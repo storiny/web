@@ -1,0 +1,19 @@
+@mixin light {
+  --inverted-0: var(--snow);
+  --inverted-50: hsl(214deg 6% 90%);
+  --inverted-100: hsl(214deg 6% 78%);
+  --inverted-200: hsl(0deg 0% 74%);
+  --inverted-300: hsl(214deg 12% 42%);
+  --inverted-400: hsl(0deg 0% 22%);
+  --inverted-negative: var(--obsidian);
+}
+
+@mixin dark {
+  --inverted-0: var(--obsidian);
+  --inverted-50: hsl(214deg 6% 18%);
+  --inverted-100: hsl(214deg 6% 26%);
+  --inverted-200: hsl(0deg 0% 45%);
+  --inverted-300: hsl(214deg 12% 80%);
+  --inverted-400: hsl(0deg 0% 99%);
+  --inverted-negative: var(--snow);
+}

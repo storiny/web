@@ -1,0 +1,84 @@
+/* Base styles */
+.slider {
+  --bg: var(--inverted-400);
+
+  position: relative;
+  display: flex;
+  align-items: center;
+  user-select: none;
+  touch-action: none;
+  cursor: pointer;
+  height: 20px;
+
+  &:not([data-disabled]):hover {
+    --bg: var(--inverted-300);
+  }
+
+  &[data-disabled] {
+    --bg: var(--inverted-100);
+
+    cursor: not-allowed;
+  }
+
+  &[data-orientation="vertical"] {
+    flex-direction: column;
+    width: 20px;
+  }
+}
+
+/* Track */
+.track {
+  background-color: var(--inverted-100);
+  box-shadow: var(--ridge-slider);
+  position: relative;
+  flex-grow: 1;
+  border-radius: 3px;
+  height: 3px;
+
+  &[data-disabled] {
+    background-color: var(--inverted-50);
+  }
+
+  &[data-orientation="vertical"] {
+    height: 100%;
+    width: 3px;
+  }
+}
+
+/* Range */
+.range {
+  position: absolute;
+  background-color: var(--bg);
+  border-radius: 3px;
+
+  &[data-orientation="horizontal"] {
+    height: 100%;
+  }
+
+  &[data-orientation="vertical"] {
+    width: 100%;
+  }
+}
+
+/* Thumb */
+.thumb {
+  --border: var(--bg);
+
+  display: block;
+  width: 16px;
+  height: 16px;
+  cursor: grab;
+  background-color: var(--bg-thumb, var(--bg));
+  border: 1.75px solid var(--border);
+  border-radius: 100%;
+
+  &:active {
+    cursor: grabbing;
+  }
+
+  &:focus {
+    --bg-thumb: var(--inverted-50);
+
+    outline: none;
+  }
+}

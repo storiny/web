@@ -1,0 +1,21 @@
+{
+  "extends": "@storiny/tsconfig/react-library.json",
+  "include": ["."],
+  "exclude": ["dist", "build", "node_modules"],
+  "compilerOptions": {
+    "esModuleInterop": true,
+    "baseUrl": "./",
+    "paths": {
+      "~/redux/*": ["src/redux/*"],
+      "~/brand/*": ["src/brand/*"],
+      "~/utils/*": ["src/utils/*"],
+      "~/hooks/*": ["src/hooks/*"],
+      "~/theme/*": ["src/theme/*"],
+      "~/icons/*": ["src/icons/*"],
+      "~/layout/*": ["src/layout/*"],
+      "~/components/*": ["src/components/*"],
+      "~/entities/*": ["src/entities/*"],
+      "~/types/*": ["src/types/*"]
+    }
+  }
+}

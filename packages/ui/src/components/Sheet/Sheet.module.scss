@@ -1,0 +1,22 @@
+/* Base styles */
+.sheet {
+  position: relative;
+  background-color: var(--bg, transparent);
+}
+
+/* Variants */
+.plain {
+  --bg: var(--bg-body);
+}
+
+.outlined {
+  --bg: var(--bg-body);
+
+  border: 1px solid var(--divider);
+}
+
+.elevated {
+  --bg: var(--bg-elevation-sm);
+
+  border: 1px solid var(--divider);
+}

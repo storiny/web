@@ -1,0 +1,16 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<AspectRatio /> matches snapshot 1`] = `
+<div
+  class="aspect-ratio"
+  style="--object-fit: cover; --padding: 100.000%;"
+>
+  <div
+    class="wrapper"
+  >
+    <div
+      data-first-child=""
+    />
+  </div>
+</div>
+`;

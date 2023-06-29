@@ -1,0 +1,121 @@
+import clsx from "clsx";
+import React from "react";
+
+import AspectRatio from "~/components/AspectRatio";
+import Avatar from "~/components/Avatar";
+import Image from "~/components/Image";
+import Link from "~/components/Link";
+import Skeleton from "~/components/Skeleton";
+import Typography from "~/components/Typography";
+import ErrorState from "~/entities/ErrorState";
+import Status from "~/entities/Status";
+import { fetchUser } from "~/redux/features";
+import { selectAuthStatus, selectUser } from "~/redux/features/auth/selectors";
+import { useAppDispatch, useAppSelector } from "~/redux/hooks";
+
+import styles from "./Persona.module.scss";
+
+const LeftSidebarPersona = () => {
+  const dispatch = useAppDispatch();
+  const authStatus = useAppSelector(selectAuthStatus);
+  const user = useAppSelector(selectUser);
+  const loading = authStatus === "loading";
+
+  if (authStatus === "error") {
+    return (
+      <ErrorState
+        componentProps={{
+          button: { loading },
+        }}
+        retry={(): void => {
+          dispatch(fetchUser());
+        }}
+        size={"sm"}
+      />
+    );
+  }
+
+  return (
+    <>
+      <AspectRatio className={styles.banner} ratio={66 / 25}>
+        {loading ? (
+          <Skeleton />
+        ) : user?.banner_id ? (
+          <>
+            {/* TODO: add banner icon */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <Image
+              alt={""}
+              data-testid={"lsb-banner"}
+              hex={user.banner_hex}
+              imgId={user.banner_id}
+              size={320}
+            />
+          </>
+        ) : null}
+      </AspectRatio>
+      {loading ? (
+        <Skeleton
+          className={styles.avatar}
+          height={64}
+          shape={"circular"}
+          width={64}
+        />
+      ) : (
+        <Avatar
+          alt={""}
+          avatarId={user?.avatar_id}
+          borderless
+          className={styles.avatar}
+          hex={user?.avatar_hex}
+          label={user?.name}
+          size={"xl"}
+        />
+      )}
+      <div className={clsx("flex-center", styles.meta)}>
+        {loading ? (
+          <>
+            <span className={"flex-col"} style={{ gap: "8px" }}>
+              <Skeleton height={16} width={72} />
+              <Skeleton height={14} width={96} />
+            </span>
+            <span
+              className={"flex-col"}
+              style={{ gap: "8px", alignItems: "center" }}
+            >
+              <Skeleton height={16} width={72} />
+              <Skeleton height={14} width={96} />
+            </span>
+          </>
+        ) : (
+          <>
+            <Link
+              className={clsx("flex-col", "ellipsis", styles.text)}
+              href={"/profile"}
+              level={"body1"}
+            >
+              {user?.name}
+              <Typography
+                as={"span"}
+                className={clsx("t-minor", "ellipsis")}
+                level={"body2"}
+              >
+                @{user?.username}
+              </Typography>
+            </Link>
+            <Typography className={clsx("flex-col", styles.text)}>
+              {/* TODO: implement follower_count */}
+              645
+              <Typography className={clsx("t-minor")} level={"body2"}>
+                followers
+              </Typography>
+            </Typography>
+          </>
+        )}
+      </div>
+      {loading ? <Skeleton height={30} /> : <Status editable />}
+    </>
+  );
+};
+
+export default LeftSidebarPersona;

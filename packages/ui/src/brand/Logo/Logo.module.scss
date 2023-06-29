@@ -1,0 +1,9 @@
+/* Base styles */
+.logo {
+  width: var(--size);
+  height: var(--size);
+
+  & > path {
+    fill: var(--inverted-400);
+  }
+}

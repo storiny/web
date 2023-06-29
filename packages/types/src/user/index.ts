@@ -1,0 +1,51 @@
+import { StatusVisibility } from "@storiny/shared";
+
+import { Connection } from "../connection";
+
+interface UserStatus {
+  emoji: string | null;
+  expires_at: string | null;
+  text: string | null;
+  visibility: StatusVisibility;
+}
+
+interface UserStatistics {
+  follower_count: number;
+  following_count: number | null;
+  friend_count: number | null;
+  story_count: number;
+}
+
+interface UserOptionalProps {
+  connections?: Connection<false>[];
+}
+
+interface UserSpecificUserProps {
+  is_blocked_by_user?: boolean;
+  is_blocking?: boolean;
+  is_follower?: boolean;
+  is_following?: boolean;
+  is_friend?: boolean;
+  is_friend_request_sent?: boolean;
+  is_muted?: boolean;
+  is_subscribed?: boolean;
+}
+
+export type User = {
+  avatar_hex: string | null;
+  avatar_id: string | null;
+  banner_hex: string | null;
+  banner_id: string | null;
+  bio: string;
+  created_at: string;
+  id: string;
+  is_private: boolean;
+  location: string | null;
+  name: string;
+  public_flags: number;
+  status?: UserStatus;
+  username: string;
+  wpm: number; // Default `225`
+} & UserStatistics &
+  UserOptionalProps &
+  UserSpecificUserProps;

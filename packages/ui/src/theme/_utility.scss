@@ -1,0 +1,61 @@
+@use "breakpoints";
+
+.unset {
+  all: unset;
+}
+
+.full-w {
+  width: 100%;
+}
+
+.full-h {
+  height: 100%;
+}
+
+.f-grow {
+  flex-grow: 1;
+}
+
+.flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.flex, .flex-col {
+  display: flex;
+}
+
+.flex-col {
+  flex-direction: column;
+}
+
+.ellipsis {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.focusable {
+  &:focus-visible {
+    outline: var(--focus-thickness) solid var(--focus);
+  }
+}
+
+.hide-last {
+  &:last-of-type {
+    display: none;
+  }
+}
+
+.only-mobile {
+  @include breakpoints.media(">mobile") {
+    display: none;
+  }
+}
+
+.not-mobile {
+  @include breakpoints.media("<=mobile") {
+    display: none;
+  }
+}

@@ -1,0 +1,25 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<Checkbox /> matches snapshot 1`] = `
+<div
+  class="flex-center container"
+>
+  <button
+    aria-checked="false"
+    aria-labelledby=":r1:"
+    class="flex-center focusable checkbox inverted md"
+    data-state="unchecked"
+    id=":r0:"
+    role="checkbox"
+    type="button"
+    value="on"
+  />
+  <label
+    class="t-body-2 t-major label"
+    for=":r0:"
+    id=":r1:"
+  >
+    Test
+  </label>
+</div>
+`;

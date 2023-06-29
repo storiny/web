@@ -1,0 +1,35 @@
+/* Base styles */
+.wordmark {
+  width: fit-content;
+  user-select: none;
+  gap: 8px;
+}
+
+/* Label */
+.label {
+  display: flex;
+  gap: 4px;
+  font-size: var(--font-size);
+  line-height: 100%;
+}
+
+/* Beta label */
+.beta {
+  font-size: 12px;
+  line-height: 100%;
+  color: var(--fg-minor);
+  margin-top: -1px;
+}
+
+/* Sizes */
+.lg {
+  --font-size: 46px;
+}
+
+.md {
+  --font-size: 28px;
+}
+
+.sm {
+  --font-size: 20px;
+}

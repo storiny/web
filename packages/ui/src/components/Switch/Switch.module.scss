@@ -1,0 +1,151 @@
+/* Base styles */
+.switch {
+  --bg: var(--unchecked-bg);
+  --border: var(--divider);
+
+  width: var(--width);
+  display: inline-block;
+  background-color: var(--bg);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border);
+  padding: var(--padding) 0;
+  position: relative;
+  cursor: pointer;
+  overflow: hidden;
+
+  &:hover {
+    --bg: var(--unchecked-hover-bg);
+  }
+
+  &[data-state="checked"] {
+    --bg: var(--checked-bg);
+
+    &:hover {
+      --bg: var(--checked-hover-bg);
+    }
+  }
+
+  &[data-disabled] {
+    --bg: transparent;
+    --border: var(--disabled-border);
+
+    &[data-state="checked"] {
+      --bg: var(--checked-disabled-bg);
+    }
+
+    cursor: not-allowed;
+  }
+}
+
+/* Indicator */
+.indicator {
+  height: var(--thumb-size);
+  width: var(--thumb-size);
+}
+
+/* Thumb */
+.thumb {
+  --bg: var(--unchecked-thumb-bg);
+
+  transition: transform 100ms;
+  width: fit-content;
+  gap: var(--thumb-gap);
+  transform: translateX(var(--thumb-translation));
+  will-change: transform;
+
+  &[data-state="checked"] {
+    --bg: var(--checked-thumb-bg);
+
+    transform: translateX(var(--thumb-checked-translation));
+
+    &[data-disabled] {
+      --bg: var(--checked-thumb-disabled-bg);
+    }
+  }
+
+  /* Thumb indicator */
+  & > span {
+    width: var(--thumb-size);
+    height: var(--thumb-size);
+    border-radius: var(--thumb-radius);
+    background-color: var(--bg);
+  }
+
+  & .indicator {
+    fill: var(--indicator-fg);
+  }
+
+  &[data-disabled] {
+    --bg: var(--unchecked-thumb-disabled-bg);
+
+    & .indicator {
+      fill: var(--indicator-disabled-fg);
+    }
+  }
+}
+
+/* Sizes */
+.md {
+  /* Base */
+  --padding: 4px;
+  --width: 46px;
+
+  /* Thumb */
+  --thumb-size: 16px;
+  --thumb-radius: var(--radius-md);
+  --thumb-gap: 6px;
+  --thumb-translation: -18px;
+  --thumb-checked-translation: 2.5px;
+}
+
+.sm {
+  /* Base */
+  --padding: 3px;
+  --width: 34px;
+
+  /* Thumb */
+  --thumb-size: 12px;
+  --thumb-radius: var(--radius-sm);
+  --thumb-gap: 4px;
+  --thumb-translation: -12px;
+  --thumb-checked-translation: 2px;
+}
+
+/* Colors */
+.inverted {
+  --indicator-fg: var(--inverted-200);
+  --indicator-disabled-fg: var(--inverted-50);
+  --disabled-border: var(--inverted-50);
+
+  /* Unchecked */
+  --unchecked-bg: var(--inverted-50);
+  --unchecked-hover-bg: var(--inverted-100);
+  --unchecked-thumb-bg: var(--inverted-negative);
+  --unchecked-thumb-disabled-bg: var(--inverted-100);
+
+  /* Checked */
+  --checked-bg: var(--inverted-400);
+  --checked-hover-bg: var(--inverted-300);
+  --checked-disabled-bg: var(--inverted-100);
+  --checked-thumb-bg: var(--inverted-50);
+  --checked-thumb-disabled-bg: var(--inverted-50);
+}
+
+.ruby {
+  --indicator-fg: var(--ruby-300);
+  --indicator-disabled-fg: var(--ruby-100);
+  --disabled-border: var(--ruby-100);
+
+  /* Unchecked */
+  --unchecked-bg: var(--ruby-100);
+  --unchecked-hover-bg: var(--ruby-200);
+  --unchecked-thumb-bg: var(--ruby-500);
+  --unchecked-thumb-disabled-bg: var(--ruby-300);
+
+  /* Checked */
+  --checked-bg: var(--ruby-500);
+  --checked-hover-bg: var(--ruby-400);
+  --checked-disabled-bg: var(--ruby-200);
+  --checked-thumb-bg: var(--ruby-100);
+  --checked-thumb-disabled-bg: var(--ruby-100);
+}

@@ -1,0 +1,18 @@
+// noinspection JSUnusedGlobalSymbols
+
+import type { Meta, StoryObj } from "@storybook/react";
+import React from "react";
+
+import PageTitle from "./PageTitle";
+
+const meta: Meta<typeof PageTitle> = {
+  title: "Entities/PageTitle",
+  component: PageTitle,
+  args: { children: "Page title" },
+  tags: ["autodocs"],
+};
+
+export default meta;
+type Story = StoryObj<typeof PageTitle>;
+
+export const Default: Story = {};

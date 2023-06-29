@@ -1,0 +1,178 @@
+@mixin main {
+  /* Colors */
+  .color-inverted {
+    /* Rigid */
+    --rigid-bg: var(--inverted-400);
+    --rigid-fg: var(--inverted-0);
+    --rigid-hover-bg: var(--inverted-300);
+    --rigid-active-bg: var(--inverted-200);
+    --rigid-active-fg: var(--inverted-negative);
+    --rigid-disabled-bg: var(--inverted-50);
+    --rigid-disabled-fg: var(--inverted-100);
+    --rigid-loading-bg: var(--inverted-200);
+    --rigid-loading-fg: var(--inverted-100);
+
+    /* Hollow */
+    --hollow-fg: var(--inverted-negative);
+    --hollow-border: var(--inverted-200);
+    --hollow-hover-bg: var(--inverted-100);
+    --hollow-active-border: var(--inverted-300);
+    --hollow-disabled-fg: var(--inverted-100);
+    --hollow-disabled-border: var(--inverted-100);
+    --hollow-loading-fg: var(--inverted-200);
+    --hollow-loading-border: var(--inverted-200);
+
+    /* Ghost */
+    --ghost-fg: var(--inverted-400);
+    --ghost-hover-bg: var(--inverted-50);
+    --ghost-hover-fg: var(--inverted-negative);
+    --ghost-active-bg: var(--inverted-100);
+    --ghost-disabled-fg: var(--inverted-100);
+    --ghost-loading-fg: var(--inverted-200);
+  }
+
+  /* Ruby color */
+  .color-ruby {
+    /* Rigid */
+    --rigid-bg: var(--ruby-500);
+    --rigid-fg: var(--snow);
+    --rigid-hover-bg: var(--ruby-600);
+    --rigid-active-bg: var(--ruby-700);
+    --rigid-disabled-bg: var(--ruby-100);
+    --rigid-disabled-fg: var(--ruby-400);
+    --rigid-loading-bg: var(--ruby-200);
+    --rigid-loading-fg: var(--ruby-500);
+
+    /* Hollow */
+    --hollow-fg: var(--ruby-800);
+    --hollow-border: var(--ruby-400);
+    --hollow-hover-bg: var(--ruby-100);
+    --hollow-hover-fg: var(--obsidian);
+    --hollow-active-bg: var(--ruby-200);
+    --hollow-disabled-fg: var(--ruby-100);
+    --hollow-disabled-border: var(--ruby-100);
+    --hollow-loading-fg: var(--ruby-200);
+    --hollow-loading-border: var(--ruby-200);
+
+    /* Ghost */
+    --ghost-fg: var(--ruby-800);
+    --ghost-hover-bg: var(--ruby-100);
+    --ghost-hover-fg: var(--obsidian);
+    --ghost-active-bg: var(--ruby-200);
+    --ghost-disabled-fg: var(--ruby-100);
+    --ghost-loading-fg: var(--ruby-200);
+  }
+
+  /* Loading */
+  .loading {
+    pointer-events: none;
+  }
+
+  /* Variants */
+  .variant-rigid {
+    --fg: var(--rigid-fg);
+
+    color: var(--fg);
+    background-color: var(--rigid-bg);
+
+    &:hover {
+      background-color: var(--rigid-hover-bg, var(--rigid-bg));
+    }
+
+    &:active {
+      --fg: var(--rigid-active-fg, var(--rigid-hover-fg, var(--rigid-fg)));
+
+      background-color: var(
+        --rigid-active-bg,
+        var(--rigid-hover-bg, var(--rigid-bg))
+      );
+    }
+
+    &:disabled, &.disabled {
+      --fg: var(--rigid-disabled-fg);
+
+      background-color: var(--rigid-disabled-bg);
+    }
+
+    &.loading {
+      --fg: var(--rigid-loading-fg);
+
+      background-color: var(--rigid-loading-bg);
+    }
+  }
+
+  .variant-hollow {
+    --fg: var(--hollow-fg);
+
+    color: var(--fg);
+    border-width: 1px;
+    border-style: solid;
+    border-color: var(--hollow-border);
+
+    &:hover {
+      --fg: var(--hollow-hover-fg);
+
+      background-color: var(--hollow-hover-bg);
+    }
+
+    &:active {
+      --fg: var(--hollow-active-fg, var(--hollow-hover-fg, var(--hollow-fg)));
+
+      border-color: var(--hollow-active-border, var(--hollow-border));
+      background-color: var(--hollow-active-bg, var(--hollow-hover-bg));
+    }
+
+    &:disabled, &.disabled {
+      --fg: var(--hollow-disabled-fg);
+
+      border-color: var(--hollow-disabled-border);
+      background-color: var(--hollow-disabled-bg);
+    }
+
+    &.loading {
+      --fg: var(--hollow-loading-fg);
+
+      border-color: var(--hollow-loading-border);
+    }
+  }
+
+  .variant-ghost {
+    --fg: var(--ghost-fg);
+
+    color: var(--fg);
+
+    &:hover {
+      --fg: var(--ghost-hover-fg, var(--ghost-fg));
+
+      background-color: var(--ghost-hover-bg);
+    }
+
+    &:active {
+      --fg: var(--ghost-active-fg, var(--ghost-hover-fg, var(--ghost-fg)));
+
+      background-color: var(--ghost-active-bg, var(--ghost-hover-bg));
+    }
+
+    &:disabled, &.disabled {
+      --fg: var(--ghost-disabled-fg);
+    }
+
+    &.loading {
+      --fg: var(--ghost-loading-fg);
+    }
+  }
+}
+
+@mixin dark {
+  .color-ruby {
+    /* Rigid */
+    --rigid-hover-bg: var(--ruby-400);
+    --rigid-active-bg: var(--ruby-300);
+
+    /* Hollow */
+    --hollow-hover-fg: var(--snow);
+
+    /* Ghost */
+    --ghost-hover-fg: var(--snow);
+  }
+}

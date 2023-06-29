@@ -1,0 +1,41 @@
+@use "../../../../../../../../packages/ui/src/theme/breakpoints" as breakpoints;
+
+/* Swatch container */
+.swatch-container {
+  flex-wrap: wrap;
+  gap: 12px;
+
+  @include breakpoints.media("<=mobile") {
+    width: auto;
+    margin-inline: var(--grid-compensation);
+    flex-direction: column;
+    gap: 0;
+  }
+}
+
+/* Swatch */
+.swatch {
+  gap: 4px;
+  padding: 16px;
+  flex-grow: 1;
+  min-width: 200px;
+  text-transform: uppercase;
+  align-items: flex-start;
+  border: 1px solid var(--divider);
+  border-radius: var(--radius-xs);
+
+  @include breakpoints.media("<=mobile") {
+    border-radius: 0;
+    width: 100%;
+  }
+}
+
+/* Color name */
+.color-name {
+  text-transform: initial;
+}
+
+/* Stat label */
+.stat-label {
+  gap: 6px;
+}

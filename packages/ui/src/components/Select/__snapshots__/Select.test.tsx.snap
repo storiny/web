@@ -1,0 +1,36 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<Select /> renders and matches snapshot 1`] = `
+<button
+  aria-autocomplete="none"
+  aria-controls="radix-:r0:"
+  aria-expanded="true"
+  class="focusable flex-center trigger md inverted"
+  data-placeholder=""
+  data-state="open"
+  dir="ltr"
+  role="combobox"
+  type="button"
+>
+  <span
+    data-value="true"
+    style="pointer-events: none;"
+  />
+  <span
+    aria-hidden="true"
+    class="icon"
+  >
+    <svg
+      aria-hidden="true"
+      class="svg-icon"
+      data-testid="chevron-icon"
+      style="transform: rotate(180deg);"
+      viewBox="0 0 12 12"
+    >
+      <path
+        d="m3 7.5 3-3 3 3"
+      />
+    </svg>
+  </span>
+</button>
+`;

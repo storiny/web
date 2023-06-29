@@ -1,0 +1,39 @@
+/* Base styles */
+.avatar-group {
+  --border-color: var(--bg-body);
+
+  display: flex;
+  flex-direction: row-reverse;
+  width: fit-content;
+}
+
+/* Sizes */
+.xl2 {
+  --group-gap: -32px;
+  --border-width: 4px;
+}
+
+.xl {
+  --group-gap: -24px;
+  --border-width: 3.5px;
+}
+
+.lg {
+  --group-gap: -18px;
+  --border-width: 3.2px;
+}
+
+.md {
+  --group-gap: -12px;
+  --border-width: 2.5px;
+}
+
+.sm {
+  --group-gap: -10px;
+  --border-width: 1.75px;
+}
+
+.xs {
+  --group-gap: -8px;
+  --border-width: 1.5px;
+}

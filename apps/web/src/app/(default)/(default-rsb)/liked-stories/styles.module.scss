@@ -1,0 +1,17 @@
+/* Input field and select trigger */
+.input, .select-trigger {
+  border-radius: 0;
+}
+
+/* Input */
+.input {
+  &:not([data-focused="true"]) {
+    border: none;
+  }
+}
+
+/* Select trigger */
+.select-trigger {
+  border: none;
+  outline-offset: calc(-1 * var(--focus-thickness));
+}

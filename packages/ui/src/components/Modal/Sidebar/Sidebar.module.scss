@@ -1,0 +1,11 @@
+/* Base styles */
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  padding: 8px;
+  gap: 4px;
+  max-width: 156px;
+  border-right: 1px solid var(--divider);
+  background-color: var(--bg-elevation-md);
+}

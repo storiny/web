@@ -1,0 +1,34 @@
+@use "grid" as grid;
+
+@font-face {
+  font-family: satoshi;
+  src: url("../static/fonts/satoshi.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: cabinet-grotesk;
+  src: url("../static/fonts/cabinet-grotesk.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+}
+
+:root {
+  --font-satoshi: satoshi;
+  --font-cabinet-grotesk: cabinet-grotesk;
+}
+
+body {
+  transition: none !important; // Disable theme switch transition
+}
+
+#storybook-root {
+  padding-bottom: var(--global-bottom-gutter, 0);
+}
+
+.grid {
+  overflow-x: clip;
+
+  @include grid.main;
+}

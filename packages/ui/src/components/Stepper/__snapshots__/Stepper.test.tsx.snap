@@ -1,0 +1,24 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<Stepper /> matches snapshot 1`] = `
+<div
+  aria-valuemax="3"
+  aria-valuemin="0"
+  aria-valuenow="1"
+  aria-valuetext="1 of 3 steps completed"
+  class="flex-center stepper md"
+  data-active="1"
+  data-total="3"
+  role="progressbar"
+>
+  <span
+    class="step active"
+  />
+  <span
+    class="step"
+  />
+  <span
+    class="step"
+  />
+</div>
+`;

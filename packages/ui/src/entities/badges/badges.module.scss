@@ -1,0 +1,8 @@
+/* Base styles */
+.badge {
+  display: inline-block;
+  min-width: var(--badge-size, 1em);
+  min-height: var(--badge-size, 1em);
+  width: var(--badge-size);
+  height: var(--badge-size);
+}

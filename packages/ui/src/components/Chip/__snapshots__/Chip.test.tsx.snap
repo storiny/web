@@ -1,0 +1,10 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<Chip /> matches snapshot 1`] = `
+<span
+  class="reset t-body-3 focusable chip md rigid"
+  data-disabled="false"
+>
+  Test
+</span>
+`;

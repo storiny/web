@@ -1,0 +1,31 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<TabPanel /> matches snapshot 1`] = `
+<div
+  class="tabs"
+  data-orientation="horizontal"
+  dir="ltr"
+>
+  <div
+    aria-orientation="horizontal"
+    class="tabs-list"
+    data-orientation="horizontal"
+    role="tablist"
+    style="outline: none;"
+    tabindex="0"
+  >
+    <button
+      aria-controls="radix-:r0:-content-test"
+      aria-selected="false"
+      class="reset flex-center t-center tab md icon-only"
+      data-orientation="horizontal"
+      data-radix-collection-item=""
+      data-state="inactive"
+      id="radix-:r0:-trigger-test"
+      role="tab"
+      tabindex="-1"
+      type="button"
+    />
+  </div>
+</div>
+`;

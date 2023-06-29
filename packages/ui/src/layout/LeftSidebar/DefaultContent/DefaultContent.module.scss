@@ -1,0 +1,15 @@
+/* Tabs */
+.tabs {
+  margin-right: -24px;
+}
+
+/* Tabs list */
+.tabs-list {
+  padding-inline-start: 8px;
+  gap: 8px;
+}
+
+/* Tab */
+.tab[data-orientation="vertical"] {
+  justify-content: flex-start;
+}

@@ -1,0 +1,27 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<ToggleGroupItem /> matches snapshot 1`] = `
+<div
+  class="toggle-group"
+  data-orientation="horizontal"
+  dir="ltr"
+  role="group"
+  style="outline: none;"
+  tabindex="0"
+>
+  <span
+    class="flex-center container"
+  >
+    <button
+      aria-checked="false"
+      class="reset focusable toggle-button md"
+      data-orientation="horizontal"
+      data-radix-collection-item=""
+      data-state="off"
+      role="radio"
+      tabindex="-1"
+      type="button"
+    />
+  </span>
+</div>
+`;

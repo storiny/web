@@ -1,0 +1,21 @@
+{
+  "name": "@storiny/shared",
+  "version": "0.0.0",
+  "private": true,
+  "sideEffects": false,
+  "scripts": {
+    "lint": "eslint \"**/*.ts*\""
+  },
+  "devDependencies": {
+    "@storiny/eslint-config": "*",
+    "@storiny/prettier-config": "*",
+    "@storiny/tsconfig": "*",
+    "@storiny/types": "*",
+    "eslint": "^8.42.0",
+    "prettier": "^2.5.1",
+    "typescript": "^5.1.5"
+  },
+  "dependencies": {
+    "zod": "^3.21.4"
+  }
+}

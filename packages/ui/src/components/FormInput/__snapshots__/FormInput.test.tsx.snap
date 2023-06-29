@@ -1,0 +1,34 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<FormInput /> matches snapshot 1`] = `
+<form
+  novalidate=""
+>
+  <fieldset
+    class="flex-col form-item"
+    data-disabled="false"
+  >
+    <label
+      class="flex label"
+      data-disabled="false"
+      for=":r0:-item"
+    >
+      Test label
+    </label>
+    <div
+      class="flex-center container inverted md"
+      data-focused="false"
+    >
+      <input
+        aria-describedby=":r0:-helper-text"
+        aria-invalid="false"
+        class="unset input"
+        id=":r0:-item"
+        name="input"
+        type="text"
+        value=""
+      />
+    </div>
+  </fieldset>
+</form>
+`;

@@ -1,0 +1,12 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<ToggleGroup /> matches snapshot 1`] = `
+<div
+  class="toggle-group"
+  data-orientation="horizontal"
+  dir="ltr"
+  role="group"
+  style="outline: none;"
+  tabindex="-1"
+/>
+`;

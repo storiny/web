@@ -1,0 +1,108 @@
+@use "../../theme/breakpoints" as breakpoints;
+
+/* Base styles */
+.story {
+  padding-block: 12px;
+  gap: 8px;
+}
+
+/* Main */
+.main {
+  justify-content: space-between;
+  gap: 16px;
+
+  @include breakpoints.media("<=mobile") {
+    flex-direction: column;
+    gap: 12px;
+
+    & .description {
+      display: none;
+    }
+
+    & .title {
+      font-size: 18px;
+      line-height: 22px;
+    }
+
+    & .persona {
+      padding-block: 6px;
+    }
+
+    & .footer {
+      padding-top: 8px;
+    }
+  }
+}
+
+/* Meta */
+.meta {
+  gap: 8px;
+}
+
+/* Title */
+.title {
+  font-size: 22px;
+  line-height: 24px;
+  border-radius: var(--radius-xs); // Focus outline radius
+  outline-offset: 3px;
+}
+
+/* Persona */
+.persona {
+  width: fit-content;
+}
+
+/* Splash */
+.splash {
+  --size: 270px;
+
+  min-width: var(--size);
+  max-width: var(--size);
+  border-radius: var(--radius-xs);
+  align-self: flex-start;
+  position: relative;
+
+  @include breakpoints.media("<=800px") {
+    --size: 200px;
+  }
+
+  @include breakpoints.media("<=mobile") {
+    --size: 100vw;
+
+    margin-inline: var(--grid-compensation);
+    width: auto;
+    border-radius: 0;
+  }
+}
+
+/* Mobile actions */
+.mobile-actions {
+  position: absolute;
+  gap: 6px;
+  top: 12px;
+  right: 12px;
+}
+
+/* Footer */
+.footer {
+  padding-top: 8px;
+  gap: 12px;
+  align-items: center;
+
+  @include breakpoints.media("<=mobile") {
+    flex-wrap: wrap;
+  }
+}
+
+/* Stat */
+.stat {
+  --icon-size: 16px;
+  --icon-stroke: var(--fg-minor);
+
+  gap: 6px;
+}
+
+/* Tags container */
+.tags-container {
+  gap: 6px;
+}

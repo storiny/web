@@ -1,0 +1,13 @@
+/* Base styles */
+.right-sidebar {
+  &.has-banner {
+    padding-top: 140px;
+
+    &::before {
+      margin-top: 140px;
+      height: calc(100% - 140px);
+      border-top: 1px solid var(--divider);
+      border-top-left-radius: var(--radius-xl);
+    }
+  }
+}

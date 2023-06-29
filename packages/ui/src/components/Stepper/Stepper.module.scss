@@ -1,0 +1,26 @@
+/* Base styles */
+.stepper {
+  gap: var(--gap);
+}
+
+/* Step */
+.step {
+  --bg: var(--inverted-100);
+
+  flex-grow: 1;
+  height: 4px;
+  background-color: var(--bg);
+
+  &.active {
+    --bg: var(--inverted-400);
+  }
+}
+
+/* Sizes */
+.md {
+  --gap: 8px;
+}
+
+.sm {
+  --gap: 4px;
+}

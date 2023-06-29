@@ -1,0 +1,40 @@
+@use "../../../../../packages/ui/src/theme/breakpoints" as breakpoints;
+
+/* Main */
+.main {
+  grid-column: 6 / -6;
+  place-content: center;
+  z-index: 1;
+  padding-block: 0;
+
+  @include breakpoints.media("<=desktop") {
+    grid-column: 4 / -4;
+  }
+
+  @include breakpoints.media("<=tablet") {
+    grid-column: 8 / -8;
+  }
+
+  @include breakpoints.media("<=mobile") {
+    grid-column: 1 / -1;
+  }
+}
+
+/* Container */
+.container {
+  padding: 32px;
+  min-height: 420px;
+  background-color: var(--bg-elevation-xs);
+  border: 1px solid var(--divider);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
+
+  @include breakpoints.media("<=mobile") {
+    background-color: var(--bg-body);
+    box-shadow: none;
+    border-radius: 0;
+    border: none;
+    padding: 32px 16px;
+    min-height: 100%;
+  }
+}

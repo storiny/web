@@ -1,0 +1,26 @@
+@use "../utils" as utils;
+
+$name: lemon;
+$hue: 50deg;
+$light-map: (
+  "100": 65,
+  "200": 58,
+  "300": 50,
+  "400": 42,
+  "500": 40,
+);
+$dark-map: (
+  "100": 24,
+  "200": 38,
+  "300": 48,
+  "400": 58,
+  "500": 68,
+);
+
+@mixin light {
+  @include utils.generate-color-levels($name, $hue, $light-map);
+}
+
+@mixin dark {
+  @include utils.generate-color-levels($name, $hue, $dark-map);
+}

@@ -1,0 +1,88 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<ModalHeader /> matches snapshot 1`] = `
+<body
+  style="pointer-events: none;"
+>
+  <span
+    aria-hidden="true"
+    data-aria-hidden="true"
+    data-radix-focus-guard=""
+    style="outline: none; opacity: 0; position: fixed; pointer-events: none;"
+    tabindex="0"
+  />
+  <div
+    aria-hidden="true"
+    data-aria-hidden="true"
+  />
+  <div
+    aria-hidden="true"
+    class="overlay"
+    data-aria-hidden="true"
+    data-state="open"
+    style="pointer-events: auto;"
+  />
+  <div
+    aria-describedby="radix-:r2:"
+    aria-labelledby="radix-:r1:"
+    class="flex-center content"
+    data-state="open"
+    id="radix-:r0:"
+    role="dialog"
+    style="pointer-events: auto;"
+    tabindex="-1"
+  >
+    <div
+      class="flex-center container"
+    >
+      <div
+        class="flex-center main"
+      >
+        <div
+          class="flex-center header"
+        >
+          <span
+            aria-hidden="true"
+            class="spacer horizontal"
+            style="--size: 1.5;"
+          />
+          <h2
+            class="t-body-2 t-major title"
+            id="radix-:r1:"
+          >
+            Test
+          </h2>
+        </div>
+        <div
+          class="body"
+        />
+        <button
+          aria-disabled="false"
+          aria-label="Close"
+          class="reset focusable variant-ghost color-inverted icon-button md close"
+          tabindex="0"
+          type="button"
+        >
+          <svg
+            aria-hidden="true"
+            class="svg-icon"
+            data-testid="x-icon"
+            viewBox="0 0 12 12"
+          >
+            <path
+              d="M9 3 3 9m0-6 6 6"
+            />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+  <span
+    aria-hidden="true"
+    data-aria-hidden="true"
+    data-radix-focus-guard=""
+    style="outline: none; opacity: 0; position: fixed; pointer-events: none;"
+    tabindex="0"
+  />
+</body>
+`;

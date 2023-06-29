@@ -1,0 +1,112 @@
+/* Container */
+.container {
+  width: fit-content;
+}
+
+/* Label */
+.label {
+  --fg: var(--fg-major);
+
+  padding-left: 8px;
+  color: var(--fg);
+}
+
+/* Base styles */
+.radio {
+  height: var(--size);
+  width: var(--size);
+  border-radius: 100%;
+  background-color: var(--bg, var(--bg-body));
+  border: 2px solid var(--border);
+
+  &:not([data-disabled]) {
+    cursor: pointer;
+
+    &:hover {
+      --bg: var(--hover-bg);
+      --border: var(--hover-border);
+    }
+
+    &:focus-visible {
+      --bg: var(--focus-bg);
+    }
+
+    &[data-state="checked"] {
+      --bg: var(--checked-bg);
+      --border: var(--checked-border);
+
+      &:hover {
+        --bg: var(--checked-hover-bg);
+        --border: var(--checked-hover-border);
+      }
+    }
+
+    & + .label {
+      cursor: pointer;
+    }
+  }
+
+  &[data-disabled] {
+    --bg: var(--disabled-bg);
+    --border: var(--disabled-border);
+
+    cursor: not-allowed;
+
+    &[data-state="checked"] {
+      --bg: var(--checked-disabled-bg);
+      --border: var(--checked-disabled-border);
+    }
+
+    & + .label {
+      --fg: var(--fg-muted);
+
+      cursor: not-allowed;
+    }
+  }
+}
+
+/* Sizes */
+.lg {
+  --size: 18px;
+  --icon-size: 12px;
+}
+
+.md {
+  --size: 16px;
+  --icon-size: 10px;
+}
+
+/* Colors */
+.inverted {
+  /* Unchecked */
+  --border: var(--inverted-100);
+  --hover-bg: var(--inverted-50);
+  --hover-border: var(--inverted-200);
+  --disabled-border: var(--inverted-50);
+  --focus-bg: var(--inverted-50);
+
+  /* Checked */
+  --checked-bg: var(--inverted-400);
+  --checked-border: var(--inverted-100);
+  --checked-hover-bg: var(--inverted-300);
+  --checked-hover-border: var(--inverted-200);
+  --checked-disabled-bg: var(--inverted-200);
+  --checked-disabled-border: var(--inverted-50);
+}
+
+.ruby {
+  /* Unchecked */
+  --border: var(--ruby-500);
+  --hover-bg: var(--ruby-100);
+  --hover-border: var(--ruby-500);
+  --disabled-border: var(--ruby-100);
+  --focus-bg: var(--ruby-100);
+
+  /* Checked */
+  --checked-bg: var(--ruby-500);
+  --checked-border: var(--ruby-200);
+  --checked-hover-bg: var(--ruby-500);
+  --checked-hover-border: var(--ruby-300);
+  --checked-disabled-bg: var(--ruby-300);
+  --checked-disabled-border: var(--ruby-100);
+}

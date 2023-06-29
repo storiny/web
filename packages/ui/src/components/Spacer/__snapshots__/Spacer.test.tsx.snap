@@ -1,0 +1,9 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<Spacer /> matches snapshot 1`] = `
+<span
+  aria-hidden="true"
+  class="spacer horizontal"
+  style="--size: 1;"
+/>
+`;

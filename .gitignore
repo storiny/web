@@ -1,0 +1,58 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+node_modules
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+
+# testing
+coverage
+test-results
+
+# docker
+docker/tmp/elasticsearch/*
+docker/tmp/minio/*
+docker/tmp/postgres/*
+docker/tmp/redis/*
+apps/cdn/docker/tmp/nginx/*
+!docker/tmp/elasticsearch/.gitkeep
+!docker/tmp/minio/.gitkeep
+!docker/tmp/postgres/.gitkeep
+!docker/tmp/redis/.gitkeep
+!apps/cdn/docker/tmp/nginx/.gitkeep
+
+# certificates
+packages/proto/certs/*
+!packages/proto/certs/gen.sh
+
+# next.js
+.next/
+out/
+build
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# local env files
+.env
+apps/web/.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# turbo
+.turbo
+
+# vercel
+.vercel

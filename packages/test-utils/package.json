@@ -1,0 +1,25 @@
+{
+  "name": "@storiny/test-utils",
+  "version": "0.0.0",
+  "private": true,
+  "sideEffects": false,
+  "devDependencies": {
+    "@storiny/eslint-config": "*",
+    "@storiny/prettier-config": "*",
+    "@storiny/tsconfig": "*",
+    "@testing-library/dom": "^9.3.1",
+    "@testing-library/jest-dom": "^5.16.5",
+    "@testing-library/react": "^14.0.0",
+    "@testing-library/user-event": "^14.4.3",
+    "@types/jest-axe": "^3.5.5",
+    "eslint": "^8.42.0",
+    "expect-more-jest": "^5.5.0",
+    "jest": "^29.5.0",
+    "jest-axe": "^7.0.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "resize-observer-polyfill": "^1.5.1",
+    "typescript": "^5.1.5",
+    "whatwg-fetch": "^3.6.2"
+  }
+}

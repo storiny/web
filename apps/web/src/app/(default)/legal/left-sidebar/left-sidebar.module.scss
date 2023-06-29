@@ -1,0 +1,29 @@
+/* Tabs */
+.tabs {
+  max-height: calc(100vh - 52px);
+}
+
+/* Tabs list */
+.tabs-list {
+  gap: 16px;
+}
+
+/* Tabs group */
+.tabs-group {
+  gap: 12px;
+}
+
+/* Tabs group container */
+.tabs-group-container {
+  margin-left: 16px;
+}
+
+/* Tab */
+.tab {
+  justify-content: flex-start;
+}
+
+/* Scroll area viewport */
+.viewport {
+  padding: 24px 0;
+}

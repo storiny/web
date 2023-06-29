@@ -1,0 +1,196 @@
+@use "../../breakpoints";
+
+/* Display */
+@mixin display {
+  &-display {
+    &-1 {
+      font-weight: 900;
+      font-size: 76px;
+      line-height: 86px;
+      letter-spacing: 0.25px;
+
+      @include breakpoints.media("<=mobile") {
+        font-size: 54px;
+        line-height: 58px;
+      }
+    }
+
+    &-2 {
+      font-weight: 900;
+      font-size: 58px;
+      line-height: 68px;
+      letter-spacing: -0.4px;
+
+      @include breakpoints.media("<=mobile") {
+        font-size: 26px;
+        line-height: 31px;
+      }
+    }
+  }
+}
+
+/* Head */
+@mixin head {
+  &-head {
+    &-xl2 {
+      font-weight: 800;
+      font-size: 38px;
+      line-height: 43px;
+      letter-spacing: -0.05px;
+
+      @include breakpoints.media("<=mobile") {
+        font-size: 32px;
+        line-height: 37px;
+        letter-spacing: 0;
+      }
+    }
+
+    &-xl {
+      font-weight: 800;
+      font-size: 30px;
+      line-height: 35px;
+
+      @include breakpoints.media("<=mobile") {
+        font-size: 28px;
+        line-height: 33px;
+      }
+    }
+
+    &-lg {
+      font-weight: 800;
+      font-size: 24px;
+      line-height: 31px;
+
+      @include breakpoints.media("<=mobile") {
+        font-size: 21px;
+        line-height: 28px;
+      }
+    }
+
+    &-md {
+      font-weight: 800;
+      font-size: 20px;
+      line-height: 25px;
+
+      @include breakpoints.media("<=mobile") {
+        font-size: 18px;
+        line-height: 23px;
+      }
+    }
+
+    &-sm {
+      font-weight: 700;
+      font-size: 19px;
+      line-height: 24px;
+    }
+
+    &-xs {
+      font-weight: 700;
+      font-size: 16px;
+      line-height: 21px;
+    }
+  }
+}
+
+/* Body */
+@mixin body {
+  &-body {
+    &-1 {
+      font-size: var(--font-size-md);
+      line-height: var(--line-height-md);
+    }
+
+    &-2 {
+      font-size: var(--font-size-sm);
+      line-height: var(--line-height-sm);
+    }
+
+    &-3 {
+      font-size: var(--font-size-xs);
+      line-height: var(--line-height-xs);
+    }
+  }
+}
+
+/* Legible */
+@mixin legible {
+  &-legible {
+    /* Regular */
+    --t-legible-font-size: 18px;
+    --t-legible-line-height: 31.5px;
+    --t-legible-font-size-sm: 17px;
+    --t-legible-line-height-sm: 27px;
+
+    font-size: var(--t-legible-font-size);
+    line-height: var(--t-legible-line-height);
+
+    @include breakpoints.media("<=mobile") {
+      font-size: var(--t-legible-font-size-sm, var(--t-legible-font-size));
+      line-height: var(
+        --t-legible-line-height-sm,
+        var(--t-legible-line-height)
+      );
+    }
+
+    /*
+     * Classes below are added programmatically
+     * to the `body` and only provide the variables
+     */
+    &-slim {
+      --t-legible-font-size: var(--font-size-md);
+      --t-legible-line-height: 24px;
+    }
+
+    &-oversized {
+      --t-legible-font-size: 20px;
+      --t-legible-line-height: 33.5px;
+      --t-legible-font-size-sm: 19.2px;
+      --t-legible-line-height-sm: 32.5px;
+    }
+  }
+}
+
+/* Quote */
+@mixin quote {
+  &-quote {
+    font-size: 20px;
+    line-height: 29px;
+    padding: 12px 24px;
+    border-radius: var(--radius-md);
+    background-color: var(--bg-elevation-xs);
+
+    @include breakpoints.media("<=mobile") {
+      font-size: 18px;
+      line-height: 25px;
+    }
+  }
+}
+
+@mixin main {
+  .t {
+    &-display-1,
+    &-display-2,
+    &-head-xl2,
+    &-head-xl,
+    &-head-lg,
+    &-head-md,
+    &-head-sm,
+    &-head-xs,
+    &-quote {
+      font-family: var(--font-primary);
+    }
+
+    &-body-1,
+    &-body-2,
+    &-body-3 {
+      font-family: var(--font-secondary);
+      font-weight: var(--font-weight-regular);
+    }
+
+    @include display;
+    @include head;
+    @include body;
+    @include quote;
+    @include legible;
+  }
+}

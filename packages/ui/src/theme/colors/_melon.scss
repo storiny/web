@@ -1,0 +1,9 @@
+@mixin light {
+  --melon-100: hsl(112deg 77% 42%);
+  --melon-200: hsl(112deg 78% 26%);
+}
+
+@mixin dark {
+  --melon-100: hsl(128deg 60% 45%);
+  --melon-200: hsl(128deg 60% 52%);
+}

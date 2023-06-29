@@ -1,0 +1,68 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<Input /> matches snapshot 1`] = `
+<div
+  class="flex-center container inverted md"
+  data-focused="false"
+>
+  <input
+    class="unset input"
+    placeholder="Test"
+    type="text"
+  />
+</div>
+`;
+
+exports[`<Input /> spinner renders spinner and matches snapshot 1`] = `
+<div
+  class="flex-center container inverted md"
+  data-focused="false"
+>
+  <input
+    class="unset input"
+    placeholder="Test"
+    type="number"
+  />
+  <span
+    class="flex-center spinner-container"
+    data-testid="spinner-container"
+  >
+    <button
+      aria-label="decrement-value"
+      class="unset focusable spinner"
+      type="button"
+    >
+      <svg
+        aria-hidden="true"
+        class="svg-icon"
+        data-testid="minus-icon"
+        viewBox="0 0 12 12"
+      >
+        <path
+          d="M2.5 6h7"
+        />
+      </svg>
+    </button>
+    <span
+      aria-hidden="true"
+      class="spinner-separator"
+    />
+    <button
+      aria-label="Increment value"
+      class="unset focusable spinner"
+      type="button"
+    >
+      <svg
+        aria-hidden="true"
+        class="svg-icon"
+        data-testid="plus-icon"
+        viewBox="0 0 12 12"
+      >
+        <path
+          d="M6 2.5v7M2.5 6h7"
+        />
+      </svg>
+    </button>
+  </span>
+</div>
+`;

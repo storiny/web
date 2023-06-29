@@ -1,0 +1,5 @@
+syntax = "proto3";
+
+package story_def.v1;
+
+message Empty {};

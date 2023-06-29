@@ -1,0 +1,4 @@
+@mixin main {
+  --easing-short: cubic-bezier(0.16, 1, 0.24, 1);
+  --easing-medium: cubic-bezier(0.8, 0.14, 0.14, 0.86);
+}

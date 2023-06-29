@@ -1,0 +1,13 @@
+@mixin main {
+  .t-bold {
+    font-weight: var(--font-weight-bold) !important;
+  }
+
+  .t-medium {
+    font-weight: var(--font-weight-medium) !important;
+  }
+
+  .t-regular {
+    font-weight: var(--font-weight-regular) !important;
+  }
+}

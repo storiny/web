@@ -1,0 +1,42 @@
+@mixin ridge-light {
+  --ridge-md: inset 0px 1px 3px #bfbfbf;
+  --ridge-sm: inset 0px 1px 3px rgba(219 219 219 / 60%);
+  --ridge-xs: inset 0px 0px 1px rgba(163 163 163 / 32%),
+    inset 0px 1px 0px rgba(128 128 128 / 10%);
+  --ridge-slider: inset 0px 0px 3px rgba(128 128 128 / 60%);
+}
+
+@mixin ridge-dark {
+  --ridge-md: inset 0px -1px 1px -1px #55575b, inset 0px 1.5px 4px #646e81;
+  --ridge-sm: inset 0px -1px 1px -1px rgba(85 87 91 / 50%),
+    inset 0px 1px 3px rgba(100 110 129 / 80%);
+  --ridge-xs: inset 0px 0px 1px rgba(255 255 255 / 32%),
+    inset 0px 1px 0px rgba(255 255 255 / 10%);
+  --ridge-slider: inset 0px 0px 3px rgba(13 13 13 / 75%);
+}
+
+@mixin shadow-light {
+  --shadow-lg: 0px 2px 18px 8px rgba(107 125 148 / 4%),
+    0px 8px 22px rgba(49 60 73 / 12%);
+  --shadow-md: 0px 3px 6px -2px rgba(112 125 143 / 5%),
+    0px 4px 16px 2px rgba(54 62 74 / 6%);
+  --shadow-sm: 0px 3px 12px rgba(54 62 74 / 8%);
+  --shadow-xs: 0px 2px 8px rgba(52 62 75 / 6%);
+}
+
+@mixin shadow-dark {
+  --shadow-lg: 0px 4px 8px #000;
+  --shadow-md: 0px 5px 6px -2px #000;
+  --shadow-sm: 0px 2px 6px rgba(0 0 0 / 32%);
+  --shadow-xs: 0px 1px 3px #000;
+}
+
+@mixin main {
+  @include ridge-light;
+  @include shadow-light;
+}
+
+@mixin dark {
+  @include ridge-dark;
+  @include shadow-dark;
+}

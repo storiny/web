@@ -1,0 +1,81 @@
+@use "./colors/beryl" as beryl;
+@use "./colors/blush" as blush;
+@use "./colors/inverted" as inverted;
+@use "./colors/lemon" as lemon;
+@use "./colors/melon" as melon;
+@use "./colors/plum" as plum;
+@use "./colors/ruby" as ruby;
+
+@mixin main {
+  /* Common */
+  --obsidian: hsl(0deg 0% 2%);
+  --snow: hsl(0deg 0% 98%);
+
+  /* Background */
+  --bg-body: hsl(0deg 0% 98%);
+  --bg-elevation-xs: hsl(0deg 0% 96%);
+  --bg-elevation-sm: hsl(0deg 0% 94%);
+  --bg-elevation-md: hsl(0deg 0% 92%);
+  --bg-elevation-lg: hsl(0deg 0% 90%);
+  --bg-skeleton: hsl(0deg 0% 85%);
+  --bg-backdrop: hsla(0deg 0% 0% / 25%);
+  --bg-selection: hsla(206deg 100% 50% / 30%);
+  --bg-inline-code: hsl(0deg 0% 100%);
+  --bg-toggle: hsl(214deg 6% 86%);
+
+  /* Foreground */
+  --fg-major: hsl(0deg 0% 10%);
+  --fg-minor: hsl(0deg 0% 42%);
+  --fg-muted: hsl(0deg 0% 55%);
+  --fg-legible: hsl(0deg 0% 12%);
+  --fg-inline-code: hsl(320deg 92% 34%);
+
+  /* Colors */
+  @include beryl.light;
+  @include blush.light;
+  @include inverted.light;
+  @include lemon.light;
+  @include melon.light;
+  @include plum.light;
+  @include ruby.light;
+
+  /* Misc */
+  --divider: hsl(0deg 0% 85%);
+  --focus: hsl(214deg 90% 75%);
+  --link: hsl(210deg 80% 45%);
+}
+
+@mixin dark {
+  /* Background */
+  --bg-body: hsl(214deg 8% 10%);
+  --bg-elevation-xs: hsl(223deg 12% 12%);
+  --bg-elevation-sm: hsl(223deg 12% 14%);
+  --bg-elevation-md: hsl(223deg 12% 18%);
+  --bg-elevation-lg: hsl(223deg 12% 24%);
+  --bg-skeleton: hsl(223deg 8% 24%);
+  --bg-backdrop: hsla(0deg 0% 0% / 50%);
+  --bg-selection: hsla(206deg 100% 34% / 65%);
+  --bg-inline-code: hsl(214deg 22% 6%);
+  --bg-toggle: hsl(214deg 6% 24%);
+
+  /* Foreground */
+  --fg-major: hsl(0deg 0% 98%);
+  --fg-minor: hsl(0deg 0% 70%);
+  --fg-muted: hsl(0deg 0% 51%);
+  --fg-legible: hsl(0deg 0% 68%);
+  --fg-inline-code: hsl(320deg 92% 70%);
+
+  /* Colors */
+  @include beryl.dark;
+  @include blush.dark;
+  @include inverted.dark;
+  @include lemon.dark;
+  @include melon.dark;
+  @include plum.dark;
+  @include ruby.dark;
+
+  /* Misc */
+  --divider: hsl(217deg 16% 25%);
+  --focus: hsl(214deg 50% 40%);
+  --link: hsl(210deg 80% 66%);
+}

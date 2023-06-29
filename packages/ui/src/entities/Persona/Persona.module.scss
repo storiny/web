@@ -1,0 +1,43 @@
+/* Primary text */
+.primary-text {
+  display: inline-flex;
+  flex-direction: column;
+  font-weight: var(--font-weight-medium);
+}
+
+/* Secondary text */
+.secondary-text {
+  font-weight: var(--font-weight-medium);
+}
+
+/* Base styles */
+.persona {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--gap);
+  
+  &.sm {
+    & .secondary-text {
+      font-size: calc(var(--font-size-xs) - 1px);
+      margin-top: -2px;
+    }
+  }
+}
+
+/* Sizes */
+.lg {
+  --gap: 12px;
+}
+
+.md {
+  --gap: 10px;
+}
+
+.sm {
+  --gap: 8px;
+}
+
+.xs {
+  --gap: 6px;
+}

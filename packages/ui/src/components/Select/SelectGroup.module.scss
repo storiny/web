@@ -1,0 +1,8 @@
+/* Base styles */
+.select-group {
+  margin-top: 4px;
+
+  &:not(:first-child) {
+    margin-top: 16px;
+  }
+}

@@ -1,0 +1,72 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<FormSwitch /> matches snapshot 1`] = `
+<form
+  novalidate=""
+>
+  <fieldset
+    class="flex-col form-item form-switch"
+    data-disabled="false"
+  >
+    <div
+      class="flex control"
+      data-disabled="false"
+    >
+      <label
+        class="flex label label"
+        data-disabled="false"
+        for=":r0:-item"
+      >
+        Test label
+      </label>
+      <button
+        aria-checked="false"
+        aria-describedby=":r0:-helper-text"
+        aria-invalid="false"
+        aria-label="Sample switch"
+        class="unset focusable switch inverted md"
+        data-state="unchecked"
+        id=":r0:-item"
+        role="switch"
+        type="button"
+        value="on"
+      >
+        <span
+          class="flex-center thumb"
+          data-state="unchecked"
+        >
+          <svg
+            aria-hidden="true"
+            class="indicator"
+            viewBox="0 0 14 14"
+          >
+            <path
+              d="M6.5 2h1v10h-1z"
+            />
+          </svg>
+          <span />
+          <svg
+            aria-hidden="true"
+            class="indicator"
+            viewBox="0 0 14 14"
+          >
+            <path
+              d="M12 7A5 5 0 1 1 2 7a5 5 0 0 1 10 0ZM3 7a4 4 0 1 0 8 0 4 4 0 0 0-8 0Z"
+            />
+          </svg>
+        </span>
+      </button>
+      <input
+        aria-hidden="true"
+        style="transform: translateX(-100%); position: absolute; pointer-events: none; opacity: 0; margin: 0px; width: 0px; height: 0px;"
+        tabindex="-1"
+        type="checkbox"
+        value="on"
+      />
+    </div>
+    <div
+      class="flex-col secondary-text-wrapper"
+    />
+  </fieldset>
+</form>
+`;

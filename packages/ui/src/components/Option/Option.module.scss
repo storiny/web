@@ -1,0 +1,39 @@
+/* Base styles */
+.option {
+  display: flex;
+  align-items: center;
+  position: relative;
+  user-select: none;
+  padding: var(--padding);
+  gap: var(--gap);
+  color: var(--fg);
+  font-size: var(--font-size);
+  line-height: var(--line-height-sm);
+  outline: none;
+  cursor: pointer;
+  min-width: 96px;
+
+  &[data-highlighted] {
+    --fg: var(--inverted-0);
+
+    background-color: var(--inverted-400);
+  }
+
+  &[data-disabled] {
+    --fg: var(--fg-muted);
+
+    pointer-events: none;
+  }
+}
+
+/* Indicator */
+.indicator {
+  --icon-stroke-width: 1.5px;
+
+  position: absolute;
+  left: 0;
+  width: 30px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}

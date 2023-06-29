@@ -1,0 +1,100 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<Notification /> renders and matches snapshot 1`] = `
+<body>
+  <div>
+    <div
+      aria-label="Notifications (F8)"
+      role="region"
+      style=""
+      tabindex="-1"
+    >
+      <span
+        aria-hidden="true"
+        style="position: fixed; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
+        tabindex="0"
+      />
+      <ol
+        class="viewport"
+        tabindex="-1"
+      >
+        <li
+          aria-atomic="true"
+          aria-live="off"
+          class="notification focusable"
+          data-radix-collection-item=""
+          data-state="open"
+          data-swipe-direction="right"
+          data-testid="notification"
+          role="status"
+          style="user-select: none;"
+          tabindex="0"
+        >
+          <div
+            class="flex-center description"
+          >
+            Test
+          </div>
+          <div
+            aria-hidden="true"
+            aria-orientation="vertical"
+            class="reset divider not-mobile"
+            data-orientation="vertical"
+            role="separator"
+          />
+          <div
+            aria-hidden="true"
+            class="reset divider only-mobile"
+            data-orientation="horizontal"
+            role="separator"
+          />
+          <div
+            class="actions"
+          >
+            <button
+              class="unset focusable t-center button"
+              data-radix-toast-announce-alt="Confirm"
+              data-radix-toast-announce-exclude=""
+              type="button"
+            >
+              Confirm
+            </button>
+            <div
+              aria-hidden="true"
+              class="reset divider not-mobile"
+              data-orientation="horizontal"
+              role="separator"
+            />
+            <div
+              aria-hidden="true"
+              aria-orientation="vertical"
+              class="reset divider only-mobile"
+              data-orientation="vertical"
+              role="separator"
+            />
+            <button
+              aria-label="Dismiss"
+              class="unset focusable t-center button"
+              data-radix-toast-announce-exclude=""
+              type="button"
+            >
+              Dismiss
+            </button>
+          </div>
+        </li>
+      </ol>
+      <span
+        aria-hidden="true"
+        style="position: fixed; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
+        tabindex="0"
+      />
+    </div>
+  </div>
+  <span
+    aria-atomic="true"
+    aria-live="assertive"
+    role="status"
+    style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
+  />
+</body>
+`;

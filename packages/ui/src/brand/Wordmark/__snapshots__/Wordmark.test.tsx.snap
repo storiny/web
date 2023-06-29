@@ -1,0 +1,24 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<Wordmark /> matches snapshot 1`] = `
+<span
+  class="flex-center wordmark md"
+>
+  <svg
+    aria-hidden="true"
+    class="logo"
+    style="--size: 34px;"
+    viewBox="0 0 64 64"
+  >
+    <path
+      d="M41.98 9.64a11.5 11.5 0 1 0-7.05 16.88l8.06 13.96a11.5 11.5 0 1 0 5.27-3.05l-8.05-13.96a11.5 11.5 0 0 0 1.77-13.83ZM12.82 60.12a11.5 11.5 0 1 0 0-23 11.5 11.5 0 0 0 0 23Z"
+      fill="currentColor"
+    />
+  </svg>
+  <span
+    class="t-major t-head-md label"
+  >
+    Storiny
+  </span>
+</span>
+`;

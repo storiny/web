@@ -1,0 +1,72 @@
+@use "../../theme/breakpoints" as breakpoints;
+
+/* Viewport */
+.viewport {
+  position: fixed;
+  top: 0;
+  left: 0;
+  display: flex;
+  width: 100%;
+  list-style: none;
+  z-index: var(--z-index-toast);
+  outline: none;
+}
+
+/* Base styles */
+.banner {
+  width: 100%;
+  display: flex;
+  align-items: flex-start;
+  padding-block: 12px;
+  padding-inline: 16px;
+  background-color: var(--bg);
+  outline-offset: calc(-1 * var(--focus-thickness));
+  border-bottom: 1px solid var(--divider);
+
+  @include breakpoints.media(">=desktop") {
+    padding-inline: 48px;
+  }
+
+  /* Colors */
+  &.inverted {
+    --bg: var(--inverted-400);
+    --fg: var(--inverted-0);
+  }
+
+  &.lemon {
+    --bg: var(--lemon-200);
+    --fg: var(--obsidian);
+  }
+
+  &.ruby {
+    --bg: var(--ruby-500);
+    --fg: var(--snow);
+  }
+}
+
+/* Decorator */
+.decorator {
+  --icon-size: 16px;
+
+  margin-right: 18px;
+}
+
+/* Description */
+.description {
+  margin-right: 24px;
+  flex-grow: 1;
+  align-items: center;
+  color: var(--fg);
+  font-size: calc(var(--font-size-sm) - 1px);
+  line-height: calc(var(--line-height-sm) - 1px);
+}
+
+/* Close action */
+.close {
+  --icon-size: 16px;
+
+  cursor: pointer;
+  border-radius: var(--radius-md); // Focus outline radius
+  width: var(--icon-size);
+  height: var(--icon-size);
+}

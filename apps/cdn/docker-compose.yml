@@ -1,0 +1,62 @@
+version: "3.8"
+
+services:
+  nginx:
+    image: storiny-nginx:v0
+    build:
+      context: ./nginx/
+      args:
+        ENABLED_MODULES: njs
+    x-develop:
+      watch:
+        - action: sync
+          path: ./nginx/njs-files
+          target: /etc/nginx/njs
+    container_name: "storiny-nginx"
+    volumes:
+      - ./www:/var/www
+      - ./nginx/conf/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/njs-files:/etc/nginx/njs
+      - ./docker/tmp/nginx/cache:/var/cache/nginx/imgproxy:delegated
+      - ./docker/tmp/nginx/logs:/var/log/nginx:delegated
+    environment:
+      PROXY_KEY: "defa4761d7619e15601ebfcae50d82083082c5eb17759a5251a58f0076a98605"
+    ports:
+      - "443:443"
+      - "8080:80"
+    depends_on:
+      - imgproxy
+    networks:
+      - common-internal
+
+  imgproxy:
+    image: darthsim/imgproxy
+    container_name: "storiny-imgproxy"
+    ports:
+      - "80:8080"
+    healthcheck:
+      test: [ "CMD", "imgproxy", "health" ]
+      timeout: 10s
+      interval: 10s
+      retries: 3
+    environment:
+      IMGPROXY_USER_AGENT: "storiny-img-proxy/1.0"
+      IMGPROXY_MAX_SRC_FILE_SIZE: 8388608 # 8MB
+      # IMGPROXY_SECRET: "local_secret"
+      IMGPROXY_MAX_ANIMATION_FRAMES: 250
+      IMGPROXY_IGNORE_SSL_VERIFICATION: true
+      IMGPROXY_DEVELOPMENT_ERRORS_MODE: true
+      IMGPROXY_ENABLE_WEBP_DETECTION: true
+      IMGPROXY_ENABLE_AVIF_DETECTION: false
+      IMGPROXY_USE_S3: "true"
+      IMGPROXY_S3_REGION: "us-east-1"
+      IMGPROXY_S3_ENDPOINT: "${PROXY_SOURCE_ENDPOINT:-http://storiny-minio:9000}"
+      AWS_ACCESS_KEY_ID: "${AWS_ACCESS_KEY_ID:-minio_user}"
+      AWS_SECRET_ACCESS_KEY: "${AWS_SECRET_ACCESS_KEY:-minio_pass}"
+    networks:
+      - common-internal
+
+networks:
+  common-internal:
+    name: internal
+    external: true

@@ -1,0 +1,19 @@
+/* Base styles */
+.skeleton {
+  display: block;
+  cursor: progress;
+  background-color: var(--bg-skeleton);
+  width: var(--width, auto);
+  height: var(--height, auto);
+  max-width: 100%;
+}
+
+/* Shapes */
+.rectangular {
+  border-radius: var(--radius-md);
+}
+
+.circular {
+  border-radius: 50%;
+  aspect-ratio: 1 / 1;
+}

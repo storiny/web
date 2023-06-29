@@ -1,0 +1,19 @@
+{
+  "name": "@storiny/proto",
+  "version": "0.0.0",
+  "private": true,
+  "sideEffects": false,
+  "scripts": {
+    "lint": "buf lint proto",
+    "build": "buf generate src",
+    "gen-certs": "make certs"
+  },
+  "devDependencies": {
+    "@bufbuild/buf": "^1.21.0-1",
+    "@storiny/eslint-config": "*",
+    "@storiny/tsconfig": "*",
+    "eslint": "^8.42.0",
+    "ts-proto": "^1.148.2",
+    "typescript": "^5.1.5"
+  }
+}

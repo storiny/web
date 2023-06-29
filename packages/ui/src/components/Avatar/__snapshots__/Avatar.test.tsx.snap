@@ -1,0 +1,16 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<Avatar /> matches snapshot 1`] = `
+<span
+  class="avatar md border"
+  style="--hex: #fff;"
+>
+  <span
+    class="flex-center fallback"
+    data-testid="fallback"
+    style="--bg: hsl(79deg 35% 50%); --fg: var(--snow);"
+  >
+    Ta
+  </span>
+</span>
+`;

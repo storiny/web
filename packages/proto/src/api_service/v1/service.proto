@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package api_service.v1;
+
+import "profile_def/v1/def.proto";
+import "tag_def/v1/def.proto";
+import "token_def/v1/def.proto";
+
+// Service definition
+service ApiService {
+  rpc GetProfile (profile_def.v1.GetProfileRequest) returns (profile_def.v1.GetProfileResponse) {}
+  rpc GetTag (tag_def.v1.GetTagRequest) returns (tag_def.v1.GetTagResponse) {}
+  rpc GetToken (token_def.v1.GetTokenRequest) returns (token_def.v1.GetTokenResponse) {}
+  rpc VerifyEmail (token_def.v1.VerifyEmailRequest) returns (token_def.v1.VerifyEmailResponse) {}
+}

@@ -1,0 +1,8 @@
+<OpenSearchDescription xmlns="http://a9.com/-/spec/opensearch/1.1/" xmlns:moz="http://www.mozilla.org/2006/browser/search/">
+    <ShortName>Storiny</ShortName>
+    <Description>Search Storiny</Description>
+    <InputEncoding>UTF-8</InputEncoding>
+    <Url type="text/html" method="get" template="https://storiny.com/search?q={searchTerms}"/>
+    <Image width="16" height="16">https://storiny.com/favicon-16.ico</Image>
+    <moz:SearchForm>https://storiny.com/search</moz:SearchForm>
+</OpenSearchDescription>

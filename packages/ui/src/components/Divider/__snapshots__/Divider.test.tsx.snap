@@ -1,0 +1,9 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<Divider /> matches snapshot 1`] = `
+<div
+  class="reset divider"
+  data-orientation="horizontal"
+  role="separator"
+/>
+`;

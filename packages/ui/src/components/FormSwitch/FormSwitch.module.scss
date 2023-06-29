@@ -1,0 +1,33 @@
+/* Base styles */
+.form-switch {
+  gap: 16px;
+}
+
+/* Control */
+.control {
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+
+  &:not([data-disabled="true"]) {
+    cursor: pointer;
+  }
+}
+
+/* Label */
+.label {
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-md);
+}
+
+/* Swcondary text wrapper */
+.secondary-text-wrapper {
+  gap: 4px;
+}
+
+/* Helper text and message */
+.secondary-text {
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-sm);
+}

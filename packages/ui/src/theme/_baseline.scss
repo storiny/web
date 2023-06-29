@@ -1,0 +1,149 @@
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  // stylelint-disable-next-line -- Fix font resize problem in iOS
+  -webkit-text-size-adjust: 100%;
+  box-sizing: border-box;
+  text-rendering: optimizelegibility;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  direction: ltr;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Reset */
+html,
+body,
+div,
+span,
+iframe,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+blockquote,
+pre,
+a,
+abbr,
+acronym,
+code,
+del,
+em,
+img,
+ins,
+kbd,
+q,
+s,
+small,
+strike,
+strong,
+sub,
+sup,
+b,
+u,
+i,
+ol,
+ul,
+li,
+fieldset,
+form,
+label,
+legend,
+table,
+caption,
+tbody,
+tfoot,
+thead,
+tr,
+th,
+td,
+article,
+aside,
+canvas,
+details,
+figure,
+figcaption,
+footer,
+header,
+hgroup,
+nav,
+section,
+summary,
+time,
+mark,
+audio,
+video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font: inherit;
+  vertical-align: baseline;
+}
+
+strong,
+b {
+  font-weight: bold;
+}
+
+em {
+  font-style: italic;
+}
+
+a {
+  outline: 0;
+  border: 0;
+  margin: 0;
+  appearance: none;
+  color: inherit;
+  text-decoration: none;
+
+  // Remove Firefox dotted outline
+  &::-moz-focus-inner {
+    border-style: none;
+  }
+}
+
+html,
+body {
+  overflow-x: clip;
+  height: 100%;
+  width: 100%;
+}
+
+body {
+  color: var(--fg-major);
+  background-color: var(--bg-body);
+  font-family: var(--font-secondary);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-md);
+  letter-spacing: 0;
+
+  // Fixed banner height compensation
+  padding-top: var(--banner-height, 0);
+  padding-bottom: var(--global-bottom-gutter, 0);
+
+  &::backdrop {
+    background-color: var(--bg-backdrop);
+  }
+
+  // Fixed bottom navigation height compensation
+  &.bottom-navigation {
+    --global-bottom-gutter: 72px;
+  }
+
+  @media print {
+    background-color: hsl(0deg 0% 100%);
+  }
+}
+
+::selection {
+  background-color: var(--bg-selection);
+}

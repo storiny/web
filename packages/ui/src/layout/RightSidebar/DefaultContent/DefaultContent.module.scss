@@ -1,0 +1,35 @@
+/* Title with icon */
+.title-with-icon {
+  --icon-size: 14px;
+  --icon-stroke: var(--fg-minor);
+
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Popular stories */
+.popular-stories {
+  gap: 20px;
+}
+
+/* Show more wrapper */
+.show-more-wrapper {
+  display: flex;
+  padding-top: 4px;
+  justify-content: flex-end;
+}
+
+/* Show more link */
+.show-more {
+  --icon-size: 12px;
+
+  width: fit-content;
+  gap: 2px;
+}
+
+/* Tags container */
+.tags-container {
+  gap: 10px;
+}

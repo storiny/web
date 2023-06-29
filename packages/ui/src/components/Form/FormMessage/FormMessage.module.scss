@@ -1,0 +1,8 @@
+/* Base styles */
+.form-message {
+  color: var(--ruby-600);
+
+  &[data-disabled="true"] {
+    color: var(--ruby-400);
+  }
+}

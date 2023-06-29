@@ -1,0 +1,147 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<FormRadioGroup /> matches snapshot 1`] = `
+<form
+  novalidate=""
+>
+  <fieldset
+    class="flex-col form-item"
+    data-disabled="false"
+  >
+    <label
+      class="flex label"
+      data-disabled="false"
+      for=":r0:-item"
+    >
+      Test label
+    </label>
+    <div
+      aria-describedby=":r0:-helper-text"
+      aria-invalid="false"
+      aria-required="false"
+      class="radio-group"
+      dir="ltr"
+      id=":r0:-item"
+      role="radiogroup"
+      style="outline: none;"
+      tabindex="0"
+    >
+      <fieldset
+        class="flex-col form-item"
+        data-disabled="false"
+      >
+        <div
+          class="flex-center container"
+        >
+          <button
+            aria-checked="false"
+            aria-describedby=":r1:-helper-text"
+            aria-invalid="false"
+            aria-label="Sample radio"
+            aria-labelledby=":r3:"
+            class="flex-center focusable radio inverted md"
+            data-radix-collection-item=""
+            data-state="unchecked"
+            id=":r1:-item"
+            role="radio"
+            tabindex="-1"
+            type="button"
+            value="0"
+          />
+          <input
+            aria-hidden="true"
+            style="transform: translateX(-100%); position: absolute; pointer-events: none; opacity: 0; margin: 0px; width: 0px; height: 0px;"
+            tabindex="-1"
+            type="radio"
+            value="0"
+          />
+          <label
+            class="t-body-2 t-major label"
+            for=":r1:-item"
+            id=":r3:"
+          >
+            Radio label
+          </label>
+        </div>
+      </fieldset>
+      <fieldset
+        class="flex-col form-item"
+        data-disabled="false"
+      >
+        <div
+          class="flex-center container"
+        >
+          <button
+            aria-checked="true"
+            aria-describedby=":r5:-helper-text"
+            aria-invalid="false"
+            aria-label="Sample radio"
+            aria-labelledby=":r7:"
+            class="flex-center focusable radio inverted md"
+            data-radix-collection-item=""
+            data-state="checked"
+            id=":r5:-item"
+            role="radio"
+            tabindex="-1"
+            type="button"
+            value="1"
+          />
+          <input
+            aria-hidden="true"
+            checked=""
+            style="transform: translateX(-100%); position: absolute; pointer-events: none; opacity: 0; margin: 0px; width: 0px; height: 0px;"
+            tabindex="-1"
+            type="radio"
+            value="1"
+          />
+          <label
+            class="t-body-2 t-major label"
+            for=":r5:-item"
+            id=":r7:"
+          >
+            Radio label
+          </label>
+        </div>
+      </fieldset>
+      <fieldset
+        class="flex-col form-item"
+        data-disabled="false"
+      >
+        <div
+          class="flex-center container"
+        >
+          <button
+            aria-checked="false"
+            aria-describedby=":r9:-helper-text"
+            aria-invalid="false"
+            aria-label="Sample radio"
+            aria-labelledby=":rb:"
+            class="flex-center focusable radio inverted md"
+            data-radix-collection-item=""
+            data-state="unchecked"
+            id=":r9:-item"
+            role="radio"
+            tabindex="-1"
+            type="button"
+            value="2"
+          />
+          <input
+            aria-hidden="true"
+            style="transform: translateX(-100%); position: absolute; pointer-events: none; opacity: 0; margin: 0px; width: 0px; height: 0px;"
+            tabindex="-1"
+            type="radio"
+            value="2"
+          />
+          <label
+            class="t-body-2 t-major label"
+            for=":r9:-item"
+            id=":rb:"
+          >
+            Radio label
+          </label>
+        </div>
+      </fieldset>
+    </div>
+  </fieldset>
+</form>
+`;

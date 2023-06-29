@@ -1,0 +1,78 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<FormSelect /> matches snapshot 1`] = `
+<form
+  novalidate=""
+>
+  <fieldset
+    class="flex-col form-item"
+    data-disabled="false"
+  >
+    <label
+      class="flex label"
+      data-disabled="false"
+      for=":r0:-item"
+    >
+      Test label
+    </label>
+    <button
+      aria-autocomplete="none"
+      aria-controls="radix-:r1:"
+      aria-describedby=":r0:-helper-text"
+      aria-expanded="true"
+      aria-invalid="false"
+      class="focusable flex-center trigger md inverted"
+      data-state="open"
+      dir="ltr"
+      id=":r0:-item"
+      role="combobox"
+      type="button"
+    >
+      <span
+        data-value="true"
+        style="pointer-events: none;"
+      >
+        Option
+      </span>
+      <span
+        aria-hidden="true"
+        class="icon"
+      >
+        <svg
+          aria-hidden="true"
+          class="svg-icon"
+          data-testid="chevron-icon"
+          style="transform: rotate(180deg);"
+          viewBox="0 0 12 12"
+        >
+          <path
+            d="m3 7.5 3-3 3 3"
+          />
+        </svg>
+      </span>
+    </button>
+    <select
+      aria-hidden="true"
+      style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
+      tabindex="-1"
+    >
+      <option
+        value="option-0"
+      >
+        Option
+      </option>
+      <option
+        selected=""
+        value="option-1"
+      >
+        Option
+      </option>
+      <option
+        value="option-2"
+      >
+        Option
+      </option>
+    </select>
+  </fieldset>
+</form>
+`;

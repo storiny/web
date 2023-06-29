@@ -1,0 +1,52 @@
+{
+  "name": "@storiny/web",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "yarn minify && dotenv -e ../../.env.local next dev",
+    "build": "yarn minify && dotenv -e ../../.env.production next build",
+    "build:analyze": "yarn minify && cross-env ANALYZE=true dotenv -e ../../.env.production next build",
+    "minify": "uglifyjs \"src/app/theme-sync.js\" --compress --mangle --output \"src/app/theme-sync.txt\"",
+    "start": "next start",
+    "lint": "next lint",
+    "test": "jest"
+  },
+  "dependencies": {
+    "@grpc/grpc-js": "^1.8.15",
+    "@mdx-js/react": "^2.3.0",
+    "@next/bundle-analyzer": "^13.4.4",
+    "@next/mdx": "^13.4.7",
+    "@storiny/proto": "*",
+    "@storiny/ui": "*",
+    "client-only": "^0.0.1",
+    "little-state-machine": "^4.8.0",
+    "nanoid": "^4.0.2",
+    "next": "^13.4.7",
+    "normalize.css": "^8.0.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-virtuoso": "^4.3.8",
+    "server-only": "^0.0.1"
+  },
+  "devDependencies": {
+    "@mdx-js/loader": "^2.3.0",
+    "@storiny/eslint-config": "*",
+    "@storiny/prettier-config": "*",
+    "@storiny/stylelint-config": "*",
+    "@storiny/test-utils": "*",
+    "@storiny/tsconfig": "*",
+    "@types/mdx": "^2.0.5",
+    "@types/node": "^17.0.12",
+    "@types/react": "18.2.7",
+    "@types/react-dom": "18.2.4",
+    "dotenv-cli": "^7.2.1",
+    "loader-utils": "^3.2.1",
+    "raw-loader": "^4.0.2",
+    "remark-gfm": "^3.0.1",
+    "sass": "^1.62.1",
+    "schema-dts": "^1.1.2",
+    "typescript": "^5.1.5",
+    "uglify-js": "^3.17.4",
+    "webpack": "^5.88.0"
+  }
+}

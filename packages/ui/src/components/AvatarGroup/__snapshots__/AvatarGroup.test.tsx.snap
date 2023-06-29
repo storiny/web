@@ -1,0 +1,29 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<AvatarGroup /> matches snapshot 1`] = `
+<div
+  class="avatar-group md md"
+>
+  <span
+    class="avatar md border"
+  >
+    <span
+      class="flex-center fallback"
+      data-testid="overflow"
+      style="--bg: var(--bg-elevation-lg); --fg: var(--fg-major);"
+    >
+      +
+      2
+    </span>
+  </span>
+  <span
+    class="avatar md border"
+  />
+  <span
+    class="avatar md border"
+  />
+  <span
+    class="avatar md border"
+  />
+</div>
+`;

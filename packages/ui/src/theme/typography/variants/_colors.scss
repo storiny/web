@@ -1,0 +1,17 @@
+@mixin main {
+  .t-major {
+    color: var(--fg-major);
+  }
+
+  .t-minor {
+    color: var(--fg-minor);
+  }
+
+  .t-muted {
+    color: var(--fg-muted);
+  }
+
+  .t-legible-fg {
+    color: var(--fg-legible);
+  }
+}

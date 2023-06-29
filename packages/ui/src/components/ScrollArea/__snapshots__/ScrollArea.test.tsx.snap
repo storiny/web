@@ -1,0 +1,34 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<ScrollArea /> matches snapshot 1`] = `
+<div
+  class="scroll-area md"
+  dir="ltr"
+  style="position: relative; --radix-scroll-area-corner-width: 0px; --radix-scroll-area-corner-height: 0px;"
+>
+  <style>
+    [data-radix-scroll-area-viewport]{scrollbar-width:none;-ms-overflow-style:none;-webkit-overflow-scrolling:touch;}[data-radix-scroll-area-viewport]::-webkit-scrollbar{display:none}
+  </style>
+  <div
+    class="viewport"
+    data-radix-scroll-area-viewport=""
+    style="overflow-x: scroll; overflow-y: scroll;"
+  >
+    <div
+      style="min-width: 100%; display: table;"
+    >
+      Test
+    </div>
+  </div>
+  <div
+    class="scrollbar"
+    data-orientation="vertical"
+    style="position: absolute; top: 0px; right: 0px; --radix-scroll-area-thumb-height: 18px;"
+  />
+  <div
+    class="scrollbar"
+    data-orientation="horizontal"
+    style="position: absolute; bottom: 0px; left: 0px; --radix-scroll-area-thumb-width: 18px;"
+  />
+</div>
+`;

@@ -1,0 +1,13 @@
+{
+  "name": "@storiny/types",
+  "version": "0.0.0",
+  "private": true,
+  "sideEffects": false,
+  "devDependencies": {
+    "@storiny/eslint-config": "*",
+    "@storiny/prettier-config": "*",
+    "@storiny/tsconfig": "*",
+    "eslint": "^8.42.0",
+    "typescript": "^5.1.5"
+  }
+}

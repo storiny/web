@@ -1,0 +1,33 @@
+"use client";
+
+import clsx from "clsx";
+import React from "react";
+
+import styles from "./FormItem.module.scss";
+import { FormItemProps } from "./FormItem.props";
+import { FormItemContext } from "./FormItemContext";
+
+const FormItem = React.forwardRef<HTMLFieldSetElement, FormItemProps>(
+  (props, ref) => {
+    const { className, disabled, required, ...rest } = props;
+    const id = React.useId();
+
+    return (
+      <FormItemContext.Provider
+        value={{ id, disabled: Boolean(disabled), required: Boolean(required) }}
+      >
+        <fieldset
+          {...rest}
+          className={clsx("flex-col", styles["form-item"], className)}
+          data-disabled={String(Boolean(disabled))}
+          disabled={disabled}
+          ref={ref}
+        />
+      </FormItemContext.Provider>
+    );
+  }
+);
+
+FormItem.displayName = "FormItem";
+
+export default FormItem;

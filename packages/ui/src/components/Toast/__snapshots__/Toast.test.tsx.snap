@@ -1,0 +1,77 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<Toast /> renders and matches snapshot 1`] = `
+<body>
+  <div>
+    <div
+      aria-label="Toast notifications (F9)"
+      role="region"
+      style=""
+      tabindex="-1"
+    >
+      <span
+        aria-hidden="true"
+        style="position: fixed; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
+        tabindex="0"
+      />
+      <ol
+        class="viewport"
+        tabindex="-1"
+      >
+        <li
+          aria-atomic="true"
+          aria-live="off"
+          class="toast focusable"
+          data-radix-collection-item=""
+          data-state="open"
+          data-swipe-direction="right"
+          data-testid="toast"
+          role="status"
+          style="user-select: none;"
+          tabindex="0"
+        >
+          <div
+            class="ellipsis description"
+          >
+            Test
+          </div>
+          <button
+            aria-label="Dismiss"
+            class="unset close"
+            data-radix-toast-announce-exclude=""
+            title="Dismiss"
+            type="button"
+          >
+            <span
+              aria-hidden="true"
+              class="flex-center close-wrapper"
+            >
+              <svg
+                aria-hidden="true"
+                class="svg-icon"
+                data-testid="x-icon"
+                viewBox="0 0 12 12"
+              >
+                <path
+                  d="M9 3 3 9m0-6 6 6"
+                />
+              </svg>
+            </span>
+          </button>
+        </li>
+      </ol>
+      <span
+        aria-hidden="true"
+        style="position: fixed; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
+        tabindex="0"
+      />
+    </div>
+  </div>
+  <span
+    aria-atomic="true"
+    aria-live="assertive"
+    role="status"
+    style="position: absolute; border: 0px; width: 1px; height: 1px; padding: 0px; margin: -1px; overflow: hidden; clip: rect(0px, 0px, 0px, 0px); white-space: nowrap; word-wrap: normal;"
+  />
+</body>
+`;

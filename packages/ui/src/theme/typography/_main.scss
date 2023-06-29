@@ -1,0 +1,11 @@
+@use "font-family";
+@use "font-size";
+@use "font-weight";
+@use "line-height";
+
+@mixin main {
+  @include font-family.main;
+  @include font-size.main;
+  @include font-weight.main;
+  @include line-height.main;
+}

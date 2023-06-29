@@ -1,0 +1,91 @@
+@use "breakpoints" as breakpoints;
+
+/* Sidenav */
+@mixin sidenav {
+  grid-column-gap: 0;
+  grid-template-columns: 72px minmax(49px, 1fr) 24px repeat(6, minmax(0, 100px)) 24px minmax(
+      49px,
+      1fr
+    );
+  grid-template-areas:
+    "sn . hd hd hd hd hd hd hd hd ."
+    "sn . . main main main main main main . ."
+    "sn . ft ft ft ft ft ft ft ft .";
+}
+
+/* Grid */
+@mixin main {
+  --header-height: 52px;
+  --main-height: calc(100vh - var(--header-height));
+  --grid-compensation: -20px; // Negative margin for full-bleed elements
+  --grid-gutter: 70px;
+  --grid-area: ". hd hd hd hd hd hd hd hd hd hd hd hd ."
+    ". lsb lsb lsb main main main main main main rsb rsb rsb ."
+    ". ft ft ft ft ft ft ft ft ft ft ft ft .";
+
+  display: grid;
+  grid-template-columns:
+    minmax(var(--grid-gutter), 1fr) repeat(12, minmax(0, 90px))
+    minmax(var(--grid-gutter), 1fr);
+
+  /* Make the `main` take up the entire free space,
+   * forcing the header and the footer to stick
+   * and their extreme positions.
+   */
+  grid-template-rows: auto minmax(var(--main-height), 1fr) auto;
+
+  // noinspection Stylelint
+  grid-template-areas: var(--grid-area);
+  grid-column-gap: 20px;
+  place-content: start center;
+  min-height: 100%;
+  width: 100vw;
+
+  &.minimal {
+    --grid-area: ". hd hd hd hd hd hd hd hd hd hd hd hd ."
+      ". . . main main main main main main main main . . ."
+      ". ft ft ft ft ft ft ft ft ft ft ft ft .";
+  }
+
+  @include breakpoints.media("<=desktop", ">tablet") {
+    --grid-compensation: 0px;
+    --grid-gutter: 48px;
+
+    // Hide left sidebar
+    --grid-area: ". hd hd hd hd hd hd hd hd hd hd hd hd ."
+      ". main main main main main main main main main rsb rsb rsb ."
+      ". ft ft ft ft ft ft ft ft ft ft ft ft .";
+
+    &.minimal {
+      --grid-area: ". hd hd hd hd hd hd hd hd hd hd hd hd ."
+        ". . main main main main main main main main main main . ."
+        ". ft ft ft ft ft ft ft ft ft ft ft ft .";
+    }
+  }
+
+  @include breakpoints.media("<=tablet", ">mobile") {
+    &:not(.no-sidenav, .minimal) {
+      @include sidenav;
+    }
+
+    &.no-sidenav,
+    &.minimal {
+      --grid-area: ". hd hd hd hd hd hd ." ". main main main main main main ."
+        ". ft ft ft ft ft ft .";
+
+      grid-template-columns: minmax(65px, 1fr) repeat(6, minmax(0, 100px)) minmax(
+          65px,
+          1fr
+        );
+    }
+  }
+
+  @include breakpoints.media("<=mobile") {
+    --grid-compensation: -16px;
+    --grid-gutter: 16px;
+    --grid-area: ". hd hd ." ". main main ." ". ft ft ." !important;
+
+    grid-column-gap: 0;
+    grid-template-columns: var(--grid-gutter) repeat(2, 1fr) var(--grid-gutter);
+  }
+}

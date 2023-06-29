@@ -1,0 +1,87 @@
+{
+  "name": "Storiny",
+  "categories": [
+    "education",
+    "entertainment",
+    "lifestyle",
+    "magazines",
+    "news",
+    "social"
+  ],
+  "description": "Discover captivating stories on Storiny, the platform that harbors the narratives that reside within you.",
+  "display": "standalone",
+  "scope": "/",
+  "start_url": "/?utm_source=app",
+  "id": "/?utm_source=app",
+  "short_name": "Storiny",
+  "theme_color": "#000000",
+  "background_color": "#ffffff",
+  "icons": [
+    { "src": "/icons/icon-192.png", "type": "image/png", "sizes": "192x192" },
+    { "src": "/icons/icon-512.png", "type": "image/png", "sizes": "512x512" },
+    {
+      "src": "/icons/maskable-192.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icons/maskable-512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "maskable"
+    }
+  ],
+  "protocol_handlers": [
+    {
+      "protocol": "web+storiny",
+      "url": "/handler?data=%s"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "New story",
+      "url": "/new?utm_source=app",
+      "icons": [
+        {
+          "src": "/shortcuts/shortcut-create.png",
+          "type": "image/png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Explore",
+      "url": "/explore?utm_source=app",
+      "icons": [
+        {
+          "src": "/shortcuts/shortcut-explore.png",
+          "type": "image/png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Notifications",
+      "url": "/notifications?utm_source=app",
+      "icons": [
+        {
+          "src": "/shortcuts/shortcut-notifications.png",
+          "type": "image/png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Settings",
+      "url": "/me/profile?utm_source=app",
+      "icons": [
+        {
+          "src": "/shortcuts/shortcut-settings.png",
+          "type": "image/png",
+          "sizes": "192x192"
+        }
+      ]
+    }
+  ]
+}

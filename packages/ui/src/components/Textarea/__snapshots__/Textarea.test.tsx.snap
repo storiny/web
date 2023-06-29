@@ -1,0 +1,13 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<Textarea /> matches snapshot 1`] = `
+<div
+  class="flex-center container inverted md"
+  data-focused="false"
+>
+  <textarea
+    class="unset textarea"
+    placeholder="Test"
+  />
+</div>
+`;

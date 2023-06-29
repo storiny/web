@@ -1,0 +1,12 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<IconButton /> matches snapshot 1`] = `
+<button
+  aria-disabled="false"
+  class="reset focusable variant-rigid color-inverted icon-button md"
+  tabindex="0"
+  type="button"
+>
+  Test
+</button>
+`;

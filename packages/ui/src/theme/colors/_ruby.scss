@@ -1,0 +1,32 @@
+@use "../utils" as utils;
+
+$name: ruby;
+$hue: 350deg;
+$light-map: (
+  "100": 84,
+  "200": 74,
+  "300": 64,
+  "400": 51,
+  "500": 44,
+  "600": 36,
+  "700": 28,
+  "800": 26,
+);
+$dark-map: (
+  "100": 16,
+  "200": 18,
+  "300": 24,
+  "400": 28,
+  "500": 38,
+  "600": 48,
+  "700": 58,
+  "800": 68,
+);
+
+@mixin light {
+  @include utils.generate-color-levels($name, $hue, $light-map);
+}
+
+@mixin dark {
+  @include utils.generate-color-levels($name, $hue, $dark-map);
+}

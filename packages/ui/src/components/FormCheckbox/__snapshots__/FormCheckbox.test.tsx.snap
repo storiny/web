@@ -1,0 +1,43 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<FormCheckbox /> matches snapshot 1`] = `
+<form
+  novalidate=""
+>
+  <fieldset
+    class="flex-col form-item"
+    data-disabled="false"
+  >
+    <div
+      class="flex-center container"
+    >
+      <button
+        aria-checked="false"
+        aria-describedby=":r0:-helper-text"
+        aria-invalid="false"
+        aria-labelledby=":r2:"
+        class="flex-center focusable checkbox inverted md"
+        data-state="unchecked"
+        id=":r0:-item"
+        role="checkbox"
+        type="button"
+        value="on"
+      />
+      <input
+        aria-hidden="true"
+        style="transform: translateX(-100%); position: absolute; pointer-events: none; opacity: 0; margin: 0px; width: 0px; height: 0px;"
+        tabindex="-1"
+        type="checkbox"
+        value="on"
+      />
+      <label
+        class="t-body-2 t-major label"
+        for=":r0:-item"
+        id=":r2:"
+      >
+        Test label
+      </label>
+    </div>
+  </fieldset>
+</form>
+`;

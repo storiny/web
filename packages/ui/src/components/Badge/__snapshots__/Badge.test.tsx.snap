@@ -1,0 +1,12 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<Badge /> matches snapshot 1`] = `
+<div
+  class="container"
+>
+  <span
+    class="flex-center badge inverted md"
+    style="--ring-bg: var(--bg-body); bottom: 14%; right: 14%; transform: scale(1) translateX(50%) translateY(50%); transform-origin: 100% 100%;"
+  />
+</div>
+`;

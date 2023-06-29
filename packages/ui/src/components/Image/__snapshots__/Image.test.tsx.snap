@@ -1,0 +1,19 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<Image /> matches snapshot 1`] = `
+<div
+  class="image"
+  style="--hex: #fff;"
+>
+  <span
+    class="flex-center fallback"
+    data-testid="fallback"
+  >
+    <p
+      class="t-major t-body-2 t-minor"
+    >
+      Image not available
+    </p>
+  </span>
+</div>
+`;

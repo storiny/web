@@ -1,0 +1,8 @@
+/* Base styles */
+.tabs {
+  display: flex;
+
+  &[data-orientation="horizontal"] {
+    flex-direction: column;
+  }
+}

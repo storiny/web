@@ -1,0 +1,21 @@
+"use client";
+
+import { clsx } from "clsx";
+import React from "react";
+
+import Divider from "~/components/Divider";
+import { UserSkeleton } from "~/entities/User";
+
+import styles from "../ListItem/ListItem.module.scss";
+
+const VirtualizedUserScrollSeekPlaceholder = React.memo(() => (
+  <div className={clsx("flex-col", styles["list-item"])}>
+    <UserSkeleton />
+    <Divider style={{ marginInline: "var(--grid-compensation)" }} />
+  </div>
+));
+
+VirtualizedUserScrollSeekPlaceholder.displayName =
+  "VirtualizedUserScrollSeekPlaceholder";
+
+export default VirtualizedUserScrollSeekPlaceholder;

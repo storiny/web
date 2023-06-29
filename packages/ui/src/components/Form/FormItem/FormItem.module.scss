@@ -1,0 +1,9 @@
+/* Base styles */
+.form-item {
+  gap: 8px;
+
+  &[data-disabled="true"] {
+    user-select: none;
+    cursor: not-allowed;
+  }
+}

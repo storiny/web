@@ -1,0 +1,162 @@
+"use client";
+
+import { clsx } from "clsx";
+import React from "react";
+
+import Button from "~/components/Button";
+import Divider from "~/components/Divider";
+import Grow from "~/components/Grow";
+import Link from "~/components/Link";
+import Spacer from "~/components/Spacer";
+import Typography from "~/components/Typography";
+
+import { useAuthState } from "../../../actions";
+import styles from "./styles.module.scss";
+
+const AppleIcon = (): React.ReactElement => (
+  <svg
+    fill="none"
+    height={18}
+    viewBox="0 0 19 18"
+    width={18}
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path
+      d="M16.59 13.82a9.97 9.97 0 0 1-2.13 3.11c-.47.44-.98.66-1.53.68-.4 0-.87-.12-1.42-.34a4.07 4.07 0 0 0-1.53-.34 4.2 4.2 0 0 0-1.57.34c-.56.22-1 .34-1.35.35-.53.03-1.05-.2-1.57-.7a10.34 10.34 0 0 1-3.13-7.25c0-1.14.25-2.14.75-2.98a4.4 4.4 0 0 1 3.7-2.19 5 5 0 0 1 1.64.39c.68.25 1.11.38 1.3.38.14 0 .63-.15 1.45-.45.77-.28 1.42-.4 1.96-.35a4.2 4.2 0 0 1 3.27 1.72 3.63 3.63 0 0 0-1.93 3.3 3.6 3.6 0 0 0 1.2 2.74c.35.34.75.6 1.19.79l-.3.8ZM13.26.72c0 .86-.32 1.67-.95 2.41-.75.89-1.67 1.4-2.67 1.32l-.02-.33c0-.82.36-1.71 1-2.43.32-.37.73-.68 1.22-.92.5-.24.96-.37 1.4-.4l.02.35Z"
+      fill="#fff"
+    />
+  </svg>
+);
+
+const TwitterIcon = (): React.ReactElement => (
+  <svg
+    fill="none"
+    height={18}
+    viewBox="0 0 19 18"
+    width={18}
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path
+      d="M16.04 5.61v.48c0 4.84-3.68 10.43-10.42 10.43-2 0-3.94-.57-5.62-1.65a7.44 7.44 0 0 0 5.42-1.52A3.67 3.67 0 0 1 2 10.81c.55.1 1.12.08 1.66-.07A3.67 3.67 0 0 1 .7 7.15V7.1c.51.29 1.08.45 1.67.46a3.67 3.67 0 0 1-1.14-4.9A10.4 10.4 0 0 0 8.8 6.5a3.67 3.67 0 0 1 6.24-3.35 7.38 7.38 0 0 0 2.33-.88 3.68 3.68 0 0 1-1.6 2.02 7.29 7.29 0 0 0 2.1-.57 7.45 7.45 0 0 1-1.83 1.9Z"
+      fill="#fff"
+    />
+  </svg>
+);
+
+const GoogleIcon = (): React.ReactElement => (
+  <svg
+    fill="none"
+    height={18}
+    viewBox="0 0 19 18"
+    width={18}
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path
+      clipRule="evenodd"
+      d="M17.9 8.82c0-.61-.05-1.2-.15-1.76H9.63v3.33h4.64c-.2 1.08-.81 2-1.72 2.6v2.17h2.78a8.41 8.41 0 0 0 2.58-6.34Z"
+      fill="#4285F4"
+      fillRule="evenodd"
+    />
+    <path
+      clipRule="evenodd"
+      d="M9.62 17.25c2.33 0 4.29-.77 5.71-2.09L12.55 13a5.18 5.18 0 0 1-7.75-2.74H1.92v2.24a8.62 8.62 0 0 0 7.7 4.75Z"
+      fill="#34A853"
+      fillRule="evenodd"
+    />
+    <path
+      clipRule="evenodd"
+      d="M4.8 10.26A5.18 5.18 0 0 1 4.8 7V4.75H1.92a8.62 8.62 0 0 0 0 7.75l2.88-2.24Z"
+      fill="#FBBC05"
+      fillRule="evenodd"
+    />
+    <path
+      clipRule="evenodd"
+      d="M9.62 3.43c1.27 0 2.4.44 3.3 1.29l2.48-2.47a8.62 8.62 0 0 0-13.48 2.5L4.8 7a5.14 5.14 0 0 1 4.82-3.56Z"
+      fill="#EA4335"
+      fillRule="evenodd"
+    />
+  </svg>
+);
+
+const Page = (): React.ReactElement => {
+  const { actions } = useAuthState();
+  return (
+    <>
+      <Typography as={"h1"} level={"h3"}>
+        Welcome to Storiny
+      </Typography>
+      <Spacer orientation={"vertical"} size={0.5} />
+      <Typography className={"t-minor"} level={"body2"}>
+        How would you like to proceed?
+      </Typography>
+      <Spacer orientation={"vertical"} size={5} />
+      <div className={clsx("flex-col", styles.actions)}>
+        <Button
+          onClick={(): void => actions.switchSegment("signup_base")}
+          size={"lg"}
+        >
+          Sign up with E-mail
+        </Button>
+        <Button
+          onClick={(): void => actions.switchSegment("login")}
+          size={"lg"}
+          variant={"hollow"}
+        >
+          Login with E-mail
+        </Button>
+        <div className={"flex-center"} style={{ paddingInline: "18px" }}>
+          <Divider style={{ width: "100%" }} />
+        </div>
+        <Button
+          className={styles["apple-button"]}
+          decorator={<AppleIcon />}
+          size={"lg"}
+        >
+          Continue with Apple
+        </Button>
+        <Button
+          className={styles["twitter-button"]}
+          decorator={<TwitterIcon />}
+          size={"lg"}
+        >
+          Continue with Twitter
+        </Button>
+        <Button
+          className={styles["google-button"]}
+          decorator={<GoogleIcon />}
+          size={"lg"}
+        >
+          Continue with Google
+        </Button>
+      </div>
+      <Spacer orientation={"vertical"} size={3} />
+      <Grow />
+      <footer
+        className={clsx("flex-col", "flex-center", "t-minor", styles.footer)}
+      >
+        <Link
+          className={"t-medium"}
+          href={"/auth"}
+          level={"body2"}
+          onClick={(): void => actions.switchSegment("recovery_base")}
+          underline={"always"}
+        >
+          Recover your account
+        </Link>
+        <Typography level={"body3"}>
+          You agree to the Storiny’s{" "}
+          <Link href={"/legal/terms"} underline={"always"}>
+            Terms of Service
+          </Link>{" "}
+          and{" "}
+          <Link href={"/legal/privacy"} underline={"always"}>
+            Privacy Statement
+          </Link>{" "}
+          by proceeding.
+        </Typography>
+      </footer>
+    </>
+  );
+};
+
+export default Page;

@@ -1,0 +1,45 @@
+/* Base styles */
+.sidenav {
+  grid-area: sn;
+  overflow: hidden;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  background-color: var(--bg-elevation-sm);
+  border-right: 1px solid var(--divider);
+  align-items: stretch;
+  gap: 18px;
+  z-index: calc(var(--z-index-header) + 1);
+}
+
+/* Logo */
+.logo {
+  border-radius: var(--radius-md); // Focus outline radius
+  outline-offset: 3px;
+}
+
+/* Branding */
+.branding {
+  height: 56px;
+
+  &:focus-visible {
+    outline: none;
+
+    & .logo {
+      outline: var(--focus-thickness) solid var(--focus);
+    }
+  }
+}
+
+/* Tabs list */
+.tabs-list {
+  padding-left: 6px;
+  gap: 14px;
+}
+
+/* Action */
+.action {
+  margin-bottom: 18px;
+  margin-inline: auto;
+}

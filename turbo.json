@@ -1,0 +1,22 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "globalDependencies": ["**/.env.*local"],
+  "globalDotEnv": [".env.local", ".env"],
+  "globalEnv": ["NODE_ENV"],
+  "pipeline": {
+    "build": {
+      "outputs": [".next/**", "!.next/cache/**", "dist/**"],
+      "dependsOn": ["^build"]
+    },
+    "dev": {
+      "cache": false
+    },
+    "test": {
+      "dependsOn": ["lint", "build"]
+    },
+    "deploy": {
+      "dependsOn": ["build", "test"]
+    },
+    "lint": {}
+  }
+}

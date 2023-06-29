@@ -1,0 +1,13 @@
+@use "colors";
+@use "sizes";
+@use "weights";
+
+@mixin main {
+  .t-center {
+    text-align: center;
+  }
+
+  @include colors.main;
+  @include sizes.main;
+  @include weights.main;
+}

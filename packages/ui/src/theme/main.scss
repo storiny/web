@@ -1,0 +1,110 @@
+@use "baseline";
+@use "palette";
+@use "radius";
+@use "typography/main" as typography;
+@use "typography/variants/main" as typography-variants;
+@use "breakpoints" as breakpoints;
+@use "grid" as grid;
+@use "shadow";
+@use "variants";
+@use "easing";
+@use "utility";
+@use "z-index";
+
+$dark-theme-selector: 'html[data-theme="dark"]';
+
+@font-face {
+  font-family: "Storiny Charfix";
+  src: local("'Segoe UI'"), local('system-ui'), local('-apple-system'), local('sans-serif');
+  unicode-range: U+60; // Satoshi does not render graves correctly
+}
+
+:root,
+.force-light-mode {
+  /* Misc */
+  --spacing: 8px;
+  --focus-thickness: 3.75px;
+
+  color-scheme: light;
+
+  @include palette.main;
+  @include radius.main;
+  @include typography.main;
+  @include variants.main;
+  @include shadow.main;
+  @include easing.main;
+  @include z-index.main;
+
+  & .invert {
+    filter: invert(1);
+  }
+}
+
+@media not print {
+  #{$dark-theme-selector},
+  .force-dark-mode {
+    color-scheme: dark;
+
+    @include palette.dark;
+    @include variants.dark;
+    @include shadow.dark;
+
+    & .invert {
+      filter: none;
+    }
+  }
+}
+
+/* Variants */
+@include typography-variants.main;
+
+.grid {
+  @include grid.main;
+}
+
+main, .base {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-block: 12px;
+}
+
+main {
+  grid-area: main;
+}
+
+// Takes up the entire width, excluding the sidebars and the sidenav.
+.page-header {
+  width: auto;
+  margin-inline: var(--grid-compensation);
+  align-items: stretch;
+  margin-top: -12px; // Tackle padding
+  position: sticky;
+  top: var(--header-height);
+  z-index: calc(var(--z-index-header) - 2);
+  box-shadow: var(--shadow-sm);
+  background-color: var(--bg-elevation-xs);
+  border-bottom: 1px solid var(--divider);
+
+  &.with-page-title {
+    top: calc(var(--header-height) + 43px);
+  }
+
+  @include breakpoints.media("<=desktop", ">tablet") {
+    margin-left: 47%;
+    transform: translateX(-50%);
+    width: calc(100vw - 40%);
+  }
+
+  @include breakpoints.media("<=tablet") {
+    width: calc(100vw - 78px);
+    margin-left: calc(50% + 2px);
+    transform: translateX(-50%);
+  }
+
+  @include breakpoints.media("<=mobile") {
+    width: 100vw;
+    margin-left: 50%;
+    transform: translateX(-50%);
+  }
+}

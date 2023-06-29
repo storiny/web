@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package token_def.v1;
+
+enum TokenType {
+  EMAIL_VERIFICATION = 0;
+  PASSWORD_RESET = 1;
+}
+
+message GetTokenRequest {
+  string identifier = 1;
+  TokenType type = 2;
+}
+
+message GetTokenResponse {
+  // Base props
+  bool is_valid = 1;
+  bool is_expired = 2;
+}
+
+// E-mail verification
+
+message VerifyEmailRequest {
+  string identifier = 1;
+}
+
+message VerifyEmailResponse {}

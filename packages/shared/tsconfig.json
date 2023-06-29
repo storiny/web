@@ -1,0 +1,4 @@
+{
+  "extends": "@storiny/tsconfig/base.json",
+  "include": ["."]
+}

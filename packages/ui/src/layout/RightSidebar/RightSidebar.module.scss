@@ -1,0 +1,14 @@
+/* Base styles */
+.right-sidebar {
+  grid-area: rsb;
+
+  &::before {
+    border-left: 1px solid var(--divider);
+    left: 0;
+  }
+}
+
+/* Wrapper */
+.wrapper {
+  padding-left: 24px;
+}

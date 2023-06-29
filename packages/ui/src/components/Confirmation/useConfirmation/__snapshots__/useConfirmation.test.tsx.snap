@@ -1,0 +1,104 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`useConfirmation renders confirmation modal, matches snapshot, and passes props to the root component 1`] = `
+<body
+  style="pointer-events: none;"
+>
+  <span
+    aria-hidden="true"
+    data-aria-hidden="true"
+    data-radix-focus-guard=""
+    style="outline: none; opacity: 0; position: fixed; pointer-events: none;"
+    tabindex="0"
+  />
+  <div
+    aria-hidden="true"
+    data-aria-hidden="true"
+  >
+    <span />
+  </div>
+  <div
+    aria-hidden="true"
+    data-aria-hidden="true"
+  />
+  <div
+    aria-hidden="true"
+    data-aria-hidden="true"
+  >
+    <span
+      aria-controls="radix-:r0:"
+      aria-expanded="true"
+      aria-haspopup="dialog"
+      data-state="open"
+      type="button"
+    />
+  </div>
+  <div
+    aria-hidden="true"
+    class="overlay"
+    data-aria-hidden="true"
+    data-state="open"
+    style="pointer-events: auto;"
+  />
+  <div
+    aria-describedby="radix-:r2:"
+    aria-labelledby="radix-:r1:"
+    class="flex-center content"
+    data-state="open"
+    data-testid="confirmation-content"
+    id="radix-:r0:"
+    role="alertdialog"
+    style="pointer-events: auto;"
+    tabindex="-1"
+  >
+    <div
+      class="flex-center container"
+    >
+      <h2
+        class="t-body-1 t-major t-center title"
+        id="radix-:r1:"
+      >
+        test
+      </h2>
+      <p
+        class="t-body-2 t-minor t-center"
+        id="radix-:r2:"
+      >
+        test
+      </p>
+    </div>
+    <div
+      class="reset divider only-mobile"
+      data-orientation="horizontal"
+      role="separator"
+    />
+    <div
+      class="flex-center footer"
+    >
+      <button
+        aria-disabled="false"
+        class="reset focusable variant-ghost color-inverted button md action"
+        tabindex="0"
+        type="button"
+      >
+        Cancel
+      </button>
+      <button
+        aria-disabled="false"
+        class="reset focusable variant-rigid color-inverted button md action"
+        tabindex="0"
+        type="button"
+      >
+        Confirm
+      </button>
+    </div>
+  </div>
+  <span
+    aria-hidden="true"
+    data-aria-hidden="true"
+    data-radix-focus-guard=""
+    style="outline: none; opacity: 0; position: fixed; pointer-events: none;"
+    tabindex="0"
+  />
+</body>
+`;

@@ -1,0 +1,10 @@
+/* Base styles */
+.footer {
+  width: 100%;
+  display: flex;
+  border-top: 1px solid var(--divider);
+  justify-content: flex-end;
+  align-items: center;
+  padding: 12px;
+  gap: 10px;
+}

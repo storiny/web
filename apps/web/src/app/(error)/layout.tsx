@@ -1,0 +1,84 @@
+import { clsx } from "clsx";
+import Image from "next/image";
+import React from "react";
+
+import Input from "~/components/Input";
+import Spacer from "~/components/Spacer";
+import Typography from "~/components/Typography";
+import SearchIcon from "~/icons/Search";
+import Footer from "~/layout/Footer";
+
+import MinimalLayout from "../(minimal)/layout";
+import styles from "./layout.module.scss";
+
+const ErrorLayout = ({
+  children,
+  errorCode,
+  title,
+  description,
+  enableSearch,
+}: {
+  children?: React.ReactNode;
+  description?: React.ReactNode;
+  enableSearch?: boolean;
+  errorCode: string;
+  title: React.ReactNode;
+}): React.ReactElement => (
+  <MinimalLayout>
+    <div
+      className={clsx("full-w", "full-h")}
+      role={"presentation"}
+      style={{ minHeight: "100vh", position: "fixed", pointerEvents: "none" }}
+    >
+      <Image
+        alt={""}
+        className={"invert"}
+        fill
+        loading={"eager"}
+        priority
+        src={"web-assets/background/noise"}
+        style={{ objectFit: "cover", opacity: 0.45 }}
+      />
+    </div>
+    <div className={clsx("flex-col", "flex-center", styles.container)}>
+      <Typography className={styles["error-code"]} level={"display1"}>
+        {errorCode.split("").map((digit, index) => (
+          <span className={styles.digit} key={index}>
+            {digit}
+          </span>
+        ))}
+      </Typography>
+      <div className={clsx("flex-col", "flex-center", styles.content)}>
+        <Typography className={"t-center"} level={"h2"}>
+          {title}
+        </Typography>
+        <Typography className={clsx("t-center", "t-minor", styles.description)}>
+          {description}
+        </Typography>
+        {enableSearch && (
+          <>
+            <Spacer orientation={"vertical"} size={2} />
+            <Input
+              decorator={<SearchIcon />}
+              placeholder={"Search Storiny"}
+              size={"lg"}
+              slotProps={{
+                container: { className: styles.input },
+              }}
+              type={"search"}
+            />
+          </>
+        )}
+      </div>
+      {children && (
+        <>
+          <Spacer orientation={"vertical"} size={5} />
+          {children}
+        </>
+      )}
+    </div>
+    <Footer />
+  </MinimalLayout>
+);
+
+export default ErrorLayout;

@@ -1,0 +1,6 @@
+/* Generates color levels */
+@mixin generate-color-levels($name, $hue, $lightness-map) {
+  @each $level, $lightness in $lightness-map {
+    --#{$name}-#{$level}: hsl(#{$hue} 100% #{'#{$lightness}%'});
+  }
+}
