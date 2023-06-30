@@ -9,7 +9,7 @@ import {
   ScrollUpButton,
   Trigger,
   Value,
-  Viewport,
+  Viewport
 } from "@radix-ui/react-select";
 import clsx from "clsx";
 import React from "react";
@@ -35,7 +35,7 @@ const Select = forwardRef<SelectProps, "div">((props, ref) => {
   const {
     color: inputColor,
     size: inputSize,
-    disabled: inputDisabled,
+    disabled: inputDisabled
   } = React.useContext(InputContext) || {};
 
   return (

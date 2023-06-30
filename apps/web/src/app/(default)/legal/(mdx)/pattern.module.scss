@@ -7,4 +7,10 @@
 .content {
   padding-block: 32px;
   gap: 24px;
+
+  & > h2, h3 {
+    margin-top: 12px;
+    margin-bottom: -12px;
+  }
 }
+

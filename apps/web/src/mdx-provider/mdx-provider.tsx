@@ -4,7 +4,15 @@ import { MDXProvider } from "@mdx-js/react";
 import { MDXComponents } from "mdx/types";
 import React from "react";
 
-import { Anchor, Code, Heading, List, Paragraph } from "./components";
+import {
+  Anchor,
+  Blockquote,
+  Code,
+  Heading,
+  List,
+  Paragraph,
+  Table
+} from "./components";
 
 /**
  * Custom markdown components
@@ -19,7 +27,9 @@ const components: MDXComponents = {
   code: Code,
   ul: List.UL,
   ol: List.OL,
-  li: List.LI
+  li: List.LI,
+  blockquote: Blockquote,
+  table: Table
 };
 
 const MarkdownProvider = ({ children }): React.ReactElement => (

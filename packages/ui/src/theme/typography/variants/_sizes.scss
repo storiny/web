@@ -116,19 +116,31 @@
 @mixin legible {
   &-legible {
     /* Regular */
-    --t-legible-font-size: 18px;
-    --t-legible-line-height: 31.5px;
-    --t-legible-font-size-sm: 17px;
-    --t-legible-line-height-sm: 27px;
+    --t-legible-regular-font-size: 18px;
+    --t-legible-regular-line-height: 31.5px;
+    --t-legible-regular-font-size-sm: 17px;
+    --t-legible-regular-line-height-sm: 27px;
 
-    font-size: var(--t-legible-font-size);
-    line-height: var(--t-legible-line-height);
+    font-size: var(--t-legible-font-size, var(--t-legible-regular-font-size));
+    line-height: var(
+      --t-legible-line-height,
+      var(--t-legible-regular-line-height)
+    );
 
     @include breakpoints.media("<=mobile") {
-      font-size: var(--t-legible-font-size-sm, var(--t-legible-font-size));
+      font-size: var(
+        --t-legible-font-size-sm,
+        var(
+          --t-legible-regular-font-size-sm,
+          var(--t-legible-font-size, var(--t-legible-regular-font-size))
+        )
+      );
       line-height: var(
         --t-legible-line-height-sm,
-        var(--t-legible-line-height)
+        var(
+          --t-legible-regular-line-height-sm,
+          var(--t-legible-line-height, var(--t-legible-regular-line-height))
+        )
       );
     }
 

@@ -7,11 +7,11 @@ import { renderWithState } from "~/redux/mock";
 
 import DefaultLayout from "../../../../layout";
 import LegalLayout from "../../../layout";
-import PoliciesPrivacy from "./page";
+import PrivacyPolicy from "./page";
 
-const meta: Meta<typeof PoliciesPrivacy> = {
+const meta: Meta<typeof PrivacyPolicy> = {
   title: "pages/Legal/policies/privacy",
-  component: PoliciesPrivacy,
+  component: PrivacyPolicy,
   parameters: {
     layout: "fullscreen"
   },
@@ -19,7 +19,7 @@ const meta: Meta<typeof PoliciesPrivacy> = {
 };
 
 export default meta;
-type Story = StoryObj<typeof PoliciesPrivacy>;
+type Story = StoryObj<typeof PrivacyPolicy>;
 
 export const Default: Story = {
   decorators: [

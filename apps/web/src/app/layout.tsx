@@ -5,8 +5,8 @@ import "normalize.css/normalize.css";
 import "~/theme/main.scss";
 
 import React from "react";
-import { getUser } from "src/common/utils/getUser";
 
+import { getUser } from "~/common/utils/getUser";
 import CriticalStyles from "~/theme/Critical";
 
 import Fonts from "./fonts";
@@ -16,7 +16,7 @@ import StateProvider from "./state-provider";
 import themeSync from "./theme-sync.txt";
 
 const RootLayout = async ({
-  children,
+  children
 }: {
   children: React.ReactNode;
 }): Promise<React.ReactElement> => {
@@ -33,7 +33,7 @@ const RootLayout = async ({
         {/* Apply theme from localStorage as soon as possible */}
         <script
           dangerouslySetInnerHTML={{
-            __html: themeSync,
+            __html: themeSync
           }}
         />
         <link href="/favicon.ico" rel="icon" sizes="any" />

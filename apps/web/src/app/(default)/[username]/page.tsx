@@ -4,12 +4,12 @@ import React from "react";
 
 import { getProfile } from "~/common/grpc";
 import { handleException } from "~/common/grpc/utils";
-import { getUser } from "~/common/utils";
+import { getUser } from "~/common/utils/getUser";
 
 import Component from "./component";
 
 const Page = async ({
-  params: { username },
+  params: { username }
 }: {
   params: { username: string };
 }): Promise<React.ReactElement | undefined> => {
@@ -17,7 +17,7 @@ const Page = async ({
     const userId = await getUser();
     const profile = await getProfile({
       username,
-      current_user_id: userId || undefined,
+      current_user_id: userId || undefined
     });
 
     return <Component profile={profile} />;

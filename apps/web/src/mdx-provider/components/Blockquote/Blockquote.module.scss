@@ -1,0 +1,8 @@
+/* Base styles */
+.blockquote {
+  background-color: var(--bg-elevation-xs);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--divider);
+  padding: 8px 12px;
+  margin-block: 8px;
+}

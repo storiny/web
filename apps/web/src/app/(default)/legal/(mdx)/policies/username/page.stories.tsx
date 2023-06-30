@@ -7,11 +7,11 @@ import { renderWithState } from "~/redux/mock";
 
 import DefaultLayout from "../../../../layout";
 import LegalLayout from "../../../layout";
-import TOS from "./page";
+import UsernamePolicy from "./page";
 
-const meta: Meta<typeof TOS> = {
-  title: "pages/Legal/terms/tos",
-  component: TOS,
+const meta: Meta<typeof UsernamePolicy> = {
+  title: "pages/Legal/policies/username",
+  component: UsernamePolicy,
   parameters: {
     layout: "fullscreen"
   },
@@ -19,7 +19,7 @@ const meta: Meta<typeof TOS> = {
 };
 
 export default meta;
-type Story = StoryObj<typeof TOS>;
+type Story = StoryObj<typeof UsernamePolicy>;
 
 export const Default: Story = {
   decorators: [

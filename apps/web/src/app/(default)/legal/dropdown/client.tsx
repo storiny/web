@@ -1,5 +1,6 @@
 "use client";
 
+import { clsx } from "clsx";
 import { useSelectedLayoutSegments } from "next/navigation";
 import { useRouter } from "next/navigation";
 import React from "react";
@@ -8,6 +9,7 @@ import Option, { OptionProps } from "~/components/Option";
 import Select, { SelectGroup, SelectLabel } from "~/components/Select";
 
 import { LegalSegment } from "../types";
+import styles from "./dropdown.module.scss";
 
 const AnchorOption = ({
   children,
@@ -108,6 +110,20 @@ const DropdownClient = (): React.ReactElement => {
   return (
     <Select
       onValueChange={(value): void => router.push(`/legal/${value}`)}
+      size={"lg"}
+      slotProps={{
+        content: {
+          position: "popper",
+          style: {
+            marginTop: "8px",
+            width: "calc(var(--radix-select-trigger-width) - 24px)",
+            maxHeight: "calc(var(--radix-popper-available-height) - 24px)"
+          }
+        },
+        trigger: {
+          className: clsx("page-header", styles.trigger)
+        }
+      }}
       value={currentSegment}
     >
       <TermsGroup />

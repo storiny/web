@@ -7,19 +7,19 @@ import { renderWithState } from "~/redux/mock";
 
 import DefaultLayout from "../../../../layout";
 import LegalLayout from "../../../layout";
-import TermsCommunityGuidelines from "./page";
+import CommunityGuidelines from "./page";
 
-const meta: Meta<typeof TermsCommunityGuidelines> = {
+const meta: Meta<typeof CommunityGuidelines> = {
   title: "pages/Legal/terms/community-guidelines",
-  component: TermsCommunityGuidelines,
+  component: CommunityGuidelines,
   parameters: {
-    layout: "fullscreen",
+    layout: "fullscreen"
   },
-  tags: ["autodocs"],
+  tags: ["autodocs"]
 };
 
 export default meta;
-type Story = StoryObj<typeof TermsCommunityGuidelines>;
+type Story = StoryObj<typeof CommunityGuidelines>;
 
 export const Default: Story = {
   decorators: [
@@ -31,6 +31,6 @@ export const Default: Story = {
           </LegalLayout>
         </DefaultLayout>,
         { ignorePrimitiveProviders: true }
-      ),
-  ],
+      )
+  ]
 };

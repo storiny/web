@@ -2,7 +2,7 @@ import "server-only";
 
 import React from "react";
 
-import { getUser } from "~/common/utils";
+import { getUser } from "~/common/utils/getUser";
 
 import CheckUserClient from "./client";
 
