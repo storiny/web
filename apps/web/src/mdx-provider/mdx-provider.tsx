@@ -11,6 +11,7 @@ import {
   Heading,
   List,
   Paragraph,
+  Pre,
   Table
 } from "./components";
 
@@ -28,6 +29,7 @@ const components: MDXComponents = {
   ul: List.UL,
   ol: List.OL,
   li: List.LI,
+  pre: Pre,
   blockquote: Blockquote,
   table: Table
 };

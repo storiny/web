@@ -37,7 +37,7 @@ const WriteButton = (): React.ReactElement => {
 };
 
 const List = ({
-  children,
+  children
 }: {
   children: React.ReactNode;
 }): React.ReactElement => (
@@ -103,10 +103,10 @@ const Footer = (props: FooterProps): React.ReactElement => {
               <ListItem href={"/about"} level={"body2"}>
                 About us
               </ListItem>
-              <ListItem href={"/policies/terms"} level={"body2"}>
+              <ListItem href={"/terms"} level={"body2"}>
                 Terms of use
               </ListItem>
-              <ListItem href={"/policies/privacy"} level={"body2"}>
+              <ListItem href={"/privacy"} level={"body2"}>
                 Privacy policy
               </ListItem>
               <ListItem href={"/branding"} level={"body2"}>

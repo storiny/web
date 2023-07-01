@@ -12,7 +12,7 @@ import DefaultLayout from "../layout";
 import Profile from "./component";
 
 const user = mockUsers[9];
-const mockResponse: GetProfileResponse = {
+const mockResponse = {
   ...user,
   is_following: false,
   is_subscribed: false,
@@ -25,22 +25,22 @@ const mockResponse: GetProfileResponse = {
   connections: [
     {
       url: "https://github.com/storiny",
-      provider: Provider.GITHUB,
+      provider: Provider.GITHUB
     },
     {
       url: "https://twitter.com/storiny_intl",
-      provider: Provider.TWITTER,
-    },
-  ],
-};
+      provider: Provider.TWITTER
+    }
+  ]
+} as GetProfileResponse;
 
 const meta: Meta<typeof Profile> = {
   title: "pages/Profile",
   component: Profile,
   parameters: {
-    layout: "fullscreen",
+    layout: "fullscreen"
   },
-  tags: ["autodocs"],
+  tags: ["autodocs"]
 };
 
 export default meta;
@@ -48,7 +48,7 @@ type Story = StoryObj<typeof Profile>;
 
 export const Default: Story = {
   args: {
-    profile: mockResponse,
+    profile: mockResponse
   },
   decorators: [
     (Story): React.ReactElement =>
@@ -57,13 +57,13 @@ export const Default: Story = {
           <Story />
         </DefaultLayout>,
         { ignorePrimitiveProviders: true }
-      ),
-  ],
+      )
+  ]
 };
 
 export const LoggedIn: Story = {
   args: {
-    profile: mockResponse,
+    profile: mockResponse
   },
   decorators: [
     (Story): React.ReactElement =>
@@ -72,13 +72,13 @@ export const LoggedIn: Story = {
           <Story />
         </DefaultLayout>,
         { ignorePrimitiveProviders: true, loggedIn: true }
-      ),
-  ],
+      )
+  ]
 };
 
 export const SelfPrivate: Story = {
   args: {
-    profile: { ...mockResponse, is_private: true, is_self: true },
+    profile: { ...mockResponse, is_private: true, is_self: true }
   },
   decorators: [
     (Story): React.ReactElement =>
@@ -87,13 +87,13 @@ export const SelfPrivate: Story = {
           <Story />
         </DefaultLayout>,
         { ignorePrimitiveProviders: true, loggedIn: true }
-      ),
-  ],
+      )
+  ]
 };
 
 export const Private: Story = {
   args: {
-    profile: { ...mockResponse, is_private: true },
+    profile: { ...mockResponse, is_private: true }
   },
   decorators: [
     (Story): React.ReactElement =>
@@ -102,13 +102,13 @@ export const Private: Story = {
           <Story />
         </DefaultLayout>,
         { ignorePrimitiveProviders: true }
-      ),
-  ],
+      )
+  ]
 };
 
 export const Blocking: Story = {
   args: {
-    profile: { ...mockResponse, is_blocking: true },
+    profile: { ...mockResponse, is_blocking: true }
   },
   decorators: [
     (Story): React.ReactElement =>
@@ -117,13 +117,13 @@ export const Blocking: Story = {
           <Story />
         </DefaultLayout>,
         { ignorePrimitiveProviders: true, loggedIn: true }
-      ),
-  ],
+      )
+  ]
 };
 
 export const BlockedByUser: Story = {
   args: {
-    profile: { ...mockResponse, is_blocked_by_user: true },
+    profile: { ...mockResponse, is_blocked_by_user: true }
   },
   decorators: [
     (Story): React.ReactElement =>
@@ -132,13 +132,13 @@ export const BlockedByUser: Story = {
           <Story />
         </DefaultLayout>,
         { ignorePrimitiveProviders: true, loggedIn: true }
-      ),
-  ],
+      )
+  ]
 };
 
 export const Suspended: Story = {
   args: {
-    profile: { ...mockResponse, public_flags: UserFlag.TEMPORARILY_SUSPENDED },
+    profile: { ...mockResponse, public_flags: UserFlag.TEMPORARILY_SUSPENDED }
   },
   decorators: [
     (Story): React.ReactElement =>
@@ -147,6 +147,6 @@ export const Suspended: Story = {
           <Story />
         </DefaultLayout>,
         { ignorePrimitiveProviders: true }
-      ),
-  ],
+      )
+  ]
 };

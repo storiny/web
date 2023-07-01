@@ -79,7 +79,7 @@ const AcceptableUsePoliciesGroup = (): React.ReactElement => (
         Bullying and Harassment
       </AnchorTab>
       <AnchorTab value={"use-policies/disturbing-ux"}>
-        Disturbing user experience
+        Disturbing User Experience
       </AnchorTab>
       <AnchorTab value={"use-policies/doxxing"}>
         Doxxing and Invasion of Privacy
@@ -95,9 +95,9 @@ const AcceptableUsePoliciesGroup = (): React.ReactElement => (
         Sexually Obscene Content
       </AnchorTab>
       <AnchorTab value={"use-policies/violent-content"}>
-        Violent threats and content
+        Violent Threats and Content
       </AnchorTab>
-      <AnchorTab value={"use-policies/appeals"}>
+      <AnchorTab value={"use-policies/appeal-and-reinstatement"}>
         Appeal and Reinstatement
       </AnchorTab>
     </div>
@@ -128,7 +128,7 @@ const SuspendedLegalLeftSidebarContent = (): React.ReactElement => {
     if (currentSegmentElement) {
       currentSegmentElement.scrollIntoView({
         block: "center",
-        behavior: "smooth",
+        behavior: "smooth"
       });
     }
   }, [currentSegment]);
@@ -142,11 +142,11 @@ const SuspendedLegalLeftSidebarContent = (): React.ReactElement => {
       role={undefined}
       slotProps={{
         viewport: {
-          className: styles.viewport,
+          className: styles.viewport
         },
         scrollbar: {
-          style: { zIndex: 1 },
-        },
+          style: { zIndex: 1 }
+        }
       }}
       value={currentSegment}
     >

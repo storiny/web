@@ -64,7 +64,7 @@ const AcceptableUsePoliciesGroup = (): React.ReactElement => (
       Bullying and Harassment
     </AnchorOption>
     <AnchorOption value={"use-policies/disturbing-ux"}>
-      Disturbing user experience
+      Disturbing User Experience
     </AnchorOption>
     <AnchorOption value={"use-policies/doxxing"}>
       Doxxing and Invasion of Privacy
@@ -82,9 +82,9 @@ const AcceptableUsePoliciesGroup = (): React.ReactElement => (
       Sexually Obscene Content
     </AnchorOption>
     <AnchorOption value={"use-policies/violent-content"}>
-      Violent threats and content
+      Violent Threats and Content
     </AnchorOption>
-    <AnchorOption value={"use-policies/appeals"}>
+    <AnchorOption value={"use-policies/appeal-and-reinstatement"}>
       Appeal and Reinstatement
     </AnchorOption>
   </SelectGroup>

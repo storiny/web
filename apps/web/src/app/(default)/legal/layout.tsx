@@ -5,6 +5,7 @@ import React from "react";
 import SplashScreen from "~/layout/SplashScreen";
 
 import Dropdown from "./dropdown";
+import LegalFooter from "./footer";
 import styles from "./layout.module.scss";
 import LeftSidebar from "./left-sidebar";
 import RightSidebar from "./right-sidebar";
@@ -19,6 +20,7 @@ const LegalLayout = ({
     <main>
       <Dropdown />
       <article className={styles.article}>{children}</article>
+      <LegalFooter />
     </main>
     <RightSidebar />
     <SplashScreen />

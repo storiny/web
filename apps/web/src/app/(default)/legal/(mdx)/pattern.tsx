@@ -21,8 +21,8 @@ const MDXPattern = ({ meta, children }: Props): React.ReactElement => (
   <MarkdownProvider>
     <div className={clsx("flex-col", styles.header)}>
       <Typography level={"h1"}>{meta.title}</Typography>
-      <Typography className={"t-medium"}>
-        Effective as of:{" "}
+      <Typography className={clsx("t-medium", "t-minor")}>
+        Last updated:{" "}
         {formatDate(new Date(meta.lastUpdated), DateFormat.STANDARD)}
       </Typography>
     </div>

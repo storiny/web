@@ -5835,6 +5835,7 @@ __metadata:
     react: ^18.2.0
     react-dom: ^18.2.0
     react-virtuoso: ^4.3.8
+    rehype-slug: ^5.1.0
     remark-gfm: ^3.0.1
     sass: ^1.62.1
     schema-dts: ^1.1.2
@@ -13337,6 +13338,13 @@ eslint-config-turbo@latest:
   languageName: node
   linkType: hard
 
+"github-slugger@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "github-slugger@npm:2.0.0"
+  checksum: 250375cde2058f21454872c2c79f72c4637340c30c51ff158ca4ec71cbc478f33d54477d787a662f9207aeb095a2060f155bc01f15329ba8a5fb6698e0fc81f8
+  languageName: node
+  linkType: hard
+
 "glob-parent@npm:^5.1.2, glob-parent@npm:~5.1.2":
   version: 5.1.2
   resolution: "glob-parent@npm:5.1.2"
@@ -13670,6 +13678,22 @@ eslint-config-turbo@latest:
   languageName: node
   linkType: hard
 
+"hast-util-has-property@npm:^2.0.0":
+  version: 2.0.1
+  resolution: "hast-util-has-property@npm:2.0.1"
+  checksum: cc909b7e2964fbfa4c53e33bfbc6f3ed883d1936f3e41a7fa020d3cb8cc5d3c903670e62bec15b55dea5a272ed86724815e8b136ba5475e138489384b1b71fa8
+  languageName: node
+  linkType: hard
+
+"hast-util-heading-rank@npm:^2.0.0":
+  version: 2.1.1
+  resolution: "hast-util-heading-rank@npm:2.1.1"
+  dependencies:
+    "@types/hast": ^2.0.0
+  checksum: a49233e9ac78f66e948dd29d6c75f41c72899854f276290423c5f59eb827dee3c42cf181ce9103f3a8295359b613ca0b9c51475dd38ecdd6c26ed291344061f1
+  languageName: node
+  linkType: hard
+
 "hast-util-parse-selector@npm:^2.0.0":
   version: 2.2.5
   resolution: "hast-util-parse-selector@npm:2.2.5"
@@ -13697,6 +13721,15 @@ eslint-config-turbo@latest:
     unist-util-position: ^4.0.0
     zwitch: ^2.0.0
   checksum: a09de0214db4d71f11cbd6f18663a8032116f82cb076b05d2d735444c05a9692902dae1023b70d0a254fc0a776f81e97450ca396bb9252c8fd631c3ba2e12f24
+  languageName: node
+  linkType: hard
+
+"hast-util-to-string@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "hast-util-to-string@npm:2.0.0"
+  dependencies:
+    "@types/hast": ^2.0.0
+  checksum: 0c087f8dee4238741cbad65d28adb8bf800252c763a3c643df2fcb4ef97232056837928c2ae73f841f310e4d336c3b183ee380a5e6eb24bda5c117f78ed600d4
   languageName: node
   linkType: hard
 
@@ -19182,6 +19215,21 @@ eslint-config-turbo@latest:
   bin:
     regjsparser: bin/parser
   checksum: 5e1b76afe8f1d03c3beaf9e0d935dd467589c3625f6d65fb8ffa14f224d783a0fed4bf49c2c1b8211043ef92b6117313419edf055a098ed8342e340586741afc
+  languageName: node
+  linkType: hard
+
+"rehype-slug@npm:^5.1.0":
+  version: 5.1.0
+  resolution: "rehype-slug@npm:5.1.0"
+  dependencies:
+    "@types/hast": ^2.0.0
+    github-slugger: ^2.0.0
+    hast-util-has-property: ^2.0.0
+    hast-util-heading-rank: ^2.0.0
+    hast-util-to-string: ^2.0.0
+    unified: ^10.0.0
+    unist-util-visit: ^4.0.0
+  checksum: 2a7c17fd74d83040e2f2ed2085b0a3274c19feb2c29eba6553fe007ff887c31f21b8aa6e07eaf59f4de610a5293c6339c59fafa8e231c43949a2f136e6ab6187
   languageName: node
   linkType: hard
 

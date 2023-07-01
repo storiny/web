@@ -17,7 +17,7 @@ type UsePolicySegment =
   | "misinformation"
   | "obscene-content"
   | "violent-content"
-  | "appeals";
+  | "appeal-and-reinstatement";
 type MiscellaneousSegment = "acknowledgements";
 
 export type LegalSegment =

@@ -145,11 +145,11 @@ const Page = (): React.ReactElement => {
         </Link>
         <Typography level={"body3"}>
           You agree to the Storiny’s{" "}
-          <Link href={"/legal/terms"} underline={"always"}>
+          <Link href={"/terms"} underline={"always"}>
             Terms of Service
           </Link>{" "}
           and{" "}
-          <Link href={"/legal/privacy"} underline={"always"}>
+          <Link href={"/privacy"} underline={"always"}>
             Privacy Statement
           </Link>{" "}
           by proceeding.

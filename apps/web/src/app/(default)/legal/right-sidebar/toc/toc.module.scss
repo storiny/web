@@ -1,0 +1,38 @@
+/* Base styles */
+.toc {
+  border-left: 1px solid var(--divider);
+  max-height: calc(100vh - 96px);
+  overflow-y: auto;
+}
+
+/* Toc list */
+.ul {
+  list-style: none;
+  gap: 8px;
+}
+
+/* Nested H3 heading list */
+.nested-ul {
+  border-left: 1px solid var(--divider);
+  margin-bottom: 8px;
+}
+
+/* Toc list item */
+.li {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-sm);
+  color: var(--fg-minor);
+  padding-left: 16px;
+  gap: 8px;
+
+  &:hover {
+    color: var(--fg-major);
+  }
+
+  &.selected {
+    color: var(--fg-major);
+    font-weight: var(--font-weight-bold);
+    border-left: 1px solid var(--inverted-400);
+  }
+}
