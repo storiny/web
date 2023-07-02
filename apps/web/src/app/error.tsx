@@ -8,7 +8,7 @@ import Typography from "~/components/Typography";
 import SplashScreen from "~/layout/SplashScreen";
 
 const RootErrorBoundary = ({
-  reset,
+  reset
 }: {
   reset: () => void;
 }): React.ReactElement => (

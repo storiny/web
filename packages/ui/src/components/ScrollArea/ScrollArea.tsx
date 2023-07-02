@@ -5,7 +5,7 @@ import {
   Root,
   Scrollbar,
   Thumb,
-  Viewport,
+  Viewport
 } from "@radix-ui/react-scroll-area";
 import clsx from "clsx";
 import React from "react";

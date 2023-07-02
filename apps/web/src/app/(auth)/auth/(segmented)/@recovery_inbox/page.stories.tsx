@@ -12,9 +12,9 @@ const meta: Meta<typeof RecoveryInboxPage> = {
   title: "pages/Auth/@recovery_inbox",
   component: RecoveryInboxPage,
   parameters: {
-    layout: "fullscreen",
+    layout: "fullscreen"
   },
-  tags: ["autodocs"],
+  tags: ["autodocs"]
 };
 
 export default meta;
@@ -28,6 +28,6 @@ export const Default: Story = {
           <Story />
         </AuthLayout>,
         { ignorePrimitiveProviders: true }
-      ),
-  ],
+      )
+  ]
 };

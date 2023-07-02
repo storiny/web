@@ -9,7 +9,7 @@ const meta: Meta<typeof Tag> = {
   title: "Entities/Tag",
   component: Tag,
   args: { value: "nice-tag", storyCount: 46, followerCount: 814 },
-  tags: ["autodocs"],
+  tags: ["autodocs"]
 };
 
 export default meta;
@@ -21,20 +21,20 @@ export const OnlyValue: Story = {
   args: {
     ...Default.args,
     followerCount: undefined,
-    storyCount: undefined,
-  },
+    storyCount: undefined
+  }
 };
 
 export const OnlyStoryCount: Story = {
   args: {
     ...Default.args,
-    followerCount: undefined,
-  },
+    followerCount: undefined
+  }
 };
 
 export const OnlyFollowerCount: Story = {
   args: {
     ...Default.args,
-    storyCount: undefined,
-  },
+    storyCount: undefined
+  }
 };

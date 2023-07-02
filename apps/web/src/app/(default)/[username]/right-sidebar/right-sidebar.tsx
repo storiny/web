@@ -17,10 +17,11 @@ interface Props {
 const ProfileRightSidebar = ({
   profile,
   isPrivate,
-  isSuspended,
+  isSuspended
 }: Props): React.ReactElement => (
   <RightSidebar
     className={clsx(
+      styles.x,
       styles["right-sidebar"],
       Boolean(profile.banner_id) &&
         !isPrivate &&

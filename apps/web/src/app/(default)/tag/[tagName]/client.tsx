@@ -21,11 +21,11 @@ import { breakpoints } from "~/theme/breakpoints";
 import styles from "./styles.module.scss";
 
 const EmptyState = dynamic(() => import("./empty-state"), {
-  loading: () => <SuspenseLoader />,
+  loading: () => <SuspenseLoader />
 });
 
 const SuspendedContent = dynamic(() => import("./content"), {
-  loading: () => <SuspenseLoader />,
+  loading: () => <SuspenseLoader />
 });
 
 export type TagTabValue = "popular" | "recent";
@@ -42,7 +42,7 @@ const PageHeader = ({
   tagName,
   onSortChange,
   onQueryChange,
-  disabled,
+  disabled
 }: {
   disabled?: boolean;
   onQueryChange: (newQuery: string) => void;
@@ -51,7 +51,14 @@ const PageHeader = ({
   sort: TagTabValue;
   tagName: string;
 }): React.ReactElement => (
-  <div className={clsx("flex-center", "page-header", styles["page-header"])}>
+  <div
+    className={clsx(
+      "flex-center",
+      "page-header",
+      styles.x,
+      styles["page-header"]
+    )}
+  >
     <Input
       decorator={<SearchIcon />}
       disabled={disabled}
@@ -60,8 +67,8 @@ const PageHeader = ({
       size={"lg"}
       slotProps={{
         container: {
-          className: clsx("f-grow", styles.input),
-        },
+          className: clsx("f-grow", styles.x, styles.input)
+        }
       }}
       type={"search"}
       value={query}
@@ -71,7 +78,7 @@ const PageHeader = ({
       disabled={disabled}
       onValueChange={onSortChange}
       slotProps={{
-        trigger: { className: styles["select-trigger"] },
+        trigger: { className: clsx(styles.x, styles["select-trigger"]) }
       }}
       value={sort}
     >
@@ -92,7 +99,7 @@ const Page = ({ tag }: Props): React.ReactElement => {
       page,
       sort,
       tagName: tag.name,
-      query: debouncedQuery,
+      query: debouncedQuery
     });
   const { items = [], hasMore } = data || {};
   const isTyping = query !== debouncedQuery;
@@ -127,7 +134,7 @@ const Page = ({ tag }: Props): React.ReactElement => {
         <ErrorState
           autoSize
           componentProps={{
-            button: { loading: isFetching },
+            button: { loading: isFetching }
           }}
           retry={refetch}
           type={getQueryErrorType(error)}

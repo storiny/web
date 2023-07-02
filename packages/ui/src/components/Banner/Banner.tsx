@@ -16,7 +16,7 @@ import { BannerIcon, BannerProps } from "./Banner.props";
 const iconMap: Record<BannerIcon, React.ReactNode> = {
   error: <XSquareIcon />,
   info: <InfoIcon />,
-  warning: <AlertSquareIcon />,
+  warning: <AlertSquareIcon />
 };
 
 const Banner = forwardRef<BannerProps, "li">((props, ref) => {

@@ -31,7 +31,7 @@ const providerIconMap: Record<TProvider, React.ComponentType> = {
   [Provider.SPOTIFY]: dynamic(() => import("~/icons/Spotify")),
   [Provider.YOUTUBE]: dynamic(() => import("~/icons/YouTube")),
   [Provider.TWITCH]: dynamic(() => import("~/icons/Twitch")),
-  [Provider.UNRECOGNIZED]: NullComponent,
+  [Provider.UNRECOGNIZED]: NullComponent
 };
 
 const providerDisplayNameMap: Record<TProvider, string> = {
@@ -48,20 +48,20 @@ const providerDisplayNameMap: Record<TProvider, string> = {
   [Provider.SPOTIFY]: "Spotify",
   [Provider.YOUTUBE]: "YouTube",
   [Provider.TWITCH]: "Twitch",
-  [Provider.UNRECOGNIZED]: "",
+  [Provider.UNRECOGNIZED]: ""
 };
 
 const Connections = ({
   connections,
   name,
-  isInsideSidebar,
+  isInsideSidebar
 }: Props): React.ReactElement => (
-  <div className={clsx("flex", styles.connections)}>
+  <div className={clsx("flex", styles.x, styles.connections)}>
     {connections.map((connection) => (
       <IconButton
         aria-label={`${name} on ${providerDisplayNameMap[connection.provider]}`}
         as={"a"}
-        className={styles.connection}
+        className={clsx(styles.x, styles.connection)}
         href={connection.url}
         key={connection.provider}
         rel={"noreferrer"}

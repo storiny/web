@@ -11,7 +11,7 @@ import {
   FormField,
   FormHelperText,
   FormItem,
-  FormMessage,
+  FormMessage
 } from "../Form";
 import { FormCheckboxProps } from "./FormCheckbox.props";
 
@@ -36,7 +36,7 @@ const FormCheckbox = React.forwardRef<HTMLFieldSetElement, FormCheckboxProps>(
         name={name}
         render={({
           field,
-          fieldState: { invalid, error },
+          fieldState: { invalid, error }
         }): React.ReactElement => (
           <FormItem
             {...formSlotProps?.formItem}
@@ -55,7 +55,7 @@ const FormCheckbox = React.forwardRef<HTMLFieldSetElement, FormCheckboxProps>(
                 required={required}
                 slotProps={{
                   ...rest?.slotProps,
-                  label: formSlotProps?.label,
+                  label: formSlotProps?.label
                 }}
               />
             </FormControl>

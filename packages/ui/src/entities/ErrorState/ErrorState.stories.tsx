@@ -9,7 +9,7 @@ const meta: Meta<typeof ErrorState> = {
   title: "Entities/ErrorState",
   component: ErrorState,
   args: { size: "md", type: "network" },
-  tags: ["autodocs"],
+  tags: ["autodocs"]
 };
 
 export default meta;
@@ -19,24 +19,24 @@ export const Default: Story = {};
 
 export const TypeNetwork: Story = {
   args: {
-    type: "network",
-  },
+    type: "network"
+  }
 };
 
 export const TypeServer: Story = {
   args: {
-    type: "server",
-  },
+    type: "server"
+  }
 };
 
 export const SizeMD: Story = {
   args: {
-    size: "md",
-  },
+    size: "md"
+  }
 };
 
 export const SizeSM: Story = {
   args: {
-    size: "sm",
-  },
+    size: "sm"
+  }
 };

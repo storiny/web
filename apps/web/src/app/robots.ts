@@ -24,10 +24,10 @@ const robots = (): MetadataRoute.Robots => ({
       "/*/followers",
       "/*/following",
       "/*/*/revisions/*",
-      "/*/*/comments/*",
-    ],
+      "/*/*/comments/*"
+    ]
   },
-  sitemap: "https://cdn.storiny.com/sitemaps/sitemap-index.xml",
+  sitemap: "https://cdn.storiny.com/sitemaps/sitemap-index.xml"
 });
 
 export default robots;

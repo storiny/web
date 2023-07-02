@@ -5,7 +5,7 @@ import { satoshiFont } from "./satoshi";
 
 const fontFamilies: Record<string, string> = {
   satoshi: satoshiFont.style.fontFamily,
-  "cabinet-grotesk": cabinetGroteskFont.style.fontFamily,
+  "cabinet-grotesk": cabinetGroteskFont.style.fontFamily
 };
 
 const fontFamiliesCss = Object.keys(fontFamilies)
@@ -16,7 +16,7 @@ const fontFamiliesCss = Object.keys(fontFamilies)
 const Fonts = (): React.ReactElement => (
   <style
     dangerouslySetInnerHTML={{
-      __html: `:root{${fontFamiliesCss}}`,
+      __html: `:root{${fontFamiliesCss}}`
     }}
   />
 );

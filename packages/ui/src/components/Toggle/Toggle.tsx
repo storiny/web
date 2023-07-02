@@ -27,7 +27,7 @@ const Toggle = forwardRef<ToggleProps, "button">((props, ref) => {
     <Container
       {...(tooltipContent && {
         ...slotProps?.tooltip,
-        content: tooltipContent,
+        content: tooltipContent
       })}
     >
       {/*

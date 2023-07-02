@@ -11,7 +11,7 @@ import {
   BadgeElevation,
   BadgeOrigin,
   BadgeProps,
-  BadgeSize,
+  BadgeSize
 } from "./Badge.props";
 
 describe("<Badge />", () => {
@@ -42,7 +42,7 @@ describe("<Badge />", () => {
 
     expect(badge).toHaveClass(...[styles.md, styles.inverted]);
     expect(badge).toHaveStyle({
-      transform: "scale(1) translateX(50%) translateY(50%)",
+      transform: "scale(1) translateX(50%) translateY(50%)"
     });
   });
 
@@ -78,7 +78,7 @@ describe("<Badge />", () => {
         expect(getByTestId("badge")).toHaveStyle({
           "--ring-bg": `var(--bg-${
             elevation === "body" ? "body" : `elevation-${elevation}`
-          })`,
+          })`
         });
       });
     }
@@ -89,7 +89,7 @@ describe("<Badge />", () => {
       { horizontal: "left", vertical: "top" },
       { horizontal: "right", vertical: "top" },
       { horizontal: "right", vertical: "bottom" },
-      { horizontal: "left", vertical: "bottom" },
+      { horizontal: "left", vertical: "bottom" }
     ] as BadgeOrigin[]
   ).forEach((anchorOrigin) => {
     it(`renders \`${anchorOrigin.vertical}-${anchorOrigin.horizontal}\` anchor origin`, () => {
@@ -101,7 +101,7 @@ describe("<Badge />", () => {
 
       expect(getByTestId("badge")).toHaveStyle({
         transform: `scale(1) ${translateX} ${translateY}`,
-        transformOrigin: `${transformOriginX} ${transformOriginY}`,
+        transformOrigin: `${transformOriginX} ${transformOriginY}`
       });
     });
   });
@@ -120,7 +120,7 @@ describe("<Badge />", () => {
     );
 
     expect(getByTestId("badge")).toHaveStyle({
-      transform: "scale(0) translateX(50%) translateY(50%)",
+      transform: "scale(0) translateX(50%) translateY(50%)"
     });
   });
 
@@ -129,7 +129,7 @@ describe("<Badge />", () => {
       <Badge
         slotProps={
           {
-            container: { "data-testid": "container" },
+            container: { "data-testid": "container" }
           } as BadgeProps["slotProps"]
         }
       />
@@ -156,7 +156,7 @@ describe("<Badge />", () => {
         top: "1px",
         right: "2px",
         bottom: "3px",
-        left: "4px",
+        left: "4px"
       });
     });
 
@@ -167,7 +167,7 @@ describe("<Badge />", () => {
         top: "15%",
         right: "15%",
         bottom: "15%",
-        left: "15%",
+        left: "15%"
       });
     });
 
@@ -178,7 +178,7 @@ describe("<Badge />", () => {
         top: 15,
         right: 15,
         bottom: 15,
-        left: 15,
+        left: 15
       });
     });
   });
@@ -187,14 +187,14 @@ describe("<Badge />", () => {
     it("computes correct translation props", () => {
       const inset = getTranslationProps({
         vertical: "top",
-        horizontal: "left",
+        horizontal: "left"
       });
 
       expect(inset).toEqual({
         translateY: "translateY(-50%)",
         translateX: "translateX(-50%)",
         transformOriginY: "0%",
-        transformOriginX: "0%",
+        transformOriginX: "0%"
       });
     });
   });

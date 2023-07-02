@@ -9,7 +9,7 @@ import IconButton from "~/components/IconButton";
 import Menu, { MenuProps } from "~/components/Menu";
 import MenuItem, {
   MenuItemProps,
-  MenuItemUnstyled,
+  MenuItemUnstyled
 } from "~/components/MenuItem";
 import Separator from "~/components/Separator";
 import Skeleton from "~/components/Skeleton";
@@ -32,7 +32,7 @@ import UserIcon from "~/icons/User";
 import {
   selectAuthStatus,
   selectLoggedIn,
-  selectUser,
+  selectUser
 } from "~/redux/features/auth/selectors";
 import { setTheme } from "~/redux/features/preferences/slice";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
@@ -79,7 +79,7 @@ const MenuItemWithLink = ({
 
 const LoggedInMenu = ({
   user,
-  trigger,
+  trigger
 }: Pick<MenuProps, "trigger"> & {
   user: User | null;
 }): React.ReactElement => (
@@ -95,7 +95,7 @@ const LoggedInMenu = ({
               alt: "",
               hex: user?.avatar_hex,
               avatarId: user?.avatar_id,
-              label: user?.name,
+              label: user?.name
             }}
             primaryText={user?.name}
             secondaryText={`@${user?.username}`}
@@ -143,7 +143,7 @@ const LoggedInMenu = ({
 // Logged out menu
 
 const LoggedOutMenu = ({
-  trigger,
+  trigger
 }: Pick<MenuProps, "trigger">): React.ReactElement => (
   <Menu trigger={trigger}>
     <ThemeToggleItem />

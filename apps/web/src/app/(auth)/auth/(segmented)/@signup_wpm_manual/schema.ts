@@ -4,5 +4,5 @@ import { z } from "zod";
 export type SignupWPMSchema = z.infer<typeof signupWPMSchema>;
 
 export const signupWPMSchema = z.object({
-  wpm: userSchema.wpm,
+  wpm: userSchema.wpm
 });

@@ -13,7 +13,7 @@ import {
   FormHelperText,
   FormItem,
   FormLabel,
-  FormMessage,
+  FormMessage
 } from "../Form";
 import styles from "./FormSwitch.module.scss";
 import { FormSwitchProps } from "./FormSwitch.props";
@@ -40,7 +40,7 @@ const FormSwitch = React.forwardRef<HTMLFieldSetElement, FormSwitchProps>(
         name={name}
         render={({
           field,
-          fieldState: { invalid, error },
+          fieldState: { invalid, error }
         }): React.ReactElement => (
           <FormItem
             {...formSlotProps?.formItem}

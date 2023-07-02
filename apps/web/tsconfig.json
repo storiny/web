@@ -9,44 +9,22 @@
     ".next/types/**/*.ts",
     "types"
   ],
-  "exclude": [
-    "node_modules"
-  ],
+  "exclude": ["node_modules"],
   "compilerOptions": {
     "baseUrl": "./",
     "paths": {
       "~/common/*": ["src/common/*"],
       // @storiny/ui
-      "~/redux/*": [
-        "../../packages/ui/src/redux/*"
-      ],
-      "~/brand/*": [
-        "../../packages/ui/src/brand/*"
-      ],
-      "~/utils/*": [
-        "../../packages/ui/src/utils/*"
-      ],
-      "~/hooks/*": [
-        "../../packages/ui/src/hooks/*"
-      ],
-      "~/theme/*": [
-        "../../packages/ui/src/theme/*"
-      ],
-      "~/icons/*": [
-        "../../packages/ui/src/icons/*"
-      ],
-      "~/layout/*": [
-        "../../packages/ui/src/layout/*"
-      ],
-      "~/components/*": [
-        "../../packages/ui/src/components/*"
-      ],
-      "~/entities/*": [
-        "../../packages/ui/src/entities/*"
-      ],
-      "~/types/*": [
-        "../../packages/ui/src/types/*"
-      ]
+      "~/redux/*": ["../../packages/ui/src/redux/*"],
+      "~/brand/*": ["../../packages/ui/src/brand/*"],
+      "~/utils/*": ["../../packages/ui/src/utils/*"],
+      "~/hooks/*": ["../../packages/ui/src/hooks/*"],
+      "~/theme/*": ["../../packages/ui/src/theme/*"],
+      "~/icons/*": ["../../packages/ui/src/icons/*"],
+      "~/layout/*": ["../../packages/ui/src/layout/*"],
+      "~/components/*": ["../../packages/ui/src/components/*"],
+      "~/entities/*": ["../../packages/ui/src/entities/*"],
+      "~/types/*": ["../../packages/ui/src/types/*"]
     },
     "plugins": [
       {

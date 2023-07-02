@@ -25,7 +25,7 @@ const AnchorTab = ({
     aria-controls={undefined}
     aria-selected={undefined}
     as={NextLink}
-    className={clsx(styles.tab)}
+    className={clsx(styles.x, styles.tab)}
     href={`/legal/${value}`}
     id={value}
     role={undefined}
@@ -36,9 +36,9 @@ const AnchorTab = ({
 // Terms group
 
 const TermsGroup = (): React.ReactElement => (
-  <div className={clsx("flex-col", styles["tabs-group"])}>
+  <div className={clsx("flex-col", styles.x, styles["tabs-group"])}>
     <Typography className={"t-bold"}>Storiny Terms</Typography>
-    <div className={clsx("flex-col", styles["tabs-group-container"])}>
+    <div className={clsx("flex-col", styles.x, styles["tabs-group-container"])}>
       <AnchorTab value={"terms/tos"}>Terms of Service</AnchorTab>
       <AnchorTab value={"terms/community-guidelines"}>
         Community Guidelines
@@ -50,9 +50,9 @@ const TermsGroup = (): React.ReactElement => (
 // Policies group
 
 const PoliciesGroup = (): React.ReactElement => (
-  <div className={clsx("flex-col", styles["tabs-group"])}>
+  <div className={clsx("flex-col", styles.x, styles["tabs-group"])}>
     <Typography className={"t-bold"}>Storiny Policies</Typography>
-    <div className={clsx("flex-col", styles["tabs-group-container"])}>
+    <div className={clsx("flex-col", styles.x, styles["tabs-group-container"])}>
       <AnchorTab value={"policies/privacy"}>Privacy Policy</AnchorTab>
       <AnchorTab value={"policies/username"}>Username Policy</AnchorTab>
       <AnchorTab value={"policies/logo"}>Logo Policy</AnchorTab>
@@ -71,9 +71,9 @@ const PoliciesGroup = (): React.ReactElement => (
 // Acceptable use policies group
 
 const AcceptableUsePoliciesGroup = (): React.ReactElement => (
-  <div className={clsx("flex-col", styles["tabs-group"])}>
+  <div className={clsx("flex-col", styles.x, styles["tabs-group"])}>
     <Typography className={"t-bold"}>Acceptable Use Policies</Typography>
-    <div className={clsx("flex-col", styles["tabs-group-container"])}>
+    <div className={clsx("flex-col", styles.x, styles["tabs-group-container"])}>
       <AnchorTab value={"use-policies/general"}>General</AnchorTab>
       <AnchorTab value={"use-policies/bullying"}>
         Bullying and Harassment
@@ -107,9 +107,9 @@ const AcceptableUsePoliciesGroup = (): React.ReactElement => (
 // Miscellaneous group
 
 const MiscellaneousGroup = (): React.ReactElement => (
-  <div className={clsx("flex-col", styles["tabs-group"])}>
+  <div className={clsx("flex-col", styles.x, styles["tabs-group"])}>
     <Typography className={"t-bold"}>Miscellaneous</Typography>
-    <div className={clsx("flex-col", styles["tabs-group-container"])}>
+    <div className={clsx("flex-col", styles.x, styles["tabs-group-container"])}>
       <AnchorTab value={"miscellaneous/acknowledgements"}>
         Acknowledgements
       </AnchorTab>
@@ -137,12 +137,12 @@ const SuspendedLegalLeftSidebarContent = (): React.ReactElement => {
     <Tabs
       activationMode={"manual"}
       as={ScrollArea}
-      className={clsx("full-w", styles.tabs)}
+      className={clsx("full-w", styles.x, styles.tabs)}
       orientation={"vertical"}
       role={undefined}
       slotProps={{
         viewport: {
-          className: styles.viewport
+          className: clsx(styles.x, styles.viewport)
         },
         scrollbar: {
           style: { zIndex: 1 }
@@ -153,7 +153,7 @@ const SuspendedLegalLeftSidebarContent = (): React.ReactElement => {
       <TabsList
         aria-orientation={undefined}
         as={"nav"}
-        className={clsx("full-w", styles["tabs-list"])}
+        className={clsx("full-w", styles.x, styles["tabs-list"])}
         loop={false}
         role={undefined}
       >

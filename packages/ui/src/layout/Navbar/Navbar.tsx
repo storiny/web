@@ -45,7 +45,7 @@ export const Navbar = (props: NavbarProps): React.ReactElement => {
           <Wordmark
             componentProps={{
               label: { className: styles["wordmark-label"] },
-              betaLabel: { className: styles["wordmark-label"] },
+              betaLabel: { className: styles["wordmark-label"] }
             }}
             role={"presentation"}
             showBeta
@@ -65,7 +65,7 @@ export const Navbar = (props: NavbarProps): React.ReactElement => {
               placeholder={"Search Storiny"}
               results={5}
               slotProps={{
-                container: { className: styles.search },
+                container: { className: styles.search }
               }}
               type={"search"}
             />

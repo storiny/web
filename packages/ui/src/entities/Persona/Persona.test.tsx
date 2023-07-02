@@ -27,7 +27,7 @@ describe("<Persona />", () => {
           alt: "",
           avatarId: testUser.avatar_id,
           hex: testUser.avatar_hex,
-          label: testUser.name,
+          label: testUser.name
         }}
         primaryText={"test"}
       />
@@ -45,7 +45,7 @@ describe("<Persona />", () => {
           alt: "",
           avatarId: testUser.avatar_id,
           hex: testUser.avatar_hex,
-          label: testUser.name,
+          label: testUser.name
         })}
         primaryText={"test"}
       />
@@ -60,12 +60,12 @@ describe("<Persona />", () => {
     const { getByTestId, queryByTestId } = renderTestWithProvider(
       <Persona
         avatar={{
-          alt: "",
+          alt: ""
         }}
         componentProps={
           {
             secondaryText: { "data-testid": "secondary-text" },
-            avatarGroup: { "data-testid": "avatar-group" },
+            avatarGroup: { "data-testid": "avatar-group" }
           } as PersonaProps["componentProps"]
         }
         data-testid={"persona"}
@@ -83,7 +83,7 @@ describe("<Persona />", () => {
       const { getByTestId } = renderTestWithProvider(
         <Persona
           avatar={{
-            alt: "",
+            alt: ""
           }}
           data-testid={"persona"}
           primaryText={"test"}
@@ -99,11 +99,11 @@ describe("<Persona />", () => {
     const { getByTestId } = renderTestWithProvider(
       <Persona
         avatar={{
-          alt: "",
+          alt: ""
         }}
         componentProps={
           {
-            secondaryText: { "data-testid": "secondary-text" },
+            secondaryText: { "data-testid": "secondary-text" }
           } as PersonaProps["componentProps"]
         }
         primaryText={"test"}
@@ -118,11 +118,11 @@ describe("<Persona />", () => {
     const { queryByTestId } = renderTestWithProvider(
       <Persona
         avatar={{
-          alt: "",
+          alt: ""
         }}
         componentProps={
           {
-            secondaryText: { "data-testid": "secondary-text" },
+            secondaryText: { "data-testid": "secondary-text" }
           } as PersonaProps["componentProps"]
         }
         primaryText={"test"}
@@ -140,15 +140,15 @@ describe("<Persona />", () => {
         <Persona
           avatar={[
             {
-              alt: "",
+              alt: ""
             },
             {
-              alt: "",
-            },
+              alt: ""
+            }
           ]}
           componentProps={
             {
-              avatarGroup: { "data-testid": "avatar-group" },
+              avatarGroup: { "data-testid": "avatar-group" }
             } as PersonaProps["componentProps"]
           }
           primaryText={"test"}
@@ -163,12 +163,12 @@ describe("<Persona />", () => {
         <Persona
           avatar={[
             {
-              alt: "",
-            },
+              alt: ""
+            }
           ]}
           componentProps={
             {
-              avatarGroup: { "data-testid": "avatar-group" },
+              avatarGroup: { "data-testid": "avatar-group" }
             } as PersonaProps["componentProps"]
           }
           primaryText={"test"}
@@ -184,17 +184,17 @@ describe("<Persona />", () => {
       <Persona
         avatar={[
           {
-            alt: "",
+            alt: ""
           },
           {
-            alt: "",
-          },
+            alt: ""
+          }
         ]}
         componentProps={
           {
             secondaryText: { "data-testid": "secondary-text" },
             primaryText: { "data-testid": "primary-text" },
-            avatarGroup: { "data-testid": "avatar-group" },
+            avatarGroup: { "data-testid": "avatar-group" }
           } as PersonaProps["componentProps"]
         }
         primaryText={"test"}

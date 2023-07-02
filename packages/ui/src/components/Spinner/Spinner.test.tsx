@@ -74,7 +74,7 @@ describe("<Spinner />", () => {
             indicator: { "data-testid": "indicator" },
             svg: { "data-testid": "svg" },
             progress: { "data-testid": "progress" },
-            track: { "data-testid": "track" },
+            track: { "data-testid": "track" }
           } as SpinnerProps["slotProps"]
         }
       />

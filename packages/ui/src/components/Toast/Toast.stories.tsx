@@ -20,13 +20,13 @@ const meta: Meta<typeof Toast> = {
       description: "The toast message.",
       table: {
         type: { summary: "string" },
-        defaultValue: { summary: "" },
+        defaultValue: { summary: "" }
       },
       control: {
-        type: "text",
-      },
-    },
-  },
+        type: "text"
+      }
+    }
+  }
 };
 
 export default meta;
@@ -45,33 +45,33 @@ const ToastComponent = (props?: ToastProps) => {
 };
 
 export const Default: Story = {
-  render: (args) => <ToastComponent {...args} />,
+  render: (args) => <ToastComponent {...args} />
 };
 
 export const SeverityBlank: Story = {
   ...Default,
   args: {
-    severity: "blank",
-  },
+    severity: "blank"
+  }
 };
 
 export const SeverityInfo: Story = {
   ...Default,
   args: {
-    severity: "info",
-  },
+    severity: "info"
+  }
 };
 
 export const SeveritySuccess: Story = {
   ...Default,
   args: {
-    severity: "success",
-  },
+    severity: "success"
+  }
 };
 
 export const SeverityError: Story = {
   ...Default,
   args: {
-    severity: "error",
-  },
+    severity: "error"
+  }
 };

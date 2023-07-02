@@ -11,7 +11,7 @@ describe("<BottomNavigation />", () => {
     const { getByRole } = renderTestWithProvider(
       <BottomNavigation forceMount />,
       {
-        loggedIn: true,
+        loggedIn: true
       }
     );
 

@@ -89,7 +89,7 @@ describe("<Checkbox />", () => {
           {
             label: { "data-testid": "label" },
             container: { "data-testid": "container" },
-            indicator: { "data-testid": "indicator" },
+            indicator: { "data-testid": "indicator" }
           } as CheckboxProps["slotProps"]
         }
       />

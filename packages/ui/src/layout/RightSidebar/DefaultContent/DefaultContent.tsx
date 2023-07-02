@@ -11,15 +11,16 @@ import ChevronIcon from "~/icons/Chevron";
 import StoriesIcon from "~/icons/Stories";
 import TagsIcon from "~/icons/Tags";
 import UsersIcon from "~/icons/Users";
+import { DefaultContentProps } from "~/layout/RightSidebar/DefaultContent/DefaultContent.props";
 import PopularStory, {
-  PopularStorySkeleton,
+  PopularStorySkeleton
 } from "~/layout/RightSidebar/PopularStory";
 import UserWithAction, {
-  UserWithActionSkeleton,
+  UserWithActionSkeleton
 } from "~/layout/RightSidebar/UserWithAction";
 import {
   getQueryErrorType,
-  useGetRightSidebarContentQuery,
+  useGetRightSidebarContentQuery
 } from "~/redux/features";
 
 import styles from "./DefaultContent.module.scss";
@@ -43,7 +44,9 @@ export const TitleWithIcon = ({
   </span>
 );
 
-const RightSidebarDefaultContent = (): React.ReactElement => {
+const RightSidebarDefaultContent = ({
+  hidePopularStories
+}: DefaultContentProps): React.ReactElement => {
   const { data, isLoading, isFetching, isError, error, refetch } =
     useGetRightSidebarContentQuery();
 
@@ -51,8 +54,8 @@ const RightSidebarDefaultContent = (): React.ReactElement => {
     <ErrorState
       componentProps={{
         button: {
-          loading: isFetching,
-        },
+          loading: isFetching
+        }
       }}
       retry={refetch}
       size={"sm"}
@@ -60,17 +63,21 @@ const RightSidebarDefaultContent = (): React.ReactElement => {
     />
   ) : (
     <>
-      <TitleWithIcon icon={<StoriesIcon />}>Popular stories</TitleWithIcon>
-      <div className={clsx("flex-col", styles["popular-stories"])}>
-        {isLoading
-          ? [...Array(3)].map((_, index) => (
-              <PopularStorySkeleton key={index} />
-            ))
-          : data?.stories.map((story) => (
-              <PopularStory key={story.id} story={story} />
-            ))}
-      </div>
-      <Separator />
+      {!hidePopularStories && (
+        <>
+          <TitleWithIcon icon={<StoriesIcon />}>Popular stories</TitleWithIcon>
+          <div className={clsx("flex-col", styles["popular-stories"])}>
+            {isLoading
+              ? [...Array(3)].map((_, index) => (
+                  <PopularStorySkeleton key={index} />
+                ))
+              : data?.stories.map((story) => (
+                  <PopularStory key={story.id} story={story} />
+                ))}
+          </div>
+          <Separator />
+        </>
+      )}
       <TitleWithIcon icon={<UsersIcon />}>Who to follow</TitleWithIcon>
       {isLoading
         ? [...Array(5)].map((_, index) => (

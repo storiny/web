@@ -47,7 +47,7 @@ describe("<SignupBaseForm />", () => {
       expect(mockSubmit).toHaveBeenCalledWith({
         email: "someone@example.com",
         password: "test-password",
-        name: "test name",
+        name: "test name"
       });
       expect(screen.queryByRole("alert")).not.toBeInTheDocument();
     });

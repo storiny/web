@@ -36,7 +36,7 @@ describe("<Option />", () => {
           slotProps={
             {
               text: { "data-testid": "text" },
-              indicator: { "data-testid": "indicator" },
+              indicator: { "data-testid": "indicator" }
             } as OptionProps["slotProps"]
           }
           value={"test"}

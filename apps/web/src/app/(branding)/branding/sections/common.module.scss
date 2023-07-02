@@ -1,13 +1,15 @@
-/* Figure with caption */
-.figure-with-caption {
-  align-items: center;
-  gap: 8px;
-}
+.x {
+  /* Figure with caption */
+  &.figure-with-caption {
+    align-items: center;
+    gap: 8px;
+  }
 
-/* Image with border for overlay and color combinations */
-.image-with-border {
-  & img {
-    border: 1px solid var(--divider);
-    border-radius: var(--radius-sm);
+  /* Image with border for overlay and color combinations */
+  &.image-with-border {
+    & img {
+      border: 1px solid var(--divider);
+      border-radius: var(--radius-sm);
+    }
   }
 }

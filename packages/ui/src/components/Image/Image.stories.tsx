@@ -14,13 +14,13 @@ const meta: Meta<typeof Image> = {
     alt: "Test image",
     width: 640,
     height: 320,
-    hex: "d3b4ac",
+    hex: "d3b4ac"
   },
   argTypes: {
     hex: {
-      control: "color",
-    },
-  },
+      control: "color"
+    }
+  }
 };
 
 export default meta;
@@ -30,6 +30,6 @@ export const Default: Story = {};
 
 export const Fallback: Story = {
   args: {
-    imgId: "/broken_src",
-  },
+    imgId: "/broken_src"
+  }
 };

@@ -13,7 +13,7 @@ export interface ToastState {
 export const toastInitialState: ToastState = {
   open: false,
   severity: "blank",
-  message: "",
+  message: ""
 };
 
 export const toastSlice = createSlice({
@@ -32,8 +32,8 @@ export const toastSlice = createSlice({
       state.open = true;
       state.message = message;
       state.severity = severity || toastInitialState.severity;
-    },
-  },
+    }
+  }
 });
 
 const { setToastOpen, renderToast } = toastSlice.actions;

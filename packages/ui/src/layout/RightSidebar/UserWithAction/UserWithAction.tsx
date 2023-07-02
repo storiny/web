@@ -10,12 +10,12 @@ import UserCheckIcon from "~/icons/UserCheck";
 import UserPlusIcon from "~/icons/UserPlus";
 import {
   selectBlock,
-  selectFollowing,
+  selectFollowing
 } from "~/redux/features/entities/selectors";
 import {
   overwriteFollowing,
   syncWithUser,
-  toggleFollowing,
+  toggleFollowing
 } from "~/redux/features/entities/slice";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 
@@ -43,7 +43,7 @@ const UserWithAction = (props: UserWithActionProps): React.ReactElement => {
             avatarId: user.avatar_id,
             hex: user.avatar_hex,
             label: user.name,
-            alt: `${user.name}'s avatar`,
+            alt: `${user.name}'s avatar`
           }}
           primaryText={user.name}
           secondaryText={`@${user.username}`}

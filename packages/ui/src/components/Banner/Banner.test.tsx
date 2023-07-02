@@ -35,8 +35,8 @@ describe("<Banner />", () => {
         await axe(baseElement, {
           rules: {
             "aria-allowed-role": { enabled: false },
-            list: { enabled: false },
-          },
+            list: { enabled: false }
+          }
         })
       ).toHaveNoViolations()
     );
@@ -88,7 +88,7 @@ describe("<Banner />", () => {
           open
           slotProps={
             {
-              decorator: { "data-testid": "decorator" },
+              decorator: { "data-testid": "decorator" }
             } as BannerProps["slotProps"]
           }
         >
@@ -109,7 +109,7 @@ describe("<Banner />", () => {
           slotProps={
             {
               decorator: { "data-testid": "decorator" },
-              close: { "data-testid": "close" },
+              close: { "data-testid": "close" }
             } as BannerProps["slotProps"]
           }
         >

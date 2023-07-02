@@ -13,7 +13,7 @@ const sizeToPrimaryTextLevelMap: Partial<Record<PersonaSize, TypographyLevel>> =
     xs: "body3",
     sm: "body3",
     md: "body2",
-    lg: "body1",
+    lg: "body1"
   } as const;
 
 const sizeToSecondaryTextLevelMap: Partial<
@@ -21,7 +21,7 @@ const sizeToSecondaryTextLevelMap: Partial<
 > = {
   sm: "body3",
   md: "body3",
-  lg: "body2",
+  lg: "body2"
 } as const;
 
 const Persona = React.forwardRef<HTMLDivElement, PersonaProps>((props, ref) => {

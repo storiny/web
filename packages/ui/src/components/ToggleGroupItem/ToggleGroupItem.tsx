@@ -31,7 +31,7 @@ const ToggleGroupItem = forwardRef<ToggleGroupItemProps, "button">(
       <Container
         {...(tooltipContent && {
           ...slotProps?.tooltip,
-          content: tooltipContent,
+          content: tooltipContent
         })}
       >
         {/*

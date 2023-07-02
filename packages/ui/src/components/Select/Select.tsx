@@ -53,6 +53,7 @@ const Select = forwardRef<SelectProps, "div">((props, ref) => {
             Boolean(inputSize) && styles.context,
             slotProps?.trigger?.className
           )}
+          disabled={disabled}
         >
           <Value {...slotProps?.value} data-value />
           <Icon

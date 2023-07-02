@@ -5,7 +5,7 @@ import React from "react";
 import {
   GroupBase,
   LoadingIndicatorProps,
-  MultiValueRemoveProps,
+  MultiValueRemoveProps
 } from "react-select";
 import CreatableSelect from "react-select/creatable";
 
@@ -21,7 +21,7 @@ const MultiValueRemove = <
   Group extends GroupBase<Option>
 >({
   children,
-  innerProps,
+  innerProps
 }: MultiValueRemoveProps<Option, IsMulti, Group>) => (
   <div
     {...innerProps}
@@ -103,11 +103,11 @@ const MultiSelect = React.forwardRef<
           ),
         menu: () => styles.menu,
         noOptionsMessage: () => clsx("t-body-2", "t-minor"),
-        loadingMessage: () => clsx("t-body-2", "t-minor"),
+        loadingMessage: () => clsx("t-body-2", "t-minor")
       }}
       components={{
         MultiValueRemove,
-        LoadingIndicator,
+        LoadingIndicator
       }}
       data-limited={isOptionDisabled}
       formatCreateLabel={(inputValue) =>
@@ -135,11 +135,11 @@ const MultiSelect = React.forwardRef<
         ...selectStyles,
         container: (base) => ({ ...base, ...style }),
         dropdownIndicator: () => ({
-          display: "none",
+          display: "none"
         }),
         clearIndicator: () => ({
-          display: "none",
-        }),
+          display: "none"
+        })
       }}
       unstyled
       value={value}

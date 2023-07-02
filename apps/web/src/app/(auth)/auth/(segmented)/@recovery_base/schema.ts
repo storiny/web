@@ -4,5 +4,5 @@ import { z } from "zod";
 export type RecoverySchema = z.infer<typeof recoverySchema>;
 
 export const recoverySchema = z.object({
-  email: userSchema.email,
+  email: userSchema.email
 });

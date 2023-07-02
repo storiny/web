@@ -9,12 +9,12 @@ const meta: Meta<typeof SplashScreen> = {
   title: "Layout/SplashScreen",
   component: SplashScreen,
   args: {
-    forceMount: true,
+    forceMount: true
   },
   parameters: {
-    layout: "fullscreen",
+    layout: "fullscreen"
   },
-  tags: ["autodocs"],
+  tags: ["autodocs"]
 };
 
 export default meta;

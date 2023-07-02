@@ -3,7 +3,7 @@ import React from "react";
 
 import {
   renderHookWithProvider,
-  renderTestWithProvider,
+  renderTestWithProvider
 } from "~/redux/testUtils";
 
 import { useToast } from "./useToast";

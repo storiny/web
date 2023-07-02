@@ -18,8 +18,8 @@ const meta: Meta<typeof AspectRatio> = {
         src={"/images/display/tokyo.jpg"}
       />
     ),
-    objectFit: "cover",
-  },
+    objectFit: "cover"
+  }
 };
 
 export default meta;

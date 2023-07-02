@@ -1,0 +1,14 @@
+.x {
+  /* Tabs */
+  &.tabs {
+    margin-left: -23px;
+  }
+
+  /* Tab */
+  &.tab {
+    border-right: none !important;
+    border-left: var(--border);
+    justify-content: flex-start;
+    padding-left: 23px !important;
+  }
+}

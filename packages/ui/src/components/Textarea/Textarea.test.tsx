@@ -32,7 +32,7 @@ describe("<Textarea />", () => {
       <Textarea
         slotProps={
           {
-            container: { as: "aside", "data-testid": "container" },
+            container: { as: "aside", "data-testid": "container" }
           } as TextareaProps["slotProps"]
         }
       />
@@ -46,7 +46,7 @@ describe("<Textarea />", () => {
       <Textarea
         slotProps={
           {
-            container: { "data-testid": "container" },
+            container: { "data-testid": "container" }
           } as TextareaProps["slotProps"]
         }
       />
@@ -64,7 +64,7 @@ describe("<Textarea />", () => {
           color={color}
           slotProps={
             {
-              container: { "data-testid": "container" },
+              container: { "data-testid": "container" }
             } as TextareaProps["slotProps"]
           }
         />
@@ -81,7 +81,7 @@ describe("<Textarea />", () => {
           size={size}
           slotProps={
             {
-              container: { "data-testid": "container" },
+              container: { "data-testid": "container" }
             } as TextareaProps["slotProps"]
           }
         />
@@ -96,7 +96,7 @@ describe("<Textarea />", () => {
       <Textarea
         slotProps={
           {
-            container: { "data-testid": "container" },
+            container: { "data-testid": "container" }
           } as TextareaProps["slotProps"]
         }
       />

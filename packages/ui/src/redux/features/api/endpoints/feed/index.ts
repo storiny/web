@@ -19,7 +19,7 @@ export const getHomeFeed = (builder: ApiQueryBuilder) =>
       `${endpointName}:${queryArgs.type}`,
     transformResponse: (response: Story[]) => ({
       items: response,
-      hasMore: response.length === ITEMS_PER_PAGE,
+      hasMore: response.length === ITEMS_PER_PAGE
     }),
     merge: (currentCache, newItems) => {
       currentCache.items.push(
@@ -31,5 +31,5 @@ export const getHomeFeed = (builder: ApiQueryBuilder) =>
     },
     forceRefetch: ({ currentArg, previousArg }) =>
       currentArg?.page !== previousArg?.page ||
-      currentArg?.type !== previousArg?.type,
+      currentArg?.type !== previousArg?.type
   });

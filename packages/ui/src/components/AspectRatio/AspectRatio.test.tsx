@@ -60,7 +60,7 @@ describe("<AspectRatio />", () => {
         data-testid={"aspect-ratio"}
         slotProps={
           {
-            wrapper: { "data-testid": "wrapper" },
+            wrapper: { "data-testid": "wrapper" }
           } as AspectRatioProps["slotProps"]
         }
       >

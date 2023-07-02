@@ -5,7 +5,7 @@ import {
   Controller,
   ControllerProps,
   FieldPath,
-  FieldValues,
+  FieldValues
 } from "react-hook-form";
 
 import { FormFieldContext } from "~/components/Form";

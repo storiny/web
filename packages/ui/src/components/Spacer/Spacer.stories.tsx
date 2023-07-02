@@ -11,8 +11,8 @@ const meta: Meta<typeof Spacer> = {
   tags: ["autodocs"],
   args: {
     orientation: "horizontal",
-    size: 1,
-  },
+    size: 1
+  }
 };
 
 export default meta;
@@ -23,28 +23,28 @@ export const Default: Story = {
     <div
       className={"flex-center"}
       style={{
-        flexDirection: args.orientation === "vertical" ? "column" : "row",
+        flexDirection: args.orientation === "vertical" ? "column" : "row"
       }}
     >
       <p className={"t-body-2 t-minor"}>Primary text</p>
       <Spacer {...args} />
       <p className={"t-body-2 t-minor"}>Secondary text</p>
     </div>
-  ),
+  )
 };
 
 export const OrientationHorizontal: Story = {
   ...Default,
   args: {
-    orientation: "horizontal",
-  },
+    orientation: "horizontal"
+  }
 };
 
 export const Inline: Story = {
   ...Default,
   args: {
-    inline: true,
-  },
+    inline: true
+  }
 };
 
 export const OrientationVertical: Story = {
@@ -56,6 +56,6 @@ export const OrientationVertical: Story = {
     </div>
   ),
   args: {
-    orientation: "vertical",
-  },
+    orientation: "vertical"
+  }
 };

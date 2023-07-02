@@ -11,21 +11,21 @@ import FormRadio from "~/components/FormRadio/FormRadio";
 import FormRadioGroup from "./FormRadioGroup";
 
 const sampleSchema = z.object({
-  sample: z.enum(["1", "2", "3"]),
+  sample: z.enum(["1", "2", "3"])
 });
 
 type SampleSchema = z.infer<typeof sampleSchema>;
 
 const Component = ({
-  children,
+  children
 }: {
   children: React.ReactNode;
 }): React.ReactElement => {
   const form = useForm<SampleSchema>({
     resolver: zodResolver(sampleSchema),
     defaultValues: {
-      sample: "1",
-    },
+      sample: "1"
+    }
   });
 
   return <Form providerProps={form}>{children}</Form>;
@@ -39,7 +39,7 @@ const meta: Meta<typeof FormRadioGroup> = {
       <Component>
         <Story />
       </Component>
-    ),
+    )
   ],
   tags: ["autodocs"],
   args: {
@@ -57,8 +57,8 @@ const meta: Meta<typeof FormRadioGroup> = {
     size: "md",
     color: "inverted",
     name: "sample",
-    style: { maxWidth: "300px" },
-  },
+    style: { maxWidth: "300px" }
+  }
 };
 
 export default meta;

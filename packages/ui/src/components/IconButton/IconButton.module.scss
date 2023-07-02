@@ -11,7 +11,8 @@
   min-height: var(--size);
   min-width: var(--size);
 
-  &.disabled, &.loading {
+  &.disabled,
+  &.loading {
     pointer-events: none;
   }
 }

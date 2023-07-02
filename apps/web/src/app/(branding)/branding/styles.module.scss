@@ -1,122 +1,124 @@
-@use "../../../../../../packages/ui/src/theme/breakpoints" as breakpoints;
+@use "breakpoints" as breakpoints;
 
-/* Container */
-.container {
-  grid-column: 2 / -2;
-  grid-row: -1;
-  margin-top: -32px;
-  display: flex;
-  justify-content: flex-end;
-  padding-bottom: 12px;
-  position: relative;
-}
+.x {
+  /* Container */
+  &.container {
+    grid-column: 2 / -2;
+    grid-row: -1;
+    margin-top: -32px;
+    display: flex;
+    justify-content: flex-end;
+    padding-bottom: 12px;
+    position: relative;
+  }
 
-/* Splash */
-.splash {
-  height: calc(100vh - var(--header-height));
-  min-height: initial;
-  width: 100%;
-  position: absolute;
-  top: var(--header-height);
-  left: 0;
-  z-index: 0;
-  user-select: none;
-  border-bottom: 1px solid var(--divider);
-
-  &::after {
-    content: "";
+  /* Splash */
+  &.splash {
+    height: calc(100vh - var(--header-height));
+    min-height: initial;
+    width: 100%;
     position: absolute;
-    top: 0;
+    top: var(--header-height);
     left: 0;
-    width: 100%;
-    height: 100%;
-  }
-}
+    z-index: 0;
+    user-select: none;
+    border-bottom: 1px solid var(--divider);
 
-/* Article */
-.article {
-  margin-top: calc(100vh - var(--header-height));
-  padding-block: 64px;
-  gap: 72px;
-
-  @include breakpoints.media("<=mobile") {
-    gap: 42px;
-  }
-}
-
-/* Section */
-.section {
-  display: flex;
-  gap: 24px;
-
-  & img {
-    width: 100%;
-    max-width: 100%;
-  }
-
-  @include breakpoints.media("<=tablet") {
-    flex-direction: column;
-    align-items: center;
-
-    & .section-title {
-      position: relative;
+    &::after {
+      content: "";
+      position: absolute;
       top: 0;
-    }
-  }
-}
-
-/* Section title */
-.section-title {
-  position: sticky;
-  top: calc(var(--header-height) + 24px);
-  height: fit-content;
-}
-
-/* Section content */
-.section-content {
-  padding-inline: 48px;
-  gap: 64px;
-
-  @include breakpoints.media("<=mobile") {
-    padding-inline: 0;
-  }
-}
-
-/* Action */
-.action {
-  padding-block: 8px;
-}
-
-/* Sub-section */
-.sub-section {
-  gap: 12px;
-}
-
-/* Figure */
-.figure {
-  position: relative;
-  user-select: none;
-  z-index: 0;
-  width: 100%;
-
-  &.with-background {
-    background-color: var(--bg-elevation-sm);
-    border: 1px solid var(--divider);
-    border-radius: var(--radius-xs);
-    padding: 2rem 4rem;
-
-    @include breakpoints.media("<=mobile") {
-      padding: 1rem 2rem;
+      left: 0;
+      width: 100%;
+      height: 100%;
     }
   }
 
-  &:not(.with-background) {
+  /* Article */
+  &.article {
+    margin-top: calc(100vh - var(--header-height));
+    padding-block: 64px;
+    gap: 72px;
+
     @include breakpoints.media("<=mobile") {
-      margin-inline: var(--grid-compensation);
-      width: auto;
-      border-left-width: 0;
-      border-right-width: 0;
-      border-radius: 0;
+      gap: 42px;
+    }
+  }
+
+  /* Section */
+  &.section {
+    display: flex;
+    gap: 24px;
+
+    & img {
+      width: 100%;
+      max-width: 100%;
+    }
+
+    @include breakpoints.media("<=tablet") {
+      flex-direction: column;
+      align-items: center;
+
+      & .section-title {
+        position: relative;
+        top: 0;
+      }
+    }
+  }
+
+  /* Section title */
+  &.section-title {
+    position: sticky;
+    top: calc(var(--header-height) + 24px);
+    height: fit-content;
+  }
+
+  /* Section content */
+  &.section-content {
+    padding-inline: 48px;
+    gap: 64px;
+
+    @include breakpoints.media("<=mobile") {
+      padding-inline: 0;
+    }
+  }
+
+  /* Action */
+  &.action {
+    padding-block: 8px;
+  }
+
+  /* Sub-section */
+  &.sub-section {
+    gap: 12px;
+  }
+
+  /* Figure */
+  &.figure {
+    position: relative;
+    user-select: none;
+    z-index: 0;
+    width: 100%;
+
+    &.with-background {
+      background-color: var(--bg-elevation-sm);
+      border: 1px solid var(--divider);
+      border-radius: var(--radius-xs);
+      padding: 2rem 4rem;
+
+      @include breakpoints.media("<=mobile") {
+        padding: 1rem 2rem;
+      }
+    }
+
+    &:not(.with-background) {
+      @include breakpoints.media("<=mobile") {
+        margin-inline: var(--grid-compensation);
+        width: auto;
+        border-left-width: 0;
+        border-right-width: 0;
+        border-radius: 0;
+      }
     }
   }
 }

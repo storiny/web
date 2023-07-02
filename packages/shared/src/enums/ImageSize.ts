@@ -11,7 +11,7 @@ export enum ImageSize {
   W_1024 = 1024,
   W_1440 = 1440,
   W_1920 = 1920,
-  W_2048 = 2048,
+  W_2048 = 2048
 }
 
 export type TImageSize = `${Extract<

@@ -43,7 +43,7 @@ describe("<RecoveryForm />", () => {
 
     await waitFor(() => {
       expect(mockSubmit).toHaveBeenCalledWith({
-        email: "someone@example.com",
+        email: "someone@example.com"
       });
       expect(screen.queryByRole("alert")).not.toBeInTheDocument();
     });

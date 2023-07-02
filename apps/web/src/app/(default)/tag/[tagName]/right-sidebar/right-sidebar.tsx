@@ -6,14 +6,14 @@ import SuspenseLoader from "~/common/suspense-loader";
 import RightSidebar from "~/layout/RightSidebar";
 
 const SuspendedTagRightSidebarContent = dynamic(() => import("./content"), {
-  loading: () => <SuspenseLoader />,
+  loading: () => <SuspenseLoader />
 });
 
 interface Props {
   tag: GetTagResponse;
 }
 
-const TagRightSidebar = ({ tag }: Props) => (
+const TagRightSidebar = ({ tag }: Props): React.ReactElement => (
   <RightSidebar>
     <SuspendedTagRightSidebarContent tag={tag} />
   </RightSidebar>

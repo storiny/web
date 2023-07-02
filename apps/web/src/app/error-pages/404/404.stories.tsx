@@ -11,9 +11,9 @@ const meta: Meta<typeof Error404Page> = {
   title: "pages/Error/404",
   component: Error404Page,
   parameters: {
-    layout: "fullscreen",
+    layout: "fullscreen"
   },
-  tags: ["autodocs"],
+  tags: ["autodocs"]
 };
 
 export default meta;
@@ -22,6 +22,6 @@ type Story = StoryObj<typeof Error404Page>;
 export const Default: Story = {
   decorators: [
     (Story): React.ReactElement =>
-      renderWithState(<Story />, { ignorePrimitiveProviders: true }),
-  ],
+      renderWithState(<Story />, { ignorePrimitiveProviders: true })
+  ]
 };

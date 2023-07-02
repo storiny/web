@@ -3,9 +3,15 @@ import _m0 from "protobufjs/minimal";
 
 export const protobufPackage = "user_def.v1";
 
-export const StatusVisibility = { GLOBAL: 0, FOLLOWERS: 1, FRIENDS: 2, UNRECOGNIZED: -1 } as const;
+export const StatusVisibility = {
+  GLOBAL: 0,
+  FOLLOWERS: 1,
+  FRIENDS: 2,
+  UNRECOGNIZED: -1,
+} as const;
 
-export type StatusVisibility = typeof StatusVisibility[keyof typeof StatusVisibility];
+export type StatusVisibility =
+  (typeof StatusVisibility)[keyof typeof StatusVisibility];
 
 export function statusVisibilityFromJSON(object: any): StatusVisibility {
   switch (object) {
@@ -47,11 +53,19 @@ export interface Status {
 }
 
 function createBaseStatus(): Status {
-  return { emoji: undefined, text: undefined, expires_at: undefined, visibility: 0 };
+  return {
+    emoji: undefined,
+    text: undefined,
+    expires_at: undefined,
+    visibility: 0,
+  };
 }
 
 export const Status = {
-  encode(message: Status, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+  encode(
+    message: Status,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
     if (message.emoji !== undefined) {
       writer.uint32(10).string(message.emoji);
     }
@@ -68,7 +82,8 @@ export const Status = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): Status {
-    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    const reader =
+      input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseStatus();
     while (reader.pos < end) {
@@ -115,8 +130,12 @@ export const Status = {
     return {
       emoji: isSet(object.emoji) ? String(object.emoji) : undefined,
       text: isSet(object.text) ? String(object.text) : undefined,
-      expires_at: isSet(object.expires_at) ? String(object.expires_at) : undefined,
-      visibility: isSet(object.visibility) ? statusVisibilityFromJSON(object.visibility) : 0,
+      expires_at: isSet(object.expires_at)
+        ? String(object.expires_at)
+        : undefined,
+      visibility: isSet(object.visibility)
+        ? statusVisibilityFromJSON(object.visibility)
+        : 0,
     };
   },
 
@@ -125,7 +144,8 @@ export const Status = {
     message.emoji !== undefined && (obj.emoji = message.emoji);
     message.text !== undefined && (obj.text = message.text);
     message.expires_at !== undefined && (obj.expires_at = message.expires_at);
-    message.visibility !== undefined && (obj.visibility = statusVisibilityToJSON(message.visibility));
+    message.visibility !== undefined &&
+      (obj.visibility = statusVisibilityToJSON(message.visibility));
     return obj;
   },
 
@@ -143,16 +163,31 @@ export const Status = {
   },
 };
 
-type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
+type Builtin =
+  | Date
+  | Function
+  | Uint8Array
+  | string
+  | number
+  | boolean
+  | undefined;
 
-export type DeepPartial<T> = T extends Builtin ? T
-  : T extends Array<infer U> ? Array<DeepPartial<U>> : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>>
-  : T extends {} ? { [K in keyof T]?: DeepPartial<T[K]> }
+export type DeepPartial<T> = T extends Builtin
+  ? T
+  : T extends Array<infer U>
+  ? Array<DeepPartial<U>>
+  : T extends ReadonlyArray<infer U>
+  ? ReadonlyArray<DeepPartial<U>>
+  : T extends {}
+  ? { [K in keyof T]?: DeepPartial<T[K]> }
   : Partial<T>;
 
 type KeysOfUnion<T> = T extends T ? keyof T : never;
-export type Exact<P, I extends P> = P extends Builtin ? P
-  : P & { [K in keyof P]: Exact<P[K], I[K]> } & { [K in Exclude<keyof I, KeysOfUnion<P>>]: never };
+export type Exact<P, I extends P> = P extends Builtin
+  ? P
+  : P & { [K in keyof P]: Exact<P[K], I[K]> } & {
+      [K in Exclude<keyof I, KeysOfUnion<P>>]: never;
+    };
 
 function isSet(value: any): boolean {
   return value !== null && value !== undefined;

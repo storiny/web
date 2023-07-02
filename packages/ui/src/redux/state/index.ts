@@ -12,5 +12,5 @@ export const initialState: Omit<AppState, "api"> = {
   toast: toastInitialState,
   notification: notificationInitialState,
   entities: entitiesInitialState,
-  preferences: preferencesInitialState,
+  preferences: preferencesInitialState
 };

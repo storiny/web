@@ -34,8 +34,8 @@ export const switchSegment: StateActions["switchSegment"] = (
   ...state,
   auth: {
     ...state.auth,
-    segment: payload,
-  },
+    segment: payload
+  }
 });
 
 /**
@@ -50,8 +50,8 @@ export const setSignupState: StateActions["setSignupState"] = (
   ...state,
   signup: {
     ...state.signup,
-    ...payload,
-  },
+    ...payload
+  }
 });
 
 /**
@@ -66,8 +66,8 @@ export const setRecoveryState: StateActions["setRecoveryState"] = (
   ...state,
   recovery: {
     ...state.recovery,
-    ...payload,
-  },
+    ...payload
+  }
 });
 
 /**
@@ -82,8 +82,8 @@ export const setResetPasswordToken: StateActions["setResetPasswordToken"] = (
   ...state,
   resetPassword: {
     ...state.resetPassword,
-    token: payload,
-  },
+    token: payload
+  }
 });
 
 /**
@@ -94,5 +94,5 @@ export const useAuthState = (): ReturnType<typeof useStateMachine> =>
     switchSegment,
     setSignupState,
     setRecoveryState,
-    setResetPasswordToken,
+    setResetPasswordToken
   });

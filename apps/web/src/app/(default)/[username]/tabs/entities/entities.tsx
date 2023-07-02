@@ -8,13 +8,13 @@ import { useDebounce } from "~/hooks/useDebounce";
 import {
   getQueryErrorType,
   GetUserEntityType,
-  useGetUserEntitiesQuery,
+  useGetUserEntitiesQuery
 } from "~/redux/features";
 
 import { ProfileEntitySortValue } from "../../client";
 
 const EmptyState = dynamic(() => import("../../empty-state"), {
-  loading: () => <SuspenseLoader />,
+  loading: () => <SuspenseLoader />
 });
 
 interface Props {
@@ -35,7 +35,7 @@ const EntitiesTab = (props: Props): React.ReactElement => {
       sort,
       userId,
       entityType,
-      query: debouncedQuery,
+      query: debouncedQuery
     });
   const { items = [], hasMore } = data || {};
   const isTyping = query !== debouncedQuery;
@@ -51,7 +51,7 @@ const EntitiesTab = (props: Props): React.ReactElement => {
         <ErrorState
           autoSize
           componentProps={{
-            button: { loading: isFetching },
+            button: { loading: isFetching }
           }}
           retry={refetch}
           type={getQueryErrorType(error)}

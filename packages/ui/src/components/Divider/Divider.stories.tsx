@@ -6,7 +6,7 @@ import Divider from "./Divider";
 const meta: Meta<typeof Divider> = {
   title: "Components/Divider",
   component: Divider,
-  tags: ["autodocs"],
+  tags: ["autodocs"]
 };
 
 export default meta;
@@ -16,8 +16,8 @@ export const Default: Story = {};
 
 export const OrientationHorizontal: Story = {
   args: {
-    orientation: "horizontal",
-  },
+    orientation: "horizontal"
+  }
 };
 
 export const OrientationVertical: Story = {
@@ -27,6 +27,6 @@ export const OrientationVertical: Story = {
     </div>
   ),
   args: {
-    orientation: "vertical",
-  },
+    orientation: "vertical"
+  }
 };

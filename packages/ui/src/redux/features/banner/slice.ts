@@ -15,7 +15,7 @@ export const bannerInitialState: BannerState = {
   open: false,
   height: 0,
   color: "inverted",
-  message: "",
+  message: ""
 };
 
 export const bannerSlice = createSlice({
@@ -42,8 +42,8 @@ export const bannerSlice = createSlice({
       state.message = message;
       state.color = color || bannerInitialState.color;
       state.icon = icon || bannerInitialState.icon;
-    },
-  },
+    }
+  }
 });
 
 const { setBannerOpen, setBannerHeight, renderBanner } = bannerSlice.actions;

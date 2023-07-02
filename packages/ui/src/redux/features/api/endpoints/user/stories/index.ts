@@ -26,7 +26,7 @@ export const getUserStories = (builder: ApiQueryBuilder) =>
       `${endpointName}:${queryArgs.userId}:${queryArgs.sort}:${queryArgs.query}`,
     transformResponse: (response: Story[]) => ({
       items: response,
-      hasMore: response.length === ITEMS_PER_PAGE,
+      hasMore: response.length === ITEMS_PER_PAGE
     }),
     merge: (currentCache, newItems) => {
       currentCache.items.push(
@@ -40,5 +40,5 @@ export const getUserStories = (builder: ApiQueryBuilder) =>
       currentArg?.userId !== previousArg?.userId ||
       currentArg?.page !== previousArg?.page ||
       currentArg?.sort !== previousArg?.sort ||
-      currentArg?.query !== previousArg?.query,
+      currentArg?.query !== previousArg?.query
   });

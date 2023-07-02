@@ -9,7 +9,7 @@ import SplashScreen from "~/layout/SplashScreen";
 
 const GlobalError = ({
   reset,
-  error,
+  error
 }: {
   error: Error;
   reset: () => void;

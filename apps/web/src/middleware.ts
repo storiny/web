@@ -26,6 +26,13 @@ export const middleware: NextMiddleware = (request) => {
       return NextResponse.redirect(
         new URL("/legal/terms/community-guidelines", request.url)
       );
+    case "/cookies":
+      return NextResponse.redirect(
+        new URL(
+          "/legal/policies/privacy#6-cookies-and-tracking-technologies",
+          request.url
+        )
+      );
   }
 };
 
@@ -41,6 +48,7 @@ export const config = {
     "/legal",
     "/terms",
     "/privacy",
-    "/guidelines"
+    "/guidelines",
+    "/cookies"
   ]
 };

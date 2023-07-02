@@ -29,7 +29,7 @@ import {
   selectBlock,
   selectFollowing,
   toggleBlock,
-  toggleFollowing,
+  toggleFollowing
 } from "~/redux/features";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 import { breakpoints } from "~/theme/breakpoints";
@@ -54,7 +54,7 @@ interface Props {
 
 const Actions = ({
   profile,
-  isInsideSidebar,
+  isInsideSidebar
 }: Pick<Props, "isInsideSidebar" | "profile">): React.ReactElement => {
   const dispatch = useAppDispatch();
   const isFollowing = useAppSelector(selectFollowing(profile.id));
@@ -67,6 +67,7 @@ const Actions = ({
     <div
       className={clsx(
         "flex",
+        styles.x,
         styles.actions,
         isInsideSidebar && styles["inside-sidebar"]
       )}
@@ -112,7 +113,7 @@ const Actions = ({
 const Stat = ({
   value,
   singularLabel,
-  pluralLabel,
+  pluralLabel
 }: {
   pluralLabel: string;
   singularLabel: string;
@@ -134,7 +135,7 @@ const Stat = ({
 // Badges block
 
 const Badges = ({
-  publicFlags,
+  publicFlags
 }: {
   publicFlags: Props["profile"]["public_flags"];
 }): React.ReactElement | null => {
@@ -145,7 +146,7 @@ const Badges = ({
   }
 
   return (
-    <div className={clsx("flex-col", styles["container"])}>
+    <div className={clsx("flex-col", styles.x, styles["container"])}>
       <Title>
         Badges
         <Tooltip
@@ -160,17 +161,21 @@ const Badges = ({
           }
           delayDuration={0}
         >
-          <InfoIcon className={styles["badge-hint"]} />
+          <InfoIcon className={clsx(styles.x, styles["badge-hint"])} />
         </Tooltip>
       </Title>
-      <div className={clsx("flex", styles["badges-container"])}>
+      <div className={clsx("flex", styles.x, styles["badges-container"])}>
         {flags.hasAnyOf(UserFlag.STAFF) && (
-          <span className={clsx("flex-center", styles["badge-wrapper"])}>
+          <span
+            className={clsx("flex-center", styles.x, styles["badge-wrapper"])}
+          >
             <StaffBadge />
           </span>
         )}
         {flags.hasAnyOf(UserFlag.EARLY_USER) && (
-          <span className={clsx("flex-center", styles["badge-wrapper"])}>
+          <span
+            className={clsx("flex-center", styles.x, styles["badge-wrapper"])}
+          >
             <EarlyUserBadge />
           </span>
         )}
@@ -182,13 +187,13 @@ const Badges = ({
 // Block title
 
 const Title = ({
-  children,
+  children
 }: {
   children: React.ReactNode;
 }): React.ReactElement => (
   <Typography
     as={"h2"}
-    className={clsx("flex", "t-bold", "t-minor", styles.title)}
+    className={clsx("flex", "t-bold", "t-minor", styles.x, styles.title)}
     level={"body3"}
   >
     {children}
@@ -199,7 +204,7 @@ const ProfileContent = ({
   profile,
   isInsideSidebar,
   isSuspended,
-  isPrivate,
+  isPrivate
 }: Props): React.ReactElement => {
   const willAvatarOverflow = useMediaQuery(
     `${breakpoints.up("tablet")} and ${breakpoints.down("desktop")}`
@@ -211,6 +216,7 @@ const ProfileContent = ({
       <div
         className={clsx(
           "flex-center",
+          styles.x,
           styles.header,
           isInsideSidebar && styles["inside-sidebar"]
         )}
@@ -221,7 +227,7 @@ const ProfileContent = ({
               <LockIcon />
             </Tooltip>
           }
-          className={styles.badge}
+          className={clsx(styles.x, styles.badge)}
           elevation={isInsideSidebar ? "xs" : "body"}
           inset={isInsideSidebar ? "15%" : "24%"}
           visible={profile.is_self && profile.is_private}
@@ -230,6 +236,7 @@ const ProfileContent = ({
             <Avatar
               alt={""}
               className={clsx(
+                styles.x,
                 styles.avatar,
                 isInsideSidebar && styles["inside-sidebar"]
               )}
@@ -239,9 +246,9 @@ const ProfileContent = ({
                   style: {
                     "--icon-size": "32px",
                     "--icon-stroke": "var(--inverted-0)",
-                    "--bg": "var(--inverted-400)",
-                  } as React.CSSProperties,
-                },
+                    "--bg": "var(--inverted-400)"
+                  } as React.CSSProperties
+                }
               }}
             >
               {isPrivate ? <LockIcon /> : <ForbidIcon />}
@@ -252,6 +259,7 @@ const ProfileContent = ({
               avatarId={profile.avatar_id}
               borderless={Boolean(profile.banner_id) && !isInsideSidebar}
               className={clsx(
+                styles.x,
                 styles.avatar,
                 Boolean(profile.banner_id) && styles["has-banner"],
                 isInsideSidebar && styles["inside-sidebar"]
@@ -267,9 +275,9 @@ const ProfileContent = ({
           <Actions isInsideSidebar={isInsideSidebar} profile={profile} />
         )}
       </div>
-      <div className={clsx("flex-col", styles.properties)}>
+      <div className={clsx("flex-col", styles.x, styles.properties)}>
         {/* Details (Name, username, statistics, and status) */}
-        <div className={clsx("flex-col", styles.details)}>
+        <div className={clsx("flex-col", styles.x, styles.details)}>
           <div className={"flex-col"}>
             <Typography as={"h1"} ellipsis level={"h3"}>
               {profile.name}
@@ -284,7 +292,7 @@ const ProfileContent = ({
           </div>
           {!isSuspended && !profile.is_blocked_by_user ? (
             <>
-              <div className={clsx("flex", styles.stats)}>
+              <div className={clsx("flex", styles.x, styles.stats)}>
                 {!isPrivate && (
                   <Stat
                     pluralLabel={"stories"}
@@ -321,7 +329,7 @@ const ProfileContent = ({
               </div>
               {!isPrivate && profile.status ? (
                 <Status
-                  className={clsx(!isInsideSidebar && styles.status)}
+                  className={clsx(styles.x, !isInsideSidebar && styles.status)}
                   emoji={profile.status.emoji}
                   expiresAt={profile.status.expires_at}
                   text={profile.status.text}
@@ -338,7 +346,7 @@ const ProfileContent = ({
             <Badges publicFlags={profile.public_flags} />
             {/* Bio */}
             {Boolean(profile.bio) && (
-              <div className={clsx("flex-col", styles["container"])}>
+              <div className={clsx("flex-col", styles.x, styles["container"])}>
                 <Title>About</Title>
                 <Typography className={"t-minor"} level={"body2"}>
                   {profile.bio}
@@ -346,9 +354,9 @@ const ProfileContent = ({
               </div>
             )}
             {/* List (Location and joining date) */}
-            <ul className={clsx("flex-col", styles.list)}>
+            <ul className={clsx("flex-col", styles.x, styles.list)}>
               {Boolean(profile.location) && (
-                <li className={clsx("flex", styles["list-item"])}>
+                <li className={clsx("flex", styles.x, styles["list-item"])}>
                   <MapPinIcon />
                   <Typography
                     as={"span"}
@@ -361,7 +369,7 @@ const ProfileContent = ({
                   </Typography>
                 </li>
               )}
-              <li className={clsx("flex", styles["list-item"])}>
+              <li className={clsx("flex", styles.x, styles["list-item"])}>
                 <CalendarIcon />
                 <Typography
                   as={"time"}
@@ -377,7 +385,11 @@ const ProfileContent = ({
             {/* Connections */}
             {Boolean(profile.connections.length) && (
               <div
-                className={clsx("flex-col", styles["connections-container"])}
+                className={clsx(
+                  "flex-col",
+                  styles.x,
+                  styles["connections-container"]
+                )}
               >
                 <Title>Connections</Title>
                 <Connections

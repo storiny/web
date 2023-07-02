@@ -8,7 +8,9 @@ interface IndexEmptyStateProps {
   value: IndexTabValue;
 }
 
-const IndexEmptyState = ({ value }: IndexEmptyStateProps) => (
+const IndexEmptyState = ({
+  value
+}: IndexEmptyStateProps): React.ReactElement => (
   <CustomState
     autoSize
     description={

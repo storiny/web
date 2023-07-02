@@ -20,9 +20,9 @@ const meta: Meta<typeof Badge> = {
         borderless
         hex={"d3b4ac"}
       />
-    ),
+    )
   },
-  tags: ["autodocs"],
+  tags: ["autodocs"]
 };
 
 export default meta;
@@ -32,93 +32,93 @@ export const Default: Story = {};
 
 export const ColorBeryl: Story = {
   args: {
-    color: "beryl",
-  },
+    color: "beryl"
+  }
 };
 
 export const ColorInverted: Story = {
   args: {
-    color: "inverted",
-  },
+    color: "inverted"
+  }
 };
 
 export const ColorRuby: Story = {
   args: {
-    color: "ruby",
-  },
+    color: "ruby"
+  }
 };
 
 export const ColorMelon: Story = {
   args: {
-    color: "melon",
-  },
+    color: "melon"
+  }
 };
 
 export const ColorLemon: Story = {
   args: {
-    color: "lemon",
-  },
+    color: "lemon"
+  }
 };
 
 export const SizeSM: Story = {
   args: {
-    size: "sm",
-  },
+    size: "sm"
+  }
 };
 
 export const SizeMD: Story = {
   args: {
-    size: "md",
-  },
+    size: "md"
+  }
 };
 
 export const SizeLG: Story = {
   args: {
-    size: "lg",
-  },
+    size: "lg"
+  }
 };
 
 export const SizeXL: Story = {
   args: {
-    size: "xl",
-  },
+    size: "xl"
+  }
 };
 
 export const ElevationBody: Story = {
   args: {
-    elevation: "body",
-  },
+    elevation: "body"
+  }
 };
 
 export const ElevationXS: Story = {
   args: {
-    elevation: "xs",
-  },
+    elevation: "xs"
+  }
 };
 
 export const ElevationSM: Story = {
   args: {
-    elevation: "sm",
-  },
+    elevation: "sm"
+  }
 };
 
 export const ElevationMD: Story = {
   args: {
-    elevation: "md",
-  },
+    elevation: "md"
+  }
 };
 
 export const ElevationLG: Story = {
   args: {
-    elevation: "lg",
-  },
+    elevation: "lg"
+  }
 };
 
 export const Position: Story = {
   args: {
     anchorOrigin: {
       horizontal: "left",
-      vertical: "bottom",
-    },
-  },
+      vertical: "bottom"
+    }
+  }
 };

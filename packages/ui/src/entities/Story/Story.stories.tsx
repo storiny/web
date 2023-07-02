@@ -11,7 +11,7 @@ const meta: Meta<typeof Story> = {
   title: "Entities/Story",
   component: Story,
   args: { story: mockStories[8] },
-  tags: ["autodocs"],
+  tags: ["autodocs"]
 };
 
 export default meta;
@@ -20,5 +20,5 @@ type TStory = StoryObj<typeof Story>;
 export const Default: TStory = {};
 
 export const Skeleton: TStory = {
-  render: () => <StorySkeleton />,
+  render: () => <StorySkeleton />
 };

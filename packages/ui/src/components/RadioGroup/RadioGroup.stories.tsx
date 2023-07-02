@@ -19,13 +19,13 @@ const meta: Meta<typeof RadioGroup> = {
       description: "The disabled state.",
       table: {
         type: { summary: "boolean" },
-        defaultValue: { summary: "false" },
+        defaultValue: { summary: "false" }
       },
       control: {
-        type: "boolean",
-      },
-    },
-  },
+        type: "boolean"
+      }
+    }
+  }
 };
 
 export default meta;
@@ -43,7 +43,7 @@ export const Default: Story = {
         />
       ))}
     </RadioGroup>
-  ),
+  )
 };
 
 export const ColorInverted: Story = {
@@ -59,7 +59,7 @@ export const ColorInverted: Story = {
         />
       ))}
     </RadioGroup>
-  ),
+  )
 };
 export const ColorRuby: Story = {
   render: (args) => (
@@ -74,7 +74,7 @@ export const ColorRuby: Story = {
         />
       ))}
     </RadioGroup>
-  ),
+  )
 };
 
 export const SizeLG: Story = {
@@ -90,7 +90,7 @@ export const SizeLG: Story = {
         />
       ))}
     </RadioGroup>
-  ),
+  )
 };
 
 export const SizeMD: Story = {
@@ -106,5 +106,5 @@ export const SizeMD: Story = {
         />
       ))}
     </RadioGroup>
-  ),
+  )
 };

@@ -33,7 +33,7 @@ const ProgressBar = forwardRef<ProgressBarProps, "div">((props, ref) => {
           className={clsx(styles.indicator, slotProps?.indicator?.className)}
           style={{
             ...slotProps?.indicator?.style,
-            transform: `translateX(-${100 - value}%)`,
+            transform: `translateX(-${100 - value}%)`
           }}
         />
       </Component>

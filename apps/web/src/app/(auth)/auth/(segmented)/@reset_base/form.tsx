@@ -30,8 +30,8 @@ const ResetForm = ({ onSubmit, token }: Props): React.ReactElement => {
     defaultValues: {
       email: "",
       password: "",
-      "logout-of-all-devices": false,
-    },
+      "logout-of-all-devices": false
+    }
   });
   const [reset, { isLoading }] = useResetPasswordMutation();
 

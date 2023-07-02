@@ -1,6 +1,6 @@
 import loaderUtils from "loader-utils";
 import * as path from "path";
- 
+
 /**
  * Classname hashing config to ignore file names from classname hashes in production
  * @see https://github.com/vercel/next.js/blob/992c46e63bef20d7ab7e40131667ed3debaf67de/packages/next/build/webpack/config/blocks/css/loaders/getCssModuleLocalIdent.ts

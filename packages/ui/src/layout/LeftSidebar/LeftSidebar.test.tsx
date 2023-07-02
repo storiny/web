@@ -22,7 +22,7 @@ describe("<LeftSidebar />", () => {
 
   it("does not have any accessibility violations when logged in", async () => {
     const { container } = renderTestWithProvider(<LeftSidebar forceMount />, {
-      loggedIn: true,
+      loggedIn: true
     });
 
     await screen.findByRole("button", { name: /write/i });
@@ -71,7 +71,7 @@ describe("<LeftSidebar />", () => {
       <LeftSidebar
         componentProps={
           {
-            wrapper: { "data-testid": "wrapper" },
+            wrapper: { "data-testid": "wrapper" }
           } as LeftSidebarProps["componentProps"]
         }
         forceMount

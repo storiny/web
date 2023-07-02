@@ -14,14 +14,14 @@ const meta: Meta<typeof Radio> = {
       <RadioGroup>
         <Story />
       </RadioGroup>
-    ),
+    )
   ],
   tags: ["autodocs"],
   args: {
     label: "Radio label",
     "aria-label": "Sample radio",
     color: "inverted",
-    size: "md",
+    size: "md"
   },
   argTypes: {
     disabled: {
@@ -31,13 +31,13 @@ const meta: Meta<typeof Radio> = {
       description: "The disabled state.",
       table: {
         type: { summary: "boolean" },
-        defaultValue: { summary: "false" },
+        defaultValue: { summary: "false" }
       },
       control: {
-        type: "boolean",
-      },
-    },
-  },
+        type: "boolean"
+      }
+    }
+  }
 };
 
 export default meta;
@@ -45,34 +45,34 @@ type Story = StoryObj<typeof Radio>;
 
 export const Default: Story = {
   args: {
-    value: "default",
-  },
+    value: "default"
+  }
 };
 
 export const ColorInverted: Story = {
   args: {
     color: "inverted",
-    value: "inverted",
-  },
+    value: "inverted"
+  }
 };
 
 export const ColorRuby: Story = {
   args: {
     color: "ruby",
-    value: "ruby",
-  },
+    value: "ruby"
+  }
 };
 
 export const SizeLG: Story = {
   args: {
     size: "lg",
-    value: "lg",
-  },
+    value: "lg"
+  }
 };
 
 export const SizeMD: Story = {
   args: {
     size: "md",
-    value: "md",
-  },
+    value: "md"
+  }
 };

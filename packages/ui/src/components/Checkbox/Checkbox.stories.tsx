@@ -13,7 +13,7 @@ const meta: Meta<typeof Checkbox> = {
     label: "Checkbox label",
     "aria-label": "Sample checkbox",
     color: "inverted",
-    size: "md",
+    size: "md"
   },
   argTypes: {
     disabled: {
@@ -23,11 +23,11 @@ const meta: Meta<typeof Checkbox> = {
       description: "The disabled state.",
       table: {
         type: { summary: "boolean" },
-        defaultValue: { summary: "false" },
+        defaultValue: { summary: "false" }
       },
       control: {
-        type: "boolean",
-      },
+        type: "boolean"
+      }
     },
     checked: {
       description: "The checked state.",
@@ -36,10 +36,10 @@ const meta: Meta<typeof Checkbox> = {
       mapping: {
         Uncontrolled: undefined,
         Checked: true,
-        Unchecked: false,
-      },
-    },
-  },
+        Unchecked: false
+      }
+    }
+  }
 };
 
 export default meta;
@@ -49,24 +49,24 @@ export const Default: Story = {};
 
 export const ColorInverted: Story = {
   args: {
-    color: "inverted",
-  },
+    color: "inverted"
+  }
 };
 
 export const ColorRuby: Story = {
   args: {
-    color: "ruby",
-  },
+    color: "ruby"
+  }
 };
 
 export const SizeLG: Story = {
   args: {
-    size: "lg",
-  },
+    size: "lg"
+  }
 };
 
 export const SizeMD: Story = {
   args: {
-    size: "md",
-  },
+    size: "md"
+  }
 };

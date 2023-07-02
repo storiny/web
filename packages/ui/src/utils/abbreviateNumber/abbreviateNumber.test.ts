@@ -25,7 +25,7 @@ describe("abbreviateNumber", () => {
       [10e16, "100P"],
       [10e17, "1E"],
       [10e18, "10E"],
-      [10e19, "100E"],
+      [10e19, "100E"]
     ] as [number, string][]
   ).forEach(([number, expected]) => {
     it(`abbreviates ${number} to ${expected}`, () => {

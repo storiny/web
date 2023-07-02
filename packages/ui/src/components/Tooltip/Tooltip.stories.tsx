@@ -19,10 +19,10 @@ const meta: Meta<typeof Tooltip> = {
       mapping: {
         Uncontrolled: undefined,
         Open: true,
-        Closed: false,
-      },
-    },
-  },
+        Closed: false
+      }
+    }
+  }
 };
 
 export default meta;
@@ -37,6 +37,6 @@ export const Default: Story = {
     </Tooltip>
   ),
   args: {
-    content: "Tooltip content",
-  },
+    content: "Tooltip content"
+  }
 };

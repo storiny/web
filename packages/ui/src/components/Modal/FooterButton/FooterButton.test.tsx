@@ -23,7 +23,7 @@ describe("<ModalFooterButton />", () => {
       <Modal
         open
         slotProps={{
-          header: { children: "Test" },
+          header: { children: "Test" }
         }}
       >
         <ModalFooterButton>Test</ModalFooterButton>

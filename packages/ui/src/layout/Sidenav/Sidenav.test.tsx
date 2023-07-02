@@ -25,7 +25,7 @@ describe("<Sidenav />", () => {
 
   it("renders logged in state", () => {
     const { getByRole } = renderTestWithProvider(<Sidenav forceMount />, {
-      loggedIn: true,
+      loggedIn: true
     });
 
     expect(

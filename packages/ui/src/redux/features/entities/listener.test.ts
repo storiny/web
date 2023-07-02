@@ -9,7 +9,7 @@ import {
   selectFriendCount,
   selectSentRequest,
   selectStoryLikeCount,
-  selectSubscribed,
+  selectSubscribed
 } from "./selectors";
 import {
   overwriteBlock,
@@ -23,7 +23,7 @@ import {
   toggleBlock,
   toggleFollowing,
   toggleFriend,
-  toggleLikedStory,
+  toggleLikedStory
 } from "./slice";
 
 const testId = "0000-0000-0000-0000";

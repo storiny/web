@@ -30,11 +30,11 @@ describe("<Select />", () => {
       <Select
         slotProps={{
           trigger: {
-            "aria-label": "Test",
+            "aria-label": "Test"
           },
           value: {
-            placeholder: "Test",
-          },
+            placeholder: "Test"
+          }
         }}
       >
         <Option value={"test"}>Option</Option>
@@ -46,9 +46,9 @@ describe("<Select />", () => {
         await axe(container, {
           rules: {
             "aria-allowed-role": {
-              enabled: false,
-            },
-          },
+              enabled: false
+            }
+          }
         })
       ).toHaveNoViolations()
     );
@@ -62,8 +62,8 @@ describe("<Select />", () => {
         slotProps={
           {
             content: {
-              "data-testid": "content",
-            },
+              "data-testid": "content"
+            }
           } as SelectProps["slotProps"]
         }
       >
@@ -80,7 +80,7 @@ describe("<Select />", () => {
         open
         slotProps={
           {
-            trigger: { "data-testid": "trigger" },
+            trigger: { "data-testid": "trigger" }
           } as SelectProps["slotProps"]
         }
       >
@@ -100,8 +100,8 @@ describe("<Select />", () => {
         slotProps={
           {
             trigger: {
-              "data-testid": "trigger",
-            },
+              "data-testid": "trigger"
+            }
           } as SelectProps["slotProps"]
         }
       >
@@ -120,7 +120,7 @@ describe("<Select />", () => {
           size={size}
           slotProps={
             {
-              trigger: { "data-testid": "trigger" },
+              trigger: { "data-testid": "trigger" }
             } as SelectProps["slotProps"]
           }
         >
@@ -140,7 +140,7 @@ describe("<Select />", () => {
           open
           slotProps={
             {
-              trigger: { "data-testid": "trigger" },
+              trigger: { "data-testid": "trigger" }
             } as SelectProps["slotProps"]
           }
         >
@@ -162,7 +162,7 @@ describe("<Select />", () => {
             content: { "data-testid": "content" },
             trigger: { "data-testid": "trigger" },
             icon: { "data-testid": "icon" },
-            viewport: { "data-testid": "viewport" },
+            viewport: { "data-testid": "viewport" }
           } as SelectProps["slotProps"]
         }
       >

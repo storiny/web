@@ -17,18 +17,18 @@ const meta: Meta<typeof Confirmation> = {
     color: "inverted",
     decorator: <UserIcon />,
     title: "Confirmation title",
-    description: "This is a confirmation description",
+    description: "This is a confirmation description"
   },
   argTypes: {
     decorator: {
       options: ["Icon", "None"],
       mapping: {
         Icon: <UserIcon />,
-        None: undefined,
-      },
-    },
+        None: undefined
+      }
+    }
   },
-  tags: ["autodocs"],
+  tags: ["autodocs"]
 };
 
 export default meta;
@@ -43,19 +43,19 @@ const ConfirmationComponent = (props: ConfirmationProps) => {
 };
 
 export const Default: Story = {
-  render: (args) => <ConfirmationComponent {...args} />,
+  render: (args) => <ConfirmationComponent {...args} />
 };
 
 export const ColorInverted: Story = {
   ...Default,
   args: {
-    color: "inverted",
-  },
+    color: "inverted"
+  }
 };
 
 export const ColorRuby: Story = {
   ...Default,
   args: {
-    color: "ruby",
-  },
+    color: "ruby"
+  }
 };

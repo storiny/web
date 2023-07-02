@@ -1,41 +1,44 @@
-/* Actions */
-.actions {
-  gap: 14px;
-}
-
-/* Apple button */
-.apple-button {
-  --rigid-fg: #fff !important;
-  --rigid-bg: #000 !important;
-}
-
-/* Apple button */
-.twitter-button {
-  --rigid-fg: #fff !important;
-  --rigid-bg: #1e8eee !important;
-}
-
-/* Apple button */
-.google-button {
-  --rigid-fg: #000 !important;
-  --rigid-bg: #fff !important;
-}
-
-/* Social buttons */
-.apple-button,
-.twitter-button,
-.google-button {
-  border: 1px solid var(--divider) !important;
-
-  &:hover, &:active {
-    color: var(--rigid-fg) !important;
-    background-color: var(--rigid-bg) !important;
-    opacity: 0.75;
+.x {
+  /* Actions */
+  &.actions {
+    gap: 14px;
   }
-}
 
-/* Footer */
-.footer {
-  text-align: center;
-  gap: 12px;
+  /* Apple button */
+  &.apple-button {
+    --rigid-fg: #fff;
+    --rigid-bg: #000;
+  }
+
+  /* Apple button */
+  &.twitter-button {
+    --rigid-fg: #fff;
+    --rigid-bg: #1e8eee;
+  }
+
+  /* Apple button */
+  &.google-button {
+    --rigid-fg: #000;
+    --rigid-bg: #fff;
+  }
+
+  /* Social buttons */
+  &.apple-button,
+  &.twitter-button,
+  &.google-button {
+    border: 1px solid var(--divider);
+
+    &:hover,
+    &:active {
+      color: var(--rigid-fg);
+      background-color: var(--rigid-bg);
+      opacity: 0.75;
+    }
+  }
+
+  /* Footer */
+  &.footer {
+    text-align: center;
+    gap: 12px;
+  }
 }

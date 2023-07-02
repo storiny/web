@@ -1,6 +1,6 @@
 import {
   ProgressIndicatorProps,
-  ProgressProps,
+  ProgressProps
 } from "@radix-ui/react-progress";
 import React from "react";
 

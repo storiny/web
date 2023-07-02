@@ -16,7 +16,7 @@ export const scaleToClassNameMap: Partial<
   lg: "t-head-lg",
   md: "t-head-md",
   sm: "t-head-sm",
-  xs: "t-head-xs",
+  xs: "t-head-xs"
 } as const;
 
 export const levelToClassNameMap: Partial<
@@ -34,7 +34,7 @@ export const levelToClassNameMap: Partial<
   h5: "t-head-sm",
   h6: "t-head-xs",
   legible: "t-legible",
-  quote: "t-quote",
+  quote: "t-quote"
 } as const;
 
 export const defaultLevelToNativeElementMap: Record<TypographyLevel, string> = {
@@ -53,10 +53,10 @@ export const defaultLevelToNativeElementMap: Record<TypographyLevel, string> = {
   legible: "p",
   mention: "p",
   tag: "p",
-  quote: "blockquote",
+  quote: "blockquote"
 } as const;
 
 export const prefixMap: Partial<Record<TypographyLevel, string>> = {
   mention: "@",
-  tag: "#",
+  tag: "#"
 };

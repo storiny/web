@@ -43,7 +43,7 @@ describe("<SignupUsernameForm />", () => {
 
     await waitFor(() => {
       expect(mockSubmit).toHaveBeenCalledWith({
-        username: "test_username",
+        username: "test_username"
       });
       expect(screen.queryByRole("alert")).not.toBeInTheDocument();
     });

@@ -47,7 +47,7 @@ describe("<ResetForm />", () => {
       expect(mockSubmit).toHaveBeenCalledWith({
         email: "someone@example.com",
         password: "test-password",
-        "logout-of-all-devices": true,
+        "logout-of-all-devices": true
       });
       expect(screen.queryByRole("alert")).not.toBeInTheDocument();
     });

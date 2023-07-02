@@ -21,7 +21,7 @@ export const testUser: User = {
   wpm: 225,
   name: "Test user",
   username: "test_user",
-  id: "0",
+  id: "0"
 };
 
 export const mockUsers: User[] = [
@@ -42,7 +42,7 @@ export const mockUsers: User[] = [
     is_private: false,
     public_flags: 0,
     bio: "",
-    location: "Menlo Park, CA",
+    location: "Menlo Park, CA"
   },
   {
     avatar_hex: "dbceac",
@@ -61,7 +61,7 @@ export const mockUsers: User[] = [
     is_private: false,
     public_flags: 0,
     bio: "",
-    location: null,
+    location: null
   },
   {
     avatar_hex: "b8987c",
@@ -85,8 +85,8 @@ export const mockUsers: User[] = [
       visibility: StatusVisibility.GLOBAL,
       text: "Gummy bears",
       expires_at: null,
-      emoji: "/images/emoji.png",
-    },
+      emoji: "/images/emoji.png"
+    }
   },
   {
     avatar_hex: "d2a4a7",
@@ -105,7 +105,7 @@ export const mockUsers: User[] = [
     is_private: false,
     public_flags: 0,
     bio: "",
-    location: null,
+    location: null
   },
   {
     avatar_hex: "615753",
@@ -124,7 +124,7 @@ export const mockUsers: User[] = [
     is_private: true,
     public_flags: 0,
     bio: "",
-    location: null,
+    location: null
   },
   {
     avatar_hex: "b7a39b",
@@ -143,7 +143,7 @@ export const mockUsers: User[] = [
     is_private: false,
     public_flags: 0,
     bio: "",
-    location: "Mountain View, California",
+    location: "Mountain View, California"
   },
   {
     avatar_hex: "d0beb7",
@@ -162,7 +162,7 @@ export const mockUsers: User[] = [
     is_private: false,
     public_flags: 0,
     bio: "",
-    location: "Tokyo",
+    location: "Tokyo"
   },
   {
     avatar_hex: "2d2948",
@@ -181,7 +181,7 @@ export const mockUsers: User[] = [
     is_private: true,
     public_flags: 0,
     bio: "",
-    location: null,
+    location: null
   },
   {
     avatar_hex: "4a4444",
@@ -200,7 +200,7 @@ export const mockUsers: User[] = [
     is_private: false,
     public_flags: 0,
     bio: "",
-    location: null,
+    location: null
   },
   {
     avatar_hex: "a89293",
@@ -219,6 +219,6 @@ export const mockUsers: User[] = [
     is_private: false,
     public_flags: 0,
     bio: "",
-    location: null,
-  },
+    location: null
+  }
 ];

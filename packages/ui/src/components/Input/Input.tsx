@@ -81,6 +81,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>((props, ref) => {
         <input
           {...rest}
           className={clsx("unset", styles.input, className)}
+          disabled={disabled}
           onBlur={handleBlur}
           onFocus={handleFocus}
           ref={innerRef}

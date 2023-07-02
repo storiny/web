@@ -1,8 +1,12 @@
 import bundleAnalyzer from "@next/bundle-analyzer";
 import mdx from "@next/mdx";
+import * as path from "path";
+import { fileURLToPath } from "url";
 
 import { mdxConfig } from "./mdx.config.mjs";
 import { webpackConfig } from "./webpack.config.mjs";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const withMDX = mdx({
   options: mdxConfig
@@ -27,6 +31,9 @@ const nextConfig = {
   },
   typescript: {
     ignoreBuildErrors: true
+  },
+  sassOptions: {
+    includePaths: [path.join(__dirname, "../../packages/ui/src/theme")]
   },
   poweredByHeader: false,
   reactStrictMode: true,

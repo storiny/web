@@ -3,7 +3,7 @@ import React from "react";
 
 import {
   renderHookWithProvider,
-  renderTestWithProvider,
+  renderTestWithProvider
 } from "~/redux/testUtils";
 
 import { ConfirmationProps } from "../Confirmation.props";
@@ -27,10 +27,10 @@ describe("useConfirmation", () => {
         title: "test",
         slotProps: {
           content: {
-            "data-testid": "confirmation-content",
-          },
+            "data-testid": "confirmation-content"
+          }
         },
-        open: true,
+        open: true
       } as ConfirmationProps);
     });
 

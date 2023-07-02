@@ -16,10 +16,10 @@ const meta: Meta<typeof Label> = {
           style={{ visibility: "hidden" }}
         />
       </fieldset>
-    ),
+    )
   ],
   args: { children: "Label content" },
-  tags: ["autodocs"],
+  tags: ["autodocs"]
 };
 
 export default meta;

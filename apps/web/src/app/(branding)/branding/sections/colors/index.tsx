@@ -7,9 +7,21 @@ import Typography from "~/components/Typography";
 import pageStyles from "../../styles.module.scss";
 import styles from "./colors.module.scss";
 
-const Stat = ({ label, value }: { label: string; value: string }) => (
+const Stat = ({
+  label,
+  value
+}: {
+  label: string;
+  value: string;
+}): React.ReactElement => (
   <Typography
-    className={clsx("flex-center", "t-medium", "t-minor", styles["stat-label"])}
+    className={clsx(
+      "flex-center",
+      "t-medium",
+      "t-minor",
+      styles.x,
+      styles["stat-label"]
+    )}
     level={"body2"}
   >
     {label}
@@ -19,32 +31,39 @@ const Stat = ({ label, value }: { label: string; value: string }) => (
   </Typography>
 );
 
-const ColorsSection = () => (
-  <section className={clsx(pageStyles.section)}>
+const ColorsSection = (): React.ReactElement => (
+  <section className={clsx(pageStyles.x, pageStyles.section)}>
     <Typography
       as={"h2"}
-      className={pageStyles["section-title"]}
+      className={clsx(pageStyles.x, pageStyles["section-title"])}
       level={"display2"}
     >
       Colors
     </Typography>
-    <div className={clsx("flex-col", pageStyles["section-content"])}>
+    <div
+      className={clsx("flex-col", pageStyles.x, pageStyles["section-content"])}
+    >
       <Typography level={"legible"}>
         The color palette of our brand consists of only two minimalistic colors,
         which conveys a strong and straightforward design language that embodies
         loyalty and power.
       </Typography>
-      <div className={clsx("flex-center", styles["swatch-container"])}>
+      <div
+        className={clsx("flex-center", styles.x, styles["swatch-container"])}
+      >
         <div
           className={clsx(
             "force-light-mode",
             "flex-col",
             "t-medium",
+            styles.x,
             styles.swatch
           )}
           style={{ backgroundColor: "var(--snow)" }}
         >
-          <span className={clsx("t-major", styles["color-name"])}>Snow</span>
+          <span className={clsx("t-major", styles.x, styles["color-name"])}>
+            Snow
+          </span>
           <Spacer orientation={"vertical"} size={5} />
           <Stat label={"Hex"} value={"#fafafa"} />
           <Stat label={"RGB"} value={"250, 250, 250"} />
@@ -56,11 +75,12 @@ const ColorsSection = () => (
             "force-dark-mode",
             "flex-col",
             "t-medium",
+            styles.x,
             styles.swatch
           )}
           style={{ backgroundColor: "var(--obsidian)" }}
         >
-          <span className={clsx("t-major", styles["color-name"])}>
+          <span className={clsx("t-major", styles.x, styles["color-name"])}>
             Obsidian
           </span>
           <Spacer orientation={"vertical"} size={5} />

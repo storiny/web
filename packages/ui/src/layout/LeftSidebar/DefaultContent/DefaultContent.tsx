@@ -2,7 +2,7 @@
 
 import clsx from "clsx";
 import NextLink from "next/link";
-import { useSelectedLayoutSegment } from "next/navigation";
+import { usePathname } from "next/navigation";
 import React from "react";
 
 import Badge from "~/components/Badge";
@@ -46,7 +46,7 @@ const AnchorTab = (props: TabProps & { href: string }): React.ReactElement => (
 
 const LeftSidebarDefaultContent = (): React.ReactElement => {
   const loggedIn = useAppSelector(selectLoggedIn);
-  const segment = useSelectedLayoutSegment();
+  const pathname = usePathname();
 
   return (
     <>
@@ -61,7 +61,13 @@ const LeftSidebarDefaultContent = (): React.ReactElement => {
         className={styles.tabs}
         orientation={"vertical"}
         role={undefined}
-        value={segment === null ? "home" : segment || undefined}
+        value={
+          pathname === "/"
+            ? "home"
+            : pathname === "/explore" || pathname.startsWith("/explore/")
+            ? "explore"
+            : pathname.substring(1)
+        }
       >
         <TabsList
           aria-orientation={undefined}

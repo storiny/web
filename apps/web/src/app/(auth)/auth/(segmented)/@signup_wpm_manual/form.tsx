@@ -24,8 +24,8 @@ const SignupWPMForm = ({ onSubmit }: Props): React.ReactElement => {
   const form = useForm<SignupWPMSchema>({
     resolver: zodResolver(signupWPMSchema),
     defaultValues: {
-      wpm: state.signup.wpm || DEFAULT_WPM,
-    },
+      wpm: state.signup.wpm || DEFAULT_WPM
+    }
   });
 
   const handleSubmit: SubmitHandler<SignupWPMSchema> = ({ wpm }) => {

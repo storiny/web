@@ -14,7 +14,7 @@ const Pre = ({
     className={className}
     enableHorizontal
     slotProps={{
-      viewport: { className: styles.viewport }
+      viewport: { className: clsx(styles.x, styles.viewport) }
     }}
     type={"auto"}
   >

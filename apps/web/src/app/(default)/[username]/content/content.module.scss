@@ -1,120 +1,124 @@
-/* Avatar */
-.avatar {
-  &:not(.inside-sidebar) {
-    &.has-banner {
-      overflow: initial;
-      outline: 6px solid var(--bg-body);
-      margin-top: -68px;
+.x {
+  /* Avatar */
+  &.avatar {
+    &:not(.inside-sidebar) {
+      &.has-banner {
+        overflow: initial;
+        outline: 6px solid var(--bg-body);
+        margin-top: -68px;
 
-      // Semi-circular arc border
-      &::before {
-        content: "";
-        position: absolute;
-        top: -7px;
-        left: 50%;
-        width: 104px;
-        height: 52px;
-        border-top-left-radius: 52px;
-        border-top-right-radius: 52px;
-        border: 1px solid var(--divider);
-        transform: translateX(-50%);
-        border-bottom: 0;
+        // Semi-circular arc border
+        &::before {
+          content: "";
+          position: absolute;
+          top: -7px;
+          left: 50%;
+          width: 104px;
+          height: 52px;
+          border-top-left-radius: 52px;
+          border-top-right-radius: 52px;
+          border: 1px solid var(--divider);
+          transform: translateX(-50%);
+          border-bottom: 0;
+        }
       }
     }
   }
-}
 
-/* Private profile badge */
-.badge {
-  --size: 28px;
-  --ring-thickness: 3px;
-  --icon-size: 12px;
-  --icon-stroke: var(--inverted-0);
+  /* Private profile badge */
+  &.badge {
+    --size: 28px;
+    --ring-thickness: 3px;
+    --icon-size: 12px;
+    --icon-stroke: var(--inverted-0);
 
-  cursor: help;
-}
+    cursor: help;
+  }
 
-/* Header, actions, and connections container */
-.header, .actions, .badges-container {
-  gap: 8px;
-}
+  /* Header, actions, and connections container */
+  &.header,
+  &.actions,
+  &.badges-container {
+    gap: 8px;
+  }
 
-/* Actions (<=tablet) */
-.actions:not(.inside-sidebar) {
-  gap: 10px;
-}
+  /* Actions (<=tablet) */
+  &.actions:not(.inside-sidebar) {
+    gap: 10px;
+  }
 
-/* Header */
-.header:not(.inside-sidebar) {
-  margin-top: 6px;
-}
+  /* Header */
+  &.header:not(.inside-sidebar) {
+    margin-top: 6px;
+  }
 
-/* Status (<=tablet) */
-.status {
-  max-width: 300px;
-}
+  /* Status (<=tablet) */
+  &.status {
+    max-width: 300px;
+  }
 
-/* User properties */
-.properties {
-  gap: 24px;
-}
+  /* User properties */
+  &.properties {
+    gap: 24px;
+  }
 
-/* Details */
-.details {
-  gap: 18px;
-}
+  /* Details */
+  &.details {
+    gap: 18px;
+  }
 
-/* Statistics */
-.stats {
-  flex-wrap: wrap;
-  gap: 4px 16px;
-}
+  /* Statistics */
+  &.stats {
+    flex-wrap: wrap;
+    gap: 4px 16px;
+  }
 
-/* Block title */
-.title {
-  text-transform: uppercase;
-  gap: 4px;
-}
+  /* Block title */
+  &.title {
+    text-transform: uppercase;
+    gap: 4px;
+  }
 
-/* Container */
-.container {
-  gap: 6px;
-}
+  /* Container */
+  &.container {
+    gap: 6px;
+  }
 
-/* Badge hint icon */
-.badge-hint {
-  --icon-size: 14px;
-  --icon-stroke: var(--fg-minor);
+  /* Badge hint icon */
+  &.badge-hint {
+    --icon-size: 14px;
+    --icon-stroke: var(--fg-minor);
 
-  cursor: help;
-}
+    cursor: help;
+  }
 
-/* Badges container */
-.badges-container {
-  --badge-size: 24px;
-}
+  /* Badges container */
+  &.badges-container {
+    --badge-size: 24px;
+  }
 
-/* Badge wrapper */
-.badge-wrapper {
-  padding: 4px;
-}
+  /* Badge wrapper */
+  &.badge-wrapper {
+    padding: 4px;
+  }
 
-/* Location and join date list */
-.list {
-  --icon-size: 14px;
-  --icon-stroke: var(--fg-minor);
+  /* Location and join date list */
+  &.list {
+    --icon-size: 14px;
+    --icon-stroke: var(--fg-minor);
 
-  gap: 4px;
-  list-style: none;
-}
+    gap: 4px;
+    list-style: none;
+  }
 
-/* List item */
-.list-item {
-  gap: 6px;
-  align-items: center;
-}
+  /* List item */
+  &.list-item {
+    gap: 6px;
+    align-items: center;
+  }
 
-/* Connections container */
-.connections-container {
-  gap: 12px;
+  /* Connections container */
+  &.connections-container {
+    gap: 12px;
+  }
 }

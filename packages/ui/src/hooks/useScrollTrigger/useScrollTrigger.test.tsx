@@ -28,7 +28,7 @@ describe("useScrollTrigger", () => {
     const dispatchScroll = (offset: number) => {
       act(() => {
         Object.defineProperty(window, "pageYOffset", {
-          value: offset,
+          value: offset
         });
         window.dispatchEvent(new window.Event("scroll", {}));
       });
@@ -53,7 +53,7 @@ describe("useScrollTrigger", () => {
         { offset: -3, result: "false" },
         { offset: 3, result: "false" },
         { offset: 103, result: "true" },
-        { offset: 102, result: "false" },
+        { offset: 102, result: "false" }
       ].forEach((test) => {
         dispatchScroll(test.offset);
         expect(getTriggerValue()).toEqual(test.result);
@@ -69,7 +69,7 @@ describe("useScrollTrigger", () => {
         { offset: 101, result: "true" },
         { offset: 100, result: "false" },
         { offset: 99, result: "false" },
-        { offset: 100, result: "false" },
+        { offset: 100, result: "false" }
       ].forEach((test) => {
         dispatchScroll(test.offset);
         expect(getTriggerValue()).toEqual(test.result);
@@ -79,10 +79,10 @@ describe("useScrollTrigger", () => {
     it("correctly evaluates scroll events on page first load", () => {
       [
         { offset: 101, result: "true" },
-        { offset: 100, result: "false" },
+        { offset: 100, result: "false" }
       ].forEach((test) => {
         Object.defineProperty(window, "pageYOffset", {
-          value: test.offset,
+          value: test.offset
         });
 
         renderTestWithProvider(<Component />);

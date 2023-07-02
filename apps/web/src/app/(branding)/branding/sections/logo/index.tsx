@@ -14,7 +14,7 @@ import pageStyles from "../../styles.module.scss";
 import commonStyles from "../common.module.scss";
 import styles from "./logo.module.scss";
 
-const LogoSpacingAndSize = () => (
+const LogoSpacingAndSize = (): React.ReactElement => (
   <>
     <Typography level={"h4"}>Spacing & Size</Typography>
     <Typography level={"legible"}>
@@ -23,7 +23,7 @@ const LogoSpacingAndSize = () => (
       as clear space around the logo.
     </Typography>
     <Spacer orientation={"vertical"} size={5} />
-    <figure className={clsx("flex-center", pageStyles.figure)}>
+    <figure className={clsx("flex-center", pageStyles.x, pageStyles.figure)}>
       <img
         alt={""}
         className={"invert"}
@@ -38,7 +38,7 @@ const LogoSpacingAndSize = () => (
       down.
     </Typography>
     <Spacer orientation={"vertical"} size={5} />
-    <figure className={clsx("flex-center", pageStyles.figure)}>
+    <figure className={clsx("flex-center", pageStyles.x, pageStyles.figure)}>
       <img
         alt={""}
         className={"invert"}
@@ -50,7 +50,7 @@ const LogoSpacingAndSize = () => (
   </>
 );
 
-const LogoColor = () => (
+const LogoColor = (): React.ReactElement => (
   <>
     <Typography level={"h4"}>Color</Typography>
     <Typography level={"legible"}>
@@ -59,11 +59,12 @@ const LogoColor = () => (
       (The Storiny Obsidian color) as defined in our brand colors.
     </Typography>
     <Spacer orientation={"vertical"} size={5} />
-    <div className={clsx("flex-col", styles["logo-color"])}>
+    <div className={clsx("flex-col", styles.x, styles["logo-color"])}>
       <figure
         className={clsx(
           "flex-center",
           "force-light-mode",
+          pageStyles.x,
           pageStyles.figure,
           pageStyles["with-background"]
         )}
@@ -74,6 +75,7 @@ const LogoColor = () => (
         className={clsx(
           "flex-center",
           "force-dark-mode",
+          pageStyles.x,
           pageStyles.figure,
           pageStyles["with-background"]
         )}
@@ -84,7 +86,7 @@ const LogoColor = () => (
   </>
 );
 
-const LogoMisuse = () => (
+const LogoMisuse = (): React.ReactElement => (
   <>
     <Typography level={"h4"}>Misuse</Typography>
     <Typography level={"legible"}>
@@ -92,7 +94,7 @@ const LogoMisuse = () => (
       examples of such incorrect usage for your reference.
     </Typography>
     <Spacer orientation={"vertical"} size={5} />
-    <div className={clsx("flex-col", styles["misuse-container"])}>
+    <div className={clsx("flex-col", styles.x, styles["misuse-container"])}>
       <FigureWithCaption
         caption={
           "Do not change the orientation of the logo elements or alter the icon."
@@ -131,7 +133,7 @@ const LogoMisuse = () => (
   </>
 );
 
-const IconSpacingAndSize = () => (
+const IconSpacingAndSize = (): React.ReactElement => (
   <>
     <Typography level={"h4"}>Spacing & Size</Typography>
     <Typography level={"legible"}>
@@ -140,7 +142,7 @@ const IconSpacingAndSize = () => (
       150% of its width as empty space around it.
     </Typography>
     <Spacer orientation={"vertical"} size={5} />
-    <figure className={clsx("flex-center", pageStyles.figure)}>
+    <figure className={clsx("flex-center", pageStyles.x, pageStyles.figure)}>
       <img
         alt={""}
         className={"invert"}
@@ -155,7 +157,7 @@ const IconSpacingAndSize = () => (
       unrecognizable.
     </Typography>
     <Spacer orientation={"vertical"} size={5} />
-    <figure className={clsx("flex-center", pageStyles.figure)}>
+    <figure className={clsx("flex-center", pageStyles.x, pageStyles.figure)}>
       <img
         alt={""}
         className={"invert"}
@@ -167,7 +169,7 @@ const IconSpacingAndSize = () => (
   </>
 );
 
-const IconColor = () => (
+const IconColor = (): React.ReactElement => (
   <>
     <Typography level={"h4"}>Color</Typography>
     <Typography level={"legible"}>
@@ -175,11 +177,12 @@ const IconColor = () => (
       for the Storiny logo.
     </Typography>
     <Spacer orientation={"vertical"} size={5} />
-    <div className={clsx("flex-col", styles["logo-color"])}>
+    <div className={clsx("flex-col", styles.x, styles["logo-color"])}>
       <figure
         className={clsx(
           "flex-center",
           "force-light-mode",
+          pageStyles.x,
           pageStyles.figure,
           pageStyles["with-background"]
         )}
@@ -190,6 +193,7 @@ const IconColor = () => (
         className={clsx(
           "flex-center",
           "force-dark-mode",
+          pageStyles.x,
           pageStyles.figure,
           pageStyles["with-background"]
         )}
@@ -209,7 +213,9 @@ const IconColor = () => (
       className={clsx(
         "flex-col",
         "t-center",
+        pageStyles.x,
         pageStyles.figure,
+        commonStyles.x,
         commonStyles["figure-with-caption"],
         commonStyles["image-with-border"]
       )}
@@ -232,7 +238,7 @@ const IconColor = () => (
   </>
 );
 
-const IconMisuse = () => (
+const IconMisuse = (): React.ReactElement => (
   <>
     <Typography level={"h4"}>Misuse</Typography>
     <Typography level={"legible"}>
@@ -240,7 +246,7 @@ const IconMisuse = () => (
       examples of such incorrect usage for your reference.
     </Typography>
     <Spacer orientation={"vertical"} size={5} />
-    <div className={clsx("flex-col", styles["misuse-container"])}>
+    <div className={clsx("flex-col", styles.x, styles["misuse-container"])}>
       <FigureWithCaption
         caption={
           "Do not rotate or distort the icon, and do not add colors or gradients that are not specified in the usage guidelines."
@@ -259,16 +265,18 @@ const IconMisuse = () => (
 
 const FigureWithCaption = ({
   src,
-  caption,
+  caption
 }: {
   caption: React.ReactNode;
   src: string;
-}) => (
+}): React.ReactElement => (
   <figure
     className={clsx(
       "flex-col",
       "t-center",
+      pageStyles.x,
       pageStyles.figure,
+      commonStyles.x,
       commonStyles["figure-with-caption"]
     )}
   >
@@ -283,23 +291,27 @@ const FigureWithCaption = ({
   </figure>
 );
 
-const LogoSection = () => (
-  <section className={clsx(pageStyles.section)}>
+const LogoSection = (): React.ReactElement => (
+  <section className={clsx(pageStyles.x, pageStyles.section)}>
     <Typography
       as={"h2"}
-      className={pageStyles["section-title"]}
+      className={clsx(pageStyles.x, pageStyles["section-title"])}
       level={"display2"}
     >
       Logo
     </Typography>
-    <div className={clsx("flex-col", pageStyles["section-content"])}>
+    <div
+      className={clsx("flex-col", pageStyles.x, pageStyles["section-content"])}
+    >
       <Typography level={"legible"}>
         We take great pride in our minimal and memorable logo design, and how it
         represents our brand. In order to preserve its visual integrity, we
         kindly request that you follow the guidelines outlined below when using
         it.
       </Typography>
-      <div className={clsx("flex-col", pageStyles["sub-section"])}>
+      <div
+        className={clsx("flex-col", pageStyles.x, pageStyles["sub-section"])}
+      >
         <Typography level={"h3"}>The Storiny Logo</Typography>
         <Typography level={"legible"}>
           Our logo is comprised of a contemporary wordmark and icon, which
@@ -309,6 +321,7 @@ const LogoSection = () => (
         <figure
           className={clsx(
             "flex-center",
+            pageStyles.x,
             pageStyles.figure,
             pageStyles["with-background"]
           )}
@@ -334,7 +347,9 @@ const LogoSection = () => (
         <LogoMisuse />
       </div>
       <Divider />
-      <div className={clsx("flex-col", pageStyles["sub-section"])}>
+      <div
+        className={clsx("flex-col", pageStyles.x, pageStyles["sub-section"])}
+      >
         <Typography level={"h3"}>The Storiny Icon</Typography>
         <Typography level={"legible"}>
           The use of the Storiny icon as a standalone element is permissible in
@@ -345,6 +360,7 @@ const LogoSection = () => (
         <figure
           className={clsx(
             "flex-center",
+            pageStyles.x,
             pageStyles.figure,
             pageStyles["with-background"]
           )}
@@ -365,7 +381,9 @@ const LogoSection = () => (
         <IconMisuse />
       </div>
       <Divider />
-      <div className={clsx("flex-col", pageStyles["sub-section"])}>
+      <div
+        className={clsx("flex-col", pageStyles.x, pageStyles["sub-section"])}
+      >
         <Typography level={"h3"}>Color combinations</Typography>
         <Typography level={"legible"}>
           The Storiny icon and the Storiny logo must always be displayed in
@@ -378,7 +396,9 @@ const LogoSection = () => (
         <figure
           className={clsx(
             "flex-col",
+            pageStyles.x,
             pageStyles.figure,
+            commonStyles.x,
             commonStyles["image-with-border"]
           )}
         >

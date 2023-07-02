@@ -13,7 +13,7 @@ import { WordmarkProps, WordmarkSize } from "./Wordmark.props";
 const logoSizeMap: Record<WordmarkSize, number> = {
   sm: 26,
   md: 34,
-  lg: 56,
+  lg: 56
 };
 
 const Wordmark = forwardRef<WordmarkProps, "span">((props, ref) => {

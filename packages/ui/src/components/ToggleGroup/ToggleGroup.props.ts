@@ -1,6 +1,6 @@
 import {
   ToggleGroupMultipleProps,
-  ToggleGroupSingleProps,
+  ToggleGroupSingleProps
 } from "@radix-ui/react-toggle-group";
 
 import { PolymorphicProps } from "~/types/index";

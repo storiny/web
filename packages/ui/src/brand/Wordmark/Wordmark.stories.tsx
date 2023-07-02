@@ -9,7 +9,7 @@ const meta: Meta<typeof Wordmark> = {
   title: "Brand/Wordmark",
   component: Wordmark,
   args: { size: "md" },
-  tags: ["autodocs"],
+  tags: ["autodocs"]
 };
 
 export default meta;
@@ -19,24 +19,24 @@ export const Default: Story = {};
 
 export const WithBetaLabel: Story = {
   args: {
-    showBeta: true,
-  },
+    showBeta: true
+  }
 };
 
 export const SizeLG: Story = {
   args: {
-    size: "lg",
-  },
+    size: "lg"
+  }
 };
 
 export const SizeMD: Story = {
   args: {
-    size: "md",
-  },
+    size: "md"
+  }
 };
 
 export const SizeSM: Story = {
   args: {
-    size: "sm",
-  },
+    size: "sm"
+  }
 };

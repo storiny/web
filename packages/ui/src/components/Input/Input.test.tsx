@@ -32,7 +32,7 @@ describe("<Input />", () => {
       <Input
         slotProps={
           {
-            container: { as: "aside", "data-testid": "container" },
+            container: { as: "aside", "data-testid": "container" }
           } as InputProps["slotProps"]
         }
       />
@@ -46,7 +46,7 @@ describe("<Input />", () => {
       <Input
         slotProps={
           {
-            container: { "data-testid": "container" },
+            container: { "data-testid": "container" }
           } as InputProps["slotProps"]
         }
       />
@@ -64,7 +64,7 @@ describe("<Input />", () => {
           color={color}
           slotProps={
             {
-              container: { "data-testid": "container" },
+              container: { "data-testid": "container" }
             } as InputProps["slotProps"]
           }
         />
@@ -81,7 +81,7 @@ describe("<Input />", () => {
           size={size}
           slotProps={
             {
-              container: { "data-testid": "container" },
+              container: { "data-testid": "container" }
             } as InputProps["slotProps"]
           }
         />
@@ -97,7 +97,7 @@ describe("<Input />", () => {
         decorator={<span>Decorator</span>}
         slotProps={
           {
-            decorator: { "data-testid": "decorator" },
+            decorator: { "data-testid": "decorator" }
           } as InputProps["slotProps"]
         }
       />
@@ -112,7 +112,7 @@ describe("<Input />", () => {
         endDecorator={<span>End decorator</span>}
         slotProps={
           {
-            endDecorator: { "data-testid": "end-decorator" },
+            endDecorator: { "data-testid": "end-decorator" }
           } as InputProps["slotProps"]
         }
       />
@@ -131,7 +131,7 @@ describe("<Input />", () => {
           {
             container: { "data-testid": "container" },
             decorator: { "data-testid": "decorator" },
-            endDecorator: { "data-testid": "end-decorator" },
+            endDecorator: { "data-testid": "end-decorator" }
           } as InputProps["slotProps"]
         }
       />
@@ -149,7 +149,7 @@ describe("<Input />", () => {
           placeholder={"Test"}
           slotProps={
             {
-              spinnerContainer: { "data-testid": "spinner-container" },
+              spinnerContainer: { "data-testid": "spinner-container" }
             } as InputProps["slotProps"]
           }
           type={"number"}
@@ -172,11 +172,11 @@ describe("<Input />", () => {
               spinnerContainer: { "data-testid": "spinner-container" },
               spinnerSeparator: { "data-testid": "spinner-separator" },
               spinnerDecrementButton: {
-                "data-testid": "spinner-decrement-button",
+                "data-testid": "spinner-decrement-button"
               },
               spinnerIncrementButton: {
-                "data-testid": "spinner-increment-button",
-              },
+                "data-testid": "spinner-increment-button"
+              }
             } as InputProps["slotProps"]
           }
           type={"number"}
@@ -187,7 +187,7 @@ describe("<Input />", () => {
         "spinner-container",
         "spinner-separator",
         "spinner-decrement-button",
-        "spinner-increment-button",
+        "spinner-increment-button"
       ].forEach((element) => {
         expect(getByTestId(element)).toBeInTheDocument();
       });
@@ -202,11 +202,11 @@ describe("<Input />", () => {
           slotProps={
             {
               spinnerIncrementButton: {
-                "data-testid": "spinner-increment-button",
+                "data-testid": "spinner-increment-button"
               },
               spinnerDecrementButton: {
-                "data-testid": "spinner-decrement-button",
-              },
+                "data-testid": "spinner-decrement-button"
+              }
             } as InputProps["slotProps"]
           }
           step={1}
@@ -231,7 +231,7 @@ describe("<Input />", () => {
           endDecorator={<span />}
           slotProps={
             {
-              endDecorator: { "data-testid": "end-decorator" },
+              endDecorator: { "data-testid": "end-decorator" }
             } as InputProps["slotProps"]
           }
           type={"number"}

@@ -18,11 +18,11 @@ const meta: Meta<typeof Switch> = {
       description: "The disabled state.",
       table: {
         type: { summary: "boolean" },
-        defaultValue: { summary: "false" },
+        defaultValue: { summary: "false" }
       },
       control: {
-        type: "boolean",
-      },
+        type: "boolean"
+      }
     },
     checked: {
       description: "The checked state.",
@@ -31,10 +31,10 @@ const meta: Meta<typeof Switch> = {
       mapping: {
         Uncontrolled: undefined,
         Checked: true,
-        Unchecked: false,
-      },
-    },
-  },
+        Unchecked: false
+      }
+    }
+  }
 };
 
 export default meta;
@@ -43,17 +43,17 @@ type Story = StoryObj<typeof Switch>;
 export const Default: Story = {};
 
 export const ColorInverted: Story = {
-  args: { color: "inverted" },
+  args: { color: "inverted" }
 };
 
 export const ColorRuby: Story = {
-  args: { color: "ruby" },
+  args: { color: "ruby" }
 };
 
 export const SizeMD: Story = {
-  args: { size: "md" },
+  args: { size: "md" }
 };
 
 export const SizeSM: Story = {
-  args: { size: "sm" },
+  args: { size: "sm" }
 };

@@ -20,13 +20,13 @@ const meta: Meta<typeof Banner> = {
       description: "The banner message.",
       table: {
         type: { summary: "string" },
-        defaultValue: { summary: "" },
+        defaultValue: { summary: "" }
       },
       control: {
-        type: "text",
-      },
-    },
-  },
+        type: "text"
+      }
+    }
+  }
 };
 
 export default meta;
@@ -43,47 +43,47 @@ const BannerComponent = (props?: BannerProps) => {
 };
 
 export const Default: Story = {
-  render: (args) => <BannerComponent {...args} />,
+  render: (args) => <BannerComponent {...args} />
 };
 
 export const ColorInverted: Story = {
   ...Default,
   args: {
-    color: "inverted",
-  },
+    color: "inverted"
+  }
 };
 
 export const ColorLemon: Story = {
   ...Default,
   args: {
-    color: "lemon",
-  },
+    color: "lemon"
+  }
 };
 
 export const ColorRuby: Story = {
   ...Default,
   args: {
-    color: "ruby",
-  },
+    color: "ruby"
+  }
 };
 
 export const IconInfo: Story = {
   ...Default,
   args: {
-    icon: "info",
-  },
+    icon: "info"
+  }
 };
 
 export const IconWarning: Story = {
   ...Default,
   args: {
-    icon: "warning",
-  },
+    icon: "warning"
+  }
 };
 
 export const IconError: Story = {
   ...Default,
   args: {
-    icon: "error",
-  },
+    icon: "error"
+  }
 };

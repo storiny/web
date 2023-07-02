@@ -14,7 +14,7 @@ import TagIcon from "~/icons/Tag";
 import {
   overwriteFollowedTag,
   selectFollowedTag,
-  toggleFollowedTag,
+  toggleFollowedTag
 } from "~/redux/features";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 import { abbreviateNumber } from "~/utils/abbreviateNumber";
@@ -37,7 +37,7 @@ const Actions = ({ tag }: Props): React.ReactElement => {
   }, [dispatch, tag.is_following, tag.id]);
 
   return (
-    <div className={clsx("flex", styles.actions)}>
+    <div className={clsx("flex", styles.x, styles.actions)}>
       <Button
         checkAuth
         decorator={isFollowing ? <CheckIcon /> : <PlusIcon />}
@@ -64,14 +64,14 @@ const Actions = ({ tag }: Props): React.ReactElement => {
 };
 
 const SuspendedTagContent = ({ tag }: Props): React.ReactElement => (
-  <div className={clsx("flex-col", styles.content)}>
-    <div className={clsx("flex-center", styles.meta)}>
-      <TagIcon className={styles["meta-icon"]} />
+  <div className={clsx("flex-col", styles.x, styles.content)}>
+    <div className={clsx("flex-center", styles.x, styles.meta)}>
+      <TagIcon className={clsx(styles.x, styles["meta-icon"])} />
       <Typography level={"h1"}>{tag.name}</Typography>
       <Grow />
       <TagActions tag={tag} />
     </div>
-    <div className={clsx("flex", styles.stats)}>
+    <div className={clsx("flex", styles.x, styles.stats)}>
       <Typography className={clsx("t-medium", "t-minor")} level={"body2"}>
         <span className={clsx("t-bold", "t-major")}>
           {abbreviateNumber(tag.story_count)}

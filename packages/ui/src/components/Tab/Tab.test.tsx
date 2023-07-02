@@ -119,7 +119,7 @@ describe("<Tab />", () => {
             decorator={<span />}
             slotProps={
               {
-                decorator: { "data-testid": "decorator" },
+                decorator: { "data-testid": "decorator" }
               } as TabProps["slotProps"]
             }
             value={"test"}

@@ -1,19 +1,21 @@
-@use "../../../../../../../packages/ui/src/theme/breakpoints" as breakpoints;
+@use "breakpoints" as breakpoints;
 
-/* Base styles */
-.footer {
-  border-top: 1px solid var(--divider);
-  padding: 24px 20px;
+.x {
+  /* Base styles */
+  &.footer {
+    border-top: 1px solid var(--divider);
+    padding: 24px 20px;
 
-  @include breakpoints.media("<=mobile") {
-    padding-inline: 0;
-    padding-bottom: 74px; // Compensate BottomNavigation height
+    @include breakpoints.media("<=mobile") {
+      padding-inline: 0;
+      padding-bottom: 74px; // Compensate BottomNavigation height
+    }
   }
-}
 
-/* Contact support link */
-.support-link {
-  --icon-size: 16px;
+  /* Contact support link */
+  &.support-link {
+    --icon-size: 16px;
 
-  gap: 6px;
+    gap: 6px;
+  }
 }

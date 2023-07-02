@@ -7,7 +7,7 @@ import ToggleGroup from "../ToggleGroup";
 import ToggleGroupItem from "./ToggleGroupItem";
 import {
   ToggleGroupItemProps,
-  ToggleGroupItemSize,
+  ToggleGroupItemSize
 } from "./ToggleGroupItem.props";
 
 describe("<ToggleGroupItem />", () => {
@@ -36,7 +36,7 @@ describe("<ToggleGroupItem />", () => {
       <ToggleGroup>
         <ToggleGroupItem
           slotProps={{
-            tooltip: { open: true },
+            tooltip: { open: true }
           }}
           value={"test"}
         >
@@ -80,7 +80,7 @@ describe("<ToggleGroupItem />", () => {
       <ToggleGroup>
         <ToggleGroupItem
           slotProps={{
-            tooltip: { open: true },
+            tooltip: { open: true }
           }}
           tooltipContent={"Tooltip content"}
           value={"test"}
@@ -106,11 +106,11 @@ describe("<ToggleGroupItem />", () => {
                 open: true,
                 slotProps: {
                   content: {
-                    "data-testid": "tooltip-content",
-                  },
-                },
+                    "data-testid": "tooltip-content"
+                  }
+                }
               },
-              container: { "data-testid": "container" },
+              container: { "data-testid": "container" }
             } as ToggleGroupItemProps["slotProps"]
           }
           tooltipContent={"Tooltip content"}

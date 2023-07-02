@@ -7,7 +7,7 @@ export const LOCAL_STORAGE_KEY = "preferences";
 
 // Schema to validate preferences stored in the browser (localStorage).
 const preferencesSchema = z.object({
-  theme: z.union([z.literal("system"), z.literal("light"), z.literal("dark")]),
+  theme: z.union([z.literal("system"), z.literal("light"), z.literal("dark")])
 });
 
 export type PreferencesState = z.infer<typeof preferencesSchema>;
@@ -24,8 +24,8 @@ export const preferencesSlice = createSlice({
       action.payload,
     setTheme: (state, action: PayloadAction<Theme>) => {
       state.theme = action.payload;
-    },
-  },
+    }
+  }
 });
 
 const { syncToBrowser, hydrateState, setTheme } = preferencesSlice.actions;
@@ -52,7 +52,7 @@ export const addPreferencesListeners = (
       } catch (e) {
         // noop
       }
-    },
+    }
   });
 
   /**
@@ -77,7 +77,7 @@ export const addPreferencesListeners = (
       }
 
       document.documentElement.setAttribute("data-theme", finalTheme);
-    },
+    }
   });
 
   /**
@@ -94,7 +94,7 @@ export const addPreferencesListeners = (
       } catch (e) {
         // noop
       }
-    },
+    }
   });
 };
 

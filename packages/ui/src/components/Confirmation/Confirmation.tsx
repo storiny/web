@@ -9,7 +9,7 @@ import {
   Portal,
   Root,
   Title,
-  Trigger,
+  Trigger
 } from "@radix-ui/react-alert-dialog";
 import clsx from "clsx";
 import React from "react";

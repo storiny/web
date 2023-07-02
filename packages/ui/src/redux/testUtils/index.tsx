@@ -4,7 +4,7 @@ import * as testingLibrary from "@testing-library/react";
 import {
   renderHook,
   RenderHookOptions,
-  RenderHookResult,
+  RenderHookResult
 } from "@testing-library/react";
 import React from "react";
 
@@ -50,7 +50,7 @@ export const renderTestWithProvider = (
   );
 
   const Wrapper = ({
-    children,
+    children
   }: React.PropsWithChildren<{}>): React.ReactElement => (
     <AppStateProvider
       ignorePrimitiveProviders={ignorePrimitiveProviders}
@@ -63,7 +63,7 @@ export const renderTestWithProvider = (
   return {
     store,
     wrapper: Wrapper,
-    ...testingLibrary.render(ui, { wrapper: Wrapper, ...renderOptions }),
+    ...testingLibrary.render(ui, { wrapper: Wrapper, ...renderOptions })
   };
 };
 

@@ -15,9 +15,9 @@ const meta: Meta<typeof Stepper> = {
     activeSteps: 1,
     "aria-label": "Sample stepper",
     style: {
-      maxWidth: "512px",
-    },
-  },
+      maxWidth: "512px"
+    }
+  }
 };
 
 export default meta;
@@ -27,12 +27,12 @@ export const Default: Story = {};
 
 export const SizeMD: Story = {
   args: {
-    size: "md",
-  },
+    size: "md"
+  }
 };
 
 export const SizeSM: Story = {
   args: {
-    size: "sm",
-  },
+    size: "sm"
+  }
 };

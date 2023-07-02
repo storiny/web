@@ -88,7 +88,8 @@
       );
     }
 
-    &:disabled, &.disabled {
+    &:disabled,
+    &.disabled {
       --fg: var(--rigid-disabled-fg);
 
       background-color: var(--rigid-disabled-bg);
@@ -122,7 +123,8 @@
       background-color: var(--hollow-active-bg, var(--hollow-hover-bg));
     }
 
-    &:disabled, &.disabled {
+    &:disabled,
+    &.disabled {
       --fg: var(--hollow-disabled-fg);
 
       border-color: var(--hollow-disabled-border);
@@ -153,7 +155,8 @@
       background-color: var(--ghost-active-bg, var(--ghost-hover-bg));
     }
 
-    &:disabled, &.disabled {
+    &:disabled,
+    &.disabled {
       --fg: var(--ghost-disabled-fg);
     }
 

@@ -9,7 +9,7 @@ export const useConfirmation = (
   const [open, setOpen] = React.useState<boolean>(false);
   const [props, setProps] = React.useState<ConfirmationProps>({
     title: "",
-    description: "",
+    description: ""
   });
 
   const element = React.useMemo(

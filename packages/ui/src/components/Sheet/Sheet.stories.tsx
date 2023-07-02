@@ -11,8 +11,8 @@ const meta: Meta<typeof Sheet> = {
   tags: ["autodocs"],
   args: {
     variant: "outlined",
-    style: { width: "256px", height: "256px" },
-  },
+    style: { width: "256px", height: "256px" }
+  }
 };
 
 export default meta;
@@ -22,18 +22,18 @@ export const Default: Story = {};
 
 export const VariantPlain: Story = {
   args: {
-    variant: "plain",
-  },
+    variant: "plain"
+  }
 };
 
 export const VariantOutlined: Story = {
   args: {
-    variant: "outlined",
-  },
+    variant: "outlined"
+  }
 };
 
 export const VariantElevated: Story = {
   args: {
-    variant: "elevated",
-  },
+    variant: "elevated"
+  }
 };

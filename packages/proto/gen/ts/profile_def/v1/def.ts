@@ -49,7 +49,10 @@ function createBaseGetProfileRequest(): GetProfileRequest {
 }
 
 export const GetProfileRequest = {
-  encode(message: GetProfileRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+  encode(
+    message: GetProfileRequest,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
     if (message.username !== "") {
       writer.uint32(10).string(message.username);
     }
@@ -60,7 +63,8 @@ export const GetProfileRequest = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): GetProfileRequest {
-    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    const reader =
+      input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseGetProfileRequest();
     while (reader.pos < end) {
@@ -92,22 +96,29 @@ export const GetProfileRequest = {
   fromJSON(object: any): GetProfileRequest {
     return {
       username: isSet(object.username) ? String(object.username) : "",
-      current_user_id: isSet(object.current_user_id) ? String(object.current_user_id) : undefined,
+      current_user_id: isSet(object.current_user_id)
+        ? String(object.current_user_id)
+        : undefined,
     };
   },
 
   toJSON(message: GetProfileRequest): unknown {
     const obj: any = {};
     message.username !== undefined && (obj.username = message.username);
-    message.current_user_id !== undefined && (obj.current_user_id = message.current_user_id);
+    message.current_user_id !== undefined &&
+      (obj.current_user_id = message.current_user_id);
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<GetProfileRequest>, I>>(base?: I): GetProfileRequest {
+  create<I extends Exact<DeepPartial<GetProfileRequest>, I>>(
+    base?: I
+  ): GetProfileRequest {
     return GetProfileRequest.fromPartial(base ?? {});
   },
 
-  fromPartial<I extends Exact<DeepPartial<GetProfileRequest>, I>>(object: I): GetProfileRequest {
+  fromPartial<I extends Exact<DeepPartial<GetProfileRequest>, I>>(
+    object: I
+  ): GetProfileRequest {
     const message = createBaseGetProfileRequest();
     message.username = object.username ?? "";
     message.current_user_id = object.current_user_id ?? undefined;
@@ -148,7 +159,10 @@ function createBaseGetProfileResponse(): GetProfileResponse {
 }
 
 export const GetProfileResponse = {
-  encode(message: GetProfileResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+  encode(
+    message: GetProfileResponse,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
     if (message.id !== "") {
       writer.uint32(10).string(message.id);
     }
@@ -234,7 +248,8 @@ export const GetProfileResponse = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): GetProfileResponse {
-    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    const reader =
+      input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseGetProfileResponse();
     while (reader.pos < end) {
@@ -447,24 +462,52 @@ export const GetProfileResponse = {
       bio: isSet(object.bio) ? String(object.bio) : undefined,
       location: isSet(object.location) ? String(object.location) : undefined,
       avatar_id: isSet(object.avatar_id) ? String(object.avatar_id) : undefined,
-      avatar_hex: isSet(object.avatar_hex) ? String(object.avatar_hex) : undefined,
+      avatar_hex: isSet(object.avatar_hex)
+        ? String(object.avatar_hex)
+        : undefined,
       banner_id: isSet(object.banner_id) ? String(object.banner_id) : undefined,
-      banner_hex: isSet(object.banner_hex) ? String(object.banner_hex) : undefined,
+      banner_hex: isSet(object.banner_hex)
+        ? String(object.banner_hex)
+        : undefined,
       created_at: isSet(object.created_at) ? String(object.created_at) : "",
-      public_flags: isSet(object.public_flags) ? Number(object.public_flags) : 0,
+      public_flags: isSet(object.public_flags)
+        ? Number(object.public_flags)
+        : 0,
       story_count: isSet(object.story_count) ? Number(object.story_count) : 0,
-      follower_count: isSet(object.follower_count) ? Number(object.follower_count) : 0,
-      following_count: isSet(object.following_count) ? Number(object.following_count) : undefined,
-      friend_count: isSet(object.friend_count) ? Number(object.friend_count) : undefined,
+      follower_count: isSet(object.follower_count)
+        ? Number(object.follower_count)
+        : 0,
+      following_count: isSet(object.following_count)
+        ? Number(object.following_count)
+        : undefined,
+      friend_count: isSet(object.friend_count)
+        ? Number(object.friend_count)
+        : undefined,
       is_private: isSet(object.is_private) ? Boolean(object.is_private) : false,
-      connections: Array.isArray(object?.connections) ? object.connections.map((e: any) => Connection.fromJSON(e)) : [],
-      is_following: isSet(object.is_following) ? Boolean(object.is_following) : undefined,
-      is_follower: isSet(object.is_follower) ? Boolean(object.is_follower) : undefined,
-      is_friend: isSet(object.is_friend) ? Boolean(object.is_friend) : undefined,
-      is_subscribed: isSet(object.is_subscribed) ? Boolean(object.is_subscribed) : undefined,
-      is_friend_request_sent: isSet(object.is_friend_request_sent) ? Boolean(object.is_friend_request_sent) : undefined,
-      is_blocked_by_user: isSet(object.is_blocked_by_user) ? Boolean(object.is_blocked_by_user) : undefined,
-      is_blocking: isSet(object.is_blocking) ? Boolean(object.is_blocking) : undefined,
+      connections: Array.isArray(object?.connections)
+        ? object.connections.map((e: any) => Connection.fromJSON(e))
+        : [],
+      is_following: isSet(object.is_following)
+        ? Boolean(object.is_following)
+        : undefined,
+      is_follower: isSet(object.is_follower)
+        ? Boolean(object.is_follower)
+        : undefined,
+      is_friend: isSet(object.is_friend)
+        ? Boolean(object.is_friend)
+        : undefined,
+      is_subscribed: isSet(object.is_subscribed)
+        ? Boolean(object.is_subscribed)
+        : undefined,
+      is_friend_request_sent: isSet(object.is_friend_request_sent)
+        ? Boolean(object.is_friend_request_sent)
+        : undefined,
+      is_blocked_by_user: isSet(object.is_blocked_by_user)
+        ? Boolean(object.is_blocked_by_user)
+        : undefined,
+      is_blocking: isSet(object.is_blocking)
+        ? Boolean(object.is_blocking)
+        : undefined,
       is_muted: isSet(object.is_muted) ? Boolean(object.is_muted) : undefined,
       is_self: isSet(object.is_self) ? Boolean(object.is_self) : undefined,
     };
@@ -475,7 +518,8 @@ export const GetProfileResponse = {
     message.id !== undefined && (obj.id = message.id);
     message.name !== undefined && (obj.name = message.name);
     message.username !== undefined && (obj.username = message.username);
-    message.status !== undefined && (obj.status = message.status ? Status.toJSON(message.status) : undefined);
+    message.status !== undefined &&
+      (obj.status = message.status ? Status.toJSON(message.status) : undefined);
     message.bio !== undefined && (obj.bio = message.bio);
     message.location !== undefined && (obj.location = message.location);
     message.avatar_id !== undefined && (obj.avatar_id = message.avatar_id);
@@ -483,41 +527,59 @@ export const GetProfileResponse = {
     message.banner_id !== undefined && (obj.banner_id = message.banner_id);
     message.banner_hex !== undefined && (obj.banner_hex = message.banner_hex);
     message.created_at !== undefined && (obj.created_at = message.created_at);
-    message.public_flags !== undefined && (obj.public_flags = Math.round(message.public_flags));
-    message.story_count !== undefined && (obj.story_count = Math.round(message.story_count));
-    message.follower_count !== undefined && (obj.follower_count = Math.round(message.follower_count));
-    message.following_count !== undefined && (obj.following_count = Math.round(message.following_count));
-    message.friend_count !== undefined && (obj.friend_count = Math.round(message.friend_count));
+    message.public_flags !== undefined &&
+      (obj.public_flags = Math.round(message.public_flags));
+    message.story_count !== undefined &&
+      (obj.story_count = Math.round(message.story_count));
+    message.follower_count !== undefined &&
+      (obj.follower_count = Math.round(message.follower_count));
+    message.following_count !== undefined &&
+      (obj.following_count = Math.round(message.following_count));
+    message.friend_count !== undefined &&
+      (obj.friend_count = Math.round(message.friend_count));
     message.is_private !== undefined && (obj.is_private = message.is_private);
     if (message.connections) {
-      obj.connections = message.connections.map((e) => e ? Connection.toJSON(e) : undefined);
+      obj.connections = message.connections.map((e) =>
+        e ? Connection.toJSON(e) : undefined
+      );
     } else {
       obj.connections = [];
     }
-    message.is_following !== undefined && (obj.is_following = message.is_following);
-    message.is_follower !== undefined && (obj.is_follower = message.is_follower);
+    message.is_following !== undefined &&
+      (obj.is_following = message.is_following);
+    message.is_follower !== undefined &&
+      (obj.is_follower = message.is_follower);
     message.is_friend !== undefined && (obj.is_friend = message.is_friend);
-    message.is_subscribed !== undefined && (obj.is_subscribed = message.is_subscribed);
-    message.is_friend_request_sent !== undefined && (obj.is_friend_request_sent = message.is_friend_request_sent);
-    message.is_blocked_by_user !== undefined && (obj.is_blocked_by_user = message.is_blocked_by_user);
-    message.is_blocking !== undefined && (obj.is_blocking = message.is_blocking);
+    message.is_subscribed !== undefined &&
+      (obj.is_subscribed = message.is_subscribed);
+    message.is_friend_request_sent !== undefined &&
+      (obj.is_friend_request_sent = message.is_friend_request_sent);
+    message.is_blocked_by_user !== undefined &&
+      (obj.is_blocked_by_user = message.is_blocked_by_user);
+    message.is_blocking !== undefined &&
+      (obj.is_blocking = message.is_blocking);
     message.is_muted !== undefined && (obj.is_muted = message.is_muted);
     message.is_self !== undefined && (obj.is_self = message.is_self);
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<GetProfileResponse>, I>>(base?: I): GetProfileResponse {
+  create<I extends Exact<DeepPartial<GetProfileResponse>, I>>(
+    base?: I
+  ): GetProfileResponse {
     return GetProfileResponse.fromPartial(base ?? {});
   },
 
-  fromPartial<I extends Exact<DeepPartial<GetProfileResponse>, I>>(object: I): GetProfileResponse {
+  fromPartial<I extends Exact<DeepPartial<GetProfileResponse>, I>>(
+    object: I
+  ): GetProfileResponse {
     const message = createBaseGetProfileResponse();
     message.id = object.id ?? "";
     message.name = object.name ?? "";
     message.username = object.username ?? "";
-    message.status = (object.status !== undefined && object.status !== null)
-      ? Status.fromPartial(object.status)
-      : undefined;
+    message.status =
+      object.status !== undefined && object.status !== null
+        ? Status.fromPartial(object.status)
+        : undefined;
     message.bio = object.bio ?? undefined;
     message.location = object.location ?? undefined;
     message.avatar_id = object.avatar_id ?? undefined;
@@ -531,7 +593,8 @@ export const GetProfileResponse = {
     message.following_count = object.following_count ?? undefined;
     message.friend_count = object.friend_count ?? undefined;
     message.is_private = object.is_private ?? false;
-    message.connections = object.connections?.map((e) => Connection.fromPartial(e)) || [];
+    message.connections =
+      object.connections?.map((e) => Connection.fromPartial(e)) || [];
     message.is_following = object.is_following ?? undefined;
     message.is_follower = object.is_follower ?? undefined;
     message.is_friend = object.is_friend ?? undefined;
@@ -564,20 +627,37 @@ var tsProtoGlobalThis: any = (() => {
   throw "Unable to locate global object";
 })();
 
-type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
+type Builtin =
+  | Date
+  | Function
+  | Uint8Array
+  | string
+  | number
+  | boolean
+  | undefined;
 
-export type DeepPartial<T> = T extends Builtin ? T
-  : T extends Array<infer U> ? Array<DeepPartial<U>> : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>>
-  : T extends {} ? { [K in keyof T]?: DeepPartial<T[K]> }
+export type DeepPartial<T> = T extends Builtin
+  ? T
+  : T extends Array<infer U>
+  ? Array<DeepPartial<U>>
+  : T extends ReadonlyArray<infer U>
+  ? ReadonlyArray<DeepPartial<U>>
+  : T extends {}
+  ? { [K in keyof T]?: DeepPartial<T[K]> }
   : Partial<T>;
 
 type KeysOfUnion<T> = T extends T ? keyof T : never;
-export type Exact<P, I extends P> = P extends Builtin ? P
-  : P & { [K in keyof P]: Exact<P[K], I[K]> } & { [K in Exclude<keyof I, KeysOfUnion<P>>]: never };
+export type Exact<P, I extends P> = P extends Builtin
+  ? P
+  : P & { [K in keyof P]: Exact<P[K], I[K]> } & {
+      [K in Exclude<keyof I, KeysOfUnion<P>>]: never;
+    };
 
 function longToNumber(long: Long): number {
   if (long.gt(Number.MAX_SAFE_INTEGER)) {
-    throw new tsProtoGlobalThis.Error("Value is larger than Number.MAX_SAFE_INTEGER");
+    throw new tsProtoGlobalThis.Error(
+      "Value is larger than Number.MAX_SAFE_INTEGER"
+    );
   }
   return long.toNumber();
 }

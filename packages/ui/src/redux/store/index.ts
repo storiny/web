@@ -3,12 +3,12 @@
 import {
   combineReducers,
   configureStore,
-  PreloadedState,
+  PreloadedState
 } from "@reduxjs/toolkit";
 import {
   createStateSyncMiddleware,
   initStateWithPrevTab,
-  withReduxStateSync,
+  withReduxStateSync
 } from "redux-state-sync";
 
 import { apiSlice } from "~/redux/features";
@@ -29,7 +29,7 @@ export const rootReducer = combineReducers({
   banner: bannerSlice,
   notification: notificationSlice,
   toast: toastSlice,
-  [apiSlice.reducerPath]: apiSlice.reducer,
+  [apiSlice.reducerPath]: apiSlice.reducer
 });
 
 /**
@@ -49,7 +49,7 @@ export const setupStore = (
       rootReducer,
       (prevState: AppState, nextState: AppState): AppState => ({
         ...nextState,
-        api: prevState.api,
+        api: prevState.api
       })
     ),
     preloadedState: {
@@ -60,8 +60,8 @@ export const setupStore = (
           typeof loggedIn !== "undefined"
             ? loggedIn
             : preloadedState.auth?.loggedIn
-        ),
-      },
+        )
+      }
     },
     devTools: !["production", "test"].includes(process.env.NODE_ENV || ""),
     middleware: (getDefaultMiddleware) =>
@@ -77,18 +77,18 @@ export const setupStore = (
                 predicate: (action) => !/api\//.test(action.type),
                 prepareState: (state: AppState) => ({
                   ...state,
-                  api: undefined,
+                  api: undefined
                 }),
                 receiveState: (
                   prevState: AppState,
                   nextState: AppState
                 ): AppState => ({
                   ...nextState,
-                  api: prevState.api,
-                }),
-              }),
-            ]),
-      ]),
+                  api: prevState.api
+                })
+              })
+            ])
+      ])
   });
 
 export const store = setupStore();

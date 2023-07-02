@@ -14,7 +14,7 @@ describe("<Story />", () => {
 
   it("renders when logged in", () => {
     renderTestWithProvider(<Story enableSsr story={testStory} />, {
-      loggedIn: true,
+      loggedIn: true
     });
   });
 
@@ -31,7 +31,7 @@ describe("<Story />", () => {
     const { container } = renderTestWithProvider(
       <Story enableSsr story={testStory} />,
       {
-        loggedIn: true,
+        loggedIn: true
       }
     );
 

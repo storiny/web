@@ -10,8 +10,8 @@ const meta: Meta<typeof ScrollArea> = {
   component: ScrollArea,
   tags: ["autodocs"],
   args: {
-    enableHorizontal: false,
-  },
+    enableHorizontal: false
+  }
 };
 
 export default meta;
@@ -23,13 +23,13 @@ export const Default: Story = {
       border: "1px solid var(--divider)",
       borderRadius: "var(--radius-sm)",
       width: "256px",
-      height: "224px",
+      height: "224px"
     },
     children: (
       <div
         className={"t-body-2 t-minor"}
         style={{
-          padding: "12px 14px",
+          padding: "12px 14px"
         }}
       >
         The old bookstore stood as a sanctuary of knowledge. Rows upon rows of
@@ -39,8 +39,8 @@ export const Default: Story = {
         beams of sunlight filtered through the dusty windows, casting a gentle
         glow upon the readers lost in their literary journeys.
       </div>
-    ),
-  },
+    )
+  }
 };
 
 export const HorizontalScroll: Story = {
@@ -52,7 +52,7 @@ export const HorizontalScroll: Story = {
       <div
         className={"t-body-2 t-minor"}
         style={{
-          padding: "12px 14px",
+          padding: "12px 14px"
         }}
       >
         {[...Array(50)].map((_, index) => (
@@ -66,20 +66,20 @@ export const HorizontalScroll: Story = {
           </div>
         ))}
       </div>
-    ),
-  },
+    )
+  }
 };
 
 export const SizeLG: Story = {
   args: {
     ...Default.args,
-    size: "lg",
-  },
+    size: "lg"
+  }
 };
 
 export const SizeMD: Story = {
   args: {
     ...Default.args,
-    size: "md",
-  },
+    size: "md"
+  }
 };

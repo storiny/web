@@ -44,7 +44,7 @@ const Actions = ({ story }: { story: Story }): React.ReactElement => {
           title: `${isBlocking ? "Unblock" : "Block"} @${story.user.username}?`,
           description: isBlocking
             ? `The public content you publish will be available to them as well as the ability to follow you.`
-            : `Your feed will not include their content, and they will not be able to follow you or interact with your profile.`,
+            : `Your feed will not include their content, and they will not be able to follow you or interact with your profile.`
         });
       }}
     >

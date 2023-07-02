@@ -28,7 +28,8 @@
 
   padding: 0;
 
-  &.fixed-color, &:hover {
+  &.fixed-color,
+  &:hover {
     --fg: var(--fg-major);
   }
 }
@@ -40,7 +41,8 @@
   border-radius: var(--radius-md);
   padding: 0 4px;
 
-  &.fixed-color, &:hover {
+  &.fixed-color,
+  &:hover {
     --bg: var(--beryl-100);
     --fg: var(--beryl-300);
   }

@@ -14,7 +14,8 @@
   border-radius: var(--radius);
   background-color: transparent;
 
-  &.disabled, &.loading {
+  &.disabled,
+  &.loading {
     pointer-events: none;
   }
 }

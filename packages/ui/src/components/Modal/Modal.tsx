@@ -6,7 +6,7 @@ import {
   Overlay,
   Portal,
   Root,
-  Trigger,
+  Trigger
 } from "@radix-ui/react-dialog";
 import clsx from "clsx";
 import React from "react";
@@ -80,7 +80,7 @@ const Modal = forwardRef<ModalProps, "div">((props, ref) => {
               {...(isTabbedMode && {
                 ...slotProps?.tabs,
                 orientation: "vertical",
-                activationMode: "manual",
+                activationMode: "manual"
               })}
             >
               {sidebar && (

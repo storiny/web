@@ -12,7 +12,7 @@ import Toc from "./toc";
 const SuspendedLegalRightSidebarContent = (): React.ReactElement => {
   const pathname = usePathname();
   return (
-    <div className={clsx("flex-col", styles.content)}>
+    <div className={clsx("flex-col", styles.x, styles.content)}>
       <Typography className={clsx("t-medium", "t-minor")}>
         In this document
       </Typography>

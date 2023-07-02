@@ -22,13 +22,13 @@ import { selectLoggedIn } from "~/redux/features/auth/selectors";
 import {
   selectBlock,
   selectFollower,
-  selectMute,
+  selectMute
 } from "~/redux/features/entities/selectors";
 import {
   syncWithUser,
   toggleBlock,
   toggleFollower,
-  toggleMute,
+  toggleMute
 } from "~/redux/features/entities/slice";
 import { useAppSelector } from "~/redux/hooks";
 import { breakpoints } from "~/theme/breakpoints";
@@ -54,7 +54,7 @@ const Actions = ({ user }: { user: User }): React.ReactElement | null => {
           title: `${isBlocking ? "Unblock" : "Block"} @${user.username}?`,
           description: isBlocking
             ? `The public content you publish will be available to them as well as the ability to follow you.`
-            : `Your feed will not include their content, and they will not be able to follow you or interact with your profile.`,
+            : `Your feed will not include their content, and they will not be able to follow you or interact with your profile.`
         });
       }}
     >

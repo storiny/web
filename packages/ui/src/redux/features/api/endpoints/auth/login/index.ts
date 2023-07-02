@@ -26,7 +26,7 @@ export const login = (builder: ApiQueryBuilder) =>
       method: "POST",
       body,
       headers: {
-        "Content-type": ContentType.JSON,
-      },
-    }),
+        "Content-type": ContentType.JSON
+      }
+    })
   });

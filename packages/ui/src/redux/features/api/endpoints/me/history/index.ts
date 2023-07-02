@@ -21,7 +21,7 @@ export const getHistory = (builder: ApiQueryBuilder) =>
       `${endpointName}:${queryArgs.query}`,
     transformResponse: (response: Story[]) => ({
       items: response,
-      hasMore: response.length === ITEMS_PER_PAGE,
+      hasMore: response.length === ITEMS_PER_PAGE
     }),
     merge: (currentCache, newItems) => {
       currentCache.items.push(
@@ -33,5 +33,5 @@ export const getHistory = (builder: ApiQueryBuilder) =>
     },
     forceRefetch: ({ currentArg, previousArg }) =>
       currentArg?.page !== previousArg?.page ||
-      currentArg?.query !== previousArg?.query,
+      currentArg?.query !== previousArg?.query
   });

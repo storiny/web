@@ -5,9 +5,9 @@ describe("webShare", () => {
     // Mock the web share api
     Object.defineProperty(global, "navigator", {
       value: {
-        share: jest.fn().mockImplementationOnce(() => Promise.resolve()),
+        share: jest.fn().mockImplementationOnce(() => Promise.resolve())
       },
-      configurable: true,
+      configurable: true
     });
   });
 
@@ -26,14 +26,14 @@ describe("webShare", () => {
   it("copies text to clipboard when web share api is not available", async () => {
     Object.defineProperty(navigator, "share", {
       value: undefined,
-      configurable: true,
+      configurable: true
     });
 
     Object.defineProperty(navigator, "clipboard", {
       value: {
-        writeText: jest.fn().mockImplementationOnce(() => Promise.resolve()),
+        writeText: jest.fn().mockImplementationOnce(() => Promise.resolve())
       },
-      configurable: true,
+      configurable: true
     });
 
     await webShare({ text: "test", url: "https://storiny.com" });

@@ -15,7 +15,7 @@ import { getQueryErrorType, useGetHomeFeedQuery } from "~/redux/features";
 import styles from "./styles.module.scss";
 
 const EmptyState = dynamic(() => import("./empty-state"), {
-  loading: () => <SuspenseLoader />,
+  loading: () => <SuspenseLoader />
 });
 
 export type IndexTabValue = "suggested" | "friends-and-following";
@@ -24,17 +24,17 @@ export type IndexTabValue = "suggested" | "friends-and-following";
 
 const PageHeader = ({
   value,
-  onChange,
+  onChange
 }: {
   onChange: (newValue: IndexTabValue) => void;
   value: IndexTabValue;
 }): React.ReactElement => (
   <Tabs
-    className={clsx("page-header", styles.tabs)}
+    className={clsx("page-header", styles.x, styles.tabs)}
     onValueChange={(newValue): void => onChange(newValue as IndexTabValue)}
     value={value}
   >
-    <TabsList className={clsx("full-w", styles["tabs-list"])}>
+    <TabsList className={clsx("full-w", styles.x, styles["tabs-list"])}>
       <Tab aria-controls={undefined} value={"suggested"}>
         Suggested
       </Tab>
@@ -51,7 +51,7 @@ const Page = (): React.ReactElement => {
   const { data, isLoading, isFetching, isError, error, refetch } =
     useGetHomeFeedQuery({
       page,
-      type: value,
+      type: value
     });
   const { items = [], hasMore } = data || {};
 
@@ -73,7 +73,7 @@ const Page = (): React.ReactElement => {
         <ErrorState
           autoSize
           componentProps={{
-            button: { loading: isFetching },
+            button: { loading: isFetching }
           }}
           retry={refetch}
           type={getQueryErrorType(error)}

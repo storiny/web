@@ -18,7 +18,7 @@ const entityTypeToTitleMap: Record<
   following: "No following users",
   followers: "No followers",
   friends: "No friends",
-  stories: "No stories published yet",
+  stories: "No stories published yet"
 };
 
 /**
@@ -51,13 +51,13 @@ const entityTypeToDescriptionMap = (
       Public stories posted by <span className={"t-medium"}>@{username}</span>{" "}
       will appear here as soon as they are published.
     </>
-  ),
+  )
 });
 
 const ProfileEmptyState = ({
   query,
   username,
-  entityType,
+  entityType
 }: ProfileEmptyStateProps): React.ReactElement => (
   <CustomState
     autoSize

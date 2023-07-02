@@ -3,9 +3,13 @@ import _m0 from "protobufjs/minimal";
 
 export const protobufPackage = "token_def.v1";
 
-export const TokenType = { EMAIL_VERIFICATION: 0, PASSWORD_RESET: 1, UNRECOGNIZED: -1 } as const;
+export const TokenType = {
+  EMAIL_VERIFICATION: 0,
+  PASSWORD_RESET: 1,
+  UNRECOGNIZED: -1,
+} as const;
 
-export type TokenType = typeof TokenType[keyof typeof TokenType];
+export type TokenType = (typeof TokenType)[keyof typeof TokenType];
 
 export function tokenTypeFromJSON(object: any): TokenType {
   switch (object) {
@@ -49,15 +53,17 @@ export interface VerifyEmailRequest {
   identifier: string;
 }
 
-export interface VerifyEmailResponse {
-}
+export interface VerifyEmailResponse {}
 
 function createBaseGetTokenRequest(): GetTokenRequest {
   return { identifier: "", type: 0 };
 }
 
 export const GetTokenRequest = {
-  encode(message: GetTokenRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+  encode(
+    message: GetTokenRequest,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
     if (message.identifier !== "") {
       writer.uint32(10).string(message.identifier);
     }
@@ -68,7 +74,8 @@ export const GetTokenRequest = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): GetTokenRequest {
-    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    const reader =
+      input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseGetTokenRequest();
     while (reader.pos < end) {
@@ -111,11 +118,15 @@ export const GetTokenRequest = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<GetTokenRequest>, I>>(base?: I): GetTokenRequest {
+  create<I extends Exact<DeepPartial<GetTokenRequest>, I>>(
+    base?: I
+  ): GetTokenRequest {
     return GetTokenRequest.fromPartial(base ?? {});
   },
 
-  fromPartial<I extends Exact<DeepPartial<GetTokenRequest>, I>>(object: I): GetTokenRequest {
+  fromPartial<I extends Exact<DeepPartial<GetTokenRequest>, I>>(
+    object: I
+  ): GetTokenRequest {
     const message = createBaseGetTokenRequest();
     message.identifier = object.identifier ?? "";
     message.type = object.type ?? 0;
@@ -128,7 +139,10 @@ function createBaseGetTokenResponse(): GetTokenResponse {
 }
 
 export const GetTokenResponse = {
-  encode(message: GetTokenResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+  encode(
+    message: GetTokenResponse,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
     if (message.is_valid === true) {
       writer.uint32(8).bool(message.is_valid);
     }
@@ -139,7 +153,8 @@ export const GetTokenResponse = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): GetTokenResponse {
-    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    const reader =
+      input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseGetTokenResponse();
     while (reader.pos < end) {
@@ -182,11 +197,15 @@ export const GetTokenResponse = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<GetTokenResponse>, I>>(base?: I): GetTokenResponse {
+  create<I extends Exact<DeepPartial<GetTokenResponse>, I>>(
+    base?: I
+  ): GetTokenResponse {
     return GetTokenResponse.fromPartial(base ?? {});
   },
 
-  fromPartial<I extends Exact<DeepPartial<GetTokenResponse>, I>>(object: I): GetTokenResponse {
+  fromPartial<I extends Exact<DeepPartial<GetTokenResponse>, I>>(
+    object: I
+  ): GetTokenResponse {
     const message = createBaseGetTokenResponse();
     message.is_valid = object.is_valid ?? false;
     message.is_expired = object.is_expired ?? false;
@@ -199,7 +218,10 @@ function createBaseVerifyEmailRequest(): VerifyEmailRequest {
 }
 
 export const VerifyEmailRequest = {
-  encode(message: VerifyEmailRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+  encode(
+    message: VerifyEmailRequest,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
     if (message.identifier !== "") {
       writer.uint32(10).string(message.identifier);
     }
@@ -207,7 +229,8 @@ export const VerifyEmailRequest = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): VerifyEmailRequest {
-    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    const reader =
+      input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseVerifyEmailRequest();
     while (reader.pos < end) {
@@ -230,7 +253,9 @@ export const VerifyEmailRequest = {
   },
 
   fromJSON(object: any): VerifyEmailRequest {
-    return { identifier: isSet(object.identifier) ? String(object.identifier) : "" };
+    return {
+      identifier: isSet(object.identifier) ? String(object.identifier) : "",
+    };
   },
 
   toJSON(message: VerifyEmailRequest): unknown {
@@ -239,11 +264,15 @@ export const VerifyEmailRequest = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<VerifyEmailRequest>, I>>(base?: I): VerifyEmailRequest {
+  create<I extends Exact<DeepPartial<VerifyEmailRequest>, I>>(
+    base?: I
+  ): VerifyEmailRequest {
     return VerifyEmailRequest.fromPartial(base ?? {});
   },
 
-  fromPartial<I extends Exact<DeepPartial<VerifyEmailRequest>, I>>(object: I): VerifyEmailRequest {
+  fromPartial<I extends Exact<DeepPartial<VerifyEmailRequest>, I>>(
+    object: I
+  ): VerifyEmailRequest {
     const message = createBaseVerifyEmailRequest();
     message.identifier = object.identifier ?? "";
     return message;
@@ -255,12 +284,16 @@ function createBaseVerifyEmailResponse(): VerifyEmailResponse {
 }
 
 export const VerifyEmailResponse = {
-  encode(_: VerifyEmailResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+  encode(
+    _: VerifyEmailResponse,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
     return writer;
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): VerifyEmailResponse {
-    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    const reader =
+      input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseVerifyEmailResponse();
     while (reader.pos < end) {
@@ -284,26 +317,45 @@ export const VerifyEmailResponse = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<VerifyEmailResponse>, I>>(base?: I): VerifyEmailResponse {
+  create<I extends Exact<DeepPartial<VerifyEmailResponse>, I>>(
+    base?: I
+  ): VerifyEmailResponse {
     return VerifyEmailResponse.fromPartial(base ?? {});
   },
 
-  fromPartial<I extends Exact<DeepPartial<VerifyEmailResponse>, I>>(_: I): VerifyEmailResponse {
+  fromPartial<I extends Exact<DeepPartial<VerifyEmailResponse>, I>>(
+    _: I
+  ): VerifyEmailResponse {
     const message = createBaseVerifyEmailResponse();
     return message;
   },
 };
 
-type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
+type Builtin =
+  | Date
+  | Function
+  | Uint8Array
+  | string
+  | number
+  | boolean
+  | undefined;
 
-export type DeepPartial<T> = T extends Builtin ? T
-  : T extends Array<infer U> ? Array<DeepPartial<U>> : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>>
-  : T extends {} ? { [K in keyof T]?: DeepPartial<T[K]> }
+export type DeepPartial<T> = T extends Builtin
+  ? T
+  : T extends Array<infer U>
+  ? Array<DeepPartial<U>>
+  : T extends ReadonlyArray<infer U>
+  ? ReadonlyArray<DeepPartial<U>>
+  : T extends {}
+  ? { [K in keyof T]?: DeepPartial<T[K]> }
   : Partial<T>;
 
 type KeysOfUnion<T> = T extends T ? keyof T : never;
-export type Exact<P, I extends P> = P extends Builtin ? P
-  : P & { [K in keyof P]: Exact<P[K], I[K]> } & { [K in Exclude<keyof I, KeysOfUnion<P>>]: never };
+export type Exact<P, I extends P> = P extends Builtin
+  ? P
+  : P & { [K in keyof P]: Exact<P[K], I[K]> } & {
+      [K in Exclude<keyof I, KeysOfUnion<P>>]: never;
+    };
 
 function isSet(value: any): boolean {
   return value !== null && value !== undefined;

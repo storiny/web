@@ -13,10 +13,10 @@ const meta: Meta<typeof MultiSelect> = {
     options: [
       { value: "one", label: "First option" },
       { value: "two", label: "Second option" },
-      { value: "three", label: "Third option" },
-    ],
+      { value: "three", label: "Third option" }
+    ]
   },
-  tags: ["autodocs"],
+  tags: ["autodocs"]
 };
 
 export default meta;
@@ -26,24 +26,24 @@ export const Default: Story = {};
 
 export const ColorInverted: Story = {
   args: {
-    color: "inverted",
-  },
+    color: "inverted"
+  }
 };
 
 export const ColorRuby: Story = {
   args: {
-    color: "ruby",
-  },
+    color: "ruby"
+  }
 };
 
 export const SizeLG: Story = {
   args: {
-    size: "lg",
-  },
+    size: "lg"
+  }
 };
 
 export const SizeMD: Story = {
   args: {
-    size: "md",
-  },
+    size: "md"
+  }
 };

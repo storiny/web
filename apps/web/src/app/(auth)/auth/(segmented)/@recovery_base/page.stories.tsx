@@ -12,9 +12,9 @@ const meta: Meta<typeof RecoveryBasePage> = {
   title: "pages/Auth/@recovery_base",
   component: RecoveryBasePage,
   parameters: {
-    layout: "fullscreen",
+    layout: "fullscreen"
   },
-  tags: ["autodocs"],
+  tags: ["autodocs"]
 };
 
 export default meta;
@@ -28,6 +28,6 @@ export const Default: Story = {
           <Story />
         </AuthLayout>,
         { ignorePrimitiveProviders: true }
-      ),
-  ],
+      )
+  ]
 };

@@ -11,7 +11,7 @@ import {
   ButtonColor,
   ButtonProps,
   ButtonSize,
-  ButtonVariant,
+  ButtonVariant
 } from "./Button.props";
 
 describe("<Button />", () => {
@@ -81,7 +81,7 @@ describe("<Button />", () => {
         decorator={<span>Decorator</span>}
         slotProps={
           {
-            decorator: { "data-testid": "decorator" },
+            decorator: { "data-testid": "decorator" }
           } as ButtonProps["slotProps"]
         }
       >
@@ -98,7 +98,7 @@ describe("<Button />", () => {
         decorator={<span>Decorator</span>}
         slotProps={
           {
-            decorator: { "data-testid": "decorator" },
+            decorator: { "data-testid": "decorator" }
           } as ButtonProps["slotProps"]
         }
       >

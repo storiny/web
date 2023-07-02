@@ -42,7 +42,7 @@ const validColors = [
   "#FFF",
   "#fff",
   "#f3f",
-  "#111",
+  "#111"
 ];
 
 const invalidColors = [
@@ -102,7 +102,7 @@ const invalidColors = [
   "#123fff00}",
   "foo #ae3f4cff bar",
   "#f3f0}",
-  "foo #e7ff bar",
+  "foo #e7ff bar"
 ];
 
 describe("isHexColor", () => {

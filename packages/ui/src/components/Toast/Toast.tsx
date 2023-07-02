@@ -20,7 +20,7 @@ const severityToComponentMap: Record<ToastSeverity, React.ReactNode> = {
   error: <XSquareIcon />,
   info: <InfoIcon />,
   success: <CheckSquareIcon />,
-  warning: <AlertSquareIcon />,
+  warning: <AlertSquareIcon />
 };
 
 const Toast = forwardRef<ToastProps, "li">((props, ref) => {

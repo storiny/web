@@ -6,7 +6,8 @@
 }
 
 /* Mention and tag */
-.mention, .tag {
+.mention,
+.tag {
   background-color: var(--bg);
   color: var(--fg);
   border-radius: var(--radius-lg);
@@ -57,7 +58,7 @@
     padding-left: 18px;
 
     &::before {
-      content: '';
+      content: "";
       position: absolute;
       width: 9px;
       height: 9px;

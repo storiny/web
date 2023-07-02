@@ -14,7 +14,7 @@ describe("<User />", () => {
 
   it("renders when logged in", () => {
     renderTestWithProvider(<User user={testUser} />, {
-      loggedIn: true,
+      loggedIn: true
     });
   });
 
@@ -27,7 +27,7 @@ describe("<User />", () => {
 
   it("does not have any accessibility violations when logged in", async () => {
     const { container } = renderTestWithProvider(<User user={testUser} />, {
-      loggedIn: true,
+      loggedIn: true
     });
 
     await waitFor(async () =>

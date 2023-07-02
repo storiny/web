@@ -1,6 +1,7 @@
 "use client";
 
 import { DEFAULT_WPM, userProps } from "@storiny/shared";
+import { clsx } from "clsx";
 import React from "react";
 
 import Button from "~/components/Button";
@@ -48,11 +49,11 @@ const Page = (): React.ReactElement => {
       <Spacer orientation={"vertical"} size={5} />
       <ScrollArea
         as={"article"}
-        className={styles["scroll-area"]}
+        className={clsx(styles.x, styles["scroll-area"])}
         slotProps={{
           viewport: {
-            className: styles.viewport,
-          },
+            className: clsx(styles.x, styles.viewport)
+          }
         }}
         type={"auto"}
       >

@@ -11,21 +11,21 @@ import Option from "~/components/Option";
 import FormSelect from "./FormSelect";
 
 const sampleSchema = z.object({
-  sample: z.string(),
+  sample: z.string()
 });
 
 type SampleSchema = z.infer<typeof sampleSchema>;
 
 const Component = ({
-  children,
+  children
 }: {
   children: React.ReactNode;
 }): React.ReactElement => {
   const form = useForm<SampleSchema>({
     resolver: zodResolver(sampleSchema),
     defaultValues: {
-      sample: "option-1",
-    },
+      sample: "option-1"
+    }
   });
 
   return <Form providerProps={form}>{children}</Form>;
@@ -39,7 +39,7 @@ const meta: Meta<typeof FormSelect> = {
       <Component>
         <Story />
       </Component>
-    ),
+    )
   ],
   tags: ["autodocs"],
   args: {
@@ -53,13 +53,13 @@ const meta: Meta<typeof FormSelect> = {
     size: "md",
     slotProps: {
       trigger: {
-        "aria-label": "Sample select",
-      },
+        "aria-label": "Sample select"
+      }
     },
     color: "inverted",
     name: "sample",
-    style: { maxWidth: "300px" },
-  },
+    style: { maxWidth: "300px" }
+  }
 };
 
 export default meta;

@@ -11,7 +11,7 @@ export const useClipboard = (): ((
   {
     onCopyStart,
     onCopyEnd,
-    disableToast,
+    disableToast
   }?: {
     disableToast?: boolean;
     onCopyEnd?: () => void;
@@ -25,7 +25,7 @@ export const useClipboard = (): ((
     {
       onCopyStart,
       onCopyEnd,
-      disableToast,
+      disableToast
     }: {
       disableToast?: boolean;
       onCopyEnd?: () => void;

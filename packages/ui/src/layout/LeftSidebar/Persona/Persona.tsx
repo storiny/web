@@ -25,7 +25,7 @@ const LeftSidebarPersona = () => {
     return (
       <ErrorState
         componentProps={{
-          button: { loading },
+          button: { loading }
         }}
         retry={(): void => {
           dispatch(fetchUser());

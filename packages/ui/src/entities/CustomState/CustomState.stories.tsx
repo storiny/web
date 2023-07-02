@@ -11,7 +11,7 @@ const meta: Meta<typeof CustomState> = {
   title: "Entities/CustomState",
   component: CustomState,
   args: { size: "md", title: "Title", description: "Description" },
-  tags: ["autodocs"],
+  tags: ["autodocs"]
 };
 
 export default meta;
@@ -21,18 +21,18 @@ export const Default: Story = {};
 
 export const WithIcon: Story = {
   args: {
-    icon: <UserIcon />,
-  },
+    icon: <UserIcon />
+  }
 };
 
 export const SizeMD: Story = {
   args: {
-    size: "md",
-  },
+    size: "md"
+  }
 };
 
 export const SizeSM: Story = {
   args: {
-    size: "sm",
-  },
+    size: "sm"
+  }
 };

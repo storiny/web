@@ -47,7 +47,7 @@ describe("<LoginForm />", () => {
       expect(mockSubmit).toHaveBeenCalledWith({
         email: "someone@example.com",
         password: "test-password",
-        "remember-me": true,
+        "remember-me": true
       });
       expect(screen.queryByRole("alert")).not.toBeInTheDocument();
     });

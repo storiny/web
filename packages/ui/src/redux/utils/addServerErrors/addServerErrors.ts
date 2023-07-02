@@ -13,6 +13,6 @@ export const addServerErrors = <T>(
   Object.keys(errors).forEach((key) => {
     setError(key as keyof T, {
       type: "server",
-      message: errors[key as keyof T]!.join(". "),
+      message: errors[key as keyof T]!.join(". ")
     });
   });

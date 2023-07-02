@@ -47,7 +47,8 @@
       }
     }
 
-    &[data-state="active"], &:focus-visible {
+    &[data-state="active"],
+    &:focus-visible {
       --fg: var(--fg-major);
       --indicator-bg: var(--inverted-400);
       --icon-stroke-width: 0.8px;

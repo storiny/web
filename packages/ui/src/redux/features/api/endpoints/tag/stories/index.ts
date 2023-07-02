@@ -21,7 +21,7 @@ export const getTagStories = (builder: ApiQueryBuilder) =>
       `${endpointName}:${queryArgs.tagName}:${queryArgs.sort}:${queryArgs.query}`,
     transformResponse: (response: Story[]) => ({
       items: response,
-      hasMore: response.length === ITEMS_PER_PAGE,
+      hasMore: response.length === ITEMS_PER_PAGE
     }),
     merge: (currentCache, newItems) => {
       currentCache.items.push(
@@ -35,5 +35,5 @@ export const getTagStories = (builder: ApiQueryBuilder) =>
       currentArg?.tagName !== previousArg?.tagName ||
       currentArg?.page !== previousArg?.page ||
       currentArg?.sort !== previousArg?.sort ||
-      currentArg?.query !== previousArg?.query,
+      currentArg?.query !== previousArg?.query
   });

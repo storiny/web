@@ -35,8 +35,8 @@ describe("<Toast />", () => {
         await axe(baseElement, {
           rules: {
             "aria-allowed-role": { enabled: false },
-            list: { enabled: false },
-          },
+            list: { enabled: false }
+          }
         })
       ).toHaveNoViolations()
     );
@@ -78,8 +78,8 @@ describe("<Toast />", () => {
               severity={severity}
               slotProps={{
                 decorator: {
-                  "data-testid": "decorator",
-                } as React.ComponentPropsWithoutRef<"span">,
+                  "data-testid": "decorator"
+                } as React.ComponentPropsWithoutRef<"span">
               }}
             >
               Test
@@ -100,7 +100,7 @@ describe("<Toast />", () => {
           open
           slotProps={
             {
-              close: { "data-testid": "close" },
+              close: { "data-testid": "close" }
             } as ToastProps["slotProps"]
           }
         >

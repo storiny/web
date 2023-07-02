@@ -22,7 +22,7 @@ describe("<Navbar />", () => {
 
   it("does not have any accessibility violations when logged in", async () => {
     const { container } = renderTestWithProvider(<Navbar />, {
-      loggedIn: true,
+      loggedIn: true
     });
 
     await waitFor(async () =>

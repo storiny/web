@@ -136,8 +136,8 @@ const Footer = (props: FooterProps): React.ReactElement => {
               >
                 Help center
               </ListItem>
-              <ListItem href={"/policies"} level={"body2"}>
-                Policies
+              <ListItem href={"/legal"} level={"body2"}>
+                Legal
               </ListItem>
               <ListItem
                 href={"https://help.storiny.com/contact"}

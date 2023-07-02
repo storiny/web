@@ -10,11 +10,11 @@ import styles from "./layout.module.scss";
 import AuthState from "./state";
 
 const AuthLayout = ({
-  children,
+  children
 }: {
   children: React.ReactNode;
 }): React.ReactElement => (
-  <div className={"grid minimal"}>
+  <div className={clsx("grid", "minimal")}>
     <Navbar variant={"minimal"} />
     <div
       className={clsx("full-w", "full-h")}
@@ -31,8 +31,8 @@ const AuthLayout = ({
         style={{ objectFit: "cover", opacity: 0.45 }}
       />
     </div>
-    <main className={styles.main}>
-      <div className={clsx("flex-col", styles.container)}>
+    <main className={clsx(styles.x, styles.main)}>
+      <div className={clsx("flex-col", styles.x, styles.container)}>
         <AuthState>{children}</AuthState>
       </div>
     </main>

@@ -1,6 +1,6 @@
 import {
   ToastCloseProps,
-  ToastProps as ToastPrimitiveProps,
+  ToastProps as ToastPrimitiveProps
 } from "@radix-ui/react-toast";
 import React from "react";
 

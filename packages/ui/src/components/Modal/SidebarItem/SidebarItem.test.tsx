@@ -75,7 +75,7 @@ describe("<ModalSidebarItem />", () => {
             decorator={<span />}
             slotProps={
               {
-                decorator: { "data-testid": "decorator" },
+                decorator: { "data-testid": "decorator" }
               } as ModalSidebarItemProps["slotProps"]
             }
             value={"test"}

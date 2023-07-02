@@ -27,7 +27,7 @@ const avatarSizeToImgSizeMap: Record<AvatarSize, ImageSize> = {
   lg: ImageSize.W_64,
   md: ImageSize.W_32,
   sm: ImageSize.W_24,
-  xs: ImageSize.W_24,
+  xs: ImageSize.W_24
 };
 
 const Avatar = forwardRef<AvatarProps, "span">((props, ref) => {
@@ -70,7 +70,7 @@ const Avatar = forwardRef<AvatarProps, "span">((props, ref) => {
       style={
         {
           ...(hex && { "--hex": `#${hex}` }),
-          ...style,
+          ...style
         } as React.CSSProperties
       }
     >
@@ -98,7 +98,7 @@ const Avatar = forwardRef<AvatarProps, "span">((props, ref) => {
                 ? "var(--bg-elevation-lg)"
                 : `hsl(${strToHue(label || alt)} 35% 50%)`,
               "--fg": children ? "var(--fg-major)" : "var(--snow)",
-              ...slotProps?.fallback?.style,
+              ...slotProps?.fallback?.style
             } as React.CSSProperties
           }
         >

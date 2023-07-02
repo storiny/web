@@ -1,5 +1,6 @@
 import "server-only";
 
+import { clsx } from "clsx";
 import React from "react";
 
 import SplashScreen from "~/layout/SplashScreen";
@@ -19,7 +20,7 @@ const LegalLayout = ({
     <LeftSidebar />
     <main>
       <Dropdown />
-      <article className={styles.article}>{children}</article>
+      <article className={clsx(styles.x, styles.article)}>{children}</article>
       <LegalFooter />
     </main>
     <RightSidebar />

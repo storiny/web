@@ -13,7 +13,7 @@ export const useNotification = () => {
     {
       icon,
       primaryText,
-      secondaryText,
+      secondaryText
     }: {
       icon?: NotificationIcon;
       primaryText?: string;

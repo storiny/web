@@ -15,7 +15,7 @@ describe("useDebounce", () => {
   it("returns debounced value", () => {
     const value = "test";
     const {
-      result: { current: debouncedValue },
+      result: { current: debouncedValue }
     } = renderHookWithProvider(() => useDebounce(value));
 
     expect(value).toEqual(debouncedValue);

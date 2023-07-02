@@ -17,7 +17,7 @@ describe("<Avatar />", () => {
         hex={"fff"}
         slotProps={
           {
-            fallback: { "data-testid": "fallback", delayMs: 0 },
+            fallback: { "data-testid": "fallback", delayMs: 0 }
           } as AvatarProps["slotProps"]
         }
         src={""}
@@ -75,7 +75,7 @@ describe("<Avatar />", () => {
         label={"Test"}
         slotProps={
           {
-            fallback: { "data-testid": "fallback", delayMs: 0 },
+            fallback: { "data-testid": "fallback", delayMs: 0 }
           } as AvatarProps["slotProps"]
         }
         src={""}
@@ -84,7 +84,7 @@ describe("<Avatar />", () => {
 
     const fallback = await screen.findByTestId("fallback");
     expect(fallback).toHaveStyle({
-      "--bg": "hsl(26deg 35% 50%)",
+      "--bg": "hsl(26deg 35% 50%)"
     });
   });
 
@@ -96,7 +96,7 @@ describe("<Avatar />", () => {
           label={"First Last"}
           slotProps={
             {
-              fallback: { "data-testid": "fallback", delayMs: 0 },
+              fallback: { "data-testid": "fallback", delayMs: 0 }
             } as AvatarProps["slotProps"]
           }
           src={""}
@@ -114,7 +114,7 @@ describe("<Avatar />", () => {
           label={"First Middle Last"}
           slotProps={
             {
-              fallback: { "data-testid": "fallback", delayMs: 0 },
+              fallback: { "data-testid": "fallback", delayMs: 0 }
             } as AvatarProps["slotProps"]
           }
           src={""}
@@ -132,7 +132,7 @@ describe("<Avatar />", () => {
           label={"First"}
           slotProps={
             {
-              fallback: { "data-testid": "fallback", delayMs: 0 },
+              fallback: { "data-testid": "fallback", delayMs: 0 }
             } as AvatarProps["slotProps"]
           }
           src={""}
@@ -149,7 +149,7 @@ describe("<Avatar />", () => {
           alt={"First Last"}
           slotProps={
             {
-              fallback: { "data-testid": "fallback", delayMs: 0 },
+              fallback: { "data-testid": "fallback", delayMs: 0 }
             } as AvatarProps["slotProps"]
           }
           src={""}
@@ -167,7 +167,7 @@ describe("<Avatar />", () => {
           label={""}
           slotProps={
             {
-              fallback: { "data-testid": "fallback", delayMs: 0 },
+              fallback: { "data-testid": "fallback", delayMs: 0 }
             } as AvatarProps["slotProps"]
           }
           src={""}
@@ -185,7 +185,7 @@ describe("<Avatar />", () => {
           label={"あやか"}
           slotProps={
             {
-              fallback: { "data-testid": "fallback", delayMs: 0 },
+              fallback: { "data-testid": "fallback", delayMs: 0 }
             } as AvatarProps["slotProps"]
           }
           src={""}
@@ -203,7 +203,7 @@ describe("<Avatar />", () => {
         alt={"Test avatar"}
         slotProps={
           {
-            fallback: { "data-testid": "fallback", delayMs: 0 },
+            fallback: { "data-testid": "fallback", delayMs: 0 }
           } as AvatarProps["slotProps"]
         }
         src={""}
@@ -220,7 +220,7 @@ describe("<Avatar />", () => {
         alt={"Test avatar"}
         slotProps={
           {
-            fallback: { "data-testid": "fallback", delayMs: 0 },
+            fallback: { "data-testid": "fallback", delayMs: 0 }
           } as AvatarProps["slotProps"]
         }
       >

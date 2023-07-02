@@ -34,7 +34,7 @@ describe("<MenuItem />", () => {
           decorator={"Test"}
           slotProps={
             {
-              decorator: { "data-testid": "decorator" },
+              decorator: { "data-testid": "decorator" }
             } as MenuItemProps["slotProps"]
           }
         >
@@ -53,7 +53,7 @@ describe("<MenuItem />", () => {
           rightSlot={"Test"}
           slotProps={
             {
-              rightSlot: { "data-testid": "right-slot" },
+              rightSlot: { "data-testid": "right-slot" }
             } as MenuItemProps["slotProps"]
           }
         >
@@ -74,7 +74,7 @@ describe("<MenuItem />", () => {
           slotProps={
             {
               decorator: { "data-testid": "decorator" },
-              rightSlot: { "data-testid": "right-slot" },
+              rightSlot: { "data-testid": "right-slot" }
             } as MenuItemProps["slotProps"]
           }
         >

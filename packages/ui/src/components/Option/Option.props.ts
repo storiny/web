@@ -1,7 +1,7 @@
 import {
   SelectItemIndicatorProps,
   SelectItemProps,
-  SelectItemTextProps,
+  SelectItemTextProps
 } from "@radix-ui/react-select";
 
 import { PolymorphicProps } from "~/types/index";

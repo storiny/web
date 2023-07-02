@@ -2,7 +2,7 @@ import {
   SliderProps as SliderPrimitiveProps,
   SliderRangeProps,
   SliderThumbProps,
-  SliderTrackProps,
+  SliderTrackProps
 } from "@radix-ui/react-slider";
 
 import { PolymorphicProps } from "~/types/index";

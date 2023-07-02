@@ -7,7 +7,7 @@ import Navbar from "~/layout/Navbar";
 import Sidenav from "~/layout/Sidenav";
 
 const DefaultLayout = ({
-  children,
+  children
 }: {
   children: React.ReactNode;
 }): React.ReactElement => (

@@ -13,7 +13,8 @@
 }
 
 /* Indicator and svg */
-.indicator, .svg {
+.indicator,
+.svg {
   width: inherit;
   height: inherit;
   display: inherit;
@@ -37,7 +38,9 @@
   stroke: var(--progress-bg);
   stroke-linecap: round;
   stroke-dasharray: var(--length);
-  stroke-dashoffset: calc(var(--length) - var(--value, 30) * var(--length) / 100);
+  stroke-dashoffset: calc(
+    var(--length) - var(--value, 30) * var(--length) / 100
+  );
   transform-origin: center;
   transform: rotate(-90deg);
 }

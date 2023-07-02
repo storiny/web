@@ -12,8 +12,8 @@ const meta: Meta<typeof Spinner> = {
   component: Spinner,
   tags: ["autodocs"],
   args: {
-    size: "md",
-  },
+    size: "md"
+  }
 };
 
 export default meta;
@@ -23,48 +23,48 @@ export const Default: Story = {};
 
 export const TypeDeterminate: Story = {
   args: {
-    value: 50,
-  },
+    value: 50
+  }
 };
 
 export const WithChildren: Story = {
   args: {
-    children: <UserIcon size={12} />,
-  },
+    children: <UserIcon size={12} />
+  }
 };
 
 export const ColorInverted: Story = {
   args: {
-    color: "inverted",
-  },
+    color: "inverted"
+  }
 };
 
 export const ColorRuby: Story = {
   args: {
-    color: "ruby",
-  },
+    color: "ruby"
+  }
 };
 
 export const SizeLG: Story = {
   args: {
-    size: "lg",
-  },
+    size: "lg"
+  }
 };
 
 export const SizeMD: Story = {
   args: {
-    size: "md",
-  },
+    size: "md"
+  }
 };
 
 export const SizeSM: Story = {
   args: {
-    size: "sm",
-  },
+    size: "sm"
+  }
 };
 
 export const SizeXS: Story = {
   args: {
-    size: "xs",
-  },
+    size: "xs"
+  }
 };

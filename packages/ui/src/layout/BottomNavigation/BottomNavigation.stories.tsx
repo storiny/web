@@ -12,13 +12,13 @@ const meta: Meta<typeof BottomNavigation> = {
   component: BottomNavigation,
   decorators: [
     (Story): React.ReactElement =>
-      renderWithState(<Story />, { loggedIn: true }),
+      renderWithState(<Story />, { loggedIn: true })
   ],
   args: {
     forceMount: true,
-    style: { width: "320px", position: "relative" },
+    style: { width: "320px", position: "relative" }
   },
-  tags: ["autodocs"],
+  tags: ["autodocs"]
 };
 
 export default meta;

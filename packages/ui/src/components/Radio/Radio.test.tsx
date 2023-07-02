@@ -105,7 +105,7 @@ describe("<Radio />", () => {
           slotProps={
             {
               label: { "data-testid": "label" },
-              container: { "data-testid": "container" },
+              container: { "data-testid": "container" }
             } as RadioProps["slotProps"]
           }
           value={"test"}

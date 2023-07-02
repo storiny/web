@@ -1,6 +1,6 @@
 // Health endpoint
 
-export const GET = () =>
+export const GET = (): Response =>
   new Response("OK", {
-    status: 200,
+    status: 200
   });

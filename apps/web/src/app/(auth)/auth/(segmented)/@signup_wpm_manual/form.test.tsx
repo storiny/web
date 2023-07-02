@@ -23,7 +23,7 @@ describe("<SignupWPMForm />", () => {
 
     await waitFor(() => {
       expect(mockSubmit).toHaveBeenCalledWith({
-        wpm: 250,
+        wpm: 250
       });
       expect(screen.queryByRole("alert")).not.toBeInTheDocument();
     });

@@ -12,14 +12,14 @@ import FormSelect from "./FormSelect";
 import { FormSelectProps } from "./FormSelect.props";
 
 const testSchema = z.object({
-  select: z.string(),
+  select: z.string()
 });
 
 type TestSchema = z.infer<typeof testSchema>;
 
 const Component = ({
   children,
-  disabled,
+  disabled
 }: {
   children: React.ReactNode;
   disabled?: boolean;
@@ -27,8 +27,8 @@ const Component = ({
   const form = useForm<TestSchema>({
     resolver: zodResolver(testSchema),
     defaultValues: {
-      select: "option-1",
-    },
+      select: "option-1"
+    }
   });
 
   return (
@@ -80,8 +80,8 @@ describe("<FormSelect />", () => {
           formSlotProps={
             {
               formItem: {
-                "data-testid": "form-item",
-              },
+                "data-testid": "form-item"
+              }
             } as FormSelectProps["formSlotProps"]
           }
           label={"Test label"}
@@ -109,7 +109,7 @@ describe("<FormSelect />", () => {
               formItem: { "data-testid": "form-item" },
               control: { "data-testid": "control" },
               label: { "data-testid": "label" },
-              helperText: { "data-testid": "helper-text" },
+              helperText: { "data-testid": "helper-text" }
             } as FormSelectProps["formSlotProps"]
           }
           helperText={"Test helper text"}

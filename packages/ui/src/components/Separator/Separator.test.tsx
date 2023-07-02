@@ -30,8 +30,8 @@ describe("<Separator />", () => {
         await axe(baseElement, {
           rules: {
             region: { enabled: false },
-            "aria-required-children": { enabled: false },
-          },
+            "aria-required-children": { enabled: false }
+          }
         })
       ).toHaveNoViolations()
     );

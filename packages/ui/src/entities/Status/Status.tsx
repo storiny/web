@@ -49,11 +49,11 @@ const Status = forwardRef<StatusProps, "span">((props, ref) => {
                 "aria-label": "Status emoji",
                 role: "img",
                 style: {
-                  "--emoji": `url("${emoji}")`,
-                } as React.CSSProperties,
+                  "--emoji": `url("${emoji}")`
+                } as React.CSSProperties
               }
             : {
-                "aria-hidden": "true",
+                "aria-hidden": "true"
               })}
         >
           {!hasEmoji && <MoodSmile />}

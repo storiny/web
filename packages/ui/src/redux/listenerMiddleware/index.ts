@@ -1,6 +1,6 @@
 import {
   createListenerMiddleware,
-  TypedStartListening,
+  TypedStartListening
 } from "@reduxjs/toolkit";
 
 import { addEntitiesListeners } from "~/redux/features";

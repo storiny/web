@@ -10,21 +10,21 @@ import Form, { useForm } from "~/components/Form";
 import FormPasswordInput from "./FormPasswordInput";
 
 const sampleSchema = z.object({
-  sample: z.string(),
+  sample: z.string()
 });
 
 type SampleSchema = z.infer<typeof sampleSchema>;
 
 const Component = ({
-  children,
+  children
 }: {
   children: React.ReactNode;
 }): React.ReactElement => {
   const form = useForm<SampleSchema>({
     resolver: zodResolver(sampleSchema),
     defaultValues: {
-      sample: "",
-    },
+      sample: ""
+    }
   });
 
   return <Form providerProps={form}>{children}</Form>;
@@ -38,7 +38,7 @@ const meta: Meta<typeof FormPasswordInput> = {
       <Component>
         <Story />
       </Component>
-    ),
+    )
   ],
   tags: ["autodocs"],
   args: {
@@ -50,10 +50,10 @@ const meta: Meta<typeof FormPasswordInput> = {
     name: "sample",
     formSlotProps: {
       formItem: {
-        style: { maxWidth: "300px" },
-      },
-    },
-  },
+        style: { maxWidth: "300px" }
+      }
+    }
+  }
 };
 
 export default meta;

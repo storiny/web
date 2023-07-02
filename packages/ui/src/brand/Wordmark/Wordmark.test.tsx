@@ -35,8 +35,8 @@ describe("<Wordmark />", () => {
         componentProps={
           {
             betaLabel: {
-              "data-testid": "beta-label",
-            },
+              "data-testid": "beta-label"
+            }
           } as WordmarkProps["componentProps"]
         }
         data-testid={"wordmark"}
@@ -63,8 +63,8 @@ describe("<Wordmark />", () => {
         componentProps={
           {
             betaLabel: {
-              "data-testid": "beta-label",
-            },
+              "data-testid": "beta-label"
+            }
           } as WordmarkProps["componentProps"]
         }
         showBeta
@@ -81,7 +81,7 @@ describe("<Wordmark />", () => {
           {
             betaLabel: { "data-testid": "beta-label" },
             label: { "data-testid": "label" },
-            logo: { "data-testid": "logo" },
+            logo: { "data-testid": "logo" }
           } as WordmarkProps["componentProps"]
         }
         showBeta

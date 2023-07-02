@@ -2,7 +2,6 @@
 
 import { clsx } from "clsx";
 import NextLink from "next/link";
-import { useSelectedLayoutSegment } from "next/navigation";
 import React from "react";
 
 import ScrollArea from "~/components/ScrollArea";
@@ -98,11 +97,13 @@ const useHeadingsObserver = (setActiveId: (id: string) => void): void => {
   }, [setActiveId]);
 };
 
-const Toc = (): React.ReactElement => {
+const LegalToc = (): React.ReactElement => {
   const [nestedHeadings, setNestedHeadings] = React.useState<NestedHeading[]>(
     []
   );
-  const [activeId, setActiveId] = React.useState<string>("");
+  const [activeId, setActiveId] = React.useState<string>(
+    typeof window !== "undefined" ? window.location.hash.substring(1) : ""
+  );
   useHeadingsObserver(setActiveId);
 
   /**
@@ -110,9 +111,7 @@ const Toc = (): React.ReactElement => {
    * @param id ID of the heading element
    */
   const scrollToHeading = (id: string): void => {
-    document
-      .getElementById(id)
-      ?.scrollIntoView?.({ behavior: "smooth", block: "center" });
+    document.getElementById(id)?.scrollIntoView?.({ behavior: "smooth" });
   };
 
   React.useEffect(() => {
@@ -141,16 +140,17 @@ const Toc = (): React.ReactElement => {
       as={"nav"}
       slotProps={{
         viewport: {
-          className: styles.toc
+          className: clsx(styles.x, styles.toc)
         }
       }}
       type={"auto"}
     >
-      <ul className={clsx("flex-col", styles.ul)}>
+      <ul className={clsx("flex-col", styles.x, styles.ul)}>
         {nestedHeadings.map((heading) => (
           <li
             className={clsx(
               "flex-col",
+              styles.x,
               styles.li,
               activeId === heading.id && styles.selected
             )}
@@ -162,15 +162,25 @@ const Toc = (): React.ReactElement => {
                 event.preventDefault();
                 scrollToHeading(heading.id);
               }}
+              scroll={false}
+              shallow
             >
               {heading.title}
             </NextLink>
             {heading.items.length > 0 && (
-              <ul className={clsx("flex-col", styles.ul, styles["nested-ul"])}>
+              <ul
+                className={clsx(
+                  "flex-col",
+                  styles.x,
+                  styles.ul,
+                  styles["nested-ul"]
+                )}
+              >
                 {heading.items.map((child) => (
                   <li
                     className={clsx(
                       "flex-col",
+                      styles.x,
                       styles.li,
                       activeId === child.id && styles.selected
                     )}
@@ -182,6 +192,8 @@ const Toc = (): React.ReactElement => {
                         event.preventDefault();
                         scrollToHeading(heading.id);
                       }}
+                      scroll={false}
+                      shallow
                     >
                       {child.title}
                     </NextLink>
@@ -196,4 +208,4 @@ const Toc = (): React.ReactElement => {
   );
 };
 
-export default Toc;
+export default LegalToc;

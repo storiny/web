@@ -29,7 +29,7 @@ const AspectRatio = forwardRef<AspectRatioProps, "div">((props, ref) => {
         {
           ...style,
           "--object-fit": objectFit,
-          "--padding": `${(100 / ratio).toFixed(3)}%`,
+          "--padding": `${(100 / ratio).toFixed(3)}%`
         } as React.CSSProperties
       }
     >

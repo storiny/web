@@ -32,8 +32,8 @@ describe("<Menu />", () => {
         await axe(baseElement, {
           rules: {
             region: { enabled: false },
-            "aria-allowed-attr": { enabled: false },
-          },
+            "aria-allowed-attr": { enabled: false }
+          }
         })
       ).toHaveNoViolations()
     );
@@ -79,7 +79,7 @@ describe("<Menu />", () => {
           {
             arrow: { "data-testid": "arrow" },
             content: { "data-testid": "content" },
-            trigger: { "data-testid": "trigger" },
+            trigger: { "data-testid": "trigger" }
           } as MenuProps["slotProps"]
         }
         trigger={<button>Trigger</button>}

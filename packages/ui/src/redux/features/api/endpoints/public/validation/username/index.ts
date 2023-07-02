@@ -17,7 +17,7 @@ export const usernameValidation = (builder: ApiQueryBuilder) =>
       method: "POST",
       body,
       headers: {
-        "Content-type": ContentType.JSON,
-      },
-    }),
+        "Content-type": ContentType.JSON
+      }
+    })
   });

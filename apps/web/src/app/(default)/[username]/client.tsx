@@ -34,7 +34,7 @@ import EntitiesTab from "./tabs/entities";
 import StoriesTab from "./tabs/stories";
 
 const CustomState = dynamic(() => import("~/entities/CustomState"), {
-  loading: () => <SuspenseLoader />,
+  loading: () => <SuspenseLoader />
 });
 
 export type ProfileTabValue = "stories" | "followers" | "following" | "friends";
@@ -51,7 +51,7 @@ interface Props {
 const TabsHeader = ({
   hasBanner,
   hideFollowing,
-  hideFriends,
+  hideFriends
 }: {
   hasBanner: boolean;
   hideFollowing: boolean;
@@ -60,11 +60,12 @@ const TabsHeader = ({
   <div
     className={clsx(
       "page-header",
+      styles.x,
       styles.tabs,
       hasBanner && styles["has-banner"]
     )}
   >
-    <TabsList className={clsx("full-w", styles["tabs-list"])}>
+    <TabsList className={clsx("full-w", styles.x, styles["tabs-list"])}>
       <Tab aria-controls={undefined} value={"stories"}>
         Stories
       </Tab>
@@ -93,7 +94,7 @@ const PageHeader = ({
   onSortChange,
   onQueryChange,
   disabled,
-  placeholder,
+  placeholder
 }: {
   disabled?: boolean;
   onQueryChange: (newQuery: string) => void;
@@ -107,6 +108,7 @@ const PageHeader = ({
       "flex-center",
       "page-header",
       "with-page-title",
+      styles.x,
       styles["page-header"]
     )}
     style={{ marginTop: 0 }}
@@ -119,8 +121,8 @@ const PageHeader = ({
       size={"lg"}
       slotProps={{
         container: {
-          className: clsx("f-grow", styles.input),
-        },
+          className: clsx("f-grow", styles.x, styles.input)
+        }
       }}
       type={"search"}
       value={query}
@@ -130,7 +132,7 @@ const PageHeader = ({
       disabled={disabled}
       onValueChange={onSortChange}
       slotProps={{
-        trigger: { className: styles["select-trigger"] },
+        trigger: { className: clsx(styles.x, styles["select-trigger"]) }
       }}
       value={sort}
     >
@@ -144,7 +146,7 @@ const PageHeader = ({
 const Page = ({
   profile,
   isSuspended,
-  isPrivate,
+  isPrivate
 }: Props): React.ReactElement => {
   const isSmallerThanTablet = useMediaQuery(breakpoints.down("tablet"));
   const firstRender = React.useRef<boolean>(true);
@@ -186,10 +188,10 @@ const Page = ({
       !profile.is_blocked_by_user &&
       hasBanner ? (
         <>
-          <div className={clsx("grid", styles["banner-wrapper"])}>
+          <div className={clsx("grid", styles.x, styles["banner-wrapper"])}>
             <Image
               alt={""}
-              className={styles.banner}
+              className={clsx(styles.x, styles.banner)}
               hex={profile.banner_hex}
               imgId={profile.banner_id}
               slotProps={{
@@ -197,7 +199,7 @@ const Page = ({
                   sizes: [
                     `${breakpoints.up("tablet")} calc(100vw - 360px)`,
                     `${breakpoints.up("mobile")} calc(100vw - 72px)`,
-                    "100vw",
+                    "100vw"
                   ].join(","),
                   srcSet: [
                     `${getCdnUrl(profile.banner_id, ImageSize.W_2048)} 2048w`,
@@ -206,15 +208,21 @@ const Page = ({
                     `${getCdnUrl(profile.banner_id, ImageSize.W_1024)} 1024w`,
                     `${getCdnUrl(profile.banner_id, ImageSize.W_860)} 860w`,
                     `${getCdnUrl(profile.banner_id, ImageSize.W_640)} 640w`,
-                    `${getCdnUrl(profile.banner_id, ImageSize.W_320)} 320w`,
-                  ].join(","),
-                },
+                    `${getCdnUrl(profile.banner_id, ImageSize.W_320)} 320w`
+                  ].join(",")
+                }
               }}
             />
-            {/* Adds an elevation to right sidebar */}
-            <div aria-hidden className={styles["right-sidebar-shadow"]} />
+            {/* Adds an elevation to the right sidebar */}
+            <div
+              aria-hidden
+              className={clsx(styles.x, styles["right-sidebar-shadow"])}
+            />
           </div>
-          <div aria-hidden className={styles["banner-spacer"]} />
+          <div
+            aria-hidden
+            className={clsx(styles.x, styles["banner-spacer"])}
+          />
         </>
       ) : null}
       {isSmallerThanTablet && (

@@ -24,13 +24,13 @@ const meta: Meta<typeof Notification> = {
       description: "The toast message.",
       table: {
         type: { summary: "string" },
-        defaultValue: { summary: "" },
+        defaultValue: { summary: "" }
       },
       control: {
-        type: "text",
-      },
-    },
-  },
+        type: "text"
+      }
+    }
+  }
 };
 
 export default meta;
@@ -51,26 +51,26 @@ const NotificationComponent = (props?: NotificationProps) => {
 };
 
 export const Default: Story = {
-  render: (args) => <NotificationComponent {...args} />,
+  render: (args) => <NotificationComponent {...args} />
 };
 
 export const IconInfo = {
   ...Default,
   args: {
-    icon: "info",
-  },
+    icon: "info"
+  }
 };
 
 export const IconTypography = {
   ...Default,
   args: {
-    icon: "typography",
-  },
+    icon: "typography"
+  }
 };
 
 export const IconExclamation = {
   ...Default,
   args: {
-    icon: "exclamation",
-  },
+    icon: "exclamation"
+  }
 };

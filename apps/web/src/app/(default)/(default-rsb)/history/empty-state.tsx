@@ -9,7 +9,7 @@ interface HistoryEmptyStateProps {
 }
 
 const HistoryEmptyState = ({
-  query,
+  query
 }: HistoryEmptyStateProps): React.ReactElement => (
   <CustomState
     autoSize

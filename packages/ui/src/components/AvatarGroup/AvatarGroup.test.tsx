@@ -20,9 +20,9 @@ describe("<AvatarGroup />", () => {
           {
             overflow: {
               slotProps: {
-                fallback: { "data-testid": "overflow", delayMs: 0 },
-              },
-            },
+                fallback: { "data-testid": "overflow", delayMs: 0 }
+              }
+            }
           } as AvatarGroupProps["slotProps"]
         }
       >
@@ -86,7 +86,7 @@ describe("<AvatarGroup />", () => {
       <AvatarGroup
         slotProps={
           {
-            overflow: { "data-testid": "overflow" },
+            overflow: { "data-testid": "overflow" }
           } as AvatarGroupProps["slotProps"]
         }
       >
@@ -104,7 +104,7 @@ describe("<AvatarGroup />", () => {
       <AvatarGroup
         slotProps={
           {
-            overflow: { "data-overflow": "" },
+            overflow: { "data-overflow": "" }
           } as AvatarGroupProps["slotProps"]
         }
       >
@@ -124,9 +124,9 @@ describe("<AvatarGroup />", () => {
           {
             overflow: {
               slotProps: {
-                fallback: { "data-testid": "overflow-fallback", delayMs: 0 },
-              },
-            },
+                fallback: { "data-testid": "overflow-fallback", delayMs: 0 }
+              }
+            }
           } as AvatarGroupProps["slotProps"]
         }
       >

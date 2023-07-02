@@ -11,10 +11,10 @@ describe("copyToClipboard", () => {
     Object.defineProperty(global, "navigator", {
       value: {
         clipboard: {
-          writeText: jest.fn().mockImplementationOnce(() => Promise.resolve()),
-        },
+          writeText: jest.fn().mockImplementationOnce(() => Promise.resolve())
+        }
       },
-      configurable: true,
+      configurable: true
     });
   });
 
@@ -24,9 +24,9 @@ describe("copyToClipboard", () => {
     // Restore clipboard
     Object.defineProperty(global, "navigator", {
       value: {
-        clipboard: initialClipboard,
+        clipboard: initialClipboard
       },
-      configurable: true,
+      configurable: true
     });
   });
 
@@ -39,7 +39,7 @@ describe("copyToClipboard", () => {
   it("copies text to the clipboard when `navigator.clipboard` is not available", async () => {
     Object.defineProperty(navigator, "clipboard", {
       value: undefined,
-      configurable: true,
+      configurable: true
     });
 
     await copyToClipboard("test");

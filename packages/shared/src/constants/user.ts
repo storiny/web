@@ -10,25 +10,25 @@ export const DEFAULT_WPM = 250;
 
 export const userProps = {
   bio: {
-    maxLength: 256,
+    maxLength: 256
   },
   wpm: { min: 70, max: 320 },
   email: {
     maxLength: 112,
-    minLength: 3,
+    minLength: 3
   },
   name: {
     minLength: 3,
-    maxLength: 32,
+    maxLength: 32
   },
   password: {
     maxLength: 64,
-    minLength: 6,
+    minLength: 6
   },
   username: {
     maxLength: 24,
-    minLength: 3,
-  },
+    minLength: 3
+  }
 } as const;
 
 export const userSchema = {
@@ -96,5 +96,5 @@ export const userSchema = {
     .max(
       userProps.wpm.max,
       zodMessages.max("reading speed", userProps.wpm.max, "number")
-    ),
+    )
 } as const;

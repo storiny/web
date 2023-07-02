@@ -5,7 +5,7 @@ import {
   FormHelperTextProps,
   FormItemProps,
   FormLabelProps,
-  FormMessageProps,
+  FormMessageProps
 } from "~/components/Form";
 
 export interface FormCheckboxProps extends Omit<CheckboxProps, "ref"> {

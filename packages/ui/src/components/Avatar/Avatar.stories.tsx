@@ -12,9 +12,9 @@ const meta: Meta<typeof Avatar> = {
   args: { size: "md" },
   argTypes: {
     hex: {
-      control: "color",
-    },
-  },
+      control: "color"
+    }
+  }
 };
 
 export default meta;
@@ -24,55 +24,55 @@ export const Default: Story = {
   args: {
     alt: "Test avatar",
     src: "/images/avatars/kevin.png",
-    hex: "d3b4ac",
-  },
+    hex: "d3b4ac"
+  }
 };
 
 export const Fallback: Story = {
   args: {
     alt: "Test avatar",
-    src: "",
-  },
+    src: ""
+  }
 };
 
 export const SizeXL2: Story = {
   args: {
     ...Default.args,
-    size: "xl2",
-  },
+    size: "xl2"
+  }
 };
 
 export const SizeXL: Story = {
   args: {
     ...Default.args,
-    size: "xl",
-  },
+    size: "xl"
+  }
 };
 
 export const SizeLG: Story = {
   args: {
     ...Default.args,
-    size: "lg",
-  },
+    size: "lg"
+  }
 };
 
 export const SizeMD: Story = {
   args: {
     ...Default.args,
-    size: "md",
-  },
+    size: "md"
+  }
 };
 
 export const SizeSM: Story = {
   args: {
     ...Default.args,
-    size: "sm",
-  },
+    size: "sm"
+  }
 };
 
 export const SizeXS: Story = {
   args: {
     ...Default.args,
-    size: "xs",
-  },
+    size: "xs"
+  }
 };

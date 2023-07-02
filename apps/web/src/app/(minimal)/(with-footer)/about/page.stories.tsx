@@ -13,9 +13,9 @@ const meta: Meta<typeof About> = {
   title: "pages/About",
   component: About,
   parameters: {
-    layout: "fullscreen",
+    layout: "fullscreen"
   },
-  tags: ["autodocs"],
+  tags: ["autodocs"]
 };
 
 export default meta;
@@ -31,6 +31,6 @@ export const Default: Story = {
           </WithFooterLayout>
         </BrandingLayout>,
         { ignorePrimitiveProviders: true }
-      ),
-  ],
+      )
+  ]
 };

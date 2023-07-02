@@ -32,7 +32,7 @@ export interface AppStateProviderProps {
 const AppStateProvider = ({
   store,
   ignorePrimitiveProviders,
-  children,
+  children
 }: AppStateProviderProps): React.ReactElement => (
   <ReduxProvider store={store}>
     <Initializer />

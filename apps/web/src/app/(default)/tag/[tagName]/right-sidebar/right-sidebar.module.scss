@@ -1,24 +1,26 @@
-/* Meta */
-.meta {
-  gap: 8px;
-}
+.x {
+  /* Meta */
+  &.meta {
+    gap: 8px;
+  }
 
-/* Meta icon */
-.meta-icon {
-  --icon-size: 24px;
-}
+  /* Meta icon */
+  &.meta-icon {
+    --icon-size: 24px;
+  }
 
-/* Properties */
-.properties {
-  gap: 18px;
-}
+  /* Properties */
+  &.properties {
+    gap: 18px;
+  }
 
-/* Stats */
-.stats {
-  gap: 4px 16px;
-}
+  /* Stats */
+  &.stats {
+    gap: 4px 16px;
+  }
 
-/* Actions */
-.actions {
-  gap: 8px;
+  /* Actions */
+  &.actions {
+    gap: 8px;
+  }
 }

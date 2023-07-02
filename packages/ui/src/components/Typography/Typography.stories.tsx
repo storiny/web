@@ -9,9 +9,9 @@ const meta: Meta<typeof Typography> = {
   args: {
     color: "major",
     level: "body1",
-    children: "Quick brown fox jumps over the lazy dog",
+    children: "Quick brown fox jumps over the lazy dog"
   },
-  tags: ["autodocs"],
+  tags: ["autodocs"]
 };
 
 export default meta;
@@ -21,149 +21,149 @@ export const Default: Story = {};
 
 export const ColorMuted: Story = {
   args: {
-    color: "muted",
-  },
+    color: "muted"
+  }
 };
 
 export const ColorMinor: Story = {
   args: {
-    color: "minor",
-  },
+    color: "minor"
+  }
 };
 
 export const ColorMajor: Story = {
   args: {
-    color: "major",
-  },
+    color: "major"
+  }
 };
 
 export const LevelMention: Story = {
   args: {
     level: "mention",
-    children: "username",
+    children: "username"
   },
   render: (args) => (
     <Typography level={"body2"}>
       <Typography {...args} />
     </Typography>
-  ),
+  )
 };
 
 export const LevelTag: Story = {
   args: {
     level: "tag",
-    children: "tag-name",
+    children: "tag-name"
   },
   render: (args) => (
     <Typography level={"body2"}>
       <Typography {...args} />
     </Typography>
-  ),
+  )
 };
 
 export const LevelInlineCode: Story = {
   args: {
     level: "inline-code",
-    children: "const foo = 'bar';",
-  },
+    children: "const foo = 'bar';"
+  }
 };
 
 export const LevelInlineCodeWithColor: Story = {
   args: {
     level: "inline-code",
-    children: "#C5FF00",
-  },
+    children: "#C5FF00"
+  }
 };
 
 export const LevelQuote: Story = {
   args: {
     level: "quote",
-    children: `"Remembering that you are going to die is the best way I know to avoid the trap of thinking you have something to lose. You are already naked. There is no reason not to follow your heart." — Steve Jobs`,
-  },
+    children: `"Remembering that you are going to die is the best way I know to avoid the trap of thinking you have something to lose. You are already naked. There is no reason not to follow your heart." — Steve Jobs`
+  }
 };
 
 export const LevelDisplay1: Story = {
   args: {
     children: "Display 1",
-    level: "display1",
-  },
+    level: "display1"
+  }
 };
 
 export const LevelDisplay2: Story = {
   args: {
     children: "Display 2",
-    level: "display2",
-  },
+    level: "display2"
+  }
 };
 
 export const LevelHeading1: Story = {
   args: {
     children: "Heading 1",
-    level: "h1",
-  },
+    level: "h1"
+  }
 };
 
 export const LevelHeading2: Story = {
   args: {
     children: "Heading 2",
-    level: "h2",
-  },
+    level: "h2"
+  }
 };
 
 export const LevelHeading3: Story = {
   args: {
     children: "Heading 3",
-    level: "h3",
-  },
+    level: "h3"
+  }
 };
 
 export const LevelHeading4: Story = {
   args: {
     children: "Heading 4",
-    level: "h4",
-  },
+    level: "h4"
+  }
 };
 
 export const LevelHeading5: Story = {
   args: {
     children: "Heading 5",
-    level: "h5",
-  },
+    level: "h5"
+  }
 };
 
 export const LevelHeading6: Story = {
   args: {
     children: "Heading 6",
-    level: "h6",
-  },
+    level: "h6"
+  }
 };
 
 export const LevelLegible: Story = {
   args: {
     children: "Legible",
-    level: "legible",
-  },
+    level: "legible"
+  }
 };
 
 export const LevelBody1: Story = {
   args: {
     children: "Body 1",
-    level: "body1",
-  },
+    level: "body1"
+  }
 };
 
 export const LevelBody2: Story = {
   args: {
     children: "Body 2",
-    level: "body2",
-  },
+    level: "body2"
+  }
 };
 
 export const LevelBody3: Story = {
   args: {
     children: "Body 3",
-    level: "body3",
-  },
+    level: "body3"
+  }
 };
 
 export const Nested: Story = {
@@ -176,13 +176,13 @@ export const Nested: Story = {
         <Typography level={"inline-code"}>span</Typography> element.
       </Typography>
     </Typography>
-  ),
+  )
 };
 
 export const Ellipsis: Story = {
   args: {
     style: { maxWidth: "128px" },
     ellipsis: true,
-    children: "A long text that will get truncated",
-  },
+    children: "A long text that will get truncated"
+  }
 };

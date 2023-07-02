@@ -14,13 +14,13 @@ const meta: Meta<typeof Sidenav> = {
     forceMount: true,
     style: {
       width: "72px",
-      position: "relative",
-    },
+      position: "relative"
+    }
   },
   parameters: {
-    layout: "fullscreen",
+    layout: "fullscreen"
   },
-  tags: ["autodocs"],
+  tags: ["autodocs"]
 };
 
 export default meta;
@@ -29,5 +29,5 @@ type Story = StoryObj<typeof Sidenav>;
 export const Default: Story = {};
 
 export const LoggedIn: Story = {
-  decorators: [(Story) => renderWithState(<Story />, { loggedIn: true })],
+  decorators: [(Story) => renderWithState(<Story />, { loggedIn: true })]
 };

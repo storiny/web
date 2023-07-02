@@ -5,8 +5,15 @@ import Spinner from "~/components/Spinner";
 
 import styles from "./SuspenseLoader.module.scss";
 
-const SuspenseLoader = () => (
-  <div className={clsx("flex-center", "full-w", styles["suspense-loader"])}>
+const SuspenseLoader = (): React.ReactElement => (
+  <div
+    className={clsx(
+      "flex-center",
+      "full-w",
+      styles.x,
+      styles["suspense-loader"]
+    )}
+  >
     <Spinner />
   </div>
 );

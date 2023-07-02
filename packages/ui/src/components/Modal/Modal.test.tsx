@@ -19,7 +19,7 @@ describe("<Modal />", () => {
       <Modal
         open
         slotProps={{
-          header: { children: "Test" },
+          header: { children: "Test" }
         }}
       />
     );
@@ -36,7 +36,7 @@ describe("<Modal />", () => {
         open
         slotProps={
           {
-            content: { "data-testid": "content" },
+            content: { "data-testid": "content" }
           } as ModalProps["slotProps"]
         }
       />
@@ -52,7 +52,7 @@ describe("<Modal />", () => {
         open
         slotProps={
           {
-            container: { "data-testid": "container" },
+            container: { "data-testid": "container" }
           } as ModalProps["slotProps"]
         }
       />
@@ -95,7 +95,7 @@ describe("<Modal />", () => {
         open
         slotProps={
           {
-            content: { "data-testid": "content" },
+            content: { "data-testid": "content" }
           } as ModalProps["slotProps"]
         }
       />
@@ -112,7 +112,7 @@ describe("<Modal />", () => {
         sidebar={<span />}
         slotProps={
           {
-            container: { "data-testid": "container" },
+            container: { "data-testid": "container" }
           } as ModalProps["slotProps"]
         }
       />
@@ -131,7 +131,7 @@ describe("<Modal />", () => {
         open
         slotProps={
           {
-            container: { "data-testid": "container" },
+            container: { "data-testid": "container" }
           } as ModalProps["slotProps"]
         }
       />
@@ -150,7 +150,7 @@ describe("<Modal />", () => {
         open
         slotProps={
           {
-            closeButton: { "data-testid": "close-button" },
+            closeButton: { "data-testid": "close-button" }
           } as ModalProps["slotProps"]
         }
       />
@@ -178,7 +178,7 @@ describe("<Modal />", () => {
             main: { "data-testid": "main" },
             overlay: { "data-testid": "overlay" },
             closeButton: { "data-testid": "close-button" },
-            tabs: { "data-tabs": "" },
+            tabs: { "data-tabs": "" }
           } as ModalProps["slotProps"]
         }
         trigger={<button>Trigger</button>}
@@ -197,7 +197,7 @@ describe("<Modal />", () => {
       "sidebar",
       "main",
       "overlay",
-      "close-button",
+      "close-button"
     ].forEach((element) => {
       expect(getByTestId(element)).toBeInTheDocument();
     });

@@ -11,14 +11,14 @@ import {
   defaultLevelToNativeElementMap,
   levelToClassNameMap,
   prefixMap,
-  scaleToClassNameMap,
+  scaleToClassNameMap
 } from "../common/typography";
 import typographyStyles from "../common/Typography.module.scss";
 import styles from "./Typography.module.scss";
 import {
   TypographyElement,
   TypographyLevel,
-  TypographyProps,
+  TypographyProps
 } from "./Typography.props";
 import { TypographyNestedContext } from "./TypographyContext";
 
@@ -66,8 +66,8 @@ const Typography = forwardRef<TypographyProps, TypographyElement>(
             ? {
                 style: {
                   ...rest?.style,
-                  "--color": children,
-                },
+                  "--color": children
+                }
               }
             : {})}
         >

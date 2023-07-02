@@ -9,7 +9,7 @@ const meta: Meta<typeof Persona> = {
   title: "Entities/Persona",
   component: Persona,
   args: { size: "md" },
-  tags: ["autodocs"],
+  tags: ["autodocs"]
 };
 
 export default meta;
@@ -22,9 +22,9 @@ export const Default: Story = {
     avatar: {
       alt: "Test avatar",
       src: "/images/avatars/louie.png",
-      hex: "d3b4ac",
-    },
-  },
+      hex: "d3b4ac"
+    }
+  }
 };
 
 export const MultipleAvatars: Story = {
@@ -34,53 +34,53 @@ export const MultipleAvatars: Story = {
       {
         alt: "First test avatar",
         src: "/images/avatars/louie.png",
-        hex: "d3b4ac",
+        hex: "d3b4ac"
       },
       {
         alt: "Second test avatar",
         src: "/images/avatars/kevin.png",
-        hex: "7da110",
+        hex: "7da110"
       },
       {
         alt: "Third test avatar",
         src: "/images/avatars/oscar.png",
-        hex: "acc5d3",
-      },
-    ],
-  },
+        hex: "acc5d3"
+      }
+    ]
+  }
 };
 
 export const WithoutSecondaryText: Story = {
   args: {
     ...Default.args,
-    secondaryText: undefined,
-  },
+    secondaryText: undefined
+  }
 };
 
 export const SizeLG: Story = {
   args: {
     ...Default.args,
-    size: "lg",
-  },
+    size: "lg"
+  }
 };
 
 export const SizeMD: Story = {
   args: {
     ...Default.args,
-    size: "md",
-  },
+    size: "md"
+  }
 };
 
 export const SizeSM: Story = {
   args: {
     ...Default.args,
-    size: "sm",
-  },
+    size: "sm"
+  }
 };
 
 export const SizeXS: Story = {
   args: {
     ...Default.args,
-    size: "xs",
-  },
+    size: "xs"
+  }
 };

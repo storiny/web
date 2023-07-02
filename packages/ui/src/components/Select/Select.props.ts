@@ -7,7 +7,7 @@ import {
   SelectScrollUpButtonProps,
   SelectTriggerProps,
   SelectValueProps,
-  SelectViewportProps,
+  SelectViewportProps
 } from "@radix-ui/react-select";
 import React from "react";
 

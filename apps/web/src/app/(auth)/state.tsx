@@ -26,27 +26,27 @@ export type AuthSegment =
 createStore(
   {
     auth: {
-      segment: "base",
+      segment: "base"
     },
     resetPassword: { token: null },
     recovery: {
-      email: "",
+      email: ""
     },
     signup: {
       email: "",
       name: "",
       password: "",
       username: "",
-      wpm: null,
-    },
+      wpm: null
+    }
   },
   {
-    persist: "none",
+    persist: "none"
   }
 );
 
 const AuthState = ({
-  children,
+  children
 }: {
   children: React.ReactNode;
 }): React.ReactElement => (

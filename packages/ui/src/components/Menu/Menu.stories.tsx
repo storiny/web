@@ -16,7 +16,7 @@ const meta: Meta<typeof Menu> = {
   component: Menu,
   tags: ["autodocs"],
   args: {
-    size: "md",
+    size: "md"
   },
   argTypes: {
     open: {
@@ -25,10 +25,10 @@ const meta: Meta<typeof Menu> = {
       mapping: {
         Uncontrolled: undefined,
         Open: true,
-        Closed: false,
-      },
-    },
-  },
+        Closed: false
+      }
+    }
+  }
 };
 
 export default meta;
@@ -48,19 +48,19 @@ const MenuComponent = (args?: MenuProps) => (
 );
 
 export const Default: Story = {
-  render: (args) => <MenuComponent {...args} />,
+  render: (args) => <MenuComponent {...args} />
 };
 
 export const SizeMD: Story = {
   ...Default,
   args: {
-    size: "md",
-  },
+    size: "md"
+  }
 };
 
 export const SizeSM: Story = {
   ...Default,
   args: {
-    size: "sm",
-  },
+    size: "sm"
+  }
 };

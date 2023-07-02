@@ -28,11 +28,11 @@ const Skeleton = forwardRef<SkeletonProps, "span">((props, ref) => {
       style={{
         ...style,
         ...(typeof width !== "undefined" && {
-          "--width": `${width}px`,
+          "--width": `${width}px`
         }),
         ...(typeof height !== "undefined" && {
-          "--height": `${height}px`,
-        }),
+          "--height": `${height}px`
+        })
       }}
     />
   );

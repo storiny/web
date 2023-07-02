@@ -6,7 +6,7 @@ import { GetProfileResponse } from "@storiny/proto/gen/ts/profile_def/v1/def";
 import { GetTagResponse } from "@storiny/proto/gen/ts/tag_def/v1/def";
 import {
   GetTokenResponse,
-  VerifyEmailResponse,
+  VerifyEmailResponse
 } from "@storiny/proto/gen/ts/token_def/v1/def";
 
 declare global {

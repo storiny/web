@@ -11,16 +11,16 @@ const meta: Meta<typeof Footer> = {
   title: "Layout/Footer",
   component: Footer,
   parameters: {
-    layout: "fullscreen",
+    layout: "fullscreen"
   },
   decorators: [
     (Story) => (
       <div className={"grid"}>
         <Story />
       </div>
-    ),
+    )
   ],
-  tags: ["autodocs"],
+  tags: ["autodocs"]
 };
 
 export default meta;
@@ -29,5 +29,5 @@ type Story = StoryObj<typeof Footer>;
 export const Default: Story = {};
 
 export const LoggedIn: Story = {
-  decorators: [(Story) => renderWithState(<Story />, { loggedIn: true })],
+  decorators: [(Story) => renderWithState(<Story />, { loggedIn: true })]
 };

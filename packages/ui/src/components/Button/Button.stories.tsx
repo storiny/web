@@ -15,7 +15,7 @@ const meta: Meta<typeof Button> = {
     children: "Button",
     size: "md",
     color: "inverted",
-    variant: "rigid",
+    variant: "rigid"
   },
   argTypes: {
     disabled: {
@@ -25,20 +25,20 @@ const meta: Meta<typeof Button> = {
       description: "The disabled state.",
       table: {
         type: { summary: "boolean" },
-        defaultValue: { summary: "false" },
+        defaultValue: { summary: "false" }
       },
       control: {
-        type: "boolean",
-      },
+        type: "boolean"
+      }
     },
     decorator: {
       options: ["Icon", "None"],
       mapping: {
         Icon: <UserIcon />,
-        None: undefined,
-      },
-    },
-  },
+        None: undefined
+      }
+    }
+  }
 };
 
 export default meta;
@@ -48,54 +48,54 @@ export const Default: Story = {};
 
 export const VariantRigid: Story = {
   args: {
-    variant: "rigid",
-  },
+    variant: "rigid"
+  }
 };
 
 export const VariantHollow: Story = {
   args: {
-    variant: "hollow",
-  },
+    variant: "hollow"
+  }
 };
 
 export const VariantGhost: Story = {
   args: {
-    variant: "ghost",
-  },
+    variant: "ghost"
+  }
 };
 
 export const ColorInverted: Story = {
   args: {
-    color: "inverted",
-  },
+    color: "inverted"
+  }
 };
 
 export const ColorRuby: Story = {
   args: {
-    color: "ruby",
-  },
+    color: "ruby"
+  }
 };
 
 export const SizeLG: Story = {
   args: {
-    size: "lg",
-  },
+    size: "lg"
+  }
 };
 
 export const SizeMD: Story = {
   args: {
-    size: "md",
-  },
+    size: "md"
+  }
 };
 
 export const SizeSM: Story = {
   args: {
-    size: "sm",
-  },
+    size: "sm"
+  }
 };
 
 export const SizeXS: Story = {
   args: {
-    size: "xs",
-  },
+    size: "xs"
+  }
 };

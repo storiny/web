@@ -1,6 +1,6 @@
 import {
   CheckboxIndicatorProps,
-  CheckboxProps as CheckboxPrimitiveProps,
+  CheckboxProps as CheckboxPrimitiveProps
 } from "@radix-ui/react-checkbox";
 import React from "react";
 

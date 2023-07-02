@@ -25,8 +25,8 @@ const RecoveryForm = ({ onSubmit }: Props): React.ReactElement => {
   const form = useForm<RecoverySchema>({
     resolver: zodResolver(recoverySchema),
     defaultValues: {
-      email: state.recovery.email,
-    },
+      email: state.recovery.email
+    }
   });
   const [recover, { isLoading }] = useRecoveryMutation();
 

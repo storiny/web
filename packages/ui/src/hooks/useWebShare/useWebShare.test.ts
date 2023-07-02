@@ -9,9 +9,9 @@ describe("useWebShare", () => {
     // Mock the web share api
     Object.defineProperty(global, "navigator", {
       value: {
-        share: jest.fn().mockImplementationOnce(() => Promise.resolve()),
+        share: jest.fn().mockImplementationOnce(() => Promise.resolve())
       },
-      configurable: true,
+      configurable: true
     });
   });
 

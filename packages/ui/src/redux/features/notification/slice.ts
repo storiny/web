@@ -12,7 +12,7 @@ export interface NotificationState {
 
 export const notificationInitialState: NotificationState = {
   open: false,
-  message: "",
+  message: ""
 };
 
 export const notificationSlice = createSlice({
@@ -38,8 +38,8 @@ export const notificationSlice = createSlice({
       state.icon = icon;
       state.primaryText = primaryText;
       state.secondaryText = secondaryText;
-    },
-  },
+    }
+  }
 });
 
 const { setNotificationOpen, renderNotification } = notificationSlice.actions;

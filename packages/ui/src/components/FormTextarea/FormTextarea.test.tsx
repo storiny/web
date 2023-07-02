@@ -11,14 +11,14 @@ import FormTextarea from "./FormTextarea";
 import { FormTextareaProps } from "./FormTextarea.props";
 
 const testSchema = z.object({
-  textarea: z.string(),
+  textarea: z.string()
 });
 
 type TestSchema = z.infer<typeof testSchema>;
 
 const Component = ({
   children,
-  disabled,
+  disabled
 }: {
   children: React.ReactNode;
   disabled?: boolean;
@@ -26,8 +26,8 @@ const Component = ({
   const form = useForm<TestSchema>({
     resolver: zodResolver(testSchema),
     defaultValues: {
-      textarea: "",
-    },
+      textarea: ""
+    }
   });
 
   return (
@@ -66,7 +66,7 @@ describe("<FormTextarea />", () => {
         <FormTextarea
           formSlotProps={
             {
-              formItem: { "data-testid": "form-item" },
+              formItem: { "data-testid": "form-item" }
             } as FormTextareaProps["formSlotProps"]
           }
           label={"Test label"}
@@ -87,7 +87,7 @@ describe("<FormTextarea />", () => {
               formItem: { "data-testid": "form-item" },
               control: { "data-testid": "control" },
               label: { "data-testid": "label" },
-              helperText: { "data-testid": "helper-text" },
+              helperText: { "data-testid": "helper-text" }
             } as FormTextareaProps["formSlotProps"]
           }
           helperText={"Test helper text"}

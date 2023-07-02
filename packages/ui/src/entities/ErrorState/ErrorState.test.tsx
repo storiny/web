@@ -9,7 +9,7 @@ import styles from "./ErrorState.module.scss";
 import {
   ErrorStateProps,
   ErrorStateSize,
-  ErrorStateType,
+  ErrorStateType
 } from "./ErrorState.props";
 
 describe("<ErrorState />", () => {
@@ -62,7 +62,7 @@ describe("<ErrorState />", () => {
       <ErrorState
         componentProps={
           {
-            button: { "data-testid": "retry-button" },
+            button: { "data-testid": "retry-button" }
           } as ErrorStateProps["componentProps"]
         }
       />

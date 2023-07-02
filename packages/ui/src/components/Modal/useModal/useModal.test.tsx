@@ -3,7 +3,7 @@ import React from "react";
 
 import {
   renderHookWithProvider,
-  renderTestWithProvider,
+  renderTestWithProvider
 } from "~/redux/testUtils";
 
 import { ModalProps } from "../Modal.props";
@@ -25,10 +25,10 @@ describe("useModal", () => {
       result.current[1]("Test", {
         slotProps: {
           content: {
-            "data-testid": "modal-content",
-          },
+            "data-testid": "modal-content"
+          }
         },
-        open: true,
+        open: true
       } as ModalProps);
     });
 
@@ -45,7 +45,7 @@ describe("useModal", () => {
 
     act(() => {
       result.current[1](<p data-testid={"modal-child"}></p>, {
-        open: true,
+        open: true
       });
     });
 

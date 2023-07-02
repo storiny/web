@@ -17,7 +17,7 @@ import { NotificationIcon, NotificationProps } from "./Notification.props";
 const iconMap: Record<NotificationIcon, React.ReactNode> = {
   exclamation: <AlertSquareIcon />,
   info: <InfoIcon />,
-  typography: <TypographyIcon />,
+  typography: <TypographyIcon />
 };
 
 const Notification = forwardRef<NotificationProps, "li">((props, ref) => {

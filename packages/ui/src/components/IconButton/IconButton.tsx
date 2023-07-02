@@ -32,7 +32,7 @@ const IconButton = forwardRef<IconButtonProps, "button">((props, ref) => {
   const {
     size: inputSize,
     color: inputColor,
-    disabled: inputDisabled,
+    disabled: inputDisabled
   } = React.useContext(InputContext) || {};
   const disabled = Boolean(inputDisabled || disabledProp || loading);
   const loggedIn = useAppSelector(selectLoggedIn);
@@ -68,7 +68,7 @@ const IconButton = forwardRef<IconButtonProps, "button">((props, ref) => {
       tabIndex={disabled ? -1 : 0}
       {...(shouldLogin
         ? {
-            href: "/login",
+            href: "/login"
           }
         : {})}
       {...(Component === "button"
@@ -85,7 +85,7 @@ const IconButton = forwardRef<IconButtonProps, "button">((props, ref) => {
               }
 
               rest?.onKeyUp?.(event);
-            },
+            }
           })}
     >
       {loading ? (

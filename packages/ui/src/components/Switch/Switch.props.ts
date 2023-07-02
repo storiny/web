@@ -1,6 +1,6 @@
 import {
   SwitchProps as SwitchPrimitiveProps,
-  SwitchThumbProps,
+  SwitchThumbProps
 } from "@radix-ui/react-switch";
 import React from "react";
 

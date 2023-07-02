@@ -20,8 +20,8 @@ const meta: Meta<typeof Input> = {
       options: ["Icon", "None"],
       mapping: {
         Icon: <UserIcon />,
-        None: undefined,
-      },
+        None: undefined
+      }
     },
     endDecorator: {
       options: ["Button", "Select", "None"],
@@ -40,9 +40,9 @@ const meta: Meta<typeof Input> = {
             ))}
           </Select>
         ),
-        None: undefined,
-      },
-    },
+        None: undefined
+      }
+    }
   },
   args: {
     size: "md",
@@ -51,10 +51,10 @@ const meta: Meta<typeof Input> = {
     placeholder: "Input placeholder",
     slotProps: {
       container: {
-        style: { maxWidth: "300px" },
-      },
-    },
-  },
+        style: { maxWidth: "300px" }
+      }
+    }
+  }
 };
 
 export default meta;
@@ -66,36 +66,36 @@ export const TypeNumber: Story = {
   args: {
     min: 0,
     max: 10,
-    type: "number",
-  },
+    type: "number"
+  }
 };
 
 export const ColorInverted: Story = {
   args: {
-    color: "inverted",
-  },
+    color: "inverted"
+  }
 };
 
 export const ColorRuby: Story = {
   args: {
-    color: "ruby",
-  },
+    color: "ruby"
+  }
 };
 
 export const SizeLG: Story = {
   args: {
-    size: "lg",
-  },
+    size: "lg"
+  }
 };
 
 export const SizeMD: Story = {
   args: {
-    size: "md",
-  },
+    size: "md"
+  }
 };
 
 export const SizeSM: Story = {
   args: {
-    size: "sm",
-  },
+    size: "sm"
+  }
 };

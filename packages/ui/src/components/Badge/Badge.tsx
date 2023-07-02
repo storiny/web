@@ -16,7 +16,7 @@ export const getTranslationProps = (anchorOrigin: BadgeOrigin) => ({
       ? "translateX(-50%)"
       : "translateX(50%)",
   transformOriginY: anchorOrigin?.vertical === "top" ? "0%" : "100%",
-  transformOriginX: anchorOrigin?.horizontal === "left" ? "0%" : "100%",
+  transformOriginX: anchorOrigin?.horizontal === "left" ? "0%" : "100%"
 });
 
 export const getInsetPosition = (badgeInset: BadgeProps["inset"]) => {
@@ -24,7 +24,7 @@ export const getInsetPosition = (badgeInset: BadgeProps["inset"]) => {
     top: badgeInset,
     left: badgeInset,
     bottom: badgeInset,
-    right: badgeInset,
+    right: badgeInset
   };
 
   if (typeof (badgeInset as string) === "string") {
@@ -99,7 +99,7 @@ const Badge = forwardRef<BadgeProps, "span">((props, ref) => {
             [anchorOrigin.horizontal]: inset[anchorOrigin.horizontal],
             transform: `scale(${visible ? 1 : 0}) ${translateX} ${translateY}`,
             transformOrigin: `${transformOriginX} ${transformOriginY}`,
-            ...style,
+            ...style
           } as React.CSSProperties
         }
       >

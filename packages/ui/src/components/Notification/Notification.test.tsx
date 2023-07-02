@@ -34,8 +34,8 @@ describe("<Notification />", () => {
         await axe(baseElement, {
           rules: {
             list: { enabled: false },
-            "aria-allowed-role": { enabled: false },
-          },
+            "aria-allowed-role": { enabled: false }
+          }
         })
       ).toHaveNoViolations()
     );
@@ -61,7 +61,7 @@ describe("<Notification />", () => {
           open
           slotProps={
             {
-              decorator: { "data-testid": "decorator" },
+              decorator: { "data-testid": "decorator" }
             } as NotificationProps["slotProps"]
           }
         >
@@ -84,7 +84,7 @@ describe("<Notification />", () => {
               decorator: { "data-testid": "decorator" },
               actions: { "data-testid": "actions" },
               primaryButton: { "data-testid": "primary-button" },
-              secondaryButton: { "data-testid": "secondary-button" },
+              secondaryButton: { "data-testid": "secondary-button" }
             } as NotificationProps["slotProps"]
           }
         >

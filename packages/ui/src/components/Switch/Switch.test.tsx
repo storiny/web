@@ -55,7 +55,7 @@ describe("<Switch />", () => {
           {
             thumb: { "data-testid": "thumb" },
             barIndicator: { "data-testid": "bar-indicator" },
-            ringIndicator: { "data-testid": "ring-indicator" },
+            ringIndicator: { "data-testid": "ring-indicator" }
           } as SwitchProps["slotProps"]
         }
       />

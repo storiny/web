@@ -12,7 +12,7 @@ const BannerWithState = () => {
   const dispatch = useAppDispatch();
   const { open, color, icon, message } = useAppSelector(selectBannerState);
   const { ref, height = 1 } = useResizeObserver<HTMLLIElement>({
-    box: "border-box",
+    box: "border-box"
   });
 
   /*

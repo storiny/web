@@ -3,7 +3,7 @@ import {
   DropdownMenuContentProps,
   DropdownMenuPortalProps,
   DropdownMenuProps,
-  DropdownMenuTriggerProps,
+  DropdownMenuTriggerProps
 } from "@radix-ui/react-dropdown-menu";
 import React from "react";
 

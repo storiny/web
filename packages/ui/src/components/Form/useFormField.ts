@@ -49,6 +49,6 @@ export const useFormField = (
     messageId: `${id}-message`,
     ...fieldState,
     ...fieldContext,
-    ...itemContext,
+    ...itemContext
   };
 };

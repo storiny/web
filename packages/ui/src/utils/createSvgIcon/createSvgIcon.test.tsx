@@ -8,7 +8,7 @@ import { createSvgIcon } from "./createSvgIcon";
 describe("createSvgIcon", () => {
   it("renders children", () => {
     const Icon = createSvgIcon(<span data-testid={"child"} />, "test", {
-      "data-test": "",
+      "data-test": ""
     } as SvgIconProps);
 
     const { getByTestId } = renderTestWithProvider(<Icon />);
@@ -17,7 +17,7 @@ describe("createSvgIcon", () => {
 
   it("passes props to the component", () => {
     const Icon = createSvgIcon(<span />, "test", {
-      "data-test": "",
+      "data-test": ""
     } as SvgIconProps);
 
     const { container } = renderTestWithProvider(<Icon />);

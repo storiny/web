@@ -12,7 +12,7 @@ import {
   FormHelperText,
   FormItem,
   FormLabel,
-  FormMessage,
+  FormMessage
 } from "../Form";
 import { FormTextareaProps } from "./FormTextarea.props";
 
@@ -37,7 +37,7 @@ const FormTextarea = React.forwardRef<HTMLFieldSetElement, FormTextareaProps>(
         name={name}
         render={({
           field,
-          fieldState: { invalid, error },
+          fieldState: { invalid, error }
         }): React.ReactElement => (
           <FormItem
             {...formSlotProps?.formItem}

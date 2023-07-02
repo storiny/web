@@ -9,7 +9,7 @@ import { copyToClipboard } from "~/utils/copyToClipboard";
  */
 export const webShare = async ({
   text,
-  url,
+  url
 }: {
   text: string;
   url: string | null;
@@ -17,7 +17,7 @@ export const webShare = async ({
   const data = {
     text,
     title: "Storiny",
-    url: url || undefined,
+    url: url || undefined
   };
 
   if (navigator.share) {

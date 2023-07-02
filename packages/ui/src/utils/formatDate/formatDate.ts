@@ -10,7 +10,7 @@ export enum DateFormat {
   RELATIVE = "relative",
   RELATIVE_CAPITALIZED = "relativeCapitalized",
   SHORT = "MMM D",
-  STANDARD = "MMM D, YYYY",
+  STANDARD = "MMM D, YYYY"
 }
 
 /**

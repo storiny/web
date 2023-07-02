@@ -13,9 +13,9 @@ const meta: Meta<typeof History> = {
   title: "pages/History",
   component: History,
   parameters: {
-    layout: "fullscreen",
+    layout: "fullscreen"
   },
-  tags: ["autodocs"],
+  tags: ["autodocs"]
 };
 
 export default meta;
@@ -31,6 +31,6 @@ export const Default: Story = {
           </DefaultRightSidebarLayout>
         </DefaultLayout>,
         { ignorePrimitiveProviders: true, loggedIn: true }
-      ),
-  ],
+      )
+  ]
 };

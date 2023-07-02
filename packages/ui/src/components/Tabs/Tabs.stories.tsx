@@ -24,7 +24,7 @@ const CustomTabPanel = ({
       padding: "calc(2.4 * var(--spacing))",
       border: "1px solid var(--divider)",
       backgroundColor: "var(--bg-elevation-xs)",
-      ...style,
+      ...style
     }}
   >
     {children}
@@ -55,8 +55,8 @@ const meta: Meta<typeof Tabs> = {
         <CustomTabPanel value={"two"}>Second panel</CustomTabPanel>
         <CustomTabPanel value={"three"}>Third panel</CustomTabPanel>
       </>
-    ),
-  },
+    )
+  }
 };
 
 export default meta;
@@ -66,14 +66,14 @@ export const Default: Story = {};
 
 export const OrientationHorizontal: Story = {
   args: {
-    orientation: "horizontal",
-  },
+    orientation: "horizontal"
+  }
 };
 
 export const OrientationVertical: Story = {
   args: {
-    orientation: "vertical",
-  },
+    orientation: "vertical"
+  }
 };
 
 export const TextOnlyLG: Story = {
@@ -88,7 +88,7 @@ export const TextOnlyLG: Story = {
       <CustomTabPanel value={"two"}>Second panel</CustomTabPanel>
       <CustomTabPanel value={"three"}>Third panel</CustomTabPanel>
     </Tabs>
-  ),
+  )
 };
 
 export const TextOnlyMD: Story = {
@@ -103,7 +103,7 @@ export const TextOnlyMD: Story = {
       <CustomTabPanel value={"two"}>Second panel</CustomTabPanel>
       <CustomTabPanel value={"three"}>Third panel</CustomTabPanel>
     </Tabs>
-  ),
+  )
 };
 
 export const IconOnlyLG: Story = {
@@ -118,7 +118,7 @@ export const IconOnlyLG: Story = {
       <CustomTabPanel value={"two"}>Second panel</CustomTabPanel>
       <CustomTabPanel value={"three"}>Third panel</CustomTabPanel>
     </Tabs>
-  ),
+  )
 };
 
 export const IconOnlyMD: Story = {
@@ -133,7 +133,7 @@ export const IconOnlyMD: Story = {
       <CustomTabPanel value={"two"}>Second panel</CustomTabPanel>
       <CustomTabPanel value={"three"}>Third panel</CustomTabPanel>
     </Tabs>
-  ),
+  )
 };
 
 export const SizeLG: Story = {
@@ -154,7 +154,7 @@ export const SizeLG: Story = {
       <CustomTabPanel value={"two"}>Second panel</CustomTabPanel>
       <CustomTabPanel value={"three"}>Third panel</CustomTabPanel>
     </Tabs>
-  ),
+  )
 };
 
 export const SizeMD: Story = {
@@ -175,5 +175,5 @@ export const SizeMD: Story = {
       <CustomTabPanel value={"two"}>Second panel</CustomTabPanel>
       <CustomTabPanel value={"three"}>Third panel</CustomTabPanel>
     </Tabs>
-  ),
+  )
 };

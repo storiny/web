@@ -14,7 +14,7 @@ const meta: Meta<typeof Toggle> = {
   args: {
     children: <UserIcon />,
     size: "md",
-    "aria-label": "Toggle button",
+    "aria-label": "Toggle button"
   },
   argTypes: {
     disabled: {
@@ -24,13 +24,13 @@ const meta: Meta<typeof Toggle> = {
       description: "The disabled state.",
       table: {
         type: { summary: "boolean" },
-        defaultValue: { summary: "false" },
+        defaultValue: { summary: "false" }
       },
       control: {
-        type: "boolean",
-      },
-    },
-  },
+        type: "boolean"
+      }
+    }
+  }
 };
 
 export default meta;
@@ -40,30 +40,30 @@ export const Default: Story = {};
 
 export const WithTooltip: Story = {
   args: {
-    tooltipContent: "Tooltip content",
-  },
+    tooltipContent: "Tooltip content"
+  }
 };
 
 export const SizeLG: Story = {
   args: {
-    size: "lg",
-  },
+    size: "lg"
+  }
 };
 
 export const SizeMD: Story = {
   args: {
-    size: "md",
-  },
+    size: "md"
+  }
 };
 
 export const SizeSM: Story = {
   args: {
-    size: "sm",
-  },
+    size: "sm"
+  }
 };
 
 export const SizeXS: Story = {
   args: {
-    size: "xs",
-  },
+    size: "xs"
+  }
 };

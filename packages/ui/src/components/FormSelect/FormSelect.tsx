@@ -12,7 +12,7 @@ import {
   FormHelperText,
   FormItem,
   FormLabel,
-  FormMessage,
+  FormMessage
 } from "../Form";
 import { FormSelectProps } from "./FormSelect.props";
 
@@ -38,7 +38,7 @@ const FormSelect = React.forwardRef<HTMLFieldSetElement, FormSelectProps>(
         name={name}
         render={({
           field,
-          fieldState: { invalid, error },
+          fieldState: { invalid, error }
         }): React.ReactElement => (
           <FormItem
             {...formSlotProps?.formItem}

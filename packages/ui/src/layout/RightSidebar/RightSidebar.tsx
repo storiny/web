@@ -19,7 +19,7 @@ import styles from "./RightSidebar.module.scss";
 import { RightSidebarProps } from "./RightSidebar.props";
 
 const RightSidebarDefaultContent = dynamic(() => import("./DefaultContent"), {
-  loading: () => <SuspenseLoader />,
+  loading: () => <SuspenseLoader />
 });
 
 const RightSidebar = (props: RightSidebarProps): React.ReactElement | null => {

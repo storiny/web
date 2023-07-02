@@ -21,7 +21,7 @@ export const resetPassword = (builder: ApiQueryBuilder) =>
       method: "POST",
       body,
       headers: {
-        "Content-type": ContentType.JSON,
-      },
-    }),
+        "Content-type": ContentType.JSON
+      }
+    })
   });

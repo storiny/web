@@ -12,7 +12,7 @@ import {
   selectFollowing,
   selectFriend,
   selectLikedStory,
-  selectSentRequest,
+  selectSentRequest
 } from "~/redux/features";
 import { AppStartListening } from "~/redux/listenerMiddleware";
 
@@ -72,7 +72,7 @@ export const entitiesInitialState: EntitiesState = {
   followerCounts: {},
   followingCounts: {},
   friendCounts: {},
-  storyLikeCounts: {},
+  storyLikeCounts: {}
 };
 
 /**
@@ -266,8 +266,8 @@ export const entitiesSlice = createSlice({
     syncWithUser: (state, action: PayloadAction<SyncableUser>) =>
       syncWithUserImpl(state, action.payload),
     syncWithStory: (state, action: PayloadAction<SyncableStory>) =>
-      syncWithStoryImpl(state, action.payload),
-  },
+      syncWithStoryImpl(state, action.payload)
+  }
 });
 
 const {
@@ -304,7 +304,7 @@ const {
   overwriteFriendCount,
   overwriteStoryLikeCount,
   syncWithStory,
-  syncWithUser,
+  syncWithUser
 } = entitiesSlice.actions;
 
 export const addEntitiesListeners = (
@@ -327,7 +327,7 @@ export const addEntitiesListeners = (
         listenerApi.dispatch(overwriteSubscription([userId, false]));
         listenerApi.dispatch(overwriteSentRequest([userId, false]));
       }
-    },
+    }
   });
 
   /**
@@ -345,7 +345,7 @@ export const addEntitiesListeners = (
           renderToast({ message: "Friend request sent", severity: "success" })
         );
       }
-    },
+    }
   });
 
   /**
@@ -362,7 +362,7 @@ export const addEntitiesListeners = (
       } else {
         listenerApi.dispatch(overwriteSubscription([userId, false]));
       }
-    },
+    }
   });
 
   /**
@@ -381,7 +381,7 @@ export const addEntitiesListeners = (
         listenerApi.dispatch(decrementSelfFollowingCount());
         listenerApi.dispatch(decrementFollowerCount(userId));
       }
-    },
+    }
   });
 
   /**
@@ -400,7 +400,7 @@ export const addEntitiesListeners = (
         listenerApi.dispatch(decrementSelfFollowerCount());
         listenerApi.dispatch(decrementFollowingCount(userId));
       }
-    },
+    }
   });
 
   /**
@@ -417,7 +417,7 @@ export const addEntitiesListeners = (
         listenerApi.dispatch(decrementSelfFriendCount());
         listenerApi.dispatch(decrementFriendCount(userId));
       }
-    },
+    }
   });
 
   /**
@@ -434,7 +434,7 @@ export const addEntitiesListeners = (
       } else {
         listenerApi.dispatch(decrementStoryLikeCount(storyId));
       }
-    },
+    }
   });
 };
 
@@ -472,7 +472,7 @@ export {
   toggleLikedStory,
   toggleMute,
   toggleSentRequest,
-  toggleSubscription,
+  toggleSubscription
 };
 
 export default entitiesSlice.reducer;

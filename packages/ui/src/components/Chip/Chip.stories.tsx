@@ -15,7 +15,7 @@ const meta: Meta<typeof Chip> = {
     children: "Chip",
     size: "md",
     variant: "rigid",
-    type: "static",
+    type: "static"
   },
   argTypes: {
     disabled: {
@@ -25,20 +25,20 @@ const meta: Meta<typeof Chip> = {
       description: "The disabled state.",
       table: {
         type: { summary: "boolean" },
-        defaultValue: { summary: "false" },
+        defaultValue: { summary: "false" }
       },
       control: {
-        type: "boolean",
-      },
+        type: "boolean"
+      }
     },
     decorator: {
       options: ["Icon", "None"],
       mapping: {
         Icon: <UserIcon />,
-        None: undefined,
-      },
-    },
-  },
+        None: undefined
+      }
+    }
+  }
 };
 
 export default meta;
@@ -48,30 +48,30 @@ export const Default: Story = {};
 
 export const Static: Story = {
   args: {
-    type: "static",
-  },
+    type: "static"
+  }
 };
 
 export const Clickable: Story = {
   args: {
-    type: "clickable",
-  },
+    type: "clickable"
+  }
 };
 
 export const Deletable: Story = {
   args: {
-    type: "deletable",
-  },
+    type: "deletable"
+  }
 };
 
 export const SizeLG: Story = {
   args: {
-    size: "lg",
-  },
+    size: "lg"
+  }
 };
 
 export const SizeMD: Story = {
   args: {
-    size: "md",
-  },
+    size: "md"
+  }
 };

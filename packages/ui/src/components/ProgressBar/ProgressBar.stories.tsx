@@ -13,8 +13,8 @@ const meta: Meta<typeof ProgressBar> = {
     size: "md",
     "aria-label": "Sample progress bar",
     value: 64,
-    style: { width: "256px" },
-  },
+    style: { width: "256px" }
+  }
 };
 
 export default meta;
@@ -24,12 +24,12 @@ export const Default: Story = {};
 
 export const SizeLG: Story = {
   args: {
-    size: "lg",
-  },
+    size: "lg"
+  }
 };
 
 export const SizeMD: Story = {
   args: {
-    size: "md",
-  },
+    size: "md"
+  }
 };

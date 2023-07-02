@@ -42,7 +42,7 @@ describe("<ScrollArea />", () => {
         data-testid={"scroll-area"}
         slotProps={
           {
-            scrollbar: { "data-testid": "scrollbar" },
+            scrollbar: { "data-testid": "scrollbar" }
           } as ScrollAreaProps["slotProps"]
         }
         type={"always"}
@@ -76,7 +76,7 @@ describe("<ScrollArea />", () => {
         enableHorizontal
         slotProps={
           {
-            scrollbar: { "data-testid": "scrollbar" },
+            scrollbar: { "data-testid": "scrollbar" }
           } as ScrollAreaProps["slotProps"]
         }
         type={"always"}
@@ -94,7 +94,7 @@ describe("<ScrollArea />", () => {
         slotProps={
           {
             viewport: { "data-testid": "viewport" },
-            scrollbar: { "data-testid": "scrollbar" },
+            scrollbar: { "data-testid": "scrollbar" }
           } as ScrollAreaProps["slotProps"]
         }
         type={"always"}

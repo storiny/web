@@ -19,7 +19,7 @@ export const useSignup = (): {
   const handleSignup = (): void => {
     signup({
       ...state.signup,
-      wpm: state.signup.wpm || DEFAULT_WPM,
+      wpm: state.signup.wpm || DEFAULT_WPM
     })
       .unwrap()
       .then((res) => {

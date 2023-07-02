@@ -34,7 +34,7 @@ describe("<Confirmation />", () => {
         open
         slotProps={
           {
-            content: { "data-testid": "content" },
+            content: { "data-testid": "content" }
           } as ConfirmationProps["slotProps"]
         }
         title={"test"}
@@ -52,7 +52,7 @@ describe("<Confirmation />", () => {
         slotProps={
           {
             confirmButton: { "data-testid": "confirm-button" },
-            cancelButton: { "data-testid": "cancel-button" },
+            cancelButton: { "data-testid": "cancel-button" }
           } as ConfirmationProps["slotProps"]
         }
         title={"test"}
@@ -73,7 +73,7 @@ describe("<Confirmation />", () => {
           open
           slotProps={
             {
-              confirmButton: { "data-testid": "confirm-button" },
+              confirmButton: { "data-testid": "confirm-button" }
             } as ConfirmationProps["slotProps"]
           }
           title={"test"}
@@ -107,7 +107,7 @@ describe("<Confirmation />", () => {
         slotProps={
           {
             confirmButton: { "data-testid": "confirm-button" },
-            cancelButton: { "data-testid": "cancel-button" },
+            cancelButton: { "data-testid": "cancel-button" }
           } as ConfirmationProps["slotProps"]
         }
         title={"test"}
@@ -132,7 +132,7 @@ describe("<Confirmation />", () => {
         slotProps={
           {
             confirmButton: { "data-testid": "confirm-button" },
-            cancelButton: { "data-testid": "cancel-button" },
+            cancelButton: { "data-testid": "cancel-button" }
           } as ConfirmationProps["slotProps"]
         }
         title={"test"}
@@ -163,7 +163,7 @@ describe("<Confirmation />", () => {
             divider: { "data-testid": "divider" },
             footer: { "data-testid": "footer" },
             title: { "data-testid": "title" },
-            overlay: { "data-testid": "overlay" },
+            overlay: { "data-testid": "overlay" }
           } as ConfirmationProps["slotProps"]
         }
         title={"test"}
@@ -182,7 +182,7 @@ describe("<Confirmation />", () => {
       "divider",
       "footer",
       "title",
-      "overlay",
+      "overlay"
     ].forEach((element) => {
       expect(getByTestId(element)).toBeInTheDocument();
     });

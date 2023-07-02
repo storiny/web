@@ -35,8 +35,8 @@ Object.defineProperty(window, "matchMedia", {
     removeListener: jest.fn(), // Safari < 14
     addEventListener: jest.fn(),
     removeEventListener: jest.fn(),
-    dispatchEvent: jest.fn(),
-  })),
+    dispatchEvent: jest.fn()
+  }))
 });
 
 // Mock `localStorage`
@@ -50,5 +50,15 @@ jest.mock("next/navigation", () => ({
   usePathname: jest.fn(),
   useSearchParams: jest.fn(),
   useSelectedLayoutSegment: jest.fn(),
-  useSelectedLayoutSegments: jest.fn(),
+  useSelectedLayoutSegments: jest.fn()
 }));
+
+// Intersection observer mock
+const mockIntersectionObserver = jest.fn();
+mockIntersectionObserver.mockReturnValue({
+  observe: () => null,
+  unobserve: () => null,
+  disconnect: () => null
+});
+
+window.IntersectionObserver = mockIntersectionObserver;

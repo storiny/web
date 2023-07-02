@@ -17,7 +17,7 @@ describe("<Image />", () => {
         imgId={""}
         slotProps={
           {
-            fallback: { "data-testid": "fallback", delayMs: 0 },
+            fallback: { "data-testid": "fallback", delayMs: 0 }
           } as ImageProps["slotProps"]
         }
       />
@@ -52,7 +52,7 @@ describe("<Image />", () => {
         imgId={""}
         slotProps={
           {
-            fallback: { "data-testid": "fallback", delayMs: 0 },
+            fallback: { "data-testid": "fallback", delayMs: 0 }
           } as ImageProps["slotProps"]
         }
       />
@@ -68,7 +68,7 @@ describe("<Image />", () => {
     );
 
     expect(getByTestId("image")).toHaveStyle({
-      "--hex": "#000",
+      "--hex": "#000"
     });
   });
 
@@ -79,7 +79,7 @@ describe("<Image />", () => {
 
     expect(getByTestId("image")).toHaveStyle({
       "--width": "64px",
-      "--height": "32px",
+      "--height": "32px"
     });
   });
 });

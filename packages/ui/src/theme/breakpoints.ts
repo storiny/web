@@ -17,7 +17,7 @@ export const breakpoints = {
   tablet: 1008,
   desktop: 1280,
   up,
-  down,
+  down
 };
 
 export type Breakpoint = "mobile" | "tablet" | "desktop";

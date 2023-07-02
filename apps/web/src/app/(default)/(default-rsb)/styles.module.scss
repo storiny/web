@@ -1,11 +1,12 @@
-/* Tabs */
-.tabs {
-  padding-inline: 20px;
-}
+.x {
+  /* Tabs */
+  &.tabs {
+    padding-inline: 20px;
+  }
 
-/* Tabs list */
-.tabs-list {
-  display: flex;
-  justify-content: space-around;
+  /* Tabs list */
+  &.tabs-list {
+    display: flex;
+    justify-content: space-around;
+  }
 }
-

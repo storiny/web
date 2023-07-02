@@ -10,9 +10,9 @@ const meta: Meta<typeof Status> = {
   component: Status,
   args: {
     text: "This is a status",
-    editable: false,
+    editable: false
   },
-  tags: ["autodocs"],
+  tags: ["autodocs"]
 };
 
 export default meta;
@@ -22,35 +22,35 @@ export const Default: Story = {};
 
 export const WithEmoji: Story = {
   args: {
-    emoji: "/images/emoji.png",
-  },
+    emoji: "/images/emoji.png"
+  }
 };
 
 export const WithExpirationTime: Story = {
   args: {
     ...WithEmoji.args,
-    expiresAt: "3d",
-  },
+    expiresAt: "3d"
+  }
 };
 
 export const WithoutText: Story = {
   args: {
     ...WithEmoji.args,
-    text: undefined,
-  },
+    text: undefined
+  }
 };
 
 export const Editable: Story = {
   args: {
     editable: true,
-    text: undefined,
-  },
+    text: undefined
+  }
 };
 
 export const EditableWithEmojiAndText: Story = {
   args: {
     ...WithEmoji.args,
     text: "Click to change",
-    editable: true,
-  },
+    editable: true
+  }
 };

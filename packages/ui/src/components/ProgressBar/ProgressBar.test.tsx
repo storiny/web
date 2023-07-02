@@ -50,7 +50,7 @@ describe("<ProgressBar />", () => {
       <ProgressBar
         slotProps={
           {
-            indicator: { "data-testid": "indicator" },
+            indicator: { "data-testid": "indicator" }
           } as ProgressBarProps["slotProps"]
         }
         value={64}

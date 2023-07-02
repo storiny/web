@@ -19,8 +19,8 @@ export const loggedInState = (
   auth: {
     loggedIn: true,
     status,
-    user: mockUsers[4],
-  },
+    user: mockUsers[4]
+  }
 });
 
 /**
@@ -35,7 +35,7 @@ export const renderWithState = (
   {
     loading,
     loggedIn,
-    ignorePrimitiveProviders,
+    ignorePrimitiveProviders
   }: {
     ignorePrimitiveProviders?: boolean;
     loading?: boolean;

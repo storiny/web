@@ -10,7 +10,7 @@ import { getQueryErrorType, useGetUserStoriesQuery } from "~/redux/features";
 import { ProfileEntitySortValue } from "../../client";
 
 const EmptyState = dynamic(() => import("../../empty-state"), {
-  loading: () => <SuspenseLoader />,
+  loading: () => <SuspenseLoader />
 });
 
 interface Props {
@@ -29,7 +29,7 @@ const StoriesTab = (props: Props): React.ReactElement => {
       page,
       sort,
       userId,
-      query: debouncedQuery,
+      query: debouncedQuery
     });
   const { items = [], hasMore } = data || {};
   const isTyping = query !== debouncedQuery;
@@ -45,7 +45,7 @@ const StoriesTab = (props: Props): React.ReactElement => {
         <ErrorState
           autoSize
           componentProps={{
-            button: { loading: isFetching },
+            button: { loading: isFetching }
           }}
           retry={refetch}
           type={getQueryErrorType(error)}

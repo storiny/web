@@ -16,8 +16,8 @@ const CriticalStyles = (): React.ReactElement => (
           "}",
           "html, body {",
           /* */ "background-color: var(--bg-body);",
-          "}",
-        ].join(""),
+          "}"
+        ].join("")
       }}
       media={"screen"}
     />
@@ -26,8 +26,8 @@ const CriticalStyles = (): React.ReactElement => (
         __html: [
           "body {",
           /* */ "background-color: hsl(0deg 0% 100%) !important;",
-          "}",
-        ].join(""),
+          "}"
+        ].join("")
       }}
       media={"print"}
     />

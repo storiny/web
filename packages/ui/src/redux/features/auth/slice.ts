@@ -14,7 +14,7 @@ export interface AuthState {
 export const authInitialState: AuthState = {
   status: "idle",
   loggedIn: false,
-  user: null,
+  user: null
 };
 
 /**
@@ -29,14 +29,14 @@ export const fetchUser = createAsyncThunk(
   {
     condition: (userId, { getState }) => {
       const {
-        auth: { loggedIn, status, user },
+        auth: { loggedIn, status, user }
       } = getState() as AppState;
 
       if (!loggedIn || user !== null || status === "loading") {
         // Do not send a request if logged out, user object is already populated or status is `loading`
         return false;
       }
-    },
+    }
   }
 );
 
@@ -102,7 +102,7 @@ export const authSlice = createSlice({
       ) {
         state.user.friend_count--;
       }
-    },
+    }
   },
   extraReducers: (builder) => {
     builder
@@ -118,7 +118,7 @@ export const authSlice = createSlice({
         state.status = "error";
         state.user = null;
       });
-  },
+  }
 });
 
 const {
@@ -127,7 +127,7 @@ const {
   incrementSelfFollowerCount,
   decrementSelfFriendCount,
   decrementSelfFollowingCount,
-  decrementSelfFollowerCount,
+  decrementSelfFollowerCount
 } = authSlice.actions;
 
 export {
@@ -136,7 +136,7 @@ export {
   decrementSelfFriendCount,
   incrementSelfFollowerCount,
   incrementSelfFollowingCount,
-  incrementSelfFriendCount,
+  incrementSelfFriendCount
 };
 
 export default authSlice.reducer;

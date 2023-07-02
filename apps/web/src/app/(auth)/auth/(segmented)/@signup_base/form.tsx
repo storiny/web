@@ -25,8 +25,8 @@ const SignupBaseForm = ({ onSubmit }: Props): React.ReactElement => {
     defaultValues: {
       name: state.signup.name,
       email: state.signup.email,
-      password: state.signup.password,
-    },
+      password: state.signup.password
+    }
   });
 
   const handleSubmit: SubmitHandler<SignupBaseSchema> = (values) => {

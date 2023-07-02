@@ -12,7 +12,7 @@ import {
   FormHelperText,
   FormItem,
   FormLabel,
-  FormMessage,
+  FormMessage
 } from "../Form";
 import { FormRadioGroupProps } from "./FormRadioGroup.props";
 
@@ -40,7 +40,7 @@ const FormRadioGroup = React.forwardRef<
       name={name}
       render={({
         field,
-        fieldState: { invalid, error },
+        fieldState: { invalid, error }
       }): React.ReactElement => (
         <FormItem
           {...formSlotProps?.formItem}

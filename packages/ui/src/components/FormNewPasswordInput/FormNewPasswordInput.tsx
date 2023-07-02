@@ -22,7 +22,7 @@ const scoreToColorMap: Record<ZXCVBNScore, string> = {
   1: "var(--ruby-500)",
   2: "var(--lemon-500)",
   3: "var(--lemon-500)",
-  4: "var(--melon-100)",
+  4: "var(--melon-100)"
 };
 
 const spinnerSizeMap: Record<
@@ -31,14 +31,14 @@ const spinnerSizeMap: Record<
 > = {
   sm: "",
   md: "24px",
-  lg: "28px",
+  lg: "28px"
 };
 
 // Strength indicator
 
 const StrengthIndicator = ({
   score: scoreProp,
-  size,
+  size
 }: {
   score: ZXCVBNScore;
   size: NonNullable<FormNewPasswordInputProps["size"]>;
@@ -67,9 +67,9 @@ const StrengthIndicator = ({
           progress: {
             className: styles["strength-progress"],
             style: {
-              "--progress-bg": scoreToColorMap[scoreProp],
-            } as React.CSSProperties,
-          },
+              "--progress-bg": scoreToColorMap[scoreProp]
+            } as React.CSSProperties
+          }
         }}
         style={{ "--size": spinnerSizeMap[size] } as React.CSSProperties}
         value={score}
@@ -100,7 +100,7 @@ const FormNewPasswordInput = React.forwardRef<
   const [suggestion, setSuggestion] = React.useState<string>("");
   const [score, setScore] = React.useState<ZXCVBNScore>(0);
   const {
-    formState: { defaultValues },
+    formState: { defaultValues }
   } = useFormContext();
 
   const toggleVisibility = (): void => {

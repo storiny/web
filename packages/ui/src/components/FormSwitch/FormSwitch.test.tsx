@@ -11,14 +11,14 @@ import FormSwitch from "./FormSwitch";
 import { FormSwitchProps } from "./FormSwitch.props";
 
 const testSchema = z.object({
-  switch: z.boolean(),
+  switch: z.boolean()
 });
 
 type TestSchema = z.infer<typeof testSchema>;
 
 const Component = ({
   children,
-  disabled,
+  disabled
 }: {
   children: React.ReactNode;
   disabled?: boolean;
@@ -26,8 +26,8 @@ const Component = ({
   const form = useForm<TestSchema>({
     resolver: zodResolver(testSchema),
     defaultValues: {
-      switch: false,
-    },
+      switch: false
+    }
   });
 
   return (
@@ -75,8 +75,8 @@ describe("<FormSwitch />", () => {
           formSlotProps={
             {
               formItem: {
-                "data-testid": "form-item",
-              },
+                "data-testid": "form-item"
+              }
             } as FormSwitchProps["formSlotProps"]
           }
           label={"Test label"}
@@ -98,7 +98,7 @@ describe("<FormSwitch />", () => {
               formItem: { "data-testid": "form-item" },
               control: { "data-testid": "control" },
               label: { "data-testid": "label" },
-              helperText: { "data-testid": "helper-text" },
+              helperText: { "data-testid": "helper-text" }
             } as FormSwitchProps["formSlotProps"]
           }
           helperText={"Test helper text"}

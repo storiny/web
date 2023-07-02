@@ -3,7 +3,7 @@ import {
   DialogOverlayProps,
   DialogPortalProps,
   DialogProps,
-  DialogTriggerProps,
+  DialogTriggerProps
 } from "@radix-ui/react-dialog";
 import React from "react";
 

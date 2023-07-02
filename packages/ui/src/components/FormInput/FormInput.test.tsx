@@ -11,14 +11,14 @@ import FormInput from "./FormInput";
 import { FormInputProps } from "./FormInput.props";
 
 const testSchema = z.object({
-  input: z.string(),
+  input: z.string()
 });
 
 type TestSchema = z.infer<typeof testSchema>;
 
 const Component = ({
   children,
-  disabled,
+  disabled
 }: {
   children: React.ReactNode;
   disabled?: boolean;
@@ -26,8 +26,8 @@ const Component = ({
   const form = useForm<TestSchema>({
     resolver: zodResolver(testSchema),
     defaultValues: {
-      input: "",
-    },
+      input: ""
+    }
   });
 
   return (
@@ -67,8 +67,8 @@ describe("<FormInput />", () => {
           formSlotProps={
             {
               formItem: {
-                "data-testid": "form-item",
-              },
+                "data-testid": "form-item"
+              }
             } as FormInputProps["formSlotProps"]
           }
           label={"Test label"}
@@ -89,7 +89,7 @@ describe("<FormInput />", () => {
               formItem: { "data-testid": "form-item" },
               control: { "data-testid": "control" },
               label: { "data-testid": "label" },
-              helperText: { "data-testid": "helper-text" },
+              helperText: { "data-testid": "helper-text" }
             } as FormInputProps["formSlotProps"]
           }
           helperText={"Test helper text"}

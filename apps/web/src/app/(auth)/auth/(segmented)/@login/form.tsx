@@ -32,8 +32,8 @@ const LoginForm = ({ onSubmit }: Props): React.ReactElement => {
     defaultValues: {
       email: "",
       password: "",
-      "remember-me": false,
-    },
+      "remember-me": false
+    }
   });
   const [login, { isLoading }] = useLoginMutation();
 
@@ -87,7 +87,7 @@ const LoginForm = ({ onSubmit }: Props): React.ReactElement => {
       <FormPasswordInput
         data-testid={"password-input"}
         formSlotProps={{
-          label: { className: clsx("flex", "full-w") },
+          label: { className: clsx("flex", "full-w") }
         }}
         label={
           <>

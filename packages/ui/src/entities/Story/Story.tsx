@@ -29,13 +29,13 @@ import { selectUser } from "~/redux/features/auth/selectors";
 import {
   selectBlock,
   selectBookmark,
-  selectLikedStory,
+  selectLikedStory
 } from "~/redux/features/entities/selectors";
 import {
   overwriteBookmark,
   overwriteLikedStory,
   syncWithStory,
-  toggleBookmark,
+  toggleBookmark
 } from "~/redux/features/entities/slice";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 import { breakpoints } from "~/theme/breakpoints";
@@ -110,7 +110,7 @@ const Story = (props: StoryProps): React.ReactElement => {
                   // @ts-expect-error polymorphic prop
                   href: `/${story.user.username}`,
                   title: `View ${story.user.name}'s profile`,
-                  as: NextLink,
+                  as: NextLink
                 }}
                 className={styles.persona}
                 primaryText={
@@ -166,7 +166,7 @@ const Story = (props: StoryProps): React.ReactElement => {
                 // Use onClick to avoid nesting anchor inside another anchor
                 {...(isMobile
                   ? {
-                      onClick: () => router.push(storyUrl),
+                      onClick: () => router.push(storyUrl)
                     }
                   : { href: storyUrl })}
               >
@@ -179,14 +179,14 @@ const Story = (props: StoryProps): React.ReactElement => {
                       sizes: [
                         "(min-width: 800px) 320px",
                         "(min-width: 650px) 256px",
-                        "100vw",
+                        "100vw"
                       ].join(","),
                       srcSet: [
                         `${getCdnUrl(story.splash_id, ImageSize.W_256)} 256w`,
                         `${getCdnUrl(story.splash_id, ImageSize.W_320)} 320w`,
-                        `${getCdnUrl(story.splash_id, ImageSize.W_640)} 640w`,
-                      ].join(","),
-                    },
+                        `${getCdnUrl(story.splash_id, ImageSize.W_640)} 640w`
+                      ].join(",")
+                    }
                   }}
                 />
                 {isMobile && (

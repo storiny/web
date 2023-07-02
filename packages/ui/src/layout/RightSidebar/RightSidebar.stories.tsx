@@ -11,10 +11,10 @@ const meta: Meta<typeof RightSidebar> = {
   title: "Layout/RightSidebar",
   component: RightSidebar,
   parameters: {
-    layout: "fullscreen",
+    layout: "fullscreen"
   },
   args: { forceMount: true, style: { width: "310px", marginRight: "48px" } },
-  tags: ["autodocs"],
+  tags: ["autodocs"]
 };
 
 export default meta;
@@ -26,11 +26,11 @@ export const Loading: Story = {
   decorators: [
     (Story) =>
       renderWithState(<Story />, {
-        loading: true,
-      }),
-  ],
+        loading: true
+      })
+  ]
 };
 
 export const LoggedIn: Story = {
-  decorators: [(Story) => renderWithState(<Story />, { loggedIn: true })],
+  decorators: [(Story) => renderWithState(<Story />, { loggedIn: true })]
 };

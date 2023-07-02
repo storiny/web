@@ -19,14 +19,14 @@ interface Props {
 
 const MDXPattern = ({ meta, children }: Props): React.ReactElement => (
   <MarkdownProvider>
-    <div className={clsx("flex-col", styles.header)}>
+    <div className={clsx("flex-col", styles.x, styles.header)}>
       <Typography level={"h1"}>{meta.title}</Typography>
       <Typography className={clsx("t-medium", "t-minor")}>
         Last updated:{" "}
         {formatDate(new Date(meta.lastUpdated), DateFormat.STANDARD)}
       </Typography>
     </div>
-    <div className={clsx("flex-col", styles.content)}>{children}</div>
+    <div className={clsx("flex-col", styles.x, styles.content)}>{children}</div>
   </MarkdownProvider>
 );
 

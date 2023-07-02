@@ -3,7 +3,7 @@
 import {
   Fallback,
   Image as ImagePrimitive,
-  Root,
+  Root
 } from "@radix-ui/react-avatar";
 import clsx from "clsx";
 import React from "react";
@@ -49,7 +49,7 @@ const Image = forwardRef<ImageProps, "div">((props, ref) => {
           ...(hex && { "--hex": `#${hex}` }),
           ...(typeof width !== "undefined" && { "--width": `${width}px` }),
           ...(typeof height !== "undefined" && { "--height": `${height}px` }),
-          ...style,
+          ...style
         } as React.CSSProperties
       }
     >

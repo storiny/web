@@ -25,7 +25,7 @@ describe("<Logo />", () => {
     );
 
     expect(getByTestId("logo")).toHaveStyle({
-      "--size": "64px",
+      "--size": "64px"
     });
   });
 
@@ -35,7 +35,7 @@ describe("<Logo />", () => {
     );
 
     expect(getByTestId("logo")).toHaveStyle({
-      "--size": "48px",
+      "--size": "48px"
     });
   });
 });

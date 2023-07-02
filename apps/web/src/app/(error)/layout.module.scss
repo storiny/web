@@ -1,45 +1,47 @@
-@use "../../../../../packages/ui/src/theme/breakpoints" as breakpoints;
+@use "breakpoints" as breakpoints;
 
-/* Container */
-.container {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
-
-/* Three digit error code */
-.error-code {
-  font-size: 128px;
-  font-weight: 900; // Black
-  line-height: 100%;
-  padding-block: 16px;
-
-  @include breakpoints.media("<=mobile") {
-    font-size: 96px;
+.x {
+  /* Container */
+  &.container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
   }
-}
 
-/* Individual digit */
-.digit {
-  &:not(:first-child) {
-    text-shadow: -3px 0 0 var(--bg-body);
-    margin-left: -18px;
+  /* Three digit error code */
+  &.error-code {
+    font-size: 128px;
+    font-weight: 900; // Black
+    line-height: 100%;
+    padding-block: 16px;
+
+    @include breakpoints.media("<=mobile") {
+      font-size: 96px;
+    }
   }
-}
 
-/* Content */
-.content {
-  gap: 8px;
-}
+  /* Individual digit */
+  &.digit {
+    &:not(:first-child) {
+      text-shadow: -3px 0 0 var(--bg-body);
+      margin-left: -18px;
+    }
+  }
 
-/* Description */
-.description {
-  max-width: 640px;
-}
+  /* Content */
+  &.content {
+    gap: 8px;
+  }
 
-/* Input */
-.input {
-  width: 320px;
-  max-width: 100%;
+  /* Description */
+  &.description {
+    max-width: 640px;
+  }
+
+  /* Input */
+  &.input {
+    width: 320px;
+    max-width: 100%;
+  }
 }

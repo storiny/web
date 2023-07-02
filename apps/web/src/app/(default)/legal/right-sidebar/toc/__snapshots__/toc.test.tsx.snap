@@ -1,0 +1,60 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<LegalToc /> matches snapshot 1`] = `
+<div>
+  <main>
+    <h2
+      id="h2-1"
+    >
+      H2
+    </h2>
+    <h3
+      id="h3-1"
+    >
+      H3
+    </h3>
+  </main>
+  <nav
+    aria-label="Table of contents"
+    class="scroll-area md"
+    dir="ltr"
+    style="position: relative; --radix-scroll-area-corner-width: 0px; --radix-scroll-area-corner-height: 0px;"
+  >
+    <style>
+      [data-radix-scroll-area-viewport]{scrollbar-width:none;-ms-overflow-style:none;-webkit-overflow-scrolling:touch;}[data-radix-scroll-area-viewport]::-webkit-scrollbar{display:none}
+    </style>
+    <div
+      class="viewport toc"
+      data-radix-scroll-area-viewport=""
+      style="overflow-x: hidden; overflow-y: scroll;"
+    >
+      <div
+        style="min-width: 100%; display: table;"
+      >
+        <ul
+          class="flex-col ul"
+        >
+          <li
+            class="flex-col li"
+          >
+            <a
+              href="#h2-1"
+            />
+            <ul
+              class="flex-col ul nested-ul"
+            >
+              <li
+                class="flex-col li"
+              >
+                <a
+                  href="#h3-1"
+                />
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+</div>
+`;

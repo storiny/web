@@ -9,7 +9,7 @@ import styles from "./IconButton.module.scss";
 import {
   IconButtonColor,
   IconButtonSize,
-  IconButtonVariant,
+  IconButtonVariant
 } from "./IconButton.props";
 
 describe("<IconButton />", () => {

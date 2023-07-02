@@ -1,7 +1,7 @@
 import {
   AvatarFallbackProps,
   AvatarImageProps,
-  AvatarProps as AvatarPrimitiveProps,
+  AvatarProps as AvatarPrimitiveProps
 } from "@radix-ui/react-avatar";
 
 import { PolymorphicProps } from "~/types/index";

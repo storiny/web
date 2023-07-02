@@ -17,7 +17,7 @@ describe("<Slider />", () => {
     const { container } = renderTestWithProvider(
       <Slider
         slotProps={{
-          thumb: { "aria-label": "Test slider" },
+          thumb: { "aria-label": "Test slider" }
         }}
       />
     );
@@ -66,7 +66,7 @@ describe("<Slider />", () => {
           {
             range: { "data-testid": "range" },
             thumb: { "data-testid": "thumb" },
-            track: { "data-testid": "track" },
+            track: { "data-testid": "track" }
           } as SliderProps["slotProps"]
         }
       />

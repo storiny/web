@@ -10,21 +10,21 @@ import { renderTestWithProvider } from "~/redux/testUtils";
 import FormPasswordInput from "./FormPasswordInput";
 
 const testSchema = z.object({
-  input: z.string(),
+  input: z.string()
 });
 
 type TestSchema = z.infer<typeof testSchema>;
 
 const Component = ({
-  children,
+  children
 }: {
   children: React.ReactNode;
 }): React.ReactElement => {
   const form = useForm<TestSchema>({
     resolver: zodResolver(testSchema),
     defaultValues: {
-      input: "",
-    },
+      input: ""
+    }
   });
 
   return <Form providerProps={form}>{children}</Form>;

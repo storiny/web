@@ -65,6 +65,7 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
         <textarea
           {...rest}
           className={clsx("unset", styles.textarea, className)}
+          disabled={disabled}
           onBlur={handleBlur}
           onFocus={handleFocus}
           ref={ref}

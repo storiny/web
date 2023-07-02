@@ -41,5 +41,5 @@ export const zodMessages = {
       ? `${capitalize(field)} must be less than ${minLength}`
       : `${capitalize(field)} must contain at most ${minLength} ${
           minLength === 1 ? "character" : "characters"
-        }`,
+        }`
 };

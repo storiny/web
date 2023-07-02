@@ -32,7 +32,7 @@ import {
   toggleFriend,
   toggleMute,
   toggleSentRequest,
-  toggleSubscription,
+  toggleSubscription
 } from "~/redux/features";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 
@@ -66,7 +66,7 @@ const Actions = ({ profile, isInsideSidebar }: Props): React.ReactElement => {
           title: `${isBlocking ? "Unblock" : "Block"} @${profile.username}?`,
           description: isBlocking
             ? `The public content you publish will be available to them as well as the ability to follow you.`
-            : `Your feed will not include their content, and they will not be able to follow you or interact with your profile.`,
+            : `Your feed will not include their content, and they will not be able to follow you or interact with your profile.`
         });
       }}
     >
@@ -85,9 +85,13 @@ const Actions = ({ profile, isInsideSidebar }: Props): React.ReactElement => {
         is_blocking: profile.is_blocking,
         is_subscribed: profile.is_subscribed,
         is_friend_request_sent: profile.is_friend_request_sent,
-        following_count: profile.following_count,
+        following_count:
+          typeof profile.following_count === "number"
+            ? profile.following_count
+            : null,
         follower_count: profile.follower_count,
-        friend_count: profile.friend_count,
+        friend_count:
+          typeof profile.friend_count === "number" ? profile.friend_count : null
       })
     );
   }, [dispatch, profile]);

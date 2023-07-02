@@ -17,7 +17,7 @@ import styles from "./LeftSidebar.module.scss";
 import { LeftSidebarProps } from "./LeftSidebar.props";
 
 const LeftSidebarDefaultContent = dynamic(() => import("./DefaultContent"), {
-  loading: () => <SuspenseLoader />,
+  loading: () => <SuspenseLoader />
 });
 
 const LeftSidebar = (props: LeftSidebarProps): React.ReactElement | null => {

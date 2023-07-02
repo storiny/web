@@ -67,7 +67,7 @@ const Button = forwardRef<ButtonProps, "button">((props, ref) => {
       tabIndex={disabled ? -1 : 0}
       {...(shouldLogin
         ? {
-            href: `/login${to}`,
+            href: `/login${to}`
           }
         : {})}
       {...(Component === "button"
@@ -84,7 +84,7 @@ const Button = forwardRef<ButtonProps, "button">((props, ref) => {
               }
 
               rest?.onKeyUp?.(event);
-            },
+            }
           })}
     >
       {decorator || loading ? (

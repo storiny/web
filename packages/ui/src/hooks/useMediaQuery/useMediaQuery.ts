@@ -44,7 +44,7 @@ export const useMediaQuery = (query: UseMediaQueryProps): boolean => {
             mediaQueryList.removeListener(handler);
           }
         };
-      },
+      }
     ];
   }, [getDefaultSnapshot, matchMedia, query]);
 

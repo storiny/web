@@ -9,7 +9,7 @@ import Form, {
   SubmitHandler,
   useForm,
   useFormContext,
-  zodResolver,
+  zodResolver
 } from "~/components/Form";
 import FormInput from "~/components/FormInput";
 import Grow from "~/components/Grow";
@@ -28,7 +28,7 @@ interface Props {
 }
 
 const UsernameField = ({
-  setValid,
+  setValid
 }: {
   setValid: (newValue: boolean) => void;
 }): React.ReactElement => {
@@ -91,9 +91,9 @@ const UsernameField = ({
               ? "var(--fg-minor)"
               : isSuccess
               ? "var(--melon-100)"
-              : "var(--ruby-500)",
-          } as React.CSSProperties,
-        },
+              : "var(--ruby-500)"
+          } as React.CSSProperties
+        }
       }}
       helperText={
         invalid ||
@@ -126,14 +126,14 @@ const UsernameField = ({
 
 const SignupUsernameForm = ({
   onSubmit,
-  skipValidation,
+  skipValidation
 }: Props): React.ReactElement => {
   const { state } = useAuthState();
   const form = useForm<SignupUsernameSchema>({
     resolver: zodResolver(signupUsernameSchema),
     defaultValues: {
-      username: state.signup.username,
-    },
+      username: state.signup.username
+    }
   });
   const [valid, setValid] = React.useState<boolean>(false);
 

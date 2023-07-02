@@ -25,7 +25,7 @@ describe("<Toggle />", () => {
     const { getByRole, queryByRole } = renderTestWithProvider(
       <Toggle
         slotProps={{
-          tooltip: { open: true },
+          tooltip: { open: true }
         }}
       >
         Test
@@ -52,7 +52,7 @@ describe("<Toggle />", () => {
     const { getByRole } = renderTestWithProvider(
       <Toggle
         slotProps={{
-          tooltip: { open: true },
+          tooltip: { open: true }
         }}
         tooltipContent={"Tooltip content"}
       >
@@ -75,11 +75,11 @@ describe("<Toggle />", () => {
               open: true,
               slotProps: {
                 content: {
-                  "data-testid": "tooltip-content",
-                },
-              },
+                  "data-testid": "tooltip-content"
+                }
+              }
             },
-            container: { "data-testid": "container" },
+            container: { "data-testid": "container" }
           } as ToggleProps["slotProps"]
         }
         tooltipContent={"Tooltip content"}

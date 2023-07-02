@@ -10,21 +10,21 @@ import Form, { useForm } from "~/components/Form";
 import FormCheckbox from "./FormCheckbox";
 
 const sampleSchema = z.object({
-  sample: z.boolean(),
+  sample: z.boolean()
 });
 
 type SampleSchema = z.infer<typeof sampleSchema>;
 
 const Component = ({
-  children,
+  children
 }: {
   children: React.ReactNode;
 }): React.ReactElement => {
   const form = useForm<SampleSchema>({
     resolver: zodResolver(sampleSchema),
     defaultValues: {
-      sample: false,
-    },
+      sample: false
+    }
   });
 
   return <Form providerProps={form}>{children}</Form>;
@@ -38,7 +38,7 @@ const meta: Meta<typeof FormCheckbox> = {
       <Component>
         <Story />
       </Component>
-    ),
+    )
   ],
   tags: ["autodocs"],
   args: {
@@ -47,8 +47,8 @@ const meta: Meta<typeof FormCheckbox> = {
     label: "Checkbox label",
     helperText: "Form checkbox helper text",
     name: "sample",
-    style: { maxWidth: "300px" },
-  },
+    style: { maxWidth: "300px" }
+  }
 };
 
 export default meta;

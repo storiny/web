@@ -14,7 +14,7 @@ import {
   recovery,
   resetPassword,
   signup,
-  usernameValidation,
+  usernameValidation
 } from "./endpoints";
 
 // Use latest
@@ -23,7 +23,7 @@ const API_VERSION = 1;
 export const apiSlice = createApi({
   reducerPath: "api",
   baseQuery: fetchBaseQuery({
-    baseUrl: `${process.env.NEXT_PUBLIC_API_URL}/v${API_VERSION}`,
+    baseUrl: `${process.env.NEXT_PUBLIC_API_URL}/v${API_VERSION}`
   }),
   endpoints: (builder) => ({
     // Get
@@ -42,8 +42,8 @@ export const apiSlice = createApi({
     login: login(builder),
     signup: signup(builder),
     recovery: recovery(builder),
-    resetPassword: resetPassword(builder),
-  }),
+    resetPassword: resetPassword(builder)
+  })
 });
 
 export const {
@@ -60,5 +60,5 @@ export const {
   useLoginMutation,
   useSignupMutation,
   useRecoveryMutation,
-  useResetPasswordMutation,
+  useResetPasswordMutation
 } = apiSlice;

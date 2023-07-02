@@ -5,7 +5,7 @@ import SuspenseLoader from "~/common/suspense-loader";
 import RightSidebar from "~/layout/RightSidebar";
 
 const SuspendedLegalRightSidebarContent = dynamic(() => import("./content"), {
-  loading: () => <SuspenseLoader />,
+  loading: () => <SuspenseLoader />
 });
 
 const LegalRightSidebar = (): React.ReactElement => (

@@ -7,7 +7,7 @@ import { Virtuoso } from "react-virtuoso";
 import {
   VirtualizedStoryFooter,
   VirtualizedStoryItem,
-  VirtualizedStoryScrollSeekPlaceholder,
+  VirtualizedStoryScrollSeekPlaceholder
 } from "..";
 import { VirtualizedStoryListProps } from "./List.props";
 import { VirtualizedStoryListContext } from "./ListContext";
@@ -26,7 +26,7 @@ const VirtualizedStoryList = React.memo(
         increaseViewportBy={750}
         scrollSeekConfiguration={{
           enter: (velocity): boolean => Math.abs(velocity) > 950,
-          exit: (velocity): boolean => Math.abs(velocity) < 10,
+          exit: (velocity): boolean => Math.abs(velocity) < 10
         }}
         useWindowScroll
         {...rest}
@@ -34,7 +34,7 @@ const VirtualizedStoryList = React.memo(
         components={{
           Item: VirtualizedStoryItem,
           ScrollSeekPlaceholder: VirtualizedStoryScrollSeekPlaceholder,
-          ...(hasMore && { Footer: VirtualizedStoryFooter }),
+          ...(hasMore && { Footer: VirtualizedStoryFooter })
         }}
         data={stories}
         endReached={hasMore ? loadMore : (): void => undefined}

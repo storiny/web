@@ -8,7 +8,7 @@ import Logo from "./Logo";
 const meta: Meta<typeof Logo> = {
   title: "Brand/Logo",
   component: Logo,
-  tags: ["autodocs"],
+  tags: ["autodocs"]
 };
 
 export default meta;

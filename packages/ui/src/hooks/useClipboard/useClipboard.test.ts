@@ -12,10 +12,10 @@ describe("useClipboard", () => {
     Object.defineProperty(global, "navigator", {
       value: {
         clipboard: {
-          writeText: jest.fn().mockImplementationOnce(() => Promise.resolve()),
-        },
+          writeText: jest.fn().mockImplementationOnce(() => Promise.resolve())
+        }
       },
-      configurable: true,
+      configurable: true
     });
   });
 
@@ -25,9 +25,9 @@ describe("useClipboard", () => {
     // Restore clipboard
     Object.defineProperty(global, "navigator", {
       value: {
-        clipboard: initialClipboard,
+        clipboard: initialClipboard
       },
-      configurable: true,
+      configurable: true
     });
   });
 

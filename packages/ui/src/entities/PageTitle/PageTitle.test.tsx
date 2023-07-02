@@ -34,7 +34,7 @@ describe("<PageTitle />", () => {
       <PageTitle
         componentProps={
           {
-            backButton: { "data-testid": "back-button" },
+            backButton: { "data-testid": "back-button" }
           } as PageTitleProps["componentProps"]
         }
       />

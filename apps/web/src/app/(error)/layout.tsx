@@ -16,7 +16,7 @@ const ErrorLayout = ({
   errorCode,
   title,
   description,
-  enableSearch,
+  enableSearch
 }: {
   children?: React.ReactNode;
   description?: React.ReactNode;
@@ -40,19 +40,28 @@ const ErrorLayout = ({
         style={{ objectFit: "cover", opacity: 0.45 }}
       />
     </div>
-    <div className={clsx("flex-col", "flex-center", styles.container)}>
-      <Typography className={styles["error-code"]} level={"display1"}>
+    <div
+      className={clsx("flex-col", "flex-center", styles.x, styles.container)}
+    >
+      <Typography
+        className={clsx(styles.x, styles["error-code"])}
+        level={"display1"}
+      >
         {errorCode.split("").map((digit, index) => (
-          <span className={styles.digit} key={index}>
+          <span className={clsx(styles.x, styles.digit)} key={index}>
             {digit}
           </span>
         ))}
       </Typography>
-      <div className={clsx("flex-col", "flex-center", styles.content)}>
+      <div
+        className={clsx("flex-col", "flex-center", styles.x, styles.content)}
+      >
         <Typography className={"t-center"} level={"h2"}>
           {title}
         </Typography>
-        <Typography className={clsx("t-center", "t-minor", styles.description)}>
+        <Typography
+          className={clsx("t-center", "t-minor", styles.x, styles.description)}
+        >
           {description}
         </Typography>
         {enableSearch && (
@@ -63,7 +72,7 @@ const ErrorLayout = ({
               placeholder={"Search Storiny"}
               size={"lg"}
               slotProps={{
-                container: { className: styles.input },
+                container: { className: clsx(styles.x, styles.input) }
               }}
               type={"search"}
             />

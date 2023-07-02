@@ -19,7 +19,7 @@ const VirtualizedUserItem = React.memo(
     return (
       <div
         {...rest}
-        className={clsx("flex-col", styles["list-item"])}
+        className={clsx("flex-col", styles.x, styles["list-item"])}
         key={item.id}
       >
         <User {...userProps} user={item} />

@@ -35,8 +35,8 @@ describe("<Tooltip />", () => {
       expect(
         await axe(baseElement, {
           rules: {
-            region: { enabled: false },
-          },
+            region: { enabled: false }
+          }
         })
       ).toHaveNoViolations()
     );
@@ -51,8 +51,8 @@ describe("<Tooltip />", () => {
         slotProps={
           {
             content: {
-              "data-testid": "content",
-            },
+              "data-testid": "content"
+            }
           } as TooltipProps["slotProps"]
         }
       >
@@ -72,11 +72,11 @@ describe("<Tooltip />", () => {
           slotProps={
             {
               arrow: {
-                "data-testid": "arrow",
+                "data-testid": "arrow"
               },
               content: {
-                "data-testid": "content",
-              },
+                "data-testid": "content"
+              }
             } as TooltipProps["slotProps"]
           }
         >

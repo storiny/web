@@ -6,5 +6,5 @@ export type ResetSchema = z.infer<typeof resetSchema>;
 export const resetSchema = z.object({
   email: userSchema.email,
   password: userSchema.password,
-  "logout-of-all-devices": z.boolean(),
+  "logout-of-all-devices": z.boolean()
 });

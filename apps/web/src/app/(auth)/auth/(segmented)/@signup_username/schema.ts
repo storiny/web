@@ -4,5 +4,5 @@ import { z } from "zod";
 export type SignupUsernameSchema = z.infer<typeof signupUsernameSchema>;
 
 export const signupUsernameSchema = z.object({
-  username: userSchema.username,
+  username: userSchema.username
 });

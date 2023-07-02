@@ -8,7 +8,7 @@ const Table = ({
   className,
   ...rest
 }: React.ComponentPropsWithoutRef<"table">): React.ReactElement => (
-  <div className={clsx(styles.table, className)}>
+  <div className={clsx(styles.x, styles.table, className)}>
     <table {...rest}>{children}</table>
   </div>
 );

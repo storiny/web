@@ -3,7 +3,7 @@ import {
   BaseQueryFn,
   FetchArgs,
   FetchBaseQueryError,
-  FetchBaseQueryMeta,
+  FetchBaseQueryMeta
 } from "@reduxjs/toolkit/query";
 
 export type ApiQueryBuilder = EndpointBuilder<

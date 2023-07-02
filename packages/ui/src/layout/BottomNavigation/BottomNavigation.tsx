@@ -28,7 +28,7 @@ const AnchorTab = (props: TabProps & { href: string }): React.ReactElement => (
     aria-controls={undefined}
     aria-selected={undefined}
     as={NextLink}
-    className={clsx(styles.tab)}
+    className={clsx(styles.x, styles.tab)}
     id={undefined}
     role={undefined}
   />
@@ -57,7 +57,10 @@ const BottomNavigation = (
   }
 
   return (
-    <div {...rest} className={clsx(styles["bottom-navigation"], className)}>
+    <div
+      {...rest}
+      className={clsx(styles.x, styles["bottom-navigation"], className)}
+    >
       <Tabs
         activationMode={"manual"}
         className={"full-w"}
@@ -67,7 +70,7 @@ const BottomNavigation = (
         <TabsList
           aria-orientation={undefined}
           as={"nav"}
-          className={clsx("full-w", styles["tabs-list"])}
+          className={clsx("full-w", styles.x, styles["tabs-list"])}
           loop={false}
           role={undefined}
           size={"lg"}
@@ -90,7 +93,7 @@ const BottomNavigation = (
             aria-label={"Write a new story"}
             as={NextLink}
             checkAuth
-            className={styles.cta}
+            className={clsx(styles.x, styles.cta)}
             href={"/new"}
             size={"lg"}
             title={"New story"}
@@ -100,11 +103,11 @@ const BottomNavigation = (
           <Badge
             anchorOrigin={{ vertical: "top", horizontal: "right" }}
             slotProps={{
-              container: { tabIndex: -1 },
+              container: { tabIndex: -1 }
             }}
             style={{
               top: "36%",
-              right: "42%",
+              right: "42%"
             }}
             visible={false}
           >

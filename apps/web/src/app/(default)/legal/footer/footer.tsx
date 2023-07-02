@@ -9,13 +9,13 @@ import MessagesIcon from "~/icons/Messages";
 import styles from "./footer.module.scss";
 
 const LegalFooter = (): React.ReactElement => (
-  <footer className={clsx("flex-center", styles.footer)}>
+  <footer className={clsx("flex-center", styles.x, styles.footer)}>
     <Typography className={"t-minor"} level={"body2"}>
       Legal &copy; {new Date().getFullYear()} Storiny
     </Typography>
     <Grow />
     <Link
-      className={clsx("flex-center", styles["support-link"])}
+      className={clsx("flex-center", styles.x, styles["support-link"])}
       color={"beryl"}
       href={"/support"}
       level={"body2"}

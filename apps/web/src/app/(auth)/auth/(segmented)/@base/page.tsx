@@ -90,7 +90,7 @@ const Page = (): React.ReactElement => {
         How would you like to proceed?
       </Typography>
       <Spacer orientation={"vertical"} size={5} />
-      <div className={clsx("flex-col", styles.actions)}>
+      <div className={clsx("flex-col", styles.x, styles.actions)}>
         <Button
           onClick={(): void => actions.switchSegment("signup_base")}
           size={"lg"}
@@ -108,21 +108,21 @@ const Page = (): React.ReactElement => {
           <Divider style={{ width: "100%" }} />
         </div>
         <Button
-          className={styles["apple-button"]}
+          className={clsx(styles.x, styles["apple-button"])}
           decorator={<AppleIcon />}
           size={"lg"}
         >
           Continue with Apple
         </Button>
         <Button
-          className={styles["twitter-button"]}
+          className={clsx(styles.x, styles["twitter-button"])}
           decorator={<TwitterIcon />}
           size={"lg"}
         >
           Continue with Twitter
         </Button>
         <Button
-          className={styles["google-button"]}
+          className={clsx(styles.x, styles["google-button"])}
           decorator={<GoogleIcon />}
           size={"lg"}
         >
@@ -132,7 +132,13 @@ const Page = (): React.ReactElement => {
       <Spacer orientation={"vertical"} size={3} />
       <Grow />
       <footer
-        className={clsx("flex-col", "flex-center", "t-minor", styles.footer)}
+        className={clsx(
+          "flex-col",
+          "flex-center",
+          "t-minor",
+          styles.x,
+          styles.footer
+        )}
       >
         <Link
           className={"t-medium"}

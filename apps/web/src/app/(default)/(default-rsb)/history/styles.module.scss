@@ -1,18 +1,21 @@
-/* Input field and icon button */
-.input, .icon-button {
-  border-radius: 0;
-}
-
-/* Input */
-.input {
-  &:not([data-focused="true"]) {
-    border: none;
+.x {
+  /* Input field and icon button */
+  &.input,
+  &.icon-button {
+    border-radius: 0;
   }
-}
 
-/* Icon button */
-.icon-button {
-  width: 38px;
-  height: 38px;
-  outline-offset: calc(-1 * var(--focus-thickness));
+  /* Input */
+  &.input {
+    &:not([data-focused="true"]) {
+      border: none;
+    }
+  }
+
+  /* Icon button */
+  &.icon-button {
+    width: 38px;
+    height: 38px;
+    outline-offset: calc(-1 * var(--focus-thickness));
+  }
 }

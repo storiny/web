@@ -27,7 +27,7 @@ const Chip = forwardRef<ChipProps, "span" | "button">((props, ref) => {
     <Component
       {...(type === "clickable" && {
         [Component === "button" ? "type" : "role"]: "button",
-        "aria-disabled": String(Boolean(disabled)),
+        "aria-disabled": String(Boolean(disabled))
       })}
       {...rest}
       className={clsx(

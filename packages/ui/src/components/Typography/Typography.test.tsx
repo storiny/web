@@ -11,7 +11,7 @@ import {
   TypographyElement,
   TypographyLevel,
   TypographyProps,
-  TypographyScale,
+  TypographyScale
 } from "./Typography.props";
 
 const typographyScales = Object.keys(scaleToClassNameMap) as TypographyScale[];
@@ -80,7 +80,7 @@ describe("<Typography />", () => {
       "p",
       "span",
       "div",
-      "code",
+      "code"
     ] as TypographyElement[]
   ).forEach((element) => {
     it(`renders as ${element} element`, () => {
@@ -99,7 +99,7 @@ describe("<Typography />", () => {
       ["major", "t-major"],
       ["minor", "t-minor"],
       ["muted", "t-muted"],
-      ["legible", "t-legible-fg"],
+      ["legible", "t-legible-fg"]
     ] as [TypographyColor, string][]
   ).forEach(([color, className]) => {
     it(`renders \`${color}\` color`, () => {
@@ -177,7 +177,7 @@ describe("<Typography />", () => {
     );
 
     expect(getByTestId("typography")).toHaveStyle({
-      "--color": "#000",
+      "--color": "#000"
     });
   });
 
@@ -202,8 +202,8 @@ describe("<Typography />", () => {
         slotProps={
           {
             link: {
-              "data-testid": "link",
-            },
+              "data-testid": "link"
+            }
           } as TypographyProps["slotProps"]
         }
       >
@@ -226,8 +226,8 @@ describe("<Typography />", () => {
         slotProps={
           {
             link: {
-              "data-testid": "link",
-            },
+              "data-testid": "link"
+            }
           } as TypographyProps["slotProps"]
         }
       >
@@ -250,8 +250,8 @@ describe("<Typography />", () => {
         slotProps={
           {
             link: {
-              "data-testid": "link",
-            },
+              "data-testid": "link"
+            }
           } as TypographyProps["slotProps"]
         }
       >

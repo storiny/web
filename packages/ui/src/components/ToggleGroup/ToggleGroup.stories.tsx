@@ -29,7 +29,7 @@ const meta: Meta<typeof ToggleGroup> = {
         </ToggleGroupItem>
       </>
     ),
-    size: "md",
+    size: "md"
   },
   argTypes: {
     disabled: {
@@ -39,13 +39,13 @@ const meta: Meta<typeof ToggleGroup> = {
       description: "The disabled state.",
       table: {
         type: { summary: "boolean" },
-        defaultValue: { summary: "false" },
+        defaultValue: { summary: "false" }
       },
       control: {
-        type: "boolean",
-      },
-    },
-  },
+        type: "boolean"
+      }
+    }
+  }
 };
 
 export default meta;
@@ -55,14 +55,14 @@ export const Default: Story = {};
 
 export const TypeMultiple: Story = {
   args: {
-    type: "multiple",
-  },
+    type: "multiple"
+  }
 };
 
 export const OrientationVertical: Story = {
   args: {
-    orientation: "vertical",
-  },
+    orientation: "vertical"
+  }
 };
 
 export const WithTooltip: Story = {
@@ -92,30 +92,30 @@ export const WithTooltip: Story = {
           <UserIcon />
         </ToggleGroupItem>
       </>
-    ),
-  },
+    )
+  }
 };
 
 export const SizeLG: Story = {
   args: {
-    size: "lg",
-  },
+    size: "lg"
+  }
 };
 
 export const SizeMD: Story = {
   args: {
-    size: "md",
-  },
+    size: "md"
+  }
 };
 
 export const SizeSM: Story = {
   args: {
-    size: "sm",
-  },
+    size: "sm"
+  }
 };
 
 export const SizeXS: Story = {
   args: {
-    size: "xs",
-  },
+    size: "xs"
+  }
 };

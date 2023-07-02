@@ -12,7 +12,7 @@ export const useWebShare =
     url: string | null = null,
     {
       onShareStart,
-      onShareEnd,
+      onShareEnd
     }: {
       onShareEnd?: () => void;
       onShareStart?: () => void;
@@ -23,7 +23,7 @@ export const useWebShare =
 
       webShare({
         text,
-        url,
+        url
       }).then(() => {
         onShareEnd && onShareEnd();
       });

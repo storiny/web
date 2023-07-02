@@ -26,10 +26,10 @@ const generateJsonLd = (profile: Props["profile"]): Graph => ({
         "@type": "ImageObject",
         height: "128",
         url: getCdnUrl("web-assets/brand/logos/plain/logo", ImageSize.W_128),
-        width: "128",
+        width: "128"
       },
       name: "Storiny",
-      url: process.env.NEXT_PUBLIC_WEB_URL,
+      url: process.env.NEXT_PUBLIC_WEB_URL
     },
     {
       "@type": "Person",
@@ -41,7 +41,7 @@ const generateJsonLd = (profile: Props["profile"]): Graph => ({
             "@type": "ImageObject",
             height: "64",
             url: getCdnUrl(profile.avatar_id, ImageSize.W_64),
-            width: "64",
+            width: "64"
           }
         : undefined,
       jobTitle: "Writer at Storiny",
@@ -52,15 +52,15 @@ const generateJsonLd = (profile: Props["profile"]): Graph => ({
           ? {
               "@type": "ImageObject",
               url: getCdnUrl(profile.avatar_id, ImageSize.W_256),
-              width: "256",
+              width: "256"
             }
           : undefined,
-        name: `${profile.name}'s profile on Storiny`,
+        name: `${profile.name}'s profile on Storiny`
       },
       name: profile.name,
-      url: `${process.env.NEXT_PUBLIC_WEB_URL}/${profile.username}`,
-    },
-  ],
+      url: `${process.env.NEXT_PUBLIC_WEB_URL}/${profile.username}`
+    }
+  ]
 });
 
 const JsonLD = ({ profile }: Props): React.ReactElement => {
@@ -80,7 +80,7 @@ const Component = ({ profile }: Props): React.ReactElement => {
   );
   const isSuspended = flags.hasAnyOf([
     UserFlag.PERMANENTLY_SUSPENDED,
-    UserFlag.TEMPORARILY_SUSPENDED,
+    UserFlag.TEMPORARILY_SUSPENDED
   ]);
   const isPrivate =
     Boolean(profile.is_private) && !profile.is_friend && !profile.is_self;

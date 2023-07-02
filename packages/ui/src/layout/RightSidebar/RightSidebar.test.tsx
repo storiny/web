@@ -18,7 +18,7 @@ const server = setupServer(
         ctx.json({
           stories: [testStory],
           users: [testUser],
-          tags: [testTag],
+          tags: [testTag]
         } as GetRightSidebarContentResponse)
       )
   )
@@ -60,7 +60,7 @@ describe("<RightSidebar />", () => {
       <RightSidebar
         componentProps={
           {
-            wrapper: { "data-testid": "wrapper" },
+            wrapper: { "data-testid": "wrapper" }
           } as RightSidebarProps["componentProps"]
         }
         forceMount

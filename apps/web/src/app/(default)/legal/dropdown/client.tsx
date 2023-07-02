@@ -121,7 +121,7 @@ const DropdownClient = (): React.ReactElement => {
           }
         },
         trigger: {
-          className: clsx("page-header", styles.trigger)
+          className: clsx("page-header", styles.x, styles.trigger)
         }
       }}
       value={currentSegment}

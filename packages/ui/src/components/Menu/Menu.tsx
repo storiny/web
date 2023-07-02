@@ -5,7 +5,7 @@ import {
   Content,
   Portal,
   Root,
-  Trigger,
+  Trigger
 } from "@radix-ui/react-dropdown-menu";
 import clsx from "clsx";
 import React from "react";

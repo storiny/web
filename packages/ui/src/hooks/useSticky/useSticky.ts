@@ -12,7 +12,7 @@ const enum MODE {
   stickyTop,
   stickyBottom,
   relative,
-  small,
+  small
 }
 
 type StickyMode = null | (typeof MODE)[keyof typeof MODE];
@@ -48,7 +48,7 @@ try {
     // eslint-disable-next-line getter-return
     get: (): void => {
       passiveArg = { passive: true };
-    },
+    }
   });
 
   window.addEventListener("testPassive", () => {}, options);
@@ -138,7 +138,7 @@ const getDimensions = <T extends object>(options: {
       top: 0,
       left: 0,
       height: window.innerHeight,
-      width: window.innerWidth,
+      width: window.innerWidth
     });
 
     const measured = measure(getRect());
@@ -244,8 +244,8 @@ const setup = (
     unsubscribes,
     measure: ({ height, top }) => ({
       height,
-      offsetTop: scrollPaneIsOffsetEl ? top : 0,
-    }),
+      offsetTop: scrollPaneIsOffsetEl ? top : 0
+    })
   });
 
   const parentNode = getParentNode(node);
@@ -264,15 +264,15 @@ const setup = (
           ? 0
           : offsetTill(parentNode as HTMLElement, scrollPane as HTMLElement) +
             parentPaddings.top +
-            scrollPaneDims.offsetTop,
-    }),
+            scrollPaneDims.offsetTop
+    })
   });
 
   const nodeDims = getDimensions({
     element: node,
     onChange: scheduleOnLayout,
     unsubscribes,
-    measure: ({ height }) => ({ height }),
+    measure: ({ height }) => ({ height })
   });
 
   let relativeOffset: number = 0;
@@ -446,7 +446,7 @@ const setup = (
 export const useSticky = ({
   offsetTop = 0,
   offsetBottom = 0,
-  bottom = false,
+  bottom = false
 }: UseStickyProps = {}): ((
   value:
     | ((prevState: HTMLElement | null) => HTMLElement | null)

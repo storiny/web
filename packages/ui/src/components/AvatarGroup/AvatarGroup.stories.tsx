@@ -9,7 +9,7 @@ import AvatarGroup from "./AvatarGroup";
 const meta: Meta<typeof AvatarGroup> = {
   title: "Components/AvatarGroup",
   component: AvatarGroup,
-  tags: ["autodocs"],
+  tags: ["autodocs"]
 };
 
 export default meta;
@@ -26,48 +26,48 @@ export const Default: Story = {
     </AvatarGroup>
   ),
   args: {
-    size: "md",
-  },
+    size: "md"
+  }
 };
 
 export const SizeXL2: Story = {
   ...Default,
   args: {
-    size: "xl2",
-  },
+    size: "xl2"
+  }
 };
 
 export const SizeXL: Story = {
   ...Default,
   args: {
-    size: "xl",
-  },
+    size: "xl"
+  }
 };
 
 export const SizeLG: Story = {
   ...Default,
   args: {
-    size: "lg",
-  },
+    size: "lg"
+  }
 };
 
 export const SizeMD: Story = {
   ...Default,
   args: {
-    size: "md",
-  },
+    size: "md"
+  }
 };
 
 export const SizeSM: Story = {
   ...Default,
   args: {
-    size: "sm",
-  },
+    size: "sm"
+  }
 };
 
 export const SizeXS: Story = {
   ...Default,
   args: {
-    size: "xs",
-  },
+    size: "xs"
+  }
 };

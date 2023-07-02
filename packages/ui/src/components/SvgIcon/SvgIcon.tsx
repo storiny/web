@@ -35,7 +35,7 @@ const SvgIcon = React.forwardRef<SVGSVGElement, SvgIconProps>((props, ref) => {
           ...(size && { "--icon-size": `${size}px` }),
           ...(color && { "--icon-stroke": color }),
           // Ignore 0 degree
-          ...(rotation && { "--rotation": `${rotation}deg` }),
+          ...(rotation && { "--rotation": `${rotation}deg` })
         } as React.CSSProperties
       }
       viewBox={viewBox}

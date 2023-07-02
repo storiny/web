@@ -16,19 +16,19 @@ const mockResponse: GetTagResponse = {
   follower_count: 1920,
   story_count: 14,
   is_following: true,
-  id: nanoid(),
+  id: nanoid()
 };
 
 const meta: Meta<typeof Tag> = {
   title: "pages/TagPage",
   component: Tag,
   args: {
-    tag: mockResponse,
+    tag: mockResponse
   },
   parameters: {
-    layout: "fullscreen",
+    layout: "fullscreen"
   },
-  tags: ["autodocs"],
+  tags: ["autodocs"]
 };
 
 export default meta;
@@ -42,6 +42,6 @@ export const Default: Story = {
           <Story />
         </DefaultLayout>,
         { ignorePrimitiveProviders: true }
-      ),
-  ],
+      )
+  ]
 };

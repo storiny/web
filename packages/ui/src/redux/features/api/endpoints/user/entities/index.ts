@@ -29,7 +29,7 @@ export const getUserEntities = (builder: ApiQueryBuilder) =>
       `${endpointName}:${queryArgs.entityType}:${queryArgs.userId}:${queryArgs.sort}:${queryArgs.query}`,
     transformResponse: (response: User[]) => ({
       items: response,
-      hasMore: response.length === ITEMS_PER_PAGE,
+      hasMore: response.length === ITEMS_PER_PAGE
     }),
     merge: (currentCache, newItems) => {
       currentCache.items.push(
@@ -44,5 +44,5 @@ export const getUserEntities = (builder: ApiQueryBuilder) =>
       currentArg?.entityType !== previousArg?.entityType ||
       currentArg?.page !== previousArg?.page ||
       currentArg?.sort !== previousArg?.sort ||
-      currentArg?.query !== previousArg?.query,
+      currentArg?.query !== previousArg?.query
   });

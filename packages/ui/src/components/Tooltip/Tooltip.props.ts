@@ -3,7 +3,7 @@ import {
   TooltipContentProps,
   TooltipPortalProps,
   TooltipProps as TooltipPrimitiveProps,
-  TooltipTriggerProps,
+  TooltipTriggerProps
 } from "@radix-ui/react-tooltip";
 import React from "react";
 

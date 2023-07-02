@@ -3,7 +3,7 @@ import {
   ScrollAreaProps as ScrollAreaPrimitiveProps,
   ScrollAreaScrollbarProps,
   ScrollAreaThumbProps,
-  ScrollAreaViewportProps,
+  ScrollAreaViewportProps
 } from "@radix-ui/react-scroll-area";
 
 import { PolymorphicProps } from "~/types/index";

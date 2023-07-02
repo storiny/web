@@ -15,7 +15,8 @@ $dark-theme-selector: 'html[data-theme="dark"]';
 
 @font-face {
   font-family: "Storiny Charfix";
-  src: local("'Segoe UI'"), local('system-ui'), local('-apple-system'), local('sans-serif');
+  src: local("'Segoe UI'"), local("system-ui"), local("-apple-system"),
+    local("sans-serif");
   unicode-range: U+60; // Satoshi does not render graves correctly
 }
 
@@ -62,7 +63,8 @@ $dark-theme-selector: 'html[data-theme="dark"]';
   @include grid.main;
 }
 
-main, .base {
+main,
+.base {
   display: flex;
   flex-direction: column;
   gap: 12px;

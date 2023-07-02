@@ -1,4 +1,6 @@
-/* Base styles */
-.content {
-  gap: 16px;
+.x {
+  /* Base styles */
+  &.content {
+    gap: 16px;
+  }
 }

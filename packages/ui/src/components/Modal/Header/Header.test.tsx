@@ -13,7 +13,7 @@ describe("<ModalHeader />", () => {
       <Modal
         open
         slotProps={{
-          header: { children: "Test" },
+          header: { children: "Test" }
         }}
       />
     );
@@ -26,7 +26,7 @@ describe("<ModalHeader />", () => {
       <Modal
         open
         slotProps={{
-          header: { children: "Test" },
+          header: { children: "Test" }
         }}
       />
     );
@@ -43,8 +43,8 @@ describe("<ModalHeader />", () => {
         slotProps={{
           header: {
             decorator: <span data-testid={"decorator"} />,
-            children: <span data-testid={"child"} />,
-          },
+            children: <span data-testid={"child"} />
+          }
         }}
       />
     );
@@ -63,9 +63,9 @@ describe("<ModalHeader />", () => {
             decorator: <span />,
             slotProps: {
               decorator: { "data-testid": "decorator" },
-              title: { "data-testid": "title" },
-            } as ModalHeaderProps["slotProps"],
-          },
+              title: { "data-testid": "title" }
+            } as ModalHeaderProps["slotProps"]
+          }
         }}
       />
     );

@@ -24,7 +24,7 @@ export const getStoriesWithQueryAndSort = (
       `${endpointName}:${queryArgs.sort}:${queryArgs.query}`,
     transformResponse: (response: Story[]) => ({
       items: response,
-      hasMore: response.length === ITEMS_PER_PAGE,
+      hasMore: response.length === ITEMS_PER_PAGE
     }),
     merge: (currentCache, newItems) => {
       currentCache.items.push(
@@ -37,5 +37,5 @@ export const getStoriesWithQueryAndSort = (
     forceRefetch: ({ currentArg, previousArg }) =>
       currentArg?.page !== previousArg?.page ||
       currentArg?.sort !== previousArg?.sort ||
-      currentArg?.query !== previousArg?.query,
+      currentArg?.query !== previousArg?.query
   });

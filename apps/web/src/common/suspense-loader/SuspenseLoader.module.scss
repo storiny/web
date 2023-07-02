@@ -1,4 +1,6 @@
-/* Base styles */
-.suspense-loader {
-  padding-block: 32px;
+.x {
+  /* Base styles */
+  &.suspense-loader {
+    padding-block: 32px;
+  }
 }

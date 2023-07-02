@@ -12,14 +12,14 @@ import FormRadioGroup from "./FormRadioGroup";
 import { FormRadioGroupProps } from "./FormRadioGroup.props";
 
 const testSchema = z.object({
-  radioGroup: z.enum(["1", "2", "3"]),
+  radioGroup: z.enum(["1", "2", "3"])
 });
 
 type TestSchema = z.infer<typeof testSchema>;
 
 const Component = ({
   children,
-  disabled,
+  disabled
 }: {
   children: React.ReactNode;
   disabled?: boolean;
@@ -27,8 +27,8 @@ const Component = ({
   const form = useForm<TestSchema>({
     resolver: zodResolver(testSchema),
     defaultValues: {
-      radioGroup: "1",
-    },
+      radioGroup: "1"
+    }
   });
 
   return (
@@ -85,7 +85,7 @@ describe("<FormRadioGroup />", () => {
         <FormRadioGroup
           formSlotProps={
             {
-              formItem: { "data-testid": "form-item" },
+              formItem: { "data-testid": "form-item" }
             } as FormRadioGroupProps["formSlotProps"]
           }
           label={"Test label"}
@@ -115,7 +115,7 @@ describe("<FormRadioGroup />", () => {
               formItem: { "data-testid": "form-item" },
               control: { "data-testid": "control" },
               label: { "data-testid": "label" },
-              helperText: { "data-testid": "helper-text" },
+              helperText: { "data-testid": "helper-text" }
             } as FormRadioGroupProps["formSlotProps"]
           }
           helperText={"Test helper text"}

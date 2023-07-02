@@ -4,5 +4,5 @@ export enum UserFlag {
   TEMPORARILY_SUSPENDED = 2,
   PERMANENTLY_SUSPENDED = 4,
   VERIFIED = 8,
-  EARLY_USER = 16,
+  EARLY_USER = 16
 }

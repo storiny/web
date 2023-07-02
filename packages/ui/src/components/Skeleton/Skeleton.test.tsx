@@ -54,7 +54,7 @@ describe("<Skeleton />", () => {
 
     expect(getByTestId("skeleton")).toHaveStyle({
       "--width": "32px",
-      "--height": "32px",
+      "--height": "32px"
     });
   });
 });

@@ -83,11 +83,11 @@ const SidenavStatic = (
               <Badge
                 anchorOrigin={{ vertical: "top", horizontal: "right" }}
                 slotProps={{
-                  container: { tabIndex: -1 },
+                  container: { tabIndex: -1 }
                 }}
                 style={{
                   top: "36%",
-                  right: "42%",
+                  right: "42%"
                 }}
                 visible={false}
               >

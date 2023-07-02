@@ -9,7 +9,7 @@ const meta: Meta<typeof PageTitle> = {
   title: "Entities/PageTitle",
   component: PageTitle,
   args: { children: "Page title" },
-  tags: ["autodocs"],
+  tags: ["autodocs"]
 };
 
 export default meta;

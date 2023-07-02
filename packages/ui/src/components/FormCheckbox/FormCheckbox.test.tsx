@@ -11,14 +11,14 @@ import FormCheckbox from "./FormCheckbox";
 import { FormCheckboxProps } from "./FormCheckbox.props";
 
 const testSchema = z.object({
-  checkbox: z.boolean(),
+  checkbox: z.boolean()
 });
 
 type TestSchema = z.infer<typeof testSchema>;
 
 const Component = ({
   children,
-  disabled,
+  disabled
 }: {
   children: React.ReactNode;
   disabled?: boolean;
@@ -26,8 +26,8 @@ const Component = ({
   const form = useForm<TestSchema>({
     resolver: zodResolver(testSchema),
     defaultValues: {
-      checkbox: false,
-    },
+      checkbox: false
+    }
   });
 
   return (
@@ -66,7 +66,7 @@ describe("<FormCheckbox />", () => {
         <FormCheckbox
           formSlotProps={
             {
-              formItem: { "data-testid": "form-item" },
+              formItem: { "data-testid": "form-item" }
             } as FormCheckboxProps["formSlotProps"]
           }
           label={"Test label"}
@@ -87,7 +87,7 @@ describe("<FormCheckbox />", () => {
               formItem: { "data-testid": "form-item" },
               control: { "data-testid": "control" },
               label: { "data-testid": "label" },
-              helperText: { "data-testid": "helper-text" },
+              helperText: { "data-testid": "helper-text" }
             } as FormCheckboxProps["formSlotProps"]
           }
           helperText={"Test helper text"}

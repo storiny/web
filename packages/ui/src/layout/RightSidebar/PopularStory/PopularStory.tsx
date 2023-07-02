@@ -27,7 +27,7 @@ const PopularStory = (props: PopularStoryProps) => {
           alt: `${user.name}'s avatar`,
           avatarId: user.avatar_id,
           label: user.name,
-          hex: user.avatar_hex,
+          hex: user.avatar_hex
         }}
         primaryText={
           <span className={clsx("flex-center", styles["primary-text"])}>

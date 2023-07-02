@@ -104,7 +104,7 @@ describe("<Chip />", () => {
         decorator={<span>Decorator</span>}
         slotProps={
           {
-            decorator: { "data-testid": "decorator" },
+            decorator: { "data-testid": "decorator" }
           } as ChipProps["slotProps"]
         }
       >
@@ -120,7 +120,7 @@ describe("<Chip />", () => {
       <Chip
         slotProps={
           {
-            action: { "data-testid": "action" },
+            action: { "data-testid": "action" }
           } as ChipProps["slotProps"]
         }
         type={"deletable"}
@@ -139,7 +139,7 @@ describe("<Chip />", () => {
         slotProps={
           {
             decorator: { "data-testid": "decorator" },
-            action: { "data-testid": "action" },
+            action: { "data-testid": "action" }
           } as ChipProps["slotProps"]
         }
         type={"deletable"}

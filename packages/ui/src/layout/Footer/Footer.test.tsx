@@ -37,7 +37,7 @@ describe("<Footer />", () => {
 
   it("renders logged in state", () => {
     const { getByRole } = renderTestWithProvider(<Footer />, {
-      loggedIn: true,
+      loggedIn: true
     });
 
     expect(getByRole("button", { name: /write/i })).toHaveAttribute(

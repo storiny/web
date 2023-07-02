@@ -13,9 +13,9 @@ const meta: Meta<typeof Index> = {
   title: "pages/Index",
   component: Index,
   parameters: {
-    layout: "fullscreen",
+    layout: "fullscreen"
   },
-  tags: ["autodocs"],
+  tags: ["autodocs"]
 };
 
 export default meta;
@@ -31,8 +31,8 @@ export const Default: Story = {
           </DefaultRightSidebarLayout>
         </DefaultLayout>,
         { ignorePrimitiveProviders: true }
-      ),
-  ],
+      )
+  ]
 };
 
 export const LoggedIn: Story = {
@@ -45,6 +45,6 @@ export const LoggedIn: Story = {
           </DefaultRightSidebarLayout>
         </DefaultLayout>,
         { loggedIn: true, ignorePrimitiveProviders: true }
-      ),
-  ],
+      )
+  ]
 };

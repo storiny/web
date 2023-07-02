@@ -47,7 +47,7 @@ describe("<SvgIcon />", () => {
     );
 
     expect(getByTestId("svg-icon")).toHaveStyle({
-      "--icon-size": "32px",
+      "--icon-size": "32px"
     });
   });
 
@@ -59,7 +59,7 @@ describe("<SvgIcon />", () => {
     );
 
     expect(getByTestId("svg-icon")).toHaveStyle({
-      "--rotation": "45deg",
+      "--rotation": "45deg"
     });
   });
 });

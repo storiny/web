@@ -10,7 +10,7 @@ const Blockquote = ({
 }: React.ComponentPropsWithoutRef<"blockquote">): React.ReactElement => (
   <blockquote
     {...rest}
-    className={clsx("t-legible-slim", styles.blockquote, className)}
+    className={clsx("t-legible-slim", styles.x, styles.blockquote, className)}
   >
     {children}
   </blockquote>

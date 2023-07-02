@@ -1,9 +1,7 @@
 @mixin main {
-  --font-primary: var(--font-cabinet-grotesk),
-    var(--font-secondary);
-  --font-secondary: "Storiny Charfix", "Storiny PUA",
-    var(--font-satoshi), "Segoe UI", -apple-system, blinkmacsystemfont,
-    system-ui, roboto, oxygen, ubuntu, cantarell, "Fira Sans", "Droid Sans",
-    "Helvetica Neue", sans-serif;
+  --font-primary: var(--font-cabinet-grotesk), var(--font-secondary);
+  --font-secondary: "Storiny Charfix", "Storiny PUA", var(--font-satoshi),
+    "Segoe UI", -apple-system, blinkmacsystemfont, system-ui, roboto, oxygen,
+    ubuntu, cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
   --font-monospace: "Storiny Mono", consolas, menlo, monospace;
 }

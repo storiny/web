@@ -24,10 +24,10 @@ const generateJsonLd = (tag: Props["tag"]): Graph => ({
         "@type": "ImageObject",
         height: "128",
         url: getCdnUrl("web-assets/brand/logos/plain/logo", ImageSize.W_128),
-        width: "128",
+        width: "128"
       },
       name: "Storiny",
-      url: process.env.NEXT_PUBLIC_WEB_URL,
+      url: process.env.NEXT_PUBLIC_WEB_URL
     },
     {
       "@type": "Thing",
@@ -36,12 +36,12 @@ const generateJsonLd = (tag: Props["tag"]): Graph => ({
       mainEntityOfPage: {
         "@id": `${process.env.NEXT_PUBLIC_WEB_URL}/tag/${tag.name}`,
         "@type": "WebPage",
-        name: tag.name,
+        name: tag.name
       },
       name: `#${tag.name}`,
-      url: `${process.env.NEXT_PUBLIC_WEB_URL}/tag/${tag.name}`,
-    },
-  ],
+      url: `${process.env.NEXT_PUBLIC_WEB_URL}/tag/${tag.name}`
+    }
+  ]
 });
 
 const Component = ({ tag }: Props): React.ReactElement => {

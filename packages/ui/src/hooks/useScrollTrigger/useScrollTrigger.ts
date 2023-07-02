@@ -39,7 +39,7 @@ export const useScrollTrigger = (): boolean => {
     target?.addEventListener?.("scroll", handleScroll, { passive: true });
     return () => {
       target?.removeEventListener?.("scroll", handleScroll, {
-        passive: true,
+        passive: true
       } as any);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps

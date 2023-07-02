@@ -17,7 +17,7 @@ import { useModal } from "./useModal";
 const meta: Meta<typeof Modal> = {
   title: "Components/Modal",
   component: Modal,
-  tags: ["autodocs"],
+  tags: ["autodocs"]
 };
 
 export default meta;
@@ -35,7 +35,7 @@ const ModalComponent = (props?: ModalProps) => {
 
 export const Default: Story = {
   args: { hideCloseButton: false, fullscreen: false },
-  render: (args) => <ModalComponent {...args} />,
+  render: (args) => <ModalComponent {...args} />
 };
 
 export const WithFooter: Story = {
@@ -44,15 +44,15 @@ export const WithFooter: Story = {
     ...Default.args,
     slotProps: {
       header: { decorator: <UserIcon />, children: "Modal title" },
-      content: { style: { minHeight: "45vh", minWidth: "40vw" } },
+      content: { style: { minHeight: "45vh", minWidth: "40vw" } }
     },
     footer: (
       <>
         <ModalFooterButton variant={"ghost"}>Cancel</ModalFooterButton>
         <ModalFooterButton>Confirm</ModalFooterButton>
       </>
-    ),
-  },
+    )
+  }
 };
 
 export const WithSidebar: Story = {
@@ -66,13 +66,13 @@ export const WithSidebar: Story = {
       >
         Sidebar content
       </p>
-    ),
-  },
+    )
+  }
 };
 
 export const Fullscreen: Story = {
   ...WithFooter,
-  args: { ...WithFooter.args, fullscreen: true },
+  args: { ...WithFooter.args, fullscreen: true }
 };
 
 export const ModeTabbed: Story = {
@@ -99,8 +99,8 @@ export const ModeTabbed: Story = {
       content: { style: { minHeight: "45vh", minWidth: "40vw" } },
       body: {
         className: "t-body-2",
-        style: { padding: "24px" },
-      },
+        style: { padding: "24px" }
+      }
     },
     sidebar: (
       <ModalSidebarList>
@@ -114,6 +114,6 @@ export const ModeTabbed: Story = {
           Three
         </ModalSidebarItem>
       </ModalSidebarList>
-    ),
-  },
+    )
+  }
 };
