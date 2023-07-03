@@ -7,17 +7,19 @@ interface BookmarksEmptyStateProps {
   query: string;
 }
 
-const BookmarksEmptyState = ({ query }: BookmarksEmptyStateProps) => (
+const BookmarksEmptyState = ({
+  query
+}: BookmarksEmptyStateProps): React.ReactElement => (
   <CustomState
     autoSize
     description={
-      Boolean(query)
+      query
         ? "Your search criteria did not match anything, make sure you've spelled it correctly or try again by being more specific."
         : "This is where you will find the stories you have bookmarked."
     }
-    icon={Boolean(query) ? undefined : <BookmarksIcon />}
+    icon={query ? undefined : <BookmarksIcon />}
     title={
-      Boolean(query)
+      query
         ? `Could not find any story for "${query}"`
         : "Bookmark stories to read them later"
     }

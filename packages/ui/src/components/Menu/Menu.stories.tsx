@@ -34,7 +34,7 @@ const meta: Meta<typeof Menu> = {
 export default meta;
 type Story = StoryObj<typeof Menu>;
 
-const MenuComponent = (args?: MenuProps) => (
+const MenuComponent = (args?: MenuProps): React.ReactElement => (
   <Menu {...args} trigger={<Button aria-label={"Show menu"}>Show menu</Button>}>
     {[...Array(5)].map((_, index) => (
       <React.Fragment key={index}>

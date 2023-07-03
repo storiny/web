@@ -90,6 +90,16 @@ describe("<Select />", () => {
     expect(getByTestId("trigger")).toHaveClass(...[styles.md, styles.inverted]);
   });
 
+  it("renders value children", () => {
+    const { getByTestId } = renderTestWithProvider(
+      <Select open valueChildren={<span data-testid={"value-children"} />}>
+        <Option value={"test"}>Option</Option>
+      </Select>
+    );
+
+    expect(getByTestId("value-children")).toBeInTheDocument();
+  });
+
   it("renders trigger with custom rendering function", () => {
     const { getByTestId } = renderTestWithProvider(
       <Select

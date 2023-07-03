@@ -1,22 +1,9 @@
-import { ChipProps } from "~/components/Chip";
+import { Tag } from "@storiny/types";
+import React from "react";
 
-// Avoid `tag` prop like other entities to control the rendering of stats.
-export interface TagProps
-  extends Omit<ChipProps, "type" | "variant" | "as" | "decorator"> {
+export interface TagProps extends React.ComponentPropsWithoutRef<"div"> {
   /**
-   * The users following this tag.
+   * The tag object.
    */
-  followerCount?: number;
-  /**
-   * The number of stories having this tag.
-   */
-  storyCount?: number;
-  /**
-   * The name of the tag.
-   */
-  value: string;
-  /**
-   * If `true`, renders with a HashIcon decorator
-   */
-  withDecorator?: boolean;
+  tag: Tag;
 }

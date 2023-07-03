@@ -57,19 +57,24 @@ export const selectMute =
 export const selectFollowerCount =
   (userId: string) =>
   (state: AppState): number =>
-    state.entities.followerCounts[userId];
+    state.entities.followerCounts[userId] || 0;
 
 export const selectFollowingCount =
   (userId: string) =>
   (state: AppState): number =>
-    state.entities.followingCounts[userId];
+    state.entities.followingCounts[userId] || 0;
 
 export const selectFriendCount =
   (userId: string) =>
   (state: AppState): number =>
-    state.entities.friendCounts[userId];
+    state.entities.friendCounts[userId] || 0;
 
 export const selectStoryLikeCount =
   (storyId: string) =>
   (state: AppState): number =>
-    state.entities.storyLikeCounts[storyId];
+    state.entities.storyLikeCounts[storyId] || 0;
+
+export const selectTagFollowerCount =
+  (tagId: string) =>
+  (state: AppState): number =>
+    state.entities.tagFollowerCounts[tagId] || 0;

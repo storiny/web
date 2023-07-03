@@ -1,5 +1,3 @@
-import "server-only";
-
 import React from "react";
 
 import Client from "./client";

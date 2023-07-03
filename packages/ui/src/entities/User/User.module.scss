@@ -2,10 +2,11 @@
 
 /* Base styles */
 .user {
-  padding-block: 20px;
+  padding-inline: 20px;
+  padding-block: 12px;
 
   @include breakpoints.media("<=mobile") {
-    padding-block: 16px;
+    padding-inline: 16px;
     gap: 4px;
   }
 }

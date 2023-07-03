@@ -13,6 +13,7 @@ import { OptionProps } from "./Option.props";
 const Option = forwardRef<OptionProps, "div">((props, ref) => {
   const {
     as: Component = "div",
+    decorator,
     children,
     className,
     slotProps,
@@ -27,6 +28,14 @@ const Option = forwardRef<OptionProps, "div">((props, ref) => {
       ref={ref}
     >
       <Component>
+        {decorator && (
+          <span
+            {...slotProps?.decorator}
+            className={clsx(styles.decorator, slotProps?.decorator?.className)}
+          >
+            {decorator}
+          </span>
+        )}
         <ItemText {...slotProps?.text}>{children}</ItemText>
         <ItemIndicator
           {...slotProps?.indicator}

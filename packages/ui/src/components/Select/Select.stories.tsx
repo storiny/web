@@ -3,6 +3,8 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
 
+import UserIcon from "~/icons/User";
+
 import Option from "../Option";
 import Separator from "../Separator";
 import Select from "./Select";
@@ -36,7 +38,9 @@ const SelectComponent = (args?: SelectProps): React.ReactElement => (
   <Select {...args}>
     {[...Array(5)].map((_, index) => (
       <React.Fragment key={index}>
-        <Option value={`option-${index}`}>Option</Option>
+        <Option decorator={<UserIcon />} value={`option-${index}`}>
+          Option
+        </Option>
         {index === 2 && <Separator />}
       </React.Fragment>
     ))}

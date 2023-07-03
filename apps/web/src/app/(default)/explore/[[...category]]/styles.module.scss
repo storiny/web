@@ -1,18 +1,27 @@
 .x {
-  /* Splash image */
-  &.splash-container {
-    height: 180px;
-    border-bottom: 1px solid var(--divider);
-    margin-top: -12px;
-    margin-inline: var(--grid-compensation);
-    align-items: center;
-    justify-content: flex-end;
+  /* Tabs */
+  &.tabs {
+    gap: 12px;
   }
 
-  /* Search input */
+  /* Tabs list */
+  &.tabs-list {
+    display: flex;
+    justify-content: space-around;
+    padding-inline: 20px;
+  }
+
+  /* Page title */
+  &.page-title {
+    box-shadow: none;
+  }
+
+  /* Input */
   &.input {
-    width: 320px;
-    max-width: 100%;
-    margin-bottom: 26px;
+    border-radius: 0;
+
+    &:not([data-focused="true"]) {
+      border: none;
+    }
   }
 }

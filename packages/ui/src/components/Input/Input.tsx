@@ -31,6 +31,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>((props, ref) => {
   const {
     decorator,
     endDecorator,
+    autoFocus,
     color = "inverted",
     size = "md",
     type = "text",
@@ -40,7 +41,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>((props, ref) => {
     ...rest
   } = props;
   const innerRef = React.useRef<HTMLInputElement>(null);
-  const [focused, setFocused] = React.useState<boolean>(false);
+  const [focused, setFocused] = React.useState<boolean>(Boolean(autoFocus));
 
   const handleFocus = (event: React.FocusEvent<HTMLInputElement>): void => {
     setFocused(true);
@@ -80,6 +81,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>((props, ref) => {
         )}
         <input
           {...rest}
+          autoFocus={autoFocus}
           className={clsx("unset", styles.input, className)}
           disabled={disabled}
           onBlur={handleBlur}

@@ -3,6 +3,7 @@
 import { StoryCategory } from "@storiny/shared";
 import { clsx } from "clsx";
 import NextLink from "next/link";
+import { useSelectedLayoutSegment } from "next/navigation";
 import React from "react";
 
 import Separator from "~/components/Separator";
@@ -33,31 +34,34 @@ const AnchorTab = ({
   />
 );
 
-const SuspendedExploreRightSidebarContent = (): React.ReactElement => (
-  <>
-    <Tabs
-      activationMode={"manual"}
-      className={clsx(styles.x, styles.tabs)}
-      defaultValue={"all"}
-      orientation={"vertical"}
-      role={undefined}
-    >
-      <TabsList
-        aria-orientation={undefined}
-        as={"nav"}
-        loop={false}
+const SuspendedExploreRightSidebarContent = (): React.ReactElement => {
+  const segment = useSelectedLayoutSegment();
+  return (
+    <>
+      <Tabs
+        activationMode={"manual"}
+        className={clsx(styles.x, styles.tabs)}
+        defaultValue={segment || "all"}
+        orientation={"vertical"}
         role={undefined}
       >
-        {categories.map(({ id, title, Icon }) => (
-          <AnchorTab decorator={<Icon />} key={id} value={id}>
-            {title}
-          </AnchorTab>
-        ))}
-      </TabsList>
-    </Tabs>
-    <Separator />
-    <DefaultRightSidebarContent hidePopularStories />
-  </>
-);
+        <TabsList
+          aria-orientation={undefined}
+          as={"nav"}
+          loop={false}
+          role={undefined}
+        >
+          {categories.map(({ id, title, Icon }) => (
+            <AnchorTab decorator={<Icon />} key={id} value={id}>
+              {title}
+            </AnchorTab>
+          ))}
+        </TabsList>
+      </Tabs>
+      <Separator />
+      <DefaultRightSidebarContent hidePopularStories />
+    </>
+  );
+};
 
 export default SuspendedExploreRightSidebarContent;

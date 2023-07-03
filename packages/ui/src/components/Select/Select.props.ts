@@ -47,4 +47,8 @@ export interface SelectProps extends SelectPrimitive {
     value?: SelectValueProps;
     viewport?: SelectViewportProps;
   };
+  /**
+   * The content rendered inside value element.
+   */
+  valueChildren?: React.ReactNode;
 }

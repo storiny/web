@@ -6,11 +6,13 @@ import React from "react";
 import { renderWithState } from "~/redux/mock";
 
 import DefaultLayout from "../../layout";
-import Explore from "./page";
+import ExploreLayout from "../layout";
+import Explore from "./client";
 
 const meta: Meta<typeof Explore> = {
   title: "pages/Explore",
   component: Explore,
+  args: { category: "all" },
   parameters: {
     layout: "fullscreen"
   },
@@ -25,7 +27,9 @@ export const Default: Story = {
     (Story): React.ReactElement =>
       renderWithState(
         <DefaultLayout>
-          <Story />
+          <ExploreLayout>
+            <Story />
+          </ExploreLayout>
         </DefaultLayout>,
         { ignorePrimitiveProviders: true }
       )

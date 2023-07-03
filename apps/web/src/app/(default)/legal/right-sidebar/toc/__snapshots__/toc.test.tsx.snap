@@ -24,7 +24,7 @@ exports[`<LegalToc /> matches snapshot 1`] = `
       [data-radix-scroll-area-viewport]{scrollbar-width:none;-ms-overflow-style:none;-webkit-overflow-scrolling:touch;}[data-radix-scroll-area-viewport]::-webkit-scrollbar{display:none}
     </style>
     <div
-      class="viewport toc"
+      class="viewport x toc"
       data-radix-scroll-area-viewport=""
       style="overflow-x: hidden; overflow-y: scroll;"
     >
@@ -32,19 +32,19 @@ exports[`<LegalToc /> matches snapshot 1`] = `
         style="min-width: 100%; display: table;"
       >
         <ul
-          class="flex-col ul"
+          class="flex-col x ul"
         >
           <li
-            class="flex-col li"
+            class="flex-col x li"
           >
             <a
               href="#h2-1"
             />
             <ul
-              class="flex-col ul nested-ul"
+              class="flex-col x ul nested-ul"
             >
               <li
-                class="flex-col li"
+                class="flex-col x li"
               >
                 <a
                   href="#h3-1"

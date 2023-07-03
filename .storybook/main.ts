@@ -3,8 +3,8 @@ import * as path from "path";
 
 const config: StorybookConfig = {
   stories: [
-    "../apps/web/src/**/*.mdx",
-    "../packages/ui/src/**/*.mdx",
+    "../apps/web/src/**/*.stories.mdx",
+    "../packages/ui/src/**/*.stories.mdx",
     "../apps/web/src/**/*.stories.@(js|jsx|ts|tsx)",
     "../packages/ui/src/**/*.stories.@(js|jsx|ts|tsx)",
   ],
@@ -19,6 +19,7 @@ const config: StorybookConfig = {
       options: {
         sass: {
           implementation: require("sass"),
+          includePaths: [path.join(__dirname, "../packages/ui/src/theme")],
         },
       },
     },
@@ -52,7 +53,7 @@ const config: StorybookConfig = {
   framework: {
     name: "@storybook/nextjs",
     options: {
-      nextConfigPath: path.resolve(__dirname, "../apps/web/next.config.js"),
+      nextConfigPath: path.resolve(__dirname, "../apps/web/next.config.mjs"),
     },
   },
   docs: {

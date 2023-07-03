@@ -1,83 +1,126 @@
+"use client";
+
 import clsx from "clsx";
 import NextLink from "next/link";
 import React from "react";
 
-import Chip from "~/components/Chip";
+import Avatar from "~/components/Avatar";
+import Button from "~/components/Button";
 import Grow from "~/components/Grow";
 import Typography from "~/components/Typography";
-import HashIcon from "~/icons/Hash";
-import StoriesIcon from "~/icons/Stories";
+import { useMediaQuery } from "~/hooks/useMediaQuery";
+import CalendarIcon from "~/icons/Calendar";
+import StoryIcon from "~/icons/Story";
+import TagIcon from "~/icons/Tag";
 import UsersIcon from "~/icons/Users";
+import {
+  selectFollowedTag,
+  selectTagFollowerCount,
+  syncWithTag,
+  toggleFollowedTag
+} from "~/redux/features";
+import { useAppDispatch, useAppSelector } from "~/redux/hooks";
+import { breakpoints } from "~/theme/breakpoints";
 import { abbreviateNumber } from "~/utils/abbreviateNumber";
+import { DateFormat, formatDate } from "~/utils/formatDate";
 
 import styles from "./Tag.module.scss";
 import { TagProps } from "./Tag.props";
 
-const Tag = (props: TagProps) => {
-  const {
-    value,
-    storyCount,
-    followerCount,
-    className,
-    withDecorator,
-    disabled,
-    ...rest
-  } = props;
-  const hasStoryCount = typeof storyCount !== "undefined";
-  const hasFollowerCount = typeof followerCount !== "undefined";
+const Tag = (props: TagProps): React.ReactElement => {
+  const { className, tag, ...rest } = props;
+  const dispatch = useAppDispatch();
+  const isMobile = useMediaQuery(breakpoints.down("mobile"));
+  const isFollowing = useAppSelector(selectFollowedTag(tag.id));
+  const followerCount = useAppSelector(selectTagFollowerCount(tag.id));
+  const tagUrl = `/tag/${tag.name}`;
+
+  React.useEffect(() => {
+    dispatch(syncWithTag(tag));
+  }, [dispatch, tag]);
 
   return (
-    <Chip
-      {...rest}
-      as={NextLink}
-      className={clsx("flex-center", "t-regular", styles.tag, className)}
-      decorator={withDecorator ? <HashIcon /> : null}
-      disabled={disabled}
-      href={`/tag/${value}`}
-      title={`Explore #${value}`}
-      type={"clickable"}
-      variant={"soft"}
-    >
-      <span className={"ellipsis"}>{value}</span>
-      {hasStoryCount || hasFollowerCount ? <Grow /> : null}
-      {hasStoryCount && (
-        <Typography
-          aria-label={`${storyCount} ${storyCount === 1 ? "story" : "stories"}`}
-          as={"span"}
-          className={clsx(
-            "flex-center",
-            "t-medium",
-            !disabled && "t-minor",
-            styles.stat
-          )}
-          data-first-child={"true"}
-          level={"body3"}
+    <div {...rest} className={clsx("flex-col", styles.tag, className)}>
+      <div className={clsx("flex-center", styles.main)}>
+        <NextLink className={clsx("flex-center", styles.meta)} href={tagUrl}>
+          <Avatar className={styles.avatar} size={"lg"}>
+            <TagIcon />
+          </Avatar>
+          <Typography className={styles["tag-name"]} ellipsis>
+            {tag.name}
+          </Typography>
+        </NextLink>
+        <Grow />
+        <Button
+          checkAuth
+          onClick={(): void => {
+            dispatch(toggleFollowedTag(tag.id));
+          }}
+          size={isMobile ? "lg" : "md"}
+          variant={isFollowing ? "hollow" : "rigid"}
         >
-          <StoriesIcon />
-          {abbreviateNumber(storyCount)}
-        </Typography>
-      )}
-      {hasFollowerCount && (
+          {isFollowing ? "Following" : "Follow"}
+        </Button>
+      </div>
+      <div className={clsx("flex-center", styles.stats)}>
         <Typography
-          aria-label={`${followerCount} ${
-            followerCount === 1 ? "follower" : "followers"
-          }`}
-          as={"span"}
-          className={clsx(
-            "flex-center",
-            "t-medium",
-            !disabled && "t-minor",
-            styles.stat
-          )}
-          data-first-child={String(typeof storyCount === "undefined")}
-          level={"body3"}
+          className={clsx("flex-center", styles.stat)}
+          level={"body2"}
+          title={`${tag.story_count.toLocaleString()} stories`}
         >
-          <UsersIcon />
-          {abbreviateNumber(followerCount)}
+          <span className={clsx("flex-center", styles["stat-icon"])}>
+            <StoryIcon />
+          </span>
+          <span>
+            {abbreviateNumber(tag.story_count)}
+            {!isMobile && (
+              <>
+                {" "}
+                <span className={"t-minor"}>stories</span>
+              </>
+            )}
+          </span>
         </Typography>
-      )}
-    </Chip>
+        <Typography
+          className={clsx("flex-center", styles.stat)}
+          level={"body2"}
+          title={`${followerCount.toLocaleString()} followers`}
+        >
+          <span className={clsx("flex-center", styles["stat-icon"])}>
+            <UsersIcon />
+          </span>
+          <span>
+            {abbreviateNumber(followerCount)}
+            {!isMobile && (
+              <>
+                {" "}
+                <span className={"t-minor"}>followers</span>
+              </>
+            )}
+          </span>
+        </Typography>
+        <Grow />
+        <Typography
+          as={"time"}
+          className={clsx("flex-center", "t-minor", styles.stat)}
+          dateTime={tag.created_at}
+          level={"body2"}
+          title={formatDate(tag.created_at)}
+        >
+          {isMobile ? (
+            <>
+              <span className={clsx("flex-center", styles["stat-icon"])}>
+                <CalendarIcon />
+              </span>
+              <span>{formatDate(tag.created_at, DateFormat.RELATIVE)}</span>
+            </>
+          ) : (
+            `Created ${formatDate(tag.created_at, DateFormat.RELATIVE)}`
+          )}
+        </Typography>
+      </div>
+    </div>
   );
 };
 
-export default Tag;
+export default React.memo(Tag);

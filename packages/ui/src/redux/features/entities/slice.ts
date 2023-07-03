@@ -1,5 +1,5 @@
 import { createSlice, isAnyOf, PayloadAction } from "@reduxjs/toolkit";
-import { Story, User } from "@storiny/types";
+import { Story, Tag, User } from "@storiny/types";
 
 import {
   decrementSelfFollowerCount,
@@ -8,6 +8,7 @@ import {
   incrementSelfFollowingCount,
   renderToast,
   selectBlock,
+  selectFollowedTag,
   selectFollower,
   selectFollowing,
   selectFriend,
@@ -34,6 +35,7 @@ interface EntitesIntegralState {
   followingCounts: Record<string, number>;
   friendCounts: Record<string, number>;
   storyLikeCounts: Record<string, number>;
+  tagFollowerCounts: Record<string, number>;
 }
 
 export type EntitiesState = EntitiesPredicateState & EntitesIntegralState;
@@ -58,6 +60,8 @@ type SyncableStory = Pick<
   "id" | "is_liked" | "is_bookmarked" | "stats" | "user"
 >;
 
+type SyncableTag = Pick<Tag, "id" | "follower_count" | "is_following">;
+
 export const entitiesInitialState: EntitiesState = {
   following: {},
   followers: {},
@@ -72,7 +76,8 @@ export const entitiesInitialState: EntitiesState = {
   followerCounts: {},
   followingCounts: {},
   friendCounts: {},
-  storyLikeCounts: {}
+  storyLikeCounts: {},
+  tagFollowerCounts: {}
 };
 
 /**
@@ -126,7 +131,7 @@ const changeEntityValue =
           ? prevState - 1
           : prevState;
     } else {
-      // Case when absent from the map
+      // When absent from the map
       state[key][entityId] = mode === "increment" ? 1 : 0;
     }
   };
@@ -180,7 +185,7 @@ const syncWithUserImpl = (state: EntitiesState, user: SyncableUser): void => {
     state.sentRequests[user.id] = user.is_friend_request_sent;
   }
 
-  // Integrals
+  // Integral
   if (isNum(user.follower_count)) {
     state.followerCounts[user.id] = user.follower_count;
   }
@@ -223,6 +228,23 @@ const syncWithStoryImpl = (
   }
 };
 
+/**
+ * Sync incoming tag to the store
+ * @param state App state
+ * @param tag Incoming tag
+ */
+const syncWithTagImpl = (state: EntitiesState, tag: SyncableTag): void => {
+  // Predicates
+  if (isBool(tag.is_following)) {
+    state.followedTags[tag.id] = tag.is_following;
+  }
+
+  // Integral
+  if (isNum(tag.follower_count)) {
+    state.tagFollowerCounts[tag.id] = tag.follower_count;
+  }
+};
+
 export const entitiesSlice = createSlice({
   name: "entities",
   initialState: entitiesInitialState,
@@ -243,10 +265,18 @@ export const entitiesSlice = createSlice({
     incrementFollowingCount: changeEntityValue("followingCounts", "increment"),
     incrementFriendsCount: changeEntityValue("friendCounts", "increment"),
     incrementStoryLikeCount: changeEntityValue("storyLikeCounts", "increment"),
+    incrementTagFollowerCount: changeEntityValue(
+      "tagFollowerCounts",
+      "increment"
+    ),
     decrementFollowerCount: changeEntityValue("followerCounts", "decrement"),
     decrementFollowingCount: changeEntityValue("followingCounts", "decrement"),
     decrementFriendCount: changeEntityValue("friendCounts", "decrement"),
     decrementStoryLikeCount: changeEntityValue("storyLikeCounts", "decrement"),
+    decrementTagFollowerCount: changeEntityValue(
+      "tagFollowerCounts",
+      "decrement"
+    ),
     // Overwrite
     overwriteFollowing: overwriteEntityValue("following"),
     overwriteFollower: overwriteEntityValue("followers"),
@@ -262,11 +292,14 @@ export const entitiesSlice = createSlice({
     overwriteFollowingCount: overwriteEntityValue("followingCounts"),
     overwriteFriendCount: overwriteEntityValue("friendCounts"),
     overwriteStoryLikeCount: overwriteEntityValue("storyLikeCounts"),
+    overwriteTagFollowerCount: overwriteEntityValue("tagFollowerCounts"),
     // Syncing utils
     syncWithUser: (state, action: PayloadAction<SyncableUser>) =>
       syncWithUserImpl(state, action.payload),
     syncWithStory: (state, action: PayloadAction<SyncableStory>) =>
-      syncWithStoryImpl(state, action.payload)
+      syncWithStoryImpl(state, action.payload),
+    syncWithTag: (state, action: PayloadAction<SyncableTag>) =>
+      syncWithTagImpl(state, action.payload)
   }
 });
 
@@ -285,10 +318,12 @@ const {
   incrementFollowerCount,
   incrementFriendsCount,
   incrementStoryLikeCount,
+  incrementTagFollowerCount,
   decrementFollowingCount,
   decrementFollowerCount,
   decrementFriendCount,
   decrementStoryLikeCount,
+  decrementTagFollowerCount,
   overwriteFollowing,
   overwriteFollower,
   overwriteFriend,
@@ -303,8 +338,10 @@ const {
   overwriteFollowerCount,
   overwriteFriendCount,
   overwriteStoryLikeCount,
+  overwriteTagFollowerCount,
   syncWithStory,
-  syncWithUser
+  syncWithUser,
+  syncWithTag
 } = entitiesSlice.actions;
 
 export const addEntitiesListeners = (
@@ -436,6 +473,23 @@ export const addEntitiesListeners = (
       }
     }
   });
+
+  /**
+   * Increment and decrement tag follower count
+   */
+  startListening({
+    actionCreator: toggleFollowedTag,
+    effect: ({ payload }, listenerApi) => {
+      const tagId = payload;
+      const hasFollowed = selectFollowedTag(tagId)(listenerApi.getState());
+
+      if (hasFollowed) {
+        listenerApi.dispatch(incrementTagFollowerCount(tagId));
+      } else {
+        listenerApi.dispatch(decrementTagFollowerCount(tagId));
+      }
+    }
+  });
 };
 
 export {
@@ -443,10 +497,12 @@ export {
   decrementFollowingCount,
   decrementFriendCount,
   decrementStoryLikeCount,
+  decrementTagFollowerCount,
   incrementFollowerCount,
   incrementFollowingCount,
   incrementFriendsCount,
   incrementStoryLikeCount,
+  incrementTagFollowerCount,
   overwriteBlock,
   overwriteBookmark,
   overwriteFollowedTag,
@@ -461,7 +517,9 @@ export {
   overwriteSentRequest,
   overwriteStoryLikeCount,
   overwriteSubscription,
+  overwriteTagFollowerCount,
   syncWithStory,
+  syncWithTag,
   syncWithUser,
   toggleBlock,
   toggleBookmark,

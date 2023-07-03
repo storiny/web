@@ -3,12 +3,14 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
 
+import { testTag } from "../../mocks";
+import TagSkeleton from "./Skeleton";
 import Tag from "./Tag";
 
 const meta: Meta<typeof Tag> = {
   title: "Entities/Tag",
   component: Tag,
-  args: { value: "nice-tag", storyCount: 46, followerCount: 814 },
+  args: { tag: testTag },
   tags: ["autodocs"]
 };
 
@@ -17,24 +19,6 @@ type Story = StoryObj<typeof Tag>;
 
 export const Default: Story = {};
 
-export const OnlyValue: Story = {
-  args: {
-    ...Default.args,
-    followerCount: undefined,
-    storyCount: undefined
-  }
-};
-
-export const OnlyStoryCount: Story = {
-  args: {
-    ...Default.args,
-    followerCount: undefined
-  }
-};
-
-export const OnlyFollowerCount: Story = {
-  args: {
-    ...Default.args,
-    storyCount: undefined
-  }
+export const Skeleton: Story = {
+  render: () => <TagSkeleton />
 };

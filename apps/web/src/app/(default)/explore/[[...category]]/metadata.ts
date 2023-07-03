@@ -13,7 +13,11 @@ export const generateMetadata = async ({
   const category = categories.find((item) => item.id === categorySegment);
 
   return {
-    title: `Explore${category ? ` ${category.title.toLowerCase()}` : ""}`,
+    title: `Explore${
+      category
+        ? ` ${category.id === "diy" ? "DIY" : category.title.toLowerCase()}`
+        : ""
+    }`,
     description: "Explore stories, writers, and tags on Storiny"
   };
 };

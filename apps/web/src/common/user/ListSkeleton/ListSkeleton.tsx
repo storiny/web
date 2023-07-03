@@ -7,7 +7,7 @@ import { UserSkeleton } from "~/entities/User";
 
 const UserListSkeleton = React.memo(() => (
   <div className={"base"}>
-    {[...Array(5)].map((_, index) => (
+    {[...Array(10)].map((_, index) => (
       <React.Fragment key={index}>
         <UserSkeleton />
         <Divider

@@ -6,26 +6,25 @@ import Skeleton from "~/components/Skeleton";
 import { useMediaQuery } from "~/hooks/useMediaQuery";
 import { breakpoints } from "~/theme/breakpoints";
 
-import userStyles from "../User.module.scss";
+import styles from "../User.module.scss";
 
 const UserSkeleton = (): React.ReactElement => {
   const isMobile = useMediaQuery(breakpoints.down("mobile"));
-
   return (
     <div
       aria-busy={"true"}
-      className={clsx("flex-col", userStyles.user)}
+      className={clsx("flex-col", styles.user)}
       style={{ cursor: "progress" }}
     >
-      <div className={clsx("flex", userStyles.main)}>
-        <div className={clsx("flex", userStyles.meta)}>
+      <div className={clsx("flex", styles.main)}>
+        <div className={clsx("flex", styles.meta)}>
           <Skeleton height={48} shape={"circular"} width={48} />
           <div className={"flex-col"} style={{ gap: "8px" }}>
             <Skeleton height={18} width={142} />
             {isMobile ? (
               <Skeleton height={14} width={88} />
             ) : (
-              <div className={clsx("flex", userStyles.stats)}>
+              <div className={clsx("flex", styles.stats)}>
                 <Skeleton height={14} width={48} />
                 <Skeleton height={14} width={48} />
               </div>
@@ -33,13 +32,13 @@ const UserSkeleton = (): React.ReactElement => {
           </div>
         </div>
         <Grow />
-        <div className={clsx("flex", userStyles.actions)}>
+        <div className={clsx("flex", styles.actions)}>
           <Skeleton height={isMobile ? 36 : 30} width={84} />
           {!isMobile && <Skeleton height={30} width={30} />}
         </div>
       </div>
       <div
-        className={clsx("flex-col", userStyles.bio)}
+        className={clsx("flex-col", styles.bio)}
         style={{ paddingTop: "8px" }}
       >
         <Skeleton height={14} width={isMobile ? 312 : 250} />

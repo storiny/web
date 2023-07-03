@@ -64,9 +64,11 @@ const LeftSidebarDefaultContent = (): React.ReactElement => {
         value={
           pathname === "/"
             ? "home"
-            : pathname === "/explore" || pathname.startsWith("/explore/")
+            : pathname === "/explore" ||
+              // pathname is null in tests
+              (pathname || "").startsWith("/explore/")
             ? "explore"
-            : pathname.substring(1)
+            : (pathname || "").substring(1)
         }
       >
         <TabsList

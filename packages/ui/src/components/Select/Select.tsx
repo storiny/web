@@ -27,6 +27,7 @@ const Select = forwardRef<SelectProps, "div">((props, ref) => {
     size = "md",
     color = "inverted",
     renderTrigger = (trigger): React.ReactNode => trigger,
+    valueChildren,
     disabled,
     children,
     slotProps,
@@ -55,7 +56,9 @@ const Select = forwardRef<SelectProps, "div">((props, ref) => {
           )}
           disabled={disabled}
         >
-          <Value {...slotProps?.value} data-value />
+          <Value {...slotProps?.value} data-value>
+            {valueChildren}
+          </Value>
           <Icon
             {...slotProps?.icon}
             className={clsx(styles.icon, slotProps?.icon?.className)}

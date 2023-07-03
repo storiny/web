@@ -4,7 +4,7 @@ const abbreviations = ["", "k", "M", "B", "T", "P", "E"] as const;
  * Abbreviates a number
  * @param a The number to abbreviate
  */
-export const abbreviateNumber = (a: number): string => {
+export const abbreviateNumber = (a: number = 0): string => {
   const positive = Math.sign(a) >= 0;
 
   a = Math.abs(a);

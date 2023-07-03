@@ -29,10 +29,10 @@ const User = (props: UserProps): React.ReactElement => {
   const isFollowing = useAppSelector(selectFollowing(user.id));
   const userUrl = `/${user.username}`;
 
-  // User specific props are synced in `Actions`
+  // User-specific props are synced in `Actions`
 
   return (
-    <div className={clsx("flex-col", styles.user, className)} {...rest}>
+    <div {...rest} className={clsx("flex-col", styles.user, className)}>
       <div className={clsx("flex", styles.main)}>
         <NextLink className={clsx("flex", styles.meta)} href={userUrl}>
           <Avatar

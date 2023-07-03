@@ -2,6 +2,9 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 import {
   getBookmarks,
+  getExploreStories,
+  getExploreTags,
+  getExploreWriters,
   getHistory,
   getHomeFeed,
   getLikedStories,
@@ -36,6 +39,9 @@ export const apiSlice = createApi({
     getTagWriters: getTagWriters(builder),
     getUserStories: getUserStories(builder),
     getUserEntities: getUserEntities(builder),
+    getExploreStories: getExploreStories(builder),
+    getExploreWriters: getExploreWriters(builder),
+    getExploreTags: getExploreTags(builder),
     // Validation
     usernameValidation: usernameValidation(builder),
     // Auth
@@ -56,6 +62,9 @@ export const {
   useGetTagWritersQuery,
   useGetUserStoriesQuery,
   useGetUserEntitiesQuery,
+  useGetExploreStoriesQuery,
+  useGetExploreWritersQuery,
+  useGetExploreTagsQuery,
   useUsernameValidationMutation,
   useLoginMutation,
   useSignupMutation,

@@ -19,6 +19,7 @@ import Tooltip from "~/components/Tooltip";
 import Typography from "~/components/Typography";
 import Persona from "~/entities/Persona";
 import Tag from "~/entities/Tag";
+import TagChip from "~/entities/TagChip";
 import { useMediaQuery } from "~/hooks/useMediaQuery";
 import BookmarkIcon from "~/icons/Bookmark";
 import BookmarkPlusIcon from "~/icons/BookmarkPlus";
@@ -88,8 +89,8 @@ const Story = (props: StoryProps): React.ReactElement => {
         </div>
       ) : (
         <article
-          className={clsx("flex-col", styles.story, className)}
           {...rest}
+          className={clsx("flex-col", styles.story, className)}
         >
           <div className={clsx("flex", styles.main)}>
             <div className={clsx("flex-col", styles.meta)}>
@@ -283,7 +284,7 @@ const Story = (props: StoryProps): React.ReactElement => {
                 )}
                 <div className={clsx("flex", styles["tags-container"])}>
                   {story.tags.slice(0, isMobile ? 1 : 2).map((tag) => (
-                    <Tag
+                    <TagChip
                       key={tag.id}
                       size={isMobile ? "lg" : "md"}
                       value={tag.name}

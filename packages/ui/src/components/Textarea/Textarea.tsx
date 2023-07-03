@@ -27,6 +27,7 @@ const Container = forwardRef<
 const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
   (props, ref) => {
     const {
+      autoFocus,
       color = "inverted",
       size = "md",
       className,
@@ -34,7 +35,7 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
       slotProps,
       ...rest
     } = props;
-    const [focused, setFocused] = React.useState<boolean>(false);
+    const [focused, setFocused] = React.useState<boolean>(Boolean(autoFocus));
 
     const handleFocus = (
       event: React.FocusEvent<HTMLTextAreaElement>
@@ -64,6 +65,7 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
       >
         <textarea
           {...rest}
+          autoFocus={autoFocus}
           className={clsx("unset", styles.textarea, className)}
           disabled={disabled}
           onBlur={handleBlur}

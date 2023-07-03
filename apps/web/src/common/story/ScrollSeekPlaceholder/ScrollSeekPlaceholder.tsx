@@ -9,7 +9,7 @@ import { StorySkeleton } from "~/entities/Story";
 import styles from "../ListItem/ListItem.module.scss";
 
 const VirtualizedStoryScrollSeekPlaceholder = React.memo(() => (
-  <div className={clsx("flex-col", styles["list-item"])}>
+  <div className={clsx("flex-col", styles.x, styles["list-item"])}>
     <StorySkeleton />
     <Divider style={{ marginInline: "var(--grid-compensation)" }} />
   </div>

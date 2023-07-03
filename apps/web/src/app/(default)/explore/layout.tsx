@@ -1,5 +1,3 @@
-import "server-only";
-
 import React from "react";
 
 import LeftSidebar from "~/layout/LeftSidebar";

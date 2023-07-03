@@ -9,10 +9,12 @@ import {
   selectFriendCount,
   selectSentRequest,
   selectStoryLikeCount,
-  selectSubscribed
+  selectSubscribed,
+  selectTagFollowerCount
 } from "./selectors";
 import {
   overwriteBlock,
+  overwriteFollowedTag,
   overwriteFollower,
   overwriteFollowing,
   overwriteFriend,
@@ -21,6 +23,7 @@ import {
   overwriteSentRequest,
   overwriteSubscription,
   toggleBlock,
+  toggleFollowedTag,
   toggleFollowing,
   toggleFriend,
   toggleLikedStory
@@ -138,5 +141,18 @@ describe("entitiesListener", () => {
     // Unlike story
     store.dispatch(toggleLikedStory(testId));
     expect(selectStoryLikeCount(testId)(store.getState())).toEqual(0);
+  });
+
+  it("syncs count on toggling tag follower", () => {
+    const store = setupStore(undefined, true);
+    store.dispatch(overwriteFollowedTag([testId, false]));
+
+    // Follow tag
+    store.dispatch(toggleFollowedTag(testId));
+    expect(selectTagFollowerCount(testId)(store.getState())).toEqual(1);
+
+    // Unfollow tag
+    store.dispatch(toggleFollowedTag(testId));
+    expect(selectTagFollowerCount(testId)(store.getState())).toEqual(0);
   });
 });
