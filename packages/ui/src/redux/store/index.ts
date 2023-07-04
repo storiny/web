@@ -18,6 +18,7 @@ import authSlice from "../features/auth/slice";
 import bannerSlice from "../features/banner/slice";
 import entitiesSlice from "../features/entities/slice";
 import notificationSlice from "../features/notification/slice";
+import notificationsSlice from "../features/notifications/slice";
 import preferencesSlice from "../features/preferences/slice";
 import toastSlice from "../features/toast/slice";
 import { listenerMiddleware } from "../listenerMiddleware";
@@ -28,6 +29,7 @@ export const rootReducer = combineReducers({
   auth: authSlice,
   banner: bannerSlice,
   notification: notificationSlice,
+  notifications: notificationsSlice,
   toast: toastSlice,
   [apiSlice.reducerPath]: apiSlice.reducer
 });

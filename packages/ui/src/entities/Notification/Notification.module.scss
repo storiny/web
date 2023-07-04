@@ -1,0 +1,66 @@
+@use "../../theme/breakpoints" as breakpoints;
+
+/* Actions */
+.actions {
+  gap: 4px;
+  display: none;
+  align-self: stretch;
+}
+
+/* Base styles */
+.notification {
+  padding-block: 8px;
+  gap: 12px;
+
+  &:hover,
+  &:focus-within {
+    & .actions {
+      display: flex;
+    }
+  }
+}
+
+/* Rendered content */
+.content {
+  font-size: 15px;
+  line-height: 22px;
+}
+
+/* Grayscale filter for read notification */
+.read {
+  filter: grayscale(1);
+}
+
+/* Avatar badge */
+.badge {
+  --icon-size: 12px;
+  --icon-stroke-width: 1.25px;
+  --icon-stroke: var(--snow);
+  --size: 24px !important;
+  --ring-thickness: 2px !important;
+
+  // margin-right: -4px;
+
+  /* System badge */
+  &.system {
+    --icon-size: 24px;
+    --icon-stroke: var(--inverted-0);
+    --icon-stroke-width: 1px;
+
+    border: none !important;
+
+    & svg {
+      fill: var(--inverted-400);
+    }
+  }
+}
+
+/* System avatar */
+.system-avatar {
+  --icon-size: 24px;
+  --icon-stroke: var(--inverted-0);
+
+  @include breakpoints.media("<=mobile") {
+    --icon-size: 18px;
+  }
+}

@@ -26,7 +26,10 @@ import PencilPlusIcon from "~/icons/PencilPlus";
 import SettingsIcon from "~/icons/Settings";
 import StoryHeartIcon from "~/icons/StoryHeart";
 import UserIcon from "~/icons/User";
-import { selectLoggedIn } from "~/redux/features";
+import {
+  selectLoggedIn,
+  selectUnreadNotificationCount
+} from "~/redux/features";
 import { useAppSelector } from "~/redux/hooks";
 
 import LeftSidebarPersona from "../Persona";
@@ -45,8 +48,9 @@ const AnchorTab = (props: TabProps & { href: string }): React.ReactElement => (
 );
 
 const LeftSidebarDefaultContent = (): React.ReactElement => {
-  const loggedIn = useAppSelector(selectLoggedIn);
   const pathname = usePathname();
+  const loggedIn = useAppSelector(selectLoggedIn);
+  const unreadNotificationCount = useAppSelector(selectUnreadNotificationCount);
 
   return (
     <>
@@ -97,7 +101,7 @@ const LeftSidebarDefaultContent = (): React.ReactElement => {
                     anchorOrigin={{ vertical: "top", horizontal: "right" }}
                     inset={"24%"}
                     size={"sm"}
-                    visible={false}
+                    visible={unreadNotificationCount !== 0}
                   >
                     <BellIcon />
                   </Badge>
@@ -142,13 +146,6 @@ const LeftSidebarDefaultContent = (): React.ReactElement => {
                   href={"/liked"}
                 >
                   Liked stories
-                </MenuItem>
-                <MenuItem
-                  as={NextLink}
-                  decorator={<ContributionIcon />}
-                  href={"/contributions"}
-                >
-                  Contributions
                 </MenuItem>
                 <MenuItem
                   as={NextLink}

@@ -2,7 +2,6 @@ import { Story } from "@storiny/types";
 import { clsx } from "clsx";
 import NextLink from "next/link";
 import React from "react";
-import { useDispatch } from "react-redux";
 
 import { useConfirmation } from "~/components/Confirmation";
 import IconButton from "~/components/IconButton";
@@ -21,13 +20,13 @@ import UserBlockIcon from "~/icons/UserBlock";
 import { selectLoggedIn } from "~/redux/features/auth/selectors";
 import { selectBlock, selectMute } from "~/redux/features/entities/selectors";
 import { toggleBlock, toggleMute } from "~/redux/features/entities/slice";
-import { useAppSelector } from "~/redux/hooks";
+import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 import { breakpoints } from "~/theme/breakpoints";
 
 const Actions = ({ story }: { story: Story }): React.ReactElement => {
   const share = useWebShare();
   const copy = useClipboard();
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const isMobile = useMediaQuery(breakpoints.down("mobile"));
   const loggedIn = useAppSelector(selectLoggedIn);
   const isBlocking = useAppSelector(selectBlock(story.user.id));

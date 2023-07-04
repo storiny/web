@@ -1,6 +1,9 @@
 import "./bookmarks";
 import "./liked-stories";
 import "./history";
+import "./unread-notifications";
+import "./notifications";
+import "./settings";
 
 import { mockUsers } from "@storiny/ui/src/mocks";
 

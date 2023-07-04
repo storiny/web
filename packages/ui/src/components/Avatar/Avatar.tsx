@@ -80,7 +80,9 @@ const Avatar = forwardRef<AvatarProps, "span">((props, ref) => {
             {...slotProps?.image}
             alt={alt}
             className={clsx(styles.image, slotProps?.image?.className)}
-            onLoadingStatusChange={(status) => setLoaded(status === "loaded")}
+            onLoadingStatusChange={(status): void =>
+              setLoaded(status === "loaded")
+            }
             src={finalSrc}
           />
         )}

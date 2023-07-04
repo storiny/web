@@ -1,11 +1,15 @@
 import { StoryCategory } from "@storiny/shared";
+import dynamic from "next/dynamic";
 import React from "react";
 
+import SuspenseLoader from "~/common/suspense-loader";
 import { TagListSkeleton, VirtualizedTagList } from "~/common/tag";
 import ErrorState from "~/entities/ErrorState";
 import { getQueryErrorType, useGetExploreTagsQuery } from "~/redux/features";
 
-import TagListEmptyState from "./empty-state";
+const EmptyState = dynamic(() => import("./empty-state"), {
+  loading: () => <SuspenseLoader />
+});
 
 const TagList = ({
   category,
@@ -44,7 +48,7 @@ const TagList = ({
           type={getQueryErrorType(error)}
         />
       ) : !isFetching && !items.length ? (
-        <TagListEmptyState query={debouncedQuery} />
+        <EmptyState query={debouncedQuery} />
       ) : (
         <VirtualizedTagList
           hasMore={Boolean(hasMore)}

@@ -84,23 +84,23 @@ export const entitiesInitialState: EntitiesState = {
  * Predicate function for validating numbers
  * @param value Value to check
  */
-const isNum = (value?: number | string | null): value is number =>
+export const isNum = (value?: number | string | null): value is number =>
   typeof value === "number";
 
 /**
  * Predicate function for validating boolean values
  * @param value Value to check
  */
-const isBool = (value?: boolean): value is boolean =>
+export const isBool = (value?: boolean): value is boolean =>
   typeof value === "boolean";
 
 /**
  * Toggles boolean entity value
  * @param key Entity key
  */
-const toggleEntityValue =
-  (key: keyof EntitiesState) =>
-  (state: EntitiesState, action: PayloadAction<string>): void => {
+export const toggleEntityValue =
+  <T extends Record<any, any>>(key: keyof T) =>
+  (state: T, action: PayloadAction<string>): void => {
     const entityId = action.payload;
     const prevState = state[key][entityId];
 
@@ -117,9 +117,9 @@ const toggleEntityValue =
  * @param key Entity key
  * @param mode Mode of operation
  */
-const changeEntityValue =
-  (key: keyof EntitiesState, mode: "increment" | "decrement") =>
-  (state: EntitiesState, action: PayloadAction<string>): void => {
+export const changeEntityValue =
+  <T extends Record<any, any>>(key: keyof T, mode: "increment" | "decrement") =>
+  (state: T, action: PayloadAction<string>): void => {
     const entityId = action.payload;
     const prevState = state[key][entityId] as number;
 
@@ -140,12 +140,9 @@ const changeEntityValue =
  * Overwrites entity value if exists
  * @param key Entity key
  */
-const overwriteEntityValue =
-  (key: keyof EntitiesState) =>
-  (
-    state: EntitiesState,
-    action: PayloadAction<[string, number | boolean]>
-  ): void => {
+export const overwriteEntityValue =
+  <T extends Record<any, any>>(key: keyof T) =>
+  (state: T, action: PayloadAction<[string, number | boolean]>): void => {
     const [entityId, value] = action.payload;
     state[key][entityId] = value;
   };
@@ -250,49 +247,77 @@ export const entitiesSlice = createSlice({
   initialState: entitiesInitialState,
   reducers: {
     // Predicate toggle
-    toggleFollowing: toggleEntityValue("following"),
-    toggleFollower: toggleEntityValue("followers"),
-    toggleFriend: toggleEntityValue("friends"),
-    toggleBookmark: toggleEntityValue("bookmarks"),
-    toggleBlock: toggleEntityValue("blocks"),
-    toggleMute: toggleEntityValue("mutes"),
-    toggleLikedStory: toggleEntityValue("likedStories"),
-    toggleFollowedTag: toggleEntityValue("followedTags"),
-    toggleSubscription: toggleEntityValue("subscriptions"),
-    toggleSentRequest: toggleEntityValue("sentRequests"),
+    toggleFollowing: toggleEntityValue<EntitiesState>("following"),
+    toggleFollower: toggleEntityValue<EntitiesState>("followers"),
+    toggleFriend: toggleEntityValue<EntitiesState>("friends"),
+    toggleBookmark: toggleEntityValue<EntitiesState>("bookmarks"),
+    toggleBlock: toggleEntityValue<EntitiesState>("blocks"),
+    toggleMute: toggleEntityValue<EntitiesState>("mutes"),
+    toggleLikedStory: toggleEntityValue<EntitiesState>("likedStories"),
+    toggleFollowedTag: toggleEntityValue<EntitiesState>("followedTags"),
+    toggleSubscription: toggleEntityValue<EntitiesState>("subscriptions"),
+    toggleSentRequest: toggleEntityValue<EntitiesState>("sentRequests"),
     // Integral
-    incrementFollowerCount: changeEntityValue("followerCounts", "increment"),
-    incrementFollowingCount: changeEntityValue("followingCounts", "increment"),
-    incrementFriendsCount: changeEntityValue("friendCounts", "increment"),
-    incrementStoryLikeCount: changeEntityValue("storyLikeCounts", "increment"),
-    incrementTagFollowerCount: changeEntityValue(
+    incrementFollowerCount: changeEntityValue<EntitiesState>(
+      "followerCounts",
+      "increment"
+    ),
+    incrementFollowingCount: changeEntityValue<EntitiesState>(
+      "followingCounts",
+      "increment"
+    ),
+    incrementFriendsCount: changeEntityValue<EntitiesState>(
+      "friendCounts",
+      "increment"
+    ),
+    incrementStoryLikeCount: changeEntityValue<EntitiesState>(
+      "storyLikeCounts",
+      "increment"
+    ),
+    incrementTagFollowerCount: changeEntityValue<EntitiesState>(
       "tagFollowerCounts",
       "increment"
     ),
-    decrementFollowerCount: changeEntityValue("followerCounts", "decrement"),
-    decrementFollowingCount: changeEntityValue("followingCounts", "decrement"),
-    decrementFriendCount: changeEntityValue("friendCounts", "decrement"),
-    decrementStoryLikeCount: changeEntityValue("storyLikeCounts", "decrement"),
-    decrementTagFollowerCount: changeEntityValue(
+    decrementFollowerCount: changeEntityValue<EntitiesState>(
+      "followerCounts",
+      "decrement"
+    ),
+    decrementFollowingCount: changeEntityValue<EntitiesState>(
+      "followingCounts",
+      "decrement"
+    ),
+    decrementFriendCount: changeEntityValue<EntitiesState>(
+      "friendCounts",
+      "decrement"
+    ),
+    decrementStoryLikeCount: changeEntityValue<EntitiesState>(
+      "storyLikeCounts",
+      "decrement"
+    ),
+    decrementTagFollowerCount: changeEntityValue<EntitiesState>(
       "tagFollowerCounts",
       "decrement"
     ),
     // Overwrite
-    overwriteFollowing: overwriteEntityValue("following"),
-    overwriteFollower: overwriteEntityValue("followers"),
-    overwriteFriend: overwriteEntityValue("friends"),
-    overwriteBookmark: overwriteEntityValue("bookmarks"),
-    overwriteBlock: overwriteEntityValue("blocks"),
-    overwriteMute: overwriteEntityValue("mutes"),
-    overwriteLikedStory: overwriteEntityValue("likedStories"),
-    overwriteFollowedTag: overwriteEntityValue("followedTags"),
-    overwriteSubscription: overwriteEntityValue("subscriptions"),
-    overwriteSentRequest: overwriteEntityValue("sentRequests"),
-    overwriteFollowerCount: overwriteEntityValue("followerCounts"),
-    overwriteFollowingCount: overwriteEntityValue("followingCounts"),
-    overwriteFriendCount: overwriteEntityValue("friendCounts"),
-    overwriteStoryLikeCount: overwriteEntityValue("storyLikeCounts"),
-    overwriteTagFollowerCount: overwriteEntityValue("tagFollowerCounts"),
+    overwriteFollowing: overwriteEntityValue<EntitiesState>("following"),
+    overwriteFollower: overwriteEntityValue<EntitiesState>("followers"),
+    overwriteFriend: overwriteEntityValue<EntitiesState>("friends"),
+    overwriteBookmark: overwriteEntityValue<EntitiesState>("bookmarks"),
+    overwriteBlock: overwriteEntityValue<EntitiesState>("blocks"),
+    overwriteMute: overwriteEntityValue<EntitiesState>("mutes"),
+    overwriteLikedStory: overwriteEntityValue<EntitiesState>("likedStories"),
+    overwriteFollowedTag: overwriteEntityValue<EntitiesState>("followedTags"),
+    overwriteSubscription: overwriteEntityValue<EntitiesState>("subscriptions"),
+    overwriteSentRequest: overwriteEntityValue<EntitiesState>("sentRequests"),
+    overwriteFollowerCount:
+      overwriteEntityValue<EntitiesState>("followerCounts"),
+    overwriteFollowingCount:
+      overwriteEntityValue<EntitiesState>("followingCounts"),
+    overwriteFriendCount: overwriteEntityValue<EntitiesState>("friendCounts"),
+    overwriteStoryLikeCount:
+      overwriteEntityValue<EntitiesState>("storyLikeCounts"),
+    overwriteTagFollowerCount:
+      overwriteEntityValue<EntitiesState>("tagFollowerCounts"),
     // Syncing utils
     syncWithUser: (state, action: PayloadAction<SyncableUser>) =>
       syncWithUserImpl(state, action.payload),

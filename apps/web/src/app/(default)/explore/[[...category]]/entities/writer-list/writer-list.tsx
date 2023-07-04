@@ -1,11 +1,15 @@
 import { StoryCategory } from "@storiny/shared";
+import dynamic from "next/dynamic";
 import React from "react";
 
+import SuspenseLoader from "~/common/suspense-loader";
 import { UserListSkeleton, VirtualizedUserList } from "~/common/user";
 import ErrorState from "~/entities/ErrorState";
 import { getQueryErrorType, useGetExploreWritersQuery } from "~/redux/features";
 
-import WriterListEmptyState from "./empty-state";
+const EmptyState = dynamic(() => import("./empty-state"), {
+  loading: () => <SuspenseLoader />
+});
 
 const WriterList = ({
   category,
@@ -44,7 +48,7 @@ const WriterList = ({
           type={getQueryErrorType(error)}
         />
       ) : !isFetching && !items.length ? (
-        <WriterListEmptyState query={debouncedQuery} />
+        <EmptyState query={debouncedQuery} />
       ) : (
         <VirtualizedUserList
           hasMore={Boolean(hasMore)}

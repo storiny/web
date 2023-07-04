@@ -1,7 +1,6 @@
 import { User } from "@storiny/types";
 import NextLink from "next/link";
 import React from "react";
-import { useDispatch } from "react-redux";
 
 import { useConfirmation } from "~/components/Confirmation";
 import IconButton from "~/components/IconButton";
@@ -30,13 +29,13 @@ import {
   toggleFollower,
   toggleMute
 } from "~/redux/features/entities/slice";
-import { useAppSelector } from "~/redux/hooks";
+import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 import { breakpoints } from "~/theme/breakpoints";
 
 const Actions = ({ user }: { user: User }): React.ReactElement | null => {
   const share = useWebShare();
   const copy = useClipboard();
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const isMobile = useMediaQuery(breakpoints.down("mobile"));
   const loggedIn = useAppSelector(selectLoggedIn);
   const isBlocking = useAppSelector(selectBlock(user.id));

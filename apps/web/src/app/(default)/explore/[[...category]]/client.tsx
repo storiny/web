@@ -49,18 +49,10 @@ const normalizeCategory = (category: Props["category"]): string =>
 
 const PageTabsHeader = (): React.ReactElement => (
   <TabsList className={clsx("page-header", styles.x, styles["tabs-list"])}>
-    <Tab aria-controls={undefined} value={"all"}>
-      All
-    </Tab>
-    <Tab aria-controls={undefined} value={"stories"}>
-      Stories
-    </Tab>
-    <Tab aria-controls={undefined} value={"writers"}>
-      Writers
-    </Tab>
-    <Tab aria-controls={undefined} value={"tags"}>
-      Tags
-    </Tab>
+    <Tab value={"all"}>All</Tab>
+    <Tab value={"stories"}>Stories</Tab>
+    <Tab value={"writers"}>Writers</Tab>
+    <Tab value={"tags"}>Tags</Tab>
   </TabsList>
 );
 

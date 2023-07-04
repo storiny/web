@@ -16,7 +16,6 @@ import TabsList from "~/components/TabsList";
 import BellIcon from "~/icons/Bell";
 import BookmarksIcon from "~/icons/Bookmarks";
 import CompassIcon from "~/icons/Compass";
-import ContributionIcon from "~/icons/Contribution";
 import DotsIcon from "~/icons/Dots";
 import HistoryIcon from "~/icons/History";
 import HomeIcon from "~/icons/Home";
@@ -25,6 +24,7 @@ import PencilPlusIcon from "~/icons/PencilPlus";
 import SettingsIcon from "~/icons/Settings";
 import StoryHeartIcon from "~/icons/StoryHeart";
 import UserIcon from "~/icons/User";
+import { selectUnreadNotificationCount } from "~/redux/features";
 import { selectLoggedIn, selectUser } from "~/redux/features/auth/selectors";
 import { useAppSelector } from "~/redux/hooks";
 
@@ -37,6 +37,7 @@ const SidenavStatic = (
   const { className, ...rest } = props;
   const loggedIn = useAppSelector(selectLoggedIn);
   const user = useAppSelector(selectUser);
+  const unreadNotificationCount = useAppSelector(selectUnreadNotificationCount);
 
   return (
     <aside {...rest} className={clsx("flex-col", styles.sidenav, className)}>
@@ -89,7 +90,7 @@ const SidenavStatic = (
                   top: "36%",
                   right: "42%"
                 }}
-                visible={false}
+                visible={unreadNotificationCount !== 0}
               >
                 <Tab
                   aria-label={"Your notifications"}
@@ -136,13 +137,6 @@ const SidenavStatic = (
                   href={"/liked"}
                 >
                   Liked stories
-                </MenuItem>
-                <MenuItem
-                  as={NextLink}
-                  decorator={<ContributionIcon />}
-                  href={"/contributions"}
-                >
-                  Contributions
                 </MenuItem>
                 <MenuItem
                   as={NextLink}

@@ -1,0 +1,50 @@
+"use client";
+
+import { clsx } from "clsx";
+import React from "react";
+import { Virtuoso } from "react-virtuoso";
+
+import {
+  VirtualizedNotificationFooter,
+  VirtualizedNotificationItem,
+  VirtualizedNotificationScrollSeekPlaceholder
+} from "..";
+import { VirtualizedNotificationListProps } from "./List.props";
+import { VirtualizedNotificationListContext } from "./ListContext";
+
+const VirtualizedNotificationList = React.memo(
+  ({
+    notifications,
+    hasMore,
+    loadMore,
+    notificationProps,
+    className,
+    ...rest
+  }: VirtualizedNotificationListProps) => (
+    <VirtualizedNotificationListContext.Provider
+      value={notificationProps || {}}
+    >
+      <Virtuoso
+        increaseViewportBy={750}
+        scrollSeekConfiguration={{
+          enter: (velocity): boolean => Math.abs(velocity) > 950,
+          exit: (velocity): boolean => Math.abs(velocity) < 10
+        }}
+        useWindowScroll
+        {...rest}
+        className={clsx("full-w", "full-h", className)}
+        components={{
+          Item: VirtualizedNotificationItem,
+          ScrollSeekPlaceholder: VirtualizedNotificationScrollSeekPlaceholder,
+          ...(hasMore && { Footer: VirtualizedNotificationFooter })
+        }}
+        data={notifications}
+        endReached={hasMore ? loadMore : (): void => undefined}
+      />
+    </VirtualizedNotificationListContext.Provider>
+  )
+);
+
+VirtualizedNotificationList.displayName = "VirtualizedNotificationList";
+
+export default VirtualizedNotificationList;

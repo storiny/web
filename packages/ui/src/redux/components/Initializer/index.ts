@@ -2,7 +2,11 @@
 
 import React from "react";
 
-import { fetchUser, syncToBrowser } from "~/redux/features";
+import {
+  fetchUnreadNotificationsCount,
+  fetchUser,
+  syncToBrowser
+} from "~/redux/features";
 import { useAppDispatch } from "~/redux/hooks";
 
 /*
@@ -14,6 +18,7 @@ const Initializer = (): null => {
   React.useEffect(() => {
     dispatch(syncToBrowser());
     dispatch(fetchUser());
+    dispatch(fetchUnreadNotificationsCount());
   }, [dispatch]);
 
   return null;

@@ -1,0 +1,23 @@
+.x {
+  /* Tabs */
+  &.tabs {
+    padding-inline: 20px;
+  }
+
+  /* Tabs list */
+  &.tabs-list {
+    display: flex;
+    justify-content: space-around;
+  }
+
+  /* Status header */
+  &.status-header {
+    padding-block: 16px;
+    margin-top: -12px;
+  }
+
+  /* Header actions */
+  &.header-actions {
+    gap: 8px;
+  }
+}

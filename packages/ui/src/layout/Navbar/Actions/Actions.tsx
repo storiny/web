@@ -120,9 +120,6 @@ const LoggedInMenu = ({
     <MenuItemWithLink decorator={<StoryHeartIcon />} href={"/liked"}>
       Liked stories
     </MenuItemWithLink>
-    <MenuItemWithLink decorator={<ContributionIcon />} href={"/contributions"}>
-      Contributions
-    </MenuItemWithLink>
     <MenuItemWithLink decorator={<HistoryIcon />} href={"/history"}>
       History
     </MenuItemWithLink>

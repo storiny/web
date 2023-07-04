@@ -1,8 +1,8 @@
 import { StatusVisibility } from "@storiny/shared";
 import { User } from "@storiny/types";
 
-const getAvatarId = (identifier: string) => `${identifier}.jpg`;
-const getBannerId = (identifier: string) => `${identifier}.jpg`;
+const getAvatarId = (identifier: string): string => `${identifier}.jpg`;
+const getBannerId = (identifier: string): string => `${identifier}.jpg`;
 
 export const testUser: User = {
   bio: "",

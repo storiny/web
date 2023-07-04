@@ -8,7 +8,6 @@ const SEGMENT = "me/liked-stories";
 
 export type GetLikedStoriesResponse = Story[];
 
-export const getLikedStories = (
-  builder: ApiQueryBuilder
-): ReturnType<typeof getStoriesWithQueryAndSort> =>
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+export const getLikedStories = (builder: ApiQueryBuilder) =>
   getStoriesWithQueryAndSort(builder, SEGMENT);

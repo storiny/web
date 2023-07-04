@@ -3,7 +3,7 @@ import { Story } from "@storiny/types";
 import { mockTags } from "../tag";
 import { mockUsers, testUser } from "../user";
 
-const getSplashId = (identifier: string) => `${identifier}.jpg`;
+const getSplashId = (identifier: string): string => `${identifier}.jpg`;
 
 export const testStory: Story = {
   splash_hex: "000000",

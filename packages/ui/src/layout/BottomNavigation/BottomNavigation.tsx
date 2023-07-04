@@ -15,6 +15,7 @@ import HomeIcon from "~/icons/Home";
 import PencilPlusIcon from "~/icons/PencilPlus";
 import SearchIcon from "~/icons/Search";
 import UserIcon from "~/icons/User";
+import { selectUnreadNotificationCount } from "~/redux/features";
 import { selectLoggedIn } from "~/redux/features/auth/selectors";
 import { useAppSelector } from "~/redux/hooks";
 import { breakpoints } from "~/theme/breakpoints";
@@ -40,6 +41,7 @@ const BottomNavigation = (
   const { className, forceMount, ...rest } = props;
   const shouldRender = useMediaQuery(breakpoints.down("mobile"));
   const loggedIn = useAppSelector(selectLoggedIn);
+  const unreadNotificationCount = useAppSelector(selectUnreadNotificationCount);
 
   // Adds padding-bottom to the body to compensate the height of the component
   React.useEffect(() => {
@@ -109,7 +111,7 @@ const BottomNavigation = (
               top: "36%",
               right: "42%"
             }}
-            visible={false}
+            visible={unreadNotificationCount !== 0}
           >
             <AnchorTab
               aria-label={"Your notifications"}

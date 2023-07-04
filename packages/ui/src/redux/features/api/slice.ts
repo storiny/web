@@ -8,12 +8,14 @@ import {
   getHistory,
   getHomeFeed,
   getLikedStories,
+  getNotifications,
   getRightSidebarContent,
   getTagStories,
   getTagWriters,
   getUserEntities,
   getUserStories,
   login,
+  notificationSettings,
   recovery,
   resetPassword,
   signup,
@@ -28,6 +30,7 @@ export const apiSlice = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: `${process.env.NEXT_PUBLIC_API_URL}/v${API_VERSION}`
   }),
+  tagTypes: ["Notification"],
   endpoints: (builder) => ({
     // Get
     getRightSidebarContent: getRightSidebarContent(builder),
@@ -42,13 +45,16 @@ export const apiSlice = createApi({
     getExploreStories: getExploreStories(builder),
     getExploreWriters: getExploreWriters(builder),
     getExploreTags: getExploreTags(builder),
+    getNotifications: getNotifications(builder),
     // Validation
     usernameValidation: usernameValidation(builder),
     // Auth
     login: login(builder),
     signup: signup(builder),
     recovery: recovery(builder),
-    resetPassword: resetPassword(builder)
+    resetPassword: resetPassword(builder),
+    // Settings
+    notificationSettings: notificationSettings(builder)
   })
 });
 
@@ -65,9 +71,11 @@ export const {
   useGetExploreStoriesQuery,
   useGetExploreWritersQuery,
   useGetExploreTagsQuery,
+  useGetNotificationsQuery,
   useUsernameValidationMutation,
   useLoginMutation,
   useSignupMutation,
   useRecoveryMutation,
-  useResetPasswordMutation
+  useResetPasswordMutation,
+  useNotificationSettingsMutation
 } = apiSlice;
