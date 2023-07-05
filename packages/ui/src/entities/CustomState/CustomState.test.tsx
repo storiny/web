@@ -9,7 +9,7 @@ import styles from "./CustomState.module.scss";
 import { CustomStateSize } from "./CustomState.props";
 
 describe("<CustomState />", () => {
-  it("renders", async () => {
+  it("renders", () => {
     renderTestWithProvider(<CustomState title={"test"} />);
   });
 

@@ -100,10 +100,10 @@
 .end-decorator {
   --bg: var(--decorator-bg);
   --fg: var(--decorator-fg);
-  --icon-stroke: var(--fg);
 
   width: fit-content;
   background-color: var(--bg);
+  color: var(--fg);
   align-self: stretch;
   margin: -1px;
 
@@ -114,6 +114,10 @@
 
   &:not(.disabled):hover {
     --bg: var(--decorator-hover-bg);
+  }
+
+  & svg {
+    --icon-stroke: var(--decorator-fg) !important;
   }
 
   & > * {

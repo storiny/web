@@ -10,7 +10,7 @@ import styles from "./Persona.module.scss";
 import { PersonaProps, PersonaSize } from "./Persona.props";
 
 describe("<Persona />", () => {
-  it("renders", async () => {
+  it("renders", () => {
     renderTestWithProvider(
       <Persona
         avatar={{ alt: "" }}

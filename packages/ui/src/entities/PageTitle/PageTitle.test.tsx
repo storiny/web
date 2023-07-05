@@ -8,7 +8,7 @@ import PageTitle from "./PageTitle";
 import { PageTitleProps } from "./PageTitle.props";
 
 describe("<PageTitle />", () => {
-  it("renders", async () => {
+  it("renders", () => {
     renderTestWithProvider(<PageTitle />);
   });
 

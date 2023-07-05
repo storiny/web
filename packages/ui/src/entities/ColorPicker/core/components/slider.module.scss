@@ -1,0 +1,19 @@
+/* Slider container */
+.container {
+  flex-grow: 1;
+  position: relative;
+  box-shadow: var(--ridge-slider);
+  border-radius: 12px;
+  height: 12px;
+  margin-block: 2px;
+}
+
+/* Thumb */
+.thumb {
+  top: 50%;
+}
+
+/* Slider overlay */
+.overlay {
+  border-radius: 12px;
+}

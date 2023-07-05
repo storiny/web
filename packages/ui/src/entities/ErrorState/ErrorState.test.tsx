@@ -13,7 +13,7 @@ import {
 } from "./ErrorState.props";
 
 describe("<ErrorState />", () => {
-  it("renders", async () => {
+  it("renders", () => {
     renderTestWithProvider(<ErrorState />);
   });
 

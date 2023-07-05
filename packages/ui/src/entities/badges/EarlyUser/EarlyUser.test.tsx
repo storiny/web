@@ -7,7 +7,7 @@ import { renderTestWithProvider } from "~/redux/testUtils";
 import EarlyUserBadge from "./EarlyUser";
 
 describe("<EarlyUserBadge />", () => {
-  it("renders", async () => {
+  it("renders", () => {
     renderTestWithProvider(<EarlyUserBadge />);
   });
 

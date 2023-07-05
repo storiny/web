@@ -6,13 +6,11 @@ import Sidenav from "./Static";
 
 describe("<Sidenav />", () => {
   it("renders", () => {
-    renderTestWithProvider(<Sidenav forceMount />);
+    renderTestWithProvider(<Sidenav />);
   });
 
   it("renders logged out state", () => {
-    const { queryByRole, getByRole } = renderTestWithProvider(
-      <Sidenav forceMount />
-    );
+    const { queryByRole, getByRole } = renderTestWithProvider(<Sidenav />);
 
     expect(
       queryByRole("button", { name: /more menu options/i })
@@ -24,7 +22,7 @@ describe("<Sidenav />", () => {
   });
 
   it("renders logged in state", () => {
-    const { getByRole } = renderTestWithProvider(<Sidenav forceMount />, {
+    const { getByRole } = renderTestWithProvider(<Sidenav />, {
       loggedIn: true
     });
 

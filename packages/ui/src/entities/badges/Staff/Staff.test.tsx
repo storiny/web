@@ -7,7 +7,7 @@ import { renderTestWithProvider } from "~/redux/testUtils";
 import StaffBadge from "./Staff";
 
 describe("<StaffBadge />", () => {
-  it("renders", async () => {
+  it("renders", () => {
     renderTestWithProvider(<StaffBadge />);
   });
 

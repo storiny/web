@@ -1,0 +1,18 @@
+/* Container */
+.container {
+  position: relative;
+  width: 236px;
+  height: 236px;
+  max-width: 100%;
+  outline-offset: calc(calc(-1 * var(--focus-thickness)) + 0.5px);
+}
+
+/* Light overlay */
+.light {
+  background: linear-gradient(to right, #fff 0%, transparent 100%);
+}
+
+/* Dark overlay */
+.dark {
+  background: linear-gradient(to bottom, transparent 0, #000 100%);
+}

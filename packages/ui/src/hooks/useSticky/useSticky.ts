@@ -4,7 +4,7 @@ import React from "react";
 
 import { UseStickyProps } from "./useSticky.props";
 
-/*
+/**
  * Original implementation: https://github.com/codecks-io/react-sticky-box
  */
 
