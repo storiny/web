@@ -1,3 +1,5 @@
+"use client";
+
 import { Root as VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import clsx from "clsx";
 import React from "react";
@@ -17,17 +19,22 @@ const ColorBoard = (props: ColorBoardProps): React.ReactElement => {
     ref
   });
 
+  // Focus on mount
+  React.useEffect(() => ref.current?.focus?.(), []);
+
   return (
     <div
       {...rest}
       {...containerProps}
-      className={clsx("focusable", styles.container, className)}
+      className={clsx(styles.container, className)}
       ref={ref}
       style={{ ...style, background: state.getSolidColor() }}
+      tabIndex={0}
     >
       <VisuallyHidden {...descriptionProps} />
       <span
         className={commonStyles.thumb}
+        data-testid={"color-board-thumb"}
         style={
           {
             ...style,

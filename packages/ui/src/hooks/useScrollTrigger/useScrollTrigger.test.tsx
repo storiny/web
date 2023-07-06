@@ -7,7 +7,7 @@ import { useScrollTrigger } from "./useScrollTrigger";
 
 describe("useScrollTrigger", () => {
   it("returns `false` by default", () => {
-    const Component = () => {
+    const Component = (): React.ReactElement => {
       const trigger = useScrollTrigger();
       return <span data-testid="trigger">{`${trigger}`}</span>;
     };
@@ -18,14 +18,15 @@ describe("useScrollTrigger", () => {
 
   describe("scrolling", () => {
     const triggerRef = React.createRef<HTMLSpanElement>();
-    const getTriggerValue = () => triggerRef.current?.textContent;
+    const getTriggerValue = (): string | null | undefined =>
+      triggerRef.current?.textContent;
 
-    const Component = () => {
+    const Component = (): React.ReactElement => {
       const trigger = useScrollTrigger();
       return <span ref={triggerRef}>{`${trigger}`}</span>;
     };
 
-    const dispatchScroll = (offset: number) => {
+    const dispatchScroll = (offset: number): void => {
       act(() => {
         Object.defineProperty(window, "pageYOffset", {
           value: offset

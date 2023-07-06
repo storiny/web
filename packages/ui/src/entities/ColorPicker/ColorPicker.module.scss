@@ -30,10 +30,7 @@
 
 /* Arrow */
 .arrow {
-  fill: var(--bg-elevation-xs);
-  filter: drop-shadow(-1px 1px 0 var(--divider))
-    drop-shadow(2px 1px 0 var(--divider));
-  margin-top: -1px;
+  fill: var(--divider);
 }
 
 /* Header */

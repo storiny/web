@@ -19,15 +19,15 @@ import { UseColorStateProps } from "./useColorState.props";
  * Default initial color state
  */
 const initalColor = {
-  h: 0,
-  s: 50,
-  v: 50,
+  h: 86,
+  s: 100,
+  v: 100,
   a: 100,
-  r: 128,
-  g: 64,
-  b: 64,
-  hex: "804040",
-  str: "#804040"
+  r: 143,
+  g: 255,
+  b: 0,
+  hex: "8FFF00",
+  str: "#8FFF00"
 };
 
 /**

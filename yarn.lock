@@ -5821,6 +5821,7 @@ __metadata:
     interweave: ^13.1.0
     jest: ^29.5.0
     jest-css-modules-transform: ^4.4.2
+    jotai: ^2.2.2
     prettier: ^2.5.1
     react: ^18.2.0
     react-dom: ^18.2.0
@@ -5834,6 +5835,7 @@ __metadata:
     ts-jest: ^29.1.0
     ts-node: ^10.9.1
     typescript: ^5.1.5
+    use-eye-dropper: ^1.4.5
     use-resize-observer: ^9.1.0
     zod: ^3.21.4
     zxcvbn: ^4.4.2
@@ -15384,6 +15386,18 @@ eslint-config-turbo@latest:
   languageName: node
   linkType: hard
 
+"jotai@npm:^2.2.2":
+  version: 2.2.2
+  resolution: "jotai@npm:2.2.2"
+  peerDependencies:
+    react: ">=17.0.0"
+  peerDependenciesMeta:
+    react:
+      optional: true
+  checksum: 6b3a62714a22984afd4f089e5bb904dc9d7dc8f6eb26135746bf154da760e485bcd5d83b08297e9f1f3f7843eb8d604c9b480fdae97786170f2d00de0ad2f87b
+  languageName: node
+  linkType: hard
+
 "js-levenshtein@npm:^1.1.6":
   version: 1.1.6
   resolution: "js-levenshtein@npm:1.1.6"
@@ -21799,6 +21813,15 @@ turbo@latest:
     "@types/react":
       optional: true
   checksum: 7913df383a5a6fcb399212eedefaac2e0c6f843555202d4e3010bac3848afe38ecaa3d0d6500ad1d936fbeffd637e6c517e68edb024af5e6beca7f27f3ce7b21
+  languageName: node
+  linkType: hard
+
+"use-eye-dropper@npm:^1.4.5":
+  version: 1.4.5
+  resolution: "use-eye-dropper@npm:1.4.5"
+  peerDependencies:
+    react: ^0.13.0 || ^0.14.0 || >=15
+  checksum: 2487a76854ed52c93e8ba6641c8fd05e1817dbe73ca2f3229b28e365ed4796769245d1030ba7ed560126c8db2e82546754083c9abcf87b9780337805f800738c
   languageName: node
   linkType: hard
 

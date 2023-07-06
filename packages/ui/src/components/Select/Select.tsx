@@ -91,7 +91,7 @@ const Select = forwardRef<SelectProps, "div">((props, ref) => {
             </ScrollUpButton>
             <Viewport
               {...slotProps?.viewport}
-              className={clsx(styles.viewport, slotProps?.viewport)}
+              className={clsx(styles.viewport, slotProps?.viewport?.className)}
             >
               {children}
             </Viewport>

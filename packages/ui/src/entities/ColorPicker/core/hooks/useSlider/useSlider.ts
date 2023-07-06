@@ -1,5 +1,6 @@
 import React from "react";
 
+import { useActiveCursor } from "~/hooks/useActiveCursor";
 import { clamp } from "~/utils/clamp";
 
 import { Key } from "../../keys";
@@ -66,6 +67,8 @@ export const useSlider = (
     ...rest
   } = props;
   const restoreScrollRef = React.useRef<() => void>(() => {});
+  const { onPointerUp: onCursorPointerUp, onPointerDown: onCursorPointerDown } =
+    useActiveCursor("grabbing");
 
   // Restore scroll before unmounting
   React.useEffect(() => restoreScrollRef.current, []);
@@ -137,6 +140,8 @@ export const useSlider = (
 
   const onPointerDown = React.useCallback(
     (event: React.PointerEvent) => {
+      onCursorPointerDown();
+
       if (!ref.current) {
         return;
       }
@@ -150,11 +155,13 @@ export const useSlider = (
 
       onPointerMove(event as any);
     },
-    [onPointerMove, ref]
+    [onCursorPointerDown, onPointerMove, ref]
   );
 
   const onPointerUp = React.useCallback(
     (event: React.PointerEvent) => {
+      onCursorPointerUp();
+
       if (!ref.current) {
         return;
       }
@@ -165,7 +172,7 @@ export const useSlider = (
       restoreScrollRef.current();
       restoreScrollRef.current = (): void => {};
     },
-    [ref]
+    [onCursorPointerUp, ref]
   );
 
   return {

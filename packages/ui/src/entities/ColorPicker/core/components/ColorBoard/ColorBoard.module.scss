@@ -4,7 +4,11 @@
   width: 236px;
   height: 236px;
   max-width: 100%;
-  outline-offset: calc(calc(-1 * var(--focus-thickness)) + 0.5px);
+
+  &:focus-visible {
+    outline: none;
+    border: var(--focus-thickness) solid var(--focus);
+  }
 }
 
 /* Light overlay */

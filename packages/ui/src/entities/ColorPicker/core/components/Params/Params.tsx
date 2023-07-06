@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 
 import Input from "~/components/Input";
@@ -15,31 +17,34 @@ const modes: Mode[] = ["hex", "rgb", "hsv"];
 const Params = (props: ParamsProps): React.ReactElement => {
   const { state } = props;
   const [mode, setMode] = React.useState<Mode>("hex");
-  const [value, setValue] = React.useState<string>("");
+  const [value, setValue] = React.useState<string>(`#${state.color.hex}`);
   const [valid, setValid] = React.useState<boolean>(true);
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
-    const nextValue = event.target.value;
-    setValue(nextValue);
+  const handleChange = React.useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>): void => {
+      const nextValue = event.target.value;
+      setValue(nextValue);
 
-    if (mode === "hex") {
-      setValid(true);
-      state.setHex(nextValue.substring(1)); // Remove #
-    } else {
-      const rgba = cssColor(nextValue);
-
-      if (rgba) {
+      if (mode === "hex") {
         setValid(true);
-
-        state.setR(rgba.r);
-        state.setG(rgba.g);
-        state.setB(rgba.b);
-        state.setA(rgba.a);
+        state.setHex(nextValue.substring(1)); // Remove #
       } else {
-        setValid(false);
+        const rgba = cssColor(nextValue);
+
+        if (rgba) {
+          setValid(true);
+
+          state.setR(rgba.r);
+          state.setG(rgba.g);
+          state.setB(rgba.b);
+          state.setA(rgba.a);
+        } else {
+          setValid(false);
+        }
       }
-    }
-  };
+    },
+    [mode, state]
+  );
 
   // Overwrite user input on state change
   React.useEffect(() => {
@@ -69,6 +74,7 @@ const Params = (props: ParamsProps): React.ReactElement => {
 
   return (
     <Input
+      aria-label={"Color value"}
       color={valid ? "inverted" : "ruby"}
       endDecorator={
         <Select
@@ -100,4 +106,4 @@ const Params = (props: ParamsProps): React.ReactElement => {
   );
 };
 
-export default Params;
+export default React.memo(Params);
