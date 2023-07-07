@@ -42,34 +42,16 @@
 
 /* Header icon */
 .icon {
-  --icon-size: 16px;
+  --icon-size: 18px;
 
   padding: 6px;
-  margin-left: -4px;
-  margin-right: 4px;
+  margin-left: -8px;
+  margin-right: 6px;
 }
 
 /* Close */
 .close {
   padding: 5px;
-}
-
-/* Main */
-.main {
-  align-items: stretch;
-}
-
-/* Category tabs list */
-.tabs-list {
-  gap: 4px;
-  padding-block: 12px;
-  border-right: 1px solid var(--divider);
-  background-color: var(--bg-elevation-sm);
-}
-
-/* Tab */
-.tab {
-  padding-right: 12px !important;
 }
 
 /* Footer */

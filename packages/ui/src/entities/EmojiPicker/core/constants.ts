@@ -17,3 +17,6 @@ export enum SkinTone {
   MEDIUM_DARK = "medium-dark",
   MEDIUM_LIGHT = "medium-light"
 }
+
+export const EMOJIS_PER_ROW = 7;
+export const LIST_HEIGHT = 292;

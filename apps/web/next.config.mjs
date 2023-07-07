@@ -33,7 +33,8 @@ const nextConfig = {
     ignoreBuildErrors: true
   },
   sassOptions: {
-    includePaths: [path.join(__dirname, "../../packages/ui/src/theme")]
+    includePaths: [path.join(__dirname, "../../packages/ui/src/theme")],
+    additionalData: `$cdn: "${process.env.NEXT_PUBLIC_CDN_URL}";`
   },
   poweredByHeader: false,
   reactStrictMode: true,
