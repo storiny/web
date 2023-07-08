@@ -1,0 +1,11 @@
+"use client";
+
+import React from "react";
+
+import { createSvgIcon } from "~/utils/createSvgIcon";
+
+const PhotoSearchIcon = (
+  <path d="M7.5 4h0m-1.75 6.5H3A1.5 1.5 0 0 1 1.5 9V3A1.5 1.5 0 0 1 3 1.5h6A1.5 1.5 0 0 1 10.5 3v2.75m-.4 4.35.9.9M1.5 8 4 5.5c.46-.45 1.04-.45 1.5 0l1 1m1 2.5a1.5 1.5 0 1 0 3 0 1.5 1.5 0 0 0-3 0Z" />
+);
+
+export default createSvgIcon(PhotoSearchIcon, "photo-search");

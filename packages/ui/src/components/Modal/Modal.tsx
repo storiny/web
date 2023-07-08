@@ -105,14 +105,15 @@ const Modal = forwardRef<ModalProps, "div">((props, ref) => {
                   <ModalFooter {...slotProps?.footer}>{footer}</ModalFooter>
                 )}
                 {/*
-                Close button with absolute position so that it's the
-                last element to get focused in the focus trap cycle.
-              */}
+                  Close button is positioned with absolute position so that it's the
+                  last element to get focused in the focus trap cycle
+                 */}
                 {!hideCloseButton && (
                   <Close asChild>
                     <IconButton
-                      {...slotProps?.closeButton}
                       aria-label={"Close"}
+                      title={"Close"}
+                      {...slotProps?.closeButton}
                       className={clsx(
                         styles.close,
                         slotProps?.closeButton?.className

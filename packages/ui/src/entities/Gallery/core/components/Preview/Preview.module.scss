@@ -1,0 +1,10 @@
+/* Base styles */
+.preview {
+  --icon-size: 40px;
+  --icon-stroke: var(--divider);
+
+  margin: 12px;
+  border-radius: var(--radius-md);
+  border: 3px dashed var(--divider);
+  aspect-ratio: 1;
+}

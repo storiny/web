@@ -5,6 +5,7 @@ import {
   getExploreStories,
   getExploreTags,
   getExploreWriters,
+  getGalleryPhotos,
   getHistory,
   getHomeFeed,
   getLikedStories,
@@ -46,6 +47,7 @@ export const apiSlice = createApi({
     getExploreWriters: getExploreWriters(builder),
     getExploreTags: getExploreTags(builder),
     getNotifications: getNotifications(builder),
+    getGalleryPhotos: getGalleryPhotos(builder),
     // Validation
     usernameValidation: usernameValidation(builder),
     // Auth
@@ -72,6 +74,7 @@ export const {
   useGetExploreWritersQuery,
   useGetExploreTagsQuery,
   useGetNotificationsQuery,
+  useGetGalleryPhotosQuery,
   useUsernameValidationMutation,
   useLoginMutation,
   useSignupMutation,

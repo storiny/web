@@ -55,6 +55,13 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>((props, ref) => {
 
   React.useImperativeHandle(ref, () => innerRef.current!);
 
+  // Unfocus when the disabled prop is changed
+  React.useEffect(() => {
+    if (disabled) {
+      setFocused(false);
+    }
+  }, [disabled]);
+
   return (
     <InputContext.Provider value={{ color, size, disabled }}>
       <Container

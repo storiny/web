@@ -10,16 +10,21 @@ import {
 } from "@radix-ui/react-popover";
 import SuspenseLoader from "@storiny/web/src/common/suspense-loader";
 import clsx from "clsx";
+import { Provider } from "jotai";
 import dynamic from "next/dynamic";
 import React from "react";
 
 import Grow from "~/components/Grow";
 import IconButton from "~/components/IconButton";
 import Typography from "~/components/Typography";
+import { previewColorAtom } from "~/entities/ColorPicker/core/atoms";
 import XIcon from "~/icons/X";
 
 import styles from "./ColorPicker.module.scss";
 import { ColorPickerProps } from "./ColorPicker.props";
+import HydrateAtoms from "./core/components/HydrateAtoms";
+import Preview from "./core/components/Preview";
+import { defaultColor } from "./core/defaultColor";
 
 const ColorPickerCore = dynamic(() => import("./core/components/ColorPicker"), {
   loading: () => (
@@ -38,20 +43,34 @@ const ColorPicker = (props: ColorPickerProps): React.ReactElement => {
       </Trigger>
       <Portal>
         <Content className={styles.content} collisionPadding={8} sideOffset={5}>
-          <div className={clsx("flex-center", styles.header)}>
-            <Typography className={"t-bold"} level={"body2"}>
-              Pick a color
-            </Typography>
-            <Grow />
-            <div className={clsx("flex-center", styles.close)}>
-              <Close aria-label={"Close"} asChild title={"Close"}>
-                <IconButton variant={"ghost"}>
-                  <XIcon />
-                </IconButton>
-              </Close>
-            </div>
-          </div>
-          <ColorPickerCore {...rest} />
+          <Provider>
+            <HydrateAtoms
+              initialValues={[
+                [
+                  previewColorAtom,
+                  rest?.defaultValue?.str ||
+                    rest?.value?.str ||
+                    defaultColor.str
+                ]
+              ]}
+            >
+              <div className={clsx("flex-center", styles.header)}>
+                <Preview />
+                <Typography className={"t-bold"} level={"body2"}>
+                  Pick a color
+                </Typography>
+                <Grow />
+                <div className={clsx("flex-center", styles.close)}>
+                  <Close aria-label={"Close"} asChild title={"Close"}>
+                    <IconButton variant={"ghost"}>
+                      <XIcon />
+                    </IconButton>
+                  </Close>
+                </div>
+              </div>
+              <ColorPickerCore {...rest} />
+            </HydrateAtoms>
+          </Provider>
           <Arrow className={styles.arrow} />
         </Content>
       </Portal>

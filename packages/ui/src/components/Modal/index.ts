@@ -5,6 +5,7 @@ export * from "./FooterButton";
 export { default as ModalHeader } from "./Header";
 export * from "./Header";
 export { default } from "./Modal";
+export * from "./Modal";
 export * from "./Modal.props";
 export { default as ModalSidebar } from "./Sidebar";
 export * from "./Sidebar";

@@ -54,7 +54,8 @@ export interface ModalProps extends ModalPrimitive {
     container?: Omit<
       React.ComponentPropsWithoutRef<"div">,
       "defaultValue" | "dir"
-    >;
+    > &
+      TabsProps;
     content?: DialogContentProps;
     footer?: React.ComponentPropsWithoutRef<"div">;
     header?: ModalHeaderProps;

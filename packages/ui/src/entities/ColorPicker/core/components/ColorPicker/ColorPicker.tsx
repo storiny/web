@@ -1,8 +1,10 @@
 "use client";
 
 import clsx from "clsx";
+import { useSetAtom } from "jotai";
 import React from "react";
 
+import { previewColorAtom } from "../../atoms";
 import { useColorState } from "../../hooks";
 import AlphaSlider from "../AlphaSlider";
 import ColorBoard from "../ColorBoard";
@@ -14,7 +16,15 @@ import { ColorPickerProps } from "./ColorPicker.props";
 
 const ColorPicker = React.forwardRef<HTMLDivElement, ColorPickerProps>(
   (props, ref) => {
-    const state = useColorState(props);
+    const setPreviewColor = useSetAtom(previewColorAtom);
+    const state = useColorState({
+      ...props,
+      onChange: (value) => {
+        setPreviewColor(value.str);
+        props?.onChange?.(value);
+      }
+    });
+
     return (
       <div className={"flex-col"} ref={ref} role="group">
         <ColorBoard state={state} />

@@ -5,6 +5,7 @@ import {
   ScrollAreaThumbProps,
   ScrollAreaViewportProps
 } from "@radix-ui/react-scroll-area";
+import React from "react";
 
 import { PolymorphicProps } from "~/types/index";
 
@@ -30,6 +31,6 @@ export interface ScrollAreaProps extends ScrollAreaPrimitive {
     corner?: ScrollAreaCornerProps;
     scrollbar?: ScrollAreaScrollbarProps;
     thumb?: ScrollAreaThumbProps;
-    viewport?: ScrollAreaViewportProps;
+    viewport?: ScrollAreaViewportProps & React.ComponentPropsWithRef<"div">;
   };
 }

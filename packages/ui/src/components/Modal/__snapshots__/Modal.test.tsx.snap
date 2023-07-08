@@ -59,6 +59,7 @@ exports[`<Modal /> matches snapshot 1`] = `
           aria-label="Close"
           class="reset focusable variant-ghost color-inverted icon-button md close"
           tabindex="0"
+          title="Close"
           type="button"
         >
           <svg

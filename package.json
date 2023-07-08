@@ -2,11 +2,11 @@
   "private": true,
   "scripts": {
     "build": "turbo run build",
-    "dev": "dotenv -- concurrently --raw \"docker-compose up -d\" \"turbo run dev --color --parallel\"",
+    "dev": "dotenv -e ./.env.local -- concurrently --raw \"docker-compose up -d\" \"turbo run dev --color --parallel\"",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "test:e2e": "playwright test",
-    "storybook:dev": "storybook dev -p 6006",
+    "storybook:dev": "dotenv -e ./.env.local -- storybook dev -p 6006",
     "storybook:build": "storybook build"
   },
   "workspaces": [
@@ -42,6 +42,7 @@
     "nanoid": "3",
     "next": "^13.4.7",
     "nodemon": "^2.0.22",
+    "pexels": "^1.4.0",
     "prettier": "^2.5.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

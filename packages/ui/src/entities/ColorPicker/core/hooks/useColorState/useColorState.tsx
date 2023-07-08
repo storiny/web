@@ -12,23 +12,9 @@ import {
   rgbToHsv
 } from "../../color/converters";
 import { isValidAlpha, isValidColor, isValidRGBValue } from "../../color/utils";
+import { defaultColor } from "../../defaultColor";
 import { ColorState, RGB, TColor } from "../../types";
 import { UseColorStateProps } from "./useColorState.props";
-
-/**
- * Default initial color state
- */
-const initalColor = {
-  h: 86,
-  s: 100,
-  v: 100,
-  a: 100,
-  r: 143,
-  g: 255,
-  b: 0,
-  hex: "8FFF00",
-  str: "#8FFF00"
-};
 
 /**
  * Sets RGB color value
@@ -111,7 +97,7 @@ const rotateHSVValue = (
 export const useColorState = (props: UseColorStateProps): ColorState => {
   const { value, defaultValue, onChange } = props;
   const [color, setColorState] = React.useState<TColor>(
-    defaultValue || initalColor
+    defaultValue || defaultColor
   );
 
   /**
