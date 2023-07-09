@@ -62,7 +62,9 @@ const Image = forwardRef<ImageProps, "div">((props, ref) => {
               styles["native-image"],
               slotProps?.image?.className
             )}
-            onLoadingStatusChange={(status) => setLoaded(status === "loaded")}
+            onLoadingStatusChange={(status): void =>
+              setLoaded(status === "loaded")
+            }
             src={finalSrc}
           />
         )}

@@ -4,7 +4,21 @@
   --icon-stroke: var(--divider);
 
   margin: 12px;
+  position: relative;
   border-radius: var(--radius-md);
   border: 3px dashed var(--divider);
   aspect-ratio: 1;
+}
+
+/* Preview image */
+.image {
+  top: 50%;
+  left: 50%;
+  width: calc(100% - 8px);
+  height: calc(100% - 8px);
+  position: absolute;
+  object-fit: cover;
+  overflow: hidden;
+  transform: translate(-50%, -50%);
+  border-radius: var(--radius-md);
 }

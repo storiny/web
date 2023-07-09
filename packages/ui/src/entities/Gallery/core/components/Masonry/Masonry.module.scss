@@ -7,3 +7,64 @@
 .viewport {
   padding: 12px;
 }
+
+/* Image overlay */
+.overlay {
+  position: absolute;
+  visibility: hidden;
+  width: 100%;
+  height: 100%;
+  padding: 8px;
+  justify-content: end;
+  background-image: linear-gradient(
+    to bottom,
+    transparent calc(100% - 50px),
+    rgba(0 0 0 / 60%) 100%
+  );
+
+  /* Link */
+  & .link {
+    color: var(--snow);
+    width: fit-content;
+  }
+}
+
+/* Image wrapper */
+.image-wrapper {
+  position: relative;
+  cursor: pointer;
+
+  &:hover {
+    & .overlay {
+      visibility: visible;
+    }
+  }
+
+  &[data-selected="true"] {
+    &::after {
+      content: "";
+      position: absolute;
+      height: 100%;
+      width: 100%;
+      pointer-events: none;
+      border-radius: var(--radius-md);
+      box-shadow: 0 0 0 3px var(--inverted-400) inset,
+        0 0 0 6px var(--bg-elevation-xs) inset;
+    }
+  }
+}
+
+/* Image */
+.image {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius-xs);
+}
+
+/* Image child */
+.image-child {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  inset: 0;
+}

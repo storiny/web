@@ -1,123 +1,157 @@
 "use client";
 
-import { useAtomValue } from "jotai";
-import {
-  useInfiniteLoader,
-  useMasonry,
-  usePositioner,
-  useResizeObserver
-} from "masonic";
+import clsx from "clsx";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { Photo } from "pexels";
 import React from "react";
+import { useInView } from "react-intersection-observer";
 
+import Image from "~/components/Image";
+import Link from "~/components/Link";
+import MasonryPrimitive, { RenderItemArgs } from "~/components/Masonry";
 import ScrollArea from "~/components/ScrollArea";
+import Spacer from "~/components/Spacer";
+import Spinner from "~/components/Spinner";
 import { useDebounce } from "~/hooks/useDebounce";
 import { useGetGalleryPhotosQuery } from "~/redux/features";
 
-import { queryAtom } from "../../atoms";
-import { useScroller, useSize } from "../../hooks";
+import { fetchingAtom, queryAtom, selectedAtom } from "../../atoms";
 import styles from "./Masonry.module.scss";
-
-const COLUMN_WIDTH = 148;
 
 // Masonry item
 
 const MasonryItem = React.memo(
-  ({ data }: { data: Photo }): React.ReactElement => (
-    <div className={"flex-col"} style={{ padding: "4px" }}>
-      <img
-        alt={data.alt || ""}
-        src={data.src.medium}
-        style={{ width: "100%", height: "100%" }}
-      />
-    </div>
-  )
+  ({ data }: RenderItemArgs<Photo>): React.ReactElement => {
+    const [selected, setSelected] = useAtom(selectedAtom);
+    const isSelected = selected?.id === String(data.id);
+
+    return (
+      <div
+        className={clsx("flex-center", styles["image-wrapper"])}
+        data-selected={String(isSelected)}
+        onClick={(): void =>
+          setSelected({
+            src: data.src.small,
+            id: String(data.id)
+          })
+        }
+      >
+        <Image
+          alt={data.alt || ""}
+          className={styles.image}
+          hex={(data.avg_color || "").substring(1)}
+          slotProps={{
+            image: {
+              className: styles["image-child"]
+            },
+            fallback: {
+              style: { display: "none" }
+            }
+          }}
+          src={data.src.medium}
+          style={{
+            width: "100%",
+            paddingTop: `${(data.height / data.width) * 100}%`
+          }}
+        />
+        <div className={clsx("flex-col", styles.overlay)}>
+          <Link
+            className={styles.link}
+            ellipsis
+            href={`${data.url}?utm_source=storiny`}
+            level={"body2"}
+            target={"_blank"}
+            title={`Photo by ${data.photographer} on Pexels`}
+          >
+            {data.photographer}
+          </Link>
+        </div>
+      </div>
+    );
+  }
 );
 
 MasonryItem.displayName = "MasonryItem";
 
-// Masonry lsit
+// Footer
 
-const MasonryList = React.memo(
-  ({
-    items,
-    incrementPage
-  }: {
-    incrementPage: () => void;
-    items: Photo[];
-  }): React.ReactElement => {
-    const containerRef = React.useRef(null);
-    const { width, height } = useSize(containerRef);
-    const { scrollTop, isScrolling } = useScroller(containerRef);
-    const positioner = usePositioner(
-      {
-        width,
-        columnWidth: COLUMN_WIDTH,
-        columnGutter: 6
-      },
-      []
-    );
-    const resizeObserver = useResizeObserver(positioner);
-    const onRender = useInfiniteLoader(incrementPage, {
-      isItemLoaded: (index, items) => !!items[index],
-      minimumBatchSize: 1,
-      threshold: 32
-    });
+const Footer = React.memo<{
+  containerRef: React.RefObject<HTMLElement>;
+  hasMore: boolean;
+  incrementPage: () => void;
+  isFetching: boolean;
+}>(({ containerRef, hasMore, isFetching, incrementPage }) => {
+  const { ref, inView } = useInView({
+    threshold: 0.1,
+    root: containerRef.current,
+    rootMargin: "0px 0px 500px 0px"
+  });
 
-    const content = useMasonry({
-      positioner,
-      resizeObserver,
-      items,
-      height,
-      //itemKey: (data, index) => data?.id ?? index,
-      scrollTop,
-      isScrolling,
-      onRender,
-      overscanBy: 4,
-      render: MasonryItem
-    });
+  React.useEffect(() => {
+    if (inView && hasMore && !isFetching) {
+      incrementPage();
+    }
+  }, [hasMore, inView, incrementPage, isFetching]);
 
-    return (
-      <ScrollArea
-        className={styles.scroller}
-        slotProps={{
-          viewport: { ref: containerRef, className: styles.viewport }
-        }}
-        type={"auto"}
-      >
-        {content}
-      </ScrollArea>
-    );
-  }
-);
+  return (
+    <div className={clsx("flex-col", "flex-center")} ref={ref}>
+      {hasMore && (
+        <>
+          <Spacer orientation={"vertical"} size={5} />
+          <Spinner />
+        </>
+      )}
+      <Spacer orientation={"vertical"} size={2} />
+    </div>
+  );
+});
 
-MasonryList.displayName = "MasonryList";
+Footer.displayName = "Footer";
 
 const Masonry = (): React.ReactElement => {
+  const containerRef = React.useRef(null);
   const [page, setPage] = React.useState<number>(1);
   const query = useAtomValue(queryAtom);
+  const setFetching = useSetAtom(fetchingAtom);
   const debouncedQuery = useDebounce(query);
-  const isTyping = query !== debouncedQuery;
-  const { data: { items = [] } = {}, isLoading } = useGetGalleryPhotosQuery({
+  const { data, isFetching, isLoading } = useGetGalleryPhotosQuery({
     page,
     query: debouncedQuery
   });
+  const { items = [], hasMore } = data || {};
 
-  const incrementPage = React.useCallback(
-    () => setPage((prevState) => prevState + 1),
-    []
-  );
+  const incrementPage = React.useCallback(() => {
+    setPage((prevState) => prevState + 1);
+  }, []);
 
-  if (isLoading || isTyping) {
-    return <h1>Loading...</h1>;
-  }
+  React.useEffect(() => {
+    setFetching(isLoading);
+  }, [isLoading, setFetching]);
 
   return (
-    <MasonryList
-      incrementPage={incrementPage}
-      items={items}
-      key={query ? page : "_"}
-    />
+    <ScrollArea
+      className={styles.scroller}
+      slotProps={{
+        viewport: { ref: containerRef, className: styles.viewport }
+      }}
+      type={"auto"}
+    >
+      <MasonryPrimitive<Photo>
+        getItemKey={(data): string => String(data.id)}
+        gutterWidth={12}
+        items={items}
+        minCols={3}
+        overscanFactor={2.8}
+        renderItem={(args): React.ReactElement => <MasonryItem {...args} />}
+        scrollContainer={(): HTMLElement => containerRef.current!}
+      />
+      <Footer
+        containerRef={containerRef}
+        hasMore={Boolean(hasMore)}
+        incrementPage={incrementPage}
+        isFetching={isFetching}
+      />
+    </ScrollArea>
   );
 };
 

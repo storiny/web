@@ -7,7 +7,7 @@ const HydrateAtoms = (props: HydrateAtomsProps): React.ReactElement => {
   const { initialValues, children } = props;
   useHydrateAtoms(initialValues);
 
-  return <>{children}</>;
+  return <React.Fragment>{children}</React.Fragment>;
 };
 
 export default HydrateAtoms;

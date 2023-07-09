@@ -1,0 +1,25 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<Masonry /> matches snapshot 1`] = `
+<div
+  style="width: 100%;"
+>
+  <div
+    class="masonry"
+    role="list"
+    style="height: 0px; width: 0px;"
+  />
+  <div
+    class="masonry"
+    style="width: 0px;"
+  >
+    <div
+      style="visibility: hidden; position: absolute; width: 0px;"
+    >
+      <span>
+        test
+      </span>
+    </div>
+  </div>
+</div>
+`;

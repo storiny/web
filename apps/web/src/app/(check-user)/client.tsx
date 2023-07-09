@@ -16,7 +16,7 @@ const CheckUserClient = ({ children, userId }: Props): React.ReactElement => {
     redirect();
   }
 
-  return <>{children}</>;
+  return <React.Fragment>{children}</React.Fragment>;
 };
 
 export default CheckUserClient;

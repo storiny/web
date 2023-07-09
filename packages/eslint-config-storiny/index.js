@@ -11,6 +11,7 @@ module.exports = {
   env: {
     "jest/globals": true,
   },
+  globals: { NodeJS: true },
   overrides: [
     {
       extends: [

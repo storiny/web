@@ -4,11 +4,16 @@
   position: relative;
   width: var(--width, 100%);
   height: var(--height, 100%);
-  background-color: var(--hex, var(--divider));
   animation-timing-function: ease-out;
   animation-duration: 200ms;
   animation-delay: 100ms; // Delay for image animation
   animation-fill-mode: forwards;
+  transition: background-color 250ms ease; // Fade out background color on load
+
+  // Hide background as images can be transparent
+  &:not(.loaded) {
+    background-color: var(--hex, var(--divider));
+  }
 }
 
 /* Native image element */

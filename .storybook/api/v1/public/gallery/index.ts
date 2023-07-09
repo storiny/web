@@ -31,12 +31,12 @@ worker.use(
       if (Boolean(query)) {
         response = await client.photos.search({
           query,
-          per_page: 24,
+          per_page: 15,
           page: Number.parseInt(page) || 1,
         });
       } else {
         response = await client.photos.curated({
-          per_page: 24,
+          per_page: 15,
           page: Number.parseInt(page) || 1,
         });
       }

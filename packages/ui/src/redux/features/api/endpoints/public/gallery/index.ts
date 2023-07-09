@@ -3,7 +3,7 @@ import { Photos } from "pexels";
 import { ApiQueryBuilder } from "~/redux/features/api/types";
 
 const SEGMENT = "public/gallery";
-const ITEMS_PER_PAGE = 24;
+const ITEMS_PER_PAGE = 15;
 
 export type GetGalleyPhotosResponse = Photos["photos"];
 
