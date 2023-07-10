@@ -3,6 +3,8 @@ import "./liked-stories";
 import "./history";
 import "./unread-notifications";
 import "./notifications";
+import "./gallery";
+import "./assets";
 import "./settings";
 
 import { mockUsers } from "@storiny/ui/src/mocks";

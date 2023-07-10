@@ -2,10 +2,10 @@ import { Photos } from "pexels";
 
 import { ApiQueryBuilder } from "~/redux/features/api/types";
 
-const SEGMENT = "public/gallery";
+const SEGMENT = "me/gallery";
 const ITEMS_PER_PAGE = 15;
 
-export type GetGalleyPhotosResponse = Photos["photos"];
+export type GetGalleryPhotosResponse = Photos["photos"];
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export const getGalleryPhotos = (builder: ApiQueryBuilder) =>

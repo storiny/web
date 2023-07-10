@@ -34,9 +34,11 @@ const meta: Meta<typeof Confirmation> = {
 export default meta;
 type Story = StoryObj<typeof Confirmation>;
 
-const ConfirmationComponent = (props: ConfirmationProps) => {
+const ConfirmationComponent = (
+  props: ConfirmationProps
+): React.ReactElement => {
   const [element, confirm] = useConfirmation(
-    <Button onClick={() => confirm(props)}>Show confirmation</Button>
+    <Button onClick={(): void => confirm(props)}>Show confirmation</Button>
   );
 
   return element;

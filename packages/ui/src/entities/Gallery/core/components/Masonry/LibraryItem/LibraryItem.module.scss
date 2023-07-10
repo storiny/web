@@ -1,0 +1,79 @@
+/* Base styles */
+.item {
+  position: relative;
+  gap: 6px;
+  padding-bottom: 10px;
+  overflow: hidden;
+}
+
+/* Deleted */
+.deleted {
+  pointer-events: none; // Disable events
+  filter: grayscale(1);
+}
+
+/* Deleted overlay */
+.deleted-overlay {
+  --icon-size: 24px;
+  --icon-stroke: var(--snow);
+
+  position: absolute;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0 0 0 / 50%);
+}
+
+/* Explicit icon button */
+.explicit-button {
+  --icon-size: 12px;
+
+  left: 6px;
+  border-radius: var(--radius-sm);
+  cursor: help;
+  height: 21px;
+  width: 21px;
+}
+
+/* Favourite icon button */
+.favourite-button {
+  right: 6px;
+}
+
+/* Overlay buttons */
+.explicit-button,
+.favourite-button {
+  --bg: rgba(0 0 0 / 50%);
+  --icon-stroke: var(--snow);
+
+  position: absolute;
+  top: 6px;
+  background-color: var(--bg);
+
+  &:hover,
+  &:active {
+    background-color: var(--bg) !important;
+  }
+
+  /* Hidden */
+  &.hidden {
+    display: none;
+  }
+}
+
+/* Item footer */
+.footer {
+  gap: 4px;
+  justify-content: space-between;
+}
+
+/* Alt text */
+.alt-text {
+  cursor: pointer;
+
+  &.empty {
+    &:hover {
+      color: var(--fg-major);
+    }
+  }
+}

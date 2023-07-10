@@ -1,3 +1,4 @@
+export * from "./AssetRating";
 export * from "./ContentType";
 export * from "./ImageSize";
 export * from "./Provider";

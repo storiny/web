@@ -1,7 +1,10 @@
+import SuspenseLoader from "@storiny/web/src/common/suspense-loader";
+import clsx from "clsx";
+import { useAtomValue, useSetAtom } from "jotai";
+import dynamic from "next/dynamic";
 import React from "react";
 
 import Modal from "~/components/Modal";
-import { Description } from "~/components/Modal";
 import ModalFooterButton from "~/components/Modal/FooterButton";
 import ModalSidebarItem from "~/components/Modal/SidebarItem";
 import ModalSidebarList from "~/components/Modal/SidebarList";
@@ -12,28 +15,40 @@ import PexelsIcon from "~/icons/Pexels";
 import PhotoSearchIcon from "~/icons/PhotoSearch";
 import UploadIcon from "~/icons/Upload";
 
+import { queryAtom, selectedAtom } from "./core/atoms";
+import GalleryMasonry from "./core/components/Masonry";
 import ImagePreview from "./core/components/Preview";
 import SearchInput from "./core/components/SearchInput";
-import PexelsTab from "./core/tabs/Pexels";
 import styles from "./Gallery.module.scss";
 import { GalleryProps } from "./Gallery.props";
 
+const UploadsTab = dynamic(() => import("./core/components/Uploads"), {
+  loading: () => <SuspenseLoader />
+});
+
 export type GallerySidebarTabsValue = "pexels" | "library" | "upload";
+
+// Footer
+
+const GalleryFooter = (): React.ReactElement => {
+  const selected = useAtomValue(selectedAtom);
+  return (
+    <>
+      <ModalFooterButton variant={"ghost"}>Cancel</ModalFooterButton>
+      <ModalFooterButton disabled={!selected}>Confirm</ModalFooterButton>
+    </>
+  );
+};
 
 const Gallery = (props: GalleryProps): React.ReactElement => {
   const { children } = props;
   const [value, setValue] = React.useState<GallerySidebarTabsValue>("pexels");
+  const setQuery = useSetAtom(queryAtom);
 
   return (
     <Modal
-      footer={
-        <>
-          <ModalFooterButton variant={"ghost"}>Cancel</ModalFooterButton>
-          <ModalFooterButton>Confirm</ModalFooterButton>
-        </>
-      }
+      footer={<GalleryFooter />}
       mode={"tabbed"}
-      open
       sidebar={
         <>
           <SearchInput disabled={value !== "pexels"} />
@@ -54,28 +69,41 @@ const Gallery = (props: GalleryProps): React.ReactElement => {
         </>
       }
       slotProps={{
-        tabs: { defaultValue: "pexels" },
+        tabs: {
+          value,
+          onValueChange: (newValue): void => {
+            setValue(newValue as GallerySidebarTabsValue);
+            setQuery("");
+          }
+        },
         content: { style: { minHeight: "45vh", minWidth: "40vw" } },
         body: {
           className: styles.body
-        },
-        container: {
-          value,
-          onValueChange: (newValue) =>
-            setValue(newValue as GallerySidebarTabsValue)
         },
         header: { decorator: <PhotoSearchIcon />, children: "Gallery" }
       }}
       trigger={children}
     >
-      <TabPanel className={styles["tab-panel"]} value={"pexels"}>
-        <PexelsTab />
+      <TabPanel
+        className={clsx("flex-center", styles["tab-panel"])}
+        tabIndex={-1}
+        value={"pexels"}
+      >
+        <GalleryMasonry tab={"pexels"} />
       </TabPanel>
-      <TabPanel value={"library"}>
-        <Description>Second tab panel</Description>
+      <TabPanel
+        className={clsx("flex-center", styles["tab-panel"])}
+        tabIndex={-1}
+        value={"library"}
+      >
+        <GalleryMasonry tab={"library"} />
       </TabPanel>
-      <TabPanel value={"upload"}>
-        <Description>Third tab panel</Description>
+      <TabPanel
+        className={clsx("flex-center", styles["tab-panel"])}
+        tabIndex={-1}
+        value={"upload"}
+      >
+        <UploadsTab />
       </TabPanel>
     </Modal>
   );

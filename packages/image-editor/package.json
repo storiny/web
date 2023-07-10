@@ -1,0 +1,27 @@
+{
+  "name": "@storiny/image-editor",
+  "version": "0.0.0",
+  "private": true,
+  "sideEffects": false,
+  "scripts": {
+    "lint": "eslint \"**/*.ts*\""
+  },
+  "devDependencies": {
+    "@storiny/eslint-config": "*",
+    "@storiny/prettier-config": "*",
+    "@storiny/stylelint-config": "*",
+    "@storiny/tsconfig": "*",
+    "@storiny/types": "*",
+    "@storiny/ui": "*",
+    "@types/react": "^18.2.14",
+    "@types/react-dom": "^18.2.6",
+    "eslint": "^8.42.0",
+    "prettier": "^2.5.1",
+    "typescript": "^5.1.5"
+  },
+  "dependencies": {
+    "clsx": "^1.2.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  }
+}

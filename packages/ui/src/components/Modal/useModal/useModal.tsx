@@ -26,7 +26,7 @@ export const useModal = (
     [children, open, props, trigger]
   );
 
-  const modal = (newChildren: React.ReactNode, props?: ModalProps) => {
+  const modal = (newChildren: React.ReactNode, props?: ModalProps): void => {
     setChildren(newChildren);
     setProps(props || {});
     setOpen(true);

@@ -6,12 +6,16 @@ export interface StoryStats {
   read_count: number;
 }
 
+interface StoryOptionalProps {
+  user?: User;
+}
+
 interface UserSpecificStoryProps {
   is_bookmarked?: boolean;
   is_liked?: boolean;
 }
 
-export interface Story extends UserSpecificStoryProps {
+export type Story = {
   created_at: string;
   description: string | null;
   id: string;
@@ -21,7 +25,7 @@ export interface Story extends UserSpecificStoryProps {
   stats: StoryStats;
   tags: Tag[];
   title: string;
-  user: User;
   user_id: string;
   word_count: number;
-}
+} & StoryOptionalProps &
+  UserSpecificStoryProps;

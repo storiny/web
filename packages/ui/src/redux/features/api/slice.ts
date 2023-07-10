@@ -1,6 +1,10 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 import {
+  assetAlt,
+  assetDelete,
+  assetFavourite,
+  assetRating,
   getBookmarks,
   getExploreStories,
   getExploreTags,
@@ -13,6 +17,7 @@ import {
   getRightSidebarContent,
   getTagStories,
   getTagWriters,
+  getUserAssets,
   getUserEntities,
   getUserStories,
   login,
@@ -31,7 +36,7 @@ export const apiSlice = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: `${process.env.NEXT_PUBLIC_API_URL}/v${API_VERSION}`
   }),
-  tagTypes: ["Notification"],
+  tagTypes: ["Notification", "Asset"],
   endpoints: (builder) => ({
     // Get
     getRightSidebarContent: getRightSidebarContent(builder),
@@ -43,6 +48,7 @@ export const apiSlice = createApi({
     getTagWriters: getTagWriters(builder),
     getUserStories: getUserStories(builder),
     getUserEntities: getUserEntities(builder),
+    getUserAssets: getUserAssets(builder),
     getExploreStories: getExploreStories(builder),
     getExploreWriters: getExploreWriters(builder),
     getExploreTags: getExploreTags(builder),
@@ -56,7 +62,12 @@ export const apiSlice = createApi({
     recovery: recovery(builder),
     resetPassword: resetPassword(builder),
     // Settings
-    notificationSettings: notificationSettings(builder)
+    notificationSettings: notificationSettings(builder),
+    // Other
+    assetAlt: assetAlt(builder),
+    assetDelete: assetDelete(builder),
+    assetFavourite: assetFavourite(builder),
+    assetRating: assetRating(builder)
   })
 });
 
@@ -70,6 +81,7 @@ export const {
   useGetTagWritersQuery,
   useGetUserStoriesQuery,
   useGetUserEntitiesQuery,
+  useGetUserAssetsQuery,
   useGetExploreStoriesQuery,
   useGetExploreWritersQuery,
   useGetExploreTagsQuery,
@@ -80,5 +92,9 @@ export const {
   useSignupMutation,
   useRecoveryMutation,
   useResetPasswordMutation,
-  useNotificationSettingsMutation
+  useNotificationSettingsMutation,
+  useAssetFavouriteMutation,
+  useAssetAltMutation,
+  useAssetDeleteMutation,
+  useAssetRatingMutation
 } = apiSlice;

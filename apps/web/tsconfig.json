@@ -23,6 +23,7 @@
       "~/icons/*": ["../../packages/ui/src/icons/*"],
       "~/layout/*": ["../../packages/ui/src/layout/*"],
       "~/components/*": ["../../packages/ui/src/components/*"],
+      "~/illustrations/*": ["../../packages/ui/src/illustrations/*"],
       "~/entities/*": ["../../packages/ui/src/entities/*"],
       "~/types/*": ["../../packages/ui/src/types/*"]
     },

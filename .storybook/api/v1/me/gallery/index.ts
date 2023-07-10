@@ -20,7 +20,7 @@ const isErrorResponse = (res: Photos | ErrorResponse): res is ErrorResponse =>
 
 worker.use(
   rest.get(
-    `${process.env.NEXT_PUBLIC_API_URL}/v1/public/gallery`,
+    `${process.env.NEXT_PUBLIC_API_URL}/v1/me/gallery`,
     async (req, res, ctx) => {
       window.fetch = ctx.fetch;
 

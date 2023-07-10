@@ -16,6 +16,7 @@ const ImagePreview = (): React.ReactElement => {
         <Image
           alt={""}
           className={styles.image}
+          hex={selected.hex}
           slotProps={{
             fallback: { style: { display: "none" } },
             image: styles["native-image"]

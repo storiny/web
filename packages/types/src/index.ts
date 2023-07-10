@@ -1,3 +1,4 @@
+export * from "./asset";
 export * from "./connection";
 export * from "./notification";
 export * from "./story";

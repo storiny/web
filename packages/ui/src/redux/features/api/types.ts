@@ -14,7 +14,7 @@ export type ApiQueryBuilder = EndpointBuilder<
     {},
     FetchBaseQueryMeta
   >,
-  "Notification", // Tags
+  "Notification" | "Asset", // Tags
   "api"
 >;
 

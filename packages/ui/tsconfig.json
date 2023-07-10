@@ -14,6 +14,7 @@
       "~/icons/*": ["src/icons/*"],
       "~/layout/*": ["src/layout/*"],
       "~/components/*": ["src/components/*"],
+      "~/illustrations/*": ["src/illustrations/*"],
       "~/entities/*": ["src/entities/*"],
       "~/types/*": ["src/types/*"]
     }

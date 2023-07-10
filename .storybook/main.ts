@@ -5,8 +5,10 @@ const config: StorybookConfig = {
   stories: [
     "../apps/web/src/**/*.stories.mdx",
     "../packages/ui/src/**/*.stories.mdx",
+    "../packages/image-editor/src/**/*.stories.mdx",
     "../apps/web/src/**/*.stories.@(js|jsx|ts|tsx)",
     "../packages/ui/src/**/*.stories.@(js|jsx|ts|tsx)",
+    "../packages/image-editor/src/**/*.stories.@(js|jsx|ts|tsx)",
   ],
   addons: [
     "@storybook/addon-links",
@@ -41,6 +43,10 @@ const config: StorybookConfig = {
       "~/icons": path.resolve(__dirname, "../packages/ui/src/icons"),
       "~/layout": path.resolve(__dirname, "../packages/ui/src/layout"),
       "~/components": path.resolve(__dirname, "../packages/ui/src/components"),
+      "~/illustrations": path.resolve(
+        __dirname,
+        "../packages/ui/src/illustrations"
+      ),
       "~/entities": path.resolve(__dirname, "../packages/ui/src/entities"),
       "~/types": path.resolve(__dirname, "../packages/ui/src/types"),
     };
