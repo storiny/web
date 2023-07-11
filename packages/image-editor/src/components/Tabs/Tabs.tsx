@@ -19,6 +19,7 @@ import styles from "./Tabs.module.scss";
 
 const PositionedTooltip = ({
   slotProps,
+  children,
   ...rest
 }: TooltipProps): React.ReactElement => (
   <Tooltip
@@ -27,7 +28,9 @@ const PositionedTooltip = ({
       ...slotProps,
       content: { ...slotProps?.content, side: "right" }
     }}
-  />
+  >
+    <span>{children}</span>
+  </Tooltip>
 );
 
 const Tabs = (): React.ReactElement => (
@@ -41,7 +44,7 @@ const Tabs = (): React.ReactElement => (
         <TabPrimitive
           aria-label={"Adjust"}
           className={clsx(styles.x, styles.tab)}
-          decorator={<AdjustIcon />}
+          decorator={<AdjustIcon className={clsx(styles.x, styles.icon)} />}
           value={Tab.ADJUST}
         />
       </PositionedTooltip>
@@ -49,7 +52,7 @@ const Tabs = (): React.ReactElement => (
         <TabPrimitive
           aria-label={"Crop"}
           className={clsx(styles.x, styles.tab)}
-          decorator={<CropIcon />}
+          decorator={<CropIcon className={clsx(styles.x, styles.icon)} />}
           value={Tab.CROP}
         />
       </PositionedTooltip>
@@ -57,7 +60,7 @@ const Tabs = (): React.ReactElement => (
         <TabPrimitive
           aria-label={"Tune"}
           className={clsx(styles.x, styles.tab)}
-          decorator={<TuneIcon />}
+          decorator={<TuneIcon className={clsx(styles.x, styles.icon)} />}
           value={Tab.TUNE}
         />
       </PositionedTooltip>
@@ -65,7 +68,7 @@ const Tabs = (): React.ReactElement => (
         <TabPrimitive
           aria-label={"Filters"}
           className={clsx(styles.x, styles.tab)}
-          decorator={<FiltersIcon />}
+          decorator={<FiltersIcon className={clsx(styles.x, styles.icon)} />}
           value={Tab.FILTERS}
         />
       </PositionedTooltip>
@@ -73,7 +76,7 @@ const Tabs = (): React.ReactElement => (
         <TabPrimitive
           aria-label={"Draw"}
           className={clsx(styles.x, styles.tab)}
-          decorator={<PencilIcon />}
+          decorator={<PencilIcon className={clsx(styles.x, styles.icon)} />}
           value={Tab.DRAW}
         />
       </PositionedTooltip>
@@ -81,7 +84,7 @@ const Tabs = (): React.ReactElement => (
         <TabPrimitive
           aria-label={"Shape"}
           className={clsx(styles.x, styles.tab)}
-          decorator={<ShapeIcon />}
+          decorator={<ShapeIcon className={clsx(styles.x, styles.icon)} />}
           value={Tab.SHAPE}
         />
       </PositionedTooltip>

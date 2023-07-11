@@ -1,0 +1,51 @@
+.x {
+  /* Base styles */
+  &.tools {
+    border-left: 1px solid var(--divider);
+    background-color: var(--bg-elevation-sm);
+    grid-area: tools;
+  }
+
+  /* Scrollbar */
+  &.scrollbar {
+    background-color: transparent;
+  }
+
+  /* Dots */
+  &.dots {
+    fill: var(--inverted-200);
+    width: 10px;
+  }
+
+  /* Resizer */
+  &.resizer {
+    position: relative;
+    height: 6px;
+    width: 100%;
+    padding-block: 2px;
+    gap: 2px;
+    background-color: var(--bg-elevation-lg);
+    box-shadow: var(--ridge-sm);
+
+    &:hover,
+    &:active {
+      background-color: var(--divider);
+
+      & .dots {
+        fill: var(--inverted-400);
+      }
+    }
+
+    // Increase drag area
+    &::after {
+      cursor: row-resize;
+      position: absolute;
+      content: "";
+      left: 0;
+      top: 50%;
+      width: 100%;
+      height: 14px;
+      transform: translateY(-50%);
+    }
+  }
+}

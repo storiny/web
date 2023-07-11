@@ -14,7 +14,7 @@ export const createSvgIcon = (
   path: React.ReactElement,
   displayName: string,
   componentProps?: SvgIconProps
-) => {
+): React.MemoExoticComponent<typeof SvgIcon> => {
   const Component = React.forwardRef<SVGSVGElement, SvgIconProps>(
     (props, ref) => (
       <SvgIcon

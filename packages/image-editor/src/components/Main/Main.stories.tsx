@@ -8,6 +8,14 @@ import Main from "./Main";
 const meta: Meta<typeof Main> = {
   title: "packages/ImageEditor",
   component: Main,
+  parameters: {
+    layout: "fullscreen"
+  },
+  args: {
+    style: {
+      height: "100vh"
+    }
+  },
   tags: ["autodocs"]
 };
 

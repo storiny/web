@@ -1,2 +1,1 @@
-export * from "./tab";
 export * from "./zoom";

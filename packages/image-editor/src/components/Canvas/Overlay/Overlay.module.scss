@@ -1,0 +1,41 @@
+.x {
+  /* Zoom menu and canvas pattern */
+  &.primary-controls {
+    position: absolute;
+    gap: 8px;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  /* Zoom */
+  &.zoom {
+    border: 1px solid var(--divider);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    background-color: var(--inverted-0);
+    box-shadow: var(--ridge-sm);
+  }
+
+  /* Zoom icon button */
+  &.zoom-icon-button {
+    --icon-size: 12px;
+
+    padding: 8px;
+    height: 28px;
+    width: 28px;
+    border-radius: 0;
+  }
+
+  /* Zoom trigger button */
+  &.zoom-trigger {
+    --icon-size: 12px;
+
+    gap: 4px;
+    padding: 8px;
+    height: 28px;
+    font-size: 11px;
+    border-radius: 0;
+    border-inline: 1px solid var(--divider);
+  }
+}

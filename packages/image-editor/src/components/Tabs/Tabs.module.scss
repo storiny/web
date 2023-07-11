@@ -4,6 +4,7 @@
     width: fit-content;
     border-right: 1px solid var(--divider);
     background-color: var(--bg-elevation-sm);
+    grid-area: tabs;
   }
 
   /* Tab */
@@ -12,9 +13,19 @@
 
     padding: 8px;
     border: none;
+    background-color: var(--bg);
 
     &:hover {
-      background-color: var(--bg-elevation-md);
+      --bg: var(--bg-elevation-md);
+    }
+
+    &[data-state="active"] {
+      --bg: var(--inverted-400);
+
+      /* Tab decorator */
+      & .icon {
+        --icon-stroke: var(--inverted-0);
+      }
     }
   }
 }
