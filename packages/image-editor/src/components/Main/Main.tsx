@@ -1,7 +1,8 @@
 import clsx from "clsx";
-import { Provider } from "jotai";
 import React from "react";
+import { Provider } from "react-redux";
 
+import { editorStore } from "../../store";
 import Canvas from "../Canvas";
 import Tabs from "../Tabs";
 import Tools from "../Tools";
@@ -14,7 +15,7 @@ const Main = ({ className, ...rest }: ImageEditorProps): React.ReactElement => (
     {...rest}
     className={clsx("full-h", "full-w", styles.x, styles.main, className)}
   >
-    <Provider>
+    <Provider store={editorStore}>
       <Topbar />
       <Tabs />
       <Canvas />

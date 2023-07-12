@@ -34,7 +34,13 @@ const Banner = forwardRef<BannerProps, "li">((props, ref) => {
     <Root
       {...rest}
       asChild
-      className={clsx(styles.banner, styles[color], "focusable", className)}
+      className={clsx(
+        "focusable",
+        "focus-invert",
+        styles.banner,
+        styles[color],
+        className
+      )}
       data-testid={"banner"}
       // Disable closing on escape
       onEscapeKeyDown={(event): void => event.preventDefault()}

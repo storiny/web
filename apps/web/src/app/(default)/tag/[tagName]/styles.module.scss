@@ -25,6 +25,5 @@
   /* Select trigger */
   &.select-trigger {
     border: none;
-    outline-offset: calc(-1 * var(--focus-thickness));
   }
 }

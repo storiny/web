@@ -56,7 +56,7 @@ const IconButton = forwardRef<IconButtonProps, "button">((props, ref) => {
         styles[inputSize || size],
         className
       )}
-      onClick={(event: React.MouseEvent<HTMLButtonElement>) => {
+      onClick={(event: React.MouseEvent<HTMLButtonElement>): void => {
         shouldLogin
           ? // Prevent navigation when testing
             process.env.NODE_ENV === "test"
@@ -76,7 +76,7 @@ const IconButton = forwardRef<IconButtonProps, "button">((props, ref) => {
         : {
             role: "button",
             // Trigger button click when space-bar is pressed
-            onKeyUp: (event: React.KeyboardEvent<HTMLButtonElement>) => {
+            onKeyUp: (event: React.KeyboardEvent<HTMLButtonElement>): void => {
               // Space-bar key
               if (event.key === " " && !disabled) {
                 // Prevent page scroll

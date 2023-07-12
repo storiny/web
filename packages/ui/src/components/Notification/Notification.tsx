@@ -80,6 +80,7 @@ const Notification = forwardRef<NotificationProps, "li">((props, ref) => {
               className={clsx(
                 "unset",
                 "focusable",
+                "focus-invert",
                 "t-center",
                 styles.button,
                 slotProps?.secondaryButton?.className

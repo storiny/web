@@ -1,7 +1,6 @@
 import clsx from "clsx";
 import React from "react";
 
-import Grow from "~/components/Grow";
 import IconButton from "~/components/IconButton";
 import Spacer from "~/components/Spacer";
 import Tooltip from "~/components/Tooltip";
@@ -13,7 +12,35 @@ import RotationIcon from "~/icons/Rotation";
 import UndoIcon from "~/icons/Undo";
 import XIcon from "~/icons/X";
 
+import {
+  selectDimension,
+  selectRotation,
+  useEditorSelector
+} from "../../store";
 import styles from "./Topbar.module.scss";
+
+// Dimension
+
+const Dimension = (): React.ReactElement => {
+  const dimension = useEditorSelector(selectDimension);
+  return (
+    <span>
+      {dimension.width}×{dimension.height}
+    </span>
+  );
+};
+
+// Rotation
+
+const Rotation = (): React.ReactElement => {
+  const rotation = useEditorSelector(selectRotation);
+  return (
+    <>
+      <RotationIcon rotation={rotation} />
+      <span>({rotation}&deg;)</span>
+    </>
+  );
+};
 
 // Status bar
 
@@ -28,10 +55,9 @@ const StatusBar = (): React.ReactElement => (
       styles["status-bar"]
     )}
   >
-    <span>460×320</span>
+    <Dimension />
     <span className={"t-muted"}>•</span>
-    <RotationIcon />
-    <span>(0°)</span>
+    <Rotation />
   </Typography>
 );
 
@@ -40,7 +66,7 @@ const Topbar = (): React.ReactElement => (
     <Tooltip content={"Download"}>
       <IconButton
         aria-label={"Download image"}
-        className={clsx(styles.x, styles["icon-button"])}
+        className={clsx("focus-invert", styles.x, styles["icon-button"])}
         variant={"ghost"}
       >
         <DownloadIcon />
@@ -49,7 +75,7 @@ const Topbar = (): React.ReactElement => (
     <Tooltip content={"Undo"}>
       <IconButton
         aria-label={"Undo changes"}
-        className={clsx(styles.x, styles["icon-button"])}
+        className={clsx("focus-invert", styles.x, styles["icon-button"])}
         variant={"ghost"}
       >
         <UndoIcon />
@@ -58,7 +84,7 @@ const Topbar = (): React.ReactElement => (
     <Tooltip content={"Redo"}>
       <IconButton
         aria-label={"Redo changes"}
-        className={clsx(styles.x, styles["icon-button"])}
+        className={clsx("focus-invert", styles.x, styles["icon-button"])}
         variant={"ghost"}
       >
         <RedoIcon />
@@ -70,7 +96,7 @@ const Topbar = (): React.ReactElement => (
     <Tooltip content={"Cancel editing"}>
       <IconButton
         aria-label={"Cancel editing"}
-        className={clsx(styles.x, styles["icon-button"])}
+        className={clsx("focus-invert", styles.x, styles["icon-button"])}
         variant={"ghost"}
       >
         <XIcon />
@@ -79,7 +105,7 @@ const Topbar = (): React.ReactElement => (
     <Tooltip content={"Confirm"}>
       <IconButton
         aria-label={"Confirm"}
-        className={clsx(styles.x, styles["icon-button"])}
+        className={clsx("focus-invert", styles.x, styles["icon-button"])}
       >
         <CheckIcon />
       </IconButton>

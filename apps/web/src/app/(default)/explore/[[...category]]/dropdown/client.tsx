@@ -75,7 +75,12 @@ const DropdownClient = (): React.ReactElement => {
         size={"lg"}
         slotProps={{
           trigger: {
-            className: clsx("ellipsis", styles.x, styles.trigger)
+            className: clsx(
+              "focus-invert",
+              "ellipsis",
+              styles.x,
+              styles.trigger
+            )
           }
         }}
         value={segment || "all"}

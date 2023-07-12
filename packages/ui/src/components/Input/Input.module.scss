@@ -144,7 +144,6 @@
   cursor: pointer;
   padding: 5px 6px;
   background-color: var(--bg);
-  outline-offset: calc(-1 * var(--focus-thickness));
 
   &:disabled {
     --bg: var(--spinner-disabled-bg);

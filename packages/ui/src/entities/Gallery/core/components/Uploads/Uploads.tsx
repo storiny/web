@@ -8,7 +8,13 @@ import styles from "./Uploads.module.scss";
 
 const UploadsTab = (): React.ReactElement => (
   <div
-    className={clsx("focusable", "flex-col", "flex-center", styles.uploads)}
+    className={clsx(
+      "focusable",
+      "focus-invert",
+      "flex-col",
+      "flex-center",
+      styles.uploads
+    )}
     tabIndex={0}
   >
     <CameraIllustration className={styles.illustration} />

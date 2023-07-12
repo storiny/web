@@ -92,10 +92,6 @@
     background-color: var(--bg-elevation-lg);
   }
 
-  &:focus-visible {
-    outline-offset: calc(-1 * var(--focus-thickness));
-  }
-
   &:first-of-type {
     border-top-right-radius: var(--radius-lg);
   }

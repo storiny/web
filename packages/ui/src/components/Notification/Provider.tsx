@@ -5,7 +5,11 @@ import React from "react";
 
 import NotificationViewport from "./Viewport";
 
-const NotificationProvider = ({ children }: { children: React.ReactNode }) => (
+const NotificationProvider = ({
+  children
+}: {
+  children: React.ReactNode;
+}): React.ReactElement => (
   <NotificationPrimitiveProvider duration={Infinity} label={"Notification"}>
     {children}
     <NotificationViewport />

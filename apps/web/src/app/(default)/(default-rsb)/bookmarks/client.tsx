@@ -58,7 +58,9 @@ const PageHeader = ({
       disabled={disabled}
       onValueChange={onSortChange}
       slotProps={{
-        trigger: { className: clsx(styles.x, styles["select-trigger"]) }
+        trigger: {
+          className: clsx("focus-invert", styles.x, styles["select-trigger"])
+        }
       }}
       value={sort}
     >

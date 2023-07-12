@@ -20,7 +20,6 @@
   padding-block: 12px;
   padding-inline: 16px;
   background-color: var(--bg);
-  outline-offset: calc(-1 * var(--focus-thickness));
   border-bottom: 1px solid var(--divider);
 
   @include breakpoints.media(">=desktop") {

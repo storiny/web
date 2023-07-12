@@ -54,7 +54,7 @@ const PageHeader = ({
       aria-label={"Modify history settings"}
       as={NextLink}
       checkAuth
-      className={clsx(styles.x, styles["icon-button"])}
+      className={clsx("focus-invert", styles.x, styles["icon-button"])}
       href={"/me/privacy"}
       size={"lg"}
       title={"History settings"}

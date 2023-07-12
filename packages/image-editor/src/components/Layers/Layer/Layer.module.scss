@@ -1,0 +1,120 @@
+.x {
+  /* Base styles */
+  &.layer {
+    padding-left: 4px;
+    gap: 8px;
+    min-height: 28px;
+    border-bottom: 1px solid var(--divider);
+
+    &:hover {
+      & .button {
+        display: flex;
+      }
+    }
+
+    /* Label and icon color */
+    &:hover,
+    &.selected {
+      & .label,
+      & .icon {
+        --icon-stroke: var(--fg-major);
+
+        color: var(--fg-major);
+      }
+    }
+
+    &:not(:only-child) {
+      cursor: pointer;
+
+      &:hover {
+        & .grabber {
+          display: flex;
+          margin-left: -4px;
+          margin-right: -8px;
+          padding-inline: 8px;
+        }
+
+        &.selected .grabber {
+          margin-right: -4px;
+        }
+      }
+    }
+
+    &.selected {
+      background-color: var(--bg-elevation-lg);
+    }
+  }
+
+  /* Icon */
+  &.icon {
+    --icon-size: 14px;
+    --icon-stroke: var(--fg-minor);
+
+    padding: 5px;
+    position: relative;
+  }
+
+  /* Label */
+  &.label {
+    font-size: 11px;
+    text-align: center;
+    color: var(--fg-minor);
+  }
+
+  /* Grabber */
+  &.grabber {
+    width: 10px;
+    height: 24px;
+    display: none;
+    cursor: move;
+    min-width: unset;
+    min-height: unset;
+    border-radius: 0;
+  }
+
+  /* Button */
+  &.button {
+    height: 24px;
+    width: 24px;
+    display: none;
+    border-radius: 0;
+  }
+
+  /* Selected dashed border */
+  &.selected-border {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    inset: 0;
+  }
+
+  /* Label input */
+  &.input {
+    border-radius: 0;
+
+    &:not([data-focused="true"]) {
+      border-block: none;
+    }
+  }
+
+  /* Lock filled icon */
+  &.lock-icon {
+    fill: none;
+    display: inline-block;
+    min-width: var(--icon-size, 1em);
+    min-height: var(--icon-size, 1em);
+    width: var(--icon-size);
+    height: var(--icon-size);
+
+    & .stroke {
+      stroke: var(--icon-stroke, var(--fg, var(--fg-major)));
+      stroke-width: var(--icon-stroke-width, 0.75px);
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    & .fill {
+      fill: var(--icon-stroke, var(--fg, var(--fg-major)));
+    }
+  }
+}

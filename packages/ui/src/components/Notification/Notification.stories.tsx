@@ -3,14 +3,10 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
 
-import UserIcon from "~/icons/User";
-
 import Button from "../Button";
 import Notification from "./Notification";
 import { NotificationProps } from "./Notification.props";
-import NotificationProvider from "./Provider";
 import { useNotification } from "./useNotification";
-import NotificationViewport from "./Viewport";
 
 const meta: Meta<typeof Notification> = {
   title: "Components/Notification",
@@ -36,12 +32,14 @@ const meta: Meta<typeof Notification> = {
 export default meta;
 type Story = StoryObj<typeof Notification>;
 
-const NotificationComponent = (props?: NotificationProps) => {
+const NotificationComponent = (
+  props?: NotificationProps
+): React.ReactElement => {
   const notify = useNotification();
 
   return (
     <Button
-      onClick={() =>
+      onClick={(): void =>
         notify("This is a notification with a long notification content", props)
       }
     >

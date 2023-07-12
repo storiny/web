@@ -113,6 +113,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>((props, ref) => {
               className={clsx(
                 "unset",
                 "focusable",
+                "focus-invert",
                 styles.spinner,
                 slotProps?.spinnerDecrementButton?.className
               )}
@@ -139,6 +140,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>((props, ref) => {
               className={clsx(
                 "unset",
                 "focusable",
+                "focus-invert",
                 styles.spinner,
                 slotProps?.spinnerIncrementButton?.className
               )}

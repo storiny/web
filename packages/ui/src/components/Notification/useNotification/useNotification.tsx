@@ -1,11 +1,16 @@
-import React from "react";
-
 import { renderNotification } from "~/redux/features/notification/slice";
 import { useAppDispatch } from "~/redux/hooks";
 
 import { NotificationIcon } from "../Notification.props";
 
-export const useNotification = () => {
+export const useNotification = (): ((
+  message: string,
+  {
+    icon,
+    primaryText,
+    secondaryText
+  }?: { icon?: NotificationIcon; primaryText?: string; secondaryText?: string }
+) => void) => {
   const dispatch = useAppDispatch();
 
   return (

@@ -8,7 +8,7 @@ import { selectBannerState } from "~/redux/features/banner/selectors";
 import { setBannerHeight, setBannerOpen } from "~/redux/features/banner/slice";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 
-const BannerWithState = () => {
+const BannerWithState = (): React.ReactElement => {
   const dispatch = useAppDispatch();
   const { open, color, icon, message } = useAppSelector(selectBannerState);
   const { ref, height = 1 } = useResizeObserver<HTMLLIElement>({
@@ -35,7 +35,9 @@ const BannerWithState = () => {
       <Banner
         color={color}
         icon={icon}
-        onOpenChange={(newState) => dispatch(setBannerOpen(newState))}
+        onOpenChange={(newState): void => {
+          dispatch(setBannerOpen(newState));
+        }}
         open={open}
         ref={ref}
       >

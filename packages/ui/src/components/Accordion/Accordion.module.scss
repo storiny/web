@@ -31,7 +31,6 @@
   line-height: 1;
   color: var(--fg-minor);
   background-color: transparent;
-  outline-offset: calc(-1 * var(--focus-thickness));
 
   &:hover {
     background-color: var(--bg-elevation-sm);

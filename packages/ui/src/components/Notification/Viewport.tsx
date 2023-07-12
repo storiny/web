@@ -5,7 +5,7 @@ import React from "react";
 
 import styles from "./Notification.module.scss";
 
-const NotificationViewport = () => (
+const NotificationViewport = (): React.ReactElement => (
   <Viewport className={styles.viewport} label={"Notifications ({hotkey})"} />
 );
 

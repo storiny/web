@@ -1,9 +1,12 @@
-import { authInitialState, notificationsInitialState } from "~/redux/features";
-import { bannerInitialState } from "~/redux/features";
-import { entitiesInitialState } from "~/redux/features";
-import { notificationInitialState } from "~/redux/features";
-import { preferencesInitialState } from "~/redux/features";
-import { toastInitialState } from "~/redux/features";
+import {
+  authInitialState,
+  bannerInitialState,
+  entitiesInitialState,
+  notificationInitialState,
+  notificationsInitialState,
+  preferencesInitialState,
+  toastInitialState
+} from "~/redux/features";
 import { AppState } from "~/redux/store";
 
 export const initialState: Omit<AppState, "api"> = {

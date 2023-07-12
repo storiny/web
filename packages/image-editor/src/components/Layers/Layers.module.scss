@@ -1,0 +1,9 @@
+/* Base styles */
+.layers {
+  list-style: none;
+  max-width: 200px;
+
+  &.scrollable {
+    max-width: 189px; // 10px scrollbar width + 1px border
+  }
+}

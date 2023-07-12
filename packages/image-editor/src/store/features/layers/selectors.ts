@@ -1,0 +1,12 @@
+import { Layer } from "../../../constants";
+import { ImgEditorState } from "../../index";
+
+export const selectActiveLayer = (state: ImgEditorState): Layer =>
+  state.layers.items.find((item) => item.id === state.layers.selected) ||
+  state.layers.items[0];
+
+export const selectLayers = (state: ImgEditorState): Layer[] =>
+  state.layers.items;
+
+export const selectActiveLayerId = (state: ImgEditorState): string =>
+  state.layers.selected;

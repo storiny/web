@@ -90,6 +90,7 @@ const AccordionTrigger = forwardRef<AccordionTriggerProps, "div">(
         asChild
         className={clsx(
           "focusable",
+          "focus-invert",
           "flex",
           "f-grow",
           "t-medium",

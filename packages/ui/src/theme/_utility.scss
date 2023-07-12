@@ -41,6 +41,10 @@
   &:focus-visible {
     outline: var(--focus-thickness) solid var(--focus);
   }
+
+  &.focus-invert {
+    outline-offset: calc(-1 * var(--focus-thickness));
+  }
 }
 
 .hide-last {
