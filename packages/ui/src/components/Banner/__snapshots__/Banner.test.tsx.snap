@@ -21,7 +21,7 @@ exports[`<Banner /> renders and matches snapshot 1`] = `
         <li
           aria-atomic="true"
           aria-live="off"
-          class="banner inverted focusable"
+          class="focusable focus-invert banner inverted"
           data-radix-collection-item=""
           data-state="open"
           data-swipe-direction="right"

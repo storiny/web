@@ -52,7 +52,7 @@ exports[`<Notification /> renders and matches snapshot 1`] = `
             class="actions"
           >
             <button
-              class="unset focusable t-center button"
+              class="unset focusable focus-invert t-center button"
               data-radix-toast-announce-alt="Confirm"
               data-radix-toast-announce-exclude=""
               type="button"

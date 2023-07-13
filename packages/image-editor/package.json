@@ -20,11 +20,16 @@
     "typescript": "^5.1.5"
   },
   "dependencies": {
+    "@hello-pangea/dnd": "^16.3.0",
     "@reduxjs/toolkit": "^1.9.5",
     "clsx": "^1.2.1",
+    "jotai": "^2.2.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-merge-refs": "^2.0.2",
     "react-redux": "^8.1.1",
-    "react-resizable-panels": "^0.0.53"
+    "react-resizable-panels": "^0.0.53",
+    "react-virtuoso": "^4.4.0",
+    "use-resize-observer": "^9.1.0"
   }
 }

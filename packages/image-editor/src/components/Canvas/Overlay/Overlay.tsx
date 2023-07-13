@@ -138,7 +138,7 @@ const ZoomControl = (): React.ReactElement => {
             max={MAX_ZOOM_LEVEL}
             min={MIN_ZOOM_LEVEL}
             onChange={(event): void => {
-              setZoom(Number.parseInt(event.target.value));
+              dispatch(setZoom(Number.parseInt(event.target.value)));
             }}
             placeholder={"Zoom level"}
             size={"sm"}

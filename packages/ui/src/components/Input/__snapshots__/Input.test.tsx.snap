@@ -29,7 +29,7 @@ exports[`<Input /> spinner renders spinner and matches snapshot 1`] = `
   >
     <button
       aria-label="decrement-value"
-      class="unset focusable spinner"
+      class="unset focusable focus-invert spinner"
       type="button"
     >
       <svg
@@ -49,7 +49,7 @@ exports[`<Input /> spinner renders spinner and matches snapshot 1`] = `
     />
     <button
       aria-label="Increment value"
-      class="unset focusable spinner"
+      class="unset focusable focus-invert spinner"
       type="button"
     >
       <svg

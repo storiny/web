@@ -1,6 +1,5 @@
 "use client";
 
-import { Root, Scrollbar, Thumb, Viewport } from "@radix-ui/react-scroll-area";
 import clsx from "clsx";
 import { useAtomValue, useSetAtom } from "jotai";
 import React from "react";
@@ -10,6 +9,7 @@ import {
   GroupedVirtuosoProps
 } from "react-virtuoso";
 
+import { Root, Scrollbar, Thumb, Viewport } from "~/components/ScrollArea";
 import Spacer from "~/components/Spacer";
 import Typography from "~/components/Typography";
 import { capitalize } from "~/utils/capitalize";
@@ -95,12 +95,11 @@ const Scroller = React.memo(
             <div className={styles["list-wrapper"]}>{children}</div>
           </Viewport>
           <Scrollbar
-            className={styles.scrollbar}
             // Update scrollbar height on query change
             key={query}
             orientation="vertical"
           >
-            <Thumb className={styles.thumb} />
+            <Thumb />
           </Scrollbar>
         </>
       );

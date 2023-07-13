@@ -5,7 +5,7 @@ exports[`<Accordion /> matches snapshot for \`multiple\` type 1`] = `
   data-orientation="vertical"
 >
   <div
-    class="focusable item"
+    class="item"
     data-item="true"
     data-orientation="vertical"
     data-state="open"
@@ -18,7 +18,7 @@ exports[`<Accordion /> matches snapshot for \`multiple\` type 1`] = `
       <button
         aria-controls="radix-:r3:"
         aria-expanded="true"
-        class="flex f-grow t-medium reset trigger"
+        class="focusable focus-invert flex f-grow t-medium reset trigger"
         data-orientation="vertical"
         data-radix-collection-item=""
         data-state="open"
@@ -62,7 +62,7 @@ exports[`<Accordion /> matches snapshot for \`single\` type 1`] = `
   data-orientation="vertical"
 >
   <div
-    class="focusable item"
+    class="item"
     data-item="true"
     data-orientation="vertical"
     data-state="open"
@@ -75,7 +75,7 @@ exports[`<Accordion /> matches snapshot for \`single\` type 1`] = `
       <button
         aria-controls="radix-:r1:"
         aria-expanded="true"
-        class="flex f-grow t-medium reset trigger"
+        class="focusable focus-invert flex f-grow t-medium reset trigger"
         data-orientation="vertical"
         data-radix-collection-item=""
         data-state="open"

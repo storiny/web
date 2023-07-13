@@ -19,13 +19,6 @@ export const layersInitialState: LayersState = {
       hidden: false,
       locked: false,
       type: LayerType.MAIN_IMAGE
-    },
-    {
-      id: nanoid(),
-      name: "Image",
-      hidden: false,
-      locked: false,
-      type: LayerType.IMAGE
     }
   ]
 };
@@ -35,7 +28,18 @@ export const layersSlice = createSlice({
   initialState: layersInitialState,
   reducers: {
     addLayer: (state, action: PayloadAction<Layer>) => {
-      state.items.push(action.payload);
+      state.items.unshift(action.payload);
+      state.selected = action.payload.id; // Select new layer
+    },
+    reorderLayer: (
+      state,
+      action: PayloadAction<{ endIndex: number; startIndex: number }>
+    ) => {
+      const { startIndex, endIndex } = action.payload;
+      const items = state.items;
+      const [removed] = items.splice(startIndex, 1);
+      items.splice(endIndex, 0, removed);
+      state.items = items;
     },
     setActiveLayer: (state, action: PayloadAction<string>) => {
       state.selected = action.payload;
@@ -82,12 +86,14 @@ const {
   setLayerName,
   toggleLayerVisibility,
   toggleLayerLock,
-  removeLayer
+  removeLayer,
+  reorderLayer
 } = layersSlice.actions;
 
 export {
   addLayer,
   removeLayer,
+  reorderLayer,
   setActiveLayer,
   setLayerName,
   toggleLayerLock,

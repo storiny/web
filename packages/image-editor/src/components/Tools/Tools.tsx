@@ -32,30 +32,6 @@ const ToolsPanel = (): React.ReactElement => {
   );
 };
 
-// Layers
-
-const LayersPanel = (): React.ReactElement => {
-  const { ref, visible } = useScrollbarVisibility<HTMLDivElement>();
-  return (
-    <ScrollArea
-      className={"full-h"}
-      slotProps={{
-        viewport: {
-          ref,
-          tabIndex: -1,
-          style: {
-            paddingRight: visible ? "10px" : 0
-          }
-        },
-        scrollbar: { className: clsx(styles.x, styles.scrollbar) }
-      }}
-      type={"auto"}
-    >
-      <Layers scrollable={visible} />
-    </ScrollArea>
-  );
-};
-
 const Tools = (): React.ReactElement => (
   <div className={clsx(styles.x, styles.tools)}>
     <PanelGroup direction={"vertical"}>
@@ -74,7 +50,7 @@ const Tools = (): React.ReactElement => (
         </svg>
       </PanelResizeHandle>
       <Panel defaultSize={30}>
-        <LayersPanel />
+        <Layers />
       </Panel>
     </PanelGroup>
   </div>

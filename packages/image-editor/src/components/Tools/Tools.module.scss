@@ -9,7 +9,7 @@
   /* Scrollbar */
   &.scrollbar {
     border-left: 1px solid var(--divider);
-    background-color: transparent;
+    background-color: var(--bg-elevation-xs);
     overflow: hidden; // Hide the scrollbar pseudo element that is used to increase the interactive area
   }
 

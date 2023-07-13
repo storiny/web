@@ -1,9 +1,32 @@
-/* Base styles */
-.layers {
-  list-style: none;
-  max-width: 200px;
+.x {
+  /* Base styles */
+  &.layers {
+    list-style: none;
+    max-width: 200px;
+  }
 
-  &.scrollable {
-    max-width: 189px; // 10px scrollbar width + 1px border
+  /* Viewport */
+  &.viewport {
+    width: 100%;
+    max-width: 100%;
+
+    &.scrollable {
+      width: calc(100% - 11px); // 10px scrollbar width + 1px border
+    }
+  }
+
+  /* Scrollbar */
+  &.scrollbar {
+    border-left: 1px solid var(--divider);
+    background-color: var(--bg-elevation-xs);
+    overflow: hidden; // Hide the scrollbar pseudo element that is used to increase the interactive area
+  }
+
+  /* Placeholder */
+  &.placeholder {
+    &:empty {
+      min-height: 28px;
+      display: block;
+    }
   }
 }

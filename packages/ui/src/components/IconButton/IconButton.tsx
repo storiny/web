@@ -81,6 +81,7 @@ const IconButton = forwardRef<IconButtonProps, "button">((props, ref) => {
               if (event.key === " " && !disabled) {
                 // Prevent page scroll
                 event.preventDefault();
+                event.stopPropagation();
                 buttonRef?.current?.click?.();
               }
 

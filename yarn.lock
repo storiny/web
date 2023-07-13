@@ -2974,6 +2974,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@babel/runtime@npm:^7.22.5":
+  version: 7.22.6
+  resolution: "@babel/runtime@npm:7.22.6"
+  dependencies:
+    regenerator-runtime: ^0.13.11
+  checksum: e585338287c4514a713babf4fdb8fc2a67adcebab3e7723a739fc62c79cfda875b314c90fd25f827afb150d781af97bc16c85bfdbfa2889f06053879a1ddb597
+  languageName: node
+  linkType: hard
+
 "@babel/template@npm:^7.18.10, @babel/template@npm:^7.20.7, @babel/template@npm:^7.21.9, @babel/template@npm:^7.3.3":
   version: 7.21.9
   resolution: "@babel/template@npm:7.21.9"
@@ -3605,6 +3614,24 @@ __metadata:
   bin:
     proto-loader-gen-types: build/bin/proto-loader-gen-types.js
   checksum: 6015d99d36d0451075a53e5c5842e8912235973a515677afca038269969ad84f22a4c9fbc9badf52f034736b3f1bf864739f7c4238ba8a7e6fd3bba75cfce0ee
+  languageName: node
+  linkType: hard
+
+"@hello-pangea/dnd@npm:^16.3.0":
+  version: 16.3.0
+  resolution: "@hello-pangea/dnd@npm:16.3.0"
+  dependencies:
+    "@babel/runtime": ^7.22.5
+    css-box-model: ^1.2.1
+    memoize-one: ^6.0.0
+    raf-schd: ^4.0.3
+    react-redux: ^8.1.1
+    redux: ^4.2.1
+    use-memo-one: ^1.1.3
+  peerDependencies:
+    react: ^16.8.5 || ^17.0.0 || ^18.0.0
+    react-dom: ^16.8.5 || ^17.0.0 || ^18.0.0
+  checksum: b3f7f82740a11ae0fba7c482c542256958848a7cf27be62ff227376e498c38dae72e6b65c1c46a6b66e886ed6f57992055df0c8c0ae37684874d5d45765ab654
   languageName: node
   linkType: hard
 
@@ -5663,6 +5690,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@storiny/image-editor@workspace:packages/image-editor"
   dependencies:
+    "@hello-pangea/dnd": ^16.3.0
     "@reduxjs/toolkit": ^1.9.5
     "@storiny/eslint-config": "*"
     "@storiny/prettier-config": "*"
@@ -5674,12 +5702,16 @@ __metadata:
     "@types/react-dom": ^18.2.6
     clsx: ^1.2.1
     eslint: ^8.42.0
+    jotai: ^2.2.2
     prettier: ^2.5.1
     react: ^18.2.0
     react-dom: ^18.2.0
+    react-merge-refs: ^2.0.2
     react-redux: ^8.1.1
     react-resizable-panels: ^0.0.53
+    react-virtuoso: ^4.4.0
     typescript: ^5.1.5
+    use-resize-observer: ^9.1.0
   languageName: unknown
   linkType: soft
 
@@ -11120,6 +11152,15 @@ __metadata:
   version: 2.0.0
   resolution: "crypto-random-string@npm:2.0.0"
   checksum: 0283879f55e7c16fdceacc181f87a0a65c53bc16ffe1d58b9d19a6277adcd71900d02bb2c4843dd55e78c51e30e89b0fec618a7f170ebcc95b33182c28f05fd6
+  languageName: node
+  linkType: hard
+
+"css-box-model@npm:^1.2.1":
+  version: 1.2.1
+  resolution: "css-box-model@npm:1.2.1"
+  dependencies:
+    tiny-invariant: ^1.0.6
+  checksum: 4d113f26fed6b9150e2c314502d00dabe06f12ae43a01a7e9b6e57f3de49b4281dbb0dc46a1158a7349618f8f34d9250af57cb43d7337e9485e73e6b821e470e
   languageName: node
   linkType: hard
 
@@ -18795,6 +18836,13 @@ eslint-config-turbo@latest:
   languageName: node
   linkType: hard
 
+"raf-schd@npm:^4.0.3":
+  version: 4.0.3
+  resolution: "raf-schd@npm:4.0.3"
+  checksum: 45514041c5ad31fa96aef3bb3c572a843b92da2f2cd1cb4a47c9ad58e48761d3a4126e18daa32b2bfa0bc2551a42d8f324a0e40e536cb656969929602b4e8b58
+  languageName: node
+  linkType: hard
+
 "ramda@npm:0.29.0":
   version: 0.29.0
   resolution: "ramda@npm:0.29.0"
@@ -18969,6 +19017,13 @@ eslint-config-turbo@latest:
   version: 18.2.0
   resolution: "react-is@npm:18.2.0"
   checksum: e72d0ba81b5922759e4aff17e0252bd29988f9642ed817f56b25a3e217e13eea8a7f2322af99a06edb779da12d5d636e9fda473d620df9a3da0df2a74141d53e
+  languageName: node
+  linkType: hard
+
+"react-merge-refs@npm:^2.0.2":
+  version: 2.0.2
+  resolution: "react-merge-refs@npm:2.0.2"
+  checksum: 64758870d79ad52e6666d1d30cdecd5a72722edfd5c89808b41acdbd81a039f0c78b8b576f7ae247010468fc45cb57dd31f402693c64224439dbe0127f4389f3
   languageName: node
   linkType: hard
 
@@ -19177,6 +19232,16 @@ eslint-config-turbo@latest:
     react: ">=16 || >=17 || >= 18"
     react-dom: ">=16 || >=17 || >= 18"
   checksum: 40edf3ed404a43191140eba96e6f14206d8bfa4e12d8f00fab83514f4e43a8c0d7bf518190ec699f1bfee1dd4e893ecd3c9098f221ebeb8f76e117a85ca09ed4
+  languageName: node
+  linkType: hard
+
+"react-virtuoso@npm:^4.4.0":
+  version: 4.4.0
+  resolution: "react-virtuoso@npm:4.4.0"
+  peerDependencies:
+    react: ">=16 || >=17 || >= 18"
+    react-dom: ">=16 || >=17 || >= 18"
+  checksum: 72dbe50f1325c029c8fef6cffd452aef2b38c2f878ac38ac819eec43d73cfac8822a3ff7116ea1ea1203aa7a7e4e803823a307eed02ea792733b4140ce7baddd
   languageName: node
   linkType: hard
 
@@ -21103,6 +21168,13 @@ eslint-config-turbo@latest:
   languageName: node
   linkType: hard
 
+"tiny-invariant@npm:^1.0.6":
+  version: 1.3.1
+  resolution: "tiny-invariant@npm:1.3.1"
+  checksum: 872dbd1ff20a21303a2fd20ce3a15602cfa7fcf9b228bd694a52e2938224313b5385a1078cb667ed7375d1612194feaca81c4ecbe93121ca1baebe344de4f84c
+  languageName: node
+  linkType: hard
+
 "titleize@npm:^3.0.0":
   version: 3.0.0
   resolution: "titleize@npm:3.0.0"
@@ -21971,6 +22043,15 @@ turbo@latest:
     "@types/react":
       optional: true
   checksum: a6532f7fc9ae222c3725ff0308aaf1f1ddbd3c00d685ef9eee6714fd0684de5cb9741b432fbf51e61a784e2955424864f7ea9f99734a02f237b17ad3e18ea5cb
+  languageName: node
+  linkType: hard
+
+"use-memo-one@npm:^1.1.3":
+  version: 1.1.3
+  resolution: "use-memo-one@npm:1.1.3"
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0
+  checksum: 8f08eba26d69406b61bb4b8dacdd5a92bd6aef5b53d346dfe87954f7330ee10ecabc937cc7854635155d46053828e85c10b5a5aff7a04720e6a97b9f42999bac
   languageName: node
   linkType: hard
 

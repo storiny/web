@@ -9,8 +9,12 @@ import {
   DEFAULT_ROTATION,
   DEFAULT_ZOOM_LEVEL,
   Dimension,
+  MAX_DIMENSION,
   MAX_ROTATION,
-  MIN_ROTATION
+  MAX_ZOOM_LEVEL,
+  MIN_DIMENSION,
+  MIN_ROTATION,
+  MIN_ZOOM_LEVEL
 } from "../../../constants";
 
 export type RootState = {
@@ -32,16 +36,20 @@ export const rootSlice = createSlice({
   initialState: rootInitialState,
   reducers: {
     setDimension: (state, action: PayloadAction<Dimension>) => {
-      state.dimension = action.payload;
+      const { height, width } = action.payload;
+      state.dimension = {
+        height: clamp(MIN_DIMENSION, height, MAX_DIMENSION),
+        width: clamp(MIN_DIMENSION, width, MAX_DIMENSION)
+      };
     },
     setPattern: (state, action: PayloadAction<CanvasPattern>) => {
       state.pattern = action.payload;
     },
     setRotation: (state, action: PayloadAction<number>) => {
-      state.rotation = action.payload;
+      state.rotation = clamp(MIN_ROTATION, action.payload, MAX_ROTATION);
     },
     setZoom: (state, action: PayloadAction<number>) => {
-      state.zoom = clamp(MIN_ROTATION, action.payload, MAX_ROTATION);
+      state.zoom = clamp(MIN_ZOOM_LEVEL, action.payload, MAX_ZOOM_LEVEL);
     }
   }
 });

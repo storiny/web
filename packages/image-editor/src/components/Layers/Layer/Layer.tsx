@@ -1,4 +1,5 @@
 import clsx from "clsx";
+import { useAtomValue } from "jotai";
 import React from "react";
 
 import Grow from "~/components/Grow";
@@ -19,6 +20,7 @@ import TrashIcon from "~/icons/Trash";
 import TypographyIcon from "~/icons/Typography";
 import { capitalize } from "~/utils/capitalize";
 
+import { isLayersDraggingAtom } from "../../../atoms";
 import { LayerType } from "../../../constants";
 import {
   removeLayer,
@@ -30,6 +32,7 @@ import {
   useEditorDispatch,
   useEditorSelector
 } from "../../../store";
+import { LayersContext } from "../LayersContext";
 import styles from "./Layer.module.scss";
 import { LayerProps } from "./Layer.props";
 
@@ -63,12 +66,14 @@ const LockFilledIcon = (): React.ReactElement => (
   </svg>
 );
 
-const Layer = (props: LayerProps): React.ReactElement => {
-  const { layer } = props;
+const Layer = React.forwardRef<HTMLLIElement, LayerProps>((props, ref) => {
+  const { layer, draggerProps, className, ...rest } = props;
   const dispatch = useEditorDispatch();
   const selectedLayerId = useEditorSelector(selectActiveLayerId);
+  const { layerCount } = React.useContext(LayersContext);
   const [isEditing, setIsEditing] = React.useState<boolean>(false);
   const [name, setName] = React.useState<string>(layer.name);
+  const isDragging = useAtomValue(isLayersDraggingAtom);
   const isSelected = layer.id === selectedLayerId;
 
   /**
@@ -80,43 +85,58 @@ const Layer = (props: LayerProps): React.ReactElement => {
 
   /**
    * Sets layer name
+   * @param shouldSave Whether to save the new name to the store
    */
-  const setLayerNameImpl = (): void => {
-    dispatch(setLayerName({ name, id: layer.id }));
+  const setLayerNameImpl = (shouldSave: boolean): void => {
     setIsEditing(false);
+
+    if (shouldSave) {
+      dispatch(setLayerName({ name, id: layer.id }));
+    } else {
+      setName(layer.name);
+    }
   };
 
   return (
     <li
+      {...rest}
       className={clsx(
         "flex-center",
         "focusable",
         "focus-invert",
         styles.x,
         styles.layer,
-        isSelected && styles.selected
+        isSelected && styles.selected,
+        isDragging && styles.dragging,
+        layer.hidden && styles.hidden,
+        className
       )}
       onClick={selectLayer}
       onKeyUp={(event): void => {
         if (event.key === "Enter" || event.key === " ") {
           event.preventDefault();
           selectLayer();
+        } else if (event.key === "Delete") {
+          event.preventDefault();
+          dispatch(removeLayer(layer.id));
         }
       }}
+      ref={ref}
       role={"button"}
       tabIndex={0}
     >
-      {!isEditing && (
+      {!isEditing && !layer.locked && layerCount > 1 ? (
         <IconButton
+          {...draggerProps}
           aria-label={"Reorder layer"}
-          className={clsx(styles.x, styles.grabber)}
+          className={clsx(styles.x, styles.grabber, draggerProps?.className)}
           size={"sm"}
           title={"Reorder layer"}
           variant={"ghost"}
         >
           <GripIcon />
         </IconButton>
-      )}
+      ) : null}
       <span
         className={clsx("flex-center", styles.x, styles.icon)}
         title={capitalize(layer.type.replace(/-/g, " "))}
@@ -144,15 +164,17 @@ const Layer = (props: LayerProps): React.ReactElement => {
       {isEditing ? (
         <Input
           autoFocus
-          onBlur={setLayerNameImpl} // Stop editing when the input focus is lost
+          onBlur={(): void => setLayerNameImpl(true)} // Stop editing when the input focus is lost
           onChange={(event): void => setName(event.target.value)}
           onKeyUp={(event): void => {
             if (event.key === "Enter") {
               event.preventDefault();
-              setLayerNameImpl();
+              event.stopPropagation();
+              setLayerNameImpl(true);
             } else if (event.key === "Escape") {
               event.preventDefault();
-              setLayerNameImpl();
+              event.stopPropagation();
+              setLayerNameImpl(false);
             }
           }}
           placeholder={"Layer name"}
@@ -181,10 +203,10 @@ const Layer = (props: LayerProps): React.ReactElement => {
       )}
       <Grow />
       {!isEditing && (
-        <div className={"flex-center"}>
+        <div className={"flex-center"} tabIndex={-1}>
           <IconButton
             aria-label={"Edit layer name"}
-            className={clsx(styles.x, styles["button"])}
+            className={clsx("focus-invert", styles.x, styles["button"])}
             onClick={(event): void => {
               event.stopPropagation();
               setIsEditing(true);
@@ -197,7 +219,12 @@ const Layer = (props: LayerProps): React.ReactElement => {
           </IconButton>
           <IconButton
             aria-label={`${layer.locked ? "Unlock" : "Lock"} layer`}
-            className={clsx(styles.x, styles["button"])}
+            className={clsx(
+              "focus-invert",
+              styles.x,
+              styles["button"],
+              layer.locked && styles.pinned
+            )}
             onClick={(event): void => {
               event.stopPropagation();
               dispatch(toggleLayerLock(layer.id));
@@ -210,7 +237,12 @@ const Layer = (props: LayerProps): React.ReactElement => {
           </IconButton>
           <IconButton
             aria-label={`${layer.hidden ? "Show" : "Hide"} layer`}
-            className={clsx(styles.x, styles["button"])}
+            className={clsx(
+              "focus-invert",
+              styles.x,
+              styles["button"],
+              layer.hidden && styles.pinned
+            )}
             onClick={(event): void => {
               event.stopPropagation();
               dispatch(toggleLayerVisibility(layer.id));
@@ -224,7 +256,7 @@ const Layer = (props: LayerProps): React.ReactElement => {
           {layer.type !== LayerType.MAIN_IMAGE && (
             <IconButton
               aria-label={"Remove layer"}
-              className={clsx(styles.x, styles["button"])}
+              className={clsx("focus-invert", styles.x, styles["button"])}
               onClick={(event): void => {
                 event.stopPropagation();
                 dispatch(removeLayer(layer.id));
@@ -245,6 +277,8 @@ const Layer = (props: LayerProps): React.ReactElement => {
       )}
     </li>
   );
-};
+});
+
+Layer.displayName = "Layer";
 
 export default Layer;

@@ -15,50 +15,7 @@ $list-height: 292px;
 
 /* Viewport */
 .viewport {
-  width: 100%;
-  height: 100%;
-  border-radius: inherit;
   padding-inline: 12px;
-}
-
-/* Thumb */
-.thumb {
-  --bg: var(--inverted-200);
-
-  flex: 1;
-  background-color: var(--bg);
-  border-radius: 10px;
-  cursor: grab;
-  position: relative;
-  transition: background 160ms ease-out;
-
-  &:active {
-    cursor: grabbing;
-  }
-}
-
-/* Scrollbar */
-.scrollbar {
-  --bg: var(--bg-elevation-sm);
-
-  display: flex;
-  user-select: none;
-  touch-action: none;
-  padding: 2px;
-  background-color: var(--bg);
-  transition: background 160ms ease-out;
-
-  &:not(:empty):hover {
-    --bg: var(--bg-elevation-md);
-
-    & .thumb {
-      --bg: var(--inverted-300);
-    }
-  }
-
-  &[data-orientation="vertical"] {
-    width: 10px;
-  }
 }
 
 /* Category group header */
