@@ -1,35 +1,78 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { nanoid } from "nanoid";
 
-import { Layer, LayerType } from "../../../constants";
+import {
+  Arrowhead,
+  ChartType,
+  DEFAULT_FONT_FAMILY,
+  DEFAULT_FONT_SIZE,
+  DEFAULT_LAYER_PROPS,
+  DEFAULT_TEXT_ALIGN,
+  StrokeRoundness,
+  TextAlign
+} from "../../../constants";
+import { Layer } from "../../../types";
 
-const mainImageId = nanoid();
+export type CurrentLayerProps = Pick<
+  Layer,
+  | "backgroundColor"
+  | "fillStyle"
+  | "opacity"
+  | "roughness"
+  | "strokeColor"
+  | "strokeStyle"
+  | "strokeWidth"
+> & {
+  chartType: ChartType;
+  endArrowhead: Arrowhead | null;
+  fontFamily: string;
+  fontSize: number;
+  roundness: StrokeRoundness;
+  startArrowhead: Arrowhead | null;
+  textAlign: TextAlign;
+};
 
 export type LayersState = {
   items: Layer[];
-  selected: string;
+  props: CurrentLayerProps;
+  selected: string | null;
 };
 
 export const layersInitialState: LayersState = {
-  selected: mainImageId,
-  items: [
-    {
-      id: mainImageId,
-      name: "Main image",
-      hidden: false,
-      locked: false,
-      type: LayerType.MAIN_IMAGE
-    }
-  ]
+  selected: null,
+  items: [],
+  props: {
+    backgroundColor: DEFAULT_LAYER_PROPS.backgroundColor,
+    chartType: ChartType.BAR,
+    endArrowhead: Arrowhead.ARROW,
+    fillStyle: DEFAULT_LAYER_PROPS.fillStyle,
+    fontFamily: DEFAULT_FONT_FAMILY,
+    fontSize: DEFAULT_FONT_SIZE,
+    opacity: DEFAULT_LAYER_PROPS.opacity,
+    roughness: DEFAULT_LAYER_PROPS.roughness,
+    roundness: StrokeRoundness.ROUND,
+    startArrowhead: null,
+    strokeColor: DEFAULT_LAYER_PROPS.strokeColor,
+    strokeStyle: DEFAULT_LAYER_PROPS.strokeStyle,
+    strokeWidth: DEFAULT_LAYER_PROPS.strokeWidth,
+    textAlign: DEFAULT_TEXT_ALIGN
+  }
 };
 
 export const layersSlice = createSlice({
   name: "layers",
   initialState: layersInitialState,
   reducers: {
-    addLayer: (state, action: PayloadAction<Layer>) => {
-      state.items.unshift(action.payload);
-      state.selected = action.payload.id; // Select new layer
+    addLayer: (
+      state,
+      action: PayloadAction<Omit<Layer, "id"> & { id?: string }>
+    ) => {
+      const layerId = action.payload.id || nanoid();
+      state.items.unshift({
+        ...action.payload,
+        id: layerId
+      } as Layer);
+      state.selected = layerId; // Select new layer
     },
     reorderLayer: (
       state,
@@ -72,8 +115,7 @@ export const layersSlice = createSlice({
     removeLayer: (state, action: PayloadAction<string>) => {
       const layer = state.items.find((item) => item.id === action.payload);
 
-      // The main image is not removeable
-      if (layer && layer.type !== LayerType.MAIN_IMAGE) {
+      if (layer) {
         state.items = state.items.filter((item) => item.id !== action.payload);
       }
     }
@@ -99,4 +141,5 @@ export {
   toggleLayerLock,
   toggleLayerVisibility
 };
+
 export default layersSlice.reducer;

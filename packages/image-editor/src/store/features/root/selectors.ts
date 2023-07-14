@@ -1,4 +1,5 @@
-import { CanvasPattern, Dimension } from "../../../constants";
+import { CanvasPattern } from "../../../constants";
+import { Dimension } from "../../../types";
 import { ImgEditorState } from "../../index";
 
 export const selectDimension = (state: ImgEditorState): Dimension =>

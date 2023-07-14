@@ -9,4 +9,5 @@ const Canvas = (): React.ReactElement => (
     <Overlay />
   </div>
 );
+
 export default Canvas;

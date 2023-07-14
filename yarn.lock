@@ -5700,16 +5700,18 @@ __metadata:
     "@storiny/ui": "*"
     "@types/react": ^18.2.14
     "@types/react-dom": ^18.2.6
+    canvas-roundrect-polyfill: ^0.0.1
     clsx: ^1.2.1
     eslint: ^8.42.0
     jotai: ^2.2.2
+    perfect-freehand: ^1.2.0
     prettier: ^2.5.1
     react: ^18.2.0
     react-dom: ^18.2.0
-    react-merge-refs: ^2.0.2
     react-redux: ^8.1.1
     react-resizable-panels: ^0.0.53
     react-virtuoso: ^4.4.0
+    roughjs: ^4.5.2
     typescript: ^5.1.5
     use-resize-observer: ^9.1.0
   languageName: unknown
@@ -10428,6 +10430,13 @@ __metadata:
   version: 1.0.30001491
   resolution: "caniuse-lite@npm:1.0.30001491"
   checksum: ce8e1343dd2ba058902b58dffa7f3695fd251a7ef51a7f0903ab8e62b32becd9f7f590cbebb3f1966cdfff0c2fc8e7154ac116e0b39730bd2f2e17103f5e6c3b
+  languageName: node
+  linkType: hard
+
+"canvas-roundrect-polyfill@npm:^0.0.1":
+  version: 0.0.1
+  resolution: "canvas-roundrect-polyfill@npm:0.0.1"
+  checksum: 0e1fcd395d35d515378625074bb7a2a0f5b60a8d90177eaa8255ded2e0358aa32646e350fd182869e33e654a41417134b997a10811fc8260c04de731299d7d18
   languageName: node
   linkType: hard
 
@@ -18106,6 +18115,13 @@ eslint-config-turbo@latest:
   languageName: node
   linkType: hard
 
+"path-data-parser@npm:0.1.0, path-data-parser@npm:^0.1.0":
+  version: 0.1.0
+  resolution: "path-data-parser@npm:0.1.0"
+  checksum: a23a214adb38074576a8873d25e8dea7e090b8396d86f58f83f3f6c6298ff56b06adc694147b67f0ed22f14dc478efa1d525710d3ec7b2d7b1efbac57e3fafe6
+  languageName: node
+  linkType: hard
+
 "path-exists@npm:^3.0.0":
   version: 3.0.0
   resolution: "path-exists@npm:3.0.0"
@@ -18207,6 +18223,13 @@ eslint-config-turbo@latest:
   languageName: node
   linkType: hard
 
+"perfect-freehand@npm:^1.2.0":
+  version: 1.2.0
+  resolution: "perfect-freehand@npm:1.2.0"
+  checksum: 03900c103170c68a495e5b4f0609d8375dd26d61a797ffb190c7436274c6a2f4011c21de2bdf420ab324350945dddbdf9c201312388a6e875dfbb88b328d91ae
+  languageName: node
+  linkType: hard
+
 "periscopic@npm:^3.0.0":
   version: 3.1.0
   resolution: "periscopic@npm:3.1.0"
@@ -18297,6 +18320,23 @@ eslint-config-turbo@latest:
   dependencies:
     ts-pnp: ^1.1.6
   checksum: a41716d13607be5a3e06ba58b17e9e619cf07da3a0a7b10bd41cd89362873041054fd2b7966ad30a1b26b826cfb8fecc0469a95902d5b1b8ba8f591e2fe6b96d
+  languageName: node
+  linkType: hard
+
+"points-on-curve@npm:0.2.0, points-on-curve@npm:^0.2.0":
+  version: 0.2.0
+  resolution: "points-on-curve@npm:0.2.0"
+  checksum: 05e87d6839e3d869cfac0e63c2b1ca700fc8f1083e3f9ae80841cc50379fd31204f9e1f221407df1a90afcb8bfa98404aee0b0fa00330b7b3b328d33be21cf47
+  languageName: node
+  linkType: hard
+
+"points-on-path@npm:^0.2.1":
+  version: 0.2.1
+  resolution: "points-on-path@npm:0.2.1"
+  dependencies:
+    path-data-parser: 0.1.0
+    points-on-curve: 0.2.0
+  checksum: 5564dd84d15699579bf07bd33adfd0dc1a5e717c0d36ee11f0832b6b6890941e25e9ea68d15f7858698a9b5ec509f60e6472a0346624bb9dd9c2100cf568ac8f
   languageName: node
   linkType: hard
 
@@ -19017,13 +19057,6 @@ eslint-config-turbo@latest:
   version: 18.2.0
   resolution: "react-is@npm:18.2.0"
   checksum: e72d0ba81b5922759e4aff17e0252bd29988f9642ed817f56b25a3e217e13eea8a7f2322af99a06edb779da12d5d636e9fda473d620df9a3da0df2a74141d53e
-  languageName: node
-  linkType: hard
-
-"react-merge-refs@npm:^2.0.2":
-  version: 2.0.2
-  resolution: "react-merge-refs@npm:2.0.2"
-  checksum: 64758870d79ad52e6666d1d30cdecd5a72722edfd5c89808b41acdbd81a039f0c78b8b576f7ae247010468fc45cb57dd31f402693c64224439dbe0127f4389f3
   languageName: node
   linkType: hard
 
@@ -19821,6 +19854,17 @@ eslint-config-turbo@latest:
   bin:
     rollup: dist/bin/rollup
   checksum: 373d0062a79cfce3583d4f6b7ab8ac9aa3201a9af1fa20b24f61a4ddea95a45974c4a8baed3087cb4e7bfc34a9dcd6774b7a635eb071ba52f97f51a59e860d6e
+  languageName: node
+  linkType: hard
+
+"roughjs@npm:^4.5.2":
+  version: 4.5.2
+  resolution: "roughjs@npm:4.5.2"
+  dependencies:
+    path-data-parser: ^0.1.0
+    points-on-curve: ^0.2.0
+    points-on-path: ^0.2.1
+  checksum: f0781208493d206c56d6a3ce5a369be9f6045dcebf15b74f382b7d41f82536273a9b4570bf444820efc7163d02d60b6c1956acd73531c52f17422cbaacb10302
   languageName: node
   linkType: hard
 

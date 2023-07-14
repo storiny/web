@@ -37,7 +37,6 @@ import styles from "./Layer.module.scss";
 import { LayerProps } from "./Layer.props";
 
 const layerTypeToIconMap: Record<LayerType, React.ReactNode> = {
-  [LayerType.MAIN_IMAGE]: <ImageIcon />,
   [LayerType.IMAGE]: <ImageIcon />,
   [LayerType.ARROW]: <ArrowIcon rotation={45} />,
   [LayerType.ELLIPSE]: <CircleIcon />,
@@ -253,26 +252,24 @@ const Layer = React.forwardRef<HTMLLIElement, LayerProps>((props, ref) => {
           >
             {layer.hidden ? <EyeClosedIcon /> : <EyeIcon />}
           </IconButton>
-          {layer.type !== LayerType.MAIN_IMAGE && (
-            <IconButton
-              aria-label={"Remove layer"}
-              className={clsx("focus-invert", styles.x, styles["button"])}
-              onClick={(event): void => {
-                event.stopPropagation();
-                dispatch(removeLayer(layer.id));
-              }}
-              size={"sm"}
-              style={
-                {
-                  "--icon-stroke": "var(--ruby-600)"
-                } as React.CSSProperties
-              }
-              title={"Remove layer"}
-              variant={"ghost"}
-            >
-              <TrashIcon />
-            </IconButton>
-          )}
+          <IconButton
+            aria-label={"Remove layer"}
+            className={clsx("focus-invert", styles.x, styles["button"])}
+            onClick={(event): void => {
+              event.stopPropagation();
+              dispatch(removeLayer(layer.id));
+            }}
+            size={"sm"}
+            style={
+              {
+                "--icon-stroke": "var(--ruby-600)"
+              } as React.CSSProperties
+            }
+            title={"Remove layer"}
+            variant={"ghost"}
+          >
+            <TrashIcon />
+          </IconButton>
         </div>
       )}
     </li>
