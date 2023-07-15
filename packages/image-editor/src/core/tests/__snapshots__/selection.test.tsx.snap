@@ -1,10 +1,10 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`select single element on the scene arrow 1`] = `
+exports[`select single layer on the scene arrow 1`] = `
 Object {
   "angle": 0,
   "backgroundColor": "transparent",
-  "boundElements": null,
+  "boundLayers": null,
   "endArrowhead": "arrow",
   "endBinding": null,
   "fillStyle": "hachure",
@@ -47,11 +47,11 @@ Object {
 }
 `;
 
-exports[`select single element on the scene arrow escape 1`] = `
+exports[`select single layer on the scene arrow escape 1`] = `
 Object {
   "angle": 0,
   "backgroundColor": "transparent",
-  "boundElements": null,
+  "boundLayers": null,
   "endArrowhead": null,
   "endBinding": null,
   "fillStyle": "hachure",
@@ -94,11 +94,11 @@ Object {
 }
 `;
 
-exports[`select single element on the scene diamond 1`] = `
+exports[`select single layer on the scene diamond 1`] = `
 Object {
   "angle": 0,
   "backgroundColor": "transparent",
-  "boundElements": null,
+  "boundLayers": null,
   "fillStyle": "hachure",
   "frameId": null,
   "groupIds": Array [],
@@ -126,11 +126,11 @@ Object {
 }
 `;
 
-exports[`select single element on the scene ellipse 1`] = `
+exports[`select single layer on the scene ellipse 1`] = `
 Object {
   "angle": 0,
   "backgroundColor": "transparent",
-  "boundElements": null,
+  "boundLayers": null,
   "fillStyle": "hachure",
   "frameId": null,
   "groupIds": Array [],
@@ -158,11 +158,11 @@ Object {
 }
 `;
 
-exports[`select single element on the scene rectangle 1`] = `
+exports[`select single layer on the scene rectangle 1`] = `
 Object {
   "angle": 0,
   "backgroundColor": "transparent",
-  "boundElements": null,
+  "boundLayers": null,
   "fillStyle": "hachure",
   "frameId": null,
   "groupIds": Array [],

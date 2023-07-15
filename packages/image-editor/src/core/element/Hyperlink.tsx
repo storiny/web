@@ -1,39 +1,39 @@
-import { AppState, ExcalidrawProps, Point, UIAppState } from "../types";
-import {
-  getShortcutKey,
-  sceneCoordsToViewportCoords,
-  viewportCoordsToSceneCoords,
-  wrapEvent,
-} from "../utils";
-import { mutateElement } from "./mutateElement";
-import { NonDeletedExcalidrawElement } from "./types";
+import "./Hyperlink.scss";
 
-import { register } from "../actions/register";
-import { ToolButton } from "../components/ToolButton";
-import { FreedrawIcon, LinkIcon, TrashIcon } from "../components/icons";
-import { t } from "../i18n";
+import clsx from "clsx";
 import {
   useCallback,
   useEffect,
   useLayoutEffect,
   useRef,
-  useState,
+  useState
 } from "react";
-import clsx from "clsx";
-import { KEYS } from "../keys";
-import { DEFAULT_LINK_SIZE } from "../renderer/renderElement";
-import { rotate } from "../math";
-import { EVENT, HYPERLINK_TOOLTIP_DELAY, MIME_TYPES } from "../constants";
-import { Bounds } from "./bounds";
-import { getTooltipDiv, updateTooltipPosition } from "../components/Tooltip";
-import { getSelectedElements } from "../scene";
-import { isPointHittingElementBoundingBox } from "./collision";
-import { getElementAbsoluteCoords } from "./";
-import { isLocalLink, normalizeLink } from "../data/url";
 
-import "./Hyperlink.scss";
+import { isLocalLink, normalizeLink } from "../../lib/data/url/url";
+import { getSelectedLayers } from "../../lib/scene";
+import { register } from "../actions/register";
 import { trackEvent } from "../analytics";
 import { useExcalidrawAppState } from "../components/App";
+import { FreedrawIcon, LinkIcon, TrashIcon } from "../components/icons";
+import { ToolButton } from "../components/ToolButton";
+import { getTooltipDiv, updateTooltipPosition } from "../components/Tooltip";
+import { EVENT, HYPERLINK_TOOLTIP_DELAY, MIME_TYPES } from "../constants";
+import { t } from "../i18n";
+import { KEYS } from "../keys";
+import { rotate } from "../math";
+import { DEFAULT_LINK_SIZE } from "../renderer/renderLayer";
+import { AppState, ExcalidrawProps, Point, UIAppState } from "../types";
+import {
+  getShortcutKey,
+  sceneCoordsToViewportCoords,
+  viewportCoordsToSceneCoords,
+  wrapEvent
+} from "../utils";
+import { getLayerAbsoluteCoords } from "./";
+import { Bounds } from "./bounds";
+import { isPointHittingLayerBoundingBox } from "./collision";
+import { mutateLayer } from "./mutateLayer";
+import { NonDeletedExcalidrawLayer } from "./types";
 
 const CONTAINER_WIDTH = 320;
 const SPACE_BOTTOM = 85;
@@ -41,28 +41,28 @@ const CONTAINER_PADDING = 5;
 const CONTAINER_HEIGHT = 42;
 const AUTO_HIDE_TIMEOUT = 500;
 
-export const EXTERNAL_LINK_IMG = document.createElement("img");
+export const EXTERNAL_LINK_IMG = document.createLayer("img");
 EXTERNAL_LINK_IMG.src = `data:${MIME_TYPES.svg}, ${encodeURIComponent(
-  `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1971c2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-external-link"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>`,
+  `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1971c2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-external-link"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>`
 )}`;
 
 let IS_HYPERLINK_TOOLTIP_VISIBLE = false;
 
 export const Hyperlink = ({
-  element,
+  layer,
   setAppState,
-  onLinkOpen,
+  onLinkOpen
 }: {
-  element: NonDeletedExcalidrawElement;
-  setAppState: React.Component<any, AppState>["setState"];
+  layer: NonDeletedExcalidrawLayer;
   onLinkOpen: ExcalidrawProps["onLinkOpen"];
+  setAppState: React.Component<any, AppState>["setState"];
 }) => {
   const appState = useExcalidrawAppState();
 
-  const linkVal = element.link || "";
+  const linkVal = layer.link || "";
 
   const [inputVal, setInputVal] = useState(linkVal);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLInputLayer>(null);
   const isEditing = appState.showHyperlinkPopup === "editor" || !linkVal;
 
   const handleSubmit = useCallback(() => {
@@ -72,19 +72,20 @@ export const Hyperlink = ({
 
     const link = normalizeLink(inputRef.current.value);
 
-    if (!element.link && link) {
+    if (!layer.link && link) {
       trackEvent("hyperlink", "create");
     }
 
-    mutateElement(element, { link });
+    mutateLayer(layer, { link });
     setAppState({ showHyperlinkPopup: "info" });
-  }, [element, setAppState]);
+  }, [layer, setAppState]);
 
-  useLayoutEffect(() => {
-    return () => {
+  useLayoutEffect(
+    () => () => {
       handleSubmit();
-    };
-  }, [handleSubmit]);
+    },
+    [handleSubmit]
+  );
 
   useEffect(() => {
     let timeoutId: number | null = null;
@@ -95,9 +96,9 @@ export const Hyperlink = ({
       if (timeoutId) {
         clearTimeout(timeoutId);
       }
-      const shouldHide = shouldHideLinkPopup(element, appState, [
+      const shouldHide = shouldHideLinkPopup(layer, appState, [
         event.clientX,
-        event.clientY,
+        event.clientY
       ]) as boolean;
       if (shouldHide) {
         timeoutId = window.setTimeout(() => {
@@ -112,25 +113,25 @@ export const Hyperlink = ({
         clearTimeout(timeoutId);
       }
     };
-  }, [appState, element, isEditing, setAppState]);
+  }, [appState, layer, isEditing, setAppState]);
 
   const handleRemove = useCallback(() => {
     trackEvent("hyperlink", "delete");
-    mutateElement(element, { link: null });
+    mutateLayer(layer, { link: null });
     if (isEditing) {
       inputRef.current!.value = "";
     }
     setAppState({ showHyperlinkPopup: false });
-  }, [setAppState, element, isEditing]);
+  }, [setAppState, layer, isEditing]);
 
   const onEdit = () => {
     trackEvent("hyperlink", "edit", "popup-ui");
     setAppState({ showHyperlinkPopup: "editor" });
   };
-  const { x, y } = getCoordsForPopover(element, appState);
+  const { x, y } = getCoordsForPopover(layer, appState);
   if (
-    appState.draggingElement ||
-    appState.resizingElement ||
+    appState.draggingLayer ||
+    appState.resizingLayer ||
     appState.isRotating ||
     appState.openMenu
   ) {
@@ -143,17 +144,14 @@ export const Hyperlink = ({
         top: `${y}px`,
         left: `${x}px`,
         width: CONTAINER_WIDTH,
-        padding: CONTAINER_PADDING,
+        padding: CONTAINER_PADDING
       }}
     >
       {isEditing ? (
         <input
-          className={clsx("excalidraw-hyperlinkContainer-input")}
-          placeholder="Type or paste your link here"
-          ref={inputRef}
-          value={inputVal}
-          onChange={(event) => setInputVal(event.target.value)}
           autoFocus
+          className={clsx("excalidraw-hyperlinkContainer-input")}
+          onChange={(event) => setInputVal(event.target.value)}
           onKeyDown={(event) => {
             event.stopPropagation();
             // prevent cmd/ctrl+k shortcut when editing link
@@ -164,26 +162,28 @@ export const Hyperlink = ({
               handleSubmit();
             }
           }}
+          placeholder="Type or paste your link here"
+          ref={inputRef}
+          value={inputVal}
         />
       ) : (
         <a
-          href={normalizeLink(element.link || "")}
           className={clsx("excalidraw-hyperlinkContainer-link", {
-            "d-none": isEditing,
+            "d-none": isEditing
           })}
-          target={isLocalLink(element.link) ? "_self" : "_blank"}
+          href={normalizeLink(layer.link || "")}
           onClick={(event) => {
-            if (element.link && onLinkOpen) {
+            if (layer.link && onLinkOpen) {
               const customEvent = wrapEvent(
                 EVENT.EXCALIDRAW_LINK,
-                event.nativeEvent,
+                event.nativeEvent
               );
               onLinkOpen(
                 {
-                  ...element,
-                  link: normalizeLink(element.link),
+                  ...layer,
+                  link: normalizeLink(layer.link)
                 },
-                customEvent,
+                customEvent
               );
               if (customEvent.defaultPrevented) {
                 event.preventDefault();
@@ -191,32 +191,33 @@ export const Hyperlink = ({
             }
           }}
           rel="noopener noreferrer"
+          target={isLocalLink(layer.link) ? "_self" : "_blank"}
         >
-          {element.link}
+          {layer.link}
         </a>
       )}
       <div className="excalidraw-hyperlinkContainer__buttons">
         {!isEditing && (
           <ToolButton
-            type="button"
-            title={t("buttons.edit")}
             aria-label={t("buttons.edit")}
-            label={t("buttons.edit")}
-            onClick={onEdit}
             className="excalidraw-hyperlinkContainer--edit"
             icon={FreedrawIcon}
+            label={t("buttons.edit")}
+            onClick={onEdit}
+            title={t("buttons.edit")}
+            type="button"
           />
         )}
 
         {linkVal && (
           <ToolButton
-            type="button"
-            title={t("buttons.remove")}
             aria-label={t("buttons.remove")}
-            label={t("buttons.remove")}
-            onClick={handleRemove}
             className="excalidraw-hyperlinkContainer--remove"
             icon={TrashIcon}
+            label={t("buttons.remove")}
+            onClick={handleRemove}
+            title={t("buttons.remove")}
+            type="button"
           />
         )}
       </div>
@@ -225,13 +226,13 @@ export const Hyperlink = ({
 };
 
 const getCoordsForPopover = (
-  element: NonDeletedExcalidrawElement,
-  appState: AppState,
+  layer: NonDeletedExcalidrawLayer,
+  appState: AppState
 ) => {
-  const [x1, y1] = getElementAbsoluteCoords(element);
+  const [x1, y1] = getLayerAbsoluteCoords(layer);
   const { x: viewportX, y: viewportY } = sceneCoordsToViewportCoords(
-    { sceneX: x1 + element.width / 2, sceneY: y1 },
-    appState,
+    { sceneX: x1 + layer.width / 2, sceneY: y1 },
+    appState
   );
   const x = viewportX - appState.offsetLeft - CONTAINER_WIDTH / 2;
   const y = viewportY - appState.offsetTop - SPACE_BOTTOM;
@@ -240,51 +241,50 @@ const getCoordsForPopover = (
 
 export const actionLink = register({
   name: "hyperlink",
-  perform: (elements, appState) => {
+  perform: (layers, appState) => {
     if (appState.showHyperlinkPopup === "editor") {
       return false;
     }
 
     return {
-      elements,
+      layers,
       appState: {
         ...appState,
         showHyperlinkPopup: "editor",
-        openMenu: null,
+        openMenu: null
       },
-      commitToHistory: true,
+      commitToHistory: true
     };
   },
   trackEvent: { category: "hyperlink", action: "click" },
   keyTest: (event) => event[KEYS.CTRL_OR_CMD] && event.key === KEYS.K,
-  contextItemLabel: (elements, appState) =>
-    getContextMenuLabel(elements, appState),
-  predicate: (elements, appState) => {
-    const selectedElements = getSelectedElements(elements, appState);
-    return selectedElements.length === 1;
+  contextItemLabel: (layers, appState) => getContextMenuLabel(layers, appState),
+  predicate: (layers, appState) => {
+    const selectedLayers = getSelectedLayers(layers, appState);
+    return selectedLayers.length === 1;
   },
-  PanelComponent: ({ elements, appState, updateData }) => {
-    const selectedElements = getSelectedElements(elements, appState);
+  PanelComponent: ({ layers, appState, updateData }) => {
+    const selectedLayers = getSelectedLayers(layers, appState);
 
     return (
       <ToolButton
-        type="button"
+        aria-label={t(getContextMenuLabel(layers, appState))}
         icon={LinkIcon}
-        aria-label={t(getContextMenuLabel(elements, appState))}
-        title={`${t("labels.link.label")} - ${getShortcutKey("CtrlOrCmd+K")}`}
         onClick={() => updateData(null)}
-        selected={selectedElements.length === 1 && !!selectedElements[0].link}
+        selected={selectedLayers.length === 1 && !!selectedLayers[0].link}
+        title={`${t("labels.link.label")} - ${getShortcutKey("CtrlOrCmd+K")}`}
+        type="button"
       />
     );
-  },
+  }
 });
 
 export const getContextMenuLabel = (
-  elements: readonly NonDeletedExcalidrawElement[],
-  appState: AppState,
+  layers: readonly NonDeletedExcalidrawLayer[],
+  appState: AppState
 ) => {
-  const selectedElements = getSelectedElements(elements, appState);
-  const label = selectedElements[0]!.link
+  const selectedLayers = getSelectedLayers(layers, appState);
+  const label = selectedLayers[0]!.link
     ? "labels.link.edit"
     : "labels.link.create";
   return label;
@@ -293,7 +293,7 @@ export const getContextMenuLabel = (
 export const getLinkHandleFromCoords = (
   [x1, y1, x2, y2]: Bounds,
   angle: number,
-  appState: UIAppState,
+  appState: UIAppState
 ): [x: number, y: number, width: number, height: number] => {
   const size = DEFAULT_LINK_SIZE;
   const linkWidth = size / appState.zoom.value;
@@ -313,39 +313,39 @@ export const getLinkHandleFromCoords = (
     y + linkHeight / 2,
     centerX,
     centerY,
-    angle,
+    angle
   );
   return [
     rotatedX - linkWidth / 2,
     rotatedY - linkHeight / 2,
     linkWidth,
-    linkHeight,
+    linkHeight
   ];
 };
 
 export const isPointHittingLinkIcon = (
-  element: NonDeletedExcalidrawElement,
+  layer: NonDeletedExcalidrawLayer,
   appState: AppState,
   [x, y]: Point,
-  isMobile: boolean,
+  isMobile: boolean
 ) => {
-  if (!element.link || appState.selectedElementIds[element.id]) {
+  if (!layer.link || appState.selectedLayerIds[layer.id]) {
     return false;
   }
   const threshold = 4 / appState.zoom.value;
   if (
     !isMobile &&
     appState.viewModeEnabled &&
-    isPointHittingElementBoundingBox(element, [x, y], threshold, null)
+    isPointHittingLayerBoundingBox(layer, [x, y], threshold, null)
   ) {
     return true;
   }
-  const [x1, y1, x2, y2] = getElementAbsoluteCoords(element);
+  const [x1, y1, x2, y2] = getLayerAbsoluteCoords(layer);
 
   const [linkX, linkY, linkWidth, linkHeight] = getLinkHandleFromCoords(
     [x1, y1, x2, y2],
-    element.angle,
-    appState,
+    layer.angle,
+    appState
   );
   const hitLink =
     x > linkX - threshold &&
@@ -357,23 +357,23 @@ export const isPointHittingLinkIcon = (
 
 let HYPERLINK_TOOLTIP_TIMEOUT_ID: number | null = null;
 export const showHyperlinkTooltip = (
-  element: NonDeletedExcalidrawElement,
-  appState: AppState,
+  layer: NonDeletedExcalidrawLayer,
+  appState: AppState
 ) => {
   if (HYPERLINK_TOOLTIP_TIMEOUT_ID) {
     clearTimeout(HYPERLINK_TOOLTIP_TIMEOUT_ID);
   }
   HYPERLINK_TOOLTIP_TIMEOUT_ID = window.setTimeout(
-    () => renderTooltip(element, appState),
-    HYPERLINK_TOOLTIP_DELAY,
+    () => renderTooltip(layer, appState),
+    HYPERLINK_TOOLTIP_DELAY
   );
 };
 
 const renderTooltip = (
-  element: NonDeletedExcalidrawElement,
-  appState: AppState,
+  layer: NonDeletedExcalidrawLayer,
+  appState: AppState
 ) => {
-  if (!element.link) {
+  if (!layer.link) {
     return;
   }
 
@@ -381,19 +381,19 @@ const renderTooltip = (
 
   tooltipDiv.classList.add("excalidraw-tooltip--visible");
   tooltipDiv.style.maxWidth = "20rem";
-  tooltipDiv.textContent = element.link;
+  tooltipDiv.textContent = layer.link;
 
-  const [x1, y1, x2, y2] = getElementAbsoluteCoords(element);
+  const [x1, y1, x2, y2] = getLayerAbsoluteCoords(layer);
 
   const [linkX, linkY, linkWidth, linkHeight] = getLinkHandleFromCoords(
     [x1, y1, x2, y2],
-    element.angle,
-    appState,
+    layer.angle,
+    appState
   );
 
   const linkViewportCoords = sceneCoordsToViewportCoords(
     { sceneX: linkX, sceneY: linkY },
-    appState,
+    appState
   );
 
   updateTooltipPosition(
@@ -402,9 +402,9 @@ const renderTooltip = (
       left: linkViewportCoords.x,
       top: linkViewportCoords.y,
       width: linkWidth,
-      height: linkHeight,
+      height: linkHeight
     },
-    "top",
+    "top"
   );
   trackEvent("hyperlink", "tooltip", "link-icon");
 
@@ -421,24 +421,24 @@ export const hideHyperlinkToolip = () => {
 };
 
 export const shouldHideLinkPopup = (
-  element: NonDeletedExcalidrawElement,
+  layer: NonDeletedExcalidrawLayer,
   appState: AppState,
-  [clientX, clientY]: Point,
+  [clientX, clientY]: Point
 ): Boolean => {
   const { x: sceneX, y: sceneY } = viewportCoordsToSceneCoords(
     { clientX, clientY },
-    appState,
+    appState
   );
 
   const threshold = 15 / appState.zoom.value;
-  // hitbox to prevent hiding when hovered in element bounding box
+  // hitbox to prevent hiding when hovered in layer bounding box
   if (
-    isPointHittingElementBoundingBox(element, [sceneX, sceneY], threshold, null)
+    isPointHittingLayerBoundingBox(layer, [sceneX, sceneY], threshold, null)
   ) {
     return false;
   }
-  const [x1, y1, x2] = getElementAbsoluteCoords(element);
-  // hit box to prevent hiding when hovered in the vertical area between element and popover
+  const [x1, y1, x2] = getLayerAbsoluteCoords(layer);
+  // hit box to prevent hiding when hovered in the vertical area between layer and popover
   if (
     sceneX >= x1 &&
     sceneX <= x2 &&
@@ -448,7 +448,7 @@ export const shouldHideLinkPopup = (
     return false;
   }
   // hit box to prevent hiding when hovered around popover within threshold
-  const { x: popoverX, y: popoverY } = getCoordsForPopover(element, appState);
+  const { x: popoverX, y: popoverY } = getCoordsForPopover(layer, appState);
 
   if (
     clientX >= popoverX - threshold &&

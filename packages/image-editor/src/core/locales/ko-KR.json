@@ -116,7 +116,7 @@
       "edit": "선 수정하기",
       "exit": "선 편집기 종료"
     },
-    "elementLock": {
+    "layerLock": {
       "lock": "잠금",
       "unlock": "잠금 해제",
       "lockAll": "모두 잠금",
@@ -124,8 +124,8 @@
     },
     "statusPublished": "게시됨",
     "sidebarLock": "사이드바 유지",
-    "selectAllElementsInFrame": "프레임의 모든 요소 선택",
-    "removeAllElementsFromFrame": "프레임의 모든 요소 삭제",
+    "selectAllLayersInFrame": "프레임의 모든 요소 선택",
+    "removeAllLayersFromFrame": "프레임의 모든 요소 삭제",
     "eyeDropper": "캔버스에서 색상 고르기"
   },
   "library": {
@@ -234,12 +234,12 @@
   },
   "hints": {
     "canvasPanning": "캔버스를 옮기려면 마우스 휠이나 스페이스바를 누르고 드래그하거나, 손 도구를 사용하기",
-    "linearElement": "여러 점을 연결하려면 클릭하고, 직선을 그리려면 바로 드래그하세요.",
+    "linearLayer": "여러 점을 연결하려면 클릭하고, 직선을 그리려면 바로 드래그하세요.",
     "freeDraw": "클릭 후 드래그하세요. 완료되면 놓으세요.",
     "text": "팁: 선택 툴로 아무 곳이나 더블 클릭해 텍스트를 추가할 수도 있습니다.",
     "text_selected": "더블 클릭 또는 ENTER를 눌러서 텍스트 수정",
     "text_editing": "ESC나 CtrlOrCmd+ENTER를 눌러서 수정을 종료하기",
-    "linearElementMulti": "마지막 지점을 클릭하거나 Esc 또는 Enter 키를 눌러 완료하세요.",
+    "linearLayerMulti": "마지막 지점을 클릭하거나 Esc 또는 Enter 키를 눌러 완료하세요.",
     "lockAngle": "SHIFT 키를 누르면서 회전하면 각도를 제한할 수 있습니다.",
     "resize": "SHIFT 키를 누르면서 조정하면 크기의 비율이 제한됩니다.\nALT를 누르면서 조정하면 중앙을 기준으로 크기를 조정합니다.",
     "resizeImage": "SHIFT를 눌러서 자유롭게 크기를 변경하거나,\nALT를 눌러서 중앙을 고정하고 크기를 변경하기",
@@ -249,7 +249,7 @@
     "lineEditor_nothingSelected": "꼭짓점을 선택해서 수정하거나 (SHIFT를 눌러서 여러개 선택),\nAlt를 누르고 클릭해서 새로운 꼭짓점 추가하기",
     "placeImage": "클릭해서 이미지를 배치하거나, 클릭하고 드래그해서 사이즈를 조정하기",
     "publishLibrary": "당신만의 라이브러리를 게시하기",
-    "bindTextToElement": "Enter 키를 눌러서 텍스트 추가하기",
+    "bindTextToLayer": "Enter 키를 눌러서 텍스트 추가하기",
     "deepBoxSelect": "CtrlOrCmd 키를 눌러서 깊게 선택하고, 드래그하지 않도록 하기",
     "eraserRevert": "Alt를 눌러서 삭제하도록 지정된 요소를 되돌리기",
     "firefox_clipboard_write": "이 기능은 설정에서 \"dom.events.asyncClipboard.clipboardItem\" 플래그를 \"true\"로 설정하여 활성화할 수 있습니다. Firefox에서 브라우저 플래그를 수정하려면, \"about:config\" 페이지에 접속하세요."
@@ -316,7 +316,7 @@
     "view": "보기",
     "zoomToFit": "모든 요소가 보이도록 확대/축소",
     "zoomToSelection": "선택 영역으로 확대/축소",
-    "toggleElementLock": "선택한 항목을 잠금/잠금 해제",
+    "toggleLayerLock": "선택한 항목을 잠금/잠금 해제",
     "movePageUpDown": "페이지 움직이기 위/아래",
     "movePageLeftRight": "페이지 움직이기 좌/우"
   },
@@ -389,8 +389,8 @@
   },
   "stats": {
     "angle": "각도",
-    "element": "요소",
-    "elements": "요소",
+    "layer": "요소",
+    "layers": "요소",
     "height": "높이",
     "scene": "화면",
     "selected": "선택됨",
@@ -411,7 +411,7 @@
     "fileSavedToFilename": "{filename} 로 저장되었습니다",
     "canvas": "캔버스",
     "selection": "선택한 요소",
-    "pasteAsSingleElement": "단일 요소로 붙여넣거나, 기존 텍스트 에디터에 붙여넣으려면 {{shortcut}} 을 사용하세요."
+    "pasteAsSingleLayer": "단일 요소로 붙여넣거나, 기존 텍스트 에디터에 붙여넣으려면 {{shortcut}} 을 사용하세요."
   },
   "colors": {
     "transparent": "투명",

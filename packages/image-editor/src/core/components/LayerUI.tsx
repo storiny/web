@@ -1,120 +1,117 @@
-import clsx from "clsx";
-import React from "react";
-import { ActionManager } from "../actions/manager";
-import { CLASSES, DEFAULT_SIDEBAR, LIBRARY_SIDEBAR_WIDTH } from "../constants";
-import { isTextElement, showSelectedShapeActions } from "../element";
-import { NonDeletedExcalidrawElement } from "../element/types";
-import { Language, t } from "../i18n";
-import { calculateScrollCenter } from "../scene";
-import {
-  AppProps,
-  AppState,
-  ExcalidrawProps,
-  BinaryFiles,
-  UIAppState,
-  AppClassProperties,
-} from "../types";
-import { capitalizeString, isShallowEqual } from "../utils";
-import { SelectedShapeActions, ShapesSwitcher } from "./Actions";
-import { ErrorDialog } from "./ErrorDialog";
-import { ImageExportDialog } from "./ImageExportDialog";
-import { FixedSideContainer } from "./FixedSideContainer";
-import { HintViewer } from "./HintViewer";
-import { Island } from "./Island";
-import { LoadingMessage } from "./LoadingMessage";
-import { LockButton } from "./LockButton";
-import { MobileMenu } from "./MobileMenu";
-import { PasteChartDialog } from "./PasteChartDialog";
-import { Section } from "./Section";
-import { HelpDialog } from "./HelpDialog";
-import Stack from "./Stack";
-import { UserList } from "./UserList";
-import { JSONExportDialog } from "./JSONExportDialog";
-import { PenModeButton } from "./PenModeButton";
-import { trackEvent } from "../analytics";
-import { useDevice } from "../components/App";
-import { Stats } from "./Stats";
-import { actionToggleStats } from "../actions/actionToggleStats";
-import Footer from "./footer/Footer";
-import { isSidebarDockedAtom } from "./Sidebar/Sidebar";
-import { jotaiScope } from "../jotai";
-import { Provider, useAtom, useAtomValue } from "jotai";
-import MainMenu from "./main-menu/MainMenu";
-import { ActiveConfirmDialog } from "./ActiveConfirmDialog";
-import { OverwriteConfirmDialog } from "./OverwriteConfirm/OverwriteConfirm";
-import { HandButton } from "./HandButton";
-import { isHandToolActive } from "../appState";
-import { TunnelsContext, useInitializeTunnels } from "../context/tunnels";
-import { LibraryIcon } from "./icons";
-import { UIAppStateContext } from "../context/ui-appState";
-import { DefaultSidebar } from "./DefaultSidebar";
-import { EyeDropper, activeEyeDropperAtom } from "./EyeDropper";
-
 import "./LayerUI.scss";
 import "./Toolbar.scss";
 
+import clsx from "clsx";
+import { Provider, useAtom, useAtomValue } from "jotai";
+import React from "react";
+
+import { calculateScrollCenter } from "../../lib/scene";
+import { actionToggleStats } from "../actions/actionToggleStats";
+import { ActionManager } from "../actions/manager";
+import { trackEvent } from "../analytics";
+import { isHandToolActive } from "../appState";
+import { useDevice } from "../components/App";
+import { CLASSES, DEFAULT_SIDEBAR, LIBRARY_SIDEBAR_WIDTH } from "../constants";
+import { TunnelsContext, useInitializeTunnels } from "../context/tunnels";
+import { UIAppStateContext } from "../context/ui-appState";
+import { Language, t } from "../i18n";
+import { jotaiScope } from "../jotai";
+import { isTextLayer, showSelectedShapeActions } from "../layer";
+import { NonDeletedExcalidrawLayer } from "../layer/types";
+import {
+  AppClassProperties,
+  AppProps,
+  AppState,
+  BinaryFiles,
+  ExcalidrawProps,
+  UIAppState
+} from "../types";
+import { capitalizeString, isShallowEqual } from "../utils";
+import { SelectedShapeActions, ShapesSwitcher } from "./Actions";
+import { ActiveConfirmDialog } from "./ActiveConfirmDialog";
+import { DefaultSidebar } from "./DefaultSidebar";
+import { ErrorDialog } from "./ErrorDialog";
+import { activeEyeDropperAtom, EyeDropper } from "./EyeDropper";
+import { FixedSideContainer } from "./FixedSideContainer";
+import Footer from "./footer/Footer";
+import { HandButton } from "./HandButton";
+import { HelpDialog } from "./HelpDialog";
+import { HintViewer } from "./HintViewer";
+import { LibraryIcon } from "./icons";
+import { ImageExportDialog } from "./ImageExportDialog";
+import { Island } from "./Island";
+import { JSONExportDialog } from "./JSONExportDialog";
+import { LoadingMessage } from "./LoadingMessage";
+import { LockButton } from "./LockButton";
+import MainMenu from "./main-menu/MainMenu";
+import { MobileMenu } from "./MobileMenu";
+import { OverwriteConfirmDialog } from "./OverwriteConfirm/OverwriteConfirm";
+import { PasteChartDialog } from "./PasteChartDialog";
+import { PenModeButton } from "./PenModeButton";
+import { Section } from "./Section";
+import { isSidebarDockedAtom } from "./Sidebar/Sidebar";
+import Stack from "./Stack";
+import { Stats } from "./Stats";
+import { UserList } from "./UserList";
+
 interface LayerUIProps {
+  UIOptions: AppProps["UIOptions"];
   actionManager: ActionManager;
   appState: UIAppState;
-  files: BinaryFiles;
-  canvas: HTMLCanvasElement | null;
-  setAppState: React.Component<any, AppState>["setState"];
-  elements: readonly NonDeletedExcalidrawElement[];
-  onLockToggle: () => void;
-  onHandToolToggle: () => void;
-  onPenModeToggle: () => void;
-  showExitZenModeBtn: boolean;
-  langCode: Language["code"];
-  renderTopRightUI?: ExcalidrawProps["renderTopRightUI"];
-  renderCustomStats?: ExcalidrawProps["renderCustomStats"];
-  UIOptions: AppProps["UIOptions"];
-  onImageAction: (data: { insertOnCanvasDirectly: boolean }) => void;
-  onExportImage: AppClassProperties["onExportImage"];
-  renderWelcomeScreen: boolean;
+  canvas: HTMLCanvasLayer | null;
   children?: React.ReactNode;
+  files: BinaryFiles;
+  langCode: Language["code"];
+  layers: readonly NonDeletedExcalidrawLayer[];
+  onExportImage: AppClassProperties["onExportImage"];
+  onHandToolToggle: () => void;
+  onImageAction: (data: { insertOnCanvasDirectly: boolean }) => void;
+  onLockToggle: () => void;
+  onPenModeToggle: () => void;
+  renderCustomStats?: ExcalidrawProps["renderCustomStats"];
+  renderTopRightUI?: ExcalidrawProps["renderTopRightUI"];
+  renderWelcomeScreen: boolean;
+  setAppState: React.Component<any, AppState>["setState"];
+  showExitZenModeBtn: boolean;
 }
 
 const DefaultMainMenu: React.FC<{
   UIOptions: AppProps["UIOptions"];
-}> = ({ UIOptions }) => {
-  return (
-    <MainMenu __fallback>
-      <MainMenu.DefaultItems.LoadScene />
-      <MainMenu.DefaultItems.SaveToActiveFile />
-      {/* FIXME we should to test for this inside the item itself */}
-      {UIOptions.canvasActions.export && <MainMenu.DefaultItems.Export />}
-      {/* FIXME we should to test for this inside the item itself */}
-      {UIOptions.canvasActions.saveAsImage && (
-        <MainMenu.DefaultItems.SaveAsImage />
-      )}
-      <MainMenu.DefaultItems.Help />
-      <MainMenu.DefaultItems.ClearCanvas />
-      <MainMenu.Separator />
-      <MainMenu.Group title="Excalidraw links">
-        <MainMenu.DefaultItems.Socials />
-      </MainMenu.Group>
-      <MainMenu.Separator />
-      <MainMenu.DefaultItems.ToggleTheme />
-      <MainMenu.DefaultItems.ChangeCanvasBackground />
-    </MainMenu>
-  );
-};
+}> = ({ UIOptions }) => (
+  <MainMenu __fallback>
+    <MainMenu.DefaultItems.LoadScene />
+    <MainMenu.DefaultItems.SaveToActiveFile />
+    {/* FIXME we should to test for this inside the item itself */}
+    {UIOptions.canvasActions.export && <MainMenu.DefaultItems.Export />}
+    {/* FIXME we should to test for this inside the item itself */}
+    {UIOptions.canvasActions.saveAsImage && (
+      <MainMenu.DefaultItems.SaveAsImage />
+    )}
+    <MainMenu.DefaultItems.Help />
+    <MainMenu.DefaultItems.ClearCanvas />
+    <MainMenu.Separator />
+    <MainMenu.Group title="Excalidraw links">
+      <MainMenu.DefaultItems.Socials />
+    </MainMenu.Group>
+    <MainMenu.Separator />
+    <MainMenu.DefaultItems.ToggleTheme />
+    <MainMenu.DefaultItems.ChangeCanvasBackground />
+  </MainMenu>
+);
 
-const DefaultOverwriteConfirmDialog = () => {
-  return (
-    <OverwriteConfirmDialog __fallback>
-      <OverwriteConfirmDialog.Actions.SaveToDisk />
-      <OverwriteConfirmDialog.Actions.ExportToImage />
-    </OverwriteConfirmDialog>
-  );
-};
+const DefaultOverwriteConfirmDialog = () => (
+  <OverwriteConfirmDialog __fallback>
+    <OverwriteConfirmDialog.Actions.SaveToDisk />
+    <OverwriteConfirmDialog.Actions.ExportToImage />
+  </OverwriteConfirmDialog>
+);
 
 const LayerUI = ({
   actionManager,
   appState,
   files,
   setAppState,
-  elements,
+  layers,
   canvas,
   onLockToggle,
   onHandToolToggle,
@@ -126,14 +123,14 @@ const LayerUI = ({
   onImageAction,
   onExportImage,
   renderWelcomeScreen,
-  children,
+  children
 }: LayerUIProps) => {
   const device = useDevice();
   const tunnels = useInitializeTunnels();
 
   const [eyeDropperState, setEyeDropperState] = useAtom(
     activeEyeDropperAtom,
-    jotaiScope,
+    jotaiScope
   );
 
   const renderJSONExportDialog = () => {
@@ -143,12 +140,12 @@ const LayerUI = ({
 
     return (
       <JSONExportDialog
-        elements={elements}
-        appState={appState}
-        files={files}
         actionManager={actionManager}
-        exportOpts={UIOptions.canvasActions.export}
+        appState={appState}
         canvas={canvas}
+        exportOpts={UIOptions.canvasActions.export}
+        files={files}
+        layers={layers}
         setAppState={setAppState}
       />
     );
@@ -161,12 +158,12 @@ const LayerUI = ({
 
     return (
       <ImageExportDialog
-        elements={elements}
+        actionManager={actionManager}
         appState={appState}
         files={files}
-        actionManager={actionManager}
-        onExportImage={onExportImage}
+        layers={layers}
         onCloseRequest={() => setAppState({ openDialog: null })}
+        onExportImage={onExportImage}
       />
     );
   };
@@ -182,10 +179,10 @@ const LayerUI = ({
 
   const renderSelectedShapeActions = () => (
     <Section
-      heading="selectedShapeActions"
       className={clsx("selected-shape-actions zen-mode-transition", {
-        "transition-left": appState.zenModeEnabled,
+        "transition-left": appState.zenModeEnabled
       })}
+      heading="selectedShapeActions"
     >
       <Island
         className={CLASSES.SHAPE_ACTIONS_MENU}
@@ -193,12 +190,12 @@ const LayerUI = ({
         style={{
           // we want to make sure this doesn't overflow so subtracting the
           // approximate height of hamburgerMenu + footer
-          maxHeight: `${appState.height - 166}px`,
+          maxHeight: `${appState.height - 166}px`
         }}
       >
         <SelectedShapeActions
           appState={appState}
-          elements={elements}
+          layers={layers}
           renderAction={actionManager.renderAction}
         />
       </Island>
@@ -208,50 +205,50 @@ const LayerUI = ({
   const renderFixedSideContainer = () => {
     const shouldRenderSelectedShapeActions = showSelectedShapeActions(
       appState,
-      elements,
+      layers
     );
 
     return (
       <FixedSideContainer side="top">
         <div className="App-menu App-menu_top">
-          <Stack.Col gap={6} className={clsx("App-menu_top__left")}>
+          <Stack.Col className={clsx("App-menu_top__left")} gap={6}>
             {renderCanvasActions()}
             {shouldRenderSelectedShapeActions && renderSelectedShapeActions()}
           </Stack.Col>
           {!appState.viewModeEnabled && (
-            <Section heading="shapes" className="shapes-section">
+            <Section className="shapes-section" heading="shapes">
               {(heading: React.ReactNode) => (
                 <div style={{ position: "relative" }}>
                   {renderWelcomeScreen && (
                     <tunnels.WelcomeScreenToolbarHintTunnel.Out />
                   )}
-                  <Stack.Col gap={4} align="start">
+                  <Stack.Col align="start" gap={4}>
                     <Stack.Row
-                      gap={1}
                       className={clsx("App-toolbar-container", {
-                        "zen-mode": appState.zenModeEnabled,
+                        "zen-mode": appState.zenModeEnabled
                       })}
+                      gap={1}
                     >
                       <Island
-                        padding={1}
                         className={clsx("App-toolbar", {
-                          "zen-mode": appState.zenModeEnabled,
+                          "zen-mode": appState.zenModeEnabled
                         })}
+                        padding={1}
                       >
                         <HintViewer
                           appState={appState}
-                          elements={elements}
-                          isMobile={device.isMobile}
                           device={device}
+                          isMobile={device.isMobile}
+                          layers={layers}
                         />
                         {heading}
                         <Stack.Row gap={1}>
                           <PenModeButton
-                            zenModeEnabled={appState.zenModeEnabled}
                             checked={appState.penMode}
                             onChange={onPenModeToggle}
-                            title={t("toolBar.penMode")}
                             penDetected={appState.penDetected}
+                            title={t("toolBar.penMode")}
+                            zenModeEnabled={appState.zenModeEnabled}
                           />
                           <LockButton
                             checked={appState.activeTool.locked}
@@ -263,21 +260,21 @@ const LayerUI = ({
 
                           <HandButton
                             checked={isHandToolActive(appState)}
+                            isMobile
                             onChange={() => onHandToolToggle()}
                             title={t("toolBar.hand")}
-                            isMobile
                           />
 
                           <ShapesSwitcher
+                            activeTool={appState.activeTool}
                             appState={appState}
                             canvas={canvas}
-                            activeTool={appState.activeTool}
-                            setAppState={setAppState}
                             onImageAction={({ pointerType }) => {
                               onImageAction({
-                                insertOnCanvasDirectly: pointerType !== "mouse",
+                                insertOnCanvasDirectly: pointerType !== "mouse"
                               });
                             }}
+                            setAppState={setAppState}
                           />
                         </Stack.Row>
                       </Island>
@@ -291,8 +288,8 @@ const LayerUI = ({
             className={clsx(
               "layer-ui__wrapper__top-right zen-mode-transition",
               {
-                "transition-right": appState.zenModeEnabled,
-              },
+                "transition-right": appState.zenModeEnabled
+              }
             )}
           >
             <UserList collaborators={appState.collaborators} />
@@ -309,20 +306,18 @@ const LayerUI = ({
     );
   };
 
-  const renderSidebars = () => {
-    return (
-      <DefaultSidebar
-        __fallback
-        onDock={(docked) => {
-          trackEvent(
-            "sidebar",
-            `toggleDock (${docked ? "dock" : "undock"})`,
-            `(${device.isMobile ? "mobile" : "desktop"})`,
-          );
-        }}
-      />
-    );
-  };
+  const renderSidebars = () => (
+    <DefaultSidebar
+      __fallback
+      onDock={(docked) => {
+        trackEvent(
+          "sidebar",
+          `toggleDock (${docked ? "dock" : "undock"})`,
+          `(${device.isMobile ? "mobile" : "desktop"})`
+        );
+      }}
+    />
+  );
 
   const isSidebarDocked = useAtomValue(isSidebarDockedAtom, jotaiScope);
 
@@ -339,17 +334,17 @@ const LayerUI = ({
       <DefaultSidebar.Trigger
         __fallback
         icon={LibraryIcon}
-        title={capitalizeString(t("toolBar.library"))}
         onToggle={(open) => {
           if (open) {
             trackEvent(
               "sidebar",
               `${DEFAULT_SIDEBAR.name} (open)`,
-              `button (${device.isMobile ? "mobile" : "desktop"})`,
+              `button (${device.isMobile ? "mobile" : "desktop"})`
             );
           }
         }}
         tab={DEFAULT_SIDEBAR.defaultTab}
+        title={capitalizeString(t("toolBar.library"))}
       >
         {t("toolBar.library")}
       </DefaultSidebar.Trigger>
@@ -364,17 +359,17 @@ const LayerUI = ({
       )}
       {eyeDropperState && !device.isMobile && (
         <EyeDropper
-          swapPreviewOnAlt={eyeDropperState.swapPreviewOnAlt}
-          previewType={eyeDropperState.previewType}
           onCancel={() => {
             setEyeDropperState(null);
           }}
           onSelect={(color, event) => {
-            setEyeDropperState((state) => {
-              return state?.keepOpenOnAlt && event.altKey ? state : null;
-            });
+            setEyeDropperState((state) =>
+              state?.keepOpenOnAlt && event.altKey ? state : null
+            );
             eyeDropperState?.onSelect?.(color, event);
           }}
+          previewType={eyeDropperState.previewType}
+          swapPreviewOnAlt={eyeDropperState.swapPreviewOnAlt}
         />
       )}
       {appState.openDialog === "help" && (
@@ -390,33 +385,33 @@ const LayerUI = ({
       {renderJSONExportDialog()}
       {appState.pasteDialog.shown && (
         <PasteChartDialog
-          setAppState={setAppState}
           appState={appState}
           onClose={() =>
             setAppState({
-              pasteDialog: { shown: false, data: null },
+              pasteDialog: { shown: false, data: null }
             })
           }
+          setAppState={setAppState}
         />
       )}
       {device.isMobile && (
         <MobileMenu
-          appState={appState}
-          elements={elements}
           actionManager={actionManager}
-          renderJSONExportDialog={renderJSONExportDialog}
-          renderImageExportDialog={renderImageExportDialog}
-          setAppState={setAppState}
-          onLockToggle={onLockToggle}
-          onHandToolToggle={onHandToolToggle}
-          onPenModeToggle={onPenModeToggle}
+          appState={appState}
           canvas={canvas}
-          onImageAction={onImageAction}
-          renderTopRightUI={renderTopRightUI}
-          renderCustomStats={renderCustomStats}
-          renderSidebars={renderSidebars}
           device={device}
+          layers={layers}
+          onHandToolToggle={onHandToolToggle}
+          onImageAction={onImageAction}
+          onLockToggle={onLockToggle}
+          onPenModeToggle={onPenModeToggle}
+          renderCustomStats={renderCustomStats}
+          renderImageExportDialog={renderImageExportDialog}
+          renderJSONExportDialog={renderJSONExportDialog}
+          renderSidebars={renderSidebars}
+          renderTopRightUI={renderTopRightUI}
           renderWelcomeScreen={renderWelcomeScreen}
+          setAppState={setAppState}
         />
       )}
       {!device.isMobile && (
@@ -424,10 +419,9 @@ const LayerUI = ({
           <div
             className={clsx("layer-ui__wrapper", {
               "disable-pointerEvents":
-                appState.draggingElement ||
-                appState.resizingElement ||
-                (appState.editingElement &&
-                  !isTextElement(appState.editingElement)),
+                appState.draggingLayer ||
+                appState.resizingLayer ||
+                (appState.editingLayer && !isTextLayer(appState.editingLayer))
             })}
             style={
               appState.openSidebar &&
@@ -440,20 +434,20 @@ const LayerUI = ({
             {renderWelcomeScreen && <tunnels.WelcomeScreenCenterTunnel.Out />}
             {renderFixedSideContainer()}
             <Footer
-              appState={appState}
               actionManager={actionManager}
-              showExitZenModeBtn={showExitZenModeBtn}
+              appState={appState}
               renderWelcomeScreen={renderWelcomeScreen}
+              showExitZenModeBtn={showExitZenModeBtn}
             />
             {appState.showStats && (
               <Stats
                 appState={appState}
-                setAppState={setAppState}
-                elements={elements}
+                layers={layers}
                 onClose={() => {
                   actionManager.executeAction(actionToggleStats);
                 }}
                 renderCustomStats={renderCustomStats}
+                setAppState={setAppState}
               />
             )}
             {appState.scrolledOutside && (
@@ -461,7 +455,7 @@ const LayerUI = ({
                 className="scroll-back-to-content"
                 onClick={() => {
                   setAppState((appState) => ({
-                    ...calculateScrollCenter(elements, appState, canvas),
+                    ...calculateScrollCenter(layers, appState, canvas)
                   }));
                 }}
               >
@@ -489,7 +483,7 @@ const LayerUI = ({
 const stripIrrelevantAppStateProps = (appState: AppState): UIAppState => {
   const {
     suggestedBindings,
-    startBoundElement,
+    startBoundLayer,
     cursorButton,
     scrollX,
     scrollY,
@@ -514,9 +508,9 @@ const areEqual = (prevProps: LayerUIProps, nextProps: LayerUIProps) => {
       stripIrrelevantAppStateProps(prevAppState as AppState),
       stripIrrelevantAppStateProps(nextAppState as AppState),
       {
-        selectedElementIds: isShallowEqual,
-        selectedGroupIds: isShallowEqual,
-      },
+        selectedLayerIds: isShallowEqual,
+        selectedGroupIds: isShallowEqual
+      }
     ) && isShallowEqual(prev, next)
   );
 };

@@ -1,9 +1,14 @@
-import { fireEvent, GlobalTestState, toggleMenu, render } from "../test-utils";
-import { Excalidraw, Footer, MainMenu } from "../../packages/excalidraw/index";
-import { queryByText, queryByTestId } from "@testing-library/react";
+import { queryByTestId, queryByText } from "@testing-library/react";
+import { useMemo } from "react";
+
+import {
+  Excalidraw,
+  Footer,
+  MainMenu
+} from "../../../lib/packages/excalidraw/index";
 import { GRID_SIZE, THEME } from "../../constants";
 import { t } from "../../i18n";
-import { useMemo } from "react";
+import { fireEvent, GlobalTestState, render, toggleMenu } from "../test-utils";
 
 const { h } = window;
 
@@ -19,40 +24,42 @@ describe("<Excalidraw/>", () => {
     it('should show exit zen mode button when zen mode is set and zen mode option in context menu when zenModeEnabled is "undefined"', async () => {
       const { container } = await render(<Excalidraw />);
       expect(
-        container.getElementsByClassName("disable-zen-mode--visible").length,
+        container.getLayersByClassName("disable-zen-mode--visible").length
       ).toBe(0);
       expect(h.state.zenModeEnabled).toBe(false);
 
       fireEvent.contextMenu(GlobalTestState.canvas, {
         button: 2,
         clientX: 1,
-        clientY: 1,
+        clientY: 1
       });
       const contextMenu = document.querySelector(".context-menu");
-      fireEvent.click(queryByText(contextMenu as HTMLElement, "Zen mode")!);
+      fireEvent.click(queryByText(contextMenu as HTMLLayer, "Zen mode")!);
       expect(h.state.zenModeEnabled).toBe(true);
       expect(
-        container.getElementsByClassName("disable-zen-mode--visible").length,
+        container.getLayersByClassName("disable-zen-mode--visible").length
       ).toBe(1);
     });
 
     it("should not show exit zen mode button and zen mode option in context menu when zenModeEnabled is set", async () => {
       const { container } = await render(<Excalidraw zenModeEnabled={true} />);
       expect(
-        container.getElementsByClassName("disable-zen-mode--visible").length,
+        container.getLayersByClassName("disable-zen-mode--visible").length
       ).toBe(0);
       expect(h.state.zenModeEnabled).toBe(true);
 
       fireEvent.contextMenu(GlobalTestState.canvas, {
         button: 2,
         clientX: 1,
-        clientY: 1,
+        clientY: 1
       });
       const contextMenu = document.querySelector(".context-menu");
-      expect(queryByText(contextMenu as HTMLElement, "Zen mode")).toBe(null);
+      expect(
+        queryByText(contextMenu as HTMLLayer, "Zen mode")
+      ).not.toBeInTheDocument();
       expect(h.state.zenModeEnabled).toBe(true);
       expect(
-        container.getElementsByClassName("disable-zen-mode--visible").length,
+        container.getLayersByClassName("disable-zen-mode--visible").length
       ).toBe(0);
     });
   });
@@ -62,7 +69,7 @@ describe("<Excalidraw/>", () => {
     let { container } = await render(
       <Excalidraw>
         <div>This is a custom footer</div>
-      </Excalidraw>,
+      </Excalidraw>
     );
     expect(container.querySelector(".footer-center")).toBe(null);
 
@@ -72,7 +79,7 @@ describe("<Excalidraw/>", () => {
         <Footer>
           <div>This is a custom footer</div>
         </Footer>
-      </Excalidraw>,
+      </Excalidraw>
     ));
     expect(container.querySelector(".footer-center")).toMatchInlineSnapshot(`
       <div
@@ -91,34 +98,36 @@ describe("<Excalidraw/>", () => {
       expect(h.state.gridSize).toBe(null);
 
       expect(
-        container.getElementsByClassName("disable-zen-mode--visible").length,
+        container.getLayersByClassName("disable-zen-mode--visible").length
       ).toBe(0);
       fireEvent.contextMenu(GlobalTestState.canvas, {
         button: 2,
         clientX: 1,
-        clientY: 1,
+        clientY: 1
       });
       const contextMenu = document.querySelector(".context-menu");
-      fireEvent.click(queryByText(contextMenu as HTMLElement, "Show grid")!);
+      fireEvent.click(queryByText(contextMenu as HTMLLayer, "Show grid")!);
       expect(h.state.gridSize).toBe(GRID_SIZE);
     });
 
     it('should not show grid mode in context menu when gridModeEnabled is not "undefined"', async () => {
       const { container } = await render(
-        <Excalidraw gridModeEnabled={false} />,
+        <Excalidraw gridModeEnabled={false} />
       );
       expect(h.state.gridSize).toBe(null);
 
       expect(
-        container.getElementsByClassName("disable-zen-mode--visible").length,
+        container.getLayersByClassName("disable-zen-mode--visible").length
       ).toBe(0);
       fireEvent.contextMenu(GlobalTestState.canvas, {
         button: 2,
         clientX: 1,
-        clientY: 1,
+        clientY: 1
       });
       const contextMenu = document.querySelector(".context-menu");
-      expect(queryByText(contextMenu as HTMLElement, "Show grid")).toBe(null);
+      expect(
+        queryByText(contextMenu as HTMLLayer, "Show grid")
+      ).not.toBeInTheDocument();
       expect(h.state.gridSize).toBe(null);
     });
   });
@@ -127,7 +136,7 @@ describe("<Excalidraw/>", () => {
     describe("Test canvasActions", () => {
       it('should render menu with default items when "UIOPtions" is "undefined"', async () => {
         const { container } = await render(
-          <Excalidraw UIOptions={undefined} />,
+          <Excalidraw UIOptions={undefined} />
         );
         //open menu
         toggleMenu(container);
@@ -136,79 +145,91 @@ describe("<Excalidraw/>", () => {
 
       it("should hide clear canvas button when clearCanvas is false", async () => {
         const { container } = await render(
-          <Excalidraw UIOptions={{ canvasActions: { clearCanvas: false } }} />,
+          <Excalidraw UIOptions={{ canvasActions: { clearCanvas: false } }} />
         );
         //open menu
         toggleMenu(container);
-        expect(queryByTestId(container, "clear-canvas-button")).toBeNull();
+        expect(
+          queryByTestId(container, "clear-canvas-button")
+        ).not.toBeInTheDocument();
       });
 
       it("should hide export button when export is false", async () => {
         const { container } = await render(
-          <Excalidraw UIOptions={{ canvasActions: { export: false } }} />,
+          <Excalidraw UIOptions={{ canvasActions: { export: false } }} />
         );
         //open menu
         toggleMenu(container);
-        expect(queryByTestId(container, "json-export-button")).toBeNull();
+        expect(
+          queryByTestId(container, "json-export-button")
+        ).not.toBeInTheDocument();
       });
 
       it("should hide 'Save as image' button when 'saveAsImage' is false", async () => {
         const { container } = await render(
-          <Excalidraw UIOptions={{ canvasActions: { saveAsImage: false } }} />,
+          <Excalidraw UIOptions={{ canvasActions: { saveAsImage: false } }} />
         );
         //open menu
         toggleMenu(container);
-        expect(queryByTestId(container, "image-export-button")).toBeNull();
+        expect(
+          queryByTestId(container, "image-export-button")
+        ).not.toBeInTheDocument();
       });
 
       it("should hide load button when loadScene is false", async () => {
         const { container } = await render(
-          <Excalidraw UIOptions={{ canvasActions: { loadScene: false } }} />,
+          <Excalidraw UIOptions={{ canvasActions: { loadScene: false } }} />
         );
 
-        expect(queryByTestId(container, "load-button")).toBeNull();
+        expect(queryByTestId(container, "load-button")).not.toBeInTheDocument();
       });
 
       it("should hide save as button when saveFileToDisk is false", async () => {
         const { container } = await render(
           <Excalidraw
             UIOptions={{ canvasActions: { export: { saveFileToDisk: false } } }}
-          />,
+          />
         );
         //open menu
         toggleMenu(container);
-        expect(queryByTestId(container, "save-as-button")).toBeNull();
+        expect(
+          queryByTestId(container, "save-as-button")
+        ).not.toBeInTheDocument();
       });
 
       it("should hide save button when saveToActiveFile is false", async () => {
         const { container } = await render(
           <Excalidraw
             UIOptions={{ canvasActions: { saveToActiveFile: false } }}
-          />,
+          />
         );
         //open menu
         toggleMenu(container);
-        expect(queryByTestId(container, "save-button")).toBeNull();
+        expect(queryByTestId(container, "save-button")).not.toBeInTheDocument();
       });
 
       it("should hide the canvas background picker when changeViewBackgroundColor is false", async () => {
         const { container } = await render(
           <Excalidraw
             UIOptions={{ canvasActions: { changeViewBackgroundColor: false } }}
-          />,
+          />
         );
         //open menu
         toggleMenu(container);
-        expect(queryByTestId(container, "canvas-background-picker")).toBeNull();
+        expect(
+          queryByTestId(container, "canvas-background-picker")
+        ).not.toBeInTheDocument();
       });
 
       it("should hide the theme toggle when theme is false", async () => {
         const { container } = await render(
-          <Excalidraw UIOptions={{ canvasActions: { toggleTheme: false } }} />,
+          <Excalidraw UIOptions={{ canvasActions: { toggleTheme: false } }} />
         );
         //open menu
         toggleMenu(container);
-        expect(queryByTestId(container, "toggle-dark-mode")).toBeNull();
+        expect(
+          queryByTestId(container, "toggle-dark-mode")
+        ).not.toBeInTheDocument();
       });
 
       it("should not render default items in custom menu even if passed if the prop in `canvasActions` is set to false", async () => {
@@ -217,20 +238,20 @@ describe("<Excalidraw/>", () => {
             <MainMenu>
               <MainMenu.ItemCustom>
                 <button
-                  style={{ height: "2rem" }}
                   onClick={() => window.alert("custom menu item")}
+                  style={{ height: "2rem" }}
                 >
                   custom item
                 </button>
               </MainMenu.ItemCustom>
               <MainMenu.DefaultItems.LoadScene />
             </MainMenu>
-          </Excalidraw>,
+          </Excalidraw>
         );
         //open menu
         toggleMenu(container);
         // load button shouldn't be rendered since `UIActions.canvasActions.loadScene` is `false`
-        expect(queryByTestId(container, "load-button")).toBeNull();
+        expect(queryByTestId(container, "load-button")).not.toBeInTheDocument();
       });
     });
   });
@@ -242,7 +263,7 @@ describe("<Excalidraw/>", () => {
       //open menu
       toggleMenu(container);
       const darkModeToggle = queryByTestId(container, "toggle-dark-mode");
-      expect(darkModeToggle).toBeTruthy();
+      expect(darkModeToggle).toBeInTheDocument();
     });
 
     it("should not show theme toggle when the theme prop is defined", async () => {
@@ -251,21 +272,23 @@ describe("<Excalidraw/>", () => {
       expect(h.state.theme).toBe(THEME.DARK);
       //open menu
       toggleMenu(container);
-      expect(queryByTestId(container, "toggle-dark-mode")).toBe(null);
+      expect(
+        queryByTestId(container, "toggle-dark-mode")
+      ).not.toBeInTheDocument();
     });
 
     it("should show theme mode toggle when `UIOptions.canvasActions.toggleTheme` is true", async () => {
       const { container } = await render(
         <Excalidraw
-          theme={THEME.DARK}
           UIOptions={{ canvasActions: { toggleTheme: true } }}
-        />,
+          theme={THEME.DARK}
+        />
       );
       expect(h.state.theme).toBe(THEME.DARK);
       //open menu
       toggleMenu(container);
       const darkModeToggle = queryByTestId(container, "toggle-dark-mode");
-      expect(darkModeToggle).toBeTruthy();
+      expect(darkModeToggle).toBeInTheDocument();
     });
 
     it("should not show theme toggle when `UIOptions.canvasActions.toggleTheme` is false", async () => {
@@ -273,13 +296,13 @@ describe("<Excalidraw/>", () => {
         <Excalidraw
           UIOptions={{ canvasActions: { toggleTheme: false } }}
           theme={THEME.DARK}
-        />,
+        />
       );
       expect(h.state.theme).toBe(THEME.DARK);
       //open menu
       toggleMenu(container);
       const darkModeToggle = queryByTestId(container, "toggle-dark-mode");
-      expect(darkModeToggle).toBe(null);
+      expect(darkModeToggle).not.toBeInTheDocument();
     });
   });
 
@@ -289,8 +312,8 @@ describe("<Excalidraw/>", () => {
       //open menu
       toggleMenu(container);
       fireEvent.click(queryByTestId(container, "image-export-button")!);
-      const textInput: HTMLInputElement | null = document.querySelector(
-        ".ImageExportModal .ImageExportModal__preview__filename .TextInput",
+      const textInput: HTMLInputLayer | null = document.querySelector(
+        ".ImageExportModal .ImageExportModal__preview__filename .TextInput"
       );
       expect(textInput?.value).toContain(`${t("labels.untitled")}`);
       expect(textInput?.nodeName).toBe("INPUT");
@@ -303,8 +326,8 @@ describe("<Excalidraw/>", () => {
       toggleMenu(container);
       await fireEvent.click(queryByTestId(container, "image-export-button")!);
       const textInput = document.querySelector(
-        ".ImageExportModal .ImageExportModal__preview__filename .TextInput",
-      ) as HTMLInputElement;
+        ".ImageExportModal .ImageExportModal__preview__filename .TextInput"
+      ) as HTMLInputLayer;
       expect(textInput?.value).toEqual(name);
       expect(textInput?.nodeName).toBe("INPUT");
       expect(textInput?.disabled).toBe(true);
@@ -316,7 +339,7 @@ describe("<Excalidraw/>", () => {
       const { container } = await render(<Excalidraw />);
 
       expect(
-        container.querySelector(".excalidraw") === document.activeElement,
+        container.querySelector(".excalidraw") === document.activeLayer
       ).toBe(false);
     });
 
@@ -324,7 +347,7 @@ describe("<Excalidraw/>", () => {
       const { container } = await render(<Excalidraw autoFocus={true} />);
 
       expect(
-        container.querySelector(".excalidraw") === document.activeElement,
+        container.querySelector(".excalidraw") === document.activeLayer
       ).toBe(true);
     });
   });
@@ -342,15 +365,15 @@ describe("<Excalidraw/>", () => {
             </MainMenu.ItemLink>
             <MainMenu.ItemCustom>
               <button
-                style={{ height: "2rem" }}
                 onClick={() => window.alert("custom menu item")}
+                style={{ height: "2rem" }}
               >
                 custom menu item
               </button>
             </MainMenu.ItemCustom>
             <MainMenu.DefaultItems.Help />
           </MainMenu>
-        </Excalidraw>,
+        </Excalidraw>
       );
       //open menu
       toggleMenu(container);
@@ -359,13 +382,14 @@ describe("<Excalidraw/>", () => {
 
     it("should update themeToggle text even if MainMenu memoized", async () => {
       const CustomExcalidraw = () => {
-        const customMenu = useMemo(() => {
-          return (
+        const customMenu = useMemo(
+          () => (
             <MainMenu>
               <MainMenu.DefaultItems.ToggleTheme />
             </MainMenu>
-          );
-        }, []);
+          ),
+          []
+        );
 
         return <Excalidraw>{customMenu}</Excalidraw>;
       };
@@ -377,13 +401,13 @@ describe("<Excalidraw/>", () => {
       expect(h.state.theme).toBe(THEME.LIGHT);
 
       expect(
-        queryByTestId(container, "toggle-dark-mode")?.textContent,
+        queryByTestId(container, "toggle-dark-mode")?.textContent
       ).toContain(t("buttons.darkMode"));
 
       fireEvent.click(queryByTestId(container, "toggle-dark-mode")!);
 
       expect(
-        queryByTestId(container, "toggle-dark-mode")?.textContent,
+        queryByTestId(container, "toggle-dark-mode")?.textContent
       ).toContain(t("buttons.lightMode"));
     });
   });

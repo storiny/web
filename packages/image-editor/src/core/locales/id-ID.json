@@ -116,7 +116,7 @@
       "edit": "Edit tautan",
       "exit": "Keluar editor garis"
     },
-    "elementLock": {
+    "layerLock": {
       "lock": "Kunci",
       "unlock": "Lepas",
       "lockAll": "Kunci semua",
@@ -124,8 +124,8 @@
     },
     "statusPublished": "Telah terbit",
     "sidebarLock": "Biarkan sidebar tetap terbuka",
-    "selectAllElementsInFrame": "",
-    "removeAllElementsFromFrame": "",
+    "selectAllLayersInFrame": "",
+    "removeAllLayersFromFrame": "",
     "eyeDropper": ""
   },
   "library": {
@@ -234,12 +234,12 @@
   },
   "hints": {
     "canvasPanning": "Untuk memindahkan kanvas, tekan roda mouse atau spacebar sambil menyeret, atau menggunakan alat tangan",
-    "linearElement": "Klik untuk memulai banyak poin, seret untuk satu baris",
+    "linearLayer": "Klik untuk memulai banyak poin, seret untuk satu baris",
     "freeDraw": "Klik dan seret, lepaskan jika Anda selesai",
     "text": "Tip: Anda juga dapat menambahkan teks dengan klik ganda di mana saja dengan alat pemilihan",
     "text_selected": "Klik ganda atau tekan ENTER untuk edit teks",
     "text_editing": "Tekan Escape atau CtrlAtauCmd+ENTER untuk selesai mengedit",
-    "linearElementMulti": "Klik pada titik akhir atau tekan Escape atau Enter untuk menyelesaikan",
+    "linearLayerMulti": "Klik pada titik akhir atau tekan Escape atau Enter untuk menyelesaikan",
     "lockAngle": "Anda dapat menjaga sudut dengan menahan SHIFT",
     "resize": "Anda dapat menjaga proposi dengan menekan SHIFT sambil mengubah ukuran,\ntekan AlT untuk mengubah ukuran dari tengah",
     "resizeImage": "Anda dapat mengubah secara bebas dengan menekan SHIFT,\nTekan ALT untuk mengubah dari tengah",
@@ -249,7 +249,7 @@
     "lineEditor_nothingSelected": "Pilih titik untuk mengedit (tekan SHIFT untuk pilih banyak), atau tekan Alt dan klik untuk tambahkan titik baru",
     "placeImage": "Klik untuk tempatkan gambar, atau klik dan jatuhkan untuk tetapkan ukuran secara manual",
     "publishLibrary": "Terbitkan pustaka Anda",
-    "bindTextToElement": "Tekan enter untuk tambahkan teks",
+    "bindTextToLayer": "Tekan enter untuk tambahkan teks",
     "deepBoxSelect": "Tekan Ctrl atau Cmd untuk memilih yang di dalam, dan mencegah penggeseran",
     "eraserRevert": "Tahan Alt untuk mengembalikan elemen yang ditandai untuk dihapus",
     "firefox_clipboard_write": "Fitur ini dapat diaktifkan melalui pengaturan flag \"dom.events.asyncClipboard.clipboardItem\" ke \"true\". Untuk mengganti flag di Firefox, pergi ke laman \"about:config\"."
@@ -316,7 +316,7 @@
     "view": "Tampilan",
     "zoomToFit": "Perbesar agar sesuai dengan semua elemen",
     "zoomToSelection": "Perbesar ke seleksi",
-    "toggleElementLock": "Kunci/lepas seleksi",
+    "toggleLayerLock": "Kunci/lepas seleksi",
     "movePageUpDown": "Pindah halaman keatas/kebawah",
     "movePageLeftRight": "Pindah halaman kebawah/keatas"
   },
@@ -389,8 +389,8 @@
   },
   "stats": {
     "angle": "Sudut",
-    "element": "Elemen",
-    "elements": "Elemen",
+    "layer": "Elemen",
+    "layers": "Elemen",
     "height": "Tinggi",
     "scene": "Pemandangan",
     "selected": "Terpilih",
@@ -411,7 +411,7 @@
     "fileSavedToFilename": "Disimpan ke {filename}",
     "canvas": "kanvas",
     "selection": "pilihan",
-    "pasteAsSingleElement": "Gunakan {{shortcut}} untuk menempelkan sebagai satu elemen,\natau tempelkan ke teks editor yang ada"
+    "pasteAsSingleLayer": "Gunakan {{shortcut}} untuk menempelkan sebagai satu elemen,\natau tempelkan ke teks editor yang ada"
   },
   "colors": {
     "transparent": "Transparan",

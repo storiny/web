@@ -1,42 +1,43 @@
+import { queryByTestId, queryByText } from "@testing-library/react";
 import ReactDOM from "react-dom";
-import {
-  ExcalidrawElement,
-  ExcalidrawLinearElement,
-  ExcalidrawTextElementWithContainer,
-  FontString,
-} from "../element/types";
+
+import { ROUNDNESS, VERTICAL_ALIGN } from "../constants";
 import ExcalidrawApp from "../excalidraw-app";
+import { KEYS } from "../keys";
+import { LinearLayerEditor } from "../layer/linearLayerEditor";
+import {
+  getBoundTextLayerPosition,
+  getBoundTextMaxWidth,
+  wrapText
+} from "../layer/textLayer";
+import * as textLayerUtils from "../layer/textLayer";
+import {
+  ExcalidrawLayer,
+  ExcalidrawLinearLayer,
+  ExcalidrawTextLayerWithContainer,
+  FontString
+} from "../layer/types";
 import { centerPoint } from "../math";
 import { reseed } from "../random";
 import * as Renderer from "../renderer/renderScene";
-import { Keyboard, Pointer, UI } from "./helpers/ui";
-import { screen, render, fireEvent, GlobalTestState } from "./test-utils";
 import { API } from "../tests/helpers/api";
 import { Point } from "../types";
-import { KEYS } from "../keys";
-import { LinearElementEditor } from "../element/linearElementEditor";
-import { queryByTestId, queryByText } from "@testing-library/react";
+import { Keyboard, Pointer, UI } from "./helpers/ui";
+import { fireEvent, GlobalTestState, render, screen } from "./test-utils";
 import { resize, rotate } from "./utils";
-import {
-  getBoundTextElementPosition,
-  wrapText,
-  getBoundTextMaxWidth,
-} from "../element/textElement";
-import * as textElementUtils from "../element/textElement";
-import { ROUNDNESS, VERTICAL_ALIGN } from "../constants";
 
 const renderScene = jest.spyOn(Renderer, "renderScene");
 
 const { h } = window;
 const font = "20px Cascadia, width: Segoe UI Emoji" as FontString;
 
-describe("Test Linear Elements", () => {
-  let container: HTMLElement;
-  let canvas: HTMLCanvasElement;
+describe("Test Linear Layers", () => {
+  let container: HTMLLayer;
+  let canvas: HTMLCanvasLayer;
 
   beforeEach(async () => {
     // Unmount ReactDOM from root
-    ReactDOM.unmountComponentAtNode(document.getElementById("root")!);
+    ReactDOM.unmountComponentAtNode(document.getLayerById("root")!);
     localStorage.clear();
     renderScene.mockClear();
     reseed(7);
@@ -53,12 +54,12 @@ describe("Test Linear Elements", () => {
   const delta = 50;
   const mouse = new Pointer("mouse");
 
-  const createTwoPointerLinearElement = (
-    type: ExcalidrawLinearElement["type"],
-    roundness: ExcalidrawElement["roundness"] = null,
-    roughness: ExcalidrawLinearElement["roughness"] = 0,
+  const createTwoPointerLinearLayer = (
+    type: ExcalidrawLinearLayer["type"],
+    roundness: ExcalidrawLayer["roundness"] = null,
+    roughness: ExcalidrawLinearLayer["roughness"] = 0
   ) => {
-    const line = API.createElement({
+    const line = API.createLayer({
       x: p1[0],
       y: p1[1],
       width: p2[0] - p1[0],
@@ -67,24 +68,24 @@ describe("Test Linear Elements", () => {
       roughness,
       points: [
         [0, 0],
-        [p2[0] - p1[0], p2[1] - p1[1]],
+        [p2[0] - p1[0], p2[1] - p1[1]]
       ],
-      roundness,
+      roundness
     });
-    h.elements = [line];
+    h.layers = [line];
 
     mouse.clickAt(p1[0], p1[1]);
     return line;
   };
 
-  const createThreePointerLinearElement = (
-    type: ExcalidrawLinearElement["type"],
-    roundness: ExcalidrawElement["roundness"] = null,
-    roughness: ExcalidrawLinearElement["roughness"] = 0,
+  const createThreePointerLinearLayer = (
+    type: ExcalidrawLinearLayer["type"],
+    roundness: ExcalidrawLayer["roundness"] = null,
+    roughness: ExcalidrawLinearLayer["roughness"] = 0
   ) => {
     //dragging line from midpoint
     const p3 = [midpoint[0] + delta - p1[0], midpoint[1] + delta - p1[1]];
-    const line = API.createElement({
+    const line = API.createLayer({
       x: p1[0],
       y: p1[1],
       width: p3[0] - p1[0],
@@ -94,60 +95,60 @@ describe("Test Linear Elements", () => {
       points: [
         [0, 0],
         [p3[0], p3[1]],
-        [p2[0] - p1[0], p2[1] - p1[1]],
+        [p2[0] - p1[0], p2[1] - p1[1]]
       ],
-      roundness,
+      roundness
     });
-    h.elements = [line];
+    h.layers = [line];
     mouse.clickAt(p1[0], p1[1]);
     return line;
   };
 
   const enterLineEditingMode = (
-    line: ExcalidrawLinearElement,
-    selectProgrammatically = false,
+    line: ExcalidrawLinearLayer,
+    selectProgrammatically = false
   ) => {
     if (selectProgrammatically) {
-      API.setSelectedElements([line]);
+      API.setSelectedLayers([line]);
     } else {
       mouse.clickAt(p1[0], p1[1]);
     }
     Keyboard.withModifierKeys({ ctrl: true }, () => {
       Keyboard.keyPress(KEYS.ENTER);
     });
-    expect(h.state.editingLinearElement?.elementId).toEqual(line.id);
+    expect(h.state.editingLinearLayer?.layerId).toEqual(line.id);
   };
 
   const drag = (startPoint: Point, endPoint: Point) => {
     fireEvent.pointerDown(canvas, {
       clientX: startPoint[0],
-      clientY: startPoint[1],
+      clientY: startPoint[1]
     });
     fireEvent.pointerMove(canvas, {
       clientX: endPoint[0],
-      clientY: endPoint[1],
+      clientY: endPoint[1]
     });
     fireEvent.pointerUp(canvas, {
       clientX: endPoint[0],
-      clientY: endPoint[1],
+      clientY: endPoint[1]
     });
   };
 
   const deletePoint = (point: Point) => {
     fireEvent.pointerDown(canvas, {
       clientX: point[0],
-      clientY: point[1],
+      clientY: point[1]
     });
     fireEvent.pointerUp(canvas, {
       clientX: point[0],
-      clientY: point[1],
+      clientY: point[1]
     });
     Keyboard.keyPress(KEYS.DELETE);
   };
 
   it("should not drag line and add midpoint until dragged beyond a threshold", () => {
-    createTwoPointerLinearElement("line");
-    const line = h.elements[0] as ExcalidrawLinearElement;
+    createTwoPointerLinearLayer("line");
+    const line = h.layers[0] as ExcalidrawLinearLayer;
     const originalX = line.x;
     const originalY = line.y;
     expect(line.points.length).toEqual(2);
@@ -168,11 +169,11 @@ describe("Test Linear Elements", () => {
   });
 
   it("should allow dragging line from midpoint in 2 pointer lines outside editor", async () => {
-    createTwoPointerLinearElement("line");
-    const line = h.elements[0] as ExcalidrawLinearElement;
+    createTwoPointerLinearLayer("line");
+    const line = h.layers[0] as ExcalidrawLinearLayer;
 
     expect(renderScene).toHaveBeenCalledTimes(7);
-    expect((h.elements[0] as ExcalidrawLinearElement).points.length).toEqual(2);
+    expect((h.layers[0] as ExcalidrawLinearLayer).points.length).toEqual(2);
 
     // drag line from midpoint
     drag(midpoint, [midpoint[0] + delta, midpoint[1] + delta]);
@@ -197,55 +198,53 @@ describe("Test Linear Elements", () => {
   });
 
   it("should allow entering and exiting line editor via context menu", () => {
-    createTwoPointerLinearElement("line");
+    createTwoPointerLinearLayer("line");
     fireEvent.contextMenu(GlobalTestState.canvas, {
       button: 2,
       clientX: midpoint[0],
-      clientY: midpoint[1],
+      clientY: midpoint[1]
     });
     // Enter line editor
     let contextMenu = document.querySelector(".context-menu");
     fireEvent.contextMenu(GlobalTestState.canvas, {
       button: 2,
       clientX: midpoint[0],
-      clientY: midpoint[1],
+      clientY: midpoint[1]
     });
-    fireEvent.click(queryByText(contextMenu as HTMLElement, "Edit line")!);
+    fireEvent.click(queryByText(contextMenu as HTMLLayer, "Edit line")!);
 
-    expect(h.state.editingLinearElement?.elementId).toEqual(h.elements[0].id);
+    expect(h.state.editingLinearLayer?.layerId).toEqual(h.layers[0].id);
 
     // Exiting line editor
     fireEvent.contextMenu(GlobalTestState.canvas, {
       button: 2,
       clientX: midpoint[0],
-      clientY: midpoint[1],
+      clientY: midpoint[1]
     });
     contextMenu = document.querySelector(".context-menu");
     fireEvent.contextMenu(GlobalTestState.canvas, {
       button: 2,
       clientX: midpoint[0],
-      clientY: midpoint[1],
+      clientY: midpoint[1]
     });
-    fireEvent.click(
-      queryByText(contextMenu as HTMLElement, "Exit line editor")!,
-    );
-    expect(h.state.editingLinearElement?.elementId).toBeUndefined();
+    fireEvent.click(queryByText(contextMenu as HTMLLayer, "Exit line editor")!);
+    expect(h.state.editingLinearLayer?.layerId).toBeUndefined();
   });
 
   it("should enter line editor when using double clicked with ctrl key", () => {
-    createTwoPointerLinearElement("line");
-    expect(h.state.editingLinearElement?.elementId).toBeUndefined();
+    createTwoPointerLinearLayer("line");
+    expect(h.state.editingLinearLayer?.layerId).toBeUndefined();
 
     Keyboard.withModifierKeys({ ctrl: true }, () => {
       mouse.doubleClick();
     });
-    expect(h.state.editingLinearElement?.elementId).toEqual(h.elements[0].id);
+    expect(h.state.editingLinearLayer?.layerId).toEqual(h.layers[0].id);
   });
 
   describe("Inside editor", () => {
     it("should not drag line and add midpoint when dragged irrespective of threshold", () => {
-      createTwoPointerLinearElement("line");
-      const line = h.elements[0] as ExcalidrawLinearElement;
+      createTwoPointerLinearLayer("line");
+      const line = h.layers[0] as ExcalidrawLinearLayer;
       const originalX = line.x;
       const originalY = line.y;
       enterLineEditingMode(line);
@@ -262,9 +261,9 @@ describe("Test Linear Elements", () => {
     });
 
     it("should allow dragging line from midpoint in 2 pointer lines", async () => {
-      createTwoPointerLinearElement("line");
+      createTwoPointerLinearLayer("line");
 
-      const line = h.elements[0] as ExcalidrawLinearElement;
+      const line = h.layers[0] as ExcalidrawLinearLayer;
       enterLineEditingMode(line);
 
       // drag line from midpoint
@@ -290,26 +289,26 @@ describe("Test Linear Elements", () => {
       `);
     });
 
-    it("should update the midpoints when element roundness changed", async () => {
-      createThreePointerLinearElement("line");
+    it("should update the midpoints when layer roundness changed", async () => {
+      createThreePointerLinearLayer("line");
 
-      const line = h.elements[0] as ExcalidrawLinearElement;
+      const line = h.layers[0] as ExcalidrawLinearLayer;
       expect(line.points.length).toEqual(3);
 
       enterLineEditingMode(line);
 
-      const midPointsWithSharpEdge = LinearElementEditor.getEditorMidPoints(
+      const midPointsWithSharpEdge = LinearLayerEditor.getEditorMidPoints(
         line,
-        h.state,
+        h.state
       );
 
       // update roundness
       fireEvent.click(screen.getByTitle("Round"));
 
       expect(renderScene).toHaveBeenCalledTimes(12);
-      const midPointsWithRoundEdge = LinearElementEditor.getEditorMidPoints(
-        h.elements[0] as ExcalidrawLinearElement,
-        h.state,
+      const midPointsWithRoundEdge = LinearLayerEditor.getEditorMidPoints(
+        h.layers[0] as ExcalidrawLinearLayer,
+        h.state
       );
       expect(midPointsWithRoundEdge[0]).not.toEqual(midPointsWithSharpEdge[0]);
       expect(midPointsWithRoundEdge[1]).not.toEqual(midPointsWithSharpEdge[1]);
@@ -328,38 +327,35 @@ describe("Test Linear Elements", () => {
       `);
     });
 
-    it("should update all the midpoints when element position changed", async () => {
-      createThreePointerLinearElement("line", {
-        type: ROUNDNESS.PROPORTIONAL_RADIUS,
+    it("should update all the midpoints when layer position changed", async () => {
+      createThreePointerLinearLayer("line", {
+        type: ROUNDNESS.PROPORTIONAL_RADIUS
       });
 
-      const line = h.elements[0] as ExcalidrawLinearElement;
+      const line = h.layers[0] as ExcalidrawLinearLayer;
       expect(line.points.length).toEqual(3);
       enterLineEditingMode(line);
 
-      const points = LinearElementEditor.getPointsGlobalCoordinates(line);
+      const points = LinearLayerEditor.getPointsGlobalCoordinates(line);
       expect([line.x, line.y]).toEqual(points[0]);
 
-      const midPoints = LinearElementEditor.getEditorMidPoints(line, h.state);
+      const midPoints = LinearLayerEditor.getEditorMidPoints(line, h.state);
 
       const startPoint = centerPoint(points[0], midPoints[0] as Point);
       const deltaX = 50;
       const deltaY = 20;
       const endPoint: Point = [startPoint[0] + deltaX, startPoint[1] + deltaY];
 
-      // Move the element
+      // Move the layer
       drag(startPoint, endPoint);
 
       expect(renderScene).toHaveBeenCalledTimes(16);
       expect([line.x, line.y]).toEqual([
         points[0][0] + deltaX,
-        points[0][1] + deltaY,
+        points[0][1] + deltaY
       ]);
 
-      const newMidPoints = LinearElementEditor.getEditorMidPoints(
-        line,
-        h.state,
-      );
+      const newMidPoints = LinearLayerEditor.getEditorMidPoints(line, h.state);
       expect(midPoints[0]).not.toEqual(newMidPoints[0]);
       expect(midPoints[1]).not.toEqual(newMidPoints[1]);
       expect(newMidPoints).toMatchInlineSnapshot(`
@@ -383,10 +379,10 @@ describe("Test Linear Elements", () => {
       const firstSegmentMidpoint: Point = [55, 45];
       const lastSegmentMidpoint: Point = [75, 40];
 
-      let line: ExcalidrawLinearElement;
+      let line: ExcalidrawLinearLayer;
 
       beforeEach(() => {
-        line = createThreePointerLinearElement("line");
+        line = createThreePointerLinearLayer("line");
 
         expect(line.points.length).toEqual(3);
 
@@ -397,20 +393,20 @@ describe("Test Linear Elements", () => {
         // drag line via first segment midpoint
         drag(firstSegmentMidpoint, [
           firstSegmentMidpoint[0] + delta,
-          firstSegmentMidpoint[1] + delta,
+          firstSegmentMidpoint[1] + delta
         ]);
         expect(line.points.length).toEqual(4);
 
         // drag line from last segment midpoint
         drag(lastSegmentMidpoint, [
           lastSegmentMidpoint[0] + delta,
-          lastSegmentMidpoint[1] + delta,
+          lastSegmentMidpoint[1] + delta
         ]);
 
         expect(renderScene).toHaveBeenCalledTimes(21);
         expect(line.points.length).toEqual(5);
 
-        expect((h.elements[0] as ExcalidrawLinearElement).points)
+        expect((h.layers[0] as ExcalidrawLinearLayer).points)
           .toMatchInlineSnapshot(`
           Array [
             Array [
@@ -438,8 +434,8 @@ describe("Test Linear Elements", () => {
       });
 
       it("should update only the first segment midpoint when its point is dragged", async () => {
-        const points = LinearElementEditor.getPointsGlobalCoordinates(line);
-        const midPoints = LinearElementEditor.getEditorMidPoints(line, h.state);
+        const points = LinearLayerEditor.getPointsGlobalCoordinates(line);
+        const midPoints = LinearLayerEditor.getEditorMidPoints(line, h.state);
 
         const hitCoords: Point = [points[0][0], points[0][1]];
 
@@ -448,15 +444,15 @@ describe("Test Linear Elements", () => {
 
         expect(renderScene).toHaveBeenCalledTimes(16);
 
-        const newPoints = LinearElementEditor.getPointsGlobalCoordinates(line);
+        const newPoints = LinearLayerEditor.getPointsGlobalCoordinates(line);
         expect([newPoints[0][0], newPoints[0][1]]).toEqual([
           points[0][0] - delta,
-          points[0][1] - delta,
+          points[0][1] - delta
         ]);
 
-        const newMidPoints = LinearElementEditor.getEditorMidPoints(
+        const newMidPoints = LinearLayerEditor.getEditorMidPoints(
           line,
-          h.state,
+          h.state
         );
 
         expect(midPoints[0]).not.toEqual(newMidPoints[0]);
@@ -464,8 +460,8 @@ describe("Test Linear Elements", () => {
       });
 
       it("should hide midpoints in the segment when points moved close", async () => {
-        const points = LinearElementEditor.getPointsGlobalCoordinates(line);
-        const midPoints = LinearElementEditor.getEditorMidPoints(line, h.state);
+        const points = LinearLayerEditor.getPointsGlobalCoordinates(line);
+        const midPoints = LinearLayerEditor.getEditorMidPoints(line, h.state);
 
         const hitCoords: Point = [points[0][0], points[0][1]];
 
@@ -474,15 +470,15 @@ describe("Test Linear Elements", () => {
 
         expect(renderScene).toHaveBeenCalledTimes(16);
 
-        const newPoints = LinearElementEditor.getPointsGlobalCoordinates(line);
+        const newPoints = LinearLayerEditor.getPointsGlobalCoordinates(line);
         expect([newPoints[0][0], newPoints[0][1]]).toEqual([
           points[0][0] + delta,
-          points[0][1] + delta,
+          points[0][1] + delta
         ]);
 
-        const newMidPoints = LinearElementEditor.getEditorMidPoints(
+        const newMidPoints = LinearLayerEditor.getEditorMidPoints(
           line,
-          h.state,
+          h.state
         );
         // This midpoint is hidden since the points are too close
         expect(newMidPoints[0]).toBeNull();
@@ -490,27 +486,27 @@ describe("Test Linear Elements", () => {
       });
 
       it("should remove the midpoint when one of the points in the segment is deleted", async () => {
-        const line = h.elements[0] as ExcalidrawLinearElement;
+        const line = h.layers[0] as ExcalidrawLinearLayer;
         enterLineEditingMode(line);
-        const points = LinearElementEditor.getPointsGlobalCoordinates(line);
+        const points = LinearLayerEditor.getPointsGlobalCoordinates(line);
 
         // dragging line from last segment midpoint
         drag(lastSegmentMidpoint, [
           lastSegmentMidpoint[0] + 50,
-          lastSegmentMidpoint[1] + 50,
+          lastSegmentMidpoint[1] + 50
         ]);
         expect(line.points.length).toEqual(4);
 
-        const midPoints = LinearElementEditor.getEditorMidPoints(line, h.state);
+        const midPoints = LinearLayerEditor.getEditorMidPoints(line, h.state);
 
         // delete 3rd point
         deletePoint(points[2]);
         expect(line.points.length).toEqual(3);
         expect(renderScene).toHaveBeenCalledTimes(22);
 
-        const newMidPoints = LinearElementEditor.getEditorMidPoints(
+        const newMidPoints = LinearLayerEditor.getEditorMidPoints(
           line,
-          h.state,
+          h.state
         );
         expect(newMidPoints.length).toEqual(2);
         expect(midPoints[0]).toEqual(newMidPoints[0]);
@@ -523,16 +519,16 @@ describe("Test Linear Elements", () => {
       // hence hardcoding it so if later some bug is introduced
       // this will fail and we can fix it
       const firstSegmentMidpoint: Point = [
-        55.9697848965255, 47.442326230998205,
+        55.9697848965255, 47.442326230998205
       ];
       const lastSegmentMidpoint: Point = [
-        76.08587175006699, 43.294165939653226,
+        76.08587175006699, 43.294165939653226
       ];
-      let line: ExcalidrawLinearElement;
+      let line: ExcalidrawLinearLayer;
 
       beforeEach(() => {
-        line = createThreePointerLinearElement("line", {
-          type: ROUNDNESS.PROPORTIONAL_RADIUS,
+        line = createThreePointerLinearLayer("line", {
+          type: ROUNDNESS.PROPORTIONAL_RADIUS
         });
         expect(line.points.length).toEqual(3);
 
@@ -543,20 +539,20 @@ describe("Test Linear Elements", () => {
         // drag line from first segment midpoint
         drag(firstSegmentMidpoint, [
           firstSegmentMidpoint[0] + delta,
-          firstSegmentMidpoint[1] + delta,
+          firstSegmentMidpoint[1] + delta
         ]);
         expect(line.points.length).toEqual(4);
 
         // drag line from last segment midpoint
         drag(lastSegmentMidpoint, [
           lastSegmentMidpoint[0] + delta,
-          lastSegmentMidpoint[1] + delta,
+          lastSegmentMidpoint[1] + delta
         ]);
         expect(renderScene).toHaveBeenCalledTimes(21);
 
         expect(line.points.length).toEqual(5);
 
-        expect((h.elements[0] as ExcalidrawLinearElement).points)
+        expect((h.layers[0] as ExcalidrawLinearLayer).points)
           .toMatchInlineSnapshot(`
           Array [
             Array [
@@ -584,23 +580,23 @@ describe("Test Linear Elements", () => {
       });
 
       it("should update all the midpoints when its point is dragged", async () => {
-        const points = LinearElementEditor.getPointsGlobalCoordinates(line);
-        const midPoints = LinearElementEditor.getEditorMidPoints(line, h.state);
+        const points = LinearLayerEditor.getPointsGlobalCoordinates(line);
+        const midPoints = LinearLayerEditor.getEditorMidPoints(line, h.state);
 
         const hitCoords: Point = [points[0][0], points[0][1]];
 
         // Drag from first point
         drag(hitCoords, [hitCoords[0] - delta, hitCoords[1] - delta]);
 
-        const newPoints = LinearElementEditor.getPointsGlobalCoordinates(line);
+        const newPoints = LinearLayerEditor.getPointsGlobalCoordinates(line);
         expect([newPoints[0][0], newPoints[0][1]]).toEqual([
           points[0][0] - delta,
-          points[0][1] - delta,
+          points[0][1] - delta
         ]);
 
-        const newMidPoints = LinearElementEditor.getEditorMidPoints(
+        const newMidPoints = LinearLayerEditor.getEditorMidPoints(
           line,
-          h.state,
+          h.state
         );
 
         expect(midPoints[0]).not.toEqual(newMidPoints[0]);
@@ -620,8 +616,8 @@ describe("Test Linear Elements", () => {
       });
 
       it("should hide midpoints in the segment when points moved close", async () => {
-        const points = LinearElementEditor.getPointsGlobalCoordinates(line);
-        const midPoints = LinearElementEditor.getEditorMidPoints(line, h.state);
+        const points = LinearLayerEditor.getPointsGlobalCoordinates(line);
+        const midPoints = LinearLayerEditor.getEditorMidPoints(line, h.state);
 
         const hitCoords: Point = [points[0][0], points[0][1]];
 
@@ -630,15 +626,15 @@ describe("Test Linear Elements", () => {
 
         expect(renderScene).toHaveBeenCalledTimes(16);
 
-        const newPoints = LinearElementEditor.getPointsGlobalCoordinates(line);
+        const newPoints = LinearLayerEditor.getPointsGlobalCoordinates(line);
         expect([newPoints[0][0], newPoints[0][1]]).toEqual([
           points[0][0] + delta,
-          points[0][1] + delta,
+          points[0][1] + delta
         ]);
 
-        const newMidPoints = LinearElementEditor.getEditorMidPoints(
+        const newMidPoints = LinearLayerEditor.getEditorMidPoints(
           line,
-          h.state,
+          h.state
         );
         // This mid point is hidden due to point being too close
         expect(newMidPoints[0]).toBeNull();
@@ -648,20 +644,20 @@ describe("Test Linear Elements", () => {
       it("should update all the midpoints when a point is deleted", async () => {
         drag(lastSegmentMidpoint, [
           lastSegmentMidpoint[0] + delta,
-          lastSegmentMidpoint[1] + delta,
+          lastSegmentMidpoint[1] + delta
         ]);
         expect(line.points.length).toEqual(4);
 
-        const midPoints = LinearElementEditor.getEditorMidPoints(line, h.state);
-        const points = LinearElementEditor.getPointsGlobalCoordinates(line);
+        const midPoints = LinearLayerEditor.getEditorMidPoints(line, h.state);
+        const points = LinearLayerEditor.getPointsGlobalCoordinates(line);
 
         // delete 3rd point
         deletePoint(points[2]);
         expect(line.points.length).toEqual(3);
 
-        const newMidPoints = LinearElementEditor.getEditorMidPoints(
+        const newMidPoints = LinearLayerEditor.getEditorMidPoints(
           line,
-          h.state,
+          h.state
         );
         expect(newMidPoints.length).toEqual(2);
         expect(midPoints[0]).not.toEqual(newMidPoints[0]);
@@ -681,27 +677,27 @@ describe("Test Linear Elements", () => {
       });
     });
 
-    it("in-editor dragging a line point covered by another element", () => {
-      createTwoPointerLinearElement("line");
-      const line = h.elements[0] as ExcalidrawLinearElement;
-      h.elements = [
+    it("in-editor dragging a line point covered by another layer", () => {
+      createTwoPointerLinearLayer("line");
+      const line = h.layers[0] as ExcalidrawLinearLayer;
+      h.layers = [
         line,
-        API.createElement({
+        API.createLayer({
           type: "rectangle",
           x: line.x - 50,
           y: line.y - 50,
           width: 100,
           height: 100,
           backgroundColor: "red",
-          fillStyle: "solid",
-        }),
+          fillStyle: "solid"
+        })
       ];
       const dragEndPositionOffset = [100, 100] as const;
-      API.setSelectedElements([line]);
+      API.setSelectedLayers([line]);
       enterLineEditingMode(line, true);
       drag(
         [line.points[0][0] + line.x, line.points[0][1] + line.y],
-        [dragEndPositionOffset[0] + line.x, dragEndPositionOffset[1] + line.y],
+        [dragEndPositionOffset[0] + line.x, dragEndPositionOffset[1] + line.y]
       );
       expect(line.points).toMatchInlineSnapshot(`
         Array [
@@ -718,54 +714,54 @@ describe("Test Linear Elements", () => {
     });
   });
 
-  describe("Test bound text element", () => {
+  describe("Test bound text layer", () => {
     const DEFAULT_TEXT = "Online whiteboard collaboration made easy";
 
-    const createBoundTextElement = (
+    const createBoundTextLayer = (
       text: string,
-      container: ExcalidrawLinearElement,
+      container: ExcalidrawLinearLayer
     ) => {
-      const textElement = API.createElement({
+      const textLayer = API.createLayer({
         type: "text",
         x: 0,
         y: 0,
         text: wrapText(text, font, getBoundTextMaxWidth(container)),
         containerId: container.id,
         width: 30,
-        height: 20,
-      }) as ExcalidrawTextElementWithContainer;
+        height: 20
+      }) as ExcalidrawTextLayerWithContainer;
 
       container = {
         ...container,
-        boundElements: (container.boundElements || []).concat({
+        boundLayers: (container.boundLayers || []).concat({
           type: "text",
-          id: textElement.id,
-        }),
+          id: textLayer.id
+        })
       };
-      const elements: ExcalidrawElement[] = [];
-      h.elements.forEach((element) => {
-        if (element.id === container.id) {
-          elements.push(container);
+      const layers: ExcalidrawLayer[] = [];
+      h.layers.forEach((layer) => {
+        if (layer.id === container.id) {
+          layers.push(container);
         } else {
-          elements.push(element);
+          layers.push(layer);
         }
       });
-      const updatedTextElement = { ...textElement, originalText: text };
-      h.elements = [...elements, updatedTextElement];
-      return { textElement: updatedTextElement, container };
+      const updatedTextLayer = { ...textLayer, originalText: text };
+      h.layers = [...layers, updatedTextLayer];
+      return { textLayer: updatedTextLayer, container };
     };
 
-    describe("Test getBoundTextElementPosition", () => {
+    describe("Test getBoundTextLayerPosition", () => {
       it("should return correct position for 2 pointer arrow", () => {
-        createTwoPointerLinearElement("arrow");
-        const arrow = h.elements[0] as ExcalidrawLinearElement;
-        const { textElement, container } = createBoundTextElement(
+        createTwoPointerLinearLayer("arrow");
+        const arrow = h.layers[0] as ExcalidrawLinearLayer;
+        const { textLayer, container } = createBoundTextLayer(
           DEFAULT_TEXT,
-          arrow,
+          arrow
         );
-        const position = LinearElementEditor.getBoundTextElementPosition(
+        const position = LinearLayerEditor.getBoundTextLayerPosition(
           container,
-          textElement,
+          textLayer
         );
         expect(position).toMatchInlineSnapshot(`
           Object {
@@ -776,18 +772,18 @@ describe("Test Linear Elements", () => {
       });
 
       it("should return correct position for arrow with odd points", () => {
-        createThreePointerLinearElement("arrow", {
-          type: ROUNDNESS.PROPORTIONAL_RADIUS,
+        createThreePointerLinearLayer("arrow", {
+          type: ROUNDNESS.PROPORTIONAL_RADIUS
         });
-        const arrow = h.elements[0] as ExcalidrawLinearElement;
-        const { textElement, container } = createBoundTextElement(
+        const arrow = h.layers[0] as ExcalidrawLinearLayer;
+        const { textLayer, container } = createBoundTextLayer(
           DEFAULT_TEXT,
-          arrow,
+          arrow
         );
 
-        const position = LinearElementEditor.getBoundTextElementPosition(
+        const position = LinearLayerEditor.getBoundTextLayerPosition(
           container,
-          textElement,
+          textLayer
         );
         expect(position).toMatchInlineSnapshot(`
           Object {
@@ -798,30 +794,30 @@ describe("Test Linear Elements", () => {
       });
 
       it("should return correct position for arrow with even points", () => {
-        createThreePointerLinearElement("arrow", {
-          type: ROUNDNESS.PROPORTIONAL_RADIUS,
+        createThreePointerLinearLayer("arrow", {
+          type: ROUNDNESS.PROPORTIONAL_RADIUS
         });
-        const arrow = h.elements[0] as ExcalidrawLinearElement;
-        const { textElement, container } = createBoundTextElement(
+        const arrow = h.layers[0] as ExcalidrawLinearLayer;
+        const { textLayer, container } = createBoundTextLayer(
           DEFAULT_TEXT,
-          arrow,
+          arrow
         );
         enterLineEditingMode(container);
         // This is the expected midpoint for line with round edge
         // hence hardcoding it so if later some bug is introduced
         // this will fail and we can fix it
         const firstSegmentMidpoint: Point = [
-          55.9697848965255, 47.442326230998205,
+          55.9697848965255, 47.442326230998205
         ];
         // drag line from first segment midpoint
         drag(firstSegmentMidpoint, [
           firstSegmentMidpoint[0] + delta,
-          firstSegmentMidpoint[1] + delta,
+          firstSegmentMidpoint[1] + delta
         ]);
 
-        const position = LinearElementEditor.getBoundTextElementPosition(
+        const position = LinearLayerEditor.getBoundTextLayerPosition(
           container,
-          textElement,
+          textLayer
         );
         expect(position).toMatchInlineSnapshot(`
           Object {
@@ -833,41 +829,39 @@ describe("Test Linear Elements", () => {
     });
 
     it("should match styles for text editor", () => {
-      createTwoPointerLinearElement("arrow");
+      createTwoPointerLinearLayer("arrow");
       Keyboard.keyPress(KEYS.ENTER);
       const editor = document.querySelector(
-        ".excalidraw-textEditorContainer > textarea",
-      ) as HTMLTextAreaElement;
+        ".excalidraw-textEditorContainer > textarea"
+      ) as HTMLTextAreaLayer;
       expect(editor).toMatchSnapshot();
     });
 
     it("should bind text to arrow when double clicked", async () => {
-      createTwoPointerLinearElement("arrow");
-      const arrow = h.elements[0] as ExcalidrawLinearElement;
+      createTwoPointerLinearLayer("arrow");
+      const arrow = h.layers[0] as ExcalidrawLinearLayer;
 
-      expect(h.elements.length).toBe(1);
-      expect(h.elements[0].id).toBe(arrow.id);
+      expect(h.layers.length).toBe(1);
+      expect(h.layers[0].id).toBe(arrow.id);
       mouse.doubleClickAt(arrow.x, arrow.y);
-      expect(h.elements.length).toBe(2);
+      expect(h.layers.length).toBe(2);
 
-      const text = h.elements[1] as ExcalidrawTextElementWithContainer;
+      const text = h.layers[1] as ExcalidrawTextLayerWithContainer;
       expect(text.type).toBe("text");
       expect(text.containerId).toBe(arrow.id);
       mouse.down();
       const editor = document.querySelector(
-        ".excalidraw-textEditorContainer > textarea",
-      ) as HTMLTextAreaElement;
+        ".excalidraw-textEditorContainer > textarea"
+      ) as HTMLTextAreaLayer;
 
       fireEvent.change(editor, {
-        target: { value: DEFAULT_TEXT },
+        target: { value: DEFAULT_TEXT }
       });
 
       await new Promise((r) => setTimeout(r, 0));
       editor.blur();
-      expect(arrow.boundElements).toStrictEqual([
-        { id: text.id, type: "text" },
-      ]);
-      expect((h.elements[1] as ExcalidrawTextElementWithContainer).text)
+      expect(arrow.boundLayers).toStrictEqual([{ id: text.id, type: "text" }]);
+      expect((h.layers[1] as ExcalidrawTextLayerWithContainer).text)
         .toMatchInlineSnapshot(`
         "Online whiteboard 
         collaboration made 
@@ -876,32 +870,32 @@ describe("Test Linear Elements", () => {
     });
 
     it("should bind text to arrow when clicked on arrow and enter pressed", async () => {
-      const arrow = createTwoPointerLinearElement("arrow");
+      const arrow = createTwoPointerLinearLayer("arrow");
 
-      expect(h.elements.length).toBe(1);
-      expect(h.elements[0].id).toBe(arrow.id);
+      expect(h.layers.length).toBe(1);
+      expect(h.layers[0].id).toBe(arrow.id);
 
       Keyboard.keyPress(KEYS.ENTER);
 
-      expect(h.elements.length).toBe(2);
+      expect(h.layers.length).toBe(2);
 
-      const textElement = h.elements[1] as ExcalidrawTextElementWithContainer;
-      expect(textElement.type).toBe("text");
-      expect(textElement.containerId).toBe(arrow.id);
+      const textLayer = h.layers[1] as ExcalidrawTextLayerWithContainer;
+      expect(textLayer.type).toBe("text");
+      expect(textLayer.containerId).toBe(arrow.id);
       const editor = document.querySelector(
-        ".excalidraw-textEditorContainer > textarea",
-      ) as HTMLTextAreaElement;
+        ".excalidraw-textEditorContainer > textarea"
+      ) as HTMLTextAreaLayer;
 
       await new Promise((r) => setTimeout(r, 0));
 
       fireEvent.change(editor, {
-        target: { value: DEFAULT_TEXT },
+        target: { value: DEFAULT_TEXT }
       });
       editor.blur();
-      expect(arrow.boundElements).toStrictEqual([
-        { id: textElement.id, type: "text" },
+      expect(arrow.boundLayers).toStrictEqual([
+        { id: textLayer.id, type: "text" }
       ]);
-      expect((h.elements[1] as ExcalidrawTextElementWithContainer).text)
+      expect((h.layers[1] as ExcalidrawTextLayerWithContainer).text)
         .toMatchInlineSnapshot(`
         "Online whiteboard 
         collaboration made 
@@ -910,46 +904,46 @@ describe("Test Linear Elements", () => {
     });
 
     it("should not bind text to line when double clicked", async () => {
-      const line = createTwoPointerLinearElement("line");
+      const line = createTwoPointerLinearLayer("line");
 
-      expect(h.elements.length).toBe(1);
+      expect(h.layers.length).toBe(1);
       mouse.doubleClickAt(line.x, line.y);
 
-      expect(h.elements.length).toBe(2);
+      expect(h.layers.length).toBe(2);
 
-      const text = h.elements[1] as ExcalidrawTextElementWithContainer;
+      const text = h.layers[1] as ExcalidrawTextLayerWithContainer;
       expect(text.type).toBe("text");
       expect(text.containerId).toBeNull();
-      expect(line.boundElements).toBeNull();
+      expect(line.boundLayers).toBeNull();
     });
 
     it("should not rotate the bound text and update position of bound text and bounding box correctly when arrow rotated", () => {
-      createThreePointerLinearElement("arrow", {
-        type: ROUNDNESS.PROPORTIONAL_RADIUS,
+      createThreePointerLinearLayer("arrow", {
+        type: ROUNDNESS.PROPORTIONAL_RADIUS
       });
 
-      const arrow = h.elements[0] as ExcalidrawLinearElement;
+      const arrow = h.layers[0] as ExcalidrawLinearLayer;
 
-      const { textElement, container } = createBoundTextElement(
+      const { textLayer, container } = createBoundTextLayer(
         DEFAULT_TEXT,
-        arrow,
+        arrow
       );
 
       expect(container.angle).toBe(0);
-      expect(textElement.angle).toBe(0);
-      expect(getBoundTextElementPosition(arrow, textElement))
+      expect(textLayer.angle).toBe(0);
+      expect(getBoundTextLayerPosition(arrow, textLayer))
         .toMatchInlineSnapshot(`
         Object {
           "x": 75,
           "y": 60,
         }
       `);
-      expect(textElement.text).toMatchInlineSnapshot(`
+      expect(textLayer.text).toMatchInlineSnapshot(`
         "Online whiteboard 
         collaboration made 
         easy"
       `);
-      expect(LinearElementEditor.getElementAbsoluteCoords(container, true))
+      expect(LinearLayerEditor.getLayerAbsoluteCoords(container, true))
         .toMatchInlineSnapshot(`
         Array [
           20,
@@ -963,20 +957,20 @@ describe("Test Linear Elements", () => {
 
       rotate(container, -35, 55);
       expect(container.angle).toMatchInlineSnapshot(`1.3988061968364685`);
-      expect(textElement.angle).toBe(0);
-      expect(getBoundTextElementPosition(container, textElement))
+      expect(textLayer.angle).toBe(0);
+      expect(getBoundTextLayerPosition(container, textLayer))
         .toMatchInlineSnapshot(`
         Object {
           "x": 21.73926141863671,
           "y": 73.31003398390868,
         }
       `);
-      expect(textElement.text).toMatchInlineSnapshot(`
+      expect(textLayer.text).toMatchInlineSnapshot(`
         "Online whiteboard 
         collaboration made 
         easy"
       `);
-      expect(LinearElementEditor.getElementAbsoluteCoords(container, true))
+      expect(LinearLayerEditor.getLayerAbsoluteCoords(container, true))
         .toMatchInlineSnapshot(`
         Array [
           20,
@@ -989,32 +983,32 @@ describe("Test Linear Elements", () => {
       `);
     });
 
-    it("should resize and position the bound text and bounding box correctly when 3 pointer arrow element resized", () => {
-      createThreePointerLinearElement("arrow", {
-        type: ROUNDNESS.PROPORTIONAL_RADIUS,
+    it("should resize and position the bound text and bounding box correctly when 3 pointer arrow layer resized", () => {
+      createThreePointerLinearLayer("arrow", {
+        type: ROUNDNESS.PROPORTIONAL_RADIUS
       });
 
-      const arrow = h.elements[0] as ExcalidrawLinearElement;
+      const arrow = h.layers[0] as ExcalidrawLinearLayer;
 
-      const { textElement, container } = createBoundTextElement(
+      const { textLayer, container } = createBoundTextLayer(
         DEFAULT_TEXT,
-        arrow,
+        arrow
       );
       expect(container.width).toBe(70);
       expect(container.height).toBe(50);
-      expect(getBoundTextElementPosition(container, textElement))
+      expect(getBoundTextLayerPosition(container, textLayer))
         .toMatchInlineSnapshot(`
         Object {
           "x": 75,
           "y": 60,
         }
       `);
-      expect(textElement.text).toMatchInlineSnapshot(`
+      expect(textLayer.text).toMatchInlineSnapshot(`
         "Online whiteboard 
         collaboration made 
         easy"
       `);
-      expect(LinearElementEditor.getElementAbsoluteCoords(container, true))
+      expect(LinearLayerEditor.getLayerAbsoluteCoords(container, true))
         .toMatchInlineSnapshot(`
         Array [
           20,
@@ -1036,19 +1030,19 @@ describe("Test Linear Elements", () => {
         }
       `);
 
-      expect(getBoundTextElementPosition(container, textElement))
+      expect(getBoundTextLayerPosition(container, textLayer))
         .toMatchInlineSnapshot(`
         Object {
           "x": 272,
           "y": 45,
         }
       `);
-      expect((h.elements[1] as ExcalidrawTextElementWithContainer).text)
+      expect((h.layers[1] as ExcalidrawTextLayerWithContainer).text)
         .toMatchInlineSnapshot(`
         "Online whiteboard 
         collaboration made easy"
       `);
-      expect(LinearElementEditor.getElementAbsoluteCoords(container, true))
+      expect(LinearLayerEditor.getLayerAbsoluteCoords(container, true))
         .toMatchInlineSnapshot(`
         Array [
           20,
@@ -1061,28 +1055,28 @@ describe("Test Linear Elements", () => {
       `);
     });
 
-    it("should resize and position the bound text correctly when 2 pointer linear element resized", () => {
-      createTwoPointerLinearElement("arrow");
+    it("should resize and position the bound text correctly when 2 pointer linear layer resized", () => {
+      createTwoPointerLinearLayer("arrow");
 
-      const arrow = h.elements[0] as ExcalidrawLinearElement;
-      const { textElement, container } = createBoundTextElement(
+      const arrow = h.layers[0] as ExcalidrawLinearLayer;
+      const { textLayer, container } = createBoundTextLayer(
         DEFAULT_TEXT,
-        arrow,
+        arrow
       );
       expect(container.width).toBe(40);
-      expect(getBoundTextElementPosition(container, textElement))
+      expect(getBoundTextLayerPosition(container, textLayer))
         .toMatchInlineSnapshot(`
         Object {
           "x": 25,
           "y": 10,
         }
       `);
-      expect(textElement.text).toMatchInlineSnapshot(`
+      expect(textLayer.text).toMatchInlineSnapshot(`
         "Online whiteboard 
         collaboration made 
         easy"
       `);
-      const points = LinearElementEditor.getPointsGlobalCoordinates(container);
+      const points = LinearLayerEditor.getPointsGlobalCoordinates(container);
 
       // Drag from last point
       drag(points[1], [points[1][0] + 300, points[1][1]]);
@@ -1095,68 +1089,68 @@ describe("Test Linear Elements", () => {
         }
       `);
 
-      expect(getBoundTextElementPosition(container, textElement))
+      expect(getBoundTextLayerPosition(container, textLayer))
         .toMatchInlineSnapshot(`
         Object {
           "x": 75,
           "y": -5,
         }
       `);
-      expect(textElement.text).toMatchInlineSnapshot(`
+      expect(textLayer.text).toMatchInlineSnapshot(`
         "Online whiteboard 
         collaboration made easy"
       `);
     });
 
-    it("should not render vertical align tool when element selected", () => {
-      createTwoPointerLinearElement("arrow");
-      const arrow = h.elements[0] as ExcalidrawLinearElement;
+    it("should not render vertical align tool when layer selected", () => {
+      createTwoPointerLinearLayer("arrow");
+      const arrow = h.layers[0] as ExcalidrawLinearLayer;
 
-      createBoundTextElement(DEFAULT_TEXT, arrow);
-      API.setSelectedElements([arrow]);
+      createBoundTextLayer(DEFAULT_TEXT, arrow);
+      API.setSelectedLayers([arrow]);
 
-      expect(queryByTestId(container, "align-top")).toBeNull();
-      expect(queryByTestId(container, "align-middle")).toBeNull();
-      expect(queryByTestId(container, "align-bottom")).toBeNull();
+      expect(queryByTestId(container, "align-top")).not.toBeInTheDocument();
+      expect(queryByTestId(container, "align-middle")).not.toBeInTheDocument();
+      expect(queryByTestId(container, "align-bottom")).not.toBeInTheDocument();
     });
 
     it("should wrap the bound text when arrow bound container moves", async () => {
-      const rect = UI.createElement("rectangle", {
+      const rect = UI.createLayer("rectangle", {
         x: 400,
         width: 200,
-        height: 500,
+        height: 500
       });
-      const arrow = UI.createElement("arrow", {
+      const arrow = UI.createLayer("arrow", {
         x: 210,
         y: 250,
         width: 400,
-        height: 1,
+        height: 1
       });
 
       mouse.select(arrow);
       Keyboard.keyPress(KEYS.ENTER);
       const editor = document.querySelector(
-        ".excalidraw-textEditorContainer > textarea",
-      ) as HTMLTextAreaElement;
+        ".excalidraw-textEditorContainer > textarea"
+      ) as HTMLTextAreaLayer;
       await new Promise((r) => setTimeout(r, 0));
       fireEvent.change(editor, { target: { value: DEFAULT_TEXT } });
       editor.blur();
 
-      const textElement = h.elements[2] as ExcalidrawTextElementWithContainer;
+      const textLayer = h.layers[2] as ExcalidrawTextLayerWithContainer;
 
-      expect(arrow.endBinding?.elementId).toBe(rect.id);
+      expect(arrow.endBinding?.layerId).toBe(rect.id);
       expect(arrow.width).toBe(400);
       expect(rect.x).toBe(400);
       expect(rect.y).toBe(0);
       expect(
-        wrapText(textElement.originalText, font, getBoundTextMaxWidth(arrow)),
+        wrapText(textLayer.originalText, font, getBoundTextMaxWidth(arrow))
       ).toMatchInlineSnapshot(`
         "Online whiteboard collaboration
         made easy"
       `);
       const handleBindTextResizeSpy = jest.spyOn(
-        textElementUtils,
-        "handleBindTextResize",
+        textLayerUtils,
+        "handleBindTextResize"
       );
 
       mouse.select(rect);
@@ -1167,12 +1161,9 @@ describe("Test Linear Elements", () => {
       expect(arrow.width).toBe(170);
       expect(rect.x).toBe(200);
       expect(rect.y).toBe(0);
-      expect(handleBindTextResizeSpy).toHaveBeenCalledWith(
-        h.elements[1],
-        false,
-      );
+      expect(handleBindTextResizeSpy).toHaveBeenCalledWith(h.layers[1], false);
       expect(
-        wrapText(textElement.originalText, font, getBoundTextMaxWidth(arrow)),
+        wrapText(textLayer.originalText, font, getBoundTextMaxWidth(arrow))
       ).toMatchInlineSnapshot(`
         "Online whiteboard 
         collaboration made 
@@ -1180,43 +1171,45 @@ describe("Test Linear Elements", () => {
       `);
     });
 
-    it("should not render horizontal align tool when element selected", () => {
-      createTwoPointerLinearElement("arrow");
-      const arrow = h.elements[0] as ExcalidrawLinearElement;
+    it("should not render horizontal align tool when layer selected", () => {
+      createTwoPointerLinearLayer("arrow");
+      const arrow = h.layers[0] as ExcalidrawLinearLayer;
 
-      createBoundTextElement(DEFAULT_TEXT, arrow);
-      API.setSelectedElements([arrow]);
+      createBoundTextLayer(DEFAULT_TEXT, arrow);
+      API.setSelectedLayers([arrow]);
 
-      expect(queryByTestId(container, "align-left")).toBeNull();
-      expect(queryByTestId(container, "align-horizontal-center")).toBeNull();
-      expect(queryByTestId(container, "align-right")).toBeNull();
+      expect(queryByTestId(container, "align-left")).not.toBeInTheDocument();
+      expect(
+        queryByTestId(container, "align-horizontal-center")
+      ).not.toBeInTheDocument();
+      expect(queryByTestId(container, "align-right")).not.toBeInTheDocument();
     });
 
     it("should update label coords when a label binded via context menu is unbinded", async () => {
-      createTwoPointerLinearElement("arrow");
-      const text = API.createElement({
+      createTwoPointerLinearLayer("arrow");
+      const text = API.createLayer({
         type: "text",
-        text: "Hello Excalidraw",
+        text: "Hello Excalidraw"
       });
       expect(text.x).toBe(0);
       expect(text.y).toBe(0);
 
-      h.elements = [h.elements[0], text];
+      h.layers = [h.layers[0], text];
 
-      const container = h.elements[0];
-      API.setSelectedElements([container, text]);
+      const container = h.layers[0];
+      API.setSelectedLayers([container, text]);
       fireEvent.contextMenu(GlobalTestState.canvas, {
         button: 2,
         clientX: 20,
-        clientY: 30,
+        clientY: 30
       });
       let contextMenu = document.querySelector(".context-menu");
 
       fireEvent.click(
-        queryByText(contextMenu as HTMLElement, "Bind text to the container")!,
+        queryByText(contextMenu as HTMLLayer, "Bind text to the container")!
       );
-      expect(container.boundElements).toStrictEqual([
-        { id: h.elements[1].id, type: "text" },
+      expect(container.boundLayers).toStrictEqual([
+        { id: h.layers[1].id, type: "text" }
       ]);
       expect(text.containerId).toBe(container.id);
       expect(text.verticalAlign).toBe(VERTICAL_ALIGN.MIDDLE);
@@ -1224,28 +1217,28 @@ describe("Test Linear Elements", () => {
       mouse.reset();
       mouse.clickAt(
         container.x + container.width / 2,
-        container.y + container.height / 2,
+        container.y + container.height / 2
       );
       mouse.down();
       mouse.up();
-      API.setSelectedElements([h.elements[0], h.elements[1]]);
+      API.setSelectedLayers([h.layers[0], h.layers[1]]);
 
       fireEvent.contextMenu(GlobalTestState.canvas, {
         button: 2,
         clientX: 20,
-        clientY: 30,
+        clientY: 30
       });
       contextMenu = document.querySelector(".context-menu");
-      fireEvent.click(queryByText(contextMenu as HTMLElement, "Unbind text")!);
-      expect(container.boundElements).toEqual([]);
+      fireEvent.click(queryByText(contextMenu as HTMLLayer, "Unbind text")!);
+      expect(container.boundLayers).toEqual([]);
       expect(text).toEqual(
         expect.objectContaining({
           containerId: null,
           width: 160,
           height: 25,
           x: -40,
-          y: 7.5,
-        }),
+          y: 7.5
+        })
       );
     });
   });

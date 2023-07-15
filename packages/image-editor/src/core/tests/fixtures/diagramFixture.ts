@@ -2,32 +2,32 @@ import { VERSIONS } from "../../constants";
 import {
   diamondFixture,
   ellipseFixture,
-  rectangleFixture,
-} from "./elementFixture";
+  rectangleFixture
+} from "./layerFixture";
 
 export const diagramFixture = {
   type: "excalidraw",
   version: VERSIONS.excalidraw,
   source: "https://excalidraw.com",
-  elements: [diamondFixture, ellipseFixture, rectangleFixture],
+  layers: [diamondFixture, ellipseFixture, rectangleFixture],
   appState: {
     viewBackgroundColor: "#ffffff",
-    gridSize: null,
+    gridSize: null
   },
-  files: {},
+  files: {}
 };
 
 export const diagramFactory = ({
   overrides = {},
-  elementOverrides = {},
+  layerOverrides = {}
 } = {}) => ({
   ...diagramFixture,
-  elements: [
-    { ...diamondFixture, ...elementOverrides },
-    { ...ellipseFixture, ...elementOverrides },
-    { ...rectangleFixture, ...elementOverrides },
+  layers: [
+    { ...diamondFixture, ...layerOverrides },
+    { ...ellipseFixture, ...layerOverrides },
+    { ...rectangleFixture, ...layerOverrides }
   ],
-  ...overrides,
+  ...overrides
 });
 
 export default diagramFixture;

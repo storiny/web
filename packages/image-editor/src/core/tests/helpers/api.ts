@@ -1,73 +1,70 @@
-import {
-  ExcalidrawElement,
-  ExcalidrawGenericElement,
-  ExcalidrawTextElement,
-  ExcalidrawLinearElement,
-  ExcalidrawFreeDrawElement,
-  ExcalidrawImageElement,
-  FileId,
-} from "../../element/types";
-import { newElement, newTextElement, newLinearElement } from "../../element";
-import { DEFAULT_VERTICAL_ALIGN, ROUNDNESS } from "../../constants";
-import { getDefaultAppState } from "../../appState";
-import { GlobalTestState, createEvent, fireEvent } from "../test-utils";
 import fs from "fs";
-import util from "util";
 import path from "path";
-import { getMimeType } from "../../data/blob";
-import { newFreeDrawElement, newImageElement } from "../../element/newElement";
+import util from "util";
+
+import { getMimeType } from "../../../lib/data/blob/blob";
+import { getSelectedLayers } from "../../../lib/scene/selection";
+import { getDefaultAppState } from "../../appState";
+import { DEFAULT_VERTICAL_ALIGN, ROUNDNESS } from "../../constants";
+import { newLayer, newLinearLayer, newTextLayer } from "../../layer";
+import { newFreeDrawLayer, newImageLayer } from "../../layer/newLayer";
+import { isLinearLayerType } from "../../layer/typeChecks";
+import {
+  ExcalidrawFreeDrawLayer,
+  ExcalidrawGenericLayer,
+  ExcalidrawImageLayer,
+  ExcalidrawLayer,
+  ExcalidrawLinearLayer,
+  ExcalidrawTextLayer,
+  FileId
+} from "../../layer/types";
 import { Point } from "../../types";
-import { getSelectedElements } from "../../scene/selection";
-import { isLinearElementType } from "../../element/typeChecks";
 import { Mutable } from "../../utility-types";
+import { createEvent, fireEvent, GlobalTestState } from "../test-utils";
 
 const readFile = util.promisify(fs.readFile);
 
 const { h } = window;
 
 export class API {
-  static setSelectedElements = (elements: ExcalidrawElement[]) => {
+  static setSelectedLayers = (layers: ExcalidrawLayer[]) => {
     h.setState({
-      selectedElementIds: elements.reduce((acc, element) => {
-        acc[element.id] = true;
+      selectedLayerIds: layers.reduce((acc, layer) => {
+        acc[layer.id] = true;
         return acc;
-      }, {} as Record<ExcalidrawElement["id"], true>),
+      }, {} as Record<ExcalidrawLayer["id"], true>)
     });
   };
 
-  static getSelectedElements = (
-    includeBoundTextElement: boolean = false,
-    includeElementsInFrames: boolean = false,
-  ): ExcalidrawElement[] => {
-    return getSelectedElements(h.elements, h.state, {
-      includeBoundTextElement,
-      includeElementsInFrames,
+  static getSelectedLayers = (
+    includeBoundTextLayer: boolean = false,
+    includeLayersInFrames: boolean = false
+  ): ExcalidrawLayer[] =>
+    getSelectedLayers(h.layers, h.state, {
+      includeBoundTextLayer,
+      includeLayersInFrames
     });
-  };
 
-  static getSelectedElement = (): ExcalidrawElement => {
-    const selectedElements = API.getSelectedElements();
-    if (selectedElements.length !== 1) {
+  static getSelectedLayer = (): ExcalidrawLayer => {
+    const selectedLayers = API.getSelectedLayers();
+    if (selectedLayers.length !== 1) {
       throw new Error(
-        `expected 1 selected element; got ${selectedElements.length}`,
+        `expected 1 selected layer; got ${selectedLayers.length}`
       );
     }
-    return selectedElements[0];
+    return selectedLayers[0];
   };
 
-  static getStateHistory = () => {
-    // @ts-ignore
-    return h.history.stateHistory;
-  };
+  static getStateHistory = () => h.history.stateHistory;
 
   static clearSelection = () => {
     // @ts-ignore
     h.app.clearSelection(null);
-    expect(API.getSelectedElements().length).toBe(0);
+    expect(API.getSelectedLayers().length).toBe(0);
   };
 
-  static createElement = <
-    T extends Exclude<ExcalidrawElement["type"], "selection"> = "rectangle",
+  static createLayer = <
+    T extends Exclude<ExcalidrawLayer["type"], "selection"> = "rectangle"
   >({
     // @ts-ignore
     type = "rectangle",
@@ -80,62 +77,60 @@ export class API {
     groupIds = [],
     ...rest
   }: {
-    type?: T;
-    x?: number;
-    y?: number;
-    height?: number;
-    width?: number;
     angle?: number;
+    backgroundColor?: ExcalidrawGenericLayer["backgroundColor"];
+    boundLayers?: ExcalidrawGenericLayer["boundLayers"];
+    containerId?: T extends "text" ? ExcalidrawTextLayer["containerId"] : never;
+    endBinding?: T extends "arrow"
+      ? ExcalidrawLinearLayer["endBinding"]
+      : never;
+    fileId?: T extends "image" ? string : never;
+    fillStyle?: ExcalidrawGenericLayer["fillStyle"];
+    fontFamily?: T extends "text" ? ExcalidrawTextLayer["fontFamily"] : never;
+    fontSize?: T extends "text" ? ExcalidrawTextLayer["fontSize"] : never;
+    groupIds?: string[];
+    height?: number;
     id?: string;
     isDeleted?: boolean;
-    groupIds?: string[];
-    // generic element props
-    strokeColor?: ExcalidrawGenericElement["strokeColor"];
-    backgroundColor?: ExcalidrawGenericElement["backgroundColor"];
-    fillStyle?: ExcalidrawGenericElement["fillStyle"];
-    strokeWidth?: ExcalidrawGenericElement["strokeWidth"];
-    strokeStyle?: ExcalidrawGenericElement["strokeStyle"];
-    roundness?: ExcalidrawGenericElement["roundness"];
-    roughness?: ExcalidrawGenericElement["roughness"];
-    opacity?: ExcalidrawGenericElement["opacity"];
-    // text props
-    text?: T extends "text" ? ExcalidrawTextElement["text"] : never;
-    fontSize?: T extends "text" ? ExcalidrawTextElement["fontSize"] : never;
-    fontFamily?: T extends "text" ? ExcalidrawTextElement["fontFamily"] : never;
-    textAlign?: T extends "text" ? ExcalidrawTextElement["textAlign"] : never;
-    verticalAlign?: T extends "text"
-      ? ExcalidrawTextElement["verticalAlign"]
-      : never;
-    boundElements?: ExcalidrawGenericElement["boundElements"];
-    containerId?: T extends "text"
-      ? ExcalidrawTextElement["containerId"]
-      : never;
-    points?: T extends "arrow" | "line" ? readonly Point[] : never;
     locked?: boolean;
-    fileId?: T extends "image" ? string : never;
-    scale?: T extends "image" ? ExcalidrawImageElement["scale"] : never;
-    status?: T extends "image" ? ExcalidrawImageElement["status"] : never;
+    opacity?: ExcalidrawGenericLayer["opacity"];
+    points?: T extends "arrow" | "line" ? readonly Point[] : never;
+    roughness?: ExcalidrawGenericLayer["roughness"];
+    roundness?: ExcalidrawGenericLayer["roundness"];
+    scale?: T extends "image" ? ExcalidrawImageLayer["scale"] : never;
     startBinding?: T extends "arrow"
-      ? ExcalidrawLinearElement["startBinding"]
+      ? ExcalidrawLinearLayer["startBinding"]
       : never;
-    endBinding?: T extends "arrow"
-      ? ExcalidrawLinearElement["endBinding"]
+    status?: T extends "image" ? ExcalidrawImageLayer["status"] : never;
+    // generic layer props
+    strokeColor?: ExcalidrawGenericLayer["strokeColor"];
+    strokeStyle?: ExcalidrawGenericLayer["strokeStyle"];
+    strokeWidth?: ExcalidrawGenericLayer["strokeWidth"];
+    // text props
+    text?: T extends "text" ? ExcalidrawTextLayer["text"] : never;
+    textAlign?: T extends "text" ? ExcalidrawTextLayer["textAlign"] : never;
+    type?: T;
+    verticalAlign?: T extends "text"
+      ? ExcalidrawTextLayer["verticalAlign"]
       : never;
+    width?: number;
+    x?: number;
+    y?: number;
   }): T extends "arrow" | "line"
-    ? ExcalidrawLinearElement
+    ? ExcalidrawLinearLayer
     : T extends "freedraw"
-    ? ExcalidrawFreeDrawElement
+    ? ExcalidrawFreeDrawLayer
     : T extends "text"
-    ? ExcalidrawTextElement
+    ? ExcalidrawTextLayer
     : T extends "image"
-    ? ExcalidrawImageElement
-    : ExcalidrawGenericElement => {
-    let element: Mutable<ExcalidrawElement> = null!;
+    ? ExcalidrawImageLayer
+    : ExcalidrawGenericLayer => {
+    let layer: Mutable<ExcalidrawLayer> = null!;
 
     const appState = h?.state || getDefaultAppState();
 
     const base: Omit<
-      ExcalidrawGenericElement,
+      ExcalidrawGenericLayer,
       | "id"
       | "width"
       | "height"
@@ -164,52 +159,52 @@ export class API {
           : rest.roundness
       )
         ? {
-            type: isLinearElementType(type)
+            type: isLinearLayerType(type)
               ? ROUNDNESS.PROPORTIONAL_RADIUS
-              : ROUNDNESS.ADAPTIVE_RADIUS,
+              : ROUNDNESS.ADAPTIVE_RADIUS
           }
         : null,
       roughness: rest.roughness ?? appState.currentItemRoughness,
       opacity: rest.opacity ?? appState.currentItemOpacity,
-      boundElements: rest.boundElements ?? null,
-      locked: rest.locked ?? false,
+      boundLayers: rest.boundLayers ?? null,
+      locked: rest.locked ?? false
     };
     switch (type) {
       case "rectangle":
       case "diamond":
       case "ellipse":
-        element = newElement({
+        layer = newLayer({
           type: type as "rectangle" | "diamond" | "ellipse",
           width,
           height,
-          ...base,
+          ...base
         });
         break;
       case "text":
         const fontSize = rest.fontSize ?? appState.currentItemFontSize;
         const fontFamily = rest.fontFamily ?? appState.currentItemFontFamily;
-        element = newTextElement({
+        layer = newTextLayer({
           ...base,
           text: rest.text || "test",
           fontSize,
           fontFamily,
           textAlign: rest.textAlign ?? appState.currentItemTextAlign,
           verticalAlign: rest.verticalAlign ?? DEFAULT_VERTICAL_ALIGN,
-          containerId: rest.containerId ?? undefined,
+          containerId: rest.containerId ?? undefined
         });
-        element.width = width;
-        element.height = height;
+        layer.width = width;
+        layer.height = height;
         break;
       case "freedraw":
-        element = newFreeDrawElement({
+        layer = newFreeDrawLayer({
           type: type as "freedraw",
           simulatePressure: true,
-          ...base,
+          ...base
         });
         break;
       case "arrow":
       case "line":
-        element = newLinearElement({
+        layer = newLinearLayer({
           ...base,
           width,
           height,
@@ -218,41 +213,41 @@ export class API {
           endArrowhead: null,
           points: rest.points ?? [
             [0, 0],
-            [100, 100],
-          ],
+            [100, 100]
+          ]
         });
         break;
       case "image":
-        element = newImageElement({
+        layer = newImageLayer({
           ...base,
           width,
           height,
           type,
           fileId: (rest.fileId as string as FileId) ?? null,
           status: rest.status || "saved",
-          scale: rest.scale || [1, 1],
+          scale: rest.scale || [1, 1]
         });
         break;
     }
-    if (element.type === "arrow") {
-      element.startBinding = rest.startBinding ?? null;
-      element.endBinding = rest.endBinding ?? null;
+    if (layer.type === "arrow") {
+      layer.startBinding = rest.startBinding ?? null;
+      layer.endBinding = rest.endBinding ?? null;
     }
     if (id) {
-      element.id = id;
+      layer.id = id;
     }
     if (isDeleted) {
-      element.isDeleted = isDeleted;
+      layer.isDeleted = isDeleted;
     }
     if (groupIds) {
-      element.groupIds = groupIds;
+      layer.groupIds = groupIds;
     }
-    return element as any;
+    return layer as any;
   };
 
   static readFile = async <T extends "utf8" | null>(
     filepath: string,
-    encoding?: T,
+    encoding?: T
   ): Promise<T extends "utf8" ? string : Buffer> => {
     filepath = path.isAbsolute(filepath)
       ? filepath
@@ -263,7 +258,7 @@ export class API {
   static loadFile = async (filepath: string) => {
     const { base, ext } = path.parse(filepath);
     return new File([await API.readFile(filepath, null)], base, {
-      type: getMimeType(ext),
+      type: getMimeType(ext)
     });
   };
 
@@ -292,8 +287,8 @@ export class API {
             return text;
           }
           return "";
-        },
-      },
+        }
+      }
     });
     fireEvent(GlobalTestState.canvas, fileDropEvent);
   };

@@ -4,7 +4,7 @@
     "pasteAsPlaintext": "Als reinen Text einfügen",
     "pasteCharts": "Diagramme einfügen",
     "selectAll": "Alle auswählen",
-    "multiSelect": "Element zur Auswahl hinzufügen",
+    "multiSelect": "Layer zur Auswahl hinzufügen",
     "moveCanvas": "Leinwand verschieben",
     "cut": "Ausschneiden",
     "copy": "Kopieren",
@@ -116,7 +116,7 @@
       "edit": "Linie bearbeiten",
       "exit": "Linieneditor verlassen"
     },
-    "elementLock": {
+    "layerLock": {
       "lock": "Sperren",
       "unlock": "Entsperren",
       "lockAll": "Alle sperren",
@@ -124,14 +124,14 @@
     },
     "statusPublished": "Veröffentlicht",
     "sidebarLock": "Seitenleiste offen lassen",
-    "selectAllElementsInFrame": "Alle Elemente im Rahmen auswählen",
-    "removeAllElementsFromFrame": "Alle Elemente aus dem Rahmen entfernen",
+    "selectAllLayersInFrame": "Alle Layere im Rahmen auswählen",
+    "removeAllLayersFromFrame": "Alle Layere aus dem Rahmen entfernen",
     "eyeDropper": "Farbe von der Zeichenfläche auswählen"
   },
   "library": {
-    "noItems": "Noch keine Elemente hinzugefügt...",
-    "hint_emptyLibrary": "Wähle ein Element auf der Zeichenfläche, um es hier hinzuzufügen. Oder installiere eine Bibliothek aus dem öffentlichen Verzeichnis.",
-    "hint_emptyPrivateLibrary": "Wähle ein Element von der Zeichenfläche, um es hier hinzuzufügen."
+    "noItems": "Noch keine Layere hinzugefügt...",
+    "hint_emptyLibrary": "Wähle ein Layer auf der Zeichenfläche, um es hier hinzuzufügen. Oder installiere eine Bibliothek aus dem öffentlichen Verzeichnis.",
+    "hint_emptyPrivateLibrary": "Wähle ein Layer von der Zeichenfläche, um es hier hinzuzufügen."
   },
   "buttons": {
     "clearReset": "Zeichenfläche löschen & Hintergrundfarbe zurücksetzen",
@@ -180,14 +180,14 @@
     "uploadedSecurly": "Der Upload wurde mit Ende-zu-Ende-Verschlüsselung gespeichert. Weder Excalidraw noch Dritte können den Inhalt einsehen.",
     "loadSceneOverridePrompt": "Das Laden einer externen Zeichnung ersetzt den vorhandenen Inhalt. Möchtest du fortfahren?",
     "collabStopOverridePrompt": "Das Stoppen der Sitzung wird deine vorherige, lokal gespeicherte Zeichnung überschreiben. Bist du dir sicher?\n\n(Wenn du deine lokale Zeichnung behalten möchtest, schließe stattdessen den Browser-Tab.)",
-    "errorAddingToLibrary": "Das Element konnte nicht zur Bibliothek hinzugefügt werden",
-    "errorRemovingFromLibrary": "Das Element konnte nicht aus der Bibliothek entfernt werden",
+    "errorAddingToLibrary": "Das Layer konnte nicht zur Bibliothek hinzugefügt werden",
+    "errorRemovingFromLibrary": "Das Layer konnte nicht aus der Bibliothek entfernt werden",
     "confirmAddLibrary": "Dies fügt {{numShapes}} Form(en) zu deiner Bibliothek hinzu. Bist du dir sicher?",
     "imageDoesNotContainScene": "Dieses Bild scheint keine Szenendaten zu enthalten. Hast Du das Einbetten der Szene während des Exports aktiviert?",
     "cannotRestoreFromImage": "Die Zeichnung konnte aus dieser Bilddatei nicht wiederhergestellt werden",
     "invalidSceneUrl": "Die Szene konnte nicht von der angegebenen URL importiert werden. Sie ist entweder fehlerhaft oder enthält keine gültigen Excalidraw JSON-Daten.",
     "resetLibrary": "Dieses löscht deine Bibliothek. Bist du sicher?",
-    "removeItemsFromsLibrary": "{{count}} Element(e) aus der Bibliothek löschen?",
+    "removeItemsFromsLibrary": "{{count}} Layer(e) aus der Bibliothek löschen?",
     "invalidEncryptionKey": "Verschlüsselungsschlüssel muss 22 Zeichen lang sein. Die Live-Zusammenarbeit ist deaktiviert.",
     "collabOfflineWarning": "Keine Internetverbindung verfügbar.\nDeine Änderungen werden nicht gespeichert!"
   },
@@ -203,9 +203,9 @@
     "collabSaveFailed_sizeExceeded": "Keine Speicherung in der Backend-Datenbank möglich, die Zeichenfläche scheint zu groß zu sein. Du solltest Deine Datei lokal speichern, um sicherzustellen, dass Du Deine Arbeit nicht verlierst.",
     "brave_measure_text_error": {
       "line1": "Sieht so aus, als ob Du den Brave-Browser verwendest und die <bold>aggressive Blockierung von Fingerabdrücken</bold> aktiviert hast.",
-      "line2": "Dies könnte dazu führen, dass die <bold>Textelemente</bold> in Ihren Zeichnungen zerstört werden.",
+      "line2": "Dies könnte dazu führen, dass die <bold>Textlayere</bold> in Ihren Zeichnungen zerstört werden.",
       "line3": "Wir empfehlen dringend, diese Einstellung zu deaktivieren. Dazu kannst Du <link>diesen Schritten</link> folgen.",
-      "line4": "Wenn die Deaktivierung dieser Einstellung die fehlerhafte Anzeige von Textelementen nicht behebt, öffne bitte ein <issueLink>Ticket</issueLink> auf unserem GitHub oder schreibe uns auf <discordLink>Discord</discordLink>"
+      "line4": "Wenn die Deaktivierung dieser Einstellung die fehlerhafte Anzeige von Textlayeren nicht behebt, öffne bitte ein <issueLink>Ticket</issueLink> auf unserem GitHub oder schreibe uns auf <discordLink>Discord</discordLink>"
     }
   },
   "toolBar": {
@@ -234,12 +234,12 @@
   },
   "hints": {
     "canvasPanning": "Um die Zeichenfläche zu verschieben, halte das Mausrad oder die Leertaste während des Ziehens, oder verwende das Hand-Werkzeug",
-    "linearElement": "Klicken für Linie mit mehreren Punkten, Ziehen für einzelne Linie",
+    "linearLayer": "Klicken für Linie mit mehreren Punkten, Ziehen für einzelne Linie",
     "freeDraw": "Klicke und ziehe. Lass los, wenn du fertig bist",
     "text": "Tipp: Du kannst auch Text hinzufügen, indem du mit dem Auswahlwerkzeug auf eine beliebige Stelle doppelklickst",
     "text_selected": "Doppelklicken oder Eingabetaste drücken, um Text zu bearbeiten",
     "text_editing": "Drücke Escape oder CtrlOrCmd+Eingabetaste, um die Bearbeitung abzuschließen",
-    "linearElementMulti": "Zum Beenden auf den letzten Punkt klicken oder Escape oder Eingabe drücken",
+    "linearLayerMulti": "Zum Beenden auf den letzten Punkt klicken oder Escape oder Eingabe drücken",
     "lockAngle": "Du kannst Winkel einschränken, indem du SHIFT gedrückt hältst",
     "resize": "Du kannst die Proportionen einschränken, indem du SHIFT während der Größenänderung gedrückt hältst. Halte ALT gedrückt, um die Größe vom Zentrum aus zu ändern",
     "resizeImage": "Du kannst die Größe frei ändern, indem du SHIFT gedrückt hältst; halte ALT, um die Größe vom Zentrum aus zu ändern",
@@ -249,15 +249,15 @@
     "lineEditor_nothingSelected": "Wähle einen zu bearbeitenden Punkt (halte SHIFT gedrückt um mehrere Punkte auszuwählen),\noder halte Alt gedrückt und klicke um neue Punkte hinzuzufügen",
     "placeImage": "Klicken, um das Bild zu platzieren oder klicken und ziehen um seine Größe manuell zu setzen",
     "publishLibrary": "Veröffentliche deine eigene Bibliothek",
-    "bindTextToElement": "Zum Hinzufügen Eingabetaste drücken",
+    "bindTextToLayer": "Zum Hinzufügen Eingabetaste drücken",
     "deepBoxSelect": "Halte CtrlOrCmd gedrückt, um innerhalb der Gruppe auszuwählen, und um Ziehen zu vermeiden",
-    "eraserRevert": "Halte Alt gedrückt, um die zum Löschen markierten Elemente zurückzusetzen",
+    "eraserRevert": "Halte Alt gedrückt, um die zum Löschen markierten Layere zurückzusetzen",
     "firefox_clipboard_write": "Diese Funktion kann wahrscheinlich aktiviert werden, indem die Einstellung \"dom.events.asyncClipboard.clipboardItem\" auf \"true\" gesetzt wird. Um die Browsereinstellungen in Firefox zu ändern, besuche die Seite \"about:config\"."
   },
   "canvasError": {
     "cannotShowPreview": "Vorschau kann nicht angezeigt werden",
     "canvasTooBig": "Die Leinwand ist möglicherweise zu groß.",
-    "canvasTooBigTip": "Tipp: Schiebe die am weitesten entfernten Elemente ein wenig näher zusammen."
+    "canvasTooBigTip": "Tipp: Schiebe die am weitesten entfernten Layere ein wenig näher zusammen."
   },
   "errorSplash": {
     "headingMain": "Es ist ein Fehler aufgetreten. Versuche <button>die Seite neu zu laden.</button>",
@@ -314,9 +314,9 @@
     "textNewLine": "Neue Zeile hinzufügen (Texteditor)",
     "title": "Hilfe",
     "view": "Ansicht",
-    "zoomToFit": "Zoomen um alle Elemente einzupassen",
+    "zoomToFit": "Zoomen um alle Layere einzupassen",
     "zoomToSelection": "Auf Auswahl zoomen",
-    "toggleElementLock": "Auswahl sperren/entsperren",
+    "toggleLayerLock": "Auswahl sperren/entsperren",
     "movePageUpDown": "Seite nach oben/unten verschieben",
     "movePageLeftRight": "Seite nach links/rechts verschieben"
   },
@@ -325,7 +325,7 @@
   },
   "publishDialog": {
     "title": "Bibliothek veröffentlichen",
-    "itemName": "Elementname",
+    "itemName": "Layername",
     "authorName": "Name des Autors",
     "githubUsername": "GitHub-Benutzername",
     "twitterUsername": "Twitter-Benutzername",
@@ -347,9 +347,9 @@
     "noteDescription": "Sende deine Bibliothek ein, um in die <link>öffentliche Bibliotheks-Repository aufgenommen zu werden</link>damit andere Nutzer sie in ihren Zeichnungen verwenden können.",
     "noteGuidelines": "Die Bibliothek muss zuerst manuell freigegeben werden. Bitte lies die <link>Richtlinien</link> vor dem Absenden. Du benötigst ein GitHub-Konto, um zu kommunizieren und Änderungen vorzunehmen, falls erforderlich, aber es ist nicht unbedingt erforderlich.",
     "noteLicense": "Mit dem Absenden stimmst du zu, dass die Bibliothek unter der <link>MIT-Lizenz, </link>die zusammengefasst beinhaltet, dass jeder sie ohne Einschränkungen nutzen kann.",
-    "noteItems": "Jedes Bibliothekselement muss einen eigenen Namen haben, damit es gefiltert werden kann. Die folgenden Bibliothekselemente werden hinzugefügt:",
-    "atleastOneLibItem": "Bitte wähle mindestens ein Bibliothekselement aus, um zu beginnen",
-    "republishWarning": "Hinweis: Einige der ausgewählten Elemente sind bereits als veröffentlicht/eingereicht markiert. Du solltest Elemente nur erneut einreichen, wenn Du eine existierende Bibliothek oder Einreichung aktualisierst."
+    "noteItems": "Jedes Bibliothekslayer muss einen eigenen Namen haben, damit es gefiltert werden kann. Die folgenden Bibliothekslayere werden hinzugefügt:",
+    "atleastOneLibItem": "Bitte wähle mindestens ein Bibliothekslayer aus, um zu beginnen",
+    "republishWarning": "Hinweis: Einige der ausgewählten Layere sind bereits als veröffentlicht/eingereicht markiert. Du solltest Layere nur erneut einreichen, wenn Du eine existierende Bibliothek oder Einreichung aktualisierst."
   },
   "publishSuccessDialog": {
     "title": "Bibliothek übermittelt",
@@ -357,7 +357,7 @@
   },
   "confirmDialog": {
     "resetLibrary": "Bibliothek zurücksetzen",
-    "removeItemsFromLib": "Ausgewählte Elemente aus der Bibliothek entfernen"
+    "removeItemsFromLib": "Ausgewählte Layere aus der Bibliothek entfernen"
   },
   "imageExportDialog": {
     "header": "Bild exportieren",
@@ -389,8 +389,8 @@
   },
   "stats": {
     "angle": "Winkel",
-    "element": "Element",
-    "elements": "Elemente",
+    "layer": "Layer",
+    "layers": "Layere",
     "height": "Höhe",
     "scene": "Zeichnung",
     "selected": "Ausgewählt",
@@ -411,7 +411,7 @@
     "fileSavedToFilename": "Als {filename} gespeichert",
     "canvas": "Zeichenfläche",
     "selection": "Auswahl",
-    "pasteAsSingleElement": "Verwende {{shortcut}} , um als einzelnes Element\neinzufügen oder in einen existierenden Texteditor einzufügen"
+    "pasteAsSingleLayer": "Verwende {{shortcut}} , um als einzelnes Layer\neinzufügen oder in einen existierenden Texteditor einzufügen"
   },
   "colors": {
     "transparent": "Transparent",

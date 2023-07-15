@@ -1,7 +1,7 @@
-import { BoundingBox, getCommonBoundingBox } from "./element/bounds";
-import { newElementWith } from "./element/mutateElement";
-import { ExcalidrawElement } from "./element/types";
 import { getMaximumGroups } from "./groups";
+import { BoundingBox, getCommonBoundingBox } from "./layer/bounds";
+import { newLayerWith } from "./layer/mutateLayer";
+import { ExcalidrawLayer } from "./layer/types";
 
 export interface Alignment {
   axis: "x" | "y";
@@ -9,7 +9,7 @@ export interface Alignment {
 }
 
 const calculateTranslation = (
-  group: ExcalidrawElement[],
+  group: ExcalidrawLayer[],
   selectionBoundingBox: BoundingBox,
   { axis, position }: Alignment
 ): { x: number; y: number } => {
@@ -38,13 +38,13 @@ const calculateTranslation = (
   };
 };
 
-export const alignElements = (
-  selectedElements: ExcalidrawElement[],
+export const alignLayers = (
+  selectedLayers: ExcalidrawLayer[],
   alignment: Alignment
-): ExcalidrawElement[] => {
-  const groups: ExcalidrawElement[][] = getMaximumGroups(selectedElements);
+): ExcalidrawLayer[] => {
+  const groups: ExcalidrawLayer[][] = getMaximumGroups(selectedLayers);
 
-  const selectionBoundingBox = getCommonBoundingBox(selectedElements);
+  const selectionBoundingBox = getCommonBoundingBox(selectedLayers);
 
   return groups.flatMap((group) => {
     const translation = calculateTranslation(
@@ -52,10 +52,10 @@ export const alignElements = (
       selectionBoundingBox,
       alignment
     );
-    return group.map((element) =>
-      newElementWith(element, {
-        x: element.x + translation.x,
-        y: element.y + translation.y
+    return group.map((layer) =>
+      newLayerWith(layer, {
+        x: layer.x + translation.x,
+        y: layer.y + translation.y
       })
     );
   });

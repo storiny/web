@@ -1,35 +1,34 @@
 import React, { memo, ReactNode, useEffect, useState } from "react";
-import { EmptyLibraryUnit, LibraryUnit } from "./LibraryUnit";
+
+import { SvgCache } from "../../lib/hooks/useLibraryItemSvg";
+import { useTransition } from "../../lib/hooks/useTransition";
+import { ExcalidrawLayer, NonDeleted } from "../layer/types";
 import { LibraryItem } from "../types";
-import { ExcalidrawElement, NonDeleted } from "../element/types";
-import { SvgCache } from "../hooks/useLibraryItemSvg";
-import { useTransition } from "../hooks/useTransition";
+import { EmptyLibraryUnit, LibraryUnit } from "./LibraryUnit";
 
 type LibraryOrPendingItem = (
   | LibraryItem
   | /* pending library item */ {
       id: null;
-      elements: readonly NonDeleted<ExcalidrawElement>[];
+      layers: readonly NonDeleted<ExcalidrawLayer>[];
     }
 )[];
 
 interface Props {
-  items: LibraryOrPendingItem;
-  onClick: (id: LibraryItem["id"] | null) => void;
-  onItemSelectToggle: (id: LibraryItem["id"], event: React.MouseEvent) => void;
-  onItemDrag: (id: LibraryItem["id"], event: React.DragEvent) => void;
   isItemSelected: (id: LibraryItem["id"] | null) => boolean;
-  svgCache: SvgCache;
+  items: LibraryOrPendingItem;
   itemsRenderedPerBatch: number;
+  onClick: (id: LibraryItem["id"] | null) => void;
+  onItemDrag: (id: LibraryItem["id"], event: React.DragEvent) => void;
+  onItemSelectToggle: (id: LibraryItem["id"], event: React.MouseEvent) => void;
+  svgCache: SvgCache;
 }
 
 export const LibraryMenuSectionGrid = ({
-  children,
+  children
 }: {
   children: ReactNode;
-}) => {
-  return <div className="library-menu-items-container__grid">{children}</div>;
-};
+}) => <div className="library-menu-items-container__grid">{children}</div>;
 
 export const LibraryMenuSection = memo(
   ({
@@ -39,7 +38,7 @@ export const LibraryMenuSection = memo(
     isItemSelected,
     onClick,
     svgCache,
-    itemsRenderedPerBatch,
+    itemsRenderedPerBatch
   }: Props) => {
     const [, startTransition] = useTransition();
     const [index, setIndex] = useState(0);
@@ -54,24 +53,24 @@ export const LibraryMenuSection = memo(
 
     return (
       <>
-        {items.map((item, i) => {
-          return i < index ? (
+        {items.map((item, i) =>
+          i < index ? (
             <LibraryUnit
-              elements={item?.elements}
-              isPending={!item?.id && !!item?.elements}
-              onClick={onClick}
-              svgCache={svgCache}
               id={item?.id}
-              selected={isItemSelected(item.id)}
-              onToggle={onItemSelectToggle}
-              onDrag={onItemDrag}
+              isPending={!item?.id && !!item?.layers}
               key={item?.id ?? i}
+              layers={item?.layers}
+              onClick={onClick}
+              onDrag={onItemDrag}
+              onToggle={onItemSelectToggle}
+              selected={isItemSelected(item.id)}
+              svgCache={svgCache}
             />
           ) : (
             <EmptyLibraryUnit key={i} />
-          );
-        })}
+          )
+        )}
       </>
     );
-  },
+  }
 );

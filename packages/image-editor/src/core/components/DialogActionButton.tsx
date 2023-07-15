@@ -1,13 +1,15 @@
+import "./DialogActionButton.scss";
+
 import clsx from "clsx";
 import { ReactNode } from "react";
-import "./DialogActionButton.scss";
+
 import Spinner from "./Spinner";
 
 interface DialogActionButtonProps {
-  label: string;
-  children?: ReactNode;
   actionType?: "primary" | "danger";
+  children?: ReactNode;
   isLoading?: boolean;
+  label: string;
 }
 
 const DialogActionButton = ({
@@ -19,15 +21,15 @@ const DialogActionButton = ({
   type = "button",
   isLoading,
   ...rest
-}: DialogActionButtonProps & React.ButtonHTMLAttributes<HTMLButtonElement>) => {
+}: DialogActionButtonProps & React.ButtonHTMLAttributes<HTMLButtonLayer>) => {
   const cs = actionType ? `Dialog__action-button--${actionType}` : "";
 
   return (
     <button
-      className={clsx("Dialog__action-button", cs, className)}
-      type={type}
       aria-label={label}
+      className={clsx("Dialog__action-button", cs, className)}
       onClick={onClick}
+      type={type}
       {...rest}
     >
       {children && (

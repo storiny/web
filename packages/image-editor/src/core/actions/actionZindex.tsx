@@ -1,32 +1,31 @@
 import React from "react";
-import {
-  moveOneLeft,
-  moveOneRight,
-  moveAllLeft,
-  moveAllRight,
-} from "../zindex";
-import { KEYS, CODES } from "../keys";
-import { t } from "../i18n";
-import { getShortcutKey } from "../utils";
-import { register } from "./register";
+
 import {
   BringForwardIcon,
   BringToFrontIcon,
   SendBackwardIcon,
-  SendToBackIcon,
+  SendToBackIcon
 } from "../components/icons";
 import { isDarwin } from "../constants";
+import { t } from "../i18n";
+import { CODES, KEYS } from "../keys";
+import { getShortcutKey } from "../utils";
+import {
+  moveAllLeft,
+  moveAllRight,
+  moveOneLeft,
+  moveOneRight
+} from "../zindex";
+import { register } from "./register";
 
 export const actionSendBackward = register({
   name: "sendBackward",
-  trackEvent: { category: "element" },
-  perform: (elements, appState) => {
-    return {
-      elements: moveOneLeft(elements, appState),
-      appState,
-      commitToHistory: true,
-    };
-  },
+  trackEvent: { category: "layer" },
+  perform: (layers, appState) => ({
+    layers: moveOneLeft(layers, appState),
+    appState,
+    commitToHistory: true
+  }),
   contextItemLabel: "labels.sendBackward",
   keyPriority: 40,
   keyTest: (event) =>
@@ -35,26 +34,24 @@ export const actionSendBackward = register({
     event.code === CODES.BRACKET_LEFT,
   PanelComponent: ({ updateData, appState }) => (
     <button
-      type="button"
       className="zIndexButton"
       onClick={() => updateData(null)}
       title={`${t("labels.sendBackward")} — ${getShortcutKey("CtrlOrCmd+[")}`}
+      type="button"
     >
       {SendBackwardIcon}
     </button>
-  ),
+  )
 });
 
 export const actionBringForward = register({
   name: "bringForward",
-  trackEvent: { category: "element" },
-  perform: (elements, appState) => {
-    return {
-      elements: moveOneRight(elements, appState),
-      appState,
-      commitToHistory: true,
-    };
-  },
+  trackEvent: { category: "layer" },
+  perform: (layers, appState) => ({
+    layers: moveOneRight(layers, appState),
+    appState,
+    commitToHistory: true
+  }),
   contextItemLabel: "labels.bringForward",
   keyPriority: 40,
   keyTest: (event) =>
@@ -63,26 +60,24 @@ export const actionBringForward = register({
     event.code === CODES.BRACKET_RIGHT,
   PanelComponent: ({ updateData, appState }) => (
     <button
-      type="button"
       className="zIndexButton"
       onClick={() => updateData(null)}
       title={`${t("labels.bringForward")} — ${getShortcutKey("CtrlOrCmd+]")}`}
+      type="button"
     >
       {BringForwardIcon}
     </button>
-  ),
+  )
 });
 
 export const actionSendToBack = register({
   name: "sendToBack",
-  trackEvent: { category: "element" },
-  perform: (elements, appState) => {
-    return {
-      elements: moveAllLeft(elements, appState),
-      appState,
-      commitToHistory: true,
-    };
-  },
+  trackEvent: { category: "layer" },
+  perform: (layers, appState) => ({
+    layers: moveAllLeft(layers, appState),
+    appState,
+    commitToHistory: true
+  }),
   contextItemLabel: "labels.sendToBack",
   keyTest: (event) =>
     isDarwin
@@ -94,7 +89,6 @@ export const actionSendToBack = register({
         event.code === CODES.BRACKET_LEFT,
   PanelComponent: ({ updateData, appState }) => (
     <button
-      type="button"
       className="zIndexButton"
       onClick={() => updateData(null)}
       title={`${t("labels.sendToBack")} — ${
@@ -102,23 +96,22 @@ export const actionSendToBack = register({
           ? getShortcutKey("CtrlOrCmd+Alt+[")
           : getShortcutKey("CtrlOrCmd+Shift+[")
       }`}
+      type="button"
     >
       {SendToBackIcon}
     </button>
-  ),
+  )
 });
 
 export const actionBringToFront = register({
   name: "bringToFront",
-  trackEvent: { category: "element" },
+  trackEvent: { category: "layer" },
 
-  perform: (elements, appState) => {
-    return {
-      elements: moveAllRight(elements, appState),
-      appState,
-      commitToHistory: true,
-    };
-  },
+  perform: (layers, appState) => ({
+    layers: moveAllRight(layers, appState),
+    appState,
+    commitToHistory: true
+  }),
   contextItemLabel: "labels.bringToFront",
   keyTest: (event) =>
     isDarwin
@@ -130,7 +123,6 @@ export const actionBringToFront = register({
         event.code === CODES.BRACKET_RIGHT,
   PanelComponent: ({ updateData, appState }) => (
     <button
-      type="button"
       className="zIndexButton"
       onClick={(event) => updateData(null)}
       title={`${t("labels.bringToFront")} — ${
@@ -138,8 +130,9 @@ export const actionBringToFront = register({
           ? getShortcutKey("CtrlOrCmd+Alt+]")
           : getShortcutKey("CtrlOrCmd+Shift+]")
       }`}
+      type="button"
     >
       {BringToFrontIcon}
     </button>
-  ),
+  )
 });

@@ -1,35 +1,35 @@
+import { getSelectedLayers } from "../../lib/scene";
 import {
   BOUND_TEXT_PADDING,
   ROUNDNESS,
-  VERTICAL_ALIGN,
   TEXT_ALIGN,
+  VERTICAL_ALIGN
 } from "../constants";
-import { getNonDeletedElements, isTextElement, newElement } from "../element";
-import { mutateElement } from "../element/mutateElement";
+import { getNonDeletedLayers, isTextLayer, newLayer } from "../layer";
+import { mutateLayer } from "../layer/mutateLayer";
 import {
   computeBoundTextPosition,
   computeContainerDimensionForBoundText,
-  getBoundTextElement,
+  getBoundTextLayer,
   measureText,
-  redrawTextBoundingBox,
-} from "../element/textElement";
+  redrawTextBoundingBox
+} from "../layer/textLayer";
 import {
   getOriginalContainerHeightFromCache,
   resetOriginalContainerCache,
-  updateOriginalContainerCache,
-} from "../element/textWysiwyg";
+  updateOriginalContainerCache
+} from "../layer/textWysiwyg";
 import {
-  hasBoundTextElement,
+  hasBoundTextLayer,
   isTextBindableContainer,
-  isUsingAdaptiveRadius,
-} from "../element/typeChecks";
+  isUsingAdaptiveRadius
+} from "../layer/typeChecks";
 import {
-  ExcalidrawElement,
-  ExcalidrawLinearElement,
+  ExcalidrawLayer,
+  ExcalidrawLinearLayer,
   ExcalidrawTextContainer,
-  ExcalidrawTextElement,
-} from "../element/types";
-import { getSelectedElements } from "../scene";
+  ExcalidrawTextLayer
+} from "../layer/types";
 import { AppState } from "../types";
 import { Mutable } from "../utility-types";
 import { getFontString } from "../utils";
@@ -38,192 +38,191 @@ import { register } from "./register";
 export const actionUnbindText = register({
   name: "unbindText",
   contextItemLabel: "labels.unbindText",
-  trackEvent: { category: "element" },
-  predicate: (elements, appState) => {
-    const selectedElements = getSelectedElements(elements, appState);
+  trackEvent: { category: "layer" },
+  predicate: (layers, appState) => {
+    const selectedLayers = getSelectedLayers(layers, appState);
 
-    return selectedElements.some((element) => hasBoundTextElement(element));
+    return selectedLayers.some((layer) => hasBoundTextLayer(layer));
   },
-  perform: (elements, appState) => {
-    const selectedElements = getSelectedElements(
-      getNonDeletedElements(elements),
-      appState,
+  perform: (layers, appState) => {
+    const selectedLayers = getSelectedLayers(
+      getNonDeletedLayers(layers),
+      appState
     );
-    selectedElements.forEach((element) => {
-      const boundTextElement = getBoundTextElement(element);
-      if (boundTextElement) {
+    selectedLayers.forEach((layer) => {
+      const boundTextLayer = getBoundTextLayer(layer);
+      if (boundTextLayer) {
         const { width, height, baseline } = measureText(
-          boundTextElement.originalText,
-          getFontString(boundTextElement),
-          boundTextElement.lineHeight,
+          boundTextLayer.originalText,
+          getFontString(boundTextLayer),
+          boundTextLayer.lineHeight
         );
         const originalContainerHeight = getOriginalContainerHeightFromCache(
-          element.id,
+          layer.id
         );
-        resetOriginalContainerCache(element.id);
-        const { x, y } = computeBoundTextPosition(element, boundTextElement);
-        mutateElement(boundTextElement as ExcalidrawTextElement, {
+        resetOriginalContainerCache(layer.id);
+        const { x, y } = computeBoundTextPosition(layer, boundTextLayer);
+        mutateLayer(boundTextLayer as ExcalidrawTextLayer, {
           containerId: null,
           width,
           height,
           baseline,
-          text: boundTextElement.originalText,
+          text: boundTextLayer.originalText,
           x,
-          y,
+          y
         });
-        mutateElement(element, {
-          boundElements: element.boundElements?.filter(
-            (ele) => ele.id !== boundTextElement.id,
+        mutateLayer(layer, {
+          boundLayers: layer.boundLayers?.filter(
+            (ele) => ele.id !== boundTextLayer.id
           ),
           height: originalContainerHeight
             ? originalContainerHeight
-            : element.height,
+            : layer.height
         });
       }
     });
     return {
-      elements,
+      layers,
       appState,
-      commitToHistory: true,
+      commitToHistory: true
     };
-  },
+  }
 });
 
 export const actionBindText = register({
   name: "bindText",
   contextItemLabel: "labels.bindText",
-  trackEvent: { category: "element" },
-  predicate: (elements, appState) => {
-    const selectedElements = getSelectedElements(elements, appState);
+  trackEvent: { category: "layer" },
+  predicate: (layers, appState) => {
+    const selectedLayers = getSelectedLayers(layers, appState);
 
-    if (selectedElements.length === 2) {
-      const textElement =
-        isTextElement(selectedElements[0]) ||
-        isTextElement(selectedElements[1]);
+    if (selectedLayers.length === 2) {
+      const textLayer =
+        isTextLayer(selectedLayers[0]) || isTextLayer(selectedLayers[1]);
 
       let bindingContainer;
-      if (isTextBindableContainer(selectedElements[0])) {
-        bindingContainer = selectedElements[0];
-      } else if (isTextBindableContainer(selectedElements[1])) {
-        bindingContainer = selectedElements[1];
+      if (isTextBindableContainer(selectedLayers[0])) {
+        bindingContainer = selectedLayers[0];
+      } else if (isTextBindableContainer(selectedLayers[1])) {
+        bindingContainer = selectedLayers[1];
       }
       if (
-        textElement &&
+        textLayer &&
         bindingContainer &&
-        getBoundTextElement(bindingContainer) === null
+        getBoundTextLayer(bindingContainer) === null
       ) {
         return true;
       }
     }
     return false;
   },
-  perform: (elements, appState) => {
-    const selectedElements = getSelectedElements(
-      getNonDeletedElements(elements),
-      appState,
+  perform: (layers, appState) => {
+    const selectedLayers = getSelectedLayers(
+      getNonDeletedLayers(layers),
+      appState
     );
 
-    let textElement: ExcalidrawTextElement;
+    let textLayer: ExcalidrawTextLayer;
     let container: ExcalidrawTextContainer;
 
     if (
-      isTextElement(selectedElements[0]) &&
-      isTextBindableContainer(selectedElements[1])
+      isTextLayer(selectedLayers[0]) &&
+      isTextBindableContainer(selectedLayers[1])
     ) {
-      textElement = selectedElements[0];
-      container = selectedElements[1];
+      textLayer = selectedLayers[0];
+      container = selectedLayers[1];
     } else {
-      textElement = selectedElements[1] as ExcalidrawTextElement;
-      container = selectedElements[0] as ExcalidrawTextContainer;
+      textLayer = selectedLayers[1] as ExcalidrawTextLayer;
+      container = selectedLayers[0] as ExcalidrawTextContainer;
     }
-    mutateElement(textElement, {
+    mutateLayer(textLayer, {
       containerId: container.id,
       verticalAlign: VERTICAL_ALIGN.MIDDLE,
-      textAlign: TEXT_ALIGN.CENTER,
+      textAlign: TEXT_ALIGN.CENTER
     });
-    mutateElement(container, {
-      boundElements: (container.boundElements || []).concat({
+    mutateLayer(container, {
+      boundLayers: (container.boundLayers || []).concat({
         type: "text",
-        id: textElement.id,
-      }),
+        id: textLayer.id
+      })
     });
     const originalContainerHeight = container.height;
-    redrawTextBoundingBox(textElement, container);
+    redrawTextBoundingBox(textLayer, container);
     // overwritting the cache with original container height so
     // it can be restored when unbind
     updateOriginalContainerCache(container.id, originalContainerHeight);
 
     return {
-      elements: pushTextAboveContainer(elements, container, textElement),
-      appState: { ...appState, selectedElementIds: { [container.id]: true } },
-      commitToHistory: true,
+      layers: pushTextAboveContainer(layers, container, textLayer),
+      appState: { ...appState, selectedLayerIds: { [container.id]: true } },
+      commitToHistory: true
     };
-  },
+  }
 });
 
 const pushTextAboveContainer = (
-  elements: readonly ExcalidrawElement[],
-  container: ExcalidrawElement,
-  textElement: ExcalidrawTextElement,
+  layers: readonly ExcalidrawLayer[],
+  container: ExcalidrawLayer,
+  textLayer: ExcalidrawTextLayer
 ) => {
-  const updatedElements = elements.slice();
-  const textElementIndex = updatedElements.findIndex(
-    (ele) => ele.id === textElement.id,
+  const updatedLayers = layers.slice();
+  const textLayerIndex = updatedLayers.findIndex(
+    (ele) => ele.id === textLayer.id
   );
-  updatedElements.splice(textElementIndex, 1);
+  updatedLayers.splice(textLayerIndex, 1);
 
-  const containerIndex = updatedElements.findIndex(
-    (ele) => ele.id === container.id,
+  const containerIndex = updatedLayers.findIndex(
+    (ele) => ele.id === container.id
   );
-  updatedElements.splice(containerIndex + 1, 0, textElement);
-  return updatedElements;
+  updatedLayers.splice(containerIndex + 1, 0, textLayer);
+  return updatedLayers;
 };
 
 const pushContainerBelowText = (
-  elements: readonly ExcalidrawElement[],
-  container: ExcalidrawElement,
-  textElement: ExcalidrawTextElement,
+  layers: readonly ExcalidrawLayer[],
+  container: ExcalidrawLayer,
+  textLayer: ExcalidrawTextLayer
 ) => {
-  const updatedElements = elements.slice();
-  const containerIndex = updatedElements.findIndex(
-    (ele) => ele.id === container.id,
+  const updatedLayers = layers.slice();
+  const containerIndex = updatedLayers.findIndex(
+    (ele) => ele.id === container.id
   );
-  updatedElements.splice(containerIndex, 1);
+  updatedLayers.splice(containerIndex, 1);
 
-  const textElementIndex = updatedElements.findIndex(
-    (ele) => ele.id === textElement.id,
+  const textLayerIndex = updatedLayers.findIndex(
+    (ele) => ele.id === textLayer.id
   );
-  updatedElements.splice(textElementIndex, 0, container);
-  return updatedElements;
+  updatedLayers.splice(textLayerIndex, 0, container);
+  return updatedLayers;
 };
 
 export const actionWrapTextInContainer = register({
   name: "wrapTextInContainer",
   contextItemLabel: "labels.createContainerFromText",
-  trackEvent: { category: "element" },
-  predicate: (elements, appState) => {
-    const selectedElements = getSelectedElements(elements, appState);
-    const areTextElements = selectedElements.every((el) => isTextElement(el));
-    return selectedElements.length > 0 && areTextElements;
+  trackEvent: { category: "layer" },
+  predicate: (layers, appState) => {
+    const selectedLayers = getSelectedLayers(layers, appState);
+    const areTextLayers = selectedLayers.every((el) => isTextLayer(el));
+    return selectedLayers.length > 0 && areTextLayers;
   },
-  perform: (elements, appState) => {
-    const selectedElements = getSelectedElements(
-      getNonDeletedElements(elements),
-      appState,
+  perform: (layers, appState) => {
+    const selectedLayers = getSelectedLayers(
+      getNonDeletedLayers(layers),
+      appState
     );
-    let updatedElements: readonly ExcalidrawElement[] = elements.slice();
-    const containerIds: Mutable<AppState["selectedElementIds"]> = {};
+    let updatedLayers: readonly ExcalidrawLayer[] = layers.slice();
+    const containerIds: Mutable<AppState["selectedLayerIds"]> = {};
 
-    for (const textElement of selectedElements) {
-      if (isTextElement(textElement)) {
-        const container = newElement({
+    for (const textLayer of selectedLayers) {
+      if (isTextLayer(textLayer)) {
+        const container = newLayer({
           type: "rectangle",
           backgroundColor: appState.currentItemBackgroundColor,
-          boundElements: [
-            ...(textElement.boundElements || []),
-            { id: textElement.id, type: "text" },
+          boundLayers: [
+            ...(textLayer.boundLayers || []),
+            { id: textLayer.id, type: "text" }
           ],
-          angle: textElement.angle,
+          angle: textLayer.angle,
           fillStyle: appState.currentItemFillStyle,
           strokeColor: appState.currentItemStrokeColor,
           roughness: appState.currentItemRoughness,
@@ -234,82 +233,82 @@ export const actionWrapTextInContainer = register({
               ? {
                   type: isUsingAdaptiveRadius("rectangle")
                     ? ROUNDNESS.ADAPTIVE_RADIUS
-                    : ROUNDNESS.PROPORTIONAL_RADIUS,
+                    : ROUNDNESS.PROPORTIONAL_RADIUS
                 }
               : null,
           opacity: 100,
           locked: false,
-          x: textElement.x - BOUND_TEXT_PADDING,
-          y: textElement.y - BOUND_TEXT_PADDING,
+          x: textLayer.x - BOUND_TEXT_PADDING,
+          y: textLayer.y - BOUND_TEXT_PADDING,
           width: computeContainerDimensionForBoundText(
-            textElement.width,
-            "rectangle",
+            textLayer.width,
+            "rectangle"
           ),
           height: computeContainerDimensionForBoundText(
-            textElement.height,
-            "rectangle",
+            textLayer.height,
+            "rectangle"
           ),
-          groupIds: textElement.groupIds,
-          frameId: textElement.frameId,
+          groupIds: textLayer.groupIds,
+          frameId: textLayer.frameId
         });
 
         // update bindings
-        if (textElement.boundElements?.length) {
-          const linearElementIds = textElement.boundElements
+        if (textLayer.boundLayers?.length) {
+          const linearLayerIds = textLayer.boundLayers
             .filter((ele) => ele.type === "arrow")
             .map((el) => el.id);
-          const linearElements = updatedElements.filter((ele) =>
-            linearElementIds.includes(ele.id),
-          ) as ExcalidrawLinearElement[];
-          linearElements.forEach((ele) => {
+          const linearLayers = updatedLayers.filter((ele) =>
+            linearLayerIds.includes(ele.id)
+          ) as ExcalidrawLinearLayer[];
+          linearLayers.forEach((ele) => {
             let startBinding = ele.startBinding;
             let endBinding = ele.endBinding;
 
-            if (startBinding?.elementId === textElement.id) {
+            if (startBinding?.layerId === textLayer.id) {
               startBinding = {
                 ...startBinding,
-                elementId: container.id,
+                layerId: container.id
               };
             }
 
-            if (endBinding?.elementId === textElement.id) {
-              endBinding = { ...endBinding, elementId: container.id };
+            if (endBinding?.layerId === textLayer.id) {
+              endBinding = { ...endBinding, layerId: container.id };
             }
 
             if (startBinding || endBinding) {
-              mutateElement(ele, { startBinding, endBinding }, false);
+              mutateLayer(ele, { startBinding, endBinding }, false);
             }
           });
         }
 
-        mutateElement(
-          textElement,
+        mutateLayer(
+          textLayer,
           {
             containerId: container.id,
             verticalAlign: VERTICAL_ALIGN.MIDDLE,
-            boundElements: null,
-            textAlign: TEXT_ALIGN.CENTER,
+            boundLayers: null,
+            textAlign: TEXT_ALIGN.CENTER
           },
-          false,
+          false
         );
-        redrawTextBoundingBox(textElement, container);
+        redrawTextBoundingBox(textLayer, container);
 
-        updatedElements = pushContainerBelowText(
-          [...updatedElements, container],
+        updatedLayers = pushContainerBelowText(
+          [...updatedLayers, container],
           container,
-          textElement,
+          textLayer
         );
         containerIds[container.id] = true;
       }
     }
 
     return {
-      elements: updatedElements,
+      layers: updatedLayers,
       appState: {
         ...appState,
-        selectedElementIds: containerIds,
+        selectedLayerIds: containerIds
       },
-      commitToHistory: true,
+      commitToHistory: true
     };
-  },
+  }
 });

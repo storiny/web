@@ -1,10 +1,11 @@
 import React from "react";
-import { ExcalidrawElement } from "../element/types";
+
+import { ExcalidrawLayer } from "../layer/types";
 import {
   AppClassProperties,
   AppState,
-  ExcalidrawProps,
   BinaryFiles,
+  ExcalidrawProps
 } from "../types";
 import { MarkOptional } from "../utility-types";
 
@@ -13,23 +14,23 @@ export type ActionSource = "ui" | "keyboard" | "contextMenu" | "api";
 /** if false, the action should be prevented */
 export type ActionResult =
   | {
-      elements?: readonly ExcalidrawElement[] | null;
       appState?: MarkOptional<
         AppState,
         "offsetTop" | "offsetLeft" | "width" | "height"
       > | null;
-      files?: BinaryFiles | null;
       commitToHistory: boolean;
-      syncHistory?: boolean;
+      files?: BinaryFiles | null;
+      layers?: readonly ExcalidrawLayer[] | null;
       replaceFiles?: boolean;
+      syncHistory?: boolean;
     }
   | false;
 
 type ActionFn = (
-  elements: readonly ExcalidrawElement[],
+  layers: readonly ExcalidrawLayer[],
   appState: Readonly<AppState>,
   formData: any,
-  app: AppClassProperties,
+  app: AppClassProperties
 ) => ActionResult | Promise<ActionResult>;
 
 export type UpdaterFn = (res: ActionResult) => void;
@@ -75,7 +76,7 @@ export type ActionName =
   | "saveFileToDisk"
   | "loadScene"
   | "duplicateSelection"
-  | "deleteSelectedElements"
+  | "deleteSelectedLayers"
   | "changeViewBackgroundColor"
   | "clearCanvas"
   | "zoomIn"
@@ -112,66 +113,66 @@ export type ActionName =
   | "unbindText"
   | "hyperlink"
   | "bindText"
-  | "unlockAllElements"
-  | "toggleElementLock"
+  | "unlockAllLayers"
+  | "toggleLayerLock"
   | "toggleLinearEditor"
   | "toggleEraserTool"
   | "toggleHandTool"
-  | "selectAllElementsInFrame"
-  | "removeAllElementsFromFrame"
+  | "selectAllLayersInFrame"
+  | "removeAllLayersFromFrame"
   | "updateFrameRendering"
   | "setFrameAsActiveTool"
   | "createContainerFromText"
   | "wrapTextInContainer";
 
 export type PanelComponentProps = {
-  elements: readonly ExcalidrawElement[];
-  appState: AppState;
-  updateData: (formData?: any) => void;
   appProps: ExcalidrawProps;
+  appState: AppState;
   data?: Record<string, any>;
+  layers: readonly ExcalidrawLayer[];
+  updateData: (formData?: any) => void;
 };
 
 export interface Action {
-  name: ActionName;
   PanelComponent?: React.FC<PanelComponentProps>;
-  perform: ActionFn;
+  checked?: (appState: Readonly<AppState>) => boolean;
+  contextItemLabel?:
+    | string
+    | ((
+        layers: readonly ExcalidrawLayer[],
+        appState: Readonly<AppState>
+      ) => string);
   keyPriority?: number;
   keyTest?: (
     event: React.KeyboardEvent | KeyboardEvent,
     appState: AppState,
-    elements: readonly ExcalidrawElement[],
+    layers: readonly ExcalidrawLayer[]
   ) => boolean;
-  contextItemLabel?:
-    | string
-    | ((
-        elements: readonly ExcalidrawElement[],
-        appState: Readonly<AppState>,
-      ) => string);
+  name: ActionName;
+  perform: ActionFn;
   predicate?: (
-    elements: readonly ExcalidrawElement[],
+    layers: readonly ExcalidrawLayer[],
     appState: AppState,
     appProps: ExcalidrawProps,
-    app: AppClassProperties,
+    app: AppClassProperties
   ) => boolean;
-  checked?: (appState: Readonly<AppState>) => boolean;
   trackEvent:
     | false
     | {
+        action?: string;
         category:
           | "toolbar"
-          | "element"
+          | "layer"
           | "canvas"
           | "export"
           | "history"
           | "menu"
           | "collab"
           | "hyperlink";
-        action?: string;
         predicate?: (
           appState: Readonly<AppState>,
-          elements: readonly ExcalidrawElement[],
-          value: any,
+          layers: readonly ExcalidrawLayer[],
+          value: any
         ) => boolean;
       };
   /** if set to `true`, allow action to be performed in viewMode.

@@ -1,33 +1,28 @@
-import { t } from "../i18n";
-import { NonDeletedExcalidrawElement } from "../element/types";
-import { getSelectedElements } from "../scene";
-import { Device, UIAppState } from "../types";
-import {
-  isImageElement,
-  isLinearElement,
-  isTextBindableContainer,
-  isTextElement,
-} from "../element/typeChecks";
-import { getShortcutKey } from "../utils";
-import { isEraserActive } from "../appState";
-
 import "./HintViewer.scss";
+
+import { getSelectedLayers } from "../../lib/scene";
+import { isEraserActive } from "../appState";
+import { t } from "../i18n";
+import {
+  isImageLayer,
+  isLinearLayer,
+  isTextBindableContainer,
+  isTextLayer
+} from "../layer/typeChecks";
+import { NonDeletedExcalidrawLayer } from "../layer/types";
+import { Device, UIAppState } from "../types";
+import { getShortcutKey } from "../utils";
 
 interface HintViewerProps {
   appState: UIAppState;
-  elements: readonly NonDeletedExcalidrawElement[];
-  isMobile: boolean;
   device: Device;
+  isMobile: boolean;
+  layers: readonly NonDeletedExcalidrawLayer[];
 }
 
-const getHints = ({
-  appState,
-  elements,
-  isMobile,
-  device,
-}: HintViewerProps) => {
+const getHints = ({ appState, layers, isMobile, device }: HintViewerProps) => {
   const { activeTool, isResizing, isRotating, lastPointerDownWith } = appState;
-  const multiMode = appState.multiElement !== null;
+  const multiMode = appState.multiLayer !== null;
 
   if (appState.openSidebar && !device.canDeviceFitSidebar) {
     return null;
@@ -38,9 +33,9 @@ const getHints = ({
   }
   if (activeTool.type === "arrow" || activeTool.type === "line") {
     if (!multiMode) {
-      return t("hints.linearElement");
+      return t("hints.linearLayer");
     }
-    return t("hints.linearElementMulti");
+    return t("hints.linearLayerMulti");
   }
 
   if (activeTool.type === "freedraw") {
@@ -51,22 +46,22 @@ const getHints = ({
     return t("hints.text");
   }
 
-  if (appState.activeTool.type === "image" && appState.pendingImageElementId) {
+  if (appState.activeTool.type === "image" && appState.pendingImageLayerId) {
     return t("hints.placeImage");
   }
 
-  const selectedElements = getSelectedElements(elements, appState);
+  const selectedLayers = getSelectedLayers(layers, appState);
 
   if (
     isResizing &&
     lastPointerDownWith === "mouse" &&
-    selectedElements.length === 1
+    selectedLayers.length === 1
   ) {
-    const targetElement = selectedElements[0];
-    if (isLinearElement(targetElement) && targetElement.points.length === 2) {
+    const targetLayer = selectedLayers[0];
+    if (isLinearLayer(targetLayer) && targetLayer.points.length === 2) {
       return t("hints.lockAngle");
     }
-    return isImageElement(targetElement)
+    return isImageLayer(targetLayer)
       ? t("hints.resizeImage")
       : t("hints.resize");
   }
@@ -75,38 +70,38 @@ const getHints = ({
     return t("hints.rotate");
   }
 
-  if (selectedElements.length === 1 && isTextElement(selectedElements[0])) {
+  if (selectedLayers.length === 1 && isTextLayer(selectedLayers[0])) {
     return t("hints.text_selected");
   }
 
-  if (appState.editingElement && isTextElement(appState.editingElement)) {
+  if (appState.editingLayer && isTextLayer(appState.editingLayer)) {
     return t("hints.text_editing");
   }
 
   if (activeTool.type === "selection") {
     if (
-      appState.draggingElement?.type === "selection" &&
-      !appState.editingElement &&
-      !appState.editingLinearElement
+      appState.draggingLayer?.type === "selection" &&
+      !appState.editingLayer &&
+      !appState.editingLinearLayer
     ) {
       return t("hints.deepBoxSelect");
     }
-    if (!selectedElements.length && !isMobile) {
+    if (!selectedLayers.length && !isMobile) {
       return t("hints.canvasPanning");
     }
   }
 
-  if (selectedElements.length === 1) {
-    if (isLinearElement(selectedElements[0])) {
-      if (appState.editingLinearElement) {
-        return appState.editingLinearElement.selectedPointsIndices
+  if (selectedLayers.length === 1) {
+    if (isLinearLayer(selectedLayers[0])) {
+      if (appState.editingLinearLayer) {
+        return appState.editingLinearLayer.selectedPointsIndices
           ? t("hints.lineEditor_pointSelected")
           : t("hints.lineEditor_nothingSelected");
       }
       return t("hints.lineEditor_info");
     }
-    if (isTextBindableContainer(selectedElements[0])) {
-      return t("hints.bindTextToElement");
+    if (isTextBindableContainer(selectedLayers[0])) {
+      return t("hints.bindTextToLayer");
     }
   }
 
@@ -115,15 +110,15 @@ const getHints = ({
 
 export const HintViewer = ({
   appState,
-  elements,
+  layers,
   isMobile,
-  device,
+  device
 }: HintViewerProps) => {
   let hint = getHints({
     appState,
-    elements,
+    layers,
     isMobile,
-    device,
+    device
   });
   if (!hint) {
     return null;

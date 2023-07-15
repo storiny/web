@@ -1,99 +1,89 @@
-import { register } from "./register";
-import { getSelectedElements } from "../scene";
-import { getNonDeletedElements } from "../element";
-import { ExcalidrawElement, NonDeleted } from "../element/types";
-import { resizeMultipleElements } from "../element/resizeElements";
+import { getSelectedLayers } from "../../lib/scene";
+import { updateFrameMembershipOfSelectedLayers } from "../frame";
+import { CODES, KEYS } from "../keys";
+import { getNonDeletedLayers } from "../layer";
+import {
+  bindOrUnbindSelectedLayers,
+  isBindingEnabled,
+  unbindLinearLayers
+} from "../layer/binding";
+import { getCommonBoundingBox } from "../layer/bounds";
+import { resizeMultipleLayers } from "../layer/resizeLayers";
+import { ExcalidrawLayer, NonDeleted } from "../layer/types";
 import { AppState, PointerDownState } from "../types";
 import { arrayToMap } from "../utils";
-import { CODES, KEYS } from "../keys";
-import { getCommonBoundingBox } from "../element/bounds";
-import {
-  bindOrUnbindSelectedElements,
-  isBindingEnabled,
-  unbindLinearElements,
-} from "../element/binding";
-import { updateFrameMembershipOfSelectedElements } from "../frame";
+import { register } from "./register";
 
 export const actionFlipHorizontal = register({
   name: "flipHorizontal",
-  trackEvent: { category: "element" },
-  perform: (elements, appState) => {
-    return {
-      elements: updateFrameMembershipOfSelectedElements(
-        flipSelectedElements(elements, appState, "horizontal"),
-        appState,
-      ),
-      appState,
-      commitToHistory: true,
-    };
-  },
+  trackEvent: { category: "layer" },
+  perform: (layers, appState) => ({
+    layers: updateFrameMembershipOfSelectedLayers(
+      flipSelectedLayers(layers, appState, "horizontal"),
+      appState
+    ),
+    appState,
+    commitToHistory: true
+  }),
   keyTest: (event) => event.shiftKey && event.code === CODES.H,
-  contextItemLabel: "labels.flipHorizontal",
+  contextItemLabel: "labels.flipHorizontal"
 });
 
 export const actionFlipVertical = register({
   name: "flipVertical",
-  trackEvent: { category: "element" },
-  perform: (elements, appState) => {
-    return {
-      elements: updateFrameMembershipOfSelectedElements(
-        flipSelectedElements(elements, appState, "vertical"),
-        appState,
-      ),
-      appState,
-      commitToHistory: true,
-    };
-  },
+  trackEvent: { category: "layer" },
+  perform: (layers, appState) => ({
+    layers: updateFrameMembershipOfSelectedLayers(
+      flipSelectedLayers(layers, appState, "vertical"),
+      appState
+    ),
+    appState,
+    commitToHistory: true
+  }),
   keyTest: (event) =>
     event.shiftKey && event.code === CODES.V && !event[KEYS.CTRL_OR_CMD],
-  contextItemLabel: "labels.flipVertical",
+  contextItemLabel: "labels.flipVertical"
 });
 
-const flipSelectedElements = (
-  elements: readonly ExcalidrawElement[],
+const flipSelectedLayers = (
+  layers: readonly ExcalidrawLayer[],
   appState: Readonly<AppState>,
-  flipDirection: "horizontal" | "vertical",
+  flipDirection: "horizontal" | "vertical"
 ) => {
-  const selectedElements = getSelectedElements(
-    getNonDeletedElements(elements),
+  const selectedLayers = getSelectedLayers(
+    getNonDeletedLayers(layers),
     appState,
     {
-      includeElementsInFrames: true,
-    },
+      includeLayersInFrames: true
+    }
   );
 
-  const updatedElements = flipElements(
-    selectedElements,
-    appState,
-    flipDirection,
-  );
+  const updatedLayers = flipLayers(selectedLayers, appState, flipDirection);
 
-  const updatedElementsMap = arrayToMap(updatedElements);
+  const updatedLayersMap = arrayToMap(updatedLayers);
 
-  return elements.map(
-    (element) => updatedElementsMap.get(element.id) || element,
-  );
+  return layers.map((layer) => updatedLayersMap.get(layer.id) || layer);
 };
 
-const flipElements = (
-  elements: NonDeleted<ExcalidrawElement>[],
+const flipLayers = (
+  layers: NonDeleted<ExcalidrawLayer>[],
   appState: AppState,
-  flipDirection: "horizontal" | "vertical",
-): ExcalidrawElement[] => {
-  const { minX, minY, maxX, maxY } = getCommonBoundingBox(elements);
+  flipDirection: "horizontal" | "vertical"
+): ExcalidrawLayer[] => {
+  const { minX, minY, maxX, maxY } = getCommonBoundingBox(layers);
 
-  resizeMultipleElements(
-    { originalElements: arrayToMap(elements) } as PointerDownState,
-    elements,
+  resizeMultipleLayers(
+    { originalLayers: arrayToMap(layers) } as PointerDownState,
+    layers,
     "nw",
     true,
     flipDirection === "horizontal" ? maxX : minX,
-    flipDirection === "horizontal" ? minY : maxY,
+    flipDirection === "horizontal" ? minY : maxY
   );
 
   (isBindingEnabled(appState)
-    ? bindOrUnbindSelectedElements
-    : unbindLinearElements)(elements);
+    ? bindOrUnbindSelectedLayers
+    : unbindLinearLayers)(layers);
 
-  return elements;
+  return layers;
 };

@@ -1,55 +1,56 @@
 import "./ToolIcon.scss";
 
-import React, { CSSProperties, useEffect, useRef, useState } from "react";
 import clsx from "clsx";
-import { useExcalidrawContainer } from "./App";
+import React, { CSSProperties, useEffect, useRef, useState } from "react";
+
 import { AbortError } from "../errors";
+import { PointerType } from "../layer/types";
+import { useExcalidrawContainer } from "./App";
 import Spinner from "./Spinner";
-import { PointerType } from "../element/types";
 
 export type ToolButtonSize = "small" | "medium";
 
 type ToolButtonBaseProps = {
-  icon?: React.ReactNode;
-  "aria-label": string;
   "aria-keyshortcuts"?: string;
-  "data-testid"?: string;
-  label?: string;
-  title?: string;
-  name?: string;
-  id?: string;
-  size?: ToolButtonSize;
-  keyBindingLabel?: string | null;
-  showAriaLabel?: boolean;
-  hidden?: boolean;
-  visible?: boolean;
-  selected?: boolean;
+  "aria-label": string;
   className?: string;
-  style?: CSSProperties;
+  "data-testid"?: string;
+  hidden?: boolean;
+  icon?: React.ReactNode;
+  id?: string;
   isLoading?: boolean;
+  keyBindingLabel?: string | null;
+  label?: string;
+  name?: string;
+  selected?: boolean;
+  showAriaLabel?: boolean;
+  size?: ToolButtonSize;
+  style?: CSSProperties;
+  title?: string;
+  visible?: boolean;
 };
 
 type ToolButtonProps =
   | (ToolButtonBaseProps & {
+      children?: React.ReactNode;
+      onClick?(event: React.MouseEvent): void;
       type: "button";
-      children?: React.ReactNode;
-      onClick?(event: React.MouseEvent): void;
     })
   | (ToolButtonBaseProps & {
+      children?: React.ReactNode;
+      onClick?(event: React.MouseEvent): void;
       type: "submit";
-      children?: React.ReactNode;
-      onClick?(event: React.MouseEvent): void;
     })
   | (ToolButtonBaseProps & {
-      type: "icon";
       children?: React.ReactNode;
       onClick?(): void;
+      type: "icon";
     })
   | (ToolButtonBaseProps & {
-      type: "radio";
       checked: boolean;
       onChange?(data: { pointerType: PointerType | null }): void;
       onPointerDown?(data: { pointerType: PointerType }): void;
+      type: "radio";
     });
 
 export const ToolButton = React.forwardRef((props: ToolButtonProps, ref) => {
@@ -87,7 +88,7 @@ export const ToolButton = React.forwardRef((props: ToolButtonProps, ref) => {
     () => () => {
       isMountedRef.current = false;
     },
-    [],
+    []
   );
 
   const lastPointerTypeRef = useRef<PointerType | null>(null);
@@ -102,6 +103,7 @@ export const ToolButton = React.forwardRef((props: ToolButtonProps, ref) => {
       | "submit";
     return (
       <button
+        aria-label={props["aria-label"]}
         className={clsx(
           "ToolIcon_type_button",
           sizeCn,
@@ -112,21 +114,20 @@ export const ToolButton = React.forwardRef((props: ToolButtonProps, ref) => {
           {
             ToolIcon: !props.hidden,
             "ToolIcon--selected": props.selected,
-            "ToolIcon--plain": props.type === "icon",
-          },
+            "ToolIcon--plain": props.type === "icon"
+          }
         )}
-        style={props.style}
         data-testid={props["data-testid"]}
+        disabled={isLoading || props.isLoading}
         hidden={props.hidden}
-        title={props.title}
-        aria-label={props["aria-label"]}
-        type={type}
         onClick={onClick}
         ref={innerRef}
-        disabled={isLoading || props.isLoading}
+        style={props.style}
+        title={props.title}
+        type={type}
       >
         {(props.icon || props.label) && (
-          <div className="ToolIcon__icon" aria-hidden="true">
+          <div aria-hidden="true" className="ToolIcon__icon">
             {props.icon || props.label}
             {props.keyBindingLabel && (
               <span className="ToolIcon__keybinding">
@@ -149,7 +150,6 @@ export const ToolButton = React.forwardRef((props: ToolButtonProps, ref) => {
   return (
     <label
       className={clsx("ToolIcon", props.className)}
-      title={props.title}
       onPointerDown={(event) => {
         lastPointerTypeRef.current = event.pointerType || null;
         props.onPointerDown?.({ pointerType: event.pointerType || null });
@@ -159,20 +159,21 @@ export const ToolButton = React.forwardRef((props: ToolButtonProps, ref) => {
           lastPointerTypeRef.current = null;
         });
       }}
+      title={props.title}
     >
       <input
-        className={`ToolIcon_type_radio ${sizeCn}`}
-        type="radio"
-        name={props.name}
-        aria-label={props["aria-label"]}
         aria-keyshortcuts={props["aria-keyshortcuts"]}
+        aria-label={props["aria-label"]}
+        checked={props.checked}
+        className={`ToolIcon_type_radio ${sizeCn}`}
         data-testid={props["data-testid"]}
         id={`${excalId}-${props.id}`}
+        name={props.name}
         onChange={() => {
           props.onChange?.({ pointerType: lastPointerTypeRef.current });
         }}
-        checked={props.checked}
         ref={innerRef}
+        type="radio"
       />
       <div className="ToolIcon__icon">
         {props.icon}
@@ -187,7 +188,7 @@ export const ToolButton = React.forwardRef((props: ToolButtonProps, ref) => {
 ToolButton.defaultProps = {
   visible: true,
   className: "",
-  size: "medium",
+  size: "medium"
 };
 
 ToolButton.displayName = "ToolButton";

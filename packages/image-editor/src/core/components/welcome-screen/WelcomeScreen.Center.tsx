@@ -1,19 +1,19 @@
 import { actionLoadScene, actionShortcuts } from "../../actions";
 import { getShortcutFromShortcutName } from "../../actions/shortcuts";
+import { useTunnels } from "../../context/tunnels";
+import { useUIAppState } from "../../context/ui-appState";
 import { t, useI18n } from "../../i18n";
 import { useDevice, useExcalidrawActionManager } from "../App";
-import { useTunnels } from "../../context/tunnels";
 import { ExcalLogo, HelpIcon, LoadIcon, usersIcon } from "../icons";
-import { useUIAppState } from "../../context/ui-appState";
 
 const WelcomeScreenMenuItemContent = ({
   icon,
   shortcut,
-  children,
+  children
 }: {
-  icon?: JSX.Element;
-  shortcut?: string | null;
   children: React.ReactNode;
+  icon?: JSX.Layer;
+  shortcut?: string | null;
 }) => {
   const device = useDevice();
   return (
@@ -36,24 +36,22 @@ const WelcomeScreenMenuItem = ({
   className = "",
   ...props
 }: {
-  onSelect: () => void;
   children: React.ReactNode;
-  icon?: JSX.Element;
+  icon?: JSX.Layer;
+  onSelect: () => void;
   shortcut?: string | null;
-} & React.ButtonHTMLAttributes<HTMLButtonElement>) => {
-  return (
-    <button
-      {...props}
-      type="button"
-      className={`welcome-screen-menu-item ${className}`}
-      onClick={onSelect}
-    >
-      <WelcomeScreenMenuItemContent icon={icon} shortcut={shortcut}>
-        {children}
-      </WelcomeScreenMenuItemContent>
-    </button>
-  );
-};
+} & React.ButtonHTMLAttributes<HTMLButtonLayer>) => (
+  <button
+    {...props}
+    className={`welcome-screen-menu-item ${className}`}
+    onClick={onSelect}
+    type="button"
+  >
+    <WelcomeScreenMenuItemContent icon={icon} shortcut={shortcut}>
+      {children}
+    </WelcomeScreenMenuItemContent>
+  </button>
+);
 WelcomeScreenMenuItem.displayName = "WelcomeScreenMenuItem";
 
 const WelcomeScreenMenuItemLink = ({
@@ -66,23 +64,21 @@ const WelcomeScreenMenuItemLink = ({
 }: {
   children: React.ReactNode;
   href: string;
-  icon?: JSX.Element;
+  icon?: JSX.Layer;
   shortcut?: string | null;
-} & React.AnchorHTMLAttributes<HTMLAnchorElement>) => {
-  return (
-    <a
-      {...props}
-      className={`welcome-screen-menu-item ${className}`}
-      href={href}
-      target="_blank"
-      rel="noreferrer"
-    >
-      <WelcomeScreenMenuItemContent icon={icon} shortcut={shortcut}>
-        {children}
-      </WelcomeScreenMenuItemContent>
-    </a>
-  );
-};
+} & React.AnchorHTMLAttributes<HTMLAnchorLayer>) => (
+  <a
+    {...props}
+    className={`welcome-screen-menu-item ${className}`}
+    href={href}
+    rel="noreferrer"
+    target="_blank"
+  >
+    <WelcomeScreenMenuItemContent icon={icon} shortcut={shortcut}>
+      {children}
+    </WelcomeScreenMenuItemContent>
+  </a>
+);
 WelcomeScreenMenuItemLink.displayName = "WelcomeScreenMenuItemLink";
 
 const Center = ({ children }: { children?: React.ReactNode }) => {
@@ -106,27 +102,23 @@ const Center = ({ children }: { children?: React.ReactNode }) => {
 };
 Center.displayName = "Center";
 
-const Logo = ({ children }: { children?: React.ReactNode }) => {
-  return (
-    <div className="welcome-screen-center__logo virgil welcome-screen-decor">
-      {children || <>{ExcalLogo} Excalidraw</>}
-    </div>
-  );
-};
+const Logo = ({ children }: { children?: React.ReactNode }) => (
+  <div className="welcome-screen-center__logo virgil welcome-screen-decor">
+    {children || <>{ExcalLogo} Excalidraw</>}
+  </div>
+);
 Logo.displayName = "Logo";
 
-const Heading = ({ children }: { children: React.ReactNode }) => {
-  return (
-    <div className="welcome-screen-center__heading welcome-screen-decor virgil">
-      {children}
-    </div>
-  );
-};
+const Heading = ({ children }: { children: React.ReactNode }) => (
+  <div className="welcome-screen-center__heading welcome-screen-decor virgil">
+    {children}
+  </div>
+);
 Heading.displayName = "Heading";
 
-const Menu = ({ children }: { children?: React.ReactNode }) => {
-  return <div className="welcome-screen-menu">{children}</div>;
-};
+const Menu = ({ children }: { children?: React.ReactNode }) => (
+  <div className="welcome-screen-menu">{children}</div>
+);
 Menu.displayName = "Menu";
 
 const MenuItemHelp = () => {
@@ -134,9 +126,9 @@ const MenuItemHelp = () => {
 
   return (
     <WelcomeScreenMenuItem
+      icon={HelpIcon}
       onSelect={() => actionManager.executeAction(actionShortcuts)}
       shortcut="?"
-      icon={HelpIcon}
     >
       {t("helpDialog.title")}
     </WelcomeScreenMenuItem>
@@ -154,9 +146,9 @@ const MenuItemLoadScene = () => {
 
   return (
     <WelcomeScreenMenuItem
+      icon={LoadIcon}
       onSelect={() => actionManager.executeAction(actionLoadScene)}
       shortcut={getShortcutFromShortcutName("loadScene")}
-      icon={LoadIcon}
     >
       {t("buttons.load")}
     </WelcomeScreenMenuItem>
@@ -165,13 +157,13 @@ const MenuItemLoadScene = () => {
 MenuItemLoadScene.displayName = "MenuItemLoadScene";
 
 const MenuItemLiveCollaborationTrigger = ({
-  onSelect,
+  onSelect
 }: {
   onSelect: () => any;
 }) => {
   const { t } = useI18n();
   return (
-    <WelcomeScreenMenuItem shortcut={null} onSelect={onSelect} icon={usersIcon}>
+    <WelcomeScreenMenuItem icon={usersIcon} onSelect={onSelect} shortcut={null}>
       {t("labels.liveCollaboration")}
     </WelcomeScreenMenuItem>
   );

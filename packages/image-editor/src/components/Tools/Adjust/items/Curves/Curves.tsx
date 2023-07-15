@@ -8,7 +8,7 @@ import {
 
 import { AdjustTool } from "../constants";
 
-const CurvesTool = (): React.ReactElement => (
+const CurvesTool = (): React.ReactLayer => (
   <AccordionItem value={AdjustTool.CURVES}>
     <AccordionTrigger>Curves</AccordionTrigger>
     <AccordionContent>Content</AccordionContent>

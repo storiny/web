@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Test Linear Elements Test bound text element should match styles for text editor 1`] = `
+exports[`Test Linear Layers Test bound text layer should match styles for text editor 1`] = `
 <textarea
   class="excalidraw-wysiwyg"
   data-type="wysiwyg"

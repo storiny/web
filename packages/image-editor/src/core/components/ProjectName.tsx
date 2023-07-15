@@ -1,18 +1,18 @@
 import "./TextInput.scss";
+import "./ProjectName.scss";
 
 import React, { useState } from "react";
-import { focusNearestParent } from "../utils";
 
-import "./ProjectName.scss";
-import { useExcalidrawContainer } from "./App";
 import { KEYS } from "../keys";
+import { focusNearestParent } from "../utils";
+import { useExcalidrawContainer } from "./App";
 
 type Props = {
-  value: string;
-  onChange: (value: string) => void;
-  label: string;
-  isNameEditable: boolean;
   ignoreFocus?: boolean;
+  isNameEditable: boolean;
+  label: string;
+  onChange: (value: string) => void;
+  value: string;
 };
 
 export const ProjectName = (props: Props) => {
@@ -29,7 +29,7 @@ export const ProjectName = (props: Props) => {
     }
   };
 
-  const handleKeyDown = (event: React.KeyboardEvent<HTMLElement>) => {
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLLayer>) => {
     if (event.key === KEYS.ENTER) {
       event.preventDefault();
       if (event.nativeEvent.isComposing || event.keyCode === 229) {
@@ -46,13 +46,13 @@ export const ProjectName = (props: Props) => {
       </label>
       {props.isNameEditable ? (
         <input
-          type="text"
           className="TextInput"
-          onBlur={handleBlur}
-          onKeyDown={handleKeyDown}
           id={`${id}-filename`}
-          value={fileName}
+          onBlur={handleBlur}
           onChange={(event) => setFileName(event.target.value)}
+          onKeyDown={handleKeyDown}
+          type="text"
+          value={fileName}
         />
       ) : (
         <span className="TextInput TextInput--readonly" id={`${id}-filename`}>

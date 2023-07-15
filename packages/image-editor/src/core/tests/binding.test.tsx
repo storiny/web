@@ -1,40 +1,40 @@
-import { fireEvent, render } from "./test-utils";
-import ExcalidrawApp from "../excalidraw-app";
-import { UI, Pointer, Keyboard } from "./helpers/ui";
-import { getTransformHandles } from "../element/transformHandles";
-import { API } from "./helpers/api";
-import { KEYS } from "../keys";
 import { actionWrapTextInContainer } from "../actions/actionBoundText";
+import ExcalidrawApp from "../excalidraw-app";
+import { KEYS } from "../keys";
+import { getTransformHandles } from "../layer/transformHandles";
+import { API } from "./helpers/api";
+import { Keyboard, Pointer, UI } from "./helpers/ui";
+import { fireEvent, render } from "./test-utils";
 
 const { h } = window;
 
 const mouse = new Pointer("mouse");
 
-describe("element binding", () => {
+describe("layer binding", () => {
   beforeEach(async () => {
     await render(<ExcalidrawApp />);
   });
 
   //@TODO fix the test with rotation
   it.skip("rotation of arrow should rebind both ends", () => {
-    const rectLeft = UI.createElement("rectangle", {
+    const rectLeft = UI.createLayer("rectangle", {
       x: 0,
       width: 200,
-      height: 500,
+      height: 500
     });
-    const rectRight = UI.createElement("rectangle", {
+    const rectRight = UI.createLayer("rectangle", {
       x: 400,
       width: 200,
-      height: 500,
+      height: 500
     });
-    const arrow = UI.createElement("arrow", {
+    const arrow = UI.createLayer("arrow", {
       x: 210,
       y: 250,
       width: 180,
-      height: 1,
+      height: 1
     });
-    expect(arrow.startBinding?.elementId).toBe(rectLeft.id);
-    expect(arrow.endBinding?.elementId).toBe(rectRight.id);
+    expect(arrow.startBinding?.layerId).toBe(rectLeft.id);
+    expect(arrow.endBinding?.layerId).toBe(rectRight.id);
 
     const rotation = getTransformHandles(arrow, h.state.zoom, "mouse")
       .rotation!;
@@ -45,18 +45,18 @@ describe("element binding", () => {
     mouse.up();
     expect(arrow.angle).toBeGreaterThan(0.7 * Math.PI);
     expect(arrow.angle).toBeLessThan(1.3 * Math.PI);
-    expect(arrow.startBinding?.elementId).toBe(rectRight.id);
-    expect(arrow.endBinding?.elementId).toBe(rectLeft.id);
+    expect(arrow.startBinding?.layerId).toBe(rectRight.id);
+    expect(arrow.endBinding?.layerId).toBe(rectLeft.id);
   });
 
   // TODO fix & reenable once we rewrite tests to work with concurrency
   it.skip(
-    "editing arrow and moving its head to bind it to element A, finalizing the" +
-      "editing by clicking on element A should end up selecting A",
+    "editing arrow and moving its head to bind it to layer A, finalizing the" +
+      "editing by clicking on layer A should end up selecting A",
     async () => {
-      UI.createElement("rectangle", {
+      UI.createLayer("rectangle", {
         y: 0,
-        size: 100,
+        size: 100
       });
       // Create arrow bound to rectangle
       UI.clickTool("arrow");
@@ -68,87 +68,87 @@ describe("element binding", () => {
       // move arrow head
       mouse.down();
       mouse.up(0, 10);
-      expect(API.getSelectedElement().type).toBe("arrow");
+      expect(API.getSelectedLayer().type).toBe("arrow");
 
       // NOTE this mouse down/up + await needs to be done in order to repro
       // the issue, due to https://github.com/excalidraw/excalidraw/blob/46bff3daceb602accf60c40a84610797260fca94/src/components/App.tsx#L740
       mouse.reset();
-      expect(h.state.editingLinearElement).not.toBe(null);
+      expect(h.state.editingLinearLayer).not.toBe(null);
       mouse.down(0, 0);
       await new Promise((r) => setTimeout(r, 100));
-      expect(h.state.editingLinearElement).toBe(null);
-      expect(API.getSelectedElement().type).toBe("rectangle");
+      expect(h.state.editingLinearLayer).toBe(null);
+      expect(API.getSelectedLayer().type).toBe("rectangle");
       mouse.up();
-      expect(API.getSelectedElement().type).toBe("rectangle");
-    },
+      expect(API.getSelectedLayer().type).toBe("rectangle");
+    }
   );
 
   it("should bind/unbind arrow when moving it with keyboard", () => {
-    const rectangle = UI.createElement("rectangle", {
+    const rectangle = UI.createLayer("rectangle", {
       x: 75,
       y: 0,
-      size: 100,
+      size: 100
     });
 
     // Creates arrow 1px away from bidding with rectangle
-    const arrow = UI.createElement("arrow", {
+    const arrow = UI.createLayer("arrow", {
       x: 0,
       y: 0,
-      size: 50,
+      size: 50
     });
 
     expect(arrow.endBinding).toBe(null);
 
-    expect(API.getSelectedElement().type).toBe("arrow");
+    expect(API.getSelectedLayer().type).toBe("arrow");
     Keyboard.keyPress(KEYS.ARROW_RIGHT);
-    expect(arrow.endBinding?.elementId).toBe(rectangle.id);
+    expect(arrow.endBinding?.layerId).toBe(rectangle.id);
 
     Keyboard.keyPress(KEYS.ARROW_LEFT);
     expect(arrow.endBinding).toBe(null);
   });
 
-  it("should unbind on bound element deletion", () => {
-    const rectangle = UI.createElement("rectangle", {
+  it("should unbind on bound layer deletion", () => {
+    const rectangle = UI.createLayer("rectangle", {
       x: 60,
       y: 0,
-      size: 100,
+      size: 100
     });
 
-    const arrow = UI.createElement("arrow", {
+    const arrow = UI.createLayer("arrow", {
       x: 0,
       y: 0,
-      size: 50,
+      size: 50
     });
 
-    expect(arrow.endBinding?.elementId).toBe(rectangle.id);
+    expect(arrow.endBinding?.layerId).toBe(rectangle.id);
 
     mouse.select(rectangle);
-    expect(API.getSelectedElement().type).toBe("rectangle");
+    expect(API.getSelectedLayer().type).toBe("rectangle");
     Keyboard.keyDown(KEYS.DELETE);
     expect(arrow.endBinding).toBe(null);
   });
 
-  it("should unbind on text element deletion by submitting empty text", async () => {
-    const text = API.createElement({
+  it("should unbind on text layer deletion by submitting empty text", async () => {
+    const text = API.createLayer({
       type: "text",
       text: "ola",
       x: 60,
       y: 0,
       width: 100,
-      height: 100,
+      height: 100
     });
 
-    h.elements = [text];
+    h.layers = [text];
 
-    const arrow = UI.createElement("arrow", {
+    const arrow = UI.createLayer("arrow", {
       x: 0,
       y: 0,
-      size: 50,
+      size: 50
     });
 
-    expect(arrow.endBinding?.elementId).toBe(text.id);
+    expect(arrow.endBinding?.layerId).toBe(text.id);
 
-    // edit text element and submit
+    // edit text layer and submit
     // -------------------------------------------------------------------------
 
     UI.clickTool("text");
@@ -156,8 +156,8 @@ describe("element binding", () => {
     mouse.clickAt(text.x + 50, text.y + 50);
 
     const editor = document.querySelector(
-      ".excalidraw-textEditorContainer > textarea",
-    ) as HTMLTextAreaElement;
+      ".excalidraw-textEditorContainer > textarea"
+    ) as HTMLTextAreaLayer;
 
     expect(editor).not.toBe(null);
 
@@ -165,40 +165,40 @@ describe("element binding", () => {
     fireEvent.keyDown(editor, { key: KEYS.ESCAPE });
 
     expect(
-      document.querySelector(".excalidraw-textEditorContainer > textarea"),
+      document.querySelector(".excalidraw-textEditorContainer > textarea")
     ).toBe(null);
     expect(arrow.endBinding).toBe(null);
   });
 
   it("should keep binding on text update", async () => {
-    const text = API.createElement({
+    const text = API.createLayer({
       type: "text",
       text: "ola",
       x: 60,
       y: 0,
       width: 100,
-      height: 100,
+      height: 100
     });
 
-    h.elements = [text];
+    h.layers = [text];
 
-    const arrow = UI.createElement("arrow", {
+    const arrow = UI.createLayer("arrow", {
       x: 0,
       y: 0,
-      size: 50,
+      size: 50
     });
 
-    expect(arrow.endBinding?.elementId).toBe(text.id);
+    expect(arrow.endBinding?.layerId).toBe(text.id);
 
-    // delete text element by submitting empty text
+    // delete text layer by submitting empty text
     // -------------------------------------------------------------------------
 
     UI.clickTool("text");
 
     mouse.clickAt(text.x + 50, text.y + 50);
     const editor = document.querySelector(
-      ".excalidraw-textEditorContainer > textarea",
-    ) as HTMLTextAreaElement;
+      ".excalidraw-textEditorContainer > textarea"
+    ) as HTMLTextAreaLayer;
 
     expect(editor).not.toBe(null);
 
@@ -206,107 +206,107 @@ describe("element binding", () => {
     fireEvent.keyDown(editor, { key: KEYS.ESCAPE });
 
     expect(
-      document.querySelector(".excalidraw-textEditorContainer > textarea"),
+      document.querySelector(".excalidraw-textEditorContainer > textarea")
     ).toBe(null);
-    expect(arrow.endBinding?.elementId).toBe(text.id);
+    expect(arrow.endBinding?.layerId).toBe(text.id);
   });
 
   it("should update binding when text containerized", async () => {
-    const rectangle1 = API.createElement({
+    const rectangle1 = API.createLayer({
       type: "rectangle",
       id: "rectangle1",
       width: 100,
       height: 100,
-      boundElements: [
+      boundLayers: [
         { id: "arrow1", type: "arrow" },
-        { id: "arrow2", type: "arrow" },
-      ],
+        { id: "arrow2", type: "arrow" }
+      ]
     });
 
-    const arrow1 = API.createElement({
+    const arrow1 = API.createLayer({
       type: "arrow",
       id: "arrow1",
       points: [
         [0, 0],
-        [0, -87.45777932247563],
+        [0, -87.45777932247563]
       ],
       startBinding: {
-        elementId: "rectangle1",
+        layerId: "rectangle1",
         focus: 0.2,
-        gap: 7,
+        gap: 7
       },
       endBinding: {
-        elementId: "text1",
+        layerId: "text1",
         focus: 0.2,
-        gap: 7,
-      },
+        gap: 7
+      }
     });
 
-    const arrow2 = API.createElement({
+    const arrow2 = API.createLayer({
       type: "arrow",
       id: "arrow2",
       points: [
         [0, 0],
-        [0, -87.45777932247563],
+        [0, -87.45777932247563]
       ],
       startBinding: {
-        elementId: "text1",
+        layerId: "text1",
         focus: 0.2,
-        gap: 7,
+        gap: 7
       },
       endBinding: {
-        elementId: "rectangle1",
+        layerId: "rectangle1",
         focus: 0.2,
-        gap: 7,
-      },
+        gap: 7
+      }
     });
 
-    const text1 = API.createElement({
+    const text1 = API.createLayer({
       type: "text",
       id: "text1",
       text: "ola",
-      boundElements: [
+      boundLayers: [
         { id: "arrow1", type: "arrow" },
-        { id: "arrow2", type: "arrow" },
-      ],
+        { id: "arrow2", type: "arrow" }
+      ]
     });
 
-    h.elements = [rectangle1, arrow1, arrow2, text1];
+    h.layers = [rectangle1, arrow1, arrow2, text1];
 
-    API.setSelectedElements([text1]);
+    API.setSelectedLayers([text1]);
 
-    expect(h.state.selectedElementIds[text1.id]).toBe(true);
+    expect(h.state.selectedLayerIds[text1.id]).toBe(true);
 
     h.app.actionManager.executeAction(actionWrapTextInContainer);
 
-    // new text container will be placed before the text element
-    const container = h.elements.at(-2)!;
+    // new text container will be placed before the text layer
+    const container = h.layers.at(-2)!;
 
     expect(container.type).toBe("rectangle");
     expect(container.id).not.toBe(rectangle1.id);
 
     expect(container).toEqual(
       expect.objectContaining({
-        boundElements: expect.arrayContaining([
+        boundLayers: expect.arrayContaining([
           {
             type: "text",
-            id: text1.id,
+            id: text1.id
           },
           {
             type: "arrow",
-            id: arrow1.id,
+            id: arrow1.id
           },
           {
             type: "arrow",
-            id: arrow2.id,
-          },
-        ]),
-      }),
+            id: arrow2.id
+          }
+        ])
+      })
     );
 
-    expect(arrow1.startBinding?.elementId).toBe(rectangle1.id);
-    expect(arrow1.endBinding?.elementId).toBe(container.id);
-    expect(arrow2.startBinding?.elementId).toBe(container.id);
-    expect(arrow2.endBinding?.elementId).toBe(rectangle1.id);
+    expect(arrow1.startBinding?.layerId).toBe(rectangle1.id);
+    expect(arrow1.endBinding?.layerId).toBe(container.id);
+    expect(arrow2.startBinding?.layerId).toBe(container.id);
+    expect(arrow2.endBinding?.layerId).toBe(rectangle1.id);
   });
 });

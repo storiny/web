@@ -1,10 +1,10 @@
-import { NonDeletedExcalidrawElement } from "../../element/types";
-import * as exportUtils from "../../scene/export";
+import * as exportUtils from "../../../lib/scene/export";
+import { NonDeletedExcalidrawLayer } from "../../layer/types";
 import {
   diamondFixture,
   ellipseFixture,
-  rectangleWithLinkFixture,
-} from "../fixtures/elementFixture";
+  rectangleWithLinkFixture
+} from "../fixtures/layerFixture";
 
 describe("exportToSvg", () => {
   window.EXCALIDRAW_ASSET_PATH = "/";
@@ -12,118 +12,118 @@ describe("exportToSvg", () => {
   const ELEMENT_WIDTH = 100;
   const ELEMENTS = [
     { ...diamondFixture, height: ELEMENT_HEIGHT, width: ELEMENT_WIDTH },
-    { ...ellipseFixture, height: ELEMENT_HEIGHT, width: ELEMENT_WIDTH },
-  ] as NonDeletedExcalidrawElement[];
+    { ...ellipseFixture, height: ELEMENT_HEIGHT, width: ELEMENT_WIDTH }
+  ] as NonDeletedExcalidrawLayer[];
 
   const DEFAULT_OPTIONS = {
     exportBackground: false,
     viewBackgroundColor: "#ffffff",
-    files: {},
+    files: {}
   };
 
   it("with default arguments", async () => {
-    const svgElement = await exportUtils.exportToSvg(
+    const svgLayer = await exportUtils.exportToSvg(
       ELEMENTS,
       DEFAULT_OPTIONS,
-      null,
+      null
     );
 
-    expect(svgElement).toMatchSnapshot();
+    expect(svgLayer).toMatchSnapshot();
   });
 
   it("with background color", async () => {
     const BACKGROUND_COLOR = "#abcdef";
 
-    const svgElement = await exportUtils.exportToSvg(
+    const svgLayer = await exportUtils.exportToSvg(
       ELEMENTS,
       {
         ...DEFAULT_OPTIONS,
         exportBackground: true,
-        viewBackgroundColor: BACKGROUND_COLOR,
+        viewBackgroundColor: BACKGROUND_COLOR
       },
-      null,
+      null
     );
 
-    expect(svgElement.querySelector("rect")).toHaveAttribute(
+    expect(svgLayer.querySelector("rect")).toHaveAttribute(
       "fill",
-      BACKGROUND_COLOR,
+      BACKGROUND_COLOR
     );
   });
 
   it("with dark mode", async () => {
-    const svgElement = await exportUtils.exportToSvg(
+    const svgLayer = await exportUtils.exportToSvg(
       ELEMENTS,
       {
         ...DEFAULT_OPTIONS,
-        exportWithDarkMode: true,
+        exportWithDarkMode: true
       },
-      null,
+      null
     );
 
-    expect(svgElement.getAttribute("filter")).toMatchInlineSnapshot(
-      `"themeFilter"`,
+    expect(svgLayer.getAttribute("filter")).toMatchInlineSnapshot(
+      `"themeFilter"`
     );
   });
 
   it("with exportPadding", async () => {
-    const svgElement = await exportUtils.exportToSvg(
+    const svgLayer = await exportUtils.exportToSvg(
       ELEMENTS,
       {
         ...DEFAULT_OPTIONS,
-        exportPadding: 0,
+        exportPadding: 0
       },
-      null,
+      null
     );
 
-    expect(svgElement).toHaveAttribute("height", ELEMENT_HEIGHT.toString());
-    expect(svgElement).toHaveAttribute("width", ELEMENT_WIDTH.toString());
-    expect(svgElement).toHaveAttribute(
+    expect(svgLayer).toHaveAttribute("height", ELEMENT_HEIGHT.toString());
+    expect(svgLayer).toHaveAttribute("width", ELEMENT_WIDTH.toString());
+    expect(svgLayer).toHaveAttribute(
       "viewBox",
-      `0 0 ${ELEMENT_WIDTH} ${ELEMENT_HEIGHT}`,
+      `0 0 ${ELEMENT_WIDTH} ${ELEMENT_HEIGHT}`
     );
   });
 
   it("with scale", async () => {
     const SCALE = 2;
 
-    const svgElement = await exportUtils.exportToSvg(
+    const svgLayer = await exportUtils.exportToSvg(
       ELEMENTS,
       {
         ...DEFAULT_OPTIONS,
         exportPadding: 0,
-        exportScale: SCALE,
+        exportScale: SCALE
       },
-      null,
+      null
     );
 
-    expect(svgElement).toHaveAttribute(
+    expect(svgLayer).toHaveAttribute(
       "height",
-      (ELEMENT_HEIGHT * SCALE).toString(),
+      (ELEMENT_HEIGHT * SCALE).toString()
     );
-    expect(svgElement).toHaveAttribute(
+    expect(svgLayer).toHaveAttribute(
       "width",
-      (ELEMENT_WIDTH * SCALE).toString(),
+      (ELEMENT_WIDTH * SCALE).toString()
     );
   });
 
   it("with exportEmbedScene", async () => {
-    const svgElement = await exportUtils.exportToSvg(
+    const svgLayer = await exportUtils.exportToSvg(
       ELEMENTS,
       {
         ...DEFAULT_OPTIONS,
-        exportEmbedScene: true,
+        exportEmbedScene: true
       },
-      null,
+      null
     );
-    expect(svgElement.innerHTML).toMatchSnapshot();
+    expect(svgLayer.innerHTML).toMatchSnapshot();
   });
 
-  it("with elements that have a link", async () => {
-    const svgElement = await exportUtils.exportToSvg(
+  it("with layers that have a link", async () => {
+    const svgLayer = await exportUtils.exportToSvg(
       [rectangleWithLinkFixture],
       DEFAULT_OPTIONS,
-      null,
+      null
     );
-    expect(svgElement.innerHTML).toMatchSnapshot();
+    expect(svgLayer.innerHTML).toMatchSnapshot();
   });
 });

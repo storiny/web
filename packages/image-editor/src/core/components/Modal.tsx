@@ -5,7 +5,7 @@ import { createPortal } from "react-dom";
 import clsx from "clsx";
 import { KEYS } from "../keys";
 import { AppState } from "../types";
-import { useCreatePortalContainer } from "../hooks/useCreatePortalContainer";
+import { useCreatePortalContainer } from "../../lib/hooks/useCreatePortalContainer";
 
 export const Modal: React.FC<{
   className?: string;

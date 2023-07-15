@@ -1,45 +1,46 @@
 import clsx from "clsx";
+
 import { actionShortcuts } from "../../actions";
 import { ActionManager } from "../../actions/manager";
+import { useTunnels } from "../../context/tunnels";
+import { UIAppState } from "../../types";
 import {
   ExitZenModeAction,
   FinalizeAction,
   UndoRedoActions,
-  ZoomActions,
+  ZoomActions
 } from "../Actions";
 import { useDevice } from "../App";
-import { useTunnels } from "../../context/tunnels";
 import { HelpButton } from "../HelpButton";
 import { Section } from "../Section";
 import Stack from "../Stack";
-import { UIAppState } from "../../types";
 
 const Footer = ({
   appState,
   actionManager,
   showExitZenModeBtn,
-  renderWelcomeScreen,
+  renderWelcomeScreen
 }: {
-  appState: UIAppState;
   actionManager: ActionManager;
-  showExitZenModeBtn: boolean;
+  appState: UIAppState;
   renderWelcomeScreen: boolean;
+  showExitZenModeBtn: boolean;
 }) => {
   const { FooterCenterTunnel, WelcomeScreenHelpHintTunnel } = useTunnels();
 
   const device = useDevice();
   const showFinalize =
-    !appState.viewModeEnabled && appState.multiElement && device.isTouchScreen;
+    !appState.viewModeEnabled && appState.multiLayer && device.isTouchScreen;
 
   return (
     <footer
-      role="contentinfo"
       className="layer-ui__wrapper__footer App-menu App-menu_bottom"
+      role="contentinfo"
     >
       <div
         className={clsx("layer-ui__wrapper__footer-left zen-mode-transition", {
           "layer-ui__wrapper__footer-left--transition-left":
-            appState.zenModeEnabled,
+            appState.zenModeEnabled
         })}
       >
         <Stack.Col gap={2}>
@@ -51,20 +52,20 @@ const Footer = ({
 
             {!appState.viewModeEnabled && (
               <UndoRedoActions
-                renderAction={actionManager.renderAction}
                 className={clsx("zen-mode-transition", {
                   "layer-ui__wrapper__footer-left--transition-bottom":
-                    appState.zenModeEnabled,
+                    appState.zenModeEnabled
                 })}
+                renderAction={actionManager.renderAction}
               />
             )}
             {showFinalize && (
               <FinalizeAction
-                renderAction={actionManager.renderAction}
                 className={clsx("zen-mode-transition", {
                   "layer-ui__wrapper__footer-left--transition-left":
-                    appState.zenModeEnabled,
+                    appState.zenModeEnabled
                 })}
+                renderAction={actionManager.renderAction}
               />
             )}
           </Section>
@@ -73,7 +74,7 @@ const Footer = ({
       <FooterCenterTunnel.Out />
       <div
         className={clsx("layer-ui__wrapper__footer-right zen-mode-transition", {
-          "transition-right disable-pointerEvents": appState.zenModeEnabled,
+          "transition-right disable-pointerEvents": appState.zenModeEnabled
         })}
       >
         <div style={{ position: "relative" }}>

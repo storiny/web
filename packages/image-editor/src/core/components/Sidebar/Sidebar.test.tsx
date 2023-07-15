@@ -1,6 +1,7 @@
 import React from "react";
+
+import { Excalidraw, Sidebar } from "../../../lib/packages/excalidraw/index";
 import { DEFAULT_SIDEBAR } from "../../constants";
-import { Excalidraw, Sidebar } from "../../packages/excalidraw/index";
 import {
   fireEvent,
   GlobalTestState,
@@ -8,39 +9,37 @@ import {
   queryByTestId,
   render,
   waitFor,
-  withExcalidrawDimensions,
+  withExcalidrawDimensions
 } from "../../tests/test-utils";
 
 export const assertSidebarDockButton = async <T extends boolean>(
-  hasDockButton: T,
+  hasDockButton: T
 ): Promise<
   T extends false
-    ? { dockButton: null; sidebar: HTMLElement }
-    : { dockButton: HTMLElement; sidebar: HTMLElement }
+    ? { dockButton: null; sidebar: HTMLLayer }
+    : { dockButton: HTMLLayer; sidebar: HTMLLayer }
 > => {
   const sidebar =
-    GlobalTestState.renderResult.container.querySelector<HTMLElement>(
-      ".sidebar",
-    );
+    GlobalTestState.renderResult.container.querySelector<HTMLLayer>(".sidebar");
   expect(sidebar).not.toBe(null);
   const dockButton = queryByTestId(sidebar!, "sidebar-dock");
   if (hasDockButton) {
     expect(dockButton).not.toBe(null);
     return { dockButton: dockButton!, sidebar: sidebar! } as any;
   }
-  expect(dockButton).toBe(null);
+  expect(dockButton).not.toBeInTheDocument();
   return { dockButton: null, sidebar: sidebar! } as any;
 };
 
 export const assertExcalidrawWithSidebar = async (
   sidebar: React.ReactNode,
   name: string,
-  test: () => void,
+  test: () => void
 ) => {
   await render(
     <Excalidraw initialData={{ appState: { openSidebar: { name } } }}>
       {sidebar}
-    </Excalidraw>,
+    </Excalidraw>
   );
   await withExcalidrawDimensions({ width: 1920, height: 1080 }, test);
 };
@@ -55,7 +54,7 @@ describe("Sidebar", () => {
           <Sidebar name="customSidebar">
             <div id="test-sidebar-content">42</div>
           </Sidebar>
-        </Excalidraw>,
+        </Excalidraw>
       );
 
       const node = container.querySelector("#test-sidebar-content");
@@ -70,7 +69,7 @@ describe("Sidebar", () => {
           <Sidebar name="customSidebar">
             <div id="test-sidebar-content">42</div>
           </Sidebar>
-        </Excalidraw>,
+        </Excalidraw>
       );
 
       await waitFor(() => {
@@ -90,7 +89,7 @@ describe("Sidebar", () => {
           <Sidebar name="customSidebar">
             <div id="test-sidebar-content">42</div>
           </Sidebar>
-        </Excalidraw>,
+        </Excalidraw>
       );
 
       // sidebar isn't rendered initially
@@ -121,7 +120,7 @@ describe("Sidebar", () => {
       // force-toggle sidebar off (=> still hidden)
       // -------------------------------------------------------------------------
       expect(
-        window.h.app.toggleSidebar({ name: "customSidebar", force: false }),
+        window.h.app.toggleSidebar({ name: "customSidebar", force: false })
       ).toBe(false);
 
       await waitFor(() => {
@@ -132,10 +131,10 @@ describe("Sidebar", () => {
       // force-toggle sidebar on
       // -------------------------------------------------------------------------
       expect(
-        window.h.app.toggleSidebar({ name: "customSidebar", force: true }),
+        window.h.app.toggleSidebar({ name: "customSidebar", force: true })
       ).toBe(true);
       expect(
-        window.h.app.toggleSidebar({ name: "customSidebar", force: true }),
+        window.h.app.toggleSidebar({ name: "customSidebar", force: true })
       ).toBe(true);
 
       await waitFor(() => {
@@ -146,7 +145,7 @@ describe("Sidebar", () => {
       // toggle library (= hide custom sidebar)
       // -------------------------------------------------------------------------
       expect(window.h.app.toggleSidebar({ name: DEFAULT_SIDEBAR.name })).toBe(
-        true,
+        true
       );
 
       await waitFor(() => {
@@ -171,7 +170,7 @@ describe("Sidebar", () => {
               <div id="test-sidebar-header-content">42</div>
             </Sidebar.Header>
           </Sidebar>
-        </Excalidraw>,
+        </Excalidraw>
       );
 
       const node = container.querySelector("#test-sidebar-header-content");
@@ -182,63 +181,57 @@ describe("Sidebar", () => {
     });
 
     it("should not render <Sidebar.Header> for custom sidebars by default", async () => {
-      const CustomExcalidraw = () => {
-        return (
-          <Excalidraw
-            initialData={{
-              appState: { openSidebar: { name: "customSidebar" } },
-            }}
-          >
-            <Sidebar name="customSidebar" className="test-sidebar">
-              hello
-            </Sidebar>
-          </Excalidraw>
-        );
-      };
+      const CustomExcalidraw = () => (
+        <Excalidraw
+          initialData={{
+            appState: { openSidebar: { name: "customSidebar" } }
+          }}
+        >
+          <Sidebar className="test-sidebar" name="customSidebar">
+            hello
+          </Sidebar>
+        </Excalidraw>
+      );
 
       const { container } = await render(<CustomExcalidraw />);
 
-      const sidebar = container.querySelector<HTMLElement>(".test-sidebar");
+      const sidebar = container.querySelector<HTMLLayer>(".test-sidebar");
       expect(sidebar).not.toBe(null);
       const closeButton = queryByTestId(sidebar!, "sidebar-close");
-      expect(closeButton).toBe(null);
+      expect(closeButton).not.toBeInTheDocument();
     });
 
     it("<Sidebar.Header> should render close button", async () => {
       const onStateChange = jest.fn();
-      const CustomExcalidraw = () => {
-        return (
-          <Excalidraw
-            initialData={{
-              appState: { openSidebar: { name: "customSidebar" } },
-            }}
+      const CustomExcalidraw = () => (
+        <Excalidraw
+          initialData={{
+            appState: { openSidebar: { name: "customSidebar" } }
+          }}
+        >
+          <Sidebar
+            className="test-sidebar"
+            name="customSidebar"
+            onStateChange={onStateChange}
           >
-            <Sidebar
-              name="customSidebar"
-              className="test-sidebar"
-              onStateChange={onStateChange}
-            >
-              <Sidebar.Header />
-            </Sidebar>
-          </Excalidraw>
-        );
-      };
+            <Sidebar.Header />
+          </Sidebar>
+        </Excalidraw>
+      );
 
       const { container } = await render(<CustomExcalidraw />);
 
       // initial open
       expect(onStateChange).toHaveBeenCalledWith({ name: "customSidebar" });
 
-      const sidebar = container.querySelector<HTMLElement>(".test-sidebar");
+      const sidebar = container.querySelector<HTMLLayer>(".test-sidebar");
       expect(sidebar).not.toBe(null);
       const closeButton = queryByTestId(sidebar!, "sidebar-close")!;
       expect(closeButton).not.toBe(null);
 
       fireEvent.click(closeButton);
       await waitFor(() => {
-        expect(container.querySelector<HTMLElement>(".test-sidebar")).toBe(
-          null,
-        );
+        expect(container.querySelector<HTMLLayer>(".test-sidebar")).toBe(null);
         expect(onStateChange).toHaveBeenCalledWith(null);
       });
     });
@@ -253,31 +246,31 @@ describe("Sidebar", () => {
         "customSidebar",
         async () => {
           await assertSidebarDockButton(false);
-        },
+        }
       );
     });
 
     it("shouldn't be user-dockable if `onDock` not supplied & `docked={true}`", async () => {
       await assertExcalidrawWithSidebar(
-        <Sidebar name="customSidebar" docked={true}>
+        <Sidebar docked={true} name="customSidebar">
           <Sidebar.Header />
         </Sidebar>,
         "customSidebar",
         async () => {
           await assertSidebarDockButton(false);
-        },
+        }
       );
     });
 
     it("shouldn't be user-dockable if `onDock` not supplied & docked={false}`", async () => {
       await assertExcalidrawWithSidebar(
-        <Sidebar name="customSidebar" docked={false}>
+        <Sidebar docked={false} name="customSidebar">
           <Sidebar.Header />
         </Sidebar>,
         "customSidebar",
         async () => {
           await assertSidebarDockButton(false);
-        },
+        }
       );
     });
 
@@ -287,21 +280,21 @@ describe("Sidebar", () => {
           initialData={{ appState: { openSidebar: { name: "customSidebar" } } }}
         >
           <Sidebar
-            name="customSidebar"
             className="test-sidebar"
-            onDock={() => {}}
             docked
+            name="customSidebar"
+            onDock={() => {}}
           >
             <Sidebar.Header />
           </Sidebar>
-        </Excalidraw>,
+        </Excalidraw>
       );
 
       await withExcalidrawDimensions(
         { width: 1920, height: 1080 },
         async () => {
           await assertSidebarDockButton(true);
-        },
+        }
       );
     });
 
@@ -311,20 +304,20 @@ describe("Sidebar", () => {
           initialData={{ appState: { openSidebar: { name: "customSidebar" } } }}
         >
           <Sidebar
-            name="customSidebar"
             className="test-sidebar"
+            name="customSidebar"
             onDock={() => {}}
           >
             <Sidebar.Header />
           </Sidebar>
-        </Excalidraw>,
+        </Excalidraw>
       );
 
       await withExcalidrawDimensions(
         { width: 1920, height: 1080 },
         async () => {
           await assertSidebarDockButton(false);
-        },
+        }
       );
     });
   });

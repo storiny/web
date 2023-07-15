@@ -1,150 +1,141 @@
+import { getSelectedLayers } from "../../lib/scene";
 import {
-  isTextElement,
-  isExcalidrawElement,
-  redrawTextBoundingBox,
-} from "../element";
-import { CODES, KEYS } from "../keys";
-import { t } from "../i18n";
-import { register } from "./register";
-import { newElementWith } from "../element/mutateElement";
-import {
-  DEFAULT_FONT_SIZE,
   DEFAULT_FONT_FAMILY,
-  DEFAULT_TEXT_ALIGN,
+  DEFAULT_FONT_SIZE,
+  DEFAULT_TEXT_ALIGN
 } from "../constants";
+import { t } from "../i18n";
+import { CODES, KEYS } from "../keys";
+import { isCanvasLayer, isTextLayer, redrawTextBoundingBox } from "../layer";
+import { newLayerWith } from "../layer/mutateLayer";
+import { getBoundTextLayer, getDefaultLineHeight } from "../layer/textLayer";
 import {
-  getBoundTextElement,
-  getDefaultLineHeight,
-} from "../element/textElement";
-import {
-  hasBoundTextElement,
-  canApplyRoundnessTypeToElement,
-  getDefaultRoundnessTypeForElement,
-  isFrameElement,
-} from "../element/typeChecks";
-import { getSelectedElements } from "../scene";
+  canApplyRoundnessTypeToLayer,
+  getDefaultRoundnessTypeForLayer,
+  hasBoundTextLayer,
+  isFrameLayer
+} from "../layer/typeChecks";
+import { register } from "./register";
 
 // `copiedStyles` is exported only for tests.
 export let copiedStyles: string = "{}";
 
 export const actionCopyStyles = register({
   name: "copyStyles",
-  trackEvent: { category: "element" },
-  perform: (elements, appState) => {
-    const elementsCopied = [];
-    const element = elements.find((el) => appState.selectedElementIds[el.id]);
-    elementsCopied.push(element);
-    if (element && hasBoundTextElement(element)) {
-      const boundTextElement = getBoundTextElement(element);
-      elementsCopied.push(boundTextElement);
+  trackEvent: { category: "layer" },
+  perform: (layers, appState) => {
+    const layersCopied = [];
+    const layer = layers.find((el) => appState.selectedLayerIds[el.id]);
+    layersCopied.push(layer);
+    if (layer && hasBoundTextLayer(layer)) {
+      const boundTextLayer = getBoundTextLayer(layer);
+      layersCopied.push(boundTextLayer);
     }
-    if (element) {
-      copiedStyles = JSON.stringify(elementsCopied);
+    if (layer) {
+      copiedStyles = JSON.stringify(layersCopied);
     }
     return {
       appState: {
         ...appState,
-        toast: { message: t("toast.copyStyles") },
+        toast: { message: t("toast.copyStyles") }
       },
-      commitToHistory: false,
+      commitToHistory: false
     };
   },
   contextItemLabel: "labels.copyStyles",
   keyTest: (event) =>
-    event[KEYS.CTRL_OR_CMD] && event.altKey && event.code === CODES.C,
+    event[KEYS.CTRL_OR_CMD] && event.altKey && event.code === CODES.C
 });
 
 export const actionPasteStyles = register({
   name: "pasteStyles",
-  trackEvent: { category: "element" },
-  perform: (elements, appState) => {
-    const elementsCopied = JSON.parse(copiedStyles);
-    const pastedElement = elementsCopied[0];
-    const boundTextElement = elementsCopied[1];
-    if (!isExcalidrawElement(pastedElement)) {
-      return { elements, commitToHistory: false };
+  trackEvent: { category: "layer" },
+  perform: (layers, appState) => {
+    const layersCopied = JSON.parse(copiedStyles);
+    const pastedLayer = layersCopied[0];
+    const boundTextLayer = layersCopied[1];
+    if (!isCanvasLayer(pastedLayer)) {
+      return { layers, commitToHistory: false };
     }
 
-    const selectedElements = getSelectedElements(elements, appState, {
-      includeBoundTextElement: true,
+    const selectedLayers = getSelectedLayers(layers, appState, {
+      includeBoundTextLayer: true
     });
-    const selectedElementIds = selectedElements.map((element) => element.id);
+    const selectedLayerIds = selectedLayers.map((layer) => layer.id);
     return {
-      elements: elements.map((element) => {
-        if (selectedElementIds.includes(element.id)) {
-          let elementStylesToCopyFrom = pastedElement;
-          if (isTextElement(element) && element.containerId) {
-            elementStylesToCopyFrom = boundTextElement;
+      layers: layers.map((layer) => {
+        if (selectedLayerIds.includes(layer.id)) {
+          let layerStylesToCopyFrom = pastedLayer;
+          if (isTextLayer(layer) && layer.containerId) {
+            layerStylesToCopyFrom = boundTextLayer;
           }
-          if (!elementStylesToCopyFrom) {
-            return element;
+          if (!layerStylesToCopyFrom) {
+            return layer;
           }
-          let newElement = newElementWith(element, {
-            backgroundColor: elementStylesToCopyFrom?.backgroundColor,
-            strokeWidth: elementStylesToCopyFrom?.strokeWidth,
-            strokeColor: elementStylesToCopyFrom?.strokeColor,
-            strokeStyle: elementStylesToCopyFrom?.strokeStyle,
-            fillStyle: elementStylesToCopyFrom?.fillStyle,
-            opacity: elementStylesToCopyFrom?.opacity,
-            roughness: elementStylesToCopyFrom?.roughness,
-            roundness: elementStylesToCopyFrom.roundness
-              ? canApplyRoundnessTypeToElement(
-                  elementStylesToCopyFrom.roundness.type,
-                  element,
+          let newLayer = newLayerWith(layer, {
+            backgroundColor: layerStylesToCopyFrom?.backgroundColor,
+            strokeWidth: layerStylesToCopyFrom?.strokeWidth,
+            strokeColor: layerStylesToCopyFrom?.strokeColor,
+            strokeStyle: layerStylesToCopyFrom?.strokeStyle,
+            fillStyle: layerStylesToCopyFrom?.fillStyle,
+            opacity: layerStylesToCopyFrom?.opacity,
+            roughness: layerStylesToCopyFrom?.roughness,
+            roundness: layerStylesToCopyFrom.roundness
+              ? canApplyRoundnessTypeToLayer(
+                  layerStylesToCopyFrom.roundness.type,
+                  layer
                 )
-                ? elementStylesToCopyFrom.roundness
-                : getDefaultRoundnessTypeForElement(element)
-              : null,
+                ? layerStylesToCopyFrom.roundness
+                : getDefaultRoundnessTypeForLayer(layer)
+              : null
           });
 
-          if (isTextElement(newElement)) {
+          if (isTextLayer(newLayer)) {
             const fontSize =
-              elementStylesToCopyFrom?.fontSize || DEFAULT_FONT_SIZE;
+              layerStylesToCopyFrom?.fontSize || DEFAULT_FONT_SIZE;
             const fontFamily =
-              elementStylesToCopyFrom?.fontFamily || DEFAULT_FONT_FAMILY;
-            newElement = newElementWith(newElement, {
+              layerStylesToCopyFrom?.fontFamily || DEFAULT_FONT_FAMILY;
+            newLayer = newLayerWith(newLayer, {
               fontSize,
               fontFamily,
-              textAlign:
-                elementStylesToCopyFrom?.textAlign || DEFAULT_TEXT_ALIGN,
+              textAlign: layerStylesToCopyFrom?.textAlign || DEFAULT_TEXT_ALIGN,
               lineHeight:
-                elementStylesToCopyFrom.lineHeight ||
-                getDefaultLineHeight(fontFamily),
+                layerStylesToCopyFrom.lineHeight ||
+                getDefaultLineHeight(fontFamily)
             });
             let container = null;
-            if (newElement.containerId) {
+            if (newLayer.containerId) {
               container =
-                selectedElements.find(
-                  (element) =>
-                    isTextElement(newElement) &&
-                    element.id === newElement.containerId,
+                selectedLayers.find(
+                  (layer) =>
+                    isTextLayer(newLayer) && layer.id === newLayer.containerId
                 ) || null;
             }
-            redrawTextBoundingBox(newElement, container);
+            redrawTextBoundingBox(newLayer, container);
           }
 
-          if (newElement.type === "arrow") {
-            newElement = newElementWith(newElement, {
-              startArrowhead: elementStylesToCopyFrom.startArrowhead,
-              endArrowhead: elementStylesToCopyFrom.endArrowhead,
+          if (newLayer.type === "arrow") {
+            newLayer = newLayerWith(newLayer, {
+              startArrowhead: layerStylesToCopyFrom.startArrowhead,
+              endArrowhead: layerStylesToCopyFrom.endArrowhead
             });
           }
 
-          if (isFrameElement(element)) {
-            newElement = newElementWith(newElement, {
+          if (isFrameLayer(layer)) {
+            newLayer = newLayerWith(newLayer, {
               roundness: null,
-              backgroundColor: "transparent",
+              backgroundColor: "transparent"
             });
           }
 
-          return newElement;
+          return newLayer;
         }
-        return element;
+        return layer;
       }),
-      commitToHistory: true,
+      commitToHistory: true
     };
   },
   contextItemLabel: "labels.pasteStyles",
   keyTest: (event) =>
-    event[KEYS.CTRL_OR_CMD] && event.altKey && event.code === CODES.V,
+    event[KEYS.CTRL_OR_CMD] && event.altKey && event.code === CODES.V
 });

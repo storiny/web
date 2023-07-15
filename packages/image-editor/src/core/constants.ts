@@ -1,7 +1,7 @@
-import cssVariables from "./css/variables.module.scss";
-import { AppProps } from "./types";
-import { ExcalidrawElement, FontFamilyValues } from "./element/types";
 import { COLOR_PALETTE } from "./colors";
+import cssVariables from "./css/variables.module.scss";
+import { ExcalidrawLayer, FontFamilyValues } from "./layer/types";
+import { AppProps } from "./types";
 
 export const isDarwin = /Mac|iPod|iPhone|iPad/.test(navigator.platform);
 export const isWindows = /^Win/.test(navigator.platform);
@@ -32,77 +32,77 @@ export const CURSOR_TYPE = {
   GRAB: "grab",
   POINTER: "pointer",
   MOVE: "move",
-  AUTO: "",
+  AUTO: ""
 };
 export const POINTER_BUTTON = {
   MAIN: 0,
   WHEEL: 1,
   SECONDARY: 2,
-  TOUCH: -1,
+  TOUCH: -1
 } as const;
 
 export enum EVENT {
-  COPY = "copy",
-  PASTE = "paste",
-  CUT = "cut",
-  KEYDOWN = "keydown",
-  KEYUP = "keyup",
-  MOUSE_MOVE = "mousemove",
-  RESIZE = "resize",
-  UNLOAD = "unload",
-  FOCUS = "focus",
+  BEFORE_UNLOAD = "beforeunload",
   BLUR = "blur",
+  COPY = "copy",
+  CUT = "cut",
   DRAG_OVER = "dragover",
   DROP = "drop",
-  GESTURE_END = "gestureend",
-  BEFORE_UNLOAD = "beforeunload",
-  GESTURE_START = "gesturestart",
-  GESTURE_CHANGE = "gesturechange",
-  POINTER_MOVE = "pointermove",
-  POINTER_DOWN = "pointerdown",
-  POINTER_UP = "pointerup",
-  STATE_CHANGE = "statechange",
-  WHEEL = "wheel",
-  TOUCH_START = "touchstart",
-  TOUCH_END = "touchend",
-  HASHCHANGE = "hashchange",
-  VISIBILITY_CHANGE = "visibilitychange",
-  SCROLL = "scroll",
   // custom events
   EXCALIDRAW_LINK = "excalidraw-link",
+  FOCUS = "focus",
+  GESTURE_CHANGE = "gesturechange",
+  GESTURE_END = "gestureend",
+  GESTURE_START = "gesturestart",
+  HASHCHANGE = "hashchange",
+  KEYDOWN = "keydown",
+  KEYUP = "keyup",
   MENU_ITEM_SELECT = "menu.itemSelect",
+  MOUSE_MOVE = "mousemove",
+  PASTE = "paste",
+  POINTER_DOWN = "pointerdown",
+  POINTER_MOVE = "pointermove",
+  POINTER_UP = "pointerup",
+  RESIZE = "resize",
+  SCROLL = "scroll",
+  STATE_CHANGE = "statechange",
+  TOUCH_END = "touchend",
+  TOUCH_START = "touchstart",
+  UNLOAD = "unload",
+  VISIBILITY_CHANGE = "visibilitychange",
+  WHEEL = "wheel"
 }
 
 export const ENV = {
   TEST: "test",
-  DEVELOPMENT: "development",
+  DEVELOPMENT: "development"
 };
 
 export const CLASSES = {
-  SHAPE_ACTIONS_MENU: "App-menu__left",
+  SHAPE_ACTIONS_MENU: "App-menu__left"
 };
 
-// 1-based in case we ever do `if(element.fontFamily)`
+// 1-based in case we ever do `if(layer.fontFamily)`
 export const FONT_FAMILY = {
   Virgil: 1,
   Helvetica: 2,
-  Cascadia: 3,
+  Cascadia: 3
 };
 
 export const THEME = {
   LIGHT: "light",
-  DARK: "dark",
+  DARK: "dark"
 };
 
 export const FRAME_STYLE = {
-  strokeColor: "#bbb" as ExcalidrawElement["strokeColor"],
-  strokeWidth: 1 as ExcalidrawElement["strokeWidth"],
-  strokeStyle: "solid" as ExcalidrawElement["strokeStyle"],
-  fillStyle: "solid" as ExcalidrawElement["fillStyle"],
-  roughness: 0 as ExcalidrawElement["roughness"],
-  roundness: null as ExcalidrawElement["roundness"],
-  backgroundColor: "transparent" as ExcalidrawElement["backgroundColor"],
-  radius: 8,
+  strokeColor: "#bbb" as ExcalidrawLayer["strokeColor"],
+  strokeWidth: 1 as ExcalidrawLayer["strokeWidth"],
+  strokeStyle: "solid" as ExcalidrawLayer["strokeStyle"],
+  fillStyle: "solid" as ExcalidrawLayer["fillStyle"],
+  roughness: 0 as ExcalidrawLayer["roughness"],
+  roundness: null as ExcalidrawLayer["roundness"],
+  backgroundColor: "transparent" as ExcalidrawLayer["backgroundColor"],
+  radius: 8
 };
 
 export const WINDOWS_EMOJI_FALLBACK_FONT = "Segoe UI Emoji";
@@ -126,7 +126,7 @@ export const IMAGE_MIME_TYPES = {
   bmp: "image/bmp",
   ico: "image/x-icon",
   avif: "image/avif",
-  jfif: "image/jfif",
+  jfif: "image/jfif"
 } as const;
 
 export const MIME_TYPES = {
@@ -140,19 +140,19 @@ export const MIME_TYPES = {
   // binary
   binary: "application/octet-stream",
   // image
-  ...IMAGE_MIME_TYPES,
+  ...IMAGE_MIME_TYPES
 } as const;
 
 export const EXPORT_IMAGE_TYPES = {
   png: "png",
   svg: "svg",
-  clipboard: "clipboard",
+  clipboard: "clipboard"
 } as const;
 
 export const EXPORT_DATA_TYPES = {
   excalidraw: "excalidraw",
   excalidrawClipboard: "excalidraw/clipboard",
-  excalidrawLibrary: "excalidrawlib",
+  excalidrawLibrary: "excalidrawlib"
 } as const;
 
 export const EXPORT_SOURCE =
@@ -177,11 +177,11 @@ export const ACTIVE_THRESHOLD = 3_000;
 export const THEME_FILTER = cssVariables.themeFilter;
 
 export const URL_QUERY_KEYS = {
-  addLibrary: "addLibrary",
+  addLibrary: "addLibrary"
 } as const;
 
 export const URL_HASH_KEYS = {
-  addLibrary: "addLibrary",
+  addLibrary: "addLibrary"
 } as const;
 
 export const DEFAULT_UI_OPTIONS: AppProps["UIOptions"] = {
@@ -192,8 +192,8 @@ export const DEFAULT_UI_OPTIONS: AppProps["UIOptions"] = {
     loadScene: true,
     saveToActiveFile: true,
     toggleTheme: null,
-    saveAsImage: true,
-  },
+    saveAsImage: true
+  }
 };
 
 // breakpoints
@@ -225,7 +225,7 @@ export const ENCRYPTION_KEY_BITS = 128;
 
 export const VERSIONS = {
   excalidraw: 2,
-  excalidrawLibrary: 2,
+  excalidrawLibrary: 2
 } as const;
 
 export const BOUND_TEXT_PADDING = 5;
@@ -233,19 +233,19 @@ export const BOUND_TEXT_PADDING = 5;
 export const VERTICAL_ALIGN = {
   TOP: "top",
   MIDDLE: "middle",
-  BOTTOM: "bottom",
+  BOTTOM: "bottom"
 };
 
 export const TEXT_ALIGN = {
   LEFT: "left",
   CENTER: "center",
-  RIGHT: "right",
+  RIGHT: "right"
 };
 
 export const ELEMENT_READY_TO_ERASE_OPACITY = 20;
 
-// Radius represented as 25% of element's largest side (width/height).
-// Used for LEGACY and PROPORTIONAL_RADIUS algorithms, or when the element is
+// Radius represented as 25% of layer's largest side (width/height).
+// Used for LEGACY and PROPORTIONAL_RADIUS algorithms, or when the layer is
 // below the cutoff size.
 export const DEFAULT_PROPORTIONAL_RADIUS = 0.25;
 // Fixed radius for the ADAPTIVE_RADIUS algorithm. In pixels.
@@ -257,32 +257,32 @@ export const ROUNDNESS = {
   // forwards-compat.
   LEGACY: 1,
 
-  // Used for linear elements & diamonds
+  // Used for linear layers & diamonds
   PROPORTIONAL_RADIUS: 2,
 
   // Current default algorithm for rectangles, using fixed pixel radius.
   // It's working similarly to a regular border-radius, but attemps to make
-  // radius visually similar across differnt element sizes, especially
-  // very large and very small elements.
+  // radius visually similar across differnt layer sizes, especially
+  // very large and very small layers.
   //
   // NOTE right now we don't allow configuration and use a constant radius
   // (see DEFAULT_ADAPTIVE_RADIUS constant)
-  ADAPTIVE_RADIUS: 3,
+  ADAPTIVE_RADIUS: 3
 } as const;
 
 /** key containt id of precedeing elemnt id we use in reconciliation during
  * collaboration */
-export const PRECEDING_ELEMENT_KEY = "__precedingElement__";
+export const PRECEDING_ELEMENT_KEY = "__precedingLayer__";
 
 export const DEFAULT_ELEMENT_PROPS: {
-  strokeColor: ExcalidrawElement["strokeColor"];
-  backgroundColor: ExcalidrawElement["backgroundColor"];
-  fillStyle: ExcalidrawElement["fillStyle"];
-  strokeWidth: ExcalidrawElement["strokeWidth"];
-  strokeStyle: ExcalidrawElement["strokeStyle"];
-  roughness: ExcalidrawElement["roughness"];
-  opacity: ExcalidrawElement["opacity"];
-  locked: ExcalidrawElement["locked"];
+  backgroundColor: ExcalidrawLayer["backgroundColor"];
+  fillStyle: ExcalidrawLayer["fillStyle"];
+  locked: ExcalidrawLayer["locked"];
+  opacity: ExcalidrawLayer["opacity"];
+  roughness: ExcalidrawLayer["roughness"];
+  strokeColor: ExcalidrawLayer["strokeColor"];
+  strokeStyle: ExcalidrawLayer["strokeStyle"];
+  strokeWidth: ExcalidrawLayer["strokeWidth"];
 } = {
   strokeColor: COLOR_PALETTE.black,
   backgroundColor: COLOR_PALETTE.transparent,
@@ -291,12 +291,12 @@ export const DEFAULT_ELEMENT_PROPS: {
   strokeStyle: "solid",
   roughness: 1,
   opacity: 100,
-  locked: false,
+  locked: false
 };
 
 export const LIBRARY_SIDEBAR_TAB = "library";
 
 export const DEFAULT_SIDEBAR = {
   name: "default",
-  defaultTab: LIBRARY_SIDEBAR_TAB,
+  defaultTab: LIBRARY_SIDEBAR_TAB
 } as const;

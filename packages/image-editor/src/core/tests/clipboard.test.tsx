@@ -1,21 +1,19 @@
 import ReactDOM from "react-dom";
-import {
-  render,
-  waitFor,
-  GlobalTestState,
-  createPasteEvent,
-} from "./test-utils";
-import { Pointer, Keyboard } from "./helpers/ui";
+
+import { copyToClipboard } from "../clipboard";
 import ExcalidrawApp from "../excalidraw-app";
 import { KEYS } from "../keys";
-import {
-  getDefaultLineHeight,
-  getLineHeightInPx,
-} from "../element/textElement";
-import { getElementBounds } from "../element";
+import { getLayerBounds } from "../layer";
+import { getDefaultLineHeight, getLineHeightInPx } from "../layer/textLayer";
 import { NormalizedZoomValue } from "../types";
 import { API } from "./helpers/api";
-import { copyToClipboard } from "../clipboard";
+import { Keyboard, Pointer } from "./helpers/ui";
+import {
+  createPasteEvent,
+  GlobalTestState,
+  render,
+  waitFor
+} from "./test-utils";
 
 const { h } = window;
 
@@ -29,22 +27,22 @@ jest.mock("../keys.ts", () => {
     isDarwin: false,
     KEYS: {
       ...actual.KEYS,
-      CTRL_OR_CMD: "ctrlKey",
-    },
+      CTRL_OR_CMD: "ctrlKey"
+    }
   };
 });
 
 const setClipboardText = (text: string) => {
   Object.assign(navigator, {
     clipboard: {
-      readText: () => text,
-    },
+      readText: () => text
+    }
   });
 };
 
 const sendPasteEvent = (text?: string) => {
   const clipboardEvent = createPasteEvent(
-    text || (() => window.navigator.clipboard.readText()),
+    text || (() => window.navigator.clipboard.readText())
   );
   document.dispatchEvent(clipboardEvent);
 };
@@ -67,12 +65,11 @@ const pasteWithCtrlCmdV = (text?: string) => {
   });
 };
 
-const sleep = (ms: number) => {
-  return new Promise((resolve) => setTimeout(() => resolve(null), ms));
-};
+const sleep = (ms: number) =>
+  new Promise((resolve) => setTimeout(() => resolve(null), ms));
 
 beforeEach(async () => {
-  ReactDOM.unmountComponentAtNode(document.getElementById("root")!);
+  ReactDOM.unmountComponentAtNode(document.getLayerById("root")!);
 
   localStorage.clear();
 
@@ -82,62 +79,62 @@ beforeEach(async () => {
   h.app.setAppState({ zoom: { value: 1 as NormalizedZoomValue } });
   setClipboardText("");
   Object.assign(document, {
-    elementFromPoint: () => GlobalTestState.canvas,
+    layerFromPoint: () => GlobalTestState.canvas
   });
 });
 
 describe("general paste behavior", () => {
   it("should randomize seed on paste", async () => {
-    const rectangle = API.createElement({ type: "rectangle" });
+    const rectangle = API.createLayer({ type: "rectangle" });
     const clipboardJSON = (await copyToClipboard([rectangle], null))!;
 
     pasteWithCtrlCmdV(clipboardJSON);
 
     await waitFor(() => {
-      expect(h.elements.length).toBe(1);
-      expect(h.elements[0].seed).not.toBe(rectangle.seed);
+      expect(h.layers.length).toBe(1);
+      expect(h.layers[0].seed).not.toBe(rectangle.seed);
     });
   });
 
   it("should retain seed on shift-paste", async () => {
-    const rectangle = API.createElement({ type: "rectangle" });
+    const rectangle = API.createLayer({ type: "rectangle" });
     const clipboardJSON = (await copyToClipboard([rectangle], null))!;
 
     // assert we don't randomize seed on shift-paste
     pasteWithCtrlCmdShiftV(clipboardJSON);
     await waitFor(() => {
-      expect(h.elements.length).toBe(1);
-      expect(h.elements[0].seed).toBe(rectangle.seed);
+      expect(h.layers.length).toBe(1);
+      expect(h.layers[0].seed).toBe(rectangle.seed);
     });
   });
 });
 
 describe("paste text as single lines", () => {
-  it("should create an element for each line when copying with Ctrl/Cmd+V", async () => {
+  it("should create an layer for each line when copying with Ctrl/Cmd+V", async () => {
     const text = "sajgfakfn\naaksfnknas\nakefnkasf";
     setClipboardText(text);
     pasteWithCtrlCmdV();
     await waitFor(() => {
-      expect(h.elements.length).toEqual(text.split("\n").length);
+      expect(h.layers.length).toEqual(text.split("\n").length);
     });
   });
 
-  it("should ignore empty lines when creating an element for each line", async () => {
+  it("should ignore empty lines when creating an layer for each line", async () => {
     const text = "\n\nsajgfakfn\n\n\naaksfnknas\n\nakefnkasf\n\n\n";
     setClipboardText(text);
     pasteWithCtrlCmdV();
     await waitFor(() => {
-      expect(h.elements.length).toEqual(3);
+      expect(h.layers.length).toEqual(3);
     });
   });
 
-  it("should not create any element if clipboard has only new lines", async () => {
+  it("should not create any layer if clipboard has only new lines", async () => {
     const text = "\n\n\n\n\n";
     setClipboardText(text);
     pasteWithCtrlCmdV();
     await waitFor(async () => {
-      await sleep(50); // elements lenght will always be zero if we don't wait, since paste is async
-      expect(h.elements.length).toEqual(0);
+      await sleep(50); // layers lenght will always be zero if we don't wait, since paste is async
+      expect(h.layers.length).toEqual(0);
     });
   });
 
@@ -146,7 +143,7 @@ describe("paste text as single lines", () => {
     const lineHeightPx =
       getLineHeightInPx(
         h.app.state.currentItemFontSize,
-        getDefaultLineHeight(h.state.currentItemFontFamily),
+        getDefaultLineHeight(h.state.currentItemFontFamily)
       ) +
       10 / h.app.state.zoom.value;
     mouse.moveTo(100, 100);
@@ -154,10 +151,10 @@ describe("paste text as single lines", () => {
     pasteWithCtrlCmdV();
     await waitFor(async () => {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const [fx, firstElY] = getElementBounds(h.elements[0]);
-      for (let i = 1; i < h.elements.length; i++) {
+      const [fx, firstElY] = getLayerBounds(h.layers[0]);
+      for (let i = 1; i < h.layers.length; i++) {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const [fx, elY] = getElementBounds(h.elements[i]);
+        const [fx, elY] = getLayerBounds(h.layers[i]);
         expect(elY).toEqual(firstElY + lineHeightPx * i);
       }
     });
@@ -168,7 +165,7 @@ describe("paste text as single lines", () => {
     const lineHeightPx =
       getLineHeightInPx(
         h.app.state.currentItemFontSize,
-        getDefaultLineHeight(h.state.currentItemFontFamily),
+        getDefaultLineHeight(h.state.currentItemFontFamily)
       ) +
       10 / h.app.state.zoom.value;
     mouse.moveTo(100, 100);
@@ -176,30 +173,30 @@ describe("paste text as single lines", () => {
     pasteWithCtrlCmdV();
     await waitFor(async () => {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const [fx, firstElY] = getElementBounds(h.elements[0]);
+      const [fx, firstElY] = getLayerBounds(h.layers[0]);
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const [lx, lastElY] = getElementBounds(h.elements[1]);
+      const [lx, lastElY] = getLayerBounds(h.layers[1]);
       expect(lastElY).toEqual(firstElY + lineHeightPx * 2);
     });
   });
 });
 
-describe("paste text as a single element", () => {
-  it("should create single text element when copying text with Ctrl/Cmd+Shift+V", async () => {
+describe("paste text as a single layer", () => {
+  it("should create single text layer when copying text with Ctrl/Cmd+Shift+V", async () => {
     const text = "sajgfakfn\naaksfnknas\nakefnkasf";
     setClipboardText(text);
     pasteWithCtrlCmdShiftV();
     await waitFor(() => {
-      expect(h.elements.length).toEqual(1);
+      expect(h.layers.length).toEqual(1);
     });
   });
-  it("should not create any element when only new lines in clipboard", async () => {
+  it("should not create any layer when only new lines in clipboard", async () => {
     const text = "\n\n\n\n";
     setClipboardText(text);
     pasteWithCtrlCmdShiftV();
     await waitFor(async () => {
       await sleep(50);
-      expect(h.elements.length).toEqual(0);
+      expect(h.layers.length).toEqual(0);
     });
   });
 });
@@ -213,9 +210,9 @@ describe("Paste bound text container", () => {
     width: 166,
     height: 187.01953125,
     roundness: { type: 2 },
-    boundElements: [{ type: "text", id: "text-id" }],
+    boundLayers: [{ type: "text", id: "text-id" }]
   };
-  const textElement = {
+  const textLayer = {
     type: "text",
     id: "text-id",
     x: 560.51171875,
@@ -230,21 +227,21 @@ describe("Paste bound text container", () => {
     verticalAlign: "middle",
     containerId: container.id,
     originalText:
-      "Excalidraw is a virtual opensource whiteboard for sketching hand-drawn like diagrams",
+      "Excalidraw is a virtual opensource whiteboard for sketching hand-drawn like diagrams"
   };
 
   it("should fix ellipse bounding box", async () => {
     const data = JSON.stringify({
       type: "excalidraw/clipboard",
-      elements: [container, textElement],
+      layers: [container, textLayer]
     });
     setClipboardText(data);
     pasteWithCtrlCmdShiftV();
 
     await waitFor(async () => {
       await sleep(1);
-      expect(h.elements.length).toEqual(2);
-      const container = h.elements[0];
+      expect(h.layers.length).toEqual(2);
+      const container = h.layers[0];
       expect(container.height).toBe(368);
       expect(container.width).toBe(166);
     });
@@ -253,21 +250,21 @@ describe("Paste bound text container", () => {
   it("should fix diamond bounding box", async () => {
     const data = JSON.stringify({
       type: "excalidraw/clipboard",
-      elements: [
+      layers: [
         {
           ...container,
-          type: "diamond",
+          type: "diamond"
         },
-        textElement,
-      ],
+        textLayer
+      ]
     });
     setClipboardText(data);
     pasteWithCtrlCmdShiftV();
 
     await waitFor(async () => {
       await sleep(1);
-      expect(h.elements.length).toEqual(2);
-      const container = h.elements[0];
+      expect(h.layers.length).toEqual(2);
+      const container = h.layers[0];
       expect(container.height).toBe(770);
       expect(container.width).toBe(166);
     });

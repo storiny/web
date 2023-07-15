@@ -1,25 +1,26 @@
+import "./EyeDropper.scss";
+
 import { atom } from "jotai";
 import { useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
+
+import { useCreatePortalContainer } from "../../lib/hooks/useCreatePortalContainer";
+import { useOutsideClick } from "../../lib/hooks/useOutsideClick";
+import { getSelectedLayers } from "../../lib/scene";
+import Scene from "../../lib/scene/Scene";
 import { COLOR_PALETTE, rgbToHex } from "../colors";
 import { EVENT } from "../constants";
 import { useUIAppState } from "../context/ui-appState";
-import { mutateElement } from "../element/mutateElement";
-import { useCreatePortalContainer } from "../hooks/useCreatePortalContainer";
-import { useOutsideClick } from "../hooks/useOutsideClick";
 import { KEYS } from "../keys";
-import { invalidateShapeForElement } from "../renderer/renderElement";
-import { getSelectedElements } from "../scene";
-import Scene from "../scene/Scene";
-import { useApp, useExcalidrawContainer, useExcalidrawElements } from "./App";
-
-import "./EyeDropper.scss";
+import { mutateLayer } from "../layer/mutateLayer";
+import { invalidateShapeForLayer } from "../renderer/renderLayer";
+import { useApp, useExcalidrawContainer, useExcalidrawLayers } from "./App";
 
 type EyeDropperProperties = {
   keepOpenOnAlt: boolean;
-  swapPreviewOnAlt?: boolean;
   onSelect?: (color: string, event: PointerEvent) => void;
   previewType?: "strokeColor" | "backgroundColor";
+  swapPreviewOnAlt?: boolean;
 };
 
 export const activeEyeDropperAtom = atom<null | EyeDropperProperties>(null);
@@ -27,26 +28,26 @@ export const activeEyeDropperAtom = atom<null | EyeDropperProperties>(null);
 export const EyeDropper: React.FC<{
   onCancel: () => void;
   onSelect: Required<EyeDropperProperties>["onSelect"];
-  swapPreviewOnAlt?: EyeDropperProperties["swapPreviewOnAlt"];
   previewType?: EyeDropperProperties["previewType"];
+  swapPreviewOnAlt?: EyeDropperProperties["swapPreviewOnAlt"];
 }> = ({
   onCancel,
   onSelect,
   swapPreviewOnAlt,
-  previewType = "backgroundColor",
+  previewType = "backgroundColor"
 }) => {
   const eyeDropperContainer = useCreatePortalContainer({
     className: "excalidraw-eye-dropper-backdrop",
-    parentSelector: ".excalidraw-eye-dropper-container",
+    parentSelector: ".excalidraw-eye-dropper-container"
   });
   const appState = useUIAppState();
-  const elements = useExcalidrawElements();
+  const layers = useExcalidrawLayers();
   const app = useApp();
 
-  const selectedElements = getSelectedElements(elements, appState);
+  const selectedLayers = getSelectedLayers(layers, appState);
 
-  const metaStuffRef = useRef({ selectedElements, app });
-  metaStuffRef.current.selectedElements = selectedElements;
+  const metaStuffRef = useRef({ selectedLayers, app });
+  metaStuffRef.current.selectedLayers = selectedLayers;
   metaStuffRef.current.app = app;
 
   const { container: excalidrawContainer } = useExcalidrawContainer();
@@ -66,11 +67,11 @@ export const EyeDropper: React.FC<{
     const mouseMoveListener = ({
       clientX,
       clientY,
-      altKey,
+      altKey
     }: {
+      altKey: boolean;
       clientX: number;
       clientY: number;
-      altKey: boolean;
     }) => {
       // FIXME swap offset when the preview gets outside viewport
       colorPreviewDiv.style.top = `${clientY + 20}px`;
@@ -80,28 +81,28 @@ export const EyeDropper: React.FC<{
         clientX * window.devicePixelRatio - appState.offsetLeft,
         clientY * window.devicePixelRatio - appState.offsetTop,
         1,
-        1,
+        1
       ).data;
 
       currentColor = rgbToHex(pixel[0], pixel[1], pixel[2]);
 
       if (isHoldingPointerDown) {
-        for (const element of metaStuffRef.current.selectedElements) {
-          mutateElement(
-            element,
+        for (const layer of metaStuffRef.current.selectedLayers) {
+          mutateLayer(
+            layer,
             {
               [altKey && swapPreviewOnAlt
                 ? previewType === "strokeColor"
                   ? "backgroundColor"
                   : "strokeColor"
-                : previewType]: currentColor,
+                : previewType]: currentColor
             },
-            false,
+            false
           );
-          invalidateShapeForElement(element);
+          invalidateShapeForLayer(layer);
         }
         Scene.getScene(
-          metaStuffRef.current.selectedElements[0],
+          metaStuffRef.current.selectedLayers[0]
         )?.informMutation();
       }
 
@@ -146,17 +147,17 @@ export const EyeDropper: React.FC<{
     mouseMoveListener({
       clientX: metaStuffRef.current.app.lastViewportPosition.x,
       clientY: metaStuffRef.current.app.lastViewportPosition.y,
-      altKey: false,
+      altKey: false
     });
 
     eyeDropperContainer.addEventListener(EVENT.KEYDOWN, keyDownListener);
     eyeDropperContainer.addEventListener(
       EVENT.POINTER_DOWN,
-      pointerDownListener,
+      pointerDownListener
     );
     eyeDropperContainer.addEventListener(EVENT.POINTER_UP, pointerUpListener);
     window.addEventListener("pointermove", mouseMoveListener, {
-      passive: true,
+      passive: true
     });
     window.addEventListener(EVENT.BLUR, onCancel);
 
@@ -165,11 +166,11 @@ export const EyeDropper: React.FC<{
       eyeDropperContainer.removeEventListener(EVENT.KEYDOWN, keyDownListener);
       eyeDropperContainer.removeEventListener(
         EVENT.POINTER_DOWN,
-        pointerDownListener,
+        pointerDownListener
       );
       eyeDropperContainer.removeEventListener(
         EVENT.POINTER_UP,
-        pointerUpListener,
+        pointerUpListener
       );
       window.removeEventListener("pointermove", mouseMoveListener);
       window.removeEventListener(EVENT.BLUR, onCancel);
@@ -183,10 +184,10 @@ export const EyeDropper: React.FC<{
     previewType,
     excalidrawContainer,
     appState.offsetLeft,
-    appState.offsetTop,
+    appState.offsetTop
   ]);
 
-  const ref = useRef<HTMLDivElement>(null);
+  const ref = useRef<HTMLDivLayer>(null);
 
   useOutsideClick(
     ref,
@@ -196,14 +197,14 @@ export const EyeDropper: React.FC<{
     (event) => {
       if (
         event.target.closest(
-          ".excalidraw-eye-dropper-trigger, .excalidraw-eye-dropper-backdrop",
+          ".excalidraw-eye-dropper-trigger, .excalidraw-eye-dropper-backdrop"
         )
       ) {
         return true;
       }
       // consider all other clicks as outside
       return false;
-    },
+    }
   );
 
   if (!eyeDropperContainer) {
@@ -211,7 +212,7 @@ export const EyeDropper: React.FC<{
   }
 
   return createPortal(
-    <div ref={ref} className="excalidraw-eye-dropper-preview" />,
-    eyeDropperContainer,
+    <div className="excalidraw-eye-dropper-preview" ref={ref} />,
+    eyeDropperContainer
   );
 };

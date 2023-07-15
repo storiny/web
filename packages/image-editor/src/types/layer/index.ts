@@ -20,7 +20,7 @@ export type Layer =
   | ImageLayer;
 
 /**
- * These are elements that don't have any additional properties
+ * These are layers that don't have any additional properties
  */
 export type GenericLayer =
   | SelectionLayer
@@ -36,13 +36,13 @@ export type BindableLayer =
   | ImageLayer;
 
 export type PointBinding = {
-  elementId: BindableLayer["id"];
   focus: number;
   gap: number;
+  layerId: BindableLayer["id"];
 };
 
 export type NonDeleted<TLayer extends Layer> = TLayer & {
-  isDeleted: false;
+  isDeleted: boolean;
 };
 
 export type NonDeletedLayer = NonDeleted<Layer>;
@@ -50,8 +50,8 @@ export type NonDeletedLayer = NonDeleted<Layer>;
 type LayerPrimitive<T extends LayerType> = {
   angle: number;
   backgroundColor: string;
-  // Other elements that are bound to this element
-  boundElements:
+  // Other layers that are bound to this layer
+  boundLayers:
     | {
         id: string;
         type: LayerType.ARROW | LayerType.TEXT;
@@ -77,7 +77,7 @@ type LayerPrimitive<T extends LayerType> = {
   strokeStyle: StrokeStyle;
   strokeWidth: number;
   type: T;
-  // Epoch (ms) timestamp of last element update
+  // Epoch (ms) timestamp of last layer update
   updated: number;
   width: number;
   x: number;

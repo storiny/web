@@ -1,18 +1,19 @@
 import ReactDOM from "react-dom";
+
+import ExcalidrawApp from "../excalidraw-app";
+import { KEYS } from "../keys";
+import { ExcalidrawLinearLayer } from "../layer/types";
+import { reseed } from "../random";
+import * as Renderer from "../renderer/renderScene";
 import {
-  render,
   fireEvent,
   mockBoundingClientRect,
-  restoreOriginalGetBoundingClientRect,
+  render,
+  restoreOriginalGetBoundingClientRect
 } from "./test-utils";
-import ExcalidrawApp from "../excalidraw-app";
-import * as Renderer from "../renderer/renderScene";
-import { KEYS } from "../keys";
-import { ExcalidrawLinearElement } from "../element/types";
-import { reseed } from "../random";
 
 // Unmount ReactDOM from root
-ReactDOM.unmountComponentAtNode(document.getElementById("root")!);
+ReactDOM.unmountComponentAtNode(document.getLayerById("root")!);
 
 const renderScene = jest.spyOn(Renderer, "renderScene");
 beforeEach(() => {
@@ -23,7 +24,7 @@ beforeEach(() => {
 
 const { h } = window;
 
-describe("remove shape in non linear elements", () => {
+describe("remove shape in non linear layers", () => {
   beforeAll(() => {
     mockBoundingClientRect();
   });
@@ -43,7 +44,7 @@ describe("remove shape in non linear elements", () => {
     fireEvent.pointerUp(canvas, { clientX: 30, clientY: 30 });
 
     expect(renderScene).toHaveBeenCalledTimes(7);
-    expect(h.elements.length).toEqual(0);
+    expect(h.layers.length).toEqual(0);
   });
 
   it("ellipse", async () => {
@@ -57,7 +58,7 @@ describe("remove shape in non linear elements", () => {
     fireEvent.pointerUp(canvas, { clientX: 30, clientY: 30 });
 
     expect(renderScene).toHaveBeenCalledTimes(7);
-    expect(h.elements.length).toEqual(0);
+    expect(h.layers.length).toEqual(0);
   });
 
   it("diamond", async () => {
@@ -71,11 +72,11 @@ describe("remove shape in non linear elements", () => {
     fireEvent.pointerUp(canvas, { clientX: 30, clientY: 30 });
 
     expect(renderScene).toHaveBeenCalledTimes(7);
-    expect(h.elements.length).toEqual(0);
+    expect(h.layers.length).toEqual(0);
   });
 });
 
-describe("multi point mode in linear elements", () => {
+describe("multi point mode in linear layers", () => {
   it("arrow", async () => {
     const { getByToolName, container } = await render(<ExcalidrawApp />);
     // select tool
@@ -99,24 +100,24 @@ describe("multi point mode in linear elements", () => {
     fireEvent.pointerDown(canvas);
     fireEvent.pointerUp(canvas);
     fireEvent.keyDown(document, {
-      key: KEYS.ENTER,
+      key: KEYS.ENTER
     });
 
     expect(renderScene).toHaveBeenCalledTimes(15);
-    expect(h.elements.length).toEqual(1);
+    expect(h.layers.length).toEqual(1);
 
-    const element = h.elements[0] as ExcalidrawLinearElement;
+    const layer = h.layers[0] as ExcalidrawLinearLayer;
 
-    expect(element.type).toEqual("arrow");
-    expect(element.x).toEqual(30);
-    expect(element.y).toEqual(30);
-    expect(element.points).toEqual([
+    expect(layer.type).toEqual("arrow");
+    expect(layer.x).toEqual(30);
+    expect(layer.y).toEqual(30);
+    expect(layer.points).toEqual([
       [0, 0],
       [20, 30],
-      [70, 110],
+      [70, 110]
     ]);
 
-    h.elements.forEach((element) => expect(element).toMatchSnapshot());
+    h.layers.forEach((layer) => expect(layer).toMatchSnapshot());
   });
 
   it("line", async () => {
@@ -142,23 +143,23 @@ describe("multi point mode in linear elements", () => {
     fireEvent.pointerDown(canvas);
     fireEvent.pointerUp(canvas);
     fireEvent.keyDown(document, {
-      key: KEYS.ENTER,
+      key: KEYS.ENTER
     });
 
     expect(renderScene).toHaveBeenCalledTimes(15);
-    expect(h.elements.length).toEqual(1);
+    expect(h.layers.length).toEqual(1);
 
-    const element = h.elements[0] as ExcalidrawLinearElement;
+    const layer = h.layers[0] as ExcalidrawLinearLayer;
 
-    expect(element.type).toEqual("line");
-    expect(element.x).toEqual(30);
-    expect(element.y).toEqual(30);
-    expect(element.points).toEqual([
+    expect(layer.type).toEqual("line");
+    expect(layer.x).toEqual(30);
+    expect(layer.y).toEqual(30);
+    expect(layer.points).toEqual([
       [0, 0],
       [20, 30],
-      [70, 110],
+      [70, 110]
     ]);
 
-    h.elements.forEach((element) => expect(element).toMatchSnapshot());
+    h.layers.forEach((layer) => expect(layer).toMatchSnapshot());
   });
 });

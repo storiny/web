@@ -4,7 +4,7 @@
     "pasteAsPlaintext": "Inserare ca text simplu",
     "pasteCharts": "Lipire diagrame",
     "selectAll": "Selectare totală",
-    "multiSelect": "Adaugă element la selecție",
+    "multiSelect": "Adaugă layer la selecție",
     "moveCanvas": "Mutare pânză",
     "cut": "Decupare",
     "copy": "Copiere",
@@ -116,7 +116,7 @@
       "edit": "Editare linie",
       "exit": "Părăsire editor de linii"
     },
-    "elementLock": {
+    "layerLock": {
       "lock": "Blocare",
       "unlock": "Deblocare",
       "lockAll": "Blocare toate",
@@ -124,14 +124,14 @@
     },
     "statusPublished": "Publicat",
     "sidebarLock": "Păstrează deschisă bara laterală",
-    "selectAllElementsInFrame": "",
-    "removeAllElementsFromFrame": "",
+    "selectAllLayersInFrame": "",
+    "removeAllLayersFromFrame": "",
     "eyeDropper": "Alegere culoare din pânză"
   },
   "library": {
-    "noItems": "Niciun element adăugat încă...",
-    "hint_emptyLibrary": "Selectează un element de pe pânză pentru a-l adăuga aici sau instalează o bibliotecă din depozitul public, de mai jos.",
-    "hint_emptyPrivateLibrary": "Selectează un element de pe pânză pentru a-l adăuga aici."
+    "noItems": "Niciun layer adăugat încă...",
+    "hint_emptyLibrary": "Selectează un layer de pe pânză pentru a-l adăuga aici sau instalează o bibliotecă din depozitul public, de mai jos.",
+    "hint_emptyPrivateLibrary": "Selectează un layer de pe pânză pentru a-l adăuga aici."
   },
   "buttons": {
     "clearReset": "Resetare pânză",
@@ -180,14 +180,14 @@
     "uploadedSecurly": "Încărcarea a fost securizată prin criptare integrală, însemnând că serverul Excalidraw și terții nu pot citi conținutul.",
     "loadSceneOverridePrompt": "Încărcarea desenului extern va înlocui conținutul existent. Dorești să continui?",
     "collabStopOverridePrompt": "Oprirea sesiunii va suprascrie desenul anterior stocat local. Confirmi alegerea?\n\n(Dacă vrei să păstrezi desenul local, pur și simplu închide fila navigatorului în schimb.)",
-    "errorAddingToLibrary": "Elementul nu a putut fi adăugat în bibliotecă",
-    "errorRemovingFromLibrary": "Elementul nu a putut fi eliminat din bibliotecă",
+    "errorAddingToLibrary": "Layerul nu a putut fi adăugat în bibliotecă",
+    "errorRemovingFromLibrary": "Layerul nu a putut fi eliminat din bibliotecă",
     "confirmAddLibrary": "Această acțiune va adăuga {{numShapes}} formă(e) la biblioteca ta. Confirmi?",
     "imageDoesNotContainScene": "Această imagine nu pare să conțină date de scenă. Ai activat încorporarea scenei în timpul exportului?",
     "cannotRestoreFromImage": "Scena nu a putut fi restaurată din acest fișier de imagine",
     "invalidSceneUrl": "Scena nu a putut fi importată din URL-ul furnizat. Este fie incorect formată, fie nu conține date JSON Excalidraw valide.",
     "resetLibrary": "Această opțiune va elimina conținutul din bibliotecă. Confirmi?",
-    "removeItemsFromsLibrary": "Ștergi {{count}} element(e) din bibliotecă?",
+    "removeItemsFromsLibrary": "Ștergi {{count}} layer(e) din bibliotecă?",
     "invalidEncryptionKey": "Cheia de criptare trebuie să aibă 22 de caractere. Colaborarea în direct este dezactivată.",
     "collabOfflineWarning": "Nu este disponibilă nicio conexiune la internet.\nModificările nu vor fi salvate!"
   },
@@ -203,9 +203,9 @@
     "collabSaveFailed_sizeExceeded": "Nu s-a putut salva în baza de date la nivel de server, întrucât se pare că pânza este prea mare. Ar trebui să salvezi fișierul la nivel local pentru a te asigura că nu îți pierzi munca.",
     "brave_measure_text_error": {
       "line1": "Se pare că folosești navigatorul Brave cu opțiunea <bold>strictă pentru blocarea amprentării</bold>.",
-      "line2": "Acest lucru poate duce la întreruperea <bold>elementelor text</bold> din desene.",
+      "line2": "Acest lucru poate duce la întreruperea <bold>layerelor text</bold> din desene.",
       "line3": "Îți recomandăm ferm să dezactivezi această setare. Poți urma <link>acești pași</link> pentru a face acest lucru.",
-      "line4": "Dacă dezactivarea acestei setări nu duce la remedierea afișării elementelor text, deschide un tichet de <issueLink>problemă</issueLink> pe pagina noastră de GitHub sau scrie-ne pe <discordLink>Discord</discordLink>"
+      "line4": "Dacă dezactivarea acestei setări nu duce la remedierea afișării layerelor text, deschide un tichet de <issueLink>problemă</issueLink> pe pagina noastră de GitHub sau scrie-ne pe <discordLink>Discord</discordLink>"
     }
   },
   "toolBar": {
@@ -234,12 +234,12 @@
   },
   "hints": {
     "canvasPanning": "Pentru a muta pânză, ține apăsată rotița mausului sau bara de spațiu sau folosește instrumentul în formă de mână",
-    "linearElement": "Dă clic pentru a crea mai multe puncte, glisează pentru a forma o singură linie",
+    "linearLayer": "Dă clic pentru a crea mai multe puncte, glisează pentru a forma o singură linie",
     "freeDraw": "Dă clic pe pânză și glisează cursorul, apoi eliberează-l când ai terminat",
     "text": "Sfat: poți adăuga text și dând dublu clic oriunde cu instrumentul de selecție",
     "text_selected": "Dă dublu clic sau apasă tasta Enter pentru a edita textul",
     "text_editing": "Apasă tasta Escape sau Ctrl sau Cmd + Enter pentru a finaliza editarea",
-    "linearElementMulti": "Dă clic pe ultimul punct sau apasă tasta Escape sau tasta Enter pentru a termina",
+    "linearLayerMulti": "Dă clic pe ultimul punct sau apasă tasta Escape sau tasta Enter pentru a termina",
     "lockAngle": "Poți constrânge unghiul prin ținerea apăsată a tastei SHIFT",
     "resize": "Poți constrânge proporțiile, ținând apăsată tasta SHIFT în timp ce redimensionezi,\nține apăsată tasta ALT pentru a redimensiona de la centru",
     "resizeImage": "Poți redimensiona liber ținând apăsată tasta SHIFT,\nține apăsată tasta ALT pentru a redimensiona din centru",
@@ -249,15 +249,15 @@
     "lineEditor_nothingSelected": "Selectează un punct pentru a-l edita (ține apăsată tasta SHIFT pentru a selecta mai multe),\nsau ține apăsată tasta Alt și dă clic pentru a adăuga puncte noi",
     "placeImage": "Dă clic pentru a poziționa imaginea sau dă clic și glisează pentru a seta manual dimensiunea imaginii",
     "publishLibrary": "Publică propria bibliotecă",
-    "bindTextToElement": "Apasă tasta Enter pentru a adăuga text",
+    "bindTextToLayer": "Apasă tasta Enter pentru a adăuga text",
     "deepBoxSelect": "Ține apăsată tasta Ctrl sau Cmd pentru a efectua selectarea de adâncime și pentru a preveni glisarea",
-    "eraserRevert": "Ține apăsată tasta Alt pentru a anula elementele marcate pentru ștergere",
+    "eraserRevert": "Ține apăsată tasta Alt pentru a anula layerele marcate pentru ștergere",
     "firefox_clipboard_write": "Această caracteristică poate fi probabil activată prin setarea preferinței „dom.events.asyncClipboard.clipboardItem” ca „true”. Pentru a schimba preferințele navigatorului în Firefox, accesează pagina „about:config”."
   },
   "canvasError": {
     "cannotShowPreview": "Nu se poate afișa previzualizarea",
     "canvasTooBig": "Pânza poate fi prea mare.",
-    "canvasTooBigTip": "Sfat: încearcă să apropii puțin mai mult elementele cele mai îndepărtate."
+    "canvasTooBigTip": "Sfat: încearcă să apropii puțin mai mult layerele cele mai îndepărtate."
   },
   "errorSplash": {
     "headingMain": "A apărut o eroare. Încearcă <button>să reîncarci pagina</button>.",
@@ -316,7 +316,7 @@
     "view": "Vizualizare",
     "zoomToFit": "Transfocare pentru a cuprinde totul",
     "zoomToSelection": "Transfocare la selecție",
-    "toggleElementLock": "Blocare/deblocare selecție",
+    "toggleLayerLock": "Blocare/deblocare selecție",
     "movePageUpDown": "Deplasare pagină sus/jos",
     "movePageLeftRight": "Deplasare pagină stânga/dreapta"
   },
@@ -325,7 +325,7 @@
   },
   "publishDialog": {
     "title": "Publicare bibliotecă",
-    "itemName": "Denumirea elementului",
+    "itemName": "Denumirea layerului",
     "authorName": "Numele autorului",
     "githubUsername": "Numele de utilizator GitHub",
     "twitterUsername": "Numele de utilizator Twitter",
@@ -347,9 +347,9 @@
     "noteDescription": "Trimite-ți biblioteca pentru a fi inclusă în <link>depozitul de biblioteci publice</link> în vederea utilizării de către alte persoane în desenele lor.",
     "noteGuidelines": "Biblioteca trebuie aprobată manual mai întâi. Citește <link>orientările</link> înainte de trimitere. Vei avea nevoie de un cont GitHub pentru a comunica și efectua modificări, dacă este cazul, însă nu este strict necesar.",
     "noteLicense": "Prin trimiterea bibliotecii, ești de acord că aceasta va fi publicată sub <link>Licența MIT, </link>care, pe scurt, înseamnă că oricine o poate folosi fără restricții.",
-    "noteItems": "Fiecare element din bibliotecă trebuie să aibă propriul nume astfel încât să fie filtrabil. Următoarele elemente din bibliotecă vor fi incluse:",
-    "atleastOneLibItem": "Selectează cel puțin un element din bibliotecă pentru a începe",
-    "republishWarning": "Observație: unele dintre elementele selectate sunt marcate ca fiind deja publicate/trimise. Ar trebui să retrimiți elemente numai atunci când actualizezi o trimitere sau o bibliotecă existentă."
+    "noteItems": "Fiecare layer din bibliotecă trebuie să aibă propriul nume astfel încât să fie filtrabil. Următoarele layere din bibliotecă vor fi incluse:",
+    "atleastOneLibItem": "Selectează cel puțin un layer din bibliotecă pentru a începe",
+    "republishWarning": "Observație: unele dintre layerele selectate sunt marcate ca fiind deja publicate/trimise. Ar trebui să retrimiți layere numai atunci când actualizezi o trimitere sau o bibliotecă existentă."
   },
   "publishSuccessDialog": {
     "title": "Bibliotecă trimisă",
@@ -357,7 +357,7 @@
   },
   "confirmDialog": {
     "resetLibrary": "Resetare bibliotecă",
-    "removeItemsFromLib": "Elimină elementele selectate din bibliotecă"
+    "removeItemsFromLib": "Elimină layerele selectate din bibliotecă"
   },
   "imageExportDialog": {
     "header": "Exportare imagine",
@@ -389,8 +389,8 @@
   },
   "stats": {
     "angle": "Unghi",
-    "element": "Element",
-    "elements": "Elemente",
+    "layer": "Layer",
+    "layers": "Layere",
     "height": "Înălțime",
     "scene": "Scenă",
     "selected": "Selectate",
@@ -411,7 +411,7 @@
     "fileSavedToFilename": "Salvat în {filename}",
     "canvas": "pânza",
     "selection": "selecția",
-    "pasteAsSingleElement": "Folosește {{shortcut}} pentru a insera ca un singur element\nsau insera într-un editor de text existent"
+    "pasteAsSingleLayer": "Folosește {{shortcut}} pentru a insera ca un singur layer\nsau insera într-un editor de text existent"
   },
   "colors": {
     "transparent": "Transparent",

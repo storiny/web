@@ -6,22 +6,21 @@ export const actionToggleViewMode = register({
   viewMode: true,
   trackEvent: {
     category: "canvas",
-    predicate: (appState) => !appState.viewModeEnabled,
+    predicate: (appState) => !appState.viewModeEnabled
   },
-  perform(elements, appState) {
+  perform(layers, appState) {
     return {
       appState: {
         ...appState,
-        viewModeEnabled: !this.checked!(appState),
+        viewModeEnabled: !this.checked!(appState)
       },
-      commitToHistory: false,
+      commitToHistory: false
     };
   },
   checked: (appState) => appState.viewModeEnabled,
-  predicate: (elements, appState, appProps) => {
-    return typeof appProps.viewModeEnabled === "undefined";
-  },
+  predicate: (layers, appState, appProps) =>
+    typeof appProps.viewModeEnabled === "undefined",
   contextItemLabel: "labels.viewMode",
   keyTest: (event) =>
-    !event[KEYS.CTRL_OR_CMD] && event.altKey && event.code === CODES.R,
+    !event[KEYS.CTRL_OR_CMD] && event.altKey && event.code === CODES.R
 });

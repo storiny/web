@@ -1,7 +1,7 @@
-import { render, updateSceneData, waitFor } from "./test-utils";
+import { createUndoAction } from "../actions/actionHistory";
 import ExcalidrawApp from "../excalidraw-app";
 import { API } from "./helpers/api";
-import { createUndoAction } from "../actions/actionHistory";
+import { render, updateSceneData, waitFor } from "./test-utils";
 const { h } = window;
 
 Object.defineProperty(window, "crypto", {
@@ -10,17 +10,17 @@ Object.defineProperty(window, "crypto", {
       arr.forEach((v, i) => (arr[i] = Math.floor(Math.random() * 256))),
     subtle: {
       generateKey: () => {},
-      exportKey: () => ({ k: "sTdLvMC_M3V8_vGa3UVRDg" }),
-    },
-  },
+      exportKey: () => ({ k: "sTdLvMC_M3V8_vGa3UVRDg" })
+    }
+  }
 });
 
 jest.mock("../excalidraw-app/data/index.ts", () => ({
   __esmodule: true,
   ...jest.requireActual("../excalidraw-app/data/index.ts"),
   getCollabServer: jest.fn(() => ({
-    url: /* doesn't really matter */ "http://localhost:3002",
-  })),
+    url: /* doesn't really matter */ "http://localhost:3002"
+  }))
 }));
 
 jest.mock("../excalidraw-app/data/firebase.ts", () => {
@@ -29,11 +29,11 @@ jest.mock("../excalidraw-app/data/firebase.ts", () => {
   const isSavedToFirebase = () => true;
   const loadFilesFromFirebase = async () => ({
     loadedFiles: [],
-    erroredFiles: [],
+    erroredFiles: []
   });
   const saveFilesToFirebase = async () => ({
     savedFiles: new Map(),
-    erroredFiles: new Map(),
+    erroredFiles: new Map()
   });
 
   return {
@@ -41,46 +41,42 @@ jest.mock("../excalidraw-app/data/firebase.ts", () => {
     saveToFirebase,
     isSavedToFirebase,
     loadFilesFromFirebase,
-    saveFilesToFirebase,
+    saveFilesToFirebase
   };
 });
 
-jest.mock("socket.io-client", () => {
-  return () => {
-    return {
-      close: () => {},
-      on: () => {},
-      once: () => {},
-      off: () => {},
-      emit: () => {},
-    };
-  };
-});
+jest.mock("socket.io-client", () => () => ({
+  close: () => {},
+  on: () => {},
+  once: () => {},
+  off: () => {},
+  emit: () => {}
+}));
 
 describe("collaboration", () => {
-  it("creating room should reset deleted elements", async () => {
+  it("creating room should reset deleted layers", async () => {
     await render(<ExcalidrawApp />);
-    // To update the scene with deleted elements before starting collab
+    // To update the scene with deleted layers before starting collab
     updateSceneData({
-      elements: [
-        API.createElement({ type: "rectangle", id: "A" }),
-        API.createElement({
+      layers: [
+        API.createLayer({ type: "rectangle", id: "A" }),
+        API.createLayer({
           type: "rectangle",
           id: "B",
-          isDeleted: true,
-        }),
-      ],
+          isDeleted: true
+        })
+      ]
     });
     await waitFor(() => {
-      expect(h.elements).toEqual([
+      expect(h.layers).toEqual([
         expect.objectContaining({ id: "A" }),
-        expect.objectContaining({ id: "B", isDeleted: true }),
+        expect.objectContaining({ id: "B", isDeleted: true })
       ]);
       expect(API.getStateHistory().length).toBe(1);
     });
     window.collab.startCollaboration(null);
     await waitFor(() => {
-      expect(h.elements).toEqual([expect.objectContaining({ id: "A" })]);
+      expect(h.layers).toEqual([expect.objectContaining({ id: "A" })]);
       expect(API.getStateHistory().length).toBe(1);
     });
 
@@ -88,7 +84,7 @@ describe("collaboration", () => {
     // noop
     h.app.actionManager.executeAction(undoAction);
     await waitFor(() => {
-      expect(h.elements).toEqual([expect.objectContaining({ id: "A" })]);
+      expect(h.layers).toEqual([expect.objectContaining({ id: "A" })]);
       expect(API.getStateHistory().length).toBe(1);
     });
   });

@@ -1,19 +1,21 @@
-import React, { useLayoutEffect, useRef, useEffect } from "react";
 import "./Popover.scss";
+
+import React, { useEffect, useLayoutEffect, useRef } from "react";
 import { unstable_batchedUpdates } from "react-dom";
-import { queryFocusableElements } from "../utils";
+
 import { KEYS } from "../keys";
+import { queryFocusableLayers } from "../utils";
 
 type Props = {
-  top?: number;
-  left?: number;
   children?: React.ReactNode;
-  onCloseRequest?(event: PointerEvent): void;
   fitInViewport?: boolean;
+  left?: number;
   offsetLeft?: number;
   offsetTop?: number;
-  viewportWidth?: number;
+  onCloseRequest?(event: PointerEvent): void;
+  top?: number;
   viewportHeight?: number;
+  viewportWidth?: number;
 };
 
 export const Popover = ({
@@ -25,9 +27,9 @@ export const Popover = ({
   offsetLeft = 0,
   offsetTop = 0,
   viewportWidth = window.innerWidth,
-  viewportHeight = window.innerHeight,
+  viewportHeight = window.innerHeight
 }: Props) => {
-  const popoverRef = useRef<HTMLDivElement>(null);
+  const popoverRef = useRef<HTMLDivLayer>(null);
 
   useEffect(() => {
     const container = popoverRef.current;
@@ -40,35 +42,35 @@ export const Popover = ({
     // within the popover, which should take precedence. Fixes cases
     // like color picker listening to keydown events on containers nested
     // in the popover.
-    if (!container.contains(document.activeElement)) {
+    if (!container.contains(document.activeLayer)) {
       container.focus();
     }
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === KEYS.TAB) {
-        const focusableElements = queryFocusableElements(container);
-        const { activeElement } = document;
-        const currentIndex = focusableElements.findIndex(
-          (element) => element === activeElement,
+        const focusableLayers = queryFocusableLayers(container);
+        const { activeLayer } = document;
+        const currentIndex = focusableLayers.findIndex(
+          (layer) => layer === activeLayer
         );
 
-        if (activeElement === container) {
+        if (activeLayer === container) {
           if (event.shiftKey) {
-            focusableElements[focusableElements.length - 1]?.focus();
+            focusableLayers[focusableLayers.length - 1]?.focus();
           } else {
-            focusableElements[0].focus();
+            focusableLayers[0].focus();
           }
           event.preventDefault();
           event.stopImmediatePropagation();
         } else if (currentIndex === 0 && event.shiftKey) {
-          focusableElements[focusableElements.length - 1]?.focus();
+          focusableLayers[focusableLayers.length - 1]?.focus();
           event.preventDefault();
           event.stopImmediatePropagation();
         } else if (
-          currentIndex === focusableElements.length - 1 &&
+          currentIndex === focusableLayers.length - 1 &&
           !event.shiftKey
         ) {
-          focusableElements[0]?.focus();
+          focusableLayers[0]?.focus();
           event.preventDefault();
           event.stopImmediatePropagation();
         }
@@ -80,8 +82,8 @@ export const Popover = ({
     return () => container.removeEventListener("keydown", handleKeyDown);
   }, []);
 
-  const lastInitializedPosRef = useRef<{ top: number; left: number } | null>(
-    null,
+  const lastInitializedPosRef = useRef<{ left: number; top: number } | null>(
+    null
   );
 
   // ensure the popover doesn't overflow the viewport
@@ -129,7 +131,7 @@ export const Popover = ({
     viewportWidth,
     viewportHeight,
     offsetLeft,
-    offsetTop,
+    offsetTop
   ]);
 
   useEffect(() => {

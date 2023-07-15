@@ -1,11 +1,20 @@
+import {
+  canChangeRoundness,
+  canHaveArrowheads,
+  getCommonAttributeOfSelectedLayers,
+  getSelectedLayers,
+  getTargetLayers,
+  isSomeLayerSelected,
+} from "../../lib/scene";
+import { hasStrokeColor } from "../../lib/scene/comparisons";
 import { AppState } from "../../src/types";
+import { trackEvent } from "../analytics";
 import {
   DEFAULT_ELEMENT_BACKGROUND_COLOR_PALETTE,
   DEFAULT_ELEMENT_BACKGROUND_PICKS,
   DEFAULT_ELEMENT_STROKE_COLOR_PALETTE,
   DEFAULT_ELEMENT_STROKE_PICKS,
 } from "../colors";
-import { trackEvent } from "../analytics";
 import { ButtonIconSelect } from "../components/ButtonIconSelect";
 import { ColorPicker } from "../components/ColorPicker/ColorPicker";
 import { IconPicker } from "../components/IconPicker";
@@ -16,35 +25,35 @@ import {
   ArrowheadArrowIcon,
   ArrowheadBarIcon,
   ArrowheadDotIcon,
-  ArrowheadTriangleIcon,
   ArrowheadNoneIcon,
-  StrokeStyleDashedIcon,
-  StrokeStyleDottedIcon,
-  TextAlignTopIcon,
-  TextAlignBottomIcon,
-  TextAlignMiddleIcon,
-  FillHachureIcon,
+  ArrowheadTriangleIcon,
+  EdgeRoundIcon,
+  EdgeSharpIcon,
   FillCrossHatchIcon,
+  FillHachureIcon,
   FillSolidIcon,
+  FillZigZagIcon,
+  FontFamilyCodeIcon,
+  FontFamilyNormalIcon,
+  FontSizeExtraLargeIcon,
+  FontSizeLargeIcon,
+  FontSizeMediumIcon,
+  FontSizeSmallIcon,
+  FreedrawIcon,
   SloppinessArchitectIcon,
   SloppinessArtistIcon,
   SloppinessCartoonistIcon,
+  StrokeStyleDashedIcon,
+  StrokeStyleDottedIcon,
   StrokeWidthBaseIcon,
   StrokeWidthBoldIcon,
   StrokeWidthExtraBoldIcon,
-  FontSizeSmallIcon,
-  FontSizeMediumIcon,
-  FontSizeLargeIcon,
-  FontSizeExtraLargeIcon,
-  EdgeSharpIcon,
-  EdgeRoundIcon,
-  FreedrawIcon,
-  FontFamilyNormalIcon,
-  FontFamilyCodeIcon,
-  TextAlignLeftIcon,
+  TextAlignBottomIcon,
   TextAlignCenterIcon,
+  TextAlignLeftIcon,
+  TextAlignMiddleIcon,
   TextAlignRightIcon,
-  FillZigZagIcon,
+  TextAlignTopIcon,
 } from "../components/icons";
 import {
   DEFAULT_FONT_FAMILY,
@@ -53,84 +62,70 @@ import {
   ROUNDNESS,
   VERTICAL_ALIGN,
 } from "../constants";
+import { getLanguage, t } from "../i18n";
+import { KEYS } from "../keys";
 import {
-  getNonDeletedElements,
-  isTextElement,
+  getNonDeletedLayers,
+  isTextLayer,
   redrawTextBoundingBox,
-} from "../element";
-import { mutateElement, newElementWith } from "../element/mutateElement";
+} from "../layer";
+import { mutateLayer, newLayerWith } from "../layer/mutateLayer";
 import {
-  getBoundTextElement,
-  getContainerElement,
+  getBoundTextLayer,
+  getContainerLayer,
   getDefaultLineHeight,
-} from "../element/textElement";
+} from "../layer/textLayer";
 import {
   isBoundToContainer,
-  isLinearElement,
+  isLinearLayer,
   isUsingAdaptiveRadius,
-} from "../element/typeChecks";
+} from "../layer/typeChecks";
 import {
   Arrowhead,
-  ExcalidrawElement,
-  ExcalidrawLinearElement,
-  ExcalidrawTextElement,
+  ExcalidrawLayer,
+  ExcalidrawLinearLayer,
+  ExcalidrawTextLayer,
   FontFamilyValues,
   TextAlign,
   VerticalAlign,
-} from "../element/types";
-import { getLanguage, t } from "../i18n";
-import { KEYS } from "../keys";
+} from "../layer/types";
 import { randomInteger } from "../random";
-import {
-  canChangeRoundness,
-  canHaveArrowheads,
-  getCommonAttributeOfSelectedElements,
-  getSelectedElements,
-  getTargetElements,
-  isSomeElementSelected,
-} from "../scene";
-import { hasStrokeColor } from "../scene/comparisons";
 import { arrayToMap, getShortcutKey } from "../utils";
 import { register } from "./register";
 
 const FONT_SIZE_RELATIVE_INCREASE_STEP = 0.1;
 
 const changeProperty = (
-  elements: readonly ExcalidrawElement[],
+  layers: readonly ExcalidrawLayer[],
   appState: AppState,
-  callback: (element: ExcalidrawElement) => ExcalidrawElement,
+  callback: (layer: ExcalidrawLayer) => ExcalidrawLayer,
   includeBoundText = false,
 ) => {
-  const selectedElementIds = arrayToMap(
-    getSelectedElements(elements, appState, {
-      includeBoundTextElement: includeBoundText,
+  const selectedLayerIds = arrayToMap(
+    getSelectedLayers(layers, appState, {
+      includeBoundTextLayer: includeBoundText,
     }),
   );
 
-  return elements.map((element) => {
+  return layers.map((layer) => {
     if (
-      selectedElementIds.get(element.id) ||
-      element.id === appState.editingElement?.id
+      selectedLayerIds.get(layer.id) ||
+      layer.id === appState.editingLayer?.id
     ) {
-      return callback(element);
+      return callback(layer);
     }
-    return element;
+    return layer;
   });
 };
 
-const getFormValue = function <T>(
-  elements: readonly ExcalidrawElement[],
-  appState: AppState,
-  getAttribute: (element: ExcalidrawElement) => T,
-  defaultValue: T,
-): T {
-  const editingElement = appState.editingElement;
-  const nonDeletedElements = getNonDeletedElements(elements);
+const getFormValue = <T>(layers: readonly ExcalidrawLayer[], appState: AppState, getAttribute: (layer: ExcalidrawLayer) => T, defaultValue: T): T => {
+  const editingLayer = appState.editingLayer;
+  const nonDeletedLayers = getNonDeletedLayers(layers);
   return (
-    (editingElement && getAttribute(editingElement)) ??
-    (isSomeElementSelected(nonDeletedElements, appState)
-      ? getCommonAttributeOfSelectedElements(
-          nonDeletedElements,
+    (editingLayer && getAttribute(editingLayer)) ??
+    (isSomeLayerSelected(nonDeletedLayers, appState)
+      ? getCommonAttributeOfSelectedLayers(
+          nonDeletedLayers,
           appState,
           getAttribute,
         )
@@ -139,64 +134,64 @@ const getFormValue = function <T>(
   );
 };
 
-const offsetElementAfterFontResize = (
-  prevElement: ExcalidrawTextElement,
-  nextElement: ExcalidrawTextElement,
+const offsetLayerAfterFontResize = (
+  prevLayer: ExcalidrawTextLayer,
+  nextLayer: ExcalidrawTextLayer,
 ) => {
-  if (isBoundToContainer(nextElement)) {
-    return nextElement;
+  if (isBoundToContainer(nextLayer)) {
+    return nextLayer;
   }
-  return mutateElement(
-    nextElement,
+  return mutateLayer(
+    nextLayer,
     {
       x:
-        prevElement.textAlign === "left"
-          ? prevElement.x
-          : prevElement.x +
-            (prevElement.width - nextElement.width) /
-              (prevElement.textAlign === "center" ? 2 : 1),
+        prevLayer.textAlign === "left"
+          ? prevLayer.x
+          : prevLayer.x +
+            (prevLayer.width - nextLayer.width) /
+              (prevLayer.textAlign === "center" ? 2 : 1),
       // centering vertically is non-standard, but for Excalidraw I think
       // it makes sense
-      y: prevElement.y + (prevElement.height - nextElement.height) / 2,
+      y: prevLayer.y + (prevLayer.height - nextLayer.height) / 2,
     },
     false,
   );
 };
 
 const changeFontSize = (
-  elements: readonly ExcalidrawElement[],
+  layers: readonly ExcalidrawLayer[],
   appState: AppState,
-  getNewFontSize: (element: ExcalidrawTextElement) => number,
-  fallbackValue?: ExcalidrawTextElement["fontSize"],
+  getNewFontSize: (layer: ExcalidrawTextLayer) => number,
+  fallbackValue?: ExcalidrawTextLayer["fontSize"],
 ) => {
   const newFontSizes = new Set<number>();
 
   return {
-    elements: changeProperty(
-      elements,
+    layers: changeProperty(
+      layers,
       appState,
-      (oldElement) => {
-        if (isTextElement(oldElement)) {
-          const newFontSize = getNewFontSize(oldElement);
+      (oldLayer) => {
+        if (isTextLayer(oldLayer)) {
+          const newFontSize = getNewFontSize(oldLayer);
           newFontSizes.add(newFontSize);
 
-          let newElement: ExcalidrawTextElement = newElementWith(oldElement, {
+          let newLayer: ExcalidrawTextLayer = newLayerWith(oldLayer, {
             fontSize: newFontSize,
           });
-          redrawTextBoundingBox(newElement, getContainerElement(oldElement));
+          redrawTextBoundingBox(newLayer, getContainerLayer(oldLayer));
 
-          newElement = offsetElementAfterFontResize(oldElement, newElement);
+          newLayer = offsetLayerAfterFontResize(oldLayer, newLayer);
 
-          return newElement;
+          return newLayer;
         }
 
-        return oldElement;
+        return oldLayer;
       },
       true,
     ),
     appState: {
       ...appState,
-      // update state only if we've set all select text elements to
+      // update state only if we've set all select text layers to
       // the same font size
       currentItemFontSize:
         newFontSizes.size === 1
@@ -212,15 +207,14 @@ const changeFontSize = (
 export const actionChangeStrokeColor = register({
   name: "changeStrokeColor",
   trackEvent: false,
-  perform: (elements, appState, value) => {
-    return {
+  perform: (layers, appState, value) => ({
       ...(value.currentItemStrokeColor && {
-        elements: changeProperty(
-          elements,
+        layers: changeProperty(
+          layers,
           appState,
           (el) => {
             return hasStrokeColor(el.type)
-              ? newElementWith(el, {
+              ? newLayerWith(el, {
                   strokeColor: value.currentItemStrokeColor,
                 })
               : el;
@@ -233,25 +227,24 @@ export const actionChangeStrokeColor = register({
         ...value,
       },
       commitToHistory: !!value.currentItemStrokeColor,
-    };
-  },
-  PanelComponent: ({ elements, appState, updateData, appProps }) => (
+    }),
+  PanelComponent: ({ layers, appState, updateData, appProps }) => (
     <>
       <h3 aria-hidden="true">{t("labels.stroke")}</h3>
       <ColorPicker
-        topPicks={DEFAULT_ELEMENT_STROKE_PICKS}
-        palette={DEFAULT_ELEMENT_STROKE_COLOR_PALETTE}
-        type="elementStroke"
-        label={t("labels.stroke")}
+        appState={appState}
         color={getFormValue(
-          elements,
+          layers,
           appState,
-          (element) => element.strokeColor,
+          (layer) => layer.strokeColor,
           appState.currentItemStrokeColor,
         )}
+        label={t("labels.stroke")}
+        layers={layers}
         onChange={(color) => updateData({ currentItemStrokeColor: color })}
-        elements={elements}
-        appState={appState}
+        palette={DEFAULT_ELEMENT_STROKE_COLOR_PALETTE}
+        topPicks={DEFAULT_ELEMENT_STROKE_PICKS}
+        type="layerStroke"
         updateData={updateData}
       />
     </>
@@ -261,11 +254,10 @@ export const actionChangeStrokeColor = register({
 export const actionChangeBackgroundColor = register({
   name: "changeBackgroundColor",
   trackEvent: false,
-  perform: (elements, appState, value) => {
-    return {
+  perform: (layers, appState, value) => ({
       ...(value.currentItemBackgroundColor && {
-        elements: changeProperty(elements, appState, (el) =>
-          newElementWith(el, {
+        layers: changeProperty(layers, appState, (el) =>
+          newLayerWith(el, {
             backgroundColor: value.currentItemBackgroundColor,
           }),
         ),
@@ -275,25 +267,24 @@ export const actionChangeBackgroundColor = register({
         ...value,
       },
       commitToHistory: !!value.currentItemBackgroundColor,
-    };
-  },
-  PanelComponent: ({ elements, appState, updateData, appProps }) => (
+    }),
+  PanelComponent: ({ layers, appState, updateData, appProps }) => (
     <>
       <h3 aria-hidden="true">{t("labels.background")}</h3>
       <ColorPicker
-        topPicks={DEFAULT_ELEMENT_BACKGROUND_PICKS}
-        palette={DEFAULT_ELEMENT_BACKGROUND_COLOR_PALETTE}
-        type="elementBackground"
-        label={t("labels.background")}
+        appState={appState}
         color={getFormValue(
-          elements,
+          layers,
           appState,
-          (element) => element.backgroundColor,
+          (layer) => layer.backgroundColor,
           appState.currentItemBackgroundColor,
         )}
+        label={t("labels.background")}
+        layers={layers}
         onChange={(color) => updateData({ currentItemBackgroundColor: color })}
-        elements={elements}
-        appState={appState}
+        palette={DEFAULT_ELEMENT_BACKGROUND_COLOR_PALETTE}
+        topPicks={DEFAULT_ELEMENT_BACKGROUND_PICKS}
+        type="layerBackground"
         updateData={updateData}
       />
     </>
@@ -303,15 +294,15 @@ export const actionChangeBackgroundColor = register({
 export const actionChangeFillStyle = register({
   name: "changeFillStyle",
   trackEvent: false,
-  perform: (elements, appState, value, app) => {
+  perform: (layers, appState, value, app) => {
     trackEvent(
-      "element",
+      "layer",
       "changeFillStyle",
       `${value} (${app.device.isMobile ? "mobile" : "desktop"})`,
     );
     return {
-      elements: changeProperty(elements, appState, (el) =>
-        newElementWith(el, {
+      layers: changeProperty(layers, appState, (el) =>
+        newLayerWith(el, {
           fillStyle: value,
         }),
       ),
@@ -319,25 +310,34 @@ export const actionChangeFillStyle = register({
       commitToHistory: true,
     };
   },
-  PanelComponent: ({ elements, appState, updateData }) => {
-    const selectedElements = getSelectedElements(elements, appState);
-    const allElementsZigZag =
-      selectedElements.length > 0 &&
-      selectedElements.every((el) => el.fillStyle === "zigzag");
+  PanelComponent: ({ layers, appState, updateData }) => {
+    const selectedLayers = getSelectedLayers(layers, appState);
+    const allLayersZigZag =
+      selectedLayers.length > 0 &&
+      selectedLayers.every((el) => el.fillStyle === "zigzag");
 
     return (
       <fieldset>
         <legend>{t("labels.fill")}</legend>
         <ButtonIconSelect
-          type="button"
+          onClick={(value, event) => {
+            const nextValue =
+              event.altKey &&
+              value === "hachure" &&
+              selectedLayers.every((el) => el.fillStyle === "hachure")
+                ? "zigzag"
+                : value;
+
+            updateData(nextValue);
+          }}
           options={[
             {
               value: "hachure",
               text: `${
-                allElementsZigZag ? t("labels.zigzag") : t("labels.hachure")
+                allLayersZigZag ? t("labels.zigzag") : t("labels.hachure")
               } (${getShortcutKey("Alt-Click")})`,
-              icon: allElementsZigZag ? FillZigZagIcon : FillHachureIcon,
-              active: allElementsZigZag ? true : undefined,
+              icon: allLayersZigZag ? FillZigZagIcon : FillHachureIcon,
+              active: allLayersZigZag ? true : undefined,
             },
             {
               value: "cross-hatch",
@@ -350,22 +350,13 @@ export const actionChangeFillStyle = register({
               icon: FillSolidIcon,
             },
           ]}
+          type="button"
           value={getFormValue(
-            elements,
+            layers,
             appState,
-            (element) => element.fillStyle,
+            (layer) => layer.fillStyle,
             appState.currentItemFillStyle,
           )}
-          onClick={(value, event) => {
-            const nextValue =
-              event.altKey &&
-              value === "hachure" &&
-              selectedElements.every((el) => el.fillStyle === "hachure")
-                ? "zigzag"
-                : value;
-
-            updateData(nextValue);
-          }}
         />
       </fieldset>
     );
@@ -375,22 +366,21 @@ export const actionChangeFillStyle = register({
 export const actionChangeStrokeWidth = register({
   name: "changeStrokeWidth",
   trackEvent: false,
-  perform: (elements, appState, value) => {
-    return {
-      elements: changeProperty(elements, appState, (el) =>
-        newElementWith(el, {
+  perform: (layers, appState, value) => ({
+      layers: changeProperty(layers, appState, (el) =>
+        newLayerWith(el, {
           strokeWidth: value,
         }),
       ),
       appState: { ...appState, currentItemStrokeWidth: value },
       commitToHistory: true,
-    };
-  },
-  PanelComponent: ({ elements, appState, updateData }) => (
+    }),
+  PanelComponent: ({ layers, appState, updateData }) => (
     <fieldset>
       <legend>{t("labels.strokeWidth")}</legend>
       <ButtonIconSelect
         group="stroke-width"
+        onChange={(value) => updateData(value)}
         options={[
           {
             value: 1,
@@ -409,12 +399,11 @@ export const actionChangeStrokeWidth = register({
           },
         ]}
         value={getFormValue(
-          elements,
+          layers,
           appState,
-          (element) => element.strokeWidth,
+          (layer) => layer.strokeWidth,
           appState.currentItemStrokeWidth,
         )}
-        onChange={(value) => updateData(value)}
       />
     </fieldset>
   ),
@@ -423,23 +412,22 @@ export const actionChangeStrokeWidth = register({
 export const actionChangeSloppiness = register({
   name: "changeSloppiness",
   trackEvent: false,
-  perform: (elements, appState, value) => {
-    return {
-      elements: changeProperty(elements, appState, (el) =>
-        newElementWith(el, {
+  perform: (layers, appState, value) => ({
+      layers: changeProperty(layers, appState, (el) =>
+        newLayerWith(el, {
           seed: randomInteger(),
           roughness: value,
         }),
       ),
       appState: { ...appState, currentItemRoughness: value },
       commitToHistory: true,
-    };
-  },
-  PanelComponent: ({ elements, appState, updateData }) => (
+    }),
+  PanelComponent: ({ layers, appState, updateData }) => (
     <fieldset>
       <legend>{t("labels.sloppiness")}</legend>
       <ButtonIconSelect
         group="sloppiness"
+        onChange={(value) => updateData(value)}
         options={[
           {
             value: 0,
@@ -458,12 +446,11 @@ export const actionChangeSloppiness = register({
           },
         ]}
         value={getFormValue(
-          elements,
+          layers,
           appState,
-          (element) => element.roughness,
+          (layer) => layer.roughness,
           appState.currentItemRoughness,
         )}
-        onChange={(value) => updateData(value)}
       />
     </fieldset>
   ),
@@ -472,22 +459,21 @@ export const actionChangeSloppiness = register({
 export const actionChangeStrokeStyle = register({
   name: "changeStrokeStyle",
   trackEvent: false,
-  perform: (elements, appState, value) => {
-    return {
-      elements: changeProperty(elements, appState, (el) =>
-        newElementWith(el, {
+  perform: (layers, appState, value) => ({
+      layers: changeProperty(layers, appState, (el) =>
+        newLayerWith(el, {
           strokeStyle: value,
         }),
       ),
       appState: { ...appState, currentItemStrokeStyle: value },
       commitToHistory: true,
-    };
-  },
-  PanelComponent: ({ elements, appState, updateData }) => (
+    }),
+  PanelComponent: ({ layers, appState, updateData }) => (
     <fieldset>
       <legend>{t("labels.strokeStyle")}</legend>
       <ButtonIconSelect
         group="strokeStyle"
+        onChange={(value) => updateData(value)}
         options={[
           {
             value: "solid",
@@ -506,12 +492,11 @@ export const actionChangeStrokeStyle = register({
           },
         ]}
         value={getFormValue(
-          elements,
+          layers,
           appState,
-          (element) => element.strokeStyle,
+          (layer) => layer.strokeStyle,
           appState.currentItemStrokeStyle,
         )}
-        onChange={(value) => updateData(value)}
       />
     </fieldset>
   ),
@@ -520,35 +505,33 @@ export const actionChangeStrokeStyle = register({
 export const actionChangeOpacity = register({
   name: "changeOpacity",
   trackEvent: false,
-  perform: (elements, appState, value) => {
-    return {
-      elements: changeProperty(
-        elements,
+  perform: (layers, appState, value) => ({
+      layers: changeProperty(
+        layers,
         appState,
         (el) =>
-          newElementWith(el, {
+          newLayerWith(el, {
             opacity: value,
           }),
         true,
       ),
       appState: { ...appState, currentItemOpacity: value },
       commitToHistory: true,
-    };
-  },
-  PanelComponent: ({ elements, appState, updateData }) => (
+    }),
+  PanelComponent: ({ layers, appState, updateData }) => (
     <label className="control-label">
       {t("labels.opacity")}
       <input
-        type="range"
-        min="0"
         max="100"
-        step="10"
+        min="0"
         onChange={(event) => updateData(+event.target.value)}
+        step="10"
+        type="range"
         value={
           getFormValue(
-            elements,
+            layers,
             appState,
-            (element) => element.opacity,
+            (layer) => layer.opacity,
             appState.currentItemOpacity,
           ) ?? undefined
         }
@@ -560,14 +543,13 @@ export const actionChangeOpacity = register({
 export const actionChangeFontSize = register({
   name: "changeFontSize",
   trackEvent: false,
-  perform: (elements, appState, value) => {
-    return changeFontSize(elements, appState, () => value, value);
-  },
-  PanelComponent: ({ elements, appState, updateData }) => (
+  perform: (layers, appState, value) => changeFontSize(layers, appState, () => value, value),
+  PanelComponent: ({ layers, appState, updateData }) => (
     <fieldset>
       <legend>{t("labels.fontSize")}</legend>
       <ButtonIconSelect
         group="font-size"
+        onChange={(value) => updateData(value)}
         options={[
           {
             value: 16,
@@ -595,21 +577,20 @@ export const actionChangeFontSize = register({
           },
         ]}
         value={getFormValue(
-          elements,
+          layers,
           appState,
-          (element) => {
-            if (isTextElement(element)) {
-              return element.fontSize;
+          (layer) => {
+            if (isTextLayer(layer)) {
+              return layer.fontSize;
             }
-            const boundTextElement = getBoundTextElement(element);
-            if (boundTextElement) {
-              return boundTextElement.fontSize;
+            const boundTextLayer = getBoundTextLayer(layer);
+            if (boundTextLayer) {
+              return boundTextLayer.fontSize;
             }
             return null;
           },
           appState.currentItemFontSize || DEFAULT_FONT_SIZE,
         )}
-        onChange={(value) => updateData(value)}
       />
     </fieldset>
   ),
@@ -618,65 +599,52 @@ export const actionChangeFontSize = register({
 export const actionDecreaseFontSize = register({
   name: "decreaseFontSize",
   trackEvent: false,
-  perform: (elements, appState, value) => {
-    return changeFontSize(elements, appState, (element) =>
+  perform: (layers, appState, value) => changeFontSize(layers, appState, (layer) =>
       Math.round(
         // get previous value before relative increase (doesn't work fully
         // due to rounding and float precision issues)
-        (1 / (1 + FONT_SIZE_RELATIVE_INCREASE_STEP)) * element.fontSize,
+        (1 / (1 + FONT_SIZE_RELATIVE_INCREASE_STEP)) * layer.fontSize,
       ),
-    );
-  },
-  keyTest: (event) => {
-    return (
-      event[KEYS.CTRL_OR_CMD] &&
+    ),
+  keyTest: (event) => event[KEYS.CTRL_OR_CMD] &&
       event.shiftKey &&
       // KEYS.COMMA needed for MacOS
-      (event.key === KEYS.CHEVRON_LEFT || event.key === KEYS.COMMA)
-    );
-  },
+      (event.key === KEYS.CHEVRON_LEFT || event.key === KEYS.COMMA),
 });
 
 export const actionIncreaseFontSize = register({
   name: "increaseFontSize",
   trackEvent: false,
-  perform: (elements, appState, value) => {
-    return changeFontSize(elements, appState, (element) =>
-      Math.round(element.fontSize * (1 + FONT_SIZE_RELATIVE_INCREASE_STEP)),
-    );
-  },
-  keyTest: (event) => {
-    return (
-      event[KEYS.CTRL_OR_CMD] &&
+  perform: (layers, appState, value) => changeFontSize(layers, appState, (layer) =>
+      Math.round(layer.fontSize * (1 + FONT_SIZE_RELATIVE_INCREASE_STEP)),
+    ),
+  keyTest: (event) => event[KEYS.CTRL_OR_CMD] &&
       event.shiftKey &&
       // KEYS.PERIOD needed for MacOS
-      (event.key === KEYS.CHEVRON_RIGHT || event.key === KEYS.PERIOD)
-    );
-  },
+      (event.key === KEYS.CHEVRON_RIGHT || event.key === KEYS.PERIOD),
 });
 
 export const actionChangeFontFamily = register({
   name: "changeFontFamily",
   trackEvent: false,
-  perform: (elements, appState, value) => {
-    return {
-      elements: changeProperty(
-        elements,
+  perform: (layers, appState, value) => ({
+      layers: changeProperty(
+        layers,
         appState,
-        (oldElement) => {
-          if (isTextElement(oldElement)) {
-            const newElement: ExcalidrawTextElement = newElementWith(
-              oldElement,
+        (oldLayer) => {
+          if (isTextLayer(oldLayer)) {
+            const newLayer: ExcalidrawTextLayer = newLayerWith(
+              oldLayer,
               {
                 fontFamily: value,
                 lineHeight: getDefaultLineHeight(value),
               },
             );
-            redrawTextBoundingBox(newElement, getContainerElement(oldElement));
-            return newElement;
+            redrawTextBoundingBox(newLayer, getContainerLayer(oldLayer));
+            return newLayer;
           }
 
-          return oldElement;
+          return oldLayer;
         },
         true,
       ),
@@ -685,13 +653,12 @@ export const actionChangeFontFamily = register({
         currentItemFontFamily: value,
       },
       commitToHistory: true,
-    };
-  },
-  PanelComponent: ({ elements, appState, updateData }) => {
+    }),
+  PanelComponent: ({ layers, appState, updateData }) => {
     const options: {
-      value: FontFamilyValues;
+      icon: JSX.Layer;
       text: string;
-      icon: JSX.Element;
+      value: FontFamilyValues;
     }[] = [
       {
         value: FONT_FAMILY.Virgil,
@@ -715,23 +682,23 @@ export const actionChangeFontFamily = register({
         <legend>{t("labels.fontFamily")}</legend>
         <ButtonIconSelect<FontFamilyValues | false>
           group="font-family"
+          onChange={(value) => updateData(value)}
           options={options}
           value={getFormValue(
-            elements,
+            layers,
             appState,
-            (element) => {
-              if (isTextElement(element)) {
-                return element.fontFamily;
+            (layer) => {
+              if (isTextLayer(layer)) {
+                return layer.fontFamily;
               }
-              const boundTextElement = getBoundTextElement(element);
-              if (boundTextElement) {
-                return boundTextElement.fontFamily;
+              const boundTextLayer = getBoundTextLayer(layer);
+              if (boundTextLayer) {
+                return boundTextLayer.fontFamily;
               }
               return null;
             },
             appState.currentItemFontFamily || DEFAULT_FONT_FAMILY,
           )}
-          onChange={(value) => updateData(value)}
         />
       </fieldset>
     );
@@ -741,22 +708,21 @@ export const actionChangeFontFamily = register({
 export const actionChangeTextAlign = register({
   name: "changeTextAlign",
   trackEvent: false,
-  perform: (elements, appState, value) => {
-    return {
-      elements: changeProperty(
-        elements,
+  perform: (layers, appState, value) => ({
+      layers: changeProperty(
+        layers,
         appState,
-        (oldElement) => {
-          if (isTextElement(oldElement)) {
-            const newElement: ExcalidrawTextElement = newElementWith(
-              oldElement,
+        (oldLayer) => {
+          if (isTextLayer(oldLayer)) {
+            const newLayer: ExcalidrawTextLayer = newLayerWith(
+              oldLayer,
               { textAlign: value },
             );
-            redrawTextBoundingBox(newElement, getContainerElement(oldElement));
-            return newElement;
+            redrawTextBoundingBox(newLayer, getContainerLayer(oldLayer));
+            return newLayer;
           }
 
-          return oldElement;
+          return oldLayer;
         },
         true,
       ),
@@ -765,11 +731,8 @@ export const actionChangeTextAlign = register({
         currentItemTextAlign: value,
       },
       commitToHistory: true,
-    };
-  },
-  PanelComponent: ({ elements, appState, updateData }) => {
-    return (
-      <fieldset>
+    }),
+  PanelComponent: ({ layers, appState, updateData }) => <fieldset>
         <legend>{t("labels.textAlign")}</legend>
         <ButtonIconSelect<TextAlign | false>
           group="text-align"
@@ -794,15 +757,15 @@ export const actionChangeTextAlign = register({
             },
           ]}
           value={getFormValue(
-            elements,
+            layers,
             appState,
-            (element) => {
-              if (isTextElement(element)) {
-                return element.textAlign;
+            (layer) => {
+              if (isTextLayer(layer)) {
+                return layer.textAlign;
               }
-              const boundTextElement = getBoundTextElement(element);
-              if (boundTextElement) {
-                return boundTextElement.textAlign;
+              const boundTextLayer = getBoundTextLayer(layer);
+              if (boundTextLayer) {
+                return boundTextLayer.textAlign;
               }
               return null;
             },
@@ -810,31 +773,28 @@ export const actionChangeTextAlign = register({
           )}
           onChange={(value) => updateData(value)}
         />
-      </fieldset>
-    );
-  },
+      </fieldset>,
 });
 
 export const actionChangeVerticalAlign = register({
   name: "changeVerticalAlign",
-  trackEvent: { category: "element" },
-  perform: (elements, appState, value) => {
-    return {
-      elements: changeProperty(
-        elements,
+  trackEvent: { category: "layer" },
+  perform: (layers, appState, value) => ({
+      layers: changeProperty(
+        layers,
         appState,
-        (oldElement) => {
-          if (isTextElement(oldElement)) {
-            const newElement: ExcalidrawTextElement = newElementWith(
-              oldElement,
+        (oldLayer) => {
+          if (isTextLayer(oldLayer)) {
+            const newLayer: ExcalidrawTextLayer = newLayerWith(
+              oldLayer,
               { verticalAlign: value },
             );
 
-            redrawTextBoundingBox(newElement, getContainerElement(oldElement));
-            return newElement;
+            redrawTextBoundingBox(newLayer, getContainerLayer(oldLayer));
+            return newLayer;
           }
 
-          return oldElement;
+          return oldLayer;
         },
         true,
       ),
@@ -842,11 +802,8 @@ export const actionChangeVerticalAlign = register({
         ...appState,
       },
       commitToHistory: true,
-    };
-  },
-  PanelComponent: ({ elements, appState, updateData }) => {
-    return (
-      <fieldset>
+    }),
+  PanelComponent: ({ layers, appState, updateData }) => <fieldset>
         <ButtonIconSelect<VerticalAlign | false>
           group="text-align"
           options={[
@@ -870,15 +827,15 @@ export const actionChangeVerticalAlign = register({
             },
           ]}
           value={getFormValue(
-            elements,
+            layers,
             appState,
-            (element) => {
-              if (isTextElement(element) && element.containerId) {
-                return element.verticalAlign;
+            (layer) => {
+              if (isTextLayer(layer) && layer.containerId) {
+                return layer.verticalAlign;
               }
-              const boundTextElement = getBoundTextElement(element);
-              if (boundTextElement) {
-                return boundTextElement.verticalAlign;
+              const boundTextLayer = getBoundTextLayer(layer);
+              if (boundTextLayer) {
+                return boundTextLayer.verticalAlign;
               }
               return null;
             },
@@ -886,18 +843,15 @@ export const actionChangeVerticalAlign = register({
           )}
           onChange={(value) => updateData(value)}
         />
-      </fieldset>
-    );
-  },
+      </fieldset>,
 });
 
 export const actionChangeRoundness = register({
   name: "changeRoundness",
   trackEvent: false,
-  perform: (elements, appState, value) => {
-    return {
-      elements: changeProperty(elements, appState, (el) =>
-        newElementWith(el, {
+  perform: (layers, appState, value) => ({
+      layers: changeProperty(layers, appState, (el) =>
+        newLayerWith(el, {
           roundness:
             value === "round"
               ? {
@@ -913,15 +867,14 @@ export const actionChangeRoundness = register({
         currentItemRoundness: value,
       },
       commitToHistory: true,
-    };
-  },
-  PanelComponent: ({ elements, appState, updateData }) => {
-    const targetElements = getTargetElements(
-      getNonDeletedElements(elements),
+    }),
+  PanelComponent: ({ layers, appState, updateData }) => {
+    const targetLayers = getTargetLayers(
+      getNonDeletedLayers(layers),
       appState,
     );
 
-    const hasLegacyRoundness = targetElements.some(
+    const hasLegacyRoundness = targetLayers.some(
       (el) => el.roundness?.type === ROUNDNESS.LEGACY,
     );
 
@@ -930,6 +883,7 @@ export const actionChangeRoundness = register({
         <legend>{t("labels.edges")}</legend>
         <ButtonIconSelect
           group="edges"
+          onChange={(value) => updateData(value)}
           options={[
             {
               value: "sharp",
@@ -943,15 +897,14 @@ export const actionChangeRoundness = register({
             },
           ]}
           value={getFormValue(
-            elements,
+            layers,
             appState,
-            (element) =>
-              hasLegacyRoundness ? null : element.roundness ? "round" : "sharp",
+            (layer) =>
+              hasLegacyRoundness ? null : layer.roundness ? "round" : "sharp",
             (canChangeRoundness(appState.activeTool.type) &&
               appState.currentItemRoundness) ||
               null,
           )}
-          onChange={(value) => updateData(value)}
         />
       </fieldset>
     );
@@ -961,26 +914,21 @@ export const actionChangeRoundness = register({
 export const actionChangeArrowhead = register({
   name: "changeArrowhead",
   trackEvent: false,
-  perform: (
-    elements,
-    appState,
-    value: { position: "start" | "end"; type: Arrowhead },
-  ) => {
-    return {
-      elements: changeProperty(elements, appState, (el) => {
-        if (isLinearElement(el)) {
+  perform: (layers, appState, value: { position: "start" | "end"; type: Arrowhead }) => ({
+      layers: changeProperty(layers, appState, (el) => {
+        if (isLinearLayer(el)) {
           const { position, type } = value;
 
           if (position === "start") {
-            const element: ExcalidrawLinearElement = newElementWith(el, {
+            const layer: ExcalidrawLinearLayer = newLayerWith(el, {
               startArrowhead: type,
             });
-            return element;
+            return layer;
           } else if (position === "end") {
-            const element: ExcalidrawLinearElement = newElementWith(el, {
+            const layer: ExcalidrawLinearLayer = newLayerWith(el, {
               endArrowhead: type,
             });
-            return element;
+            return layer;
           }
         }
 
@@ -993,9 +941,8 @@ export const actionChangeArrowhead = register({
           : "currentItemEndArrowhead"]: value.type,
       },
       commitToHistory: true,
-    };
-  },
-  PanelComponent: ({ elements, appState, updateData }) => {
+    }),
+  PanelComponent: ({ layers, appState, updateData }) => {
     const isRTL = getLanguage().rtl;
 
     return (
@@ -1004,6 +951,7 @@ export const actionChangeArrowhead = register({
         <div className="iconSelectList buttonList">
           <IconPicker
             label="arrowhead_start"
+            onChange={(value) => updateData({ position: "start", type: value })}
             options={[
               {
                 value: null,
@@ -1037,19 +985,19 @@ export const actionChangeArrowhead = register({
               },
             ]}
             value={getFormValue<Arrowhead | null>(
-              elements,
+              layers,
               appState,
-              (element) =>
-                isLinearElement(element) && canHaveArrowheads(element.type)
-                  ? element.startArrowhead
+              (layer) =>
+                isLinearLayer(layer) && canHaveArrowheads(layer.type)
+                  ? layer.startArrowhead
                   : appState.currentItemStartArrowhead,
               appState.currentItemStartArrowhead,
             )}
-            onChange={(value) => updateData({ position: "start", type: value })}
           />
           <IconPicker
-            label="arrowhead_end"
             group="arrowheads"
+            label="arrowhead_end"
+            onChange={(value) => updateData({ position: "end", type: value })}
             options={[
               {
                 value: null,
@@ -1083,15 +1031,14 @@ export const actionChangeArrowhead = register({
               },
             ]}
             value={getFormValue<Arrowhead | null>(
-              elements,
+              layers,
               appState,
-              (element) =>
-                isLinearElement(element) && canHaveArrowheads(element.type)
-                  ? element.endArrowhead
+              (layer) =>
+                isLinearLayer(layer) && canHaveArrowheads(layer.type)
+                  ? layer.endArrowhead
                   : appState.currentItemEndArrowhead,
               appState.currentItemEndArrowhead,
             )}
-            onChange={(value) => updateData({ position: "end", type: value })}
           />
         </div>
       </fieldset>

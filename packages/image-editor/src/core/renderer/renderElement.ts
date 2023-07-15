@@ -1,56 +1,56 @@
-import {
-  ExcalidrawElement,
-  ExcalidrawLinearElement,
-  ExcalidrawTextElement,
-  Arrowhead,
-  NonDeletedExcalidrawElement,
-  ExcalidrawFreeDrawElement,
-  ExcalidrawImageElement,
-  ExcalidrawTextElementWithContainer,
-} from "../element/types";
-import {
-  isTextElement,
-  isLinearElement,
-  isFreeDrawElement,
-  isInitializedImageElement,
-  isArrowElement,
-  hasBoundTextElement,
-} from "../element/typeChecks";
-import {
-  getDiamondPoints,
-  getElementAbsoluteCoords,
-  getArrowheadPoints,
-} from "../element/bounds";
+import { getStroke, StrokeOptions } from "perfect-freehand";
 import { RoughCanvas } from "roughjs/bin/canvas";
 import { Drawable, Options } from "roughjs/bin/core";
-import { RoughSVG } from "roughjs/bin/svg";
 import { RoughGenerator } from "roughjs/bin/generator";
-
-import { RenderConfig } from "../scene/types";
-import { distance, getFontString, getFontFamilyString, isRTL } from "../utils";
-import { getCornerRadius, isPathALoop, isRightAngle } from "../math";
 import rough from "roughjs/bin/rough";
-import { AppState, BinaryFiles, Zoom } from "../types";
+import { RoughSVG } from "roughjs/bin/svg";
+
+import { normalizeLink } from "../../lib/data/url/url";
+import { RenderConfig } from "../../lib/scene/types";
 import { getDefaultAppState } from "../appState";
 import {
   BOUND_TEXT_PADDING,
   FRAME_STYLE,
   MAX_DECIMALS_FOR_SVG_EXPORT,
   MIME_TYPES,
-  SVG_NS,
+  SVG_NS
 } from "../constants";
-import { getStroke, StrokeOptions } from "perfect-freehand";
+import { getContainingFrame } from "../frame";
 import {
-  getBoundTextElement,
-  getContainerCoords,
-  getContainerElement,
-  getLineHeightInPx,
+  getArrowheadPoints,
+  getDiamondPoints,
+  getLayerAbsoluteCoords
+} from "../layer/bounds";
+import { LinearLayerEditor } from "../layer/linearLayerEditor";
+import {
+  getBoundTextLayer,
   getBoundTextMaxHeight,
   getBoundTextMaxWidth,
-} from "../element/textElement";
-import { LinearElementEditor } from "../element/linearElementEditor";
-import { getContainingFrame } from "../frame";
-import { normalizeLink } from "../data/url";
+  getContainerCoords,
+  getContainerLayer,
+  getLineHeightInPx
+} from "../layer/textLayer";
+import {
+  hasBoundTextLayer,
+  isArrowLayer,
+  isFreeDrawLayer,
+  isInitializedImageLayer,
+  isLinearLayer,
+  isTextLayer
+} from "../layer/typeChecks";
+import {
+  Arrowhead,
+  ExcalidrawFreeDrawLayer,
+  ExcalidrawImageLayer,
+  ExcalidrawLayer,
+  ExcalidrawLinearLayer,
+  ExcalidrawTextLayer,
+  ExcalidrawTextLayerWithContainer,
+  NonDeletedExcalidrawLayer
+} from "../layer/types";
+import { getCornerRadius, isPathALoop, isRightAngle } from "../math";
+import { AppState, BinaryFiles, Zoom } from "../types";
+import { distance, getFontFamilyString, getFontString, isRTL } from "../utils";
 
 // using a stronger invert (100% vs our regular 93%) and saturate
 // as a temp hack to make images in dark theme look closer to original
@@ -60,51 +60,47 @@ const IMAGE_INVERT_FILTER = "invert(100%) hue-rotate(180deg) saturate(1.25)";
 
 const defaultAppState = getDefaultAppState();
 
-const isPendingImageElement = (
-  element: ExcalidrawElement,
-  renderConfig: RenderConfig,
+const isPendingImageLayer = (
+  layer: ExcalidrawLayer,
+  renderConfig: RenderConfig
 ) =>
-  isInitializedImageElement(element) &&
-  !renderConfig.imageCache.has(element.fileId);
+  isInitializedImageLayer(layer) && !renderConfig.imageCache.has(layer.fileId);
 
 const shouldResetImageFilter = (
-  element: ExcalidrawElement,
-  renderConfig: RenderConfig,
-) => {
-  return (
-    renderConfig.theme === "dark" &&
-    isInitializedImageElement(element) &&
-    !isPendingImageElement(element, renderConfig) &&
-    renderConfig.imageCache.get(element.fileId)?.mimeType !== MIME_TYPES.svg
-  );
-};
+  layer: ExcalidrawLayer,
+  renderConfig: RenderConfig
+) =>
+  renderConfig.theme === "dark" &&
+  isInitializedImageLayer(layer) &&
+  !isPendingImageLayer(layer, renderConfig) &&
+  renderConfig.imageCache.get(layer.fileId)?.mimeType !== MIME_TYPES.svg;
 
 const getDashArrayDashed = (strokeWidth: number) => [8, 8 + strokeWidth];
 
 const getDashArrayDotted = (strokeWidth: number) => [1.5, 6 + strokeWidth];
 
-const getCanvasPadding = (element: ExcalidrawElement) =>
-  element.type === "freedraw" ? element.strokeWidth * 12 : 20;
+const getCanvasPadding = (layer: ExcalidrawLayer) =>
+  layer.type === "freedraw" ? layer.strokeWidth * 12 : 20;
 
-export interface ExcalidrawElementWithCanvas {
-  element: ExcalidrawElement | ExcalidrawTextElement;
-  canvas: HTMLCanvasElement;
-  theme: RenderConfig["theme"];
-  scale: number;
-  zoomValue: RenderConfig["zoom"]["value"];
+export interface ExcalidrawLayerWithCanvas {
+  boundTextLayerVersion: number | null;
+  canvas: HTMLCanvasLayer;
   canvasOffsetX: number;
   canvasOffsetY: number;
-  boundTextElementVersion: number | null;
   containingFrameOpacity: number;
+  layer: ExcalidrawLayer | ExcalidrawTextLayer;
+  scale: number;
+  theme: RenderConfig["theme"];
+  zoomValue: RenderConfig["zoom"]["value"];
 }
 
-const cappedElementCanvasSize = (
-  element: NonDeletedExcalidrawElement,
-  zoom: Zoom,
+const cappedLayerCanvasSize = (
+  layer: NonDeletedExcalidrawLayer,
+  zoom: Zoom
 ): {
-  width: number;
   height: number;
   scale: number;
+  width: number;
 } => {
   // these limits are ballpark, they depend on specific browsers and device.
   // We've chosen lower limits to be safe. We might want to change these limits
@@ -116,20 +112,20 @@ const cappedElementCanvasSize = (
   // ~ safari width/height limit based on developer.mozilla.org.
   const WIDTH_HEIGHT_LIMIT = 32767;
 
-  const padding = getCanvasPadding(element);
+  const padding = getCanvasPadding(layer);
 
-  const [x1, y1, x2, y2] = getElementAbsoluteCoords(element);
-  const elementWidth =
-    isLinearElement(element) || isFreeDrawElement(element)
+  const [x1, y1, x2, y2] = getLayerAbsoluteCoords(layer);
+  const layerWidth =
+    isLinearLayer(layer) || isFreeDrawLayer(layer)
       ? distance(x1, x2)
-      : element.width;
-  const elementHeight =
-    isLinearElement(element) || isFreeDrawElement(element)
+      : layer.width;
+  const layerHeight =
+    isLinearLayer(layer) || isFreeDrawLayer(layer)
       ? distance(y1, y2)
-      : element.height;
+      : layer.height;
 
-  let width = elementWidth * window.devicePixelRatio + padding * 2;
-  let height = elementHeight * window.devicePixelRatio + padding * 2;
+  let width = layerWidth * window.devicePixelRatio + padding * 2;
+  let height = layerHeight * window.devicePixelRatio + padding * 2;
 
   let scale: number = zoom.value;
 
@@ -152,16 +148,16 @@ const cappedElementCanvasSize = (
   return { width, height, scale };
 };
 
-const generateElementCanvas = (
-  element: NonDeletedExcalidrawElement,
+const generateLayerCanvas = (
+  layer: NonDeletedExcalidrawLayer,
   zoom: Zoom,
-  renderConfig: RenderConfig,
-): ExcalidrawElementWithCanvas => {
-  const canvas = document.createElement("canvas");
+  renderConfig: RenderConfig
+): ExcalidrawLayerWithCanvas => {
+  const canvas = document.createLayer("canvas");
   const context = canvas.getContext("2d")!;
-  const padding = getCanvasPadding(element);
+  const padding = getCanvasPadding(layer);
 
-  const { width, height, scale } = cappedElementCanvasSize(element, zoom);
+  const { width, height, scale } = cappedLayerCanvasSize(layer, zoom);
 
   canvas.width = width;
   canvas.height = height;
@@ -169,17 +165,17 @@ const generateElementCanvas = (
   let canvasOffsetX = 0;
   let canvasOffsetY = 0;
 
-  if (isLinearElement(element) || isFreeDrawElement(element)) {
-    const [x1, y1] = getElementAbsoluteCoords(element);
+  if (isLinearLayer(layer) || isFreeDrawLayer(layer)) {
+    const [x1, y1] = getLayerAbsoluteCoords(layer);
 
     canvasOffsetX =
-      element.x > x1
-        ? distance(element.x, x1) * window.devicePixelRatio * scale
+      layer.x > x1
+        ? distance(layer.x, x1) * window.devicePixelRatio * scale
         : 0;
 
     canvasOffsetY =
-      element.y > y1
-        ? distance(element.y, y1) * window.devicePixelRatio * scale
+      layer.y > y1
+        ? distance(layer.y, y1) * window.devicePixelRatio * scale
         : 0;
 
     context.translate(canvasOffsetX, canvasOffsetY);
@@ -189,84 +185,84 @@ const generateElementCanvas = (
   context.translate(padding * scale, padding * scale);
   context.scale(
     window.devicePixelRatio * scale,
-    window.devicePixelRatio * scale,
+    window.devicePixelRatio * scale
   );
 
   const rc = rough.canvas(canvas);
 
   // in dark theme, revert the image color filter
-  if (shouldResetImageFilter(element, renderConfig)) {
+  if (shouldResetImageFilter(layer, renderConfig)) {
     context.filter = IMAGE_INVERT_FILTER;
   }
 
-  drawElementOnCanvas(element, rc, context, renderConfig);
+  drawLayerOnCanvas(layer, rc, context, renderConfig);
   context.restore();
 
   return {
-    element,
+    layer,
     canvas,
     theme: renderConfig.theme,
     scale,
     zoomValue: zoom.value,
     canvasOffsetX,
     canvasOffsetY,
-    boundTextElementVersion: getBoundTextElement(element)?.version || null,
-    containingFrameOpacity: getContainingFrame(element)?.opacity || 100,
+    boundTextLayerVersion: getBoundTextLayer(layer)?.version || null,
+    containingFrameOpacity: getContainingFrame(layer)?.opacity || 100
   };
 };
 
 export const DEFAULT_LINK_SIZE = 14;
 
-const IMAGE_PLACEHOLDER_IMG = document.createElement("img");
+const IMAGE_PLACEHOLDER_IMG = document.createLayer("img");
 IMAGE_PLACEHOLDER_IMG.src = `data:${MIME_TYPES.svg},${encodeURIComponent(
-  `<svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="image" class="svg-inline--fa fa-image fa-w-16" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="#888" d="M464 448H48c-26.51 0-48-21.49-48-48V112c0-26.51 21.49-48 48-48h416c26.51 0 48 21.49 48 48v288c0 26.51-21.49 48-48 48zM112 120c-30.928 0-56 25.072-56 56s25.072 56 56 56 56-25.072 56-56-25.072-56-56-56zM64 384h384V272l-87.515-87.515c-4.686-4.686-12.284-4.686-16.971 0L208 320l-55.515-55.515c-4.686-4.686-12.284-4.686-16.971 0L64 336v48z"></path></svg>`,
+  `<svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="image" class="svg-inline--fa fa-image fa-w-16" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="#888" d="M464 448H48c-26.51 0-48-21.49-48-48V112c0-26.51 21.49-48 48-48h416c26.51 0 48 21.49 48 48v288c0 26.51-21.49 48-48 48zM112 120c-30.928 0-56 25.072-56 56s25.072 56 56 56 56-25.072 56-56-25.072-56-56-56zM64 384h384V272l-87.515-87.515c-4.686-4.686-12.284-4.686-16.971 0L208 320l-55.515-55.515c-4.686-4.686-12.284-4.686-16.971 0L64 336v48z"></path></svg>`
 )}`;
 
-const IMAGE_ERROR_PLACEHOLDER_IMG = document.createElement("img");
+const IMAGE_ERROR_PLACEHOLDER_IMG = document.createLayer("img");
 IMAGE_ERROR_PLACEHOLDER_IMG.src = `data:${MIME_TYPES.svg},${encodeURIComponent(
-  `<svg viewBox="0 0 668 668" xmlns="http://www.w3.org/2000/svg" xml:space="preserve" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2"><path d="M464 448H48c-26.51 0-48-21.49-48-48V112c0-26.51 21.49-48 48-48h416c26.51 0 48 21.49 48 48v288c0 26.51-21.49 48-48 48ZM112 120c-30.928 0-56 25.072-56 56s25.072 56 56 56 56-25.072 56-56-25.072-56-56-56ZM64 384h384V272l-87.515-87.515c-4.686-4.686-12.284-4.686-16.971 0L208 320l-55.515-55.515c-4.686-4.686-12.284-4.686-16.971 0L64 336v48Z" style="fill:#888;fill-rule:nonzero" transform="matrix(.81709 0 0 .81709 124.825 145.825)"/><path d="M256 8C119.034 8 8 119.033 8 256c0 136.967 111.034 248 248 248s248-111.034 248-248S392.967 8 256 8Zm130.108 117.892c65.448 65.448 70 165.481 20.677 235.637L150.47 105.216c70.204-49.356 170.226-44.735 235.638 20.676ZM125.892 386.108c-65.448-65.448-70-165.481-20.677-235.637L361.53 406.784c-70.203 49.356-170.226 44.736-235.638-20.676Z" style="fill:#888;fill-rule:nonzero" transform="matrix(.30366 0 0 .30366 506.822 60.065)"/></svg>`,
+  `<svg viewBox="0 0 668 668" xmlns="http://www.w3.org/2000/svg" xml:space="preserve" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2"><path d="M464 448H48c-26.51 0-48-21.49-48-48V112c0-26.51 21.49-48 48-48h416c26.51 0 48 21.49 48 48v288c0 26.51-21.49 48-48 48ZM112 120c-30.928 0-56 25.072-56 56s25.072 56 56 56 56-25.072 56-56-25.072-56-56-56ZM64 384h384V272l-87.515-87.515c-4.686-4.686-12.284-4.686-16.971 0L208 320l-55.515-55.515c-4.686-4.686-12.284-4.686-16.971 0L64 336v48Z" style="fill:#888;fill-rule:nonzero" transform="matrix(.81709 0 0 .81709 124.825 145.825)"/><path d="M256 8C119.034 8 8 119.033 8 256c0 136.967 111.034 248 248 248s248-111.034 248-248S392.967 8 256 8Zm130.108 117.892c65.448 65.448 70 165.481 20.677 235.637L150.47 105.216c70.204-49.356 170.226-44.735 235.638 20.676ZM125.892 386.108c-65.448-65.448-70-165.481-20.677-235.637L361.53 406.784c-70.203 49.356-170.226 44.736-235.638-20.676Z" style="fill:#888;fill-rule:nonzero" transform="matrix(.30366 0 0 .30366 506.822 60.065)"/></svg>`
 )}`;
 
 const drawImagePlaceholder = (
-  element: ExcalidrawImageElement,
+  layer: ExcalidrawImageLayer,
   context: CanvasRenderingContext2D,
-  zoomValue: AppState["zoom"]["value"],
+  zoomValue: AppState["zoom"]["value"]
 ) => {
   context.fillStyle = "#E7E7E7";
-  context.fillRect(0, 0, element.width, element.height);
+  context.fillRect(0, 0, layer.width, layer.height);
 
-  const imageMinWidthOrHeight = Math.min(element.width, element.height);
+  const imageMinWidthOrHeight = Math.min(layer.width, layer.height);
 
   const size = Math.min(
     imageMinWidthOrHeight,
-    Math.min(imageMinWidthOrHeight * 0.4, 100),
+    Math.min(imageMinWidthOrHeight * 0.4, 100)
   );
 
   context.drawImage(
-    element.status === "error"
+    layer.status === "error"
       ? IMAGE_ERROR_PLACEHOLDER_IMG
       : IMAGE_PLACEHOLDER_IMG,
-    element.width / 2 - size / 2,
-    element.height / 2 - size / 2,
+    layer.width / 2 - size / 2,
+    layer.height / 2 - size / 2,
     size,
-    size,
+    size
   );
 };
-const drawElementOnCanvas = (
-  element: NonDeletedExcalidrawElement,
+const drawLayerOnCanvas = (
+  layer: NonDeletedExcalidrawLayer,
   rc: RoughCanvas,
   context: CanvasRenderingContext2D,
-  renderConfig: RenderConfig,
+  renderConfig: RenderConfig
 ) => {
   context.globalAlpha =
-    ((getContainingFrame(element)?.opacity ?? 100) * element.opacity) / 10000;
-  switch (element.type) {
+    ((getContainingFrame(layer)?.opacity ?? 100) * layer.opacity) / 10000;
+  switch (layer.type) {
     case "rectangle":
     case "diamond":
     case "ellipse": {
       context.lineJoin = "round";
       context.lineCap = "round";
-      rc.draw(getShapeForElement(element)!);
+      rc.draw(getShapeForLayer(layer)!);
       break;
     }
     case "arrow":
@@ -274,7 +270,7 @@ const drawElementOnCanvas = (
       context.lineJoin = "round";
       context.lineCap = "round";
 
-      getShapeForElement(element)!.forEach((shape) => {
+      getShapeForLayer(layer)!.forEach((shape) => {
         rc.draw(shape);
       });
       break;
@@ -282,41 +278,41 @@ const drawElementOnCanvas = (
     case "freedraw": {
       // Draw directly to canvas
       context.save();
-      context.fillStyle = element.strokeColor;
+      context.fillStyle = layer.strokeColor;
 
-      const path = getFreeDrawPath2D(element) as Path2D;
-      const fillShape = getShapeForElement(element);
+      const path = getFreeDrawPath2D(layer) as Path2D;
+      const fillShape = getShapeForLayer(layer);
 
       if (fillShape) {
         rc.draw(fillShape);
       }
 
-      context.fillStyle = element.strokeColor;
+      context.fillStyle = layer.strokeColor;
       context.fill(path);
 
       context.restore();
       break;
     }
     case "image": {
-      const img = isInitializedImageElement(element)
-        ? renderConfig.imageCache.get(element.fileId)?.image
+      const img = isInitializedImageLayer(layer)
+        ? renderConfig.imageCache.get(layer.fileId)?.image
         : undefined;
       if (img != null && !(img instanceof Promise)) {
         context.drawImage(
           img,
           0 /* hardcoded for the selection box*/,
           0,
-          element.width,
-          element.height,
+          layer.width,
+          layer.height
         );
       } else {
-        drawImagePlaceholder(element, context, renderConfig.zoom.value);
+        drawImagePlaceholder(layer, context, renderConfig.zoom.value);
       }
       break;
     }
     default: {
-      if (isTextElement(element)) {
-        const rtl = isRTL(element.text);
+      if (isTextLayer(layer)) {
+        const rtl = isRTL(layer.text);
         const shouldTemporarilyAttach = rtl && !context.canvas.isConnected;
         if (shouldTemporarilyAttach) {
           // to correctly render RTL text mixed with LTR, we have to append it
@@ -325,29 +321,29 @@ const drawElementOnCanvas = (
         }
         context.canvas.setAttribute("dir", rtl ? "rtl" : "ltr");
         context.save();
-        context.font = getFontString(element);
-        context.fillStyle = element.strokeColor;
-        context.textAlign = element.textAlign as CanvasTextAlign;
+        context.font = getFontString(layer);
+        context.fillStyle = layer.strokeColor;
+        context.textAlign = layer.textAlign as CanvasTextAlign;
 
         // Canvas does not support multiline text by default
-        const lines = element.text.replace(/\r\n?/g, "\n").split("\n");
+        const lines = layer.text.replace(/\r\n?/g, "\n").split("\n");
 
         const horizontalOffset =
-          element.textAlign === "center"
-            ? element.width / 2
-            : element.textAlign === "right"
-            ? element.width
+          layer.textAlign === "center"
+            ? layer.width / 2
+            : layer.textAlign === "right"
+            ? layer.width
             : 0;
         const lineHeightPx = getLineHeightInPx(
-          element.fontSize,
-          element.lineHeight,
+          layer.fontSize,
+          layer.lineHeight
         );
-        const verticalOffset = element.height - element.baseline;
+        const verticalOffset = layer.height - layer.baseline;
         for (let index = 0; index < lines.length; index++) {
           context.fillText(
             lines[index],
             horizontalOffset,
-            (index + 1) * lineHeightPx - verticalOffset,
+            (index + 1) * lineHeightPx - verticalOffset
           );
         }
         context.restore();
@@ -355,164 +351,159 @@ const drawElementOnCanvas = (
           context.canvas.remove();
         }
       } else {
-        throw new Error(`Unimplemented type ${element.type}`);
+        throw new Error(`Unimplemented type ${layer.type}`);
       }
     }
   }
   context.globalAlpha = 1;
 };
 
-const elementWithCanvasCache = new WeakMap<
-  ExcalidrawElement,
-  ExcalidrawElementWithCanvas
+const layerWithCanvasCache = new WeakMap<
+  ExcalidrawLayer,
+  ExcalidrawLayerWithCanvas
 >();
 
-const shapeCache = new WeakMap<ExcalidrawElement, ElementShape>();
+const shapeCache = new WeakMap<ExcalidrawLayer, LayerShape>();
 
-type ElementShape = Drawable | Drawable[] | null;
+type LayerShape = Drawable | Drawable[] | null;
 
-type ElementShapes = {
-  freedraw: Drawable | null;
+type LayerShapes = {
   arrow: Drawable[];
+  freedraw: Drawable | null;
+  image: null;
   line: Drawable[];
   text: null;
-  image: null;
 };
 
-export const getShapeForElement = <T extends ExcalidrawElement>(element: T) =>
-  shapeCache.get(element) as T["type"] extends keyof ElementShapes
-    ? ElementShapes[T["type"]] | undefined
+export const getShapeForLayer = <T extends ExcalidrawLayer>(layer: T) =>
+  shapeCache.get(layer) as T["type"] extends keyof LayerShapes
+    ? LayerShapes[T["type"]] | undefined
     : Drawable | null | undefined;
 
-export const setShapeForElement = <T extends ExcalidrawElement>(
-  element: T,
-  shape: T["type"] extends keyof ElementShapes
-    ? ElementShapes[T["type"]]
-    : Drawable,
-) => shapeCache.set(element, shape);
+export const setShapeForLayer = <T extends ExcalidrawLayer>(
+  layer: T,
+  shape: T["type"] extends keyof LayerShapes ? LayerShapes[T["type"]] : Drawable
+) => shapeCache.set(layer, shape);
 
-export const invalidateShapeForElement = (element: ExcalidrawElement) =>
-  shapeCache.delete(element);
+export const invalidateShapeForLayer = (layer: ExcalidrawLayer) =>
+  shapeCache.delete(layer);
 
 export const generateRoughOptions = (
-  element: ExcalidrawElement,
-  continuousPath = false,
+  layer: ExcalidrawLayer,
+  continuousPath = false
 ): Options => {
   const options: Options = {
-    seed: element.seed,
+    seed: layer.seed,
     strokeLineDash:
-      element.strokeStyle === "dashed"
-        ? getDashArrayDashed(element.strokeWidth)
-        : element.strokeStyle === "dotted"
-        ? getDashArrayDotted(element.strokeWidth)
+      layer.strokeStyle === "dashed"
+        ? getDashArrayDashed(layer.strokeWidth)
+        : layer.strokeStyle === "dotted"
+        ? getDashArrayDotted(layer.strokeWidth)
         : undefined,
     // for non-solid strokes, disable multiStroke because it tends to make
     // dashes/dots overlay each other
-    disableMultiStroke: element.strokeStyle !== "solid",
+    disableMultiStroke: layer.strokeStyle !== "solid",
     // for non-solid strokes, increase the width a bit to make it visually
     // similar to solid strokes, because we're also disabling multiStroke
     strokeWidth:
-      element.strokeStyle !== "solid"
-        ? element.strokeWidth + 0.5
-        : element.strokeWidth,
+      layer.strokeStyle !== "solid"
+        ? layer.strokeWidth + 0.5
+        : layer.strokeWidth,
     // when increasing strokeWidth, we must explicitly set fillWeight and
     // hachureGap because if not specified, roughjs uses strokeWidth to
     // calculate them (and we don't want the fills to be modified)
-    fillWeight: element.strokeWidth / 2,
-    hachureGap: element.strokeWidth * 4,
-    roughness: element.roughness,
-    stroke: element.strokeColor,
-    preserveVertices: continuousPath,
+    fillWeight: layer.strokeWidth / 2,
+    hachureGap: layer.strokeWidth * 4,
+    roughness: layer.roughness,
+    stroke: layer.strokeColor,
+    preserveVertices: continuousPath
   };
 
-  switch (element.type) {
+  switch (layer.type) {
     case "rectangle":
     case "diamond":
     case "ellipse": {
-      options.fillStyle = element.fillStyle;
+      options.fillStyle = layer.fillStyle;
       options.fill =
-        element.backgroundColor === "transparent"
+        layer.backgroundColor === "transparent"
           ? undefined
-          : element.backgroundColor;
-      if (element.type === "ellipse") {
+          : layer.backgroundColor;
+      if (layer.type === "ellipse") {
         options.curveFitting = 1;
       }
       return options;
     }
     case "line":
     case "freedraw": {
-      if (isPathALoop(element.points)) {
-        options.fillStyle = element.fillStyle;
+      if (isPathALoop(layer.points)) {
+        options.fillStyle = layer.fillStyle;
         options.fill =
-          element.backgroundColor === "transparent"
+          layer.backgroundColor === "transparent"
             ? undefined
-            : element.backgroundColor;
+            : layer.backgroundColor;
       }
       return options;
     }
     case "arrow":
       return options;
     default: {
-      throw new Error(`Unimplemented type ${element.type}`);
+      throw new Error(`Unimplemented type ${layer.type}`);
     }
   }
 };
 
 /**
- * Generates the element's shape and puts it into the cache.
- * @param element
+ * Generates the layer's shape and puts it into the cache.
+ * @param layer
  * @param generator
  */
-const generateElementShape = (
-  element: NonDeletedExcalidrawElement,
-  generator: RoughGenerator,
+const generateLayerShape = (
+  layer: NonDeletedExcalidrawLayer,
+  generator: RoughGenerator
 ) => {
-  let shape = shapeCache.get(element);
+  let shape = shapeCache.get(layer);
 
-  // `null` indicates no rc shape applicable for this element type
+  // `null` indicates no rc shape applicable for this layer type
   // (= do not generate anything)
   if (shape === undefined) {
-    elementWithCanvasCache.delete(element);
+    layerWithCanvasCache.delete(layer);
 
-    switch (element.type) {
+    switch (layer.type) {
       case "rectangle": {
-        if (element.roundness) {
-          const w = element.width;
-          const h = element.height;
-          const r = getCornerRadius(Math.min(w, h), element);
+        if (layer.roundness) {
+          const w = layer.width;
+          const h = layer.height;
+          const r = getCornerRadius(Math.min(w, h), layer);
           shape = generator.path(
             `M ${r} 0 L ${w - r} 0 Q ${w} 0, ${w} ${r} L ${w} ${
               h - r
             } Q ${w} ${h}, ${w - r} ${h} L ${r} ${h} Q 0 ${h}, 0 ${
               h - r
             } L 0 ${r} Q 0 0, ${r} 0`,
-            generateRoughOptions(element, true),
+            generateRoughOptions(layer, true)
           );
         } else {
           shape = generator.rectangle(
             0,
             0,
-            element.width,
-            element.height,
-            generateRoughOptions(element),
+            layer.width,
+            layer.height,
+            generateRoughOptions(layer)
           );
         }
-        setShapeForElement(element, shape);
+        setShapeForLayer(layer, shape);
 
         break;
       }
       case "diamond": {
         const [topX, topY, rightX, rightY, bottomX, bottomY, leftX, leftY] =
-          getDiamondPoints(element);
-        if (element.roundness) {
-          const verticalRadius = getCornerRadius(
-            Math.abs(topX - leftX),
-            element,
-          );
+          getDiamondPoints(layer);
+        if (layer.roundness) {
+          const verticalRadius = getCornerRadius(Math.abs(topX - leftX), layer);
 
           const horizontalRadius = getCornerRadius(
             Math.abs(rightY - topY),
-            element,
+            layer
           );
 
           shape = generator.path(
@@ -534,7 +525,7 @@ const generateElementShape = (
             C ${topX} ${topY}, ${topX} ${topY}, ${topX + verticalRadius} ${
               topY + horizontalRadius
             }`,
-            generateRoughOptions(element, true),
+            generateRoughOptions(layer, true)
           );
         } else {
           shape = generator.polygon(
@@ -542,42 +533,42 @@ const generateElementShape = (
               [topX, topY],
               [rightX, rightY],
               [bottomX, bottomY],
-              [leftX, leftY],
+              [leftX, leftY]
             ],
-            generateRoughOptions(element),
+            generateRoughOptions(layer)
           );
         }
-        setShapeForElement(element, shape);
+        setShapeForLayer(layer, shape);
 
         break;
       }
       case "ellipse":
         shape = generator.ellipse(
-          element.width / 2,
-          element.height / 2,
-          element.width,
-          element.height,
-          generateRoughOptions(element),
+          layer.width / 2,
+          layer.height / 2,
+          layer.width,
+          layer.height,
+          generateRoughOptions(layer)
         );
-        setShapeForElement(element, shape);
+        setShapeForLayer(layer, shape);
 
         break;
       case "line":
       case "arrow": {
-        const options = generateRoughOptions(element);
+        const options = generateRoughOptions(layer);
 
         // points array can be empty in the beginning, so it is important to add
         // initial position to it
-        const points = element.points.length ? element.points : [[0, 0]];
+        const points = layer.points.length ? layer.points : [[0, 0]];
 
-        // curve is always the first element
-        // this simplifies finding the curve for an element
-        if (!element.roundness) {
+        // curve is always the first layer
+        // this simplifies finding the curve for an layer
+        if (!layer.roundness) {
           if (options.fill) {
             shape = [generator.polygon(points as [number, number][], options)];
           } else {
             shape = [
-              generator.linearPath(points as [number, number][], options),
+              generator.linearPath(points as [number, number][], options)
             ];
           }
         } else {
@@ -585,20 +576,20 @@ const generateElementShape = (
         }
 
         // add lines only in arrow
-        if (element.type === "arrow") {
-          const { startArrowhead = null, endArrowhead = "arrow" } = element;
+        if (layer.type === "arrow") {
+          const { startArrowhead = null, endArrowhead = "arrow" } = layer;
 
           const getArrowheadShapes = (
-            element: ExcalidrawLinearElement,
+            layer: ExcalidrawLinearLayer,
             shape: Drawable[],
             position: "start" | "end",
-            arrowhead: Arrowhead,
+            arrowhead: Arrowhead
           ) => {
             const arrowheadPoints = getArrowheadPoints(
-              element,
+              layer,
               shape,
               position,
-              arrowhead,
+              arrowhead
             );
 
             if (arrowheadPoints === null) {
@@ -612,10 +603,10 @@ const generateElementShape = (
               return [
                 generator.circle(x, y, r, {
                   ...options,
-                  fill: element.strokeColor,
+                  fill: layer.strokeColor,
                   fillStyle: "solid",
-                  stroke: "none",
-                }),
+                  stroke: "none"
+                })
               ];
             }
 
@@ -631,23 +622,23 @@ const generateElementShape = (
                     [x, y],
                     [x2, y2],
                     [x3, y3],
-                    [x, y],
+                    [x, y]
                   ],
                   {
                     ...options,
-                    fill: element.strokeColor,
-                    fillStyle: "solid",
-                  },
-                ),
+                    fill: layer.strokeColor,
+                    fillStyle: "solid"
+                  }
+                )
               ];
             }
 
             // Arrow arrowheads
             const [x2, y2, x3, y3, x4, y4] = arrowheadPoints;
 
-            if (element.strokeStyle === "dotted") {
+            if (layer.strokeStyle === "dotted") {
               // for dotted arrows caps, reduce gap to make it more legible
-              const dash = getDashArrayDotted(element.strokeWidth - 1);
+              const dash = getDashArrayDotted(layer.strokeWidth - 1);
               options.strokeLineDash = [dash[0], dash[1] - 1];
             } else {
               // for solid/dashed, keep solid arrow cap
@@ -655,16 +646,16 @@ const generateElementShape = (
             }
             return [
               generator.line(x3, y3, x2, y2, options),
-              generator.line(x4, y4, x2, y2, options),
+              generator.line(x4, y4, x2, y2, options)
             ];
           };
 
           if (startArrowhead !== null) {
             const shapes = getArrowheadShapes(
-              element,
+              layer,
               shape,
               "start",
-              startArrowhead,
+              startArrowhead
             );
             shape.push(...shapes);
           }
@@ -675,90 +666,86 @@ const generateElementShape = (
             }
 
             const shapes = getArrowheadShapes(
-              element,
+              layer,
               shape,
               "end",
-              endArrowhead,
+              endArrowhead
             );
             shape.push(...shapes);
           }
         }
 
-        setShapeForElement(element, shape);
+        setShapeForLayer(layer, shape);
 
         break;
       }
       case "freedraw": {
-        generateFreeDrawShape(element);
+        generateFreeDrawShape(layer);
 
-        if (isPathALoop(element.points)) {
+        if (isPathALoop(layer.points)) {
           // generate rough polygon to fill freedraw shape
-          shape = generator.polygon(element.points as [number, number][], {
-            ...generateRoughOptions(element),
-            stroke: "none",
+          shape = generator.polygon(layer.points as [number, number][], {
+            ...generateRoughOptions(layer),
+            stroke: "none"
           });
         } else {
           shape = null;
         }
-        setShapeForElement(element, shape);
+        setShapeForLayer(layer, shape);
         break;
       }
       case "text":
       case "image": {
-        // just to ensure we don't regenerate element.canvas on rerenders
-        setShapeForElement(element, null);
+        // just to ensure we don't regenerate layer.canvas on rerenders
+        setShapeForLayer(layer, null);
         break;
       }
     }
   }
 };
 
-const generateElementWithCanvas = (
-  element: NonDeletedExcalidrawElement,
-  renderConfig: RenderConfig,
+const generateLayerWithCanvas = (
+  layer: NonDeletedExcalidrawLayer,
+  renderConfig: RenderConfig
 ) => {
   const zoom: Zoom = renderConfig ? renderConfig.zoom : defaultAppState.zoom;
-  const prevElementWithCanvas = elementWithCanvasCache.get(element);
+  const prevLayerWithCanvas = layerWithCanvasCache.get(layer);
   const shouldRegenerateBecauseZoom =
-    prevElementWithCanvas &&
-    prevElementWithCanvas.zoomValue !== zoom.value &&
+    prevLayerWithCanvas &&
+    prevLayerWithCanvas.zoomValue !== zoom.value &&
     !renderConfig?.shouldCacheIgnoreZoom;
-  const boundTextElementVersion = getBoundTextElement(element)?.version || null;
-  const containingFrameOpacity = getContainingFrame(element)?.opacity || 100;
+  const boundTextLayerVersion = getBoundTextLayer(layer)?.version || null;
+  const containingFrameOpacity = getContainingFrame(layer)?.opacity || 100;
 
   if (
-    !prevElementWithCanvas ||
+    !prevLayerWithCanvas ||
     shouldRegenerateBecauseZoom ||
-    prevElementWithCanvas.theme !== renderConfig.theme ||
-    prevElementWithCanvas.boundTextElementVersion !== boundTextElementVersion ||
-    prevElementWithCanvas.containingFrameOpacity !== containingFrameOpacity
+    prevLayerWithCanvas.theme !== renderConfig.theme ||
+    prevLayerWithCanvas.boundTextLayerVersion !== boundTextLayerVersion ||
+    prevLayerWithCanvas.containingFrameOpacity !== containingFrameOpacity
   ) {
-    const elementWithCanvas = generateElementCanvas(
-      element,
-      zoom,
-      renderConfig,
-    );
+    const layerWithCanvas = generateLayerCanvas(layer, zoom, renderConfig);
 
-    elementWithCanvasCache.set(element, elementWithCanvas);
+    layerWithCanvasCache.set(layer, layerWithCanvas);
 
-    return elementWithCanvas;
+    return layerWithCanvas;
   }
-  return prevElementWithCanvas;
+  return prevLayerWithCanvas;
 };
 
-const drawElementFromCanvas = (
-  elementWithCanvas: ExcalidrawElementWithCanvas,
+const drawLayerFromCanvas = (
+  layerWithCanvas: ExcalidrawLayerWithCanvas,
   rc: RoughCanvas,
   context: CanvasRenderingContext2D,
-  renderConfig: RenderConfig,
+  renderConfig: RenderConfig
 ) => {
-  const element = elementWithCanvas.element;
-  const padding = getCanvasPadding(element);
-  const zoom = elementWithCanvas.scale;
-  let [x1, y1, x2, y2] = getElementAbsoluteCoords(element);
+  const layer = layerWithCanvas.layer;
+  const padding = getCanvasPadding(layer);
+  const zoom = layerWithCanvas.scale;
+  let [x1, y1, x2, y2] = getLayerAbsoluteCoords(layer);
 
-  // Free draw elements will otherwise "shuffle" as the min x and y change
-  if (isFreeDrawElement(element)) {
+  // Free draw layers will otherwise "shuffle" as the min x and y change
+  if (isFreeDrawLayer(layer)) {
     x1 = Math.floor(x1);
     x2 = Math.ceil(x2);
     y1 = Math.floor(y1);
@@ -770,10 +757,10 @@ const drawElementFromCanvas = (
 
   context.save();
   context.scale(1 / window.devicePixelRatio, 1 / window.devicePixelRatio);
-  const boundTextElement = getBoundTextElement(element);
+  const boundTextLayer = getBoundTextLayer(layer);
 
-  if (isArrowElement(element) && boundTextElement) {
-    const tempCanvas = document.createElement("canvas");
+  if (isArrowLayer(layer) && boundTextLayer) {
+    const tempCanvas = document.createLayer("canvas");
     const tempCanvasContext = tempCanvas.getContext("2d")!;
 
     // Take max dimensions of arrow canvas so that when canvas is rotated
@@ -781,30 +768,30 @@ const drawElementFromCanvas = (
     const maxDim = Math.max(distance(x1, x2), distance(y1, y2));
     tempCanvas.width =
       maxDim * window.devicePixelRatio * zoom +
-      padding * elementWithCanvas.scale * 10;
+      padding * layerWithCanvas.scale * 10;
     tempCanvas.height =
       maxDim * window.devicePixelRatio * zoom +
-      padding * elementWithCanvas.scale * 10;
-    const offsetX = (tempCanvas.width - elementWithCanvas.canvas!.width) / 2;
-    const offsetY = (tempCanvas.height - elementWithCanvas.canvas!.height) / 2;
+      padding * layerWithCanvas.scale * 10;
+    const offsetX = (tempCanvas.width - layerWithCanvas.canvas!.width) / 2;
+    const offsetY = (tempCanvas.height - layerWithCanvas.canvas!.height) / 2;
 
     tempCanvasContext.translate(tempCanvas.width / 2, tempCanvas.height / 2);
-    tempCanvasContext.rotate(element.angle);
+    tempCanvasContext.rotate(layer.angle);
 
     tempCanvasContext.drawImage(
-      elementWithCanvas.canvas!,
-      -elementWithCanvas.canvas.width / 2,
-      -elementWithCanvas.canvas.height / 2,
-      elementWithCanvas.canvas.width,
-      elementWithCanvas.canvas.height,
+      layerWithCanvas.canvas!,
+      -layerWithCanvas.canvas.width / 2,
+      -layerWithCanvas.canvas.height / 2,
+      layerWithCanvas.canvas.width,
+      layerWithCanvas.canvas.height
     );
 
     const [, , , , boundTextCx, boundTextCy] =
-      getElementAbsoluteCoords(boundTextElement);
+      getLayerAbsoluteCoords(boundTextLayer);
 
-    tempCanvasContext.rotate(-element.angle);
+    tempCanvasContext.rotate(-layer.angle);
 
-    // Shift the canvas to the center of the bound text element
+    // Shift the canvas to the center of the bound text layer
     const shiftX =
       tempCanvas.width / 2 -
       (boundTextCx - x1) * window.devicePixelRatio * zoom -
@@ -820,18 +807,18 @@ const drawElementFromCanvas = (
 
     // Clear the bound text area
     tempCanvasContext.clearRect(
-      -(boundTextElement.width / 2 + BOUND_TEXT_PADDING) *
+      -(boundTextLayer.width / 2 + BOUND_TEXT_PADDING) *
         window.devicePixelRatio *
         zoom,
-      -(boundTextElement.height / 2 + BOUND_TEXT_PADDING) *
+      -(boundTextLayer.height / 2 + BOUND_TEXT_PADDING) *
         window.devicePixelRatio *
         zoom,
-      (boundTextElement.width + BOUND_TEXT_PADDING * 2) *
+      (boundTextLayer.width + BOUND_TEXT_PADDING * 2) *
         window.devicePixelRatio *
         zoom,
-      (boundTextElement.height + BOUND_TEXT_PADDING * 2) *
+      (boundTextLayer.height + BOUND_TEXT_PADDING * 2) *
         window.devicePixelRatio *
-        zoom,
+        zoom
     );
 
     context.translate(cx, cy);
@@ -840,22 +827,22 @@ const drawElementFromCanvas = (
       (-(x2 - x1) / 2) * window.devicePixelRatio - offsetX / zoom - padding,
       (-(y2 - y1) / 2) * window.devicePixelRatio - offsetY / zoom - padding,
       tempCanvas.width / zoom,
-      tempCanvas.height / zoom,
+      tempCanvas.height / zoom
     );
   } else {
-    // we translate context to element center so that rotation and scale
-    // originates from the element center
+    // we translate context to layer center so that rotation and scale
+    // originates from the layer center
     context.translate(cx, cy);
 
-    context.rotate(element.angle);
+    context.rotate(layer.angle);
 
     if (
-      "scale" in elementWithCanvas.element &&
-      !isPendingImageElement(element, renderConfig)
+      "scale" in layerWithCanvas.layer &&
+      !isPendingImageLayer(layer, renderConfig)
     ) {
       context.scale(
-        elementWithCanvas.element.scale[0],
-        elementWithCanvas.element.scale[1],
+        layerWithCanvas.layer.scale[0],
+        layerWithCanvas.layer.scale[1]
       );
     }
 
@@ -863,55 +850,55 @@ const drawElementFromCanvas = (
     context.translate(-cx, -cy);
 
     context.drawImage(
-      elementWithCanvas.canvas!,
+      layerWithCanvas.canvas!,
       (x1 + renderConfig.scrollX) * window.devicePixelRatio -
-        (padding * elementWithCanvas.scale) / elementWithCanvas.scale,
+        (padding * layerWithCanvas.scale) / layerWithCanvas.scale,
       (y1 + renderConfig.scrollY) * window.devicePixelRatio -
-        (padding * elementWithCanvas.scale) / elementWithCanvas.scale,
-      elementWithCanvas.canvas!.width / elementWithCanvas.scale,
-      elementWithCanvas.canvas!.height / elementWithCanvas.scale,
+        (padding * layerWithCanvas.scale) / layerWithCanvas.scale,
+      layerWithCanvas.canvas!.width / layerWithCanvas.scale,
+      layerWithCanvas.canvas!.height / layerWithCanvas.scale
     );
 
     if (
       process.env.REACT_APP_DEBUG_ENABLE_TEXT_CONTAINER_BOUNDING_BOX ===
         "true" &&
-      hasBoundTextElement(element)
+      hasBoundTextLayer(layer)
     ) {
-      const textElement = getBoundTextElement(
-        element,
-      ) as ExcalidrawTextElementWithContainer;
-      const coords = getContainerCoords(element);
+      const textLayer = getBoundTextLayer(
+        layer
+      ) as ExcalidrawTextLayerWithContainer;
+      const coords = getContainerCoords(layer);
       context.strokeStyle = "#c92a2a";
       context.lineWidth = 3;
       context.strokeRect(
         (coords.x + renderConfig.scrollX) * window.devicePixelRatio,
         (coords.y + renderConfig.scrollY) * window.devicePixelRatio,
-        getBoundTextMaxWidth(element) * window.devicePixelRatio,
-        getBoundTextMaxHeight(element, textElement) * window.devicePixelRatio,
+        getBoundTextMaxWidth(layer) * window.devicePixelRatio,
+        getBoundTextMaxHeight(layer, textLayer) * window.devicePixelRatio
       );
     }
   }
   context.restore();
 
-  // Clear the nested element we appended to the DOM
+  // Clear the nested layer we appended to the DOM
 };
 
-export const renderElement = (
-  element: NonDeletedExcalidrawElement,
+export const renderLayer = (
+  layer: NonDeletedExcalidrawLayer,
   rc: RoughCanvas,
   context: CanvasRenderingContext2D,
   renderConfig: RenderConfig,
-  appState: AppState,
+  appState: AppState
 ) => {
   const generator = rc.generator;
-  switch (element.type) {
+  switch (layer.type) {
     case "selection": {
       // do not render selection when exporting
       if (!renderConfig.isExporting) {
         context.save();
         context.translate(
-          element.x + renderConfig.scrollX,
-          element.y + renderConfig.scrollY,
+          layer.x + renderConfig.scrollX,
+          layer.y + renderConfig.scrollY
         );
         context.fillStyle = "rgba(0, 0, 200, 0.04)";
 
@@ -921,10 +908,10 @@ export const renderElement = (
         // from right to left
         const offset = 0.5 / renderConfig.zoom.value;
 
-        context.fillRect(offset, offset, element.width, element.height);
+        context.fillRect(offset, offset, layer.width, layer.height);
         context.lineWidth = 1 / renderConfig.zoom.value;
         context.strokeStyle = " rgb(105, 101, 219)";
-        context.strokeRect(offset, offset, element.width, element.height);
+        context.strokeRect(offset, offset, layer.width, layer.height);
 
         context.restore();
       }
@@ -938,8 +925,8 @@ export const renderElement = (
       ) {
         context.save();
         context.translate(
-          element.x + renderConfig.scrollX,
-          element.y + renderConfig.scrollY,
+          layer.x + renderConfig.scrollX,
+          layer.y + renderConfig.scrollY
         );
         context.fillStyle = "rgba(0, 0, 200, 0.04)";
 
@@ -951,14 +938,14 @@ export const renderElement = (
           context.roundRect(
             0,
             0,
-            element.width,
-            element.height,
-            FRAME_STYLE.radius / renderConfig.zoom.value,
+            layer.width,
+            layer.height,
+            FRAME_STYLE.radius / renderConfig.zoom.value
           );
           context.stroke();
           context.closePath();
         } else {
-          context.strokeRect(0, 0, element.width, element.height);
+          context.strokeRect(0, 0, layer.width, layer.height);
         }
 
         context.restore();
@@ -966,26 +953,23 @@ export const renderElement = (
       break;
     }
     case "freedraw": {
-      generateElementShape(element, generator);
+      generateLayerShape(layer, generator);
 
       if (renderConfig.isExporting) {
-        const [x1, y1, x2, y2] = getElementAbsoluteCoords(element);
+        const [x1, y1, x2, y2] = getLayerAbsoluteCoords(layer);
         const cx = (x1 + x2) / 2 + renderConfig.scrollX;
         const cy = (y1 + y2) / 2 + renderConfig.scrollY;
-        const shiftX = (x2 - x1) / 2 - (element.x - x1);
-        const shiftY = (y2 - y1) / 2 - (element.y - y1);
+        const shiftX = (x2 - x1) / 2 - (layer.x - x1);
+        const shiftY = (y2 - y1) / 2 - (layer.y - y1);
         context.save();
         context.translate(cx, cy);
-        context.rotate(element.angle);
+        context.rotate(layer.angle);
         context.translate(-shiftX, -shiftY);
-        drawElementOnCanvas(element, rc, context, renderConfig);
+        drawLayerOnCanvas(layer, rc, context, renderConfig);
         context.restore();
       } else {
-        const elementWithCanvas = generateElementWithCanvas(
-          element,
-          renderConfig,
-        );
-        drawElementFromCanvas(elementWithCanvas, rc, context, renderConfig);
+        const layerWithCanvas = generateLayerWithCanvas(layer, renderConfig);
+        drawLayerFromCanvas(layerWithCanvas, rc, context, renderConfig);
       }
 
       break;
@@ -997,21 +981,20 @@ export const renderElement = (
     case "arrow":
     case "image":
     case "text": {
-      generateElementShape(element, generator);
+      generateLayerShape(layer, generator);
       if (renderConfig.isExporting) {
-        const [x1, y1, x2, y2] = getElementAbsoluteCoords(element);
+        const [x1, y1, x2, y2] = getLayerAbsoluteCoords(layer);
         const cx = (x1 + x2) / 2 + renderConfig.scrollX;
         const cy = (y1 + y2) / 2 + renderConfig.scrollY;
-        let shiftX = (x2 - x1) / 2 - (element.x - x1);
-        let shiftY = (y2 - y1) / 2 - (element.y - y1);
-        if (isTextElement(element)) {
-          const container = getContainerElement(element);
-          if (isArrowElement(container)) {
-            const boundTextCoords =
-              LinearElementEditor.getBoundTextElementPosition(
-                container,
-                element as ExcalidrawTextElementWithContainer,
-              );
+        let shiftX = (x2 - x1) / 2 - (layer.x - x1);
+        let shiftY = (y2 - y1) / 2 - (layer.y - y1);
+        if (isTextLayer(layer)) {
+          const container = getContainerLayer(layer);
+          if (isArrowLayer(container)) {
+            const boundTextCoords = LinearLayerEditor.getBoundTextLayerPosition(
+              container,
+              layer as ExcalidrawTextLayerWithContainer
+            );
             shiftX = (x2 - x1) / 2 - (boundTextCoords.x - x1);
             shiftY = (y2 - y1) / 2 - (boundTextCoords.y - y1);
           }
@@ -1019,20 +1002,20 @@ export const renderElement = (
         context.save();
         context.translate(cx, cy);
 
-        if (shouldResetImageFilter(element, renderConfig)) {
+        if (shouldResetImageFilter(layer, renderConfig)) {
           context.filter = "none";
         }
-        const boundTextElement = getBoundTextElement(element);
+        const boundTextLayer = getBoundTextLayer(layer);
 
-        if (isArrowElement(element) && boundTextElement) {
-          const tempCanvas = document.createElement("canvas");
+        if (isArrowLayer(layer) && boundTextLayer) {
+          const tempCanvas = document.createLayer("canvas");
 
           const tempCanvasContext = tempCanvas.getContext("2d")!;
 
           // Take max dimensions of arrow canvas so that when canvas is rotated
           // the arrow doesn't get clipped
           const maxDim = Math.max(distance(x1, x2), distance(y1, y2));
-          const padding = getCanvasPadding(element);
+          const padding = getCanvasPadding(layer);
           tempCanvas.width =
             maxDim * appState.exportScale + padding * 10 * appState.exportScale;
           tempCanvas.height =
@@ -1040,38 +1023,38 @@ export const renderElement = (
 
           tempCanvasContext.translate(
             tempCanvas.width / 2,
-            tempCanvas.height / 2,
+            tempCanvas.height / 2
           );
           tempCanvasContext.scale(appState.exportScale, appState.exportScale);
 
           // Shift the canvas to left most point of the arrow
-          shiftX = element.width / 2 - (element.x - x1);
-          shiftY = element.height / 2 - (element.y - y1);
+          shiftX = layer.width / 2 - (layer.x - x1);
+          shiftY = layer.height / 2 - (layer.y - y1);
 
-          tempCanvasContext.rotate(element.angle);
+          tempCanvasContext.rotate(layer.angle);
           const tempRc = rough.canvas(tempCanvas);
 
           tempCanvasContext.translate(-shiftX, -shiftY);
 
-          drawElementOnCanvas(element, tempRc, tempCanvasContext, renderConfig);
+          drawLayerOnCanvas(layer, tempRc, tempCanvasContext, renderConfig);
 
           tempCanvasContext.translate(shiftX, shiftY);
 
-          tempCanvasContext.rotate(-element.angle);
+          tempCanvasContext.rotate(-layer.angle);
 
           // Shift the canvas to center of bound text
           const [, , , , boundTextCx, boundTextCy] =
-            getElementAbsoluteCoords(boundTextElement);
+            getLayerAbsoluteCoords(boundTextLayer);
           const boundTextShiftX = (x1 + x2) / 2 - boundTextCx;
           const boundTextShiftY = (y1 + y2) / 2 - boundTextCy;
           tempCanvasContext.translate(-boundTextShiftX, -boundTextShiftY);
 
           // Clear the bound text area
           tempCanvasContext.clearRect(
-            -boundTextElement.width / 2,
-            -boundTextElement.height / 2,
-            boundTextElement.width,
-            boundTextElement.height,
+            -boundTextLayer.width / 2,
+            -boundTextLayer.height / 2,
+            boundTextLayer.width,
+            boundTextLayer.height
           );
           context.scale(1 / appState.exportScale, 1 / appState.exportScale);
           context.drawImage(
@@ -1079,28 +1062,25 @@ export const renderElement = (
             -tempCanvas.width / 2,
             -tempCanvas.height / 2,
             tempCanvas.width,
-            tempCanvas.height,
+            tempCanvas.height
           );
         } else {
-          context.rotate(element.angle);
+          context.rotate(layer.angle);
 
-          if (element.type === "image") {
+          if (layer.type === "image") {
             // note: scale must be applied *after* rotating
-            context.scale(element.scale[0], element.scale[1]);
+            context.scale(layer.scale[0], layer.scale[1]);
           }
 
           context.translate(-shiftX, -shiftY);
-          drawElementOnCanvas(element, rc, context, renderConfig);
+          drawLayerOnCanvas(layer, rc, context, renderConfig);
         }
 
         context.restore();
-        // not exporting → optimized rendering (cache & render from element
+        // not exporting → optimized rendering (cache & render from layer
         // canvases)
       } else {
-        const elementWithCanvas = generateElementWithCanvas(
-          element,
-          renderConfig,
-        );
+        const layerWithCanvas = generateLayerWithCanvas(layer, renderConfig);
 
         const currentImageSmoothingStatus = context.imageSmoothingEnabled;
 
@@ -1109,10 +1089,10 @@ export const renderElement = (
           // on low resolution (while still zooming in) than sharp ones
           !renderConfig?.shouldCacheIgnoreZoom &&
           // angle is 0 -> always disable smoothing
-          (!element.angle ||
+          (!layer.angle ||
             // or check if angle is a right angle in which case we can still
             // disable smoothing without adversely affecting the result
-            isRightAngle(element.angle))
+            isRightAngle(layer.angle))
         ) {
           // Disabling smoothing makes output much sharper, especially for
           // text. Unless for non-right angles, where the aliasing is really
@@ -1124,7 +1104,7 @@ export const renderElement = (
           context.imageSmoothingEnabled = false;
         }
 
-        drawElementFromCanvas(elementWithCanvas, rc, context, renderConfig);
+        drawLayerFromCanvas(layerWithCanvas, rc, context, renderConfig);
 
         // reset
         context.imageSmoothingEnabled = currentImageSmoothingStatus;
@@ -1133,7 +1113,7 @@ export const renderElement = (
     }
     default: {
       // @ts-ignore
-      throw new Error(`Unimplemented type ${element.type}`);
+      throw new Error(`Unimplemented type ${layer.type}`);
     }
   }
 };
@@ -1141,7 +1121,7 @@ export const renderElement = (
 const roughSVGDrawWithPrecision = (
   rsvg: RoughSVG,
   drawable: Drawable,
-  precision?: number,
+  precision?: number
 ) => {
   if (typeof precision === "undefined") {
     return rsvg.draw(drawable);
@@ -1149,20 +1129,20 @@ const roughSVGDrawWithPrecision = (
   const pshape: Drawable = {
     sets: drawable.sets,
     shape: drawable.shape,
-    options: { ...drawable.options, fixedDecimalPlaceDigits: precision },
+    options: { ...drawable.options, fixedDecimalPlaceDigits: precision }
   };
   return rsvg.draw(pshape);
 };
 
 const maybeWrapNodesInFrameClipPath = (
-  element: NonDeletedExcalidrawElement,
-  root: SVGElement,
-  nodes: SVGElement[],
-  exportedFrameId?: string | null,
+  layer: NonDeletedExcalidrawLayer,
+  root: SVGLayer,
+  nodes: SVGLayer[],
+  exportedFrameId?: string | null
 ) => {
-  const frame = getContainingFrame(element);
+  const frame = getContainingFrame(layer);
   if (frame && frame.id === exportedFrameId) {
-    const g = root.ownerDocument!.createElementNS(SVG_NS, "g");
+    const g = root.ownerDocument!.createLayerNS(SVG_NS, "g");
     g.setAttributeNS(SVG_NS, "clip-path", `url(#${frame.id})`);
     nodes.forEach((node) => g.appendChild(node));
     return g;
@@ -1171,52 +1151,52 @@ const maybeWrapNodesInFrameClipPath = (
   return null;
 };
 
-export const renderElementToSvg = (
-  element: NonDeletedExcalidrawElement,
+export const renderLayerToSvg = (
+  layer: NonDeletedExcalidrawLayer,
   rsvg: RoughSVG,
-  svgRoot: SVGElement,
+  svgRoot: SVGLayer,
   files: BinaryFiles,
   offsetX: number,
   offsetY: number,
   exportWithDarkMode?: boolean,
-  exportingFrameId?: string | null,
+  exportingFrameId?: string | null
 ) => {
-  const [x1, y1, x2, y2] = getElementAbsoluteCoords(element);
-  let cx = (x2 - x1) / 2 - (element.x - x1);
-  let cy = (y2 - y1) / 2 - (element.y - y1);
-  if (isTextElement(element)) {
-    const container = getContainerElement(element);
-    if (isArrowElement(container)) {
-      const [x1, y1, x2, y2] = getElementAbsoluteCoords(container);
+  const [x1, y1, x2, y2] = getLayerAbsoluteCoords(layer);
+  let cx = (x2 - x1) / 2 - (layer.x - x1);
+  let cy = (y2 - y1) / 2 - (layer.y - y1);
+  if (isTextLayer(layer)) {
+    const container = getContainerLayer(layer);
+    if (isArrowLayer(container)) {
+      const [x1, y1, x2, y2] = getLayerAbsoluteCoords(container);
 
-      const boundTextCoords = LinearElementEditor.getBoundTextElementPosition(
+      const boundTextCoords = LinearLayerEditor.getBoundTextLayerPosition(
         container,
-        element as ExcalidrawTextElementWithContainer,
+        layer as ExcalidrawTextLayerWithContainer
       );
       cx = (x2 - x1) / 2 - (boundTextCoords.x - x1);
       cy = (y2 - y1) / 2 - (boundTextCoords.y - y1);
-      offsetX = offsetX + boundTextCoords.x - element.x;
-      offsetY = offsetY + boundTextCoords.y - element.y;
+      offsetX = offsetX + boundTextCoords.x - layer.x;
+      offsetY = offsetY + boundTextCoords.y - layer.y;
     }
   }
-  const degree = (180 * element.angle) / Math.PI;
+  const degree = (180 * layer.angle) / Math.PI;
   const generator = rsvg.generator;
 
-  // element to append node to, most of the time svgRoot
+  // layer to append node to, most of the time svgRoot
   let root = svgRoot;
 
-  // if the element has a link, create an anchor tag and make that the new root
-  if (element.link) {
-    const anchorTag = svgRoot.ownerDocument!.createElementNS(SVG_NS, "a");
-    anchorTag.setAttribute("href", normalizeLink(element.link));
+  // if the layer has a link, create an anchor tag and make that the new root
+  if (layer.link) {
+    const anchorTag = svgRoot.ownerDocument!.createLayerNS(SVG_NS, "a");
+    anchorTag.setAttribute("href", normalizeLink(layer.link));
     root.appendChild(anchorTag);
     root = anchorTag;
   }
 
   const opacity =
-    ((getContainingFrame(element)?.opacity ?? 100) * element.opacity) / 10000;
+    ((getContainingFrame(layer)?.opacity ?? 100) * layer.opacity) / 10000;
 
-  switch (element.type) {
+  switch (layer.type) {
     case "selection": {
       // Since this is used only during editing experience, which is canvas based,
       // this should not happen
@@ -1225,11 +1205,11 @@ export const renderElementToSvg = (
     case "rectangle":
     case "diamond":
     case "ellipse": {
-      generateElementShape(element, generator);
+      generateLayerShape(layer, generator);
       const node = roughSVGDrawWithPrecision(
         rsvg,
-        getShapeForElement(element)!,
-        MAX_DECIMALS_FOR_SVG_EXPORT,
+        getShapeForLayer(layer)!,
+        MAX_DECIMALS_FOR_SVG_EXPORT
       );
       if (opacity !== 1) {
         node.setAttribute("stroke-opacity", `${opacity}`);
@@ -1240,14 +1220,14 @@ export const renderElementToSvg = (
         "transform",
         `translate(${offsetX || 0} ${
           offsetY || 0
-        }) rotate(${degree} ${cx} ${cy})`,
+        }) rotate(${degree} ${cx} ${cy})`
       );
 
       const g = maybeWrapNodesInFrameClipPath(
-        element,
+        layer,
         root,
         [node],
-        exportingFrameId,
+        exportingFrameId
       );
 
       g ? root.appendChild(g) : root.appendChild(node);
@@ -1255,40 +1235,37 @@ export const renderElementToSvg = (
     }
     case "line":
     case "arrow": {
-      const boundText = getBoundTextElement(element);
-      const maskPath = svgRoot.ownerDocument!.createElementNS(SVG_NS, "mask");
+      const boundText = getBoundTextLayer(layer);
+      const maskPath = svgRoot.ownerDocument!.createLayerNS(SVG_NS, "mask");
       if (boundText) {
-        maskPath.setAttribute("id", `mask-${element.id}`);
-        const maskRectVisible = svgRoot.ownerDocument!.createElementNS(
+        maskPath.setAttribute("id", `mask-${layer.id}`);
+        const maskRectVisible = svgRoot.ownerDocument!.createLayerNS(
           SVG_NS,
-          "rect",
+          "rect"
         );
         offsetX = offsetX || 0;
         offsetY = offsetY || 0;
         maskRectVisible.setAttribute("x", "0");
         maskRectVisible.setAttribute("y", "0");
         maskRectVisible.setAttribute("fill", "#fff");
-        maskRectVisible.setAttribute(
-          "width",
-          `${element.width + 100 + offsetX}`,
-        );
+        maskRectVisible.setAttribute("width", `${layer.width + 100 + offsetX}`);
         maskRectVisible.setAttribute(
           "height",
-          `${element.height + 100 + offsetY}`,
+          `${layer.height + 100 + offsetY}`
         );
 
         maskPath.appendChild(maskRectVisible);
-        const maskRectInvisible = svgRoot.ownerDocument!.createElementNS(
+        const maskRectInvisible = svgRoot.ownerDocument!.createLayerNS(
           SVG_NS,
-          "rect",
+          "rect"
         );
-        const boundTextCoords = LinearElementEditor.getBoundTextElementPosition(
-          element,
-          boundText,
+        const boundTextCoords = LinearLayerEditor.getBoundTextLayerPosition(
+          layer,
+          boundText
         );
 
-        const maskX = offsetX + boundTextCoords.x - element.x;
-        const maskY = offsetY + boundTextCoords.y - element.y;
+        const maskX = offsetX + boundTextCoords.x - layer.x;
+        const maskY = offsetY + boundTextCoords.y - layer.y;
 
         maskRectInvisible.setAttribute("x", maskX.toString());
         maskRectInvisible.setAttribute("y", maskY.toString());
@@ -1298,18 +1275,18 @@ export const renderElementToSvg = (
         maskRectInvisible.setAttribute("opacity", "1");
         maskPath.appendChild(maskRectInvisible);
       }
-      generateElementShape(element, generator);
-      const group = svgRoot.ownerDocument!.createElementNS(SVG_NS, "g");
+      generateLayerShape(layer, generator);
+      const group = svgRoot.ownerDocument!.createLayerNS(SVG_NS, "g");
       if (boundText) {
-        group.setAttribute("mask", `url(#mask-${element.id})`);
+        group.setAttribute("mask", `url(#mask-${layer.id})`);
       }
       group.setAttribute("stroke-linecap", "round");
 
-      getShapeForElement(element)!.forEach((shape) => {
+      getShapeForLayer(layer)!.forEach((shape) => {
         const node = roughSVGDrawWithPrecision(
           rsvg,
           shape,
-          MAX_DECIMALS_FOR_SVG_EXPORT,
+          MAX_DECIMALS_FOR_SVG_EXPORT
         );
         if (opacity !== 1) {
           node.setAttribute("stroke-opacity", `${opacity}`);
@@ -1319,12 +1296,12 @@ export const renderElementToSvg = (
           "transform",
           `translate(${offsetX || 0} ${
             offsetY || 0
-          }) rotate(${degree} ${cx} ${cy})`,
+          }) rotate(${degree} ${cx} ${cy})`
         );
         if (
-          element.type === "line" &&
-          isPathALoop(element.points) &&
-          element.backgroundColor !== "transparent"
+          layer.type === "line" &&
+          isPathALoop(layer.points) &&
+          layer.backgroundColor !== "transparent"
         ) {
           node.setAttribute("fill-rule", "evenodd");
         }
@@ -1332,10 +1309,10 @@ export const renderElementToSvg = (
       });
 
       const g = maybeWrapNodesInFrameClipPath(
-        element,
+        layer,
         root,
         [group, maskPath],
-        exportingFrameId,
+        exportingFrameId
       );
       if (g) {
         root.appendChild(g);
@@ -1346,12 +1323,12 @@ export const renderElementToSvg = (
       break;
     }
     case "freedraw": {
-      generateElementShape(element, generator);
-      generateFreeDrawShape(element);
-      const shape = getShapeForElement(element);
+      generateLayerShape(layer, generator);
+      generateFreeDrawShape(layer);
+      const shape = getShapeForLayer(layer);
       const node = shape
         ? roughSVGDrawWithPrecision(rsvg, shape, MAX_DECIMALS_FOR_SVG_EXPORT)
-        : svgRoot.ownerDocument!.createElementNS(SVG_NS, "g");
+        : svgRoot.ownerDocument!.createLayerNS(SVG_NS, "g");
       if (opacity !== 1) {
         node.setAttribute("stroke-opacity", `${opacity}`);
         node.setAttribute("fill-opacity", `${opacity}`);
@@ -1360,37 +1337,36 @@ export const renderElementToSvg = (
         "transform",
         `translate(${offsetX || 0} ${
           offsetY || 0
-        }) rotate(${degree} ${cx} ${cy})`,
+        }) rotate(${degree} ${cx} ${cy})`
       );
       node.setAttribute("stroke", "none");
-      const path = svgRoot.ownerDocument!.createElementNS(SVG_NS, "path");
-      path.setAttribute("fill", element.strokeColor);
-      path.setAttribute("d", getFreeDrawSvgPath(element));
+      const path = svgRoot.ownerDocument!.createLayerNS(SVG_NS, "path");
+      path.setAttribute("fill", layer.strokeColor);
+      path.setAttribute("d", getFreeDrawSvgPath(layer));
       node.appendChild(path);
 
       const g = maybeWrapNodesInFrameClipPath(
-        element,
+        layer,
         root,
         [node],
-        exportingFrameId,
+        exportingFrameId
       );
 
       g ? root.appendChild(g) : root.appendChild(node);
       break;
     }
     case "image": {
-      const width = Math.round(element.width);
-      const height = Math.round(element.height);
-      const fileData =
-        isInitializedImageElement(element) && files[element.fileId];
+      const width = Math.round(layer.width);
+      const height = Math.round(layer.height);
+      const fileData = isInitializedImageLayer(layer) && files[layer.fileId];
       if (fileData) {
         const symbolId = `image-${fileData.id}`;
         let symbol = svgRoot.querySelector(`#${symbolId}`);
         if (!symbol) {
-          symbol = svgRoot.ownerDocument!.createElementNS(SVG_NS, "symbol");
+          symbol = svgRoot.ownerDocument!.createLayerNS(SVG_NS, "symbol");
           symbol.id = symbolId;
 
-          const image = svgRoot.ownerDocument!.createElementNS(SVG_NS, "image");
+          const image = svgRoot.ownerDocument!.createLayerNS(SVG_NS, "image");
 
           image.setAttribute("width", "100%");
           image.setAttribute("height", "100%");
@@ -1401,7 +1377,7 @@ export const renderElementToSvg = (
           root.prepend(symbol);
         }
 
-        const use = svgRoot.ownerDocument!.createElementNS(SVG_NS, "use");
+        const use = svgRoot.ownerDocument!.createLayerNS(SVG_NS, "use");
         use.setAttribute("href", `#${symbolId}`);
 
         // in dark theme, revert the image color filter
@@ -1414,34 +1390,34 @@ export const renderElementToSvg = (
         use.setAttribute("opacity", `${opacity}`);
 
         // We first apply `scale` transforms (horizontal/vertical mirroring)
-        // on the <use> element, then apply translation and rotation
-        // on the <g> element which wraps the <use>.
+        // on the <use> layer, then apply translation and rotation
+        // on the <g> layer which wraps the <use>.
         // Doing this separately is a quick hack to to work around compositing
         // the transformations correctly (the transform-origin was not being
         // applied correctly).
-        if (element.scale[0] !== 1 || element.scale[1] !== 1) {
-          const translateX = element.scale[0] !== 1 ? -width : 0;
-          const translateY = element.scale[1] !== 1 ? -height : 0;
+        if (layer.scale[0] !== 1 || layer.scale[1] !== 1) {
+          const translateX = layer.scale[0] !== 1 ? -width : 0;
+          const translateY = layer.scale[1] !== 1 ? -height : 0;
           use.setAttribute(
             "transform",
-            `scale(${element.scale[0]}, ${element.scale[1]}) translate(${translateX} ${translateY})`,
+            `scale(${layer.scale[0]}, ${layer.scale[1]}) translate(${translateX} ${translateY})`
           );
         }
 
-        const g = svgRoot.ownerDocument!.createElementNS(SVG_NS, "g");
+        const g = svgRoot.ownerDocument!.createLayerNS(SVG_NS, "g");
         g.appendChild(use);
         g.setAttribute(
           "transform",
           `translate(${offsetX || 0} ${
             offsetY || 0
-          }) rotate(${degree} ${cx} ${cy})`,
+          }) rotate(${degree} ${cx} ${cy})`
         );
 
         const clipG = maybeWrapNodesInFrameClipPath(
-          element,
+          layer,
           root,
           [g],
-          exportingFrameId,
+          exportingFrameId
         );
         clipG ? root.appendChild(clipG) : root.appendChild(g);
       }
@@ -1452,8 +1428,8 @@ export const renderElementToSvg = (
       break;
     }
     default: {
-      if (isTextElement(element)) {
-        const node = svgRoot.ownerDocument!.createElementNS(SVG_NS, "g");
+      if (isTextLayer(layer)) {
+        const node = svgRoot.ownerDocument!.createLayerNS(SVG_NS, "g");
         if (opacity !== 1) {
           node.setAttribute("stroke-opacity", `${opacity}`);
           node.setAttribute("fill-opacity", `${opacity}`);
@@ -1463,34 +1439,34 @@ export const renderElementToSvg = (
           "transform",
           `translate(${offsetX || 0} ${
             offsetY || 0
-          }) rotate(${degree} ${cx} ${cy})`,
+          }) rotate(${degree} ${cx} ${cy})`
         );
-        const lines = element.text.replace(/\r\n?/g, "\n").split("\n");
+        const lines = layer.text.replace(/\r\n?/g, "\n").split("\n");
         const lineHeightPx = getLineHeightInPx(
-          element.fontSize,
-          element.lineHeight,
+          layer.fontSize,
+          layer.lineHeight
         );
         const horizontalOffset =
-          element.textAlign === "center"
-            ? element.width / 2
-            : element.textAlign === "right"
-            ? element.width
+          layer.textAlign === "center"
+            ? layer.width / 2
+            : layer.textAlign === "right"
+            ? layer.width
             : 0;
-        const direction = isRTL(element.text) ? "rtl" : "ltr";
+        const direction = isRTL(layer.text) ? "rtl" : "ltr";
         const textAnchor =
-          element.textAlign === "center"
+          layer.textAlign === "center"
             ? "middle"
-            : element.textAlign === "right" || direction === "rtl"
+            : layer.textAlign === "right" || direction === "rtl"
             ? "end"
             : "start";
         for (let i = 0; i < lines.length; i++) {
-          const text = svgRoot.ownerDocument!.createElementNS(SVG_NS, "text");
+          const text = svgRoot.ownerDocument!.createLayerNS(SVG_NS, "text");
           text.textContent = lines[i];
           text.setAttribute("x", `${horizontalOffset}`);
           text.setAttribute("y", `${i * lineHeightPx}`);
-          text.setAttribute("font-family", getFontFamilyString(element));
-          text.setAttribute("font-size", `${element.fontSize}px`);
-          text.setAttribute("fill", element.strokeColor);
+          text.setAttribute("font-family", getFontFamilyString(layer));
+          text.setAttribute("font-size", `${layer.fontSize}px`);
+          text.setAttribute("fill", layer.strokeColor);
           text.setAttribute("text-anchor", textAnchor);
           text.setAttribute("style", "white-space: pre;");
           text.setAttribute("direction", direction);
@@ -1499,66 +1475,66 @@ export const renderElementToSvg = (
         }
 
         const g = maybeWrapNodesInFrameClipPath(
-          element,
+          layer,
           root,
           [node],
-          exportingFrameId,
+          exportingFrameId
         );
 
         g ? root.appendChild(g) : root.appendChild(node);
       } else {
         // @ts-ignore
-        throw new Error(`Unimplemented type ${element.type}`);
+        throw new Error(`Unimplemented type ${layer.type}`);
       }
     }
   }
 };
 
-export const pathsCache = new WeakMap<ExcalidrawFreeDrawElement, Path2D>([]);
+export const pathsCache = new WeakMap<ExcalidrawFreeDrawLayer, Path2D>([]);
 
-export function generateFreeDrawShape(element: ExcalidrawFreeDrawElement) {
-  const svgPathData = getFreeDrawSvgPath(element);
+export const generateFreeDrawShape = (layer: ExcalidrawFreeDrawLayer) => {
+  const svgPathData = getFreeDrawSvgPath(layer);
   const path = new Path2D(svgPathData);
-  pathsCache.set(element, path);
+  pathsCache.set(layer, path);
   return path;
-}
+};
 
-export function getFreeDrawPath2D(element: ExcalidrawFreeDrawElement) {
-  return pathsCache.get(element);
-}
+export const getFreeDrawPath2D = (layer: ExcalidrawFreeDrawLayer) =>
+  pathsCache.get(layer);
 
-export function getFreeDrawSvgPath(element: ExcalidrawFreeDrawElement) {
+export const getFreeDrawSvgPath = (layer: ExcalidrawFreeDrawLayer) => {
   // If input points are empty (should they ever be?) return a dot
-  const inputPoints = element.simulatePressure
-    ? element.points
-    : element.points.length
-    ? element.points.map(([x, y], i) => [x, y, element.pressures[i]])
+  const inputPoints = layer.simulatePressure
+    ? layer.points
+    : layer.points.length
+    ? layer.points.map(([x, y], i) => [x, y, layer.pressures[i]])
     : [[0, 0, 0.5]];
 
   // Consider changing the options for simulated pressure vs real pressure
   const options: StrokeOptions = {
-    simulatePressure: element.simulatePressure,
-    size: element.strokeWidth * 4.25,
+    simulatePressure: layer.simulatePressure,
+    size: layer.strokeWidth * 4.25,
     thinning: 0.6,
     smoothing: 0.5,
     streamline: 0.5,
     easing: (t) => Math.sin((t * Math.PI) / 2), // https://easings.net/#easeOutSine
-    last: !!element.lastCommittedPoint, // LastCommittedPoint is added on pointerup
+    last: !!layer.lastCommittedPoint // LastCommittedPoint is added on pointerup
   };
 
   return getSvgPathFromStroke(getStroke(inputPoints as number[][], options));
-}
+};
 
-function med(A: number[], B: number[]) {
-  return [(A[0] + B[0]) / 2, (A[1] + B[1]) / 2];
-}
+const med = (A: number[], B: number[]) => [
+  (A[0] + B[0]) / 2,
+  (A[1] + B[1]) / 2
+];
 
 // Trim SVG path data so number are each two decimal points. This
 // improves SVG exports, and prevents rendering errors on points
 // with long decimals.
 const TO_FIXED_PRECISION = /(\s?[A-Z]?,?-?[0-9]*\.[0-9]{0,2})(([0-9]|e|-)*)/g;
 
-function getSvgPathFromStroke(points: number[][]): string {
+const getSvgPathFromStroke = (points: number[][]): string => {
   if (!points.length) {
     return "";
   }
@@ -1575,8 +1551,8 @@ function getSvgPathFromStroke(points: number[][]): string {
         }
         return acc;
       },
-      ["M", points[0], "Q"],
+      ["M", points[0], "Q"]
     )
     .join(" ")
     .replace(TO_FIXED_PRECISION, "$1");
-}
+};

@@ -1,32 +1,31 @@
-import { ReactNode, useCallback, useEffect, useRef, useState } from "react";
+import "./PublishLibrary.scss";
+
 import OpenColor from "open-color";
+import { ReactNode, useCallback, useEffect, useRef, useState } from "react";
 
-import { Dialog } from "./Dialog";
-import { t } from "../i18n";
-import Trans from "./Trans";
-
-import { LibraryItems, LibraryItem, UIAppState } from "../types";
-import { exportToCanvas, exportToSvg } from "../packages/utils";
+import { canvasToBlob, resizeImageFile } from "../../lib/data/blob/blob";
+import { ExportedLibraryData } from "../../lib/data/types";
+import { exportToCanvas, exportToSvg } from "../../lib/packages/utils";
 import {
   EXPORT_DATA_TYPES,
   EXPORT_SOURCE,
   MIME_TYPES,
-  VERSIONS,
+  VERSIONS
 } from "../constants";
-import { ExportedLibraryData } from "../data/types";
-import { canvasToBlob, resizeImageFile } from "../data/blob";
+import { t } from "../i18n";
+import { LibraryItem, LibraryItems, UIAppState } from "../types";
 import { chunk } from "../utils";
+import { Dialog } from "./Dialog";
 import DialogActionButton from "./DialogActionButton";
 import { CloseIcon } from "./icons";
 import { ToolButton } from "./ToolButton";
-
-import "./PublishLibrary.scss";
+import Trans from "./Trans";
 
 interface PublishLibraryDataParams {
   authorName: string;
+  description: string;
   githubHandle: string;
   name: string;
-  description: string;
   twitterHandle: string;
   website: string;
 }
@@ -37,7 +36,7 @@ const savePublishLibDataToStorage = (data: PublishLibraryDataParams) => {
   try {
     localStorage.setItem(
       LOCAL_STORAGE_KEY_PUBLISH_LIBRARY,
-      JSON.stringify(data),
+      JSON.stringify(data)
     );
   } catch (error: any) {
     // Unable to access window.localStorage
@@ -67,7 +66,7 @@ const generatePreviewImage = async (libraryItems: LibraryItems) => {
 
   const rows = chunk(libraryItems, MAX_ITEMS_PER_ROW);
 
-  const canvas = document.createElement("canvas");
+  const canvas = document.createLayer("canvas");
 
   canvas.width =
     rows[0].length * BOX_SIZE +
@@ -87,9 +86,9 @@ const generatePreviewImage = async (libraryItems: LibraryItems) => {
   // ---------------------------------------------------------------------------
   for (const [index, item] of libraryItems.entries()) {
     const itemCanvas = await exportToCanvas({
-      elements: item.elements,
+      layers: item.layers,
       files: null,
-      maxWidthOrHeight: BOX_SIZE,
+      maxWidthOrHeight: BOX_SIZE
     });
 
     const { width, height } = itemCanvas;
@@ -104,7 +103,7 @@ const generatePreviewImage = async (libraryItems: LibraryItems) => {
     ctx.drawImage(
       itemCanvas,
       colOffset + (BOX_SIZE - width) / 2 + BOX_PADDING,
-      rowOffset + (BOX_SIZE - height) / 2 + BOX_PADDING,
+      rowOffset + (BOX_SIZE - height) / 2 + BOX_PADDING
     );
 
     // draw item border
@@ -115,7 +114,7 @@ const generatePreviewImage = async (libraryItems: LibraryItems) => {
       colOffset + BOX_PADDING / 2,
       rowOffset + BOX_PADDING / 2,
       BOX_SIZE + BOX_PADDING,
-      BOX_SIZE + BOX_PADDING,
+      BOX_SIZE + BOX_PADDING
     );
   }
 
@@ -123,8 +122,8 @@ const generatePreviewImage = async (libraryItems: LibraryItems) => {
     new File([await canvasToBlob(canvas)], "preview", { type: MIME_TYPES.png }),
     {
       outputType: MIME_TYPES.jpg,
-      maxWidthOrHeight: 5000,
-    },
+      maxWidthOrHeight: 5000
+    }
   );
 };
 
@@ -133,16 +132,16 @@ const SingleLibraryItem = ({
   appState,
   index,
   onChange,
-  onRemove,
+  onRemove
 }: {
-  libItem: LibraryItem;
   appState: UIAppState;
   index: number;
+  libItem: LibraryItem;
   onChange: (val: string, index: number) => void;
   onRemove: (id: string) => void;
 }) => {
-  const svgRef = useRef<HTMLDivElement | null>(null);
-  const inputRef = useRef<HTMLInputElement | null>(null);
+  const svgRef = useRef<HTMLDivLayer | null>(null);
+  const inputRef = useRef<HTMLInputLayer | null>(null);
 
   useEffect(() => {
     const node = svgRef.current;
@@ -151,17 +150,17 @@ const SingleLibraryItem = ({
     }
     (async () => {
       const svg = await exportToSvg({
-        elements: libItem.elements,
+        layers: libItem.layers,
         appState: {
           ...appState,
           viewBackgroundColor: OpenColor.white,
-          exportBackground: true,
+          exportBackground: true
         },
-        files: null,
+        files: null
       });
       node.innerHTML = svg.outerHTML;
     })();
-  }, [libItem.elements, appState]);
+  }, [libItem.layers, appState]);
 
   return (
     <div className="single-library-item">
@@ -170,14 +169,14 @@ const SingleLibraryItem = ({
           {t("labels.statusPublished")}
         </span>
       )}
-      <div ref={svgRef} className="single-library-item__svg" />
+      <div className="single-library-item__svg" ref={svgRef} />
       <ToolButton
         aria-label={t("buttons.remove")}
-        type="button"
-        icon={CloseIcon}
         className="single-library-item--remove"
+        icon={CloseIcon}
         onClick={onRemove.bind(null, libItem.id)}
         title={t("buttons.remove")}
+        type="button"
       />
       <div
         style={{
@@ -186,14 +185,14 @@ const SingleLibraryItem = ({
           width: "100%",
           fontSize: "14px",
           fontWeight: 500,
-          flexDirection: "column",
+          flexDirection: "column"
         }}
       >
         <label
           style={{
             display: "flex",
             justifyContent: "space-between",
-            flexDirection: "column",
+            flexDirection: "column"
           }}
         >
           <div style={{ padding: "0.5em 0" }}>
@@ -205,14 +204,14 @@ const SingleLibraryItem = ({
             </span>
           </div>
           <input
-            type="text"
-            ref={inputRef}
-            style={{ width: "80%", padding: "0.2rem" }}
             defaultValue={libItem.name}
-            placeholder="Item name"
             onChange={(event) => {
               onChange(event.target.value, index);
             }}
+            placeholder="Item name"
+            ref={inputRef}
+            style={{ width: "80%", padding: "0.2rem" }}
+            type="text"
           />
         </label>
         <span className="error">{libItem.error}</span>
@@ -228,20 +227,20 @@ const PublishLibrary = ({
   onSuccess,
   onError,
   updateItemsInStorage,
-  onRemove,
+  onRemove
 }: {
-  onClose: () => void;
-  libraryItems: LibraryItems;
   appState: UIAppState;
+  libraryItems: LibraryItems;
+  onClose: () => void;
+  onError: (error: Error) => void;
+
+  onRemove: (id: string) => void;
   onSuccess: (data: {
-    url: string;
     authorName: string;
     items: LibraryItems;
+    url: string;
   }) => void;
-
-  onError: (error: Error) => void;
   updateItemsInStorage: (items: LibraryItems) => void;
-  onRemove: (id: string) => void;
 }) => {
   const [libraryData, setLibraryData] = useState<PublishLibraryDataParams>({
     authorName: "",
@@ -249,7 +248,7 @@ const PublishLibrary = ({
     name: "",
     description: "",
     twitterHandle: "",
-    website: "",
+    website: ""
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -262,7 +261,7 @@ const PublishLibrary = ({
   }, []);
 
   const [clonedLibItems, setClonedLibItems] = useState<LibraryItems>(
-    libraryItems.slice(),
+    libraryItems.slice()
   );
 
   useEffect(() => {
@@ -272,11 +271,11 @@ const PublishLibrary = ({
   const onInputChange = (event: any) => {
     setLibraryData({
       ...libraryData,
-      [event.target.name]: event.target.value,
+      [event.target.name]: event.target.value
     });
   };
 
-  const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+  const onSubmit = async (event: React.FormEvent<HTMLFormLayer>) => {
     event.preventDefault();
     setIsSubmitting(true);
     const erroredLibItems: LibraryItem[] = [];
@@ -302,7 +301,7 @@ const PublishLibrary = ({
       type: EXPORT_DATA_TYPES.excalidrawLibrary,
       version: VERSIONS.excalidrawLibrary,
       source: EXPORT_SOURCE,
-      libraryItems: clonedLibItems,
+      libraryItems: clonedLibItems
     };
     const content = JSON.stringify(libContent, null, 2);
     const lib = new Blob([content], { type: "application/json" });
@@ -321,7 +320,7 @@ const PublishLibrary = ({
 
     fetch(`${process.env.REACT_APP_LIBRARY_BACKEND}/submit`, {
       method: "post",
-      body: formData,
+      body: formData
     })
       .then(
         (response) => {
@@ -332,7 +331,7 @@ const PublishLibrary = ({
               onSuccess({
                 url,
                 authorName: libraryData.authorName,
-                items: clonedLibItems,
+                items: clonedLibItems
               });
             });
           }
@@ -343,7 +342,7 @@ const PublishLibrary = ({
             })
             .then((error) => {
               throw new Error(
-                error.message || response.statusText || "something went wrong",
+                error.message || response.statusText || "something went wrong"
               );
             });
         },
@@ -351,7 +350,7 @@ const PublishLibrary = ({
           console.error(err);
           onError(err);
           setIsSubmitting(false);
-        },
+        }
       )
       .catch((err) => {
         console.error(err);
@@ -366,9 +365,9 @@ const PublishLibrary = ({
       items.push(
         <div className="single-library-item-wrapper" key={index}>
           <SingleLibraryItem
-            libItem={libItem}
             appState={appState}
             index={index}
+            libItem={libItem}
             onChange={(val, index) => {
               const items = clonedLibItems.slice();
               items[index].name = val;
@@ -376,7 +375,7 @@ const PublishLibrary = ({
             }}
             onRemove={onRemove}
           />
-        </div>,
+        </div>
       );
     });
     return <div className="selected-library-items">{items}</div>;
@@ -391,14 +390,14 @@ const PublishLibrary = ({
   const shouldRenderForm = !!libraryItems.length;
 
   const containsPublishedItems = libraryItems.some(
-    (item) => item.status === "published",
+    (item) => item.status === "published"
   );
 
   return (
     <Dialog
+      className="publish-library"
       onCloseRequest={onDialogClose}
       title={t("publishDialog.title")}
-      className="publish-library"
     >
       {shouldRenderForm ? (
         <form onSubmit={onSubmit}>
@@ -408,8 +407,8 @@ const PublishLibrary = ({
               link={(el) => (
                 <a
                   href="https://libraries.excalidraw.com"
-                  target="_blank"
                   rel="noopener noreferrer"
+                  target="_blank"
                 >
                   {el}
                 </a>
@@ -422,8 +421,8 @@ const PublishLibrary = ({
               link={(el) => (
                 <a
                   href="https://github.com/excalidraw/excalidraw-libraries#guidelines"
-                  target="_blank"
                   rel="noopener noreferrer"
+                  target="_blank"
                 >
                   {el}
                 </a>
@@ -449,12 +448,12 @@ const PublishLibrary = ({
                 </span>
               </div>
               <input
-                type="text"
                 name="name"
-                required
-                value={libraryData.name}
                 onChange={onInputChange}
                 placeholder={t("publishDialog.placeholder.libraryName")}
+                required
+                type="text"
+                value={libraryData.name}
               />
             </label>
             <label style={{ alignItems: "flex-start" }}>
@@ -466,11 +465,11 @@ const PublishLibrary = ({
               </div>
               <textarea
                 name="description"
-                rows={4}
-                required
-                value={libraryData.description}
                 onChange={onInputChange}
                 placeholder={t("publishDialog.placeholder.libraryDesc")}
+                required
+                rows={4}
+                value={libraryData.description}
               />
             </label>
             <label>
@@ -481,44 +480,44 @@ const PublishLibrary = ({
                 </span>
               </div>
               <input
-                type="text"
                 name="authorName"
-                required
-                value={libraryData.authorName}
                 onChange={onInputChange}
                 placeholder={t("publishDialog.placeholder.authorName")}
+                required
+                type="text"
+                value={libraryData.authorName}
               />
             </label>
             <label>
               <span>{t("publishDialog.githubUsername")}</span>
               <input
-                type="text"
                 name="githubHandle"
-                value={libraryData.githubHandle}
                 onChange={onInputChange}
                 placeholder={t("publishDialog.placeholder.githubHandle")}
+                type="text"
+                value={libraryData.githubHandle}
               />
             </label>
             <label>
               <span>{t("publishDialog.twitterUsername")}</span>
               <input
-                type="text"
                 name="twitterHandle"
-                value={libraryData.twitterHandle}
                 onChange={onInputChange}
                 placeholder={t("publishDialog.placeholder.twitterHandle")}
+                type="text"
+                value={libraryData.twitterHandle}
               />
             </label>
             <label>
               <span>{t("publishDialog.website")}</span>
               <input
-                type="text"
                 name="website"
-                pattern="https?://.+"
-                title={t("publishDialog.errors.website")}
-                value={libraryData.website}
                 onChange={onInputChange}
+                pattern="https?://.+"
                 placeholder={t("publishDialog.placeholder.website")}
+                title={t("publishDialog.errors.website")}
+                type="text"
+                value={libraryData.website}
               />
             </label>
             <span className="publish-library-note">
@@ -527,8 +526,8 @@ const PublishLibrary = ({
                 link={(el) => (
                   <a
                     href="https://github.com/excalidraw/excalidraw-libraries/blob/main/LICENSE"
-                    target="_blank"
                     rel="noopener noreferrer"
+                    target="_blank"
                   >
                     {el}
                   </a>
@@ -538,15 +537,15 @@ const PublishLibrary = ({
           </div>
           <div className="publish-library__buttons">
             <DialogActionButton
+              data-testid="cancel-clear-canvas-button"
               label={t("buttons.cancel")}
               onClick={onDialogClose}
-              data-testid="cancel-clear-canvas-button"
             />
             <DialogActionButton
-              type="submit"
-              label={t("buttons.submit")}
               actionType="primary"
               isLoading={isSubmitting}
+              label={t("buttons.submit")}
+              type="submit"
             />
           </div>
         </form>

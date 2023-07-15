@@ -1,5 +1,5 @@
+import { Excalidraw } from "../../lib/packages/excalidraw/entry";
 import { KEYS } from "../keys";
-import { Excalidraw } from "../packages/excalidraw/entry";
 import { API } from "./helpers/api";
 import { Keyboard } from "./helpers/ui";
 import { fireEvent, render, waitFor } from "./test-utils";
@@ -8,12 +8,12 @@ describe("shortcuts", () => {
   it("Clear canvas shortcut should display confirm dialog", async () => {
     await render(
       <Excalidraw
-        initialData={{ elements: [API.createElement({ type: "rectangle" })] }}
         handleKeyboardGlobally
-      />,
+        initialData={{ layers: [API.createLayer({ type: "rectangle" })] }}
+      />
     );
 
-    expect(window.h.elements.length).toBe(1);
+    expect(window.h.layers.length).toBe(1);
 
     Keyboard.withModifierKeys({ ctrl: true }, () => {
       Keyboard.keyDown(KEYS.DELETE);
@@ -24,7 +24,7 @@ describe("shortcuts", () => {
     fireEvent.click(confirmDialog.querySelector('[aria-label="Confirm"]')!);
 
     await waitFor(() => {
-      expect(window.h.elements[0].isDeleted).toBe(true);
+      expect(window.h.layers[0].isDeleted).toBe(true);
     });
   });
 });

@@ -1,21 +1,22 @@
 import clsx from "clsx";
 import { useAtom } from "jotai";
 import { useEffect, useRef } from "react";
+
+import { ColorPaletteCustom } from "../../colors";
+import { t } from "../../i18n";
 import {
   activeColorPickerSectionAtom,
   colorPickerHotkeyBindings,
-  getColorNameAndShadeFromColor,
+  getColorNameAndShadeFromColor
 } from "./colorPickerUtils";
 import HotkeyLabel from "./HotkeyLabel";
-import { ColorPaletteCustom } from "../../colors";
-import { t } from "../../i18n";
 
 interface PickerColorListProps {
-  palette: ColorPaletteCustom;
-  color: string;
-  onChange: (color: string) => void;
-  label: string;
   activeShade: number;
+  color: string;
+  label: string;
+  onChange: (color: string) => void;
+  palette: ColorPaletteCustom;
 }
 
 const PickerColorList = ({
@@ -23,17 +24,17 @@ const PickerColorList = ({
   color,
   onChange,
   label,
-  activeShade,
+  activeShade
 }: PickerColorListProps) => {
   const colorObj = getColorNameAndShadeFromColor({
     color: color || "transparent",
-    palette,
+    palette
   });
   const [activeColorPickerSection, setActiveColorPickerSection] = useAtom(
-    activeColorPickerSectionAtom,
+    activeColorPickerSectionAtom
   );
 
-  const btnRef = useRef<HTMLButtonElement>(null);
+  const btnRef = useRef<HTMLButtonLayer>(null);
 
   useEffect(() => {
     if (btnRef.current && activeColorPickerSection === "baseColors") {
@@ -52,27 +53,27 @@ const PickerColorList = ({
 
         return (
           <button
-            ref={colorObj?.colorName === key ? btnRef : undefined}
-            tabIndex={-1}
-            type="button"
+            aria-label={`${label} — ${keybinding}`}
             className={clsx(
               "color-picker__button color-picker__button--large",
               {
                 active: colorObj?.colorName === key,
-                "is-transparent": color === "transparent" || !color,
-              },
+                "is-transparent": color === "transparent" || !color
+              }
             )}
+            data-testid={`color-${key}`}
+            key={key}
             onClick={() => {
               onChange(color);
               setActiveColorPickerSection("baseColors");
             }}
+            ref={colorObj?.colorName === key ? btnRef : undefined}
+            style={color ? { "--swatch-color": color } : undefined}
+            tabIndex={-1}
             title={`${label}${
               color.startsWith("#") ? ` ${color}` : ""
             } — ${keybinding}`}
-            aria-label={`${label} — ${keybinding}`}
-            style={color ? { "--swatch-color": color } : undefined}
-            data-testid={`color-${key}`}
-            key={key}
+            type="button"
           >
             <div className="color-picker__button-outline" />
             <HotkeyLabel color={color} keyLabel={keybinding} />

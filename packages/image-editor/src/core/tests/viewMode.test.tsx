@@ -1,8 +1,8 @@
-import { render, GlobalTestState } from "./test-utils";
+import { CURSOR_TYPE } from "../constants";
 import ExcalidrawApp from "../excalidraw-app";
 import { KEYS } from "../keys";
 import { Keyboard, Pointer, UI } from "./helpers/ui";
-import { CURSOR_TYPE } from "../constants";
+import { GlobalTestState, render } from "./test-utils";
 
 const { h } = window;
 const mouse = new Pointer("mouse");
@@ -33,11 +33,11 @@ describe("view mode", () => {
     });
   });
 
-  it("cursor should stay as grabbing type when hovering over canvas elements", async () => {
+  it("cursor should stay as grabbing type when hovering over canvas layers", async () => {
     // create a rectangle, then hover over it – cursor should be
     // move type for mouse and grab for touch & pen
     // then switch to view-mode and cursor should be grabbing type
-    UI.createElement("rectangle", { size: 100 });
+    UI.createLayer("rectangle", { size: 100 });
 
     pointerTypes.forEach((pointerType) => {
       const pointer = pointerType;

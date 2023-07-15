@@ -4,12 +4,12 @@ export const ButtonIconCycle = <T extends any>({
   options,
   value,
   onChange,
-  group,
+  group
 }: {
-  options: { value: T; text: string; icon: JSX.Element }[];
-  value: T | null;
-  onChange: (value: T) => void;
   group: string;
+  onChange: (value: T) => void;
+  options: { icon: JSX.Layer; text: string; value: T }[];
+  value: T | null;
 }) => {
   const current = options.find((op) => op.value === value);
 
@@ -20,8 +20,8 @@ export const ButtonIconCycle = <T extends any>({
   };
 
   return (
-    <label key={group} className={clsx({ active: current!.value !== null })}>
-      <input type="button" name={group} onClick={cycle} />
+    <label className={clsx({ active: current!.value !== null })} key={group}>
+      <input name={group} onClick={cycle} type="button" />
       {current!.icon}
     </label>
   );

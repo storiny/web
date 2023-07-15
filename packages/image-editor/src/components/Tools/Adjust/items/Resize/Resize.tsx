@@ -8,7 +8,7 @@ import {
 
 import { AdjustTool } from "../constants";
 
-const ResizeTool = (): React.ReactElement => (
+const ResizeTool = (): React.ReactLayer => (
   <AccordionItem value={AdjustTool.RESIZE}>
     <AccordionTrigger>Resize</AccordionTrigger>
     <AccordionContent>Content</AccordionContent>

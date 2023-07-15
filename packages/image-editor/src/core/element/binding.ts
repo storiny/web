@@ -1,660 +1,640 @@
-import {
-  ExcalidrawLinearElement,
-  ExcalidrawBindableElement,
-  NonDeleted,
-  NonDeletedExcalidrawElement,
-  PointBinding,
-  ExcalidrawElement,
-} from "./types";
-import { getElementAtPosition } from "../scene";
+import { getLayerAtPosition } from "../../lib/scene";
+import Scene from "../../lib/scene/Scene";
+import { KEYS } from "../keys";
 import { AppState } from "../types";
-import {
-  isBindableElement,
-  isBindingElement,
-  isLinearElement,
-} from "./typeChecks";
+import { arrayToMap, tupleToCoors } from "../utils";
 import {
   bindingBorderTest,
-  distanceToBindableElement,
-  maxBindingGap,
   determineFocusDistance,
-  intersectElementWithLine,
   determineFocusPoint,
+  distanceToBindableLayer,
+  intersectLayerWithLine,
+  maxBindingGap
 } from "./collision";
-import { mutateElement } from "./mutateElement";
-import Scene from "../scene/Scene";
-import { LinearElementEditor } from "./linearElementEditor";
-import { arrayToMap, tupleToCoors } from "../utils";
-import { KEYS } from "../keys";
-import { getBoundTextElement, handleBindTextResize } from "./textElement";
+import { LinearLayerEditor } from "./linearLayerEditor";
+import { mutateLayer } from "./mutateLayer";
+import { getBoundTextLayer, handleBindTextResize } from "./textLayer";
+import { isBindableLayer, isBindingLayer, isLinearLayer } from "./typeChecks";
+import {
+  ExcalidrawBindableLayer,
+  ExcalidrawLayer,
+  ExcalidrawLinearLayer,
+  NonDeleted,
+  NonDeletedExcalidrawLayer,
+  PointBinding
+} from "./types";
 
 export type SuggestedBinding =
-  | NonDeleted<ExcalidrawBindableElement>
+  | NonDeleted<ExcalidrawBindableLayer>
   | SuggestedPointBinding;
 
 export type SuggestedPointBinding = [
-  NonDeleted<ExcalidrawLinearElement>,
+  NonDeleted<ExcalidrawLinearLayer>,
   "start" | "end" | "both",
-  NonDeleted<ExcalidrawBindableElement>,
+  NonDeleted<ExcalidrawBindableLayer>
 ];
 
 export const shouldEnableBindingForPointerEvent = (
-  event: React.PointerEvent<HTMLElement>,
-) => {
-  return !event[KEYS.CTRL_OR_CMD];
-};
+  event: React.PointerEvent<HTMLLayer>
+) => !event[KEYS.CTRL_OR_CMD];
 
-export const isBindingEnabled = (appState: AppState): boolean => {
-  return appState.isBindingEnabled;
-};
+export const isBindingEnabled = (appState: AppState): boolean =>
+  appState.isBindingEnabled;
 
-const getNonDeletedElements = (
+const getNonDeletedLayers = (
   scene: Scene,
-  ids: readonly ExcalidrawElement["id"][],
-): NonDeleted<ExcalidrawElement>[] => {
-  const result: NonDeleted<ExcalidrawElement>[] = [];
+  ids: readonly ExcalidrawLayer["id"][]
+): NonDeleted<ExcalidrawLayer>[] => {
+  const result: NonDeleted<ExcalidrawLayer>[] = [];
   ids.forEach((id) => {
-    const element = scene.getNonDeletedElement(id);
-    if (element != null) {
-      result.push(element);
+    const layer = scene.getNonDeletedLayer(id);
+    if (layer != null) {
+      result.push(layer);
     }
   });
   return result;
 };
 
-export const bindOrUnbindLinearElement = (
-  linearElement: NonDeleted<ExcalidrawLinearElement>,
-  startBindingElement: ExcalidrawBindableElement | null | "keep",
-  endBindingElement: ExcalidrawBindableElement | null | "keep",
+export const bindOrUnbindLinearLayer = (
+  linearLayer: NonDeleted<ExcalidrawLinearLayer>,
+  startBindingLayer: ExcalidrawBindableLayer | null | "keep",
+  endBindingLayer: ExcalidrawBindableLayer | null | "keep"
 ): void => {
-  const boundToElementIds: Set<ExcalidrawBindableElement["id"]> = new Set();
-  const unboundFromElementIds: Set<ExcalidrawBindableElement["id"]> = new Set();
-  bindOrUnbindLinearElementEdge(
-    linearElement,
-    startBindingElement,
-    endBindingElement,
+  const boundToLayerIds: Set<ExcalidrawBindableLayer["id"]> = new Set();
+  const unboundFromLayerIds: Set<ExcalidrawBindableLayer["id"]> = new Set();
+  bindOrUnbindLinearLayerEdge(
+    linearLayer,
+    startBindingLayer,
+    endBindingLayer,
     "start",
-    boundToElementIds,
-    unboundFromElementIds,
+    boundToLayerIds,
+    unboundFromLayerIds
   );
-  bindOrUnbindLinearElementEdge(
-    linearElement,
-    endBindingElement,
-    startBindingElement,
+  bindOrUnbindLinearLayerEdge(
+    linearLayer,
+    endBindingLayer,
+    startBindingLayer,
     "end",
-    boundToElementIds,
-    unboundFromElementIds,
+    boundToLayerIds,
+    unboundFromLayerIds
   );
 
-  const onlyUnbound = Array.from(unboundFromElementIds).filter(
-    (id) => !boundToElementIds.has(id),
+  const onlyUnbound = Array.from(unboundFromLayerIds).filter(
+    (id) => !boundToLayerIds.has(id)
   );
 
-  getNonDeletedElements(Scene.getScene(linearElement)!, onlyUnbound).forEach(
-    (element) => {
-      mutateElement(element, {
-        boundElements: element.boundElements?.filter(
-          (element) =>
-            element.type !== "arrow" || element.id !== linearElement.id,
-        ),
+  getNonDeletedLayers(Scene.getScene(linearLayer)!, onlyUnbound).forEach(
+    (layer) => {
+      mutateLayer(layer, {
+        boundLayers: layer.boundLayers?.filter(
+          (layer) => layer.type !== "arrow" || layer.id !== linearLayer.id
+        )
       });
-    },
+    }
   );
 };
 
-const bindOrUnbindLinearElementEdge = (
-  linearElement: NonDeleted<ExcalidrawLinearElement>,
-  bindableElement: ExcalidrawBindableElement | null | "keep",
-  otherEdgeBindableElement: ExcalidrawBindableElement | null | "keep",
+const bindOrUnbindLinearLayerEdge = (
+  linearLayer: NonDeleted<ExcalidrawLinearLayer>,
+  bindableLayer: ExcalidrawBindableLayer | null | "keep",
+  otherEdgeBindableLayer: ExcalidrawBindableLayer | null | "keep",
   startOrEnd: "start" | "end",
   // Is mutated
-  boundToElementIds: Set<ExcalidrawBindableElement["id"]>,
+  boundToLayerIds: Set<ExcalidrawBindableLayer["id"]>,
   // Is mutated
-  unboundFromElementIds: Set<ExcalidrawBindableElement["id"]>,
+  unboundFromLayerIds: Set<ExcalidrawBindableLayer["id"]>
 ): void => {
-  if (bindableElement !== "keep") {
-    if (bindableElement != null) {
+  if (bindableLayer !== "keep") {
+    if (bindableLayer != null) {
       // Don't bind if we're trying to bind or are already bound to the same
-      // element on the other edge already ("start" edge takes precedence).
+      // layer on the other edge already ("start" edge takes precedence).
       if (
-        otherEdgeBindableElement == null ||
-        (otherEdgeBindableElement === "keep"
-          ? !isLinearElementSimpleAndAlreadyBoundOnOppositeEdge(
-              linearElement,
-              bindableElement,
-              startOrEnd,
+        otherEdgeBindableLayer == null ||
+        (otherEdgeBindableLayer === "keep"
+          ? !isLinearLayerSimpleAndAlreadyBoundOnOppositeEdge(
+              linearLayer,
+              bindableLayer,
+              startOrEnd
             )
           : startOrEnd === "start" ||
-            otherEdgeBindableElement.id !== bindableElement.id)
+            otherEdgeBindableLayer.id !== bindableLayer.id)
       ) {
-        bindLinearElement(linearElement, bindableElement, startOrEnd);
-        boundToElementIds.add(bindableElement.id);
+        bindLinearLayer(linearLayer, bindableLayer, startOrEnd);
+        boundToLayerIds.add(bindableLayer.id);
       }
     } else {
-      const unbound = unbindLinearElement(linearElement, startOrEnd);
+      const unbound = unbindLinearLayer(linearLayer, startOrEnd);
       if (unbound != null) {
-        unboundFromElementIds.add(unbound);
+        unboundFromLayerIds.add(unbound);
       }
     }
   }
 };
 
-export const bindOrUnbindSelectedElements = (
-  elements: NonDeleted<ExcalidrawElement>[],
+export const bindOrUnbindSelectedLayers = (
+  layers: NonDeleted<ExcalidrawLayer>[]
 ): void => {
-  elements.forEach((element) => {
-    if (isBindingElement(element)) {
-      bindOrUnbindLinearElement(
-        element,
-        getElligibleElementForBindingElement(element, "start"),
-        getElligibleElementForBindingElement(element, "end"),
+  layers.forEach((layer) => {
+    if (isBindingLayer(layer)) {
+      bindOrUnbindLinearLayer(
+        layer,
+        getEligibleLayerForBindingLayer(layer, "start"),
+        getEligibleLayerForBindingLayer(layer, "end")
       );
-    } else if (isBindableElement(element)) {
-      maybeBindBindableElement(element);
+    } else if (isBindableLayer(layer)) {
+      maybeBindBindableLayer(layer);
     }
   });
 };
 
-const maybeBindBindableElement = (
-  bindableElement: NonDeleted<ExcalidrawBindableElement>,
+const maybeBindBindableLayer = (
+  bindableLayer: NonDeleted<ExcalidrawBindableLayer>
 ): void => {
-  getElligibleElementsForBindableElementAndWhere(bindableElement).forEach(
-    ([linearElement, where]) =>
-      bindOrUnbindLinearElement(
-        linearElement,
-        where === "end" ? "keep" : bindableElement,
-        where === "start" ? "keep" : bindableElement,
-      ),
+  getEligibleLayersForBindableLayerAndWhere(bindableLayer).forEach(
+    ([linearLayer, where]) =>
+      bindOrUnbindLinearLayer(
+        linearLayer,
+        where === "end" ? "keep" : bindableLayer,
+        where === "start" ? "keep" : bindableLayer
+      )
   );
 };
 
-export const maybeBindLinearElement = (
-  linearElement: NonDeleted<ExcalidrawLinearElement>,
+export const maybeBindLinearLayer = (
+  linearLayer: NonDeleted<ExcalidrawLinearLayer>,
   appState: AppState,
   scene: Scene,
-  pointerCoords: { x: number; y: number },
+  pointerCoords: { x: number; y: number }
 ): void => {
-  if (appState.startBoundElement != null) {
-    bindLinearElement(linearElement, appState.startBoundElement, "start");
+  if (appState.startBoundLayer != null) {
+    bindLinearLayer(linearLayer, appState.startBoundLayer, "start");
   }
-  const hoveredElement = getHoveredElementForBinding(pointerCoords, scene);
+  const hoveredLayer = getHoveredLayerForBinding(pointerCoords, scene);
   if (
-    hoveredElement != null &&
-    !isLinearElementSimpleAndAlreadyBoundOnOppositeEdge(
-      linearElement,
-      hoveredElement,
-      "end",
+    hoveredLayer != null &&
+    !isLinearLayerSimpleAndAlreadyBoundOnOppositeEdge(
+      linearLayer,
+      hoveredLayer,
+      "end"
     )
   ) {
-    bindLinearElement(linearElement, hoveredElement, "end");
+    bindLinearLayer(linearLayer, hoveredLayer, "end");
   }
 };
 
-const bindLinearElement = (
-  linearElement: NonDeleted<ExcalidrawLinearElement>,
-  hoveredElement: ExcalidrawBindableElement,
-  startOrEnd: "start" | "end",
+const bindLinearLayer = (
+  linearLayer: NonDeleted<ExcalidrawLinearLayer>,
+  hoveredLayer: ExcalidrawBindableLayer,
+  startOrEnd: "start" | "end"
 ): void => {
-  mutateElement(linearElement, {
+  mutateLayer(linearLayer, {
     [startOrEnd === "start" ? "startBinding" : "endBinding"]: {
-      elementId: hoveredElement.id,
-      ...calculateFocusAndGap(linearElement, hoveredElement, startOrEnd),
-    } as PointBinding,
+      layerId: hoveredLayer.id,
+      ...calculateFocusAndGap(linearLayer, hoveredLayer, startOrEnd)
+    } as PointBinding
   });
 
-  const boundElementsMap = arrayToMap(hoveredElement.boundElements || []);
-  if (!boundElementsMap.has(linearElement.id)) {
-    mutateElement(hoveredElement, {
-      boundElements: (hoveredElement.boundElements || []).concat({
-        id: linearElement.id,
-        type: "arrow",
-      }),
+  const boundLayersMap = arrayToMap(hoveredLayer.boundLayers || []);
+  if (!boundLayersMap.has(linearLayer.id)) {
+    mutateLayer(hoveredLayer, {
+      boundLayers: (hoveredLayer.boundLayers || []).concat({
+        id: linearLayer.id,
+        type: "arrow"
+      })
     });
   }
 };
 
 // Don't bind both ends of a simple segment
-const isLinearElementSimpleAndAlreadyBoundOnOppositeEdge = (
-  linearElement: NonDeleted<ExcalidrawLinearElement>,
-  bindableElement: ExcalidrawBindableElement,
-  startOrEnd: "start" | "end",
+const isLinearLayerSimpleAndAlreadyBoundOnOppositeEdge = (
+  linearLayer: NonDeleted<ExcalidrawLinearLayer>,
+  bindableLayer: ExcalidrawBindableLayer,
+  startOrEnd: "start" | "end"
 ): boolean => {
   const otherBinding =
-    linearElement[startOrEnd === "start" ? "endBinding" : "startBinding"];
-  return isLinearElementSimpleAndAlreadyBound(
-    linearElement,
-    otherBinding?.elementId,
-    bindableElement,
+    linearLayer[startOrEnd === "start" ? "endBinding" : "startBinding"];
+  return isLinearLayerSimpleAndAlreadyBound(
+    linearLayer,
+    otherBinding?.layerId,
+    bindableLayer
   );
 };
 
-export const isLinearElementSimpleAndAlreadyBound = (
-  linearElement: NonDeleted<ExcalidrawLinearElement>,
-  alreadyBoundToId: ExcalidrawBindableElement["id"] | undefined,
-  bindableElement: ExcalidrawBindableElement,
-): boolean => {
-  return (
-    alreadyBoundToId === bindableElement.id && linearElement.points.length < 3
-  );
-};
+export const isLinearLayerSimpleAndAlreadyBound = (
+  linearLayer: NonDeleted<ExcalidrawLinearLayer>,
+  alreadyBoundToId: ExcalidrawBindableLayer["id"] | undefined,
+  bindableLayer: ExcalidrawBindableLayer
+): boolean =>
+  alreadyBoundToId === bindableLayer.id && linearLayer.points.length < 3;
 
-export const unbindLinearElements = (
-  elements: NonDeleted<ExcalidrawElement>[],
+export const unbindLinearLayers = (
+  layers: NonDeleted<ExcalidrawLayer>[]
 ): void => {
-  elements.forEach((element) => {
-    if (isBindingElement(element)) {
-      bindOrUnbindLinearElement(element, null, null);
+  layers.forEach((layer) => {
+    if (isBindingLayer(layer)) {
+      bindOrUnbindLinearLayer(layer, null, null);
     }
   });
 };
 
-const unbindLinearElement = (
-  linearElement: NonDeleted<ExcalidrawLinearElement>,
-  startOrEnd: "start" | "end",
-): ExcalidrawBindableElement["id"] | null => {
+const unbindLinearLayer = (
+  linearLayer: NonDeleted<ExcalidrawLinearLayer>,
+  startOrEnd: "start" | "end"
+): ExcalidrawBindableLayer["id"] | null => {
   const field = startOrEnd === "start" ? "startBinding" : "endBinding";
-  const binding = linearElement[field];
+  const binding = linearLayer[field];
   if (binding == null) {
     return null;
   }
-  mutateElement(linearElement, { [field]: null });
-  return binding.elementId;
+  mutateLayer(linearLayer, { [field]: null });
+  return binding.layerId;
 };
 
-export const getHoveredElementForBinding = (
+export const getHoveredLayerForBinding = (
   pointerCoords: {
     x: number;
     y: number;
   },
-  scene: Scene,
-): NonDeleted<ExcalidrawBindableElement> | null => {
-  const hoveredElement = getElementAtPosition(
-    scene.getNonDeletedElements(),
-    (element) =>
-      isBindableElement(element, false) &&
-      bindingBorderTest(element, pointerCoords),
+  scene: Scene
+): NonDeleted<ExcalidrawBindableLayer> | null => {
+  const hoveredLayer = getLayerAtPosition(
+    scene.getNonDeletedLayers(),
+    (layer) =>
+      isBindableLayer(layer, false) && bindingBorderTest(layer, pointerCoords)
   );
-  return hoveredElement as NonDeleted<ExcalidrawBindableElement> | null;
+  return hoveredLayer as NonDeleted<ExcalidrawBindableLayer> | null;
 };
 
 const calculateFocusAndGap = (
-  linearElement: NonDeleted<ExcalidrawLinearElement>,
-  hoveredElement: ExcalidrawBindableElement,
-  startOrEnd: "start" | "end",
+  linearLayer: NonDeleted<ExcalidrawLinearLayer>,
+  hoveredLayer: ExcalidrawBindableLayer,
+  startOrEnd: "start" | "end"
 ): { focus: number; gap: number } => {
   const direction = startOrEnd === "start" ? -1 : 1;
-  const edgePointIndex = direction === -1 ? 0 : linearElement.points.length - 1;
+  const edgePointIndex = direction === -1 ? 0 : linearLayer.points.length - 1;
   const adjacentPointIndex = edgePointIndex - direction;
-  const edgePoint = LinearElementEditor.getPointAtIndexGlobalCoordinates(
-    linearElement,
-    edgePointIndex,
+  const edgePoint = LinearLayerEditor.getPointAtIndexGlobalCoordinates(
+    linearLayer,
+    edgePointIndex
   );
-  const adjacentPoint = LinearElementEditor.getPointAtIndexGlobalCoordinates(
-    linearElement,
-    adjacentPointIndex,
+  const adjacentPoint = LinearLayerEditor.getPointAtIndexGlobalCoordinates(
+    linearLayer,
+    adjacentPointIndex
   );
   return {
-    focus: determineFocusDistance(hoveredElement, adjacentPoint, edgePoint),
-    gap: Math.max(1, distanceToBindableElement(hoveredElement, edgePoint)),
+    focus: determineFocusDistance(hoveredLayer, adjacentPoint, edgePoint),
+    gap: Math.max(1, distanceToBindableLayer(hoveredLayer, edgePoint))
   };
 };
 
-// Supports translating, rotating and scaling `changedElement` with bound
-// linear elements.
+// Supports translating, rotating and scaling `changedLayer` with bound
+// linear layers.
 // Because scaling involves moving the focus points as well, it is
-// done before the `changedElement` is updated, and the `newSize` is passed
+// done before the `changedLayer` is updated, and the `newSize` is passed
 // in explicitly.
-export const updateBoundElements = (
-  changedElement: NonDeletedExcalidrawElement,
+export const updateBoundLayers = (
+  changedLayer: NonDeletedExcalidrawLayer,
   options?: {
-    simultaneouslyUpdated?: readonly ExcalidrawElement[];
-    newSize?: { width: number; height: number };
-  },
+    newSize?: { height: number; width: number };
+    simultaneouslyUpdated?: readonly ExcalidrawLayer[];
+  }
 ) => {
-  const boundLinearElements = (changedElement.boundElements ?? []).filter(
-    (el) => el.type === "arrow",
+  const boundLinearLayers = (changedLayer.boundLayers ?? []).filter(
+    (el) => el.type === "arrow"
   );
-  if (boundLinearElements.length === 0) {
+  if (boundLinearLayers.length === 0) {
     return;
   }
   const { newSize, simultaneouslyUpdated } = options ?? {};
-  const simultaneouslyUpdatedElementIds = getSimultaneouslyUpdatedElementIds(
-    simultaneouslyUpdated,
+  const simultaneouslyUpdatedLayerIds = getSimultaneouslyUpdatedLayerIds(
+    simultaneouslyUpdated
   );
 
-  getNonDeletedElements(
-    Scene.getScene(changedElement)!,
-    boundLinearElements.map((el) => el.id),
-  ).forEach((element) => {
-    if (!isLinearElement(element)) {
+  getNonDeletedLayers(
+    Scene.getScene(changedLayer)!,
+    boundLinearLayers.map((el) => el.id)
+  ).forEach((layer) => {
+    if (!isLinearLayer(layer)) {
       return;
     }
 
-    const bindableElement = changedElement as ExcalidrawBindableElement;
-    // In case the boundElements are stale
-    if (!doesNeedUpdate(element, bindableElement)) {
+    const bindableLayer = changedLayer as ExcalidrawBindableLayer;
+    // In case the boundLayers are stale
+    if (!doesNeedUpdate(layer, bindableLayer)) {
       return;
     }
     const startBinding = maybeCalculateNewGapWhenScaling(
-      bindableElement,
-      element.startBinding,
-      newSize,
+      bindableLayer,
+      layer.startBinding,
+      newSize
     );
     const endBinding = maybeCalculateNewGapWhenScaling(
-      bindableElement,
-      element.endBinding,
-      newSize,
+      bindableLayer,
+      layer.endBinding,
+      newSize
     );
-    // `linearElement` is being moved/scaled already, just update the binding
-    if (simultaneouslyUpdatedElementIds.has(element.id)) {
-      mutateElement(element, { startBinding, endBinding });
+    // `linearLayer` is being moved/scaled already, just update the binding
+    if (simultaneouslyUpdatedLayerIds.has(layer.id)) {
+      mutateLayer(layer, { startBinding, endBinding });
       return;
     }
     updateBoundPoint(
-      element,
+      layer,
       "start",
       startBinding,
-      changedElement as ExcalidrawBindableElement,
+      changedLayer as ExcalidrawBindableLayer
     );
     updateBoundPoint(
-      element,
+      layer,
       "end",
       endBinding,
-      changedElement as ExcalidrawBindableElement,
+      changedLayer as ExcalidrawBindableLayer
     );
-    const boundText = getBoundTextElement(element);
+    const boundText = getBoundTextLayer(layer);
     if (boundText) {
-      handleBindTextResize(element, false);
+      handleBindTextResize(layer, false);
     }
   });
 };
 
 const doesNeedUpdate = (
-  boundElement: NonDeleted<ExcalidrawLinearElement>,
-  changedElement: ExcalidrawBindableElement,
-) => {
-  return (
-    boundElement.startBinding?.elementId === changedElement.id ||
-    boundElement.endBinding?.elementId === changedElement.id
-  );
-};
+  boundLayer: NonDeleted<ExcalidrawLinearLayer>,
+  changedLayer: ExcalidrawBindableLayer
+) =>
+  boundLayer.startBinding?.layerId === changedLayer.id ||
+  boundLayer.endBinding?.layerId === changedLayer.id;
 
-const getSimultaneouslyUpdatedElementIds = (
-  simultaneouslyUpdated: readonly ExcalidrawElement[] | undefined,
-): Set<ExcalidrawElement["id"]> => {
-  return new Set((simultaneouslyUpdated || []).map((element) => element.id));
-};
+const getSimultaneouslyUpdatedLayerIds = (
+  simultaneouslyUpdated: readonly ExcalidrawLayer[] | undefined
+): Set<ExcalidrawLayer["id"]> =>
+  new Set((simultaneouslyUpdated || []).map((layer) => layer.id));
 
 const updateBoundPoint = (
-  linearElement: NonDeleted<ExcalidrawLinearElement>,
+  linearLayer: NonDeleted<ExcalidrawLinearLayer>,
   startOrEnd: "start" | "end",
   binding: PointBinding | null | undefined,
-  changedElement: ExcalidrawBindableElement,
+  changedLayer: ExcalidrawBindableLayer
 ): void => {
   if (
     binding == null ||
-    // We only need to update the other end if this is a 2 point line element
-    (binding.elementId !== changedElement.id && linearElement.points.length > 2)
+    // We only need to update the other end if this is a 2 point line layer
+    (binding.layerId !== changedLayer.id && linearLayer.points.length > 2)
   ) {
     return;
   }
-  const bindingElement = Scene.getScene(linearElement)!.getElement(
-    binding.elementId,
-  ) as ExcalidrawBindableElement | null;
-  if (bindingElement == null) {
-    // We're not cleaning up after deleted elements atm., so handle this case
+  const bindingLayer = Scene.getScene(linearLayer)!.getLayer(
+    binding.layerId
+  ) as ExcalidrawBindableLayer | null;
+  if (bindingLayer == null) {
+    // We're not cleaning up after deleted layers atm., so handle this case
     return;
   }
   const direction = startOrEnd === "start" ? -1 : 1;
-  const edgePointIndex = direction === -1 ? 0 : linearElement.points.length - 1;
+  const edgePointIndex = direction === -1 ? 0 : linearLayer.points.length - 1;
   const adjacentPointIndex = edgePointIndex - direction;
-  const adjacentPoint = LinearElementEditor.getPointAtIndexGlobalCoordinates(
-    linearElement,
-    adjacentPointIndex,
+  const adjacentPoint = LinearLayerEditor.getPointAtIndexGlobalCoordinates(
+    linearLayer,
+    adjacentPointIndex
   );
   const focusPointAbsolute = determineFocusPoint(
-    bindingElement,
+    bindingLayer,
     binding.focus,
-    adjacentPoint,
+    adjacentPoint
   );
   let newEdgePoint;
-  // The linear element was not originally pointing inside the bound shape,
+  // The linear layer was not originally pointing inside the bound shape,
   // we can point directly at the focus point
   if (binding.gap === 0) {
     newEdgePoint = focusPointAbsolute;
   } else {
-    const intersections = intersectElementWithLine(
-      bindingElement,
+    const intersections = intersectLayerWithLine(
+      bindingLayer,
       adjacentPoint,
       focusPointAbsolute,
-      binding.gap,
+      binding.gap
     );
     if (intersections.length === 0) {
       // This should never happen, since focusPoint should always be
-      // inside the element, but just in case, bail out
+      // inside the layer, but just in case, bail out
       newEdgePoint = focusPointAbsolute;
     } else {
       // Guaranteed to intersect because focusPoint is always inside the shape
       newEdgePoint = intersections[0];
     }
   }
-  LinearElementEditor.movePoints(
-    linearElement,
+  LinearLayerEditor.movePoints(
+    linearLayer,
     [
       {
         index: edgePointIndex,
-        point: LinearElementEditor.pointFromAbsoluteCoords(
-          linearElement,
-          newEdgePoint,
-        ),
-      },
+        point: LinearLayerEditor.pointFromAbsoluteCoords(
+          linearLayer,
+          newEdgePoint
+        )
+      }
     ],
-    { [startOrEnd === "start" ? "startBinding" : "endBinding"]: binding },
+    { [startOrEnd === "start" ? "startBinding" : "endBinding"]: binding }
   );
 };
 
 const maybeCalculateNewGapWhenScaling = (
-  changedElement: ExcalidrawBindableElement,
+  changedLayer: ExcalidrawBindableLayer,
   currentBinding: PointBinding | null | undefined,
-  newSize: { width: number; height: number } | undefined,
+  newSize: { height: number; width: number } | undefined
 ): PointBinding | null | undefined => {
   if (currentBinding == null || newSize == null) {
     return currentBinding;
   }
-  const { gap, focus, elementId } = currentBinding;
+  const { gap, focus, layerId } = currentBinding;
   const { width: newWidth, height: newHeight } = newSize;
-  const { width, height } = changedElement;
+  const { width, height } = changedLayer;
   const newGap = Math.max(
     1,
     Math.min(
-      maxBindingGap(changedElement, newWidth, newHeight),
-      gap * (newWidth < newHeight ? newWidth / width : newHeight / height),
-    ),
+      maxBindingGap(changedLayer, newWidth, newHeight),
+      gap * (newWidth < newHeight ? newWidth / width : newHeight / height)
+    )
   );
-  return { elementId, gap: newGap, focus };
+  return { layerId, gap: newGap, focus };
 };
 
-export const getEligibleElementsForBinding = (
-  elements: NonDeleted<ExcalidrawElement>[],
+export const getEligibleLayersForBinding = (
+  layers: NonDeleted<ExcalidrawLayer>[]
 ): SuggestedBinding[] => {
-  const includedElementIds = new Set(elements.map(({ id }) => id));
-  return elements.flatMap((element) =>
-    isBindingElement(element, false)
-      ? (getElligibleElementsForBindingElement(
-          element as NonDeleted<ExcalidrawLinearElement>,
+  const includedLayerIds = new Set(layers.map(({ id }) => id));
+  return layers.flatMap((layer) =>
+    isBindingLayer(layer, false)
+      ? (getEligibleLayersForBindingLayer(
+          layer as NonDeleted<ExcalidrawLinearLayer>
         ).filter(
-          (element) => !includedElementIds.has(element.id),
+          (layer) => !includedLayerIds.has(layer.id)
         ) as SuggestedBinding[])
-      : isBindableElement(element, false)
-      ? getElligibleElementsForBindableElementAndWhere(element).filter(
-          (binding) => !includedElementIds.has(binding[0].id),
+      : isBindableLayer(layer, false)
+      ? getEligibleLayersForBindableLayerAndWhere(layer).filter(
+          (binding) => !includedLayerIds.has(binding[0].id)
         )
-      : [],
+      : []
   );
 };
 
-const getElligibleElementsForBindingElement = (
-  linearElement: NonDeleted<ExcalidrawLinearElement>,
-): NonDeleted<ExcalidrawBindableElement>[] => {
-  return [
-    getElligibleElementForBindingElement(linearElement, "start"),
-    getElligibleElementForBindingElement(linearElement, "end"),
+const getEligibleLayersForBindingLayer = (
+  linearLayer: NonDeleted<ExcalidrawLinearLayer>
+): NonDeleted<ExcalidrawBindableLayer>[] =>
+  [
+    getEligibleLayerForBindingLayer(linearLayer, "start"),
+    getEligibleLayerForBindingLayer(linearLayer, "end")
   ].filter(
-    (element): element is NonDeleted<ExcalidrawBindableElement> =>
-      element != null,
+    (layer): layer is NonDeleted<ExcalidrawBindableLayer> => layer != null
   );
-};
 
-const getElligibleElementForBindingElement = (
-  linearElement: NonDeleted<ExcalidrawLinearElement>,
-  startOrEnd: "start" | "end",
-): NonDeleted<ExcalidrawBindableElement> | null => {
-  return getHoveredElementForBinding(
-    getLinearElementEdgeCoors(linearElement, startOrEnd),
-    Scene.getScene(linearElement)!,
+const getEligibleLayerForBindingLayer = (
+  linearLayer: NonDeleted<ExcalidrawLinearLayer>,
+  startOrEnd: "start" | "end"
+): NonDeleted<ExcalidrawBindableLayer> | null =>
+  getHoveredLayerForBinding(
+    getLinearLayerEdgeCoors(linearLayer, startOrEnd),
+    Scene.getScene(linearLayer)!
   );
-};
 
-const getLinearElementEdgeCoors = (
-  linearElement: NonDeleted<ExcalidrawLinearElement>,
-  startOrEnd: "start" | "end",
+const getLinearLayerEdgeCoors = (
+  linearLayer: NonDeleted<ExcalidrawLinearLayer>,
+  startOrEnd: "start" | "end"
 ): { x: number; y: number } => {
   const index = startOrEnd === "start" ? 0 : -1;
   return tupleToCoors(
-    LinearElementEditor.getPointAtIndexGlobalCoordinates(linearElement, index),
+    LinearLayerEditor.getPointAtIndexGlobalCoordinates(linearLayer, index)
   );
 };
 
-const getElligibleElementsForBindableElementAndWhere = (
-  bindableElement: NonDeleted<ExcalidrawBindableElement>,
-): SuggestedPointBinding[] => {
-  return Scene.getScene(bindableElement)!
-    .getNonDeletedElements()
-    .map((element) => {
-      if (!isBindingElement(element, false)) {
+const getEligibleLayersForBindableLayerAndWhere = (
+  bindableLayer: NonDeleted<ExcalidrawBindableLayer>
+): SuggestedPointBinding[] =>
+  Scene.getScene(bindableLayer)!
+    .getNonDeletedLayers()
+    .map((layer) => {
+      if (!isBindingLayer(layer, false)) {
         return null;
       }
-      const canBindStart = isLinearElementEligibleForNewBindingByBindable(
-        element,
+      const canBindStart = isLinearLayerEligibleForNewBindingByBindable(
+        layer,
         "start",
-        bindableElement,
+        bindableLayer
       );
-      const canBindEnd = isLinearElementEligibleForNewBindingByBindable(
-        element,
+      const canBindEnd = isLinearLayerEligibleForNewBindingByBindable(
+        layer,
         "end",
-        bindableElement,
+        bindableLayer
       );
       if (!canBindStart && !canBindEnd) {
         return null;
       }
       return [
-        element,
+        layer,
         canBindStart && canBindEnd ? "both" : canBindStart ? "start" : "end",
-        bindableElement,
+        bindableLayer
       ];
     })
-    .filter((maybeElement) => maybeElement != null) as SuggestedPointBinding[];
-};
+    .filter((maybeLayer) => maybeLayer != null) as SuggestedPointBinding[];
 
-const isLinearElementEligibleForNewBindingByBindable = (
-  linearElement: NonDeleted<ExcalidrawLinearElement>,
+const isLinearLayerEligibleForNewBindingByBindable = (
+  linearLayer: NonDeleted<ExcalidrawLinearLayer>,
   startOrEnd: "start" | "end",
-  bindableElement: NonDeleted<ExcalidrawBindableElement>,
+  bindableLayer: NonDeleted<ExcalidrawBindableLayer>
 ): boolean => {
   const existingBinding =
-    linearElement[startOrEnd === "start" ? "startBinding" : "endBinding"];
+    linearLayer[startOrEnd === "start" ? "startBinding" : "endBinding"];
   return (
     existingBinding == null &&
-    !isLinearElementSimpleAndAlreadyBoundOnOppositeEdge(
-      linearElement,
-      bindableElement,
-      startOrEnd,
+    !isLinearLayerSimpleAndAlreadyBoundOnOppositeEdge(
+      linearLayer,
+      bindableLayer,
+      startOrEnd
     ) &&
     bindingBorderTest(
-      bindableElement,
-      getLinearElementEdgeCoors(linearElement, startOrEnd),
+      bindableLayer,
+      getLinearLayerEdgeCoors(linearLayer, startOrEnd)
     )
   );
 };
 
 // We need to:
-// 1: Update elements not selected to point to duplicated elements
-// 2: Update duplicated elements to point to other duplicated elements
+// 1: Update layers not selected to point to duplicated layers
+// 2: Update duplicated layers to point to other duplicated layers
 export const fixBindingsAfterDuplication = (
-  sceneElements: readonly ExcalidrawElement[],
-  oldElements: readonly ExcalidrawElement[],
-  oldIdToDuplicatedId: Map<ExcalidrawElement["id"], ExcalidrawElement["id"]>,
+  sceneLayers: readonly ExcalidrawLayer[],
+  oldLayers: readonly ExcalidrawLayer[],
+  oldIdToDuplicatedId: Map<ExcalidrawLayer["id"], ExcalidrawLayer["id"]>,
   // There are three copying mechanisms: Copy-paste, duplication and alt-drag.
   // Only when alt-dragging the new "duplicates" act as the "old", while
-  // the "old" elements act as the "new copy" - essentially working reverse
+  // the "old" layers act as the "new copy" - essentially working reverse
   // to the other two.
-  duplicatesServeAsOld?: "duplicatesServeAsOld" | undefined,
+  duplicatesServeAsOld?: "duplicatesServeAsOld" | undefined
 ): void => {
-  // First collect all the binding/bindable elements, so we only update
+  // First collect all the binding/bindable layers, so we only update
   // each once, regardless of whether they were duplicated or not.
-  const allBoundElementIds: Set<ExcalidrawElement["id"]> = new Set();
-  const allBindableElementIds: Set<ExcalidrawElement["id"]> = new Set();
+  const allBoundLayerIds: Set<ExcalidrawLayer["id"]> = new Set();
+  const allBindableLayerIds: Set<ExcalidrawLayer["id"]> = new Set();
   const shouldReverseRoles = duplicatesServeAsOld === "duplicatesServeAsOld";
-  oldElements.forEach((oldElement) => {
-    const { boundElements } = oldElement;
-    if (boundElements != null && boundElements.length > 0) {
-      boundElements.forEach((boundElement) => {
-        if (shouldReverseRoles && !oldIdToDuplicatedId.has(boundElement.id)) {
-          allBoundElementIds.add(boundElement.id);
+  oldLayers.forEach((oldLayer) => {
+    const { boundLayers } = oldLayer;
+    if (boundLayers != null && boundLayers.length > 0) {
+      boundLayers.forEach((boundLayer) => {
+        if (shouldReverseRoles && !oldIdToDuplicatedId.has(boundLayer.id)) {
+          allBoundLayerIds.add(boundLayer.id);
         }
       });
-      allBindableElementIds.add(oldIdToDuplicatedId.get(oldElement.id)!);
+      allBindableLayerIds.add(oldIdToDuplicatedId.get(oldLayer.id)!);
     }
-    if (isBindingElement(oldElement)) {
-      if (oldElement.startBinding != null) {
-        const { elementId } = oldElement.startBinding;
-        if (shouldReverseRoles && !oldIdToDuplicatedId.has(elementId)) {
-          allBindableElementIds.add(elementId);
+    if (isBindingLayer(oldLayer)) {
+      if (oldLayer.startBinding != null) {
+        const { layerId } = oldLayer.startBinding;
+        if (shouldReverseRoles && !oldIdToDuplicatedId.has(layerId)) {
+          allBindableLayerIds.add(layerId);
         }
       }
-      if (oldElement.endBinding != null) {
-        const { elementId } = oldElement.endBinding;
-        if (shouldReverseRoles && !oldIdToDuplicatedId.has(elementId)) {
-          allBindableElementIds.add(elementId);
+      if (oldLayer.endBinding != null) {
+        const { layerId } = oldLayer.endBinding;
+        if (shouldReverseRoles && !oldIdToDuplicatedId.has(layerId)) {
+          allBindableLayerIds.add(layerId);
         }
       }
-      if (oldElement.startBinding != null || oldElement.endBinding != null) {
-        allBoundElementIds.add(oldIdToDuplicatedId.get(oldElement.id)!);
+      if (oldLayer.startBinding != null || oldLayer.endBinding != null) {
+        allBoundLayerIds.add(oldIdToDuplicatedId.get(oldLayer.id)!);
       }
     }
   });
 
-  // Update the linear elements
+  // Update the linear layers
   (
-    sceneElements.filter(({ id }) =>
-      allBoundElementIds.has(id),
-    ) as ExcalidrawLinearElement[]
-  ).forEach((element) => {
-    const { startBinding, endBinding } = element;
-    mutateElement(element, {
+    sceneLayers.filter(({ id }) =>
+      allBoundLayerIds.has(id)
+    ) as ExcalidrawLinearLayer[]
+  ).forEach((layer) => {
+    const { startBinding, endBinding } = layer;
+    mutateLayer(layer, {
       startBinding: newBindingAfterDuplication(
         startBinding,
-        oldIdToDuplicatedId,
+        oldIdToDuplicatedId
       ),
-      endBinding: newBindingAfterDuplication(endBinding, oldIdToDuplicatedId),
+      endBinding: newBindingAfterDuplication(endBinding, oldIdToDuplicatedId)
     });
   });
 
   // Update the bindable shapes
-  sceneElements
-    .filter(({ id }) => allBindableElementIds.has(id))
-    .forEach((bindableElement) => {
-      const { boundElements } = bindableElement;
-      if (boundElements != null && boundElements.length > 0) {
-        mutateElement(bindableElement, {
-          boundElements: boundElements.map((boundElement) =>
-            oldIdToDuplicatedId.has(boundElement.id)
+  sceneLayers
+    .filter(({ id }) => allBindableLayerIds.has(id))
+    .forEach((bindableLayer) => {
+      const { boundLayers } = bindableLayer;
+      if (boundLayers != null && boundLayers.length > 0) {
+        mutateLayer(bindableLayer, {
+          boundLayers: boundLayers.map((boundLayer) =>
+            oldIdToDuplicatedId.has(boundLayer.id)
               ? {
-                  id: oldIdToDuplicatedId.get(boundElement.id)!,
-                  type: boundElement.type,
+                  id: oldIdToDuplicatedId.get(boundLayer.id)!,
+                  type: boundLayer.type
                 }
-              : boundElement,
-          ),
+              : boundLayer
+          )
         });
       }
     });
@@ -662,64 +642,59 @@ export const fixBindingsAfterDuplication = (
 
 const newBindingAfterDuplication = (
   binding: PointBinding | null,
-  oldIdToDuplicatedId: Map<ExcalidrawElement["id"], ExcalidrawElement["id"]>,
+  oldIdToDuplicatedId: Map<ExcalidrawLayer["id"], ExcalidrawLayer["id"]>
 ): PointBinding | null => {
   if (binding == null) {
     return null;
   }
-  const { elementId, focus, gap } = binding;
+  const { layerId, focus, gap } = binding;
   return {
     focus,
     gap,
-    elementId: oldIdToDuplicatedId.get(elementId) ?? elementId,
+    layerId: oldIdToDuplicatedId.get(layerId) ?? layerId
   };
 };
 
 export const fixBindingsAfterDeletion = (
-  sceneElements: readonly ExcalidrawElement[],
-  deletedElements: readonly ExcalidrawElement[],
+  sceneLayers: readonly ExcalidrawLayer[],
+  deletedLayers: readonly ExcalidrawLayer[]
 ): void => {
-  const deletedElementIds = new Set(
-    deletedElements.map((element) => element.id),
-  );
+  const deletedLayerIds = new Set(deletedLayers.map((layer) => layer.id));
   // non-deleted which bindings need to be updated
-  const affectedElements: Set<ExcalidrawElement["id"]> = new Set();
-  deletedElements.forEach((deletedElement) => {
-    if (isBindableElement(deletedElement)) {
-      deletedElement.boundElements?.forEach((element) => {
-        if (!deletedElementIds.has(element.id)) {
-          affectedElements.add(element.id);
+  const affectedLayers: Set<ExcalidrawLayer["id"]> = new Set();
+  deletedLayers.forEach((deletedLayer) => {
+    if (isBindableLayer(deletedLayer)) {
+      deletedLayer.boundLayers?.forEach((layer) => {
+        if (!deletedLayerIds.has(layer.id)) {
+          affectedLayers.add(layer.id);
         }
       });
-    } else if (isBindingElement(deletedElement)) {
-      if (deletedElement.startBinding) {
-        affectedElements.add(deletedElement.startBinding.elementId);
+    } else if (isBindingLayer(deletedLayer)) {
+      if (deletedLayer.startBinding) {
+        affectedLayers.add(deletedLayer.startBinding.layerId);
       }
-      if (deletedElement.endBinding) {
-        affectedElements.add(deletedElement.endBinding.elementId);
+      if (deletedLayer.endBinding) {
+        affectedLayers.add(deletedLayer.endBinding.layerId);
       }
     }
   });
-  sceneElements
-    .filter(({ id }) => affectedElements.has(id))
-    .forEach((element) => {
-      if (isBindableElement(element)) {
-        mutateElement(element, {
-          boundElements: newBoundElementsAfterDeletion(
-            element.boundElements,
-            deletedElementIds,
-          ),
+  sceneLayers
+    .filter(({ id }) => affectedLayers.has(id))
+    .forEach((layer) => {
+      if (isBindableLayer(layer)) {
+        mutateLayer(layer, {
+          boundLayers: newBoundLayersAfterDeletion(
+            layer.boundLayers,
+            deletedLayerIds
+          )
         });
-      } else if (isBindingElement(element)) {
-        mutateElement(element, {
+      } else if (isBindingLayer(layer)) {
+        mutateLayer(layer, {
           startBinding: newBindingAfterDeletion(
-            element.startBinding,
-            deletedElementIds,
+            layer.startBinding,
+            deletedLayerIds
           ),
-          endBinding: newBindingAfterDeletion(
-            element.endBinding,
-            deletedElementIds,
-          ),
+          endBinding: newBindingAfterDeletion(layer.endBinding, deletedLayerIds)
         });
       }
     });
@@ -727,20 +702,20 @@ export const fixBindingsAfterDeletion = (
 
 const newBindingAfterDeletion = (
   binding: PointBinding | null,
-  deletedElementIds: Set<ExcalidrawElement["id"]>,
+  deletedLayerIds: Set<ExcalidrawLayer["id"]>
 ): PointBinding | null => {
-  if (binding == null || deletedElementIds.has(binding.elementId)) {
+  if (binding == null || deletedLayerIds.has(binding.layerId)) {
     return null;
   }
   return binding;
 };
 
-const newBoundElementsAfterDeletion = (
-  boundElements: ExcalidrawElement["boundElements"],
-  deletedElementIds: Set<ExcalidrawElement["id"]>,
+const newBoundLayersAfterDeletion = (
+  boundLayers: ExcalidrawLayer["boundLayers"],
+  deletedLayerIds: Set<ExcalidrawLayer["id"]>
 ) => {
-  if (!boundElements) {
+  if (!boundLayers) {
     return null;
   }
-  return boundElements.filter((ele) => !deletedElementIds.has(ele.id));
+  return boundLayers.filter((ele) => !deletedLayerIds.has(ele.id));
 };

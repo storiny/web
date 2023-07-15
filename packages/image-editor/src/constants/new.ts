@@ -1,6 +1,6 @@
 import { COLOR_PALETTE } from "./colors";
 import cssVariables from "./css/variables.module.scss";
-import { ExcalidrawElement, FontFamilyValues } from "./element/types";
+import { ExcalidrawLayer, FontFamilyValues } from "./layer/types";
 import { AppProps } from "./types";
 
 export const DRAGGING_THRESHOLD = 10; // px
@@ -11,13 +11,13 @@ export const TEXT_TO_CENTER_SNAP_THRESHOLD = 30;
 export const SHIFT_LOCKING_ANGLE = Math.PI / 12;
 
 export const FRAME_STYLE = {
-  strokeColor: "#bbb" as ExcalidrawElement["strokeColor"],
-  strokeWidth: 1 as ExcalidrawElement["strokeWidth"],
-  strokeStyle: "solid" as ExcalidrawElement["strokeStyle"],
-  fillStyle: "solid" as ExcalidrawElement["fillStyle"],
-  roughness: 0 as ExcalidrawElement["roughness"],
-  roundness: null as ExcalidrawElement["roundness"],
-  backgroundColor: "transparent" as ExcalidrawElement["backgroundColor"],
+  strokeColor: "#bbb" as ExcalidrawLayer["strokeColor"],
+  strokeWidth: 1 as ExcalidrawLayer["strokeWidth"],
+  strokeStyle: "solid" as ExcalidrawLayer["strokeStyle"],
+  fillStyle: "solid" as ExcalidrawLayer["fillStyle"],
+  roughness: 0 as ExcalidrawLayer["roughness"],
+  roundness: null as ExcalidrawLayer["roundness"],
+  backgroundColor: "transparent" as ExcalidrawLayer["backgroundColor"],
   radius: 8
 };
 
@@ -92,8 +92,8 @@ export const BOUND_TEXT_PADDING = 5;
 
 export const ELEMENT_READY_TO_ERASE_OPACITY = 20;
 
-// Radius represented as 25% of element's largest side (width/height).
-// Used for LEGACY and PROPORTIONAL_RADIUS algorithms, or when the element is
+// Radius represented as 25% of layer's largest side (width/height).
+// Used for LEGACY and PROPORTIONAL_RADIUS algorithms, or when the layer is
 // below the cutoff size.
 export const DEFAULT_PROPORTIONAL_RADIUS = 0.25;
 // Fixed radius for the ADAPTIVE_RADIUS algorithm. In pixels.

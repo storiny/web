@@ -3,12 +3,12 @@ import React from "react";
 export const getMenuTriggerComponent = (children: React.ReactNode) => {
   const comp = React.Children.toArray(children).find(
     (child) =>
-      React.isValidElement(child) &&
+      React.isValidLayer(child) &&
       typeof child.type !== "string" &&
       //@ts-ignore
       child?.type.displayName &&
       //@ts-ignore
-      child.type.displayName === "DropdownMenuTrigger",
+      child.type.displayName === "DropdownMenuTrigger"
   );
   if (!comp) {
     return null;
@@ -20,12 +20,12 @@ export const getMenuTriggerComponent = (children: React.ReactNode) => {
 export const getMenuContentComponent = (children: React.ReactNode) => {
   const comp = React.Children.toArray(children).find(
     (child) =>
-      React.isValidElement(child) &&
+      React.isValidLayer(child) &&
       typeof child.type !== "string" &&
       //@ts-ignore
       child?.type.displayName &&
       //@ts-ignore
-      child.type.displayName === "DropdownMenuContent",
+      child.type.displayName === "DropdownMenuContent"
   );
   if (!comp) {
     return null;

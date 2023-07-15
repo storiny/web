@@ -1,68 +1,69 @@
-import { Excalidraw } from "../packages/excalidraw/index";
-import { queryByTestId, fireEvent } from "@testing-library/react";
-import { render } from "../tests/test-utils";
-import { Pointer, UI } from "../tests/helpers/ui";
+import { fireEvent, queryByTestId } from "@testing-library/react";
+
+import { Excalidraw } from "../../lib/packages/excalidraw/index";
 import { API } from "../tests/helpers/api";
+import { Pointer, UI } from "../tests/helpers/ui";
+import { render } from "../tests/test-utils";
 
 const { h } = window;
 const mouse = new Pointer("mouse");
 
-describe("element locking", () => {
-  it("should not show unlockAllElements action in contextMenu if no elements locked", async () => {
+describe("layer locking", () => {
+  it("should not show unlockAllLayers action in contextMenu if no layers locked", async () => {
     await render(<Excalidraw />);
 
     mouse.rightClickAt(0, 0);
 
-    const item = queryByTestId(UI.queryContextMenu()!, "unlockAllElements");
-    expect(item).toBe(null);
+    const item = queryByTestId(UI.queryContextMenu()!, "unlockAllLayers");
+    expect(item).not.toBeInTheDocument();
   });
 
-  it("should unlock all elements and select them when using unlockAllElements action in contextMenu", async () => {
+  it("should unlock all layers and select them when using unlockAllLayers action in contextMenu", async () => {
     await render(
       <Excalidraw
         initialData={{
-          elements: [
-            API.createElement({
+          layers: [
+            API.createLayer({
               x: 100,
               y: 100,
               width: 100,
               height: 100,
-              locked: true,
+              locked: true
             }),
-            API.createElement({
+            API.createLayer({
               x: 100,
               y: 100,
               width: 100,
               height: 100,
-              locked: true,
+              locked: true
             }),
-            API.createElement({
+            API.createLayer({
               x: 100,
               y: 100,
               width: 100,
               height: 100,
-              locked: false,
-            }),
-          ],
+              locked: false
+            })
+          ]
         }}
-      />,
+      />
     );
 
     mouse.rightClickAt(0, 0);
 
-    expect(Object.keys(h.state.selectedElementIds).length).toBe(0);
-    expect(h.elements.map((el) => el.locked)).toEqual([true, true, false]);
+    expect(Object.keys(h.state.selectedLayerIds).length).toBe(0);
+    expect(h.layers.map((el) => el.locked)).toEqual([true, true, false]);
 
-    const item = queryByTestId(UI.queryContextMenu()!, "unlockAllElements");
-    expect(item).not.toBe(null);
+    const item = queryByTestId(UI.queryContextMenu()!, "unlockAllLayers");
+    expect(item).toBeInTheDocument();
 
     fireEvent.click(item!.querySelector("button")!);
 
-    expect(h.elements.map((el) => el.locked)).toEqual([false, false, false]);
-    // should select the unlocked elements
-    expect(h.state.selectedElementIds).toEqual({
-      [h.elements[0].id]: true,
-      [h.elements[1].id]: true,
+    expect(h.layers.map((el) => el.locked)).toEqual([false, false, false]);
+    // should select the unlocked layers
+    expect(h.state.selectedLayerIds).toEqual({
+      [h.layers[0].id]: true,
+      [h.layers[1].id]: true
     });
   });
 });

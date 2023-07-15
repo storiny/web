@@ -1,23 +1,21 @@
 import {
   getTransformHandles,
-  TransformHandleDirection,
-} from "../element/transformHandles";
-import { ExcalidrawElement } from "../element/types";
+  TransformHandleDirection
+} from "../layer/transformHandles";
+import { ExcalidrawLayer } from "../layer/types";
 import { Keyboard, KeyboardModifiers, Pointer } from "./helpers/ui";
 
 const mouse = new Pointer("mouse");
 const { h } = window;
 
 export const resize = (
-  element: ExcalidrawElement,
+  layer: ExcalidrawLayer,
   handleDir: TransformHandleDirection,
   mouseMove: [number, number],
-  keyboardModifiers: KeyboardModifiers = {},
+  keyboardModifiers: KeyboardModifiers = {}
 ) => {
-  mouse.select(element);
-  const handle = getTransformHandles(element, h.state.zoom, "mouse")[
-    handleDir
-  ]!;
+  mouse.select(layer);
+  const handle = getTransformHandles(layer, h.state.zoom, "mouse")[handleDir]!;
   const clientX = handle[0] + handle[2] / 2;
   const clientY = handle[1] + handle[3] / 2;
   Keyboard.withModifierKeys(keyboardModifiers, () => {
@@ -29,13 +27,13 @@ export const resize = (
 };
 
 export const rotate = (
-  element: ExcalidrawElement,
+  layer: ExcalidrawLayer,
   deltaX: number,
   deltaY: number,
-  keyboardModifiers: KeyboardModifiers = {},
+  keyboardModifiers: KeyboardModifiers = {}
 ) => {
-  mouse.select(element);
-  const handle = getTransformHandles(element, h.state.zoom, "mouse").rotation!;
+  mouse.select(layer);
+  const handle = getTransformHandles(layer, h.state.zoom, "mouse").rotation!;
   const clientX = handle[0] + handle[2] / 2;
   const clientY = handle[1] + handle[3] / 2;
 

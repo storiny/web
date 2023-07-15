@@ -1,44 +1,45 @@
-import React, { useState, useCallback, useMemo, useRef } from "react";
+import "./LibraryMenu.scss";
+
+import { atom, useAtom } from "jotai";
+import React, { useCallback, useMemo, useRef, useState } from "react";
+
 import Library, {
   distributeLibraryItemsOnSquareGrid,
-  libraryItemsAtom,
-} from "../data/library";
+  libraryItemsAtom
+} from "../../lib/data/library";
+import { getSelectedLayers } from "../../lib/scene";
+import { trackEvent } from "../analytics";
+import { useUIAppState } from "../context/ui-appState";
 import { t } from "../i18n";
+import { jotaiScope } from "../jotai";
+import { NonDeletedExcalidrawLayer } from "../layer/types";
 import { randomId } from "../random";
 import {
-  LibraryItems,
-  LibraryItem,
   ExcalidrawProps,
-  UIAppState,
+  LibraryItem,
+  LibraryItems,
+  UIAppState
 } from "../types";
-import LibraryMenuItems from "./LibraryMenuItems";
-import { trackEvent } from "../analytics";
-import { atom, useAtom } from "jotai";
-import { jotaiScope } from "../jotai";
-import Spinner from "./Spinner";
+import { isShallowEqual } from "../utils";
 import {
   useApp,
   useAppProps,
-  useExcalidrawElements,
-  useExcalidrawSetAppState,
+  useExcalidrawLayers,
+  useExcalidrawSetAppState
 } from "./App";
-import { getSelectedElements } from "../scene";
-import { useUIAppState } from "../context/ui-appState";
-
-import "./LibraryMenu.scss";
 import { LibraryMenuControlButtons } from "./LibraryMenuControlButtons";
-import { isShallowEqual } from "../utils";
-import { NonDeletedExcalidrawElement } from "../element/types";
+import LibraryMenuItems from "./LibraryMenuItems";
+import Spinner from "./Spinner";
 
 export const isLibraryMenuOpenAtom = atom(false);
 
-const LibraryMenuWrapper = ({ children }: { children: React.ReactNode }) => {
-  return <div className="layer-ui__library">{children}</div>;
-};
+const LibraryMenuWrapper = ({ children }: { children: React.ReactNode }) => (
+  <div className="layer-ui__library">{children}</div>
+);
 
 export const LibraryMenuContent = ({
   onInsertLibraryItems,
-  pendingElements,
+  pendingLayers,
   onAddToLibrary,
   setAppState,
   libraryReturnUrl,
@@ -46,56 +47,56 @@ export const LibraryMenuContent = ({
   id,
   theme,
   selectedItems,
-  onSelectItems,
+  onSelectItems
 }: {
-  pendingElements: LibraryItem["elements"];
-  onInsertLibraryItems: (libraryItems: LibraryItems) => void;
-  onAddToLibrary: () => void;
-  setAppState: React.Component<any, UIAppState>["setState"];
-  libraryReturnUrl: ExcalidrawProps["libraryReturnUrl"];
-  library: Library;
   id: string;
-  theme: UIAppState["theme"];
-  selectedItems: LibraryItem["id"][];
+  library: Library;
+  libraryReturnUrl: ExcalidrawProps["libraryReturnUrl"];
+  onAddToLibrary: () => void;
+  onInsertLibraryItems: (libraryItems: LibraryItems) => void;
   onSelectItems: (id: LibraryItem["id"][]) => void;
+  pendingLayers: LibraryItem["layers"];
+  selectedItems: LibraryItem["id"][];
+  setAppState: React.Component<any, UIAppState>["setState"];
+  theme: UIAppState["theme"];
 }) => {
   const [libraryItemsData] = useAtom(libraryItemsAtom, jotaiScope);
 
   const _onAddToLibrary = useCallback(
-    (elements: LibraryItem["elements"]) => {
+    (layers: LibraryItem["layers"]) => {
       const addToLibrary = async (
-        processedElements: LibraryItem["elements"],
-        libraryItems: LibraryItems,
+        processedLayers: LibraryItem["layers"],
+        libraryItems: LibraryItems
       ) => {
-        trackEvent("element", "addToLibrary", "ui");
-        if (processedElements.some((element) => element.type === "image")) {
+        trackEvent("layer", "addToLibrary", "ui");
+        if (processedLayers.some((layer) => layer.type === "image")) {
           return setAppState({
             errorMessage:
-              "Support for adding images to the library coming soon!",
+              "Support for adding images to the library coming soon!"
           });
         }
         const nextItems: LibraryItems = [
           {
             status: "unpublished",
-            elements: processedElements,
+            layers: processedLayers,
             id: randomId(),
-            created: Date.now(),
+            created: Date.now()
           },
-          ...libraryItems,
+          ...libraryItems
         ];
         onAddToLibrary();
         library.setLibrary(nextItems).catch(() => {
           setAppState({ errorMessage: t("alerts.errorAddingToLibrary") });
         });
       };
-      addToLibrary(elements, libraryItemsData.libraryItems);
+      addToLibrary(layers, libraryItemsData.libraryItems);
     },
-    [onAddToLibrary, library, setAppState, libraryItemsData.libraryItems],
+    [onAddToLibrary, library, setAppState, libraryItemsData.libraryItems]
   );
 
   const libraryItems = useMemo(
     () => libraryItemsData.libraryItems,
-    [libraryItemsData],
+    [libraryItemsData]
   );
 
   if (
@@ -115,28 +116,28 @@ export const LibraryMenuContent = ({
   }
 
   const showBtn =
-    libraryItemsData.libraryItems.length > 0 || pendingElements.length > 0;
+    libraryItemsData.libraryItems.length > 0 || pendingLayers.length > 0;
 
   return (
     <LibraryMenuWrapper>
       <LibraryMenuItems
+        id={id}
         isLoading={libraryItemsData.status === "loading"}
         libraryItems={libraryItems}
+        libraryReturnUrl={libraryReturnUrl}
         onAddToLibrary={_onAddToLibrary}
         onInsertLibraryItems={onInsertLibraryItems}
-        pendingElements={pendingElements}
-        id={id}
-        libraryReturnUrl={libraryReturnUrl}
-        theme={theme}
         onSelectItems={onSelectItems}
+        pendingLayers={pendingLayers}
         selectedItems={selectedItems}
+        theme={theme}
       />
       {showBtn && (
         <LibraryMenuControlButtons
           className="library-menu-control-buttons--at-bottom"
-          style={{ padding: "16px 12px 0 12px" }}
           id={id}
           libraryReturnUrl={libraryReturnUrl}
+          style={{ padding: "16px 12px 0 12px" }}
           theme={theme}
         />
       )}
@@ -144,29 +145,29 @@ export const LibraryMenuContent = ({
   );
 };
 
-const usePendingElementsMemo = (
+const usePendingLayersMemo = (
   appState: UIAppState,
-  elements: readonly NonDeletedExcalidrawElement[],
+  layers: readonly NonDeletedExcalidrawLayer[]
 ) => {
   const create = () =>
-    getSelectedElements(elements, appState, {
-      includeBoundTextElement: true,
-      includeElementsInFrames: true,
+    getSelectedLayers(layers, appState, {
+      includeBoundTextLayer: true,
+      includeLayersInFrames: true
     });
   const val = useRef(create());
   const prevAppState = useRef<UIAppState>(appState);
-  const prevElements = useRef(elements);
+  const prevLayers = useRef(layers);
 
   if (
     !isShallowEqual(
-      appState.selectedElementIds,
-      prevAppState.current.selectedElementIds,
+      appState.selectedLayerIds,
+      prevAppState.current.selectedLayerIds
     ) ||
-    !isShallowEqual(elements, prevElements.current)
+    !isShallowEqual(layers, prevLayers.current)
   ) {
     val.current = create();
     prevAppState.current = appState;
-    prevElements.current = elements;
+    prevLayers.current = layers;
   }
   return val.current;
 };
@@ -176,42 +177,42 @@ const usePendingElementsMemo = (
  * <DefaultSidebar/> or host apps Sidebar components.
  */
 export const LibraryMenu = () => {
-  const { library, id, onInsertElements } = useApp();
+  const { library, id, onInsertLayers } = useApp();
   const appProps = useAppProps();
   const appState = useUIAppState();
   const setAppState = useExcalidrawSetAppState();
-  const elements = useExcalidrawElements();
+  const layers = useExcalidrawLayers();
   const [selectedItems, setSelectedItems] = useState<LibraryItem["id"][]>([]);
   const memoizedLibrary = useMemo(() => library, [library]);
-  // BUG: pendingElements are still causing some unnecessary rerenders because clicking into canvas returns some ids even when no element is selected.
-  const pendingElements = usePendingElementsMemo(appState, elements);
+  // BUG: pendingLayers are still causing some unnecessary rerenders because clicking into canvas returns some ids even when no layer is selected.
+  const pendingLayers = usePendingLayersMemo(appState, layers);
 
   const onInsertLibraryItems = useCallback(
     (libraryItems: LibraryItems) => {
-      onInsertElements(distributeLibraryItemsOnSquareGrid(libraryItems));
+      onInsertLayers(distributeLibraryItemsOnSquareGrid(libraryItems));
     },
-    [onInsertElements],
+    [onInsertLayers]
   );
 
   const deselectItems = useCallback(() => {
     setAppState({
-      selectedElementIds: {},
-      selectedGroupIds: {},
+      selectedLayerIds: {},
+      selectedGroupIds: {}
     });
   }, [setAppState]);
 
   return (
     <LibraryMenuContent
-      pendingElements={pendingElements}
-      onInsertLibraryItems={onInsertLibraryItems}
-      onAddToLibrary={deselectItems}
-      setAppState={setAppState}
-      libraryReturnUrl={appProps.libraryReturnUrl}
-      library={memoizedLibrary}
       id={id}
-      theme={appState.theme}
-      selectedItems={selectedItems}
+      library={memoizedLibrary}
+      libraryReturnUrl={appProps.libraryReturnUrl}
+      onAddToLibrary={deselectItems}
+      onInsertLibraryItems={onInsertLibraryItems}
       onSelectItems={setSelectedItems}
+      pendingLayers={pendingLayers}
+      selectedItems={selectedItems}
+      setAppState={setAppState}
+      theme={appState.theme}
     />
   );
 };

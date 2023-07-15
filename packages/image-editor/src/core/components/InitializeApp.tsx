@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 
-import { LoadingMessage } from "./LoadingMessage";
 import { defaultLang, Language, languages, setLanguage } from "../i18n";
-import { Theme } from "../element/types";
+import { Theme } from "../layer/types";
+import { LoadingMessage } from "./LoadingMessage";
 
 interface Props {
+  children: React.ReactLayer;
   langCode: Language["code"];
-  children: React.ReactElement;
   theme?: Theme;
 }
 

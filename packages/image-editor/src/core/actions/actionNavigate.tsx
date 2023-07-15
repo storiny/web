@@ -1,6 +1,6 @@
+import { centerScrollOn } from "../../lib/scene/scroll";
 import { getClientColor } from "../clients";
 import { Avatar } from "../components/Avatar";
-import { centerScrollOn } from "../scene/scroll";
 import { Collaborator } from "../types";
 import { register } from "./register";
 
@@ -8,7 +8,7 @@ export const actionGoToCollaborator = register({
   name: "goToCollaborator",
   viewMode: true,
   trackEvent: { category: "collab" },
-  perform: (_elements, appState, value) => {
+  perform: (_layers, appState, value) => {
     const point = value as Collaborator["pointer"];
     if (!point) {
       return { appState, commitToHistory: false };
@@ -21,14 +21,14 @@ export const actionGoToCollaborator = register({
           scenePoint: point,
           viewportDimensions: {
             width: appState.width,
-            height: appState.height,
+            height: appState.height
           },
-          zoom: appState.zoom,
+          zoom: appState.zoom
         }),
         // Close mobile menu
-        openMenu: appState.openMenu === "canvas" ? null : appState.openMenu,
+        openMenu: appState.openMenu === "canvas" ? null : appState.openMenu
       },
-      commitToHistory: false,
+      commitToHistory: false
     };
   },
   PanelComponent: ({ updateData, data }) => {
@@ -39,10 +39,10 @@ export const actionGoToCollaborator = register({
     return (
       <Avatar
         color={background}
-        onClick={() => updateData(collaborator.pointer)}
         name={collaborator.username || ""}
+        onClick={() => updateData(collaborator.pointer)}
         src={collaborator.avatarUrl}
       />
     );
-  },
+  }
 });

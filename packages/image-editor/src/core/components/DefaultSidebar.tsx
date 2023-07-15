@@ -1,4 +1,5 @@
 import clsx from "clsx";
+
 import { DEFAULT_SIDEBAR, LIBRARY_SIDEBAR_TAB } from "../constants";
 import { useTunnels } from "../context/tunnels";
 import { useUIAppState } from "../context/ui-appState";
@@ -15,7 +16,7 @@ const DefaultSidebarTrigger = withInternalFallback(
   "DefaultSidebarTrigger",
   (
     props: Omit<SidebarTriggerProps, "name"> &
-      React.HTMLAttributes<HTMLDivElement>,
+      React.HTMLAttributes<HTMLDivLayer>
   ) => {
     const { DefaultSidebarTriggerTunnel } = useTunnels();
     return (
@@ -27,14 +28,14 @@ const DefaultSidebarTrigger = withInternalFallback(
         />
       </DefaultSidebarTriggerTunnel.In>
     );
-  },
+  }
 );
 DefaultSidebarTrigger.displayName = "DefaultSidebarTrigger";
 
 const DefaultTabTriggers = ({
   children,
   ...rest
-}: { children: React.ReactNode } & React.HTMLAttributes<HTMLDivElement>) => {
+}: { children: React.ReactNode } & React.HTMLAttributes<HTMLDivLayer>) => {
   const { DefaultSidebarTabTriggersTunnel } = useTunnels();
   return (
     <DefaultSidebarTabTriggersTunnel.In>
@@ -68,10 +69,10 @@ export const DefaultSidebar = Object.assign(
       return (
         <Sidebar
           {...rest}
-          name="default"
-          key="default"
           className={clsx("default-sidebar", className)}
           docked={docked ?? appState.defaultSidebarDockedPreference}
+          key="default"
+          name="default"
           onDock={
             // `onDock=false` disables docking.
             // if `docked` passed, but no onDock passed, disable manual docking.
@@ -94,7 +95,7 @@ export const DefaultSidebar = Object.assign(
                     textOverflow: "ellipsis",
                     overflow: "hidden",
                     whiteSpace: "nowrap",
-                    paddingRight: "1em",
+                    paddingRight: "1em"
                   }}
                 >
                   {t("toolBar.library")}
@@ -109,10 +110,10 @@ export const DefaultSidebar = Object.assign(
           </Sidebar.Tabs>
         </Sidebar>
       );
-    },
+    }
   ),
   {
     Trigger: DefaultSidebarTrigger,
-    TabTriggers: DefaultTabTriggers,
-  },
+    TabTriggers: DefaultTabTriggers
+  }
 );

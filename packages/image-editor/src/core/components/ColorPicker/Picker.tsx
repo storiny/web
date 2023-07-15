@@ -1,40 +1,39 @@
-import React, { useEffect, useState } from "react";
-import { t } from "../../i18n";
-
-import { ExcalidrawElement } from "../../element/types";
-import { ShadeList } from "./ShadeList";
-
-import PickerColorList from "./PickerColorList";
 import { useAtom } from "jotai";
-import { CustomColorList } from "./CustomColorList";
-import { colorPickerKeyNavHandler } from "./keyboardNavHandlers";
-import PickerHeading from "./PickerHeading";
-import {
-  ColorPickerType,
-  activeColorPickerSectionAtom,
-  getColorNameAndShadeFromColor,
-  getMostUsedCustomColors,
-  isCustomColor,
-} from "./colorPickerUtils";
+import React, { useEffect, useState } from "react";
+
 import {
   ColorPaletteCustom,
   DEFAULT_ELEMENT_BACKGROUND_COLOR_INDEX,
-  DEFAULT_ELEMENT_STROKE_COLOR_INDEX,
+  DEFAULT_ELEMENT_STROKE_COLOR_INDEX
 } from "../../colors";
-import { KEYS } from "../../keys";
 import { EVENT } from "../../constants";
+import { t } from "../../i18n";
+import { KEYS } from "../../keys";
+import { ExcalidrawLayer } from "../../layer/types";
+import {
+  activeColorPickerSectionAtom,
+  ColorPickerType,
+  getColorNameAndShadeFromColor,
+  getMostUsedCustomColors,
+  isCustomColor
+} from "./colorPickerUtils";
+import { CustomColorList } from "./CustomColorList";
+import { colorPickerKeyNavHandler } from "./keyboardNavHandlers";
+import PickerColorList from "./PickerColorList";
+import PickerHeading from "./PickerHeading";
+import { ShadeList } from "./ShadeList";
 
 interface PickerProps {
-  color: string;
-  onChange: (color: string) => void;
-  label: string;
-  type: ColorPickerType;
-  elements: readonly ExcalidrawElement[];
-  palette: ColorPaletteCustom;
-  updateData: (formData?: any) => void;
   children?: React.ReactNode;
-  onEyeDropperToggle: (force?: boolean) => void;
+  color: string;
+  label: string;
+  layers: readonly ExcalidrawLayer[];
+  onChange: (color: string) => void;
   onEscape: (event: React.KeyboardEvent | KeyboardEvent) => void;
+  onEyeDropperToggle: (force?: boolean) => void;
+  palette: ColorPaletteCustom;
+  type: ColorPickerType;
+  updateData: (formData?: any) => void;
 }
 
 export const Picker = ({
@@ -42,27 +41,27 @@ export const Picker = ({
   onChange,
   label,
   type,
-  elements,
+  layers,
   palette,
   updateData,
   children,
   onEyeDropperToggle,
-  onEscape,
+  onEscape
 }: PickerProps) => {
   const [customColors] = React.useState(() => {
     if (type === "canvasBackground") {
       return [];
     }
-    return getMostUsedCustomColors(elements, type, palette);
+    return getMostUsedCustomColors(layers, type, palette);
   });
 
   const [activeColorPickerSection, setActiveColorPickerSection] = useAtom(
-    activeColorPickerSectionAtom,
+    activeColorPickerSectionAtom
   );
 
   const colorObj = getColorNameAndShadeFromColor({
     color,
-    palette,
+    palette
   });
 
   useEffect(() => {
@@ -77,7 +76,7 @@ export const Picker = ({
           ? "custom"
           : colorObj?.shade != null
           ? "shades"
-          : "baseColors",
+          : "baseColors"
       );
     }
   }, [
@@ -86,14 +85,14 @@ export const Picker = ({
     palette,
     setActiveColorPickerSection,
     colorObj,
-    customColors,
+    customColors
   ]);
 
   const [activeShade, setActiveShade] = useState(
     colorObj?.shade ??
-      (type === "elementBackground"
+      (type === "layerBackground"
         ? DEFAULT_ELEMENT_BACKGROUND_COLOR_INDEX
-        : DEFAULT_ELEMENT_STROKE_COLOR_INDEX),
+        : DEFAULT_ELEMENT_STROKE_COLOR_INDEX)
   );
 
   useEffect(() => {
@@ -112,12 +111,11 @@ export const Picker = ({
     };
   }, [colorObj, onEyeDropperToggle]);
 
-  const pickerRef = React.useRef<HTMLDivElement>(null);
+  const pickerRef = React.useRef<HTMLDivLayer>(null);
 
   return (
-    <div role="dialog" aria-modal="true" aria-label={t("labels.colorPicker")}>
+    <div aria-label={t("labels.colorPicker")} aria-modal="true" role="dialog">
       <div
-        ref={pickerRef}
         onKeyDown={(event) => {
           const handled = colorPickerKeyNavHandler({
             event,
@@ -130,7 +128,7 @@ export const Picker = ({
             setActiveColorPickerSection,
             updateData,
             activeShade,
-            onEscape,
+            onEscape
           });
 
           if (handled) {
@@ -138,6 +136,7 @@ export const Picker = ({
             event.stopPropagation();
           }
         }}
+        ref={pickerRef}
         className="color-picker-content"
         // to allow focusing by clicking but not by tabbing
         tabIndex={-1}
@@ -148,8 +147,8 @@ export const Picker = ({
               {t("colorPicker.mostUsedCustomColors")}
             </PickerHeading>
             <CustomColorList
-              colors={customColors}
               color={color}
+              colors={customColors}
               label={t("colorPicker.mostUsedCustomColors")}
               onChange={onChange}
             />
@@ -159,11 +158,11 @@ export const Picker = ({
         <div>
           <PickerHeading>{t("colorPicker.colors")}</PickerHeading>
           <PickerColorList
+            activeShade={activeShade}
             color={color}
             label={label}
-            palette={palette}
             onChange={onChange}
-            activeShade={activeShade}
+            palette={palette}
           />
         </div>
 

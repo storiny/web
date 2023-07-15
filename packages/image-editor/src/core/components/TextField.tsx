@@ -1,30 +1,30 @@
-import {
-  forwardRef,
-  useRef,
-  useImperativeHandle,
-  KeyboardEvent,
-  useLayoutEffect,
-} from "react";
-import clsx from "clsx";
-
 import "./TextField.scss";
 
+import clsx from "clsx";
+import {
+  forwardRef,
+  KeyboardEvent,
+  useImperativeHandle,
+  useLayoutEffect,
+  useRef
+} from "react";
+
 export type TextFieldProps = {
-  value?: string;
-
-  onChange?: (value: string) => void;
-  onClick?: () => void;
-  onKeyDown?: (event: KeyboardEvent<HTMLInputElement>) => void;
-
-  readonly?: boolean;
   fullWidth?: boolean;
-  selectOnRender?: boolean;
 
   label?: string;
+  onChange?: (value: string) => void;
+  onClick?: () => void;
+
+  onKeyDown?: (event: KeyboardEvent<HTMLInputLayer>) => void;
   placeholder?: string;
+  readonly?: boolean;
+
+  selectOnRender?: boolean;
+  value?: string;
 };
 
-export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
+export const TextField = forwardRef<HTMLInputLayer, TextFieldProps>(
   (
     {
       value,
@@ -34,11 +34,11 @@ export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
       placeholder,
       readonly,
       selectOnRender,
-      onKeyDown,
+      onKeyDown
     },
-    ref,
+    ref
   ) => {
-    const innerRef = useRef<HTMLInputElement | null>(null);
+    const innerRef = useRef<HTMLInputLayer | null>(null);
 
     useImperativeHandle(ref, () => innerRef.current!);
 
@@ -51,7 +51,7 @@ export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
     return (
       <div
         className={clsx("ExcTextField", {
-          "ExcTextField--fullWidth": fullWidth,
+          "ExcTextField--fullWidth": fullWidth
         })}
         onClick={() => {
           innerRef.current?.focus();
@@ -60,20 +60,20 @@ export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(
         <div className="ExcTextField__label">{label}</div>
         <div
           className={clsx("ExcTextField__input", {
-            "ExcTextField__input--readonly": readonly,
+            "ExcTextField__input--readonly": readonly
           })}
         >
           <input
-            readOnly={readonly}
-            type="text"
-            value={value}
-            placeholder={placeholder}
-            ref={innerRef}
             onChange={(event) => onChange?.(event.target.value)}
             onKeyDown={onKeyDown}
+            placeholder={placeholder}
+            readOnly={readonly}
+            ref={innerRef}
+            type="text"
+            value={value}
           />
         </div>
       </div>
     );
-  },
+  }
 );

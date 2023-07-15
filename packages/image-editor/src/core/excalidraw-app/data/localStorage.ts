@@ -1,18 +1,18 @@
-import { ExcalidrawElement } from "../../element/types";
-import { AppState } from "../../types";
+import { ImportedDataState } from "../../../lib/data/types";
 import {
   clearAppStateForLocalStorage,
-  getDefaultAppState,
+  getDefaultAppState
 } from "../../appState";
-import { clearElementsForLocalStorage } from "../../element";
+import { clearLayersForLocalStorage } from "../../layer";
+import { ExcalidrawLayer } from "../../layer/types";
+import { AppState } from "../../types";
 import { STORAGE_KEYS } from "../app_constants";
-import { ImportedDataState } from "../../data/types";
 
 export const saveUsernameToLocalStorage = (username: string) => {
   try {
     localStorage.setItem(
       STORAGE_KEYS.LOCAL_STORAGE_COLLAB,
-      JSON.stringify({ username }),
+      JSON.stringify({ username })
     );
   } catch (error: any) {
     // Unable to access window.localStorage
@@ -35,24 +35,24 @@ export const importUsernameFromLocalStorage = (): string | null => {
 };
 
 export const importFromLocalStorage = () => {
-  let savedElements = null;
+  let savedLayers = null;
   let savedState = null;
 
   try {
-    savedElements = localStorage.getItem(STORAGE_KEYS.LOCAL_STORAGE_ELEMENTS);
+    savedLayers = localStorage.getItem(STORAGE_KEYS.LOCAL_STORAGE_ELEMENTS);
     savedState = localStorage.getItem(STORAGE_KEYS.LOCAL_STORAGE_APP_STATE);
   } catch (error: any) {
     // Unable to access localStorage
     console.error(error);
   }
 
-  let elements: ExcalidrawElement[] = [];
-  if (savedElements) {
+  let layers: ExcalidrawLayer[] = [];
+  if (savedLayers) {
     try {
-      elements = clearElementsForLocalStorage(JSON.parse(savedElements));
+      layers = clearLayersForLocalStorage(JSON.parse(savedLayers));
     } catch (error: any) {
       console.error(error);
-      // Do nothing because elements array is already empty
+      // Do nothing because layers array is already empty
     }
   }
 
@@ -62,22 +62,22 @@ export const importFromLocalStorage = () => {
       appState = {
         ...getDefaultAppState(),
         ...clearAppStateForLocalStorage(
-          JSON.parse(savedState) as Partial<AppState>,
-        ),
+          JSON.parse(savedState) as Partial<AppState>
+        )
       };
     } catch (error: any) {
       console.error(error);
       // Do nothing because appState is already null
     }
   }
-  return { elements, appState };
+  return { layers, appState };
 };
 
-export const getElementsStorageSize = () => {
+export const getLayersStorageSize = () => {
   try {
-    const elements = localStorage.getItem(STORAGE_KEYS.LOCAL_STORAGE_ELEMENTS);
-    const elementsSize = elements?.length || 0;
-    return elementsSize;
+    const layers = localStorage.getItem(STORAGE_KEYS.LOCAL_STORAGE_ELEMENTS);
+    const layersSize = layers?.length || 0;
+    return layersSize;
   } catch (error: any) {
     console.error(error);
     return 0;
@@ -94,7 +94,7 @@ export const getTotalStorageSize = () => {
     const collabSize = collab?.length || 0;
     const librarySize = library?.length || 0;
 
-    return appStateSize + collabSize + librarySize + getElementsStorageSize();
+    return appStateSize + collabSize + librarySize + getLayersStorageSize();
   } catch (error: any) {
     console.error(error);
     return 0;
@@ -104,7 +104,7 @@ export const getTotalStorageSize = () => {
 export const getLibraryItemsFromStorage = () => {
   try {
     const libraryItems: ImportedDataState["libraryItems"] = JSON.parse(
-      localStorage.getItem(STORAGE_KEYS.LOCAL_STORAGE_LIBRARY) as string,
+      localStorage.getItem(STORAGE_KEYS.LOCAL_STORAGE_LIBRARY) as string
     );
 
     return libraryItems || [];

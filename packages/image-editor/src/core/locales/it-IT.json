@@ -4,7 +4,7 @@
     "pasteAsPlaintext": "Incolla come testo normale",
     "pasteCharts": "Incolla grafici",
     "selectAll": "Seleziona tutto",
-    "multiSelect": "Aggiungi elemento alla selezione",
+    "multiSelect": "Aggiungi layero alla selezione",
     "moveCanvas": "Sposta tela",
     "cut": "Taglia",
     "copy": "Copia",
@@ -116,7 +116,7 @@
       "edit": "Modifica linea",
       "exit": "Esci dall'editor di linea"
     },
-    "elementLock": {
+    "layerLock": {
       "lock": "Blocca",
       "unlock": "Sblocca",
       "lockAll": "Blocca tutto",
@@ -124,14 +124,14 @@
     },
     "statusPublished": "Pubblicato",
     "sidebarLock": "Mantieni aperta la barra laterale",
-    "selectAllElementsInFrame": "",
-    "removeAllElementsFromFrame": "",
+    "selectAllLayersInFrame": "",
+    "removeAllLayersFromFrame": "",
     "eyeDropper": ""
   },
   "library": {
-    "noItems": "Nessun elemento ancora aggiunto...",
-    "hint_emptyLibrary": "Seleziona un elemento sulla tela per aggiungerlo qui, o installa una libreria dal repository pubblico qui sotto.",
-    "hint_emptyPrivateLibrary": "Seleziona un elemento sulla tela per aggiungerlo qui."
+    "noItems": "Nessun layero ancora aggiunto...",
+    "hint_emptyLibrary": "Seleziona un layero sulla tela per aggiungerlo qui, o installa una libreria dal repository pubblico qui sotto.",
+    "hint_emptyPrivateLibrary": "Seleziona un layero sulla tela per aggiungerlo qui."
   },
   "buttons": {
     "clearReset": "Svuota la tela",
@@ -180,14 +180,14 @@
     "uploadedSecurly": "L'upload è stato protetto con la crittografia end-to-end, il che significa che il server Excalidraw e terze parti non possono leggere il contenuto.",
     "loadSceneOverridePrompt": "Se carichi questo disegno esterno, sostituirà quello che hai. Vuoi continuare?",
     "collabStopOverridePrompt": "Interrompere la sessione sovrascriverà il precedente disegno memorizzato localmente. Sei sicuro?\n\n(Se vuoi mantenere il tuo disegno locale, chiudi semplicemente la scheda del browser.)",
-    "errorAddingToLibrary": "Impossibile aggiungere l'elemento alla libreria",
-    "errorRemovingFromLibrary": "Impossibile rimuovere l'elemento dalla libreria",
+    "errorAddingToLibrary": "Impossibile aggiungere l'layero alla libreria",
+    "errorRemovingFromLibrary": "Impossibile rimuovere l'layero dalla libreria",
     "confirmAddLibrary": "Questo aggiungerà {{numShapes}} forma(e) alla tua libreria. Sei sicuro?",
     "imageDoesNotContainScene": "Questa immagine pare non contenere alcuna scena. Avevi incluso la scena durante l'esportazione?",
     "cannotRestoreFromImage": "Impossibile ripristinare la scena da questo file immagine",
     "invalidSceneUrl": "Impossibile importare la scena dall'URL fornito. Potrebbe essere malformato o non contenere dati JSON Excalidraw validi.",
     "resetLibrary": "Questa azione cancellerà l'intera libreria. Sei sicuro?",
-    "removeItemsFromsLibrary": "Eliminare {{count}} elementi dalla libreria?",
+    "removeItemsFromsLibrary": "Eliminare {{count}} layeri dalla libreria?",
     "invalidEncryptionKey": "La chiave di cifratura deve essere composta da 22 caratteri. La collaborazione live è disabilitata.",
     "collabOfflineWarning": "Nessuna connessione internet disponibile.\nLe tue modifiche non verranno salvate!"
   },
@@ -203,9 +203,9 @@
     "collabSaveFailed_sizeExceeded": "Impossibile salvare nel database di backend, la tela sembra essere troppo grande. Dovresti salvare il file localmente per assicurarti di non perdere il tuo lavoro.",
     "brave_measure_text_error": {
       "line1": "Sembra che tu stia utilizzando il browser Brave con l'impostazione <bold>Blocco aggressivo delle impronte digitali</bold> abilitata.",
-      "line2": "Ciò potrebbe causare la rottura degli <bold>Elementi di testo</bold> nei tuoi disegni.",
+      "line2": "Ciò potrebbe causare la rottura degli <bold>Layeri di testo</bold> nei tuoi disegni.",
       "line3": "Consigliamo vivamente di disabilitare questa impostazione. Puoi seguire <link>questi passaggi</link> su come farlo.",
-      "line4": "Se la disattivazione di questa impostazione non risolve la visualizzazione degli elementi di testo, apri un <issueLink>problema</issueLink> sul nostro GitHub o scrivici su <discordLink>Discord</discordLink>"
+      "line4": "Se la disattivazione di questa impostazione non risolve la visualizzazione degli layeri di testo, apri un <issueLink>problema</issueLink> sul nostro GitHub o scrivici su <discordLink>Discord</discordLink>"
     }
   },
   "toolBar": {
@@ -234,12 +234,12 @@
   },
   "hints": {
     "canvasPanning": "Per spostare la tela, tieni premuta la rotellina del mouse o la barra spaziatrice mentre trascini oppure usa lo strumento mano",
-    "linearElement": "Clicca per iniziare una linea in più punti, trascina per singola linea",
+    "linearLayer": "Clicca per iniziare una linea in più punti, trascina per singola linea",
     "freeDraw": "Clicca e trascina, rilascia quando avrai finito",
     "text": "Suggerimento: puoi anche aggiungere del testo facendo doppio clic ovunque con lo strumento di selezione",
     "text_selected": "Fai doppio click o premi INVIO per modificare il testo",
     "text_editing": "Premi ESC o CtrlOCmd+INVIO per completare le modifiche",
-    "linearElementMulti": "Clicca sull'ultimo punto o premi Esc o Invio per finire",
+    "linearLayerMulti": "Clicca sull'ultimo punto o premi Esc o Invio per finire",
     "lockAngle": "Puoi limitare l'angolo tenendo premuto SHIFT",
     "resize": "Per vincolare le proporzioni, tieni premuto MAIUSC durante il ridimensionamento;\nper ridimensionare dal centro, tieni premuto ALT",
     "resizeImage": "Puoi ridimensionare liberamente tenendo premuto SHIFT,\ntieni premuto ALT per ridimensionare dal centro",
@@ -249,15 +249,15 @@
     "lineEditor_nothingSelected": "Seleziona un punto da modificare (tieni premuto MAIUSC per selezionare più punti),\noppure tieni premuto Alt e fai clic per aggiungere nuovi punti",
     "placeImage": "Fai click per posizionare l'immagine, o click e trascina per impostarne la dimensione manualmente",
     "publishLibrary": "Pubblica la tua libreria",
-    "bindTextToElement": "Premi invio per aggiungere il testo",
+    "bindTextToLayer": "Premi invio per aggiungere il testo",
     "deepBoxSelect": "Tieni premuto CtrlOCmd per selezionare in profondità e per impedire il trascinamento",
-    "eraserRevert": "Tieni premuto Alt per ripristinare gli elementi contrassegnati per l'eliminazione",
+    "eraserRevert": "Tieni premuto Alt per ripristinare gli layeri contrassegnati per l'eliminazione",
     "firefox_clipboard_write": "Questa funzione può essere abilitata impostando il flag \"dom.events.asyncClipboard.clipboardItem\" su \"true\". Per modificare i flag del browser in Firefox, visitare la pagina \"about:config\"."
   },
   "canvasError": {
     "cannotShowPreview": "Impossibile visualizzare l'anteprima",
     "canvasTooBig": "La tela potrebbe essere troppo grande.",
-    "canvasTooBigTip": "Suggerimento: prova a spostare gli elementi più lontani più vicini tra loro."
+    "canvasTooBigTip": "Suggerimento: prova a spostare gli layeri più lontani più vicini tra loro."
   },
   "errorSplash": {
     "headingMain": "Si è verificato un errore. Provare <button>ricaricando la pagina.</button>",
@@ -314,9 +314,9 @@
     "textNewLine": "Aggiungi nuova riga (editor di testo)",
     "title": "Guida",
     "view": "Vista",
-    "zoomToFit": "Adatta zoom per mostrare tutti gli elementi",
+    "zoomToFit": "Adatta zoom per mostrare tutti gli layeri",
     "zoomToSelection": "Zoom alla selezione",
-    "toggleElementLock": "Blocca/sblocca selezione",
+    "toggleLayerLock": "Blocca/sblocca selezione",
     "movePageUpDown": "Sposta la pagina su/giù",
     "movePageLeftRight": "Sposta la pagina a sinistra/destra"
   },
@@ -325,7 +325,7 @@
   },
   "publishDialog": {
     "title": "Pubblica la libreria",
-    "itemName": "Nome dell'elemento",
+    "itemName": "Nome dell'layero",
     "authorName": "Nome dell'autore",
     "githubUsername": "Nome utente di GitHub",
     "twitterUsername": "Nome utente di Twitter",
@@ -347,9 +347,9 @@
     "noteDescription": "Invia la tua libreria da includere nella <link>repository della libreria pubblica</link>perché sia usata da altri nei loro disegni.",
     "noteGuidelines": "La libreria dev'esser prima approvata manualmente. Sei pregato di leggere le <link>linee guida</link> prima di inviarla. Necessiterai di un profilo di GitHub per comunicare ed effettuare modifiche se richiesto, ma non è strettamente necessario.",
     "noteLicense": "Inviando, acconsenti che la libreria sarà pubblicata sotto la <link>Licenza MIT, </link>che in breve significa che chiunque possa usarla senza restrizioni.",
-    "noteItems": "Ogni elemento della libreria deve avere il proprio nome, così che sia filtrabile. Gli elementi della seguente libreria saranno inclusi:",
-    "atleastOneLibItem": "Sei pregato di selezionare almeno un elemento della libreria per iniziare",
-    "republishWarning": "Nota: alcuni degli elementi selezionati sono contrassegnati come già pubblicati/presentati. È necessario reinviare gli elementi solo quando si aggiorna una libreria o una presentazione esistente."
+    "noteItems": "Ogni layero della libreria deve avere il proprio nome, così che sia filtrabile. Gli layeri della seguente libreria saranno inclusi:",
+    "atleastOneLibItem": "Sei pregato di selezionare almeno un layero della libreria per iniziare",
+    "republishWarning": "Nota: alcuni degli layeri selezionati sono contrassegnati come già pubblicati/presentati. È necessario reinviare gli layeri solo quando si aggiorna una libreria o una presentazione esistente."
   },
   "publishSuccessDialog": {
     "title": "Libreria inviata",
@@ -357,7 +357,7 @@
   },
   "confirmDialog": {
     "resetLibrary": "Ripristina la libreria",
-    "removeItemsFromLib": "Rimuovi gli elementi selezionati dalla libreria"
+    "removeItemsFromLib": "Rimuovi gli layeri selezionati dalla libreria"
   },
   "imageExportDialog": {
     "header": "Esporta immagine",
@@ -389,8 +389,8 @@
   },
   "stats": {
     "angle": "Angolo",
-    "element": "Elemento",
-    "elements": "Elementi",
+    "layer": "Layero",
+    "layers": "Layeri",
     "height": "Altezza",
     "scene": "Scena",
     "selected": "Selezionato",
@@ -411,7 +411,7 @@
     "fileSavedToFilename": "Salvato in {filename}",
     "canvas": "tela",
     "selection": "selezione",
-    "pasteAsSingleElement": "Usa {{shortcut}} per incollare come un singolo elemento,\no incollare in un editor di testo esistente"
+    "pasteAsSingleLayer": "Usa {{shortcut}} per incollare come un singolo layero,\no incollare in un editor di testo esistente"
   },
   "colors": {
     "transparent": "Trasparente",

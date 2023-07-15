@@ -1,4 +1,7 @@
 import oc from "open-color";
+import { unstable_batchedUpdates } from "react-dom";
+
+import { isEraserActive, isHandToolActive } from "./appState";
 import { COLOR_PALETTE } from "./colors";
 import {
   CURSOR_TYPE,
@@ -8,17 +11,15 @@ import {
   isDarwin,
   MIME_TYPES,
   THEME,
-  WINDOWS_EMOJI_FALLBACK_FONT,
+  WINDOWS_EMOJI_FALLBACK_FONT
 } from "./constants";
 import {
   FontFamilyValues,
   FontString,
-  NonDeletedExcalidrawElement,
-} from "./element/types";
-import { AppState, DataURL, LastActiveTool, Zoom } from "./types";
-import { unstable_batchedUpdates } from "react-dom";
+  NonDeletedExcalidrawLayer
+} from "./layer/types";
 import { SHAPES } from "./shapes";
-import { isEraserActive, isHandToolActive } from "./appState";
+import { AppState, DataURL, LastActiveTool, Zoom } from "./types";
 import { ResolutionType } from "./utility-types";
 
 let mockDateTime: string | null = null;
@@ -46,46 +47,39 @@ export const capitalizeString = (str: string) =>
   str.charAt(0).toUpperCase() + str.slice(1);
 
 export const isToolIcon = (
-  target: Element | EventTarget | null,
-): target is HTMLElement =>
-  target instanceof HTMLElement && target.className.includes("ToolIcon");
+  target: Layer | EventTarget | null
+): target is HTMLLayer =>
+  target instanceof HTMLLayer && target.className.includes("ToolIcon");
 
 export const isInputLike = (
-  target: Element | EventTarget | null,
+  target: Layer | EventTarget | null
 ): target is
-  | HTMLInputElement
-  | HTMLTextAreaElement
-  | HTMLSelectElement
-  | HTMLBRElement
-  | HTMLDivElement =>
-  (target instanceof HTMLElement && target.dataset.type === "wysiwyg") ||
-  target instanceof HTMLBRElement || // newline in wysiwyg
-  target instanceof HTMLInputElement ||
-  target instanceof HTMLTextAreaElement ||
-  target instanceof HTMLSelectElement;
+  | HTMLInputLayer
+  | HTMLTextAreaLayer
+  | HTMLSelectLayer
+  | HTMLBRLayer
+  | HTMLDivLayer =>
+  (target instanceof HTMLLayer && target.dataset.type === "wysiwyg") ||
+  target instanceof HTMLBRLayer || // newline in wysiwyg
+  target instanceof HTMLInputLayer ||
+  target instanceof HTMLTextAreaLayer ||
+  target instanceof HTMLSelectLayer;
 
-export const isInteractive = (target: Element | EventTarget | null) => {
-  return (
-    isInputLike(target) ||
-    (target instanceof Element && !!target.closest("label, button"))
-  );
-};
+export const isInteractive = (target: Layer | EventTarget | null) =>
+  isInputLike(target) ||
+  (target instanceof Layer && !!target.closest("label, button"));
 
-export const isWritableElement = (
-  target: Element | EventTarget | null,
-): target is
-  | HTMLInputElement
-  | HTMLTextAreaElement
-  | HTMLBRElement
-  | HTMLDivElement =>
-  (target instanceof HTMLElement && target.dataset.type === "wysiwyg") ||
-  target instanceof HTMLBRElement || // newline in wysiwyg
-  target instanceof HTMLTextAreaElement ||
-  (target instanceof HTMLInputElement &&
+export const isWritableLayer = (
+  target: Layer | EventTarget | null
+): target is HTMLInputLayer | HTMLTextAreaLayer | HTMLBRLayer | HTMLDivLayer =>
+  (target instanceof HTMLLayer && target.dataset.type === "wysiwyg") ||
+  target instanceof HTMLBRLayer || // newline in wysiwyg
+  target instanceof HTMLTextAreaLayer ||
+  (target instanceof HTMLInputLayer &&
     (target.type === "text" || target.type === "number"));
 
 export const getFontFamilyString = ({
-  fontFamily,
+  fontFamily
 }: {
   fontFamily: FontFamilyValues;
 }) => {
@@ -97,20 +91,18 @@ export const getFontFamilyString = ({
   return WINDOWS_EMOJI_FALLBACK_FONT;
 };
 
-/** returns fontSize+fontFamily string for assignment to DOM elements */
+/** returns fontSize+fontFamily string for assignment to DOM layers */
 export const getFontString = ({
   fontSize,
-  fontFamily,
+  fontFamily
 }: {
-  fontSize: number;
   fontFamily: FontFamilyValues;
-}) => {
-  return `${fontSize}px ${getFontFamilyString({ fontFamily })}` as FontString;
-};
+  fontSize: number;
+}) => `${fontSize}px ${getFontFamilyString({ fontFamily })}` as FontString;
 
 export const debounce = <T extends any[]>(
   fn: (...args: T) => void,
-  timeout: number,
+  timeout: number
 ) => {
   let handle = 0;
   let lastArgs: T | null = null;
@@ -140,7 +132,7 @@ export const debounce = <T extends any[]>(
 // throttle callback to execute once per animation frame
 export const throttleRAF = <T extends any[]>(
   fn: (...args: T) => void,
-  opts?: { trailing?: boolean },
+  opts?: { trailing?: boolean }
 ) => {
   let timerId: number | null = null;
   let lastArgs: T | null = null;
@@ -197,13 +189,10 @@ export const throttleRAF = <T extends any[]>(
  * @param {number} k - The value to be tweened.
  * @returns {number} The tweened value.
  */
-export const easeOut = (k: number) => {
-  return 1 - Math.pow(1 - k, 4);
-};
+export const easeOut = (k: number) => 1 - Math.pow(1 - k, 4);
 
-const easeOutInterpolate = (from: number, to: number, progress: number) => {
-  return (to - from) * easeOut(progress) + from;
-};
+const easeOutInterpolate = (from: number, to: number, progress: number) =>
+  (to - from) * easeOut(progress) + from;
 
 /**
  * Animates values from `fromValues` to `toValues` using the requestAnimationFrame API.
@@ -233,7 +222,7 @@ const easeOutInterpolate = (from: number, to: number, progress: number) => {
  */
 export const easeToValuesRAF = <
   T extends Record<keyof T, number>,
-  K extends keyof T,
+  K extends keyof T
 >({
   fromValues,
   toValues,
@@ -242,10 +231,10 @@ export const easeToValuesRAF = <
   interpolateValue,
   onStart,
   onEnd,
-  onCancel,
+  onCancel
 }: {
+  duration?: number;
   fromValues: T;
-  toValues: T;
   /**
    * Interpolate a single value.
    * Return undefined to be handled by the default interpolator.
@@ -255,19 +244,19 @@ export const easeToValuesRAF = <
     toValue: number,
     /** no easing applied  */
     progress: number,
-    key: K,
+    key: K
   ) => number | undefined;
-  onStep: (values: T) => void;
-  duration?: number;
-  onStart?: () => void;
-  onEnd?: () => void;
   onCancel?: () => void;
+  onEnd?: () => void;
+  onStart?: () => void;
+  onStep: (values: T) => void;
+  toValues: T;
 }) => {
   let canceled = false;
   let frameId = 0;
   let startTime: number;
 
-  function step(timestamp: number) {
+  const step = (timestamp: number) => {
     if (canceled) {
       return;
     }
@@ -319,7 +308,7 @@ export const easeToValuesRAF = <
       onStep(toValues);
       onEnd?.();
     }
-  }
+  };
 
   frameId = window.requestAnimationFrame(step);
 
@@ -333,7 +322,7 @@ export const easeToValuesRAF = <
 // https://github.com/lodash/lodash/blob/es/chunk.js
 export const chunk = <T extends any>(
   array: readonly T[],
-  size: number,
+  size: number
 ): T[][] => {
   if (!array.length || size < 1) {
     return [];
@@ -347,7 +336,7 @@ export const chunk = <T extends any>(
   return result;
 };
 
-export const selectNode = (node: Element) => {
+export const selectNode = (node: Layer) => {
   const selection = window.getSelection();
   if (selection) {
     const range = document.createRange();
@@ -369,15 +358,15 @@ export const distance = (x: number, y: number) => Math.abs(x - y);
 export const updateActiveTool = (
   appState: Pick<AppState, "activeTool">,
   data: (
-    | { type: typeof SHAPES[number]["value"] | "eraser" | "hand" | "frame" }
-    | { type: "custom"; customType: string }
-  ) & { lastActiveToolBeforeEraser?: LastActiveTool },
+    | { type: (typeof SHAPES)[number]["value"] | "eraser" | "hand" | "frame" }
+    | { customType: string; type: "custom" }
+  ) & { lastActiveToolBeforeEraser?: LastActiveTool }
 ): AppState["activeTool"] => {
   if (data.type === "custom") {
     return {
       ...appState.activeTool,
       type: "custom",
-      customType: data.customType,
+      customType: data.customType
     };
   }
 
@@ -388,17 +377,17 @@ export const updateActiveTool = (
         ? appState.activeTool.lastActiveTool
         : data.lastActiveToolBeforeEraser,
     type: data.type,
-    customType: null,
+    customType: null
   };
 };
 
-export const resetCursor = (canvas: HTMLCanvasElement | null) => {
+export const resetCursor = (canvas: HTMLCanvasLayer | null) => {
   if (canvas) {
     canvas.style.cursor = "";
   }
 };
 
-export const setCursor = (canvas: HTMLCanvasElement | null, cursor: string) => {
+export const setCursor = (canvas: HTMLCanvasLayer | null, cursor: string) => {
   if (canvas) {
     canvas.style.cursor = cursor;
   }
@@ -407,14 +396,14 @@ export const setCursor = (canvas: HTMLCanvasElement | null, cursor: string) => {
 let eraserCanvasCache: any;
 let previewDataURL: string;
 export const setEraserCursor = (
-  canvas: HTMLCanvasElement | null,
-  theme: AppState["theme"],
+  canvas: HTMLCanvasLayer | null,
+  theme: AppState["theme"]
 ) => {
   const cursorImageSizePx = 20;
 
   const drawCanvas = () => {
     const isDarkTheme = theme === THEME.DARK;
-    eraserCanvasCache = document.createElement("canvas");
+    eraserCanvasCache = document.createLayer("canvas");
     eraserCanvasCache.theme = theme;
     eraserCanvasCache.height = cursorImageSizePx;
     eraserCanvasCache.width = cursorImageSizePx;
@@ -426,7 +415,7 @@ export const setEraserCursor = (
       eraserCanvasCache.height / 2,
       5,
       0,
-      2 * Math.PI,
+      2 * Math.PI
     );
     context.fillStyle = isDarkTheme ? oc.black : oc.white;
     context.fill();
@@ -442,13 +431,13 @@ export const setEraserCursor = (
     canvas,
     `url(${previewDataURL}) ${cursorImageSizePx / 2} ${
       cursorImageSizePx / 2
-    }, auto`,
+    }, auto`
   );
 };
 
 export const setCursorForShape = (
-  canvas: HTMLCanvasElement | null,
-  appState: Pick<AppState, "activeTool" | "theme">,
+  canvas: HTMLCanvasLayer | null,
+  appState: Pick<AppState, "activeTool" | "theme">
 ) => {
   if (!canvas) {
     return;
@@ -467,11 +456,9 @@ export const setCursorForShape = (
   }
 };
 
-export const isFullScreen = () =>
-  document.fullscreenElement?.nodeName === "HTML";
+export const isFullScreen = () => document.fullscreenLayer?.nodeName === "HTML";
 
-export const allowFullScreen = () =>
-  document.documentElement.requestFullscreen();
+export const allowFullScreen = () => document.documentLayer.requestFullscreen();
 
 export const exitFullScreen = () => document.exitFullscreen();
 
@@ -495,14 +482,14 @@ export const viewportCoordsToSceneCoords = (
     offsetLeft,
     offsetTop,
     scrollX,
-    scrollY,
+    scrollY
   }: {
-    zoom: Zoom;
     offsetLeft: number;
     offsetTop: number;
     scrollX: number;
     scrollY: number;
-  },
+    zoom: Zoom;
+  }
 ) => {
   const x = (clientX - offsetLeft) / zoom.value - scrollX;
   const y = (clientY - offsetTop) / zoom.value - scrollY;
@@ -517,14 +504,14 @@ export const sceneCoordsToViewportCoords = (
     offsetLeft,
     offsetTop,
     scrollX,
-    scrollY,
+    scrollY
   }: {
-    zoom: Zoom;
     offsetLeft: number;
     offsetTop: number;
     scrollX: number;
     scrollY: number;
-  },
+    zoom: Zoom;
+  }
 ) => {
   const x = (sceneX + scrollX) * zoom.value + offsetLeft;
   const y = (sceneY + scrollY) * zoom.value + offsetTop;
@@ -532,7 +519,7 @@ export const sceneCoordsToViewportCoords = (
 };
 
 export const getGlobalCSSVariable = (name: string) =>
-  getComputedStyle(document.documentElement).getPropertyValue(`--${name}`);
+  getComputedStyle(document.documentLayer).getPropertyValue(`--${name}`);
 
 const RS_LTR_CHARS =
   "A-Za-z\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u02B8\u0300-\u0590\u0800-\u1FFF" +
@@ -548,7 +535,7 @@ const RE_RTL_CHECK = new RegExp(`^[^${RS_LTR_CHARS}]*[${RS_RTL_CHARS}]`);
 export const isRTL = (text: string) => RE_RTL_CHECK.test(text);
 
 export const tupleToCoors = (
-  xyTuple: readonly [number, number],
+  xyTuple: readonly [number, number]
 ): { x: number; y: number } => {
   const [x, y] = xyTuple;
   return { x, y };
@@ -565,8 +552,8 @@ export const muteFSAbortError = (error?: Error) => {
 
 export const findIndex = <T>(
   array: readonly T[],
-  cb: (element: T, index: number, array: readonly T[]) => boolean,
-  fromIndex: number = 0,
+  cb: (layer: T, index: number, array: readonly T[]) => boolean,
+  fromIndex: number = 0
 ) => {
   if (fromIndex < 0) {
     fromIndex = array.length + fromIndex;
@@ -583,8 +570,8 @@ export const findIndex = <T>(
 
 export const findLastIndex = <T>(
   array: readonly T[],
-  cb: (element: T, index: number, array: readonly T[]) => boolean,
-  fromIndex: number = array.length - 1,
+  cb: (layer: T, index: number, array: readonly T[]) => boolean,
+  fromIndex: number = array.length - 1
 ) => {
   if (fromIndex < 0) {
     fromIndex = array.length + fromIndex;
@@ -610,8 +597,8 @@ export const isTransparent = (color: string) => {
 };
 
 export type ResolvablePromise<T> = Promise<T> & {
-  resolve: [T] extends [undefined] ? (value?: T) => void : (value: T) => void;
   reject: (error: Error) => void;
+  resolve: [T] extends [undefined] ? (value?: T) => void : (value: T) => void;
 };
 export const resolvablePromise = <T>() => {
   let resolve!: any;
@@ -629,9 +616,9 @@ export const resolvablePromise = <T>() => {
  * @param func handler taking at most single parameter (event).
  */
 export const withBatchedUpdates = <
-  TFunction extends ((event: any) => void) | (() => void),
+  TFunction extends ((event: any) => void) | (() => void)
 >(
-  func: Parameters<TFunction>["length"] extends 0 | 1 ? TFunction : never,
+  func: Parameters<TFunction>["length"] extends 0 | 1 ? TFunction : never
 ) =>
   ((event) => {
     unstable_batchedUpdates(func as TFunction, event);
@@ -642,15 +629,13 @@ export const withBatchedUpdates = <
  * animation frame
  */
 export const withBatchedUpdatesThrottled = <
-  TFunction extends ((event: any) => void) | (() => void),
+  TFunction extends ((event: any) => void) | (() => void)
 >(
-  func: Parameters<TFunction>["length"] extends 0 | 1 ? TFunction : never,
-) => {
-  // @ts-ignore
-  return throttleRAF<Parameters<TFunction>>(((event) => {
+  func: Parameters<TFunction>["length"] extends 0 | 1 ? TFunction : never
+) =>
+  throttleRAF<Parameters<TFunction>>(((event) => {
     unstable_batchedUpdates(func, event);
   }) as TFunction);
-};
 
 //https://stackoverflow.com/a/9462382/8418
 export const nFormatter = (num: number, digits: number): string => {
@@ -658,7 +643,7 @@ export const nFormatter = (num: number, digits: number): string => {
     { value: 1, symbol: "b" },
     { value: 1e3, symbol: "k" },
     { value: 1e6, symbol: "M" },
-    { value: 1e9, symbol: "G" },
+    { value: 1e9, symbol: "G" }
   ];
   const rx = /\.0+$|(\.[0-9]*[1-9])0+$/;
   let index;
@@ -672,16 +657,13 @@ export const nFormatter = (num: number, digits: number): string => {
   );
 };
 
-export const getVersion = () => {
-  return (
-    document.querySelector<HTMLMetaElement>('meta[name="version"]')?.content ||
-    DEFAULT_VERSION
-  );
-};
+export const getVersion = () =>
+  document.querySelector<HTMLMetaLayer>('meta[name="version"]')?.content ||
+  DEFAULT_VERSION;
 
 // Adapted from https://github.com/Modernizr/Modernizr/blob/master/feature-detects/emoji.js
 export const supportsEmoji = () => {
-  const canvas = document.createElement("canvas");
+  const canvas = document.createLayer("canvas");
   const ctx = canvas.getContext("2d");
   if (!ctx) {
     return false;
@@ -697,9 +679,9 @@ export const supportsEmoji = () => {
 };
 
 export const getNearestScrollableContainer = (
-  element: HTMLElement,
-): HTMLElement | Document => {
-  let parent = element.parentElement;
+  layer: HTMLLayer
+): HTMLLayer | Document => {
+  let parent = layer.parentLayer;
   while (parent) {
     if (parent === document.body) {
       return document;
@@ -714,19 +696,19 @@ export const getNearestScrollableContainer = (
     ) {
       return parent;
     }
-    parent = parent.parentElement;
+    parent = parent.parentLayer;
   }
   return document;
 };
 
-export const focusNearestParent = (element: HTMLInputElement) => {
-  let parent = element.parentElement;
+export const focusNearestParent = (layer: HTMLInputLayer) => {
+  let parent = layer.parentLayer;
   while (parent) {
     if (parent.tabIndex > -1) {
       parent.focus();
       return;
     }
-    parent = parent.parentElement;
+    parent = parent.parentLayer;
   }
 };
 
@@ -736,11 +718,10 @@ export const preventUnload = (event: BeforeUnloadEvent) => {
   event.returnValue = "";
 };
 
-export const bytesToHexString = (bytes: Uint8Array) => {
-  return Array.from(bytes)
+export const bytesToHexString = (bytes: Uint8Array) =>
+  Array.from(bytes)
     .map((byte) => `0${byte.toString(16)}`.slice(-2))
     .join("");
-};
 
 export const getUpdatedTimestamp = () => (isTestEnv() ? 1 : Date.now());
 
@@ -749,36 +730,34 @@ export const getUpdatedTimestamp = () => (isTestEnv() ? 1 : Date.now());
  * or array of ids (strings), into a Map, keyd by `id`.
  */
 export const arrayToMap = <T extends { id: string } | string>(
-  items: readonly T[],
-) => {
-  return items.reduce((acc: Map<string, T>, element) => {
-    acc.set(typeof element === "string" ? element : element.id, element);
+  items: readonly T[]
+) =>
+  items.reduce((acc: Map<string, T>, layer) => {
+    acc.set(typeof layer === "string" ? layer : layer.id, layer);
     return acc;
   }, new Map());
-};
 
 export const arrayToMapWithIndex = <T extends { id: string }>(
-  elements: readonly T[],
+  layers: readonly T[]
 ) =>
-  elements.reduce((acc, element: T, idx) => {
-    acc.set(element.id, [element, idx]);
+  layers.reduce((acc, layer: T, idx) => {
+    acc.set(layer.id, [layer, idx]);
     return acc;
-  }, new Map<string, [element: T, index: number]>());
+  }, new Map<string, [layer: T, index: number]>());
 
 export const isTestEnv = () => process.env.NODE_ENV === "test";
 
-export const wrapEvent = <T extends Event>(name: EVENT, nativeEvent: T) => {
-  return new CustomEvent(name, {
+export const wrapEvent = <T extends Event>(name: EVENT, nativeEvent: T) =>
+  new CustomEvent(name, {
     detail: {
-      nativeEvent,
+      nativeEvent
     },
-    cancelable: true,
+    cancelable: true
   });
-};
 
 export const updateObject = <T extends Record<string, any>>(
   obj: T,
-  updates: Partial<T>,
+  updates: Partial<T>
 ): T => {
   let didChange = false;
   for (const key in updates) {
@@ -801,7 +780,7 @@ export const updateObject = <T extends Record<string, any>>(
 
   return {
     ...obj,
-    ...updates,
+    ...updates
   };
 };
 
@@ -821,38 +800,34 @@ export const getFrame = () => {
 export const isRunningInIframe = () => getFrame() === "iframe";
 
 export const isPromiseLike = (
-  value: any,
-): value is Promise<ResolutionType<typeof value>> => {
-  return (
-    !!value &&
-    typeof value === "object" &&
-    "then" in value &&
-    "catch" in value &&
-    "finally" in value
-  );
-};
+  value: any
+): value is Promise<ResolutionType<typeof value>> =>
+  !!value &&
+  typeof value === "object" &&
+  "then" in value &&
+  "catch" in value &&
+  "finally" in value;
 
-export const queryFocusableElements = (container: HTMLElement | null) => {
-  const focusableElements = container?.querySelectorAll<HTMLElement>(
-    "button, a, input, select, textarea, div[tabindex], label[tabindex]",
+export const queryFocusableLayers = (container: HTMLLayer | null) => {
+  const focusableLayers = container?.querySelectorAll<HTMLLayer>(
+    "button, a, input, select, textarea, div[tabindex], label[tabindex]"
   );
 
-  return focusableElements
-    ? Array.from(focusableElements).filter(
-        (element) =>
-          element.tabIndex > -1 && !(element as HTMLInputElement).disabled,
+  return focusableLayers
+    ? Array.from(focusableLayers).filter(
+        (layer) => layer.tabIndex > -1 && !(layer as HTMLInputLayer).disabled
       )
     : [];
 };
 
 export const isShallowEqual = <
   T extends Record<string, any>,
-  I extends keyof T,
+  I extends keyof T
 >(
   objA: T,
   objB: T,
   comparators?: Record<I, (a: T[I], b: T[I]) => boolean>,
-  debug = false,
+  debug = false
 ) => {
   const aKeys = Object.keys(objA);
   const bKeys = Object.keys(objB);
@@ -869,7 +844,7 @@ export const isShallowEqual = <
         `%cisShallowEqual: ${key} not equal ->`,
         "color: #8B4000",
         objA[key],
-        objB[key],
+        objB[key]
       );
     }
     return ret;
@@ -878,12 +853,13 @@ export const isShallowEqual = <
 
 // taken from Radix UI
 // https://github.com/radix-ui/primitives/blob/main/packages/core/primitive/src/primitive.tsx
-export const composeEventHandlers = <E>(
-  originalEventHandler?: (event: E) => void,
-  ourEventHandler?: (event: E) => void,
-  { checkForDefaultPrevented = true } = {},
-) => {
-  return function handleEvent(event: E) {
+export const composeEventHandlers =
+  <E>(
+    originalEventHandler?: (event: E) => void,
+    ourEventHandler?: (event: E) => void,
+    { checkForDefaultPrevented = true } = {}
+  ) =>
+  (event: E) => {
     originalEventHandler?.(event);
 
     if (
@@ -893,17 +869,16 @@ export const composeEventHandlers = <E>(
       return ourEventHandler?.(event);
     }
   };
-};
 
 export const isOnlyExportingSingleFrame = (
-  elements: readonly NonDeletedExcalidrawElement[],
+  layers: readonly NonDeletedExcalidrawLayer[]
 ) => {
-  const frames = elements.filter((element) => element.type === "frame");
+  const frames = layers.filter((layer) => layer.type === "frame");
 
   return (
     frames.length === 1 &&
-    elements.every(
-      (element) => element.type === "frame" || element.frameId === frames[0].id,
+    layers.every(
+      (layer) => layer.type === "frame" || layer.frameId === frames[0].id
     )
   );
 };

@@ -1,20 +1,21 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { render, fireEvent } from "./test-utils";
+
 import ExcalidrawApp from "../excalidraw-app";
-import * as Renderer from "../renderer/renderScene";
-import { reseed } from "../random";
-import { bindOrUnbindLinearElement } from "../element/binding";
-import {
-  ExcalidrawLinearElement,
-  NonDeleted,
-  ExcalidrawRectangleElement,
-} from "../element/types";
-import { UI, Pointer, Keyboard } from "./helpers/ui";
 import { KEYS } from "../keys";
+import { bindOrUnbindLinearLayer } from "../layer/binding";
+import {
+  ExcalidrawLinearLayer,
+  ExcalidrawRectangleLayer,
+  NonDeleted
+} from "../layer/types";
+import { reseed } from "../random";
+import * as Renderer from "../renderer/renderScene";
+import { Keyboard, Pointer, UI } from "./helpers/ui";
+import { fireEvent, render } from "./test-utils";
 
 // Unmount ReactDOM from root
-ReactDOM.unmountComponentAtNode(document.getElementById("root")!);
+ReactDOM.unmountComponentAtNode(document.getLayerById("root")!);
 
 const renderScene = jest.spyOn(Renderer, "renderScene");
 beforeEach(() => {
@@ -25,13 +26,13 @@ beforeEach(() => {
 
 const { h } = window;
 
-describe("move element", () => {
+describe("move layer", () => {
   it("rectangle", async () => {
     const { getByToolName, container } = await render(<ExcalidrawApp />);
     const canvas = container.querySelector("canvas")!;
 
     {
-      // create element
+      // create layer
       const tool = getByToolName("rectangle");
       fireEvent.click(tool);
       fireEvent.pointerDown(canvas, { clientX: 30, clientY: 20 });
@@ -39,10 +40,10 @@ describe("move element", () => {
       fireEvent.pointerUp(canvas);
 
       expect(renderScene).toHaveBeenCalledTimes(9);
-      expect(h.state.selectionElement).toBeNull();
-      expect(h.elements.length).toEqual(1);
-      expect(h.state.selectedElementIds[h.elements[0].id]).toBeTruthy();
-      expect([h.elements[0].x, h.elements[0].y]).toEqual([30, 20]);
+      expect(h.state.selectionLayer).toBeNull();
+      expect(h.layers.length).toEqual(1);
+      expect(h.state.selectedLayerIds[h.layers[0].id]).toBeTruthy();
+      expect([h.layers[0].x, h.layers[0].y]).toEqual([30, 20]);
 
       renderScene.mockClear();
     }
@@ -52,35 +53,35 @@ describe("move element", () => {
     fireEvent.pointerUp(canvas);
 
     expect(renderScene).toHaveBeenCalledTimes(3);
-    expect(h.state.selectionElement).toBeNull();
-    expect(h.elements.length).toEqual(1);
-    expect([h.elements[0].x, h.elements[0].y]).toEqual([0, 40]);
+    expect(h.state.selectionLayer).toBeNull();
+    expect(h.layers.length).toEqual(1);
+    expect([h.layers[0].x, h.layers[0].y]).toEqual([0, 40]);
 
-    h.elements.forEach((element) => expect(element).toMatchSnapshot());
+    h.layers.forEach((layer) => expect(layer).toMatchSnapshot());
   });
 
   it("rectangles with binding arrow", async () => {
     await render(<ExcalidrawApp />);
 
-    // create elements
-    const rectA = UI.createElement("rectangle", { size: 100 });
-    const rectB = UI.createElement("rectangle", { x: 200, y: 0, size: 300 });
-    const line = UI.createElement("line", { x: 110, y: 50, size: 80 });
+    // create layers
+    const rectA = UI.createLayer("rectangle", { size: 100 });
+    const rectB = UI.createLayer("rectangle", { x: 200, y: 0, size: 300 });
+    const line = UI.createLayer("line", { x: 110, y: 50, size: 80 });
 
     // bind line to two rectangles
-    bindOrUnbindLinearElement(
-      line.get() as NonDeleted<ExcalidrawLinearElement>,
-      rectA.get() as ExcalidrawRectangleElement,
-      rectB.get() as ExcalidrawRectangleElement,
+    bindOrUnbindLinearLayer(
+      line.get() as NonDeleted<ExcalidrawLinearLayer>,
+      rectA.get() as ExcalidrawRectangleLayer,
+      rectB.get() as ExcalidrawRectangleLayer
     );
 
     // select the second rectangles
     new Pointer("mouse").clickOn(rectB);
 
     expect(renderScene).toHaveBeenCalledTimes(23);
-    expect(h.state.selectionElement).toBeNull();
-    expect(h.elements.length).toEqual(3);
-    expect(h.state.selectedElementIds[rectB.id]).toBeTruthy();
+    expect(h.state.selectionLayer).toBeNull();
+    expect(h.layers.length).toEqual(3);
+    expect(h.state.selectedLayerIds[rectB.id]).toBeTruthy();
     expect([rectA.x, rectA.y]).toEqual([0, 0]);
     expect([rectB.x, rectB.y]).toEqual([200, 0]);
     expect([line.x, line.y]).toEqual([110, 50]);
@@ -95,25 +96,25 @@ describe("move element", () => {
 
     // Check that the arrow size has been changed according to moving the rectangle
     expect(renderScene).toHaveBeenCalledTimes(3);
-    expect(h.state.selectionElement).toBeNull();
-    expect(h.elements.length).toEqual(3);
-    expect(h.state.selectedElementIds[rectB.id]).toBeTruthy();
+    expect(h.state.selectionLayer).toBeNull();
+    expect(h.layers.length).toEqual(3);
+    expect(h.state.selectedLayerIds[rectB.id]).toBeTruthy();
     expect([rectA.x, rectA.y]).toEqual([0, 0]);
     expect([rectB.x, rectB.y]).toEqual([201, 2]);
     expect([Math.round(line.x), Math.round(line.y)]).toEqual([110, 50]);
     expect([Math.round(line.width), Math.round(line.height)]).toEqual([81, 81]);
 
-    h.elements.forEach((element) => expect(element).toMatchSnapshot());
+    h.layers.forEach((layer) => expect(layer).toMatchSnapshot());
   });
 });
 
-describe("duplicate element on move when ALT is clicked", () => {
+describe("duplicate layer on move when ALT is clicked", () => {
   it("rectangle", async () => {
     const { getByToolName, container } = await render(<ExcalidrawApp />);
     const canvas = container.querySelector("canvas")!;
 
     {
-      // create element
+      // create layer
       const tool = getByToolName("rectangle");
       fireEvent.click(tool);
       fireEvent.pointerDown(canvas, { clientX: 30, clientY: 20 });
@@ -121,10 +122,10 @@ describe("duplicate element on move when ALT is clicked", () => {
       fireEvent.pointerUp(canvas);
 
       expect(renderScene).toHaveBeenCalledTimes(9);
-      expect(h.state.selectionElement).toBeNull();
-      expect(h.elements.length).toEqual(1);
-      expect(h.state.selectedElementIds[h.elements[0].id]).toBeTruthy();
-      expect([h.elements[0].x, h.elements[0].y]).toEqual([30, 20]);
+      expect(h.state.selectionLayer).toBeNull();
+      expect(h.layers.length).toEqual(1);
+      expect(h.state.selectedLayerIds[h.layers[0].id]).toBeTruthy();
+      expect([h.layers[0].x, h.layers[0].y]).toEqual([30, 20]);
 
       renderScene.mockClear();
     }
@@ -141,13 +142,13 @@ describe("duplicate element on move when ALT is clicked", () => {
     // TODO: This used to be 4, but binding made it go up to 5. Do we need
     // that additional render?
     expect(renderScene).toHaveBeenCalledTimes(5);
-    expect(h.state.selectionElement).toBeNull();
-    expect(h.elements.length).toEqual(2);
+    expect(h.state.selectionLayer).toBeNull();
+    expect(h.layers.length).toEqual(2);
 
-    // previous element should stay intact
-    expect([h.elements[0].x, h.elements[0].y]).toEqual([30, 20]);
-    expect([h.elements[1].x, h.elements[1].y]).toEqual([-10, 60]);
+    // previous layer should stay intact
+    expect([h.layers[0].x, h.layers[0].y]).toEqual([30, 20]);
+    expect([h.layers[1].x, h.layers[1].y]).toEqual([-10, 60]);
 
-    h.elements.forEach((element) => expect(element).toMatchSnapshot());
+    h.layers.forEach((layer) => expect(layer).toMatchSnapshot());
   });
 });

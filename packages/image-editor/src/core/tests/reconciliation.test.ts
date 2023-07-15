@@ -1,25 +1,26 @@
 import { expect } from "chai";
+
 import { PRECEDING_ELEMENT_KEY } from "../constants";
-import { ExcalidrawElement } from "../element/types";
 import {
-  BroadcastedExcalidrawElement,
-  ReconciledElements,
-  reconcileElements,
+  BroadcastedExcalidrawLayer,
+  ReconciledLayers,
+  reconcileLayers
 } from "../excalidraw-app/collab/reconciliation";
+import { ExcalidrawLayer } from "../layer/types";
 import { randomInteger } from "../random";
 import { AppState } from "../types";
 
 type Id = string;
-type ElementLike = {
+type LayerLike = {
+  [PRECEDING_ELEMENT_KEY]?: string | null;
   id: string;
   version: number;
   versionNonce: number;
-  [PRECEDING_ELEMENT_KEY]?: string | null;
 };
 
-type Cache = Record<string, ExcalidrawElement | undefined>;
+type Cache = Record<string, ExcalidrawLayer | undefined>;
 
-const createElement = (opts: { uid: string } | ElementLike) => {
+const createLayer = (opts: { uid: string } | LayerLike) => {
   let uid: string;
   let id: string;
   let version: number | null;
@@ -27,7 +28,7 @@ const createElement = (opts: { uid: string } | ElementLike) => {
   let versionNonce: number | null = null;
   if ("uid" in opts) {
     const match = opts.uid.match(
-      /^(?:\((\^|\w+)\))?(\w+)(?::(\d+))?(?:\((\w+)\))?$/,
+      /^(?:\((\^|\w+)\))?(\w+)(?::(\d+))?(?:\((\w+)\))?$/
     )!;
     parent = match[1];
     id = match[2];
@@ -43,46 +44,44 @@ const createElement = (opts: { uid: string } | ElementLike) => {
     id,
     version,
     versionNonce: versionNonce || randomInteger(),
-    [PRECEDING_ELEMENT_KEY]: parent || null,
+    [PRECEDING_ELEMENT_KEY]: parent || null
   };
 };
 
-const idsToElements = (
-  ids: (Id | ElementLike)[],
-  cache: Cache = {},
-): readonly ExcalidrawElement[] => {
-  return ids.reduce((acc, _uid, idx) => {
+const idsToLayers = (
+  ids: (Id | LayerLike)[],
+  cache: Cache = {}
+): readonly ExcalidrawLayer[] =>
+  ids.reduce((acc, _uid, idx) => {
     const {
       uid,
       id,
       version,
       [PRECEDING_ELEMENT_KEY]: parent,
-      versionNonce,
-    } = createElement(typeof _uid === "string" ? { uid: _uid } : _uid);
+      versionNonce
+    } = createLayer(typeof _uid === "string" ? { uid: _uid } : _uid);
     const cached = cache[uid];
     const elem = {
       id,
       version: version ?? 0,
       versionNonce,
       ...cached,
-      [PRECEDING_ELEMENT_KEY]: parent,
-    } as BroadcastedExcalidrawElement;
+      [PRECEDING_ELEMENT_KEY]: parent
+    } as BroadcastedExcalidrawLayer;
     // @ts-ignore
     cache[uid] = elem;
     acc.push(elem);
     return acc;
-  }, [] as ExcalidrawElement[]);
-};
+  }, [] as ExcalidrawLayer[]);
 
-const addParents = (elements: BroadcastedExcalidrawElement[]) => {
-  return elements.map((el, idx, els) => {
+const addParents = (layers: BroadcastedExcalidrawLayer[]) =>
+  layers.map((el, idx, els) => {
     el[PRECEDING_ELEMENT_KEY] = els[idx - 1]?.id || "^";
     return el;
   });
-};
 
-const cleanElements = (elements: ReconciledElements) => {
-  return elements.map((el) => {
+const cleanLayers = (layers: ReconciledLayers) =>
+  layers.map((el) => {
     // @ts-ignore
     delete el[PRECEDING_ELEMENT_KEY];
     // @ts-ignore
@@ -91,43 +90,42 @@ const cleanElements = (elements: ReconciledElements) => {
     delete el.prev;
     return el;
   });
-};
 
 const cloneDeep = (data: any) => JSON.parse(JSON.stringify(data));
 
 const test = <U extends `${string}:${"L" | "R"}`>(
-  local: (Id | ElementLike)[],
-  remote: (Id | ElementLike)[],
+  local: (Id | LayerLike)[],
+  remote: (Id | LayerLike)[],
   target: U[],
-  bidirectional = true,
+  bidirectional = true
 ) => {
   const cache: Cache = {};
-  const _local = idsToElements(local, cache);
-  const _remote = idsToElements(remote, cache);
+  const _local = idsToLayers(local, cache);
+  const _remote = idsToLayers(remote, cache);
   const _target = target.map((uid) => {
     const [, id, source] = uid.match(/^(\w+):([LR])$/)!;
     return (source === "L" ? _local : _remote).find((e) => e.id === id)!;
-  }) as any as ReconciledElements;
-  const remoteReconciled = reconcileElements(_local, _remote, {} as AppState);
+  }) as any as ReconciledLayers;
+  const remoteReconciled = reconcileLayers(_local, _remote, {} as AppState);
   expect(target.length).equal(remoteReconciled.length);
-  expect(cleanElements(remoteReconciled)).deep.equal(
-    cleanElements(_target),
-    "remote reconciliation",
+  expect(cleanLayers(remoteReconciled)).deep.equal(
+    cleanLayers(_target),
+    "remote reconciliation"
   );
 
-  const __local = cleanElements(cloneDeep(_remote));
-  const __remote = addParents(cleanElements(cloneDeep(remoteReconciled)));
+  const __local = cleanLayers(cloneDeep(_remote));
+  const __remote = addParents(cleanLayers(cloneDeep(remoteReconciled)));
   if (bidirectional) {
     try {
       expect(
-        cleanElements(
-          reconcileElements(
+        cleanLayers(
+          reconcileLayers(
             cloneDeep(__local),
             cloneDeep(__remote),
-            {} as AppState,
-          ),
-        ),
-      ).deep.equal(cleanElements(remoteReconciled), "local re-reconciliation");
+            {} as AppState
+          )
+        )
+      ).deep.equal(cleanLayers(remoteReconciled), "local re-reconciliation");
     } catch (error: any) {
       console.error("local original", __local);
       console.error("remote reconciled", __remote);
@@ -138,8 +136,8 @@ const test = <U extends `${string}:${"L" | "R"}`>(
 
 export const findIndex = <T>(
   array: readonly T[],
-  cb: (element: T, index: number, array: readonly T[]) => boolean,
-  fromIndex: number = 0,
+  cb: (layer: T, index: number, array: readonly T[]) => boolean,
+  fromIndex: number = 0
 ) => {
   if (fromIndex < 0) {
     fromIndex = array.length + fromIndex;
@@ -156,32 +154,32 @@ export const findIndex = <T>(
 
 // -----------------------------------------------------------------------------
 
-describe("elements reconciliation", () => {
-  it("reconcileElements()", () => {
+describe("layers reconciliation", () => {
+  it("reconcileLayers()", () => {
     // -------------------------------------------------------------------------
     //
     // in following tests, we pass:
-    //  (1) an array of local elements and their version (:1, :2...)
-    //  (2) an array of remote elements and their version (:1, :2...)
-    //  (3) expected reconciled elements
+    //  (1) an array of local layers and their version (:1, :2...)
+    //  (2) an array of remote layers and their version (:1, :2...)
+    //  (3) expected reconciled layers
     //
     // in the reconciled array:
-    //  :L means local element was resolved
-    //  :R means remote element was resolved
+    //  :L means local layer was resolved
+    //  :R means remote layer was resolved
     //
-    // if a remote element is prefixed with parentheses, the enclosed string:
-    //  (^) means the element is the first element in the array
-    //  (<id>) means the element is preceded by <id> element
+    // if a remote layer is prefixed with parentheses, the enclosed string:
+    //  (^) means the layer is the first layer in the array
+    //  (<id>) means the layer is preceded by <id> layer
     //
     // if versions are missing, it defaults to version 0
     // -------------------------------------------------------------------------
 
-    // non-annotated elements
+    // non-annotated layers
     // -------------------------------------------------------------------------
-    // usually when we sync elements they should always be annotated with
-    // their (preceding elements) parents, but let's test a couple of cases when
+    // usually when we sync layers they should always be annotated with
+    // their (preceding layers) parents, but let's test a couple of cases when
     // they're not for whatever reason (remote clients are on older version...),
-    // in which case the first synced element either replaces existing element
+    // in which case the first synced layer either replaces existing layer
     // or is pushed at the end of the array
 
     test(["A:1", "B:1", "C:1"], ["B:2"], ["A:L", "B:R", "C:L"]);
@@ -211,26 +209,26 @@ describe("elements reconciliation", () => {
     test(
       ["A:2", "B:2", "C"],
       ["D", "B:1", "A:3"],
-      ["B:L", "A:R", "C:L", "D:R"],
+      ["B:L", "A:R", "C:L", "D:R"]
     );
     test(
       ["A:2", "B:2", "C"],
       ["D", "B:2", "A:3", "C"],
-      ["D:R", "B:L", "A:R", "C:L"],
+      ["D:R", "B:L", "A:R", "C:L"]
     );
     test(
       ["A", "B", "C", "D", "E", "F"],
       ["A", "B:2", "X", "E:2", "F", "Y"],
-      ["A:L", "B:R", "X:R", "E:R", "F:L", "Y:R", "C:L", "D:L"],
+      ["A:L", "B:R", "X:R", "E:R", "F:L", "Y:R", "C:L", "D:L"]
     );
 
-    // annotated elements
+    // annotated layers
     // -------------------------------------------------------------------------
 
     test(
       ["A", "B", "C"],
       ["(B)X", "(A)Y", "(Y)Z"],
-      ["A:L", "B:L", "X:R", "Y:R", "Z:R", "C:L"],
+      ["A:L", "B:L", "X:R", "Y:R", "Z:R", "C:L"]
     );
 
     test(["A"], ["(^)X", "Y"], ["X:R", "Y:R", "A:L"]);
@@ -239,25 +237,25 @@ describe("elements reconciliation", () => {
     test(
       ["A", "B"],
       ["(A)C", "(^)D", "F"],
-      ["A:L", "C:R", "D:R", "F:R", "B:L"],
+      ["A:L", "C:R", "D:R", "F:R", "B:L"]
     );
 
     test(
       ["A", "B", "C", "D"],
       ["(B)C:1", "B", "D:1"],
-      ["A:L", "C:R", "B:L", "D:R"],
+      ["A:L", "C:R", "B:L", "D:R"]
     );
 
     test(
       ["A", "B", "C"],
       ["(^)X", "(A)Y", "(B)Z"],
-      ["X:R", "A:L", "Y:R", "B:L", "Z:R", "C:L"],
+      ["X:R", "A:L", "Y:R", "B:L", "Z:R", "C:L"]
     );
 
     test(
       ["B", "A", "C"],
       ["(^)X", "(A)Y", "(B)Z"],
-      ["X:R", "B:L", "A:L", "Y:R", "Z:R", "C:L"],
+      ["X:R", "B:L", "A:L", "Y:R", "Z:R", "C:L"]
     );
 
     test(["A", "B"], ["(A)X", "(A)Y"], ["A:L", "X:R", "Y:R", "B:L"]);
@@ -265,49 +263,49 @@ describe("elements reconciliation", () => {
     test(
       ["A", "B", "C", "D", "E"],
       ["(A)X", "(C)Y", "(D)Z"],
-      ["A:L", "X:R", "B:L", "C:L", "Y:R", "D:L", "Z:R", "E:L"],
+      ["A:L", "X:R", "B:L", "C:L", "Y:R", "D:L", "Z:R", "E:L"]
     );
 
     test(
       ["X", "Y", "Z"],
       ["(^)A", "(A)B", "(B)C", "(C)X", "(X)D", "(D)Y", "(Y)Z"],
-      ["A:R", "B:R", "C:R", "X:L", "D:R", "Y:L", "Z:L"],
+      ["A:R", "B:R", "C:R", "X:L", "D:R", "Y:L", "Z:L"]
     );
 
     test(
       ["A", "B", "C", "D", "E"],
       ["(C)X", "(A)Y", "(D)E:1"],
-      ["A:L", "B:L", "C:L", "X:R", "Y:R", "D:L", "E:R"],
+      ["A:L", "B:L", "C:L", "X:R", "Y:R", "D:L", "E:R"]
     );
 
     test(
       ["C:1", "B", "D:1"],
       ["A", "B", "C:1", "D:1"],
-      ["A:R", "B:L", "C:L", "D:L"],
+      ["A:R", "B:L", "C:L", "D:L"]
     );
 
     test(
       ["A", "B", "C", "D"],
       ["(A)C:1", "(C)B", "(B)D:1"],
-      ["A:L", "C:R", "B:L", "D:R"],
+      ["A:L", "C:R", "B:L", "D:R"]
     );
 
     test(
       ["A", "B", "C", "D"],
       ["(A)C:1", "(C)B", "(B)D:1"],
-      ["A:L", "C:R", "B:L", "D:R"],
+      ["A:L", "C:R", "B:L", "D:R"]
     );
 
     test(
       ["C:1", "B", "D:1"],
       ["(^)A", "(A)B", "(B)C:2", "(C)D:1"],
-      ["A:R", "B:L", "C:R", "D:L"],
+      ["A:R", "B:L", "C:R", "D:L"]
     );
 
     test(
       ["A", "B", "C", "D"],
       ["(C)X", "(B)Y", "(A)Z"],
-      ["A:L", "B:L", "C:L", "X:R", "Y:R", "Z:R", "D:L"],
+      ["A:L", "B:L", "C:L", "X:R", "Y:R", "Z:R", "D:L"]
     );
 
     test(["A", "B", "C", "D"], ["(A)B:1", "C:1"], ["A:L", "B:R", "C:R", "D:L"]);
@@ -315,7 +313,7 @@ describe("elements reconciliation", () => {
     test(
       ["A", "B", "C", "D"],
       ["(A)C:1", "B", "D:1"],
-      ["A:L", "C:R", "B:L", "D:R"],
+      ["A:L", "C:R", "B:L", "D:R"]
     );
 
     test(["A:1", "B:1", "C"], ["B:2"], ["A:L", "B:R", "C:L"]);
@@ -332,20 +330,20 @@ describe("elements reconciliation", () => {
     test(["A:2", "B:2"], ["(A)C", "B:1"], ["A:L", "C:R", "B:L"]);
   });
 
-  it("test identical elements reconciliation", () => {
+  it("test identical layers reconciliation", () => {
     const testIdentical = (
-      local: ElementLike[],
-      remote: ElementLike[],
-      expected: Id[],
+      local: LayerLike[],
+      remote: LayerLike[],
+      expected: Id[]
     ) => {
-      const ret = reconcileElements(
-        local as any as ExcalidrawElement[],
-        remote as any as ExcalidrawElement[],
-        {} as AppState,
+      const ret = reconcileLayers(
+        local as any as ExcalidrawLayer[],
+        remote as any as ExcalidrawLayer[],
+        {} as AppState
       );
 
       if (new Set(ret.map((x) => x.id)).size !== ret.length) {
-        throw new Error("reconcileElements: duplicate elements found");
+        throw new Error("reconcileLayers: duplicate layers found");
       }
 
       expect(ret.map((x) => x.id)).to.deep.equal(expected);
@@ -357,65 +355,65 @@ describe("elements reconciliation", () => {
     testIdentical(
       [{ id: "A", version: 1, versionNonce: 1 }],
       [{ id: "A", version: 1, versionNonce: 1 }],
-      ["A"],
+      ["A"]
     );
     testIdentical(
       [
         { id: "A", version: 1, versionNonce: 1 },
-        { id: "B", version: 1, versionNonce: 1 },
+        { id: "B", version: 1, versionNonce: 1 }
       ],
       [
         { id: "B", version: 1, versionNonce: 1 },
-        { id: "A", version: 1, versionNonce: 1 },
+        { id: "A", version: 1, versionNonce: 1 }
       ],
-      ["B", "A"],
+      ["B", "A"]
     );
     testIdentical(
       [
         { id: "A", version: 1, versionNonce: 1 },
-        { id: "B", version: 1, versionNonce: 1 },
+        { id: "B", version: 1, versionNonce: 1 }
       ],
       [
         { id: "B", version: 1, versionNonce: 1 },
-        { id: "A", version: 1, versionNonce: 1 },
+        { id: "A", version: 1, versionNonce: 1 }
       ],
-      ["B", "A"],
+      ["B", "A"]
     );
 
-    // actually identical (arrays and element objects)
+    // actually identical (arrays and layer objects)
     // -------------------------------------------------------------------------
 
-    const elements1 = [
+    const layers1 = [
       {
         id: "A",
         version: 1,
         versionNonce: 1,
-        [PRECEDING_ELEMENT_KEY]: null,
+        [PRECEDING_ELEMENT_KEY]: null
       },
       {
         id: "B",
         version: 1,
         versionNonce: 1,
-        [PRECEDING_ELEMENT_KEY]: null,
-      },
+        [PRECEDING_ELEMENT_KEY]: null
+      }
     ];
 
-    testIdentical(elements1, elements1, ["A", "B"]);
-    testIdentical(elements1, elements1.slice(), ["A", "B"]);
-    testIdentical(elements1.slice(), elements1, ["A", "B"]);
-    testIdentical(elements1.slice(), elements1.slice(), ["A", "B"]);
+    testIdentical(layers1, layers1, ["A", "B"]);
+    testIdentical(layers1, layers1.slice(), ["A", "B"]);
+    testIdentical(layers1.slice(), layers1, ["A", "B"]);
+    testIdentical(layers1.slice(), layers1.slice(), ["A", "B"]);
 
     const el1 = {
       id: "A",
       version: 1,
       versionNonce: 1,
-      [PRECEDING_ELEMENT_KEY]: null,
+      [PRECEDING_ELEMENT_KEY]: null
     };
     const el2 = {
       id: "B",
       version: 1,
       versionNonce: 1,
-      [PRECEDING_ELEMENT_KEY]: null,
+      [PRECEDING_ELEMENT_KEY]: null
     };
     testIdentical([el1, el2], [el2, el1], ["A", "B"]);
   });

@@ -3,27 +3,27 @@ import "./Tooltip.scss";
 import React, { useEffect } from "react";
 
 export const getTooltipDiv = () => {
-  const existingDiv = document.querySelector<HTMLDivElement>(
-    ".excalidraw-tooltip",
+  const existingDiv = document.querySelector<HTMLDivLayer>(
+    ".excalidraw-tooltip"
   );
   if (existingDiv) {
     return existingDiv;
   }
-  const div = document.createElement("div");
+  const div = document.createLayer("div");
   document.body.appendChild(div);
   div.classList.add("excalidraw-tooltip");
   return div;
 };
 
 export const updateTooltipPosition = (
-  tooltip: HTMLDivElement,
+  tooltip: HTMLDivLayer,
   item: {
+    height: number;
     left: number;
     top: number;
     width: number;
-    height: number;
   },
-  position: "bottom" | "top" = "bottom",
+  position: "bottom" | "top" = "bottom"
 ) => {
   const tooltipRect = tooltip.getBoundingClientRect();
 
@@ -55,15 +55,15 @@ export const updateTooltipPosition = (
 
   Object.assign(tooltip.style, {
     top: `${top}px`,
-    left: `${left}px`,
+    left: `${left}px`
   });
 };
 
 const updateTooltip = (
-  item: HTMLDivElement,
-  tooltip: HTMLDivElement,
+  item: HTMLDivLayer,
+  tooltip: HTMLDivLayer,
   label: string,
-  long: boolean,
+  long: boolean
 ) => {
   tooltip.classList.add("excalidraw-tooltip--visible");
   tooltip.style.minWidth = long ? "50ch" : "10ch";
@@ -86,21 +86,21 @@ export const Tooltip = ({
   children,
   label,
   long = false,
-  style,
+  style
 }: TooltipProps) => {
-  useEffect(() => {
-    return () =>
-      getTooltipDiv().classList.remove("excalidraw-tooltip--visible");
-  }, []);
+  useEffect(
+    () => () => getTooltipDiv().classList.remove("excalidraw-tooltip--visible"),
+    []
+  );
   return (
     <div
       className="excalidraw-tooltip-wrapper"
       onPointerEnter={(event) =>
         updateTooltip(
-          event.currentTarget as HTMLDivElement,
+          event.currentTarget as HTMLDivLayer,
           getTooltipDiv(),
           label,
-          long,
+          long
         )
       }
       onPointerLeave={() =>

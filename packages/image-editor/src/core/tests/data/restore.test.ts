@@ -1,20 +1,20 @@
-import * as restore from "../../data/restore";
-import {
-  ExcalidrawElement,
-  ExcalidrawFreeDrawElement,
-  ExcalidrawLinearElement,
-  ExcalidrawTextElement,
-} from "../../element/types";
-import * as sizeHelpers from "../../element/sizeHelpers";
-import { API } from "../helpers/api";
+import * as restore from "../../../lib/data/restore/restore";
+import { ImportedDataState } from "../../../lib/data/types";
 import { getDefaultAppState } from "../../appState";
-import { ImportedDataState } from "../../data/types";
-import { NormalizedZoomValue } from "../../types";
 import { DEFAULT_SIDEBAR, FONT_FAMILY, ROUNDNESS } from "../../constants";
-import { newElementWith } from "../../element/mutateElement";
+import { newLayerWith } from "../../layer/mutateLayer";
+import * as sizeHelpers from "../../layer/sizeHelpers";
+import {
+  ExcalidrawFreeDrawLayer,
+  ExcalidrawLayer,
+  ExcalidrawLinearLayer,
+  ExcalidrawTextLayer
+} from "../../layer/types";
+import { NormalizedZoomValue } from "../../types";
+import { API } from "../helpers/api";
 
-describe("restoreElements", () => {
-  const mockSizeHelper = jest.spyOn(sizeHelpers, "isInvisiblySmallElement");
+describe("restoreLayers", () => {
+  const mockSizeHelper = jest.spyOn(sizeHelpers, "isInvisiblySmallLayer");
 
   beforeEach(() => {
     mockSizeHelper.mockReset();
@@ -24,205 +24,202 @@ describe("restoreElements", () => {
     mockSizeHelper.mockRestore();
   });
 
-  it("should return empty array when element is null", () => {
-    expect(restore.restoreElements(null, null)).toStrictEqual([]);
+  it("should return empty array when layer is null", () => {
+    expect(restore.restoreLayers(null, null)).toStrictEqual([]);
   });
 
-  it("should not call isInvisiblySmallElement when element is a selection element", () => {
-    const selectionEl = { type: "selection" } as ExcalidrawElement;
-    const restoreElements = restore.restoreElements([selectionEl], null);
-    expect(restoreElements.length).toBe(0);
-    expect(sizeHelpers.isInvisiblySmallElement).toBeCalledTimes(0);
+  it("should not call isInvisiblySmallLayer when layer is a selection layer", () => {
+    const selectionEl = { type: "selection" } as ExcalidrawLayer;
+    const restoreLayers = restore.restoreLayers([selectionEl], null);
+    expect(restoreLayers.length).toBe(0);
+    expect(sizeHelpers.isInvisiblySmallLayer).toBeCalledTimes(0);
   });
 
   it("should return empty array when input type is not supported", () => {
-    const dummyNotSupportedElement: any = API.createElement({
-      type: "text",
+    const dummyNotSupportedLayer: any = API.createLayer({
+      type: "text"
     });
 
-    dummyNotSupportedElement.type = "not supported";
-    expect(
-      restore.restoreElements([dummyNotSupportedElement], null).length,
-    ).toBe(0);
+    dummyNotSupportedLayer.type = "not supported";
+    expect(restore.restoreLayers([dummyNotSupportedLayer], null).length).toBe(
+      0
+    );
   });
 
-  it("should return empty array when isInvisiblySmallElement is true", () => {
-    const rectElement = API.createElement({ type: "rectangle" });
+  it("should return empty array when isInvisiblySmallLayer is true", () => {
+    const rectLayer = API.createLayer({ type: "rectangle" });
     mockSizeHelper.mockImplementation(() => true);
 
-    expect(restore.restoreElements([rectElement], null).length).toBe(0);
+    expect(restore.restoreLayers([rectLayer], null).length).toBe(0);
   });
 
-  it("should restore text element correctly passing value for each attribute", () => {
-    const textElement = API.createElement({
+  it("should restore text layer correctly passing value for each attribute", () => {
+    const textLayer = API.createLayer({
       type: "text",
       fontSize: 14,
       fontFamily: FONT_FAMILY.Virgil,
       text: "text",
       textAlign: "center",
       verticalAlign: "middle",
-      id: "id-text01",
+      id: "id-text01"
     });
 
-    const restoredText = restore.restoreElements(
-      [textElement],
-      null,
-    )[0] as ExcalidrawTextElement;
+    const restoredText = restore.restoreLayers(
+      [textLayer],
+      null
+    )[0] as ExcalidrawTextLayer;
 
     expect(restoredText).toMatchSnapshot({
-      seed: expect.any(Number),
+      seed: expect.any(Number)
     });
   });
 
-  it("should restore text element correctly with unknown font family, null text and undefined alignment", () => {
-    const textElement: any = API.createElement({
+  it("should restore text layer correctly with unknown font family, null text and undefined alignment", () => {
+    const textLayer: any = API.createLayer({
       type: "text",
       textAlign: undefined,
       verticalAlign: undefined,
-      id: "id-text01",
+      id: "id-text01"
     });
 
-    textElement.text = null;
-    textElement.font = "10 unknown";
+    textLayer.text = null;
+    textLayer.font = "10 unknown";
 
-    const restoredText = restore.restoreElements(
-      [textElement],
-      null,
-    )[0] as ExcalidrawTextElement;
+    const restoredText = restore.restoreLayers(
+      [textLayer],
+      null
+    )[0] as ExcalidrawTextLayer;
     expect(restoredText).toMatchSnapshot({
-      seed: expect.any(Number),
+      seed: expect.any(Number)
     });
   });
 
-  it("should restore freedraw element correctly", () => {
-    const freedrawElement = API.createElement({
+  it("should restore freedraw layer correctly", () => {
+    const freedrawLayer = API.createLayer({
       type: "freedraw",
-      id: "id-freedraw01",
+      id: "id-freedraw01"
     });
 
-    const restoredFreedraw = restore.restoreElements(
-      [freedrawElement],
-      null,
-    )[0] as ExcalidrawFreeDrawElement;
+    const restoredFreedraw = restore.restoreLayers(
+      [freedrawLayer],
+      null
+    )[0] as ExcalidrawFreeDrawLayer;
 
     expect(restoredFreedraw).toMatchSnapshot({ seed: expect.any(Number) });
   });
 
-  it("should restore line and draw elements correctly", () => {
-    const lineElement = API.createElement({ type: "line", id: "id-line01" });
+  it("should restore line and draw layers correctly", () => {
+    const lineLayer = API.createLayer({ type: "line", id: "id-line01" });
 
-    const drawElement: any = API.createElement({
+    const drawLayer: any = API.createLayer({
       type: "line",
-      id: "id-draw01",
+      id: "id-draw01"
     });
-    drawElement.type = "draw";
+    drawLayer.type = "draw";
 
-    const restoredElements = restore.restoreElements(
-      [lineElement, drawElement],
-      null,
-    );
+    const restoredLayers = restore.restoreLayers([lineLayer, drawLayer], null);
 
-    const restoredLine = restoredElements[0] as ExcalidrawLinearElement;
-    const restoredDraw = restoredElements[1] as ExcalidrawLinearElement;
+    const restoredLine = restoredLayers[0] as ExcalidrawLinearLayer;
+    const restoredDraw = restoredLayers[1] as ExcalidrawLinearLayer;
 
     expect(restoredLine).toMatchSnapshot({ seed: expect.any(Number) });
     expect(restoredDraw).toMatchSnapshot({ seed: expect.any(Number) });
   });
 
-  it("should restore arrow element correctly", () => {
-    const arrowElement = API.createElement({ type: "arrow", id: "id-arrow01" });
+  it("should restore arrow layer correctly", () => {
+    const arrowLayer = API.createLayer({ type: "arrow", id: "id-arrow01" });
 
-    const restoredElements = restore.restoreElements([arrowElement], null);
+    const restoredLayers = restore.restoreLayers([arrowLayer], null);
 
-    const restoredArrow = restoredElements[0] as ExcalidrawLinearElement;
+    const restoredArrow = restoredLayers[0] as ExcalidrawLinearLayer;
 
     expect(restoredArrow).toMatchSnapshot({ seed: expect.any(Number) });
   });
 
-  it("when arrow element has defined endArrowHead", () => {
-    const arrowElement = API.createElement({ type: "arrow" });
+  it("when arrow layer has defined endArrowHead", () => {
+    const arrowLayer = API.createLayer({ type: "arrow" });
 
-    const restoredElements = restore.restoreElements([arrowElement], null);
+    const restoredLayers = restore.restoreLayers([arrowLayer], null);
 
-    const restoredArrow = restoredElements[0] as ExcalidrawLinearElement;
+    const restoredArrow = restoredLayers[0] as ExcalidrawLinearLayer;
 
-    expect(arrowElement.endArrowhead).toBe(restoredArrow.endArrowhead);
+    expect(arrowLayer.endArrowhead).toBe(restoredArrow.endArrowhead);
   });
 
-  it("when arrow element has undefined endArrowHead", () => {
-    const arrowElement = API.createElement({ type: "arrow" });
-    Object.defineProperty(arrowElement, "endArrowhead", {
-      get: jest.fn(() => undefined),
+  it("when arrow layer has undefined endArrowHead", () => {
+    const arrowLayer = API.createLayer({ type: "arrow" });
+    Object.defineProperty(arrowLayer, "endArrowhead", {
+      get: jest.fn(() => undefined)
     });
 
-    const restoredElements = restore.restoreElements([arrowElement], null);
+    const restoredLayers = restore.restoreLayers([arrowLayer], null);
 
-    const restoredArrow = restoredElements[0] as ExcalidrawLinearElement;
+    const restoredArrow = restoredLayers[0] as ExcalidrawLinearLayer;
 
     expect(restoredArrow.endArrowhead).toBe("arrow");
   });
 
-  it("when element.points of a line element is not an array", () => {
-    const lineElement: any = API.createElement({
+  it("when layer.points of a line layer is not an array", () => {
+    const lineLayer: any = API.createLayer({
       type: "line",
       width: 100,
-      height: 200,
+      height: 200
     });
 
-    lineElement.points = "not an array";
+    lineLayer.points = "not an array";
 
     const expectedLinePoints = [
       [0, 0],
-      [lineElement.width, lineElement.height],
+      [lineLayer.width, lineLayer.height]
     ];
 
-    const restoredLine = restore.restoreElements(
-      [lineElement],
-      null,
-    )[0] as ExcalidrawLinearElement;
+    const restoredLine = restore.restoreLayers(
+      [lineLayer],
+      null
+    )[0] as ExcalidrawLinearLayer;
 
     expect(restoredLine.points).toMatchObject(expectedLinePoints);
   });
 
   it("when the number of points of a line is greater or equal 2", () => {
-    const lineElement_0 = API.createElement({
+    const lineLayer_0 = API.createLayer({
       type: "line",
       width: 100,
       height: 200,
       x: 10,
-      y: 20,
+      y: 20
     });
-    const lineElement_1 = API.createElement({
+    const lineLayer_1 = API.createLayer({
       type: "line",
       width: 200,
       height: 400,
       x: 30,
-      y: 40,
+      y: 40
     });
 
     const pointsEl_0 = [
       [0, 0],
-      [1, 1],
+      [1, 1]
     ];
-    Object.defineProperty(lineElement_0, "points", {
-      get: jest.fn(() => pointsEl_0),
+    Object.defineProperty(lineLayer_0, "points", {
+      get: jest.fn(() => pointsEl_0)
     });
 
     const pointsEl_1 = [
       [3, 4],
-      [5, 6],
+      [5, 6]
     ];
-    Object.defineProperty(lineElement_1, "points", {
-      get: jest.fn(() => pointsEl_1),
+    Object.defineProperty(lineLayer_1, "points", {
+      get: jest.fn(() => pointsEl_1)
     });
 
-    const restoredElements = restore.restoreElements(
-      [lineElement_0, lineElement_1],
-      null,
+    const restoredLayers = restore.restoreLayers(
+      [lineLayer_0, lineLayer_1],
+      null
     );
 
-    const restoredLine_0 = restoredElements[0] as ExcalidrawLinearElement;
-    const restoredLine_1 = restoredElements[1] as ExcalidrawLinearElement;
+    const restoredLine_0 = restoredLayers[0] as ExcalidrawLinearLayer;
+    const restoredLine_1 = restoredLayers[1] as ExcalidrawLinearLayer;
 
     expect(restoredLine_0.points).toMatchObject(pointsEl_0);
 
@@ -230,21 +227,21 @@ describe("restoreElements", () => {
     const offsetY = pointsEl_1[0][1];
     const restoredPointsEl1 = [
       [pointsEl_1[0][0] - offsetX, pointsEl_1[0][1] - offsetY],
-      [pointsEl_1[1][0] - offsetX, pointsEl_1[1][1] - offsetY],
+      [pointsEl_1[1][0] - offsetX, pointsEl_1[1][1] - offsetY]
     ];
     expect(restoredLine_1.points).toMatchObject(restoredPointsEl1);
-    expect(restoredLine_1.x).toBe(lineElement_1.x + offsetX);
-    expect(restoredLine_1.y).toBe(lineElement_1.y + offsetY);
+    expect(restoredLine_1.x).toBe(lineLayer_1.x + offsetX);
+    expect(restoredLine_1.y).toBe(lineLayer_1.y + offsetY);
   });
 
-  it("should restore correctly with rectangle, ellipse and diamond elements", () => {
+  it("should restore correctly with rectangle, ellipse and diamond layers", () => {
     const types = ["rectangle", "ellipse", "diamond"];
 
-    const elements: ExcalidrawElement[] = [];
+    const layers: ExcalidrawLayer[] = [];
     let idCount = 0;
     types.forEach((elType) => {
       idCount += 1;
-      const element = API.createElement({
+      const layer = API.createLayer({
         type: elType as "rectangle" | "ellipse" | "diamond",
         id: idCount.toString(),
         fillStyle: "cross-hatch",
@@ -259,41 +256,41 @@ describe("restoreElements", () => {
         width: 100,
         height: 200,
         groupIds: ["1", "2", "3"],
-        roundness: { type: ROUNDNESS.PROPORTIONAL_RADIUS },
+        roundness: { type: ROUNDNESS.PROPORTIONAL_RADIUS }
       });
 
-      elements.push(element);
+      layers.push(layer);
     });
 
-    const restoredElements = restore.restoreElements(elements, null);
+    const restoredLayers = restore.restoreLayers(layers, null);
 
-    expect(restoredElements[0]).toMatchSnapshot({ seed: expect.any(Number) });
-    expect(restoredElements[1]).toMatchSnapshot({ seed: expect.any(Number) });
-    expect(restoredElements[2]).toMatchSnapshot({ seed: expect.any(Number) });
+    expect(restoredLayers[0]).toMatchSnapshot({ seed: expect.any(Number) });
+    expect(restoredLayers[1]).toMatchSnapshot({ seed: expect.any(Number) });
+    expect(restoredLayers[2]).toMatchSnapshot({ seed: expect.any(Number) });
   });
 
-  it("bump versions of local duplicate elements when supplied", () => {
-    const rectangle = API.createElement({ type: "rectangle" });
-    const ellipse = API.createElement({ type: "ellipse" });
-    const rectangle_modified = newElementWith(rectangle, { isDeleted: true });
+  it("bump versions of local duplicate layers when supplied", () => {
+    const rectangle = API.createLayer({ type: "rectangle" });
+    const ellipse = API.createLayer({ type: "ellipse" });
+    const rectangle_modified = newLayerWith(rectangle, { isDeleted: true });
 
-    const restoredElements = restore.restoreElements(
+    const restoredLayers = restore.restoreLayers(
       [rectangle, ellipse],
-      [rectangle_modified],
+      [rectangle_modified]
     );
 
-    expect(restoredElements[0].id).toBe(rectangle.id);
-    expect(restoredElements[0].versionNonce).not.toBe(rectangle.versionNonce);
-    expect(restoredElements).toEqual([
+    expect(restoredLayers[0].id).toBe(rectangle.id);
+    expect(restoredLayers[0].versionNonce).not.toBe(rectangle.versionNonce);
+    expect(restoredLayers).toEqual([
       expect.objectContaining({
         id: rectangle.id,
-        version: rectangle_modified.version + 1,
+        version: rectangle_modified.version + 1
       }),
       expect.objectContaining({
         id: ellipse.id,
         version: ellipse.version,
-        versionNonce: ellipse.versionNonce,
-      }),
+        versionNonce: ellipse.versionNonce
+      })
     ]);
   });
 });
@@ -312,10 +309,10 @@ describe("restoreAppState", () => {
 
     const restoredAppState = restore.restoreAppState(
       stubImportedAppState,
-      stubLocalAppState,
+      stubLocalAppState
     );
     expect(restoredAppState.activeTool).toEqual(
-      stubImportedAppState.activeTool,
+      stubImportedAppState.activeTool
     );
     expect(restoredAppState.cursorButton).toBe("up");
     expect(restoredAppState.name).toBe(stubImportedAppState.name);
@@ -325,7 +322,7 @@ describe("restoreAppState", () => {
     const stubImportedAppState = {
       ...getDefaultAppState(),
       cursorButton: undefined,
-      name: undefined,
+      name: undefined
     };
 
     const stubLocalAppState = getDefaultAppState();
@@ -334,7 +331,7 @@ describe("restoreAppState", () => {
 
     const restoredAppState = restore.restoreAppState(
       stubImportedAppState,
-      stubLocalAppState,
+      stubLocalAppState
     );
     expect(restoredAppState.cursorButton).toBe(stubLocalAppState.cursorButton);
     expect(restoredAppState.name).toBe(stubLocalAppState.name);
@@ -347,7 +344,7 @@ describe("restoreAppState", () => {
 
     const restoredAppState = restore.restoreAppState(
       stubImportedAppState,
-      null,
+      null
     );
     expect(restoredAppState.cursorButton).toBe("up");
     expect(restoredAppState.name).toBe(stubImportedAppState.name);
@@ -366,39 +363,39 @@ describe("restoreAppState", () => {
   it("should return default app state when imported data state and local app state are undefined", () => {
     const stubImportedAppState = {
       ...getDefaultAppState(),
-      cursorButton: undefined,
+      cursorButton: undefined
     };
 
     const stubLocalAppState = {
       ...getDefaultAppState(),
-      cursorButton: undefined,
+      cursorButton: undefined
     };
 
     const restoredAppState = restore.restoreAppState(
       stubImportedAppState,
-      stubLocalAppState,
+      stubLocalAppState
     );
     expect(restoredAppState.cursorButton).toBe(
-      getDefaultAppState().cursorButton,
+      getDefaultAppState().cursorButton
     );
   });
 
   it("should return default app state when imported data state and local app state are null", () => {
     const restoredAppState = restore.restoreAppState(null, null);
     expect(restoredAppState.cursorButton).toBe(
-      getDefaultAppState().cursorButton,
+      getDefaultAppState().cursorButton
     );
   });
 
-  it("when imported data state has a not allowed Excalidraw Element Types", () => {
+  it("when imported data state has a not allowed Excalidraw Layer Types", () => {
     const stubImportedAppState: any = getDefaultAppState();
 
-    stubImportedAppState.activeTool = "not allowed Excalidraw Element Types";
+    stubImportedAppState.activeTool = "not allowed Excalidraw Layer Types";
     const stubLocalAppState = getDefaultAppState();
 
     const restoredAppState = restore.restoreAppState(
       stubImportedAppState,
-      stubLocalAppState,
+      stubLocalAppState
     );
     expect(restoredAppState.activeTool.type).toBe("selection");
   });
@@ -413,7 +410,7 @@ describe("restoreAppState", () => {
 
       const restoredAppState = restore.restoreAppState(
         stubImportedAppState,
-        stubLocalAppState,
+        stubLocalAppState
       );
 
       expect(restoredAppState.zoom.value).toBe(10);
@@ -422,14 +419,14 @@ describe("restoreAppState", () => {
     it("when the zoom of imported data state is not a number", () => {
       const stubImportedAppState = getDefaultAppState();
       stubImportedAppState.zoom = {
-        value: 10 as NormalizedZoomValue,
+        value: 10 as NormalizedZoomValue
       };
 
       const stubLocalAppState = getDefaultAppState();
 
       const restoredAppState = restore.restoreAppState(
         stubImportedAppState,
-        stubLocalAppState,
+        stubLocalAppState
       );
 
       expect(restoredAppState.zoom.value).toBe(10);
@@ -440,14 +437,14 @@ describe("restoreAppState", () => {
       const stubImportedAppState = getDefaultAppState();
 
       Object.defineProperty(stubImportedAppState, "zoom", {
-        get: jest.fn(() => null),
+        get: jest.fn(() => null)
       });
 
       const stubLocalAppState = getDefaultAppState();
 
       const restoredAppState = restore.restoreAppState(
         stubImportedAppState,
-        stubLocalAppState,
+        stubLocalAppState
       );
 
       expect(restoredAppState.zoom).toMatchObject(getDefaultAppState().zoom);
@@ -458,32 +455,32 @@ describe("restoreAppState", () => {
     expect(restore.restoreAppState({}, null).openSidebar).toBe(null);
     expect(
       restore.restoreAppState({ openSidebar: "library" } as any, null)
-        .openSidebar,
+        .openSidebar
     ).toEqual({ name: DEFAULT_SIDEBAR.name });
     expect(
-      restore.restoreAppState({ openSidebar: "xxx" } as any, null).openSidebar,
+      restore.restoreAppState({ openSidebar: "xxx" } as any, null).openSidebar
     ).toEqual({ name: DEFAULT_SIDEBAR.name });
     // while "library" was our legacy sidebar name, we can't assume it's legacy
     // value as it may be some host app's custom sidebar name ¯\_(ツ)_/¯
     expect(
       restore.restoreAppState({ openSidebar: { name: "library" } } as any, null)
-        .openSidebar,
+        .openSidebar
     ).toEqual({ name: "library" });
     expect(
       restore.restoreAppState(
         { openSidebar: { name: DEFAULT_SIDEBAR.name, tab: "ola" } } as any,
-        null,
-      ).openSidebar,
+        null
+      ).openSidebar
     ).toEqual({ name: DEFAULT_SIDEBAR.name, tab: "ola" });
   });
 });
 
 describe("restore", () => {
-  it("when imported data state is null it should return an empty array of elements", () => {
+  it("when imported data state is null it should return an empty array of layers", () => {
     const stubLocalAppState = getDefaultAppState();
 
     const restoredData = restore.restore(null, stubLocalAppState, null);
-    expect(restoredData.elements.length).toBe(0);
+    expect(restoredData.layers.length).toBe(0);
   });
 
   it("when imported data state is null it should return the local app state property", () => {
@@ -493,27 +490,27 @@ describe("restore", () => {
 
     const restoredData = restore.restore(null, stubLocalAppState, null);
     expect(restoredData.appState.cursorButton).toBe(
-      stubLocalAppState.cursorButton,
+      stubLocalAppState.cursorButton
     );
     expect(restoredData.appState.name).toBe(stubLocalAppState.name);
   });
 
-  it("when imported data state has elements", () => {
+  it("when imported data state has layers", () => {
     const stubLocalAppState = getDefaultAppState();
 
-    const textElement = API.createElement({ type: "text" });
-    const rectElement = API.createElement({ type: "rectangle" });
-    const elements = [textElement, rectElement];
+    const textLayer = API.createLayer({ type: "text" });
+    const rectLayer = API.createLayer({ type: "rectangle" });
+    const layers = [textLayer, rectLayer];
 
     const importedDataState = {} as ImportedDataState;
-    importedDataState.elements = elements;
+    importedDataState.layers = layers;
 
     const restoredData = restore.restore(
       importedDataState,
       stubLocalAppState,
-      null,
+      null
     );
-    expect(restoredData.elements.length).toBe(elements.length);
+    expect(restoredData.layers.length).toBe(layers.length);
   });
 
   it("when local app state is null but imported app state is supplied", () => {
@@ -529,262 +526,249 @@ describe("restore", () => {
     expect(restoredData.appState.name).toBe(stubImportedAppState.name);
   });
 
-  it("bump versions of local duplicate elements when supplied", () => {
-    const rectangle = API.createElement({ type: "rectangle" });
-    const ellipse = API.createElement({ type: "ellipse" });
+  it("bump versions of local duplicate layers when supplied", () => {
+    const rectangle = API.createLayer({ type: "rectangle" });
+    const ellipse = API.createLayer({ type: "ellipse" });
 
-    const rectangle_modified = newElementWith(rectangle, { isDeleted: true });
+    const rectangle_modified = newLayerWith(rectangle, { isDeleted: true });
 
     const restoredData = restore.restore(
-      { elements: [rectangle, ellipse] },
+      { layers: [rectangle, ellipse] },
       null,
-      [rectangle_modified],
+      [rectangle_modified]
     );
 
-    expect(restoredData.elements[0].id).toBe(rectangle.id);
-    expect(restoredData.elements[0].versionNonce).not.toBe(
-      rectangle.versionNonce,
+    expect(restoredData.layers[0].id).toBe(rectangle.id);
+    expect(restoredData.layers[0].versionNonce).not.toBe(
+      rectangle.versionNonce
     );
-    expect(restoredData.elements).toEqual([
+    expect(restoredData.layers).toEqual([
       expect.objectContaining({ version: rectangle_modified.version + 1 }),
       expect.objectContaining({
         id: ellipse.id,
         version: ellipse.version,
-        versionNonce: ellipse.versionNonce,
-      }),
+        versionNonce: ellipse.versionNonce
+      })
     ]);
   });
 });
 
 describe("repairing bindings", () => {
-  it("should repair container boundElements when repair is true", () => {
-    const container = API.createElement({
+  it("should repair container boundLayers when repair is true", () => {
+    const container = API.createLayer({
       type: "rectangle",
-      boundElements: [],
+      boundLayers: []
     });
-    const boundElement = API.createElement({
+    const boundLayer = API.createLayer({
       type: "text",
-      containerId: container.id,
+      containerId: container.id
     });
 
-    expect(container.boundElements).toEqual([]);
+    expect(container.boundLayers).toEqual([]);
 
-    let restoredElements = restore.restoreElements(
-      [container, boundElement],
-      null,
-    );
+    let restoredLayers = restore.restoreLayers([container, boundLayer], null);
 
-    expect(restoredElements).toEqual([
+    expect(restoredLayers).toEqual([
       expect.objectContaining({
         id: container.id,
-        boundElements: [],
+        boundLayers: []
       }),
       expect.objectContaining({
-        id: boundElement.id,
-        containerId: container.id,
-      }),
+        id: boundLayer.id,
+        containerId: container.id
+      })
     ]);
 
-    restoredElements = restore.restoreElements(
-      [container, boundElement],
-      null,
-      { repairBindings: true },
-    );
+    restoredLayers = restore.restoreLayers([container, boundLayer], null, {
+      repairBindings: true
+    });
 
-    expect(restoredElements).toEqual([
+    expect(restoredLayers).toEqual([
       expect.objectContaining({
         id: container.id,
-        boundElements: [{ type: boundElement.type, id: boundElement.id }],
+        boundLayers: [{ type: boundLayer.type, id: boundLayer.id }]
       }),
       expect.objectContaining({
-        id: boundElement.id,
-        containerId: container.id,
-      }),
+        id: boundLayer.id,
+        containerId: container.id
+      })
     ]);
   });
 
-  it("should repair containerId of boundElements when repair is true", () => {
-    const boundElement = API.createElement({
+  it("should repair containerId of boundLayers when repair is true", () => {
+    const boundLayer = API.createLayer({
       type: "text",
-      containerId: null,
+      containerId: null
     });
-    const container = API.createElement({
+    const container = API.createLayer({
       type: "rectangle",
-      boundElements: [{ type: boundElement.type, id: boundElement.id }],
+      boundLayers: [{ type: boundLayer.type, id: boundLayer.id }]
     });
 
-    let restoredElements = restore.restoreElements(
-      [container, boundElement],
-      null,
-    );
+    let restoredLayers = restore.restoreLayers([container, boundLayer], null);
 
-    expect(restoredElements).toEqual([
+    expect(restoredLayers).toEqual([
       expect.objectContaining({
         id: container.id,
-        boundElements: [{ type: boundElement.type, id: boundElement.id }],
+        boundLayers: [{ type: boundLayer.type, id: boundLayer.id }]
       }),
       expect.objectContaining({
-        id: boundElement.id,
-        containerId: null,
-      }),
+        id: boundLayer.id,
+        containerId: null
+      })
     ]);
 
-    restoredElements = restore.restoreElements(
-      [container, boundElement],
-      null,
-      { repairBindings: true },
-    );
+    restoredLayers = restore.restoreLayers([container, boundLayer], null, {
+      repairBindings: true
+    });
 
-    expect(restoredElements).toEqual([
+    expect(restoredLayers).toEqual([
       expect.objectContaining({
         id: container.id,
-        boundElements: [{ type: boundElement.type, id: boundElement.id }],
+        boundLayers: [{ type: boundLayer.type, id: boundLayer.id }]
       }),
       expect.objectContaining({
-        id: boundElement.id,
-        containerId: container.id,
-      }),
+        id: boundLayer.id,
+        containerId: container.id
+      })
     ]);
   });
 
-  it("should ignore bound element if deleted", () => {
-    const container = API.createElement({
+  it("should ignore bound layer if deleted", () => {
+    const container = API.createLayer({
       type: "rectangle",
-      boundElements: [],
+      boundLayers: []
     });
-    const boundElement = API.createElement({
+    const boundLayer = API.createLayer({
       type: "text",
       containerId: container.id,
-      isDeleted: true,
+      isDeleted: true
     });
 
-    expect(container.boundElements).toEqual([]);
+    expect(container.boundLayers).toEqual([]);
 
-    const restoredElements = restore.restoreElements(
-      [container, boundElement],
-      null,
-    );
+    const restoredLayers = restore.restoreLayers([container, boundLayer], null);
 
-    expect(restoredElements).toEqual([
+    expect(restoredLayers).toEqual([
       expect.objectContaining({
         id: container.id,
-        boundElements: [],
+        boundLayers: []
       }),
       expect.objectContaining({
-        id: boundElement.id,
-        containerId: container.id,
-      }),
+        id: boundLayer.id,
+        containerId: container.id
+      })
     ]);
   });
 
-  it("should remove bindings of deleted elements from boundElements when repair is true", () => {
-    const container = API.createElement({
+  it("should remove bindings of deleted layers from boundLayers when repair is true", () => {
+    const container = API.createLayer({
       type: "rectangle",
-      boundElements: [],
+      boundLayers: []
     });
-    const boundElement = API.createElement({
+    const boundLayer = API.createLayer({
       type: "text",
       containerId: container.id,
-      isDeleted: true,
+      isDeleted: true
     });
-    const invisibleBoundElement = API.createElement({
+    const invisibleBoundLayer = API.createLayer({
       type: "text",
       containerId: container.id,
       width: 0,
-      height: 0,
+      height: 0
     });
 
-    const obsoleteBinding = { type: boundElement.type, id: boundElement.id };
+    const obsoleteBinding = { type: boundLayer.type, id: boundLayer.id };
     const invisibleBinding = {
-      type: invisibleBoundElement.type,
-      id: invisibleBoundElement.id,
+      type: invisibleBoundLayer.type,
+      id: invisibleBoundLayer.id
     };
-    expect(container.boundElements).toEqual([]);
+    expect(container.boundLayers).toEqual([]);
 
     const nonExistentBinding = { type: "text", id: "non-existent" };
     // @ts-ignore
-    container.boundElements = [
+    container.boundLayers = [
       obsoleteBinding,
       invisibleBinding,
-      nonExistentBinding,
+      nonExistentBinding
     ];
 
-    let restoredElements = restore.restoreElements(
-      [container, invisibleBoundElement, boundElement],
-      null,
+    let restoredLayers = restore.restoreLayers(
+      [container, invisibleBoundLayer, boundLayer],
+      null
     );
 
-    expect(restoredElements).toEqual([
+    expect(restoredLayers).toEqual([
       expect.objectContaining({
         id: container.id,
-        boundElements: [obsoleteBinding, invisibleBinding, nonExistentBinding],
+        boundLayers: [obsoleteBinding, invisibleBinding, nonExistentBinding]
       }),
       expect.objectContaining({
-        id: boundElement.id,
-        containerId: container.id,
-      }),
+        id: boundLayer.id,
+        containerId: container.id
+      })
     ]);
 
-    restoredElements = restore.restoreElements(
-      [container, invisibleBoundElement, boundElement],
+    restoredLayers = restore.restoreLayers(
+      [container, invisibleBoundLayer, boundLayer],
       null,
-      { repairBindings: true },
+      { repairBindings: true }
     );
 
-    expect(restoredElements).toEqual([
+    expect(restoredLayers).toEqual([
       expect.objectContaining({
         id: container.id,
-        boundElements: [],
+        boundLayers: []
       }),
       expect.objectContaining({
-        id: boundElement.id,
-        containerId: container.id,
-      }),
+        id: boundLayer.id,
+        containerId: container.id
+      })
     ]);
   });
 
   it("should remove containerId if container not exists when repair is true", () => {
-    const boundElement = API.createElement({
+    const boundLayer = API.createLayer({
       type: "text",
-      containerId: "non-existent",
+      containerId: "non-existent"
     });
-    const boundElementDeleted = API.createElement({
+    const boundLayerDeleted = API.createLayer({
       type: "text",
       containerId: "non-existent",
-      isDeleted: true,
+      isDeleted: true
     });
 
-    let restoredElements = restore.restoreElements(
-      [boundElement, boundElementDeleted],
-      null,
+    let restoredLayers = restore.restoreLayers(
+      [boundLayer, boundLayerDeleted],
+      null
     );
 
-    expect(restoredElements).toEqual([
+    expect(restoredLayers).toEqual([
       expect.objectContaining({
-        id: boundElement.id,
-        containerId: "non-existent",
+        id: boundLayer.id,
+        containerId: "non-existent"
       }),
       expect.objectContaining({
-        id: boundElementDeleted.id,
-        containerId: "non-existent",
-      }),
+        id: boundLayerDeleted.id,
+        containerId: "non-existent"
+      })
     ]);
 
-    restoredElements = restore.restoreElements(
-      [boundElement, boundElementDeleted],
+    restoredLayers = restore.restoreLayers(
+      [boundLayer, boundLayerDeleted],
       null,
-      { repairBindings: true },
+      { repairBindings: true }
     );
 
-    expect(restoredElements).toEqual([
+    expect(restoredLayers).toEqual([
       expect.objectContaining({
-        id: boundElement.id,
-        containerId: null,
+        id: boundLayer.id,
+        containerId: null
       }),
       expect.objectContaining({
-        id: boundElementDeleted.id,
-        containerId: null,
-      }),
+        id: boundLayerDeleted.id,
+        containerId: null
+      })
     ]);
   });
 });

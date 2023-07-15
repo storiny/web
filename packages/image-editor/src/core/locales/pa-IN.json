@@ -116,7 +116,7 @@
       "edit": "ਪੰਕਤੀ ਸੋਧੋ",
       "exit": "ਪੰਕਤੀ ਸੋਧਕ 'ਤੋਂ ਬਾਹਰ ਨਿਕਲੋ"
     },
-    "elementLock": {
+    "layerLock": {
       "lock": "ਲਾਕ ਕਰੋ",
       "unlock": "ਅਨਲਾਕ ਕਰੋ",
       "lockAll": "ਸਭ ਲਾਕ ਕਰੋ",
@@ -124,8 +124,8 @@
     },
     "statusPublished": "ਪ੍ਰਕਾਸ਼ਤ ਹੈ",
     "sidebarLock": "ਸਾਈਡਬਾਰ ਨੂੰ ਖੁੱਲ੍ਹਾ ਰੱਖੋ",
-    "selectAllElementsInFrame": "",
-    "removeAllElementsFromFrame": "",
+    "selectAllLayersInFrame": "",
+    "removeAllLayersFromFrame": "",
     "eyeDropper": ""
   },
   "library": {
@@ -234,12 +234,12 @@
   },
   "hints": {
     "canvasPanning": "",
-    "linearElement": "ਇੱਕ ਤੋਂ ਜ਼ਿਆਦਾ ਬਿੰਦੂਆਂ ਲਈ ਕਲਿੱਕ ਕਰਕੇ ਸ਼ੁਰੂਆਤ ਕਰੋ, ਇਕਹਿਰੀ ਲਕੀਰ ਲਈ ਘਸੀਟੋ",
+    "linearLayer": "ਇੱਕ ਤੋਂ ਜ਼ਿਆਦਾ ਬਿੰਦੂਆਂ ਲਈ ਕਲਿੱਕ ਕਰਕੇ ਸ਼ੁਰੂਆਤ ਕਰੋ, ਇਕਹਿਰੀ ਲਕੀਰ ਲਈ ਘਸੀਟੋ",
     "freeDraw": "ਕਲਿੱਕ ਕਰਕੇ ਘਸੀਟੋ, ਪੂਰਾ ਹੋਣ 'ਤੇ ਛੱਡ ਦਿਉ",
     "text": "ਨੁਸਖਾ: ਤੁਸੀਂ ਚੋਣਕਾਰ ਸੰਦ ਰਾਹੀਂ ਕਿਤੇ ਵੀ ਡਬਲ-ਕਲਿੱਕ ਕਰਕੇ ਵੀ ਪਾਠ ਜੋੜ ਸਕਦੇ ਹੋ",
     "text_selected": "ਪਾਠ ਨੂੰ ਸੋਧਣ ਲਈ ਡਬਲ-ਕਲਿੱਕ ਕਰੋ ਜਾਂ ਐਂਟਰ ਦਬਾਓ",
     "text_editing": "ਸੋਧ ਮੁਕੰਮਲ ਕਰਨ ਲਈ ਐਸਕੇਪ (Esc) ਜਾਂ Ctrl-ਜਾਂ-Cmd+ਐਂਟਰ (enter) ਦਬਾਓ",
-    "linearElementMulti": "ਮੁਕੰਮਲ ਕਰਨ ਲਈ ਆਖਰੀ ਬਿੰਦੂ 'ਤੇ ਕਲਿੱਕ ਕਰੋ ਜਾਂ ਇਸਕੇਪ ਜਾਂ ਐਂਟਰ ਦਬਾਓ",
+    "linearLayerMulti": "ਮੁਕੰਮਲ ਕਰਨ ਲਈ ਆਖਰੀ ਬਿੰਦੂ 'ਤੇ ਕਲਿੱਕ ਕਰੋ ਜਾਂ ਇਸਕੇਪ ਜਾਂ ਐਂਟਰ ਦਬਾਓ",
     "lockAngle": "ਤੁਸੀਂ SHIFT ਦਬਾਈ ਰੱਖ ਕੇ ਕੋਣਾਂ ਨੂੰ ਕਾਬੂ ਕਰ ਸਕਦੇ ਹੋ",
     "resize": "ਤੁਸੀਂ ਅਕਾਰ ਬਦਲਦੇ ਸਮੇਂ SHIFT ਦਬਾਈ ਰੱਖ ਕੇ ਅਨੁਪਾਤ ਨੂੰ ਕਾਬੂ ਕਰ ਸਕਦੇ ਹੋ, ਵਿਚਕਾਰ ਤੋਂ ਅਕਾਰ ਬਦਲਣ ਲਈ ALT ਦਬਾਓ",
     "resizeImage": "",
@@ -249,7 +249,7 @@
     "lineEditor_nothingSelected": "",
     "placeImage": "",
     "publishLibrary": "ਆਪਣੀ ਲਾਇਬ੍ਰੇਰੀ ਪ੍ਰਕਾਸ਼ਿਤ ਕਰੋ",
-    "bindTextToElement": "ਪਾਠ ਜੋੜਨ ਲਈ ਐੰਟਰ ਦਬਾਓ",
+    "bindTextToLayer": "ਪਾਠ ਜੋੜਨ ਲਈ ਐੰਟਰ ਦਬਾਓ",
     "deepBoxSelect": "",
     "eraserRevert": "",
     "firefox_clipboard_write": ""
@@ -316,7 +316,7 @@
     "view": "ਦਿੱਖ",
     "zoomToFit": "ਸਾਰੇ ਐਲੀਮੈਂਟਾਂ ਨੂੰ ਫਿੱਟ ਕਰਨ ਲਈ ਜ਼ੂਮ ਕਰੋ",
     "zoomToSelection": "ਚੋਣ ਤੱਕ ਜ਼ੂਮ ਕਰੋ",
-    "toggleElementLock": "",
+    "toggleLayerLock": "",
     "movePageUpDown": "",
     "movePageLeftRight": ""
   },
@@ -389,8 +389,8 @@
   },
   "stats": {
     "angle": "ਕੋਣ",
-    "element": "ਐਲੀਮੈਂਟ",
-    "elements": "ਐਲੀਮੈਂਟ",
+    "layer": "ਐਲੀਮੈਂਟ",
+    "layers": "ਐਲੀਮੈਂਟ",
     "height": "ਉਚਾਈ",
     "scene": "ਦ੍ਰਿਸ਼",
     "selected": "ਚੁਣੇ",
@@ -411,7 +411,7 @@
     "fileSavedToFilename": "{filename} ਵਿੱਚ ਸਾਂਭੀ",
     "canvas": "ਕੈਨਵਸ",
     "selection": "ਚੋਣ",
-    "pasteAsSingleElement": ""
+    "pasteAsSingleLayer": ""
   },
   "colors": {
     "transparent": "ਪਾਰਦਰਸ਼ੀ",

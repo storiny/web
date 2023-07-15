@@ -4,7 +4,7 @@
     "pasteAsPlaintext": "Itsatsi testu arrunt gisa",
     "pasteCharts": "Itsatsi grafikoak",
     "selectAll": "Hautatu dena",
-    "multiSelect": "Gehitu elementua hautapenera",
+    "multiSelect": "Gehitu layerua hautapenera",
     "moveCanvas": "Mugitu oihala",
     "cut": "Ebaki",
     "copy": "Kopiatu",
@@ -116,7 +116,7 @@
       "edit": "Editatu lerroa",
       "exit": "Irten lerro-editoretik"
     },
-    "elementLock": {
+    "layerLock": {
       "lock": "Blokeatu",
       "unlock": "Desblokeatu",
       "lockAll": "Blokeatu guztiak",
@@ -124,14 +124,14 @@
     },
     "statusPublished": "Argitaratua",
     "sidebarLock": "Mantendu alboko barra irekita",
-    "selectAllElementsInFrame": "Hautatu markoko elementu guztiak",
-    "removeAllElementsFromFrame": "Kendu markoko elementu guztiak",
+    "selectAllLayersInFrame": "Hautatu markoko layeru guztiak",
+    "removeAllLayersFromFrame": "Kendu markoko layeru guztiak",
     "eyeDropper": "Aukeratu kolorea oihaletik"
   },
   "library": {
-    "noItems": "Oraindik ez da elementurik gehitu...",
-    "hint_emptyLibrary": "Hautatu oihaleko elementu bat hemen gehitzeko, edo instalatu liburutegi bat beheko biltegi publikotik.",
-    "hint_emptyPrivateLibrary": "Hautatu oihaleko elementu bat hemen gehitzeko."
+    "noItems": "Oraindik ez da layerurik gehitu...",
+    "hint_emptyLibrary": "Hautatu oihaleko layeru bat hemen gehitzeko, edo instalatu liburutegi bat beheko biltegi publikotik.",
+    "hint_emptyPrivateLibrary": "Hautatu oihaleko layeru bat hemen gehitzeko."
   },
   "buttons": {
     "clearReset": "Garbitu oihala",
@@ -180,14 +180,14 @@
     "uploadedSecurly": "Kargatzea muturretik muturrerako zifratze bidez ziurtatu da, hau da, Excalidraw zerbitzariak eta hirugarrenek ezin dutela edukia irakurri.",
     "loadSceneOverridePrompt": "Kanpoko marrazkia kargatzeak lehendik duzun edukia ordezkatuko du. Jarraitu nahi duzu?",
     "collabStopOverridePrompt": "Saioa gelditzeak lokalean gordetako zure aurreko marrazkia gainidatziko du. Ziur zaude?\n\n(Zure marrazki lokala mantendu nahi baduzu, itxi arakatzailearen fitxa.)",
-    "errorAddingToLibrary": "Ezin izan da elementua liburutegian gehitu",
-    "errorRemovingFromLibrary": "Ezin izan da elementua liburutegitik kendu",
+    "errorAddingToLibrary": "Ezin izan da layerua liburutegian gehitu",
+    "errorRemovingFromLibrary": "Ezin izan da layerua liburutegitik kendu",
     "confirmAddLibrary": "Honek {{numShapes}} forma gehituko ditu zure liburutegian. Ziur zaude?",
     "imageDoesNotContainScene": "Irudi honek ez dirudi eszena daturik duenik. Eszena kapsulatzea gaitu al duzu esportazioan?",
     "cannotRestoreFromImage": "Ezin izan da eszena leheneratu irudi fitxategi honetatik",
     "invalidSceneUrl": "Ezin izan da eszena inportatu emandako URLtik. Gaizki eratuta dago edo ez du baliozko Excalidraw JSON daturik.",
     "resetLibrary": "Honek zure liburutegia garbituko du. Ziur zaude?",
-    "removeItemsFromsLibrary": "Liburutegitik {{count}} elementu ezabatu?",
+    "removeItemsFromsLibrary": "Liburutegitik {{count}} layeru ezabatu?",
     "invalidEncryptionKey": "Enkriptazio-gakoak 22 karaktere izan behar ditu. Zuzeneko lankidetza desgaituta dago.",
     "collabOfflineWarning": "Ez dago Interneteko konexiorik.\nZure aldaketak ez dira gordeko!"
   },
@@ -203,9 +203,9 @@
     "collabSaveFailed_sizeExceeded": "Ezin izan da backend datu-basean gorde, ohiala handiegia dela dirudi. Fitxategia lokalean gorde beharko zenuke zure lana galtzen ez duzula ziurtatzeko.",
     "brave_measure_text_error": {
       "line1": "Brave arakatzailea erabiltzen ari zarela dirudi <bold>Blokeatu hatz-markak erasokorki</bold> ezarpena gaituta.",
-      "line2": "Honek zure marrazkietako <bold>Testu-elementuak</bold> hautsi ditzake.",
+      "line2": "Honek zure marrazkietako <bold>Testu-layeruak</bold> hautsi ditzake.",
       "line3": "Ezarpen hau desgaitzea gomendatzen dugu. <link>urrats hauek</link> jarrai ditzakezu hori nola egin jakiteko.",
-      "line4": "Ezarpen hau desgaituz gero, testu-elementuen bistaratzea konpontzen ez bada, ireki <issueLink>arazo</issueLink> gure GitHub-en edo idatzi iezaguzu <discordLink>Discord</discordLink> helbidera"
+      "line4": "Ezarpen hau desgaituz gero, testu-layeruen bistaratzea konpontzen ez bada, ireki <issueLink>arazo</issueLink> gure GitHub-en edo idatzi iezaguzu <discordLink>Discord</discordLink> helbidera"
     }
   },
   "toolBar": {
@@ -234,12 +234,12 @@
   },
   "hints": {
     "canvasPanning": "Oihala mugitzeko, eutsi saguaren gurpila edo zuriune-barra arrastatzean, edo erabili esku tresna",
-    "linearElement": "Egin klik hainbat puntu hasteko, arrastatu lerro bakarrerako",
+    "linearLayer": "Egin klik hainbat puntu hasteko, arrastatu lerro bakarrerako",
     "freeDraw": "Egin klik eta arrastatu, askatu amaitutakoan",
     "text": "Aholkua: testua gehitu dezakezu edozein lekutan klik bikoitza eginez hautapen tresnarekin",
     "text_selected": "Egin klik bikoitza edo sakatu SARTU testua editatzeko",
     "text_editing": "Sakatu Esc edo Ctrl+SARTU editatzen amaitzeko",
-    "linearElementMulti": "Egin klik azken puntuan edo sakatu Esc edo Sartu amaitzeko",
+    "linearLayerMulti": "Egin klik azken puntuan edo sakatu Esc edo Sartu amaitzeko",
     "lockAngle": "SHIFT sakatuta angelua mantendu dezakezu",
     "resize": "Proportzioak mantendu ditzakezu SHIFT sakatuta tamaina aldatzen duzun bitartean.\nsakatu ALT erditik tamaina aldatzeko",
     "resizeImage": "Tamaina libreki alda dezakezu SHIFT sakatuta,\nsakatu ALT erditik tamaina aldatzeko",
@@ -249,15 +249,15 @@
     "lineEditor_nothingSelected": "Hautatu editatzeko puntu bat (SHIFT sakatuta anitz hautatzeko),\nedo eduki Alt sakatuta eta egin klik puntu berriak gehitzeko",
     "placeImage": "Egin klik irudia kokatzeko, edo egin klik eta arrastatu bere tamaina eskuz ezartzeko",
     "publishLibrary": "Argitaratu zure liburutegia",
-    "bindTextToElement": "Sakatu Sartu testua gehitzeko",
+    "bindTextToLayer": "Sakatu Sartu testua gehitzeko",
     "deepBoxSelect": "Eutsi Ctrl edo Cmd sakatuta aukeraketa sakona egiteko eta arrastatzea saihesteko",
-    "eraserRevert": "Eduki Alt sakatuta ezabatzeko markatutako elementuak leheneratzeko",
+    "eraserRevert": "Eduki Alt sakatuta ezabatzeko markatutako layeruak leheneratzeko",
     "firefox_clipboard_write": "Ezaugarri hau \"dom.events.asyncClipboard.clipboardItem\" marka \"true\" gisa ezarrita gaitu daiteke. Firefox-en arakatzailearen banderak aldatzeko, bisitatu \"about:config\" orrialdera."
   },
   "canvasError": {
     "cannotShowPreview": "Ezin da oihala aurreikusi",
     "canvasTooBig": "Agian oihala handiegia da.",
-    "canvasTooBigTip": "Aholkua: saiatu urrunen dauden elementuak pixka bat hurbiltzen."
+    "canvasTooBigTip": "Aholkua: saiatu urrunen dauden layeruak pixka bat hurbiltzen."
   },
   "errorSplash": {
     "headingMain": "Errore bat aurkitu da. Saiatu <button>orria birkargatzen.</button>",
@@ -314,9 +314,9 @@
     "textNewLine": "Gehitu lerro berri bat (testu editorea)",
     "title": "Laguntza",
     "view": "Bistaratu",
-    "zoomToFit": "Egin zoom elementu guztiak ikusteko",
+    "zoomToFit": "Egin zoom layeru guztiak ikusteko",
     "zoomToSelection": "Zooma hautapenera",
-    "toggleElementLock": "Blokeatu/desbloketatu hautapena",
+    "toggleLayerLock": "Blokeatu/desbloketatu hautapena",
     "movePageUpDown": "Mugitu orria gora/behera",
     "movePageLeftRight": "Mugitu orria ezker/eskuin"
   },
@@ -325,7 +325,7 @@
   },
   "publishDialog": {
     "title": "Argitaratu liburutegia",
-    "itemName": "Elementuaren izena",
+    "itemName": "Layeruaren izena",
     "authorName": "Egilearen izena",
     "githubUsername": "GitHub-eko erabiltzaile-izena",
     "twitterUsername": "Twitter-eko erabiltzaile-izena",
@@ -347,9 +347,9 @@
     "noteDescription": "Bidali zure liburutegira sartu ahal izateko <link>zure liburutegiko biltegian</link>beste jendeak bere marrazkietan erabili ahal izateko.",
     "noteGuidelines": "Liburutegia eskuz onartu behar da. Irakurri <link>gidalerroak</link> bidali aurretik. GitHub kontu bat edukitzea komeni da komunikatzeko eta aldaketak egin ahal izateko, baina ez da guztiz beharrezkoa.",
     "noteLicense": "Bidaltzen baduzu, onartzen duzu liburutegia <link>MIT lizentziarekin argitaratuko dela, </link>zeinak, laburbilduz, esan nahi du edozeinek erabiltzen ahal duela murrizketarik gabe.",
-    "noteItems": "Liburutegiko elementu bakoitzak bere izena eduki behar du iragazi ahal izateko. Liburutegiko hurrengo elementuak barne daude:",
-    "atleastOneLibItem": "Hautatu gutxienez liburutegiko elementu bat gutxienez hasi ahal izateko",
-    "republishWarning": "Oharra: hautatutako elementu batzuk dagoeneko argitaratuta/bidalita bezala markatuta daude. Elementuak berriro bidali behar dituzu lehendik dagoen liburutegi edo bidalketa eguneratzen duzunean."
+    "noteItems": "Liburutegiko layeru bakoitzak bere izena eduki behar du iragazi ahal izateko. Liburutegiko hurrengo layeruak barne daude:",
+    "atleastOneLibItem": "Hautatu gutxienez liburutegiko layeru bat gutxienez hasi ahal izateko",
+    "republishWarning": "Oharra: hautatutako layeru batzuk dagoeneko argitaratuta/bidalita bezala markatuta daude. Layeruak berriro bidali behar dituzu lehendik dagoen liburutegi edo bidalketa eguneratzen duzunean."
   },
   "publishSuccessDialog": {
     "title": "Liburutegia bidali da",
@@ -357,7 +357,7 @@
   },
   "confirmDialog": {
     "resetLibrary": "Leheneratu liburutegia",
-    "removeItemsFromLib": "Kendu hautatutako elementuak liburutegitik"
+    "removeItemsFromLib": "Kendu hautatutako layeruak liburutegitik"
   },
   "imageExportDialog": {
     "header": "Esportatu irudia",
@@ -389,8 +389,8 @@
   },
   "stats": {
     "angle": "Angelua",
-    "element": "Elementua",
-    "elements": "Elementuak",
+    "layer": "Layerua",
+    "layers": "Layeruak",
     "height": "Altuera",
     "scene": "Eszena",
     "selected": "Hautatua",
@@ -411,7 +411,7 @@
     "fileSavedToFilename": "{filename}-n gorde da",
     "canvas": "oihala",
     "selection": "hautapena",
-    "pasteAsSingleElement": "Erabili {{shortcut}} elementu bakar gisa itsasteko,\nedo itsatsi lehendik dagoen testu-editore batean"
+    "pasteAsSingleLayer": "Erabili {{shortcut}} layeru bakar gisa itsasteko,\nedo itsatsi lehendik dagoen testu-editore batean"
   },
   "colors": {
     "transparent": "Gardena",

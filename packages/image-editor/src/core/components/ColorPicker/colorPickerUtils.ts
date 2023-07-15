@@ -1,17 +1,18 @@
-import { ExcalidrawElement } from "../../element/types";
 import { atom } from "jotai";
+
 import {
-  ColorPickerColor,
   ColorPaletteCustom,
-  MAX_CUSTOM_COLORS_USED_IN_CANVAS,
+  ColorPickerColor,
+  MAX_CUSTOM_COLORS_USED_IN_CANVAS
 } from "../../colors";
+import { ExcalidrawLayer } from "../../layer/types";
 
 export const getColorNameAndShadeFromColor = ({
   palette,
-  color,
+  color
 }: {
-  palette: ColorPaletteCustom;
   color: string;
+  palette: ColorPaletteCustom;
 }): {
   colorName: ColorPickerColor;
   shade: number | null;
@@ -32,12 +33,12 @@ export const getColorNameAndShadeFromColor = ({
 export const colorPickerHotkeyBindings = [
   ["q", "w", "e", "r", "t"],
   ["a", "s", "d", "f", "g"],
-  ["z", "x", "c", "v", "b"],
+  ["z", "x", "c", "v", "b"]
 ].flat();
 
 export const isCustomColor = ({
   color,
-  palette,
+  palette
 }: {
   color: string;
   palette: ColorPaletteCustom;
@@ -47,30 +48,30 @@ export const isCustomColor = ({
 };
 
 export const getMostUsedCustomColors = (
-  elements: readonly ExcalidrawElement[],
-  type: "elementBackground" | "elementStroke",
-  palette: ColorPaletteCustom,
+  layers: readonly ExcalidrawLayer[],
+  type: "layerBackground" | "layerStroke",
+  palette: ColorPaletteCustom
 ) => {
-  const elementColorTypeMap = {
-    elementBackground: "backgroundColor",
-    elementStroke: "strokeColor",
+  const layerColorTypeMap = {
+    layerBackground: "backgroundColor",
+    layerStroke: "strokeColor"
   };
 
-  const colors = elements.filter((element) => {
-    if (element.isDeleted) {
+  const colors = layers.filter((layer) => {
+    if (layer.isDeleted) {
       return false;
     }
 
     const color =
-      element[elementColorTypeMap[type] as "backgroundColor" | "strokeColor"];
+      layer[layerColorTypeMap[type] as "backgroundColor" | "strokeColor"];
 
     return isCustomColor({ color, palette });
   });
 
   const colorCountMap = new Map<string, number>();
-  colors.forEach((element) => {
+  colors.forEach((layer) => {
     const color =
-      element[elementColorTypeMap[type] as "backgroundColor" | "strokeColor"];
+      layer[layerColorTypeMap[type] as "backgroundColor" | "strokeColor"];
     if (colorCountMap.has(color)) {
       colorCountMap.set(color, colorCountMap.get(color)! + 1);
     } else {
@@ -132,5 +133,5 @@ export const getContrastYIQ = (bgHex: string, isCustomColor: boolean) => {
 
 export type ColorPickerType =
   | "canvasBackground"
-  | "elementBackground"
-  | "elementStroke";
+  | "layerBackground"
+  | "layerStroke";

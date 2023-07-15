@@ -19,13 +19,13 @@ const getTransChildren = (
   format: string,
   props: {
     [key: string]: React.ReactNode | ((el: React.ReactNode) => React.ReactNode);
-  },
+  }
 ): React.ReactNode[] => {
-  const stack: { name: string; children: React.ReactNode[] }[] = [
+  const stack: { children: React.ReactNode[]; name: string }[] = [
     {
       name: "",
-      children: [],
-    },
+      children: []
+    }
   ];
 
   format
@@ -45,11 +45,11 @@ const getTransChildren = (
         if (props.hasOwnProperty(name)) {
           stack.push({
             name,
-            children: [],
+            children: []
           });
         } else {
           console.warn(
-            `Trans: missed to pass in prop ${name} for interpolating ${format}`,
+            `Trans: missed to pass in prop ${name} for interpolating ${format}`
           );
         }
       } else if (tagEndMatch !== null) {
@@ -63,10 +63,10 @@ const getTransChildren = (
         const name = tagEndMatch[1];
         if (name === stack[stack.length - 1].name) {
           const item = stack.pop()!;
-          const itemChildren = React.createElement(
+          const itemChildren = React.createLayer(
             React.Fragment,
             {},
-            ...item.children,
+            ...item.children
           );
           const fn = props[item.name];
           if (typeof fn === "function") {
@@ -74,7 +74,7 @@ const getTransChildren = (
           }
         } else {
           console.warn(
-            `Trans: unexpected end tag ${match} for interpolating ${format}`,
+            `Trans: unexpected end tag ${match} for interpolating ${format}`
           );
         }
       } else if (keyMatch !== null) {
@@ -88,7 +88,7 @@ const getTransChildren = (
           stack[stack.length - 1].children.push(props[name] as React.ReactNode);
         } else {
           console.warn(
-            `Trans: key ${name} not in props for interpolating ${format}`,
+            `Trans: key ${name} not in props for interpolating ${format}`
           );
         }
       } else {
@@ -153,16 +153,16 @@ const Trans = ({
   children,
   ...props
 }: {
-  i18nKey: string;
   [key: string]: React.ReactNode | ((el: React.ReactNode) => React.ReactNode);
+  i18nKey: string;
 }) => {
   const { t } = useI18n();
 
   // This is needed to avoid unique key error in list which gets rendered from getTransChildren
-  return React.createElement(
+  return React.createLayer(
     React.Fragment,
     {},
-    ...getTransChildren(t(i18nKey), props),
+    ...getTransChildren(t(i18nKey), props)
   );
 };
 

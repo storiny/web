@@ -1,13 +1,14 @@
-import { t } from "../i18n";
-import { useState, useEffect } from "react";
-import Spinner from "./Spinner";
 import clsx from "clsx";
+import { useEffect, useState } from "react";
+
 import { THEME } from "../constants";
-import { Theme } from "../element/types";
+import { t } from "../i18n";
+import { Theme } from "../layer/types";
+import Spinner from "./Spinner";
 
 export const LoadingMessage: React.FC<{ delay?: number; theme?: Theme }> = ({
   delay,
-  theme,
+  theme
 }) => {
   const [isWaiting, setIsWaiting] = useState(!!delay);
 
@@ -28,7 +29,7 @@ export const LoadingMessage: React.FC<{ delay?: number; theme?: Theme }> = ({
   return (
     <div
       className={clsx("LoadingMessage", {
-        "LoadingMessage--dark": theme === THEME.DARK,
+        "LoadingMessage--dark": theme === THEME.DARK
       })}
     >
       <div>

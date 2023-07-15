@@ -116,7 +116,7 @@
       "edit": "",
       "exit": ""
     },
-    "elementLock": {
+    "layerLock": {
       "lock": "",
       "unlock": "",
       "lockAll": "",
@@ -124,8 +124,8 @@
     },
     "statusPublished": "",
     "sidebarLock": "",
-    "selectAllElementsInFrame": "",
-    "removeAllElementsFromFrame": "",
+    "selectAllLayersInFrame": "",
+    "removeAllLayersFromFrame": "",
     "eyeDropper": ""
   },
   "library": {
@@ -234,12 +234,12 @@
   },
   "hints": {
     "canvasPanning": "",
-    "linearElement": "Кликнете, за да стартирате няколко точки, плъзнете за една линия",
+    "linearLayer": "Кликнете, за да стартирате няколко точки, плъзнете за една линия",
     "freeDraw": "Натиснете и влачете, пуснете като сте готови",
     "text": "Подсказка: Можете също да добавите текст като натиснете някъде два път с инструмента за селекция",
     "text_selected": "",
     "text_editing": "",
-    "linearElementMulti": "Кликнете върху последната точка или натиснете Escape или Enter, за да завършите",
+    "linearLayerMulti": "Кликнете върху последната точка или натиснете Escape или Enter, за да завършите",
     "lockAngle": "Можете да ограничите ъгъла, като задържите SHIFT",
     "resize": "Може да ограничите при преоразмеряване като задържите SHIFT,\nзадръжте ALT за преоразмерите през центъра",
     "resizeImage": "",
@@ -249,7 +249,7 @@
     "lineEditor_nothingSelected": "",
     "placeImage": "",
     "publishLibrary": "",
-    "bindTextToElement": "Натиснете Enter, за да добавите",
+    "bindTextToLayer": "Натиснете Enter, за да добавите",
     "deepBoxSelect": "",
     "eraserRevert": "",
     "firefox_clipboard_write": ""
@@ -316,7 +316,7 @@
     "view": "Преглед",
     "zoomToFit": "Приближи докато се виждат всички елементи",
     "zoomToSelection": "Приближи селекцията",
-    "toggleElementLock": "",
+    "toggleLayerLock": "",
     "movePageUpDown": "",
     "movePageLeftRight": ""
   },
@@ -389,8 +389,8 @@
   },
   "stats": {
     "angle": "Ъгъл",
-    "element": "Елемент",
-    "elements": "Елементи",
+    "layer": "Елемент",
+    "layers": "Елементи",
     "height": "Височина",
     "scene": "Сцена",
     "selected": "Селектирано",
@@ -411,7 +411,7 @@
     "fileSavedToFilename": "",
     "canvas": "",
     "selection": "",
-    "pasteAsSingleElement": ""
+    "pasteAsSingleLayer": ""
   },
   "colors": {
     "transparent": "",

@@ -1,10 +1,10 @@
 import { HamburgerMenuIcon, palette } from "../components/icons";
 import { ToolButton } from "../components/ToolButton";
 import { t } from "../i18n";
-import { showSelectedShapeActions, getNonDeletedElements } from "../element";
-import { register } from "./register";
-import { allowFullScreen, exitFullScreen, isFullScreen } from "../utils";
 import { KEYS } from "../keys";
+import { getNonDeletedLayers, showSelectedShapeActions } from "../layer";
+import { allowFullScreen, exitFullScreen, isFullScreen } from "../utils";
+import { register } from "./register";
 
 export const actionToggleCanvasMenu = register({
   name: "toggleCanvasMenu",
@@ -12,44 +12,41 @@ export const actionToggleCanvasMenu = register({
   perform: (_, appState) => ({
     appState: {
       ...appState,
-      openMenu: appState.openMenu === "canvas" ? null : "canvas",
+      openMenu: appState.openMenu === "canvas" ? null : "canvas"
     },
-    commitToHistory: false,
+    commitToHistory: false
   }),
   PanelComponent: ({ appState, updateData }) => (
     <ToolButton
-      type="button"
-      icon={HamburgerMenuIcon}
       aria-label={t("buttons.menu")}
+      icon={HamburgerMenuIcon}
       onClick={updateData}
       selected={appState.openMenu === "canvas"}
+      type="button"
     />
-  ),
+  )
 });
 
 export const actionToggleEditMenu = register({
   name: "toggleEditMenu",
   trackEvent: { category: "menu" },
-  perform: (_elements, appState) => ({
+  perform: (_layers, appState) => ({
     appState: {
       ...appState,
-      openMenu: appState.openMenu === "shape" ? null : "shape",
+      openMenu: appState.openMenu === "shape" ? null : "shape"
     },
-    commitToHistory: false,
+    commitToHistory: false
   }),
-  PanelComponent: ({ elements, appState, updateData }) => (
+  PanelComponent: ({ layers, appState, updateData }) => (
     <ToolButton
-      visible={showSelectedShapeActions(
-        appState,
-        getNonDeletedElements(elements),
-      )}
-      type="button"
-      icon={palette}
       aria-label={t("buttons.edit")}
+      icon={palette}
       onClick={updateData}
       selected={appState.openMenu === "shape"}
+      type="button"
+      visible={showSelectedShapeActions(appState, getNonDeletedLayers(layers))}
     />
-  ),
+  )
 });
 
 export const actionFullScreen = register({
@@ -64,26 +61,26 @@ export const actionFullScreen = register({
       exitFullScreen();
     }
     return {
-      commitToHistory: false,
+      commitToHistory: false
     };
-  },
+  }
 });
 
 export const actionShortcuts = register({
   name: "toggleShortcuts",
   viewMode: true,
   trackEvent: { category: "menu", action: "toggleHelpDialog" },
-  perform: (_elements, appState, _, { focusContainer }) => {
+  perform: (_layers, appState, _, { focusContainer }) => {
     if (appState.openDialog === "help") {
       focusContainer();
     }
     return {
       appState: {
         ...appState,
-        openDialog: appState.openDialog === "help" ? null : "help",
+        openDialog: appState.openDialog === "help" ? null : "help"
       },
-      commitToHistory: false,
+      commitToHistory: false
     };
   },
-  keyTest: (event) => event.key === KEYS.QUESTION_MARK,
+  keyTest: (event) => event.key === KEYS.QUESTION_MARK
 });

@@ -4,7 +4,7 @@
     "pasteAsPlaintext": "Plakken als platte tekst",
     "pasteCharts": "Plak grafieken",
     "selectAll": "Alles selecteren",
-    "multiSelect": "Voeg element toe aan selectie",
+    "multiSelect": "Voeg layer toe aan selectie",
     "moveCanvas": "Canvas verplaatsen",
     "cut": "Knip",
     "copy": "Kopiëren",
@@ -116,7 +116,7 @@
       "edit": "Bewerk regel",
       "exit": "Verlaat regel-editor"
     },
-    "elementLock": {
+    "layerLock": {
       "lock": "Vergrendel",
       "unlock": "Ontgrendel",
       "lockAll": "Vergrendel alles",
@@ -124,8 +124,8 @@
     },
     "statusPublished": "Gepubliceerd",
     "sidebarLock": "Zijbalk open houden",
-    "selectAllElementsInFrame": "",
-    "removeAllElementsFromFrame": "",
+    "selectAllLayersInFrame": "",
+    "removeAllLayersFromFrame": "",
     "eyeDropper": ""
   },
   "library": {
@@ -234,12 +234,12 @@
   },
   "hints": {
     "canvasPanning": "Om de canvas te verplaatsen, houd muiswiel of spatiebalk ingedrukt tijdens slepen, of gebruik het handgereedschap",
-    "linearElement": "Klik om meerdere punten te starten, sleep voor één lijn",
+    "linearLayer": "Klik om meerdere punten te starten, sleep voor één lijn",
     "freeDraw": "Klik en sleep, laat los als je klaar bent",
     "text": "Tip: je kunt tekst toevoegen door ergens dubbel te klikken met de selectietool",
     "text_selected": "Dubbelklik of druk op ENTER om tekst te bewerken",
     "text_editing": "Druk op Escape of CtrlOrCmd+ENTER om het bewerken te voltooien",
-    "linearElementMulti": "Klik op het laatste punt of druk op Escape of Enter om te stoppen",
+    "linearLayerMulti": "Klik op het laatste punt of druk op Escape of Enter om te stoppen",
     "lockAngle": "Je kunt de hoek beperken door SHIFT ingedrukt te houden",
     "resize": "Houd tijdens het vergroten SHIFT ingedrukt om verhoudingen te behouden,\ngebruik ALT om vanuit het midden te vergroten/verkleinen",
     "resizeImage": "",
@@ -249,7 +249,7 @@
     "lineEditor_nothingSelected": "",
     "placeImage": "",
     "publishLibrary": "Publiceer je eigen bibliotheek",
-    "bindTextToElement": "Druk op enter om tekst toe te voegen",
+    "bindTextToLayer": "Druk op enter om tekst toe te voegen",
     "deepBoxSelect": "",
     "eraserRevert": "",
     "firefox_clipboard_write": ""
@@ -257,7 +257,7 @@
   "canvasError": {
     "cannotShowPreview": "Kan voorbeeld niet tonen",
     "canvasTooBig": "Het canvas is mogelijk te groot.",
-    "canvasTooBigTip": "Tip: beweeg de verste elementen iets dichter bij elkaar."
+    "canvasTooBigTip": "Tip: beweeg de verste layeren iets dichter bij elkaar."
   },
   "errorSplash": {
     "headingMain": "Fout opgetreden. Probeer <button>de pagina opnieuw laden.</button>",
@@ -314,9 +314,9 @@
     "textNewLine": "Nieuwe regel toevoegen (teksteditor)",
     "title": "Help",
     "view": "Weergave",
-    "zoomToFit": "Zoom in op alle elementen",
+    "zoomToFit": "Zoom in op alle layeren",
     "zoomToSelection": "Inzoomen op selectie",
-    "toggleElementLock": "",
+    "toggleLayerLock": "",
     "movePageUpDown": "Pagina omhoog/omlaag",
     "movePageLeftRight": "Verplaats pagina links/rechts"
   },
@@ -389,8 +389,8 @@
   },
   "stats": {
     "angle": "Hoek",
-    "element": "Element",
-    "elements": "Elementen",
+    "layer": "Layer",
+    "layers": "Layeren",
     "height": "Hoogte",
     "scene": "Scene",
     "selected": "Geselecteerd",
@@ -411,7 +411,7 @@
     "fileSavedToFilename": "Opgeslagen als {filename}",
     "canvas": "canvas",
     "selection": "selectie",
-    "pasteAsSingleElement": "Gebruik {{shortcut}} om te plakken als een enkel element,\nof plak in een bestaande teksteditor"
+    "pasteAsSingleLayer": "Gebruik {{shortcut}} om te plakken als een enkel layer,\nof plak in een bestaande teksteditor"
   },
   "colors": {
     "transparent": "Transparant",

@@ -116,7 +116,7 @@
       "edit": "Ẓreg izirig",
       "exit": "Ffeɣ seg umaẓrag n yizirig"
     },
-    "elementLock": {
+    "layerLock": {
       "lock": "Sekkeṛ",
       "unlock": "Serreḥ",
       "lockAll": "Sekkeṛ akk",
@@ -124,8 +124,8 @@
     },
     "statusPublished": "Yeffeɣ-d",
     "sidebarLock": "Eǧǧ afeggag n yidis yeldi",
-    "selectAllElementsInFrame": "",
-    "removeAllElementsFromFrame": "",
+    "selectAllLayersInFrame": "",
+    "removeAllLayersFromFrame": "",
     "eyeDropper": ""
   },
   "library": {
@@ -234,12 +234,12 @@
   },
   "hints": {
     "canvasPanning": "Akken ad tesmuttiḍ taɣzut n usuneɣ, ṭṭef ṛṛuda n umumed, neɣ seqdec afecku Afus",
-    "linearElement": "Ssit akken ad tebduḍ aṭas n tenqiḍin, zuɣer i yiwen n yizirig",
+    "linearLayer": "Ssit akken ad tebduḍ aṭas n tenqiḍin, zuɣer i yiwen n yizirig",
     "freeDraw": "Ssit yerna zuɣer, serreḥ ticki tfukeḍ",
     "text": "Tixidest: tzemreḍ daɣen ad ternuḍ aḍris s usiti snat n tikkal anida tebɣiḍ s ufecku n tefrayt",
     "text_selected": "Ssit snat n tikkal neɣ ssed taqeffalt Kcem akken ad tẓergeḍ aḍris",
     "text_editing": "Ssit Escape neɣ CtrlOrCmd+ENTER akken ad tfakkeḍ asiẓreg",
-    "linearElementMulti": "Ssit ɣef tenqiḍt taneggarut neɣ ssed taqeffalt Escape neɣ taqeffalt Kcem akken ad tfakkeḍ",
+    "linearLayerMulti": "Ssit ɣef tenqiḍt taneggarut neɣ ssed taqeffalt Escape neɣ taqeffalt Kcem akken ad tfakkeḍ",
     "lockAngle": "Tzemreḍ ad tḥettmeḍ tiɣmert s tuṭṭfa n tqeffalt SHIFT",
     "resize": "Tzemreḍ ad tḥettemeḍ assaɣ s tuṭṭfa n tqeffalt SHIFT mi ara tettbeddileḍ tiddi,\nma teṭṭfeḍ ALT abeddel n tiddi ad yili si tlemmast",
     "resizeImage": "Tzemreḍ ad talseḍ tiddi s tilelli s tuṭṭfa n SHIFT,\nṭṭef ALT akken ad talseḍ tiddi si tlemmast",
@@ -249,7 +249,7 @@
     "lineEditor_nothingSelected": "Fren tanqiḍt akken ad tẓergeḍ (ṭṭef SHIFT akken ad tferneḍ aṭas),\nneɣ ṭṭef Alt akken ad ternuḍ tinqiḍin timaynutin",
     "placeImage": "Ssit akken ad tserseḍ tugna, neɣ ssit u zuɣer akken ad tesbaduḍ tiddi-ines s ufus",
     "publishLibrary": "Siẓreg tamkarḍit-inek•inem",
-    "bindTextToElement": "Ssed ɣef kcem akken ad ternuḍ aḍris",
+    "bindTextToLayer": "Ssed ɣef kcem akken ad ternuḍ aḍris",
     "deepBoxSelect": "Ṭṭef CtrlOrCmd akken ad tferneḍ s telqey, yerna ad trewleḍ i uzuɣer",
     "eraserRevert": "Ssed Alt akken ad tsefsxeḍ iferdisen yettwacerḍen i tukksa",
     "firefox_clipboard_write": ""
@@ -316,7 +316,7 @@
     "view": "Tamuɣli",
     "zoomToFit": "Simɣur akken ad twliḍ akk iferdisen",
     "zoomToSelection": "Simɣur ɣer tefrayt",
-    "toggleElementLock": "Sekkeṛ/kkes asekker i tefrayt",
+    "toggleLayerLock": "Sekkeṛ/kkes asekker i tefrayt",
     "movePageUpDown": "Smutti asebter d asawen/akessar",
     "movePageLeftRight": "Smutti asebter s azelmaḍ/ayfus"
   },
@@ -389,8 +389,8 @@
   },
   "stats": {
     "angle": "Tiɣmeṛt",
-    "element": "Aferdis",
-    "elements": "Iferdisen",
+    "layer": "Aferdis",
+    "layers": "Iferdisen",
     "height": "Tattayt",
     "scene": "Asayes",
     "selected": "Yettwafren",
@@ -411,7 +411,7 @@
     "fileSavedToFilename": "Yettwasekles di {filename}",
     "canvas": "taɣzut n usuneɣ",
     "selection": "tafrayt",
-    "pasteAsSingleElement": ""
+    "pasteAsSingleLayer": ""
   },
   "colors": {
     "transparent": "Afrawan",

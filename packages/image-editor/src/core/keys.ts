@@ -20,7 +20,7 @@ export const CODES = {
   H: "KeyH",
   V: "KeyV",
   Z: "KeyZ",
-  R: "KeyR",
+  R: "KeyR"
 } as const;
 
 export const KEYS = {
@@ -75,7 +75,7 @@ export const KEYS = {
   6: "6",
   7: "7",
   8: "8",
-  9: "9",
+  9: "9"
 } as const;
 
 export type Key = keyof typeof KEYS;
@@ -93,5 +93,5 @@ export const shouldMaintainAspectRatio = (event: MouseEvent | KeyboardEvent) =>
   event.shiftKey;
 
 export const shouldRotateWithDiscreteAngle = (
-  event: MouseEvent | KeyboardEvent | React.PointerEvent<HTMLCanvasElement>,
+  event: MouseEvent | KeyboardEvent | React.PointerEvent<HTMLCanvasLayer>
 ) => event.shiftKey;

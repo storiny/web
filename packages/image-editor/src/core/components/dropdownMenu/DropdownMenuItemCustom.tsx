@@ -7,15 +7,13 @@ const DropdownMenuItemCustom = ({
 }: {
   children: React.ReactNode;
   className?: string;
-} & React.HTMLAttributes<HTMLDivElement>) => {
-  return (
-    <div
-      {...rest}
-      className={`dropdown-menu-item-base dropdown-menu-item-custom ${className}`.trim()}
-    >
-      {children}
-    </div>
-  );
-};
+} & React.HTMLAttributes<HTMLDivLayer>) => (
+  <div
+    {...rest}
+    className={`dropdown-menu-item-base dropdown-menu-item-custom ${className}`.trim()}
+  >
+    {children}
+  </div>
+);
 
 export default DropdownMenuItemCustom;

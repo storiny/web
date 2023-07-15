@@ -4,7 +4,7 @@
     "pasteAsPlaintext": "Paste as plaintext",
     "pasteCharts": "Paste charts",
     "selectAll": "Select all",
-    "multiSelect": "Add element to selection",
+    "multiSelect": "Add layer to selection",
     "moveCanvas": "Move canvas",
     "cut": "Cut",
     "copy": "Copy",
@@ -116,7 +116,7 @@
       "edit": "Edit line",
       "exit": "Exit line editor"
     },
-    "elementLock": {
+    "layerLock": {
       "lock": "Lock",
       "unlock": "Unlock",
       "lockAll": "Lock all",
@@ -124,8 +124,8 @@
     },
     "statusPublished": "Published",
     "sidebarLock": "Keep sidebar open",
-    "selectAllElementsInFrame": "Select all elements in frame",
-    "removeAllElementsFromFrame": "Remove all elements from frame",
+    "selectAllLayersInFrame": "Select all layers in frame",
+    "removeAllLayersFromFrame": "Remove all layers from frame",
     "eyeDropper": "Pick color from canvas"
   },
   "library": {
@@ -203,9 +203,9 @@
     "collabSaveFailed_sizeExceeded": "Couldn't save to the backend database, the canvas seems to be too big. You should save the file locally to ensure you don't lose your work.",
     "brave_measure_text_error": {
       "line1": "Looks like you are using Brave browser with the <bold>Aggressively Block Fingerprinting</bold> setting enabled.",
-      "line2": "This could result in breaking the <bold>Text Elements</bold> in your drawings.",
+      "line2": "This could result in breaking the <bold>Text Layers</bold> in your drawings.",
       "line3": "We strongly recommend disabling this setting. You can follow <link>these steps</link> on how to do so.",
-      "line4": "If disabling this setting doesn't fix the display of text elements, please open an <issueLink>issue</issueLink> on our GitHub, or write us on <discordLink>Discord</discordLink>"
+      "line4": "If disabling this setting doesn't fix the display of text layers, please open an <issueLink>issue</issueLink> on our GitHub, or write us on <discordLink>Discord</discordLink>"
     }
   },
   "toolBar": {
@@ -234,12 +234,12 @@
   },
   "hints": {
     "canvasPanning": "To move canvas, hold mouse wheel or spacebar while dragging, or use the hand tool",
-    "linearElement": "Click to start multiple points, drag for single line",
+    "linearLayer": "Click to start multiple points, drag for single line",
     "freeDraw": "Click and drag, release when you're finished",
     "text": "Tip: you can also add text by double-clicking anywhere with the selection tool",
     "text_selected": "Double-click or press ENTER to edit text",
     "text_editing": "Press Escape or CtrlOrCmd+ENTER to finish editing",
-    "linearElementMulti": "Click on last point or press Escape or Enter to finish",
+    "linearLayerMulti": "Click on last point or press Escape or Enter to finish",
     "lockAngle": "You can constrain angle by holding SHIFT",
     "resize": "You can constrain proportions by holding SHIFT while resizing,\nhold ALT to resize from the center",
     "resizeImage": "You can resize freely by holding SHIFT,\nhold ALT to resize from the center",
@@ -249,15 +249,15 @@
     "lineEditor_nothingSelected": "Select a point to edit (hold SHIFT to select multiple),\nor hold Alt and click to add new points",
     "placeImage": "Click to place the image, or click and drag to set its size manually",
     "publishLibrary": "Publish your own library",
-    "bindTextToElement": "Press enter to add text",
+    "bindTextToLayer": "Press enter to add text",
     "deepBoxSelect": "Hold CtrlOrCmd to deep select, and to prevent dragging",
-    "eraserRevert": "Hold Alt to revert the elements marked for deletion",
+    "eraserRevert": "Hold Alt to revert the layers marked for deletion",
     "firefox_clipboard_write": "This feature can likely be enabled by setting the \"dom.events.asyncClipboard.clipboardItem\" flag to \"true\". To change the browser flags in Firefox, visit the \"about:config\" page."
   },
   "canvasError": {
     "cannotShowPreview": "Cannot show preview",
     "canvasTooBig": "The canvas may be too big.",
-    "canvasTooBigTip": "Tip: try moving the farthest elements a bit closer together."
+    "canvasTooBigTip": "Tip: try moving the farthest layers a bit closer together."
   },
   "errorSplash": {
     "headingMain": "Encountered an error. Try <button>reloading the page</button>.",
@@ -314,9 +314,9 @@
     "textNewLine": "Add new line (text editor)",
     "title": "Help",
     "view": "View",
-    "zoomToFit": "Zoom to fit all elements",
+    "zoomToFit": "Zoom to fit all layers",
     "zoomToSelection": "Zoom to selection",
-    "toggleElementLock": "Lock/unlock selection",
+    "toggleLayerLock": "Lock/unlock selection",
     "movePageUpDown": "Move page up/down",
     "movePageLeftRight": "Move page left/right"
   },
@@ -389,8 +389,8 @@
   },
   "stats": {
     "angle": "Angle",
-    "element": "Element",
-    "elements": "Elements",
+    "layer": "Layer",
+    "layers": "Layers",
     "height": "Height",
     "scene": "Scene",
     "selected": "Selected",
@@ -411,7 +411,7 @@
     "fileSavedToFilename": "Saved to {filename}",
     "canvas": "canvas",
     "selection": "selection",
-    "pasteAsSingleElement": "Use {{shortcut}} to paste as a single element,\nor paste into an existing text editor"
+    "pasteAsSingleLayer": "Use {{shortcut}} to paste as a single layer,\nor paste into an existing text editor"
   },
   "colors": {
     "transparent": "Transparent",

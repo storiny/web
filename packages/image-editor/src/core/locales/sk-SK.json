@@ -116,7 +116,7 @@
       "edit": "Upraviť čiaru",
       "exit": "Ukončiť editovanie čiary"
     },
-    "elementLock": {
+    "layerLock": {
       "lock": "Zamknúť",
       "unlock": "Odomknúť",
       "lockAll": "Zamknúť všetko",
@@ -124,8 +124,8 @@
     },
     "statusPublished": "Zverejnené",
     "sidebarLock": "Nechať bočný panel otvorený",
-    "selectAllElementsInFrame": "",
-    "removeAllElementsFromFrame": "",
+    "selectAllLayersInFrame": "",
+    "removeAllLayersFromFrame": "",
     "eyeDropper": "Vybrať farbu z plátna"
   },
   "library": {
@@ -234,12 +234,12 @@
   },
   "hints": {
     "canvasPanning": "Pre pohyb plátna podržte koliesko myši alebo medzerník počas ťahania, alebo použite nástroj ruka",
-    "linearElement": "Kliknite na vloženie viacerých bodov, potiahnite na vytvorenie jednej priamky",
+    "linearLayer": "Kliknite na vloženie viacerých bodov, potiahnite na vytvorenie jednej priamky",
     "freeDraw": "Kliknite a ťahajte, pustite na ukončenie",
     "text": "Tip: text môžete pridať aj dvojklikom kdekoľvek, ak je zvolený nástroj výber",
     "text_selected": "Použite dvojklik alebo stlačte Enter na editáciu textu",
     "text_editing": "Stlačte Escape alebo CtrlOrCmd+ENTER na ukončenie editovania",
-    "linearElementMulti": "Kliknite na počiatočný bod alebo stlačte Escape alebo Enter na ukončenie",
+    "linearLayerMulti": "Kliknite na počiatočný bod alebo stlačte Escape alebo Enter na ukončenie",
     "lockAngle": "Počas rotácie obmedzíte uhol podržaním SHIFT",
     "resize": "Počas zmeny veľkosti zachováte proporcie podržaním SHIFT,\\npodržaním ALT meníte veľkosť so zachovaním stredu",
     "resizeImage": "Podržte SHIFT pre voľnú zmenu veľkosti, podržte ALT pre zmenu veľkosti od stredu",
@@ -249,7 +249,7 @@
     "lineEditor_nothingSelected": "Zvoľte bod na upravovanie (podržte SHIFT pre zvolenie viacerých bodov) alebo podržte Alt a kliknite na pridanie nového bodu",
     "placeImage": "Kliknite pre umiestnenie obrázka alebo kliknite a ťahajte pre zmenu jeho veľkosti",
     "publishLibrary": "Uverejniť vašu knižnicu",
-    "bindTextToElement": "Stlačte enter na pridanie textu",
+    "bindTextToLayer": "Stlačte enter na pridanie textu",
     "deepBoxSelect": "Podržte CtrlOrCmd na výber v skupine alebo zamedzeniu poťiahnutia",
     "eraserRevert": "Podržte Alt pre prehodenie položiek určených na vymazanie",
     "firefox_clipboard_write": "Táto sa funkcionalita sa dá zapnúť nastavením \"dom.events.asyncClipboard.clipboardItem\" na \"true\". Pre zmenu nastavení vo Firefox-e otvorte stránku \"about:config\"."
@@ -316,7 +316,7 @@
     "view": "Zobrazenie",
     "zoomToFit": "Priblížiť aby boli zahrnuté všetky prvky",
     "zoomToSelection": "Priblížiť na výber",
-    "toggleElementLock": "Zamknúť/odomknúť vybrané",
+    "toggleLayerLock": "Zamknúť/odomknúť vybrané",
     "movePageUpDown": "Posunúť stranu hore/dole",
     "movePageLeftRight": "Posunúť stranu doľava/doprava"
   },
@@ -389,8 +389,8 @@
   },
   "stats": {
     "angle": "Uhol",
-    "element": "Prvok",
-    "elements": "Prvky",
+    "layer": "Prvok",
+    "layers": "Prvky",
     "height": "Výška",
     "scene": "Scéna",
     "selected": "Vybrané",
@@ -411,7 +411,7 @@
     "fileSavedToFilename": "Uložený ako {filename}",
     "canvas": "plátna",
     "selection": "výberu",
-    "pasteAsSingleElement": "Použitím {{shortcut}} vložte ako samostatný prvok alebo vložte do existujúceho editovaného textu"
+    "pasteAsSingleLayer": "Použitím {{shortcut}} vložte ako samostatný prvok alebo vložte do existujúceho editovaného textu"
   },
   "colors": {
     "transparent": "Priehľadná",

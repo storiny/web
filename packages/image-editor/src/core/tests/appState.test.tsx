@@ -1,10 +1,10 @@
-import { queryByTestId, render, waitFor } from "./test-utils";
-import ExcalidrawApp from "../excalidraw-app";
-import { API } from "./helpers/api";
 import { getDefaultAppState } from "../appState";
 import { EXPORT_DATA_TYPES, MIME_TYPES } from "../constants";
+import ExcalidrawApp from "../excalidraw-app";
+import { ExcalidrawTextLayer } from "../layer/types";
+import { API } from "./helpers/api";
 import { Pointer, UI } from "./helpers/ui";
-import { ExcalidrawTextElement } from "../element/types";
+import { queryByTestId, render, waitFor } from "./test-utils";
 
 const { h } = window;
 
@@ -17,9 +17,9 @@ describe("appState", () => {
       localStorageData: {
         appState: {
           exportBackground,
-          viewBackgroundColor: "#F00",
-        },
-      },
+          viewBackgroundColor: "#F00"
+        }
+      }
     });
 
     await waitFor(() => {
@@ -33,17 +33,17 @@ describe("appState", () => {
           JSON.stringify({
             type: EXPORT_DATA_TYPES.excalidraw,
             appState: {
-              viewBackgroundColor: "#000",
+              viewBackgroundColor: "#000"
             },
-            elements: [API.createElement({ type: "rectangle", id: "A" })],
-          }),
+            layers: [API.createLayer({ type: "rectangle", id: "A" })]
+          })
         ],
-        { type: MIME_TYPES.json },
-      ),
+        { type: MIME_TYPES.json }
+      )
     );
 
     await waitFor(() => {
-      expect(h.elements).toEqual([expect.objectContaining({ id: "A" })]);
+      expect(h.layers).toEqual([expect.objectContaining({ id: "A" })]);
       // non-imported prop → retain
       expect(h.state.exportBackground).toBe(exportBackground);
       // imported prop → overwrite
@@ -51,13 +51,13 @@ describe("appState", () => {
     });
   });
 
-  it("changing fontSize with text tool selected (no element created yet)", async () => {
+  it("changing fontSize with text tool selected (no layer created yet)", async () => {
     const { container } = await render(<ExcalidrawApp />, {
       localStorageData: {
         appState: {
-          currentItemFontSize: 30,
-        },
-      },
+          currentItemFontSize: 30
+        }
+      }
     });
 
     UI.clickTool("text");
@@ -70,6 +70,6 @@ describe("appState", () => {
 
     mouse.clickAt(100, 100);
 
-    expect((h.elements[0] as ExcalidrawTextElement).fontSize).toBe(16);
+    expect((h.layers[0] as ExcalidrawTextLayer).fontSize).toBe(16);
   });
 });

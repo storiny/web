@@ -4,7 +4,7 @@
     "pasteAsPlaintext": "Prilepi kot navadno besedilo",
     "pasteCharts": "Prilepi grafikone",
     "selectAll": "Izberi vse",
-    "multiSelect": "Dodaj element v izbor",
+    "multiSelect": "Dodaj layer v izbor",
     "moveCanvas": "Premakni platno",
     "cut": "Izreži",
     "copy": "Kopiraj",
@@ -105,7 +105,7 @@
     "decreaseFontSize": "Zmanjšaj velikost pisave",
     "increaseFontSize": "Povečaj velikost pisave",
     "unbindText": "Veži besedilo",
-    "bindText": "Veži besedilo na element",
+    "bindText": "Veži besedilo na layer",
     "createContainerFromText": "Zavij besedilo v vsebnik",
     "link": {
       "edit": "Uredi povezavo",
@@ -116,7 +116,7 @@
       "edit": "Uredi črto",
       "exit": "Zapri urejanje črte"
     },
-    "elementLock": {
+    "layerLock": {
       "lock": "Zakleni",
       "unlock": "Odkleni",
       "lockAll": "Zakleni vse",
@@ -124,14 +124,14 @@
     },
     "statusPublished": "Objavljeno",
     "sidebarLock": "Obdrži stransko vrstico odprto",
-    "selectAllElementsInFrame": "Izberi vse elemente v okvirju",
-    "removeAllElementsFromFrame": "Izbriši vse elemente v okvirju",
+    "selectAllLayersInFrame": "Izberi vse layere v okvirju",
+    "removeAllLayersFromFrame": "Izbriši vse layere v okvirju",
     "eyeDropper": "Izberi barvo s platna"
   },
   "library": {
-    "noItems": "Dodan še ni noben element...",
-    "hint_emptyLibrary": "Izberite element na platnu, da ga dodate sem, ali namestite knjižnico iz javnega skladišča spodaj.",
-    "hint_emptyPrivateLibrary": "Izberite element na platnu, da ga dodate sem."
+    "noItems": "Dodan še ni noben layer...",
+    "hint_emptyLibrary": "Izberite layer na platnu, da ga dodate sem, ali namestite knjižnico iz javnega skladišča spodaj.",
+    "hint_emptyPrivateLibrary": "Izberite layer na platnu, da ga dodate sem."
   },
   "buttons": {
     "clearReset": "Ponastavi platno",
@@ -180,14 +180,14 @@
     "uploadedSecurly": "Nalaganje je bilo zaščiteno s šifriranjem od konca do konca, kar pomeni, da strežnik Excalidraw in tretje osebe ne morejo brati vsebine.",
     "loadSceneOverridePrompt": "Nalaganje zunanje risbe bo nadomestilo vašo obstoječo vsebino. Ali želite nadaljevati?",
     "collabStopOverridePrompt": "Ustavitev seje bo prepisala vašo prejšnjo, lokalno shranjeno risbo. Ali ste prepričani?\n\n(Če želite obdržati lokalno risbo, preprosto zaprite zavihek brskalnika.)",
-    "errorAddingToLibrary": "Elementa ni bilo mogoče dodati v knjižnico",
-    "errorRemovingFromLibrary": "Elementa ni bilo mogoče izbrisati iz knjižnice",
+    "errorAddingToLibrary": "Layera ni bilo mogoče dodati v knjižnico",
+    "errorRemovingFromLibrary": "Layera ni bilo mogoče izbrisati iz knjižnice",
     "confirmAddLibrary": "S tem boste v vašo knjižnico dodali oblike ({{numShapes}}). Ali ste prepričani?",
     "imageDoesNotContainScene": "Zdi se, da ta slika ne vsebuje podatkov o sceni. Ali ste med izvozom omogočili vdelavo scene?",
     "cannotRestoreFromImage": "Scene ni bilo mogoče obnoviti iz te slikovne datoteke",
     "invalidSceneUrl": "S priloženega URL-ja ni bilo mogoče uvoziti scene. Je napačno oblikovana ali pa ne vsebuje veljavnih podatkov Excalidraw JSON.",
     "resetLibrary": "To bo počistilo vašo knjižnico. Ali ste prepričani?",
-    "removeItemsFromsLibrary": "Izbriši elemente ({{count}}) iz knjižnice?",
+    "removeItemsFromsLibrary": "Izbriši layere ({{count}}) iz knjižnice?",
     "invalidEncryptionKey": "Ključ za šifriranje mora vsebovati 22 znakov. Sodelovanje v živo je onemogočeno.",
     "collabOfflineWarning": "Internetna povezava ni na voljo.\nVaše spremembe ne bodo shranjene!"
   },
@@ -203,9 +203,9 @@
     "collabSaveFailed_sizeExceeded": "Ni bilo mogoče shraniti v zaledno bazo podatkov, zdi se, da je platno preveliko. Datoteko shranite lokalno, da ne izgubite svojega dela.",
     "brave_measure_text_error": {
       "line1": "Videti je, da uporabljate brskalnik Brave z omogočeno nastavitvijo <bold>Agresivno blokiranje prstnih odtisov</bold>.",
-      "line2": "To bi lahko povzročilo motnje v obnašanju <bold>besedilnih elementov</bold> v vaših risbah.",
+      "line2": "To bi lahko povzročilo motnje v obnašanju <bold>besedilnih layerov</bold> v vaših risbah.",
       "line3": "Močno priporočamo, da onemogočite to nastavitev. Sledite <link>tem korakom</link>, kako to storiti.",
-      "line4": "Če onemogočanje te nastavitve ne popravi prikaza besedilnih elementov, odprite <issueLink>vprašanje</issueLink> na našem GitHubu ali nam pišite na <discordLink>Discord</discordLink>"
+      "line4": "Če onemogočanje te nastavitve ne popravi prikaza besedilnih layerov, odprite <issueLink>vprašanje</issueLink> na našem GitHubu ali nam pišite na <discordLink>Discord</discordLink>"
     }
   },
   "toolBar": {
@@ -234,12 +234,12 @@
   },
   "hints": {
     "canvasPanning": "Za premikanje platna med vlečenjem držite kolesce miške ali preslednico ali uporabite orodje roka",
-    "linearElement": "Kliknite za začetek več točk, povlecite za posamezno črto",
+    "linearLayer": "Kliknite za začetek več točk, povlecite za posamezno črto",
     "freeDraw": "Kliknite in povlecite, spustite, ko končate",
     "text": "Namig: besedilo lahko dodate tudi z dvoklikom kjer koli z orodjem za izbiro",
     "text_selected": "Dvokliknite ali pritisnite tipko Enter, da uredite besedilo",
     "text_editing": "Pritisnite tipko Escape ali CtrlOrCmd+Enter za zaključek urejanja",
-    "linearElementMulti": "Kliknite zadnjo točko ali pritisnite Escape ali Enter, da končate",
+    "linearLayerMulti": "Kliknite zadnjo točko ali pritisnite Escape ali Enter, da končate",
     "lockAngle": "Kot lahko omejite tako, da držite tipko Shift",
     "resize": "Razmerja lahko omejite tako, da držite tipko Shift med spreminjanjem velikosti. Držite tipko Alt, da spremenite velikost od središča",
     "resizeImage": "Velikost lahko prosto spreminjate tako, da držite tipko Shift. Držite tipko Alt, da spremenite velikost od središča",
@@ -249,15 +249,15 @@
     "lineEditor_nothingSelected": "Izberite točko za urejanje (pridržite tipko Shift za izbiro več točk), ali držite tipko Alt in kliknite za dodajanje novih točk",
     "placeImage": "Kliknite, da postavite sliko, ali kliknite in povlecite, da ročno nastavite njeno velikost",
     "publishLibrary": "Objavi svojo knjižnico",
-    "bindTextToElement": "Pritisnite tipko Enter za dodajanje besedila",
+    "bindTextToLayer": "Pritisnite tipko Enter za dodajanje besedila",
     "deepBoxSelect": "Držite tipko CtrlOrCmd za globoko izbiro in preprečitev vlečenja",
-    "eraserRevert": "Pridržite tipko Alt, da razveljavite elemente, označene za brisanje",
+    "eraserRevert": "Pridržite tipko Alt, da razveljavite layere, označene za brisanje",
     "firefox_clipboard_write": "To funkcijo lahko verjetno omogočite z nastavitvijo zastavice \"dom.events.asyncClipboard.clipboardItem\" na \"true\". Če želite spremeniti zastavice brskalnika v Firefoxu, obiščite stran \"about:config\"."
   },
   "canvasError": {
     "cannotShowPreview": "Predogleda ni bilo mogoče prikazati",
     "canvasTooBig": "Morda je platno preveliko.",
-    "canvasTooBigTip": "Nasvet: poskusite premakniti najbolj oddaljene elemente nekoliko bližje skupaj."
+    "canvasTooBigTip": "Nasvet: poskusite premakniti najbolj oddaljene layere nekoliko bližje skupaj."
   },
   "errorSplash": {
     "headingMain": "Prišlo je do napake. Poskusite <button>ponovno naložiti stran.</button>",
@@ -314,9 +314,9 @@
     "textNewLine": "Dodaj novo vrstico (urejevalnik besedila)",
     "title": "Pomoč",
     "view": "Pogled",
-    "zoomToFit": "Približaj na vse elemente",
+    "zoomToFit": "Približaj na vse layere",
     "zoomToSelection": "Približaj na izbor",
-    "toggleElementLock": "Zakleni/odkleni izbor",
+    "toggleLayerLock": "Zakleni/odkleni izbor",
     "movePageUpDown": "Premakni stran gor/dol",
     "movePageLeftRight": "Premakni stran levo/desno"
   },
@@ -325,7 +325,7 @@
   },
   "publishDialog": {
     "title": "Objavi knjižnico",
-    "itemName": "Ime elementa",
+    "itemName": "Ime layera",
     "authorName": "Ime avtorja",
     "githubUsername": "GitHub uporabniško ime",
     "twitterUsername": "Twitter uporabniško ime",
@@ -347,9 +347,9 @@
     "noteDescription": "Predložite svojo knjižnico, da bo vključena v <link>javno skladišče knjižnic,</link>da jih drugi lahko uporabljajo v svojih risbah.",
     "noteGuidelines": "Knjižnica mora biti najprej ročno odobrena. Prosimo vas, da pred oddajanjem preberete naše <link>smernice.</link>Za komunikacijo in spreminjanje po potrebi boste potrebovali račun GitHub, vendar to ni obvezno.",
     "noteLicense": "Z oddajo se strinjate, da bo knjižnica objavljena pod <link>licenco MIT, </link>kar na kratko pomeni, da jo lahko kdorkoli uporablja brez omejitev.",
-    "noteItems": "Vsak element knjižnice mora imeti svoje ime, tako da ga je mogoče filtrirati. Vključeni bodo naslednji elementi knjižnice:",
-    "atleastOneLibItem": "Za začetek izberite vsaj en element knjižnice",
-    "republishWarning": "Opomba: nekateri izbrani predmeti so označeni kot že objavljeni/oddani. Elemente lahko znova oddate samo, ko posodabljate obstoječo knjižnico ali oddajo."
+    "noteItems": "Vsak layer knjižnice mora imeti svoje ime, tako da ga je mogoče filtrirati. Vključeni bodo naslednji layeri knjižnice:",
+    "atleastOneLibItem": "Za začetek izberite vsaj en layer knjižnice",
+    "republishWarning": "Opomba: nekateri izbrani predmeti so označeni kot že objavljeni/oddani. Layere lahko znova oddate samo, ko posodabljate obstoječo knjižnico ali oddajo."
   },
   "publishSuccessDialog": {
     "title": "Knjižnica oddana",
@@ -357,7 +357,7 @@
   },
   "confirmDialog": {
     "resetLibrary": "Ponastavi knjižnico",
-    "removeItemsFromLib": "Odstran izbrane elemente iz knjižnice"
+    "removeItemsFromLib": "Odstran izbrane layere iz knjižnice"
   },
   "imageExportDialog": {
     "header": "Izvozi sliko",
@@ -389,8 +389,8 @@
   },
   "stats": {
     "angle": "Kot",
-    "element": "Element",
-    "elements": "Elementi",
+    "layer": "Layer",
+    "layers": "Layeri",
     "height": "Višina",
     "scene": "Scena",
     "selected": "Izbrano",
@@ -411,7 +411,7 @@
     "fileSavedToFilename": "Shranjeno v {filename}",
     "canvas": "platno",
     "selection": "izbor",
-    "pasteAsSingleElement": "Uporabite {{shortcut}}, da prilepite kot en element,\n ali prilepite v obstoječ urejevalnik besedil"
+    "pasteAsSingleLayer": "Uporabite {{shortcut}}, da prilepite kot en layer,\n ali prilepite v obstoječ urejevalnik besedil"
   },
   "colors": {
     "transparent": "Prosojno",

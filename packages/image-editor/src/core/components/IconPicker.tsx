@@ -1,12 +1,13 @@
+import "./IconPicker.scss";
+
+import clsx from "clsx";
 import React from "react";
+
+import { getLanguage } from "../i18n";
+import { isArrowKey, KEYS } from "../keys";
 import { Popover } from "./Popover";
 
-import "./IconPicker.scss";
-import { isArrowKey, KEYS } from "../keys";
-import { getLanguage } from "../i18n";
-import clsx from "clsx";
-
-function Picker<T>({
+const Picker = <T>({
   options,
   value,
   label,
@@ -15,13 +16,13 @@ function Picker<T>({
 }: {
   label: string;
   value: T;
-  options: { value: T; text: string; icon: JSX.Element; keyBinding: string }[];
+  options: { value: T; text: string; icon: JSX.Layer; keyBinding: string }[];
   onChange: (value: T) => void;
   onClose: () => void;
-}) {
-  const rFirstItem = React.useRef<HTMLButtonElement>();
-  const rActiveItem = React.useRef<HTMLButtonElement>();
-  const rGallery = React.useRef<HTMLDivElement>(null);
+}) => {
+  const rFirstItem = React.useRef<HTMLButtonLayer>();
+  const rActiveItem = React.useRef<HTMLButtonLayer>();
+  const rGallery = React.useRef<HTMLDivLayer>(null);
 
   React.useEffect(() => {
     // After the component is first mounted focus on first input
@@ -48,18 +49,18 @@ function Picker<T>({
       // a timeout here to let the stack clear before checking.
       setTimeout(() => {
         const active = rActiveItem.current;
-        const docActive = document.activeElement;
+        const docActive = document.activeLayer;
         if (active !== docActive) {
           onClose();
         }
       }, 0);
     } else if (isArrowKey(event.key)) {
       // Arrow navigation
-      const { activeElement } = document;
+      const { activeLayer } = document;
       const isRTL = getLanguage().rtl;
       const index = Array.prototype.indexOf.call(
         rGallery!.current!.children,
-        activeElement,
+        activeLayer,
       );
       if (index !== -1) {
         const length = options.length;
@@ -107,7 +108,7 @@ function Picker<T>({
               active: value === option.value,
             })}
             onClick={(event) => {
-              (event.currentTarget as HTMLButtonElement).focus();
+              (event.currentTarget as HTMLButtonLayer).focus();
               onChange(option.value);
             }}
             title={`${option.text} — ${option.keyBinding.toUpperCase()}`}
@@ -133,9 +134,9 @@ function Picker<T>({
       </div>
     </div>
   );
-}
+};
 
-export function IconPicker<T>({
+export const IconPicker = <T>({
   value,
   label,
   options,
@@ -144,10 +145,10 @@ export function IconPicker<T>({
 }: {
   label: string;
   value: T;
-  options: { value: T; text: string; icon: JSX.Element; keyBinding: string }[];
+  options: { value: T; text: string; icon: JSX.Layer; keyBinding: string }[];
   onChange: (value: T) => void;
   group?: string;
-}) {
+}) => {
   const [isActive, setActive] = React.useState(false);
   const rPickerButton = React.useRef<any>(null);
   const isRTL = getLanguage().rtl;
@@ -189,4 +190,4 @@ export function IconPicker<T>({
       </React.Suspense>
     </div>
   );
-}
+};

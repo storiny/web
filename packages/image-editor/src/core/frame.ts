@@ -1,54 +1,47 @@
+import { getLayersWithinSelection, getSelectedLayers } from "../lib/scene";
+import Scene, { ExcalidrawLayersIncludingDeleted } from "../lib/scene/Scene";
+import { getLayersInGroup, selectGroupsFromGivenLayers } from "./groups";
+import { getCommonBounds, getLayerAbsoluteCoords, isTextLayer } from "./layer";
+import { isFrameLayer } from "./layer";
+import { getLayerLineSegments } from "./layer/bounds";
+import { mutateLayer } from "./layer/mutateLayer";
+import { getBoundTextLayer, getContainerLayer } from "./layer/textLayer";
 import {
-  getCommonBounds,
-  getElementAbsoluteCoords,
-  isTextElement,
-} from "./element";
-import {
-  ExcalidrawElement,
-  ExcalidrawFrameElement,
+  ExcalidrawFrameLayer,
+  ExcalidrawLayer,
   NonDeleted,
-  NonDeletedExcalidrawElement,
-} from "./element/types";
+  NonDeletedExcalidrawLayer
+} from "./layer/types";
 import { isPointWithinBounds } from "./math";
-import {
-  getBoundTextElement,
-  getContainerElement,
-} from "./element/textElement";
-import { arrayToMap, findIndex } from "./utils";
-import { mutateElement } from "./element/mutateElement";
 import { AppState } from "./types";
-import { getElementsWithinSelection, getSelectedElements } from "./scene";
-import { isFrameElement } from "./element";
+import { arrayToMap, findIndex } from "./utils";
 import { moveOneRight } from "./zindex";
-import { getElementsInGroup, selectGroupsFromGivenElements } from "./groups";
-import Scene, { ExcalidrawElementsIncludingDeleted } from "./scene/Scene";
-import { getElementLineSegments } from "./element/bounds";
 
 // --------------------------- Frame State ------------------------------------
-export const bindElementsToFramesAfterDuplication = (
-  nextElements: ExcalidrawElement[],
-  oldElements: readonly ExcalidrawElement[],
-  oldIdToDuplicatedId: Map<ExcalidrawElement["id"], ExcalidrawElement["id"]>,
+export const bindLayersToFramesAfterDuplication = (
+  nextLayers: ExcalidrawLayer[],
+  oldLayers: readonly ExcalidrawLayer[],
+  oldIdToDuplicatedId: Map<ExcalidrawLayer["id"], ExcalidrawLayer["id"]>
 ) => {
-  const nextElementMap = arrayToMap(nextElements) as Map<
-    ExcalidrawElement["id"],
-    ExcalidrawElement
+  const nextLayerMap = arrayToMap(nextLayers) as Map<
+    ExcalidrawLayer["id"],
+    ExcalidrawLayer
   >;
 
-  for (const element of oldElements) {
-    if (element.frameId) {
+  for (const layer of oldLayers) {
+    if (layer.frameId) {
       // use its frameId to get the new frameId
-      const nextElementId = oldIdToDuplicatedId.get(element.id);
-      const nextFrameId = oldIdToDuplicatedId.get(element.frameId);
-      if (nextElementId) {
-        const nextElement = nextElementMap.get(nextElementId);
-        if (nextElement) {
-          mutateElement(
-            nextElement,
+      const nextLayerId = oldIdToDuplicatedId.get(layer.id);
+      const nextFrameId = oldIdToDuplicatedId.get(layer.frameId);
+      if (nextLayerId) {
+        const nextLayer = nextLayerMap.get(nextLayerId);
+        if (nextLayer) {
+          mutateLayer(
+            nextLayer,
             {
-              frameId: nextFrameId ?? element.frameId,
+              frameId: nextFrameId ?? layer.frameId
             },
-            false,
+            false
           );
         }
       }
@@ -80,12 +73,12 @@ class LineSegment {
     return [
       new Point(
         Math.min(this.first.x, this.second.x),
-        Math.min(this.first.y, this.second.y),
+        Math.min(this.first.y, this.second.y)
       ),
       new Point(
         Math.max(this.first.x, this.second.x),
-        Math.max(this.first.y, this.second.y),
-      ),
+        Math.max(this.first.y, this.second.y)
+      )
     ];
   }
 }
@@ -100,7 +93,7 @@ class FrameGeometry {
 
   private static doBoundingBoxesIntersect(
     a: [Point, Point],
-    b: [Point, Point],
+    b: [Point, Point]
   ) {
     return (
       a[0].x <= b[1].x &&
@@ -113,7 +106,7 @@ class FrameGeometry {
   private static isPointOnLine(a: LineSegment, b: Point) {
     const aTmp = new LineSegment(
       new Point(0, 0),
-      new Point(a.second.x - a.first.x, a.second.y - a.first.y),
+      new Point(a.second.x - a.first.x, a.second.y - a.first.y)
     );
     const bTmp = new Point(b.x - a.first.x, b.y - a.first.y);
     const r = this.crossProduct(aTmp.second, bTmp);
@@ -123,7 +116,7 @@ class FrameGeometry {
   private static isPointRightOfLine(a: LineSegment, b: Point) {
     const aTmp = new LineSegment(
       new Point(0, 0),
-      new Point(a.second.x - a.first.x, a.second.y - a.first.y),
+      new Point(a.second.x - a.first.x, a.second.y - a.first.y)
     );
     const bTmp = new Point(b.x - a.first.x, b.y - a.first.y);
     return this.crossProduct(aTmp.second, bTmp) < 0;
@@ -131,7 +124,7 @@ class FrameGeometry {
 
   private static lineSegmentTouchesOrCrossesLine(
     a: LineSegment,
-    b: LineSegment,
+    b: LineSegment
   ) {
     return (
       this.isPointOnLine(a, b.first) ||
@@ -144,15 +137,15 @@ class FrameGeometry {
 
   private static doLineSegmentsIntersect(
     a: [readonly [number, number], readonly [number, number]],
-    b: [readonly [number, number], readonly [number, number]],
+    b: [readonly [number, number], readonly [number, number]]
   ) {
     const aSegment = new LineSegment(
       new Point(a[0][0], a[0][1]),
-      new Point(a[1][0], a[1][1]),
+      new Point(a[1][0], a[1][1])
     );
     const bSegment = new LineSegment(
       new Point(b[0][0], b[0][1]),
-      new Point(b[1][0], b[1][1]),
+      new Point(b[1][0], b[1][1])
     );
 
     const box1 = aSegment.getBoundingBox();
@@ -164,137 +157,128 @@ class FrameGeometry {
     );
   }
 
-  public static isElementIntersectingFrame(
-    element: ExcalidrawElement,
-    frame: ExcalidrawFrameElement,
+  public static isLayerIntersectingFrame(
+    layer: ExcalidrawLayer,
+    frame: ExcalidrawFrameLayer
   ) {
-    const frameLineSegments = getElementLineSegments(frame);
+    const frameLineSegments = getLayerLineSegments(frame);
 
-    const elementLineSegments = getElementLineSegments(element);
+    const layerLineSegments = getLayerLineSegments(layer);
 
     const intersecting = frameLineSegments.some((frameLineSegment) =>
-      elementLineSegments.some((elementLineSegment) =>
-        this.doLineSegmentsIntersect(frameLineSegment, elementLineSegment),
-      ),
+      layerLineSegments.some((layerLineSegment) =>
+        this.doLineSegmentsIntersect(frameLineSegment, layerLineSegment)
+      )
     );
 
     return intersecting;
   }
 }
 
-export const getElementsCompletelyInFrame = (
-  elements: readonly ExcalidrawElement[],
-  frame: ExcalidrawFrameElement,
+export const getLayersCompletelyInFrame = (
+  layers: readonly ExcalidrawLayer[],
+  frame: ExcalidrawFrameLayer
 ) =>
   omitGroupsContainingFrames(
-    getElementsWithinSelection(elements, frame, false),
+    getLayersWithinSelection(layers, frame, false)
   ).filter(
-    (element) =>
-      (element.type !== "frame" && !element.frameId) ||
-      element.frameId === frame.id,
+    (layer) =>
+      (layer.type !== "frame" && !layer.frameId) || layer.frameId === frame.id
   );
 
-export const isElementContainingFrame = (
-  elements: readonly ExcalidrawElement[],
-  element: ExcalidrawElement,
-  frame: ExcalidrawFrameElement,
-) => {
-  return getElementsWithinSelection(elements, element).some(
-    (e) => e.id === frame.id,
-  );
-};
+export const isLayerContainingFrame = (
+  layers: readonly ExcalidrawLayer[],
+  layer: ExcalidrawLayer,
+  frame: ExcalidrawFrameLayer
+) => getLayersWithinSelection(layers, layer).some((e) => e.id === frame.id);
 
-export const getElementsIntersectingFrame = (
-  elements: readonly ExcalidrawElement[],
-  frame: ExcalidrawFrameElement,
+export const getLayersIntersectingFrame = (
+  layers: readonly ExcalidrawLayer[],
+  frame: ExcalidrawFrameLayer
 ) =>
-  elements.filter((element) =>
-    FrameGeometry.isElementIntersectingFrame(element, frame),
+  layers.filter((layer) =>
+    FrameGeometry.isLayerIntersectingFrame(layer, frame)
   );
 
-export const elementsAreInFrameBounds = (
-  elements: readonly ExcalidrawElement[],
-  frame: ExcalidrawFrameElement,
+export const layersAreInFrameBounds = (
+  layers: readonly ExcalidrawLayer[],
+  frame: ExcalidrawFrameLayer
 ) => {
   const [selectionX1, selectionY1, selectionX2, selectionY2] =
-    getElementAbsoluteCoords(frame);
+    getLayerAbsoluteCoords(frame);
 
-  const [elementX1, elementY1, elementX2, elementY2] =
-    getCommonBounds(elements);
+  const [layerX1, layerY1, layerX2, layerY2] = getCommonBounds(layers);
 
   return (
-    selectionX1 <= elementX1 &&
-    selectionY1 <= elementY1 &&
-    selectionX2 >= elementX2 &&
-    selectionY2 >= elementY2
+    selectionX1 <= layerX1 &&
+    selectionY1 <= layerY1 &&
+    selectionX2 >= layerX2 &&
+    selectionY2 >= layerY2
   );
 };
 
-export const elementOverlapsWithFrame = (
-  element: ExcalidrawElement,
-  frame: ExcalidrawFrameElement,
-) => {
-  return (
-    elementsAreInFrameBounds([element], frame) ||
-    FrameGeometry.isElementIntersectingFrame(element, frame) ||
-    isElementContainingFrame([frame], element, frame)
-  );
-};
+export const layerOverlapsWithFrame = (
+  layer: ExcalidrawLayer,
+  frame: ExcalidrawFrameLayer
+) =>
+  layersAreInFrameBounds([layer], frame) ||
+  FrameGeometry.isLayerIntersectingFrame(layer, frame) ||
+  isLayerContainingFrame([frame], layer, frame);
 
 export const isCursorInFrame = (
   cursorCoords: {
     x: number;
     y: number;
   },
-  frame: NonDeleted<ExcalidrawFrameElement>,
+  frame: NonDeleted<ExcalidrawFrameLayer>
 ) => {
-  const [fx1, fy1, fx2, fy2] = getElementAbsoluteCoords(frame);
+  const [fx1, fy1, fx2, fy2] = getLayerAbsoluteCoords(frame);
 
   return isPointWithinBounds(
     [fx1, fy1],
     [cursorCoords.x, cursorCoords.y],
-    [fx2, fy2],
+    [fx2, fy2]
   );
 };
 
 export const groupsAreAtLeastIntersectingTheFrame = (
-  elements: readonly NonDeletedExcalidrawElement[],
+  layers: readonly NonDeletedExcalidrawLayer[],
   groupIds: readonly string[],
-  frame: ExcalidrawFrameElement,
+  frame: ExcalidrawFrameLayer
 ) => {
-  const elementsInGroup = groupIds.flatMap((groupId) =>
-    getElementsInGroup(elements, groupId),
+  const layersInGroup = groupIds.flatMap((groupId) =>
+    getLayersInGroup(layers, groupId)
   );
 
-  if (elementsInGroup.length === 0) {
+  if (layersInGroup.length === 0) {
     return true;
   }
 
-  return !!elementsInGroup.find(
-    (element) =>
-      elementsAreInFrameBounds([element], frame) ||
-      FrameGeometry.isElementIntersectingFrame(element, frame),
+  return !!layersInGroup.find(
+    (layer) =>
+      layersAreInFrameBounds([layer], frame) ||
+      FrameGeometry.isLayerIntersectingFrame(layer, frame)
   );
 };
 
 export const groupsAreCompletelyOutOfFrame = (
-  elements: readonly NonDeletedExcalidrawElement[],
+  layers: readonly NonDeletedExcalidrawLayer[],
   groupIds: readonly string[],
-  frame: ExcalidrawFrameElement,
+  frame: ExcalidrawFrameLayer
 ) => {
-  const elementsInGroup = groupIds.flatMap((groupId) =>
-    getElementsInGroup(elements, groupId),
+  const layersInGroup = groupIds.flatMap((groupId) =>
+    getLayersInGroup(layers, groupId)
   );
 
-  if (elementsInGroup.length === 0) {
+  if (layersInGroup.length === 0) {
     return true;
   }
 
   return (
-    elementsInGroup.find(
-      (element) =>
-        elementsAreInFrameBounds([element], frame) ||
-        FrameGeometry.isElementIntersectingFrame(element, frame),
+    layersInGroup.find(
+      (layer) =>
+        layersAreInFrameBounds([layer], frame) ||
+        FrameGeometry.isLayerIntersectingFrame(layer, frame)
     ) === undefined
   );
 };
@@ -302,321 +286,311 @@ export const groupsAreCompletelyOutOfFrame = (
 // --------------------------- Frame Utils ------------------------------------
 
 /**
- * Returns a map of frameId to frame elements. Includes empty frames.
+ * Returns a map of frameId to frame layers. Includes empty frames.
  */
-export const groupByFrames = (elements: readonly ExcalidrawElement[]) => {
-  const frameElementsMap = new Map<
-    ExcalidrawElement["id"],
-    ExcalidrawElement[]
-  >();
+export const groupByFrames = (layers: readonly ExcalidrawLayer[]) => {
+  const frameLayersMap = new Map<ExcalidrawLayer["id"], ExcalidrawLayer[]>();
 
-  for (const element of elements) {
-    const frameId = isFrameElement(element) ? element.id : element.frameId;
-    if (frameId && !frameElementsMap.has(frameId)) {
-      frameElementsMap.set(frameId, getFrameElements(elements, frameId));
+  for (const layer of layers) {
+    const frameId = isFrameLayer(layer) ? layer.id : layer.frameId;
+    if (frameId && !frameLayersMap.has(frameId)) {
+      frameLayersMap.set(frameId, getFrameLayers(layers, frameId));
     }
   }
 
-  return frameElementsMap;
+  return frameLayersMap;
 };
 
-export const getFrameElements = (
-  allElements: ExcalidrawElementsIncludingDeleted,
-  frameId: string,
-) => allElements.filter((element) => element.frameId === frameId);
+export const getFrameLayers = (
+  allLayers: ExcalidrawLayersIncludingDeleted,
+  frameId: string
+) => allLayers.filter((layer) => layer.frameId === frameId);
 
-export const getElementsInResizingFrame = (
-  allElements: ExcalidrawElementsIncludingDeleted,
-  frame: ExcalidrawFrameElement,
-  appState: AppState,
-): ExcalidrawElement[] => {
-  const prevElementsInFrame = getFrameElements(allElements, frame.id);
-  const nextElementsInFrame = new Set<ExcalidrawElement>(prevElementsInFrame);
+export const getLayersInResizingFrame = (
+  allLayers: ExcalidrawLayersIncludingDeleted,
+  frame: ExcalidrawFrameLayer,
+  appState: AppState
+): ExcalidrawLayer[] => {
+  const prevLayersInFrame = getFrameLayers(allLayers, frame.id);
+  const nextLayersInFrame = new Set<ExcalidrawLayer>(prevLayersInFrame);
 
-  const elementsCompletelyInFrame = new Set([
-    ...getElementsCompletelyInFrame(allElements, frame),
-    ...prevElementsInFrame.filter((element) =>
-      isElementContainingFrame(allElements, element, frame),
-    ),
+  const layersCompletelyInFrame = new Set([
+    ...getLayersCompletelyInFrame(allLayers, frame),
+    ...prevLayersInFrame.filter((layer) =>
+      isLayerContainingFrame(allLayers, layer, frame)
+    )
   ]);
 
-  const elementsNotCompletelyInFrame = prevElementsInFrame.filter(
-    (element) => !elementsCompletelyInFrame.has(element),
+  const layersNotCompletelyInFrame = prevLayersInFrame.filter(
+    (layer) => !layersCompletelyInFrame.has(layer)
   );
 
-  // for elements that are completely in the frame
+  // for layers that are completely in the frame
   // if they are part of some groups, then those groups are still
   // considered to belong to the frame
   const groupsToKeep = new Set<string>(
-    Array.from(elementsCompletelyInFrame).flatMap(
-      (element) => element.groupIds,
-    ),
+    Array.from(layersCompletelyInFrame).flatMap((layer) => layer.groupIds)
   );
 
-  for (const element of elementsNotCompletelyInFrame) {
-    if (!FrameGeometry.isElementIntersectingFrame(element, frame)) {
-      if (element.groupIds.length === 0) {
-        nextElementsInFrame.delete(element);
+  for (const layer of layersNotCompletelyInFrame) {
+    if (!FrameGeometry.isLayerIntersectingFrame(layer, frame)) {
+      if (layer.groupIds.length === 0) {
+        nextLayersInFrame.delete(layer);
       }
-    } else if (element.groupIds.length > 0) {
-      // group element intersects with the frame, we should keep the groups
-      // that this element is part of
-      for (const id of element.groupIds) {
+    } else if (layer.groupIds.length > 0) {
+      // group layer intersects with the frame, we should keep the groups
+      // that this layer is part of
+      for (const id of layer.groupIds) {
         groupsToKeep.add(id);
       }
     }
   }
 
-  for (const element of elementsNotCompletelyInFrame) {
-    if (element.groupIds.length > 0) {
-      let shouldRemoveElement = true;
+  for (const layer of layersNotCompletelyInFrame) {
+    if (layer.groupIds.length > 0) {
+      let shouldRemoveLayer = true;
 
-      for (const id of element.groupIds) {
+      for (const id of layer.groupIds) {
         if (groupsToKeep.has(id)) {
-          shouldRemoveElement = false;
+          shouldRemoveLayer = false;
         }
       }
 
-      if (shouldRemoveElement) {
-        nextElementsInFrame.delete(element);
+      if (shouldRemoveLayer) {
+        nextLayersInFrame.delete(layer);
       }
     }
   }
 
-  const individualElementsCompletelyInFrame = Array.from(
-    elementsCompletelyInFrame,
-  ).filter((element) => element.groupIds.length === 0);
+  const individualLayersCompletelyInFrame = Array.from(
+    layersCompletelyInFrame
+  ).filter((layer) => layer.groupIds.length === 0);
 
-  for (const element of individualElementsCompletelyInFrame) {
-    nextElementsInFrame.add(element);
+  for (const layer of individualLayersCompletelyInFrame) {
+    nextLayersInFrame.add(layer);
   }
 
-  const newGroupElementsCompletelyInFrame = Array.from(
-    elementsCompletelyInFrame,
-  ).filter((element) => element.groupIds.length > 0);
+  const newGroupLayersCompletelyInFrame = Array.from(
+    layersCompletelyInFrame
+  ).filter((layer) => layer.groupIds.length > 0);
 
-  const groupIds = selectGroupsFromGivenElements(
-    newGroupElementsCompletelyInFrame,
-    appState,
+  const groupIds = selectGroupsFromGivenLayers(
+    newGroupLayersCompletelyInFrame,
+    appState
   );
 
-  // new group elements
+  // new group layers
   for (const [id, isSelected] of Object.entries(groupIds)) {
     if (isSelected) {
-      const elementsInGroup = getElementsInGroup(allElements, id);
+      const layersInGroup = getLayersInGroup(allLayers, id);
 
-      if (elementsAreInFrameBounds(elementsInGroup, frame)) {
-        for (const element of elementsInGroup) {
-          nextElementsInFrame.add(element);
+      if (layersAreInFrameBounds(layersInGroup, frame)) {
+        for (const layer of layersInGroup) {
+          nextLayersInFrame.add(layer);
         }
       }
     }
   }
 
-  return [...nextElementsInFrame].filter((element) => {
-    return !(isTextElement(element) && element.containerId);
-  });
-};
-
-export const getElementsInNewFrame = (
-  allElements: ExcalidrawElementsIncludingDeleted,
-  frame: ExcalidrawFrameElement,
-) => {
-  return omitGroupsContainingFrames(
-    allElements,
-    getElementsCompletelyInFrame(allElements, frame),
+  return [...nextLayersInFrame].filter(
+    (layer) => !(isTextLayer(layer) && layer.containerId)
   );
 };
 
+export const getLayersInNewFrame = (
+  allLayers: ExcalidrawLayersIncludingDeleted,
+  frame: ExcalidrawFrameLayer
+) =>
+  omitGroupsContainingFrames(
+    allLayers,
+    getLayersCompletelyInFrame(allLayers, frame)
+  );
+
 export const getContainingFrame = (
-  element: ExcalidrawElement,
+  layer: ExcalidrawLayer,
   /**
-   * Optionally an elements map, in case the elements aren't in the Scene yet.
-   * Takes precedence over Scene elements, even if the element exists
-   * in Scene elements and not the supplied elements map.
+   * Optionally an layers map, in case the layers aren't in the Scene yet.
+   * Takes precedence over Scene layers, even if the layer exists
+   * in Scene layers and not the supplied layers map.
    */
-  elementsMap?: Map<string, ExcalidrawElement>,
+  layersMap?: Map<string, ExcalidrawLayer>
 ) => {
-  if (element.frameId) {
-    if (elementsMap) {
-      return (elementsMap.get(element.frameId) ||
-        null) as null | ExcalidrawFrameElement;
+  if (layer.frameId) {
+    if (layersMap) {
+      return (layersMap.get(layer.frameId) ||
+        null) as null | ExcalidrawFrameLayer;
     }
     return (
-      (Scene.getScene(element)?.getElement(
-        element.frameId,
-      ) as ExcalidrawFrameElement) || null
+      (Scene.getScene(layer)?.getLayer(
+        layer.frameId
+      ) as ExcalidrawFrameLayer) || null
     );
   }
   return null;
 };
 
 // --------------------------- Frame Operations -------------------------------
-export const addElementsToFrame = (
-  allElements: ExcalidrawElementsIncludingDeleted,
-  elementsToAdd: NonDeletedExcalidrawElement[],
-  frame: ExcalidrawFrameElement,
+export const addLayersToFrame = (
+  allLayers: ExcalidrawLayersIncludingDeleted,
+  layersToAdd: NonDeletedExcalidrawLayer[],
+  frame: ExcalidrawFrameLayer
 ) => {
-  const _elementsToAdd: ExcalidrawElement[] = [];
+  const _layersToAdd: ExcalidrawLayer[] = [];
 
-  for (const element of elementsToAdd) {
-    _elementsToAdd.push(element);
+  for (const layer of layersToAdd) {
+    _layersToAdd.push(layer);
 
-    const boundTextElement = getBoundTextElement(element);
-    if (boundTextElement) {
-      _elementsToAdd.push(boundTextElement);
+    const boundTextLayer = getBoundTextLayer(layer);
+    if (boundTextLayer) {
+      _layersToAdd.push(boundTextLayer);
     }
   }
 
-  let nextElements = allElements.slice();
+  let nextLayers = allLayers.slice();
 
-  const frameBoundary = findIndex(nextElements, (e) => e.frameId === frame.id);
+  const frameBoundary = findIndex(nextLayers, (e) => e.frameId === frame.id);
 
-  for (const element of omitGroupsContainingFrames(
-    allElements,
-    _elementsToAdd,
-  )) {
-    if (element.frameId !== frame.id && !isFrameElement(element)) {
-      mutateElement(
-        element,
+  for (const layer of omitGroupsContainingFrames(allLayers, _layersToAdd)) {
+    if (layer.frameId !== frame.id && !isFrameLayer(layer)) {
+      mutateLayer(
+        layer,
         {
-          frameId: frame.id,
+          frameId: frame.id
         },
-        false,
+        false
       );
 
-      const frameIndex = findIndex(nextElements, (e) => e.id === frame.id);
-      const elementIndex = findIndex(nextElements, (e) => e.id === element.id);
+      const frameIndex = findIndex(nextLayers, (e) => e.id === frame.id);
+      const layerIndex = findIndex(nextLayers, (e) => e.id === layer.id);
 
-      if (elementIndex < frameBoundary) {
-        nextElements = [
-          ...nextElements.slice(0, elementIndex),
-          ...nextElements.slice(elementIndex + 1, frameBoundary),
-          element,
-          ...nextElements.slice(frameBoundary),
+      if (layerIndex < frameBoundary) {
+        nextLayers = [
+          ...nextLayers.slice(0, layerIndex),
+          ...nextLayers.slice(layerIndex + 1, frameBoundary),
+          layer,
+          ...nextLayers.slice(frameBoundary)
         ];
-      } else if (elementIndex > frameIndex) {
-        nextElements = [
-          ...nextElements.slice(0, frameIndex),
-          element,
-          ...nextElements.slice(frameIndex, elementIndex),
-          ...nextElements.slice(elementIndex + 1),
+      } else if (layerIndex > frameIndex) {
+        nextLayers = [
+          ...nextLayers.slice(0, frameIndex),
+          layer,
+          ...nextLayers.slice(frameIndex, layerIndex),
+          ...nextLayers.slice(layerIndex + 1)
         ];
       }
     }
   }
 
-  return nextElements;
+  return nextLayers;
 };
 
-export const removeElementsFromFrame = (
-  allElements: ExcalidrawElementsIncludingDeleted,
-  elementsToRemove: NonDeletedExcalidrawElement[],
-  appState: AppState,
+export const removeLayersFromFrame = (
+  allLayers: ExcalidrawLayersIncludingDeleted,
+  layersToRemove: NonDeletedExcalidrawLayer[],
+  appState: AppState
 ) => {
-  const _elementsToRemove: ExcalidrawElement[] = [];
+  const _layersToRemove: ExcalidrawLayer[] = [];
 
-  for (const element of elementsToRemove) {
-    if (element.frameId) {
-      _elementsToRemove.push(element);
-      const boundTextElement = getBoundTextElement(element);
-      if (boundTextElement) {
-        _elementsToRemove.push(boundTextElement);
+  for (const layer of layersToRemove) {
+    if (layer.frameId) {
+      _layersToRemove.push(layer);
+      const boundTextLayer = getBoundTextLayer(layer);
+      if (boundTextLayer) {
+        _layersToRemove.push(boundTextLayer);
       }
     }
   }
 
-  for (const element of _elementsToRemove) {
-    mutateElement(
-      element,
+  for (const layer of _layersToRemove) {
+    mutateLayer(
+      layer,
       {
-        frameId: null,
+        frameId: null
       },
-      false,
+      false
     );
   }
 
-  const nextElements = moveOneRight(
-    allElements,
+  const nextLayers = moveOneRight(
+    allLayers,
     appState,
-    Array.from(_elementsToRemove),
+    Array.from(_layersToRemove)
   );
 
-  return nextElements;
+  return nextLayers;
 };
 
-export const removeAllElementsFromFrame = (
-  allElements: ExcalidrawElementsIncludingDeleted,
-  frame: ExcalidrawFrameElement,
-  appState: AppState,
+export const removeAllLayersFromFrame = (
+  allLayers: ExcalidrawLayersIncludingDeleted,
+  frame: ExcalidrawFrameLayer,
+  appState: AppState
 ) => {
-  const elementsInFrame = getFrameElements(allElements, frame.id);
-  return removeElementsFromFrame(allElements, elementsInFrame, appState);
+  const layersInFrame = getFrameLayers(allLayers, frame.id);
+  return removeLayersFromFrame(allLayers, layersInFrame, appState);
 };
 
-export const replaceAllElementsInFrame = (
-  allElements: ExcalidrawElementsIncludingDeleted,
-  nextElementsInFrame: ExcalidrawElement[],
-  frame: ExcalidrawFrameElement,
-  appState: AppState,
-) => {
-  return addElementsToFrame(
-    removeAllElementsFromFrame(allElements, frame, appState),
-    nextElementsInFrame,
-    frame,
+export const replaceAllLayersInFrame = (
+  allLayers: ExcalidrawLayersIncludingDeleted,
+  nextLayersInFrame: ExcalidrawLayer[],
+  frame: ExcalidrawFrameLayer,
+  appState: AppState
+) =>
+  addLayersToFrame(
+    removeAllLayersFromFrame(allLayers, frame, appState),
+    nextLayersInFrame,
+    frame
   );
-};
 
-/** does not mutate elements, but return new ones */
-export const updateFrameMembershipOfSelectedElements = (
-  allElements: ExcalidrawElementsIncludingDeleted,
-  appState: AppState,
+/** does not mutate layers, but return new ones */
+export const updateFrameMembershipOfSelectedLayers = (
+  allLayers: ExcalidrawLayersIncludingDeleted,
+  appState: AppState
 ) => {
-  const selectedElements = getSelectedElements(allElements, appState);
-  const elementsToFilter = new Set<ExcalidrawElement>(selectedElements);
+  const selectedLayers = getSelectedLayers(allLayers, appState);
+  const layersToFilter = new Set<ExcalidrawLayer>(selectedLayers);
 
   if (appState.editingGroupId) {
-    for (const element of selectedElements) {
-      if (element.groupIds.length === 0) {
-        elementsToFilter.add(element);
+    for (const layer of selectedLayers) {
+      if (layer.groupIds.length === 0) {
+        layersToFilter.add(layer);
       } else {
-        element.groupIds
-          .flatMap((gid) => getElementsInGroup(allElements, gid))
-          .forEach((element) => elementsToFilter.add(element));
+        layer.groupIds
+          .flatMap((gid) => getLayersInGroup(allLayers, gid))
+          .forEach((layer) => layersToFilter.add(layer));
       }
     }
   }
 
-  const elementsToRemove = new Set<ExcalidrawElement>();
+  const layersToRemove = new Set<ExcalidrawLayer>();
 
-  elementsToFilter.forEach((element) => {
+  layersToFilter.forEach((layer) => {
     if (
-      element.frameId &&
-      !isFrameElement(element) &&
-      !isElementInFrame(element, allElements, appState)
+      layer.frameId &&
+      !isFrameLayer(layer) &&
+      !isLayerInFrame(layer, allLayers, appState)
     ) {
-      elementsToRemove.add(element);
+      layersToRemove.add(layer);
     }
   });
 
-  return elementsToRemove.size > 0
-    ? removeElementsFromFrame(allElements, [...elementsToRemove], appState)
-    : allElements;
+  return layersToRemove.size > 0
+    ? removeLayersFromFrame(allLayers, [...layersToRemove], appState)
+    : allLayers;
 };
 
 /**
- * filters out elements that are inside groups that contain a frame element
+ * filters out layers that are inside groups that contain a frame layer
  * anywhere in the group tree
  */
 export const omitGroupsContainingFrames = (
-  allElements: ExcalidrawElementsIncludingDeleted,
-  /** subset of elements you want to filter. Optional perf optimization so we
-   * don't have to filter all elements unnecessarily
+  allLayers: ExcalidrawLayersIncludingDeleted,
+  /** subset of layers you want to filter. Optional perf optimization so we
+   * don't have to filter all layers unnecessarily
    */
-  selectedElements?: readonly ExcalidrawElement[],
+  selectedLayers?: readonly ExcalidrawLayer[]
 ) => {
   const uniqueGroupIds = new Set<string>();
-  for (const el of selectedElements || allElements) {
+  for (const el of selectedLayers || allLayers) {
     const topMostGroupId = el.groupIds[el.groupIds.length - 1];
     if (topMostGroupId) {
       uniqueGroupIds.add(topMostGroupId);
@@ -625,60 +599,49 @@ export const omitGroupsContainingFrames = (
 
   const rejectedGroupIds = new Set<string>();
   for (const groupId of uniqueGroupIds) {
-    if (
-      getElementsInGroup(allElements, groupId).some((el) => isFrameElement(el))
-    ) {
+    if (getLayersInGroup(allLayers, groupId).some((el) => isFrameLayer(el))) {
       rejectedGroupIds.add(groupId);
     }
   }
 
-  return (selectedElements || allElements).filter(
-    (el) => !rejectedGroupIds.has(el.groupIds[el.groupIds.length - 1]),
+  return (selectedLayers || allLayers).filter(
+    (el) => !rejectedGroupIds.has(el.groupIds[el.groupIds.length - 1])
   );
 };
 
 /**
- * depending on the appState, return target frame, which is the frame the given element
+ * depending on the appState, return target frame, which is the frame the given layer
  * is going to be added to or remove from
  */
-export const getTargetFrame = (
-  element: ExcalidrawElement,
-  appState: AppState,
-) => {
-  const _element = isTextElement(element)
-    ? getContainerElement(element) || element
-    : element;
+export const getTargetFrame = (layer: ExcalidrawLayer, appState: AppState) => {
+  const _layer = isTextLayer(layer) ? getContainerLayer(layer) || layer : layer;
 
-  return appState.selectedElementIds[_element.id] &&
-    appState.selectedElementsAreBeingDragged
+  return appState.selectedLayerIds[_layer.id] &&
+    appState.selectedLayersAreBeingDragged
     ? appState.frameToHighlight
-    : getContainingFrame(_element);
+    : getContainingFrame(_layer);
 };
 
-// given an element, return if the element is in some frame
-export const isElementInFrame = (
-  element: ExcalidrawElement,
-  allElements: ExcalidrawElementsIncludingDeleted,
-  appState: AppState,
+// given an layer, return if the layer is in some frame
+export const isLayerInFrame = (
+  layer: ExcalidrawLayer,
+  allLayers: ExcalidrawLayersIncludingDeleted,
+  appState: AppState
 ) => {
-  const frame = getTargetFrame(element, appState);
-  const _element = isTextElement(element)
-    ? getContainerElement(element) || element
-    : element;
+  const frame = getTargetFrame(layer, appState);
+  const _layer = isTextLayer(layer) ? getContainerLayer(layer) || layer : layer;
 
   if (frame) {
-    if (_element.groupIds.length === 0) {
-      return elementOverlapsWithFrame(_element, frame);
+    if (_layer.groupIds.length === 0) {
+      return layerOverlapsWithFrame(_layer, frame);
     }
 
-    const allElementsInGroup = new Set(
-      _element.groupIds.flatMap((gid) => getElementsInGroup(allElements, gid)),
+    const allLayersInGroup = new Set(
+      _layer.groupIds.flatMap((gid) => getLayersInGroup(allLayers, gid))
     );
 
-    if (appState.editingGroupId && appState.selectedElementsAreBeingDragged) {
-      const selectedElements = new Set(
-        getSelectedElements(allElements, appState),
-      );
+    if (appState.editingGroupId && appState.selectedLayersAreBeingDragged) {
+      const selectedLayers = new Set(getSelectedLayers(allLayers, appState));
 
       const editingGroupOverlapsFrame = appState.frameToHighlight !== null;
 
@@ -686,19 +649,19 @@ export const isElementInFrame = (
         return true;
       }
 
-      selectedElements.forEach((selectedElement) => {
-        allElementsInGroup.delete(selectedElement);
+      selectedLayers.forEach((selectedLayer) => {
+        allLayersInGroup.delete(selectedLayer);
       });
     }
 
-    for (const elementInGroup of allElementsInGroup) {
-      if (isFrameElement(elementInGroup)) {
+    for (const layerInGroup of allLayersInGroup) {
+      if (isFrameLayer(layerInGroup)) {
         return false;
       }
     }
 
-    for (const elementInGroup of allElementsInGroup) {
-      if (elementOverlapsWithFrame(elementInGroup, frame)) {
+    for (const layerInGroup of allLayersInGroup) {
+      if (layerOverlapsWithFrame(layerInGroup, frame)) {
         return true;
       }
     }

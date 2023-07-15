@@ -5,7 +5,7 @@ import {
   DEFAULT_FONT_SIZE,
   DEFAULT_TEXT_ALIGN,
   EXPORT_SCALES,
-  THEME,
+  THEME
 } from "./constants";
 import { t } from "./i18n";
 import { AppState, NormalizedZoomValue } from "./types";
@@ -18,88 +18,86 @@ const defaultExportScale = EXPORT_SCALES.includes(devicePixelRatio)
 export const getDefaultAppState = (): Omit<
   AppState,
   "offsetTop" | "offsetLeft" | "width" | "height"
-> => {
-  return {
-    showWelcomeScreen: false,
-    theme: THEME.LIGHT,
-    collaborators: new Map(),
-    currentChartType: "bar",
-    currentItemBackgroundColor: DEFAULT_ELEMENT_PROPS.backgroundColor,
-    currentItemEndArrowhead: "arrow",
-    currentItemFillStyle: DEFAULT_ELEMENT_PROPS.fillStyle,
-    currentItemFontFamily: DEFAULT_FONT_FAMILY,
-    currentItemFontSize: DEFAULT_FONT_SIZE,
-    currentItemOpacity: DEFAULT_ELEMENT_PROPS.opacity,
-    currentItemRoughness: DEFAULT_ELEMENT_PROPS.roughness,
-    currentItemStartArrowhead: null,
-    currentItemStrokeColor: DEFAULT_ELEMENT_PROPS.strokeColor,
-    currentItemRoundness: "round",
-    currentItemStrokeStyle: DEFAULT_ELEMENT_PROPS.strokeStyle,
-    currentItemStrokeWidth: DEFAULT_ELEMENT_PROPS.strokeWidth,
-    currentItemTextAlign: DEFAULT_TEXT_ALIGN,
-    cursorButton: "up",
-    draggingElement: null,
-    editingElement: null,
-    editingGroupId: null,
-    editingLinearElement: null,
-    activeTool: {
-      type: "selection",
-      customType: null,
-      locked: DEFAULT_ELEMENT_PROPS.locked,
-      lastActiveTool: null,
-    },
-    penMode: false,
-    penDetected: false,
-    errorMessage: null,
-    exportBackground: true,
-    exportScale: defaultExportScale,
-    exportEmbedScene: false,
-    exportWithDarkMode: false,
-    fileHandle: null,
-    gridSize: null,
-    isBindingEnabled: true,
-    defaultSidebarDockedPreference: false,
-    isLoading: false,
-    isResizing: false,
-    isRotating: false,
-    lastPointerDownWith: "mouse",
-    multiElement: null,
-    name: `${t("labels.untitled")}-${getDateTime()}`,
-    contextMenu: null,
-    openMenu: null,
-    openPopup: null,
-    openSidebar: null,
-    openDialog: null,
-    pasteDialog: { shown: false, data: null },
-    previousSelectedElementIds: {},
-    resizingElement: null,
-    scrolledOutside: false,
-    scrollX: 0,
-    scrollY: 0,
-    selectedElementIds: {},
-    selectedGroupIds: {},
-    selectedElementsAreBeingDragged: false,
-    selectionElement: null,
-    shouldCacheIgnoreZoom: false,
-    showStats: false,
-    startBoundElement: null,
-    suggestedBindings: [],
-    frameRendering: { enabled: true, clip: true, name: true, outline: true },
-    frameToHighlight: null,
-    editingFrame: null,
-    elementsToHighlight: null,
-    toast: null,
-    viewBackgroundColor: COLOR_PALETTE.white,
-    zenModeEnabled: false,
-    zoom: {
-      value: 1 as NormalizedZoomValue,
-    },
-    viewModeEnabled: false,
-    pendingImageElementId: null,
-    showHyperlinkPopup: false,
-    selectedLinearElement: null,
-  };
-};
+> => ({
+  showWelcomeScreen: false,
+  theme: THEME.LIGHT,
+  collaborators: new Map(),
+  currentChartType: "bar",
+  currentItemBackgroundColor: DEFAULT_ELEMENT_PROPS.backgroundColor,
+  currentItemEndArrowhead: "arrow",
+  currentItemFillStyle: DEFAULT_ELEMENT_PROPS.fillStyle,
+  currentItemFontFamily: DEFAULT_FONT_FAMILY,
+  currentItemFontSize: DEFAULT_FONT_SIZE,
+  currentItemOpacity: DEFAULT_ELEMENT_PROPS.opacity,
+  currentItemRoughness: DEFAULT_ELEMENT_PROPS.roughness,
+  currentItemStartArrowhead: null,
+  currentItemStrokeColor: DEFAULT_ELEMENT_PROPS.strokeColor,
+  currentItemRoundness: "round",
+  currentItemStrokeStyle: DEFAULT_ELEMENT_PROPS.strokeStyle,
+  currentItemStrokeWidth: DEFAULT_ELEMENT_PROPS.strokeWidth,
+  currentItemTextAlign: DEFAULT_TEXT_ALIGN,
+  cursorButton: "up",
+  draggingLayer: null,
+  editingLayer: null,
+  editingGroupId: null,
+  editingLinearLayer: null,
+  activeTool: {
+    type: "selection",
+    customType: null,
+    locked: DEFAULT_ELEMENT_PROPS.locked,
+    lastActiveTool: null
+  },
+  penMode: false,
+  penDetected: false,
+  errorMessage: null,
+  exportBackground: true,
+  exportScale: defaultExportScale,
+  exportEmbedScene: false,
+  exportWithDarkMode: false,
+  fileHandle: null,
+  gridSize: null,
+  isBindingEnabled: true,
+  defaultSidebarDockedPreference: false,
+  isLoading: false,
+  isResizing: false,
+  isRotating: false,
+  lastPointerDownWith: "mouse",
+  multiLayer: null,
+  name: `${t("labels.untitled")}-${getDateTime()}`,
+  contextMenu: null,
+  openMenu: null,
+  openPopup: null,
+  openSidebar: null,
+  openDialog: null,
+  pasteDialog: { shown: false, data: null },
+  previousSelectedLayerIds: {},
+  resizingLayer: null,
+  scrolledOutside: false,
+  scrollX: 0,
+  scrollY: 0,
+  selectedLayerIds: {},
+  selectedGroupIds: {},
+  selectedLayersAreBeingDragged: false,
+  selectionLayer: null,
+  shouldCacheIgnoreZoom: false,
+  showStats: false,
+  startBoundLayer: null,
+  suggestedBindings: [],
+  frameRendering: { enabled: true, clip: true, name: true, outline: true },
+  frameToHighlight: null,
+  editingFrame: null,
+  layersToHighlight: null,
+  toast: null,
+  viewBackgroundColor: COLOR_PALETTE.white,
+  zenModeEnabled: false,
+  zoom: {
+    value: 1 as NormalizedZoomValue
+  },
+  viewModeEnabled: false,
+  pendingImageLayerId: null,
+  showHyperlinkPopup: false,
+  selectedLinearLayer: null
+});
 
 /**
  * Config containing all AppState keys. Used to determine whether given state
@@ -114,7 +112,7 @@ const APP_STATE_STORAGE_CONF = (<
     /** server (shareLink/collab/...) */
     server: boolean;
   },
-  T extends Record<keyof AppState, Values>,
+  T extends Record<keyof AppState, Values>
 >(config: { [K in keyof T]: K extends keyof AppState ? T[K] : never }) =>
   config)({
   showWelcomeScreen: { browser: true, export: false, server: false },
@@ -129,7 +127,7 @@ const APP_STATE_STORAGE_CONF = (<
   currentItemRoundness: {
     browser: true,
     export: false,
-    server: false,
+    server: false
   },
   currentItemOpacity: { browser: true, export: false, server: false },
   currentItemRoughness: { browser: true, export: false, server: false },
@@ -139,10 +137,10 @@ const APP_STATE_STORAGE_CONF = (<
   currentItemStrokeWidth: { browser: true, export: false, server: false },
   currentItemTextAlign: { browser: true, export: false, server: false },
   cursorButton: { browser: true, export: false, server: false },
-  draggingElement: { browser: false, export: false, server: false },
-  editingElement: { browser: false, export: false, server: false },
+  draggingLayer: { browser: false, export: false, server: false },
+  editingLayer: { browser: false, export: false, server: false },
   editingGroupId: { browser: true, export: false, server: false },
-  editingLinearElement: { browser: false, export: false, server: false },
+  editingLinearLayer: { browser: false, export: false, server: false },
   activeTool: { browser: true, export: false, server: false },
   penMode: { browser: true, export: false, server: false },
   penDetected: { browser: true, export: false, server: false },
@@ -158,13 +156,13 @@ const APP_STATE_STORAGE_CONF = (<
   defaultSidebarDockedPreference: {
     browser: true,
     export: false,
-    server: false,
+    server: false
   },
   isLoading: { browser: false, export: false, server: false },
   isResizing: { browser: false, export: false, server: false },
   isRotating: { browser: false, export: false, server: false },
   lastPointerDownWith: { browser: true, export: false, server: false },
-  multiElement: { browser: false, export: false, server: false },
+  multiLayer: { browser: false, export: false, server: false },
   name: { browser: true, export: false, server: false },
   offsetLeft: { browser: false, export: false, server: false },
   offsetTop: { browser: false, export: false, server: false },
@@ -174,50 +172,50 @@ const APP_STATE_STORAGE_CONF = (<
   openSidebar: { browser: true, export: false, server: false },
   openDialog: { browser: false, export: false, server: false },
   pasteDialog: { browser: false, export: false, server: false },
-  previousSelectedElementIds: { browser: true, export: false, server: false },
-  resizingElement: { browser: false, export: false, server: false },
+  previousSelectedLayerIds: { browser: true, export: false, server: false },
+  resizingLayer: { browser: false, export: false, server: false },
   scrolledOutside: { browser: true, export: false, server: false },
   scrollX: { browser: true, export: false, server: false },
   scrollY: { browser: true, export: false, server: false },
-  selectedElementIds: { browser: true, export: false, server: false },
+  selectedLayerIds: { browser: true, export: false, server: false },
   selectedGroupIds: { browser: true, export: false, server: false },
-  selectedElementsAreBeingDragged: {
+  selectedLayersAreBeingDragged: {
     browser: false,
     export: false,
-    server: false,
+    server: false
   },
-  selectionElement: { browser: false, export: false, server: false },
+  selectionLayer: { browser: false, export: false, server: false },
   shouldCacheIgnoreZoom: { browser: true, export: false, server: false },
   showStats: { browser: true, export: false, server: false },
-  startBoundElement: { browser: false, export: false, server: false },
+  startBoundLayer: { browser: false, export: false, server: false },
   suggestedBindings: { browser: false, export: false, server: false },
   frameRendering: { browser: false, export: false, server: false },
   frameToHighlight: { browser: false, export: false, server: false },
   editingFrame: { browser: false, export: false, server: false },
-  elementsToHighlight: { browser: false, export: false, server: false },
+  layersToHighlight: { browser: false, export: false, server: false },
   toast: { browser: false, export: false, server: false },
   viewBackgroundColor: { browser: true, export: true, server: true },
   width: { browser: false, export: false, server: false },
   zenModeEnabled: { browser: true, export: false, server: false },
   zoom: { browser: true, export: false, server: false },
   viewModeEnabled: { browser: false, export: false, server: false },
-  pendingImageElementId: { browser: false, export: false, server: false },
+  pendingImageLayerId: { browser: false, export: false, server: false },
   showHyperlinkPopup: { browser: false, export: false, server: false },
-  selectedLinearElement: { browser: true, export: false, server: false },
+  selectedLinearLayer: { browser: true, export: false, server: false }
 });
 
 const _clearAppStateForStorage = <
-  ExportType extends "export" | "browser" | "server",
+  ExportType extends "export" | "browser" | "server"
 >(
   appState: Partial<AppState>,
-  exportType: ExportType,
+  exportType: ExportType
 ) => {
   type ExportableKeys = {
-    [K in keyof typeof APP_STATE_STORAGE_CONF]: typeof APP_STATE_STORAGE_CONF[K][ExportType] extends true
+    [K in keyof typeof APP_STATE_STORAGE_CONF]: (typeof APP_STATE_STORAGE_CONF)[K][ExportType] extends true
       ? K
       : never;
   }[keyof typeof APP_STATE_STORAGE_CONF];
-  const stateForExport = {} as { [K in ExportableKeys]?: typeof appState[K] };
+  const stateForExport = {} as { [K in ExportableKeys]?: (typeof appState)[K] };
   for (const key of Object.keys(appState) as (keyof typeof appState)[]) {
     const propConfig = APP_STATE_STORAGE_CONF[key];
     if (propConfig?.[exportType]) {
@@ -230,28 +228,23 @@ const _clearAppStateForStorage = <
   return stateForExport;
 };
 
-export const clearAppStateForLocalStorage = (appState: Partial<AppState>) => {
-  return _clearAppStateForStorage(appState, "browser");
-};
+export const clearAppStateForLocalStorage = (appState: Partial<AppState>) =>
+  _clearAppStateForStorage(appState, "browser");
 
-export const cleanAppStateForExport = (appState: Partial<AppState>) => {
-  return _clearAppStateForStorage(appState, "export");
-};
+export const cleanAppStateForExport = (appState: Partial<AppState>) =>
+  _clearAppStateForStorage(appState, "export");
 
-export const clearAppStateForDatabase = (appState: Partial<AppState>) => {
-  return _clearAppStateForStorage(appState, "server");
-};
+export const clearAppStateForDatabase = (appState: Partial<AppState>) =>
+  _clearAppStateForStorage(appState, "server");
 
 export const isEraserActive = ({
-  activeTool,
+  activeTool
 }: {
   activeTool: AppState["activeTool"];
 }) => activeTool.type === "eraser";
 
 export const isHandToolActive = ({
-  activeTool,
+  activeTool
 }: {
   activeTool: AppState["activeTool"];
-}) => {
-  return activeTool.type === "hand";
-};
+}) => activeTool.type === "hand";

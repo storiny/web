@@ -1,58 +1,58 @@
 import {
-  ExcalidrawElement,
-  ExcalidrawImageElement,
-  ExcalidrawTextElement,
-  ExcalidrawLinearElement,
-  ExcalidrawGenericElement,
-  NonDeleted,
-  TextAlign,
-  GroupId,
-  VerticalAlign,
-  Arrowhead,
-  ExcalidrawFreeDrawElement,
-  FontFamilyValues,
-  ExcalidrawTextContainer,
-  ExcalidrawFrameElement,
-} from "../element/types";
-import {
-  arrayToMap,
-  getFontString,
-  getUpdatedTimestamp,
-  isTestEnv,
-} from "../utils";
-import { randomInteger, randomId } from "../random";
-import { bumpVersion, newElementWith } from "./mutateElement";
-import { getNewGroupIdsForDuplication } from "../groups";
-import { AppState } from "../types";
-import { getElementAbsoluteCoords } from ".";
-import { adjustXYWithRotation } from "../math";
-import { getResizedElementAbsoluteCoords } from "./bounds";
-import {
-  getContainerElement,
-  measureText,
-  normalizeText,
-  wrapText,
-  getBoundTextMaxWidth,
-  getDefaultLineHeight,
-} from "./textElement";
-import {
   DEFAULT_ELEMENT_PROPS,
   DEFAULT_FONT_FAMILY,
   DEFAULT_FONT_SIZE,
   DEFAULT_TEXT_ALIGN,
   DEFAULT_VERTICAL_ALIGN,
-  VERTICAL_ALIGN,
+  VERTICAL_ALIGN
 } from "../constants";
+import { getNewGroupIdsForDuplication } from "../groups";
+import {
+  Arrowhead,
+  ExcalidrawFrameLayer,
+  ExcalidrawFreeDrawLayer,
+  ExcalidrawGenericLayer,
+  ExcalidrawImageLayer,
+  ExcalidrawLayer,
+  ExcalidrawLinearLayer,
+  ExcalidrawTextContainer,
+  ExcalidrawTextLayer,
+  FontFamilyValues,
+  GroupId,
+  NonDeleted,
+  TextAlign,
+  VerticalAlign
+} from "../layer/types";
+import { adjustXYWithRotation } from "../math";
+import { randomId, randomInteger } from "../random";
+import { AppState } from "../types";
 import { MarkOptional, Merge, Mutable } from "../utility-types";
+import {
+  arrayToMap,
+  getFontString,
+  getUpdatedTimestamp,
+  isTestEnv
+} from "../utils";
+import { getLayerAbsoluteCoords } from ".";
+import { getResizedLayerAbsoluteCoords } from "./bounds";
+import { bumpVersion, newLayerWith } from "./mutateLayer";
+import {
+  getBoundTextMaxWidth,
+  getContainerLayer,
+  getDefaultLineHeight,
+  measureText,
+  normalizeText,
+  wrapText
+} from "./textLayer";
 
-type ElementConstructorOpts = MarkOptional<
-  Omit<ExcalidrawGenericElement, "id" | "type" | "isDeleted" | "updated">,
+type LayerConstructorOpts = MarkOptional<
+  Omit<ExcalidrawGenericLayer, "id" | "type" | "isDeleted" | "updated">,
   | "width"
   | "height"
   | "angle"
   | "groupIds"
   | "frameId"
-  | "boundElements"
+  | "boundLayers"
   | "seed"
   | "version"
   | "versionNonce"
@@ -68,7 +68,7 @@ type ElementConstructorOpts = MarkOptional<
   | "opacity"
 >;
 
-const _newElementBase = <T extends ExcalidrawElement>(
+const _newLayerBase = <T extends ExcalidrawLayer>(
   type: T["type"],
   {
     x,
@@ -86,14 +86,14 @@ const _newElementBase = <T extends ExcalidrawElement>(
     groupIds = [],
     frameId = null,
     roundness = null,
-    boundElements = null,
+    boundLayers = null,
     link = null,
     locked = DEFAULT_ELEMENT_PROPS.locked,
     ...rest
-  }: ElementConstructorOpts & Omit<Partial<ExcalidrawGenericElement>, "type">,
+  }: LayerConstructorOpts & Omit<Partial<ExcalidrawGenericLayer>, "type">
 ) => {
   // assign type to guard against excess properties
-  const element: Merge<ExcalidrawGenericElement, { type: T["type"] }> = {
+  const layer: Merge<ExcalidrawGenericLayer, { type: T["type"] }> = {
     id: rest.id || randomId(),
     type,
     x,
@@ -115,71 +115,69 @@ const _newElementBase = <T extends ExcalidrawElement>(
     version: rest.version || 1,
     versionNonce: rest.versionNonce ?? 0,
     isDeleted: false as false,
-    boundElements,
+    boundLayers,
     updated: getUpdatedTimestamp(),
     link,
-    locked,
+    locked
   };
-  return element;
+  return layer;
 };
 
-export const newElement = (
+export const newLayer = (
   opts: {
-    type: ExcalidrawGenericElement["type"];
-  } & ElementConstructorOpts,
-): NonDeleted<ExcalidrawGenericElement> =>
-  _newElementBase<ExcalidrawGenericElement>(opts.type, opts);
+    type: ExcalidrawGenericLayer["type"];
+  } & LayerConstructorOpts
+): NonDeleted<ExcalidrawGenericLayer> =>
+  _newLayerBase<ExcalidrawGenericLayer>(opts.type, opts);
 
-export const newFrameElement = (
-  opts: ElementConstructorOpts,
-): NonDeleted<ExcalidrawFrameElement> => {
-  const frameElement = newElementWith(
+export const newFrameLayer = (
+  opts: LayerConstructorOpts
+): NonDeleted<ExcalidrawFrameLayer> => {
+  const frameLayer = newLayerWith(
     {
-      ..._newElementBase<ExcalidrawFrameElement>("frame", opts),
+      ..._newLayerBase<ExcalidrawFrameLayer>("frame", opts),
       type: "frame",
-      name: null,
+      name: null
     },
-    {},
+    {}
   );
 
-  return frameElement;
+  return frameLayer;
 };
 
-/** computes element x/y offset based on textAlign/verticalAlign */
-const getTextElementPositionOffsets = (
+/** computes layer x/y offset based on textAlign/verticalAlign */
+const getTextLayerPositionOffsets = (
   opts: {
-    textAlign: ExcalidrawTextElement["textAlign"];
-    verticalAlign: ExcalidrawTextElement["verticalAlign"];
+    textAlign: ExcalidrawTextLayer["textAlign"];
+    verticalAlign: ExcalidrawTextLayer["verticalAlign"];
   },
   metrics: {
-    width: number;
     height: number;
-  },
-) => {
-  return {
-    x:
-      opts.textAlign === "center"
-        ? metrics.width / 2
-        : opts.textAlign === "right"
-        ? metrics.width
-        : 0,
-    y: opts.verticalAlign === "middle" ? metrics.height / 2 : 0,
-  };
-};
+    width: number;
+  }
+) => ({
+  x:
+    opts.textAlign === "center"
+      ? metrics.width / 2
+      : opts.textAlign === "right"
+      ? metrics.width
+      : 0,
+  y: opts.verticalAlign === "middle" ? metrics.height / 2 : 0
+});
 
-export const newTextElement = (
+export const newTextLayer = (
   opts: {
-    text: string;
-    fontSize?: number;
+    containerId?: ExcalidrawTextContainer["id"];
     fontFamily?: FontFamilyValues;
+    fontSize?: number;
+    isFrameName?: boolean;
+    lineHeight?: ExcalidrawTextLayer["lineHeight"];
+    strokeWidth?: ExcalidrawTextLayer["strokeWidth"];
+    text: string;
     textAlign?: TextAlign;
     verticalAlign?: VerticalAlign;
-    containerId?: ExcalidrawTextContainer["id"];
-    lineHeight?: ExcalidrawTextElement["lineHeight"];
-    strokeWidth?: ExcalidrawTextElement["strokeWidth"];
-    isFrameName?: boolean;
-  } & ElementConstructorOpts,
-): NonDeleted<ExcalidrawTextElement> => {
+  } & LayerConstructorOpts
+): NonDeleted<ExcalidrawTextLayer> => {
   const fontFamily = opts.fontFamily || DEFAULT_FONT_FAMILY;
   const fontSize = opts.fontSize || DEFAULT_FONT_SIZE;
   const lineHeight = opts.lineHeight || getDefaultLineHeight(fontFamily);
@@ -187,18 +185,18 @@ export const newTextElement = (
   const metrics = measureText(
     text,
     getFontString({ fontFamily, fontSize }),
-    lineHeight,
+    lineHeight
   );
   const textAlign = opts.textAlign || DEFAULT_TEXT_ALIGN;
   const verticalAlign = opts.verticalAlign || DEFAULT_VERTICAL_ALIGN;
-  const offsets = getTextElementPositionOffsets(
+  const offsets = getTextLayerPositionOffsets(
     { textAlign, verticalAlign },
-    metrics,
+    metrics
   );
 
-  const textElement = newElementWith(
+  const textLayer = newLayerWith(
     {
-      ..._newElementBase<ExcalidrawTextElement>("text", opts),
+      ..._newLayerBase<ExcalidrawTextLayer>("text", opts),
       text,
       fontSize,
       fontFamily,
@@ -212,56 +210,56 @@ export const newTextElement = (
       containerId: opts.containerId || null,
       originalText: text,
       lineHeight,
-      isFrameName: opts.isFrameName || false,
+      isFrameName: opts.isFrameName || false
     },
-    {},
+    {}
   );
-  return textElement;
+  return textLayer;
 };
 
 const getAdjustedDimensions = (
-  element: ExcalidrawTextElement,
-  nextText: string,
+  layer: ExcalidrawTextLayer,
+  nextText: string
 ): {
+  baseline: number;
+  height: number;
+  width: number;
   x: number;
   y: number;
-  width: number;
-  height: number;
-  baseline: number;
 } => {
   const {
     width: nextWidth,
     height: nextHeight,
-    baseline: nextBaseline,
-  } = measureText(nextText, getFontString(element), element.lineHeight);
-  const { textAlign, verticalAlign } = element;
+    baseline: nextBaseline
+  } = measureText(nextText, getFontString(layer), layer.lineHeight);
+  const { textAlign, verticalAlign } = layer;
   let x: number;
   let y: number;
   if (
     textAlign === "center" &&
     verticalAlign === VERTICAL_ALIGN.MIDDLE &&
-    !element.containerId
+    !layer.containerId
   ) {
     const prevMetrics = measureText(
-      element.text,
-      getFontString(element),
-      element.lineHeight,
+      layer.text,
+      getFontString(layer),
+      layer.lineHeight
     );
-    const offsets = getTextElementPositionOffsets(element, {
+    const offsets = getTextLayerPositionOffsets(layer, {
       width: nextWidth - prevMetrics.width,
-      height: nextHeight - prevMetrics.height,
+      height: nextHeight - prevMetrics.height
     });
 
-    x = element.x - offsets.x;
-    y = element.y - offsets.y;
+    x = layer.x - offsets.x;
+    y = layer.y - offsets.y;
   } else {
-    const [x1, y1, x2, y2] = getElementAbsoluteCoords(element);
+    const [x1, y1, x2, y2] = getLayerAbsoluteCoords(layer);
 
-    const [nextX1, nextY1, nextX2, nextY2] = getResizedElementAbsoluteCoords(
-      element,
+    const [nextX1, nextY1, nextX2, nextY2] = getResizedLayerAbsoluteCoords(
+      layer,
       nextWidth,
       nextHeight,
-      false,
+      false
     );
     const deltaX1 = (x1 - nextX1) / 2;
     const deltaY1 = (y1 - nextY1) / 2;
@@ -272,15 +270,15 @@ const getAdjustedDimensions = (
       {
         s: true,
         e: textAlign === "center" || textAlign === "left",
-        w: textAlign === "center" || textAlign === "right",
+        w: textAlign === "center" || textAlign === "right"
       },
-      element.x,
-      element.y,
-      element.angle,
+      layer.x,
+      layer.y,
+      layer.angle,
       deltaX1,
       deltaY1,
       deltaX2,
-      deltaY2,
+      deltaY2
     );
   }
 
@@ -288,113 +286,106 @@ const getAdjustedDimensions = (
     width: nextWidth,
     height: nextHeight,
     baseline: nextBaseline,
-    x: Number.isFinite(x) ? x : element.x,
-    y: Number.isFinite(y) ? y : element.y,
+    x: Number.isFinite(x) ? x : layer.x,
+    y: Number.isFinite(y) ? y : layer.y
   };
 };
 
 export const refreshTextDimensions = (
-  textElement: ExcalidrawTextElement,
-  text = textElement.text,
+  textLayer: ExcalidrawTextLayer,
+  text = textLayer.text
 ) => {
-  if (textElement.isDeleted) {
+  if (textLayer.isDeleted) {
     return;
   }
-  const container = getContainerElement(textElement);
+  const container = getContainerLayer(textLayer);
   if (container) {
     text = wrapText(
       text,
-      getFontString(textElement),
-      getBoundTextMaxWidth(container),
+      getFontString(textLayer),
+      getBoundTextMaxWidth(container)
     );
   }
-  const dimensions = getAdjustedDimensions(textElement, text);
+  const dimensions = getAdjustedDimensions(textLayer, text);
   return { text, ...dimensions };
 };
 
-export const updateTextElement = (
-  textElement: ExcalidrawTextElement,
+export const updateTextLayer = (
+  textLayer: ExcalidrawTextLayer,
   {
     text,
     isDeleted,
-    originalText,
+    originalText
   }: {
-    text: string;
     isDeleted?: boolean;
     originalText: string;
-  },
-): ExcalidrawTextElement => {
-  return newElementWith(textElement, {
+    text: string;
+  }
+): ExcalidrawTextLayer =>
+  newLayerWith(textLayer, {
     originalText,
-    isDeleted: isDeleted ?? textElement.isDeleted,
-    ...refreshTextDimensions(textElement, originalText),
+    isDeleted: isDeleted ?? textLayer.isDeleted,
+    ...refreshTextDimensions(textLayer, originalText)
   });
-};
 
-export const newFreeDrawElement = (
+export const newFreeDrawLayer = (
   opts: {
-    type: "freedraw";
-    points?: ExcalidrawFreeDrawElement["points"];
+    points?: ExcalidrawFreeDrawLayer["points"];
     simulatePressure: boolean;
-  } & ElementConstructorOpts,
-): NonDeleted<ExcalidrawFreeDrawElement> => {
-  return {
-    ..._newElementBase<ExcalidrawFreeDrawElement>(opts.type, opts),
-    points: opts.points || [],
-    pressures: [],
-    simulatePressure: opts.simulatePressure,
-    lastCommittedPoint: null,
-  };
-};
+    type: "freedraw";
+  } & LayerConstructorOpts
+): NonDeleted<ExcalidrawFreeDrawLayer> => ({
+  ..._newLayerBase<ExcalidrawFreeDrawLayer>(opts.type, opts),
+  points: opts.points || [],
+  pressures: [],
+  simulatePressure: opts.simulatePressure,
+  lastCommittedPoint: null
+});
 
-export const newLinearElement = (
+export const newLinearLayer = (
   opts: {
-    type: ExcalidrawLinearElement["type"];
-    startArrowhead: Arrowhead | null;
     endArrowhead: Arrowhead | null;
-    points?: ExcalidrawLinearElement["points"];
-  } & ElementConstructorOpts,
-): NonDeleted<ExcalidrawLinearElement> => {
-  return {
-    ..._newElementBase<ExcalidrawLinearElement>(opts.type, opts),
-    points: opts.points || [],
-    lastCommittedPoint: null,
-    startBinding: null,
-    endBinding: null,
-    startArrowhead: opts.startArrowhead,
-    endArrowhead: opts.endArrowhead,
-  };
-};
+    points?: ExcalidrawLinearLayer["points"];
+    startArrowhead: Arrowhead | null;
+    type: ExcalidrawLinearLayer["type"];
+  } & LayerConstructorOpts
+): NonDeleted<ExcalidrawLinearLayer> => ({
+  ..._newLayerBase<ExcalidrawLinearLayer>(opts.type, opts),
+  points: opts.points || [],
+  lastCommittedPoint: null,
+  startBinding: null,
+  endBinding: null,
+  startArrowhead: opts.startArrowhead,
+  endArrowhead: opts.endArrowhead
+});
 
-export const newImageElement = (
+export const newImageLayer = (
   opts: {
-    type: ExcalidrawImageElement["type"];
-    status?: ExcalidrawImageElement["status"];
-    fileId?: ExcalidrawImageElement["fileId"];
-    scale?: ExcalidrawImageElement["scale"];
-  } & ElementConstructorOpts,
-): NonDeleted<ExcalidrawImageElement> => {
-  return {
-    ..._newElementBase<ExcalidrawImageElement>("image", opts),
-    // in the future we'll support changing stroke color for some SVG elements,
-    // and `transparent` will likely mean "use original colors of the image"
-    strokeColor: "transparent",
-    status: opts.status ?? "pending",
-    fileId: opts.fileId ?? null,
-    scale: opts.scale ?? [1, 1],
-  };
-};
+    fileId?: ExcalidrawImageLayer["fileId"];
+    scale?: ExcalidrawImageLayer["scale"];
+    status?: ExcalidrawImageLayer["status"];
+    type: ExcalidrawImageLayer["type"];
+  } & LayerConstructorOpts
+): NonDeleted<ExcalidrawImageLayer> => ({
+  ..._newLayerBase<ExcalidrawImageLayer>("image", opts),
+  // in the future we'll support changing stroke color for some SVG layers,
+  // and `transparent` will likely mean "use original colors of the image"
+  strokeColor: "transparent",
+  status: opts.status ?? "pending",
+  fileId: opts.fileId ?? null,
+  scale: opts.scale ?? [1, 1]
+});
 
-// Simplified deep clone for the purpose of cloning ExcalidrawElement.
+// Simplified deep clone for the purpose of cloning ExcalidrawLayer.
 //
 // Only clones plain objects and arrays. Doesn't clone Date, RegExp, Map, Set,
 // Typed arrays and other non-null objects.
 //
 // Adapted from https://github.com/lukeed/klona
 //
-// The reason for `deepCopyElement()` wrapper is type safety (only allow
-// passing ExcalidrawElement as the top-level argument).
-const _deepCopyElement = (val: any, depth: number = 0) => {
+// The reason for `deepCopyLayer()` wrapper is type safety (only allow
+// passing ExcalidrawLayer as the top-level argument).
+const _deepCopyLayer = (val: any, depth: number = 0) => {
   // only clone non-primitives
   if (val == null || typeof val !== "object") {
     return val;
@@ -410,11 +401,11 @@ const _deepCopyElement = (val: any, depth: number = 0) => {
     for (const key in val) {
       if (val.hasOwnProperty(key)) {
         // don't copy non-serializable objects like these caches. They'll be
-        // populated when the element is rendered.
+        // populated when the layer is rendered.
         if (depth === 0 && (key === "shape" || key === "canvas")) {
           continue;
         }
-        tmp[key] = _deepCopyElement(val[key], depth + 1);
+        tmp[key] = _deepCopyLayer(val[key], depth + 1);
       }
     }
     return tmp;
@@ -424,13 +415,13 @@ const _deepCopyElement = (val: any, depth: number = 0) => {
     let k = val.length;
     const arr = new Array(k);
     while (k--) {
-      arr[k] = _deepCopyElement(val[k], depth + 1);
+      arr[k] = _deepCopyLayer(val[k], depth + 1);
     }
     return arr;
   }
 
   // we're not cloning non-array & non-plain-object objects because we
-  // don't support them on excalidraw elements yet. If we do, we need to make
+  // don't support them on excalidraw layers yet. If we do, we need to make
   // sure we start cloning them, so let's warn about it.
   if (process.env.NODE_ENV === "development") {
     if (
@@ -439,7 +430,7 @@ const _deepCopyElement = (val: any, depth: number = 0) => {
       objectType.startsWith("[object ")
     ) {
       console.warn(
-        `_deepCloneElement: unexpected object type ${objectType}. This value will not be cloned!`,
+        `_deepCloneLayer: unexpected object type ${objectType}. This value will not be cloned!`
       );
     }
   }
@@ -448,19 +439,16 @@ const _deepCopyElement = (val: any, depth: number = 0) => {
 };
 
 /**
- * Clones ExcalidrawElement data structure. Does not regenerate id, nonce, or
+ * Clones ExcalidrawLayer data structure. Does not regenerate id, nonce, or
  * any value. The purpose is to to break object references for immutability
- * reasons, whenever we want to keep the original element, but ensure it's not
+ * reasons, whenever we want to keep the original layer, but ensure it's not
  * mutated.
  *
  * Only clones plain objects and arrays. Doesn't clone Date, RegExp, Map, Set,
  * Typed arrays and other non-null objects.
  */
-export const deepCopyElement = <T extends ExcalidrawElement>(
-  val: T,
-): Mutable<T> => {
-  return _deepCopyElement(val);
-};
+export const deepCopyLayer = <T extends ExcalidrawLayer>(val: T): Mutable<T> =>
+  _deepCopyLayer(val);
 
 /**
  * utility wrapper to generate new id. In test env it reuses the old + postfix
@@ -468,14 +456,14 @@ export const deepCopyElement = <T extends ExcalidrawElement>(
  */
 const regenerateId = (
   /** supply null if no previous id exists */
-  previousId: string | null,
+  previousId: string | null
 ) => {
   if (isTestEnv() && previousId) {
     let nextId = `${previousId}_copy`;
     // `window.h` may not be defined in some unit tests
     if (
       window.h?.app
-        ?.getSceneElementsIncludingDeleted()
+        ?.getSceneLayersIncludingDeleted()
         .find((el) => el.id === nextId)
     ) {
       nextId += "_copy";
@@ -486,29 +474,29 @@ const regenerateId = (
 };
 
 /**
- * Duplicate an element, often used in the alt-drag operation.
+ * Duplicate an layer, often used in the alt-drag operation.
  * Note that this method has gotten a bit complicated since the
- * introduction of gruoping/ungrouping elements.
+ * introduction of gruoping/ungrouping layers.
  * @param editingGroupId The current group being edited. The new
- *                       element will inherit this group and its
+ *                       layer will inherit this group and its
  *                       parents.
  * @param groupIdMapForOperation A Map that maps old group IDs to
  *                               duplicated ones. If you are duplicating
- *                               multiple elements at once, share this map
+ *                               multiple layers at once, share this map
  *                               amongst all of them
- * @param element Element to duplicate
- * @param overrides Any element properties to override
+ * @param layer Layer to duplicate
+ * @param overrides Any layer properties to override
  */
-export const duplicateElement = <TElement extends ExcalidrawElement>(
+export const duplicateLayer = <TLayer extends ExcalidrawLayer>(
   editingGroupId: AppState["editingGroupId"],
   groupIdMapForOperation: Map<GroupId, GroupId>,
-  element: TElement,
-  overrides?: Partial<TElement>,
-): Readonly<TElement> => {
-  let copy = deepCopyElement(element);
+  layer: TLayer,
+  overrides?: Partial<TLayer>
+): Readonly<TLayer> => {
+  let copy = deepCopyLayer(layer);
 
   copy.id = regenerateId(copy.id);
-  copy.boundElements = null;
+  copy.boundLayers = null;
   copy.updated = getUpdatedTimestamp();
   copy.seed = randomInteger();
   copy.groupIds = getNewGroupIdsForDuplication(
@@ -519,7 +507,7 @@ export const duplicateElement = <TElement extends ExcalidrawElement>(
         groupIdMapForOperation.set(groupId, regenerateId(groupId));
       }
       return groupIdMapForOperation.get(groupId)!;
-    },
+    }
   );
   if (overrides) {
     copy = Object.assign(copy, overrides);
@@ -528,62 +516,62 @@ export const duplicateElement = <TElement extends ExcalidrawElement>(
 };
 
 /**
- * Clones elements, regenerating their ids (including bindings) and group ids.
+ * Clones layers, regenerating their ids (including bindings) and group ids.
  *
- * If bindings don't exist in the elements array, they are removed. Therefore,
- * it's advised to supply the whole elements array, or sets of elements that
+ * If bindings don't exist in the layers array, they are removed. Therefore,
+ * it's advised to supply the whole layers array, or sets of layers that
  * are encapsulated (such as library items), if the purpose is to retain
- * bindings to the cloned elements intact.
+ * bindings to the cloned layers intact.
  *
  * NOTE by default does not randomize or regenerate anything except the id.
  */
-export const duplicateElements = (
-  elements: readonly ExcalidrawElement[],
+export const duplicateLayers = (
+  layers: readonly ExcalidrawLayer[],
   opts?: {
     /** NOTE also updates version flags and `updated` */
     randomizeSeed: boolean;
-  },
+  }
 ) => {
-  const clonedElements: ExcalidrawElement[] = [];
+  const clonedLayers: ExcalidrawLayer[] = [];
 
-  const origElementsMap = arrayToMap(elements);
+  const origLayersMap = arrayToMap(layers);
 
   // used for for migrating old ids to new ids
-  const elementNewIdsMap = new Map<
-    /* orig */ ExcalidrawElement["id"],
-    /* new */ ExcalidrawElement["id"]
+  const layerNewIdsMap = new Map<
+    /* orig */ ExcalidrawLayer["id"],
+    /* new */ ExcalidrawLayer["id"]
   >();
 
-  const maybeGetNewId = (id: ExcalidrawElement["id"]) => {
-    // if we've already migrated the element id, return the new one directly
-    if (elementNewIdsMap.has(id)) {
-      return elementNewIdsMap.get(id)!;
+  const maybeGetNewId = (id: ExcalidrawLayer["id"]) => {
+    // if we've already migrated the layer id, return the new one directly
+    if (layerNewIdsMap.has(id)) {
+      return layerNewIdsMap.get(id)!;
     }
-    // if we haven't migrated the element id, but an old element with the same
+    // if we haven't migrated the layer id, but an old layer with the same
     // id exists, generate a new id for it and return it
-    if (origElementsMap.has(id)) {
+    if (origLayersMap.has(id)) {
       const newId = regenerateId(id);
-      elementNewIdsMap.set(id, newId);
+      layerNewIdsMap.set(id, newId);
       return newId;
     }
-    // if old element doesn't exist, return null to mark it for removal
+    // if old layer doesn't exist, return null to mark it for removal
     return null;
   };
 
   const groupNewIdsMap = new Map</* orig */ GroupId, /* new */ GroupId>();
 
-  for (const element of elements) {
-    const clonedElement: Mutable<ExcalidrawElement> = _deepCopyElement(element);
+  for (const layer of layers) {
+    const clonedLayer: Mutable<ExcalidrawLayer> = _deepCopyLayer(layer);
 
-    clonedElement.id = maybeGetNewId(element.id)!;
+    clonedLayer.id = maybeGetNewId(layer.id)!;
 
     if (opts?.randomizeSeed) {
-      clonedElement.seed = randomInteger();
-      bumpVersion(clonedElement);
+      clonedLayer.seed = randomInteger();
+      bumpVersion(clonedLayer);
     }
 
-    if (clonedElement.groupIds) {
-      clonedElement.groupIds = clonedElement.groupIds.map((groupId) => {
+    if (clonedLayer.groupIds) {
+      clonedLayer.groupIds = clonedLayer.groupIds.map((groupId) => {
         if (!groupNewIdsMap.has(groupId)) {
           groupNewIdsMap.set(groupId, regenerateId(groupId));
         }
@@ -591,16 +579,16 @@ export const duplicateElements = (
       });
     }
 
-    if ("containerId" in clonedElement && clonedElement.containerId) {
-      const newContainerId = maybeGetNewId(clonedElement.containerId);
-      clonedElement.containerId = newContainerId;
+    if ("containerId" in clonedLayer && clonedLayer.containerId) {
+      const newContainerId = maybeGetNewId(clonedLayer.containerId);
+      clonedLayer.containerId = newContainerId;
     }
 
-    if ("boundElements" in clonedElement && clonedElement.boundElements) {
-      clonedElement.boundElements = clonedElement.boundElements.reduce(
+    if ("boundLayers" in clonedLayer && clonedLayer.boundLayers) {
+      clonedLayer.boundLayers = clonedLayer.boundLayers.reduce(
         (
-          acc: Mutable<NonNullable<ExcalidrawElement["boundElements"]>>,
-          binding,
+          acc: Mutable<NonNullable<ExcalidrawLayer["boundLayers"]>>,
+          binding
         ) => {
           const newBindingId = maybeGetNewId(binding.id);
           if (newBindingId) {
@@ -608,37 +596,35 @@ export const duplicateElements = (
           }
           return acc;
         },
-        [],
+        []
       );
     }
 
-    if ("endBinding" in clonedElement && clonedElement.endBinding) {
-      const newEndBindingId = maybeGetNewId(clonedElement.endBinding.elementId);
-      clonedElement.endBinding = newEndBindingId
+    if ("endBinding" in clonedLayer && clonedLayer.endBinding) {
+      const newEndBindingId = maybeGetNewId(clonedLayer.endBinding.layerId);
+      clonedLayer.endBinding = newEndBindingId
         ? {
-            ...clonedElement.endBinding,
-            elementId: newEndBindingId,
+            ...clonedLayer.endBinding,
+            layerId: newEndBindingId
           }
         : null;
     }
-    if ("startBinding" in clonedElement && clonedElement.startBinding) {
-      const newEndBindingId = maybeGetNewId(
-        clonedElement.startBinding.elementId,
-      );
-      clonedElement.startBinding = newEndBindingId
+    if ("startBinding" in clonedLayer && clonedLayer.startBinding) {
+      const newEndBindingId = maybeGetNewId(clonedLayer.startBinding.layerId);
+      clonedLayer.startBinding = newEndBindingId
         ? {
-            ...clonedElement.startBinding,
-            elementId: newEndBindingId,
+            ...clonedLayer.startBinding,
+            layerId: newEndBindingId
           }
         : null;
     }
 
-    if (clonedElement.frameId) {
-      clonedElement.frameId = maybeGetNewId(clonedElement.frameId);
+    if (clonedLayer.frameId) {
+      clonedLayer.frameId = maybeGetNewId(clonedLayer.frameId);
     }
 
-    clonedElements.push(clonedElement);
+    clonedLayers.push(clonedLayer);
   }
 
-  return clonedElements;
+  return clonedLayers;
 };

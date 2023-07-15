@@ -1,26 +1,26 @@
-import { ExcalidrawElement } from "./types";
-import { invalidateShapeForElement } from "../renderer/renderElement";
-import Scene from "../scene/Scene";
+import Scene from "../../lib/scene/Scene";
 import { getSizeFromPoints } from "../points";
 import { randomInteger } from "../random";
+import { invalidateShapeForLayer } from "../renderer/renderLayer";
 import { Point } from "../types";
-import { getUpdatedTimestamp } from "../utils";
 import { Mutable } from "../utility-types";
+import { getUpdatedTimestamp } from "../utils";
+import { ExcalidrawLayer } from "./types";
 
-type ElementUpdate<TElement extends ExcalidrawElement> = Omit<
-  Partial<TElement>,
+type LayerUpdate<TLayer extends ExcalidrawLayer> = Omit<
+  Partial<TLayer>,
   "id" | "version" | "versionNonce"
 >;
 
-// This function tracks updates of text elements for the purposes for collaboration.
+// This function tracks updates of text layers for the purposes for collaboration.
 // The version is used to compare updates when more than one user is working in
 // the same drawing. Note: this will trigger the component to update. Make sure you
 // are calling it either from a React event handler or within unstable_batchedUpdates().
-export const mutateElement = <TElement extends Mutable<ExcalidrawElement>>(
-  element: TElement,
-  updates: ElementUpdate<TElement>,
-  informMutation = true,
-): TElement => {
+export const mutateLayer = <TLayer extends Mutable<ExcalidrawLayer>>(
+  layer: TLayer,
+  updates: LayerUpdate<TLayer>,
+  informMutation = true
+): TLayer => {
   let didChange = false;
 
   // casting to any because can't use `in` operator
@@ -35,7 +35,7 @@ export const mutateElement = <TElement extends Mutable<ExcalidrawElement>>(
     const value = (updates as any)[key];
     if (typeof value !== "undefined") {
       if (
-        (element as any)[key] === value &&
+        (layer as any)[key] === value &&
         // if object, always update because its attrs could have changed
         // (except for specific keys we handle below)
         (typeof value !== "object" ||
@@ -47,13 +47,13 @@ export const mutateElement = <TElement extends Mutable<ExcalidrawElement>>(
       }
 
       if (key === "scale") {
-        const prevScale = (element as any)[key];
+        const prevScale = (layer as any)[key];
         const nextScale = value;
         if (prevScale[0] === nextScale[0] && prevScale[1] === nextScale[1]) {
           continue;
         }
       } else if (key === "points") {
-        const prevPoints = (element as any)[key];
+        const prevPoints = (layer as any)[key];
         const nextPoints = value;
         if (prevPoints.length === nextPoints.length) {
           let didChangePoints = false;
@@ -75,12 +75,12 @@ export const mutateElement = <TElement extends Mutable<ExcalidrawElement>>(
         }
       }
 
-      (element as any)[key] = value;
+      (layer as any)[key] = value;
       didChange = true;
     }
   }
   if (!didChange) {
-    return element;
+    return layer;
   }
 
   if (
@@ -89,30 +89,30 @@ export const mutateElement = <TElement extends Mutable<ExcalidrawElement>>(
     typeof fileId != "undefined" ||
     typeof points !== "undefined"
   ) {
-    invalidateShapeForElement(element);
+    invalidateShapeForLayer(layer);
   }
 
-  element.version++;
-  element.versionNonce = randomInteger();
-  element.updated = getUpdatedTimestamp();
+  layer.version++;
+  layer.versionNonce = randomInteger();
+  layer.updated = getUpdatedTimestamp();
 
   if (informMutation) {
-    Scene.getScene(element)?.informMutation();
+    Scene.getScene(layer)?.informMutation();
   }
 
-  return element;
+  return layer;
 };
 
-export const newElementWith = <TElement extends ExcalidrawElement>(
-  element: TElement,
-  updates: ElementUpdate<TElement>,
-): TElement => {
+export const newLayerWith = <TLayer extends ExcalidrawLayer>(
+  layer: TLayer,
+  updates: LayerUpdate<TLayer>
+): TLayer => {
   let didChange = false;
   for (const key in updates) {
     const value = (updates as any)[key];
     if (typeof value !== "undefined") {
       if (
-        (element as any)[key] === value &&
+        (layer as any)[key] === value &&
         // if object, always update because its attrs could have changed
         (typeof value !== "object" || value === null)
       ) {
@@ -123,29 +123,29 @@ export const newElementWith = <TElement extends ExcalidrawElement>(
   }
 
   if (!didChange) {
-    return element;
+    return layer;
   }
 
   return {
-    ...element,
+    ...layer,
     ...updates,
     updated: getUpdatedTimestamp(),
-    version: element.version + 1,
-    versionNonce: randomInteger(),
+    version: layer.version + 1,
+    versionNonce: randomInteger()
   };
 };
 
 /**
- * Mutates element, bumping `version`, `versionNonce`, and `updated`.
+ * Mutates layer, bumping `version`, `versionNonce`, and `updated`.
  *
  * NOTE: does not trigger re-render.
  */
 export const bumpVersion = (
-  element: Mutable<ExcalidrawElement>,
-  version?: ExcalidrawElement["version"],
+  layer: Mutable<ExcalidrawLayer>,
+  version?: ExcalidrawLayer["version"]
 ) => {
-  element.version = (version ?? element.version) + 1;
-  element.versionNonce = randomInteger();
-  element.updated = getUpdatedTimestamp();
-  return element;
+  layer.version = (version ?? layer.version) + 1;
+  layer.versionNonce = randomInteger();
+  layer.updated = getUpdatedTimestamp();
+  return layer;
 };

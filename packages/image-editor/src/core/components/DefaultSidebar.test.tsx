@@ -1,6 +1,6 @@
 import React from "react";
 import { DEFAULT_SIDEBAR } from "../constants";
-import { DefaultSidebar } from "../packages/excalidraw/index";
+import { DefaultSidebar } from "../../lib/packages/excalidraw/index";
 import {
   fireEvent,
   waitFor,

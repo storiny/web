@@ -1,35 +1,36 @@
 import React from "react";
+
+import { trackEvent } from "../analytics";
+import { ExcalidrawLayer } from "../layer/types";
+import { AppClassProperties, AppState } from "../types";
 import {
   Action,
-  UpdaterFn,
   ActionName,
   ActionResult,
-  PanelComponentProps,
   ActionSource,
+  PanelComponentProps,
+  UpdaterFn
 } from "./types";
-import { ExcalidrawElement } from "../element/types";
-import { AppClassProperties, AppState } from "../types";
-import { trackEvent } from "../analytics";
 
 const trackAction = (
   action: Action,
   source: ActionSource,
   appState: Readonly<AppState>,
-  elements: readonly ExcalidrawElement[],
+  layers: readonly ExcalidrawLayer[],
   app: AppClassProperties,
-  value: any,
+  value: any
 ) => {
   if (action.trackEvent) {
     try {
       if (typeof action.trackEvent === "object") {
         const shouldTrack = action.trackEvent.predicate
-          ? action.trackEvent.predicate(appState, elements, value)
+          ? action.trackEvent.predicate(appState, layers, value)
           : true;
         if (shouldTrack) {
           trackEvent(
             action.trackEvent.category,
             action.trackEvent.action || action.name,
-            `${source} (${app.device.isMobile ? "mobile" : "desktop"})`,
+            `${source} (${app.device.isMobile ? "mobile" : "desktop"})`
           );
         }
       }
@@ -45,26 +46,24 @@ export class ActionManager {
   updater: (actionResult: ActionResult | Promise<ActionResult>) => void;
 
   getAppState: () => Readonly<AppState>;
-  getElementsIncludingDeleted: () => readonly ExcalidrawElement[];
+  getLayersIncludingDeleted: () => readonly ExcalidrawLayer[];
   app: AppClassProperties;
 
   constructor(
     updater: UpdaterFn,
     getAppState: () => AppState,
-    getElementsIncludingDeleted: () => readonly ExcalidrawElement[],
-    app: AppClassProperties,
+    getLayersIncludingDeleted: () => readonly ExcalidrawLayer[],
+    app: AppClassProperties
   ) {
     this.updater = (actionResult) => {
       if (actionResult && "then" in actionResult) {
-        actionResult.then((actionResult) => {
-          return updater(actionResult);
-        });
+        actionResult.then((actionResult) => updater(actionResult));
       } else {
         return updater(actionResult);
       }
     };
     this.getAppState = getAppState;
-    this.getElementsIncludingDeleted = getElementsIncludingDeleted;
+    this.getLayersIncludingDeleted = getLayersIncludingDeleted;
     this.app = app;
   }
 
@@ -89,8 +88,8 @@ export class ActionManager {
           action.keyTest(
             event,
             this.getAppState(),
-            this.getElementsIncludingDeleted(),
-          ),
+            this.getLayersIncludingDeleted()
+          )
       );
 
     if (data.length !== 1) {
@@ -106,29 +105,29 @@ export class ActionManager {
       return false;
     }
 
-    const elements = this.getElementsIncludingDeleted();
+    const layers = this.getLayersIncludingDeleted();
     const appState = this.getAppState();
     const value = null;
 
-    trackAction(action, "keyboard", appState, elements, this.app, null);
+    trackAction(action, "keyboard", appState, layers, this.app, null);
 
     event.preventDefault();
     event.stopPropagation();
-    this.updater(data[0].perform(elements, appState, value, this.app));
+    this.updater(data[0].perform(layers, appState, value, this.app));
     return true;
   }
 
   executeAction(
     action: Action,
     source: ActionSource = "api",
-    value: any = null,
+    value: any = null
   ) {
-    const elements = this.getElementsIncludingDeleted();
+    const layers = this.getLayersIncludingDeleted();
     const appState = this.getAppState();
 
-    trackAction(action, source, appState, elements, this.app, value);
+    trackAction(action, source, appState, layers, this.app, value);
 
-    this.updater(action.perform(elements, appState, value, this.app));
+    this.updater(action.perform(layers, appState, value, this.app));
   }
 
   /**
@@ -147,28 +146,28 @@ export class ActionManager {
       const action = this.actions[name];
       const PanelComponent = action.PanelComponent!;
       PanelComponent.displayName = "PanelComponent";
-      const elements = this.getElementsIncludingDeleted();
+      const layers = this.getLayersIncludingDeleted();
       const appState = this.getAppState();
       const updateData = (formState?: any) => {
-        trackAction(action, "ui", appState, elements, this.app, formState);
+        trackAction(action, "ui", appState, layers, this.app, formState);
 
         this.updater(
           action.perform(
-            this.getElementsIncludingDeleted(),
+            this.getLayersIncludingDeleted(),
             this.getAppState(),
             formState,
-            this.app,
-          ),
+            this.app
+          )
         );
       };
 
       return (
         <PanelComponent
-          elements={this.getElementsIncludingDeleted()}
-          appState={this.getAppState()}
-          updateData={updateData}
           appProps={this.app.props}
+          appState={this.getAppState()}
           data={data}
+          layers={this.getLayersIncludingDeleted()}
+          updateData={updateData}
         />
       );
     }
@@ -177,12 +176,12 @@ export class ActionManager {
   };
 
   isActionEnabled = (action: Action) => {
-    const elements = this.getElementsIncludingDeleted();
+    const layers = this.getLayersIncludingDeleted();
     const appState = this.getAppState();
 
     return (
       !action.predicate ||
-      action.predicate(elements, appState, this.app.props, this.app)
+      action.predicate(layers, appState, this.app.props, this.app)
     );
   };
 }

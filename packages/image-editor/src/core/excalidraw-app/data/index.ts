@@ -1,51 +1,49 @@
-import { compressData, decompressData } from "../../data/encode";
+import { compressData, decompressData } from "../../../lib/data/encode/encode";
 import {
   decryptData,
   generateEncryptionKey,
-  IV_LENGTH_BYTES,
-} from "../../data/encryption";
-import { serializeAsJSON } from "../../data/json";
-import { restore } from "../../data/restore";
-import { ImportedDataState } from "../../data/types";
-import { isInvisiblySmallElement } from "../../element/sizeHelpers";
-import { isInitializedImageElement } from "../../element/typeChecks";
-import { ExcalidrawElement, FileId } from "../../element/types";
+  IV_LENGTH_BYTES
+} from "../../../lib/data/encryption/encryption";
+import { serializeAsJSON } from "../../../lib/data/json/json";
+import { restore } from "../../../lib/data/restore/restore";
+import { ImportedDataState } from "../../../lib/data/types";
 import { t } from "../../i18n";
+import { isInvisiblySmallLayer } from "../../layer/sizeHelpers";
+import { isInitializedImageLayer } from "../../layer/typeChecks";
+import { ExcalidrawLayer, FileId } from "../../layer/types";
 import {
   AppState,
   BinaryFileData,
   BinaryFiles,
-  UserIdleState,
+  UserIdleState
 } from "../../types";
 import { bytesToHexString } from "../../utils";
 import {
   DELETED_ELEMENT_TIMEOUT,
   FILE_UPLOAD_MAX_BYTES,
-  ROOM_ID_BYTES,
+  ROOM_ID_BYTES
 } from "../app_constants";
 import { encodeFilesForUpload } from "./FileManager";
 import { saveFilesToFirebase } from "./firebase";
 
-export type SyncableExcalidrawElement = ExcalidrawElement & {
-  _brand: "SyncableExcalidrawElement";
+export type SyncableExcalidrawLayer = ExcalidrawLayer & {
+  _brand: "SyncableExcalidrawLayer";
 };
 
-export const isSyncableElement = (
-  element: ExcalidrawElement,
-): element is SyncableExcalidrawElement => {
-  if (element.isDeleted) {
-    if (element.updated > Date.now() - DELETED_ELEMENT_TIMEOUT) {
+export const isSyncableLayer = (
+  layer: ExcalidrawLayer
+): layer is SyncableExcalidrawLayer => {
+  if (layer.isDeleted) {
+    if (layer.updated > Date.now() - DELETED_ELEMENT_TIMEOUT) {
       return true;
     }
     return false;
   }
-  return !isInvisiblySmallElement(element);
+  return !isInvisiblySmallLayer(layer);
 };
 
-export const getSyncableElements = (elements: readonly ExcalidrawElement[]) =>
-  elements.filter((element) =>
-    isSyncableElement(element),
-  ) as SyncableExcalidrawElement[];
+export const getSyncableLayers = (layers: readonly ExcalidrawLayer[]) =>
+  layers.filter((layer) => isSyncableLayer(layer)) as SyncableExcalidrawLayer[];
 
 const BACKEND_V2_GET = process.env.REACT_APP_BACKEND_V2_GET_URL;
 const BACKEND_V2_POST = process.env.REACT_APP_BACKEND_V2_POST_URL;
@@ -64,19 +62,19 @@ const generateRoomId = async () => {
  * If REACT_APP_WS_SERVER_URL env is set, we use that instead (useful for forks)
  */
 export const getCollabServer = async (): Promise<{
-  url: string;
   polling: boolean;
+  url: string;
 }> => {
   if (process.env.REACT_APP_WS_SERVER_URL) {
     return {
       url: process.env.REACT_APP_WS_SERVER_URL,
-      polling: true,
+      polling: true
     };
   }
 
   try {
     const resp = await fetch(
-      `${process.env.REACT_APP_PORTAL_URL}/collab-server`,
+      `${process.env.REACT_APP_PORTAL_URL}/collab-server`
     );
     return await resp.json();
   } catch (error) {
@@ -91,35 +89,35 @@ export type EncryptedData = {
 };
 
 export type SocketUpdateDataSource = {
-  SCENE_INIT: {
-    type: "SCENE_INIT";
-    payload: {
-      elements: readonly ExcalidrawElement[];
-    };
-  };
-  SCENE_UPDATE: {
-    type: "SCENE_UPDATE";
-    payload: {
-      elements: readonly ExcalidrawElement[];
-    };
-  };
-  MOUSE_LOCATION: {
-    type: "MOUSE_LOCATION";
-    payload: {
-      socketId: string;
-      pointer: { x: number; y: number };
-      button: "down" | "up";
-      selectedElementIds: AppState["selectedElementIds"];
-      username: string;
-    };
-  };
   IDLE_STATUS: {
-    type: "IDLE_STATUS";
     payload: {
       socketId: string;
       userState: UserIdleState;
       username: string;
     };
+    type: "IDLE_STATUS";
+  };
+  MOUSE_LOCATION: {
+    payload: {
+      button: "down" | "up";
+      pointer: { x: number; y: number };
+      selectedLayerIds: AppState["selectedLayerIds"];
+      socketId: string;
+      username: string;
+    };
+    type: "MOUSE_LOCATION";
+  };
+  SCENE_INIT: {
+    payload: {
+      layers: readonly ExcalidrawLayer[];
+    };
+    type: "SCENE_INIT";
+  };
+  SCENE_UPDATE: {
+    payload: {
+      layers: readonly ExcalidrawLayer[];
+    };
+    type: "SCENE_UPDATE";
   };
 };
 
@@ -165,9 +163,8 @@ export const generateCollaborationLinkData = async () => {
 export const getCollaborationLink = (data: {
   roomId: string;
   roomKey: string;
-}) => {
-  return `${window.location.origin}${window.location.pathname}#room=${data.roomId},${data.roomKey}`;
-};
+}) =>
+  `${window.location.origin}${window.location.pathname}#room=${data.roomId},${data.roomKey}`;
 
 /**
  * Decodes shareLink data using the legacy buffer format.
@@ -175,7 +172,7 @@ export const getCollaborationLink = (data: {
  */
 const legacy_decodeFromBackend = async ({
   buffer,
-  decryptionKey,
+  decryptionKey
 }: {
   buffer: ArrayBuffer;
   decryptionKey: string;
@@ -195,19 +192,19 @@ const legacy_decodeFromBackend = async ({
 
   // We need to convert the decrypted array buffer to a string
   const string = new window.TextDecoder("utf-8").decode(
-    new Uint8Array(decrypted),
+    new Uint8Array(decrypted)
   );
   const data: ImportedDataState = JSON.parse(string);
 
   return {
-    elements: data.elements || null,
-    appState: data.appState || null,
+    layers: data.layers || null,
+    appState: data.appState || null
   };
 };
 
 const importFromBackend = async (
   id: string,
-  decryptionKey: string,
+  decryptionKey: string
 ): Promise<ImportedDataState> => {
   try {
     const response = await fetch(`${BACKEND_V2_GET}${id}`);
@@ -222,21 +219,21 @@ const importFromBackend = async (
       const { data: decodedBuffer } = await decompressData(
         new Uint8Array(buffer),
         {
-          decryptionKey,
-        },
+          decryptionKey
+        }
       );
       const data: ImportedDataState = JSON.parse(
-        new TextDecoder().decode(decodedBuffer),
+        new TextDecoder().decode(decodedBuffer)
       );
 
       return {
-        elements: data.elements || null,
-        appState: data.appState || null,
+        layers: data.layers || null,
+        appState: data.appState || null
       };
     } catch (error: any) {
       console.warn(
         "error when decoding shareLink data using the new format:",
-        error,
+        error
       );
       return legacy_decodeFromBackend({ buffer, decryptionKey });
     }
@@ -253,7 +250,7 @@ export const loadScene = async (
   // Supply local state even if importing from backend to ensure we restore
   // localStorage user settings which we do not persist on server.
   // Non-optional so we don't forget to pass it even if `undefined`.
-  localDataState: ImportedDataState | undefined | null,
+  localDataState: ImportedDataState | undefined | null
 ) => {
   let data;
   if (id != null && privateKey != null) {
@@ -262,61 +259,61 @@ export const loadScene = async (
     data = restore(
       await importFromBackend(id, privateKey),
       localDataState?.appState,
-      localDataState?.elements,
-      { repairBindings: true, refreshDimensions: false },
+      localDataState?.layers,
+      { repairBindings: true, refreshDimensions: false }
     );
   } else {
     data = restore(localDataState || null, null, null, {
-      repairBindings: true,
+      repairBindings: true
     });
   }
 
   return {
-    elements: data.elements,
+    layers: data.layers,
     appState: data.appState,
     // note: this will always be empty because we're not storing files
     // in the scene database/localStorage, and instead fetch them async
     // from a different database
     files: data.files,
-    commitToHistory: false,
+    commitToHistory: false
   };
 };
 
 type ExportToBackendResult =
-  | { url: null; errorMessage: string }
-  | { url: string; errorMessage: null };
+  | { errorMessage: string; url: null }
+  | { errorMessage: null; url: string };
 
 export const exportToBackend = async (
-  elements: readonly ExcalidrawElement[],
+  layers: readonly ExcalidrawLayer[],
   appState: Partial<AppState>,
-  files: BinaryFiles,
+  files: BinaryFiles
 ): Promise<ExportToBackendResult> => {
   const encryptionKey = await generateEncryptionKey("string");
 
   const payload = await compressData(
     new TextEncoder().encode(
-      serializeAsJSON(elements, appState, files, "database"),
+      serializeAsJSON(layers, appState, files, "database")
     ),
-    { encryptionKey },
+    { encryptionKey }
   );
 
   try {
     const filesMap = new Map<FileId, BinaryFileData>();
-    for (const element of elements) {
-      if (isInitializedImageElement(element) && files[element.fileId]) {
-        filesMap.set(element.fileId, files[element.fileId]);
+    for (const layer of layers) {
+      if (isInitializedImageLayer(layer) && files[layer.fileId]) {
+        filesMap.set(layer.fileId, files[layer.fileId]);
       }
     }
 
     const filesToUpload = await encodeFilesForUpload({
       files: filesMap,
       encryptionKey,
-      maxBytes: FILE_UPLOAD_MAX_BYTES,
+      maxBytes: FILE_UPLOAD_MAX_BYTES
     });
 
     const response = await fetch(BACKEND_V2_POST, {
       method: "POST",
-      body: payload.buffer,
+      body: payload.buffer
     });
     const json = await response.json();
     if (json.id) {
@@ -328,14 +325,14 @@ export const exportToBackend = async (
 
       await saveFilesToFirebase({
         prefix: `/files/shareLinks/${json.id}`,
-        files: filesToUpload,
+        files: filesToUpload
       });
 
       return { url: urlString, errorMessage: null };
     } else if (json.error_class === "RequestTooLargeError") {
       return {
         url: null,
-        errorMessage: t("alerts.couldNotCreateShareableLinkTooBig"),
+        errorMessage: t("alerts.couldNotCreateShareableLinkTooBig")
       };
     }
 

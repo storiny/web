@@ -1,6 +1,6 @@
-import { ExcalidrawElement } from "../../element/types";
+import { ExcalidrawLayer } from "../../layer/types";
 
-const elementBase: Omit<ExcalidrawElement, "type"> = {
+const layerBase: Omit<ExcalidrawLayer, "type"> = {
   id: "vWrqOAfkind2qcm7LDAGZ",
   x: 414,
   y: 237,
@@ -21,26 +21,26 @@ const elementBase: Omit<ExcalidrawElement, "type"> = {
   version: 120,
   versionNonce: 1188004276,
   isDeleted: false,
-  boundElements: null,
+  boundLayers: null,
   updated: 1,
   link: null,
-  locked: false,
+  locked: false
 };
 
-export const rectangleFixture: ExcalidrawElement = {
-  ...elementBase,
+export const rectangleFixture: ExcalidrawLayer = {
+  ...layerBase,
+  type: "rectangle"
+};
+export const ellipseFixture: ExcalidrawLayer = {
+  ...layerBase,
+  type: "ellipse"
+};
+export const diamondFixture: ExcalidrawLayer = {
+  ...layerBase,
+  type: "diamond"
+};
+export const rectangleWithLinkFixture: ExcalidrawLayer = {
+  ...layerBase,
   type: "rectangle",
-};
-export const ellipseFixture: ExcalidrawElement = {
-  ...elementBase,
-  type: "ellipse",
-};
-export const diamondFixture: ExcalidrawElement = {
-  ...elementBase,
-  type: "diamond",
-};
-export const rectangleWithLinkFixture: ExcalidrawElement = {
-  ...elementBase,
-  type: "rectangle",
-  link: "excalidraw.com",
+  link: "excalidraw.com"
 };

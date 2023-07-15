@@ -1,128 +1,124 @@
-import { KEYS } from "../keys";
-import { isInvisiblySmallElement } from "../element";
-import { updateActiveTool, resetCursor } from "../utils";
-import { ToolButton } from "../components/ToolButton";
+import Scene from "../../lib/scene/Scene";
 import { done } from "../components/icons";
+import { ToolButton } from "../components/ToolButton";
 import { t } from "../i18n";
-import { register } from "./register";
-import { mutateElement } from "../element/mutateElement";
-import { isPathALoop } from "../math";
-import { LinearElementEditor } from "../element/linearElementEditor";
-import Scene from "../scene/Scene";
+import { KEYS } from "../keys";
+import { isInvisiblySmallLayer } from "../layer";
 import {
-  maybeBindLinearElement,
-  bindOrUnbindLinearElement,
-} from "../element/binding";
-import { isBindingElement, isLinearElement } from "../element/typeChecks";
+  bindOrUnbindLinearLayer,
+  maybeBindLinearLayer
+} from "../layer/binding";
+import { LinearLayerEditor } from "../layer/linearLayerEditor";
+import { mutateLayer } from "../layer/mutateLayer";
+import { isBindingLayer, isLinearLayer } from "../layer/typeChecks";
+import { isPathALoop } from "../math";
 import { AppState } from "../types";
+import { resetCursor, updateActiveTool } from "../utils";
+import { register } from "./register";
 
 export const actionFinalize = register({
   name: "finalize",
   trackEvent: false,
-  perform: (elements, appState, _, { canvas, focusContainer, scene }) => {
-    if (appState.editingLinearElement) {
-      const { elementId, startBindingElement, endBindingElement } =
-        appState.editingLinearElement;
-      const element = LinearElementEditor.getElement(elementId);
+  perform: (layers, appState, _, { canvas, focusContainer, scene }) => {
+    if (appState.editingLinearLayer) {
+      const { layerId, startBindingLayer, endBindingLayer } =
+        appState.editingLinearLayer;
+      const layer = LinearLayerEditor.getLayer(layerId);
 
-      if (element) {
-        if (isBindingElement(element)) {
-          bindOrUnbindLinearElement(
-            element,
-            startBindingElement,
-            endBindingElement,
-          );
+      if (layer) {
+        if (isBindingLayer(layer)) {
+          bindOrUnbindLinearLayer(layer, startBindingLayer, endBindingLayer);
         }
         return {
-          elements:
-            element.points.length < 2 || isInvisiblySmallElement(element)
-              ? elements.filter((el) => el.id !== element.id)
+          layers:
+            layer.points.length < 2 || isInvisiblySmallLayer(layer)
+              ? layers.filter((el) => el.id !== layer.id)
               : undefined,
           appState: {
             ...appState,
             cursorButton: "up",
-            editingLinearElement: null,
+            editingLinearLayer: null
           },
-          commitToHistory: true,
+          commitToHistory: true
         };
       }
     }
 
-    let newElements = elements;
+    let newLayers = layers;
 
-    const pendingImageElement =
-      appState.pendingImageElementId &&
-      scene.getElement(appState.pendingImageElementId);
+    const pendingImageLayer =
+      appState.pendingImageLayerId &&
+      scene.getLayer(appState.pendingImageLayerId);
 
-    if (pendingImageElement) {
-      mutateElement(pendingImageElement, { isDeleted: true }, false);
+    if (pendingImageLayer) {
+      mutateLayer(pendingImageLayer, { isDeleted: true }, false);
     }
 
-    if (window.document.activeElement instanceof HTMLElement) {
+    if (window.document.activeLayer instanceof HTMLLayer) {
       focusContainer();
     }
 
-    const multiPointElement = appState.multiElement
-      ? appState.multiElement
-      : appState.editingElement?.type === "freedraw"
-      ? appState.editingElement
+    const multiPointLayer = appState.multiLayer
+      ? appState.multiLayer
+      : appState.editingLayer?.type === "freedraw"
+      ? appState.editingLayer
       : null;
 
-    if (multiPointElement) {
+    if (multiPointLayer) {
       // pen and mouse have hover
       if (
-        multiPointElement.type !== "freedraw" &&
+        multiPointLayer.type !== "freedraw" &&
         appState.lastPointerDownWith !== "touch"
       ) {
-        const { points, lastCommittedPoint } = multiPointElement;
+        const { points, lastCommittedPoint } = multiPointLayer;
         if (
           !lastCommittedPoint ||
           points[points.length - 1] !== lastCommittedPoint
         ) {
-          mutateElement(multiPointElement, {
-            points: multiPointElement.points.slice(0, -1),
+          mutateLayer(multiPointLayer, {
+            points: multiPointLayer.points.slice(0, -1)
           });
         }
       }
-      if (isInvisiblySmallElement(multiPointElement)) {
-        newElements = newElements.slice(0, -1);
+      if (isInvisiblySmallLayer(multiPointLayer)) {
+        newLayers = newLayers.slice(0, -1);
       }
 
       // If the multi point line closes the loop,
       // set the last point to first point.
       // This ensures that loop remains closed at different scales.
-      const isLoop = isPathALoop(multiPointElement.points, appState.zoom.value);
+      const isLoop = isPathALoop(multiPointLayer.points, appState.zoom.value);
       if (
-        multiPointElement.type === "line" ||
-        multiPointElement.type === "freedraw"
+        multiPointLayer.type === "line" ||
+        multiPointLayer.type === "freedraw"
       ) {
         if (isLoop) {
-          const linePoints = multiPointElement.points;
+          const linePoints = multiPointLayer.points;
           const firstPoint = linePoints[0];
-          mutateElement(multiPointElement, {
+          mutateLayer(multiPointLayer, {
             points: linePoints.map((point, index) =>
               index === linePoints.length - 1
                 ? ([firstPoint[0], firstPoint[1]] as const)
-                : point,
-            ),
+                : point
+            )
           });
         }
       }
 
       if (
-        isBindingElement(multiPointElement) &&
+        isBindingLayer(multiPointLayer) &&
         !isLoop &&
-        multiPointElement.points.length > 1
+        multiPointLayer.points.length > 1
       ) {
-        const [x, y] = LinearElementEditor.getPointAtIndexGlobalCoordinates(
-          multiPointElement,
-          -1,
+        const [x, y] = LinearLayerEditor.getPointAtIndexGlobalCoordinates(
+          multiPointLayer,
+          -1
         );
-        maybeBindLinearElement(
-          multiPointElement,
+        maybeBindLinearLayer(
+          multiPointLayer,
           appState,
-          Scene.getScene(multiPointElement)!,
-          { x, y },
+          Scene.getScene(multiPointLayer)!,
+          { x, y }
         );
       }
     }
@@ -130,7 +126,7 @@ export const actionFinalize = register({
     if (
       (!appState.activeTool.locked &&
         appState.activeTool.type !== "freedraw") ||
-      !multiPointElement
+      !multiPointLayer
     ) {
       resetCursor(canvas);
     }
@@ -139,66 +135,66 @@ export const actionFinalize = register({
     if (appState.activeTool.type === "eraser") {
       activeTool = updateActiveTool(appState, {
         ...(appState.activeTool.lastActiveTool || {
-          type: "selection",
+          type: "selection"
         }),
-        lastActiveToolBeforeEraser: null,
+        lastActiveToolBeforeEraser: null
       });
     } else {
       activeTool = updateActiveTool(appState, {
-        type: "selection",
+        type: "selection"
       });
     }
 
     return {
-      elements: newElements,
+      layers: newLayers,
       appState: {
         ...appState,
         cursorButton: "up",
         activeTool:
           (appState.activeTool.locked ||
             appState.activeTool.type === "freedraw") &&
-          multiPointElement
+          multiPointLayer
             ? appState.activeTool
             : activeTool,
-        draggingElement: null,
-        multiElement: null,
-        editingElement: null,
-        startBoundElement: null,
+        draggingLayer: null,
+        multiLayer: null,
+        editingLayer: null,
+        startBoundLayer: null,
         suggestedBindings: [],
-        selectedElementIds:
-          multiPointElement &&
+        selectedLayerIds:
+          multiPointLayer &&
           !appState.activeTool.locked &&
           appState.activeTool.type !== "freedraw"
             ? {
-                ...appState.selectedElementIds,
-                [multiPointElement.id]: true,
+                ...appState.selectedLayerIds,
+                [multiPointLayer.id]: true
               }
-            : appState.selectedElementIds,
-        // To select the linear element when user has finished mutipoint editing
-        selectedLinearElement:
-          multiPointElement && isLinearElement(multiPointElement)
-            ? new LinearElementEditor(multiPointElement, scene)
-            : appState.selectedLinearElement,
-        pendingImageElementId: null,
+            : appState.selectedLayerIds,
+        // To select the linear layer when user has finished mutipoint editing
+        selectedLinearLayer:
+          multiPointLayer && isLinearLayer(multiPointLayer)
+            ? new LinearLayerEditor(multiPointLayer, scene)
+            : appState.selectedLinearLayer,
+        pendingImageLayerId: null
       },
-      commitToHistory: appState.activeTool.type === "freedraw",
+      commitToHistory: appState.activeTool.type === "freedraw"
     };
   },
   keyTest: (event, appState) =>
     (event.key === KEYS.ESCAPE &&
-      (appState.editingLinearElement !== null ||
-        (!appState.draggingElement && appState.multiElement === null))) ||
+      (appState.editingLinearLayer !== null ||
+        (!appState.draggingLayer && appState.multiLayer === null))) ||
     ((event.key === KEYS.ESCAPE || event.key === KEYS.ENTER) &&
-      appState.multiElement !== null),
+      appState.multiLayer !== null),
   PanelComponent: ({ appState, updateData, data }) => (
     <ToolButton
-      type="button"
-      icon={done}
-      title={t("buttons.done")}
       aria-label={t("buttons.done")}
+      icon={done}
       onClick={updateData}
-      visible={appState.multiElement != null}
       size={data?.size || "medium"}
+      title={t("buttons.done")}
+      type="button"
+      visible={appState.multiLayer != null}
     />
-  ),
+  )
 });

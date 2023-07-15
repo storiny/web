@@ -1,12 +1,13 @@
-import React from "react";
 import * as Sentry from "@sentry/browser";
+import React from "react";
+
 import { t } from "../i18n";
 import Trans from "./Trans";
 
 interface TopErrorBoundaryState {
   hasError: boolean;
-  sentryEventId: string;
   localStorage: string;
+  sentryEventId: string;
 }
 
 export class TopErrorBoundary extends React.Component<
@@ -16,7 +17,7 @@ export class TopErrorBoundary extends React.Component<
   state: TopErrorBoundaryState = {
     hasError: false,
     sentryEventId: "",
-    localStorage: "",
+    localStorage: ""
   };
 
   render() {
@@ -40,15 +41,15 @@ export class TopErrorBoundary extends React.Component<
       this.setState((state) => ({
         hasError: true,
         sentryEventId: eventId,
-        localStorage: JSON.stringify(_localStorage),
+        localStorage: JSON.stringify(_localStorage)
       }));
     });
   }
 
-  private selectTextArea(event: React.MouseEvent<HTMLTextAreaElement>) {
-    if (event.target !== document.activeElement) {
+  private selectTextArea(event: React.MouseEvent<HTMLTextAreaLayer>) {
+    if (event.target !== document.activeLayer) {
       event.preventDefault();
-      (event.target as HTMLTextAreaElement).select();
+      (event.target as HTMLTextAreaLayer).select();
     }
   }
 
@@ -66,7 +67,7 @@ export class TopErrorBoundary extends React.Component<
     }
 
     window.open(
-      `https://github.com/excalidraw/excalidraw/issues/new?body=${body}`,
+      `https://github.com/excalidraw/excalidraw/issues/new?body=${body}`
     );
   }
 
@@ -76,15 +77,14 @@ export class TopErrorBoundary extends React.Component<
         <div className="ErrorSplash-messageContainer">
           <div className="ErrorSplash-paragraph bigger align-center">
             <Trans
-              i18nKey="errorSplash.headingMain"
               button={(el) => (
                 <button onClick={() => window.location.reload()}>{el}</button>
               )}
+              i18nKey="errorSplash.headingMain"
             />
           </div>
           <div className="ErrorSplash-paragraph align-center">
             <Trans
-              i18nKey="errorSplash.clearCanvasMessage"
               button={(el) => (
                 <button
                   onClick={() => {
@@ -99,14 +99,15 @@ export class TopErrorBoundary extends React.Component<
                   {el}
                 </button>
               )}
+              i18nKey="errorSplash.clearCanvasMessage"
             />
             <br />
             <div className="smaller">
-              <span role="img" aria-label="warning">
+              <span aria-label="warning" role="img">
                 ⚠️
               </span>
               {t("errorSplash.clearCanvasCaveat")}
-              <span role="img" aria-hidden="true">
+              <span aria-hidden="true" role="img">
                 ⚠️
               </span>
             </div>
@@ -114,24 +115,24 @@ export class TopErrorBoundary extends React.Component<
           <div>
             <div className="ErrorSplash-paragraph">
               {t("errorSplash.trackedToSentry", {
-                eventId: this.state.sentryEventId,
+                eventId: this.state.sentryEventId
               })}
             </div>
             <div className="ErrorSplash-paragraph">
               <Trans
-                i18nKey="errorSplash.openIssueMessage"
                 button={(el) => (
                   <button onClick={() => this.createGithubIssue()}>{el}</button>
                 )}
+                i18nKey="errorSplash.openIssueMessage"
               />
             </div>
             <div className="ErrorSplash-paragraph">
               <div className="ErrorSplash-details">
                 <label>{t("errorSplash.sceneContent")}</label>
                 <textarea
-                  rows={5}
                   onPointerDown={this.selectTextArea}
                   readOnly={true}
+                  rows={5}
                   value={this.state.localStorage}
                 />
               </div>

@@ -1,88 +1,75 @@
+export { actionLink } from "../layer/Hyperlink";
+export { actionAddToLibrary } from "./actionAddToLibrary";
+export {
+  actionAlignBottom,
+  actionAlignHorizontallyCentered,
+  actionAlignLeft,
+  actionAlignRight,
+  actionAlignTop,
+  actionAlignVerticallyCentered
+} from "./actionAlign";
+export { actionBindText, actionUnbindText } from "./actionBoundText";
+export {
+  actionChangeViewBackgroundColor,
+  actionClearCanvas,
+  actionResetZoom,
+  actionToggleTheme,
+  actionZoomIn,
+  actionZoomOut,
+  actionZoomToFit
+} from "./actionCanvas";
+export {
+  actionCopy,
+  actionCopyAsPng,
+  actionCopyAsSvg,
+  actionCut,
+  copyText
+} from "./actionClipboard";
 export { actionDeleteSelected } from "./actionDeleteSelected";
+export {
+  distributeHorizontally,
+  distributeVertically
+} from "./actionDistribute";
+export { actionDuplicateSelection } from "./actionDuplicateSelection";
+export {
+  actionChangeExportBackground,
+  actionChangeProjectName,
+  actionLoadScene,
+  actionSaveFileToDisk,
+  actionSaveToActiveFile
+} from "./actionExport";
+export { actionFinalize } from "./actionFinalize";
+export { actionFlipHorizontal, actionFlipVertical } from "./actionFlip";
+export { actionGroup, actionUngroup } from "./actionGroup";
+export { actionToggleLayerLock } from "./actionLayerLock";
+export { actionToggleLinearEditor } from "./actionLinearEditor";
+export {
+  actionFullScreen,
+  actionShortcuts,
+  actionToggleCanvasMenu,
+  actionToggleEditMenu
+} from "./actionMenu";
+export { actionGoToCollaborator } from "./actionNavigate";
+export {
+  actionChangeBackgroundColor,
+  actionChangeFillStyle,
+  actionChangeFontFamily,
+  actionChangeFontSize,
+  actionChangeOpacity,
+  actionChangeSloppiness,
+  actionChangeStrokeColor,
+  actionChangeStrokeWidth,
+  actionChangeTextAlign,
+  actionChangeVerticalAlign
+} from "./actionProperties";
+export { actionSelectAll } from "./actionSelectAll";
+export { actionCopyStyles, actionPasteStyles } from "./actionStyles";
+export { actionToggleGridMode } from "./actionToggleGridMode";
+export { actionToggleStats } from "./actionToggleStats";
+export { actionToggleZenMode } from "./actionToggleZenMode";
 export {
   actionBringForward,
   actionBringToFront,
   actionSendBackward,
-  actionSendToBack,
+  actionSendToBack
 } from "./actionZindex";
-export { actionSelectAll } from "./actionSelectAll";
-export { actionDuplicateSelection } from "./actionDuplicateSelection";
-export {
-  actionChangeStrokeColor,
-  actionChangeBackgroundColor,
-  actionChangeStrokeWidth,
-  actionChangeFillStyle,
-  actionChangeSloppiness,
-  actionChangeOpacity,
-  actionChangeFontSize,
-  actionChangeFontFamily,
-  actionChangeTextAlign,
-  actionChangeVerticalAlign,
-} from "./actionProperties";
-
-export {
-  actionChangeViewBackgroundColor,
-  actionClearCanvas,
-  actionZoomIn,
-  actionZoomOut,
-  actionResetZoom,
-  actionZoomToFit,
-  actionToggleTheme,
-} from "./actionCanvas";
-
-export { actionFinalize } from "./actionFinalize";
-
-export {
-  actionChangeProjectName,
-  actionChangeExportBackground,
-  actionSaveToActiveFile,
-  actionSaveFileToDisk,
-  actionLoadScene,
-} from "./actionExport";
-
-export { actionCopyStyles, actionPasteStyles } from "./actionStyles";
-export {
-  actionToggleCanvasMenu,
-  actionToggleEditMenu,
-  actionFullScreen,
-  actionShortcuts,
-} from "./actionMenu";
-
-export { actionGroup, actionUngroup } from "./actionGroup";
-
-export { actionGoToCollaborator } from "./actionNavigate";
-
-export { actionAddToLibrary } from "./actionAddToLibrary";
-
-export {
-  actionAlignTop,
-  actionAlignBottom,
-  actionAlignLeft,
-  actionAlignRight,
-  actionAlignVerticallyCentered,
-  actionAlignHorizontallyCentered,
-} from "./actionAlign";
-
-export {
-  distributeHorizontally,
-  distributeVertically,
-} from "./actionDistribute";
-
-export { actionFlipHorizontal, actionFlipVertical } from "./actionFlip";
-
-export {
-  actionCopy,
-  actionCut,
-  actionCopyAsPng,
-  actionCopyAsSvg,
-  copyText,
-} from "./actionClipboard";
-
-export { actionToggleGridMode } from "./actionToggleGridMode";
-export { actionToggleZenMode } from "./actionToggleZenMode";
-
-export { actionToggleStats } from "./actionToggleStats";
-export { actionUnbindText, actionBindText } from "./actionBoundText";
-export { actionLink } from "../element/Hyperlink";
-export { actionToggleElementLock } from "./actionElementLock";
-export { actionToggleLinearEditor } from "./actionLinearEditor";

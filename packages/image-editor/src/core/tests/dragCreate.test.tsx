@@ -1,18 +1,19 @@
 import ReactDOM from "react-dom";
+
 import ExcalidrawApp from "../excalidraw-app";
-import * as Renderer from "../renderer/renderScene";
 import { KEYS } from "../keys";
+import { ExcalidrawLinearLayer } from "../layer/types";
+import { reseed } from "../random";
+import * as Renderer from "../renderer/renderScene";
 import {
-  render,
   fireEvent,
   mockBoundingClientRect,
-  restoreOriginalGetBoundingClientRect,
+  render,
+  restoreOriginalGetBoundingClientRect
 } from "./test-utils";
-import { ExcalidrawLinearElement } from "../element/types";
-import { reseed } from "../random";
 
 // Unmount ReactDOM from root
-ReactDOM.unmountComponentAtNode(document.getElementById("root")!);
+ReactDOM.unmountComponentAtNode(document.getLayerById("root")!);
 
 const renderScene = jest.spyOn(Renderer, "renderScene");
 beforeEach(() => {
@@ -24,7 +25,7 @@ beforeEach(() => {
 const { h } = window;
 
 describe("Test dragCreate", () => {
-  describe("add element to the scene when pointer dragging long enough", () => {
+  describe("add layer to the scene when pointer dragging long enough", () => {
     it("rectangle", async () => {
       const { getByToolName, container } = await render(<ExcalidrawApp />);
       // select tool
@@ -43,17 +44,17 @@ describe("Test dragCreate", () => {
       fireEvent.pointerUp(canvas);
 
       expect(renderScene).toHaveBeenCalledTimes(9);
-      expect(h.state.selectionElement).toBeNull();
+      expect(h.state.selectionLayer).toBeNull();
 
-      expect(h.elements.length).toEqual(1);
-      expect(h.elements[0].type).toEqual("rectangle");
-      expect(h.elements[0].x).toEqual(30);
-      expect(h.elements[0].y).toEqual(20);
-      expect(h.elements[0].width).toEqual(30); // 60 - 30
-      expect(h.elements[0].height).toEqual(50); // 70 - 20
+      expect(h.layers.length).toEqual(1);
+      expect(h.layers[0].type).toEqual("rectangle");
+      expect(h.layers[0].x).toEqual(30);
+      expect(h.layers[0].y).toEqual(20);
+      expect(h.layers[0].width).toEqual(30); // 60 - 30
+      expect(h.layers[0].height).toEqual(50); // 70 - 20
 
-      expect(h.elements.length).toMatchSnapshot();
-      h.elements.forEach((element) => expect(element).toMatchSnapshot());
+      expect(h.layers.length).toMatchSnapshot();
+      h.layers.forEach((layer) => expect(layer).toMatchSnapshot());
     });
 
     it("ellipse", async () => {
@@ -74,17 +75,17 @@ describe("Test dragCreate", () => {
       fireEvent.pointerUp(canvas);
 
       expect(renderScene).toHaveBeenCalledTimes(9);
-      expect(h.state.selectionElement).toBeNull();
+      expect(h.state.selectionLayer).toBeNull();
 
-      expect(h.elements.length).toEqual(1);
-      expect(h.elements[0].type).toEqual("ellipse");
-      expect(h.elements[0].x).toEqual(30);
-      expect(h.elements[0].y).toEqual(20);
-      expect(h.elements[0].width).toEqual(30); // 60 - 30
-      expect(h.elements[0].height).toEqual(50); // 70 - 20
+      expect(h.layers.length).toEqual(1);
+      expect(h.layers[0].type).toEqual("ellipse");
+      expect(h.layers[0].x).toEqual(30);
+      expect(h.layers[0].y).toEqual(20);
+      expect(h.layers[0].width).toEqual(30); // 60 - 30
+      expect(h.layers[0].height).toEqual(50); // 70 - 20
 
-      expect(h.elements.length).toMatchSnapshot();
-      h.elements.forEach((element) => expect(element).toMatchSnapshot());
+      expect(h.layers.length).toMatchSnapshot();
+      h.layers.forEach((layer) => expect(layer).toMatchSnapshot());
     });
 
     it("diamond", async () => {
@@ -105,17 +106,17 @@ describe("Test dragCreate", () => {
       fireEvent.pointerUp(canvas);
 
       expect(renderScene).toHaveBeenCalledTimes(9);
-      expect(h.state.selectionElement).toBeNull();
+      expect(h.state.selectionLayer).toBeNull();
 
-      expect(h.elements.length).toEqual(1);
-      expect(h.elements[0].type).toEqual("diamond");
-      expect(h.elements[0].x).toEqual(30);
-      expect(h.elements[0].y).toEqual(20);
-      expect(h.elements[0].width).toEqual(30); // 60 - 30
-      expect(h.elements[0].height).toEqual(50); // 70 - 20
+      expect(h.layers.length).toEqual(1);
+      expect(h.layers[0].type).toEqual("diamond");
+      expect(h.layers[0].x).toEqual(30);
+      expect(h.layers[0].y).toEqual(20);
+      expect(h.layers[0].width).toEqual(30); // 60 - 30
+      expect(h.layers[0].height).toEqual(50); // 70 - 20
 
-      expect(h.elements.length).toMatchSnapshot();
-      h.elements.forEach((element) => expect(element).toMatchSnapshot());
+      expect(h.layers.length).toMatchSnapshot();
+      h.layers.forEach((layer) => expect(layer).toMatchSnapshot());
     });
 
     it("arrow", async () => {
@@ -136,21 +137,21 @@ describe("Test dragCreate", () => {
       fireEvent.pointerUp(canvas);
 
       expect(renderScene).toHaveBeenCalledTimes(9);
-      expect(h.state.selectionElement).toBeNull();
+      expect(h.state.selectionLayer).toBeNull();
 
-      expect(h.elements.length).toEqual(1);
+      expect(h.layers.length).toEqual(1);
 
-      const element = h.elements[0] as ExcalidrawLinearElement;
+      const layer = h.layers[0] as ExcalidrawLinearLayer;
 
-      expect(element.type).toEqual("arrow");
-      expect(element.x).toEqual(30);
-      expect(element.y).toEqual(20);
-      expect(element.points.length).toEqual(2);
-      expect(element.points[0]).toEqual([0, 0]);
-      expect(element.points[1]).toEqual([30, 50]); // (60 - 30, 70 - 20)
+      expect(layer.type).toEqual("arrow");
+      expect(layer.x).toEqual(30);
+      expect(layer.y).toEqual(20);
+      expect(layer.points.length).toEqual(2);
+      expect(layer.points[0]).toEqual([0, 0]);
+      expect(layer.points[1]).toEqual([30, 50]); // (60 - 30, 70 - 20)
 
-      expect(h.elements.length).toMatchSnapshot();
-      h.elements.forEach((element) => expect(element).toMatchSnapshot());
+      expect(h.layers.length).toMatchSnapshot();
+      h.layers.forEach((layer) => expect(layer).toMatchSnapshot());
     });
 
     it("line", async () => {
@@ -171,24 +172,24 @@ describe("Test dragCreate", () => {
       fireEvent.pointerUp(canvas);
 
       expect(renderScene).toHaveBeenCalledTimes(9);
-      expect(h.state.selectionElement).toBeNull();
+      expect(h.state.selectionLayer).toBeNull();
 
-      expect(h.elements.length).toEqual(1);
+      expect(h.layers.length).toEqual(1);
 
-      const element = h.elements[0] as ExcalidrawLinearElement;
+      const layer = h.layers[0] as ExcalidrawLinearLayer;
 
-      expect(element.type).toEqual("line");
-      expect(element.x).toEqual(30);
-      expect(element.y).toEqual(20);
-      expect(element.points.length).toEqual(2);
-      expect(element.points[0]).toEqual([0, 0]);
-      expect(element.points[1]).toEqual([30, 50]); // (60 - 30, 70 - 20)
+      expect(layer.type).toEqual("line");
+      expect(layer.x).toEqual(30);
+      expect(layer.y).toEqual(20);
+      expect(layer.points.length).toEqual(2);
+      expect(layer.points[0]).toEqual([0, 0]);
+      expect(layer.points[1]).toEqual([30, 50]); // (60 - 30, 70 - 20)
 
-      h.elements.forEach((element) => expect(element).toMatchSnapshot());
+      h.layers.forEach((layer) => expect(layer).toMatchSnapshot());
     });
   });
 
-  describe("do not add element to the scene if size is too small", () => {
+  describe("do not add layer to the scene if size is too small", () => {
     beforeAll(() => {
       mockBoundingClientRect();
     });
@@ -211,8 +212,8 @@ describe("Test dragCreate", () => {
       fireEvent.pointerUp(canvas);
 
       expect(renderScene).toHaveBeenCalledTimes(7);
-      expect(h.state.selectionElement).toBeNull();
-      expect(h.elements.length).toEqual(0);
+      expect(h.state.selectionLayer).toBeNull();
+      expect(h.layers.length).toEqual(0);
     });
 
     it("ellipse", async () => {
@@ -230,8 +231,8 @@ describe("Test dragCreate", () => {
       fireEvent.pointerUp(canvas);
 
       expect(renderScene).toHaveBeenCalledTimes(7);
-      expect(h.state.selectionElement).toBeNull();
-      expect(h.elements.length).toEqual(0);
+      expect(h.state.selectionLayer).toBeNull();
+      expect(h.layers.length).toEqual(0);
     });
 
     it("diamond", async () => {
@@ -249,8 +250,8 @@ describe("Test dragCreate", () => {
       fireEvent.pointerUp(canvas);
 
       expect(renderScene).toHaveBeenCalledTimes(7);
-      expect(h.state.selectionElement).toBeNull();
-      expect(h.elements.length).toEqual(0);
+      expect(h.state.selectionLayer).toBeNull();
+      expect(h.layers.length).toEqual(0);
     });
 
     it("arrow", async () => {
@@ -269,12 +270,12 @@ describe("Test dragCreate", () => {
 
       // we need to finalize it because arrows and lines enter multi-mode
       fireEvent.keyDown(document, {
-        key: KEYS.ENTER,
+        key: KEYS.ENTER
       });
 
       expect(renderScene).toHaveBeenCalledTimes(8);
-      expect(h.state.selectionElement).toBeNull();
-      expect(h.elements.length).toEqual(0);
+      expect(h.state.selectionLayer).toBeNull();
+      expect(h.layers.length).toEqual(0);
     });
 
     it("line", async () => {
@@ -293,12 +294,12 @@ describe("Test dragCreate", () => {
 
       // we need to finalize it because arrows and lines enter multi-mode
       fireEvent.keyDown(document, {
-        key: KEYS.ENTER,
+        key: KEYS.ENTER
       });
 
       expect(renderScene).toHaveBeenCalledTimes(8);
-      expect(h.state.selectionElement).toBeNull();
-      expect(h.elements.length).toEqual(0);
+      expect(h.state.selectionLayer).toBeNull();
+      expect(h.layers.length).toEqual(0);
     });
   });
 });

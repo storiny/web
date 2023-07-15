@@ -116,7 +116,7 @@
       "edit": "تحرير السطر",
       "exit": "الخروج من المُحرر"
     },
-    "elementLock": {
+    "layerLock": {
       "lock": "قفل",
       "unlock": "فتح",
       "lockAll": "قفل الكل",
@@ -124,8 +124,8 @@
     },
     "statusPublished": "نُشر",
     "sidebarLock": "إبقاء الشريط الجانبي مفتوح",
-    "selectAllElementsInFrame": "",
-    "removeAllElementsFromFrame": "",
+    "selectAllLayersInFrame": "",
+    "removeAllLayersFromFrame": "",
     "eyeDropper": ""
   },
   "library": {
@@ -234,12 +234,12 @@
   },
   "hints": {
     "canvasPanning": "لتحريك القماش، اضغط على عجلة الفأرة أو مفتاح المسافة أثناء السحب، أو استخدم أداة اليد",
-    "linearElement": "انقر لبدء نقاط متعددة، اسحب لخط واحد",
+    "linearLayer": "انقر لبدء نقاط متعددة، اسحب لخط واحد",
     "freeDraw": "انقر واسحب، افرج عند الانتهاء",
     "text": "نصيحة: يمكنك أيضًا إضافة نص بالنقر المزدوج في أي مكان بأداة الاختيار",
     "text_selected": "انقر نقراً مزدوجاً أو اضغط ادخال لتعديل النص",
     "text_editing": "اضغط على Esc أو (Ctrl أو Cmd) + Enter لإنهاء التعديل",
-    "linearElementMulti": "انقر فوق النقطة الأخيرة أو اضغط على Esc أو Enter للإنهاء",
+    "linearLayerMulti": "انقر فوق النقطة الأخيرة أو اضغط على Esc أو Enter للإنهاء",
     "lockAngle": "يمكنك تقييد الزاوية بالضغط على SHIFT",
     "resize": "يمكنك تقييد النسب بالضغط على SHIFT أثناء تغيير الحجم،\nاضغط على ALT لتغيير الحجم من المركز",
     "resizeImage": "يمكنك تغيير الحجم بحرية بالضغط بأستمرار على SHIFT،\nاضغط بأستمرار على ALT أيضا لتغيير الحجم من المركز",
@@ -249,7 +249,7 @@
     "lineEditor_nothingSelected": "",
     "placeImage": "",
     "publishLibrary": "نشر مكتبتك",
-    "bindTextToElement": "",
+    "bindTextToLayer": "",
     "deepBoxSelect": "",
     "eraserRevert": "",
     "firefox_clipboard_write": ""
@@ -316,7 +316,7 @@
     "view": "عرض",
     "zoomToFit": "تكبير للملائمة",
     "zoomToSelection": "تكبير للعنصر المحدد",
-    "toggleElementLock": "",
+    "toggleLayerLock": "",
     "movePageUpDown": "",
     "movePageLeftRight": ""
   },
@@ -389,8 +389,8 @@
   },
   "stats": {
     "angle": "الزاوية",
-    "element": "عنصر",
-    "elements": "العناصر",
+    "layer": "عنصر",
+    "layers": "العناصر",
     "height": "الارتفاع",
     "scene": "المشهد",
     "selected": "المحدد",
@@ -411,7 +411,7 @@
     "fileSavedToFilename": "حفظ باسم {filename}",
     "canvas": "لوحة الرسم",
     "selection": "العنصر المحدد",
-    "pasteAsSingleElement": ""
+    "pasteAsSingleLayer": ""
   },
   "colors": {
     "transparent": "شفاف",

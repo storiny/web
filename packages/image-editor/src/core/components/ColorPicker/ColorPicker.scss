@@ -418,7 +418,7 @@
     color: #aaa;
   }
 
-  .color-picker-type-elementBackground .color-picker-keybinding {
+  .color-picker-type-layerBackground .color-picker-keybinding {
     color: $oc-white;
   }
 
@@ -426,12 +426,12 @@
     color: #aaa;
   }
 
-  .color-picker-type-elementStroke .color-picker-keybinding {
+  .color-picker-type-layerStroke .color-picker-keybinding {
     color: #d4d4d4;
   }
 
   &.theme--dark {
-    .color-picker-type-elementBackground .color-picker-keybinding {
+    .color-picker-type-layerBackground .color-picker-keybinding {
       color: $oc-black;
     }
     .color-picker-swatch[aria-label="transparent"] .color-picker-keybinding {

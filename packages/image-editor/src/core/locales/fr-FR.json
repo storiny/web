@@ -116,7 +116,7 @@
       "edit": "Modifier la ligne",
       "exit": "Quitter l'éditeur de ligne"
     },
-    "elementLock": {
+    "layerLock": {
       "lock": "Verrouiller",
       "unlock": "Déverrouiller",
       "lockAll": "Tout verrouiller",
@@ -124,8 +124,8 @@
     },
     "statusPublished": "Publié",
     "sidebarLock": "Maintenir la barre latérale ouverte",
-    "selectAllElementsInFrame": "",
-    "removeAllElementsFromFrame": "",
+    "selectAllLayersInFrame": "",
+    "removeAllLayersFromFrame": "",
     "eyeDropper": ""
   },
   "library": {
@@ -234,12 +234,12 @@
   },
   "hints": {
     "canvasPanning": "Pour déplacer la zone de dessin, maintenez la molette de la souris enfoncée ou la barre d'espace tout en faisant glisser, ou utiliser l'outil main.",
-    "linearElement": "Cliquez pour démarrer plusieurs points, faites glisser pour une seule ligne",
+    "linearLayer": "Cliquez pour démarrer plusieurs points, faites glisser pour une seule ligne",
     "freeDraw": "Cliquez et faites glissez, relâchez quand vous avez terminé",
     "text": "Astuce : vous pouvez aussi ajouter du texte en double-cliquant n'importe où avec l'outil de sélection",
     "text_selected": "Double-cliquez ou appuyez sur ENTRÉE pour modifier le texte",
     "text_editing": "Appuyez sur ÉCHAP ou Ctrl/Cmd+ENTRÉE pour terminer l'édition",
-    "linearElementMulti": "Cliquez sur le dernier point ou appuyez sur Échap ou Entrée pour terminer",
+    "linearLayerMulti": "Cliquez sur le dernier point ou appuyez sur Échap ou Entrée pour terminer",
     "lockAngle": "Vous pouvez restreindre l'angle en maintenant MAJ",
     "resize": "Vous pouvez conserver les proportions en maintenant la touche MAJ pendant le redimensionnement, maintenez la touche ALT pour redimensionner par rapport au centre",
     "resizeImage": "Vous pouvez redimensionner librement en maintenant SHIFT,\nmaintenez ALT pour redimensionner depuis le centre",
@@ -249,7 +249,7 @@
     "lineEditor_nothingSelected": "Sélectionner un point pour éditer (maintenir la touche MAJ pour en sélectionner plusieurs),\nou maintenir la touche Alt enfoncée et cliquer pour ajouter de nouveaux points",
     "placeImage": "Cliquez pour placer l'image, ou cliquez et faites glisser pour définir sa taille manuellement",
     "publishLibrary": "Publier votre propre bibliothèque",
-    "bindTextToElement": "Appuyer sur Entrée pour ajouter du texte",
+    "bindTextToLayer": "Appuyer sur Entrée pour ajouter du texte",
     "deepBoxSelect": "Maintenir Ctrl ou Cmd pour sélectionner dans les groupes et empêcher le déplacement",
     "eraserRevert": "Maintenez Alt enfoncé pour annuler les éléments marqués pour suppression",
     "firefox_clipboard_write": "Cette fonctionnalité devrait pouvoir être activée en définissant l'option \"dom.events.asyncClipboard.clipboard.clipboardItem\" à \"true\". Pour modifier les paramètres du navigateur dans Firefox, visitez la page \"about:config\"."
@@ -316,7 +316,7 @@
     "view": "Affichage",
     "zoomToFit": "Zoomer pour voir tous les éléments",
     "zoomToSelection": "Zoomer sur la sélection",
-    "toggleElementLock": "Verrouiller/déverrouiller la sélection",
+    "toggleLayerLock": "Verrouiller/déverrouiller la sélection",
     "movePageUpDown": "Déplacer la page vers le haut/bas",
     "movePageLeftRight": "Déplacer la page vers la gauche/droite"
   },
@@ -389,8 +389,8 @@
   },
   "stats": {
     "angle": "Angle",
-    "element": "Élément",
-    "elements": "Éléments",
+    "layer": "Élément",
+    "layers": "Éléments",
     "height": "Hauteur",
     "scene": "Scène",
     "selected": "Sélection",
@@ -411,7 +411,7 @@
     "fileSavedToFilename": "Enregistré sous {filename}",
     "canvas": "canevas",
     "selection": "sélection",
-    "pasteAsSingleElement": "Utiliser {{shortcut}} pour coller comme un seul élément,\nou coller dans un éditeur de texte existant"
+    "pasteAsSingleLayer": "Utiliser {{shortcut}} pour coller comme un seul élément,\nou coller dans un éditeur de texte existant"
   },
   "colors": {
     "transparent": "Transparent",

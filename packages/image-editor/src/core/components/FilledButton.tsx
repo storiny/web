@@ -1,28 +1,28 @@
-import React, { forwardRef } from "react";
-import clsx from "clsx";
-
 import "./FilledButton.scss";
+
+import clsx from "clsx";
+import React, { forwardRef } from "react";
 
 export type ButtonVariant = "filled" | "outlined" | "icon";
 export type ButtonColor = "primary" | "danger" | "warning" | "muted";
 export type ButtonSize = "medium" | "large";
 
 export type FilledButtonProps = {
-  label: string;
-
   children?: React.ReactNode;
+
+  className?: string;
+  color?: ButtonColor;
+
+  fullWidth?: boolean;
+  label: string;
   onClick?: () => void;
+  size?: ButtonSize;
+  startIcon?: React.ReactNode;
 
   variant?: ButtonVariant;
-  color?: ButtonColor;
-  size?: ButtonSize;
-  className?: string;
-  fullWidth?: boolean;
-
-  startIcon?: React.ReactNode;
 };
 
-export const FilledButton = forwardRef<HTMLButtonElement, FilledButtonProps>(
+export const FilledButton = forwardRef<HTMLButtonLayer, FilledButtonProps>(
   (
     {
       children,
@@ -33,32 +33,30 @@ export const FilledButton = forwardRef<HTMLButtonElement, FilledButtonProps>(
       color = "primary",
       size = "medium",
       fullWidth,
-      className,
+      className
     },
-    ref,
-  ) => {
-    return (
-      <button
-        className={clsx(
-          "ExcButton",
-          `ExcButton--color-${color}`,
-          `ExcButton--variant-${variant}`,
-          `ExcButton--size-${size}`,
-          { "ExcButton--fullWidth": fullWidth },
-          className,
-        )}
-        onClick={onClick}
-        type="button"
-        aria-label={label}
-        ref={ref}
-      >
-        {startIcon && (
-          <div className="ExcButton__icon" aria-hidden>
-            {startIcon}
-          </div>
-        )}
-        {variant !== "icon" && (children ?? label)}
-      </button>
-    );
-  },
+    ref
+  ) => (
+    <button
+      aria-label={label}
+      className={clsx(
+        "ExcButton",
+        `ExcButton--color-${color}`,
+        `ExcButton--variant-${variant}`,
+        `ExcButton--size-${size}`,
+        { "ExcButton--fullWidth": fullWidth },
+        className
+      )}
+      onClick={onClick}
+      ref={ref}
+      type="button"
+    >
+      {startIcon && (
+        <div aria-hidden className="ExcButton__icon">
+          {startIcon}
+        </div>
+      )}
+      {variant !== "icon" && (children ?? label)}
+    </button>
+  )
 );

@@ -1,15 +1,14 @@
-import {
-  ExcalidrawElement,
-  NonDeletedExcalidrawElement,
-  PointerType,
-} from "./types";
-
-import { getElementAbsoluteCoords } from "./bounds";
 import { rotate } from "../math";
-import { AppState, Zoom } from "../types";
-import { isTextElement } from ".";
-import { isFrameElement, isLinearElement } from "./typeChecks";
 import { DEFAULT_SPACING } from "../renderer/renderScene";
+import { AppState, Zoom } from "../types";
+import { isTextLayer } from ".";
+import { getLayerAbsoluteCoords } from "./bounds";
+import { isFrameLayer, isLinearLayer } from "./typeChecks";
+import {
+  ExcalidrawLayer,
+  NonDeletedExcalidrawLayer,
+  PointerType
+} from "./types";
 
 export type TransformHandleDirection =
   | "n"
@@ -32,7 +31,7 @@ export type MaybeTransformHandleType = TransformHandleType | false;
 const transformHandleSizes: { [k in PointerType]: number } = {
   mouse: 8,
   pen: 16,
-  touch: 28,
+  touch: 28
 };
 
 const ROTATION_RESIZE_HANDLE_GAP = 16;
@@ -41,7 +40,7 @@ export const OMIT_SIDES_FOR_MULTIPLE_ELEMENTS = {
   e: true,
   s: true,
   n: true,
-  w: true,
+  w: true
 };
 
 export const OMIT_SIDES_FOR_FRAME = {
@@ -49,14 +48,14 @@ export const OMIT_SIDES_FOR_FRAME = {
   s: true,
   n: true,
   w: true,
-  rotation: true,
+  rotation: true
 };
 
 const OMIT_SIDES_FOR_TEXT_ELEMENT = {
   e: true,
   s: true,
   n: true,
-  w: true,
+  w: true
 };
 
 const OMIT_SIDES_FOR_LINE_SLASH = {
@@ -65,14 +64,14 @@ const OMIT_SIDES_FOR_LINE_SLASH = {
   n: true,
   w: true,
   nw: true,
-  se: true,
+  se: true
 };
 
 const OMIT_SIDES_FOR_LINE_BACKSLASH = {
   e: true,
   s: true,
   n: true,
-  w: true,
+  w: true
 };
 
 const generateTransformHandle = (
@@ -82,7 +81,7 @@ const generateTransformHandle = (
   height: number,
   cx: number,
   cy: number,
-  angle: number,
+  angle: number
 ): TransformHandle => {
   const [xx, yy] = rotate(x + width / 2, y + height / 2, cx, cy, angle);
   return [xx - width / 2, yy - height / 2, width, height];
@@ -94,7 +93,7 @@ export const getTransformHandlesFromCoords = (
   zoom: Zoom,
   pointerType: PointerType,
   omitSides: { [T in TransformHandleType]?: boolean } = {},
-  margin = 4,
+  margin = 4
 ): TransformHandles => {
   const size = transformHandleSizes[pointerType];
   const handleWidth = size / zoom.value;
@@ -118,7 +117,7 @@ export const getTransformHandlesFromCoords = (
           handleHeight,
           cx,
           cy,
-          angle,
+          angle
         ),
     ne: omitSides.ne
       ? undefined
@@ -129,7 +128,7 @@ export const getTransformHandlesFromCoords = (
           handleHeight,
           cx,
           cy,
-          angle,
+          angle
         ),
     sw: omitSides.sw
       ? undefined
@@ -140,7 +139,7 @@ export const getTransformHandlesFromCoords = (
           handleHeight,
           cx,
           cy,
-          angle,
+          angle
         ),
     se: omitSides.se
       ? undefined
@@ -151,7 +150,7 @@ export const getTransformHandlesFromCoords = (
           handleHeight,
           cx,
           cy,
-          angle,
+          angle
         ),
     rotation: omitSides.rotation
       ? undefined
@@ -166,8 +165,8 @@ export const getTransformHandlesFromCoords = (
           handleHeight,
           cx,
           cy,
-          angle,
-        ),
+          angle
+        )
   };
 
   // We only want to show height handles (all cardinal directions)  above a certain size
@@ -183,7 +182,7 @@ export const getTransformHandlesFromCoords = (
         handleHeight,
         cx,
         cy,
-        angle,
+        angle
       );
     }
     if (!omitSides.s) {
@@ -194,7 +193,7 @@ export const getTransformHandlesFromCoords = (
         handleHeight,
         cx,
         cy,
-        angle,
+        angle
       );
     }
   }
@@ -207,7 +206,7 @@ export const getTransformHandlesFromCoords = (
         handleHeight,
         cx,
         cy,
-        angle,
+        angle
       );
     }
     if (!omitSides.e) {
@@ -218,7 +217,7 @@ export const getTransformHandlesFromCoords = (
         handleHeight,
         cx,
         cy,
-        angle,
+        angle
       );
     }
   }
@@ -227,22 +226,22 @@ export const getTransformHandlesFromCoords = (
 };
 
 export const getTransformHandles = (
-  element: ExcalidrawElement,
+  layer: ExcalidrawLayer,
   zoom: Zoom,
-  pointerType: PointerType = "mouse",
+  pointerType: PointerType = "mouse"
 ): TransformHandles => {
-  // so that when locked element is selected (especially when you toggle lock
-  // via keyboard) the locked element is visually distinct, indicating
+  // so that when locked layer is selected (especially when you toggle lock
+  // via keyboard) the locked layer is visually distinct, indicating
   // you can't move/resize
-  if (element.locked) {
+  if (layer.locked) {
     return {};
   }
 
   let omitSides: { [T in TransformHandleType]?: boolean } = {};
-  if (element.type === "freedraw" || isLinearElement(element)) {
-    if (element.points.length === 2) {
+  if (layer.type === "freedraw" || isLinearLayer(layer)) {
+    if (layer.points.length === 2) {
       // only check the last point because starting point is always (0,0)
-      const [, p1] = element.points;
+      const [, p1] = layer.points;
       if (p1[0] === 0 || p1[1] === 0) {
         omitSides = OMIT_SIDES_FOR_LINE_BACKSLASH;
       } else if (p1[0] > 0 && p1[1] < 0) {
@@ -255,40 +254,40 @@ export const getTransformHandles = (
         omitSides = OMIT_SIDES_FOR_LINE_BACKSLASH;
       }
     }
-  } else if (isTextElement(element)) {
+  } else if (isTextLayer(layer)) {
     omitSides = OMIT_SIDES_FOR_TEXT_ELEMENT;
-  } else if (isFrameElement(element)) {
+  } else if (isFrameLayer(layer)) {
     omitSides = {
-      rotation: true,
+      rotation: true
     };
   }
-  const dashedLineMargin = isLinearElement(element)
+  const dashedLineMargin = isLinearLayer(layer)
     ? DEFAULT_SPACING + 8
     : DEFAULT_SPACING;
   return getTransformHandlesFromCoords(
-    getElementAbsoluteCoords(element, true),
-    element.angle,
+    getLayerAbsoluteCoords(layer, true),
+    layer.angle,
     zoom,
     pointerType,
     omitSides,
-    dashedLineMargin,
+    dashedLineMargin
   );
 };
 
 export const shouldShowBoundingBox = (
-  elements: NonDeletedExcalidrawElement[],
-  appState: AppState,
+  layers: NonDeletedExcalidrawLayer[],
+  appState: AppState
 ) => {
-  if (appState.editingLinearElement) {
+  if (appState.editingLinearLayer) {
     return false;
   }
-  if (elements.length > 1) {
+  if (layers.length > 1) {
     return true;
   }
-  const element = elements[0];
-  if (!isLinearElement(element)) {
+  const layer = layers[0];
+  if (!isLinearLayer(layer)) {
     return true;
   }
 
-  return element.points.length > 2;
+  return layer.points.length > 2;
 };

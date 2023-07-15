@@ -1,211 +1,198 @@
-import { CODES, KEYS } from "../keys";
-import { register } from "./register";
+import { exportCanvas } from "../../lib/data/export";
+import { getSelectedLayers } from "../../lib/scene/selection";
 import {
   copyTextToSystemClipboard,
   copyToClipboard,
   probablySupportsClipboardBlob,
-  probablySupportsClipboardWriteText,
+  probablySupportsClipboardWriteText
 } from "../clipboard";
-import { actionDeleteSelected } from "./actionDeleteSelected";
-import { getSelectedElements } from "../scene/selection";
-import { exportCanvas } from "../data/index";
-import { getNonDeletedElements, isTextElement } from "../element";
 import { t } from "../i18n";
+import { CODES, KEYS } from "../keys";
+import { getNonDeletedLayers, isTextLayer } from "../layer";
+import { actionDeleteSelected } from "./actionDeleteSelected";
+import { register } from "./register";
 
 export const actionCopy = register({
   name: "copy",
-  trackEvent: { category: "element" },
-  perform: (elements, appState, _, app) => {
-    const elementsToCopy = getSelectedElements(elements, appState, {
-      includeBoundTextElement: true,
-      includeElementsInFrames: true,
+  trackEvent: { category: "layer" },
+  perform: (layers, appState, _, app) => {
+    const layersToCopy = getSelectedLayers(layers, appState, {
+      includeBoundTextLayer: true,
+      includeLayersInFrames: true
     });
 
-    copyToClipboard(elementsToCopy, app.files);
+    copyToClipboard(layersToCopy, app.files);
 
     return {
-      commitToHistory: false,
+      commitToHistory: false
     };
   },
-  predicate: (elements, appState, appProps, app) => {
-    return app.device.isMobile && !!navigator.clipboard;
-  },
+  predicate: (layers, appState, appProps, app) =>
+    app.device.isMobile && !!navigator.clipboard,
   contextItemLabel: "labels.copy",
   // don't supply a shortcut since we handle this conditionally via onCopy event
-  keyTest: undefined,
+  keyTest: undefined
 });
 
 export const actionPaste = register({
   name: "paste",
-  trackEvent: { category: "element" },
-  perform: (elements: any, appStates: any, data, app) => {
+  trackEvent: { category: "layer" },
+  perform: (layers: any, appStates: any, data, app) => {
     app.pasteFromClipboard(null);
     return {
-      commitToHistory: false,
+      commitToHistory: false
     };
   },
-  predicate: (elements, appState, appProps, app) => {
-    return app.device.isMobile && !!navigator.clipboard;
-  },
+  predicate: (layers, appState, appProps, app) =>
+    app.device.isMobile && !!navigator.clipboard,
   contextItemLabel: "labels.paste",
   // don't supply a shortcut since we handle this conditionally via onCopy event
-  keyTest: undefined,
+  keyTest: undefined
 });
 
 export const actionCut = register({
   name: "cut",
-  trackEvent: { category: "element" },
-  perform: (elements, appState, data, app) => {
-    actionCopy.perform(elements, appState, data, app);
-    return actionDeleteSelected.perform(elements, appState);
+  trackEvent: { category: "layer" },
+  perform: (layers, appState, data, app) => {
+    actionCopy.perform(layers, appState, data, app);
+    return actionDeleteSelected.perform(layers, appState);
   },
-  predicate: (elements, appState, appProps, app) => {
-    return app.device.isMobile && !!navigator.clipboard;
-  },
+  predicate: (layers, appState, appProps, app) =>
+    app.device.isMobile && !!navigator.clipboard,
   contextItemLabel: "labels.cut",
-  keyTest: (event) => event[KEYS.CTRL_OR_CMD] && event.key === KEYS.X,
+  keyTest: (event) => event[KEYS.CTRL_OR_CMD] && event.key === KEYS.X
 });
 
 export const actionCopyAsSvg = register({
   name: "copyAsSvg",
-  trackEvent: { category: "element" },
-  perform: async (elements, appState, _data, app) => {
+  trackEvent: { category: "layer" },
+  perform: async (layers, appState, _data, app) => {
     if (!app.canvas) {
       return {
-        commitToHistory: false,
+        commitToHistory: false
       };
     }
-    const selectedElements = getSelectedElements(
-      getNonDeletedElements(elements),
+    const selectedLayers = getSelectedLayers(
+      getNonDeletedLayers(layers),
       appState,
       {
-        includeBoundTextElement: true,
-        includeElementsInFrames: true,
-      },
+        includeBoundTextLayer: true,
+        includeLayersInFrames: true
+      }
     );
     try {
       await exportCanvas(
         "clipboard-svg",
-        selectedElements.length
-          ? selectedElements
-          : getNonDeletedElements(elements),
+        selectedLayers.length ? selectedLayers : getNonDeletedLayers(layers),
         appState,
         app.files,
-        appState,
+        appState
       );
       return {
-        commitToHistory: false,
+        commitToHistory: false
       };
     } catch (error: any) {
       console.error(error);
       return {
         appState: {
           ...appState,
-          errorMessage: error.message,
+          errorMessage: error.message
         },
-        commitToHistory: false,
+        commitToHistory: false
       };
     }
   },
-  predicate: (elements) => {
-    return probablySupportsClipboardWriteText && elements.length > 0;
-  },
-  contextItemLabel: "labels.copyAsSvg",
+  predicate: (layers) =>
+    probablySupportsClipboardWriteText && layers.length > 0,
+  contextItemLabel: "labels.copyAsSvg"
 });
 
 export const actionCopyAsPng = register({
   name: "copyAsPng",
-  trackEvent: { category: "element" },
-  perform: async (elements, appState, _data, app) => {
+  trackEvent: { category: "layer" },
+  perform: async (layers, appState, _data, app) => {
     if (!app.canvas) {
       return {
-        commitToHistory: false,
+        commitToHistory: false
       };
     }
-    const selectedElements = getSelectedElements(
-      getNonDeletedElements(elements),
+    const selectedLayers = getSelectedLayers(
+      getNonDeletedLayers(layers),
       appState,
       {
-        includeBoundTextElement: true,
-        includeElementsInFrames: true,
-      },
+        includeBoundTextLayer: true,
+        includeLayersInFrames: true
+      }
     );
     try {
       await exportCanvas(
         "clipboard",
-        selectedElements.length
-          ? selectedElements
-          : getNonDeletedElements(elements),
+        selectedLayers.length ? selectedLayers : getNonDeletedLayers(layers),
         appState,
         app.files,
-        appState,
+        appState
       );
       return {
         appState: {
           ...appState,
           toast: {
             message: t("toast.copyToClipboardAsPng", {
-              exportSelection: selectedElements.length
+              exportSelection: selectedLayers.length
                 ? t("toast.selection")
                 : t("toast.canvas"),
               exportColorScheme: appState.exportWithDarkMode
                 ? t("buttons.darkMode")
-                : t("buttons.lightMode"),
-            }),
-          },
+                : t("buttons.lightMode")
+            })
+          }
         },
-        commitToHistory: false,
+        commitToHistory: false
       };
     } catch (error: any) {
       console.error(error);
       return {
         appState: {
           ...appState,
-          errorMessage: error.message,
+          errorMessage: error.message
         },
-        commitToHistory: false,
+        commitToHistory: false
       };
     }
   },
-  predicate: (elements) => {
-    return probablySupportsClipboardBlob && elements.length > 0;
-  },
+  predicate: (layers) => probablySupportsClipboardBlob && layers.length > 0,
   contextItemLabel: "labels.copyAsPng",
-  keyTest: (event) => event.code === CODES.C && event.altKey && event.shiftKey,
+  keyTest: (event) => event.code === CODES.C && event.altKey && event.shiftKey
 });
 
 export const copyText = register({
   name: "copyText",
-  trackEvent: { category: "element" },
-  perform: (elements, appState) => {
-    const selectedElements = getSelectedElements(
-      getNonDeletedElements(elements),
+  trackEvent: { category: "layer" },
+  perform: (layers, appState) => {
+    const selectedLayers = getSelectedLayers(
+      getNonDeletedLayers(layers),
       appState,
       {
-        includeBoundTextElement: true,
-      },
+        includeBoundTextLayer: true
+      }
     );
 
-    const text = selectedElements
-      .reduce((acc: string[], element) => {
-        if (isTextElement(element)) {
-          acc.push(element.text);
+    const text = selectedLayers
+      .reduce((acc: string[], layer) => {
+        if (isTextLayer(layer)) {
+          acc.push(layer.text);
         }
         return acc;
       }, [])
       .join("\n\n");
     copyTextToSystemClipboard(text);
     return {
-      commitToHistory: false,
+      commitToHistory: false
     };
   },
-  predicate: (elements, appState) => {
-    return (
-      probablySupportsClipboardWriteText &&
-      getSelectedElements(elements, appState, {
-        includeBoundTextElement: true,
-      }).some(isTextElement)
-    );
-  },
-  contextItemLabel: "labels.copyText",
+  predicate: (layers, appState) =>
+    probablySupportsClipboardWriteText &&
+    getSelectedLayers(layers, appState, {
+      includeBoundTextLayer: true
+    }).some(isTextLayer),
+  contextItemLabel: "labels.copyText"
 });

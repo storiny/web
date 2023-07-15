@@ -1,63 +1,59 @@
-import { register } from "./register";
-import { getSelectedElements } from "../scene";
-import { getNonDeletedElements } from "../element";
-import { deepCopyElement } from "../element/newElement";
-import { randomId } from "../random";
+import { getSelectedLayers } from "../../lib/scene";
 import { t } from "../i18n";
+import { getNonDeletedLayers } from "../layer";
+import { deepCopyLayer } from "../layer/newLayer";
+import { randomId } from "../random";
+import { register } from "./register";
 
 export const actionAddToLibrary = register({
   name: "addToLibrary",
-  trackEvent: { category: "element" },
-  perform: (elements, appState, _, app) => {
-    const selectedElements = getSelectedElements(
-      getNonDeletedElements(elements),
+  trackEvent: { category: "layer" },
+  perform: (layers, appState, _, app) => {
+    const selectedLayers = getSelectedLayers(
+      getNonDeletedLayers(layers),
       appState,
       {
-        includeBoundTextElement: true,
-        includeElementsInFrames: true,
-      },
+        includeBoundTextLayer: true,
+        includeLayersInFrames: true
+      }
     );
-    if (selectedElements.some((element) => element.type === "image")) {
+    if (selectedLayers.some((layer) => layer.type === "image")) {
       return {
         commitToHistory: false,
         appState: {
           ...appState,
-          errorMessage: "Support for adding images to the library coming soon!",
-        },
+          errorMessage: "Support for adding images to the library coming soon!"
+        }
       };
     }
 
     return app.library
       .getLatestLibrary()
-      .then((items) => {
-        return app.library.setLibrary([
+      .then((items) =>
+        app.library.setLibrary([
           {
             id: randomId(),
             status: "unpublished",
-            elements: selectedElements.map(deepCopyElement),
-            created: Date.now(),
+            layers: selectedLayers.map(deepCopyLayer),
+            created: Date.now()
           },
-          ...items,
-        ]);
-      })
-      .then(() => {
-        return {
-          commitToHistory: false,
-          appState: {
-            ...appState,
-            toast: { message: t("toast.addedToLibrary") },
-          },
-        };
-      })
-      .catch((error) => {
-        return {
-          commitToHistory: false,
-          appState: {
-            ...appState,
-            errorMessage: error.message,
-          },
-        };
-      });
+          ...items
+        ])
+      )
+      .then(() => ({
+        commitToHistory: false,
+        appState: {
+          ...appState,
+          toast: { message: t("toast.addedToLibrary") }
+        }
+      }))
+      .catch((error) => ({
+        commitToHistory: false,
+        appState: {
+          ...appState,
+          errorMessage: error.message
+        }
+      }));
   },
-  contextItemLabel: "labels.addToLibrary",
+  contextItemLabel: "labels.addToLibrary"
 });

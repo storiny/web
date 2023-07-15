@@ -1,20 +1,21 @@
 import ReactDOM from "react-dom";
-import { render } from "./test-utils";
-import ExcalidrawApp from "../excalidraw-app";
-import { reseed } from "../random";
+
 import {
-  actionSendBackward,
   actionBringForward,
   actionBringToFront,
-  actionSendToBack,
   actionDuplicateSelection,
+  actionSendBackward,
+  actionSendToBack
 } from "../actions";
+import ExcalidrawApp from "../excalidraw-app";
+import { selectGroupsForSelectedLayers } from "../groups";
+import { reseed } from "../random";
 import { AppState } from "../types";
 import { API } from "./helpers/api";
-import { selectGroupsForSelectedElements } from "../groups";
+import { render } from "./test-utils";
 
 // Unmount ReactDOM from root
-ReactDOM.unmountComponentAtNode(document.getElementById("root")!);
+ReactDOM.unmountComponentAtNode(document.getLayerById("root")!);
 
 beforeEach(() => {
   localStorage.clear();
@@ -23,23 +24,23 @@ beforeEach(() => {
 
 const { h } = window;
 
-const populateElements = (
-  elements: {
+const populateLayers = (
+  layers: {
+    containerId?: string;
+    groupIds?: string[];
+    height?: number;
     id: string;
     isDeleted?: boolean;
     isSelected?: boolean;
-    groupIds?: string[];
-    y?: number;
-    x?: number;
     width?: number;
-    height?: number;
-    containerId?: string;
+    x?: number;
+    y?: number;
   }[],
-  appState?: Partial<AppState>,
+  appState?: Partial<AppState>
 ) => {
-  const selectedElementIds: any = {};
+  const selectedLayerIds: any = {};
 
-  const newElements = elements.map(
+  const newLayers = layers.map(
     ({
       id,
       isDeleted = false,
@@ -49,9 +50,9 @@ const populateElements = (
       x = 100,
       width = 100,
       height = 100,
-      containerId = null,
+      containerId = null
     }) => {
-      const element = API.createElement({
+      const layer = API.createLayer({
         type: containerId ? "text" : "rectangle",
         id,
         isDeleted,
@@ -60,42 +61,42 @@ const populateElements = (
         width,
         height,
         groupIds,
-        containerId,
+        containerId
       });
       if (isSelected) {
-        selectedElementIds[element.id] = true;
+        selectedLayerIds[layer.id] = true;
       }
-      return element;
-    },
+      return layer;
+    }
   );
 
-  // initialize `boundElements` on containers, if applicable
-  h.elements = newElements.map((element, index, elements) => {
-    const nextElement = elements[index + 1];
+  // initialize `boundLayers` on containers, if applicable
+  h.layers = newLayers.map((layer, index, layers) => {
+    const nextLayer = layers[index + 1];
     if (
-      nextElement &&
-      "containerId" in nextElement &&
-      element.id === nextElement.containerId
+      nextLayer &&
+      "containerId" in nextLayer &&
+      layer.id === nextLayer.containerId
     ) {
       return {
-        ...element,
-        boundElements: [{ type: "text", id: nextElement.id }],
+        ...layer,
+        boundLayers: [{ type: "text", id: nextLayer.id }]
       };
     }
-    return element;
+    return layer;
   });
 
   h.setState({
-    ...selectGroupsForSelectedElements(
-      { ...h.state, ...appState, selectedElementIds },
-      h.elements,
-      h.state,
+    ...selectGroupsForSelectedLayers(
+      { ...h.state, ...appState, selectedLayerIds },
+      h.layers,
+      h.state
     ),
     ...appState,
-    selectedElementIds,
+    selectedLayerIds
   });
 
-  return selectedElementIds;
+  return selectedLayerIds;
 };
 
 type Actions =
@@ -105,26 +106,26 @@ type Actions =
   | typeof actionSendToBack;
 
 const assertZindex = ({
-  elements,
+  layers,
   appState,
-  operations,
+  operations
 }: {
-  elements: {
+  appState?: Partial<AppState>;
+  layers: {
+    containerId?: string;
+    groupIds?: string[];
     id: string;
     isDeleted?: true;
     isSelected?: true;
-    groupIds?: string[];
-    containerId?: string;
   }[];
-  appState?: Partial<AppState>;
   operations: [Actions, string[]][];
 }) => {
-  const selectedElementIds = populateElements(elements, appState);
+  const selectedLayerIds = populateLayers(layers, appState);
 
   operations.forEach(([action, expected]) => {
     h.app.actionManager.executeAction(action);
-    expect(h.elements.map((element) => element.id)).toEqual(expected);
-    expect(h.state.selectedElementIds).toEqual(selectedElementIds);
+    expect(h.layers.map((layer) => layer.id)).toEqual(expected);
+    expect(h.state.selectedLayerIds).toEqual(selectedLayerIds);
   });
 };
 
@@ -135,474 +136,474 @@ describe("z-index manipulation", () => {
 
   it("send back", () => {
     assertZindex({
-      elements: [
+      layers: [
         { id: "A" },
         { id: "B", isDeleted: true },
         { id: "C", isDeleted: true },
-        { id: "D", isSelected: true },
+        { id: "D", isSelected: true }
       ],
       operations: [
         [actionSendBackward, ["D", "A", "B", "C"]],
         // noop
-        [actionSendBackward, ["D", "A", "B", "C"]],
-      ],
+        [actionSendBackward, ["D", "A", "B", "C"]]
+      ]
     });
 
     assertZindex({
-      elements: [
+      layers: [
         { id: "A", isSelected: true },
         { id: "B", isSelected: true },
-        { id: "C", isSelected: true },
+        { id: "C", isSelected: true }
       ],
       operations: [
         // noop
-        [actionSendBackward, ["A", "B", "C"]],
-      ],
+        [actionSendBackward, ["A", "B", "C"]]
+      ]
     });
 
     assertZindex({
-      elements: [
+      layers: [
         { id: "A", isDeleted: true },
         { id: "B" },
         { id: "C", isDeleted: true },
-        { id: "D", isSelected: true },
+        { id: "D", isSelected: true }
       ],
-      operations: [[actionSendBackward, ["A", "D", "B", "C"]]],
+      operations: [[actionSendBackward, ["A", "D", "B", "C"]]]
     });
 
     assertZindex({
-      elements: [
+      layers: [
         { id: "A" },
         { id: "B", isDeleted: true },
         { id: "C", isDeleted: true },
         { id: "D", isSelected: true },
         { id: "E", isSelected: true },
-        { id: "F" },
+        { id: "F" }
       ],
       operations: [
         [actionSendBackward, ["D", "E", "A", "B", "C", "F"]],
         // noop
-        [actionSendBackward, ["D", "E", "A", "B", "C", "F"]],
-      ],
+        [actionSendBackward, ["D", "E", "A", "B", "C", "F"]]
+      ]
     });
 
     assertZindex({
-      elements: [
+      layers: [
         { id: "A" },
         { id: "B" },
         { id: "C", isDeleted: true },
         { id: "D", isDeleted: true },
         { id: "E", isSelected: true },
         { id: "F" },
-        { id: "G", isSelected: true },
+        { id: "G", isSelected: true }
       ],
       operations: [
         [actionSendBackward, ["A", "E", "B", "C", "D", "G", "F"]],
         [actionSendBackward, ["E", "A", "G", "B", "C", "D", "F"]],
         [actionSendBackward, ["E", "G", "A", "B", "C", "D", "F"]],
         // noop
-        [actionSendBackward, ["E", "G", "A", "B", "C", "D", "F"]],
-      ],
+        [actionSendBackward, ["E", "G", "A", "B", "C", "D", "F"]]
+      ]
     });
 
     assertZindex({
-      elements: [
+      layers: [
         { id: "A" },
         { id: "B" },
         { id: "C", isDeleted: true },
         { id: "D", isSelected: true },
         { id: "E", isDeleted: true },
         { id: "F", isSelected: true },
-        { id: "G" },
+        { id: "G" }
       ],
       operations: [
         [actionSendBackward, ["A", "D", "E", "F", "B", "C", "G"]],
         [actionSendBackward, ["D", "E", "F", "A", "B", "C", "G"]],
         // noop
-        [actionSendBackward, ["D", "E", "F", "A", "B", "C", "G"]],
-      ],
+        [actionSendBackward, ["D", "E", "F", "A", "B", "C", "G"]]
+      ]
     });
 
-    // grouped elements should be atomic
+    // grouped layers should be atomic
     // -------------------------------------------------------------------------
 
     assertZindex({
-      elements: [
+      layers: [
         { id: "A" },
         { id: "B", groupIds: ["g1"] },
         { id: "C", groupIds: ["g1"] },
         { id: "D", isDeleted: true },
         { id: "E", isDeleted: true },
-        { id: "F", isSelected: true },
+        { id: "F", isSelected: true }
       ],
       operations: [
         [actionSendBackward, ["A", "F", "B", "C", "D", "E"]],
         [actionSendBackward, ["F", "A", "B", "C", "D", "E"]],
         // noop
-        [actionSendBackward, ["F", "A", "B", "C", "D", "E"]],
-      ],
+        [actionSendBackward, ["F", "A", "B", "C", "D", "E"]]
+      ]
     });
 
     assertZindex({
-      elements: [
+      layers: [
         { id: "A" },
         { id: "B", groupIds: ["g2", "g1"] },
         { id: "C", groupIds: ["g2", "g1"] },
         { id: "D", groupIds: ["g1"] },
         { id: "E", isDeleted: true },
-        { id: "F", isSelected: true },
+        { id: "F", isSelected: true }
       ],
       operations: [
         [actionSendBackward, ["A", "F", "B", "C", "D", "E"]],
         [actionSendBackward, ["F", "A", "B", "C", "D", "E"]],
         // noop
-        [actionSendBackward, ["F", "A", "B", "C", "D", "E"]],
-      ],
+        [actionSendBackward, ["F", "A", "B", "C", "D", "E"]]
+      ]
     });
 
     assertZindex({
-      elements: [
+      layers: [
         { id: "A" },
         { id: "B", groupIds: ["g1"] },
         { id: "C", groupIds: ["g2", "g1"] },
         { id: "D", groupIds: ["g2", "g1"] },
         { id: "E", isDeleted: true },
-        { id: "F", isSelected: true },
+        { id: "F", isSelected: true }
       ],
       operations: [
         [actionSendBackward, ["A", "F", "B", "C", "D", "E"]],
         [actionSendBackward, ["F", "A", "B", "C", "D", "E"]],
         // noop
-        [actionSendBackward, ["F", "A", "B", "C", "D", "E"]],
-      ],
+        [actionSendBackward, ["F", "A", "B", "C", "D", "E"]]
+      ]
     });
 
     assertZindex({
-      elements: [
+      layers: [
         { id: "A" },
         { id: "B1", groupIds: ["g1"] },
         { id: "C1", groupIds: ["g1"] },
         { id: "D2", groupIds: ["g2"], isSelected: true },
-        { id: "E2", groupIds: ["g2"], isSelected: true },
+        { id: "E2", groupIds: ["g2"], isSelected: true }
       ],
       appState: {
-        editingGroupId: null,
+        editingGroupId: null
       },
-      operations: [[actionSendBackward, ["A", "D2", "E2", "B1", "C1"]]],
+      operations: [[actionSendBackward, ["A", "D2", "E2", "B1", "C1"]]]
     });
 
     // in-group siblings
     // -------------------------------------------------------------------------
 
     assertZindex({
-      elements: [
+      layers: [
         { id: "A" },
         { id: "B", groupIds: ["g1"] },
         { id: "C", groupIds: ["g2", "g1"] },
-        { id: "D", groupIds: ["g2", "g1"], isSelected: true },
+        { id: "D", groupIds: ["g2", "g1"], isSelected: true }
       ],
       appState: {
-        editingGroupId: "g2",
+        editingGroupId: "g2"
       },
       operations: [
         [actionSendBackward, ["A", "B", "D", "C"]],
         // noop (prevented)
-        [actionSendBackward, ["A", "B", "D", "C"]],
-      ],
+        [actionSendBackward, ["A", "B", "D", "C"]]
+      ]
     });
 
     assertZindex({
-      elements: [
+      layers: [
         { id: "A" },
         { id: "B", groupIds: ["g2", "g1"] },
         { id: "C", groupIds: ["g2", "g1"] },
-        { id: "D", groupIds: ["g1"], isSelected: true },
+        { id: "D", groupIds: ["g1"], isSelected: true }
       ],
       appState: {
-        editingGroupId: "g1",
+        editingGroupId: "g1"
       },
       operations: [
         [actionSendBackward, ["A", "D", "B", "C"]],
         // noop (prevented)
-        [actionSendBackward, ["A", "D", "B", "C"]],
-      ],
+        [actionSendBackward, ["A", "D", "B", "C"]]
+      ]
     });
 
     assertZindex({
-      elements: [
+      layers: [
         { id: "A" },
         { id: "B", groupIds: ["g1"] },
         { id: "C", groupIds: ["g2", "g1"], isSelected: true },
         { id: "D", groupIds: ["g2", "g1"], isDeleted: true },
-        { id: "E", groupIds: ["g2", "g1"], isSelected: true },
+        { id: "E", groupIds: ["g2", "g1"], isSelected: true }
       ],
       appState: {
-        editingGroupId: "g1",
+        editingGroupId: "g1"
       },
       operations: [
         [actionSendBackward, ["A", "C", "D", "E", "B"]],
         // noop (prevented)
-        [actionSendBackward, ["A", "C", "D", "E", "B"]],
-      ],
+        [actionSendBackward, ["A", "C", "D", "E", "B"]]
+      ]
     });
 
     assertZindex({
-      elements: [
+      layers: [
         { id: "A" },
         { id: "B", groupIds: ["g1"] },
         { id: "C", groupIds: ["g2", "g1"] },
         { id: "D", groupIds: ["g2", "g1"] },
         { id: "E", groupIds: ["g3", "g1"], isSelected: true },
-        { id: "F", groupIds: ["g3", "g1"], isSelected: true },
+        { id: "F", groupIds: ["g3", "g1"], isSelected: true }
       ],
       appState: {
-        editingGroupId: "g1",
+        editingGroupId: "g1"
       },
       operations: [
         [actionSendBackward, ["A", "B", "E", "F", "C", "D"]],
         [actionSendBackward, ["A", "E", "F", "B", "C", "D"]],
         // noop (prevented)
-        [actionSendBackward, ["A", "E", "F", "B", "C", "D"]],
-      ],
+        [actionSendBackward, ["A", "E", "F", "B", "C", "D"]]
+      ]
     });
 
     // invalid z-indexes across groups (legacy) → allow to sort to next sibling
     assertZindex({
-      elements: [
+      layers: [
         { id: "A", groupIds: ["g1"] },
         { id: "B", groupIds: ["g2"] },
         { id: "C", groupIds: ["g1"] },
         { id: "D", groupIds: ["g2"], isSelected: true },
-        { id: "E", groupIds: ["g2"], isSelected: true },
+        { id: "E", groupIds: ["g2"], isSelected: true }
       ],
       appState: {
-        editingGroupId: "g2",
+        editingGroupId: "g2"
       },
       operations: [
         [actionSendBackward, ["A", "D", "E", "B", "C"]],
         // noop
-        [actionSendBackward, ["A", "D", "E", "B", "C"]],
-      ],
+        [actionSendBackward, ["A", "D", "E", "B", "C"]]
+      ]
     });
 
     // invalid z-indexes across groups (legacy) → allow to sort to next sibling
     assertZindex({
-      elements: [
+      layers: [
         { id: "A", groupIds: ["g1"] },
         { id: "B", groupIds: ["g2"] },
         { id: "C", groupIds: ["g1"] },
         { id: "D", groupIds: ["g2"], isSelected: true },
         { id: "F" },
-        { id: "G", groupIds: ["g2"], isSelected: true },
+        { id: "G", groupIds: ["g2"], isSelected: true }
       ],
       appState: {
-        editingGroupId: "g2",
+        editingGroupId: "g2"
       },
       operations: [
         [actionSendBackward, ["A", "D", "G", "B", "C", "F"]],
         // noop
-        [actionSendBackward, ["A", "D", "G", "B", "C", "F"]],
-      ],
+        [actionSendBackward, ["A", "D", "G", "B", "C", "F"]]
+      ]
     });
   });
 
   it("bring forward", () => {
     assertZindex({
-      elements: [
+      layers: [
         { id: "A" },
         { id: "B", isSelected: true },
         { id: "C", isSelected: true },
         { id: "D", isDeleted: true },
-        { id: "E" },
+        { id: "E" }
       ],
       operations: [
         [actionBringForward, ["A", "D", "E", "B", "C"]],
         // noop
-        [actionBringForward, ["A", "D", "E", "B", "C"]],
-      ],
+        [actionBringForward, ["A", "D", "E", "B", "C"]]
+      ]
     });
 
     assertZindex({
-      elements: [
+      layers: [
         { id: "A", isSelected: true },
         { id: "B", isSelected: true },
-        { id: "C", isSelected: true },
+        { id: "C", isSelected: true }
       ],
       operations: [
         // noop
-        [actionBringForward, ["A", "B", "C"]],
-      ],
+        [actionBringForward, ["A", "B", "C"]]
+      ]
     });
 
     assertZindex({
-      elements: [
+      layers: [
         { id: "A", isSelected: true },
         { id: "B", isDeleted: true },
         { id: "C", isDeleted: true },
         { id: "D" },
         { id: "E", isSelected: true },
         { id: "F", isDeleted: true },
-        { id: "G" },
+        { id: "G" }
       ],
       operations: [
         [actionBringForward, ["B", "C", "D", "A", "F", "G", "E"]],
         [actionBringForward, ["B", "C", "D", "F", "G", "A", "E"]],
         // noop
-        [actionBringForward, ["B", "C", "D", "F", "G", "A", "E"]],
-      ],
+        [actionBringForward, ["B", "C", "D", "F", "G", "A", "E"]]
+      ]
     });
 
-    // grouped elements should be atomic
+    // grouped layers should be atomic
     // -------------------------------------------------------------------------
 
     assertZindex({
-      elements: [
+      layers: [
         { id: "A", isSelected: true },
         { id: "B", isDeleted: true },
         { id: "C", isDeleted: true },
         { id: "D", groupIds: ["g1"] },
         { id: "E", groupIds: ["g1"] },
-        { id: "F" },
+        { id: "F" }
       ],
       operations: [
         [actionBringForward, ["B", "C", "D", "E", "A", "F"]],
         [actionBringForward, ["B", "C", "D", "E", "F", "A"]],
         // noop
-        [actionBringForward, ["B", "C", "D", "E", "F", "A"]],
-      ],
+        [actionBringForward, ["B", "C", "D", "E", "F", "A"]]
+      ]
     });
 
     assertZindex({
-      elements: [
+      layers: [
         { id: "A" },
         { id: "B", isSelected: true },
         { id: "C", groupIds: ["g2", "g1"] },
         { id: "D", groupIds: ["g2", "g1"] },
         { id: "E", groupIds: ["g1"] },
-        { id: "F" },
+        { id: "F" }
       ],
       operations: [
         [actionBringForward, ["A", "C", "D", "E", "B", "F"]],
         [actionBringForward, ["A", "C", "D", "E", "F", "B"]],
         // noop
-        [actionBringForward, ["A", "C", "D", "E", "F", "B"]],
-      ],
+        [actionBringForward, ["A", "C", "D", "E", "F", "B"]]
+      ]
     });
 
     assertZindex({
-      elements: [
+      layers: [
         { id: "A" },
         { id: "B", isSelected: true },
         { id: "C", groupIds: ["g1"] },
         { id: "D", groupIds: ["g2", "g1"] },
         { id: "E", groupIds: ["g2", "g1"] },
-        { id: "F" },
+        { id: "F" }
       ],
       operations: [
         [actionBringForward, ["A", "C", "D", "E", "B", "F"]],
         [actionBringForward, ["A", "C", "D", "E", "F", "B"]],
         // noop
-        [actionBringForward, ["A", "C", "D", "E", "F", "B"]],
-      ],
+        [actionBringForward, ["A", "C", "D", "E", "F", "B"]]
+      ]
     });
 
     // in-group siblings
     // -------------------------------------------------------------------------
 
     assertZindex({
-      elements: [
+      layers: [
         { id: "A" },
         { id: "B", groupIds: ["g2", "g1"], isSelected: true },
         { id: "C", groupIds: ["g2", "g1"] },
-        { id: "D", groupIds: ["g1"] },
+        { id: "D", groupIds: ["g1"] }
       ],
       appState: {
-        editingGroupId: "g2",
+        editingGroupId: "g2"
       },
       operations: [
         [actionBringForward, ["A", "C", "B", "D"]],
         // noop (prevented)
-        [actionBringForward, ["A", "C", "B", "D"]],
-      ],
+        [actionBringForward, ["A", "C", "B", "D"]]
+      ]
     });
 
     assertZindex({
-      elements: [
+      layers: [
         { id: "A", groupIds: ["g1"], isSelected: true },
         { id: "B", groupIds: ["g2", "g1"] },
         { id: "C", groupIds: ["g2", "g1"] },
-        { id: "D" },
+        { id: "D" }
       ],
       appState: {
-        editingGroupId: "g1",
+        editingGroupId: "g1"
       },
       operations: [
         [actionBringForward, ["B", "C", "A", "D"]],
         // noop (prevented)
-        [actionBringForward, ["B", "C", "A", "D"]],
-      ],
+        [actionBringForward, ["B", "C", "A", "D"]]
+      ]
     });
 
     assertZindex({
-      elements: [
+      layers: [
         { id: "A", groupIds: ["g2", "g1"], isSelected: true },
         { id: "B", groupIds: ["g2", "g1"], isSelected: true },
         { id: "C", groupIds: ["g1"] },
-        { id: "D" },
+        { id: "D" }
       ],
       appState: {
-        editingGroupId: "g1",
+        editingGroupId: "g1"
       },
       operations: [
         [actionBringForward, ["C", "A", "B", "D"]],
         // noop (prevented)
-        [actionBringForward, ["C", "A", "B", "D"]],
-      ],
+        [actionBringForward, ["C", "A", "B", "D"]]
+      ]
     });
 
     // invalid z-indexes across groups (legacy) → allow to sort to next sibling
     assertZindex({
-      elements: [
+      layers: [
         { id: "A", groupIds: ["g2"], isSelected: true },
         { id: "B", groupIds: ["g2"], isSelected: true },
         { id: "C", groupIds: ["g1"] },
         { id: "D", groupIds: ["g2"] },
-        { id: "E", groupIds: ["g1"] },
+        { id: "E", groupIds: ["g1"] }
       ],
       appState: {
-        editingGroupId: "g2",
+        editingGroupId: "g2"
       },
       operations: [
         [actionBringForward, ["C", "D", "A", "B", "E"]],
         // noop
-        [actionBringForward, ["C", "D", "A", "B", "E"]],
-      ],
+        [actionBringForward, ["C", "D", "A", "B", "E"]]
+      ]
     });
 
     // invalid z-indexes across groups (legacy) → allow to sort to next sibling
     assertZindex({
-      elements: [
+      layers: [
         { id: "A", groupIds: ["g2"], isSelected: true },
         { id: "B" },
         { id: "C", groupIds: ["g2"], isSelected: true },
         { id: "D", groupIds: ["g1"] },
         { id: "E", groupIds: ["g2"] },
-        { id: "F", groupIds: ["g1"] },
+        { id: "F", groupIds: ["g1"] }
       ],
       appState: {
-        editingGroupId: "g2",
+        editingGroupId: "g2"
       },
       operations: [
         [actionBringForward, ["B", "D", "E", "A", "C", "F"]],
         // noop
-        [actionBringForward, ["B", "D", "E", "A", "C", "F"]],
-      ],
+        [actionBringForward, ["B", "D", "E", "A", "C", "F"]]
+      ]
     });
   });
 
   it("bring to front", () => {
     assertZindex({
-      elements: [
+      layers: [
         { id: "0" },
         { id: "A", isSelected: true },
         { id: "B", isDeleted: true },
@@ -610,57 +611,57 @@ describe("z-index manipulation", () => {
         { id: "D" },
         { id: "E", isSelected: true },
         { id: "F", isDeleted: true },
-        { id: "G" },
+        { id: "G" }
       ],
       operations: [
         [actionBringToFront, ["0", "B", "C", "D", "F", "G", "A", "E"]],
         // noop
-        [actionBringToFront, ["0", "B", "C", "D", "F", "G", "A", "E"]],
-      ],
+        [actionBringToFront, ["0", "B", "C", "D", "F", "G", "A", "E"]]
+      ]
     });
 
     assertZindex({
-      elements: [
+      layers: [
         { id: "A", isSelected: true },
         { id: "B", isSelected: true },
-        { id: "C", isSelected: true },
+        { id: "C", isSelected: true }
       ],
       operations: [
         // noop
-        [actionBringToFront, ["A", "B", "C"]],
-      ],
+        [actionBringToFront, ["A", "B", "C"]]
+      ]
     });
 
     assertZindex({
-      elements: [
+      layers: [
         { id: "A" },
         { id: "B", isSelected: true },
-        { id: "C", isSelected: true },
+        { id: "C", isSelected: true }
       ],
       operations: [
         // noop
-        [actionBringToFront, ["A", "B", "C"]],
-      ],
+        [actionBringToFront, ["A", "B", "C"]]
+      ]
     });
 
     assertZindex({
-      elements: [
+      layers: [
         { id: "A", isSelected: true },
         { id: "B", isSelected: true },
-        { id: "C" },
+        { id: "C" }
       ],
       operations: [
         [actionBringToFront, ["C", "A", "B"]],
         // noop
-        [actionBringToFront, ["C", "A", "B"]],
-      ],
+        [actionBringToFront, ["C", "A", "B"]]
+      ]
     });
 
     // in-group sorting
     // -------------------------------------------------------------------------
 
     assertZindex({
-      elements: [
+      layers: [
         { id: "A" },
         { id: "B", groupIds: ["g1"] },
         { id: "C", groupIds: ["g1"], isSelected: true },
@@ -669,75 +670,75 @@ describe("z-index manipulation", () => {
         { id: "F", groupIds: ["g2", "g1"] },
         { id: "G", groupIds: ["g2", "g1"] },
         { id: "H", groupIds: ["g3", "g1"] },
-        { id: "I", groupIds: ["g3", "g1"] },
+        { id: "I", groupIds: ["g3", "g1"] }
       ],
       appState: {
-        editingGroupId: "g1",
+        editingGroupId: "g1"
       },
       operations: [
         [actionBringToFront, ["A", "B", "D", "F", "G", "H", "I", "C", "E"]],
         // noop (prevented)
-        [actionBringToFront, ["A", "B", "D", "F", "G", "H", "I", "C", "E"]],
-      ],
+        [actionBringToFront, ["A", "B", "D", "F", "G", "H", "I", "C", "E"]]
+      ]
     });
 
     assertZindex({
-      elements: [
+      layers: [
         { id: "A" },
         { id: "B", groupIds: ["g2", "g1"], isSelected: true },
         { id: "D", groupIds: ["g2", "g1"] },
-        { id: "C", groupIds: ["g1"] },
+        { id: "C", groupIds: ["g1"] }
       ],
       appState: {
-        editingGroupId: "g2",
+        editingGroupId: "g2"
       },
       operations: [
         [actionBringToFront, ["A", "D", "B", "C"]],
         // noop (prevented)
-        [actionBringToFront, ["A", "D", "B", "C"]],
-      ],
+        [actionBringToFront, ["A", "D", "B", "C"]]
+      ]
     });
 
     // invalid z-indexes across groups (legacy) → allow to sort to next sibling
     assertZindex({
-      elements: [
+      layers: [
         { id: "A", groupIds: ["g2", "g3"], isSelected: true },
         { id: "B", groupIds: ["g1", "g3"] },
         { id: "C", groupIds: ["g2", "g3"] },
-        { id: "D", groupIds: ["g1", "g3"] },
+        { id: "D", groupIds: ["g1", "g3"] }
       ],
       appState: {
-        editingGroupId: "g2",
+        editingGroupId: "g2"
       },
       operations: [
         [actionBringToFront, ["B", "C", "A", "D"]],
         // noop
-        [actionBringToFront, ["B", "C", "A", "D"]],
-      ],
+        [actionBringToFront, ["B", "C", "A", "D"]]
+      ]
     });
 
     // invalid z-indexes across groups (legacy) → allow to sort to next sibling
     assertZindex({
-      elements: [
+      layers: [
         { id: "A", groupIds: ["g2"], isSelected: true },
         { id: "B", groupIds: ["g1"] },
         { id: "C", groupIds: ["g2"] },
-        { id: "D", groupIds: ["g1"] },
+        { id: "D", groupIds: ["g1"] }
       ],
       appState: {
-        editingGroupId: "g2",
+        editingGroupId: "g2"
       },
       operations: [
         [actionBringToFront, ["B", "C", "A", "D"]],
         // noop
-        [actionBringToFront, ["B", "C", "A", "D"]],
-      ],
+        [actionBringToFront, ["B", "C", "A", "D"]]
+      ]
     });
   });
 
   it("send to back", () => {
     assertZindex({
-      elements: [
+      layers: [
         { id: "A" },
         { id: "B", isDeleted: true },
         { id: "C" },
@@ -746,57 +747,57 @@ describe("z-index manipulation", () => {
         { id: "F", isDeleted: true },
         { id: "G" },
         { id: "H", isSelected: true },
-        { id: "I" },
+        { id: "I" }
       ],
       operations: [
         [actionSendToBack, ["E", "H", "A", "B", "C", "D", "F", "G", "I"]],
         // noop
-        [actionSendToBack, ["E", "H", "A", "B", "C", "D", "F", "G", "I"]],
-      ],
+        [actionSendToBack, ["E", "H", "A", "B", "C", "D", "F", "G", "I"]]
+      ]
     });
 
     assertZindex({
-      elements: [
+      layers: [
         { id: "A", isSelected: true },
         { id: "B", isSelected: true },
-        { id: "C", isSelected: true },
+        { id: "C", isSelected: true }
       ],
       operations: [
         // noop
-        [actionSendToBack, ["A", "B", "C"]],
-      ],
+        [actionSendToBack, ["A", "B", "C"]]
+      ]
     });
 
     assertZindex({
-      elements: [
+      layers: [
         { id: "A", isSelected: true },
         { id: "B", isSelected: true },
-        { id: "C" },
+        { id: "C" }
       ],
       operations: [
         // noop
-        [actionSendToBack, ["A", "B", "C"]],
-      ],
+        [actionSendToBack, ["A", "B", "C"]]
+      ]
     });
 
     assertZindex({
-      elements: [
+      layers: [
         { id: "A" },
         { id: "B", isSelected: true },
-        { id: "C", isSelected: true },
+        { id: "C", isSelected: true }
       ],
       operations: [
         [actionSendToBack, ["B", "C", "A"]],
         // noop
-        [actionSendToBack, ["B", "C", "A"]],
-      ],
+        [actionSendToBack, ["B", "C", "A"]]
+      ]
     });
 
     // in-group sorting
     // -------------------------------------------------------------------------
 
     assertZindex({
-      elements: [
+      layers: [
         { id: "A" },
         { id: "B", groupIds: ["g2", "g1"] },
         { id: "C", groupIds: ["g2", "g1"] },
@@ -805,150 +806,150 @@ describe("z-index manipulation", () => {
         { id: "F", groupIds: ["g1"], isSelected: true },
         { id: "G", groupIds: ["g1"] },
         { id: "H", groupIds: ["g1"], isSelected: true },
-        { id: "I", groupIds: ["g1"] },
+        { id: "I", groupIds: ["g1"] }
       ],
       appState: {
-        editingGroupId: "g1",
+        editingGroupId: "g1"
       },
       operations: [
         [actionSendToBack, ["A", "F", "H", "B", "C", "D", "E", "G", "I"]],
         // noop (prevented)
-        [actionSendToBack, ["A", "F", "H", "B", "C", "D", "E", "G", "I"]],
-      ],
+        [actionSendToBack, ["A", "F", "H", "B", "C", "D", "E", "G", "I"]]
+      ]
     });
 
     assertZindex({
-      elements: [
+      layers: [
         { id: "A" },
         { id: "B", groupIds: ["g1"] },
         { id: "C", groupIds: ["g2", "g1"] },
-        { id: "D", groupIds: ["g2", "g1"], isSelected: true },
+        { id: "D", groupIds: ["g2", "g1"], isSelected: true }
       ],
       appState: {
-        editingGroupId: "g2",
+        editingGroupId: "g2"
       },
       operations: [
         [actionSendToBack, ["A", "B", "D", "C"]],
         // noop (prevented)
-        [actionSendToBack, ["A", "B", "D", "C"]],
-      ],
+        [actionSendToBack, ["A", "B", "D", "C"]]
+      ]
     });
 
     // invalid z-indexes across groups (legacy) → allow to sort to next sibling
     assertZindex({
-      elements: [
+      layers: [
         { id: "A", groupIds: ["g1", "g3"] },
         { id: "B", groupIds: ["g2", "g3"] },
         { id: "C", groupIds: ["g1", "g3"] },
-        { id: "D", groupIds: ["g2", "g3"], isSelected: true },
+        { id: "D", groupIds: ["g2", "g3"], isSelected: true }
       ],
       appState: {
-        editingGroupId: "g2",
+        editingGroupId: "g2"
       },
       operations: [
         [actionSendToBack, ["A", "D", "B", "C"]],
         // noop
-        [actionSendToBack, ["A", "D", "B", "C"]],
-      ],
+        [actionSendToBack, ["A", "D", "B", "C"]]
+      ]
     });
 
     // invalid z-indexes across groups (legacy) → allow to sort to next sibling
     assertZindex({
-      elements: [
+      layers: [
         { id: "A", groupIds: ["g1"] },
         { id: "B", groupIds: ["g2"] },
         { id: "C", groupIds: ["g1"] },
-        { id: "D", groupIds: ["g2"], isSelected: true },
+        { id: "D", groupIds: ["g2"], isSelected: true }
       ],
       appState: {
-        editingGroupId: "g2",
+        editingGroupId: "g2"
       },
       operations: [
         [actionSendToBack, ["A", "D", "B", "C"]],
         // noop
-        [actionSendToBack, ["A", "D", "B", "C"]],
-      ],
+        [actionSendToBack, ["A", "D", "B", "C"]]
+      ]
     });
   });
 
-  it("duplicating elements should retain zindex integrity", () => {
-    populateElements([
+  it("duplicating layers should retain zindex integrity", () => {
+    populateLayers([
       { id: "A", isSelected: true },
-      { id: "B", isSelected: true },
+      { id: "B", isSelected: true }
     ]);
     h.app.actionManager.executeAction(actionDuplicateSelection);
-    expect(h.elements).toMatchObject([
+    expect(h.layers).toMatchObject([
       { id: "A" },
       { id: "A_copy" },
       { id: "B" },
-      { id: "B_copy" },
+      { id: "B_copy" }
     ]);
 
-    populateElements([
+    populateLayers([
       { id: "A", groupIds: ["g1"], isSelected: true },
-      { id: "B", groupIds: ["g1"], isSelected: true },
+      { id: "B", groupIds: ["g1"], isSelected: true }
     ]);
     h.app.actionManager.executeAction(actionDuplicateSelection);
-    expect(h.elements).toMatchObject([
+    expect(h.layers).toMatchObject([
       { id: "A" },
       { id: "B" },
       {
         id: "A_copy",
 
-        groupIds: [expect.stringMatching(/.{3,}/)],
+        groupIds: [expect.stringMatching(/.{3,}/)]
       },
       {
         id: "B_copy",
 
-        groupIds: [expect.stringMatching(/.{3,}/)],
-      },
+        groupIds: [expect.stringMatching(/.{3,}/)]
+      }
     ]);
 
-    populateElements([
+    populateLayers([
       { id: "A", groupIds: ["g1"], isSelected: true },
       { id: "B", groupIds: ["g1"], isSelected: true },
-      { id: "C" },
+      { id: "C" }
     ]);
     h.app.actionManager.executeAction(actionDuplicateSelection);
-    expect(h.elements).toMatchObject([
+    expect(h.layers).toMatchObject([
       { id: "A" },
       { id: "B" },
       {
         id: "A_copy",
 
-        groupIds: [expect.stringMatching(/.{3,}/)],
+        groupIds: [expect.stringMatching(/.{3,}/)]
       },
       {
         id: "B_copy",
 
-        groupIds: [expect.stringMatching(/.{3,}/)],
+        groupIds: [expect.stringMatching(/.{3,}/)]
       },
-      { id: "C" },
+      { id: "C" }
     ]);
 
-    populateElements([
+    populateLayers([
       { id: "A", groupIds: ["g1"], isSelected: true },
       { id: "B", groupIds: ["g1"], isSelected: true },
-      { id: "C", isSelected: true },
+      { id: "C", isSelected: true }
     ]);
     h.app.actionManager.executeAction(actionDuplicateSelection);
-    expect(h.elements.map((element) => element.id)).toEqual([
+    expect(h.layers.map((layer) => layer.id)).toEqual([
       "A",
       "B",
       "A_copy",
       "B_copy",
       "C",
-      "C_copy",
+      "C_copy"
     ]);
 
-    populateElements([
+    populateLayers([
       { id: "A", groupIds: ["g1"], isSelected: true },
       { id: "B", groupIds: ["g1"], isSelected: true },
       { id: "C", groupIds: ["g2"], isSelected: true },
-      { id: "D", groupIds: ["g2"], isSelected: true },
+      { id: "D", groupIds: ["g2"], isSelected: true }
     ]);
     h.app.actionManager.executeAction(actionDuplicateSelection);
-    expect(h.elements.map((element) => element.id)).toEqual([
+    expect(h.layers.map((layer) => layer.id)).toEqual([
       "A",
       "B",
       "A_copy",
@@ -956,64 +957,64 @@ describe("z-index manipulation", () => {
       "C",
       "D",
       "C_copy",
-      "D_copy",
+      "D_copy"
     ]);
 
-    populateElements(
+    populateLayers(
       [
         { id: "A", groupIds: ["g1", "g2"], isSelected: true },
         { id: "B", groupIds: ["g1", "g2"], isSelected: true },
-        { id: "C", groupIds: ["g2"], isSelected: true },
+        { id: "C", groupIds: ["g2"], isSelected: true }
       ],
       {
-        selectedGroupIds: { g1: true },
-      },
+        selectedGroupIds: { g1: true }
+      }
     );
     h.app.actionManager.executeAction(actionDuplicateSelection);
-    expect(h.elements.map((element) => element.id)).toEqual([
+    expect(h.layers.map((layer) => layer.id)).toEqual([
       "A",
       "B",
       "A_copy",
       "B_copy",
       "C",
-      "C_copy",
+      "C_copy"
     ]);
 
-    populateElements(
+    populateLayers(
       [
         { id: "A", groupIds: ["g1", "g2"], isSelected: true },
         { id: "B", groupIds: ["g1", "g2"], isSelected: true },
-        { id: "C", groupIds: ["g2"], isSelected: true },
+        { id: "C", groupIds: ["g2"], isSelected: true }
       ],
       {
-        selectedGroupIds: { g2: true },
-      },
+        selectedGroupIds: { g2: true }
+      }
     );
     h.app.actionManager.executeAction(actionDuplicateSelection);
-    expect(h.elements.map((element) => element.id)).toEqual([
+    expect(h.layers.map((layer) => layer.id)).toEqual([
       "A",
       "B",
       "C",
       "A_copy",
       "B_copy",
-      "C_copy",
+      "C_copy"
     ]);
 
-    populateElements(
+    populateLayers(
       [
         { id: "A", groupIds: ["g1", "g2"], isSelected: true },
         { id: "B", groupIds: ["g1", "g2"], isSelected: true },
         { id: "C", groupIds: ["g2"], isSelected: true },
         { id: "D", groupIds: ["g3", "g4"], isSelected: true },
         { id: "E", groupIds: ["g3", "g4"], isSelected: true },
-        { id: "F", groupIds: ["g4"], isSelected: true },
+        { id: "F", groupIds: ["g4"], isSelected: true }
       ],
       {
-        selectedGroupIds: { g2: true, g4: true },
-      },
+        selectedGroupIds: { g2: true, g4: true }
+      }
     );
     h.app.actionManager.executeAction(actionDuplicateSelection);
-    expect(h.elements.map((element) => element.id)).toEqual([
+    expect(h.layers.map((layer) => layer.id)).toEqual([
       "A",
       "B",
       "C",
@@ -1025,161 +1026,161 @@ describe("z-index manipulation", () => {
       "F",
       "D_copy",
       "E_copy",
-      "F_copy",
+      "F_copy"
     ]);
 
-    populateElements(
+    populateLayers(
       [
         { id: "A", groupIds: ["g1", "g2"], isSelected: true },
         { id: "B", groupIds: ["g1", "g2"] },
-        { id: "C", groupIds: ["g2"] },
+        { id: "C", groupIds: ["g2"] }
       ],
-      { editingGroupId: "g1" },
+      { editingGroupId: "g1" }
     );
     h.app.actionManager.executeAction(actionDuplicateSelection);
-    expect(h.elements.map((element) => element.id)).toEqual([
+    expect(h.layers.map((layer) => layer.id)).toEqual([
       "A",
       "A_copy",
       "B",
-      "C",
+      "C"
     ]);
 
-    populateElements(
+    populateLayers(
       [
         { id: "A", groupIds: ["g1", "g2"] },
         { id: "B", groupIds: ["g1", "g2"], isSelected: true },
-        { id: "C", groupIds: ["g2"] },
+        { id: "C", groupIds: ["g2"] }
       ],
-      { editingGroupId: "g1" },
+      { editingGroupId: "g1" }
     );
     h.app.actionManager.executeAction(actionDuplicateSelection);
-    expect(h.elements.map((element) => element.id)).toEqual([
+    expect(h.layers.map((layer) => layer.id)).toEqual([
       "A",
       "B",
       "B_copy",
-      "C",
+      "C"
     ]);
 
-    populateElements(
+    populateLayers(
       [
         { id: "A", groupIds: ["g1", "g2"], isSelected: true },
         { id: "B", groupIds: ["g1", "g2"], isSelected: true },
-        { id: "C", groupIds: ["g2"] },
+        { id: "C", groupIds: ["g2"] }
       ],
-      { editingGroupId: "g1" },
+      { editingGroupId: "g1" }
     );
     h.app.actionManager.executeAction(actionDuplicateSelection);
-    expect(h.elements.map((element) => element.id)).toEqual([
+    expect(h.layers.map((layer) => layer.id)).toEqual([
       "A",
       "A_copy",
       "B",
       "B_copy",
-      "C",
+      "C"
     ]);
   });
 
-  it("duplicating incorrectly interleaved elements (group elements should be together) should still produce reasonable result", () => {
-    populateElements([
+  it("duplicating incorrectly interleaved layers (group layers should be together) should still produce reasonable result", () => {
+    populateLayers([
       { id: "A", groupIds: ["g1"], isSelected: true },
       { id: "B" },
-      { id: "C", groupIds: ["g1"], isSelected: true },
+      { id: "C", groupIds: ["g1"], isSelected: true }
     ]);
     h.app.actionManager.executeAction(actionDuplicateSelection);
-    expect(h.elements.map((element) => element.id)).toEqual([
+    expect(h.layers.map((layer) => layer.id)).toEqual([
       "A",
       "C",
       "A_copy",
       "C_copy",
-      "B",
+      "B"
     ]);
   });
 
-  it("group-selected duplication should includes deleted elements that weren't selected on account of being deleted", () => {
-    populateElements([
+  it("group-selected duplication should includes deleted layers that weren't selected on account of being deleted", () => {
+    populateLayers([
       { id: "A", groupIds: ["g1"], isDeleted: true },
       { id: "B", groupIds: ["g1"], isSelected: true },
       { id: "C", groupIds: ["g1"], isSelected: true },
-      { id: "D" },
+      { id: "D" }
     ]);
     expect(h.state.selectedGroupIds).toEqual({ g1: true });
     h.app.actionManager.executeAction(actionDuplicateSelection);
-    expect(h.elements.map((element) => element.id)).toEqual([
+    expect(h.layers.map((layer) => layer.id)).toEqual([
       "A",
       "B",
       "C",
       "A_copy",
       "B_copy",
       "C_copy",
-      "D",
+      "D"
     ]);
   });
 
   it("text-container binding should be atomic", () => {
     assertZindex({
-      elements: [
+      layers: [
         { id: "A", isSelected: true },
         { id: "B" },
-        { id: "C", containerId: "B" },
+        { id: "C", containerId: "B" }
       ],
       operations: [
         [actionBringForward, ["B", "C", "A"]],
-        [actionSendBackward, ["A", "B", "C"]],
-      ],
+        [actionSendBackward, ["A", "B", "C"]]
+      ]
     });
 
     assertZindex({
-      elements: [
+      layers: [
         { id: "A" },
         { id: "B", isSelected: true },
-        { id: "C", containerId: "B" },
+        { id: "C", containerId: "B" }
       ],
       operations: [
         [actionSendBackward, ["B", "C", "A"]],
-        [actionBringForward, ["A", "B", "C"]],
-      ],
+        [actionBringForward, ["A", "B", "C"]]
+      ]
     });
 
     assertZindex({
-      elements: [
+      layers: [
         { id: "A", isSelected: true, groupIds: ["g1"] },
         { id: "B", groupIds: ["g1"] },
-        { id: "C", containerId: "B", groupIds: ["g1"] },
+        { id: "C", containerId: "B", groupIds: ["g1"] }
       ],
       appState: {
-        editingGroupId: "g1",
+        editingGroupId: "g1"
       },
       operations: [
         [actionBringForward, ["B", "C", "A"]],
-        [actionSendBackward, ["A", "B", "C"]],
-      ],
+        [actionSendBackward, ["A", "B", "C"]]
+      ]
     });
 
     assertZindex({
-      elements: [
+      layers: [
         { id: "A", groupIds: ["g1"] },
         { id: "B", groupIds: ["g1"], isSelected: true },
-        { id: "C", containerId: "B", groupIds: ["g1"] },
+        { id: "C", containerId: "B", groupIds: ["g1"] }
       ],
       appState: {
-        editingGroupId: "g1",
+        editingGroupId: "g1"
       },
       operations: [
         [actionSendBackward, ["B", "C", "A"]],
-        [actionBringForward, ["A", "B", "C"]],
-      ],
+        [actionBringForward, ["A", "B", "C"]]
+      ]
     });
 
     assertZindex({
-      elements: [
+      layers: [
         { id: "A", groupIds: ["g1"] },
         { id: "B", isSelected: true, groupIds: ["g1"] },
         { id: "C" },
-        { id: "D", containerId: "C" },
+        { id: "D", containerId: "C" }
       ],
       appState: {
-        editingGroupId: "g1",
+        editingGroupId: "g1"
       },
-      operations: [[actionBringForward, ["A", "B", "C", "D"]]],
+      operations: [[actionBringForward, ["A", "B", "C", "D"]]]
     });
   });
 });

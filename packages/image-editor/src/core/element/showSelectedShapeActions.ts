@@ -1,17 +1,17 @@
-import { NonDeletedExcalidrawElement } from "./types";
-import { getSelectedElements } from "../scene";
+import { getSelectedLayers } from "../../lib/scene";
 import { UIAppState } from "../types";
+import { NonDeletedExcalidrawLayer } from "./types";
 
 export const showSelectedShapeActions = (
   appState: UIAppState,
-  elements: readonly NonDeletedExcalidrawElement[],
+  layers: readonly NonDeletedExcalidrawLayer[]
 ) =>
   Boolean(
     (!appState.viewModeEnabled &&
       appState.activeTool.type !== "custom" &&
-      (appState.editingElement ||
+      (appState.editingLayer ||
         (appState.activeTool.type !== "selection" &&
           appState.activeTool.type !== "eraser" &&
           appState.activeTool.type !== "hand"))) ||
-      getSelectedElements(elements, appState).length,
+      getSelectedLayers(layers, appState).length
   );

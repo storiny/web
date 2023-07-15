@@ -1,232 +1,220 @@
-import { alignElements, Alignment } from "../align";
+import { getSelectedLayers, isSomeLayerSelected } from "../../lib/scene";
+import { alignLayers, Alignment } from "../align";
 import {
   AlignBottomIcon,
   AlignLeftIcon,
   AlignRightIcon,
   AlignTopIcon,
   CenterHorizontallyIcon,
-  CenterVerticallyIcon,
+  CenterVerticallyIcon
 } from "../components/icons";
 import { ToolButton } from "../components/ToolButton";
-import { getNonDeletedElements } from "../element";
-import { ExcalidrawElement } from "../element/types";
-import { updateFrameMembershipOfSelectedElements } from "../frame";
+import { updateFrameMembershipOfSelectedLayers } from "../frame";
 import { t } from "../i18n";
 import { KEYS } from "../keys";
-import { getSelectedElements, isSomeElementSelected } from "../scene";
+import { getNonDeletedLayers } from "../layer";
+import { ExcalidrawLayer } from "../layer/types";
 import { AppState } from "../types";
 import { arrayToMap, getShortcutKey } from "../utils";
 import { register } from "./register";
 
 const alignActionsPredicate = (
-  elements: readonly ExcalidrawElement[],
-  appState: AppState,
+  layers: readonly ExcalidrawLayer[],
+  appState: AppState
 ) => {
-  const selectedElements = getSelectedElements(
-    getNonDeletedElements(elements),
-    appState,
+  const selectedLayers = getSelectedLayers(
+    getNonDeletedLayers(layers),
+    appState
   );
   return (
-    selectedElements.length > 1 &&
+    selectedLayers.length > 1 &&
     // TODO enable aligning frames when implemented properly
-    !selectedElements.some((el) => el.type === "frame")
+    !selectedLayers.some((el) => el.type === "frame")
   );
 };
 
-const alignSelectedElements = (
-  elements: readonly ExcalidrawElement[],
+const alignSelectedLayers = (
+  layers: readonly ExcalidrawLayer[],
   appState: Readonly<AppState>,
-  alignment: Alignment,
+  alignment: Alignment
 ) => {
-  const selectedElements = getSelectedElements(
-    getNonDeletedElements(elements),
-    appState,
+  const selectedLayers = getSelectedLayers(
+    getNonDeletedLayers(layers),
+    appState
   );
 
-  const updatedElements = alignElements(selectedElements, alignment);
+  const updatedLayers = alignLayers(selectedLayers, alignment);
 
-  const updatedElementsMap = arrayToMap(updatedElements);
+  const updatedLayersMap = arrayToMap(updatedLayers);
 
-  return updateFrameMembershipOfSelectedElements(
-    elements.map((element) => updatedElementsMap.get(element.id) || element),
-    appState,
+  return updateFrameMembershipOfSelectedLayers(
+    layers.map((layer) => updatedLayersMap.get(layer.id) || layer),
+    appState
   );
 };
 
 export const actionAlignTop = register({
   name: "alignTop",
-  trackEvent: { category: "element" },
+  trackEvent: { category: "layer" },
   predicate: alignActionsPredicate,
-  perform: (elements, appState) => {
-    return {
-      appState,
-      elements: alignSelectedElements(elements, appState, {
-        position: "start",
-        axis: "y",
-      }),
-      commitToHistory: true,
-    };
-  },
+  perform: (layers, appState) => ({
+    appState,
+    layers: alignSelectedLayers(layers, appState, {
+      position: "start",
+      axis: "y"
+    }),
+    commitToHistory: true
+  }),
   keyTest: (event) =>
     event[KEYS.CTRL_OR_CMD] && event.shiftKey && event.key === KEYS.ARROW_UP,
-  PanelComponent: ({ elements, appState, updateData }) => (
+  PanelComponent: ({ layers, appState, updateData }) => (
     <ToolButton
-      hidden={!alignActionsPredicate(elements, appState)}
-      type="button"
+      aria-label={t("labels.alignTop")}
+      hidden={!alignActionsPredicate(layers, appState)}
       icon={AlignTopIcon}
       onClick={() => updateData(null)}
       title={`${t("labels.alignTop")} — ${getShortcutKey(
-        "CtrlOrCmd+Shift+Up",
+        "CtrlOrCmd+Shift+Up"
       )}`}
-      aria-label={t("labels.alignTop")}
-      visible={isSomeElementSelected(getNonDeletedElements(elements), appState)}
+      type="button"
+      visible={isSomeLayerSelected(getNonDeletedLayers(layers), appState)}
     />
-  ),
+  )
 });
 
 export const actionAlignBottom = register({
   name: "alignBottom",
-  trackEvent: { category: "element" },
+  trackEvent: { category: "layer" },
   predicate: alignActionsPredicate,
-  perform: (elements, appState) => {
-    return {
-      appState,
-      elements: alignSelectedElements(elements, appState, {
-        position: "end",
-        axis: "y",
-      }),
-      commitToHistory: true,
-    };
-  },
+  perform: (layers, appState) => ({
+    appState,
+    layers: alignSelectedLayers(layers, appState, {
+      position: "end",
+      axis: "y"
+    }),
+    commitToHistory: true
+  }),
   keyTest: (event) =>
     event[KEYS.CTRL_OR_CMD] && event.shiftKey && event.key === KEYS.ARROW_DOWN,
-  PanelComponent: ({ elements, appState, updateData }) => (
+  PanelComponent: ({ layers, appState, updateData }) => (
     <ToolButton
-      hidden={!alignActionsPredicate(elements, appState)}
-      type="button"
+      aria-label={t("labels.alignBottom")}
+      hidden={!alignActionsPredicate(layers, appState)}
       icon={AlignBottomIcon}
       onClick={() => updateData(null)}
       title={`${t("labels.alignBottom")} — ${getShortcutKey(
-        "CtrlOrCmd+Shift+Down",
+        "CtrlOrCmd+Shift+Down"
       )}`}
-      aria-label={t("labels.alignBottom")}
-      visible={isSomeElementSelected(getNonDeletedElements(elements), appState)}
+      type="button"
+      visible={isSomeLayerSelected(getNonDeletedLayers(layers), appState)}
     />
-  ),
+  )
 });
 
 export const actionAlignLeft = register({
   name: "alignLeft",
-  trackEvent: { category: "element" },
+  trackEvent: { category: "layer" },
   predicate: alignActionsPredicate,
-  perform: (elements, appState) => {
-    return {
-      appState,
-      elements: alignSelectedElements(elements, appState, {
-        position: "start",
-        axis: "x",
-      }),
-      commitToHistory: true,
-    };
-  },
+  perform: (layers, appState) => ({
+    appState,
+    layers: alignSelectedLayers(layers, appState, {
+      position: "start",
+      axis: "x"
+    }),
+    commitToHistory: true
+  }),
   keyTest: (event) =>
     event[KEYS.CTRL_OR_CMD] && event.shiftKey && event.key === KEYS.ARROW_LEFT,
-  PanelComponent: ({ elements, appState, updateData }) => (
+  PanelComponent: ({ layers, appState, updateData }) => (
     <ToolButton
-      hidden={!alignActionsPredicate(elements, appState)}
-      type="button"
+      aria-label={t("labels.alignLeft")}
+      hidden={!alignActionsPredicate(layers, appState)}
       icon={AlignLeftIcon}
       onClick={() => updateData(null)}
       title={`${t("labels.alignLeft")} — ${getShortcutKey(
-        "CtrlOrCmd+Shift+Left",
+        "CtrlOrCmd+Shift+Left"
       )}`}
-      aria-label={t("labels.alignLeft")}
-      visible={isSomeElementSelected(getNonDeletedElements(elements), appState)}
+      type="button"
+      visible={isSomeLayerSelected(getNonDeletedLayers(layers), appState)}
     />
-  ),
+  )
 });
 
 export const actionAlignRight = register({
   name: "alignRight",
-  trackEvent: { category: "element" },
+  trackEvent: { category: "layer" },
   predicate: alignActionsPredicate,
-  perform: (elements, appState) => {
-    return {
-      appState,
-      elements: alignSelectedElements(elements, appState, {
-        position: "end",
-        axis: "x",
-      }),
-      commitToHistory: true,
-    };
-  },
+  perform: (layers, appState) => ({
+    appState,
+    layers: alignSelectedLayers(layers, appState, {
+      position: "end",
+      axis: "x"
+    }),
+    commitToHistory: true
+  }),
   keyTest: (event) =>
     event[KEYS.CTRL_OR_CMD] && event.shiftKey && event.key === KEYS.ARROW_RIGHT,
-  PanelComponent: ({ elements, appState, updateData }) => (
+  PanelComponent: ({ layers, appState, updateData }) => (
     <ToolButton
-      hidden={!alignActionsPredicate(elements, appState)}
-      type="button"
+      aria-label={t("labels.alignRight")}
+      hidden={!alignActionsPredicate(layers, appState)}
       icon={AlignRightIcon}
       onClick={() => updateData(null)}
       title={`${t("labels.alignRight")} — ${getShortcutKey(
-        "CtrlOrCmd+Shift+Right",
+        "CtrlOrCmd+Shift+Right"
       )}`}
-      aria-label={t("labels.alignRight")}
-      visible={isSomeElementSelected(getNonDeletedElements(elements), appState)}
+      type="button"
+      visible={isSomeLayerSelected(getNonDeletedLayers(layers), appState)}
     />
-  ),
+  )
 });
 
 export const actionAlignVerticallyCentered = register({
   name: "alignVerticallyCentered",
-  trackEvent: { category: "element" },
+  trackEvent: { category: "layer" },
   predicate: alignActionsPredicate,
-  perform: (elements, appState) => {
-    return {
-      appState,
-      elements: alignSelectedElements(elements, appState, {
-        position: "center",
-        axis: "y",
-      }),
-      commitToHistory: true,
-    };
-  },
-  PanelComponent: ({ elements, appState, updateData }) => (
+  perform: (layers, appState) => ({
+    appState,
+    layers: alignSelectedLayers(layers, appState, {
+      position: "center",
+      axis: "y"
+    }),
+    commitToHistory: true
+  }),
+  PanelComponent: ({ layers, appState, updateData }) => (
     <ToolButton
-      hidden={!alignActionsPredicate(elements, appState)}
-      type="button"
+      aria-label={t("labels.centerVertically")}
+      hidden={!alignActionsPredicate(layers, appState)}
       icon={CenterVerticallyIcon}
       onClick={() => updateData(null)}
       title={t("labels.centerVertically")}
-      aria-label={t("labels.centerVertically")}
-      visible={isSomeElementSelected(getNonDeletedElements(elements), appState)}
+      type="button"
+      visible={isSomeLayerSelected(getNonDeletedLayers(layers), appState)}
     />
-  ),
+  )
 });
 
 export const actionAlignHorizontallyCentered = register({
   name: "alignHorizontallyCentered",
-  trackEvent: { category: "element" },
+  trackEvent: { category: "layer" },
   predicate: alignActionsPredicate,
-  perform: (elements, appState) => {
-    return {
-      appState,
-      elements: alignSelectedElements(elements, appState, {
-        position: "center",
-        axis: "x",
-      }),
-      commitToHistory: true,
-    };
-  },
-  PanelComponent: ({ elements, appState, updateData }) => (
+  perform: (layers, appState) => ({
+    appState,
+    layers: alignSelectedLayers(layers, appState, {
+      position: "center",
+      axis: "x"
+    }),
+    commitToHistory: true
+  }),
+  PanelComponent: ({ layers, appState, updateData }) => (
     <ToolButton
-      hidden={!alignActionsPredicate(elements, appState)}
-      type="button"
+      aria-label={t("labels.centerHorizontally")}
+      hidden={!alignActionsPredicate(layers, appState)}
       icon={CenterHorizontallyIcon}
       onClick={() => updateData(null)}
       title={t("labels.centerHorizontally")}
-      aria-label={t("labels.centerHorizontally")}
-      visible={isSomeElementSelected(getNonDeletedElements(elements), appState)}
+      type="button"
+      visible={isSomeLayerSelected(getNonDeletedLayers(layers), appState)}
     />
-  ),
+  )
 });

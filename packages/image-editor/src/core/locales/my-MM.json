@@ -116,7 +116,7 @@
       "edit": "",
       "exit": ""
     },
-    "elementLock": {
+    "layerLock": {
       "lock": "",
       "unlock": "",
       "lockAll": "",
@@ -124,8 +124,8 @@
     },
     "statusPublished": "",
     "sidebarLock": "",
-    "selectAllElementsInFrame": "",
-    "removeAllElementsFromFrame": "",
+    "selectAllLayersInFrame": "",
+    "removeAllLayersFromFrame": "",
     "eyeDropper": ""
   },
   "library": {
@@ -234,12 +234,12 @@
   },
   "hints": {
     "canvasPanning": "",
-    "linearElement": "အမှတ်များချမှတ်ရေးဆွဲရန်ကလစ်နှိပ်ပါ၊ မျဉ်းတစ်ကြောင်းတည်းအတွက် တရွတ်ဆွဲပါ။",
+    "linearLayer": "အမှတ်များချမှတ်ရေးဆွဲရန်ကလစ်နှိပ်ပါ၊ မျဉ်းတစ်ကြောင်းတည်းအတွက် တရွတ်ဆွဲပါ။",
     "freeDraw": "ကလစ်နှိပ်၍ တရွတ်ဆွဲပါ၊ ပြီးလျှင်လွှတ်ပါ။",
     "text": "မှတ်ချက်။ ။မည်သည့်ကိရိယာရွေးထားသည်ဖြစ်စေ ကလစ်နှစ်ချက်နှိပ်၍စာသားထည့်နိုင်သည်",
     "text_selected": "",
     "text_editing": "",
-    "linearElementMulti": "နောက်ဆုံးအမှတ်ပေါ်တွင်ကလစ်နှိပ်ခြင်း၊ Escape (သို့) Enter နှိပ်ခြင်းတို့ဖြင့်အဆုံးသတ်နိုင်",
+    "linearLayerMulti": "နောက်ဆုံးအမှတ်ပေါ်တွင်ကလစ်နှိပ်ခြင်း၊ Escape (သို့) Enter နှိပ်ခြင်းတို့ဖြင့်အဆုံးသတ်နိုင်",
     "lockAngle": "",
     "resize": "အချိုးအစားကန့်သတ်ရန် Shift နှင့် ဗဟိုမှချိန်ညှိရန် Alt တို့ကိုနှိပ်ထားနိုင်သည်",
     "resizeImage": "",
@@ -249,7 +249,7 @@
     "lineEditor_nothingSelected": "",
     "placeImage": "",
     "publishLibrary": "",
-    "bindTextToElement": "",
+    "bindTextToLayer": "",
     "deepBoxSelect": "",
     "eraserRevert": "",
     "firefox_clipboard_write": ""
@@ -316,7 +316,7 @@
     "view": "",
     "zoomToFit": "",
     "zoomToSelection": "",
-    "toggleElementLock": "",
+    "toggleLayerLock": "",
     "movePageUpDown": "",
     "movePageLeftRight": ""
   },
@@ -389,8 +389,8 @@
   },
   "stats": {
     "angle": "ထောင့်",
-    "element": "",
-    "elements": "",
+    "layer": "",
+    "layers": "",
     "height": "အမြင့်",
     "scene": "မြင်ကွင်း",
     "selected": "ရွေးချယ်သည်",
@@ -411,7 +411,7 @@
     "fileSavedToFilename": "",
     "canvas": "",
     "selection": "",
-    "pasteAsSingleElement": ""
+    "pasteAsSingleLayer": ""
   },
   "colors": {
     "transparent": "",

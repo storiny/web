@@ -1,12 +1,12 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Test dragCreate add element to the scene when pointer dragging long enough arrow 1`] = `1`;
+exports[`Test dragCreate add layer to the scene when pointer dragging long enough arrow 1`] = `1`;
 
-exports[`Test dragCreate add element to the scene when pointer dragging long enough arrow 2`] = `
+exports[`Test dragCreate add layer to the scene when pointer dragging long enough arrow 2`] = `
 Object {
   "angle": 0,
   "backgroundColor": "transparent",
-  "boundElements": null,
+  "boundLayers": null,
   "endArrowhead": "arrow",
   "endBinding": null,
   "fillStyle": "hachure",
@@ -49,13 +49,13 @@ Object {
 }
 `;
 
-exports[`Test dragCreate add element to the scene when pointer dragging long enough diamond 1`] = `1`;
+exports[`Test dragCreate add layer to the scene when pointer dragging long enough diamond 1`] = `1`;
 
-exports[`Test dragCreate add element to the scene when pointer dragging long enough diamond 2`] = `
+exports[`Test dragCreate add layer to the scene when pointer dragging long enough diamond 2`] = `
 Object {
   "angle": 0,
   "backgroundColor": "transparent",
-  "boundElements": null,
+  "boundLayers": null,
   "fillStyle": "hachure",
   "frameId": null,
   "groupIds": Array [],
@@ -83,13 +83,13 @@ Object {
 }
 `;
 
-exports[`Test dragCreate add element to the scene when pointer dragging long enough ellipse 1`] = `1`;
+exports[`Test dragCreate add layer to the scene when pointer dragging long enough ellipse 1`] = `1`;
 
-exports[`Test dragCreate add element to the scene when pointer dragging long enough ellipse 2`] = `
+exports[`Test dragCreate add layer to the scene when pointer dragging long enough ellipse 2`] = `
 Object {
   "angle": 0,
   "backgroundColor": "transparent",
-  "boundElements": null,
+  "boundLayers": null,
   "fillStyle": "hachure",
   "frameId": null,
   "groupIds": Array [],
@@ -117,11 +117,11 @@ Object {
 }
 `;
 
-exports[`Test dragCreate add element to the scene when pointer dragging long enough line 1`] = `
+exports[`Test dragCreate add layer to the scene when pointer dragging long enough line 1`] = `
 Object {
   "angle": 0,
   "backgroundColor": "transparent",
-  "boundElements": null,
+  "boundLayers": null,
   "endArrowhead": null,
   "endBinding": null,
   "fillStyle": "hachure",
@@ -164,13 +164,13 @@ Object {
 }
 `;
 
-exports[`Test dragCreate add element to the scene when pointer dragging long enough rectangle 1`] = `1`;
+exports[`Test dragCreate add layer to the scene when pointer dragging long enough rectangle 1`] = `1`;
 
-exports[`Test dragCreate add element to the scene when pointer dragging long enough rectangle 2`] = `
+exports[`Test dragCreate add layer to the scene when pointer dragging long enough rectangle 2`] = `
 Object {
   "angle": 0,
   "backgroundColor": "transparent",
-  "boundElements": null,
+  "boundLayers": null,
   "fillStyle": "hachure",
   "frameId": null,
   "groupIds": Array [],

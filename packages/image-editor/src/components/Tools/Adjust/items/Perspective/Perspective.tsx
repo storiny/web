@@ -8,7 +8,7 @@ import {
 
 import { AdjustTool } from "../constants";
 
-const PerspectiveTool = (): React.ReactElement => (
+const PerspectiveTool = (): React.ReactLayer => (
   <AccordionItem value={AdjustTool.PERSPECTIVE}>
     <AccordionTrigger>Perspective</AccordionTrigger>
     <AccordionContent>Content</AccordionContent>

@@ -116,7 +116,7 @@
       "edit": "",
       "exit": ""
     },
-    "elementLock": {
+    "layerLock": {
       "lock": "",
       "unlock": "",
       "lockAll": "",
@@ -124,8 +124,8 @@
     },
     "statusPublished": "",
     "sidebarLock": "",
-    "selectAllElementsInFrame": "",
-    "removeAllElementsFromFrame": "",
+    "selectAllLayersInFrame": "",
+    "removeAllLayersFromFrame": "",
     "eyeDropper": ""
   },
   "library": {
@@ -234,12 +234,12 @@
   },
   "hints": {
     "canvasPanning": "",
-    "linearElement": "",
+    "linearLayer": "",
     "freeDraw": "",
     "text": "",
     "text_selected": "",
     "text_editing": "",
-    "linearElementMulti": "",
+    "linearLayerMulti": "",
     "lockAngle": "",
     "resize": "",
     "resizeImage": "",
@@ -249,7 +249,7 @@
     "lineEditor_nothingSelected": "",
     "placeImage": "",
     "publishLibrary": "",
-    "bindTextToElement": "",
+    "bindTextToLayer": "",
     "deepBoxSelect": "",
     "eraserRevert": "",
     "firefox_clipboard_write": ""
@@ -316,7 +316,7 @@
     "view": "",
     "zoomToFit": "",
     "zoomToSelection": "",
-    "toggleElementLock": "",
+    "toggleLayerLock": "",
     "movePageUpDown": "",
     "movePageLeftRight": ""
   },
@@ -389,8 +389,8 @@
   },
   "stats": {
     "angle": "",
-    "element": "",
-    "elements": "",
+    "layer": "",
+    "layers": "",
     "height": "",
     "scene": "",
     "selected": "",
@@ -411,7 +411,7 @@
     "fileSavedToFilename": "",
     "canvas": "畫布",
     "selection": "",
-    "pasteAsSingleElement": ""
+    "pasteAsSingleLayer": ""
   },
   "colors": {
     "transparent": "",

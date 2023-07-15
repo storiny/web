@@ -116,7 +116,7 @@
       "edit": "編輯線條",
       "exit": "結束線條編輯"
     },
-    "elementLock": {
+    "layerLock": {
       "lock": "鎖定",
       "unlock": "解鎖",
       "lockAll": "全部鎖定",
@@ -124,8 +124,8 @@
     },
     "statusPublished": "已發布",
     "sidebarLock": "側欄維持開啟",
-    "selectAllElementsInFrame": "選取框架內的所有元素",
-    "removeAllElementsFromFrame": "從框架內移除所有元素",
+    "selectAllLayersInFrame": "選取框架內的所有元素",
+    "removeAllLayersFromFrame": "從框架內移除所有元素",
     "eyeDropper": "從畫布中選取顏色"
   },
   "library": {
@@ -234,12 +234,12 @@
   },
   "hints": {
     "canvasPanning": "若要移動畫布，請在拖曳時按住滑鼠滾輪或空白鍵，或使用手形工具",
-    "linearElement": "點擊以繪製多點曲線；或拖曳以繪製直線",
+    "linearLayer": "點擊以繪製多點曲線；或拖曳以繪製直線",
     "freeDraw": "點擊並拖曳來繪圖，放開即結束",
     "text": "提示：亦可使用選取工具在任何地方雙擊來加入文字",
     "text_selected": "雙擊滑鼠或按 Enter 以編輯文字",
     "text_editing": "按跳脫鍵或 Ctrl 或 Cmd + Enter 以結束編輯",
-    "linearElementMulti": "按下 Escape 或 Enter 以結束繪製",
+    "linearLayerMulti": "按下 Escape 或 Enter 以結束繪製",
     "lockAngle": "按住 SHIFT 可限制旋轉角度",
     "resize": "縮放時按住 Shift 可保持原比例縮放；\\n按住 Alt 可由中心點進行縮放",
     "resizeImage": "按住 SHIFT 可任意縮放，按住 ALT 可由中央縮放。",
@@ -249,7 +249,7 @@
     "lineEditor_nothingSelected": "選擇要編輯的錨點（按住 SHIFT 可多選），\n或按住 Alt 並點擊以增加新錨點。",
     "placeImage": "點擊以放置圖片，或點擊並拖曳以手動調整其尺寸。",
     "publishLibrary": "發布個人資料庫",
-    "bindTextToElement": "按下 Enter 以加入文字。",
+    "bindTextToLayer": "按下 Enter 以加入文字。",
     "deepBoxSelect": "按住 Ctrl 或 Cmd 以深度選取並避免拖曳",
     "eraserRevert": "按住 Alt 以反選取已標記待刪除的元素",
     "firefox_clipboard_write": "此功能有機會透過將 \"dom.events.asyncClipboard.clipboardItem\" 設定為 \"true\" 來開啟。\n若要變更 Firefox 瀏覽器的此設定值，請至 \"about:config\" 頁面。"
@@ -316,7 +316,7 @@
     "view": "檢視",
     "zoomToFit": "放大至填滿畫面",
     "zoomToSelection": "縮放至選取區",
-    "toggleElementLock": "鎖定/解鎖已選的項目",
+    "toggleLayerLock": "鎖定/解鎖已選的項目",
     "movePageUpDown": "向上/下移動頁面",
     "movePageLeftRight": "向左/右移動頁面"
   },
@@ -389,8 +389,8 @@
   },
   "stats": {
     "angle": "角度",
-    "element": "元素",
-    "elements": "元素",
+    "layer": "元素",
+    "layers": "元素",
     "height": "高度",
     "scene": "場景",
     "selected": "已選",
@@ -411,7 +411,7 @@
     "fileSavedToFilename": "儲存為 {filename}",
     "canvas": "畫布",
     "selection": "已選項目",
-    "pasteAsSingleElement": "使用 {{shortcut}} 以做為單一物件貼上，\n或貼上至現有的文字編輯器"
+    "pasteAsSingleLayer": "使用 {{shortcut}} 以做為單一物件貼上，\n或貼上至現有的文字編輯器"
   },
   "colors": {
     "transparent": "透明",

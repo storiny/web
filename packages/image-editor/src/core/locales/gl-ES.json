@@ -4,7 +4,7 @@
     "pasteAsPlaintext": "Pegar coma texto sen formato",
     "pasteCharts": "Pegar gráficos",
     "selectAll": "Seleccionar todo",
-    "multiSelect": "Engadir elemento á selección",
+    "multiSelect": "Engadir layero á selección",
     "moveCanvas": "Mover o lenzo",
     "cut": "Cortar",
     "copy": "Copiar",
@@ -116,7 +116,7 @@
       "edit": "Editar liña",
       "exit": "Saír do editor de liñas"
     },
-    "elementLock": {
+    "layerLock": {
       "lock": "Bloquear",
       "unlock": "Desbloquear",
       "lockAll": "Bloquear todo",
@@ -124,14 +124,14 @@
     },
     "statusPublished": "Publicado",
     "sidebarLock": "Manter a barra lateral aberta",
-    "selectAllElementsInFrame": "",
-    "removeAllElementsFromFrame": "",
+    "selectAllLayersInFrame": "",
+    "removeAllLayersFromFrame": "",
     "eyeDropper": ""
   },
   "library": {
-    "noItems": "Aínda non hai elementos engadidos...",
-    "hint_emptyLibrary": "Seleccione un elemento no lenzo para engadilo aquí, ou instale unha biblioteca dende o repositorio público, como se detalla a continuación.",
-    "hint_emptyPrivateLibrary": "Seleccione un elemento do lenzo para engadilo aquí."
+    "noItems": "Aínda non hai layeros engadidos...",
+    "hint_emptyLibrary": "Seleccione un layero no lenzo para engadilo aquí, ou instale unha biblioteca dende o repositorio público, como se detalla a continuación.",
+    "hint_emptyPrivateLibrary": "Seleccione un layero do lenzo para engadilo aquí."
   },
   "buttons": {
     "clearReset": "Limpar o lenzo",
@@ -180,14 +180,14 @@
     "uploadedSecurly": "A carga foi asegurada con cifrado de extremo a extremo, o que significa que o servidor de Excalidraw e terceiros non poden ler o contido.",
     "loadSceneOverridePrompt": "A carga dun debuxo externo substituirá o contido existente. Desexa continuar?",
     "collabStopOverridePrompt": "Deter a sesión, sobrescribirá o seu debuxo local previamente almacenado. Está seguro?\n\n(Se quere manter o seu debuxo local, simplemente peche a lapela do navegador.)",
-    "errorAddingToLibrary": "Non se puido engadir o elemento á biblioteca",
-    "errorRemovingFromLibrary": "Non se puido eliminar o elemento da biblioteca",
+    "errorAddingToLibrary": "Non se puido engadir o layero á biblioteca",
+    "errorRemovingFromLibrary": "Non se puido eliminar o layero da biblioteca",
     "confirmAddLibrary": "Isto engadirá {{numShapes}} forma(s) a túa biblioteca. Estás seguro?",
     "imageDoesNotContainScene": "Esta imaxe non parece conter ningún dato da escena. Activou a inserción de escenas durante a exportación?",
     "cannotRestoreFromImage": "Non se puido restaurar a escena dende este arquivo de imaxe",
     "invalidSceneUrl": "Non se puido importar a escena dende a URL proporcionada. Ou ben está malformada ou non contén un JSON con información válida para Excalidraw.",
     "resetLibrary": "Isto limpará a súa biblioteca. Está seguro?",
-    "removeItemsFromsLibrary": "Eliminar {{count}} elemento(s) da biblioteca?",
+    "removeItemsFromsLibrary": "Eliminar {{count}} layero(s) da biblioteca?",
     "invalidEncryptionKey": "A clave de cifrado debe ter 22 caracteres. A colaboración en directo está desactivada.",
     "collabOfflineWarning": "Non hai conexión a Internet dispoñible.\nOs teus cambios non serán gardados!"
   },
@@ -234,12 +234,12 @@
   },
   "hints": {
     "canvasPanning": "Para mover o lenzo, manteña pulsada a roda do rato ou a barra de espazo mentres arrastra, ou utilice a ferramenta da man",
-    "linearElement": "Faga clic para iniciar varios puntos, arrastre para unha sola liña",
+    "linearLayer": "Faga clic para iniciar varios puntos, arrastre para unha sola liña",
     "freeDraw": "Fai clic e arrastra, solta cando acabes",
     "text": "Consello: tamén podes engadir texto facendo dobre-clic en calquera lugar coa ferramenta de selección",
     "text_selected": "Dobre-clic ou prema ENTER para editar o texto",
     "text_editing": "Prema Escape ou CtrlOrCmd+ENTER para finalizar a edición",
-    "linearElementMulti": "Faga clic no último punto ou prema Escape ou Enter para rematar",
+    "linearLayerMulti": "Faga clic no último punto ou prema Escape ou Enter para rematar",
     "lockAngle": "Pode reducir o ángulo mantendo SHIFT",
     "resize": "Pode reducir as proporcións mantendo SHIFT mentres axusta o tamaño,\nmanteña ALT para axustalo dende o centro",
     "resizeImage": "Pode axustar o tamaño libremente mantendo SHIFT,\nmanteña ALT para axustalo dende o centro",
@@ -249,15 +249,15 @@
     "lineEditor_nothingSelected": "Seleccione un punto para editar (manteña pulsado SHIFT para selección múltiple),\nou manteña pulsado Alt e faga clic para engadir novos puntos",
     "placeImage": "Faga clic para colocar a imaxe, ou faga clic e arrastre para establecer o seu tamaño manualmente",
     "publishLibrary": "Publica a túa propia biblioteca",
-    "bindTextToElement": "Prema a tecla enter para engadir texto",
+    "bindTextToLayer": "Prema a tecla enter para engadir texto",
     "deepBoxSelect": "Manteña pulsado CtrlOrCmd para seleccionar en profundidade e evitar o arrastre",
-    "eraserRevert": "Manteña pulsado Alt para reverter os elementos marcados para a súa eliminación",
+    "eraserRevert": "Manteña pulsado Alt para reverter os layeros marcados para a súa eliminación",
     "firefox_clipboard_write": "Esta función pódese activar establecendo a opción \"dom.events.asyncClipboard.clipboardItem\" a \"true\". Para cambiar as opcións do navegador en Firefox, visita a páxina \"about:config\"."
   },
   "canvasError": {
     "cannotShowPreview": "Non se pode mostrar a vista previa",
     "canvasTooBig": "Pode que o lenzo sexa demasiado grande.",
-    "canvasTooBigTip": "Consello: Probe a acercar un pouco os elementos máis afastados."
+    "canvasTooBigTip": "Consello: Probe a acercar un pouco os layeros máis afastados."
   },
   "errorSplash": {
     "headingMain": "Atopouse un erro. Probe <button>recargando a páxina.</button>",
@@ -314,9 +314,9 @@
     "textNewLine": "Engadir unha nova liña (editor de texto)",
     "title": "Axuda",
     "view": "Vista",
-    "zoomToFit": "Zoom que se axuste a todos os elementos",
+    "zoomToFit": "Zoom que se axuste a todos os layeros",
     "zoomToSelection": "Zoom á selección",
-    "toggleElementLock": "Bloquear/desbloquear selección",
+    "toggleLayerLock": "Bloquear/desbloquear selección",
     "movePageUpDown": "Mover páxina cara enriba/abaixo",
     "movePageLeftRight": "Mover páxina cara a esquerda/dereita"
   },
@@ -325,7 +325,7 @@
   },
   "publishDialog": {
     "title": "Publicar biblioteca",
-    "itemName": "Nome do elemento",
+    "itemName": "Nome do layero",
     "authorName": "Nome do autor",
     "githubUsername": "Nome de usuario en Github",
     "twitterUsername": "Nome de usuario en Twitter",
@@ -347,9 +347,9 @@
     "noteDescription": "Envíe a súa biblioteca para que sexa incluída no <link>repositorio público de bibliotecas</link>para que outra xente a poida usar nos seus debuxos.",
     "noteGuidelines": "A biblioteca necesita ser aprobada manualmente primeiro. Por favor, lea as <link>normas</link> antes de ser enviado. Necesitarás unha conta de GitHub para comunicarte ou facer cambios se se solicitan, pero non é estritamente necesario.",
     "noteLicense": "Ao enviar, estás de acordo con que a biblioteca sexa publicada baixo a <link>Licenza MIT, </link>o cal significa que, en resumo, calquera pode usalo sen restricións.",
-    "noteItems": "Cada elemento da biblioteca debe ter o seu nome propio para que se poida filtrar. Os seguintes elementos da biblioteca serán incluídos:",
-    "atleastOneLibItem": "Por favor seleccione polo menos un elemento da biblioteca para comezar",
-    "republishWarning": "Nota: algúns dos elementos seleccionados están marcados como xa publicados/enviados. Só deberías reenviar elementos cando se actualice unha biblioteca ou envío."
+    "noteItems": "Cada layero da biblioteca debe ter o seu nome propio para que se poida filtrar. Os seguintes layeros da biblioteca serán incluídos:",
+    "atleastOneLibItem": "Por favor seleccione polo menos un layero da biblioteca para comezar",
+    "republishWarning": "Nota: algúns dos layeros seleccionados están marcados como xa publicados/enviados. Só deberías reenviar layeros cando se actualice unha biblioteca ou envío."
   },
   "publishSuccessDialog": {
     "title": "Biblioteca enviada",
@@ -357,7 +357,7 @@
   },
   "confirmDialog": {
     "resetLibrary": "Restablecer biblioteca",
-    "removeItemsFromLib": "Eliminar os elementos seleccionados da biblioteca"
+    "removeItemsFromLib": "Eliminar os layeros seleccionados da biblioteca"
   },
   "imageExportDialog": {
     "header": "",
@@ -389,8 +389,8 @@
   },
   "stats": {
     "angle": "Ángulo",
-    "element": "Elemento",
-    "elements": "Elementos",
+    "layer": "Layero",
+    "layers": "Layeros",
     "height": "Alto",
     "scene": "Escena",
     "selected": "Seleccionado",
@@ -411,7 +411,7 @@
     "fileSavedToFilename": "Gardado en {filename}",
     "canvas": "lenzo",
     "selection": "selección",
-    "pasteAsSingleElement": "Usa {{shortcut}} para pegar como un único elemento\nou pega nun editor de texto existente"
+    "pasteAsSingleLayer": "Usa {{shortcut}} para pegar como un único layero\nou pega nun editor de texto existente"
   },
   "colors": {
     "transparent": "Transparente",

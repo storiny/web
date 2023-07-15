@@ -4,7 +4,7 @@
     "pasteAsPlaintext": "Colar como texto sem formatação",
     "pasteCharts": "Colar gráficos",
     "selectAll": "Selecionar tudo",
-    "multiSelect": "Adicionar elemento à seleção",
+    "multiSelect": "Adicionar layero à seleção",
     "moveCanvas": "Mover tela",
     "cut": "Recortar",
     "copy": "Copiar",
@@ -116,7 +116,7 @@
       "edit": "Editar linha",
       "exit": "Sair do editor de linha"
     },
-    "elementLock": {
+    "layerLock": {
       "lock": "Bloquear",
       "unlock": "Desbloquear",
       "lockAll": "Bloquear tudo",
@@ -124,8 +124,8 @@
     },
     "statusPublished": "Publicado",
     "sidebarLock": "Manter barra lateral aberta",
-    "selectAllElementsInFrame": "",
-    "removeAllElementsFromFrame": "",
+    "selectAllLayersInFrame": "",
+    "removeAllLayersFromFrame": "",
     "eyeDropper": ""
   },
   "library": {
@@ -203,9 +203,9 @@
     "collabSaveFailed_sizeExceeded": "Não foi possível salvar no banco de dados do servidor, a tela parece ser muito grande. Se os problemas persistirem, salve o arquivo localmente para garantir que não perca o seu trabalho.",
     "brave_measure_text_error": {
       "line1": "Parece que você está usando o navegador Brave com a configuração <bold>Bloquear Impressões Digitais</bold> no modo agressivo.",
-      "line2": "Isso pode acabar quebrando <bold>Elementos de Texto</bold> em seus desenhos.",
+      "line2": "Isso pode acabar quebrando <bold>Layeros de Texto</bold> em seus desenhos.",
       "line3": "Recomendamos fortemente desativar essa configuração. Você pode acessar o <link>passo a passo</link> sobre como fazer isso.",
-      "line4": "Se desativar essa configuração não corrigir a exibição de elementos de texto, por favor abra uma <issueLink>issue</issueLink> em nosso GitHub, ou mande uma mensagem em nosso <discordLink>Discord</discordLink>"
+      "line4": "Se desativar essa configuração não corrigir a exibição de layeros de texto, por favor abra uma <issueLink>issue</issueLink> em nosso GitHub, ou mande uma mensagem em nosso <discordLink>Discord</discordLink>"
     }
   },
   "toolBar": {
@@ -234,12 +234,12 @@
   },
   "hints": {
     "canvasPanning": "Para mover a tela, segure a roda do mouse ou a barra de espaço enquanto arrasta ou use a ferramenta de mão",
-    "linearElement": "Clique para iniciar vários pontos, arraste para uma única linha",
+    "linearLayer": "Clique para iniciar vários pontos, arraste para uma única linha",
     "freeDraw": "Toque e arraste, solte quando terminar",
     "text": "Dica: você também pode adicionar texto clicando duas vezes em qualquer lugar com a ferramenta de seleção",
     "text_selected": "Clique duplo ou tecle ENTER para editar o texto",
     "text_editing": "Pressione Esc ou Ctrl/Cmd+ENTER para encerrar a edição",
-    "linearElementMulti": "Clique no último ponto ou pressione Escape ou Enter para terminar",
+    "linearLayerMulti": "Clique no último ponto ou pressione Escape ou Enter para terminar",
     "lockAngle": "Você pode restringir o ângulo segurando o SHIFT",
     "resize": "Você pode restringir proporções segurando SHIFT enquanto redimensiona,\nsegure ALT para redimensionar do centro",
     "resizeImage": "Você pode redimensionar livremente segurando SHIFT,\nsegure ALT para redimensionar a partir do centro",
@@ -249,15 +249,15 @@
     "lineEditor_nothingSelected": "Selecione um ponto para editar (segure SHIFT para selecionar vários) ou segure Alt e clique para adicionar novos pontos",
     "placeImage": "Clique para colocar a imagem, ou clique e arraste para definir manualmente o seu tamanho",
     "publishLibrary": "Publicar sua própria biblioteca",
-    "bindTextToElement": "Pressione Enter para adicionar o texto",
+    "bindTextToLayer": "Pressione Enter para adicionar o texto",
     "deepBoxSelect": "Segure Ctrl/Cmd para seleção profunda e para evitar arrastar",
-    "eraserRevert": "Segure a tecla Alt para inverter os elementos marcados para exclusão",
+    "eraserRevert": "Segure a tecla Alt para inverter os layeros marcados para exclusão",
     "firefox_clipboard_write": "Esse recurso pode ser ativado configurando a opção \"dom.events.asyncClipboard.clipboardItem\" como \"true\". Para alterar os sinalizadores do navegador no Firefox, visite a página \"about:config\"."
   },
   "canvasError": {
     "cannotShowPreview": "Não é possível mostrar pré-visualização",
     "canvasTooBig": "A tela pode ser muito grande.",
-    "canvasTooBigTip": "Dica: tente aproximar um pouco os elementos mais distantes."
+    "canvasTooBigTip": "Dica: tente aproximar um pouco os layeros mais distantes."
   },
   "errorSplash": {
     "headingMain": "Foi encontrado um erro. Tente <button>recarregar a página.</button>",
@@ -314,9 +314,9 @@
     "textNewLine": "Adicionar nova linha (editor de texto)",
     "title": "Ajudar",
     "view": "Visualizar",
-    "zoomToFit": "Ampliar para encaixar todos os elementos",
+    "zoomToFit": "Ampliar para encaixar todos os layeros",
     "zoomToSelection": "Ampliar a seleção",
-    "toggleElementLock": "Bloquear/desbloquear seleção",
+    "toggleLayerLock": "Bloquear/desbloquear seleção",
     "movePageUpDown": "Mover a página para cima/baixo",
     "movePageLeftRight": "Mover a página para esquerda/direita"
   },
@@ -389,8 +389,8 @@
   },
   "stats": {
     "angle": "Ângulo",
-    "element": "Elemento",
-    "elements": "Elementos",
+    "layer": "Layero",
+    "layers": "Layeros",
     "height": "Altura",
     "scene": "Cena",
     "selected": "Selecionado",
@@ -411,7 +411,7 @@
     "fileSavedToFilename": "Salvo em {filename}",
     "canvas": "tela",
     "selection": "seleção",
-    "pasteAsSingleElement": "Use {{shortcut}} para colar como um único elemento,\nou cole em um editor de texto já existente"
+    "pasteAsSingleLayer": "Use {{shortcut}} para colar como um único layero,\nou cole em um editor de texto já existente"
   },
   "colors": {
     "transparent": "Transparente",

@@ -1,19 +1,19 @@
 import {
   COLOR_PALETTE,
   DEFAULT_CHART_COLOR_INDEX,
-  getAllColorsSpecificShade,
+  getAllColorsSpecificShade
 } from "./colors";
 import {
   DEFAULT_FONT_FAMILY,
   DEFAULT_FONT_SIZE,
   ENV,
-  VERTICAL_ALIGN,
+  VERTICAL_ALIGN
 } from "./constants";
-import { newElement, newLinearElement, newTextElement } from "./element";
-import { NonDeletedExcalidrawElement } from "./element/types";
+import { newLayer, newLinearLayer, newTextLayer } from "./layer";
+import { NonDeletedExcalidrawLayer } from "./layer/types";
 import { randomId } from "./random";
 
-export type ChartElements = readonly NonDeletedExcalidrawElement[];
+export type ChartLayers = readonly NonDeletedExcalidrawLayer[];
 
 const BAR_WIDTH = 32;
 const BAR_GAP = 12;
@@ -21,8 +21,8 @@ const BAR_HEIGHT = 256;
 const GRID_OPACITY = 50;
 
 export interface Spreadsheet {
-  title: string | null;
   labels: string[] | null;
+  title: string | null;
   values: number[];
 }
 
@@ -30,8 +30,8 @@ export const NOT_SPREADSHEET = "NOT_SPREADSHEET";
 export const VALID_SPREADSHEET = "VALID_SPREADSHEET";
 
 type ParseSpreadsheetResult =
-  | { type: typeof NOT_SPREADSHEET; reason: string }
-  | { type: typeof VALID_SPREADSHEET; spreadsheet: Spreadsheet };
+  | { reason: string; type: typeof NOT_SPREADSHEET }
+  | { spreadsheet: Spreadsheet; type: typeof VALID_SPREADSHEET };
 
 /**
  * @private exported for testing
@@ -64,7 +64,7 @@ export const tryParseCells = (cells: string[][]): ParseSpreadsheetResult => {
 
     const hasHeader = tryParseNumber(cells[0][0]) === null;
     const values = (hasHeader ? cells.slice(1) : cells).map((line) =>
-      tryParseNumber(line[0]),
+      tryParseNumber(line[0])
     );
 
     if (values.length < 2) {
@@ -76,8 +76,8 @@ export const tryParseCells = (cells: string[][]): ParseSpreadsheetResult => {
       spreadsheet: {
         title: hasHeader ? cells[0][0] : null,
         labels: null,
-        values: values as number[],
-      },
+        values: values as number[]
+      }
     };
   }
 
@@ -103,8 +103,8 @@ export const tryParseCells = (cells: string[][]): ParseSpreadsheetResult => {
     spreadsheet: {
       title: hasHeader ? cells[0][valueColumnIndex] : null,
       labels: rows.map((row) => row[labelColumnIndex]),
-      values: rows.map((row) => tryParseNumber(row[valueColumnIndex])!),
-    },
+      values: rows.map((row) => tryParseNumber(row[valueColumnIndex])!)
+    }
   };
 };
 
@@ -148,7 +148,7 @@ export const tryParseSpreadsheet = (text: string): ParseSpreadsheetResult => {
   if (!isSpreadsheet) {
     return {
       type: NOT_SPREADSHEET,
-      reason: "All rows don't have same number of columns",
+      reason: "All rows don't have same number of columns"
     };
   }
 
@@ -177,7 +177,7 @@ const commonProps = {
   strokeStyle: "solid",
   strokeWidth: 1,
   verticalAlign: VERTICAL_ALIGN.MIDDLE,
-  locked: false,
+  locked: false
 } as const;
 
 const getChartDimensions = (spreadsheet: Spreadsheet) => {
@@ -192,52 +192,49 @@ const chartXLabels = (
   x: number,
   y: number,
   groupId: string,
-  backgroundColor: string,
-): ChartElements => {
-  return (
-    spreadsheet.labels?.map((label, index) => {
-      return newTextElement({
-        groupIds: [groupId],
-        backgroundColor,
-        ...commonProps,
-        text: label.length > 8 ? `${label.slice(0, 5)}...` : label,
-        x: x + index * (BAR_WIDTH + BAR_GAP) + BAR_GAP * 2,
-        y: y + BAR_GAP / 2,
-        width: BAR_WIDTH,
-        angle: 5.87,
-        fontSize: 16,
-        textAlign: "center",
-        verticalAlign: "top",
-      });
-    }) || []
-  );
-};
+  backgroundColor: string
+): ChartLayers =>
+  spreadsheet.labels?.map((label, index) =>
+    newTextLayer({
+      groupIds: [groupId],
+      backgroundColor,
+      ...commonProps,
+      text: label.length > 8 ? `${label.slice(0, 5)}...` : label,
+      x: x + index * (BAR_WIDTH + BAR_GAP) + BAR_GAP * 2,
+      y: y + BAR_GAP / 2,
+      width: BAR_WIDTH,
+      angle: 5.87,
+      fontSize: 16,
+      textAlign: "center",
+      verticalAlign: "top"
+    })
+  ) || [];
 
 const chartYLabels = (
   spreadsheet: Spreadsheet,
   x: number,
   y: number,
   groupId: string,
-  backgroundColor: string,
-): ChartElements => {
-  const minYLabel = newTextElement({
+  backgroundColor: string
+): ChartLayers => {
+  const minYLabel = newTextLayer({
     groupIds: [groupId],
     backgroundColor,
     ...commonProps,
     x: x - BAR_GAP,
     y: y - BAR_GAP,
     text: "0",
-    textAlign: "right",
+    textAlign: "right"
   });
 
-  const maxYLabel = newTextElement({
+  const maxYLabel = newTextLayer({
     groupIds: [groupId],
     backgroundColor,
     ...commonProps,
     x: x - BAR_GAP,
     y: y - BAR_HEIGHT - minYLabel.height / 2,
     text: Math.max(...spreadsheet.values).toLocaleString(),
-    textAlign: "right",
+    textAlign: "right"
   });
 
   return [minYLabel, maxYLabel];
@@ -248,10 +245,10 @@ const chartLines = (
   x: number,
   y: number,
   groupId: string,
-  backgroundColor: string,
-): ChartElements => {
+  backgroundColor: string
+): ChartLayers => {
   const { chartWidth, chartHeight } = getChartDimensions(spreadsheet);
-  const xLine = newLinearElement({
+  const xLine = newLinearLayer({
     backgroundColor,
     groupIds: [groupId],
     ...commonProps,
@@ -263,11 +260,11 @@ const chartLines = (
     width: chartWidth,
     points: [
       [0, 0],
-      [chartWidth, 0],
-    ],
+      [chartWidth, 0]
+    ]
   });
 
-  const yLine = newLinearElement({
+  const yLine = newLinearLayer({
     backgroundColor,
     groupIds: [groupId],
     ...commonProps,
@@ -279,11 +276,11 @@ const chartLines = (
     height: chartHeight,
     points: [
       [0, 0],
-      [0, -chartHeight],
-    ],
+      [0, -chartHeight]
+    ]
   });
 
-  const maxLine = newLinearElement({
+  const maxLine = newLinearLayer({
     backgroundColor,
     groupIds: [groupId],
     ...commonProps,
@@ -297,26 +294,26 @@ const chartLines = (
     opacity: GRID_OPACITY,
     points: [
       [0, 0],
-      [chartWidth, 0],
-    ],
+      [chartWidth, 0]
+    ]
   });
 
   return [xLine, yLine, maxLine];
 };
 
 // For the maths behind it https://excalidraw.com/#json=6320864370884608,O_5xfD-Agh32tytHpRJx1g
-const chartBaseElements = (
+const chartBaseLayers = (
   spreadsheet: Spreadsheet,
   x: number,
   y: number,
   groupId: string,
   backgroundColor: string,
-  debug?: boolean,
-): ChartElements => {
+  debug?: boolean
+): ChartLayers => {
   const { chartWidth, chartHeight } = getChartDimensions(spreadsheet);
 
   const title = spreadsheet.title
-    ? newTextElement({
+    ? newTextLayer({
         backgroundColor,
         groupIds: [groupId],
         ...commonProps,
@@ -324,12 +321,12 @@ const chartBaseElements = (
         x: x + chartWidth / 2,
         y: y - BAR_HEIGHT - BAR_GAP * 2 - DEFAULT_FONT_SIZE,
         roundness: null,
-        textAlign: "center",
+        textAlign: "center"
       })
     : null;
 
   const debugRect = debug
-    ? newElement({
+    ? newLayer({
         backgroundColor,
         groupIds: [groupId],
         ...commonProps,
@@ -340,7 +337,7 @@ const chartBaseElements = (
         height: chartHeight,
         strokeColor: COLOR_PALETTE.black,
         fillStyle: "solid",
-        opacity: 6,
+        opacity: 6
       })
     : null;
 
@@ -349,22 +346,22 @@ const chartBaseElements = (
     ...(title ? [title] : []),
     ...chartXLabels(spreadsheet, x, y, groupId, backgroundColor),
     ...chartYLabels(spreadsheet, x, y, groupId, backgroundColor),
-    ...chartLines(spreadsheet, x, y, groupId, backgroundColor),
+    ...chartLines(spreadsheet, x, y, groupId, backgroundColor)
   ];
 };
 
 const chartTypeBar = (
   spreadsheet: Spreadsheet,
   x: number,
-  y: number,
-): ChartElements => {
+  y: number
+): ChartLayers => {
   const max = Math.max(...spreadsheet.values);
   const groupId = randomId();
   const backgroundColor = bgColors[Math.floor(Math.random() * bgColors.length)];
 
   const bars = spreadsheet.values.map((value, index) => {
     const barHeight = (value / max) * BAR_HEIGHT;
-    return newElement({
+    return newLayer({
       backgroundColor,
       groupIds: [groupId],
       ...commonProps,
@@ -372,28 +369,28 @@ const chartTypeBar = (
       x: x + index * (BAR_WIDTH + BAR_GAP) + BAR_GAP,
       y: y - barHeight - BAR_GAP,
       width: BAR_WIDTH,
-      height: barHeight,
+      height: barHeight
     });
   });
 
   return [
     ...bars,
-    ...chartBaseElements(
+    ...chartBaseLayers(
       spreadsheet,
       x,
       y,
       groupId,
       backgroundColor,
-      process.env.NODE_ENV === ENV.DEVELOPMENT,
-    ),
+      process.env.NODE_ENV === ENV.DEVELOPMENT
+    )
   ];
 };
 
 const chartTypeLine = (
   spreadsheet: Spreadsheet,
   x: number,
-  y: number,
-): ChartElements => {
+  y: number
+): ChartLayers => {
   const max = Math.max(...spreadsheet.values);
   const groupId = randomId();
   const backgroundColor = bgColors[Math.floor(Math.random() * bgColors.length)];
@@ -407,12 +404,12 @@ const chartTypeLine = (
     index++;
   }
 
-  const maxX = Math.max(...points.map((element) => element[0]));
-  const maxY = Math.max(...points.map((element) => element[1]));
-  const minX = Math.min(...points.map((element) => element[0]));
-  const minY = Math.min(...points.map((element) => element[1]));
+  const maxX = Math.max(...points.map((layer) => layer[0]));
+  const maxY = Math.max(...points.map((layer) => layer[1]));
+  const minX = Math.min(...points.map((layer) => layer[0]));
+  const minY = Math.min(...points.map((layer) => layer[1]));
 
-  const line = newLinearElement({
+  const line = newLinearLayer({
     backgroundColor,
     groupIds: [groupId],
     ...commonProps,
@@ -424,13 +421,13 @@ const chartTypeLine = (
     height: maxY - minY,
     width: maxX - minX,
     strokeWidth: 2,
-    points: points as any,
+    points: points as any
   });
 
   const dots = spreadsheet.values.map((value, index) => {
     const cx = index * (BAR_WIDTH + BAR_GAP) + BAR_GAP / 2;
     const cy = -(value / max) * BAR_HEIGHT + BAR_GAP / 2;
-    return newElement({
+    return newLayer({
       backgroundColor,
       groupIds: [groupId],
       ...commonProps,
@@ -440,14 +437,14 @@ const chartTypeLine = (
       x: x + cx + BAR_WIDTH / 2,
       y: y + cy - BAR_GAP * 2,
       width: BAR_GAP,
-      height: BAR_GAP,
+      height: BAR_GAP
     });
   });
 
   const lines = spreadsheet.values.map((value, index) => {
     const cx = index * (BAR_WIDTH + BAR_GAP) + BAR_GAP / 2;
     const cy = (value / max) * BAR_HEIGHT + BAR_GAP / 2 + BAR_GAP;
-    return newLinearElement({
+    return newLinearLayer({
       backgroundColor,
       groupIds: [groupId],
       ...commonProps,
@@ -461,23 +458,23 @@ const chartTypeLine = (
       opacity: GRID_OPACITY,
       points: [
         [0, 0],
-        [0, cy],
-      ],
+        [0, cy]
+      ]
     });
   });
 
   return [
-    ...chartBaseElements(
+    ...chartBaseLayers(
       spreadsheet,
       x,
       y,
       groupId,
       backgroundColor,
-      process.env.NODE_ENV === ENV.DEVELOPMENT,
+      process.env.NODE_ENV === ENV.DEVELOPMENT
     ),
     line,
     ...lines,
-    ...dots,
+    ...dots
   ];
 };
 
@@ -485,8 +482,8 @@ export const renderSpreadsheet = (
   chartType: string,
   spreadsheet: Spreadsheet,
   x: number,
-  y: number,
-): ChartElements => {
+  y: number
+): ChartLayers => {
   if (chartType === "line") {
     return chartTypeLine(spreadsheet, x, y);
   }

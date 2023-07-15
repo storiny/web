@@ -1,8 +1,9 @@
-import fallbackLangData from "./locales/en.json";
-import percentages from "./locales/percentages.json";
+import { atom, useAtomValue } from "jotai";
+
 import { ENV } from "./constants";
 import { jotaiScope, jotaiStore } from "./jotai";
-import { atom, useAtomValue } from "jotai";
+import fallbackLangData from "./locales/en.json";
+import percentages from "./locales/percentages.json";
 
 const COMPLETION_THRESHOLD = 85;
 
@@ -60,14 +61,14 @@ export const languages: Language[] = [
     { code: "zh-CN", label: "简体中文" },
     { code: "zh-TW", label: "繁體中文" },
     { code: "vi-VN", label: "Tiếng Việt" },
-    { code: "mr-IN", label: "मराठी" },
+    { code: "mr-IN", label: "मराठी" }
   ]
     .filter(
       (lang) =>
         (percentages as Record<string, number>)[lang.code] >=
-        COMPLETION_THRESHOLD,
+        COMPLETION_THRESHOLD
     )
-    .sort((left, right) => (left.label > right.label ? 1 : -1)),
+    .sort((left, right) => (left.label > right.label ? 1 : -1))
 ];
 
 const TEST_LANG_CODE = "__test__";
@@ -77,8 +78,8 @@ if (process.env.NODE_ENV === ENV.DEVELOPMENT) {
     {
       code: `${TEST_LANG_CODE}.rtl`,
       label: "\u{202a}test language (rtl)\u{202c}",
-      rtl: true,
-    },
+      rtl: true
+    }
   );
 }
 
@@ -87,8 +88,8 @@ let currentLangData = {};
 
 export const setLanguage = async (lang: Language) => {
   currentLang = lang;
-  document.documentElement.dir = currentLang.rtl ? "rtl" : "ltr";
-  document.documentElement.lang = currentLang.code;
+  document.documentLayer.dir = currentLang.rtl ? "rtl" : "ltr";
+  document.documentLayer.lang = currentLang.code;
 
   if (lang.code.startsWith(TEST_LANG_CODE)) {
     currentLangData = {};
@@ -125,7 +126,7 @@ const findPartsForData = (data: any, parts: string[]) => {
 export const t = (
   path: string,
   replacement?: { [key: string]: string | number } | null,
-  fallback?: string,
+  fallback?: string
 ) => {
   if (currentLang.code.startsWith(TEST_LANG_CODE)) {
     const name = replacement

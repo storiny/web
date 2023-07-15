@@ -1,196 +1,93 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import React from "react";
-
-import { clamp } from "~/utils/clamp";
+import { createSlice } from "@reduxjs/toolkit";
 
 import {
   Arrowhead,
-  CanvasPattern,
   ChartType,
-  DEFAULT_CANVAS_PATTERN,
-  DEFAULT_DIMENSION,
-  DEFAULT_ROTATION,
-  DEFAULT_ZOOM_LEVEL,
-  FillStyle,
-  MAX_DIMENSION,
-  MAX_ROTATION,
-  MAX_ZOOM_LEVEL,
-  MIN_DIMENSION,
-  MIN_ROTATION,
-  MIN_ZOOM_LEVEL,
+  DEFAULT_FONT_FAMILY,
+  DEFAULT_FONT_SIZE,
+  DEFAULT_LAYER_PROPS,
+  DEFAULT_TEXT_ALIGN,
+  EXPORT_SCALE,
   PointerType,
   Shape,
-  SHAPES,
-  StrokeRoundness,
-  StrokeStyle,
-  TextAlign
+  StrokeRoundness
 } from "../../../constants";
-import {
-  BindableLayer,
-  Dimension,
-  GroupId,
-  ImageLayer,
-  Layer,
-  LinearLayer,
-  NonDeleted,
-  NonDeletedLayer,
-  Zoom
-} from "../../../types";
+import {EditorState, RootState} from "../../../types";
 
-export type LastActiveTool = {
-  customType: null;
-  type: Shape;
-} | null;
-
-export interface RootState {
-  activeTool: {
-    /**
-     * Indicates a previous tool we should revert back to if we deselect the
-     * currently active tool
-     */
-    lastActiveTool: LastActiveTool;
-    locked: boolean;
-  } & (
-    | {
-        customType: null;
-        type: (typeof SHAPES)[number]["value"] | "eraser" | "hand";
-      }
-    | {
-        customType: string;
-        type: "custom";
-      }
-  );
-  contextMenu: {
-    items: ContextMenuItems;
-    left: number;
-    top: number;
-  } | null;
-  currentChartType: ChartType;
-  currentItemBackgroundColor: string;
-  currentItemEndArrowhead: Arrowhead | null;
-  currentItemFillStyle: FillStyle;
-  currentItemFontFamily: string;
-  currentItemFontSize: number;
-  currentItemOpacity: number;
-  currentItemRoughness: number;
-  currentItemRoundness: StrokeRoundness;
-  currentItemStartArrowhead: Arrowhead | null;
-  currentItemStrokeColor: string;
-  currentItemStrokeStyle: StrokeStyle;
-  currentItemStrokeWidth: number;
-  currentItemTextAlign: TextAlign;
-  cursorButton: "up" | "down";
-  draggingLayer: NonDeletedLayer | null;
-  // Group being edited when we drill down to its constituent element
-  editingGroupId: GroupId | null;
-  // Layer being edited, but not necessarily added to layers array yet
-  // (e.g., text element when typing into the input)
-  editingLayer: NonDeletedLayer | null;
-  editingLinearLayer: LinearElementEditor | null;
-  elementsToHighlight: NonDeleted<Layer>[] | null;
-  errorMessage: React.ReactNode;
-  exportScale: number;
-  fileHandle: FileSystemHandle | null;
-  gridSize: number | null;
-  height: number;
-  helpModal: boolean;
-  isBindingEnabled: boolean;
-  isLoading: boolean;
-  isResizing: boolean;
-  isRotating: boolean;
-  lastPointerDownWith: PointerType;
-  multiElement: NonDeleted<LinearLayer> | null;
-  name: string;
-  offsetLeft: number;
-  offsetTop: number;
-  openMenu: "canvas" | "shape" | null;
-  pasteDialog:
-    | {
-        data: null;
-        shown: false;
-      }
-    | {
-        data: Spreadsheet;
-        shown: true;
-      };
-  penDetected: boolean;
-  penMode: boolean;
-  // Image layer waiting to be placed on canvas
-  pendingImageLayerId: ImageLayer["id"] | null;
-  previousSelectedLayerIds: { [id: string]: true };
-  resizingElement: NonDeletedLayer | null;
-  scrollX: number;
-  scrollY: number;
-  scrolledOutside: boolean;
-  // Top-most selected groups
-  selectedGroupIds: { [groupId: string]: boolean };
-  selectedLayerIds: Readonly<{ [id: string]: true }>;
-  selectedLayersAreBeingDragged: boolean;
-  selectedLinearLayer: LinearElementEditor | null;
-  selectionLayer: NonDeletedLayer | null;
-  shouldCacheIgnoreZoom: boolean;
-  showHyperlinkPopup: false | "info" | "editor";
-  showStats: boolean;
-  startBoundLayer: NonDeleted<BindableLayer> | null;
-  suggestedBindings: SuggestedBinding[];
-  toast: { closable?: boolean; duration?: number; message: string } | null;
-  viewBackgroundColor: string;
-  width: number;
-  zoom: Zoom;
-}
-
-export type AppState = Omit<
+export const rootInitialState: Omit<
   RootState,
-  | "suggestedBindings"
-  | "startBoundElement"
-  | "cursorButton"
-  | "scrollX"
-  | "scrollY"
->;
-
-export type SceneData = {
-  appState?: ImportedDataState["appState"];
-  commitToHistory?: boolean;
-  elements?: ImportedDataState["elements"];
-};
-
-export interface Device {
-  isMobile: boolean;
-  isSmScreen: boolean;
-  isTouchScreen: boolean;
-}
-
-export const rootInitialState: RootState = {
-  dimension: DEFAULT_DIMENSION,
-  pattern: DEFAULT_CANVAS_PATTERN,
-  rotation: DEFAULT_ROTATION,
-  zoom: DEFAULT_ZOOM_LEVEL
+  "offsetTop" | "offsetLeft" | "width" | "height"
+> = {
+  currentItemBackgroundColor: DEFAULT_LAYER_PROPS.backgroundColor,
+  currentChartType: ChartType.BAR,
+  currentItemEndArrowhead: Arrowhead.ARROW,
+  currentItemFillStyle: DEFAULT_LAYER_PROPS.fillStyle,
+  currentItemFontFamily: DEFAULT_FONT_FAMILY,
+  currentItemFontSize: DEFAULT_FONT_SIZE,
+  currentItemOpacity: DEFAULT_LAYER_PROPS.opacity,
+  currentItemRoughness: DEFAULT_LAYER_PROPS.roughness,
+  currentItemRoundness: StrokeRoundness.ROUND,
+  currentItemStartArrowhead: null,
+  currentItemStrokeColor: DEFAULT_LAYER_PROPS.strokeColor,
+  currentItemStrokeStyle: DEFAULT_LAYER_PROPS.strokeStyle,
+  currentItemStrokeWidth: DEFAULT_LAYER_PROPS.strokeWidth,
+  currentItemTextAlign: DEFAULT_TEXT_ALIGN,
+  cursorButton: "up",
+  snapToGrid: false,
+  draggingLayer: null,
+  editingLayer: null,
+  editingGroupId: null,
+  editingLinearLayer: null,
+  activeTool: {
+    type: Shape.SELECTION,
+    customType: null,
+    locked: DEFAULT_LAYER_PROPS.locked,
+    lastActiveTool: null
+  },
+  penMode: false,
+  penDetected: false,
+  errorMessage: null,
+  exportScale: EXPORT_SCALE,
+  fileHandle: null,
+  gridSize: null,
+  isBindingEnabled: true,
+  isLoading: false,
+  isResizing: false,
+  isRotating: false,
+  lastPointerDownWith: PointerType.MOUSE,
+  multiLayer: null,
+  contextMenu: null,
+  previousSelectedLayerIds: {},
+  resizingLayer: null,
+  scrolledOutside: false,
+  scrollX: 0,
+  scrollY: 0,
+  selectedLayerIds: {},
+  selectedGroupIds: {},
+  selectedLayersAreBeingDragged: false,
+  selectionLayer: null,
+  shouldCacheIgnoreZoom: false,
+  showStats: false,
+  startBoundLayer: null,
+  suggestedBindings: [],
+  layersToHighlight: null,
+  toast: null,
+  viewBackgroundColor: "#fff",
+  zoom: {
+    value: 1
+  },
+  pendingImageLayerId: null,
+  showHyperlinkPopup: false,
+  selectedLinearLayer: null
 };
 
 export const rootSlice = createSlice({
   name: "root",
   initialState: rootInitialState,
-  reducers: {
-    setDimension: (state, action: PayloadAction<Dimension>) => {
-      const { height, width } = action.payload;
-      state.dimension = {
-        height: clamp(MIN_DIMENSION, height, MAX_DIMENSION),
-        width: clamp(MIN_DIMENSION, width, MAX_DIMENSION)
-      };
-    },
-    setPattern: (state, action: PayloadAction<CanvasPattern>) => {
-      state.pattern = action.payload;
-    },
-    setRotation: (state, action: PayloadAction<number>) => {
-      state.rotation = clamp(MIN_ROTATION, action.payload, MAX_ROTATION);
-    },
-    setZoom: (state, action: PayloadAction<number>) => {
-      state.zoom = clamp(MIN_ZOOM_LEVEL, action.payload, MAX_ZOOM_LEVEL);
-    }
-  }
+  reducers: {}
 });
 
-const { setDimension, setPattern, setRotation, setZoom } = rootSlice.actions;
+const {} = rootSlice.actions;
 
-export { setDimension, setPattern, setRotation, setZoom };
+export {};
 export default rootSlice.reducer;

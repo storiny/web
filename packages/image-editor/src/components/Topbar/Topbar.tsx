@@ -21,7 +21,7 @@ import styles from "./Topbar.module.scss";
 
 // Dimension
 
-const Dimension = (): React.ReactElement => {
+const Dimension = (): React.ReactLayer => {
   const dimension = useEditorSelector(selectDimension);
   return (
     <span>
@@ -32,7 +32,7 @@ const Dimension = (): React.ReactElement => {
 
 // Rotation
 
-const Rotation = (): React.ReactElement => {
+const Rotation = (): React.ReactLayer => {
   const rotation = useEditorSelector(selectRotation);
   return (
     <>
@@ -44,7 +44,7 @@ const Rotation = (): React.ReactElement => {
 
 // Status bar
 
-const StatusBar = (): React.ReactElement => (
+const StatusBar = (): React.ReactLayer => (
   <Typography
     as={"div"}
     className={clsx(
@@ -61,7 +61,7 @@ const StatusBar = (): React.ReactElement => (
   </Typography>
 );
 
-const Topbar = (): React.ReactElement => (
+const Topbar = (): React.ReactLayer => (
   <div className={clsx("flex-center", styles.x, styles.topbar)}>
     <Tooltip content={"Download"}>
       <IconButton

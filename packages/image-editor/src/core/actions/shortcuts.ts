@@ -16,7 +16,7 @@ export type ShortcutName =
       | "copyStyles"
       | "pasteStyles"
       | "selectAll"
-      | "deleteSelectedElements"
+      | "deleteSelectedLayers"
       | "duplicateSelection"
       | "sendBackward"
       | "bringForward"
@@ -34,7 +34,7 @@ export type ShortcutName =
       | "flipHorizontal"
       | "flipVertical"
       | "hyperlink"
-      | "toggleElementLock"
+      | "toggleLayerLock"
     >
   | "saveScene"
   | "imageExport";
@@ -51,22 +51,22 @@ const shortcutMap: Record<ShortcutName, string[]> = {
   copyStyles: [getShortcutKey("CtrlOrCmd+Alt+C")],
   pasteStyles: [getShortcutKey("CtrlOrCmd+Alt+V")],
   selectAll: [getShortcutKey("CtrlOrCmd+A")],
-  deleteSelectedElements: [getShortcutKey("Delete")],
+  deleteSelectedLayers: [getShortcutKey("Delete")],
   duplicateSelection: [
     getShortcutKey("CtrlOrCmd+D"),
-    getShortcutKey(`Alt+${t("helpDialog.drag")}`),
+    getShortcutKey(`Alt+${t("helpDialog.drag")}`)
   ],
   sendBackward: [getShortcutKey("CtrlOrCmd+[")],
   bringForward: [getShortcutKey("CtrlOrCmd+]")],
   sendToBack: [
     isDarwin
       ? getShortcutKey("CtrlOrCmd+Alt+[")
-      : getShortcutKey("CtrlOrCmd+Shift+["),
+      : getShortcutKey("CtrlOrCmd+Shift+[")
   ],
   bringToFront: [
     isDarwin
       ? getShortcutKey("CtrlOrCmd+Alt+]")
-      : getShortcutKey("CtrlOrCmd+Shift+]"),
+      : getShortcutKey("CtrlOrCmd+Shift+]")
   ],
   copyAsPng: [getShortcutKey("Shift+Alt+C")],
   copyAsSvg: [],
@@ -80,7 +80,7 @@ const shortcutMap: Record<ShortcutName, string[]> = {
   flipVertical: [getShortcutKey("Shift+V")],
   viewMode: [getShortcutKey("Alt+R")],
   hyperlink: [getShortcutKey("CtrlOrCmd+K")],
-  toggleElementLock: [getShortcutKey("CtrlOrCmd+Shift+L")],
+  toggleLayerLock: [getShortcutKey("CtrlOrCmd+Shift+L")]
 };
 
 export const getShortcutFromShortcutName = (name: ShortcutName) => {

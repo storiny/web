@@ -4,7 +4,7 @@
     "pasteAsPlaintext": "Pegar en tèxt brut",
     "pasteCharts": "Pegar los grafics",
     "selectAll": "Tot seleccionar",
-    "multiSelect": "Apondre un element a la seleccion",
+    "multiSelect": "Apondre un layer a la seleccion",
     "moveCanvas": "Desplaçar lo canabàs",
     "cut": "Talhar",
     "copy": "Copiar",
@@ -116,7 +116,7 @@
       "edit": "Modificar la linha",
       "exit": "Sortir de l’editor de linha"
     },
-    "elementLock": {
+    "layerLock": {
       "lock": "Verrolhar",
       "unlock": "Desverrolhar",
       "lockAll": "Tot verrolhar",
@@ -124,14 +124,14 @@
     },
     "statusPublished": "Publicat",
     "sidebarLock": "Gardar la barra laterala dobèrta",
-    "selectAllElementsInFrame": "",
-    "removeAllElementsFromFrame": "",
+    "selectAllLayersInFrame": "",
+    "removeAllLayersFromFrame": "",
     "eyeDropper": ""
   },
   "library": {
-    "noItems": "Cap d’element pas encara apondut...",
-    "hint_emptyLibrary": "Seleccionatz un element d’apondre aquí, o installatz una bibliotèca del depaus public, çai-jos.",
-    "hint_emptyPrivateLibrary": "Seleccionatz un element d’apondre aquí pel canabàs."
+    "noItems": "Cap d’layer pas encara apondut...",
+    "hint_emptyLibrary": "Seleccionatz un layer d’apondre aquí, o installatz una bibliotèca del depaus public, çai-jos.",
+    "hint_emptyPrivateLibrary": "Seleccionatz un layer d’apondre aquí pel canabàs."
   },
   "buttons": {
     "clearReset": "Reïnicializar lo canabàs",
@@ -180,14 +180,14 @@
     "uploadedSecurly": "Lo telecargament es estat securizat amb un chiframent del cap a la fin, significa que los servidors d’Excalidraw o que quina tèrça part que siá pòdon pas legir lo contengut.",
     "loadSceneOverridePrompt": "Cargar un dessenh extèrn remplaçarà vòstre contengut existent. Volètz contunhar ?",
     "collabStopOverridePrompt": "Arrestar la session remplaçarà vòstre precedent dessenh gardat localament. O volètz vertadièrament ?\n\n(Se volètz gardar vòstre dessenh local, tampatz simplament l’onglet del navegador a la plaça)",
-    "errorAddingToLibrary": "Apondon impossible de l’element a la bibliotèca",
-    "errorRemovingFromLibrary": "Supression impossibla de l’element a la bibliotèca",
+    "errorAddingToLibrary": "Apondon impossible de l’layer a la bibliotèca",
+    "errorRemovingFromLibrary": "Supression impossibla de l’layer a la bibliotèca",
     "confirmAddLibrary": "Apondrà {{numShapes}} forma(s) a vòstra bibliotèca. Confirmatz ?",
     "imageDoesNotContainScene": "Aqueste imatge sembla pas conténer cap de donadas de scèna. Avètz activat l’integracion de scèna pendent l’exportacion ?",
     "cannotRestoreFromImage": "Restauracion impossibla de la scèna a partir del fichièr imatge",
     "invalidSceneUrl": "Importacion impossibla de la scèna a partir de l’URL provesida. Es siá mal formatada o siá conten pas cap de donada JSON Excalidraw valida.",
     "resetLibrary": "Aquò suprimirà vòstra bibliotèca. O volètz vertadièrament ?",
-    "removeItemsFromsLibrary": "Suprimir {{count}} element(s) de la bibliotèca ?",
+    "removeItemsFromsLibrary": "Suprimir {{count}} layer(s) de la bibliotèca ?",
     "invalidEncryptionKey": "La clau de chiframent deu conténer 22 caractèrs. La collaboracion en dirèct es desactivada.",
     "collabOfflineWarning": "Cap de connexion pas disponibla.\nVòstras modificacions seràn pas salvadas !"
   },
@@ -234,12 +234,12 @@
   },
   "hints": {
     "canvasPanning": "",
-    "linearElement": "Clicatz per començar mantun punt, lisatz per una sola linha",
+    "linearLayer": "Clicatz per començar mantun punt, lisatz per una sola linha",
     "freeDraw": "Clicatz e lisatz, relargatz un còp acabat",
     "text": "Astúcia : podètz tanben apondre de tèxt en doble clicant ont que siá amb l’aisina de seleccion",
     "text_selected": "Clicatz dos còps o quichatz ENTRADA per modificar lo tèxt",
     "text_editing": "Quichatz ESCAPAR o CtrlOrCmd+ENTRADA per acabar la modificacion",
-    "linearElementMulti": "Clicatz sul darrièr punt o quichatz Ecap o Entrada per acabar",
+    "linearLayerMulti": "Clicatz sul darrièr punt o quichatz Ecap o Entrada per acabar",
     "lockAngle": "Podètz restrénger l’angle en mantenent MAJ",
     "resize": "Podètz servar las proporcions en mantenent la tòca MAJ pendent lo redimensionament,\nmantenètz la tòca ALT per redimensionar a partir del centre",
     "resizeImage": "Podètz retalhar liurament en quichant CTRL,\nquichatz ALT per retalhar a partir del centre",
@@ -249,15 +249,15 @@
     "lineEditor_nothingSelected": "Seleccionar un punt d’editar (manténer Maj. per ne seleccionar mantun),\no manténer Alt e clicar per n’apondre de novèls",
     "placeImage": "Clicatz per plaçar l’imatge, o clicatz e lisatz per definir sa talha manualament",
     "publishLibrary": "Publicar vòstra pròpria bibliotèca",
-    "bindTextToElement": "Quichatz Entrada per apondre de tèxte",
+    "bindTextToLayer": "Quichatz Entrada per apondre de tèxte",
     "deepBoxSelect": "Gardar CtrlOCmd per una seleccion gropada e empachar lo desplaçament",
-    "eraserRevert": "Tenètz quichat Alt per anullar los elements marcats per supression",
+    "eraserRevert": "Tenètz quichat Alt per anullar los layers marcats per supression",
     "firefox_clipboard_write": ""
   },
   "canvasError": {
     "cannotShowPreview": "Afichatge impossible de l’apercebut",
     "canvasTooBig": "Lo canabàs pòt èsser tròp grand.",
-    "canvasTooBigTip": "Astúcia : ensajatz de sarrar los elements mai alonhats."
+    "canvasTooBigTip": "Astúcia : ensajatz de sarrar los layers mai alonhats."
   },
   "errorSplash": {
     "headingMain": "Una error s’es producha. Ensajatz <button>recargament de la pagina.</button>",
@@ -314,9 +314,9 @@
     "textNewLine": "Apondre linha novèl (editor de tèxt)",
     "title": "Ajuda",
     "view": "Vista",
-    "zoomToFit": "Zoomar per veire totes los elements",
+    "zoomToFit": "Zoomar per veire totes los layers",
     "zoomToSelection": "Zoomar la seleccion",
-    "toggleElementLock": "Verrolhar/Desverrolhar la seleccion",
+    "toggleLayerLock": "Verrolhar/Desverrolhar la seleccion",
     "movePageUpDown": "Desplaçar la pagina ennaut/enbàs",
     "movePageLeftRight": "Desplaçar la pagina a esquèrra/drecha"
   },
@@ -325,7 +325,7 @@
   },
   "publishDialog": {
     "title": "Publicar la bibliotèca",
-    "itemName": "Nom de l’element",
+    "itemName": "Nom de l’layer",
     "authorName": "Nom de l’autor",
     "githubUsername": "Nom d’utilizaire GitHub",
     "twitterUsername": "Nom d’utilizaire Twitter",
@@ -347,9 +347,9 @@
     "noteDescription": "Enviatz vòstra bibliotèca per èsser compresa al <link>repertòri public de bibliotèca</link>per que los autres l’utilizen dins lor dessenhs.",
     "noteGuidelines": "Qualqu’un deu aprovar la bibliotèca manualament per començar. Volgatz legir las <link>linhas directrises</link> abans de sometre. Vos farà mestièr un compte GitHub per comunicar e realizar de modificacions se demandadas, mas es pas complètament obligatòri.",
     "noteLicense": "En sometent, acceptatz que la bibliotèca siá publicada sota la <link>Licéncia MIT, </link>que significa en brèu que qual que siá pòt l’utilizar sens cap de restriccion.",
-    "noteItems": "Cada element de bibliotèca deu aver un nom pròpri per èsser filtrable. Los elements de bibliotèca seguentas seràn incluses :",
-    "atleastOneLibItem": "Volgatz seleccionar almens un element de bibliotèca per començar",
-    "republishWarning": "Nòta : d’unes elements seleccionats son marcats ja coma publicats/enviats. Deuriatz sonque tornar enviar los elements pendent l’actualizacion d’una bibliotèca existenta o un mandadís."
+    "noteItems": "Cada layer de bibliotèca deu aver un nom pròpri per èsser filtrable. Los layers de bibliotèca seguentas seràn incluses :",
+    "atleastOneLibItem": "Volgatz seleccionar almens un layer de bibliotèca per començar",
+    "republishWarning": "Nòta : d’unes layers seleccionats son marcats ja coma publicats/enviats. Deuriatz sonque tornar enviar los layers pendent l’actualizacion d’una bibliotèca existenta o un mandadís."
   },
   "publishSuccessDialog": {
     "title": "Bibliotèca somesa",
@@ -357,7 +357,7 @@
   },
   "confirmDialog": {
     "resetLibrary": "Reïnicializar la bibliotèca",
-    "removeItemsFromLib": "Tirar los elements seleccionats de la bibliotèca"
+    "removeItemsFromLib": "Tirar los layers seleccionats de la bibliotèca"
   },
   "imageExportDialog": {
     "header": "",
@@ -389,8 +389,8 @@
   },
   "stats": {
     "angle": "Angle",
-    "element": "Element",
-    "elements": "Elements",
+    "layer": "Layer",
+    "layers": "Layers",
     "height": "Nautor",
     "scene": "Scèna",
     "selected": "Seleccionat",
@@ -411,7 +411,7 @@
     "fileSavedToFilename": "Enregistrat jos {filename}",
     "canvas": "canabàs",
     "selection": "seleccion",
-    "pasteAsSingleElement": ""
+    "pasteAsSingleLayer": ""
   },
   "colors": {
     "transparent": "Transparéncia",

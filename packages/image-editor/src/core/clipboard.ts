@@ -1,29 +1,26 @@
-import {
-  ExcalidrawElement,
-  NonDeletedExcalidrawElement,
-} from "./element/types";
-import { BinaryFiles } from "./types";
-import { SVG_EXPORT_TAG } from "./scene/export";
-import { tryParseSpreadsheet, Spreadsheet, VALID_SPREADSHEET } from "./charts";
+import { SVG_EXPORT_TAG } from "../lib/scene/export";
+import { Spreadsheet, tryParseSpreadsheet, VALID_SPREADSHEET } from "./charts";
 import { EXPORT_DATA_TYPES, MIME_TYPES } from "./constants";
-import { isInitializedImageElement } from "./element/typeChecks";
-import { deepCopyElement } from "./element/newElement";
-import { mutateElement } from "./element/mutateElement";
 import { getContainingFrame } from "./frame";
+import { mutateLayer } from "./layer/mutateLayer";
+import { deepCopyLayer } from "./layer/newLayer";
+import { isInitializedImageLayer } from "./layer/typeChecks";
+import { ExcalidrawLayer, NonDeletedExcalidrawLayer } from "./layer/types";
+import { BinaryFiles } from "./types";
 import { isPromiseLike, isTestEnv } from "./utils";
 
-type ElementsClipboard = {
-  type: typeof EXPORT_DATA_TYPES.excalidrawClipboard;
-  elements: readonly NonDeletedExcalidrawElement[];
+type LayersClipboard = {
   files: BinaryFiles | undefined;
+  layers: readonly NonDeletedExcalidrawLayer[];
+  type: typeof EXPORT_DATA_TYPES.excalidrawClipboard;
 };
 
 export interface ClipboardData {
-  spreadsheet?: Spreadsheet;
-  elements?: readonly ExcalidrawElement[];
-  files?: BinaryFiles;
-  text?: string;
   errorMessage?: string;
+  files?: BinaryFiles;
+  layers?: readonly ExcalidrawLayer[];
+  spreadsheet?: Spreadsheet;
+  text?: string;
 }
 
 let CLIPBOARD = "";
@@ -39,17 +36,17 @@ export const probablySupportsClipboardBlob =
   "clipboard" in navigator &&
   "write" in navigator.clipboard &&
   "ClipboardItem" in window &&
-  "toBlob" in HTMLCanvasElement.prototype;
+  "toBlob" in HTMLCanvasLayer.prototype;
 
-const clipboardContainsElements = (
-  contents: any,
-): contents is { elements: ExcalidrawElement[]; files?: BinaryFiles } => {
+const clipboardContainsLayers = (
+  contents: any
+): contents is { files?: BinaryFiles; layers: ExcalidrawLayer[] } => {
   if (
     [
       EXPORT_DATA_TYPES.excalidraw,
-      EXPORT_DATA_TYPES.excalidrawClipboard,
+      EXPORT_DATA_TYPES.excalidrawClipboard
     ].includes(contents?.type) &&
-    Array.isArray(contents.elements)
+    Array.isArray(contents.layers)
   ) {
     return true;
   }
@@ -57,19 +54,19 @@ const clipboardContainsElements = (
 };
 
 export const copyToClipboard = async (
-  elements: readonly NonDeletedExcalidrawElement[],
-  files: BinaryFiles | null,
+  layers: readonly NonDeletedExcalidrawLayer[],
+  files: BinaryFiles | null
 ) => {
   const framesToCopy = new Set(
-    elements.filter((element) => element.type === "frame"),
+    layers.filter((layer) => layer.type === "frame")
   );
   let foundFile = false;
 
-  const _files = elements.reduce((acc, element) => {
-    if (isInitializedImageElement(element)) {
+  const _files = layers.reduce((acc, layer) => {
+    if (isInitializedImageLayer(layer)) {
       foundFile = true;
-      if (files && files[element.fileId]) {
-        acc[element.fileId] = files[element.fileId];
+      if (files && files[layer.fileId]) {
+        acc[layer.fileId] = files[layer.fileId];
       }
     }
     return acc;
@@ -77,28 +74,28 @@ export const copyToClipboard = async (
 
   if (foundFile && !files) {
     console.warn(
-      "copyToClipboard: attempting to file element(s) without providing associated `files` object.",
+      "copyToClipboard: attempting to file layer(s) without providing associated `files` object."
     );
   }
 
-  // select binded text elements when copying
-  const contents: ElementsClipboard = {
+  // select binded text layers when copying
+  const contents: LayersClipboard = {
     type: EXPORT_DATA_TYPES.excalidrawClipboard,
-    elements: elements.map((element) => {
+    layers: layers.map((layer) => {
       if (
-        getContainingFrame(element) &&
-        !framesToCopy.has(getContainingFrame(element)!)
+        getContainingFrame(layer) &&
+        !framesToCopy.has(getContainingFrame(layer)!)
       ) {
-        const copiedElement = deepCopyElement(element);
-        mutateElement(copiedElement, {
-          frameId: null,
+        const copiedLayer = deepCopyLayer(layer);
+        mutateLayer(copiedLayer, {
+          frameId: null
         });
-        return copiedElement;
+        return copiedLayer;
       }
 
-      return element;
+      return layer;
     }),
-    files: files ? _files : undefined,
+    files: files ? _files : undefined
   };
   const json = JSON.stringify(contents);
 
@@ -117,7 +114,7 @@ export const copyToClipboard = async (
   }
 };
 
-const getAppClipboard = (): Partial<ElementsClipboard> => {
+const getAppClipboard = (): Partial<LayersClipboard> => {
   if (!CLIPBOARD) {
     return {};
   }
@@ -131,7 +128,7 @@ const getAppClipboard = (): Partial<ElementsClipboard> => {
 };
 
 const parsePotentialSpreadsheet = (
-  text: string,
+  text: string
 ): { spreadsheet: Spreadsheet } | { errorMessage: string } | null => {
   const result = tryParseSpreadsheet(text);
   if (result.type === VALID_SPREADSHEET) {
@@ -145,7 +142,7 @@ const parsePotentialSpreadsheet = (
  *  via async clipboard API if supported)
  */
 export const getSystemClipboard = async (
-  event: ClipboardEvent | null,
+  event: ClipboardEvent | null
 ): Promise<string> => {
   try {
     const text = event
@@ -164,13 +161,13 @@ export const getSystemClipboard = async (
  */
 export const parseClipboard = async (
   event: ClipboardEvent | null,
-  isPlainPaste = false,
+  isPlainPaste = false
 ): Promise<ClipboardData> => {
   const systemClipboard = await getSystemClipboard(event);
 
   // if system clipboard empty, couldn't be resolved, or contains previously
   // copied excalidraw scene as SVG, fall back to previously copied excalidraw
-  // elements
+  // layers
   if (
     !systemClipboard ||
     (!isPlainPaste && systemClipboard.includes(SVG_EXPORT_TAG))
@@ -191,25 +188,25 @@ export const parseClipboard = async (
 
   try {
     const systemClipboardData = JSON.parse(systemClipboard);
-    if (clipboardContainsElements(systemClipboardData)) {
+    if (clipboardContainsLayers(systemClipboardData)) {
       return {
-        elements: systemClipboardData.elements,
+        layers: systemClipboardData.layers,
         files: systemClipboardData.files,
         text: isPlainPaste
-          ? JSON.stringify(systemClipboardData.elements, null, 2)
-          : undefined,
+          ? JSON.stringify(systemClipboardData.layers, null, 2)
+          : undefined
       };
     }
   } catch (e) {}
-  // system clipboard doesn't contain excalidraw elements → return plaintext
+  // system clipboard doesn't contain excalidraw layers → return plaintext
   // unless we set a flag to prefer in-app clipboard because browser didn't
   // support storing to system clipboard on copy
-  return PREFER_APP_CLIPBOARD && appClipboardData.elements
+  return PREFER_APP_CLIPBOARD && appClipboardData.layers
     ? {
         ...appClipboardData,
         text: isPlainPaste
-          ? JSON.stringify(appClipboardData.elements, null, 2)
-          : undefined,
+          ? JSON.stringify(appClipboardData.layers, null, 2)
+          : undefined
       }
     : { text: systemClipboard };
 };
@@ -226,8 +223,8 @@ export const copyBlobToClipboardAsPng = async (blob: Blob | Promise<Blob>) => {
     // So we need to await this and fallback to awaiting the blob if applicable.
     await navigator.clipboard.write([
       new window.ClipboardItem({
-        [MIME_TYPES.png]: blob,
-      }),
+        [MIME_TYPES.png]: blob
+      })
     ]);
   } catch (error: any) {
     // if we're using a Promise ClipboardItem, let's try constructing
@@ -235,8 +232,8 @@ export const copyBlobToClipboardAsPng = async (blob: Blob | Promise<Blob>) => {
     if (isPromiseLike(blob)) {
       await navigator.clipboard.write([
         new window.ClipboardItem({
-          [MIME_TYPES.png]: await blob,
-        }),
+          [MIME_TYPES.png]: await blob
+        })
       ]);
     } else {
       throw error;
@@ -266,16 +263,16 @@ export const copyTextToSystemClipboard = async (text: string | null) => {
 
 // adapted from https://github.com/zenorocha/clipboard.js/blob/ce79f170aa655c408b6aab33c9472e8e4fa52e19/src/clipboard-action.js#L48
 const copyTextViaExecCommand = (text: string) => {
-  const isRTL = document.documentElement.getAttribute("dir") === "rtl";
+  const isRTL = document.documentLayer.getAttribute("dir") === "rtl";
 
-  const textarea = document.createElement("textarea");
+  const textarea = document.createLayer("textarea");
 
   textarea.style.border = "0";
   textarea.style.padding = "0";
   textarea.style.margin = "0";
   textarea.style.position = "absolute";
   textarea.style[isRTL ? "right" : "left"] = "-9999px";
-  const yPosition = window.pageYOffset || document.documentElement.scrollTop;
+  const yPosition = window.pageYOffset || document.documentLayer.scrollTop;
   textarea.style.top = `${yPosition}px`;
   // Prevent zooming on iOS
   textarea.style.fontSize = "12pt";

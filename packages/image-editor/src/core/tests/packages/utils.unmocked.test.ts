@@ -1,6 +1,9 @@
-import { decodePngMetadata, decodeSvgMetadata } from "../../data/image";
-import { ImportedDataState } from "../../data/types";
-import * as utils from "../../packages/utils";
+import {
+  decodePngMetadata,
+  decodeSvgMetadata
+} from "../../../lib/data/image/image";
+import { ImportedDataState } from "../../../lib/data/types";
+import * as utils from "../../../lib/packages/utils";
 import { API } from "../helpers/api";
 
 // NOTE this test file is using the actual API, unmocked. Hence splitting it
@@ -10,19 +13,19 @@ import { API } from "../helpers/api";
 describe("embedding scene data", () => {
   describe("exportToSvg", () => {
     it("embedding scene data shouldn't modify them", async () => {
-      const rectangle = API.createElement({ type: "rectangle" });
-      const ellipse = API.createElement({ type: "ellipse" });
+      const rectangle = API.createLayer({ type: "rectangle" });
+      const ellipse = API.createLayer({ type: "ellipse" });
 
-      const sourceElements = [rectangle, ellipse];
+      const sourceLayers = [rectangle, ellipse];
 
       const svgNode = await utils.exportToSvg({
-        elements: sourceElements,
+        layers: sourceLayers,
         appState: {
           viewBackgroundColor: "#ffffff",
           gridSize: null,
-          exportEmbedScene: true,
+          exportEmbedScene: true
         },
-        files: null,
+        files: null
       });
 
       const svg = svgNode.outerHTML;
@@ -30,8 +33,8 @@ describe("embedding scene data", () => {
       const parsedString = await decodeSvgMetadata({ svg });
       const importedData: ImportedDataState = JSON.parse(parsedString);
 
-      expect(sourceElements.map((x) => x.id)).toEqual(
-        importedData.elements?.map((el) => el.id),
+      expect(sourceLayers.map((x) => x.id)).toEqual(
+        importedData.layers?.map((el) => el.id)
       );
     });
   });
@@ -40,27 +43,27 @@ describe("embedding scene data", () => {
   // (canvas.toBlob not supported in jsdom)
   describe.skip("exportToBlob", () => {
     it("embedding scene data shouldn't modify them", async () => {
-      const rectangle = API.createElement({ type: "rectangle" });
-      const ellipse = API.createElement({ type: "ellipse" });
+      const rectangle = API.createLayer({ type: "rectangle" });
+      const ellipse = API.createLayer({ type: "ellipse" });
 
-      const sourceElements = [rectangle, ellipse];
+      const sourceLayers = [rectangle, ellipse];
 
       const blob = await utils.exportToBlob({
         mimeType: "image/png",
-        elements: sourceElements,
+        layers: sourceLayers,
         appState: {
           viewBackgroundColor: "#ffffff",
           gridSize: null,
-          exportEmbedScene: true,
+          exportEmbedScene: true
         },
-        files: null,
+        files: null
       });
 
       const parsedString = await decodePngMetadata(blob);
       const importedData: ImportedDataState = JSON.parse(parsedString);
 
-      expect(sourceElements.map((x) => x.id)).toEqual(
-        importedData.elements?.map((el) => el.id),
+      expect(sourceLayers.map((x) => x.id)).toEqual(
+        importedData.layers?.map((el) => el.id)
       );
     });
   });

@@ -1,11 +1,11 @@
-import { t } from "../../i18n";
-import { usersIcon } from "../icons";
-import { Button } from "../Button";
+import "./LiveCollaborationTrigger.scss";
 
 import clsx from "clsx";
 
-import "./LiveCollaborationTrigger.scss";
 import { useUIAppState } from "../../context/ui-appState";
+import { t } from "../../i18n";
+import { Button } from "../Button";
+import { usersIcon } from "../icons";
 
 const LiveCollaborationTrigger = ({
   isCollaborating,
@@ -14,17 +14,17 @@ const LiveCollaborationTrigger = ({
 }: {
   isCollaborating: boolean;
   onSelect: () => void;
-} & React.ButtonHTMLAttributes<HTMLButtonElement>) => {
+} & React.ButtonHTMLAttributes<HTMLButtonLayer>) => {
   const appState = useUIAppState();
 
   return (
     <Button
       {...rest}
       className={clsx("collab-button", { active: isCollaborating })}
-      type="button"
       onSelect={onSelect}
       style={{ position: "relative" }}
       title={t("labels.liveCollaboration")}
+      type="button"
     >
       {usersIcon}
       {appState.collaborators.size > 0 && (

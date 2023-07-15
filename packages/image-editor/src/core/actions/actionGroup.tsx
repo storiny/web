@@ -1,44 +1,44 @@
-import { KEYS } from "../keys";
-import { t } from "../i18n";
-import { arrayToMap, getShortcutKey } from "../utils";
-import { register } from "./register";
-import { UngroupIcon, GroupIcon } from "../components/icons";
-import { newElementWith } from "../element/mutateElement";
-import { getSelectedElements, isSomeElementSelected } from "../scene";
-import {
-  getSelectedGroupIds,
-  selectGroup,
-  selectGroupsForSelectedElements,
-  getElementsInGroup,
-  addToGroup,
-  removeFromSelectedGroups,
-  isElementInGroup,
-} from "../groups";
-import { getNonDeletedElements } from "../element";
-import { randomId } from "../random";
+import { getSelectedLayers, isSomeLayerSelected } from "../../lib/scene";
+import { GroupIcon, UngroupIcon } from "../components/icons";
 import { ToolButton } from "../components/ToolButton";
 import {
-  ExcalidrawElement,
-  ExcalidrawFrameElement,
-  ExcalidrawTextElement,
-} from "../element/types";
-import { AppState } from "../types";
-import { isBoundToContainer } from "../element/typeChecks";
-import {
-  getElementsInResizingFrame,
+  getLayersInResizingFrame,
   groupByFrames,
-  removeElementsFromFrame,
-  replaceAllElementsInFrame,
+  removeLayersFromFrame,
+  replaceAllLayersInFrame
 } from "../frame";
+import {
+  addToGroup,
+  getLayersInGroup,
+  getSelectedGroupIds,
+  isLayerInGroup,
+  removeFromSelectedGroups,
+  selectGroup,
+  selectGroupsForSelectedLayers
+} from "../groups";
+import { t } from "../i18n";
+import { KEYS } from "../keys";
+import { getNonDeletedLayers } from "../layer";
+import { newLayerWith } from "../layer/mutateLayer";
+import { isBoundToContainer } from "../layer/typeChecks";
+import {
+  ExcalidrawFrameLayer,
+  ExcalidrawLayer,
+  ExcalidrawTextLayer
+} from "../layer/types";
+import { randomId } from "../random";
+import { AppState } from "../types";
+import { arrayToMap, getShortcutKey } from "../utils";
+import { register } from "./register";
 
-const allElementsInSameGroup = (elements: readonly ExcalidrawElement[]) => {
-  if (elements.length >= 2) {
-    const groupIds = elements[0].groupIds;
+const allLayersInSameGroup = (layers: readonly ExcalidrawLayer[]) => {
+  if (layers.length >= 2) {
+    const groupIds = layers[0].groupIds;
     for (const groupId of groupIds) {
       if (
-        elements.reduce(
-          (acc, element) => acc && isElementInGroup(element, groupId),
-          true,
+        layers.reduce(
+          (acc, layer) => acc && isLayerInGroup(layer, groupId),
+          true
         )
       ) {
         return true;
@@ -49,206 +49,187 @@ const allElementsInSameGroup = (elements: readonly ExcalidrawElement[]) => {
 };
 
 const enableActionGroup = (
-  elements: readonly ExcalidrawElement[],
-  appState: AppState,
+  layers: readonly ExcalidrawLayer[],
+  appState: AppState
 ) => {
-  const selectedElements = getSelectedElements(
-    getNonDeletedElements(elements),
+  const selectedLayers = getSelectedLayers(
+    getNonDeletedLayers(layers),
     appState,
     {
-      includeBoundTextElement: true,
-    },
+      includeBoundTextLayer: true
+    }
   );
-  return (
-    selectedElements.length >= 2 && !allElementsInSameGroup(selectedElements)
-  );
+  return selectedLayers.length >= 2 && !allLayersInSameGroup(selectedLayers);
 };
 
 export const actionGroup = register({
   name: "group",
-  trackEvent: { category: "element" },
-  perform: (elements, appState, _, app) => {
-    const selectedElements = getSelectedElements(
-      getNonDeletedElements(elements),
+  trackEvent: { category: "layer" },
+  perform: (layers, appState, _, app) => {
+    const selectedLayers = getSelectedLayers(
+      getNonDeletedLayers(layers),
       appState,
       {
-        includeBoundTextElement: true,
-      },
+        includeBoundTextLayer: true
+      }
     );
-    if (selectedElements.length < 2) {
+    if (selectedLayers.length < 2) {
       // nothing to group
-      return { appState, elements, commitToHistory: false };
+      return { appState, layers, commitToHistory: false };
     }
     // if everything is already grouped into 1 group, there is nothing to do
     const selectedGroupIds = getSelectedGroupIds(appState);
     if (selectedGroupIds.length === 1) {
       const selectedGroupId = selectedGroupIds[0];
-      const elementIdsInGroup = new Set(
-        getElementsInGroup(elements, selectedGroupId).map(
-          (element) => element.id,
-        ),
+      const layerIdsInGroup = new Set(
+        getLayersInGroup(layers, selectedGroupId).map((layer) => layer.id)
       );
-      const selectedElementIds = new Set(
-        selectedElements.map((element) => element.id),
-      );
+      const selectedLayerIds = new Set(selectedLayers.map((layer) => layer.id));
       const combinedSet = new Set([
-        ...Array.from(elementIdsInGroup),
-        ...Array.from(selectedElementIds),
+        ...Array.from(layerIdsInGroup),
+        ...Array.from(selectedLayerIds)
       ]);
-      if (combinedSet.size === elementIdsInGroup.size) {
+      if (combinedSet.size === layerIdsInGroup.size) {
         // no incremental ids in the selected ids
-        return { appState, elements, commitToHistory: false };
+        return { appState, layers, commitToHistory: false };
       }
     }
 
-    let nextElements = [...elements];
+    let nextLayers = [...layers];
 
-    // this includes the case where we are grouping elements inside a frame
-    // and elements outside that frame
-    const groupingElementsFromDifferentFrames =
-      new Set(selectedElements.map((element) => element.frameId)).size > 1;
-    // when it happens, we want to remove elements that are in the frame
+    // this includes the case where we are grouping layers inside a frame
+    // and layers outside that frame
+    const groupingLayersFromDifferentFrames =
+      new Set(selectedLayers.map((layer) => layer.frameId)).size > 1;
+    // when it happens, we want to remove layers that are in the frame
     // and are going to be grouped from the frame (mouthful, I know)
-    if (groupingElementsFromDifferentFrames) {
-      const frameElementsMap = groupByFrames(selectedElements);
+    if (groupingLayersFromDifferentFrames) {
+      const frameLayersMap = groupByFrames(selectedLayers);
 
-      frameElementsMap.forEach((elementsInFrame, frameId) => {
-        nextElements = removeElementsFromFrame(
-          nextElements,
-          elementsInFrame,
-          appState,
-        );
+      frameLayersMap.forEach((layersInFrame, frameId) => {
+        nextLayers = removeLayersFromFrame(nextLayers, layersInFrame, appState);
       });
     }
 
     const newGroupId = randomId();
-    const selectElementIds = arrayToMap(selectedElements);
+    const selectLayerIds = arrayToMap(selectedLayers);
 
-    nextElements = nextElements.map((element) => {
-      if (!selectElementIds.get(element.id)) {
-        return element;
+    nextLayers = nextLayers.map((layer) => {
+      if (!selectLayerIds.get(layer.id)) {
+        return layer;
       }
-      return newElementWith(element, {
+      return newLayerWith(layer, {
         groupIds: addToGroup(
-          element.groupIds,
+          layer.groupIds,
           newGroupId,
-          appState.editingGroupId,
-        ),
+          appState.editingGroupId
+        )
       });
     });
     // keep the z order within the group the same, but move them
-    // to the z order of the highest element in the layer stack
-    const elementsInGroup = getElementsInGroup(nextElements, newGroupId);
-    const lastElementInGroup = elementsInGroup[elementsInGroup.length - 1];
-    const lastGroupElementIndex = nextElements.lastIndexOf(lastElementInGroup);
-    const elementsAfterGroup = nextElements.slice(lastGroupElementIndex + 1);
-    const elementsBeforeGroup = nextElements
-      .slice(0, lastGroupElementIndex)
-      .filter(
-        (updatedElement) => !isElementInGroup(updatedElement, newGroupId),
-      );
-    nextElements = [
-      ...elementsBeforeGroup,
-      ...elementsInGroup,
-      ...elementsAfterGroup,
-    ];
+    // to the z order of the highest layer in the layer stack
+    const layersInGroup = getLayersInGroup(nextLayers, newGroupId);
+    const lastLayerInGroup = layersInGroup[layersInGroup.length - 1];
+    const lastGroupLayerIndex = nextLayers.lastIndexOf(lastLayerInGroup);
+    const layersAfterGroup = nextLayers.slice(lastGroupLayerIndex + 1);
+    const layersBeforeGroup = nextLayers
+      .slice(0, lastGroupLayerIndex)
+      .filter((updatedLayer) => !isLayerInGroup(updatedLayer, newGroupId));
+    nextLayers = [...layersBeforeGroup, ...layersInGroup, ...layersAfterGroup];
 
     return {
       appState: selectGroup(
         newGroupId,
         { ...appState, selectedGroupIds: {} },
-        getNonDeletedElements(nextElements),
+        getNonDeletedLayers(nextLayers)
       ),
-      elements: nextElements,
-      commitToHistory: true,
+      layers: nextLayers,
+      commitToHistory: true
     };
   },
   contextItemLabel: "labels.group",
-  predicate: (elements, appState) => enableActionGroup(elements, appState),
+  predicate: (layers, appState) => enableActionGroup(layers, appState),
   keyTest: (event) =>
     !event.shiftKey && event[KEYS.CTRL_OR_CMD] && event.key === KEYS.G,
-  PanelComponent: ({ elements, appState, updateData }) => (
+  PanelComponent: ({ layers, appState, updateData }) => (
     <ToolButton
-      hidden={!enableActionGroup(elements, appState)}
-      type="button"
+      aria-label={t("labels.group")}
+      hidden={!enableActionGroup(layers, appState)}
       icon={<GroupIcon theme={appState.theme} />}
       onClick={() => updateData(null)}
       title={`${t("labels.group")} — ${getShortcutKey("CtrlOrCmd+G")}`}
-      aria-label={t("labels.group")}
-      visible={isSomeElementSelected(getNonDeletedElements(elements), appState)}
+      type="button"
+      visible={isSomeLayerSelected(getNonDeletedLayers(layers), appState)}
     ></ToolButton>
-  ),
+  )
 });
 
 export const actionUngroup = register({
   name: "ungroup",
-  trackEvent: { category: "element" },
-  perform: (elements, appState, _, app) => {
+  trackEvent: { category: "layer" },
+  perform: (layers, appState, _, app) => {
     const groupIds = getSelectedGroupIds(appState);
     if (groupIds.length === 0) {
-      return { appState, elements, commitToHistory: false };
+      return { appState, layers, commitToHistory: false };
     }
 
-    let nextElements = [...elements];
+    let nextLayers = [...layers];
 
-    const selectedElements = getSelectedElements(nextElements, appState);
-    const frames = selectedElements
-      .filter((element) => element.frameId)
-      .map((element) =>
-        app.scene.getElement(element.frameId!),
-      ) as ExcalidrawFrameElement[];
+    const selectedLayers = getSelectedLayers(nextLayers, appState);
+    const frames = selectedLayers
+      .filter((layer) => layer.frameId)
+      .map((layer) =>
+        app.scene.getLayer(layer.frameId!)
+      ) as ExcalidrawFrameLayer[];
 
-    const boundTextElementIds: ExcalidrawTextElement["id"][] = [];
-    nextElements = nextElements.map((element) => {
-      if (isBoundToContainer(element)) {
-        boundTextElementIds.push(element.id);
+    const boundTextLayerIds: ExcalidrawTextLayer["id"][] = [];
+    nextLayers = nextLayers.map((layer) => {
+      if (isBoundToContainer(layer)) {
+        boundTextLayerIds.push(layer.id);
       }
       const nextGroupIds = removeFromSelectedGroups(
-        element.groupIds,
-        appState.selectedGroupIds,
+        layer.groupIds,
+        appState.selectedGroupIds
       );
-      if (nextGroupIds.length === element.groupIds.length) {
-        return element;
+      if (nextGroupIds.length === layer.groupIds.length) {
+        return layer;
       }
-      return newElementWith(element, {
-        groupIds: nextGroupIds,
+      return newLayerWith(layer, {
+        groupIds: nextGroupIds
       });
     });
 
-    const updateAppState = selectGroupsForSelectedElements(
+    const updateAppState = selectGroupsForSelectedLayers(
       { ...appState, selectedGroupIds: {} },
-      getNonDeletedElements(nextElements),
-      appState,
+      getNonDeletedLayers(nextLayers),
+      appState
     );
 
     frames.forEach((frame) => {
       if (frame) {
-        nextElements = replaceAllElementsInFrame(
-          nextElements,
-          getElementsInResizingFrame(nextElements, frame, appState),
+        nextLayers = replaceAllLayersInFrame(
+          nextLayers,
+          getLayersInResizingFrame(nextLayers, frame, appState),
           frame,
-          appState,
+          appState
         );
       }
     });
 
-    // remove binded text elements from selection
-    updateAppState.selectedElementIds = Object.entries(
-      updateAppState.selectedElementIds,
-    ).reduce(
-      (acc: { [key: ExcalidrawElement["id"]]: true }, [id, selected]) => {
-        if (selected && !boundTextElementIds.includes(id)) {
-          acc[id] = true;
-        }
-        return acc;
-      },
-      {},
-    );
+    // remove binded text layers from selection
+    updateAppState.selectedLayerIds = Object.entries(
+      updateAppState.selectedLayerIds
+    ).reduce((acc: { [key: ExcalidrawLayer["id"]]: true }, [id, selected]) => {
+      if (selected && !boundTextLayerIds.includes(id)) {
+        acc[id] = true;
+      }
+      return acc;
+    }, {});
 
     return {
       appState: updateAppState,
-      elements: nextElements,
-      commitToHistory: true,
+      layers: nextLayers,
+      commitToHistory: true
     };
   },
   keyTest: (event) =>
@@ -256,17 +237,17 @@ export const actionUngroup = register({
     event[KEYS.CTRL_OR_CMD] &&
     event.key === KEYS.G.toUpperCase(),
   contextItemLabel: "labels.ungroup",
-  predicate: (elements, appState) => getSelectedGroupIds(appState).length > 0,
+  predicate: (layers, appState) => getSelectedGroupIds(appState).length > 0,
 
-  PanelComponent: ({ elements, appState, updateData }) => (
+  PanelComponent: ({ layers, appState, updateData }) => (
     <ToolButton
-      type="button"
+      aria-label={t("labels.ungroup")}
       hidden={getSelectedGroupIds(appState).length === 0}
       icon={<UngroupIcon theme={appState.theme} />}
       onClick={() => updateData(null)}
       title={`${t("labels.ungroup")} — ${getShortcutKey("CtrlOrCmd+Shift+G")}`}
-      aria-label={t("labels.ungroup")}
-      visible={isSomeElementSelected(getNonDeletedElements(elements), appState)}
+      type="button"
+      visible={isSomeLayerSelected(getNonDeletedLayers(layers), appState)}
     ></ToolButton>
-  ),
+  )
 });

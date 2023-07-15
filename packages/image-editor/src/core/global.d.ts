@@ -1,25 +1,25 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 interface Document {
   fonts?: {
-    ready?: Promise<void>;
-    check?: (font: string, text?: string) => boolean;
-    load?: (font: string, text?: string) => Promise<FontFace[]>;
     addEventListener?(
       type: "loading" | "loadingdone" | "loadingerror",
-      listener: (this: Document, ev: Event) => any,
+      listener: (this: Document, ev: Event) => any
     ): void;
+    check?: (font: string, text?: string) => boolean;
+    load?: (font: string, text?: string) => Promise<FontFace[]>;
+    ready?: Promise<void>;
   };
 }
 
 interface Window {
   ClipboardItem: any;
-  __EXCALIDRAW_SHA__: string | undefined;
   EXCALIDRAW_ASSET_PATH: string | undefined;
   EXCALIDRAW_EXPORT_SOURCE: string;
   EXCALIDRAW_THROTTLE_RENDER: boolean | undefined;
+  __EXCALIDRAW_SHA__: string | undefined;
+  fathom: { trackEvent: Function };
   gtag: Function;
   sa_event: Function;
-  fathom: { trackEvent: Function };
 }
 
 interface CanvasRenderingContext2D {
@@ -34,7 +34,7 @@ interface CanvasRenderingContext2D {
       | [number] // [all-corners]
       | [number, number] // [top-left-and-bottom-right, top-right-and-bottom-left]
       | [number, number, number] // [top-left, top-right-and-bottom-left, bottom-right]
-      | [number, number, number, number], // [top-left, top-right, bottom-right, bottom-left]
+      | [number, number, number, number] // [top-left, top-right, bottom-right, bottom-left]
   ) => void;
 }
 
@@ -43,8 +43,8 @@ declare namespace NodeJS {
   interface ProcessEnv {
     readonly REACT_APP_BACKEND_V2_GET_URL: string;
     readonly REACT_APP_BACKEND_V2_POST_URL: string;
-    readonly REACT_APP_PORTAL_URL: string;
     readonly REACT_APP_FIREBASE_CONFIG: string;
+    readonly REACT_APP_PORTAL_URL: string;
   }
 }
 
@@ -54,13 +54,13 @@ interface Clipboard extends EventTarget {
 
 // PNG encoding/decoding
 // -----------------------------------------------------------------------------
-type TEXtChunk = { name: "tEXt"; data: Uint8Array };
+type TEXtChunk = { data: Uint8Array; name: "tEXt" };
 
 declare module "png-chunk-text" {
   function encode(
     name: string,
-    value: string,
-  ): { name: "tEXt"; data: Uint8Array };
+    value: string
+  ): { data: Uint8Array; name: "tEXt" };
   function decode(data: Uint8Array): { keyword: string; text: string };
 }
 declare module "png-chunks-encode" {
@@ -94,17 +94,17 @@ interface Uint8Array {
 
 // https://github.com/nodeca/image-blob-reduce/issues/23#issuecomment-783271848
 declare module "image-blob-reduce" {
-  import { PicaResizeOptions, Pica } from "pica";
+  import { Pica, PicaResizeOptions } from "pica";
   namespace ImageBlobReduce {
     interface ImageBlobReduce {
-      toBlob(file: File, options: ImageBlobReduceOptions): Promise<Blob>;
       _create_blob(
         this: { pica: Pica },
         env: {
-          out_canvas: HTMLCanvasElement;
           out_blob: Blob;
-        },
+          out_canvas: HTMLCanvasLayer;
+        }
       ): Promise<any>;
+      toBlob(file: File, options: ImageBlobReduceOptions): Promise<Blob>;
     }
 
     interface ImageBlobReduceStatic {

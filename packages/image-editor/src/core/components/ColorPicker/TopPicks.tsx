@@ -1,30 +1,31 @@
 import clsx from "clsx";
-import { ColorPickerType } from "./colorPickerUtils";
+
 import {
   DEFAULT_CANVAS_BACKGROUND_PICKS,
   DEFAULT_ELEMENT_BACKGROUND_PICKS,
-  DEFAULT_ELEMENT_STROKE_PICKS,
+  DEFAULT_ELEMENT_STROKE_PICKS
 } from "../../colors";
+import { ColorPickerType } from "./colorPickerUtils";
 
 interface TopPicksProps {
-  onChange: (color: string) => void;
-  type: ColorPickerType;
   activeColor: string;
+  onChange: (color: string) => void;
   topPicks?: readonly string[];
+  type: ColorPickerType;
 }
 
 export const TopPicks = ({
   onChange,
   type,
   activeColor,
-  topPicks,
+  topPicks
 }: TopPicksProps) => {
   let colors;
-  if (type === "elementStroke") {
+  if (type === "layerStroke") {
     colors = DEFAULT_ELEMENT_STROKE_PICKS;
   }
 
-  if (type === "elementBackground") {
+  if (type === "layerBackground") {
     colors = DEFAULT_ELEMENT_BACKGROUND_PICKS;
   }
 
@@ -48,13 +49,13 @@ export const TopPicks = ({
         <button
           className={clsx("color-picker__button", {
             active: color === activeColor,
-            "is-transparent": color === "transparent" || !color,
+            "is-transparent": color === "transparent" || !color
           })}
-          style={{ "--swatch-color": color }}
           key={color}
-          type="button"
-          title={color}
           onClick={() => onChange(color)}
+          style={{ "--swatch-color": color }}
+          title={color}
+          type="button"
         >
           <div className="color-picker__button-outline" />
         </button>

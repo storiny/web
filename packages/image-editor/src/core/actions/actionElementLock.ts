@@ -1,102 +1,93 @@
-import { newElementWith } from "../element/mutateElement";
-import { ExcalidrawElement } from "../element/types";
+import { getSelectedLayers } from "../../lib/scene";
 import { KEYS } from "../keys";
-import { getSelectedElements } from "../scene";
+import { newLayerWith } from "../layer/mutateLayer";
+import { ExcalidrawLayer } from "../layer/types";
 import { arrayToMap } from "../utils";
 import { register } from "./register";
 
-const shouldLock = (elements: readonly ExcalidrawElement[]) =>
-  elements.every((el) => !el.locked);
+const shouldLock = (layers: readonly ExcalidrawLayer[]) =>
+  layers.every((el) => !el.locked);
 
-export const actionToggleElementLock = register({
-  name: "toggleElementLock",
-  trackEvent: { category: "element" },
-  predicate: (elements, appState) => {
-    const selectedElements = getSelectedElements(elements, appState);
-    return !selectedElements.some(
-      (element) => element.locked && element.frameId,
-    );
+export const actionToggleLayerLock = register({
+  name: "toggleLayerLock",
+  trackEvent: { category: "layer" },
+  predicate: (layers, appState) => {
+    const selectedLayers = getSelectedLayers(layers, appState);
+    return !selectedLayers.some((layer) => layer.locked && layer.frameId);
   },
-  perform: (elements, appState) => {
-    const selectedElements = getSelectedElements(elements, appState, {
-      includeBoundTextElement: true,
-      includeElementsInFrames: true,
+  perform: (layers, appState) => {
+    const selectedLayers = getSelectedLayers(layers, appState, {
+      includeBoundTextLayer: true,
+      includeLayersInFrames: true
     });
 
-    if (!selectedElements.length) {
+    if (!selectedLayers.length) {
       return false;
     }
 
-    const nextLockState = shouldLock(selectedElements);
-    const selectedElementsMap = arrayToMap(selectedElements);
+    const nextLockState = shouldLock(selectedLayers);
+    const selectedLayersMap = arrayToMap(selectedLayers);
     return {
-      elements: elements.map((element) => {
-        if (!selectedElementsMap.has(element.id)) {
-          return element;
+      layers: layers.map((layer) => {
+        if (!selectedLayersMap.has(layer.id)) {
+          return layer;
         }
 
-        return newElementWith(element, { locked: nextLockState });
+        return newLayerWith(layer, { locked: nextLockState });
       }),
       appState: {
         ...appState,
-        selectedLinearElement: nextLockState
-          ? null
-          : appState.selectedLinearElement,
+        selectedLinearLayer: nextLockState ? null : appState.selectedLinearLayer
       },
-      commitToHistory: true,
+      commitToHistory: true
     };
   },
-  contextItemLabel: (elements, appState) => {
-    const selected = getSelectedElements(elements, appState, {
-      includeBoundTextElement: false,
+  contextItemLabel: (layers, appState) => {
+    const selected = getSelectedLayers(layers, appState, {
+      includeBoundTextLayer: false
     });
     if (selected.length === 1 && selected[0].type !== "frame") {
       return selected[0].locked
-        ? "labels.elementLock.unlock"
-        : "labels.elementLock.lock";
+        ? "labels.layerLock.unlock"
+        : "labels.layerLock.lock";
     }
 
     return shouldLock(selected)
-      ? "labels.elementLock.lockAll"
-      : "labels.elementLock.unlockAll";
+      ? "labels.layerLock.lockAll"
+      : "labels.layerLock.unlockAll";
   },
-  keyTest: (event, appState, elements) => {
-    return (
-      event.key.toLocaleLowerCase() === KEYS.L &&
-      event[KEYS.CTRL_OR_CMD] &&
-      event.shiftKey &&
-      getSelectedElements(elements, appState, {
-        includeBoundTextElement: false,
-      }).length > 0
-    );
-  },
+  keyTest: (event, appState, layers) =>
+    event.key.toLocaleLowerCase() === KEYS.L &&
+    event[KEYS.CTRL_OR_CMD] &&
+    event.shiftKey &&
+    getSelectedLayers(layers, appState, {
+      includeBoundTextLayer: false
+    }).length > 0
 });
 
-export const actionUnlockAllElements = register({
-  name: "unlockAllElements",
+export const actionUnlockAllLayers = register({
+  name: "unlockAllLayers",
   trackEvent: { category: "canvas" },
   viewMode: false,
-  predicate: (elements) => {
-    return elements.some((element) => element.locked);
-  },
-  perform: (elements, appState) => {
-    const lockedElements = elements.filter((el) => el.locked);
+  predicate: (layers) => layers.some((layer) => layer.locked),
+  perform: (layers, appState) => {
+    const lockedLayers = layers.filter((el) => el.locked);
 
     return {
-      elements: elements.map((element) => {
-        if (element.locked) {
-          return newElementWith(element, { locked: false });
+      layers: layers.map((layer) => {
+        if (layer.locked) {
+          return newLayerWith(layer, { locked: false });
         }
-        return element;
+        return layer;
       }),
       appState: {
         ...appState,
-        selectedElementIds: Object.fromEntries(
-          lockedElements.map((el) => [el.id, true]),
-        ),
+        selectedLayerIds: Object.fromEntries(
+          lockedLayers.map((el) => [el.id, true])
+        )
       },
-      commitToHistory: true,
+      commitToHistory: true
     };
   },
-  contextItemLabel: "labels.elementLock.unlockAll",
+  contextItemLabel: "labels.layerLock.unlockAll"
 });

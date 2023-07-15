@@ -1,20 +1,22 @@
-import React from "react";
-import { t } from "../i18n";
-import { KEYS } from "../keys";
-import { Dialog } from "./Dialog";
-import { getShortcutKey } from "../utils";
 import "./HelpDialog.scss";
-import { ExternalLinkIcon } from "./icons";
+
+import React from "react";
+
 import { probablySupportsClipboardBlob } from "../clipboard";
 import { isDarwin, isFirefox, isWindows } from "../constants";
+import { t } from "../i18n";
+import { KEYS } from "../keys";
+import { getShortcutKey } from "../utils";
+import { Dialog } from "./Dialog";
+import { ExternalLinkIcon } from "./icons";
 
 const Header = () => (
   <div className="HelpDialog__header">
     <a
       className="HelpDialog__btn"
       href="https://docs.excalidraw.com"
-      target="_blank"
       rel="noopener noreferrer"
+      target="_blank"
     >
       {t("helpDialog.documentation")}
       <div className="HelpDialog__link-icon">{ExternalLinkIcon}</div>
@@ -22,8 +24,8 @@ const Header = () => (
     <a
       className="HelpDialog__btn"
       href="https://blog.excalidraw.com"
-      target="_blank"
       rel="noopener noreferrer"
+      target="_blank"
     >
       {t("helpDialog.blog")}
       <div className="HelpDialog__link-icon">{ExternalLinkIcon}</div>
@@ -31,8 +33,8 @@ const Header = () => (
     <a
       className="HelpDialog__btn"
       href="https://github.com/excalidraw/excalidraw/issues"
-      target="_blank"
       rel="noopener noreferrer"
+      target="_blank"
     >
       {t("helpDialog.github")}
       <div className="HelpDialog__link-icon">{ExternalLinkIcon}</div>
@@ -40,7 +42,7 @@ const Header = () => (
   </div>
 );
 
-const Section = (props: { title: string; children: React.ReactNode }) => (
+const Section = (props: { children: React.ReactNode; title: string }) => (
   <>
     <h3>{props.title}</h3>
     <div className="HelpDialog__islands-container">{props.children}</div>
@@ -58,7 +60,7 @@ const ShortcutIsland = (props: {
   </div>
 );
 
-function* intersperse(as: JSX.Element[][], delim: string | null) {
+function* intersperse(as: JSX.Layer[][], delim: string | null) {
   let first = true;
   for (const x of as) {
     if (!first) {
@@ -69,18 +71,17 @@ function* intersperse(as: JSX.Element[][], delim: string | null) {
   }
 }
 
-const upperCaseSingleChars = (str: string) => {
-  return str.replace(/\b[a-z]\b/, (c) => c.toUpperCase());
-};
+const upperCaseSingleChars = (str: string) =>
+  str.replace(/\b[a-z]\b/, (c) => c.toUpperCase());
 
 const Shortcut = ({
   label,
   shortcuts,
-  isOr = true,
+  isOr = true
 }: {
+  isOr?: boolean;
   label: string;
   shortcuts: string[];
-  isOr?: boolean;
 }) => {
   const splitShortcutKeys = shortcuts.map((shortcut) => {
     const keys = shortcut.endsWith("++")
@@ -116,15 +117,15 @@ export const HelpDialog = ({ onClose }: { onClose?: () => void }) => {
   return (
     <>
       <Dialog
+        className={"HelpDialog"}
         onCloseRequest={handleClose}
         title={t("helpDialog.title")}
-        className={"HelpDialog"}
       >
         <Header />
         <Section title={t("helpDialog.shortcuts")}>
           <ShortcutIsland
-            className="HelpDialog__island--tools"
             caption={t("helpDialog.tools")}
+            className="HelpDialog__island--tools"
           >
             <Shortcut label={t("toolBar.hand")} shortcuts={[KEYS.H]} />
             <Shortcut
@@ -181,35 +182,35 @@ export const HelpDialog = ({ onClose }: { onClose?: () => void }) => {
               label={t("helpDialog.textNewLine")}
               shortcuts={[
                 getShortcutKey("Enter"),
-                getShortcutKey("Shift+Enter"),
+                getShortcutKey("Shift+Enter")
               ]}
             />
             <Shortcut
               label={t("helpDialog.textFinish")}
               shortcuts={[
                 getShortcutKey("Esc"),
-                getShortcutKey("CtrlOrCmd+Enter"),
+                getShortcutKey("CtrlOrCmd+Enter")
               ]}
             />
             <Shortcut
+              isOr={false}
               label={t("helpDialog.curvedArrow")}
               shortcuts={[
                 "A",
                 t("helpDialog.click"),
                 t("helpDialog.click"),
-                t("helpDialog.click"),
+                t("helpDialog.click")
               ]}
-              isOr={false}
             />
             <Shortcut
+              isOr={false}
               label={t("helpDialog.curvedLine")}
               shortcuts={[
                 "L",
                 t("helpDialog.click"),
                 t("helpDialog.click"),
-                t("helpDialog.click"),
+                t("helpDialog.click")
               ]}
-              isOr={false}
             />
             <Shortcut label={t("toolBar.lock")} shortcuts={[KEYS.Q]} />
             <Shortcut
@@ -222,8 +223,8 @@ export const HelpDialog = ({ onClose }: { onClose?: () => void }) => {
             />
           </ShortcutIsland>
           <ShortcutIsland
-            className="HelpDialog__island--view"
             caption={t("helpDialog.view")}
+            className="HelpDialog__island--view"
           >
             <Shortcut
               label={t("buttons.zoomIn")}
@@ -276,16 +277,16 @@ export const HelpDialog = ({ onClose }: { onClose?: () => void }) => {
             />
           </ShortcutIsland>
           <ShortcutIsland
-            className="HelpDialog__island--editor"
             caption={t("helpDialog.editor")}
+            className="HelpDialog__island--editor"
           >
             <Shortcut
+              isOr={true}
               label={t("labels.moveCanvas")}
               shortcuts={[
                 getShortcutKey(`Space+${t("helpDialog.drag")}`),
-                getShortcutKey(`Wheel+${t("helpDialog.drag")}`),
+                getShortcutKey(`Wheel+${t("helpDialog.drag")}`)
               ]}
-              isOr={true}
             />
             <Shortcut
               label={t("buttons.clearReset")}
@@ -348,7 +349,7 @@ export const HelpDialog = ({ onClose }: { onClose?: () => void }) => {
               shortcuts={[
                 isDarwin
                   ? getShortcutKey("CtrlOrCmd+Alt+[")
-                  : getShortcutKey("CtrlOrCmd+Shift+["),
+                  : getShortcutKey("CtrlOrCmd+Shift+[")
               ]}
             />
             <Shortcut
@@ -356,7 +357,7 @@ export const HelpDialog = ({ onClose }: { onClose?: () => void }) => {
               shortcuts={[
                 isDarwin
                   ? getShortcutKey("CtrlOrCmd+Alt+]")
-                  : getShortcutKey("CtrlOrCmd+Shift+]"),
+                  : getShortcutKey("CtrlOrCmd+Shift+]")
               ]}
             />
             <Shortcut
@@ -387,11 +388,11 @@ export const HelpDialog = ({ onClose }: { onClose?: () => void }) => {
               label={t("labels.duplicateSelection")}
               shortcuts={[
                 getShortcutKey("CtrlOrCmd+D"),
-                getShortcutKey(`Alt+${t("helpDialog.drag")}`),
+                getShortcutKey(`Alt+${t("helpDialog.drag")}`)
               ]}
             />
             <Shortcut
-              label={t("helpDialog.toggleElementLock")}
+              label={t("helpDialog.toggleLayerLock")}
               shortcuts={[getShortcutKey("CtrlOrCmd+Shift+L")]}
             />
             <Shortcut
@@ -404,7 +405,7 @@ export const HelpDialog = ({ onClose }: { onClose?: () => void }) => {
                 isWindows
                   ? [
                       getShortcutKey("CtrlOrCmd+Y"),
-                      getShortcutKey("CtrlOrCmd+Shift+Z"),
+                      getShortcutKey("CtrlOrCmd+Shift+Z")
                     ]
                   : [getShortcutKey("CtrlOrCmd+Shift+Z")]
               }

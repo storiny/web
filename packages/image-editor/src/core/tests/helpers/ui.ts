@@ -1,12 +1,12 @@
-import {
-  ExcalidrawElement,
-  ExcalidrawLinearElement,
-  ExcalidrawTextElement,
-} from "../../element/types";
 import { KEYS } from "../../keys";
+import { mutateLayer } from "../../layer/mutateLayer";
+import {
+  ExcalidrawLayer,
+  ExcalidrawLinearLayer,
+  ExcalidrawTextLayer
+} from "../../layer/types";
 import { ToolName } from "../queries/toolQueries";
 import { fireEvent, GlobalTestState } from "../test-utils";
-import { mutateElement } from "../../element/mutateElement";
 import { API } from "./api";
 
 const { h } = window;
@@ -17,8 +17,8 @@ let ctrlKey = false;
 
 export type KeyboardModifiers = {
   alt?: boolean;
-  shift?: boolean;
   ctrl?: boolean;
+  shift?: boolean;
 };
 export class Keyboard {
   static withModifierKeys = (modifiers: KeyboardModifiers, cb: () => void) => {
@@ -44,7 +44,7 @@ export class Keyboard {
       key,
       ctrlKey,
       shiftKey,
-      altKey,
+      altKey
     });
   };
 
@@ -53,7 +53,7 @@ export class Keyboard {
       key,
       ctrlKey,
       shiftKey,
-      altKey,
+      altKey
     });
   };
 
@@ -67,7 +67,7 @@ export class Keyboard {
       code,
       ctrlKey,
       shiftKey,
-      altKey,
+      altKey
     });
   };
 
@@ -76,7 +76,7 @@ export class Keyboard {
       code,
       ctrlKey,
       shiftKey,
-      altKey,
+      altKey
     });
   };
 
@@ -92,7 +92,7 @@ export class Pointer {
 
   constructor(
     private readonly pointerType: "mouse" | "touch" | "pen",
-    private readonly pointerId = 1,
+    private readonly pointerId = 1
   ) {}
 
   reset() {
@@ -118,7 +118,7 @@ export class Pointer {
       pointerId: this.pointerId,
       altKey,
       shiftKey,
-      ctrlKey,
+      ctrlKey
     };
   }
 
@@ -183,7 +183,7 @@ export class Pointer {
     fireEvent.contextMenu(GlobalTestState.canvas, {
       button: 2,
       clientX: x,
-      clientY: y,
+      clientY: y
     });
   }
 
@@ -195,29 +195,29 @@ export class Pointer {
   // ---------------------------------------------------------------------------
 
   select(
-    /** if multiple elements supplied, they're shift-selected */
-    elements: ExcalidrawElement | ExcalidrawElement[],
+    /** if multiple layers supplied, they're shift-selected */
+    layers: ExcalidrawLayer | ExcalidrawLayer[]
   ) {
     API.clearSelection();
     Keyboard.withModifierKeys({ shift: true }, () => {
-      elements = Array.isArray(elements) ? elements : [elements];
-      elements.forEach((element) => {
+      layers = Array.isArray(layers) ? layers : [layers];
+      layers.forEach((layer) => {
         this.reset();
-        this.click(element.x, element.y);
+        this.click(layer.x, layer.y);
       });
     });
     this.reset();
   }
 
-  clickOn(element: ExcalidrawElement) {
+  clickOn(layer: ExcalidrawLayer) {
     this.reset();
-    this.click(element.x, element.y);
+    this.click(layer.x, layer.y);
     this.reset();
   }
 
-  doubleClickOn(element: ExcalidrawElement) {
+  doubleClickOn(layer: ExcalidrawLayer) {
     this.reset();
-    this.doubleClick(element.x, element.y);
+    this.doubleClick(layer.x, layer.y);
     this.reset();
   }
 }
@@ -229,33 +229,33 @@ export class UI {
     fireEvent.click(GlobalTestState.renderResult.getByToolName(toolName));
   };
 
-  static clickLabeledElement = (label: string) => {
-    const element = document.querySelector(`[aria-label='${label}']`);
-    if (!element) {
-      throw new Error(`No labeled element found: ${label}`);
+  static clickLabeledLayer = (label: string) => {
+    const layer = document.querySelector(`[aria-label='${label}']`);
+    if (!layer) {
+      throw new Error(`No labeled layer found: ${label}`);
     }
-    fireEvent.click(element);
+    fireEvent.click(layer);
   };
 
   static clickOnTestId = (testId: string) => {
-    const element = document.querySelector(`[data-testid='${testId}']`);
-    // const element = GlobalTestState.renderResult.queryByTestId(testId);
-    if (!element) {
-      throw new Error(`No element with testid "${testId}" found`);
+    const layer = document.querySelector(`[data-testid='${testId}']`);
+    // const layer = GlobalTestState.renderResult.queryByTestId(testId);
+    if (!layer) {
+      throw new Error(`No layer with testid "${testId}" found`);
     }
-    fireEvent.click(element);
+    fireEvent.click(layer);
   };
 
   /**
-   * Creates an Excalidraw element, and returns a proxy that wraps it so that
+   * Creates an Excalidraw layer, and returns a proxy that wraps it so that
    * accessing props will return the latest ones from the object existing in
-   * the app's elements array. This is because across the app lifecycle we tend
-   * to recreate element objects and the returned reference will become stale.
+   * the app's layers array. This is because across the app lifecycle we tend
+   * to recreate layer objects and the returned reference will become stale.
    *
-   * If you need to get the actual element, not the proxy, call `get()` method
+   * If you need to get the actual layer, not the proxy, call `get()` method
    * on the proxy object.
    */
-  static createElement<T extends ToolName>(
+  static createLayer<T extends ToolName>(
     type: T,
     {
       position = 0,
@@ -264,28 +264,28 @@ export class UI {
       size = 10,
       width = size,
       height = width,
-      angle = 0,
+      angle = 0
     }: {
+      angle?: number;
+      height?: number;
       position?: number;
-      x?: number;
-      y?: number;
       size?: number;
       width?: number;
-      height?: number;
-      angle?: number;
-    } = {},
+      x?: number;
+      y?: number;
+    } = {}
   ): (T extends "arrow" | "line" | "freedraw"
-    ? ExcalidrawLinearElement
+    ? ExcalidrawLinearLayer
     : T extends "text"
-    ? ExcalidrawTextElement
-    : ExcalidrawElement) & {
-    /** Returns the actual, current element from the elements array, instead
+    ? ExcalidrawTextLayer
+    : ExcalidrawLayer) & {
+    /** Returns the actual, current layer from the layers array, instead
         of the proxy */
     get(): T extends "arrow" | "line" | "freedraw"
-      ? ExcalidrawLinearElement
+      ? ExcalidrawLinearLayer
       : T extends "text"
-      ? ExcalidrawTextElement
-      : ExcalidrawElement;
+      ? ExcalidrawTextLayer
+      : ExcalidrawLayer;
   } {
     UI.clickTool(type);
     mouse.reset();
@@ -293,43 +293,42 @@ export class UI {
     mouse.reset();
     mouse.up(x + (width ?? height ?? size), y + (height ?? size));
 
-    const origElement = h.elements[h.elements.length - 1] as any;
+    const origLayer = h.layers[h.layers.length - 1] as any;
 
     if (angle !== 0) {
-      mutateElement(origElement, { angle });
+      mutateLayer(origLayer, { angle });
     }
 
     return new Proxy(
       {},
       {
         get(target, prop) {
-          const currentElement = h.elements.find(
-            (element) => element.id === origElement.id,
+          const currentLayer = h.layers.find(
+            (layer) => layer.id === origLayer.id
           ) as any;
           if (prop === "get") {
-            if (currentElement.hasOwnProperty("get")) {
+            if (currentLayer.hasOwnProperty("get")) {
               throw new Error(
-                "trying to get `get` test property, but ExcalidrawElement seems to define its own",
+                "trying to get `get` test property, but ExcalidrawLayer seems to define its own"
               );
             }
-            return () => currentElement;
+            return () => currentLayer;
           }
-          return currentElement[prop];
-        },
-      },
+          return currentLayer[prop];
+        }
+      }
     ) as any;
   }
 
-  static group(elements: ExcalidrawElement[]) {
-    mouse.select(elements);
+  static group(layers: ExcalidrawLayer[]) {
+    mouse.select(layers);
     Keyboard.withModifierKeys({ ctrl: true }, () => {
       Keyboard.keyPress(KEYS.G);
     });
   }
 
-  static queryContextMenu = () => {
-    return GlobalTestState.renderResult.container.querySelector(
-      ".context-menu",
-    ) as HTMLElement | null;
-  };
+  static queryContextMenu = () =>
+    GlobalTestState.renderResult.container.querySelector(
+      ".context-menu"
+    ) as HTMLLayer | null;
 }

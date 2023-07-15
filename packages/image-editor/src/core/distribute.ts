@@ -1,24 +1,24 @@
-import { ExcalidrawElement } from "./element/types";
-import { newElementWith } from "./element/mutateElement";
 import { getMaximumGroups } from "./groups";
-import { getCommonBoundingBox } from "./element/bounds";
+import { getCommonBoundingBox } from "./layer/bounds";
+import { newLayerWith } from "./layer/mutateLayer";
+import { ExcalidrawLayer } from "./layer/types";
 
 export interface Distribution {
-  space: "between";
   axis: "x" | "y";
+  space: "between";
 }
 
-export const distributeElements = (
-  selectedElements: ExcalidrawElement[],
-  distribution: Distribution,
-): ExcalidrawElement[] => {
+export const distributeLayers = (
+  selectedLayers: ExcalidrawLayer[],
+  distribution: Distribution
+): ExcalidrawLayer[] => {
   const [start, mid, end, extent] =
     distribution.axis === "x"
       ? (["minX", "midX", "maxX", "width"] as const)
       : (["minY", "midY", "maxY", "height"] as const);
 
-  const bounds = getCommonBoundingBox(selectedElements);
-  const groups = getMaximumGroups(selectedElements)
+  const bounds = getCommonBoundingBox(selectedLayers);
+  const groups = getMaximumGroups(selectedLayers)
     .map((group) => [group, getCommonBoundingBox(group)] as const)
     .sort((a, b) => a[1][mid] - b[1][mid]);
 
@@ -47,7 +47,7 @@ export const distributeElements = (
     return groups.flatMap(([group, box], index) => {
       const translation = {
         x: 0,
-        y: 0,
+        y: 0
       };
 
       // Don't move our start and end boxes
@@ -56,11 +56,11 @@ export const distributeElements = (
         translation[distribution.axis] = pos - box[mid];
       }
 
-      return group.map((element) =>
-        newElementWith(element, {
-          x: element.x + translation.x,
-          y: element.y + translation.y,
-        }),
+      return group.map((layer) =>
+        newLayerWith(layer, {
+          x: layer.x + translation.x,
+          y: layer.y + translation.y
+        })
       );
     });
   }
@@ -72,7 +72,7 @@ export const distributeElements = (
   return groups.flatMap(([group, box]) => {
     const translation = {
       x: 0,
-      y: 0,
+      y: 0
     };
 
     translation[distribution.axis] = pos - box[start];
@@ -80,11 +80,11 @@ export const distributeElements = (
     pos += step;
     pos += box[extent];
 
-    return group.map((element) =>
-      newElementWith(element, {
-        x: element.x + translation.x,
-        y: element.y + translation.y,
-      }),
+    return group.map((layer) =>
+      newLayerWith(layer, {
+        x: layer.x + translation.x,
+        y: layer.y + translation.y
+      })
     );
   });
 };

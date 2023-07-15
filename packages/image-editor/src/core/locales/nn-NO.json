@@ -4,7 +4,7 @@
     "pasteAsPlaintext": "",
     "pasteCharts": "Lim inn diagram",
     "selectAll": "Vel alt",
-    "multiSelect": "Legg til element i utval",
+    "multiSelect": "Legg til layer i utval",
     "moveCanvas": "Flytt lerretet",
     "cut": "Klipp ut",
     "copy": "Kopier",
@@ -116,7 +116,7 @@
       "edit": "",
       "exit": ""
     },
-    "elementLock": {
+    "layerLock": {
       "lock": "",
       "unlock": "",
       "lockAll": "",
@@ -124,8 +124,8 @@
     },
     "statusPublished": "",
     "sidebarLock": "",
-    "selectAllElementsInFrame": "",
-    "removeAllElementsFromFrame": "",
+    "selectAllLayersInFrame": "",
+    "removeAllLayersFromFrame": "",
     "eyeDropper": ""
   },
   "library": {
@@ -180,14 +180,14 @@
     "uploadedSecurly": "Opplastinga er kryptert og er ikkje mogleg å lese av Excalidraw-serveren eller tredjepartar.",
     "loadSceneOverridePrompt": "Innlasting av ekstern teikning erstattar ditt eksisterande innhald. Ynskjer du å fortsette?",
     "collabStopOverridePrompt": "Viss du avsluttar økta overskriv du den førre, lokalt lagra teikninga di. Er du sikker?\n\n(Ønsker du å halde fram med denne? Då er det berre å lukke denne fana.)",
-    "errorAddingToLibrary": "Kunne ikkje legge elementet i biblioteket",
-    "errorRemovingFromLibrary": "Kunne ikkje fjerne elementet frå biblioteket",
+    "errorAddingToLibrary": "Kunne ikkje legge layeret i biblioteket",
+    "errorRemovingFromLibrary": "Kunne ikkje fjerne layeret frå biblioteket",
     "confirmAddLibrary": "Dette vil legge til {{numShapes}} form(er) i biblioteket ditt. Er du sikker?",
     "imageDoesNotContainScene": "Dette biletet ser ikkje ut til å ha noko scenedata. Har du skrutt på innbygging av scene medan eksporteringa heldt på?",
     "cannotRestoreFromImage": "Scena kunne ikkje gjenopprettast frå denne biletfila",
     "invalidSceneUrl": "Kunne ikkje hente noko scene frå den URL-en. Ho er anten øydelagd eller inneheld ikkje gyldig Excalidraw JSON-data.",
     "resetLibrary": "Dette vil fjerne alt innhald frå biblioteket. Er du sikker?",
-    "removeItemsFromsLibrary": "Slette {{count}} element frå biblioteket?",
+    "removeItemsFromsLibrary": "Slette {{count}} layer frå biblioteket?",
     "invalidEncryptionKey": "Krypteringsnøkkelen må ha 22 teikn. Sanntidssamarbeid er deaktivert.",
     "collabOfflineWarning": ""
   },
@@ -234,12 +234,12 @@
   },
   "hints": {
     "canvasPanning": "",
-    "linearElement": "Klikk for å starte linje med fleire punkt, eller drag for ei enkel linje",
+    "linearLayer": "Klikk for å starte linje med fleire punkt, eller drag for ei enkel linje",
     "freeDraw": "Klikk og drag, slepp når du er ferdig",
     "text": "Tips: du kan òg leggje til tekst ved å dobbeltklikke kor som helst med utvalgsverktyet",
     "text_selected": "Dobbelklikk eller trykk ENTER for å redigere teksta",
     "text_editing": "Trykk Escape eller CtrlOrCmd+ENTER for å fullføre redigeringa",
-    "linearElementMulti": "Klikk på siste punkt eller trykk Escape eller Enter for å fullføre",
+    "linearLayerMulti": "Klikk på siste punkt eller trykk Escape eller Enter for å fullføre",
     "lockAngle": "Du kan begrense vinkelen ved å holde nede SKIFT",
     "resize": "Du kan halde fram med forholdet ved å trykke SHIFT medan du endrar storleik,\ntrykk ALT for å endre storleiken frå midten",
     "resizeImage": "Du kan endre storleiken fritt ved å halde inne SHIFT,\nhald ALT for å endre storleik frå sentrum",
@@ -249,15 +249,15 @@
     "lineEditor_nothingSelected": "Vel eit punkt å redigere (hald inne SHIFT for å velje fleire),\neller hald inne Alt og klikk for å legge til nye punkt",
     "placeImage": "Klikk for å plassere biletet, eller klikk og drag for å velje storleik manuelt",
     "publishLibrary": "Publiser ditt eige bibliotek",
-    "bindTextToElement": "Trykk på enter for å legge til tekst",
+    "bindTextToLayer": "Trykk på enter for å legge til tekst",
     "deepBoxSelect": "Hald inne Ctrl / Cmd for å velje djupt, og forhindre flytting",
-    "eraserRevert": "Hald inne Alt for å reversere markering av element for sletting",
+    "eraserRevert": "Hald inne Alt for å reversere markering av layer for sletting",
     "firefox_clipboard_write": ""
   },
   "canvasError": {
     "cannotShowPreview": "Kan ikkje vise førehandsvising",
     "canvasTooBig": "Lerretet er mogleg for stort.",
-    "canvasTooBigTip": "Tips: prøv å flytte elementa som er lengst frå kvarandre, litt nærare kvarandre."
+    "canvasTooBigTip": "Tips: prøv å flytte layera som er lengst frå kvarandre, litt nærare kvarandre."
   },
   "errorSplash": {
     "headingMain": "Ein feil oppstod. Prøv <button>å laste sida på nytt.</button>",
@@ -314,9 +314,9 @@
     "textNewLine": "Legg til ny linje (teksthandsamar)",
     "title": "Hjelp",
     "view": "Vising",
-    "zoomToFit": "Zoom for å sjå alle elementa",
+    "zoomToFit": "Zoom for å sjå alle layera",
     "zoomToSelection": "Zoom til utval",
-    "toggleElementLock": "",
+    "toggleLayerLock": "",
     "movePageUpDown": "",
     "movePageLeftRight": ""
   },
@@ -325,7 +325,7 @@
   },
   "publishDialog": {
     "title": "Publiser bibliotek",
-    "itemName": "Elementnamn",
+    "itemName": "Layernamn",
     "authorName": "Eigaren sitt namn",
     "githubUsername": "GitHub-brukarnamn",
     "twitterUsername": "Twitter-brukarnamn",
@@ -347,8 +347,8 @@
     "noteDescription": "Send inn biblioteket ditt til inkludering i <link>den offentlege bibliotek-kjeldekoda</link>slik at andre kan bruke det i teikningane deira.",
     "noteGuidelines": "Biblioteket må godkjennast manuelt fyrst. Ver vennleg å lese <link>retningslinjene</link> før du sender inn. Du kjem til å trenge ein GitHub-konto for å kommunisere og gjere endringar dersom kravt, men det er ikkje strengt naudsynt.",
     "noteLicense": "Ved å sende inn godkjenner du at biblioteket vert publisert under <link>MIT-lisensen, </link>som kort sagt betyr at kven som helst kan bruke det utan avgrensingar.",
-    "noteItems": "Kvart bibliotekselement må ha eit eige namn, slik at det er mogleg å filtrere. Dei følgande bibliotekselementa blir inkludert:",
-    "atleastOneLibItem": "Ver vennleg å markere minst eitt bibliotekselement for å starte",
+    "noteItems": "Kvart bibliotekslayer må ha eit eige namn, slik at det er mogleg å filtrere. Dei følgande bibliotekslayera blir inkludert:",
+    "atleastOneLibItem": "Ver vennleg å markere minst eitt bibliotekslayer for å starte",
     "republishWarning": ""
   },
   "publishSuccessDialog": {
@@ -357,7 +357,7 @@
   },
   "confirmDialog": {
     "resetLibrary": "Tilbakestill bibliotek",
-    "removeItemsFromLib": "Fjern valde element frå biblioteket"
+    "removeItemsFromLib": "Fjern valde layer frå biblioteket"
   },
   "imageExportDialog": {
     "header": "",
@@ -389,8 +389,8 @@
   },
   "stats": {
     "angle": "Vinkel",
-    "element": "Element",
-    "elements": "Element",
+    "layer": "Layer",
+    "layers": "Layer",
     "height": "Høgde",
     "scene": "Scene",
     "selected": "Valde",
@@ -411,7 +411,7 @@
     "fileSavedToFilename": "Lagra som {filename}",
     "canvas": "lerret",
     "selection": "val",
-    "pasteAsSingleElement": ""
+    "pasteAsSingleLayer": ""
   },
   "colors": {
     "transparent": "Gjennomsiktig",

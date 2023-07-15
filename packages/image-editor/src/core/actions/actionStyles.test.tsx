@@ -7,7 +7,7 @@ import {
   fireEvent,
   render,
   screen,
-  togglePopover,
+  togglePopover
 } from "../tests/test-utils";
 import { copiedStyles } from "./actionStyles";
 
@@ -50,28 +50,28 @@ describe("actionStyles", () => {
     fireEvent.click(screen.getByTitle("Cartoonist"));
     // Opacity
     fireEvent.change(screen.getByLabelText("Opacity"), {
-      target: { value: "60" },
+      target: { value: "60" }
     });
 
     mouse.reset();
 
-    API.setSelectedElements([h.elements[1]]);
+    API.setSelectedLayers([h.layers[1]]);
 
     Keyboard.withModifierKeys({ ctrl: true, alt: true }, () => {
       Keyboard.codeDown(CODES.C);
     });
     const secondRect = JSON.parse(copiedStyles)[0];
-    expect(secondRect.id).toBe(h.elements[1].id);
+    expect(secondRect.id).toBe(h.layers[1].id);
 
     mouse.reset();
     // Paste styles to first rectangle
-    API.setSelectedElements([h.elements[0]]);
+    API.setSelectedLayers([h.layers[0]]);
     Keyboard.withModifierKeys({ ctrl: true, alt: true }, () => {
       Keyboard.codeDown(CODES.V);
     });
 
-    const firstRect = API.getSelectedElement();
-    expect(firstRect.id).toBe(h.elements[0].id);
+    const firstRect = API.getSelectedLayer();
+    expect(firstRect.id).toBe(h.layers[0].id);
     expect(firstRect.strokeColor).toBe("#e03131");
     expect(firstRect.backgroundColor).toBe("#a5d8ff");
     expect(firstRect.fillStyle).toBe("cross-hatch");

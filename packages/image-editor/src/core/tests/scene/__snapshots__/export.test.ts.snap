@@ -74,7 +74,7 @@ exports[`exportToSvg with default arguments 1`] = `
 </svg>
 `;
 
-exports[`exportToSvg with elements that have a link 1`] = `
+exports[`exportToSvg with layers that have a link 1`] = `
 "
   <!-- svg-source:excalidraw -->
   

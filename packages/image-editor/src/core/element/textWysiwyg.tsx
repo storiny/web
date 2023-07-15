@@ -1,49 +1,45 @@
-import { CODES, KEYS } from "../keys";
+import Scene from "../../lib/scene/Scene";
+import { actionZoomIn, actionZoomOut } from "../actions/actionCanvas";
 import {
-  isWritableElement,
-  getFontString,
-  getFontFamilyString,
-  isTestEnv,
-} from "../utils";
-import Scene from "../scene/Scene";
-import {
-  isArrowElement,
-  isBoundToContainer,
-  isTextElement,
-} from "./typeChecks";
+  actionDecreaseFontSize,
+  actionIncreaseFontSize
+} from "../actions/actionProperties";
+import { parseClipboard } from "../clipboard";
+import App from "../components/App";
 import { CLASSES, isSafari } from "../constants";
-import {
-  ExcalidrawElement,
-  ExcalidrawLinearElement,
-  ExcalidrawTextElementWithContainer,
-  ExcalidrawTextElement,
-  ExcalidrawTextContainer,
-} from "./types";
+import { CODES, KEYS } from "../keys";
 import { AppState } from "../types";
-import { mutateElement } from "./mutateElement";
 import {
-  getBoundTextElementId,
+  getFontFamilyString,
+  getFontString,
+  isTestEnv,
+  isWritableLayer
+} from "../utils";
+import { LinearLayerEditor } from "./linearLayerEditor";
+import { mutateLayer } from "./mutateLayer";
+import {
+  computeBoundTextPosition,
+  computeContainerDimensionForBoundText,
+  detectLineHeight,
+  getBoundTextLayerId,
+  getBoundTextMaxHeight,
+  getBoundTextMaxWidth,
   getContainerDims,
-  getContainerElement,
-  getTextElementAngle,
+  getContainerLayer,
+  getTextLayerAngle,
   getTextWidth,
   normalizeText,
   redrawTextBoundingBox,
-  wrapText,
-  getBoundTextMaxHeight,
-  getBoundTextMaxWidth,
-  computeContainerDimensionForBoundText,
-  detectLineHeight,
-  computeBoundTextPosition,
-} from "./textElement";
+  wrapText
+} from "./textLayer";
+import { isArrowLayer, isBoundToContainer, isTextLayer } from "./typeChecks";
 import {
-  actionDecreaseFontSize,
-  actionIncreaseFontSize,
-} from "../actions/actionProperties";
-import { actionZoomIn, actionZoomOut } from "../actions/actionCanvas";
-import App from "../components/App";
-import { LinearElementEditor } from "./linearElementEditor";
-import { parseClipboard } from "../clipboard";
+  ExcalidrawLayer,
+  ExcalidrawLinearLayer,
+  ExcalidrawTextContainer,
+  ExcalidrawTextLayer,
+  ExcalidrawTextLayerWithContainer
+} from "./types";
 
 const getTransform = (
   width: number,
@@ -51,7 +47,7 @@ const getTransform = (
   angle: number,
   appState: AppState,
   maxWidth: number,
-  maxHeight: number,
+  maxHeight: number
 ) => {
   const { zoom } = appState;
   const degree = (180 * angle) / Math.PI;
@@ -76,7 +72,7 @@ const originalContainerCache: {
 
 export const updateOriginalContainerCache = (
   id: ExcalidrawTextContainer["id"],
-  height: ExcalidrawTextContainer["height"],
+  height: ExcalidrawTextContainer["height"]
 ) => {
   const data =
     originalContainerCache[id] || (originalContainerCache[id] = { height });
@@ -85,7 +81,7 @@ export const updateOriginalContainerCache = (
 };
 
 export const resetOriginalContainerCache = (
-  id: ExcalidrawTextContainer["id"],
+  id: ExcalidrawTextContainer["id"]
 ) => {
   if (originalContainerCache[id]) {
     delete originalContainerCache[id];
@@ -93,49 +89,47 @@ export const resetOriginalContainerCache = (
 };
 
 export const getOriginalContainerHeightFromCache = (
-  id: ExcalidrawTextContainer["id"],
-) => {
-  return originalContainerCache[id]?.height ?? null;
-};
+  id: ExcalidrawTextContainer["id"]
+) => originalContainerCache[id]?.height ?? null;
 
 export const textWysiwyg = ({
   id,
   onChange,
   onSubmit,
   getViewportCoords,
-  element,
+  layer,
   canvas,
   excalidrawContainer,
-  app,
+  app
 }: {
-  id: ExcalidrawElement["id"];
+  app: App;
+  canvas: HTMLCanvasLayer | null;
+  excalidrawContainer: HTMLDivLayer | null;
+  getViewportCoords: (x: number, y: number) => [number, number];
+  id: ExcalidrawLayer["id"];
+  layer: ExcalidrawTextLayer;
   onChange?: (text: string) => void;
   onSubmit: (data: {
+    originalText: string;
     text: string;
     viaKeyboard: boolean;
-    originalText: string;
   }) => void;
-  getViewportCoords: (x: number, y: number) => [number, number];
-  element: ExcalidrawTextElement;
-  canvas: HTMLCanvasElement | null;
-  excalidrawContainer: HTMLDivElement | null;
-  app: App;
 }) => {
   const textPropertiesUpdated = (
-    updatedTextElement: ExcalidrawTextElement,
-    editable: HTMLTextAreaElement,
+    updatedTextLayer: ExcalidrawTextLayer,
+    editable: HTMLTextAreaLayer
   ) => {
     if (!editable.style.fontFamily || !editable.style.fontSize) {
       return false;
     }
     const currentFont = editable.style.fontFamily.replace(/"/g, "");
     if (
-      getFontFamilyString({ fontFamily: updatedTextElement.fontFamily }) !==
+      getFontFamilyString({ fontFamily: updatedTextLayer.fontFamily }) !==
       currentFont
     ) {
       return true;
     }
-    if (`${updatedTextElement.fontSize}px` !== editable.style.fontSize) {
+    if (`${updatedTextLayer.fontSize}px` !== editable.style.fontSize) {
       return true;
     }
     return false;
@@ -143,39 +137,38 @@ export const textWysiwyg = ({
 
   const updateWysiwygStyle = () => {
     const appState = app.state;
-    const updatedTextElement =
-      Scene.getScene(element)?.getElement<ExcalidrawTextElement>(id);
+    const updatedTextLayer =
+      Scene.getScene(layer)?.getLayer<ExcalidrawTextLayer>(id);
 
-    if (!updatedTextElement) {
+    if (!updatedTextLayer) {
       return;
     }
-    const { textAlign, verticalAlign } = updatedTextElement;
+    const { textAlign, verticalAlign } = updatedTextLayer;
 
-    if (updatedTextElement && isTextElement(updatedTextElement)) {
-      let coordX = updatedTextElement.x;
-      let coordY = updatedTextElement.y;
-      const container = getContainerElement(updatedTextElement);
-      let maxWidth = updatedTextElement.width;
+    if (updatedTextLayer && isTextLayer(updatedTextLayer)) {
+      let coordX = updatedTextLayer.x;
+      let coordY = updatedTextLayer.y;
+      const container = getContainerLayer(updatedTextLayer);
+      let maxWidth = updatedTextLayer.width;
 
-      let maxHeight = updatedTextElement.height;
-      let textElementWidth = updatedTextElement.width;
-      // Set to element height by default since that's
+      let maxHeight = updatedTextLayer.height;
+      let textLayerWidth = updatedTextLayer.width;
+      // Set to layer height by default since that's
       // what is going to be used for unbounded text
-      const textElementHeight = updatedTextElement.height;
+      const textLayerHeight = updatedTextLayer.height;
 
-      if (container && updatedTextElement.containerId) {
-        if (isArrowElement(container)) {
-          const boundTextCoords =
-            LinearElementEditor.getBoundTextElementPosition(
-              container,
-              updatedTextElement as ExcalidrawTextElementWithContainer,
-            );
+      if (container && updatedTextLayer.containerId) {
+        if (isArrowLayer(container)) {
+          const boundTextCoords = LinearLayerEditor.getBoundTextLayerPosition(
+            container,
+            updatedTextLayer as ExcalidrawTextLayerWithContainer
+          );
           coordX = boundTextCoords.x;
           coordY = boundTextCoords.y;
         }
         const propertiesUpdated = textPropertiesUpdated(
-          updatedTextElement,
-          editable,
+          updatedTextLayer,
+          editable
         );
         const containerDims = getContainerDims(container);
 
@@ -183,14 +176,14 @@ export const textWysiwyg = ({
         if (propertiesUpdated) {
           originalContainerData = updateOriginalContainerCache(
             container.id,
-            containerDims.height,
+            containerDims.height
           );
         } else {
           originalContainerData = originalContainerCache[container.id];
           if (!originalContainerData) {
             originalContainerData = updateOriginalContainerCache(
               container.id,
-              containerDims.height,
+              containerDims.height
             );
           }
         }
@@ -198,34 +191,34 @@ export const textWysiwyg = ({
         maxWidth = getBoundTextMaxWidth(container);
         maxHeight = getBoundTextMaxHeight(
           container,
-          updatedTextElement as ExcalidrawTextElementWithContainer,
+          updatedTextLayer as ExcalidrawTextLayerWithContainer
         );
 
         // autogrow container height if text exceeds
-        if (!isArrowElement(container) && textElementHeight > maxHeight) {
+        if (!isArrowLayer(container) && textLayerHeight > maxHeight) {
           const targetContainerHeight = computeContainerDimensionForBoundText(
-            textElementHeight,
-            container.type,
+            textLayerHeight,
+            container.type
           );
 
-          mutateElement(container, { height: targetContainerHeight });
+          mutateLayer(container, { height: targetContainerHeight });
           return;
         } else if (
           // autoshrink container height until original container height
           // is reached when text is removed
-          !isArrowElement(container) &&
+          !isArrowLayer(container) &&
           containerDims.height > originalContainerData.height &&
-          textElementHeight < maxHeight
+          textLayerHeight < maxHeight
         ) {
           const targetContainerHeight = computeContainerDimensionForBoundText(
-            textElementHeight,
-            container.type,
+            textLayerHeight,
+            container.type
           );
-          mutateElement(container, { height: targetContainerHeight });
+          mutateLayer(container, { height: targetContainerHeight });
         } else {
           const { y } = computeBoundTextPosition(
             container,
-            updatedTextElement as ExcalidrawTextElementWithContainer,
+            updatedTextLayer as ExcalidrawTextLayerWithContainer
           );
           coordY = y;
         }
@@ -250,18 +243,18 @@ export const textWysiwyg = ({
 
       if (!container) {
         maxWidth = (appState.width - 8 - viewportX) / appState.zoom.value;
-        textElementWidth = Math.min(textElementWidth, maxWidth);
+        textLayerWidth = Math.min(textLayerWidth, maxWidth);
       } else {
-        textElementWidth += 0.5;
+        textLayerWidth += 0.5;
       }
 
-      let lineHeight = updatedTextElement.lineHeight;
+      let lineHeight = updatedTextLayer.lineHeight;
 
       // In Safari the font size gets rounded off when rendering hence calculating the line height by rounding off font size
       if (isSafari) {
         lineHeight = detectLineHeight({
-          ...updatedTextElement,
-          fontSize: Math.round(updatedTextElement.fontSize),
+          ...updatedTextLayer,
+          fontSize: Math.round(updatedTextLayer.fontSize)
         });
       }
 
@@ -269,39 +262,39 @@ export const textWysiwyg = ({
       const editorMaxHeight =
         (appState.height - viewportY) / appState.zoom.value;
       Object.assign(editable.style, {
-        font: getFontString(updatedTextElement),
+        font: getFontString(updatedTextLayer),
         // must be defined *after* font ¯\_(ツ)_/¯
         lineHeight,
-        width: `${textElementWidth}px`,
-        height: `${textElementHeight}px`,
+        width: `${textLayerWidth}px`,
+        height: `${textLayerHeight}px`,
         left: `${viewportX}px`,
         top: `${viewportY}px`,
         transform: getTransform(
-          textElementWidth,
-          textElementHeight,
-          getTextElementAngle(updatedTextElement),
+          textLayerWidth,
+          textLayerHeight,
+          getTextLayerAngle(updatedTextLayer),
           appState,
           maxWidth,
-          editorMaxHeight,
+          editorMaxHeight
         ),
         textAlign,
         verticalAlign,
-        color: updatedTextElement.strokeColor,
-        opacity: updatedTextElement.opacity / 100,
+        color: updatedTextLayer.strokeColor,
+        opacity: updatedTextLayer.opacity / 100,
         filter: "var(--theme-filter)",
-        maxHeight: `${editorMaxHeight}px`,
+        maxHeight: `${editorMaxHeight}px`
       });
       editable.scrollTop = 0;
       // For some reason updating font attribute doesn't set font family
       // hence updating font family explicitly for test environment
       if (isTestEnv()) {
-        editable.style.fontFamily = getFontFamilyString(updatedTextElement);
+        editable.style.fontFamily = getFontFamilyString(updatedTextLayer);
       }
-      mutateElement(updatedTextElement, { x: coordX, y: coordY });
+      mutateLayer(updatedTextLayer, { x: coordX, y: coordY });
     }
   };
 
-  const editable = document.createElement("textarea");
+  const editable = document.createLayer("textarea");
 
   editable.dir = "auto";
   editable.tabIndex = 0;
@@ -313,7 +306,7 @@ export const textWysiwyg = ({
   let whiteSpace = "pre";
   let wordBreak = "normal";
 
-  if (isBoundToContainer(element)) {
+  if (isBoundToContainer(layer)) {
     whiteSpace = "pre-wrap";
     wordBreak = "break-word";
   }
@@ -335,9 +328,9 @@ export const textWysiwyg = ({
     // prevent line wrapping (`whitespace: nowrap` doesn't work on FF)
     whiteSpace,
     overflowWrap: "break-word",
-    boxSizing: "content-box",
+    boxSizing: "content-box"
   });
-  editable.value = element.originalText;
+  editable.value = layer.originalText;
   updateWysiwygStyle();
 
   if (onChange) {
@@ -350,17 +343,17 @@ export const textWysiwyg = ({
       if (!data) {
         return;
       }
-      const container = getContainerElement(element);
+      const container = getContainerLayer(layer);
 
       const font = getFontString({
         fontSize: app.state.currentItemFontSize,
-        fontFamily: app.state.currentItemFontFamily,
+        fontFamily: app.state.currentItemFontFamily
       });
       if (container) {
         const wrappedText = wrapText(
           `${editable.value}${data}`,
           font,
-          getBoundTextMaxWidth(container),
+          getBoundTextMaxWidth(container)
         );
         const width = getTextWidth(wrappedText, font);
         editable.style.width = `${width}px`;
@@ -410,7 +403,7 @@ export const textWysiwyg = ({
       } else {
         indent();
       }
-      // We must send an input event to resize the element
+      // We must send an input event to resize the layer
       editable.dispatchEvent(new Event("input"));
     }
   };
@@ -463,7 +456,7 @@ export const textWysiwyg = ({
       if (selectionStart > removedTabs[removedTabs.length - 1]) {
         editable.selectionStart = Math.max(
           selectionStart - TAB_SIZE,
-          removedTabs[removedTabs.length - 1],
+          removedTabs[removedTabs.length - 1]
         );
       } else {
         // If the cursor is before the first tab removed, ex:
@@ -475,7 +468,7 @@ export const textWysiwyg = ({
       }
       editable.selectionEnd = Math.max(
         editable.selectionStart,
-        selectionEnd - TAB_SIZE * removedTabs.length,
+        selectionEnd - TAB_SIZE * removedTabs.length
       );
     }
   };
@@ -503,9 +496,9 @@ export const textWysiwyg = ({
               ? // curr line index is prev line's start + prev line's length + \n
                 startIndices[idx - 1] + lines[idx - 1].length + 1
               : // first selected line
-                selectionStart,
+                selectionStart
           ),
-        [] as number[],
+        [] as number[]
       )
       .reverse();
   };
@@ -523,44 +516,42 @@ export const textWysiwyg = ({
     // it'd get stuck in an infinite loop of blur→onSubmit after we re-focus the
     // wysiwyg on update
     cleanup();
-    const updateElement = Scene.getScene(element)?.getElement(
-      element.id,
-    ) as ExcalidrawTextElement;
-    if (!updateElement) {
+    const updateLayer = Scene.getScene(layer)?.getLayer(
+      layer.id
+    ) as ExcalidrawTextLayer;
+    if (!updateLayer) {
       return;
     }
     let text = editable.value;
-    const container = getContainerElement(updateElement);
+    const container = getContainerLayer(updateLayer);
 
     if (container) {
-      text = updateElement.text;
+      text = updateLayer.text;
       if (editable.value.trim()) {
-        const boundTextElementId = getBoundTextElementId(container);
-        if (!boundTextElementId || boundTextElementId !== element.id) {
-          mutateElement(container, {
-            boundElements: (container.boundElements || []).concat({
+        const boundTextLayerId = getBoundTextLayerId(container);
+        if (!boundTextLayerId || boundTextLayerId !== layer.id) {
+          mutateLayer(container, {
+            boundLayers: (container.boundLayers || []).concat({
               type: "text",
-              id: element.id,
-            }),
+              id: layer.id
+            })
           });
         }
       } else {
-        mutateElement(container, {
-          boundElements: container.boundElements?.filter(
+        mutateLayer(container, {
+          boundLayers: container.boundLayers?.filter(
             (ele) =>
-              !isTextElement(
-                ele as ExcalidrawTextElement | ExcalidrawLinearElement,
-              ),
-          ),
+              !isTextLayer(ele as ExcalidrawTextLayer | ExcalidrawLinearLayer)
+          )
         });
       }
-      redrawTextBoundingBox(updateElement, container);
+      redrawTextBoundingBox(updateLayer, container);
     }
 
     onSubmit({
       text,
       viaKeyboard: submittedViaKeyboard,
-      originalText: editable.value,
+      originalText: editable.value
     });
   };
 
@@ -598,8 +589,7 @@ export const textWysiwyg = ({
     const target = event?.target;
 
     const isTargetPickerTrigger =
-      target instanceof HTMLElement &&
-      target.classList.contains("active-color");
+      target instanceof HTMLLayer && target.classList.contains("active-color");
 
     setTimeout(() => {
       editable.onblur = handleSubmit;
@@ -607,13 +597,13 @@ export const textWysiwyg = ({
       if (isTargetPickerTrigger) {
         const callback = (
           mutationList: MutationRecord[],
-          observer: MutationObserver,
+          observer: MutationObserver
         ) => {
           const radixIsRemoved = mutationList.find(
             (mutation) =>
               mutation.removedNodes.length > 0 &&
-              (mutation.removedNodes[0] as HTMLElement).dataset
-                ?.radixPopperContentWrapper !== undefined,
+              (mutation.removedNodes[0] as HTMLLayer).dataset
+                ?.radixPopperContentWrapper !== undefined
           );
 
           if (radixIsRemoved) {
@@ -631,7 +621,7 @@ export const textWysiwyg = ({
         const observer = new MutationObserver(callback);
 
         observer.observe(document.querySelector(".excalidraw-container")!, {
-          childList: true,
+          childList: true
         });
       }
 
@@ -645,14 +635,14 @@ export const textWysiwyg = ({
   // prevent blur when changing properties from the menu
   const onPointerDown = (event: MouseEvent) => {
     const isTargetPickerTrigger =
-      event.target instanceof HTMLElement &&
+      event.target instanceof HTMLLayer &&
       event.target.classList.contains("active-color");
 
     if (
-      ((event.target instanceof HTMLElement ||
-        event.target instanceof SVGElement) &&
+      ((event.target instanceof HTMLLayer ||
+        event.target instanceof SVGLayer) &&
         event.target.closest(`.${CLASSES.SHAPE_ACTIONS_MENU}`) &&
-        !isWritableElement(event.target)) ||
+        !isWritableLayer(event.target)) ||
       isTargetPickerTrigger
     ) {
       editable.onblur = null;
@@ -663,11 +653,11 @@ export const textWysiwyg = ({
     }
   };
 
-  // handle updates of textElement properties of editing element
-  const unbindUpdate = Scene.getScene(element)!.addCallback(() => {
+  // handle updates of textLayer properties of editing layer
+  const unbindUpdate = Scene.getScene(layer)!.addCallback(() => {
     updateWysiwygStyle();
-    const isColorPickerActive = !!document.activeElement?.closest(
-      ".color-picker-content",
+    const isColorPickerActive = !!document.activeLayer?.closest(
+      ".color-picker-content"
     );
     if (!isColorPickerActive) {
       editable.focus();
@@ -698,7 +688,7 @@ export const textWysiwyg = ({
   window.addEventListener("pointerdown", onPointerDown);
   window.addEventListener("wheel", stopEvent, {
     passive: false,
-    capture: true,
+    capture: true
   });
   excalidrawContainer
     ?.querySelector(".excalidraw-textEditorContainer")!

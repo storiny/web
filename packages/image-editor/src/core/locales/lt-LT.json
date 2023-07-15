@@ -4,7 +4,7 @@
     "pasteAsPlaintext": "Įklijuoti kaip paprastą tekstą",
     "pasteCharts": "Įklijuoti diagramas",
     "selectAll": "Pažymėti viską",
-    "multiSelect": "Pridėkite elementą prie pasirinktų",
+    "multiSelect": "Pridėkite layerą prie pasirinktų",
     "moveCanvas": "Judinti drobę",
     "cut": "Iškirpti",
     "copy": "Kopijuoti",
@@ -116,7 +116,7 @@
       "edit": "",
       "exit": ""
     },
-    "elementLock": {
+    "layerLock": {
       "lock": "Užrakinti",
       "unlock": "Atrakinti",
       "lockAll": "",
@@ -124,8 +124,8 @@
     },
     "statusPublished": "",
     "sidebarLock": "",
-    "selectAllElementsInFrame": "",
-    "removeAllElementsFromFrame": "",
+    "selectAllLayersInFrame": "",
+    "removeAllLayersFromFrame": "",
     "eyeDropper": ""
   },
   "library": {
@@ -180,14 +180,14 @@
     "uploadedSecurly": "",
     "loadSceneOverridePrompt": "",
     "collabStopOverridePrompt": "Sesijos nutraukimas perrašys ankstesnį, lokaliai išsaugotą piešinį. Ar tikrai to nori?\n\n(Jei nori išlaikyti lokalų piešinį, tiesiog uždaryk naršyklės skirtuką.)",
-    "errorAddingToLibrary": "Nepavyko įtraukti elemento į biblioteką",
-    "errorRemovingFromLibrary": "Nepavyko pašalinti elemento iš bibliotekos",
+    "errorAddingToLibrary": "Nepavyko įtraukti layero į biblioteką",
+    "errorRemovingFromLibrary": "Nepavyko pašalinti layero iš bibliotekos",
     "confirmAddLibrary": "Tai įtrauks {{numShapes}} figūrą/-as į tavo biblioteką. Ar tikrai to nori?",
     "imageDoesNotContainScene": "Panašu, jog šis paveiksliukas neturi scenos duomenų. Ar yra įjuntas scenos įtraukimas ekportavimo metu?",
     "cannotRestoreFromImage": "Nepavyko atstatyti scenos iš šio nuotraukos failo",
     "invalidSceneUrl": "Nepavyko suimportuoti scenos iš pateiktos nuorodos (URL). Ji arba blogai suformatuota, arba savyje neturi teisingų Excalidraw JSON duomenų.",
     "resetLibrary": "Tai išvalys tavo biblioteką. Ar tikrai to nori?",
-    "removeItemsFromsLibrary": "Ištrinti {{count}} elementą/-us iš bibliotekos?",
+    "removeItemsFromsLibrary": "Ištrinti {{count}} layerą/-us iš bibliotekos?",
     "invalidEncryptionKey": "Šifravimo raktas turi būti iš 22 simbolių. Redagavimas gyvai yra išjungtas.",
     "collabOfflineWarning": ""
   },
@@ -234,12 +234,12 @@
   },
   "hints": {
     "canvasPanning": "",
-    "linearElement": "Paspaudimai sukurs papildomus taškus, nepertraukiamas tempimas sukurs liniją",
+    "linearLayer": "Paspaudimai sukurs papildomus taškus, nepertraukiamas tempimas sukurs liniją",
     "freeDraw": "Spausk ir tempk, paleisk kai norėsi pabaigti",
     "text": "Užuomina: tekstą taip pat galima pridėti bet kur su dvigubu pelės paspaudimu, kol parinkas žymėjimo įrankis",
     "text_selected": "",
     "text_editing": "",
-    "linearElementMulti": "",
+    "linearLayerMulti": "",
     "lockAngle": "",
     "resize": "",
     "resizeImage": "",
@@ -249,7 +249,7 @@
     "lineEditor_nothingSelected": "",
     "placeImage": "",
     "publishLibrary": "",
-    "bindTextToElement": "",
+    "bindTextToLayer": "",
     "deepBoxSelect": "",
     "eraserRevert": "",
     "firefox_clipboard_write": ""
@@ -316,7 +316,7 @@
     "view": "",
     "zoomToFit": "",
     "zoomToSelection": "Priartinti iki pažymėtos vietos",
-    "toggleElementLock": "",
+    "toggleLayerLock": "",
     "movePageUpDown": "Pajudinti puslapį aukštyn/žemyn",
     "movePageLeftRight": "Pajudinti puslapį kairėn/dešinėn"
   },
@@ -325,7 +325,7 @@
   },
   "publishDialog": {
     "title": "Paviešinti biblioteką",
-    "itemName": "Elemento pavadinimas",
+    "itemName": "Layero pavadinimas",
     "authorName": "Autoriaus vardas",
     "githubUsername": "Github spalyvardis",
     "twitterUsername": "Twitter slapyvardis",
@@ -357,7 +357,7 @@
   },
   "confirmDialog": {
     "resetLibrary": "Atstatyti biblioteką",
-    "removeItemsFromLib": "Pašalinti pasirinktus elementus iš bibliotekos"
+    "removeItemsFromLib": "Pašalinti pasirinktus layerus iš bibliotekos"
   },
   "imageExportDialog": {
     "header": "",
@@ -389,8 +389,8 @@
   },
   "stats": {
     "angle": "",
-    "element": "Elementas",
-    "elements": "Elementai",
+    "layer": "Layeras",
+    "layers": "Layerai",
     "height": "Aukštis",
     "scene": "Scena",
     "selected": "Pasirinkta",
@@ -411,7 +411,7 @@
     "fileSavedToFilename": "Išsaugota į {filename}",
     "canvas": "drobė",
     "selection": "",
-    "pasteAsSingleElement": ""
+    "pasteAsSingleLayer": ""
   },
   "colors": {
     "transparent": "Permatoma",

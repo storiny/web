@@ -1,40 +1,40 @@
-import { ExcalidrawElement } from "./element/types";
-import { newElementWith } from "./element/mutateElement";
-import { BoundingBox, getCommonBoundingBox } from "./element/bounds";
 import { getMaximumGroups } from "./groups";
+import { BoundingBox, getCommonBoundingBox } from "./layer/bounds";
+import { newLayerWith } from "./layer/mutateLayer";
+import { ExcalidrawLayer } from "./layer/types";
 
 export interface Alignment {
-  position: "start" | "center" | "end";
   axis: "x" | "y";
+  position: "start" | "center" | "end";
 }
 
-export const alignElements = (
-  selectedElements: ExcalidrawElement[],
-  alignment: Alignment,
-): ExcalidrawElement[] => {
-  const groups: ExcalidrawElement[][] = getMaximumGroups(selectedElements);
+export const alignLayers = (
+  selectedLayers: ExcalidrawLayer[],
+  alignment: Alignment
+): ExcalidrawLayer[] => {
+  const groups: ExcalidrawLayer[][] = getMaximumGroups(selectedLayers);
 
-  const selectionBoundingBox = getCommonBoundingBox(selectedElements);
+  const selectionBoundingBox = getCommonBoundingBox(selectedLayers);
 
   return groups.flatMap((group) => {
     const translation = calculateTranslation(
       group,
       selectionBoundingBox,
-      alignment,
+      alignment
     );
-    return group.map((element) =>
-      newElementWith(element, {
-        x: element.x + translation.x,
-        y: element.y + translation.y,
-      }),
+    return group.map((layer) =>
+      newLayerWith(layer, {
+        x: layer.x + translation.x,
+        y: layer.y + translation.y
+      })
     );
   });
 };
 
 const calculateTranslation = (
-  group: ExcalidrawElement[],
+  group: ExcalidrawLayer[],
   selectionBoundingBox: BoundingBox,
-  { axis, position }: Alignment,
+  { axis, position }: Alignment
 ): { x: number; y: number } => {
   const groupBoundingBox = getCommonBoundingBox(group);
 
@@ -45,18 +45,18 @@ const calculateTranslation = (
   if (position === "start") {
     return {
       ...noTranslation,
-      [axis]: selectionBoundingBox[min] - groupBoundingBox[min],
+      [axis]: selectionBoundingBox[min] - groupBoundingBox[min]
     };
   } else if (position === "end") {
     return {
       ...noTranslation,
-      [axis]: selectionBoundingBox[max] - groupBoundingBox[max],
+      [axis]: selectionBoundingBox[max] - groupBoundingBox[max]
     };
   } // else if (position === "center") {
   return {
     ...noTranslation,
     [axis]:
       (selectionBoundingBox[min] + selectionBoundingBox[max]) / 2 -
-      (groupBoundingBox[min] + groupBoundingBox[max]) / 2,
+      (groupBoundingBox[min] + groupBoundingBox[max]) / 2
   };
 };

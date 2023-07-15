@@ -1,43 +1,44 @@
 import ReactDOM from "react-dom";
-import {
-  render,
-  fireEvent,
-  mockBoundingClientRect,
-  restoreOriginalGetBoundingClientRect,
-  GlobalTestState,
-  screen,
-  queryByText,
-  queryAllByText,
-  waitFor,
-  togglePopover,
-} from "./test-utils";
-import ExcalidrawApp from "../excalidraw-app";
-import * as Renderer from "../renderer/renderScene";
-import { reseed } from "../random";
-import { UI, Pointer, Keyboard } from "./helpers/ui";
-import { KEYS } from "../keys";
-import { ShortcutName } from "../actions/shortcuts";
+
 import { copiedStyles } from "../actions/actionStyles";
-import { API } from "./helpers/api";
-import { setDateTimeForTests } from "../utils";
+import { ShortcutName } from "../actions/shortcuts";
+import ExcalidrawApp from "../excalidraw-app";
+import { KEYS } from "../keys";
+import { reseed } from "../random";
+import * as Renderer from "../renderer/renderScene";
 import { LibraryItem } from "../types";
+import { setDateTimeForTests } from "../utils";
+import { API } from "./helpers/api";
+import { Keyboard, Pointer, UI } from "./helpers/ui";
+import {
+  fireEvent,
+  GlobalTestState,
+  mockBoundingClientRect,
+  queryAllByText,
+  queryByText,
+  render,
+  restoreOriginalGetBoundingClientRect,
+  screen,
+  togglePopover,
+  waitFor
+} from "./test-utils";
 
 const checkpoint = (name: string) => {
   expect(renderScene.mock.calls.length).toMatchSnapshot(
-    `[${name}] number of renders`,
+    `[${name}] number of renders`
   );
   expect(h.state).toMatchSnapshot(`[${name}] appState`);
   expect(h.history.getSnapshotForTest()).toMatchSnapshot(`[${name}] history`);
-  expect(h.elements.length).toMatchSnapshot(`[${name}] number of elements`);
-  h.elements.forEach((element, i) =>
-    expect(element).toMatchSnapshot(`[${name}] element ${i}`),
+  expect(h.layers.length).toMatchSnapshot(`[${name}] number of layers`);
+  h.layers.forEach((layer, i) =>
+    expect(layer).toMatchSnapshot(`[${name}] layer ${i}`)
   );
 };
 
 const mouse = new Pointer("mouse");
 
 // Unmount ReactDOM from root
-ReactDOM.unmountComponentAtNode(document.getElementById("root")!);
+ReactDOM.unmountComponentAtNode(document.getLayerById("root")!);
 
 const renderScene = jest.spyOn(Renderer, "renderScene");
 beforeEach(() => {
@@ -48,7 +49,7 @@ beforeEach(() => {
 
 const { h } = window;
 
-describe("contextMenu element", () => {
+describe("contextMenu layer", () => {
   beforeEach(async () => {
     localStorage.clear();
     renderScene.mockClear();
@@ -77,7 +78,7 @@ describe("contextMenu element", () => {
     fireEvent.contextMenu(GlobalTestState.canvas, {
       button: 2,
       clientX: 1,
-      clientY: 1,
+      clientY: 1
     });
     const contextMenu = UI.queryContextMenu();
     const contextMenuOptions =
@@ -87,19 +88,19 @@ describe("contextMenu element", () => {
       "gridMode",
       "zenMode",
       "viewMode",
-      "stats",
+      "stats"
     ];
 
     expect(contextMenu).not.toBeNull();
     expect(contextMenuOptions?.length).toBe(expectedShortcutNames.length);
     expectedShortcutNames.forEach((shortcutName) => {
       expect(
-        contextMenu?.querySelector(`li[data-testid="${shortcutName}"]`),
+        contextMenu?.querySelector(`li[data-testid="${shortcutName}"]`)
       ).not.toBeNull();
     });
   });
 
-  it("shows context menu for element", () => {
+  it("shows context menu for layer", () => {
     UI.clickTool("rectangle");
     mouse.down(10, 10);
     mouse.up(20, 20);
@@ -107,7 +108,7 @@ describe("contextMenu element", () => {
     fireEvent.contextMenu(GlobalTestState.canvas, {
       button: 2,
       clientX: 1,
-      clientY: 1,
+      clientY: 1
     });
     const contextMenu = UI.queryContextMenu();
     const contextMenuOptions =
@@ -115,7 +116,7 @@ describe("contextMenu element", () => {
     const expectedShortcutNames: ShortcutName[] = [
       "copyStyles",
       "pasteStyles",
-      "deleteSelectedElements",
+      "deleteSelectedLayers",
       "addToLibrary",
       "flipHorizontal",
       "flipVertical",
@@ -125,59 +126,59 @@ describe("contextMenu element", () => {
       "bringToFront",
       "duplicateSelection",
       "hyperlink",
-      "toggleElementLock",
+      "toggleLayerLock"
     ];
 
     expect(contextMenu).not.toBeNull();
     expect(contextMenuOptions?.length).toBe(expectedShortcutNames.length);
     expectedShortcutNames.forEach((shortcutName) => {
       expect(
-        contextMenu?.querySelector(`li[data-testid="${shortcutName}"]`),
+        contextMenu?.querySelector(`li[data-testid="${shortcutName}"]`)
       ).not.toBeNull();
     });
   });
 
-  it("shows context menu for element", () => {
-    const rect1 = API.createElement({
+  it("shows context menu for layer", () => {
+    const rect1 = API.createLayer({
       type: "rectangle",
       x: 0,
       y: 0,
       height: 200,
       width: 200,
-      backgroundColor: "red",
+      backgroundColor: "red"
     });
-    const rect2 = API.createElement({
+    const rect2 = API.createLayer({
       type: "rectangle",
       x: 0,
       y: 0,
       height: 200,
       width: 200,
-      backgroundColor: "red",
+      backgroundColor: "red"
     });
-    h.elements = [rect1, rect2];
-    API.setSelectedElements([rect1]);
+    h.layers = [rect1, rect2];
+    API.setSelectedLayers([rect1]);
 
     // lower z-index
     fireEvent.contextMenu(GlobalTestState.canvas, {
       button: 2,
       clientX: 100,
-      clientY: 100,
+      clientY: 100
     });
     expect(UI.queryContextMenu()).not.toBeNull();
-    expect(API.getSelectedElement().id).toBe(rect1.id);
+    expect(API.getSelectedLayer().id).toBe(rect1.id);
 
     // higher z-index
-    API.setSelectedElements([rect2]);
+    API.setSelectedLayers([rect2]);
     fireEvent.contextMenu(GlobalTestState.canvas, {
       button: 2,
       clientX: 100,
-      clientY: 100,
+      clientY: 100
     });
     expect(UI.queryContextMenu()).not.toBeNull();
-    expect(API.getSelectedElement().id).toBe(rect2.id);
+    expect(API.getSelectedLayer().id).toBe(rect2.id);
   });
 
-  it("shows 'Group selection' in context menu for multiple selected elements", () => {
+  it("shows 'Group selection' in context menu for multiple selected layers", () => {
     UI.clickTool("rectangle");
     mouse.down(10, 10);
     mouse.up(10, 10);
@@ -195,7 +196,7 @@ describe("contextMenu element", () => {
     fireEvent.contextMenu(GlobalTestState.canvas, {
       button: 2,
       clientX: 1,
-      clientY: 1,
+      clientY: 1
     });
 
     const contextMenu = UI.queryContextMenu();
@@ -204,7 +205,7 @@ describe("contextMenu element", () => {
     const expectedShortcutNames: ShortcutName[] = [
       "copyStyles",
       "pasteStyles",
-      "deleteSelectedElements",
+      "deleteSelectedLayers",
       "group",
       "addToLibrary",
       "flipHorizontal",
@@ -214,19 +215,19 @@ describe("contextMenu element", () => {
       "sendToBack",
       "bringToFront",
       "duplicateSelection",
-      "toggleElementLock",
+      "toggleLayerLock"
     ];
 
     expect(contextMenu).not.toBeNull();
     expect(contextMenuOptions?.length).toBe(expectedShortcutNames.length);
     expectedShortcutNames.forEach((shortcutName) => {
       expect(
-        contextMenu?.querySelector(`li[data-testid="${shortcutName}"]`),
+        contextMenu?.querySelector(`li[data-testid="${shortcutName}"]`)
       ).not.toBeNull();
     });
   });
 
-  it("shows 'Ungroup selection' in context menu for group inside selected elements", () => {
+  it("shows 'Ungroup selection' in context menu for group inside selected layers", () => {
     UI.clickTool("rectangle");
     mouse.down(10, 10);
     mouse.up(10, 10);
@@ -248,7 +249,7 @@ describe("contextMenu element", () => {
     fireEvent.contextMenu(GlobalTestState.canvas, {
       button: 2,
       clientX: 1,
-      clientY: 1,
+      clientY: 1
     });
 
     const contextMenu = UI.queryContextMenu();
@@ -257,7 +258,7 @@ describe("contextMenu element", () => {
     const expectedShortcutNames: ShortcutName[] = [
       "copyStyles",
       "pasteStyles",
-      "deleteSelectedElements",
+      "deleteSelectedLayers",
       "ungroup",
       "addToLibrary",
       "flipHorizontal",
@@ -267,14 +268,14 @@ describe("contextMenu element", () => {
       "sendToBack",
       "bringToFront",
       "duplicateSelection",
-      "toggleElementLock",
+      "toggleLayerLock"
     ];
 
     expect(contextMenu).not.toBeNull();
     expect(contextMenuOptions?.length).toBe(expectedShortcutNames.length);
     expectedShortcutNames.forEach((shortcutName) => {
       expect(
-        contextMenu?.querySelector(`li[data-testid="${shortcutName}"]`),
+        contextMenu?.querySelector(`li[data-testid="${shortcutName}"]`)
       ).not.toBeNull();
     });
   });
@@ -287,14 +288,14 @@ describe("contextMenu element", () => {
     fireEvent.contextMenu(GlobalTestState.canvas, {
       button: 2,
       clientX: 1,
-      clientY: 1,
+      clientY: 1
     });
     const contextMenu = UI.queryContextMenu();
     expect(copiedStyles).toBe("{}");
     fireEvent.click(queryByText(contextMenu!, "Copy styles")!);
     expect(copiedStyles).not.toBe("{}");
-    const element = JSON.parse(copiedStyles)[0];
-    expect(element).toEqual(API.getSelectedElement());
+    const layer = JSON.parse(copiedStyles)[0];
+    expect(layer).toEqual(API.getSelectedLayer());
   });
 
   it("selecting 'Paste styles' in context menu pastes styles", () => {
@@ -321,7 +322,7 @@ describe("contextMenu element", () => {
     fireEvent.click(screen.getByTitle("Cartoonist"));
     // Opacity
     fireEvent.change(screen.getByLabelText("Opacity"), {
-      target: { value: "60" },
+      target: { value: "60" }
     });
 
     // closing the background popover as this blocks
@@ -335,26 +336,26 @@ describe("contextMenu element", () => {
     fireEvent.contextMenu(GlobalTestState.canvas, {
       button: 2,
       clientX: 40,
-      clientY: 40,
+      clientY: 40
     });
 
     let contextMenu = UI.queryContextMenu();
     fireEvent.click(queryByText(contextMenu!, "Copy styles")!);
     const secondRect = JSON.parse(copiedStyles)[0];
-    expect(secondRect.id).toBe(h.elements[1].id);
+    expect(secondRect.id).toBe(h.layers[1].id);
 
     mouse.reset();
     // Paste styles to first rectangle
     fireEvent.contextMenu(GlobalTestState.canvas, {
       button: 2,
       clientX: 10,
-      clientY: 10,
+      clientY: 10
     });
     contextMenu = UI.queryContextMenu();
     fireEvent.click(queryByText(contextMenu!, "Paste styles")!);
 
-    const firstRect = API.getSelectedElement();
-    expect(firstRect.id).toBe(h.elements[0].id);
+    const firstRect = API.getSelectedLayer();
+    expect(firstRect.id).toBe(h.layers[0].id);
     expect(firstRect.strokeColor).toBe("#e03131");
     expect(firstRect.backgroundColor).toBe("#a5d8ff");
     expect(firstRect.fillStyle).toBe("cross-hatch");
@@ -364,7 +365,7 @@ describe("contextMenu element", () => {
     expect(firstRect.opacity).toBe(60);
   });
 
-  it("selecting 'Delete' in context menu deletes element", () => {
+  it("selecting 'Delete' in context menu deletes layer", () => {
     UI.clickTool("rectangle");
     mouse.down(10, 10);
     mouse.up(20, 20);
@@ -372,15 +373,15 @@ describe("contextMenu element", () => {
     fireEvent.contextMenu(GlobalTestState.canvas, {
       button: 2,
       clientX: 1,
-      clientY: 1,
+      clientY: 1
     });
     const contextMenu = UI.queryContextMenu();
     fireEvent.click(queryAllByText(contextMenu!, "Delete")[0]);
-    expect(API.getSelectedElements()).toHaveLength(0);
-    expect(h.elements[0].isDeleted).toBe(true);
+    expect(API.getSelectedLayers()).toHaveLength(0);
+    expect(h.layers[0].isDeleted).toBe(true);
   });
 
-  it("selecting 'Add to library' in context menu adds element to library", async () => {
+  it("selecting 'Add to library' in context menu adds layer to library", async () => {
     UI.clickTool("rectangle");
     mouse.down(10, 10);
     mouse.up(20, 20);
@@ -388,7 +389,7 @@ describe("contextMenu element", () => {
     fireEvent.contextMenu(GlobalTestState.canvas, {
       button: 2,
       clientX: 1,
-      clientY: 1,
+      clientY: 1
     });
     const contextMenu = UI.queryContextMenu();
     fireEvent.click(queryByText(contextMenu!, "Add to library")!);
@@ -396,12 +397,12 @@ describe("contextMenu element", () => {
     await waitFor(() => {
       const library = localStorage.getItem("excalidraw-library");
       expect(library).not.toBeNull();
-      const addedElement = JSON.parse(library!)[0] as LibraryItem;
-      expect(addedElement.elements[0]).toEqual(h.elements[0]);
+      const addedLayer = JSON.parse(library!)[0] as LibraryItem;
+      expect(addedLayer.layers[0]).toEqual(h.layers[0]);
     });
   });
 
-  it("selecting 'Duplicate' in context menu duplicates element", () => {
+  it("selecting 'Duplicate' in context menu duplicates layer", () => {
     UI.clickTool("rectangle");
     mouse.down(10, 10);
     mouse.up(20, 20);
@@ -409,17 +410,17 @@ describe("contextMenu element", () => {
     fireEvent.contextMenu(GlobalTestState.canvas, {
       button: 2,
       clientX: 1,
-      clientY: 1,
+      clientY: 1
     });
     const contextMenu = UI.queryContextMenu();
     fireEvent.click(queryByText(contextMenu!, "Duplicate")!);
-    expect(h.elements).toHaveLength(2);
-    const { id: _id0, seed: _seed0, x: _x0, y: _y0, ...rect1 } = h.elements[0];
-    const { id: _id1, seed: _seed1, x: _x1, y: _y1, ...rect2 } = h.elements[1];
+    expect(h.layers).toHaveLength(2);
+    const { id: _id0, seed: _seed0, x: _x0, y: _y0, ...rect1 } = h.layers[0];
+    const { id: _id1, seed: _seed1, x: _x1, y: _y1, ...rect2 } = h.layers[1];
     expect(rect1).toEqual(rect2);
   });
 
-  it("selecting 'Send backward' in context menu sends element backward", () => {
+  it("selecting 'Send backward' in context menu sends layer backward", () => {
     UI.clickTool("rectangle");
     mouse.down(10, 10);
     mouse.up(20, 20);
@@ -432,16 +433,16 @@ describe("contextMenu element", () => {
     fireEvent.contextMenu(GlobalTestState.canvas, {
       button: 2,
       clientX: 40,
-      clientY: 40,
+      clientY: 40
     });
     const contextMenu = UI.queryContextMenu();
-    const elementsBefore = h.elements;
+    const layersBefore = h.layers;
     fireEvent.click(queryByText(contextMenu!, "Send backward")!);
-    expect(elementsBefore[0].id).toEqual(h.elements[1].id);
-    expect(elementsBefore[1].id).toEqual(h.elements[0].id);
+    expect(layersBefore[0].id).toEqual(h.layers[1].id);
+    expect(layersBefore[1].id).toEqual(h.layers[0].id);
   });
 
-  it("selecting 'Bring forward' in context menu brings element forward", () => {
+  it("selecting 'Bring forward' in context menu brings layer forward", () => {
     UI.clickTool("rectangle");
     mouse.down(10, 10);
     mouse.up(20, 20);
@@ -454,16 +455,16 @@ describe("contextMenu element", () => {
     fireEvent.contextMenu(GlobalTestState.canvas, {
       button: 2,
       clientX: 10,
-      clientY: 10,
+      clientY: 10
     });
     const contextMenu = UI.queryContextMenu();
-    const elementsBefore = h.elements;
+    const layersBefore = h.layers;
     fireEvent.click(queryByText(contextMenu!, "Bring forward")!);
-    expect(elementsBefore[0].id).toEqual(h.elements[1].id);
-    expect(elementsBefore[1].id).toEqual(h.elements[0].id);
+    expect(layersBefore[0].id).toEqual(h.layers[1].id);
+    expect(layersBefore[1].id).toEqual(h.layers[0].id);
   });
 
-  it("selecting 'Send to back' in context menu sends element to back", () => {
+  it("selecting 'Send to back' in context menu sends layer to back", () => {
     UI.clickTool("rectangle");
     mouse.down(10, 10);
     mouse.up(20, 20);
@@ -476,15 +477,15 @@ describe("contextMenu element", () => {
     fireEvent.contextMenu(GlobalTestState.canvas, {
       button: 2,
       clientX: 40,
-      clientY: 40,
+      clientY: 40
     });
     const contextMenu = UI.queryContextMenu();
-    const elementsBefore = h.elements;
+    const layersBefore = h.layers;
     fireEvent.click(queryByText(contextMenu!, "Send to back")!);
-    expect(elementsBefore[1].id).toEqual(h.elements[0].id);
+    expect(layersBefore[1].id).toEqual(h.layers[0].id);
   });
 
-  it("selecting 'Bring to front' in context menu brings element to front", () => {
+  it("selecting 'Bring to front' in context menu brings layer to front", () => {
     UI.clickTool("rectangle");
     mouse.down(10, 10);
     mouse.up(20, 20);
@@ -497,15 +498,15 @@ describe("contextMenu element", () => {
     fireEvent.contextMenu(GlobalTestState.canvas, {
       button: 2,
       clientX: 10,
-      clientY: 10,
+      clientY: 10
     });
     const contextMenu = UI.queryContextMenu();
-    const elementsBefore = h.elements;
+    const layersBefore = h.layers;
     fireEvent.click(queryByText(contextMenu!, "Bring to front")!);
-    expect(elementsBefore[0].id).toEqual(h.elements[1].id);
+    expect(layersBefore[0].id).toEqual(h.layers[1].id);
   });
 
-  it("selecting 'Group selection' in context menu groups selected elements", () => {
+  it("selecting 'Group selection' in context menu groups selected layers", () => {
     UI.clickTool("rectangle");
     mouse.down(10, 10);
     mouse.up(20, 20);
@@ -522,13 +523,13 @@ describe("contextMenu element", () => {
     fireEvent.contextMenu(GlobalTestState.canvas, {
       button: 2,
       clientX: 1,
-      clientY: 1,
+      clientY: 1
     });
     const contextMenu = UI.queryContextMenu();
     fireEvent.click(queryByText(contextMenu!, "Group selection")!);
     const selectedGroupIds = Object.keys(h.state.selectedGroupIds);
-    expect(h.elements[0].groupIds).toEqual(selectedGroupIds);
-    expect(h.elements[1].groupIds).toEqual(selectedGroupIds);
+    expect(h.layers[0].groupIds).toEqual(selectedGroupIds);
+    expect(h.layers[1].groupIds).toEqual(selectedGroupIds);
   });
 
   it("selecting 'Ungroup selection' in context menu ungroups selected group", () => {
@@ -552,7 +553,7 @@ describe("contextMenu element", () => {
     fireEvent.contextMenu(GlobalTestState.canvas, {
       button: 2,
       clientX: 1,
-      clientY: 1,
+      clientY: 1
     });
 
     const contextMenu = UI.queryContextMenu();
@@ -561,32 +562,32 @@ describe("contextMenu element", () => {
 
     const selectedGroupIds = Object.keys(h.state.selectedGroupIds);
     expect(selectedGroupIds).toHaveLength(0);
-    expect(h.elements[0].groupIds).toHaveLength(0);
-    expect(h.elements[1].groupIds).toHaveLength(0);
+    expect(h.layers[0].groupIds).toHaveLength(0);
+    expect(h.layers[1].groupIds).toHaveLength(0);
   });
 
   it("right-clicking on a group should select whole group", () => {
-    const rectangle1 = API.createElement({
+    const rectangle1 = API.createLayer({
       type: "rectangle",
       width: 100,
       backgroundColor: "red",
       fillStyle: "solid",
-      groupIds: ["g1"],
+      groupIds: ["g1"]
     });
-    const rectangle2 = API.createElement({
+    const rectangle2 = API.createLayer({
       type: "rectangle",
       width: 100,
       backgroundColor: "red",
       fillStyle: "solid",
-      groupIds: ["g1"],
+      groupIds: ["g1"]
     });
-    h.elements = [rectangle1, rectangle2];
+    h.layers = [rectangle1, rectangle2];
 
     mouse.rightClickAt(50, 50);
-    expect(API.getSelectedElements().length).toBe(2);
-    expect(API.getSelectedElements()).toEqual([
+    expect(API.getSelectedLayers().length).toBe(2);
+    expect(API.getSelectedLayers()).toEqual([
       expect.objectContaining({ id: rectangle1.id }),
-      expect.objectContaining({ id: rectangle2.id }),
+      expect.objectContaining({ id: rectangle2.id })
     ]);
   });
 });

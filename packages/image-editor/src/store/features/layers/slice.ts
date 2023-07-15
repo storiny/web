@@ -1,62 +1,16 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { nanoid } from "nanoid";
 
-import {
-  Arrowhead,
-  ChartType,
-  DEFAULT_FONT_FAMILY,
-  DEFAULT_FONT_SIZE,
-  DEFAULT_LAYER_PROPS,
-  DEFAULT_TEXT_ALIGN,
-  StrokeRoundness,
-  TextAlign
-} from "../../../constants";
 import { Layer } from "../../../types";
-
-export type CurrentLayerProps = Pick<
-  Layer,
-  | "backgroundColor"
-  | "fillStyle"
-  | "opacity"
-  | "roughness"
-  | "strokeColor"
-  | "strokeStyle"
-  | "strokeWidth"
-> & {
-  chartType: ChartType;
-  endArrowhead: Arrowhead | null;
-  fontFamily: string;
-  fontSize: number;
-  roundness: StrokeRoundness;
-  startArrowhead: Arrowhead | null;
-  textAlign: TextAlign;
-};
 
 export type LayersState = {
   items: Layer[];
-  props: CurrentLayerProps;
   selected: string | null;
 };
 
 export const layersInitialState: LayersState = {
   selected: null,
-  items: [],
-  props: {
-    backgroundColor: DEFAULT_LAYER_PROPS.backgroundColor,
-    chartType: ChartType.BAR,
-    endArrowhead: Arrowhead.ARROW,
-    fillStyle: DEFAULT_LAYER_PROPS.fillStyle,
-    fontFamily: DEFAULT_FONT_FAMILY,
-    fontSize: DEFAULT_FONT_SIZE,
-    opacity: DEFAULT_LAYER_PROPS.opacity,
-    roughness: DEFAULT_LAYER_PROPS.roughness,
-    roundness: StrokeRoundness.ROUND,
-    startArrowhead: null,
-    strokeColor: DEFAULT_LAYER_PROPS.strokeColor,
-    strokeStyle: DEFAULT_LAYER_PROPS.strokeStyle,
-    strokeWidth: DEFAULT_LAYER_PROPS.strokeWidth,
-    textAlign: DEFAULT_TEXT_ALIGN
-  }
+  items: []
 };
 
 export const layersSlice = createSlice({

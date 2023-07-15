@@ -1,28 +1,29 @@
 import oc from "open-color";
 import React from "react";
+
 import { THEME } from "../../constants";
-import { Theme } from "../../element/types";
+import { Theme } from "../../layer/types";
 
 // https://github.com/tholman/github-corners
 export const GitHubCorner = React.memo(
-  ({ theme, dir }: { theme: Theme; dir: string }) => (
+  ({ theme, dir }: { dir: string; theme: Theme }) => (
     <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="40"
-      height="40"
-      viewBox="0 0 250 250"
       className="rtl-mirror"
+      height="40"
       style={{
         marginTop: "calc(var(--space-factor) * -1)",
         [dir === "rtl" ? "marginLeft" : "marginRight"]:
-          "calc(var(--space-factor) * -1)",
+          "calc(var(--space-factor) * -1)"
       }}
+      viewBox="0 0 250 250"
+      width="40"
+      xmlns="http://www.w3.org/2000/svg"
     >
       <a
-        href="https://github.com/excalidraw/excalidraw"
-        target="_blank"
-        rel="noopener noreferrer"
         aria-label="GitHub repository"
+        href="https://github.com/excalidraw/excalidraw"
+        rel="noopener noreferrer"
+        target="_blank"
       >
         <path
           d="M0 0l115 115h15l12 27 108 108V0z"
@@ -31,8 +32,8 @@ export const GitHubCorner = React.memo(
         <path
           className="octo-arm"
           d="M128 109c-15-9-9-19-9-19 3-7 2-11 2-11-1-7 3-2 3-2 4 5 2 11 2 11-3 10 5 15 9 16"
-          style={{ transformOrigin: "130px 106px" }}
           fill={theme === THEME.LIGHT ? oc.white : "var(--default-bg-color)"}
+          style={{ transformOrigin: "130px 106px" }}
         />
         <path
           className="octo-body"
@@ -41,5 +42,5 @@ export const GitHubCorner = React.memo(
         />
       </a>
     </svg>
-  ),
+  )
 );

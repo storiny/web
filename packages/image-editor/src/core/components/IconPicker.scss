@@ -120,7 +120,7 @@
     color: #aaa;
   }
 
-  .picker-type-elementBackground .picker-keybinding {
+  .picker-type-layerBackground .picker-keybinding {
     color: $oc-white;
   }
 
@@ -128,12 +128,12 @@
     color: #aaa;
   }
 
-  .picker-type-elementStroke .picker-keybinding {
+  .picker-type-layerStroke .picker-keybinding {
     color: #d4d4d4;
   }
 
   &.theme--dark {
-    .picker-type-elementBackground .picker-keybinding {
+    .picker-type-layerBackground .picker-keybinding {
       color: $oc-black;
     }
     .picker-swatch[aria-label="transparent"] .picker-keybinding {

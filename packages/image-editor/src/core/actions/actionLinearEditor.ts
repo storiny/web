@@ -1,53 +1,53 @@
-import { getNonDeletedElements } from "../element";
-import { LinearElementEditor } from "../element/linearElementEditor";
-import { isLinearElement } from "../element/typeChecks";
-import { ExcalidrawLinearElement } from "../element/types";
-import { getSelectedElements } from "../scene";
+import { getSelectedLayers } from "../../lib/scene";
+import { getNonDeletedLayers } from "../layer";
+import { LinearLayerEditor } from "../layer/linearLayerEditor";
+import { isLinearLayer } from "../layer/typeChecks";
+import { ExcalidrawLinearLayer } from "../layer/types";
 import { register } from "./register";
 
 export const actionToggleLinearEditor = register({
   name: "toggleLinearEditor",
   trackEvent: {
-    category: "element",
+    category: "layer"
   },
-  predicate: (elements, appState) => {
-    const selectedElements = getSelectedElements(elements, appState);
-    if (selectedElements.length === 1 && isLinearElement(selectedElements[0])) {
+  predicate: (layers, appState) => {
+    const selectedLayers = getSelectedLayers(layers, appState);
+    if (selectedLayers.length === 1 && isLinearLayer(selectedLayers[0])) {
       return true;
     }
     return false;
   },
-  perform(elements, appState, _, app) {
-    const selectedElement = getSelectedElements(
-      getNonDeletedElements(elements),
+  perform: (layers, appState, _, app) => {
+    const selectedLayer = getSelectedLayers(
+      getNonDeletedLayers(layers),
       appState,
       {
-        includeBoundTextElement: true,
-      },
-    )[0] as ExcalidrawLinearElement;
+        includeBoundTextLayer: true
+      }
+    )[0] as ExcalidrawLinearLayer;
 
-    const editingLinearElement =
-      appState.editingLinearElement?.elementId === selectedElement.id
+    const editingLinearLayer =
+      appState.editingLinearLayer?.layerId === selectedLayer.id
         ? null
-        : new LinearElementEditor(selectedElement, app.scene);
+        : new LinearLayerEditor(selectedLayer, app.scene);
     return {
       appState: {
         ...appState,
-        editingLinearElement,
+        editingLinearLayer
       },
-      commitToHistory: false,
+      commitToHistory: false
     };
   },
-  contextItemLabel: (elements, appState) => {
-    const selectedElement = getSelectedElements(
-      getNonDeletedElements(elements),
+  contextItemLabel: (layers, appState) => {
+    const selectedLayer = getSelectedLayers(
+      getNonDeletedLayers(layers),
       appState,
       {
-        includeBoundTextElement: true,
-      },
-    )[0] as ExcalidrawLinearElement;
-    return appState.editingLinearElement?.elementId === selectedElement.id
+        includeBoundTextLayer: true
+      }
+    )[0] as ExcalidrawLinearLayer;
+    return appState.editingLinearLayer?.layerId === selectedLayer.id
       ? "labels.lineEditor.exit"
       : "labels.lineEditor.edit";
-  },
+  }
 });

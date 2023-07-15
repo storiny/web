@@ -1,14 +1,5 @@
-import { getFontString, arrayToMap, isTestEnv } from "../utils";
-import {
-  ExcalidrawElement,
-  ExcalidrawTextContainer,
-  ExcalidrawTextElement,
-  ExcalidrawTextElementWithContainer,
-  FontFamilyValues,
-  FontString,
-  NonDeletedExcalidrawElement,
-} from "./types";
-import { mutateElement } from "./mutateElement";
+import { getSelectedLayers } from "../../lib/scene";
+import Scene from "../../lib/scene/Scene";
 import {
   BOUND_TEXT_PADDING,
   DEFAULT_FONT_FAMILY,
@@ -16,66 +7,70 @@ import {
   FONT_FAMILY,
   isSafari,
   TEXT_ALIGN,
-  VERTICAL_ALIGN,
+  VERTICAL_ALIGN
 } from "../constants";
-import { MaybeTransformHandleType } from "./transformHandles";
-import Scene from "../scene/Scene";
-import { isTextElement } from ".";
-import { isBoundToContainer, isArrowElement } from "./typeChecks";
-import { LinearElementEditor } from "./linearElementEditor";
+import { getLayerAbsoluteCoords } from "../layer";
 import { AppState } from "../types";
-import { isTextBindableContainer } from "./typeChecks";
-import { getElementAbsoluteCoords } from "../element";
-import { getSelectedElements } from "../scene";
-import { isHittingElementNotConsideringBoundingBox } from "./collision";
+import { ExtractSetType } from "../utility-types";
+import { arrayToMap, getFontString, isTestEnv } from "../utils";
+import { isTextLayer } from ".";
+import { isHittingLayerNotConsideringBoundingBox } from "./collision";
+import { LinearLayerEditor } from "./linearLayerEditor";
+import { mutateLayer } from "./mutateLayer";
 import {
   resetOriginalContainerCache,
-  updateOriginalContainerCache,
+  updateOriginalContainerCache
 } from "./textWysiwyg";
-import { ExtractSetType } from "../utility-types";
+import { MaybeTransformHandleType } from "./transformHandles";
+import { isArrowLayer, isBoundToContainer } from "./typeChecks";
+import { isTextBindableContainer } from "./typeChecks";
+import {
+  ExcalidrawLayer,
+  ExcalidrawTextContainer,
+  ExcalidrawTextLayer,
+  ExcalidrawTextLayerWithContainer,
+  FontFamilyValues,
+  FontString,
+  NonDeletedExcalidrawLayer
+} from "./types";
 
-export const normalizeText = (text: string) => {
-  return (
-    text
-      // replace tabs with spaces so they render and measure correctly
-      .replace(/\t/g, "        ")
-      // normalize newlines
-      .replace(/\r?\n|\r/g, "\n")
-  );
-};
+export const normalizeText = (text: string) =>
+  text
+    // replace tabs with spaces so they render and measure correctly
+    .replace(/\t/g, "        ")
+    // normalize newlines
+    .replace(/\r?\n|\r/g, "\n");
 
-export const splitIntoLines = (text: string) => {
-  return normalizeText(text).split("\n");
-};
+export const splitIntoLines = (text: string) => normalizeText(text).split("\n");
 
 export const redrawTextBoundingBox = (
-  textElement: ExcalidrawTextElement,
-  container: ExcalidrawElement | null,
+  textLayer: ExcalidrawTextLayer,
+  container: ExcalidrawLayer | null
 ) => {
   let maxWidth = undefined;
   const boundTextUpdates = {
-    x: textElement.x,
-    y: textElement.y,
-    text: textElement.text,
-    width: textElement.width,
-    height: textElement.height,
-    baseline: textElement.baseline,
+    x: textLayer.x,
+    y: textLayer.y,
+    text: textLayer.text,
+    width: textLayer.width,
+    height: textLayer.height,
+    baseline: textLayer.baseline
   };
 
-  boundTextUpdates.text = textElement.text;
+  boundTextUpdates.text = textLayer.text;
 
   if (container) {
     maxWidth = getBoundTextMaxWidth(container);
     boundTextUpdates.text = wrapText(
-      textElement.originalText,
-      getFontString(textElement),
-      maxWidth,
+      textLayer.originalText,
+      getFontString(textLayer),
+      maxWidth
     );
   }
   const metrics = measureText(
     boundTextUpdates.text,
-    getFontString(textElement),
-    textElement.lineHeight,
+    getFontString(textLayer),
+    textLayer.lineHeight
   );
 
   boundTextUpdates.width = metrics.width;
@@ -86,65 +81,65 @@ export const redrawTextBoundingBox = (
     const containerDims = getContainerDims(container);
     const maxContainerHeight = getBoundTextMaxHeight(
       container,
-      textElement as ExcalidrawTextElementWithContainer,
+      textLayer as ExcalidrawTextLayerWithContainer
     );
 
     let nextHeight = containerDims.height;
     if (metrics.height > maxContainerHeight) {
       nextHeight = computeContainerDimensionForBoundText(
         metrics.height,
-        container.type,
+        container.type
       );
-      mutateElement(container, { height: nextHeight });
+      mutateLayer(container, { height: nextHeight });
       updateOriginalContainerCache(container.id, nextHeight);
     }
-    const updatedTextElement = {
-      ...textElement,
-      ...boundTextUpdates,
-    } as ExcalidrawTextElementWithContainer;
-    const { x, y } = computeBoundTextPosition(container, updatedTextElement);
+    const updatedTextLayer = {
+      ...textLayer,
+      ...boundTextUpdates
+    } as ExcalidrawTextLayerWithContainer;
+    const { x, y } = computeBoundTextPosition(container, updatedTextLayer);
     boundTextUpdates.x = x;
     boundTextUpdates.y = y;
   }
 
-  mutateElement(textElement, boundTextUpdates);
+  mutateLayer(textLayer, boundTextUpdates);
 };
 
 export const bindTextToShapeAfterDuplication = (
-  sceneElements: ExcalidrawElement[],
-  oldElements: ExcalidrawElement[],
-  oldIdToDuplicatedId: Map<ExcalidrawElement["id"], ExcalidrawElement["id"]>,
+  sceneLayers: ExcalidrawLayer[],
+  oldLayers: ExcalidrawLayer[],
+  oldIdToDuplicatedId: Map<ExcalidrawLayer["id"], ExcalidrawLayer["id"]>
 ): void => {
-  const sceneElementMap = arrayToMap(sceneElements) as Map<
-    ExcalidrawElement["id"],
-    ExcalidrawElement
+  const sceneLayerMap = arrayToMap(sceneLayers) as Map<
+    ExcalidrawLayer["id"],
+    ExcalidrawLayer
   >;
-  oldElements.forEach((element) => {
-    const newElementId = oldIdToDuplicatedId.get(element.id) as string;
-    const boundTextElementId = getBoundTextElementId(element);
+  oldLayers.forEach((layer) => {
+    const newLayerId = oldIdToDuplicatedId.get(layer.id) as string;
+    const boundTextLayerId = getBoundTextLayerId(layer);
 
-    if (boundTextElementId) {
-      const newTextElementId = oldIdToDuplicatedId.get(boundTextElementId);
-      if (newTextElementId) {
-        const newContainer = sceneElementMap.get(newElementId);
+    if (boundTextLayerId) {
+      const newTextLayerId = oldIdToDuplicatedId.get(boundTextLayerId);
+      if (newTextLayerId) {
+        const newContainer = sceneLayerMap.get(newLayerId);
         if (newContainer) {
-          mutateElement(newContainer, {
-            boundElements: (element.boundElements || [])
+          mutateLayer(newContainer, {
+            boundLayers: (layer.boundLayers || [])
               .filter(
-                (boundElement) =>
-                  boundElement.id !== newTextElementId &&
-                  boundElement.id !== boundTextElementId,
+                (boundLayer) =>
+                  boundLayer.id !== newTextLayerId &&
+                  boundLayer.id !== boundTextLayerId
               )
               .concat({
                 type: "text",
-                id: newTextElementId,
-              }),
+                id: newTextLayerId
+              })
           });
         }
-        const newTextElement = sceneElementMap.get(newTextElementId);
-        if (newTextElement && isTextElement(newTextElement)) {
-          mutateElement(newTextElement, {
-            containerId: newContainer ? newElementId : null,
+        const newTextLayer = sceneLayerMap.get(newTextLayerId);
+        if (newTextLayer && isTextLayer(newTextLayer)) {
+          mutateLayer(newTextLayer, {
+            containerId: newContainer ? newLayerId : null
           });
         }
       }
@@ -153,126 +148,124 @@ export const bindTextToShapeAfterDuplication = (
 };
 
 export const handleBindTextResize = (
-  container: NonDeletedExcalidrawElement,
-  transformHandleType: MaybeTransformHandleType,
+  container: NonDeletedExcalidrawLayer,
+  transformHandleType: MaybeTransformHandleType
 ) => {
-  const boundTextElementId = getBoundTextElementId(container);
-  if (!boundTextElementId) {
+  const boundTextLayerId = getBoundTextLayerId(container);
+  if (!boundTextLayerId) {
     return;
   }
   resetOriginalContainerCache(container.id);
-  let textElement = Scene.getScene(container)!.getElement(
-    boundTextElementId,
-  ) as ExcalidrawTextElement;
-  if (textElement && textElement.text) {
+  let textLayer = Scene.getScene(container)!.getLayer(
+    boundTextLayerId
+  ) as ExcalidrawTextLayer;
+  if (textLayer && textLayer.text) {
     if (!container) {
       return;
     }
 
-    textElement = Scene.getScene(container)!.getElement(
-      boundTextElementId,
-    ) as ExcalidrawTextElement;
-    let text = textElement.text;
-    let nextHeight = textElement.height;
-    let nextWidth = textElement.width;
+    textLayer = Scene.getScene(container)!.getLayer(
+      boundTextLayerId
+    ) as ExcalidrawTextLayer;
+    let text = textLayer.text;
+    let nextHeight = textLayer.height;
+    let nextWidth = textLayer.width;
     const containerDims = getContainerDims(container);
     const maxWidth = getBoundTextMaxWidth(container);
     const maxHeight = getBoundTextMaxHeight(
       container,
-      textElement as ExcalidrawTextElementWithContainer,
+      textLayer as ExcalidrawTextLayerWithContainer
     );
     let containerHeight = containerDims.height;
-    let nextBaseLine = textElement.baseline;
+    let nextBaseLine = textLayer.baseline;
     if (transformHandleType !== "n" && transformHandleType !== "s") {
       if (text) {
         text = wrapText(
-          textElement.originalText,
-          getFontString(textElement),
-          maxWidth,
+          textLayer.originalText,
+          getFontString(textLayer),
+          maxWidth
         );
       }
       const metrics = measureText(
         text,
-        getFontString(textElement),
-        textElement.lineHeight,
+        getFontString(textLayer),
+        textLayer.lineHeight
       );
       nextHeight = metrics.height;
       nextWidth = metrics.width;
       nextBaseLine = metrics.baseline;
     }
-    // increase height in case text element height exceeds
+    // increase height in case text layer height exceeds
     if (nextHeight > maxHeight) {
       containerHeight = computeContainerDimensionForBoundText(
         nextHeight,
-        container.type,
+        container.type
       );
 
       const diff = containerHeight - containerDims.height;
       // fix the y coord when resizing from ne/nw/n
       const updatedY =
-        !isArrowElement(container) &&
+        !isArrowLayer(container) &&
         (transformHandleType === "ne" ||
           transformHandleType === "nw" ||
           transformHandleType === "n")
           ? container.y - diff
           : container.y;
-      mutateElement(container, {
+      mutateLayer(container, {
         height: containerHeight,
-        y: updatedY,
+        y: updatedY
       });
     }
 
-    mutateElement(textElement, {
+    mutateLayer(textLayer, {
       text,
       width: nextWidth,
       height: nextHeight,
-      baseline: nextBaseLine,
+      baseline: nextBaseLine
     });
 
-    if (!isArrowElement(container)) {
-      mutateElement(
-        textElement,
+    if (!isArrowLayer(container)) {
+      mutateLayer(
+        textLayer,
         computeBoundTextPosition(
           container,
-          textElement as ExcalidrawTextElementWithContainer,
-        ),
+          textLayer as ExcalidrawTextLayerWithContainer
+        )
       );
     }
   }
 };
 
 export const computeBoundTextPosition = (
-  container: ExcalidrawElement,
-  boundTextElement: ExcalidrawTextElementWithContainer,
+  container: ExcalidrawLayer,
+  boundTextLayer: ExcalidrawTextLayerWithContainer
 ) => {
-  if (isArrowElement(container)) {
-    return LinearElementEditor.getBoundTextElementPosition(
+  if (isArrowLayer(container)) {
+    return LinearLayerEditor.getBoundTextLayerPosition(
       container,
-      boundTextElement,
+      boundTextLayer
     );
   }
   const containerCoords = getContainerCoords(container);
-  const maxContainerHeight = getBoundTextMaxHeight(container, boundTextElement);
+  const maxContainerHeight = getBoundTextMaxHeight(container, boundTextLayer);
   const maxContainerWidth = getBoundTextMaxWidth(container);
 
   let x;
   let y;
-  if (boundTextElement.verticalAlign === VERTICAL_ALIGN.TOP) {
+  if (boundTextLayer.verticalAlign === VERTICAL_ALIGN.TOP) {
     y = containerCoords.y;
-  } else if (boundTextElement.verticalAlign === VERTICAL_ALIGN.BOTTOM) {
-    y = containerCoords.y + (maxContainerHeight - boundTextElement.height);
+  } else if (boundTextLayer.verticalAlign === VERTICAL_ALIGN.BOTTOM) {
+    y = containerCoords.y + (maxContainerHeight - boundTextLayer.height);
   } else {
     y =
-      containerCoords.y +
-      (maxContainerHeight / 2 - boundTextElement.height / 2);
+      containerCoords.y + (maxContainerHeight / 2 - boundTextLayer.height / 2);
   }
-  if (boundTextElement.textAlign === TEXT_ALIGN.LEFT) {
+  if (boundTextLayer.textAlign === TEXT_ALIGN.LEFT) {
     x = containerCoords.x;
-  } else if (boundTextElement.textAlign === TEXT_ALIGN.RIGHT) {
-    x = containerCoords.x + (maxContainerWidth - boundTextElement.width);
+  } else if (boundTextLayer.textAlign === TEXT_ALIGN.RIGHT) {
+    x = containerCoords.x + (maxContainerWidth - boundTextLayer.width);
   } else {
-    x =
-      containerCoords.x + (maxContainerWidth / 2 - boundTextElement.width / 2);
+    x = containerCoords.x + (maxContainerWidth / 2 - boundTextLayer.width / 2);
   }
   return { x, y };
 };
@@ -282,7 +275,7 @@ export const computeBoundTextPosition = (
 export const measureText = (
   text: string,
   font: FontString,
-  lineHeight: ExcalidrawTextElement["lineHeight"],
+  lineHeight: ExcalidrawTextLayer["lineHeight"]
 ) => {
   text = text
     .split("\n")
@@ -300,10 +293,10 @@ export const measureText = (
 export const measureBaseline = (
   text: string,
   font: FontString,
-  lineHeight: ExcalidrawTextElement["lineHeight"],
-  wrapInContainer?: boolean,
+  lineHeight: ExcalidrawTextLayer["lineHeight"],
+  wrapInContainer?: boolean
 ) => {
-  const container = document.createElement("div");
+  const container = document.createLayer("div");
   container.style.position = "absolute";
   container.style.whiteSpace = "pre";
   container.style.font = font;
@@ -321,7 +314,7 @@ export const measureBaseline = (
   // Baseline is important for positioning text on canvas
   document.body.appendChild(container);
 
-  const span = document.createElement("span");
+  const span = document.createLayer("span");
   span.style.display = "inline-block";
   span.style.overflow = "hidden";
   span.style.width = "1px";
@@ -352,11 +345,11 @@ export const measureBaseline = (
  * To get unitless line-height (if unknown) we can calculate it by dividing
  * height-per-line by fontSize.
  */
-export const detectLineHeight = (textElement: ExcalidrawTextElement) => {
-  const lineCount = splitIntoLines(textElement.text).length;
-  return (textElement.height /
+export const detectLineHeight = (textLayer: ExcalidrawTextLayer) => {
+  const lineCount = splitIntoLines(textLayer.text).length;
+  return (textLayer.height /
     lineCount /
-    textElement.fontSize) as ExcalidrawTextElement["lineHeight"];
+    textLayer.fontSize) as ExcalidrawTextLayer["lineHeight"];
 };
 
 /**
@@ -364,25 +357,21 @@ export const detectLineHeight = (textElement: ExcalidrawTextElement) => {
  * aligning with the W3C spec.
  */
 export const getLineHeightInPx = (
-  fontSize: ExcalidrawTextElement["fontSize"],
-  lineHeight: ExcalidrawTextElement["lineHeight"],
-) => {
-  return fontSize * lineHeight;
-};
+  fontSize: ExcalidrawTextLayer["fontSize"],
+  lineHeight: ExcalidrawTextLayer["lineHeight"]
+) => fontSize * lineHeight;
 
 // FIXME rename to getApproxMinContainerHeight
 export const getApproxMinLineHeight = (
-  fontSize: ExcalidrawTextElement["fontSize"],
-  lineHeight: ExcalidrawTextElement["lineHeight"],
-) => {
-  return getLineHeightInPx(fontSize, lineHeight) + BOUND_TEXT_PADDING * 2;
-};
+  fontSize: ExcalidrawTextLayer["fontSize"],
+  lineHeight: ExcalidrawTextLayer["lineHeight"]
+) => getLineHeightInPx(fontSize, lineHeight) + BOUND_TEXT_PADDING * 2;
 
-let canvas: HTMLCanvasElement | undefined;
+let canvas: HTMLCanvasLayer | undefined;
 
 const getLineWidth = (text: string, font: FontString) => {
   if (!canvas) {
-    canvas = document.createElement("canvas");
+    canvas = document.createLayer("canvas");
   }
   const canvas2dContext = canvas.getContext("2d")!;
   canvas2dContext.font = font;
@@ -409,7 +398,7 @@ export const getTextWidth = (text: string, font: FontString) => {
 export const getTextHeight = (
   text: string,
   fontSize: number,
-  lineHeight: ExcalidrawTextElement["lineHeight"],
+  lineHeight: ExcalidrawTextLayer["lineHeight"]
 ) => {
   const lineCount = splitIntoLines(text).length;
   return getLineHeightInPx(fontSize, lineHeight) * lineCount;
@@ -492,7 +481,7 @@ export const wrapText = (text: string, font: FontString, maxWidth: number) => {
 
         while (words[index].length > 0) {
           const currentChar = String.fromCodePoint(
-            words[index].codePointAt(0)!,
+            words[index].codePointAt(0)!
           );
           const width = charWidth.calculate(currentChar, font);
           currentLineWidthTillNow += width;
@@ -580,12 +569,10 @@ export const charWidth = (() => {
     return cachedCharWidth[font][ascii];
   };
 
-  const getCache = (font: FontString) => {
-    return cachedCharWidth[font];
-  };
+  const getCache = (font: FontString) => cachedCharWidth[font];
   return {
     calculate,
-    getCache,
+    getCache
   };
 })();
 
@@ -594,7 +581,7 @@ const DUMMY_TEXT = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".toLocaleUpperCase();
 // FIXME rename to getApproxMinContainerWidth
 export const getApproxMinLineWidth = (
   font: FontString,
-  lineHeight: ExcalidrawTextElement["lineHeight"],
+  lineHeight: ExcalidrawTextLayer["lineHeight"]
 ) => {
   const maxCharWidth = getMaxCharWidth(font);
   if (maxCharWidth === 0) {
@@ -649,90 +636,89 @@ export const getApproxCharsToFitInWidth = (font: FontString, width: number) => {
   return str.length;
 };
 
-export const getBoundTextElementId = (container: ExcalidrawElement | null) => {
-  return container?.boundElements?.length
-    ? container?.boundElements?.filter((ele) => ele.type === "text")[0]?.id ||
-        null
+export const getBoundTextLayerId = (container: ExcalidrawLayer | null) =>
+  container?.boundLayers?.length
+    ? container?.boundLayers?.filter((ele) => ele.type === "text")[0]?.id ||
+      null
     : null;
-};
 
-export const getBoundTextElement = (element: ExcalidrawElement | null) => {
-  if (!element) {
+export const getBoundTextLayer = (layer: ExcalidrawLayer | null) => {
+  if (!layer) {
     return null;
   }
-  const boundTextElementId = getBoundTextElementId(element);
-  if (boundTextElementId) {
+  const boundTextLayerId = getBoundTextLayerId(layer);
+  if (boundTextLayerId) {
     return (
-      (Scene.getScene(element)?.getElement(
-        boundTextElementId,
-      ) as ExcalidrawTextElementWithContainer) || null
+      (Scene.getScene(layer)?.getLayer(
+        boundTextLayerId
+      ) as ExcalidrawTextLayerWithContainer) || null
     );
   }
   return null;
 };
 
-export const getContainerElement = (
-  element:
-    | (ExcalidrawElement & {
-        containerId: ExcalidrawElement["id"] | null;
+export const getContainerLayer = (
+  layer:
+    | (ExcalidrawLayer & {
+        containerId: ExcalidrawLayer["id"] | null;
       })
-    | null,
+    | null
 ) => {
-  if (!element) {
+  if (!layer) {
     return null;
   }
-  if (element.containerId) {
-    return Scene.getScene(element)?.getElement(element.containerId) || null;
+  if (layer.containerId) {
+    return Scene.getScene(layer)?.getLayer(layer.containerId) || null;
   }
   return null;
 };
 
-export const getContainerDims = (element: ExcalidrawElement) => {
+export const getContainerDims = (layer: ExcalidrawLayer) => {
   const MIN_WIDTH = 300;
-  if (isArrowElement(element)) {
-    const width = Math.max(element.width, MIN_WIDTH);
-    const height = element.height;
+  if (isArrowLayer(layer)) {
+    const width = Math.max(layer.width, MIN_WIDTH);
+    const height = layer.height;
     return { width, height };
   }
-  return { width: element.width, height: element.height };
+  return { width: layer.width, height: layer.height };
 };
 
 export const getContainerCenter = (
-  container: ExcalidrawElement,
-  appState: AppState,
+  container: ExcalidrawLayer,
+  appState: AppState
 ) => {
-  if (!isArrowElement(container)) {
+  if (!isArrowLayer(container)) {
     return {
       x: container.x + container.width / 2,
-      y: container.y + container.height / 2,
+      y: container.y + container.height / 2
     };
   }
-  const points = LinearElementEditor.getPointsGlobalCoordinates(container);
+  const points = LinearLayerEditor.getPointsGlobalCoordinates(container);
   if (points.length % 2 === 1) {
     const index = Math.floor(container.points.length / 2);
-    const midPoint = LinearElementEditor.getPointGlobalCoordinates(
+    const midPoint = LinearLayerEditor.getPointGlobalCoordinates(
       container,
-      container.points[index],
+      container.points[index]
     );
     return { x: midPoint[0], y: midPoint[1] };
   }
   const index = container.points.length / 2 - 1;
-  let midSegmentMidpoint = LinearElementEditor.getEditorMidPoints(
+  let midSegmentMidpoint = LinearLayerEditor.getEditorMidPoints(
     container,
-    appState,
+    appState
   )[index];
   if (!midSegmentMidpoint) {
-    midSegmentMidpoint = LinearElementEditor.getSegmentMidPoint(
+    midSegmentMidpoint = LinearLayerEditor.getSegmentMidPoint(
       container,
       points[index],
       points[index + 1],
-      index + 1,
+      index + 1
     );
   }
   return { x: midSegmentMidpoint[0], y: midSegmentMidpoint[1] };
 };
 
-export const getContainerCoords = (container: NonDeletedExcalidrawElement) => {
+export const getContainerCoords = (container: NonDeletedExcalidrawLayer) => {
   let offsetX = BOUND_TEXT_PADDING;
   let offsetY = BOUND_TEXT_PADDING;
 
@@ -748,129 +734,125 @@ export const getContainerCoords = (container: NonDeletedExcalidrawElement) => {
   }
   return {
     x: container.x + offsetX,
-    y: container.y + offsetY,
+    y: container.y + offsetY
   };
 };
 
-export const getTextElementAngle = (textElement: ExcalidrawTextElement) => {
-  const container = getContainerElement(textElement);
-  if (!container || isArrowElement(container)) {
-    return textElement.angle;
+export const getTextLayerAngle = (textLayer: ExcalidrawTextLayer) => {
+  const container = getContainerLayer(textLayer);
+  if (!container || isArrowLayer(container)) {
+    return textLayer.angle;
   }
   return container.angle;
 };
 
-export const getBoundTextElementOffset = (
-  boundTextElement: ExcalidrawTextElement | null,
+export const getBoundTextLayerOffset = (
+  boundTextLayer: ExcalidrawTextLayer | null
 ) => {
-  const container = getContainerElement(boundTextElement);
-  if (!container || !boundTextElement) {
+  const container = getContainerLayer(boundTextLayer);
+  if (!container || !boundTextLayer) {
     return 0;
   }
-  if (isArrowElement(container)) {
+  if (isArrowLayer(container)) {
     return BOUND_TEXT_PADDING * 8;
   }
 
   return BOUND_TEXT_PADDING;
 };
 
-export const getBoundTextElementPosition = (
-  container: ExcalidrawElement,
-  boundTextElement: ExcalidrawTextElementWithContainer,
+export const getBoundTextLayerPosition = (
+  container: ExcalidrawLayer,
+  boundTextLayer: ExcalidrawTextLayerWithContainer
 ) => {
-  if (isArrowElement(container)) {
-    return LinearElementEditor.getBoundTextElementPosition(
+  if (isArrowLayer(container)) {
+    return LinearLayerEditor.getBoundTextLayerPosition(
       container,
-      boundTextElement,
+      boundTextLayer
     );
   }
 };
 
 export const shouldAllowVerticalAlign = (
-  selectedElements: NonDeletedExcalidrawElement[],
-) => {
-  return selectedElements.some((element) => {
-    const hasBoundContainer = isBoundToContainer(element);
+  selectedLayers: NonDeletedExcalidrawLayer[]
+) =>
+  selectedLayers.some((layer) => {
+    const hasBoundContainer = isBoundToContainer(layer);
     if (hasBoundContainer) {
-      const container = getContainerElement(element);
-      if (isTextElement(element) && isArrowElement(container)) {
+      const container = getContainerLayer(layer);
+      if (isTextLayer(layer) && isArrowLayer(container)) {
         return false;
       }
       return true;
     }
     return false;
   });
-};
 
 export const suppportsHorizontalAlign = (
-  selectedElements: NonDeletedExcalidrawElement[],
-) => {
-  return selectedElements.some((element) => {
-    const hasBoundContainer = isBoundToContainer(element);
+  selectedLayers: NonDeletedExcalidrawLayer[]
+) =>
+  selectedLayers.some((layer) => {
+    const hasBoundContainer = isBoundToContainer(layer);
     if (hasBoundContainer) {
-      const container = getContainerElement(element);
-      if (isTextElement(element) && isArrowElement(container)) {
+      const container = getContainerLayer(layer);
+      if (isTextLayer(layer) && isArrowLayer(container)) {
         return false;
       }
       return true;
     }
 
-    return isTextElement(element);
+    return isTextLayer(layer);
   });
-};
 
 export const getTextBindableContainerAtPosition = (
-  elements: readonly ExcalidrawElement[],
+  layers: readonly ExcalidrawLayer[],
   appState: AppState,
   x: number,
-  y: number,
+  y: number
 ): ExcalidrawTextContainer | null => {
-  const selectedElements = getSelectedElements(elements, appState);
-  if (selectedElements.length === 1) {
-    return isTextBindableContainer(selectedElements[0], false)
-      ? selectedElements[0]
+  const selectedLayers = getSelectedLayers(layers, appState);
+  if (selectedLayers.length === 1) {
+    return isTextBindableContainer(selectedLayers[0], false)
+      ? selectedLayers[0]
       : null;
   }
-  let hitElement = null;
+  let hitLayer = null;
   // We need to to hit testing from front (end of the array) to back (beginning of the array)
-  for (let index = elements.length - 1; index >= 0; --index) {
-    if (elements[index].isDeleted) {
+  for (let index = layers.length - 1; index >= 0; --index) {
+    if (layers[index].isDeleted) {
       continue;
     }
-    const [x1, y1, x2, y2] = getElementAbsoluteCoords(elements[index]);
+    const [x1, y1, x2, y2] = getLayerAbsoluteCoords(layers[index]);
     if (
-      isArrowElement(elements[index]) &&
-      isHittingElementNotConsideringBoundingBox(
-        elements[index],
-        appState,
-        null,
-        [x, y],
-      )
+      isArrowLayer(layers[index]) &&
+      isHittingLayerNotConsideringBoundingBox(layers[index], appState, null, [
+        x,
+        y
+      ])
     ) {
-      hitElement = elements[index];
+      hitLayer = layers[index];
       break;
     } else if (x1 < x && x < x2 && y1 < y && y < y2) {
-      hitElement = elements[index];
+      hitLayer = layers[index];
       break;
     }
   }
 
-  return isTextBindableContainer(hitElement, false) ? hitElement : null;
+  return isTextBindableContainer(hitLayer, false) ? hitLayer : null;
 };
 
 const VALID_CONTAINER_TYPES = new Set([
   "rectangle",
   "ellipse",
   "diamond",
-  "arrow",
+  "arrow"
 ]);
 
-export const isValidTextContainer = (element: ExcalidrawElement) =>
-  VALID_CONTAINER_TYPES.has(element.type);
+export const isValidTextContainer = (layer: ExcalidrawLayer) =>
+  VALID_CONTAINER_TYPES.has(layer.type);
 
 export const computeContainerDimensionForBoundText = (
   dimension: number,
-  containerType: ExtractSetType<typeof VALID_CONTAINER_TYPES>,
+  containerType: ExtractSetType<typeof VALID_CONTAINER_TYPES>
 ) => {
   dimension = Math.ceil(dimension);
   const padding = BOUND_TEXT_PADDING * 2;
@@ -887,9 +869,9 @@ export const computeContainerDimensionForBoundText = (
   return dimension + padding;
 };
 
-export const getBoundTextMaxWidth = (container: ExcalidrawElement) => {
+export const getBoundTextMaxWidth = (container: ExcalidrawLayer) => {
   const width = getContainerDims(container).width;
-  if (isArrowElement(container)) {
+  if (isArrowLayer(container)) {
     return width - BOUND_TEXT_PADDING * 8 * 2;
   }
 
@@ -908,14 +890,14 @@ export const getBoundTextMaxWidth = (container: ExcalidrawElement) => {
 };
 
 export const getBoundTextMaxHeight = (
-  container: ExcalidrawElement,
-  boundTextElement: ExcalidrawTextElementWithContainer,
+  container: ExcalidrawLayer,
+  boundTextLayer: ExcalidrawTextLayerWithContainer
 ) => {
   const height = getContainerDims(container).height;
-  if (isArrowElement(container)) {
+  if (isArrowLayer(container)) {
     const containerHeight = height - BOUND_TEXT_PADDING * 8 * 2;
     if (containerHeight <= 0) {
-      return boundTextElement.height;
+      return boundTextLayer.height;
     }
     return height;
   }
@@ -938,8 +920,8 @@ export const isMeasureTextSupported = () => {
     DUMMY_TEXT,
     getFontString({
       fontSize: DEFAULT_FONT_SIZE,
-      fontFamily: DEFAULT_FONT_FAMILY,
-    }),
+      fontFamily: DEFAULT_FONT_FAMILY
+    })
   );
   return width > 0;
 };
@@ -958,12 +940,12 @@ export const isMeasureTextSupported = () => {
 const DEFAULT_LINE_HEIGHT = {
   // ~1.25 is the average for Virgil in WebKit and Blink.
   // Gecko (FF) uses ~1.28.
-  [FONT_FAMILY.Virgil]: 1.25 as ExcalidrawTextElement["lineHeight"],
+  [FONT_FAMILY.Virgil]: 1.25 as ExcalidrawTextLayer["lineHeight"],
   // ~1.15 is the average for Virgil in WebKit and Blink.
   // Gecko if all over the place.
-  [FONT_FAMILY.Helvetica]: 1.15 as ExcalidrawTextElement["lineHeight"],
+  [FONT_FAMILY.Helvetica]: 1.15 as ExcalidrawTextLayer["lineHeight"],
   // ~1.2 is the average for Virgil in WebKit and Blink, and kinda Gecko too
-  [FONT_FAMILY.Cascadia]: 1.2 as ExcalidrawTextElement["lineHeight"],
+  [FONT_FAMILY.Cascadia]: 1.2 as ExcalidrawTextLayer["lineHeight"]
 };
 
 export const getDefaultLineHeight = (fontFamily: FontFamilyValues) => {

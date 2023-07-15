@@ -116,7 +116,7 @@
       "edit": "",
       "exit": ""
     },
-    "elementLock": {
+    "layerLock": {
       "lock": "",
       "unlock": "",
       "lockAll": "",
@@ -124,8 +124,8 @@
     },
     "statusPublished": "",
     "sidebarLock": "",
-    "selectAllElementsInFrame": "",
-    "removeAllElementsFromFrame": "",
+    "selectAllLayersInFrame": "",
+    "removeAllLayersFromFrame": "",
     "eyeDropper": ""
   },
   "library": {
@@ -234,12 +234,12 @@
   },
   "hints": {
     "canvasPanning": "",
-    "linearElement": "Kattintással görbe, az eger húzásával pedig egyenes nyilat rajzolhatsz",
+    "linearLayer": "Kattintással görbe, az eger húzásával pedig egyenes nyilat rajzolhatsz",
     "freeDraw": "Kattints és húzd, majd engedd el, amikor végeztél",
     "text": "Tipp: A kijelölés eszközzel a dupla kattintás új szöveget hoz létre",
     "text_selected": "Kattints duplán, vagy nyomj entert a szöveg szerkesztéséhez",
     "text_editing": "Nyomjd meg az Escape vagy a Ctrl/Cmd+ENTER billentyűkombinációt a szerkesztés befejezéséhez",
-    "linearElementMulti": "Kattints a következő ív pozíciójára, vagy fejezd be a nyilat az Escape vagy Enter megnyomásával",
+    "linearLayerMulti": "Kattints a következő ív pozíciójára, vagy fejezd be a nyilat az Escape vagy Enter megnyomásával",
     "lockAngle": "A SHIFT billentyű lenyomva tartásával korlátozhatja forgatás szögét",
     "resize": "A SHIFT billentyű lenyomva tartásával az átméretezés megtartja az arányokat,\naz ALT lenyomva tartásával pedig a középpont egy helyben marad",
     "resizeImage": "A SHIFT billentyű lenyomva tartásával szabadon átméretezheted,\ntartsd lenyomva az ALT billentyűt a középről való átméretezéshez",
@@ -249,7 +249,7 @@
     "lineEditor_nothingSelected": "Válaszd ki a szerkeszteni kívánt pontot (több kijelöléséhez tartsd lenyomva a SHIFT billentyűt),\nvagy Alt, és kattintson az új pontok hozzáadásához",
     "placeImage": "Kattints a kép elhelyezéséhez, vagy kattints és méretezd manuálisan",
     "publishLibrary": "Tedd közzé saját könyvtáradat",
-    "bindTextToElement": "Nyomd meg az Entert szöveg hozzáadáshoz",
+    "bindTextToLayer": "Nyomd meg az Entert szöveg hozzáadáshoz",
     "deepBoxSelect": "Tartsd lenyomva a Ctrl/Cmd billentyűt a mély kijelöléshez és a húzás megakadályozásához",
     "eraserRevert": "",
     "firefox_clipboard_write": ""
@@ -316,7 +316,7 @@
     "view": "Nézet",
     "zoomToFit": "Az összes elem látótérbe hozása",
     "zoomToSelection": "Kijelölésre nagyítás",
-    "toggleElementLock": "",
+    "toggleLayerLock": "",
     "movePageUpDown": "",
     "movePageLeftRight": ""
   },
@@ -389,8 +389,8 @@
   },
   "stats": {
     "angle": "Szög",
-    "element": "Elem",
-    "elements": "Elemek",
+    "layer": "Elem",
+    "layers": "Elemek",
     "height": "Magasság",
     "scene": "Jelenet",
     "selected": "Kijelölt",
@@ -411,7 +411,7 @@
     "fileSavedToFilename": "Mentve mint {filename}",
     "canvas": "rajzvászon",
     "selection": "kijelölés",
-    "pasteAsSingleElement": ""
+    "pasteAsSingleLayer": ""
   },
   "colors": {
     "transparent": "Átlátszó",

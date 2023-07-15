@@ -1,20 +1,22 @@
-import clsx from "clsx";
-import { composeEventHandlers } from "../utils";
 import "./Button.scss";
 
-interface ButtonProps extends React.HTMLAttributes<HTMLButtonElement> {
-  type?: "button" | "submit" | "reset";
+import clsx from "clsx";
+
+import { composeEventHandlers } from "../utils";
+
+interface ButtonProps extends React.HTMLAttributes<HTMLButtonLayer> {
+  children: React.ReactNode;
+  className?: string;
   onSelect: () => any;
   /** whether button is in active state */
   selected?: boolean;
-  children: React.ReactNode;
-  className?: string;
+  type?: "button" | "submit" | "reset";
 }
 
 /**
  * A generic button component that follows Excalidraw's design system.
  * Style can be customised using `className` or `style` prop.
- * Accepts all props that a regular `button` element accepts.
+ * Accepts all props that a regular `button` layer accepts.
  */
 export const Button = ({
   type = "button",
@@ -23,17 +25,15 @@ export const Button = ({
   children,
   className = "",
   ...rest
-}: ButtonProps) => {
-  return (
-    <button
-      onClick={composeEventHandlers(rest.onClick, (event) => {
-        onSelect();
-      })}
-      type={type}
-      className={clsx("excalidraw-button", className, { selected })}
-      {...rest}
-    >
-      {children}
-    </button>
-  );
-};
+}: ButtonProps) => (
+  <button
+    className={clsx("excalidraw-button", className, { selected })}
+    onClick={composeEventHandlers(rest.onClick, (event) => {
+      onSelect();
+    })}
+    type={type}
+    {...rest}
+  >
+    {children}
+  </button>
+);

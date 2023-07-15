@@ -116,7 +116,7 @@
       "edit": "Điều chỉnh nét",
       "exit": "Thoát chỉnh nét"
     },
-    "elementLock": {
+    "layerLock": {
       "lock": "Khoá",
       "unlock": "Mở khoá",
       "lockAll": "Khóa tất cả",
@@ -124,8 +124,8 @@
     },
     "statusPublished": "Đã đăng tải",
     "sidebarLock": "Giữ thanh bên luôn mở",
-    "selectAllElementsInFrame": "",
-    "removeAllElementsFromFrame": "",
+    "selectAllLayersInFrame": "",
+    "removeAllLayersFromFrame": "",
     "eyeDropper": ""
   },
   "library": {
@@ -234,12 +234,12 @@
   },
   "hints": {
     "canvasPanning": "Để di chuyển canvas, giữ con lăn chuột hoặc phím cách trong khi kéo, hoặc sử dụng công cụ cầm tay",
-    "linearElement": "Ấn để bắt đầu nhiểm điểm vẽ, kéo để vẽ một đường thẳng",
+    "linearLayer": "Ấn để bắt đầu nhiểm điểm vẽ, kéo để vẽ một đường thẳng",
     "freeDraw": "Ấn bà kéo, thả khi bạn xong",
     "text": "Mẹo: bạn có thể thêm văn bản tại bất cứ đâu bằng cách ấn hai lần bằng tool lựa chọn",
     "text_selected": "Ấn 2 lần hoặc nhấn ENTER để chỉnh văn bản",
     "text_editing": "Nhấn Escape hoặc Ctrl/Cmd+ENTER để hoàn thành chỉnh sửa",
-    "linearElementMulti": "Nhấn vào điểm cuối hoặc nhấn Escape hoặc Enter để kết thúc",
+    "linearLayerMulti": "Nhấn vào điểm cuối hoặc nhấn Escape hoặc Enter để kết thúc",
     "lockAngle": "Bạn có thể chỉnh lại góc bằng cách giữ phím SHIFT",
     "resize": "Bạn có thể chỉnh tỷ lệ bằng cách giữ SHIFT khi chỉnh kích cỡ,\ngiữ ALT để chỉnh kích cỡ từ trung tâm",
     "resizeImage": "",
@@ -249,7 +249,7 @@
     "lineEditor_nothingSelected": "",
     "placeImage": "",
     "publishLibrary": "",
-    "bindTextToElement": "",
+    "bindTextToLayer": "",
     "deepBoxSelect": "",
     "eraserRevert": "",
     "firefox_clipboard_write": "Tính năng này có thể được bật bằng cách đặt cờ \"dom.events.asyncClipboard.clipboardItem\" thành \"true\". Để thay đổi cờ trình duyệt trong Firefox, hãy truy cập trang \"about:config\"."
@@ -257,7 +257,7 @@
   "canvasError": {
     "cannotShowPreview": "Không thể xem trước",
     "canvasTooBig": "Canvas này có thể hơi lớn.",
-    "canvasTooBigTip": "Mẹo: hãy thử di chuyển các elements nhất lại gần nhau hơn một chút."
+    "canvasTooBigTip": "Mẹo: hãy thử di chuyển các layers nhất lại gần nhau hơn một chút."
   },
   "errorSplash": {
     "headingMain": "",
@@ -316,7 +316,7 @@
     "view": "",
     "zoomToFit": "",
     "zoomToSelection": "",
-    "toggleElementLock": "",
+    "toggleLayerLock": "",
     "movePageUpDown": "",
     "movePageLeftRight": ""
   },
@@ -389,8 +389,8 @@
   },
   "stats": {
     "angle": "",
-    "element": "",
-    "elements": "",
+    "layer": "",
+    "layers": "",
     "height": "",
     "scene": "",
     "selected": "",
@@ -411,7 +411,7 @@
     "fileSavedToFilename": "",
     "canvas": "canvas",
     "selection": "",
-    "pasteAsSingleElement": ""
+    "pasteAsSingleLayer": ""
   },
   "colors": {
     "transparent": "",

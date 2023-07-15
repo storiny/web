@@ -1,23 +1,25 @@
+import "./Stats.scss";
+
 import React from "react";
-import { getCommonBounds } from "../element/bounds";
-import { NonDeletedExcalidrawElement } from "../element/types";
+
+import { getTargetLayers } from "../../lib/scene";
 import { t } from "../i18n";
-import { getTargetElements } from "../scene";
+import { getCommonBounds } from "../layer/bounds";
+import { NonDeletedExcalidrawLayer } from "../layer/types";
 import { ExcalidrawProps, UIAppState } from "../types";
 import { CloseIcon } from "./icons";
 import { Island } from "./Island";
-import "./Stats.scss";
 
 export const Stats = (props: {
   appState: UIAppState;
-  setAppState: React.Component<any, UIAppState>["setState"];
-  elements: readonly NonDeletedExcalidrawElement[];
+  layers: readonly NonDeletedExcalidrawLayer[];
   onClose: () => void;
   renderCustomStats: ExcalidrawProps["renderCustomStats"];
+  setAppState: React.Component<any, UIAppState>["setState"];
 }) => {
-  const boundingBox = getCommonBounds(props.elements);
-  const selectedElements = getTargetElements(props.elements, props.appState);
-  const selectedBoundingBox = getCommonBounds(selectedElements);
+  const boundingBox = getCommonBounds(props.layers);
+  const selectedLayers = getTargetLayers(props.layers, props.appState);
+  const selectedBoundingBox = getCommonBounds(selectedLayers);
 
   return (
     <div className="Stats">
@@ -32,8 +34,8 @@ export const Stats = (props: {
               <th colSpan={2}>{t("stats.scene")}</th>
             </tr>
             <tr>
-              <td>{t("stats.elements")}</td>
-              <td>{props.elements.length}</td>
+              <td>{t("stats.layers")}</td>
+              <td>{props.layers.length}</td>
             </tr>
             <tr>
               <td>{t("stats.width")}</td>
@@ -44,24 +46,24 @@ export const Stats = (props: {
               <td>{Math.round(boundingBox[3]) - Math.round(boundingBox[1])}</td>
             </tr>
 
-            {selectedElements.length === 1 && (
+            {selectedLayers.length === 1 && (
               <tr>
-                <th colSpan={2}>{t("stats.element")}</th>
+                <th colSpan={2}>{t("stats.layer")}</th>
               </tr>
             )}
 
-            {selectedElements.length > 1 && (
+            {selectedLayers.length > 1 && (
               <>
                 <tr>
                   <th colSpan={2}>{t("stats.selected")}</th>
                 </tr>
                 <tr>
-                  <td>{t("stats.elements")}</td>
-                  <td>{selectedElements.length}</td>
+                  <td>{t("stats.layers")}</td>
+                  <td>{selectedLayers.length}</td>
                 </tr>
               </>
             )}
-            {selectedElements.length > 0 && (
+            {selectedLayers.length > 0 && (
               <>
                 <tr>
                   <td>{"x"}</td>
@@ -75,7 +77,7 @@ export const Stats = (props: {
                   <td>{t("stats.width")}</td>
                   <td>
                     {Math.round(
-                      selectedBoundingBox[2] - selectedBoundingBox[0],
+                      selectedBoundingBox[2] - selectedBoundingBox[0]
                     )}
                   </td>
                 </tr>
@@ -83,23 +85,21 @@ export const Stats = (props: {
                   <td>{t("stats.height")}</td>
                   <td>
                     {Math.round(
-                      selectedBoundingBox[3] - selectedBoundingBox[1],
+                      selectedBoundingBox[3] - selectedBoundingBox[1]
                     )}
                   </td>
                 </tr>
               </>
             )}
-            {selectedElements.length === 1 && (
+            {selectedLayers.length === 1 && (
               <tr>
                 <td>{t("stats.angle")}</td>
                 <td>
-                  {`${Math.round(
-                    (selectedElements[0].angle * 180) / Math.PI,
-                  )}°`}
+                  {`${Math.round((selectedLayers[0].angle * 180) / Math.PI)}°`}
                 </td>
               </tr>
             )}
-            {props.renderCustomStats?.(props.elements, props.appState)}
+            {props.renderCustomStats?.(props.layers, props.appState)}
           </tbody>
         </table>
       </Island>

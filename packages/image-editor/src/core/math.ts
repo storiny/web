@@ -1,17 +1,17 @@
-import { NormalizedZoomValue, Point, Zoom } from "./types";
 import {
   DEFAULT_ADAPTIVE_RADIUS,
-  LINE_CONFIRM_THRESHOLD,
   DEFAULT_PROPORTIONAL_RADIUS,
-  ROUNDNESS,
+  LINE_CONFIRM_THRESHOLD,
+  ROUNDNESS
 } from "./constants";
+import { getCurvePathOps } from "./layer/bounds";
 import {
-  ExcalidrawElement,
-  ExcalidrawLinearElement,
-  NonDeleted,
-} from "./element/types";
-import { getShapeForElement } from "./renderer/renderElement";
-import { getCurvePathOps } from "./element/bounds";
+  ExcalidrawLayer,
+  ExcalidrawLinearLayer,
+  NonDeleted
+} from "./layer/types";
+import { getShapeForLayer } from "./renderer/renderLayer";
+import { NormalizedZoomValue, Point, Zoom } from "./types";
 import { Mutable } from "./utility-types";
 
 export const rotate = (
@@ -19,26 +19,26 @@ export const rotate = (
   y1: number,
   x2: number,
   y2: number,
-  angle: number,
+  angle: number
 ): [number, number] =>
   // 𝑎′𝑥=(𝑎𝑥−𝑐𝑥)cos𝜃−(𝑎𝑦−𝑐𝑦)sin𝜃+𝑐𝑥
   // 𝑎′𝑦=(𝑎𝑥−𝑐𝑥)sin𝜃+(𝑎𝑦−𝑐𝑦)cos𝜃+𝑐𝑦.
   // https://math.stackexchange.com/questions/2204520/how-do-i-rotate-a-line-segment-in-a-specific-point-on-the-line
   [
     (x1 - x2) * Math.cos(angle) - (y1 - y2) * Math.sin(angle) + x2,
-    (x1 - x2) * Math.sin(angle) + (y1 - y2) * Math.cos(angle) + y2,
+    (x1 - x2) * Math.sin(angle) + (y1 - y2) * Math.cos(angle) + y2
   ];
 
 export const rotatePoint = (
   point: Point,
   center: Point,
-  angle: number,
+  angle: number
 ): [number, number] => rotate(point[0], point[1], center[0], center[1], angle);
 
 export const adjustXYWithRotation = (
   sides: {
-    n?: boolean;
     e?: boolean;
+    n?: boolean;
     s?: boolean;
     w?: boolean;
   },
@@ -48,7 +48,7 @@ export const adjustXYWithRotation = (
   deltaX1: number,
   deltaY1: number,
   deltaX2: number,
-  deltaY2: number,
+  deltaY2: number
 ): [number, number] => {
   const cos = Math.cos(angle);
   const sin = Math.sin(angle);
@@ -151,16 +151,17 @@ export const distance2d = (x1: number, y1: number, x2: number, y2: number) => {
   return Math.hypot(xd, yd);
 };
 
-export const centerPoint = (a: Point, b: Point): Point => {
-  return [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2];
-};
+export const centerPoint = (a: Point, b: Point): Point => [
+  (a[0] + b[0]) / 2,
+  (a[1] + b[1]) / 2
+];
 
 // Checks if the first and last point are close enough
 // to be considered a loop
 export const isPathALoop = (
-  points: ExcalidrawLinearElement["points"],
+  points: ExcalidrawLinearLayer["points"],
   /** supply if you want the loop detection to account for current zoom */
-  zoomValue: Zoom["value"] = 1 as NormalizedZoomValue,
+  zoomValue: Zoom["value"] = 1 as NormalizedZoomValue
 ): boolean => {
   if (points.length >= 3) {
     const [first, last] = [points[0], points[points.length - 1]];
@@ -179,7 +180,7 @@ export const isPathALoop = (
 export const isPointInPolygon = (
   points: Point[],
   x: number,
-  y: number,
+  y: number
 ): boolean => {
   const vertices = points.length;
 
@@ -206,14 +207,11 @@ export const isPointInPolygon = (
 
 // Returns whether `q` lies inside the segment/rectangle defined by `p` and `r`.
 // This is an approximation to "does `q` lie on a segment `pr`" check.
-export const isPointWithinBounds = (p: Point, q: Point, r: Point) => {
-  return (
-    q[0] <= Math.max(p[0], r[0]) &&
-    q[0] >= Math.min(p[0], r[0]) &&
-    q[1] <= Math.max(p[1], r[1]) &&
-    q[1] >= Math.min(p[1], r[1])
-  );
-};
+export const isPointWithinBounds = (p: Point, q: Point, r: Point) =>
+  q[0] <= Math.max(p[0], r[0]) &&
+  q[0] >= Math.min(p[0], r[0]) &&
+  q[1] <= Math.max(p[1], r[1]) &&
+  q[1] >= Math.min(p[1], r[1]);
 
 // For the ordered points p, q, r, return
 // 0 if p, q, r are colinear
@@ -265,27 +263,27 @@ const doSegmentsIntersect = (p1: Point, q1: Point, p2: Point, q2: Point) => {
 export const getGridPoint = (
   x: number,
   y: number,
-  gridSize: number | null,
+  gridSize: number | null
 ): [number, number] => {
   if (gridSize) {
     return [
       Math.round(x / gridSize) * gridSize,
-      Math.round(y / gridSize) * gridSize,
+      Math.round(y / gridSize) * gridSize
     ];
   }
   return [x, y];
 };
 
-export const getCornerRadius = (x: number, element: ExcalidrawElement) => {
+export const getCornerRadius = (x: number, layer: ExcalidrawLayer) => {
   if (
-    element.roundness?.type === ROUNDNESS.PROPORTIONAL_RADIUS ||
-    element.roundness?.type === ROUNDNESS.LEGACY
+    layer.roundness?.type === ROUNDNESS.PROPORTIONAL_RADIUS ||
+    layer.roundness?.type === ROUNDNESS.LEGACY
   ) {
     return x * DEFAULT_PROPORTIONAL_RADIUS;
   }
 
-  if (element.roundness?.type === ROUNDNESS.ADAPTIVE_RADIUS) {
-    const fixedRadiusSize = element.roundness?.value ?? DEFAULT_ADAPTIVE_RADIUS;
+  if (layer.roundness?.type === ROUNDNESS.ADAPTIVE_RADIUS) {
+    const fixedRadiusSize = layer.roundness?.value ?? DEFAULT_ADAPTIVE_RADIUS;
 
     const CUTOFF_SIZE = fixedRadiusSize / DEFAULT_PROPORTIONAL_RADIUS;
 
@@ -300,10 +298,10 @@ export const getCornerRadius = (x: number, element: ExcalidrawElement) => {
 };
 
 export const getControlPointsForBezierCurve = (
-  element: NonDeleted<ExcalidrawLinearElement>,
-  endPoint: Point,
+  layer: NonDeleted<ExcalidrawLinearLayer>,
+  endPoint: Point
 ) => {
-  const shape = getShapeForElement(element as ExcalidrawLinearElement);
+  const shape = getShapeForLayer(layer as ExcalidrawLinearLayer);
   if (!shape) {
     return null;
   }
@@ -342,7 +340,7 @@ export const getBezierXY = (
   p1: Point,
   p2: Point,
   p3: Point,
-  t: number,
+  t: number
 ) => {
   const equation = (t: number, idx: number) =>
     Math.pow(1 - t, 3) * p3[idx] +
@@ -355,12 +353,12 @@ export const getBezierXY = (
 };
 
 export const getPointsInBezierCurve = (
-  element: NonDeleted<ExcalidrawLinearElement>,
-  endPoint: Point,
+  layer: NonDeleted<ExcalidrawLinearLayer>,
+  endPoint: Point
 ) => {
   const controlPoints: Mutable<Point>[] = getControlPointsForBezierCurve(
-    element,
-    endPoint,
+    layer,
+    endPoint
   )!;
   if (!controlPoints) {
     return [];
@@ -374,7 +372,7 @@ export const getPointsInBezierCurve = (
       controlPoints[1],
       controlPoints[2],
       controlPoints[3],
-      t,
+      t
     );
     pointsOnCurve.push([point[0], point[1]]);
     t -= 0.05;
@@ -388,12 +386,12 @@ export const getPointsInBezierCurve = (
 };
 
 export const getBezierCurveArcLengths = (
-  element: NonDeleted<ExcalidrawLinearElement>,
-  endPoint: Point,
+  layer: NonDeleted<ExcalidrawLinearLayer>,
+  endPoint: Point
 ) => {
   const arcLengths: number[] = [];
   arcLengths[0] = 0;
-  const points = getPointsInBezierCurve(element, endPoint);
+  const points = getPointsInBezierCurve(layer, endPoint);
   let index = 0;
   let distance = 0;
   while (index < points.length - 1) {
@@ -401,7 +399,7 @@ export const getBezierCurveArcLengths = (
       points[index][0],
       points[index][1],
       points[index + 1][0],
-      points[index + 1][1],
+      points[index + 1][1]
     );
     distance += segmentDistance;
     arcLengths.push(distance);
@@ -412,20 +410,20 @@ export const getBezierCurveArcLengths = (
 };
 
 export const getBezierCurveLength = (
-  element: NonDeleted<ExcalidrawLinearElement>,
-  endPoint: Point,
+  layer: NonDeleted<ExcalidrawLinearLayer>,
+  endPoint: Point
 ) => {
-  const arcLengths = getBezierCurveArcLengths(element, endPoint);
+  const arcLengths = getBezierCurveArcLengths(layer, endPoint);
   return arcLengths.at(-1) as number;
 };
 
 // This maps interval to actual interval t on the curve so that when t = 0.5, its actually the point at 50% of the length
 export const mapIntervalToBezierT = (
-  element: NonDeleted<ExcalidrawLinearElement>,
+  layer: NonDeleted<ExcalidrawLinearLayer>,
   endPoint: Point,
-  interval: number, // The interval between 0 to 1 for which you want to find the point on the curve,
+  interval: number // The interval between 0 to 1 for which you want to find the point on the curve,
 ) => {
-  const arcLengths = getBezierCurveArcLengths(element, endPoint);
+  const arcLengths = getBezierCurveArcLengths(layer, endPoint);
   const pointsCount = arcLengths.length - 1;
   const curveLength = arcLengths.at(-1) as number;
   const targetLength = interval * curveLength;
@@ -457,18 +455,8 @@ export const mapIntervalToBezierT = (
   );
 };
 
-export const arePointsEqual = (p1: Point, p2: Point) => {
-  return p1[0] === p2[0] && p1[1] === p2[1];
-};
+export const arePointsEqual = (p1: Point, p2: Point) =>
+  p1[0] === p2[0] && p1[1] === p2[1];
 
-export const isRightAngle = (angle: number) => {
-  // if our angles were mathematically accurate, we could just check
-  //
-  //    angle % (Math.PI / 2) === 0
-  //
-  // but since we're in floating point land, we need to round.
-  //
-  // Below, after dividing by Math.PI, a multiple of 0.5 indicates a right
-  // angle, which we can check with modulo after rounding.
-  return Math.round((angle / Math.PI) * 10000) % 5000 === 0;
-};
+export const isRightAngle = (angle: number) =>
+  Math.round((angle / Math.PI) * 10000) % 5000 === 0;

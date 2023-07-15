@@ -116,7 +116,7 @@
       "edit": "Upravit čáru",
       "exit": "Ukončit editor řádků"
     },
-    "elementLock": {
+    "layerLock": {
       "lock": "Uzamknout",
       "unlock": "Odemknout",
       "lockAll": "Uzamknout vše",
@@ -124,8 +124,8 @@
     },
     "statusPublished": "Zveřejněno",
     "sidebarLock": "Ponechat postranní panel otevřený",
-    "selectAllElementsInFrame": "",
-    "removeAllElementsFromFrame": "",
+    "selectAllLayersInFrame": "",
+    "removeAllLayersFromFrame": "",
     "eyeDropper": "Vyberte barvu z plátna"
   },
   "library": {
@@ -203,7 +203,7 @@
     "collabSaveFailed_sizeExceeded": "Nelze uložit do databáze na serveru, plátno se zdá být příliš velké. Měli byste uložit soubor lokálně, abyste se ujistili, že neztratíte svou práci.",
     "brave_measure_text_error": {
       "line1": "Vypadá to, že používáte Brave prohlížeč s povoleným nastavením <bold>Aggressively Block Fingerprinting</bold>.",
-      "line2": "To by mohlo vést k narušení <bold>Textových elementů</bold> ve vašich výkresech.",
+      "line2": "To by mohlo vést k narušení <bold>Textových layerů</bold> ve vašich výkresech.",
       "line3": "Důrazně doporučujeme zakázat toto nastavení. Můžete sledovat <link>tyto kroky</link> jak to udělat.",
       "line4": "Pokud vypnutí tohoto nastavení neopravuje zobrazení textových prvků, prosím, otevřete <issueLink>problém</issueLink> na našem GitHubu, nebo nám napište na <discordLink>Discord</discordLink>"
     }
@@ -234,12 +234,12 @@
   },
   "hints": {
     "canvasPanning": "Chcete-li přesunout plátno, podržte kolečko nebo mezerník při tažení nebo použijte nástroj Ruka",
-    "linearElement": "Kliknutím pro více bodů, táhnutím pro jednu čáru",
+    "linearLayer": "Kliknutím pro více bodů, táhnutím pro jednu čáru",
     "freeDraw": "Klikněte a táhněte, pro ukončení pusťte",
     "text": "Tip: Text můžete také přidat dvojitým kliknutím kdekoli pomocí nástroje pro výběr",
     "text_selected": "Dvojklikem nebo stisknutím klávesy ENTER upravíte text",
     "text_editing": "Stiskněte Escape nebo Ctrl/Cmd+ENTER pro dokončení úprav",
-    "linearElementMulti": "Klikněte na poslední bod nebo stiskněte Escape anebo Enter pro dokončení",
+    "linearLayerMulti": "Klikněte na poslední bod nebo stiskněte Escape anebo Enter pro dokončení",
     "lockAngle": "Úhel můžete omezit podržením SHIFT",
     "resize": "Můžete omezit proporce podržením SHIFT při změně velikosti,\npodržte ALT pro změnu velikosti od středu",
     "resizeImage": "Můžete volně změnit velikost podržením SHIFT,\npodržením klávesy ALT změníte velikosti od středu",
@@ -249,7 +249,7 @@
     "lineEditor_nothingSelected": "Vyberte bod, který chcete upravit (podržením klávesy SHIFT vyberete více položek),\nnebo podržením klávesy Alt a kliknutím přidáte nové body",
     "placeImage": "Kliknutím umístěte obrázek, nebo klepnutím a přetažením ručně nastavíte jeho velikost",
     "publishLibrary": "Publikovat vlastní knihovnu",
-    "bindTextToElement": "Stiskněte Enter pro přidání textu",
+    "bindTextToLayer": "Stiskněte Enter pro přidání textu",
     "deepBoxSelect": "Podržte Ctrl/Cmd pro hluboký výběr a pro zabránění táhnutí",
     "eraserRevert": "Podržením klávesy Alt vrátíte prvky označené pro smazání",
     "firefox_clipboard_write": "Tato funkce může být povolena nastavením vlajky \"dom.events.asyncClipboard.clipboardItem\" na \"true\". Chcete-li změnit vlajky prohlížeče ve Firefoxu, navštivte stránku \"about:config\"."
@@ -316,7 +316,7 @@
     "view": "Zobrazení",
     "zoomToFit": "Přiblížit na zobrazení všech prvků",
     "zoomToSelection": "Přiblížit na výběr",
-    "toggleElementLock": "Zamknout/odemknout výběr",
+    "toggleLayerLock": "Zamknout/odemknout výběr",
     "movePageUpDown": "Posunout stránku nahoru/dolů",
     "movePageLeftRight": "Přesunout stránku doleva/doprava"
   },
@@ -389,8 +389,8 @@
   },
   "stats": {
     "angle": "Úhel",
-    "element": "Prvek",
-    "elements": "Prvky",
+    "layer": "Prvek",
+    "layers": "Prvky",
     "height": "Výška",
     "scene": "Scéna",
     "selected": "Vybráno",
@@ -411,7 +411,7 @@
     "fileSavedToFilename": "Uloženo do {filename}",
     "canvas": "plátno",
     "selection": "výběr",
-    "pasteAsSingleElement": "Pomocí {{shortcut}} vložte jako jeden prvek,\nnebo vložte do existujícího textového editoru"
+    "pasteAsSingleLayer": "Pomocí {{shortcut}} vložte jako jeden prvek,\nnebo vložte do existujícího textového editoru"
   },
   "colors": {
     "transparent": "Průhledná",

@@ -1,37 +1,35 @@
+import { deepCopyLayer } from "./layer/newLayer";
+import { isLinearLayer } from "./layer/typeChecks";
+import { ExcalidrawLayer } from "./layer/types";
 import { AppState } from "./types";
-import { ExcalidrawElement } from "./element/types";
-import { isLinearElement } from "./element/typeChecks";
-import { deepCopyElement } from "./element/newElement";
 import { Mutable } from "./utility-types";
 
 export interface HistoryEntry {
   appState: ReturnType<typeof clearAppStatePropertiesForHistory>;
-  elements: ExcalidrawElement[];
+  layers: ExcalidrawLayer[];
 }
 
-interface DehydratedExcalidrawElement {
+interface DehydratedExcalidrawLayer {
   id: string;
   versionNonce: number;
 }
 
 interface DehydratedHistoryEntry {
   appState: string;
-  elements: DehydratedExcalidrawElement[];
+  layers: DehydratedExcalidrawLayer[];
 }
 
-const clearAppStatePropertiesForHistory = (appState: AppState) => {
-  return {
-    selectedElementIds: appState.selectedElementIds,
-    selectedGroupIds: appState.selectedGroupIds,
-    viewBackgroundColor: appState.viewBackgroundColor,
-    editingLinearElement: appState.editingLinearElement,
-    editingGroupId: appState.editingGroupId,
-    name: appState.name,
-  };
-};
+const clearAppStatePropertiesForHistory = (appState: AppState) => ({
+  selectedLayerIds: appState.selectedLayerIds,
+  selectedGroupIds: appState.selectedGroupIds,
+  viewBackgroundColor: appState.viewBackgroundColor,
+  editingLinearLayer: appState.editingLinearLayer,
+  editingGroupId: appState.editingGroupId,
+  name: appState.name
+});
 
 class History {
-  private elementCache = new Map<string, Map<number, ExcalidrawElement>>();
+  private layerCache = new Map<string, Map<number, ExcalidrawLayer>>();
   private recording: boolean = true;
   private stateHistory: DehydratedHistoryEntry[] = [];
   private redoStack: DehydratedHistoryEntry[] = [];
@@ -39,43 +37,43 @@ class History {
 
   private hydrateHistoryEntry({
     appState,
-    elements,
+    layers
   }: DehydratedHistoryEntry): HistoryEntry {
     return {
       appState: JSON.parse(appState),
-      elements: elements.map((dehydratedExcalidrawElement) => {
-        const element = this.elementCache
-          .get(dehydratedExcalidrawElement.id)
-          ?.get(dehydratedExcalidrawElement.versionNonce);
-        if (!element) {
+      layers: layers.map((dehydratedExcalidrawLayer) => {
+        const layer = this.layerCache
+          .get(dehydratedExcalidrawLayer.id)
+          ?.get(dehydratedExcalidrawLayer.versionNonce);
+        if (!layer) {
           throw new Error(
-            `Element not found: ${dehydratedExcalidrawElement.id}:${dehydratedExcalidrawElement.versionNonce}`,
+            `Layer not found: ${dehydratedExcalidrawLayer.id}:${dehydratedExcalidrawLayer.versionNonce}`
           );
         }
-        return element;
-      }),
+        return layer;
+      })
     };
   }
 
   private dehydrateHistoryEntry({
     appState,
-    elements,
+    layers
   }: HistoryEntry): DehydratedHistoryEntry {
     return {
       appState: JSON.stringify(appState),
-      elements: elements.map((element: ExcalidrawElement) => {
-        if (!this.elementCache.has(element.id)) {
-          this.elementCache.set(element.id, new Map());
+      layers: layers.map((layer: ExcalidrawLayer) => {
+        if (!this.layerCache.has(layer.id)) {
+          this.layerCache.set(layer.id, new Map());
         }
-        const versions = this.elementCache.get(element.id)!;
-        if (!versions.has(element.versionNonce)) {
-          versions.set(element.versionNonce, deepCopyElement(element));
+        const versions = this.layerCache.get(layer.id)!;
+        if (!versions.has(layer.versionNonce)) {
+          versions.set(layer.versionNonce, deepCopyLayer(layer));
         }
         return {
-          id: element.id,
-          versionNonce: element.versionNonce,
+          id: layer.id,
+          versionNonce: layer.versionNonce
         };
-      }),
+      })
     };
   }
 
@@ -83,11 +81,11 @@ class History {
     return {
       recording: this.recording,
       stateHistory: this.stateHistory.map((dehydratedHistoryEntry) =>
-        this.hydrateHistoryEntry(dehydratedHistoryEntry),
+        this.hydrateHistoryEntry(dehydratedHistoryEntry)
       ),
       redoStack: this.redoStack.map((dehydratedHistoryEntry) =>
-        this.hydrateHistoryEntry(dehydratedHistoryEntry),
-      ),
+        this.hydrateHistoryEntry(dehydratedHistoryEntry)
+      )
     };
   }
 
@@ -95,44 +93,43 @@ class History {
     this.stateHistory.length = 0;
     this.redoStack.length = 0;
     this.lastEntry = null;
-    this.elementCache.clear();
+    this.layerCache.clear();
   }
 
   private generateEntry = (
     appState: AppState,
-    elements: readonly ExcalidrawElement[],
+    layers: readonly ExcalidrawLayer[]
   ): DehydratedHistoryEntry =>
     this.dehydrateHistoryEntry({
       appState: clearAppStatePropertiesForHistory(appState),
-      elements: elements.reduce((elements, element) => {
+      layers: layers.reduce((layers, layer) => {
         if (
-          isLinearElement(element) &&
-          appState.multiElement &&
-          appState.multiElement.id === element.id
+          isLinearLayer(layer) &&
+          appState.multiLayer &&
+          appState.multiLayer.id === layer.id
         ) {
           // don't store multi-point arrow if still has only one point
           if (
-            appState.multiElement &&
-            appState.multiElement.id === element.id &&
-            element.points.length < 2
+            appState.multiLayer &&
+            appState.multiLayer.id === layer.id &&
+            layer.points.length < 2
           ) {
-            return elements;
+            return layers;
           }
 
-          elements.push({
-            ...element,
+          layers.push({
+            ...layer,
             // don't store last point if not committed
             points:
-              element.lastCommittedPoint !==
-              element.points[element.points.length - 1]
-                ? element.points.slice(0, -1)
-                : element.points,
+              layer.lastCommittedPoint !== layer.points[layer.points.length - 1]
+                ? layer.points.slice(0, -1)
+                : layer.points
           });
         } else {
-          elements.push(element);
+          layers.push(layer);
         }
-        return elements;
-      }, [] as Mutable<typeof elements>),
+        return layers;
+      }, [] as Mutable<typeof layers>)
     });
 
   shouldCreateEntry(nextEntry: HistoryEntry): boolean {
@@ -142,14 +139,14 @@ class History {
       return true;
     }
 
-    if (nextEntry.elements.length !== lastEntry.elements.length) {
+    if (nextEntry.layers.length !== lastEntry.layers.length) {
       return true;
     }
 
-    // loop from right to left as changes are likelier to happen on new elements
-    for (let i = nextEntry.elements.length - 1; i > -1; i--) {
-      const prev = nextEntry.elements[i];
-      const next = lastEntry.elements[i];
+    // loop from right to left as changes are likelier to happen on new layers
+    for (let i = nextEntry.layers.length - 1; i > -1; i--) {
+      const prev = nextEntry.layers[i];
+      const next = lastEntry.layers[i];
       if (
         !prev ||
         !next ||
@@ -163,15 +160,14 @@ class History {
     // note: this is safe because entry's appState is guaranteed no excess props
     let key: keyof typeof nextEntry.appState;
     for (key in nextEntry.appState) {
-      if (key === "editingLinearElement") {
+      if (key === "editingLinearLayer") {
         if (
-          nextEntry.appState[key]?.elementId ===
-          lastEntry.appState[key]?.elementId
+          nextEntry.appState[key]?.layerId === lastEntry.appState[key]?.layerId
         ) {
           continue;
         }
       }
-      if (key === "selectedElementIds" || key === "selectedGroupIds") {
+      if (key === "selectedLayerIds" || key === "selectedGroupIds") {
         continue;
       }
       if (nextEntry.appState[key] !== lastEntry.appState[key]) {
@@ -182,8 +178,8 @@ class History {
     return false;
   }
 
-  pushEntry(appState: AppState, elements: readonly ExcalidrawElement[]) {
-    const newEntryDehydrated = this.generateEntry(appState, elements);
+  pushEntry(appState: AppState, layers: readonly ExcalidrawLayer[]) {
+    const newEntryDehydrated = this.generateEntry(appState, layers);
     const newEntry: HistoryEntry = this.hydrateHistoryEntry(newEntryDehydrated);
 
     if (newEntry) {
@@ -240,12 +236,12 @@ class History {
    *  app state in a way that would break `shouldCreateEntry` which relies on
    *  `lastEntry` to reflect last comittable history state.
    * We can't update `lastEntry` from within history when calling undo/redo
-   *  because the action potentially mutates appState/elements before storing
+   *  because the action potentially mutates appState/layers before storing
    *  it.
    */
-  setCurrentState(appState: AppState, elements: readonly ExcalidrawElement[]) {
+  setCurrentState(appState: AppState, layers: readonly ExcalidrawLayer[]) {
     this.lastEntry = this.hydrateHistoryEntry(
-      this.generateEntry(appState, elements),
+      this.generateEntry(appState, layers)
     );
   }
 
@@ -254,9 +250,9 @@ class History {
     this.recording = true;
   }
 
-  record(state: AppState, elements: readonly ExcalidrawElement[]) {
+  record(state: AppState, layers: readonly ExcalidrawLayer[]) {
     if (this.recording) {
-      this.pushEntry(state, elements);
+      this.pushEntry(state, layers);
       this.recording = false;
     }
   }

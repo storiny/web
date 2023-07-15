@@ -1,33 +1,34 @@
+import "./LibraryMenuItems.scss";
+
 import React, {
   useCallback,
   useEffect,
   useMemo,
   useRef,
-  useState,
+  useState
 } from "react";
-import { serializeLibraryAsJSON } from "../data/json";
+
+import { serializeLibraryAsJSON } from "../../lib/data/json/json";
+import { useLibraryCache } from "../../lib/hooks/useLibraryItemSvg";
+import { useScrollPosition } from "../../lib/hooks/useScrollPosition";
+import { MIME_TYPES } from "../constants";
 import { t } from "../i18n";
+import { duplicateLayers } from "../layer/newLayer";
 import {
   ExcalidrawProps,
   LibraryItem,
   LibraryItems,
-  UIAppState,
+  UIAppState
 } from "../types";
 import { arrayToMap } from "../utils";
-import Stack from "./Stack";
-import { MIME_TYPES } from "../constants";
-import Spinner from "./Spinner";
-import { duplicateElements } from "../element/newElement";
 import { LibraryMenuControlButtons } from "./LibraryMenuControlButtons";
 import { LibraryDropdownMenu } from "./LibraryMenuHeaderContent";
 import {
   LibraryMenuSection,
-  LibraryMenuSectionGrid,
+  LibraryMenuSectionGrid
 } from "./LibraryMenuSection";
-import { useScrollPosition } from "../hooks/useScrollPosition";
-import { useLibraryCache } from "../hooks/useLibraryItemSvg";
-
-import "./LibraryMenuItems.scss";
+import Spinner from "./Spinner";
+import Stack from "./Stack";
 
 // using an odd number of items per batch so the rendering creates an irregular
 // pattern which looks more organic
@@ -36,31 +37,31 @@ const ITEMS_RENDERED_PER_BATCH = 17;
 // speed it up
 const CACHED_ITEMS_RENDERED_PER_BATCH = 64;
 
-export default function LibraryMenuItems({
+export default ({
   isLoading,
   libraryItems,
   onAddToLibrary,
   onInsertLibraryItems,
-  pendingElements,
+  pendingLayers,
   theme,
   id,
   libraryReturnUrl,
   onSelectItems,
-  selectedItems,
+  selectedItems
 }: {
+  id: string;
   isLoading: boolean;
   libraryItems: LibraryItems;
-  pendingElements: LibraryItem["elements"];
-  onInsertLibraryItems: (libraryItems: LibraryItems) => void;
-  onAddToLibrary: (elements: LibraryItem["elements"]) => void;
   libraryReturnUrl: ExcalidrawProps["libraryReturnUrl"];
-  theme: UIAppState["theme"];
-  id: string;
-  selectedItems: LibraryItem["id"][];
+  onAddToLibrary: (layers: LibraryItem["layers"]) => void;
+  onInsertLibraryItems: (libraryItems: LibraryItems) => void;
   onSelectItems: (id: LibraryItem["id"][]) => void;
-}) {
-  const libraryContainerRef = useRef<HTMLDivElement>(null);
-  const scrollPosition = useScrollPosition<HTMLDivElement>(libraryContainerRef);
+  pendingLayers: LibraryItem["layers"];
+  selectedItems: LibraryItem["id"][];
+  theme: UIAppState["theme"];
+}) => {
+  const libraryContainerRef = useRef<HTMLDivLayer>(null);
+  const scrollPosition = useScrollPosition<HTMLDivLayer>(libraryContainerRef);
 
   // This effect has to be called only on first render, therefore  `scrollPosition` isn't in the dependency array
   useEffect(() => {
@@ -72,20 +73,18 @@ export default function LibraryMenuItems({
   const { svgCache } = useLibraryCache();
   const unpublishedItems = useMemo(
     () => libraryItems.filter((item) => item.status !== "published"),
-    [libraryItems],
+    [libraryItems]
   );
 
   const publishedItems = useMemo(
     () => libraryItems.filter((item) => item.status === "published"),
-    [libraryItems],
+    [libraryItems]
   );
 
-  const showBtn = !libraryItems.length && !pendingElements.length;
+  const showBtn = !libraryItems.length && !pendingLayers.length;
 
   const isLibraryEmpty =
-    !pendingElements.length &&
-    !unpublishedItems.length &&
-    !publishedItems.length;
+    !pendingLayers.length && !unpublishedItems.length && !publishedItems.length;
 
   const [lastSelectedItem, setLastSelectedItem] = useState<
     LibraryItem["id"] | null
@@ -100,7 +99,7 @@ export default function LibraryMenuItems({
       if (shouldSelect) {
         if (event.shiftKey && lastSelectedItem) {
           const rangeStart = orderedItems.findIndex(
-            (item) => item.id === lastSelectedItem,
+            (item) => item.id === lastSelectedItem
           );
           const rangeEnd = orderedItems.findIndex((item) => item.id === id);
 
@@ -120,7 +119,7 @@ export default function LibraryMenuItems({
               }
               return acc;
             },
-            [],
+            []
           );
 
           onSelectItems(nextSelectedIds);
@@ -138,40 +137,38 @@ export default function LibraryMenuItems({
       onSelectItems,
       publishedItems,
       selectedItems,
-      unpublishedItems,
-    ],
+      unpublishedItems
+    ]
   );
 
-  const getInsertedElements = useCallback(
+  const getInsertedLayers = useCallback(
     (id: string) => {
-      let targetElements;
+      let targetLayers;
       if (selectedItems.includes(id)) {
-        targetElements = libraryItems.filter((item) =>
-          selectedItems.includes(item.id),
+        targetLayers = libraryItems.filter((item) =>
+          selectedItems.includes(item.id)
         );
       } else {
-        targetElements = libraryItems.filter((item) => item.id === id);
+        targetLayers = libraryItems.filter((item) => item.id === id);
       }
-      return targetElements.map((item) => {
-        return {
-          ...item,
-          // duplicate each library item before inserting on canvas to confine
-          // ids and bindings to each library item. See #6465
-          elements: duplicateElements(item.elements, { randomizeSeed: true }),
-        };
-      });
+      return targetLayers.map((item) => ({
+        ...item,
+        // duplicate each library item before inserting on canvas to confine
+        // ids and bindings to each library item. See #6465
+        layers: duplicateLayers(item.layers, { randomizeSeed: true })
+      }));
     },
-    [libraryItems, selectedItems],
+    [libraryItems, selectedItems]
   );
 
   const onItemDrag = useCallback(
     (id: LibraryItem["id"], event: React.DragEvent) => {
       event.dataTransfer.setData(
         MIME_TYPES.excalidrawlib,
-        serializeLibraryAsJSON(getInsertedElements(id)),
+        serializeLibraryAsJSON(getInsertedLayers(id))
       );
     },
-    [getInsertedElements],
+    [getInsertedLayers]
   );
 
   const isItemSelected = useCallback(
@@ -182,20 +179,20 @@ export default function LibraryMenuItems({
 
       return selectedItems.includes(id);
     },
-    [selectedItems],
+    [selectedItems]
   );
 
   const onAddToLibraryClick = useCallback(() => {
-    onAddToLibrary(pendingElements);
-  }, [pendingElements, onAddToLibrary]);
+    onAddToLibrary(pendingLayers);
+  }, [pendingLayers, onAddToLibrary]);
 
   const onItemClick = useCallback(
     (id: LibraryItem["id"] | null) => {
       if (id) {
-        onInsertLibraryItems(getInsertedElements(id));
+        onInsertLibraryItems(getInsertedLayers(id));
       }
     },
-    [getInsertedElements, onInsertLibraryItems],
+    [getInsertedLayers, onInsertLibraryItems]
   );
 
   const itemsRenderedPerBatch =
@@ -207,29 +204,27 @@ export default function LibraryMenuItems({
     <div
       className="library-menu-items-container"
       style={
-        pendingElements.length ||
-        unpublishedItems.length ||
-        publishedItems.length
+        pendingLayers.length || unpublishedItems.length || publishedItems.length
           ? { justifyContent: "flex-start" }
           : { borderBottom: 0 }
       }
     >
       {!isLibraryEmpty && (
         <LibraryDropdownMenu
-          selectedItems={selectedItems}
-          onSelectItems={onSelectItems}
           className="library-menu-dropdown-container--in-heading"
+          onSelectItems={onSelectItems}
+          selectedItems={selectedItems}
         />
       )}
       <Stack.Col
-        className="library-menu-items-container__items"
         align="start"
+        className="library-menu-items-container__items"
         gap={1}
+        ref={libraryContainerRef}
         style={{
           flex: publishedItems.length > 0 ? 1 : "0 1 auto",
-          marginBottom: 0,
+          marginBottom: 0
         }}
-        ref={libraryContainerRef}
       >
         <>
           {!isLibraryEmpty && (
@@ -243,13 +238,13 @@ export default function LibraryMenuItems({
                 position: "absolute",
                 top: "var(--container-padding-y)",
                 right: "var(--container-padding-x)",
-                transform: "translateY(50%)",
+                transform: "translateY(50%)"
               }}
             >
               <Spinner />
             </div>
           )}
-          {!pendingElements.length && !unpublishedItems.length ? (
+          {!pendingLayers.length && !unpublishedItems.length ? (
             <div className="library-menu-items__no-items">
               <div className="library-menu-items__no-items__label">
                 {t("library.noItems")}
@@ -262,24 +257,24 @@ export default function LibraryMenuItems({
             </div>
           ) : (
             <LibraryMenuSectionGrid>
-              {pendingElements.length > 0 && (
+              {pendingLayers.length > 0 && (
                 <LibraryMenuSection
-                  itemsRenderedPerBatch={itemsRenderedPerBatch}
-                  items={[{ id: null, elements: pendingElements }]}
-                  onItemSelectToggle={onItemSelectToggle}
-                  onItemDrag={onItemDrag}
-                  onClick={onAddToLibraryClick}
                   isItemSelected={isItemSelected}
+                  items={[{ id: null, layers: pendingLayers }]}
+                  itemsRenderedPerBatch={itemsRenderedPerBatch}
+                  onClick={onAddToLibraryClick}
+                  onItemDrag={onItemDrag}
+                  onItemSelectToggle={onItemSelectToggle}
                   svgCache={svgCache}
                 />
               )}
               <LibraryMenuSection
-                itemsRenderedPerBatch={itemsRenderedPerBatch}
-                items={unpublishedItems}
-                onItemSelectToggle={onItemSelectToggle}
-                onItemDrag={onItemDrag}
-                onClick={onItemClick}
                 isItemSelected={isItemSelected}
+                items={unpublishedItems}
+                itemsRenderedPerBatch={itemsRenderedPerBatch}
+                onClick={onItemClick}
+                onItemDrag={onItemDrag}
+                onItemSelectToggle={onItemSelectToggle}
                 svgCache={svgCache}
               />
             </LibraryMenuSectionGrid>
@@ -288,7 +283,7 @@ export default function LibraryMenuItems({
 
         <>
           {(publishedItems.length > 0 ||
-            pendingElements.length > 0 ||
+            pendingLayers.length > 0 ||
             unpublishedItems.length > 0) && (
             <div className="library-menu-items-container__header library-menu-items-container__header--excal">
               {t("labels.excalidrawLib")}
@@ -297,12 +292,12 @@ export default function LibraryMenuItems({
           {publishedItems.length > 0 ? (
             <LibraryMenuSectionGrid>
               <LibraryMenuSection
-                itemsRenderedPerBatch={itemsRenderedPerBatch}
-                items={publishedItems}
-                onItemSelectToggle={onItemSelectToggle}
-                onItemDrag={onItemDrag}
-                onClick={onItemClick}
                 isItemSelected={isItemSelected}
+                items={publishedItems}
+                itemsRenderedPerBatch={itemsRenderedPerBatch}
+                onClick={onItemClick}
+                onItemDrag={onItemDrag}
+                onItemSelectToggle={onItemSelectToggle}
                 svgCache={svgCache}
               />
             </LibraryMenuSectionGrid>
@@ -315,7 +310,7 @@ export default function LibraryMenuItems({
                 alignItems: "center",
                 justifyContent: "center",
                 width: "100%",
-                fontSize: ".9rem",
+                fontSize: ".9rem"
               }}
             >
               {t("library.noItems")}
@@ -325,18 +320,18 @@ export default function LibraryMenuItems({
 
         {showBtn && (
           <LibraryMenuControlButtons
-            style={{ padding: "16px 0", width: "100%" }}
             id={id}
             libraryReturnUrl={libraryReturnUrl}
+            style={{ padding: "16px 0", width: "100%" }}
             theme={theme}
           >
             <LibraryDropdownMenu
-              selectedItems={selectedItems}
               onSelectItems={onSelectItems}
+              selectedItems={selectedItems}
             />
           </LibraryMenuControlButtons>
         )}
       </Stack.Col>
     </div>
   );
-}
+};

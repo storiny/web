@@ -4,7 +4,7 @@
     "pasteAsPlaintext": "Klistra som oformaterad text",
     "pasteCharts": "Klistra in diagram",
     "selectAll": "Markera alla",
-    "multiSelect": "Lägg till element till markering",
+    "multiSelect": "Lägg till layer till markering",
     "moveCanvas": "Flytta canvas",
     "cut": "Klipp ut",
     "copy": "Kopiera",
@@ -116,7 +116,7 @@
       "edit": "Redigera linje",
       "exit": "Avsluta linjeredigerare"
     },
-    "elementLock": {
+    "layerLock": {
       "lock": "Lås",
       "unlock": "Lås upp",
       "lockAll": "Lås alla",
@@ -124,8 +124,8 @@
     },
     "statusPublished": "Publicerad",
     "sidebarLock": "Håll sidofältet öppet",
-    "selectAllElementsInFrame": "Markera alla element i rutan",
-    "removeAllElementsFromFrame": "Ta bort alla element från rutan",
+    "selectAllLayersInFrame": "Markera alla layer i rutan",
+    "removeAllLayersFromFrame": "Ta bort alla layer från rutan",
     "eyeDropper": "Välj färg från canvas"
   },
   "library": {
@@ -203,9 +203,9 @@
     "collabSaveFailed_sizeExceeded": "Det gick inte att spara till backend-databasen, whiteboarden verkar vara för stor. Du bör spara filen lokalt för att du inte ska förlora ditt arbete.",
     "brave_measure_text_error": {
       "line1": "Det ser ut som om du använder Brave-webbläsaren med <bold>Aggressivt Blockera fingeravtryck</bold> inställningen aktiverad.",
-      "line2": "Detta kan resultera i trasiga <bold>Textelement</bold> i dina ritningar.",
+      "line2": "Detta kan resultera i trasiga <bold>Textlayer</bold> i dina ritningar.",
       "line3": "Vi rekommenderar starkt att du inaktiverar den här inställningen. Du kan följa <link>dessa steg</link> för att inaktivera den.",
-      "line4": "Om inaktivering av denna inställning inte åtgärdar visningen av textelement, öppna ett <issueLink>ärende</issueLink> på vår GitHub, eller skriv till oss på <discordLink>Discord</discordLink>"
+      "line4": "Om inaktivering av denna inställning inte åtgärdar visningen av textlayer, öppna ett <issueLink>ärende</issueLink> på vår GitHub, eller skriv till oss på <discordLink>Discord</discordLink>"
     }
   },
   "toolBar": {
@@ -234,12 +234,12 @@
   },
   "hints": {
     "canvasPanning": "För att flytta whiteboarden, håll mushjulet eller mellanslagstangenten medan du drar eller använd handverktyget",
-    "linearElement": "Klicka för att starta flera punkter, dra för en linje",
+    "linearLayer": "Klicka för att starta flera punkter, dra för en linje",
     "freeDraw": "Klicka och dra, släpp när du är klar",
     "text": "Tips: du kan också lägga till text genom att dubbelklicka var som helst med markeringsverktyget",
     "text_selected": "Dubbelklicka eller tryck ENTER för att redigera text",
     "text_editing": "Tryck Escape eller CtrlOrCmd + ENTER för att slutföra redigeringen",
-    "linearElementMulti": "Klicka på sista punkten eller tryck Escape eller Enter för att avsluta",
+    "linearLayerMulti": "Klicka på sista punkten eller tryck Escape eller Enter för att avsluta",
     "lockAngle": "Du kan begränsa vinkeln genom att hålla SKIFT",
     "resize": "Du kan behålla proportioner genom att hålla SHIFT medan du ändrar storlek,\nhåller du ALT ändras storlek relativt mitten",
     "resizeImage": "Du kan ändra storlek fritt genom att hålla SHIFT,\nhåll ALT för att ändra storlek från mitten",
@@ -249,15 +249,15 @@
     "lineEditor_nothingSelected": "Välj en punkt att redigera (håll SHIFT för att välja flera),\neller håll ned Alt och klicka för att lägga till nya punkter",
     "placeImage": "Klicka för att placera bilden, eller klicka och dra för att ställa in dess storlek manuellt",
     "publishLibrary": "Publicera ditt eget bibliotek",
-    "bindTextToElement": "Tryck på Enter för att lägga till text",
+    "bindTextToLayer": "Tryck på Enter för att lägga till text",
     "deepBoxSelect": "Håll Ctrl eller Cmd för att djupvälja, och för att förhindra att dra",
-    "eraserRevert": "Håll Alt för att återställa de element som är markerade för borttagning",
+    "eraserRevert": "Håll Alt för att återställa de layer som är markerade för borttagning",
     "firefox_clipboard_write": "Denna funktion kan sannolikt aktiveras genom att ställa in \"dom.events.asyncClipboard.clipboardItem\" flaggan till \"true\". För att ändra webbläsarens flaggor i Firefox, besök \"about:config\" sidan."
   },
   "canvasError": {
     "cannotShowPreview": "Kan inte visa förhandsgranskning",
     "canvasTooBig": "Canvasen kan vara för stor.",
-    "canvasTooBigTip": "Tips: prova att flytta de mest avlägsna elementen lite närmare varandra."
+    "canvasTooBigTip": "Tips: prova att flytta de mest avlägsna layeren lite närmare varandra."
   },
   "errorSplash": {
     "headingMain": "Ett fel uppstod. Försök <button>med att läsa in sidan på nytt.</button>",
@@ -314,9 +314,9 @@
     "textNewLine": "Lägg till ny rad (text)",
     "title": "Hjälp",
     "view": "Visa",
-    "zoomToFit": "Zooma för att rymma alla element",
+    "zoomToFit": "Zooma för att rymma alla layer",
     "zoomToSelection": "Zooma till markering",
-    "toggleElementLock": "Lås/Lås upp valda",
+    "toggleLayerLock": "Lås/Lås upp valda",
     "movePageUpDown": "Flytta sida upp/ner",
     "movePageLeftRight": "Flytta sida vänster/höger"
   },
@@ -389,8 +389,8 @@
   },
   "stats": {
     "angle": "Vinkel",
-    "element": "Element",
-    "elements": "Element",
+    "layer": "Layer",
+    "layers": "Layer",
     "height": "Höjd",
     "scene": "Skiss",
     "selected": "Valda",
@@ -411,7 +411,7 @@
     "fileSavedToFilename": "Sparad till {filename}",
     "canvas": "canvas",
     "selection": "markering",
-    "pasteAsSingleElement": "Använd {{shortcut}} för att klistra in som ett enda element,\neller klistra in i en befintlig textredigerare"
+    "pasteAsSingleLayer": "Använd {{shortcut}} för att klistra in som ett enda layer,\neller klistra in i en befintlig textredigerare"
   },
   "colors": {
     "transparent": "Genomskinlig",

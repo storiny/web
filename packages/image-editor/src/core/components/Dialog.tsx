@@ -1,35 +1,37 @@
-import clsx from "clsx";
-import React, { useEffect, useState } from "react";
-import { useCallbackRefState } from "../hooks/useCallbackRefState";
-import { t } from "../i18n";
-import {
-  useExcalidrawContainer,
-  useDevice,
-  useExcalidrawSetAppState,
-} from "../components/App";
-import { KEYS } from "../keys";
 import "./Dialog.scss";
+
+import clsx from "clsx";
+import { useSetAtom } from "jotai";
+import React, { useEffect, useState } from "react";
+
+import { useCallbackRefState } from "../../lib/hooks/useCallbackRefState";
+import {
+  useDevice,
+  useExcalidrawContainer,
+  useExcalidrawSetAppState
+} from "../components/App";
+import { t } from "../i18n";
+import { jotaiScope } from "../jotai";
+import { KEYS } from "../keys";
+import { queryFocusableLayers } from "../utils";
 import { back, CloseIcon } from "./icons";
 import { Island } from "./Island";
-import { Modal } from "./Modal";
-import { queryFocusableElements } from "../utils";
-import { useSetAtom } from "jotai";
 import { isLibraryMenuOpenAtom } from "./LibraryMenu";
-import { jotaiScope } from "../jotai";
+import { Modal } from "./Modal";
 
 export type DialogSize = number | "small" | "regular" | "wide" | undefined;
 
 export interface DialogProps {
+  autofocus?: boolean;
   children: React.ReactNode;
   className?: string;
-  size?: DialogSize;
-  onCloseRequest(): void;
-  title: React.ReactNode | false;
-  autofocus?: boolean;
   closeOnClickOutside?: boolean;
+  onCloseRequest(): void;
+  size?: DialogSize;
+  title: React.ReactNode | false;
 }
 
-function getDialogSize(size: DialogSize): number {
+const getDialogSize = (size: DialogSize): number => {
   if (size && typeof size === "number") {
     return size;
   }
@@ -43,11 +45,11 @@ function getDialogSize(size: DialogSize): number {
     default:
       return 800;
   }
-}
+};
 
 export const Dialog = (props: DialogProps) => {
-  const [islandNode, setIslandNode] = useCallbackRefState<HTMLDivElement>();
-  const [lastActiveElement] = useState(document.activeElement);
+  const [islandNode, setIslandNode] = useCallbackRefState<HTMLDivLayer>();
+  const [lastActiveLayer] = useState(document.activeLayer);
   const { id } = useExcalidrawContainer();
   const device = useDevice();
 
@@ -56,29 +58,29 @@ export const Dialog = (props: DialogProps) => {
       return;
     }
 
-    const focusableElements = queryFocusableElements(islandNode);
+    const focusableLayers = queryFocusableLayers(islandNode);
 
-    if (focusableElements.length > 0 && props.autofocus !== false) {
-      // If there's an element other than close, focus it.
-      (focusableElements[1] || focusableElements[0]).focus();
+    if (focusableLayers.length > 0 && props.autofocus !== false) {
+      // If there's an layer other than close, focus it.
+      (focusableLayers[1] || focusableLayers[0]).focus();
     }
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === KEYS.TAB) {
-        const focusableElements = queryFocusableElements(islandNode);
-        const { activeElement } = document;
-        const currentIndex = focusableElements.findIndex(
-          (element) => element === activeElement,
+        const focusableLayers = queryFocusableLayers(islandNode);
+        const { activeLayer } = document;
+        const currentIndex = focusableLayers.findIndex(
+          (layer) => layer === activeLayer
         );
 
         if (currentIndex === 0 && event.shiftKey) {
-          focusableElements[focusableElements.length - 1].focus();
+          focusableLayers[focusableLayers.length - 1].focus();
           event.preventDefault();
         } else if (
-          currentIndex === focusableElements.length - 1 &&
+          currentIndex === focusableLayers.length - 1 &&
           !event.shiftKey
         ) {
-          focusableElements[0].focus();
+          focusableLayers[0].focus();
           event.preventDefault();
         }
       }
@@ -95,29 +97,29 @@ export const Dialog = (props: DialogProps) => {
   const onClose = () => {
     setAppState({ openMenu: null });
     setIsLibraryMenuOpen(false);
-    (lastActiveElement as HTMLElement).focus();
+    (lastActiveLayer as HTMLLayer).focus();
     props.onCloseRequest();
   };
 
   return (
     <Modal
       className={clsx("Dialog", props.className)}
+      closeOnClickOutside={props.closeOnClickOutside}
       labelledBy="dialog-title"
       maxWidth={getDialogSize(props.size)}
       onCloseRequest={onClose}
-      closeOnClickOutside={props.closeOnClickOutside}
     >
       <Island ref={setIslandNode}>
         {props.title && (
-          <h2 id={`${id}-dialog-title`} className="Dialog__title">
+          <h2 className="Dialog__title" id={`${id}-dialog-title`}>
             <span className="Dialog__titleContent">{props.title}</span>
           </h2>
         )}
         <button
+          aria-label={t("buttons.close")}
           className="Dialog__close"
           onClick={onClose}
           title={t("buttons.close")}
-          aria-label={t("buttons.close")}
         >
           {device.isMobile ? back : CloseIcon}
         </button>

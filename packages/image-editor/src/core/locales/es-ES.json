@@ -4,7 +4,7 @@
     "pasteAsPlaintext": "Pegar como texto sin formato",
     "pasteCharts": "Pegar gráficos",
     "selectAll": "Seleccionar todo",
-    "multiSelect": "Añadir elemento a la selección",
+    "multiSelect": "Añadir layero a la selección",
     "moveCanvas": "Mover el lienzo",
     "cut": "Cortar",
     "copy": "Copiar",
@@ -116,7 +116,7 @@
       "edit": "Editar línea",
       "exit": "Salir del editor en línea"
     },
-    "elementLock": {
+    "layerLock": {
       "lock": "Bloquear",
       "unlock": "Desbloquear",
       "lockAll": "Bloquear todo",
@@ -124,14 +124,14 @@
     },
     "statusPublished": "Publicado",
     "sidebarLock": "Mantener barra lateral abierta",
-    "selectAllElementsInFrame": "",
-    "removeAllElementsFromFrame": "",
+    "selectAllLayersInFrame": "",
+    "removeAllLayersFromFrame": "",
     "eyeDropper": ""
   },
   "library": {
-    "noItems": "No hay elementos añadidos todavía...",
-    "hint_emptyLibrary": "Seleccione un elemento en el lienzo para añadirlo aquí, o instale una biblioteca del repositorio público, a continuación.",
-    "hint_emptyPrivateLibrary": "Seleccione un elemento del lienzo para añadirlo aquí."
+    "noItems": "No hay layeros añadidos todavía...",
+    "hint_emptyLibrary": "Seleccione un layero en el lienzo para añadirlo aquí, o instale una biblioteca del repositorio público, a continuación.",
+    "hint_emptyPrivateLibrary": "Seleccione un layero del lienzo para añadirlo aquí."
   },
   "buttons": {
     "clearReset": "Limpiar lienzo y reiniciar el color de fondo",
@@ -180,14 +180,14 @@
     "uploadedSecurly": "La carga ha sido asegurada con cifrado de principio a fin, lo que significa que el servidor de Excalidraw y terceros no pueden leer el contenido.",
     "loadSceneOverridePrompt": "Si carga este dibujo externo, reemplazará el que tiene. ¿Desea continuar?",
     "collabStopOverridePrompt": "Detener la sesión sobrescribirá su dibujo anterior almacenado localmente. ¿Está seguro?\n\n(Si desea mantener su dibujo local, simplemente cierre la pestaña del navegador.)",
-    "errorAddingToLibrary": "No se pudo agregar el elemento a la biblioteca",
-    "errorRemovingFromLibrary": "No se pudo quitar el elemento de la biblioteca",
+    "errorAddingToLibrary": "No se pudo agregar el layero a la biblioteca",
+    "errorRemovingFromLibrary": "No se pudo quitar el layero de la biblioteca",
     "confirmAddLibrary": "Esto añadirá {{numShapes}} forma(s) a tu biblioteca. ¿Estás seguro?",
     "imageDoesNotContainScene": "Esta imagen no parece contener datos de escena. ¿Ha habilitado la inserción de la escena durante la exportación?",
     "cannotRestoreFromImage": "No se pudo restaurar la escena desde este archivo de imagen",
     "invalidSceneUrl": "No se ha podido importar la escena desde la URL proporcionada. Está mal formada, o no contiene datos de Excalidraw JSON válidos.",
     "resetLibrary": "Esto borrará tu biblioteca. ¿Estás seguro?",
-    "removeItemsFromsLibrary": "¿Eliminar {{count}} elemento(s) de la biblioteca?",
+    "removeItemsFromsLibrary": "¿Eliminar {{count}} layero(s) de la biblioteca?",
     "invalidEncryptionKey": "La clave de cifrado debe tener 22 caracteres. La colaboración en vivo está deshabilitada.",
     "collabOfflineWarning": "No hay conexión a internet disponible.\n¡No se guardarán los cambios!"
   },
@@ -234,12 +234,12 @@
   },
   "hints": {
     "canvasPanning": "Para mover el lienzo, mantenga la rueda del ratón o la barra espaciadora mientras arrastra o utilice la herramienta de mano",
-    "linearElement": "Haz clic para dibujar múltiples puntos, arrastrar para solo una línea",
+    "linearLayer": "Haz clic para dibujar múltiples puntos, arrastrar para solo una línea",
     "freeDraw": "Haz clic y arrastra, suelta al terminar",
     "text": "Consejo: también puedes añadir texto haciendo doble clic en cualquier lugar con la herramienta de selección",
     "text_selected": "Doble clic o pulse ENTER para editar el texto",
     "text_editing": "Pulse Escape o Ctrl/Cmd + ENTER para terminar de editar",
-    "linearElementMulti": "Haz clic en el último punto o presiona Escape o Enter para finalizar",
+    "linearLayerMulti": "Haz clic en el último punto o presiona Escape o Enter para finalizar",
     "lockAngle": "Puedes restringir el ángulo manteniendo presionado el botón SHIFT",
     "resize": "Para mantener las proporciones mantén SHIFT presionado mientras modificas el tamaño, \nmantén presionado ALT para modificar el tamaño desde el centro",
     "resizeImage": "Puede redimensionar libremente pulsando SHIFT,\npulse ALT para redimensionar desde el centro",
@@ -249,15 +249,15 @@
     "lineEditor_nothingSelected": "Seleccione un punto a editar (mantenga MAYÚSCULAS para seleccionar múltiples),\no mantenga pulsado Alt y haga click para añadir nuevos puntos",
     "placeImage": "Haga clic para colocar la imagen o haga click y arrastre para establecer su tamaño manualmente",
     "publishLibrary": "Publica tu propia biblioteca",
-    "bindTextToElement": "Presione Entrar para agregar",
+    "bindTextToLayer": "Presione Entrar para agregar",
     "deepBoxSelect": "Mantén CtrlOrCmd para seleccionar en profundidad, y para evitar arrastrar",
-    "eraserRevert": "Mantenga pulsado Alt para revertir los elementos marcados para su eliminación",
+    "eraserRevert": "Mantenga pulsado Alt para revertir los layeros marcados para su eliminación",
     "firefox_clipboard_write": "Esta característica puede ser habilitada estableciendo la bandera \"dom.events.asyncClipboard.clipboardItem\" a \"true\". Para cambiar las banderas del navegador en Firefox, visite la página \"about:config\"."
   },
   "canvasError": {
     "cannotShowPreview": "No se puede mostrar la vista previa",
     "canvasTooBig": "El lienzo podría ser demasiado grande.",
-    "canvasTooBigTip": "Sugerencia: intenta acercar un poco más los elementos más lejanos."
+    "canvasTooBigTip": "Sugerencia: intenta acercar un poco más los layeros más lejanos."
   },
   "errorSplash": {
     "headingMain": "Se encontró un error. Intente <button>recargando la página.</button>",
@@ -314,9 +314,9 @@
     "textNewLine": "Añadir nueva linea (editor de texto)",
     "title": "Ayuda",
     "view": "Vista",
-    "zoomToFit": "Ajustar la vista para mostrar todos los elementos",
+    "zoomToFit": "Ajustar la vista para mostrar todos los layeros",
     "zoomToSelection": "Ampliar selección",
-    "toggleElementLock": "Bloquear/desbloquear selección",
+    "toggleLayerLock": "Bloquear/desbloquear selección",
     "movePageUpDown": "Mover página hacia arriba/abajo",
     "movePageLeftRight": "Mover página hacia la izquierda/derecha"
   },
@@ -347,9 +347,9 @@
     "noteDescription": "Envía tu biblioteca para ser incluida en el <link>repositorio de librería pública</link>para que otras personas utilicen en sus dibujos.",
     "noteGuidelines": "La biblioteca debe ser aprobada manualmente primero. Por favor, lea la <link>pautas</link> antes de enviar. Necesitará una cuenta de GitHub para comunicarse y hacer cambios si se solicita, pero no es estrictamente necesario.",
     "noteLicense": "Al enviar, usted acepta que la biblioteca se publicará bajo el <link>Licencia MIT </link>que en breve significa que cualquiera puede utilizarlos sin restricciones.",
-    "noteItems": "Cada elemento de la biblioteca debe tener su propio nombre para que sea filtrable. Los siguientes elementos de la biblioteca serán incluidos:",
-    "atleastOneLibItem": "Por favor, seleccione al menos un elemento de la biblioteca para empezar",
-    "republishWarning": "Nota: algunos de los elementos seleccionados están marcados como ya publicados/enviados. Sólo debería volver a enviar elementos cuando se actualice una biblioteca o envío."
+    "noteItems": "Cada layero de la biblioteca debe tener su propio nombre para que sea filtrable. Los siguientes layeros de la biblioteca serán incluidos:",
+    "atleastOneLibItem": "Por favor, seleccione al menos un layero de la biblioteca para empezar",
+    "republishWarning": "Nota: algunos de los layeros seleccionados están marcados como ya publicados/enviados. Sólo debería volver a enviar layeros cuando se actualice una biblioteca o envío."
   },
   "publishSuccessDialog": {
     "title": "Biblioteca enviada",
@@ -357,7 +357,7 @@
   },
   "confirmDialog": {
     "resetLibrary": "Reiniciar biblioteca",
-    "removeItemsFromLib": "Eliminar elementos seleccionados de la biblioteca"
+    "removeItemsFromLib": "Eliminar layeros seleccionados de la biblioteca"
   },
   "imageExportDialog": {
     "header": "",
@@ -389,8 +389,8 @@
   },
   "stats": {
     "angle": "Ángulo",
-    "element": "Elemento",
-    "elements": "Elementos",
+    "layer": "Layero",
+    "layers": "Layeros",
     "height": "Alto",
     "scene": "Escena",
     "selected": "Seleccionado",
@@ -411,7 +411,7 @@
     "fileSavedToFilename": "Guardado en {filename}",
     "canvas": "lienzo",
     "selection": "selección",
-    "pasteAsSingleElement": "Usa {{shortcut}} para pegar como un solo elemento,\no pegar en un editor de texto existente"
+    "pasteAsSingleLayer": "Usa {{shortcut}} para pegar como un solo layero,\no pegar en un editor de texto existente"
   },
   "colors": {
     "transparent": "Transparente",

@@ -1,19 +1,20 @@
 /**
- * This file deals with saving data state (appState, elements, images, ...)
+ * This file deals with saving data state (appState, layers, images, ...)
  * locally to the browser.
  *
  * Notes:
  *
- * - DataState refers to full state of the app: appState, elements, images,
+ * - DataState refers to full state of the app: appState, layers, images,
  *   though some state is saved separately (collab username, library) for one
  *   reason or another. We also save different data to different sotrage
  *   (localStorage, indexedDB).
  */
 
-import { createStore, entries, del, getMany, set, setMany } from "idb-keyval";
+import { createStore, del, entries, getMany, set, setMany } from "idb-keyval";
+
 import { clearAppStateForLocalStorage } from "../../appState";
-import { clearElementsForLocalStorage } from "../../element";
-import { ExcalidrawElement, FileId } from "../../element/types";
+import { clearLayersForLocalStorage } from "../../layer";
+import { ExcalidrawLayer, FileId } from "../../layer/types";
 import { AppState, BinaryFileData, BinaryFiles } from "../../types";
 import { debounce } from "../../utils";
 import { SAVE_TO_LOCAL_STORAGE_TIMEOUT, STORAGE_KEYS } from "../app_constants";
@@ -44,17 +45,17 @@ class LocalFileManager extends FileManager {
 }
 
 const saveDataStateToLocalStorage = (
-  elements: readonly ExcalidrawElement[],
-  appState: AppState,
+  layers: readonly ExcalidrawLayer[],
+  appState: AppState
 ) => {
   try {
     localStorage.setItem(
       STORAGE_KEYS.LOCAL_STORAGE_ELEMENTS,
-      JSON.stringify(clearElementsForLocalStorage(elements)),
+      JSON.stringify(clearLayersForLocalStorage(layers))
     );
     localStorage.setItem(
       STORAGE_KEYS.LOCAL_STORAGE_APP_STATE,
-      JSON.stringify(clearAppStateForLocalStorage(appState)),
+      JSON.stringify(clearAppStateForLocalStorage(appState))
     );
     updateBrowserStateVersion(STORAGE_KEYS.VERSION_DATA_STATE);
   } catch (error: any) {
@@ -68,32 +69,32 @@ type SavingLockTypes = "collaboration";
 export class LocalData {
   private static _save = debounce(
     async (
-      elements: readonly ExcalidrawElement[],
+      layers: readonly ExcalidrawLayer[],
       appState: AppState,
       files: BinaryFiles,
-      onFilesSaved: () => void,
+      onFilesSaved: () => void
     ) => {
-      saveDataStateToLocalStorage(elements, appState);
+      saveDataStateToLocalStorage(layers, appState);
 
       await this.fileStorage.saveFiles({
-        elements,
-        files,
+        layers,
+        files
       });
       onFilesSaved();
     },
-    SAVE_TO_LOCAL_STORAGE_TIMEOUT,
+    SAVE_TO_LOCAL_STORAGE_TIMEOUT
   );
 
   /** Saves DataState, including files. Bails if saving is paused */
   static save = (
-    elements: readonly ExcalidrawElement[],
+    layers: readonly ExcalidrawLayer[],
     appState: AppState,
     files: BinaryFiles,
-    onFilesSaved: () => void,
+    onFilesSaved: () => void
   ) => {
     // we need to make the `isSavePaused` check synchronously (undebounced)
     if (!this.isSavePaused()) {
-      this._save(elements, appState, files, onFilesSaved);
+      this._save(layers, appState, files, onFilesSaved);
     }
   };
 
@@ -131,7 +132,7 @@ export class LocalData {
             if (data) {
               const _data: BinaryFileData = {
                 ...data,
-                lastRetrieved: Date.now(),
+                lastRetrieved: Date.now()
               };
               filesToSave.push([id, _data]);
               loadedFiles.push(_data);
@@ -148,7 +149,7 @@ export class LocalData {
           }
 
           return { loadedFiles, erroredFiles };
-        },
+        }
       );
     },
     async saveFiles({ addedFiles }) {
@@ -169,10 +170,10 @@ export class LocalData {
             console.error(error);
             erroredFiles.set(id, true);
           }
-        }),
+        })
       );
 
       return { savedFiles, erroredFiles };
-    },
+    }
   });
 }

@@ -1,108 +1,104 @@
+import { getSelectedLayers, isSomeLayerSelected } from "../../lib/scene";
 import {
   DistributeHorizontallyIcon,
-  DistributeVerticallyIcon,
+  DistributeVerticallyIcon
 } from "../components/icons";
 import { ToolButton } from "../components/ToolButton";
-import { distributeElements, Distribution } from "../distribute";
-import { getNonDeletedElements } from "../element";
-import { ExcalidrawElement } from "../element/types";
-import { updateFrameMembershipOfSelectedElements } from "../frame";
+import { distributeLayers, Distribution } from "../distribute";
+import { updateFrameMembershipOfSelectedLayers } from "../frame";
 import { t } from "../i18n";
 import { CODES, KEYS } from "../keys";
-import { getSelectedElements, isSomeElementSelected } from "../scene";
+import { getNonDeletedLayers } from "../layer";
+import { ExcalidrawLayer } from "../layer/types";
 import { AppState } from "../types";
 import { arrayToMap, getShortcutKey } from "../utils";
 import { register } from "./register";
 
 const enableActionGroup = (
-  elements: readonly ExcalidrawElement[],
-  appState: AppState,
+  layers: readonly ExcalidrawLayer[],
+  appState: AppState
 ) => {
-  const selectedElements = getSelectedElements(
-    getNonDeletedElements(elements),
-    appState,
+  const selectedLayers = getSelectedLayers(
+    getNonDeletedLayers(layers),
+    appState
   );
   return (
-    selectedElements.length > 1 &&
+    selectedLayers.length > 1 &&
     // TODO enable distributing frames when implemented properly
-    !selectedElements.some((el) => el.type === "frame")
+    !selectedLayers.some((el) => el.type === "frame")
   );
 };
 
-const distributeSelectedElements = (
-  elements: readonly ExcalidrawElement[],
+const distributeSelectedLayers = (
+  layers: readonly ExcalidrawLayer[],
   appState: Readonly<AppState>,
-  distribution: Distribution,
+  distribution: Distribution
 ) => {
-  const selectedElements = getSelectedElements(
-    getNonDeletedElements(elements),
-    appState,
+  const selectedLayers = getSelectedLayers(
+    getNonDeletedLayers(layers),
+    appState
   );
 
-  const updatedElements = distributeElements(selectedElements, distribution);
+  const updatedLayers = distributeLayers(selectedLayers, distribution);
 
-  const updatedElementsMap = arrayToMap(updatedElements);
+  const updatedLayersMap = arrayToMap(updatedLayers);
 
-  return updateFrameMembershipOfSelectedElements(
-    elements.map((element) => updatedElementsMap.get(element.id) || element),
-    appState,
+  return updateFrameMembershipOfSelectedLayers(
+    layers.map((layer) => updatedLayersMap.get(layer.id) || layer),
+    appState
   );
 };
 
 export const distributeHorizontally = register({
   name: "distributeHorizontally",
-  trackEvent: { category: "element" },
-  perform: (elements, appState) => {
-    return {
-      appState,
-      elements: distributeSelectedElements(elements, appState, {
-        space: "between",
-        axis: "x",
-      }),
-      commitToHistory: true,
-    };
-  },
+  trackEvent: { category: "layer" },
+  perform: (layers, appState) => ({
+    appState,
+    layers: distributeSelectedLayers(layers, appState, {
+      space: "between",
+      axis: "x"
+    }),
+    commitToHistory: true
+  }),
   keyTest: (event) =>
     !event[KEYS.CTRL_OR_CMD] && event.altKey && event.code === CODES.H,
-  PanelComponent: ({ elements, appState, updateData }) => (
+  PanelComponent: ({ layers, appState, updateData }) => (
     <ToolButton
-      hidden={!enableActionGroup(elements, appState)}
-      type="button"
+      aria-label={t("labels.distributeHorizontally")}
+      hidden={!enableActionGroup(layers, appState)}
       icon={DistributeHorizontallyIcon}
       onClick={() => updateData(null)}
       title={`${t("labels.distributeHorizontally")} — ${getShortcutKey(
-        "Alt+H",
+        "Alt+H"
       )}`}
-      aria-label={t("labels.distributeHorizontally")}
-      visible={isSomeElementSelected(getNonDeletedElements(elements), appState)}
+      type="button"
+      visible={isSomeLayerSelected(getNonDeletedLayers(layers), appState)}
     />
-  ),
+  )
 });
 
 export const distributeVertically = register({
   name: "distributeVertically",
-  trackEvent: { category: "element" },
-  perform: (elements, appState) => {
-    return {
-      appState,
-      elements: distributeSelectedElements(elements, appState, {
-        space: "between",
-        axis: "y",
-      }),
-      commitToHistory: true,
-    };
-  },
+  trackEvent: { category: "layer" },
+  perform: (layers, appState) => ({
+    appState,
+    layers: distributeSelectedLayers(layers, appState, {
+      space: "between",
+      axis: "y"
+    }),
+    commitToHistory: true
+  }),
   keyTest: (event) =>
     !event[KEYS.CTRL_OR_CMD] && event.altKey && event.code === CODES.V,
-  PanelComponent: ({ elements, appState, updateData }) => (
+  PanelComponent: ({ layers, appState, updateData }) => (
     <ToolButton
-      hidden={!enableActionGroup(elements, appState)}
-      type="button"
+      aria-label={t("labels.distributeVertically")}
+      hidden={!enableActionGroup(layers, appState)}
       icon={DistributeVerticallyIcon}
       onClick={() => updateData(null)}
       title={`${t("labels.distributeVertically")} — ${getShortcutKey("Alt+V")}`}
-      aria-label={t("labels.distributeVertically")}
-      visible={isSomeElementSelected(getNonDeletedElements(elements), appState)}
+      type="button"
+      visible={isSomeLayerSelected(getNonDeletedLayers(layers), appState)}
     />
-  ),
+  )
 });

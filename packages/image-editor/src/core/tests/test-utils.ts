@@ -1,34 +1,33 @@
 import "pepjs";
 
 import {
-  render,
-  queries,
-  RenderResult,
-  RenderOptions,
-  waitFor,
   fireEvent,
+  queries,
+  render,
+  RenderOptions,
+  RenderResult,
+  waitFor
 } from "@testing-library/react";
 
-import * as toolQueries from "./queries/toolQueries";
-import { ImportedDataState } from "../data/types";
+import { ImportedDataState } from "../../lib/data/types";
+import { getSelectedLayers } from "../../lib/scene/selection";
 import { STORAGE_KEYS } from "../excalidraw-app/app_constants";
-
+import { ExcalidrawLayer } from "../layer/types";
 import { SceneData } from "../types";
-import { getSelectedElements } from "../scene/selection";
-import { ExcalidrawElement } from "../element/types";
 import { UI } from "./helpers/ui";
+import * as toolQueries from "./queries/toolQueries";
 
 const customQueries = {
   ...queries,
-  ...toolQueries,
+  ...toolQueries
 };
 
 type TestRenderFn = (
-  ui: React.ReactElement,
+  ui: React.ReactLayer,
   options?: Omit<
     RenderOptions & { localStorageData?: ImportedDataState },
     "queries"
-  >,
+  >
 ) => Promise<RenderResult<typeof customQueries>>;
 
 const renderApp: TestRenderFn = async (ui, options) => {
@@ -39,7 +38,7 @@ const renderApp: TestRenderFn = async (ui, options) => {
 
   const renderResult = render(ui, {
     queries: customQueries,
-    ...options,
+    ...options
   });
 
   GlobalTestState.renderResult = renderResult;
@@ -48,9 +47,7 @@ const renderApp: TestRenderFn = async (ui, options) => {
     // must be a getter because at the time of ExcalidrawApp render the
     // child App component isn't likely mounted yet (and thus canvas not
     // present in DOM)
-    get() {
-      return renderResult.container.querySelector("canvas")!;
-    },
+    get: () => renderResult.container.querySelector("canvas")!
   });
 
   await waitFor(() => {
@@ -83,22 +80,22 @@ export class GlobalTestState {
   /**
    * retrieves canvas for currently rendered app instance
    */
-  static get canvas(): HTMLCanvasElement {
+  static get canvas(): HTMLCanvasLayer {
     return null!;
   }
 }
 
 const initLocalStorage = (data: ImportedDataState) => {
-  if (data.elements) {
+  if (data.layers) {
     localStorage.setItem(
       STORAGE_KEYS.LOCAL_STORAGE_ELEMENTS,
-      JSON.stringify(data.elements),
+      JSON.stringify(data.layers)
     );
   }
   if (data.appState) {
     localStorage.setItem(
       STORAGE_KEYS.LOCAL_STORAGE_APP_STATE,
-      JSON.stringify(data.appState),
+      JSON.stringify(data.appState)
     );
   }
 };
@@ -108,7 +105,7 @@ export const updateSceneData = (data: SceneData) => {
 };
 
 const originalGetBoundingClientRect =
-  global.window.HTMLDivElement.prototype.getBoundingClientRect;
+  global.window.HTMLDivLayer.prototype.getBoundingClientRect;
 
 export const mockBoundingClientRect = (
   {
@@ -120,7 +117,7 @@ export const mockBoundingClientRect = (
     height = 1080,
     x = 0,
     y = 0,
-    toJSON = () => {},
+    toJSON = () => {}
   } = {
     top: 10,
     left: 20,
@@ -129,11 +126,11 @@ export const mockBoundingClientRect = (
     width: 200,
     x: 10,
     y: 20,
-    height: 100,
-  },
+    height: 100
+  }
 ) => {
   // override getBoundingClientRect as by default it will always return all values as 0 even if customized in html
-  global.window.HTMLDivElement.prototype.getBoundingClientRect = () => ({
+  global.window.HTMLDivLayer.prototype.getBoundingClientRect = () => ({
     top,
     left,
     bottom,
@@ -142,13 +139,13 @@ export const mockBoundingClientRect = (
     height,
     x,
     y,
-    toJSON,
+    toJSON
   });
 };
 
 export const withExcalidrawDimensions = async (
-  dimensions: { width: number; height: number },
-  cb: () => void,
+  dimensions: { height: number; width: number },
+  cb: () => void
 ) => {
   mockBoundingClientRect(dimensions);
   // @ts-ignore
@@ -164,51 +161,50 @@ export const withExcalidrawDimensions = async (
 };
 
 export const restoreOriginalGetBoundingClientRect = () => {
-  global.window.HTMLDivElement.prototype.getBoundingClientRect =
+  global.window.HTMLDivLayer.prototype.getBoundingClientRect =
     originalGetBoundingClientRect;
 };
 
-export const assertSelectedElements = (
-  ...elements: (
-    | (ExcalidrawElement["id"] | ExcalidrawElement)[]
-    | ExcalidrawElement["id"]
-    | ExcalidrawElement
+export const assertSelectedLayers = (
+  ...layers: (
+    | (ExcalidrawLayer["id"] | ExcalidrawLayer)[]
+    | ExcalidrawLayer["id"]
+    | ExcalidrawLayer
   )[]
 ) => {
   const { h } = window;
-  const selectedElementIds = getSelectedElements(
-    h.app.getSceneElements(),
-    h.state,
+  const selectedLayerIds = getSelectedLayers(
+    h.app.getSceneLayers(),
+    h.state
   ).map((el) => el.id);
-  const ids = elements
+  const ids = layers
     .flat()
     .map((item) => (typeof item === "string" ? item : item.id));
-  expect(selectedElementIds.length).toBe(ids.length);
-  expect(selectedElementIds).toEqual(expect.arrayContaining(ids));
+  expect(selectedLayerIds.length).toBe(ids.length);
+  expect(selectedLayerIds).toEqual(expect.arrayContaining(ids));
 };
 
 export const createPasteEvent = (
   text:
     | string
     | /* getData function */ ((type: string) => string | Promise<string>),
-  files?: File[],
-) => {
-  return Object.assign(
+  files?: File[]
+) =>
+  Object.assign(
     new Event("paste", {
       bubbles: true,
       cancelable: true,
-      composed: true,
+      composed: true
     }),
     {
       clipboardData: {
         getData: typeof text === "string" ? () => text : text,
-        files: files || [],
-      },
-    },
+        files: files || []
+      }
+    }
   );
-};
 
-export const toggleMenu = (container: HTMLElement) => {
+export const toggleMenu = (container: HTMLLayer) => {
   // open menu
   fireEvent.click(container.querySelector(".dropdown-menu-button")!);
 };
@@ -226,5 +222,5 @@ export const togglePopover = (label: string) => {
     disconnect() {}
   };
 
-  UI.clickLabeledElement(label);
+  UI.clickLabeledLayer(label);
 };

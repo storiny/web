@@ -1,68 +1,65 @@
-import { getSelectedElements, isSomeElementSelected } from "../scene";
-import { KEYS } from "../keys";
-import { ToolButton } from "../components/ToolButton";
-import { t } from "../i18n";
-import { register } from "./register";
-import { getNonDeletedElements } from "../element";
-import { ExcalidrawElement } from "../element/types";
-import { AppState } from "../types";
-import { newElementWith } from "../element/mutateElement";
-import { getElementsInGroup } from "../groups";
-import { LinearElementEditor } from "../element/linearElementEditor";
-import { fixBindingsAfterDeletion } from "../element/binding";
-import { isBoundToContainer } from "../element/typeChecks";
-import { updateActiveTool } from "../utils";
+import { getSelectedLayers, isSomeLayerSelected } from "../../lib/scene";
 import { TrashIcon } from "../components/icons";
+import { ToolButton } from "../components/ToolButton";
+import { getLayersInGroup } from "../groups";
+import { t } from "../i18n";
+import { KEYS } from "../keys";
+import { getNonDeletedLayers } from "../layer";
+import { fixBindingsAfterDeletion } from "../layer/binding";
+import { LinearLayerEditor } from "../layer/linearLayerEditor";
+import { newLayerWith } from "../layer/mutateLayer";
+import { isBoundToContainer } from "../layer/typeChecks";
+import { ExcalidrawLayer } from "../layer/types";
+import { AppState } from "../types";
+import { updateActiveTool } from "../utils";
+import { register } from "./register";
 
-const deleteSelectedElements = (
-  elements: readonly ExcalidrawElement[],
-  appState: AppState,
+const deleteSelectedLayers = (
+  layers: readonly ExcalidrawLayer[],
+  appState: AppState
 ) => {
   const framesToBeDeleted = new Set(
-    getSelectedElements(
-      elements.filter((el) => el.type === "frame"),
-      appState,
-    ).map((el) => el.id),
+    getSelectedLayers(
+      layers.filter((el) => el.type === "frame"),
+      appState
+    ).map((el) => el.id)
   );
 
   return {
-    elements: elements.map((el) => {
-      if (appState.selectedElementIds[el.id]) {
-        return newElementWith(el, { isDeleted: true });
+    layers: layers.map((el) => {
+      if (appState.selectedLayerIds[el.id]) {
+        return newLayerWith(el, { isDeleted: true });
       }
 
       if (el.frameId && framesToBeDeleted.has(el.frameId)) {
-        return newElementWith(el, { isDeleted: true });
+        return newLayerWith(el, { isDeleted: true });
       }
 
-      if (
-        isBoundToContainer(el) &&
-        appState.selectedElementIds[el.containerId]
-      ) {
-        return newElementWith(el, { isDeleted: true });
+      if (isBoundToContainer(el) && appState.selectedLayerIds[el.containerId]) {
+        return newLayerWith(el, { isDeleted: true });
       }
       return el;
     }),
     appState: {
       ...appState,
-      selectedElementIds: {},
-    },
+      selectedLayerIds: {}
+    }
   };
 };
 
 const handleGroupEditingState = (
   appState: AppState,
-  elements: readonly ExcalidrawElement[],
+  layers: readonly ExcalidrawLayer[]
 ): AppState => {
   if (appState.editingGroupId) {
-    const siblingElements = getElementsInGroup(
-      getNonDeletedElements(elements),
-      appState.editingGroupId!,
+    const siblingLayers = getLayersInGroup(
+      getNonDeletedLayers(layers),
+      appState.editingGroupId!
     );
-    if (siblingElements.length) {
+    if (siblingLayers.length) {
       return {
         ...appState,
-        selectedElementIds: { [siblingElements[0].id]: true },
+        selectedLayerIds: { [siblingLayers[0].id]: true }
       };
     }
   }
@@ -70,21 +67,21 @@ const handleGroupEditingState = (
 };
 
 export const actionDeleteSelected = register({
-  name: "deleteSelectedElements",
-  trackEvent: { category: "element", action: "delete" },
-  perform: (elements, appState) => {
-    if (appState.editingLinearElement) {
+  name: "deleteSelectedLayers",
+  trackEvent: { category: "layer", action: "delete" },
+  perform: (layers, appState) => {
+    if (appState.editingLinearLayer) {
       const {
-        elementId,
+        layerId,
         selectedPointsIndices,
-        startBindingElement,
-        endBindingElement,
-      } = appState.editingLinearElement;
-      const element = LinearElementEditor.getElement(elementId);
-      if (!element) {
+        startBindingLayer,
+        endBindingLayer
+      } = appState.editingLinearLayer;
+      const layer = LinearLayerEditor.getLayer(layerId);
+      if (!layer) {
         return false;
       }
-      // case: no point selected → do nothing, as deleting the whole element
+      // case: no point selected → do nothing, as deleting the whole layer
       // is most likely a mistake, where you wanted to delete a specific point
       // but failed to select it (or you thought it's selected, while it was
       // only in a hover state)
@@ -93,90 +90,92 @@ export const actionDeleteSelected = register({
       }
 
       // case: deleting last remaining point
-      if (element.points.length < 2) {
-        const nextElements = elements.map((el) => {
-          if (el.id === element.id) {
-            return newElementWith(el, { isDeleted: true });
+      if (layer.points.length < 2) {
+        const nextLayers = layers.map((el) => {
+          if (el.id === layer.id) {
+            return newLayerWith(el, { isDeleted: true });
           }
           return el;
         });
-        const nextAppState = handleGroupEditingState(appState, nextElements);
+        const nextAppState = handleGroupEditingState(appState, nextLayers);
 
         return {
-          elements: nextElements,
+          layers: nextLayers,
           appState: {
             ...nextAppState,
-            editingLinearElement: null,
+            editingLinearLayer: null
           },
-          commitToHistory: false,
+          commitToHistory: false
         };
       }
 
       // We cannot do this inside `movePoint` because it is also called
       // when deleting the uncommitted point (which hasn't caused any binding)
       const binding = {
-        startBindingElement: selectedPointsIndices?.includes(0)
+        startBindingLayer: selectedPointsIndices?.includes(0)
           ? null
-          : startBindingElement,
-        endBindingElement: selectedPointsIndices?.includes(
-          element.points.length - 1,
+          : startBindingLayer,
+        endBindingLayer: selectedPointsIndices?.includes(
+          layer.points.length - 1
         )
           ? null
-          : endBindingElement,
+          : endBindingLayer
       };
 
-      LinearElementEditor.deletePoints(element, selectedPointsIndices);
+      LinearLayerEditor.deletePoints(layer, selectedPointsIndices);
 
       return {
-        elements,
+        layers,
         appState: {
           ...appState,
-          editingLinearElement: {
-            ...appState.editingLinearElement,
+          editingLinearLayer: {
+            ...appState.editingLinearLayer,
             ...binding,
             selectedPointsIndices:
               selectedPointsIndices?.[0] > 0
                 ? [selectedPointsIndices[0] - 1]
-                : [0],
-          },
+                : [0]
+          }
         },
-        commitToHistory: true,
+        commitToHistory: true
       };
     }
-    let { elements: nextElements, appState: nextAppState } =
-      deleteSelectedElements(elements, appState);
+    let { layers: nextLayers, appState: nextAppState } = deleteSelectedLayers(
+      layers,
+      appState
+    );
     fixBindingsAfterDeletion(
-      nextElements,
-      elements.filter(({ id }) => appState.selectedElementIds[id]),
+      nextLayers,
+      layers.filter(({ id }) => appState.selectedLayerIds[id])
     );
 
-    nextAppState = handleGroupEditingState(nextAppState, nextElements);
+    nextAppState = handleGroupEditingState(nextAppState, nextLayers);
 
     return {
-      elements: nextElements,
+      layers: nextLayers,
       appState: {
         ...nextAppState,
         activeTool: updateActiveTool(appState, { type: "selection" }),
-        multiElement: null,
+        multiLayer: null
       },
-      commitToHistory: isSomeElementSelected(
-        getNonDeletedElements(elements),
-        appState,
-      ),
+      commitToHistory: isSomeLayerSelected(
+        getNonDeletedLayers(layers),
+        appState
+      )
     };
   },
   contextItemLabel: "labels.delete",
-  keyTest: (event, appState, elements) =>
+  keyTest: (event, appState, layers) =>
     (event.key === KEYS.BACKSPACE || event.key === KEYS.DELETE) &&
     !event[KEYS.CTRL_OR_CMD],
-  PanelComponent: ({ elements, appState, updateData }) => (
+  PanelComponent: ({ layers, appState, updateData }) => (
     <ToolButton
-      type="button"
-      icon={TrashIcon}
-      title={t("labels.delete")}
       aria-label={t("labels.delete")}
+      icon={TrashIcon}
       onClick={() => updateData(null)}
-      visible={isSomeElementSelected(getNonDeletedElements(elements), appState)}
+      title={t("labels.delete")}
+      type="button"
+      visible={isSomeLayerSelected(getNonDeletedLayers(layers), appState)}
     />
-  ),
+  )
 });

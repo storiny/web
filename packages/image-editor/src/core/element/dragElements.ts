@@ -1,127 +1,123 @@
-import { updateBoundElements } from "./binding";
-import { getCommonBounds } from "./bounds";
-import { mutateElement } from "./mutateElement";
-import { getPerfectElementSize } from "./sizeHelpers";
-import { NonDeletedExcalidrawElement } from "./types";
-import { AppState, PointerDownState } from "../types";
-import { getBoundTextElement } from "./textElement";
+import Scene from "../../lib/scene/Scene";
 import { isSelectedViaGroup } from "../groups";
-import Scene from "../scene/Scene";
-import { isFrameElement } from "./typeChecks";
+import { AppState, PointerDownState } from "../types";
+import { updateBoundLayers } from "./binding";
+import { getCommonBounds } from "./bounds";
+import { mutateLayer } from "./mutateLayer";
+import { getPerfectLayerSize } from "./sizeHelpers";
+import { getBoundTextLayer } from "./textLayer";
+import { isFrameLayer } from "./typeChecks";
+import { NonDeletedExcalidrawLayer } from "./types";
 
-export const dragSelectedElements = (
+export const dragSelectedLayers = (
   pointerDownState: PointerDownState,
-  selectedElements: NonDeletedExcalidrawElement[],
+  selectedLayers: NonDeletedExcalidrawLayer[],
   pointerX: number,
   pointerY: number,
   lockDirection: boolean = false,
   distanceX: number = 0,
   distanceY: number = 0,
   appState: AppState,
-  scene: Scene,
+  scene: Scene
 ) => {
-  const [x1, y1] = getCommonBounds(selectedElements);
+  const [x1, y1] = getCommonBounds(selectedLayers);
   const offset = { x: pointerX - x1, y: pointerY - y1 };
 
-  // we do not want a frame and its elements to be selected at the same time
-  // but when it happens (due to some bug), we want to avoid updating element
+  // we do not want a frame and its layers to be selected at the same time
+  // but when it happens (due to some bug), we want to avoid updating layer
   // in the frame twice, hence the use of set
-  const elementsToUpdate = new Set<NonDeletedExcalidrawElement>(
-    selectedElements,
-  );
-  const frames = selectedElements
-    .filter((e) => isFrameElement(e))
-    .map((f) => f.id);
+  const layersToUpdate = new Set<NonDeletedExcalidrawLayer>(selectedLayers);
+  const frames = selectedLayers.filter((e) => isFrameLayer(e)).map((f) => f.id);
 
   if (frames.length > 0) {
-    const elementsInFrames = scene
-      .getNonDeletedElements()
+    const layersInFrames = scene
+      .getNonDeletedLayers()
       .filter((e) => e.frameId !== null)
       .filter((e) => frames.includes(e.frameId!));
 
-    elementsInFrames.forEach((element) => elementsToUpdate.add(element));
+    layersInFrames.forEach((layer) => layersToUpdate.add(layer));
   }
 
-  elementsToUpdate.forEach((element) => {
-    updateElementCoords(
+  layersToUpdate.forEach((layer) => {
+    updateLayerCoords(
       lockDirection,
       distanceX,
       distanceY,
       pointerDownState,
-      element,
-      offset,
+      layer,
+      offset
     );
     // update coords of bound text only if we're dragging the container directly
     // (we don't drag the group that it's part of)
     if (
       // container isn't part of any group
       // (perf optim so we don't check `isSelectedViaGroup()` in every case)
-      !element.groupIds.length ||
+      !layer.groupIds.length ||
       // container is part of a group, but we're dragging the container directly
-      (appState.editingGroupId && !isSelectedViaGroup(appState, element))
+      (appState.editingGroupId && !isSelectedViaGroup(appState, layer))
     ) {
-      const textElement = getBoundTextElement(element);
+      const textLayer = getBoundTextLayer(layer);
       if (
-        textElement &&
+        textLayer &&
         // when container is added to a frame, so will its bound text
-        // so the text is already in `elementsToUpdate` and we should avoid
+        // so the text is already in `layersToUpdate` and we should avoid
         // updating its coords again
-        (!textElement.frameId || !frames.includes(textElement.frameId))
+        (!textLayer.frameId || !frames.includes(textLayer.frameId))
       ) {
-        updateElementCoords(
+        updateLayerCoords(
           lockDirection,
           distanceX,
           distanceY,
           pointerDownState,
-          textElement,
-          offset,
+          textLayer,
+          offset
         );
       }
     }
-    updateBoundElements(element, {
-      simultaneouslyUpdated: Array.from(elementsToUpdate),
+    updateBoundLayers(layer, {
+      simultaneouslyUpdated: Array.from(layersToUpdate)
     });
   });
 };
 
-const updateElementCoords = (
+const updateLayerCoords = (
   lockDirection: boolean,
   distanceX: number,
   distanceY: number,
   pointerDownState: PointerDownState,
-  element: NonDeletedExcalidrawElement,
-  offset: { x: number; y: number },
+  layer: NonDeletedExcalidrawLayer,
+  offset: { x: number; y: number }
 ) => {
   let x: number;
   let y: number;
   if (lockDirection) {
     const lockX = lockDirection && distanceX < distanceY;
     const lockY = lockDirection && distanceX > distanceY;
-    const original = pointerDownState.originalElements.get(element.id);
-    x = lockX && original ? original.x : element.x + offset.x;
-    y = lockY && original ? original.y : element.y + offset.y;
+    const original = pointerDownState.originalLayers.get(layer.id);
+    x = lockX && original ? original.x : layer.x + offset.x;
+    y = lockY && original ? original.y : layer.y + offset.y;
   } else {
-    x = element.x + offset.x;
-    y = element.y + offset.y;
+    x = layer.x + offset.x;
+    y = layer.y + offset.y;
   }
 
-  mutateElement(element, {
+  mutateLayer(layer, {
     x,
-    y,
+    y
   });
 };
 export const getDragOffsetXY = (
-  selectedElements: NonDeletedExcalidrawElement[],
+  selectedLayers: NonDeletedExcalidrawLayer[],
   x: number,
-  y: number,
+  y: number
 ): [number, number] => {
-  const [x1, y1] = getCommonBounds(selectedElements);
+  const [x1, y1] = getCommonBounds(selectedLayers);
   return [x - x1, y - y1];
 };
 
-export const dragNewElement = (
-  draggingElement: NonDeletedExcalidrawElement,
-  elementType: AppState["activeTool"]["type"],
+export const dragNewLayer = (
+  draggingLayer: NonDeletedExcalidrawLayer,
+  layerType: AppState["activeTool"]["type"],
   originX: number,
   originY: number,
   x: number,
@@ -132,9 +128,9 @@ export const dragNewElement = (
   shouldResizeFromCenter: boolean,
   /** whether to keep given aspect ratio when `isResizeWithSidesSameLength` is
       true */
-  widthAspectRatio?: number | null,
+  widthAspectRatio?: number | null
 ) => {
-  if (shouldMaintainAspectRatio && draggingElement.type !== "selection") {
+  if (shouldMaintainAspectRatio && draggingLayer.type !== "selection") {
     if (widthAspectRatio) {
       height = width / widthAspectRatio;
     } else {
@@ -142,16 +138,16 @@ export const dragNewElement = (
       // (originX, originY), we use ONLY width or height to control size increase.
       // This allows the cursor to always "stick" to one of the sides of the bounding box.
       if (Math.abs(y - originY) > Math.abs(x - originX)) {
-        ({ width, height } = getPerfectElementSize(
-          elementType,
+        ({ width, height } = getPerfectLayerSize(
+          layerType,
           height,
-          x < originX ? -width : width,
+          x < originX ? -width : width
         ));
       } else {
-        ({ width, height } = getPerfectElementSize(
-          elementType,
+        ({ width, height } = getPerfectLayerSize(
+          layerType,
           width,
-          y < originY ? -height : height,
+          y < originY ? -height : height
         ));
       }
 
@@ -172,11 +168,11 @@ export const dragNewElement = (
   }
 
   if (width !== 0 && height !== 0) {
-    mutateElement(draggingElement, {
+    mutateLayer(draggingLayer, {
       x: newX,
       y: newY,
       width,
-      height,
+      height
     });
   }
 };

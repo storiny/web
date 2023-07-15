@@ -1,143 +1,141 @@
-import { getNonDeletedElements } from "../element";
-import { ExcalidrawElement } from "../element/types";
-import { removeAllElementsFromFrame } from "../frame";
-import { getFrameElements } from "../frame";
+import { getSelectedLayers } from "../../lib/scene";
+import { removeAllLayersFromFrame } from "../frame";
+import { getFrameLayers } from "../frame";
 import { KEYS } from "../keys";
-import { getSelectedElements } from "../scene";
+import { getNonDeletedLayers } from "../layer";
+import { ExcalidrawLayer } from "../layer/types";
 import { AppState } from "../types";
 import { setCursorForShape, updateActiveTool } from "../utils";
 import { register } from "./register";
 
 const isSingleFrameSelected = (
-  elements: readonly ExcalidrawElement[],
-  appState: AppState,
+  layers: readonly ExcalidrawLayer[],
+  appState: AppState
 ) => {
-  const selectedElements = getSelectedElements(
-    getNonDeletedElements(elements),
-    appState,
+  const selectedLayers = getSelectedLayers(
+    getNonDeletedLayers(layers),
+    appState
   );
 
-  return selectedElements.length === 1 && selectedElements[0].type === "frame";
+  return selectedLayers.length === 1 && selectedLayers[0].type === "frame";
 };
 
-export const actionSelectAllElementsInFrame = register({
-  name: "selectAllElementsInFrame",
+export const actionSelectAllLayersInFrame = register({
+  name: "selectAllLayersInFrame",
   trackEvent: { category: "canvas" },
-  perform: (elements, appState) => {
-    const selectedFrame = getSelectedElements(
-      getNonDeletedElements(elements),
-      appState,
+  perform: (layers, appState) => {
+    const selectedFrame = getSelectedLayers(
+      getNonDeletedLayers(layers),
+      appState
     )[0];
 
     if (selectedFrame && selectedFrame.type === "frame") {
-      const elementsInFrame = getFrameElements(
-        getNonDeletedElements(elements),
-        selectedFrame.id,
-      ).filter((element) => !(element.type === "text" && element.containerId));
+      const layersInFrame = getFrameLayers(
+        getNonDeletedLayers(layers),
+        selectedFrame.id
+      ).filter((layer) => !(layer.type === "text" && layer.containerId));
 
       return {
-        elements,
+        layers,
         appState: {
           ...appState,
-          selectedElementIds: elementsInFrame.reduce((acc, element) => {
-            acc[element.id] = true;
+          selectedLayerIds: layersInFrame.reduce((acc, layer) => {
+            acc[layer.id] = true;
             return acc;
-          }, {} as Record<ExcalidrawElement["id"], true>),
+          }, {} as Record<ExcalidrawLayer["id"], true>)
         },
-        commitToHistory: false,
+        commitToHistory: false
       };
     }
 
     return {
-      elements,
+      layers,
       appState,
-      commitToHistory: false,
+      commitToHistory: false
     };
   },
-  contextItemLabel: "labels.selectAllElementsInFrame",
-  predicate: (elements, appState) => isSingleFrameSelected(elements, appState),
+  contextItemLabel: "labels.selectAllLayersInFrame",
+  predicate: (layers, appState) => isSingleFrameSelected(layers, appState)
 });
 
-export const actionRemoveAllElementsFromFrame = register({
-  name: "removeAllElementsFromFrame",
+export const actionRemoveAllLayersFromFrame = register({
+  name: "removeAllLayersFromFrame",
   trackEvent: { category: "history" },
-  perform: (elements, appState) => {
-    const selectedFrame = getSelectedElements(
-      getNonDeletedElements(elements),
-      appState,
+  perform: (layers, appState) => {
+    const selectedFrame = getSelectedLayers(
+      getNonDeletedLayers(layers),
+      appState
     )[0];
 
     if (selectedFrame && selectedFrame.type === "frame") {
       return {
-        elements: removeAllElementsFromFrame(elements, selectedFrame, appState),
+        layers: removeAllLayersFromFrame(layers, selectedFrame, appState),
         appState: {
           ...appState,
-          selectedElementIds: {
-            [selectedFrame.id]: true,
-          },
+          selectedLayerIds: {
+            [selectedFrame.id]: true
+          }
         },
-        commitToHistory: true,
+        commitToHistory: true
       };
     }
 
     return {
-      elements,
+      layers,
       appState,
-      commitToHistory: false,
+      commitToHistory: false
     };
   },
-  contextItemLabel: "labels.removeAllElementsFromFrame",
-  predicate: (elements, appState) => isSingleFrameSelected(elements, appState),
+  contextItemLabel: "labels.removeAllLayersFromFrame",
+  predicate: (layers, appState) => isSingleFrameSelected(layers, appState)
 });
 
 export const actionupdateFrameRendering = register({
   name: "updateFrameRendering",
   viewMode: true,
   trackEvent: { category: "canvas" },
-  perform: (elements, appState) => {
-    return {
-      elements,
-      appState: {
-        ...appState,
-        frameRendering: {
-          ...appState.frameRendering,
-          enabled: !appState.frameRendering.enabled,
-        },
-      },
-      commitToHistory: false,
-    };
-  },
+  perform: (layers, appState) => ({
+    layers,
+    appState: {
+      ...appState,
+      frameRendering: {
+        ...appState.frameRendering,
+        enabled: !appState.frameRendering.enabled
+      }
+    },
+    commitToHistory: false
+  }),
   contextItemLabel: "labels.updateFrameRendering",
-  checked: (appState: AppState) => appState.frameRendering.enabled,
+  checked: (appState: AppState) => appState.frameRendering.enabled
 });
 
 export const actionSetFrameAsActiveTool = register({
   name: "setFrameAsActiveTool",
   trackEvent: { category: "toolbar" },
-  perform: (elements, appState, _, app) => {
+  perform: (layers, appState, _, app) => {
     const nextActiveTool = updateActiveTool(appState, {
-      type: "frame",
+      type: "frame"
     });
 
     setCursorForShape(app.canvas, {
       ...appState,
-      activeTool: nextActiveTool,
+      activeTool: nextActiveTool
     });
 
     return {
-      elements,
+      layers,
       appState: {
         ...appState,
         activeTool: updateActiveTool(appState, {
-          type: "frame",
-        }),
+          type: "frame"
+        })
       },
-      commitToHistory: false,
+      commitToHistory: false
     };
   },
   keyTest: (event) =>
     !event[KEYS.CTRL_OR_CMD] &&
     !event.shiftKey &&
     !event.altKey &&
-    event.key.toLocaleLowerCase() === KEYS.F,
+    event.key.toLocaleLowerCase() === KEYS.F
 });

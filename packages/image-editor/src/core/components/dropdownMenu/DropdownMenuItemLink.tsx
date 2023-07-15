@@ -1,9 +1,10 @@
-import MenuItemContent from "./DropdownMenuItemContent";
 import React from "react";
+
 import {
   getDropdownMenuItemClassName,
-  useHandleDropdownMenuItemClick,
+  useHandleDropdownMenuItemClick
 } from "./common";
+import MenuItemContent from "./DropdownMenuItemContent";
 
 const DropdownMenuItemLink = ({
   icon,
@@ -14,24 +15,24 @@ const DropdownMenuItemLink = ({
   className = "",
   ...rest
 }: {
-  href: string;
-  icon?: JSX.Element;
   children: React.ReactNode;
-  shortcut?: string;
   className?: string;
+  href: string;
+  icon?: JSX.Layer;
   onSelect?: (event: Event) => void;
-} & React.AnchorHTMLAttributes<HTMLAnchorElement>) => {
+  shortcut?: string;
+} & React.AnchorHTMLAttributes<HTMLAnchorLayer>) => {
   const handleClick = useHandleDropdownMenuItemClick(rest.onClick, onSelect);
 
   return (
     <a
       {...rest}
-      href={href}
-      target="_blank"
-      rel="noreferrer"
       className={getDropdownMenuItemClassName(className)}
-      title={rest.title ?? rest["aria-label"]}
+      href={href}
       onClick={handleClick}
+      rel="noreferrer"
+      target="_blank"
+      title={rest.title ?? rest["aria-label"]}
     >
       <MenuItemContent icon={icon} shortcut={shortcut}>
         {children}

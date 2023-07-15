@@ -1,12 +1,12 @@
-import * as utils from "../../packages/utils";
-import { diagramFactory } from "../fixtures/diagramFixture";
-import * as mockedSceneExportUtils from "../../scene/export";
+import * as utils from "../../../lib/packages/utils";
+import * as mockedSceneExportUtils from "../../../lib/scene/export";
 import { MIME_TYPES } from "../../constants";
+import { diagramFactory } from "../fixtures/diagramFixture";
 
 jest.mock("../../scene/export", () => ({
   __esmodule: true,
   ...jest.requireActual("../../scene/export"),
-  exportToSvg: jest.fn(),
+  exportToSvg: jest.fn()
 }));
 
 describe("exportToCanvas", () => {
@@ -14,7 +14,7 @@ describe("exportToCanvas", () => {
 
   it("with default arguments", async () => {
     const canvas = await utils.exportToCanvas({
-      ...diagramFactory({ elementOverrides: { width: 100, height: 100 } }),
+      ...diagramFactory({ layerOverrides: { width: 100, height: 100 } })
     });
 
     expect(canvas.width).toBe(100 + 2 * EXPORT_PADDING);
@@ -23,8 +23,8 @@ describe("exportToCanvas", () => {
 
   it("when custom width and height", async () => {
     const canvas = await utils.exportToCanvas({
-      ...diagramFactory({ elementOverrides: { width: 100, height: 100 } }),
-      getDimensions: () => ({ width: 200, height: 200, scale: 1 }),
+      ...diagramFactory({ layerOverrides: { width: 100, height: 100 } }),
+      getDimensions: () => ({ width: 200, height: 200, scale: 1 })
     });
 
     expect(canvas.width).toBe(200);
@@ -43,15 +43,15 @@ describe("exportToBlob", () => {
         // testing typo in MIME type (jpg → jpeg)
         mimeType: "image/jpg",
         appState: {
-          exportBackground: true,
-        },
+          exportBackground: true
+        }
       });
       expect(blob?.type).toBe(MIME_TYPES.jpg);
     });
 
     it("should default to image/png", async () => {
       const blob = await utils.exportToBlob({
-        ...diagramFactory(),
+        ...diagramFactory()
       });
       expect(blob?.type).toBe(MIME_TYPES.png);
     });
@@ -64,11 +64,11 @@ describe("exportToBlob", () => {
       await utils.exportToBlob({
         ...diagramFactory(),
         mimeType: MIME_TYPES.png,
-        quality: 1,
+        quality: 1
       });
 
       expect(consoleSpy).toHaveBeenCalledWith(
-        `"quality" will be ignored for "${MIME_TYPES.png}" mimeType`,
+        `"quality" will be ignored for "${MIME_TYPES.png}" mimeType`
       );
     });
   });
@@ -76,46 +76,46 @@ describe("exportToBlob", () => {
 
 describe("exportToSvg", () => {
   const mockedExportUtil = mockedSceneExportUtils.exportToSvg as jest.Mock;
-  const passedElements = () => mockedExportUtil.mock.calls[0][0];
+  const passedLayers = () => mockedExportUtil.mock.calls[0][0];
   const passedOptions = () => mockedExportUtil.mock.calls[0][1];
   afterEach(jest.resetAllMocks);
 
   it("with default arguments", async () => {
     await utils.exportToSvg({
       ...diagramFactory({
-        overrides: { appState: void 0 },
-      }),
+        overrides: { appState: void 0 }
+      })
     });
 
     const passedOptionsWhenDefault = {
       ...passedOptions(),
       // To avoid varying snapshots
-      name: "name",
+      name: "name"
     };
-    expect(passedElements().length).toBe(3);
+    expect(passedLayers().length).toBe(3);
     expect(passedOptionsWhenDefault).toMatchSnapshot();
   });
 
-  it("with deleted elements", async () => {
+  it("with deleted layers", async () => {
     await utils.exportToSvg({
       ...diagramFactory({
         overrides: { appState: void 0 },
-        elementOverrides: { isDeleted: true },
-      }),
+        layerOverrides: { isDeleted: true }
+      })
     });
 
-    expect(passedElements().length).toBe(0);
+    expect(passedLayers().length).toBe(0);
   });
 
   it("with exportPadding", async () => {
     await utils.exportToSvg({
       ...diagramFactory({ overrides: { appState: { name: "diagram name" } } }),
-      exportPadding: 0,
+      exportPadding: 0
     });
 
-    expect(passedElements().length).toBe(3);
+    expect(passedLayers().length).toBe(3);
     expect(passedOptions()).toEqual(
-      expect.objectContaining({ exportPadding: 0 }),
+      expect.objectContaining({ exportPadding: 0 })
     );
   });
 
@@ -123,12 +123,12 @@ describe("exportToSvg", () => {
     await utils.exportToSvg({
       ...diagramFactory({
         overrides: {
-          appState: { name: "diagram name", exportEmbedScene: true },
-        },
-      }),
+          appState: { name: "diagram name", exportEmbedScene: true }
+        }
+      })
     });
 
-    expect(passedElements().length).toBe(3);
+    expect(passedLayers().length).toBe(3);
     expect(passedOptions().exportEmbedScene).toBe(true);
   });
 });

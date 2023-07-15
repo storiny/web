@@ -54,7 +54,7 @@ VirtualizedLayer.displayName = "VirtualizedLayer";
 // Scroller
 
 const Scroller = React.memo(
-  React.forwardRef<HTMLDivElement, React.ComponentPropsWithRef<"div">>(
+  React.forwardRef<HTMLDivLayer, React.ComponentPropsWithRef<"div">>(
     ({ children, ...rest }, ref) => {
       const { layerCount, panelHeight } = React.useContext(LayersContext);
       const scrollHeight = layerCount * LAYER_HEIGHT;
@@ -107,7 +107,7 @@ const LayerPlaceholder = React.memo<React.ComponentPropsWithoutRef<"span">>(
 
 LayerPlaceholder.displayName = "LayerPlaceholder";
 
-const Layers = (): React.ReactElement => {
+const Layers = (): React.ReactLayer => {
   const droppableId = React.useId();
   const dispatch = useEditorDispatch();
   const layers = useEditorSelector(selectLayers);
@@ -146,7 +146,7 @@ const Layers = (): React.ReactElement => {
         <Droppable
           droppableId={droppableId}
           mode="virtual"
-          renderClone={(provided, snapshot, rubric): React.ReactElement => (
+          renderClone={(provided, snapshot, rubric): React.ReactLayer => (
             <VirtualizedLayer
               isDragging={snapshot.isDragging}
               layer={layers[rubric.source.index]}
@@ -154,7 +154,7 @@ const Layers = (): React.ReactElement => {
             />
           )}
         >
-          {(provided): React.ReactElement => (
+          {(provided): React.ReactLayer => (
             <Root
               asChild
               className={clsx("full-h", "flex-col", styles.x, styles.layers)}
@@ -171,13 +171,13 @@ const Layers = (): React.ReactElement => {
                   }}
                   data={layers}
                   fixedItemHeight={LAYER_HEIGHT}
-                  itemContent={(index, item): React.ReactElement => (
+                  itemContent={(index, item): React.ReactLayer => (
                     <Draggable
                       draggableId={item.id}
                       index={index}
                       key={item.id}
                     >
-                      {(provided): React.ReactElement => (
+                      {(provided): React.ReactLayer => (
                         <VirtualizedLayer
                           isDragging={false}
                           layer={item}
@@ -191,8 +191,8 @@ const Layers = (): React.ReactElement => {
                     enter: (velocity): boolean => Math.abs(velocity) > 950,
                     exit: (velocity): boolean => Math.abs(velocity) < 10
                   }}
-                  scrollerRef={(element): void =>
-                    provided.innerRef(element as HTMLElement)
+                  scrollerRef={(layer): void =>
+                    provided.innerRef(layer as HTMLLayer)
                   }
                 />
               </ul>

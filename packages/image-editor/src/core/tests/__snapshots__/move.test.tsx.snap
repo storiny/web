@@ -1,10 +1,10 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`duplicate element on move when ALT is clicked rectangle 1`] = `
+exports[`duplicate layer on move when ALT is clicked rectangle 1`] = `
 Object {
   "angle": 0,
   "backgroundColor": "transparent",
-  "boundElements": null,
+  "boundLayers": null,
   "fillStyle": "hachure",
   "frameId": null,
   "groupIds": Array [],
@@ -32,11 +32,11 @@ Object {
 }
 `;
 
-exports[`duplicate element on move when ALT is clicked rectangle 2`] = `
+exports[`duplicate layer on move when ALT is clicked rectangle 2`] = `
 Object {
   "angle": 0,
   "backgroundColor": "transparent",
-  "boundElements": null,
+  "boundLayers": null,
   "fillStyle": "hachure",
   "frameId": null,
   "groupIds": Array [],
@@ -64,11 +64,11 @@ Object {
 }
 `;
 
-exports[`move element rectangle 1`] = `
+exports[`move layer rectangle 1`] = `
 Object {
   "angle": 0,
   "backgroundColor": "transparent",
-  "boundElements": null,
+  "boundLayers": null,
   "fillStyle": "hachure",
   "frameId": null,
   "groupIds": Array [],
@@ -96,11 +96,11 @@ Object {
 }
 `;
 
-exports[`move element rectangles with binding arrow 1`] = `
+exports[`move layer rectangles with binding arrow 1`] = `
 Object {
   "angle": 0,
   "backgroundColor": "transparent",
-  "boundElements": Array [
+  "boundLayers": Array [
     Object {
       "id": "id2",
       "type": "arrow",
@@ -133,11 +133,11 @@ Object {
 }
 `;
 
-exports[`move element rectangles with binding arrow 2`] = `
+exports[`move layer rectangles with binding arrow 2`] = `
 Object {
   "angle": 0,
   "backgroundColor": "transparent",
-  "boundElements": Array [
+  "boundLayers": Array [
     Object {
       "id": "id2",
       "type": "arrow",
@@ -170,14 +170,14 @@ Object {
 }
 `;
 
-exports[`move element rectangles with binding arrow 3`] = `
+exports[`move layer rectangles with binding arrow 3`] = `
 Object {
   "angle": 0,
   "backgroundColor": "transparent",
-  "boundElements": null,
+  "boundLayers": null,
   "endArrowhead": null,
   "endBinding": Object {
-    "elementId": "id1",
+    "layerId": "id1",
     "focus": -0.46666666666666673,
     "gap": 10,
   },
@@ -208,7 +208,7 @@ Object {
   "seed": 401146281,
   "startArrowhead": null,
   "startBinding": Object {
-    "elementId": "id0",
+    "layerId": "id0",
     "focus": -0.6000000000000001,
     "gap": 10,
   },

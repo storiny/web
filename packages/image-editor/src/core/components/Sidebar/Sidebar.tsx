@@ -1,35 +1,36 @@
+import "./Sidebar.scss";
+
+import clsx from "clsx";
+import { atom, useSetAtom } from "jotai";
 import React, {
+  forwardRef,
+  useCallback,
   useEffect,
+  useImperativeHandle,
   useLayoutEffect,
   useRef,
-  useState,
-  forwardRef,
-  useImperativeHandle,
-  useCallback,
+  useState
 } from "react";
-import { Island } from ".././Island";
-import { atom, useSetAtom } from "jotai";
+
+import { useOutsideClick } from "../../../lib/hooks/useOutsideClick";
+import { EVENT } from "../../constants";
+import { useUIAppState } from "../../context/ui-appState";
 import { jotaiScope } from "../../jotai";
+import { KEYS } from "../../keys";
+import { updateObject } from "../../utils";
+import { Island } from ".././Island";
+import { useDevice, useExcalidrawSetAppState } from "../App";
 import {
-  SidebarPropsContext,
   SidebarProps,
-  SidebarPropsContextValue,
+  SidebarPropsContext,
+  SidebarPropsContextValue
 } from "./common";
 import { SidebarHeader } from "./SidebarHeader";
-import clsx from "clsx";
-import { useDevice, useExcalidrawSetAppState } from "../App";
-import { updateObject } from "../../utils";
-import { KEYS } from "../../keys";
-import { EVENT } from "../../constants";
-import { SidebarTrigger } from "./SidebarTrigger";
-import { SidebarTabTriggers } from "./SidebarTabTriggers";
-import { SidebarTabTrigger } from "./SidebarTabTrigger";
-import { SidebarTabs } from "./SidebarTabs";
 import { SidebarTab } from "./SidebarTab";
-import { useUIAppState } from "../../context/ui-appState";
-import { useOutsideClick } from "../../hooks/useOutsideClick";
-
-import "./Sidebar.scss";
+import { SidebarTabs } from "./SidebarTabs";
+import { SidebarTabTrigger } from "./SidebarTabTrigger";
+import { SidebarTabTriggers } from "./SidebarTabTriggers";
+import { SidebarTrigger } from "./SidebarTrigger";
 
 /**
  * Flags whether the currently rendered Sidebar is docked or not, for use
@@ -50,12 +51,12 @@ export const SidebarInner = forwardRef(
       docked,
       className,
       ...rest
-    }: SidebarProps & Omit<React.RefAttributes<HTMLDivElement>, "onSelect">,
-    ref: React.ForwardedRef<HTMLDivElement>,
+    }: SidebarProps & Omit<React.RefAttributes<HTMLDivLayer>, "onSelect">,
+    ref: React.ForwardedRef<HTMLDivLayer>
   ) => {
     if (process.env.NODE_ENV === "development" && onDock && docked == null) {
       console.warn(
-        "Sidebar: `docked` must be set when `onDock` is supplied for the sidebar to be user-dockable. To hide this message, either pass `docked` or remove `onDock`",
+        "Sidebar: `docked` must be set when `onDock` is supplied for the sidebar to be user-dockable. To hide this message, either pass `docked` or remove `onDock`"
       );
     }
 
@@ -71,7 +72,7 @@ export const SidebarInner = forwardRef(
     }, [setIsSidebarDockedAtom, docked]);
 
     const headerPropsRef = useRef<SidebarPropsContextValue>(
-      {} as SidebarPropsContextValue,
+      {} as SidebarPropsContextValue
     );
     headerPropsRef.current.onCloseRequest = () => {
       setAppState({ openSidebar: null });
@@ -83,14 +84,12 @@ export const SidebarInner = forwardRef(
     headerPropsRef.current = updateObject(headerPropsRef.current, {
       docked,
       // explicit prop to rerender on update
-      shouldRenderDockButton: !!onDock && docked != null,
+      shouldRenderDockButton: !!onDock && docked != null
     });
 
-    const islandRef = useRef<HTMLDivElement>(null);
+    const islandRef = useRef<HTMLDivLayer>(null);
 
-    useImperativeHandle(ref, () => {
-      return islandRef.current!;
-    });
+    useImperativeHandle(ref, () => islandRef.current!);
 
     const device = useDevice();
 
@@ -110,15 +109,15 @@ export const SidebarInner = forwardRef(
         (event) => {
           // If click on the library icon, do nothing so that LibraryButton
           // can toggle library menu
-          if ((event.target as Element).closest(".sidebar-trigger")) {
+          if ((event.target as Layer).closest(".sidebar-trigger")) {
             return;
           }
           if (!docked || !device.canDeviceFitSidebar) {
             closeLibrary();
           }
         },
-        [closeLibrary, docked, device.canDeviceFitSidebar],
-      ),
+        [closeLibrary, docked, device.canDeviceFitSidebar]
+      )
     );
 
     useEffect(() => {
@@ -147,12 +146,12 @@ export const SidebarInner = forwardRef(
         </SidebarPropsContext.Provider>
       </Island>
     );
-  },
+  }
 );
 SidebarInner.displayName = "SidebarInner";
 
 export const Sidebar = Object.assign(
-  forwardRef((props: SidebarProps, ref: React.ForwardedRef<HTMLDivElement>) => {
+  forwardRef((props: SidebarProps, ref: React.ForwardedRef<HTMLDivLayer>) => {
     const appState = useUIAppState();
 
     const { onStateChange } = props;
@@ -173,7 +172,7 @@ export const Sidebar = Object.assign(
         onStateChange?.(
           appState.openSidebar?.name !== props.name
             ? null
-            : appState.openSidebar,
+            : appState.openSidebar
         );
       }
       refPrevOpenSidebar.current = appState.openSidebar;
@@ -203,7 +202,7 @@ export const Sidebar = Object.assign(
       return null;
     }
 
-    return <SidebarInner {...props} ref={ref} key={props.name} />;
+    return <SidebarInner {...props} key={props.name} ref={ref} />;
   }),
   {
     Header: SidebarHeader,
@@ -211,7 +210,7 @@ export const Sidebar = Object.assign(
     TabTrigger: SidebarTabTrigger,
     Tabs: SidebarTabs,
     Tab: SidebarTab,
-    Trigger: SidebarTrigger,
-  },
+    Trigger: SidebarTrigger
+  }
 );
 Sidebar.displayName = "Sidebar";

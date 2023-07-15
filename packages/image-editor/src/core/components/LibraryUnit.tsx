@@ -1,34 +1,36 @@
+import "./LibraryUnit.scss";
+
 import clsx from "clsx";
 import { memo, useEffect, useRef, useState } from "react";
+
+import { SvgCache, useLibraryItemSvg } from "../../lib/hooks/useLibraryItemSvg";
 import { useDevice } from "../components/App";
 import { LibraryItem } from "../types";
-import "./LibraryUnit.scss";
 import { CheckboxItem } from "./CheckboxItem";
 import { PlusIcon } from "./icons";
-import { SvgCache, useLibraryItemSvg } from "../hooks/useLibraryItemSvg";
 
 export const LibraryUnit = memo(
   ({
     id,
-    elements,
+    layers,
     isPending,
     onClick,
     selected,
     onToggle,
     onDrag,
-    svgCache,
+    svgCache
   }: {
     id: LibraryItem["id"] | /** for pending item */ null;
-    elements?: LibraryItem["elements"];
     isPending?: boolean;
+    layers?: LibraryItem["layers"];
     onClick: (id: LibraryItem["id"] | null) => void;
-    selected: boolean;
-    onToggle: (id: string, event: React.MouseEvent) => void;
     onDrag: (id: string, event: React.DragEvent) => void;
+    onToggle: (id: string, event: React.MouseEvent) => void;
+    selected: boolean;
     svgCache: SvgCache;
   }) => {
-    const ref = useRef<HTMLDivElement | null>(null);
-    const svg = useLibraryItemSvg(id, elements, svgCache);
+    const ref = useRef<HTMLDivLayer | null>(null);
+    const svg = useLibraryItemSvg(id, layers, svgCache);
 
     useEffect(() => {
       const node = ref.current;
@@ -55,22 +57,21 @@ export const LibraryUnit = memo(
     return (
       <div
         className={clsx("library-unit", {
-          "library-unit__active": elements,
-          "library-unit--hover": elements && isHovered,
+          "library-unit__active": layers,
+          "library-unit--hover": layers && isHovered,
           "library-unit--selected": selected,
-          "library-unit--skeleton": !svg,
+          "library-unit--skeleton": !svg
         })}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
         <div
           className={clsx("library-unit__dragger", {
-            "library-unit__pulse": !!isPending,
+            "library-unit__pulse": !!isPending
           })}
-          ref={ref}
-          draggable={!!elements}
+          draggable={!!layers}
           onClick={
-            !!elements || !!isPending
+            !!layers || !!isPending
               ? (event) => {
                   if (id && event.shiftKey) {
                     onToggle(id, event);
@@ -88,18 +89,19 @@ export const LibraryUnit = memo(
             setIsHovered(false);
             onDrag(id, event);
           }}
+          ref={ref}
         />
         {adder}
-        {id && elements && (isHovered || isMobile || selected) && (
+        {id && layers && (isHovered || isMobile || selected) && (
           <CheckboxItem
             checked={selected}
-            onChange={(checked, event) => onToggle(id, event)}
             className="library-unit__checkbox"
+            onChange={(checked, event) => onToggle(id, event)}
           />
         )}
       </div>
     );
-  },
+  }
 );
 
 export const EmptyLibraryUnit = () => (

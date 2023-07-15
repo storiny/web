@@ -1,40 +1,40 @@
-import React from "react";
-import { NonDeletedExcalidrawElement } from "../element/types";
-import { t } from "../i18n";
+import "./ExportDialog.scss";
 
-import { ExportOpts, BinaryFiles, UIAppState } from "../types";
+import React from "react";
+
+import { nativeFileSystemSupported } from "../../lib/data/fs/filesystem";
+import { actionSaveFileToDisk } from "../actions/actionExport";
+import { ActionManager } from "../actions/manager";
+import { trackEvent } from "../analytics";
+import { t } from "../i18n";
+import { NonDeletedExcalidrawLayer } from "../layer/types";
+import { BinaryFiles, ExportOpts, UIAppState } from "../types";
+import { getFrame } from "../utils";
+import { Card } from "./Card";
 import { Dialog } from "./Dialog";
 import { exportToFileIcon, LinkIcon } from "./icons";
 import { ToolButton } from "./ToolButton";
-import { actionSaveFileToDisk } from "../actions/actionExport";
-import { Card } from "./Card";
-
-import "./ExportDialog.scss";
-import { nativeFileSystemSupported } from "../data/filesystem";
-import { trackEvent } from "../analytics";
-import { ActionManager } from "../actions/manager";
-import { getFrame } from "../utils";
 
 export type ExportCB = (
-  elements: readonly NonDeletedExcalidrawElement[],
-  scale?: number,
+  layers: readonly NonDeletedExcalidrawLayer[],
+  scale?: number
 ) => void;
 
 const JSONExportModal = ({
-  elements,
+  layers,
   appState,
   files,
   actionManager,
   exportOpts,
-  canvas,
+  canvas
 }: {
-  appState: UIAppState;
-  files: BinaryFiles;
-  elements: readonly NonDeletedExcalidrawElement[];
   actionManager: ActionManager;
-  onCloseRequest: () => void;
+  appState: UIAppState;
+  canvas: HTMLCanvasLayer | null;
   exportOpts: ExportOpts;
-  canvas: HTMLCanvasElement | null;
+  files: BinaryFiles;
+  layers: readonly NonDeletedExcalidrawLayer[];
+  onCloseRequest: () => void;
 }) => {
   const { onExportToBackend } = exportOpts;
   return (
@@ -50,14 +50,14 @@ const JSONExportModal = ({
                 actionManager.renderAction("changeProjectName")}
             </div>
             <ToolButton
-              className="Card-button"
-              type="button"
-              title={t("exportDialog.disk_button")}
               aria-label={t("exportDialog.disk_button")}
-              showAriaLabel={true}
+              className="Card-button"
               onClick={() => {
                 actionManager.executeAction(actionSaveFileToDisk, "ui");
               }}
+              showAriaLabel={true}
+              title={t("exportDialog.disk_button")}
+              type="button"
             />
           </Card>
         )}
@@ -67,40 +67,40 @@ const JSONExportModal = ({
             <h2>{t("exportDialog.link_title")}</h2>
             <div className="Card-details">{t("exportDialog.link_details")}</div>
             <ToolButton
-              className="Card-button"
-              type="button"
-              title={t("exportDialog.link_button")}
               aria-label={t("exportDialog.link_button")}
-              showAriaLabel={true}
+              className="Card-button"
               onClick={() => {
-                onExportToBackend(elements, appState, files, canvas);
+                onExportToBackend(layers, appState, files, canvas);
                 trackEvent("export", "link", `ui (${getFrame()})`);
               }}
+              showAriaLabel={true}
+              title={t("exportDialog.link_button")}
+              type="button"
             />
           </Card>
         )}
         {exportOpts.renderCustomUI &&
-          exportOpts.renderCustomUI(elements, appState, files, canvas)}
+          exportOpts.renderCustomUI(layers, appState, files, canvas)}
       </div>
     </div>
   );
 };
 
 export const JSONExportDialog = ({
-  elements,
+  layers,
   appState,
   files,
   actionManager,
   exportOpts,
   canvas,
-  setAppState,
+  setAppState
 }: {
-  elements: readonly NonDeletedExcalidrawElement[];
-  appState: UIAppState;
-  files: BinaryFiles;
   actionManager: ActionManager;
+  appState: UIAppState;
+  canvas: HTMLCanvasLayer | null;
   exportOpts: ExportOpts;
-  canvas: HTMLCanvasElement | null;
+  files: BinaryFiles;
+  layers: readonly NonDeletedExcalidrawLayer[];
   setAppState: React.Component<any, UIAppState>["setState"];
 }) => {
   const handleClose = React.useCallback(() => {
@@ -112,13 +112,13 @@ export const JSONExportDialog = ({
       {appState.openDialog === "jsonExport" && (
         <Dialog onCloseRequest={handleClose} title={t("buttons.export")}>
           <JSONExportModal
-            elements={elements}
-            appState={appState}
-            files={files}
             actionManager={actionManager}
-            onCloseRequest={handleClose}
-            exportOpts={exportOpts}
+            appState={appState}
             canvas={canvas}
+            exportOpts={exportOpts}
+            files={files}
+            layers={layers}
+            onCloseRequest={handleClose}
           />
         </Dialog>
       )}

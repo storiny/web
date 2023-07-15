@@ -116,7 +116,7 @@
       "edit": "行を編集",
       "exit": "行エディタを終了"
     },
-    "elementLock": {
+    "layerLock": {
       "lock": "ロック",
       "unlock": "ロック解除",
       "lockAll": "すべてロック",
@@ -124,8 +124,8 @@
     },
     "statusPublished": "公開済み",
     "sidebarLock": "サイドバーを開いたままにする",
-    "selectAllElementsInFrame": "",
-    "removeAllElementsFromFrame": "",
+    "selectAllLayersInFrame": "",
+    "removeAllLayersFromFrame": "",
     "eyeDropper": ""
   },
   "library": {
@@ -234,12 +234,12 @@
   },
   "hints": {
     "canvasPanning": "キャンバスを移動するには、マウスホイールまたはスペースバーを押しながらドラッグするか、手ツールを使用します",
-    "linearElement": "クリックすると複数の頂点からなる曲線を開始、ドラッグすると直線",
+    "linearLayer": "クリックすると複数の頂点からなる曲線を開始、ドラッグすると直線",
     "freeDraw": "クリックしてドラッグします。離すと終了します",
     "text": "ヒント: 選択ツールを使用して任意の場所をダブルクリックしてテキストを追加することもできます",
     "text_selected": "テキストを編集するには、ダブルクリックまたはEnterキーを押します",
     "text_editing": "Esc キーまたは CtrlOrCmd+ENTER キーを押して編集を終了します",
-    "linearElementMulti": "最後のポイントをクリックするか、エスケープまたはEnterを押して終了します",
+    "linearLayerMulti": "最後のポイントをクリックするか、エスケープまたはEnterを押して終了します",
     "lockAngle": "SHIFTを押したままにすると、角度を制限することができます",
     "resize": "サイズを変更中にSHIFTを押すと縦横比を固定できます。Altを押すと中央からサイズを変更できます",
     "resizeImage": "SHIFTを長押しすると自由にサイズを変更できます。\n中央からサイズを変更するにはALTを長押しします",
@@ -249,7 +249,7 @@
     "lineEditor_nothingSelected": "編集する点を選択（SHIFTを押したままで複数選択）、\nAltキーを押しながらクリックすると新しい点を追加",
     "placeImage": "クリックして画像を配置するか、クリックしてドラッグしてサイズを手動で設定します",
     "publishLibrary": "自分のライブラリを公開",
-    "bindTextToElement": "Enterを押してテキストを追加",
+    "bindTextToLayer": "Enterを押してテキストを追加",
     "deepBoxSelect": "CtrlOrCmd を押し続けることでドラッグを抑止し、深い選択を行います",
     "eraserRevert": "Alt を押し続けることで削除マークされた要素を元に戻す",
     "firefox_clipboard_write": "この機能は、\"dom.events.asyncClipboard.clipboardItem\" フラグを \"true\" に設定することで有効になる可能性があります。Firefox でブラウザーの設定を変更するには、\"about:config\" ページを参照してください。"
@@ -316,7 +316,7 @@
     "view": "表示",
     "zoomToFit": "すべての要素が収まるようにズーム",
     "zoomToSelection": "選択要素にズーム",
-    "toggleElementLock": "選択したアイテムをロック/ロック解除",
+    "toggleLayerLock": "選択したアイテムをロック/ロック解除",
     "movePageUpDown": "ページを上下に移動",
     "movePageLeftRight": "ページを左右に移動"
   },
@@ -389,8 +389,8 @@
   },
   "stats": {
     "angle": "角度",
-    "element": "要素",
-    "elements": "要素",
+    "layer": "要素",
+    "layers": "要素",
     "height": "高さ",
     "scene": "シーン",
     "selected": "選択済み",
@@ -411,7 +411,7 @@
     "fileSavedToFilename": "{filename} に保存しました",
     "canvas": "キャンバス",
     "selection": "選択",
-    "pasteAsSingleElement": "{{shortcut}} を使用して単一の要素として貼り付けるか、\n既存のテキストエディタに貼り付け"
+    "pasteAsSingleLayer": "{{shortcut}} を使用して単一の要素として貼り付けるか、\n既存のテキストエディタに貼り付け"
   },
   "colors": {
     "transparent": "透明",

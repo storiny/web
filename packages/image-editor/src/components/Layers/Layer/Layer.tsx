@@ -48,7 +48,7 @@ const layerTypeToIconMap: Record<LayerType, React.ReactNode> = {
 
 // Lock filled ico
 
-const LockFilledIcon = (): React.ReactElement => (
+const LockFilledIcon = (): React.ReactLayer => (
   <svg
     aria-hidden={"true"}
     className={clsx(styles.x, styles["lock-icon"])}
@@ -65,7 +65,7 @@ const LockFilledIcon = (): React.ReactElement => (
   </svg>
 );
 
-const Layer = React.forwardRef<HTMLLIElement, LayerProps>((props, ref) => {
+const Layer = React.forwardRef<HTMLLILayer, LayerProps>((props, ref) => {
   const { layer, draggerProps, className, ...rest } = props;
   const dispatch = useEditorDispatch();
   const selectedLayerId = useEditorSelector(selectActiveLayerId);

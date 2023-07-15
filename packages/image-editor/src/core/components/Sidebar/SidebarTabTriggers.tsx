@@ -4,13 +4,11 @@ export const SidebarTabTriggers = ({
   children,
   ...rest
 }: { children: React.ReactNode } & Omit<
-  React.RefAttributes<HTMLDivElement>,
+  React.RefAttributes<HTMLDivLayer>,
   "onSelect"
->) => {
-  return (
-    <RadixTabs.List className="sidebar-triggers" {...rest}>
-      {children}
-    </RadixTabs.List>
-  );
-};
+>) => (
+  <RadixTabs.List className="sidebar-triggers" {...rest}>
+    {children}
+  </RadixTabs.List>
+);
 SidebarTabTriggers.displayName = "SidebarTabTriggers";

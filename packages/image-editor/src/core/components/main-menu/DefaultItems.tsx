@@ -1,10 +1,27 @@
-import { getShortcutFromShortcutName } from "../../actions/shortcuts";
-import { useI18n } from "../../i18n";
+import "./DefaultItems.scss";
+
+import clsx from "clsx";
+import { useSetAtom } from "jotai";
+
 import {
-  useExcalidrawSetAppState,
+  actionClearCanvas,
+  actionLoadScene,
+  actionSaveToActiveFile,
+  actionShortcuts,
+  actionToggleTheme
+} from "../../actions";
+import { getShortcutFromShortcutName } from "../../actions/shortcuts";
+import { useUIAppState } from "../../context/ui-appState";
+import { useI18n } from "../../i18n";
+import { jotaiScope } from "../../jotai";
+import { activeConfirmDialogAtom } from "../ActiveConfirmDialog";
+import {
   useExcalidrawActionManager,
-  useExcalidrawElements,
+  useExcalidrawLayers,
+  useExcalidrawSetAppState
 } from "../App";
+import DropdownMenuItem from "../dropdownMenu/DropdownMenuItem";
+import DropdownMenuItemLink from "../dropdownMenu/DropdownMenuItemLink";
 import {
   ExportIcon,
   ExportImageIcon,
@@ -14,32 +31,16 @@ import {
   save,
   SunIcon,
   TrashIcon,
-  usersIcon,
+  usersIcon
 } from "../icons";
-import { GithubIcon, DiscordIcon, TwitterIcon } from "../icons";
-import DropdownMenuItem from "../dropdownMenu/DropdownMenuItem";
-import DropdownMenuItemLink from "../dropdownMenu/DropdownMenuItemLink";
-import {
-  actionClearCanvas,
-  actionLoadScene,
-  actionSaveToActiveFile,
-  actionShortcuts,
-  actionToggleTheme,
-} from "../../actions";
-
-import "./DefaultItems.scss";
-import clsx from "clsx";
-import { useSetAtom } from "jotai";
-import { activeConfirmDialogAtom } from "../ActiveConfirmDialog";
-import { jotaiScope } from "../../jotai";
-import { useUIAppState } from "../../context/ui-appState";
+import { DiscordIcon, GithubIcon, TwitterIcon } from "../icons";
 import { openConfirmModal } from "../OverwriteConfirm/OverwriteConfirmState";
 import Trans from "../Trans";
 
 export const LoadScene = () => {
   const { t } = useI18n();
   const actionManager = useExcalidrawActionManager();
-  const elements = useExcalidrawElements();
+  const layers = useExcalidrawLayers();
 
   if (!actionManager.isActionEnabled(actionLoadScene)) {
     return null;
@@ -47,18 +48,18 @@ export const LoadScene = () => {
 
   const handleSelect = async () => {
     if (
-      !elements.length ||
+      !layers.length ||
       (await openConfirmModal({
         title: t("overwriteConfirm.modal.loadFromFile.title"),
         actionLabel: t("overwriteConfirm.modal.loadFromFile.button"),
         color: "warning",
         description: (
           <Trans
-            i18nKey="overwriteConfirm.modal.loadFromFile.description"
             bold={(text) => <strong>{text}</strong>}
             br={() => <br />}
+            i18nKey="overwriteConfirm.modal.loadFromFile.description"
           />
-        ),
+        )
       }))
     ) {
       actionManager.executeAction(actionLoadScene);
@@ -67,11 +68,11 @@ export const LoadScene = () => {
 
   return (
     <DropdownMenuItem
+      aria-label={t("buttons.load")}
+      data-testid="load-button"
       icon={LoadIcon}
       onSelect={handleSelect}
-      data-testid="load-button"
       shortcut={getShortcutFromShortcutName("loadScene")}
-      aria-label={t("buttons.load")}
     >
       {t("buttons.load")}
     </DropdownMenuItem>
@@ -89,11 +90,11 @@ export const SaveToActiveFile = () => {
 
   return (
     <DropdownMenuItem
-      shortcut={getShortcutFromShortcutName("saveScene")}
-      data-testid="save-button"
-      onSelect={() => actionManager.executeAction(actionSaveToActiveFile)}
-      icon={save}
       aria-label={`${t("buttons.save")}`}
+      data-testid="save-button"
+      icon={save}
+      onSelect={() => actionManager.executeAction(actionSaveToActiveFile)}
+      shortcut={getShortcutFromShortcutName("saveScene")}
     >{`${t("buttons.save")}`}</DropdownMenuItem>
   );
 };
@@ -104,11 +105,11 @@ export const SaveAsImage = () => {
   const { t } = useI18n();
   return (
     <DropdownMenuItem
-      icon={ExportImageIcon}
+      aria-label={t("buttons.exportImage")}
       data-testid="image-export-button"
+      icon={ExportImageIcon}
       onSelect={() => setAppState({ openDialog: "imageExport" })}
       shortcut={getShortcutFromShortcutName("imageExport")}
-      aria-label={t("buttons.exportImage")}
     >
       {t("buttons.exportImage")}
     </DropdownMenuItem>
@@ -123,11 +124,11 @@ export const Help = () => {
 
   return (
     <DropdownMenuItem
+      aria-label={t("helpDialog.title")}
       data-testid="help-menu-item"
       icon={HelpIcon}
       onSelect={() => actionManager.executeAction(actionShortcuts)}
       shortcut="?"
-      aria-label={t("helpDialog.title")}
     >
       {t("helpDialog.title")}
     </DropdownMenuItem>
@@ -140,7 +141,7 @@ export const ClearCanvas = () => {
 
   const setActiveConfirmDialog = useSetAtom(
     activeConfirmDialogAtom,
-    jotaiScope,
+    jotaiScope
   );
   const actionManager = useExcalidrawActionManager();
 
@@ -150,10 +151,10 @@ export const ClearCanvas = () => {
 
   return (
     <DropdownMenuItem
+      aria-label={t("buttons.clearReset")}
+      data-testid="clear-canvas-button"
       icon={TrashIcon}
       onSelect={() => setActiveConfirmDialog("clearCanvas")}
-      data-testid="clear-canvas-button"
-      aria-label={t("buttons.clearReset")}
     >
       {t("buttons.clearReset")}
     </DropdownMenuItem>
@@ -172,19 +173,19 @@ export const ToggleTheme = () => {
 
   return (
     <DropdownMenuItem
-      onSelect={(event) => {
-        // do not close the menu when changing theme
-        event.preventDefault();
-        return actionManager.executeAction(actionToggleTheme);
-      }}
-      icon={appState.theme === "dark" ? SunIcon : MoonIcon}
-      data-testid="toggle-dark-mode"
-      shortcut={getShortcutFromShortcutName("toggleTheme")}
       aria-label={
         appState.theme === "dark"
           ? t("buttons.lightMode")
           : t("buttons.darkMode")
       }
+      data-testid="toggle-dark-mode"
+      icon={appState.theme === "dark" ? SunIcon : MoonIcon}
+      onSelect={(event) => {
+        // do not close the menu when changing theme
+        event.preventDefault();
+        return actionManager.executeAction(actionToggleTheme);
+      }}
+      shortcut={getShortcutFromShortcutName("toggleTheme")}
     >
       {appState.theme === "dark"
         ? t("buttons.lightMode")
@@ -220,12 +221,12 @@ export const Export = () => {
   const setAppState = useExcalidrawSetAppState();
   return (
     <DropdownMenuItem
+      aria-label={t("buttons.export")}
+      data-testid="json-export-button"
       icon={ExportIcon}
       onSelect={() => {
         setAppState({ openDialog: "jsonExport" });
       }}
-      data-testid="json-export-button"
-      aria-label={t("buttons.export")}
     >
       {t("buttons.export")}
     </DropdownMenuItem>
@@ -236,23 +237,23 @@ Export.displayName = "Export";
 export const Socials = () => (
   <>
     <DropdownMenuItemLink
-      icon={GithubIcon}
-      href="https://github.com/excalidraw/excalidraw"
       aria-label="GitHub"
+      href="https://github.com/excalidraw/excalidraw"
+      icon={GithubIcon}
     >
       GitHub
     </DropdownMenuItemLink>
     <DropdownMenuItemLink
-      icon={DiscordIcon}
-      href="https://discord.gg/UexuTaE"
       aria-label="Discord"
+      href="https://discord.gg/UexuTaE"
+      icon={DiscordIcon}
     >
       Discord
     </DropdownMenuItemLink>
     <DropdownMenuItemLink
-      icon={TwitterIcon}
-      href="https://twitter.com/excalidraw"
       aria-label="Twitter"
+      href="https://twitter.com/excalidraw"
+      icon={TwitterIcon}
     >
       Twitter
     </DropdownMenuItemLink>
@@ -262,19 +263,19 @@ Socials.displayName = "Socials";
 
 export const LiveCollaborationTrigger = ({
   onSelect,
-  isCollaborating,
+  isCollaborating
 }: {
-  onSelect: () => void;
   isCollaborating: boolean;
+  onSelect: () => void;
 }) => {
   const { t } = useI18n();
   return (
     <DropdownMenuItem
+      className={clsx({
+        "active-collab": isCollaborating
+      })}
       data-testid="collab-button"
       icon={usersIcon}
-      className={clsx({
-        "active-collab": isCollaborating,
-      })}
       onSelect={onSelect}
     >
       {t("labels.liveCollaboration")}

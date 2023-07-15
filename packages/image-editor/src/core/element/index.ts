@@ -1,112 +1,101 @@
+import { isInvisiblySmallLayer } from "./sizeHelpers";
+import { isLinearLayerType } from "./typeChecks";
 import {
-  ExcalidrawElement,
-  NonDeletedExcalidrawElement,
+  ExcalidrawFrameLayer,
+  ExcalidrawLayer,
   NonDeleted,
-  ExcalidrawFrameElement,
+  NonDeletedExcalidrawLayer
 } from "./types";
-import { isInvisiblySmallElement } from "./sizeHelpers";
-import { isLinearElementType } from "./typeChecks";
 
 export {
-  newElement,
-  newTextElement,
-  updateTextElement,
-  refreshTextDimensions,
-  newLinearElement,
-  newImageElement,
-  duplicateElement,
-} from "./newElement";
-export {
-  getElementAbsoluteCoords,
-  getElementBounds,
+  getArrowheadPoints,
+  getClosestLayerBounds,
   getCommonBounds,
   getDiamondPoints,
-  getArrowheadPoints,
-  getClosestElementBounds,
+  getLayerAbsoluteCoords,
+  getLayerBounds
 } from "./bounds";
-
-export {
-  OMIT_SIDES_FOR_MULTIPLE_ELEMENTS,
-  getTransformHandlesFromCoords,
-  getTransformHandles,
-} from "./transformHandles";
 export {
   hitTest,
-  isHittingElementBoundingBoxWithoutHittingElement,
+  isHittingLayerBoundingBoxWithoutHittingLayer
 } from "./collision";
 export {
-  resizeTest,
-  getCursorForResizingElement,
-  getElementWithTransformHandleType,
-  getTransformHandleTypeFromCoords,
-} from "./resizeTest";
+  dragNewLayer,
+  dragSelectedLayers,
+  getDragOffsetXY
+} from "./dragLayers";
 export {
-  transformElements,
-  getResizeOffsetXY,
+  duplicateLayer,
+  newImageLayer,
+  newLayer,
+  newLinearLayer,
+  newTextLayer,
+  refreshTextDimensions,
+  updateTextLayer
+} from "./newLayer";
+export {
   getResizeArrowDirection,
-} from "./resizeElements";
+  getResizeOffsetXY,
+  transformLayers
+} from "./resizeLayers";
 export {
-  dragSelectedElements,
-  getDragOffsetXY,
-  dragNewElement,
-} from "./dragElements";
-export {
-  isTextElement,
-  isExcalidrawElement,
-  isFrameElement,
-} from "./typeChecks";
-export { textWysiwyg } from "./textWysiwyg";
-export { redrawTextBoundingBox } from "./textElement";
-export {
-  getPerfectElementSize,
-  getLockedLinearCursorAlignSize,
-  isInvisiblySmallElement,
-  resizePerfectLineForNWHandler,
-  getNormalizedDimensions,
-} from "./sizeHelpers";
+  getCursorForResizingLayer,
+  getLayerWithTransformHandleType,
+  getTransformHandleTypeFromCoords,
+  resizeTest
+} from "./resizeTest";
 export { showSelectedShapeActions } from "./showSelectedShapeActions";
+export {
+  getLockedLinearCursorAlignSize,
+  getNormalizedDimensions,
+  getPerfectLayerSize,
+  isInvisiblySmallLayer,
+  resizePerfectLineForNWHandler
+} from "./sizeHelpers";
+export { redrawTextBoundingBox } from "./textLayer";
+export { textWysiwyg } from "./textWysiwyg";
+export {
+  getTransformHandles,
+  getTransformHandlesFromCoords,
+  OMIT_SIDES_FOR_MULTIPLE_ELEMENTS
+} from "./transformHandles";
+export { isCanvasLayer, isFrameLayer, isTextLayer } from "./typeChecks";
 
-export const getSceneVersion = (elements: readonly ExcalidrawElement[]) =>
-  elements.reduce((acc, el) => acc + el.version, 0);
+export const getSceneVersion = (layers: readonly ExcalidrawLayer[]) =>
+  layers.reduce((acc, el) => acc + el.version, 0);
 
-export const getVisibleElements = (elements: readonly ExcalidrawElement[]) =>
-  elements.filter(
-    (el) => !el.isDeleted && !isInvisiblySmallElement(el),
-  ) as readonly NonDeletedExcalidrawElement[];
+export const getVisibleLayers = (layers: readonly ExcalidrawLayer[]) =>
+  layers.filter(
+    (el) => !el.isDeleted && !isInvisiblySmallLayer(el)
+  ) as readonly NonDeletedExcalidrawLayer[];
 
-export const getNonDeletedElements = (elements: readonly ExcalidrawElement[]) =>
-  elements.filter(
-    (element) => !element.isDeleted,
-  ) as readonly NonDeletedExcalidrawElement[];
+export const getNonDeletedLayers = (layers: readonly ExcalidrawLayer[]) =>
+  layers.filter(
+    (layer) => !layer.isDeleted
+  ) as readonly NonDeletedExcalidrawLayer[];
 
-export const getNonDeletedFrames = (
-  frames: readonly ExcalidrawFrameElement[],
-) =>
+export const getNonDeletedFrames = (frames: readonly ExcalidrawFrameLayer[]) =>
   frames.filter(
-    (frame) => !frame.isDeleted,
-  ) as readonly NonDeleted<ExcalidrawFrameElement>[];
+    (frame) => !frame.isDeleted
+  ) as readonly NonDeleted<ExcalidrawFrameLayer>[];
 
-export const isNonDeletedElement = <T extends ExcalidrawElement>(
-  element: T,
-): element is NonDeleted<T> => !element.isDeleted;
+export const isNonDeletedLayer = <T extends ExcalidrawLayer>(
+  layer: T
+): layer is NonDeleted<T> => !layer.isDeleted;
 
-const _clearElements = (
-  elements: readonly ExcalidrawElement[],
-): ExcalidrawElement[] =>
-  getNonDeletedElements(elements).map((element) =>
-    isLinearElementType(element.type)
-      ? { ...element, lastCommittedPoint: null }
-      : element,
+const _clearLayers = (layers: readonly ExcalidrawLayer[]): ExcalidrawLayer[] =>
+  getNonDeletedLayers(layers).map((layer) =>
+    isLinearLayerType(layer.type)
+      ? { ...layer, lastCommittedPoint: null }
+      : layer
   );
 
-export const clearElementsForDatabase = (
-  elements: readonly ExcalidrawElement[],
-) => _clearElements(elements);
+export const clearLayersForDatabase = (layers: readonly ExcalidrawLayer[]) =>
+  _clearLayers(layers);
 
-export const clearElementsForExport = (
-  elements: readonly ExcalidrawElement[],
-) => _clearElements(elements);
+export const clearLayersForExport = (layers: readonly ExcalidrawLayer[]) =>
+  _clearLayers(layers);
 
-export const clearElementsForLocalStorage = (
-  elements: readonly ExcalidrawElement[],
-) => _clearElements(elements);
+export const clearLayersForLocalStorage = (
+  layers: readonly ExcalidrawLayer[]
+) => _clearLayers(layers);

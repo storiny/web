@@ -116,7 +116,7 @@
       "edit": "ערוך קו",
       "exit": "צא מעורך הקו"
     },
-    "elementLock": {
+    "layerLock": {
       "lock": "נעילה",
       "unlock": "ביטול נעילה",
       "lockAll": "לנעול הכל",
@@ -124,8 +124,8 @@
     },
     "statusPublished": "פורסם",
     "sidebarLock": "שמור את סרגל הצד פתוח",
-    "selectAllElementsInFrame": "",
-    "removeAllElementsFromFrame": "",
+    "selectAllLayersInFrame": "",
+    "removeAllLayersFromFrame": "",
     "eyeDropper": ""
   },
   "library": {
@@ -234,12 +234,12 @@
   },
   "hints": {
     "canvasPanning": "כדי להזיז את הקנבס, החזק את גלגל העכבר לחוץ או את מקש הרווח לחוץ תוך כדי גרירה, או השתמש בכלי היד",
-    "linearElement": "לחץ להתחלת מספר נקודות, גרור לקו יחיד",
+    "linearLayer": "לחץ להתחלת מספר נקודות, גרור לקו יחיד",
     "freeDraw": "לחץ וגרור, שחרר כשסיימת",
     "text": "טיפ: אפשר להוסיף טקסט על ידי לחיצה כפולה בכל מקום עם כלי הבחירה",
     "text_selected": "לחץ לחיצה כפולה או הקש על אנטר לעריכת הטקסט",
     "text_editing": "כדי לסיים את העריכה לחץ על מקש Escape או על Ctrl (Cmd במחשבי אפל) ומקש Enter",
-    "linearElementMulti": "הקלק על הנקודה האחרונה או הקש Escape או Enter לסיום",
+    "linearLayerMulti": "הקלק על הנקודה האחרונה או הקש Escape או Enter לסיום",
     "lockAngle": "ניתן להגביל את הזוויות על ידי החזקה של מקש ה- SHIFT",
     "resize": "ניתן להגביל פרופורציות על ידי לחיצה על SHIFT תוך כדי שינוי גודל,\nהחזק ALT בשביל לשנות גודל ביחס למרכז",
     "resizeImage": "אתה יכול לשנות את הגודל בחופשיות על ידי החזקת מקש SHIFT,\nהחזק את מקש ALT כדי לבצע שינוי גודל מהמרכז",
@@ -249,7 +249,7 @@
     "lineEditor_nothingSelected": "בחר נקודה כדי לערוך (החזק SHIFT לבחירת כמה),\nאו החזק Alt והקלק להוספת נקודות חדשות",
     "placeImage": "הקלק להנחת התמונה, או הקלק וגרור להגדרת הגודל שלו ידנית",
     "publishLibrary": "פרסם ספריה משלך",
-    "bindTextToElement": "הקש Enter כדי להוספת טקסט",
+    "bindTextToLayer": "הקש Enter כדי להוספת טקסט",
     "deepBoxSelect": "החזק Ctrl / Cmd לבחירה עמוקה ולמניעת גרירה",
     "eraserRevert": "החזק Alt להחזרת רכיבים מסומנים למחיקה",
     "firefox_clipboard_write": "יכולות זה ניתנת להפעלה על ידי שינוי הדגל של \"dom.events.asyncClipboard.clipboardItem\" למצב \"true\". כדי לשנות את הדגל בדפדפן Firefox, בקר בעמוד ״about:config״."
@@ -316,7 +316,7 @@
     "view": "תצוגה",
     "zoomToFit": "זום להתאמת כל האלמנטים למסך",
     "zoomToSelection": "התמקד בבחירה",
-    "toggleElementLock": "נעילה/ביטול הנעילה של הרכיבים הנבחרים",
+    "toggleLayerLock": "נעילה/ביטול הנעילה של הרכיבים הנבחרים",
     "movePageUpDown": "זוז עמוד למעלה/למטה",
     "movePageLeftRight": "זוז עמוד שמאלה/ימינה"
   },
@@ -389,8 +389,8 @@
   },
   "stats": {
     "angle": "זווית",
-    "element": "רכיב",
-    "elements": "רכיבים",
+    "layer": "רכיב",
+    "layers": "רכיבים",
     "height": "גובה",
     "scene": "תצוגה",
     "selected": "נבחר",
@@ -411,7 +411,7 @@
     "fileSavedToFilename": "נשמר לקובץ {filename}",
     "canvas": "קנבאס",
     "selection": "בחירה",
-    "pasteAsSingleElement": "השתמש ב- {{shortcut}} כדי להדביק כפריט יחיד,\nאו הדבק לתוך עורך טקסט קיים"
+    "pasteAsSingleLayer": "השתמש ב- {{shortcut}} כדי להדביק כפריט יחיד,\nאו הדבק לתוך עורך טקסט קיים"
   },
   "colors": {
     "transparent": "שקוף",

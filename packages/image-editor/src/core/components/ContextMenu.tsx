@@ -1,20 +1,21 @@
-import clsx from "clsx";
-import { Popover } from "./Popover";
-import { t } from "../i18n";
-
 import "./ContextMenu.scss";
-import {
-  getShortcutFromShortcutName,
-  ShortcutName,
-} from "../actions/shortcuts";
-import { Action } from "../actions/types";
+
+import clsx from "clsx";
+import React from "react";
+
 import { ActionManager } from "../actions/manager";
 import {
+  getShortcutFromShortcutName,
+  ShortcutName
+} from "../actions/shortcuts";
+import { Action } from "../actions/types";
+import { t } from "../i18n";
+import {
   useExcalidrawAppState,
-  useExcalidrawElements,
-  useExcalidrawSetAppState,
+  useExcalidrawLayers,
+  useExcalidrawSetAppState
 } from "./App";
-import React from "react";
+import { Popover } from "./Popover";
 
 export type ContextMenuItem = typeof CONTEXT_MENU_SEPARATOR | Action;
 
@@ -23,8 +24,8 @@ export type ContextMenuItems = (ContextMenuItem | false | null | undefined)[];
 type ContextMenuProps = {
   actionManager: ActionManager;
   items: ContextMenuItems;
-  top: number;
   left: number;
+  top: number;
 };
 
 export const CONTEXT_MENU_SEPARATOR = "separator";
@@ -33,7 +34,7 @@ export const ContextMenu = React.memo(
   ({ actionManager, items, top, left }: ContextMenuProps) => {
     const appState = useExcalidrawAppState();
     const setAppState = useExcalidrawSetAppState();
-    const elements = useExcalidrawElements();
+    const layers = useExcalidrawLayers();
 
     const filteredItems = items.reduce((acc: ContextMenuItem[], item) => {
       if (
@@ -41,10 +42,10 @@ export const ContextMenu = React.memo(
         (item === CONTEXT_MENU_SEPARATOR ||
           !item.predicate ||
           item.predicate(
-            elements,
+            layers,
             appState,
             actionManager.app.props,
-            actionManager.app,
+            actionManager.app
           ))
       ) {
         acc.push(item);
@@ -54,14 +55,14 @@ export const ContextMenu = React.memo(
 
     return (
       <Popover
-        onCloseRequest={() => setAppState({ contextMenu: null })}
-        top={top}
-        left={left}
         fitInViewport={true}
+        left={left}
         offsetLeft={appState.offsetLeft}
         offsetTop={appState.offsetTop}
-        viewportWidth={appState.width}
+        onCloseRequest={() => setAppState({ contextMenu: null })}
+        top={top}
         viewportHeight={appState.height}
+        viewportWidth={appState.width}
       >
         <ul
           className="context-menu"
@@ -75,14 +76,14 @@ export const ContextMenu = React.memo(
               ) {
                 return null;
               }
-              return <hr key={idx} className="context-menu-item-separator" />;
+              return <hr className="context-menu-item-separator" key={idx} />;
             }
 
             const actionName = item.name;
             let label = "";
             if (item.contextItemLabel) {
               if (typeof item.contextItemLabel === "function") {
-                label = t(item.contextItemLabel(elements, appState));
+                label = t(item.contextItemLabel(layers, appState));
               } else {
                 label = t(item.contextItemLabel);
               }
@@ -90,8 +91,8 @@ export const ContextMenu = React.memo(
 
             return (
               <li
-                key={idx}
                 data-testid={actionName}
+                key={idx}
                 onClick={() => {
                   // we need update state before executing the action in case
                   // the action uses the appState it's being passed (that still
@@ -103,8 +104,8 @@ export const ContextMenu = React.memo(
               >
                 <button
                   className={clsx("context-menu-item", {
-                    dangerous: actionName === "deleteSelectedElements",
-                    checkmark: item.checked?.(appState),
+                    dangerous: actionName === "deleteSelectedLayers",
+                    checkmark: item.checked?.(appState)
                   })}
                 >
                   <div className="context-menu-item__label">{label}</div>
@@ -120,5 +121,5 @@ export const ContextMenu = React.memo(
         </ul>
       </Popover>
     );
-  },
+  }
 );

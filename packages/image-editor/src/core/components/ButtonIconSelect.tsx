@@ -4,56 +4,56 @@ import clsx from "clsx";
 export const ButtonIconSelect = <T extends Object>(
   props: {
     options: {
-      value: T;
-      text: string;
-      icon: JSX.Element;
-      testId?: string;
       /** if not supplied, defaults to value identity check */
       active?: boolean;
+      icon: JSX.Layer;
+      testId?: string;
+      text: string;
+      value: T;
     }[];
-    value: T | null;
     type?: "radio" | "button";
+    value: T | null;
   } & (
-    | { type?: "radio"; group: string; onChange: (value: T) => void }
+    | { group: string; onChange: (value: T) => void; type?: "radio" }
     | {
-        type: "button";
         onClick: (
           value: T,
-          event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+          event: React.MouseEvent<HTMLButtonLayer, MouseEvent>
         ) => void;
+        type: "button";
       }
-  ),
+  )
 ) => (
   <div className="buttonList buttonListIcon">
     {props.options.map((option) =>
       props.type === "button" ? (
         <button
-          key={option.text}
-          onClick={(event) => props.onClick(option.value, event)}
           className={clsx({
-            active: option.active ?? props.value === option.value,
+            active: option.active ?? props.value === option.value
           })}
           data-testid={option.testId}
+          key={option.text}
+          onClick={(event) => props.onClick(option.value, event)}
           title={option.text}
         >
           {option.icon}
         </button>
       ) : (
         <label
-          key={option.text}
           className={clsx({ active: props.value === option.value })}
+          key={option.text}
           title={option.text}
         >
           <input
-            type="radio"
-            name={props.group}
-            onChange={() => props.onChange(option.value)}
             checked={props.value === option.value}
             data-testid={option.testId}
+            name={props.group}
+            onChange={() => props.onChange(option.value)}
+            type="radio"
           />
           {option.icon}
         </label>
-      ),
+      )
     )}
   </div>
 );

@@ -1,51 +1,51 @@
+import { excludeLayersInFramesFromSelection } from "../../lib/scene/selection";
+import { selectGroupsForSelectedLayers } from "../groups";
 import { KEYS } from "../keys";
+import { getNonDeletedLayers, isTextLayer } from "../layer";
+import { LinearLayerEditor } from "../layer/linearLayerEditor";
+import { isLinearLayer } from "../layer/typeChecks";
+import { ExcalidrawLayer } from "../layer/types";
 import { register } from "./register";
-import { selectGroupsForSelectedElements } from "../groups";
-import { getNonDeletedElements, isTextElement } from "../element";
-import { ExcalidrawElement } from "../element/types";
-import { isLinearElement } from "../element/typeChecks";
-import { LinearElementEditor } from "../element/linearElementEditor";
-import { excludeElementsInFramesFromSelection } from "../scene/selection";
 
 export const actionSelectAll = register({
   name: "selectAll",
   trackEvent: { category: "canvas" },
-  perform: (elements, appState, value, app) => {
-    if (appState.editingLinearElement) {
+  perform: (layers, appState, value, app) => {
+    if (appState.editingLinearLayer) {
       return false;
     }
 
-    const selectedElementIds = excludeElementsInFramesFromSelection(
-      elements.filter(
-        (element) =>
-          !element.isDeleted &&
-          !(isTextElement(element) && element.containerId) &&
-          !element.locked,
-      ),
-    ).reduce((map: Record<ExcalidrawElement["id"], true>, element) => {
-      map[element.id] = true;
+    const selectedLayerIds = excludeLayersInFramesFromSelection(
+      layers.filter(
+        (layer) =>
+          !layer.isDeleted &&
+          !(isTextLayer(layer) && layer.containerId) &&
+          !layer.locked
+      )
+    ).reduce((map: Record<ExcalidrawLayer["id"], true>, layer) => {
+      map[layer.id] = true;
       return map;
     }, {});
 
     return {
-      appState: selectGroupsForSelectedElements(
+      appState: selectGroupsForSelectedLayers(
         {
           ...appState,
-          selectedLinearElement:
-            // single linear element selected
-            Object.keys(selectedElementIds).length === 1 &&
-            isLinearElement(elements[0])
-              ? new LinearElementEditor(elements[0], app.scene)
+          selectedLinearLayer:
+            // single linear layer selected
+            Object.keys(selectedLayerIds).length === 1 &&
+            isLinearLayer(layers[0])
+              ? new LinearLayerEditor(layers[0], app.scene)
               : null,
           editingGroupId: null,
-          selectedElementIds,
+          selectedLayerIds
         },
-        getNonDeletedElements(elements),
-        appState,
+        getNonDeletedLayers(layers),
+        appState
       ),
-      commitToHistory: true,
+      commitToHistory: true
     };
   },
   contextItemLabel: "labels.selectAll",
-  keyTest: (event) => event[KEYS.CTRL_OR_CMD] && event.key === KEYS.A,
+  keyTest: (event) => event[KEYS.CTRL_OR_CMD] && event.key === KEYS.A
 });

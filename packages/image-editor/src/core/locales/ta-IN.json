@@ -116,7 +116,7 @@
       "edit": "தொடுப்பைத் திருத்து",
       "exit": "வரி திருத்தியிலிருந்து வெளியேறு"
     },
-    "elementLock": {
+    "layerLock": {
       "lock": "பூட்டு",
       "unlock": "பூட்டவிழ்",
       "lockAll": "எல்லாம் பூட்டு",
@@ -124,8 +124,8 @@
     },
     "statusPublished": "வெளியிடப்பட்டது",
     "sidebarLock": "பக்கப்பட்டையைத் திறந்தே வை",
-    "selectAllElementsInFrame": "",
-    "removeAllElementsFromFrame": "",
+    "selectAllLayersInFrame": "",
+    "removeAllLayersFromFrame": "",
     "eyeDropper": "கித்தானிலிருந்து நிறம் தேர்ந்தெடு"
   },
   "library": {
@@ -234,12 +234,12 @@
   },
   "hints": {
     "canvasPanning": "",
-    "linearElement": "பல புள்ளிகளைத் துவக்க சொடுக்கு, ஒற்றை வரிக்கு பிடித்திழு",
+    "linearLayer": "பல புள்ளிகளைத் துவக்க சொடுக்கு, ஒற்றை வரிக்கு பிடித்திழு",
     "freeDraw": "சொடுக்கி பிடித்திழு, முடித்ததும் விடுவி",
     "text": "துணுக்குதவி: தெரிவு கருவி கொண்டு எங்காவது இரு-சொடுக்கி உரையைச் சேர்க்கலாம்",
     "text_selected": "உரையைத் திருத்த இரு-சொடுக்கு அ ENTERஐ அழுத்து",
     "text_editing": "திருத்துவதை முடிக்க Escape அ CtrlOrCmd+ENTERஐ அழுத்து",
-    "linearElementMulti": "கடைசி புள்ளியில் சொடுக்கு அ முடிக்க Escape அ Enter அழுத்து",
+    "linearLayerMulti": "கடைசி புள்ளியில் சொடுக்கு அ முடிக்க Escape அ Enter அழுத்து",
     "lockAngle": "SHIFTஐ அழுத்திப்பிடித்து கோணத்தை வற்புறுத்தலாம்",
     "resize": "மறுஅளவிடுகையில் SHIFTஐ அழுத்திப்பிடித்து விகிதசமத்தை வற்புறுத்தலாம்,\nமையத்திலிருந்து மறுஅளவிட ALTஐ அழுத்திப்பிடி",
     "resizeImage": "SHIFTஐ நீண்டழுத்தி கட்டற்று அளவுமாற்றலாம்,\nமையத்திலிருந்து அளவுமாற்ற ALTஐ நீண்டழுத்துக",
@@ -249,7 +249,7 @@
     "lineEditor_nothingSelected": "திருத்த புள்ளியைத் தேர்ந்தெடு (பலவற்றை தேர SHIFTஐ அழுத்திப்பிடி),\nஅ புதிய புள்ளிகளைச் சேர்க்க Altஐ அழுத்திப்பிடித்துச் சொடுக்கு",
     "placeImage": "படத்தை வைக்கச் சொடுக்கு, அ கைமுறையாக அளவு அமைக்க சொடுக்கி பிடித்திழு",
     "publishLibrary": "உம் சொந்த நூலகத்தைப் பிரசுரி",
-    "bindTextToElement": "உரையைச் சேர்க்க enterஐ அழுத்து",
+    "bindTextToLayer": "உரையைச் சேர்க்க enterஐ அழுத்து",
     "deepBoxSelect": "ஆழ்ந்துத் தேரவும் பிடித்திழுத்தலைத் தவிர்க்கவும் CtrlOrCmdஐ அழுத்திப்பிடி",
     "eraserRevert": "",
     "firefox_clipboard_write": ""
@@ -316,7 +316,7 @@
     "view": "பார்",
     "zoomToFit": "அனைத்துறுப்புகளும் பொருந்தும்படி விரிவாக்கு",
     "zoomToSelection": "தெரிவுக்கு விரிவாக்கு",
-    "toggleElementLock": "தேர்ந்தெடுப்பைப் பூட்டு/பூட்டவிழ்",
+    "toggleLayerLock": "தேர்ந்தெடுப்பைப் பூட்டு/பூட்டவிழ்",
     "movePageUpDown": "",
     "movePageLeftRight": ""
   },
@@ -389,8 +389,8 @@
   },
   "stats": {
     "angle": "கோணம்",
-    "element": "உறுப்பு",
-    "elements": "உறுப்புகள்",
+    "layer": "உறுப்பு",
+    "layers": "உறுப்புகள்",
     "height": "உயரம்",
     "scene": "காட்சி",
     "selected": "தேர்ந்தவை",
@@ -411,7 +411,7 @@
     "fileSavedToFilename": "{filename}-க்கு சேமிக்கப்பட்டது",
     "canvas": "கித்தான்",
     "selection": "தெரிவு",
-    "pasteAsSingleElement": ""
+    "pasteAsSingleLayer": ""
   },
   "colors": {
     "transparent": "ஒளிபுகுத்தன்மை",

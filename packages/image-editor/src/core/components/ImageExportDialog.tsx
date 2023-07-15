@@ -1,94 +1,89 @@
+import "./ImageExportDialog.scss";
+
 import React, { useEffect, useRef, useState } from "react";
 
-import type { ActionManager } from "../actions/manager";
-import type { AppClassProperties, BinaryFiles, UIAppState } from "../types";
-
+import { canvasToBlob } from "../../lib/data/blob/blob";
+import { nativeFileSystemSupported } from "../../lib/data/fs/filesystem";
+import { exportToCanvas } from "../../lib/packages/utils";
+import { getSelectedLayers, isSomeLayerSelected } from "../../lib/scene";
 import {
-  actionExportWithDarkMode,
   actionChangeExportBackground,
   actionChangeExportEmbedScene,
   actionChangeExportScale,
   actionChangeProjectName,
+  actionExportWithDarkMode
 } from "../actions/actionExport";
+import type { ActionManager } from "../actions/manager";
 import { probablySupportsClipboardBlob } from "../clipboard";
 import {
   DEFAULT_EXPORT_PADDING,
   EXPORT_IMAGE_TYPES,
-  isFirefox,
   EXPORT_SCALES,
+  isFirefox
 } from "../constants";
-
-import { canvasToBlob } from "../data/blob";
-import { nativeFileSystemSupported } from "../data/filesystem";
-import { NonDeletedExcalidrawElement } from "../element/types";
 import { t } from "../i18n";
-import { getSelectedElements, isSomeElementSelected } from "../scene";
-import { exportToCanvas } from "../packages/utils";
-
-import { copyIcon, downloadIcon, helpIcon } from "./icons";
+import { NonDeletedExcalidrawLayer } from "../layer/types";
+import type { AppClassProperties, BinaryFiles, UIAppState } from "../types";
+import { useAppProps } from "./App";
 import { Dialog } from "./Dialog";
+import { FilledButton } from "./FilledButton";
+import { copyIcon, downloadIcon, helpIcon } from "./icons";
 import { RadioGroup } from "./RadioGroup";
 import { Switch } from "./Switch";
 import { Tooltip } from "./Tooltip";
 
-import "./ImageExportDialog.scss";
-import { useAppProps } from "./App";
-import { FilledButton } from "./FilledButton";
-
 const supportsContextFilters =
-  "filter" in document.createElement("canvas").getContext("2d")!;
+  "filter" in document.createLayer("canvas").getContext("2d")!;
 
-export const ErrorCanvasPreview = () => {
-  return (
-    <div>
-      <h3>{t("canvasError.cannotShowPreview")}</h3>
-      <p>
-        <span>{t("canvasError.canvasTooBig")}</span>
-      </p>
-      <em>({t("canvasError.canvasTooBigTip")})</em>
-    </div>
-  );
-};
+export const ErrorCanvasPreview = () => (
+  <div>
+    <h3>{t("canvasError.cannotShowPreview")}</h3>
+    <p>
+      <span>{t("canvasError.canvasTooBig")}</span>
+    </p>
+    <em>({t("canvasError.canvasTooBigTip")})</em>
+  </div>
+);
 
 type ImageExportModalProps = {
-  appState: UIAppState;
-  elements: readonly NonDeletedExcalidrawElement[];
-  files: BinaryFiles;
   actionManager: ActionManager;
+  appState: UIAppState;
+  files: BinaryFiles;
+  layers: readonly NonDeletedExcalidrawLayer[];
   onExportImage: AppClassProperties["onExportImage"];
 };
 
 const ImageExportModal = ({
   appState,
-  elements,
+  layers,
   files,
   actionManager,
-  onExportImage,
+  onExportImage
 }: ImageExportModalProps) => {
   const appProps = useAppProps();
   const [projectName, setProjectName] = useState(appState.name);
 
-  const someElementIsSelected = isSomeElementSelected(elements, appState);
+  const someLayerIsSelected = isSomeLayerSelected(layers, appState);
 
-  const [exportSelected, setExportSelected] = useState(someElementIsSelected);
+  const [exportSelected, setExportSelected] = useState(someLayerIsSelected);
   const [exportWithBackground, setExportWithBackground] = useState(
-    appState.exportBackground,
+    appState.exportBackground
   );
   const [exportDarkMode, setExportDarkMode] = useState(
-    appState.exportWithDarkMode,
+    appState.exportWithDarkMode
   );
   const [embedScene, setEmbedScene] = useState(appState.exportEmbedScene);
   const [exportScale, setExportScale] = useState(appState.exportScale);
 
-  const previewRef = useRef<HTMLDivElement>(null);
+  const previewRef = useRef<HTMLDivLayer>(null);
   const [renderError, setRenderError] = useState<Error | null>(null);
 
-  const exportedElements = exportSelected
-    ? getSelectedElements(elements, appState, {
-        includeBoundTextElement: true,
-        includeElementsInFrames: true,
+  const exportedLayers = exportSelected
+    ? getSelectedLayers(layers, appState, {
+        includeBoundTextLayer: true,
+        includeLayersInFrames: true
       })
-    : elements;
+    : layers;
 
   useEffect(() => {
     const previewNode = previewRef.current;
@@ -101,11 +96,11 @@ const ImageExportModal = ({
       return;
     }
     exportToCanvas({
-      elements: exportedElements,
+      layers: exportedLayers,
       appState,
       files,
       exportPadding: DEFAULT_EXPORT_PADDING,
-      maxWidthOrHeight: Math.max(maxWidth, maxHeight),
+      maxWidthOrHeight: Math.max(maxWidth, maxHeight)
     })
       .then((canvas) => {
         setRenderError(null);
@@ -119,7 +114,7 @@ const ImageExportModal = ({
         console.error(error);
         setRenderError(error);
       });
-  }, [appState, files, exportedElements]);
+  }, [appState, files, exportedLayers]);
 
   return (
     <div className="ImageExportModal">
@@ -131,10 +126,7 @@ const ImageExportModal = ({
         <div className="ImageExportModal__preview__filename">
           {!nativeFileSystemSupported && (
             <input
-              type="text"
               className="TextInput"
-              value={projectName}
-              style={{ width: "30ch" }}
               disabled={
                 typeof appProps.name !== "undefined" || appState.viewModeEnabled
               }
@@ -143,23 +135,26 @@ const ImageExportModal = ({
                 actionManager.executeAction(
                   actionChangeProjectName,
                   "ui",
-                  event.target.value,
+                  event.target.value
                 );
               }}
+              style={{ width: "30ch" }}
+              type="text"
+              value={projectName}
             />
           )}
         </div>
       </div>
       <div className="ImageExportModal__settings">
         <h3>{t("imageExportDialog.header")}</h3>
-        {someElementIsSelected && (
+        {someLayerIsSelected && (
           <ExportSetting
             label={t("imageExportDialog.label.onlySelected")}
             name="exportOnlySelected"
           >
             <Switch
-              name="exportOnlySelected"
               checked={exportSelected}
+              name="exportOnlySelected"
               onChange={(checked) => {
                 setExportSelected(checked);
               }}
@@ -171,14 +166,14 @@ const ImageExportModal = ({
           name="exportBackgroundSwitch"
         >
           <Switch
-            name="exportBackgroundSwitch"
             checked={exportWithBackground}
+            name="exportBackgroundSwitch"
             onChange={(checked) => {
               setExportWithBackground(checked);
               actionManager.executeAction(
                 actionChangeExportBackground,
                 "ui",
-                checked,
+                checked
               );
             }}
           />
@@ -189,14 +184,14 @@ const ImageExportModal = ({
             name="exportDarkModeSwitch"
           >
             <Switch
-              name="exportDarkModeSwitch"
               checked={exportDarkMode}
+              name="exportDarkModeSwitch"
               onChange={(checked) => {
                 setExportDarkMode(checked);
                 actionManager.executeAction(
                   actionExportWithDarkMode,
                   "ui",
-                  checked,
+                  checked
                 );
               }}
             />
@@ -204,18 +199,18 @@ const ImageExportModal = ({
         )}
         <ExportSetting
           label={t("imageExportDialog.label.embedScene")}
-          tooltip={t("imageExportDialog.tooltip.embedScene")}
           name="exportEmbedSwitch"
+          tooltip={t("imageExportDialog.tooltip.embedScene")}
         >
           <Switch
-            name="exportEmbedSwitch"
             checked={embedScene}
+            name="exportEmbedSwitch"
             onChange={(checked) => {
               setEmbedScene(checked);
               actionManager.executeAction(
                 actionChangeExportEmbedScene,
                 "ui",
-                checked,
+                checked
               );
             }}
           />
@@ -225,16 +220,16 @@ const ImageExportModal = ({
           name="exportScale"
         >
           <RadioGroup
+            choices={EXPORT_SCALES.map((scale) => ({
+              value: scale,
+              label: `${scale}\u00d7`
+            }))}
             name="exportScale"
-            value={exportScale}
             onChange={(scale) => {
               setExportScale(scale);
               actionManager.executeAction(actionChangeExportScale, "ui", scale);
             }}
-            choices={EXPORT_SCALES.map((scale) => ({
-              value: scale,
-              label: `${scale}\u00d7`,
-            }))}
+            value={exportScale}
           />
         </ExportSetting>
 
@@ -243,7 +238,7 @@ const ImageExportModal = ({
             className="ImageExportModal__settings__buttons__button"
             label={t("imageExportDialog.title.exportToPng")}
             onClick={() =>
-              onExportImage(EXPORT_IMAGE_TYPES.png, exportedElements)
+              onExportImage(EXPORT_IMAGE_TYPES.png, exportedLayers)
             }
             startIcon={downloadIcon}
           >
@@ -253,7 +248,7 @@ const ImageExportModal = ({
             className="ImageExportModal__settings__buttons__button"
             label={t("imageExportDialog.title.exportToSvg")}
             onClick={() =>
-              onExportImage(EXPORT_IMAGE_TYPES.svg, exportedElements)
+              onExportImage(EXPORT_IMAGE_TYPES.svg, exportedLayers)
             }
             startIcon={downloadIcon}
           >
@@ -264,7 +259,7 @@ const ImageExportModal = ({
               className="ImageExportModal__settings__buttons__button"
               label={t("imageExportDialog.title.copyPngToClipboard")}
               onClick={() =>
-                onExportImage(EXPORT_IMAGE_TYPES.clipboard, exportedElements)
+                onExportImage(EXPORT_IMAGE_TYPES.clipboard, exportedLayers)
               }
               startIcon={copyIcon}
             >
@@ -278,52 +273,50 @@ const ImageExportModal = ({
 };
 
 type ExportSettingProps = {
-  label: string;
   children: React.ReactNode;
-  tooltip?: string;
+  label: string;
   name?: string;
+  tooltip?: string;
 };
 
 const ExportSetting = ({
   label,
   children,
   tooltip,
-  name,
-}: ExportSettingProps) => {
-  return (
-    <div className="ImageExportModal__settings__setting" title={label}>
-      <label
-        htmlFor={name}
-        className="ImageExportModal__settings__setting__label"
-      >
-        {label}
-        {tooltip && (
-          <Tooltip label={tooltip} long={true}>
-            {helpIcon}
-          </Tooltip>
-        )}
-      </label>
-      <div className="ImageExportModal__settings__setting__content">
-        {children}
-      </div>
+  name
+}: ExportSettingProps) => (
+  <div className="ImageExportModal__settings__setting" title={label}>
+    <label
+      className="ImageExportModal__settings__setting__label"
+      htmlFor={name}
+    >
+      {label}
+      {tooltip && (
+        <Tooltip label={tooltip} long={true}>
+          {helpIcon}
+        </Tooltip>
+      )}
+    </label>
+    <div className="ImageExportModal__settings__setting__content">
+      {children}
     </div>
-  );
-};
+  </div>
+);
 
 export const ImageExportDialog = ({
-  elements,
+  layers,
   appState,
   files,
   actionManager,
   onExportImage,
-  onCloseRequest,
+  onCloseRequest
 }: {
-  appState: UIAppState;
-  elements: readonly NonDeletedExcalidrawElement[];
-  files: BinaryFiles;
   actionManager: ActionManager;
-  onExportImage: AppClassProperties["onExportImage"];
+  appState: UIAppState;
+  files: BinaryFiles;
+  layers: readonly NonDeletedExcalidrawLayer[];
   onCloseRequest: () => void;
+  onExportImage: AppClassProperties["onExportImage"];
 }) => {
   if (appState.openDialog !== "imageExport") {
     return null;
@@ -332,10 +325,10 @@ export const ImageExportDialog = ({
   return (
     <Dialog onCloseRequest={onCloseRequest} size="wide" title={false}>
       <ImageExportModal
-        elements={elements}
+        actionManager={actionManager}
         appState={appState}
         files={files}
-        actionManager={actionManager}
+        layers={layers}
         onExportImage={onExportImage}
       />
     </Dialog>

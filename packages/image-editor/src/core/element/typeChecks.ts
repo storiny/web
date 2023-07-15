@@ -2,187 +2,147 @@ import { ROUNDNESS } from "../constants";
 import { AppState } from "../types";
 import { MarkNonNullable } from "../utility-types";
 import {
-  ExcalidrawElement,
-  ExcalidrawTextElement,
-  ExcalidrawLinearElement,
-  ExcalidrawBindableElement,
-  ExcalidrawGenericElement,
-  ExcalidrawFreeDrawElement,
-  InitializedExcalidrawImageElement,
-  ExcalidrawImageElement,
-  ExcalidrawTextElementWithContainer,
+  ExcalidrawBindableLayer,
+  ExcalidrawFrameLayer,
+  ExcalidrawFreeDrawLayer,
+  ExcalidrawGenericLayer,
+  ExcalidrawImageLayer,
+  ExcalidrawLayer,
+  ExcalidrawLinearLayer,
   ExcalidrawTextContainer,
-  ExcalidrawFrameElement,
-  RoundnessType,
+  ExcalidrawTextLayer,
+  ExcalidrawTextLayerWithContainer,
+  InitializedExcalidrawImageLayer,
+  RoundnessType
 } from "./types";
 
-export const isGenericElement = (
-  element: ExcalidrawElement | null,
-): element is ExcalidrawGenericElement => {
-  return (
-    element != null &&
-    (element.type === "selection" ||
-      element.type === "rectangle" ||
-      element.type === "diamond" ||
-      element.type === "ellipse")
-  );
-};
+export const isGenericLayer = (
+  layer: ExcalidrawLayer | null
+): layer is ExcalidrawGenericLayer =>
+  layer != null &&
+  (layer.type === "selection" ||
+    layer.type === "rectangle" ||
+    layer.type === "diamond" ||
+    layer.type === "ellipse");
 
-export const isInitializedImageElement = (
-  element: ExcalidrawElement | null,
-): element is InitializedExcalidrawImageElement => {
-  return !!element && element.type === "image" && !!element.fileId;
-};
+export const isInitializedImageLayer = (
+  layer: ExcalidrawLayer | null
+): layer is InitializedExcalidrawImageLayer =>
+  !!layer && layer.type === "image" && !!layer.fileId;
 
-export const isImageElement = (
-  element: ExcalidrawElement | null,
-): element is ExcalidrawImageElement => {
-  return !!element && element.type === "image";
-};
+export const isImageLayer = (
+  layer: ExcalidrawLayer | null
+): layer is ExcalidrawImageLayer => !!layer && layer.type === "image";
 
-export const isTextElement = (
-  element: ExcalidrawElement | null,
-): element is ExcalidrawTextElement => {
-  return element != null && element.type === "text";
-};
+export const isTextLayer = (
+  layer: ExcalidrawLayer | null
+): layer is ExcalidrawTextLayer => layer != null && layer.type === "text";
 
-export const isFrameElement = (
-  element: ExcalidrawElement | null,
-): element is ExcalidrawFrameElement => {
-  return element != null && element.type === "frame";
-};
+export const isFrameLayer = (
+  layer: ExcalidrawLayer | null
+): layer is ExcalidrawFrameLayer => layer != null && layer.type === "frame";
 
-export const isFreeDrawElement = (
-  element?: ExcalidrawElement | null,
-): element is ExcalidrawFreeDrawElement => {
-  return element != null && isFreeDrawElementType(element.type);
-};
+export const isFreeDrawLayer = (
+  layer?: ExcalidrawLayer | null
+): layer is ExcalidrawFreeDrawLayer =>
+  layer != null && isFreeDrawLayerType(layer.type);
 
-export const isFreeDrawElementType = (
-  elementType: ExcalidrawElement["type"],
-): boolean => {
-  return elementType === "freedraw";
-};
+export const isFreeDrawLayerType = (
+  layerType: ExcalidrawLayer["type"]
+): boolean => layerType === "freedraw";
 
-export const isLinearElement = (
-  element?: ExcalidrawElement | null,
-): element is ExcalidrawLinearElement => {
-  return element != null && isLinearElementType(element.type);
-};
+export const isLinearLayer = (
+  layer?: ExcalidrawLayer | null
+): layer is ExcalidrawLinearLayer =>
+  layer != null && isLinearLayerType(layer.type);
 
-export const isArrowElement = (
-  element?: ExcalidrawElement | null,
-): element is ExcalidrawLinearElement => {
-  return element != null && element.type === "arrow";
-};
+export const isArrowLayer = (
+  layer?: ExcalidrawLayer | null
+): layer is ExcalidrawLinearLayer => layer != null && layer.type === "arrow";
 
-export const isLinearElementType = (
-  elementType: AppState["activeTool"]["type"],
-): boolean => {
-  return (
-    elementType === "arrow" || elementType === "line" // || elementType === "freedraw"
-  );
-};
+export const isLinearLayerType = (
+  layerType: AppState["activeTool"]["type"]
+): boolean => layerType === "arrow" || layerType === "line";
 
-export const isBindingElement = (
-  element?: ExcalidrawElement | null,
-  includeLocked = true,
-): element is ExcalidrawLinearElement => {
-  return (
-    element != null &&
-    (!element.locked || includeLocked === true) &&
-    isBindingElementType(element.type)
-  );
-};
+export const isBindingLayer = (
+  layer?: ExcalidrawLayer | null,
+  includeLocked = true
+): layer is ExcalidrawLinearLayer =>
+  layer != null &&
+  (!layer.locked || includeLocked === true) &&
+  isBindingLayerType(layer.type);
 
-export const isBindingElementType = (
-  elementType: AppState["activeTool"]["type"],
-): boolean => {
-  return elementType === "arrow";
-};
+export const isBindingLayerType = (
+  layerType: AppState["activeTool"]["type"]
+): boolean => layerType === "arrow";
 
-export const isBindableElement = (
-  element: ExcalidrawElement | null,
-  includeLocked = true,
-): element is ExcalidrawBindableElement => {
-  return (
-    element != null &&
-    (!element.locked || includeLocked === true) &&
-    (element.type === "rectangle" ||
-      element.type === "diamond" ||
-      element.type === "ellipse" ||
-      element.type === "image" ||
-      (element.type === "text" && !element.containerId))
-  );
-};
+export const isBindableLayer = (
+  layer: ExcalidrawLayer | null,
+  includeLocked = true
+): layer is ExcalidrawBindableLayer =>
+  layer != null &&
+  (!layer.locked || includeLocked === true) &&
+  (layer.type === "rectangle" ||
+    layer.type === "diamond" ||
+    layer.type === "ellipse" ||
+    layer.type === "image" ||
+    (layer.type === "text" && !layer.containerId));
 
 export const isTextBindableContainer = (
-  element: ExcalidrawElement | null,
-  includeLocked = true,
-): element is ExcalidrawTextContainer => {
-  return (
-    element != null &&
-    (!element.locked || includeLocked === true) &&
-    (element.type === "rectangle" ||
-      element.type === "diamond" ||
-      element.type === "ellipse" ||
-      isArrowElement(element))
-  );
-};
+  layer: ExcalidrawLayer | null,
+  includeLocked = true
+): layer is ExcalidrawTextContainer =>
+  layer != null &&
+  (!layer.locked || includeLocked === true) &&
+  (layer.type === "rectangle" ||
+    layer.type === "diamond" ||
+    layer.type === "ellipse" ||
+    isArrowLayer(layer));
 
-export const isExcalidrawElement = (element: any): boolean => {
-  return (
-    element?.type === "text" ||
-    element?.type === "diamond" ||
-    element?.type === "rectangle" ||
-    element?.type === "ellipse" ||
-    element?.type === "arrow" ||
-    element?.type === "freedraw" ||
-    element?.type === "line"
-  );
-};
+export const isCanvasLayer = (layer: any): boolean =>
+  layer?.type === "text" ||
+  layer?.type === "diamond" ||
+  layer?.type === "rectangle" ||
+  layer?.type === "ellipse" ||
+  layer?.type === "arrow" ||
+  layer?.type === "freedraw" ||
+  layer?.type === "line";
 
-export const hasBoundTextElement = (
-  element: ExcalidrawElement | null,
-): element is MarkNonNullable<ExcalidrawBindableElement, "boundElements"> => {
-  return (
-    isTextBindableContainer(element) &&
-    !!element.boundElements?.some(({ type }) => type === "text")
-  );
-};
+export const hasBoundTextLayer = (
+  layer: ExcalidrawLayer | null
+): layer is MarkNonNullable<ExcalidrawBindableLayer, "boundLayers"> =>
+  isTextBindableContainer(layer) &&
+  !!layer.boundLayers?.some(({ type }) => type === "text");
 
 export const isBoundToContainer = (
-  element: ExcalidrawElement | null,
-): element is ExcalidrawTextElementWithContainer => {
-  return (
-    element !== null &&
-    "containerId" in element &&
-    element.containerId !== null &&
-    isTextElement(element)
-  );
-};
+  layer: ExcalidrawLayer | null
+): layer is ExcalidrawTextLayerWithContainer =>
+  layer !== null &&
+  "containerId" in layer &&
+  layer.containerId !== null &&
+  isTextLayer(layer);
 
 export const isUsingAdaptiveRadius = (type: string) => type === "rectangle";
 
 export const isUsingProportionalRadius = (type: string) =>
   type === "line" || type === "arrow" || type === "diamond";
 
-export const canApplyRoundnessTypeToElement = (
+export const canApplyRoundnessTypeToLayer = (
   roundnessType: RoundnessType,
-  element: ExcalidrawElement,
+  layer: ExcalidrawLayer
 ) => {
   if (
     (roundnessType === ROUNDNESS.ADAPTIVE_RADIUS ||
-      // if legacy roundness, it can be applied to elements that currently
+      // if legacy roundness, it can be applied to layers that currently
       // use adaptive radius
       roundnessType === ROUNDNESS.LEGACY) &&
-    isUsingAdaptiveRadius(element.type)
+    isUsingAdaptiveRadius(layer.type)
   ) {
     return true;
   }
   if (
     roundnessType === ROUNDNESS.PROPORTIONAL_RADIUS &&
-    isUsingProportionalRadius(element.type)
+    isUsingProportionalRadius(layer.type)
   ) {
     return true;
   }
@@ -190,22 +150,20 @@ export const canApplyRoundnessTypeToElement = (
   return false;
 };
 
-export const getDefaultRoundnessTypeForElement = (
-  element: ExcalidrawElement,
-) => {
+export const getDefaultRoundnessTypeForLayer = (layer: ExcalidrawLayer) => {
   if (
-    element.type === "arrow" ||
-    element.type === "line" ||
-    element.type === "diamond"
+    layer.type === "arrow" ||
+    layer.type === "line" ||
+    layer.type === "diamond"
   ) {
     return {
-      type: ROUNDNESS.PROPORTIONAL_RADIUS,
+      type: ROUNDNESS.PROPORTIONAL_RADIUS
     };
   }
 
-  if (element.type === "rectangle") {
+  if (layer.type === "rectangle") {
     return {
-      type: ROUNDNESS.ADAPTIVE_RADIUS,
+      type: ROUNDNESS.ADAPTIVE_RADIUS
     };
   }
 

@@ -1,12 +1,13 @@
 import "./Avatar.scss";
 
 import React, { useState } from "react";
+
 import { getNameInitial } from "../clients";
 
 type AvatarProps = {
-  onClick: (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => void;
   color: string;
   name: string;
+  onClick: (e: React.MouseEvent<HTMLDivLayer, MouseEvent>) => void;
   src?: string;
 };
 
@@ -16,14 +17,14 @@ export const Avatar = ({ color, onClick, name, src }: AvatarProps) => {
   const loadImg = !error && src;
   const style = loadImg ? undefined : { background: color };
   return (
-    <div className="Avatar" style={style} onClick={onClick}>
+    <div className="Avatar" onClick={onClick} style={style}>
       {loadImg ? (
         <img
-          className="Avatar-img"
-          src={src}
           alt={shortName}
-          referrerPolicy="no-referrer"
+          className="Avatar-img"
           onError={() => setError(true)}
+          referrerPolicy="no-referrer"
+          src={src}
         />
       ) : (
         shortName

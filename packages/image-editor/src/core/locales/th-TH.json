@@ -116,7 +116,7 @@
       "edit": "แก้ไขเส้น",
       "exit": ""
     },
-    "elementLock": {
+    "layerLock": {
       "lock": "ล็อก",
       "unlock": "ปลดล็อก",
       "lockAll": "ล็อกทั้งหมด",
@@ -124,8 +124,8 @@
     },
     "statusPublished": "เผยแพร่",
     "sidebarLock": "",
-    "selectAllElementsInFrame": "",
-    "removeAllElementsFromFrame": "",
+    "selectAllLayersInFrame": "",
+    "removeAllLayersFromFrame": "",
     "eyeDropper": ""
   },
   "library": {
@@ -234,12 +234,12 @@
   },
   "hints": {
     "canvasPanning": "",
-    "linearElement": "",
+    "linearLayer": "",
     "freeDraw": "",
     "text": "",
     "text_selected": "คลิกสองครั้งหรือกด ENTER เพื่อแก้ไขข้อความ",
     "text_editing": "กดปุ่ม Esc หรือกด Ctrl, Cmd + Enter เพื่อเสร็จการแก้ไข",
-    "linearElementMulti": "คลิกที่จุดสุดท้ายหรือกด Escape หรือ Enter เพื่อเสร็จสิ้น",
+    "linearLayerMulti": "คลิกที่จุดสุดท้ายหรือกด Escape หรือ Enter เพื่อเสร็จสิ้น",
     "lockAngle": "",
     "resize": "",
     "resizeImage": "",
@@ -249,7 +249,7 @@
     "lineEditor_nothingSelected": "",
     "placeImage": "",
     "publishLibrary": "",
-    "bindTextToElement": "",
+    "bindTextToLayer": "",
     "deepBoxSelect": "",
     "eraserRevert": "",
     "firefox_clipboard_write": ""
@@ -316,7 +316,7 @@
     "view": "ดู",
     "zoomToFit": "",
     "zoomToSelection": "",
-    "toggleElementLock": "",
+    "toggleLayerLock": "",
     "movePageUpDown": "",
     "movePageLeftRight": "ย้ายหน้าไปด้าน ซ้าย/ขวา"
   },
@@ -389,8 +389,8 @@
   },
   "stats": {
     "angle": "",
-    "element": "",
-    "elements": "",
+    "layer": "",
+    "layers": "",
     "height": "",
     "scene": "",
     "selected": "",
@@ -411,7 +411,7 @@
     "fileSavedToFilename": "",
     "canvas": "",
     "selection": "",
-    "pasteAsSingleElement": ""
+    "pasteAsSingleLayer": ""
   },
   "colors": {
     "transparent": "",

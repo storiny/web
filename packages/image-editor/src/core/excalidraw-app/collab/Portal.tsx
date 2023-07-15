@@ -1,24 +1,23 @@
-import {
-  isSyncableElement,
-  SocketUpdateData,
-  SocketUpdateDataSource,
-} from "../data";
-
-import { TCollabClass } from "./Collab";
-
-import { ExcalidrawElement } from "../../element/types";
-import {
-  WS_EVENTS,
-  FILE_UPLOAD_TIMEOUT,
-  WS_SCENE_EVENT_TYPES,
-} from "../app_constants";
-import { UserIdleState } from "../../types";
-import { trackEvent } from "../../analytics";
 import throttle from "lodash.throttle";
-import { newElementWith } from "../../element/mutateElement";
-import { BroadcastedExcalidrawElement } from "./reconciliation";
-import { encryptData } from "../../data/encryption";
+
+import { encryptData } from "../../../lib/data/encryption/encryption";
+import { trackEvent } from "../../analytics";
 import { PRECEDING_ELEMENT_KEY } from "../../constants";
+import { newLayerWith } from "../../layer/mutateLayer";
+import { ExcalidrawLayer } from "../../layer/types";
+import { UserIdleState } from "../../types";
+import {
+  FILE_UPLOAD_TIMEOUT,
+  WS_EVENTS,
+  WS_SCENE_EVENT_TYPES
+} from "../app_constants";
+import {
+  isSyncableLayer,
+  SocketUpdateData,
+  SocketUpdateDataSource
+} from "../data";
+import { TCollabClass } from "./Collab";
+import { BroadcastedExcalidrawLayer } from "./reconciliation";
 
 class Portal {
   collab: TCollabClass;
@@ -26,7 +25,7 @@ class Portal {
   socketInitialized: boolean = false; // we don't want the socket to emit any updates until it is fully initialized
   roomId: string | null = null;
   roomKey: string | null = null;
-  broadcastedElementVersions: Map<string, number> = new Map();
+  broadcastedLayerVersions: Map<string, number> = new Map();
 
   constructor(collab: TCollabClass) {
     this.collab = collab;
@@ -47,8 +46,8 @@ class Portal {
     this.socket.on("new-user", async (_socketId: string) => {
       this.broadcastScene(
         WS_SCENE_EVENT_TYPES.INIT,
-        this.collab.getSceneElementsIncludingDeleted(),
-        /* syncAll */ true,
+        this.collab.getSceneLayersIncludingDeleted(),
+        /* syncAll */ true
       );
     });
     this.socket.on("room-user-change", (clients: string[]) => {
@@ -68,7 +67,7 @@ class Portal {
     this.roomId = null;
     this.roomKey = null;
     this.socketInitialized = false;
-    this.broadcastedElementVersions = new Map();
+    this.broadcastedLayerVersions = new Map();
   }
 
   isOpen() {
@@ -82,7 +81,7 @@ class Portal {
 
   async _broadcastSocketData(
     data: SocketUpdateData,
-    volatile: boolean = false,
+    volatile: boolean = false
   ) {
     if (this.isOpen()) {
       const json = JSON.stringify(data);
@@ -93,7 +92,7 @@ class Portal {
         volatile ? WS_EVENTS.SERVER_VOLATILE : WS_EVENTS.SERVER,
         this.roomId,
         encryptedBuffer,
-        iv,
+        iv
       );
     }
   }
@@ -101,77 +100,76 @@ class Portal {
   queueFileUpload = throttle(async () => {
     try {
       await this.collab.fileManager.saveFiles({
-        elements: this.collab.excalidrawAPI.getSceneElementsIncludingDeleted(),
-        files: this.collab.excalidrawAPI.getFiles(),
+        layers: this.collab.excalidrawAPI.getSceneLayersIncludingDeleted(),
+        files: this.collab.excalidrawAPI.getFiles()
       });
     } catch (error: any) {
       if (error.name !== "AbortError") {
         this.collab.excalidrawAPI.updateScene({
           appState: {
-            errorMessage: error.message,
-          },
+            errorMessage: error.message
+          }
         });
       }
     }
 
     this.collab.excalidrawAPI.updateScene({
-      elements: this.collab.excalidrawAPI
-        .getSceneElementsIncludingDeleted()
-        .map((element) => {
-          if (this.collab.fileManager.shouldUpdateImageElementStatus(element)) {
+      layers: this.collab.excalidrawAPI
+        .getSceneLayersIncludingDeleted()
+        .map((layer) => {
+          if (this.collab.fileManager.shouldUpdateImageLayerStatus(layer)) {
             // this will signal collaborators to pull image data from server
-            // (using mutation instead of newElementWith otherwise it'd break
+            // (using mutation instead of newLayerWith otherwise it'd break
             // in-progress dragging)
-            return newElementWith(element, { status: "saved" });
+            return newLayerWith(layer, { status: "saved" });
           }
-          return element;
-        }),
+          return layer;
+        })
     });
   }, FILE_UPLOAD_TIMEOUT);
 
   broadcastScene = async (
     updateType: WS_SCENE_EVENT_TYPES.INIT | WS_SCENE_EVENT_TYPES.UPDATE,
-    allElements: readonly ExcalidrawElement[],
-    syncAll: boolean,
+    allLayers: readonly ExcalidrawLayer[],
+    syncAll: boolean
   ) => {
     if (updateType === WS_SCENE_EVENT_TYPES.INIT && !syncAll) {
       throw new Error("syncAll must be true when sending SCENE.INIT");
     }
 
-    // sync out only the elements we think we need to to save bandwidth.
+    // sync out only the layers we think we need to to save bandwidth.
     // periodically we'll resync the whole thing to make sure no one diverges
     // due to a dropped message (server goes down etc).
-    const syncableElements = allElements.reduce(
-      (acc, element: BroadcastedExcalidrawElement, idx, elements) => {
+    const syncableLayers = allLayers.reduce(
+      (acc, layer: BroadcastedExcalidrawLayer, idx, layers) => {
         if (
           (syncAll ||
-            !this.broadcastedElementVersions.has(element.id) ||
-            element.version >
-              this.broadcastedElementVersions.get(element.id)!) &&
-          isSyncableElement(element)
+            !this.broadcastedLayerVersions.has(layer.id) ||
+            layer.version > this.broadcastedLayerVersions.get(layer.id)!) &&
+          isSyncableLayer(layer)
         ) {
           acc.push({
-            ...element,
+            ...layer,
             // z-index info for the reconciler
-            [PRECEDING_ELEMENT_KEY]: idx === 0 ? "^" : elements[idx - 1]?.id,
+            [PRECEDING_ELEMENT_KEY]: idx === 0 ? "^" : layers[idx - 1]?.id
           });
         }
         return acc;
       },
-      [] as BroadcastedExcalidrawElement[],
+      [] as BroadcastedExcalidrawLayer[]
     );
 
     const data: SocketUpdateDataSource[typeof updateType] = {
       type: updateType,
       payload: {
-        elements: syncableElements,
-      },
+        layers: syncableLayers
+      }
     };
 
-    for (const syncableElement of syncableElements) {
-      this.broadcastedElementVersions.set(
-        syncableElement.id,
-        syncableElement.version,
+    for (const syncableLayer of syncableLayers) {
+      this.broadcastedLayerVersions.set(
+        syncableLayer.id,
+        syncableLayer.version
       );
     }
 
@@ -187,19 +185,19 @@ class Portal {
         payload: {
           socketId: this.socket.id,
           userState,
-          username: this.collab.state.username,
-        },
+          username: this.collab.state.username
+        }
       };
       return this._broadcastSocketData(
         data as SocketUpdateData,
-        true, // volatile
+        true // volatile
       );
     }
   };
 
   broadcastMouseLocation = (payload: {
-    pointer: SocketUpdateDataSource["MOUSE_LOCATION"]["payload"]["pointer"];
     button: SocketUpdateDataSource["MOUSE_LOCATION"]["payload"]["button"];
+    pointer: SocketUpdateDataSource["MOUSE_LOCATION"]["payload"]["pointer"];
   }) => {
     if (this.socket?.id) {
       const data: SocketUpdateDataSource["MOUSE_LOCATION"] = {
@@ -208,14 +206,14 @@ class Portal {
           socketId: this.socket.id,
           pointer: payload.pointer,
           button: payload.button || "up",
-          selectedElementIds:
-            this.collab.excalidrawAPI.getAppState().selectedElementIds,
-          username: this.collab.state.username,
-        },
+          selectedLayerIds:
+            this.collab.excalidrawAPI.getAppState().selectedLayerIds,
+          username: this.collab.state.username
+        }
       };
       return this._broadcastSocketData(
         data as SocketUpdateData,
-        true, // volatile
+        true // volatile
       );
     }
   };

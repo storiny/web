@@ -4,7 +4,7 @@
     "pasteAsPlaintext": "Ielīmēt kā vienkāršu tekstu",
     "pasteCharts": "Ielīmēt grafikus",
     "selectAll": "Atlasīt visu",
-    "multiSelect": "Pievienot elementu atlasei",
+    "multiSelect": "Pievienot layeru atlasei",
     "moveCanvas": "Pārvietot tāfeli",
     "cut": "Izgriezt",
     "copy": "Kopēt",
@@ -116,7 +116,7 @@
       "edit": "Rediģēt līniju",
       "exit": "Aizvērt līnijas redaktoru"
     },
-    "elementLock": {
+    "layerLock": {
       "lock": "Fiksēt",
       "unlock": "Atbrīvot",
       "lockAll": "Fiksēt visu",
@@ -124,8 +124,8 @@
     },
     "statusPublished": "Publicēts",
     "sidebarLock": "Paturēt atvērtu sānjoslu",
-    "selectAllElementsInFrame": "",
-    "removeAllElementsFromFrame": "",
+    "selectAllLayersInFrame": "",
+    "removeAllLayersFromFrame": "",
     "eyeDropper": ""
   },
   "library": {
@@ -234,12 +234,12 @@
   },
   "hints": {
     "canvasPanning": "Lai bīdītu tāfeli, turiet nospiestu ritināšanas vai atstarpes taustiņu, vai izmanto rokas rīku",
-    "linearElement": "Klikšķiniet, lai sāktu zīmēt vairākus punktus; velciet, lai zīmētu līniju",
+    "linearLayer": "Klikšķiniet, lai sāktu zīmēt vairākus punktus; velciet, lai zīmētu līniju",
     "freeDraw": "Spiediet un velciet; atlaidiet, kad pabeidzat",
     "text": "Ieteikums: lai pievienotu tekstu, varat arī jebkur dubultklikšķināt ar atlases rīku",
     "text_selected": "Dubultklikšķiniet vai spiediet ievades taustiņu, lai rediģētu tekstu",
     "text_editing": "Spiediet iziešanas taustiņu vai CtrlOrCmd+ENTER, lai beigtu rediģēt",
-    "linearElementMulti": "Klikšķiniet uz pēdējā punkta vai spiediet izejas vai ievades taustiņu, lai pabeigtu",
+    "linearLayerMulti": "Klikšķiniet uz pēdējā punkta vai spiediet izejas vai ievades taustiņu, lai pabeigtu",
     "lockAngle": "Varat ierobežot leņķi, turot nospiestu SHIFT",
     "resize": "Kad maināt izmēru, varat ierobežot proporcijas, turot nospiestu SHIFT,\nvai arī ALT, lai mainītu izmēru ap centru",
     "resizeImage": "Varat brīvi mainīt izmēru, turot nospiestu SHIFT;\nturiet nospiestu ALT, lai mainītu izmēru ap centru",
@@ -249,15 +249,15 @@
     "lineEditor_nothingSelected": "Atlasiet punktu, lai labotu (turiet nospiestu SHIFT, lai atlasītu vairākus),\nvai turiet Alt un clikšķiniet, lai pievienotu jaunus punktus",
     "placeImage": "Klikšķiniet, lai novietotu attēlu, vai spiediet un velciet, lai iestatītu tā izmēru",
     "publishLibrary": "Publicēt savu bibliotēku",
-    "bindTextToElement": "Spiediet ievades taustiņu, lai pievienotu tekstu",
+    "bindTextToLayer": "Spiediet ievades taustiņu, lai pievienotu tekstu",
     "deepBoxSelect": "Turient nospiestu Ctrl vai Cmd, lai atlasītu dziļumā un lai nepieļautu objektu pavilkšanu",
-    "eraserRevert": "Turiet Alt, lai noņemtu elementus no dzēsšanas atlases",
+    "eraserRevert": "Turiet Alt, lai noņemtu layerus no dzēsšanas atlases",
     "firefox_clipboard_write": "Šis iestatījums var tikt ieslēgts ar \"dom.events.asyncClipboard.clipboardItem\" marķieri pārslēgtu uz \"true\". Lai mainītu pārlūka marķierus Firefox, apmeklē \"about:config\" lapu."
   },
   "canvasError": {
     "cannotShowPreview": "Nevar rādīt priekšskatījumu",
     "canvasTooBig": "Iespējams, tāfele ir par lielu.",
-    "canvasTooBigTip": "Ieteikums: mēģiniet satuvināt pašus tālākos elementus."
+    "canvasTooBigTip": "Ieteikums: mēģiniet satuvināt pašus tālākos layerus."
   },
   "errorSplash": {
     "headingMain": "Notikusi kļūda. Mēģiniet <button>pārlādēt lapu.</button>",
@@ -314,9 +314,9 @@
     "textNewLine": "Nākamā rindiņa (teksta redaktorā)",
     "title": "Palīdzība",
     "view": "Skatīt",
-    "zoomToFit": "Iestatīt mērogu, kas iekļauj visus elementus",
+    "zoomToFit": "Iestatīt mērogu, kas iekļauj visus layerus",
     "zoomToSelection": "Iestatīt mērogu, lai rādītu atlasi",
-    "toggleElementLock": "Fiksēt/atbrīvot atlasīto",
+    "toggleLayerLock": "Fiksēt/atbrīvot atlasīto",
     "movePageUpDown": "Pārvietot lapu augšup/lejup",
     "movePageLeftRight": "Pārvietot lapu pa labi/kreisi"
   },
@@ -389,8 +389,8 @@
   },
   "stats": {
     "angle": "Leņķis",
-    "element": "Elements",
-    "elements": "Elementi",
+    "layer": "Layers",
+    "layers": "Layeri",
     "height": "Augstums",
     "scene": "Aina",
     "selected": "Atlasīti",
@@ -411,7 +411,7 @@
     "fileSavedToFilename": "Saglabāts kā {filename}",
     "canvas": "tāfeli",
     "selection": "atlasi",
-    "pasteAsSingleElement": "Izmantojiet {{shortcut}}, lai ielīmētu kā jaunu elementu, vai ielīmētu esošā teksta lauciņā"
+    "pasteAsSingleLayer": "Izmantojiet {{shortcut}}, lai ielīmētu kā jaunu layeru, vai ielīmētu esošā teksta lauciņā"
   },
   "colors": {
     "transparent": "Caurspīdīgs",

@@ -1,28 +1,28 @@
 import { PRECEDING_ELEMENT_KEY } from "../../constants";
-import { ExcalidrawElement } from "../../element/types";
+import { ExcalidrawLayer } from "../../layer/types";
 import { AppState } from "../../types";
 import { arrayToMapWithIndex } from "../../utils";
 
-export type ReconciledElements = readonly ExcalidrawElement[] & {
-  _brand: "reconciledElements";
+export type ReconciledLayers = readonly ExcalidrawLayer[] & {
+  _brand: "reconciledLayers";
 };
 
-export type BroadcastedExcalidrawElement = ExcalidrawElement & {
+export type BroadcastedExcalidrawLayer = ExcalidrawLayer & {
   [PRECEDING_ELEMENT_KEY]?: string;
 };
 
-const shouldDiscardRemoteElement = (
+const shouldDiscardRemoteLayer = (
   localAppState: AppState,
-  local: ExcalidrawElement | undefined,
-  remote: BroadcastedExcalidrawElement,
+  local: ExcalidrawLayer | undefined,
+  remote: BroadcastedExcalidrawLayer
 ): boolean => {
   if (
     local &&
-    // local element is being edited
-    (local.id === localAppState.editingElement?.id ||
-      local.id === localAppState.resizingElement?.id ||
-      local.id === localAppState.draggingElement?.id ||
-      // local element is newer
+    // local layer is being edited
+    (local.id === localAppState.editingLayer?.id ||
+      local.id === localAppState.resizingLayer?.id ||
+      local.id === localAppState.draggingLayer?.id ||
+      // local layer is newer
       local.version > remote.version ||
       // resolve conflicting edits deterministically by taking the one with
       // the lowest versionNonce
@@ -34,41 +34,40 @@ const shouldDiscardRemoteElement = (
   return false;
 };
 
-export const reconcileElements = (
-  localElements: readonly ExcalidrawElement[],
-  remoteElements: readonly BroadcastedExcalidrawElement[],
-  localAppState: AppState,
-): ReconciledElements => {
-  const localElementsData =
-    arrayToMapWithIndex<ExcalidrawElement>(localElements);
+export const reconcileLayers = (
+  localLayers: readonly ExcalidrawLayer[],
+  remoteLayers: readonly BroadcastedExcalidrawLayer[],
+  localAppState: AppState
+): ReconciledLayers => {
+  const localLayersData = arrayToMapWithIndex<ExcalidrawLayer>(localLayers);
 
-  const reconciledElements: ExcalidrawElement[] = localElements.slice();
+  const reconciledLayers: ExcalidrawLayer[] = localLayers.slice();
 
-  const duplicates = new WeakMap<ExcalidrawElement, true>();
+  const duplicates = new WeakMap<ExcalidrawLayer, true>();
 
   let cursor = 0;
   let offset = 0;
 
-  let remoteElementIdx = -1;
-  for (const remoteElement of remoteElements) {
-    remoteElementIdx++;
+  let remoteLayerIdx = -1;
+  for (const remoteLayer of remoteLayers) {
+    remoteLayerIdx++;
 
-    const local = localElementsData.get(remoteElement.id);
+    const local = localLayersData.get(remoteLayer.id);
 
-    if (shouldDiscardRemoteElement(localAppState, local?.[0], remoteElement)) {
-      if (remoteElement[PRECEDING_ELEMENT_KEY]) {
-        delete remoteElement[PRECEDING_ELEMENT_KEY];
+    if (shouldDiscardRemoteLayer(localAppState, local?.[0], remoteLayer)) {
+      if (remoteLayer[PRECEDING_ELEMENT_KEY]) {
+        delete remoteLayer[PRECEDING_ELEMENT_KEY];
       }
 
       continue;
     }
 
-    // Mark duplicate for removal as it'll be replaced with the remote element
+    // Mark duplicate for removal as it'll be replaced with the remote layer
     if (local) {
-      // Unless the remote and local elements are the same element in which case
+      // Unless the remote and local layers are the same layer in which case
       // we need to keep it as we'd otherwise discard it from the resulting
       // array.
-      if (local[0] === remoteElement) {
+      if (local[0] === remoteLayer) {
         continue;
       }
       duplicates.set(local[0], true);
@@ -77,78 +76,72 @@ export const reconcileElements = (
     // parent may not be defined in case the remote client is running an older
     // excalidraw version
     const parent =
-      remoteElement[PRECEDING_ELEMENT_KEY] ||
-      remoteElements[remoteElementIdx - 1]?.id ||
+      remoteLayer[PRECEDING_ELEMENT_KEY] ||
+      remoteLayers[remoteLayerIdx - 1]?.id ||
       null;
 
     if (parent != null) {
-      delete remoteElement[PRECEDING_ELEMENT_KEY];
+      delete remoteLayer[PRECEDING_ELEMENT_KEY];
 
-      // ^ indicates the element is the first in elements array
+      // ^ indicates the layer is the first in layers array
       if (parent === "^") {
         offset++;
         if (cursor === 0) {
-          reconciledElements.unshift(remoteElement);
-          localElementsData.set(remoteElement.id, [
-            remoteElement,
-            cursor - offset,
-          ]);
+          reconciledLayers.unshift(remoteLayer);
+          localLayersData.set(remoteLayer.id, [remoteLayer, cursor - offset]);
         } else {
-          reconciledElements.splice(cursor + 1, 0, remoteElement);
-          localElementsData.set(remoteElement.id, [
-            remoteElement,
-            cursor + 1 - offset,
+          reconciledLayers.splice(cursor + 1, 0, remoteLayer);
+          localLayersData.set(remoteLayer.id, [
+            remoteLayer,
+            cursor + 1 - offset
           ]);
           cursor++;
         }
       } else {
-        let idx = localElementsData.has(parent)
-          ? localElementsData.get(parent)![1]
+        let idx = localLayersData.has(parent)
+          ? localLayersData.get(parent)![1]
           : null;
         if (idx != null) {
           idx += offset;
         }
         if (idx != null && idx >= cursor) {
-          reconciledElements.splice(idx + 1, 0, remoteElement);
+          reconciledLayers.splice(idx + 1, 0, remoteLayer);
           offset++;
-          localElementsData.set(remoteElement.id, [
-            remoteElement,
-            idx + 1 - offset,
-          ]);
+          localLayersData.set(remoteLayer.id, [remoteLayer, idx + 1 - offset]);
           cursor = idx + 1;
         } else if (idx != null) {
-          reconciledElements.splice(cursor + 1, 0, remoteElement);
+          reconciledLayers.splice(cursor + 1, 0, remoteLayer);
           offset++;
-          localElementsData.set(remoteElement.id, [
-            remoteElement,
-            cursor + 1 - offset,
+          localLayersData.set(remoteLayer.id, [
+            remoteLayer,
+            cursor + 1 - offset
           ]);
           cursor++;
         } else {
-          reconciledElements.push(remoteElement);
-          localElementsData.set(remoteElement.id, [
-            remoteElement,
-            reconciledElements.length - 1 - offset,
+          reconciledLayers.push(remoteLayer);
+          localLayersData.set(remoteLayer.id, [
+            remoteLayer,
+            reconciledLayers.length - 1 - offset
           ]);
         }
       }
-      // no parent z-index information, local element exists → replace in place
+      // no parent z-index information, local layer exists → replace in place
     } else if (local) {
-      reconciledElements[local[1]] = remoteElement;
-      localElementsData.set(remoteElement.id, [remoteElement, local[1]]);
+      reconciledLayers[local[1]] = remoteLayer;
+      localLayersData.set(remoteLayer.id, [remoteLayer, local[1]]);
       // otherwise push to the end
     } else {
-      reconciledElements.push(remoteElement);
-      localElementsData.set(remoteElement.id, [
-        remoteElement,
-        reconciledElements.length - 1 - offset,
+      reconciledLayers.push(remoteLayer);
+      localLayersData.set(remoteLayer.id, [
+        remoteLayer,
+        reconciledLayers.length - 1 - offset
       ]);
     }
   }
 
-  const ret: readonly ExcalidrawElement[] = reconciledElements.filter(
-    (element) => !duplicates.has(element),
+  const ret: readonly ExcalidrawLayer[] = reconciledLayers.filter(
+    (layer) => !duplicates.has(layer)
   );
 
-  return ret as ReconciledElements;
+  return ret as ReconciledLayers;
 };

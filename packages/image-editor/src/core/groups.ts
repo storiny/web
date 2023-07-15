@@ -1,19 +1,19 @@
-import { GroupId, ExcalidrawElement, NonDeleted } from "./element/types";
+import { getSelectedLayers } from "../lib/scene";
+import { makeNextSelectedLayerIds } from "../lib/scene/selection";
+import { getBoundTextLayer } from "./layer/textLayer";
+import { ExcalidrawLayer, GroupId, NonDeleted } from "./layer/types";
 import { AppState } from "./types";
-import { getSelectedElements } from "./scene";
-import { getBoundTextElement } from "./element/textElement";
-import { makeNextSelectedElementIds } from "./scene/selection";
 
 export const selectGroup = (
   groupId: GroupId,
   appState: AppState,
-  elements: readonly NonDeleted<ExcalidrawElement>[],
+  layers: readonly NonDeleted<ExcalidrawLayer>[]
 ): AppState => {
-  const elementsInGroup = elements.filter((element) =>
-    element.groupIds.includes(groupId),
+  const layersInGroup = layers.filter((layer) =>
+    layer.groupIds.includes(groupId)
   );
 
-  if (elementsInGroup.length < 2) {
+  if (layersInGroup.length < 2) {
     if (
       appState.selectedGroupIds[groupId] ||
       appState.editingGroupId === groupId
@@ -21,7 +21,7 @@ export const selectGroup = (
       return {
         ...appState,
         selectedGroupIds: { ...appState.selectedGroupIds, [groupId]: false },
-        editingGroupId: null,
+        editingGroupId: null
       };
     }
     return appState;
@@ -30,29 +30,27 @@ export const selectGroup = (
   return {
     ...appState,
     selectedGroupIds: { ...appState.selectedGroupIds, [groupId]: true },
-    selectedElementIds: {
-      ...appState.selectedElementIds,
-      ...Object.fromEntries(
-        elementsInGroup.map((element) => [element.id, true]),
-      ),
-    },
+    selectedLayerIds: {
+      ...appState.selectedLayerIds,
+      ...Object.fromEntries(layersInGroup.map((layer) => [layer.id, true]))
+    }
   };
 };
 
 /**
- * If the element's group is selected, don't render an individual
+ * If the layer's group is selected, don't render an individual
  * selection border around it.
  */
 export const isSelectedViaGroup = (
   appState: AppState,
-  element: ExcalidrawElement,
-) => getSelectedGroupForElement(appState, element) != null;
+  layer: ExcalidrawLayer
+) => getSelectedGroupForLayer(appState, layer) != null;
 
-export const getSelectedGroupForElement = (
+export const getSelectedGroupForLayer = (
   appState: AppState,
-  element: ExcalidrawElement,
+  layer: ExcalidrawLayer
 ) =>
-  element.groupIds
+  layer.groupIds
     .filter((groupId) => groupId !== appState.editingGroupId)
     .find((groupId) => appState.selectedGroupIds[groupId]);
 
@@ -62,31 +60,31 @@ export const getSelectedGroupIds = (appState: AppState): GroupId[] =>
     .map(([groupId, isSelected]) => groupId);
 
 /**
- * When you select an element, you often want to actually select the whole group it's in, unless
+ * When you select an layer, you often want to actually select the whole group it's in, unless
  * you're currently editing that group.
  */
-export const selectGroupsForSelectedElements = (
+export const selectGroupsForSelectedLayers = (
   appState: AppState,
-  elements: readonly NonDeleted<ExcalidrawElement>[],
-  prevAppState: AppState,
+  layers: readonly NonDeleted<ExcalidrawLayer>[],
+  prevAppState: AppState
 ): AppState => {
   let nextAppState: AppState = { ...appState, selectedGroupIds: {} };
 
-  const selectedElements = getSelectedElements(elements, appState);
+  const selectedLayers = getSelectedLayers(layers, appState);
 
-  if (!selectedElements.length) {
+  if (!selectedLayers.length) {
     return {
       ...nextAppState,
       editingGroupId: null,
-      selectedElementIds: makeNextSelectedElementIds(
-        nextAppState.selectedElementIds,
-        prevAppState,
-      ),
+      selectedLayerIds: makeNextSelectedLayerIds(
+        nextAppState.selectedLayerIds,
+        prevAppState
+      )
     };
   }
 
-  for (const selectedElement of selectedElements) {
-    let groupIds = selectedElement.groupIds;
+  for (const selectedLayer of selectedLayers) {
+    let groupIds = selectedLayer.groupIds;
     if (appState.editingGroupId) {
       // handle the case where a group is nested within a group
       const indexOfEditingGroup = groupIds.indexOf(appState.editingGroupId);
@@ -96,28 +94,28 @@ export const selectGroupsForSelectedElements = (
     }
     if (groupIds.length > 0) {
       const groupId = groupIds[groupIds.length - 1];
-      nextAppState = selectGroup(groupId, nextAppState, elements);
+      nextAppState = selectGroup(groupId, nextAppState, layers);
     }
   }
 
-  nextAppState.selectedElementIds = makeNextSelectedElementIds(
-    nextAppState.selectedElementIds,
-    prevAppState,
+  nextAppState.selectedLayerIds = makeNextSelectedLayerIds(
+    nextAppState.selectedLayerIds,
+    prevAppState
   );
 
   return nextAppState;
 };
 
-// given a list of elements, return the the actual group ids that should be selected
-// or used to update the elements
-export const selectGroupsFromGivenElements = (
-  elements: readonly NonDeleted<ExcalidrawElement>[],
-  appState: AppState,
+// given a list of layers, return the the actual group ids that should be selected
+// or used to update the layers
+export const selectGroupsFromGivenLayers = (
+  layers: readonly NonDeleted<ExcalidrawLayer>[],
+  appState: AppState
 ) => {
   let nextAppState: AppState = { ...appState, selectedGroupIds: {} };
 
-  for (const element of elements) {
-    let groupIds = element.groupIds;
+  for (const layer of layers) {
+    let groupIds = layer.groupIds;
     if (appState.editingGroupId) {
       const indexOfEditingGroup = groupIds.indexOf(appState.editingGroupId);
       if (indexOfEditingGroup > -1) {
@@ -126,44 +124,42 @@ export const selectGroupsFromGivenElements = (
     }
     if (groupIds.length > 0) {
       const groupId = groupIds[groupIds.length - 1];
-      nextAppState = selectGroup(groupId, nextAppState, elements);
+      nextAppState = selectGroup(groupId, nextAppState, layers);
     }
   }
 
   return nextAppState.selectedGroupIds;
 };
 
-export const editGroupForSelectedElement = (
+export const editGroupForSelectedLayer = (
   appState: AppState,
-  element: NonDeleted<ExcalidrawElement>,
-): AppState => {
-  return {
-    ...appState,
-    editingGroupId: element.groupIds.length ? element.groupIds[0] : null,
-    selectedGroupIds: {},
-    selectedElementIds: {
-      [element.id]: true,
-    },
-  };
-};
+  layer: NonDeleted<ExcalidrawLayer>
+): AppState => ({
+  ...appState,
+  editingGroupId: layer.groupIds.length ? layer.groupIds[0] : null,
+  selectedGroupIds: {},
+  selectedLayerIds: {
+    [layer.id]: true
+  }
+});
 
-export const isElementInGroup = (element: ExcalidrawElement, groupId: string) =>
-  element.groupIds.includes(groupId);
+export const isLayerInGroup = (layer: ExcalidrawLayer, groupId: string) =>
+  layer.groupIds.includes(groupId);
 
-export const getElementsInGroup = (
-  elements: readonly ExcalidrawElement[],
-  groupId: string,
-) => elements.filter((element) => isElementInGroup(element, groupId));
+export const getLayersInGroup = (
+  layers: readonly ExcalidrawLayer[],
+  groupId: string
+) => layers.filter((layer) => isLayerInGroup(layer, groupId));
 
-export const getSelectedGroupIdForElement = (
-  element: ExcalidrawElement,
-  selectedGroupIds: { [groupId: string]: boolean },
-) => element.groupIds.find((groupId) => selectedGroupIds[groupId]);
+export const getSelectedGroupIdForLayer = (
+  layer: ExcalidrawLayer,
+  selectedGroupIds: { [groupId: string]: boolean }
+) => layer.groupIds.find((groupId) => selectedGroupIds[groupId]);
 
 export const getNewGroupIdsForDuplication = (
-  groupIds: ExcalidrawElement["groupIds"],
+  groupIds: ExcalidrawLayer["groupIds"],
   editingGroupId: AppState["editingGroupId"],
-  mapper: (groupId: GroupId) => GroupId,
+  mapper: (groupId: GroupId) => GroupId
 ) => {
   const copy = [...groupIds];
   const positionOfEditingGroupId = editingGroupId
@@ -179,9 +175,9 @@ export const getNewGroupIdsForDuplication = (
 };
 
 export const addToGroup = (
-  prevGroupIds: ExcalidrawElement["groupIds"],
+  prevGroupIds: ExcalidrawLayer["groupIds"],
   newGroupId: GroupId,
-  editingGroupId: AppState["editingGroupId"],
+  editingGroupId: AppState["editingGroupId"]
 ) => {
   // insert before the editingGroupId, or push to the end.
   const groupIds = [...prevGroupIds];
@@ -195,39 +191,39 @@ export const addToGroup = (
 };
 
 export const removeFromSelectedGroups = (
-  groupIds: ExcalidrawElement["groupIds"],
-  selectedGroupIds: { [groupId: string]: boolean },
+  groupIds: ExcalidrawLayer["groupIds"],
+  selectedGroupIds: { [groupId: string]: boolean }
 ) => groupIds.filter((groupId) => !selectedGroupIds[groupId]);
 
 export const getMaximumGroups = (
-  elements: ExcalidrawElement[],
-): ExcalidrawElement[][] => {
-  const groups: Map<String, ExcalidrawElement[]> = new Map<
+  layers: ExcalidrawLayer[]
+): ExcalidrawLayer[][] => {
+  const groups: Map<String, ExcalidrawLayer[]> = new Map<
     String,
-    ExcalidrawElement[]
+    ExcalidrawLayer[]
   >();
 
-  elements.forEach((element: ExcalidrawElement) => {
+  layers.forEach((layer: ExcalidrawLayer) => {
     const groupId =
-      element.groupIds.length === 0
-        ? element.id
-        : element.groupIds[element.groupIds.length - 1];
+      layer.groupIds.length === 0
+        ? layer.id
+        : layer.groupIds[layer.groupIds.length - 1];
 
     const currentGroupMembers = groups.get(groupId) || [];
 
     // Include bound text if present when grouping
-    const boundTextElement = getBoundTextElement(element);
-    if (boundTextElement) {
-      currentGroupMembers.push(boundTextElement);
+    const boundTextLayer = getBoundTextLayer(layer);
+    if (boundTextLayer) {
+      currentGroupMembers.push(boundTextLayer);
     }
-    groups.set(groupId, [...currentGroupMembers, element]);
+    groups.set(groupId, [...currentGroupMembers, layer]);
   });
 
   return Array.from(groups.values());
 };
 
-export const elementsAreInSameGroup = (elements: ExcalidrawElement[]) => {
-  const allGroups = elements.flatMap((element) => element.groupIds);
+export const layersAreInSameGroup = (layers: ExcalidrawLayer[]) => {
+  const allGroups = layers.flatMap((layer) => layer.groupIds);
   const groupCount = new Map<string, number>();
   let maxGroup = 0;
 
@@ -238,5 +234,5 @@ export const elementsAreInSameGroup = (elements: ExcalidrawElement[]) => {
     }
   }
 
-  return maxGroup === elements.length;
+  return maxGroup === layers.length;
 };

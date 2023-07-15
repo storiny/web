@@ -1,14 +1,14 @@
+import { Excalidraw } from "../../lib/packages/excalidraw/index";
+import ExcalidrawApp from "../excalidraw-app";
+import { KEYS } from "../keys";
+import { API } from "./helpers/api";
+import { Keyboard } from "./helpers/ui";
 import {
   mockBoundingClientRect,
   render,
   restoreOriginalGetBoundingClientRect,
-  waitFor,
+  waitFor
 } from "./test-utils";
-import { Excalidraw } from "../packages/excalidraw/index";
-import { API } from "./helpers/api";
-import { Keyboard } from "./helpers/ui";
-import { KEYS } from "../keys";
-import ExcalidrawApp from "../excalidraw-app";
 
 const { h } = window;
 
@@ -28,18 +28,18 @@ describe("appState", () => {
       <div>
         <Excalidraw
           initialData={{
-            elements: [
-              API.createElement({
+            layers: [
+              API.createLayer({
                 type: "rectangle",
                 id: "A",
                 width: ELEM_WIDTH,
-                height: ELEM_HEIGHT,
-              }),
+                height: ELEM_HEIGHT
+              })
             ],
-            scrollToContent: true,
+            scrollToContent: true
           }}
         />
-      </div>,
+      </div>
     );
     await waitFor(() => {
       expect(h.state.width).toBe(200);

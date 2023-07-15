@@ -1,59 +1,56 @@
-import { Action, ActionResult } from "./types";
-import { UndoIcon, RedoIcon } from "../components/icons";
+import { RedoIcon, UndoIcon } from "../components/icons";
 import { ToolButton } from "../components/ToolButton";
-import { t } from "../i18n";
-import History, { HistoryEntry } from "../history";
-import { ExcalidrawElement } from "../element/types";
-import { AppState } from "../types";
-import { KEYS } from "../keys";
-import { newElementWith } from "../element/mutateElement";
-import { fixBindingsAfterDeletion } from "../element/binding";
-import { arrayToMap } from "../utils";
 import { isWindows } from "../constants";
+import History, { HistoryEntry } from "../history";
+import { t } from "../i18n";
+import { KEYS } from "../keys";
+import { fixBindingsAfterDeletion } from "../layer/binding";
+import { newLayerWith } from "../layer/mutateLayer";
+import { ExcalidrawLayer } from "../layer/types";
+import { AppState } from "../types";
+import { arrayToMap } from "../utils";
+import { Action, ActionResult } from "./types";
 
 const writeData = (
-  prevElements: readonly ExcalidrawElement[],
+  prevLayers: readonly ExcalidrawLayer[],
   appState: AppState,
-  updater: () => HistoryEntry | null,
+  updater: () => HistoryEntry | null
 ): ActionResult => {
   const commitToHistory = false;
   if (
-    !appState.multiElement &&
-    !appState.resizingElement &&
-    !appState.editingElement &&
-    !appState.draggingElement
+    !appState.multiLayer &&
+    !appState.resizingLayer &&
+    !appState.editingLayer &&
+    !appState.draggingLayer
   ) {
     const data = updater();
     if (data === null) {
       return { commitToHistory };
     }
 
-    const prevElementMap = arrayToMap(prevElements);
-    const nextElements = data.elements;
-    const nextElementMap = arrayToMap(nextElements);
+    const prevLayerMap = arrayToMap(prevLayers);
+    const nextLayers = data.layers;
+    const nextLayerMap = arrayToMap(nextLayers);
 
-    const deletedElements = prevElements.filter(
-      (prevElement) => !nextElementMap.has(prevElement.id),
+    const deletedLayers = prevLayers.filter(
+      (prevLayer) => !nextLayerMap.has(prevLayer.id)
     );
-    const elements = nextElements
-      .map((nextElement) =>
-        newElementWith(
-          prevElementMap.get(nextElement.id) || nextElement,
-          nextElement,
-        ),
+    const layers = nextLayers
+      .map((nextLayer) =>
+        newLayerWith(prevLayerMap.get(nextLayer.id) || nextLayer, nextLayer)
       )
       .concat(
-        deletedElements.map((prevElement) =>
-          newElementWith(prevElement, { isDeleted: true }),
-        ),
+        deletedLayers.map((prevLayer) =>
+          newLayerWith(prevLayer, { isDeleted: true })
+        )
       );
-    fixBindingsAfterDeletion(elements, deletedElements);
+    fixBindingsAfterDeletion(layers, deletedLayers);
 
     return {
-      elements,
+      layers,
       appState: { ...appState, ...data.appState },
       commitToHistory,
-      syncHistory: true,
+      syncHistory: true
     };
   }
   return { commitToHistory };
@@ -64,29 +61,29 @@ type ActionCreator = (history: History) => Action;
 export const createUndoAction: ActionCreator = (history) => ({
   name: "undo",
   trackEvent: { category: "history" },
-  perform: (elements, appState) =>
-    writeData(elements, appState, () => history.undoOnce()),
+  perform: (layers, appState) =>
+    writeData(layers, appState, () => history.undoOnce()),
   keyTest: (event) =>
     event[KEYS.CTRL_OR_CMD] &&
     event.key.toLowerCase() === KEYS.Z &&
     !event.shiftKey,
   PanelComponent: ({ updateData, data }) => (
     <ToolButton
-      type="button"
-      icon={UndoIcon}
       aria-label={t("buttons.undo")}
+      icon={UndoIcon}
       onClick={updateData}
       size={data?.size || "medium"}
+      type="button"
     />
   ),
-  commitToHistory: () => false,
+  commitToHistory: () => false
 });
 
 export const createRedoAction: ActionCreator = (history) => ({
   name: "redo",
   trackEvent: { category: "history" },
-  perform: (elements, appState) =>
-    writeData(elements, appState, () => history.redoOnce()),
+  perform: (layers, appState) =>
+    writeData(layers, appState, () => history.redoOnce()),
   keyTest: (event) =>
     (event[KEYS.CTRL_OR_CMD] &&
       event.shiftKey &&
@@ -94,12 +91,12 @@ export const createRedoAction: ActionCreator = (history) => ({
     (isWindows && event.ctrlKey && !event.shiftKey && event.key === KEYS.Y),
   PanelComponent: ({ updateData, data }) => (
     <ToolButton
-      type="button"
-      icon={RedoIcon}
       aria-label={t("buttons.redo")}
+      icon={RedoIcon}
       onClick={updateData}
       size={data?.size || "medium"}
+      type="button"
     />
   ),
-  commitToHistory: () => false,
+  commitToHistory: () => false
 });

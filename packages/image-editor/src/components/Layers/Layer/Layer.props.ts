@@ -4,7 +4,7 @@ import { Layer } from "../../../constants";
 
 export interface LayerProps extends React.ComponentPropsWithRef<"li"> {
   /**
-   * Props passed to the dragger element
+   * Props passed to the dragger layer
    */
   draggerProps?: Omit<React.ComponentPropsWithRef<"button">, "color" | "size">;
   /**

@@ -1,25 +1,29 @@
+import { nanoid } from "nanoid";
 import React from "react";
+
+import {
+  encryptData,
+  generateEncryptionKey
+} from "../../../lib/data/encryption/encryption";
+import { serializeAsJSON } from "../../../lib/data/json/json";
+import { trackEvent } from "../../analytics";
 import { Card } from "../../components/Card";
 import { ToolButton } from "../../components/ToolButton";
-import { serializeAsJSON } from "../../data/json";
-import { loadFirebaseStorage, saveFilesToFirebase } from "../data/firebase";
-import { FileId, NonDeletedExcalidrawElement } from "../../element/types";
-import { AppState, BinaryFileData, BinaryFiles } from "../../types";
-import { nanoid } from "nanoid";
+import { MIME_TYPES } from "../../constants";
 import { useI18n } from "../../i18n";
-import { excalidrawPlusIcon } from "./icons";
-import { encryptData, generateEncryptionKey } from "../../data/encryption";
-import { isInitializedImageElement } from "../../element/typeChecks";
+import { isInitializedImageLayer } from "../../layer/typeChecks";
+import { FileId, NonDeletedExcalidrawLayer } from "../../layer/types";
+import { AppState, BinaryFileData, BinaryFiles } from "../../types";
+import { getFrame } from "../../utils";
 import { FILE_UPLOAD_MAX_BYTES } from "../app_constants";
 import { encodeFilesForUpload } from "../data/FileManager";
-import { MIME_TYPES } from "../../constants";
-import { trackEvent } from "../../analytics";
-import { getFrame } from "../../utils";
+import { loadFirebaseStorage, saveFilesToFirebase } from "../data/firebase";
+import { excalidrawPlusIcon } from "./icons";
 
 export const exportToExcalidrawPlus = async (
-  elements: readonly NonDeletedExcalidrawElement[],
+  layers: readonly NonDeletedExcalidrawLayer[],
   appState: Partial<AppState>,
-  files: BinaryFiles,
+  files: BinaryFiles
 ) => {
   const firebase = await loadFirebaseStorage();
 
@@ -28,14 +32,14 @@ export const exportToExcalidrawPlus = async (
   const encryptionKey = (await generateEncryptionKey())!;
   const encryptedData = await encryptData(
     encryptionKey,
-    serializeAsJSON(elements, appState, files, "database"),
+    serializeAsJSON(layers, appState, files, "database")
   );
 
   const blob = new Blob(
     [encryptedData.iv, new Uint8Array(encryptedData.encryptedBuffer)],
     {
-      type: MIME_TYPES.binary,
-    },
+      type: MIME_TYPES.binary
+    }
   );
 
   await firebase
@@ -44,14 +48,14 @@ export const exportToExcalidrawPlus = async (
     .put(blob, {
       customMetadata: {
         data: JSON.stringify({ version: 2, name: appState.name }),
-        created: Date.now().toString(),
-      },
+        created: Date.now().toString()
+      }
     });
 
   const filesMap = new Map<FileId, BinaryFileData>();
-  for (const element of elements) {
-    if (isInitializedImageElement(element) && files[element.fileId]) {
-      filesMap.set(element.fileId, files[element.fileId]);
+  for (const layer of layers) {
+    if (isInitializedImageLayer(layer) && files[layer.fileId]) {
+      filesMap.set(layer.fileId, files[layer.fileId]);
     }
   }
 
@@ -59,26 +63,26 @@ export const exportToExcalidrawPlus = async (
     const filesToUpload = await encodeFilesForUpload({
       files: filesMap,
       encryptionKey,
-      maxBytes: FILE_UPLOAD_MAX_BYTES,
+      maxBytes: FILE_UPLOAD_MAX_BYTES
     });
 
     await saveFilesToFirebase({
       prefix: `/migrations/files/scenes/${id}`,
-      files: filesToUpload,
+      files: filesToUpload
     });
   }
 
   window.open(
-    `https://plus.excalidraw.com/import?excalidraw=${id},${encryptionKey}`,
+    `https://plus.excalidraw.com/import?excalidraw=${id},${encryptionKey}`
   );
 };
 
 export const ExportToExcalidrawPlus: React.FC<{
-  elements: readonly NonDeletedExcalidrawElement[];
   appState: Partial<AppState>;
   files: BinaryFiles;
+  layers: readonly NonDeletedExcalidrawLayer[];
   onError: (error: Error) => void;
-}> = ({ elements, appState, files, onError }) => {
+}> = ({ layers, appState, files, onError }) => {
   const { t } = useI18n();
   return (
     <Card color="primary">
@@ -88,15 +92,12 @@ export const ExportToExcalidrawPlus: React.FC<{
         {t("exportDialog.excalidrawplus_description")}
       </div>
       <ToolButton
-        className="Card-button"
-        type="button"
-        title={t("exportDialog.excalidrawplus_button")}
         aria-label={t("exportDialog.excalidrawplus_button")}
-        showAriaLabel={true}
+        className="Card-button"
         onClick={async () => {
           try {
             trackEvent("export", "eplus", `ui (${getFrame()})`);
-            await exportToExcalidrawPlus(elements, appState, files);
+            await exportToExcalidrawPlus(layers, appState, files);
           } catch (error: any) {
             console.error(error);
             if (error.name !== "AbortError") {
@@ -104,6 +105,9 @@ export const ExportToExcalidrawPlus: React.FC<{
             }
           }
         }}
+        showAriaLabel={true}
+        title={t("exportDialog.excalidrawplus_button")}
+        type="button"
       />
     </Card>
   );

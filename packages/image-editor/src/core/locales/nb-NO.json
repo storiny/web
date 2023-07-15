@@ -4,7 +4,7 @@
     "pasteAsPlaintext": "Lim inn som klartekst",
     "pasteCharts": "Lim inn diagrammer",
     "selectAll": "Velg alt",
-    "multiSelect": "Legg til element i utvalg",
+    "multiSelect": "Legg til layer i utvalg",
     "moveCanvas": "Flytt lerretet",
     "cut": "Klipp ut",
     "copy": "Kopier",
@@ -116,7 +116,7 @@
       "edit": "Rediger linje",
       "exit": "Avslutt linjeredigering"
     },
-    "elementLock": {
+    "layerLock": {
       "lock": "Lås",
       "unlock": "Lås opp",
       "lockAll": "Lås alle",
@@ -124,12 +124,12 @@
     },
     "statusPublished": "Publisert",
     "sidebarLock": "Holde sidemenyen åpen",
-    "selectAllElementsInFrame": "Velg alle elementene i rammen",
-    "removeAllElementsFromFrame": "Fjern alle elementer fra rammen",
+    "selectAllLayersInFrame": "Velg alle layerene i rammen",
+    "removeAllLayersFromFrame": "Fjern alle layerer fra rammen",
     "eyeDropper": "Velg farge fra lerretet"
   },
   "library": {
-    "noItems": "Ingen elementer lagt til ennå...",
+    "noItems": "Ingen layerer lagt til ennå...",
     "hint_emptyLibrary": "Velg et objekt på lerretet for å legge det til her, eller installer et bibliotek fra den offentlige samlingen under.",
     "hint_emptyPrivateLibrary": "Velg et objekt på lerretet for å legge det til her."
   },
@@ -180,14 +180,14 @@
     "uploadedSecurly": "Opplastingen er kryptert og kan ikke leses av Excalidraw-serveren eller tredjeparter.",
     "loadSceneOverridePrompt": "Å laste inn ekstern tegning vil erstatte det eksisterende innholdet. Ønsker du å fortsette?",
     "collabStopOverridePrompt": "Hvis du slutter økten, overskrives din forrige, lokalt lagrede tegning. Er du sikker?\n\n(Hvis du ønsker å beholde din lokale tegning, bare lukk nettleserfanen i stedet.)",
-    "errorAddingToLibrary": "Kunne ikke legge element i biblioteket",
-    "errorRemovingFromLibrary": "Kunne ikke fjerne element fra biblioteket",
+    "errorAddingToLibrary": "Kunne ikke legge layer i biblioteket",
+    "errorRemovingFromLibrary": "Kunne ikke fjerne layer fra biblioteket",
     "confirmAddLibrary": "Dette vil legge til {{numShapes}} figur(er) i biblioteket ditt. Er du sikker?",
     "imageDoesNotContainScene": "Det ser ikke ut til at dette bildet inneholder noen scenedata. Har du aktivert innebygging av scene under eksporten?",
     "cannotRestoreFromImage": "Scenen kunne ikke gjenopprettes fra denne bildefilen",
     "invalidSceneUrl": "Kunne ikke importere scene fra den oppgitte URL-en. Den er enten ødelagt, eller inneholder ikke gyldig Excalidraw JSON-data.",
     "resetLibrary": "Dette vil tømme biblioteket ditt. Er du sikker?",
-    "removeItemsFromsLibrary": "Slett {{count}} element(er) fra biblioteket?",
+    "removeItemsFromsLibrary": "Slett {{count}} layer(er) fra biblioteket?",
     "invalidEncryptionKey": "Krypteringsnøkkel må ha 22 tegn. Live-samarbeid er deaktivert.",
     "collabOfflineWarning": "Ingen Internett-tilkobling tilgjengelig.\nEndringer dine vil ikke bli lagret!"
   },
@@ -203,9 +203,9 @@
     "collabSaveFailed_sizeExceeded": "Kunne ikke lagre til backend-databasen, lerretet ser ut til å være for stort. Du bør lagre filen lokalt for å sikre at du ikke mister arbeidet ditt.",
     "brave_measure_text_error": {
       "line1": "Ser ut som om du bruker Brave nettleser med <bold>Aggressivt Block Finger</bold> -innstillingen aktivert.",
-      "line2": "Dette kan resultere i å bryte <bold>tekst-elementene</bold> i tegningene.",
+      "line2": "Dette kan resultere i å bryte <bold>tekst-layerene</bold> i tegningene.",
       "line3": "Vi anbefaler på det sterkeste å deaktivere denne innstillingen. Du kan følge <link>disse trinnene</link> om hvordan du gjør det.",
-      "line4": "Hvis deaktivering av denne innstillingen ikke fikser visningen av tekstelementer, vennligst åpne en <issueLink>sak</issueLink> på vår GitHub, eller skriv oss på <discordLink>Discord</discordLink>"
+      "line4": "Hvis deaktivering av denne innstillingen ikke fikser visningen av tekstlayerer, vennligst åpne en <issueLink>sak</issueLink> på vår GitHub, eller skriv oss på <discordLink>Discord</discordLink>"
     }
   },
   "toolBar": {
@@ -234,12 +234,12 @@
   },
   "hints": {
     "canvasPanning": "For å flytte lerretet, hold musehjulet eller mellomromstasten mens du drar, eller bruk hånd-verktøyet",
-    "linearElement": "Klikk for å starte linje med flere punkter, eller dra for en enkel linje",
+    "linearLayer": "Klikk for å starte linje med flere punkter, eller dra for en enkel linje",
     "freeDraw": "Klikk og dra, slipp når du er ferdig",
     "text": "Tips: du kan også legge til tekst ved å dobbeltklikke hvor som helst med utvalgsverktøyet",
     "text_selected": "Dobbeltklikk eller trykk ENTER for å redigere tekst",
     "text_editing": "Trykk Escape eller Ctrl/Cmd+Enter for å fullføre redigering",
-    "linearElementMulti": "Klikk på siste punkt eller trykk Escape eller Enter for å fullføre",
+    "linearLayerMulti": "Klikk på siste punkt eller trykk Escape eller Enter for å fullføre",
     "lockAngle": "Du kan låse vinkelen ved å holde nede SHIFT",
     "resize": "Du kan beholde forholdet ved å trykke SHIFT mens du endrer størrelse,\ntrykk ALT for å endre størrelsen fra midten",
     "resizeImage": "Du kan endre størrelse fritt ved å holde SHIFT,\nhold ALT for å endre størrelse fra midten",
@@ -249,15 +249,15 @@
     "lineEditor_nothingSelected": "Velg et punkt å redigere (hold SHIFT for å velge flere),\neller hold Alt og klikk for å legge til nye punkter",
     "placeImage": "Klikk for å plassere bildet, eller klikk og dra for å angi størrelsen manuelt",
     "publishLibrary": "Publiser ditt eget bibliotek",
-    "bindTextToElement": "Trykk Enter for å legge til tekst",
+    "bindTextToLayer": "Trykk Enter for å legge til tekst",
     "deepBoxSelect": "Hold CTRL/CMD for å markere dypt og forhindre flytting",
-    "eraserRevert": "Hold Alt for å reversere elementene merket for sletting",
+    "eraserRevert": "Hold Alt for å reversere layerene merket for sletting",
     "firefox_clipboard_write": "Denne funksjonen kan sannsynligvis aktiveres ved å sette \"dom.events.asyncClipboard.clipboardItem\" flagget til \"true\". For å endre nettleserens flagg i Firefox, besøk \"about:config\"-siden."
   },
   "canvasError": {
     "cannotShowPreview": "Kan ikke vise forhåndsvisning",
     "canvasTooBig": "Lerretet kan være for stort.",
-    "canvasTooBigTip": "Tips: Prøv å flytte de ytterste elementene litt tettere sammen."
+    "canvasTooBigTip": "Tips: Prøv å flytte de ytterste layerene litt tettere sammen."
   },
   "errorSplash": {
     "headingMain": "En feil oppsto. Prøv <button>å laste siden på nytt.</button>",
@@ -314,9 +314,9 @@
     "textNewLine": "Legg til ny linje (teksteditor)",
     "title": "Hjelp",
     "view": "Vis",
-    "zoomToFit": "Zoom for å se alle elementer",
+    "zoomToFit": "Zoom for å se alle layerer",
     "zoomToSelection": "Zoom til utvalg",
-    "toggleElementLock": "Lås/lås opp utvalg",
+    "toggleLayerLock": "Lås/lås opp utvalg",
     "movePageUpDown": "Flytt side opp/ned",
     "movePageLeftRight": "Flytt siden til venstre/høyre"
   },
@@ -325,7 +325,7 @@
   },
   "publishDialog": {
     "title": "Publiser bibliotek",
-    "itemName": "Elementnavn",
+    "itemName": "Layernavn",
     "authorName": "Forfatterens navn",
     "githubUsername": "GitHub-brukernavnet",
     "twitterUsername": "Twitter-brukernavn",
@@ -347,9 +347,9 @@
     "noteDescription": "Send inn biblioteket ditt som skal inkluderes i <link>kildekode for offentlig bibliotek</link>for andre å bruke dem i tegninger.",
     "noteGuidelines": "Biblioteket må godkjennes manuelt først. Les <link>retningslinjene</link> før innsending. Du vil trenge en GitHub-konto for å kommunisere og gjøre endringer hvis ønsket, men det er ikke påkrevd.",
     "noteLicense": "Ved å sende inn godtar du at biblioteket blir publisert under <link>MIT-lisens, </link>som kortfattet betyr at andre kan bruke dem uten begrensninger.",
-    "noteItems": "Hvert bibliotek må ha sitt eget navn, så det er filtrerbart. Følgende bibliotekselementer vil bli inkludert:",
+    "noteItems": "Hvert bibliotek må ha sitt eget navn, så det er filtrerbart. Følgende bibliotekslayerer vil bli inkludert:",
     "atleastOneLibItem": "Vennligst velg minst ett bibliotek for å komme i gang",
-    "republishWarning": "Merk: noen av de valgte elementene er merket som allerede publisert/sendt. Du bør kun sende inn elementer på nytt når du oppdaterer et eksisterende bibliotek eller innlevering."
+    "republishWarning": "Merk: noen av de valgte layerene er merket som allerede publisert/sendt. Du bør kun sende inn layerer på nytt når du oppdaterer et eksisterende bibliotek eller innlevering."
   },
   "publishSuccessDialog": {
     "title": "Bibliotek innsendt",
@@ -357,7 +357,7 @@
   },
   "confirmDialog": {
     "resetLibrary": "Nullstill bibliotek",
-    "removeItemsFromLib": "Fjern valgte elementer fra bibliotek"
+    "removeItemsFromLib": "Fjern valgte layerer fra bibliotek"
   },
   "imageExportDialog": {
     "header": "Eksporter bilde",
@@ -389,8 +389,8 @@
   },
   "stats": {
     "angle": "Vinkel",
-    "element": "Element",
-    "elements": "Elementer",
+    "layer": "Layer",
+    "layers": "Layerer",
     "height": "Høyde",
     "scene": "Scene",
     "selected": "Valgt",
@@ -411,7 +411,7 @@
     "fileSavedToFilename": "Lagret til {filename}",
     "canvas": "lerret",
     "selection": "utvalg",
-    "pasteAsSingleElement": "Bruk {{shortcut}} for å lime inn som ett enkelt element,\neller lim inn i en eksisterende tekstbehandler"
+    "pasteAsSingleLayer": "Bruk {{shortcut}} for å lime inn som ett enkelt layer,\neller lim inn i en eksisterende tekstbehandler"
   },
   "colors": {
     "transparent": "Gjennomsiktig",

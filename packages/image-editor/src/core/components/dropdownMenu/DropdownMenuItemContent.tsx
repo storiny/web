@@ -3,11 +3,11 @@ import { useDevice } from "../App";
 const MenuItemContent = ({
   icon,
   shortcut,
-  children,
+  children
 }: {
-  icon?: JSX.Element;
-  shortcut?: string;
   children: React.ReactNode;
+  icon?: JSX.Layer;
+  shortcut?: string;
 }) => {
   const device = useDevice();
   return (

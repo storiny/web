@@ -1,13 +1,13 @@
-import { useRef, useState } from "react";
+import "./RoomDialog.scss";
+
 import * as Popover from "@radix-ui/react-popover";
+import { useRef, useState } from "react";
 
-import { copyTextToSystemClipboard } from "../../clipboard";
 import { trackEvent } from "../../analytics";
-import { getFrame } from "../../utils";
-import { useI18n } from "../../i18n";
-import { KEYS } from "../../keys";
-
+import { ReactComponent as CollabImage } from "../../assets/lock.svg";
+import { copyTextToSystemClipboard } from "../../clipboard";
 import { Dialog } from "../../components/Dialog";
+import { FilledButton } from "../../components/FilledButton";
 import {
   copyIcon,
   playerPlayIcon,
@@ -15,13 +15,12 @@ import {
   share,
   shareIOS,
   shareWindows,
-  tablerCheckIcon,
+  tablerCheckIcon
 } from "../../components/icons";
 import { TextField } from "../../components/TextField";
-import { FilledButton } from "../../components/FilledButton";
-
-import { ReactComponent as CollabImage } from "../../assets/lock.svg";
-import "./RoomDialog.scss";
+import { useI18n } from "../../i18n";
+import { KEYS } from "../../keys";
+import { getFrame } from "../../utils";
 
 const getShareIcon = () => {
   const navigator = window.navigator as any;
@@ -38,13 +37,13 @@ const getShareIcon = () => {
 };
 
 export type RoomModalProps = {
-  handleClose: () => void;
   activeRoomLink: string;
-  username: string;
-  onUsernameChange: (username: string) => void;
+  handleClose: () => void;
   onRoomCreate: () => void;
   onRoomDestroy: () => void;
+  onUsernameChange: (username: string) => void;
   setErrorMessage: (message: string) => void;
+  username: string;
 };
 
 export const RoomModal = ({
@@ -54,12 +53,12 @@ export const RoomModal = ({
   setErrorMessage,
   username,
   onUsernameChange,
-  handleClose,
+  handleClose
 }: RoomModalProps) => {
   const { t } = useI18n();
   const [justCopied, setJustCopied] = useState(false);
   const timerRef = useRef<number>(0);
-  const ref = useRef<HTMLInputElement>(null);
+  const ref = useRef<HTMLInputLayer>(null);
   const isShareSupported = "share" in navigator;
 
   const copyRoomLink = async () => {
@@ -87,7 +86,7 @@ export const RoomModal = ({
       await navigator.share({
         title: t("roomDialog.shareTitle"),
         text: t("roomDialog.shareTitle"),
-        url: activeRoomLink,
+        url: activeRoomLink
       });
     } catch (error: any) {
       // Just ignore.
@@ -101,45 +100,45 @@ export const RoomModal = ({
           {t("labels.liveCollaboration")}
         </h3>
         <TextField
-          value={username}
-          placeholder="Your name"
           label="Your name"
           onChange={onUsernameChange}
           onKeyDown={(event) => event.key === KEYS.ENTER && handleClose()}
+          placeholder="Your name"
+          value={username}
         />
         <div className="RoomDialog__active__linkRow">
           <TextField
-            ref={ref}
+            fullWidth
             label="Link"
             readonly
-            fullWidth
+            ref={ref}
             value={activeRoomLink}
           />
           {isShareSupported && (
             <FilledButton
-              size="large"
-              variant="icon"
-              label="Share"
-              startIcon={getShareIcon()}
               className="RoomDialog__active__share"
+              label="Share"
               onClick={shareRoomLink}
+              size="large"
+              startIcon={getShareIcon()}
+              variant="icon"
             />
           )}
           <Popover.Root open={justCopied}>
             <Popover.Trigger asChild>
               <FilledButton
-                size="large"
                 label="Copy link"
-                startIcon={copyIcon}
                 onClick={copyRoomLink}
+                size="large"
+                startIcon={copyIcon}
               />
             </Popover.Trigger>
             <Popover.Content
-              onOpenAutoFocus={(event) => event.preventDefault()}
-              onCloseAutoFocus={(event) => event.preventDefault()}
-              className="RoomDialog__popover"
-              side="top"
               align="end"
+              className="RoomDialog__popover"
+              onCloseAutoFocus={(event) => event.preventDefault()}
+              onOpenAutoFocus={(event) => event.preventDefault()}
+              side="top"
               sideOffset={5.5}
             >
               {tablerCheckIcon} copied
@@ -149,9 +148,9 @@ export const RoomModal = ({
         <div className="RoomDialog__active__description">
           <p>
             <span
-              role="img"
               aria-hidden="true"
               className="RoomDialog__active__description__emoji"
+              role="img"
             >
               🔒{" "}
             </span>
@@ -162,15 +161,15 @@ export const RoomModal = ({
 
         <div className="RoomDialog__active__actions">
           <FilledButton
-            size="large"
-            variant="outlined"
             color="danger"
             label={t("roomDialog.button_stopSession")}
-            startIcon={playerStopFilledIcon}
             onClick={() => {
               trackEvent("share", "room closed");
               onRoomDestroy();
             }}
+            size="large"
+            startIcon={playerStopFilledIcon}
+            variant="outlined"
           />
         </div>
       </>
@@ -193,27 +192,25 @@ export const RoomModal = ({
 
       <div className="RoomDialog__inactive__start_session">
         <FilledButton
-          size="large"
           label={t("roomDialog.button_startSession")}
-          startIcon={playerPlayIcon}
           onClick={() => {
             trackEvent("share", "room creation", `ui (${getFrame()})`);
             onRoomCreate();
           }}
+          size="large"
+          startIcon={playerPlayIcon}
         />
       </div>
     </>
   );
 };
 
-const RoomDialog = (props: RoomModalProps) => {
-  return (
-    <Dialog size="small" onCloseRequest={props.handleClose} title={false}>
-      <div className="RoomDialog">
-        <RoomModal {...props} />
-      </div>
-    </Dialog>
-  );
-};
+const RoomDialog = (props: RoomModalProps) => (
+  <Dialog onCloseRequest={props.handleClose} size="small" title={false}>
+    <div className="RoomDialog">
+      <RoomModal {...props} />
+    </div>
+  </Dialog>
+);
 
 export default RoomDialog;

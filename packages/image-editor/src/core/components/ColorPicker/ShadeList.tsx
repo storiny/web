@@ -1,13 +1,14 @@
 import clsx from "clsx";
 import { useAtom } from "jotai";
 import { useEffect, useRef } from "react";
+
+import { ColorPaletteCustom } from "../../colors";
+import { t } from "../../i18n";
 import {
   activeColorPickerSectionAtom,
-  getColorNameAndShadeFromColor,
+  getColorNameAndShadeFromColor
 } from "./colorPickerUtils";
 import HotkeyLabel from "./HotkeyLabel";
-import { t } from "../../i18n";
-import { ColorPaletteCustom } from "../../colors";
 
 interface ShadeListProps {
   hex: string;
@@ -18,14 +19,14 @@ interface ShadeListProps {
 export const ShadeList = ({ hex, onChange, palette }: ShadeListProps) => {
   const colorObj = getColorNameAndShadeFromColor({
     color: hex || "transparent",
-    palette,
+    palette
   });
 
   const [activeColorPickerSection, setActiveColorPickerSection] = useAtom(
-    activeColorPickerSectionAtom,
+    activeColorPickerSectionAtom
   );
 
-  const btnRef = useRef<HTMLButtonElement>(null);
+  const btnRef = useRef<HTMLButtonLayer>(null);
 
   useEffect(() => {
     if (btnRef.current && activeColorPickerSection === "shades") {
@@ -43,28 +44,28 @@ export const ShadeList = ({ hex, onChange, palette }: ShadeListProps) => {
         <div className="color-picker-content--default shades">
           {shades.map((color, i) => (
             <button
+              aria-label="Shade"
+              className={clsx(
+                "color-picker__button color-picker__button--large",
+                { active: i === shade }
+              )}
+              key={i}
+              onClick={() => {
+                onChange(color);
+                setActiveColorPickerSection("shades");
+              }}
               ref={
                 i === shade && activeColorPickerSection === "shades"
                   ? btnRef
                   : undefined
               }
-              tabIndex={-1}
-              key={i}
-              type="button"
-              className={clsx(
-                "color-picker__button color-picker__button--large",
-                { active: i === shade },
-              )}
-              aria-label="Shade"
-              title={`${colorName} - ${i + 1}`}
               style={color ? { "--swatch-color": color } : undefined}
-              onClick={() => {
-                onChange(color);
-                setActiveColorPickerSection("shades");
-              }}
+              tabIndex={-1}
+              title={`${colorName} - ${i + 1}`}
+              type="button"
             >
               <div className="color-picker__button-outline" />
-              <HotkeyLabel color={color} keyLabel={i + 1} isShade />
+              <HotkeyLabel color={color} isShade keyLabel={i + 1} />
             </button>
           ))}
         </div>
@@ -79,12 +80,11 @@ export const ShadeList = ({ hex, onChange, palette }: ShadeListProps) => {
       tabIndex={-1}
     >
       <button
-        type="button"
-        tabIndex={-1}
         className="color-picker__button color-picker__button--large color-picker__button--no-focus-visible"
+        tabIndex={-1}
+        type="button"
       />
       <div
-        tabIndex={-1}
         style={{
           position: "absolute",
           top: 0,
@@ -95,8 +95,9 @@ export const ShadeList = ({ hex, onChange, palette }: ShadeListProps) => {
           alignItems: "center",
           justifyContent: "center",
           textAlign: "center",
-          fontSize: "0.75rem",
+          fontSize: "0.75rem"
         }}
+        tabIndex={-1}
       >
         {t("colorPicker.noShades")}
       </div>

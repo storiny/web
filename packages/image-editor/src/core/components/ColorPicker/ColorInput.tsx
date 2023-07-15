@@ -1,27 +1,28 @@
-import { useCallback, useEffect, useRef, useState } from "react";
-import { getColor } from "./ColorPicker";
+import clsx from "clsx";
 import { useAtom } from "jotai";
-import { activeColorPickerSectionAtom } from "./colorPickerUtils";
-import { eyeDropperIcon } from "../icons";
+import { useCallback, useEffect, useRef, useState } from "react";
+
+import { t } from "../../i18n";
 import { jotaiScope } from "../../jotai";
 import { KEYS } from "../../keys";
-import { activeEyeDropperAtom } from "../EyeDropper";
-import clsx from "clsx";
-import { t } from "../../i18n";
-import { useDevice } from "../App";
 import { getShortcutKey } from "../../utils";
+import { useDevice } from "../App";
+import { activeEyeDropperAtom } from "../EyeDropper";
+import { eyeDropperIcon } from "../icons";
+import { getColor } from "./ColorPicker";
+import { activeColorPickerSectionAtom } from "./colorPickerUtils";
 
 interface ColorInputProps {
   color: string;
-  onChange: (color: string) => void;
   label: string;
+  onChange: (color: string) => void;
 }
 
 export const ColorInput = ({ color, onChange, label }: ColorInputProps) => {
   const device = useDevice();
   const [innerValue, setInnerValue] = useState(color);
   const [activeSection, setActiveColorPickerSection] = useAtom(
-    activeColorPickerSectionAtom,
+    activeColorPickerSectionAtom
   );
 
   useEffect(() => {
@@ -38,11 +39,11 @@ export const ColorInput = ({ color, onChange, label }: ColorInputProps) => {
       }
       setInnerValue(value);
     },
-    [onChange],
+    [onChange]
   );
 
-  const inputRef = useRef<HTMLInputElement>(null);
-  const eyeDropperTriggerRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputLayer>(null);
+  const eyeDropperTriggerRef = useRef<HTMLDivLayer>(null);
 
   useEffect(() => {
     if (inputRef.current) {
@@ -52,32 +53,28 @@ export const ColorInput = ({ color, onChange, label }: ColorInputProps) => {
 
   const [eyeDropperState, setEyeDropperState] = useAtom(
     activeEyeDropperAtom,
-    jotaiScope,
+    jotaiScope
   );
 
-  useEffect(() => {
-    return () => {
+  useEffect(
+    () => () => {
       setEyeDropperState(null);
-    };
-  }, [setEyeDropperState]);
+    },
+    [setEyeDropperState]
+  );
 
   return (
     <div className="color-picker__input-label">
       <div className="color-picker__input-hash">#</div>
       <input
-        ref={activeSection === "hex" ? inputRef : undefined}
-        style={{ border: 0, padding: 0 }}
-        spellCheck={false}
-        className="color-picker-input"
         aria-label={label}
-        onChange={(event) => {
-          changeColor(event.target.value);
-        }}
-        value={(innerValue || "").replace(/^#/, "")}
+        className="color-picker-input"
         onBlur={() => {
           setInnerValue(color);
         }}
-        tabIndex={-1}
+        onChange={(event) => {
+          changeColor(event.target.value);
+        }}
         onFocus={() => setActiveColorPickerSection("hex")}
         onKeyDown={(event) => {
           if (event.key === KEYS.TAB) {
@@ -87,6 +84,11 @@ export const ColorInput = ({ color, onChange, label }: ColorInputProps) => {
           }
           event.stopPropagation();
         }}
+        ref={activeSection === "hex" ? inputRef : undefined}
+        spellCheck={false}
+        style={{ border: 0, padding: 0 }}
+        tabIndex={-1}
+        value={(innerValue || "").replace(/^#/, "")}
       />
       {/* TODO reenable on mobile with a better UX */}
       {!device.isMobile && (
@@ -95,13 +97,12 @@ export const ColorInput = ({ color, onChange, label }: ColorInputProps) => {
             style={{
               width: "1px",
               height: "1.25rem",
-              backgroundColor: "var(--default-border-color)",
+              backgroundColor: "var(--default-border-color)"
             }}
           />
           <div
-            ref={eyeDropperTriggerRef}
             className={clsx("excalidraw-eye-dropper-trigger", {
-              selected: eyeDropperState,
+              selected: eyeDropperState
             })}
             onClick={() =>
               setEyeDropperState((s) =>
@@ -109,12 +110,13 @@ export const ColorInput = ({ color, onChange, label }: ColorInputProps) => {
                   ? null
                   : {
                       keepOpenOnAlt: false,
-                      onSelect: (color) => onChange(color),
-                    },
+                      onSelect: (color) => onChange(color)
+                    }
               )
             }
+            ref={eyeDropperTriggerRef}
             title={`${t(
-              "labels.eyeDropper",
+              "labels.eyeDropper"
             )} — ${KEYS.I.toLocaleUpperCase()} or ${getShortcutKey("Alt")} `}
           >
             {eyeDropperIcon}

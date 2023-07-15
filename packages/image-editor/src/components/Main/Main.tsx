@@ -10,7 +10,7 @@ import Topbar from "../Topbar";
 import styles from "./Main.module.scss";
 import { ImageEditorProps } from "./Main.props";
 
-const Main = ({ className, ...rest }: ImageEditorProps): React.ReactElement => (
+const Main = ({ className, ...rest }: ImageEditorProps): React.ReactLayer => (
   <div
     {...rest}
     className={clsx("full-h", "full-w", styles.x, styles.main, className)}

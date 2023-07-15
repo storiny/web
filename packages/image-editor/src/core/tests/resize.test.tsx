@@ -1,17 +1,18 @@
 import ReactDOM from "react-dom";
-import { render } from "./test-utils";
+
 import App from "../components/App";
-import * as Renderer from "../renderer/renderScene";
-import { reseed } from "../random";
-import { UI, Keyboard } from "./helpers/ui";
-import { resize } from "./utils";
-import { ExcalidrawTextElement } from "../element/types";
 import ExcalidrawApp from "../excalidraw-app";
-import { API } from "./helpers/api";
 import { KEYS } from "../keys";
+import { ExcalidrawTextLayer } from "../layer/types";
+import { reseed } from "../random";
+import * as Renderer from "../renderer/renderScene";
+import { API } from "./helpers/api";
+import { Keyboard, UI } from "./helpers/ui";
+import { render } from "./test-utils";
+import { resize } from "./utils";
 
 // Unmount ReactDOM from root
-ReactDOM.unmountComponentAtNode(document.getElementById("root")!);
+ReactDOM.unmountComponentAtNode(document.getLayerById("root")!);
 
 const renderScene = jest.spyOn(Renderer, "renderScene");
 beforeEach(() => {
@@ -22,12 +23,12 @@ beforeEach(() => {
 
 const { h } = window;
 
-describe("resize rectangle ellipses and diamond elements", () => {
+describe("resize rectangle ellipses and diamond layers", () => {
   const elemData = {
     x: 0,
     y: 0,
     width: 100,
-    height: 100,
+    height: 100
   };
   // Value for irrelevant cursor movements
   const _ = 234;
@@ -46,12 +47,12 @@ describe("resize rectangle ellipses and diamond elements", () => {
     "resizes with handle $handle",
     async ({ handle, move, dimensions, topLeft }) => {
       await render(<App />);
-      const rectangle = UI.createElement("rectangle", elemData);
+      const rectangle = UI.createLayer("rectangle", elemData);
       resize(rectangle, handle, move);
-      const element = h.elements[0];
-      expect([element.width, element.height]).toEqual(dimensions);
-      expect([element.x, element.y]).toEqual(topLeft);
-    },
+      const layer = h.layers[0];
+      expect([layer.width, layer.height]).toEqual(dimensions);
+      expect([layer.x, layer.y]).toEqual(topLeft);
+    }
   );
 
   it.each`
@@ -63,12 +64,12 @@ describe("resize rectangle ellipses and diamond elements", () => {
     "resizes with fixed side ratios on handle $handle",
     async ({ handle, move, dimensions, topLeft }) => {
       await render(<App />);
-      const rectangle = UI.createElement("rectangle", elemData);
+      const rectangle = UI.createLayer("rectangle", elemData);
       resize(rectangle, handle, move, { shift: true });
-      const element = h.elements[0];
-      expect([element.width, element.height]).toEqual(dimensions);
-      expect([element.x, element.y]).toEqual(topLeft);
-    },
+      const layer = h.layers[0];
+      expect([layer.width, layer.height]).toEqual(dimensions);
+      expect([layer.x, layer.y]).toEqual(topLeft);
+    }
   );
 
   it.each`
@@ -81,12 +82,12 @@ describe("resize rectangle ellipses and diamond elements", () => {
     "Flips while resizing and keeping side ratios on handle $handle",
     async ({ handle, move, dimensions, topLeft }) => {
       await render(<App />);
-      const rectangle = UI.createElement("rectangle", elemData);
+      const rectangle = UI.createLayer("rectangle", elemData);
       resize(rectangle, handle, move, { shift: true });
-      const element = h.elements[0];
-      expect([element.width, element.height]).toEqual(dimensions);
-      expect([element.x, element.y]).toEqual(topLeft);
-    },
+      const layer = h.layers[0];
+      expect([layer.width, layer.height]).toEqual(dimensions);
+      expect([layer.x, layer.y]).toEqual(topLeft);
+    }
   );
 
   it.each`
@@ -97,12 +98,12 @@ describe("resize rectangle ellipses and diamond elements", () => {
     "Resizes from center on handle $handle",
     async ({ handle, move, dimensions, topLeft }) => {
       await render(<App />);
-      const rectangle = UI.createElement("rectangle", elemData);
+      const rectangle = UI.createLayer("rectangle", elemData);
       resize(rectangle, handle, move, { alt: true });
-      const element = h.elements[0];
-      expect([element.width, element.height]).toEqual(dimensions);
-      expect([element.x, element.y]).toEqual(topLeft);
-    },
+      const layer = h.layers[0];
+      expect([layer.width, layer.height]).toEqual(dimensions);
+      expect([layer.x, layer.y]).toEqual(topLeft);
+    }
   );
 
   it.each`
@@ -113,38 +114,38 @@ describe("resize rectangle ellipses and diamond elements", () => {
     "Resizes from center, flips and keeps side rations on handle $handle",
     async ({ handle, move, dimensions, topLeft }) => {
       await render(<App />);
-      const rectangle = UI.createElement("rectangle", elemData);
+      const rectangle = UI.createLayer("rectangle", elemData);
       resize(rectangle, handle, move, { alt: true, shift: true });
-      const element = h.elements[0];
-      expect([element.width, element.height]).toEqual(dimensions);
-      expect([element.x, element.y]).toEqual(topLeft);
-    },
+      const layer = h.layers[0];
+      expect([layer.width, layer.height]).toEqual(dimensions);
+      expect([layer.x, layer.y]).toEqual(topLeft);
+    }
   );
 });
 
-describe("Test text element", () => {
+describe("Test text layer", () => {
   it("should update font size via keyboard", async () => {
     await render(<ExcalidrawApp />);
 
-    const textElement = API.createElement({
+    const textLayer = API.createLayer({
       type: "text",
-      text: "abc",
+      text: "abc"
     });
 
-    window.h.elements = [textElement];
+    window.h.layers = [textLayer];
 
-    API.setSelectedElements([textElement]);
+    API.setSelectedLayers([textLayer]);
 
-    const origFontSize = textElement.fontSize;
+    const origFontSize = textLayer.fontSize;
 
     Keyboard.withModifierKeys({ shift: true, ctrl: true }, () => {
       Keyboard.keyDown(KEYS.CHEVRON_RIGHT);
-      expect((window.h.elements[0] as ExcalidrawTextElement).fontSize).toBe(
-        origFontSize * 1.1,
+      expect((window.h.layers[0] as ExcalidrawTextLayer).fontSize).toBe(
+        origFontSize * 1.1
       );
       Keyboard.keyDown(KEYS.CHEVRON_LEFT);
-      expect((window.h.elements[0] as ExcalidrawTextElement).fontSize).toBe(
-        origFontSize,
+      expect((window.h.layers[0] as ExcalidrawTextLayer).fontSize).toBe(
+        origFontSize
       );
     });
   });

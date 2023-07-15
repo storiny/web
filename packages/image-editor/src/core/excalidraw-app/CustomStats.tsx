@@ -1,14 +1,12 @@
 import { useEffect, useState } from "react";
-import { debounce, getVersion, nFormatter } from "../utils";
-import {
-  getElementsStorageSize,
-  getTotalStorageSize,
-} from "./data/localStorage";
+
+import { copyTextToSystemClipboard } from "../clipboard";
 import { DEFAULT_VERSION } from "../constants";
 import { t } from "../i18n";
-import { copyTextToSystemClipboard } from "../clipboard";
-import { NonDeletedExcalidrawElement } from "../element/types";
+import { NonDeletedExcalidrawLayer } from "../layer/types";
 import { UIAppState } from "../types";
+import { debounce, getVersion, nFormatter } from "../utils";
+import { getLayersStorageSize, getTotalStorageSize } from "./data/localStorage";
 
 type StorageSizes = { scene: number; total: number };
 
@@ -16,27 +14,27 @@ const STORAGE_SIZE_TIMEOUT = 500;
 
 const getStorageSizes = debounce((cb: (sizes: StorageSizes) => void) => {
   cb({
-    scene: getElementsStorageSize(),
-    total: getTotalStorageSize(),
+    scene: getLayersStorageSize(),
+    total: getTotalStorageSize()
   });
 }, STORAGE_SIZE_TIMEOUT);
 
 type Props = {
-  setToast: (message: string) => void;
-  elements: readonly NonDeletedExcalidrawElement[];
   appState: UIAppState;
+  layers: readonly NonDeletedExcalidrawLayer[];
+  setToast: (message: string) => void;
 };
 const CustomStats = (props: Props) => {
   const [storageSizes, setStorageSizes] = useState<StorageSizes>({
     scene: 0,
-    total: 0,
+    total: 0
   });
 
   useEffect(() => {
     getStorageSizes((sizes) => {
       setStorageSizes(sizes);
     });
-  }, [props.elements, props.appState]);
+  }, [props.layers, props.appState]);
   useEffect(() => () => getStorageSizes.cancel(), []);
 
   const version = getVersion();
@@ -69,13 +67,13 @@ const CustomStats = (props: Props) => {
       <tr>
         <td
           colSpan={2}
-          style={{ textAlign: "center", cursor: "pointer" }}
           onClick={async () => {
             try {
               await copyTextToSystemClipboard(getVersion());
               props.setToast(t("toast.copyToClipboard"));
             } catch {}
           }}
+          style={{ textAlign: "center", cursor: "pointer" }}
           title={t("stats.versionCopy")}
         >
           {timestamp}

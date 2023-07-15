@@ -1,52 +1,50 @@
-import { bumpVersion } from "./element/mutateElement";
-import { isFrameElement } from "./element/typeChecks";
-import { ExcalidrawElement } from "./element/types";
+import { getSelectedLayers } from "../lib/scene";
+import Scene from "../lib/scene/Scene";
 import { groupByFrames } from "./frame";
-import { getElementsInGroup } from "./groups";
-import { getSelectedElements } from "./scene";
-import Scene from "./scene/Scene";
+import { getLayersInGroup } from "./groups";
+import { bumpVersion } from "./layer/mutateLayer";
+import { isFrameLayer } from "./layer/typeChecks";
+import { ExcalidrawLayer } from "./layer/types";
 import { AppState } from "./types";
 import { arrayToMap, findIndex, findLastIndex } from "./utils";
 
-// elements that do not belong to a frame are considered a root element
-const isRootElement = (element: ExcalidrawElement) => {
-  return !element.frameId;
-};
+// layers that do not belong to a frame are considered a root layer
+const isRootLayer = (layer: ExcalidrawLayer) => !layer.frameId;
 
 /**
- * Returns indices of elements to move based on selected elements.
- * Includes contiguous deleted elements that are between two selected elements,
+ * Returns indices of layers to move based on selected layers.
+ * Includes contiguous deleted layers that are between two selected layers,
  *  e.g.: [0 (selected), 1 (deleted), 2 (deleted), 3 (selected)]
  *
- * Specified elements (elementsToBeMoved) take precedence over
- * appState.selectedElementsIds
+ * Specified layers (layersToBeMoved) take precedence over
+ * appState.selectedLayersIds
  */
 const getIndicesToMove = (
-  elements: readonly ExcalidrawElement[],
+  layers: readonly ExcalidrawLayer[],
   appState: AppState,
-  elementsToBeMoved?: readonly ExcalidrawElement[],
+  layersToBeMoved?: readonly ExcalidrawLayer[]
 ) => {
   let selectedIndices: number[] = [];
   let deletedIndices: number[] = [];
   let includeDeletedIndex = null;
   let index = -1;
-  const selectedElementIds = arrayToMap(
-    elementsToBeMoved
-      ? elementsToBeMoved
-      : getSelectedElements(elements, appState, {
-          includeBoundTextElement: true,
-        }),
+  const selectedLayerIds = arrayToMap(
+    layersToBeMoved
+      ? layersToBeMoved
+      : getSelectedLayers(layers, appState, {
+          includeBoundTextLayer: true
+        })
   );
-  while (++index < elements.length) {
-    const element = elements[index];
-    if (selectedElementIds.get(element.id)) {
+  while (++index < layers.length) {
+    const layer = layers[index];
+    if (selectedLayerIds.get(layer.id)) {
       if (deletedIndices.length) {
         selectedIndices = selectedIndices.concat(deletedIndices);
         deletedIndices = [];
       }
       selectedIndices.push(index);
       includeDeletedIndex = index + 1;
-    } else if (element.isDeleted && includeDeletedIndex === index) {
+    } else if (layer.isDeleted && includeDeletedIndex === index) {
       includeDeletedIndex = index + 1;
       deletedIndices.push(index);
     } else {
@@ -68,39 +66,38 @@ const toContiguousGroups = (array: number[]) => {
 };
 
 /**
- * @returns index of target element, consindering tightly-bound elements
- * (currently non-linear elements bound to a container) as a one unit.
+ * @returns index of target layer, consindering tightly-bound layers
+ * (currently non-linear layers bound to a container) as a one unit.
  * If no binding present, returns `undefined`.
  */
 const getTargetIndexAccountingForBinding = (
-  nextElement: ExcalidrawElement,
-  elements: readonly ExcalidrawElement[],
-  direction: "left" | "right",
+  nextLayer: ExcalidrawLayer,
+  layers: readonly ExcalidrawLayer[],
+  direction: "left" | "right"
 ) => {
-  if ("containerId" in nextElement && nextElement.containerId) {
+  if ("containerId" in nextLayer && nextLayer.containerId) {
     if (direction === "left") {
-      const containerElement = Scene.getScene(nextElement)!.getElement(
-        nextElement.containerId,
+      const containerLayer = Scene.getScene(nextLayer)!.getLayer(
+        nextLayer.containerId
       );
-      if (containerElement) {
-        return elements.indexOf(containerElement);
+      if (containerLayer) {
+        return layers.indexOf(containerLayer);
       }
     } else {
-      return elements.indexOf(nextElement);
+      return layers.indexOf(nextLayer);
     }
   } else {
-    const boundElementId = nextElement.boundElements?.find(
-      (binding) => binding.type !== "arrow",
+    const boundLayerId = nextLayer.boundLayers?.find(
+      (binding) => binding.type !== "arrow"
     )?.id;
-    if (boundElementId) {
+    if (boundLayerId) {
       if (direction === "left") {
-        return elements.indexOf(nextElement);
+        return layers.indexOf(nextLayer);
       }
-      const boundTextElement =
-        Scene.getScene(nextElement)!.getElement(boundElementId);
+      const boundTextLayer = Scene.getScene(nextLayer)!.getLayer(boundLayerId);
 
-      if (boundTextElement) {
-        return elements.indexOf(boundTextElement);
+      if (boundTextLayer) {
+        return layers.indexOf(boundTextLayer);
       }
     }
   }
@@ -108,101 +105,98 @@ const getTargetIndexAccountingForBinding = (
 
 /**
  * Returns next candidate index that's available to be moved to. Currently that
- *  is a non-deleted element, and not inside a group (unless we're editing it).
+ *  is a non-deleted layer, and not inside a group (unless we're editing it).
  */
 const getTargetIndex = (
   appState: AppState,
-  elements: readonly ExcalidrawElement[],
+  layers: readonly ExcalidrawLayer[],
   boundaryIndex: number,
-  direction: "left" | "right",
+  direction: "left" | "right"
 ) => {
-  const sourceElement = elements[boundaryIndex];
+  const sourceLayer = layers[boundaryIndex];
 
-  const indexFilter = (element: ExcalidrawElement) => {
-    if (element.isDeleted) {
+  const indexFilter = (layer: ExcalidrawLayer) => {
+    if (layer.isDeleted) {
       return false;
     }
     // if we're editing group, find closest sibling irrespective of whether
-    // there's a different-group element between them (for legacy reasons)
+    // there's a different-group layer between them (for legacy reasons)
     if (appState.editingGroupId) {
-      return element.groupIds.includes(appState.editingGroupId);
+      return layer.groupIds.includes(appState.editingGroupId);
     }
     return true;
   };
 
   const candidateIndex =
     direction === "left"
-      ? findLastIndex(elements, indexFilter, Math.max(0, boundaryIndex - 1))
-      : findIndex(elements, indexFilter, boundaryIndex + 1);
+      ? findLastIndex(layers, indexFilter, Math.max(0, boundaryIndex - 1))
+      : findIndex(layers, indexFilter, boundaryIndex + 1);
 
-  const nextElement = elements[candidateIndex];
+  const nextLayer = layers[candidateIndex];
 
-  if (!nextElement) {
+  if (!nextLayer) {
     return -1;
   }
 
   if (appState.editingGroupId) {
     if (
-      // candidate element is a sibling in current editing group → return
-      sourceElement?.groupIds.join("") === nextElement?.groupIds.join("")
+      // candidate layer is a sibling in current editing group → return
+      sourceLayer?.groupIds.join("") === nextLayer?.groupIds.join("")
     ) {
       return (
-        getTargetIndexAccountingForBinding(nextElement, elements, direction) ??
+        getTargetIndexAccountingForBinding(nextLayer, layers, direction) ??
         candidateIndex
       );
-    } else if (!nextElement?.groupIds.includes(appState.editingGroupId)) {
-      // candidate element is outside current editing group → prevent
+    } else if (!nextLayer?.groupIds.includes(appState.editingGroupId)) {
+      // candidate layer is outside current editing group → prevent
       return -1;
     }
   }
 
-  if (!nextElement.groupIds.length) {
+  if (!nextLayer.groupIds.length) {
     return (
-      getTargetIndexAccountingForBinding(nextElement, elements, direction) ??
+      getTargetIndexAccountingForBinding(nextLayer, layers, direction) ??
       candidateIndex
     );
   }
 
   const siblingGroupId = appState.editingGroupId
-    ? nextElement.groupIds[
-        nextElement.groupIds.indexOf(appState.editingGroupId) - 1
+    ? nextLayer.groupIds[
+        nextLayer.groupIds.indexOf(appState.editingGroupId) - 1
       ]
-    : nextElement.groupIds[nextElement.groupIds.length - 1];
+    : nextLayer.groupIds[nextLayer.groupIds.length - 1];
 
-  const elementsInSiblingGroup = getElementsInGroup(elements, siblingGroupId);
+  const layersInSiblingGroup = getLayersInGroup(layers, siblingGroupId);
 
-  if (elementsInSiblingGroup.length) {
-    // assumes getElementsInGroup() returned elements are sorted
+  if (layersInSiblingGroup.length) {
+    // assumes getLayersInGroup() returned layers are sorted
     // by zIndex (ascending)
     return direction === "left"
-      ? elements.indexOf(elementsInSiblingGroup[0])
-      : elements.indexOf(
-          elementsInSiblingGroup[elementsInSiblingGroup.length - 1],
-        );
+      ? layers.indexOf(layersInSiblingGroup[0])
+      : layers.indexOf(layersInSiblingGroup[layersInSiblingGroup.length - 1]);
   }
 
   return candidateIndex;
 };
 
-const getTargetElementsMap = <T extends ExcalidrawElement>(
-  elements: readonly T[],
-  indices: number[],
-) => {
-  return indices.reduce((acc, index) => {
-    const element = elements[index];
-    acc[element.id] = element;
+const getTargetLayersMap = <T extends ExcalidrawLayer>(
+  layers: readonly T[],
+  indices: number[]
+) =>
+  indices.reduce((acc, index) => {
+    const layer = layers[index];
+    acc[layer.id] = layer;
     return acc;
-  }, {} as Record<string, ExcalidrawElement>);
-};
+  }, {} as Record<string, ExcalidrawLayer>);
 
-const _shiftElements = (
-  elements: readonly ExcalidrawElement[],
+const _shiftLayers = (
+  layers: readonly ExcalidrawLayer[],
   appState: AppState,
   direction: "left" | "right",
-  elementsToBeMoved?: readonly ExcalidrawElement[],
+  layersToBeMoved?: readonly ExcalidrawLayer[]
 ) => {
-  const indicesToMove = getIndicesToMove(elements, appState, elementsToBeMoved);
-  const targetElementsMap = getTargetElementsMap(elements, indicesToMove);
+  const indicesToMove = getIndicesToMove(layers, appState, layersToBeMoved);
+  const targetLayersMap = getTargetLayersMap(layers, indicesToMove);
   let groupedIndices = toContiguousGroups(indicesToMove);
 
   if (direction === "right") {
@@ -216,89 +210,78 @@ const _shiftElements = (
 
     const targetIndex = getTargetIndex(
       appState,
-      elements,
+      layers,
       boundaryIndex,
-      direction,
+      direction
     );
 
     if (targetIndex === -1 || boundaryIndex === targetIndex) {
       return;
     }
 
-    const leadingElements =
+    const leadingLayers =
       direction === "left"
-        ? elements.slice(0, targetIndex)
-        : elements.slice(0, leadingIndex);
-    const targetElements = elements.slice(leadingIndex, trailingIndex + 1);
-    const displacedElements =
+        ? layers.slice(0, targetIndex)
+        : layers.slice(0, leadingIndex);
+    const targetLayers = layers.slice(leadingIndex, trailingIndex + 1);
+    const displacedLayers =
       direction === "left"
-        ? elements.slice(targetIndex, leadingIndex)
-        : elements.slice(trailingIndex + 1, targetIndex + 1);
-    const trailingElements =
+        ? layers.slice(targetIndex, leadingIndex)
+        : layers.slice(trailingIndex + 1, targetIndex + 1);
+    const trailingLayers =
       direction === "left"
-        ? elements.slice(trailingIndex + 1)
-        : elements.slice(targetIndex + 1);
+        ? layers.slice(trailingIndex + 1)
+        : layers.slice(targetIndex + 1);
 
-    elements =
+    layers =
       direction === "left"
         ? [
-            ...leadingElements,
-            ...targetElements,
-            ...displacedElements,
-            ...trailingElements,
+            ...leadingLayers,
+            ...targetLayers,
+            ...displacedLayers,
+            ...trailingLayers
           ]
         : [
-            ...leadingElements,
-            ...displacedElements,
-            ...targetElements,
-            ...trailingElements,
+            ...leadingLayers,
+            ...displacedLayers,
+            ...targetLayers,
+            ...trailingLayers
           ];
   });
 
-  return elements.map((element) => {
-    if (targetElementsMap[element.id]) {
-      return bumpVersion(element);
+  return layers.map((layer) => {
+    if (targetLayersMap[layer.id]) {
+      return bumpVersion(layer);
     }
-    return element;
+    return layer;
   });
 };
 
-const shiftElements = (
+const shiftLayers = (
   appState: AppState,
-  elements: readonly ExcalidrawElement[],
+  layers: readonly ExcalidrawLayer[],
   direction: "left" | "right",
-  elementsToBeMoved?: readonly ExcalidrawElement[],
-) => {
-  return shift(
-    elements,
-    appState,
-    direction,
-    _shiftElements,
-    elementsToBeMoved,
-  );
-};
+  layersToBeMoved?: readonly ExcalidrawLayer[]
+) => shift(layers, appState, direction, _shiftLayers, layersToBeMoved);
 
-const _shiftElementsToEnd = (
-  elements: readonly ExcalidrawElement[],
+const _shiftLayersToEnd = (
+  layers: readonly ExcalidrawLayer[],
   appState: AppState,
-  direction: "left" | "right",
+  direction: "left" | "right"
 ) => {
-  const indicesToMove = getIndicesToMove(elements, appState);
-  const targetElementsMap = getTargetElementsMap(elements, indicesToMove);
-  const displacedElements: ExcalidrawElement[] = [];
+  const indicesToMove = getIndicesToMove(layers, appState);
+  const targetLayersMap = getTargetLayersMap(layers, indicesToMove);
+  const displacedLayers: ExcalidrawLayer[] = [];
 
   let leadingIndex: number;
   let trailingIndex: number;
   if (direction === "left") {
     if (appState.editingGroupId) {
-      const groupElements = getElementsInGroup(
-        elements,
-        appState.editingGroupId,
-      );
-      if (!groupElements.length) {
-        return elements;
+      const groupLayers = getLayersInGroup(layers, appState.editingGroupId);
+      if (!groupLayers.length) {
+        return layers;
       }
-      leadingIndex = elements.indexOf(groupElements[0]);
+      leadingIndex = layers.indexOf(groupLayers[0]);
     } else {
       leadingIndex = 0;
     }
@@ -306,16 +289,13 @@ const _shiftElementsToEnd = (
     trailingIndex = indicesToMove[indicesToMove.length - 1];
   } else {
     if (appState.editingGroupId) {
-      const groupElements = getElementsInGroup(
-        elements,
-        appState.editingGroupId,
-      );
-      if (!groupElements.length) {
-        return elements;
+      const groupLayers = getLayersInGroup(layers, appState.editingGroupId);
+      if (!groupLayers.length) {
+        return layers;
       }
-      trailingIndex = elements.indexOf(groupElements[groupElements.length - 1]);
+      trailingIndex = layers.indexOf(groupLayers[groupLayers.length - 1]);
     } else {
-      trailingIndex = elements.length - 1;
+      trailingIndex = layers.length - 1;
     }
 
     leadingIndex = indicesToMove[0];
@@ -323,147 +303,125 @@ const _shiftElementsToEnd = (
 
   for (let index = leadingIndex; index < trailingIndex + 1; index++) {
     if (!indicesToMove.includes(index)) {
-      displacedElements.push(elements[index]);
+      displacedLayers.push(layers[index]);
     }
   }
 
-  const targetElements = Object.values(targetElementsMap).map((element) => {
-    return bumpVersion(element);
-  });
+  const targetLayers = Object.values(targetLayersMap).map((layer) =>
+    bumpVersion(layer)
+  );
 
-  const leadingElements = elements.slice(0, leadingIndex);
-  const trailingElements = elements.slice(trailingIndex + 1);
+  const leadingLayers = layers.slice(0, leadingIndex);
+  const trailingLayers = layers.slice(trailingIndex + 1);
 
   return direction === "left"
-    ? [
-        ...leadingElements,
-        ...targetElements,
-        ...displacedElements,
-        ...trailingElements,
-      ]
+    ? [...leadingLayers, ...targetLayers, ...displacedLayers, ...trailingLayers]
     : [
-        ...leadingElements,
-        ...displacedElements,
-        ...targetElements,
-        ...trailingElements,
+        ...leadingLayers,
+        ...displacedLayers,
+        ...targetLayers,
+        ...trailingLayers
       ];
 };
 
-const shiftElementsToEnd = (
-  elements: readonly ExcalidrawElement[],
+const shiftLayersToEnd = (
+  layers: readonly ExcalidrawLayer[],
   appState: AppState,
   direction: "left" | "right",
-  elementsToBeMoved?: readonly ExcalidrawElement[],
-) => {
-  return shift(
-    elements,
-    appState,
-    direction,
-    _shiftElementsToEnd,
-    elementsToBeMoved,
-  );
-};
+  layersToBeMoved?: readonly ExcalidrawLayer[]
+) => shift(layers, appState, direction, _shiftLayersToEnd, layersToBeMoved);
 
-function shift(
-  elements: readonly ExcalidrawElement[],
+const shift = (
+  layers: readonly ExcalidrawLayer[],
   appState: AppState,
   direction: "left" | "right",
   shiftFunction: (
-    elements: ExcalidrawElement[],
+    layers: ExcalidrawLayer[],
     appState: AppState,
     direction: "left" | "right",
-    elementsToBeMoved?: readonly ExcalidrawElement[],
-  ) => ExcalidrawElement[] | readonly ExcalidrawElement[],
-  elementsToBeMoved?: readonly ExcalidrawElement[],
-) {
-  const elementsMap = arrayToMap(elements);
-  const frameElementsMap = groupByFrames(elements);
+    layersToBeMoved?: readonly ExcalidrawLayer[]
+  ) => ExcalidrawLayer[] | readonly ExcalidrawLayer[],
+  layersToBeMoved?: readonly ExcalidrawLayer[]
+) => {
+  const layersMap = arrayToMap(layers);
+  const frameLayersMap = groupByFrames(layers);
 
-  // in case root is non-existent, we promote children elements to root
-  let rootElements = elements.filter(
-    (element) =>
-      isRootElement(element) ||
-      (element.frameId && !elementsMap.has(element.frameId)),
+  // in case root is non-existent, we promote children layers to root
+  let rootLayers = layers.filter(
+    (layer) =>
+      isRootLayer(layer) || (layer.frameId && !layersMap.has(layer.frameId))
   );
   // and remove non-existet root
-  for (const frameId of frameElementsMap.keys()) {
-    if (!elementsMap.has(frameId)) {
-      frameElementsMap.delete(frameId);
+  for (const frameId of frameLayersMap.keys()) {
+    if (!layersMap.has(frameId)) {
+      frameLayersMap.delete(frameId);
     }
   }
 
-  // shift the root elements first
-  rootElements = shiftFunction(
-    rootElements,
+  // shift the root layers first
+  rootLayers = shiftFunction(
+    rootLayers,
     appState,
     direction,
-    elementsToBeMoved,
-  ) as ExcalidrawElement[];
+    layersToBeMoved
+  ) as ExcalidrawLayer[];
 
-  // shift the elements in frames if needed
-  frameElementsMap.forEach((frameElements, frameId) => {
-    if (!appState.selectedElementIds[frameId]) {
-      frameElementsMap.set(
+  // shift the layers in frames if needed
+  frameLayersMap.forEach((frameLayers, frameId) => {
+    if (!appState.selectedLayerIds[frameId]) {
+      frameLayersMap.set(
         frameId,
         shiftFunction(
-          frameElements,
+          frameLayers,
           appState,
           direction,
-          elementsToBeMoved,
-        ) as ExcalidrawElement[],
+          layersToBeMoved
+        ) as ExcalidrawLayer[]
       );
     }
   });
 
-  // return the final elements
-  let finalElements: ExcalidrawElement[] = [];
+  // return the final layers
+  let finalLayers: ExcalidrawLayer[] = [];
 
-  rootElements.forEach((element) => {
-    if (isFrameElement(element)) {
-      finalElements = [
-        ...finalElements,
-        ...(frameElementsMap.get(element.id) ?? []),
-        element,
+  rootLayers.forEach((layer) => {
+    if (isFrameLayer(layer)) {
+      finalLayers = [
+        ...finalLayers,
+        ...(frameLayersMap.get(layer.id) ?? []),
+        layer
       ];
     } else {
-      finalElements = [...finalElements, element];
+      finalLayers = [...finalLayers, layer];
     }
   });
 
-  return finalElements;
-}
+  return finalLayers;
+};
 
 // public API
 // -----------------------------------------------------------------------------
 
 export const moveOneLeft = (
-  elements: readonly ExcalidrawElement[],
+  layers: readonly ExcalidrawLayer[],
   appState: AppState,
-  elementsToBeMoved?: readonly ExcalidrawElement[],
-) => {
-  return shiftElements(appState, elements, "left", elementsToBeMoved);
-};
+  layersToBeMoved?: readonly ExcalidrawLayer[]
+) => shiftLayers(appState, layers, "left", layersToBeMoved);
 
 export const moveOneRight = (
-  elements: readonly ExcalidrawElement[],
+  layers: readonly ExcalidrawLayer[],
   appState: AppState,
-  elementsToBeMoved?: readonly ExcalidrawElement[],
-) => {
-  return shiftElements(appState, elements, "right", elementsToBeMoved);
-};
+  layersToBeMoved?: readonly ExcalidrawLayer[]
+) => shiftLayers(appState, layers, "right", layersToBeMoved);
 
 export const moveAllLeft = (
-  elements: readonly ExcalidrawElement[],
+  layers: readonly ExcalidrawLayer[],
   appState: AppState,
-  elementsToBeMoved?: readonly ExcalidrawElement[],
-) => {
-  return shiftElementsToEnd(elements, appState, "left", elementsToBeMoved);
-};
+  layersToBeMoved?: readonly ExcalidrawLayer[]
+) => shiftLayersToEnd(layers, appState, "left", layersToBeMoved);
 
 export const moveAllRight = (
-  elements: readonly ExcalidrawElement[],
+  layers: readonly ExcalidrawLayer[],
   appState: AppState,
-  elementsToBeMoved?: readonly ExcalidrawElement[],
-) => {
-  return shiftElementsToEnd(elements, appState, "right", elementsToBeMoved);
-};
+  layersToBeMoved?: readonly ExcalidrawLayer[]
+) => shiftLayersToEnd(layers, appState, "right", layersToBeMoved);
