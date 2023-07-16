@@ -1,3 +1,4 @@
+import { isPointWithinBounds } from "../lib/math/math";
 import { getLayersWithinSelection, getSelectedLayers } from "../lib/scene";
 import Scene, { ExcalidrawLayersIncludingDeleted } from "../lib/scene/Scene";
 import { getLayersInGroup, selectGroupsFromGivenLayers } from "./groups";
@@ -12,7 +13,6 @@ import {
   NonDeleted,
   NonDeletedExcalidrawLayer
 } from "./layer/types";
-import { isPointWithinBounds } from "./math";
 import { AppState } from "./types";
 import { arrayToMap, findIndex } from "./utils";
 import { moveOneRight } from "./zindex";

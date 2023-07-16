@@ -6,6 +6,11 @@ import rough from "roughjs/bin/rough";
 import { RoughSVG } from "roughjs/bin/svg";
 
 import { normalizeLink } from "../../lib/data/url/url";
+import {
+  getCornerRadius,
+  isPathALoop,
+  isRightAngle
+} from "../../lib/math/math";
 import { RenderConfig } from "../../lib/scene/types";
 import { getDefaultAppState } from "../appState";
 import {
@@ -48,7 +53,6 @@ import {
   ExcalidrawTextLayerWithContainer,
   NonDeletedExcalidrawLayer
 } from "../layer/types";
-import { getCornerRadius, isPathALoop, isRightAngle } from "../math";
 import { AppState, BinaryFiles, Zoom } from "../types";
 import { distance, getFontFamilyString, getFontString, isRTL } from "../utils";
 

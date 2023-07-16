@@ -1,3 +1,4 @@
+import { adjustXYWithRotation } from "../../lib/math/math";
 import {
   DEFAULT_ELEMENT_PROPS,
   DEFAULT_FONT_FAMILY,
@@ -23,7 +24,6 @@ import {
   TextAlign,
   VerticalAlign
 } from "../layer/types";
-import { adjustXYWithRotation } from "../math";
 import { randomId, randomInteger } from "../random";
 import { AppState } from "../types";
 import { MarkOptional, Merge, Mutable } from "../utility-types";
@@ -35,7 +35,7 @@ import {
 } from "../utils";
 import { getLayerAbsoluteCoords } from ".";
 import { getResizedLayerAbsoluteCoords } from "./bounds";
-import { bumpVersion, newLayerWith } from "./mutateLayer";
+import { bumpUpdate, newLayerWith } from "./mutateLayer";
 import {
   getBoundTextMaxWidth,
   getContainerLayer,
@@ -385,7 +385,7 @@ export const newImageLayer = (
 //
 // The reason for `deepCopyLayer()` wrapper is type safety (only allow
 // passing ExcalidrawLayer as the top-level argument).
-const _deepCopyLayer = (val: any, depth: number = 0) => {
+const deepCopyLayerImpl = (val: any, depth: number = 0) => {
   // only clone non-primitives
   if (val == null || typeof val !== "object") {
     return val;
@@ -405,7 +405,7 @@ const _deepCopyLayer = (val: any, depth: number = 0) => {
         if (depth === 0 && (key === "shape" || key === "canvas")) {
           continue;
         }
-        tmp[key] = _deepCopyLayer(val[key], depth + 1);
+        tmp[key] = deepCopyLayerImpl(val[key], depth + 1);
       }
     }
     return tmp;
@@ -415,7 +415,7 @@ const _deepCopyLayer = (val: any, depth: number = 0) => {
     let k = val.length;
     const arr = new Array(k);
     while (k--) {
-      arr[k] = _deepCopyLayer(val[k], depth + 1);
+      arr[k] = deepCopyLayerImpl(val[k], depth + 1);
     }
     return arr;
   }
@@ -448,7 +448,7 @@ const _deepCopyLayer = (val: any, depth: number = 0) => {
  * Typed arrays and other non-null objects.
  */
 export const deepCopyLayer = <T extends ExcalidrawLayer>(val: T): Mutable<T> =>
-  _deepCopyLayer(val);
+  deepCopyLayerImpl(val);
 
 /**
  * utility wrapper to generate new id. In test env it reuses the old + postfix
@@ -561,13 +561,13 @@ export const duplicateLayers = (
   const groupNewIdsMap = new Map</* orig */ GroupId, /* new */ GroupId>();
 
   for (const layer of layers) {
-    const clonedLayer: Mutable<ExcalidrawLayer> = _deepCopyLayer(layer);
+    const clonedLayer: Mutable<ExcalidrawLayer> = deepCopyLayerImpl(layer);
 
     clonedLayer.id = maybeGetNewId(layer.id)!;
 
     if (opts?.randomizeSeed) {
       clonedLayer.seed = randomInteger();
-      bumpVersion(clonedLayer);
+      bumpUpdate(clonedLayer);
     }
 
     if (clonedLayer.groupIds) {

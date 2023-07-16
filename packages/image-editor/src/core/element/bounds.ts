@@ -1,7 +1,7 @@
 import { Drawable, Op } from "roughjs/bin/core";
 import rough from "roughjs/bin/rough";
 
-import { distance2d, rotate, rotatePoint } from "../math";
+import { distance2d, rotate, rotatePoint } from "../../lib/math/math";
 import { rescalePoints } from "../points";
 import {
   generateRoughOptions,

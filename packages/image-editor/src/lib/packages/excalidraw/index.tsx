@@ -207,7 +207,7 @@ export {
   isInvisiblySmallLayer
 } from "../../../core/layer";
 export {
-  bumpVersion,
+  bumpUpdate,
   mutateLayer,
   newLayerWith
 } from "../../../core/layer/mutateLayer";

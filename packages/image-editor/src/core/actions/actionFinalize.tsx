@@ -1,3 +1,4 @@
+import { isPathALoop } from "../../lib/math/math";
 import Scene from "../../lib/scene/Scene";
 import { done } from "../components/icons";
 import { ToolButton } from "../components/ToolButton";
@@ -11,7 +12,6 @@ import {
 import { LinearLayerEditor } from "../layer/linearLayerEditor";
 import { mutateLayer } from "../layer/mutateLayer";
 import { isBindingLayer, isLinearLayer } from "../layer/typeChecks";
-import { isPathALoop } from "../math";
 import { AppState } from "../types";
 import { resetCursor, updateActiveTool } from "../utils";
 import { register } from "./register";

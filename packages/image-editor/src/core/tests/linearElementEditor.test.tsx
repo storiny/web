@@ -1,6 +1,7 @@
 import { queryByTestId, queryByText } from "@testing-library/react";
 import ReactDOM from "react-dom";
 
+import { centerPoint } from "../../lib/math/math";
 import { ROUNDNESS, VERTICAL_ALIGN } from "../constants";
 import ExcalidrawApp from "../excalidraw-app";
 import { KEYS } from "../keys";
@@ -17,7 +18,6 @@ import {
   ExcalidrawTextLayerWithContainer,
   FontString
 } from "../layer/types";
-import { centerPoint } from "../math";
 import { reseed } from "../random";
 import * as Renderer from "../renderer/renderScene";
 import { API } from "../tests/helpers/api";

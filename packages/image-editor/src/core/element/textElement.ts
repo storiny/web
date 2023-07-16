@@ -362,7 +362,7 @@ export const getLineHeightInPx = (
 ) => fontSize * lineHeight;
 
 // FIXME rename to getApproxMinContainerHeight
-export const getApproxMinLineHeight = (
+export const getApproxMinContainerHeight = (
   fontSize: ExcalidrawTextLayer["fontSize"],
   lineHeight: ExcalidrawTextLayer["lineHeight"]
 ) => getLineHeightInPx(fontSize, lineHeight) + BOUND_TEXT_PADDING * 2;

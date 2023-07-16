@@ -11,3 +11,4 @@ export enum TextAlign {
 }
 
 export const DEFAULT_TEXT_ALIGN = TextAlign.LEFT;
+export const DEFAULT_VERTICAL_ALIGN = VerticalAlign.TOP;

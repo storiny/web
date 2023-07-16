@@ -1,4 +1,4 @@
-import { rotate } from "../math";
+import { rotate } from "../../lib/math/math";
 import { DEFAULT_SPACING } from "../renderer/renderScene";
 import { AppState, Zoom } from "../types";
 import { isTextLayer } from ".";

@@ -1,7 +1,3 @@
-import Scene from "../../lib/scene/Scene";
-import { DRAGGING_THRESHOLD } from "../constants";
-import History from "../history";
-import { shouldRotateWithDiscreteAngle } from "../keys";
 import {
   arePointsEqual,
   centerPoint,
@@ -14,7 +10,11 @@ import {
   mapIntervalToBezierT,
   rotate,
   rotatePoint
-} from "../math";
+} from "../../lib/math/math";
+import Scene from "../../lib/scene/Scene";
+import { DRAGGING_THRESHOLD } from "../constants";
+import History from "../history";
+import { shouldRotateWithDiscreteAngle } from "../keys";
 import { getShapeForLayer } from "../renderer/renderLayer";
 import { AppState, Point, PointerCoords } from "../types";
 import { Mutable } from "../utility-types";

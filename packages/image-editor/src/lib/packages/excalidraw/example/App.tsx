@@ -6,7 +6,6 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { EVENT, ROUNDNESS } from "../../../../core/constants";
 import { KEYS } from "../../../../core/keys";
 import { NonDeletedExcalidrawLayer } from "../../../../core/layer/types";
-import { distance2d } from "../../../../core/math";
 import {
   AppState,
   BinaryFileData,
@@ -24,6 +23,7 @@ import {
 } from "../../../../core/utils";
 import { fileOpen } from "../../../data/fs/filesystem";
 import { ImportedLibraryData } from "../../../data/types";
+import { distance2d } from "../../../math/math";
 import { loadSceneOrLibraryFromBlob } from "../../utils";
 import type * as TExcalidraw from "../index";
 import CustomFooter from "./CustomFooter";

@@ -1,11 +1,11 @@
-import Scene from "../../lib/scene/Scene";
-import { SHIFT_LOCKING_ANGLE } from "../constants";
 import {
   adjustXYWithRotation,
   centerPoint,
   rotate,
   rotatePoint
-} from "../math";
+} from "../../lib/math/math";
+import Scene from "../../lib/scene/Scene";
+import { SHIFT_LOCKING_ANGLE } from "../constants";
 import { rescalePoints } from "../points";
 import { Point, PointerDownState } from "../types";
 import type { Mutable } from "../utility-types";
@@ -21,7 +21,7 @@ import {
 import { LinearLayerEditor } from "./linearLayerEditor";
 import { mutateLayer } from "./mutateLayer";
 import {
-  getApproxMinLineHeight,
+  getApproxMinContainerHeight,
   getApproxMinLineWidth,
   getBoundTextLayer,
   getBoundTextLayerId,
@@ -455,7 +455,7 @@ export const resizeSingleLayer = (
         getFontString(boundTextLayer),
         boundTextLayer.lineHeight
       );
-      const minHeight = getApproxMinLineHeight(
+      const minHeight = getApproxMinContainerHeight(
         boundTextLayer.fontSize,
         boundTextLayer.lineHeight
       );

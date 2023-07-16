@@ -10,6 +10,7 @@ import {
 } from "react";
 
 import { isLocalLink, normalizeLink } from "../../lib/data/url/url";
+import { rotate } from "../../lib/math/math";
 import { getSelectedLayers } from "../../lib/scene";
 import { register } from "../actions/register";
 import { trackEvent } from "../analytics";
@@ -20,7 +21,6 @@ import { getTooltipDiv, updateTooltipPosition } from "../components/Tooltip";
 import { EVENT, HYPERLINK_TOOLTIP_DELAY, MIME_TYPES } from "../constants";
 import { t } from "../i18n";
 import { KEYS } from "../keys";
-import { rotate } from "../math";
 import { DEFAULT_LINK_SIZE } from "../renderer/renderLayer";
 import { AppState, ExcalidrawProps, Point, UIAppState } from "../types";
 import {

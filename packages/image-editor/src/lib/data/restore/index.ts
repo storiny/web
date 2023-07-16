@@ -20,7 +20,7 @@ import {
   refreshTextDimensions
 } from "../../../core/layer";
 import { LinearLayerEditor } from "../../../core/layer/linearLayerEditor";
-import { bumpVersion } from "../../../core/layer/mutateLayer";
+import { bumpUpdate } from "../../../core/layer/mutateLayer";
 import {
   detectLineHeight,
   getDefaultLineHeight,
@@ -333,7 +333,7 @@ export const restoreLayers = (
       if (migratedLayer) {
         const localLayer = localLayersMap?.get(layer.id);
         if (localLayer && localLayer.version > migratedLayer.version) {
-          migratedLayer = bumpVersion(migratedLayer, localLayer.version);
+          migratedLayer = bumpUpdate(migratedLayer, localLayer.version);
         }
         if (existingIds.has(migratedLayer.id)) {
           migratedLayer = { ...migratedLayer, id: randomId() };

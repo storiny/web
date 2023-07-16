@@ -1,18 +1,18 @@
 import { pointsOnBezierCurves } from "points-on-curve";
 import { Drawable } from "roughjs/bin/core";
 
-import * as GA from "../ga";
-import * as GADirection from "../gadirections";
-import * as GALine from "../galines";
-import * as GAPoint from "../gapoints";
-import * as GATransform from "../gatransforms";
 import {
   distance2d,
   isPathALoop,
   isPointInPolygon,
   rotate,
   rotatePoint
-} from "../math";
+} from "../../lib/math/math";
+import * as GA from "../ga";
+import * as GADirection from "../gadirections";
+import * as GALine from "../galines";
+import * as GAPoint from "../gapoints";
+import * as GATransform from "../gatransforms";
 import { getShapeForLayer } from "../renderer/renderLayer";
 import { FrameNameBoundsCache, Point } from "../types";
 import { AppState } from "../types";

@@ -140,7 +140,7 @@ export const newLayerWith = <TLayer extends ExcalidrawLayer>(
  *
  * NOTE: does not trigger re-render.
  */
-export const bumpVersion = (
+export const bumpUpdate = (
   layer: Mutable<ExcalidrawLayer>,
   version?: ExcalidrawLayer["version"]
 ) => {

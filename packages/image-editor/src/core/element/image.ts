@@ -12,7 +12,7 @@ import {
   InitializedExcalidrawImageLayer
 } from "./types";
 
-export const loadHTMLImageLayer = (dataURL: DataURL) =>
+export const loadHTMLImageElement = (dataURL: DataURL) =>
   new Promise<HTMLImageLayer>((resolve, reject) => {
     const image = new Image();
     image.onload = () => {
@@ -50,7 +50,7 @@ export const updateImageCache = async ({
                 throw new Error("Only images can be added to ImageCache");
               }
 
-              const imagePromise = loadHTMLImageLayer(fileData.dataURL);
+              const imagePromise = loadHTMLImageElement(fileData.dataURL);
               const data = {
                 image: imagePromise,
                 mimeType: fileData.mimeType

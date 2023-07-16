@@ -11,7 +11,7 @@ export type BinaryFileData = {
   mimeType:
     | ImageMime
     // Unknown file type
-    | typeof NonImageMime.BINARY;
+    | NonImageMime.BINARY;
 };
 
 export type BinaryFileMetadata = Omit<BinaryFileData, "dataURL">;

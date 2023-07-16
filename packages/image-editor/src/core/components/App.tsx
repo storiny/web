@@ -26,6 +26,7 @@ import Library, {
 } from "../../lib/data/library";
 import { restore, restoreLayers } from "../../lib/data/restore/restore";
 import { isLocalLink, normalizeLink } from "../../lib/data/url/url";
+import { distance2d, getGridPoint, isPathALoop } from "../../lib/math/math";
 import {
   calculateScrollCenter,
   getLayersAtPosition,
@@ -217,7 +218,7 @@ import {
 } from "../layer/Hyperlink";
 import {
   getInitializedImageLayers,
-  loadHTMLImageLayer,
+  loadHTMLImageElement,
   normalizeSVG,
   updateImageCache as _updateImageCache
 } from "../layer/image";
@@ -231,7 +232,7 @@ import {
 } from "../layer/newLayer";
 import {
   bindTextToShapeAfterDuplication,
-  getApproxMinLineHeight,
+  getApproxMinContainerHeight,
   getApproxMinLineWidth,
   getBoundTextLayer,
   getContainerCenter,
@@ -272,7 +273,6 @@ import {
   NonDeleted,
   NonDeletedExcalidrawLayer
 } from "../layer/types";
-import { distance2d, getGridPoint, isPathALoop } from "../math";
 import { invalidateShapeForLayer } from "../renderer/renderLayer";
 import { isVisibleLayer, renderScene } from "../renderer/renderScene";
 import { findShapeByKey, SHAPES } from "../shapes";
@@ -3151,7 +3151,7 @@ class App extends React.Component<AppProps, AppState> {
         getFontString(fontString),
         lineHeight
       );
-      const minHeight = getApproxMinLineHeight(fontSize, lineHeight);
+      const minHeight = getApproxMinContainerHeight(fontSize, lineHeight);
       const containerDims = getContainerDims(container);
       const newHeight = Math.max(containerDims.height, minHeight);
       const newWidth = Math.max(containerDims.width, minWidth);
@@ -6554,7 +6554,7 @@ class App extends React.Component<AppProps, AppState> {
     // SVG cannot be resized via `resizeImageFile` so we resize by rendering to
     // a small canvas
     if (imageFile.type === MIME_TYPES.svg) {
-      const img = await loadHTMLImageLayer(previewDataURL);
+      const img = await loadHTMLImageElement(previewDataURL);
 
       let height = Math.min(img.height, cursorImageSizePx);
       let width = height * (img.width / img.height);

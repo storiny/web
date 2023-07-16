@@ -2,7 +2,7 @@ import { getSelectedLayers } from "../lib/scene";
 import Scene from "../lib/scene/Scene";
 import { groupByFrames } from "./frame";
 import { getLayersInGroup } from "./groups";
-import { bumpVersion } from "./layer/mutateLayer";
+import { bumpUpdate } from "./layer/mutateLayer";
 import { isFrameLayer } from "./layer/typeChecks";
 import { ExcalidrawLayer } from "./layer/types";
 import { AppState } from "./types";
@@ -251,7 +251,7 @@ const _shiftLayers = (
 
   return layers.map((layer) => {
     if (targetLayersMap[layer.id]) {
-      return bumpVersion(layer);
+      return bumpUpdate(layer);
     }
     return layer;
   });
@@ -308,7 +308,7 @@ const _shiftLayersToEnd = (
   }
 
   const targetLayers = Object.values(targetLayersMap).map((layer) =>
-    bumpVersion(layer)
+    bumpUpdate(layer)
   );
 
   const leadingLayers = layers.slice(0, leadingIndex);
