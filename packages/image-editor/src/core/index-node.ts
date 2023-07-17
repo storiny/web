@@ -1,4 +1,4 @@
-import { exportToCanvas } from "../lib/scene/export";
+import { exportToCanvas } from "../lib/scene/export/export";
 import { getDefaultAppState } from "./appState";
 
 const { registerFont, createCanvas } = require("canvas");

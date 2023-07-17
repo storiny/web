@@ -1,5 +1,5 @@
 import { getSelectedLayers } from "../../lib/scene";
-import Scene from "../../lib/scene/Scene";
+import Scene from "../../lib/scene/scene/Scene";
 import {
   BOUND_TEXT_PADDING,
   DEFAULT_FONT_FAMILY,
@@ -579,7 +579,7 @@ export const charWidth = (() => {
 const DUMMY_TEXT = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".toLocaleUpperCase();
 
 // FIXME rename to getApproxMinContainerWidth
-export const getApproxMinLineWidth = (
+export const getApproxMinContainerWidth = (
   font: FontString,
   lineHeight: ExcalidrawTextLayer["lineHeight"]
 ) => {

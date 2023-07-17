@@ -2,7 +2,7 @@ import { isSomeLayerSelected } from "../../lib/scene";
 import {
   excludeLayersInFramesFromSelection,
   getSelectedLayers
-} from "../../lib/scene/selection";
+} from "../../lib/scene/selection/selection";
 import { DuplicateIcon } from "../components/icons";
 import { ToolButton } from "../components/ToolButton";
 import { GRID_SIZE } from "../constants";

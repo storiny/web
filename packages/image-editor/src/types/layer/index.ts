@@ -1,3 +1,5 @@
+import { MarkNonNullable } from "@storiny/types";
+
 import {
   Arrowhead,
   FillStyle,
@@ -98,8 +100,7 @@ export type ImageLayer = LayerPrimitive<LayerType.IMAGE> & {
   status: "pending" | "saved" | "error";
 };
 
-export type InitializedImageLayer = Omit<ImageLayer, "fileId"> &
-  NonNullable<Pick<ImageLayer, "fileId">>;
+export type InitializedImageLayer = MarkNonNullable<ImageLayer, "fileId">;
 
 export type TextLayer = LayerPrimitive<LayerType.TEXT> & {
   baseline: number;

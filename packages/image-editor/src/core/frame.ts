@@ -1,6 +1,8 @@
 import { isPointWithinBounds } from "../lib/math/math";
 import { getLayersWithinSelection, getSelectedLayers } from "../lib/scene";
-import Scene, { ExcalidrawLayersIncludingDeleted } from "../lib/scene/Scene";
+import Scene, {
+  ExcalidrawLayersIncludingDeleted
+} from "../lib/scene/scene/Scene";
 import { getLayersInGroup, selectGroupsFromGivenLayers } from "./groups";
 import { getCommonBounds, getLayerAbsoluteCoords, isTextLayer } from "./layer";
 import { isFrameLayer } from "./layer";

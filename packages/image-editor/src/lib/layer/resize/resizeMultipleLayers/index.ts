@@ -10,10 +10,10 @@ import {
   TextLayer,
   TextLayerWithContainer
 } from "../../../../types";
-import Scene from "../../../scene/Scene";
+import Scene from "../../../scene/scene/Scene";
 import { updateBoundLayers } from "../../binding";
 import { getCommonBoundingBox, getLayerPointsCoords } from "../../bounds";
-import { LinearLayerEditor } from "../../LinearLayerEditor";
+import { LinearLayerEditor } from "../../linearLayerEditor";
 import { mutateLayer } from "../../mutate";
 import {
   isBoundToContainer,

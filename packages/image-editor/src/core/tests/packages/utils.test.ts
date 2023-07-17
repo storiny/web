@@ -1,5 +1,5 @@
 import * as utils from "../../../lib/packages/utils";
-import * as mockedSceneExportUtils from "../../../lib/scene/export";
+import * as mockedSceneExportUtils from "../../../lib/scene/export/export";
 import { MIME_TYPES } from "../../constants";
 import { diagramFactory } from "../fixtures/diagramFixture";
 

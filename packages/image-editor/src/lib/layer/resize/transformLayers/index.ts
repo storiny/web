@@ -7,7 +7,7 @@ import {
   TextLayerWithContainer
 } from "../../../../types";
 import { adjustXYWithRotation, rotate } from "../../../math";
-import Scene from "../../../scene/Scene";
+import Scene from "../../../scene/scene/Scene";
 import { updateBoundLayers } from "../../binding";
 import {
   getLayerAbsoluteCoords,
@@ -18,7 +18,7 @@ import { isArrowLayer, isTextLayer } from "../../predicates";
 import {
   MaybeTransformHandleType,
   TransformHandleType
-} from "../../transformHandles";
+} from "../../transformHandles/transformHandles";
 import { measureFontSizeFromWidth } from "../measureFontSizeFromWidth";
 import { normalizeAngle } from "../normalizeAngle";
 import { resizeMultipleLayers } from "../resizeMultipleLayers";

@@ -10,7 +10,7 @@ import {
 } from "@testing-library/react";
 
 import { ImportedDataState } from "../../lib/data/types";
-import { getSelectedLayers } from "../../lib/scene/selection";
+import { getSelectedLayers } from "../../lib/scene/selection/selection";
 import { STORAGE_KEYS } from "../excalidraw-app/app_constants";
 import { ExcalidrawLayer } from "../layer/types";
 import { SceneData } from "../types";

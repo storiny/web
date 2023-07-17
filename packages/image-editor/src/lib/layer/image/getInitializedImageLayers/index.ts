@@ -1,4 +1,5 @@
 import { InitializedImageLayer, Layer } from "../../../../types";
+import { isInitializedImageLayer } from "../../predicates";
 
 /**
  * Filters the initialized layers out from the given layers

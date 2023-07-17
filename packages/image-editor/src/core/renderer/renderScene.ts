@@ -8,8 +8,8 @@ import {
   getScrollBars,
   SCROLLBAR_COLOR,
   SCROLLBAR_WIDTH
-} from "../../lib/scene/scrollbars";
-import { getSelectedLayers } from "../../lib/scene/selection";
+} from "../../lib/scene/scrollbars/scrollbars";
+import { getSelectedLayers } from "../../lib/scene/selection/selection";
 import { RenderConfig } from "../../lib/scene/types";
 import { getClientColor } from "../clients";
 import { FRAME_STYLE, THEME_FILTER } from "../constants";

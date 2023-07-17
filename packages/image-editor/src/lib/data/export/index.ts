@@ -1,8 +1,25 @@
 import { DEFAULT_EXPORT_PADDING } from "../../../core/constants";
-import { BinaryFiles, EditorState, NonDeletedLayer } from "../../../types";
-import { exportToCanvas } from "../../scene/export";
+import {
+  BinaryFiles,
+  EditorState,
+  Layer,
+  NonDeletedLayer
+} from "../../../types";
+import { getNonDeletedLayers, isLinearLayerType } from "../../layer";
+import { exportToCanvas } from "../../scene/export/export";
 import { canvasToBlob } from "../blob";
 import { fileSave, FileSystemHandle } from "../fs";
+
+/**
+ * Cleans up layers for exporting
+ * @param layers Layers to clean
+ */
+export const clearLayersForExport = (layers: readonly Layer[]): Layer[] =>
+  getNonDeletedLayers(layers).map((layer) =>
+    isLinearLayerType(layer.type)
+      ? { ...layer, lastCommittedPoint: null }
+      : layer
+  );
 
 /**
  * Exports canvas to PNG

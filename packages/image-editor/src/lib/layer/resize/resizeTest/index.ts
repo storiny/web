@@ -5,7 +5,7 @@ import {
   MaybeTransformHandleType,
   TransformHandle,
   TransformHandleType
-} from "../../transformHandles";
+} from "../../transformHandles/transformHandles";
 
 /**
  * Predicate function for determining whether X and Y values are inside

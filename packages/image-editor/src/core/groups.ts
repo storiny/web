@@ -1,5 +1,5 @@
 import { getSelectedLayers } from "../lib/scene";
-import { makeNextSelectedLayerIds } from "../lib/scene/selection";
+import { makeNextSelectedLayerIds } from "../lib/scene/selection/selection";
 import { getBoundTextLayer } from "./layer/textLayer";
 import { ExcalidrawLayer, GroupId, NonDeleted } from "./layer/types";
 import { AppState } from "./types";

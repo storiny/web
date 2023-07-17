@@ -38,13 +38,13 @@ import {
   isSomeLayerSelected
 } from "../../lib/scene";
 import { Fonts } from "../../lib/scene/Fonts";
-import Scene from "../../lib/scene/Scene";
+import Scene from "../../lib/scene/scene/Scene";
 import {
   excludeLayersInFramesFromSelection,
   makeNextSelectedLayerIds
-} from "../../lib/scene/selection";
+} from "../../lib/scene/selection/selection";
 import { RenderConfig, ScrollBars } from "../../lib/scene/types";
-import { getStateForZoom } from "../../lib/scene/zoom";
+import { getStateForZoom } from "../../lib/scene/zoom/zoom";
 import {
   actionAddToLibrary,
   actionBindText,
@@ -233,7 +233,7 @@ import {
 import {
   bindTextToShapeAfterDuplication,
   getApproxMinContainerHeight,
-  getApproxMinLineWidth,
+  getApproxMinContainerWidth,
   getBoundTextLayer,
   getContainerCenter,
   getContainerDims,
@@ -3147,7 +3147,7 @@ class App extends React.Component<AppProps, AppState> {
         fontSize,
         fontFamily
       };
-      const minWidth = getApproxMinLineWidth(
+      const minWidth = getApproxMinContainerWidth(
         getFontString(fontString),
         lineHeight
       );

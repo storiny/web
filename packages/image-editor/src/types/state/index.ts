@@ -4,6 +4,7 @@ import {
   Arrowhead,
   ChartType,
   FillStyle,
+  ImageMime,
   PointerType,
   Shape,
   SHAPES,
@@ -11,9 +12,12 @@ import {
   StrokeStyle,
   TextAlign
 } from "../../constants";
+import { LinearLayerEditor, SuggestedBinding } from "../../lib/layer";
+import { BinaryFiles } from "../binary";
 import { Spreadsheet } from "../chart";
 import {
   BindableLayer,
+  FileId,
   GroupId,
   ImageLayer,
   Layer,
@@ -75,6 +79,7 @@ export interface RootState {
   editingLinearLayer: LinearLayerEditor | null;
   errorMessage: React.ReactNode;
   exportScale: number;
+  // eslint-disable-next-line no-undef
   fileHandle: FileSystemHandle | null;
   gridSize: number | null;
   height: number;
@@ -134,3 +139,27 @@ export type EditorState = Omit<
   | "scrollX"
   | "scrollY"
 >;
+
+/**
+ * Subset of editor class properties that we need to use elsewhere
+ * in the editor
+ */
+export interface EditorClassProperties {
+  canvas: HTMLCanvasElement | null;
+  // device: App["device"];
+  files: BinaryFiles;
+  focusContainer(): void;
+  // id: App["id"];
+  imageCache: Map<
+    FileId,
+    {
+      image: HTMLImageElement | Promise<HTMLImageElement>;
+      mimeType: ImageMime;
+    }
+  >;
+  // lastViewportPosition: App["lastViewportPosition"];
+  // onExportImage: App["onExportImage"];
+  // onInsertLayers: App["onInsertLayers"];
+  // pasteFromClipboard: App["pasteFromClipboard"];
+  // scene: App["scene"];
+}

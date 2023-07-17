@@ -1,4 +1,4 @@
-import Scene from "../../lib/scene/Scene";
+import Scene from "../../lib/scene/scene/Scene";
 import { isSelectedViaGroup } from "../groups";
 import { AppState, PointerDownState } from "../types";
 import { updateBoundLayers } from "./binding";

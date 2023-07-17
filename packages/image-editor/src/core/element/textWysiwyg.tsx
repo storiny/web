@@ -1,4 +1,4 @@
-import Scene from "../../lib/scene/Scene";
+import Scene from "../../lib/scene/scene/Scene";
 import { actionZoomIn, actionZoomOut } from "../actions/actionCanvas";
 import {
   actionDecreaseFontSize,

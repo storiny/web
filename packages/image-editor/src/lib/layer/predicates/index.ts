@@ -13,6 +13,7 @@ export * from "./isImageLayer";
 export * from "./isInitializedImageLayer";
 export * from "./isLinearLayer";
 export * from "./isLinearLayerType";
+export * from "./isNonDeletedLayer";
 export * from "./isTextBindableContainer";
 export * from "./isTextLayer";
 export * from "./isUsingAdaptiveRadius";

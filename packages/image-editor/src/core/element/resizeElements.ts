@@ -4,7 +4,7 @@ import {
   rotate,
   rotatePoint
 } from "../../lib/math/math";
-import Scene from "../../lib/scene/Scene";
+import Scene from "../../lib/scene/scene/Scene";
 import { SHIFT_LOCKING_ANGLE } from "../constants";
 import { rescalePoints } from "../points";
 import { Point, PointerDownState } from "../types";
@@ -22,7 +22,7 @@ import { LinearLayerEditor } from "./linearLayerEditor";
 import { mutateLayer } from "./mutateLayer";
 import {
   getApproxMinContainerHeight,
-  getApproxMinLineWidth,
+  getApproxMinContainerWidth,
   getBoundTextLayer,
   getBoundTextLayerId,
   getBoundTextMaxHeight,
@@ -451,7 +451,7 @@ export const resizeSingleLayer = (
         baseline: nextFont.baseline
       };
     } else {
-      const minWidth = getApproxMinLineWidth(
+      const minWidth = getApproxMinContainerWidth(
         getFontString(boundTextLayer),
         boundTextLayer.lineHeight
       );

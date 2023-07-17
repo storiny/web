@@ -3,7 +3,7 @@ import path from "path";
 import util from "util";
 
 import { getMimeType } from "../../../lib/data/blob/blob";
-import { getSelectedLayers } from "../../../lib/scene/selection";
+import { getSelectedLayers } from "../../../lib/scene/selection/selection";
 import { getDefaultAppState } from "../../appState";
 import { DEFAULT_VERTICAL_ALIGN, ROUNDNESS } from "../../constants";
 import { newLayer, newLinearLayer, newTextLayer } from "../../layer";

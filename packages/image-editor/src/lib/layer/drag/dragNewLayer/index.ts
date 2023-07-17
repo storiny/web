@@ -1,6 +1,7 @@
 import { LayerType } from "../../../../constants";
 import { NonDeletedLayer } from "../../../../types";
-import { getPerfectLayerSize } from "../../sizeHelpers";
+import { mutateLayer } from "../../mutate";
+import { getPerfectLayerSize } from "../../resize";
 
 /**
  * Drag handler for new layer

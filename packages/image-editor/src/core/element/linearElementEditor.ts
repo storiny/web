@@ -11,7 +11,7 @@ import {
   rotate,
   rotatePoint
 } from "../../lib/math/math";
-import Scene from "../../lib/scene/Scene";
+import Scene from "../../lib/scene/scene/Scene";
 import { DRAGGING_THRESHOLD } from "../constants";
 import History from "../history";
 import { shouldRotateWithDiscreteAngle } from "../keys";

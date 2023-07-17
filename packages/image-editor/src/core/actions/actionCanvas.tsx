@@ -1,6 +1,6 @@
 import { getNormalizedZoom, getSelectedLayers } from "../../lib/scene";
-import { centerScrollOn } from "../../lib/scene/scroll";
-import { getStateForZoom } from "../../lib/scene/zoom";
+import { centerScrollOn } from "../../lib/scene/scroll/scroll";
+import { getStateForZoom } from "../../lib/scene/zoom/zoom";
 import {
   getDefaultAppState,
   isEraserActive,

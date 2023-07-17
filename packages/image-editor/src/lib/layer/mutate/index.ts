@@ -2,7 +2,7 @@ import { Mutable } from "@storiny/types";
 
 import { Layer, Point } from "../../../types";
 import { invalidateShapeForLayer } from "../../renderer";
-import Scene from "../../scene/Scene";
+import Scene from "../../scene/scene/Scene";
 import { getSizeFromPoints } from "../points";
 import { getUpdatedTimestamp } from "../utils";
 

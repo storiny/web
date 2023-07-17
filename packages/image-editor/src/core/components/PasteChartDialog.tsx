@@ -3,7 +3,7 @@ import "./PasteChartDialog.scss";
 import oc from "open-color";
 import React, { useLayoutEffect, useRef, useState } from "react";
 
-import { exportToSvg } from "../../lib/scene/export";
+import { exportToSvg } from "../../lib/scene/export/export";
 import { trackEvent } from "../analytics";
 import { ChartLayers, renderSpreadsheet, Spreadsheet } from "../charts";
 import { t } from "../i18n";

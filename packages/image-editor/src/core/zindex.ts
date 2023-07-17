@@ -1,5 +1,5 @@
 import { getSelectedLayers } from "../lib/scene";
-import Scene from "../lib/scene/Scene";
+import Scene from "../lib/scene/scene/Scene";
 import { groupByFrames } from "./frame";
 import { getLayersInGroup } from "./groups";
 import { bumpUpdate } from "./layer/mutateLayer";

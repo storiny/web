@@ -5,7 +5,7 @@ import { loadFromJSON, saveAsJSON } from "../../lib/data/export";
 import { nativeFileSystemSupported } from "../../lib/data/fs/filesystem";
 import { resaveAsImageWithScene } from "../../lib/data/resave/resave";
 import { getSelectedLayers, isSomeLayerSelected } from "../../lib/scene";
-import { getExportSize } from "../../lib/scene/export";
+import { getExportSize } from "../../lib/scene/export/export";
 import { useDevice } from "../components/App";
 import { CheckboxItem } from "../components/CheckboxItem";
 import { DarkModeToggle } from "../components/DarkModeToggle";

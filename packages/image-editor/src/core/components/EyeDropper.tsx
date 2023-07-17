@@ -7,7 +7,7 @@ import { createPortal } from "react-dom";
 import { useCreatePortalContainer } from "../../lib/hooks/useCreatePortalContainer";
 import { useOutsideClick } from "../../lib/hooks/useOutsideClick";
 import { getSelectedLayers } from "../../lib/scene";
-import Scene from "../../lib/scene/Scene";
+import Scene from "../../lib/scene/scene/Scene";
 import { COLOR_PALETTE, rgbToHex } from "../colors";
 import { EVENT } from "../constants";
 import { useUIAppState } from "../context/ui-appState";

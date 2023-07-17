@@ -6,9 +6,11 @@ import { pointsOnBezierCurves } from "points-on-curve";
 import { Drawable } from "roughjs/bin/core";
 
 import { LayerType, StrokeRoundness } from "../../../constants";
+import { isTransparent } from "../../../core/utils";
 import {
   BindableLayer,
   DiamondLayer,
+  EditorState,
   EllipseLayer,
   FreeDrawLayer,
   ImageLayer,
@@ -20,7 +22,13 @@ import {
   RectangleLayer,
   TextLayer
 } from "../../../types";
-import { distance2d, isPointInPolygon, rotate, rotatePoint } from "../../math";
+import {
+  distance2d,
+  isPathALoop,
+  isPointInPolygon,
+  rotate,
+  rotatePoint
+} from "../../math";
 import { getShapeForLayer } from "../../renderer";
 import { getCurvePathOps, getLayerAbsoluteCoords } from "../bounds";
 import * as GA from "../ga";
@@ -28,6 +36,7 @@ import * as GADirection from "../gadirections";
 import * as GALine from "../galines";
 import * as GAPoint from "../gapoints";
 import * as GATransform from "../gatransforms";
+import { hasBoundTextLayer, isImageLayer, isTextLayer } from "../predicates";
 
 interface HitTestArgs {
   check: (distance: number, threshold: number) => boolean;
@@ -40,24 +49,24 @@ interface HitTestArgs {
  * Predicate function for determining whether a layer can be dragged from inside
  * @param layer Layer
  */
-// const isLayerDraggableFromInside = (layer: NonDeletedLayer): boolean => {
-//   if (layer.type === LayerType.ARROW) {
-//     return false;
-//   }
-//
-//   if (layer.type === LayerType.FREE_DRAW) {
-//     return true;
-//   }
-//
-//   const isDraggableFromInside =
-//     !isTransparent(layer.backgroundColor) || hasBoundTextLayer(layer);
-//
-//   if (layer.type === LayerType.LINE) {
-//     return isDraggableFromInside && isPathALoop(layer.points);
-//   }
-//
-//   return isDraggableFromInside || isImageLayer(layer);
-// };
+const isLayerDraggableFromInside = (layer: NonDeletedLayer): boolean => {
+  if (layer.type === LayerType.ARROW) {
+    return false;
+  }
+
+  if (layer.type === LayerType.FREE_DRAW) {
+    return true;
+  }
+
+  const isDraggableFromInside =
+    !isTransparent(layer.backgroundColor) || hasBoundTextLayer(layer);
+
+  if (layer.type === LayerType.LINE) {
+    return isDraggableFromInside && isPathALoop(layer.points);
+  }
+
+  return isDraggableFromInside || isImageLayer(layer);
+};
 
 // export const hitTest = (
 //   layer: NonDeletedLayer,
@@ -138,26 +147,26 @@ interface HitTestArgs {
 //   );
 // };
 //
-// export const isHittingLayerNotConsideringBoundingBox = (
-//   layer: NonDeletedExcalidrawLayer,
-//   appState: AppState,
-//   frameNameBoundsCache: FrameNameBoundsCache | null,
-//   point: Point
-// ): boolean => {
-//   const threshold = 10 / appState.zoom.value;
-//   const check = isTextLayer(layer)
-//     ? isStrictlyInside
-//     : isLayerDraggableFromInside(layer)
-//     ? isInsideCheck
-//     : isNearCheck;
-//   return hitTestPointAgainstLayer({
-//     layer,
-//     point,
-//     threshold,
-//     check,
-//     frameNameBoundsCache
-//   });
-// };
+
+export const isHittingLayerNotConsideringBoundingBox = (
+  layer: NonDeletedLayer,
+  editorState: EditorState,
+  point: Point
+): boolean => {
+  const threshold = 10 / editorState.zoom.value;
+  const check = isTextLayer(layer)
+    ? isStrictlyInside
+    : isLayerDraggableFromInside(layer)
+    ? isInsideCheck
+    : isNearCheck;
+
+  return hitTestPointAgainstLayer({
+    layer,
+    point,
+    threshold,
+    check
+  });
+};
 
 // const isLayerSelected = (
 //   appState: AppState,
@@ -285,8 +294,11 @@ export const distanceToBindableLayer = (
   }
 };
 
-// const isStrictlyInside = (distance: number, threshold: number): boolean =>
-//   distance < 0;
+/**
+ * Predicate function for checking if the distance is less than zero
+ * @param distance Distance
+ */
+const isStrictlyInside = (distance: number): boolean => distance < 0;
 
 /**
  * Predicate function for checking if the distance value is inside the threshold
@@ -296,8 +308,13 @@ export const distanceToBindableLayer = (
 const isInsideCheck = (distance: number, threshold: number): boolean =>
   distance < threshold;
 
-// const isNearCheck = (distance: number, threshold: number): boolean =>
-//   Math.abs(distance) < threshold;
+/**
+ * Predicate function for near check
+ * @param distance Distance
+ * @param threshold Threshold
+ */
+const isNearCheck = (distance: number, threshold: number): boolean =>
+  Math.abs(distance) < threshold;
 
 /**
  * Predicate function for checking if the disance value is outside the threshold

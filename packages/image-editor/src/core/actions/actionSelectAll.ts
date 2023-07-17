@@ -1,4 +1,4 @@
-import { excludeLayersInFramesFromSelection } from "../../lib/scene/selection";
+import { excludeLayersInFramesFromSelection } from "../../lib/scene/selection/selection";
 import { selectGroupsForSelectedLayers } from "../groups";
 import { KEYS } from "../keys";
 import { getNonDeletedLayers, isTextLayer } from "../layer";

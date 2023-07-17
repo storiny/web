@@ -1,5 +1,5 @@
 import { LinearLayer, NonDeleted } from "../../../../types";
-import { MaybeTransformHandleType } from "../../transformHandles";
+import { MaybeTransformHandleType } from "../../transformHandles/transformHandles";
 
 /**
  * Returns the resize arrow direction

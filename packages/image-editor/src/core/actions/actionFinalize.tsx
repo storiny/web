@@ -1,5 +1,5 @@
 import { isPathALoop } from "../../lib/math/math";
-import Scene from "../../lib/scene/Scene";
+import Scene from "../../lib/scene/scene/Scene";
 import { done } from "../components/icons";
 import { ToolButton } from "../components/ToolButton";
 import { t } from "../i18n";

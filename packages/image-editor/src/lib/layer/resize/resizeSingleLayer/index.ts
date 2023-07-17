@@ -9,7 +9,7 @@ import { updateBoundLayers } from "../../binding";
 import { getResizedLayerAbsoluteCoords } from "../../bounds";
 import { mutateLayer } from "../../mutate";
 import { isFreeDrawLayer, isLinearLayer } from "../../predicates";
-import { TransformHandleDirection } from "../../transformHandles";
+import { TransformHandleDirection } from "../../transformHandles/transformHandles";
 import { measureFontSizeFromWidth } from "../measureFontSizeFromWidth";
 
 /**
@@ -151,7 +151,7 @@ export const resizeSingleLayer = (
         baseline: nextFont.baseline
       };
     } else {
-      const minWidth = getApproxMinLineWidth(
+      const minWidth = getApproxMinContainerWidth(
         getFontString(boundTextLayer),
         boundTextLayer.lineHeight
       );

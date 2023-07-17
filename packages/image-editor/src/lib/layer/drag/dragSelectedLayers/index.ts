@@ -1,9 +1,13 @@
+import { isSelectedViaGroup } from "../../../../core/groups";
 import {
   EditorState,
   NonDeletedLayer,
   PointerDownState
 } from "../../../../types";
+import { updateBoundLayers } from "../../binding";
 import { getCommonBounds } from "../../bounds";
+import { mutateLayer } from "../../mutate";
+import { getBoundTextLayer } from "../../text";
 
 /**
  * Updates layer coordinates
@@ -82,7 +86,7 @@ export const dragSelectedLayers = (
       // Container isn't part of any group
       // (perf optimization, so that we don't check `isSelectedViaGroup()` in every case)
       !layer.groupIds.length ||
-      // Container is part of a group, but we're dragging the container directly
+      // The container is part of a group, but we're dragging the container directly
       (editorState.editingGroupId && !isSelectedViaGroup(editorState, layer))
     ) {
       const textLayer = getBoundTextLayer(layer);

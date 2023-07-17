@@ -1,7 +1,10 @@
 import React from "react";
 
 import { calculateScrollCenter } from "../../lib/scene";
-import { SCROLLBAR_MARGIN, SCROLLBAR_WIDTH } from "../../lib/scene/scrollbars";
+import {
+  SCROLLBAR_MARGIN,
+  SCROLLBAR_WIDTH
+} from "../../lib/scene/scrollbars/scrollbars";
 import { actionToggleStats } from "../actions";
 import { ActionManager } from "../actions/manager";
 import { isHandToolActive } from "../appState";

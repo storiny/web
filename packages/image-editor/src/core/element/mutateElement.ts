@@ -1,4 +1,4 @@
-import Scene from "../../lib/scene/Scene";
+import Scene from "../../lib/scene/scene/Scene";
 import { getSizeFromPoints } from "../points";
 import { randomInteger } from "../random";
 import { invalidateShapeForLayer } from "../renderer/renderLayer";

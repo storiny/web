@@ -1,5 +1,5 @@
 import { getLayerAtPosition } from "../../lib/scene";
-import Scene from "../../lib/scene/Scene";
+import Scene from "../../lib/scene/scene/Scene";
 import { KEYS } from "../keys";
 import { AppState } from "../types";
 import { arrayToMap, tupleToCoors } from "../utils";

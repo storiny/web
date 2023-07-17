@@ -5,7 +5,7 @@ import {
   encodeSvgMetadata
 } from "../../lib/data/image/image";
 import { serializeAsJSON } from "../../lib/data/json/json";
-import { exportToSvg } from "../../lib/scene/export";
+import { exportToSvg } from "../../lib/scene/export/export";
 import { getDefaultAppState } from "../appState";
 import ExcalidrawApp from "../excalidraw-app";
 import { FileId } from "../layer/types";

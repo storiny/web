@@ -1,5 +1,5 @@
 import { exportCanvas } from "../../lib/data/export";
-import { getSelectedLayers } from "../../lib/scene/selection";
+import { getSelectedLayers } from "../../lib/scene/selection/selection";
 import {
   copyTextToSystemClipboard,
   copyToClipboard,

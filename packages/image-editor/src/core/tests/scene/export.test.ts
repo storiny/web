@@ -1,4 +1,4 @@
-import * as exportUtils from "../../../lib/scene/export";
+import * as exportUtils from "../../../lib/scene/export/export";
 import { NonDeletedExcalidrawLayer } from "../../layer/types";
 import {
   diamondFixture,
