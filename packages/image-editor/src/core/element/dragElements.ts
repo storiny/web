@@ -17,7 +17,7 @@ export const dragSelectedLayers = (
   lockDirection: boolean = false,
   distanceX: number = 0,
   distanceY: number = 0,
-  appState: AppState,
+  editorState: AppState,
   scene: Scene
 ) => {
   const [x1, y1] = getCommonBounds(selectedLayers);
@@ -54,7 +54,7 @@ export const dragSelectedLayers = (
       // (perf optim so we don't check `isSelectedViaGroup()` in every case)
       !layer.groupIds.length ||
       // container is part of a group, but we're dragging the container directly
-      (appState.editingGroupId && !isSelectedViaGroup(appState, layer))
+      (editorState.editingGroupId && !isSelectedViaGroup(editorState, layer))
     ) {
       const textLayer = getBoundTextLayer(layer);
       if (

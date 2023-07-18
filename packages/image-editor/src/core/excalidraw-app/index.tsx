@@ -21,8 +21,17 @@ import {
   Excalidraw,
   LiveCollaborationTrigger
 } from "../../lib/packages/excalidraw/index";
+import {
+  debounce,
+  getFrame,
+  getVersion,
+  isRunningInIframe,
+  isTestEnv,
+  preventUnload,
+  ResolvablePromise,
+  resolvablePromise
+} from "../../lib/utils/utils";
 import { trackEvent } from "../analytics";
-import { getDefaultAppState } from "../appState";
 import { ErrorDialog } from "../components/ErrorDialog";
 import { OverwriteConfirmDialog } from "../components/OverwriteConfirm/OverwriteConfirm";
 import { openConfirmModal } from "../components/OverwriteConfirm/OverwriteConfirmState";
@@ -36,6 +45,7 @@ import {
   TITLE_TIMEOUT,
   VERSION_TIMEOUT
 } from "../constants";
+import { getDefaultAppState } from "../editorState";
 import { t } from "../i18n";
 import { useAtomWithInitialValue } from "../jotai";
 import { newLayerWith } from "../layer/mutateLayer";
@@ -56,16 +66,6 @@ import {
   UIAppState
 } from "../types";
 import { ResolutionType } from "../utility-types";
-import {
-  debounce,
-  getFrame,
-  getVersion,
-  isRunningInIframe,
-  isTestEnv,
-  preventUnload,
-  ResolvablePromise,
-  resolvablePromise
-} from "../utils";
 import {
   FIREBASE_STORAGE_PREFIXES,
   STORAGE_KEYS,
@@ -203,7 +203,7 @@ const initializeScene = async (opts: {
     } catch (error: any) {
       return {
         scene: {
-          appState: {
+          editorState: {
             errorMessage: t("alerts.invalidSceneUrl")
           }
         },
@@ -220,14 +220,15 @@ const initializeScene = async (opts: {
     return {
       // when collaborating, the state may have already been updated at this
       // point (we may have received updates from other clients), so reconcile
-      // layers and appState with existing state
+      // layers and editorState with existing state
       scene: {
         ...scene,
-        appState: {
+        editorState: {
           ...restoreAppState(
             {
-              ...scene?.appState,
-              theme: localDataState?.appState?.theme || scene?.appState?.theme
+              ...scene?.editorState,
+              theme:
+                localDataState?.editorState?.theme || scene?.editorState?.theme
             },
             excalidrawAPI.getAppState()
           ),
@@ -388,7 +389,7 @@ const ExcalidrawWrapper = () => {
         ) {
           collabAPI.stopCollaboration(false);
         }
-        excalidrawAPI.updateScene({ appState: { isLoading: true } });
+        excalidrawAPI.updateScene({ editorState: { isLoading: true } });
 
         initializeScene({ collabAPI, excalidrawAPI }).then((data) => {
           loadImages(data);
@@ -528,7 +529,7 @@ const ExcalidrawWrapper = () => {
     () =>
       localStorage.getItem(STORAGE_KEYS.LOCAL_STORAGE_THEME) ||
       // FIXME migration from old LS scheme. Can be removed later. #5660
-      importFromLocalStorage().appState?.theme ||
+      importFromLocalStorage().editorState?.theme ||
       THEME.LIGHT
   );
 
@@ -541,19 +542,19 @@ const ExcalidrawWrapper = () => {
 
   const onChange = (
     layers: readonly ExcalidrawLayer[],
-    appState: AppState,
+    editorState: AppState,
     files: BinaryFiles
   ) => {
     if (collabAPI?.isCollaborating()) {
       collabAPI.syncLayers(layers);
     }
 
-    setTheme(appState.theme);
+    setTheme(editorState.theme);
 
     // this check is redundant, but since this is a hot path, it's best
     // not to evaludate the nested expression every time
     if (!LocalData.isSavePaused()) {
-      LocalData.save(layers, appState, files, () => {
+      LocalData.save(layers, editorState, files, () => {
         if (excalidrawAPI) {
           let didChange = false;
 
@@ -586,7 +587,7 @@ const ExcalidrawWrapper = () => {
 
   const onExportToBackend = async (
     exportedLayers: readonly NonDeletedExcalidrawLayer[],
-    appState: Partial<AppState>,
+    editorState: Partial<AppState>,
     files: BinaryFiles,
     canvas: HTMLCanvasLayer | null
   ) => {
@@ -598,9 +599,9 @@ const ExcalidrawWrapper = () => {
         const { url, errorMessage } = await exportToBackend(
           exportedLayers,
           {
-            ...appState,
-            viewBackgroundColor: appState.exportBackground
-              ? appState.viewBackgroundColor
+            ...editorState,
+            viewBackgroundColor: editorState.exportBackground
+              ? editorState.viewBackgroundColor
               : getDefaultAppState().viewBackgroundColor
           },
           files
@@ -625,10 +626,10 @@ const ExcalidrawWrapper = () => {
 
   const renderCustomStats = (
     layers: readonly NonDeletedExcalidrawLayer[],
-    appState: UIAppState
+    editorState: UIAppState
   ) => (
     <CustomStats
-      appState={appState}
+      editorState={editorState}
       layers={layers}
       setToast={(message) => excalidrawAPI!.setToast({ message })}
     />
@@ -658,14 +659,14 @@ const ExcalidrawWrapper = () => {
             toggleTheme: true,
             export: {
               onExportToBackend,
-              renderCustomUI: (layers, appState, files) => (
+              renderCustomUI: (layers, editorState, files) => (
                 <ExportToExcalidrawPlus
-                  appState={appState}
+                  editorState={editorState}
                   files={files}
                   layers={layers}
                   onError={(error) => {
                     excalidrawAPI?.updateScene({
-                      appState: {
+                      editorState: {
                         errorMessage: error.message
                       }
                     });

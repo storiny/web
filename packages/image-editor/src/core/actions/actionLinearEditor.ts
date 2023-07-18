@@ -10,43 +10,43 @@ export const actionToggleLinearEditor = register({
   trackEvent: {
     category: "layer"
   },
-  predicate: (layers, appState) => {
-    const selectedLayers = getSelectedLayers(layers, appState);
+  predicate: (layers, editorState) => {
+    const selectedLayers = getSelectedLayers(layers, editorState);
     if (selectedLayers.length === 1 && isLinearLayer(selectedLayers[0])) {
       return true;
     }
     return false;
   },
-  perform: (layers, appState, _, app) => {
+  perform: (layers, editorState, _, app) => {
     const selectedLayer = getSelectedLayers(
       getNonDeletedLayers(layers),
-      appState,
+      editorState,
       {
         includeBoundTextLayer: true
       }
     )[0] as ExcalidrawLinearLayer;
 
     const editingLinearLayer =
-      appState.editingLinearLayer?.layerId === selectedLayer.id
+      editorState.editingLinearLayer?.layerId === selectedLayer.id
         ? null
         : new LinearLayerEditor(selectedLayer, app.scene);
     return {
-      appState: {
-        ...appState,
+      editorState: {
+        ...editorState,
         editingLinearLayer
       },
       commitToHistory: false
     };
   },
-  contextItemLabel: (layers, appState) => {
+  contextItemLabel: (layers, editorState) => {
     const selectedLayer = getSelectedLayers(
       getNonDeletedLayers(layers),
-      appState,
+      editorState,
       {
         includeBoundTextLayer: true
       }
     )[0] as ExcalidrawLinearLayer;
-    return appState.editingLinearLayer?.layerId === selectedLayer.id
+    return editorState.editingLinearLayer?.layerId === selectedLayer.id
       ? "labels.lineEditor.exit"
       : "labels.lineEditor.edit";
   }

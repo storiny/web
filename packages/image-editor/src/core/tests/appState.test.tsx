@@ -1,5 +1,5 @@
-import { getDefaultAppState } from "../appState";
 import { EXPORT_DATA_TYPES, MIME_TYPES } from "../constants";
+import { getDefaultAppState } from "../editorState";
 import ExcalidrawApp from "../excalidraw-app";
 import { ExcalidrawTextLayer } from "../layer/types";
 import { API } from "./helpers/api";
@@ -8,14 +8,14 @@ import { queryByTestId, render, waitFor } from "./test-utils";
 
 const { h } = window;
 
-describe("appState", () => {
-  it("drag&drop file doesn't reset non-persisted appState", async () => {
+describe("editorState", () => {
+  it("drag&drop file doesn't reset non-persisted editorState", async () => {
     const defaultAppState = getDefaultAppState();
     const exportBackground = !defaultAppState.exportBackground;
 
     await render(<ExcalidrawApp />, {
       localStorageData: {
-        appState: {
+        editorState: {
           exportBackground,
           viewBackgroundColor: "#F00"
         }
@@ -32,7 +32,7 @@ describe("appState", () => {
         [
           JSON.stringify({
             type: EXPORT_DATA_TYPES.excalidraw,
-            appState: {
+            editorState: {
               viewBackgroundColor: "#000"
             },
             layers: [API.createLayer({ type: "rectangle", id: "A" })]
@@ -54,7 +54,7 @@ describe("appState", () => {
   it("changing fontSize with text tool selected (no layer created yet)", async () => {
     const { container } = await render(<ExcalidrawApp />, {
       localStorageData: {
-        appState: {
+        editorState: {
           currentItemFontSize: 30
         }
       }

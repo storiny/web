@@ -1,7 +1,7 @@
 import rough from "roughjs";
 
-import { rescalePoints } from "../../../../core/points";
 import { Layer } from "../../../../types";
+import { rescalePoints } from "../../../point";
 import { generateRoughOptions } from "../../../renderer";
 import { isFreeDrawLayer, isLinearLayer } from "../../predicates";
 import { getBoundsFromPoints } from "../getBoundsFromPoints";

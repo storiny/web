@@ -2,19 +2,15 @@ import { nanoid } from "nanoid";
 import React from "react";
 
 import { ImageMime, Mime, NonImageMime } from "../../../constants";
-import { cleanAppStateForExport } from "../../../core/appState";
-import { IMAGE_MIME_TYPES, MIME_TYPES } from "../../../core/constants";
-import { CanvasError } from "../../../core/errors";
-import { DataURL } from "../../../core/types";
-import { ValueOf } from "../../../core/utility-types";
-import { bytesToHexString } from "../../../core/utils";
-import { FileId } from "../../../types";
-import { EditorState, Layer } from "../../../types";
+import { FileId, Layer, RootState } from "../../../types";
+import { CanvasError } from "../../errors";
 import { calculateScrollCenter } from "../../scene";
+import { cleanEditorStateForExport } from "../../state";
+import { bytesToHexString } from "../../utils";
 import { clearLayersForExport } from "../export";
-import { FileSystemHandle, nativeFileSystemSupported } from "../fs/filesystem";
-import { isValidExcalidrawData } from "../json/json";
-import { restore } from "../restore/restore";
+import { nativeFileSystemSupported } from "../fs";
+import { isValidEditorData } from "../json";
+import { restore, RestoredDataState } from "../restore";
 
 /**
  * Parses data from a blob or file
@@ -25,7 +21,7 @@ const parseFileContents = async (blob: Blob | File): Promise<string> => {
 
   if (blob.type === ImageMime.PNG) {
     try {
-      return await (await import("../image/image")).decodePngMetadata(blob);
+      return await (await import("../image")).decodePngMetadata(blob);
     } catch (error: any) {
       if (error.message === "INVALID") {
         throw new DOMException(
@@ -57,7 +53,7 @@ const parseFileContents = async (blob: Blob | File): Promise<string> => {
     if (blob.type === ImageMime.SVG) {
       try {
         return await (
-          await import("../image/image")
+          await import("../image")
         ).decodeSvgMetadata({
           svg: contents
         });
@@ -115,6 +111,7 @@ export const getMimeType = (blob: Blob | string): string => {
  * @param handle File handle
  */
 export const getFileHandleType = (
+  // eslint-disable-next-line no-undef
   handle: FileSystemHandle | null
 ): string | null => {
   if (!handle) {
@@ -136,6 +133,7 @@ export const isImageFileHandleType = (
  * Predicate function for checking for image file handles
  * @param handle File handle
  */
+// eslint-disable-next-line no-undef
 export const isImageFileHandle = (handle: FileSystemHandle | null): boolean => {
   const type = getFileHandleType(handle);
   return type === "png" || type === "svg";
@@ -147,7 +145,7 @@ export const isImageFileHandle = (handle: FileSystemHandle | null): boolean => {
  */
 export const isSupportedImageFile = (
   blob: Blob | null | undefined
-): blob is Blob & { type: ValueOf<typeof IMAGE_MIME_TYPES> } => {
+): blob is Blob & { type: ImageMime } => {
   const { type } = blob || {};
   return !!type && (Object.values(ImageMime) as string[]).includes(type);
 };
@@ -161,24 +159,26 @@ export const isSupportedImageFile = (
  */
 export const loadSceneFromBlob = async (
   blob: Blob | File,
-  localEditorState: EditorState | null,
+  localEditorState: RootState | null,
   localLayers: readonly Layer[] | null,
   // Defaults to `blob.handle` if defined, `null` otherwise
+  // eslint-disable-next-line no-undef
   fileHandle?: FileSystemHandle | null
 ): Promise<{ data: RestoredDataState; type: NonImageMime }> => {
   const contents = await parseFileContents(blob);
 
   try {
     const data = JSON.parse(contents);
-    if (isValidExcalidrawData(data)) {
+
+    if (isValidEditorData(data)) {
       return {
         type: NonImageMime.EXCALIDRAW,
         data: restore(
           {
             layers: clearLayersForExport(data.layers || []),
-            appState: {
-              fileHandle: fileHandle || blob.handle || null,
-              ...cleanAppStateForExport(data.appState || {}),
+            editorState: {
+              fileHandle: fileHandle || (blob as any).handle || null,
+              ...cleanEditorStateForExport(data.editorState || {}),
               ...(localEditorState
                 ? calculateScrollCenter(
                     data.layers || [],
@@ -211,9 +211,10 @@ export const loadSceneFromBlob = async (
  */
 export const loadFromBlob = async (
   blob: Blob,
-  localEditorState: EditorState | null,
+  localEditorState: RootState | null,
   localLayers: readonly Layer[] | null,
   // Defaults to `blob.handle` if defined, `null` otherwise
+  // eslint-disable-next-line no-undef
   fileHandle?: FileSystemHandle | null
 ): Promise<RestoredDataState> => {
   const restored = await loadSceneFromBlob(
@@ -234,7 +235,7 @@ export const loadFromBlob = async (
  * Converts canvas data to blob
  * @param canvas Canvas layer
  */
-export const canvasToBlob = async (canvas: HTMLCanvasLayer): Promise<Blob> =>
+export const canvasToBlob = async (canvas: HTMLCanvasElement): Promise<Blob> =>
   new Promise((resolve, reject) => {
     try {
       canvas.toBlob((blob) => {
@@ -276,12 +277,12 @@ export const generateIdFromFile = async (file: File): Promise<FileId> => {
  * Returns the dataURL of a file
  * @param file File
  */
-export const getDataURL = async (file: Blob | File): Promise<DataURL> =>
+export const getDataURL = async (file: Blob | File): Promise<string> =>
   new Promise((resolve, reject) => {
     const reader = new FileReader();
 
     reader.onload = (): void => {
-      const dataURL = reader.result as DataURL;
+      const dataURL = reader.result as string;
       resolve(dataURL);
     };
 
@@ -294,7 +295,7 @@ export const getDataURL = async (file: Blob | File): Promise<DataURL> =>
  * @param dataURL dataURL
  * @param filename Name of the new file
  */
-export const dataURLToFile = (dataURL: DataURL, filename = ""): File => {
+export const dataURLToFile = (dataURL: string, filename = ""): File => {
   const dataIndexStart = dataURL.indexOf(",");
   const byteString = atob(dataURL.slice(dataIndexStart + 1));
   const mimeType = dataURL.slice(0, dataIndexStart).split(":")[1].split(";")[0];
@@ -371,7 +372,7 @@ export const svgStringToFile = (
   filename: string = ""
 ): File & { type: ImageMime.SVG } =>
   new File([new TextEncoder().encode(svgString)], filename, {
-    type: MIME_TYPES.svg
+    type: ImageMime.SVG
   }) as File & { type: ImageMime.SVG };
 
 /**
@@ -379,7 +380,8 @@ export const svgStringToFile = (
  * @param event Drag event
  */
 export const getFileFromEvent = async (
-  event: React.DragEvent<HTMLDivLayer>
+  event: React.DragEvent<HTMLDivElement>
+  // eslint-disable-next-line no-undef
 ): Promise<{ file: File | null; fileHandle: FileSystemHandle | null }> => {
   const file = event.dataTransfer.files.item(0);
   const fileHandle = await getFileHandle(event);
@@ -392,7 +394,8 @@ export const getFileFromEvent = async (
  * @param event Drag event
  */
 export const getFileHandle = async (
-  event: React.DragEvent<HTMLDivLayer>
+  event: React.DragEvent<HTMLDivElement>
+  // eslint-disable-next-line no-undef
 ): Promise<FileSystemHandle | null> => {
   if (nativeFileSystemSupported) {
     try {

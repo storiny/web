@@ -1,7 +1,7 @@
 import { NonDeletedLayer } from "../../../../types";
 import { rotate } from "../../../math";
 import { getCommonBounds, getLayerAbsoluteCoords } from "../../bounds";
-import { MaybeTransformHandleType } from "../../transformHandles/transformHandles";
+import { MaybeTransformHandleType } from "../../transformHandles";
 
 /**
  * Returns the X and Y resize offset

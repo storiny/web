@@ -1,7 +1,7 @@
+import { arrayToMapWithIndex } from "../../../lib/utils/utils";
 import { PRECEDING_ELEMENT_KEY } from "../../constants";
 import { ExcalidrawLayer } from "../../layer/types";
 import { AppState } from "../../types";
-import { arrayToMapWithIndex } from "../../utils";
 
 export type ReconciledLayers = readonly ExcalidrawLayer[] & {
   _brand: "reconciledLayers";

@@ -1,8 +1,4 @@
 import {
-  sceneCoordsToViewportCoords,
-  viewportCoordsToSceneCoords
-} from "../../../core/utils";
-import {
   EditorState,
   Layer,
   PointerCoords,
@@ -14,6 +10,10 @@ import {
   getCommonBounds,
   getVisibleLayers
 } from "../../layer";
+import {
+  sceneCoordsToViewportCoords,
+  viewportCoordsToSceneCoords
+} from "../../utils/utils";
 
 /**
  * Predicate function for determining overflow

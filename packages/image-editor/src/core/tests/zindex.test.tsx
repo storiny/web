@@ -36,7 +36,7 @@ const populateLayers = (
     x?: number;
     y?: number;
   }[],
-  appState?: Partial<AppState>
+  editorState?: Partial<AppState>
 ) => {
   const selectedLayerIds: any = {};
 
@@ -88,11 +88,11 @@ const populateLayers = (
 
   h.setState({
     ...selectGroupsForSelectedLayers(
-      { ...h.state, ...appState, selectedLayerIds },
+      { ...h.state, ...editorState, selectedLayerIds },
       h.layers,
       h.state
     ),
-    ...appState,
+    ...editorState,
     selectedLayerIds
   });
 
@@ -107,10 +107,10 @@ type Actions =
 
 const assertZindex = ({
   layers,
-  appState,
+  editorState,
   operations
 }: {
-  appState?: Partial<AppState>;
+  editorState?: Partial<AppState>;
   layers: {
     containerId?: string;
     groupIds?: string[];
@@ -120,7 +120,7 @@ const assertZindex = ({
   }[];
   operations: [Actions, string[]][];
 }) => {
-  const selectedLayerIds = populateLayers(layers, appState);
+  const selectedLayerIds = populateLayers(layers, editorState);
 
   operations.forEach(([action, expected]) => {
     h.app.actionManager.executeAction(action);
@@ -286,7 +286,7 @@ describe("z-index manipulation", () => {
         { id: "D2", groupIds: ["g2"], isSelected: true },
         { id: "E2", groupIds: ["g2"], isSelected: true }
       ],
-      appState: {
+      editorState: {
         editingGroupId: null
       },
       operations: [[actionSendBackward, ["A", "D2", "E2", "B1", "C1"]]]
@@ -302,7 +302,7 @@ describe("z-index manipulation", () => {
         { id: "C", groupIds: ["g2", "g1"] },
         { id: "D", groupIds: ["g2", "g1"], isSelected: true }
       ],
-      appState: {
+      editorState: {
         editingGroupId: "g2"
       },
       operations: [
@@ -319,7 +319,7 @@ describe("z-index manipulation", () => {
         { id: "C", groupIds: ["g2", "g1"] },
         { id: "D", groupIds: ["g1"], isSelected: true }
       ],
-      appState: {
+      editorState: {
         editingGroupId: "g1"
       },
       operations: [
@@ -337,7 +337,7 @@ describe("z-index manipulation", () => {
         { id: "D", groupIds: ["g2", "g1"], isDeleted: true },
         { id: "E", groupIds: ["g2", "g1"], isSelected: true }
       ],
-      appState: {
+      editorState: {
         editingGroupId: "g1"
       },
       operations: [
@@ -356,7 +356,7 @@ describe("z-index manipulation", () => {
         { id: "E", groupIds: ["g3", "g1"], isSelected: true },
         { id: "F", groupIds: ["g3", "g1"], isSelected: true }
       ],
-      appState: {
+      editorState: {
         editingGroupId: "g1"
       },
       operations: [
@@ -376,7 +376,7 @@ describe("z-index manipulation", () => {
         { id: "D", groupIds: ["g2"], isSelected: true },
         { id: "E", groupIds: ["g2"], isSelected: true }
       ],
-      appState: {
+      editorState: {
         editingGroupId: "g2"
       },
       operations: [
@@ -396,7 +396,7 @@ describe("z-index manipulation", () => {
         { id: "F" },
         { id: "G", groupIds: ["g2"], isSelected: true }
       ],
-      appState: {
+      editorState: {
         editingGroupId: "g2"
       },
       operations: [
@@ -517,7 +517,7 @@ describe("z-index manipulation", () => {
         { id: "C", groupIds: ["g2", "g1"] },
         { id: "D", groupIds: ["g1"] }
       ],
-      appState: {
+      editorState: {
         editingGroupId: "g2"
       },
       operations: [
@@ -534,7 +534,7 @@ describe("z-index manipulation", () => {
         { id: "C", groupIds: ["g2", "g1"] },
         { id: "D" }
       ],
-      appState: {
+      editorState: {
         editingGroupId: "g1"
       },
       operations: [
@@ -551,7 +551,7 @@ describe("z-index manipulation", () => {
         { id: "C", groupIds: ["g1"] },
         { id: "D" }
       ],
-      appState: {
+      editorState: {
         editingGroupId: "g1"
       },
       operations: [
@@ -570,7 +570,7 @@ describe("z-index manipulation", () => {
         { id: "D", groupIds: ["g2"] },
         { id: "E", groupIds: ["g1"] }
       ],
-      appState: {
+      editorState: {
         editingGroupId: "g2"
       },
       operations: [
@@ -590,7 +590,7 @@ describe("z-index manipulation", () => {
         { id: "E", groupIds: ["g2"] },
         { id: "F", groupIds: ["g1"] }
       ],
-      appState: {
+      editorState: {
         editingGroupId: "g2"
       },
       operations: [
@@ -672,7 +672,7 @@ describe("z-index manipulation", () => {
         { id: "H", groupIds: ["g3", "g1"] },
         { id: "I", groupIds: ["g3", "g1"] }
       ],
-      appState: {
+      editorState: {
         editingGroupId: "g1"
       },
       operations: [
@@ -689,7 +689,7 @@ describe("z-index manipulation", () => {
         { id: "D", groupIds: ["g2", "g1"] },
         { id: "C", groupIds: ["g1"] }
       ],
-      appState: {
+      editorState: {
         editingGroupId: "g2"
       },
       operations: [
@@ -707,7 +707,7 @@ describe("z-index manipulation", () => {
         { id: "C", groupIds: ["g2", "g3"] },
         { id: "D", groupIds: ["g1", "g3"] }
       ],
-      appState: {
+      editorState: {
         editingGroupId: "g2"
       },
       operations: [
@@ -725,7 +725,7 @@ describe("z-index manipulation", () => {
         { id: "C", groupIds: ["g2"] },
         { id: "D", groupIds: ["g1"] }
       ],
-      appState: {
+      editorState: {
         editingGroupId: "g2"
       },
       operations: [
@@ -808,7 +808,7 @@ describe("z-index manipulation", () => {
         { id: "H", groupIds: ["g1"], isSelected: true },
         { id: "I", groupIds: ["g1"] }
       ],
-      appState: {
+      editorState: {
         editingGroupId: "g1"
       },
       operations: [
@@ -825,7 +825,7 @@ describe("z-index manipulation", () => {
         { id: "C", groupIds: ["g2", "g1"] },
         { id: "D", groupIds: ["g2", "g1"], isSelected: true }
       ],
-      appState: {
+      editorState: {
         editingGroupId: "g2"
       },
       operations: [
@@ -843,7 +843,7 @@ describe("z-index manipulation", () => {
         { id: "C", groupIds: ["g1", "g3"] },
         { id: "D", groupIds: ["g2", "g3"], isSelected: true }
       ],
-      appState: {
+      editorState: {
         editingGroupId: "g2"
       },
       operations: [
@@ -861,7 +861,7 @@ describe("z-index manipulation", () => {
         { id: "C", groupIds: ["g1"] },
         { id: "D", groupIds: ["g2"], isSelected: true }
       ],
-      appState: {
+      editorState: {
         editingGroupId: "g2"
       },
       operations: [
@@ -1146,7 +1146,7 @@ describe("z-index manipulation", () => {
         { id: "B", groupIds: ["g1"] },
         { id: "C", containerId: "B", groupIds: ["g1"] }
       ],
-      appState: {
+      editorState: {
         editingGroupId: "g1"
       },
       operations: [
@@ -1161,7 +1161,7 @@ describe("z-index manipulation", () => {
         { id: "B", groupIds: ["g1"], isSelected: true },
         { id: "C", containerId: "B", groupIds: ["g1"] }
       ],
-      appState: {
+      editorState: {
         editingGroupId: "g1"
       },
       operations: [
@@ -1177,7 +1177,7 @@ describe("z-index manipulation", () => {
         { id: "C" },
         { id: "D", containerId: "C" }
       ],
-      appState: {
+      editorState: {
         editingGroupId: "g1"
       },
       operations: [[actionBringForward, ["A", "B", "C", "D"]]]

@@ -1,8 +1,8 @@
 import { getSelectedLayers } from "../../lib/scene";
+import { arrayToMap } from "../../lib/utils/utils";
 import { KEYS } from "../keys";
 import { newLayerWith } from "../layer/mutateLayer";
 import { ExcalidrawLayer } from "../layer/types";
-import { arrayToMap } from "../utils";
 import { register } from "./register";
 
 const shouldLock = (layers: readonly ExcalidrawLayer[]) =>
@@ -11,12 +11,12 @@ const shouldLock = (layers: readonly ExcalidrawLayer[]) =>
 export const actionToggleLayerLock = register({
   name: "toggleLayerLock",
   trackEvent: { category: "layer" },
-  predicate: (layers, appState) => {
-    const selectedLayers = getSelectedLayers(layers, appState);
+  predicate: (layers, editorState) => {
+    const selectedLayers = getSelectedLayers(layers, editorState);
     return !selectedLayers.some((layer) => layer.locked && layer.frameId);
   },
-  perform: (layers, appState) => {
-    const selectedLayers = getSelectedLayers(layers, appState, {
+  perform: (layers, editorState) => {
+    const selectedLayers = getSelectedLayers(layers, editorState, {
       includeBoundTextLayer: true,
       includeLayersInFrames: true
     });
@@ -35,15 +35,17 @@ export const actionToggleLayerLock = register({
 
         return newLayerWith(layer, { locked: nextLockState });
       }),
-      appState: {
-        ...appState,
-        selectedLinearLayer: nextLockState ? null : appState.selectedLinearLayer
+      editorState: {
+        ...editorState,
+        selectedLinearLayer: nextLockState
+          ? null
+          : editorState.selectedLinearLayer
       },
       commitToHistory: true
     };
   },
-  contextItemLabel: (layers, appState) => {
-    const selected = getSelectedLayers(layers, appState, {
+  contextItemLabel: (layers, editorState) => {
+    const selected = getSelectedLayers(layers, editorState, {
       includeBoundTextLayer: false
     });
     if (selected.length === 1 && selected[0].type !== "frame") {
@@ -56,11 +58,11 @@ export const actionToggleLayerLock = register({
       ? "labels.layerLock.lockAll"
       : "labels.layerLock.unlockAll";
   },
-  keyTest: (event, appState, layers) =>
+  keyTest: (event, editorState, layers) =>
     event.key.toLocaleLowerCase() === KEYS.L &&
     event[KEYS.CTRL_OR_CMD] &&
     event.shiftKey &&
-    getSelectedLayers(layers, appState, {
+    getSelectedLayers(layers, editorState, {
       includeBoundTextLayer: false
     }).length > 0
 });
@@ -70,7 +72,7 @@ export const actionUnlockAllLayers = register({
   trackEvent: { category: "canvas" },
   viewMode: false,
   predicate: (layers) => layers.some((layer) => layer.locked),
-  perform: (layers, appState) => {
+  perform: (layers, editorState) => {
     const lockedLayers = layers.filter((el) => el.locked);
 
     return {
@@ -80,8 +82,8 @@ export const actionUnlockAllLayers = register({
         }
         return layer;
       }),
-      appState: {
-        ...appState,
+      editorState: {
+        ...editorState,
         selectedLayerIds: Object.fromEntries(
           lockedLayers.map((el) => [el.id, true])
         )

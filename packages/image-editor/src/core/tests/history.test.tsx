@@ -1,8 +1,8 @@
 import { waitFor } from "@testing-library/react";
 
 import { createRedoAction, createUndoAction } from "../actions/actionHistory";
-import { getDefaultAppState } from "../appState";
 import { EXPORT_DATA_TYPES, MIME_TYPES } from "../constants";
+import { getDefaultAppState } from "../editorState";
 import ExcalidrawApp from "../excalidraw-app";
 import { API } from "./helpers/api";
 import { Keyboard, Pointer, UI } from "./helpers/ui";
@@ -17,7 +17,7 @@ describe("history", () => {
     await render(<ExcalidrawApp />, {
       localStorageData: {
         layers: [API.createLayer({ type: "rectangle", id: "A" })],
-        appState: {
+        editorState: {
           zenModeEnabled: true
         }
       }
@@ -64,7 +64,7 @@ describe("history", () => {
     await render(<ExcalidrawApp />, {
       localStorageData: {
         layers: [API.createLayer({ type: "rectangle", id: "A" })],
-        appState: {
+        editorState: {
           viewBackgroundColor: "#FFF"
         }
       }
@@ -80,7 +80,7 @@ describe("history", () => {
         [
           JSON.stringify({
             type: EXPORT_DATA_TYPES.excalidraw,
-            appState: {
+            editorState: {
               ...getDefaultAppState(),
               viewBackgroundColor: "#000"
             },

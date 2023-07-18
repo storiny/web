@@ -1,9 +1,10 @@
-import { useExcalidrawSetAppState } from "../App";
-import { SidebarTriggerProps } from "./common";
-import { useUIAppState } from "../../context/ui-appState";
+import "./SidebarTrigger.scss";
+
 import clsx from "clsx";
 
-import "./SidebarTrigger.scss";
+import { useUIAppState } from "../../context/ui-editorState";
+import { useExcalidrawSetAppState } from "../App";
+import { SidebarTriggerProps } from "./common";
 
 export const SidebarTrigger = ({
   name,
@@ -13,16 +14,18 @@ export const SidebarTrigger = ({
   children,
   onToggle,
   className,
-  style,
+  style
 }: SidebarTriggerProps) => {
   const setAppState = useExcalidrawSetAppState();
-  const appState = useUIAppState();
+  const editorState = useUIAppState();
 
   return (
     <label title={title}>
       <input
+        aria-keyshortcuts="0"
+        aria-label={title}
+        checked={editorState.openSidebar?.name === name}
         className="ToolIcon_type_checkbox"
-        type="checkbox"
         onChange={(event) => {
           document
             .querySelector(".layer-ui__wrapper")
@@ -31,9 +34,7 @@ export const SidebarTrigger = ({
           setAppState({ openSidebar: isOpen ? { name, tab } : null });
           onToggle?.(isOpen);
         }}
-        checked={appState.openSidebar?.name === name}
-        aria-label={title}
-        aria-keyshortcuts="0"
+        type="checkbox"
       />
       <div className={clsx("sidebar-trigger", className)} style={style}>
         {icon && <div>{icon}</div>}

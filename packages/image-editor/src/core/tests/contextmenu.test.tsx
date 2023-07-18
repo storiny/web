@@ -1,5 +1,6 @@
 import ReactDOM from "react-dom";
 
+import { setDateTimeForTests } from "../../lib/utils/utils";
 import { copiedStyles } from "../actions/actionStyles";
 import { ShortcutName } from "../actions/shortcuts";
 import ExcalidrawApp from "../excalidraw-app";
@@ -7,7 +8,6 @@ import { KEYS } from "../keys";
 import { reseed } from "../random";
 import * as Renderer from "../renderer/renderScene";
 import { LibraryItem } from "../types";
-import { setDateTimeForTests } from "../utils";
 import { API } from "./helpers/api";
 import { Keyboard, Pointer, UI } from "./helpers/ui";
 import {
@@ -27,7 +27,7 @@ const checkpoint = (name: string) => {
   expect(renderScene.mock.calls.length).toMatchSnapshot(
     `[${name}] number of renders`
   );
-  expect(h.state).toMatchSnapshot(`[${name}] appState`);
+  expect(h.state).toMatchSnapshot(`[${name}] editorState`);
   expect(h.history.getSnapshotForTest()).toMatchSnapshot(`[${name}] history`);
   expect(h.layers.length).toMatchSnapshot(`[${name}] number of layers`);
   h.layers.forEach((layer, i) =>

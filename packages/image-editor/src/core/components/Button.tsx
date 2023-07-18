@@ -2,7 +2,7 @@ import "./Button.scss";
 
 import clsx from "clsx";
 
-import { composeEventHandlers } from "../utils";
+import { composeEventHandlers } from "../../lib/utils/utils";
 
 interface ButtonProps extends React.HTMLAttributes<HTMLButtonLayer> {
   children: React.ReactNode;

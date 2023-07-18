@@ -92,10 +92,10 @@ const initLocalStorage = (data: ImportedDataState) => {
       JSON.stringify(data.layers)
     );
   }
-  if (data.appState) {
+  if (data.editorState) {
     localStorage.setItem(
       STORAGE_KEYS.LOCAL_STORAGE_APP_STATE,
-      JSON.stringify(data.appState)
+      JSON.stringify(data.editorState)
     );
   }
 };

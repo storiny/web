@@ -1,16 +1,12 @@
 import rough from "roughjs/bin/rough";
 
-import { getDefaultAppState } from "../../../../core/appState";
 import { DEFAULT_EXPORT_PADDING } from "../../../../core/constants";
-import { distance, isOnlyExportingSingleFrame } from "../../../../core/utils";
 import { BinaryFiles } from "../../../../types";
 import { EditorState, NonDeletedLayer } from "../../../../types";
-import {
-  getCommonBounds,
-  getInitializedImageLayers,
-  updateImageCache
-} from "../../../layer";
+import { getInitializedImageLayers, updateImageCache } from "../../../layer";
 import { renderScene } from "../../../renderer";
+import { getDefaultEditorState } from "../../../state";
+import { getCanvasSize } from "../getExportSize";
 
 /**
  * Exports the current editor state to a canvas element
@@ -51,13 +47,12 @@ export const exportToCanvas = async (
 ): Promise<HTMLCanvasElement> => {
   const [minX, minY, width, height] = getCanvasSize(layers, exportPadding);
   const { canvas, scale = 1 } = createCanvas(width, height);
-  const defaultAppState = getDefaultAppState();
+  const defaultEditorState = getDefaultEditorState();
   const { imageCache } = await updateImageCache({
     imageCache: new Map(),
     fileIds: getInitializedImageLayers(layers).map((layer) => layer.fileId),
     files
   });
-  const onlyExportingSingleFrame = isOnlyExportingSingleFrame(layers);
 
   renderScene({
     layers,
@@ -67,9 +62,9 @@ export const exportToCanvas = async (
     canvas,
     renderConfig: {
       viewBackgroundColor: exportBackground ? viewBackgroundColor : null,
-      scrollX: -minX + (onlyExportingSingleFrame ? 0 : exportPadding),
-      scrollY: -minY + (onlyExportingSingleFrame ? 0 : exportPadding),
-      zoom: defaultAppState.zoom,
+      scrollX: -minX + exportPadding,
+      scrollY: -minY + exportPadding,
+      zoom: defaultEditorState.zoom,
       remotePointerViewportCoords: {},
       remoteSelectedLayerIds: {},
       shouldCacheIgnoreZoom: false,

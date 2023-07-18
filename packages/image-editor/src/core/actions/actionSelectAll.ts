@@ -10,8 +10,8 @@ import { register } from "./register";
 export const actionSelectAll = register({
   name: "selectAll",
   trackEvent: { category: "canvas" },
-  perform: (layers, appState, value, app) => {
-    if (appState.editingLinearLayer) {
+  perform: (layers, editorState, value, app) => {
+    if (editorState.editingLinearLayer) {
       return false;
     }
 
@@ -28,9 +28,9 @@ export const actionSelectAll = register({
     }, {});
 
     return {
-      appState: selectGroupsForSelectedLayers(
+      editorState: selectGroupsForSelectedLayers(
         {
-          ...appState,
+          ...editorState,
           selectedLinearLayer:
             // single linear layer selected
             Object.keys(selectedLayerIds).length === 1 &&
@@ -41,7 +41,7 @@ export const actionSelectAll = register({
           selectedLayerIds
         },
         getNonDeletedLayers(layers),
-        appState
+        editorState
       ),
       commitToHistory: true
     };

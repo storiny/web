@@ -1,7 +1,7 @@
-import * as GA from "../ga";
-import { point, toString, direction, offset } from "../ga";
-import * as GAPoint from "../gapoints";
+import * as GA from "../../lib/algebra/geom/ga";
+import { direction, offset, point, toString } from "../../lib/algebra/geom/ga";
 import * as GALine from "../galines";
+import * as GAPoint from "../gapoints";
 import * as GATransform from "../gatransforms";
 
 describe("geometric algebra", () => {
@@ -23,7 +23,7 @@ describe("geometric algebra", () => {
       const a = GA.point(0, 0);
       const b = GA.point(2, 0);
       expect(toString(GALine.through(a, b))).toEqual(
-        toString(GALine.equation(0, 2, 0)),
+        toString(GALine.equation(0, 2, 0))
       );
     });
     it("parallel", () => {
@@ -54,7 +54,7 @@ describe("geometric algebra", () => {
       const move = GATransform.translation(offset(3, 4));
       const parallel = GATransform.apply(move, original);
       expect(toString(parallel)).toEqual(
-        toString(GALine.through(point(5, 6), point(6, 8))),
+        toString(GALine.through(point(5, 6), point(6, 8)))
       );
     });
   });

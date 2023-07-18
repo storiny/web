@@ -1,5 +1,5 @@
 import { BindableLayer, LinearLayer, NonDeleted } from "../../../../types";
-import Scene from "../../../scene/scene/Scene";
+import { Scene } from "../../../scene";
 import { getHoveredLayerForBinding } from "../getHoveredLayerForBinding";
 import { getLinearLayerEdgeCoors } from "../getLinearLayerEdgeCoors";
 

@@ -1,9 +1,9 @@
 import { LayerType } from "../../../../constants";
 import { BindableLayer, LinearLayer, NonDeleted } from "../../../../types";
-import Scene from "../../../scene/scene/Scene";
+import { Scene } from "../../../scene";
 import { mutateLayer } from "../../mutate";
 import { bindLinearLayer } from "../bindLinearLayer";
-import { getNonDeletedLayers } from "../getNonDeletedLayersFromScene";
+import { getNonDeletedLayersFromScene } from "../getNonDeletedLayersFromScene";
 import { isLinearLayerSimpleAndAlreadyBoundOnOppositeEdge } from "../isLinearLayerSimpleAndAlreadyBoundOnOppositeEdge";
 
 /**
@@ -106,14 +106,14 @@ export const bindOrUnbindLinearLayer = (
     (id) => !boundToLayerIds.has(id)
   );
 
-  getNonDeletedLayers(Scene.getScene(linearLayer)!, onlyUnbound).forEach(
-    (layer) => {
-      mutateLayer(layer, {
-        boundLayers: layer.boundLayers?.filter(
-          (layer) =>
-            layer.type !== LayerType.ARROW || layer.id !== linearLayer.id
-        )
-      });
-    }
-  );
+  getNonDeletedLayersFromScene(
+    Scene.getScene(linearLayer)!,
+    onlyUnbound
+  ).forEach((layer) => {
+    mutateLayer(layer, {
+      boundLayers: layer.boundLayers?.filter(
+        (layer) => layer.type !== LayerType.ARROW || layer.id !== linearLayer.id
+      )
+    });
+  });
 };

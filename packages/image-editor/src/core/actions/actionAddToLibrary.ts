@@ -8,10 +8,10 @@ import { register } from "./register";
 export const actionAddToLibrary = register({
   name: "addToLibrary",
   trackEvent: { category: "layer" },
-  perform: (layers, appState, _, app) => {
+  perform: (layers, editorState, _, app) => {
     const selectedLayers = getSelectedLayers(
       getNonDeletedLayers(layers),
-      appState,
+      editorState,
       {
         includeBoundTextLayer: true,
         includeLayersInFrames: true
@@ -20,8 +20,8 @@ export const actionAddToLibrary = register({
     if (selectedLayers.some((layer) => layer.type === "image")) {
       return {
         commitToHistory: false,
-        appState: {
-          ...appState,
+        editorState: {
+          ...editorState,
           errorMessage: "Support for adding images to the library coming soon!"
         }
       };
@@ -42,15 +42,15 @@ export const actionAddToLibrary = register({
       )
       .then(() => ({
         commitToHistory: false,
-        appState: {
-          ...appState,
+        editorState: {
+          ...editorState,
           toast: { message: t("toast.addedToLibrary") }
         }
       }))
       .catch((error) => ({
         commitToHistory: false,
-        appState: {
-          ...appState,
+        editorState: {
+          ...editorState,
           errorMessage: error.message
         }
       }));

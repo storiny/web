@@ -1,4 +1,4 @@
-import { arrayToMapWithIndex } from "../utils";
+import { arrayToMapWithIndex } from "../../lib/utils/utils";
 import { ExcalidrawLayer } from "./types";
 
 const normalizeGroupLayerOrder = (layers: readonly ExcalidrawLayer[]) => {

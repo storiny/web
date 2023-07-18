@@ -106,7 +106,7 @@ class Portal {
     } catch (error: any) {
       if (error.name !== "AbortError") {
         this.collab.excalidrawAPI.updateScene({
-          appState: {
+          editorState: {
             errorMessage: error.message
           }
         });

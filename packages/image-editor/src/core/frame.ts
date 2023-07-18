@@ -3,6 +3,8 @@ import { getLayersWithinSelection, getSelectedLayers } from "../lib/scene";
 import Scene, {
   ExcalidrawLayersIncludingDeleted
 } from "../lib/scene/scene/Scene";
+import { arrayToMap, findIndex } from "../lib/utils/utils";
+import { moveOneRight } from "../lib/zIndex/zindex";
 import { getLayersInGroup, selectGroupsFromGivenLayers } from "./groups";
 import { getCommonBounds, getLayerAbsoluteCoords, isTextLayer } from "./layer";
 import { isFrameLayer } from "./layer";
@@ -16,8 +18,6 @@ import {
   NonDeletedExcalidrawLayer
 } from "./layer/types";
 import { AppState } from "./types";
-import { arrayToMap, findIndex } from "./utils";
-import { moveOneRight } from "./zindex";
 
 // --------------------------- Frame State ------------------------------------
 export const bindLayersToFramesAfterDuplication = (
@@ -311,7 +311,7 @@ export const getFrameLayers = (
 export const getLayersInResizingFrame = (
   allLayers: ExcalidrawLayersIncludingDeleted,
   frame: ExcalidrawFrameLayer,
-  appState: AppState
+  editorState: AppState
 ): ExcalidrawLayer[] => {
   const prevLayersInFrame = getFrameLayers(allLayers, frame.id);
   const nextLayersInFrame = new Set<ExcalidrawLayer>(prevLayersInFrame);
@@ -378,7 +378,7 @@ export const getLayersInResizingFrame = (
 
   const groupIds = selectGroupsFromGivenLayers(
     newGroupLayersCompletelyInFrame,
-    appState
+    editorState
   );
 
   // new group layers
@@ -489,7 +489,7 @@ export const addLayersToFrame = (
 export const removeLayersFromFrame = (
   allLayers: ExcalidrawLayersIncludingDeleted,
   layersToRemove: NonDeletedExcalidrawLayer[],
-  appState: AppState
+  editorState: AppState
 ) => {
   const _layersToRemove: ExcalidrawLayer[] = [];
 
@@ -515,7 +515,7 @@ export const removeLayersFromFrame = (
 
   const nextLayers = moveOneRight(
     allLayers,
-    appState,
+    editorState,
     Array.from(_layersToRemove)
   );
 
@@ -525,20 +525,20 @@ export const removeLayersFromFrame = (
 export const removeAllLayersFromFrame = (
   allLayers: ExcalidrawLayersIncludingDeleted,
   frame: ExcalidrawFrameLayer,
-  appState: AppState
+  editorState: AppState
 ) => {
   const layersInFrame = getFrameLayers(allLayers, frame.id);
-  return removeLayersFromFrame(allLayers, layersInFrame, appState);
+  return removeLayersFromFrame(allLayers, layersInFrame, editorState);
 };
 
 export const replaceAllLayersInFrame = (
   allLayers: ExcalidrawLayersIncludingDeleted,
   nextLayersInFrame: ExcalidrawLayer[],
   frame: ExcalidrawFrameLayer,
-  appState: AppState
+  editorState: AppState
 ) =>
   addLayersToFrame(
-    removeAllLayersFromFrame(allLayers, frame, appState),
+    removeAllLayersFromFrame(allLayers, frame, editorState),
     nextLayersInFrame,
     frame
   );
@@ -546,12 +546,12 @@ export const replaceAllLayersInFrame = (
 /** does not mutate layers, but return new ones */
 export const updateFrameMembershipOfSelectedLayers = (
   allLayers: ExcalidrawLayersIncludingDeleted,
-  appState: AppState
+  editorState: AppState
 ) => {
-  const selectedLayers = getSelectedLayers(allLayers, appState);
+  const selectedLayers = getSelectedLayers(allLayers, editorState);
   const layersToFilter = new Set<ExcalidrawLayer>(selectedLayers);
 
-  if (appState.editingGroupId) {
+  if (editorState.editingGroupId) {
     for (const layer of selectedLayers) {
       if (layer.groupIds.length === 0) {
         layersToFilter.add(layer);
@@ -569,14 +569,14 @@ export const updateFrameMembershipOfSelectedLayers = (
     if (
       layer.frameId &&
       !isFrameLayer(layer) &&
-      !isLayerInFrame(layer, allLayers, appState)
+      !isLayerInFrame(layer, allLayers, editorState)
     ) {
       layersToRemove.add(layer);
     }
   });
 
   return layersToRemove.size > 0
-    ? removeLayersFromFrame(allLayers, [...layersToRemove], appState)
+    ? removeLayersFromFrame(allLayers, [...layersToRemove], editorState)
     : allLayers;
 };
 
@@ -612,15 +612,18 @@ export const omitGroupsContainingFrames = (
 };
 
 /**
- * depending on the appState, return target frame, which is the frame the given layer
+ * depending on the editorState, return target frame, which is the frame the given layer
  * is going to be added to or remove from
  */
-export const getTargetFrame = (layer: ExcalidrawLayer, appState: AppState) => {
+export const getTargetFrame = (
+  layer: ExcalidrawLayer,
+  editorState: AppState
+) => {
   const _layer = isTextLayer(layer) ? getContainerLayer(layer) || layer : layer;
 
-  return appState.selectedLayerIds[_layer.id] &&
-    appState.selectedLayersAreBeingDragged
-    ? appState.frameToHighlight
+  return editorState.selectedLayerIds[_layer.id] &&
+    editorState.selectedLayersAreBeingDragged
+    ? editorState.frameToHighlight
     : getContainingFrame(_layer);
 };
 
@@ -628,9 +631,9 @@ export const getTargetFrame = (layer: ExcalidrawLayer, appState: AppState) => {
 export const isLayerInFrame = (
   layer: ExcalidrawLayer,
   allLayers: ExcalidrawLayersIncludingDeleted,
-  appState: AppState
+  editorState: AppState
 ) => {
-  const frame = getTargetFrame(layer, appState);
+  const frame = getTargetFrame(layer, editorState);
   const _layer = isTextLayer(layer) ? getContainerLayer(layer) || layer : layer;
 
   if (frame) {
@@ -642,10 +645,13 @@ export const isLayerInFrame = (
       _layer.groupIds.flatMap((gid) => getLayersInGroup(allLayers, gid))
     );
 
-    if (appState.editingGroupId && appState.selectedLayersAreBeingDragged) {
-      const selectedLayers = new Set(getSelectedLayers(allLayers, appState));
+    if (
+      editorState.editingGroupId &&
+      editorState.selectedLayersAreBeingDragged
+    ) {
+      const selectedLayers = new Set(getSelectedLayers(allLayers, editorState));
 
-      const editingGroupOverlapsFrame = appState.frameToHighlight !== null;
+      const editingGroupOverlapsFrame = editorState.frameToHighlight !== null;
 
       if (editingGroupOverlapsFrame) {
         return true;

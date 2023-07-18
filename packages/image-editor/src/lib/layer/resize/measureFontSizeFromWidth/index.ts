@@ -1,5 +1,11 @@
 import { NonDeleted, TextLayer } from "../../../../types";
+import { getFontString } from "../../../utils";
 import { isBoundToContainer } from "../../predicates";
+import {
+  getBoundTextMaxWidth,
+  getContainerLayer,
+  measureText
+} from "../../text";
 
 const MIN_FONT_SIZE = 1;
 

@@ -6,11 +6,11 @@ import { fileOpen } from "../../lib/data/fs/filesystem";
 import { saveLibraryAsJSON } from "../../lib/data/json/json";
 import Library, { libraryItemsAtom } from "../../lib/data/library";
 import { useLibraryCache } from "../../lib/hooks/useLibraryItemSvg";
-import { useUIAppState } from "../context/ui-appState";
+import { muteFSAbortError } from "../../lib/utils/utils";
+import { useUIAppState } from "../context/ui-editorState";
 import { t } from "../i18n";
 import { jotaiScope } from "../jotai";
 import { LibraryItem, LibraryItems, UIAppState } from "../types";
-import { muteFSAbortError } from "../utils";
 import { useApp, useExcalidrawSetAppState } from "./App";
 import ConfirmDialog from "./ConfirmDialog";
 import { Dialog } from "./Dialog";
@@ -33,8 +33,8 @@ const getSelectedItems = (
 ) => libraryItems.filter((item) => selectedItems.includes(item.id));
 
 export const LibraryDropdownMenuButton: React.FC<{
-  appState: UIAppState;
   className?: string;
+  editorState: UIAppState;
   library: Library;
   onRemoveFromLibrary: () => void;
   onSelectItems: (items: LibraryItem["id"][]) => void;
@@ -48,7 +48,7 @@ export const LibraryDropdownMenuButton: React.FC<{
   onRemoveFromLibrary,
   resetLibrary,
   onSelectItems,
-  appState,
+  editorState,
   className
 }) => {
   const [libraryItemsData] = useAtom(libraryItemsAtom, jotaiScope);
@@ -248,7 +248,7 @@ export const LibraryDropdownMenuButton: React.FC<{
       {showRemoveLibAlert && renderRemoveLibAlert()}
       {showPublishLibraryDialog && (
         <PublishLibrary
-          appState={appState}
+          editorState={editorState}
           libraryItems={getSelectedItems(
             libraryItemsData.libraryItems,
             selectedItems
@@ -282,7 +282,7 @@ export const LibraryDropdownMenu = ({
 }) => {
   const { library } = useApp();
   const { clearLibraryCache, deleteItemsFromLibraryCache } = useLibraryCache();
-  const appState = useUIAppState();
+  const editorState = useUIAppState();
   const setAppState = useExcalidrawSetAppState();
 
   const [libraryItemsData] = useAtom(libraryItemsAtom, jotaiScope);
@@ -307,8 +307,8 @@ export const LibraryDropdownMenu = ({
 
   return (
     <LibraryDropdownMenuButton
-      appState={appState}
       className={className}
+      editorState={editorState}
       library={library}
       onRemoveFromLibrary={() =>
         removeFromLibrary(libraryItemsData.libraryItems)

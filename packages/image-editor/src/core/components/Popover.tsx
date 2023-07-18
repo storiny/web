@@ -3,8 +3,8 @@ import "./Popover.scss";
 import React, { useEffect, useLayoutEffect, useRef } from "react";
 import { unstable_batchedUpdates } from "react-dom";
 
+import { queryFocusableLayers } from "../../lib/utils/utils";
 import { KEYS } from "../keys";
-import { queryFocusableLayers } from "../utils";
 
 type Props = {
   children?: React.ReactNode;

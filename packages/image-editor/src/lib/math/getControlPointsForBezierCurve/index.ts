@@ -1,7 +1,7 @@
 import { Mutable } from "@storiny/types";
 
 import { LinearLayer, NonDeleted, Point } from "../../../types";
-import { getCurvePathOps } from "../../layer/bounds";
+import { getCurvePathOps } from "../../layer";
 import { getShapeForLayer } from "../../renderer";
 import { distance2d } from "../distance2d";
 

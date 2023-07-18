@@ -3,15 +3,15 @@ import { UIAppState } from "../types";
 import { NonDeletedExcalidrawLayer } from "./types";
 
 export const showSelectedShapeActions = (
-  appState: UIAppState,
+  editorState: UIAppState,
   layers: readonly NonDeletedExcalidrawLayer[]
 ) =>
   Boolean(
-    (!appState.viewModeEnabled &&
-      appState.activeTool.type !== "custom" &&
-      (appState.editingLayer ||
-        (appState.activeTool.type !== "selection" &&
-          appState.activeTool.type !== "eraser" &&
-          appState.activeTool.type !== "hand"))) ||
-      getSelectedLayers(layers, appState).length
+    (!editorState.viewModeEnabled &&
+      editorState.activeTool.type !== "custom" &&
+      (editorState.editingLayer ||
+        (editorState.activeTool.type !== "selection" &&
+          editorState.activeTool.type !== "eraser" &&
+          editorState.activeTool.type !== "hand"))) ||
+      getSelectedLayers(layers, editorState).length
   );

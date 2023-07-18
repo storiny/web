@@ -1,9 +1,9 @@
 import { Mutable } from "@storiny/types";
 
 import { LinearLayer, NonDeleted, Point } from "../../../types";
+import { arePointsEqual } from "../arePointsEqual";
 import { getBezierXY } from "../getBezierXY";
 import { getControlPointsForBezierCurve } from "../getControlPointsForBezierCurve";
-import { arePointsEqual } from "../math";
 
 /**
  * Returns points in the bézier curve

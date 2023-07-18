@@ -14,6 +14,7 @@ export const isLinearLayerSimpleAndAlreadyBoundOnOppositeEdge = (
 ): boolean => {
   const otherBinding =
     linearLayer[startOrEnd === "start" ? "endBinding" : "startBinding"];
+
   return isLinearLayerSimpleAndAlreadyBound(
     linearLayer,
     otherBinding?.layerId,

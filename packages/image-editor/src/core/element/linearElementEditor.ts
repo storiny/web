@@ -12,13 +12,13 @@ import {
   rotatePoint
 } from "../../lib/math/math";
 import Scene from "../../lib/scene/scene/Scene";
+import { tupleToCoors } from "../../lib/utils/utils";
 import { DRAGGING_THRESHOLD } from "../constants";
 import History from "../history";
 import { shouldRotateWithDiscreteAngle } from "../keys";
 import { getShapeForLayer } from "../renderer/renderLayer";
 import { AppState, Point, PointerCoords } from "../types";
 import { Mutable } from "../utility-types";
-import { tupleToCoors } from "../utils";
 import { getLayerAbsoluteCoords, getLockedLinearCursorAlignSize } from ".";
 import {
   bindOrUnbindLinearLayer,
@@ -122,16 +122,16 @@ export class LinearLayerEditor {
 
   static handleBoxSelection(
     event: PointerEvent,
-    appState: AppState,
+    editorState: AppState,
     setState: React.Component<any, AppState>["setState"]
   ) {
     if (
-      !appState.editingLinearLayer ||
-      appState.draggingLayer?.type !== "selection"
+      !editorState.editingLinearLayer ||
+      editorState.draggingLayer?.type !== "selection"
     ) {
       return false;
     }
-    const { editingLinearLayer } = appState;
+    const { editingLinearLayer } = editorState;
     const { selectedPointsIndices, layerId } = editingLinearLayer;
 
     const layer = LinearLayerEditor.getLayer(layerId);
@@ -140,7 +140,7 @@ export class LinearLayerEditor {
     }
 
     const [selectionX1, selectionY1, selectionX2, selectionY2] =
-      getLayerAbsoluteCoords(appState.draggingLayer);
+      getLayerAbsoluteCoords(editorState.draggingLayer);
 
     const pointsSceneCoords =
       LinearLayerEditor.getPointsGlobalCoordinates(layer);
@@ -175,7 +175,7 @@ export class LinearLayerEditor {
   /** @returns whether point was dragged */
   static handlePointDragging(
     event: PointerEvent,
-    appState: AppState,
+    editorState: AppState,
     scenePointerX: number,
     scenePointerY: number,
     maybeSuggestBinding: (
@@ -212,7 +212,7 @@ export class LinearLayerEditor {
           layer,
           referencePoint,
           [scenePointerX, scenePointerY],
-          appState.gridSize
+          editorState.gridSize
         );
 
         LinearLayerEditor.movePoints(layer, [
@@ -229,7 +229,7 @@ export class LinearLayerEditor {
           layer,
           scenePointerX - linearLayerEditor.pointerOffset.x,
           scenePointerY - linearLayerEditor.pointerOffset.y,
-          appState.gridSize
+          editorState.gridSize
         );
 
         const deltaX = newDraggingPointPosition[0] - draggingPoint[0];
@@ -244,7 +244,7 @@ export class LinearLayerEditor {
                     layer,
                     scenePointerX - linearLayerEditor.pointerOffset.x,
                     scenePointerY - linearLayerEditor.pointerOffset.y,
-                    appState.gridSize
+                    editorState.gridSize
                   )
                 : ([
                     layer.points[pointIndex][0] + deltaX,
@@ -309,7 +309,7 @@ export class LinearLayerEditor {
   static handlePointerUp(
     event: PointerEvent,
     editingLinearLayer: LinearLayerEditor,
-    appState: AppState
+    editorState: AppState
   ): LinearLayerEditor {
     const { layerId, selectedPointsIndices, isDragging, pointerDownState } =
       editingLinearLayer;
@@ -330,7 +330,7 @@ export class LinearLayerEditor {
     if (isDragging && selectedPointsIndices) {
       for (const selectedPoint of selectedPointsIndices) {
         if (selectedPoint === 0 || selectedPoint === layer.points.length - 1) {
-          if (isPathALoop(layer.points, appState.zoom.value)) {
+          if (isPathALoop(layer.points, editorState.zoom.value)) {
             LinearLayerEditor.movePoints(layer, [
               {
                 index: selectedPoint,
@@ -342,7 +342,7 @@ export class LinearLayerEditor {
             ]);
           }
 
-          const bindingLayer = isBindingEnabled(appState)
+          const bindingLayer = isBindingEnabled(editorState)
             ? getHoveredLayerForBinding(
                 tupleToCoors(
                   LinearLayerEditor.getPointAtIndexGlobalCoordinates(
@@ -389,27 +389,31 @@ export class LinearLayerEditor {
 
   static getEditorMidPoints = (
     layer: NonDeleted<ExcalidrawLinearLayer>,
-    appState: AppState
+    editorState: AppState
   ): (typeof editorMidPointsCache)["points"] => {
     const boundText = getBoundTextLayer(layer);
 
     // Since its not needed outside editor unless 2 pointer lines or bound text
-    if (!appState.editingLinearLayer && layer.points.length > 2 && !boundText) {
+    if (
+      !editorState.editingLinearLayer &&
+      layer.points.length > 2 &&
+      !boundText
+    ) {
       return [];
     }
     if (
       editorMidPointsCache.version === layer.version &&
-      editorMidPointsCache.zoom === appState.zoom.value
+      editorMidPointsCache.zoom === editorState.zoom.value
     ) {
       return editorMidPointsCache.points;
     }
-    LinearLayerEditor.updateEditorMidPointsCache(layer, appState);
+    LinearLayerEditor.updateEditorMidPointsCache(layer, editorState);
     return editorMidPointsCache.points!;
   };
 
   static updateEditorMidPointsCache = (
     layer: NonDeleted<ExcalidrawLinearLayer>,
-    appState: AppState
+    editorState: AppState
   ) => {
     const points = LinearLayerEditor.getPointsGlobalCoordinates(layer);
 
@@ -421,7 +425,7 @@ export class LinearLayerEditor {
           layer,
           layer.points[index],
           layer.points[index + 1],
-          appState.zoom
+          editorState.zoom
         )
       ) {
         midpoints.push(null);
@@ -439,13 +443,13 @@ export class LinearLayerEditor {
     }
     editorMidPointsCache.points = midpoints;
     editorMidPointsCache.version = layer.version;
-    editorMidPointsCache.zoom = appState.zoom.value;
+    editorMidPointsCache.zoom = editorState.zoom.value;
   };
 
   static getSegmentMidpointHitCoords = (
     linearLayerEditor: LinearLayerEditor,
     scenePointer: { x: number; y: number },
-    appState: AppState
+    editorState: AppState
   ) => {
     const { layerId } = linearLayerEditor;
     const layer = LinearLayerEditor.getLayer(layerId);
@@ -454,7 +458,7 @@ export class LinearLayerEditor {
     }
     const clickedPointIndex = LinearLayerEditor.getPointIndexUnderCursor(
       layer,
-      appState.zoom,
+      editorState.zoom,
       scenePointer.x,
       scenePointer.y
     );
@@ -462,11 +466,12 @@ export class LinearLayerEditor {
       return null;
     }
     const points = LinearLayerEditor.getPointsGlobalCoordinates(layer);
-    if (points.length >= 3 && !appState.editingLinearLayer) {
+    if (points.length >= 3 && !editorState.editingLinearLayer) {
       return null;
     }
 
-    const threshold = LinearLayerEditor.POINT_HANDLE_SIZE / appState.zoom.value;
+    const threshold =
+      LinearLayerEditor.POINT_HANDLE_SIZE / editorState.zoom.value;
 
     const existingSegmentMidpointHitCoords =
       linearLayerEditor.segmentMidPointHoveredCoords;
@@ -483,7 +488,7 @@ export class LinearLayerEditor {
     }
     let index = 0;
     const midPoints: (typeof editorMidPointsCache)["points"] =
-      LinearLayerEditor.getEditorMidPoints(layer, appState);
+      LinearLayerEditor.getEditorMidPoints(layer, editorState);
     while (index < midPoints.length) {
       if (midPoints[index] !== null) {
         const distance = distance2d(
@@ -555,14 +560,14 @@ export class LinearLayerEditor {
 
   static getSegmentMidPointIndex(
     linearLayerEditor: LinearLayerEditor,
-    appState: AppState,
+    editorState: AppState,
     midPoint: Point
   ) {
     const layer = LinearLayerEditor.getLayer(linearLayerEditor.layerId);
     if (!layer) {
       return -1;
     }
-    const midPoints = LinearLayerEditor.getEditorMidPoints(layer, appState);
+    const midPoints = LinearLayerEditor.getEditorMidPoints(layer, editorState);
     let index = 0;
     while (index < midPoints.length) {
       if (LinearLayerEditor.arePointsEqual(midPoint, midPoints[index])) {
@@ -575,7 +580,7 @@ export class LinearLayerEditor {
 
   static handlePointerDown(
     event: React.PointerEvent<HTMLLayer>,
-    appState: AppState,
+    editorState: AppState,
     history: History,
     scenePointer: { x: number; y: number },
     linearLayerEditor: LinearLayerEditor
@@ -603,17 +608,17 @@ export class LinearLayerEditor {
     const segmentMidpoint = LinearLayerEditor.getSegmentMidpointHitCoords(
       linearLayerEditor,
       scenePointer,
-      appState
+      editorState
     );
     let segmentMidpointIndex = null;
     if (segmentMidpoint) {
       segmentMidpointIndex = LinearLayerEditor.getSegmentMidPointIndex(
         linearLayerEditor,
-        appState,
+        editorState,
         segmentMidpoint
       );
     }
-    if (event.altKey && appState.editingLinearLayer) {
+    if (event.altKey && editorState.editingLinearLayer) {
       if (linearLayerEditor.lastUncommittedPoint == null) {
         mutateLayer(layer, {
           points: [
@@ -622,7 +627,7 @@ export class LinearLayerEditor {
               layer,
               scenePointer.x,
               scenePointer.y,
-              appState.gridSize
+              editorState.gridSize
             )
           ]
         });
@@ -655,7 +660,7 @@ export class LinearLayerEditor {
 
     const clickedPointIndex = LinearLayerEditor.getPointIndexUnderCursor(
       layer,
-      appState.zoom,
+      editorState.zoom,
       scenePointer.x,
       scenePointer.y
     );
@@ -670,7 +675,7 @@ export class LinearLayerEditor {
       // binding (which needs to happen at the point the user finishes moving
       // the point).
       const { startBindingLayer, endBindingLayer } = linearLayerEditor;
-      if (isBindingEnabled(appState) && isBindingLayer(layer)) {
+      if (isBindingEnabled(editorState) && isBindingLayer(layer)) {
         bindOrUnbindLinearLayer(layer, startBindingLayer, endBindingLayer);
       }
     }
@@ -736,15 +741,15 @@ export class LinearLayerEditor {
     event: React.PointerEvent<HTMLCanvasLayer>,
     scenePointerX: number,
     scenePointerY: number,
-    appState: AppState
+    editorState: AppState
   ): LinearLayerEditor | null {
-    if (!appState.editingLinearLayer) {
+    if (!editorState.editingLinearLayer) {
       return null;
     }
-    const { layerId, lastUncommittedPoint } = appState.editingLinearLayer;
+    const { layerId, lastUncommittedPoint } = editorState.editingLinearLayer;
     const layer = LinearLayerEditor.getLayer(layerId);
     if (!layer) {
-      return appState.editingLinearLayer;
+      return editorState.editingLinearLayer;
     }
 
     const { points } = layer;
@@ -755,7 +760,7 @@ export class LinearLayerEditor {
         LinearLayerEditor.deletePoints(layer, [points.length - 1]);
       }
       return {
-        ...appState.editingLinearLayer,
+        ...editorState.editingLinearLayer,
         lastUncommittedPoint: null
       };
     }
@@ -769,7 +774,7 @@ export class LinearLayerEditor {
         layer,
         lastCommittedPoint,
         [scenePointerX, scenePointerY],
-        appState.gridSize
+        editorState.gridSize
       );
 
       newPoint = [
@@ -779,9 +784,9 @@ export class LinearLayerEditor {
     } else {
       newPoint = LinearLayerEditor.createPointAt(
         layer,
-        scenePointerX - appState.editingLinearLayer.pointerOffset.x,
-        scenePointerY - appState.editingLinearLayer.pointerOffset.y,
-        appState.gridSize
+        scenePointerX - editorState.editingLinearLayer.pointerOffset.x,
+        scenePointerY - editorState.editingLinearLayer.pointerOffset.y,
+        editorState.gridSize
       );
     }
 
@@ -793,10 +798,10 @@ export class LinearLayerEditor {
         }
       ]);
     } else {
-      LinearLayerEditor.addPoints(layer, appState, [{ point: newPoint }]);
+      LinearLayerEditor.addPoints(layer, editorState, [{ point: newPoint }]);
     }
     return {
-      ...appState.editingLinearLayer,
+      ...editorState.editingLinearLayer,
       lastUncommittedPoint: layer.points[layer.points.length - 1]
     };
   }
@@ -937,12 +942,12 @@ export class LinearLayerEditor {
     mutateLayer(layer, LinearLayerEditor.getNormalizedPoints(layer));
   }
 
-  static duplicateSelectedPoints(appState: AppState) {
-    if (!appState.editingLinearLayer) {
+  static duplicateSelectedPoints(editorState: AppState) {
+    if (!editorState.editingLinearLayer) {
       return false;
     }
 
-    const { selectedPointsIndices, layerId } = appState.editingLinearLayer;
+    const { selectedPointsIndices, layerId } = editorState.editingLinearLayer;
 
     const layer = LinearLayerEditor.getLayer(layerId);
 
@@ -995,10 +1000,10 @@ export class LinearLayerEditor {
     }
 
     return {
-      appState: {
-        ...appState,
+      editorState: {
+        ...editorState,
         editingLinearLayer: {
-          ...appState.editingLinearLayer,
+          ...editorState.editingLinearLayer,
           selectedPointsIndices: nextSelectedIndices
         }
       }
@@ -1040,7 +1045,7 @@ export class LinearLayerEditor {
 
   static addPoints(
     layer: NonDeleted<ExcalidrawLinearLayer>,
-    appState: AppState,
+    editorState: AppState,
     targetPoints: { point: Point }[]
   ) {
     const offsetX = 0;
@@ -1105,7 +1110,7 @@ export class LinearLayerEditor {
   static shouldAddMidpoint(
     linearLayerEditor: LinearLayerEditor,
     pointerCoords: PointerCoords,
-    appState: AppState
+    editorState: AppState
   ) {
     const layer = LinearLayerEditor.getLayer(linearLayerEditor.layerId);
 
@@ -1132,8 +1137,8 @@ export class LinearLayerEditor {
       pointerCoords.y
     );
     if (
-      !appState.editingLinearLayer &&
-      dist < DRAGGING_THRESHOLD / appState.zoom.value
+      !editorState.editingLinearLayer &&
+      dist < DRAGGING_THRESHOLD / editorState.zoom.value
     ) {
       return false;
     }
@@ -1143,7 +1148,7 @@ export class LinearLayerEditor {
   static addMidpoint(
     linearLayerEditor: LinearLayerEditor,
     pointerCoords: PointerCoords,
-    appState: AppState
+    editorState: AppState
   ) {
     const layer = LinearLayerEditor.getLayer(linearLayerEditor.layerId);
     if (!layer) {
@@ -1162,7 +1167,7 @@ export class LinearLayerEditor {
       layer,
       pointerCoords.x,
       pointerCoords.y,
-      appState.gridSize
+      editorState.gridSize
     );
     const points = [
       ...layer.points.slice(0, segmentMidpoint.index!),

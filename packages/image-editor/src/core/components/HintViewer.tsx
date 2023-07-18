@@ -1,7 +1,8 @@
 import "./HintViewer.scss";
 
 import { getSelectedLayers } from "../../lib/scene";
-import { isEraserActive } from "../appState";
+import { getShortcutKey } from "../../lib/utils/utils";
+import { isEraserActive } from "../editorState";
 import { t } from "../i18n";
 import {
   isImageLayer,
@@ -11,24 +12,29 @@ import {
 } from "../layer/typeChecks";
 import { NonDeletedExcalidrawLayer } from "../layer/types";
 import { Device, UIAppState } from "../types";
-import { getShortcutKey } from "../utils";
 
 interface HintViewerProps {
-  appState: UIAppState;
   device: Device;
+  editorState: UIAppState;
   isMobile: boolean;
   layers: readonly NonDeletedExcalidrawLayer[];
 }
 
-const getHints = ({ appState, layers, isMobile, device }: HintViewerProps) => {
-  const { activeTool, isResizing, isRotating, lastPointerDownWith } = appState;
-  const multiMode = appState.multiLayer !== null;
+const getHints = ({
+  editorState,
+  layers,
+  isMobile,
+  device
+}: HintViewerProps) => {
+  const { activeTool, isResizing, isRotating, lastPointerDownWith } =
+    editorState;
+  const multiMode = editorState.multiLayer !== null;
 
-  if (appState.openSidebar && !device.canDeviceFitSidebar) {
+  if (editorState.openSidebar && !device.canDeviceFitSidebar) {
     return null;
   }
 
-  if (isEraserActive(appState)) {
+  if (isEraserActive(editorState)) {
     return t("hints.eraserRevert");
   }
   if (activeTool.type === "arrow" || activeTool.type === "line") {
@@ -46,11 +52,14 @@ const getHints = ({ appState, layers, isMobile, device }: HintViewerProps) => {
     return t("hints.text");
   }
 
-  if (appState.activeTool.type === "image" && appState.pendingImageLayerId) {
+  if (
+    editorState.activeTool.type === "image" &&
+    editorState.pendingImageLayerId
+  ) {
     return t("hints.placeImage");
   }
 
-  const selectedLayers = getSelectedLayers(layers, appState);
+  const selectedLayers = getSelectedLayers(layers, editorState);
 
   if (
     isResizing &&
@@ -74,15 +83,15 @@ const getHints = ({ appState, layers, isMobile, device }: HintViewerProps) => {
     return t("hints.text_selected");
   }
 
-  if (appState.editingLayer && isTextLayer(appState.editingLayer)) {
+  if (editorState.editingLayer && isTextLayer(editorState.editingLayer)) {
     return t("hints.text_editing");
   }
 
   if (activeTool.type === "selection") {
     if (
-      appState.draggingLayer?.type === "selection" &&
-      !appState.editingLayer &&
-      !appState.editingLinearLayer
+      editorState.draggingLayer?.type === "selection" &&
+      !editorState.editingLayer &&
+      !editorState.editingLinearLayer
     ) {
       return t("hints.deepBoxSelect");
     }
@@ -93,8 +102,8 @@ const getHints = ({ appState, layers, isMobile, device }: HintViewerProps) => {
 
   if (selectedLayers.length === 1) {
     if (isLinearLayer(selectedLayers[0])) {
-      if (appState.editingLinearLayer) {
-        return appState.editingLinearLayer.selectedPointsIndices
+      if (editorState.editingLinearLayer) {
+        return editorState.editingLinearLayer.selectedPointsIndices
           ? t("hints.lineEditor_pointSelected")
           : t("hints.lineEditor_nothingSelected");
       }
@@ -109,13 +118,13 @@ const getHints = ({ appState, layers, isMobile, device }: HintViewerProps) => {
 };
 
 export const HintViewer = ({
-  appState,
+  editorState,
   layers,
   isMobile,
   device
 }: HintViewerProps) => {
   let hint = getHints({
-    appState,
+    editorState,
     layers,
     isMobile,
     device

@@ -5,11 +5,11 @@ import {
   rotatePoint
 } from "../../lib/math/math";
 import Scene from "../../lib/scene/scene/Scene";
+import { getFontString } from "../../lib/utils/utils";
 import { SHIFT_LOCKING_ANGLE } from "../constants";
 import { rescalePoints } from "../points";
 import { Point, PointerDownState } from "../types";
 import type { Mutable } from "../utility-types";
-import { getFontString } from "../utils";
 import { updateBoundLayers } from "./binding";
 import {
   getCommonBoundingBox,

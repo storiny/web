@@ -6,19 +6,19 @@ export const actionToggleZenMode = register({
   viewMode: true,
   trackEvent: {
     category: "canvas",
-    predicate: (appState) => !appState.zenModeEnabled
+    predicate: (editorState) => !editorState.zenModeEnabled
   },
-  perform(layers, appState) {
+  perform(layers, editorState) {
     return {
-      appState: {
-        ...appState,
-        zenModeEnabled: !this.checked!(appState)
+      editorState: {
+        ...editorState,
+        zenModeEnabled: !this.checked!(editorState)
       },
       commitToHistory: false
     };
   },
-  checked: (appState) => appState.zenModeEnabled,
-  predicate: (layers, appState, appProps) =>
+  checked: (editorState) => editorState.zenModeEnabled,
+  predicate: (layers, editorState, appProps) =>
     typeof appProps.zenModeEnabled === "undefined",
   contextItemLabel: "buttons.zenMode",
   keyTest: (event) =>

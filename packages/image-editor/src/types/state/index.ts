@@ -40,16 +40,10 @@ export interface RootState {
      */
     lastActiveTool: LastActiveTool;
     locked: boolean;
-  } & (
-    | {
-        customType: null;
-        type: (typeof SHAPES)[number]["value"] | "eraser" | "hand";
-      }
-    | {
-        customType: string;
-        type: "custom";
-      }
-  );
+  } & {
+    customType: null;
+    type: Shape;
+  };
   contextMenu: {
     items: ContextMenuItems;
     left: number;

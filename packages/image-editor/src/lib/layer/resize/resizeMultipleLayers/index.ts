@@ -10,7 +10,8 @@ import {
   TextLayer,
   TextLayerWithContainer
 } from "../../../../types";
-import Scene from "../../../scene/scene/Scene";
+import { rescalePoints } from "../../../point";
+import { Scene } from "../../../scene";
 import { updateBoundLayers } from "../../binding";
 import { getCommonBoundingBox, getLayerPointsCoords } from "../../bounds";
 import { LinearLayerEditor } from "../../linearLayerEditor";
@@ -22,6 +23,13 @@ import {
   isLinearLayer,
   isTextLayer
 } from "../../predicates";
+import {
+  getBoundTextLayer,
+  getBoundTextLayerId,
+  getBoundTextMaxHeight,
+  getBoundTextMaxWidth,
+  handleBindTextResize
+} from "../../text";
 import { measureFontSizeFromWidth } from "../measureFontSizeFromWidth";
 import { normalizeAngle } from "../normalizeAngle";
 
@@ -37,7 +45,7 @@ const rescalePointsInLayer = (
   width: number,
   height: number,
   normalizePoints: boolean
-) =>
+): { points?: Point[] } =>
   isLinearLayer(layer) || isFreeDrawLayer(layer)
     ? {
         points: rescalePoints(

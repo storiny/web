@@ -1,5 +1,6 @@
 import ReactDOM from "react-dom";
 
+import { setDateTimeForTests } from "../../lib/utils/utils";
 import { FONT_FAMILY } from "../constants";
 import ExcalidrawApp from "../excalidraw-app";
 import { defaultLang } from "../i18n";
@@ -7,7 +8,6 @@ import { CODES, KEYS } from "../keys";
 import { ExcalidrawLayer } from "../layer/types";
 import { reseed } from "../random";
 import * as Renderer from "../renderer/renderScene";
-import { setDateTimeForTests } from "../utils";
 import { API } from "./helpers/api";
 import { Keyboard, Pointer, UI } from "./helpers/ui";
 import {
@@ -36,7 +36,7 @@ const checkpoint = (name: string) => {
   expect(renderScene.mock.calls.length).toMatchSnapshot(
     `[${name}] number of renders`
   );
-  expect(h.state).toMatchSnapshot(`[${name}] appState`);
+  expect(h.state).toMatchSnapshot(`[${name}] editorState`);
   expect(h.history.getSnapshotForTest()).toMatchSnapshot(`[${name}] history`);
   expect(h.layers.length).toMatchSnapshot(`[${name}] number of layers`);
   h.layers.forEach((layer, i) =>
@@ -662,7 +662,7 @@ describe("regression tests", () => {
     expect(API.getSelectedLayers().length).toBe(1);
   });
 
-  it("updates fontSize & fontFamily appState", () => {
+  it("updates fontSize & fontFamily editorState", () => {
     UI.clickTool("text");
     expect(h.state.currentItemFontFamily).toEqual(FONT_FAMILY.Virgil);
     fireEvent.click(screen.getByTitle(/code/i));

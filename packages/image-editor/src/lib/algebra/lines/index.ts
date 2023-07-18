@@ -1,9 +1,8 @@
-import * as GA from "./ga";
-import { Line, Point } from "./ga";
+import { dot, inorm, join, Line, meet, normalized, Point } from "../geom";
 
 /**
  * A line is stored as an array `[0, c, a, b, 0, 0, 0, 0]` representing:
- *   c * e0 + a * e1 + b*e2
+ * c * e0 + a * e1 + b*e2
  *
  * This maps to a standard formula `a * x + b * y + c`.
  *
@@ -14,39 +13,76 @@ import { Line, Point } from "./ga";
  * `c / norm(line)` is the oriented distance from line to origin.
  */
 
-// Returns line with direction (x, y) through origin
+/**
+ * Returns line with a direction (x, y) through origin
+ * @param x
+ * @param y
+ */
 export const vector = (x: number, y: number): Line =>
-  GA.normalized([0, 0, -y, x, 0, 0, 0, 0]);
+  normalized([0, 0, -y, x, 0, 0, 0, 0]);
 
-// For equation ax + by + c = 0.
+/**
+ * Equation ax + by + c = 0
+ * @param a A
+ * @param b B
+ * @param c C
+ */
 export const equation = (a: number, b: number, c: number): Line =>
-  GA.normalized([0, c, a, b, 0, 0, 0, 0]);
+  normalized([0, c, a, b, 0, 0, 0, 0]);
 
+/**
+ * though
+ * @param from From
+ * @param to to
+ */
 export const through = (from: Point, to: Point): Line =>
-  GA.normalized(GA.join(to, from));
+  normalized(join(to, from));
 
-export const orthogonal = (line: Line, point: Point): Line =>
-  GA.dot(line, point);
+/**
+ * orthogonalLine
+ * @param line Line
+ * @param point Point
+ */
+export const orthogonalLine = (line: Line, point: Point): Line =>
+  dot(line, point);
 
 // Returns a line perpendicular to the line through `against` and `intersection`
 // going through `intersection`.
-export const orthogonalThrough = (against: Point, intersection: Point): Line =>
-  orthogonal(through(against, intersection), intersection);
 
+/**
+ * Returns a line perpendicular to the line through `against` and `intersection`
+ * goung through `intersection`
+ * @param against Against
+ * @param intersection Intersection
+ */
+export const orthogonalThrough = (against: Point, intersection: Point): Line =>
+  orthogonalLine(through(against, intersection), intersection);
+
+/**
+ * parallel
+ * @param line Line
+ * @param distance Distance
+ */
 export const parallel = (line: Line, distance: number): Line => {
   const result = line.slice();
   result[1] -= distance;
+
   return result as unknown as Line;
 };
 
+/**
+ * parallelThrough
+ * @param line Line
+ * @param point Point
+ */
 export const parallelThrough = (line: Line, point: Point): Line =>
-  orthogonal(orthogonal(point, line), point);
+  orthogonalLine(orthogonalLine(point, line), point);
 
-export const distance = (line1: Line, line2: Line): number =>
-  GA.inorm(GA.meet(line1, line2));
+export const lineDistance = (line1: Line, line2: Line): number =>
+  inorm(meet(line1, line2));
 
 export const angle = (line1: Line, line2: Line): number =>
-  Math.acos(GA.dot(line1, line2)[0]);
+  Math.acos(dot(line1, line2)[0]);
 
 // The orientation of the line
 export const sign = (line: Line): number => Math.sign(line[1]);

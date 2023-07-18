@@ -16,13 +16,13 @@ import { Section } from "../Section";
 import Stack from "../Stack";
 
 const Footer = ({
-  appState,
+  editorState,
   actionManager,
   showExitZenModeBtn,
   renderWelcomeScreen
 }: {
   actionManager: ActionManager;
-  appState: UIAppState;
+  editorState: UIAppState;
   renderWelcomeScreen: boolean;
   showExitZenModeBtn: boolean;
 }) => {
@@ -30,7 +30,9 @@ const Footer = ({
 
   const device = useDevice();
   const showFinalize =
-    !appState.viewModeEnabled && appState.multiLayer && device.isTouchScreen;
+    !editorState.viewModeEnabled &&
+    editorState.multiLayer &&
+    device.isTouchScreen;
 
   return (
     <footer
@@ -40,21 +42,21 @@ const Footer = ({
       <div
         className={clsx("layer-ui__wrapper__footer-left zen-mode-transition", {
           "layer-ui__wrapper__footer-left--transition-left":
-            appState.zenModeEnabled
+            editorState.zenModeEnabled
         })}
       >
         <Stack.Col gap={2}>
           <Section heading="canvasActions">
             <ZoomActions
               renderAction={actionManager.renderAction}
-              zoom={appState.zoom}
+              zoom={editorState.zoom}
             />
 
-            {!appState.viewModeEnabled && (
+            {!editorState.viewModeEnabled && (
               <UndoRedoActions
                 className={clsx("zen-mode-transition", {
                   "layer-ui__wrapper__footer-left--transition-bottom":
-                    appState.zenModeEnabled
+                    editorState.zenModeEnabled
                 })}
                 renderAction={actionManager.renderAction}
               />
@@ -63,7 +65,7 @@ const Footer = ({
               <FinalizeAction
                 className={clsx("zen-mode-transition", {
                   "layer-ui__wrapper__footer-left--transition-left":
-                    appState.zenModeEnabled
+                    editorState.zenModeEnabled
                 })}
                 renderAction={actionManager.renderAction}
               />
@@ -74,7 +76,7 @@ const Footer = ({
       <FooterCenterTunnel.Out />
       <div
         className={clsx("layer-ui__wrapper__footer-right zen-mode-transition", {
-          "transition-right disable-pointerEvents": appState.zenModeEnabled
+          "transition-right disable-pointerEvents": editorState.zenModeEnabled
         })}
       >
         <div style={{ position: "relative" }}>

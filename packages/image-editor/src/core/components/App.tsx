@@ -46,6 +46,33 @@ import {
 import { RenderConfig, ScrollBars } from "../../lib/scene/types";
 import { getStateForZoom } from "../../lib/scene/zoom/zoom";
 import {
+  debounce,
+  distance,
+  easeOut,
+  easeToValuesRAF,
+  getFontString,
+  getNearestScrollableContainer,
+  getShortcutKey,
+  isInputLike,
+  isToolIcon,
+  isTransparent,
+  isWritableLayer,
+  muteFSAbortError,
+  resetCursor,
+  resolvablePromise,
+  sceneCoordsToViewportCoords,
+  setCursor,
+  setCursorForShape,
+  setEraserCursor,
+  tupleToCoors,
+  updateActiveTool,
+  updateObject,
+  viewportCoordsToSceneCoords,
+  withBatchedUpdates,
+  withBatchedUpdatesThrottled,
+  wrapEvent
+} from "../../lib/utils/utils";
+import {
   actionAddToLibrary,
   actionBindText,
   actionBringForward,
@@ -89,11 +116,6 @@ import { ActionManager } from "../actions/manager";
 import { actions } from "../actions/register";
 import { ActionResult } from "../actions/types";
 import { trackEvent } from "../analytics";
-import {
-  getDefaultAppState,
-  isEraserActive,
-  isHandToolActive
-} from "../appState";
 import { parseClipboard } from "../clipboard";
 import {
   APP_NAME,
@@ -133,6 +155,11 @@ import {
   VERTICAL_ALIGN,
   ZOOM_STEP
 } from "../constants";
+import {
+  getDefaultAppState,
+  isEraserActive,
+  isHandToolActive
+} from "../editorState";
 import {
   addLayersToFrame,
   bindLayersToFramesAfterDuplication,
@@ -294,33 +321,6 @@ import {
   SidebarName,
   SidebarTabName
 } from "../types";
-import {
-  debounce,
-  distance,
-  easeOut,
-  easeToValuesRAF,
-  getFontString,
-  getNearestScrollableContainer,
-  getShortcutKey,
-  isInputLike,
-  isToolIcon,
-  isTransparent,
-  isWritableLayer,
-  muteFSAbortError,
-  resetCursor,
-  resolvablePromise,
-  sceneCoordsToViewportCoords,
-  setCursor,
-  setCursorForShape,
-  setEraserCursor,
-  tupleToCoors,
-  updateActiveTool,
-  updateObject,
-  viewportCoordsToSceneCoords,
-  withBatchedUpdates,
-  withBatchedUpdatesThrottled,
-  wrapEvent
-} from "../utils";
 import { activeConfirmDialogAtom } from "./ActiveConfirmDialog";
 import BraveMeasureTextError from "./BraveMeasureTextError";
 import {
@@ -835,8 +835,8 @@ class App extends React.Component<AppProps, AppState> {
                         <LayerUI
                           UIOptions={this.props.UIOptions}
                           actionManager={this.actionManager}
-                          appState={this.state}
                           canvas={this.canvas}
+                          editorState={this.state}
                           files={this.files}
                           langCode={getLanguage().code}
                           layers={this.scene.getNonDeletedLayers()}
@@ -1029,19 +1029,20 @@ class App extends React.Component<AppProps, AppState> {
         this.addNewImagesToImageCache();
       }
 
-      if (actionResult.appState || editingLayer || this.state.contextMenu) {
+      if (actionResult.editorState || editingLayer || this.state.contextMenu) {
         if (actionResult.commitToHistory) {
           this.history.resumeRecording();
         }
 
-        let viewModeEnabled = actionResult?.appState?.viewModeEnabled || false;
-        let zenModeEnabled = actionResult?.appState?.zenModeEnabled || false;
-        let gridSize = actionResult?.appState?.gridSize || null;
+        let viewModeEnabled =
+          actionResult?.editorState?.viewModeEnabled || false;
+        let zenModeEnabled = actionResult?.editorState?.zenModeEnabled || false;
+        let gridSize = actionResult?.editorState?.gridSize || null;
         const theme =
-          actionResult?.appState?.theme || this.props.theme || THEME.LIGHT;
-        let name = actionResult?.appState?.name ?? this.state.name;
+          actionResult?.editorState?.theme || this.props.theme || THEME.LIGHT;
+        let name = actionResult?.editorState?.name ?? this.state.name;
         const errorMessage =
-          actionResult?.appState?.errorMessage ?? this.state.errorMessage;
+          actionResult?.editorState?.errorMessage ?? this.state.errorMessage;
         if (typeof this.props.viewModeEnabled !== "undefined") {
           viewModeEnabled = this.props.viewModeEnabled;
         }
@@ -1059,7 +1060,7 @@ class App extends React.Component<AppProps, AppState> {
         }
 
         editingLayer =
-          editingLayer || actionResult.appState?.editingLayer || null;
+          editingLayer || actionResult.editorState?.editingLayer || null;
 
         if (editingLayer?.isDeleted) {
           editingLayer = null;
@@ -1067,7 +1068,7 @@ class App extends React.Component<AppProps, AppState> {
 
         this.setState(
           (state) =>
-            Object.assign(actionResult.appState || {}, {
+            Object.assign(actionResult.editorState || {}, {
               // NOTE this will prevent opening context menu using an action
               // or programmatically from the host, so it will need to be
               // rewritten later
@@ -1167,7 +1168,7 @@ class App extends React.Component<AppProps, AppState> {
     } catch (error: any) {
       console.error(error);
       initialData = {
-        appState: {
+        editorState: {
           errorMessage:
             error.message ||
             "Encountered an error during importing or restoring scene data"
@@ -1175,28 +1176,28 @@ class App extends React.Component<AppProps, AppState> {
       };
     }
     const scene = restore(initialData, null, null, { repairBindings: true });
-    scene.appState = {
-      ...scene.appState,
-      theme: this.props.theme || scene.appState.theme,
+    scene.editorState = {
+      ...scene.editorState,
+      theme: this.props.theme || scene.editorState.theme,
       // we're falling back to current (pre-init) state when deciding
       // whether to open the library, to handle a case where we
       // update the state outside of initialData (e.g. when loading the app
       // with a library install link, which should auto-open the library)
-      openSidebar: scene.appState?.openSidebar || this.state.openSidebar,
+      openSidebar: scene.editorState?.openSidebar || this.state.openSidebar,
       activeTool:
-        scene.appState.activeTool.type === "image"
-          ? { ...scene.appState.activeTool, type: "selection" }
-          : scene.appState.activeTool,
+        scene.editorState.activeTool.type === "image"
+          ? { ...scene.editorState.activeTool, type: "selection" }
+          : scene.editorState.activeTool,
       isLoading: false,
       toast: this.state.toast
     };
     if (initialData?.scrollToContent) {
-      scene.appState = {
-        ...scene.appState,
+      scene.editorState = {
+        ...scene.editorState,
         ...calculateScrollCenter(
           scene.layers,
           {
-            ...scene.appState,
+            ...scene.editorState,
             width: this.state.width,
             height: this.state.height,
             offsetTop: this.state.offsetTop,
@@ -1692,7 +1693,7 @@ class App extends React.Component<AppProps, AppState> {
     renderScene(
       {
         layers: renderingLayers,
-        appState: this.state,
+        editorState: this.state,
         scale: window.devicePixelRatio,
         rc: this.rc!,
         canvas: this.canvas!,
@@ -2278,15 +2279,15 @@ class App extends React.Component<AppProps, AppState> {
     let scrollY = this.state.scrollY;
 
     if (opts?.fitToContent || opts?.fitToViewport) {
-      const { appState } = zoomToFit({
+      const { editorState } = zoomToFit({
         targetLayers,
-        appState: this.state,
+        editorState: this.state,
         fitToViewport: !!opts?.fitToViewport,
         viewportZoomFactor: opts?.viewportZoomFactor
       });
-      zoom = appState.zoom;
-      scrollX = appState.scrollX;
-      scrollY = appState.scrollY;
+      zoom = editorState.zoom;
+      scrollX = editorState.scrollX;
+      scrollY = editorState.scrollY;
     } else {
       // compute only the viewport location, without any zoom adjustment
       const scroll = calculateScrollCenter(
@@ -2383,7 +2384,7 @@ class App extends React.Component<AppProps, AppState> {
     }
   };
 
-  /** adds supplied files to existing files in the appState */
+  /** adds supplied files to existing files in the editorState */
   public addFiles: ExcalidrawImperativeAPI["addFiles"] = withBatchedUpdates(
     (files) => {
       const filesMap = files.reduce((acc, fileData) => {
@@ -2407,17 +2408,17 @@ class App extends React.Component<AppProps, AppState> {
 
   public updateScene = withBatchedUpdates(
     <K extends keyof AppState>(sceneData: {
-      appState?: Pick<AppState, K> | null;
       collaborators?: SceneData["collaborators"];
       commitToHistory?: SceneData["commitToHistory"];
+      editorState?: Pick<AppState, K> | null;
       layers?: SceneData["layers"];
     }) => {
       if (sceneData.commitToHistory) {
         this.history.resumeRecording();
       }
 
-      if (sceneData.appState) {
-        this.setState(sceneData.appState);
+      if (sceneData.editorState) {
+        this.setState(sceneData.editorState);
       }
 
       if (sceneData.layers) {
@@ -3986,7 +3987,7 @@ class App extends React.Component<AppProps, AppState> {
                 .filter((el) => el.id !== layer.id)
             }
           : {}),
-        appState: {
+        editorState: {
           draggingLayer: null,
           editingLayer: null,
           startBoundLayer: null,
@@ -4957,7 +4958,7 @@ class App extends React.Component<AppProps, AppState> {
       /* If arrow is pre-arrowheads, it will have undefined for both start and end arrowheads.
       If so, we want it to be null for start and "arrow" for end. If the linear item is not
       an arrow, we want it to be null for both. Otherwise, we want it to use the
-      values from appState. */
+      values from editorState. */
 
       const { currentItemStartArrowhead, currentItemEndArrowhead } = this.state;
       const [startArrowhead, endArrowhead] =
@@ -6892,8 +6893,8 @@ class App extends React.Component<AppProps, AppState> {
             );
             this.syncActionResult({
               ...scene,
-              appState: {
-                ...(scene.appState || this.state),
+              editorState: {
+                ...(scene.editorState || this.state),
                 isLoading: false
               },
               replaceFiles: true,
@@ -6972,8 +6973,8 @@ class App extends React.Component<AppProps, AppState> {
         this.setState({ isLoading: true });
         this.syncActionResult({
           ...ret.data,
-          appState: {
-            ...(ret.data.appState || this.state),
+          editorState: {
+            ...(ret.data.editorState || this.state),
             isLoading: false
           },
           replaceFiles: true,
@@ -7396,14 +7397,14 @@ class App extends React.Component<AppProps, AppState> {
   private getTextWysiwygSnappedToCenterPosition(
     x: number,
     y: number,
-    appState: AppState,
+    editorState: AppState,
     container?: ExcalidrawTextContainer | null
   ) {
     if (container) {
       let layerCenterX = container.x + container.width / 2;
       let layerCenterY = container.y + container.height / 2;
 
-      const layerCenter = getContainerCenter(container, appState);
+      const layerCenter = getContainerCenter(container, editorState);
       if (layerCenter) {
         layerCenterX = layerCenter.x;
         layerCenterY = layerCenter.y;
@@ -7414,7 +7415,7 @@ class App extends React.Component<AppProps, AppState> {
       if (isSnappedToCenter) {
         const { x: viewportX, y: viewportY } = sceneCoordsToViewportCoords(
           { sceneX: layerCenterX, sceneY: layerCenterY },
-          appState
+          editorState
         );
         return { viewportX, viewportY, layerCenterX, layerCenterY };
       }

@@ -1,20 +1,20 @@
 import { getSelectedLayers } from "../../lib/scene";
+import { setCursorForShape, updateActiveTool } from "../../lib/utils/utils";
 import { removeAllLayersFromFrame } from "../frame";
 import { getFrameLayers } from "../frame";
 import { KEYS } from "../keys";
 import { getNonDeletedLayers } from "../layer";
 import { ExcalidrawLayer } from "../layer/types";
 import { AppState } from "../types";
-import { setCursorForShape, updateActiveTool } from "../utils";
 import { register } from "./register";
 
 const isSingleFrameSelected = (
   layers: readonly ExcalidrawLayer[],
-  appState: AppState
+  editorState: AppState
 ) => {
   const selectedLayers = getSelectedLayers(
     getNonDeletedLayers(layers),
-    appState
+    editorState
   );
 
   return selectedLayers.length === 1 && selectedLayers[0].type === "frame";
@@ -23,10 +23,10 @@ const isSingleFrameSelected = (
 export const actionSelectAllLayersInFrame = register({
   name: "selectAllLayersInFrame",
   trackEvent: { category: "canvas" },
-  perform: (layers, appState) => {
+  perform: (layers, editorState) => {
     const selectedFrame = getSelectedLayers(
       getNonDeletedLayers(layers),
-      appState
+      editorState
     )[0];
 
     if (selectedFrame && selectedFrame.type === "frame") {
@@ -37,8 +37,8 @@ export const actionSelectAllLayersInFrame = register({
 
       return {
         layers,
-        appState: {
-          ...appState,
+        editorState: {
+          ...editorState,
           selectedLayerIds: layersInFrame.reduce((acc, layer) => {
             acc[layer.id] = true;
             return acc;
@@ -50,28 +50,28 @@ export const actionSelectAllLayersInFrame = register({
 
     return {
       layers,
-      appState,
+      editorState,
       commitToHistory: false
     };
   },
   contextItemLabel: "labels.selectAllLayersInFrame",
-  predicate: (layers, appState) => isSingleFrameSelected(layers, appState)
+  predicate: (layers, editorState) => isSingleFrameSelected(layers, editorState)
 });
 
 export const actionRemoveAllLayersFromFrame = register({
   name: "removeAllLayersFromFrame",
   trackEvent: { category: "history" },
-  perform: (layers, appState) => {
+  perform: (layers, editorState) => {
     const selectedFrame = getSelectedLayers(
       getNonDeletedLayers(layers),
-      appState
+      editorState
     )[0];
 
     if (selectedFrame && selectedFrame.type === "frame") {
       return {
-        layers: removeAllLayersFromFrame(layers, selectedFrame, appState),
-        appState: {
-          ...appState,
+        layers: removeAllLayersFromFrame(layers, selectedFrame, editorState),
+        editorState: {
+          ...editorState,
           selectedLayerIds: {
             [selectedFrame.id]: true
           }
@@ -82,51 +82,51 @@ export const actionRemoveAllLayersFromFrame = register({
 
     return {
       layers,
-      appState,
+      editorState,
       commitToHistory: false
     };
   },
   contextItemLabel: "labels.removeAllLayersFromFrame",
-  predicate: (layers, appState) => isSingleFrameSelected(layers, appState)
+  predicate: (layers, editorState) => isSingleFrameSelected(layers, editorState)
 });
 
 export const actionupdateFrameRendering = register({
   name: "updateFrameRendering",
   viewMode: true,
   trackEvent: { category: "canvas" },
-  perform: (layers, appState) => ({
+  perform: (layers, editorState) => ({
     layers,
-    appState: {
-      ...appState,
+    editorState: {
+      ...editorState,
       frameRendering: {
-        ...appState.frameRendering,
-        enabled: !appState.frameRendering.enabled
+        ...editorState.frameRendering,
+        enabled: !editorState.frameRendering.enabled
       }
     },
     commitToHistory: false
   }),
   contextItemLabel: "labels.updateFrameRendering",
-  checked: (appState: AppState) => appState.frameRendering.enabled
+  checked: (editorState: AppState) => editorState.frameRendering.enabled
 });
 
 export const actionSetFrameAsActiveTool = register({
   name: "setFrameAsActiveTool",
   trackEvent: { category: "toolbar" },
-  perform: (layers, appState, _, app) => {
-    const nextActiveTool = updateActiveTool(appState, {
+  perform: (layers, editorState, _, app) => {
+    const nextActiveTool = updateActiveTool(editorState, {
       type: "frame"
     });
 
     setCursorForShape(app.canvas, {
-      ...appState,
+      ...editorState,
       activeTool: nextActiveTool
     });
 
     return {
       layers,
-      appState: {
-        ...appState,
-        activeTool: updateActiveTool(appState, {
+      editorState: {
+        ...editorState,
+        activeTool: updateActiveTool(editorState, {
           type: "frame"
         })
       },

@@ -2,7 +2,7 @@ import "./LiveCollaborationTrigger.scss";
 
 import clsx from "clsx";
 
-import { useUIAppState } from "../../context/ui-appState";
+import { useUIAppState } from "../../context/ui-editorState";
 import { t } from "../../i18n";
 import { Button } from "../Button";
 import { usersIcon } from "../icons";
@@ -15,7 +15,7 @@ const LiveCollaborationTrigger = ({
   isCollaborating: boolean;
   onSelect: () => void;
 } & React.ButtonHTMLAttributes<HTMLButtonLayer>) => {
-  const appState = useUIAppState();
+  const editorState = useUIAppState();
 
   return (
     <Button
@@ -27,9 +27,9 @@ const LiveCollaborationTrigger = ({
       type="button"
     >
       {usersIcon}
-      {appState.collaborators.size > 0 && (
+      {editorState.collaborators.size > 0 && (
         <div className="CollabButton-collaborators">
-          {appState.collaborators.size}
+          {editorState.collaborators.size}
         </div>
       )}
     </Button>

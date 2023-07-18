@@ -6,6 +6,7 @@ import { ReactNode, useCallback, useEffect, useRef, useState } from "react";
 import { canvasToBlob, resizeImageFile } from "../../lib/data/blob/blob";
 import { ExportedLibraryData } from "../../lib/data/types";
 import { exportToCanvas, exportToSvg } from "../../lib/packages/utils";
+import { chunk } from "../../lib/utils/utils";
 import {
   EXPORT_DATA_TYPES,
   EXPORT_SOURCE,
@@ -14,7 +15,6 @@ import {
 } from "../constants";
 import { t } from "../i18n";
 import { LibraryItem, LibraryItems, UIAppState } from "../types";
-import { chunk } from "../utils";
 import { Dialog } from "./Dialog";
 import DialogActionButton from "./DialogActionButton";
 import { CloseIcon } from "./icons";
@@ -129,12 +129,12 @@ const generatePreviewImage = async (libraryItems: LibraryItems) => {
 
 const SingleLibraryItem = ({
   libItem,
-  appState,
+  editorState,
   index,
   onChange,
   onRemove
 }: {
-  appState: UIAppState;
+  editorState: UIAppState;
   index: number;
   libItem: LibraryItem;
   onChange: (val: string, index: number) => void;
@@ -151,8 +151,8 @@ const SingleLibraryItem = ({
     (async () => {
       const svg = await exportToSvg({
         layers: libItem.layers,
-        appState: {
-          ...appState,
+        editorState: {
+          ...editorState,
           viewBackgroundColor: OpenColor.white,
           exportBackground: true
         },
@@ -160,7 +160,7 @@ const SingleLibraryItem = ({
       });
       node.innerHTML = svg.outerHTML;
     })();
-  }, [libItem.layers, appState]);
+  }, [libItem.layers, editorState]);
 
   return (
     <div className="single-library-item">
@@ -223,13 +223,13 @@ const SingleLibraryItem = ({
 const PublishLibrary = ({
   onClose,
   libraryItems,
-  appState,
+  editorState,
   onSuccess,
   onError,
   updateItemsInStorage,
   onRemove
 }: {
-  appState: UIAppState;
+  editorState: UIAppState;
   libraryItems: LibraryItems;
   onClose: () => void;
   onError: (error: Error) => void;
@@ -365,7 +365,7 @@ const PublishLibrary = ({
       items.push(
         <div className="single-library-item-wrapper" key={index}>
           <SingleLibraryItem
-            appState={appState}
+            editorState={editorState}
             index={index}
             libItem={libItem}
             onChange={(val, index) => {

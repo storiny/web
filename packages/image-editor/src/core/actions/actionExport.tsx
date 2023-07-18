@@ -23,19 +23,19 @@ import { register } from "./register";
 export const actionChangeProjectName = register({
   name: "changeProjectName",
   trackEvent: false,
-  perform: (_layers, appState, value) => ({
-    appState: { ...appState, name: value },
+  perform: (_layers, editorState, value) => ({
+    editorState: { ...editorState, name: value },
     commitToHistory: false
   }),
-  PanelComponent: ({ appState, updateData, appProps, data }) => (
+  PanelComponent: ({ editorState, updateData, appProps, data }) => (
     <ProjectName
       ignoreFocus={data?.ignoreFocus ?? false}
       isNameEditable={
-        typeof appProps.name === "undefined" && !appState.viewModeEnabled
+        typeof appProps.name === "undefined" && !editorState.viewModeEnabled
       }
       label={t("labels.fileTitle")}
       onChange={(name: string) => updateData(name)}
-      value={appState.name || "Unnamed"}
+      value={editorState.name || "Unnamed"}
     />
   )
 });
@@ -43,15 +43,15 @@ export const actionChangeProjectName = register({
 export const actionChangeExportScale = register({
   name: "changeExportScale",
   trackEvent: { category: "export", action: "scale" },
-  perform: (_layers, appState, value) => ({
-    appState: { ...appState, exportScale: value },
+  perform: (_layers, editorState, value) => ({
+    editorState: { ...editorState, exportScale: value },
     commitToHistory: false
   }),
-  PanelComponent: ({ layers: allLayers, appState, updateData }) => {
+  PanelComponent: ({ layers: allLayers, editorState, updateData }) => {
     const layers = getNonDeletedLayers(allLayers);
-    const exportSelected = isSomeLayerSelected(layers, appState);
+    const exportSelected = isSomeLayerSelected(layers, editorState);
     const exportedLayers = exportSelected
-      ? getSelectedLayers(layers, appState)
+      ? getSelectedLayers(layers, editorState)
       : layers;
 
     return (
@@ -70,7 +70,7 @@ export const actionChangeExportScale = register({
           return (
             <ToolButton
               aria-label={scaleButtonTitle}
-              checked={s === appState.exportScale}
+              checked={s === editorState.exportScale}
               icon={`${s}x`}
               id="export-canvas-scale"
               key={s}
@@ -90,13 +90,13 @@ export const actionChangeExportScale = register({
 export const actionChangeExportBackground = register({
   name: "changeExportBackground",
   trackEvent: { category: "export", action: "toggleBackground" },
-  perform: (_layers, appState, value) => ({
-    appState: { ...appState, exportBackground: value },
+  perform: (_layers, editorState, value) => ({
+    editorState: { ...editorState, exportBackground: value },
     commitToHistory: false
   }),
-  PanelComponent: ({ appState, updateData }) => (
+  PanelComponent: ({ editorState, updateData }) => (
     <CheckboxItem
-      checked={appState.exportBackground}
+      checked={editorState.exportBackground}
       onChange={(checked) => updateData(checked)}
     >
       {t("labels.withBackground")}
@@ -107,13 +107,13 @@ export const actionChangeExportBackground = register({
 export const actionChangeExportEmbedScene = register({
   name: "changeExportEmbedScene",
   trackEvent: { category: "export", action: "embedScene" },
-  perform: (_layers, appState, value) => ({
-    appState: { ...appState, exportEmbedScene: value },
+  perform: (_layers, editorState, value) => ({
+    editorState: { ...editorState, exportEmbedScene: value },
     commitToHistory: false
   }),
-  PanelComponent: ({ appState, updateData }) => (
+  PanelComponent: ({ editorState, updateData }) => (
     <CheckboxItem
-      checked={appState.exportEmbedScene}
+      checked={editorState.exportEmbedScene}
       onChange={(checked) => updateData(checked)}
     >
       {t("labels.exportEmbedScene")}
@@ -127,22 +127,22 @@ export const actionChangeExportEmbedScene = register({
 export const actionSaveToActiveFile = register({
   name: "saveToActiveFile",
   trackEvent: { category: "export" },
-  predicate: (layers, appState, props, app) =>
+  predicate: (layers, editorState, props, app) =>
     !!app.props.UIOptions.canvasActions.saveToActiveFile &&
-    !!appState.fileHandle &&
-    !appState.viewModeEnabled,
-  perform: async (layers, appState, value, app) => {
-    const fileHandleExists = !!appState.fileHandle;
+    !!editorState.fileHandle &&
+    !editorState.viewModeEnabled,
+  perform: async (layers, editorState, value, app) => {
+    const fileHandleExists = !!editorState.fileHandle;
 
     try {
-      const { fileHandle } = isImageFileHandle(appState.fileHandle)
-        ? await resaveAsImageWithScene(layers, appState, app.files)
-        : await saveAsJSON(layers, appState, app.files);
+      const { fileHandle } = isImageFileHandle(editorState.fileHandle)
+        ? await resaveAsImageWithScene(layers, editorState, app.files)
+        : await saveAsJSON(layers, editorState, app.files);
 
       return {
         commitToHistory: false,
-        appState: {
-          ...appState,
+        editorState: {
+          ...editorState,
           fileHandle,
           toast: fileHandleExists
             ? {
@@ -173,17 +173,20 @@ export const actionSaveFileToDisk = register({
   name: "saveFileToDisk",
   viewMode: true,
   trackEvent: { category: "export" },
-  perform: async (layers, appState, value, app) => {
+  perform: async (layers, editorState, value, app) => {
     try {
       const { fileHandle } = await saveAsJSON(
         layers,
         {
-          ...appState,
+          ...editorState,
           fileHandle: null
         },
         app.files
       );
-      return { commitToHistory: false, appState: { ...appState, fileHandle } };
+      return {
+        commitToHistory: false,
+        editorState: { ...editorState, fileHandle }
+      };
     } catch (error: any) {
       if (error?.name !== "AbortError") {
         console.error(error);
@@ -212,18 +215,19 @@ export const actionSaveFileToDisk = register({
 export const actionLoadScene = register({
   name: "loadScene",
   trackEvent: { category: "export" },
-  predicate: (layers, appState, props, app) =>
-    !!app.props.UIOptions.canvasActions.loadScene && !appState.viewModeEnabled,
-  perform: async (layers, appState, _, app) => {
+  predicate: (layers, editorState, props, app) =>
+    !!app.props.UIOptions.canvasActions.loadScene &&
+    !editorState.viewModeEnabled,
+  perform: async (layers, editorState, _, app) => {
     try {
       const {
         layers: loadedLayers,
-        appState: loadedAppState,
+        editorState: loadedAppState,
         files
-      } = await loadFromJSON(appState, layers);
+      } = await loadFromJSON(editorState, layers);
       return {
         layers: loadedLayers,
-        appState: loadedAppState,
+        editorState: loadedAppState,
         files,
         commitToHistory: true
       };
@@ -234,7 +238,7 @@ export const actionLoadScene = register({
       }
       return {
         layers,
-        appState: { ...appState, errorMessage: error.message },
+        editorState: { ...editorState, errorMessage: error.message },
         files: app.files,
         commitToHistory: false
       };
@@ -246,11 +250,11 @@ export const actionLoadScene = register({
 export const actionExportWithDarkMode = register({
   name: "exportWithDarkMode",
   trackEvent: { category: "export", action: "toggleTheme" },
-  perform: (_layers, appState, value) => ({
-    appState: { ...appState, exportWithDarkMode: value },
+  perform: (_layers, editorState, value) => ({
+    editorState: { ...editorState, exportWithDarkMode: value },
     commitToHistory: false
   }),
-  PanelComponent: ({ appState, updateData }) => (
+  PanelComponent: ({ editorState, updateData }) => (
     <div
       style={{
         display: "flex",
@@ -264,7 +268,7 @@ export const actionExportWithDarkMode = register({
           updateData(theme === THEME.DARK);
         }}
         title={t("labels.toggleExportColorScheme")}
-        value={appState.exportWithDarkMode ? THEME.DARK : THEME.LIGHT}
+        value={editorState.exportWithDarkMode ? THEME.DARK : THEME.LIGHT}
       />
     </div>
   )

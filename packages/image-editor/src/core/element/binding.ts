@@ -1,8 +1,8 @@
 import { getLayerAtPosition } from "../../lib/scene";
 import Scene from "../../lib/scene/scene/Scene";
+import { arrayToMap, tupleToCoors } from "../../lib/utils/utils";
 import { KEYS } from "../keys";
 import { AppState } from "../types";
-import { arrayToMap, tupleToCoors } from "../utils";
 import {
   bindingBorderTest,
   determineFocusDistance,
@@ -38,8 +38,8 @@ export const shouldEnableBindingForPointerEvent = (
   event: React.PointerEvent<HTMLLayer>
 ) => !event[KEYS.CTRL_OR_CMD];
 
-export const isBindingEnabled = (appState: AppState): boolean =>
-  appState.isBindingEnabled;
+export const isBindingEnabled = (editorState: AppState): boolean =>
+  editorState.isBindingEnabled;
 
 const getNonDeletedLayers = (
   scene: Scene,
@@ -162,12 +162,12 @@ const maybeBindBindableLayer = (
 
 export const maybeBindLinearLayer = (
   linearLayer: NonDeleted<ExcalidrawLinearLayer>,
-  appState: AppState,
+  editorState: AppState,
   scene: Scene,
   pointerCoords: { x: number; y: number }
 ): void => {
-  if (appState.startBoundLayer != null) {
-    bindLinearLayer(linearLayer, appState.startBoundLayer, "start");
+  if (editorState.startBoundLayer != null) {
+    bindLinearLayer(linearLayer, editorState.startBoundLayer, "start");
   }
   const hoveredLayer = getHoveredLayerForBinding(pointerCoords, scene);
   if (

@@ -1,5 +1,5 @@
 import { Layer } from "../../../../types";
-import { MaybeTransformHandleType } from "../../transformHandles/transformHandles";
+import { MaybeTransformHandleType } from "../../transformHandles";
 
 const RESIZE_CURSORS = ["ns", "nesw", "ew", "nwse"];
 

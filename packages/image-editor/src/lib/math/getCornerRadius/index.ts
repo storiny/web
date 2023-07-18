@@ -2,7 +2,7 @@ import { Roundness } from "../../../constants";
 import {
   DEFAULT_ADAPTIVE_RADIUS,
   DEFAULT_PROPORTIONAL_RADIUS
-} from "../../../core/constants";
+} from "../../../constants/new";
 import { Layer } from "../../../types";
 
 /**

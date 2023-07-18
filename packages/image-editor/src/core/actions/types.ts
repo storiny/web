@@ -14,11 +14,11 @@ export type ActionSource = "ui" | "keyboard" | "contextMenu" | "api";
 /** if false, the action should be prevented */
 export type ActionResult =
   | {
-      appState?: MarkOptional<
+      commitToHistory: boolean;
+      editorState?: MarkOptional<
         AppState,
         "offsetTop" | "offsetLeft" | "width" | "height"
       > | null;
-      commitToHistory: boolean;
       files?: BinaryFiles | null;
       layers?: readonly ExcalidrawLayer[] | null;
       replaceFiles?: boolean;
@@ -28,7 +28,7 @@ export type ActionResult =
 
 type ActionFn = (
   layers: readonly ExcalidrawLayer[],
-  appState: Readonly<AppState>,
+  editorState: Readonly<AppState>,
   formData: any,
   app: AppClassProperties
 ) => ActionResult | Promise<ActionResult>;
@@ -127,32 +127,32 @@ export type ActionName =
 
 export type PanelComponentProps = {
   appProps: ExcalidrawProps;
-  appState: AppState;
   data?: Record<string, any>;
+  editorState: AppState;
   layers: readonly ExcalidrawLayer[];
   updateData: (formData?: any) => void;
 };
 
 export interface Action {
   PanelComponent?: React.FC<PanelComponentProps>;
-  checked?: (appState: Readonly<AppState>) => boolean;
+  checked?: (editorState: Readonly<AppState>) => boolean;
   contextItemLabel?:
     | string
     | ((
         layers: readonly ExcalidrawLayer[],
-        appState: Readonly<AppState>
+        editorState: Readonly<AppState>
       ) => string);
   keyPriority?: number;
   keyTest?: (
     event: React.KeyboardEvent | KeyboardEvent,
-    appState: AppState,
+    editorState: AppState,
     layers: readonly ExcalidrawLayer[]
   ) => boolean;
   name: ActionName;
   perform: ActionFn;
   predicate?: (
     layers: readonly ExcalidrawLayer[],
-    appState: AppState,
+    editorState: AppState,
     appProps: ExcalidrawProps,
     app: AppClassProperties
   ) => boolean;
@@ -170,7 +170,7 @@ export interface Action {
           | "collab"
           | "hyperlink";
         predicate?: (
-          appState: Readonly<AppState>,
+          editorState: Readonly<AppState>,
           layers: readonly ExcalidrawLayer[],
           value: any
         ) => boolean;

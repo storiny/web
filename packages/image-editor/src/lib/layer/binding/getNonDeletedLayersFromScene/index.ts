@@ -1,5 +1,5 @@
 import { Layer, NonDeleted } from "../../../../types";
-import Scene from "../../../scene/scene/Scene";
+import { Scene } from "../../../scene";
 
 /**
  * Returns non-deleted layers from the scene

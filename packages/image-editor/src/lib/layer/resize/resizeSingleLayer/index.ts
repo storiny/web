@@ -5,11 +5,21 @@ import {
   PointerDownState
 } from "../../../../types";
 import { centerPoint, rotatePoint } from "../../../math";
+import { rescalePoints } from "../../../point";
+import { getFontString } from "../../../utils";
 import { updateBoundLayers } from "../../binding";
 import { getResizedLayerAbsoluteCoords } from "../../bounds";
 import { mutateLayer } from "../../mutate";
 import { isFreeDrawLayer, isLinearLayer } from "../../predicates";
-import { TransformHandleDirection } from "../../transformHandles/transformHandles";
+import {
+  getApproxMinContainerHeight,
+  getApproxMinContainerWidth,
+  getBoundTextLayer,
+  getBoundTextMaxHeight,
+  getBoundTextMaxWidth,
+  handleBindTextResize
+} from "../../text";
+import { TransformHandleDirection } from "../../transformHandles";
 import { measureFontSizeFromWidth } from "../measureFontSizeFromWidth";
 
 /**

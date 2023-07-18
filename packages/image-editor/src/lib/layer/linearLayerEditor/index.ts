@@ -14,6 +14,7 @@ import {
   PointerCoords,
   TextLayerWithContainer
 } from "../../../types";
+import { History } from "../../history";
 import { shouldRotateWithDiscreteAngle } from "../../keys";
 import {
   arePointsEqual,
@@ -29,19 +30,23 @@ import {
   rotatePoint
 } from "../../math";
 import { getShapeForLayer } from "../../renderer";
-import { isBindingEnabled } from "../binding";
+import { Scene } from "../../scene";
+import { tupleToCoors } from "../../utils";
+import {
+  bindOrUnbindLinearLayer,
+  getHoveredLayerForBinding,
+  isBindingEnabled
+} from "../binding";
 import {
   getCurvePathOps,
+  getLayerAbsoluteCoords,
   getLayerPointsCoords,
   getMinMaxXYFromCurvePathOps
 } from "../bounds";
-import History from "../history";
+import { mutateLayer } from "../mutate";
 import { isBindingLayer } from "../predicates";
-import Scene from "../scene/Scene";
-import { tupleToCoors } from "../utils";
-import { getLayerAbsoluteCoords, getLockedLinearCursorAlignSize } from ".";
-import { mutateLayer } from "./mutateLayer";
-import { getBoundTextLayer, handleBindTextResize } from "./textLayer";
+import { getLockedLinearCursorAlignSize } from "../resize";
+import { getBoundTextLayer, handleBindTextResize } from "../text";
 
 /**
  * Mid-points cache
@@ -63,6 +68,7 @@ const normalizeSelectedPoints = (
     ...new Set(points.filter((p) => p !== null && p !== -1))
   ] as number[];
   nextPoints = nextPoints.sort((a, b) => a - b);
+
   return nextPoints.length ? nextPoints : null;
 };
 
@@ -1401,7 +1407,7 @@ export class LinearLayerEditor {
    */
   private static updatePoints(
     layer: NonDeleted<LinearLayer>,
-    nextPoints: readonly Point[],
+    nextPoints: Point[],
     offsetX: number,
     offsetY: number,
     otherUpdates?: { endBinding?: PointBinding; startBinding?: PointBinding }

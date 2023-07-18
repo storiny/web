@@ -3,13 +3,13 @@ import "./ExportDialog.scss";
 import React from "react";
 
 import { nativeFileSystemSupported } from "../../lib/data/fs/filesystem";
+import { getFrame } from "../../lib/utils/utils";
 import { actionSaveFileToDisk } from "../actions/actionExport";
 import { ActionManager } from "../actions/manager";
 import { trackEvent } from "../analytics";
 import { t } from "../i18n";
 import { NonDeletedExcalidrawLayer } from "../layer/types";
 import { BinaryFiles, ExportOpts, UIAppState } from "../types";
-import { getFrame } from "../utils";
 import { Card } from "./Card";
 import { Dialog } from "./Dialog";
 import { exportToFileIcon, LinkIcon } from "./icons";
@@ -22,15 +22,15 @@ export type ExportCB = (
 
 const JSONExportModal = ({
   layers,
-  appState,
+  editorState,
   files,
   actionManager,
   exportOpts,
   canvas
 }: {
   actionManager: ActionManager;
-  appState: UIAppState;
   canvas: HTMLCanvasLayer | null;
+  editorState: UIAppState;
   exportOpts: ExportOpts;
   files: BinaryFiles;
   layers: readonly NonDeletedExcalidrawLayer[];
@@ -70,7 +70,7 @@ const JSONExportModal = ({
               aria-label={t("exportDialog.link_button")}
               className="Card-button"
               onClick={() => {
-                onExportToBackend(layers, appState, files, canvas);
+                onExportToBackend(layers, editorState, files, canvas);
                 trackEvent("export", "link", `ui (${getFrame()})`);
               }}
               showAriaLabel={true}
@@ -80,7 +80,7 @@ const JSONExportModal = ({
           </Card>
         )}
         {exportOpts.renderCustomUI &&
-          exportOpts.renderCustomUI(layers, appState, files, canvas)}
+          exportOpts.renderCustomUI(layers, editorState, files, canvas)}
       </div>
     </div>
   );
@@ -88,7 +88,7 @@ const JSONExportModal = ({
 
 export const JSONExportDialog = ({
   layers,
-  appState,
+  editorState,
   files,
   actionManager,
   exportOpts,
@@ -96,8 +96,8 @@ export const JSONExportDialog = ({
   setAppState
 }: {
   actionManager: ActionManager;
-  appState: UIAppState;
   canvas: HTMLCanvasLayer | null;
+  editorState: UIAppState;
   exportOpts: ExportOpts;
   files: BinaryFiles;
   layers: readonly NonDeletedExcalidrawLayer[];
@@ -109,12 +109,12 @@ export const JSONExportDialog = ({
 
   return (
     <>
-      {appState.openDialog === "jsonExport" && (
+      {editorState.openDialog === "jsonExport" && (
         <Dialog onCloseRequest={handleClose} title={t("buttons.export")}>
           <JSONExportModal
             actionManager={actionManager}
-            appState={appState}
             canvas={canvas}
+            editorState={editorState}
             exportOpts={exportOpts}
             files={files}
             layers={layers}

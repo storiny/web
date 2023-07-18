@@ -1,7 +1,7 @@
 import { isSafari } from "@storiny/shared/src/browsers";
+import { isTestEnv } from "@storiny/shared/src/utils/isTestEnv";
 
 import { KeyCode, KEYS, LayerType } from "../../../constants";
-import { CLASSES } from "../../../core/constants";
 import {
   EditorState,
   Layer,
@@ -10,7 +10,12 @@ import {
   TextLayer,
   TextLayerWithContainer
 } from "../../../types";
-import Scene from "../../scene/scene/Scene";
+import { Scene } from "../../scene";
+import {
+  getFontFamilyString,
+  getFontString,
+  isWritableElement
+} from "../../utils";
 import { actionZoomIn, actionZoomOut } from "../actions/actionCanvas";
 import {
   actionDecreaseFontSize,
@@ -21,12 +26,6 @@ import App from "../components/App";
 import { LinearLayerEditor } from "../linearLayerEditor";
 import { mutateLayer } from "../mutate";
 import { isArrowLayer, isBoundToContainer, isTextLayer } from "../predicates";
-import {
-  getFontFamilyString,
-  getFontString,
-  isTestEnv,
-  isWritableLayer
-} from "../utils";
 import {
   computeBoundTextPosition,
   computeContainerDimensionForBoundText,
@@ -162,10 +161,7 @@ export const wysiwyg = ({
 
     const currentFont = editable.style.fontFamily.replace(/"/g, "");
 
-    if (
-      getFontFamilyString({ fontFamily: updatedTextLayer.fontFamily }) !==
-      currentFont
-    ) {
+    if (getFontFamilyString(updatedTextLayer.fontFamily) !== currentFont) {
       return true;
     }
 
@@ -173,7 +169,7 @@ export const wysiwyg = ({
   };
 
   const updateWysiwygStyle = (): void => {
-    const appState = app.state;
+    const editorState = app.state;
     const updatedTextLayer = Scene.getScene(layer)?.getLayer<TextLayer>(id);
 
     if (!updatedTextLayer) {
@@ -283,7 +279,7 @@ export const wysiwyg = ({
       }
 
       if (!container) {
-        maxWidth = (appState.width - 8 - viewportX) / appState.zoom.value;
+        maxWidth = (editorState.width - 8 - viewportX) / editorState.zoom.value;
         textLayerWidth = Math.min(textLayerWidth, maxWidth);
       } else {
         textLayerWidth += 0.5;
@@ -302,7 +298,7 @@ export const wysiwyg = ({
 
       // Make sure text editor height doesn't go beyond viewport
       const editorMaxHeight =
-        (appState.height - viewportY) / appState.zoom.value;
+        (editorState.height - viewportY) / editorState.zoom.value;
 
       Object.assign(editable.style, {
         font: getFontString(updatedTextLayer),
@@ -316,7 +312,7 @@ export const wysiwyg = ({
           textLayerWidth,
           textLayerHeight,
           getTextLayerAngle(updatedTextLayer),
-          appState,
+          editorState,
           maxWidth,
           editorMaxHeight
         ),
@@ -333,7 +329,9 @@ export const wysiwyg = ({
       // For some reason, updating font attribute doesn't set the font family,
       // hence updating the font family explicitly for testing environment
       if (isTestEnv()) {
-        editable.style.fontFamily = getFontFamilyString(updatedTextLayer);
+        editable.style.fontFamily = getFontFamilyString(
+          updatedTextLayer.fontFamily
+        );
       }
 
       mutateLayer(updatedTextLayer, { x: coordX, y: coordY });
@@ -727,8 +725,9 @@ export const wysiwyg = ({
     if (
       ((event.target instanceof HTMLElement ||
         event.target instanceof SVGElement) &&
-        event.target.closest(`.${CLASSES.SHAPE_ACTIONS_MENU}`) &&
-        !isWritableLayer(event.target)) ||
+        // TODO: Add class below
+        event.target.closest(`SHAPE_ACTIONS_MENU`) &&
+        !isWritableElement(event.target)) ||
       isTargetPickerTrigger
     ) {
       editable.onblur = null;

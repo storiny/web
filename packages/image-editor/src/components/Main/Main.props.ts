@@ -19,7 +19,7 @@ export interface ImageEditorProps
   initialState?: ImportedDataState | null | Promise<ImportedDataState | null>;
   onChange?: (
     layers: readonly Layer[],
-    appState: RootState,
+    editorState: RootState,
     files: BinaryFiles
   ) => void;
   onLinkOpen?: (

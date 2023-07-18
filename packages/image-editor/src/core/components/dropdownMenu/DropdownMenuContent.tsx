@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import React, { useRef } from "react";
 
-import { useOutsideClick } from "../../../lib/hooks/useOutsideClick";
+import { useOutsideClick } from "../../../lib/hooks/useOutsideClick/useOutsideClick";
 import { useDevice } from "../App";
 import { Island } from "../Island";
 import Stack from "../Stack";

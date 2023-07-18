@@ -4,14 +4,19 @@ import { PureComponent } from "react";
 
 import { decryptData } from "../../../lib/data/encryption/encryption";
 import { ImportedDataState } from "../../../lib/data/types";
+import { AbortError } from "../../../lib/errors/errors";
 import {
   getSceneVersion,
   restoreLayers
 } from "../../../lib/packages/excalidraw/index";
+import {
+  preventUnload,
+  resolvablePromise,
+  withBatchedUpdates
+} from "../../../lib/utils/utils";
 import { ErrorDialog } from "../../components/ErrorDialog";
 import { APP_NAME, ENV, EVENT } from "../../constants";
 import { ACTIVE_THRESHOLD, IDLE_THRESHOLD } from "../../constants";
-import { AbortError } from "../../errors";
 import { t } from "../../i18n";
 import { newLayerWith } from "../../layer/mutateLayer";
 import { isImageLayer, isInitializedImageLayer } from "../../layer/typeChecks";
@@ -22,11 +27,6 @@ import {
 import { ExcalidrawImperativeAPI } from "../../types";
 import { Collaborator, Gesture } from "../../types";
 import { UserIdleState } from "../../types";
-import {
-  preventUnload,
-  resolvablePromise,
-  withBatchedUpdates
-} from "../../utils";
 import {
   CURSOR_SYNC_TIMEOUT,
   FILE_UPLOAD_MAX_BYTES,
@@ -611,14 +611,14 @@ class Collab extends PureComponent<Props, CollabState> {
     remoteLayers: readonly ExcalidrawLayer[]
   ): ReconciledLayers => {
     const localLayers = this.getSceneLayersIncludingDeleted();
-    const appState = this.excalidrawAPI.getAppState();
+    const editorState = this.excalidrawAPI.getAppState();
 
     remoteLayers = restoreLayers(remoteLayers, null);
 
     const reconciledLayers = _reconcileLayers(
       localLayers,
       remoteLayers,
-      appState
+      editorState
     );
 
     // Avoid broadcasting to the rest of the collaborators the scene

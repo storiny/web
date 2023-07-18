@@ -2,10 +2,10 @@ import clsx from "clsx";
 import { useAtom } from "jotai";
 import { useCallback, useEffect, useRef, useState } from "react";
 
+import { getShortcutKey } from "../../../lib/utils/utils";
 import { t } from "../../i18n";
 import { jotaiScope } from "../../jotai";
 import { KEYS } from "../../keys";
-import { getShortcutKey } from "../../utils";
 import { useDevice } from "../App";
 import { activeEyeDropperAtom } from "../EyeDropper";
 import { eyeDropperIcon } from "../icons";

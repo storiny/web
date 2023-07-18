@@ -11,6 +11,11 @@ import {
 } from "../../lib/scene/scrollbars/scrollbars";
 import { getSelectedLayers } from "../../lib/scene/selection/selection";
 import { RenderConfig } from "../../lib/scene/types";
+import {
+  isOnlyExportingSingleFrame,
+  throttleRAF,
+  viewportCoordsToSceneCoords
+} from "../../lib/utils/utils";
 import { getClientColor } from "../clients";
 import { FRAME_STYLE, THEME_FILTER } from "../constants";
 import {
@@ -58,11 +63,6 @@ import {
 } from "../layer/types";
 import { AppState, BinaryFiles, Point, Zoom } from "../types";
 import { UserIdleState } from "../types";
-import {
-  isOnlyExportingSingleFrame,
-  throttleRAF,
-  viewportCoordsToSceneCoords
-} from "../utils";
 import { renderLayer, renderLayerToSvg } from "./renderLayer";
 import { roundRect } from "./roundRect";
 
@@ -198,11 +198,11 @@ const renderSingleLinearPoint = (
 
 const renderLinearPointHandles = (
   context: CanvasRenderingContext2D,
-  appState: AppState,
+  editorState: AppState,
   renderConfig: RenderConfig,
   layer: NonDeleted<ExcalidrawLinearLayer>
 ) => {
-  if (!appState.selectedLinearLayer) {
+  if (!editorState.selectedLinearLayer) {
     return;
   }
   context.save();
@@ -211,12 +211,12 @@ const renderLinearPointHandles = (
   const points = LinearLayerEditor.getPointsGlobalCoordinates(layer);
 
   const { POINT_HANDLE_SIZE } = LinearLayerEditor;
-  const radius = appState.editingLinearLayer
+  const radius = editorState.editingLinearLayer
     ? POINT_HANDLE_SIZE
     : POINT_HANDLE_SIZE / 2;
   points.forEach((point, idx) => {
     const isSelected =
-      !!appState.editingLinearLayer?.selectedPointsIndices?.includes(idx);
+      !!editorState.editingLinearLayer?.selectedPointsIndices?.includes(idx);
 
     renderSingleLinearPoint(context, renderConfig, point, radius, isSelected);
   });
@@ -224,22 +224,22 @@ const renderLinearPointHandles = (
   //Rendering segment mid points
   const midPoints = LinearLayerEditor.getEditorMidPoints(
     layer,
-    appState
+    editorState
   ).filter((midPoint) => midPoint !== null) as Point[];
 
   midPoints.forEach((segmentMidPoint) => {
     if (
-      appState?.selectedLinearLayer?.segmentMidPointHoveredCoords &&
+      editorState?.selectedLinearLayer?.segmentMidPointHoveredCoords &&
       LinearLayerEditor.arePointsEqual(
         segmentMidPoint,
-        appState.selectedLinearLayer.segmentMidPointHoveredCoords
+        editorState.selectedLinearLayer.segmentMidPointHoveredCoords
       )
     ) {
       // The order of renderingSingleLinearPoint and highLight points is different
       // inside vs outside editor as hover states are different,
       // in editor when hovered the original point is not visible as hover state fully covers it whereas outside the
       // editor original point is visible and hover state is just an outer circle.
-      if (appState.editingLinearLayer) {
+      if (editorState.editingLinearLayer) {
         renderSingleLinearPoint(
           context,
           renderConfig,
@@ -258,7 +258,7 @@ const renderLinearPointHandles = (
           false
         );
       }
-    } else if (appState.editingLinearLayer || points.length === 2) {
+    } else if (editorState.editingLinearLayer || points.length === 2) {
       renderSingleLinearPoint(
         context,
         renderConfig,
@@ -290,12 +290,12 @@ const highlightPoint = (
 };
 const renderLinearLayerPointHighlight = (
   context: CanvasRenderingContext2D,
-  appState: AppState,
+  editorState: AppState,
   renderConfig: RenderConfig
 ) => {
-  const { layerId, hoverPointIndex } = appState.selectedLinearLayer!;
+  const { layerId, hoverPointIndex } = editorState.selectedLinearLayer!;
   if (
-    appState.editingLinearLayer?.selectedPointsIndices?.includes(
+    editorState.editingLinearLayer?.selectedPointsIndices?.includes(
       hoverPointIndex
     )
   ) {
@@ -346,14 +346,14 @@ const frameClip = (
 
 export const _renderScene = ({
   layers,
-  appState,
+  editorState,
   scale,
   rc,
   canvas,
   renderConfig
 }: {
-  appState: AppState;
   canvas: HTMLCanvasLayer;
+  editorState: AppState;
   layers: readonly NonDeletedExcalidrawLayer[];
   rc: RoughCanvas;
   renderConfig: RenderConfig;
@@ -409,16 +409,16 @@ export const _renderScene = ({
     context.scale(renderConfig.zoom.value, renderConfig.zoom.value);
 
     // Grid
-    if (renderGrid && appState.gridSize) {
+    if (renderGrid && editorState.gridSize) {
       strokeGrid(
         context,
-        appState.gridSize,
-        -Math.ceil(renderConfig.zoom.value / appState.gridSize) *
-          appState.gridSize +
-          (renderConfig.scrollX % appState.gridSize),
-        -Math.ceil(renderConfig.zoom.value / appState.gridSize) *
-          appState.gridSize +
-          (renderConfig.scrollY % appState.gridSize),
+        editorState.gridSize,
+        -Math.ceil(renderConfig.zoom.value / editorState.gridSize) *
+          editorState.gridSize +
+          (renderConfig.scrollX % editorState.gridSize),
+        -Math.ceil(renderConfig.zoom.value / editorState.gridSize) *
+          editorState.gridSize +
+          (renderConfig.scrollY % editorState.gridSize),
         normalizedCanvasWidth / renderConfig.zoom.value,
         normalizedCanvasHeight / renderConfig.zoom.value
       );
@@ -428,8 +428,8 @@ export const _renderScene = ({
     const visibleLayers = layers.filter((layer) =>
       isVisibleLayer(layer, normalizedCanvasWidth, normalizedCanvasHeight, {
         zoom: renderConfig.zoom,
-        offsetLeft: appState.offsetLeft,
-        offsetTop: appState.offsetTop,
+        offsetLeft: editorState.offsetLeft,
+        offsetTop: editorState.offsetTop,
         scrollX: renderConfig.scrollX,
         scrollY: renderConfig.scrollY
       })
@@ -440,9 +440,9 @@ export const _renderScene = ({
     visibleLayers.forEach((layer) => {
       if (
         layer.groupIds.length > 0 &&
-        appState.frameToHighlight &&
-        appState.selectedLayerIds[layer.id] &&
-        (layerOverlapsWithFrame(layer, appState.frameToHighlight) ||
+        editorState.frameToHighlight &&
+        editorState.selectedLayerIds[layer.id] &&
+        (layerOverlapsWithFrame(layer, editorState.frameToHighlight) ||
           layer.groupIds.find((groupId) => groupsToBeAddedToFrame.has(groupId)))
       ) {
         layer.groupIds.forEach((groupId) =>
@@ -459,37 +459,37 @@ export const _renderScene = ({
         // - when exporting the whole canvas, we DO NOT apply clipping
         // - when we are exporting a particular frame, apply clipping
         //   if the containing frame is not selected, apply clipping
-        const frameId = layer.frameId || appState.frameToHighlight?.id;
+        const frameId = layer.frameId || editorState.frameToHighlight?.id;
 
         if (
           frameId &&
           ((renderConfig.isExporting && isOnlyExportingSingleFrame(layers)) ||
             (!renderConfig.isExporting &&
-              appState.frameRendering.enabled &&
-              appState.frameRendering.clip))
+              editorState.frameRendering.enabled &&
+              editorState.frameRendering.clip))
         ) {
           context.save();
 
-          const frame = getTargetFrame(layer, appState);
+          const frame = getTargetFrame(layer, editorState);
 
-          if (frame && isLayerInFrame(layer, layers, appState)) {
+          if (frame && isLayerInFrame(layer, layers, editorState)) {
             frameClip(frame, context, renderConfig);
           }
-          renderLayer(layer, rc, context, renderConfig, appState);
+          renderLayer(layer, rc, context, renderConfig, editorState);
           context.restore();
         } else {
-          renderLayer(layer, rc, context, renderConfig, appState);
+          renderLayer(layer, rc, context, renderConfig, editorState);
         }
         // Getting the layer using LinearLayerEditor during collab mismatches version - being one head of visible layers due to
         // ShapeCache returns empty hence making sure that we get the
         // correct layer from visible layers
-        if (appState.editingLinearLayer?.layerId === layer.id) {
+        if (editorState.editingLinearLayer?.layerId === layer.id) {
           if (layer) {
             editingLinearLayer = layer as NonDeleted<ExcalidrawLinearLayer>;
           }
         }
         if (!isExporting) {
-          renderLinkIcon(layer, context, appState);
+          renderLinkIcon(layer, context, editorState);
         }
       } catch (error: any) {
         console.error(error);
@@ -499,49 +499,49 @@ export const _renderScene = ({
     if (editingLinearLayer) {
       renderLinearPointHandles(
         context,
-        appState,
+        editorState,
         renderConfig,
         editingLinearLayer
       );
     }
 
     // Paint selection layer
-    if (appState.selectionLayer) {
+    if (editorState.selectionLayer) {
       try {
         renderLayer(
-          appState.selectionLayer,
+          editorState.selectionLayer,
           rc,
           context,
           renderConfig,
-          appState
+          editorState
         );
       } catch (error: any) {
         console.error(error);
       }
     }
 
-    if (isBindingEnabled(appState)) {
-      appState.suggestedBindings
+    if (isBindingEnabled(editorState)) {
+      editorState.suggestedBindings
         .filter((binding) => binding != null)
         .forEach((suggestedBinding) => {
           renderBindingHighlight(context, renderConfig, suggestedBinding!);
         });
     }
 
-    if (appState.frameToHighlight) {
-      renderFrameHighlight(context, renderConfig, appState.frameToHighlight);
+    if (editorState.frameToHighlight) {
+      renderFrameHighlight(context, renderConfig, editorState.frameToHighlight);
     }
 
-    if (appState.layersToHighlight) {
+    if (editorState.layersToHighlight) {
       renderLayersBoxHighlight(
         context,
         renderConfig,
-        appState.layersToHighlight,
-        appState
+        editorState.layersToHighlight,
+        editorState
       );
     }
 
-    const locallySelectedLayers = getSelectedLayers(layers, appState);
+    const locallySelectedLayers = getSelectedLayers(layers, editorState);
     const isFrameSelected = locallySelectedLayers.some((layer) =>
       isFrameLayer(layer)
     );
@@ -551,31 +551,31 @@ export const _renderScene = ({
     // correct layer from visible layers
     if (
       locallySelectedLayers.length === 1 &&
-      appState.editingLinearLayer?.layerId === locallySelectedLayers[0].id
+      editorState.editingLinearLayer?.layerId === locallySelectedLayers[0].id
     ) {
       renderLinearPointHandles(
         context,
-        appState,
+        editorState,
         renderConfig,
         locallySelectedLayers[0] as NonDeleted<ExcalidrawLinearLayer>
       );
     }
 
     if (
-      appState.selectedLinearLayer &&
-      appState.selectedLinearLayer.hoverPointIndex >= 0
+      editorState.selectedLinearLayer &&
+      editorState.selectedLinearLayer.hoverPointIndex >= 0
     ) {
-      renderLinearLayerPointHighlight(context, appState, renderConfig);
+      renderLinearLayerPointHighlight(context, editorState, renderConfig);
     }
     // Paint selected layers
     if (
       renderSelection &&
-      !appState.multiLayer &&
-      !appState.editingLinearLayer
+      !editorState.multiLayer &&
+      !editorState.editingLinearLayer
     ) {
       const showBoundingBox = shouldShowBoundingBox(
         locallySelectedLayers,
-        appState
+        editorState
       );
 
       const locallySelectedIds = locallySelectedLayers.map((layer) => layer.id);
@@ -585,12 +585,13 @@ export const _renderScene = ({
       // render selected linear layer points
       if (
         isSingleLinearLayerSelected &&
-        appState.selectedLinearLayer?.layerId === locallySelectedLayers[0].id &&
+        editorState.selectedLinearLayer?.layerId ===
+          locallySelectedLayers[0].id &&
         !locallySelectedLayers[0].locked
       ) {
         renderLinearPointHandles(
           context,
-          appState,
+          editorState,
           renderConfig,
           locallySelectedLayers[0] as ExcalidrawLinearLayer
         );
@@ -601,7 +602,7 @@ export const _renderScene = ({
           // local user
           if (
             locallySelectedIds.includes(layer.id) &&
-            !isSelectedViaGroup(appState, layer)
+            !isSelectedViaGroup(editorState, layer)
           ) {
             selectionColors.push(selectionColor);
           }
@@ -652,13 +653,13 @@ export const _renderScene = ({
           });
         };
 
-        for (const groupId of getSelectedGroupIds(appState)) {
+        for (const groupId of getSelectedGroupIds(editorState)) {
           // TODO: support multiplayer selected group IDs
           addSelectionForGroupId(groupId);
         }
 
-        if (appState.editingGroupId) {
-          addSelectionForGroupId(appState.editingGroupId);
+        if (editorState.editingGroupId) {
+          addSelectionForGroupId(editorState.editingGroupId);
         }
 
         selections.forEach((selection) =>
@@ -676,7 +677,7 @@ export const _renderScene = ({
           renderConfig.zoom,
           "mouse" // when we render we don't know which pointer type so use mouse
         );
-        if (!appState.viewModeEnabled && showBoundingBox) {
+        if (!editorState.viewModeEnabled && showBoundingBox) {
           renderTransformHandles(
             context,
             renderConfig,
@@ -684,7 +685,7 @@ export const _renderScene = ({
             locallySelectedLayers[0].angle
           );
         }
-      } else if (locallySelectedLayers.length > 1 && !appState.isRotating) {
+      } else if (locallySelectedLayers.length > 1 && !editorState.isRotating) {
         const dashedLinePadding =
           (DEFAULT_SPACING * 2) / renderConfig.zoom.value;
         context.fillStyle = oc.white;
@@ -729,8 +730,8 @@ export const _renderScene = ({
     for (const clientId in renderConfig.remotePointerViewportCoords) {
       let { x, y } = renderConfig.remotePointerViewportCoords[clientId];
 
-      x -= appState.offsetLeft;
-      y -= appState.offsetTop;
+      x -= editorState.offsetLeft;
+      y -= editorState.offsetTop;
 
       const width = 11;
       const height = 14;
@@ -897,9 +898,9 @@ export const _renderScene = ({
 
 const renderSceneThrottled = throttleRAF(
   (config: {
-    appState: AppState;
     callback?: (data: ReturnType<typeof _renderScene>) => void;
     canvas: HTMLCanvasLayer;
+    editorState: AppState;
     layers: readonly NonDeletedExcalidrawLayer[];
     rc: RoughCanvas;
     renderConfig: RenderConfig;
@@ -914,9 +915,9 @@ const renderSceneThrottled = throttleRAF(
 /** renderScene throttled to animation framerate */
 export const renderScene = <T extends boolean = false>(
   config: {
-    appState: AppState;
     callback?: (data: ReturnType<typeof _renderScene>) => void;
     canvas: HTMLCanvasLayer;
+    editorState: AppState;
     layers: readonly NonDeletedExcalidrawLayer[];
     rc: RoughCanvas;
     renderConfig: RenderConfig;
@@ -1145,7 +1146,7 @@ const renderLayersBoxHighlight = (
   context: CanvasRenderingContext2D,
   renderConfig: RenderConfig,
   layers: NonDeleted<ExcalidrawLayer>[],
-  appState: AppState
+  editorState: AppState
 ) => {
   const individualLayers = layers.filter(
     (layer) => layer.groupIds.length === 0
@@ -1173,7 +1174,7 @@ const renderLayersBoxHighlight = (
     return getSelectionFromLayers(groupLayers);
   };
 
-  Object.entries(selectGroupsFromGivenLayers(layersInGroups, appState))
+  Object.entries(selectGroupsFromGivenLayers(layersInGroups, editorState))
     .filter(([id, isSelected]) => isSelected)
     .map(([id, isSelected]) => id)
     .map((groupId) => getSelectionForGroupId(groupId))
@@ -1213,32 +1214,35 @@ let linkCanvasCache: any;
 const renderLinkIcon = (
   layer: NonDeletedExcalidrawLayer,
   context: CanvasRenderingContext2D,
-  appState: AppState
+  editorState: AppState
 ) => {
-  if (layer.link && !appState.selectedLayerIds[layer.id]) {
+  if (layer.link && !editorState.selectedLayerIds[layer.id]) {
     const [x1, y1, x2, y2] = getLayerAbsoluteCoords(layer);
     const [x, y, width, height] = getLinkHandleFromCoords(
       [x1, y1, x2, y2],
       layer.angle,
-      appState
+      editorState
     );
     const centerX = x + width / 2;
     const centerY = y + height / 2;
     context.save();
-    context.translate(appState.scrollX + centerX, appState.scrollY + centerY);
+    context.translate(
+      editorState.scrollX + centerX,
+      editorState.scrollY + centerY
+    );
     context.rotate(layer.angle);
 
-    if (!linkCanvasCache || linkCanvasCache.zoom !== appState.zoom.value) {
+    if (!linkCanvasCache || linkCanvasCache.zoom !== editorState.zoom.value) {
       linkCanvasCache = document.createLayer("canvas");
-      linkCanvasCache.zoom = appState.zoom.value;
+      linkCanvasCache.zoom = editorState.zoom.value;
       linkCanvasCache.width =
-        width * window.devicePixelRatio * appState.zoom.value;
+        width * window.devicePixelRatio * editorState.zoom.value;
       linkCanvasCache.height =
-        height * window.devicePixelRatio * appState.zoom.value;
+        height * window.devicePixelRatio * editorState.zoom.value;
       const linkCanvasCacheContext = linkCanvasCache.getContext("2d")!;
       linkCanvasCacheContext.scale(
-        window.devicePixelRatio * appState.zoom.value,
-        window.devicePixelRatio * appState.zoom.value
+        window.devicePixelRatio * editorState.zoom.value,
+        window.devicePixelRatio * editorState.zoom.value
       );
       linkCanvasCacheContext.fillStyle = "#fff";
       linkCanvasCacheContext.fillRect(0, 0, width, height);

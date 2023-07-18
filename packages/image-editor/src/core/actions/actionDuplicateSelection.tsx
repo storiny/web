@@ -3,6 +3,7 @@ import {
   excludeLayersInFramesFromSelection,
   getSelectedLayers
 } from "../../lib/scene/selection/selection";
+import { arrayToMap, getShortcutKey } from "../../lib/utils/utils";
 import { DuplicateIcon } from "../components/icons";
 import { ToolButton } from "../components/ToolButton";
 import { GRID_SIZE } from "../constants";
@@ -25,17 +26,16 @@ import {
 import { isBoundToContainer, isFrameLayer } from "../layer/typeChecks";
 import { ExcalidrawLayer } from "../layer/types";
 import { AppState } from "../types";
-import { arrayToMap, getShortcutKey } from "../utils";
 import { register } from "./register";
 import { ActionResult } from "./types";
 
 export const actionDuplicateSelection = register({
   name: "duplicateSelection",
   trackEvent: { category: "layer" },
-  perform: (layers, appState) => {
+  perform: (layers, editorState) => {
     // duplicate selected point(s) if editing a line
-    if (appState.editingLinearLayer) {
-      const ret = LinearLayerEditor.duplicateSelectedPoints(appState);
+    if (editorState.editingLinearLayer) {
+      const ret = LinearLayerEditor.duplicateSelectedPoints(editorState);
 
       if (!ret) {
         return false;
@@ -43,19 +43,19 @@ export const actionDuplicateSelection = register({
 
       return {
         layers,
-        appState: ret.appState,
+        editorState: ret.editorState,
         commitToHistory: true
       };
     }
 
     return {
-      ...duplicateLayers(layers, appState),
+      ...duplicateLayers(layers, editorState),
       commitToHistory: true
     };
   },
   contextItemLabel: "labels.duplicateSelection",
   keyTest: (event) => event[KEYS.CTRL_OR_CMD] && event.key === KEYS.D,
-  PanelComponent: ({ layers, appState, updateData }) => (
+  PanelComponent: ({ layers, editorState, updateData }) => (
     <ToolButton
       aria-label={t("labels.duplicateSelection")}
       icon={DuplicateIcon}
@@ -64,14 +64,14 @@ export const actionDuplicateSelection = register({
         "CtrlOrCmd+D"
       )}`}
       type="button"
-      visible={isSomeLayerSelected(getNonDeletedLayers(layers), appState)}
+      visible={isSomeLayerSelected(getNonDeletedLayers(layers), editorState)}
     />
   )
 });
 
 const duplicateLayers = (
   layers: readonly ExcalidrawLayer[],
-  appState: AppState
+  editorState: AppState
 ): Partial<ActionResult> => {
   // ---------------------------------------------------------------------------
 
@@ -85,7 +85,7 @@ const duplicateLayers = (
 
   const duplicateAndOffsetLayer = (layer: ExcalidrawLayer) => {
     const newLayer = duplicateLayer(
-      appState.editingGroupId,
+      editorState.editingGroupId,
       groupIdMap,
       layer,
       {
@@ -100,7 +100,7 @@ const duplicateLayers = (
   };
 
   const idsOfLayersToDuplicate = arrayToMap(
-    getSelectedLayers(sortedLayers, appState, {
+    getSelectedLayers(sortedLayers, editorState, {
       includeBoundTextLayer: true,
       includeLayersInFrames: true
     })
@@ -142,7 +142,7 @@ const duplicateLayers = (
     if (idsOfLayersToDuplicate.get(layer.id)) {
       // if a group or a container/bound-text or frame, duplicate atomically
       if (layer.groupIds.length || boundTextLayer || isLayerAFrame) {
-        const groupId = getSelectedGroupForLayer(appState, layer);
+        const groupId = getSelectedGroupForLayer(editorState, layer);
         if (groupId) {
           // TODO:
           // remove `.flatMap...`
@@ -247,9 +247,9 @@ const duplicateLayers = (
 
   return {
     layers: finalLayers,
-    appState: selectGroupsForSelectedLayers(
+    editorState: selectGroupsForSelectedLayers(
       {
-        ...appState,
+        ...editorState,
         selectedGroupIds: {},
         selectedLayerIds: nextLayersToSelect.reduce(
           (acc: Record<ExcalidrawLayer["id"], true>, layer) => {
@@ -262,7 +262,7 @@ const duplicateLayers = (
         )
       },
       getNonDeletedLayers(finalLayers),
-      appState
+      editorState
     )
   };
 };

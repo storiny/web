@@ -5,7 +5,7 @@ import {
   MaybeTransformHandleType,
   OMIT_SIDES_FOR_MULTIPLE_ELEMENTS,
   TransformHandleType
-} from "../../transformHandles/transformHandles";
+} from "../../transformHandles";
 import { isInsideTransformHandle } from "../resizeTest";
 
 /**

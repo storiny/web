@@ -1,4 +1,3 @@
-import { getFontString } from "../../../core/utils";
 import { Layer, TextLayer } from "../../../types";
 import {
   isBoundToContainer,
@@ -7,6 +6,7 @@ import {
   refreshTextDimensions
 } from "../../layer";
 import { invalidateShapeForLayer } from "../../renderer";
+import { getFontString } from "../../utils/utils";
 import { Scene } from "../scene";
 
 export class Fonts {

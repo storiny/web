@@ -1,4 +1,10 @@
 import Scene from "../../lib/scene/scene/Scene";
+import {
+  getFontFamilyString,
+  getFontString,
+  isTestEnv,
+  isWritableLayer
+} from "../../lib/utils/utils";
 import { actionZoomIn, actionZoomOut } from "../actions/actionCanvas";
 import {
   actionDecreaseFontSize,
@@ -9,12 +15,6 @@ import App from "../components/App";
 import { CLASSES, isSafari } from "../constants";
 import { CODES, KEYS } from "../keys";
 import { AppState } from "../types";
-import {
-  getFontFamilyString,
-  getFontString,
-  isTestEnv,
-  isWritableLayer
-} from "../utils";
 import { LinearLayerEditor } from "./linearLayerEditor";
 import { mutateLayer } from "./mutateLayer";
 import {
@@ -45,11 +45,11 @@ const getTransform = (
   width: number,
   height: number,
   angle: number,
-  appState: AppState,
+  editorState: AppState,
   maxWidth: number,
   maxHeight: number
 ) => {
-  const { zoom } = appState;
+  const { zoom } = editorState;
   const degree = (180 * angle) / Math.PI;
   let translateX = (width * (zoom.value - 1)) / 2;
   let translateY = (height * (zoom.value - 1)) / 2;
@@ -136,7 +136,7 @@ export const textWysiwyg = ({
   };
 
   const updateWysiwygStyle = () => {
-    const appState = app.state;
+    const editorState = app.state;
     const updatedTextLayer =
       Scene.getScene(layer)?.getLayer<ExcalidrawTextLayer>(id);
 
@@ -242,7 +242,7 @@ export const textWysiwyg = ({
       }
 
       if (!container) {
-        maxWidth = (appState.width - 8 - viewportX) / appState.zoom.value;
+        maxWidth = (editorState.width - 8 - viewportX) / editorState.zoom.value;
         textLayerWidth = Math.min(textLayerWidth, maxWidth);
       } else {
         textLayerWidth += 0.5;
@@ -260,7 +260,7 @@ export const textWysiwyg = ({
 
       // Make sure text editor height doesn't go beyond viewport
       const editorMaxHeight =
-        (appState.height - viewportY) / appState.zoom.value;
+        (editorState.height - viewportY) / editorState.zoom.value;
       Object.assign(editable.style, {
         font: getFontString(updatedTextLayer),
         // must be defined *after* font ¯\_(ツ)_/¯
@@ -273,7 +273,7 @@ export const textWysiwyg = ({
           textLayerWidth,
           textLayerHeight,
           getTextLayerAngle(updatedTextLayer),
-          appState,
+          editorState,
           maxWidth,
           editorMaxHeight
         ),

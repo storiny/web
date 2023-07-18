@@ -1,9 +1,9 @@
-import { isSelectedViaGroup } from "../../../../core/groups";
 import {
   EditorState,
   NonDeletedLayer,
   PointerDownState
 } from "../../../../types";
+import { isSelectedViaGroup } from "../../../group";
 import { updateBoundLayers } from "../../binding";
 import { getCommonBounds } from "../../bounds";
 import { mutateLayer } from "../../mutate";

@@ -2,7 +2,7 @@ import { ImportedDataState } from "../../../lib/data/types";
 import {
   clearAppStateForLocalStorage,
   getDefaultAppState
-} from "../../appState";
+} from "../../editorState";
 import { clearLayersForLocalStorage } from "../../layer";
 import { ExcalidrawLayer } from "../../layer/types";
 import { AppState } from "../../types";
@@ -56,10 +56,10 @@ export const importFromLocalStorage = () => {
     }
   }
 
-  let appState = null;
+  let editorState = null;
   if (savedState) {
     try {
-      appState = {
+      editorState = {
         ...getDefaultAppState(),
         ...clearAppStateForLocalStorage(
           JSON.parse(savedState) as Partial<AppState>
@@ -67,10 +67,10 @@ export const importFromLocalStorage = () => {
       };
     } catch (error: any) {
       console.error(error);
-      // Do nothing because appState is already null
+      // Do nothing because editorState is already null
     }
   }
-  return { layers, appState };
+  return { layers, editorState };
 };
 
 export const getLayersStorageSize = () => {
@@ -86,15 +86,17 @@ export const getLayersStorageSize = () => {
 
 export const getTotalStorageSize = () => {
   try {
-    const appState = localStorage.getItem(STORAGE_KEYS.LOCAL_STORAGE_APP_STATE);
+    const editorState = localStorage.getItem(
+      STORAGE_KEYS.LOCAL_STORAGE_APP_STATE
+    );
     const collab = localStorage.getItem(STORAGE_KEYS.LOCAL_STORAGE_COLLAB);
     const library = localStorage.getItem(STORAGE_KEYS.LOCAL_STORAGE_LIBRARY);
 
-    const appStateSize = appState?.length || 0;
+    const editorStateSize = editorState?.length || 0;
     const collabSize = collab?.length || 0;
     const librarySize = library?.length || 0;
 
-    return appStateSize + collabSize + librarySize + getLayersStorageSize();
+    return editorStateSize + collabSize + librarySize + getLayersStorageSize();
   } catch (error: any) {
     console.error(error);
     return 0;

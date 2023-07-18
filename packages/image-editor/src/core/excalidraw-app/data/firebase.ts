@@ -213,7 +213,7 @@ const createFirebaseSceneDocument = async (
 export const saveToFirebase = async (
   portal: Portal,
   layers: readonly SyncableExcalidrawLayer[],
-  appState: AppState
+  editorState: AppState
 ) => {
   const { roomId, roomKey, socket } = portal;
   if (
@@ -255,7 +255,7 @@ export const saveToFirebase = async (
     );
 
     const reconciledLayers = getSyncableLayers(
-      reconcileLayers(layers, prevLayers, appState)
+      reconcileLayers(layers, prevLayers, editorState)
     );
 
     const sceneDocument = await createFirebaseSceneDocument(

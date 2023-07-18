@@ -1,4 +1,5 @@
 import { SVG_EXPORT_TAG } from "../lib/scene/export/export";
+import { isPromiseLike, isTestEnv } from "../lib/utils/utils";
 import { Spreadsheet, tryParseSpreadsheet, VALID_SPREADSHEET } from "./charts";
 import { EXPORT_DATA_TYPES, MIME_TYPES } from "./constants";
 import { getContainingFrame } from "./frame";
@@ -7,7 +8,6 @@ import { deepCopyLayer } from "./layer/newLayer";
 import { isInitializedImageLayer } from "./layer/typeChecks";
 import { ExcalidrawLayer, NonDeletedExcalidrawLayer } from "./layer/types";
 import { BinaryFiles } from "./types";
-import { isPromiseLike, isTestEnv } from "./utils";
 
 type LayersClipboard = {
   files: BinaryFiles | undefined;

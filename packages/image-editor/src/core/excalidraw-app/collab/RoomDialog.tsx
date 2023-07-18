@@ -3,6 +3,7 @@ import "./RoomDialog.scss";
 import * as Popover from "@radix-ui/react-popover";
 import { useRef, useState } from "react";
 
+import { getFrame } from "../../../lib/utils/utils";
 import { trackEvent } from "../../analytics";
 import { ReactComponent as CollabImage } from "../../assets/lock.svg";
 import { copyTextToSystemClipboard } from "../../clipboard";
@@ -20,7 +21,6 @@ import {
 import { TextField } from "../../components/TextField";
 import { useI18n } from "../../i18n";
 import { KEYS } from "../../keys";
-import { getFrame } from "../../utils";
 
 const getShareIcon = () => {
   const navigator = window.navigator as any;

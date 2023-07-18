@@ -23,26 +23,25 @@ import {
   TextContainerLayer,
   TextLayer
 } from "../../../types";
+import { getNewGroupIdsForDuplication } from "../../group";
 import { adjustXYWithRotation } from "../../math";
-import { getResizedLayerAbsoluteCoords } from "../bounds";
-import { getNewGroupIdsForDuplication } from "../groups";
-import { getLayerAbsoluteCoords } from "../index";
-import { bumpUpdate, newLayerWith } from "../mutate";
-import { randomId, randomInteger } from "../random";
+import { randomId, randomInteger } from "../../random";
 import {
   arrayToMap,
   getFontString,
   getUpdatedTimestamp,
   isTestEnv
-} from "../utils";
+} from "../../utils";
+import { getResizedLayerAbsoluteCoords } from "../bounds";
 import {
   getBoundTextMaxWidth,
   getContainerLayer,
-  getDefaultLineHeight,
+  getLayerAbsoluteCoords,
   measureText,
   normalizeText,
   wrapText
-} from "./textLayer";
+} from "../index";
+import { bumpUpdate, newLayerWith } from "../mutate";
 
 type LayerConstructorOpts = MarkOptional<
   Omit<GenericLayer, "id" | "type" | "isDeleted" | "updated">,
@@ -165,7 +164,7 @@ export const newTextLayer = (
 ): NonDeleted<TextLayer> => {
   const fontFamily = opts.fontFamily || DEFAULT_FONT_FAMILY;
   const fontSize = opts.fontSize || DEFAULT_FONT_SIZE;
-  const lineHeight = opts.lineHeight || getDefaultLineHeight(fontFamily);
+  const lineHeight = opts.lineHeight || 1.2;
   const text = normalizeText(opts.text);
   const metrics = measureText(
     text,
@@ -468,12 +467,12 @@ export const deepCopyLayer = <T extends Layer>(val: T): Mutable<T> =>
 const regenerateId = (previousId: string | null): string => {
   if (isTestEnv() && previousId) {
     let nextId = `${previousId}:copy`;
-    // `window.h` may not be defined in some unit tests
 
+    // `window.h` may not be defined in some unit tests
     if (
       window.h?.app
         ?.getSceneLayersIncludingDeleted()
-        .find(({ id }) => id === nextId)
+        .find(({ id }: { id: string }) => id === nextId)
     ) {
       nextId += ":copy";
     }

@@ -72,10 +72,10 @@ const ChartPreviewBtn = (props: {
 
 export const PasteChartDialog = ({
   setAppState,
-  appState,
+  editorState,
   onClose
 }: {
-  appState: UIAppState;
+  editorState: UIAppState;
   onClose: () => void;
   setAppState: React.Component<any, UIAppState>["setState"];
 }) => {
@@ -110,14 +110,14 @@ export const PasteChartDialog = ({
         <ChartPreviewBtn
           chartType="bar"
           onClick={handleChartClick}
-          selected={appState.currentChartType === "bar"}
-          spreadsheet={appState.pasteDialog.data}
+          selected={editorState.currentChartType === "bar"}
+          spreadsheet={editorState.pasteDialog.data}
         />
         <ChartPreviewBtn
           chartType="line"
           onClick={handleChartClick}
-          selected={appState.currentChartType === "line"}
-          spreadsheet={appState.pasteDialog.data}
+          selected={editorState.currentChartType === "line"}
+          spreadsheet={editorState.pasteDialog.data}
         />
       </div>
     </Dialog>

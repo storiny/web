@@ -11,7 +11,7 @@ import {
   actionToggleTheme
 } from "../../actions";
 import { getShortcutFromShortcutName } from "../../actions/shortcuts";
-import { useUIAppState } from "../../context/ui-appState";
+import { useUIAppState } from "../../context/ui-editorState";
 import { useI18n } from "../../i18n";
 import { jotaiScope } from "../../jotai";
 import { activeConfirmDialogAtom } from "../ActiveConfirmDialog";
@@ -164,7 +164,7 @@ ClearCanvas.displayName = "ClearCanvas";
 
 export const ToggleTheme = () => {
   const { t } = useI18n();
-  const appState = useUIAppState();
+  const editorState = useUIAppState();
   const actionManager = useExcalidrawActionManager();
 
   if (!actionManager.isActionEnabled(actionToggleTheme)) {
@@ -174,12 +174,12 @@ export const ToggleTheme = () => {
   return (
     <DropdownMenuItem
       aria-label={
-        appState.theme === "dark"
+        editorState.theme === "dark"
           ? t("buttons.lightMode")
           : t("buttons.darkMode")
       }
       data-testid="toggle-dark-mode"
-      icon={appState.theme === "dark" ? SunIcon : MoonIcon}
+      icon={editorState.theme === "dark" ? SunIcon : MoonIcon}
       onSelect={(event) => {
         // do not close the menu when changing theme
         event.preventDefault();
@@ -187,7 +187,7 @@ export const ToggleTheme = () => {
       }}
       shortcut={getShortcutFromShortcutName("toggleTheme")}
     >
-      {appState.theme === "dark"
+      {editorState.theme === "dark"
         ? t("buttons.lightMode")
         : t("buttons.darkMode")}
     </DropdownMenuItem>
@@ -197,10 +197,10 @@ ToggleTheme.displayName = "ToggleTheme";
 
 export const ChangeCanvasBackground = () => {
   const { t } = useI18n();
-  const appState = useUIAppState();
+  const editorState = useUIAppState();
   const actionManager = useExcalidrawActionManager();
 
-  if (appState.viewModeEnabled) {
+  if (editorState.viewModeEnabled) {
     return null;
   }
   return (

@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 
+import { debounce, getVersion, nFormatter } from "../../lib/utils/utils";
 import { copyTextToSystemClipboard } from "../clipboard";
 import { DEFAULT_VERSION } from "../constants";
 import { t } from "../i18n";
 import { NonDeletedExcalidrawLayer } from "../layer/types";
 import { UIAppState } from "../types";
-import { debounce, getVersion, nFormatter } from "../utils";
 import { getLayersStorageSize, getTotalStorageSize } from "./data/localStorage";
 
 type StorageSizes = { scene: number; total: number };
@@ -20,7 +20,7 @@ const getStorageSizes = debounce((cb: (sizes: StorageSizes) => void) => {
 }, STORAGE_SIZE_TIMEOUT);
 
 type Props = {
-  appState: UIAppState;
+  editorState: UIAppState;
   layers: readonly NonDeletedExcalidrawLayer[];
   setToast: (message: string) => void;
 };
@@ -34,7 +34,7 @@ const CustomStats = (props: Props) => {
     getStorageSizes((sizes) => {
       setStorageSizes(sizes);
     });
-  }, [props.layers, props.appState]);
+  }, [props.layers, props.editorState]);
   useEffect(() => () => getStorageSizes.cancel(), []);
 
   const version = getVersion();

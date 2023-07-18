@@ -1,3 +1,4 @@
+import { arrayToMap } from "../../lib/utils/utils";
 import { RedoIcon, UndoIcon } from "../components/icons";
 import { ToolButton } from "../components/ToolButton";
 import { isWindows } from "../constants";
@@ -8,20 +9,19 @@ import { fixBindingsAfterDeletion } from "../layer/binding";
 import { newLayerWith } from "../layer/mutateLayer";
 import { ExcalidrawLayer } from "../layer/types";
 import { AppState } from "../types";
-import { arrayToMap } from "../utils";
 import { Action, ActionResult } from "./types";
 
 const writeData = (
   prevLayers: readonly ExcalidrawLayer[],
-  appState: AppState,
+  editorState: AppState,
   updater: () => HistoryEntry | null
 ): ActionResult => {
   const commitToHistory = false;
   if (
-    !appState.multiLayer &&
-    !appState.resizingLayer &&
-    !appState.editingLayer &&
-    !appState.draggingLayer
+    !editorState.multiLayer &&
+    !editorState.resizingLayer &&
+    !editorState.editingLayer &&
+    !editorState.draggingLayer
   ) {
     const data = updater();
     if (data === null) {
@@ -48,7 +48,7 @@ const writeData = (
 
     return {
       layers,
-      appState: { ...appState, ...data.appState },
+      editorState: { ...editorState, ...data.editorState },
       commitToHistory,
       syncHistory: true
     };
@@ -61,8 +61,8 @@ type ActionCreator = (history: History) => Action;
 export const createUndoAction: ActionCreator = (history) => ({
   name: "undo",
   trackEvent: { category: "history" },
-  perform: (layers, appState) =>
-    writeData(layers, appState, () => history.undoOnce()),
+  perform: (layers, editorState) =>
+    writeData(layers, editorState, () => history.undoOnce()),
   keyTest: (event) =>
     event[KEYS.CTRL_OR_CMD] &&
     event.key.toLowerCase() === KEYS.Z &&
@@ -82,8 +82,8 @@ export const createUndoAction: ActionCreator = (history) => ({
 export const createRedoAction: ActionCreator = (history) => ({
   name: "redo",
   trackEvent: { category: "history" },
-  perform: (layers, appState) =>
-    writeData(layers, appState, () => history.redoOnce()),
+  perform: (layers, editorState) =>
+    writeData(layers, editorState, () => history.redoOnce()),
   keyTest: (event) =>
     (event[KEYS.CTRL_OR_CMD] &&
       event.shiftKey &&

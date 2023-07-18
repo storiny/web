@@ -276,9 +276,9 @@ export const getTransformHandles = (
 
 export const shouldShowBoundingBox = (
   layers: NonDeletedExcalidrawLayer[],
-  appState: AppState
+  editorState: AppState
 ) => {
-  if (appState.editingLinearLayer) {
+  if (editorState.editingLinearLayer) {
     return false;
   }
   if (layers.length > 1) {

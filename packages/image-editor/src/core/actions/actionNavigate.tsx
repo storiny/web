@@ -8,25 +8,26 @@ export const actionGoToCollaborator = register({
   name: "goToCollaborator",
   viewMode: true,
   trackEvent: { category: "collab" },
-  perform: (_layers, appState, value) => {
+  perform: (_layers, editorState, value) => {
     const point = value as Collaborator["pointer"];
     if (!point) {
-      return { appState, commitToHistory: false };
+      return { editorState, commitToHistory: false };
     }
 
     return {
-      appState: {
-        ...appState,
+      editorState: {
+        ...editorState,
         ...centerScrollOn({
           scenePoint: point,
           viewportDimensions: {
-            width: appState.width,
-            height: appState.height
+            width: editorState.width,
+            height: editorState.height
           },
-          zoom: appState.zoom
+          zoom: editorState.zoom
         }),
         // Close mobile menu
-        openMenu: appState.openMenu === "canvas" ? null : appState.openMenu
+        openMenu:
+          editorState.openMenu === "canvas" ? null : editorState.openMenu
       },
       commitToHistory: false
     };

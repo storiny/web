@@ -1,6 +1,6 @@
-import { getGlobalCSSVariable } from "../../../core/utils";
 import { Layer, Zoom } from "../../../types";
 import { getCommonBounds } from "../../layer";
+import { getGlobalCSSVariable } from "../../utils/utils";
 import { ScrollBars } from "../types";
 
 export const SCROLLBAR_MARGIN = 4;

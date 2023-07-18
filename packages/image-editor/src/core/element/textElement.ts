@@ -1,5 +1,6 @@
 import { getSelectedLayers } from "../../lib/scene";
 import Scene from "../../lib/scene/scene/Scene";
+import { arrayToMap, getFontString, isTestEnv } from "../../lib/utils/utils";
 import {
   BOUND_TEXT_PADDING,
   DEFAULT_FONT_FAMILY,
@@ -12,7 +13,6 @@ import {
 import { getLayerAbsoluteCoords } from "../layer";
 import { AppState } from "../types";
 import { ExtractSetType } from "../utility-types";
-import { arrayToMap, getFontString, isTestEnv } from "../utils";
 import { isTextLayer } from ".";
 import { isHittingLayerNotConsideringBoundingBox } from "./collision";
 import { LinearLayerEditor } from "./linearLayerEditor";
@@ -685,7 +685,7 @@ export const getContainerDims = (layer: ExcalidrawLayer) => {
 
 export const getContainerCenter = (
   container: ExcalidrawLayer,
-  appState: AppState
+  editorState: AppState
 ) => {
   if (!isArrowLayer(container)) {
     return {
@@ -705,7 +705,7 @@ export const getContainerCenter = (
   const index = container.points.length / 2 - 1;
   let midSegmentMidpoint = LinearLayerEditor.getEditorMidPoints(
     container,
-    appState
+    editorState
   )[index];
   if (!midSegmentMidpoint) {
     midSegmentMidpoint = LinearLayerEditor.getSegmentMidPoint(
@@ -805,11 +805,11 @@ export const suppportsHorizontalAlign = (
 
 export const getTextBindableContainerAtPosition = (
   layers: readonly ExcalidrawLayer[],
-  appState: AppState,
+  editorState: AppState,
   x: number,
   y: number
 ): ExcalidrawTextContainer | null => {
-  const selectedLayers = getSelectedLayers(layers, appState);
+  const selectedLayers = getSelectedLayers(layers, editorState);
   if (selectedLayers.length === 1) {
     return isTextBindableContainer(selectedLayers[0], false)
       ? selectedLayers[0]
@@ -824,10 +824,12 @@ export const getTextBindableContainerAtPosition = (
     const [x1, y1, x2, y2] = getLayerAbsoluteCoords(layers[index]);
     if (
       isArrowLayer(layers[index]) &&
-      isHittingLayerNotConsideringBoundingBox(layers[index], appState, null, [
-        x,
-        y
-      ])
+      isHittingLayerNotConsideringBoundingBox(
+        layers[index],
+        editorState,
+        null,
+        [x, y]
+      )
     ) {
       hitLayer = layers[index];
       break;

@@ -8,8 +8,9 @@ import Library, {
   libraryItemsAtom
 } from "../../lib/data/library";
 import { getSelectedLayers } from "../../lib/scene";
+import { isShallowEqual } from "../../lib/utils/utils";
 import { trackEvent } from "../analytics";
-import { useUIAppState } from "../context/ui-appState";
+import { useUIAppState } from "../context/ui-editorState";
 import { t } from "../i18n";
 import { jotaiScope } from "../jotai";
 import { NonDeletedExcalidrawLayer } from "../layer/types";
@@ -20,7 +21,6 @@ import {
   LibraryItems,
   UIAppState
 } from "../types";
-import { isShallowEqual } from "../utils";
 import {
   useApp,
   useAppProps,
@@ -146,27 +146,27 @@ export const LibraryMenuContent = ({
 };
 
 const usePendingLayersMemo = (
-  appState: UIAppState,
+  editorState: UIAppState,
   layers: readonly NonDeletedExcalidrawLayer[]
 ) => {
   const create = () =>
-    getSelectedLayers(layers, appState, {
+    getSelectedLayers(layers, editorState, {
       includeBoundTextLayer: true,
       includeLayersInFrames: true
     });
   const val = useRef(create());
-  const prevAppState = useRef<UIAppState>(appState);
+  const prevAppState = useRef<UIAppState>(editorState);
   const prevLayers = useRef(layers);
 
   if (
     !isShallowEqual(
-      appState.selectedLayerIds,
+      editorState.selectedLayerIds,
       prevAppState.current.selectedLayerIds
     ) ||
     !isShallowEqual(layers, prevLayers.current)
   ) {
     val.current = create();
-    prevAppState.current = appState;
+    prevAppState.current = editorState;
     prevLayers.current = layers;
   }
   return val.current;
@@ -179,13 +179,13 @@ const usePendingLayersMemo = (
 export const LibraryMenu = () => {
   const { library, id, onInsertLayers } = useApp();
   const appProps = useAppProps();
-  const appState = useUIAppState();
+  const editorState = useUIAppState();
   const setAppState = useExcalidrawSetAppState();
   const layers = useExcalidrawLayers();
   const [selectedItems, setSelectedItems] = useState<LibraryItem["id"][]>([]);
   const memoizedLibrary = useMemo(() => library, [library]);
   // BUG: pendingLayers are still causing some unnecessary rerenders because clicking into canvas returns some ids even when no layer is selected.
-  const pendingLayers = usePendingLayersMemo(appState, layers);
+  const pendingLayers = usePendingLayersMemo(editorState, layers);
 
   const onInsertLibraryItems = useCallback(
     (libraryItems: LibraryItems) => {
@@ -212,7 +212,7 @@ export const LibraryMenu = () => {
       pendingLayers={pendingLayers}
       selectedItems={selectedItems}
       setAppState={setAppState}
-      theme={appState.theme}
+      theme={editorState.theme}
     />
   );
 };

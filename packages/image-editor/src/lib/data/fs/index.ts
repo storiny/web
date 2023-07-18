@@ -2,15 +2,12 @@ import { devConsole } from "@storiny/shared/src/utils/devLog";
 import {
   fileOpen as fileOpenImpl,
   fileSave as fileSaveImpl,
-  FileSystemHandle,
   supported as nativeFileSystemSupported
 } from "browser-fs-access";
 
-import { Event, ImageMime, Mime, NonImageMime } from "../../../constants";
-import { AbortError } from "../../../core/errors";
-import { debounce } from "../../../core/utils";
-
-type FileExtension = Exclude<Mime, NonImageMime.BINARY>;
+import { Event, ImageMime, Mime } from "../../../constants";
+import { AbortError } from "../../errors";
+import { debounce } from "../../utils";
 
 const INPUT_CHANGE_INTERVAL_MS = 500;
 
@@ -20,7 +17,7 @@ const INPUT_CHANGE_INTERVAL_MS = 500;
  */
 export const fileOpen = <M extends boolean | undefined = false>(opts: {
   description: string;
-  extensions?: FileExtension[];
+  extensions?: string[];
   multiple?: M;
 }): Promise<M extends false | undefined ? File : File[]> => {
   // An unsafe TS hack
@@ -46,7 +43,6 @@ export const fileOpen = <M extends boolean | undefined = false>(opts: {
     multiple: opts.multiple ?? false,
     legacySetup: (resolve, reject, input) => {
       const scheduleRejection = debounce(reject, INPUT_CHANGE_INTERVAL_MS);
-
       const focusHandler = (): void => {
         checkForFile();
         document.addEventListener(Event.KEYUP, scheduleRejection);
@@ -95,7 +91,8 @@ export const fileSave = (
   blob: Blob,
   opts: {
     description: string;
-    extension: FileExtension;
+    extension: string;
+    // eslint-disable-next-line no-undef
     fileHandle?: FileSystemHandle | null;
     name: string;
   }
@@ -110,5 +107,4 @@ export const fileSave = (
     opts.fileHandle as any
   );
 
-export type { FileSystemHandle };
 export { nativeFileSystemSupported };

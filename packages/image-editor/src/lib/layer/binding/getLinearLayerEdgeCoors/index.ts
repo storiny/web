@@ -1,4 +1,5 @@
 import { LinearLayer, NonDeleted } from "../../../../types";
+import { tupleToCoors } from "../../../utils";
 import { LinearLayerEditor } from "../../linearLayerEditor";
 
 /**

@@ -37,7 +37,7 @@ export const assertExcalidrawWithSidebar = async (
   test: () => void
 ) => {
   await render(
-    <Excalidraw initialData={{ appState: { openSidebar: { name } } }}>
+    <Excalidraw initialData={{ editorState: { openSidebar: { name } } }}>
       {sidebar}
     </Excalidraw>
   );
@@ -49,7 +49,9 @@ describe("Sidebar", () => {
     it("should render custom sidebar", async () => {
       const { container } = await render(
         <Excalidraw
-          initialData={{ appState: { openSidebar: { name: "customSidebar" } } }}
+          initialData={{
+            editorState: { openSidebar: { name: "customSidebar" } }
+          }}
         >
           <Sidebar name="customSidebar">
             <div id="test-sidebar-content">42</div>
@@ -64,7 +66,9 @@ describe("Sidebar", () => {
     it("should render only one sidebar and prefer the custom one", async () => {
       const { container } = await render(
         <Excalidraw
-          initialData={{ appState: { openSidebar: { name: "customSidebar" } } }}
+          initialData={{
+            editorState: { openSidebar: { name: "customSidebar" } }
+          }}
         >
           <Sidebar name="customSidebar">
             <div id="test-sidebar-content">42</div>
@@ -163,7 +167,9 @@ describe("Sidebar", () => {
     it("should render custom sidebar header", async () => {
       const { container } = await render(
         <Excalidraw
-          initialData={{ appState: { openSidebar: { name: "customSidebar" } } }}
+          initialData={{
+            editorState: { openSidebar: { name: "customSidebar" } }
+          }}
         >
           <Sidebar name="customSidebar">
             <Sidebar.Header>
@@ -184,7 +190,7 @@ describe("Sidebar", () => {
       const CustomExcalidraw = () => (
         <Excalidraw
           initialData={{
-            appState: { openSidebar: { name: "customSidebar" } }
+            editorState: { openSidebar: { name: "customSidebar" } }
           }}
         >
           <Sidebar className="test-sidebar" name="customSidebar">
@@ -206,7 +212,7 @@ describe("Sidebar", () => {
       const CustomExcalidraw = () => (
         <Excalidraw
           initialData={{
-            appState: { openSidebar: { name: "customSidebar" } }
+            editorState: { openSidebar: { name: "customSidebar" } }
           }}
         >
           <Sidebar
@@ -277,7 +283,9 @@ describe("Sidebar", () => {
     it("should be user-dockable when both `onDock` and `docked` supplied", async () => {
       await render(
         <Excalidraw
-          initialData={{ appState: { openSidebar: { name: "customSidebar" } } }}
+          initialData={{
+            editorState: { openSidebar: { name: "customSidebar" } }
+          }}
         >
           <Sidebar
             className="test-sidebar"
@@ -301,7 +309,9 @@ describe("Sidebar", () => {
     it("shouldn't be user-dockable when only `onDock` supplied w/o `docked`", async () => {
       await render(
         <Excalidraw
-          initialData={{ appState: { openSidebar: { name: "customSidebar" } } }}
+          initialData={{
+            editorState: { openSidebar: { name: "customSidebar" } }
+          }}
         >
           <Sidebar
             className="test-sidebar"

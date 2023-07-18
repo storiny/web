@@ -1,6 +1,6 @@
 import { PointerType } from "../../../../constants";
 import { EditorState, NonDeletedLayer, Zoom } from "../../../../types";
-import { MaybeTransformHandleType } from "../../transformHandles/transformHandles";
+import { MaybeTransformHandleType } from "../../transformHandles";
 import { resizeTest } from "../resizeTest";
 
 /**

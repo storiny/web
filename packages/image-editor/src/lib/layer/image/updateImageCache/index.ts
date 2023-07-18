@@ -1,6 +1,7 @@
 import { ImageMime, NonImageMime } from "../../../../constants";
-import { AppClassProperties } from "../../../../core/types";
+import { EditorClassProperties } from "../../../../types";
 import { BinaryFiles, FileId } from "../../../../types";
+import { loadHTMLImageElement } from "../loadHTMLImageElement";
 
 /**
  * Updates cache, even if already populated with given image. Thus, you
@@ -16,7 +17,7 @@ export const updateImageCache = async ({
 }: {
   fileIds: FileId[];
   files: BinaryFiles;
-  imageCache: AppClassProperties["imageCache"];
+  imageCache: EditorClassProperties["imageCache"];
 }): Promise<{
   erroredFiles: Map<FileId, true>;
   imageCache: Map<

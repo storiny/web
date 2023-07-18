@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 
+import { composeEventHandlers } from "../../../lib/utils/utils";
 import { EVENT } from "../../constants";
-import { composeEventHandlers } from "../../utils";
 
 export const DropdownMenuContentPropsContext = React.createContext<{
   onSelect?: (event: Event) => void;

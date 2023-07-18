@@ -3,7 +3,7 @@
  * @param dataURL Data URL of the image
  */
 export const loadHTMLImageElement = (
-  dataURL: DataURL
+  dataURL: string
 ): Promise<HTMLImageElement> =>
   new Promise<HTMLImageElement>((resolve, reject) => {
     const image = new Image();

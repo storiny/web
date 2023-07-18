@@ -4,8 +4,8 @@ import util from "util";
 
 import { getMimeType } from "../../../lib/data/blob/blob";
 import { getSelectedLayers } from "../../../lib/scene/selection/selection";
-import { getDefaultAppState } from "../../appState";
 import { DEFAULT_VERTICAL_ALIGN, ROUNDNESS } from "../../constants";
+import { getDefaultAppState } from "../../editorState";
 import { newLayer, newLinearLayer, newTextLayer } from "../../layer";
 import { newFreeDrawLayer, newImageLayer } from "../../layer/newLayer";
 import { isLinearLayerType } from "../../layer/typeChecks";
@@ -127,7 +127,7 @@ export class API {
     : ExcalidrawGenericLayer => {
     let layer: Mutable<ExcalidrawLayer> = null!;
 
-    const appState = h?.state || getDefaultAppState();
+    const editorState = h?.state || getDefaultAppState();
 
     const base: Omit<
       ExcalidrawGenericLayer,
@@ -147,15 +147,15 @@ export class API {
       x,
       y,
       angle: rest.angle ?? 0,
-      strokeColor: rest.strokeColor ?? appState.currentItemStrokeColor,
+      strokeColor: rest.strokeColor ?? editorState.currentItemStrokeColor,
       backgroundColor:
-        rest.backgroundColor ?? appState.currentItemBackgroundColor,
-      fillStyle: rest.fillStyle ?? appState.currentItemFillStyle,
-      strokeWidth: rest.strokeWidth ?? appState.currentItemStrokeWidth,
-      strokeStyle: rest.strokeStyle ?? appState.currentItemStrokeStyle,
+        rest.backgroundColor ?? editorState.currentItemBackgroundColor,
+      fillStyle: rest.fillStyle ?? editorState.currentItemFillStyle,
+      strokeWidth: rest.strokeWidth ?? editorState.currentItemStrokeWidth,
+      strokeStyle: rest.strokeStyle ?? editorState.currentItemStrokeStyle,
       roundness: (
         rest.roundness === undefined
-          ? appState.currentItemRoundness === "round"
+          ? editorState.currentItemRoundness === "round"
           : rest.roundness
       )
         ? {
@@ -164,8 +164,8 @@ export class API {
               : ROUNDNESS.ADAPTIVE_RADIUS
           }
         : null,
-      roughness: rest.roughness ?? appState.currentItemRoughness,
-      opacity: rest.opacity ?? appState.currentItemOpacity,
+      roughness: rest.roughness ?? editorState.currentItemRoughness,
+      opacity: rest.opacity ?? editorState.currentItemOpacity,
       boundLayers: rest.boundLayers ?? null,
       locked: rest.locked ?? false
     };
@@ -181,14 +181,14 @@ export class API {
         });
         break;
       case "text":
-        const fontSize = rest.fontSize ?? appState.currentItemFontSize;
-        const fontFamily = rest.fontFamily ?? appState.currentItemFontFamily;
+        const fontSize = rest.fontSize ?? editorState.currentItemFontSize;
+        const fontFamily = rest.fontFamily ?? editorState.currentItemFontFamily;
         layer = newTextLayer({
           ...base,
           text: rest.text || "test",
           fontSize,
           fontFamily,
-          textAlign: rest.textAlign ?? appState.currentItemTextAlign,
+          textAlign: rest.textAlign ?? editorState.currentItemTextAlign,
           verticalAlign: rest.verticalAlign ?? DEFAULT_VERTICAL_ALIGN,
           containerId: rest.containerId ?? undefined
         });

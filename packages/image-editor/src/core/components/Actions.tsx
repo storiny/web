@@ -13,6 +13,12 @@ import {
   hasText
 } from "../../lib/scene";
 import { hasStrokeColor } from "../../lib/scene/comparisons";
+import {
+  capitalizeString,
+  isTransparent,
+  setCursorForShape,
+  updateActiveTool
+} from "../../lib/utils/utils";
 import { actionToggleZenMode } from "../actions";
 import { ActionManager } from "../actions/manager";
 import { trackEvent } from "../analytics";
@@ -28,12 +34,6 @@ import { hasBoundTextLayer } from "../layer/typeChecks";
 import { ExcalidrawLayer, PointerType } from "../layer/types";
 import { SHAPES } from "../shapes";
 import { UIAppState, Zoom } from "../types";
-import {
-  capitalizeString,
-  isTransparent,
-  setCursorForShape,
-  updateActiveTool
-} from "../utils";
 import DropdownMenu from "./dropdownMenu/DropdownMenu";
 import { extraToolsIcon, frameToolIcon } from "./icons";
 import Stack from "./Stack";
@@ -41,15 +41,18 @@ import { ToolButton } from "./ToolButton";
 import { Tooltip } from "./Tooltip";
 
 export const SelectedShapeActions = ({
-  appState,
+  editorState,
   layers,
   renderAction
 }: {
-  appState: UIAppState;
+  editorState: UIAppState;
   layers: readonly ExcalidrawLayer[];
   renderAction: ActionManager["renderAction"];
 }) => {
-  const targetLayers = getTargetLayers(getNonDeletedLayers(layers), appState);
+  const targetLayers = getTargetLayers(
+    getNonDeletedLayers(layers),
+    editorState
+  );
 
   let isSingleLayerBoundContainer = false;
   if (
@@ -58,18 +61,18 @@ export const SelectedShapeActions = ({
   ) {
     isSingleLayerBoundContainer = true;
   }
-  const isEditing = Boolean(appState.editingLayer);
+  const isEditing = Boolean(editorState.editingLayer);
   const device = useDevice();
   const isRTL = document.documentLayer.getAttribute("dir") === "rtl";
 
   const showFillIcons =
-    hasBackground(appState.activeTool.type) ||
+    hasBackground(editorState.activeTool.type) ||
     targetLayers.some(
       (layer) =>
         hasBackground(layer.type) && !isTransparent(layer.backgroundColor)
     );
   const showChangeBackgroundIcons =
-    hasBackground(appState.activeTool.type) ||
+    hasBackground(editorState.activeTool.type) ||
     targetLayers.some((layer) => hasBackground(layer.type));
 
   const showLinkIcon = targetLayers.length === 1 || isSingleLayerBoundContainer;
@@ -86,8 +89,8 @@ export const SelectedShapeActions = ({
   return (
     <div className="panelColumn">
       <div>
-        {((hasStrokeColor(appState.activeTool.type) &&
-          appState.activeTool.type !== "image" &&
+        {((hasStrokeColor(editorState.activeTool.type) &&
+          editorState.activeTool.type !== "image" &&
           commonSelectedType !== "image" &&
           commonSelectedType !== "frame") ||
           targetLayers.some((layer) => hasStrokeColor(layer.type))) &&
@@ -98,15 +101,15 @@ export const SelectedShapeActions = ({
       )}
       {showFillIcons && renderAction("changeFillStyle")}
 
-      {(hasStrokeWidth(appState.activeTool.type) ||
+      {(hasStrokeWidth(editorState.activeTool.type) ||
         targetLayers.some((layer) => hasStrokeWidth(layer.type))) &&
         renderAction("changeStrokeWidth")}
 
-      {(appState.activeTool.type === "freedraw" ||
+      {(editorState.activeTool.type === "freedraw" ||
         targetLayers.some((layer) => layer.type === "freedraw")) &&
         renderAction("changeStrokeShape")}
 
-      {(hasStrokeStyle(appState.activeTool.type) ||
+      {(hasStrokeStyle(editorState.activeTool.type) ||
         targetLayers.some((layer) => hasStrokeStyle(layer.type))) && (
         <>
           {renderAction("changeStrokeStyle")}
@@ -114,12 +117,12 @@ export const SelectedShapeActions = ({
         </>
       )}
 
-      {(canChangeRoundness(appState.activeTool.type) ||
+      {(canChangeRoundness(editorState.activeTool.type) ||
         targetLayers.some((layer) => canChangeRoundness(layer.type))) && (
         <>{renderAction("changeRoundness")}</>
       )}
 
-      {(hasText(appState.activeTool.type) ||
+      {(hasText(editorState.activeTool.type) ||
         targetLayers.some((layer) => hasText(layer.type))) && (
         <>
           {renderAction("changeFontSize")}
@@ -133,7 +136,7 @@ export const SelectedShapeActions = ({
 
       {shouldAllowVerticalAlign(targetLayers) &&
         renderAction("changeVerticalAlign")}
-      {(canHaveArrowheads(appState.activeTool.type) ||
+      {(canHaveArrowheads(editorState.activeTool.type) ||
         targetLayers.some((layer) => canHaveArrowheads(layer.type))) && (
         <>{renderAction("changeArrowhead")}</>
       )}
@@ -211,11 +214,11 @@ export const ShapesSwitcher = ({
   activeTool,
   setAppState,
   onImageAction,
-  appState
+  editorState
 }: {
   activeTool: UIAppState["activeTool"];
-  appState: UIAppState;
   canvas: HTMLCanvasLayer | null;
+  editorState: UIAppState;
   onImageAction: (data: { pointerType: PointerType | null }) => void;
   setAppState: React.Component<any, UIAppState>["setState"];
 }) => {
@@ -242,10 +245,10 @@ export const ShapesSwitcher = ({
             keyBindingLabel={numericKey || letter}
             name="editor-current-shape"
             onChange={({ pointerType }) => {
-              if (appState.activeTool.type !== value) {
+              if (editorState.activeTool.type !== value) {
                 trackEvent("toolbar", value, "ui");
               }
-              const nextActiveTool = updateActiveTool(appState, {
+              const nextActiveTool = updateActiveTool(editorState, {
                 type: value
               });
               setAppState({
@@ -254,7 +257,7 @@ export const ShapesSwitcher = ({
                 selectedLayerIds: {}
               });
               setCursorForShape(canvas, {
-                ...appState,
+                ...editorState,
                 activeTool: nextActiveTool
               });
               if (value === "image") {
@@ -262,7 +265,7 @@ export const ShapesSwitcher = ({
               }
             }}
             onPointerDown={({ pointerType }) => {
-              if (!appState.penDetected && pointerType === "pen") {
+              if (!editorState.penDetected && pointerType === "pen") {
                 setAppState({
                   penDetected: true,
                   penMode: true
@@ -288,7 +291,7 @@ export const ShapesSwitcher = ({
           name="editor-current-shape"
           onChange={({ pointerType }) => {
             trackEvent("toolbar", "frame", "ui");
-            const nextActiveTool = updateActiveTool(appState, {
+            const nextActiveTool = updateActiveTool(editorState, {
               type: "frame"
             });
             setAppState({
@@ -298,7 +301,7 @@ export const ShapesSwitcher = ({
             });
           }}
           onPointerDown={({ pointerType }) => {
-            if (!appState.penDetected && pointerType === "pen") {
+            if (!editorState.penDetected && pointerType === "pen") {
               setAppState({
                 penDetected: true,
                 penMode: true
@@ -328,7 +331,7 @@ export const ShapesSwitcher = ({
               data-testid="toolbar-frame"
               icon={frameToolIcon}
               onSelect={() => {
-                const nextActiveTool = updateActiveTool(appState, {
+                const nextActiveTool = updateActiveTool(editorState, {
                   type: "frame"
                 });
                 setAppState({

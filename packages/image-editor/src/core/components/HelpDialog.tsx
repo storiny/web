@@ -2,11 +2,11 @@ import "./HelpDialog.scss";
 
 import React from "react";
 
+import { getShortcutKey } from "../../lib/utils/utils";
 import { probablySupportsClipboardBlob } from "../clipboard";
 import { isDarwin, isFirefox, isWindows } from "../constants";
 import { t } from "../i18n";
 import { KEYS } from "../keys";
-import { getShortcutKey } from "../utils";
 import { Dialog } from "./Dialog";
 import { ExternalLinkIcon } from "./icons";
 

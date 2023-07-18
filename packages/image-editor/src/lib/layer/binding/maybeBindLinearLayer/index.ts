@@ -1,5 +1,5 @@
 import { LinearLayer, NonDeleted, RootState } from "../../../../types";
-import Scene from "../../../scene/scene/Scene";
+import { Scene } from "../../../scene";
 import { bindLinearLayer } from "../bindLinearLayer";
 import { getHoveredLayerForBinding } from "../getHoveredLayerForBinding";
 import { isLinearLayerSimpleAndAlreadyBoundOnOppositeEdge } from "../isLinearLayerSimpleAndAlreadyBoundOnOppositeEdge";

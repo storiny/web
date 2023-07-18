@@ -15,7 +15,7 @@ import {
 const trackAction = (
   action: Action,
   source: ActionSource,
-  appState: Readonly<AppState>,
+  editorState: Readonly<AppState>,
   layers: readonly ExcalidrawLayer[],
   app: AppClassProperties,
   value: any
@@ -24,7 +24,7 @@ const trackAction = (
     try {
       if (typeof action.trackEvent === "object") {
         const shouldTrack = action.trackEvent.predicate
-          ? action.trackEvent.predicate(appState, layers, value)
+          ? action.trackEvent.predicate(editorState, layers, value)
           : true;
         if (shouldTrack) {
           trackEvent(
@@ -106,14 +106,14 @@ export class ActionManager {
     }
 
     const layers = this.getLayersIncludingDeleted();
-    const appState = this.getAppState();
+    const editorState = this.getAppState();
     const value = null;
 
-    trackAction(action, "keyboard", appState, layers, this.app, null);
+    trackAction(action, "keyboard", editorState, layers, this.app, null);
 
     event.preventDefault();
     event.stopPropagation();
-    this.updater(data[0].perform(layers, appState, value, this.app));
+    this.updater(data[0].perform(layers, editorState, value, this.app));
     return true;
   }
 
@@ -123,11 +123,11 @@ export class ActionManager {
     value: any = null
   ) {
     const layers = this.getLayersIncludingDeleted();
-    const appState = this.getAppState();
+    const editorState = this.getAppState();
 
-    trackAction(action, source, appState, layers, this.app, value);
+    trackAction(action, source, editorState, layers, this.app, value);
 
-    this.updater(action.perform(layers, appState, value, this.app));
+    this.updater(action.perform(layers, editorState, value, this.app));
   }
 
   /**
@@ -147,9 +147,9 @@ export class ActionManager {
       const PanelComponent = action.PanelComponent!;
       PanelComponent.displayName = "PanelComponent";
       const layers = this.getLayersIncludingDeleted();
-      const appState = this.getAppState();
+      const editorState = this.getAppState();
       const updateData = (formState?: any) => {
-        trackAction(action, "ui", appState, layers, this.app, formState);
+        trackAction(action, "ui", editorState, layers, this.app, formState);
 
         this.updater(
           action.perform(
@@ -164,8 +164,8 @@ export class ActionManager {
       return (
         <PanelComponent
           appProps={this.app.props}
-          appState={this.getAppState()}
           data={data}
+          editorState={this.getAppState()}
           layers={this.getLayersIncludingDeleted()}
           updateData={updateData}
         />
@@ -177,11 +177,11 @@ export class ActionManager {
 
   isActionEnabled = (action: Action) => {
     const layers = this.getLayersIncludingDeleted();
-    const appState = this.getAppState();
+    const editorState = this.getAppState();
 
     return (
       !action.predicate ||
-      action.predicate(layers, appState, this.app.props, this.app)
+      action.predicate(layers, editorState, this.app.props, this.app)
     );
   };
 }

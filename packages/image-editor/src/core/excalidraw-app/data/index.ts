@@ -7,6 +7,7 @@ import {
 import { serializeAsJSON } from "../../../lib/data/json/json";
 import { restore } from "../../../lib/data/restore/restore";
 import { ImportedDataState } from "../../../lib/data/types";
+import { bytesToHexString } from "../../../lib/utils/utils";
 import { t } from "../../i18n";
 import { isInvisiblySmallLayer } from "../../layer/sizeHelpers";
 import { isInitializedImageLayer } from "../../layer/typeChecks";
@@ -17,7 +18,6 @@ import {
   BinaryFiles,
   UserIdleState
 } from "../../types";
-import { bytesToHexString } from "../../utils";
 import {
   DELETED_ELEMENT_TIMEOUT,
   FILE_UPLOAD_MAX_BYTES,
@@ -198,7 +198,7 @@ const legacy_decodeFromBackend = async ({
 
   return {
     layers: data.layers || null,
-    appState: data.appState || null
+    editorState: data.editorState || null
   };
 };
 
@@ -228,7 +228,7 @@ const importFromBackend = async (
 
       return {
         layers: data.layers || null,
-        appState: data.appState || null
+        editorState: data.editorState || null
       };
     } catch (error: any) {
       console.warn(
@@ -258,7 +258,7 @@ export const loadScene = async (
     // extra care not to leak it
     data = restore(
       await importFromBackend(id, privateKey),
-      localDataState?.appState,
+      localDataState?.editorState,
       localDataState?.layers,
       { repairBindings: true, refreshDimensions: false }
     );
@@ -270,7 +270,7 @@ export const loadScene = async (
 
   return {
     layers: data.layers,
-    appState: data.appState,
+    editorState: data.editorState,
     // note: this will always be empty because we're not storing files
     // in the scene database/localStorage, and instead fetch them async
     // from a different database
@@ -285,14 +285,14 @@ type ExportToBackendResult =
 
 export const exportToBackend = async (
   layers: readonly ExcalidrawLayer[],
-  appState: Partial<AppState>,
+  editorState: Partial<AppState>,
   files: BinaryFiles
 ): Promise<ExportToBackendResult> => {
   const encryptionKey = await generateEncryptionKey("string");
 
   const payload = await compressData(
     new TextEncoder().encode(
-      serializeAsJSON(layers, appState, files, "database")
+      serializeAsJSON(layers, editorState, files, "database")
     ),
     { encryptionKey }
   );

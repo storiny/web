@@ -1,8 +1,8 @@
 import { BindableLayer, NonDeleted } from "../../../../types";
-import { getLayerAtPosition } from "../../../scene";
-import Scene from "../../../scene/scene/Scene";
+import { Scene } from "../../../scene";
 import { bindingBorderTest } from "../../collision";
 import { isBindableLayer } from "../../predicates";
+import { getLayerAtPosition } from "../../utils";
 
 /**
  * Returns the hovered layer for binding

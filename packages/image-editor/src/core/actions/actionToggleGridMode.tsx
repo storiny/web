@@ -8,19 +8,19 @@ export const actionToggleGridMode = register({
   viewMode: true,
   trackEvent: {
     category: "canvas",
-    predicate: (appState) => !appState.gridSize
+    predicate: (editorState) => !editorState.gridSize
   },
-  perform(layers, appState) {
+  perform(layers, editorState) {
     return {
-      appState: {
-        ...appState,
-        gridSize: this.checked!(appState) ? null : GRID_SIZE
+      editorState: {
+        ...editorState,
+        gridSize: this.checked!(editorState) ? null : GRID_SIZE
       },
       commitToHistory: false
     };
   },
-  checked: (appState: AppState) => appState.gridSize !== null,
-  predicate: (layer, appState, props) =>
+  checked: (editorState: AppState) => editorState.gridSize !== null,
+  predicate: (layer, editorState, props) =>
     typeof props.gridModeEnabled === "undefined",
   contextItemLabel: "labels.showGrid",
   keyTest: (event) => event[KEYS.CTRL_OR_CMD] && event.code === CODES.QUOTE

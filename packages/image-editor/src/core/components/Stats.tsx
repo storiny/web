@@ -11,14 +11,14 @@ import { CloseIcon } from "./icons";
 import { Island } from "./Island";
 
 export const Stats = (props: {
-  appState: UIAppState;
+  editorState: UIAppState;
   layers: readonly NonDeletedExcalidrawLayer[];
   onClose: () => void;
   renderCustomStats: ExcalidrawProps["renderCustomStats"];
   setAppState: React.Component<any, UIAppState>["setState"];
 }) => {
   const boundingBox = getCommonBounds(props.layers);
-  const selectedLayers = getTargetLayers(props.layers, props.appState);
+  const selectedLayers = getTargetLayers(props.layers, props.editorState);
   const selectedBoundingBox = getCommonBounds(selectedLayers);
 
   return (
@@ -99,7 +99,7 @@ export const Stats = (props: {
                 </td>
               </tr>
             )}
-            {props.renderCustomStats?.(props.layers, props.appState)}
+            {props.renderCustomStats?.(props.layers, props.editorState)}
           </tbody>
         </table>
       </Island>

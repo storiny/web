@@ -32,7 +32,7 @@ export const CONTEXT_MENU_SEPARATOR = "separator";
 
 export const ContextMenu = React.memo(
   ({ actionManager, items, top, left }: ContextMenuProps) => {
-    const appState = useExcalidrawAppState();
+    const editorState = useExcalidrawAppState();
     const setAppState = useExcalidrawSetAppState();
     const layers = useExcalidrawLayers();
 
@@ -43,7 +43,7 @@ export const ContextMenu = React.memo(
           !item.predicate ||
           item.predicate(
             layers,
-            appState,
+            editorState,
             actionManager.app.props,
             actionManager.app
           ))
@@ -57,12 +57,12 @@ export const ContextMenu = React.memo(
       <Popover
         fitInViewport={true}
         left={left}
-        offsetLeft={appState.offsetLeft}
-        offsetTop={appState.offsetTop}
+        offsetLeft={editorState.offsetLeft}
+        offsetTop={editorState.offsetTop}
         onCloseRequest={() => setAppState({ contextMenu: null })}
         top={top}
-        viewportHeight={appState.height}
-        viewportWidth={appState.width}
+        viewportHeight={editorState.height}
+        viewportWidth={editorState.width}
       >
         <ul
           className="context-menu"
@@ -83,7 +83,7 @@ export const ContextMenu = React.memo(
             let label = "";
             if (item.contextItemLabel) {
               if (typeof item.contextItemLabel === "function") {
-                label = t(item.contextItemLabel(layers, appState));
+                label = t(item.contextItemLabel(layers, editorState));
               } else {
                 label = t(item.contextItemLabel);
               }
@@ -95,7 +95,7 @@ export const ContextMenu = React.memo(
                 key={idx}
                 onClick={() => {
                   // we need update state before executing the action in case
-                  // the action uses the appState it's being passed (that still
+                  // the action uses the editorState it's being passed (that still
                   // contains a defined contextMenu) to return the next state.
                   setAppState({ contextMenu: null }, () => {
                     actionManager.executeAction(item, "contextMenu");
@@ -105,7 +105,7 @@ export const ContextMenu = React.memo(
                 <button
                   className={clsx("context-menu-item", {
                     dangerous: actionName === "deleteSelectedLayers",
-                    checkmark: item.checked?.(appState)
+                    checkmark: item.checked?.(editorState)
                   })}
                 >
                   <div className="context-menu-item__label">{label}</div>

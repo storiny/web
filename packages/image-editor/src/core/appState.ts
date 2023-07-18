@@ -1,3 +1,4 @@
+import { getDateTime } from "../lib/utils/utils";
 import { COLOR_PALETTE } from "./colors";
 import {
   DEFAULT_ELEMENT_PROPS,
@@ -9,7 +10,6 @@ import {
 } from "./constants";
 import { t } from "./i18n";
 import { AppState, NormalizedZoomValue } from "./types";
-import { getDateTime } from "./utils";
 
 const defaultExportScale = EXPORT_SCALES.includes(devicePixelRatio)
   ? devicePixelRatio
@@ -207,7 +207,7 @@ const APP_STATE_STORAGE_CONF = (<
 const _clearAppStateForStorage = <
   ExportType extends "export" | "browser" | "server"
 >(
-  appState: Partial<AppState>,
+  editorState: Partial<AppState>,
   exportType: ExportType
 ) => {
   type ExportableKeys = {
@@ -215,11 +215,13 @@ const _clearAppStateForStorage = <
       ? K
       : never;
   }[keyof typeof APP_STATE_STORAGE_CONF];
-  const stateForExport = {} as { [K in ExportableKeys]?: (typeof appState)[K] };
-  for (const key of Object.keys(appState) as (keyof typeof appState)[]) {
+  const stateForExport = {} as {
+    [K in ExportableKeys]?: (typeof editorState)[K];
+  };
+  for (const key of Object.keys(editorState) as (keyof typeof editorState)[]) {
     const propConfig = APP_STATE_STORAGE_CONF[key];
     if (propConfig?.[exportType]) {
-      const nextValue = appState[key];
+      const nextValue = editorState[key];
 
       // https://github.com/microsoft/TypeScript/issues/31445
       (stateForExport as any)[key] = nextValue;
@@ -228,14 +230,14 @@ const _clearAppStateForStorage = <
   return stateForExport;
 };
 
-export const clearAppStateForLocalStorage = (appState: Partial<AppState>) =>
-  _clearAppStateForStorage(appState, "browser");
+export const clearAppStateForLocalStorage = (editorState: Partial<AppState>) =>
+  _clearAppStateForStorage(editorState, "browser");
 
-export const cleanAppStateForExport = (appState: Partial<AppState>) =>
-  _clearAppStateForStorage(appState, "export");
+export const cleanAppStateForExport = (editorState: Partial<AppState>) =>
+  _clearAppStateForStorage(editorState, "export");
 
-export const clearAppStateForDatabase = (appState: Partial<AppState>) =>
-  _clearAppStateForStorage(appState, "server");
+export const clearAppStateForDatabase = (editorState: Partial<AppState>) =>
+  _clearAppStateForStorage(editorState, "server");
 
 export const isEraserActive = ({
   activeTool

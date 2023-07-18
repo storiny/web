@@ -42,7 +42,7 @@ describe("exportToBlob", () => {
         getDimensions: (width, height) => ({ width, height, scale: 1 }),
         // testing typo in MIME type (jpg → jpeg)
         mimeType: "image/jpg",
-        appState: {
+        editorState: {
           exportBackground: true
         }
       });
@@ -83,7 +83,7 @@ describe("exportToSvg", () => {
   it("with default arguments", async () => {
     await utils.exportToSvg({
       ...diagramFactory({
-        overrides: { appState: void 0 }
+        overrides: { editorState: void 0 }
       })
     });
 
@@ -99,7 +99,7 @@ describe("exportToSvg", () => {
   it("with deleted layers", async () => {
     await utils.exportToSvg({
       ...diagramFactory({
-        overrides: { appState: void 0 },
+        overrides: { editorState: void 0 },
         layerOverrides: { isDeleted: true }
       })
     });
@@ -109,7 +109,9 @@ describe("exportToSvg", () => {
 
   it("with exportPadding", async () => {
     await utils.exportToSvg({
-      ...diagramFactory({ overrides: { appState: { name: "diagram name" } } }),
+      ...diagramFactory({
+        overrides: { editorState: { name: "diagram name" } }
+      }),
       exportPadding: 0
     });
 
@@ -123,7 +125,7 @@ describe("exportToSvg", () => {
     await utils.exportToSvg({
       ...diagramFactory({
         overrides: {
-          appState: { name: "diagram name", exportEmbedScene: true }
+          editorState: { name: "diagram name", exportEmbedScene: true }
         }
       })
     });

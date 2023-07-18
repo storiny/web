@@ -5,12 +5,12 @@ import { useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 
 import { useCreatePortalContainer } from "../../lib/hooks/useCreatePortalContainer";
-import { useOutsideClick } from "../../lib/hooks/useOutsideClick";
+import { useOutsideClick } from "../../lib/hooks/useOutsideClick/useOutsideClick";
 import { getSelectedLayers } from "../../lib/scene";
 import Scene from "../../lib/scene/scene/Scene";
 import { COLOR_PALETTE, rgbToHex } from "../colors";
 import { EVENT } from "../constants";
-import { useUIAppState } from "../context/ui-appState";
+import { useUIAppState } from "../context/ui-editorState";
 import { KEYS } from "../keys";
 import { mutateLayer } from "../layer/mutateLayer";
 import { invalidateShapeForLayer } from "../renderer/renderLayer";
@@ -40,11 +40,11 @@ export const EyeDropper: React.FC<{
     className: "excalidraw-eye-dropper-backdrop",
     parentSelector: ".excalidraw-eye-dropper-container"
   });
-  const appState = useUIAppState();
+  const editorState = useUIAppState();
   const layers = useExcalidrawLayers();
   const app = useApp();
 
-  const selectedLayers = getSelectedLayers(layers, appState);
+  const selectedLayers = getSelectedLayers(layers, editorState);
 
   const metaStuffRef = useRef({ selectedLayers, app });
   metaStuffRef.current.selectedLayers = selectedLayers;
@@ -78,8 +78,8 @@ export const EyeDropper: React.FC<{
       colorPreviewDiv.style.left = `${clientX + 20}px`;
 
       const pixel = ctx.getImageData(
-        clientX * window.devicePixelRatio - appState.offsetLeft,
-        clientY * window.devicePixelRatio - appState.offsetTop,
+        clientX * window.devicePixelRatio - editorState.offsetLeft,
+        clientY * window.devicePixelRatio - editorState.offsetTop,
         1,
         1
       ).data;
@@ -183,8 +183,8 @@ export const EyeDropper: React.FC<{
     swapPreviewOnAlt,
     previewType,
     excalidrawContainer,
-    appState.offsetLeft,
-    appState.offsetTop
+    editorState.offsetLeft,
+    editorState.offsetTop
   ]);
 
   const ref = useRef<HTMLDivLayer>(null);

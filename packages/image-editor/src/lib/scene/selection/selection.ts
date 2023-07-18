@@ -1,11 +1,11 @@
 import { LayerType } from "../../../constants";
-import { isShallowEqual } from "../../../core/utils";
 import { EditorState, Layer, NonDeletedLayer } from "../../../types";
 import {
   getLayerAbsoluteCoords,
   getLayerBounds,
   isBoundToContainer
 } from "../../layer";
+import { isShallowEqual } from "../../utils/utils";
 
 /**
  * Returns the layers within selection

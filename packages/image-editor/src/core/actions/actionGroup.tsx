@@ -1,4 +1,5 @@
 import { getSelectedLayers, isSomeLayerSelected } from "../../lib/scene";
+import { arrayToMap, getShortcutKey } from "../../lib/utils/utils";
 import { GroupIcon, UngroupIcon } from "../components/icons";
 import { ToolButton } from "../components/ToolButton";
 import {
@@ -28,7 +29,6 @@ import {
 } from "../layer/types";
 import { randomId } from "../random";
 import { AppState } from "../types";
-import { arrayToMap, getShortcutKey } from "../utils";
 import { register } from "./register";
 
 const allLayersInSameGroup = (layers: readonly ExcalidrawLayer[]) => {
@@ -50,11 +50,11 @@ const allLayersInSameGroup = (layers: readonly ExcalidrawLayer[]) => {
 
 const enableActionGroup = (
   layers: readonly ExcalidrawLayer[],
-  appState: AppState
+  editorState: AppState
 ) => {
   const selectedLayers = getSelectedLayers(
     getNonDeletedLayers(layers),
-    appState,
+    editorState,
     {
       includeBoundTextLayer: true
     }
@@ -65,20 +65,20 @@ const enableActionGroup = (
 export const actionGroup = register({
   name: "group",
   trackEvent: { category: "layer" },
-  perform: (layers, appState, _, app) => {
+  perform: (layers, editorState, _, app) => {
     const selectedLayers = getSelectedLayers(
       getNonDeletedLayers(layers),
-      appState,
+      editorState,
       {
         includeBoundTextLayer: true
       }
     );
     if (selectedLayers.length < 2) {
       // nothing to group
-      return { appState, layers, commitToHistory: false };
+      return { editorState, layers, commitToHistory: false };
     }
     // if everything is already grouped into 1 group, there is nothing to do
-    const selectedGroupIds = getSelectedGroupIds(appState);
+    const selectedGroupIds = getSelectedGroupIds(editorState);
     if (selectedGroupIds.length === 1) {
       const selectedGroupId = selectedGroupIds[0];
       const layerIdsInGroup = new Set(
@@ -91,7 +91,7 @@ export const actionGroup = register({
       ]);
       if (combinedSet.size === layerIdsInGroup.size) {
         // no incremental ids in the selected ids
-        return { appState, layers, commitToHistory: false };
+        return { editorState, layers, commitToHistory: false };
       }
     }
 
@@ -107,7 +107,11 @@ export const actionGroup = register({
       const frameLayersMap = groupByFrames(selectedLayers);
 
       frameLayersMap.forEach((layersInFrame, frameId) => {
-        nextLayers = removeLayersFromFrame(nextLayers, layersInFrame, appState);
+        nextLayers = removeLayersFromFrame(
+          nextLayers,
+          layersInFrame,
+          editorState
+        );
       });
     }
 
@@ -122,7 +126,7 @@ export const actionGroup = register({
         groupIds: addToGroup(
           layer.groupIds,
           newGroupId,
-          appState.editingGroupId
+          editorState.editingGroupId
         )
       });
     });
@@ -138,9 +142,9 @@ export const actionGroup = register({
     nextLayers = [...layersBeforeGroup, ...layersInGroup, ...layersAfterGroup];
 
     return {
-      appState: selectGroup(
+      editorState: selectGroup(
         newGroupId,
-        { ...appState, selectedGroupIds: {} },
+        { ...editorState, selectedGroupIds: {} },
         getNonDeletedLayers(nextLayers)
       ),
       layers: nextLayers,
@@ -148,18 +152,18 @@ export const actionGroup = register({
     };
   },
   contextItemLabel: "labels.group",
-  predicate: (layers, appState) => enableActionGroup(layers, appState),
+  predicate: (layers, editorState) => enableActionGroup(layers, editorState),
   keyTest: (event) =>
     !event.shiftKey && event[KEYS.CTRL_OR_CMD] && event.key === KEYS.G,
-  PanelComponent: ({ layers, appState, updateData }) => (
+  PanelComponent: ({ layers, editorState, updateData }) => (
     <ToolButton
       aria-label={t("labels.group")}
-      hidden={!enableActionGroup(layers, appState)}
-      icon={<GroupIcon theme={appState.theme} />}
+      hidden={!enableActionGroup(layers, editorState)}
+      icon={<GroupIcon theme={editorState.theme} />}
       onClick={() => updateData(null)}
       title={`${t("labels.group")} — ${getShortcutKey("CtrlOrCmd+G")}`}
       type="button"
-      visible={isSomeLayerSelected(getNonDeletedLayers(layers), appState)}
+      visible={isSomeLayerSelected(getNonDeletedLayers(layers), editorState)}
     ></ToolButton>
   )
 });
@@ -167,15 +171,15 @@ export const actionGroup = register({
 export const actionUngroup = register({
   name: "ungroup",
   trackEvent: { category: "layer" },
-  perform: (layers, appState, _, app) => {
-    const groupIds = getSelectedGroupIds(appState);
+  perform: (layers, editorState, _, app) => {
+    const groupIds = getSelectedGroupIds(editorState);
     if (groupIds.length === 0) {
-      return { appState, layers, commitToHistory: false };
+      return { editorState, layers, commitToHistory: false };
     }
 
     let nextLayers = [...layers];
 
-    const selectedLayers = getSelectedLayers(nextLayers, appState);
+    const selectedLayers = getSelectedLayers(nextLayers, editorState);
     const frames = selectedLayers
       .filter((layer) => layer.frameId)
       .map((layer) =>
@@ -189,7 +193,7 @@ export const actionUngroup = register({
       }
       const nextGroupIds = removeFromSelectedGroups(
         layer.groupIds,
-        appState.selectedGroupIds
+        editorState.selectedGroupIds
       );
       if (nextGroupIds.length === layer.groupIds.length) {
         return layer;
@@ -200,18 +204,18 @@ export const actionUngroup = register({
     });
 
     const updateAppState = selectGroupsForSelectedLayers(
-      { ...appState, selectedGroupIds: {} },
+      { ...editorState, selectedGroupIds: {} },
       getNonDeletedLayers(nextLayers),
-      appState
+      editorState
     );
 
     frames.forEach((frame) => {
       if (frame) {
         nextLayers = replaceAllLayersInFrame(
           nextLayers,
-          getLayersInResizingFrame(nextLayers, frame, appState),
+          getLayersInResizingFrame(nextLayers, frame, editorState),
           frame,
-          appState
+          editorState
         );
       }
     });
@@ -227,7 +231,7 @@ export const actionUngroup = register({
     }, {});
 
     return {
-      appState: updateAppState,
+      editorState: updateAppState,
       layers: nextLayers,
       commitToHistory: true
     };
@@ -237,17 +241,18 @@ export const actionUngroup = register({
     event[KEYS.CTRL_OR_CMD] &&
     event.key === KEYS.G.toUpperCase(),
   contextItemLabel: "labels.ungroup",
-  predicate: (layers, appState) => getSelectedGroupIds(appState).length > 0,
+  predicate: (layers, editorState) =>
+    getSelectedGroupIds(editorState).length > 0,
 
-  PanelComponent: ({ layers, appState, updateData }) => (
+  PanelComponent: ({ layers, editorState, updateData }) => (
     <ToolButton
       aria-label={t("labels.ungroup")}
-      hidden={getSelectedGroupIds(appState).length === 0}
-      icon={<UngroupIcon theme={appState.theme} />}
+      hidden={getSelectedGroupIds(editorState).length === 0}
+      icon={<UngroupIcon theme={editorState.theme} />}
       onClick={() => updateData(null)}
       title={`${t("labels.ungroup")} — ${getShortcutKey("CtrlOrCmd+Shift+G")}`}
       type="button"
-      visible={isSomeLayerSelected(getNonDeletedLayers(layers), appState)}
+      visible={isSomeLayerSelected(getNonDeletedLayers(layers), editorState)}
     ></ToolButton>
   )
 });

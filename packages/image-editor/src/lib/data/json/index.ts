@@ -1,17 +1,18 @@
 import { NonImageMime } from "../../../constants";
 import { EXPORT_DATA_TYPES, EXPORT_SOURCE } from "../../../constants/new";
-import { cleanAppStateForExport } from "../../../core/appState";
-import { clearLayersForExport } from "../../../core/layer";
 import {
   BinaryFiles,
   EditorState,
+  ExportedDataState,
   ImportedDataState,
-  Layer
+  Layer,
+  RootState
 } from "../../../types";
+import { cleanEditorStateForExport } from "../../state";
 import { isImageFileHandle, loadFromBlob, normalizeFile } from "../blob";
+import { clearLayersForExport } from "../export";
 import { fileOpen, fileSave } from "../fs";
-import { RestoredDataState } from "../restore/restore";
-import { ExportedDataState } from "../types";
+import { RestoredDataState } from "../restore";
 
 /**
  * Strips out files which are only referenced by deleted layers
@@ -54,7 +55,7 @@ export const serializeAsJSON = (
     version: 1,
     source: EXPORT_SOURCE,
     layers: clearLayersForExport(layers),
-    editorState: cleanAppStateForExport(editorState),
+    editorState: cleanEditorStateForExport(editorState),
     files: filterOutDeletedFiles(layers, files)
   };
 
@@ -71,7 +72,8 @@ export const saveAsJSON = async (
   layers: readonly Layer[],
   editorState: EditorState,
   files: BinaryFiles
-): Promise<{ fileHandle: FileSystemFileHandle }> => {
+  // eslint-disable-next-line no-undef
+): Promise<{ fileHandle: FileSystemHandle | null }> => {
   const serialized = serializeAsJSON(layers, editorState, files);
   const blob = new Blob([serialized], {
     type: NonImageMime.EXCALIDRAW
@@ -95,7 +97,7 @@ export const saveAsJSON = async (
  * @param localLayers Layers
  */
 export const loadFromJSON = async (
-  localEditorState: EditorState,
+  localEditorState: RootState,
   localLayers: readonly Layer[] | null
 ): Promise<RestoredDataState> => {
   const file = await fileOpen({
@@ -109,7 +111,7 @@ export const loadFromJSON = async (
     await normalizeFile(file),
     localEditorState,
     localLayers,
-    file.handle
+    (file as any).handle
   );
 };
 
@@ -117,7 +119,7 @@ export const loadFromJSON = async (
  * Function for validating editor data
  * @param data Editor data
  */
-export const isValidExcalidrawData = (data?: {
+export const isValidEditorData = (data?: {
   editorState?: any;
   layers?: any;
   type?: any;

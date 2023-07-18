@@ -7,8 +7,8 @@ import {
 } from "../../lib/scene/scrollbars/scrollbars";
 import { actionToggleStats } from "../actions";
 import { ActionManager } from "../actions/manager";
-import { isHandToolActive } from "../appState";
 import { useTunnels } from "../context/tunnels";
+import { isHandToolActive } from "../editorState";
 import { t } from "../i18n";
 import { showSelectedShapeActions } from "../layer";
 import { NonDeletedExcalidrawLayer } from "../layer/types";
@@ -26,9 +26,9 @@ import { Stats } from "./Stats";
 
 type MobileMenuProps = {
   actionManager: ActionManager;
-  appState: UIAppState;
   canvas: HTMLCanvasLayer | null;
   device: Device;
+  editorState: UIAppState;
   layers: readonly NonDeletedExcalidrawLayer[];
   onHandToolToggle: () => void;
   onImageAction: (data: { insertOnCanvasDirectly: boolean }) => void;
@@ -41,14 +41,14 @@ type MobileMenuProps = {
   renderSidebars: () => JSX.Layer | null;
   renderTopRightUI?: (
     isMobile: boolean,
-    appState: UIAppState
+    editorState: UIAppState
   ) => JSX.Layer | null;
   renderWelcomeScreen: boolean;
   setAppState: React.Component<any, AppState>["setState"];
 };
 
 export const MobileMenu = ({
-  appState,
+  editorState,
   layers,
   actionManager,
   setAppState,
@@ -79,9 +79,9 @@ export const MobileMenu = ({
                 {heading}
                 <Stack.Row gap={1}>
                   <ShapesSwitcher
-                    activeTool={appState.activeTool}
-                    appState={appState}
+                    activeTool={editorState.activeTool}
                     canvas={canvas}
+                    editorState={editorState}
                     onImageAction={({ pointerType }) => {
                       onImageAction({
                         insertOnCanvasDirectly: pointerType !== "mouse"
@@ -91,26 +91,26 @@ export const MobileMenu = ({
                   />
                 </Stack.Row>
               </Island>
-              {renderTopRightUI && renderTopRightUI(true, appState)}
+              {renderTopRightUI && renderTopRightUI(true, editorState)}
               <div className="mobile-misc-tools-container">
-                {!appState.viewModeEnabled && (
+                {!editorState.viewModeEnabled && (
                   <DefaultSidebarTriggerTunnel.Out />
                 )}
                 <PenModeButton
-                  checked={appState.penMode}
+                  checked={editorState.penMode}
                   isMobile
                   onChange={onPenModeToggle}
-                  penDetected={appState.penDetected}
+                  penDetected={editorState.penDetected}
                   title={t("toolBar.penMode")}
                 />
                 <LockButton
-                  checked={appState.activeTool.locked}
+                  checked={editorState.activeTool.locked}
                   isMobile
                   onChange={onLockToggle}
                   title={t("toolBar.lock")}
                 />
                 <HandButton
-                  checked={isHandToolActive(appState)}
+                  checked={isHandToolActive(editorState)}
                   isMobile
                   onChange={() => onHandToolToggle()}
                   title={t("toolBar.hand")}
@@ -121,8 +121,8 @@ export const MobileMenu = ({
         )}
       </Section>
       <HintViewer
-        appState={appState}
         device={device}
+        editorState={editorState}
         isMobile={true}
         layers={layers}
       />
@@ -130,7 +130,7 @@ export const MobileMenu = ({
   );
 
   const renderAppToolbar = () => {
-    if (appState.viewModeEnabled) {
+    if (editorState.viewModeEnabled) {
       return (
         <div className="App-toolbar-content">
           <MainMenuTunnel.Out />
@@ -145,7 +145,7 @@ export const MobileMenu = ({
         {actionManager.renderAction("undo")}
         {actionManager.renderAction("redo")}
         {actionManager.renderAction(
-          appState.multiLayer ? "finalize" : "duplicateSelection"
+          editorState.multiLayer ? "finalize" : "duplicateSelection"
         )}
         {actionManager.renderAction("deleteSelectedLayers")}
       </div>
@@ -155,10 +155,10 @@ export const MobileMenu = ({
   return (
     <>
       {renderSidebars()}
-      {!appState.viewModeEnabled && renderToolbar()}
-      {!appState.openMenu && appState.showStats && (
+      {!editorState.viewModeEnabled && renderToolbar()}
+      {!editorState.openMenu && editorState.showStats && (
         <Stats
-          appState={appState}
+          editorState={editorState}
           layers={layers}
           onClose={() => {
             actionManager.executeAction(actionToggleStats);
@@ -176,12 +176,12 @@ export const MobileMenu = ({
         }}
       >
         <Island padding={0}>
-          {appState.openMenu === "shape" &&
-          !appState.viewModeEnabled &&
-          showSelectedShapeActions(appState, layers) ? (
+          {editorState.openMenu === "shape" &&
+          !editorState.viewModeEnabled &&
+          showSelectedShapeActions(editorState, layers) ? (
             <Section className="App-mobile-menu" heading="selectedShapeActions">
               <SelectedShapeActions
-                appState={appState}
+                editorState={editorState}
                 layers={layers}
                 renderAction={actionManager.renderAction}
               />
@@ -189,14 +189,14 @@ export const MobileMenu = ({
           ) : null}
           <footer className="App-toolbar">
             {renderAppToolbar()}
-            {appState.scrolledOutside &&
-              !appState.openMenu &&
-              !appState.openSidebar && (
+            {editorState.scrolledOutside &&
+              !editorState.openMenu &&
+              !editorState.openSidebar && (
                 <button
                   className="scroll-back-to-content"
                   onClick={() => {
-                    setAppState((appState) => ({
-                      ...calculateScrollCenter(layers, appState, canvas)
+                    setAppState((editorState) => ({
+                      ...calculateScrollCenter(layers, editorState, canvas)
                     }));
                   }}
                 >

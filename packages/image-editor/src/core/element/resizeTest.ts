@@ -25,13 +25,13 @@ const isInsideTransformHandle = (
 
 export const resizeTest = (
   layer: NonDeletedExcalidrawLayer,
-  appState: AppState,
+  editorState: AppState,
   x: number,
   y: number,
   zoom: Zoom,
   pointerType: PointerType
 ): MaybeTransformHandleType => {
-  if (!appState.selectedLayerIds[layer.id]) {
+  if (!editorState.selectedLayerIds[layer.id]) {
     return false;
   }
 
@@ -63,7 +63,7 @@ export const resizeTest = (
 
 export const getLayerWithTransformHandleType = (
   layers: readonly NonDeletedExcalidrawLayer[],
-  appState: AppState,
+  editorState: AppState,
   scenePointerX: number,
   scenePointerY: number,
   zoom: Zoom,
@@ -75,7 +75,7 @@ export const getLayerWithTransformHandleType = (
     }
     const transformHandleType = resizeTest(
       layer,
-      appState,
+      editorState,
       scenePointerX,
       scenePointerY,
       zoom,

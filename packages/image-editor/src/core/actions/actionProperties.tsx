@@ -90,19 +90,19 @@ import {
   VerticalAlign,
 } from "../layer/types";
 import { randomInteger } from "../random";
-import { arrayToMap, getShortcutKey } from "../utils";
+import { arrayToMap, getShortcutKey } from "../../lib/utils/utils";
 import { register } from "./register";
 
 const FONT_SIZE_RELATIVE_INCREASE_STEP = 0.1;
 
 const changeProperty = (
   layers: readonly ExcalidrawLayer[],
-  appState: AppState,
+  editorState: AppState,
   callback: (layer: ExcalidrawLayer) => ExcalidrawLayer,
   includeBoundText = false,
 ) => {
   const selectedLayerIds = arrayToMap(
-    getSelectedLayers(layers, appState, {
+    getSelectedLayers(layers, editorState, {
       includeBoundTextLayer: includeBoundText,
     }),
   );
@@ -110,7 +110,7 @@ const changeProperty = (
   return layers.map((layer) => {
     if (
       selectedLayerIds.get(layer.id) ||
-      layer.id === appState.editingLayer?.id
+      layer.id === editorState.editingLayer?.id
     ) {
       return callback(layer);
     }
@@ -118,15 +118,15 @@ const changeProperty = (
   });
 };
 
-const getFormValue = <T>(layers: readonly ExcalidrawLayer[], appState: AppState, getAttribute: (layer: ExcalidrawLayer) => T, defaultValue: T): T => {
-  const editingLayer = appState.editingLayer;
+const getFormValue = <T>(layers: readonly ExcalidrawLayer[], editorState: AppState, getAttribute: (layer: ExcalidrawLayer) => T, defaultValue: T): T => {
+  const editingLayer = editorState.editingLayer;
   const nonDeletedLayers = getNonDeletedLayers(layers);
   return (
     (editingLayer && getAttribute(editingLayer)) ??
-    (isSomeLayerSelected(nonDeletedLayers, appState)
+    (isSomeLayerSelected(nonDeletedLayers, editorState)
       ? getCommonAttributeOfSelectedLayers(
           nonDeletedLayers,
-          appState,
+          editorState,
           getAttribute,
         )
       : defaultValue) ??
@@ -160,7 +160,7 @@ const offsetLayerAfterFontResize = (
 
 const changeFontSize = (
   layers: readonly ExcalidrawLayer[],
-  appState: AppState,
+  editorState: AppState,
   getNewFontSize: (layer: ExcalidrawTextLayer) => number,
   fallbackValue?: ExcalidrawTextLayer["fontSize"],
 ) => {
@@ -169,7 +169,7 @@ const changeFontSize = (
   return {
     layers: changeProperty(
       layers,
-      appState,
+      editorState,
       (oldLayer) => {
         if (isTextLayer(oldLayer)) {
           const newFontSize = getNewFontSize(oldLayer);
@@ -189,14 +189,14 @@ const changeFontSize = (
       },
       true,
     ),
-    appState: {
-      ...appState,
+    editorState: {
+      ...editorState,
       // update state only if we've set all select text layers to
       // the same font size
       currentItemFontSize:
         newFontSizes.size === 1
           ? [...newFontSizes][0]
-          : fallbackValue ?? appState.currentItemFontSize,
+          : fallbackValue ?? editorState.currentItemFontSize,
     },
     commitToHistory: true,
   };
@@ -207,11 +207,11 @@ const changeFontSize = (
 export const actionChangeStrokeColor = register({
   name: "changeStrokeColor",
   trackEvent: false,
-  perform: (layers, appState, value) => ({
+  perform: (layers, editorState, value) => ({
       ...(value.currentItemStrokeColor && {
         layers: changeProperty(
           layers,
-          appState,
+          editorState,
           (el) => {
             return hasStrokeColor(el.type)
               ? newLayerWith(el, {
@@ -222,22 +222,22 @@ export const actionChangeStrokeColor = register({
           true,
         ),
       }),
-      appState: {
-        ...appState,
+      editorState: {
+        ...editorState,
         ...value,
       },
       commitToHistory: !!value.currentItemStrokeColor,
     }),
-  PanelComponent: ({ layers, appState, updateData, appProps }) => (
+  PanelComponent: ({ layers, editorState, updateData, appProps }) => (
     <>
       <h3 aria-hidden="true">{t("labels.stroke")}</h3>
       <ColorPicker
-        appState={appState}
+        editorState={editorState}
         color={getFormValue(
           layers,
-          appState,
+          editorState,
           (layer) => layer.strokeColor,
-          appState.currentItemStrokeColor,
+          editorState.currentItemStrokeColor,
         )}
         label={t("labels.stroke")}
         layers={layers}
@@ -254,30 +254,30 @@ export const actionChangeStrokeColor = register({
 export const actionChangeBackgroundColor = register({
   name: "changeBackgroundColor",
   trackEvent: false,
-  perform: (layers, appState, value) => ({
+  perform: (layers, editorState, value) => ({
       ...(value.currentItemBackgroundColor && {
-        layers: changeProperty(layers, appState, (el) =>
+        layers: changeProperty(layers, editorState, (el) =>
           newLayerWith(el, {
             backgroundColor: value.currentItemBackgroundColor,
           }),
         ),
       }),
-      appState: {
-        ...appState,
+      editorState: {
+        ...editorState,
         ...value,
       },
       commitToHistory: !!value.currentItemBackgroundColor,
     }),
-  PanelComponent: ({ layers, appState, updateData, appProps }) => (
+  PanelComponent: ({ layers, editorState, updateData, appProps }) => (
     <>
       <h3 aria-hidden="true">{t("labels.background")}</h3>
       <ColorPicker
-        appState={appState}
+        editorState={editorState}
         color={getFormValue(
           layers,
-          appState,
+          editorState,
           (layer) => layer.backgroundColor,
-          appState.currentItemBackgroundColor,
+          editorState.currentItemBackgroundColor,
         )}
         label={t("labels.background")}
         layers={layers}
@@ -294,24 +294,24 @@ export const actionChangeBackgroundColor = register({
 export const actionChangeFillStyle = register({
   name: "changeFillStyle",
   trackEvent: false,
-  perform: (layers, appState, value, app) => {
+  perform: (layers, editorState, value, app) => {
     trackEvent(
       "layer",
       "changeFillStyle",
       `${value} (${app.device.isMobile ? "mobile" : "desktop"})`,
     );
     return {
-      layers: changeProperty(layers, appState, (el) =>
+      layers: changeProperty(layers, editorState, (el) =>
         newLayerWith(el, {
           fillStyle: value,
         }),
       ),
-      appState: { ...appState, currentItemFillStyle: value },
+      editorState: { ...editorState, currentItemFillStyle: value },
       commitToHistory: true,
     };
   },
-  PanelComponent: ({ layers, appState, updateData }) => {
-    const selectedLayers = getSelectedLayers(layers, appState);
+  PanelComponent: ({ layers, editorState, updateData }) => {
+    const selectedLayers = getSelectedLayers(layers, editorState);
     const allLayersZigZag =
       selectedLayers.length > 0 &&
       selectedLayers.every((el) => el.fillStyle === "zigzag");
@@ -353,9 +353,9 @@ export const actionChangeFillStyle = register({
           type="button"
           value={getFormValue(
             layers,
-            appState,
+            editorState,
             (layer) => layer.fillStyle,
-            appState.currentItemFillStyle,
+            editorState.currentItemFillStyle,
           )}
         />
       </fieldset>
@@ -366,16 +366,16 @@ export const actionChangeFillStyle = register({
 export const actionChangeStrokeWidth = register({
   name: "changeStrokeWidth",
   trackEvent: false,
-  perform: (layers, appState, value) => ({
-      layers: changeProperty(layers, appState, (el) =>
+  perform: (layers, editorState, value) => ({
+      layers: changeProperty(layers, editorState, (el) =>
         newLayerWith(el, {
           strokeWidth: value,
         }),
       ),
-      appState: { ...appState, currentItemStrokeWidth: value },
+      editorState: { ...editorState, currentItemStrokeWidth: value },
       commitToHistory: true,
     }),
-  PanelComponent: ({ layers, appState, updateData }) => (
+  PanelComponent: ({ layers, editorState, updateData }) => (
     <fieldset>
       <legend>{t("labels.strokeWidth")}</legend>
       <ButtonIconSelect
@@ -400,9 +400,9 @@ export const actionChangeStrokeWidth = register({
         ]}
         value={getFormValue(
           layers,
-          appState,
+          editorState,
           (layer) => layer.strokeWidth,
-          appState.currentItemStrokeWidth,
+          editorState.currentItemStrokeWidth,
         )}
       />
     </fieldset>
@@ -412,17 +412,17 @@ export const actionChangeStrokeWidth = register({
 export const actionChangeSloppiness = register({
   name: "changeSloppiness",
   trackEvent: false,
-  perform: (layers, appState, value) => ({
-      layers: changeProperty(layers, appState, (el) =>
+  perform: (layers, editorState, value) => ({
+      layers: changeProperty(layers, editorState, (el) =>
         newLayerWith(el, {
           seed: randomInteger(),
           roughness: value,
         }),
       ),
-      appState: { ...appState, currentItemRoughness: value },
+      editorState: { ...editorState, currentItemRoughness: value },
       commitToHistory: true,
     }),
-  PanelComponent: ({ layers, appState, updateData }) => (
+  PanelComponent: ({ layers, editorState, updateData }) => (
     <fieldset>
       <legend>{t("labels.sloppiness")}</legend>
       <ButtonIconSelect
@@ -447,9 +447,9 @@ export const actionChangeSloppiness = register({
         ]}
         value={getFormValue(
           layers,
-          appState,
+          editorState,
           (layer) => layer.roughness,
-          appState.currentItemRoughness,
+          editorState.currentItemRoughness,
         )}
       />
     </fieldset>
@@ -459,16 +459,16 @@ export const actionChangeSloppiness = register({
 export const actionChangeStrokeStyle = register({
   name: "changeStrokeStyle",
   trackEvent: false,
-  perform: (layers, appState, value) => ({
-      layers: changeProperty(layers, appState, (el) =>
+  perform: (layers, editorState, value) => ({
+      layers: changeProperty(layers, editorState, (el) =>
         newLayerWith(el, {
           strokeStyle: value,
         }),
       ),
-      appState: { ...appState, currentItemStrokeStyle: value },
+      editorState: { ...editorState, currentItemStrokeStyle: value },
       commitToHistory: true,
     }),
-  PanelComponent: ({ layers, appState, updateData }) => (
+  PanelComponent: ({ layers, editorState, updateData }) => (
     <fieldset>
       <legend>{t("labels.strokeStyle")}</legend>
       <ButtonIconSelect
@@ -493,9 +493,9 @@ export const actionChangeStrokeStyle = register({
         ]}
         value={getFormValue(
           layers,
-          appState,
+          editorState,
           (layer) => layer.strokeStyle,
-          appState.currentItemStrokeStyle,
+          editorState.currentItemStrokeStyle,
         )}
       />
     </fieldset>
@@ -505,20 +505,20 @@ export const actionChangeStrokeStyle = register({
 export const actionChangeOpacity = register({
   name: "changeOpacity",
   trackEvent: false,
-  perform: (layers, appState, value) => ({
+  perform: (layers, editorState, value) => ({
       layers: changeProperty(
         layers,
-        appState,
+        editorState,
         (el) =>
           newLayerWith(el, {
             opacity: value,
           }),
         true,
       ),
-      appState: { ...appState, currentItemOpacity: value },
+      editorState: { ...editorState, currentItemOpacity: value },
       commitToHistory: true,
     }),
-  PanelComponent: ({ layers, appState, updateData }) => (
+  PanelComponent: ({ layers, editorState, updateData }) => (
     <label className="control-label">
       {t("labels.opacity")}
       <input
@@ -530,9 +530,9 @@ export const actionChangeOpacity = register({
         value={
           getFormValue(
             layers,
-            appState,
+            editorState,
             (layer) => layer.opacity,
-            appState.currentItemOpacity,
+            editorState.currentItemOpacity,
           ) ?? undefined
         }
       />
@@ -543,8 +543,8 @@ export const actionChangeOpacity = register({
 export const actionChangeFontSize = register({
   name: "changeFontSize",
   trackEvent: false,
-  perform: (layers, appState, value) => changeFontSize(layers, appState, () => value, value),
-  PanelComponent: ({ layers, appState, updateData }) => (
+  perform: (layers, editorState, value) => changeFontSize(layers, editorState, () => value, value),
+  PanelComponent: ({ layers, editorState, updateData }) => (
     <fieldset>
       <legend>{t("labels.fontSize")}</legend>
       <ButtonIconSelect
@@ -578,7 +578,7 @@ export const actionChangeFontSize = register({
         ]}
         value={getFormValue(
           layers,
-          appState,
+          editorState,
           (layer) => {
             if (isTextLayer(layer)) {
               return layer.fontSize;
@@ -589,7 +589,7 @@ export const actionChangeFontSize = register({
             }
             return null;
           },
-          appState.currentItemFontSize || DEFAULT_FONT_SIZE,
+          editorState.currentItemFontSize || DEFAULT_FONT_SIZE,
         )}
       />
     </fieldset>
@@ -599,7 +599,7 @@ export const actionChangeFontSize = register({
 export const actionDecreaseFontSize = register({
   name: "decreaseFontSize",
   trackEvent: false,
-  perform: (layers, appState, value) => changeFontSize(layers, appState, (layer) =>
+  perform: (layers, editorState, value) => changeFontSize(layers, editorState, (layer) =>
       Math.round(
         // get previous value before relative increase (doesn't work fully
         // due to rounding and float precision issues)
@@ -615,7 +615,7 @@ export const actionDecreaseFontSize = register({
 export const actionIncreaseFontSize = register({
   name: "increaseFontSize",
   trackEvent: false,
-  perform: (layers, appState, value) => changeFontSize(layers, appState, (layer) =>
+  perform: (layers, editorState, value) => changeFontSize(layers, editorState, (layer) =>
       Math.round(layer.fontSize * (1 + FONT_SIZE_RELATIVE_INCREASE_STEP)),
     ),
   keyTest: (event) => event[KEYS.CTRL_OR_CMD] &&
@@ -627,10 +627,10 @@ export const actionIncreaseFontSize = register({
 export const actionChangeFontFamily = register({
   name: "changeFontFamily",
   trackEvent: false,
-  perform: (layers, appState, value) => ({
+  perform: (layers, editorState, value) => ({
       layers: changeProperty(
         layers,
-        appState,
+        editorState,
         (oldLayer) => {
           if (isTextLayer(oldLayer)) {
             const newLayer: ExcalidrawTextLayer = newLayerWith(
@@ -648,13 +648,13 @@ export const actionChangeFontFamily = register({
         },
         true,
       ),
-      appState: {
-        ...appState,
+      editorState: {
+        ...editorState,
         currentItemFontFamily: value,
       },
       commitToHistory: true,
     }),
-  PanelComponent: ({ layers, appState, updateData }) => {
+  PanelComponent: ({ layers, editorState, updateData }) => {
     const options: {
       icon: JSX.Layer;
       text: string;
@@ -686,7 +686,7 @@ export const actionChangeFontFamily = register({
           options={options}
           value={getFormValue(
             layers,
-            appState,
+            editorState,
             (layer) => {
               if (isTextLayer(layer)) {
                 return layer.fontFamily;
@@ -697,7 +697,7 @@ export const actionChangeFontFamily = register({
               }
               return null;
             },
-            appState.currentItemFontFamily || DEFAULT_FONT_FAMILY,
+            editorState.currentItemFontFamily || DEFAULT_FONT_FAMILY,
           )}
         />
       </fieldset>
@@ -708,10 +708,10 @@ export const actionChangeFontFamily = register({
 export const actionChangeTextAlign = register({
   name: "changeTextAlign",
   trackEvent: false,
-  perform: (layers, appState, value) => ({
+  perform: (layers, editorState, value) => ({
       layers: changeProperty(
         layers,
-        appState,
+        editorState,
         (oldLayer) => {
           if (isTextLayer(oldLayer)) {
             const newLayer: ExcalidrawTextLayer = newLayerWith(
@@ -726,13 +726,13 @@ export const actionChangeTextAlign = register({
         },
         true,
       ),
-      appState: {
-        ...appState,
+      editorState: {
+        ...editorState,
         currentItemTextAlign: value,
       },
       commitToHistory: true,
     }),
-  PanelComponent: ({ layers, appState, updateData }) => <fieldset>
+  PanelComponent: ({ layers, editorState, updateData }) => <fieldset>
         <legend>{t("labels.textAlign")}</legend>
         <ButtonIconSelect<TextAlign | false>
           group="text-align"
@@ -758,7 +758,7 @@ export const actionChangeTextAlign = register({
           ]}
           value={getFormValue(
             layers,
-            appState,
+            editorState,
             (layer) => {
               if (isTextLayer(layer)) {
                 return layer.textAlign;
@@ -769,7 +769,7 @@ export const actionChangeTextAlign = register({
               }
               return null;
             },
-            appState.currentItemTextAlign,
+            editorState.currentItemTextAlign,
           )}
           onChange={(value) => updateData(value)}
         />
@@ -779,10 +779,10 @@ export const actionChangeTextAlign = register({
 export const actionChangeVerticalAlign = register({
   name: "changeVerticalAlign",
   trackEvent: { category: "layer" },
-  perform: (layers, appState, value) => ({
+  perform: (layers, editorState, value) => ({
       layers: changeProperty(
         layers,
-        appState,
+        editorState,
         (oldLayer) => {
           if (isTextLayer(oldLayer)) {
             const newLayer: ExcalidrawTextLayer = newLayerWith(
@@ -798,37 +798,37 @@ export const actionChangeVerticalAlign = register({
         },
         true,
       ),
-      appState: {
-        ...appState,
+      editorState: {
+        ...editorState,
       },
       commitToHistory: true,
     }),
-  PanelComponent: ({ layers, appState, updateData }) => <fieldset>
+  PanelComponent: ({ layers, editorState, updateData }) => <fieldset>
         <ButtonIconSelect<VerticalAlign | false>
           group="text-align"
           options={[
             {
               value: VERTICAL_ALIGN.TOP,
               text: t("labels.alignTop"),
-              icon: <TextAlignTopIcon theme={appState.theme} />,
+              icon: <TextAlignTopIcon theme={editorState.theme} />,
               testId: "align-top",
             },
             {
               value: VERTICAL_ALIGN.MIDDLE,
               text: t("labels.centerVertically"),
-              icon: <TextAlignMiddleIcon theme={appState.theme} />,
+              icon: <TextAlignMiddleIcon theme={editorState.theme} />,
               testId: "align-middle",
             },
             {
               value: VERTICAL_ALIGN.BOTTOM,
               text: t("labels.alignBottom"),
-              icon: <TextAlignBottomIcon theme={appState.theme} />,
+              icon: <TextAlignBottomIcon theme={editorState.theme} />,
               testId: "align-bottom",
             },
           ]}
           value={getFormValue(
             layers,
-            appState,
+            editorState,
             (layer) => {
               if (isTextLayer(layer) && layer.containerId) {
                 return layer.verticalAlign;
@@ -849,8 +849,8 @@ export const actionChangeVerticalAlign = register({
 export const actionChangeRoundness = register({
   name: "changeRoundness",
   trackEvent: false,
-  perform: (layers, appState, value) => ({
-      layers: changeProperty(layers, appState, (el) =>
+  perform: (layers, editorState, value) => ({
+      layers: changeProperty(layers, editorState, (el) =>
         newLayerWith(el, {
           roundness:
             value === "round"
@@ -862,16 +862,16 @@ export const actionChangeRoundness = register({
               : null,
         }),
       ),
-      appState: {
-        ...appState,
+      editorState: {
+        ...editorState,
         currentItemRoundness: value,
       },
       commitToHistory: true,
     }),
-  PanelComponent: ({ layers, appState, updateData }) => {
+  PanelComponent: ({ layers, editorState, updateData }) => {
     const targetLayers = getTargetLayers(
       getNonDeletedLayers(layers),
-      appState,
+      editorState,
     );
 
     const hasLegacyRoundness = targetLayers.some(
@@ -898,11 +898,11 @@ export const actionChangeRoundness = register({
           ]}
           value={getFormValue(
             layers,
-            appState,
+            editorState,
             (layer) =>
               hasLegacyRoundness ? null : layer.roundness ? "round" : "sharp",
-            (canChangeRoundness(appState.activeTool.type) &&
-              appState.currentItemRoundness) ||
+            (canChangeRoundness(editorState.activeTool.type) &&
+              editorState.currentItemRoundness) ||
               null,
           )}
         />
@@ -914,8 +914,8 @@ export const actionChangeRoundness = register({
 export const actionChangeArrowhead = register({
   name: "changeArrowhead",
   trackEvent: false,
-  perform: (layers, appState, value: { position: "start" | "end"; type: Arrowhead }) => ({
-      layers: changeProperty(layers, appState, (el) => {
+  perform: (layers, editorState, value: { position: "start" | "end"; type: Arrowhead }) => ({
+      layers: changeProperty(layers, editorState, (el) => {
         if (isLinearLayer(el)) {
           const { position, type } = value;
 
@@ -934,15 +934,15 @@ export const actionChangeArrowhead = register({
 
         return el;
       }),
-      appState: {
-        ...appState,
+      editorState: {
+        ...editorState,
         [value.position === "start"
           ? "currentItemStartArrowhead"
           : "currentItemEndArrowhead"]: value.type,
       },
       commitToHistory: true,
     }),
-  PanelComponent: ({ layers, appState, updateData }) => {
+  PanelComponent: ({ layers, editorState, updateData }) => {
     const isRTL = getLanguage().rtl;
 
     return (
@@ -986,12 +986,12 @@ export const actionChangeArrowhead = register({
             ]}
             value={getFormValue<Arrowhead | null>(
               layers,
-              appState,
+              editorState,
               (layer) =>
                 isLinearLayer(layer) && canHaveArrowheads(layer.type)
                   ? layer.startArrowhead
-                  : appState.currentItemStartArrowhead,
-              appState.currentItemStartArrowhead,
+                  : editorState.currentItemStartArrowhead,
+              editorState.currentItemStartArrowhead,
             )}
           />
           <IconPicker
@@ -1032,12 +1032,12 @@ export const actionChangeArrowhead = register({
             ]}
             value={getFormValue<Arrowhead | null>(
               layers,
-              appState,
+              editorState,
               (layer) =>
                 isLinearLayer(layer) && canHaveArrowheads(layer.type)
                   ? layer.endArrowhead
-                  : appState.currentItemEndArrowhead,
-              appState.currentItemEndArrowhead,
+                  : editorState.currentItemEndArrowhead,
+              editorState.currentItemEndArrowhead,
             )}
           />
         </div>

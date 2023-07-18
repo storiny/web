@@ -1,5 +1,5 @@
 import { BindableLayer, LinearLayer, NonDeleted } from "../../../../types";
-import Scene from "../../../scene/scene/Scene";
+import { Scene } from "../../../scene";
 import { bindingBorderTest } from "../../collision";
 import { isBindingLayer } from "../../predicates";
 import { getLinearLayerEdgeCoors } from "../getLinearLayerEdgeCoors";

@@ -12,7 +12,12 @@ import {
   isRightAngle
 } from "../../lib/math/math";
 import { RenderConfig } from "../../lib/scene/types";
-import { getDefaultAppState } from "../appState";
+import {
+  distance,
+  getFontFamilyString,
+  getFontString,
+  isRTL
+} from "../../lib/utils/utils";
 import {
   BOUND_TEXT_PADDING,
   FRAME_STYLE,
@@ -20,6 +25,7 @@ import {
   MIME_TYPES,
   SVG_NS
 } from "../constants";
+import { getDefaultAppState } from "../editorState";
 import { getContainingFrame } from "../frame";
 import {
   getArrowheadPoints,
@@ -54,7 +60,6 @@ import {
   NonDeletedExcalidrawLayer
 } from "../layer/types";
 import { AppState, BinaryFiles, Zoom } from "../types";
-import { distance, getFontFamilyString, getFontString, isRTL } from "../utils";
 
 // using a stronger invert (100% vs our regular 93%) and saturate
 // as a temp hack to make images in dark theme look closer to original
@@ -892,7 +897,7 @@ export const renderLayer = (
   rc: RoughCanvas,
   context: CanvasRenderingContext2D,
   renderConfig: RenderConfig,
-  appState: AppState
+  editorState: AppState
 ) => {
   const generator = rc.generator;
   switch (layer.type) {
@@ -924,8 +929,8 @@ export const renderLayer = (
     case "frame": {
       if (
         !renderConfig.isExporting &&
-        appState.frameRendering.enabled &&
-        appState.frameRendering.outline
+        editorState.frameRendering.enabled &&
+        editorState.frameRendering.outline
       ) {
         context.save();
         context.translate(
@@ -1021,15 +1026,20 @@ export const renderLayer = (
           const maxDim = Math.max(distance(x1, x2), distance(y1, y2));
           const padding = getCanvasPadding(layer);
           tempCanvas.width =
-            maxDim * appState.exportScale + padding * 10 * appState.exportScale;
+            maxDim * editorState.exportScale +
+            padding * 10 * editorState.exportScale;
           tempCanvas.height =
-            maxDim * appState.exportScale + padding * 10 * appState.exportScale;
+            maxDim * editorState.exportScale +
+            padding * 10 * editorState.exportScale;
 
           tempCanvasContext.translate(
             tempCanvas.width / 2,
             tempCanvas.height / 2
           );
-          tempCanvasContext.scale(appState.exportScale, appState.exportScale);
+          tempCanvasContext.scale(
+            editorState.exportScale,
+            editorState.exportScale
+          );
 
           // Shift the canvas to left most point of the arrow
           shiftX = layer.width / 2 - (layer.x - x1);
@@ -1060,7 +1070,10 @@ export const renderLayer = (
             boundTextLayer.width,
             boundTextLayer.height
           );
-          context.scale(1 / appState.exportScale, 1 / appState.exportScale);
+          context.scale(
+            1 / editorState.exportScale,
+            1 / editorState.exportScale
+          );
           context.drawImage(
             tempCanvas,
             -tempCanvas.width / 2,

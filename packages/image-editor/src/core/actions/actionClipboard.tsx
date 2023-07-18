@@ -15,8 +15,8 @@ import { register } from "./register";
 export const actionCopy = register({
   name: "copy",
   trackEvent: { category: "layer" },
-  perform: (layers, appState, _, app) => {
-    const layersToCopy = getSelectedLayers(layers, appState, {
+  perform: (layers, editorState, _, app) => {
+    const layersToCopy = getSelectedLayers(layers, editorState, {
       includeBoundTextLayer: true,
       includeLayersInFrames: true
     });
@@ -27,7 +27,7 @@ export const actionCopy = register({
       commitToHistory: false
     };
   },
-  predicate: (layers, appState, appProps, app) =>
+  predicate: (layers, editorState, appProps, app) =>
     app.device.isMobile && !!navigator.clipboard,
   contextItemLabel: "labels.copy",
   // don't supply a shortcut since we handle this conditionally via onCopy event
@@ -37,13 +37,13 @@ export const actionCopy = register({
 export const actionPaste = register({
   name: "paste",
   trackEvent: { category: "layer" },
-  perform: (layers: any, appStates: any, data, app) => {
+  perform: (layers: any, editorStates: any, data, app) => {
     app.pasteFromClipboard(null);
     return {
       commitToHistory: false
     };
   },
-  predicate: (layers, appState, appProps, app) =>
+  predicate: (layers, editorState, appProps, app) =>
     app.device.isMobile && !!navigator.clipboard,
   contextItemLabel: "labels.paste",
   // don't supply a shortcut since we handle this conditionally via onCopy event
@@ -53,11 +53,11 @@ export const actionPaste = register({
 export const actionCut = register({
   name: "cut",
   trackEvent: { category: "layer" },
-  perform: (layers, appState, data, app) => {
-    actionCopy.perform(layers, appState, data, app);
-    return actionDeleteSelected.perform(layers, appState);
+  perform: (layers, editorState, data, app) => {
+    actionCopy.perform(layers, editorState, data, app);
+    return actionDeleteSelected.perform(layers, editorState);
   },
-  predicate: (layers, appState, appProps, app) =>
+  predicate: (layers, editorState, appProps, app) =>
     app.device.isMobile && !!navigator.clipboard,
   contextItemLabel: "labels.cut",
   keyTest: (event) => event[KEYS.CTRL_OR_CMD] && event.key === KEYS.X
@@ -66,7 +66,7 @@ export const actionCut = register({
 export const actionCopyAsSvg = register({
   name: "copyAsSvg",
   trackEvent: { category: "layer" },
-  perform: async (layers, appState, _data, app) => {
+  perform: async (layers, editorState, _data, app) => {
     if (!app.canvas) {
       return {
         commitToHistory: false
@@ -74,7 +74,7 @@ export const actionCopyAsSvg = register({
     }
     const selectedLayers = getSelectedLayers(
       getNonDeletedLayers(layers),
-      appState,
+      editorState,
       {
         includeBoundTextLayer: true,
         includeLayersInFrames: true
@@ -84,9 +84,9 @@ export const actionCopyAsSvg = register({
       await exportCanvas(
         "clipboard-svg",
         selectedLayers.length ? selectedLayers : getNonDeletedLayers(layers),
-        appState,
+        editorState,
         app.files,
-        appState
+        editorState
       );
       return {
         commitToHistory: false
@@ -94,8 +94,8 @@ export const actionCopyAsSvg = register({
     } catch (error: any) {
       console.error(error);
       return {
-        appState: {
-          ...appState,
+        editorState: {
+          ...editorState,
           errorMessage: error.message
         },
         commitToHistory: false
@@ -110,7 +110,7 @@ export const actionCopyAsSvg = register({
 export const actionCopyAsPng = register({
   name: "copyAsPng",
   trackEvent: { category: "layer" },
-  perform: async (layers, appState, _data, app) => {
+  perform: async (layers, editorState, _data, app) => {
     if (!app.canvas) {
       return {
         commitToHistory: false
@@ -118,7 +118,7 @@ export const actionCopyAsPng = register({
     }
     const selectedLayers = getSelectedLayers(
       getNonDeletedLayers(layers),
-      appState,
+      editorState,
       {
         includeBoundTextLayer: true,
         includeLayersInFrames: true
@@ -128,19 +128,19 @@ export const actionCopyAsPng = register({
       await exportCanvas(
         "clipboard",
         selectedLayers.length ? selectedLayers : getNonDeletedLayers(layers),
-        appState,
+        editorState,
         app.files,
-        appState
+        editorState
       );
       return {
-        appState: {
-          ...appState,
+        editorState: {
+          ...editorState,
           toast: {
             message: t("toast.copyToClipboardAsPng", {
               exportSelection: selectedLayers.length
                 ? t("toast.selection")
                 : t("toast.canvas"),
-              exportColorScheme: appState.exportWithDarkMode
+              exportColorScheme: editorState.exportWithDarkMode
                 ? t("buttons.darkMode")
                 : t("buttons.lightMode")
             })
@@ -151,8 +151,8 @@ export const actionCopyAsPng = register({
     } catch (error: any) {
       console.error(error);
       return {
-        appState: {
-          ...appState,
+        editorState: {
+          ...editorState,
           errorMessage: error.message
         },
         commitToHistory: false
@@ -167,10 +167,10 @@ export const actionCopyAsPng = register({
 export const copyText = register({
   name: "copyText",
   trackEvent: { category: "layer" },
-  perform: (layers, appState) => {
+  perform: (layers, editorState) => {
     const selectedLayers = getSelectedLayers(
       getNonDeletedLayers(layers),
-      appState,
+      editorState,
       {
         includeBoundTextLayer: true
       }
@@ -189,9 +189,9 @@ export const copyText = register({
       commitToHistory: false
     };
   },
-  predicate: (layers, appState) =>
+  predicate: (layers, editorState) =>
     probablySupportsClipboardWriteText &&
-    getSelectedLayers(layers, appState, {
+    getSelectedLayers(layers, editorState, {
       includeBoundTextLayer: true
     }).some(isTextLayer),
   contextItemLabel: "labels.copyText"

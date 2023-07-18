@@ -1,6 +1,6 @@
-import { LayerType } from "../../constants";
-import { Layer } from "../../types";
-import { arrayToMapWithIndex } from "../utils";
+import { LayerType } from "../../../constants";
+import { Layer } from "../../../types";
+import { arrayToMapWithIndex } from "../../utils";
 
 /**
  * Normalizes a group's layer order

@@ -3,6 +3,7 @@ export * from "./chart";
 export * from "./clipboard";
 export * from "./device";
 export * from "./dimension";
+export * from "./export";
 export * from "./gesture";
 export * from "./import";
 export * from "./layer";

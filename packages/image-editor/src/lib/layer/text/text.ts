@@ -1,4 +1,5 @@
 import { isSafari } from "@storiny/shared/src/browsers";
+import { isTestEnv } from "@storiny/shared/src/utils/isTestEnv";
 import { ExtractSetType } from "@storiny/types";
 
 import {
@@ -16,10 +17,14 @@ import {
   TextLayer,
   TextLayerWithContainer
 } from "../../../types";
-import { getSelectedLayers } from "../../scene";
-import Scene from "../../scene/scene/Scene";
+import { getSelectedLayers, Scene } from "../../scene";
+import { arrayToMap, getFontString } from "../../utils";
 import { isHittingLayerNotConsideringBoundingBox } from "../collision";
-import { getLayerAbsoluteCoords } from "../index";
+import {
+  getLayerAbsoluteCoords,
+  resetOriginalContainerCache,
+  updateOriginalContainerCache
+} from "../index";
 import { LinearLayerEditor } from "../linearLayerEditor";
 import { mutateLayer } from "../mutate";
 import {
@@ -28,12 +33,7 @@ import {
   isTextBindableContainer,
   isTextLayer
 } from "../predicates";
-import { MaybeTransformHandleType } from "../transformHandles/transformHandles";
-import { arrayToMap, getFontString, isTestEnv } from "../utils";
-import {
-  resetOriginalContainerCache,
-  updateOriginalContainerCache
-} from "./textWysiwyg";
+import { MaybeTransformHandleType } from "../transformHandles";
 
 /**
  * Normalizes text string

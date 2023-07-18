@@ -7,7 +7,7 @@ import {
   NonDeletedLayer,
   PointBinding
 } from "../../../../types";
-import Scene from "../../../scene/scene/Scene";
+import { Scene } from "../../../scene";
 import {
   determineFocusPoint,
   intersectLayerWithLine,
@@ -17,7 +17,7 @@ import { LinearLayerEditor } from "../../linearLayerEditor";
 import { mutateLayer } from "../../mutate";
 import { isLinearLayer } from "../../predicates";
 import { getBoundTextLayer, handleBindTextResize } from "../../text";
-import { getNonDeletedLayers } from "../getNonDeletedLayersFromScene";
+import { getNonDeletedLayersFromScene } from "../getNonDeletedLayersFromScene";
 
 /**
  * Predicate function for determining stale layers
@@ -176,7 +176,7 @@ export const updateBoundLayers = (
     simultaneouslyUpdated
   );
 
-  getNonDeletedLayers(
+  getNonDeletedLayersFromScene(
     Scene.getScene(changedLayer)!,
     boundLinearLayers.map(({ id }) => id)
   ).forEach((layer) => {

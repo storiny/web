@@ -1,5 +1,11 @@
 import { adjustXYWithRotation } from "../../lib/math/math";
 import {
+  arrayToMap,
+  getFontString,
+  getUpdatedTimestamp,
+  isTestEnv
+} from "../../lib/utils/utils";
+import {
   DEFAULT_ELEMENT_PROPS,
   DEFAULT_FONT_FAMILY,
   DEFAULT_FONT_SIZE,
@@ -27,12 +33,6 @@ import {
 import { randomId, randomInteger } from "../random";
 import { AppState } from "../types";
 import { MarkOptional, Merge, Mutable } from "../utility-types";
-import {
-  arrayToMap,
-  getFontString,
-  getUpdatedTimestamp,
-  isTestEnv
-} from "../utils";
 import { getLayerAbsoluteCoords } from ".";
 import { getResizedLayerAbsoluteCoords } from "./bounds";
 import { bumpUpdate, newLayerWith } from "./mutateLayer";

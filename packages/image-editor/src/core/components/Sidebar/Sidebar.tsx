@@ -12,12 +12,12 @@ import React, {
   useState
 } from "react";
 
-import { useOutsideClick } from "../../../lib/hooks/useOutsideClick";
+import { useOutsideClick } from "../../../lib/hooks/useOutsideClick/useOutsideClick";
+import { updateObject } from "../../../lib/utils/utils";
 import { EVENT } from "../../constants";
-import { useUIAppState } from "../../context/ui-appState";
+import { useUIAppState } from "../../context/ui-editorState";
 import { jotaiScope } from "../../jotai";
 import { KEYS } from "../../keys";
-import { updateObject } from "../../utils";
 import { Island } from ".././Island";
 import { useDevice, useExcalidrawSetAppState } from "../App";
 import {
@@ -36,7 +36,7 @@ import { SidebarTrigger } from "./SidebarTrigger";
  * Flags whether the currently rendered Sidebar is docked or not, for use
  * in upstream components that need to act on this (e.g. LayerUI to shift the
  * UI). We use an atom because of potential host app sidebars (for the default
- * sidebar we could just read from appState.defaultSidebarDockedPreference).
+ * sidebar we could just read from editorState.defaultSidebarDockedPreference).
  *
  * Since we can only render one Sidebar at a time, we can use a simple flag.
  */
@@ -152,31 +152,31 @@ SidebarInner.displayName = "SidebarInner";
 
 export const Sidebar = Object.assign(
   forwardRef((props: SidebarProps, ref: React.ForwardedRef<HTMLDivLayer>) => {
-    const appState = useUIAppState();
+    const editorState = useUIAppState();
 
     const { onStateChange } = props;
 
-    const refPrevOpenSidebar = useRef(appState.openSidebar);
+    const refPrevOpenSidebar = useRef(editorState.openSidebar);
     useEffect(() => {
       if (
         // closing sidebar
-        ((!appState.openSidebar &&
+        ((!editorState.openSidebar &&
           refPrevOpenSidebar?.current?.name === props.name) ||
           // opening current sidebar
-          (appState.openSidebar?.name === props.name &&
+          (editorState.openSidebar?.name === props.name &&
             refPrevOpenSidebar?.current?.name !== props.name) ||
           // switching tabs or switching to a different sidebar
           refPrevOpenSidebar.current?.name === props.name) &&
-        appState.openSidebar !== refPrevOpenSidebar.current
+        editorState.openSidebar !== refPrevOpenSidebar.current
       ) {
         onStateChange?.(
-          appState.openSidebar?.name !== props.name
+          editorState.openSidebar?.name !== props.name
             ? null
-            : appState.openSidebar
+            : editorState.openSidebar
         );
       }
-      refPrevOpenSidebar.current = appState.openSidebar;
-    }, [appState.openSidebar, onStateChange, props.name]);
+      refPrevOpenSidebar.current = editorState.openSidebar;
+    }, [editorState.openSidebar, onStateChange, props.name]);
 
     const [mounted, setMounted] = useState(false);
     useLayoutEffect(() => {
@@ -196,7 +196,8 @@ export const Sidebar = Object.assign(
     // Alternative, and more general solution would be to namespace the fallback
     // HoC so that state is not shared between subcomponents when the wrapping
     // component is of the same type (e.g. Sidebar -> SidebarHeader).
-    const shouldRender = mounted && appState.openSidebar?.name === props.name;
+    const shouldRender =
+      mounted && editorState.openSidebar?.name === props.name;
 
     if (!shouldRender) {
       return null;

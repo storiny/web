@@ -3,7 +3,7 @@ import "./ToolIcon.scss";
 import clsx from "clsx";
 import React, { CSSProperties, useEffect, useRef, useState } from "react";
 
-import { AbortError } from "../errors";
+import { AbortError } from "../../lib/errors/errors";
 import { PointerType } from "../layer/types";
 import { useExcalidrawContainer } from "./App";
 import Spinner from "./Spinner";

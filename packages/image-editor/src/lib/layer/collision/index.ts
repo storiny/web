@@ -6,7 +6,6 @@ import { pointsOnBezierCurves } from "points-on-curve";
 import { Drawable } from "roughjs/bin/core";
 
 import { LayerType, StrokeRoundness } from "../../../constants";
-import { isTransparent } from "../../../core/utils";
 import {
   BindableLayer,
   DiamondLayer,
@@ -23,6 +22,29 @@ import {
   TextLayer
 } from "../../../types";
 import {
+  abs as gaAbs,
+  apply as gaApply,
+  compose as gaCompose,
+  distancePoint as gaDistancePoint,
+  distanceToLine as gaDistanceToLine,
+  equation as gaEquation,
+  from as gaFrom,
+  fromDirection as gaFromDirection,
+  Line as GALine,
+  offset as gaOffset,
+  orthogonalThrough as gaOrthogonalThrough,
+  Point as GAPoint,
+  point as gaPoint,
+  reverse as gaReverse,
+  rotation as gaRotation,
+  sign as gaSign,
+  sub as gaSub,
+  through as gaThrough,
+  toTuple as gaToTuple,
+  Transform as GATransform,
+  translation as gaTranslation
+} from "../../algebra";
+import {
   distance2d,
   isPathALoop,
   isPointInPolygon,
@@ -30,12 +52,8 @@ import {
   rotatePoint
 } from "../../math";
 import { getShapeForLayer } from "../../renderer";
+import { isTransparent } from "../../utils";
 import { getCurvePathOps, getLayerAbsoluteCoords } from "../bounds";
-import * as GA from "../ga";
-import * as GADirection from "../gadirections";
-import * as GALine from "../galines";
-import * as GAPoint from "../gapoints";
-import * as GATransform from "../gatransforms";
 import { hasBoundTextLayer, isImageLayer, isTextLayer } from "../predicates";
 
 interface HitTestArgs {
@@ -76,12 +94,12 @@ const isLayerDraggableFromInside = (layer: NonDeletedLayer): boolean => {
 //   y: number
 // ): boolean => {
 //   // How many pixels off the shape boundary we still consider a hit
-//   const threshold = 10 / appState.zoom.value;
+//   const threshold = 10 / editorState.zoom.value;
 //   const point: Point = [x, y];
 //
 //   if (
-//     isLayerSelected(appState, layer) &&
-//     shouldShowBoundingBox([layer], appState)
+//     isLayerSelected(editorState, layer) &&
+//     shouldShowBoundingBox([layer], editorState)
 //   ) {
 //     return isPointHittingLayerBoundingBox(
 //       layer,
@@ -95,7 +113,7 @@ const isLayerDraggableFromInside = (layer: NonDeletedLayer): boolean => {
 //   if (boundTextLayer) {
 //     const isHittingBoundTextLayer = hitTest(
 //       boundTextLayer,
-//       appState,
+//       editorState,
 //       frameNameBoundsCache,
 //       x,
 //       y
@@ -106,7 +124,7 @@ const isLayerDraggableFromInside = (layer: NonDeletedLayer): boolean => {
 //   }
 //   return isHittingLayerNotConsideringBoundingBox(
 //     layer,
-//     appState,
+//     editorState,
 //     frameNameBoundsCache,
 //     point
 //   );
@@ -114,19 +132,19 @@ const isLayerDraggableFromInside = (layer: NonDeletedLayer): boolean => {
 
 // export const isHittingLayerBoundingBoxWithoutHittingLayer = (
 //   layer: NonDeletedExcalidrawLayer,
-//   appState: AppState,
+//   editorState: AppState,
 //   frameNameBoundsCache: FrameNameBoundsCache,
 //   x: number,
 //   y: number
 // ): boolean => {
-//   const threshold = 10 / appState.zoom.value;
+//   const threshold = 10 / editorState.zoom.value;
 //
 //   // So that bound text layer hit is considered within bounding box of container even if its outside actual bounding box of layer
 //   // eg for linear layers text can be outside the layer bounding box
 //   const boundTextLayer = getBoundTextLayer(layer);
 //   if (
 //     boundTextLayer &&
-//     hitTest(boundTextLayer, appState, frameNameBoundsCache, x, y)
+//     hitTest(boundTextLayer, editorState, frameNameBoundsCache, x, y)
 //   ) {
 //     return false;
 //   }
@@ -134,7 +152,7 @@ const isLayerDraggableFromInside = (layer: NonDeletedLayer): boolean => {
 //   return (
 //     !isHittingLayerNotConsideringBoundingBox(
 //       layer,
-//       appState,
+//       editorState,
 //       frameNameBoundsCache,
 //       [x, y]
 //     ) &&
@@ -169,9 +187,9 @@ export const isHittingLayerNotConsideringBoundingBox = (
 };
 
 // const isLayerSelected = (
-//   appState: AppState,
+//   editorState: AppState,
 //   layer: NonDeleted<ExcalidrawLayer>
-// ) => appState.selectedLayerIds[layer.id];
+// ) => editorState.selectedLayerIds[layer.id];
 
 /**
  * Predicate function for checking if a point is hitting layer's bounding box
@@ -335,16 +353,16 @@ const distanceToRectangle = (
 ): number => {
   const [, pointRel, hwidth, hheight] = pointRelativeToLayer(layer, point);
   return Math.max(
-    GAPoint.distanceToLine(pointRel, GALine.equation(0, 1, -hheight)),
-    GAPoint.distanceToLine(pointRel, GALine.equation(1, 0, -hwidth))
+    gaDistanceToLine(pointRel, gaEquation(0, 1, -hheight)),
+    gaDistanceToLine(pointRel, gaEquation(1, 0, -hwidth))
   );
 };
 
 // const distanceToRectangleBox = (box: RectangleBox, point: Point): number => {
 //   const [, pointRel, hwidth, hheight] = pointRelativeToDivLayer(point, box);
 //   return Math.max(
-//     GAPoint.distanceToLine(pointRel, GALine.equation(0, 1, -hheight)),
-//     GAPoint.distanceToLine(pointRel, GALine.equation(1, 0, -hwidth))
+//     gaDistanceToLine(pointRel, gaEquation(0, 1, -hheight)),
+//     gaDistanceToLine(pointRel, gaEquation(1, 0, -hwidth))
 //   );
 // };
 
@@ -355,8 +373,8 @@ const distanceToRectangle = (
  */
 const distanceToDiamond = (layer: DiamondLayer, point: Point): number => {
   const [, pointRel, hwidth, hheight] = pointRelativeToLayer(layer, point);
-  const side = GALine.equation(hheight, hwidth, -hheight * hwidth);
-  return GAPoint.distanceToLine(pointRel, side);
+  const side = gaEquation(hheight, hwidth, -hheight * hwidth);
+  return gaDistanceToLine(pointRel, side);
 };
 
 /**
@@ -366,7 +384,7 @@ const distanceToDiamond = (layer: DiamondLayer, point: Point): number => {
  */
 const distanceToEllipse = (layer: EllipseLayer, point: Point): number => {
   const [pointRel, tangent] = ellipseParamsForTest(layer, point);
-  return -GALine.sign(tangent) * GAPoint.distanceToLine(pointRel, tangent);
+  return -gaSign(tangent) * gaDistanceToLine(pointRel, tangent);
 };
 
 /**
@@ -377,9 +395,9 @@ const distanceToEllipse = (layer: EllipseLayer, point: Point): number => {
 const ellipseParamsForTest = (
   layer: EllipseLayer,
   point: Point
-): [GA.Point, GA.Line] => {
+): [GAPoint, GALine] => {
   const [, pointRel, hwidth, hheight] = pointRelativeToLayer(layer, point);
-  const [px, py] = GAPoint.toTuple(pointRel);
+  const [px, py] = gaToTuple(pointRel);
   // We're working in positive quadrant, so start with `t = 45deg`, `tx=cos(t)`
   let tx = 0.707;
   let ty = 0.707;
@@ -409,8 +427,8 @@ const ellipseParamsForTest = (
     ty /= t;
   });
 
-  const closestPoint = GA.point(a * tx, b * ty);
-  const tangent = GALine.orthogonalThrough(pointRel, closestPoint);
+  const closestPoint = gaPoint(a * tx, b * ty);
+  const tangent = gaOrthogonalThrough(pointRel, closestPoint);
 
   return [pointRel, tangent];
 };
@@ -484,7 +502,7 @@ const hitTestFreeDrawLayer = (
   const shape = getShapeForLayer(layer);
 
   // For filled freedraw shapes, support
-  // selecting them from inside
+  // selecting them from the inside
   if (shape && shape.sets.length) {
     return hitTestRoughShape(shape, x, y, threshold);
   }
@@ -507,17 +525,17 @@ const hitTestLinear = (args: HitTestArgs): boolean => {
     args.layer,
     args.point
   );
-  const side1 = GALine.equation(0, 1, -hheight);
-  const side2 = GALine.equation(1, 0, -hwidth);
+  const side1 = gaEquation(0, 1, -hheight);
+  const side2 = gaEquation(1, 0, -hwidth);
 
   if (
-    !isInsideCheck(GAPoint.distanceToLine(pointAbs, side1), threshold) ||
-    !isInsideCheck(GAPoint.distanceToLine(pointAbs, side2), threshold)
+    !isInsideCheck(gaDistanceToLine(pointAbs, side1), threshold) ||
+    !isInsideCheck(gaDistanceToLine(pointAbs, side2), threshold)
   ) {
     return false;
   }
 
-  const [relX, relY] = GAPoint.toTuple(point);
+  const [relX, relY] = gaToTuple(point);
   const shape = getShapeForLayer(layer as LinearLayer);
 
   if (!shape) {
@@ -559,19 +577,20 @@ const hitTestLinear = (args: HitTestArgs): boolean => {
 const pointRelativeToLayer = (
   layer: Layer,
   pointTuple: Point
-): [GA.Point, GA.Point, number, number] => {
-  const point = GAPoint.from(pointTuple);
+): [GAPoint, GAPoint, number, number] => {
+  const point = gaFrom(pointTuple);
   const [x1, y1, x2, y2] = getLayerAbsoluteCoords(layer);
   const center = coordsCenter(x1, y1, x2, y2);
   // GA has angle orientation opposite to `rotate`
-  const rotate = GATransform.rotation(center, layer.angle);
-  const pointRotated = GATransform.apply(rotate, point);
-  const pointRelToCenter = GA.sub(pointRotated, GADirection.from(center));
-  const pointRelToCenterAbs = GAPoint.abs(pointRelToCenter);
-  const layerPos = GA.offset(layer.x, layer.y);
-  const pointRelToPos = GA.sub(pointRotated, layerPos);
+  const rotate = gaRotation(center, layer.angle);
+  const pointRotated = gaApply(rotate, point);
+  const pointRelToCenter = gaSub(pointRotated, gaFromDirection(center));
+  const pointRelToCenterAbs = gaAbs(pointRelToCenter);
+  const layerPos = gaOffset(layer.x, layer.y);
+  const pointRelToPos = gaSub(pointRotated, layerPos);
   const halfWidth = (x2 - x1) / 2;
   const halfHeight = (y2 - y1) / 2;
+
   return [pointRelToPos, pointRelToCenterAbs, halfWidth, halfHeight];
 };
 
@@ -579,15 +598,15 @@ const pointRelativeToLayer = (
 //   pointTuple: Point,
 //   rectangle: RectangleBox
 // ): [GA.Point, GA.Point, number, number] => {
-//   const point = GAPoint.from(pointTuple);
+//   const point = gaFrom(pointTuple);
 //   const [x1, y1, x2, y2] = getRectangleBoxAbsoluteCoords(rectangle);
 //   const center = coordsCenter(x1, y1, x2, y2);
 //   const rotate = GATransform.rotation(center, rectangle.angle);
-//   const pointRotated = GATransform.apply(rotate, point);
-//   const pointRelToCenter = GA.sub(pointRotated, GADirection.from(center));
+//   const pointRotated = gaApply(rotate, point);
+//   const pointRelToCenter = gaSub(pointRotated, GADirection.from(center));
 //   const pointRelToCenterAbs = GAPoint.abs(pointRelToCenter);
 //   const layerPos = GA.offset(rectangle.x, rectangle.y);
-//   const pointRelToPos = GA.sub(pointRotated, layerPos);
+//   const pointRelToPos = gaSub(pointRotated, layerPos);
 //   const halfWidth = (x2 - x1) / 2;
 //   const halfHeight = (y2 - y1) / 2;
 //   return [pointRelToPos, pointRelToCenterAbs, halfWidth, halfHeight];
@@ -611,16 +630,14 @@ export const pointInAbsoluteCoords = (layer: Layer, point: Point): Point => {
  * Transformations to layer's center
  * @param layer Layer
  */
-const relativizationToLayerCenter = (layer: Layer): GA.Transform => {
+const relativizationToLayerCenter = (layer: Layer): GATransform => {
   const [x1, y1, x2, y2] = getLayerAbsoluteCoords(layer);
   const center = coordsCenter(x1, y1, x2, y2);
   // GA has angle orientation opposite to `rotate`
-  const rotate = GATransform.rotation(center, layer.angle);
-  const translate = GA.reverse(
-    GATransform.translation(GADirection.from(center))
-  );
+  const rotate = gaRotation(center, layer.angle);
+  const translate = gaReverse(gaTranslation(gaFromDirection(center)));
 
-  return GATransform.compose(rotate, translate);
+  return gaCompose(rotate, translate);
 };
 
 /**
@@ -635,7 +652,7 @@ const coordsCenter = (
   y1: number,
   x2: number,
   y2: number
-): GA.Point => GA.point((x1 + x2) / 2, (y1 + y2) / 2);
+): GAPoint => gaPoint((x1 + x2) / 2, (y1 + y2) / 2);
 
 /**
  * Returns the focus distance, the oriented ratio between the size of
@@ -651,9 +668,9 @@ export const determineFocusDistance = (
   b: Point
 ): number => {
   const relateToCenter = relativizationToLayerCenter(layer);
-  const aRel = GATransform.apply(relateToCenter, GAPoint.from(a));
-  const bRel = GATransform.apply(relateToCenter, GAPoint.from(b));
-  const line = GALine.through(aRel, bRel);
+  const aRel = gaApply(relateToCenter, gaFrom(a));
+  const bRel = gaApply(relateToCenter, gaFrom(b));
+  const line = gaThrough(aRel, bRel);
   const q = layer.height / layer.width;
   const hwidth = layer.width / 2;
   const hheight = layer.height / 2;
@@ -662,6 +679,7 @@ export const determineFocusDistance = (
   const c = line[1];
   const mabs = Math.abs(m);
   const nabs = Math.abs(n);
+
   switch (layer.type) {
     case LayerType.RECTANGLE:
     case LayerType.IMAGE:
@@ -687,15 +705,13 @@ export const determineFocusPoint = (
   if (focus === 0) {
     const [x1, y1, x2, y2] = getLayerAbsoluteCoords(layer);
     const center = coordsCenter(x1, y1, x2, y2);
-    return GAPoint.toTuple(center);
+
+    return gaToTuple(center);
   }
 
   const relateToCenter = relativizationToLayerCenter(layer);
-  const adjacentPointRel = GATransform.apply(
-    relateToCenter,
-    GAPoint.from(adjacentPoint)
-  );
-  const reverseRelateToCenter = GA.reverse(relateToCenter);
+  const adjacentPointRel = gaApply(relateToCenter, gaFrom(adjacentPoint));
+  const reverseRelateToCenter = gaReverse(relateToCenter);
   let point;
 
   switch (layer.type) {
@@ -712,7 +728,7 @@ export const determineFocusPoint = (
       break;
   }
 
-  return GAPoint.toTuple(GATransform.apply(reverseRelateToCenter, point));
+  return gaToTuple(gaApply(reverseRelateToCenter, point));
 };
 
 /**
@@ -730,14 +746,14 @@ export const intersectLayerWithLine = (
   gap: number = 0
 ): Point[] => {
   const relateToCenter = relativizationToLayerCenter(layer);
-  const aRel = GATransform.apply(relateToCenter, GAPoint.from(a));
-  const bRel = GATransform.apply(relateToCenter, GAPoint.from(b));
-  const line = GALine.through(aRel, bRel);
-  const reverseRelateToCenter = GA.reverse(relateToCenter);
+  const aRel = gaApply(relateToCenter, gaFrom(a));
+  const bRel = gaApply(relateToCenter, gaFrom(b));
+  const line = gaThrough(aRel, bRel);
+  const reverseRelateToCenter = gaReverse(relateToCenter);
   const intersections = getSortedLayerLineIntersections(layer, line, aRel, gap);
 
   return intersections.map((point) =>
-    GAPoint.toTuple(GATransform.apply(reverseRelateToCenter, point))
+    gaToTuple(gaApply(reverseRelateToCenter, point))
   );
 };
 
@@ -750,11 +766,12 @@ export const intersectLayerWithLine = (
  */
 const getSortedLayerLineIntersections = (
   layer: BindableLayer,
-  line: GA.Line,
-  nearPoint: GA.Point,
+  line: GALine,
+  nearPoint: GAPoint,
   gap: number = 0
-): GA.Point[] => {
-  let intersections: GA.Point[];
+): GAPoint[] => {
+  let intersections: GAPoint[];
+
   switch (layer.type) {
     case LayerType.RECTANGLE:
     case LayerType.IMAGE:
@@ -771,8 +788,7 @@ const getSortedLayerLineIntersections = (
   }
 
   const sortedIntersections = intersections.sort(
-    (i1, i2) =>
-      GAPoint.distance(i1, nearPoint) - GAPoint.distance(i2, nearPoint)
+    (i1, i2) => gaDistancePoint(i1, nearPoint) - gaDistancePoint(i2, nearPoint)
   );
 
   return [
@@ -789,7 +805,7 @@ const getSortedLayerLineIntersections = (
 const getCorners = (
   layer: RectangleLayer | ImageLayer | DiamondLayer | TextLayer,
   scale: number = 1
-): GA.Point[] => {
+): GAPoint[] => {
   const hx = (scale * layer.width) / 2;
   const hy = (scale * layer.height) / 2;
 
@@ -798,12 +814,7 @@ const getCorners = (
     case LayerType.IMAGE:
     case LayerType.TEXT:
     case LayerType.DIAMOND:
-      return [
-        GA.point(0, hy),
-        GA.point(hx, 0),
-        GA.point(0, -hy),
-        GA.point(-hx, 0)
-      ];
+      return [gaPoint(0, hy), gaPoint(hx, 0), gaPoint(0, -hy), gaPoint(-hx, 0)];
   }
 };
 
@@ -815,8 +826,8 @@ const getCorners = (
 //   segment: [GA.Point, GA.Point]
 // ): GA.Point[] => {
 //   const [a, b] = segment;
-//   const aDist = GAPoint.distanceToLine(a, line);
-//   const bDist = GAPoint.distanceToLine(b, line);
+//   const aDist = gaDistanceToLine(a, line);
+//   const bDist = gaDistanceToLine(b, line);
 //   if (aDist * bDist >= 0) {
 //     // The intersection is outside segment `(a, b)`
 //     return [];
@@ -833,7 +844,7 @@ const getCorners = (
 //     GADirection.fromTo(a, b),
 //     distance
 //   );
-//   return [GATransform.apply(offset, a), GATransform.apply(offset, b)];
+//   return [gaApply(offset, a), gaApply(offset, b)];
 // };
 
 /**
@@ -845,8 +856,8 @@ const getCorners = (
 const getEllipseIntersections = (
   layer: EllipseLayer,
   gap: number,
-  line: GA.Line
-): GA.Point[] => {
+  line: GALine
+): GAPoint[] => {
   const a = layer.width / 2 + gap;
   const b = layer.height / 2 + gap;
   const m = line[2];
@@ -864,11 +875,11 @@ const getEllipseIntersections = (
   const yn = -b * b * n * c;
 
   return [
-    GA.point(
+    gaPoint(
       (xn + a * b * n * discrRoot) / squares,
       (yn - a * b * m * discrRoot) / squares
     ),
-    GA.point(
+    gaPoint(
       (xn - a * b * n * discrRoot) / squares,
       (yn + a * b * m * discrRoot) / squares
     )
@@ -882,18 +893,18 @@ const getEllipseIntersections = (
  * @param line Line
  */
 export const getCircleIntersections = (
-  center: GA.Point,
+  center: GAPoint,
   radius: number,
-  line: GA.Line
-): GA.Point[] => {
+  line: GALine
+): GAPoint[] => {
   if (radius === 0) {
-    return GAPoint.distanceToLine(line, center) === 0 ? [center] : [];
+    return gaDistanceToLine(line, center) === 0 ? [center] : [];
   }
 
   const m = line[2];
   const n = line[3];
   const c = line[1];
-  const [a, b] = GAPoint.toTuple(center);
+  const [a, b] = gaToTuple(center);
   const r = radius;
   const squares = m * m + n * n;
   const discr = r * r * squares - (m * a + n * b + c) ** 2;
@@ -907,8 +918,8 @@ export const getCircleIntersections = (
   const yn = b * m * m - a * m * n - n * c;
 
   return [
-    GA.point((xn + n * discrRoot) / squares, (yn - m * discrRoot) / squares),
-    GA.point((xn - n * discrRoot) / squares, (yn + m * discrRoot) / squares)
+    gaPoint((xn + n * discrRoot) / squares, (yn - m * discrRoot) / squares),
+    gaPoint((xn - n * discrRoot) / squares, (yn + m * discrRoot) / squares)
   ];
 };
 
@@ -926,13 +937,13 @@ export const getCircleIntersections = (
 export const findFocusPointForEllipse = (
   ellipse: EllipseLayer,
   relativeDistance: number,
-  point: GA.Point
-): GA.Point => {
+  point: GAPoint
+): GAPoint => {
   const relativeDistanceAbs = Math.abs(relativeDistance);
   const a = (ellipse.width * relativeDistanceAbs) / 2;
   const b = (ellipse.height * relativeDistanceAbs) / 2;
   const orientation = Math.sign(relativeDistance);
-  const [px, pyo] = GAPoint.toTuple(point);
+  const [px, pyo] = gaToTuple(point);
 
   // The calculation below can't handle py = 0
   const py = pyo === 0 ? 0.0001 : pyo;
@@ -951,7 +962,7 @@ export const findFocusPointForEllipse = (
   }
 
   const x = -(a ** 2 * m) / (n ** 2 * b ** 2 + m ** 2 * a ** 2);
-  return GA.point(x, (-m * x - 1) / n);
+  return gaPoint(x, (-m * x - 1) / n);
 };
 
 /**
@@ -965,16 +976,16 @@ export const findFocusPointForEllipse = (
 export const findFocusPointForRectangulars = (
   layer: RectangleLayer | ImageLayer | DiamondLayer | TextLayer,
   relativeDistance: number,
-  point: GA.Point
-): GA.Point => {
+  point: GAPoint
+): GAPoint => {
   const relativeDistanceAbs = Math.abs(relativeDistance);
   const orientation = Math.sign(relativeDistance);
   const corners = getCorners(layer, relativeDistanceAbs);
   let maxDistance = 0;
-  let tangentPoint: null | GA.Point = null;
+  let tangentPoint: null | GAPoint = null;
 
   corners.forEach((corner) => {
-    const distance = orientation * GALine.through(point, corner)[1];
+    const distance = orientation * gaThrough(point, corner)[1];
     if (distance > maxDistance) {
       maxDistance = distance;
       tangentPoint = corner;

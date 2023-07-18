@@ -1,10 +1,10 @@
 import { Mutable } from "@storiny/types";
 
 import { Layer, Point } from "../../../types";
+import { getSizeFromPoints } from "../../point";
 import { invalidateShapeForLayer } from "../../renderer";
-import Scene from "../../scene/scene/Scene";
-import { getSizeFromPoints } from "../points";
-import { getUpdatedTimestamp } from "../utils";
+import { Scene } from "../../scene";
+import { getUpdatedTimestamp } from "../../utils";
 
 type LayerUpdate<TLayer extends Layer> = Omit<Partial<TLayer>, "id">;
 

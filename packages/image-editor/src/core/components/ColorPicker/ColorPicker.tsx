@@ -5,12 +5,16 @@ import clsx from "clsx";
 import { useAtom } from "jotai";
 import { useRef } from "react";
 
+import {
+  isInteractive,
+  isTransparent,
+  isWritableLayer
+} from "../../../lib/utils/utils";
 import { COLOR_PALETTE, ColorPaletteCustom, ColorTuple } from "../../colors";
 import { t } from "../../i18n";
 import { jotaiScope } from "../../jotai";
 import { ExcalidrawLayer } from "../../layer/types";
 import { AppState } from "../../types";
-import { isInteractive, isTransparent, isWritableLayer } from "../../utils";
 import { useDevice, useExcalidrawContainer } from "../App";
 import { activeEyeDropperAtom } from "../EyeDropper";
 import { ColorInput } from "./ColorInput";
@@ -44,8 +48,8 @@ export const getColor = (color: string): string | null => {
 };
 
 interface ColorPickerProps {
-  appState: AppState;
   color: string;
+  editorState: AppState;
   label: string;
   layers: readonly ExcalidrawLayer[];
   onChange: (color: string) => void;
@@ -240,7 +244,7 @@ export const ColorPicker = ({
   palette = COLOR_PALETTE,
   topPicks,
   updateData,
-  appState
+  editorState
 }: ColorPickerProps) => (
   <div>
     <div aria-modal="true" className="color-picker-container" role="dialog">
@@ -262,12 +266,12 @@ export const ColorPicker = ({
         onOpenChange={(open) => {
           updateData({ openPopup: open ? type : null });
         }}
-        open={appState.openPopup === type}
+        open={editorState.openPopup === type}
       >
         {/* serves as an active color indicator as well */}
         <ColorPickerTrigger color={color} label={label} type={type} />
         {/* popup content */}
-        {appState.openPopup === type && (
+        {editorState.openPopup === type && (
           <ColorPickerPopupContent
             color={color}
             label={label}

@@ -1,10 +1,10 @@
 import Scene from "../../lib/scene/scene/Scene";
+import { getUpdatedTimestamp } from "../../lib/utils/utils";
 import { getSizeFromPoints } from "../points";
 import { randomInteger } from "../random";
 import { invalidateShapeForLayer } from "../renderer/renderLayer";
 import { Point } from "../types";
 import { Mutable } from "../utility-types";
-import { getUpdatedTimestamp } from "../utils";
 import { ExcalidrawLayer } from "./types";
 
 type LayerUpdate<TLayer extends ExcalidrawLayer> = Omit<

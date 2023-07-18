@@ -1,7 +1,7 @@
 import * as restore from "../../../lib/data/restore/restore";
 import { ImportedDataState } from "../../../lib/data/types";
-import { getDefaultAppState } from "../../appState";
 import { DEFAULT_SIDEBAR, FONT_FAMILY, ROUNDNESS } from "../../constants";
+import { getDefaultAppState } from "../../editorState";
 import { newLayerWith } from "../../layer/mutateLayer";
 import * as sizeHelpers from "../../layer/sizeHelpers";
 import {
@@ -451,7 +451,7 @@ describe("restoreAppState", () => {
     });
   });
 
-  it("should handle appState.openSidebar legacy values", () => {
+  it("should handle editorState.openSidebar legacy values", () => {
     expect(restore.restoreAppState({}, null).openSidebar).toBe(null);
     expect(
       restore.restoreAppState({ openSidebar: "library" } as any, null)
@@ -489,10 +489,10 @@ describe("restore", () => {
     stubLocalAppState.name = "local app state";
 
     const restoredData = restore.restore(null, stubLocalAppState, null);
-    expect(restoredData.appState.cursorButton).toBe(
+    expect(restoredData.editorState.cursorButton).toBe(
       stubLocalAppState.cursorButton
     );
-    expect(restoredData.appState.name).toBe(stubLocalAppState.name);
+    expect(restoredData.editorState.name).toBe(stubLocalAppState.name);
   });
 
   it("when imported data state has layers", () => {
@@ -519,11 +519,11 @@ describe("restore", () => {
     stubImportedAppState.name = "imported app state";
 
     const importedDataState = {} as ImportedDataState;
-    importedDataState.appState = stubImportedAppState;
+    importedDataState.editorState = stubImportedAppState;
 
     const restoredData = restore.restore(importedDataState, null, null);
-    expect(restoredData.appState.cursorButton).toBe("up");
-    expect(restoredData.appState.name).toBe(stubImportedAppState.name);
+    expect(restoredData.editorState.cursorButton).toBe("up");
+    expect(restoredData.editorState.name).toBe(stubImportedAppState.name);
   });
 
   it("bump versions of local duplicate layers when supplied", () => {

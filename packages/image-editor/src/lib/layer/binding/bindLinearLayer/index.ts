@@ -11,6 +11,7 @@ import {
 } from "../../collision";
 import { LinearLayerEditor } from "../../linearLayerEditor";
 import { mutateLayer } from "../../mutate";
+import {arrayToMap} from "../../../utils";
 
 /**
  * Returns the focus and gap values for layer

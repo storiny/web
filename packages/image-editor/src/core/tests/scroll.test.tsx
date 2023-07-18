@@ -12,7 +12,7 @@ import {
 
 const { h } = window;
 
-describe("appState", () => {
+describe("editorState", () => {
   it("scroll-to-content on init works with non-zero offsets", async () => {
     const WIDTH = 200;
     const HEIGHT = 100;

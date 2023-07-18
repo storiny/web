@@ -1,5 +1,5 @@
 import { LinearLayer, NonDeleted } from "../../../../types";
-import { MaybeTransformHandleType } from "../../transformHandles/transformHandles";
+import { MaybeTransformHandleType } from "../../transformHandles";
 
 /**
  * Returns the resize arrow direction
@@ -16,5 +16,6 @@ export const getResizeArrowDirection = (
     (transformHandleType === "ne" && px >= 0) ||
     (transformHandleType === "sw" && px <= 0) ||
     (transformHandleType === "se" && (px > 0 || py > 0));
+
   return isResizeEnd ? "end" : "origin";
 };

@@ -1,4 +1,5 @@
 import { getSelectedLayers } from "../../lib/scene";
+import { arrayToMap } from "../../lib/utils/utils";
 import { updateFrameMembershipOfSelectedLayers } from "../frame";
 import { CODES, KEYS } from "../keys";
 import { getNonDeletedLayers } from "../layer";
@@ -11,18 +12,17 @@ import { getCommonBoundingBox } from "../layer/bounds";
 import { resizeMultipleLayers } from "../layer/resizeLayers";
 import { ExcalidrawLayer, NonDeleted } from "../layer/types";
 import { AppState, PointerDownState } from "../types";
-import { arrayToMap } from "../utils";
 import { register } from "./register";
 
 export const actionFlipHorizontal = register({
   name: "flipHorizontal",
   trackEvent: { category: "layer" },
-  perform: (layers, appState) => ({
+  perform: (layers, editorState) => ({
     layers: updateFrameMembershipOfSelectedLayers(
-      flipSelectedLayers(layers, appState, "horizontal"),
-      appState
+      flipSelectedLayers(layers, editorState, "horizontal"),
+      editorState
     ),
-    appState,
+    editorState,
     commitToHistory: true
   }),
   keyTest: (event) => event.shiftKey && event.code === CODES.H,
@@ -32,12 +32,12 @@ export const actionFlipHorizontal = register({
 export const actionFlipVertical = register({
   name: "flipVertical",
   trackEvent: { category: "layer" },
-  perform: (layers, appState) => ({
+  perform: (layers, editorState) => ({
     layers: updateFrameMembershipOfSelectedLayers(
-      flipSelectedLayers(layers, appState, "vertical"),
-      appState
+      flipSelectedLayers(layers, editorState, "vertical"),
+      editorState
     ),
-    appState,
+    editorState,
     commitToHistory: true
   }),
   keyTest: (event) =>
@@ -47,18 +47,18 @@ export const actionFlipVertical = register({
 
 const flipSelectedLayers = (
   layers: readonly ExcalidrawLayer[],
-  appState: Readonly<AppState>,
+  editorState: Readonly<AppState>,
   flipDirection: "horizontal" | "vertical"
 ) => {
   const selectedLayers = getSelectedLayers(
     getNonDeletedLayers(layers),
-    appState,
+    editorState,
     {
       includeLayersInFrames: true
     }
   );
 
-  const updatedLayers = flipLayers(selectedLayers, appState, flipDirection);
+  const updatedLayers = flipLayers(selectedLayers, editorState, flipDirection);
 
   const updatedLayersMap = arrayToMap(updatedLayers);
 
@@ -67,7 +67,7 @@ const flipSelectedLayers = (
 
 const flipLayers = (
   layers: NonDeleted<ExcalidrawLayer>[],
-  appState: AppState,
+  editorState: AppState,
   flipDirection: "horizontal" | "vertical"
 ): ExcalidrawLayer[] => {
   const { minX, minY, maxX, maxY } = getCommonBoundingBox(layers);
@@ -81,7 +81,7 @@ const flipLayers = (
     flipDirection === "horizontal" ? minY : maxY
   );
 
-  (isBindingEnabled(appState)
+  (isBindingEnabled(editorState)
     ? bindOrUnbindSelectedLayers
     : unbindLinearLayers)(layers);
 

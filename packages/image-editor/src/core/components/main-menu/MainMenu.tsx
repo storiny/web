@@ -1,23 +1,22 @@
 import React from "react";
+
+import { composeEventHandlers } from "../../../lib/utils/utils";
+import { useTunnels } from "../../context/tunnels";
+import { useUIAppState } from "../../context/ui-editorState";
+import { t } from "../../i18n";
 import { useDevice, useExcalidrawSetAppState } from "../App";
 import DropdownMenu from "../dropdownMenu/DropdownMenu";
-
-import * as DefaultItems from "./DefaultItems";
-
-import { UserList } from "../UserList";
-import { t } from "../../i18n";
-import { HamburgerMenuIcon } from "../icons";
 import { withInternalFallback } from "../hoc/withInternalFallback";
-import { composeEventHandlers } from "../../utils";
-import { useTunnels } from "../../context/tunnels";
-import { useUIAppState } from "../../context/ui-appState";
+import { HamburgerMenuIcon } from "../icons";
+import { UserList } from "../UserList";
+import * as DefaultItems from "./DefaultItems";
 
 const MainMenu = Object.assign(
   withInternalFallback(
     "MainMenu",
     ({
       children,
-      onSelect,
+      onSelect
     }: {
       children?: React.ReactNode;
       /**
@@ -27,7 +26,7 @@ const MainMenu = Object.assign(
     }) => {
       const { MainMenuTunnel } = useTunnels();
       const device = useDevice();
-      const appState = useUIAppState();
+      const editorState = useUIAppState();
       const setAppState = useExcalidrawSetAppState();
       const onClickOutside = device.isMobile
         ? undefined
@@ -35,14 +34,14 @@ const MainMenu = Object.assign(
 
       return (
         <MainMenuTunnel.In>
-          <DropdownMenu open={appState.openMenu === "canvas"}>
+          <DropdownMenu open={editorState.openMenu === "canvas"}>
             <DropdownMenu.Trigger
+              data-testid="main-menu-trigger"
               onToggle={() => {
                 setAppState({
-                  openMenu: appState.openMenu === "canvas" ? null : "canvas",
+                  openMenu: editorState.openMenu === "canvas" ? null : "canvas"
                 });
               }}
-              data-testid="main-menu-trigger"
             >
               {HamburgerMenuIcon}
             </DropdownMenu.Trigger>
@@ -53,12 +52,12 @@ const MainMenu = Object.assign(
               })}
             >
               {children}
-              {device.isMobile && appState.collaborators.size > 0 && (
+              {device.isMobile && editorState.collaborators.size > 0 && (
                 <fieldset className="UserList-Wrapper">
                   <legend>{t("labels.collaborators")}</legend>
                   <UserList
+                    collaborators={editorState.collaborators}
                     mobile={true}
-                    collaborators={appState.collaborators}
                   />
                 </fieldset>
               )}
@@ -66,7 +65,7 @@ const MainMenu = Object.assign(
           </DropdownMenu>
         </MainMenuTunnel.In>
       );
-    },
+    }
   ),
   {
     Trigger: DropdownMenu.Trigger,
@@ -75,8 +74,8 @@ const MainMenu = Object.assign(
     ItemCustom: DropdownMenu.ItemCustom,
     Group: DropdownMenu.Group,
     Separator: DropdownMenu.Separator,
-    DefaultItems,
-  },
+    DefaultItems
+  }
 );
 
 export default MainMenu;

@@ -5,97 +5,62 @@ import { RoughGenerator } from "roughjs/bin/generator";
 import rough from "roughjs/bin/rough";
 import { RoughSVG } from "roughjs/bin/svg";
 
-import { getDefaultAppState } from "../appState";
+import { ImageMime, LayerType } from "../../../constants";
 import {
   BOUND_TEXT_PADDING,
   FRAME_STYLE,
   MAX_DECIMALS_FOR_SVG_EXPORT,
-  MIME_TYPES,
   SVG_NS
-} from "../constants";
-import { normalizeLink } from "../data/url";
-import { getContainingFrame } from "../frame";
-import {
-  getArrowheadPoints,
-  getDiamondPoints,
-  getLayerAbsoluteCoords
-} from "../layer/bounds";
-import { LinearLayerEditor } from "../layer/linearLayerEditor";
-import {
-  getBoundTextLayer,
-  getBoundTextMaxHeight,
-  getBoundTextMaxWidth,
-  getContainerCoords,
-  getContainerLayer,
-  getLineHeightInPx
-} from "../layer/textLayer";
-import {
-  hasBoundTextLayer,
-  isArrowLayer,
-  isFreeDrawLayer,
-  isInitializedImageLayer,
-  isLinearLayer,
-  isTextLayer
-} from "../layer/typeChecks";
-import {
-  Arrowhead,
-  ExcalidrawFreeDrawLayer,
-  ExcalidrawImageLayer,
-  ExcalidrawLayer,
-  ExcalidrawLinearLayer,
-  ExcalidrawTextLayer,
-  ExcalidrawTextLayerWithContainer,
-  NonDeletedExcalidrawLayer
-} from "../layer/types";
-import { getCornerRadius, isPathALoop, isRightAngle } from "../math";
-import { RenderConfig } from "../scene/types";
-import { AppState, BinaryFiles, Zoom } from "../types";
-import { distance, getFontFamilyString, getFontString, isRTL } from "../utils";
+} from "../../../constants/new";
+import { Layer, NonDeletedLayer, TextLayer, Zoom } from "../../../types";
+import { isInitializedImageLayer } from "../../layer";
+import { RenderConfig } from "../../scene";
+import { getDefaultEditorState } from "../../state";
 
-// using a stronger invert (100% vs our regular 93%) and saturate
+// Using a stronger invert (100% vs our regular 93%) and saturate
 // as a temp hack to make images in dark theme look closer to original
 // color scheme (it's still not quite there and the colors look slightly
 // desatured, alas...)
 const IMAGE_INVERT_FILTER = "invert(100%) hue-rotate(180deg) saturate(1.25)";
 
-const defaultAppState = getDefaultAppState();
+const defaultEditorState = getDefaultEditorState();
 
-const isPendingImageLayer = (
-  layer: ExcalidrawLayer,
-  renderConfig: RenderConfig
-) =>
+const isPendingImageLayer = (layer: Layer, renderConfig: RenderConfig) =>
   isInitializedImageLayer(layer) && !renderConfig.imageCache.has(layer.fileId);
 
-const shouldResetImageFilter = (
-  layer: ExcalidrawLayer,
-  renderConfig: RenderConfig
-) =>
+const shouldResetImageFilter = (layer: Layer, renderConfig: RenderConfig) =>
   renderConfig.theme === "dark" &&
   isInitializedImageLayer(layer) &&
   !isPendingImageLayer(layer, renderConfig) &&
-  renderConfig.imageCache.get(layer.fileId)?.mimeType !== MIME_TYPES.svg;
+  renderConfig.imageCache.get(layer.fileId)?.mimeType !== ImageMime.SVG;
 
-const getDashArrayDashed = (strokeWidth: number) => [8, 8 + strokeWidth];
+const getDashArrayDashed = (strokeWidth: number): [number, number] => [
+  8,
+  8 + strokeWidth
+];
 
-const getDashArrayDotted = (strokeWidth: number) => [1.5, 6 + strokeWidth];
+const getDashArrayDotted = (strokeWidth: number): [number, number] => [
+  1.5,
+  6 + strokeWidth
+];
 
-const getCanvasPadding = (layer: ExcalidrawLayer) =>
-  layer.type === "freedraw" ? layer.strokeWidth * 12 : 20;
+const getCanvasPadding = (layer: Layer): number =>
+  layer.type === LayerType.FREE_DRAW ? layer.strokeWidth * 12 : 20;
 
-export interface ExcalidrawLayerWithCanvas {
+export interface LayerWithCanvas {
   boundTextLayerVersion: number | null;
-  canvas: HTMLCanvasLayer;
+  canvas: HTMLCanvasElement;
   canvasOffsetX: number;
   canvasOffsetY: number;
   containingFrameOpacity: number;
-  layer: ExcalidrawLayer | ExcalidrawTextLayer;
+  layer: Layer | TextLayer;
   scale: number;
   theme: RenderConfig["theme"];
   zoomValue: RenderConfig["zoom"]["value"];
 }
 
 const cappedLayerCanvasSize = (
-  layer: NonDeletedExcalidrawLayer,
+  layer: NonDeletedLayer,
   zoom: Zoom
 ): {
   height: number;
@@ -149,10 +114,10 @@ const cappedLayerCanvasSize = (
 };
 
 const generateLayerCanvas = (
-  layer: NonDeletedExcalidrawLayer,
+  layer: NonDeletedLayer,
   zoom: Zoom,
   renderConfig: RenderConfig
-): ExcalidrawLayerWithCanvas => {
+): LayerWithCanvas => {
   const canvas = document.createLayer("canvas");
   const context = canvas.getContext("2d")!;
   const padding = getCanvasPadding(layer);
@@ -249,7 +214,7 @@ const drawImagePlaceholder = (
   );
 };
 const drawLayerOnCanvas = (
-  layer: NonDeletedExcalidrawLayer,
+  layer: NonDeletedLayer,
   rc: RoughCanvas,
   context: CanvasRenderingContext2D,
   renderConfig: RenderConfig
@@ -358,12 +323,9 @@ const drawLayerOnCanvas = (
   context.globalAlpha = 1;
 };
 
-const layerWithCanvasCache = new WeakMap<
-  ExcalidrawLayer,
-  ExcalidrawLayerWithCanvas
->();
+const layerWithCanvasCache = new WeakMap<Layer, LayerWithCanvas>();
 
-const shapeCache = new WeakMap<ExcalidrawLayer, LayerShape>();
+const shapeCache = new WeakMap<Layer, LayerShape>();
 
 type LayerShape = Drawable | Drawable[] | null;
 
@@ -375,21 +337,21 @@ type LayerShapes = {
   text: null;
 };
 
-export const getShapeForLayer = <T extends ExcalidrawLayer>(layer: T) =>
+export const getShapeForLayer = <T extends Layer>(layer: T) =>
   shapeCache.get(layer) as T["type"] extends keyof LayerShapes
     ? LayerShapes[T["type"]] | undefined
     : Drawable | null | undefined;
 
-export const setShapeForLayer = <T extends ExcalidrawLayer>(
+export const setShapeForLayer = <T extends Layer>(
   layer: T,
   shape: T["type"] extends keyof LayerShapes ? LayerShapes[T["type"]] : Drawable
 ) => shapeCache.set(layer, shape);
 
-export const invalidateShapeForLayer = (layer: ExcalidrawLayer) =>
+export const invalidateShapeForLayer = (layer: Layer) =>
   shapeCache.delete(layer);
 
 export const generateRoughOptions = (
-  layer: ExcalidrawLayer,
+  layer: Layer,
   continuousPath = false
 ): Options => {
   const options: Options = {
@@ -458,7 +420,7 @@ export const generateRoughOptions = (
  * @param generator
  */
 const generateLayerShape = (
-  layer: NonDeletedExcalidrawLayer,
+  layer: NonDeletedLayer,
   generator: RoughGenerator
 ) => {
   let shape = shapeCache.get(layer);
@@ -705,10 +667,10 @@ const generateLayerShape = (
 };
 
 const generateLayerWithCanvas = (
-  layer: NonDeletedExcalidrawLayer,
+  layer: NonDeletedLayer,
   renderConfig: RenderConfig
 ) => {
-  const zoom: Zoom = renderConfig ? renderConfig.zoom : defaultAppState.zoom;
+  const zoom: Zoom = renderConfig ? renderConfig.zoom : defaultEditorState.zoom;
   const prevLayerWithCanvas = layerWithCanvasCache.get(layer);
   const shouldRegenerateBecauseZoom =
     prevLayerWithCanvas &&
@@ -734,7 +696,7 @@ const generateLayerWithCanvas = (
 };
 
 const drawLayerFromCanvas = (
-  layerWithCanvas: ExcalidrawLayerWithCanvas,
+  layerWithCanvas: LayerWithCanvas,
   rc: RoughCanvas,
   context: CanvasRenderingContext2D,
   renderConfig: RenderConfig
@@ -884,11 +846,11 @@ const drawLayerFromCanvas = (
 };
 
 export const renderLayer = (
-  layer: NonDeletedExcalidrawLayer,
+  layer: NonDeletedLayer,
   rc: RoughCanvas,
   context: CanvasRenderingContext2D,
   renderConfig: RenderConfig,
-  appState: AppState
+  editorState: AppState
 ) => {
   const generator = rc.generator;
   switch (layer.type) {
@@ -920,8 +882,8 @@ export const renderLayer = (
     case "frame": {
       if (
         !renderConfig.isExporting &&
-        appState.frameRendering.enabled &&
-        appState.frameRendering.outline
+        editorState.frameRendering.enabled &&
+        editorState.frameRendering.outline
       ) {
         context.save();
         context.translate(
@@ -1017,15 +979,20 @@ export const renderLayer = (
           const maxDim = Math.max(distance(x1, x2), distance(y1, y2));
           const padding = getCanvasPadding(layer);
           tempCanvas.width =
-            maxDim * appState.exportScale + padding * 10 * appState.exportScale;
+            maxDim * editorState.exportScale +
+            padding * 10 * editorState.exportScale;
           tempCanvas.height =
-            maxDim * appState.exportScale + padding * 10 * appState.exportScale;
+            maxDim * editorState.exportScale +
+            padding * 10 * editorState.exportScale;
 
           tempCanvasContext.translate(
             tempCanvas.width / 2,
             tempCanvas.height / 2
           );
-          tempCanvasContext.scale(appState.exportScale, appState.exportScale);
+          tempCanvasContext.scale(
+            editorState.exportScale,
+            editorState.exportScale
+          );
 
           // Shift the canvas to left most point of the arrow
           shiftX = layer.width / 2 - (layer.x - x1);
@@ -1056,7 +1023,10 @@ export const renderLayer = (
             boundTextLayer.width,
             boundTextLayer.height
           );
-          context.scale(1 / appState.exportScale, 1 / appState.exportScale);
+          context.scale(
+            1 / editorState.exportScale,
+            1 / editorState.exportScale
+          );
           context.drawImage(
             tempCanvas,
             -tempCanvas.width / 2,
@@ -1135,7 +1105,7 @@ const roughSVGDrawWithPrecision = (
 };
 
 const maybeWrapNodesInFrameClipPath = (
-  layer: NonDeletedExcalidrawLayer,
+  layer: NonDeletedLayer,
   root: SVGLayer,
   nodes: SVGLayer[],
   exportedFrameId?: string | null
@@ -1152,7 +1122,7 @@ const maybeWrapNodesInFrameClipPath = (
 };
 
 export const renderLayerToSvg = (
-  layer: NonDeletedExcalidrawLayer,
+  layer: NonDeletedLayer,
   rsvg: RoughSVG,
   svgRoot: SVGLayer,
   files: BinaryFiles,

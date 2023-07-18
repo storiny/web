@@ -1,13 +1,13 @@
-import { distance } from "../../../../core/utils";
 import { NonDeletedLayer } from "../../../../types";
 import { getCommonBounds } from "../../../layer";
+import { distance } from "../../../utils";
 
 /**
  * Computes the smallest area to fit the contents in
  * @param layers Layers
  * @param exportPadding Padding
  */
-const getCanvasSize = (
+export const getCanvasSize = (
   layers: readonly NonDeletedLayer[],
   exportPadding: number
 ): [number, number, number, number] => {

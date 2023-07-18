@@ -1,4 +1,5 @@
 import { getSelectedLayers, isSomeLayerSelected } from "../../lib/scene";
+import { updateActiveTool } from "../../lib/utils/utils";
 import { TrashIcon } from "../components/icons";
 import { ToolButton } from "../components/ToolButton";
 import { getLayersInGroup } from "../groups";
@@ -11,23 +12,22 @@ import { newLayerWith } from "../layer/mutateLayer";
 import { isBoundToContainer } from "../layer/typeChecks";
 import { ExcalidrawLayer } from "../layer/types";
 import { AppState } from "../types";
-import { updateActiveTool } from "../utils";
 import { register } from "./register";
 
 const deleteSelectedLayers = (
   layers: readonly ExcalidrawLayer[],
-  appState: AppState
+  editorState: AppState
 ) => {
   const framesToBeDeleted = new Set(
     getSelectedLayers(
       layers.filter((el) => el.type === "frame"),
-      appState
+      editorState
     ).map((el) => el.id)
   );
 
   return {
     layers: layers.map((el) => {
-      if (appState.selectedLayerIds[el.id]) {
+      if (editorState.selectedLayerIds[el.id]) {
         return newLayerWith(el, { isDeleted: true });
       }
 
@@ -35,48 +35,51 @@ const deleteSelectedLayers = (
         return newLayerWith(el, { isDeleted: true });
       }
 
-      if (isBoundToContainer(el) && appState.selectedLayerIds[el.containerId]) {
+      if (
+        isBoundToContainer(el) &&
+        editorState.selectedLayerIds[el.containerId]
+      ) {
         return newLayerWith(el, { isDeleted: true });
       }
       return el;
     }),
-    appState: {
-      ...appState,
+    editorState: {
+      ...editorState,
       selectedLayerIds: {}
     }
   };
 };
 
 const handleGroupEditingState = (
-  appState: AppState,
+  editorState: AppState,
   layers: readonly ExcalidrawLayer[]
 ): AppState => {
-  if (appState.editingGroupId) {
+  if (editorState.editingGroupId) {
     const siblingLayers = getLayersInGroup(
       getNonDeletedLayers(layers),
-      appState.editingGroupId!
+      editorState.editingGroupId!
     );
     if (siblingLayers.length) {
       return {
-        ...appState,
+        ...editorState,
         selectedLayerIds: { [siblingLayers[0].id]: true }
       };
     }
   }
-  return appState;
+  return editorState;
 };
 
 export const actionDeleteSelected = register({
   name: "deleteSelectedLayers",
   trackEvent: { category: "layer", action: "delete" },
-  perform: (layers, appState) => {
-    if (appState.editingLinearLayer) {
+  perform: (layers, editorState) => {
+    if (editorState.editingLinearLayer) {
       const {
         layerId,
         selectedPointsIndices,
         startBindingLayer,
         endBindingLayer
-      } = appState.editingLinearLayer;
+      } = editorState.editingLinearLayer;
       const layer = LinearLayerEditor.getLayer(layerId);
       if (!layer) {
         return false;
@@ -97,11 +100,11 @@ export const actionDeleteSelected = register({
           }
           return el;
         });
-        const nextAppState = handleGroupEditingState(appState, nextLayers);
+        const nextAppState = handleGroupEditingState(editorState, nextLayers);
 
         return {
           layers: nextLayers,
-          appState: {
+          editorState: {
             ...nextAppState,
             editingLinearLayer: null
           },
@@ -126,10 +129,10 @@ export const actionDeleteSelected = register({
 
       return {
         layers,
-        appState: {
-          ...appState,
+        editorState: {
+          ...editorState,
           editingLinearLayer: {
-            ...appState.editingLinearLayer,
+            ...editorState.editingLinearLayer,
             ...binding,
             selectedPointsIndices:
               selectedPointsIndices?.[0] > 0
@@ -140,42 +143,40 @@ export const actionDeleteSelected = register({
         commitToHistory: true
       };
     }
-    let { layers: nextLayers, appState: nextAppState } = deleteSelectedLayers(
-      layers,
-      appState
-    );
+    let { layers: nextLayers, editorState: nextAppState } =
+      deleteSelectedLayers(layers, editorState);
     fixBindingsAfterDeletion(
       nextLayers,
-      layers.filter(({ id }) => appState.selectedLayerIds[id])
+      layers.filter(({ id }) => editorState.selectedLayerIds[id])
     );
 
     nextAppState = handleGroupEditingState(nextAppState, nextLayers);
 
     return {
       layers: nextLayers,
-      appState: {
+      editorState: {
         ...nextAppState,
-        activeTool: updateActiveTool(appState, { type: "selection" }),
+        activeTool: updateActiveTool(editorState, { type: "selection" }),
         multiLayer: null
       },
       commitToHistory: isSomeLayerSelected(
         getNonDeletedLayers(layers),
-        appState
+        editorState
       )
     };
   },
   contextItemLabel: "labels.delete",
-  keyTest: (event, appState, layers) =>
+  keyTest: (event, editorState, layers) =>
     (event.key === KEYS.BACKSPACE || event.key === KEYS.DELETE) &&
     !event[KEYS.CTRL_OR_CMD],
-  PanelComponent: ({ layers, appState, updateData }) => (
+  PanelComponent: ({ layers, editorState, updateData }) => (
     <ToolButton
       aria-label={t("labels.delete")}
       icon={TrashIcon}
       onClick={() => updateData(null)}
       title={t("labels.delete")}
       type="button"
-      visible={isSomeLayerSelected(getNonDeletedLayers(layers), appState)}
+      visible={isSomeLayerSelected(getNonDeletedLayers(layers), editorState)}
     />
   )
 });

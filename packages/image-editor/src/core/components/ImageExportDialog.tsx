@@ -47,39 +47,39 @@ export const ErrorCanvasPreview = () => (
 
 type ImageExportModalProps = {
   actionManager: ActionManager;
-  appState: UIAppState;
+  editorState: UIAppState;
   files: BinaryFiles;
   layers: readonly NonDeletedExcalidrawLayer[];
   onExportImage: AppClassProperties["onExportImage"];
 };
 
 const ImageExportModal = ({
-  appState,
+  editorState,
   layers,
   files,
   actionManager,
   onExportImage
 }: ImageExportModalProps) => {
   const appProps = useAppProps();
-  const [projectName, setProjectName] = useState(appState.name);
+  const [projectName, setProjectName] = useState(editorState.name);
 
-  const someLayerIsSelected = isSomeLayerSelected(layers, appState);
+  const someLayerIsSelected = isSomeLayerSelected(layers, editorState);
 
   const [exportSelected, setExportSelected] = useState(someLayerIsSelected);
   const [exportWithBackground, setExportWithBackground] = useState(
-    appState.exportBackground
+    editorState.exportBackground
   );
   const [exportDarkMode, setExportDarkMode] = useState(
-    appState.exportWithDarkMode
+    editorState.exportWithDarkMode
   );
-  const [embedScene, setEmbedScene] = useState(appState.exportEmbedScene);
-  const [exportScale, setExportScale] = useState(appState.exportScale);
+  const [embedScene, setEmbedScene] = useState(editorState.exportEmbedScene);
+  const [exportScale, setExportScale] = useState(editorState.exportScale);
 
   const previewRef = useRef<HTMLDivLayer>(null);
   const [renderError, setRenderError] = useState<Error | null>(null);
 
   const exportedLayers = exportSelected
-    ? getSelectedLayers(layers, appState, {
+    ? getSelectedLayers(layers, editorState, {
         includeBoundTextLayer: true,
         includeLayersInFrames: true
       })
@@ -97,7 +97,7 @@ const ImageExportModal = ({
     }
     exportToCanvas({
       layers: exportedLayers,
-      appState,
+      editorState,
       files,
       exportPadding: DEFAULT_EXPORT_PADDING,
       maxWidthOrHeight: Math.max(maxWidth, maxHeight)
@@ -114,7 +114,7 @@ const ImageExportModal = ({
         console.error(error);
         setRenderError(error);
       });
-  }, [appState, files, exportedLayers]);
+  }, [editorState, files, exportedLayers]);
 
   return (
     <div className="ImageExportModal">
@@ -128,7 +128,8 @@ const ImageExportModal = ({
             <input
               className="TextInput"
               disabled={
-                typeof appProps.name !== "undefined" || appState.viewModeEnabled
+                typeof appProps.name !== "undefined" ||
+                editorState.viewModeEnabled
               }
               onChange={(event) => {
                 setProjectName(event.target.value);
@@ -305,20 +306,20 @@ const ExportSetting = ({
 
 export const ImageExportDialog = ({
   layers,
-  appState,
+  editorState,
   files,
   actionManager,
   onExportImage,
   onCloseRequest
 }: {
   actionManager: ActionManager;
-  appState: UIAppState;
+  editorState: UIAppState;
   files: BinaryFiles;
   layers: readonly NonDeletedExcalidrawLayer[];
   onCloseRequest: () => void;
   onExportImage: AppClassProperties["onExportImage"];
 }) => {
-  if (appState.openDialog !== "imageExport") {
+  if (editorState.openDialog !== "imageExport") {
     return null;
   }
 
@@ -326,7 +327,7 @@ export const ImageExportDialog = ({
     <Dialog onCloseRequest={onCloseRequest} size="wide" title={false}>
       <ImageExportModal
         actionManager={actionManager}
-        appState={appState}
+        editorState={editorState}
         files={files}
         layers={layers}
         onExportImage={onExportImage}

@@ -5,6 +5,7 @@ import type { FileSystemHandle } from "../lib/data/fs/filesystem";
 import Library from "../lib/data/library";
 import { ImportedDataState } from "../lib/data/types";
 import { isOverScrollBars } from "../lib/scene";
+import type { ResolvablePromise, throttleRAF } from "../lib/utils/utils";
 import { Spreadsheet } from "./charts";
 import { ClipboardData } from "./clipboard";
 import type App from "./components/App";
@@ -34,7 +35,6 @@ import {
 } from "./layer/types";
 import { SHAPES } from "./shapes";
 import { ForwardRef, Merge, ValueOf } from "./utility-types";
-import type { ResolvablePromise, throttleRAF } from "./utils";
 
 export type Point = Readonly<RoughPoint>;
 
@@ -143,7 +143,7 @@ export type AppState = {
    *
    * NOTE this is only a user preference and does not reflect the actual docked
    * state of the sidebar, because the host apps can override this through
-   * a DefaultSidebar prop, which is not reflected back to the appState.
+   * a DefaultSidebar prop, which is not reflected back to the editorState.
    */
   defaultSidebarDockedPreference: boolean;
   draggingLayer: NonDeletedExcalidrawLayer | null;
@@ -327,7 +327,7 @@ export interface ExcalidrawProps {
   name?: string;
   onChange?: (
     layers: readonly ExcalidrawLayer[],
-    appState: AppState,
+    editorState: AppState,
     files: BinaryFiles
   ) => void;
   onLibraryChange?: (libraryItems: LibraryItems) => void | Promise<any>;
@@ -353,11 +353,11 @@ export interface ExcalidrawProps {
   onScrollChange?: (scrollX: number, scrollY: number) => void;
   renderCustomStats?: (
     layers: readonly NonDeletedExcalidrawLayer[],
-    appState: UIAppState
+    editorState: UIAppState
   ) => JSX.Layer;
   renderTopRightUI?: (
     isMobile: boolean,
-    appState: UIAppState
+    editorState: UIAppState
   ) => JSX.Layer | null;
   theme?: Theme;
   viewModeEnabled?: boolean;
@@ -365,9 +365,9 @@ export interface ExcalidrawProps {
 }
 
 export type SceneData = {
-  appState?: ImportedDataState["appState"];
   collaborators?: Map<string, Collaborator>;
   commitToHistory?: boolean;
+  editorState?: ImportedDataState["editorState"];
   layers?: ImportedDataState["layers"];
 };
 
@@ -380,13 +380,13 @@ export enum UserIdleState {
 export type ExportOpts = {
   onExportToBackend?: (
     exportedLayers: readonly NonDeletedExcalidrawLayer[],
-    appState: UIAppState,
+    editorState: UIAppState,
     files: BinaryFiles,
     canvas: HTMLCanvasLayer | null
   ) => void;
   renderCustomUI?: (
     exportedLayers: readonly NonDeletedExcalidrawLayer[],
-    appState: UIAppState,
+    editorState: UIAppState,
     files: BinaryFiles,
     canvas: HTMLCanvasLayer | null
   ) => JSX.Layer;

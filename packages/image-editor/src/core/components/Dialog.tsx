@@ -5,6 +5,7 @@ import { useSetAtom } from "jotai";
 import React, { useEffect, useState } from "react";
 
 import { useCallbackRefState } from "../../lib/hooks/useCallbackRefState";
+import { queryFocusableLayers } from "../../lib/utils/utils";
 import {
   useDevice,
   useExcalidrawContainer,
@@ -13,7 +14,6 @@ import {
 import { t } from "../i18n";
 import { jotaiScope } from "../jotai";
 import { KEYS } from "../keys";
-import { queryFocusableLayers } from "../utils";
 import { back, CloseIcon } from "./icons";
 import { Island } from "./Island";
 import { isLibraryMenuOpenAtom } from "./LibraryMenu";

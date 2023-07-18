@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`contextMenu layer right-clicking on a group should select whole group: [end of test] appState 1`] = `
+exports[`contextMenu layer right-clicking on a group should select whole group: [end of test] editorState 1`] = `
 Object {
   "activeTool": Object {
     "customType": null,
@@ -450,7 +450,7 @@ Object {
   "redoStack": Array [],
   "stateHistory": Array [
     Object {
-      "appState": Object {
+      "editorState": Object {
         "editingGroupId": null,
         "editingLinearLayer": null,
         "name": "Untitled-201933152653",
@@ -468,7 +468,7 @@ exports[`contextMenu layer right-clicking on a group should select whole group: 
 
 exports[`contextMenu layer right-clicking on a group should select whole group: [end of test] number of renders 1`] = `7`;
 
-exports[`contextMenu layer selecting 'Add to library' in context menu adds layer to library: [end of test] appState 1`] = `
+exports[`contextMenu layer selecting 'Add to library' in context menu adds layer to library: [end of test] editorState 1`] = `
 Object {
   "activeTool": Object {
     "customType": null,
@@ -605,7 +605,7 @@ Object {
   "redoStack": Array [],
   "stateHistory": Array [
     Object {
-      "appState": Object {
+      "editorState": Object {
         "editingGroupId": null,
         "editingLinearLayer": null,
         "name": "Untitled-201933152653",
@@ -616,7 +616,7 @@ Object {
       "layers": Array [],
     },
     Object {
-      "appState": Object {
+      "editorState": Object {
         "editingGroupId": null,
         "editingLinearLayer": null,
         "name": "Untitled-201933152653",
@@ -666,7 +666,7 @@ exports[`contextMenu layer selecting 'Add to library' in context menu adds layer
 
 exports[`contextMenu layer selecting 'Add to library' in context menu adds layer to library: [end of test] number of renders 1`] = `14`;
 
-exports[`contextMenu layer selecting 'Bring forward' in context menu brings layer forward: [end of test] appState 1`] = `
+exports[`contextMenu layer selecting 'Bring forward' in context menu brings layer forward: [end of test] editorState 1`] = `
 Object {
   "activeTool": Object {
     "customType": null,
@@ -833,7 +833,7 @@ Object {
   "redoStack": Array [],
   "stateHistory": Array [
     Object {
-      "appState": Object {
+      "editorState": Object {
         "editingGroupId": null,
         "editingLinearLayer": null,
         "name": "Untitled-201933152653",
@@ -844,7 +844,7 @@ Object {
       "layers": Array [],
     },
     Object {
-      "appState": Object {
+      "editorState": Object {
         "editingGroupId": null,
         "editingLinearLayer": null,
         "name": "Untitled-201933152653",
@@ -887,7 +887,7 @@ Object {
       ],
     },
     Object {
-      "appState": Object {
+      "editorState": Object {
         "editingGroupId": null,
         "editingLinearLayer": null,
         "name": "Untitled-201933152653",
@@ -959,7 +959,7 @@ Object {
       ],
     },
     Object {
-      "appState": Object {
+      "editorState": Object {
         "editingGroupId": null,
         "editingLinearLayer": null,
         "name": "Untitled-201933152653",
@@ -1038,7 +1038,7 @@ exports[`contextMenu layer selecting 'Bring forward' in context menu brings laye
 
 exports[`contextMenu layer selecting 'Bring forward' in context menu brings layer forward: [end of test] number of renders 1`] = `18`;
 
-exports[`contextMenu layer selecting 'Bring to front' in context menu brings layer to front: [end of test] appState 1`] = `
+exports[`contextMenu layer selecting 'Bring to front' in context menu brings layer to front: [end of test] editorState 1`] = `
 Object {
   "activeTool": Object {
     "customType": null,
@@ -1205,7 +1205,7 @@ Object {
   "redoStack": Array [],
   "stateHistory": Array [
     Object {
-      "appState": Object {
+      "editorState": Object {
         "editingGroupId": null,
         "editingLinearLayer": null,
         "name": "Untitled-201933152653",
@@ -1216,7 +1216,7 @@ Object {
       "layers": Array [],
     },
     Object {
-      "appState": Object {
+      "editorState": Object {
         "editingGroupId": null,
         "editingLinearLayer": null,
         "name": "Untitled-201933152653",
@@ -1259,7 +1259,7 @@ Object {
       ],
     },
     Object {
-      "appState": Object {
+      "editorState": Object {
         "editingGroupId": null,
         "editingLinearLayer": null,
         "name": "Untitled-201933152653",
@@ -1331,7 +1331,7 @@ Object {
       ],
     },
     Object {
-      "appState": Object {
+      "editorState": Object {
         "editingGroupId": null,
         "editingLinearLayer": null,
         "name": "Untitled-201933152653",
@@ -1410,7 +1410,7 @@ exports[`contextMenu layer selecting 'Bring to front' in context menu brings lay
 
 exports[`contextMenu layer selecting 'Bring to front' in context menu brings layer to front: [end of test] number of renders 1`] = `18`;
 
-exports[`contextMenu layer selecting 'Copy styles' in context menu copies styles: [end of test] appState 1`] = `
+exports[`contextMenu layer selecting 'Copy styles' in context menu copies styles: [end of test] editorState 1`] = `
 Object {
   "activeTool": Object {
     "customType": null,
@@ -1547,7 +1547,7 @@ Object {
   "redoStack": Array [],
   "stateHistory": Array [
     Object {
-      "appState": Object {
+      "editorState": Object {
         "editingGroupId": null,
         "editingLinearLayer": null,
         "name": "Untitled-201933152653",
@@ -1558,7 +1558,7 @@ Object {
       "layers": Array [],
     },
     Object {
-      "appState": Object {
+      "editorState": Object {
         "editingGroupId": null,
         "editingLinearLayer": null,
         "name": "Untitled-201933152653",
@@ -1608,7 +1608,7 @@ exports[`contextMenu layer selecting 'Copy styles' in context menu copies styles
 
 exports[`contextMenu layer selecting 'Copy styles' in context menu copies styles: [end of test] number of renders 1`] = `14`;
 
-exports[`contextMenu layer selecting 'Delete' in context menu deletes layer: [end of test] appState 1`] = `
+exports[`contextMenu layer selecting 'Delete' in context menu deletes layer: [end of test] editorState 1`] = `
 Object {
   "activeTool": Object {
     "customType": null,
@@ -1741,7 +1741,7 @@ Object {
   "redoStack": Array [],
   "stateHistory": Array [
     Object {
-      "appState": Object {
+      "editorState": Object {
         "editingGroupId": null,
         "editingLinearLayer": null,
         "name": "Untitled-201933152653",
@@ -1752,7 +1752,7 @@ Object {
       "layers": Array [],
     },
     Object {
-      "appState": Object {
+      "editorState": Object {
         "editingGroupId": null,
         "editingLinearLayer": null,
         "name": "Untitled-201933152653",
@@ -1795,7 +1795,7 @@ Object {
       ],
     },
     Object {
-      "appState": Object {
+      "editorState": Object {
         "editingGroupId": null,
         "editingLinearLayer": null,
         "name": "Untitled-201933152653",
@@ -1843,7 +1843,7 @@ exports[`contextMenu layer selecting 'Delete' in context menu deletes layer: [en
 
 exports[`contextMenu layer selecting 'Delete' in context menu deletes layer: [end of test] number of renders 1`] = `14`;
 
-exports[`contextMenu layer selecting 'Duplicate' in context menu duplicates layer: [end of test] appState 1`] = `
+exports[`contextMenu layer selecting 'Duplicate' in context menu duplicates layer: [end of test] editorState 1`] = `
 Object {
   "activeTool": Object {
     "customType": null,
@@ -2010,7 +2010,7 @@ Object {
   "redoStack": Array [],
   "stateHistory": Array [
     Object {
-      "appState": Object {
+      "editorState": Object {
         "editingGroupId": null,
         "editingLinearLayer": null,
         "name": "Untitled-201933152653",
@@ -2021,7 +2021,7 @@ Object {
       "layers": Array [],
     },
     Object {
-      "appState": Object {
+      "editorState": Object {
         "editingGroupId": null,
         "editingLinearLayer": null,
         "name": "Untitled-201933152653",
@@ -2064,7 +2064,7 @@ Object {
       ],
     },
     Object {
-      "appState": Object {
+      "editorState": Object {
         "editingGroupId": null,
         "editingLinearLayer": null,
         "name": "Untitled-201933152653",
@@ -2143,7 +2143,7 @@ exports[`contextMenu layer selecting 'Duplicate' in context menu duplicates laye
 
 exports[`contextMenu layer selecting 'Duplicate' in context menu duplicates layer: [end of test] number of renders 1`] = `14`;
 
-exports[`contextMenu layer selecting 'Group selection' in context menu groups selected layers: [end of test] appState 1`] = `
+exports[`contextMenu layer selecting 'Group selection' in context menu groups selected layers: [end of test] editorState 1`] = `
 Object {
   "activeTool": Object {
     "customType": null,
@@ -2319,7 +2319,7 @@ Object {
   "redoStack": Array [],
   "stateHistory": Array [
     Object {
-      "appState": Object {
+      "editorState": Object {
         "editingGroupId": null,
         "editingLinearLayer": null,
         "name": "Untitled-201933152653",
@@ -2330,7 +2330,7 @@ Object {
       "layers": Array [],
     },
     Object {
-      "appState": Object {
+      "editorState": Object {
         "editingGroupId": null,
         "editingLinearLayer": null,
         "name": "Untitled-201933152653",
@@ -2373,7 +2373,7 @@ Object {
       ],
     },
     Object {
-      "appState": Object {
+      "editorState": Object {
         "editingGroupId": null,
         "editingLinearLayer": null,
         "name": "Untitled-201933152653",
@@ -2445,7 +2445,7 @@ Object {
       ],
     },
     Object {
-      "appState": Object {
+      "editorState": Object {
         "editingGroupId": null,
         "editingLinearLayer": null,
         "name": "Untitled-201933152653",
@@ -2531,7 +2531,7 @@ exports[`contextMenu layer selecting 'Group selection' in context menu groups se
 
 exports[`contextMenu layer selecting 'Group selection' in context menu groups selected layers: [end of test] number of renders 1`] = `20`;
 
-exports[`contextMenu layer selecting 'Paste styles' in context menu pastes styles: [end of test] appState 1`] = `
+exports[`contextMenu layer selecting 'Paste styles' in context menu pastes styles: [end of test] editorState 1`] = `
 Object {
   "activeTool": Object {
     "customType": null,
@@ -2700,7 +2700,7 @@ Object {
   "redoStack": Array [],
   "stateHistory": Array [
     Object {
-      "appState": Object {
+      "editorState": Object {
         "editingGroupId": null,
         "editingLinearLayer": null,
         "name": "Untitled-201933152653",
@@ -2711,7 +2711,7 @@ Object {
       "layers": Array [],
     },
     Object {
-      "appState": Object {
+      "editorState": Object {
         "editingGroupId": null,
         "editingLinearLayer": null,
         "name": "Untitled-201933152653",
@@ -2754,7 +2754,7 @@ Object {
       ],
     },
     Object {
-      "appState": Object {
+      "editorState": Object {
         "editingGroupId": null,
         "editingLinearLayer": null,
         "name": "Untitled-201933152653",
@@ -2826,7 +2826,7 @@ Object {
       ],
     },
     Object {
-      "appState": Object {
+      "editorState": Object {
         "editingGroupId": null,
         "editingLinearLayer": null,
         "name": "Untitled-201933152653",
@@ -2898,7 +2898,7 @@ Object {
       ],
     },
     Object {
-      "appState": Object {
+      "editorState": Object {
         "editingGroupId": null,
         "editingLinearLayer": null,
         "name": "Untitled-201933152653",
@@ -2970,7 +2970,7 @@ Object {
       ],
     },
     Object {
-      "appState": Object {
+      "editorState": Object {
         "editingGroupId": null,
         "editingLinearLayer": null,
         "name": "Untitled-201933152653",
@@ -3042,7 +3042,7 @@ Object {
       ],
     },
     Object {
-      "appState": Object {
+      "editorState": Object {
         "editingGroupId": null,
         "editingLinearLayer": null,
         "name": "Untitled-201933152653",
@@ -3114,7 +3114,7 @@ Object {
       ],
     },
     Object {
-      "appState": Object {
+      "editorState": Object {
         "editingGroupId": null,
         "editingLinearLayer": null,
         "name": "Untitled-201933152653",
@@ -3186,7 +3186,7 @@ Object {
       ],
     },
     Object {
-      "appState": Object {
+      "editorState": Object {
         "editingGroupId": null,
         "editingLinearLayer": null,
         "name": "Untitled-201933152653",
@@ -3258,7 +3258,7 @@ Object {
       ],
     },
     Object {
-      "appState": Object {
+      "editorState": Object {
         "editingGroupId": null,
         "editingLinearLayer": null,
         "name": "Untitled-201933152653",
@@ -3330,7 +3330,7 @@ Object {
       ],
     },
     Object {
-      "appState": Object {
+      "editorState": Object {
         "editingGroupId": null,
         "editingLinearLayer": null,
         "name": "Untitled-201933152653",
@@ -3409,7 +3409,7 @@ exports[`contextMenu layer selecting 'Paste styles' in context menu pastes style
 
 exports[`contextMenu layer selecting 'Paste styles' in context menu pastes styles: [end of test] number of renders 1`] = `32`;
 
-exports[`contextMenu layer selecting 'Send backward' in context menu sends layer backward: [end of test] appState 1`] = `
+exports[`contextMenu layer selecting 'Send backward' in context menu sends layer backward: [end of test] editorState 1`] = `
 Object {
   "activeTool": Object {
     "customType": null,
@@ -3576,7 +3576,7 @@ Object {
   "redoStack": Array [],
   "stateHistory": Array [
     Object {
-      "appState": Object {
+      "editorState": Object {
         "editingGroupId": null,
         "editingLinearLayer": null,
         "name": "Untitled-201933152653",
@@ -3587,7 +3587,7 @@ Object {
       "layers": Array [],
     },
     Object {
-      "appState": Object {
+      "editorState": Object {
         "editingGroupId": null,
         "editingLinearLayer": null,
         "name": "Untitled-201933152653",
@@ -3630,7 +3630,7 @@ Object {
       ],
     },
     Object {
-      "appState": Object {
+      "editorState": Object {
         "editingGroupId": null,
         "editingLinearLayer": null,
         "name": "Untitled-201933152653",
@@ -3702,7 +3702,7 @@ Object {
       ],
     },
     Object {
-      "appState": Object {
+      "editorState": Object {
         "editingGroupId": null,
         "editingLinearLayer": null,
         "name": "Untitled-201933152653",
@@ -3781,7 +3781,7 @@ exports[`contextMenu layer selecting 'Send backward' in context menu sends layer
 
 exports[`contextMenu layer selecting 'Send backward' in context menu sends layer backward: [end of test] number of renders 1`] = `18`;
 
-exports[`contextMenu layer selecting 'Send to back' in context menu sends layer to back: [end of test] appState 1`] = `
+exports[`contextMenu layer selecting 'Send to back' in context menu sends layer to back: [end of test] editorState 1`] = `
 Object {
   "activeTool": Object {
     "customType": null,
@@ -3948,7 +3948,7 @@ Object {
   "redoStack": Array [],
   "stateHistory": Array [
     Object {
-      "appState": Object {
+      "editorState": Object {
         "editingGroupId": null,
         "editingLinearLayer": null,
         "name": "Untitled-201933152653",
@@ -3959,7 +3959,7 @@ Object {
       "layers": Array [],
     },
     Object {
-      "appState": Object {
+      "editorState": Object {
         "editingGroupId": null,
         "editingLinearLayer": null,
         "name": "Untitled-201933152653",
@@ -4002,7 +4002,7 @@ Object {
       ],
     },
     Object {
-      "appState": Object {
+      "editorState": Object {
         "editingGroupId": null,
         "editingLinearLayer": null,
         "name": "Untitled-201933152653",
@@ -4074,7 +4074,7 @@ Object {
       ],
     },
     Object {
-      "appState": Object {
+      "editorState": Object {
         "editingGroupId": null,
         "editingLinearLayer": null,
         "name": "Untitled-201933152653",
@@ -4153,7 +4153,7 @@ exports[`contextMenu layer selecting 'Send to back' in context menu sends layer 
 
 exports[`contextMenu layer selecting 'Send to back' in context menu sends layer to back: [end of test] number of renders 1`] = `18`;
 
-exports[`contextMenu layer selecting 'Ungroup selection' in context menu ungroups selected group: [end of test] appState 1`] = `
+exports[`contextMenu layer selecting 'Ungroup selection' in context menu ungroups selected group: [end of test] editorState 1`] = `
 Object {
   "activeTool": Object {
     "customType": null,
@@ -4323,7 +4323,7 @@ Object {
   "redoStack": Array [],
   "stateHistory": Array [
     Object {
-      "appState": Object {
+      "editorState": Object {
         "editingGroupId": null,
         "editingLinearLayer": null,
         "name": "Untitled-201933152653",
@@ -4334,7 +4334,7 @@ Object {
       "layers": Array [],
     },
     Object {
-      "appState": Object {
+      "editorState": Object {
         "editingGroupId": null,
         "editingLinearLayer": null,
         "name": "Untitled-201933152653",
@@ -4377,7 +4377,7 @@ Object {
       ],
     },
     Object {
-      "appState": Object {
+      "editorState": Object {
         "editingGroupId": null,
         "editingLinearLayer": null,
         "name": "Untitled-201933152653",
@@ -4449,7 +4449,7 @@ Object {
       ],
     },
     Object {
-      "appState": Object {
+      "editorState": Object {
         "editingGroupId": null,
         "editingLinearLayer": null,
         "name": "Untitled-201933152653",
@@ -4528,7 +4528,7 @@ Object {
       ],
     },
     Object {
-      "appState": Object {
+      "editorState": Object {
         "editingGroupId": null,
         "editingLinearLayer": null,
         "name": "Untitled-201933152653",
@@ -4608,7 +4608,7 @@ exports[`contextMenu layer selecting 'Ungroup selection' in context menu ungroup
 
 exports[`contextMenu layer selecting 'Ungroup selection' in context menu ungroups selected group: [end of test] number of renders 1`] = `21`;
 
-exports[`contextMenu layer shows 'Group selection' in context menu for multiple selected layers: [end of test] appState 1`] = `
+exports[`contextMenu layer shows 'Group selection' in context menu for multiple selected layers: [end of test] editorState 1`] = `
 Object {
   "activeTool": Object {
     "customType": null,
@@ -5054,7 +5054,7 @@ Object {
   "redoStack": Array [],
   "stateHistory": Array [
     Object {
-      "appState": Object {
+      "editorState": Object {
         "editingGroupId": null,
         "editingLinearLayer": null,
         "name": "Untitled-201933152653",
@@ -5065,7 +5065,7 @@ Object {
       "layers": Array [],
     },
     Object {
-      "appState": Object {
+      "editorState": Object {
         "editingGroupId": null,
         "editingLinearLayer": null,
         "name": "Untitled-201933152653",
@@ -5108,7 +5108,7 @@ Object {
       ],
     },
     Object {
-      "appState": Object {
+      "editorState": Object {
         "editingGroupId": null,
         "editingLinearLayer": null,
         "name": "Untitled-201933152653",
@@ -5187,7 +5187,7 @@ exports[`contextMenu layer shows 'Group selection' in context menu for multiple 
 
 exports[`contextMenu layer shows 'Group selection' in context menu for multiple selected layers: [end of test] number of renders 1`] = `20`;
 
-exports[`contextMenu layer shows 'Ungroup selection' in context menu for group inside selected layers: [end of test] appState 1`] = `
+exports[`contextMenu layer shows 'Ungroup selection' in context menu for group inside selected layers: [end of test] editorState 1`] = `
 Object {
   "activeTool": Object {
     "customType": null,
@@ -5639,7 +5639,7 @@ Object {
   "redoStack": Array [],
   "stateHistory": Array [
     Object {
-      "appState": Object {
+      "editorState": Object {
         "editingGroupId": null,
         "editingLinearLayer": null,
         "name": "Untitled-201933152653",
@@ -5650,7 +5650,7 @@ Object {
       "layers": Array [],
     },
     Object {
-      "appState": Object {
+      "editorState": Object {
         "editingGroupId": null,
         "editingLinearLayer": null,
         "name": "Untitled-201933152653",
@@ -5693,7 +5693,7 @@ Object {
       ],
     },
     Object {
-      "appState": Object {
+      "editorState": Object {
         "editingGroupId": null,
         "editingLinearLayer": null,
         "name": "Untitled-201933152653",
@@ -5765,7 +5765,7 @@ Object {
       ],
     },
     Object {
-      "appState": Object {
+      "editorState": Object {
         "editingGroupId": null,
         "editingLinearLayer": null,
         "name": "Untitled-201933152653",
@@ -5851,7 +5851,7 @@ exports[`contextMenu layer shows 'Ungroup selection' in context menu for group i
 
 exports[`contextMenu layer shows 'Ungroup selection' in context menu for group inside selected layers: [end of test] number of renders 1`] = `21`;
 
-exports[`contextMenu layer shows context menu for canvas: [end of test] appState 1`] = `
+exports[`contextMenu layer shows context menu for canvas: [end of test] editorState 1`] = `
 Object {
   "activeTool": Object {
     "customType": null,
@@ -6067,7 +6067,7 @@ Object {
   "redoStack": Array [],
   "stateHistory": Array [
     Object {
-      "appState": Object {
+      "editorState": Object {
         "editingGroupId": null,
         "editingLinearLayer": null,
         "name": "Untitled-201933152653",
@@ -6085,7 +6085,7 @@ exports[`contextMenu layer shows context menu for canvas: [end of test] number o
 
 exports[`contextMenu layer shows context menu for canvas: [end of test] number of renders 1`] = `6`;
 
-exports[`contextMenu layer shows context menu for layer: [end of test] appState 1`] = `
+exports[`contextMenu layer shows context menu for layer: [end of test] editorState 1`] = `
 Object {
   "activeTool": Object {
     "customType": null,
@@ -6458,7 +6458,7 @@ Object {
 }
 `;
 
-exports[`contextMenu layer shows context menu for layer: [end of test] appState 2`] = `
+exports[`contextMenu layer shows context menu for layer: [end of test] editorState 2`] = `
 Object {
   "activeTool": Object {
     "customType": null,
@@ -6933,7 +6933,7 @@ Object {
   "redoStack": Array [],
   "stateHistory": Array [
     Object {
-      "appState": Object {
+      "editorState": Object {
         "editingGroupId": null,
         "editingLinearLayer": null,
         "name": "Untitled-201933152653",
@@ -6944,7 +6944,7 @@ Object {
       "layers": Array [],
     },
     Object {
-      "appState": Object {
+      "editorState": Object {
         "editingGroupId": null,
         "editingLinearLayer": null,
         "name": "Untitled-201933152653",
@@ -6996,7 +6996,7 @@ Object {
   "redoStack": Array [],
   "stateHistory": Array [
     Object {
-      "appState": Object {
+      "editorState": Object {
         "editingGroupId": null,
         "editingLinearLayer": null,
         "name": "Untitled-201933152653",

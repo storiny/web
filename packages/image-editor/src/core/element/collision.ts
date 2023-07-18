@@ -1,6 +1,7 @@
 import { pointsOnBezierCurves } from "points-on-curve";
 import { Drawable } from "roughjs/bin/core";
 
+import * as GA from "../../lib/algebra/geom/ga";
 import {
   distance2d,
   isPathALoop,
@@ -8,7 +9,7 @@ import {
   rotate,
   rotatePoint
 } from "../../lib/math/math";
-import * as GA from "../ga";
+import { isTransparent } from "../../lib/utils/utils";
 import * as GADirection from "../gadirections";
 import * as GALine from "../galines";
 import * as GAPoint from "../gapoints";
@@ -17,7 +18,6 @@ import { getShapeForLayer } from "../renderer/renderLayer";
 import { FrameNameBoundsCache, Point } from "../types";
 import { AppState } from "../types";
 import { Mutable } from "../utility-types";
-import { isTransparent } from "../utils";
 import { isTextLayer } from ".";
 import {
   getCurvePathOps,
@@ -64,18 +64,18 @@ const isLayerDraggableFromInside = (
 
 export const hitTest = (
   layer: NonDeletedExcalidrawLayer,
-  appState: AppState,
+  editorState: AppState,
   frameNameBoundsCache: FrameNameBoundsCache,
   x: number,
   y: number
 ): boolean => {
   // How many pixels off the shape boundary we still consider a hit
-  const threshold = 10 / appState.zoom.value;
+  const threshold = 10 / editorState.zoom.value;
   const point: Point = [x, y];
 
   if (
-    isLayerSelected(appState, layer) &&
-    shouldShowBoundingBox([layer], appState)
+    isLayerSelected(editorState, layer) &&
+    shouldShowBoundingBox([layer], editorState)
   ) {
     return isPointHittingLayerBoundingBox(
       layer,
@@ -89,7 +89,7 @@ export const hitTest = (
   if (boundTextLayer) {
     const isHittingBoundTextLayer = hitTest(
       boundTextLayer,
-      appState,
+      editorState,
       frameNameBoundsCache,
       x,
       y
@@ -100,7 +100,7 @@ export const hitTest = (
   }
   return isHittingLayerNotConsideringBoundingBox(
     layer,
-    appState,
+    editorState,
     frameNameBoundsCache,
     point
   );
@@ -108,19 +108,19 @@ export const hitTest = (
 
 export const isHittingLayerBoundingBoxWithoutHittingLayer = (
   layer: NonDeletedExcalidrawLayer,
-  appState: AppState,
+  editorState: AppState,
   frameNameBoundsCache: FrameNameBoundsCache,
   x: number,
   y: number
 ): boolean => {
-  const threshold = 10 / appState.zoom.value;
+  const threshold = 10 / editorState.zoom.value;
 
   // So that bound text layer hit is considered within bounding box of container even if its outside actual bounding box of layer
   // eg for linear layers text can be outside the layer bounding box
   const boundTextLayer = getBoundTextLayer(layer);
   if (
     boundTextLayer &&
-    hitTest(boundTextLayer, appState, frameNameBoundsCache, x, y)
+    hitTest(boundTextLayer, editorState, frameNameBoundsCache, x, y)
   ) {
     return false;
   }
@@ -128,7 +128,7 @@ export const isHittingLayerBoundingBoxWithoutHittingLayer = (
   return (
     !isHittingLayerNotConsideringBoundingBox(
       layer,
-      appState,
+      editorState,
       frameNameBoundsCache,
       [x, y]
     ) &&
@@ -143,11 +143,11 @@ export const isHittingLayerBoundingBoxWithoutHittingLayer = (
 
 export const isHittingLayerNotConsideringBoundingBox = (
   layer: NonDeletedExcalidrawLayer,
-  appState: AppState,
+  editorState: AppState,
   frameNameBoundsCache: FrameNameBoundsCache | null,
   point: Point
 ): boolean => {
-  const threshold = 10 / appState.zoom.value;
+  const threshold = 10 / editorState.zoom.value;
   const check = isTextLayer(layer)
     ? isStrictlyInside
     : isLayerDraggableFromInside(layer)
@@ -163,9 +163,9 @@ export const isHittingLayerNotConsideringBoundingBox = (
 };
 
 const isLayerSelected = (
-  appState: AppState,
+  editorState: AppState,
   layer: NonDeleted<ExcalidrawLayer>
-) => appState.selectedLayerIds[layer.id];
+) => editorState.selectedLayerIds[layer.id];
 
 export const isPointHittingLayerBoundingBox = (
   layer: NonDeleted<ExcalidrawLayer>,

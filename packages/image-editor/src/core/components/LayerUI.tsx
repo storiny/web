@@ -6,14 +6,15 @@ import { Provider, useAtom, useAtomValue } from "jotai";
 import React from "react";
 
 import { calculateScrollCenter } from "../../lib/scene";
+import { capitalizeString, isShallowEqual } from "../../lib/utils/utils";
 import { actionToggleStats } from "../actions/actionToggleStats";
 import { ActionManager } from "../actions/manager";
 import { trackEvent } from "../analytics";
-import { isHandToolActive } from "../appState";
 import { useDevice } from "../components/App";
 import { CLASSES, DEFAULT_SIDEBAR, LIBRARY_SIDEBAR_WIDTH } from "../constants";
 import { TunnelsContext, useInitializeTunnels } from "../context/tunnels";
-import { UIAppStateContext } from "../context/ui-appState";
+import { UIAppStateContext } from "../context/ui-editorState";
+import { isHandToolActive } from "../editorState";
 import { Language, t } from "../i18n";
 import { jotaiScope } from "../jotai";
 import { isTextLayer, showSelectedShapeActions } from "../layer";
@@ -26,7 +27,6 @@ import {
   ExcalidrawProps,
   UIAppState
 } from "../types";
-import { capitalizeString, isShallowEqual } from "../utils";
 import { SelectedShapeActions, ShapesSwitcher } from "./Actions";
 import { ActiveConfirmDialog } from "./ActiveConfirmDialog";
 import { DefaultSidebar } from "./DefaultSidebar";
@@ -57,9 +57,9 @@ import { UserList } from "./UserList";
 interface LayerUIProps {
   UIOptions: AppProps["UIOptions"];
   actionManager: ActionManager;
-  appState: UIAppState;
   canvas: HTMLCanvasLayer | null;
   children?: React.ReactNode;
+  editorState: UIAppState;
   files: BinaryFiles;
   langCode: Language["code"];
   layers: readonly NonDeletedExcalidrawLayer[];
@@ -108,7 +108,7 @@ const DefaultOverwriteConfirmDialog = () => (
 
 const LayerUI = ({
   actionManager,
-  appState,
+  editorState,
   files,
   setAppState,
   layers,
@@ -141,8 +141,8 @@ const LayerUI = ({
     return (
       <JSONExportDialog
         actionManager={actionManager}
-        appState={appState}
         canvas={canvas}
+        editorState={editorState}
         exportOpts={UIOptions.canvasActions.export}
         files={files}
         layers={layers}
@@ -159,7 +159,7 @@ const LayerUI = ({
     return (
       <ImageExportDialog
         actionManager={actionManager}
-        appState={appState}
+        editorState={editorState}
         files={files}
         layers={layers}
         onCloseRequest={() => setAppState({ openDialog: null })}
@@ -180,7 +180,7 @@ const LayerUI = ({
   const renderSelectedShapeActions = () => (
     <Section
       className={clsx("selected-shape-actions zen-mode-transition", {
-        "transition-left": appState.zenModeEnabled
+        "transition-left": editorState.zenModeEnabled
       })}
       heading="selectedShapeActions"
     >
@@ -190,11 +190,11 @@ const LayerUI = ({
         style={{
           // we want to make sure this doesn't overflow so subtracting the
           // approximate height of hamburgerMenu + footer
-          maxHeight: `${appState.height - 166}px`
+          maxHeight: `${editorState.height - 166}px`
         }}
       >
         <SelectedShapeActions
-          appState={appState}
+          editorState={editorState}
           layers={layers}
           renderAction={actionManager.renderAction}
         />
@@ -204,7 +204,7 @@ const LayerUI = ({
 
   const renderFixedSideContainer = () => {
     const shouldRenderSelectedShapeActions = showSelectedShapeActions(
-      appState,
+      editorState,
       layers
     );
 
@@ -215,7 +215,7 @@ const LayerUI = ({
             {renderCanvasActions()}
             {shouldRenderSelectedShapeActions && renderSelectedShapeActions()}
           </Stack.Col>
-          {!appState.viewModeEnabled && (
+          {!editorState.viewModeEnabled && (
             <Section className="shapes-section" heading="shapes">
               {(heading: React.ReactNode) => (
                 <div style={{ position: "relative" }}>
@@ -225,33 +225,33 @@ const LayerUI = ({
                   <Stack.Col align="start" gap={4}>
                     <Stack.Row
                       className={clsx("App-toolbar-container", {
-                        "zen-mode": appState.zenModeEnabled
+                        "zen-mode": editorState.zenModeEnabled
                       })}
                       gap={1}
                     >
                       <Island
                         className={clsx("App-toolbar", {
-                          "zen-mode": appState.zenModeEnabled
+                          "zen-mode": editorState.zenModeEnabled
                         })}
                         padding={1}
                       >
                         <HintViewer
-                          appState={appState}
                           device={device}
+                          editorState={editorState}
                           isMobile={device.isMobile}
                           layers={layers}
                         />
                         {heading}
                         <Stack.Row gap={1}>
                           <PenModeButton
-                            checked={appState.penMode}
+                            checked={editorState.penMode}
                             onChange={onPenModeToggle}
-                            penDetected={appState.penDetected}
+                            penDetected={editorState.penDetected}
                             title={t("toolBar.penMode")}
-                            zenModeEnabled={appState.zenModeEnabled}
+                            zenModeEnabled={editorState.zenModeEnabled}
                           />
                           <LockButton
-                            checked={appState.activeTool.locked}
+                            checked={editorState.activeTool.locked}
                             onChange={onLockToggle}
                             title={t("toolBar.lock")}
                           />
@@ -259,16 +259,16 @@ const LayerUI = ({
                           <div className="App-toolbar__divider" />
 
                           <HandButton
-                            checked={isHandToolActive(appState)}
+                            checked={isHandToolActive(editorState)}
                             isMobile
                             onChange={() => onHandToolToggle()}
                             title={t("toolBar.hand")}
                           />
 
                           <ShapesSwitcher
-                            activeTool={appState.activeTool}
-                            appState={appState}
+                            activeTool={editorState.activeTool}
                             canvas={canvas}
+                            editorState={editorState}
                             onImageAction={({ pointerType }) => {
                               onImageAction({
                                 insertOnCanvasDirectly: pointerType !== "mouse"
@@ -288,16 +288,16 @@ const LayerUI = ({
             className={clsx(
               "layer-ui__wrapper__top-right zen-mode-transition",
               {
-                "transition-right": appState.zenModeEnabled
+                "transition-right": editorState.zenModeEnabled
               }
             )}
           >
-            <UserList collaborators={appState.collaborators} />
-            {renderTopRightUI?.(device.isMobile, appState)}
-            {!appState.viewModeEnabled &&
+            <UserList collaborators={editorState.collaborators} />
+            {renderTopRightUI?.(device.isMobile, editorState)}
+            {!editorState.viewModeEnabled &&
               // hide button when sidebar docked
               (!isSidebarDocked ||
-                appState.openSidebar?.name !== DEFAULT_SIDEBAR.name) && (
+                editorState.openSidebar?.name !== DEFAULT_SIDEBAR.name) && (
                 <tunnels.DefaultSidebarTriggerTunnel.Out />
               )}
           </div>
@@ -351,10 +351,10 @@ const LayerUI = ({
       <DefaultOverwriteConfirmDialog />
       {/* ------------------------------------------------------------------ */}
 
-      {appState.isLoading && <LoadingMessage delay={250} />}
-      {appState.errorMessage && (
+      {editorState.isLoading && <LoadingMessage delay={250} />}
+      {editorState.errorMessage && (
         <ErrorDialog onClose={() => setAppState({ errorMessage: null })}>
-          {appState.errorMessage}
+          {editorState.errorMessage}
         </ErrorDialog>
       )}
       {eyeDropperState && !device.isMobile && (
@@ -372,7 +372,7 @@ const LayerUI = ({
           swapPreviewOnAlt={eyeDropperState.swapPreviewOnAlt}
         />
       )}
-      {appState.openDialog === "help" && (
+      {editorState.openDialog === "help" && (
         <HelpDialog
           onClose={() => {
             setAppState({ openDialog: null });
@@ -383,9 +383,9 @@ const LayerUI = ({
       <tunnels.OverwriteConfirmDialogTunnel.Out />
       {renderImageExportDialog()}
       {renderJSONExportDialog()}
-      {appState.pasteDialog.shown && (
+      {editorState.pasteDialog.shown && (
         <PasteChartDialog
-          appState={appState}
+          editorState={editorState}
           onClose={() =>
             setAppState({
               pasteDialog: { shown: false, data: null }
@@ -397,9 +397,9 @@ const LayerUI = ({
       {device.isMobile && (
         <MobileMenu
           actionManager={actionManager}
-          appState={appState}
           canvas={canvas}
           device={device}
+          editorState={editorState}
           layers={layers}
           onHandToolToggle={onHandToolToggle}
           onImageAction={onImageAction}
@@ -419,12 +419,13 @@ const LayerUI = ({
           <div
             className={clsx("layer-ui__wrapper", {
               "disable-pointerEvents":
-                appState.draggingLayer ||
-                appState.resizingLayer ||
-                (appState.editingLayer && !isTextLayer(appState.editingLayer))
+                editorState.draggingLayer ||
+                editorState.resizingLayer ||
+                (editorState.editingLayer &&
+                  !isTextLayer(editorState.editingLayer))
             })}
             style={
-              appState.openSidebar &&
+              editorState.openSidebar &&
               isSidebarDocked &&
               device.canDeviceFitSidebar
                 ? { width: `calc(100% - ${LIBRARY_SIDEBAR_WIDTH}px)` }
@@ -435,13 +436,13 @@ const LayerUI = ({
             {renderFixedSideContainer()}
             <Footer
               actionManager={actionManager}
-              appState={appState}
+              editorState={editorState}
               renderWelcomeScreen={renderWelcomeScreen}
               showExitZenModeBtn={showExitZenModeBtn}
             />
-            {appState.showStats && (
+            {editorState.showStats && (
               <Stats
-                appState={appState}
+                editorState={editorState}
                 layers={layers}
                 onClose={() => {
                   actionManager.executeAction(actionToggleStats);
@@ -450,12 +451,12 @@ const LayerUI = ({
                 setAppState={setAppState}
               />
             )}
-            {appState.scrolledOutside && (
+            {editorState.scrolledOutside && (
               <button
                 className="scroll-back-to-content"
                 onClick={() => {
-                  setAppState((appState) => ({
-                    ...calculateScrollCenter(layers, appState, canvas)
+                  setAppState((editorState) => ({
+                    ...calculateScrollCenter(layers, editorState, canvas)
                   }));
                 }}
               >
@@ -470,7 +471,7 @@ const LayerUI = ({
   );
 
   return (
-    <UIAppStateContext.Provider value={appState}>
+    <UIAppStateContext.Provider value={editorState}>
       <Provider scope={tunnels.jotaiScope}>
         <TunnelsContext.Provider value={tunnels}>
           {layerUIJSX}
@@ -480,7 +481,7 @@ const LayerUI = ({
   );
 };
 
-const stripIrrelevantAppStateProps = (appState: AppState): UIAppState => {
+const stripIrrelevantAppStateProps = (editorState: AppState): UIAppState => {
   const {
     suggestedBindings,
     startBoundLayer,
@@ -488,7 +489,7 @@ const stripIrrelevantAppStateProps = (appState: AppState): UIAppState => {
     scrollX,
     scrollY,
     ...ret
-  } = appState;
+  } = editorState;
   return ret;
 };
 
@@ -498,8 +499,8 @@ const areEqual = (prevProps: LayerUIProps, nextProps: LayerUIProps) => {
     return false;
   }
 
-  const { canvas: _prevCanvas, appState: prevAppState, ...prev } = prevProps;
-  const { canvas: _nextCanvas, appState: nextAppState, ...next } = nextProps;
+  const { canvas: _prevCanvas, editorState: prevAppState, ...prev } = prevProps;
+  const { canvas: _nextCanvas, editorState: nextAppState, ...next } = nextProps;
 
   return (
     isShallowEqual(

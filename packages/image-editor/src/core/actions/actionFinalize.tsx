@@ -1,5 +1,6 @@
 import { isPathALoop } from "../../lib/math/math";
 import Scene from "../../lib/scene/scene/Scene";
+import { resetCursor, updateActiveTool } from "../../lib/utils/utils";
 import { done } from "../components/icons";
 import { ToolButton } from "../components/ToolButton";
 import { t } from "../i18n";
@@ -13,16 +14,15 @@ import { LinearLayerEditor } from "../layer/linearLayerEditor";
 import { mutateLayer } from "../layer/mutateLayer";
 import { isBindingLayer, isLinearLayer } from "../layer/typeChecks";
 import { AppState } from "../types";
-import { resetCursor, updateActiveTool } from "../utils";
 import { register } from "./register";
 
 export const actionFinalize = register({
   name: "finalize",
   trackEvent: false,
-  perform: (layers, appState, _, { canvas, focusContainer, scene }) => {
-    if (appState.editingLinearLayer) {
+  perform: (layers, editorState, _, { canvas, focusContainer, scene }) => {
+    if (editorState.editingLinearLayer) {
       const { layerId, startBindingLayer, endBindingLayer } =
-        appState.editingLinearLayer;
+        editorState.editingLinearLayer;
       const layer = LinearLayerEditor.getLayer(layerId);
 
       if (layer) {
@@ -34,8 +34,8 @@ export const actionFinalize = register({
             layer.points.length < 2 || isInvisiblySmallLayer(layer)
               ? layers.filter((el) => el.id !== layer.id)
               : undefined,
-          appState: {
-            ...appState,
+          editorState: {
+            ...editorState,
             cursorButton: "up",
             editingLinearLayer: null
           },
@@ -47,8 +47,8 @@ export const actionFinalize = register({
     let newLayers = layers;
 
     const pendingImageLayer =
-      appState.pendingImageLayerId &&
-      scene.getLayer(appState.pendingImageLayerId);
+      editorState.pendingImageLayerId &&
+      scene.getLayer(editorState.pendingImageLayerId);
 
     if (pendingImageLayer) {
       mutateLayer(pendingImageLayer, { isDeleted: true }, false);
@@ -58,17 +58,17 @@ export const actionFinalize = register({
       focusContainer();
     }
 
-    const multiPointLayer = appState.multiLayer
-      ? appState.multiLayer
-      : appState.editingLayer?.type === "freedraw"
-      ? appState.editingLayer
+    const multiPointLayer = editorState.multiLayer
+      ? editorState.multiLayer
+      : editorState.editingLayer?.type === "freedraw"
+      ? editorState.editingLayer
       : null;
 
     if (multiPointLayer) {
       // pen and mouse have hover
       if (
         multiPointLayer.type !== "freedraw" &&
-        appState.lastPointerDownWith !== "touch"
+        editorState.lastPointerDownWith !== "touch"
       ) {
         const { points, lastCommittedPoint } = multiPointLayer;
         if (
@@ -87,7 +87,10 @@ export const actionFinalize = register({
       // If the multi point line closes the loop,
       // set the last point to first point.
       // This ensures that loop remains closed at different scales.
-      const isLoop = isPathALoop(multiPointLayer.points, appState.zoom.value);
+      const isLoop = isPathALoop(
+        multiPointLayer.points,
+        editorState.zoom.value
+      );
       if (
         multiPointLayer.type === "line" ||
         multiPointLayer.type === "freedraw"
@@ -116,7 +119,7 @@ export const actionFinalize = register({
         );
         maybeBindLinearLayer(
           multiPointLayer,
-          appState,
+          editorState,
           Scene.getScene(multiPointLayer)!,
           { x, y }
         );
@@ -124,37 +127,37 @@ export const actionFinalize = register({
     }
 
     if (
-      (!appState.activeTool.locked &&
-        appState.activeTool.type !== "freedraw") ||
+      (!editorState.activeTool.locked &&
+        editorState.activeTool.type !== "freedraw") ||
       !multiPointLayer
     ) {
       resetCursor(canvas);
     }
 
     let activeTool: AppState["activeTool"];
-    if (appState.activeTool.type === "eraser") {
-      activeTool = updateActiveTool(appState, {
-        ...(appState.activeTool.lastActiveTool || {
+    if (editorState.activeTool.type === "eraser") {
+      activeTool = updateActiveTool(editorState, {
+        ...(editorState.activeTool.lastActiveTool || {
           type: "selection"
         }),
         lastActiveToolBeforeEraser: null
       });
     } else {
-      activeTool = updateActiveTool(appState, {
+      activeTool = updateActiveTool(editorState, {
         type: "selection"
       });
     }
 
     return {
       layers: newLayers,
-      appState: {
-        ...appState,
+      editorState: {
+        ...editorState,
         cursorButton: "up",
         activeTool:
-          (appState.activeTool.locked ||
-            appState.activeTool.type === "freedraw") &&
+          (editorState.activeTool.locked ||
+            editorState.activeTool.type === "freedraw") &&
           multiPointLayer
-            ? appState.activeTool
+            ? editorState.activeTool
             : activeTool,
         draggingLayer: null,
         multiLayer: null,
@@ -163,30 +166,30 @@ export const actionFinalize = register({
         suggestedBindings: [],
         selectedLayerIds:
           multiPointLayer &&
-          !appState.activeTool.locked &&
-          appState.activeTool.type !== "freedraw"
+          !editorState.activeTool.locked &&
+          editorState.activeTool.type !== "freedraw"
             ? {
-                ...appState.selectedLayerIds,
+                ...editorState.selectedLayerIds,
                 [multiPointLayer.id]: true
               }
-            : appState.selectedLayerIds,
+            : editorState.selectedLayerIds,
         // To select the linear layer when user has finished mutipoint editing
         selectedLinearLayer:
           multiPointLayer && isLinearLayer(multiPointLayer)
             ? new LinearLayerEditor(multiPointLayer, scene)
-            : appState.selectedLinearLayer,
+            : editorState.selectedLinearLayer,
         pendingImageLayerId: null
       },
-      commitToHistory: appState.activeTool.type === "freedraw"
+      commitToHistory: editorState.activeTool.type === "freedraw"
     };
   },
-  keyTest: (event, appState) =>
+  keyTest: (event, editorState) =>
     (event.key === KEYS.ESCAPE &&
-      (appState.editingLinearLayer !== null ||
-        (!appState.draggingLayer && appState.multiLayer === null))) ||
+      (editorState.editingLinearLayer !== null ||
+        (!editorState.draggingLayer && editorState.multiLayer === null))) ||
     ((event.key === KEYS.ESCAPE || event.key === KEYS.ENTER) &&
-      appState.multiLayer !== null),
-  PanelComponent: ({ appState, updateData, data }) => (
+      editorState.multiLayer !== null),
+  PanelComponent: ({ editorState, updateData, data }) => (
     <ToolButton
       aria-label={t("buttons.done")}
       icon={done}
@@ -194,7 +197,7 @@ export const actionFinalize = register({
       size={data?.size || "medium"}
       title={t("buttons.done")}
       type="button"
-      visible={appState.multiLayer != null}
+      visible={editorState.multiLayer != null}
     />
   )
 });

@@ -10,7 +10,8 @@ import React, {
 
 import { serializeLibraryAsJSON } from "../../lib/data/json/json";
 import { useLibraryCache } from "../../lib/hooks/useLibraryItemSvg";
-import { useScrollPosition } from "../../lib/hooks/useScrollPosition";
+import { useScrollPosition } from "../../lib/hooks/useScrollPosition/useScrollPosition";
+import { arrayToMap } from "../../lib/utils/utils";
 import { MIME_TYPES } from "../constants";
 import { t } from "../i18n";
 import { duplicateLayers } from "../layer/newLayer";
@@ -20,7 +21,6 @@ import {
   LibraryItems,
   UIAppState
 } from "../types";
-import { arrayToMap } from "../utils";
 import { LibraryMenuControlButtons } from "./LibraryMenuControlButtons";
 import { LibraryDropdownMenu } from "./LibraryMenuHeaderContent";
 import {

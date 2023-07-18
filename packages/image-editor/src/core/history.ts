@@ -5,7 +5,7 @@ import { AppState } from "./types";
 import { Mutable } from "./utility-types";
 
 export interface HistoryEntry {
-  appState: ReturnType<typeof clearAppStatePropertiesForHistory>;
+  editorState: ReturnType<typeof clearAppStatePropertiesForHistory>;
   layers: ExcalidrawLayer[];
 }
 
@@ -15,17 +15,17 @@ interface DehydratedExcalidrawLayer {
 }
 
 interface DehydratedHistoryEntry {
-  appState: string;
+  editorState: string;
   layers: DehydratedExcalidrawLayer[];
 }
 
-const clearAppStatePropertiesForHistory = (appState: AppState) => ({
-  selectedLayerIds: appState.selectedLayerIds,
-  selectedGroupIds: appState.selectedGroupIds,
-  viewBackgroundColor: appState.viewBackgroundColor,
-  editingLinearLayer: appState.editingLinearLayer,
-  editingGroupId: appState.editingGroupId,
-  name: appState.name
+const clearAppStatePropertiesForHistory = (editorState: AppState) => ({
+  selectedLayerIds: editorState.selectedLayerIds,
+  selectedGroupIds: editorState.selectedGroupIds,
+  viewBackgroundColor: editorState.viewBackgroundColor,
+  editingLinearLayer: editorState.editingLinearLayer,
+  editingGroupId: editorState.editingGroupId,
+  name: editorState.name
 });
 
 class History {
@@ -36,11 +36,11 @@ class History {
   private lastEntry: HistoryEntry | null = null;
 
   private hydrateHistoryEntry({
-    appState,
+    editorState,
     layers
   }: DehydratedHistoryEntry): HistoryEntry {
     return {
-      appState: JSON.parse(appState),
+      editorState: JSON.parse(editorState),
       layers: layers.map((dehydratedExcalidrawLayer) => {
         const layer = this.layerCache
           .get(dehydratedExcalidrawLayer.id)
@@ -56,11 +56,11 @@ class History {
   }
 
   private dehydrateHistoryEntry({
-    appState,
+    editorState,
     layers
   }: HistoryEntry): DehydratedHistoryEntry {
     return {
-      appState: JSON.stringify(appState),
+      editorState: JSON.stringify(editorState),
       layers: layers.map((layer: ExcalidrawLayer) => {
         if (!this.layerCache.has(layer.id)) {
           this.layerCache.set(layer.id, new Map());
@@ -97,21 +97,21 @@ class History {
   }
 
   private generateEntry = (
-    appState: AppState,
+    editorState: AppState,
     layers: readonly ExcalidrawLayer[]
   ): DehydratedHistoryEntry =>
     this.dehydrateHistoryEntry({
-      appState: clearAppStatePropertiesForHistory(appState),
+      editorState: clearAppStatePropertiesForHistory(editorState),
       layers: layers.reduce((layers, layer) => {
         if (
           isLinearLayer(layer) &&
-          appState.multiLayer &&
-          appState.multiLayer.id === layer.id
+          editorState.multiLayer &&
+          editorState.multiLayer.id === layer.id
         ) {
           // don't store multi-point arrow if still has only one point
           if (
-            appState.multiLayer &&
-            appState.multiLayer.id === layer.id &&
+            editorState.multiLayer &&
+            editorState.multiLayer.id === layer.id &&
             layer.points.length < 2
           ) {
             return layers;
@@ -157,12 +157,13 @@ class History {
       }
     }
 
-    // note: this is safe because entry's appState is guaranteed no excess props
-    let key: keyof typeof nextEntry.appState;
-    for (key in nextEntry.appState) {
+    // note: this is safe because entry's editorState is guaranteed no excess props
+    let key: keyof typeof nextEntry.editorState;
+    for (key in nextEntry.editorState) {
       if (key === "editingLinearLayer") {
         if (
-          nextEntry.appState[key]?.layerId === lastEntry.appState[key]?.layerId
+          nextEntry.editorState[key]?.layerId ===
+          lastEntry.editorState[key]?.layerId
         ) {
           continue;
         }
@@ -170,7 +171,7 @@ class History {
       if (key === "selectedLayerIds" || key === "selectedGroupIds") {
         continue;
       }
-      if (nextEntry.appState[key] !== lastEntry.appState[key]) {
+      if (nextEntry.editorState[key] !== lastEntry.editorState[key]) {
         return true;
       }
     }
@@ -178,8 +179,8 @@ class History {
     return false;
   }
 
-  pushEntry(appState: AppState, layers: readonly ExcalidrawLayer[]) {
-    const newEntryDehydrated = this.generateEntry(appState, layers);
+  pushEntry(editorState: AppState, layers: readonly ExcalidrawLayer[]) {
+    const newEntryDehydrated = this.generateEntry(editorState, layers);
     const newEntry: HistoryEntry = this.hydrateHistoryEntry(newEntryDehydrated);
 
     if (newEntry) {
@@ -236,12 +237,12 @@ class History {
    *  app state in a way that would break `shouldCreateEntry` which relies on
    *  `lastEntry` to reflect last comittable history state.
    * We can't update `lastEntry` from within history when calling undo/redo
-   *  because the action potentially mutates appState/layers before storing
+   *  because the action potentially mutates editorState/layers before storing
    *  it.
    */
-  setCurrentState(appState: AppState, layers: readonly ExcalidrawLayer[]) {
+  setCurrentState(editorState: AppState, layers: readonly ExcalidrawLayer[]) {
     this.lastEntry = this.hydrateHistoryEntry(
-      this.generateEntry(appState, layers)
+      this.generateEntry(editorState, layers)
     );
   }
 

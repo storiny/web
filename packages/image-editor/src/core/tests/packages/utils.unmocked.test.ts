@@ -20,7 +20,7 @@ describe("embedding scene data", () => {
 
       const svgNode = await utils.exportToSvg({
         layers: sourceLayers,
-        appState: {
+        editorState: {
           viewBackgroundColor: "#ffffff",
           gridSize: null,
           exportEmbedScene: true
@@ -51,7 +51,7 @@ describe("embedding scene data", () => {
       const blob = await utils.exportToBlob({
         mimeType: "image/png",
         layers: sourceLayers,
-        appState: {
+        editorState: {
           viewBackgroundColor: "#ffffff",
           gridSize: null,
           exportEmbedScene: true

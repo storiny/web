@@ -1,26 +1,18 @@
 import { useLayoutEffect, useRef, useState } from "react";
 
 import { useDevice, useExcalidrawContainer } from "../../core/components/App";
-import { useUIAppState } from "../../core/context/ui-appState";
+import { useUIAppState } from "../../core/context/ui-editorState";
 
 export const useCreatePortalContainer = (opts?: {
   className?: string;
   parentSelector?: string;
-}) => {
-  const [div, setDiv] = useState<HTMLDivLayer | null>(null);
-
+}): HTMLDivElement | null => {
+  const [div, setDiv] = useState<HTMLDivElement | null>(null);
   const device = useDevice();
   const { theme } = useUIAppState();
   const isMobileRef = useRef(device.isMobile);
   isMobileRef.current = device.isMobile;
-
   const { container: excalidrawContainer } = useExcalidrawContainer();
-
-  useLayoutEffect(() => {
-    if (div) {
-      div.classList.toggle("excalidraw--mobile", device.isMobile);
-    }
-  }, [div, device.isMobile]);
 
   useLayoutEffect(() => {
     const container = opts?.parentSelector
@@ -31,14 +23,10 @@ export const useCreatePortalContainer = (opts?: {
       return;
     }
 
-    const div = document.createLayer("div");
+    const div = document.createElement("div");
 
     div.classList.add("excalidraw", ...(opts?.className?.split(/\s+/) || []));
-    div.classList.toggle("excalidraw--mobile", isMobileRef.current);
-    div.classList.toggle("theme--dark", theme === "dark");
-
     container.appendChild(div);
-
     setDiv(div);
 
     return () => {

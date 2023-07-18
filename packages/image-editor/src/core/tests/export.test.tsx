@@ -6,7 +6,7 @@ import {
 } from "../../lib/data/image/image";
 import { serializeAsJSON } from "../../lib/data/json/json";
 import { exportToSvg } from "../../lib/scene/export/export";
-import { getDefaultAppState } from "../appState";
+import { getDefaultAppState } from "../editorState";
 import ExcalidrawApp from "../excalidraw-app";
 import { FileId } from "../layer/types";
 import { API } from "./helpers/api";
@@ -151,7 +151,7 @@ describe("export", () => {
         angle: normalizeAngle(315)
       })
     ];
-    const appState = { ...getDefaultAppState(), exportBackground: false };
+    const editorState = { ...getDefaultAppState(), exportBackground: false };
     const files = {
       file_A: {
         id: "file_A" as FileId,
@@ -162,7 +162,7 @@ describe("export", () => {
       }
     } as const;
 
-    const svg = await exportToSvg(layers, appState, files);
+    const svg = await exportToSvg(layers, editorState, files);
 
     const svgText = svg.outerHTML;
 

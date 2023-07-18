@@ -1,6 +1,6 @@
+import { isPrimitive } from "../../lib/utils/utils";
 import { FONT_FAMILY, ROUNDNESS } from "../constants";
 import { API } from "../tests/helpers/api";
-import { isPrimitive } from "../utils";
 import { mutateLayer } from "./mutateLayer";
 import { duplicateLayer, duplicateLayers } from "./newLayer";
 import { ExcalidrawLinearLayer } from "./types";

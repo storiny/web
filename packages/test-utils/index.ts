@@ -43,6 +43,11 @@ Object.defineProperty(window, "matchMedia", {
 Storage.prototype.setItem = jest.fn();
 Storage.prototype.getItem = jest.fn();
 
+// Mock `nanoid`
+jest.mock("nanoid", () => ({
+  nanoid: jest.fn(() => "test-id")
+}));
+
 // Mock next.js navigation utilities
 jest.mock("next/navigation", () => ({
   useRouter: jest.fn(),

@@ -1,4 +1,5 @@
 import { getSelectedLayers } from "../../lib/scene";
+import { getFontString } from "../../lib/utils/utils";
 import {
   BOUND_TEXT_PADDING,
   ROUNDNESS,
@@ -32,22 +33,21 @@ import {
 } from "../layer/types";
 import { AppState } from "../types";
 import { Mutable } from "../utility-types";
-import { getFontString } from "../utils";
 import { register } from "./register";
 
 export const actionUnbindText = register({
   name: "unbindText",
   contextItemLabel: "labels.unbindText",
   trackEvent: { category: "layer" },
-  predicate: (layers, appState) => {
-    const selectedLayers = getSelectedLayers(layers, appState);
+  predicate: (layers, editorState) => {
+    const selectedLayers = getSelectedLayers(layers, editorState);
 
     return selectedLayers.some((layer) => hasBoundTextLayer(layer));
   },
-  perform: (layers, appState) => {
+  perform: (layers, editorState) => {
     const selectedLayers = getSelectedLayers(
       getNonDeletedLayers(layers),
-      appState
+      editorState
     );
     selectedLayers.forEach((layer) => {
       const boundTextLayer = getBoundTextLayer(layer);
@@ -83,7 +83,7 @@ export const actionUnbindText = register({
     });
     return {
       layers,
-      appState,
+      editorState,
       commitToHistory: true
     };
   }
@@ -93,8 +93,8 @@ export const actionBindText = register({
   name: "bindText",
   contextItemLabel: "labels.bindText",
   trackEvent: { category: "layer" },
-  predicate: (layers, appState) => {
-    const selectedLayers = getSelectedLayers(layers, appState);
+  predicate: (layers, editorState) => {
+    const selectedLayers = getSelectedLayers(layers, editorState);
 
     if (selectedLayers.length === 2) {
       const textLayer =
@@ -116,10 +116,10 @@ export const actionBindText = register({
     }
     return false;
   },
-  perform: (layers, appState) => {
+  perform: (layers, editorState) => {
     const selectedLayers = getSelectedLayers(
       getNonDeletedLayers(layers),
-      appState
+      editorState
     );
 
     let textLayer: ExcalidrawTextLayer;
@@ -154,7 +154,10 @@ export const actionBindText = register({
 
     return {
       layers: pushTextAboveContainer(layers, container, textLayer),
-      appState: { ...appState, selectedLayerIds: { [container.id]: true } },
+      editorState: {
+        ...editorState,
+        selectedLayerIds: { [container.id]: true }
+      },
       commitToHistory: true
     };
   }
@@ -200,15 +203,15 @@ export const actionWrapTextInContainer = register({
   name: "wrapTextInContainer",
   contextItemLabel: "labels.createContainerFromText",
   trackEvent: { category: "layer" },
-  predicate: (layers, appState) => {
-    const selectedLayers = getSelectedLayers(layers, appState);
+  predicate: (layers, editorState) => {
+    const selectedLayers = getSelectedLayers(layers, editorState);
     const areTextLayers = selectedLayers.every((el) => isTextLayer(el));
     return selectedLayers.length > 0 && areTextLayers;
   },
-  perform: (layers, appState) => {
+  perform: (layers, editorState) => {
     const selectedLayers = getSelectedLayers(
       getNonDeletedLayers(layers),
-      appState
+      editorState
     );
     let updatedLayers: readonly ExcalidrawLayer[] = layers.slice();
     const containerIds: Mutable<AppState["selectedLayerIds"]> = {};
@@ -217,19 +220,19 @@ export const actionWrapTextInContainer = register({
       if (isTextLayer(textLayer)) {
         const container = newLayer({
           type: "rectangle",
-          backgroundColor: appState.currentItemBackgroundColor,
+          backgroundColor: editorState.currentItemBackgroundColor,
           boundLayers: [
             ...(textLayer.boundLayers || []),
             { id: textLayer.id, type: "text" }
           ],
           angle: textLayer.angle,
-          fillStyle: appState.currentItemFillStyle,
-          strokeColor: appState.currentItemStrokeColor,
-          roughness: appState.currentItemRoughness,
-          strokeWidth: appState.currentItemStrokeWidth,
-          strokeStyle: appState.currentItemStrokeStyle,
+          fillStyle: editorState.currentItemFillStyle,
+          strokeColor: editorState.currentItemStrokeColor,
+          roughness: editorState.currentItemRoughness,
+          strokeWidth: editorState.currentItemStrokeWidth,
+          strokeStyle: editorState.currentItemStrokeStyle,
           roundness:
-            appState.currentItemRoundness === "round"
+            editorState.currentItemRoundness === "round"
               ? {
                   type: isUsingAdaptiveRadius("rectangle")
                     ? ROUNDNESS.ADAPTIVE_RADIUS
@@ -304,8 +307,8 @@ export const actionWrapTextInContainer = register({
 
     return {
       layers: updatedLayers,
-      appState: {
-        ...appState,
+      editorState: {
+        ...editorState,
         selectedLayerIds: containerIds
       },
       commitToHistory: true

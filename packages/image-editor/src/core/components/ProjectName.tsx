@@ -3,8 +3,8 @@ import "./ProjectName.scss";
 
 import React, { useState } from "react";
 
+import { focusNearestParent } from "../../lib/utils/utils";
 import { KEYS } from "../keys";
-import { focusNearestParent } from "../utils";
 import { useExcalidrawContainer } from "./App";
 
 type Props = {

@@ -1,11 +1,11 @@
 import clsx from "clsx";
 
+import { composeEventHandlers } from "../../lib/utils/utils";
 import { DEFAULT_SIDEBAR, LIBRARY_SIDEBAR_TAB } from "../constants";
 import { useTunnels } from "../context/tunnels";
-import { useUIAppState } from "../context/ui-appState";
+import { useUIAppState } from "../context/ui-editorState";
 import { t } from "../i18n";
 import { MarkOptional, Merge } from "../utility-types";
-import { composeEventHandlers } from "../utils";
 import { useExcalidrawSetAppState } from "./App";
 import { withInternalFallback } from "./hoc/withInternalFallback";
 import { LibraryMenu } from "./LibraryMenu";
@@ -61,7 +61,7 @@ export const DefaultSidebar = Object.assign(
         onDock?: SidebarProps["onDock"] | false;
       }
     >) => {
-      const appState = useUIAppState();
+      const editorState = useUIAppState();
       const setAppState = useExcalidrawSetAppState();
 
       const { DefaultSidebarTabTriggersTunnel } = useTunnels();
@@ -70,7 +70,7 @@ export const DefaultSidebar = Object.assign(
         <Sidebar
           {...rest}
           className={clsx("default-sidebar", className)}
-          docked={docked ?? appState.defaultSidebarDockedPreference}
+          docked={docked ?? editorState.defaultSidebarDockedPreference}
           key="default"
           name="default"
           onDock={

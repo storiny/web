@@ -1,39 +1,16 @@
 /* eslint-disable no-case-declarations */
+
+import { Mutable } from "@storiny/types";
+
 import {
   Arrowhead,
+  DEFAULT_TEXT_ALIGN,
+  DEFAULT_VERTICAL_ALIGN,
   FillStyle,
   LayerType,
   Shape,
   StrokeStyle
 } from "../../../constants";
-import { getDefaultAppState } from "../../../core/appState";
-import {
-  DEFAULT_SIDEBAR,
-  DEFAULT_TEXT_ALIGN,
-  DEFAULT_VERTICAL_ALIGN
-} from "../../../core/constants";
-import {
-  getNonDeletedLayers,
-  getNormalizedDimensions,
-  isInvisiblySmallLayer,
-  isTextLayer,
-  refreshTextDimensions
-} from "../../../core/layer";
-import { LinearLayerEditor } from "../../../core/layer/linearLayerEditor";
-import { bumpUpdate } from "../../../core/layer/mutateLayer";
-import {
-  detectLineHeight,
-  getDefaultLineHeight,
-  measureBaseline
-} from "../../../core/layer/textLayer";
-import { randomId } from "../../../core/random";
-import { MarkOptional, Mutable } from "../../../core/utility-types";
-import {
-  arrayToMap,
-  getFontString,
-  getUpdatedTimestamp,
-  updateActiveTool
-} from "../../../core/utils";
 import {
   BinaryFiles,
   EditorState,
@@ -42,8 +19,24 @@ import {
   SelectionLayer,
   TextLayer
 } from "../../../types";
-import { LegacyAppState } from "../types";
-import { normalizeLink } from "../url/url";
+import {
+  detectLineHeight,
+  getNormalizedDimensions,
+  isInvisiblySmallLayer,
+  isTextLayer,
+  LinearLayerEditor,
+  measureBaseline,
+  refreshTextDimensions
+} from "../../layer";
+import { randomId } from "../../random";
+import { getDefaultEditorState } from "../../state";
+import {
+  arrayToMap,
+  getFontString,
+  getUpdatedTimestamp,
+  updateActiveTool
+} from "../../utils";
+import { normalizeLink } from "../url";
 
 type RestoredEditorState = Omit<
   EditorState,
@@ -51,17 +44,17 @@ type RestoredEditorState = Omit<
 >;
 
 export const AllowedActiveTools: Record<Shape, boolean> = {
-  selection: true,
-  text: true,
-  rectangle: true,
-  diamond: true,
-  ellipse: true,
-  line: true,
-  image: true,
-  arrow: true,
-  freedraw: true,
-  eraser: false,
-  hand: true
+  [Shape.SELECTION]: true,
+  [Shape.TEXT]: true,
+  [Shape.RECTANGLE]: true,
+  [Shape.DIAMOND]: true,
+  [Shape.ELLIPSE]: true,
+  [Shape.LINE]: true,
+  [Shape.IMAGE]: true,
+  [Shape.ARROW]: true,
+  [Shape.FREE_DRAW]: true,
+  [Shape.ERASER]: false,
+  [Shape.HAND]: true
 };
 
 export type RestoredDataState = {
@@ -122,13 +115,18 @@ const restoreLayerWithProperties = <
   } as unknown as T;
 };
 
+/**
+ * Restores a layer
+ * @param layer Layer
+ * @param refreshDimensions Whether to refresh dimensions
+ */
 const restoreLayer = (
   layer: Exclude<Layer, SelectionLayer>,
   refreshDimensions = false
   // @ts-ignore
 ): typeof layer | null => {
   switch (layer.type) {
-    case "text":
+    case LayerType.TEXT:
       let fontSize = layer.fontSize;
       let fontFamily = layer.fontFamily;
 
@@ -149,9 +147,7 @@ const restoreLayer = (
         (layer.height
           ? // Detect line-height from current layer height and font-size
             detectLineHeight(layer)
-          : // No layer height likely means programmatic use, so default
-            // to a fixed line height
-            getDefaultLineHeight(layer.fontFamily));
+          : 1.2);
       const baseline = measureBaseline(
         layer.text,
         getFontString(layer),
@@ -175,7 +171,7 @@ const restoreLayer = (
       }
 
       return layer;
-    case "freedraw": {
+    case LayerType.FREE_DRAW: {
       return restoreLayerWithProperties(layer, {
         points: layer.points,
         lastCommittedPoint: null,
@@ -183,14 +179,14 @@ const restoreLayer = (
         pressures: layer.pressures
       });
     }
-    case "image":
+    case LayerType.IMAGE:
       return restoreLayerWithProperties(layer, {
         status: layer.status || "pending",
         fileId: layer.fileId,
         scale: layer.scale || [1, 1]
       });
-    case "line":
-    case "arrow": {
+    case LayerType.LINE:
+    case LayerType.ARROW: {
       const {
         startArrowhead = null,
         endArrowhead = layer.type === LayerType.ARROW ? Arrowhead.ARROW : null
@@ -217,11 +213,11 @@ const restoreLayer = (
     }
 
     // Generic layers
-    case "ellipse":
+    case LayerType.ELLIPSE:
       return restoreLayerWithProperties(layer, {});
-    case "rectangle":
+    case LayerType.RECTANGLE:
       return restoreLayerWithProperties(layer, {});
-    case "diamond":
+    case LayerType.DIAMOND:
       return restoreLayerWithProperties(layer, {});
     // Default case is not used to catch missing layer type cases
   }
@@ -322,7 +318,7 @@ export const restoreLayers = (
 ): Layer[] => {
   // Used to detect duplicate top-level layer ids
   const existingIds = new Set<string>();
-  const localLayersMap = localLayers ? arrayToMap(localLayers) : null;
+  // const localLayersMap = localLayers ? arrayToMap(localLayers) : null;
   const restoredLayers = (layers || []).reduce((layers, layer) => {
     if (layer.type !== LayerType.SELECTION && !isInvisiblySmallLayer(layer)) {
       let migratedLayer: Layer | null = restoreLayer(
@@ -331,19 +327,21 @@ export const restoreLayers = (
       );
 
       if (migratedLayer) {
-        const localLayer = localLayersMap?.get(layer.id);
-        if (localLayer && localLayer.version > migratedLayer.version) {
-          migratedLayer = bumpUpdate(migratedLayer, localLayer.version);
-        }
+        // const localLayer = localLayersMap?.get(layer.id);
+        // if (localLayer && localLayer.version > migratedLayer.version) {
+        //   migratedLayer = bumpUpdate(migratedLayer);
+        // }
+
         if (existingIds.has(migratedLayer.id)) {
           migratedLayer = { ...migratedLayer, id: randomId() };
         }
+
         existingIds.add(migratedLayer.id);
         layers.push(migratedLayer);
       }
     }
     return layers;
-  }, [] as ExcalidrawLayer[]);
+  }, [] as Layer[]);
 
   if (!opts?.repairBindings) {
     return restoredLayers;
@@ -352,10 +350,6 @@ export const restoreLayers = (
   // repair binding. Mutates layers.
   const restoredLayersMap = arrayToMap(restoredLayers);
   for (const layer of restoredLayers) {
-    if (layer.frameId) {
-      repairFrameMembership(layer, restoredLayersMap);
-    }
-
     if (isTextLayer(layer) && layer.containerId) {
       repairBoundLayer(layer, restoredLayersMap);
     } else if (layer.boundLayers) {
@@ -366,68 +360,21 @@ export const restoreLayers = (
   return restoredLayers;
 };
 
-const coalesceAppStateValue = <
-  T extends keyof ReturnType<typeof getDefaultAppState>
->(
-  key: T,
-  appState: Exclude<ImportedDataState["appState"], null | undefined>,
-  defaultAppState: ReturnType<typeof getDefaultAppState>
-) => {
-  const value = appState[key];
-  // NOTE the value! assertion is needed in TS 4.5.5 (fixed in newer versions)
-  return value !== undefined ? value! : defaultAppState[key];
-};
+export const restoreEditorState = (
+  editorState: ImportedDataState["editorState"],
+  localEditorState: Partial<EditorState> | null | undefined
+): RestoredEditorState => {
+  editorState = editorState || {};
+  const defaultEditorState = getDefaultEditorState();
+  const nextEditorState = {} as typeof defaultEditorState;
 
-const LegacyAppStateMigrations: {
-  [K in keyof LegacyAppState]: (
-    ImportedDataState: Exclude<ImportedDataState["appState"], null | undefined>,
-    defaultAppState: ReturnType<typeof getDefaultAppState>
-  ) => [LegacyAppState[K][1], AppState[LegacyAppState[K][1]]];
-} = {
-  isSidebarDocked: (appState, defaultAppState) => [
-    "defaultSidebarDockedPreference",
-    appState.isSidebarDocked ??
-      coalesceAppStateValue(
-        "defaultSidebarDockedPreference",
-        appState,
-        defaultAppState
-      )
-  ]
-};
-
-export const restoreAppState = (
-  appState: ImportedDataState["appState"],
-  localAppState: Partial<AppState> | null | undefined
-): RestoredAppState => {
-  appState = appState || {};
-  const defaultAppState = getDefaultAppState();
-  const nextAppState = {} as typeof defaultAppState;
-
-  // first, migrate all legacy AppState properties to new ones. We do it
-  // in one go before migrate the rest of the properties in case the new ones
-  // depend on checking any other key (i.e. they are coupled)
-  for (const legacyKey of Object.keys(
-    LegacyAppStateMigrations
-  ) as (keyof typeof LegacyAppStateMigrations)[]) {
-    if (legacyKey in appState) {
-      const [nextKey, nextValue] = LegacyAppStateMigrations[legacyKey](
-        appState,
-        defaultAppState
-      );
-      (nextAppState as any)[nextKey] = nextValue;
-    }
-  }
-
-  for (const [key, defaultValue] of Object.entries(defaultAppState) as [
-    keyof typeof defaultAppState,
+  for (const [key, defaultValue] of Object.entries(defaultEditorState) as [
+    keyof typeof defaultEditorState,
     any
   ][]) {
-    // if AppState contains a legacy key, prefer that one and migrate its
-    // value to the new one
-    const suppliedValue = appState[key];
-
-    const localValue = localAppState ? localAppState[key] : undefined;
-    (nextAppState as any)[key] =
+    const suppliedValue = editorState[key];
+    const localValue = localEditorState ? localEditorState[key] : undefined;
+    (nextEditorState as any)[key] =
       suppliedValue !== undefined
         ? suppliedValue
         : localValue !== undefined
@@ -436,88 +383,40 @@ export const restoreAppState = (
   }
 
   return {
-    ...nextAppState,
-    cursorButton: localAppState?.cursorButton || "up",
-    // reset on fresh restore so as to hide the UI button if penMode not active
+    ...nextEditorState,
+    // cursorButton: localEditorState?.cursorButton || "up",
     penDetected:
-      localAppState?.penDetected ??
-      (appState.penMode ? appState.penDetected ?? false : false),
+      localEditorState?.penDetected ??
+      (editorState.penMode ? editorState.penDetected ?? false : false),
     activeTool: {
       ...updateActiveTool(
-        defaultAppState,
-        nextAppState.activeTool.type &&
-          AllowedExcalidrawActiveTools[nextAppState.activeTool.type]
-          ? nextAppState.activeTool
-          : { type: "selection" }
+        defaultEditorState,
+        nextEditorState.activeTool.type &&
+          AllowedActiveTools[nextEditorState.activeTool.type]
+          ? nextEditorState.activeTool
+          : { type: Shape.SELECTION }
       ),
       lastActiveTool: null,
-      locked: nextAppState.activeTool.locked ?? false
+      locked: nextEditorState.activeTool.locked ?? false
     },
-    // Migrates from previous version where appState.zoom was a number
-    zoom:
-      typeof appState.zoom === "number"
-        ? {
-            value: appState.zoom as NormalizedZoomValue
-          }
-        : appState.zoom?.value
-        ? appState.zoom
-        : defaultAppState.zoom,
-    openSidebar:
-      // string (legacy)
-      typeof (appState.openSidebar as any as string) === "string"
-        ? { name: DEFAULT_SIDEBAR.name }
-        : nextAppState.openSidebar
+    zoom: editorState.zoom?.value ? editorState.zoom : defaultEditorState.zoom
   };
 };
 
+/**
+ * Restores editor state
+ * @param data Data
+ * @param localEditorState Local editor state
+ * @param localLayers Local layers
+ * @param layersConfig Layers config
+ */
 export const restore = (
-  data: Pick<ImportedDataState, "appState" | "layers" | "files"> | null,
-  localAppState: Partial<AppState> | null | undefined,
-  localLayers: readonly ExcalidrawLayer[] | null | undefined,
+  data: Pick<ImportedDataState, "editorState" | "layers" | "files"> | null,
+  localEditorState: Partial<EditorState> | null | undefined,
+  localLayers: readonly Layer[] | null | undefined,
   layersConfig?: { refreshDimensions?: boolean; repairBindings?: boolean }
 ): RestoredDataState => ({
   layers: restoreLayers(data?.layers, localLayers, layersConfig),
-  appState: restoreAppState(data?.appState, localAppState || null),
+  editorState: restoreEditorState(data?.editorState, localEditorState || null),
   files: data?.files || {}
 });
-
-const restoreLibraryItem = (libraryItem: LibraryItem) => {
-  const layers = restoreLayers(getNonDeletedLayers(libraryItem.layers), null);
-  return layers.length ? { ...libraryItem, layers } : null;
-};
-
-export const restoreLibraryItems = (
-  libraryItems: ImportedDataState["libraryItems"] = [],
-  defaultStatus: LibraryItem["status"]
-) => {
-  const restoredItems: LibraryItem[] = [];
-  for (const item of libraryItems) {
-    // migrate older libraries
-    if (Array.isArray(item)) {
-      const restoredItem = restoreLibraryItem({
-        status: defaultStatus,
-        layers: item,
-        id: randomId(),
-        created: Date.now()
-      });
-      if (restoredItem) {
-        restoredItems.push(restoredItem);
-      }
-    } else {
-      const _item = item as MarkOptional<
-        LibraryItem,
-        "id" | "status" | "created"
-      >;
-      const restoredItem = restoreLibraryItem({
-        ..._item,
-        id: _item.id || randomId(),
-        status: _item.status || defaultStatus,
-        created: _item.created || Date.now()
-      });
-      if (restoredItem) {
-        restoredItems.push(restoredItem);
-      }
-    }
-  }
-  return restoredItems;
-};

@@ -1,5 +1,12 @@
 import React from "react";
 
+import { getShortcutKey } from "../../lib/utils/utils";
+import {
+  moveAllLeft,
+  moveAllRight,
+  moveOneLeft,
+  moveOneRight
+} from "../../lib/zIndex/zindex";
 import {
   BringForwardIcon,
   BringToFrontIcon,
@@ -9,21 +16,14 @@ import {
 import { isDarwin } from "../constants";
 import { t } from "../i18n";
 import { CODES, KEYS } from "../keys";
-import { getShortcutKey } from "../utils";
-import {
-  moveAllLeft,
-  moveAllRight,
-  moveOneLeft,
-  moveOneRight
-} from "../zindex";
 import { register } from "./register";
 
 export const actionSendBackward = register({
   name: "sendBackward",
   trackEvent: { category: "layer" },
-  perform: (layers, appState) => ({
-    layers: moveOneLeft(layers, appState),
-    appState,
+  perform: (layers, editorState) => ({
+    layers: moveOneLeft(layers, editorState),
+    editorState,
     commitToHistory: true
   }),
   contextItemLabel: "labels.sendBackward",
@@ -32,7 +32,7 @@ export const actionSendBackward = register({
     event[KEYS.CTRL_OR_CMD] &&
     !event.shiftKey &&
     event.code === CODES.BRACKET_LEFT,
-  PanelComponent: ({ updateData, appState }) => (
+  PanelComponent: ({ updateData, editorState }) => (
     <button
       className="zIndexButton"
       onClick={() => updateData(null)}
@@ -47,9 +47,9 @@ export const actionSendBackward = register({
 export const actionBringForward = register({
   name: "bringForward",
   trackEvent: { category: "layer" },
-  perform: (layers, appState) => ({
-    layers: moveOneRight(layers, appState),
-    appState,
+  perform: (layers, editorState) => ({
+    layers: moveOneRight(layers, editorState),
+    editorState,
     commitToHistory: true
   }),
   contextItemLabel: "labels.bringForward",
@@ -58,7 +58,7 @@ export const actionBringForward = register({
     event[KEYS.CTRL_OR_CMD] &&
     !event.shiftKey &&
     event.code === CODES.BRACKET_RIGHT,
-  PanelComponent: ({ updateData, appState }) => (
+  PanelComponent: ({ updateData, editorState }) => (
     <button
       className="zIndexButton"
       onClick={() => updateData(null)}
@@ -73,9 +73,9 @@ export const actionBringForward = register({
 export const actionSendToBack = register({
   name: "sendToBack",
   trackEvent: { category: "layer" },
-  perform: (layers, appState) => ({
-    layers: moveAllLeft(layers, appState),
-    appState,
+  perform: (layers, editorState) => ({
+    layers: moveAllLeft(layers, editorState),
+    editorState,
     commitToHistory: true
   }),
   contextItemLabel: "labels.sendToBack",
@@ -87,7 +87,7 @@ export const actionSendToBack = register({
       : event[KEYS.CTRL_OR_CMD] &&
         event.shiftKey &&
         event.code === CODES.BRACKET_LEFT,
-  PanelComponent: ({ updateData, appState }) => (
+  PanelComponent: ({ updateData, editorState }) => (
     <button
       className="zIndexButton"
       onClick={() => updateData(null)}
@@ -107,9 +107,9 @@ export const actionBringToFront = register({
   name: "bringToFront",
   trackEvent: { category: "layer" },
 
-  perform: (layers, appState) => ({
-    layers: moveAllRight(layers, appState),
-    appState,
+  perform: (layers, editorState) => ({
+    layers: moveAllRight(layers, editorState),
+    editorState,
     commitToHistory: true
   }),
   contextItemLabel: "labels.bringToFront",
@@ -121,7 +121,7 @@ export const actionBringToFront = register({
       : event[KEYS.CTRL_OR_CMD] &&
         event.shiftKey &&
         event.code === CODES.BRACKET_RIGHT,
-  PanelComponent: ({ updateData, appState }) => (
+  PanelComponent: ({ updateData, editorState }) => (
     <button
       className="zIndexButton"
       onClick={(event) => updateData(null)}

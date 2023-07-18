@@ -6,6 +6,7 @@ import {
   generateEncryptionKey
 } from "../../../lib/data/encryption/encryption";
 import { serializeAsJSON } from "../../../lib/data/json/json";
+import { getFrame } from "../../../lib/utils/utils";
 import { trackEvent } from "../../analytics";
 import { Card } from "../../components/Card";
 import { ToolButton } from "../../components/ToolButton";
@@ -14,7 +15,6 @@ import { useI18n } from "../../i18n";
 import { isInitializedImageLayer } from "../../layer/typeChecks";
 import { FileId, NonDeletedExcalidrawLayer } from "../../layer/types";
 import { AppState, BinaryFileData, BinaryFiles } from "../../types";
-import { getFrame } from "../../utils";
 import { FILE_UPLOAD_MAX_BYTES } from "../app_constants";
 import { encodeFilesForUpload } from "../data/FileManager";
 import { loadFirebaseStorage, saveFilesToFirebase } from "../data/firebase";
@@ -22,7 +22,7 @@ import { excalidrawPlusIcon } from "./icons";
 
 export const exportToExcalidrawPlus = async (
   layers: readonly NonDeletedExcalidrawLayer[],
-  appState: Partial<AppState>,
+  editorState: Partial<AppState>,
   files: BinaryFiles
 ) => {
   const firebase = await loadFirebaseStorage();
@@ -32,7 +32,7 @@ export const exportToExcalidrawPlus = async (
   const encryptionKey = (await generateEncryptionKey())!;
   const encryptedData = await encryptData(
     encryptionKey,
-    serializeAsJSON(layers, appState, files, "database")
+    serializeAsJSON(layers, editorState, files, "database")
   );
 
   const blob = new Blob(
@@ -47,7 +47,7 @@ export const exportToExcalidrawPlus = async (
     .ref(`/migrations/scenes/${id}`)
     .put(blob, {
       customMetadata: {
-        data: JSON.stringify({ version: 2, name: appState.name }),
+        data: JSON.stringify({ version: 2, name: editorState.name }),
         created: Date.now().toString()
       }
     });
@@ -78,11 +78,11 @@ export const exportToExcalidrawPlus = async (
 };
 
 export const ExportToExcalidrawPlus: React.FC<{
-  appState: Partial<AppState>;
+  editorState: Partial<AppState>;
   files: BinaryFiles;
   layers: readonly NonDeletedExcalidrawLayer[];
   onError: (error: Error) => void;
-}> = ({ layers, appState, files, onError }) => {
+}> = ({ layers, editorState, files, onError }) => {
   const { t } = useI18n();
   return (
     <Card color="primary">
@@ -97,7 +97,7 @@ export const ExportToExcalidrawPlus: React.FC<{
         onClick={async () => {
           try {
             trackEvent("export", "eplus", `ui (${getFrame()})`);
-            await exportToExcalidrawPlus(layers, appState, files);
+            await exportToExcalidrawPlus(layers, editorState, files);
           } catch (error: any) {
             console.error(error);
             if (error.name !== "AbortError") {

@@ -23,9 +23,9 @@ export let copiedStyles: string = "{}";
 export const actionCopyStyles = register({
   name: "copyStyles",
   trackEvent: { category: "layer" },
-  perform: (layers, appState) => {
+  perform: (layers, editorState) => {
     const layersCopied = [];
-    const layer = layers.find((el) => appState.selectedLayerIds[el.id]);
+    const layer = layers.find((el) => editorState.selectedLayerIds[el.id]);
     layersCopied.push(layer);
     if (layer && hasBoundTextLayer(layer)) {
       const boundTextLayer = getBoundTextLayer(layer);
@@ -35,8 +35,8 @@ export const actionCopyStyles = register({
       copiedStyles = JSON.stringify(layersCopied);
     }
     return {
-      appState: {
-        ...appState,
+      editorState: {
+        ...editorState,
         toast: { message: t("toast.copyStyles") }
       },
       commitToHistory: false
@@ -50,7 +50,7 @@ export const actionCopyStyles = register({
 export const actionPasteStyles = register({
   name: "pasteStyles",
   trackEvent: { category: "layer" },
-  perform: (layers, appState) => {
+  perform: (layers, editorState) => {
     const layersCopied = JSON.parse(copiedStyles);
     const pastedLayer = layersCopied[0];
     const boundTextLayer = layersCopied[1];
@@ -58,7 +58,7 @@ export const actionPasteStyles = register({
       return { layers, commitToHistory: false };
     }
 
-    const selectedLayers = getSelectedLayers(layers, appState, {
+    const selectedLayers = getSelectedLayers(layers, editorState, {
       includeBoundTextLayer: true
     });
     const selectedLayerIds = selectedLayers.map((layer) => layer.id);

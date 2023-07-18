@@ -1,7 +1,7 @@
 import { devConsole } from "@storiny/shared/src/utils/devLog";
 import { deflate, inflate } from "pako";
 
-import { decryptData, encryptData } from "../encryption/encryption";
+import { decryptData, encryptData } from "../encryption";
 
 // Byte (binary) strings
 

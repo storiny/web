@@ -2,16 +2,21 @@ import { getNormalizedZoom, getSelectedLayers } from "../../lib/scene";
 import { centerScrollOn } from "../../lib/scene/scroll/scroll";
 import { getStateForZoom } from "../../lib/scene/zoom/zoom";
 import {
-  getDefaultAppState,
-  isEraserActive,
-  isHandToolActive
-} from "../appState";
+  getShortcutKey,
+  setCursor,
+  updateActiveTool
+} from "../../lib/utils/utils";
 import { DEFAULT_CANVAS_BACKGROUND_PICKS } from "../colors";
 import { ColorPicker } from "../components/ColorPicker/ColorPicker";
 import { ZoomInIcon, ZoomOutIcon } from "../components/icons";
 import { ToolButton } from "../components/ToolButton";
 import { Tooltip } from "../components/Tooltip";
 import { CURSOR_TYPE, MIN_ZOOM, THEME, ZOOM_STEP } from "../constants";
+import {
+  getDefaultAppState,
+  isEraserActive,
+  isHandToolActive
+} from "../editorState";
 import { t } from "../i18n";
 import { CODES, KEYS } from "../keys";
 import { getCommonBounds, getNonDeletedLayers } from "../layer";
@@ -19,24 +24,23 @@ import { Bounds } from "../layer/bounds";
 import { newLayerWith } from "../layer/mutateLayer";
 import { ExcalidrawLayer } from "../layer/types";
 import { AppState, NormalizedZoomValue } from "../types";
-import { getShortcutKey, setCursor, updateActiveTool } from "../utils";
 import { register } from "./register";
 
 export const actionChangeViewBackgroundColor = register({
   name: "changeViewBackgroundColor",
   trackEvent: false,
-  predicate: (layers, appState, props, app) =>
+  predicate: (layers, editorState, props, app) =>
     !!app.props.UIOptions.canvasActions.changeViewBackgroundColor &&
-    !appState.viewModeEnabled,
-  perform: (_, appState, value) => ({
-    appState: { ...appState, ...value },
+    !editorState.viewModeEnabled,
+  perform: (_, editorState, value) => ({
+    editorState: { ...editorState, ...value },
     commitToHistory: !!value.viewBackgroundColor
   }),
-  PanelComponent: ({ layers, appState, updateData, appProps }) => (
+  PanelComponent: ({ layers, editorState, updateData, appProps }) => (
     <ColorPicker
-      appState={appState}
-      color={appState.viewBackgroundColor}
+      color={editorState.viewBackgroundColor}
       data-testid="canvas-background-picker"
+      editorState={editorState}
       label={t("labels.canvasBackground")}
       layers={layers}
       onChange={(color) => updateData({ viewBackgroundColor: color })}
@@ -51,28 +55,28 @@ export const actionChangeViewBackgroundColor = register({
 export const actionClearCanvas = register({
   name: "clearCanvas",
   trackEvent: { category: "canvas" },
-  predicate: (layers, appState, props, app) =>
+  predicate: (layers, editorState, props, app) =>
     !!app.props.UIOptions.canvasActions.clearCanvas &&
-    !appState.viewModeEnabled,
-  perform: (layers, appState, _, app) => {
+    !editorState.viewModeEnabled,
+  perform: (layers, editorState, _, app) => {
     app.imageCache.clear();
     return {
       layers: layers.map((layer) => newLayerWith(layer, { isDeleted: true })),
-      appState: {
+      editorState: {
         ...getDefaultAppState(),
         files: {},
-        theme: appState.theme,
-        penMode: appState.penMode,
-        penDetected: appState.penDetected,
-        exportBackground: appState.exportBackground,
-        exportEmbedScene: appState.exportEmbedScene,
-        gridSize: appState.gridSize,
-        showStats: appState.showStats,
-        pasteDialog: appState.pasteDialog,
+        theme: editorState.theme,
+        penMode: editorState.penMode,
+        penDetected: editorState.penDetected,
+        exportBackground: editorState.exportBackground,
+        exportEmbedScene: editorState.exportEmbedScene,
+        gridSize: editorState.gridSize,
+        showStats: editorState.showStats,
+        pasteDialog: editorState.pasteDialog,
         activeTool:
-          appState.activeTool.type === "image"
-            ? { ...appState.activeTool, type: "selection" }
-            : appState.activeTool
+          editorState.activeTool.type === "image"
+            ? { ...editorState.activeTool, type: "selection" }
+            : editorState.activeTool
       },
       commitToHistory: true
     };
@@ -83,16 +87,16 @@ export const actionZoomIn = register({
   name: "zoomIn",
   viewMode: true,
   trackEvent: { category: "canvas" },
-  perform: (_layers, appState, _, app) => ({
-    appState: {
-      ...appState,
+  perform: (_layers, editorState, _, app) => ({
+    editorState: {
+      ...editorState,
       ...getStateForZoom(
         {
-          viewportX: appState.width / 2 + appState.offsetLeft,
-          viewportY: appState.height / 2 + appState.offsetTop,
-          nextZoom: getNormalizedZoom(appState.zoom.value + ZOOM_STEP)
+          viewportX: editorState.width / 2 + editorState.offsetLeft,
+          viewportY: editorState.height / 2 + editorState.offsetTop,
+          nextZoom: getNormalizedZoom(editorState.zoom.value + ZOOM_STEP)
         },
-        appState
+        editorState
       )
     },
     commitToHistory: false
@@ -118,16 +122,16 @@ export const actionZoomOut = register({
   name: "zoomOut",
   viewMode: true,
   trackEvent: { category: "canvas" },
-  perform: (_layers, appState, _, app) => ({
-    appState: {
-      ...appState,
+  perform: (_layers, editorState, _, app) => ({
+    editorState: {
+      ...editorState,
       ...getStateForZoom(
         {
-          viewportX: appState.width / 2 + appState.offsetLeft,
-          viewportY: appState.height / 2 + appState.offsetTop,
-          nextZoom: getNormalizedZoom(appState.zoom.value - ZOOM_STEP)
+          viewportX: editorState.width / 2 + editorState.offsetLeft,
+          viewportY: editorState.height / 2 + editorState.offsetTop,
+          nextZoom: getNormalizedZoom(editorState.zoom.value - ZOOM_STEP)
         },
-        appState
+        editorState
       )
     },
     commitToHistory: false
@@ -153,21 +157,21 @@ export const actionResetZoom = register({
   name: "resetZoom",
   viewMode: true,
   trackEvent: { category: "canvas" },
-  perform: (_layers, appState, _, app) => ({
-    appState: {
-      ...appState,
+  perform: (_layers, editorState, _, app) => ({
+    editorState: {
+      ...editorState,
       ...getStateForZoom(
         {
-          viewportX: appState.width / 2 + appState.offsetLeft,
-          viewportY: appState.height / 2 + appState.offsetTop,
+          viewportX: editorState.width / 2 + editorState.offsetLeft,
+          viewportY: editorState.height / 2 + editorState.offsetTop,
           nextZoom: getNormalizedZoom(1)
         },
-        appState
+        editorState
       )
     },
     commitToHistory: false
   }),
-  PanelComponent: ({ updateData, appState }) => (
+  PanelComponent: ({ updateData, editorState }) => (
     <Tooltip label={t("buttons.resetZoom")} style={{ height: "100%" }}>
       <ToolButton
         aria-label={t("buttons.resetZoom")}
@@ -178,7 +182,7 @@ export const actionResetZoom = register({
         title={t("buttons.resetZoom")}
         type="button"
       >
-        {(appState.zoom.value * 100).toFixed(0)}%
+        {(editorState.zoom.value * 100).toFixed(0)}%
       </ToolButton>
     </Tooltip>
   ),
@@ -208,11 +212,11 @@ const zoomValueToFitBoundsOnViewport = (
 
 export const zoomToFit = ({
   targetLayers,
-  appState,
+  editorState,
   fitToViewport = false,
   viewportZoomFactor = 0.7
 }: {
-  appState: Readonly<AppState>;
+  editorState: Readonly<AppState>;
   /** whether to fit content to viewport (beyond >100%) */
   fitToViewport: boolean;
   targetLayers: readonly ExcalidrawLayer[];
@@ -235,8 +239,8 @@ export const zoomToFit = ({
 
     newZoomValue =
       Math.min(
-        appState.width / commonBoundsWidth,
-        appState.height / commonBoundsHeight
+        editorState.width / commonBoundsWidth,
+        editorState.height / commonBoundsHeight
       ) * Math.min(1, Math.max(viewportZoomFactor, 0.1));
 
     // Apply clamping to newZoomValue to be between 10% and 3000%
@@ -245,19 +249,19 @@ export const zoomToFit = ({
       30.0
     ) as NormalizedZoomValue;
 
-    scrollX = (appState.width / 2) * (1 / newZoomValue) - centerX;
-    scrollY = (appState.height / 2) * (1 / newZoomValue) - centerY;
+    scrollX = (editorState.width / 2) * (1 / newZoomValue) - centerX;
+    scrollY = (editorState.height / 2) * (1 / newZoomValue) - centerY;
   } else {
     newZoomValue = zoomValueToFitBoundsOnViewport(commonBounds, {
-      width: appState.width,
-      height: appState.height
+      width: editorState.width,
+      height: editorState.height
     });
 
     const centerScroll = centerScrollOn({
       scenePoint: { x: centerX, y: centerY },
       viewportDimensions: {
-        width: appState.width,
-        height: appState.height
+        width: editorState.width,
+        height: editorState.height
       },
       zoom: { value: newZoomValue }
     });
@@ -267,8 +271,8 @@ export const zoomToFit = ({
   }
 
   return {
-    appState: {
-      ...appState,
+    editorState: {
+      ...editorState,
       scrollX,
       scrollY,
       zoom: { value: newZoomValue }
@@ -283,14 +287,14 @@ export const zoomToFit = ({
 export const actionZoomToFitSelectionInViewport = register({
   name: "zoomToFitSelectionInViewport",
   trackEvent: { category: "canvas" },
-  perform: (layers, appState) => {
+  perform: (layers, editorState) => {
     const selectedLayers = getSelectedLayers(
       getNonDeletedLayers(layers),
-      appState
+      editorState
     );
     return zoomToFit({
       targetLayers: selectedLayers.length ? selectedLayers : layers,
-      appState,
+      editorState,
       fitToViewport: false
     });
   },
@@ -306,14 +310,14 @@ export const actionZoomToFitSelectionInViewport = register({
 export const actionZoomToFitSelection = register({
   name: "zoomToFitSelection",
   trackEvent: { category: "canvas" },
-  perform: (layers, appState) => {
+  perform: (layers, editorState) => {
     const selectedLayers = getSelectedLayers(
       getNonDeletedLayers(layers),
-      appState
+      editorState
     );
     return zoomToFit({
       targetLayers: selectedLayers.length ? selectedLayers : layers,
-      appState,
+      editorState,
       fitToViewport: true
     });
   },
@@ -329,8 +333,8 @@ export const actionZoomToFit = register({
   name: "zoomToFit",
   viewMode: true,
   trackEvent: { category: "canvas" },
-  perform: (layers, appState) =>
-    zoomToFit({ targetLayers: layers, appState, fitToViewport: false }),
+  perform: (layers, editorState) =>
+    zoomToFit({ targetLayers: layers, editorState, fitToViewport: false }),
   keyTest: (event) =>
     event.code === CODES.ONE &&
     event.shiftKey &&
@@ -342,42 +346,42 @@ export const actionToggleTheme = register({
   name: "toggleTheme",
   viewMode: true,
   trackEvent: { category: "canvas" },
-  perform: (_, appState, value) => ({
-    appState: {
-      ...appState,
+  perform: (_, editorState, value) => ({
+    editorState: {
+      ...editorState,
       theme:
-        value || (appState.theme === THEME.LIGHT ? THEME.DARK : THEME.LIGHT)
+        value || (editorState.theme === THEME.LIGHT ? THEME.DARK : THEME.LIGHT)
     },
     commitToHistory: false
   }),
   keyTest: (event) => event.altKey && event.shiftKey && event.code === CODES.D,
-  predicate: (layers, appState, props, app) =>
+  predicate: (layers, editorState, props, app) =>
     !!app.props.UIOptions.canvasActions.toggleTheme
 });
 
 export const actionToggleEraserTool = register({
   name: "toggleEraserTool",
   trackEvent: { category: "toolbar" },
-  perform: (layers, appState) => {
+  perform: (layers, editorState) => {
     let activeTool: AppState["activeTool"];
 
-    if (isEraserActive(appState)) {
-      activeTool = updateActiveTool(appState, {
-        ...(appState.activeTool.lastActiveTool || {
+    if (isEraserActive(editorState)) {
+      activeTool = updateActiveTool(editorState, {
+        ...(editorState.activeTool.lastActiveTool || {
           type: "selection"
         }),
         lastActiveToolBeforeEraser: null
       });
     } else {
-      activeTool = updateActiveTool(appState, {
+      activeTool = updateActiveTool(editorState, {
         type: "eraser",
-        lastActiveToolBeforeEraser: appState.activeTool
+        lastActiveToolBeforeEraser: editorState.activeTool
       });
     }
 
     return {
-      appState: {
-        ...appState,
+      editorState: {
+        ...editorState,
         selectedLayerIds: {},
         selectedGroupIds: {},
         activeTool
@@ -391,27 +395,27 @@ export const actionToggleEraserTool = register({
 export const actionToggleHandTool = register({
   name: "toggleHandTool",
   trackEvent: { category: "toolbar" },
-  perform: (layers, appState, _, app) => {
+  perform: (layers, editorState, _, app) => {
     let activeTool: AppState["activeTool"];
 
-    if (isHandToolActive(appState)) {
-      activeTool = updateActiveTool(appState, {
-        ...(appState.activeTool.lastActiveTool || {
+    if (isHandToolActive(editorState)) {
+      activeTool = updateActiveTool(editorState, {
+        ...(editorState.activeTool.lastActiveTool || {
           type: "selection"
         }),
         lastActiveToolBeforeEraser: null
       });
     } else {
-      activeTool = updateActiveTool(appState, {
+      activeTool = updateActiveTool(editorState, {
         type: "hand",
-        lastActiveToolBeforeEraser: appState.activeTool
+        lastActiveToolBeforeEraser: editorState.activeTool
       });
       setCursor(app.canvas, CURSOR_TYPE.GRAB);
     }
 
     return {
-      appState: {
-        ...appState,
+      editorState: {
+        ...editorState,
         selectedLayerIds: {},
         selectedGroupIds: {},
         activeTool

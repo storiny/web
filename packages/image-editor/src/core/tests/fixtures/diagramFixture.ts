@@ -10,7 +10,7 @@ export const diagramFixture = {
   version: VERSIONS.excalidraw,
   source: "https://excalidraw.com",
   layers: [diamondFixture, ellipseFixture, rectangleFixture],
-  appState: {
+  editorState: {
     viewBackgroundColor: "#ffffff",
     gridSize: null
   },
