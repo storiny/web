@@ -1,10 +1,10 @@
-import { getSelectedLayers, isSomeLayerSelected } from "../../lib/scene";
-import { arrayToMap, getShortcutKey } from "../../lib/utils/utils";
 import {
   DistributeHorizontallyIcon,
   DistributeVerticallyIcon
-} from "../components/icons";
-import { ToolButton } from "../components/ToolButton";
+} from "../../components/core/icons";
+import { ToolButton } from "../../components/core/ToolButton";
+import { getSelectedLayers, isSomeLayerSelected } from "../../lib/scene";
+import { arrayToMap, getShortcutKey } from "../../lib/utils/utils";
 import { distributeLayers, Distribution } from "../distribute";
 import { updateFrameMembershipOfSelectedLayers } from "../frame";
 import { t } from "../i18n";

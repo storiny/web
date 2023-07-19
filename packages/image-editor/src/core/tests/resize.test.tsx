@@ -1,6 +1,6 @@
 import ReactDOM from "react-dom";
 
-import App from "../components/App";
+import App from "../../components/core/App";
 import ExcalidrawApp from "../excalidraw-app";
 import { KEYS } from "../keys";
 import { ExcalidrawTextLayer } from "../layer/types";

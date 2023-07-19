@@ -1,4 +1,4 @@
-import { CODES, KEYS } from "../keys";
+import { KeyCode, KEYS } from "../../constants";
 import { register } from "./register";
 
 export const actionToggleZenMode = register({
@@ -22,5 +22,5 @@ export const actionToggleZenMode = register({
     typeof appProps.zenModeEnabled === "undefined",
   contextItemLabel: "buttons.zenMode",
   keyTest: (event) =>
-    !event[KEYS.CTRL_OR_CMD] && event.altKey && event.code === CODES.Z
+    !event[KEYS.CTRL_OR_CMD] && event.altKey && event.code === KeyCode.Z
 });

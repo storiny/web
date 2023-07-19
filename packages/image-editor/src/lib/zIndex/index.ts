@@ -1,6 +1,6 @@
 import { LayerType } from "../../constants";
-import { getLayersInGroup } from "../../core/groups";
 import { EditorState, Layer } from "../../types";
+import { getLayersInGroup } from "../group";
 import { bumpUpdate } from "../layer";
 import { getSelectedLayers, Scene } from "../scene";
 import { arrayToMap, findIndex, findLastIndex } from "../utils";

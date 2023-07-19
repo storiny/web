@@ -23,7 +23,7 @@ const stubCache = (
 };
 
 describe("getItemsPosition", () => {
-  test("handles empty layout", () => {
+  it("handles empty layout", () => {
     const positions = getItemsPosition({
       cache: stubCache(),
       width: 500
@@ -32,7 +32,7 @@ describe("getItemsPosition", () => {
     expect(positions([])).toEqual([]);
   });
 
-  test("handles layout with a single row", () => {
+  it("handles layout with a single row", () => {
     const measurements = { a: 100, b: 120, c: 80 };
     const items = ["a", "b", "c"];
     const layout = getItemsPosition({
@@ -47,7 +47,7 @@ describe("getItemsPosition", () => {
     ]);
   });
 
-  test("handles wrapping items", () => {
+  it("handles wrapping items", () => {
     const measurements = { a: 100, b: 120, c: 80, d: 100 };
     const items = ["a", "b", "c", "d"];
     const layout = getItemsPosition({

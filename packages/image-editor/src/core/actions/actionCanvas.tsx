@@ -1,3 +1,8 @@
+import { ColorPicker } from "../../components/core/ColorPicker/ColorPicker";
+import { ZoomInIcon, ZoomOutIcon } from "../../components/core/icons";
+import { ToolButton } from "../../components/core/ToolButton";
+import { Tooltip } from "../../components/core/Tooltip";
+import { DEFAULT_CANVAS_BACKGROUND_PICKS } from "../../lib/color/colors";
 import { getNormalizedZoom, getSelectedLayers } from "../../lib/scene";
 import { centerScrollOn } from "../../lib/scene/scroll/scroll";
 import { getStateForZoom } from "../../lib/scene/zoom/zoom";
@@ -6,11 +11,6 @@ import {
   setCursor,
   updateActiveTool
 } from "../../lib/utils/utils";
-import { DEFAULT_CANVAS_BACKGROUND_PICKS } from "../colors";
-import { ColorPicker } from "../components/ColorPicker/ColorPicker";
-import { ZoomInIcon, ZoomOutIcon } from "../components/icons";
-import { ToolButton } from "../components/ToolButton";
-import { Tooltip } from "../components/Tooltip";
 import { CURSOR_TYPE, MIN_ZOOM, THEME, ZOOM_STEP } from "../constants";
 import {
   getDefaultAppState,

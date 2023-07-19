@@ -3,12 +3,8 @@ import "./RoomDialog.scss";
 import * as Popover from "@radix-ui/react-popover";
 import { useRef, useState } from "react";
 
-import { getFrame } from "../../../lib/utils/utils";
-import { trackEvent } from "../../analytics";
-import { ReactComponent as CollabImage } from "../../assets/lock.svg";
-import { copyTextToSystemClipboard } from "../../clipboard";
-import { Dialog } from "../../components/Dialog";
-import { FilledButton } from "../../components/FilledButton";
+import { Dialog } from "../../../components/core/Dialog";
+import { FilledButton } from "../../../components/core/FilledButton";
 import {
   copyIcon,
   playerPlayIcon,
@@ -17,8 +13,12 @@ import {
   shareIOS,
   shareWindows,
   tablerCheckIcon
-} from "../../components/icons";
-import { TextField } from "../../components/TextField";
+} from "../../../components/core/icons";
+import { TextField } from "../../../components/core/TextField";
+import { copyTextToSystemClipboard } from "../../../lib/clipboard/clipboard";
+import { getFrame } from "../../../lib/utils/utils";
+import { trackEvent } from "../../analytics";
+import { ReactComponent as CollabImage } from "../../assets/lock.svg";
 import { useI18n } from "../../i18n";
 import { KEYS } from "../../keys";
 

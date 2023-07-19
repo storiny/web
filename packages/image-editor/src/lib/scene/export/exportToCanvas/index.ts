@@ -1,8 +1,7 @@
 import rough from "roughjs/bin/rough";
 
-import { DEFAULT_EXPORT_PADDING } from "../../../../core/constants";
-import { BinaryFiles } from "../../../../types";
-import { EditorState, NonDeletedLayer } from "../../../../types";
+import { DEFAULT_EXPORT_PADDING } from "../../../../constants";
+import { BinaryFiles, NonDeletedLayer, RootState } from "../../../../types";
 import { getInitializedImageLayers, updateImageCache } from "../../../layer";
 import { renderScene } from "../../../renderer";
 import { getDefaultEditorState } from "../../../state";
@@ -20,7 +19,7 @@ import { getCanvasSize } from "../getExportSize";
  */
 export const exportToCanvas = async (
   layers: readonly NonDeletedLayer[],
-  editorState: EditorState,
+  editorState: RootState,
   files: BinaryFiles,
   {
     exportBackground,
@@ -65,11 +64,7 @@ export const exportToCanvas = async (
       scrollX: -minX + exportPadding,
       scrollY: -minY + exportPadding,
       zoom: defaultEditorState.zoom,
-      remotePointerViewportCoords: {},
-      remoteSelectedLayerIds: {},
       shouldCacheIgnoreZoom: false,
-      remotePointerUsernames: {},
-      remotePointerUserStates: {},
       imageCache,
       renderScrollbars: false,
       renderSelection: false,

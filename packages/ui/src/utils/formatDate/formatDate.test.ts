@@ -256,13 +256,13 @@ const relativeFixtures: Array<RelativeFixture> = [
 ];
 
 describe("formatDate", () => {
-  test.each(fixtures)(
+  it.each(fixtures)(
     "formats date with $format format: $expected",
     ({ value, format, expected }) =>
       expect(formatDate(value, format || undefined)).toEqual(expected)
   );
 
-  test.each([
+  it.each([
     ...relativeFixtures.map((fixture) => ({
       ...fixture,
       format: DateFormat.RELATIVE

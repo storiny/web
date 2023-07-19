@@ -8,11 +8,11 @@ const decodedUrl =
   "";
 
 describe("verify", () => {
-  test("returns `true` for a valid remote image url", () => {
+  it("returns `true` for a valid remote image url", () => {
     expect(verify(digest, decodedUrl, key)).toBeTruthy();
   });
 
-  test("returns `false` for an invalid remote image url", () => {
+  it("returns `false` for an invalid remote image url", () => {
     expect(verify(digest, decodedUrl + "invalid", key)).toBeFalsy();
   });
 });

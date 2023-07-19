@@ -1,11 +1,11 @@
+import { DuplicateIcon } from "../../components/core/icons";
+import { ToolButton } from "../../components/core/ToolButton";
 import { isSomeLayerSelected } from "../../lib/scene";
 import {
   excludeLayersInFramesFromSelection,
   getSelectedLayers
 } from "../../lib/scene/selection/selection";
 import { arrayToMap, getShortcutKey } from "../../lib/utils/utils";
-import { DuplicateIcon } from "../components/icons";
-import { ToolButton } from "../components/ToolButton";
 import { GRID_SIZE } from "../constants";
 import { bindLayersToFramesAfterDuplication, getFrameLayers } from "../frame";
 import {

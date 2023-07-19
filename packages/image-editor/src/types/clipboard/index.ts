@@ -1,4 +1,4 @@
-import { Spreadsheet } from "../../core/charts";
+import { Spreadsheet } from "../../lib/chart/charts";
 import { BinaryFiles } from "../binary";
 import { Layer } from "../layer";
 

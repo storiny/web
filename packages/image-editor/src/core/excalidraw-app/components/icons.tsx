@@ -1,4 +1,4 @@
-import { createIcon } from "../../components/icons";
+import { createIcon } from "../../../components/core/icons";
 
 export const excalidrawPlusIcon = createIcon(
   <>
@@ -15,5 +15,5 @@ export const excalidrawPlusIcon = createIcon(
       fill="currentColor"
     />
   </>,
-  { width: 89, height: 131, style: { transform: "translateX(4px)" } },
+  { width: 89, height: 131, style: { transform: "translateX(4px)" } }
 );

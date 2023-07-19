@@ -6,7 +6,7 @@ import {
   refreshTextDimensions
 } from "../../layer";
 import { invalidateShapeForLayer } from "../../renderer";
-import { getFontString } from "../../utils/utils";
+import { getFontString } from "../../utils";
 import { Scene } from "../scene";
 
 export class Fonts {

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
+import { copyTextToSystemClipboard } from "../../lib/clipboard/clipboard";
 import { debounce, getVersion, nFormatter } from "../../lib/utils/utils";
-import { copyTextToSystemClipboard } from "../clipboard";
 import { DEFAULT_VERSION } from "../constants";
 import { t } from "../i18n";
 import { NonDeletedExcalidrawLayer } from "../layer/types";

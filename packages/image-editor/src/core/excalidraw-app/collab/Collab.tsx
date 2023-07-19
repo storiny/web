@@ -2,6 +2,7 @@ import { atom, useAtom } from "jotai";
 import throttle from "lodash.throttle";
 import { PureComponent } from "react";
 
+import { ErrorDialog } from "../../../components/core/ErrorDialog";
 import { decryptData } from "../../../lib/data/encryption/encryption";
 import { ImportedDataState } from "../../../lib/data/types";
 import { AbortError } from "../../../lib/errors/errors";
@@ -14,7 +15,6 @@ import {
   resolvablePromise,
   withBatchedUpdates
 } from "../../../lib/utils/utils";
-import { ErrorDialog } from "../../components/ErrorDialog";
 import { APP_NAME, ENV, EVENT } from "../../constants";
 import { ACTIVE_THRESHOLD, IDLE_THRESHOLD } from "../../constants";
 import { t } from "../../i18n";

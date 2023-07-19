@@ -1,6 +1,6 @@
+import { RedoIcon, UndoIcon } from "../../components/core/icons";
+import { ToolButton } from "../../components/core/ToolButton";
 import { arrayToMap } from "../../lib/utils/utils";
-import { RedoIcon, UndoIcon } from "../components/icons";
-import { ToolButton } from "../components/ToolButton";
 import { isWindows } from "../constants";
 import History, { HistoryEntry } from "../history";
 import { t } from "../i18n";

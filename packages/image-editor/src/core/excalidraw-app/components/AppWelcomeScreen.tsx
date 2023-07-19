@@ -1,12 +1,13 @@
 import React from "react";
-import { PlusPromoIcon } from "../../components/icons";
-import { useI18n } from "../../i18n";
+
+import { PlusPromoIcon } from "../../../components/core/icons";
 import { WelcomeScreen } from "../../../lib/packages/excalidraw/index";
+import { useI18n } from "../../i18n";
 import { isExcalidrawPlusSignedUser } from "../app_constants";
 
 export const AppWelcomeScreen: React.FC<{
-  setCollabDialogShown: (toggle: boolean) => any;
   isCollabEnabled: boolean;
+  setCollabDialogShown: (toggle: boolean) => any;
 }> = React.memo((props) => {
   const { t } = useI18n();
   let headingContent;
@@ -18,9 +19,9 @@ export const AppWelcomeScreen: React.FC<{
         if (bit === "Excalidraw+") {
           return (
             <a
-              style={{ pointerEvents: "all" }}
               href={`${process.env.REACT_APP_PLUS_APP}?utm_source=excalidraw&utm_medium=app&utm_content=welcomeScreenSignedInUser`}
               key={idx}
+              style={{ pointerEvents: "all" }}
             >
               Excalidraw+
             </a>
@@ -55,8 +56,8 @@ export const AppWelcomeScreen: React.FC<{
           {!isExcalidrawPlusSignedUser && (
             <WelcomeScreen.Center.MenuItemLink
               href="https://plus.excalidraw.com/plus?utm_source=excalidraw&utm_medium=app&utm_content=welcomeScreenGuest"
-              shortcut={null}
               icon={PlusPromoIcon}
+              shortcut={null}
             >
               Try Excalidraw Plus!
             </WelcomeScreen.Center.MenuItemLink>

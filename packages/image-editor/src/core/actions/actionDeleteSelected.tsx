@@ -1,7 +1,7 @@
+import { TrashIcon } from "../../components/core/icons";
+import { ToolButton } from "../../components/core/ToolButton";
 import { getSelectedLayers, isSomeLayerSelected } from "../../lib/scene";
 import { updateActiveTool } from "../../lib/utils/utils";
-import { TrashIcon } from "../components/icons";
-import { ToolButton } from "../components/ToolButton";
 import { getLayersInGroup } from "../groups";
 import { t } from "../i18n";
 import { KEYS } from "../keys";

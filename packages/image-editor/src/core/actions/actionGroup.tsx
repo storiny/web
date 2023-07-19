@@ -1,7 +1,7 @@
+import { GroupIcon, UngroupIcon } from "../../components/core/icons";
+import { ToolButton } from "../../components/core/ToolButton";
 import { getSelectedLayers, isSomeLayerSelected } from "../../lib/scene";
 import { arrayToMap, getShortcutKey } from "../../lib/utils/utils";
-import { GroupIcon, UngroupIcon } from "../components/icons";
-import { ToolButton } from "../components/ToolButton";
 import {
   getLayersInResizingFrame,
   groupByFrames,

@@ -1,7 +1,7 @@
 import { normalizeLink } from "./url";
 
 describe("normalizeLink", () => {
-  test("sanitizes links", () => {
+  it("sanitizes links", () => {
     expect(
       normalizeLink(`javascript://%0aalert(document.domain)`).startsWith(
         `javascript:`

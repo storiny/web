@@ -1,10 +1,10 @@
+import { HamburgerMenuIcon, palette } from "../../components/core/icons";
+import { ToolButton } from "../../components/core/ToolButton";
 import {
   allowFullScreen,
   exitFullScreen,
   isFullScreen
 } from "../../lib/utils/utils";
-import { HamburgerMenuIcon, palette } from "../components/icons";
-import { ToolButton } from "../components/ToolButton";
 import { t } from "../i18n";
 import { KEYS } from "../keys";
 import { getNonDeletedLayers, showSelectedShapeActions } from "../layer";

@@ -1,15 +1,15 @@
 import React from "react";
 import { Point as RoughPoint } from "roughjs/bin/geometry";
 
+import type App from "../components/core/App";
+import { ContextMenuItems } from "../components/core/ContextMenu";
+import { Spreadsheet } from "../lib/chart/charts";
+import { ClipboardData } from "../lib/clipboard/clipboard";
 import type { FileSystemHandle } from "../lib/data/fs/filesystem";
 import Library from "../lib/data/library";
 import { ImportedDataState } from "../lib/data/types";
 import { isOverScrollBars } from "../lib/scene";
 import type { ResolvablePromise, throttleRAF } from "../lib/utils/utils";
-import { Spreadsheet } from "./charts";
-import { ClipboardData } from "./clipboard";
-import type App from "./components/App";
-import { ContextMenuItems } from "./components/ContextMenu";
 import type { IMAGE_MIME_TYPES, MIME_TYPES } from "./constants";
 import { Language } from "./i18n";
 import { SuggestedBinding } from "./layer/binding";

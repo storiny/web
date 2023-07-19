@@ -1,4 +1,4 @@
-function hashToInteger(id: string) {
+const hashToInteger = (id: string) => {
   let hash = 0;
   if (id.length === 0) {
     return hash;
@@ -8,13 +8,13 @@ function hashToInteger(id: string) {
     hash = (hash << 5) - hash + char;
   }
   return hash;
-}
+};
 
 export const getClientColor = (
   /**
    * any uniquely identifying key, such as user id or socket id
    */
-  id: string,
+  id: string
 ) => {
   // to get more even distribution in case `id` is not uniformly distributed to
   // begin with, we hash it

@@ -1,11 +1,37 @@
-import { DEFAULT_LAYER_PROPS, PointerType, Shape } from "../../constants";
+import {
+  Arrowhead,
+  ChartType,
+  DEFAULT_FONT_FAMILY,
+  DEFAULT_FONT_SIZE,
+  DEFAULT_LAYER_PROPS,
+  DEFAULT_TEXT_ALIGN,
+  EXPORT_SCALE,
+  PointerType,
+  Shape,
+  StrokeRoundness
+} from "../../constants";
 import { EditorState } from "../../types";
 
 export const getDefaultEditorState = (): Omit<
   EditorState,
   "offsetTop" | "offsetLeft" | "width" | "height"
 > => ({
-  cursorButton: "up",
+  currentItemBackgroundColor: DEFAULT_LAYER_PROPS.backgroundColor,
+  currentChartType: ChartType.BAR,
+  currentItemEndArrowhead: Arrowhead.ARROW,
+  currentItemFillStyle: DEFAULT_LAYER_PROPS.fillStyle,
+  currentItemFontFamily: DEFAULT_FONT_FAMILY,
+  currentItemFontSize: DEFAULT_FONT_SIZE,
+  currentItemOpacity: DEFAULT_LAYER_PROPS.opacity,
+  currentItemRoughness: DEFAULT_LAYER_PROPS.roughness,
+  currentItemRoundness: StrokeRoundness.ROUND,
+  currentItemStartArrowhead: null,
+  currentItemStrokeColor: DEFAULT_LAYER_PROPS.strokeColor,
+  currentItemStrokeStyle: DEFAULT_LAYER_PROPS.strokeStyle,
+  currentItemStrokeWidth: DEFAULT_LAYER_PROPS.strokeWidth,
+  currentItemTextAlign: DEFAULT_TEXT_ALIGN,
+  // cursorButton: "up",
+  snapToGrid: false,
   draggingLayer: null,
   editingLayer: null,
   editingGroupId: null,
@@ -19,7 +45,7 @@ export const getDefaultEditorState = (): Omit<
   penMode: false,
   penDetected: false,
   errorMessage: null,
-  exportScale: defaultExportScale,
+  exportScale: EXPORT_SCALE,
   fileHandle: null,
   gridSize: null,
   isBindingEnabled: true,
@@ -32,16 +58,16 @@ export const getDefaultEditorState = (): Omit<
   previousSelectedLayerIds: {},
   resizingLayer: null,
   scrolledOutside: false,
-  scrollX: 0,
-  scrollY: 0,
+  // scrollX: 0,
+  // scrollY: 0,
   selectedLayerIds: {},
   selectedGroupIds: {},
   selectedLayersAreBeingDragged: false,
   selectionLayer: null,
   shouldCacheIgnoreZoom: false,
   showStats: false,
-  startBoundLayer: null,
-  suggestedBindings: [],
+  // startBoundLayer: null,
+  // suggestedBindings: [],
   layersToHighlight: null,
   toast: null,
   viewBackgroundColor: "#fff",
@@ -50,7 +76,11 @@ export const getDefaultEditorState = (): Omit<
   },
   pendingImageLayerId: null,
   showHyperlinkPopup: false,
-  selectedLinearLayer: null
+  selectedLinearLayer: null,
+  name: "",
+  helpModal: false,
+  openMenu: null,
+  pasteDialog: { shown: false, data: null }
 });
 
 /**

@@ -1,6 +1,8 @@
 import { nanoid } from "nanoid";
 import React from "react";
 
+import { Card } from "../../../components/core/Card";
+import { ToolButton } from "../../../components/core/ToolButton";
 import {
   encryptData,
   generateEncryptionKey
@@ -8,8 +10,6 @@ import {
 import { serializeAsJSON } from "../../../lib/data/json/json";
 import { getFrame } from "../../../lib/utils/utils";
 import { trackEvent } from "../../analytics";
-import { Card } from "../../components/Card";
-import { ToolButton } from "../../components/ToolButton";
 import { MIME_TYPES } from "../../constants";
 import { useI18n } from "../../i18n";
 import { isInitializedImageLayer } from "../../layer/typeChecks";

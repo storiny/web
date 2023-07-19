@@ -1,5 +1,11 @@
 import React from "react";
 
+import {
+  BringForwardIcon,
+  BringToFrontIcon,
+  SendBackwardIcon,
+  SendToBackIcon
+} from "../../components/core/icons";
 import { getShortcutKey } from "../../lib/utils/utils";
 import {
   moveAllLeft,
@@ -7,12 +13,6 @@ import {
   moveOneLeft,
   moveOneRight
 } from "../../lib/zIndex/zindex";
-import {
-  BringForwardIcon,
-  BringToFrontIcon,
-  SendBackwardIcon,
-  SendToBackIcon
-} from "../components/icons";
 import { isDarwin } from "../constants";
 import { t } from "../i18n";
 import { CODES, KEYS } from "../keys";

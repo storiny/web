@@ -1,18 +1,18 @@
-import "../components/ToolIcon.scss";
+import "../../components/core/ToolIcon.scss";
 
+import { useDevice } from "../../components/core/App";
+import { CheckboxItem } from "../../components/core/CheckboxItem";
+import { DarkModeToggle } from "../../components/core/DarkModeToggle";
+import { questionCircle, saveAs } from "../../components/core/icons";
+import { ProjectName } from "../../components/core/ProjectName";
+import { ToolButton } from "../../components/core/ToolButton";
+import { Tooltip } from "../../components/core/Tooltip";
 import { isImageFileHandle } from "../../lib/data/blob/blob";
 import { loadFromJSON, saveAsJSON } from "../../lib/data/export";
 import { nativeFileSystemSupported } from "../../lib/data/fs/filesystem";
 import { resaveAsImageWithScene } from "../../lib/data/resave/resave";
 import { getSelectedLayers, isSomeLayerSelected } from "../../lib/scene";
 import { getExportSize } from "../../lib/scene/export/export";
-import { useDevice } from "../components/App";
-import { CheckboxItem } from "../components/CheckboxItem";
-import { DarkModeToggle } from "../components/DarkModeToggle";
-import { questionCircle, saveAs } from "../components/icons";
-import { ProjectName } from "../components/ProjectName";
-import { ToolButton } from "../components/ToolButton";
-import { Tooltip } from "../components/Tooltip";
 import { DEFAULT_EXPORT_PADDING, EXPORT_SCALES, THEME } from "../constants";
 import { t } from "../i18n";
 import { KEYS } from "../keys";

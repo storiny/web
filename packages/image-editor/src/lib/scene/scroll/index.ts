@@ -1,10 +1,4 @@
-import {
-  EditorState,
-  Layer,
-  PointerCoords,
-  RootState,
-  Zoom
-} from "../../../types";
+import { Layer, PointerCoords, RootState, Zoom } from "../../../types";
 import {
   getClosestLayerBounds,
   getCommonBounds,
@@ -13,7 +7,7 @@ import {
 import {
   sceneCoordsToViewportCoords,
   viewportCoordsToSceneCoords
-} from "../../utils/utils";
+} from "../../utils";
 
 /**
  * Predicate function for determining overflow
@@ -22,7 +16,7 @@ import {
  * @param cords Coordinates
  */
 const isOutsideViewPort = (
-  editorState: EditorState,
+  editorState: RootState,
   canvas: HTMLCanvasElement | null,
   cords: Array<number>
 ): boolean => {

@@ -1,4 +1,4 @@
-import { tryParseSpreadsheet } from "../charts";
+import { tryParseSpreadsheet } from "../../lib/chart/charts";
 
 describe("tryParseSpreadsheet", () => {
   it("works for numbers with comma in them", () => {
@@ -6,7 +6,7 @@ describe("tryParseSpreadsheet", () => {
       `Week Index${"\t"}Users
 Week 1${"\t"}814
 Week 2${"\t"}10,301
-Week 3${"\t"}4,264`,
+Week 3${"\t"}4,264`
     );
     expect(result).toMatchSnapshot();
   });

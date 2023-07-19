@@ -1,4 +1,4 @@
-import { COLOR_PALETTE } from "./colors";
+import { COLOR_PALETTE } from "../lib/color/colors";
 import cssVariables from "./css/variables.module.scss";
 import { ExcalidrawLayer, FontFamilyValues } from "./layer/types";
 import { AppProps } from "./types";

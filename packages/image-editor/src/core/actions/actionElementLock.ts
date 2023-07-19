@@ -17,8 +17,7 @@ export const actionToggleLayerLock = register({
   },
   perform: (layers, editorState) => {
     const selectedLayers = getSelectedLayers(layers, editorState, {
-      includeBoundTextLayer: true,
-      includeLayersInFrames: true
+      includeBoundTextLayer: true
     });
 
     if (!selectedLayers.length) {

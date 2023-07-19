@@ -1,7 +1,7 @@
 import { rotate } from "./rotate";
 
 describe("rotate", () => {
-  test("rotates over (x2, y2) and returns the rotated coordinates for (x1, y1)", () => {
+  it("rotates over (x2, y2) and returns the rotated coordinates for (x1, y1)", () => {
     const x1 = 10;
     const y1 = 20;
     const x2 = 20;

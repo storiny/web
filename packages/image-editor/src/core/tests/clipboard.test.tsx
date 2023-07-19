@@ -1,6 +1,6 @@
 import ReactDOM from "react-dom";
 
-import { copyToClipboard } from "../clipboard";
+import { copyToClipboard } from "../../lib/clipboard/clipboard";
 import ExcalidrawApp from "../excalidraw-app";
 import { KEYS } from "../keys";
 import { getLayerBounds } from "../layer";

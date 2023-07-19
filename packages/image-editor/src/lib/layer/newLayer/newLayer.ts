@@ -51,6 +51,7 @@ type LayerConstructorOpts = MarkOptional<
   | "groupIds"
   | "boundLayers"
   | "seed"
+  | "name"
   | "link"
   | "strokeStyle"
   | "fillStyle"

@@ -1,8 +1,8 @@
+import { done } from "../../components/core/icons";
+import { ToolButton } from "../../components/core/ToolButton";
 import { isPathALoop } from "../../lib/math/math";
 import Scene from "../../lib/scene/scene/Scene";
 import { resetCursor, updateActiveTool } from "../../lib/utils/utils";
-import { done } from "../components/icons";
-import { ToolButton } from "../components/ToolButton";
 import { t } from "../i18n";
 import { KEYS } from "../keys";
 import { isInvisiblySmallLayer } from "../layer";

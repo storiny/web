@@ -1,6 +1,6 @@
+import { Avatar } from "../../components/core/Avatar";
 import { centerScrollOn } from "../../lib/scene/scroll/scroll";
 import { getClientColor } from "../clients";
-import { Avatar } from "../components/Avatar";
 import { Collaborator } from "../types";
 import { register } from "./register";
 

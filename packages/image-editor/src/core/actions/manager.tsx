@@ -101,10 +101,6 @@ export class ActionManager {
 
     const action = data[0];
 
-    if (this.getAppState().viewModeEnabled && action.viewMode !== true) {
-      return false;
-    }
-
     const layers = this.getLayersIncludingDeleted();
     const editorState = this.getAppState();
     const value = null;

@@ -2,7 +2,7 @@ import { getWidth } from "./getWidth";
 
 const getFixture = (width: string | number) => ({
   segment: `w@${width}`,
-  result: `${width}`,
+  result: `${width}`
 });
 
 const fixtures = [
@@ -14,12 +14,11 @@ const fixtures = [
   getFixture(512),
   getFixture(0.5),
   getFixture(1e3),
-  getFixture("auto"),
+  getFixture("auto")
 ];
 
 describe("getWidth", () => {
-  test.each(fixtures)(
-    "returns `$result` for `$segment`",
-    ({ segment, result }) => expect(getWidth(segment)).toEqual(result)
+  it.each(fixtures)("returns `$result` for `$segment`", ({ segment, result }) =>
+    expect(getWidth(segment)).toEqual(result)
   );
 });

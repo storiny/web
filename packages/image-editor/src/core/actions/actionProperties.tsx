@@ -14,10 +14,10 @@ import {
   DEFAULT_ELEMENT_BACKGROUND_PICKS,
   DEFAULT_ELEMENT_STROKE_COLOR_PALETTE,
   DEFAULT_ELEMENT_STROKE_PICKS,
-} from "../colors";
-import { ButtonIconSelect } from "../components/ButtonIconSelect";
-import { ColorPicker } from "../components/ColorPicker/ColorPicker";
-import { IconPicker } from "../components/IconPicker";
+} from "../../lib/color/colors";
+import { ButtonIconSelect } from "../../components/core/ButtonIconSelect";
+import { ColorPicker } from "../../components/core/ColorPicker/ColorPicker";
+import { IconPicker } from "../../components/core/IconPicker";
 // TODO barnabasmolnar/editor-redesign
 // TextAlignTopIcon, TextAlignBottomIcon,TextAlignMiddleIcon,
 // ArrowHead icons
@@ -54,7 +54,7 @@ import {
   TextAlignMiddleIcon,
   TextAlignRightIcon,
   TextAlignTopIcon,
-} from "../components/icons";
+} from "../../components/core/icons";
 import {
   DEFAULT_FONT_FAMILY,
   DEFAULT_FONT_SIZE,

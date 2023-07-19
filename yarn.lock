@@ -5718,6 +5718,7 @@ __metadata:
     eslint: ^8.42.0
     image-blob-reduce: ^4.1.0
     jotai: ^2.2.2
+    open-color: ^1.9.1
     perfect-freehand: ^1.2.0
     pica: ^9.0.1
     png-chunk-text: ^1.0.0
@@ -17922,6 +17923,13 @@ eslint-config-turbo@latest:
   dependencies:
     mimic-fn: ^4.0.0
   checksum: 0846ce78e440841335d4e9182ef69d5762e9f38aa7499b19f42ea1c4cd40f0b4446094c455c713f9adac3f4ae86f613bb5e30c99e52652764d06a89f709b3788
+  languageName: node
+  linkType: hard
+
+"open-color@npm:^1.9.1":
+  version: 1.9.1
+  resolution: "open-color@npm:1.9.1"
+  checksum: 8ab89bb9506d5c8ece6f0f11e98bb294ee43f2e41f8ca61de8f5b1ece9d5f7f33bc46a1caefefff8112370abdef6bfc4df4a58283b1e458b32feb451820a2d61
   languageName: node
   linkType: hard
 

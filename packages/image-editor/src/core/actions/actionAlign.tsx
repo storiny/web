@@ -1,6 +1,3 @@
-import { getSelectedLayers, isSomeLayerSelected } from "../../lib/scene";
-import { arrayToMap, getShortcutKey } from "../../lib/utils/utils";
-import { alignLayers, Alignment } from "../align";
 import {
   AlignBottomIcon,
   AlignLeftIcon,
@@ -8,8 +5,11 @@ import {
   AlignTopIcon,
   CenterHorizontallyIcon,
   CenterVerticallyIcon
-} from "../components/icons";
-import { ToolButton } from "../components/ToolButton";
+} from "../../components/core/icons";
+import { ToolButton } from "../../components/core/ToolButton";
+import { getSelectedLayers, isSomeLayerSelected } from "../../lib/scene";
+import { arrayToMap, getShortcutKey } from "../../lib/utils/utils";
+import { alignLayers, Alignment } from "../align";
 import { updateFrameMembershipOfSelectedLayers } from "../frame";
 import { t } from "../i18n";
 import { KEYS } from "../keys";

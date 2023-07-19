@@ -1,6 +1,6 @@
 import { useLayoutEffect, useRef, useState } from "react";
 
-import { useDevice, useExcalidrawContainer } from "../../core/components/App";
+import { useDevice, useExcalidrawContainer } from "../../components/core/App";
 import { useUIAppState } from "../../core/context/ui-editorState";
 
 export const useCreatePortalContainer = (opts?: {

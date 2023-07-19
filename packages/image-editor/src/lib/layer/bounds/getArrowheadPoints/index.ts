@@ -17,10 +17,7 @@ export const getArrowheadPoints = (
   shape: Drawable[],
   position: "start" | "end",
   arrowhead: Arrowhead
-):
-  | [number, number, number, number, number, number]
-  | [number, number, number]
-  | null => {
+): number[] | null => {
   const ops = getCurvePathOps(shape[0]);
 
   if (ops.length < 1) {
@@ -101,7 +98,7 @@ export const getArrowheadPoints = (
 
   if (arrowhead === Arrowhead.DOT) {
     const r = Math.hypot(ys - y2, xs - x2) + layer.strokeWidth;
-    return [x2, y2, r];
+    return [x2, y2, r] as [number, number, number];
   }
 
   const angle = {

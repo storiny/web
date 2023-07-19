@@ -5,7 +5,7 @@ import {
   getLayerBounds,
   isBoundToContainer
 } from "../../layer";
-import { isShallowEqual } from "../../utils/utils";
+import { isShallowEqual } from "../../utils";
 
 /**
  * Returns the layers within selection

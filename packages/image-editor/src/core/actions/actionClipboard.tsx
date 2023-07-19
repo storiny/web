@@ -1,11 +1,11 @@
-import { exportCanvas } from "../../lib/data/export";
-import { getSelectedLayers } from "../../lib/scene/selection/selection";
 import {
   copyTextToSystemClipboard,
   copyToClipboard,
   probablySupportsClipboardBlob,
   probablySupportsClipboardWriteText
-} from "../clipboard";
+} from "../../lib/clipboard/clipboard";
+import { exportCanvas } from "../../lib/data/export";
+import { getSelectedLayers } from "../../lib/scene/selection/selection";
 import { t } from "../i18n";
 import { CODES, KEYS } from "../keys";
 import { getNonDeletedLayers, isTextLayer } from "../layer";

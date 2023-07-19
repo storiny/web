@@ -5,6 +5,12 @@ import LanguageDetector from "i18next-browser-languagedetector";
 import { atom, Provider, useAtom, useAtomValue } from "jotai";
 import { useEffect, useRef, useState } from "react";
 
+import { ErrorDialog } from "../../components/core/ErrorDialog";
+import { OverwriteConfirmDialog } from "../../components/core/OverwriteConfirm/OverwriteConfirm";
+import { openConfirmModal } from "../../components/core/OverwriteConfirm/OverwriteConfirmState";
+import { ShareableLinkDialog } from "../../components/core/ShareableLinkDialog";
+import { TopErrorBoundary } from "../../components/core/TopErrorBoundary";
+import Trans from "../../components/core/Trans";
 import { loadFromBlob } from "../../lib/data/blob/blob";
 import {
   parseLibraryTokensFromUrl,
@@ -32,12 +38,6 @@ import {
   resolvablePromise
 } from "../../lib/utils/utils";
 import { trackEvent } from "../analytics";
-import { ErrorDialog } from "../components/ErrorDialog";
-import { OverwriteConfirmDialog } from "../components/OverwriteConfirm/OverwriteConfirm";
-import { openConfirmModal } from "../components/OverwriteConfirm/OverwriteConfirmState";
-import { ShareableLinkDialog } from "../components/ShareableLinkDialog";
-import { TopErrorBoundary } from "../components/TopErrorBoundary";
-import Trans from "../components/Trans";
 import {
   APP_NAME,
   EVENT,
