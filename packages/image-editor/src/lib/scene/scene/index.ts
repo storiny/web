@@ -12,6 +12,29 @@ type SceneStateCallbackRemover = () => void;
 
 export type LayersIncludingDeleted = readonly Layer[];
 
+const hashSelectionOpts = (
+  opts: Parameters<InstanceType<typeof Scene>["getSelectedElements"]>[0]
+): string => {
+  const keys = ["includeBoundTextElement", "includeElementsInFrames"] as const;
+
+  type HashableKeys = Omit<typeof opts, "selectedElementIds" | "elements">;
+
+  // just to ensure we're hashing all expected keys
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  type _ = Assert<
+    SameType<
+      Required<HashableKeys>,
+      Pick<Required<HashableKeys>, (typeof keys)[number]>
+    >
+  >;
+
+  let hash = "";
+  for (const key of keys) {
+    hash += `${key}:${opts[key] ? "1" : "0"}`;
+  }
+  return hash;
+};
+
 /**
  * Predicate function for determining valid layer keys
  * @param layerKey Layer key
@@ -55,6 +78,52 @@ export class Scene {
     }
 
     return this.sceneMapByLayer.get(layerKey) || null;
+  }
+
+  getSelectedLayers(opts: {
+    /**
+     * for specific cases where you need to use elements not from current
+     * scene state. This in effect will likely result in cache-miss, and
+     * the cache won't be updated in this case.
+     */
+    elements?: readonly Layer[];
+    // selection-related options
+    includeBoundTextElement?: boolean;
+    includeElementsInFrames?: boolean;
+    // NOTE can be ommitted by making Scene constructor require App instance
+    selectedElementIds: AppState["selectedElementIds"];
+  }): NonDeleted<ExcalidrawElement>[] {
+    const hash = hashSelectionOpts(opts);
+
+    const elements = opts?.elements || this.nonDeletedElements;
+    if (
+      this.selectedElementsCache.elements === elements &&
+      this.selectedElementsCache.selectedElementIds === opts.selectedElementIds
+    ) {
+      const cached = this.selectedElementsCache.cache.get(hash);
+      if (cached) {
+        return cached;
+      }
+    } else if (opts?.elements == null) {
+      // if we're operating on latest scene elements and the cache is not
+      //  storing the latest elements, clear the cache
+      this.selectedElementsCache.cache.clear();
+    }
+
+    const selectedElements = getSelectedElements(
+      elements,
+      { selectedElementIds: opts.selectedElementIds },
+      opts
+    );
+
+    // cache only if we're not using custom elements
+    if (opts?.elements == null) {
+      this.selectedElementsCache.selectedElementIds = opts.selectedElementIds;
+      this.selectedElementsCache.elements = this.nonDeletedElements;
+      this.selectedElementsCache.cache.set(hash, selectedElements);
+    }
+
+    return selectedElements;
   }
 
   /**

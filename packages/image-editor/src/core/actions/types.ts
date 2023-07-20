@@ -1,13 +1,12 @@
+import { MarkOptional } from "@storiny/types";
 import React from "react";
 
-import { ExcalidrawLayer } from "../layer/types";
 import {
-  AppClassProperties,
-  AppState,
   BinaryFiles,
-  ExcalidrawProps
-} from "../types";
-import { MarkOptional } from "../utility-types";
+  EditorClassProperties,
+  EditorState,
+  Layer
+} from "../../types";
 
 export type ActionSource = "ui" | "keyboard" | "contextMenu" | "api";
 
@@ -16,21 +15,21 @@ export type ActionResult =
   | {
       commitToHistory: boolean;
       editorState?: MarkOptional<
-        AppState,
+        EditorState,
         "offsetTop" | "offsetLeft" | "width" | "height"
       > | null;
       files?: BinaryFiles | null;
-      layers?: readonly ExcalidrawLayer[] | null;
+      layers?: Layer[] | null;
       replaceFiles?: boolean;
       syncHistory?: boolean;
     }
   | false;
 
 type ActionFn = (
-  layers: readonly ExcalidrawLayer[],
-  editorState: Readonly<AppState>,
+  layers: Layer[],
+  editorState: Readonly<EditorState>,
   formData: any,
-  app: AppClassProperties
+  app: EditorClassProperties
 ) => ActionResult | Promise<ActionResult>;
 
 export type UpdaterFn = (res: ActionResult) => void;
@@ -126,56 +125,25 @@ export type ActionName =
   | "wrapTextInContainer";
 
 export type PanelComponentProps = {
-  appProps: ExcalidrawProps;
   data?: Record<string, any>;
-  editorState: AppState;
-  layers: readonly ExcalidrawLayer[];
+  editorState: EditorState;
+  layers: Layer[];
   updateData: (formData?: any) => void;
 };
 
 export interface Action {
   PanelComponent?: React.FC<PanelComponentProps>;
-  checked?: (editorState: Readonly<AppState>) => boolean;
+  checked?: (editorState: Readonly<EditorState>) => boolean;
   contextItemLabel?:
     | string
-    | ((
-        layers: readonly ExcalidrawLayer[],
-        editorState: Readonly<AppState>
-      ) => string);
+    | ((layers: Layer[], editorState: Readonly<EditorState>) => string);
   keyPriority?: number;
   keyTest?: (
     event: React.KeyboardEvent | KeyboardEvent,
-    editorState: AppState,
-    layers: readonly ExcalidrawLayer[]
+    editorState: EditorState,
+    layers: Layer[]
   ) => boolean;
   name: ActionName;
   perform: ActionFn;
-  predicate?: (
-    layers: readonly ExcalidrawLayer[],
-    editorState: AppState,
-    appProps: ExcalidrawProps,
-    app: AppClassProperties
-  ) => boolean;
-  trackEvent:
-    | false
-    | {
-        action?: string;
-        category:
-          | "toolbar"
-          | "layer"
-          | "canvas"
-          | "export"
-          | "history"
-          | "menu"
-          | "collab"
-          | "hyperlink";
-        predicate?: (
-          editorState: Readonly<AppState>,
-          layers: readonly ExcalidrawLayer[],
-          value: any
-        ) => boolean;
-      };
-  /** if set to `true`, allow action to be performed in viewMode.
-   *  Defaults to `false` */
-  viewMode?: boolean;
+  predicate?: (layers: Layer[], editorState: EditorState) => boolean;
 }

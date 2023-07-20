@@ -1,8 +1,6 @@
 import React from "react";
 
-import { trackEvent } from "../analytics";
-import { ExcalidrawLayer } from "../layer/types";
-import { AppClassProperties, AppState } from "../types";
+import { EditorClassProperties, EditorState, Layer } from "../../types";
 import {
   Action,
   ActionName,
@@ -12,71 +10,52 @@ import {
   UpdaterFn
 } from "./types";
 
-const trackAction = (
-  action: Action,
-  source: ActionSource,
-  editorState: Readonly<AppState>,
-  layers: readonly ExcalidrawLayer[],
-  app: AppClassProperties,
-  value: any
-) => {
-  if (action.trackEvent) {
-    try {
-      if (typeof action.trackEvent === "object") {
-        const shouldTrack = action.trackEvent.predicate
-          ? action.trackEvent.predicate(editorState, layers, value)
-          : true;
-        if (shouldTrack) {
-          trackEvent(
-            action.trackEvent.category,
-            action.trackEvent.action || action.name,
-            `${source} (${app.device.isMobile ? "mobile" : "desktop"})`
-          );
-        }
-      }
-    } catch (error) {
-      console.error("error while logging action:", error);
-    }
-  }
-};
-
 export class ActionManager {
   actions = {} as Record<ActionName, Action>;
 
   updater: (actionResult: ActionResult | Promise<ActionResult>) => void;
-
-  getAppState: () => Readonly<AppState>;
-  getLayersIncludingDeleted: () => readonly ExcalidrawLayer[];
-  app: AppClassProperties;
+  getEditorState: () => Readonly<EditorState>;
+  getLayersIncludingDeleted: () => Layer[];
+  app: EditorClassProperties;
 
   constructor(
     updater: UpdaterFn,
-    getAppState: () => AppState,
-    getLayersIncludingDeleted: () => readonly ExcalidrawLayer[],
-    app: AppClassProperties
+    getEditorState: () => EditorState,
+    getLayersIncludingDeleted: () => Layer[],
+    app: EditorClassProperties
   ) {
-    this.updater = (actionResult) => {
+    this.updater = (actionResult): void => {
       if (actionResult && "then" in actionResult) {
         actionResult.then((actionResult) => updater(actionResult));
       } else {
         return updater(actionResult);
       }
     };
-    this.getAppState = getAppState;
+
+    this.getEditorState = getEditorState;
     this.getLayersIncludingDeleted = getLayersIncludingDeleted;
     this.app = app;
   }
 
-  registerAction(action: Action) {
+  registerAction(action: Action): void {
     this.actions[action.name] = action;
   }
 
-  registerAll(actions: readonly Action[]) {
+  registerAll(actions: readonly Action[]): void {
     actions.forEach((action) => this.registerAction(action));
   }
 
-  handleKeyDown(event: React.KeyboardEvent | KeyboardEvent) {
-    const canvasActions = this.app.props.UIOptions.canvasActions;
+  handleKeyDown(event: React.KeyboardEvent | KeyboardEvent): boolean {
+    const canvasActions = {
+      changeViewBackgroundColor: true,
+      clearCanvas: true,
+      export: { saveFileToDisk: true },
+      loadScene: true,
+      saveToActiveFile: true,
+      toggleTheme: null,
+      saveAsImage: true
+    };
+
     const data = Object.values(this.actions)
       .sort((a, b) => (b.keyPriority || 0) - (a.keyPriority || 0))
       .filter(
@@ -87,7 +66,7 @@ export class ActionManager {
           action.keyTest &&
           action.keyTest(
             event,
-            this.getAppState(),
+            this.getEditorState(),
             this.getLayersIncludingDeleted()
           )
       );
@@ -99,13 +78,9 @@ export class ActionManager {
       return false;
     }
 
-    const action = data[0];
-
     const layers = this.getLayersIncludingDeleted();
-    const editorState = this.getAppState();
+    const editorState = this.getEditorState();
     const value = null;
-
-    trackAction(action, "keyboard", editorState, layers, this.app, null);
 
     event.preventDefault();
     event.stopPropagation();
@@ -117,11 +92,9 @@ export class ActionManager {
     action: Action,
     source: ActionSource = "api",
     value: any = null
-  ) {
+  ): void {
     const layers = this.getLayersIncludingDeleted();
-    const editorState = this.getAppState();
-
-    trackAction(action, source, editorState, layers, this.app, value);
+    const editorState = this.getEditorState();
 
     this.updater(action.perform(layers, editorState, value, this.app));
   }
@@ -129,8 +102,19 @@ export class ActionManager {
   /**
    * @param data additional data sent to the PanelComponent
    */
-  renderAction = (name: ActionName, data?: PanelComponentProps["data"]) => {
-    const canvasActions = this.app.props.UIOptions.canvasActions;
+  renderAction = (
+    name: ActionName,
+    data?: PanelComponentProps["data"]
+  ): React.ReactElement | null => {
+    const canvasActions = {
+      changeViewBackgroundColor: true,
+      clearCanvas: true,
+      export: { saveFileToDisk: true },
+      loadScene: true,
+      saveToActiveFile: true,
+      toggleTheme: null,
+      saveAsImage: true
+    };
 
     if (
       this.actions[name] &&
@@ -142,15 +126,11 @@ export class ActionManager {
       const action = this.actions[name];
       const PanelComponent = action.PanelComponent!;
       PanelComponent.displayName = "PanelComponent";
-      const layers = this.getLayersIncludingDeleted();
-      const editorState = this.getAppState();
-      const updateData = (formState?: any) => {
-        trackAction(action, "ui", editorState, layers, this.app, formState);
-
+      const updateData = (formState?: any): void => {
         this.updater(
           action.perform(
             this.getLayersIncludingDeleted(),
-            this.getAppState(),
+            this.getEditorState(),
             formState,
             this.app
           )
@@ -159,9 +139,8 @@ export class ActionManager {
 
       return (
         <PanelComponent
-          appProps={this.app.props}
           data={data}
-          editorState={this.getAppState()}
+          editorState={this.getEditorState()}
           layers={this.getLayersIncludingDeleted()}
           updateData={updateData}
         />
@@ -171,13 +150,10 @@ export class ActionManager {
     return null;
   };
 
-  isActionEnabled = (action: Action) => {
+  isActionEnabled = (action: Action): boolean => {
     const layers = this.getLayersIncludingDeleted();
-    const editorState = this.getAppState();
+    const editorState = this.getEditorState();
 
-    return (
-      !action.predicate ||
-      action.predicate(layers, editorState, this.app.props, this.app)
-    );
+    return !action.predicate || action.predicate(layers, editorState);
   };
 }

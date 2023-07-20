@@ -6,16 +6,9 @@ import {
   SendBackwardIcon,
   SendToBackIcon
 } from "../../components/core/icons";
-import { getShortcutKey } from "../../lib/utils/utils";
-import {
-  moveAllLeft,
-  moveAllRight,
-  moveOneLeft,
-  moveOneRight
-} from "../../lib/zIndex/zindex";
+import { KeyCode, KEYS } from "../../constants";
+import { moveOneLeft } from "../../lib";
 import { isDarwin } from "../constants";
-import { t } from "../i18n";
-import { CODES, KEYS } from "../keys";
 import { register } from "./register";
 
 export const actionSendBackward = register({

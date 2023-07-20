@@ -225,7 +225,7 @@ const shiftLayers = (
   editorState: EditorState,
   layers: Layer[],
   direction: "left" | "right",
-  layersToBeMoved?: readonly Layer[]
+  layersToBeMoved?: Layer[]
 ): Layer[] =>
   shift(
     layers,
@@ -312,7 +312,7 @@ const shiftLayersToEnd = (
   layers: Layer[],
   editorState: EditorState,
   direction: "left" | "right",
-  layersToBeMoved?: readonly Layer[]
+  layersToBeMoved?: Layer[]
 ): Layer[] =>
   shift(
     layers,
@@ -407,9 +407,9 @@ const shift = (
     layers: Layer[],
     editorState: EditorState,
     direction: "left" | "right",
-    layersToBeMoved?: readonly Layer[]
+    layersToBeMoved?: Layer[]
   ) => Layer[] | readonly Layer[],
-  layersToBeMoved?: readonly Layer[]
+  layersToBeMoved?: Layer[]
 ): Layer[] =>
   shiftFunction(layers, editorState, direction, layersToBeMoved) as Layer[];
 
@@ -422,7 +422,7 @@ const shift = (
 export const moveOneLeft = (
   layers: Layer[],
   editorState: EditorState,
-  layersToBeMoved?: readonly Layer[]
+  layersToBeMoved?: Layer[]
 ): Layer[] => shiftLayers(editorState, layers, "left", layersToBeMoved);
 
 /**
@@ -434,7 +434,7 @@ export const moveOneLeft = (
 export const moveOneRight = (
   layers: Layer[],
   editorState: EditorState,
-  layersToBeMoved?: readonly Layer[]
+  layersToBeMoved?: Layer[]
 ): Layer[] => shiftLayers(editorState, layers, "right", layersToBeMoved);
 
 /**
@@ -446,7 +446,7 @@ export const moveOneRight = (
 export const moveAllLeft = (
   layers: Layer[],
   editorState: EditorState,
-  layersToBeMoved?: readonly Layer[]
+  layersToBeMoved?: Layer[]
 ): Layer[] => shiftLayersToEnd(layers, editorState, "left", layersToBeMoved);
 
 /**
@@ -458,5 +458,5 @@ export const moveAllLeft = (
 export const moveAllRight = (
   layers: Layer[],
   editorState: EditorState,
-  layersToBeMoved?: readonly Layer[]
+  layersToBeMoved?: Layer[]
 ): Layer[] => shiftLayersToEnd(layers, editorState, "right", layersToBeMoved);

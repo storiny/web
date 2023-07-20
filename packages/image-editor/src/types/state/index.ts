@@ -12,6 +12,7 @@ import {
   StrokeStyle,
   TextAlign
 } from "../../constants";
+import { Scene } from "../../lib";
 import { LinearLayerEditor, SuggestedBinding } from "../../lib/layer";
 import { BinaryFiles } from "../binary";
 import { Spreadsheet } from "../chart";
@@ -155,5 +156,5 @@ export interface EditorClassProperties {
   // onExportImage: App["onExportImage"];
   // onInsertLayers: App["onInsertLayers"];
   // pasteFromClipboard: App["pasteFromClipboard"];
-  // scene: App["scene"];
+  scene: Scene;
 }

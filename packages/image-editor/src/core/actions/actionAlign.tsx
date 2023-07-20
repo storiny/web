@@ -7,44 +7,81 @@ import {
   CenterVerticallyIcon
 } from "../../components/core/icons";
 import { ToolButton } from "../../components/core/ToolButton";
-import { getSelectedLayers, isSomeLayerSelected } from "../../lib/scene";
-import { arrayToMap, getShortcutKey } from "../../lib/utils/utils";
-import { alignLayers, Alignment } from "../align";
-import { updateFrameMembershipOfSelectedLayers } from "../frame";
-import { t } from "../i18n";
-import { KEYS } from "../keys";
-import { getNonDeletedLayers } from "../layer";
-import { ExcalidrawLayer } from "../layer/types";
+import {
+  alignLayers,
+  Alignment,
+  arrayToMap,
+  getNonDeletedLayers,
+  getSelectedLayers,
+  LayersIncludingDeleted
+} from "../../lib";
+import { EditorClassProperties, EditorState, Layer } from "../../types";
 import { AppState } from "../types";
 import { register } from "./register";
 
-const alignActionsPredicate = (
-  layers: readonly ExcalidrawLayer[],
-  editorState: AppState
+export const updateFrameMembershipOfSelectedElements = (
+  allElements: LayersIncludingDeleted,
+  editorState: EditorState,
+  app: EditorClassProperties
 ) => {
+  const selectedElements = app.scene.getSelectedElements({
+    selectedElementIds: appState.selectedElementIds,
+    // supplying elements explicitly in case we're passed non-state elements
+    elements: allElements
+  });
+  const elementsToFilter = new Set<ExcalidrawElement>(selectedElements);
+
+  if (appState.editingGroupId) {
+    for (const element of selectedElements) {
+      if (element.groupIds.length === 0) {
+        elementsToFilter.add(element);
+      } else {
+        element.groupIds
+          .flatMap((gid) => getElementsInGroup(allElements, gid))
+          .forEach((element) => elementsToFilter.add(element));
+      }
+    }
+  }
+
+  const elementsToRemove = new Set<ExcalidrawElement>();
+
+  elementsToFilter.forEach((element) => {
+    if (
+      element.frameId &&
+      !isFrameElement(element) &&
+      !isElementInFrame(element, allElements, appState)
+    ) {
+      elementsToRemove.add(element);
+    }
+  });
+
+  return elementsToRemove.size > 0
+    ? removeElementsFromFrame(allElements, [...elementsToRemove], appState)
+    : allElements;
+};
+
+const alignActionsPredicate = (
+  layers: readonly Layer[],
+  editorState: AppState
+): boolean => {
   const selectedLayers = getSelectedLayers(
     getNonDeletedLayers(layers),
     editorState
   );
-  return (
-    selectedLayers.length > 1 &&
-    // TODO enable aligning frames when implemented properly
-    !selectedLayers.some((el) => el.type === "frame")
-  );
+
+  return selectedLayers.length > 1;
 };
 
 const alignSelectedLayers = (
-  layers: readonly ExcalidrawLayer[],
-  editorState: Readonly<AppState>,
+  layers: readonly Layer[],
+  editorState: Readonly<EditorState>,
   alignment: Alignment
 ) => {
   const selectedLayers = getSelectedLayers(
     getNonDeletedLayers(layers),
     editorState
   );
-
   const updatedLayers = alignLayers(selectedLayers, alignment);
-
   const updatedLayersMap = arrayToMap(updatedLayers);
 
   return updateFrameMembershipOfSelectedLayers(

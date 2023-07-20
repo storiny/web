@@ -1,4 +1,4 @@
-import { CODES, KEYS } from "../keys";
+import { KeyCode, KEYS } from "../../constants";
 import { register } from "./register";
 
 export const actionToggleStats = register({
@@ -17,5 +17,5 @@ export const actionToggleStats = register({
   checked: (editorState) => editorState.showStats,
   contextItemLabel: "stats.title",
   keyTest: (event) =>
-    !event[KEYS.CTRL_OR_CMD] && event.altKey && event.code === CODES.SLASH
+    !event[KEYS.CTRL_OR_CMD] && event.altKey && event.code === KeyCode.SLASH
 });
