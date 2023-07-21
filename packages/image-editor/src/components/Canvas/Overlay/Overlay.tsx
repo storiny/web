@@ -76,7 +76,7 @@ const patternToSvg: Record<CanvasPattern, React.ReactNode> = {
 
 // Zoom control
 
-const ZoomControl = (): React.ReactLayer => {
+const ZoomControl = (): React.ReactElement => {
   const dispatch = useEditorDispatch();
   const zoom = useEditorSelector(selectZoom);
 
@@ -189,7 +189,7 @@ const ZoomControl = (): React.ReactLayer => {
 
 // Pattern control
 
-const PatternControl = (): React.ReactLayer => {
+const PatternControl = (): React.ReactElement => {
   const dispatch = useEditorDispatch();
   const pattern = useEditorSelector(selectPattern);
 
@@ -248,7 +248,7 @@ const PatternControl = (): React.ReactLayer => {
 
 // Info
 
-const Info = (): React.ReactLayer => (
+const Info = (): React.ReactElement => (
   <IconButton
     aria-label={"Show stats"}
     className={clsx(styles.x, styles["stats-button"])}
@@ -260,7 +260,7 @@ const Info = (): React.ReactLayer => (
   </IconButton>
 );
 
-const Overlay = (): React.ReactLayer => (
+const Overlay = (): React.ReactElement => (
   <React.Fragment>
     <div className={clsx("flex-center", styles.x, styles["primary-controls"])}>
       <ZoomControl />

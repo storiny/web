@@ -20,27 +20,14 @@ export enum Arrowhead {
   TRIANGLE = "triangle"
 }
 
-export enum PointerType {
-  MOUSE = "mouse",
-  PEN = "pen",
-  TOUCH = "touch"
-}
-
-export enum StrokeRoundness {
-  ROUND = "round",
-  SHARP = "sharp"
-}
-
 export enum LayerType {
   ARROW = "arrow",
-  DIAMOND = "diamond",
   ELLIPSE = "ellipse",
-  FREE_DRAW = "freedraw",
   IMAGE = "image",
   LINE = "line",
+  PEN = "pen",
   POLYGON = "polygon",
   RECTANGLE = "rectangle",
-  SELECTION = "selection",
   TEXT = "text"
 }
 

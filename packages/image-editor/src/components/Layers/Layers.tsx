@@ -107,7 +107,7 @@ const LayerPlaceholder = React.memo<React.ComponentPropsWithoutRef<"span">>(
 
 LayerPlaceholder.displayName = "LayerPlaceholder";
 
-const Layers = (): React.ReactLayer => {
+const Layers = (): React.ReactElement => {
   const droppableId = React.useId();
   const dispatch = useEditorDispatch();
   const layers = useEditorSelector(selectLayers);
@@ -146,7 +146,7 @@ const Layers = (): React.ReactLayer => {
         <Droppable
           droppableId={droppableId}
           mode="virtual"
-          renderClone={(provided, snapshot, rubric): React.ReactLayer => (
+          renderClone={(provided, snapshot, rubric): React.ReactElement => (
             <VirtualizedLayer
               isDragging={snapshot.isDragging}
               layer={layers[rubric.source.index]}
@@ -154,7 +154,7 @@ const Layers = (): React.ReactLayer => {
             />
           )}
         >
-          {(provided): React.ReactLayer => (
+          {(provided): React.ReactElement => (
             <Root
               asChild
               className={clsx("full-h", "flex-col", styles.x, styles.layers)}
@@ -171,13 +171,13 @@ const Layers = (): React.ReactLayer => {
                   }}
                   data={layers}
                   fixedItemHeight={LAYER_HEIGHT}
-                  itemContent={(index, item): React.ReactLayer => (
+                  itemContent={(index, item): React.ReactElement => (
                     <Draggable
                       draggableId={item.id}
                       index={index}
                       key={item.id}
                     >
-                      {(provided): React.ReactLayer => (
+                      {(provided): React.ReactElement => (
                         <VirtualizedLayer
                           isDragging={false}
                           layer={item}

@@ -14,7 +14,7 @@ import ResizeTool from "./items/Resize";
 import RotateTool from "./items/Rotate";
 import SaturationTool from "./items/Saturation";
 
-const AdjustTools = (): React.ReactLayer => (
+const AdjustTools = (): React.ReactElement => (
   <Accordion type={"multiple"}>
     <ResizeTool />
     <RotateTool />

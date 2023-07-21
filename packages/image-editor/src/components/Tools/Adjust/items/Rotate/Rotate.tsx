@@ -8,7 +8,7 @@ import {
 
 import { AdjustTool } from "../constants";
 
-const RotateTool = (): React.ReactLayer => (
+const RotateTool = (): React.ReactElement => (
   <AccordionItem value={AdjustTool.ROTATE}>
     <AccordionTrigger>Rotate</AccordionTrigger>
     <AccordionContent>Content</AccordionContent>

@@ -1,4 +1,5 @@
 import clsx from "clsx";
+import { Rect } from "fabric";
 import React from "react";
 
 import IconButton from "~/components/IconButton";
@@ -12,27 +13,48 @@ import RotationIcon from "~/icons/Rotation";
 import UndoIcon from "~/icons/Undo";
 import XIcon from "~/icons/X";
 
-import {
-  selectDimension,
-  selectRotation,
-  useEditorSelector
-} from "../../store";
+import { useCanvas } from "../../hooks";
+import { selectRotation, useEditorSelector } from "../../store";
 import styles from "./Topbar.module.scss";
+
+const MyToolKit = (): React.ReactElement => {
+  const canvas = useCanvas();
+  const drawRect = (): void => {
+    canvas.current?.add(
+      new Rect({
+        borderColor: "#1371ec",
+        cornerColor: "#fff",
+        cornerSize: 10,
+        cornerStrokeColor: "#1371ec",
+        fill: "#BFC1C5",
+        transparentCorners: false,
+        padding: 0,
+        height: 100,
+        left: 100,
+        top: 100,
+        width: 100
+      })
+    );
+  };
+
+  return <button onClick={drawRect}>Draw</button>;
+};
 
 // Dimension
 
-const Dimension = (): React.ReactLayer => {
-  const dimension = useEditorSelector(selectDimension);
+const Dimension = (): React.ReactElement => {
+  const canvas = useCanvas();
   return (
     <span>
-      {dimension.width}×{dimension.height}
+      <MyToolKit />
+      {canvas.current?.width}×{canvas.current?.height}
     </span>
   );
 };
 
 // Rotation
 
-const Rotation = (): React.ReactLayer => {
+const Rotation = (): React.ReactElement => {
   const rotation = useEditorSelector(selectRotation);
   return (
     <>
@@ -44,7 +66,7 @@ const Rotation = (): React.ReactLayer => {
 
 // Status bar
 
-const StatusBar = (): React.ReactLayer => (
+const StatusBar = (): React.ReactElement => (
   <Typography
     as={"div"}
     className={clsx(
@@ -61,7 +83,7 @@ const StatusBar = (): React.ReactLayer => (
   </Typography>
 );
 
-const Topbar = (): React.ReactLayer => (
+const Topbar = (): React.ReactElement => (
   <div className={clsx("flex-center", styles.x, styles.topbar)}>
     <Tooltip content={"Download"}>
       <IconButton

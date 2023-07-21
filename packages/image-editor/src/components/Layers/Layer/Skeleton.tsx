@@ -6,7 +6,7 @@ import Skeleton from "~/components/Skeleton";
 
 import styles from "./Layer.module.scss";
 
-const LayerSkeleton = (): React.ReactLayer => (
+const LayerSkeleton = (): React.ReactElement => (
   <div
     aria-busy={"true"}
     className={clsx("flex-center", styles.x, styles.layer)}

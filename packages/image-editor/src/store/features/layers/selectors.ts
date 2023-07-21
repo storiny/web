@@ -1,15 +1,12 @@
 import { Layer } from "../../../types";
-import { CurrentLayerProps, ImgEditorState } from "../../index";
+import { ImgEditorState } from "../../index";
 
 export const selectActiveLayer = (state: ImgEditorState): Layer =>
-  state.layers.items.find((item) => item.id === state.layers.selected) ||
-  state.layers.items[0];
+  state.layers.layers.find((layer) => layer.id === state.layers.selected) ||
+  state.layers.layers[0];
 
 export const selectLayers = (state: ImgEditorState): Layer[] =>
-  state.layers.items;
+  state.layers.layers;
 
 export const selectActiveLayerId = (state: ImgEditorState): string | null =>
   state.layers.selected;
-
-export const selectLayerProps = (state: ImgEditorState): CurrentLayerProps =>
-  state.layers.props;

@@ -11,7 +11,7 @@ import styles from "./Tools.module.scss";
 
 // Tools
 
-const ToolsPanel = (): React.ReactLayer => {
+const ToolsPanel = (): React.ReactElement => {
   const { ref, visible } = useScrollbarVisibility<HTMLDivLayer>();
   return (
     <ScrollArea
@@ -32,7 +32,7 @@ const ToolsPanel = (): React.ReactLayer => {
   );
 };
 
-const Tools = (): React.ReactLayer => (
+const Tools = (): React.ReactElement => (
   <div className={clsx(styles.x, styles.tools)}>
     <PanelGroup direction={"vertical"}>
       <Panel>

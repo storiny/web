@@ -3106,13 +3106,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@braintree/sanitize-url@npm:^6.0.2":
-  version: 6.0.2
-  resolution: "@braintree/sanitize-url@npm:6.0.2"
-  checksum: 6a9dfd4081cc96516eeb281d1a83d3b5f1ad3d2837adf968fcc2ba18889ee833554f9c641b4083c36d3360a932e4504ddf25b0b51e9933c3742622df82cf7c9a
-  languageName: node
-  linkType: hard
-
 "@bufbuild/buf-darwin-arm64@npm:1.21.0-1":
   version: 1.21.0-1
   resolution: "@bufbuild/buf-darwin-arm64@npm:1.21.0-1"
@@ -4037,6 +4030,25 @@ __metadata:
   version: 3.4.0
   resolution: "@juggle/resize-observer@npm:3.4.0"
   checksum: 2505028c05cc2e17639fcad06218b1c4b60f932a4ebb4b41ab546ef8c157031ae377e3f560903801f6d01706dbefd4943b6c4704bf19ed86dfa1c62f1473a570
+  languageName: node
+  linkType: hard
+
+"@mapbox/node-pre-gyp@npm:^1.0.0":
+  version: 1.0.11
+  resolution: "@mapbox/node-pre-gyp@npm:1.0.11"
+  dependencies:
+    detect-libc: ^2.0.0
+    https-proxy-agent: ^5.0.0
+    make-dir: ^3.1.0
+    node-fetch: ^2.6.7
+    nopt: ^5.0.0
+    npmlog: ^5.0.1
+    rimraf: ^3.0.2
+    semver: ^7.3.5
+    tar: ^6.1.11
+  bin:
+    node-pre-gyp: bin/node-pre-gyp
+  checksum: b848f6abc531a11961d780db813cc510ca5a5b6bf3184d72134089c6875a91c44d571ba6c1879470020803f7803609e7b2e6e429651c026fe202facd11d444b8
   languageName: node
   linkType: hard
 
@@ -5697,7 +5709,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@storiny/image-editor@workspace:packages/image-editor"
   dependencies:
-    "@braintree/sanitize-url": ^6.0.2
     "@hello-pangea/dnd": ^16.3.0
     "@reduxjs/toolkit": ^1.9.5
     "@storiny/eslint-config": "*"
@@ -5707,31 +5718,18 @@ __metadata:
     "@storiny/tsconfig": "*"
     "@storiny/types": "*"
     "@storiny/ui": "*"
-    "@types/image-blob-reduce": ^4.1.1
-    "@types/pako": ^2.0.0
-    "@types/pica": ^9.0.1
     "@types/react": ^18.2.14
     "@types/react-dom": ^18.2.6
-    browser-fs-access: ^0.34.1
-    canvas-roundrect-polyfill: ^0.0.1
     clsx: ^1.2.1
     eslint: ^8.42.0
-    image-blob-reduce: ^4.1.0
+    fabric: beta
     jotai: ^2.2.2
-    open-color: ^1.9.1
-    perfect-freehand: ^1.2.0
-    pica: ^9.0.1
-    png-chunk-text: ^1.0.0
-    png-chunks-encode: ^1.0.0
-    png-chunks-extract: ^1.0.0
-    points-on-curve: ^1.0.0
     prettier: ^2.5.1
     react: ^18.2.0
     react-dom: ^18.2.0
     react-redux: ^8.1.1
     react-resizable-panels: ^0.0.53
     react-virtuoso: ^4.4.0
-    roughjs: ^4.5.2
     typescript: ^5.1.5
     use-resize-observer: ^9.1.0
   languageName: unknown
@@ -8278,15 +8276,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/image-blob-reduce@npm:^4.1.1":
-  version: 4.1.1
-  resolution: "@types/image-blob-reduce@npm:4.1.1"
-  dependencies:
-    "@types/pica": "*"
-  checksum: 758a9304af3998f057b6ae1950421f4d0c2234a4950b6115b5f35ec9f70a43b51da448440d23270c86e4e3bf5e7d36668d1ec4505a271ef04aac0c84242cc524
-  languageName: node
-  linkType: hard
-
 "@types/istanbul-lib-coverage@npm:*, @types/istanbul-lib-coverage@npm:^2.0.0, @types/istanbul-lib-coverage@npm:^2.0.1":
   version: 2.0.4
   resolution: "@types/istanbul-lib-coverage@npm:2.0.4"
@@ -8511,24 +8500,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/pako@npm:^2.0.0":
-  version: 2.0.0
-  resolution: "@types/pako@npm:2.0.0"
-  checksum: 50240a036b5e6acabbf36ac4dca93ec9e619241f0404da8d401cdb427bec3029833324b8a04c4b1ae2ecbc33422fdec31dbf9f43653d9d07cafb82ace78dfccd
-  languageName: node
-  linkType: hard
-
 "@types/parse-json@npm:^4.0.0":
   version: 4.0.0
   resolution: "@types/parse-json@npm:4.0.0"
   checksum: fd6bce2b674b6efc3db4c7c3d336bd70c90838e8439de639b909ce22f3720d21344f52427f1d9e57b265fcb7f6c018699b99e5e0c208a1a4823014269a6bf35b
-  languageName: node
-  linkType: hard
-
-"@types/pica@npm:*, @types/pica@npm:^9.0.1":
-  version: 9.0.1
-  resolution: "@types/pica@npm:9.0.1"
-  checksum: 06765597c09874b0aeaec34fcce63c1aff2265bbb6dcf4fa75e61402db2239efe9b3dc4ec31f5dd739dfc555f1ce48abf5006a3d2086e7028142cebec1fda3c2
   languageName: node
   linkType: hard
 
@@ -10179,13 +10154,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"browser-fs-access@npm:^0.34.1":
-  version: 0.34.1
-  resolution: "browser-fs-access@npm:0.34.1"
-  checksum: 339865241c9ffe80a1991248573709f0787e83920d29810f87c4d7545df630f8408acdf91f349710cdf3678a1ff6c90074e087be3c7d97a20639c95f5eb7438c
-  languageName: node
-  linkType: hard
-
 "browserify-aes@npm:^1.0.0, browserify-aes@npm:^1.0.4":
   version: 1.2.0
   resolution: "browserify-aes@npm:1.2.0"
@@ -10494,10 +10462,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"canvas-roundrect-polyfill@npm:^0.0.1":
-  version: 0.0.1
-  resolution: "canvas-roundrect-polyfill@npm:0.0.1"
-  checksum: 0e1fcd395d35d515378625074bb7a2a0f5b60a8d90177eaa8255ded2e0358aa32646e350fd182869e33e654a41417134b997a10811fc8260c04de731299d7d18
+"canvas@npm:^2.8.0":
+  version: 2.11.2
+  resolution: "canvas@npm:2.11.2"
+  dependencies:
+    "@mapbox/node-pre-gyp": ^1.0.0
+    nan: ^2.17.0
+    node-gyp: latest
+    simple-get: ^3.0.3
+  checksum: 61e554aef80022841dc836964534082ec21435928498032562089dfb7736215f039c7d99ee546b0cf10780232d9bf310950f8b4d489dc394e0fb6f6adfc97994
   languageName: node
   linkType: hard
 
@@ -11132,13 +11105,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"crc-32@npm:^0.3.0":
-  version: 0.3.0
-  resolution: "crc-32@npm:0.3.0"
-  checksum: 65e3129aa13263122b5381cfec66386bdfcfb8430987e7b0cf5af0d890d9fdb62e06c3024867bfb7e4d9cc9f7d5b5fe6df033da58cd6ae92f97b6b513321e272
-  languageName: node
-  linkType: hard
-
 "create-ecdh@npm:^4.0.0":
   version: 4.0.4
   resolution: "create-ecdh@npm:4.0.4"
@@ -11463,6 +11429,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"decompress-response@npm:^4.2.0":
+  version: 4.2.1
+  resolution: "decompress-response@npm:4.2.1"
+  dependencies:
+    mimic-response: ^2.0.0
+  checksum: 4e783ca4dfe9417354d61349750fe05236f565a4415a6ca20983a311be2371debaedd9104c0b0e7b36e5f167aeaae04f84f1a0b3f8be4162f1d7d15598b8fdba
+  languageName: node
+  linkType: hard
+
 "dedent@npm:^0.7.0":
   version: 0.7.0
   resolution: "dedent@npm:0.7.0"
@@ -11646,6 +11621,13 @@ __metadata:
   bin:
     detect-libc: ./bin/detect-libc.js
   checksum: daaaed925ffa7889bd91d56e9624e6c8033911bb60f3a50a74a87500680652969dbaab9526d1e200a4c94acf80fc862a22131841145a0a8482d60a99c24f4a3e
+  languageName: node
+  linkType: hard
+
+"detect-libc@npm:^2.0.0":
+  version: 2.0.2
+  resolution: "detect-libc@npm:2.0.2"
+  checksum: 2b2cd3649b83d576f4be7cc37eb3b1815c79969c8b1a03a40a4d55d83bc74d010753485753448eacb98784abf22f7dbd3911fd3b60e29fda28fed2d1a997944d
   languageName: node
   linkType: hard
 
@@ -12999,6 +12981,21 @@ eslint-config-turbo@latest:
   languageName: node
   linkType: hard
 
+"fabric@npm:beta":
+  version: 6.0.0-beta10
+  resolution: "fabric@npm:6.0.0-beta10"
+  dependencies:
+    canvas: ^2.8.0
+    jsdom: ^20.0.1
+  dependenciesMeta:
+    canvas:
+      optional: true
+    jsdom:
+      optional: true
+  checksum: 3f3be89c18662dfec32511b76dac1829706b0372829e642c96acc9d2d07b196202b75f66ba7d8b4158f195df94a0f430df2d12b996410fdf3468b766872f7fcf
+  languageName: node
+  linkType: hard
+
 "fast-deep-equal@npm:^3.1.1, fast-deep-equal@npm:^3.1.3":
   version: 3.1.3
   resolution: "fast-deep-equal@npm:3.1.3"
@@ -13733,13 +13730,6 @@ eslint-config-turbo@latest:
   languageName: node
   linkType: hard
 
-"glur@npm:^1.1.2":
-  version: 1.1.2
-  resolution: "glur@npm:1.1.2"
-  checksum: d80a50fe7f713a564cf50a8e46e2385e5256233c1180b94c06dfdf038655c8b11aa648dd8516b66025abfe437f4201aa10c0e759b68b9a37241375707cf107ea
-  languageName: node
-  linkType: hard
-
 "gopd@npm:^1.0.1":
   version: 1.0.1
   resolution: "gopd@npm:1.0.1"
@@ -14251,15 +14241,6 @@ eslint-config-turbo@latest:
   version: 5.2.4
   resolution: "ignore@npm:5.2.4"
   checksum: 3d4c309c6006e2621659311783eaea7ebcd41fe4ca1d78c91c473157ad6666a57a2df790fe0d07a12300d9aac2888204d7be8d59f9aaf665b1c7fcdb432517ef
-  languageName: node
-  linkType: hard
-
-"image-blob-reduce@npm:^4.1.0":
-  version: 4.1.0
-  resolution: "image-blob-reduce@npm:4.1.0"
-  dependencies:
-    pica: ^9.0.0
-  checksum: 48aa9efaf4f432c7baf135ec8f28f5b9a19c7aef0e9e7f223916fe7ca0676ac0adefdd005abd72a4a0c6dc31c871de2115224f298cce76b071dff332a8ea5ab4
   languageName: node
   linkType: hard
 
@@ -15693,7 +15674,7 @@ eslint-config-turbo@latest:
   languageName: node
   linkType: hard
 
-"jsdom@npm:^20.0.0":
+"jsdom@npm:^20.0.0, jsdom@npm:^20.0.1":
   version: 20.0.3
   resolution: "jsdom@npm:20.0.3"
   dependencies:
@@ -16169,7 +16150,7 @@ eslint-config-turbo@latest:
   languageName: node
   linkType: hard
 
-"make-dir@npm:^3.0.0, make-dir@npm:^3.0.2":
+"make-dir@npm:^3.0.0, make-dir@npm:^3.0.2, make-dir@npm:^3.1.0":
   version: 3.1.0
   resolution: "make-dir@npm:3.1.0"
   dependencies:
@@ -17127,6 +17108,13 @@ eslint-config-turbo@latest:
   languageName: node
   linkType: hard
 
+"mimic-response@npm:^2.0.0":
+  version: 2.1.0
+  resolution: "mimic-response@npm:2.1.0"
+  checksum: 014fad6ab936657e5f2f48bd87af62a8e928ebe84472aaf9e14fec4fcb31257a5edff77324d8ac13ddc6685ba5135cf16e381efac324e5f174fb4ddbf902bf07
+  languageName: node
+  linkType: hard
+
 "min-indent@npm:^1.0.0":
   version: 1.0.1
   resolution: "min-indent@npm:1.0.1"
@@ -17375,20 +17363,19 @@ eslint-config-turbo@latest:
   languageName: node
   linkType: hard
 
-"multimath@npm:^2.0.0":
-  version: 2.0.0
-  resolution: "multimath@npm:2.0.0"
-  dependencies:
-    glur: ^1.1.2
-    object-assign: ^4.1.1
-  checksum: 420d2090e4c9466c8195281011643a7087a3f8db9f7621fb19e13dce34d468d16f6e686625426efd4dbd1c9fa1cbc3c07ff634d9d9534dc6fa47b0849c2bcd69
-  languageName: node
-  linkType: hard
-
 "mute-stream@npm:0.0.8":
   version: 0.0.8
   resolution: "mute-stream@npm:0.0.8"
   checksum: ff48d251fc3f827e5b1206cda0ffdaec885e56057ee86a3155e1951bc940fd5f33531774b1cc8414d7668c10a8907f863f6561875ee6e8768931a62121a531a1
+  languageName: node
+  linkType: hard
+
+"nan@npm:^2.17.0":
+  version: 2.17.0
+  resolution: "nan@npm:2.17.0"
+  dependencies:
+    node-gyp: latest
+  checksum: ec609aeaf7e68b76592a3ba96b372aa7f5df5b056c1e37410b0f1deefbab5a57a922061e2c5b369bae9c7c6b5e6eecf4ad2dac8833a1a7d3a751e0a7c7f849ed
   languageName: node
   linkType: hard
 
@@ -17658,6 +17645,17 @@ eslint-config-turbo@latest:
   languageName: node
   linkType: hard
 
+"nopt@npm:^5.0.0":
+  version: 5.0.0
+  resolution: "nopt@npm:5.0.0"
+  dependencies:
+    abbrev: 1
+  bin:
+    nopt: bin/nopt.js
+  checksum: d35fdec187269503843924e0114c0c6533fb54bbf1620d0f28b4b60ba01712d6687f62565c55cc20a504eff0fbe5c63e22340c3fad549ad40469ffb611b04f2f
+  languageName: node
+  linkType: hard
+
 "nopt@npm:^6.0.0":
   version: 6.0.0
   resolution: "nopt@npm:6.0.0"
@@ -17923,13 +17921,6 @@ eslint-config-turbo@latest:
   dependencies:
     mimic-fn: ^4.0.0
   checksum: 0846ce78e440841335d4e9182ef69d5762e9f38aa7499b19f42ea1c4cd40f0b4446094c455c713f9adac3f4ae86f613bb5e30c99e52652764d06a89f709b3788
-  languageName: node
-  linkType: hard
-
-"open-color@npm:^1.9.1":
-  version: 1.9.1
-  resolution: "open-color@npm:1.9.1"
-  checksum: 8ab89bb9506d5c8ece6f0f11e98bb294ee43f2e41f8ca61de8f5b1ece9d5f7f33bc46a1caefefff8112370abdef6bfc4df4a58283b1e458b32feb451820a2d61
   languageName: node
   linkType: hard
 
@@ -18223,13 +18214,6 @@ eslint-config-turbo@latest:
   languageName: node
   linkType: hard
 
-"path-data-parser@npm:0.1.0, path-data-parser@npm:^0.1.0":
-  version: 0.1.0
-  resolution: "path-data-parser@npm:0.1.0"
-  checksum: a23a214adb38074576a8873d25e8dea7e090b8396d86f58f83f3f6c6298ff56b06adc694147b67f0ed22f14dc478efa1d525710d3ec7b2d7b1efbac57e3fafe6
-  languageName: node
-  linkType: hard
-
 "path-exists@npm:^3.0.0":
   version: 3.0.0
   resolution: "path-exists@npm:3.0.0"
@@ -18331,13 +18315,6 @@ eslint-config-turbo@latest:
   languageName: node
   linkType: hard
 
-"perfect-freehand@npm:^1.2.0":
-  version: 1.2.0
-  resolution: "perfect-freehand@npm:1.2.0"
-  checksum: 03900c103170c68a495e5b4f0609d8375dd26d61a797ffb190c7436274c6a2f4011c21de2bdf420ab324350945dddbdf9c201312388a6e875dfbb88b328d91ae
-  languageName: node
-  linkType: hard
-
 "periscopic@npm:^3.0.0":
   version: 3.1.0
   resolution: "periscopic@npm:3.1.0"
@@ -18355,18 +18332,6 @@ eslint-config-turbo@latest:
   dependencies:
     isomorphic-fetch: ^3.0.0
   checksum: 7345486ae818c1110118922af9d604bd0738452bef9cf0282be7894c6d2a2b52f860f5570932340dad7c7ef0f9a2519919187e441574c2f90c5311692250a6c2
-  languageName: node
-  linkType: hard
-
-"pica@npm:^9.0.0, pica@npm:^9.0.1":
-  version: 9.0.1
-  resolution: "pica@npm:9.0.1"
-  dependencies:
-    glur: ^1.1.2
-    multimath: ^2.0.0
-    object-assign: ^4.1.1
-    webworkify: ^1.5.0
-  checksum: 0063206643ef54c6641f3f8795807de9567acebbe3160839ae87bbf870ff2e4e4caca8135dd050e1f5427d12737488d4ede7f3cce4525ae86f2a0138d397f738
   languageName: node
   linkType: hard
 
@@ -18434,62 +18399,12 @@ eslint-config-turbo@latest:
   languageName: node
   linkType: hard
 
-"png-chunk-text@npm:^1.0.0":
-  version: 1.0.0
-  resolution: "png-chunk-text@npm:1.0.0"
-  checksum: 38b2421f6921f4f4ed429fc8b5d78f68e45955d7c9768b0a772791fa1c87fd80ae2e0e2f1119155626d7a4a29deec5eb5dbbc5a3e4221ecf8e5c1fbd9860c127
-  languageName: node
-  linkType: hard
-
-"png-chunks-encode@npm:^1.0.0":
-  version: 1.0.0
-  resolution: "png-chunks-encode@npm:1.0.0"
-  dependencies:
-    crc-32: ^0.3.0
-    sliced: ^1.0.1
-  checksum: 46e16f1e5fbaa24eb3acffed754100f34be2cc2995fc2426a704ba563db03b75df5972935ac4d47df2e6a94ca4be2b7c48032f1b77592693e0afd7f72ad8a7d7
-  languageName: node
-  linkType: hard
-
-"png-chunks-extract@npm:^1.0.0":
-  version: 1.0.0
-  resolution: "png-chunks-extract@npm:1.0.0"
-  dependencies:
-    crc-32: ^0.3.0
-  checksum: 54d3ee37ae87f19bee7f1df20cb0dfad3903c668cfcb28ac00f6c7c932fc533ae4fb83127d7a73cd2387f093f5fa3e462d61778febe8ae6c760e775e003e019c
-  languageName: node
-  linkType: hard
-
 "pnp-webpack-plugin@npm:^1.7.0":
   version: 1.7.0
   resolution: "pnp-webpack-plugin@npm:1.7.0"
   dependencies:
     ts-pnp: ^1.1.6
   checksum: a41716d13607be5a3e06ba58b17e9e619cf07da3a0a7b10bd41cd89362873041054fd2b7966ad30a1b26b826cfb8fecc0469a95902d5b1b8ba8f591e2fe6b96d
-  languageName: node
-  linkType: hard
-
-"points-on-curve@npm:0.2.0, points-on-curve@npm:^0.2.0":
-  version: 0.2.0
-  resolution: "points-on-curve@npm:0.2.0"
-  checksum: 05e87d6839e3d869cfac0e63c2b1ca700fc8f1083e3f9ae80841cc50379fd31204f9e1f221407df1a90afcb8bfa98404aee0b0fa00330b7b3b328d33be21cf47
-  languageName: node
-  linkType: hard
-
-"points-on-curve@npm:^1.0.0":
-  version: 1.0.0
-  resolution: "points-on-curve@npm:1.0.0"
-  checksum: acad06519912f52a4b13de4f00eff773c9191186b90ca717fcd938b6be0e0e10252eef62abe85074fca3029ffe944acc44e89816db5ec19373b173fa42c44c8e
-  languageName: node
-  linkType: hard
-
-"points-on-path@npm:^0.2.1":
-  version: 0.2.1
-  resolution: "points-on-path@npm:0.2.1"
-  dependencies:
-    path-data-parser: 0.1.0
-    points-on-curve: 0.2.0
-  checksum: 5564dd84d15699579bf07bd33adfd0dc1a5e717c0d36ee11f0832b6b6890941e25e9ea68d15f7858698a9b5ec509f60e6472a0346624bb9dd9c2100cf568ac8f
   languageName: node
   linkType: hard
 
@@ -20010,17 +19925,6 @@ eslint-config-turbo@latest:
   languageName: node
   linkType: hard
 
-"roughjs@npm:^4.5.2":
-  version: 4.5.2
-  resolution: "roughjs@npm:4.5.2"
-  dependencies:
-    path-data-parser: ^0.1.0
-    points-on-curve: ^0.2.0
-    points-on-path: ^0.2.1
-  checksum: f0781208493d206c56d6a3ce5a369be9f6045dcebf15b74f382b7d41f82536273a9b4570bf444820efc7163d02d60b6c1956acd73531c52f17422cbaacb10302
-  languageName: node
-  linkType: hard
-
 "run-applescript@npm:^5.0.0":
   version: 5.0.0
   resolution: "run-applescript@npm:5.0.0"
@@ -20444,6 +20348,24 @@ eslint-config-turbo@latest:
   languageName: node
   linkType: hard
 
+"simple-concat@npm:^1.0.0":
+  version: 1.0.1
+  resolution: "simple-concat@npm:1.0.1"
+  checksum: 4d211042cc3d73a718c21ac6c4e7d7a0363e184be6a5ad25c8a1502e49df6d0a0253979e3d50dbdd3f60ef6c6c58d756b5d66ac1e05cda9cacd2e9fc59e3876a
+  languageName: node
+  linkType: hard
+
+"simple-get@npm:^3.0.3":
+  version: 3.1.1
+  resolution: "simple-get@npm:3.1.1"
+  dependencies:
+    decompress-response: ^4.2.0
+    once: ^1.3.1
+    simple-concat: ^1.0.0
+  checksum: 80195e70bf171486e75c31e28e5485468195cc42f85940f8b45c4a68472160144d223eb4d07bc82ef80cb974b7c401db021a540deb2d34ac4b3b8883da2d6401
+  languageName: node
+  linkType: hard
+
 "simple-update-notifier@npm:^1.0.0, simple-update-notifier@npm:^1.0.7":
   version: 1.1.0
   resolution: "simple-update-notifier@npm:1.1.0"
@@ -20507,13 +20429,6 @@ eslint-config-turbo@latest:
     astral-regex: ^2.0.0
     is-fullwidth-code-point: ^3.0.0
   checksum: 4a82d7f085b0e1b070e004941ada3c40d3818563ac44766cca4ceadd2080427d337554f9f99a13aaeb3b4a94d9964d9466c807b3d7b7541d1ec37ee32d308756
-  languageName: node
-  linkType: hard
-
-"sliced@npm:^1.0.1":
-  version: 1.0.1
-  resolution: "sliced@npm:1.0.1"
-  checksum: 84528d23279985ead75809eeec5d601b0fb6bc28348c6627f4feb40747533a1e36a75e8bc60f9079528079b21c434890b397e8fc5c24a649165cc0bbe90b4d70
   languageName: node
   linkType: hard
 
@@ -22632,13 +22547,6 @@ turbo@latest:
   bin:
     webpack: bin/webpack.js
   checksum: 9fd1568b34ec2e99ba97c8509a15ab2576ec80c396e7015551ec814b24cfc11de173acba3e114dafe95f1a6d460781b09d6201e6a1fb15110e1d01a09f61a283
-  languageName: node
-  linkType: hard
-
-"webworkify@npm:^1.5.0":
-  version: 1.5.0
-  resolution: "webworkify@npm:1.5.0"
-  checksum: 426c10e0b94cac0678aed05fdf1abce98e8e11a523380537bab99fcd63df7c4b71b3630e61ab8052fdbd8d6e55e53700523b423cd475b258f95be5189d8cde49
   languageName: node
   linkType: hard
 

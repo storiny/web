@@ -8,7 +8,7 @@ import {
 
 import { AdjustTool } from "../constants";
 
-const HueTool = (): React.ReactLayer => (
+const HueTool = (): React.ReactElement => (
   <AccordionItem value={AdjustTool.HUE}>
     <AccordionTrigger>Hue</AccordionTrigger>
     <AccordionContent>Content</AccordionContent>

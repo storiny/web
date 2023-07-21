@@ -5,4 +5,4 @@ export enum CanvasPattern {
   NONE = "none"
 }
 
-export const DEFAULT_CANVAS_PATTERN = CanvasPattern.NONE;
+export const DEFAULT_CANVAS_PATTERN = CanvasPattern.DOTTED;

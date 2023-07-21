@@ -48,7 +48,7 @@ const layerTypeToIconMap: Record<LayerType, React.ReactNode> = {
 
 // Lock filled ico
 
-const LockFilledIcon = (): React.ReactLayer => (
+const LockFilledIcon = (): React.ReactElement => (
   <svg
     aria-hidden={"true"}
     className={clsx(styles.x, styles["lock-icon"])}

@@ -14,9 +14,6 @@
     "@storiny/tsconfig": "*",
     "@storiny/types": "*",
     "@storiny/ui": "*",
-    "@types/image-blob-reduce": "^4.1.1",
-    "@types/pako": "^2.0.0",
-    "@types/pica": "^9.0.1",
     "@types/react": "^18.2.14",
     "@types/react-dom": "^18.2.6",
     "eslint": "^8.42.0",
@@ -24,27 +21,16 @@
     "typescript": "^5.1.5"
   },
   "dependencies": {
-    "@braintree/sanitize-url": "^6.0.2",
     "@hello-pangea/dnd": "^16.3.0",
     "@reduxjs/toolkit": "^1.9.5",
-    "browser-fs-access": "^0.34.1",
-    "canvas-roundrect-polyfill": "^0.0.1",
     "clsx": "^1.2.1",
-    "image-blob-reduce": "^4.1.0",
+    "fabric": "beta",
     "jotai": "^2.2.2",
-    "open-color": "^1.9.1",
-    "perfect-freehand": "^1.2.0",
-    "pica": "^9.0.1",
-    "png-chunk-text": "^1.0.0",
-    "png-chunks-encode": "^1.0.0",
-    "png-chunks-extract": "^1.0.0",
-    "points-on-curve": "^1.0.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-redux": "^8.1.1",
     "react-resizable-panels": "^0.0.53",
     "react-virtuoso": "^4.4.0",
-    "roughjs": "^4.5.2",
     "use-resize-observer": "^9.1.0"
   }
 }

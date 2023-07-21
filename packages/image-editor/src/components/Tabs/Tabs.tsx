@@ -21,7 +21,7 @@ const PositionedTooltip = ({
   slotProps,
   children,
   ...rest
-}: TooltipProps): React.ReactLayer => (
+}: TooltipProps): React.ReactElement => (
   <Tooltip
     {...rest}
     slotProps={{
@@ -33,7 +33,7 @@ const PositionedTooltip = ({
   </Tooltip>
 );
 
-const Tabs = (): React.ReactLayer => (
+const Tabs = (): React.ReactElement => (
   <TabsPrimitive
     className={clsx(styles.x, styles.tabs)}
     defaultValue={Tab.ADJUST}
