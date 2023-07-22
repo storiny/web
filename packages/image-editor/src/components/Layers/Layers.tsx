@@ -1,3 +1,5 @@
+"use client";
+
 import {
   DragDropContext,
   Draggable,
@@ -14,13 +16,14 @@ import useResizeObserver from "use-resize-observer";
 import { Root, Scrollbar, Thumb, Viewport } from "~/components/ScrollArea";
 
 import { isLayersDraggingAtom } from "../../atoms";
-import { Layer as TLayer } from "../../constants/layer";
+import { useCanvas } from "../../hooks";
 import {
   reorderLayer,
   selectLayers,
   useEditorDispatch,
   useEditorSelector
 } from "../../store";
+import { Layer as TLayer } from "../../types/layer";
 import Layer, { LayerSkeleton } from "./Layer";
 import styles from "./Layers.module.scss";
 import { LayersContext } from "./LayersContext";
@@ -54,7 +57,7 @@ VirtualizedLayer.displayName = "VirtualizedLayer";
 // Scroller
 
 const Scroller = React.memo(
-  React.forwardRef<HTMLDivLayer, React.ComponentPropsWithRef<"div">>(
+  React.forwardRef<HTMLDivElement, React.ComponentPropsWithRef<"div">>(
     ({ children, ...rest }, ref) => {
       const { layerCount, panelHeight } = React.useContext(LayersContext);
       const scrollHeight = layerCount * LAYER_HEIGHT;
@@ -192,7 +195,7 @@ const Layers = (): React.ReactElement => {
                     exit: (velocity): boolean => Math.abs(velocity) < 10
                   }}
                   scrollerRef={(layer): void =>
-                    provided.innerRef(layer as HTMLLayer)
+                    provided.innerRef(layer as HTMLElement)
                   }
                 />
               </ul>

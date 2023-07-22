@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Layer } from "../../../constants";
+import { Layer } from "../../../types";
 
 export interface LayerProps extends React.ComponentPropsWithRef<"li"> {
   /**

@@ -22,16 +22,14 @@ import { capitalize } from "~/utils/capitalize";
 
 import { isLayersDraggingAtom } from "../../../atoms";
 import { LayerType } from "../../../constants";
+import { useCanvas } from "../../../hooks";
 import {
-  removeLayer,
-  selectActiveLayerId,
-  setActiveLayer,
   setLayerName,
   toggleLayerLock,
   toggleLayerVisibility,
-  useEditorDispatch,
-  useEditorSelector
+  useEditorDispatch
 } from "../../../store";
+import { getObjectById } from "../../../utils/getObjectById";
 import { LayersContext } from "../LayersContext";
 import styles from "./Layer.module.scss";
 import { LayerProps } from "./Layer.props";
@@ -43,7 +41,8 @@ const layerTypeToIconMap: Record<LayerType, React.ReactNode> = {
   [LayerType.RECTANGLE]: <RectangleIcon />,
   [LayerType.TEXT]: <TypographyIcon />,
   [LayerType.LINE]: <LineIcon rotation={45} />,
-  [LayerType.POLYGON]: <PolygonIcon />
+  [LayerType.POLYGON]: <PolygonIcon />,
+  [LayerType.PEN]: <PencilIcon />
 };
 
 // Lock filled ico
@@ -65,21 +64,26 @@ const LockFilledIcon = (): React.ReactElement => (
   </svg>
 );
 
-const Layer = React.forwardRef<HTMLLILayer, LayerProps>((props, ref) => {
+const Layer = React.forwardRef<HTMLLIElement, LayerProps>((props, ref) => {
   const { layer, draggerProps, className, ...rest } = props;
   const dispatch = useEditorDispatch();
-  const selectedLayerId = useEditorSelector(selectActiveLayerId);
+  const canvas = useCanvas();
   const { layerCount } = React.useContext(LayersContext);
   const [isEditing, setIsEditing] = React.useState<boolean>(false);
   const [name, setName] = React.useState<string>(layer.name);
   const isDragging = useAtomValue(isLayersDraggingAtom);
-  const isSelected = layer.id === selectedLayerId;
+  const targetObject = React.useMemo(
+    () => getObjectById(canvas.current, layer.id),
+    [canvas, layer.id]
+  );
 
   /**
    * Selects the current layer
    */
-  const selectLayer = (): void => {
-    dispatch(setActiveLayer(layer.id));
+  const selectLayerImpl = (): void => {
+    if (targetObject) {
+      canvas.current.setActiveObject(targetObject as any);
+    }
   };
 
   /**
@@ -96,6 +100,15 @@ const Layer = React.forwardRef<HTMLLILayer, LayerProps>((props, ref) => {
     }
   };
 
+  /**
+   * Removes the current layer
+   */
+  const removeLayer = (): void => {
+    if (targetObject) {
+      canvas.current.remove(targetObject as any);
+    }
+  };
+
   return (
     <li
       {...rest}
@@ -105,19 +118,19 @@ const Layer = React.forwardRef<HTMLLILayer, LayerProps>((props, ref) => {
         "focus-invert",
         styles.x,
         styles.layer,
-        isSelected && styles.selected,
         isDragging && styles.dragging,
+        layer.selected && styles.selected,
         layer.hidden && styles.hidden,
         className
       )}
-      onClick={selectLayer}
+      onClick={selectLayerImpl}
       onKeyUp={(event): void => {
         if (event.key === "Enter" || event.key === " ") {
           event.preventDefault();
-          selectLayer();
+          selectLayerImpl();
         } else if (event.key === "Delete") {
           event.preventDefault();
-          dispatch(removeLayer(layer.id));
+          removeLayer();
         }
       }}
       ref={ref}
@@ -141,7 +154,7 @@ const Layer = React.forwardRef<HTMLLILayer, LayerProps>((props, ref) => {
         title={capitalize(layer.type.replace(/-/g, " "))}
       >
         {layerTypeToIconMap[layer.type]}
-        {isSelected && (
+        {layer.selected && (
           <svg
             aria-hidden
             className={clsx(styles.x, styles["selected-border"])}
@@ -193,7 +206,7 @@ const Layer = React.forwardRef<HTMLLILayer, LayerProps>((props, ref) => {
             "ellipsis",
             styles.x,
             styles.label,
-            isSelected && styles.selected
+            layer.selected && styles.selected
           )}
           title={name}
         >
@@ -257,7 +270,7 @@ const Layer = React.forwardRef<HTMLLILayer, LayerProps>((props, ref) => {
             className={clsx("focus-invert", styles.x, styles["button"])}
             onClick={(event): void => {
               event.stopPropagation();
-              dispatch(removeLayer(layer.id));
+              removeLayer();
             }}
             size={"sm"}
             style={

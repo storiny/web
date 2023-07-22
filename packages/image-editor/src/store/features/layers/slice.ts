@@ -5,11 +5,9 @@ import { Layer } from "../../../types";
 
 export interface LayersState {
   layers: Layer[];
-  selected: string | null;
 }
 
 export const layersInitialState: LayersState = {
-  selected: null,
   layers: []
 };
 
@@ -19,14 +17,19 @@ export const layersSlice = createSlice({
   reducers: {
     addLayer: (
       state,
-      action: PayloadAction<Omit<Layer, "id"> & { id?: string }>
+      action: PayloadAction<
+        Omit<Layer, "id" | "selected"> & { id?: string; selected?: boolean }
+      >
     ) => {
       const layerId = action.payload.id || nanoid();
       state.layers.unshift({
         ...action.payload,
+        selected:
+          typeof action.payload.selected === "undefined"
+            ? true
+            : action.payload.selected,
         id: layerId
       } as Layer);
-      state.selected = layerId; // Select new layer
     },
     mutateLayer: (
       state,
@@ -39,6 +42,14 @@ export const layersSlice = createSlice({
         Object.assign(state.layers[layerIndex], rest);
       }
     },
+    setLayerSelected: (state, action: PayloadAction<[string, boolean]>) => {
+      const [id, selected] = action.payload;
+      const layer = state.layers.find((layer) => layer.id === id);
+
+      if (layer) {
+        layer.selected = selected;
+      }
+    },
     reorderLayer: (
       state,
       action: PayloadAction<{ endIndex: number; startIndex: number }>
@@ -48,9 +59,6 @@ export const layersSlice = createSlice({
       const [removed] = layers.splice(startIndex, 1);
       layers.splice(endIndex, 0, removed);
       state.layers = layers;
-    },
-    setActiveLayer: (state, action: PayloadAction<string>) => {
-      state.selected = action.payload;
     },
     setLayerName: (
       state,
@@ -91,13 +99,13 @@ export const layersSlice = createSlice({
 
 const {
   addLayer,
-  setActiveLayer,
   setLayerName,
   toggleLayerVisibility,
   toggleLayerLock,
   removeLayer,
   reorderLayer,
-  mutateLayer
+  mutateLayer,
+  setLayerSelected
 } = layersSlice.actions;
 
 export {
@@ -105,8 +113,8 @@ export {
   mutateLayer,
   removeLayer,
   reorderLayer,
-  setActiveLayer,
   setLayerName,
+  setLayerSelected,
   toggleLayerLock,
   toggleLayerVisibility
 };

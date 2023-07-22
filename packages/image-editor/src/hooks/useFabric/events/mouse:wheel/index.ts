@@ -1,4 +1,4 @@
-import { Canvas } from "fabric";
+import { Canvas, Point } from "fabric";
 
 import { editorStore, selectZoom, setZoom } from "../../../../store";
 
@@ -16,6 +16,9 @@ export const mouseWheelEvent = (canvas: Canvas): void => {
 
   editorStore.subscribe(() => {
     const zoom = selectZoom(editorStore.getState());
-    canvas.setZoom(zoom / 100);
+    canvas.zoomToPoint(
+      new Point(canvas.width / 2, canvas.height / 2),
+      zoom / 100
+    );
   });
 };

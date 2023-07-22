@@ -16,14 +16,14 @@ const Main = ({ className, ...rest }: ImageEditorProps): React.ReactElement => (
     {...rest}
     className={clsx("full-h", "full-w", styles.x, styles.main, className)}
   >
-    <Provider store={editorStore}>
-      <FabricProvider>
+    <FabricProvider>
+      <Provider store={editorStore}>
         <Topbar />
         <Tabs />
         <Canvas />
         <Tools />
-      </FabricProvider>
-    </Provider>
+      </Provider>
+    </FabricProvider>
   </div>
 );
 

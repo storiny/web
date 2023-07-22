@@ -14,7 +14,11 @@ import UndoIcon from "~/icons/Undo";
 import XIcon from "~/icons/X";
 
 import { useCanvas } from "../../hooks";
-import { selectRotation, useEditorSelector } from "../../store";
+import {
+  selectActiveLayerRotation,
+  selectActiveLayerSize,
+  useEditorSelector
+} from "../../store";
 import styles from "./Topbar.module.scss";
 
 const MyToolKit = (): React.ReactElement => {
@@ -29,6 +33,8 @@ const MyToolKit = (): React.ReactElement => {
         fill: "#BFC1C5",
         transparentCorners: false,
         padding: 0,
+        borderOpacityWhenMoving: 0.25,
+        strokeWidth: 0,
         height: 100,
         left: 100,
         top: 100,
@@ -42,24 +48,38 @@ const MyToolKit = (): React.ReactElement => {
 
 // Dimension
 
-const Dimension = (): React.ReactElement => {
-  const canvas = useCanvas();
+const Dimension = (): React.ReactElement | null => {
+  const activeLayerSize = useEditorSelector(selectActiveLayerSize);
+
+  if (!activeLayerSize) {
+    return null;
+  }
+
   return (
-    <span>
-      <MyToolKit />
-      {canvas.current?.width}×{canvas.current?.height}
-    </span>
+    <>
+      <span>
+        {Math.round(activeLayerSize.scaleX * activeLayerSize.width)}×
+        {Math.round(activeLayerSize.scaleY * activeLayerSize.height)}
+      </span>
+      <span className={"t-muted"}>•</span>
+    </>
   );
 };
 
 // Rotation
 
 const Rotation = (): React.ReactElement => {
-  const rotation = useEditorSelector(selectRotation);
+  const activeLayerRotation = useEditorSelector(selectActiveLayerRotation);
   return (
     <>
-      <RotationIcon rotation={rotation} />
-      <span>({rotation}&deg;)</span>
+      <RotationIcon rotation={activeLayerRotation?.rotation || 0} />
+      <span>
+        (
+        {typeof activeLayerRotation?.rotation === "number"
+          ? activeLayerRotation.rotation
+          : "-"}
+        &deg;)
+      </span>
     </>
   );
 };
@@ -77,8 +97,8 @@ const StatusBar = (): React.ReactElement => (
       styles["status-bar"]
     )}
   >
+    <MyToolKit />
     <Dimension />
-    <span className={"t-muted"}>•</span>
     <Rotation />
   </Typography>
 );

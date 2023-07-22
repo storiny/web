@@ -37,7 +37,7 @@ const getColorFromRGBA = ({
  * @see https://github.com/microsoft/fluentui
  * @param inputColor Input color string
  */
-export const strToColor = (inputColor: string): TColor | undefined => {
+export const strToColor = (inputColor?: string): TColor | undefined => {
   const color = cssColor(inputColor);
 
   if (!color) {
@@ -46,6 +46,6 @@ export const strToColor = (inputColor: string): TColor | undefined => {
 
   return {
     ...getColorFromRGBA(color!),
-    str: inputColor
+    str: inputColor || ""
   };
 };

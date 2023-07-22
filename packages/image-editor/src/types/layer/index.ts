@@ -17,7 +17,7 @@ export type Layer =
 
 type LayerPrimitive<T extends LayerType> = {
   cornerRadius: number;
-  fill: string;
+  fill: string | null;
   height: number;
   hidden: boolean;
   id: string;
@@ -25,6 +25,9 @@ type LayerPrimitive<T extends LayerType> = {
   name: string;
   opacity: number;
   rotation: number;
+  scaleX: number;
+  scaleY: number;
+  selected: boolean;
   strokeColor: string;
   strokeStyle: StrokeStyle;
   strokeWidth: number;

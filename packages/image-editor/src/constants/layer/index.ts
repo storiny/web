@@ -31,25 +31,5 @@ export enum LayerType {
   TEXT = "text"
 }
 
-export const DEFAULT_LAYER_PROPS: Pick<
-  Layer,
-  | "backgroundColor"
-  | "fillStyle"
-  | "locked"
-  | "hidden"
-  | "opacity"
-  | "roughness"
-  | "strokeColor"
-  | "strokeStyle"
-  | "strokeWidth"
-> = {
-  backgroundColor: "transparent",
-  fillStyle: FillStyle.HACHURE,
-  hidden: false,
-  locked: false,
-  opacity: 100,
-  roughness: 1,
-  strokeColor: "#000000",
-  strokeStyle: StrokeStyle.SOLID,
-  strokeWidth: 1
-};
+export const MIN_LAYER_SIZE = 1;
+export const MAX_LAYER_SIZE = 8e3;

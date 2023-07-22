@@ -3,16 +3,17 @@ import React from "react";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 
 import ScrollArea from "~/components/ScrollArea";
+import ColorPicker from "~/entities/ColorPicker";
 import { useScrollbarVisibility } from "~/hooks/useScrollbarVisibility";
 
 import Layers from "../Layers";
-import AdjustTools from "./Adjust";
+import DrawTools from "./Draw";
 import styles from "./Tools.module.scss";
 
 // Tools
 
 const ToolsPanel = (): React.ReactElement => {
-  const { ref, visible } = useScrollbarVisibility<HTMLDivLayer>();
+  const { ref, visible } = useScrollbarVisibility<HTMLDivElement>();
   return (
     <ScrollArea
       className={"full-h"}
@@ -27,7 +28,9 @@ const ToolsPanel = (): React.ReactElement => {
       }}
       type={"auto"}
     >
-      <AdjustTools />
+      <div style={{ maxWidth: "199px" }}>
+        <DrawTools />
+      </div>
     </ScrollArea>
   );
 };

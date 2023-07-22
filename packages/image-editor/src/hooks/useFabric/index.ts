@@ -2,6 +2,7 @@ import { Canvas } from "fabric";
 import React from "react";
 
 import { FabricContext } from "../../components/Context";
+import { CURSORS } from "../../constants";
 import { bindEvents } from "./events";
 
 /**
@@ -23,6 +24,12 @@ export const useFabric = (): ((
     canvas.current.selectionColor = "rgba(46, 115, 252, 0.11)";
     canvas.current.selectionBorderColor = "rgba(98, 155, 255, 0.81)";
     canvas.current.selectionLineWidth = 1.5;
+
+    canvas.current.set({
+      defaultCursor: CURSORS.default,
+      moveCursor: CURSORS.move,
+      hoverCursor: CURSORS.crosshair
+    });
 
     bindEvents(canvas.current);
     // eslint-disable-next-line react-hooks/exhaustive-deps
