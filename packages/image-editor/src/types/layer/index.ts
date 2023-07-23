@@ -1,9 +1,4 @@
-import {
-  LayerType,
-  StrokeStyle,
-  TextAlign,
-  VerticalAlign
-} from "../../constants";
+import { LayerType, TextAlign, VerticalAlign } from "../../constants";
 
 export type Layer =
   | PenLayer
@@ -16,25 +11,22 @@ export type Layer =
   | TextLayer;
 
 type LayerPrimitive<T extends LayerType> = {
+  angle: number;
   cornerRadius: number;
   fill: string | null;
   height: number;
   hidden: boolean;
   id: string;
+  lastRotationCommitSource?: "user" | "lib";
+  lastScalingCommitSource?: "user" | "lib";
   locked: boolean;
   name: string;
   opacity: number;
-  rotation: number;
   scaleX: number;
   scaleY: number;
   selected: boolean;
-  strokeColor: string;
-  strokeStyle: StrokeStyle;
-  strokeWidth: number;
   type: T;
   width: number;
-  x: number;
-  y: number;
 };
 
 export type PenLayer = LayerPrimitive<LayerType.PEN>;

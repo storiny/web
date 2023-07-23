@@ -21,14 +21,13 @@ export const useFabric = (): ((
       enableRetinaScaling: true
     });
 
-    canvas.current.selectionColor = "rgba(46, 115, 252, 0.11)";
-    canvas.current.selectionBorderColor = "rgba(98, 155, 255, 0.81)";
-    canvas.current.selectionLineWidth = 1.5;
-
     canvas.current.set({
+      selectionColor: "rgba(46, 115, 252, 0.11)",
+      selectionBorderColor: "rgba(98, 155, 255, 0.81)",
+      selectionLineWidth: 1.5,
       defaultCursor: CURSORS.default,
       moveCursor: CURSORS.move,
-      hoverCursor: CURSORS.crosshair
+      hoverCursor: CURSORS.move
     });
 
     bindEvents(canvas.current);

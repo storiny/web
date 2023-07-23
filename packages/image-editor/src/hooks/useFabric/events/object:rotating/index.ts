@@ -1,32 +1,49 @@
 import { Canvas } from "fabric";
 
-import {
-  editorStore,
-  mutateLayer,
-  selectActiveLayerRotation
-} from "../../../../store";
+import { MAX_ANGLE } from "../../../../constants";
+import { editorStore, mutateLayer, selectActiveLayer } from "../../../../store";
+import { isGroup } from "../../../../utils";
 
 export const objectRotatingEvent = (canvas: Canvas): void => {
   canvas.on("object:rotating", (options) => {
     const object = options.target;
 
-    editorStore.dispatch(
-      mutateLayer({
-        id: object.get("id"),
-        rotation: Math.round(object.angle)
-      })
-    );
+    if (isGroup(object)) {
+      const objects = object.getObjects();
+      for (const groupObject of objects) {
+        const totalAngle = groupObject.getTotalAngle();
+
+        editorStore.dispatch(
+          mutateLayer({
+            id: groupObject.get("id"),
+            angle:
+              totalAngle < 0 ? MAX_ANGLE - Math.abs(totalAngle) : totalAngle,
+            lastRotationCommitSource: "lib"
+          })
+        );
+      }
+    } else {
+      editorStore.dispatch(
+        mutateLayer({
+          id: object.get("id"),
+          angle: object.angle,
+          lastRotationCommitSource: "lib"
+        })
+      );
+    }
   });
 
   editorStore.subscribe(() => {
-    const activeLayerRotation = selectActiveLayerRotation(
-      editorStore.getState()
-    );
+    const activeLayer = selectActiveLayer(editorStore.getState());
 
-    if (activeLayerRotation) {
+    if (
+      activeLayer &&
+      activeLayer.lastRotationCommitSource !== "lib" &&
+      activeLayer.lastScalingCommitSource !== "lib"
+    ) {
       canvas.getObjects().forEach((object) => {
-        if (object.get("id") === activeLayerRotation.id) {
-          object.rotate(activeLayerRotation.rotation);
+        if (object.get("id") === activeLayer.id) {
+          object.rotate(activeLayer.angle);
         }
       });
     }

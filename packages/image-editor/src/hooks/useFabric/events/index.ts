@@ -3,7 +3,6 @@ import { Canvas } from "fabric";
 import { mouseWheelEvent } from "./mouse:wheel";
 import { objectAddedEvent } from "./object:added";
 import { objectModifiedEvent } from "./object:modified";
-import { objectMovingEvent } from "./object:moving";
 import { objectRemovedEvent } from "./object:removed";
 import { objectRotatingEvent } from "./object:rotating";
 import { objectScalingEvent } from "./object:scaling";
@@ -25,7 +24,6 @@ export const bindEvents = (canvas: Canvas): void => {
     selectionUpdatedEvent,
     objectRemovedEvent,
     objectRotatingEvent,
-    objectScalingEvent,
-    objectMovingEvent
+    objectScalingEvent
   ].forEach((bindable) => bindable(canvas));
 };

@@ -35,11 +35,20 @@ export const layersSlice = createSlice({
       state,
       action: PayloadAction<Partial<Omit<Layer, "id">> & { id: string }>
     ) => {
-      const { id, ...rest } = action.payload;
+      const {
+        id,
+        lastScalingCommitSource = "user",
+        lastRotationCommitSource = "user",
+        ...rest
+      } = action.payload;
       const layerIndex = state.layers.findIndex((layer) => layer.id === id);
 
       if (layerIndex > -1) {
-        Object.assign(state.layers[layerIndex], rest);
+        Object.assign(state.layers[layerIndex], {
+          ...rest,
+          lastScalingCommitSource,
+          lastRotationCommitSource
+        });
       }
     },
     setLayerSelected: (state, action: PayloadAction<[string, boolean]>) => {

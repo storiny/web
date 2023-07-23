@@ -21,6 +21,11 @@ export interface InputProps
    */
   endDecorator?: React.ReactNode;
   /**
+   * If `true`, renders with a monospaced font
+   * @default false
+   */
+  monospaced?: boolean;
+  /**
    * The size of the component.
    * @default 'md'
    */

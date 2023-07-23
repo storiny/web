@@ -5764,7 +5764,6 @@ __metadata:
     jest: ^29.5.0
     jest-css-modules-transform: ^4.4.2
     jest-environment-jsdom: ^29.5.0
-    lodash.throttle: ^4.1.1
     msw: ^1.2.1
     msw-storybook-addon: ^1.8.0
     nanoid: 3
@@ -16013,13 +16012,6 @@ eslint-config-turbo@latest:
   version: 4.6.2
   resolution: "lodash.merge@npm:4.6.2"
   checksum: ad580b4bdbb7ca1f7abf7e1bce63a9a0b98e370cf40194b03380a46b4ed799c9573029599caebc1b14e3f24b111aef72b96674a56cfa105e0f5ac70546cdc005
-  languageName: node
-  linkType: hard
-
-"lodash.throttle@npm:^4.1.1":
-  version: 4.1.1
-  resolution: "lodash.throttle@npm:4.1.1"
-  checksum: 129c0a28cee48b348aef146f638ef8a8b197944d4e9ec26c1890c19d9bf5a5690fe11b655c77a4551268819b32d27f4206343e30c78961f60b561b8608c8c805
   languageName: node
   linkType: hard
 

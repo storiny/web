@@ -1,8 +1,9 @@
 import { Canvas } from "fabric";
 import { nanoid } from "nanoid";
 
-import { LayerType, StrokeStyle } from "../../../../constants";
+import { LayerType } from "../../../../constants";
 import { addLayer, editorStore } from "../../../../store";
+import { getNewLayerName } from "../../../../utils";
 
 export const objectAddedEvent = (canvas: Canvas): void => {
   canvas.on("object:added", (options) => {
@@ -15,23 +16,17 @@ export const objectAddedEvent = (canvas: Canvas): void => {
       addLayer({
         cornerRadius: 0,
         fill: object.fill as string,
-        height: object.height,
         hidden: !object.visible,
         id,
         locked: false,
-        name: "Rectangle",
-        opacity: object.opacity,
-        rotating: false,
-        rotation: object.angle,
+        name: getNewLayerName(LayerType.RECTANGLE),
+        opacity: Math.round(object.opacity * 100),
+        angle: Math.round(object.angle),
         scaleX: object.scaleX,
         scaleY: object.scaleY,
-        strokeColor: "",
-        strokeStyle: StrokeStyle.SOLID,
-        strokeWidth: object.strokeWidth,
         type: LayerType.RECTANGLE,
         width: object.width,
-        x: object.left,
-        y: object.top
+        height: object.height
       })
     );
   });

@@ -51,4 +51,9 @@
       transform: translateY(-50%);
     }
   }
+
+  /* Tools wrapper */
+  &.tools-wrapper {
+    max-width: calc(199px - var(--scrollbar-width, 0px));
+  }
 }

@@ -33,3 +33,4 @@ export enum LayerType {
 
 export const MIN_LAYER_SIZE = 1;
 export const MAX_LAYER_SIZE = 8e3;
+export const DEFAULT_LAYER_FILL = "#bfc1c5";

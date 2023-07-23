@@ -28,7 +28,14 @@ const ToolsPanel = (): React.ReactElement => {
       }}
       type={"auto"}
     >
-      <div style={{ maxWidth: "199px" }}>
+      <div
+        className={clsx(styles.x, styles["tools-wrapper"])}
+        style={
+          {
+            "--scrollbar-width": visible ? "10px" : "0px"
+          } as React.CSSProperties
+        }
+      >
         <DrawTools />
       </div>
     </ScrollArea>

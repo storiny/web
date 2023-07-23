@@ -1,31 +1,21 @@
-import { BaseFabricObject, Canvas } from "fabric";
+import { Canvas } from "fabric";
 
-import {
-  editorStore,
-  mutateLayer,
-  selectLayers,
-  setLayerSelected
-} from "../../../../store";
-import { Layer } from "../../../../types";
+import { editorStore, setLayerSelected } from "../../../../store";
 
 export const selectionCreatedEvent = (canvas: Canvas): void => {
   canvas.on("selection:created", (options) => {
-    const objects = options.selected;
+    options.selected.forEach((object) => {
+      if (object.group) {
+        object.group.set({
+          cornerColor: "#fff",
+          borderOpacityWhenMoving: 0.25,
+          cornerSize: 10,
+          cornerStrokeColor: "#1371ec",
+          transparentCorners: false
+        });
+      }
 
-    objects.forEach((object) => {
       editorStore.dispatch(setLayerSelected([object.get("id"), true]));
     });
   });
-
-  // editorStore.subscribe(() => {
-  //   const layers = selectLayers(editorStore.getState());
-  //
-  //   canvas.getObjects().forEach((object) => {
-  //     layers.some((layer) =>
-  //       layer.id === (object as any).id
-  //         ? syncFabricObjectToLayer(object, layer)
-  //         : undefined
-  //     );
-  //   });
-  // });
 };

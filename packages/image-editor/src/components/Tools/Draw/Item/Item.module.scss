@@ -1,0 +1,22 @@
+.x {
+  /* Base styles */
+  &.item {
+    gap: 8px;
+    padding-inline: 8px;
+
+    &:not(.has-label) {
+      padding-block: 4px;
+    }
+  }
+
+  /* Label */
+  &.label {
+    font-size: 11px;
+    line-height: 14px;
+  }
+
+  /* Content */
+  &.content {
+    gap: 8px;
+  }
+}

@@ -35,6 +35,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>((props, ref) => {
     color = "inverted",
     size = "md",
     type = "text",
+    monospaced,
     disabled,
     className,
     slotProps,
@@ -89,7 +90,12 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>((props, ref) => {
         <input
           {...rest}
           autoFocus={autoFocus}
-          className={clsx("unset", styles.input, className)}
+          className={clsx(
+            "unset",
+            styles.input,
+            monospaced && styles.monospaced,
+            className
+          )}
           disabled={disabled}
           onBlur={handleBlur}
           onFocus={handleFocus}

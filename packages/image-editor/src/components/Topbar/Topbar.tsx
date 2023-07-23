@@ -14,11 +14,7 @@ import UndoIcon from "~/icons/Undo";
 import XIcon from "~/icons/X";
 
 import { useCanvas } from "../../hooks";
-import {
-  selectActiveLayerRotation,
-  selectActiveLayerSize,
-  useEditorSelector
-} from "../../store";
+import { selectActiveLayer, useEditorSelector } from "../../store";
 import styles from "./Topbar.module.scss";
 
 const MyToolKit = (): React.ReactElement => {
@@ -30,8 +26,8 @@ const MyToolKit = (): React.ReactElement => {
         cornerColor: "#fff",
         cornerSize: 10,
         cornerStrokeColor: "#1371ec",
-        fill: "#BFC1C5",
         transparentCorners: false,
+        fill: "#BFC1C5",
         padding: 0,
         borderOpacityWhenMoving: 0.25,
         strokeWidth: 0,
@@ -49,17 +45,17 @@ const MyToolKit = (): React.ReactElement => {
 // Dimension
 
 const Dimension = (): React.ReactElement | null => {
-  const activeLayerSize = useEditorSelector(selectActiveLayerSize);
+  const activeLayer = useEditorSelector(selectActiveLayer);
 
-  if (!activeLayerSize) {
+  if (!activeLayer) {
     return null;
   }
 
   return (
     <>
       <span>
-        {Math.round(activeLayerSize.scaleX * activeLayerSize.width)}×
-        {Math.round(activeLayerSize.scaleY * activeLayerSize.height)}
+        {Math.round(activeLayer.scaleX * 100)}×
+        {Math.round(activeLayer.scaleY * 100)}
       </span>
       <span className={"t-muted"}>•</span>
     </>
@@ -69,14 +65,14 @@ const Dimension = (): React.ReactElement | null => {
 // Rotation
 
 const Rotation = (): React.ReactElement => {
-  const activeLayerRotation = useEditorSelector(selectActiveLayerRotation);
+  const activeLayer = useEditorSelector(selectActiveLayer);
   return (
     <>
-      <RotationIcon rotation={activeLayerRotation?.rotation || 0} />
+      <RotationIcon rotation={activeLayer?.angle || 0} />
       <span>
         (
-        {typeof activeLayerRotation?.rotation === "number"
-          ? activeLayerRotation.rotation
+        {typeof activeLayer?.angle === "number"
+          ? Math.round(activeLayer.angle)
           : "-"}
         &deg;)
       </span>

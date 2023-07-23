@@ -11,5 +11,5 @@ export const getObjectById = (
   id: string
 ): BaseFabricObject | undefined =>
   canvas
-    ? canvas.getObjects().find((object) => (object as any).id === id)
+    ? canvas.getObjects().find((object) => object.get("id") === id)
     : undefined;

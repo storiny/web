@@ -11,8 +11,7 @@ const syncFabricObjectToLayer = (
 ): void => {
   object.set({
     visible: !layer.hidden,
-    opacity: layer.opacity,
-    fill: layer.fill
+    opacity: layer.opacity / 100
   });
 
   if (layer.locked) {
@@ -41,12 +40,9 @@ export const objectModifiedEvent = (canvas: Canvas): void => {
 
     editorStore.dispatch(
       mutateLayer({
-        id: (object as any).id,
+        id: object.get("id"),
         hidden: !object.visible,
-        opacity: object.opacity,
-        strokeWidth: object.strokeWidth,
-        x: object.left,
-        y: object.top
+        opacity: Math.round(object.opacity * 100)
       })
     );
   });
@@ -56,7 +52,7 @@ export const objectModifiedEvent = (canvas: Canvas): void => {
 
     canvas.getObjects().forEach((object) => {
       layers.some((layer) =>
-        layer.id === (object as any).id
+        layer.id === object.get("id")
           ? syncFabricObjectToLayer(canvas, object, layer)
           : undefined
       );
