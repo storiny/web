@@ -4,6 +4,7 @@ import React from "react";
 import { FabricContext } from "../../components/Context";
 import { CURSORS } from "../../constants";
 import { bindEvents } from "./events";
+import { registerActiveObjectSize, registerGuidesPlugin } from "./plugins";
 
 /**
  * Hook for initializing fabric context
@@ -22,15 +23,18 @@ export const useFabric = (): ((
     });
 
     canvas.current.set({
-      selectionColor: "rgba(46, 115, 252, 0.11)",
-      selectionBorderColor: "rgba(98, 155, 255, 0.81)",
-      selectionLineWidth: 1.5,
+      selectionColor: "rgba(46,115,252,0.12)",
+      selectionBorderColor: "rgba(106,172,255,0.8)",
+      selectionLineWidth: 1.75,
       defaultCursor: CURSORS.default,
       moveCursor: CURSORS.move,
       hoverCursor: CURSORS.move
     });
 
-    bindEvents(canvas.current);
+    [bindEvents, registerGuidesPlugin, registerActiveObjectSize].forEach(
+      (bindable) => bindable(canvas.current)
+    );
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 };

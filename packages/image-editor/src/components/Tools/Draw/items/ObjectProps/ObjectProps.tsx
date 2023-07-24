@@ -1,3 +1,4 @@
+import { Rect } from "fabric";
 import React from "react";
 
 import Input from "~/components/Input";
@@ -9,16 +10,18 @@ import { MAX_ANGLE, MIN_ANGLE } from "../../../../../constants";
 import {
   mutateLayer,
   selectActiveLayer,
+  useActiveObject,
   useEditorDispatch,
   useEditorSelector
 } from "../../../../../store";
-import DrawItem from "../../Item";
+import DrawItem, { DrawItemRow } from "../../Item";
 
 const ObjectProps = (): React.ReactElement | null => {
+  const activeObject = useActiveObject();
   const activeLayer = useEditorSelector(selectActiveLayer);
   const dispatch = useEditorDispatch();
 
-  if (!activeLayer) {
+  if (!activeLayer || !activeObject) {
     return null;
   }
 
@@ -35,42 +38,53 @@ const ObjectProps = (): React.ReactElement | null => {
    * @param cornerRadius New corner radius
    */
   const changeCornerRadius = (cornerRadius: number): void => {
-    dispatch(mutateLayer({ id: activeLayer.id, cornerRadius }));
+    if (activeObject) {
+      activeObject.set({
+        rx: cornerRadius,
+        ry: cornerRadius
+      });
+      activeObject.canvas?.renderAll();
+    }
   };
 
   return (
     <DrawItem>
-      <Input
-        aria-label={"Layer angle"}
-        decorator={<AngleIcon />}
-        max={MAX_ANGLE}
-        min={MIN_ANGLE}
-        monospaced
-        onChange={(event): void => {
-          const value = Number.parseInt(event.target.value, 10) ?? 0;
-          changeAngle(clamp(MIN_ANGLE, value, MAX_ANGLE));
-        }}
-        placeholder={"Angle"}
-        size={"sm"}
-        title={"Angle"}
-        type={"number"}
-        value={Math.round(activeLayer.angle)}
-      />
-      <Input
-        aria-label={"Layer corner radius"}
-        decorator={<CornerRadiusIcon />}
-        min={0}
-        monospaced
-        onChange={(event): void => {
-          const value = Number.parseInt(event.target.value, 10) ?? 0;
-          changeCornerRadius(clamp(0, value, Infinity));
-        }}
-        placeholder={"Corner radius"}
-        size={"sm"}
-        title={"Corner radius"}
-        type={"number"}
-        value={activeLayer.cornerRadius}
-      />
+      <DrawItemRow>
+        <Input
+          aria-label={"Layer angle"}
+          decorator={<AngleIcon />}
+          max={MAX_ANGLE}
+          min={MIN_ANGLE}
+          monospaced
+          onChange={(event): void => {
+            const value = Number.parseInt(event.target.value, 10) ?? 0;
+            changeAngle(clamp(MIN_ANGLE, value, MAX_ANGLE));
+          }}
+          placeholder={"Angle"}
+          size={"sm"}
+          title={"Angle"}
+          type={"number"}
+          value={Math.round(activeLayer.angle)}
+        />
+        <Input
+          aria-label={"Layer corner radius"}
+          decorator={<CornerRadiusIcon />}
+          defaultValue={Math.max(
+            (activeObject as Rect).rx,
+            (activeObject as Rect).ry
+          )}
+          min={0}
+          monospaced
+          onChange={(event): void => {
+            const value = Number.parseInt(event.target.value, 10) ?? 0;
+            changeCornerRadius(clamp(0, value, Infinity));
+          }}
+          placeholder={"Corner radius"}
+          size={"sm"}
+          title={"Corner radius"}
+          type={"number"}
+        />
+      </DrawItemRow>
     </DrawItem>
   );
 };

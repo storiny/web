@@ -1,5 +1,3 @@
-import { Layer } from "../../types";
-
 export enum FillStyle {
   CROSS_HATCH = "cross-hatch",
   HACHURE = "hachure",
@@ -9,7 +7,6 @@ export enum FillStyle {
 
 export enum StrokeStyle {
   DASHED = "dashed",
-  DOTTED = "dotted",
   SOLID = "solid"
 }
 

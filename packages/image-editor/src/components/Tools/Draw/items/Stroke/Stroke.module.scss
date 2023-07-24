@@ -1,0 +1,11 @@
+/* Indicator */
+.indicator {
+  all: unset;
+  cursor: pointer;
+  display: block;
+  height: 14px;
+  width: 14px;
+  border-radius: var(--radius-xs);
+  background-color: var(--stroke);
+  border: 1px solid var(--divider);
+}

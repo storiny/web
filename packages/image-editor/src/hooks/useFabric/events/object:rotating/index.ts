@@ -17,8 +17,7 @@ export const objectRotatingEvent = (canvas: Canvas): void => {
           mutateLayer({
             id: groupObject.get("id"),
             angle:
-              totalAngle < 0 ? MAX_ANGLE - Math.abs(totalAngle) : totalAngle,
-            lastRotationCommitSource: "lib"
+              totalAngle < 0 ? MAX_ANGLE - Math.abs(totalAngle) : totalAngle
           })
         );
       }
@@ -26,8 +25,7 @@ export const objectRotatingEvent = (canvas: Canvas): void => {
       editorStore.dispatch(
         mutateLayer({
           id: object.get("id"),
-          angle: object.angle,
-          lastRotationCommitSource: "lib"
+          angle: object.angle
         })
       );
     }
@@ -36,11 +34,7 @@ export const objectRotatingEvent = (canvas: Canvas): void => {
   editorStore.subscribe(() => {
     const activeLayer = selectActiveLayer(editorStore.getState());
 
-    if (
-      activeLayer &&
-      activeLayer.lastRotationCommitSource !== "lib" &&
-      activeLayer.lastScalingCommitSource !== "lib"
-    ) {
+    if (activeLayer) {
       canvas.getObjects().forEach((object) => {
         if (object.get("id") === activeLayer.id) {
           object.rotate(activeLayer.angle);

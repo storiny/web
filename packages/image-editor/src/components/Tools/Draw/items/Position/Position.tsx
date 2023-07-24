@@ -5,7 +5,7 @@ import LetterXIcon from "~/icons/LetterX";
 import LetterYIcon from "~/icons/LetterY";
 
 import { useActiveObject, useEventRender } from "../../../../../store";
-import DrawItem from "../../Item";
+import DrawItem, { DrawItemRow } from "../../Item";
 
 const Position = (): React.ReactElement | null => {
   const activeObject = useActiveObject();
@@ -59,32 +59,34 @@ const Position = (): React.ReactElement | null => {
 
   return (
     <DrawItem>
-      <Input
-        aria-label={"Position X"}
-        decorator={<LetterXIcon />}
-        monospaced
-        onChange={(event): void =>
-          changeX(Number.parseInt(event.target.value, 10) || 1)
-        }
-        placeholder={"Position X"}
-        size={"sm"}
-        title={"Position X"}
-        type={"number"}
-        value={Math.round(pos.x)}
-      />
-      <Input
-        aria-label={"Position Y"}
-        decorator={<LetterYIcon />}
-        monospaced
-        onChange={(event): void =>
-          changeY(Number.parseInt(event.target.value, 10) || 1)
-        }
-        placeholder={"Position Y"}
-        size={"sm"}
-        title={"Position Y"}
-        type={"number"}
-        value={Math.round(pos.y)}
-      />
+      <DrawItemRow>
+        <Input
+          aria-label={"Position X"}
+          decorator={<LetterXIcon />}
+          monospaced
+          onChange={(event): void =>
+            changeX(Number.parseInt(event.target.value, 10) || 1)
+          }
+          placeholder={"Position X"}
+          size={"sm"}
+          title={"Position X"}
+          type={"number"}
+          value={Math.round(pos.x)}
+        />
+        <Input
+          aria-label={"Position Y"}
+          decorator={<LetterYIcon />}
+          monospaced
+          onChange={(event): void =>
+            changeY(Number.parseInt(event.target.value, 10) || 1)
+          }
+          placeholder={"Position Y"}
+          size={"sm"}
+          title={"Position Y"}
+          type={"number"}
+          value={Math.round(pos.y)}
+        />
+      </DrawItemRow>
     </DrawItem>
   );
 };

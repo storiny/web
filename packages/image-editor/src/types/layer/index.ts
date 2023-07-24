@@ -12,21 +12,12 @@ export type Layer =
 
 type LayerPrimitive<T extends LayerType> = {
   angle: number;
-  cornerRadius: number;
-  fill: string | null;
-  height: number;
   hidden: boolean;
   id: string;
-  lastRotationCommitSource?: "user" | "lib";
-  lastScalingCommitSource?: "user" | "lib";
   locked: boolean;
   name: string;
-  opacity: number;
-  scaleX: number;
-  scaleY: number;
   selected: boolean;
   type: T;
-  width: number;
 };
 
 export type PenLayer = LayerPrimitive<LayerType.PEN>;

@@ -10,6 +10,7 @@ import Fill from "./items/Fill";
 import LayerProps from "./items/LayerProps";
 import ObjectProps from "./items/ObjectProps";
 import Position from "./items/Position";
+import Stroke from "./items/Stroke";
 
 const DrawTools = (): React.ReactElement => (
   <>
@@ -25,6 +26,10 @@ const DrawTools = (): React.ReactElement => (
     <Divider />
     <Spacer orientation={"vertical"} size={1.5} />
     <Fill />
+    <Spacer orientation={"vertical"} size={1.5} />
+    <Divider />
+    <Spacer orientation={"vertical"} size={1.5} />
+    <Stroke />
   </>
 );
 

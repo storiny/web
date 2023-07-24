@@ -13,6 +13,7 @@ const DrawItem = ({
   ...rest
 }: DrawItemProps): React.ReactElement => (
   <div
+    {...rest}
     className={clsx(
       "flex-col",
       styles.x,
@@ -26,9 +27,7 @@ const DrawItem = ({
         {label}
       </Typography>
     )}
-    <div {...rest} className={clsx("flex", styles.x, styles.content)}>
-      {children}
-    </div>
+    {children}
   </div>
 );
 

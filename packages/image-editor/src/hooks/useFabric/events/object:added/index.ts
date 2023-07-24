@@ -8,25 +8,27 @@ import { getNewLayerName } from "../../../../utils";
 export const objectAddedEvent = (canvas: Canvas): void => {
   canvas.on("object:added", (options) => {
     const object = options.target;
+
+    // Skip tooltips
+    if (object.get("tooltip")) {
+      return;
+    }
+
     const id = nanoid();
-    object.set("id", id);
+    object.set({
+      id
+    });
+
     canvas.setActiveObject(object as any);
 
     editorStore.dispatch(
       addLayer({
-        cornerRadius: 0,
-        fill: object.fill as string,
         hidden: !object.visible,
         id,
         locked: false,
         name: getNewLayerName(LayerType.RECTANGLE),
-        opacity: Math.round(object.opacity * 100),
         angle: Math.round(object.angle),
-        scaleX: object.scaleX,
-        scaleY: object.scaleY,
-        type: LayerType.RECTANGLE,
-        width: object.width,
-        height: object.height
+        type: LayerType.RECTANGLE
       })
     );
   });
