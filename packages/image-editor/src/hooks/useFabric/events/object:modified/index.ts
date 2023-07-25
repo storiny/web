@@ -3,7 +3,8 @@ import { BaseFabricObject, Canvas } from "fabric";
 import { CURSORS } from "../../../../constants";
 import { editorStore, mutateLayer, selectLayers } from "../../../../store";
 import { Layer } from "../../../../types";
-import { isGroup } from "../../../../utils";
+import { isGroup, isInteractiveObject } from "../../../../utils";
+// import { isGroup } from "../../../../utils";
 
 const syncFabricObjectToLayer = (
   canvas: Canvas,
@@ -39,13 +40,13 @@ export const objectModifiedEvent = (canvas: Canvas): void => {
   canvas.on("object:modified", (options) => {
     const object = options.target;
 
-    if (!isGroup(object)) {
-      editorStore.dispatch(
-        mutateLayer({
-          id: object.get("id"),
-          hidden: !object.visible
-        })
-      );
+    if (isInteractiveObject(object)) {
+      object.set({
+        height: object.height * object.scaleY,
+        width: object.width * object.scaleX,
+        scaleX: 1,
+        scaleY: 1
+      });
     }
   });
 

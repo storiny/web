@@ -1,6 +1,13 @@
 import { CSSProperties } from "react";
 
 /**
+ * Returns reusable resize cursor
+ * @param angle Cursor angle
+ */
+const getResizeCursor = (angle?: number): string =>
+  `<svg xmlns="http://www.w3.org/2000/svg" style="transform:rotate(${angle}deg)" fill="none" width="32" height="32"><path fill="#050505" d="M18 16a2 2 0 1 1-4 0 2 2 0 0 1 4 0ZM12.5 8 16 3l3.5 5h-7ZM19.5 24 16 29l-3.5-5h7Z"/><path stroke="#FAFAFA" stroke-linejoin="round" d="M16.41 2.71a.5.5 0 0 0-.82 0l-3.5 5a.5.5 0 0 0 .41.79h7a.5.5 0 0 0 .41-.79l-3.5-5Zm-.82 26.58a.5.5 0 0 0 .82 0l3.5-5a.5.5 0 0 0-.41-.79h-7a.5.5 0 0 0-.41.79l3.5 5ZM16 18.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z"/></svg>`;
+
+/**
  * Returns the CSS cursor style
  * @param svgString Cursor SVG markup
  * @param fallback Native cursor fallback
@@ -29,5 +36,13 @@ export const CURSORS: { [k in NonNullable<CSSProperties["cursor"]>]: string } =
     move: getCursorStyle(
       '<svg xmlns="http://www.w3.org/2000/svg" fill="none" width="32" height="32"><path fill="#050505" d="M18.63 16a2 2 0 1 1-4 0 2 2 0 0 1 4 0ZM13.13 8l3.5-5 3.5 5h-7ZM20.13 24l-3.5 5-3.5-5h7Z"/><path stroke="#FAFAFA" stroke-linejoin="round" d="M12.72 7.71a.5.5 0 0 0 .4.79h7a.5.5 0 0 0 .42-.79l-3.5-5a.5.5 0 0 0-.82 0l-3.5 5Zm7.82 16.58a.5.5 0 0 0-.41-.79h-7a.5.5 0 0 0-.41.79l3.5 5a.5.5 0 0 0 .82 0l3.5-5Zm-3.91-5.79a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z"/><path fill="#050505" d="M16.63 14a2 2 0 1 1 0 4 2 2 0 0 1 0-4ZM8.63 19.5l-5-3.5 5-3.5v7ZM24.63 12.5l5 3.5-5 3.5v-7Z"/><path stroke="#FAFAFA" stroke-linejoin="round" d="M8.34 19.91a.5.5 0 0 0 .79-.41v-7a.5.5 0 0 0-.79-.41l-5 3.5a.5.5 0 0 0 0 .82l5 3.5Zm16.57-7.82a.5.5 0 0 0-.78.41v7a.5.5 0 0 0 .78.41l5-3.5a.5.5 0 0 0 0-.82l-5-3.5ZM19.13 16a2.5 2.5 0 1 0-5 0 2.5 2.5 0 0 0 5 0Z"/></svg>',
       "move"
-    )
+    ),
+    "n-resize": getCursorStyle(getResizeCursor(), "n-resize"),
+    "s-resize": getCursorStyle(getResizeCursor(), "s-resize"),
+    "nw-resize": getCursorStyle(getResizeCursor(-45), "ne-resize"),
+    "se-resize": getCursorStyle(getResizeCursor(-45), "sw-resize"),
+    "ne-resize": getCursorStyle(getResizeCursor(45), "ne-resize"),
+    "sw-resize": getCursorStyle(getResizeCursor(45), "sw-resize"),
+    "w-resize": getCursorStyle(getResizeCursor(90), "w-resize"),
+    "e-resize": getCursorStyle(getResizeCursor(90), "e-resize")
   };

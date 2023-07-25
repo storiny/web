@@ -1,2 +1,2 @@
-export * from "./activeObjectSize";
 export * from "./guides";
+export * from "./tooltip";

@@ -13,7 +13,8 @@ export const selectionUpdatedEvent = (canvas: Canvas): void => {
           cornerSize: 10,
           cornerStrokeColor: "#1371ec",
           borderOpacityWhenMoving: 0.25,
-          transparentCorners: false
+          transparentCorners: false,
+          lockRotation: true
         });
       }
 

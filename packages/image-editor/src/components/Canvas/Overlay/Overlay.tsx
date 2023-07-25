@@ -157,7 +157,7 @@ const ZoomControl = (): React.ReactElement => {
           <span>+</span>
         </MenuItem>
         <MenuItem
-          disabled={zoom <= 1}
+          disabled={zoom <= MIN_ZOOM_LEVEL}
           onClick={(): void => decrementZoom()}
           onSelect={(event): void => event.preventDefault()}
         >

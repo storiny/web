@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { Rect, util } from "fabric";
+import { controlsUtils, Rect } from "fabric";
 import React from "react";
 import rough from "roughjs/bin/rough";
 
@@ -14,6 +14,7 @@ import RotationIcon from "~/icons/Rotation";
 import UndoIcon from "~/icons/Undo";
 import XIcon from "~/icons/X";
 
+import { CURSORS } from "../../constants";
 import { useCanvas } from "../../hooks";
 import {
   mutateLayer,
@@ -47,6 +48,54 @@ Rect.prototype._render = function (ctx): void {
   );
 };
 
+Rect.prototype.drawControls = function (ctx): void {
+  ctx.save();
+
+  const retinaScaling = this.getCanvasRetinaScaling();
+  ctx.setTransform(retinaScaling, 0, 0, retinaScaling, 0, 0);
+  ctx.strokeStyle = ctx.fillStyle = this.cornerColor;
+
+  if (!this.transparentCorners) {
+    ctx.strokeStyle = this.cornerStrokeColor;
+  }
+
+  this._setLineDash(ctx, this.cornerDashArray);
+  this.setCoords();
+
+  this.forEachControl((control, key) => {
+    control.cursorStyleHandler = (eventData, control): string => {
+      if (control.actionName === "rotate") {
+        return CURSORS.crosshair;
+      }
+
+      const cursor = controlsUtils.scaleCursorStyleHandler(
+        eventData,
+        control,
+        this
+      );
+
+      return CURSORS[cursor] || cursor;
+    };
+
+    if (control.getVisibility(this, key)) {
+      const p = this.oCoords[key];
+      control.render(
+        ctx,
+        p.x,
+        p.y,
+        {
+          cornerStrokeColor: this.cornerStrokeColor,
+          cornerDashArray: this.cornerDashArray,
+          cornerColor: this.cornerColor
+        },
+        this
+      );
+    }
+  });
+
+  ctx.restore();
+};
+
 const MyToolKit = (): React.ReactElement => {
   const canvas = useCanvas();
   const drawRect = (): void => {
@@ -66,7 +115,8 @@ const MyToolKit = (): React.ReactElement => {
         height: 100,
         left: 100,
         top: 100,
-        width: 100
+        width: 100,
+        interactive: true
       })
     );
   };
