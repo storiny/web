@@ -10,21 +10,3 @@ export const COMMON_OBJECT_PROPS: TProps<BaseFabricObject> = {
   transparentCorners: false,
   noScaleCache: false
 };
-
-/**
- * Returns dashed dash array
- * @param strokeWidth Stroke width
- */
-export const getDashArrayDashed = (strokeWidth: number): [number, number] => [
-  8,
-  8 + strokeWidth
-];
-
-/**
- * Returns dotted dash array
- * @param strokeWidth Stroke width
- */
-export const getDashArrayDotted = (strokeWidth: number): [number, number] => [
-  1.5,
-  6 + strokeWidth
-];

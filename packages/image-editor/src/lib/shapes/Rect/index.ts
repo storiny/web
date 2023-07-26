@@ -3,12 +3,12 @@ import rough from "roughjs/bin/rough";
 
 import { FillStyle, LayerType, StrokeStyle } from "../../../constants";
 import { RectangleLayer } from "../../../types";
-import { getCornerRadius } from "../../../utils";
 import {
-  COMMON_OBJECT_PROPS,
-  getDashArrayDashed,
-  getDashArrayDotted
-} from "../common";
+  getCornerRadius,
+  getDashedDashArray,
+  getDottedDashArray
+} from "../../../utils";
+import { COMMON_OBJECT_PROPS } from "../common";
 import { RectPrimitive } from "../Object";
 
 export type RectProps = ConstructorParameters<typeof RectPrimitive>[0] &
@@ -83,10 +83,10 @@ export class Rect extends RectPrimitive<RectProps> {
       hachureGap: this.get("hachureGap"),
       roughness: this.get("roughness"),
       strokeLineDash:
-        this.get("strokeStyle") === "dashed"
-          ? getDashArrayDashed(this.strokeWidth)
-          : this.get("strokeStyle") === "dotted"
-          ? getDashArrayDotted(this.strokeWidth)
+        this.get("strokeStyle") === StrokeStyle.DASHED
+          ? getDashedDashArray(this.strokeWidth)
+          : this.get("strokeStyle") === StrokeStyle.DOTTED
+          ? getDottedDashArray(this.strokeWidth)
           : undefined
     };
 

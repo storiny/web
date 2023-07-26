@@ -1,7 +1,6 @@
 import { Canvas } from "fabric";
 import { nanoid } from "nanoid";
 
-import { LayerType } from "../../../../constants";
 import { addLayer, editorStore } from "../../../../store";
 import { getNewLayerName } from "../../../../utils";
 
