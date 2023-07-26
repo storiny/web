@@ -2,7 +2,7 @@ import { BaseFabricObject } from "fabric";
 import React from "react";
 
 import { useCanvas } from "../../../hooks";
-import { getObjectById } from "../../../utils/getObjectById";
+import { getObjectById } from "../../../utils";
 import { selectActiveLayers } from "../../features";
 import { useEditorSelector } from "../store";
 

@@ -8,10 +8,7 @@ const DrawItemRow = ({
   className,
   ...rest
 }: React.ComponentPropsWithoutRef<"div">): React.ReactElement => (
-  <div
-    {...rest}
-    className={clsx("flex-center", styles.x, styles.row, className)}
-  >
+  <div {...rest} className={clsx("flex", styles.x, styles.row, className)}>
     {children}
   </div>
 );

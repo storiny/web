@@ -4,7 +4,6 @@ import { mouseWheelEvent } from "./mouse:wheel";
 import { objectAddedEvent } from "./object:added";
 import { objectModifiedEvent } from "./object:modified";
 import { objectRemovedEvent } from "./object:removed";
-import { objectRotatingEvent } from "./object:rotating";
 import { objectScalingEvent } from "./object:scaling";
 import { selectionClearedEvent } from "./selection:cleared";
 import { selectionCreatedEvent } from "./selection:created";
@@ -23,7 +22,6 @@ export const bindEvents = (canvas: Canvas): void => {
     selectionClearedEvent,
     selectionUpdatedEvent,
     objectRemovedEvent,
-    objectRotatingEvent,
     objectScalingEvent
   ].forEach((bindable) => bindable(canvas));
 };

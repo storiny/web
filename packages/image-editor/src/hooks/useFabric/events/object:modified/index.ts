@@ -1,15 +1,14 @@
 import { BaseFabricObject, Canvas } from "fabric";
 
 import { CURSORS } from "../../../../constants";
-import { editorStore, mutateLayer, selectLayers } from "../../../../store";
-import { Layer } from "../../../../types";
-import { isGroup, isInteractiveObject } from "../../../../utils";
-// import { isGroup } from "../../../../utils";
+import { editorStore, selectLayers } from "../../../../store";
+import { BareLayer } from "../../../../types";
+import { isInteractiveObject } from "../../../../utils";
 
 const syncFabricObjectToLayer = (
   canvas: Canvas,
   object: BaseFabricObject,
-  layer: Layer
+  layer: BareLayer
 ): void => {
   object.set({
     visible: !layer.hidden,

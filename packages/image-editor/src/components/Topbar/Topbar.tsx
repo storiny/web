@@ -1,7 +1,5 @@
 import clsx from "clsx";
-import { controlsUtils, Rect } from "fabric";
 import React from "react";
-import rough from "roughjs/bin/rough";
 
 import IconButton from "~/components/IconButton";
 import Spacer from "~/components/Spacer";
@@ -14,111 +12,15 @@ import RotationIcon from "~/icons/Rotation";
 import UndoIcon from "~/icons/Undo";
 import XIcon from "~/icons/X";
 
-import { CURSORS } from "../../constants";
 import { useCanvas } from "../../hooks";
-import {
-  mutateLayer,
-  selectActiveLayer,
-  useEditorDispatch,
-  useEditorSelector
-} from "../../store";
+import { Rect } from "../../lib";
+import { useActiveObject, useEventRender } from "../../store";
 import styles from "./Topbar.module.scss";
-
-Rect.prototype._render = function (ctx): void {
-  const rc = rough.canvas(ctx.canvas);
-  const { width: w, height: h } = this;
-  const x = -w / 2;
-  const y = -h / 2;
-
-  if (!this.get("seed")) {
-    this.set("seed", rough.newSeed());
-  }
-
-  rc.draw(
-    rc.rectangle(x, y, w, h, {
-      seed: this.get("seed"),
-      stroke: this.stroke as string,
-      strokeWidth: this.strokeWidth,
-      fill: this.fill as string,
-      fillWeight: this.fillWeight || 1,
-      fillStyle: this.fillStyle || "hachure",
-      hachureGap: this.get("hachureGap") || 5,
-      roughness: this.get("roughness") || 1
-    })
-  );
-};
-
-Rect.prototype.drawControls = function (ctx): void {
-  ctx.save();
-
-  const retinaScaling = this.getCanvasRetinaScaling();
-  ctx.setTransform(retinaScaling, 0, 0, retinaScaling, 0, 0);
-  ctx.strokeStyle = ctx.fillStyle = this.cornerColor;
-
-  if (!this.transparentCorners) {
-    ctx.strokeStyle = this.cornerStrokeColor;
-  }
-
-  this._setLineDash(ctx, this.cornerDashArray);
-  this.setCoords();
-
-  this.forEachControl((control, key) => {
-    control.cursorStyleHandler = (eventData, control): string => {
-      if (control.actionName === "rotate") {
-        return CURSORS.crosshair;
-      }
-
-      const cursor = controlsUtils.scaleCursorStyleHandler(
-        eventData,
-        control,
-        this
-      );
-
-      return CURSORS[cursor] || cursor;
-    };
-
-    if (control.getVisibility(this, key)) {
-      const p = this.oCoords[key];
-      control.render(
-        ctx,
-        p.x,
-        p.y,
-        {
-          cornerStrokeColor: this.cornerStrokeColor,
-          cornerDashArray: this.cornerDashArray,
-          cornerColor: this.cornerColor
-        },
-        this
-      );
-    }
-  });
-
-  ctx.restore();
-};
 
 const MyToolKit = (): React.ReactElement => {
   const canvas = useCanvas();
   const drawRect = (): void => {
-    canvas.current?.add(
-      new Rect({
-        borderColor: "#1371ec",
-        cornerColor: "#fff",
-        cornerSize: 10,
-        cornerStrokeColor: "#1371ec",
-        transparentCorners: false,
-        fill: "#969696",
-        stroke: "#000000",
-        padding: 0,
-        borderOpacityWhenMoving: 0.25,
-        strokeWidth: 0,
-        noScaleCache: false,
-        height: 100,
-        left: 100,
-        top: 100,
-        width: 100,
-        interactive: true
-      })
-    );
+    canvas.current?.add(new Rect({}));
   };
 
   return <button onClick={drawRect}>Draw</button>;
@@ -127,18 +29,28 @@ const MyToolKit = (): React.ReactElement => {
 // Rotation
 
 const Rotation = (): React.ReactElement => {
-  const activeLayer = useEditorSelector(selectActiveLayer);
-  const dispatch = useEditorDispatch();
+  const activeObject = useActiveObject();
+  useEventRender(
+    "object:rotating",
+    (options) => options.target.get("id") === activeObject?.get("id")
+  );
 
   return (
     <div
       className={"flex-center"}
       onClick={(): void => {
-        if (activeLayer) {
-          dispatch(mutateLayer({ id: activeLayer.id, angle: 0 }));
+        if (activeObject) {
+          activeObject.rotate(0);
+
+          if (activeObject.canvas) {
+            activeObject.canvas?.requestRenderAll();
+            activeObject.canvas?.fire?.("object:rotating", {
+              target: activeObject
+            } as any);
+          }
         }
       }}
-      {...(activeLayer
+      {...(activeObject
         ? {
             title: "Reset rotation",
             role: "button",
@@ -147,12 +59,12 @@ const Rotation = (): React.ReactElement => {
           }
         : {})}
     >
-      <RotationIcon rotation={activeLayer?.angle || 0} />
+      <RotationIcon rotation={activeObject?.angle || 0} />
       <Spacer size={0.5} />
       <span>
         (
-        {typeof activeLayer?.angle === "number"
-          ? Math.round(activeLayer.angle)
+        {typeof activeObject?.angle === "number"
+          ? Math.round(activeObject.angle)
           : "-"}
         &deg;)
       </span>

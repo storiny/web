@@ -1,78 +1,263 @@
+import { clsx } from "clsx";
+import { BaseFabricObject } from "fabric";
 import React from "react";
 
 import Input from "~/components/Input";
+import Option from "~/components/Option";
+import Select from "~/components/Select";
 import ColorPicker, { strToColor, TColor } from "~/entities/ColorPicker";
+import CrossHatchFillIcon from "~/icons/CrossHatchFill";
+import DashedFillIcon from "~/icons/DashedFill";
+import DottedFillIcon from "~/icons/DottedFill";
+import HachureFillIcon from "~/icons/HachureFill";
+import HachureGapIcon from "~/icons/HachureGap";
+import RulerMeasureIcon from "~/icons/RulerMeasure";
+import SolidFillIcon from "~/icons/SolidFill";
+import ZigzagFillIcon from "~/icons/ZigzagFill";
+import ZigzagLineFillIcon from "~/icons/ZigzagLineFill";
 
-import { DEFAULT_LAYER_FILL } from "../../../../../constants";
+import { DEFAULT_LAYER_FILL, FillStyle } from "../../../../../constants";
 import { useActiveObject } from "../../../../../store";
-import DrawItem from "../../Item";
+import DrawItem, { DrawItemRow } from "../../Item";
 import styles from "./Fill.module.scss";
 
-const Fill = (): React.ReactElement | null => {
-  const activeObject = useActiveObject();
+// Fill
+
+const FillControl = ({
+  activeObject
+}: {
+  activeObject: BaseFabricObject;
+}): React.ReactElement => {
   const [fill, setFill] = React.useState<TColor>(
     strToColor((activeObject?.fill as string) || DEFAULT_LAYER_FILL)!
   );
   const [value, setValue] = React.useState(`#${fill.hex}`);
 
+  /**
+   * Mutates the fill of the object
+   * @param newFill New fill
+   */
+  const changeFill = React.useCallback(
+    (newFill: TColor) => {
+      setFill(newFill);
+
+      if (activeObject) {
+        activeObject.set({
+          fill: newFill.str,
+          dirty: true
+        });
+        activeObject.canvas?.requestRenderAll();
+      }
+    },
+    [activeObject]
+  );
+
   React.useEffect(() => {
     setValue(`#${fill.hex}`);
   }, [fill]);
+
+  return (
+    <Input
+      aria-label={"Layer fill"}
+      decorator={
+        <ColorPicker
+          defaultValue={fill}
+          onChange={(value): void => changeFill(value)}
+        >
+          <button
+            aria-label={"Pick a color"}
+            className={styles.indicator}
+            style={
+              {
+                "--fill": fill.str
+              } as React.CSSProperties
+            }
+            title={"Pick a color"}
+          />
+        </ColorPicker>
+      }
+      monospaced
+      onChange={(event): void => {
+        setValue(event.target.value);
+        const newColor = strToColor(event.target.value);
+
+        if (newColor) {
+          changeFill(newColor);
+        }
+      }}
+      placeholder={"Fill"}
+      size={"sm"}
+      title={"Fill"}
+      value={value}
+    />
+  );
+};
+
+// Fill style
+
+const FillStyleControl = ({
+  activeObject
+}: {
+  activeObject: BaseFabricObject;
+}): React.ReactElement => {
+  const [fillStyle, setFillStyle] = React.useState<FillStyle>(
+    activeObject?.get("fillStyle") || FillStyle.SOLID
+  );
+
+  /**
+   * Mutates the fill style of the object
+   * @param fillStyle New fill style
+   */
+  const changeFillStyle = React.useCallback(
+    (fillStyle: FillStyle) => {
+      setFillStyle(fillStyle);
+
+      if (activeObject) {
+        activeObject.set({
+          fillStyle,
+          dirty: true
+        });
+        activeObject.canvas?.requestRenderAll();
+      }
+    },
+    [activeObject]
+  );
+
+  /**
+   * Mutates the fill weight of the object
+   * @param fillWeight New fill weight
+   */
+  const changeFillWeight = React.useCallback(
+    (fillWeight: number) => {
+      if (activeObject) {
+        activeObject.set({
+          fillWeight,
+          dirty: true
+        });
+        activeObject.canvas?.requestRenderAll();
+      }
+    },
+    [activeObject]
+  );
+
+  /**
+   * Mutates the hachure gap of the object
+   * @param hachureGap New hachure gap
+   */
+  const changeHachureGap = React.useCallback(
+    (hachureGap: number) => {
+      if (activeObject) {
+        activeObject.set({
+          hachureGap,
+          dirty: true
+        });
+        activeObject.canvas?.requestRenderAll();
+      }
+    },
+    [activeObject]
+  );
+
+  return (
+    <>
+      <DrawItemRow>
+        <Select
+          onValueChange={(newValue: FillStyle): void =>
+            changeFillStyle(newValue)
+          }
+          size={"sm"}
+          slotProps={{
+            trigger: {
+              className: clsx("full-w"),
+              style: { flex: "0.6" }
+            }
+          }}
+          value={fillStyle}
+        >
+          <Option decorator={<SolidFillIcon />} value={FillStyle.SOLID}>
+            Solid
+          </Option>
+          <Option decorator={<HachureFillIcon />} value={FillStyle.HACHURE}>
+            Hachure
+          </Option>
+          <Option
+            decorator={<CrossHatchFillIcon />}
+            value={FillStyle.CROSS_HATCH}
+          >
+            Cross hatch
+          </Option>
+          <Option decorator={<DashedFillIcon />} value={FillStyle.DASHED}>
+            Dashed
+          </Option>
+          <Option decorator={<DottedFillIcon />} value={FillStyle.DOTS}>
+            Dots
+          </Option>
+          <Option decorator={<ZigzagFillIcon />} value={FillStyle.ZIGZAG}>
+            Zigzag
+          </Option>
+          <Option
+            decorator={<ZigzagLineFillIcon />}
+            value={FillStyle.ZIGZAG_LINE}
+          >
+            Zigzag line
+          </Option>
+        </Select>
+        <Input
+          aria-label={"Layer fill weight"}
+          decorator={<RulerMeasureIcon />}
+          defaultValue={activeObject.get("fillWeight") ?? 1}
+          disabled={fillStyle === FillStyle.SOLID}
+          min={0.1}
+          monospaced
+          onChange={(event): void => {
+            changeFillWeight(Number.parseFloat(event.target.value) ?? 1);
+          }}
+          placeholder={"Fill weight"}
+          size={"sm"}
+          slotProps={{
+            container: {
+              style: { flex: "0.4" }
+            }
+          }}
+          step={0.1}
+          title={"Fill weight"}
+          type={"number"}
+        />
+      </DrawItemRow>
+      <DrawItemRow>
+        <Input
+          aria-label={"Layer hachure gap"}
+          decorator={<HachureGapIcon />}
+          defaultValue={activeObject.get("hachureGap") ?? 1}
+          disabled={fillStyle === FillStyle.SOLID}
+          min={0.1}
+          monospaced
+          onChange={(event): void => {
+            changeHachureGap(Number.parseFloat(event.target.value) ?? 1);
+          }}
+          placeholder={"Hachure gap"}
+          size={"sm"}
+          step={0.1}
+          title={"Hachure gap"}
+          type={"number"}
+        />
+      </DrawItemRow>
+    </>
+  );
+};
+
+const Fill = (): React.ReactElement | null => {
+  const activeObject = useActiveObject();
 
   if (!activeObject) {
     return null;
   }
 
-  /**
-   * Mutates the fill of the object
-   * @param newFill New fill
-   */
-  const changeFill = (newFill: TColor): void => {
-    setFill(newFill);
-
-    if (activeObject) {
-      activeObject.set({
-        fill: newFill.str
-      });
-      activeObject.canvas?.renderAll();
-    }
-  };
-
   return (
     <DrawItem label={"Fill"}>
-      <Input
-        aria-label={"Layer fill"}
-        decorator={
-          <ColorPicker
-            defaultValue={fill}
-            onChange={(value): void => changeFill(value)}
-          >
-            <button
-              aria-label={"Pick a color"}
-              className={styles.indicator}
-              style={
-                {
-                  "--fill": fill.str
-                } as React.CSSProperties
-              }
-              title={"Pick a color"}
-            />
-          </ColorPicker>
-        }
-        monospaced
-        onChange={(event): void => {
-          setValue(event.target.value);
-          const newColor = strToColor(event.target.value);
-
-          if (newColor) {
-            changeFill(newColor);
-          }
-        }}
-        placeholder={"Fill"}
-        size={"sm"}
-        title={"Fill"}
-        value={value}
-      />
+      <DrawItemRow>
+        <FillControl activeObject={activeObject} />
+      </DrawItemRow>
+      <FillStyleControl activeObject={activeObject} />
     </DrawItem>
   );
 };

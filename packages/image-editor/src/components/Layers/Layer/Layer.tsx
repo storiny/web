@@ -29,7 +29,7 @@ import {
   toggleLayerVisibility,
   useEditorDispatch
 } from "../../../store";
-import { getObjectById } from "../../../utils/getObjectById";
+import { getObjectById } from "../../../utils";
 import { LayersContext } from "../LayersContext";
 import styles from "./Layer.module.scss";
 import { LayerProps } from "./Layer.props";
@@ -70,7 +70,7 @@ const Layer = React.forwardRef<HTMLLIElement, LayerProps>((props, ref) => {
   const canvas = useCanvas();
   const { layerCount } = React.useContext(LayersContext);
   const [isEditing, setIsEditing] = React.useState<boolean>(false);
-  const [name, setName] = React.useState<string>(layer.name);
+  const [name, setName] = React.useState<string>(layer.name!);
   const isDragging = useAtomValue(isLayersDraggingAtom);
   const targetObject = React.useMemo(
     () => getObjectById(canvas.current, layer.id),
@@ -96,7 +96,7 @@ const Layer = React.forwardRef<HTMLLIElement, LayerProps>((props, ref) => {
     if (shouldSave) {
       dispatch(setLayerName({ name, id: layer.id }));
     } else {
-      setName(layer.name);
+      setName(layer.name!);
     }
   };
 
@@ -178,6 +178,7 @@ const Layer = React.forwardRef<HTMLLIElement, LayerProps>((props, ref) => {
           autoFocus
           onBlur={(): void => setLayerNameImpl(true)} // Stop editing when the input focus is lost
           onChange={(event): void => setName(event.target.value)}
+          onFocus={(event): void => event.target.select()}
           onKeyUp={(event): void => {
             if (event.key === "Enter") {
               event.preventDefault();

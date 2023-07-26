@@ -37,6 +37,11 @@ export const CURSORS: { [k in NonNullable<CSSProperties["cursor"]>]: string } =
       '<svg xmlns="http://www.w3.org/2000/svg" fill="none" width="32" height="32"><path fill="#050505" d="M18.63 16a2 2 0 1 1-4 0 2 2 0 0 1 4 0ZM13.13 8l3.5-5 3.5 5h-7ZM20.13 24l-3.5 5-3.5-5h7Z"/><path stroke="#FAFAFA" stroke-linejoin="round" d="M12.72 7.71a.5.5 0 0 0 .4.79h7a.5.5 0 0 0 .42-.79l-3.5-5a.5.5 0 0 0-.82 0l-3.5 5Zm7.82 16.58a.5.5 0 0 0-.41-.79h-7a.5.5 0 0 0-.41.79l3.5 5a.5.5 0 0 0 .82 0l3.5-5Zm-3.91-5.79a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z"/><path fill="#050505" d="M16.63 14a2 2 0 1 1 0 4 2 2 0 0 1 0-4ZM8.63 19.5l-5-3.5 5-3.5v7ZM24.63 12.5l5 3.5-5 3.5v-7Z"/><path stroke="#FAFAFA" stroke-linejoin="round" d="M8.34 19.91a.5.5 0 0 0 .79-.41v-7a.5.5 0 0 0-.79-.41l-5 3.5a.5.5 0 0 0 0 .82l5 3.5Zm16.57-7.82a.5.5 0 0 0-.78.41v7a.5.5 0 0 0 .78.41l5-3.5a.5.5 0 0 0 0-.82l-5-3.5ZM19.13 16a2.5 2.5 0 1 0-5 0 2.5 2.5 0 0 0 5 0Z"/></svg>',
       "move"
     ),
+    copy: getCursorStyle(
+      `<svg xmlns="http://www.w3.org/2000/svg" fill="none" width="32" height="32"><circle cx="14" cy="22" r="5.5" fill="#050505" stroke="#FAFAFA" stroke-linejoin="round"/><path fill="#FAFAFA" d="M14.38 19.3h-.77v2.31h-2.3v.77h2.3v2.31h.77v-2.3h2.31v-.78h-2.3v-2.3Z"/><path fill="#050505" stroke="#FAFAFA" stroke-linejoin="round" d="M15.18 12.86a.5.5 0 0 1-.22.92l-6.15.69-3.4 5.83a.5.5 0 0 1-.93-.14L.83 4.34a.5.5 0 0 1 .76-.53l13.59 9.05Z"/></svg>`,
+      "copy",
+      "-32 0"
+    ),
     "n-resize": getCursorStyle(getResizeCursor(), "n-resize"),
     "s-resize": getCursorStyle(getResizeCursor(), "s-resize"),
     "nw-resize": getCursorStyle(getResizeCursor(-45), "ne-resize"),

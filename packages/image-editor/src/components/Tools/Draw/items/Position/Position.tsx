@@ -18,6 +18,42 @@ const Position = (): React.ReactElement | null => {
     return object.get("id") === activeObject?.get("id");
   });
 
+  /**
+   * Mutates X coordinate of the object
+   * @param newX New X coordinate
+   */
+  const changeX = React.useCallback(
+    (newX: number) => {
+      if (activeObject) {
+        setPos((prevState) => ({ ...prevState, x: newX }));
+        activeObject.set({
+          left: newX,
+          dirty: true
+        });
+        activeObject.canvas?.requestRenderAll();
+      }
+    },
+    [activeObject]
+  );
+
+  /**
+   * Mutates Y coordinate of the object
+   * @param newY New Y coordinate
+   */
+  const changeY = React.useCallback(
+    (newY: number) => {
+      if (activeObject) {
+        setPos((prevState) => ({ ...prevState, y: newY }));
+        activeObject.set({
+          top: newY,
+          dirty: true
+        });
+        activeObject.canvas?.requestRenderAll();
+      }
+    },
+    [activeObject]
+  );
+
   React.useEffect(() => {
     setPos({
       x: activeObject?.left || 0,
@@ -28,34 +64,6 @@ const Position = (): React.ReactElement | null => {
   if (!activeObject) {
     return null;
   }
-
-  /**
-   * Mutates X coordinate of the object
-   * @param newX New X coordinate
-   */
-  const changeX = (newX: number): void => {
-    if (activeObject) {
-      setPos((prevState) => ({ ...prevState, x: newX }));
-      activeObject.set({
-        left: newX
-      });
-      activeObject.canvas?.renderAll();
-    }
-  };
-
-  /**
-   * Mutates Y coordinate of the object
-   * @param newY New Y coordinate
-   */
-  const changeY = (newY: number): void => {
-    if (activeObject) {
-      setPos((prevState) => ({ ...prevState, y: newY }));
-      activeObject.set({
-        top: newY
-      });
-      activeObject.canvas?.renderAll();
-    }
-  };
 
   return (
     <DrawItem>

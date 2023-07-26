@@ -22,6 +22,46 @@ const Dimensions = (): React.ReactElement | null => {
     return object.get("id") === activeObject?.get("id");
   });
 
+  /**
+   * Mutates the height of the object
+   * @param newHeight New width
+   */
+  const changeHeight = React.useCallback(
+    (newHeight: number) => {
+      if (activeObject) {
+        setDimensions((prevState) => ({ ...prevState, height: newHeight }));
+        activeObject.set({
+          height: newHeight,
+          scaleX: 1,
+          scaleY: 1,
+          dirty: true
+        });
+        activeObject.canvas?.requestRenderAll();
+      }
+    },
+    [activeObject]
+  );
+
+  /**
+   * Mutates the width of the object
+   * @param newWidth New width
+   */
+  const changeWidth = React.useCallback(
+    (newWidth: number) => {
+      if (activeObject) {
+        setDimensions((prevState) => ({ ...prevState, width: newWidth }));
+        activeObject.set({
+          width: newWidth,
+          scaleX: 1,
+          scaleY: 1,
+          dirty: true
+        });
+        activeObject.canvas?.requestRenderAll();
+      }
+    },
+    [activeObject]
+  );
+
   React.useEffect(() => {
     setDimensions({
       height: activeObject?.height || 1,
@@ -32,38 +72,6 @@ const Dimensions = (): React.ReactElement | null => {
   if (!activeObject) {
     return null;
   }
-
-  /**
-   * Mutates the width of the object
-   * @param newWidth New width
-   */
-  const changeWidth = (newWidth: number): void => {
-    if (activeObject) {
-      setDimensions((prevState) => ({ ...prevState, width: newWidth }));
-      activeObject.set({
-        width: newWidth,
-        scaleX: 1,
-        scaleY: 1
-      });
-      activeObject.canvas?.renderAll();
-    }
-  };
-
-  /**
-   * Mutates the height of the object
-   * @param newHeight New width
-   */
-  const changeHeight = (newHeight: number): void => {
-    if (activeObject) {
-      setDimensions((prevState) => ({ ...prevState, height: newHeight }));
-      activeObject.set({
-        height: newHeight,
-        scaleX: 1,
-        scaleY: 1
-      });
-      activeObject.canvas?.renderAll();
-    }
-  };
 
   return (
     <DrawItem>

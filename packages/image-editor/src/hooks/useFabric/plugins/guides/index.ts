@@ -217,7 +217,7 @@ class AlignGuidelines {
   private watchMouseUp(): void {
     this.canvas.on("mouse:up", () => {
       this.clearLinesMeta();
-      this.canvas.renderAll();
+      this.canvas.requestRenderAll();
     });
   }
 

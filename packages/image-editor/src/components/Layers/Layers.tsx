@@ -112,6 +112,7 @@ LayerPlaceholder.displayName = "LayerPlaceholder";
 
 const Layers = (): React.ReactElement => {
   const droppableId = React.useId();
+  const canvas = useCanvas();
   const dispatch = useEditorDispatch();
   const layers = useEditorSelector(selectLayers);
   const { ref, height = 1 } = useResizeObserver();
@@ -128,14 +129,30 @@ const Layers = (): React.ReactElement => {
         return;
       }
 
+      const startIndex = result.source.index;
+      const endIndex = result.destination.index;
+
+      if (canvas.current) {
+        const objects = canvas.current.getObjects();
+        const sourceObject =
+          canvas.current.getObjects()[objects.length - 1 - startIndex];
+
+        if (sourceObject) {
+          canvas.current.moveObjectTo(
+            sourceObject,
+            objects.length - 1 - endIndex
+          );
+        }
+      }
+
       dispatch(
         reorderLayer({
-          startIndex: result.source.index,
-          endIndex: result.destination.index
+          startIndex,
+          endIndex
         })
       );
     },
-    [dispatch, setDragging]
+    [canvas, dispatch, setDragging]
   );
 
   return (

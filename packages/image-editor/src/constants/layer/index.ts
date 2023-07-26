@@ -1,12 +1,16 @@
 export enum FillStyle {
   CROSS_HATCH = "cross-hatch",
+  DASHED = "dashed",
+  DOTS = "dots",
   HACHURE = "hachure",
   SOLID = "solid",
-  ZIGZAG = "zigzag"
+  ZIGZAG = "zigzag",
+  ZIGZAG_LINE = "zigzag-line"
 }
 
 export enum StrokeStyle {
   DASHED = "dashed",
+  DOTTED = "dotted",
   SOLID = "solid"
 }
 

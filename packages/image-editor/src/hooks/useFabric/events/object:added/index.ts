@@ -15,10 +15,7 @@ export const objectAddedEvent = (canvas: Canvas): void => {
     }
 
     const id = nanoid();
-    object.set({
-      id
-    });
-
+    object.set("id", id);
     canvas.setActiveObject(object as any);
 
     editorStore.dispatch(
@@ -26,9 +23,8 @@ export const objectAddedEvent = (canvas: Canvas): void => {
         hidden: !object.visible,
         id,
         locked: false,
-        name: getNewLayerName(LayerType.RECTANGLE),
-        angle: Math.round(object.angle),
-        type: LayerType.RECTANGLE
+        name: getNewLayerName(object.get("_type")),
+        type: object.get("_type")
       })
     );
   });

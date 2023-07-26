@@ -19,16 +19,14 @@ export const useFabric = (): ((
     }
 
     canvas.current = new Canvas(element, {
-      enableRetinaScaling: true
-    });
-
-    canvas.current.set({
+      enableRetinaScaling: true,
       selectionColor: "rgba(46,115,252,0.12)",
       selectionBorderColor: "rgba(106,172,255,0.8)",
       selectionLineWidth: 1.75,
       defaultCursor: CURSORS.default,
       moveCursor: CURSORS.move,
-      hoverCursor: CURSORS.move
+      hoverCursor: CURSORS.move,
+      uniformScaling: false
     });
 
     [bindEvents, registerGuidesPlugin, registerTooltip].forEach((bindable) =>

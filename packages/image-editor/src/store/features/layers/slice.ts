@@ -1,10 +1,10 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { nanoid } from "nanoid";
 
-import { Layer } from "../../../types";
+import { BareLayer, Layer } from "../../../types";
 
 export interface LayersState {
-  layers: Layer[];
+  layers: BareLayer[];
 }
 
 export const layersInitialState: LayersState = {
@@ -18,7 +18,7 @@ export const layersSlice = createSlice({
     addLayer: (
       state,
       action: PayloadAction<
-        Omit<Layer, "id" | "selected"> & { id?: string; selected?: boolean }
+        Omit<BareLayer, "id" | "selected"> & { id?: string; selected?: boolean }
       >
     ) => {
       const layerId = action.payload.id || nanoid();
@@ -29,11 +29,11 @@ export const layersSlice = createSlice({
             ? true
             : action.payload.selected,
         id: layerId
-      } as Layer);
+      } as BareLayer);
     },
     mutateLayer: (
       state,
-      action: PayloadAction<Partial<Omit<Layer, "id">> & { id: string }>
+      action: PayloadAction<Partial<Omit<BareLayer, "id">> & { id: string }>
     ) => {
       const { id, ...rest } = action.payload;
       const layerIndex = state.layers.findIndex((layer) => layer.id === id);
