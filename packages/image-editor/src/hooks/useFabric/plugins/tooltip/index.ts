@@ -2,6 +2,9 @@ import { BaseFabricObject, Canvas } from "fabric";
 
 import { isInteractiveObject } from "../../../../utils";
 
+/**
+ * Renders tooltips for a selected object
+ */
 class ObjectTooltip {
   /**
    * Canvas
@@ -85,7 +88,7 @@ class ObjectTooltip {
   }
 
   /**
-   * Watches render events
+   * Binds canvas events
    */
   bindEvents(): void {
     this.canvas.on("before:render", () => {
@@ -94,18 +97,12 @@ class ObjectTooltip {
 
     this.canvas.on("selection:created", (event) => {
       const [object] = event.selected;
-
-      if (isInteractiveObject(object)) {
-        this.activeObject = object;
-      }
+      this.activeObject = object;
     });
 
     this.canvas.on("selection:updated", (options) => {
       const [object] = options.selected;
-
-      if (isInteractiveObject(object)) {
-        this.activeObject = object;
-      }
+      this.activeObject = object;
     });
 
     this.canvas.on("selection:cleared", () => {
@@ -113,7 +110,11 @@ class ObjectTooltip {
     });
 
     this.canvas.on("after:render", () => {
-      if (this.activeObject && !this.activeObject.get("isMoving")) {
+      if (
+        this.activeObject &&
+        isInteractiveObject(this.activeObject) &&
+        !this.activeObject.get("isMoving")
+      ) {
         const boundingRect = this.activeObject.getBoundingRect();
         const x = boundingRect.left + boundingRect.width / 2;
         const y = boundingRect.top + boundingRect.height + this.verticalMargin;

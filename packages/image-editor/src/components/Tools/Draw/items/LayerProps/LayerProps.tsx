@@ -30,7 +30,6 @@ const OpacityControl = ({
 
   /**
    * Mutates the opacity of the object
-   * @param opacity New opacity
    */
   const changeOpacity = React.useCallback(
     (opacity: number) => {
@@ -88,7 +87,6 @@ const RoughnessControl = ({
 }): React.ReactElement => {
   /**
    * Mutates the roughness of the object
-   * @param roughness New roughness
    */
   const changeRoughness = React.useCallback(
     (roughness: number) => {

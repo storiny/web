@@ -12,7 +12,8 @@ const syncFabricObjectToLayer = (
 ): void => {
   object.set({
     visible: !layer.hidden,
-    locked: layer.locked
+    locked: layer.locked,
+    selected: layer.selected
   });
 
   if (layer.locked) {

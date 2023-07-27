@@ -30,7 +30,6 @@ const StrokeControl = ({
 
   /**
    * Mutates the stroke color of the object
-   * @param newStroke New fill
    */
   const changeStroke = React.useCallback(
     (newStroke: TColor) => {
@@ -102,7 +101,6 @@ const StrokeWidthControl = ({
 }): React.ReactElement => {
   /**
    * Mutates the stroke width of the object
-   * @param strokeWidth New stroke width
    */
   const changeStrokeWidth = React.useCallback(
     (strokeWidth: number) => {
@@ -153,7 +151,6 @@ const StrokeStyleControl = ({
 
   /**
    * Mutates the stroke style of the object
-   * @param newStrokeStyle New stroke style
    */
   const changeStrokeStyle = React.useCallback(
     (newStrokeStyle: StrokeStyle) => {

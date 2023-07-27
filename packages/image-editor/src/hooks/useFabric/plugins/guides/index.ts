@@ -17,6 +17,9 @@ type ACoordsAppendCenter = NonNullable<BaseFabricObject["aCoords"]> & {
   c: Point;
 };
 
+/**
+ * Renders align guidelines
+ */
 class AlignGuidelines {
   /**
    * Line margin (px)

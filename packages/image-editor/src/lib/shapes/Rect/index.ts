@@ -1,3 +1,4 @@
+import { Shadow } from "fabric";
 import { Drawable, Options } from "roughjs/bin/core";
 import rough from "roughjs/bin/rough";
 
@@ -43,6 +44,7 @@ export class Rect extends RectPrimitive<RectProps> {
       ...rest,
       seed,
       _type: LayerType.RECTANGLE
+      // shadow: new Shadow({ color: "red", offsetX: 10, blur: 2 })
     });
   }
 

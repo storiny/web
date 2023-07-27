@@ -24,7 +24,6 @@ const AngleControl = ({
 
   /**
    * Mutates the angle of the object
-   * @param angle New angle
    */
   const changeAngle = React.useCallback(
     (angle: number) => {
@@ -71,7 +70,6 @@ const CornerRadiusControl = ({
 }): React.ReactElement => {
   /**
    * Mutates the corner radius of the object
-   * @param cornerRadius New corner radius
    */
   const changeCornerRadius = React.useCallback(
     (cornerRadius: number) => {

@@ -35,7 +35,6 @@ const FillControl = ({
 
   /**
    * Mutates the fill of the object
-   * @param newFill New fill
    */
   const changeFill = React.useCallback(
     (newFill: TColor) => {
@@ -106,7 +105,6 @@ const FillStyleControl = ({
 
   /**
    * Mutates the fill style of the object
-   * @param fillStyle New fill style
    */
   const changeFillStyle = React.useCallback(
     (fillStyle: FillStyle) => {
@@ -125,7 +123,6 @@ const FillStyleControl = ({
 
   /**
    * Mutates the fill weight of the object
-   * @param fillWeight New fill weight
    */
   const changeFillWeight = React.useCallback(
     (fillWeight: number) => {
@@ -142,7 +139,6 @@ const FillStyleControl = ({
 
   /**
    * Mutates the hachure gap of the object
-   * @param hachureGap New hachure gap
    */
   const changeHachureGap = React.useCallback(
     (hachureGap: number) => {
