@@ -10,3 +10,15 @@ export const COMMON_OBJECT_PROPS: TProps<BaseFabricObject> = {
   transparentCorners: false,
   noScaleCache: false
 };
+
+export const CLONE_PROPS = [
+  "strokeWidth",
+  "fill",
+  "stroke",
+  "strokeStyle",
+  "interactive",
+  "fillStyle",
+  "fillWeight",
+  "hachureGap",
+  "roughness"
+];

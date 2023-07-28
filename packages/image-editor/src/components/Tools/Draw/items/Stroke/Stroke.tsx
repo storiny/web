@@ -14,7 +14,7 @@ import RulerMeasureIcon from "~/icons/RulerMeasure";
 import { StrokeStyle } from "../../../../../constants";
 import { useActiveObject } from "../../../../../store";
 import DrawItem, { DrawItemRow } from "../../Item";
-import styles from "./Stroke.module.scss";
+import commonStyles from "../common.module.scss";
 
 // Stroke color
 
@@ -60,10 +60,10 @@ const StrokeControl = ({
         >
           <button
             aria-label={"Pick a color"}
-            className={styles.indicator}
+            className={commonStyles.indicator}
             style={
               {
-                "--stroke": stroke.str
+                "--color": stroke.str
               } as React.CSSProperties
             }
             title={"Pick a color"}

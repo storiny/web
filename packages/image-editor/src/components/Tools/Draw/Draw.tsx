@@ -12,6 +12,7 @@ import Fill from "./items/Fill";
 import LayerProps from "./items/LayerProps";
 import ObjectProps from "./items/ObjectProps";
 import Position from "./items/Position";
+import Shadow from "./items/Shadow";
 import Skew from "./items/Skew";
 import Stroke from "./items/Stroke";
 
@@ -40,6 +41,12 @@ const DrawTools = (): React.ReactElement | null => {
           <Divider />
           <Spacer orientation={"vertical"} size={2} />
           <Stroke />
+          <Spacer orientation={"vertical"} size={2} />
+          <Divider />
+          <Spacer orientation={"vertical"} size={2} />
+          <Shadow />
+          <Spacer orientation={"vertical"} size={2} />
+          <Divider />
         </React.Fragment>
       )}
       <Spacer orientation={"vertical"} size={2} />

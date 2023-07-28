@@ -1,5 +1,4 @@
 import clsx from "clsx";
-import { BaseFabricObject, Group } from "fabric";
 import React from "react";
 
 import Divider from "~/components/Divider";
@@ -37,37 +36,12 @@ const AlignButton = ({
 
 const Alignment = (): React.ReactElement | null => {
   const canvas = useCanvas();
-  const [group, setGroup] = React.useState<Group | null>(null);
-  const selectMaybeGroup = (object: BaseFabricObject): void => {
-    const activeObject = canvas.current?.getActiveObject();
-    console.log(activeObject);
-    if (activeObject) {
-      if (isGroup(activeObject)) {
-        setGroup(activeObject);
-      } else if (activeObject.group) {
-        setGroup(activeObject.group);
-      }
-    }
-  };
+  const activeObjects = canvas.current?.getActiveObjects();
+  const group = activeObjects?.length > 1 && activeObjects?.[0]?.group;
 
-  useEventRender("selection:created", (options) => {
-    const object = options.selected[0];
-    selectMaybeGroup(object);
-
-    return false;
-  });
-
-  useEventRender("selection:updated", (options) => {
-    const object = options.selected[0];
-    selectMaybeGroup(object);
-
-    return false;
-  });
-
-  useEventRender("selection:cleared", () => {
-    setGroup(null);
-    return false;
-  });
+  useEventRender("selection:created", () => false);
+  useEventRender("selection:updated", () => true);
+  useEventRender("selection:cleared", () => true);
 
   /**
    * Changes the alignment of the object
@@ -75,57 +49,76 @@ const Alignment = (): React.ReactElement | null => {
    */
   const changeAlignment = React.useCallback(
     (newAlignemnt: TAlignment) => {
-      // const canvas = activeObject?.canvas;
-      //
-      // if (activeObject && canvas) {
-      //   const boundingRect = activeObject.getBoundingRect();
-      //   const { width, height } = canvas;
-      //
-      //   switch (newAlignemnt) {
-      //     case "top":
-      //       activeObject.set({
-      //         top: activeObject.top - boundingRect.top,
-      //         dirty: true
-      //       });
-      //       break;
-      //     case "left":
-      //       activeObject.set({
-      //         left: activeObject.left - boundingRect.left,
-      //         dirty: true
-      //       });
-      //       break;
-      //     case "bottom":
-      //       activeObject.set({
-      //         top: canvas.height - boundingRect.height / 2,
-      //         dirty: true
-      //       });
-      //       break;
-      //     case "right":
-      //       activeObject.set({
-      //         left: canvas.width - boundingRect.width / 2,
-      //         dirty: true
-      //       });
-      //       break;
-      //     case "center":
-      //       activeObject.set({ left: width / 2, dirty: true });
-      //       break;
-      //     case "middle":
-      //       activeObject.set({ top: height / 2, dirty: true });
-      //       break;
-      //   }
-      //
-      //   activeObject.setCoords();
-      //   canvas.requestRenderAll();
-      // }
+      if (!group) {
+        return;
+      }
+
+      for (const object of group.getObjects()) {
+        const boundingRect = object.getBoundingRect(true);
+
+        switch (newAlignemnt) {
+          case "top":
+            object.set({
+              top: group.top - boundingRect.top + object.top,
+              dirty: true
+            });
+            break;
+          case "left":
+            object.set({
+              left: group.left - boundingRect.left + object.left,
+              dirty: true
+            });
+            break;
+          case "bottom":
+            object.set({
+              top:
+                group.top +
+                group.height -
+                (boundingRect.top + boundingRect.height) +
+                object.top,
+              dirty: true
+            });
+            break;
+          case "right":
+            object.set({
+              left:
+                group.left +
+                group.width -
+                (boundingRect.left + boundingRect.width) +
+                object.left,
+              dirty: true
+            });
+            break;
+          case "center":
+            object.set({
+              left:
+                group.left +
+                group.width / 2 -
+                (boundingRect.left + boundingRect.width / 2) +
+                object.left,
+              dirty: true
+            });
+            break;
+          case "middle":
+            object.set({
+              top:
+                group.top +
+                group.height / 2 -
+                (boundingRect.top + boundingRect.height / 2) +
+                object.top,
+              dirty: true
+            });
+            break;
+        }
+
+        object.setCoords();
+        canvas.current?.renderAll();
+      }
     },
-    [
-      //    activeObject
-    ]
+    [canvas, group]
   );
 
-  React.useEffect(() => console.log(group), [group]);
-
-  if (!group) {
+  if (!group || !isGroup(group)) {
     return null;
   }
 

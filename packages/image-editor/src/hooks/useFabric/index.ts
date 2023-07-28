@@ -4,7 +4,12 @@ import React from "react";
 import { FabricContext } from "../../components/Context";
 import { CURSORS } from "../../constants";
 import { bindEvents } from "./events";
-import { registerGuidesPlugin, registerTooltip } from "./plugins";
+import {
+  registerClone,
+  registerGuidesPlugin,
+  registerKeyboard,
+  registerTooltip
+} from "./plugins";
 
 /**
  * Hook for initializing fabric context
@@ -29,9 +34,19 @@ export const useFabric = (): ((
       uniformScaling: false
     });
 
-    [bindEvents, registerGuidesPlugin, registerTooltip].forEach((bindable) =>
-      bindable(canvas.current)
-    );
+    // Disable context menu
+    const selectionElement = canvas.current.getSelectionElement();
+    selectionElement.addEventListener("contextmenu", (event) => {
+      event.preventDefault();
+    });
+
+    [
+      bindEvents,
+      registerGuidesPlugin,
+      registerTooltip,
+      registerKeyboard,
+      registerClone
+    ].forEach((bindable) => bindable(canvas.current));
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

@@ -5106,6 +5106,7 @@ __metadata:
     clsx: ^1.2.1
     eslint: ^8.42.0
     fabric: beta
+    hotkeys-js: ^3.11.2
     jotai: ^2.2.2
     prettier: ^2.5.1
     react: ^18.2.0
@@ -13160,6 +13161,13 @@ eslint-config-turbo@latest:
   dependencies:
     lru-cache: ^6.0.0
   checksum: c3f87b3c2f7eb8c2748c8f49c0c2517c9a95f35d26f4bf54b2a8cba05d2e668f3753548b6ea366b18ec8dadb4e12066e19fa382a01496b0ffa0497eb23cbe461
+  languageName: node
+  linkType: hard
+
+"hotkeys-js@npm:^3.11.2":
+  version: 3.11.2
+  resolution: "hotkeys-js@npm:3.11.2"
+  checksum: 8e3d984628d2dcf75519017cfdb2c936e7bd0598cf87e3b11e90a5a0b104105042f9979de0118061e819fca95be9c26f27f76447ceeff726678737aaedcd9707
   languageName: node
   linkType: hard
 

@@ -19,7 +19,7 @@ import ZigzagLineFillIcon from "~/icons/ZigzagLineFill";
 import { DEFAULT_LAYER_FILL, FillStyle } from "../../../../../constants";
 import { useActiveObject } from "../../../../../store";
 import DrawItem, { DrawItemRow } from "../../Item";
-import styles from "./Fill.module.scss";
+import commonStyles from "../common.module.scss";
 
 // Fill
 
@@ -65,10 +65,10 @@ const FillControl = ({
         >
           <button
             aria-label={"Pick a color"}
-            className={styles.indicator}
+            className={commonStyles.indicator}
             style={
               {
-                "--fill": fill.str
+                "--color": fill.str
               } as React.CSSProperties
             }
             title={"Pick a color"}

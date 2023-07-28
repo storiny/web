@@ -8,36 +8,44 @@ import { isInteractiveObject } from "../../../../utils";
 class ObjectTooltip {
   /**
    * Canvas
+   * @private
    */
-  canvas: Canvas;
+  private readonly canvas: Canvas;
   /**
    * Canvas context
+   * @private
    */
-  ctx: CanvasRenderingContext2D;
+  private readonly ctx: CanvasRenderingContext2D;
   /**
    * Current active object
+   * @private
    */
-  activeObject: BaseFabricObject | undefined;
+  private activeObject: BaseFabricObject | undefined;
   /**
    * Vertical margin for the tooltip (px)
+   * @private
    */
-  verticalMargin = 10;
+  private readonly verticalMargin = 10;
   /**
    * Tooltip font
+   * @private
    */
-  font = "500 10px var(--font-secondary)";
+  private readonly font = "500 10px var(--font-secondary)";
   /**
    * Tooltip background color
+   * @private
    */
-  backgroundColor = "#505050";
+  private readonly backgroundColor = "#505050";
   /**
    * Tooltip foreground color
+   * @private
    */
-  foregroundColor = "#fafafa";
+  private readonly foregroundColor = "#fafafa";
   /**
    * Tooltip inline padding (px)
+   * @private
    */
-  inlinePadding = 10;
+  private readonly inlinePadding = 10;
 
   /**
    * Ctor
@@ -53,8 +61,9 @@ class ObjectTooltip {
    * @param text Tooltip text
    * @param x X value
    * @param y Y value
+   * @private
    */
-  renderTooltip(text: string, x: number, y: number): void {
+  private renderTooltip(text: string, x: number, y: number): void {
     const ctx = this.ctx;
     ctx.save();
 
@@ -82,15 +91,17 @@ class ObjectTooltip {
 
   /**
    * Clears tooltip
+   * @private
    */
-  clearTooltip(): void {
+  private clearTooltip(): void {
     this.canvas.clearContext(this.ctx);
   }
 
   /**
    * Binds canvas events
+   * @private
    */
-  bindEvents(): void {
+  private bindEvents(): void {
     this.canvas.on("before:render", () => {
       this.clearTooltip();
     });
@@ -130,7 +141,7 @@ class ObjectTooltip {
   /**
    * Initialize plugin
    */
-  init(): void {
+  public init(): void {
     this.bindEvents();
   }
 }

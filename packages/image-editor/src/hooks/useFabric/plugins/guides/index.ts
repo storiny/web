@@ -3,7 +3,6 @@ import {
   Canvas,
   Object as FabricObject,
   Point,
-  TMat2D,
   util
 } from "fabric";
 
@@ -23,52 +22,59 @@ type ACoordsAppendCenter = NonNullable<BaseFabricObject["aCoords"]> & {
 class AlignGuidelines {
   /**
    * Line margin (px)
+   * @private
    */
-  aligningLineMargin = 4;
+  private readonly aligningLineMargin = 4;
   /**
    * Line width (px)
+   * @private
    */
-  aligningLineWidth = 0.75;
+  private readonly aligningLineWidth = 0.75;
   /**
    * Line color
+   * @private
    */
-  aligningLineColor = "#ff0000";
+  private readonly aligningLineColor = "#ff0000";
   /**
    * Sign width (px)
+   * @private
    */
-  signWidth = 1;
+  private readonly signWidth = 1;
   /**
    * Sign color
+   * @private
    */
-  signColor = this.aligningLineColor;
+  private readonly signColor = this.aligningLineColor;
   /**
    * Sign size (px)
+   * @private
    */
-  signSize = 3;
+  private readonly signSize = 3;
   /**
    * Canvas
+   * @private
    */
-  canvas: Canvas;
+  private readonly canvas: Canvas;
   /**
    * Canvas context
+   * @private
    */
-  ctx: CanvasRenderingContext2D;
-  /**
-   * Transform matrix
-   */
-  viewportTransform: TMat2D | undefined;
+  private readonly ctx: CanvasRenderingContext2D;
   /**
    * Vertical guide lines
+   * @private
    */
-  verticalLines: LineCoords<"vertical">[] = [];
+  private readonly verticalLines: LineCoords<"vertical">[] = [];
   /**
    * Horizontal guide lines
+   * @private
    */
-  horizontalLines: LineCoords<"horizontal">[] = [];
+  private readonly horizontalLines: LineCoords<"horizontal">[] = [];
   /**
    * Current active object
+   * @private
    */
-  activeObject: BaseFabricObject = new FabricObject();
+  private activeObject: BaseFabricObject = new FabricObject();
 
   /**
    * Ctor
@@ -209,7 +215,6 @@ class AlignGuidelines {
   private watchMouseDown(): void {
     this.canvas.on("mouse:down", () => {
       this.clearLinesMeta();
-      this.viewportTransform = this.canvas.viewportTransform;
     });
   }
 
@@ -633,14 +638,14 @@ class AlignGuidelines {
   /**
    * Clears guidelines
    */
-  clearGuideline(): void {
+  private clearGuideline(): void {
     this.canvas.clearContext(this.ctx);
   }
 
   /**
    * Watches render events
    */
-  watchRender(): void {
+  private watchRender(): void {
     this.canvas.on("before:render", () => {
       this.clearGuideline();
     });
@@ -661,7 +666,7 @@ class AlignGuidelines {
   /**
    * Initialize plugin
    */
-  init(): void {
+  public init(): void {
     this.watchObjectMoving();
     this.watchRender();
     this.watchMouseDown();

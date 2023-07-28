@@ -9,6 +9,7 @@ import {
 } from "fabric";
 
 import { CURSORS } from "../../../constants";
+import { CLONE_PROPS } from "../common";
 
 const DISABLED_CONTROLS = ["ml", "mt", "mr", "mb"];
 const CLONE_CONTROL_SIZE = 14;
@@ -28,7 +29,7 @@ const cloneObject = (
   const canvas = target.canvas;
 
   if (canvas) {
-    target.clone().then((cloned) => {
+    target.clone(CLONE_PROPS).then((cloned) => {
       if (direction === "left") {
         cloned.left -= cloned.width + 24;
       } else {
