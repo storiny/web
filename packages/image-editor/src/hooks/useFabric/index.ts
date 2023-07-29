@@ -1,12 +1,13 @@
-import { Canvas } from "fabric";
+import { Canvas, Pattern } from "fabric";
 import React from "react";
 
 import { FabricContext } from "../../components/Context";
 import { CURSORS } from "../../constants";
 import { bindEvents } from "./events";
 import {
+  registerActions,
   registerClone,
-  registerGuidesPlugin,
+  registerGuides,
   registerKeyboard,
   registerTooltip
 } from "./plugins";
@@ -42,10 +43,11 @@ export const useFabric = (): ((
 
     [
       bindEvents,
-      registerGuidesPlugin,
+      registerGuides,
       registerTooltip,
       registerKeyboard,
-      registerClone
+      registerClone,
+      registerActions
     ].forEach((bindable) => bindable(canvas.current));
 
     // eslint-disable-next-line react-hooks/exhaustive-deps

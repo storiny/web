@@ -19,7 +19,7 @@ type ACoordsAppendCenter = NonNullable<BaseFabricObject["aCoords"]> & {
 /**
  * Renders align guidelines
  */
-class AlignGuidelines {
+class GuidesPlugin {
   /**
    * Line margin (px)
    * @private
@@ -679,6 +679,6 @@ class AlignGuidelines {
  * Guide-lines plugin
  * @param canvas Canvas
  */
-export const registerGuidesPlugin = (canvas: Canvas): void => {
-  new AlignGuidelines(canvas).init();
+export const registerGuides = (canvas: Canvas): void => {
+  new GuidesPlugin(canvas).init();
 };

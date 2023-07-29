@@ -1,0 +1,14 @@
+.x {
+  /* Base styles */
+  &.actions {
+    background-color: var(--obsidian);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--divider);
+    overflow: hidden;
+  }
+
+  /* Icon button */
+  &.button {
+    border-radius: 0;
+  }
+}

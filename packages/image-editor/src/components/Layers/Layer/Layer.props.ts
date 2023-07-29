@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Layer } from "../../../types";
+import { BareLayer } from "../../../types";
 
 export interface LayerProps extends React.ComponentPropsWithRef<"li"> {
   /**
@@ -10,5 +10,5 @@ export interface LayerProps extends React.ComponentPropsWithRef<"li"> {
   /**
    * Layer object
    */
-  layer: Layer;
+  layer: BareLayer;
 }

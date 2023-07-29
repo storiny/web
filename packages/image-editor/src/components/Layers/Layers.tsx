@@ -23,7 +23,7 @@ import {
   useEditorDispatch,
   useEditorSelector
 } from "../../store";
-import { Layer as TLayer } from "../../types/layer";
+import { BareLayer } from "../../types";
 import Layer, { LayerSkeleton } from "./Layer";
 import styles from "./Layers.module.scss";
 import { LayersContext } from "./LayersContext";
@@ -35,7 +35,7 @@ const LAYER_HEIGHT = 28;
 const VirtualizedLayer = React.memo<
   {
     isDragging: boolean;
-    layer: TLayer;
+    layer: BareLayer;
     provided: DraggableProvided;
   } & React.ComponentPropsWithoutRef<"li">
 >(({ layer, provided, isDragging, ...rest }) => (
@@ -182,7 +182,7 @@ const Layers = (): React.ReactElement => {
               type={"auto"}
             >
               <ul>
-                <Virtuoso<TLayer>
+                <Virtuoso<BareLayer>
                   className={clsx("full-w", "full-h")}
                   components={{
                     Item: LayerPlaceholder,

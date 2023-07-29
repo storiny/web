@@ -5,7 +5,7 @@ import { isInteractiveObject } from "../../../../utils";
 /**
  * Renders tooltips for a selected object
  */
-class ObjectTooltip {
+class TooltipPlugin {
   /**
    * Canvas
    * @private
@@ -151,5 +151,5 @@ class ObjectTooltip {
  * @param canvas Canvas
  */
 export const registerTooltip = (canvas: Canvas): void => {
-  new ObjectTooltip(canvas).init();
+  new TooltipPlugin(canvas).init();
 };

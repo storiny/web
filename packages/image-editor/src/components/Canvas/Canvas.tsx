@@ -2,6 +2,7 @@ import React from "react";
 import useResizeObserver from "use-resize-observer";
 
 import { useCanvas, useFabric } from "../../hooks";
+import Actions from "../Layers/Layer/Actions";
 import styles from "./Canvas.module.scss";
 import Overlay from "./Overlay";
 
@@ -18,6 +19,7 @@ const Canvas = (): React.ReactElement => {
     <div className={styles["canvas-container"]} ref={ref}>
       <canvas className={styles.canvas} ref={fabricRef} />
       <Overlay />
+      <Actions />
     </div>
   );
 };

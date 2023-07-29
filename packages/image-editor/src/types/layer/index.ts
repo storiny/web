@@ -80,7 +80,7 @@ type LayerPrimitive<T extends LayerType> = {
    * Stroke style
    * @default 'solid'
    */
-  strokeStyle: StrokeStyle;
+  strokeStyle?: StrokeStyle;
   /**
    * Layer type
    */

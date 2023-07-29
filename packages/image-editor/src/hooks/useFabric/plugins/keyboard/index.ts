@@ -4,7 +4,7 @@ import hotkeys from "hotkeys-js";
 /**
  * Handles keyboard events for objects
  */
-class ObjectKeyboard {
+class KeyboardPlugin {
   /**
    * Canvas
    * @private
@@ -46,5 +46,5 @@ class ObjectKeyboard {
  * @param canvas Canvas
  */
 export const registerKeyboard = (canvas: Canvas): void => {
-  new ObjectKeyboard(canvas).init();
+  new KeyboardPlugin(canvas).init();
 };

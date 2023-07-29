@@ -1,4 +1,3 @@
-import { Shadow } from "fabric";
 import { Drawable, Options } from "roughjs/bin/core";
 import rough from "roughjs/bin/rough";
 
@@ -9,7 +8,6 @@ import {
   getDashedDashArray,
   getDottedDashArray
 } from "../../../utils";
-import { COMMON_OBJECT_PROPS } from "../common";
 import { RectPrimitive } from "../Object";
 
 export type RectProps = ConstructorParameters<typeof RectPrimitive>[0] &
@@ -39,12 +37,10 @@ export class Rect extends RectPrimitive<RectProps> {
     const { seed = rough.newSeed(), ...rest } = props;
 
     super({
-      ...COMMON_OBJECT_PROPS,
       ...DEFAULT_RECT_PROPS,
       ...rest,
       seed,
       _type: LayerType.RECTANGLE
-      // shadow: new Shadow({ color: "red", offsetX: 10, blur: 2 })
     });
   }
 

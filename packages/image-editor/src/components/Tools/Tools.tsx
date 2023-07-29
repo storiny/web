@@ -3,7 +3,6 @@ import React from "react";
 import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 
 import ScrollArea from "~/components/ScrollArea";
-import ColorPicker from "~/entities/ColorPicker";
 import { useScrollbarVisibility } from "~/hooks/useScrollbarVisibility";
 
 import Layers from "../Layers";
@@ -59,7 +58,7 @@ const Tools = (): React.ReactElement => (
           <path d="M2 1a1 1 0 1 1-2 0 1 1 0 0 1 2 0ZM6 1a1 1 0 1 1-2 0 1 1 0 0 1 2 0ZM10 1a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z" />
         </svg>
       </PanelResizeHandle>
-      <Panel defaultSize={30}>
+      <Panel defaultSize={25}>
         <Layers />
       </Panel>
     </PanelGroup>

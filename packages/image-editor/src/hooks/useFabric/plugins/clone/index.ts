@@ -8,7 +8,7 @@ const CLONED_OBJECT_OFFSET = 15; // px
 /**
  * Handles keyboard events for cloning objects
  */
-class ObjectClone {
+class ClonePlugin {
   /**
    * Canvas
    * @private
@@ -125,5 +125,5 @@ class ObjectClone {
  * @param canvas Canvas
  */
 export const registerClone = (canvas: Canvas): void => {
-  new ObjectClone(canvas).init();
+  new ClonePlugin(canvas).init();
 };
