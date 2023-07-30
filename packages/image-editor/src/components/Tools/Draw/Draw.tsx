@@ -5,7 +5,7 @@ import React from "react";
 import Divider from "~/components/Divider";
 import Spacer from "~/components/Spacer";
 
-import { useActiveObject } from "../../../store";
+import { useActiveObject } from "../../../hooks";
 import Alignment from "./items/Alignment";
 import Dimensions from "./items/Dimensions";
 import Fill from "./items/Fill";

@@ -1,17 +1,14 @@
-import { Drawable, Options } from "roughjs/bin/core";
+import { classRegistry } from "fabric";
+import { Drawable } from "roughjs/bin/core";
 import rough from "roughjs/bin/rough";
 
-import { FillStyle, LayerType, StrokeStyle } from "../../../constants";
+import { FillStyle, LayerType } from "../../../constants";
 import { RectangleLayer } from "../../../types";
-import {
-  getCornerRadius,
-  getDashedDashArray,
-  getDottedDashArray
-} from "../../../utils";
+import { generateRoughOptions, getCornerRadius } from "../../../utils";
 import { RectPrimitive } from "../Object";
 
 export type RectProps = ConstructorParameters<typeof RectPrimitive>[0] &
-  Omit<RectangleLayer, "id" | "type">;
+  Omit<RectangleLayer, "id" | "_type">;
 
 const DEFAULT_RECT_PROPS: Partial<RectProps> = {
   strokeWidth: 0,
@@ -35,7 +32,6 @@ export class Rect extends RectPrimitive<RectProps> {
    */
   constructor(props: RectProps) {
     const { seed = rough.newSeed(), ...rest } = props;
-
     super({
       ...DEFAULT_RECT_PROPS,
       ...rest,
@@ -56,37 +52,19 @@ export class Rect extends RectPrimitive<RectProps> {
    * @param ctx Canvas context
    */
   _render(ctx: CanvasRenderingContext2D): void {
-    const rc = rough.canvas(ctx.canvas);
+    let rc = this.get("_rc");
+
+    if (!rc) {
+      rc = rough.canvas(ctx.canvas);
+      this.set("_rc", rc);
+    }
+
     const { width: w, height: h, rx, ry } = this;
     const x = -w / 2;
     const y = -h / 2;
     const r = getCornerRadius(Math.min(w, h), Math.max(rx, ry));
     let shape: Drawable;
-
-    const options: Options = {
-      seed: this.get("seed"),
-      stroke: this.stroke as string,
-      // For non-solid strokes, disable `multiStroke` because it tends to make
-      // dashes / dots overlay over each other
-      disableMultiStroke: this.get("strokeStyle") !== StrokeStyle.SOLID,
-      // For non-solid strokes, increase the width a bit to make it visually
-      // similar to solid strokes, as we're also disabling `multiStroke`
-      strokeWidth:
-        this.get("strokeStyle") !== StrokeStyle.SOLID
-          ? this.strokeWidth + 0.5
-          : this.strokeWidth,
-      fill: this.fill as string,
-      fillWeight: this.get("fillWeight"),
-      fillStyle: this.get("fillStyle"),
-      hachureGap: this.get("hachureGap"),
-      roughness: this.get("roughness"),
-      strokeLineDash:
-        this.get("strokeStyle") === StrokeStyle.DASHED
-          ? getDashedDashArray(this.strokeWidth)
-          : this.get("strokeStyle") === StrokeStyle.DOTTED
-          ? getDottedDashArray(this.strokeWidth)
-          : undefined
-    };
+    const options = generateRoughOptions(this);
 
     if (r > 0) {
       shape = rc.path(
@@ -111,3 +89,5 @@ export class Rect extends RectPrimitive<RectProps> {
     ctx.restore();
   }
 }
+
+classRegistry.setClass(Rect, RectPrimitive.type);

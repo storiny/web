@@ -4,7 +4,8 @@ import Input from "~/components/Input";
 import LetterXIcon from "~/icons/LetterX";
 import LetterYIcon from "~/icons/LetterY";
 
-import { useActiveObject, useEventRender } from "../../../../../store";
+import { useActiveObject, useEventRender } from "../../../../../hooks";
+import { modifyObject } from "../../../../../utils";
 import DrawItem, { DrawItemRow } from "../../Item";
 
 const Position = (): React.ReactElement | null => {
@@ -26,11 +27,9 @@ const Position = (): React.ReactElement | null => {
     (newX: number) => {
       if (activeObject) {
         setPos((prevState) => ({ ...prevState, x: newX }));
-        activeObject.set({
-          left: newX,
-          dirty: true
+        modifyObject(activeObject, {
+          left: newX
         });
-        activeObject.canvas?.requestRenderAll();
       }
     },
     [activeObject]
@@ -44,11 +43,9 @@ const Position = (): React.ReactElement | null => {
     (newY: number) => {
       if (activeObject) {
         setPos((prevState) => ({ ...prevState, y: newY }));
-        activeObject.set({
-          top: newY,
-          dirty: true
+        modifyObject(activeObject, {
+          top: newY
         });
-        activeObject.canvas?.requestRenderAll();
       }
     },
     [activeObject]

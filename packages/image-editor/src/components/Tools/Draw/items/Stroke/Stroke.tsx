@@ -12,9 +12,12 @@ import LineSolidIcon from "~/icons/LineSolid";
 import RulerMeasureIcon from "~/icons/RulerMeasure";
 
 import { StrokeStyle } from "../../../../../constants";
-import { useActiveObject } from "../../../../../store";
+import { useActiveObject } from "../../../../../hooks";
+import { modifyObject } from "../../../../../utils";
 import DrawItem, { DrawItemRow } from "../../Item";
 import commonStyles from "../common.module.scss";
+
+const DEFAULT_LAYER_STROKE = "rgba(0,0,0,0)";
 
 // Stroke color
 
@@ -24,7 +27,7 @@ const StrokeControl = ({
   activeObject: BaseFabricObject;
 }): React.ReactElement => {
   const [stroke, setStroke] = React.useState<TColor>(
-    strToColor((activeObject.stroke as string) || "rgba(0,0,0,0)")!
+    strToColor((activeObject.stroke as string) || DEFAULT_LAYER_STROKE)!
   );
   const [value, setValue] = React.useState(`#${stroke.hex}`);
 
@@ -36,11 +39,9 @@ const StrokeControl = ({
       setStroke(newStroke);
 
       if (activeObject) {
-        activeObject.set({
-          stroke: newStroke.str,
-          dirty: true
+        modifyObject(activeObject, {
+          stroke: newStroke.str
         });
-        activeObject.canvas?.requestRenderAll();
       }
     },
     [activeObject]
@@ -49,6 +50,12 @@ const StrokeControl = ({
   React.useEffect(() => {
     setValue(`#${stroke.hex}`);
   }, [stroke]);
+
+  React.useEffect(() => {
+    setStroke(
+      strToColor((activeObject?.stroke as string) || DEFAULT_LAYER_STROKE)!
+    );
+  }, [activeObject?.stroke]);
 
   return (
     <Input
@@ -105,11 +112,9 @@ const StrokeWidthControl = ({
   const changeStrokeWidth = React.useCallback(
     (strokeWidth: number) => {
       if (activeObject) {
-        activeObject.set({
-          strokeWidth,
-          dirty: true
+        modifyObject(activeObject, {
+          strokeWidth
         });
-        activeObject.canvas?.requestRenderAll();
       }
     },
     [activeObject]
@@ -157,15 +162,17 @@ const StrokeStyleControl = ({
       setStrokeStyle(newStrokeStyle);
 
       if (activeObject) {
-        activeObject.set({
-          strokeStyle: newStrokeStyle,
-          dirty: true
+        modifyObject(activeObject, {
+          strokeStyle: newStrokeStyle
         });
-        activeObject.canvas?.requestRenderAll();
       }
     },
     [activeObject]
   );
+
+  React.useEffect(() => {
+    setStrokeStyle(activeObject.get("strokeStyle") || StrokeStyle.SOLID);
+  }, [activeObject]);
 
   return (
     <Select

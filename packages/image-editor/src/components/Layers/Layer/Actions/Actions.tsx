@@ -11,8 +11,8 @@ import FlipHorizontalIcon from "~/icons/FlipHorizontal";
 import FlipVerticalIcon from "~/icons/FlipVertical";
 import TrashIcon from "~/icons/Trash";
 
+import { useActiveObject } from "../../../../hooks";
 import { CLONE_PROPS } from "../../../../lib";
-import { useActiveObject } from "../../../../store";
 import styles from "./Actions.module.scss";
 
 const POPOVER_ID = "object-popover";
@@ -39,6 +39,13 @@ const Actions = (): React.ReactElement | null => {
       activeObject.clone(CLONE_PROPS).then((cloned) => {
         cloned.top += 24;
         cloned.left += 24;
+
+        cloned.set({
+          width: activeObject.width,
+          height: activeObject.height,
+          scaleX: 1,
+          scaleY: 1
+        });
 
         activeObject.canvas?.add(cloned);
       });

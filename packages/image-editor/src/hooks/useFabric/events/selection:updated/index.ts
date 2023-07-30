@@ -1,12 +1,8 @@
 import { Canvas } from "fabric";
 
-import { editorStore, setLayerSelected } from "../../../../store";
-
 export const selectionUpdatedEvent = (canvas: Canvas): void => {
   canvas.on("selection:updated", (options) => {
-    const { selected, deselected } = options;
-
-    selected.forEach((object) => {
+    for (const object of options.selected) {
       if (object.group) {
         object.group.set({
           cornerColor: "#fff",
@@ -18,11 +14,15 @@ export const selectionUpdatedEvent = (canvas: Canvas): void => {
         });
       }
 
-      editorStore.dispatch(setLayerSelected([object.get("id"), true]));
-    });
+      object.set({
+        selected: true
+      });
+    }
 
-    deselected.forEach((object) => {
-      editorStore.dispatch(setLayerSelected([object.get("id"), false]));
-    });
+    for (const object of options.deselected) {
+      object.set({
+        selected: false
+      });
+    }
   });
 };

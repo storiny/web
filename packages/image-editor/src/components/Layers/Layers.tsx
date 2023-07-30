@@ -8,6 +8,7 @@ import {
   DropResult
 } from "@hello-pangea/dnd";
 import clsx from "clsx";
+import { BaseFabricObject } from "fabric";
 import { useSetAtom } from "jotai";
 import React from "react";
 import { Virtuoso } from "react-virtuoso";
@@ -17,13 +18,6 @@ import { Root, Scrollbar, Thumb, Viewport } from "~/components/ScrollArea";
 
 import { isLayersDraggingAtom } from "../../atoms";
 import { useCanvas } from "../../hooks";
-import {
-  reorderLayer,
-  selectLayers,
-  useEditorDispatch,
-  useEditorSelector
-} from "../../store";
-import { BareLayer } from "../../types";
 import Layer, { LayerSkeleton } from "./Layer";
 import styles from "./Layers.module.scss";
 import { LayersContext } from "./LayersContext";
@@ -35,7 +29,7 @@ const LAYER_HEIGHT = 28;
 const VirtualizedLayer = React.memo<
   {
     isDragging: boolean;
-    layer: BareLayer;
+    layer: BaseFabricObject;
     provided: DraggableProvided;
   } & React.ComponentPropsWithoutRef<"li">
 >(({ layer, provided, isDragging, ...rest }) => (
@@ -110,13 +104,72 @@ const LayerPlaceholder = React.memo<React.ComponentPropsWithoutRef<"span">>(
 
 LayerPlaceholder.displayName = "LayerPlaceholder";
 
-const Layers = (): React.ReactElement => {
+const Layers = (): React.ReactElement | null => {
   const droppableId = React.useId();
   const canvas = useCanvas();
-  const dispatch = useEditorDispatch();
-  const layers = useEditorSelector(selectLayers);
+  const [layers, setLayers] = React.useState<BaseFabricObject[]>([]);
   const { ref, height = 1 } = useResizeObserver();
   const setDragging = useSetAtom(isLayersDraggingAtom);
+
+  React.useEffect(() => {
+    const { current } = canvas;
+
+    /**
+     * Updates the layers
+     */
+    const updateLayers = (): void => {
+      if (current) {
+        const newLayers = current.getObjects();
+        setLayers(newLayers.reverse());
+      }
+    };
+
+    /**
+     * Updates layers if a specific set of properties get
+     * modified
+     * @param options Options
+     */
+    const updateLayersIfModified = (options: {
+      target: BaseFabricObject;
+    }): void => {
+      const nextLayer = options.target;
+      const prevLayer = layers.find(
+        (layer) => layer.get("id") === nextLayer.get("id")
+      );
+
+      if (prevLayer) {
+        if (
+          prevLayer.get("locked") !== nextLayer.get("locked") ||
+          prevLayer.get("visible") !== nextLayer.get("visible")
+        ) {
+          updateLayers();
+        }
+      }
+    };
+
+    if (current) {
+      current.on("object:added", updateLayers);
+      current.on("object:removed", updateLayers);
+      current.on("object:modified", updateLayersIfModified);
+      current.on("selection:created", updateLayers);
+      current.on("selection:updated", updateLayers);
+      current.on("selection:cleared", updateLayers);
+    }
+
+    updateLayers();
+
+    return () => {
+      if (current) {
+        current.off("object:added", updateLayers);
+        current.off("object:removed", updateLayers);
+        current.off("object:modified", updateLayersIfModified);
+        current.off("selection:created", updateLayers);
+        current.off("selection:updated", updateLayers);
+        current.off("selection:cleared", updateLayers);
+      }
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [canvas]);
 
   const onDragEnd = React.useCallback(
     (result: DropResult) => {
@@ -142,18 +195,21 @@ const Layers = (): React.ReactElement => {
             sourceObject,
             objects.length - 1 - endIndex
           );
+
+          setLayers((prevLayers) => {
+            const [removed] = prevLayers.splice(startIndex, 1);
+            prevLayers.splice(endIndex, 0, removed);
+            return prevLayers;
+          });
         }
       }
-
-      dispatch(
-        reorderLayer({
-          startIndex,
-          endIndex
-        })
-      );
     },
-    [canvas, dispatch, setDragging]
+    [canvas, setDragging]
   );
+
+  if (!layers.length) {
+    return null;
+  }
 
   return (
     <LayersContext.Provider
@@ -182,7 +238,7 @@ const Layers = (): React.ReactElement => {
               type={"auto"}
             >
               <ul>
-                <Virtuoso<BareLayer>
+                <Virtuoso<BaseFabricObject>
                   className={clsx("full-w", "full-h")}
                   components={{
                     Item: LayerPlaceholder,
@@ -193,9 +249,9 @@ const Layers = (): React.ReactElement => {
                   fixedItemHeight={LAYER_HEIGHT}
                   itemContent={(index, item): React.ReactElement => (
                     <Draggable
-                      draggableId={item.id}
+                      draggableId={item.get("id")}
                       index={index}
-                      key={item.id}
+                      key={item.get("id")}
                     >
                       {(provided): React.ReactElement => (
                         <VirtualizedLayer

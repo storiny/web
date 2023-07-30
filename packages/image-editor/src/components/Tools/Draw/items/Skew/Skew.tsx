@@ -4,7 +4,8 @@ import Input from "~/components/Input";
 import AxisXIcon from "~/icons/AxisX";
 import AxisYIcon from "~/icons/AxisY";
 
-import { useActiveObject } from "../../../../../store";
+import { useActiveObject } from "../../../../../hooks";
+import { modifyObject } from "../../../../../utils";
 import DrawItem, { DrawItemRow } from "../../Item";
 
 const Skew = (): React.ReactElement | null => {
@@ -16,11 +17,9 @@ const Skew = (): React.ReactElement | null => {
   const changeSkew = React.useCallback(
     (skew: number, axis: "x" | "y") => {
       if (activeObject) {
-        activeObject.set({
-          [`skew${axis.toUpperCase()}`]: skew,
-          dirty: true
+        modifyObject(activeObject, {
+          [`skew${axis.toUpperCase()}`]: skew
         });
-        activeObject.canvas?.requestRenderAll();
       }
     },
     [activeObject]

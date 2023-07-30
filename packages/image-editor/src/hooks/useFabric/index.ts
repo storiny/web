@@ -1,4 +1,4 @@
-import { Canvas, Pattern } from "fabric";
+import { Canvas } from "fabric";
 import React from "react";
 
 import { FabricContext } from "../../components/Context";
@@ -8,6 +8,7 @@ import {
   registerActions,
   registerClone,
   registerGuides,
+  registerHistory,
   registerKeyboard,
   registerTooltip
 } from "./plugins";
@@ -30,8 +31,8 @@ export const useFabric = (): ((
       selectionBorderColor: "rgba(106,172,255,0.8)",
       selectionLineWidth: 1.75,
       defaultCursor: CURSORS.default,
+      hoverCursor: CURSORS.default,
       moveCursor: CURSORS.move,
-      hoverCursor: CURSORS.move,
       uniformScaling: false
     });
 
@@ -47,7 +48,8 @@ export const useFabric = (): ((
       registerTooltip,
       registerKeyboard,
       registerClone,
-      registerActions
+      registerActions,
+      registerHistory
     ].forEach((bindable) => bindable(canvas.current));
 
     // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -1,30 +1,30 @@
 import { Canvas } from "fabric";
 import { nanoid } from "nanoid";
 
-import { addLayer, editorStore } from "../../../../store";
-import { getNewLayerName } from "../../../../utils";
+import { getNewLayerName, isInteractiveObject } from "../../../../utils";
 
 export const objectAddedEvent = (canvas: Canvas): void => {
   canvas.on("object:added", (options) => {
     const object = options.target;
 
     // Skip tooltips
-    if (object.get("tooltip")) {
+    if (object.get("tooltip") || !isInteractiveObject(object as any)) {
       return;
     }
 
-    const id = nanoid();
-    object.set("id", id);
-    canvas.setActiveObject(object as any);
+    const locked = object.get("locked");
 
-    editorStore.dispatch(
-      addLayer({
-        hidden: !object.visible,
-        id,
-        locked: false,
-        name: getNewLayerName(object.get("_type")),
-        type: object.get("_type")
-      })
-    );
+    object.set({
+      id: object.get("id") || nanoid(),
+      locked: typeof locked === "undefined" ? false : locked,
+      selected: true,
+      name: object.get("name") || getNewLayerName(object.get("_type"), canvas),
+      height: object.height * object.scaleY,
+      width: object.width * object.scaleX,
+      scaleY: 1,
+      scaleX: 1
+    });
+
+    canvas.setActiveObject(object as any);
   });
 };

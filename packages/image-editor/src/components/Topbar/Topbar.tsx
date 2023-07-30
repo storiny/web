@@ -13,14 +13,14 @@ import UndoIcon from "~/icons/Undo";
 import XIcon from "~/icons/X";
 
 import { useCanvas } from "../../hooks";
-import { Rect } from "../../lib";
-import { useActiveObject, useEventRender } from "../../store";
+import { useActiveObject, useEventRender } from "../../hooks";
+import { Ellipse } from "../../lib";
 import styles from "./Topbar.module.scss";
 
 const MyToolKit = (): React.ReactElement => {
   const canvas = useCanvas();
   const drawRect = (): void => {
-    canvas.current?.add(new Rect({}));
+    canvas.current?.add(new Ellipse({}));
   };
 
   return <button onClick={drawRect}>Draw</button>;
@@ -90,6 +90,55 @@ const StatusBar = (): React.ReactElement => (
   </Typography>
 );
 
+// History
+
+const History = (): React.ReactElement => {
+  const canvas = useCanvas();
+
+  /**
+   * Undo
+   */
+  const undo = (): void => {
+    if (canvas.current) {
+      canvas.current.historyManager.undo();
+    }
+  };
+
+  /**
+   * Redo
+   */
+  const redo = (): void => {
+    if (canvas.current) {
+      canvas.current.historyManager.redo();
+    }
+  };
+
+  return (
+    <>
+      <Tooltip content={"Undo"}>
+        <IconButton
+          aria-label={"Undo changes"}
+          className={clsx("focus-invert", styles.x, styles["icon-button"])}
+          onClick={undo}
+          variant={"ghost"}
+        >
+          <UndoIcon />
+        </IconButton>
+      </Tooltip>
+      <Tooltip content={"Redo"}>
+        <IconButton
+          aria-label={"Redo changes"}
+          className={clsx("focus-invert", styles.x, styles["icon-button"])}
+          onClick={redo}
+          variant={"ghost"}
+        >
+          <RedoIcon />
+        </IconButton>
+      </Tooltip>
+    </>
+  );
+};
+
 const Topbar = (): React.ReactElement => (
   <div className={clsx("flex-center", styles.x, styles.topbar)}>
     <Tooltip content={"Download"}>
@@ -101,24 +150,7 @@ const Topbar = (): React.ReactElement => (
         <DownloadIcon />
       </IconButton>
     </Tooltip>
-    <Tooltip content={"Undo"}>
-      <IconButton
-        aria-label={"Undo changes"}
-        className={clsx("focus-invert", styles.x, styles["icon-button"])}
-        variant={"ghost"}
-      >
-        <UndoIcon />
-      </IconButton>
-    </Tooltip>
-    <Tooltip content={"Redo"}>
-      <IconButton
-        aria-label={"Redo changes"}
-        className={clsx("focus-invert", styles.x, styles["icon-button"])}
-        variant={"ghost"}
-      >
-        <RedoIcon />
-      </IconButton>
-    </Tooltip>
+    <History />
     <Spacer size={2} />
     <StatusBar />
     <Spacer size={2} />

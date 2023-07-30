@@ -1,7 +1,7 @@
 import { CanvasEvents } from "fabric";
 import React from "react";
 
-import { useCanvas } from "../../../hooks";
+import { useCanvas } from "../index";
 
 /**
  * Hooks for force re-rendering on canvas event

@@ -9,8 +9,12 @@ import UnconstrainedIcon from "~/icons/Unconstrained";
 import { clamp } from "~/utils/clamp";
 
 import { MAX_LAYER_SIZE, MIN_LAYER_SIZE } from "../../../../../constants";
-import { useCanvas } from "../../../../../hooks";
-import { useActiveObject, useEventRender } from "../../../../../store";
+import {
+  useActiveObject,
+  useCanvas,
+  useEventRender
+} from "../../../../../hooks";
+import { modifyObject } from "../../../../../utils";
 import DrawItem, { DrawItemRow } from "../../Item";
 
 const Dimensions = (): React.ReactElement | null => {
@@ -41,20 +45,17 @@ const Dimensions = (): React.ReactElement | null => {
       if (activeObject) {
         const delta = newHeight - activeObject.height;
 
-        activeObject.set({
+        modifyObject(activeObject, {
           height: clamp(1, newHeight, Infinity),
           scaleX: 1,
-          scaleY: 1,
-          dirty: true
+          scaleY: 1
         });
 
         if (constrained) {
-          activeObject.set({
+          modifyObject(activeObject, {
             width: clamp(1, activeObject.width + delta, Infinity)
           });
         }
-
-        activeObject.canvas?.requestRenderAll();
       }
     },
     [activeObject, constrained]
@@ -70,20 +71,17 @@ const Dimensions = (): React.ReactElement | null => {
       if (activeObject) {
         const delta = newWidth - activeObject.width;
 
-        activeObject.set({
+        modifyObject(activeObject, {
           width: clamp(1, newWidth, Infinity),
           scaleX: 1,
-          scaleY: 1,
-          dirty: true
+          scaleY: 1
         });
 
         if (constrained) {
-          activeObject.set({
+          modifyObject(activeObject, {
             height: clamp(1, activeObject.height + delta, Infinity)
           });
         }
-
-        activeObject.canvas?.requestRenderAll();
       }
     },
     [activeObject, constrained]

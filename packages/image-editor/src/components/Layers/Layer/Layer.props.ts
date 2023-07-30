@@ -1,6 +1,5 @@
+import { BaseFabricObject } from "fabric";
 import React from "react";
-
-import { BareLayer } from "../../../types";
 
 export interface LayerProps extends React.ComponentPropsWithRef<"li"> {
   /**
@@ -10,5 +9,5 @@ export interface LayerProps extends React.ComponentPropsWithRef<"li"> {
   /**
    * Layer object
    */
-  layer: BareLayer;
+  layer: BaseFabricObject;
 }

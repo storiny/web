@@ -9,13 +9,8 @@ import RoughnessIcon from "~/icons/Roughness";
 import { clamp } from "~/utils/clamp";
 
 import { MAX_OPACITY, MIN_OPACITY } from "../../../../../constants";
-import {
-  selectActiveLayer,
-  toggleLayerVisibility,
-  useActiveObject,
-  useEditorDispatch,
-  useEditorSelector
-} from "../../../../../store";
+import { useActiveObject, useEventRender } from "../../../../../hooks";
+import { modifyObject } from "../../../../../utils";
 import DrawItem, { DrawItemRow } from "../../Item";
 
 // Opacity
@@ -24,9 +19,11 @@ const OpacityControl = ({
   activeObject
 }: {
   activeObject: BaseFabricObject;
-}): React.ReactElement | null => {
-  const activeLayer = useEditorSelector(selectActiveLayer);
-  const dispatch = useEditorDispatch();
+}): React.ReactElement => {
+  useEventRender(
+    "object:modified",
+    (options) => options.target.get("id") === activeObject.get("id")
+  );
 
   /**
    * Mutates the opacity of the object
@@ -34,19 +31,22 @@ const OpacityControl = ({
   const changeOpacity = React.useCallback(
     (opacity: number) => {
       if (activeObject) {
-        activeObject.set({
-          opacity: opacity / 100,
-          dirty: true
+        modifyObject(activeObject, {
+          opacity: opacity / 100
         });
-        activeObject.canvas?.requestRenderAll();
       }
     },
     [activeObject]
   );
 
-  if (!activeLayer) {
-    return null;
-  }
+  /**
+   * Toggles the layer's visibility
+   */
+  const toggleLayerVisibility = (): void => {
+    modifyObject(activeObject, {
+      visible: !activeObject.visible
+    });
+  };
 
   return (
     <Input
@@ -54,13 +54,11 @@ const OpacityControl = ({
       defaultValue={Math.round(activeObject.opacity * 100)}
       endDecorator={
         <IconButton
-          aria-label={`${activeLayer.hidden ? "Show" : "Hide"} layer`}
-          onClick={(): void => {
-            dispatch(toggleLayerVisibility(activeLayer.id));
-          }}
-          title={`${activeLayer.hidden ? "Show" : "Hide"} layer`}
+          aria-label={`${!activeObject.visible ? "Show" : "Hide"} layer`}
+          onClick={toggleLayerVisibility}
+          title={`${!activeObject.visible ? "Show" : "Hide"} layer`}
         >
-          {activeLayer.hidden ? <EyeClosedIcon /> : <EyeIcon />}
+          {!activeObject.visible ? <EyeClosedIcon /> : <EyeIcon />}
         </IconButton>
       }
       max={MAX_OPACITY}
@@ -91,11 +89,9 @@ const RoughnessControl = ({
   const changeRoughness = React.useCallback(
     (roughness: number) => {
       if (activeObject) {
-        activeObject.set({
-          roughness,
-          dirty: true
+        modifyObject(activeObject, {
+          roughness
         });
-        activeObject.canvas?.requestRenderAll();
       }
     },
     [activeObject]

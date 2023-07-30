@@ -6,11 +6,6 @@ import {
   VerticalAlign
 } from "../../constants";
 
-export type BareLayer = Pick<
-  Layer,
-  "hidden" | "id" | "locked" | "name" | "type" | "selected"
->;
-
 export type Layer =
   | PenLayer
   | PolygonLayer
@@ -40,6 +35,10 @@ type SolidLayerProps = {
 };
 
 type LayerPrimitive<T extends LayerType> = {
+  /**
+   * Layer type
+   */
+  _type: T;
   /**
    * Hidden flag
    * @default false
@@ -81,10 +80,6 @@ type LayerPrimitive<T extends LayerType> = {
    * @default 'solid'
    */
   strokeStyle?: StrokeStyle;
-  /**
-   * Layer type
-   */
-  type: T;
 };
 
 export type PenLayer = LayerPrimitive<LayerType.PEN>;

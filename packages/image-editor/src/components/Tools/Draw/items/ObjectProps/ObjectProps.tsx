@@ -7,7 +7,8 @@ import CornerRadiusIcon from "~/icons/CornerRadius";
 import { clamp } from "~/utils/clamp";
 
 import { MAX_ANGLE, MIN_ANGLE } from "../../../../../constants";
-import { useActiveObject, useEventRender } from "../../../../../store";
+import { useActiveObject, useEventRender } from "../../../../../hooks";
+import { modifyObject } from "../../../../../utils";
 import DrawItem, { DrawItemRow } from "../../Item";
 
 // Angle
@@ -33,6 +34,9 @@ const AngleControl = ({
         if (activeObject.canvas) {
           activeObject.canvas?.requestRenderAll();
           activeObject.canvas?.fire?.("object:rotating", {
+            target: activeObject
+          } as any);
+          activeObject.canvas?.fire?.("object:modified", {
             target: activeObject
           } as any);
         }
@@ -74,12 +78,10 @@ const CornerRadiusControl = ({
   const changeCornerRadius = React.useCallback(
     (cornerRadius: number) => {
       if (activeObject) {
-        activeObject.set({
+        modifyObject(activeObject, {
           rx: cornerRadius,
-          ry: cornerRadius,
-          dirty: true
+          ry: cornerRadius
         });
-        activeObject.canvas?.requestRenderAll();
       }
     },
     [activeObject]

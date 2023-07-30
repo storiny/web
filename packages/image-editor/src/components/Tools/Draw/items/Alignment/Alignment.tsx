@@ -12,9 +12,8 @@ import AlignMiddleIcon from "~/icons/AlignMiddle";
 import AlignRightIcon from "~/icons/AlignRight";
 import AlignTopIcon from "~/icons/AlignTop";
 
-import { useCanvas } from "../../../../../hooks";
-import { useEventRender } from "../../../../../store";
-import { isGroup } from "../../../../../utils";
+import { useCanvas, useEventRender } from "../../../../../hooks";
+import { isGroup, modifyObject } from "../../../../../utils";
 import DrawItem, { DrawItemRow } from "../../Item";
 import styles from "./Alignment.module.scss";
 
@@ -58,55 +57,49 @@ const Alignment = (): React.ReactElement | null => {
 
         switch (newAlignemnt) {
           case "top":
-            object.set({
-              top: group.top - boundingRect.top + object.top,
-              dirty: true
+            modifyObject(object, {
+              top: group.top - boundingRect.top + object.top
             });
             break;
           case "left":
-            object.set({
-              left: group.left - boundingRect.left + object.left,
-              dirty: true
+            modifyObject(object, {
+              left: group.left - boundingRect.left + object.left
             });
             break;
           case "bottom":
-            object.set({
+            modifyObject(object, {
               top:
                 group.top +
                 group.height -
                 (boundingRect.top + boundingRect.height) +
-                object.top,
-              dirty: true
+                object.top
             });
             break;
           case "right":
-            object.set({
+            modifyObject(object, {
               left:
                 group.left +
                 group.width -
                 (boundingRect.left + boundingRect.width) +
-                object.left,
-              dirty: true
+                object.left
             });
             break;
           case "center":
-            object.set({
+            modifyObject(object, {
               left:
                 group.left +
                 group.width / 2 -
                 (boundingRect.left + boundingRect.width / 2) +
-                object.left,
-              dirty: true
+                object.left
             });
             break;
           case "middle":
-            object.set({
+            modifyObject(object, {
               top:
                 group.top +
                 group.height / 2 -
                 (boundingRect.top + boundingRect.height / 2) +
-                object.top,
-              dirty: true
+                object.top
             });
             break;
         }

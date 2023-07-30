@@ -22,14 +22,8 @@ import { capitalize } from "~/utils/capitalize";
 
 import { isLayersDraggingAtom } from "../../../atoms";
 import { LayerType } from "../../../constants";
-import { useCanvas } from "../../../hooks";
-import {
-  setLayerName,
-  toggleLayerLock,
-  toggleLayerVisibility,
-  useEditorDispatch
-} from "../../../store";
-import { getObjectById } from "../../../utils";
+import { useCanvas, useEventRender } from "../../../hooks";
+import { modifyObject } from "../../../utils";
 import { LayersContext } from "../LayersContext";
 import styles from "./Layer.module.scss";
 import { LayerProps } from "./Layer.props";
@@ -66,24 +60,27 @@ const LockFilledIcon = (): React.ReactElement => (
 
 const Layer = React.forwardRef<HTMLLIElement, LayerProps>((props, ref) => {
   const { layer, draggerProps, className, ...rest } = props;
-  const dispatch = useEditorDispatch();
   const canvas = useCanvas();
   const { layerCount } = React.useContext(LayersContext);
   const [isEditing, setIsEditing] = React.useState<boolean>(false);
-  const [name, setName] = React.useState<string>(layer.name!);
+  const [name, setName] = React.useState<string>(layer.get("name"));
   const isDragging = useAtomValue(isLayersDraggingAtom);
-  const targetObject = React.useMemo(
-    () => getObjectById(canvas.current, layer.id),
-    [canvas, layer.id]
+  useEventRender(
+    "object:modified",
+    (options) => options.target.get("id") === layer.get("id")
   );
+
+  if (!layer) {
+    return null;
+  }
 
   /**
    * Selects the current layer
    */
   const selectLayerImpl = (): void => {
-    if (targetObject) {
-      canvas.current.setActiveObject(targetObject as any);
-    }
+    modifyObject(layer, {
+      selected: true
+    });
   };
 
   /**
@@ -94,19 +91,37 @@ const Layer = React.forwardRef<HTMLLIElement, LayerProps>((props, ref) => {
     setIsEditing(false);
 
     if (shouldSave) {
-      dispatch(setLayerName({ name, id: layer.id }));
+      modifyObject(layer, {
+        name
+      });
     } else {
-      setName(layer.name!);
+      setName(layer.get("name"));
     }
+  };
+
+  /**
+   * Toggles the layer's lock
+   */
+  const toggleLayerLock = (): void => {
+    modifyObject(layer, {
+      locked: !layer.get("locked")
+    });
+  };
+
+  /**
+   * Toggles the layer's visibility
+   */
+  const toggleLayerVisibility = (): void => {
+    modifyObject(layer, {
+      visible: !layer.visible
+    });
   };
 
   /**
    * Removes the current layer
    */
   const removeLayer = (): void => {
-    if (targetObject) {
-      canvas.current.remove(targetObject as any);
-    }
+    canvas.current.remove(layer as any);
   };
 
   return (
@@ -119,8 +134,8 @@ const Layer = React.forwardRef<HTMLLIElement, LayerProps>((props, ref) => {
         styles.x,
         styles.layer,
         isDragging && styles.dragging,
-        layer.selected && styles.selected,
-        layer.hidden && styles.hidden,
+        layer.get("selected") && styles.selected,
+        !layer.visible && styles.hidden,
         className
       )}
       onClick={selectLayerImpl}
@@ -137,7 +152,7 @@ const Layer = React.forwardRef<HTMLLIElement, LayerProps>((props, ref) => {
       role={"button"}
       tabIndex={0}
     >
-      {!isEditing && !layer.locked && layerCount > 1 ? (
+      {!isEditing && !layer.get("locked") && layerCount > 1 ? (
         <IconButton
           {...draggerProps}
           aria-label={"Reorder layer"}
@@ -151,10 +166,10 @@ const Layer = React.forwardRef<HTMLLIElement, LayerProps>((props, ref) => {
       ) : null}
       <span
         className={clsx("flex-center", styles.x, styles.icon)}
-        title={capitalize(layer.type.replace(/-/g, " "))}
+        title={capitalize(layer.get("_type").replace(/-/g, " "))}
       >
-        {layerTypeToIconMap[layer.type]}
-        {layer.selected && (
+        {layerTypeToIconMap[layer.get("_type") as LayerType]}
+        {layer.get("selected") && (
           <svg
             aria-hidden
             className={clsx(styles.x, styles["selected-border"])}
@@ -207,11 +222,11 @@ const Layer = React.forwardRef<HTMLLIElement, LayerProps>((props, ref) => {
             "ellipsis",
             styles.x,
             styles.label,
-            layer.selected && styles.selected
+            layer.get("selected") && styles.selected
           )}
           title={name}
         >
-          {layer.name}
+          {layer.get("name")}
         </span>
       )}
       <Grow />
@@ -231,40 +246,40 @@ const Layer = React.forwardRef<HTMLLIElement, LayerProps>((props, ref) => {
             <PencilIcon />
           </IconButton>
           <IconButton
-            aria-label={`${layer.locked ? "Unlock" : "Lock"} layer`}
+            aria-label={`${layer.get("locked") ? "Unlock" : "Lock"} layer`}
             className={clsx(
               "focus-invert",
               styles.x,
               styles["button"],
-              layer.locked && styles.pinned
+              layer.get("locked") && styles.pinned
             )}
             onClick={(event): void => {
               event.stopPropagation();
-              dispatch(toggleLayerLock(layer.id));
+              toggleLayerLock();
             }}
             size={"sm"}
-            title={`${layer.locked ? "Unlock" : "Lock"} layer`}
+            title={`${layer.get("locked") ? "Unlock" : "Lock"} layer`}
             variant={"ghost"}
           >
-            {layer.locked ? <LockFilledIcon /> : <LockOpenIcon />}
+            {layer.get("locked") ? <LockFilledIcon /> : <LockOpenIcon />}
           </IconButton>
           <IconButton
-            aria-label={`${layer.hidden ? "Show" : "Hide"} layer`}
+            aria-label={`${!layer.visible ? "Show" : "Hide"} layer`}
             className={clsx(
               "focus-invert",
               styles.x,
               styles["button"],
-              layer.hidden && styles.pinned
+              !layer.visible && styles.pinned
             )}
             onClick={(event): void => {
               event.stopPropagation();
-              dispatch(toggleLayerVisibility(layer.id));
+              toggleLayerVisibility();
             }}
             size={"sm"}
-            title={`${layer.hidden ? "Show" : "Hide"} layer`}
+            title={`${!layer.visible ? "Show" : "Hide"} layer`}
             variant={"ghost"}
           >
-            {layer.hidden ? <EyeClosedIcon /> : <EyeIcon />}
+            {!layer.visible ? <EyeClosedIcon /> : <EyeIcon />}
           </IconButton>
           <IconButton
             aria-label={"Remove layer"}

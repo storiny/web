@@ -2,10 +2,9 @@
 
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 
-import { layersSlice, rootSlice } from "./features";
+import { rootSlice } from "./features";
 
 export const rootReducer = combineReducers({
-  layers: layersSlice.reducer,
   root: rootSlice.reducer
 });
 

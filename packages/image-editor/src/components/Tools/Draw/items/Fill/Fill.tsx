@@ -17,7 +17,8 @@ import ZigzagFillIcon from "~/icons/ZigzagFill";
 import ZigzagLineFillIcon from "~/icons/ZigzagLineFill";
 
 import { DEFAULT_LAYER_FILL, FillStyle } from "../../../../../constants";
-import { useActiveObject } from "../../../../../store";
+import { useActiveObject } from "../../../../../hooks";
+import { modifyObject } from "../../../../../utils";
 import DrawItem, { DrawItemRow } from "../../Item";
 import commonStyles from "../common.module.scss";
 
@@ -41,11 +42,9 @@ const FillControl = ({
       setFill(newFill);
 
       if (activeObject) {
-        activeObject.set({
-          fill: newFill.str,
-          dirty: true
+        modifyObject(activeObject, {
+          fill: newFill.str
         });
-        activeObject.canvas?.requestRenderAll();
       }
     },
     [activeObject]
@@ -54,6 +53,10 @@ const FillControl = ({
   React.useEffect(() => {
     setValue(`#${fill.hex}`);
   }, [fill]);
+
+  React.useEffect(() => {
+    setFill(strToColor((activeObject?.fill as string) || DEFAULT_LAYER_FILL)!);
+  }, [activeObject?.fill]);
 
   return (
     <Input
@@ -111,11 +114,9 @@ const FillStyleControl = ({
       setFillStyle(fillStyle);
 
       if (activeObject) {
-        activeObject.set({
-          fillStyle,
-          dirty: true
+        modifyObject(activeObject, {
+          fillStyle
         });
-        activeObject.canvas?.requestRenderAll();
       }
     },
     [activeObject]
@@ -127,11 +128,7 @@ const FillStyleControl = ({
   const changeFillWeight = React.useCallback(
     (fillWeight: number) => {
       if (activeObject) {
-        activeObject.set({
-          fillWeight,
-          dirty: true
-        });
-        activeObject.canvas?.requestRenderAll();
+        modifyObject(activeObject, { fillWeight });
       }
     },
     [activeObject]
@@ -143,15 +140,15 @@ const FillStyleControl = ({
   const changeHachureGap = React.useCallback(
     (hachureGap: number) => {
       if (activeObject) {
-        activeObject.set({
-          hachureGap,
-          dirty: true
-        });
-        activeObject.canvas?.requestRenderAll();
+        modifyObject(activeObject, { hachureGap });
       }
     },
     [activeObject]
   );
+
+  React.useEffect(() => {
+    setFillStyle(activeObject?.get("fillStyle") || FillStyle.SOLID);
+  }, [activeObject]);
 
   return (
     <>

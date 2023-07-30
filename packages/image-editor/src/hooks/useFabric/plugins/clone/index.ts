@@ -53,6 +53,13 @@ class ClonePlugin {
       cloned.left += this.cloneCount * CLONED_OBJECT_OFFSET;
       cloned.top += this.cloneCount * CLONED_OBJECT_OFFSET;
 
+      cloned.set({
+        width: activeObject.width,
+        height: activeObject.height,
+        scaleX: 1,
+        scaleY: 1
+      });
+
       this.canvas.add(cloned);
       this.canvas.setActiveObject(cloned as any);
       this.canvas.requestRenderAll();
@@ -64,7 +71,7 @@ class ClonePlugin {
    * @param object Object to clone
    * @private
    */
-  private clone(object: NonNullable<typeof this.cache>): void {
+  private clone(object?: NonNullable<typeof this.cache>): void {
     const activeObject = object || this.canvas.getActiveObject();
 
     if (activeObject) {
@@ -95,21 +102,42 @@ class ClonePlugin {
    * @private
    */
   private bindEvents(): void {
-    hotkeys("ctrl+c,ctrl+v,ctrl+x", (keyboardEvent, hotkeysEvent) => {
-      if (hotkeysEvent.key === "ctrl+c" || hotkeysEvent.key === "ctrl+x") {
-        this.cache = this.canvas.getActiveObject() || null;
-        this.cloneCount = 0;
+    hotkeys(
+      "ctrl+c,cmd+c,ctrl+v,cmd+v,ctrl+x,cmd+x,ctrl+d,cmd+d",
+      (keyboardEvent, hotkeysEvent) => {
+        switch (hotkeysEvent.key) {
+          // Cut and copy
+          case "ctrl+c":
+          case "ctrl+x":
+          case "cmd+c":
+          case "cmd+x":
+            this.cache = this.canvas.getActiveObject() || null;
+            this.cloneCount = 0;
 
-        // Cut
-        if (hotkeysEvent.key === "ctrl+x") {
-          this.removeActiveObject();
-        }
-      } else if (hotkeysEvent.key === "ctrl+v") {
-        if (this.cache) {
-          this.clone(this.cache);
+            // Cut
+            if (hotkeysEvent.key === "ctrl+x") {
+              this.removeActiveObject();
+            }
+
+            break;
+          // Paste
+          case "ctrl+v":
+          case "cmd+v":
+            if (this.cache) {
+              this.clone(this.cache);
+            }
+            break;
+          // Duplicate
+          case "ctrl+d":
+          case "cmd+d":
+            keyboardEvent.preventDefault();
+            this.clone();
+            break;
+          default:
+            break;
         }
       }
-    });
+    );
   }
 
   /**

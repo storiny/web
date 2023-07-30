@@ -32,6 +32,13 @@ const cloneObject = (
         cloned.left += cloned.width + 24;
       }
 
+      cloned.set({
+        width: target.width,
+        height: target.height,
+        scaleX: 1,
+        scaleY: 1
+      });
+
       canvas.add(cloned);
     });
   }

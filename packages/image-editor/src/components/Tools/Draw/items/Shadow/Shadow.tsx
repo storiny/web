@@ -7,7 +7,8 @@ import BlurIcon from "~/icons/Blur";
 import LetterXIcon from "~/icons/LetterX";
 import LetterYIcon from "~/icons/LetterY";
 
-import { useActiveObject } from "../../../../../store";
+import { useActiveObject } from "../../../../../hooks";
+import { modifyObject } from "../../../../../utils";
 import DrawItem, { DrawItemRow } from "../../Item";
 import commonStyles from "../common.module.scss";
 
@@ -33,16 +34,14 @@ const ShadowColorControl = ({
       setColor(newColor);
 
       if (activeObject) {
-        if (activeObject.shadow) {
-          activeObject.shadow.color = newColor.str;
-        } else {
-          activeObject.set({
-            shadow: new ObjectShadow({ color: newColor.str })
-          });
-        }
-
-        activeObject.dirty = true;
-        activeObject.canvas?.requestRenderAll();
+        modifyObject(activeObject, {
+          shadow: activeObject.shadow
+            ? {
+                ...activeObject.shadow,
+                color: newColor.str
+              }
+            : new ObjectShadow({ color: newColor.str })
+        });
       }
     },
     [activeObject]
@@ -51,6 +50,14 @@ const ShadowColorControl = ({
   React.useEffect(() => {
     setValue(`#${color.hex}`);
   }, [color]);
+
+  React.useEffect(() => {
+    setColor(
+      strToColor(
+        (activeObject.shadow?.color as string) || DEFAULT_SHADOW_COLOR
+      )!
+    );
+  }, [activeObject.shadow?.color]);
 
   return (
     <Input
@@ -107,16 +114,14 @@ const ShadowBlurControl = ({
   const changeBlur = React.useCallback(
     (blur: number) => {
       if (activeObject) {
-        if (activeObject.shadow) {
-          activeObject.shadow.blur = blur;
-        } else {
-          activeObject.set({
-            shadow: new ObjectShadow({ blur, color: DEFAULT_SHADOW_COLOR })
-          });
-        }
-
-        activeObject.dirty = true;
-        activeObject.canvas?.requestRenderAll();
+        modifyObject(activeObject, {
+          shadow: activeObject.shadow
+            ? {
+                ...activeObject.shadow,
+                blur
+              }
+            : new ObjectShadow({ blur, color: DEFAULT_SHADOW_COLOR })
+        });
       }
     },
     [activeObject]
@@ -163,19 +168,17 @@ const ShadowOffsetsControl = ({
           : "Y"}`;
 
       if (activeObject) {
-        if (activeObject.shadow) {
-          activeObject.shadow[offsetProp] = offset;
-        } else {
-          activeObject.set({
-            shadow: new ObjectShadow({
-              [offsetProp]: offset,
-              color: DEFAULT_SHADOW_COLOR
-            })
-          });
-        }
-
-        activeObject.dirty = true;
-        activeObject.canvas?.requestRenderAll();
+        modifyObject(activeObject, {
+          shadow: activeObject.shadow
+            ? {
+                ...activeObject.shadow,
+                [offsetProp]: offset
+              }
+            : new ObjectShadow({
+                [offsetProp]: offset,
+                color: DEFAULT_SHADOW_COLOR
+              })
+        });
       }
     },
     [activeObject]
