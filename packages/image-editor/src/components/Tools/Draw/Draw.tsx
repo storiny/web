@@ -20,7 +20,7 @@ const DrawTools = (): React.ReactElement | null => {
   const activeObject = useActiveObject();
 
   return (
-    <React.Fragment key={activeObject?.get("id")}>
+    <React.Fragment>
       <Alignment />
       {activeObject && (
         <React.Fragment>

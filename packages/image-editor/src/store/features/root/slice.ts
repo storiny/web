@@ -28,11 +28,14 @@ export const rootSlice = createSlice({
       state.zoom = Math.round(
         clamp(MIN_ZOOM_LEVEL, action.payload, MAX_ZOOM_LEVEL)
       );
+    },
+    setPattern: (state, action: PayloadAction<CanvasPattern>) => {
+      state.pattern = action.payload;
     }
   }
 });
 
-const { setZoom } = rootSlice.actions;
+const { setZoom, setPattern } = rootSlice.actions;
 
-export { setZoom };
+export { setPattern, setZoom };
 export default rootSlice.reducer;

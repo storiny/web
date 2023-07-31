@@ -3,6 +3,7 @@ import {
   Control,
   controlsUtils,
   Object as FabricObject,
+  Point,
   Transform
 } from "fabric";
 
@@ -82,11 +83,16 @@ class ObjectControls {
         this.registerRotateControls();
       }
 
+      if (this.object.get("isDrawing")) {
+        return;
+      }
+
       ctx.save();
 
       const retinaScaling = this.object.getCanvasRetinaScaling();
       ctx.setTransform(retinaScaling, 0, 0, retinaScaling, 0, 0);
-      ctx.strokeStyle = ctx.fillStyle = this.object.cornerColor;
+      ctx.strokeStyle = this.object.cornerColor;
+      ctx.fillStyle = this.object.cornerColor;
 
       if (!this.object.transparentCorners) {
         ctx.strokeStyle = this.object.cornerStrokeColor;
@@ -122,15 +128,27 @@ class ObjectControls {
           const p = this.object.oCoords[key];
 
           if (control.actionName === "clone") {
-            ctx.save();
+            const boundingRect = this.object.getBoundingRect();
+            const margin = 24; // px
+            const x =
+              key === "cl"
+                ? boundingRect.left - margin // Clone left
+                : boundingRect.left + boundingRect.width + margin; // Clone right
+            const y = boundingRect.top + boundingRect.height / 2;
+
+            control.sizeX = CLONE_CONTROL_SIZE;
+            control.sizeY = CLONE_CONTROL_SIZE;
+            control.positionHandler = (): Point =>
+              new Point(x, y - CLONE_CONTROL_SIZE / 2);
+            this.object.setCoords();
+
             ctx.fillStyle = this.object.cornerColor || "";
             ctx.strokeStyle = this.object.cornerStrokeColor || "";
             ctx.lineWidth = 1;
             ctx.beginPath();
-            ctx.arc(p.x, p.y, CLONE_CONTROL_SIZE / 2, 0, Math.PI * 2, false);
+            ctx.arc(x, y, CLONE_CONTROL_SIZE / 2, 0, Math.PI * 2, false);
             ctx.fill();
             ctx.stroke();
-            ctx.restore();
           } else {
             control.render(
               ctx,
@@ -157,18 +175,12 @@ class ObjectControls {
    */
   private registerCloneControls(): void {
     this.object.controls.cl = new Control({
-      x: -0.5,
-      y: 0,
-      offsetX: -24,
       cursorStyle: "pointer",
       mouseUpHandler: (_, transform): void => cloneObject("left", transform),
       actionName: "clone"
     });
 
     this.object.controls.cr = new Control({
-      x: 0.5,
-      y: 0,
-      offsetX: 24,
       cursorStyle: "pointer",
       mouseUpHandler: (_, transform): void => cloneObject("right", transform),
       actionName: "clone"

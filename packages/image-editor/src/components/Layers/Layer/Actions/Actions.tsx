@@ -5,7 +5,7 @@ import ReactDOM from "react-dom";
 
 import Divider from "~/components/Divider";
 import IconButton from "~/components/IconButton";
-import Tooltip from "~/components/Tooltip";
+import Tooltip, { TooltipProvider } from "~/components/Tooltip";
 import CopyIcon from "~/icons/Copy";
 import FlipHorizontalIcon from "~/icons/FlipHorizontal";
 import FlipVerticalIcon from "~/icons/FlipVertical";
@@ -87,48 +87,50 @@ const Actions = (): React.ReactElement | null => {
 
   return ReactDOM.createPortal(
     <div className={clsx(clsx("flex-center", styles.x, styles.actions))}>
-      <Tooltip content={"Flip vertically"}>
-        <IconButton
-          className={clsx(styles.x, styles.button)}
-          onClick={(): void => flipLayer("y")}
-          size={"sm"}
-          variant={"ghost"}
-        >
-          <FlipVerticalIcon />
-        </IconButton>
-      </Tooltip>
-      <Tooltip content={"Flip horizontally"}>
-        <IconButton
-          className={clsx(styles.x, styles.button)}
-          onClick={(): void => flipLayer("x")}
-          size={"sm"}
-          variant={"ghost"}
-        >
-          <FlipHorizontalIcon />
-        </IconButton>
-      </Tooltip>
-      <Tooltip content={"Clone layer"}>
-        <IconButton
-          className={clsx(styles.x, styles.button)}
-          onClick={cloneLayer}
-          size={"sm"}
-          variant={"ghost"}
-        >
-          <CopyIcon />
-        </IconButton>
-      </Tooltip>
-      <Divider orientation={"vertical"} />
-      <Tooltip content={"Remove layer"}>
-        <IconButton
-          className={clsx(styles.x, styles.button)}
-          color={"ruby"}
-          onClick={removeLayer}
-          size={"sm"}
-          variant={"ghost"}
-        >
-          <TrashIcon />
-        </IconButton>
-      </Tooltip>
+      <TooltipProvider disableHoverableContent>
+        <Tooltip content={"Flip vertically"}>
+          <IconButton
+            className={clsx(styles.x, styles.button)}
+            onClick={(): void => flipLayer("y")}
+            size={"sm"}
+            variant={"ghost"}
+          >
+            <FlipVerticalIcon />
+          </IconButton>
+        </Tooltip>
+        <Tooltip content={"Flip horizontally"}>
+          <IconButton
+            className={clsx(styles.x, styles.button)}
+            onClick={(): void => flipLayer("x")}
+            size={"sm"}
+            variant={"ghost"}
+          >
+            <FlipHorizontalIcon />
+          </IconButton>
+        </Tooltip>
+        <Tooltip content={"Clone layer"}>
+          <IconButton
+            className={clsx(styles.x, styles.button)}
+            onClick={cloneLayer}
+            size={"sm"}
+            variant={"ghost"}
+          >
+            <CopyIcon />
+          </IconButton>
+        </Tooltip>
+        <Divider orientation={"vertical"} />
+        <Tooltip content={"Remove layer"}>
+          <IconButton
+            className={clsx(styles.x, styles.button)}
+            color={"ruby"}
+            onClick={removeLayer}
+            size={"sm"}
+            variant={"ghost"}
+          >
+            <TrashIcon />
+          </IconButton>
+        </Tooltip>
+      </TooltipProvider>
     </div>,
     element
   );

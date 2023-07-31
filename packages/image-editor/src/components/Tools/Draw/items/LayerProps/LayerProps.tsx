@@ -125,7 +125,7 @@ const LayerProps = (): React.ReactElement | null => {
   }
 
   return (
-    <DrawItem label={"Layer"}>
+    <DrawItem key={activeObject.get("id")} label={"Layer"}>
       <DrawItemRow>
         <OpacityControl activeObject={activeObject} />
       </DrawItemRow>

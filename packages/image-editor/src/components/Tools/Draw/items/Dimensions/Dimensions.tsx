@@ -34,6 +34,14 @@ const Dimensions = (): React.ReactElement | null => {
     const object = options.target;
     return object.get("id") === activeObject?.get("id");
   });
+  useEventRender("draw:scaling" as any, (options) => {
+    const object = options.target;
+    return object.get("id") === activeObject?.get("id");
+  });
+  useEventRender("draw:end" as any, (options) => {
+    const object = options.target;
+    return object.get("id") === activeObject?.get("id");
+  });
 
   /**
    * Mutates the height of the object
@@ -113,7 +121,7 @@ const Dimensions = (): React.ReactElement | null => {
   }
 
   return (
-    <DrawItem>
+    <DrawItem key={activeObject.get("id")}>
       <DrawItemRow>
         <Input
           aria-label={"Layer width"}

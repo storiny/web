@@ -124,7 +124,8 @@ class TooltipPlugin {
       if (
         this.activeObject &&
         isInteractiveObject(this.activeObject) &&
-        !this.activeObject.get("isMoving")
+        !this.activeObject.get("isMoving") &&
+        !this.activeObject.get("isDrawing")
       ) {
         const boundingRect = this.activeObject.getBoundingRect();
         const x = boundingRect.left + boundingRect.width / 2;

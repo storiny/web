@@ -18,11 +18,27 @@ export const useEventRender = <
   const canvas = useCanvas();
   const [, forceUpdate] = React.useReducer((x) => x + 1, 0);
 
-  if (canvas.current) {
-    canvas.current.on<K, E>(eventName, (options) => {
+  React.useEffect(() => {
+    const { current } = canvas;
+
+    /**
+     * Event handler
+     * @param options Handler options
+     */
+    const eventHandler = (options: E): void => {
       if (callback(options)) {
         forceUpdate();
       }
-    });
-  }
+    };
+
+    if (current) {
+      current.on<K, E>(eventName, eventHandler);
+    }
+
+    return () => {
+      if (current) {
+        current.off<K>(eventName, eventHandler);
+      }
+    };
+  }, [callback, canvas, eventName]);
 };

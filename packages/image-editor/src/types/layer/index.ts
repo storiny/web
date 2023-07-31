@@ -54,6 +54,10 @@ type LayerPrimitive<T extends LayerType> = {
    */
   interactive?: boolean;
   /**
+   * Drawing flag
+   */
+  isDrawing?: boolean;
+  /**
    * Locked flag
    * @default false
    */

@@ -1,12 +1,18 @@
+import clsx from "clsx";
 import { BaseFabricObject, Shadow as ObjectShadow } from "fabric";
 import React from "react";
 
 import Input from "~/components/Input";
-import ColorPicker, { strToColor, TColor } from "~/entities/ColorPicker";
+import ColorPicker, {
+  hexToRgb,
+  strToColor,
+  TColor
+} from "~/entities/ColorPicker";
 import BlurIcon from "~/icons/Blur";
 import LetterXIcon from "~/icons/LetterX";
 import LetterYIcon from "~/icons/LetterY";
 
+import { MAX_OPACITY, MIN_OPACITY } from "../../../../../constants";
 import { useActiveObject } from "../../../../../hooks";
 import { modifyObject } from "../../../../../utils";
 import DrawItem, { DrawItemRow } from "../../Item";
@@ -60,44 +66,78 @@ const ShadowColorControl = ({
   }, [activeObject.shadow?.color]);
 
   return (
-    <Input
-      aria-label={"Layer shadow color"}
-      decorator={
-        <ColorPicker
-          defaultValue={color}
-          onChange={(value): void => changeColor(value)}
-        >
-          <button
-            aria-label={"Pick a color"}
-            className={commonStyles.indicator}
-            style={
-              {
-                "--color": color.str
-              } as React.CSSProperties
-            }
-            title={"Pick a color"}
-          />
-        </ColorPicker>
-      }
-      monospaced
-      onChange={(event): void => {
-        setValue(event.target.value);
-        const newColor = strToColor(event.target.value);
+    <DrawItemRow>
+      <Input
+        aria-label={"Layer shadow color"}
+        decorator={
+          <ColorPicker
+            defaultValue={color}
+            onChange={(value): void => changeColor(value)}
+          >
+            <button
+              aria-label={"Pick a color"}
+              className={clsx(
+                "focusable",
+                "focus-invert",
+                commonStyles.indicator
+              )}
+              style={
+                {
+                  "--color": color.str
+                } as React.CSSProperties
+              }
+              title={"Pick a color"}
+            />
+          </ColorPicker>
+        }
+        monospaced
+        onChange={(event): void => {
+          setValue(event.target.value);
+          const newColor = strToColor(event.target.value);
 
-        if (newColor) {
-          changeColor(newColor);
-        }
-      }}
-      placeholder={"Shadow color"}
-      size={"sm"}
-      slotProps={{
-        container: {
-          style: { flex: "0.6" }
-        }
-      }}
-      title={"Shadow color"}
-      value={value}
-    />
+          if (newColor) {
+            changeColor(newColor);
+          }
+        }}
+        placeholder={"Shadow color"}
+        size={"sm"}
+        slotProps={{
+          container: {
+            style: { flex: "0.6" }
+          }
+        }}
+        title={"Shadow color"}
+        value={value}
+      />
+      <Input
+        aria-label={"Layer shadow opacity"}
+        max={MAX_OPACITY}
+        min={MIN_OPACITY}
+        monospaced
+        onChange={(event): void => {
+          const a = Number.parseInt(event.target.value) ?? 0;
+          const { r, g, b } = hexToRgb(color.hex);
+
+          changeColor({
+            ...color,
+            str: `rgba(${r},${g},${b},${a / 100})`,
+            a
+          });
+        }}
+        placeholder={"Shadow opacity"}
+        size={"sm"}
+        slotProps={{
+          container: {
+            style: {
+              flex: "0.4"
+            }
+          }
+        }}
+        title={"Shadow opacity"}
+        type={"number"}
+        value={Math.round(color.a)}
+      />
+    </DrawItemRow>
   );
 };
 
@@ -139,11 +179,6 @@ const ShadowBlurControl = ({
       }}
       placeholder={"Shadow blur"}
       size={"sm"}
-      slotProps={{
-        container: {
-          style: { flex: "0.4" }
-        }
-      }}
       title={"Shadow blur"}
       type={"number"}
     />
@@ -224,9 +259,9 @@ const Shadow = (): React.ReactElement | null => {
   }
 
   return (
-    <DrawItem label={"Shadow"}>
+    <DrawItem key={activeObject.get("id")} label={"Shadow"}>
+      <ShadowColorControl activeObject={activeObject} />
       <DrawItemRow>
-        <ShadowColorControl activeObject={activeObject} />
         <ShadowBlurControl activeObject={activeObject} />
       </DrawItemRow>
       <DrawItemRow>

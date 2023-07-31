@@ -5,7 +5,11 @@ import React from "react";
 import Input from "~/components/Input";
 import Option from "~/components/Option";
 import Select from "~/components/Select";
-import ColorPicker, { strToColor, TColor } from "~/entities/ColorPicker";
+import ColorPicker, {
+  hexToRgb,
+  strToColor,
+  TColor
+} from "~/entities/ColorPicker";
 import CrossHatchFillIcon from "~/icons/CrossHatchFill";
 import DashedFillIcon from "~/icons/DashedFill";
 import DottedFillIcon from "~/icons/DottedFill";
@@ -16,7 +20,12 @@ import SolidFillIcon from "~/icons/SolidFill";
 import ZigzagFillIcon from "~/icons/ZigzagFill";
 import ZigzagLineFillIcon from "~/icons/ZigzagLineFill";
 
-import { DEFAULT_LAYER_FILL, FillStyle } from "../../../../../constants";
+import {
+  DEFAULT_LAYER_FILL,
+  FillStyle,
+  MAX_OPACITY,
+  MIN_OPACITY
+} from "../../../../../constants";
 import { useActiveObject } from "../../../../../hooks";
 import { modifyObject } from "../../../../../utils";
 import DrawItem, { DrawItemRow } from "../../Item";
@@ -59,39 +68,80 @@ const FillControl = ({
   }, [activeObject?.fill]);
 
   return (
-    <Input
-      aria-label={"Layer fill"}
-      decorator={
-        <ColorPicker
-          defaultValue={fill}
-          onChange={(value): void => changeFill(value)}
-        >
-          <button
-            aria-label={"Pick a color"}
-            className={commonStyles.indicator}
-            style={
-              {
-                "--color": fill.str
-              } as React.CSSProperties
-            }
-            title={"Pick a color"}
-          />
-        </ColorPicker>
-      }
-      monospaced
-      onChange={(event): void => {
-        setValue(event.target.value);
-        const newColor = strToColor(event.target.value);
-
-        if (newColor) {
-          changeFill(newColor);
+    <DrawItemRow>
+      <Input
+        aria-label={"Layer fill"}
+        decorator={
+          <ColorPicker
+            defaultValue={fill}
+            onChange={(value): void => changeFill(value)}
+          >
+            <button
+              aria-label={"Pick a color"}
+              className={clsx(
+                "focusable",
+                "focus-invert",
+                commonStyles.indicator
+              )}
+              style={
+                {
+                  "--color": fill.str
+                } as React.CSSProperties
+              }
+              title={"Pick a color"}
+            />
+          </ColorPicker>
         }
-      }}
-      placeholder={"Fill"}
-      size={"sm"}
-      title={"Fill"}
-      value={value}
-    />
+        monospaced
+        onChange={(event): void => {
+          setValue(event.target.value);
+          const newColor = strToColor(event.target.value);
+
+          if (newColor) {
+            changeFill(newColor);
+          }
+        }}
+        placeholder={"Fill"}
+        size={"sm"}
+        slotProps={{
+          container: {
+            style: {
+              flex: "0.6"
+            }
+          }
+        }}
+        title={"Fill"}
+        value={value}
+      />
+      <Input
+        aria-label={"Layer fill opacity"}
+        max={MAX_OPACITY}
+        min={MIN_OPACITY}
+        monospaced
+        onChange={(event): void => {
+          const a = Number.parseInt(event.target.value) ?? 0;
+          const { r, g, b } = hexToRgb(fill.hex);
+
+          changeFill({
+            ...fill,
+            str: `rgba(${r},${g},${b},${a / 100})`,
+            a
+          });
+        }}
+        placeholder={"Fill opacity"}
+        size={"sm"}
+        slotProps={{
+          container: {
+            style: {
+              flex: "0.4"
+            }
+          }
+        }}
+        title={"Fill opacity"}
+        type={"number"}
+        value={Math.round(fill.a)}
+      />
+    </DrawItemRow>
   );
 };
 
@@ -246,10 +296,8 @@ const Fill = (): React.ReactElement | null => {
   }
 
   return (
-    <DrawItem label={"Fill"}>
-      <DrawItemRow>
-        <FillControl activeObject={activeObject} />
-      </DrawItemRow>
+    <DrawItem key={activeObject.get("id")} label={"Fill"}>
+      <FillControl activeObject={activeObject} />
       <FillStyleControl activeObject={activeObject} />
     </DrawItem>
   );

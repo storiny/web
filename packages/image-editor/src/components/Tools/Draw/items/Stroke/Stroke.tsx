@@ -5,13 +5,21 @@ import React from "react";
 import Input from "~/components/Input";
 import Option from "~/components/Option";
 import Select from "~/components/Select";
-import ColorPicker, { strToColor, TColor } from "~/entities/ColorPicker";
+import ColorPicker, {
+  hexToRgb,
+  strToColor,
+  TColor
+} from "~/entities/ColorPicker";
 import LineDashedIcon from "~/icons/LineDashed";
 import LineDottedIcon from "~/icons/LineDotted";
 import LineSolidIcon from "~/icons/LineSolid";
 import RulerMeasureIcon from "~/icons/RulerMeasure";
 
-import { StrokeStyle } from "../../../../../constants";
+import {
+  MAX_OPACITY,
+  MIN_OPACITY,
+  StrokeStyle
+} from "../../../../../constants";
 import { useActiveObject } from "../../../../../hooks";
 import { modifyObject } from "../../../../../utils";
 import DrawItem, { DrawItemRow } from "../../Item";
@@ -58,44 +66,78 @@ const StrokeControl = ({
   }, [activeObject?.stroke]);
 
   return (
-    <Input
-      aria-label={"Layer stroke"}
-      decorator={
-        <ColorPicker
-          defaultValue={stroke}
-          onChange={(value): void => changeStroke(value)}
-        >
-          <button
-            aria-label={"Pick a color"}
-            className={commonStyles.indicator}
-            style={
-              {
-                "--color": stroke.str
-              } as React.CSSProperties
-            }
-            title={"Pick a color"}
-          />
-        </ColorPicker>
-      }
-      monospaced
-      onChange={(event): void => {
-        setValue(event.target.value);
-        const newColor = strToColor(event.target.value);
+    <DrawItemRow>
+      <Input
+        aria-label={"Layer stroke"}
+        decorator={
+          <ColorPicker
+            defaultValue={stroke}
+            onChange={(value): void => changeStroke(value)}
+          >
+            <button
+              aria-label={"Pick a color"}
+              className={clsx(
+                "focusable",
+                "focus-invert",
+                commonStyles.indicator
+              )}
+              style={
+                {
+                  "--color": stroke.str
+                } as React.CSSProperties
+              }
+              title={"Pick a color"}
+            />
+          </ColorPicker>
+        }
+        monospaced
+        onChange={(event): void => {
+          setValue(event.target.value);
+          const newColor = strToColor(event.target.value);
 
-        if (newColor) {
-          changeStroke(newColor);
-        }
-      }}
-      placeholder={"Stroke"}
-      size={"sm"}
-      slotProps={{
-        container: {
-          style: { flex: "0.6" }
-        }
-      }}
-      title={"Stroke"}
-      value={value}
-    />
+          if (newColor) {
+            changeStroke(newColor);
+          }
+        }}
+        placeholder={"Stroke"}
+        size={"sm"}
+        slotProps={{
+          container: {
+            style: { flex: "0.6" }
+          }
+        }}
+        title={"Stroke"}
+        value={value}
+      />
+      <Input
+        aria-label={"Layer stroke opacity"}
+        max={MAX_OPACITY}
+        min={MIN_OPACITY}
+        monospaced
+        onChange={(event): void => {
+          const a = Number.parseInt(event.target.value) ?? 0;
+          const { r, g, b } = hexToRgb(stroke.hex);
+
+          changeStroke({
+            ...stroke,
+            str: `rgba(${r},${g},${b},${a / 100})`,
+            a
+          });
+        }}
+        placeholder={"Stroke opacity"}
+        size={"sm"}
+        slotProps={{
+          container: {
+            style: {
+              flex: "0.4"
+            }
+          }
+        }}
+        title={"Stroke opacity"}
+        type={"number"}
+        value={Math.round(stroke.a)}
+      />
+    </DrawItemRow>
   );
 };
 
@@ -134,7 +176,9 @@ const StrokeWidthControl = ({
       size={"sm"}
       slotProps={{
         container: {
-          style: { flex: "0.4" }
+          style: {
+            flex: "0.4"
+          }
         }
       }}
       title={"Stroke width"}
@@ -182,7 +226,8 @@ const StrokeStyleControl = ({
       size={"sm"}
       slotProps={{
         trigger: {
-          className: clsx("full-w")
+          className: clsx("full-w"),
+          style: { flex: "0.6" }
         }
       }}
       value={strokeStyle}
@@ -208,13 +253,11 @@ const Stroke = (): React.ReactElement | null => {
   }
 
   return (
-    <DrawItem label={"Stroke"}>
-      <DrawItemRow>
-        <StrokeControl activeObject={activeObject} />
-        <StrokeWidthControl activeObject={activeObject} />
-      </DrawItemRow>
+    <DrawItem key={activeObject.get("id")} label={"Stroke"}>
+      <StrokeControl activeObject={activeObject} />
       <DrawItemRow>
         <StrokeStyleControl activeObject={activeObject} />
+        <StrokeWidthControl activeObject={activeObject} />
       </DrawItemRow>
     </DrawItem>
   );

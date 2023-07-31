@@ -1,7 +1,7 @@
 import { classRegistry } from "fabric";
 import rough from "roughjs/bin/rough";
 
-import { FillStyle, LayerType } from "../../../constants";
+import { FillStyle, LayerType, StrokeStyle } from "../../../constants";
 import { EllipseLayer } from "../../../types";
 import { generateRoughOptions } from "../../../utils";
 import { EllipsePrimitive } from "../Object";
@@ -10,18 +10,15 @@ export type EllipseProps = ConstructorParameters<typeof EllipsePrimitive>[0] &
   Omit<EllipseLayer, "id" | "_type">;
 
 const DEFAULT_ELLIPSE_PROPS: Partial<EllipseProps> = {
-  strokeWidth: 0,
-  height: 100,
-  left: 100,
-  top: 100,
-  width: 100,
-  fill: "#969696",
-  stroke: "rgba(0,0,0,0)",
   interactive: true,
+  fill: "rgba(0,0,0,0)",
+  stroke: "rgba(0,0,0,1)",
   fillStyle: FillStyle.HACHURE,
+  strokeStyle: StrokeStyle.SOLID,
   fillWeight: 1,
+  strokeWidth: 1,
   hachureGap: 5,
-  roughness: 0.5
+  roughness: 1
 };
 
 export class Ellipse extends EllipsePrimitive<EllipseProps> {

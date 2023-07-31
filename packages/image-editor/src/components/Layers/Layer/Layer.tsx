@@ -78,9 +78,10 @@ const Layer = React.forwardRef<HTMLLIElement, LayerProps>((props, ref) => {
    * Selects the current layer
    */
   const selectLayerImpl = (): void => {
-    modifyObject(layer, {
-      selected: true
-    });
+    if (canvas.current) {
+      canvas.current.setActiveObject(layer as any);
+      canvas.current.requestRenderAll();
+    }
   };
 
   /**

@@ -117,7 +117,7 @@ const ObjectProps = (): React.ReactElement | null => {
   }
 
   return (
-    <DrawItem>
+    <DrawItem key={activeObject.get("id")}>
       <DrawItemRow>
         <AngleControl activeObject={activeObject} />
         <CornerRadiusControl activeObject={activeObject} />

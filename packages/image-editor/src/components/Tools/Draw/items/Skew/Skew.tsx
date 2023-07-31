@@ -30,7 +30,7 @@ const Skew = (): React.ReactElement | null => {
   }
 
   return (
-    <DrawItem>
+    <DrawItem key={activeObject.get("id")}>
       <DrawItemRow>
         <Input
           aria-label={"Layer skew X"}

@@ -7,6 +7,7 @@ import { bindEvents } from "./events";
 import {
   registerActions,
   registerClone,
+  registerDraw,
   registerGuides,
   registerHistory,
   registerKeyboard,
@@ -49,7 +50,8 @@ export const useFabric = (): ((
       registerKeyboard,
       registerClone,
       registerActions,
-      registerHistory
+      registerHistory,
+      registerDraw
     ].forEach((bindable) => bindable(canvas.current));
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
