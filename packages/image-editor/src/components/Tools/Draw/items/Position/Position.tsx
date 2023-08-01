@@ -26,6 +26,10 @@ const Position = (): React.ReactElement | null => {
     const object = options.target;
     return object.get("id") === activeObject?.get("id");
   });
+  useEventRender("linear:moving" as any, (options) => {
+    const object = options.target;
+    return object.get("id") === activeObject?.get("id");
+  });
 
   /**
    * Mutates X coordinate of the object

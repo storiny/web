@@ -4,6 +4,7 @@ export const selectionUpdatedEvent = (canvas: Canvas): void => {
   canvas.on("selection:updated", (options) => {
     for (const object of options.selected) {
       if (object.group) {
+        object.group.setControlsVisibility({ mtr: false });
         object.group.set({
           cornerColor: "#fff",
           cornerSize: 10,

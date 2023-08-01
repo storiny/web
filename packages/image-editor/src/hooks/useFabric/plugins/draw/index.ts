@@ -1,7 +1,8 @@
 import { BaseFabricObject, Canvas } from "fabric";
 
 import { CURSORS } from "../../../../constants";
-import { Ellipse } from "../../../../lib";
+import { Ellipse, Line } from "../../../../lib";
+import { isLinearObject } from "../../../../utils";
 
 type DrawEvent = "draw:start" | "draw:end" | "draw:scaling";
 
@@ -139,11 +140,19 @@ class DrawPlugin {
       this.x = mouse.x;
       this.y = mouse.y;
 
-      this.object = new Ellipse({
-        width: 1,
-        height: 1,
-        left: this.x,
-        top: this.y,
+      // this.object = new Ellipse({
+      //   width: 1,
+      //   height: 1,
+      //   left: this.x,
+      //   top: this.y,
+      //   hasBorder: false,
+      //   isDrawing: true
+      // });
+      this.object = new Line({
+        x1: this.x,
+        y1: this.y,
+        x2: this.x + 1,
+        y2: this.y + 1,
         hasBorder: false,
         isDrawing: true
       });
@@ -160,20 +169,29 @@ class DrawPlugin {
       }
 
       const mouse = this.canvas.getPointer(options.e);
-      const w = mouse.x - this.x;
-      const h = mouse.y - this.y;
 
-      if (!w || !h) {
-        return;
+      if (isLinearObject(this.object)) {
+        this.object.set({
+          x2: mouse.x,
+          y2: mouse.y,
+          dirty: true
+        });
+      } else {
+        const w = mouse.x - this.x;
+        const h = mouse.y - this.y;
+
+        if (!w || !h) {
+          return;
+        }
+
+        this.object.set({
+          width: Math.abs(w),
+          height: Math.abs(h),
+          left: w < 0 ? this.x + w : this.object.left,
+          top: h < 0 ? this.y + h : this.object.top,
+          dirty: true
+        });
       }
-
-      this.object.set({
-        width: Math.abs(w),
-        height: Math.abs(h),
-        left: w < 0 ? this.x + w : this.object.left,
-        top: h < 0 ? this.y + h : this.object.top,
-        dirty: true
-      });
 
       this.fireEvent("draw:scaling");
       this.canvas.requestRenderAll();

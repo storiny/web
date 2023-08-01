@@ -23,6 +23,7 @@ export enum Arrowhead {
 
 export enum LayerType {
   ARROW = "arrow",
+  DIAMOND = "diamond",
   ELLIPSE = "ellipse",
   IMAGE = "image",
   LINE = "line",

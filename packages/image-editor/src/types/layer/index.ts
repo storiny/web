@@ -90,6 +90,7 @@ export type PenLayer = LayerPrimitive<LayerType.PEN>;
 export type PolygonLayer = LayerPrimitive<LayerType.POLYGON> & SolidLayerProps;
 export type RectangleLayer = LayerPrimitive<LayerType.RECTANGLE> &
   SolidLayerProps;
+export type DiamondLayer = LayerPrimitive<LayerType.DIAMOND> & SolidLayerProps;
 export type EllipseLayer = LayerPrimitive<LayerType.ELLIPSE> & SolidLayerProps;
 export type LineLayer = LayerPrimitive<LayerType.LINE>;
 export type ArrowLayer = LayerPrimitive<LayerType.ARROW>;

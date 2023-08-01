@@ -7,6 +7,7 @@ import IconButton from "~/components/IconButton";
 import Input from "~/components/Input";
 import ArrowIcon from "~/icons/Arrow";
 import CircleIcon from "~/icons/Circle";
+import DiamondIcon from "~/icons/Diamond";
 import EyeIcon from "~/icons/Eye";
 import EyeClosedIcon from "~/icons/EyeClosed";
 import GripIcon from "~/icons/Grip";
@@ -36,7 +37,8 @@ const layerTypeToIconMap: Record<LayerType, React.ReactNode> = {
   [LayerType.TEXT]: <TypographyIcon />,
   [LayerType.LINE]: <LineIcon rotation={45} />,
   [LayerType.POLYGON]: <PolygonIcon />,
-  [LayerType.PEN]: <PencilIcon />
+  [LayerType.PEN]: <PencilIcon />,
+  [LayerType.DIAMOND]: <DiamondIcon />
 };
 
 // Lock filled ico

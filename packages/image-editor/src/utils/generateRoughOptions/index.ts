@@ -40,7 +40,7 @@ export const generateRoughOptions = (
   };
 
   switch (object.get("_type")) {
-    // case LayerType.DIAMOND:
+    case LayerType.DIAMOND:
     case LayerType.RECTANGLE:
     case LayerType.ELLIPSE: {
       options.fillStyle = object.get("fillStyle");

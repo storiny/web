@@ -13,6 +13,7 @@ import TrashIcon from "~/icons/Trash";
 
 import { useActiveObject } from "../../../../hooks";
 import { CLONE_PROPS } from "../../../../lib";
+import { isLinearObject, syncLinearPoints } from "../../../../utils";
 import styles from "./Actions.module.scss";
 
 const POPOVER_ID = "object-popover";
@@ -37,15 +38,28 @@ const Actions = (): React.ReactElement | null => {
   const cloneLayer = (): void => {
     if (activeObject) {
       activeObject.clone(CLONE_PROPS).then((cloned) => {
-        cloned.top += 24;
-        cloned.left += 24;
+        if (isLinearObject(cloned)) {
+          cloned.set({
+            x1: activeObject.get("x1") + 24,
+            x2: activeObject.get("x2") + 24,
+            y1: activeObject.get("y1") + 24,
+            y2: activeObject.get("y2") + 24,
+            width: activeObject.width,
+            height: activeObject.height,
+            scaleX: 1,
+            scaleY: 1
+          });
+        } else {
+          cloned.top += 24;
+          cloned.left += 24;
 
-        cloned.set({
-          width: activeObject.width,
-          height: activeObject.height,
-          scaleX: 1,
-          scaleY: 1
-        });
+          cloned.set({
+            width: activeObject.width,
+            height: activeObject.height,
+            scaleX: 1,
+            scaleY: 1
+          });
+        }
 
         activeObject.canvas?.add(cloned);
       });

@@ -42,6 +42,10 @@ const Dimensions = (): React.ReactElement | null => {
     const object = options.target;
     return object.get("id") === activeObject?.get("id");
   });
+  useEventRender("linear:moving" as any, (options) => {
+    const object = options.target;
+    return object.get("id") === activeObject?.get("id");
+  });
 
   /**
    * Mutates the height of the object

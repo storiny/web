@@ -6,4 +6,6 @@ export * from "./getNewLayerName";
 export * from "./isActiveSelection";
 export * from "./isGroup";
 export * from "./isInteractiveObject";
+export * from "./isLinearObject";
 export * from "./modifyObject";
+export * from "./syncLinearPoints";

@@ -1,6 +1,7 @@
 import {
   BaseFabricObject,
   Ellipse,
+  Line,
   Object as FabricObject,
   Rect,
   TProps
@@ -19,7 +20,9 @@ export const WithPrimitive = <TBase extends Constructor>(Base: TBase): TBase =>
       super(...args);
 
       this.set({
-        ...COMMON_OBJECT_PROPS
+        ...COMMON_OBJECT_PROPS,
+        originX: "center",
+        originY: "center"
       });
 
       registerControls(this);
@@ -33,3 +36,11 @@ export class RectPrimitive<
 export class EllipsePrimitive<
   Props extends TProps<BaseFabricObject>
 > extends WithPrimitive(Ellipse)<Props> {}
+
+export class DiamondPrimitve<
+  Props extends TProps<BaseFabricObject>
+> extends WithPrimitive(FabricObject)<Props> {}
+
+export class LinePrimitive<
+  Props extends TProps<BaseFabricObject>
+> extends WithPrimitive(Line)<Props> {}

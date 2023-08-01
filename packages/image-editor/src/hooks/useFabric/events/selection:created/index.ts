@@ -4,6 +4,7 @@ export const selectionCreatedEvent = (canvas: Canvas): void => {
   canvas.on("selection:created", (options) => {
     for (const object of options.selected) {
       if (object.group) {
+        object.group.setControlsVisibility({ mtr: false });
         object.group.set({
           cornerColor: "#fff",
           borderOpacityWhenMoving: 0.25,
