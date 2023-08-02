@@ -1,5 +1,6 @@
 export * from "./align";
 export * from "./cursor";
+export * from "./group";
 export * from "./layer";
 export * from "./opacity";
 export * from "./pattern";

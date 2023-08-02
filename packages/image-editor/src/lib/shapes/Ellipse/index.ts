@@ -1,4 +1,5 @@
 import { classRegistry } from "fabric";
+import { RoughCanvas } from "roughjs/bin/canvas";
 import rough from "roughjs/bin/rough";
 
 import { FillStyle, LayerType, StrokeStyle } from "../../../constants";
@@ -22,6 +23,8 @@ const DEFAULT_ELLIPSE_PROPS: Partial<EllipseProps> = {
 };
 
 export class Ellipse extends EllipsePrimitive<EllipseProps> {
+  static override type = LayerType.ELLIPSE;
+
   /**
    * Ctor
    * @param props Ellipse props
@@ -48,7 +51,7 @@ export class Ellipse extends EllipsePrimitive<EllipseProps> {
    * @param ctx Canvas context
    */
   _render(ctx: CanvasRenderingContext2D): void {
-    let rc = this.get("_rc");
+    let rc: RoughCanvas = this.get("_rc");
 
     if (!rc) {
       rc = rough.canvas(ctx.canvas);
@@ -63,4 +66,4 @@ export class Ellipse extends EllipsePrimitive<EllipseProps> {
   }
 }
 
-classRegistry.setClass(Ellipse, EllipsePrimitive.type);
+classRegistry.setClass(Ellipse, LayerType.ELLIPSE);

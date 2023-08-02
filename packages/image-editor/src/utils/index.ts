@@ -4,6 +4,7 @@ export * from "./getDashedDashArray";
 export * from "./getDottedDashArray";
 export * from "./getNewLayerName";
 export * from "./isActiveSelection";
+export * from "./isArrowObject";
 export * from "./isGroup";
 export * from "./isInteractiveObject";
 export * from "./isLinearObject";

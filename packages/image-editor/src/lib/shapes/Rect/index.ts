@@ -1,4 +1,5 @@
 import { classRegistry } from "fabric";
+import { RoughCanvas } from "roughjs/bin/canvas";
 import { Drawable } from "roughjs/bin/core";
 import rough from "roughjs/bin/rough";
 
@@ -23,6 +24,8 @@ const DEFAULT_RECT_PROPS: Partial<RectProps> = {
 };
 
 export class Rect extends RectPrimitive<RectProps> {
+  static override type = LayerType.RECTANGLE;
+
   /**
    * Ctor
    * @param props Rectangle props
@@ -49,7 +52,7 @@ export class Rect extends RectPrimitive<RectProps> {
    * @param ctx Canvas context
    */
   _render(ctx: CanvasRenderingContext2D): void {
-    let rc = this.get("_rc");
+    let rc: RoughCanvas = this.get("_rc");
 
     if (!rc) {
       rc = rough.canvas(ctx.canvas);
@@ -87,4 +90,4 @@ export class Rect extends RectPrimitive<RectProps> {
   }
 }
 
-classRegistry.setClass(Rect, RectPrimitive.type);
+classRegistry.setClass(Rect, LayerType.RECTANGLE);

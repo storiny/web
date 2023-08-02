@@ -2,28 +2,43 @@ import { clsx } from "clsx";
 import { BaseFabricObject } from "fabric";
 import React from "react";
 
+import IconButton from "~/components/IconButton";
 import Input from "~/components/Input";
 import Option from "~/components/Option";
 import Select from "~/components/Select";
+import Tooltip from "~/components/Tooltip";
 import ColorPicker, {
   hexToRgb,
   strToColor,
   TColor
 } from "~/entities/ColorPicker";
+import ArrowheadArrowIcon from "~/icons/ArrowheadArrow";
+import ArrowheadArrowLongIcon from "~/icons/ArrowheadArrowLong";
+import ArrowheadBarIcon from "~/icons/ArrowheadBar";
+import ArrowheadBarLongIcon from "~/icons/ArrowheadBarLong";
+import ArrowheadDotIcon from "~/icons/ArrowheadDot";
+import ArrowheadDotLongIcon from "~/icons/ArrowheadDotLong";
+import ArrowheadNoneIcon from "~/icons/ArrowheadNone";
+import ArrowheadNoneLongIcon from "~/icons/ArrowheadNoneLong";
+import ArrowheadTriangleIcon from "~/icons/ArrowheadTriangle";
+import ArrowheadTriangleLongIcon from "~/icons/ArrowheadTriangleLong";
 import LineDashedIcon from "~/icons/LineDashed";
 import LineDottedIcon from "~/icons/LineDotted";
 import LineSolidIcon from "~/icons/LineSolid";
 import RulerMeasureIcon from "~/icons/RulerMeasure";
+import SwapIcon from "~/icons/Swap";
 
 import {
+  Arrowhead,
   MAX_OPACITY,
   MIN_OPACITY,
   StrokeStyle
 } from "../../../../../constants";
 import { useActiveObject } from "../../../../../hooks";
-import { modifyObject } from "../../../../../utils";
+import { isArrowObject, modifyObject } from "../../../../../utils";
 import DrawItem, { DrawItemRow } from "../../Item";
 import commonStyles from "../common.module.scss";
+import styles from "./Stroke.module.scss";
 
 const DEFAULT_LAYER_STROKE = "rgba(0,0,0,0)";
 
@@ -245,6 +260,166 @@ const StrokeStyleControl = ({
   );
 };
 
+/**
+ * Returns the arrowhead icon
+ * @param arrowhead Arrowhead
+ * @param position Arrowhead position
+ */
+const getArrowheadIcon = (
+  arrowhead: Arrowhead,
+  position: "start" | "end"
+): React.ReactNode => {
+  const rotation = position === "start" ? 0 : 180;
+  return (
+    {
+      [Arrowhead.NONE]: <ArrowheadNoneLongIcon rotation={rotation} />,
+      [Arrowhead.ARROW]: <ArrowheadArrowLongIcon rotation={rotation} />,
+      [Arrowhead.DOT]: <ArrowheadDotLongIcon rotation={rotation} />,
+      [Arrowhead.BAR]: <ArrowheadBarLongIcon rotation={rotation} />,
+      [Arrowhead.TRIANGLE]: <ArrowheadTriangleLongIcon rotation={rotation} />
+    } as Record<Arrowhead, React.ReactNode>
+  )[arrowhead];
+};
+
+// Arrowhead style
+
+const ArrowheadControl = ({
+  activeObject
+}: {
+  activeObject: BaseFabricObject;
+}): React.ReactElement => {
+  const [startArrowhead, setStartArrowhead] = React.useState<Arrowhead>(
+    activeObject.get("startArrowhead") || Arrowhead.NONE
+  );
+  const [endArrowhead, setEndArrowhead] = React.useState<Arrowhead>(
+    activeObject.get("endArrowhead") || Arrowhead.ARROW
+  );
+
+  /**
+   * Mutates the arrowhead of the object
+   */
+  const changeArrowhead = React.useCallback(
+    (arrowhead: Arrowhead, position: "start" | "end") => {
+      (position === "start" ? setStartArrowhead : setEndArrowhead)(arrowhead);
+
+      if (activeObject) {
+        modifyObject(activeObject, {
+          [position === "start" ? "startArrowhead" : "endArrowhead"]: arrowhead
+        });
+      }
+    },
+    [activeObject]
+  );
+
+  /**
+   * Swaps the start and end arrowheads
+   */
+  const swapArrowheads = React.useCallback(() => {
+    const currentStartArrowhead = startArrowhead;
+    setStartArrowhead(endArrowhead);
+    setEndArrowhead(currentStartArrowhead);
+
+    if (activeObject) {
+      modifyObject(activeObject, {
+        startArrowhead: endArrowhead,
+        endArrowhead: currentStartArrowhead
+      });
+    }
+  }, [activeObject, endArrowhead, startArrowhead]);
+
+  React.useEffect(() => {
+    setStartArrowhead(activeObject.get("startArrowhead") || Arrowhead.NONE);
+    setEndArrowhead(activeObject.get("endArrowhead") || Arrowhead.ARROW);
+  }, [activeObject]);
+
+  return (
+    <DrawItemRow>
+      <Select
+        onValueChange={(newValue: Arrowhead): void =>
+          changeArrowhead(newValue, "start")
+        }
+        size={"sm"}
+        slotProps={{
+          trigger: {
+            className: clsx("full-w")
+          }
+        }}
+        value={startArrowhead}
+        valueChildren={
+          <span className={clsx("flex-center", styles["arrowhead-value"])}>
+            {getArrowheadIcon(startArrowhead, "start")}
+          </span>
+        }
+      >
+        <Option decorator={<ArrowheadNoneIcon />} value={Arrowhead.NONE}>
+          None
+        </Option>
+        <Option decorator={<ArrowheadArrowIcon />} value={Arrowhead.ARROW}>
+          Arrow
+        </Option>
+        <Option
+          decorator={<ArrowheadTriangleIcon />}
+          value={Arrowhead.TRIANGLE}
+        >
+          Triangle
+        </Option>
+        <Option decorator={<ArrowheadDotIcon />} value={Arrowhead.DOT}>
+          Dot
+        </Option>
+        <Option decorator={<ArrowheadBarIcon />} value={Arrowhead.BAR}>
+          Bar
+        </Option>
+      </Select>
+      <Tooltip content={"Swap arrowheads"}>
+        <IconButton
+          onClick={swapArrowheads}
+          size={"sm"}
+          style={{ "--size": "24px" } as React.CSSProperties}
+          variant={"ghost"}
+        >
+          <SwapIcon />
+        </IconButton>
+      </Tooltip>
+      <Select
+        onValueChange={(newValue: Arrowhead): void =>
+          changeArrowhead(newValue, "end")
+        }
+        size={"sm"}
+        slotProps={{
+          trigger: {
+            className: clsx("full-w")
+          }
+        }}
+        value={endArrowhead}
+        valueChildren={
+          <span className={clsx("flex-center", styles["arrowhead-value"])}>
+            {getArrowheadIcon(endArrowhead, "end")}
+          </span>
+        }
+      >
+        <Option decorator={<ArrowheadNoneIcon />} value={Arrowhead.NONE}>
+          None
+        </Option>
+        <Option decorator={<ArrowheadArrowIcon />} value={Arrowhead.ARROW}>
+          Arrow
+        </Option>
+        <Option
+          decorator={<ArrowheadTriangleIcon />}
+          value={Arrowhead.TRIANGLE}
+        >
+          Triangle
+        </Option>
+        <Option decorator={<ArrowheadDotIcon />} value={Arrowhead.DOT}>
+          Dot
+        </Option>
+        <Option decorator={<ArrowheadBarIcon />} value={Arrowhead.BAR}>
+          Bar
+        </Option>
+      </Select>
+    </DrawItemRow>
+  );
+};
+
 const Stroke = (): React.ReactElement | null => {
   const activeObject = useActiveObject();
 
@@ -259,6 +434,9 @@ const Stroke = (): React.ReactElement | null => {
         <StrokeStyleControl activeObject={activeObject} />
         <StrokeWidthControl activeObject={activeObject} />
       </DrawItemRow>
+      {isArrowObject(activeObject) && (
+        <ArrowheadControl activeObject={activeObject} />
+      )}
     </DrawItem>
   );
 };

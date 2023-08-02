@@ -1,4 +1,5 @@
 import { classRegistry, Point } from "fabric";
+import { RoughCanvas } from "roughjs/bin/canvas";
 import rough from "roughjs/bin/rough";
 
 import { FillStyle, LayerType, StrokeStyle } from "../../../constants";
@@ -27,6 +28,8 @@ const DEFAULT_LINE_PROPS: Partial<LineProps> = {
 };
 
 export class Line extends LinePrimitive<LineProps> {
+  static override type = LayerType.LINE;
+
   /**
    * Ctor
    * @param props Line props
@@ -55,7 +58,7 @@ export class Line extends LinePrimitive<LineProps> {
    * @param ctx Canvas context
    */
   _render(ctx: CanvasRenderingContext2D): void {
-    let rc = this.get("_rc");
+    let rc: RoughCanvas = this.get("_rc");
 
     if (!rc) {
       rc = rough.canvas(ctx.canvas);
@@ -81,4 +84,4 @@ export class Line extends LinePrimitive<LineProps> {
   }
 }
 
-classRegistry.setClass(Line, LinePrimitive.type);
+classRegistry.setClass(Line, LayerType.LINE);

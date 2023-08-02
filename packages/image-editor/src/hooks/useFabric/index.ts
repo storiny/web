@@ -1,4 +1,4 @@
-import { Canvas } from "fabric";
+import { Canvas, PencilBrush } from "fabric";
 import React from "react";
 
 import { FabricContext } from "../../components/Context";
@@ -42,6 +42,10 @@ export const useFabric = (): ((
     selectionElement.addEventListener("contextmenu", (event) => {
       event.preventDefault();
     });
+
+    canvas.current.isDrawingMode = true;
+    canvas.current.freeDrawingBrush = new PencilBrush(canvas.current);
+    canvas.current.freeDrawingBrush.color = "#000";
 
     [
       bindEvents,

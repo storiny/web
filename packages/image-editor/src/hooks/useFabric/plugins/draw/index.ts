@@ -1,7 +1,7 @@
 import { BaseFabricObject, Canvas } from "fabric";
 
 import { CURSORS } from "../../../../constants";
-import { Ellipse, Line } from "../../../../lib";
+import { Arrow } from "../../../../lib";
 import { isLinearObject } from "../../../../utils";
 
 type DrawEvent = "draw:start" | "draw:end" | "draw:scaling";
@@ -50,7 +50,7 @@ class DrawPlugin {
   constructor(canvas: Canvas) {
     this.canvas = canvas;
     this.started = false;
-    this.enabled = true;
+    this.enabled = false;
     this.object = null;
     this.x = 0;
     this.y = 0;
@@ -148,7 +148,7 @@ class DrawPlugin {
       //   hasBorder: false,
       //   isDrawing: true
       // });
-      this.object = new Line({
+      this.object = new Arrow({
         x1: this.x,
         y1: this.y,
         x2: this.x + 1,

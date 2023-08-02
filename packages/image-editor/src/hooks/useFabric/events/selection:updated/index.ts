@@ -1,18 +1,13 @@
 import { Canvas } from "fabric";
 
+import { COMMON_GROUP_PROPS } from "../../../../constants";
+
 export const selectionUpdatedEvent = (canvas: Canvas): void => {
   canvas.on("selection:updated", (options) => {
     for (const object of options.selected) {
       if (object.group) {
         object.group.setControlsVisibility({ mtr: false });
-        object.group.set({
-          cornerColor: "#fff",
-          cornerSize: 10,
-          cornerStrokeColor: "#1371ec",
-          borderOpacityWhenMoving: 0.25,
-          transparentCorners: false,
-          lockRotation: true
-        });
+        object.group.set(COMMON_GROUP_PROPS);
       }
 
       object.set({

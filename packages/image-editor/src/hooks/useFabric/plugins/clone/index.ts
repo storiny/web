@@ -1,7 +1,12 @@
 import { ActiveSelection, BaseFabricObject, Canvas } from "fabric";
 import hotkeys from "hotkeys-js";
 
-import { isActiveSelection } from "../../../../utils";
+import { CLONE_PROPS } from "../../../../lib";
+import {
+  isActiveSelection,
+  isArrowObject,
+  isLinearObject
+} from "../../../../utils";
 
 const CLONED_OBJECT_OFFSET = 15; // px
 
@@ -43,26 +48,39 @@ class ClonePlugin {
   private cloneObject(activeObject: BaseFabricObject): void {
     this.cloneCount++;
 
-    activeObject.clone().then((cloned) => {
-      if (cloned.left === undefined || cloned.top === undefined) {
-        return;
+    activeObject.clone(CLONE_PROPS).then((cloned) => {
+      if (isLinearObject(cloned)) {
+        cloned.set({
+          x1: activeObject.get("x1") + CLONED_OBJECT_OFFSET,
+          x2: activeObject.get("x2") + CLONED_OBJECT_OFFSET,
+          y1: activeObject.get("y1"),
+          y2: activeObject.get("y2"),
+          width: activeObject.width,
+          height: activeObject.height,
+          scaleX: 1,
+          scaleY: 1
+        });
+
+        // Set arrowheads
+        if (isArrowObject(cloned)) {
+          cloned.set({
+            startArrowhead: activeObject.get("startArrowhead"),
+            endArrowhead: activeObject.get("endArrowhead")
+          });
+        }
+      } else {
+        cloned.left += this.cloneCount * CLONED_OBJECT_OFFSET;
+        cloned.top += this.cloneCount * CLONED_OBJECT_OFFSET;
+
+        cloned.set({
+          width: activeObject.width,
+          height: activeObject.height,
+          scaleX: 1,
+          scaleY: 1
+        });
       }
 
-      this.canvas.discardActiveObject();
-
-      cloned.left += this.cloneCount * CLONED_OBJECT_OFFSET;
-      cloned.top += this.cloneCount * CLONED_OBJECT_OFFSET;
-
-      cloned.set({
-        width: activeObject.width,
-        height: activeObject.height,
-        scaleX: 1,
-        scaleY: 1
-      });
-
       this.canvas.add(cloned);
-      this.canvas.setActiveObject(cloned as any);
-      this.canvas.requestRenderAll();
     });
   }
 

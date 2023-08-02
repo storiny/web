@@ -1,4 +1,5 @@
 import { BaseFabricObject, classRegistry } from "fabric";
+import { RoughCanvas } from "roughjs/bin/canvas";
 import { Drawable } from "roughjs/bin/core";
 import rough from "roughjs/bin/rough";
 
@@ -42,6 +43,7 @@ const getDiamondPoints = (
 };
 
 export class Diamond extends DiamondPrimitve<DiamondProps> {
+  static override type = LayerType.ARROW;
   /**
    * Radius X
    * @private
@@ -52,10 +54,6 @@ export class Diamond extends DiamondPrimitve<DiamondProps> {
    * @private
    */
   private readonly ry: number = 0;
-  /**
-   * Object type
-   */
-  static type = LayerType.DIAMOND;
 
   /**
    * Ctor
@@ -83,7 +81,7 @@ export class Diamond extends DiamondPrimitve<DiamondProps> {
    * @param ctx Canvas context
    */
   _render(ctx: CanvasRenderingContext2D): void {
-    let rc = this.get("_rc");
+    let rc: RoughCanvas = this.get("_rc");
 
     if (!rc) {
       rc = rough.canvas(ctx.canvas);

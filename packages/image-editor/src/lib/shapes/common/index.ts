@@ -8,7 +8,11 @@ export const COMMON_OBJECT_PROPS: TProps<BaseFabricObject> = {
   cornerStrokeColor: "#1371ec",
   padding: 0,
   transparentCorners: false,
-  noScaleCache: false
+  /**
+   * Excessive roughness causes the shapes to overflow the bounding box,
+   * messing up the cached bitmap image drawn on the offscreen canvas
+   */
+  objectCaching: false
 };
 
 export const CLONE_PROPS = [
@@ -26,5 +30,7 @@ export const CLONE_PROPS = [
   "fillStyle",
   "fillWeight",
   "hachureGap",
-  "roughness"
+  "roughness",
+  "startArrowhead",
+  "endArrowhead"
 ];

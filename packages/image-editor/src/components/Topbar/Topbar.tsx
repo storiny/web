@@ -14,13 +14,15 @@ import XIcon from "~/icons/X";
 
 import { useCanvas } from "../../hooks";
 import { useActiveObject, useEventRender } from "../../hooks";
-import { Line } from "../../lib";
+import { Rect } from "../../lib";
 import styles from "./Topbar.module.scss";
 
 const MyToolKit = (): React.ReactElement => {
   const canvas = useCanvas();
   const drawRect = (): void => {
-    canvas.current?.add(new Line({ x1: 100, y1: 100, x2: 200, y2: 200 }));
+    canvas.current?.add(
+      new Rect({ top: 100, left: 100, width: 200, height: 200 })
+    );
   };
 
   return <button onClick={drawRect}>Draw</button>;

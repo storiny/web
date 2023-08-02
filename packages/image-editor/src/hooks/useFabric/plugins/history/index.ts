@@ -2,24 +2,38 @@ import { Canvas } from "fabric";
 import hotkeys from "hotkeys-js";
 
 import { Layer } from "../../../../types";
+import { isLinearObject, syncLinearPoints } from "../../../../utils";
+
+type ThrottledFunction<T extends (...args: any) => any> = (
+  ...args: Parameters<T>
+) => ReturnType<T>;
 
 /**
- * Debounces a function for the provided delay
- * @param func Function
- * @param timeout Timeout delay
+ * Returns a throttled function that only invokes the provided function (`func`) at most once
+ * per within a given number of milliseconds
+ * @param func Function to throttle
+ * @param limit Limit in ms
  */
-const debounce = <Params extends any[]>(
-  func: (...args: Params) => any,
-  timeout: number
-): ((...args: Params) => void) => {
-  let timer: NodeJS.Timeout;
-  return (...args: Params) => {
-    clearTimeout(timer);
-    timer = setTimeout(() => {
-      func(...args);
-    }, timeout);
+function throttle<T extends (...args: any) => any>(
+  func: T,
+  limit: number
+): ThrottledFunction<T> {
+  let inThrottle: boolean;
+  let lastResult: ReturnType<T>;
+
+  return function (this: any): ReturnType<T> {
+    const args = arguments;
+    const context = this;
+
+    if (!inThrottle) {
+      inThrottle = true;
+      setTimeout(() => (inThrottle = false), limit);
+      lastResult = func.apply(context, args as any);
+    }
+
+    return lastResult;
   };
-};
+}
 
 /**
  * History plugin
@@ -63,6 +77,10 @@ export class HistoryPlugin {
    */
   private readonly propertiesToInclude: Array<keyof Layer | string> = [
     "_type",
+    "x1",
+    "x2",
+    "y1",
+    "y2",
     "id",
     "interactive",
     "name",
@@ -79,7 +97,9 @@ export class HistoryPlugin {
     "lineHeight",
     "text",
     "textAlign",
-    "verticalAlign"
+    "verticalAlign",
+    "startArrowhead",
+    "endArrowhead"
   ];
   /**
    * Debounced save action
@@ -97,7 +117,7 @@ export class HistoryPlugin {
     this.redoStack = [];
     this.nextState = this.getNextState();
     this.isProcessing = false;
-    this.debouncedSaveAction = debounce(this.saveActionImpl.bind(this), 100);
+    this.debouncedSaveAction = throttle(this.saveActionImpl.bind(this), 100);
   }
 
   /**
@@ -142,12 +162,30 @@ export class HistoryPlugin {
   private loadHistory(history: string | Record<string, any>): void {
     this.canvas
       .loadFromJSON(history, (prop, object) => {
-        object.set({
-          width: prop.width,
-          height: prop.height,
-          scaleX: 1,
-          scaleY: 1
-        });
+        if (isLinearObject(object)) {
+          object.set({
+            x1: prop.x1,
+            x2: prop.x2,
+            y1: prop.y1,
+            y2: prop.y2,
+            left: prop.left,
+            top: prop.top,
+            width: prop.width,
+            height: prop.height,
+            scaleX: 1,
+            scaleY: 1
+          });
+          syncLinearPoints(object);
+        } else {
+          object.set({
+            left: prop.left,
+            top: prop.top,
+            width: prop.width,
+            height: prop.height,
+            scaleX: 1,
+            scaleY: 1
+          });
+        }
       })
       .then(() => {
         this.canvas.renderAll();
@@ -251,7 +289,7 @@ export class HistoryPlugin {
       "object:skewing": this.saveAction.bind(this)
     });
 
-    hotkeys("ctrl+z,ctrl+y,ctrl+shift+z", (keyboardEvent, hotkeysEvent) => {
+    hotkeys("ctrl+z,ctrl+y,ctrl+shift+z", (_, hotkeysEvent) => {
       switch (hotkeysEvent.key) {
         case "ctrl+z":
           this.undo();

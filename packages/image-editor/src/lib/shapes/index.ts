@@ -1,3 +1,4 @@
+export * from "./Arrow";
 export * from "./common";
 export * from "./Diamond";
 export * from "./Ellipse";

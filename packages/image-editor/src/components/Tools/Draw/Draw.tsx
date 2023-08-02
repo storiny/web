@@ -5,6 +5,7 @@ import React from "react";
 import Divider from "~/components/Divider";
 import Spacer from "~/components/Spacer";
 
+import { LayerType } from "../../../constants";
 import { useActiveObject } from "../../../hooks";
 import Alignment from "./items/Alignment";
 import Dimensions from "./items/Dimensions";
@@ -16,39 +17,71 @@ import Shadow from "./items/Shadow";
 import Skew from "./items/Skew";
 import Stroke from "./items/Stroke";
 
-const DrawTools = (): React.ReactElement | null => {
-  const activeObject = useActiveObject();
+const SpacerWithDivider = (): React.ReactElement => (
+  <React.Fragment>
+    <Spacer orientation={"vertical"} size={2} />
+    <Divider />
+    <Spacer orientation={"vertical"} size={2} />
+  </React.Fragment>
+);
 
-  return (
-    <React.Fragment>
-      <Alignment />
-      {activeObject && (
+/**
+ * Returns tools for active object
+ * @param type Active object type
+ */
+const getActiveObjectTools = (type: LayerType): React.ReactElement | null => {
+  switch (type) {
+    case LayerType.RECTANGLE:
+    case LayerType.DIAMOND:
+    case LayerType.ELLIPSE:
+      return (
         <React.Fragment>
           <Spacer orientation={"vertical"} size={1.5} />
           <Position />
           <Dimensions />
           <Skew />
           <ObjectProps />
-          <Spacer orientation={"vertical"} size={2} />
-          <Divider />
-          <Spacer orientation={"vertical"} size={2} />
+          <SpacerWithDivider />
           <LayerProps />
-          <Spacer orientation={"vertical"} size={2} />
-          <Divider />
-          <Spacer orientation={"vertical"} size={2} />
+          <SpacerWithDivider />
           <Fill />
-          <Spacer orientation={"vertical"} size={2} />
-          <Divider />
-          <Spacer orientation={"vertical"} size={2} />
+          <SpacerWithDivider />
           <Stroke />
-          <Spacer orientation={"vertical"} size={2} />
-          <Divider />
-          <Spacer orientation={"vertical"} size={2} />
+          <SpacerWithDivider />
           <Shadow />
           <Spacer orientation={"vertical"} size={2} />
           <Divider />
         </React.Fragment>
-      )}
+      );
+    case LayerType.LINE:
+    case LayerType.ARROW:
+      return (
+        <React.Fragment>
+          <Spacer orientation={"vertical"} size={1.5} />
+          <Position />
+          <Skew />
+          <SpacerWithDivider />
+          <LayerProps />
+          <SpacerWithDivider />
+          <Stroke />
+          <SpacerWithDivider />
+          <Shadow />
+          <Spacer orientation={"vertical"} size={2} />
+          <Divider />
+        </React.Fragment>
+      );
+    default:
+      return null;
+  }
+};
+
+const DrawTools = (): React.ReactElement | null => {
+  const activeObject = useActiveObject();
+
+  return (
+    <React.Fragment>
+      <Alignment />
+      {activeObject && getActiveObjectTools(activeObject.get("_type"))}
       <Spacer orientation={"vertical"} size={2} />
     </React.Fragment>
   );

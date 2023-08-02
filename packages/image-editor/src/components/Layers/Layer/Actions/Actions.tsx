@@ -13,7 +13,7 @@ import TrashIcon from "~/icons/Trash";
 
 import { useActiveObject } from "../../../../hooks";
 import { CLONE_PROPS } from "../../../../lib";
-import { isLinearObject, syncLinearPoints } from "../../../../utils";
+import { isArrowObject, isLinearObject } from "../../../../utils";
 import styles from "./Actions.module.scss";
 
 const POPOVER_ID = "object-popover";
@@ -49,6 +49,13 @@ const Actions = (): React.ReactElement | null => {
             scaleX: 1,
             scaleY: 1
           });
+
+          if (isArrowObject(cloned)) {
+            cloned.set({
+              startArrowhead: activeObject.get("startArrowhead"),
+              endArrowhead: activeObject.get("endArrowhead")
+            });
+          }
         } else {
           cloned.top += 24;
           cloned.left += 24;
@@ -102,26 +109,30 @@ const Actions = (): React.ReactElement | null => {
   return ReactDOM.createPortal(
     <div className={clsx(clsx("flex-center", styles.x, styles.actions))}>
       <TooltipProvider disableHoverableContent>
-        <Tooltip content={"Flip vertically"}>
-          <IconButton
-            className={clsx(styles.x, styles.button)}
-            onClick={(): void => flipLayer("y")}
-            size={"sm"}
-            variant={"ghost"}
-          >
-            <FlipVerticalIcon />
-          </IconButton>
-        </Tooltip>
-        <Tooltip content={"Flip horizontally"}>
-          <IconButton
-            className={clsx(styles.x, styles.button)}
-            onClick={(): void => flipLayer("x")}
-            size={"sm"}
-            variant={"ghost"}
-          >
-            <FlipHorizontalIcon />
-          </IconButton>
-        </Tooltip>
+        {activeObject && !isLinearObject(activeObject) ? (
+          <>
+            <Tooltip content={"Flip vertically"}>
+              <IconButton
+                className={clsx(styles.x, styles.button)}
+                onClick={(): void => flipLayer("y")}
+                size={"sm"}
+                variant={"ghost"}
+              >
+                <FlipVerticalIcon />
+              </IconButton>
+            </Tooltip>
+            <Tooltip content={"Flip horizontally"}>
+              <IconButton
+                className={clsx(styles.x, styles.button)}
+                onClick={(): void => flipLayer("x")}
+                size={"sm"}
+                variant={"ghost"}
+              >
+                <FlipHorizontalIcon />
+              </IconButton>
+            </Tooltip>
+          </>
+        ) : null}
         <Tooltip content={"Clone layer"}>
           <IconButton
             className={clsx(styles.x, styles.button)}

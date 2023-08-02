@@ -1,4 +1,5 @@
 import {
+  Arrowhead,
   FillStyle,
   LayerType,
   StrokeStyle,
@@ -93,7 +94,12 @@ export type RectangleLayer = LayerPrimitive<LayerType.RECTANGLE> &
 export type DiamondLayer = LayerPrimitive<LayerType.DIAMOND> & SolidLayerProps;
 export type EllipseLayer = LayerPrimitive<LayerType.ELLIPSE> & SolidLayerProps;
 export type LineLayer = LayerPrimitive<LayerType.LINE>;
-export type ArrowLayer = LayerPrimitive<LayerType.ARROW>;
+
+export type ArrowLayer = LayerPrimitive<LayerType.ARROW> & {
+  endArrowhead?: Arrowhead;
+  startArrowhead?: Arrowhead;
+};
+
 export type ImageLayer = LayerPrimitive<LayerType.IMAGE>;
 export type TextLayer = LayerPrimitive<LayerType.TEXT> & {
   /**

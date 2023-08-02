@@ -3,6 +3,7 @@ import {
   Ellipse,
   Line,
   Object as FabricObject,
+  Path,
   Rect,
   TProps
 } from "fabric";
@@ -44,3 +45,11 @@ export class DiamondPrimitve<
 export class LinePrimitive<
   Props extends TProps<BaseFabricObject>
 > extends WithPrimitive(Line)<Props> {}
+
+export class ArrowPrimitive<
+  Props extends TProps<BaseFabricObject>
+> extends WithPrimitive(Line)<Props> {}
+
+export class PenPrimitive<
+  Props extends TProps<BaseFabricObject>
+> extends WithPrimitive(Path)<Props> {}

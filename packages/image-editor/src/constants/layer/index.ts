@@ -18,6 +18,7 @@ export enum Arrowhead {
   ARROW = "arrow",
   BAR = "bar",
   DOT = "dot",
+  NONE = "none",
   TRIANGLE = "triangle"
 }
 

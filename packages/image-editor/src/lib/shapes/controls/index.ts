@@ -48,6 +48,15 @@ const cloneObject = (
           scaleX: 1,
           scaleY: 1
         });
+
+        // Set arrowheads
+        // Avoid using `isArrowObject` due to circular deps
+        if (cloned.get("_type") === LayerType.ARROW) {
+          cloned.set({
+            startArrowhead: target.get("startArrowhead"),
+            endArrowhead: target.get("endArrowhead")
+          });
+        }
       } else {
         if (direction === "left") {
           cloned.left -= cloned.width + 24;
@@ -112,7 +121,6 @@ class ObjectControls {
 
       ctx.save();
 
-      let hasRestored = false;
       const retinaScaling = this.object.getCanvasRetinaScaling();
       ctx.setTransform(retinaScaling, 0, 0, retinaScaling, 0, 0);
       ctx.strokeStyle = this.object.cornerColor;
@@ -213,9 +221,6 @@ class ObjectControls {
             ctx.fill();
             ctx.stroke();
           } else {
-            ctx.restore();
-            hasRestored = true;
-
             control.render(
               ctx,
               p.x,
@@ -231,9 +236,7 @@ class ObjectControls {
         }
       });
 
-      if (!hasRestored) {
-        ctx.restore();
-      }
+      ctx.restore();
     };
   }
 
@@ -281,6 +284,7 @@ class ObjectControls {
           });
 
           this.canvas?.fire("linear:moving" as any, { target: object });
+          this.canvas?.fire("object:modified" as any, { target: object });
 
           return true;
         }
@@ -308,6 +312,7 @@ class ObjectControls {
           });
 
           this.canvas?.fire("linear:moving" as any, { target: object });
+          this.canvas?.fire("object:modified" as any, { target: object });
 
           return true;
         }
@@ -435,7 +440,7 @@ class ObjectControls {
     this.registerDrawControls();
     this.registerCloneControls();
 
-    if (this.object.get("_type") === LayerType.LINE) {
+    if (isLinearObject(this.object)) {
       this.registerLinearControls();
     }
   }
