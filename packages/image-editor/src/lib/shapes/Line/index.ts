@@ -8,12 +8,7 @@ import { generateRoughOptions } from "../../../utils";
 import { LinePrimitive } from "../Object";
 
 export type LineProps = ConstructorParameters<typeof LinePrimitive>[1] &
-  Omit<LineLayer, "id" | "_type"> & {
-    x1: number;
-    x2: number;
-    y1: number;
-    y2: number;
-  };
+  Omit<LineLayer, "id" | "_type">;
 
 const DEFAULT_LINE_PROPS: Partial<LineProps> = {
   interactive: true,

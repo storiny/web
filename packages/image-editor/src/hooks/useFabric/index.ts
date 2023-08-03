@@ -1,8 +1,9 @@
-import { Canvas, PencilBrush } from "fabric";
+import { Canvas } from "fabric";
 import React from "react";
 
 import { FabricContext } from "../../components/Context";
 import { CURSORS } from "../../constants";
+import { PenBrush } from "../../lib/shapes/Pen";
 import { bindEvents } from "./events";
 import {
   registerActions,
@@ -44,7 +45,7 @@ export const useFabric = (): ((
     });
 
     canvas.current.isDrawingMode = true;
-    canvas.current.freeDrawingBrush = new PencilBrush(canvas.current);
+    canvas.current.freeDrawingBrush = new PenBrush(canvas.current);
     canvas.current.freeDrawingBrush.color = "#000";
 
     [

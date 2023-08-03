@@ -7,8 +7,8 @@ import {
   Transform
 } from "fabric";
 
-import { CURSORS, LayerType } from "../../../constants";
-import { isLinearObject } from "../../../utils";
+import { CURSORS } from "../../../constants";
+import { isArrowObject, isLinearObject } from "../../../utils";
 import { CLONE_PROPS } from "../common";
 
 const DISABLED_CONTROLS = ["ml", "mt", "mr", "mb"];
@@ -50,8 +50,7 @@ const cloneObject = (
         });
 
         // Set arrowheads
-        // Avoid using `isArrowObject` due to circular deps
-        if (cloned.get("_type") === LayerType.ARROW) {
+        if (isArrowObject(cloned)) {
           cloned.set({
             startArrowhead: target.get("startArrowhead"),
             endArrowhead: target.get("endArrowhead")

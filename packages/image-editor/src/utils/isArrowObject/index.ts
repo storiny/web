@@ -1,5 +1,6 @@
 import { BaseFabricObject } from "fabric";
 
+import { LayerType } from "../../constants";
 import { Arrow } from "../../lib";
 
 /**
@@ -7,4 +8,4 @@ import { Arrow } from "../../lib";
  * @param object Object
  */
 export const isArrowObject = (object: BaseFabricObject): object is Arrow =>
-  object instanceof Arrow;
+  object.get("_type") === LayerType.ARROW;

@@ -1,3 +1,5 @@
+import { Point } from "fabric";
+
 import {
   Arrowhead,
   FillStyle,
@@ -33,6 +35,13 @@ type SolidLayerProps = {
    * @default 5
    */
   hachureGap?: number;
+};
+
+type LinearLayerProps = {
+  x1: number;
+  x2: number;
+  y1: number;
+  y2: number;
 };
 
 type LayerPrimitive<T extends LayerType> = {
@@ -87,18 +96,33 @@ type LayerPrimitive<T extends LayerType> = {
   strokeStyle?: StrokeStyle;
 };
 
-export type PenLayer = LayerPrimitive<LayerType.PEN>;
+// Path layers
+
+export type PenLayer = Omit<
+  LayerPrimitive<LayerType.PEN>,
+  "seed" | "strokeStyle" | "roughness" | "isDrawing"
+> & {
+  points: Point[];
+};
+
+// Solid layers
+
 export type PolygonLayer = LayerPrimitive<LayerType.POLYGON> & SolidLayerProps;
 export type RectangleLayer = LayerPrimitive<LayerType.RECTANGLE> &
   SolidLayerProps;
 export type DiamondLayer = LayerPrimitive<LayerType.DIAMOND> & SolidLayerProps;
 export type EllipseLayer = LayerPrimitive<LayerType.ELLIPSE> & SolidLayerProps;
-export type LineLayer = LayerPrimitive<LayerType.LINE>;
 
-export type ArrowLayer = LayerPrimitive<LayerType.ARROW> & {
-  endArrowhead?: Arrowhead;
-  startArrowhead?: Arrowhead;
-};
+// Linear layers
+
+export type LineLayer = LayerPrimitive<LayerType.LINE> & LinearLayerProps;
+export type ArrowLayer = LayerPrimitive<LayerType.ARROW> &
+  LinearLayerProps & {
+    endArrowhead?: Arrowhead;
+    startArrowhead?: Arrowhead;
+  };
+
+// Other
 
 export type ImageLayer = LayerPrimitive<LayerType.IMAGE>;
 export type TextLayer = LayerPrimitive<LayerType.TEXT> & {

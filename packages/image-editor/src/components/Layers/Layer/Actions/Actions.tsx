@@ -109,30 +109,28 @@ const Actions = (): React.ReactElement | null => {
   return ReactDOM.createPortal(
     <div className={clsx(clsx("flex-center", styles.x, styles.actions))}>
       <TooltipProvider disableHoverableContent>
-        {activeObject && !isLinearObject(activeObject) ? (
-          <>
-            <Tooltip content={"Flip vertically"}>
-              <IconButton
-                className={clsx(styles.x, styles.button)}
-                onClick={(): void => flipLayer("y")}
-                size={"sm"}
-                variant={"ghost"}
-              >
-                <FlipVerticalIcon />
-              </IconButton>
-            </Tooltip>
-            <Tooltip content={"Flip horizontally"}>
-              <IconButton
-                className={clsx(styles.x, styles.button)}
-                onClick={(): void => flipLayer("x")}
-                size={"sm"}
-                variant={"ghost"}
-              >
-                <FlipHorizontalIcon />
-              </IconButton>
-            </Tooltip>
-          </>
-        ) : null}
+        <Tooltip content={"Flip vertically"}>
+          <IconButton
+            className={clsx(styles.x, styles.button)}
+            disabled={Boolean(activeObject && isLinearObject(activeObject))}
+            onClick={(): void => flipLayer("y")}
+            size={"sm"}
+            variant={"ghost"}
+          >
+            <FlipVerticalIcon />
+          </IconButton>
+        </Tooltip>
+        <Tooltip content={"Flip horizontally"}>
+          <IconButton
+            className={clsx(styles.x, styles.button)}
+            disabled={Boolean(activeObject && isLinearObject(activeObject))}
+            onClick={(): void => flipLayer("x")}
+            size={"sm"}
+            variant={"ghost"}
+          >
+            <FlipHorizontalIcon />
+          </IconButton>
+        </Tooltip>
         <Tooltip content={"Clone layer"}>
           <IconButton
             className={clsx(styles.x, styles.button)}

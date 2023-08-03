@@ -5108,6 +5108,7 @@ __metadata:
     fabric: beta
     hotkeys-js: ^3.11.2
     jotai: ^2.2.2
+    perfect-freehand: ^1.2.0
     prettier: ^2.5.1
     react: ^18.2.0
     react-dom: ^18.2.0
@@ -17474,6 +17475,13 @@ eslint-config-turbo@latest:
   version: 1.2.0
   resolution: "pend@npm:1.2.0"
   checksum: 6c72f5243303d9c60bd98e6446ba7d30ae29e3d56fdb6fae8767e8ba6386f33ee284c97efe3230a0d0217e2b1723b8ab490b1bbf34fcbb2180dbc8a9de47850d
+  languageName: node
+  linkType: hard
+
+"perfect-freehand@npm:^1.2.0":
+  version: 1.2.0
+  resolution: "perfect-freehand@npm:1.2.0"
+  checksum: 03900c103170c68a495e5b4f0609d8375dd26d61a797ffb190c7436274c6a2f4011c21de2bdf420ab324350945dddbdf9c201312388a6e875dfbb88b328d91ae
   languageName: node
   linkType: hard
 
