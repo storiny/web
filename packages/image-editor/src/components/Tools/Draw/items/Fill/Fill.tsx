@@ -119,7 +119,7 @@ const FillControl = ({
         min={MIN_OPACITY}
         monospaced
         onChange={(event): void => {
-          const a = Number.parseInt(event.target.value) ?? 0;
+          const a = Number.parseInt(event.target.value) || 0;
           const { r, g, b } = hexToRgb(fill.hex);
 
           changeFill({

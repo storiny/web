@@ -4,11 +4,13 @@ import {
   classRegistry,
   Point,
   Shadow,
-  TEvent
+  TEvent,
+  util
 } from "fabric";
+import { TSimplePathData } from "fabric/src/util/path/typedefs";
 import { getStroke, StrokeOptions } from "perfect-freehand";
 
-import { LayerType } from "../../../constants";
+import { CURSORS, LayerType, PenStyle } from "../../../constants";
 import { PenLayer } from "../../../types";
 import { PenPrimitive } from "../Object";
 
@@ -16,13 +18,8 @@ export type PenProps = ConstructorParameters<typeof PenPrimitive>[1] &
   Omit<PenLayer, "id" | "_type">;
 
 const DEFAULT_PEN_PROPS: Partial<PenProps> = {
-  interactive: true,
-  stroke: "rgba(0,0,0,1)",
-  strokeWidth: 1
+  interactive: true
 };
-
-// Trim SVG path data so numbers are rounded to two decimal points each
-const TO_FIXED_PRECISION = /(\s?[A-Z]?,?-?[0-9]*\.[0-9]{0,2})(([0-9]|e|-)*)/g;
 
 /**
  * Returns a new array containing the medians of the corresponding elements
@@ -36,65 +33,75 @@ const med = (A: number[], B: number[]): [number, number] => [
 ];
 
 /**
- * Generates an SVG path from stroke
+ * Converts stroke points to SVG commands
  * @param points Points returned from `getStroke`
  */
-const getSvgPathFromStroke = (points: number[][]): string => {
+const convertPointsToSvgCommands = (
+  points: [number, number][]
+): TSimplePathData => {
   if (!points.length) {
-    return "";
+    return [];
   }
 
   const max = points.length - 1;
 
-  return points
-    .reduce(
-      (acc, point, i, arr) => {
-        if (i === max) {
-          acc.push(point, med(point, arr[0]), "L", arr[0], "Z");
-        } else {
-          acc.push(point, med(point, arr[i + 1]));
-        }
+  return points.reduce<TSimplePathData>(
+    (acc, point, i, arr) => {
+      if (i === max) {
+        acc.push(["Q", ...point, ...med(point, arr[0])]);
+        acc.push(["L", ...arr[0]]);
+        acc.push(["Z"]);
+      } else {
+        acc.push(["Q", ...point, ...med(point, arr[i + 1])]);
+      }
 
-        return acc;
-      },
-      ["M", points[0], "Q"]
-    )
-    .join(" ")
-    .replace(TO_FIXED_PRECISION, "$1");
+      return acc;
+    },
+    [["M", ...points[0]]]
+  );
 };
 
 /**
- * Returns SVG path from points
+ * Returns SVG path commands from points
  * @param points Captured points array
  * @param options Options
  */
 const getSvgPathFromPoints = (
   points: Point[],
   options?: StrokeOptions & { strokeWidth: number }
-): string =>
-  getSvgPathFromStroke(
+): TSimplePathData =>
+  convertPointsToSvgCommands(
     getStroke(points, {
       thinning: 0.6,
       smoothing: 0.5,
       streamline: 0.5,
       ...options,
-      simulatePressure: true,
-      size: (options?.strokeWidth || 1) * 4.25,
-      easing: (t) => Math.sin((t * Math.PI) / 2) // https://easings.net/#easeOutSine
-    })
+      size:
+        (options?.strokeWidth || 1) * (options?.simulatePressure ? 3.25 : 1),
+      // https://easings.net/#easeOutSine
+      easing: (t) => Math.sin((t * Math.PI) / 2)
+    }) as [number, number][]
   );
+
+// Brush
 
 export class PenBrush extends BaseBrush {
   /**
    * Array of points captured during mouse movements
+   * @private
    */
-  public points: Point[];
+  private points: Point[];
   /**
    * Boolean flag indicating wether the temporary drawing has finished
    * (mouse-up event), and the drawing needs to be off-loaded to the
    * main canvas
+   * @private
    */
-  public hasCommittedLastPoint: boolean;
+  private hasCommittedLastPoint: boolean;
+  /**
+   * Pen style
+   */
+  public penStyle: PenStyle;
 
   /**
    * Ctor
@@ -102,6 +109,7 @@ export class PenBrush extends BaseBrush {
    */
   constructor(canvas: Canvas) {
     super(canvas);
+    this.penStyle = PenStyle.PRESSURE;
     this.points = [];
     this.hasCommittedLastPoint = false;
   }
@@ -170,6 +178,23 @@ export class PenBrush extends BaseBrush {
   }
 
   /**
+   * Sets brush styles
+   * @param ctx Rendering context
+   * @private
+   */
+  private setBrushStyles(ctx: CanvasRenderingContext2D): void {
+    ctx.fillStyle = this.color;
+    ctx.lineWidth = this.width;
+    ctx.lineCap = this.strokeLineCap;
+    ctx.miterLimit = this.strokeMiterLimit;
+    ctx.lineJoin = this.strokeLineJoin;
+    ctx.setLineDash(this.strokeDashArray || []);
+
+    // Update cursor
+    this.canvas.freeDrawingCursor = CURSORS.pen(this.color);
+  }
+
+  /**
    * Adds a new point to the `points` array. Returns `true` if the point was added,
    * false otherwise
    * @param point Point to add
@@ -192,8 +217,8 @@ export class PenBrush extends BaseBrush {
    * @private
    */
   private reset(): void {
-    this.points.length = 0;
-    this._setBrushStyles(this.canvas.contextTop);
+    this.points = [];
+    this.setBrushStyles(this.canvas.contextTop);
     this._setShadow();
   }
 
@@ -214,12 +239,13 @@ export class PenBrush extends BaseBrush {
   private createPath(): Pen {
     const path = new Pen({
       points: this.points,
+      penWidth: this.width,
+      penStyle: this.penStyle,
       fill: this.color,
       stroke: null
     });
 
     if (this.shadow) {
-      this.shadow.affectStroke = true;
       path.shadow = new Shadow(this.shadow);
     }
 
@@ -231,10 +257,14 @@ export class PenBrush extends BaseBrush {
    * @private
    */
   private getSvgPathData(): string {
-    return getSvgPathFromPoints(this.points, {
-      last: this.hasCommittedLastPoint,
-      strokeWidth: this.strokeWidth || 1
-    });
+    return util.joinPath(
+      getSvgPathFromPoints(this.points, {
+        last: this.hasCommittedLastPoint,
+        strokeWidth: this.width || 1,
+        simulatePressure: this.penStyle === PenStyle.PRESSURE
+      }),
+      3
+    );
   }
 
   /**
@@ -246,16 +276,15 @@ export class PenBrush extends BaseBrush {
     const path = this.createPath();
     path.left += path.width / 2;
     path.top += path.height / 2;
-
     this.canvas.clearContext(this.canvas.contextTop);
-    //    this.canvas.fire("before:path:created", { path });
+    this.canvas.fire("before:path:created", { path });
     this.canvas.add(path);
     this.canvas.requestRenderAll();
 
     path.setCoords();
     this._resetShadow();
 
-    //    this.canvas.fire("path:created", { path });
+    this.canvas.fire("path:created", { path });
   }
 }
 
@@ -268,15 +297,17 @@ export class Pen extends PenPrimitive<PenProps> {
    */
   constructor(props: PenProps) {
     super(
-      getSvgPathFromPoints(props.points, {
+      getSvgPathFromPoints(props.points || [], {
         last: true,
-        strokeWidth: props.strokeWidth || 1
+        strokeWidth: props.penWidth || 1,
+        simulatePressure:
+          (props.penStyle || PenStyle.PRESSURE) === PenStyle.PRESSURE
       }),
       {
         ...DEFAULT_PEN_PROPS,
         ...props,
         _type: LayerType.PEN,
-        objectCaching: true
+        objectCaching: true // Never overflows the bounding box
       }
     );
   }
@@ -288,20 +319,18 @@ export class Pen extends PenPrimitive<PenProps> {
     return LayerType.PEN;
   }
 
-  private getPathData(): string {
-    const points = this.get("points");
-    return getSvgPathFromPoints(points, {
-      last: true,
-      strokeWidth: this.strokeWidth || 1
-    });
-  }
-
   /**
    * Renders shape
    * @param ctx Canvas context
    */
   _render(ctx: CanvasRenderingContext2D): void {
-    this._setPath(this.getPathData());
+    const pathData = getSvgPathFromPoints(this.get("points"), {
+      last: true,
+      strokeWidth: this.get("penWidth") || 1,
+      simulatePressure: this.get("penStyle") === PenStyle.PRESSURE
+    });
+
+    this._setPath(pathData);
     super._render.apply(this, [ctx]);
   }
 }

@@ -6,12 +6,13 @@ import Divider from "~/components/Divider";
 import Spacer from "~/components/Spacer";
 
 import { LayerType } from "../../../constants";
-import { useActiveObject } from "../../../hooks";
+import { useActiveObject, useCanvas } from "../../../hooks";
 import Alignment from "./items/Alignment";
 import Dimensions from "./items/Dimensions";
 import Fill from "./items/Fill";
 import LayerProps from "./items/LayerProps";
 import ObjectProps from "./items/ObjectProps";
+import PenProps from "./items/PenProps";
 import Position from "./items/Position";
 import Shadow from "./items/Shadow";
 import Skew from "./items/Skew";
@@ -22,6 +23,30 @@ const SpacerWithDivider = (): React.ReactElement => (
     <Spacer orientation={"vertical"} size={2} />
     <Divider />
     <Spacer orientation={"vertical"} size={2} />
+  </React.Fragment>
+);
+
+const PenTools = ({
+  isDrawing
+}: {
+  isDrawing: boolean;
+}): React.ReactElement => (
+  <React.Fragment>
+    <Spacer orientation={"vertical"} size={1.5} />
+    {!isDrawing && (
+      <React.Fragment>
+        <Position />
+        <Dimensions />
+        <Skew />
+        <ObjectProps disableCornerRadius />
+        <SpacerWithDivider />
+      </React.Fragment>
+    )}
+    <PenProps />
+    <SpacerWithDivider />
+    <Shadow isPen />
+    <Spacer orientation={"vertical"} size={2} />
+    <Divider />
   </React.Fragment>
 );
 
@@ -70,18 +95,25 @@ const getActiveObjectTools = (type: LayerType): React.ReactElement | null => {
           <Divider />
         </React.Fragment>
       );
+    case LayerType.PEN:
+      return <PenTools isDrawing={false} />;
     default:
       return null;
   }
 };
 
 const DrawTools = (): React.ReactElement | null => {
+  const canvas = useCanvas();
   const activeObject = useActiveObject();
 
   return (
     <React.Fragment>
       <Alignment />
-      {activeObject && getActiveObjectTools(activeObject.get("_type"))}
+      {canvas.current?.isDrawingMode ? (
+        <PenTools isDrawing={true} />
+      ) : activeObject ? (
+        getActiveObjectTools(activeObject.get("_type"))
+      ) : null}
       <Spacer orientation={"vertical"} size={2} />
     </React.Fragment>
   );

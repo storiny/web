@@ -16,21 +16,30 @@ export const COMMON_OBJECT_PROPS: TProps<BaseFabricObject> = {
 };
 
 export const CLONE_PROPS = [
+  "interactive",
   "x1",
   "x2",
   "y1",
   "y2",
   "flipX",
   "flipY",
-  "strokeWidth",
-  "fill",
   "stroke",
   "strokeStyle",
-  "interactive",
+  "strokeWidth",
+  "penWidth",
+  "penStyle",
+  "fill",
   "fillStyle",
   "fillWeight",
+  "points",
   "hachureGap",
   "roughness",
+  "fontFamily",
+  "fontSize",
+  "lineHeight",
+  "text",
+  "textAlign",
+  "verticalAlign",
   "startArrowhead",
   "endArrowhead"
 ];

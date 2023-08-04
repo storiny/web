@@ -1,8 +1,14 @@
 import { Canvas } from "fabric";
 import hotkeys from "hotkeys-js";
 
+import { CLONE_PROPS } from "../../../../lib";
 import { Layer } from "../../../../types";
-import { isLinearObject, syncLinearPoints } from "../../../../utils";
+import {
+  isLinearObject,
+  isPenObject,
+  recoverObject,
+  syncLinearPoints
+} from "../../../../utils";
 
 type ThrottledFunction<T extends (...args: any) => any> = (
   ...args: Parameters<T>
@@ -48,12 +54,12 @@ export class HistoryPlugin {
    * Undo stack
    * @private
    */
-  private readonly undoStack: any[];
+  private undoStack: any[];
   /**
    * Redo stack
    * @private
    */
-  private readonly redoStack: any[];
+  private redoStack: any[];
   /**
    * Undo and redo stack limit
    * @private
@@ -76,30 +82,13 @@ export class HistoryPlugin {
    * @private
    */
   private readonly propertiesToInclude: Array<keyof Layer | string> = [
+    ...CLONE_PROPS,
     "_type",
-    "x1",
-    "x2",
-    "y1",
-    "y2",
     "id",
-    "interactive",
     "name",
     "locked",
     "selected",
-    "seed",
-    "fillStyle",
-    "fillWeight",
-    "hachureGap",
-    "roughness",
-    "strokeStyle",
-    "fontFamily",
-    "fontSize",
-    "lineHeight",
-    "text",
-    "textAlign",
-    "verticalAlign",
-    "startArrowhead",
-    "endArrowhead"
+    "seed"
   ];
   /**
    * Debounced save action
@@ -161,32 +150,7 @@ export class HistoryPlugin {
    */
   private loadHistory(history: string | Record<string, any>): void {
     this.canvas
-      .loadFromJSON(history, (prop, object) => {
-        if (isLinearObject(object)) {
-          object.set({
-            x1: prop.x1,
-            x2: prop.x2,
-            y1: prop.y1,
-            y2: prop.y2,
-            left: prop.left,
-            top: prop.top,
-            width: prop.width,
-            height: prop.height,
-            scaleX: 1,
-            scaleY: 1
-          });
-          syncLinearPoints(object);
-        } else {
-          object.set({
-            left: prop.left,
-            top: prop.top,
-            width: prop.width,
-            height: prop.height,
-            scaleX: 1,
-            scaleY: 1
-          });
-        }
-      })
+      .loadFromJSON(history, (prop, object) => recoverObject(object, prop))
       .then(() => {
         this.canvas.renderAll();
         this.isProcessing = false;
@@ -236,8 +200,8 @@ export class HistoryPlugin {
    * Clears the history
    */
   public clear(): void {
-    this.undoStack.length = 0;
-    this.undoStack.length = 0;
+    this.undoStack = [];
+    this.redoStack = [];
   }
 
   /**

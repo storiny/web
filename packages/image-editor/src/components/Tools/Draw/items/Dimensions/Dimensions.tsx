@@ -14,7 +14,7 @@ import {
   useCanvas,
   useEventRender
 } from "../../../../../hooks";
-import { modifyObject } from "../../../../../utils";
+import { isScalableObject, modifyObject } from "../../../../../utils";
 import DrawItem, { DrawItemRow } from "../../Item";
 
 const Dimensions = (): React.ReactElement | null => {
@@ -55,22 +55,37 @@ const Dimensions = (): React.ReactElement | null => {
       setDimensions((prevState) => ({ ...prevState, height: newHeight }));
 
       if (activeObject) {
-        const delta = newHeight - activeObject.height;
+        const clampedHeight = clamp(1, newHeight, Infinity);
 
-        modifyObject(activeObject, {
-          height: clamp(1, newHeight, Infinity),
-          scaleX: 1,
-          scaleY: 1
-        });
+        if (isScalableObject(activeObject)) {
+          if (constrained) {
+            activeObject.scaleToHeight(clampedHeight); // Scale both X and Y equally
+            canvas.current?.requestRenderAll();
+          } else {
+            const boundingRectFactor =
+              activeObject.getBoundingRect().height /
+              activeObject.getScaledHeight();
 
-        if (constrained) {
+            modifyObject(activeObject, {
+              scaleY: clampedHeight / activeObject.height / boundingRectFactor
+            });
+          }
+        } else {
+          const delta = newHeight - activeObject.height;
+
           modifyObject(activeObject, {
-            width: clamp(1, activeObject.width + delta, Infinity)
+            height: clampedHeight
           });
+
+          if (constrained) {
+            modifyObject(activeObject, {
+              width: clamp(1, activeObject.width + delta, Infinity)
+            });
+          }
         }
       }
     },
-    [activeObject, constrained]
+    [activeObject, canvas, constrained]
   );
 
   /**
@@ -81,22 +96,37 @@ const Dimensions = (): React.ReactElement | null => {
       setDimensions((prevState) => ({ ...prevState, width: newWidth }));
 
       if (activeObject) {
-        const delta = newWidth - activeObject.width;
+        const clampedWidth = clamp(1, newWidth, Infinity);
 
-        modifyObject(activeObject, {
-          width: clamp(1, newWidth, Infinity),
-          scaleX: 1,
-          scaleY: 1
-        });
+        if (isScalableObject(activeObject)) {
+          if (constrained) {
+            activeObject.scaleToWidth(clampedWidth); // Scale both X and Y equally
+            canvas.current?.requestRenderAll();
+          } else {
+            const boundingRectFactor =
+              activeObject.getBoundingRect().width /
+              activeObject.getScaledWidth();
 
-        if (constrained) {
+            modifyObject(activeObject, {
+              scaleX: clampedWidth / activeObject.width / boundingRectFactor
+            });
+          }
+        } else {
+          const delta = newWidth - activeObject.width;
+
           modifyObject(activeObject, {
-            height: clamp(1, activeObject.height + delta, Infinity)
+            width: clampedWidth
           });
+
+          if (constrained) {
+            modifyObject(activeObject, {
+              height: clamp(1, activeObject.height + delta, Infinity)
+            });
+          }
         }
       }
     },
-    [activeObject, constrained]
+    [activeObject, canvas, constrained]
   );
 
   /**
@@ -115,10 +145,15 @@ const Dimensions = (): React.ReactElement | null => {
 
   React.useEffect(() => {
     setDimensions({
-      height: activeObject?.height || 1,
-      width: activeObject?.width || 1
+      height: (activeObject?.height || 0) * (activeObject?.scaleY || 0) || 1,
+      width: (activeObject?.width || 0) * (activeObject?.scaleX || 0) || 1
     });
-  }, [activeObject?.height, activeObject?.width]);
+  }, [
+    activeObject?.height,
+    activeObject?.scaleX,
+    activeObject?.scaleY,
+    activeObject?.width
+  ]);
 
   if (!activeObject) {
     return null;

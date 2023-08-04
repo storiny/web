@@ -43,7 +43,8 @@ const getDiamondPoints = (
 };
 
 export class Diamond extends DiamondPrimitve<DiamondProps> {
-  static override type = LayerType.ARROW;
+  static override type = LayerType.DIAMOND;
+
   /**
    * Radius X
    * @private

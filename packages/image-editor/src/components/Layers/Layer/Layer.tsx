@@ -143,6 +143,10 @@ const Layer = React.forwardRef<HTMLLIElement, LayerProps>((props, ref) => {
       )}
       onClick={selectLayerImpl}
       onKeyUp={(event): void => {
+        if (isEditing) {
+          return;
+        }
+
         if (event.key === "Enter" || event.key === " ") {
           event.preventDefault();
           selectLayerImpl();

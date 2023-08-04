@@ -52,13 +52,6 @@ export const generateRoughOptions = (
       return options;
     }
     case LayerType.LINE:
-    case LayerType.PEN: {
-      // if (isPathALoop(element.points)) {
-      //   options.fillStyle = object.get("fillStyle");
-      // }
-
-      return options;
-    }
     case LayerType.ARROW:
       return options;
     default: {

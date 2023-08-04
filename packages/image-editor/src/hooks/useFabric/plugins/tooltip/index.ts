@@ -130,8 +130,10 @@ class TooltipPlugin {
         const boundingRect = this.activeObject.getBoundingRect();
         const x = boundingRect.left + boundingRect.width / 2;
         const y = boundingRect.top + boundingRect.height + this.verticalMargin;
-        const text = `${Math.round(this.activeObject.width)} ✕ ${Math.round(
-          this.activeObject.height
+        const text = `${Math.round(
+          this.activeObject.width * this.activeObject.scaleX
+        )} ✕ ${Math.round(
+          this.activeObject.height * this.activeObject.scaleY
         )}`;
 
         this.renderTooltip(text, x, y);

@@ -14,14 +14,17 @@ import XIcon from "~/icons/X";
 
 import { useCanvas } from "../../hooks";
 import { useActiveObject, useEventRender } from "../../hooks";
-import { Rect } from "../../lib";
+import { Text } from "../../lib";
 import styles from "./Topbar.module.scss";
 
 const MyToolKit = (): React.ReactElement => {
   const canvas = useCanvas();
   const drawRect = (): void => {
     canvas.current?.add(
-      new Rect({ top: 100, left: 100, width: 200, height: 200 })
+      new Text({
+        text: "Some text",
+        fontSize: 20
+      })
     );
   };
 

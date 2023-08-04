@@ -5,7 +5,8 @@ import { CLONE_PROPS } from "../../../../lib";
 import {
   isActiveSelection,
   isArrowObject,
-  isLinearObject
+  isLinearObject,
+  recoverObject
 } from "../../../../utils";
 
 const CLONED_OBJECT_OFFSET = 15; // px
@@ -49,35 +50,16 @@ class ClonePlugin {
     this.cloneCount++;
 
     activeObject.clone(CLONE_PROPS).then((cloned) => {
+      recoverObject(cloned, activeObject);
+
       if (isLinearObject(cloned)) {
         cloned.set({
           x1: activeObject.get("x1") + CLONED_OBJECT_OFFSET,
-          x2: activeObject.get("x2") + CLONED_OBJECT_OFFSET,
-          y1: activeObject.get("y1"),
-          y2: activeObject.get("y2"),
-          width: activeObject.width,
-          height: activeObject.height,
-          scaleX: 1,
-          scaleY: 1
+          x2: activeObject.get("x2") + CLONED_OBJECT_OFFSET
         });
-
-        // Set arrowheads
-        if (isArrowObject(cloned)) {
-          cloned.set({
-            startArrowhead: activeObject.get("startArrowhead"),
-            endArrowhead: activeObject.get("endArrowhead")
-          });
-        }
       } else {
         cloned.left += this.cloneCount * CLONED_OBJECT_OFFSET;
         cloned.top += this.cloneCount * CLONED_OBJECT_OFFSET;
-
-        cloned.set({
-          width: activeObject.width,
-          height: activeObject.height,
-          scaleX: 1,
-          scaleY: 1
-        });
       }
 
       this.canvas.add(cloned);

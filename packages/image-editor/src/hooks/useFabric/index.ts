@@ -44,9 +44,9 @@ export const useFabric = (): ((
       event.preventDefault();
     });
 
-    canvas.current.isDrawingMode = true;
-    canvas.current.freeDrawingBrush = new PenBrush(canvas.current);
-    canvas.current.freeDrawingBrush.color = "#000";
+    // canvas.current.isDrawingMode = true;
+    // canvas.current.freeDrawingBrush = new PenBrush(canvas.current);
+    // canvas.current.freeDrawingBrush.color = "#0ff";
 
     [
       bindEvents,

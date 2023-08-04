@@ -4,6 +4,7 @@ import {
   Arrowhead,
   FillStyle,
   LayerType,
+  PenStyle,
   StrokeStyle,
   TextAlign,
   VerticalAlign
@@ -102,6 +103,17 @@ export type PenLayer = Omit<
   LayerPrimitive<LayerType.PEN>,
   "seed" | "strokeStyle" | "roughness" | "isDrawing"
 > & {
+  /**
+   * Pen style
+   */
+  penStyle?: PenStyle;
+  /**
+   * Width of the pen
+   */
+  penWidth?: number;
+  /**
+   * Pen points
+   */
   points: Point[];
 };
 
@@ -118,7 +130,13 @@ export type EllipseLayer = LayerPrimitive<LayerType.ELLIPSE> & SolidLayerProps;
 export type LineLayer = LayerPrimitive<LayerType.LINE> & LinearLayerProps;
 export type ArrowLayer = LayerPrimitive<LayerType.ARROW> &
   LinearLayerProps & {
+    /**
+     * End arrowhead
+     */
     endArrowhead?: Arrowhead;
+    /**
+     * Start arrowhead
+     */
     startArrowhead?: Arrowhead;
   };
 
@@ -129,16 +147,16 @@ export type TextLayer = LayerPrimitive<LayerType.TEXT> & {
   /**
    * Layer font family
    */
-  fontFamily: string;
+  fontFamily?: string;
   /**
    * Layer font size (px)
    */
-  fontSize: number;
+  fontSize?: number;
   /**
    * Unitless line height (aligned to W3C). To get line height in px, multiply
    * with font size
    */
-  lineHeight: number;
+  lineHeight?: number;
   /**
    * Layer text content
    */
@@ -146,9 +164,9 @@ export type TextLayer = LayerPrimitive<LayerType.TEXT> & {
   /**
    * Text align
    */
-  textAlign: TextAlign;
+  textAlign?: TextAlign;
   /**
    * Vertical align
    */
-  verticalAlign: VerticalAlign;
+  verticalAlign?: VerticalAlign;
 };

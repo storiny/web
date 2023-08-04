@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { BaseFabricObject, Shadow as ObjectShadow } from "fabric";
+import { BaseFabricObject, Canvas, Shadow as ObjectShadow } from "fabric";
 import React from "react";
 
 import Input from "~/components/Input";
@@ -13,7 +13,7 @@ import LetterXIcon from "~/icons/LetterX";
 import LetterYIcon from "~/icons/LetterY";
 
 import { MAX_OPACITY, MIN_OPACITY } from "../../../../../constants";
-import { useActiveObject } from "../../../../../hooks";
+import { useActiveObject, useCanvas } from "../../../../../hooks";
 import { modifyObject } from "../../../../../utils";
 import DrawItem, { DrawItemRow } from "../../Item";
 import commonStyles from "../common.module.scss";
@@ -23,12 +23,18 @@ const DEFAULT_SHADOW_COLOR = "rgba(0,0,0,0)";
 // Shadow color
 
 const ShadowColorControl = ({
-  activeObject
+  activeObject,
+  canvas
 }: {
-  activeObject: BaseFabricObject;
+  activeObject?: BaseFabricObject;
+  canvas: Canvas;
 }): React.ReactElement => {
   const [color, setColor] = React.useState<TColor>(
-    strToColor((activeObject.shadow?.color as string) || DEFAULT_SHADOW_COLOR)!
+    strToColor(
+      (activeObject?.shadow?.color as string) ||
+        canvas.freeDrawingBrush?.shadow?.color ||
+        DEFAULT_SHADOW_COLOR
+    )!
   );
   const [value, setValue] = React.useState(`#${color.hex}`);
 
@@ -41,16 +47,19 @@ const ShadowColorControl = ({
 
       if (activeObject) {
         modifyObject(activeObject, {
-          shadow: activeObject.shadow
-            ? {
-                ...activeObject.shadow,
-                color: newColor.str
-              }
-            : new ObjectShadow({ color: newColor.str })
+          shadow: new ObjectShadow({
+            ...activeObject.shadow,
+            color: newColor.str
+          })
+        });
+      } else if (canvas.freeDrawingBrush) {
+        canvas.freeDrawingBrush.shadow = new ObjectShadow({
+          ...canvas.freeDrawingBrush.shadow,
+          color: newColor.str
         });
       }
     },
-    [activeObject]
+    [activeObject, canvas.freeDrawingBrush]
   );
 
   React.useEffect(() => {
@@ -60,10 +69,12 @@ const ShadowColorControl = ({
   React.useEffect(() => {
     setColor(
       strToColor(
-        (activeObject.shadow?.color as string) || DEFAULT_SHADOW_COLOR
+        (activeObject?.shadow?.color as string) ||
+          canvas.freeDrawingBrush?.shadow?.color ||
+          DEFAULT_SHADOW_COLOR
       )!
     );
-  }, [activeObject.shadow?.color]);
+  }, [activeObject?.shadow?.color, canvas.freeDrawingBrush?.shadow?.color]);
 
   return (
     <DrawItemRow>
@@ -115,7 +126,7 @@ const ShadowColorControl = ({
         min={MIN_OPACITY}
         monospaced
         onChange={(event): void => {
-          const a = Number.parseInt(event.target.value) ?? 0;
+          const a = Number.parseInt(event.target.value) || 0;
           const { r, g, b } = hexToRgb(color.hex);
 
           changeColor({
@@ -144,9 +155,11 @@ const ShadowColorControl = ({
 // Shadow blur
 
 const ShadowBlurControl = ({
-  activeObject
+  activeObject,
+  canvas
 }: {
-  activeObject: BaseFabricObject;
+  activeObject?: BaseFabricObject;
+  canvas: Canvas;
 }): React.ReactElement => {
   /**
    * Mutates the shadow blur of the object
@@ -155,23 +168,30 @@ const ShadowBlurControl = ({
     (blur: number) => {
       if (activeObject) {
         modifyObject(activeObject, {
-          shadow: activeObject.shadow
-            ? {
-                ...activeObject.shadow,
-                blur
-              }
-            : new ObjectShadow({ blur, color: DEFAULT_SHADOW_COLOR })
+          shadow: new ObjectShadow({
+            color: DEFAULT_SHADOW_COLOR,
+            ...activeObject.shadow,
+            blur
+          })
+        });
+      } else if (canvas.freeDrawingBrush) {
+        canvas.freeDrawingBrush.shadow = new ObjectShadow({
+          color: DEFAULT_SHADOW_COLOR,
+          ...canvas.freeDrawingBrush.shadow,
+          blur
         });
       }
     },
-    [activeObject]
+    [activeObject, canvas.freeDrawingBrush]
   );
 
   return (
     <Input
       aria-label={"Layer shadow blur"}
       decorator={<BlurIcon />}
-      defaultValue={activeObject.shadow?.blur ?? 0}
+      defaultValue={
+        activeObject?.shadow?.blur ?? canvas.freeDrawingBrush?.shadow?.blur ?? 0
+      }
       min={0}
       monospaced
       onChange={(event): void => {
@@ -188,9 +208,11 @@ const ShadowBlurControl = ({
 // Shadow offsets
 
 const ShadowOffsetsControl = ({
-  activeObject
+  activeObject,
+  canvas
 }: {
-  activeObject: BaseFabricObject;
+  activeObject?: BaseFabricObject;
+  canvas: Canvas;
 }): React.ReactElement => {
   /**
    * Mutates the shadow blur of the object
@@ -204,19 +226,21 @@ const ShadowOffsetsControl = ({
 
       if (activeObject) {
         modifyObject(activeObject, {
-          shadow: activeObject.shadow
-            ? {
-                ...activeObject.shadow,
-                [offsetProp]: offset
-              }
-            : new ObjectShadow({
-                [offsetProp]: offset,
-                color: DEFAULT_SHADOW_COLOR
-              })
+          shadow: new ObjectShadow({
+            color: DEFAULT_SHADOW_COLOR,
+            ...activeObject.shadow,
+            [offsetProp]: offset
+          })
+        });
+      } else if (canvas.freeDrawingBrush) {
+        canvas.freeDrawingBrush.shadow = new ObjectShadow({
+          color: DEFAULT_SHADOW_COLOR,
+          ...canvas.freeDrawingBrush.shadow,
+          [offsetProp]: offset
         });
       }
     },
-    [activeObject]
+    [activeObject, canvas.freeDrawingBrush]
   );
 
   return (
@@ -224,7 +248,11 @@ const ShadowOffsetsControl = ({
       <Input
         aria-label={"Shadow offset X"}
         decorator={<LetterXIcon />}
-        defaultValue={Math.round(activeObject.shadow?.offsetX ?? 0)}
+        defaultValue={Math.round(
+          activeObject?.shadow?.offsetX ??
+            canvas.freeDrawingBrush?.shadow?.offsetX ??
+            0
+        )}
         monospaced
         onChange={(event): void =>
           changeOffset(Number.parseInt(event.target.value, 10) ?? 0, "x")
@@ -237,7 +265,11 @@ const ShadowOffsetsControl = ({
       <Input
         aria-label={"Shadow offset Y"}
         decorator={<LetterYIcon />}
-        defaultValue={Math.round(activeObject.shadow?.offsetY ?? 0)}
+        defaultValue={Math.round(
+          activeObject?.shadow?.offsetY ??
+            canvas.freeDrawingBrush?.shadow?.offsetY ??
+            0
+        )}
         monospaced
         onChange={(event): void =>
           changeOffset(Number.parseInt(event.target.value, 10) ?? 0, "y")
@@ -251,21 +283,31 @@ const ShadowOffsetsControl = ({
   );
 };
 
-const Shadow = (): React.ReactElement | null => {
+const Shadow = ({ isPen }: { isPen?: boolean }): React.ReactElement | null => {
+  const canvas = useCanvas();
   const activeObject = useActiveObject();
 
-  if (!activeObject) {
+  if (!canvas.current || (!activeObject && !isPen)) {
     return null;
   }
 
   return (
-    <DrawItem key={activeObject.get("id")} label={"Shadow"}>
-      <ShadowColorControl activeObject={activeObject} />
+    <DrawItem key={activeObject?.get("id")} label={"Shadow"}>
+      <ShadowColorControl
+        activeObject={activeObject || undefined}
+        canvas={canvas.current}
+      />
       <DrawItemRow>
-        <ShadowBlurControl activeObject={activeObject} />
+        <ShadowBlurControl
+          activeObject={activeObject || undefined}
+          canvas={canvas.current}
+        />
       </DrawItemRow>
       <DrawItemRow>
-        <ShadowOffsetsControl activeObject={activeObject} />
+        <ShadowOffsetsControl
+          activeObject={activeObject || undefined}
+          canvas={canvas.current}
+        />
       </DrawItemRow>
     </DrawItem>
   );

@@ -5,6 +5,7 @@ import {
   Object as FabricObject,
   Path,
   Rect,
+  Textbox,
   TProps
 } from "fabric";
 
@@ -53,3 +54,5 @@ export class ArrowPrimitive<
 export class PenPrimitive<
   Props extends TProps<BaseFabricObject>
 > extends WithPrimitive(Path)<Props> {}
+
+export class TextPrimitive extends WithPrimitive(Textbox) {}

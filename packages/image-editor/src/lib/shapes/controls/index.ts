@@ -8,7 +8,7 @@ import {
 } from "fabric";
 
 import { CURSORS } from "../../../constants";
-import { isArrowObject, isLinearObject } from "../../../utils";
+import { isLinearObject, recoverObject } from "../../../utils";
 import { CLONE_PROPS } from "../common";
 
 const DISABLED_CONTROLS = ["ml", "mt", "mr", "mb"];
@@ -37,38 +37,19 @@ const cloneObject = (
 
   if (canvas) {
     target.clone(CLONE_PROPS).then((cloned) => {
+      recoverObject(cloned, target);
+
       if (isLinearObject(cloned)) {
         cloned.set({
           x1: target.get("x1") + (direction === "left" ? -24 : 24),
-          x2: target.get("x2") + (direction === "left" ? -24 : 24),
-          y1: target.get("y1"),
-          y2: target.get("y2"),
-          width: target.width,
-          height: target.height,
-          scaleX: 1,
-          scaleY: 1
+          x2: target.get("x2") + (direction === "left" ? -24 : 24)
         });
-
-        // Set arrowheads
-        if (isArrowObject(cloned)) {
-          cloned.set({
-            startArrowhead: target.get("startArrowhead"),
-            endArrowhead: target.get("endArrowhead")
-          });
-        }
       } else {
         if (direction === "left") {
-          cloned.left -= cloned.width + 24;
+          cloned.left -= cloned.width * cloned.scaleX + 24;
         } else {
-          cloned.left += cloned.width + 24;
+          cloned.left += cloned.width * cloned.scaleX + 24;
         }
-
-        cloned.set({
-          width: target.width,
-          height: target.height,
-          scaleX: 1,
-          scaleY: 1
-        });
       }
 
       canvas.add(cloned);

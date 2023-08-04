@@ -1,8 +1,8 @@
-import { BaseFabricObject, Canvas } from "fabric";
+import { BaseFabricObject, Canvas, TPointerEvent } from "fabric";
 
 import { CURSORS } from "../../../../constants";
-import { Arrow } from "../../../../lib";
-import { isLinearObject } from "../../../../utils";
+import { Text } from "../../../../lib";
+import { isLinearObject, isTextObject } from "../../../../utils";
 
 type DrawEvent = "draw:start" | "draw:end" | "draw:scaling";
 
@@ -50,7 +50,7 @@ class DrawPlugin {
   constructor(canvas: Canvas) {
     this.canvas = canvas;
     this.started = false;
-    this.enabled = false;
+    this.enabled = true;
     this.object = null;
     this.x = 0;
     this.y = 0;
@@ -71,7 +71,7 @@ class DrawPlugin {
    * Handlers draw end event
    * @private
    */
-  private endDrawing(): void {
+  private endDrawing(e?: TPointerEvent): void {
     if (!this.started) {
       return;
     }
@@ -87,6 +87,13 @@ class DrawPlugin {
         isDrawing: false
       });
       this.canvas.setActiveObject(this.object as any);
+
+      if (isTextObject(this.object)) {
+        // Start editing the text layer
+        this.object.enterEditing(e || ({} as any));
+        this.object.hiddenTextarea?.focus();
+      }
+
       this.fireEvent("draw:end");
       this.object = null;
     }
@@ -140,7 +147,7 @@ class DrawPlugin {
       this.x = mouse.x;
       this.y = mouse.y;
 
-      // this.object = new Ellipse({
+      // this.object = new Text({
       //   width: 1,
       //   height: 1,
       //   left: this.x,
@@ -148,11 +155,21 @@ class DrawPlugin {
       //   hasBorder: false,
       //   isDrawing: true
       // });
-      this.object = new Arrow({
-        x1: this.x,
-        y1: this.y,
-        x2: this.x + 1,
-        y2: this.y + 1,
+
+      // this.object = new Arrow({
+      //   x1: this.x,
+      //   y1: this.y,
+      //   x2: this.x + 1,
+      //   y2: this.y + 1,
+      //   hasBorder: false,
+      //   isDrawing: true
+      // });
+
+      this.object = new Text({
+        text: "",
+        width: 100,
+        left: this.x,
+        top: this.y,
         hasBorder: false,
         isDrawing: true
       });
@@ -161,6 +178,10 @@ class DrawPlugin {
       this.canvas.add(this.object);
       this.canvas.requestRenderAll();
       this.canvas.setActiveObject(this.object as any);
+
+      if (isTextObject(this.object)) {
+        this.endDrawing(options.e); // End drawing immediately for text layers
+      }
     });
 
     this.canvas.on("mouse:move", (options) => {

@@ -1,18 +1,14 @@
 import { CSSProperties } from "react";
 
 /**
- * Returns reusable resize cursor
- * @param angle Cursor angle
+ * Wraps SVG data into SVG string
+ * @param data SVG elements
+ * @param style Additional styles applied to the SVG
  */
-const getResizeCursor = (angle?: number): string =>
-  `<svg xmlns="http://www.w3.org/2000/svg" style="transform:rotate(${angle}deg)" fill="none" width="32" height="32"><path fill="#050505" d="M18 16a2 2 0 1 1-4 0 2 2 0 0 1 4 0ZM12.5 8 16 3l3.5 5h-7ZM19.5 24 16 29l-3.5-5h7Z"/><path stroke="#FAFAFA" stroke-linejoin="round" d="M16.41 2.71a.5.5 0 0 0-.82 0l-3.5 5a.5.5 0 0 0 .41.79h7a.5.5 0 0 0 .41-.79l-3.5-5Zm-.82 26.58a.5.5 0 0 0 .82 0l3.5-5a.5.5 0 0 0-.41-.79h-7a.5.5 0 0 0-.41.79l3.5 5ZM16 18.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z"/></svg>`;
-
-/**
- * Returns reusable rotate cursor
- * @param angle Cursor angle
- */
-const getRotateCursor = (angle?: number): string =>
-  `<svg xmlns="http://www.w3.org/2000/svg" style="transform:rotate(${angle}deg)" fill="none" width="32" height="32"><path fill="#050505" stroke="#FAFAFA" stroke-width="1.06" d="M20.75 8v2.13h-3.72a6.9 6.9 0 0 0-6.9 6.9v3.72H6.71l.9.9 3.72 3.73.38.37.37-.37 3.72-3.72.91-.91h-3.41v-3.72a3.72 3.72 0 0 1 3.72-3.72h3.72v3.41l.9-.9 3.73-3.73.37-.37-.37-.38-3.72-3.72-.91-.9V8Z"/></svg>`;
+const wrapSvg = (data: string, style?: string): string =>
+  `<svg xmlns="http://www.w3.org/2000/svg" fill="none" width="32" height="32"${
+    style ? ` style="${style}"` : ""
+  }>${data}</svg>`;
 
 /**
  * Returns the CSS cursor style
@@ -25,29 +21,66 @@ const getCursorStyle = (
   fallback: CSSProperties["cursor"] = "default",
   offset = "16 16"
 ): string =>
-  `url("data:image/svg+xml,${encodeURIComponent(
-    svgString
-  )}") ${offset}, ${fallback}`;
+  `url("data:image/svg+xml;base64,${btoa(svgString)}") ${offset}, ${fallback}`;
+
+/**
+ * Returns reusable resize cursor
+ * @param angle Cursor angle
+ */
+const getResizeCursor = (angle?: number): string =>
+  wrapSvg(
+    '<path fill="#050505" d="M18 16a2 2 0 1 1-4 0 2 2 0 0 1 4 0ZM12.5 8 16 3l3.5 5h-7ZM19.5 24 16 29l-3.5-5h7Z"/><path stroke="#fafafa" stroke-linejoin="round" stroke-width="1.75" d="M16.72 2.5a.87.87 0 0 0-1.44 0l-3.5 5a.87.87 0 0 0 .72 1.38h7a.87.87 0 0 0 .72-1.38l-3.5-5Zm-1.44 27a.87.87 0 0 0 1.44 0l3.5-5a.88.88 0 0 0-.72-1.38h-7a.87.87 0 0 0-.72 1.38l3.5 5ZM16 18.87a2.88 2.88 0 1 0 0-5.75 2.88 2.88 0 0 0 0 5.76Z"/>',
+    `transform:rotate(${angle}deg)`
+  );
+
+/**
+ * Returns reusable rotate cursor
+ * @param angle Cursor angle
+ */
+const getRotateCursor = (angle?: number): string =>
+  wrapSvg(
+    '<path fill="#050505" stroke="#fafafa" stroke-width="1.25" d="M20.66 8v2.03h-3.63a7 7 0 0 0-7 7v3.63H6.5l1.06 1.06 3.72 3.72.44.44.44-.44 3.72-3.72 1.07-1.06H13.4v-3.63a3.62 3.62 0 0 1 3.62-3.62h3.63v3.53l1.06-1.06 3.72-3.72.44-.44-.44-.44-3.72-3.72-1.06-1.07V8Z"/>',
+    `transform:rotate(${angle}deg)`
+  );
+
+/**
+ * Returns pen cursor with the specified fill
+ * @param fill Pen fill
+ */
+const getPenCursor = (fill: string = "#050505"): string =>
+  wrapSvg(
+    `<path fill="${fill}" stroke="#fafafa" stroke-linejoin="round" stroke-width="1.75" d="M18.26 9.5a.87.87 0 0 0-.24.47.87.87 0 0 0-.47.24l-8.84 8.84a.88.88 0 0 0-.23.4l-.7 2.83a.87.87 0 0 0 1.06 1.06l2.83-.7c.15-.04.3-.12.4-.23l8.84-8.84a.88.88 0 0 0 .24-.47.88.88 0 0 0 .47-.24l1.41-1.41c.74-.74.74-1.92 0-2.65l-.7-.71a1.87 1.87 0 0 0-2.66 0L18.26 9.5Z"/>`
+  );
 
 export const CURSORS = {
   default: getCursorStyle(
-    '<svg xmlns="http://www.w3.org/2000/svg" fill="none" width="32" height="32"><path fill="#050505" stroke="#FAFAFA" stroke-linejoin="round" d="M15.18 12.86a.5.5 0 0 1-.22.92l-6.15.69-3.4 5.83a.5.5 0 0 1-.93-.14L.83 4.34a.5.5 0 0 1 .76-.53l13.59 9.05Z"/></svg>',
+    wrapSvg(
+      '<path fill="#050505" stroke="#fafafa" stroke-linejoin="round" stroke-width="1.25" d="M15.25 12.76a.63.63 0 0 1-.28 1.14l-6.09.69-3.37 5.78a.62.62 0 0 1-1.15-.18L.71 4.36a.62.62 0 0 1 .95-.66l13.59 9.06Z"/>'
+    ),
     "progress",
     "-32 0"
   ),
   crosshair: getCursorStyle(
-    '<svg xmlns="http://www.w3.org/2000/svg" fill="none" width="32" height="32"><path fill="#050505" stroke="#FAFAFA" stroke-linejoin="round" d="M16.5 9a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v6.5H8a.5.5 0 0 0-.5.5v1c0 .28.22.5.5.5h6.5V24c0 .28.22.5.5.5h1a.5.5 0 0 0 .5-.5v-6.5H23a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-6.5V9Z"/></svg>',
+    wrapSvg(
+      '<path fill="#050505" stroke="#fafafa" stroke-linejoin="round" stroke-width="1.75" d="M15 8.13c-.48 0-.88.39-.88.87v6.13H8c-.48 0-.88.39-.88.87v1c0 .48.4.88.88.88h6.13V24c0 .48.39.88.87.88h1c.48 0 .88-.4.88-.88v-6.13H23c.48 0 .88-.39.88-.87v-1a.87.87 0 0 0-.88-.88h-6.13V9a.88.88 0 0 0-.87-.88h-1Z"/>'
+    ),
     "crosshair"
   ),
   move: getCursorStyle(
-    '<svg xmlns="http://www.w3.org/2000/svg" fill="none" width="32" height="32"><path fill="#050505" d="M18.63 16a2 2 0 1 1-4 0 2 2 0 0 1 4 0ZM13.13 8l3.5-5 3.5 5h-7ZM20.13 24l-3.5 5-3.5-5h7Z"/><path stroke="#FAFAFA" stroke-linejoin="round" d="M12.72 7.71a.5.5 0 0 0 .4.79h7a.5.5 0 0 0 .42-.79l-3.5-5a.5.5 0 0 0-.82 0l-3.5 5Zm7.82 16.58a.5.5 0 0 0-.41-.79h-7a.5.5 0 0 0-.41.79l3.5 5a.5.5 0 0 0 .82 0l3.5-5Zm-3.91-5.79a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z"/><path fill="#050505" d="M16.63 14a2 2 0 1 1 0 4 2 2 0 0 1 0-4ZM8.63 19.5l-5-3.5 5-3.5v7ZM24.63 12.5l5 3.5-5 3.5v-7Z"/><path stroke="#FAFAFA" stroke-linejoin="round" d="M8.34 19.91a.5.5 0 0 0 .79-.41v-7a.5.5 0 0 0-.79-.41l-5 3.5a.5.5 0 0 0 0 .82l5 3.5Zm16.57-7.82a.5.5 0 0 0-.78.41v7a.5.5 0 0 0 .78.41l5-3.5a.5.5 0 0 0 0-.82l-5-3.5ZM19.13 16a2.5 2.5 0 1 0-5 0 2.5 2.5 0 0 0 5 0Z"/></svg>',
+    wrapSvg(
+      '<path fill="#050505" stroke="#fafafa" stroke-linejoin="round" stroke-width="1.75" d="M17.34 2.5a.87.87 0 0 0-1.43 0l-3.5 5a.87.87 0 0 0 .72 1.38h7a.88.88 0 0 0 .71-1.38l-3.5-5Zm-1.43 27a.88.88 0 0 0 1.43 0l3.5-5a.88.88 0 0 0-.71-1.38h-7a.87.87 0 0 0-.72 1.38l3.5 5Zm.72-10.63a2.88 2.88 0 1 0 0-5.75 2.88 2.88 0 0 0 0 5.76Z"/><path fill="#050505" stroke="#fafafa" stroke-linejoin="round" stroke-width="1.75" d="M3.13 15.28a.87.87 0 0 0 0 1.44l5 3.5a.87.87 0 0 0 1.37-.72v-7a.87.87 0 0 0-1.37-.72l-5 3.5Zm27 1.44a.87.87 0 0 0 0-1.44l-5-3.5a.88.88 0 0 0-1.38.72v7a.87.87 0 0 0 1.38.72l5-3.5ZM19.5 16a2.88 2.88 0 1 0-5.75 0 2.88 2.88 0 0 0 5.75 0Z"/>'
+    ),
     "move"
   ),
   copy: getCursorStyle(
-    `<svg xmlns="http://www.w3.org/2000/svg" fill="none" width="32" height="32"><circle cx="14" cy="22" r="5.5" fill="#050505" stroke="#FAFAFA" stroke-linejoin="round"/><path fill="#FAFAFA" d="M14.38 19.3h-.77v2.31h-2.3v.77h2.3v2.31h.77v-2.3h2.31v-.78h-2.3v-2.3Z"/><path fill="#050505" stroke="#FAFAFA" stroke-linejoin="round" d="M15.18 12.86a.5.5 0 0 1-.22.92l-6.15.69-3.4 5.83a.5.5 0 0 1-.93-.14L.83 4.34a.5.5 0 0 1 .76-.53l13.59 9.05Z"/></svg>`,
+    wrapSvg(
+      '<path fill="#050505" d="M19 22a5 5 0 1 1-10 0 5 5 0 0 1 10 0Z"/><path fill="#fafafa" d="M14.38 19.3h-.77v2.31h-2.3v.77h2.3v2.31h.77v-2.3h2.31v-.78h-2.3v-2.3Z"/><path fill="#050505" d="M14.9 13.28 1.32 4.22l3.65 15.83L8.5 14l6.4-.72Z"/><path stroke="#fafafa" stroke-linejoin="round" stroke-width="1.25" d="M14.97 13.9a.62.62 0 0 0 .28-1.14L1.66 3.7a.62.62 0 0 0-.95.66L4.36 20.2a.62.62 0 0 0 1.15.18l3.37-5.78 6.1-.7ZM14 27.62a5.63 5.63 0 1 0 0-11.25 5.63 5.63 0 0 0 0 11.25Z"/>'
+    ),
     "copy",
     "-32 0"
   ),
+  pen: (fill?: string) =>
+    getCursorStyle(getPenCursor(fill), "crosshair", "8 24"),
   rotate: (angle?: number) =>
     getCursorStyle(getRotateCursor(angle), "crosshair"),
   "n-resize": getCursorStyle(getResizeCursor(), "n-resize"),

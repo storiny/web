@@ -14,6 +14,11 @@ export enum StrokeStyle {
   SOLID = "solid"
 }
 
+export enum PenStyle {
+  NORMAL = "normal",
+  PRESSURE = "pressure"
+}
+
 export enum Arrowhead {
   ARROW = "arrow",
   BAR = "bar",

@@ -42,6 +42,27 @@ import styles from "./Stroke.module.scss";
 
 const DEFAULT_LAYER_STROKE = "rgba(0,0,0,0)";
 
+/**
+ * Returns the arrowhead icon
+ * @param arrowhead Arrowhead
+ * @param position Arrowhead position
+ */
+const getArrowheadIcon = (
+  arrowhead: Arrowhead,
+  position: "start" | "end"
+): React.ReactNode => {
+  const rotation = position === "start" ? 0 : 180;
+  return (
+    {
+      [Arrowhead.NONE]: <ArrowheadNoneLongIcon rotation={rotation} />,
+      [Arrowhead.ARROW]: <ArrowheadArrowLongIcon rotation={rotation} />,
+      [Arrowhead.DOT]: <ArrowheadDotLongIcon rotation={rotation} />,
+      [Arrowhead.BAR]: <ArrowheadBarLongIcon rotation={rotation} />,
+      [Arrowhead.TRIANGLE]: <ArrowheadTriangleLongIcon rotation={rotation} />
+    } as Record<Arrowhead, React.ReactNode>
+  )[arrowhead];
+};
+
 // Stroke color
 
 const StrokeControl = ({
@@ -130,7 +151,7 @@ const StrokeControl = ({
         min={MIN_OPACITY}
         monospaced
         onChange={(event): void => {
-          const a = Number.parseInt(event.target.value) ?? 0;
+          const a = Number.parseInt(event.target.value) || 0;
           const { r, g, b } = hexToRgb(stroke.hex);
 
           changeStroke({
@@ -258,27 +279,6 @@ const StrokeStyleControl = ({
       </Option>
     </Select>
   );
-};
-
-/**
- * Returns the arrowhead icon
- * @param arrowhead Arrowhead
- * @param position Arrowhead position
- */
-const getArrowheadIcon = (
-  arrowhead: Arrowhead,
-  position: "start" | "end"
-): React.ReactNode => {
-  const rotation = position === "start" ? 0 : 180;
-  return (
-    {
-      [Arrowhead.NONE]: <ArrowheadNoneLongIcon rotation={rotation} />,
-      [Arrowhead.ARROW]: <ArrowheadArrowLongIcon rotation={rotation} />,
-      [Arrowhead.DOT]: <ArrowheadDotLongIcon rotation={rotation} />,
-      [Arrowhead.BAR]: <ArrowheadBarLongIcon rotation={rotation} />,
-      [Arrowhead.TRIANGLE]: <ArrowheadTriangleLongIcon rotation={rotation} />
-    } as Record<Arrowhead, React.ReactNode>
-  )[arrowhead];
 };
 
 // Arrowhead style

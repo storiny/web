@@ -109,7 +109,11 @@ const CornerRadiusControl = ({
   );
 };
 
-const ObjectProps = (): React.ReactElement | null => {
+const ObjectProps = ({
+  disableCornerRadius
+}: {
+  disableCornerRadius?: boolean;
+}): React.ReactElement | null => {
   const activeObject = useActiveObject();
 
   if (!activeObject) {
@@ -120,7 +124,9 @@ const ObjectProps = (): React.ReactElement | null => {
     <DrawItem key={activeObject.get("id")}>
       <DrawItemRow>
         <AngleControl activeObject={activeObject} />
-        <CornerRadiusControl activeObject={activeObject} />
+        {!disableCornerRadius && (
+          <CornerRadiusControl activeObject={activeObject} />
+        )}
       </DrawItemRow>
     </DrawItem>
   );

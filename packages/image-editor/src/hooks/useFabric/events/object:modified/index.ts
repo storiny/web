@@ -1,6 +1,6 @@
 import { Canvas } from "fabric";
 
-import { isInteractiveObject } from "../../../../utils";
+import { isInteractiveObject, isScalableObject } from "../../../../utils";
 
 export const objectModifiedEvent = (canvas: Canvas): void => {
   canvas.on("object:modified", (options) => {
@@ -23,7 +23,7 @@ export const objectModifiedEvent = (canvas: Canvas): void => {
       });
     }
 
-    if (isInteractiveObject(object)) {
+    if (isInteractiveObject(object) && !isScalableObject(object)) {
       object.set({
         height: object.height * object.scaleY,
         width: object.width * object.scaleX,
