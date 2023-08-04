@@ -152,7 +152,7 @@ class DrawPlugin {
       //   height: 1,
       //   left: this.x,
       //   top: this.y,
-      //   hasBorder: false,
+      //   hasBorders: false,
       //   isDrawing: true
       // });
 
@@ -161,7 +161,7 @@ class DrawPlugin {
       //   y1: this.y,
       //   x2: this.x + 1,
       //   y2: this.y + 1,
-      //   hasBorder: false,
+      //   hasBorders: false,
       //   isDrawing: true
       // });
 
@@ -170,11 +170,9 @@ class DrawPlugin {
         width: 100,
         left: this.x,
         top: this.y,
-        hasBorder: false,
-        isDrawing: true
+        hasBorders: false
       });
 
-      this.object.set("hasBorders", false);
       this.canvas.add(this.object);
       this.canvas.requestRenderAll();
       this.canvas.setActiveObject(this.object as any);

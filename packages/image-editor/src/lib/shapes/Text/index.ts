@@ -1,15 +1,16 @@
 import { classRegistry } from "fabric";
+import { ITextProps } from "fabric/src/shapes/IText/IText";
 
-import { LayerType, StrokeStyle } from "../../../constants";
+import { LayerType } from "../../../constants";
 import { TextLayer } from "../../../types";
 import { TextPrimitive } from "../Object";
 
-export type TextProps = ConstructorParameters<typeof TextPrimitive>[1] &
-  Omit<TextLayer, "id" | "_type">;
+export type TextProps = Partial<ITextProps> & Omit<TextLayer, "id" | "_type">;
 
 const DEFAULT_TEXT_PROPS: Partial<TextProps> = {
   interactive: true,
-  strokeStyle: StrokeStyle.SOLID
+  ["cursorDelay" as any]: 1750,
+  ["cursorDuration" as any]: 500
 };
 
 export class Text extends TextPrimitive {

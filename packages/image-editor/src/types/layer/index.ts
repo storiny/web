@@ -143,7 +143,10 @@ export type ArrowLayer = LayerPrimitive<LayerType.ARROW> &
 // Other
 
 export type ImageLayer = LayerPrimitive<LayerType.IMAGE>;
-export type TextLayer = LayerPrimitive<LayerType.TEXT> & {
+export type TextLayer = Omit<
+  LayerPrimitive<LayerType.TEXT>,
+  "seed" | "strokeStyle" | "roughness" | "isDrawing"
+> & {
   /**
    * Layer font family
    */
