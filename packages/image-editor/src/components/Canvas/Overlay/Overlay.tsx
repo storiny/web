@@ -1,5 +1,7 @@
 import { Item as Option } from "@radix-ui/react-select";
 import clsx from "clsx";
+import { Point } from "fabric";
+import { useAtom } from "jotai";
 import React from "react";
 
 import Button from "~/components/Button";
@@ -11,24 +13,18 @@ import MenuItem from "~/components/MenuItem";
 import Select from "~/components/Select";
 import Separator from "~/components/Separator";
 import ChevronIcon from "~/icons/Chevron";
-import InfoIcon from "~/icons/Info";
 import MinusIcon from "~/icons/Minus";
 import PlusIcon from "~/icons/Plus";
 import { capitalize } from "~/utils/capitalize";
+import { clamp } from "~/utils/clamp";
 
+import { patternAtom } from "../../../atoms";
 import {
   CanvasPattern,
   MAX_ZOOM_LEVEL,
   MIN_ZOOM_LEVEL
 } from "../../../constants";
-import {
-  selectPattern,
-  selectZoom,
-  setPattern,
-  setZoom,
-  useEditorDispatch,
-  useEditorSelector
-} from "../../../store";
+import { useCanvas, useEventRender } from "../../../hooks";
 import styles from "./Overlay.module.scss";
 
 const patternToSvg: Record<CanvasPattern, React.ReactNode> = {
@@ -77,15 +73,37 @@ const patternToSvg: Record<CanvasPattern, React.ReactNode> = {
 // Zoom control
 
 const ZoomControl = (): React.ReactElement => {
-  const dispatch = useEditorDispatch();
-  const zoom = useEditorSelector(selectZoom);
+  const canvas = useCanvas();
+  const [zoom, setZoom] = React.useState<number>(100);
+  useEventRender("mouse:wheel", () => {
+    if (canvas.current) {
+      setZoom(Math.round(canvas.current.getZoom() * 100));
+    }
+
+    return false;
+  });
+
+  /**
+   * Zooms to the center of the canvas with the provided value
+   * @param value Zoom value
+   */
+  const setCanvasZoom = (value: number): void => {
+    setZoom(Math.round(value * 100));
+
+    if (canvas.current) {
+      canvas.current.zoomToPoint(
+        new Point(canvas.current.width / 2, canvas.current.height / 2),
+        clamp(MIN_ZOOM_LEVEL, value * 100, MAX_ZOOM_LEVEL) / 100
+      );
+    }
+  };
 
   /**
    * Decrements zoom level
    * @param value Decrement value
    */
   const decrementZoom = (value: number = 10): void => {
-    dispatch(setZoom(zoom - value));
+    setCanvasZoom((canvas.current.getZoom() * 100 - value) / 100);
   };
 
   /**
@@ -93,15 +111,21 @@ const ZoomControl = (): React.ReactElement => {
    * @param value Increment level
    */
   const incrementZoom = (value: number = 10): void => {
-    dispatch(setZoom(zoom + value));
+    setCanvasZoom((canvas.current.getZoom() * 100 + value) / 100);
   };
+
+  React.useEffect(() => {
+    if (canvas.current) {
+      setZoom(Math.round(canvas.current.getZoom() * 100));
+    }
+  }, [canvas]);
 
   return (
     <div className={clsx("flex-center", styles.x, styles.zoom)}>
       <IconButton
         aria-label={"Decrement zoom level"}
         className={clsx("focus-invert", styles.x, styles["zoom-icon-button"])}
-        disabled={zoom <= 1}
+        disabled={zoom <= MIN_ZOOM_LEVEL}
         onClick={(): void => decrementZoom()}
         title={"Decrement zoom level"}
         variant={"ghost"}
@@ -138,7 +162,7 @@ const ZoomControl = (): React.ReactElement => {
             max={MAX_ZOOM_LEVEL}
             min={MIN_ZOOM_LEVEL}
             onChange={(event): void => {
-              dispatch(setZoom(Number.parseInt(event.target.value, 10)));
+              setCanvasZoom(Number.parseInt(event.target.value, 10) / 100);
             }}
             placeholder={"Zoom level"}
             size={"sm"}
@@ -165,13 +189,7 @@ const ZoomControl = (): React.ReactElement => {
           <Grow />
           <span>-</span>
         </MenuItem>
-        <MenuItem
-          onClick={(): void => {
-            dispatch(setZoom(100));
-          }}
-        >
-          Zoom to 100%
-        </MenuItem>
+        <MenuItem onClick={(): void => setCanvasZoom(1)}>Zoom to 100%</MenuItem>
       </Menu>
       <IconButton
         aria-label={"Increment zoom level"}
@@ -190,13 +208,12 @@ const ZoomControl = (): React.ReactElement => {
 // Pattern control
 
 const PatternControl = (): React.ReactElement => {
-  const dispatch = useEditorDispatch();
-  const pattern = useEditorSelector(selectPattern);
+  const [pattern, setPattern] = useAtom(patternAtom);
 
   return (
     <Select
       onValueChange={(newValue): void => {
-        dispatch(setPattern(newValue as CanvasPattern));
+        setPattern(newValue as CanvasPattern);
       }}
       slotProps={{
         content: {
@@ -232,11 +249,19 @@ const PatternControl = (): React.ReactElement => {
         CanvasPattern.DOTTED
       ].map((pattern) => (
         <Option
-          aria-label={`${capitalize(pattern)} pattern`}
+          aria-label={
+            pattern === CanvasPattern.NONE
+              ? "None"
+              : `${capitalize(pattern)} pattern`
+          }
           aria-labelledby={undefined}
           className={clsx(styles.x, styles.option)}
           key={pattern}
-          title={`${capitalize(pattern)} pattern`}
+          title={
+            pattern === CanvasPattern.NONE
+              ? "None"
+              : `${capitalize(pattern)} pattern`
+          }
           value={pattern}
         >
           {patternToSvg[pattern]}
@@ -246,27 +271,12 @@ const PatternControl = (): React.ReactElement => {
   );
 };
 
-// Info
-
-const Info = (): React.ReactElement => (
-  <IconButton
-    aria-label={"Show stats"}
-    className={clsx(styles.x, styles["stats-button"])}
-    size={"sm"}
-    title={"Show stats"}
-    variant={"ghost"}
-  >
-    <InfoIcon />
-  </IconButton>
-);
-
 const Overlay = (): React.ReactElement => (
   <React.Fragment>
     <div className={clsx("flex-center", styles.x, styles["primary-controls"])}>
       <ZoomControl />
       <PatternControl />
     </div>
-    <Info />
   </React.Fragment>
 );
 

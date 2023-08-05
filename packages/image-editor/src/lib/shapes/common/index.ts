@@ -15,31 +15,41 @@ export const COMMON_OBJECT_PROPS: TProps<BaseFabricObject> = {
   objectCaching: false
 };
 
-export const CLONE_PROPS = [
+const BASE_PROPS = [
   "interactive",
-  "x1",
-  "x2",
-  "y1",
-  "y2",
+  "left",
+  "top",
+  "width",
+  "height",
+  "scaleX",
+  "scaleY",
   "flipX",
-  "flipY",
-  "stroke",
-  "strokeStyle",
-  "strokeWidth",
-  "penWidth",
-  "penStyle",
-  "fill",
-  "fillStyle",
-  "fillWeight",
-  "points",
-  "hachureGap",
-  "roughness",
+  "flipY"
+];
+const STROKE_PROPS = ["stroke", "strokeStyle", "strokeWidth"];
+const FILL_PROPS = ["fill", "fillStyle", "fillWeight"];
+const ROUGH_PROPS = ["hachureGap", "roughness"];
+const LINEAR_PROPS = ["x1", "x2", "y1", "y2"];
+const ARROW_PROPS = ["startArrowhead", "endArrowhead"];
+const IMAGE_PROPS = ["filters"];
+const PEN_PROPS = ["penWidth", "penStyle", "points"];
+const TEXT_PROPS = [
   "fontFamily",
   "fontSize",
   "lineHeight",
   "text",
   "textAlign",
-  "verticalAlign",
-  "startArrowhead",
-  "endArrowhead"
+  "verticalAlign"
+];
+
+export const CLONE_PROPS = [
+  ...BASE_PROPS,
+  ...STROKE_PROPS,
+  ...FILL_PROPS,
+  ...ROUGH_PROPS,
+  ...LINEAR_PROPS,
+  ...ARROW_PROPS,
+  ...IMAGE_PROPS,
+  ...PEN_PROPS,
+  ...TEXT_PROPS
 ];

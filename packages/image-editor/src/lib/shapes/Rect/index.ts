@@ -3,7 +3,12 @@ import { RoughCanvas } from "roughjs/bin/canvas";
 import { Drawable } from "roughjs/bin/core";
 import rough from "roughjs/bin/rough";
 
-import { FillStyle, LayerType, StrokeStyle } from "../../../constants";
+import {
+  DEFAULT_LAYER_COLOR,
+  FillStyle,
+  LayerType,
+  StrokeStyle
+} from "../../../constants";
 import { RectangleLayer } from "../../../types";
 import { generateRoughOptions, getCornerRadius } from "../../../utils";
 import { RectPrimitive } from "../Object";
@@ -14,7 +19,7 @@ export type RectProps = ConstructorParameters<typeof RectPrimitive>[0] &
 const DEFAULT_RECT_PROPS: Partial<RectProps> = {
   interactive: true,
   fill: "rgba(0,0,0,0)",
-  stroke: "rgba(0,0,0,1)",
+  stroke: DEFAULT_LAYER_COLOR,
   fillStyle: FillStyle.HACHURE,
   strokeStyle: StrokeStyle.SOLID,
   fillWeight: 1,

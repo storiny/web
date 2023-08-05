@@ -18,7 +18,6 @@ import Status from "~/entities/Status";
 import BookmarksIcon from "~/icons/Bookmarks";
 import ChevronIcon from "~/icons/Chevron";
 import CloudOffIcon from "~/icons/CloudOff";
-import ContributionIcon from "~/icons/Contribution";
 import DotsIcon from "~/icons/Dots";
 import ExplicitIcon from "~/icons/Explicit";
 import HistoryIcon from "~/icons/History";

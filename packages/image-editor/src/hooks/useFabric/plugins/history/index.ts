@@ -1,14 +1,8 @@
 import { Canvas } from "fabric";
 import hotkeys from "hotkeys-js";
 
-import { CLONE_PROPS } from "../../../../lib";
-import { Layer } from "../../../../types";
-import {
-  isLinearObject,
-  isPenObject,
-  recoverObject,
-  syncLinearPoints
-} from "../../../../utils";
+import { recoveryKeys } from "../../../../constants";
+import { recoverObject } from "../../../../utils";
 
 type ThrottledFunction<T extends (...args: any) => any> = (
   ...args: Parameters<T>
@@ -78,19 +72,6 @@ export class HistoryPlugin {
    */
   private isProcessing: boolean;
   /**
-   * Properties to include when serializing the state
-   * @private
-   */
-  private readonly propertiesToInclude: Array<keyof Layer | string> = [
-    ...CLONE_PROPS,
-    "_type",
-    "id",
-    "name",
-    "locked",
-    "selected",
-    "seed"
-  ];
-  /**
    * Debounced save action
    * @private
    */
@@ -113,7 +94,12 @@ export class HistoryPlugin {
    * Returns current stringified canvas state
    */
   private getNextState(): string {
-    return JSON.stringify(this.canvas.toDatalessJSON(this.propertiesToInclude));
+    const data = this.canvas.toDatalessJSON(recoveryKeys);
+
+    delete data.width;
+    delete data.height;
+
+    return JSON.stringify(data);
   }
 
   /**

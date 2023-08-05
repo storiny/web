@@ -13,6 +13,8 @@ const DEFAULT_TEXT_PROPS: Partial<TextProps> = {
   ["cursorDuration" as any]: 500
 };
 
+// TODO: Implement
+
 export class Text extends TextPrimitive {
   static override type = LayerType.TEXT;
 

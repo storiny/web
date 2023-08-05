@@ -3,7 +3,12 @@ import { RoughCanvas } from "roughjs/bin/canvas";
 import { Drawable } from "roughjs/bin/core";
 import rough from "roughjs/bin/rough";
 
-import { FillStyle, LayerType, StrokeStyle } from "../../../constants";
+import {
+  DEFAULT_LAYER_COLOR,
+  FillStyle,
+  LayerType,
+  StrokeStyle
+} from "../../../constants";
 import { DiamondLayer } from "../../../types";
 import { generateRoughOptions, getCornerRadius } from "../../../utils";
 import { DiamondPrimitve } from "../Object";
@@ -14,7 +19,7 @@ export type DiamondProps = ConstructorParameters<typeof DiamondPrimitve>[0] &
 const DEFAULT_DIAMOND_PROPS: Partial<DiamondProps> = {
   interactive: true,
   fill: "rgba(0,0,0,0)",
-  stroke: "rgba(0,0,0,1)",
+  stroke: DEFAULT_LAYER_COLOR,
   fillStyle: FillStyle.HACHURE,
   strokeStyle: StrokeStyle.SOLID,
   fillWeight: 1,

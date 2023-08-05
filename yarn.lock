@@ -5108,15 +5108,18 @@ __metadata:
     fabric: beta
     hotkeys-js: ^3.11.2
     jotai: ^2.2.2
+    lz-string: ^1.5.0
     perfect-freehand: ^1.2.0
     prettier: ^2.5.1
     react: ^18.2.0
     react-dom: ^18.2.0
+    react-hotkeys-hook: ^4.4.1
     react-redux: ^8.1.1
     react-resizable-panels: ^0.0.53
     react-virtuoso: ^4.4.0
     roughjs: ^4.5.2
     typescript: ^5.1.5
+    use-file-picker: ^1.7.0
     use-resize-observer: ^9.1.0
   languageName: unknown
   linkType: soft
@@ -12212,6 +12215,15 @@ eslint-config-turbo@latest:
   languageName: node
   linkType: hard
 
+"file-selector@npm:0.2.4":
+  version: 0.2.4
+  resolution: "file-selector@npm:0.2.4"
+  dependencies:
+    tslib: ^2.0.3
+  checksum: 83341e7416352c7de0caf433b33c8d007d3c298c17d6ba0e70168af82bb045d905ddd6f4bc3ca764a2035c6f18eae7f52223dc6a784056f61b8391c351f88323
+  languageName: node
+  linkType: hard
+
 "file-system-cache@npm:2.3.0":
   version: 2.3.0
   resolution: "file-system-cache@npm:2.3.0"
@@ -18269,6 +18281,16 @@ eslint-config-turbo@latest:
   languageName: node
   linkType: hard
 
+"react-hotkeys-hook@npm:^4.4.1":
+  version: 4.4.1
+  resolution: "react-hotkeys-hook@npm:4.4.1"
+  peerDependencies:
+    react: ">=16.8.1"
+    react-dom: ">=16.8.1"
+  checksum: c03d5d013ec41f3a63a3dd7d704d2fc98fba227811f7a1222af8651705f1cef983b7ccc4325f9910fec920156b14b4f05101882dc7d0bde1601ba56c01d5f162
+  languageName: node
+  linkType: hard
+
 "react-inspector@npm:^6.0.0":
   version: 6.0.1
   resolution: "react-inspector@npm:6.0.1"
@@ -21372,6 +21394,17 @@ turbo@latest:
   peerDependencies:
     react: ^0.13.0 || ^0.14.0 || >=15
   checksum: 2487a76854ed52c93e8ba6641c8fd05e1817dbe73ca2f3229b28e365ed4796769245d1030ba7ed560126c8db2e82546754083c9abcf87b9780337805f800738c
+  languageName: node
+  linkType: hard
+
+"use-file-picker@npm:^1.7.0":
+  version: 1.7.0
+  resolution: "use-file-picker@npm:1.7.0"
+  dependencies:
+    file-selector: 0.2.4
+  peerDependencies:
+    react: ">=16"
+  checksum: 9bccba39af11ad57ae0c821acf5ce13a5eae5acb6b02caa9674234b436ceefa39e5a300b39f94bc0aa7b78add0b8e7dabecae087ef4aff99bfd96c46290da7c7
   languageName: node
   linkType: hard
 

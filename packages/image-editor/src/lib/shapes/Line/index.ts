@@ -2,7 +2,11 @@ import { classRegistry, Point } from "fabric";
 import { RoughCanvas } from "roughjs/bin/canvas";
 import rough from "roughjs/bin/rough";
 
-import { FillStyle, LayerType, StrokeStyle } from "../../../constants";
+import {
+  DEFAULT_LAYER_COLOR,
+  LayerType,
+  StrokeStyle
+} from "../../../constants";
 import { LineLayer } from "../../../types";
 import { generateRoughOptions } from "../../../utils";
 import { LinePrimitive } from "../Object";
@@ -12,11 +16,8 @@ export type LineProps = ConstructorParameters<typeof LinePrimitive>[1] &
 
 const DEFAULT_LINE_PROPS: Partial<LineProps> = {
   interactive: true,
-  fill: "rgba(0,0,0,0)",
-  stroke: "rgba(0,0,0,1)",
-  fillStyle: FillStyle.HACHURE,
+  stroke: DEFAULT_LAYER_COLOR,
   strokeStyle: StrokeStyle.SOLID,
-  fillWeight: 1,
   strokeWidth: 1,
   hachureGap: 5,
   roughness: 1

@@ -15,11 +15,11 @@ import ImageIcon from "~/icons/Image";
 import LineIcon from "~/icons/Line";
 import LockOpenIcon from "~/icons/LockOpen";
 import PencilIcon from "~/icons/Pencil";
-import PolygonIcon from "~/icons/Polygon";
 import RectangleIcon from "~/icons/Rectangle";
 import TrashIcon from "~/icons/Trash";
 import TypographyIcon from "~/icons/Typography";
 import { capitalize } from "~/utils/capitalize";
+import { truncate } from "~/utils/truncate";
 
 import { isLayersDraggingAtom } from "../../../atoms";
 import { LayerType } from "../../../constants";
@@ -36,7 +36,6 @@ const layerTypeToIconMap: Record<LayerType, React.ReactNode> = {
   [LayerType.RECTANGLE]: <RectangleIcon />,
   [LayerType.TEXT]: <TypographyIcon />,
   [LayerType.LINE]: <LineIcon rotation={45} />,
-  [LayerType.POLYGON]: <PolygonIcon />,
   [LayerType.PEN]: <PencilIcon />,
   [LayerType.DIAMOND]: <DiamondIcon />
 };
@@ -199,7 +198,7 @@ const Layer = React.forwardRef<HTMLLIElement, LayerProps>((props, ref) => {
         <Input
           autoFocus
           onBlur={(): void => setLayerNameImpl(true)} // Stop editing when the input focus is lost
-          onChange={(event): void => setName(event.target.value)}
+          onChange={(event): void => setName(truncate(event.target.value, 96))}
           onFocus={(event): void => event.target.select()}
           onKeyUp={(event): void => {
             if (event.key === "Enter") {

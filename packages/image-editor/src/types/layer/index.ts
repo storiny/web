@@ -12,7 +12,6 @@ import {
 
 export type Layer =
   | PenLayer
-  | PolygonLayer
   | RectangleLayer
   | EllipseLayer
   | LineLayer
@@ -119,7 +118,6 @@ export type PenLayer = Omit<
 
 // Solid layers
 
-export type PolygonLayer = LayerPrimitive<LayerType.POLYGON> & SolidLayerProps;
 export type RectangleLayer = LayerPrimitive<LayerType.RECTANGLE> &
   SolidLayerProps;
 export type DiamondLayer = LayerPrimitive<LayerType.DIAMOND> & SolidLayerProps;
@@ -142,7 +140,13 @@ export type ArrowLayer = LayerPrimitive<LayerType.ARROW> &
 
 // Other
 
-export type ImageLayer = LayerPrimitive<LayerType.IMAGE>;
+export type ImageLayer = LayerPrimitive<LayerType.IMAGE> & {
+  /**
+   * Image source
+   */
+  src?: string;
+};
+
 export type TextLayer = Omit<
   LayerPrimitive<LayerType.TEXT>,
   "seed" | "strokeStyle" | "roughness" | "isDrawing"

@@ -1,0 +1,20 @@
+$transparent-grid: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAJUlEQVQYV2N89erVfwY0ICYmxoguxjgUFKI7GsTH5m4M3w1ChQC1/Ca8i2n1WgAAAABJRU5ErkJggg");
+
+.x {
+  /* Swatch */
+  &.swatch {
+    flex: 1;
+    border: 1px solid var(--divider);
+    background-color: var(--color, transparent);
+
+    &.transparent {
+      background-image: $transparent-grid;
+      background-color: var(--inverted-0);
+    }
+
+    &[data-state="on"] {
+      outline: 3px solid var(--focus);
+      outline-offset: -3px;
+    }
+  }
+}

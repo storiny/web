@@ -1,6 +1,7 @@
 import { BaseFabricObject } from "fabric";
 
 import { isArrowObject } from "../isArrowObject";
+import { isImageObject } from "../isImageObject";
 import { isLinearObject } from "../isLinearObject";
 import { isPenObject } from "../isPenObject";
 import { isScalableObject } from "../isScalableObject";
@@ -17,7 +18,9 @@ export const recoverObject = (object: BaseFabricObject, prop: any): void => {
     top: prop.top,
     width: prop.width,
     height: prop.height,
-    angle: prop.angle
+    angle: prop.angle,
+    locked: prop.locked,
+    visible: prop.visible
   });
 
   if (isScalableObject(object)) {
@@ -40,7 +43,9 @@ export const recoverObject = (object: BaseFabricObject, prop: any): void => {
       shadow: prop.shadow,
       fill: prop.fill
     });
-  } else if (isLinearObject(object)) {
+  }
+
+  if (isLinearObject(object)) {
     object.set({
       x1: prop.x1,
       x2: prop.x2,
@@ -57,6 +62,10 @@ export const recoverObject = (object: BaseFabricObject, prop: any): void => {
     }
 
     syncLinearPoints(object);
+  }
+
+  if (isImageObject(object)) {
+    object.filters = [...prop.filters];
   }
 
   if (object.canvas) {

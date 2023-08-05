@@ -1,6 +1,8 @@
 import { Canvas, Point } from "fabric";
 
-import { editorStore, selectZoom, setZoom } from "../../../../store";
+import { clamp } from "~/utils/clamp";
+
+import { MAX_ZOOM_LEVEL, MIN_ZOOM_LEVEL } from "../../../../constants";
 
 export const mouseWheelEvent = (canvas: Canvas): void => {
   canvas.on("mouse:wheel", (options) => {
@@ -8,17 +10,12 @@ export const mouseWheelEvent = (canvas: Canvas): void => {
     let zoom = canvas.getZoom();
     zoom *= 0.999 ** delta;
 
-    editorStore.dispatch(setZoom(zoom * 100));
+    canvas.zoomToPoint(
+      new Point(options.e.offsetX, options.e.offsetY),
+      clamp(MIN_ZOOM_LEVEL, zoom * 100, MAX_ZOOM_LEVEL) / 100
+    );
 
     options.e.preventDefault();
     options.e.stopPropagation();
-  });
-
-  editorStore.subscribe(() => {
-    const zoom = selectZoom(editorStore.getState());
-    canvas.zoomToPoint(
-      new Point(canvas.width / 2, canvas.height / 2),
-      zoom / 100
-    );
   });
 };

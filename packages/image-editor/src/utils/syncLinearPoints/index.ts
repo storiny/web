@@ -19,7 +19,6 @@ export const syncLinearPoints = (object: BaseFabricObject): void => {
       matrix
     );
 
-    // Mutating the main properties messes up rotation
     object.set({
       x1,
       y1,

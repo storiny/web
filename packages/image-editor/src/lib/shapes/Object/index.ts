@@ -1,6 +1,7 @@
 import {
   BaseFabricObject,
   Ellipse,
+  Image,
   Line,
   Object as FabricObject,
   Path,
@@ -56,3 +57,7 @@ export class PenPrimitive<
 > extends WithPrimitive(Path)<Props> {}
 
 export class TextPrimitive extends WithPrimitive(Textbox) {}
+
+export class ImagePrimitive<
+  Props extends TProps<BaseFabricObject>
+> extends WithPrimitive(Image)<Props> {}

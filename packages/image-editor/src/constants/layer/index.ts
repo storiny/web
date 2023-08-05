@@ -34,11 +34,16 @@ export enum LayerType {
   IMAGE = "image",
   LINE = "line",
   PEN = "pen",
-  POLYGON = "polygon",
   RECTANGLE = "rectangle",
   TEXT = "text"
 }
 
+// TODO: Remove text once implemented
+export type DrawableLayerType = Exclude<
+  LayerType,
+  LayerType.PEN | LayerType.IMAGE | LayerType.TEXT
+>;
+
 export const MIN_LAYER_SIZE = 1;
 export const MAX_LAYER_SIZE = 8e3;
-export const DEFAULT_LAYER_FILL = "rgba(191,193,197,1)";
+export const DEFAULT_LAYER_COLOR = "rgba(191,193,197,1)";

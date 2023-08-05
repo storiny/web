@@ -2,8 +2,7 @@ import { Canvas } from "fabric";
 import React from "react";
 
 import { FabricContext } from "../../components/Context";
-import { CURSORS } from "../../constants";
-import { PenBrush } from "../../lib/shapes/Pen";
+import { CURSORS, DEFAULT_CANVAS_FILL } from "../../constants";
 import { bindEvents } from "./events";
 import {
   registerActions,
@@ -12,6 +11,7 @@ import {
   registerGuides,
   registerHistory,
   registerKeyboard,
+  registerPan,
   registerTooltip
 } from "./plugins";
 
@@ -29,13 +29,15 @@ export const useFabric = (): ((
 
     canvas.current = new Canvas(element, {
       enableRetinaScaling: true,
+      backgroundColor: DEFAULT_CANVAS_FILL,
       selectionColor: "rgba(46,115,252,0.12)",
       selectionBorderColor: "rgba(106,172,255,0.8)",
       selectionLineWidth: 1.75,
       defaultCursor: CURSORS.default,
       hoverCursor: CURSORS.default,
       moveCursor: CURSORS.move,
-      uniformScaling: false
+      uniformScaling: false, // Uniformly scale X and Y
+      preserveObjectStacking: true // Prevents bringing selected objects to the front
     });
 
     // Disable context menu
@@ -44,10 +46,6 @@ export const useFabric = (): ((
       event.preventDefault();
     });
 
-    // canvas.current.isDrawingMode = true;
-    // canvas.current.freeDrawingBrush = new PenBrush(canvas.current);
-    // canvas.current.freeDrawingBrush.color = "#0ff";
-
     [
       bindEvents,
       registerGuides,
@@ -55,8 +53,9 @@ export const useFabric = (): ((
       registerKeyboard,
       registerClone,
       registerActions,
-      registerHistory,
-      registerDraw
+      registerPan,
+      registerDraw,
+      registerHistory
     ].forEach((bindable) => bindable(canvas.current));
 
     // eslint-disable-next-line react-hooks/exhaustive-deps

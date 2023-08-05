@@ -5,6 +5,7 @@ import rough from "roughjs/bin/rough";
 
 import {
   Arrowhead,
+  DEFAULT_LAYER_COLOR,
   FillStyle,
   LayerType,
   StrokeStyle
@@ -24,12 +25,10 @@ export type ArrowProps = ConstructorParameters<typeof ArrowPrimitive>[1] &
 const DEFAULT_ARROW_PROPS: Partial<ArrowProps> = {
   interactive: true,
   fill: "rgba(0,0,0,0)",
-  stroke: "rgba(0,0,0,1)",
-  fillStyle: FillStyle.HACHURE,
+  stroke: DEFAULT_LAYER_COLOR,
   strokeStyle: StrokeStyle.SOLID,
   startArrowhead: Arrowhead.NONE,
   endArrowhead: Arrowhead.ARROW,
-  fillWeight: 1,
   strokeWidth: 1,
   hachureGap: 5,
   roughness: 1
