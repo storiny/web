@@ -11,6 +11,7 @@ import ModalSidebarList from "~/components/Modal/SidebarList";
 import Spacer from "~/components/Spacer";
 import TabPanel from "~/components/TabPanel";
 import AlbumIcon from "~/icons/Album";
+import PenIcon from "~/icons/Pen";
 import PexelsIcon from "~/icons/Pexels";
 import PhotoSearchIcon from "~/icons/PhotoSearch";
 import UploadIcon from "~/icons/Upload";
@@ -19,6 +20,7 @@ import { queryAtom, selectedAtom } from "./core/atoms";
 import GalleryMasonry from "./core/components/Masonry";
 import ImagePreview from "./core/components/Preview";
 import SearchInput from "./core/components/SearchInput";
+import Whiteboard from "./core/components/Whiteboard";
 import styles from "./Gallery.module.scss";
 import { GalleryProps } from "./Gallery.props";
 
@@ -26,7 +28,11 @@ const UploadsTab = dynamic(() => import("./core/components/Uploads"), {
   loading: () => <SuspenseLoader />
 });
 
-export type GallerySidebarTabsValue = "pexels" | "library" | "upload";
+export type GallerySidebarTabsValue =
+  | "pexels"
+  | "whiteboard"
+  | "library"
+  | "upload";
 
 // Footer
 
@@ -44,11 +50,20 @@ const Gallery = (props: GalleryProps): React.ReactElement => {
   const { children } = props;
   const [value, setValue] = React.useState<GallerySidebarTabsValue>("pexels");
   const setQuery = useSetAtom(queryAtom);
+  const fullscreen = value === "whiteboard";
 
   return (
     <Modal
       footer={<GalleryFooter />}
+      fullscreen={fullscreen}
       mode={"tabbed"}
+      onOpenChange={(open): void => {
+        if (!open) {
+          // Reset values
+          setValue("pexels");
+          setQuery("");
+        }
+      }}
       sidebar={
         <>
           <SearchInput disabled={value !== "pexels"} />
@@ -56,6 +71,9 @@ const Gallery = (props: GalleryProps): React.ReactElement => {
           <ModalSidebarList>
             <ModalSidebarItem decorator={<PexelsIcon />} value={"pexels"}>
               Pexels
+            </ModalSidebarItem>
+            <ModalSidebarItem decorator={<PenIcon />} value={"whiteboard"}>
+              Whiteboard
             </ModalSidebarItem>
             <ModalSidebarItem decorator={<AlbumIcon />} value={"library"}>
               Library
@@ -76,11 +94,31 @@ const Gallery = (props: GalleryProps): React.ReactElement => {
             setQuery("");
           }
         },
-        content: { style: { minHeight: "45vh", minWidth: "40vw" } },
+        sidebar: {
+          style: {
+            display: fullscreen ? "none" : "flex"
+          }
+        },
+        content: {
+          style: {
+            minHeight: "45vh",
+            minWidth: "40vw"
+          }
+        },
         body: {
           className: styles.body
         },
-        header: { decorator: <PhotoSearchIcon />, children: "Gallery" }
+        closeButton: {
+          style: { display: fullscreen ? "none" : "flex" }
+        },
+        header: {
+          decorator: <PhotoSearchIcon />,
+          children: "Gallery",
+          style: { display: fullscreen ? "none" : "flex" }
+        },
+        footer: {
+          style: { display: fullscreen ? "none" : "flex" }
+        }
       }}
       trigger={children}
     >
@@ -90,6 +128,16 @@ const Gallery = (props: GalleryProps): React.ReactElement => {
         value={"pexels"}
       >
         <GalleryMasonry tab={"pexels"} />
+      </TabPanel>
+      <TabPanel
+        className={clsx("flex-center", styles["tab-panel"])}
+        tabIndex={-1}
+        value={"whiteboard"}
+      >
+        <Whiteboard
+          onCancel={(): void => setValue("pexels")}
+          onConfirm={(): void => setValue("pexels")}
+        />
       </TabPanel>
       <TabPanel
         className={clsx("flex-center", styles["tab-panel"])}

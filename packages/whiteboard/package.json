@@ -1,0 +1,46 @@
+{
+  "name": "@storiny/whiteboard",
+  "version": "0.0.0",
+  "private": true,
+  "sideEffects": false,
+  "scripts": {
+    "lint": "eslint \"**/*.ts*\""
+  },
+  "devDependencies": {
+    "@storiny/eslint-config": "*",
+    "@storiny/prettier-config": "*",
+    "@storiny/shared": "*",
+    "@storiny/stylelint-config": "*",
+    "@storiny/tsconfig": "*",
+    "@storiny/types": "*",
+    "@storiny/ui": "*",
+    "@types/image-blob-reduce": "^4.1.1",
+    "@types/pako": "^2.0.0",
+    "@types/pica": "^9.0.1",
+    "@types/react": "^18.2.18",
+    "@types/react-dom": "^18.2.7",
+    "eslint": "^8.42.0",
+    "prettier": "^2.5.1",
+    "typescript": "^5.1.5"
+  },
+  "dependencies": {
+    "@hello-pangea/dnd": "^16.3.0",
+    "clsx": "^1.2.1",
+    "fabric": "beta",
+    "hotkeys-js": "^3.11.2",
+    "image-blob-reduce": "^4.1.0",
+    "jotai": "^2.2.2",
+    "lz-string": "^1.5.0",
+    "pako": "^2.1.0",
+    "perfect-freehand": "^1.2.0",
+    "pica": "^9.0.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-hotkeys-hook": "^4.4.1",
+    "react-resizable-panels": "^0.0.53",
+    "react-virtuoso": "^4.4.0",
+    "roughjs": "^4.5.2",
+    "use-file-picker": "^1.7.0",
+    "use-resize-observer": "^9.1.0"
+  }
+}

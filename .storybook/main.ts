@@ -5,10 +5,10 @@ const config: StorybookConfig = {
   stories: [
     "../apps/web/src/**/*.stories.mdx",
     "../packages/ui/src/**/*.stories.mdx",
-    "../packages/image-editor/src/**/*.stories.mdx",
+    "../packages/whiteboard/src/**/*.stories.mdx",
     "../apps/web/src/**/*.stories.@(js|jsx|ts|tsx)",
     "../packages/ui/src/**/*.stories.@(js|jsx|ts|tsx)",
-    "../packages/image-editor/src/**/*.stories.@(js|jsx|ts|tsx)",
+    "../packages/whiteboard/src/**/*.stories.@(js|jsx|ts|tsx)",
   ],
   addons: [
     "@storybook/addon-links",

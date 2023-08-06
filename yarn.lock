@@ -5088,42 +5088,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@storiny/image-editor@workspace:packages/image-editor":
-  version: 0.0.0-use.local
-  resolution: "@storiny/image-editor@workspace:packages/image-editor"
-  dependencies:
-    "@hello-pangea/dnd": ^16.3.0
-    "@reduxjs/toolkit": ^1.9.5
-    "@storiny/eslint-config": "*"
-    "@storiny/prettier-config": "*"
-    "@storiny/shared": "*"
-    "@storiny/stylelint-config": "*"
-    "@storiny/tsconfig": "*"
-    "@storiny/types": "*"
-    "@storiny/ui": "*"
-    "@types/react": ^18.2.14
-    "@types/react-dom": ^18.2.6
-    clsx: ^1.2.1
-    eslint: ^8.42.0
-    fabric: beta
-    hotkeys-js: ^3.11.2
-    jotai: ^2.2.2
-    lz-string: ^1.5.0
-    perfect-freehand: ^1.2.0
-    prettier: ^2.5.1
-    react: ^18.2.0
-    react-dom: ^18.2.0
-    react-hotkeys-hook: ^4.4.1
-    react-redux: ^8.1.1
-    react-resizable-panels: ^0.0.53
-    react-virtuoso: ^4.4.0
-    roughjs: ^4.5.2
-    typescript: ^5.1.5
-    use-file-picker: ^1.7.0
-    use-resize-observer: ^9.1.0
-  languageName: unknown
-  linkType: soft
-
 "@storiny/monorepo@workspace:.":
   version: 0.0.0-use.local
   resolution: "@storiny/monorepo@workspace:."
@@ -5300,13 +5264,14 @@ __metadata:
     "@storiny/types": "*"
     "@swc/core": ^1.3.62
     "@swc/jest": ^0.2.26
+    "@tanem/react-nprogress": ^5.0.46
     "@testing-library/jest-dom": ^5.16.5
     "@testing-library/react": ^14.0.0
     "@types/css-mediaquery": ^0.1.1
     "@types/jest": ^29.5.1
     "@types/node": ^20.3.2
-    "@types/react": 18.2.7
-    "@types/react-dom": 18.2.4
+    "@types/react": ^18.2.18
+    "@types/react-dom": ^18.2.7
     "@types/react-redux": ^7.1.25
     "@types/redux-state-sync": ^3.1.5
     "@types/zxcvbn": ^4.4.1
@@ -5323,6 +5288,7 @@ __metadata:
     prettier: ^2.5.1
     react: ^18.2.0
     react-dom: ^18.2.0
+    react-dropzone: ^14.2.3
     react-hook-form: ^7.44.3
     react-intersection-observer: ^9.5.2
     react-redux: ^8.0.5
@@ -5358,8 +5324,8 @@ __metadata:
     "@storiny/ui": "*"
     "@types/mdx": ^2.0.5
     "@types/node": ^17.0.12
-    "@types/react": 18.2.7
-    "@types/react-dom": 18.2.4
+    "@types/react": ^18.2.18
+    "@types/react-dom": ^18.2.7
     client-only: ^0.0.1
     dotenv-cli: ^7.2.1
     little-state-machine: ^4.8.0
@@ -5379,6 +5345,46 @@ __metadata:
     typescript: ^5.1.5
     uglify-js: ^3.17.4
     webpack: ^5.88.0
+  languageName: unknown
+  linkType: soft
+
+"@storiny/whiteboard@workspace:packages/whiteboard":
+  version: 0.0.0-use.local
+  resolution: "@storiny/whiteboard@workspace:packages/whiteboard"
+  dependencies:
+    "@hello-pangea/dnd": ^16.3.0
+    "@storiny/eslint-config": "*"
+    "@storiny/prettier-config": "*"
+    "@storiny/shared": "*"
+    "@storiny/stylelint-config": "*"
+    "@storiny/tsconfig": "*"
+    "@storiny/types": "*"
+    "@storiny/ui": "*"
+    "@types/image-blob-reduce": ^4.1.1
+    "@types/pako": ^2.0.0
+    "@types/pica": ^9.0.1
+    "@types/react": ^18.2.18
+    "@types/react-dom": ^18.2.7
+    clsx: ^1.2.1
+    eslint: ^8.42.0
+    fabric: beta
+    hotkeys-js: ^3.11.2
+    image-blob-reduce: ^4.1.0
+    jotai: ^2.2.2
+    lz-string: ^1.5.0
+    pako: ^2.1.0
+    perfect-freehand: ^1.2.0
+    pica: ^9.0.1
+    prettier: ^2.5.1
+    react: ^18.2.0
+    react-dom: ^18.2.0
+    react-hotkeys-hook: ^4.4.1
+    react-resizable-panels: ^0.0.53
+    react-virtuoso: ^4.4.0
+    roughjs: ^4.5.2
+    typescript: ^5.1.5
+    use-file-picker: ^1.7.0
+    use-resize-observer: ^9.1.0
   languageName: unknown
   linkType: soft
 
@@ -6970,6 +6976,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@tanem/react-nprogress@npm:^5.0.46":
+  version: 5.0.46
+  resolution: "@tanem/react-nprogress@npm:5.0.46"
+  dependencies:
+    "@babel/runtime": ^7.22.6
+    hoist-non-react-statics: ^3.3.2
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0
+    react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
+  checksum: 656859d0d832eb759db4e6b314e5e001e5de3cc942de33a4348f8f5726ba9249d6123de2c9b5ce56999b967e30c7c728d6fb49a9b63e97b31b8047718b097e47
+  languageName: node
+  linkType: hard
+
 "@testing-library/dom@npm:^8.11.1":
   version: 8.20.0
   resolution: "@testing-library/dom@npm:8.20.0"
@@ -7345,6 +7364,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/image-blob-reduce@npm:^4.1.1":
+  version: 4.1.1
+  resolution: "@types/image-blob-reduce@npm:4.1.1"
+  dependencies:
+    "@types/pica": "*"
+  checksum: 758a9304af3998f057b6ae1950421f4d0c2234a4950b6115b5f35ec9f70a43b51da448440d23270c86e4e3bf5e7d36668d1ec4505a271ef04aac0c84242cc524
+  languageName: node
+  linkType: hard
+
 "@types/istanbul-lib-coverage@npm:*, @types/istanbul-lib-coverage@npm:^2.0.0, @types/istanbul-lib-coverage@npm:^2.0.1":
   version: 2.0.4
   resolution: "@types/istanbul-lib-coverage@npm:2.0.4"
@@ -7555,10 +7583,24 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/pako@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "@types/pako@npm:2.0.0"
+  checksum: 50240a036b5e6acabbf36ac4dca93ec9e619241f0404da8d401cdb427bec3029833324b8a04c4b1ae2ecbc33422fdec31dbf9f43653d9d07cafb82ace78dfccd
+  languageName: node
+  linkType: hard
+
 "@types/parse-json@npm:^4.0.0":
   version: 4.0.0
   resolution: "@types/parse-json@npm:4.0.0"
   checksum: fd6bce2b674b6efc3db4c7c3d336bd70c90838e8439de639b909ce22f3720d21344f52427f1d9e57b265fcb7f6c018699b99e5e0c208a1a4823014269a6bf35b
+  languageName: node
+  linkType: hard
+
+"@types/pica@npm:*, @types/pica@npm:^9.0.1":
+  version: 9.0.1
+  resolution: "@types/pica@npm:9.0.1"
+  checksum: 06765597c09874b0aeaec34fcce63c1aff2265bbb6dcf4fa75e61402db2239efe9b3dc4ec31f5dd739dfc555f1ce48abf5006a3d2086e7028142cebec1fda3c2
   languageName: node
   linkType: hard
 
@@ -7597,7 +7639,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react-dom@npm:18.2.4, @types/react-dom@npm:^18.0.0":
+"@types/react-dom@npm:^18.0.0":
   version: 18.2.4
   resolution: "@types/react-dom@npm:18.2.4"
   dependencies:
@@ -7606,12 +7648,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react-dom@npm:^18.2.6":
-  version: 18.2.6
-  resolution: "@types/react-dom@npm:18.2.6"
+"@types/react-dom@npm:^18.2.7":
+  version: 18.2.7
+  resolution: "@types/react-dom@npm:18.2.7"
   dependencies:
     "@types/react": "*"
-  checksum: b56e42efab121a3a8013d2eb8c1688e6028a25ea6d33c4362d2846f0af3760b164b4d7c34846614024cfb8956cca70dd1743487f152e32ff89a00fe6fbd2be54
+  checksum: e02ea908289a7ad26053308248d2b87f6aeafd73d0e2de2a3d435947bcea0422599016ffd1c3e38ff36c42f5e1c87c7417f05b0a157e48649e4a02f21727d54f
   languageName: node
   linkType: hard
 
@@ -7636,7 +7678,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react@npm:*, @types/react@npm:18.2.7, @types/react@npm:>=16":
+"@types/react@npm:*, @types/react@npm:>=16":
   version: 18.2.7
   resolution: "@types/react@npm:18.2.7"
   dependencies:
@@ -7647,14 +7689,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react@npm:^18.2.14":
-  version: 18.2.14
-  resolution: "@types/react@npm:18.2.14"
+"@types/react@npm:^18.2.18":
+  version: 18.2.18
+  resolution: "@types/react@npm:18.2.18"
   dependencies:
     "@types/prop-types": "*"
     "@types/scheduler": "*"
     csstype: ^3.0.2
-  checksum: a6a5e8cc78f486b9020d1ad009aa6c56943c68c7c6376e0f8399e9cbcd950b7b8f5d73f00200f5379f5e58d31d57d8aed24357f301d8e86108cd438ce6c8b3dd
+  checksum: 2e0d75de2b618e76780019e52478b1bec2b015a9187aea30f84518c0c3ddc639055bdfea50864aece937bad0cb0544d0100b80d30f5461e72fbc1c3c0be8b140
   languageName: node
   linkType: hard
 
@@ -8754,6 +8796,13 @@ __metadata:
   version: 0.4.0
   resolution: "asynckit@npm:0.4.0"
   checksum: 7b78c451df768adba04e2d02e63e2d0bf3b07adcd6e42b4cf665cb7ce899bedd344c69a1dcbce355b5f972d597b25aaa1c1742b52cffd9caccb22f348114f6be
+  languageName: node
+  linkType: hard
+
+"attr-accept@npm:^2.2.2":
+  version: 2.2.2
+  resolution: "attr-accept@npm:2.2.2"
+  checksum: 496f7249354ab53e522510c1dc8f67a1887382187adde4dc205507d2f014836a247073b05e9d9ea51e2e9c7f71b0d2aa21730af80efa9af2d68303e5f0565c4d
   languageName: node
   linkType: hard
 
@@ -12224,6 +12273,15 @@ eslint-config-turbo@latest:
   languageName: node
   linkType: hard
 
+"file-selector@npm:^0.6.0":
+  version: 0.6.0
+  resolution: "file-selector@npm:0.6.0"
+  dependencies:
+    tslib: ^2.4.0
+  checksum: 7d051b6e5d793f3c6e2ab287ba5e7c2c6a0971bccc9d56e044c8047ba483e18f60fc0b5771c951dc707c0d15f4f36ccb4f1f1aaf385d21ec8f7700dadf8325ba
+  languageName: node
+  linkType: hard
+
 "file-system-cache@npm:2.3.0":
   version: 2.3.0
   resolution: "file-system-cache@npm:2.3.0"
@@ -12866,6 +12924,13 @@ eslint-config-turbo@latest:
   languageName: node
   linkType: hard
 
+"glur@npm:^1.1.2":
+  version: 1.1.2
+  resolution: "glur@npm:1.1.2"
+  checksum: d80a50fe7f713a564cf50a8e46e2385e5256233c1180b94c06dfdf038655c8b11aa648dd8516b66025abfe437f4201aa10c0e759b68b9a37241375707cf107ea
+  languageName: node
+  linkType: hard
+
 "gopd@npm:^1.0.1":
   version: 1.0.1
   resolution: "gopd@npm:1.0.1"
@@ -13384,6 +13449,15 @@ eslint-config-turbo@latest:
   version: 5.2.4
   resolution: "ignore@npm:5.2.4"
   checksum: 3d4c309c6006e2621659311783eaea7ebcd41fe4ca1d78c91c473157ad6666a57a2df790fe0d07a12300d9aac2888204d7be8d59f9aaf665b1c7fcdb432517ef
+  languageName: node
+  linkType: hard
+
+"image-blob-reduce@npm:^4.1.0":
+  version: 4.1.0
+  resolution: "image-blob-reduce@npm:4.1.0"
+  dependencies:
+    pica: ^9.0.0
+  checksum: 48aa9efaf4f432c7baf135ec8f28f5b9a19c7aef0e9e7f223916fe7ca0676ac0adefdd005abd72a4a0c6dc31c871de2115224f298cce76b071dff332a8ea5ab4
   languageName: node
   linkType: hard
 
@@ -16517,6 +16591,16 @@ eslint-config-turbo@latest:
   languageName: node
   linkType: hard
 
+"multimath@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "multimath@npm:2.0.0"
+  dependencies:
+    glur: ^1.1.2
+    object-assign: ^4.1.1
+  checksum: 420d2090e4c9466c8195281011643a7087a3f8db9f7621fb19e13dce34d468d16f6e686625426efd4dbd1c9fa1cbc3c07ff634d9d9534dc6fa47b0849c2bcd69
+  languageName: node
+  linkType: hard
+
 "mute-stream@npm:0.0.8":
   version: 0.0.8
   resolution: "mute-stream@npm:0.0.8"
@@ -17251,6 +17335,13 @@ eslint-config-turbo@latest:
   languageName: node
   linkType: hard
 
+"pako@npm:^2.1.0":
+  version: 2.1.0
+  resolution: "pako@npm:2.1.0"
+  checksum: 71666548644c9a4d056bcaba849ca6fd7242c6cf1af0646d3346f3079a1c7f4a66ffec6f7369ee0dc88f61926c10d6ab05da3e1fca44b83551839e89edd75a3e
+  languageName: node
+  linkType: hard
+
 "pako@npm:~0.2.0":
   version: 0.2.9
   resolution: "pako@npm:0.2.9"
@@ -17514,6 +17605,18 @@ eslint-config-turbo@latest:
   dependencies:
     isomorphic-fetch: ^3.0.0
   checksum: 7345486ae818c1110118922af9d604bd0738452bef9cf0282be7894c6d2a2b52f860f5570932340dad7c7ef0f9a2519919187e441574c2f90c5311692250a6c2
+  languageName: node
+  linkType: hard
+
+"pica@npm:^9.0.0, pica@npm:^9.0.1":
+  version: 9.0.1
+  resolution: "pica@npm:9.0.1"
+  dependencies:
+    glur: ^1.1.2
+    multimath: ^2.0.0
+    object-assign: ^4.1.1
+    webworkify: ^1.5.0
+  checksum: 0063206643ef54c6641f3f8795807de9567acebbe3160839ae87bbf870ff2e4e4caca8135dd050e1f5427d12737488d4ede7f3cce4525ae86f2a0138d397f738
   languageName: node
   linkType: hard
 
@@ -18255,6 +18358,19 @@ eslint-config-turbo@latest:
   peerDependencies:
     react: ^18.2.0
   checksum: 7d323310bea3a91be2965f9468d552f201b1c27891e45ddc2d6b8f717680c95a75ae0bc1e3f5cf41472446a2589a75aed4483aee8169287909fcd59ad149e8cc
+  languageName: node
+  linkType: hard
+
+"react-dropzone@npm:^14.2.3":
+  version: 14.2.3
+  resolution: "react-dropzone@npm:14.2.3"
+  dependencies:
+    attr-accept: ^2.2.2
+    file-selector: ^0.6.0
+    prop-types: ^15.8.1
+  peerDependencies:
+    react: ">= 16.8 || 18.0.0"
+  checksum: 174b744d5ca898cf3d84ec1aeb6cef5211c446697e45dc8ece8287a03d291f8d07253206d5a1247ef156fd385d65e7de666d4d5c2986020b8543b8f2434e8b40
   languageName: node
   linkType: hard
 
@@ -21805,6 +21921,13 @@ turbo@latest:
   bin:
     webpack: bin/webpack.js
   checksum: 9fd1568b34ec2e99ba97c8509a15ab2576ec80c396e7015551ec814b24cfc11de173acba3e114dafe95f1a6d460781b09d6201e6a1fb15110e1d01a09f61a283
+  languageName: node
+  linkType: hard
+
+"webworkify@npm:^1.5.0":
+  version: 1.5.0
+  resolution: "webworkify@npm:1.5.0"
+  checksum: 426c10e0b94cac0678aed05fdf1abce98e8e11a523380537bab99fcd63df7c4b71b3630e61ab8052fdbd8d6e55e53700523b423cd475b258f95be5189d8cde49
   languageName: node
   linkType: hard
 

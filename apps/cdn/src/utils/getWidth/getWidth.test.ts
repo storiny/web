@@ -1,6 +1,8 @@
 import { getWidth } from "./getWidth";
 
-const getFixture = (width: string | number) => ({
+const getFixture = (
+  width: string | number
+): { result: string; segment: string } => ({
   segment: `w@${width}`,
   result: `${width}`
 });

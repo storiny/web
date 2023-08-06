@@ -59,6 +59,7 @@
   padding: 24px;
   width: 100%;
   flex-grow: 1;
+  min-height: 0;
 }
 
 @keyframes content-zoom-out {
