@@ -11,33 +11,33 @@ import TrendingUpIcon from "~/icons/TrendingUp";
 import styles from "./PopularStory.module.scss";
 import { PopularStoryProps } from "./PopularStory.props";
 
-const PopularStory = (props: PopularStoryProps) => {
+const PopularStory = (props: PopularStoryProps): React.ReactElement => {
   const { story } = props;
   const { title, slug, user } = story;
 
   return (
     <article className={clsx("flex-col", styles["popular-story"])}>
       <Typography as={"h2"} level={"h6"}>
-        <Link fixedColor href={`/${user.username}/${slug}`}>
+        <Link fixedColor href={`/${user?.username}/${slug}`}>
           {title}
         </Link>
       </Typography>
       <Persona
         avatar={{
-          alt: `${user.name}'s avatar`,
-          avatarId: user.avatar_id,
-          label: user.name,
-          hex: user.avatar_hex
+          alt: `${user?.name}'s avatar`,
+          avatarId: user?.avatar_id,
+          label: user?.name,
+          hex: user?.avatar_hex
         }}
         primaryText={
           <span className={clsx("flex-center", styles["primary-text"])}>
             <Link
               className={clsx("t-medium")}
               fixedColor
-              href={`/${user.username}`}
+              href={`/${user?.username}`}
               level={"body2"}
             >
-              {user.name}
+              {user?.name}
             </Link>
             <Typography
               aria-hidden

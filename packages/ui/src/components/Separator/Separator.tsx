@@ -10,13 +10,17 @@ import styles from "./Separator.module.scss";
 import { SeparatorProps } from "./Separator.props";
 
 const Separator = forwardRef<SeparatorProps, "div">((props, ref) => {
-  const { as: Component = "div", className, ...rest } = props;
+  const { as: Component = "div", className, invertMargin, ...rest } = props;
 
   return (
     <SeparatorPrimitive
       {...rest}
       asChild
-      className={clsx(styles.separator, className)}
+      className={clsx(
+        styles.separator,
+        invertMargin && styles["invert-margin"],
+        className
+      )}
       ref={ref}
     >
       <Component />

@@ -18,6 +18,16 @@ describe("<Separator />", () => {
     expect(baseElement).toMatchSnapshot();
   });
 
+  it("renders with inverted margin", () => {
+    const { baseElement } = renderTestWithProvider(
+      <Menu open trigger={<button>Trigger</button>}>
+        <Separator invertMargin />
+      </Menu>
+    );
+
+    expect(baseElement).toMatchSnapshot();
+  });
+
   it("does not have any accessibility violations", async () => {
     const { baseElement } = renderTestWithProvider(
       <Menu open trigger={<button>Trigger</button>}>

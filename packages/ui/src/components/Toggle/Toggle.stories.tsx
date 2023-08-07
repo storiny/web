@@ -3,7 +3,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
 
-import UserIcon from "~/icons/User";
+import RectangleIcon from "~/icons/Rectangle";
 
 import Toggle from "./Toggle";
 
@@ -12,7 +12,7 @@ const meta: Meta<typeof Toggle> = {
   component: Toggle,
   tags: ["autodocs"],
   args: {
-    children: <UserIcon />,
+    children: <RectangleIcon />,
     size: "md",
     "aria-label": "Toggle button"
   },

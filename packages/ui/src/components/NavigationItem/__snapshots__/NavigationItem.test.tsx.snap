@@ -1,0 +1,29 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<NavigationItem /> matches snapshot 1`] = `
+<button
+  class="reset flex-center focusable f-grow navigation-item"
+  data-disabled="false"
+>
+  Test
+  <span
+    aria-hidden="true"
+    class="f-grow"
+  />
+  <span
+    class="flex-center chevron"
+  >
+    <svg
+      aria-hidden="true"
+      class="svg-icon"
+      data-testid="chevron-icon"
+      style="--rotation: 90deg;"
+      viewBox="0 0 12 12"
+    >
+      <path
+        d="m3 7.5 3-3 3 3"
+      />
+    </svg>
+  </span>
+</button>
+`;

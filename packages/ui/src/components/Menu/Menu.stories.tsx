@@ -3,7 +3,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
 
-import UserIcon from "~/icons/User";
+import RectangleIcon from "~/icons/Rectangle";
 
 import Button from "../Button";
 import Menu from "../Menu";
@@ -20,8 +20,8 @@ const meta: Meta<typeof Menu> = {
   },
   argTypes: {
     open: {
-      control: "select",
       options: ["Uncontrolled", "Open", "Closed"],
+      control: { type: "select" },
       mapping: {
         Uncontrolled: undefined,
         Open: true,
@@ -38,7 +38,7 @@ const MenuComponent = (args?: MenuProps): React.ReactElement => (
   <Menu {...args} trigger={<Button aria-label={"Show menu"}>Show menu</Button>}>
     {[...Array(5)].map((_, index) => (
       <React.Fragment key={index}>
-        <MenuItem decorator={<UserIcon />} rightSlot={"⌘+T"}>
+        <MenuItem decorator={<RectangleIcon />} rightSlot={"⌘+T"}>
           Menu item
         </MenuItem>
         {index === 2 && <Separator />}

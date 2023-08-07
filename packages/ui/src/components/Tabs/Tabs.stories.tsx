@@ -4,7 +4,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import clsx from "clsx";
 import React from "react";
 
-import UserIcon from "~/icons/User";
+import RectangleIcon from "~/icons/Rectangle";
 
 import Tab from "../Tab";
 import TabPanel, { TabPanelProps } from "../TabPanel";
@@ -16,7 +16,7 @@ const CustomTabPanel = ({
   style,
   children,
   ...rest
-}: TabPanelProps) => (
+}: TabPanelProps): React.ReactElement => (
   <TabPanel
     {...rest}
     className={clsx("t-body-2", "t-minor", className)}
@@ -41,13 +41,13 @@ const meta: Meta<typeof Tabs> = {
     children: (
       <>
         <TabsList>
-          <Tab decorator={<UserIcon />} value={"one"}>
+          <Tab decorator={<RectangleIcon />} value={"one"}>
             One
           </Tab>
-          <Tab decorator={<UserIcon />} value={"two"}>
+          <Tab decorator={<RectangleIcon />} value={"two"}>
             Two
           </Tab>
-          <Tab decorator={<UserIcon />} value={"three"}>
+          <Tab decorator={<RectangleIcon />} value={"three"}>
             Three
           </Tab>
         </TabsList>
@@ -110,9 +110,9 @@ export const IconOnlyLG: Story = {
   render: (args) => (
     <Tabs {...args}>
       <TabsList size={"lg"}>
-        <Tab decorator={<UserIcon />} value={"one"} />
-        <Tab decorator={<UserIcon />} value={"two"} />
-        <Tab decorator={<UserIcon />} value={"three"} />
+        <Tab decorator={<RectangleIcon />} value={"one"} />
+        <Tab decorator={<RectangleIcon />} value={"two"} />
+        <Tab decorator={<RectangleIcon />} value={"three"} />
       </TabsList>
       <CustomTabPanel value={"one"}>First panel</CustomTabPanel>
       <CustomTabPanel value={"two"}>Second panel</CustomTabPanel>
@@ -125,9 +125,9 @@ export const IconOnlyMD: Story = {
   render: (args) => (
     <Tabs {...args}>
       <TabsList size={"md"}>
-        <Tab decorator={<UserIcon />} value={"one"} />
-        <Tab decorator={<UserIcon />} value={"two"} />
-        <Tab decorator={<UserIcon />} value={"three"} />
+        <Tab decorator={<RectangleIcon />} value={"one"} />
+        <Tab decorator={<RectangleIcon />} value={"two"} />
+        <Tab decorator={<RectangleIcon />} value={"three"} />
       </TabsList>
       <CustomTabPanel value={"one"}>First panel</CustomTabPanel>
       <CustomTabPanel value={"two"}>Second panel</CustomTabPanel>
@@ -140,13 +140,13 @@ export const SizeLG: Story = {
   render: (args) => (
     <Tabs {...args}>
       <TabsList size={"lg"}>
-        <Tab decorator={<UserIcon />} value={"one"}>
+        <Tab decorator={<RectangleIcon />} value={"one"}>
           One
         </Tab>
-        <Tab decorator={<UserIcon />} value={"two"}>
+        <Tab decorator={<RectangleIcon />} value={"two"}>
           Two
         </Tab>
-        <Tab decorator={<UserIcon />} value={"three"}>
+        <Tab decorator={<RectangleIcon />} value={"three"}>
           Three
         </Tab>
       </TabsList>
@@ -161,13 +161,13 @@ export const SizeMD: Story = {
   render: (args) => (
     <Tabs {...args}>
       <TabsList size={"md"}>
-        <Tab decorator={<UserIcon />} value={"one"}>
+        <Tab decorator={<RectangleIcon />} value={"one"}>
           One
         </Tab>
-        <Tab decorator={<UserIcon />} value={"two"}>
+        <Tab decorator={<RectangleIcon />} value={"two"}>
           Two
         </Tab>
-        <Tab decorator={<UserIcon />} value={"three"}>
+        <Tab decorator={<RectangleIcon />} value={"three"}>
           Three
         </Tab>
       </TabsList>

@@ -1,26 +1,39 @@
 import SuspenseLoader from "@storiny/web/src/common/suspense-loader";
 import clsx from "clsx";
-import { useAtomValue, useSetAtom } from "jotai";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import dynamic from "next/dynamic";
 import React from "react";
 
-import Modal from "~/components/Modal";
+import IconButton from "~/components/IconButton";
+import Modal, { ModalFooterButtonProps } from "~/components/Modal";
 import ModalFooterButton from "~/components/Modal/FooterButton";
 import ModalSidebarItem from "~/components/Modal/SidebarItem";
 import ModalSidebarList from "~/components/Modal/SidebarList";
 import Spacer from "~/components/Spacer";
 import TabPanel from "~/components/TabPanel";
+import NavigationScreen from "~/entities/Gallery/core/components/NavigationScreen/NavigationScreen";
+import { useMediaQuery } from "~/hooks/useMediaQuery";
 import AlbumIcon from "~/icons/Album";
+import ChevronIcon from "~/icons/Chevron";
 import PenIcon from "~/icons/Pen";
 import PexelsIcon from "~/icons/Pexels";
 import PhotoSearchIcon from "~/icons/PhotoSearch";
 import UploadIcon from "~/icons/Upload";
+import { breakpoints } from "~/theme/breakpoints";
 
-import { queryAtom, selectedAtom } from "./core/atoms";
+import {
+  GallerySidebarTabsValue,
+  navSegmentAtom,
+  queryAtom,
+  selectedAtom,
+  sidebarTabAtom
+} from "./core/atoms";
 import GalleryMasonry from "./core/components/Masonry";
 import ImagePreview from "./core/components/Preview";
 import SearchInput from "./core/components/SearchInput";
 import Whiteboard from "./core/components/Whiteboard";
+import WhiteboardUploader from "./core/components/Whiteboard/Uploader";
+import { FileWithPreview } from "./core/types";
 import styles from "./Gallery.module.scss";
 import { GalleryProps } from "./Gallery.props";
 
@@ -28,34 +41,51 @@ const UploadsTab = dynamic(() => import("./core/components/Uploads"), {
   loading: () => <SuspenseLoader />
 });
 
-export type GallerySidebarTabsValue =
-  | "pexels"
-  | "whiteboard"
-  | "library"
-  | "upload";
-
 // Footer
 
 const GalleryFooter = (): React.ReactElement => {
   const selected = useAtomValue(selectedAtom);
+  const isSmallerThanTablet = useMediaQuery(breakpoints.down("tablet"));
+  const buttonProps: ModalFooterButtonProps = {
+    size: isSmallerThanTablet ? "lg" : "md",
+    ...(isSmallerThanTablet
+      ? {
+          style: { borderRadius: 0, flex: 1 }
+        }
+      : {})
+  };
+
   return (
     <>
-      <ModalFooterButton variant={"ghost"}>Cancel</ModalFooterButton>
-      <ModalFooterButton disabled={!selected}>Confirm</ModalFooterButton>
+      <ModalFooterButton {...buttonProps} variant={"ghost"}>
+        Cancel
+      </ModalFooterButton>
+      <ModalFooterButton {...buttonProps} disabled={!selected}>
+        Confirm
+      </ModalFooterButton>
     </>
   );
 };
 
 const Gallery = (props: GalleryProps): React.ReactElement => {
   const { children } = props;
-  const [value, setValue] = React.useState<GallerySidebarTabsValue>("pexels");
+  const isSmallerThanTablet = useMediaQuery(breakpoints.down("tablet"));
+  const uploadImageUrl = React.useRef<string | null>(null);
+  const [navSegment, setNavSegment] = useAtom(navSegmentAtom);
+  const [whiteboardUploading, setWhiteboardUploading] =
+    React.useState<boolean>(false);
+  const [uploaderProps, setUploaderProps] = React.useState<{
+    alt: string;
+    file: FileWithPreview;
+  } | null>(null);
+  const [value, setValue] = useAtom(sidebarTabAtom);
   const setQuery = useSetAtom(queryAtom);
-  const fullscreen = value === "whiteboard";
+  const fullscreen = value === "whiteboard" && !whiteboardUploading;
 
   return (
     <Modal
       footer={<GalleryFooter />}
-      fullscreen={fullscreen}
+      fullscreen={isSmallerThanTablet || fullscreen}
       mode={"tabbed"}
       onOpenChange={(open): void => {
         if (!open) {
@@ -96,13 +126,14 @@ const Gallery = (props: GalleryProps): React.ReactElement => {
         },
         sidebar: {
           style: {
-            display: fullscreen ? "none" : "flex"
+            display: fullscreen || isSmallerThanTablet ? "none" : "flex"
           }
         },
         content: {
           style: {
             minHeight: "45vh",
-            minWidth: "40vw"
+            width: "40vw",
+            minWidth: fullscreen || isSmallerThanTablet ? "100%" : "640px"
           }
         },
         body: {
@@ -112,47 +143,103 @@ const Gallery = (props: GalleryProps): React.ReactElement => {
           style: { display: fullscreen ? "none" : "flex" }
         },
         header: {
-          decorator: <PhotoSearchIcon />,
+          decorator:
+            !isSmallerThanTablet || navSegment === "home" ? (
+              <PhotoSearchIcon />
+            ) : (
+              <IconButton
+                aria-label={"Go to main screen"}
+                onClick={(): void => setNavSegment("home")}
+                variant={"ghost"}
+              >
+                <ChevronIcon rotation={-90} />
+              </IconButton>
+            ),
           children: "Gallery",
           style: { display: fullscreen ? "none" : "flex" }
         },
         footer: {
-          style: { display: fullscreen ? "none" : "flex" }
+          style: {
+            display: fullscreen ? "none" : "flex",
+            ...(isSmallerThanTablet ? { gap: 0, padding: 0 } : {})
+          }
         }
       }}
       trigger={children}
     >
-      <TabPanel
-        className={clsx("flex-center", styles["tab-panel"])}
-        tabIndex={-1}
-        value={"pexels"}
-      >
-        <GalleryMasonry tab={"pexels"} />
-      </TabPanel>
-      <TabPanel
-        className={clsx("flex-center", styles["tab-panel"])}
-        tabIndex={-1}
-        value={"whiteboard"}
-      >
-        <Whiteboard
-          onCancel={(): void => setValue("pexels")}
-          onConfirm={(): void => setValue("pexels")}
-        />
-      </TabPanel>
-      <TabPanel
-        className={clsx("flex-center", styles["tab-panel"])}
-        tabIndex={-1}
-        value={"library"}
-      >
-        <GalleryMasonry tab={"library"} />
-      </TabPanel>
-      <TabPanel
-        className={clsx("flex-center", styles["tab-panel"])}
-        tabIndex={-1}
-        value={"upload"}
-      >
-        <UploadsTab />
-      </TabPanel>
+      {isSmallerThanTablet ? (
+        {
+          home: <NavigationScreen />,
+          pexels: <GalleryMasonry tab={"pexels"} />,
+          library: <GalleryMasonry tab={"library"} />,
+          upload: <UploadsTab disableWhiteboardPrompt />
+        }[navSegment]
+      ) : (
+        <React.Fragment>
+          <TabPanel
+            className={clsx("flex-center", styles["tab-panel"])}
+            tabIndex={-1}
+            value={"pexels"}
+          >
+            <GalleryMasonry tab={"pexels"} />
+          </TabPanel>
+          <TabPanel
+            className={clsx("flex-center", styles["tab-panel"])}
+            tabIndex={-1}
+            value={"whiteboard"}
+          >
+            {whiteboardUploading && uploaderProps ? (
+              <WhiteboardUploader
+                alt={uploaderProps.alt}
+                file={uploaderProps.file}
+                onReset={(): void => {
+                  setUploaderProps(null);
+                  setWhiteboardUploading(false);
+                }}
+              />
+            ) : (
+              <Whiteboard
+                initialImageUrl={uploadImageUrl.current}
+                onCancel={(): void => {
+                  setUploaderProps(null);
+                  setWhiteboardUploading(false);
+                  setValue("pexels");
+                }}
+                onConfirm={(file, alt): void => {
+                  Object.assign(file, { preview: URL.createObjectURL(file) });
+                  setUploaderProps({ file, alt } as {
+                    alt: string;
+                    file: FileWithPreview;
+                  });
+                  setWhiteboardUploading(true);
+                }}
+                onMount={(): void => {
+                  uploadImageUrl.current = null;
+                }}
+              />
+            )}
+          </TabPanel>
+          <TabPanel
+            className={clsx("flex-center", styles["tab-panel"])}
+            tabIndex={-1}
+            value={"library"}
+          >
+            <GalleryMasonry tab={"library"} />
+          </TabPanel>
+          <TabPanel
+            className={clsx("flex-center", styles["tab-panel"])}
+            tabIndex={-1}
+            value={"upload"}
+          >
+            <UploadsTab
+              onOpenInWhiteboard={(blobUrl): void => {
+                uploadImageUrl.current = blobUrl;
+                setValue("whiteboard");
+              }}
+            />
+          </TabPanel>
+        </React.Fragment>
+      )}
     </Modal>
   );
 };

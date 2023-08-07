@@ -13,6 +13,7 @@ import Spacer from "~/components/Spacer";
 import Spinner from "~/components/Spinner";
 import ErrorState from "~/entities/ErrorState";
 import { useDebounce } from "~/hooks/useDebounce";
+import { useMediaQuery } from "~/hooks/useMediaQuery";
 import {
   GetGalleryPhotosResponse,
   getQueryErrorType,
@@ -20,6 +21,7 @@ import {
   useGetGalleryPhotosQuery,
   useGetUserAssetsQuery
 } from "~/redux/features";
+import { breakpoints } from "~/theme/breakpoints";
 
 import { fetchingAtom, queryAtom } from "../../atoms";
 import LibraryMasonryItem from "./LibraryItem";
@@ -34,9 +36,11 @@ const EmptyState = dynamic(() => import("./EmptyState"), {
 // Pexels
 
 const Pexels = ({
-  containerRef
+  containerRef,
+  minCols
 }: {
   containerRef: React.RefObject<HTMLDivElement>;
+  minCols: number;
 }): React.ReactElement => {
   const [page, setPage] = React.useState<number>(1);
   const query = useAtomValue(queryAtom);
@@ -84,7 +88,7 @@ const Pexels = ({
           getItemKey={(data): string => String(data.id)}
           gutterWidth={12}
           items={items}
-          minCols={3}
+          minCols={minCols}
           overscanFactor={2.8}
           renderItem={(args): React.ReactElement => (
             <PexelsMasonryItem {...args} />
@@ -105,9 +109,11 @@ const Pexels = ({
 // User library
 
 const Library = ({
-  containerRef
+  containerRef,
+  minCols
 }: {
   containerRef: React.RefObject<HTMLDivElement>;
+  minCols: number;
 }): React.ReactElement => {
   const [page, setPage] = React.useState<number>(1);
   const { data, isFetching, isLoading, isError, error, refetch } =
@@ -147,7 +153,7 @@ const Library = ({
           getItemKey={(data): string => String(data.id)}
           gutterWidth={12}
           items={items}
-          minCols={3}
+          minCols={minCols}
           overscanFactor={2.8}
           renderItem={(args): React.ReactElement => (
             <LibraryMasonryItem {...args} />
@@ -202,7 +208,9 @@ GalleryMasonryFooter.displayName = "GalleryMasonryFooter";
 
 const GalleryMasonry = (props: GalleryMasonryProps): React.ReactElement => {
   const { tab } = props;
+  const isSmallerThanTablet = useMediaQuery(breakpoints.down("tablet"));
   const containerRef = React.useRef<HTMLDivElement>(null);
+  const minCols = isSmallerThanTablet ? 2 : 3;
 
   return (
     <ScrollArea
@@ -217,9 +225,9 @@ const GalleryMasonry = (props: GalleryMasonryProps): React.ReactElement => {
       type={"auto"}
     >
       {tab === "pexels" ? (
-        <Pexels containerRef={containerRef} />
+        <Pexels containerRef={containerRef} minCols={minCols} />
       ) : (
-        <Library containerRef={containerRef} />
+        <Library containerRef={containerRef} minCols={minCols} />
       )}
     </ScrollArea>
   );

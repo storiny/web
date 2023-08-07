@@ -5,6 +5,7 @@ import {
   assetDelete,
   assetFavourite,
   assetRating,
+  assetUpload,
   getBookmarks,
   getExploreStories,
   getExploreTags,
@@ -64,6 +65,7 @@ export const apiSlice = createApi({
     // Settings
     notificationSettings: notificationSettings(builder),
     // Other
+    assetUpload: assetUpload(builder),
     assetAlt: assetAlt(builder),
     assetDelete: assetDelete(builder),
     assetFavourite: assetFavourite(builder),
@@ -93,6 +95,7 @@ export const {
   useRecoveryMutation,
   useResetPasswordMutation,
   useNotificationSettingsMutation,
+  useAssetUploadMutation,
   useAssetFavouriteMutation,
   useAssetAltMutation,
   useAssetDeleteMutation,

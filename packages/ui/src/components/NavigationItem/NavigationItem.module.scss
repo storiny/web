@@ -1,0 +1,48 @@
+/* Base styles */
+.navigation-item {
+  --fg: var(--fg-major);
+  --bg: transparent;
+
+  display: inline-flex;
+  color: var(--fg);
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 19px;
+  font-weight: var(--font-weight-medium);
+  background-color: var(--bg);
+  justify-content: flex-start;
+  padding: 8px;
+  gap: 6px;
+  min-height: 42px;
+  height: 42px;
+  cursor: pointer;
+
+  &:not([data-disabled="true"]) {
+    &:hover {
+      --bg: var(--bg-elevation-md);
+    }
+
+    &:active {
+      --bg: var(--bg-elevation-lg);
+    }
+  }
+
+  &[data-disabled="true"] {
+    --fg: var(--fg-muted);
+
+    cursor: not-allowed;
+  }
+}
+
+/* Decorator and chevron */
+.decorator,
+.chevron {
+  --icon-size: 18px;
+
+  padding: 4px;
+}
+
+/* Chevron */
+.chevron {
+  --icon-stroke: var(--fg-muted);
+}

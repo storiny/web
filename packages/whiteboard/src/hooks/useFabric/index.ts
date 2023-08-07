@@ -6,6 +6,8 @@ import { useAppSelector } from "~/redux/hooks";
 
 import { FabricContext } from "../../components/Context";
 import { CURSORS, SWATCH } from "../../constants";
+import { Image } from "../../lib";
+import { useWhiteboard } from "../useWhiteboard";
 import { bindEvents } from "./events";
 import {
   registerActions,
@@ -24,6 +26,7 @@ import {
 export const useFabric = (): ((
   element: HTMLCanvasElement
 ) => Promise<boolean> | undefined) => {
+  const { initialImageUrl } = useWhiteboard();
   const canvas = React.useContext(FabricContext);
   const theme = useAppSelector(selectTheme);
   return React.useCallback((element: HTMLCanvasElement) => {
@@ -49,6 +52,23 @@ export const useFabric = (): ((
     selectionElement.addEventListener("contextmenu", (event) => {
       event.preventDefault();
     });
+
+    // Load the initial image into the canvas
+    if (initialImageUrl) {
+      Image.fromURL(initialImageUrl).then((loaded) => {
+        if (canvas.current) {
+          loaded.set({
+            left: canvas.current.width / 2,
+            top: canvas.current.height / 2
+          });
+
+          canvas.current.add(loaded);
+
+          // Revoke to avoid memory leaks
+          URL.revokeObjectURL(initialImageUrl);
+        }
+      });
+    }
 
     [
       bindEvents,

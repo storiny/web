@@ -3,7 +3,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
 
-import UserIcon from "~/icons/User";
+import RectangleIcon from "~/icons/Rectangle";
 
 import Button from "../Button";
 import Confirmation from "./Confirmation";
@@ -15,15 +15,16 @@ const meta: Meta<typeof Confirmation> = {
   component: Confirmation,
   args: {
     color: "inverted",
-    decorator: <UserIcon />,
+    decorator: <RectangleIcon />,
     title: "Confirmation title",
     description: "This is a confirmation description"
   },
   argTypes: {
     decorator: {
       options: ["Icon", "None"],
+      control: { type: "select" },
       mapping: {
-        Icon: <UserIcon />,
+        Icon: <RectangleIcon />,
         None: undefined
       }
     }

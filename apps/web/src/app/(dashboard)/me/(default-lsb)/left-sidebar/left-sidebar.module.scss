@@ -1,0 +1,50 @@
+.x {
+  /* Base styles */
+  &.left-sidebar {
+    padding-block: 8px;
+    gap: 16px;
+  }
+
+  /* Content */
+  &.content {
+    width: 100%;
+    gap: 16px;
+    padding-right: 24px;
+    align-items: stretch;
+  }
+
+  /* Persona */
+  &.persona {
+    justify-content: flex-start;
+  }
+
+  /* Tabs */
+  &.tabs {
+    max-height: calc(100vh - 52px);
+  }
+
+  /* Tabs list */
+  &.tabs-list {
+    gap: 18px;
+  }
+
+  /* Tabs group */
+  &.tabs-group {
+    gap: 8px;
+  }
+
+  /* Tabs group container */
+  &.tabs-group-container {
+    margin-left: 8px;
+  }
+
+  /* Tab */
+  &.tab {
+    justify-content: flex-start;
+  }
+
+  /* Scroll area viewport */
+  &.viewport {
+    gap: 18px;
+  }
+}

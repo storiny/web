@@ -17,6 +17,9 @@ const PexelsMasonryItem = React.memo(
     const [selected, setSelected] = useAtom(selectedAtom);
     const isSelected = selected?.id === String(data.id);
 
+    /**
+     * Handles selection
+     */
     const handleSelect = (): void => {
       setSelected({
         src: data.src.medium,

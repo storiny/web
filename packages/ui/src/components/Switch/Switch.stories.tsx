@@ -26,8 +26,8 @@ const meta: Meta<typeof Switch> = {
     },
     checked: {
       description: "The checked state.",
-      control: "select",
       options: ["Uncontrolled", "Checked", "Unchecked"],
+      control: { type: "select" },
       mapping: {
         Uncontrolled: undefined,
         Checked: true,

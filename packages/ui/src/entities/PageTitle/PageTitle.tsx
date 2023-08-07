@@ -26,7 +26,7 @@ const PageTitle = (props: PageTitleProps) => {
       <IconButton
         aria-label={"Navigate to previous page"}
         {...componentProps?.backButton}
-        onClick={() => router.back()}
+        onClick={(): void => router.back()}
         size={"sm"}
         title={"Back"}
         variant={"ghost"}

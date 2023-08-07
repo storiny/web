@@ -3,7 +3,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
 
-import UserIcon from "~/icons/User";
+import RectangleIcon from "~/icons/Rectangle";
 
 import IconButton from "../IconButton";
 import Tooltip from "./Tooltip";
@@ -14,8 +14,8 @@ const meta: Meta<typeof Tooltip> = {
   tags: ["autodocs"],
   argTypes: {
     open: {
-      control: "select",
       options: ["Uncontrolled", "Open", "Closed"],
+      control: { type: "select" },
       mapping: {
         Uncontrolled: undefined,
         Open: true,
@@ -32,7 +32,7 @@ export const Default: Story = {
   render: (args) => (
     <Tooltip {...args}>
       <IconButton>
-        <UserIcon />
+        <RectangleIcon />
       </IconButton>
     </Tooltip>
   ),

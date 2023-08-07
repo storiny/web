@@ -3,7 +3,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
 
-import UserIcon from "~/icons/User";
+import RectangleIcon from "~/icons/Rectangle";
 
 import Button from "../Button";
 import TabPanel from "../TabPanel";
@@ -45,7 +45,7 @@ export const WithFooter: Story = {
   args: {
     ...Default.args,
     slotProps: {
-      header: { decorator: <UserIcon />, children: "Modal title" },
+      header: { decorator: <RectangleIcon />, children: "Modal title" },
       content: { style: { minHeight: "45vh", minWidth: "40vw" } }
     },
     footer: (
@@ -106,13 +106,13 @@ export const ModeTabbed: Story = {
     },
     sidebar: (
       <ModalSidebarList>
-        <ModalSidebarItem decorator={<UserIcon />} value={"one"}>
+        <ModalSidebarItem decorator={<RectangleIcon />} value={"one"}>
           One
         </ModalSidebarItem>
-        <ModalSidebarItem decorator={<UserIcon />} value={"two"}>
+        <ModalSidebarItem decorator={<RectangleIcon />} value={"two"}>
           Two
         </ModalSidebarItem>
-        <ModalSidebarItem decorator={<UserIcon />} value={"three"}>
+        <ModalSidebarItem decorator={<RectangleIcon />} value={"three"}>
           Three
         </ModalSidebarItem>
       </ModalSidebarList>

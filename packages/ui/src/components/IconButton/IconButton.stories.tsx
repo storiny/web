@@ -3,7 +3,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
 
-import UserIcon from "~/icons/User";
+import RectangleIcon from "~/icons/Rectangle";
 
 import IconButton from "./IconButton";
 
@@ -12,7 +12,7 @@ const meta: Meta<typeof IconButton> = {
   component: IconButton,
   tags: ["autodocs"],
   args: {
-    children: <UserIcon />,
+    children: <RectangleIcon />,
     size: "md",
     color: "inverted",
     variant: "rigid"

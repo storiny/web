@@ -1,5 +1,11 @@
+/* Base styles */
 .separator {
   height: 1px;
   background-color: var(--divider);
   margin: 8px 0;
+}
+
+/* Inverted margin */
+.invert-margin {
+  margin: 0 8px;
 }

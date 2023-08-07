@@ -4,7 +4,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
 
 import CheckIcon from "~/icons/Check";
-import UserIcon from "~/icons/User";
+import RectangleIcon from "~/icons/Rectangle";
 
 import IconButton from "../IconButton";
 import Option from "../Option";
@@ -18,13 +18,15 @@ const meta: Meta<typeof Input> = {
   argTypes: {
     decorator: {
       options: ["Icon", "None"],
+      control: { type: "select" },
       mapping: {
-        Icon: <UserIcon />,
+        Icon: <RectangleIcon />,
         None: undefined
       }
     },
     endDecorator: {
       options: ["Button", "Select", "None"],
+      control: { type: "select" },
       mapping: {
         Button: (
           <IconButton>

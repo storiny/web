@@ -2,19 +2,22 @@ import React from "react";
 
 import { WhiteboardCoreProps } from "../Main";
 
+type WhiteboardPropsWithoutMount = Omit<WhiteboardCoreProps, "onMount">;
+
 /**
  * Context
  */
-export const WhiteboardContext = React.createContext<WhiteboardCoreProps>(
-  {} as WhiteboardCoreProps
-);
+export const WhiteboardContext =
+  React.createContext<WhiteboardPropsWithoutMount>(
+    {} as WhiteboardPropsWithoutMount
+  );
 
 const WhiteboardProvider = ({
   children,
   value
 }: {
   children: React.ReactNode;
-  value: WhiteboardCoreProps;
+  value: WhiteboardPropsWithoutMount;
 }): React.ReactElement => (
   <WhiteboardContext.Provider value={value}>
     {children}

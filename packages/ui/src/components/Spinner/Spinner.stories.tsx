@@ -3,7 +3,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
 
-import UserIcon from "~/icons/User";
+import RectangleIcon from "~/icons/Rectangle";
 
 import Spinner from "./Spinner";
 
@@ -29,7 +29,7 @@ export const TypeDeterminate: Story = {
 
 export const WithChildren: Story = {
   args: {
-    children: <UserIcon size={12} />
+    children: <RectangleIcon size={12} />
   }
 };
 

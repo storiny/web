@@ -21,7 +21,7 @@
     "client-only": "^0.0.1",
     "little-state-machine": "^4.8.0",
     "nanoid": "^4.0.2",
-    "next": "^13.4.7",
+    "next": "^13.4.13",
     "normalize.css": "^8.0.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

@@ -59,7 +59,7 @@ const Story = (props: StoryProps): React.ReactElement => {
   const isLiked = useAppSelector(selectLikedStory(story.id));
   const isUserBlocked = useAppSelector(selectBlock(story.user_id));
   const [collapsed, setCollapsed] = React.useState(isUserBlocked);
-  const storyUrl = `/${story.user.username}/${story.slug}`;
+  const storyUrl = `/${story.user?.username}/${story.slug}`;
 
   React.useEffect(() => {
     dispatch(syncWithStory(story));
@@ -104,13 +104,13 @@ const Story = (props: StoryProps): React.ReactElement => {
               </Typography>
               <Persona
                 avatar={{
-                  avatarId: story.user.avatar_id,
-                  hex: story.user.avatar_hex,
+                  avatarId: story.user?.avatar_id,
+                  hex: story.user?.avatar_hex,
                   alt: "",
                   className: "focusable",
                   // @ts-expect-error polymorphic prop
                   href: `/${story.user.username}`,
-                  title: `View ${story.user.name}'s profile`,
+                  title: `View ${story.user?.name}'s profile`,
                   as: NextLink
                 }}
                 className={styles.persona}
@@ -118,10 +118,10 @@ const Story = (props: StoryProps): React.ReactElement => {
                   <span className={"flex"} style={{ gap: "4px" }}>
                     <Link
                       className={"t-medium"}
-                      href={`/${story.user.username}`}
+                      href={`/${story.user?.username}`}
                       level={"body2"}
                     >
-                      {story.user.name}
+                      {story.user?.name}
                     </Link>
                     <Typography
                       aria-hidden

@@ -10,15 +10,24 @@ import Topbar from "../Topbar";
 import styles from "./Main.module.scss";
 import { WhiteboardProps } from "./Main.props";
 
-const Main = (props: WhiteboardProps): React.ReactElement => {
-  const { className, onConfirm, onCancel, ...rest } = props;
+const Main = React.forwardRef<HTMLDivElement, WhiteboardProps>((props, ref) => {
+  const { className, onMount, onConfirm, onCancel, initialImageUrl, ...rest } =
+    props;
+
+  React.useEffect(() => {
+    if (onMount) {
+      onMount();
+    }
+  }, [onMount]);
+
   return (
     <div
       {...rest}
       className={clsx("full-h", "full-w", styles.x, styles.main, className)}
+      ref={ref}
     >
       <Provider>
-        <WhiteboardProvider value={{ onConfirm, onCancel }}>
+        <WhiteboardProvider value={{ onConfirm, onCancel, initialImageUrl }}>
           <FabricProvider>
             <Topbar />
             <Tools />
@@ -29,6 +38,8 @@ const Main = (props: WhiteboardProps): React.ReactElement => {
       </Provider>
     </div>
   );
-};
+});
+
+Main.displayName = "Whiteboard";
 
 export default Main;

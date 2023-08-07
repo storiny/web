@@ -3,7 +3,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
 
-import UserIcon from "~/icons/User";
+import RectangleIcon from "~/icons/Rectangle";
 
 import ToggleGroupItem from "../ToggleGroupItem";
 import ToggleGroup from "./ToggleGroup";
@@ -19,13 +19,13 @@ const meta: Meta<typeof ToggleGroup> = {
     children: (
       <>
         <ToggleGroupItem aria-label={"First item"} value={"one"}>
-          <UserIcon />
+          <RectangleIcon />
         </ToggleGroupItem>
         <ToggleGroupItem aria-label={"Second item"} value={"two"}>
-          <UserIcon />
+          <RectangleIcon />
         </ToggleGroupItem>
         <ToggleGroupItem aria-label={"Third item"} value={"three"}>
-          <UserIcon />
+          <RectangleIcon />
         </ToggleGroupItem>
       </>
     ),
@@ -75,21 +75,21 @@ export const WithTooltip: Story = {
           tooltipContent={"First item"}
           value={"one"}
         >
-          <UserIcon />
+          <RectangleIcon />
         </ToggleGroupItem>
         <ToggleGroupItem
           aria-label={"Second item"}
           tooltipContent={"Second item"}
           value={"two"}
         >
-          <UserIcon />
+          <RectangleIcon />
         </ToggleGroupItem>
         <ToggleGroupItem
           aria-label={"Third item"}
           tooltipContent={"Third item"}
           value={"three"}
         >
-          <UserIcon />
+          <RectangleIcon />
         </ToggleGroupItem>
       </>
     )

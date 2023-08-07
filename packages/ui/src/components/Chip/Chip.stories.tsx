@@ -3,7 +3,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
 
-import UserIcon from "~/icons/User";
+import RectangleIcon from "~/icons/Rectangle";
 
 import Chip from "./Chip";
 
@@ -33,8 +33,9 @@ const meta: Meta<typeof Chip> = {
     },
     decorator: {
       options: ["Icon", "None"],
+      control: { type: "select" },
       mapping: {
-        Icon: <UserIcon />,
+        Icon: <RectangleIcon />,
         None: undefined
       }
     }

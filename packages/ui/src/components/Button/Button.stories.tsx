@@ -3,7 +3,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
 
-import UserIcon from "~/icons/User";
+import RectangleIcon from "~/icons/Rectangle";
 
 import Button from "./Button";
 
@@ -33,8 +33,9 @@ const meta: Meta<typeof Button> = {
     },
     decorator: {
       options: ["Icon", "None"],
+      control: { type: "select" },
       mapping: {
-        Icon: <UserIcon />,
+        Icon: <RectangleIcon />,
         None: undefined
       }
     }

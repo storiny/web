@@ -1,11 +1,9 @@
 import { atom } from "jotai";
 
-export type SelectedAtomValue =
-  | {
-      hex: string | null;
-      id: string;
-      src: string;
-    }
-  | undefined;
+export type SelectedAtomValue = {
+  hex: string | null;
+  id: string;
+  src: string;
+} | null;
 
-export const selectedAtom = atom<SelectedAtomValue>(undefined);
+export const selectedAtom = atom<SelectedAtomValue>(null);

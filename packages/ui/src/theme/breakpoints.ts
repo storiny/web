@@ -2,14 +2,14 @@
  * Media above or equal to the breakpoint
  * @param breakpoint
  */
-const up = (breakpoint: Breakpoint) =>
+const up = (breakpoint: Breakpoint): string =>
   `(min-width: ${breakpoints[breakpoint] + 1}px)`;
 
 /**
  * Media below the breakpoint
  * @param breakpoint
  */
-const down = (breakpoint: Breakpoint) =>
+const down = (breakpoint: Breakpoint): string =>
   `(max-width: ${breakpoints[breakpoint]}px)`;
 
 export const breakpoints = {

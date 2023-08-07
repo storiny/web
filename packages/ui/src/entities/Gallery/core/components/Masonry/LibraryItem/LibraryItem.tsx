@@ -92,10 +92,17 @@ const LibraryMasonryItem = React.memo(
     const [dispatchDelete] = useAssetDeleteMutation();
     const isSelected = selected?.id === String(data.id);
 
+    /**
+     * Handles rating change
+     */
     const onRatingChange = React.useCallback(
       (newRating: AssetRating) => setRating(newRating),
       []
     );
+
+    /**
+     * Handles selection
+     */
     const handleSelect = (): void => {
       if (!deleted) {
         setSelected({
@@ -106,25 +113,37 @@ const LibraryMasonryItem = React.memo(
       }
     };
 
+    /**
+     * Handles rating
+     */
     const handleRating = React.useCallback(() => {
       dispatchRating({ rating, id: data.id });
     }, [data.id, dispatchRating, rating]);
 
+    /**
+     * Handles item deletion
+     */
     const handleDelete = React.useCallback(() => {
       dispatchDelete({ id: data.id });
       setDeleted(true);
 
       // Reset selection
       if (isSelected) {
-        setSelected(undefined);
+        setSelected(null);
       }
     }, [data.id, dispatchDelete, isSelected, setSelected]);
 
+    /**
+     * Marks the item as favourite
+     */
     const handleFavourite = (): void => {
       favourite({ id: data.id, value: !isFavourite });
       setIsFavourite((prevState) => !prevState);
     };
 
+    /**
+     * Handles the alt text
+     */
     const handleAlt = (): void => {
       alt({ id: data.id, alt: altText });
       setEditingMode(false);
