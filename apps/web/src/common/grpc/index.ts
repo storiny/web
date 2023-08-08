@@ -8,6 +8,7 @@ import {
   GetTokenResponse,
   VerifyEmailResponse
 } from "@storiny/proto/gen/ts/token_def/v1/def";
+import { GetUserIdResponse } from "@storiny/proto/gen/ts/user_def/v1/def";
 
 declare global {
   // noinspection ES6ConvertVarToLetConst
@@ -20,7 +21,7 @@ global.grpcClient = new ApiServiceClient(
 );
 
 /**
- * Converts callback style functions to a promise
+ * Converts callback style function to a promise
  * @param callback Callback style function to promisify
  */
 const promisify =
@@ -38,8 +39,17 @@ const promisify =
       );
     });
 
-export { GetProfileResponse, GetTagResponse, GetTokenResponse };
+export {
+  GetProfileResponse,
+  GetTagResponse,
+  GetTokenResponse,
+  GetUserIdResponse,
+  VerifyEmailResponse
+};
 
+export const getUserId = promisify<GetUserIdResponse>(
+  global.grpcClient.getUserId
+);
 export const getTag = promisify<GetTagResponse>(global.grpcClient.getTag);
 export const getProfile = promisify<GetProfileResponse>(
   global.grpcClient.getProfile

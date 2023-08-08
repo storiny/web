@@ -5,14 +5,14 @@ import React from "react";
 
 import { renderWithState } from "~/redux/mock";
 
-import DashboardLayout from "../../../../layout";
+import DashboardLayout from "../../../../../layout";
+import DashboardSplashLayout from "../../../layout";
 import DefaultDashboardLeftSidebarLayout from "../../layout";
-import DefaultDashboardRightSidebarLayout from "../layout";
-import Index from "./page";
+import AccountProfilePage from "./page";
 
-const meta: Meta<typeof Index> = {
-  title: "dashboard/Index",
-  component: Index,
+const meta: Meta<typeof AccountProfilePage> = {
+  title: "dashboard/Account/profile",
+  component: AccountProfilePage,
   parameters: {
     layout: "fullscreen"
   },
@@ -20,18 +20,18 @@ const meta: Meta<typeof Index> = {
 };
 
 export default meta;
-type Story = StoryObj<typeof Index>;
+type Story = StoryObj<typeof AccountProfilePage>;
 
 export const Default: Story = {
   decorators: [
     (Story): React.ReactElement =>
       renderWithState(
         <DashboardLayout>
-          <DefaultDashboardLeftSidebarLayout>
-            <DefaultDashboardRightSidebarLayout>
+          <DashboardSplashLayout>
+            <DefaultDashboardLeftSidebarLayout>
               <Story />
-            </DefaultDashboardRightSidebarLayout>
-          </DefaultDashboardLeftSidebarLayout>
+            </DefaultDashboardLeftSidebarLayout>
+          </DashboardSplashLayout>
         </DashboardLayout>,
         { ignorePrimitiveProviders: true, loggedIn: true }
       )

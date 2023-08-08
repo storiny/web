@@ -3,8 +3,9 @@ syntax = "proto3";
 package token_def.v1;
 
 enum TokenType {
-  EMAIL_VERIFICATION = 0;
-  PASSWORD_RESET = 1;
+  UNSPECIFIED = 0;
+  EMAIL_VERIFICATION = 1;
+  PASSWORD_RESET = 2;
 }
 
 message GetTokenRequest {

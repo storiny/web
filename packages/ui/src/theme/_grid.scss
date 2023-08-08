@@ -56,10 +56,15 @@
       ". main main main main main main main main main rsb rsb rsb ."
       ". ft ft ft ft ft ft ft ft ft ft ft ft .";
 
-    &.minimal {
+    &.minimal,
+    &.dashboard {
       --grid-area: ". hd hd hd hd hd hd hd hd hd hd hd hd ."
         ". . main main main main main main main main main main . ."
         ". ft ft ft ft ft ft ft ft ft ft ft ft .";
+    }
+
+    &.dashboard {
+      @include sidenav;
     }
   }
 

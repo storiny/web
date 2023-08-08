@@ -12,7 +12,7 @@ const WriterSkeleton = (): React.ReactElement => (
     <Skeleton height={48} shape={"circular"} width={48} />
     <Typography className={clsx("flex-col", "flex-center")}>
       <Skeleton height={14} width={48} />
-      <Spacer orientation={"vertical"} size={1} />
+      <Spacer orientation={"vertical"} />
       <Skeleton height={12} width={64} />
     </Typography>
   </div>

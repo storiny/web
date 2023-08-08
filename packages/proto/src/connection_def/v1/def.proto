@@ -3,19 +3,20 @@ syntax = "proto3";
 package connection_def.v1;
 
 enum Provider {
-  TWITTER = 0;
-  GITHUB = 1;
-  TWITCH = 2;
-  SPOTIFY = 3;
-  REDDIT = 4;
-  FACEBOOK = 5;
-  INSTAGRAM = 6;
-  DISCORD = 7;
-  YOUTUBE = 8;
-  LINKED_IN = 9;
-  FIGMA = 10;
-  DRIBBBLE = 11;
-  SNAPCHAT = 12;
+  UNSPECIFIED = 0;
+  TWITTER = 1;
+  GITHUB = 2;
+  TWITCH = 3;
+  SPOTIFY = 4;
+  REDDIT = 5;
+  FACEBOOK = 6;
+  INSTAGRAM = 7;
+  DISCORD = 8;
+  YOUTUBE = 9;
+  LINKED_IN = 10;
+  FIGMA = 11;
+  DRIBBBLE = 12;
+  SNAPCHAT = 13;
 }
 
 message Connection {

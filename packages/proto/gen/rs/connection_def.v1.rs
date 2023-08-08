@@ -10,19 +10,20 @@ pub struct Connection {
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
 #[repr(i32)]
 pub enum Provider {
-    Twitter = 0,
-    Github = 1,
-    Twitch = 2,
-    Spotify = 3,
-    Reddit = 4,
-    Facebook = 5,
-    Instagram = 6,
-    Discord = 7,
-    Youtube = 8,
-    LinkedIn = 9,
-    Figma = 10,
-    Dribbble = 11,
-    Snapchat = 12,
+    Unspecified = 0,
+    Twitter = 1,
+    Github = 2,
+    Twitch = 3,
+    Spotify = 4,
+    Reddit = 5,
+    Facebook = 6,
+    Instagram = 7,
+    Discord = 8,
+    Youtube = 9,
+    LinkedIn = 10,
+    Figma = 11,
+    Dribbble = 12,
+    Snapchat = 13,
 }
 impl Provider {
     /// String value of the enum field names used in the ProtoBuf definition.
@@ -31,6 +32,7 @@ impl Provider {
     /// (if the ProtoBuf definition does not change) and safe for programmatic use.
     pub fn as_str_name(&self) -> &'static str {
         match self {
+            Provider::Unspecified => "UNSPECIFIED",
             Provider::Twitter => "TWITTER",
             Provider::Github => "GITHUB",
             Provider::Twitch => "TWITCH",
@@ -49,6 +51,7 @@ impl Provider {
     /// Creates an enum from field names used in the ProtoBuf definition.
     pub fn from_str_name(value: &str) -> ::core::option::Option<Self> {
         match value {
+            "UNSPECIFIED" => Some(Self::Unspecified),
             "TWITTER" => Some(Self::Twitter),
             "GITHUB" => Some(Self::Github),
             "TWITCH" => Some(Self::Twitch),

@@ -5,6 +5,7 @@ import clsx from "clsx";
 import dynamic from "next/dynamic";
 import React from "react";
 
+import Grow from "~/components/Grow";
 import NoSsr from "~/components/NoSsr";
 import Separator from "~/components/Separator";
 import { useMediaQuery } from "~/hooks/useMediaQuery";
@@ -69,6 +70,7 @@ const RightSidebar = (props: RightSidebarProps): React.ReactElement | null => {
           )}
           {!hideFooter && (
             <>
+              <Grow />
               <Separator />
               <RightSidebarFooter />
             </>

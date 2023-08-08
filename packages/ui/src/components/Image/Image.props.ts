@@ -20,7 +20,7 @@ export interface ImageProps extends PolymorphicProps<"div"> {
   /**
    * The CDN id of the image. This will override the src prop.
    */
-  imgId?: string;
+  imgId?: string | null;
   /**
    * The size of the component for generating the CDN URL.
    */

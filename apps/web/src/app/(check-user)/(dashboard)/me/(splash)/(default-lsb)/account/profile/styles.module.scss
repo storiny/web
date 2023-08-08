@@ -1,0 +1,34 @@
+.x {
+  /* Banner aspect ratio */
+  &.aspect-ratio {
+    position: relative;
+    width: auto;
+    margin-top: -12px;
+    margin-inline: var(--grid-compensation);
+  }
+
+  /* Banner image */
+  &.banner {
+    width: auto;
+  }
+
+  /* Banner actions */
+  &.banner-actions {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    gap: 6px;
+  }
+
+  /* Wrapper */
+  &.wrapper {
+    width: 100%;
+    gap: 42px;
+    padding-block: 24px;
+  }
+
+  /* Group */
+  &.group {
+    gap: 12px;
+  }
+}

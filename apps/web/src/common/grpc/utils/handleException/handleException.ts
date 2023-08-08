@@ -14,16 +14,13 @@ export const handleException = (err: ServiceError): void => {
   // 404 page
   if (errCode === Status.NOT_FOUND) {
     notFound();
-    return;
   }
 
   // Login page
   if (errCode === Status.UNAUTHENTICATED) {
     redirect("/login");
-    return;
   }
 
   // Gateway error
   redirect("/gateway-error");
-  return;
 };

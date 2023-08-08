@@ -8,8 +8,15 @@ import ChevronIcon from "~/icons/Chevron";
 import styles from "./PageTitle.module.scss";
 import { PageTitleProps } from "./PageTitle.props";
 
-const PageTitle = (props: PageTitleProps) => {
-  const { className, componentProps, children, ...rest } = props;
+const PageTitle = (props: PageTitleProps): React.ReactElement => {
+  const {
+    dashboard,
+    hideBackButton,
+    className,
+    componentProps,
+    children,
+    ...rest
+  } = props;
   const router = useRouter();
 
   return (
@@ -20,19 +27,22 @@ const PageTitle = (props: PageTitleProps) => {
         "flex",
         "t-bold",
         styles["page-title"],
+        dashboard && "dashboard-header",
         className
       )}
     >
-      <IconButton
-        aria-label={"Navigate to previous page"}
-        {...componentProps?.backButton}
-        onClick={(): void => router.back()}
-        size={"sm"}
-        title={"Back"}
-        variant={"ghost"}
-      >
-        <ChevronIcon rotation={-90} />
-      </IconButton>
+      {!hideBackButton && (
+        <IconButton
+          aria-label={"Navigate to previous page"}
+          {...componentProps?.backButton}
+          onClick={(): void => router.back()}
+          size={"sm"}
+          title={"Back"}
+          variant={"ghost"}
+        >
+          <ChevronIcon rotation={-90} />
+        </IconButton>
+      )}
       {children}
     </header>
   );

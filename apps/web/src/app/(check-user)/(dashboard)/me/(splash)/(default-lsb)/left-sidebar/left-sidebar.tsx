@@ -16,7 +16,8 @@ const DefaultDashboardLeftSidebar = (): React.ReactElement => (
     componentProps={{
       wrapper: {
         style: {
-          paddingInline: 0
+          paddingInline: 0,
+          paddingBottom: 0
         }
       }
     }}

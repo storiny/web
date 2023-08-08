@@ -70,7 +70,7 @@ const ErrorState = React.forwardRef<HTMLDivElement, ErrorStateProps>(
         <Button
           {...componentProps?.button}
           decorator={<RetryIcon />}
-          onClick={(event) => {
+          onClick={(event): void => {
             retry?.(event);
             componentProps?.button?.onClick?.(event);
           }}

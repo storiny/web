@@ -117,7 +117,7 @@ const Alignment = (): React.ReactElement | null => {
 
   return (
     <>
-      <Spacer orientation={"vertical"} size={1} />
+      <Spacer orientation={"vertical"} />
       <DrawItem className={clsx(styles.x, styles.item)}>
         <DrawItemRow
           style={{

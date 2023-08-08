@@ -1,17 +1,18 @@
+import { clsx } from "clsx";
 import React from "react";
 
 import Navbar from "~/layout/Navbar";
-import SplashScreen from "~/layout/SplashScreen";
+import Sidenav from "~/layout/Sidenav";
 
 const DashboardLayout = ({
   children
 }: {
   children: React.ReactNode;
 }): React.ReactElement => (
-  <div className={"grid"}>
+  <div className={clsx("grid", "dashboard")}>
     <Navbar />
+    <Sidenav isDashboard />
     {children}
-    <SplashScreen />
   </div>
 );
 

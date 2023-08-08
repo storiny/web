@@ -201,7 +201,7 @@ const ExportImageModal = React.forwardRef<
             value={name}
           />
         )}
-        <Spacer size={1} />
+        <Spacer />
         <Input
           aria-label={"Image padding"}
           decorator={<PaddingIcon />}

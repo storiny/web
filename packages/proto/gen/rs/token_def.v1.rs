@@ -31,8 +31,9 @@ pub struct VerifyEmailResponse {
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
 #[repr(i32)]
 pub enum TokenType {
-    EmailVerification = 0,
-    PasswordReset = 1,
+    Unspecified = 0,
+    EmailVerification = 1,
+    PasswordReset = 2,
 }
 impl TokenType {
     /// String value of the enum field names used in the ProtoBuf definition.
@@ -41,6 +42,7 @@ impl TokenType {
     /// (if the ProtoBuf definition does not change) and safe for programmatic use.
     pub fn as_str_name(&self) -> &'static str {
         match self {
+            TokenType::Unspecified => "UNSPECIFIED",
             TokenType::EmailVerification => "EMAIL_VERIFICATION",
             TokenType::PasswordReset => "PASSWORD_RESET",
         }
@@ -48,6 +50,7 @@ impl TokenType {
     /// Creates an enum from field names used in the ProtoBuf definition.
     pub fn from_str_name(value: &str) -> ::core::option::Option<Self> {
         match value {
+            "UNSPECIFIED" => Some(Self::Unspecified),
             "EMAIL_VERIFICATION" => Some(Self::EmailVerification),
             "PASSWORD_RESET" => Some(Self::PasswordReset),
             _ => None,

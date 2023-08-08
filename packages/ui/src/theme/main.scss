@@ -96,6 +96,12 @@ main {
     margin-left: 47%;
     transform: translateX(-50%);
     width: calc(100vw - 40%);
+
+    &.dashboard-header {
+      width: calc(100vw - 78px);
+      margin-left: calc(50% + 2px);
+      transform: translateX(-50%);
+    }
   }
 
   @include breakpoints.media("<=tablet") {

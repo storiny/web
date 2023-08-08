@@ -6,4 +6,8 @@ export interface SidenavProps extends React.ComponentPropsWithoutRef<"aside"> {
    * @default false
    */
   forceMount?: boolean;
+  /**
+   * If `true`, renders below the desktop breakpoint
+   */
+  isDashboard?: boolean;
 }

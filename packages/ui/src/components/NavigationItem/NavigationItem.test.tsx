@@ -26,6 +26,15 @@ describe("<NavigationItem />", () => {
     );
   });
 
+  it("renders as a polymorphic element", () => {
+    const { getByTestId } = renderTestWithProvider(
+      <NavigationItem as={"aside"} data-testid={"navigation-item"} />
+    );
+    expect(getByTestId("navigation-item").nodeName.toLowerCase()).toEqual(
+      "aside"
+    );
+  });
+
   it("renders decorator", () => {
     const { getByTestId } = renderTestWithProvider(
       <NavigationItem decorator={<span data-testid={"decorator"} />}>

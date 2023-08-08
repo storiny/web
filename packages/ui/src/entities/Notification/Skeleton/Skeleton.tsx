@@ -19,7 +19,7 @@ const NotificationSkeleton = (): React.ReactElement => {
       />
       <div className={"flex-col"}>
         <Skeleton height={isMobile ? 15 : 18} width={198} />
-        <Spacer orientation={"vertical"} size={1} />
+        <Spacer orientation={"vertical"} />
         <Skeleton height={isMobile ? 12 : 14} width={82} />
       </div>
     </div>

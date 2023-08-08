@@ -36,6 +36,8 @@ const WriteButton = (): React.ReactElement => {
   );
 };
 
+// List
+
 const List = ({
   children
 }: {
@@ -43,6 +45,8 @@ const List = ({
 }): React.ReactElement => (
   <ul className={clsx("flex-col", styles.list)}>{children}</ul>
 );
+
+// List item
 
 const ListItem = ({ children, ...rest }: LinkProps): React.ReactElement => (
   <li>
@@ -52,7 +56,6 @@ const ListItem = ({ children, ...rest }: LinkProps): React.ReactElement => (
 
 const Footer = (props: FooterProps): React.ReactElement => {
   const { className, ...rest } = props;
-
   return (
     <footer {...rest} className={clsx(styles.footer, className)}>
       <div className={clsx("flex-col", styles.container)}>

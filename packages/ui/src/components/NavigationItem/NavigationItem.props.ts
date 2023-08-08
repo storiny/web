@@ -1,7 +1,8 @@
 import React from "react";
 
-export interface NavigationItemProps
-  extends React.ComponentPropsWithRef<"button"> {
+import { PolymorphicProps } from "~/types/polymorphic";
+
+export interface NavigationItemProps extends PolymorphicProps<"button"> {
   /**
    * The element placed before the children
    */

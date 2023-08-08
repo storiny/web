@@ -1,5 +1,6 @@
 import React from "react";
 
+import DashboardFooter from "./footer";
 import DefaultDashboardLeftSidebar from "./left-sidebar";
 
 const DefaultDashboardLeftSidebarLayout = ({
@@ -10,6 +11,7 @@ const DefaultDashboardLeftSidebarLayout = ({
   <>
     <DefaultDashboardLeftSidebar />
     {children}
+    <DashboardFooter />
   </>
 );
 

@@ -31,6 +31,7 @@ const providerIconMap: Record<TProvider, React.ComponentType> = {
   [Provider.SPOTIFY]: dynamic(() => import("~/icons/Spotify")),
   [Provider.YOUTUBE]: dynamic(() => import("~/icons/YouTube")),
   [Provider.TWITCH]: dynamic(() => import("~/icons/Twitch")),
+  [Provider.UNSPECIFIED]: NullComponent,
   [Provider.UNRECOGNIZED]: NullComponent
 };
 
@@ -48,6 +49,7 @@ const providerDisplayNameMap: Record<TProvider, string> = {
   [Provider.SPOTIFY]: "Spotify",
   [Provider.YOUTUBE]: "YouTube",
   [Provider.TWITCH]: "Twitch",
+  [Provider.UNSPECIFIED]: "",
   [Provider.UNRECOGNIZED]: ""
 };
 

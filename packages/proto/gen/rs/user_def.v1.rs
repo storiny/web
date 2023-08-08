@@ -11,12 +11,26 @@ pub struct Status {
     #[prost(enumeration="StatusVisibility", tag="4")]
     pub visibility: i32,
 }
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct GetUserIdRequest {
+    /// Token from the session cookie
+    #[prost(string, tag="1")]
+    pub token: ::prost::alloc::string::String,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct GetUserIdResponse {
+    #[prost(string, tag="1")]
+    pub id: ::prost::alloc::string::String,
+}
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
 #[repr(i32)]
 pub enum StatusVisibility {
-    Global = 0,
-    Followers = 1,
-    Friends = 2,
+    Unspecified = 0,
+    Global = 1,
+    Followers = 2,
+    Friends = 3,
 }
 impl StatusVisibility {
     /// String value of the enum field names used in the ProtoBuf definition.
@@ -25,6 +39,7 @@ impl StatusVisibility {
     /// (if the ProtoBuf definition does not change) and safe for programmatic use.
     pub fn as_str_name(&self) -> &'static str {
         match self {
+            StatusVisibility::Unspecified => "UNSPECIFIED",
             StatusVisibility::Global => "GLOBAL",
             StatusVisibility::Followers => "FOLLOWERS",
             StatusVisibility::Friends => "FRIENDS",
@@ -33,6 +48,7 @@ impl StatusVisibility {
     /// Creates an enum from field names used in the ProtoBuf definition.
     pub fn from_str_name(value: &str) -> ::core::option::Option<Self> {
         match value {
+            "UNSPECIFIED" => Some(Self::Unspecified),
             "GLOBAL" => Some(Self::Global),
             "FOLLOWERS" => Some(Self::Followers),
             "FRIENDS" => Some(Self::Friends),

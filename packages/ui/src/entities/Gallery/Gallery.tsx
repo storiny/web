@@ -97,7 +97,7 @@ const Gallery = (props: GalleryProps): React.ReactElement => {
       sidebar={
         <>
           <SearchInput disabled={value !== "pexels"} />
-          <Spacer orientation={"vertical"} size={1} />
+          <Spacer orientation={"vertical"} />
           <ModalSidebarList>
             <ModalSidebarItem decorator={<PexelsIcon />} value={"pexels"}>
               Pexels

@@ -5,11 +5,28 @@ package api_service.v1;
 import "profile_def/v1/def.proto";
 import "tag_def/v1/def.proto";
 import "token_def/v1/def.proto";
+import "user_def/v1/def.proto";
 
 // Service definition
 service ApiService {
+  /**
+   * Checks whether the user is authenticated using the token from the session cookie
+   */
+  rpc GetUserId (user_def.v1.GetUserIdRequest) returns (user_def.v1.GetUserIdResponse) {}
+  /**
+   * Returns the profile page data for a user
+   */
   rpc GetProfile (profile_def.v1.GetProfileRequest) returns (profile_def.v1.GetProfileResponse) {}
+  /**
+   * Returns the tag page data for a tag
+   */
   rpc GetTag (tag_def.v1.GetTagRequest) returns (tag_def.v1.GetTagResponse) {}
+  /**
+   * Returns the token using its identifier
+   */
   rpc GetToken (token_def.v1.GetTokenRequest) returns (token_def.v1.GetTokenResponse) {}
+  /**
+   * Verifies a user's email using the provided token identifier
+   */
   rpc VerifyEmail (token_def.v1.VerifyEmailRequest) returns (token_def.v1.VerifyEmailResponse) {}
 }

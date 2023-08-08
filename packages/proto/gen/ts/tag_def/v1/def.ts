@@ -24,10 +24,7 @@ function createBaseGetTagRequest(): GetTagRequest {
 }
 
 export const GetTagRequest = {
-  encode(
-    message: GetTagRequest,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+  encode(message: GetTagRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.name !== "") {
       writer.uint32(10).string(message.name);
     }
@@ -38,8 +35,7 @@ export const GetTagRequest = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): GetTagRequest {
-    const reader =
-      input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseGetTagRequest();
     while (reader.pos < end) {
@@ -71,29 +67,25 @@ export const GetTagRequest = {
   fromJSON(object: any): GetTagRequest {
     return {
       name: isSet(object.name) ? String(object.name) : "",
-      current_user_id: isSet(object.current_user_id)
-        ? String(object.current_user_id)
-        : undefined,
+      current_user_id: isSet(object.current_user_id) ? String(object.current_user_id) : undefined,
     };
   },
 
   toJSON(message: GetTagRequest): unknown {
     const obj: any = {};
-    message.name !== undefined && (obj.name = message.name);
-    message.current_user_id !== undefined &&
-      (obj.current_user_id = message.current_user_id);
+    if (message.name !== "") {
+      obj.name = message.name;
+    }
+    if (message.current_user_id !== undefined) {
+      obj.current_user_id = message.current_user_id;
+    }
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<GetTagRequest>, I>>(
-    base?: I
-  ): GetTagRequest {
-    return GetTagRequest.fromPartial(base ?? {});
+  create<I extends Exact<DeepPartial<GetTagRequest>, I>>(base?: I): GetTagRequest {
+    return GetTagRequest.fromPartial(base ?? ({} as any));
   },
-
-  fromPartial<I extends Exact<DeepPartial<GetTagRequest>, I>>(
-    object: I
-  ): GetTagRequest {
+  fromPartial<I extends Exact<DeepPartial<GetTagRequest>, I>>(object: I): GetTagRequest {
     const message = createBaseGetTagRequest();
     message.name = object.name ?? "";
     message.current_user_id = object.current_user_id ?? undefined;
@@ -102,21 +94,11 @@ export const GetTagRequest = {
 };
 
 function createBaseGetTagResponse(): GetTagResponse {
-  return {
-    id: "",
-    name: "",
-    story_count: 0,
-    follower_count: 0,
-    created_at: "",
-    is_following: undefined,
-  };
+  return { id: "", name: "", story_count: 0, follower_count: 0, created_at: "", is_following: undefined };
 }
 
 export const GetTagResponse = {
-  encode(
-    message: GetTagResponse,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+  encode(message: GetTagResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.id !== "") {
       writer.uint32(10).string(message.id);
     }
@@ -139,8 +121,7 @@ export const GetTagResponse = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): GetTagResponse {
-    const reader =
-      input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseGetTagResponse();
     while (reader.pos < end) {
@@ -202,39 +183,39 @@ export const GetTagResponse = {
       id: isSet(object.id) ? String(object.id) : "",
       name: isSet(object.name) ? String(object.name) : "",
       story_count: isSet(object.story_count) ? Number(object.story_count) : 0,
-      follower_count: isSet(object.follower_count)
-        ? Number(object.follower_count)
-        : 0,
+      follower_count: isSet(object.follower_count) ? Number(object.follower_count) : 0,
       created_at: isSet(object.created_at) ? String(object.created_at) : "",
-      is_following: isSet(object.is_following)
-        ? Boolean(object.is_following)
-        : undefined,
+      is_following: isSet(object.is_following) ? Boolean(object.is_following) : undefined,
     };
   },
 
   toJSON(message: GetTagResponse): unknown {
     const obj: any = {};
-    message.id !== undefined && (obj.id = message.id);
-    message.name !== undefined && (obj.name = message.name);
-    message.story_count !== undefined &&
-      (obj.story_count = Math.round(message.story_count));
-    message.follower_count !== undefined &&
-      (obj.follower_count = Math.round(message.follower_count));
-    message.created_at !== undefined && (obj.created_at = message.created_at);
-    message.is_following !== undefined &&
-      (obj.is_following = message.is_following);
+    if (message.id !== "") {
+      obj.id = message.id;
+    }
+    if (message.name !== "") {
+      obj.name = message.name;
+    }
+    if (message.story_count !== 0) {
+      obj.story_count = Math.round(message.story_count);
+    }
+    if (message.follower_count !== 0) {
+      obj.follower_count = Math.round(message.follower_count);
+    }
+    if (message.created_at !== "") {
+      obj.created_at = message.created_at;
+    }
+    if (message.is_following !== undefined) {
+      obj.is_following = message.is_following;
+    }
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<GetTagResponse>, I>>(
-    base?: I
-  ): GetTagResponse {
-    return GetTagResponse.fromPartial(base ?? {});
+  create<I extends Exact<DeepPartial<GetTagResponse>, I>>(base?: I): GetTagResponse {
+    return GetTagResponse.fromPartial(base ?? ({} as any));
   },
-
-  fromPartial<I extends Exact<DeepPartial<GetTagResponse>, I>>(
-    object: I
-  ): GetTagResponse {
+  fromPartial<I extends Exact<DeepPartial<GetTagResponse>, I>>(object: I): GetTagResponse {
     const message = createBaseGetTagResponse();
     message.id = object.id ?? "";
     message.name = object.name ?? "";
@@ -246,31 +227,16 @@ export const GetTagResponse = {
   },
 };
 
-type Builtin =
-  | Date
-  | Function
-  | Uint8Array
-  | string
-  | number
-  | boolean
-  | undefined;
+type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
 
-export type DeepPartial<T> = T extends Builtin
-  ? T
-  : T extends Array<infer U>
-  ? Array<DeepPartial<U>>
-  : T extends ReadonlyArray<infer U>
-  ? ReadonlyArray<DeepPartial<U>>
-  : T extends {}
-  ? { [K in keyof T]?: DeepPartial<T[K]> }
+export type DeepPartial<T> = T extends Builtin ? T
+  : T extends Array<infer U> ? Array<DeepPartial<U>> : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>>
+  : T extends {} ? { [K in keyof T]?: DeepPartial<T[K]> }
   : Partial<T>;
 
 type KeysOfUnion<T> = T extends T ? keyof T : never;
-export type Exact<P, I extends P> = P extends Builtin
-  ? P
-  : P & { [K in keyof P]: Exact<P[K], I[K]> } & {
-      [K in Exclude<keyof I, KeysOfUnion<P>>]: never;
-    };
+export type Exact<P, I extends P> = P extends Builtin ? P
+  : P & { [K in keyof P]: Exact<P[K], I[K]> } & { [K in Exclude<keyof I, KeysOfUnion<P>>]: never };
 
 function isSet(value: any): boolean {
   return value !== null && value !== undefined;

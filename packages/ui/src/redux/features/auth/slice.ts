@@ -27,7 +27,7 @@ export const fetchUser = createAsyncThunk(
     return res.json();
   },
   {
-    condition: (userId, { getState }) => {
+    condition: (_, { getState }) => {
       const {
         auth: { loggedIn, status, user }
       } = getState() as AppState;

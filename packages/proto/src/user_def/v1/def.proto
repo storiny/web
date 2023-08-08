@@ -3,9 +3,10 @@ syntax = "proto3";
 package user_def.v1;
 
 enum StatusVisibility {
-  GLOBAL = 0;
-  FOLLOWERS = 1;
-  FRIENDS = 2;
+  UNSPECIFIED = 0;
+  GLOBAL = 1;
+  FOLLOWERS = 2;
+  FRIENDS = 3;
 }
 
 message Status {
@@ -13,4 +14,12 @@ message Status {
   optional string text = 2;
   optional string expires_at = 3;
   StatusVisibility visibility = 4;
+}
+
+message GetUserIdRequest {
+  string token = 1; // Token from the session cookie
+}
+
+message GetUserIdResponse {
+  string id = 1;
 }

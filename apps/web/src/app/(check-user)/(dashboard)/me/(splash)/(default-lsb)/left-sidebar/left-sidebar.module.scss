@@ -1,8 +1,24 @@
 .x {
   /* Base styles */
   &.left-sidebar {
-    padding-block: 8px;
+    padding-top: 8px;
+    max-height: calc(100vh - 76px);
+    height: 100%;
+  }
+
+  /* Scroller */
+  &.scroller {
+    max-height: 100%;
+    height: 100%;
+  }
+
+  /* Scroll area viewport */
+  &.viewport {
     gap: 16px;
+    padding-top: 16px;
+    padding-bottom: 32px;
+    max-height: 100%;
+    justify-content: stretch;
   }
 
   /* Content */
@@ -11,6 +27,7 @@
     gap: 16px;
     padding-right: 24px;
     align-items: stretch;
+    min-height: fit-content;
   }
 
   /* Persona */
@@ -20,7 +37,7 @@
 
   /* Tabs */
   &.tabs {
-    max-height: calc(100vh - 52px);
+    height: fit-content;
   }
 
   /* Tabs list */
@@ -43,8 +60,9 @@
     justify-content: flex-start;
   }
 
-  /* Scroll area viewport */
-  &.viewport {
-    gap: 18px;
+  /* Footer */
+  &.footer {
+    position: sticky;
+    top: 100%;
   }
 }

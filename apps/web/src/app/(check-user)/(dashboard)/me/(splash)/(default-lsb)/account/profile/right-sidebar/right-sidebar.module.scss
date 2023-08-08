@@ -1,0 +1,13 @@
+.x {
+  /* Base styles */
+  &.right-sidebar {
+    gap: 12px;
+  }
+
+  /* Header */
+  &.header {
+    gap: 24px;
+    padding-right: 18px;
+    justify-content: flex-start;
+  }
+}

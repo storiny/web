@@ -12,9 +12,11 @@ import { SidenavProps } from "./Sidenav.props";
 const SidenavStatic = dynamic(() => import("./Static"));
 
 const Sidenav = (props: SidenavProps): React.ReactElement | null => {
-  const { forceMount, ...rest } = props;
+  const { forceMount, isDashboard, ...rest } = props;
   const skipRender = useMediaQuery(
-    `${breakpoints.down("mobile")}, ${breakpoints.up("tablet")}`
+    `${breakpoints.down("mobile")}, ${breakpoints.up(
+      isDashboard ? "desktop" : "tablet"
+    )}`
   );
 
   if ((skipRender && !forceMount) || typeof window === "undefined") {
@@ -23,7 +25,7 @@ const Sidenav = (props: SidenavProps): React.ReactElement | null => {
 
   return (
     <NoSsr>
-      <SidenavStatic {...{ ...rest, forceMount: undefined }} />
+      <SidenavStatic {...rest} />
     </NoSsr>
   );
 };

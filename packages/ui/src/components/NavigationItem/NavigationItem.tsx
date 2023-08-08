@@ -5,18 +5,26 @@ import React from "react";
 
 import Grow from "~/components/Grow";
 import ChevronIcon from "~/icons/Chevron";
+import { forwardRef } from "~/utils/forwardRef";
 
 import commonStyles from "../common/ButtonReset.module.scss";
 import styles from "./NavigationItem.module.scss";
 import { NavigationItemProps } from "./NavigationItem.props";
 
-const NavigationItem = React.forwardRef<HTMLButtonElement, NavigationItemProps>(
+const NavigationItem = forwardRef<NavigationItemProps, "button">(
   (props, ref) => {
-    const { decorator, disabled, slotProps, className, children, ...rest } =
-      props;
+    const {
+      as: Component = "button",
+      decorator,
+      disabled,
+      slotProps,
+      className,
+      children,
+      ...rest
+    } = props;
 
     return (
-      <button
+      <Component
         {...rest}
         className={clsx(
           commonStyles.reset,
@@ -47,7 +55,7 @@ const NavigationItem = React.forwardRef<HTMLButtonElement, NavigationItemProps>(
         <span className={clsx("flex-center", styles.chevron)}>
           <ChevronIcon rotation={90} />
         </span>
-      </button>
+      </Component>
     );
   }
 );

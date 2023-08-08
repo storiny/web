@@ -15,7 +15,7 @@ import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 
 import styles from "./Persona.module.scss";
 
-const LeftSidebarPersona = () => {
+const LeftSidebarPersona = (): React.ReactElement => {
   const dispatch = useAppDispatch();
   const authStatus = useAppSelector(selectAuthStatus);
   const user = useAppSelector(selectUser);

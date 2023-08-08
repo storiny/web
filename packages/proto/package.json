@@ -4,8 +4,8 @@
   "private": true,
   "sideEffects": false,
   "scripts": {
-    "lint": "buf lint proto",
-    "build": "buf generate src",
+    "lint": "buf lint src --config buf.yaml",
+    "build": "buf generate src --config buf.yaml --template buf.gen.yaml",
     "gen-certs": "make certs"
   },
   "devDependencies": {
