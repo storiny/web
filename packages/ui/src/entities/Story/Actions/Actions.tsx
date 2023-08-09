@@ -29,8 +29,8 @@ const Actions = ({ story }: { story: Story }): React.ReactElement => {
   const dispatch = useAppDispatch();
   const isMobile = useMediaQuery(breakpoints.down("mobile"));
   const loggedIn = useAppSelector(selectLoggedIn);
-  const isBlocking = useAppSelector(selectBlock(story.user.id));
-  const isMuted = useAppSelector(selectMute(story.user.id));
+  const isBlocking = useAppSelector(selectBlock(story.user!.id));
+  const isMuted = useAppSelector(selectMute(story.user!.id));
   const [element, confirm] = useConfirmation(
     <MenuItem
       decorator={<UserBlockIcon />}
@@ -39,8 +39,10 @@ const Actions = ({ story }: { story: Story }): React.ReactElement => {
 
         confirm({
           color: isBlocking ? "inverted" : "ruby",
-          onConfirm: () => dispatch(toggleBlock(story.user.id)),
-          title: `${isBlocking ? "Unblock" : "Block"} @${story.user.username}?`,
+          onConfirm: () => dispatch(toggleBlock(story.user!.id)),
+          title: `${isBlocking ? "Unblock" : "Block"} @${
+            story.user!.username
+          }?`,
           description: isBlocking
             ? `The public content you publish will be available to them as well as the ability to follow you.`
             : `Your feed will not include their content, and they will not be able to follow you or interact with your profile.`
@@ -68,14 +70,14 @@ const Actions = ({ story }: { story: Story }): React.ReactElement => {
       <MenuItem
         decorator={<ShareIcon />}
         onClick={(): void =>
-          share(story.title, `/${story.user.username}/${story.slug}`)
+          share(story.title, `/${story.user!.username}/${story.slug}`)
         }
       >
         Share this story
       </MenuItem>
       <MenuItem
         decorator={<CopyIcon />}
-        onClick={(): void => copy(`/${story.user.username}/${story.slug}`)}
+        onClick={(): void => copy(`/${story.user!.username}/${story.slug}`)}
       >
         Copy link to story
       </MenuItem>
@@ -95,7 +97,7 @@ const Actions = ({ story }: { story: Story }): React.ReactElement => {
           <MenuItem
             decorator={<MuteIcon />}
             onClick={(): void => {
-              dispatch(toggleMute(story.user.id));
+              dispatch(toggleMute(story.user!.id));
             }}
           >
             {isMuted ? "Unmute" : "Mute"} this writer

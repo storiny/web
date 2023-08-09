@@ -11,9 +11,9 @@ import {
   withReduxStateSync
 } from "redux-state-sync";
 
-import { apiSlice } from "~/redux/features";
 import { initialState } from "~/redux/state";
 
+import { apiSlice } from "../features/api/slice";
 import authSlice from "../features/auth/slice";
 import bannerSlice from "../features/banner/slice";
 import entitiesSlice from "../features/entities/slice";

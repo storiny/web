@@ -53,7 +53,7 @@ if (typeof global.process === "undefined") {
   const worker = setupWorker();
   worker.start().then(() => undefined);
   // Expose worker globally
-  (window as any).msw = { worker, rest };
+  window.msw = { worker, rest };
   // Register global endpoints
   registerApiEndpoints().then(() => undefined);
 }

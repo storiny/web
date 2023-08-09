@@ -1,7 +1,7 @@
 import { mockNotifications } from "@storiny/ui/src/mocks";
 import { nanoid } from "nanoid";
 
-const { worker, rest } = (window as any).msw;
+const { worker, rest } = window.msw;
 
 worker.use(
   rest.get(

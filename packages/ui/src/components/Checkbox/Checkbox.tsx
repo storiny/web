@@ -30,8 +30,8 @@ const Checkbox = React.forwardRef<HTMLButtonElement, CheckboxProps>(
       <div
         {...slotProps?.container}
         className={clsx(
+          "fit-w",
           "flex-center",
-          styles.container,
           slotProps?.container?.className
         )}
       >

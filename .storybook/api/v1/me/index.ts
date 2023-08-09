@@ -9,7 +9,7 @@ import "./settings";
 
 import { mockUsers } from "@storiny/ui/src/mocks";
 
-const { worker, rest } = (window as any).msw;
+const { worker, rest } = window.msw;
 
 worker.use(
   rest.get(`${process.env.NEXT_PUBLIC_API_URL}/v1/me`, (req, res, ctx) =>

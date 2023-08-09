@@ -53,7 +53,7 @@ const Page = (): React.ReactElement => (
       <section className={clsx(styles.x, styles.section)}>
         <Typography
           as={"h2"}
-          className={clsx(styles.x, styles["section-title"])}
+          className={clsx("fit-h", styles.x, styles["section-title"])}
           level={"display2"}
         >
           The Storiny Brand

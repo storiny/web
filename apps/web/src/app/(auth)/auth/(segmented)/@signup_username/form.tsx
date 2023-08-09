@@ -119,7 +119,6 @@ const UsernameField = ({
       name={"username"}
       required
       size={"lg"}
-      type={"text"}
     />
   );
 };

@@ -22,15 +22,15 @@ pub struct GetProfileResponse {
     #[prost(string, optional, tag="5")]
     pub bio: ::core::option::Option<::prost::alloc::string::String>,
     #[prost(string, optional, tag="6")]
-    pub location: ::core::option::Option<::prost::alloc::string::String>,
-    #[prost(string, optional, tag="7")]
     pub avatar_id: ::core::option::Option<::prost::alloc::string::String>,
-    #[prost(string, optional, tag="8")]
+    #[prost(string, optional, tag="7")]
     pub avatar_hex: ::core::option::Option<::prost::alloc::string::String>,
-    #[prost(string, optional, tag="9")]
+    #[prost(string, optional, tag="8")]
     pub banner_id: ::core::option::Option<::prost::alloc::string::String>,
-    #[prost(string, optional, tag="10")]
+    #[prost(string, optional, tag="9")]
     pub banner_hex: ::core::option::Option<::prost::alloc::string::String>,
+    #[prost(string, tag="10")]
+    pub location: ::prost::alloc::string::String,
     #[prost(string, tag="11")]
     pub created_at: ::prost::alloc::string::String,
     #[prost(int64, tag="12")]

@@ -24,12 +24,10 @@ export default meta;
 type Story = StoryObj<typeof Modal>;
 
 const ModalComponent = (props?: ModalProps): React.ReactElement => {
-  const [element, modal] = useModal(
-    <Button
-      onClick={(): void => modal(props?.children || "This is a modal", props)}
-    >
-      Show modal
-    </Button>
+  const [element] = useModal(
+    ({ openModal }) => <Button onClick={openModal}>Show modal</Button>,
+    props?.children || "This is a modal",
+    props
   );
 
   return element;

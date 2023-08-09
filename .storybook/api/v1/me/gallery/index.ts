@@ -5,8 +5,8 @@ import {
   ErrorResponse,
 } from "pexels";
 
-const { worker, rest } = (window as any).msw;
-const client = createClient(process.env.PEXELS_API_KEY);
+const { worker, rest } = window.msw;
+const client = createClient(process.env.PEXELS_API_KEY || "");
 const originalFetch = window.fetch;
 
 type ApiResponse = Photos | PhotosWithTotalResults | ErrorResponse;
@@ -22,10 +22,10 @@ worker.use(
   rest.get(
     `${process.env.NEXT_PUBLIC_API_URL}/v1/me/gallery`,
     async (req, res, ctx) => {
-      window.fetch = ctx.fetch;
+      (window as any).fetch = ctx.fetch;
 
-      const page = req.url.searchParams.get("page");
-      const query = req.url.searchParams.get("query");
+      const page = req.url.searchParams.get("page") || "";
+      const query = req.url.searchParams.get("query") || "";
       let response: ApiResponse;
 
       if (Boolean(query)) {

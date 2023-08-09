@@ -1,32 +1,37 @@
 import { ContentType } from "@storiny/shared";
 import { NotificationType } from "@storiny/types";
 
-import { ApiQueryBuilder } from "~/redux/features/api/types";
+import { apiSlice } from "~/redux/features/api/slice";
 
 const SEGMENT = "me/settings/notifications";
 
-export type NotificationSettingsResponse = void;
+export interface NotificationSettingsResponse {}
 export interface NotificationSettingsPayload {
-  id?: string;
+  id?: string; // Notification ID for invalidating the cache
   type: NotificationType;
-  value: boolean; // Notification ID for invalidating cache
+  value: boolean;
 }
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export const notificationSettings = (builder: ApiQueryBuilder) =>
-  builder.mutation<NotificationSettingsResponse, NotificationSettingsPayload>({
-    query: (body) => ({
-      url: `/${SEGMENT}`,
-      method: "POST",
-      body: {
-        type: body.type,
-        value: body.value
-      },
-      headers: {
-        "Content-type": ContentType.JSON
-      }
-    }),
-    invalidatesTags: (result, error, arg) => [
-      arg.id ? { type: "Notification", id: arg.id } : "Notification"
-    ]
-  });
+export const { useNotificationSettingsMutation } = apiSlice.injectEndpoints({
+  endpoints: (builder) => ({
+    notificationSettings: builder.mutation<
+      NotificationSettingsResponse,
+      NotificationSettingsPayload
+    >({
+      query: (body) => ({
+        url: `/${SEGMENT}`,
+        method: "PATCH",
+        body: {
+          type: body.type,
+          value: body.value
+        },
+        headers: {
+          "Content-type": ContentType.JSON
+        }
+      }),
+      invalidatesTags: (result, error, arg) => [
+        arg.id ? { type: "Notification", id: arg.id } : "Notification"
+      ]
+    })
+  })
+});

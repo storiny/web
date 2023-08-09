@@ -85,8 +85,5 @@
     "use-resize-observer": "^9.1.0",
     "zod": "^3.21.4",
     "zxcvbn": "^4.4.2"
-  },
-  "msw": {
-    "workerDirectory": "public"
   }
 }

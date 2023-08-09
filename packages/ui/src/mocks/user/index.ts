@@ -8,7 +8,7 @@ export const testUser: User = {
   bio: "",
   is_private: false,
   public_flags: 0,
-  location: null,
+  location: "",
   follower_count: 0,
   following_count: 0,
   friend_count: 0,
@@ -61,7 +61,7 @@ export const mockUsers: User[] = [
     is_private: false,
     public_flags: 0,
     bio: "",
-    location: null
+    location: ""
   },
   {
     avatar_hex: "b8987c",
@@ -105,7 +105,7 @@ export const mockUsers: User[] = [
     is_private: false,
     public_flags: 0,
     bio: "",
-    location: null
+    location: ""
   },
   {
     avatar_hex: "615753",
@@ -124,7 +124,7 @@ export const mockUsers: User[] = [
     is_private: true,
     public_flags: 0,
     bio: "",
-    location: null
+    location: ""
   },
   {
     avatar_hex: "b7a39b",
@@ -181,7 +181,7 @@ export const mockUsers: User[] = [
     is_private: true,
     public_flags: 0,
     bio: "",
-    location: null
+    location: ""
   },
   {
     avatar_hex: "4a4444",
@@ -200,7 +200,7 @@ export const mockUsers: User[] = [
     is_private: false,
     public_flags: 0,
     bio: "",
-    location: null
+    location: ""
   },
   {
     avatar_hex: "a89293",
@@ -219,6 +219,6 @@ export const mockUsers: User[] = [
     is_private: false,
     public_flags: 0,
     bio: "",
-    location: null
+    location: ""
   }
 ];

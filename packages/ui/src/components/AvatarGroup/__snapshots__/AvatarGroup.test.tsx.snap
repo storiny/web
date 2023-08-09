@@ -2,7 +2,7 @@
 
 exports[`<AvatarGroup /> matches snapshot 1`] = `
 <div
-  class="avatar-group md md"
+  class="fit-w avatar-group md md"
 >
   <span
     class="avatar md border"

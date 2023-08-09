@@ -1,24 +1,26 @@
 import { ContentType } from "@storiny/shared";
 
-import { ApiQueryBuilder, ApiResponse } from "~/redux/features/api/types";
+import { apiSlice } from "~/redux/features/api/slice";
 
 const SEGMENT = "auth/recovery";
 
-export interface RecoveryResponse extends ApiResponse {}
+export interface RecoveryResponse {}
 
 export interface RecoveryPayload {
   email: string;
 }
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export const recovery = (builder: ApiQueryBuilder) =>
-  builder.mutation<RecoveryResponse, RecoveryPayload>({
-    query: (body) => ({
-      url: `/${SEGMENT}`,
-      method: "POST",
-      body,
-      headers: {
-        "Content-type": ContentType.JSON
-      }
+export const { useRecoveryMutation } = apiSlice.injectEndpoints({
+  endpoints: (builder) => ({
+    recovery: builder.mutation<RecoveryResponse, RecoveryPayload>({
+      query: (body) => ({
+        url: `/${SEGMENT}`,
+        method: "POST",
+        body,
+        headers: {
+          "Content-type": ContentType.JSON
+        }
+      })
     })
-  });
+  })
+});

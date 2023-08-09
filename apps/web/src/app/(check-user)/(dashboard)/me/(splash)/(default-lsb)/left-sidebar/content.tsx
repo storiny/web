@@ -148,7 +148,7 @@ const SuspendedDashboardLeftSidebarContent = (): React.ReactElement => {
       >
         <Tabs
           activationMode={"manual"}
-          className={clsx("full-w", styles.x, styles.tabs)}
+          className={clsx("full-w", "fit-h")}
           orientation={"vertical"}
           role={undefined}
           value={currentSegment}

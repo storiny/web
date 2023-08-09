@@ -5,7 +5,7 @@ import dynamic from "next/dynamic";
 import React from "react";
 
 import IconButton from "~/components/IconButton";
-import Modal, { ModalFooterButtonProps } from "~/components/Modal";
+import Modal from "~/components/Modal";
 import ModalFooterButton from "~/components/Modal/FooterButton";
 import ModalSidebarItem from "~/components/Modal/SidebarItem";
 import ModalSidebarList from "~/components/Modal/SidebarList";
@@ -43,24 +43,35 @@ const UploadsTab = dynamic(() => import("./core/components/Uploads"), {
 
 // Footer
 
-const GalleryFooter = (): React.ReactElement => {
+const GalleryFooter = (
+  props: Pick<GalleryProps, "onConfirm" | "onCancel">
+): React.ReactElement => {
+  const { onConfirm, onCancel } = props;
   const selected = useAtomValue(selectedAtom);
   const isSmallerThanTablet = useMediaQuery(breakpoints.down("tablet"));
-  const buttonProps: ModalFooterButtonProps = {
-    size: isSmallerThanTablet ? "lg" : "md",
-    ...(isSmallerThanTablet
-      ? {
-          style: { borderRadius: 0, flex: 1 }
-        }
-      : {})
-  };
 
   return (
     <>
-      <ModalFooterButton {...buttonProps} variant={"ghost"}>
+      <ModalFooterButton
+        compact={isSmallerThanTablet}
+        onClick={(): void => {
+          if (onCancel) {
+            onCancel();
+          }
+        }}
+        variant={"ghost"}
+      >
         Cancel
       </ModalFooterButton>
-      <ModalFooterButton {...buttonProps} disabled={!selected}>
+      <ModalFooterButton
+        compact={isSmallerThanTablet}
+        disabled={!selected}
+        onClick={(): void => {
+          if (onConfirm) {
+            onConfirm(selected!);
+          }
+        }}
+      >
         Confirm
       </ModalFooterButton>
     </>
@@ -68,7 +79,7 @@ const GalleryFooter = (): React.ReactElement => {
 };
 
 const Gallery = (props: GalleryProps): React.ReactElement => {
-  const { children } = props;
+  const { children, onConfirm, onCancel } = props;
   const isSmallerThanTablet = useMediaQuery(breakpoints.down("tablet"));
   const uploadImageUrl = React.useRef<string | null>(null);
   const [navSegment, setNavSegment] = useAtom(navSegmentAtom);
@@ -84,7 +95,7 @@ const Gallery = (props: GalleryProps): React.ReactElement => {
 
   return (
     <Modal
-      footer={<GalleryFooter />}
+      footer={<GalleryFooter {...{ onConfirm, onCancel }} />}
       fullscreen={isSmallerThanTablet || fullscreen}
       mode={"tabbed"}
       onOpenChange={(open): void => {
@@ -159,9 +170,9 @@ const Gallery = (props: GalleryProps): React.ReactElement => {
           style: { display: fullscreen ? "none" : "flex" }
         },
         footer: {
+          compact: isSmallerThanTablet,
           style: {
-            display: fullscreen ? "none" : "flex",
-            ...(isSmallerThanTablet ? { gap: 0, padding: 0 } : {})
+            display: fullscreen ? "none" : "flex"
           }
         }
       }}

@@ -2,7 +2,7 @@
 
 exports[`<Checkbox /> matches snapshot 1`] = `
 <div
-  class="flex-center container"
+  class="fit-w flex-center"
 >
   <button
     aria-checked="false"

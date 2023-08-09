@@ -7,3 +7,11 @@ exports[`<ModalFooter /> matches snapshot 1`] = `
   Test
 </div>
 `;
+
+exports[`<ModalFooter /> renders \`compact\` version 1`] = `
+<div
+  class="footer compact"
+>
+  Test
+</div>
+`;

@@ -29,7 +29,13 @@ const Wordmark = forwardRef<WordmarkProps, "span">((props, ref) => {
   return (
     <Component
       {...rest}
-      className={clsx("flex-center", styles.wordmark, styles[size], className)}
+      className={clsx(
+        "fit-w",
+        "flex-center",
+        styles.wordmark,
+        styles[size],
+        className
+      )}
       ref={ref}
     >
       <Logo {...componentProps?.logo} size={logoSizeMap[size]} />

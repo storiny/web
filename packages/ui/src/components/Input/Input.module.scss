@@ -21,7 +21,7 @@
 
   &.disabled {
     --fg: var(--fg-muted);
-    --border: var(--disabled-border);
+    --border: var(--disabled-border, transparent);
     --icon-stroke: var(--decorator-disabled-fg);
 
     background-color: var(--bg-elevation-md);
@@ -105,7 +105,6 @@
   --bg: var(--decorator-bg);
   --fg: var(--decorator-fg);
 
-  width: fit-content;
   background-color: var(--bg);
   color: var(--fg);
   align-self: stretch;

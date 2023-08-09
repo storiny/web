@@ -5,6 +5,7 @@ import React from "react";
 
 import Button from "~/components/Button";
 import Spacer from "~/components/Spacer";
+import { useToast } from "~/components/Toast";
 import Typography from "~/components/Typography";
 import { selectedAtom } from "~/entities/Gallery/core/atoms";
 import { useAssetUploadMutation } from "~/redux/features";
@@ -19,6 +20,7 @@ const WhiteboardUploader = (
 ): React.ReactElement => {
   const { file, alt, onReset } = props;
   const setSelected = useSetAtom(selectedAtom);
+  const toast = useToast();
   const [uploadImage, result] = useAssetUploadMutation();
 
   /**
@@ -27,15 +29,20 @@ const WhiteboardUploader = (
   const handleUpload = React.useCallback(() => {
     uploadImage({ file, alt })
       .unwrap()
-      .then((uploaded) =>
+      .then((res) => {
         setSelected({
-          src: getCdnUrl(uploaded.key, ImageSize.W_320),
-          id: String(uploaded.id),
-          hex: uploaded.hex
-        })
-      )
-      .catch(() => undefined);
-  }, [alt, file, setSelected, uploadImage]);
+          src: getCdnUrl(res.key, ImageSize.W_320),
+          id: String(res.id),
+          hex: res.hex,
+          source: "native"
+        });
+      })
+      .catch((e) => {
+        if (e?.data?.error) {
+          toast(e.data.error, "error");
+        }
+      });
+  }, [alt, file, setSelected, toast, uploadImage]);
 
   /**
    * Resets the component

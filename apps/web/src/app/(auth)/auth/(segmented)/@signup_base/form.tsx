@@ -50,7 +50,6 @@ const SignupBaseForm = ({ onSubmit }: Props): React.ReactElement => {
         name={"name"}
         required
         size={"lg"}
-        type={"text"}
       />
       <Spacer orientation={"vertical"} size={3} />
       <FormInput

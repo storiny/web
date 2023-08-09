@@ -24,7 +24,8 @@ const PexelsMasonryItem = React.memo(
       setSelected({
         src: data.src.medium,
         id: String(data.id),
-        hex: (data.avg_color || "").substring(1)
+        hex: (data.avg_color || "").substring(1),
+        source: "pexels"
       });
     };
 

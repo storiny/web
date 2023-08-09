@@ -15,6 +15,14 @@ describe("<ModalFooter />", () => {
     expect(container.firstChild).toMatchSnapshot();
   });
 
+  it("renders `compact` version", () => {
+    const { container } = renderTestWithProvider(
+      <ModalFooter compact>Test</ModalFooter>
+    );
+
+    expect(container.firstChild).toMatchSnapshot();
+  });
+
   it("does not have any accessibility violations", async () => {
     const { container } = renderTestWithProvider(
       <ModalFooter>Test</ModalFooter>

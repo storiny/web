@@ -18,11 +18,11 @@ export interface GetProfileResponse {
   username: string;
   status?: Status | undefined;
   bio?: string | undefined;
-  location?: string | undefined;
   avatar_id?: string | undefined;
   avatar_hex?: string | undefined;
   banner_id?: string | undefined;
   banner_hex?: string | undefined;
+  location: string;
   created_at: string;
   public_flags: number;
   story_count: number;
@@ -125,11 +125,11 @@ function createBaseGetProfileResponse(): GetProfileResponse {
     username: "",
     status: undefined,
     bio: undefined,
-    location: undefined,
     avatar_id: undefined,
     avatar_hex: undefined,
     banner_id: undefined,
     banner_hex: undefined,
+    location: "",
     created_at: "",
     public_flags: 0,
     story_count: 0,
@@ -167,20 +167,20 @@ export const GetProfileResponse = {
     if (message.bio !== undefined) {
       writer.uint32(42).string(message.bio);
     }
-    if (message.location !== undefined) {
-      writer.uint32(50).string(message.location);
-    }
     if (message.avatar_id !== undefined) {
-      writer.uint32(58).string(message.avatar_id);
+      writer.uint32(50).string(message.avatar_id);
     }
     if (message.avatar_hex !== undefined) {
-      writer.uint32(66).string(message.avatar_hex);
+      writer.uint32(58).string(message.avatar_hex);
     }
     if (message.banner_id !== undefined) {
-      writer.uint32(74).string(message.banner_id);
+      writer.uint32(66).string(message.banner_id);
     }
     if (message.banner_hex !== undefined) {
-      writer.uint32(82).string(message.banner_hex);
+      writer.uint32(74).string(message.banner_hex);
+    }
+    if (message.location !== "") {
+      writer.uint32(82).string(message.location);
     }
     if (message.created_at !== "") {
       writer.uint32(90).string(message.created_at);
@@ -283,35 +283,35 @@ export const GetProfileResponse = {
             break;
           }
 
-          message.location = reader.string();
+          message.avatar_id = reader.string();
           continue;
         case 7:
           if (tag !== 58) {
             break;
           }
 
-          message.avatar_id = reader.string();
+          message.avatar_hex = reader.string();
           continue;
         case 8:
           if (tag !== 66) {
             break;
           }
 
-          message.avatar_hex = reader.string();
+          message.banner_id = reader.string();
           continue;
         case 9:
           if (tag !== 74) {
             break;
           }
 
-          message.banner_id = reader.string();
+          message.banner_hex = reader.string();
           continue;
         case 10:
           if (tag !== 82) {
             break;
           }
 
-          message.banner_hex = reader.string();
+          message.location = reader.string();
           continue;
         case 11:
           if (tag !== 90) {
@@ -448,11 +448,11 @@ export const GetProfileResponse = {
       username: isSet(object.username) ? String(object.username) : "",
       status: isSet(object.status) ? Status.fromJSON(object.status) : undefined,
       bio: isSet(object.bio) ? String(object.bio) : undefined,
-      location: isSet(object.location) ? String(object.location) : undefined,
       avatar_id: isSet(object.avatar_id) ? String(object.avatar_id) : undefined,
       avatar_hex: isSet(object.avatar_hex) ? String(object.avatar_hex) : undefined,
       banner_id: isSet(object.banner_id) ? String(object.banner_id) : undefined,
       banner_hex: isSet(object.banner_hex) ? String(object.banner_hex) : undefined,
+      location: isSet(object.location) ? String(object.location) : "",
       created_at: isSet(object.created_at) ? String(object.created_at) : "",
       public_flags: isSet(object.public_flags) ? Number(object.public_flags) : 0,
       story_count: isSet(object.story_count) ? Number(object.story_count) : 0,
@@ -490,9 +490,6 @@ export const GetProfileResponse = {
     if (message.bio !== undefined) {
       obj.bio = message.bio;
     }
-    if (message.location !== undefined) {
-      obj.location = message.location;
-    }
     if (message.avatar_id !== undefined) {
       obj.avatar_id = message.avatar_id;
     }
@@ -504,6 +501,9 @@ export const GetProfileResponse = {
     }
     if (message.banner_hex !== undefined) {
       obj.banner_hex = message.banner_hex;
+    }
+    if (message.location !== "") {
+      obj.location = message.location;
     }
     if (message.created_at !== "") {
       obj.created_at = message.created_at;
@@ -571,11 +571,11 @@ export const GetProfileResponse = {
       ? Status.fromPartial(object.status)
       : undefined;
     message.bio = object.bio ?? undefined;
-    message.location = object.location ?? undefined;
     message.avatar_id = object.avatar_id ?? undefined;
     message.avatar_hex = object.avatar_hex ?? undefined;
     message.banner_id = object.banner_id ?? undefined;
     message.banner_hex = object.banner_hex ?? undefined;
+    message.location = object.location ?? "";
     message.created_at = object.created_at ?? "";
     message.public_flags = object.public_flags ?? 0;
     message.story_count = object.story_count ?? 0;

@@ -33,7 +33,7 @@ const PageTitle = (props: PageTitleProps): React.ReactElement => {
     >
       {!hideBackButton && (
         <IconButton
-          aria-label={"Navigate to previous page"}
+          aria-label={"Navigate to the previous page"}
           {...componentProps?.backButton}
           onClick={(): void => router.back()}
           size={"sm"}

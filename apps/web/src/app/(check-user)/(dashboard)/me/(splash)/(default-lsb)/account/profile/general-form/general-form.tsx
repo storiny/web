@@ -1,0 +1,166 @@
+"use client";
+
+import { userProps } from "@storiny/shared";
+import { clsx } from "clsx";
+import React from "react";
+
+import Button from "~/components/Button";
+import Form, {
+  SubmitHandler,
+  useForm,
+  useFormContext,
+  zodResolver
+} from "~/components/Form";
+import FormInput from "~/components/FormInput";
+import FormTextarea from "~/components/FormTextarea";
+import Grow from "~/components/Grow";
+import Link from "~/components/Link";
+import Spacer from "~/components/Spacer";
+import { useToast } from "~/components/Toast";
+import { useMediaQuery } from "~/hooks/useMediaQuery";
+import {
+  mutateUser,
+  selectUser,
+  useProfileSettingsMutation
+} from "~/redux/features";
+import { useAppDispatch, useAppSelector } from "~/redux/hooks";
+import { breakpoints } from "~/theme/breakpoints";
+
+import styles from "./general-form.module.scss";
+import { AccountGeneralSchema, accountGeneralSchema } from "./schema";
+
+interface Props {
+  onSubmit?: SubmitHandler<AccountGeneralSchema>;
+}
+
+// Save button
+
+const SaveButton = ({
+  isLoading
+}: {
+  isLoading: boolean;
+}): React.ReactElement => {
+  const { formState } = useFormContext();
+  const isSmallerThanTablet = useMediaQuery(breakpoints.down("tablet"));
+
+  return (
+    <div className={clsx("flex")}>
+      <Grow />
+      <Button
+        disabled={!formState.isDirty}
+        loading={isLoading}
+        size={isSmallerThanTablet ? "lg" : "md"}
+        type={"submit"}
+      >
+        Save Profile
+      </Button>
+    </div>
+  );
+};
+
+const AccountGeneralForm = ({ onSubmit }: Props): React.ReactElement => {
+  const dispatch = useAppDispatch();
+  const toast = useToast();
+  const isSmallerThanTablet = useMediaQuery(breakpoints.down("tablet"));
+  const user = useAppSelector(selectUser)!;
+  const form = useForm<AccountGeneralSchema>({
+    resolver: zodResolver(accountGeneralSchema),
+    defaultValues: {
+      name: user.name,
+      bio: user.bio,
+      location: user.location
+    }
+  });
+  const [profileSettings, { isLoading }] = useProfileSettingsMutation();
+
+  const handleSubmit: SubmitHandler<AccountGeneralSchema> = (values) => {
+    if (onSubmit) {
+      onSubmit(values);
+    } else {
+      profileSettings(values)
+        .unwrap()
+        .then(() => {
+          dispatch(mutateUser(values));
+          form.reset(values);
+          toast("Profile updated successfully", "success");
+        })
+        .catch((e) => {
+          toast(
+            e?.data?.error || "Could not update your profile settings",
+            "error"
+          );
+        });
+    }
+  };
+
+  return (
+    <Form<AccountGeneralSchema>
+      className={clsx("flex-col")}
+      disabled={isLoading}
+      onSubmit={handleSubmit}
+      providerProps={form}
+    >
+      <div className={clsx("flex-center", styles.x, styles["input-row"])}>
+        <FormInput
+          autoComplete={"name"}
+          data-testid={"name-input"}
+          formSlotProps={{
+            formItem: {
+              className: "f-grow"
+            }
+          }}
+          helperText={
+            "Provide a name that you are commonly known by, such as your full name or nickname, to help others find you easily."
+          }
+          label={"Name"}
+          maxLength={userProps.name.maxLength}
+          minLength={userProps.name.minLength}
+          name={"name"}
+          placeholder={"Your name"}
+          required
+          size={isSmallerThanTablet ? "lg" : "md"}
+        />
+        <FormInput
+          autoComplete={"country-name"}
+          data-testid={"location-input"}
+          formSlotProps={{
+            formItem: {
+              className: "f-grow"
+            }
+          }}
+          helperText={
+            "Your location helps us improve your home feed and is also displayed on your public profile."
+          }
+          label={"Location"}
+          maxLength={userProps.location.maxLength}
+          name={"location"}
+          placeholder={"Your location"}
+          size={isSmallerThanTablet ? "lg" : "md"}
+        />
+      </div>
+      <Spacer orientation={"vertical"} size={3} />
+      <FormTextarea
+        data-testid={"bio-textarea"}
+        helperText={
+          <React.Fragment>
+            You can format your bio using selected markdown features such as **
+            <b>bold</b>** and *<em>italics</em>*, and you can also mention
+            <span className={"t-medium"}>@someone</span>.{" "}
+            <Link href={"/guides/formatting-bio"} underline={"always"}>
+              Learn more about formatting your bio
+            </Link>
+            .
+          </React.Fragment>
+        }
+        label={"Bio"}
+        maxLength={userProps.bio.maxLength}
+        name={"bio"}
+        placeholder={"Your bio"}
+      />
+      <Spacer orientation={"vertical"} size={3} />
+      <SaveButton isLoading={isLoading} />
+    </Form>
+  );
+};
+
+export default AccountGeneralForm;

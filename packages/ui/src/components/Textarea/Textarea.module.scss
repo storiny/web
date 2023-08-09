@@ -21,7 +21,7 @@
 
   &.disabled {
     --fg: var(--fg-muted);
-    --border: var(--disabled-border);
+    --border: var(--disabled-border, transparent);
 
     background-color: var(--bg-elevation-md);
     cursor: not-allowed;

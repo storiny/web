@@ -108,7 +108,8 @@ const LibraryMasonryItem = React.memo(
         setSelected({
           src: getCdnUrl(data.key, ImageSize.W_320),
           id: String(data.id),
-          hex: data.hex
+          hex: data.hex,
+          source: "native"
         });
       }
     };
@@ -150,42 +151,44 @@ const LibraryMasonryItem = React.memo(
     };
 
     // Rating modal
-    const [ratingElement, modal] = useModal(
-      <MenuItem
-        decorator={<ExplicitIcon />}
-        onClick={(): void =>
-          modal(<RatingModal rating={rating} setRating={onRatingChange} />, {
-            footer: (
-              <>
-                <ModalFooterButton variant={"ghost"}>Cancel</ModalFooterButton>
-                <ModalFooterButton onClick={handleRating}>
-                  Confirm
-                </ModalFooterButton>
-              </>
-            ),
-            slotProps: {
-              content: {
-                style: {
-                  width: "360px",
-                  zIndex: "calc(var(--z-index-modal) + 2)"
-                }
-              },
-              header: {
-                decorator: <ExplicitIcon />,
-                children: "Edit image rating"
-              },
-              overlay: {
-                style: {
-                  zIndex: "calc(var(--z-index-modal) + 2)"
-                }
-              }
+    const [ratingElement] = useModal(
+      ({ openModal }) => (
+        <MenuItem
+          decorator={<ExplicitIcon />}
+          onClick={openModal}
+          onSelect={(event): void => event.preventDefault()}
+        >
+          Edit rating
+        </MenuItem>
+      ),
+      <RatingModal rating={rating} setRating={onRatingChange} />,
+      {
+        footer: (
+          <>
+            <ModalFooterButton variant={"ghost"}>Cancel</ModalFooterButton>
+            <ModalFooterButton onClick={handleRating}>
+              Confirm
+            </ModalFooterButton>
+          </>
+        ),
+        slotProps: {
+          content: {
+            style: {
+              width: "360px",
+              zIndex: "calc(var(--z-index-modal) + 2)"
             }
-          })
+          },
+          header: {
+            decorator: <ExplicitIcon />,
+            children: "Edit image rating"
+          },
+          overlay: {
+            style: {
+              zIndex: "calc(var(--z-index-modal) + 2)"
+            }
+          }
         }
-        onSelect={(event): void => event.preventDefault()}
-      >
-        Edit rating
-      </MenuItem>
+      }
     );
 
     // Delete image modal
@@ -291,6 +294,7 @@ const LibraryMasonryItem = React.memo(
         </Tooltip>
         {editingMode ? (
           <Input
+            autoFocus
             endDecorator={
               <IconButton
                 aria-label={"Save alt text"}

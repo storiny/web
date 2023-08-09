@@ -1,17 +1,43 @@
+import { EndpointBuilder } from "@reduxjs/toolkit/dist/query/endpointDefinitions";
+import {
+  BaseQueryFn,
+  FetchArgs,
+  FetchBaseQueryError,
+  FetchBaseQueryMeta
+} from "@reduxjs/toolkit/query";
 import { Story } from "@storiny/types";
 
-import { ApiQueryBuilder } from "~/redux/features/api/types";
-
-export type GetLikedStoriesResponse = Story[];
+export type ApiQueryBuilder = EndpointBuilder<
+  BaseQueryFn<
+    string | FetchArgs,
+    unknown,
+    FetchBaseQueryError,
+    {},
+    FetchBaseQueryMeta
+  >,
+  "Notification" | "Asset", // Tags
+  "api"
+>;
 
 const ITEMS_PER_PAGE = 10;
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+/**
+ * Query builder for fetching stories with query and sort
+ * parameters
+ * @param builder Builder
+ * @param segment Segment
+ * @param defaultSort Default sort value
+ */
 export const getStoriesWithQueryAndSort = (
   builder: ApiQueryBuilder,
   segment: string,
   defaultSort: string = "recent"
-) =>
+): ReturnType<
+  typeof builder.query<
+    { hasMore: boolean; items: Story[] },
+    { page: number; query?: string; sort: string }
+  >
+> =>
   builder.query<
     { hasMore: boolean; items: Story[] },
     { page: number; query?: string; sort: string }

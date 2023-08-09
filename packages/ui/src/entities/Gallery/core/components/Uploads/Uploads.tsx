@@ -94,7 +94,8 @@ const UploadsTab = (props: UploadsProps): React.ReactElement => {
           setSelected({
             src: getCdnUrl(uploaded.key, ImageSize.W_320),
             id: String(uploaded.id),
-            hex: uploaded.hex
+            hex: uploaded.hex,
+            source: "native"
           })
         )
         .catch(() => undefined);

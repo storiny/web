@@ -21,6 +21,21 @@ import {
 } from "./plugins";
 
 /**
+ * Returns the system color scheme
+ */
+const parseSystemTheme = (): "dark" | "light" => {
+  if (
+    window &&
+    window.matchMedia &&
+    window.matchMedia("(prefers-color-scheme: light)").matches
+  ) {
+    return "light";
+  }
+
+  return "dark";
+};
+
+/**
  * Hook for initializing fabric context
  */
 export const useFabric = (): ((
@@ -36,7 +51,10 @@ export const useFabric = (): ((
 
     canvas.current = new Canvas(element, {
       enableRetinaScaling: true,
-      backgroundColor: theme === "dark" ? SWATCH.dark : SWATCH.light,
+      backgroundColor:
+        (theme === "system" ? parseSystemTheme() : theme) === "dark"
+          ? SWATCH.dark
+          : SWATCH.light,
       selectionColor: "rgba(46,115,252,0.12)",
       selectionBorderColor: "rgba(106,172,255,0.8)",
       selectionLineWidth: 1.75,

@@ -28,6 +28,7 @@ const AvatarGroup = forwardRef<AvatarGroupProps, "div">((props, ref) => {
       <Component
         {...rest}
         className={clsx(
+          "fit-w",
           styles["avatar-group"],
           styles[size],
           commonStyles[size],

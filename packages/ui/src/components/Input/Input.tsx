@@ -162,6 +162,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>((props, ref) => {
           <span
             {...slotProps?.endDecorator}
             className={clsx(
+              "fit-w",
               "flex-center",
               disabled && styles.disabled,
               styles["end-decorator"],

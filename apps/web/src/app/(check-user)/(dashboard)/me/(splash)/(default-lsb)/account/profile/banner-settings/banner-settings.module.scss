@@ -1,0 +1,30 @@
+@use "breakpoints" as breakpoints;
+
+.x {
+  /* Banner aspect ratio */
+  &.aspect-ratio {
+    position: relative;
+    width: auto;
+    margin-top: -12px;
+    margin-inline: var(--grid-compensation);
+
+    @include breakpoints.media("<=desktop", ">mobile") {
+      width: calc(100vw - 78px);
+      margin-left: calc(50% + 2px);
+      transform: translateX(-50%);
+    }
+  }
+
+  /* Banner image */
+  &.banner {
+    width: auto;
+  }
+
+  /* Banner actions */
+  &.banner-actions {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    gap: 6px;
+  }
+}

@@ -1,6 +1,6 @@
 import { Story, Tag, User } from "@storiny/types";
 
-import { ApiQueryBuilder } from "~/redux/features/api/types";
+import { apiSlice } from "~/redux/features/api/slice";
 
 const SEGMENT = "rsb-content";
 
@@ -10,8 +10,12 @@ export interface GetRightSidebarContentResponse {
   users: User[];
 }
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export const getRightSidebarContent = (builder: ApiQueryBuilder) =>
-  builder.query<GetRightSidebarContentResponse, void>({
-    query: () => `/${SEGMENT}`
-  });
+export const { useGetRightSidebarContentQuery } = apiSlice.injectEndpoints({
+  endpoints: (builder) => ({
+    getRightSidebarContent: builder.query<GetRightSidebarContentResponse, void>(
+      {
+        query: () => `/${SEGMENT}`
+      }
+    )
+  })
+});

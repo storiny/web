@@ -1,7 +1,7 @@
 import { mockStories, mockTags, mockUsers } from "@storiny/ui/src/mocks";
 import { GetRightSidebarContentResponse } from "@storiny/ui/src/redux";
 
-const { worker, rest } = (window as any).msw;
+const { worker, rest } = window.msw;
 
 worker.use(
   rest.get(

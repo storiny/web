@@ -46,7 +46,7 @@ const FormInput = React.forwardRef<HTMLFieldSetElement, FormInputProps>(
             ref={ref}
             required={required}
           >
-            <FormLabel {...formSlotProps?.label}>{label}</FormLabel>
+            {label && <FormLabel {...formSlotProps?.label}>{label}</FormLabel>}
             <FormControl {...formSlotProps?.control}>
               <Input
                 {...rest}

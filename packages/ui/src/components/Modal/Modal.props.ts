@@ -7,6 +7,7 @@ import {
 } from "@radix-ui/react-dialog";
 import React from "react";
 
+import { ModalFooterProps } from "~/components/Modal/Footer";
 import { PolymorphicProps } from "~/types/index";
 
 import { IconButtonProps } from "../IconButton";
@@ -57,7 +58,7 @@ export interface ModalProps extends ModalPrimitive {
     > &
       TabsProps;
     content?: DialogContentProps;
-    footer?: React.ComponentPropsWithoutRef<"div">;
+    footer?: ModalFooterProps;
     header?: ModalHeaderProps;
     main?: React.ComponentPropsWithoutRef<"div">;
     overlay?: DialogOverlayProps;

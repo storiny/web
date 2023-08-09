@@ -19,7 +19,7 @@ const FormHelperText = React.forwardRef<
     <Typography
       level={"body3"}
       {...rest}
-      className={clsx(disabled ? "t-muted" : "t-minor", "t-medium", className)}
+      className={clsx(disabled ? "t-muted" : "t-minor", className)}
       id={helperTextId}
       ref={ref}
     />

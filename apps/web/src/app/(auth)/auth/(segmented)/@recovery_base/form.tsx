@@ -37,14 +37,10 @@ const RecoveryForm = ({ onSubmit }: Props): React.ReactElement => {
       actions.setRecoveryState({ email });
       recover({ email })
         .unwrap()
-        .then((res) => {
-          if (res.error) {
-            toast(res.error.message, "error");
-          } else {
-            actions.switchSegment("recovery_inbox");
-          }
-        })
-        .catch(() => toast("Could not recover your account", "error"));
+        .then(() => actions.switchSegment("recovery_inbox"))
+        .catch((e) =>
+          toast(e?.data?.error || "Could not recover your account", "error")
+        );
     }
   };
 

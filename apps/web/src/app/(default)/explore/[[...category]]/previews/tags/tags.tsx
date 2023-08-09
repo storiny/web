@@ -85,6 +85,7 @@ const TagsPreview = ({
         ) : (
           <Link
             className={clsx(
+              "fit-w",
               "t-bold",
               "flex-center",
               styles.x,

@@ -9,7 +9,7 @@ exports[`<FormCheckbox /> matches snapshot 1`] = `
     data-disabled="false"
   >
     <div
-      class="flex-center container"
+      class="fit-w flex-center"
     >
       <button
         aria-checked="false"

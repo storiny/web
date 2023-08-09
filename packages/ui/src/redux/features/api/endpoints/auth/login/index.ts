@@ -1,6 +1,6 @@
 import { ContentType } from "@storiny/shared";
 
-import { ApiQueryBuilder, ApiResponse } from "~/redux/features/api/types";
+import { apiSlice } from "~/redux/features/api/slice";
 
 const SEGMENT = "auth/login";
 
@@ -18,15 +18,17 @@ export interface LoginPayload {
   "remember-me": boolean;
 }
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export const login = (builder: ApiQueryBuilder) =>
-  builder.mutation<LoginResponse, LoginPayload>({
-    query: (body) => ({
-      url: `/${SEGMENT}`,
-      method: "POST",
-      body,
-      headers: {
-        "Content-type": ContentType.JSON
-      }
+export const { useLoginMutation } = apiSlice.injectEndpoints({
+  endpoints: (builder) => ({
+    login: builder.mutation<LoginResponse, LoginPayload>({
+      query: (body) => ({
+        url: `/${SEGMENT}`,
+        method: "POST",
+        body,
+        headers: {
+          "Content-type": ContentType.JSON
+        }
+      })
     })
-  });
+  })
+});

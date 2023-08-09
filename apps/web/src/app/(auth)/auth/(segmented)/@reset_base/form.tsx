@@ -41,14 +41,10 @@ const ResetForm = ({ onSubmit, token }: Props): React.ReactElement => {
     } else {
       reset({ ...values, token })
         .unwrap()
-        .then((res) => {
-          if (res.error) {
-            toast(res.error.message);
-          } else {
-            actions.switchSegment("reset_success");
-          }
-        })
-        .catch(() => toast("Could not reset your password", "error"));
+        .then(() => actions.switchSegment("reset_success"))
+        .catch((e) =>
+          toast(e?.data?.error || "Could not reset your password", "error")
+        );
     }
   };
 

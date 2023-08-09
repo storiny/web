@@ -1,6 +1,6 @@
 // Server static files from .public folder
 
-const { worker, rest } = (window as any).msw;
+const { worker, rest } = window.msw;
 
 worker.use(
   rest.get(

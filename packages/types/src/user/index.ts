@@ -40,7 +40,7 @@ export type User = {
   created_at: string;
   id: string;
   is_private: boolean;
-  location: string | null;
+  location: string;
   name: string;
   public_flags: number;
   status?: UserStatus;

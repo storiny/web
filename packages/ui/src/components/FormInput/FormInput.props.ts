@@ -26,7 +26,7 @@ export interface FormInputProps extends InputProps {
   /**
    * The label for the form component.
    */
-  label: React.ReactNode;
+  label?: React.ReactNode;
   /**
    * The name of the form element.
    */

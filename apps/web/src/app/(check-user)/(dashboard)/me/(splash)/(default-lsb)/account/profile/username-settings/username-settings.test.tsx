@@ -1,0 +1,67 @@
+import { userEvent } from "@storiny/test-utils";
+import { act, screen, waitFor } from "@testing-library/react";
+import React from "react";
+
+import { renderTestWithProvider } from "~/redux/testUtils";
+
+import UsernameSettings from "./username-settings";
+
+describe("<UsernameSettings />", () => {
+  it("renders validation messages", async () => {
+    const mockSubmit = jest.fn();
+    const user = userEvent.setup();
+    renderTestWithProvider(<UsernameSettings onSubmit={mockSubmit} />, {
+      loggedIn: true
+    });
+
+    await act(async () => {
+      await user.click(
+        screen.getByRole("button", { name: /change username/i }) // Open modal
+      );
+    });
+
+    await act(async () => {
+      await user.type(screen.getByTestId("current-password-input"), " "); // The button is disabled until the form is dirty
+      await user.click(screen.getByRole("button", { name: /confirm/i }));
+    });
+
+    await waitFor(() => {
+      expect(screen.queryAllByRole("alert").length).not.toEqual(0);
+      expect(mockSubmit).not.toBeCalled();
+    });
+  });
+
+  it("submits correct form data", async () => {
+    const mockSubmit = jest.fn();
+    const user = userEvent.setup();
+    renderTestWithProvider(<UsernameSettings onSubmit={mockSubmit} />, {
+      loggedIn: true
+    });
+
+    await act(async () => {
+      await user.click(
+        screen.getByRole("button", { name: /change username/i }) // Open modal
+      );
+    });
+
+    await act(async () => {
+      await user.type(
+        screen.getByTestId("new-username-input"),
+        "test_username"
+      );
+      await user.type(
+        screen.getByTestId("current-password-input"),
+        "test-password"
+      );
+      await user.click(screen.getByRole("button", { name: /confirm/i }));
+    });
+
+    await waitFor(() => {
+      expect(mockSubmit).toHaveBeenCalledWith({
+        "new-username": "test_username",
+        "current-password": "test-password"
+      });
+      expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+    });
+  });
+});

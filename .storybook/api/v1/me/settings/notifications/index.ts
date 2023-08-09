@@ -1,10 +1,10 @@
-const { worker, rest } = (window as any).msw;
+const { worker, rest } = window.msw;
 
 worker.use(
-  rest.post(
+  rest.patch(
     `${process.env.NEXT_PUBLIC_API_URL}/v1/me/settings/notifications`,
     async (req, res, ctx) => {
-      return res(ctx.delay(750), ctx.status(200));
+      return res(ctx.delay(750), ctx.status(204));
     }
   )
 );

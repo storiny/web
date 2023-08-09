@@ -10,9 +10,16 @@ import Button from "../../Button";
 const ModalFooterButton = React.forwardRef<
   HTMLButtonElement,
   ModalFooterButtonProps
->((props, ref) => (
+>(({ compact, size, style, ...rest }, ref) => (
   <Close asChild>
-    <Button {...props} ref={ref} />
+    <Button
+      {...rest}
+      ref={ref}
+      size={compact ? "lg" : size}
+      {...(compact
+        ? { style: { ...style, borderRadius: 0, flex: 1 } }
+        : { style })}
+    />
   </Close>
 ));
 

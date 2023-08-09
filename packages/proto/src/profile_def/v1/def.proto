@@ -17,11 +17,11 @@ message GetProfileResponse {
   string username = 3;
   optional user_def.v1.Status status = 4;
   optional string bio = 5;
-  optional string location = 6;
-  optional string avatar_id = 7;
-  optional string avatar_hex = 8;
-  optional string banner_id = 9;
-  optional string banner_hex = 10;
+  optional string avatar_id = 6;
+  optional string avatar_hex = 7;
+  optional string banner_id = 8;
+  optional string banner_hex = 9;
+  string location = 10;
   string created_at = 11;
   int64 public_flags = 12;
   int32 story_count = 13;

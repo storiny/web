@@ -54,7 +54,7 @@ const Page = (): React.ReactElement => (
       <section className={clsx(styles.x, styles.section)}>
         <Typography
           as={"h2"}
-          className={clsx(styles.x, styles["section-title"])}
+          className={clsx("fit-h", styles.x, styles["section-title"])}
           level={"display2"}
         >
           About Storiny
@@ -86,7 +86,7 @@ const Page = (): React.ReactElement => (
       <section className={clsx(styles.x, styles.section)}>
         <Typography
           as={"h2"}
-          className={clsx(styles.x, styles["section-title"])}
+          className={clsx("fit-h", styles.x, styles["section-title"])}
           level={"display2"}
         >
           Give wings to your ideas
@@ -115,7 +115,7 @@ const Page = (): React.ReactElement => (
       <section className={clsx(styles.x, styles.section)}>
         <Typography
           as={"h2"}
-          className={clsx(styles.x, styles["section-title"])}
+          className={clsx("fit-h", styles.x, styles["section-title"])}
           level={"display2"}
         >
           How it started
@@ -147,7 +147,7 @@ const Page = (): React.ReactElement => (
       <section className={clsx(styles.x, styles.section)}>
         <Typography
           as={"h2"}
-          className={clsx(styles.x, styles["section-title"])}
+          className={clsx("fit-h", styles.x, styles["section-title"])}
           level={"display2"}
         >
           Our vision
@@ -172,7 +172,7 @@ const Page = (): React.ReactElement => (
       <section className={clsx(styles.x, styles.section)}>
         <Typography
           as={"h2"}
-          className={clsx(styles.x, styles["section-title"])}
+          className={clsx("fit-h", styles.x, styles["section-title"])}
           level={"display2"}
         >
           Get in touch

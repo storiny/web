@@ -287,7 +287,7 @@ const Tools = (): React.ReactElement => {
 
   return (
     <ScrollArea
-      className={clsx(styles.x, styles.tools)}
+      className={clsx("fit-w", styles.x, styles.tools)}
       slotProps={{
         thumb: {
           className: clsx(styles.x, styles.thumb)

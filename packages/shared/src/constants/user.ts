@@ -12,6 +12,9 @@ export const userProps = {
   bio: {
     maxLength: 256
   },
+  location: {
+    maxLength: 36
+  },
   wpm: { min: 70, max: 320 },
   email: {
     maxLength: 112,
@@ -37,6 +40,12 @@ export const userSchema = {
     .max(
       userProps.bio.maxLength,
       zodMessages.max("bio", userProps.bio.maxLength)
+    ),
+  location: z
+    .string()
+    .max(
+      userProps.location.maxLength,
+      zodMessages.max("location", userProps.location.maxLength)
     ),
   email: z
     .string()

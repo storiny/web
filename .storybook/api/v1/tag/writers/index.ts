@@ -1,6 +1,6 @@
 import { mockUsers } from "@storiny/ui/src/mocks";
 
-const { worker, rest } = (window as any).msw;
+const { worker, rest } = window.msw;
 
 worker.use(
   rest.get(

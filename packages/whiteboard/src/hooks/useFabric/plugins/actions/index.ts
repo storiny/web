@@ -51,14 +51,12 @@ class ActionsPlugin {
   private initializePopover(): void {
     this.popover.id = POPOVER_ID;
     this.popover.ariaHidden = "true";
-    this.popover.classList.add("force-dark-mode");
+    this.popover.classList.add("force-dark-mode", "fit-w", "fit-h");
     this.popover.style.cssText = Object.entries({
       position: "absolute",
       left: 0,
       top: 0,
-      zIndex: 10,
-      width: "fit-content",
-      height: "fit-content"
+      zIndex: 10
     } as React.CSSProperties)
       .map(([prop, value]) => `${prop}:${value}`)
       .join(";");

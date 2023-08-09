@@ -1,7 +1,6 @@
 .x {
   /* Base styles */
   &.tools {
-    width: fit-content;
     border-right: 1px solid var(--divider);
     background-color: var(--bg-elevation-sm);
     grid-area: tools;

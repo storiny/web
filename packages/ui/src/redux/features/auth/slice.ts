@@ -1,4 +1,4 @@
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { User } from "@storiny/types";
 
 import { AppState } from "~/redux/store";
@@ -44,6 +44,15 @@ export const authSlice = createSlice({
   name: "auth",
   initialState: authInitialState,
   reducers: {
+    /**
+     * Mutates the user
+     */
+    mutateUser: (state, action: PayloadAction<Partial<User>>) => {
+      if (state.user !== null) {
+        state.user = { ...state.user, ...action.payload };
+        return state;
+      }
+    },
     /**
      * Increments follower count
      */
@@ -122,6 +131,7 @@ export const authSlice = createSlice({
 });
 
 const {
+  mutateUser,
   incrementSelfFriendCount,
   incrementSelfFollowingCount,
   incrementSelfFollowerCount,
@@ -136,7 +146,8 @@ export {
   decrementSelfFriendCount,
   incrementSelfFollowerCount,
   incrementSelfFollowingCount,
-  incrementSelfFriendCount
+  incrementSelfFriendCount,
+  mutateUser
 };
 
 export default authSlice.reducer;

@@ -2,7 +2,7 @@
 
 exports[`<Wordmark /> matches snapshot 1`] = `
 <span
-  class="flex-center wordmark md"
+  class="fit-w flex-center wordmark md"
 >
   <svg
     aria-hidden="true"

@@ -1,4 +1,4 @@
-@use "breakpoints";
+@use "breakpoints" as breakpoints;
 
 .unset {
   all: unset;
@@ -10,6 +10,14 @@
 
 .full-h {
   height: 100%;
+}
+
+.fit-w {
+  width: fit-content;
+}
+
+.fit-h {
+  height: fit-content;
 }
 
 .f-grow {

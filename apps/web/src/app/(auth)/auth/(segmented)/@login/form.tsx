@@ -44,23 +44,19 @@ const LoginForm = ({ onSubmit }: Props): React.ReactElement => {
       login(values)
         .unwrap()
         .then((res) => {
-          if (res.error) {
-            toast(res.error.message, "error");
+          if (res.result === "success") {
+            router.replace("/"); // Home page
           } else {
-            if (res.result === "success") {
-              router.replace("/"); // Home page
-            } else {
-              actions.switchSegment(
-                res.result === "suspended"
-                  ? "suspended"
-                  : res.result === "held_for_deletion"
-                  ? "deletion"
-                  : "email_confirmation"
-              );
-            }
+            actions.switchSegment(
+              res.result === "suspended"
+                ? "suspended"
+                : res.result === "held_for_deletion"
+                ? "deletion"
+                : "email_confirmation"
+            );
           }
         })
-        .catch(() => toast("Could not log you in", "error"));
+        .catch((e) => toast(e?.data?.error || "Could not log you in", "error"));
     }
   };
 

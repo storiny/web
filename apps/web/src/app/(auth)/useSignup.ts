@@ -22,14 +22,8 @@ export const useSignup = (): {
       wpm: state.signup.wpm || DEFAULT_WPM
     })
       .unwrap()
-      .then((res) => {
-        if (res.error) {
-          toast(res.error.message, "error");
-        } else {
-          actions.switchSegment("email_confirmation");
-        }
-      })
-      .catch(() => toast("Could not sign you up", "error"));
+      .then(() => actions.switchSegment("email_confirmation"))
+      .catch((e) => toast(e?.data?.error || "Could not sign you up", "error"));
   };
 
   return { handleSignup, isLoading };

@@ -1,10 +1,10 @@
 import { ContentType } from "@storiny/shared";
 
-import { ApiQueryBuilder, ApiResponse } from "~/redux/features/api/types";
+import { apiSlice } from "~/redux/features/api/slice";
 
 const SEGMENT = "auth/reset-password";
 
-export interface ResetPasswordResponse extends ApiResponse {}
+export interface ResetPasswordResponse {}
 
 export interface ResetPasswordPayload {
   email: string;
@@ -13,15 +13,20 @@ export interface ResetPasswordPayload {
   token: string;
 }
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export const resetPassword = (builder: ApiQueryBuilder) =>
-  builder.mutation<ResetPasswordResponse, ResetPasswordPayload>({
-    query: (body) => ({
-      url: `/${SEGMENT}`,
-      method: "POST",
-      body,
-      headers: {
-        "Content-type": ContentType.JSON
-      }
+export const { useResetPasswordMutation } = apiSlice.injectEndpoints({
+  endpoints: (builder) => ({
+    resetPassword: builder.mutation<
+      ResetPasswordResponse,
+      ResetPasswordPayload
+    >({
+      query: (body) => ({
+        url: `/${SEGMENT}`,
+        method: "POST",
+        body,
+        headers: {
+          "Content-type": ContentType.JSON
+        }
+      })
     })
-  });
+  })
+});

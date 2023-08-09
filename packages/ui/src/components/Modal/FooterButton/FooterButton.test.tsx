@@ -18,6 +18,16 @@ describe("<ModalFooterButton />", () => {
     expect(baseElement).toMatchSnapshot();
   });
 
+  it("renders `compact` version", () => {
+    const { baseElement } = renderTestWithProvider(
+      <Modal open>
+        <ModalFooterButton compact>Test</ModalFooterButton>
+      </Modal>
+    );
+
+    expect(baseElement).toMatchSnapshot();
+  });
+
   it("does not have any accessibility violations", async () => {
     const { baseElement } = renderTestWithProvider(
       <Modal

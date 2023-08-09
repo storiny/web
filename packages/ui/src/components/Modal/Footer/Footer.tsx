@@ -8,10 +8,13 @@ import { ModalFooterProps } from "./Footer.props";
 
 const ModalFooter = React.forwardRef<HTMLDivElement, ModalFooterProps>(
   (props, ref) => {
-    const { children, className, ...rest } = props;
-
+    const { compact, children, className, ...rest } = props;
     return (
-      <div {...rest} className={clsx(styles.footer, className)} ref={ref}>
+      <div
+        {...rest}
+        className={clsx(styles.footer, compact && styles.compact, className)}
+        ref={ref}
+      >
         {children}
       </div>
     );
