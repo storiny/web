@@ -16,8 +16,17 @@ interface UserStatistics {
   story_count: number;
 }
 
+interface UserLoginProps {
+  login_apple_id?: string | null;
+  login_google_id?: string | null;
+}
+
 interface UserOptionalProps {
   connections?: Connection<false>[];
+  email?: string;
+  password?: string | null;
+  status?: UserStatus;
+  username_modified_at?: string | null;
 }
 
 interface UserSpecificUserProps {
@@ -43,9 +52,9 @@ export type User = {
   location: string;
   name: string;
   public_flags: number;
-  status?: UserStatus;
   username: string;
   wpm: number; // Default `225`
 } & UserStatistics &
   UserOptionalProps &
-  UserSpecificUserProps;
+  UserSpecificUserProps &
+  UserLoginProps;

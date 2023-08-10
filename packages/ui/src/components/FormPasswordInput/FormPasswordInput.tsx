@@ -17,6 +17,9 @@ const FormPasswordInput = React.forwardRef<
   const { name, label, ...rest } = props;
   const [visible, setVisible] = React.useState<boolean>(false);
 
+  /**
+   * Toggles visibility
+   */
   const toggleVisibility = (): void => {
     setVisible((prevState) => !prevState);
   };

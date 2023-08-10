@@ -3,8 +3,10 @@
 import clsx from "clsx";
 import React from "react";
 
+import { useMediaQuery } from "~/hooks/useMediaQuery";
 import MinusIcon from "~/icons/Minus";
 import PlusIcon from "~/icons/Plus";
+import { breakpoints } from "~/theme/breakpoints";
 import { forwardRef } from "~/utils/forwardRef";
 
 import styles from "./Input.module.scss";
@@ -30,10 +32,11 @@ const Container = forwardRef<
 const Input = React.forwardRef<HTMLInputElement, InputProps>((props, ref) => {
   const {
     decorator,
+    autoSize,
     endDecorator,
     autoFocus,
     color = "inverted",
-    size = "md",
+    size: sizeProp = "md",
     type = "text",
     monospaced,
     disabled,
@@ -41,14 +44,24 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>((props, ref) => {
     slotProps,
     ...rest
   } = props;
+  const isSmallerThanTablet = useMediaQuery(breakpoints.down("tablet"));
   const innerRef = React.useRef<HTMLInputElement>(null);
   const [focused, setFocused] = React.useState<boolean>(Boolean(autoFocus));
+  const size = autoSize ? (isSmallerThanTablet ? "lg" : sizeProp) : sizeProp;
 
+  /**
+   * Handles focus
+   * @param event Focus event
+   */
   const handleFocus = (event: React.FocusEvent<HTMLInputElement>): void => {
     setFocused(true);
     rest?.onFocus?.(event);
   };
 
+  /**
+   * Handles blur
+   * @param event Focus event
+   */
   const handleBlur = (event: React.FocusEvent<HTMLInputElement>): void => {
     setFocused(false);
     rest?.onBlur?.(event);

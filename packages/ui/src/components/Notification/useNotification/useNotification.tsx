@@ -3,6 +3,9 @@ import { useAppDispatch } from "~/redux/hooks";
 
 import { NotificationIcon } from "../Notification.props";
 
+/**
+ * Hook for rendering notifications
+ */
 export const useNotification = (): ((
   message: string,
   {

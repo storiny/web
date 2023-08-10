@@ -2,8 +2,8 @@ syntax = "proto3";
 
 package profile_def.v1;
 
-import "user_def/v1/def.proto";
 import "connection_def/v1/def.proto";
+import "user_def/v1/def.proto";
 
 message GetProfileRequest {
   string username = 1;

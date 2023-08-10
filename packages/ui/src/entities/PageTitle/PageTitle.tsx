@@ -1,4 +1,5 @@
 import clsx from "clsx";
+import NextLink from "next/link";
 import { useRouter } from "next/navigation";
 import React from "react";
 
@@ -11,6 +12,7 @@ import { PageTitleProps } from "./PageTitle.props";
 const PageTitle = (props: PageTitleProps): React.ReactElement => {
   const {
     dashboard,
+    backButtonHref,
     hideBackButton,
     className,
     componentProps,
@@ -34,8 +36,10 @@ const PageTitle = (props: PageTitleProps): React.ReactElement => {
       {!hideBackButton && (
         <IconButton
           aria-label={"Navigate to the previous page"}
+          {...(backButtonHref
+            ? { as: NextLink, href: backButtonHref }
+            : { onClick: (): void => router.back() })}
           {...componentProps?.backButton}
-          onClick={(): void => router.back()}
           size={"sm"}
           title={"Back"}
           variant={"ghost"}

@@ -8,7 +8,10 @@ import {
   GetTokenResponse,
   VerifyEmailResponse
 } from "@storiny/proto/gen/ts/token_def/v1/def";
-import { GetUserIdResponse } from "@storiny/proto/gen/ts/user_def/v1/def";
+import {
+  GetUserCredentialsResponse,
+  GetUserIdResponse
+} from "@storiny/proto/gen/ts/user_def/v1/def";
 
 declare global {
   // noinspection ES6ConvertVarToLetConst
@@ -43,12 +46,16 @@ export {
   GetProfileResponse,
   GetTagResponse,
   GetTokenResponse,
+  GetUserCredentialsResponse,
   GetUserIdResponse,
   VerifyEmailResponse
 };
 
 export const getUserId = promisify<GetUserIdResponse>(
   global.grpcClient.getUserId
+);
+export const getUserCredentials = promisify<GetUserCredentialsResponse>(
+  global.grpcClient.getUserCredentials
 );
 export const getTag = promisify<GetTagResponse>(global.grpcClient.getTag);
 export const getProfile = promisify<GetProfileResponse>(

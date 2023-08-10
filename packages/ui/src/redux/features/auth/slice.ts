@@ -20,7 +20,7 @@ export const authInitialState: AuthState = {
 /**
  * Fetch the user object from the server
  */
-export const fetchUser = createAsyncThunk(
+export const fetchUser = createAsyncThunk<User>(
   "auth/fetchUser",
   async () => {
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/v1/me`);
@@ -33,7 +33,8 @@ export const fetchUser = createAsyncThunk(
       } = getState() as AppState;
 
       if (!loggedIn || user !== null || status === "loading") {
-        // Do not send a request if logged out, user object is already populated or status is `loading`
+        // Do not send a request if logged out, a user object is already populated,
+        // or the status is `loading`
         return false;
       }
     }

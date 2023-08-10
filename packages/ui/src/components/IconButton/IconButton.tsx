@@ -3,8 +3,10 @@
 import clsx from "clsx";
 import React from "react";
 
+import { useMediaQuery } from "~/hooks/useMediaQuery";
 import { selectLoggedIn } from "~/redux/features/auth/selectors";
 import { useAppSelector } from "~/redux/hooks";
+import { breakpoints } from "~/theme/breakpoints";
 import { forwardRef } from "~/utils/forwardRef";
 
 import buttonStyles from "../common/ButtonReset.module.scss";
@@ -16,11 +18,12 @@ import { IconButtonProps } from "./IconButton.props";
 const IconButton = forwardRef<IconButtonProps, "button">((props, ref) => {
   const {
     as = "button",
+    autoSize,
     children,
     loading,
     className,
     color = "inverted",
-    size = "md",
+    size: sizeProp = "md",
     variant = "rigid",
     type = "button",
     disabled: disabledProp,
@@ -28,6 +31,7 @@ const IconButton = forwardRef<IconButtonProps, "button">((props, ref) => {
     onClick,
     ...rest
   } = props;
+  const isSmallerThanTablet = useMediaQuery(breakpoints.down("tablet"));
   const buttonRef = React.useRef<HTMLElement>(null);
   const {
     size: inputSize,
@@ -38,6 +42,7 @@ const IconButton = forwardRef<IconButtonProps, "button">((props, ref) => {
   const loggedIn = useAppSelector(selectLoggedIn);
   const shouldLogin = checkAuth && !loggedIn;
   const Component = shouldLogin ? "a" : as;
+  const size = autoSize ? (isSmallerThanTablet ? "lg" : sizeProp) : sizeProp;
 
   React.useImperativeHandle(ref, () => buttonRef.current!);
 

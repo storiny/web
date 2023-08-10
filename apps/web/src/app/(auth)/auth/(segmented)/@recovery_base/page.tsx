@@ -2,7 +2,6 @@
 
 import React from "react";
 
-import { SubmitHandler } from "~/components/Form";
 import Link from "~/components/Link";
 import Spacer from "~/components/Spacer";
 import Typography from "~/components/Typography";

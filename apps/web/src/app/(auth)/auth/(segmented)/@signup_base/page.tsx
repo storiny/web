@@ -1,5 +1,6 @@
 "use client";
 
+import { redirect } from "next/navigation";
 import React from "react";
 
 import { SubmitHandler } from "~/components/Form";
@@ -7,6 +8,8 @@ import Link from "~/components/Link";
 import Spacer from "~/components/Spacer";
 import Stepper from "~/components/Stepper";
 import Typography from "~/components/Typography";
+import { selectLoggedIn } from "~/redux/features";
+import { useAppSelector } from "~/redux/hooks";
 
 import { useAuthState } from "../../../actions";
 import SignupBaseForm from "./form";
@@ -14,6 +17,13 @@ import { SignupBaseSchema } from "./schema";
 
 const Page = (): React.ReactElement => {
   const { actions } = useAuthState();
+  const loggedIn = useAppSelector(selectLoggedIn);
+
+  React.useEffect(() => {
+    if (loggedIn) {
+      redirect("/");
+    }
+  }, [loggedIn]);
 
   const onSubmit: SubmitHandler<SignupBaseSchema> = React.useCallback(
     ({ name, password, email }) => {

@@ -1,0 +1,53 @@
+"use client";
+
+import React from "react";
+
+import { GetUserCredentialsResponse } from "~/common/grpc";
+import Divider from "~/components/Divider";
+import Spacer from "~/components/Spacer";
+import Typography from "~/components/Typography";
+
+import DashboardGroup from "../../../dashboard-group";
+import DashboardTitle from "../../../dashboard-title";
+import DashboardWrapper from "../../../dashboard-wrapper";
+import CredentialsTwoFactorAuthSettings from "./2fa-settings";
+import CredentialsConnectedAccountsGroup from "./connected-accounts-group";
+import CredentialsEmailGroup from "./email-group";
+import CredentialsPasswordSettings from "./password-settings";
+
+type Props = GetUserCredentialsResponse;
+
+const CredentialsClient = (props: Props): React.ReactElement => {
+  const { is_2fa_enabled, login_google_id, login_apple_id, has_password } =
+    props;
+  return (
+    <React.Fragment>
+      <DashboardTitle>Credentials</DashboardTitle>
+      <DashboardWrapper>
+        <CredentialsEmailGroup has_password={has_password} />
+        <Divider />
+        <DashboardGroup>
+          <Typography as={"h2"} level={"h4"}>
+            Authentication
+          </Typography>
+          <Spacer orientation={"vertical"} size={3} />
+          <CredentialsPasswordSettings has_password={has_password} />
+          <Spacer orientation={"vertical"} size={5} />
+          <CredentialsTwoFactorAuthSettings
+            has_password={has_password}
+            is_2fa_enabled={is_2fa_enabled}
+          />
+        </DashboardGroup>
+        <Divider />
+        <CredentialsConnectedAccountsGroup
+          has_password={has_password}
+          login_apple_id={login_apple_id}
+          login_google_id={login_google_id}
+        />
+      </DashboardWrapper>
+      <Spacer orientation={"vertical"} size={10} />
+    </React.Fragment>
+  );
+};
+
+export default CredentialsClient;

@@ -43,42 +43,45 @@ const ImportItem = (): React.ReactElement => {
     event.preventDefault(); // Do not auto-close the menu
 
     if (canvas.current?.getObjects()?.length) {
-      confirmImport({
-        color: "ruby",
-        onConfirm: openFileSelector,
-        slotProps: {
-          content: {
-            style: {
-              zIndex: "calc(var(--z-index-modal) + 2)"
-            }
-          },
-          overlay: {
-            style: {
-              zIndex: "calc(var(--z-index-modal) + 2)"
-            }
-          }
-        },
-        title: "Overwrite canvas?",
-        description:
-          "Opening a new sketch file will overwrite the existing layers on the canvas. Do you want to proceed?"
-      });
+      confirmImport();
     } else {
       openFileSelector();
     }
   };
 
   const [element, confirmImport] = useConfirmation(
-    <MenuItem
-      decorator={<FolderOpenIcon />}
-      /*
-       * Add an on-click listener to prevent the modal from opening
-       * when the menu item is clicked
-       */
-      onClick={importFile}
-      onSelect={importFile as any}
-    >
-      Open
-    </MenuItem>
+    () => (
+      <MenuItem
+        decorator={<FolderOpenIcon />}
+        /*
+         * Add an on-click listener to prevent the modal from opening
+         * when the menu item is clicked
+         */
+        onClick={importFile}
+        onSelect={importFile as any}
+      >
+        Open
+      </MenuItem>
+    ),
+    {
+      color: "ruby",
+      onConfirm: openFileSelector,
+      slotProps: {
+        content: {
+          style: {
+            zIndex: "calc(var(--z-index-modal) + 2)"
+          }
+        },
+        overlay: {
+          style: {
+            zIndex: "calc(var(--z-index-modal) + 2)"
+          }
+        }
+      },
+      title: "Overwrite canvas?",
+      description:
+        "Opening a new sketch file will overwrite the existing layers on the canvas. Do you want to proceed?"
+    }
   );
 
   return element;

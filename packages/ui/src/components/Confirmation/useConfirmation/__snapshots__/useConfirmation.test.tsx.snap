@@ -58,13 +58,13 @@ exports[`useConfirmation renders confirmation modal, matches snapshot, and passe
         class="t-body-1 t-major t-center title"
         id="radix-:r1:"
       >
-        test
+        Test title
       </h2>
       <p
         class="t-body-2 t-minor t-center"
         id="radix-:r2:"
       >
-        test
+        Test description
       </p>
     </div>
     <div

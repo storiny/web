@@ -11,6 +11,8 @@ pub struct Status {
     #[prost(enumeration="StatusVisibility", tag="4")]
     pub visibility: i32,
 }
+// Get user ID
+
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct GetUserIdRequest {
@@ -23,6 +25,27 @@ pub struct GetUserIdRequest {
 pub struct GetUserIdResponse {
     #[prost(string, tag="1")]
     pub id: ::prost::alloc::string::String,
+}
+// Get user credentials
+
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct GetUserCredentialsRequest {
+    /// User ID
+    #[prost(string, tag="1")]
+    pub id: ::prost::alloc::string::String,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct GetUserCredentialsResponse {
+    #[prost(bool, tag="1")]
+    pub has_password: bool,
+    #[prost(bool, tag="2")]
+    pub is_2fa_enabled: bool,
+    #[prost(string, optional, tag="3")]
+    pub login_apple_id: ::core::option::Option<::prost::alloc::string::String>,
+    #[prost(string, optional, tag="4")]
+    pub login_google_id: ::core::option::Option<::prost::alloc::string::String>,
 }
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
 #[repr(i32)]

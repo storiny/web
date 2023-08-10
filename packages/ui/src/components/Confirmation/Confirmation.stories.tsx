@@ -38,8 +38,11 @@ type Story = StoryObj<typeof Confirmation>;
 const ConfirmationComponent = (
   props: ConfirmationProps
 ): React.ReactElement => {
-  const [element, confirm] = useConfirmation(
-    <Button onClick={(): void => confirm(props)}>Show confirmation</Button>
+  const [element] = useConfirmation(
+    ({ openConfirmation }) => (
+      <Button onClick={openConfirmation}>Show confirmation</Button>
+    ),
+    props
   );
 
   return element;

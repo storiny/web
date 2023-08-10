@@ -3,6 +3,9 @@ import { useAppDispatch } from "~/redux/hooks";
 
 import { ToastSeverity } from "../Toast.props";
 
+/**
+ * Hooks for rendering toasts
+ */
 export const useToast = (): ((
   message: string,
   severity?: ToastSeverity

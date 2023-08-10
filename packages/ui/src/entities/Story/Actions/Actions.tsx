@@ -31,26 +31,26 @@ const Actions = ({ story }: { story: Story }): React.ReactElement => {
   const loggedIn = useAppSelector(selectLoggedIn);
   const isBlocking = useAppSelector(selectBlock(story.user!.id));
   const isMuted = useAppSelector(selectMute(story.user!.id));
-  const [element, confirm] = useConfirmation(
-    <MenuItem
-      decorator={<UserBlockIcon />}
-      onSelect={(event): void => {
-        event.preventDefault(); // Do not auto-close the menu
-
-        confirm({
-          color: isBlocking ? "inverted" : "ruby",
-          onConfirm: () => dispatch(toggleBlock(story.user!.id)),
-          title: `${isBlocking ? "Unblock" : "Block"} @${
-            story.user!.username
-          }?`,
-          description: isBlocking
-            ? `The public content you publish will be available to them as well as the ability to follow you.`
-            : `Your feed will not include their content, and they will not be able to follow you or interact with your profile.`
-        });
-      }}
-    >
-      {isBlocking ? "Unblock" : "Block"} this writer
-    </MenuItem>
+  const [element] = useConfirmation(
+    ({ openConfirmation }) => (
+      <MenuItem
+        decorator={<UserBlockIcon />}
+        onSelect={(event): void => {
+          event.preventDefault(); // Do not auto-close the menu
+          openConfirmation();
+        }}
+      >
+        {isBlocking ? "Unblock" : "Block"} this writer
+      </MenuItem>
+    ),
+    {
+      color: isBlocking ? "inverted" : "ruby",
+      onConfirm: () => dispatch(toggleBlock(story.user!.id)),
+      title: `${isBlocking ? "Unblock" : "Block"} @${story.user!.username}?`,
+      description: isBlocking
+        ? `The public content you publish will be available to them as well as the ability to follow you.`
+        : `Your feed will not include their content, and they will not be able to follow you or interact with your profile.`
+    }
   );
 
   return (

@@ -3,7 +3,7 @@ import { nanoid } from "nanoid";
 
 const { worker, rest } = window.msw;
 
-const handler = (req, res, ctx) =>
+const handler: Parameters<typeof rest.get>[1] = (req, res, ctx) =>
   res(
     ctx.delay(1200),
     ctx.json(mockUsers.slice(0, 10).map((user) => ({ ...user, id: nanoid() })))

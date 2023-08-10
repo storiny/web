@@ -3,7 +3,13 @@ import _m0 from "protobufjs/minimal";
 
 export const protobufPackage = "token_def.v1";
 
-export const TokenType = { UNSPECIFIED: 0, EMAIL_VERIFICATION: 1, PASSWORD_RESET: 2, UNRECOGNIZED: -1 } as const;
+export const TokenType = {
+  UNSPECIFIED: 0,
+  EMAIL_VERIFICATION: 1,
+  PASSWORD_RESET: 2,
+  PASSWORD_ADD: 3,
+  UNRECOGNIZED: -1,
+} as const;
 
 export type TokenType = typeof TokenType[keyof typeof TokenType];
 
@@ -18,6 +24,9 @@ export function tokenTypeFromJSON(object: any): TokenType {
     case 2:
     case "PASSWORD_RESET":
       return TokenType.PASSWORD_RESET;
+    case 3:
+    case "PASSWORD_ADD":
+      return TokenType.PASSWORD_ADD;
     case -1:
     case "UNRECOGNIZED":
     default:
@@ -33,6 +42,8 @@ export function tokenTypeToJSON(object: TokenType): string {
       return "EMAIL_VERIFICATION";
     case TokenType.PASSWORD_RESET:
       return "PASSWORD_RESET";
+    case TokenType.PASSWORD_ADD:
+      return "PASSWORD_ADD";
     case TokenType.UNRECOGNIZED:
     default:
       return "UNRECOGNIZED";

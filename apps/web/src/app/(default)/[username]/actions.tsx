@@ -54,24 +54,26 @@ const Actions = ({ profile, isInsideSidebar }: Props): React.ReactElement => {
   const isFriendRequestSent = useAppSelector(selectSentRequest(profile.id));
   const isSelf = Boolean(profile.is_self);
   const isBlockedByUser = Boolean(profile.is_blocked_by_user);
-  const [element, confirm] = useConfirmation(
-    <MenuItem
-      decorator={<UserBlockIcon />}
-      onSelect={(event): void => {
-        event.preventDefault(); // Do not auto-close the menu
-
-        confirm({
-          color: isBlocking ? "inverted" : "ruby",
-          onConfirm: () => dispatch(toggleBlock(profile.id)),
-          title: `${isBlocking ? "Unblock" : "Block"} @${profile.username}?`,
-          description: isBlocking
-            ? `The public content you publish will be available to them as well as the ability to follow you.`
-            : `Your feed will not include their content, and they will not be able to follow you or interact with your profile.`
-        });
-      }}
-    >
-      {isBlocking ? "Unblock" : "Block"} this user
-    </MenuItem>
+  const [element] = useConfirmation(
+    ({ openConfirmation }) => (
+      <MenuItem
+        decorator={<UserBlockIcon />}
+        onSelect={(event): void => {
+          event.preventDefault(); // Do not auto-close the menu
+          openConfirmation();
+        }}
+      >
+        {isBlocking ? "Unblock" : "Block"} this user
+      </MenuItem>
+    ),
+    {
+      color: isBlocking ? "inverted" : "ruby",
+      onConfirm: () => dispatch(toggleBlock(profile.id)),
+      title: `${isBlocking ? "Unblock" : "Block"} @${profile.username}?`,
+      description: isBlocking
+        ? `The public content you publish will be available to them as well as the ability to follow you.`
+        : `Your feed will not include their content, and they will not be able to follow you or interact with your profile.`
+    }
   );
 
   React.useEffect(() => {

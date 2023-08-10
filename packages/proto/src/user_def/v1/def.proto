@@ -16,10 +16,25 @@ message Status {
   StatusVisibility visibility = 4;
 }
 
+// Get user ID
+
 message GetUserIdRequest {
   string token = 1; // Token from the session cookie
 }
 
 message GetUserIdResponse {
   string id = 1;
+}
+
+// Get user credentials
+
+message GetUserCredentialsRequest {
+  string id = 1; // User ID
+}
+
+message GetUserCredentialsResponse {
+  bool has_password = 1;
+  bool is_2fa_enabled = 2;
+  optional string login_apple_id = 3;
+  optional string login_google_id = 4;
 }

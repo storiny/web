@@ -6,6 +6,7 @@ enum TokenType {
   UNSPECIFIED = 0;
   EMAIL_VERIFICATION = 1;
   PASSWORD_RESET = 2;
+  PASSWORD_ADD = 3;
 }
 
 message GetTokenRequest {

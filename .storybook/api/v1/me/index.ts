@@ -6,6 +6,7 @@ import "./notifications";
 import "./gallery";
 import "./assets";
 import "./settings";
+import "./validation";
 
 import { mockUsers } from "@storiny/ui/src/mocks";
 

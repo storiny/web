@@ -41,15 +41,13 @@ const SaveButton = ({
   isLoading: boolean;
 }): React.ReactElement => {
   const { formState } = useFormContext();
-  const isSmallerThanTablet = useMediaQuery(breakpoints.down("tablet"));
-
   return (
     <div className={clsx("flex")}>
       <Grow />
       <Button
+        autoSize
         disabled={!formState.isDirty}
         loading={isLoading}
-        size={isSmallerThanTablet ? "lg" : "md"}
         type={"submit"}
       >
         Save Profile
@@ -61,7 +59,6 @@ const SaveButton = ({
 const AccountGeneralForm = ({ onSubmit }: Props): React.ReactElement => {
   const dispatch = useAppDispatch();
   const toast = useToast();
-  const isSmallerThanTablet = useMediaQuery(breakpoints.down("tablet"));
   const user = useAppSelector(selectUser)!;
   const form = useForm<AccountGeneralSchema>({
     resolver: zodResolver(accountGeneralSchema),
@@ -103,6 +100,7 @@ const AccountGeneralForm = ({ onSubmit }: Props): React.ReactElement => {
       <div className={clsx("flex-center", styles.x, styles["input-row"])}>
         <FormInput
           autoComplete={"name"}
+          autoSize
           data-testid={"name-input"}
           formSlotProps={{
             formItem: {
@@ -118,10 +116,10 @@ const AccountGeneralForm = ({ onSubmit }: Props): React.ReactElement => {
           name={"name"}
           placeholder={"Your name"}
           required
-          size={isSmallerThanTablet ? "lg" : "md"}
         />
         <FormInput
           autoComplete={"country-name"}
+          autoSize
           data-testid={"location-input"}
           formSlotProps={{
             formItem: {
@@ -135,7 +133,6 @@ const AccountGeneralForm = ({ onSubmit }: Props): React.ReactElement => {
           maxLength={userProps.location.maxLength}
           name={"location"}
           placeholder={"Your location"}
-          size={isSmallerThanTablet ? "lg" : "md"}
         />
       </div>
       <Spacer orientation={"vertical"} size={3} />

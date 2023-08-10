@@ -3,8 +3,10 @@
 import clsx from "clsx";
 import React from "react";
 
+import { useMediaQuery } from "~/hooks/useMediaQuery";
 import { selectLoggedIn } from "~/redux/features/auth/selectors";
 import { useAppSelector } from "~/redux/hooks";
+import { breakpoints } from "~/theme/breakpoints";
 import { forwardRef } from "~/utils/forwardRef";
 
 import buttonStyles from "../common/ButtonReset.module.scss";
@@ -15,12 +17,13 @@ import { ButtonProps } from "./Button.props";
 const Button = forwardRef<ButtonProps, "button">((props, ref) => {
   const {
     as = "button",
+    autoSize,
     children,
     className,
     loading,
     disabled: disabledProp,
     color = "inverted",
-    size = "md",
+    size: sizeProp = "md",
     variant = "rigid",
     type = "button",
     decorator,
@@ -29,11 +32,13 @@ const Button = forwardRef<ButtonProps, "button">((props, ref) => {
     slotProps,
     ...rest
   } = props;
+  const isSmallerThanTablet = useMediaQuery(breakpoints.down("tablet"));
   const buttonRef = React.useRef<HTMLElement>(null);
   const disabled = Boolean(disabledProp || loading);
   const loggedIn = useAppSelector(selectLoggedIn);
   const shouldLogin = checkAuth && !loggedIn;
   const Component = shouldLogin ? "a" : as;
+  const size = autoSize ? (isSmallerThanTablet ? "lg" : sizeProp) : sizeProp;
   const to = (rest as any)?.href
     ? `?to=${encodeURIComponent((rest as any).href)}`
     : "";

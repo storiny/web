@@ -34,6 +34,7 @@ pub enum TokenType {
     Unspecified = 0,
     EmailVerification = 1,
     PasswordReset = 2,
+    PasswordAdd = 3,
 }
 impl TokenType {
     /// String value of the enum field names used in the ProtoBuf definition.
@@ -45,6 +46,7 @@ impl TokenType {
             TokenType::Unspecified => "UNSPECIFIED",
             TokenType::EmailVerification => "EMAIL_VERIFICATION",
             TokenType::PasswordReset => "PASSWORD_RESET",
+            TokenType::PasswordAdd => "PASSWORD_ADD",
         }
     }
     /// Creates an enum from field names used in the ProtoBuf definition.
@@ -53,6 +55,7 @@ impl TokenType {
             "UNSPECIFIED" => Some(Self::Unspecified),
             "EMAIL_VERIFICATION" => Some(Self::EmailVerification),
             "PASSWORD_RESET" => Some(Self::PasswordReset),
+            "PASSWORD_ADD" => Some(Self::PasswordAdd),
             _ => None,
         }
     }

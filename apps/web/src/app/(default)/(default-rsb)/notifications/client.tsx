@@ -82,7 +82,6 @@ const StatusHeader = ({
   tab: NotificationsTabValue;
 }): React.ReactElement => {
   const dispatch = useAppDispatch();
-  const isSmallerThanTablet = useMediaQuery(breakpoints.down("tablet"));
   const isMobile = useMediaQuery(breakpoints.down("mobile"));
   const unreadCount = useAppSelector(selectUnreadNotificationCount);
   const status = useAppSelector(selectUnreadNotificationsStatus);
@@ -123,13 +122,13 @@ const StatusHeader = ({
             </IconButton>
           ) : (
             <Button
+              autoSize
               checkAuth
               decorator={<ChecksIcon />}
               disabled={unreadCount === 0}
               onClick={(): void => {
                 dispatch(markAllAsRead());
               }}
-              size={isSmallerThanTablet ? "lg" : "md"}
               variant={"hollow"}
             >
               Mark all as read
@@ -138,9 +137,9 @@ const StatusHeader = ({
           <IconButton
             aria-label={"Notification settings"}
             as={NextLink}
+            autoSize
             checkAuth
             href={"/me/notifications"}
-            size={isSmallerThanTablet ? "lg" : "md"}
             title={"Notification settings"}
             variant={"ghost"}
           >

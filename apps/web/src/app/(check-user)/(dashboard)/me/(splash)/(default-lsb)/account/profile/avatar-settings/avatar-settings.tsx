@@ -25,33 +25,33 @@ const AvatarSettings = (): React.ReactElement | null => {
   const dispatch = useAppDispatch();
   const user = useAppSelector(selectUser)!;
   const toast = useToast();
-  const isSmallerThanTablet = useMediaQuery(breakpoints.down("tablet"));
   const [avatarId, setAvatarId] = React.useState<string | null>(user.avatar_id);
   const [source, setSource] = React.useState<"pexels" | "native" | null>(null);
   const [avatarSettings, { isLoading }] = useAvatarSettingsMutation();
-  const [element, confirm] = useConfirmation(
-    <Button
-      decorator={<TrashIcon />}
-      disabled={!avatarId || isLoading}
-      onClick={(): void =>
-        confirm({
-          color: "ruby",
-          decorator: <TrashIcon />,
-          onConfirm: (): void => {
-            setAvatarId(null);
-            setSource(null);
-            dispatchAvatarSettings();
-          },
-          title: "Remove avatar?",
-          description:
-            "Are you sure you want to remove your avatar? This action cannot be undone."
-        })
-      }
-      size={isSmallerThanTablet ? "lg" : "md"}
-      variant={"hollow"}
-    >
-      Remove
-    </Button>
+  const [element] = useConfirmation(
+    ({ openConfirmation }) => (
+      <Button
+        autoSize
+        decorator={<TrashIcon />}
+        disabled={!avatarId || isLoading}
+        onClick={openConfirmation}
+        variant={"hollow"}
+      >
+        Remove
+      </Button>
+    ),
+    {
+      color: "ruby",
+      decorator: <TrashIcon />,
+      onConfirm: (): void => {
+        setAvatarId(null);
+        setSource(null);
+        dispatchAvatarSettings();
+      },
+      title: "Remove avatar?",
+      description:
+        "Are you sure you want to remove your avatar? This action cannot be undone."
+    }
   );
 
   /**
@@ -96,9 +96,9 @@ const AvatarSettings = (): React.ReactElement | null => {
             }}
           >
             <Button
+              autoSize
               decorator={<PencilIcon />}
               disabled={isLoading}
-              size={isSmallerThanTablet ? "lg" : "md"}
               variant={"hollow"}
             >
               Edit

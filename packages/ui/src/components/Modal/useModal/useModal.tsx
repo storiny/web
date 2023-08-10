@@ -5,6 +5,12 @@ import React from "react";
 import Modal from "../Modal";
 import { ModalProps } from "../Modal.props";
 
+/**
+ * Hook for rendering modals
+ * @param trigger Modal trigger component
+ * @param children Modal children
+ * @param props Modal props
+ */
 export const useModal = (
   trigger: ({
     openModal,
@@ -14,7 +20,7 @@ export const useModal = (
     openModal: () => void;
   }) => ModalProps["trigger"],
   children: React.ReactNode,
-  props?: ModalProps
+  props?: Omit<ModalProps, "trigger" | "children">
 ): [React.ReactElement, () => void, () => void, boolean] => {
   const [open, setOpen] = React.useState<boolean>(false);
   const openModal = React.useCallback(() => setOpen(true), []);
@@ -25,7 +31,7 @@ export const useModal = (
       <Modal
         open={open}
         {...props}
-        onOpenChange={setOpen}
+        onOpenChange={props?.onOpenChange || setOpen}
         trigger={trigger({ closeModal, openModal })}
       >
         {children}

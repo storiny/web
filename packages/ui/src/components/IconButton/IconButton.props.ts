@@ -6,6 +6,12 @@ export type IconButtonVariant = "rigid" | "hollow" | "ghost";
 
 export interface IconButtonProps extends PolymorphicProps<"button"> {
   /**
+   * Automatically resize the component to `lg` when the viewport width is smaller than or
+   * equal to tablet
+   * @default false
+   */
+  autoSize?: boolean;
+  /**
    * The authentication flag to redirect the user to the login page if they are logged out.
    * @default false
    */

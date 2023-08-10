@@ -7,14 +7,19 @@ import { getUserId } from "~/common/grpc";
 import { handleException } from "~/common/grpc/utils";
 
 // TODO: Change cookie ID
-const SESSION_COOKIE_ID = "storiny.sid";
+export const SESSION_COOKIE_ID = "storiny.sid";
 
 /**
  * Checks whether the user maintains a valid session by sending a
  * validation request to the backend server with the session cookie
  * data. Returns the user's ID if the user is logged in, `null` otherwise
+ *
+ * @param shallow Whether to do a shallow check. Only checks the presence
+ * of the cookie, and returns a boolean value if the cookie exists
  */
-export const getUser = async (): Promise<string | null> => {
+export const getUser = async (
+  shallow?: boolean
+): Promise<typeof shallow extends true ? boolean : string | null> => {
   const cookieStore = cookies();
   const sessionCookie = cookieStore.get(SESSION_COOKIE_ID);
 

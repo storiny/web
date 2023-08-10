@@ -211,6 +211,7 @@ const EmojiList = React.forwardRef<
   GroupedVirtuosoHandle,
   GroupedVirtuosoProps<any, any>
 >((props, ref) => {
+  const { className, ...rest } = props;
   const setCategory = useSetAtom(emojiCategoryAtom);
   const query = useAtomValue(queryAtom);
   const searchResults = useSearch();
@@ -237,7 +238,8 @@ const EmojiList = React.forwardRef<
         </div>
       ) : (
         <GroupedVirtuoso
-          className={"f-grow"}
+          {...rest}
+          className={clsx("f-grow", className)}
           components={{
             Group,
             Scroller,

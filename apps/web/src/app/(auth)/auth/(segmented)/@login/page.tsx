@@ -1,16 +1,27 @@
 "use client";
 
+import { redirect } from "next/navigation";
 import React from "react";
 
 import Link from "~/components/Link";
 import Spacer from "~/components/Spacer";
 import Typography from "~/components/Typography";
+import { selectLoggedIn } from "~/redux/features";
+import { useAppSelector } from "~/redux/hooks";
 
 import { useAuthState } from "../../../actions";
 import LoginForm from "./form";
 
 const Page = (): React.ReactElement => {
   const { actions } = useAuthState();
+  const loggedIn = useAppSelector(selectLoggedIn);
+
+  React.useEffect(() => {
+    if (loggedIn) {
+      redirect("/");
+    }
+  }, [loggedIn]);
+
   return (
     <>
       <Typography as={"h1"} level={"h3"}>

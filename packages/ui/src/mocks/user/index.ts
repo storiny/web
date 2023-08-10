@@ -21,6 +21,7 @@ export const testUser: User = {
   wpm: 225,
   name: "Test user",
   username: "test_user",
+  email: "test@example.com",
   id: "0"
 };
 
@@ -42,7 +43,9 @@ export const mockUsers: User[] = [
     is_private: false,
     public_flags: 0,
     bio: "",
-    location: "Menlo Park, CA"
+    email: "alfred.welch@example.com",
+    location: "Menlo Park, CA",
+    username_modified_at: null
   },
   {
     avatar_hex: "dbceac",
@@ -61,7 +64,9 @@ export const mockUsers: User[] = [
     is_private: false,
     public_flags: 0,
     bio: "",
-    location: ""
+    email: "wayne.jordan@example.com",
+    location: "",
+    username_modified_at: null
   },
   {
     avatar_hex: "b8987c",
@@ -80,13 +85,15 @@ export const mockUsers: User[] = [
     is_private: false,
     public_flags: 0,
     bio: "",
+    email: "frank.peck@example.com",
     location: "London",
     status: {
       visibility: StatusVisibility.GLOBAL,
       text: "Gummy bears",
       expires_at: null,
       emoji: "/images/emoji.png"
-    }
+    },
+    username_modified_at: null
   },
   {
     avatar_hex: "d2a4a7",
@@ -105,7 +112,9 @@ export const mockUsers: User[] = [
     is_private: false,
     public_flags: 0,
     bio: "",
-    location: ""
+    email: "stacy.hall@example.com",
+    location: "",
+    username_modified_at: null
   },
   {
     avatar_hex: "615753",
@@ -124,7 +133,9 @@ export const mockUsers: User[] = [
     is_private: true,
     public_flags: 0,
     bio: "",
-    location: ""
+    email: "brennan.austin@example.com",
+    location: "",
+    username_modified_at: null
   },
   {
     avatar_hex: "b7a39b",
@@ -143,7 +154,9 @@ export const mockUsers: User[] = [
     is_private: false,
     public_flags: 0,
     bio: "",
-    location: "Mountain View, California"
+    email: "jacob.webb@example.com",
+    location: "Mountain View, California",
+    username_modified_at: null
   },
   {
     avatar_hex: "d0beb7",
@@ -162,7 +175,9 @@ export const mockUsers: User[] = [
     is_private: false,
     public_flags: 0,
     bio: "",
-    location: "Tokyo"
+    email: "kaylee.ford@example.com",
+    location: "Tokyo",
+    username_modified_at: null
   },
   {
     avatar_hex: "2d2948",
@@ -181,7 +196,9 @@ export const mockUsers: User[] = [
     is_private: true,
     public_flags: 0,
     bio: "",
-    location: ""
+    email: "carla.bowman@example.com",
+    location: "",
+    username_modified_at: null
   },
   {
     avatar_hex: "4a4444",
@@ -200,7 +217,9 @@ export const mockUsers: User[] = [
     is_private: false,
     public_flags: 0,
     bio: "",
-    location: ""
+    email: "terri.fields@example.com",
+    location: "",
+    username_modified_at: null
   },
   {
     avatar_hex: "a89293",
@@ -219,6 +238,8 @@ export const mockUsers: User[] = [
     is_private: false,
     public_flags: 0,
     bio: "",
-    location: ""
+    email: "fred.kelly@example.com",
+    location: "",
+    username_modified_at: null
   }
 ];

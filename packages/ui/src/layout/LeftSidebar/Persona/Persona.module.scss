@@ -1,20 +1,34 @@
-/* Banner */
-.banner {
+/* Banner and placeholder */
+.banner,
+.banner-placeholder {
   border-radius: var(--radius-md);
   border: 1px solid var(--divider);
   width: 100%;
   user-select: none;
   overflow: hidden;
   position: relative;
+}
 
-  &::after {
-    content: "";
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    top: 0;
-    left: 0;
+/* Banner */
+.banner {
+  &.has-banner {
+    &::after {
+      content: "";
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+    }
   }
+}
+
+/* Banner placeholder */
+.banner-placeholder {
+  --icon-size: 18px;
+
+  background-color: var(--bg-elevation-md);
+  padding-bottom: 24px;
 }
 
 /* Avatar */

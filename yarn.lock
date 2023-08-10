@@ -4508,6 +4508,7 @@ __metadata:
     client-only: ^0.0.1
     dotenv-cli: ^7.2.1
     fuse.js: ^6.6.2
+    jotai: ^2.3.1
     little-state-machine: ^4.8.0
     loader-utils: ^3.2.1
     nanoid: ^4.0.2
@@ -13605,6 +13606,21 @@ __metadata:
     react:
       optional: true
   checksum: 21df579532a61e9b745584a17252560ca7267af363e4d9ea3283a1f1290aded33b33d96c5748b09f3e7c23fceae02055a8093647d841b57eb87e566995b89e4a
+  languageName: node
+  linkType: hard
+
+"jotai@npm:^2.3.1":
+  version: 2.3.1
+  resolution: "jotai@npm:2.3.1"
+  peerDependencies:
+    "@types/react": ">=17.0.0"
+    react: ">=17.0.0"
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+    react:
+      optional: true
+  checksum: c2e3dcb3206749cd7f63ab9cfec5d0bacd19ac8c1710e688716fcbdaa031c6bb78f10ed24ea8da65cd98b4dc3c04170c05eedb4d3284b9ad80858f834c69a914
   languageName: node
   linkType: hard
 

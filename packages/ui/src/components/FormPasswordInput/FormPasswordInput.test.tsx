@@ -30,7 +30,7 @@ const Component = ({
   return <Form providerProps={form}>{children}</Form>;
 };
 
-describe("<FormInput />", () => {
+describe("<FormPasswordInput />", () => {
   it("matches snapshot", () => {
     const { container } = renderTestWithProvider(
       <Component>

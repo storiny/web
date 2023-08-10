@@ -139,10 +139,11 @@ const SuspendedDashboardLeftSidebarContent = (): React.ReactElement => {
         className={clsx(styles.x, styles.scroller)}
         slotProps={{
           viewport: {
+            tabIndex: -1,
             className: clsx("flex", styles.x, styles.viewport)
           },
           scrollbar: {
-            style: { zIndex: 1 }
+            style: { zIndex: 1, backgroundColor: "transparent" }
           }
         }}
       >

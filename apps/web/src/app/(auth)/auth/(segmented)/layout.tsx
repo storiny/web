@@ -22,8 +22,12 @@ const SegmentedLayout = (
     return props.reset_base;
   }
 
-  if (["login", "signup"].includes(segment)) {
-    return segment === "login" ? props.login : props.signup_base;
+  if (["login", "signup", "recover"].includes(segment)) {
+    return segment === "login"
+      ? props.login
+      : segment === "recover"
+      ? props.recovery_base
+      : props.signup_base;
   }
 
   return props[state.auth.segment];

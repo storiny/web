@@ -12,6 +12,7 @@ import { useToast } from "~/components/Toast";
 import Typography from "~/components/Typography";
 import { useMediaQuery } from "~/hooks/useMediaQuery";
 import AtIcon from "~/icons/At";
+import PasswordIcon from "~/icons/Password";
 import { mutateUser, useUsernameSettingsMutation } from "~/redux/features";
 import { useAppDispatch } from "~/redux/hooks";
 import { breakpoints } from "~/theme/breakpoints";
@@ -22,50 +23,48 @@ interface Props {
   onSubmit?: SubmitHandler<UsernameSettingsSchema>;
 }
 
-const UsernameSettingsModal = (): React.ReactElement => {
-  const isSmallerThanTablet = useMediaQuery(breakpoints.down("tablet"));
-  return (
-    <React.Fragment>
-      <Description asChild>
-        <Typography className={"t-minor"} level={"body2"}>
-          Enter your new username along with your existing password.
-        </Typography>
-      </Description>
-      <Spacer orientation={"vertical"} size={5} />
-      <FormInput
-        autoComplete={"username"}
-        data-testid={"new-username-input"}
-        decorator={<AtIcon />}
-        formSlotProps={{
-          formItem: {
-            className: "f-grow"
-          }
-        }}
-        label={"New username"}
-        maxLength={userProps.username.maxLength}
-        minLength={userProps.username.minLength}
-        name={"new-username"}
-        placeholder={"Choose a new username"}
-        required
-        size={isSmallerThanTablet ? "lg" : "md"}
-      />
-      <Spacer orientation={"vertical"} size={3} />
-      <FormPasswordInput
-        data-testid={"current-password-input"}
-        formSlotProps={{
-          formItem: {
-            className: "f-grow"
-          }
-        }}
-        label={"Current password"}
-        name={"current-password"}
-        placeholder={"Your current password"}
-        required
-        size={isSmallerThanTablet ? "lg" : "md"}
-      />
-    </React.Fragment>
-  );
-};
+const UsernameSettingsModal = (): React.ReactElement => (
+  <React.Fragment>
+    <Description asChild>
+      <Typography className={"t-minor"} level={"body2"}>
+        Enter your new username along with your existing password.
+      </Typography>
+    </Description>
+    <Spacer orientation={"vertical"} size={5} />
+    <FormInput
+      autoComplete={"username"}
+      autoSize
+      data-testid={"new-username-input"}
+      decorator={<AtIcon />}
+      formSlotProps={{
+        formItem: {
+          className: "f-grow"
+        }
+      }}
+      label={"New username"}
+      maxLength={userProps.username.maxLength}
+      minLength={userProps.username.minLength}
+      name={"new-username"}
+      placeholder={"Choose a new username"}
+      required
+    />
+    <Spacer orientation={"vertical"} size={3} />
+    <FormPasswordInput
+      autoSize
+      data-testid={"current-password-input"}
+      decorator={<PasswordIcon />}
+      formSlotProps={{
+        formItem: {
+          className: "f-grow"
+        }
+      }}
+      label={"Current password"}
+      name={"current-password"}
+      placeholder={"Your current password"}
+      required
+    />
+  </React.Fragment>
+);
 
 const UsernameSettings = ({ onSubmit }: Props): React.ReactElement => {
   const dispatch = useAppDispatch();

@@ -1,18 +1,6 @@
 @use "breakpoints" as breakpoints;
 
 .x {
-  /* Wrapper */
-  &.wrapper {
-    width: 100%;
-    gap: 42px;
-    padding-block: 24px;
-  }
-
-  /* Group */
-  &.group {
-    gap: 12px;
-  }
-
   /* Avatar settings wrapper */
   &.avatar-settings-wrapper {
     padding: 12px 16px;

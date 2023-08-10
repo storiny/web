@@ -145,7 +145,7 @@ const SuspendedLegalLeftSidebarContent = (): React.ReactElement => {
           className: clsx(styles.x, styles.viewport)
         },
         scrollbar: {
-          style: { zIndex: 1 }
+          style: { zIndex: 1, backgroundColor: "transparent" }
         }
       }}
       value={currentSegment}

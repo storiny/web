@@ -1,4 +1,5 @@
 import clsx from "clsx";
+import NextLink from "next/link";
 import React from "react";
 
 import AspectRatio from "~/components/AspectRatio";
@@ -9,9 +10,11 @@ import Skeleton from "~/components/Skeleton";
 import Typography from "~/components/Typography";
 import ErrorState from "~/entities/ErrorState";
 import Status from "~/entities/Status";
+import PhotoPlusIcon from "~/icons/PhotoPlus";
 import { fetchUser } from "~/redux/features";
 import { selectAuthStatus, selectUser } from "~/redux/features/auth/selectors";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
+import { abbreviateNumber } from "~/utils/abbreviateNumber";
 
 import styles from "./Persona.module.scss";
 
@@ -37,22 +40,28 @@ const LeftSidebarPersona = (): React.ReactElement => {
 
   return (
     <>
-      <AspectRatio className={styles.banner} ratio={66 / 25}>
+      <AspectRatio
+        className={clsx(styles.banner, user?.banner_id && styles["has-banner"])}
+        ratio={66 / 25}
+      >
         {loading ? (
           <Skeleton />
         ) : user?.banner_id ? (
-          <>
-            {/* TODO: add banner icon */}
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <Image
-              alt={""}
-              data-testid={"lsb-banner"}
-              hex={user.banner_hex}
-              imgId={user.banner_id}
-              size={320}
-            />
-          </>
-        ) : null}
+          <Image
+            alt={""}
+            data-testid={"lsb-banner"}
+            hex={user.banner_hex}
+            imgId={user.banner_id}
+            size={320}
+          />
+        ) : (
+          <NextLink
+            className={clsx("flex-center", styles["banner-placeholder"])}
+            href={"/me/account/profile"}
+          >
+            <PhotoPlusIcon />
+          </NextLink>
+        )}
       </AspectRatio>
       {loading ? (
         <Skeleton
@@ -104,8 +113,7 @@ const LeftSidebarPersona = (): React.ReactElement => {
               </Typography>
             </Link>
             <Typography className={clsx("flex-col", styles.text)}>
-              {/* TODO: implement follower_count */}
-              645
+              {abbreviateNumber(user?.follower_count || 0)}
               <Typography className={clsx("t-minor")} level={"body2"}>
                 followers
               </Typography>

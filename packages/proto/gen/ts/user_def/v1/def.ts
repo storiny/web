@@ -60,6 +60,18 @@ export interface GetUserIdResponse {
   id: string;
 }
 
+export interface GetUserCredentialsRequest {
+  /** User ID */
+  id: string;
+}
+
+export interface GetUserCredentialsResponse {
+  has_password: boolean;
+  is_2fa_enabled: boolean;
+  login_apple_id?: string | undefined;
+  login_google_id?: string | undefined;
+}
+
 function createBaseStatus(): Status {
   return { emoji: undefined, text: undefined, expires_at: undefined, visibility: 0 };
 }
@@ -274,6 +286,167 @@ export const GetUserIdResponse = {
   fromPartial<I extends Exact<DeepPartial<GetUserIdResponse>, I>>(object: I): GetUserIdResponse {
     const message = createBaseGetUserIdResponse();
     message.id = object.id ?? "";
+    return message;
+  },
+};
+
+function createBaseGetUserCredentialsRequest(): GetUserCredentialsRequest {
+  return { id: "" };
+}
+
+export const GetUserCredentialsRequest = {
+  encode(message: GetUserCredentialsRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.id !== "") {
+      writer.uint32(10).string(message.id);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): GetUserCredentialsRequest {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseGetUserCredentialsRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.id = reader.string();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): GetUserCredentialsRequest {
+    return { id: isSet(object.id) ? String(object.id) : "" };
+  },
+
+  toJSON(message: GetUserCredentialsRequest): unknown {
+    const obj: any = {};
+    if (message.id !== "") {
+      obj.id = message.id;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<GetUserCredentialsRequest>, I>>(base?: I): GetUserCredentialsRequest {
+    return GetUserCredentialsRequest.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<GetUserCredentialsRequest>, I>>(object: I): GetUserCredentialsRequest {
+    const message = createBaseGetUserCredentialsRequest();
+    message.id = object.id ?? "";
+    return message;
+  },
+};
+
+function createBaseGetUserCredentialsResponse(): GetUserCredentialsResponse {
+  return { has_password: false, is_2fa_enabled: false, login_apple_id: undefined, login_google_id: undefined };
+}
+
+export const GetUserCredentialsResponse = {
+  encode(message: GetUserCredentialsResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.has_password === true) {
+      writer.uint32(8).bool(message.has_password);
+    }
+    if (message.is_2fa_enabled === true) {
+      writer.uint32(16).bool(message.is_2fa_enabled);
+    }
+    if (message.login_apple_id !== undefined) {
+      writer.uint32(26).string(message.login_apple_id);
+    }
+    if (message.login_google_id !== undefined) {
+      writer.uint32(34).string(message.login_google_id);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): GetUserCredentialsResponse {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseGetUserCredentialsResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 8) {
+            break;
+          }
+
+          message.has_password = reader.bool();
+          continue;
+        case 2:
+          if (tag !== 16) {
+            break;
+          }
+
+          message.is_2fa_enabled = reader.bool();
+          continue;
+        case 3:
+          if (tag !== 26) {
+            break;
+          }
+
+          message.login_apple_id = reader.string();
+          continue;
+        case 4:
+          if (tag !== 34) {
+            break;
+          }
+
+          message.login_google_id = reader.string();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): GetUserCredentialsResponse {
+    return {
+      has_password: isSet(object.has_password) ? Boolean(object.has_password) : false,
+      is_2fa_enabled: isSet(object.is_2fa_enabled) ? Boolean(object.is_2fa_enabled) : false,
+      login_apple_id: isSet(object.login_apple_id) ? String(object.login_apple_id) : undefined,
+      login_google_id: isSet(object.login_google_id) ? String(object.login_google_id) : undefined,
+    };
+  },
+
+  toJSON(message: GetUserCredentialsResponse): unknown {
+    const obj: any = {};
+    if (message.has_password === true) {
+      obj.has_password = message.has_password;
+    }
+    if (message.is_2fa_enabled === true) {
+      obj.is_2fa_enabled = message.is_2fa_enabled;
+    }
+    if (message.login_apple_id !== undefined) {
+      obj.login_apple_id = message.login_apple_id;
+    }
+    if (message.login_google_id !== undefined) {
+      obj.login_google_id = message.login_google_id;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<GetUserCredentialsResponse>, I>>(base?: I): GetUserCredentialsResponse {
+    return GetUserCredentialsResponse.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<GetUserCredentialsResponse>, I>>(object: I): GetUserCredentialsResponse {
+    const message = createBaseGetUserCredentialsResponse();
+    message.has_password = object.has_password ?? false;
+    message.is_2fa_enabled = object.is_2fa_enabled ?? false;
+    message.login_apple_id = object.login_apple_id ?? undefined;
+    message.login_google_id = object.login_google_id ?? undefined;
     return message;
   },
 };

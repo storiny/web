@@ -5,7 +5,6 @@
   &.aspect-ratio {
     position: relative;
     width: auto;
-    margin-top: -12px;
     margin-inline: var(--grid-compensation);
 
     @include breakpoints.media("<=desktop", ">mobile") {
@@ -26,5 +25,12 @@
     top: 8px;
     right: 8px;
     gap: 6px;
+  }
+
+  /* Placeholder */
+  &.placeholder {
+    --icon-size: 24px;
+
+    background-color: var(--bg-elevation-md);
   }
 }

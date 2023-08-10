@@ -192,35 +192,37 @@ const LibraryMasonryItem = React.memo(
     );
 
     // Delete image modal
-    const [deleteElement, confirm] = useConfirmation(
-      <MenuItem
-        decorator={<TrashIcon />}
-        onSelect={(event): void => {
-          event.preventDefault(); // Do not auto-close the menu
-
-          confirm({
-            color: "ruby",
-            decorator: <TrashIcon />,
-            onConfirm: handleDelete,
-            title: "Delete image?",
-            description: `The image will be permanently deleted and cannot be recovered. If this image is used in a story or profile, it will be replaced by a placeholder.`,
-            slotProps: {
-              content: {
-                style: {
-                  zIndex: "calc(var(--z-index-modal) + 2)"
-                }
-              },
-              overlay: {
-                style: {
-                  zIndex: "calc(var(--z-index-modal) + 2)"
-                }
-              }
+    const [deleteElement] = useConfirmation(
+      ({ openConfirmation }) => (
+        <MenuItem
+          decorator={<TrashIcon />}
+          onSelect={(event): void => {
+            event.preventDefault(); // Do not auto-close the menu
+            openConfirmation();
+          }}
+        >
+          Delete image
+        </MenuItem>
+      ),
+      {
+        color: "ruby",
+        decorator: <TrashIcon />,
+        onConfirm: handleDelete,
+        title: "Delete image?",
+        description: `The image will be permanently deleted and cannot be recovered. If this image is used in a story or profile, it will be replaced by a placeholder.`,
+        slotProps: {
+          content: {
+            style: {
+              zIndex: "calc(var(--z-index-modal) + 2)"
             }
-          });
-        }}
-      >
-        Delete image
-      </MenuItem>
+          },
+          overlay: {
+            style: {
+              zIndex: "calc(var(--z-index-modal) + 2)"
+            }
+          }
+        }
+      }
     );
 
     return (

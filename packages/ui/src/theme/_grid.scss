@@ -47,6 +47,12 @@
       ". ft ft ft ft ft ft ft ft ft ft ft ft .";
   }
 
+  &.dashboard {
+    main {
+      padding-block: 0; // Disable padding
+    }
+  }
+
   @include breakpoints.media("<=desktop", ">tablet") {
     --grid-compensation: 0px;
     --grid-gutter: 48px;

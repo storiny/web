@@ -10,6 +10,7 @@ import { getUser } from "~/common/utils/getUser";
 import CriticalStyles from "~/theme/Critical";
 
 import Fonts from "./fonts";
+import ObserverErrorHandler from "./observer";
 import { PreloadResources } from "./preload-resources";
 import StateProvider from "./state-provider";
 // @ts-ignore
@@ -20,27 +21,7 @@ const RootLayout = async ({
 }: {
   children: React.ReactNode;
 }): Promise<React.ReactElement> => {
-  const userId = await getUser();
-  const loggedIn = Boolean(userId);
-
-  React.useEffect(() => {
-    // Virtuoso's resize observer can throw this error,
-    // which is caught by DnD and aborts dragging
-    const errorHandler = (event: ErrorEvent): void => {
-      if (
-        [
-          "ResizeObserver loop completed with undelivered notifications.",
-          "ResizeObserver loop limit exceeded"
-        ].includes(event.message)
-      ) {
-        event.stopImmediatePropagation();
-      }
-    };
-
-    window.addEventListener("error", errorHandler);
-    return () => window.removeEventListener("error", errorHandler);
-  }, []);
-
+  const loggedIn = await getUser(true);
   return (
     <html
       lang="en"
@@ -75,6 +56,7 @@ const RootLayout = async ({
       <body dir={"ltr"}>
         <StateProvider loggedIn={loggedIn}>{children}</StateProvider>
       </body>
+      <ObserverErrorHandler />
     </html>
   );
 };
