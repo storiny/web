@@ -67,7 +67,7 @@ export interface GetUserCredentialsRequest {
 
 export interface GetUserCredentialsResponse {
   has_password: boolean;
-  is_2fa_enabled: boolean;
+  mfa_enabled: boolean;
   login_apple_id?: string | undefined;
   login_google_id?: string | undefined;
 }
@@ -348,7 +348,7 @@ export const GetUserCredentialsRequest = {
 };
 
 function createBaseGetUserCredentialsResponse(): GetUserCredentialsResponse {
-  return { has_password: false, is_2fa_enabled: false, login_apple_id: undefined, login_google_id: undefined };
+  return { has_password: false, mfa_enabled: false, login_apple_id: undefined, login_google_id: undefined };
 }
 
 export const GetUserCredentialsResponse = {
@@ -356,8 +356,8 @@ export const GetUserCredentialsResponse = {
     if (message.has_password === true) {
       writer.uint32(8).bool(message.has_password);
     }
-    if (message.is_2fa_enabled === true) {
-      writer.uint32(16).bool(message.is_2fa_enabled);
+    if (message.mfa_enabled === true) {
+      writer.uint32(16).bool(message.mfa_enabled);
     }
     if (message.login_apple_id !== undefined) {
       writer.uint32(26).string(message.login_apple_id);
@@ -387,7 +387,7 @@ export const GetUserCredentialsResponse = {
             break;
           }
 
-          message.is_2fa_enabled = reader.bool();
+          message.mfa_enabled = reader.bool();
           continue;
         case 3:
           if (tag !== 26) {
@@ -415,7 +415,7 @@ export const GetUserCredentialsResponse = {
   fromJSON(object: any): GetUserCredentialsResponse {
     return {
       has_password: isSet(object.has_password) ? Boolean(object.has_password) : false,
-      is_2fa_enabled: isSet(object.is_2fa_enabled) ? Boolean(object.is_2fa_enabled) : false,
+      mfa_enabled: isSet(object.mfa_enabled) ? Boolean(object.mfa_enabled) : false,
       login_apple_id: isSet(object.login_apple_id) ? String(object.login_apple_id) : undefined,
       login_google_id: isSet(object.login_google_id) ? String(object.login_google_id) : undefined,
     };
@@ -426,8 +426,8 @@ export const GetUserCredentialsResponse = {
     if (message.has_password === true) {
       obj.has_password = message.has_password;
     }
-    if (message.is_2fa_enabled === true) {
-      obj.is_2fa_enabled = message.is_2fa_enabled;
+    if (message.mfa_enabled === true) {
+      obj.mfa_enabled = message.mfa_enabled;
     }
     if (message.login_apple_id !== undefined) {
       obj.login_apple_id = message.login_apple_id;
@@ -444,7 +444,7 @@ export const GetUserCredentialsResponse = {
   fromPartial<I extends Exact<DeepPartial<GetUserCredentialsResponse>, I>>(object: I): GetUserCredentialsResponse {
     const message = createBaseGetUserCredentialsResponse();
     message.has_password = object.has_password ?? false;
-    message.is_2fa_enabled = object.is_2fa_enabled ?? false;
+    message.mfa_enabled = object.mfa_enabled ?? false;
     message.login_apple_id = object.login_apple_id ?? undefined;
     message.login_google_id = object.login_google_id ?? undefined;
     return message;

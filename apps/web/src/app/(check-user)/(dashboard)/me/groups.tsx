@@ -184,26 +184,34 @@ export const dashboardGroups: Group[] = [
   miscellaneousGroup
 ];
 
-// Searching items
-
-const dashboardFuse = new Fuse<Group>(dashboardGroups, {
-  isCaseSensitive: false,
-  includeScore: false,
-  shouldSort: true,
-  includeMatches: true,
-  findAllMatches: false,
-  minMatchCharLength: 1,
-  location: 0,
-  threshold: 0.3,
-  keys: ["items.title"]
-});
+/**
+ * Returns dashboard groups fuse
+ */
+const getDashboardGroupsFuse = async (): Promise<Fuse<Group>> => {
+  const Fuse = (await import("fuse.js")).default;
+  return new Fuse<Group>(dashboardGroups, {
+    isCaseSensitive: false,
+    includeScore: false,
+    shouldSort: true,
+    includeMatches: true,
+    findAllMatches: false,
+    minMatchCharLength: 1,
+    location: 0,
+    threshold: 0.3,
+    keys: ["items.title"]
+  });
+};
 
 /**
  * Returns the groups with items matching the provided text
  * @param query Query
  */
-export const searchDashboardGroups = (query: string): Group[] => {
+export const searchDashboardGroups = async (
+  query: string
+): Promise<Group[]> => {
+  const dashboardFuse = await getDashboardGroupsFuse();
   const results = dashboardFuse.search(query);
+
   return results.map(
     (result) =>
       ({

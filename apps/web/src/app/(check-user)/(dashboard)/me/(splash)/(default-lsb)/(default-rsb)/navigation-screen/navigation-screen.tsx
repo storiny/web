@@ -64,7 +64,7 @@ const DashboardNavigationScreen = (): React.ReactElement => {
           onChange={(event): void => {
             const value = event.target.value;
             setQuery(value);
-            setResults(searchDashboardGroups(value));
+            searchDashboardGroups(value).then(setResults);
           }}
           placeholder={"Search settings"}
           size={"lg"}

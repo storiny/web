@@ -18,7 +18,7 @@ import PasswordIcon from "~/icons/Password";
 import {
   useAddPasswordMutation,
   useAddPasswordRequestVerificationMutation
-} from "~/redux/features/api/endpoints/me/settings/password";
+} from "~/redux/features";
 import { breakpoints } from "~/theme/breakpoints";
 
 import { AddPasswordScreen, addPasswordScreenAtom } from "./atom";
@@ -39,7 +39,7 @@ const screenToMessageMap: Record<AddPasswordScreen, string> = {
   "verification-code":
     "Check your inbox for an email that we have just sent with a confirmation code inside. Enter that code here.",
   password:
-    "Choose a long and secure password that is at least 8 characters long.",
+    "Choose a long and secure password that is at least 6 characters long.",
   finish:
     "Your password has been added. You have been logged out and will need to log in again using your password."
 };

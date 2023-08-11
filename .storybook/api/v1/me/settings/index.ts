@@ -5,3 +5,4 @@ import "./banner";
 import "./username";
 import "./email";
 import "./password";
+import "./mfa";

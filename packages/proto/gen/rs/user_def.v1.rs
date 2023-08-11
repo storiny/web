@@ -41,7 +41,7 @@ pub struct GetUserCredentialsResponse {
     #[prost(bool, tag="1")]
     pub has_password: bool,
     #[prost(bool, tag="2")]
-    pub is_2fa_enabled: bool,
+    pub mfa_enabled: bool,
     #[prost(string, optional, tag="3")]
     pub login_apple_id: ::core::option::Option<::prost::alloc::string::String>,
     #[prost(string, optional, tag="4")]

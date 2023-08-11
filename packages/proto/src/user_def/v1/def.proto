@@ -34,7 +34,7 @@ message GetUserCredentialsRequest {
 
 message GetUserCredentialsResponse {
   bool has_password = 1;
-  bool is_2fa_enabled = 2;
+  bool mfa_enabled = 2;
   optional string login_apple_id = 3;
   optional string login_google_id = 4;
 }

@@ -1,11 +1,11 @@
 import React from "react";
 
-import Button from "~/components/Button";
 import Spacer from "~/components/Spacer";
 import Typography from "~/components/Typography";
 
 import AddPassword from "./add-password";
 import { PasswordSettingsProps } from "./password-settings.props";
+import UpdatePassword from "./update-password";
 
 const CredentialsPasswordSettings = (
   props: PasswordSettingsProps
@@ -23,13 +23,7 @@ const CredentialsPasswordSettings = (
           : "You initially signed up through one of our social login providers. We highly recommend that you add a password to your account, as this will allow you to log in using both your e-mail and password, in addition to the social login."}
       </Typography>
       <Spacer orientation={"vertical"} size={3} />
-      {has_password ? (
-        <Button autoSize className={"fit-w"} variant={"hollow"}>
-          Update password
-        </Button>
-      ) : (
-        <AddPassword />
-      )}
+      {has_password ? <UpdatePassword /> : <AddPassword />}
     </React.Fragment>
   );
 };

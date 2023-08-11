@@ -24,6 +24,8 @@ interface UserLoginProps {
 interface UserOptionalProps {
   connections?: Connection<false>[];
   email?: string;
+  mfa_enabled?: boolean; // Multifactor auth
+  mfa_secret?: string | null; // MFA secret
   password?: string | null;
   status?: UserStatus;
   username_modified_at?: string | null;

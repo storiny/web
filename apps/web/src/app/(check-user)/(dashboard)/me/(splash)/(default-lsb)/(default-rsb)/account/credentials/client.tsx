@@ -18,8 +18,7 @@ import CredentialsPasswordSettings from "./password-settings";
 type Props = GetUserCredentialsResponse;
 
 const CredentialsClient = (props: Props): React.ReactElement => {
-  const { is_2fa_enabled, login_google_id, login_apple_id, has_password } =
-    props;
+  const { mfa_enabled, login_google_id, login_apple_id, has_password } = props;
   return (
     <React.Fragment>
       <DashboardTitle>Credentials</DashboardTitle>
@@ -35,7 +34,7 @@ const CredentialsClient = (props: Props): React.ReactElement => {
           <Spacer orientation={"vertical"} size={5} />
           <CredentialsTwoFactorAuthSettings
             has_password={has_password}
-            is_2fa_enabled={is_2fa_enabled}
+            mfa_enabled={mfa_enabled}
           />
         </DashboardGroup>
         <Divider />
