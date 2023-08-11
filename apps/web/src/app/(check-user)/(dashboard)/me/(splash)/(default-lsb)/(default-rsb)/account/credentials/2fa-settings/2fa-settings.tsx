@@ -9,6 +9,7 @@ import Typography from "~/components/Typography";
 import styles from "./2fa-settings.module.scss";
 import { TwoFactorAuthSettingsProps } from "./2fa-settings.props";
 import Enable2FA from "./enable-2fa";
+import RecoveryCodes from "./recovery-codes";
 import Remove2FA from "./remove-2fa";
 
 const CredentialsTwoFactorAuthSettings = ({
@@ -40,9 +41,7 @@ const CredentialsTwoFactorAuthSettings = ({
       <Spacer orientation={"vertical"} size={3} />
       {enabled ? (
         <div className={clsx("flex", styles.actions)}>
-          <Button autoSize className={"fit-w"} variant={"hollow"}>
-            View recovery codes
-          </Button>
+          <RecoveryCodes />
           <Remove2FA setEnabled={setEnabledImpl} />
         </div>
       ) : (

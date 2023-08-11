@@ -16,7 +16,7 @@ const meta: Meta<typeof AccountCredentialsPage> = {
   component: AccountCredentialsPage,
   args: {
     has_password: true,
-    is_2fa_enabled: true
+    mfa_enabled: true
   },
   parameters: {
     layout: "fullscreen"
@@ -57,7 +57,7 @@ export const No2FA: Story = {
   ...Default,
   args: {
     ...Default.args,
-    is_2fa_enabled: false
+    mfa_enabled: false
   }
 };
 
