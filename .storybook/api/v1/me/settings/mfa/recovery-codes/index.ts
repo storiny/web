@@ -6,7 +6,12 @@ worker.use(
     async (req, res, ctx) => {
       return res(
         ctx.delay(750),
-        ctx.json([...Array(12)].map(() => `0000 0000`))
+        ctx.json(
+          [...Array(12)].map((_, index) => ({
+            used: index % 2 === 0,
+            value: `0000 0000`,
+          }))
+        )
       );
     }
   )
