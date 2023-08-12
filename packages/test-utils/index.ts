@@ -15,6 +15,9 @@ declare global {
   var waitForPosition: () => Promise<void>;
 }
 
+// Mock fetch
+global.fetch = jest.fn();
+
 // Wait for popper's position
 global.waitForPosition = (): Promise<void> => act(async () => {});
 

@@ -6,3 +6,5 @@ import "./username";
 import "./email";
 import "./password";
 import "./mfa";
+import "./accounts";
+import "./privacy";

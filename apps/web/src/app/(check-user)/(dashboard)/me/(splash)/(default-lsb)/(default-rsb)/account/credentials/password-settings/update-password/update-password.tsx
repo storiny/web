@@ -60,7 +60,7 @@ const UpdatePasswordModal = ({
               className: "f-grow"
             }
           }}
-          label={"Password"}
+          label={"New password"}
           name={"new-password"}
           placeholder={"6+ characters"}
           required

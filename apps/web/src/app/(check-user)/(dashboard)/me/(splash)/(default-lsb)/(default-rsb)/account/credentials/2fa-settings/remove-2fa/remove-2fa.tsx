@@ -48,7 +48,7 @@ const Remove2FAModal = (): React.ReactElement => (
       maxLength={RECOVERY_CODE_MAX_LENGTH}
       minLength={RECOVERY_CODE_MIN_LENGTH}
       name={"code"}
-      placeholder={"6-digit authentication code or 8-digit backup code"}
+      placeholder={"6-digit authentication or 8-digit backup code"}
       required
     />
     <Spacer orientation={"vertical"} size={2} />

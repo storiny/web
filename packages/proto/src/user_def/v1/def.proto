@@ -3,10 +3,10 @@ syntax = "proto3";
 package user_def.v1;
 
 enum StatusVisibility {
-  UNSPECIFIED = 0;
-  GLOBAL = 1;
-  FOLLOWERS = 2;
-  FRIENDS = 3;
+  STATUS_VISIBILITY_UNSPECIFIED = 0;
+  STATUS_VISIBILITY_GLOBAL = 1;
+  STATUS_VISIBILITY_FOLLOWERS = 2;
+  STATUS_VISIBILITY_FRIENDS = 3;
 }
 
 message Status {
@@ -24,17 +24,4 @@ message GetUserIdRequest {
 
 message GetUserIdResponse {
   string id = 1;
-}
-
-// Get user credentials
-
-message GetUserCredentialsRequest {
-  string id = 1; // User ID
-}
-
-message GetUserCredentialsResponse {
-  bool has_password = 1;
-  bool mfa_enabled = 2;
-  optional string login_apple_id = 3;
-  optional string login_google_id = 4;
 }

@@ -65,7 +65,10 @@ const FormSwitch = React.forwardRef<HTMLFieldSetElement, FormSwitchProps>(
                   checked={field.value}
                   color={invalid || error ? "ruby" : rest?.color}
                   disabled={disabled}
-                  onCheckedChange={field.onChange}
+                  onCheckedChange={(checked): void => {
+                    field.onChange(checked);
+                    rest?.onCheckedChange?.(checked);
+                  }}
                   required={required}
                 />
               </FormControl>

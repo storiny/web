@@ -26,46 +26,46 @@ export type Provider = typeof Provider[keyof typeof Provider];
 export function providerFromJSON(object: any): Provider {
   switch (object) {
     case 0:
-    case "UNSPECIFIED":
+    case "PROVIDER_UNSPECIFIED":
       return Provider.UNSPECIFIED;
     case 1:
-    case "TWITTER":
+    case "PROVIDER_TWITTER":
       return Provider.TWITTER;
     case 2:
-    case "GITHUB":
+    case "PROVIDER_GITHUB":
       return Provider.GITHUB;
     case 3:
-    case "TWITCH":
+    case "PROVIDER_TWITCH":
       return Provider.TWITCH;
     case 4:
-    case "SPOTIFY":
+    case "PROVIDER_SPOTIFY":
       return Provider.SPOTIFY;
     case 5:
-    case "REDDIT":
+    case "PROVIDER_REDDIT":
       return Provider.REDDIT;
     case 6:
-    case "FACEBOOK":
+    case "PROVIDER_FACEBOOK":
       return Provider.FACEBOOK;
     case 7:
-    case "INSTAGRAM":
+    case "PROVIDER_INSTAGRAM":
       return Provider.INSTAGRAM;
     case 8:
-    case "DISCORD":
+    case "PROVIDER_DISCORD":
       return Provider.DISCORD;
     case 9:
-    case "YOUTUBE":
+    case "PROVIDER_YOUTUBE":
       return Provider.YOUTUBE;
     case 10:
-    case "LINKED_IN":
+    case "PROVIDER_LINKED_IN":
       return Provider.LINKED_IN;
     case 11:
-    case "FIGMA":
+    case "PROVIDER_FIGMA":
       return Provider.FIGMA;
     case 12:
-    case "DRIBBBLE":
+    case "PROVIDER_DRIBBBLE":
       return Provider.DRIBBBLE;
     case 13:
-    case "SNAPCHAT":
+    case "PROVIDER_SNAPCHAT":
       return Provider.SNAPCHAT;
     case -1:
     case "UNRECOGNIZED":
@@ -77,33 +77,33 @@ export function providerFromJSON(object: any): Provider {
 export function providerToJSON(object: Provider): string {
   switch (object) {
     case Provider.UNSPECIFIED:
-      return "UNSPECIFIED";
+      return "PROVIDER_UNSPECIFIED";
     case Provider.TWITTER:
-      return "TWITTER";
+      return "PROVIDER_TWITTER";
     case Provider.GITHUB:
-      return "GITHUB";
+      return "PROVIDER_GITHUB";
     case Provider.TWITCH:
-      return "TWITCH";
+      return "PROVIDER_TWITCH";
     case Provider.SPOTIFY:
-      return "SPOTIFY";
+      return "PROVIDER_SPOTIFY";
     case Provider.REDDIT:
-      return "REDDIT";
+      return "PROVIDER_REDDIT";
     case Provider.FACEBOOK:
-      return "FACEBOOK";
+      return "PROVIDER_FACEBOOK";
     case Provider.INSTAGRAM:
-      return "INSTAGRAM";
+      return "PROVIDER_INSTAGRAM";
     case Provider.DISCORD:
-      return "DISCORD";
+      return "PROVIDER_DISCORD";
     case Provider.YOUTUBE:
-      return "YOUTUBE";
+      return "PROVIDER_YOUTUBE";
     case Provider.LINKED_IN:
-      return "LINKED_IN";
+      return "PROVIDER_LINKED_IN";
     case Provider.FIGMA:
-      return "FIGMA";
+      return "PROVIDER_FIGMA";
     case Provider.DRIBBBLE:
-      return "DRIBBBLE";
+      return "PROVIDER_DRIBBBLE";
     case Provider.SNAPCHAT:
-      return "SNAPCHAT";
+      return "PROVIDER_SNAPCHAT";
     case Provider.UNRECOGNIZED:
     default:
       return "UNRECOGNIZED";

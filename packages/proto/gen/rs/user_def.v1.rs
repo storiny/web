@@ -26,27 +26,6 @@ pub struct GetUserIdResponse {
     #[prost(string, tag="1")]
     pub id: ::prost::alloc::string::String,
 }
-// Get user credentials
-
-#[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct GetUserCredentialsRequest {
-    /// User ID
-    #[prost(string, tag="1")]
-    pub id: ::prost::alloc::string::String,
-}
-#[allow(clippy::derive_partial_eq_without_eq)]
-#[derive(Clone, PartialEq, ::prost::Message)]
-pub struct GetUserCredentialsResponse {
-    #[prost(bool, tag="1")]
-    pub has_password: bool,
-    #[prost(bool, tag="2")]
-    pub mfa_enabled: bool,
-    #[prost(string, optional, tag="3")]
-    pub login_apple_id: ::core::option::Option<::prost::alloc::string::String>,
-    #[prost(string, optional, tag="4")]
-    pub login_google_id: ::core::option::Option<::prost::alloc::string::String>,
-}
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
 #[repr(i32)]
 pub enum StatusVisibility {
@@ -62,19 +41,19 @@ impl StatusVisibility {
     /// (if the ProtoBuf definition does not change) and safe for programmatic use.
     pub fn as_str_name(&self) -> &'static str {
         match self {
-            StatusVisibility::Unspecified => "UNSPECIFIED",
-            StatusVisibility::Global => "GLOBAL",
-            StatusVisibility::Followers => "FOLLOWERS",
-            StatusVisibility::Friends => "FRIENDS",
+            StatusVisibility::Unspecified => "STATUS_VISIBILITY_UNSPECIFIED",
+            StatusVisibility::Global => "STATUS_VISIBILITY_GLOBAL",
+            StatusVisibility::Followers => "STATUS_VISIBILITY_FOLLOWERS",
+            StatusVisibility::Friends => "STATUS_VISIBILITY_FRIENDS",
         }
     }
     /// Creates an enum from field names used in the ProtoBuf definition.
     pub fn from_str_name(value: &str) -> ::core::option::Option<Self> {
         match value {
-            "UNSPECIFIED" => Some(Self::Unspecified),
-            "GLOBAL" => Some(Self::Global),
-            "FOLLOWERS" => Some(Self::Followers),
-            "FRIENDS" => Some(Self::Friends),
+            "STATUS_VISIBILITY_UNSPECIFIED" => Some(Self::Unspecified),
+            "STATUS_VISIBILITY_GLOBAL" => Some(Self::Global),
+            "STATUS_VISIBILITY_FOLLOWERS" => Some(Self::Followers),
+            "STATUS_VISIBILITY_FRIENDS" => Some(Self::Friends),
             _ => None,
         }
     }

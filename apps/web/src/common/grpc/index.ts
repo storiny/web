@@ -2,16 +2,15 @@ import "server-only";
 
 import { credentials, ServiceError } from "@grpc/grpc-js";
 import { ApiServiceClient } from "@storiny/proto/gen/ts/api_service/v1/service";
+import { GetCredentialsResponse } from "@storiny/proto/gen/ts/credentials_def/v1/def";
+import { GetPrivacySettingsResponse } from "@storiny/proto/gen/ts/privacy_settings_def/v1/def";
 import { GetProfileResponse } from "@storiny/proto/gen/ts/profile_def/v1/def";
 import { GetTagResponse } from "@storiny/proto/gen/ts/tag_def/v1/def";
 import {
   GetTokenResponse,
   VerifyEmailResponse
 } from "@storiny/proto/gen/ts/token_def/v1/def";
-import {
-  GetUserCredentialsResponse,
-  GetUserIdResponse
-} from "@storiny/proto/gen/ts/user_def/v1/def";
+import { GetUserIdResponse } from "@storiny/proto/gen/ts/user_def/v1/def";
 
 declare global {
   // noinspection ES6ConvertVarToLetConst
@@ -43,10 +42,11 @@ const promisify =
     });
 
 export {
+  GetCredentialsResponse,
+  GetPrivacySettingsResponse,
   GetProfileResponse,
   GetTagResponse,
   GetTokenResponse,
-  GetUserCredentialsResponse,
   GetUserIdResponse,
   VerifyEmailResponse
 };
@@ -54,14 +54,23 @@ export {
 export const getUserId = promisify<GetUserIdResponse>(
   global.grpcClient.getUserId
 );
-export const getUserCredentials = promisify<GetUserCredentialsResponse>(
-  global.grpcClient.getUserCredentials
+
+export const getCredentials = promisify<GetCredentialsResponse>(
+  global.grpcClient.getCredentials
 );
+
+export const getPrivacySettings = promisify<GetPrivacySettingsResponse>(
+  global.grpcClient.getPrivacySettings
+);
+
 export const getTag = promisify<GetTagResponse>(global.grpcClient.getTag);
+
 export const getProfile = promisify<GetProfileResponse>(
   global.grpcClient.getProfile
 );
+
 export const getToken = promisify<GetTokenResponse>(global.grpcClient.getToken);
+
 export const verifyEmail = promisify<VerifyEmailResponse>(
   global.grpcClient.verifyEmail
 );

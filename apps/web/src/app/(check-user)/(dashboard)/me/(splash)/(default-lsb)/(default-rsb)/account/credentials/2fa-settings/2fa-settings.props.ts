@@ -1,6 +1,6 @@
-import { GetUserCredentialsResponse } from "~/common/grpc";
+import { GetCredentialsResponse } from "~/common/grpc";
 
 export type TwoFactorAuthSettingsProps = Pick<
-  GetUserCredentialsResponse,
+  GetCredentialsResponse,
   "mfa_enabled" | "has_password"
 >;

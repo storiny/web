@@ -43,19 +43,19 @@ impl TokenType {
     /// (if the ProtoBuf definition does not change) and safe for programmatic use.
     pub fn as_str_name(&self) -> &'static str {
         match self {
-            TokenType::Unspecified => "UNSPECIFIED",
-            TokenType::EmailVerification => "EMAIL_VERIFICATION",
-            TokenType::PasswordReset => "PASSWORD_RESET",
-            TokenType::PasswordAdd => "PASSWORD_ADD",
+            TokenType::Unspecified => "TOKEN_TYPE_UNSPECIFIED",
+            TokenType::EmailVerification => "TOKEN_TYPE_EMAIL_VERIFICATION",
+            TokenType::PasswordReset => "TOKEN_TYPE_PASSWORD_RESET",
+            TokenType::PasswordAdd => "TOKEN_TYPE_PASSWORD_ADD",
         }
     }
     /// Creates an enum from field names used in the ProtoBuf definition.
     pub fn from_str_name(value: &str) -> ::core::option::Option<Self> {
         match value {
-            "UNSPECIFIED" => Some(Self::Unspecified),
-            "EMAIL_VERIFICATION" => Some(Self::EmailVerification),
-            "PASSWORD_RESET" => Some(Self::PasswordReset),
-            "PASSWORD_ADD" => Some(Self::PasswordAdd),
+            "TOKEN_TYPE_UNSPECIFIED" => Some(Self::Unspecified),
+            "TOKEN_TYPE_EMAIL_VERIFICATION" => Some(Self::EmailVerification),
+            "TOKEN_TYPE_PASSWORD_RESET" => Some(Self::PasswordReset),
+            "TOKEN_TYPE_PASSWORD_ADD" => Some(Self::PasswordAdd),
             _ => None,
         }
     }

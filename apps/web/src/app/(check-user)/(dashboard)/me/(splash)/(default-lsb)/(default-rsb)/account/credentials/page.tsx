@@ -3,7 +3,7 @@ import "server-only";
 import { redirect } from "next/navigation";
 import React from "react";
 
-import { getUserCredentials } from "~/common/grpc";
+import { getCredentials } from "~/common/grpc";
 import { handleException } from "~/common/grpc/utils";
 import { getUser } from "~/common/utils/getUser";
 
@@ -17,7 +17,7 @@ const Page = async (): Promise<React.ReactElement | undefined> => {
       redirect("/login");
     }
 
-    const credentialsResponse = await getUserCredentials({ id: userId });
+    const credentialsResponse = await getCredentials({ id: userId });
 
     return <CredentialsClient {...credentialsResponse} />;
   } catch (e) {

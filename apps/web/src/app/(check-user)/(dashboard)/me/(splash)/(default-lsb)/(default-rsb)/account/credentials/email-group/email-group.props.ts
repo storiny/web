@@ -1,3 +1,3 @@
-import { GetUserCredentialsResponse } from "~/common/grpc";
+import { GetCredentialsResponse } from "~/common/grpc";
 
-export type EmailGroupProps = Pick<GetUserCredentialsResponse, "has_password">;
+export type EmailGroupProps = Pick<GetCredentialsResponse, "has_password">;

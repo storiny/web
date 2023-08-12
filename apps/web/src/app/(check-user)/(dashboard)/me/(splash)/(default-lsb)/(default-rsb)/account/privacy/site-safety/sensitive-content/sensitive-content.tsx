@@ -1,0 +1,79 @@
+import { clsx } from "clsx";
+import React from "react";
+
+import { GetPrivacySettingsResponse } from "~/common/grpc";
+import Form, { SubmitHandler, useForm, zodResolver } from "~/components/Form";
+import FormSwitch from "~/components/FormSwitch";
+import Spacer from "~/components/Spacer";
+import { useToast } from "~/components/Toast";
+import Typography from "~/components/Typography";
+import { useSensitiveContentMutation } from "~/redux/features";
+
+import styles from "../site-safety.module.scss";
+import { SensitiveContentSchema, sensitiveContentSchema } from "./schema";
+
+type Props = {
+  onSubmit?: SubmitHandler<SensitiveContentSchema>;
+} & Pick<GetPrivacySettingsResponse, "allow_sensitive_media">;
+
+const SensitiveContent = ({
+  onSubmit,
+  allow_sensitive_media
+}: Props): React.ReactElement => {
+  const toast = useToast();
+  const form = useForm<SensitiveContentSchema>({
+    resolver: zodResolver(sensitiveContentSchema),
+    defaultValues: {
+      "sensitive-content": allow_sensitive_media
+    }
+  });
+  const [sensitiveContent, { isLoading }] = useSensitiveContentMutation();
+
+  const handleSubmit: SubmitHandler<SensitiveContentSchema> = (values) => {
+    if (onSubmit) {
+      onSubmit(values);
+    } else {
+      sensitiveContent(values)
+        .unwrap()
+        .then(() => toast("Sensitive media settings updated", "success"))
+        .catch((e) => {
+          toast(
+            e?.data?.error || "Could not change your sensitive media settings",
+            "error"
+          );
+        });
+    }
+  };
+
+  return (
+    <React.Fragment>
+      <Typography as={"h3"} level={"h6"}>
+        Sensitive content
+      </Typography>
+      <Spacer orientation={"vertical"} size={0.5} />
+      <Form<SensitiveContentSchema>
+        className={clsx("flex-col", styles.form)}
+        disabled={isLoading}
+        onSubmit={handleSubmit}
+        providerProps={form}
+      >
+        <FormSwitch
+          helperText={
+            <React.Fragment>
+              Allow images and other media containing suggestive nudity,
+              violence, or sensitive content to be displayed in stories without
+              a warning. This setting only affects the accounts on this browser.
+            </React.Fragment>
+          }
+          label={"Display potentially sensitive media"}
+          name={"sensitive-content"}
+          onCheckedChange={(): void => {
+            form.handleSubmit(handleSubmit)();
+          }}
+        />
+      </Form>
+    </React.Fragment>
+  );
+};
+
+export default SensitiveContent;

@@ -11,6 +11,7 @@ import CheckIcon from "~/icons/Check";
 import DashboardGroup from "../../../../dashboard-group";
 import styles from "./connected-accounts-group.module.scss";
 import { ConnectedAccountsGroupProps } from "./connected-accounts-group.props";
+import RemoveAccount from "./remove-account";
 
 // Icons
 
@@ -92,23 +93,35 @@ const AppleAccount = ({
 }: Pick<
   ConnectedAccountsGroupProps,
   "has_password" | "login_apple_id"
->): React.ReactElement => (
-  <Account
-    action={
-      <Button
-        autoSize
-        color={login_apple_id ? "ruby" : "inverted"}
-        disabled={Boolean(login_apple_id) && !has_password}
-        variant={"hollow"}
-      >
-        {login_apple_id ? "Disconnect" : "Connect"}
-      </Button>
-    }
-    connected={Boolean(login_apple_id)}
-    icon={<AppleIcon />}
-    label={"Apple"}
-  />
-);
+>): React.ReactElement => {
+  const [connected, setConnected] = React.useState<boolean>(
+    Boolean(login_apple_id)
+  );
+
+  return (
+    <Account
+      action={
+        connected ? (
+          <RemoveAccount
+            onRemove={(): void => setConnected(false)}
+            vendor={"Apple"}
+          />
+        ) : (
+          <Button
+            autoSize
+            disabled={Boolean(login_apple_id) && !has_password}
+            variant={"hollow"}
+          >
+            Connect
+          </Button>
+        )
+      }
+      connected={Boolean(login_apple_id)}
+      icon={<AppleIcon />}
+      label={"Apple"}
+    />
+  );
+};
 
 // Google account
 
@@ -118,23 +131,35 @@ const GoogleAccount = ({
 }: Pick<
   ConnectedAccountsGroupProps,
   "has_password" | "login_google_id"
->): React.ReactElement => (
-  <Account
-    action={
-      <Button
-        autoSize
-        color={login_google_id ? "ruby" : "inverted"}
-        disabled={Boolean(login_google_id) && !has_password}
-        variant={"hollow"}
-      >
-        {login_google_id ? "Disconnect" : "Connect"}
-      </Button>
-    }
-    connected={Boolean(login_google_id)}
-    icon={<GoogleIcon />}
-    label={"Google"}
-  />
-);
+>): React.ReactElement => {
+  const [connected, setConnected] = React.useState<boolean>(
+    Boolean(login_google_id)
+  );
+
+  return (
+    <Account
+      action={
+        connected ? (
+          <RemoveAccount
+            onRemove={(): void => setConnected(false)}
+            vendor={"Google"}
+          />
+        ) : (
+          <Button
+            autoSize
+            disabled={Boolean(login_google_id) && !has_password}
+            variant={"hollow"}
+          >
+            Connect
+          </Button>
+        )
+      }
+      connected={Boolean(login_google_id)}
+      icon={<GoogleIcon />}
+      label={"Google"}
+    />
+  );
+};
 
 const CredentialsConnectedAccountsGroup = (
   props: ConnectedAccountsGroupProps

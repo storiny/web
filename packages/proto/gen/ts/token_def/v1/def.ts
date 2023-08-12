@@ -16,16 +16,16 @@ export type TokenType = typeof TokenType[keyof typeof TokenType];
 export function tokenTypeFromJSON(object: any): TokenType {
   switch (object) {
     case 0:
-    case "UNSPECIFIED":
+    case "TOKEN_TYPE_UNSPECIFIED":
       return TokenType.UNSPECIFIED;
     case 1:
-    case "EMAIL_VERIFICATION":
+    case "TOKEN_TYPE_EMAIL_VERIFICATION":
       return TokenType.EMAIL_VERIFICATION;
     case 2:
-    case "PASSWORD_RESET":
+    case "TOKEN_TYPE_PASSWORD_RESET":
       return TokenType.PASSWORD_RESET;
     case 3:
-    case "PASSWORD_ADD":
+    case "TOKEN_TYPE_PASSWORD_ADD":
       return TokenType.PASSWORD_ADD;
     case -1:
     case "UNRECOGNIZED":
@@ -37,13 +37,13 @@ export function tokenTypeFromJSON(object: any): TokenType {
 export function tokenTypeToJSON(object: TokenType): string {
   switch (object) {
     case TokenType.UNSPECIFIED:
-      return "UNSPECIFIED";
+      return "TOKEN_TYPE_UNSPECIFIED";
     case TokenType.EMAIL_VERIFICATION:
-      return "EMAIL_VERIFICATION";
+      return "TOKEN_TYPE_EMAIL_VERIFICATION";
     case TokenType.PASSWORD_RESET:
-      return "PASSWORD_RESET";
+      return "TOKEN_TYPE_PASSWORD_RESET";
     case TokenType.PASSWORD_ADD:
-      return "PASSWORD_ADD";
+      return "TOKEN_TYPE_PASSWORD_ADD";
     case TokenType.UNRECOGNIZED:
     default:
       return "UNRECOGNIZED";

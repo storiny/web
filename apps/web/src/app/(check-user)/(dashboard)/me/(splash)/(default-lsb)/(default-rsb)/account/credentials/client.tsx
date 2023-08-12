@@ -2,7 +2,7 @@
 
 import React from "react";
 
-import { GetUserCredentialsResponse } from "~/common/grpc";
+import { GetCredentialsResponse } from "~/common/grpc";
 import Divider from "~/components/Divider";
 import Spacer from "~/components/Spacer";
 import Typography from "~/components/Typography";
@@ -15,7 +15,7 @@ import CredentialsConnectedAccountsGroup from "./connected-accounts-group";
 import CredentialsEmailGroup from "./email-group";
 import CredentialsPasswordSettings from "./password-settings";
 
-type Props = GetUserCredentialsResponse;
+type Props = GetCredentialsResponse;
 
 const CredentialsClient = (props: Props): React.ReactElement => {
   const { mfa_enabled, login_google_id, login_apple_id, has_password } = props;

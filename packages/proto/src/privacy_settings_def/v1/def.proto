@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+package privacy_settings_def.v1;
+
+enum IncomingFriendRequest {
+  INCOMING_FRIEND_REQUEST_UNSPECIFIED = 0;
+  INCOMING_FRIEND_REQUEST_EVERYONE = 1;
+  INCOMING_FRIEND_REQUEST_FOLLOWING = 2;
+  INCOMING_FRIEND_REQUEST_FOF = 3;
+  INCOMING_FRIEND_REQUEST_NONE = 4;
+}
+
+enum RelationVisibility {
+  RELATION_VISIBILITY_UNSPECIFIED = 0;
+  RELATION_VISIBILITY_EVERYONE = 1;
+  RELATION_VISIBILITY_FRIENDS = 2;
+  RELATION_VISIBILITY_NONE = 3;
+}
+
+message GetPrivacySettingsRequest {
+  string id = 1;
+}
+
+message GetPrivacySettingsResponse {
+  bool is_private_account = 1;
+  bool record_read_history = 2;
+  bool allow_sensitive_media = 3;
+  IncomingFriendRequest incoming_friend_requests = 4;
+  RelationVisibility following_list_visibility = 5;
+  RelationVisibility friends_list_visibility = 6;
+}
