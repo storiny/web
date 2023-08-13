@@ -59,6 +59,12 @@ export interface LinkProps extends LinkPrimitive {
    */
   scale?: LinkScale;
   /**
+   * The props passed to the individual component elements.
+   */
+  slotProps?: {
+    ellipsisCell?: React.ComponentPropsWithoutRef<"span">;
+  };
+  /**
    * Controls when the link should have an underline.
    * @default 'hover'
    */

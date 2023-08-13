@@ -9,7 +9,7 @@ import CheckIcon from "~/icons/Check";
 import {
   syncWithNotification,
   toggleReadNotification,
-  useNotificationSettingsMutation
+  useUnsubscribeNotificationMutation
 } from "~/redux/features";
 import { useAppDispatch } from "~/redux/hooks";
 import { breakpoints } from "~/theme/breakpoints";
@@ -24,14 +24,14 @@ const Actions = ({
   const dispatch = useAppDispatch();
   const isMobile = useMediaQuery(breakpoints.down("mobile"));
   const [unsubscribe, { isLoading, isError, isSuccess }] =
-    useNotificationSettingsMutation();
+    useUnsubscribeNotificationMutation();
 
   React.useEffect(() => {
     dispatch(syncWithNotification(notification));
   }, [dispatch, notification]);
 
   const unsubscribeImpl = (): void => {
-    unsubscribe({ value: false, id: notification.id, type: notification.type });
+    unsubscribe({ id: notification.id, type: notification.type });
   };
 
   if (isMobile) {

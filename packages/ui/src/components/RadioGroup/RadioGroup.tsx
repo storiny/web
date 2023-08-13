@@ -13,6 +13,7 @@ import { RadioGroupContext } from "./RadioGroupContext";
 const RadioGroup = forwardRef<RadioGroupProps, "div">((props, ref) => {
   const {
     as: Component = "div",
+    autoSize,
     size,
     color,
     children,
@@ -21,7 +22,7 @@ const RadioGroup = forwardRef<RadioGroupProps, "div">((props, ref) => {
   } = props;
 
   return (
-    <RadioGroupContext.Provider value={{ size, color }}>
+    <RadioGroupContext.Provider value={{ size, color, autoSize }}>
       <Root
         {...rest}
         asChild

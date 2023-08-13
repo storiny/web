@@ -14,11 +14,11 @@ import UnlinkIcon from "~/icons/Unlink";
 import { useRemoveAccountMutation } from "~/redux/features";
 import { breakpoints } from "~/theme/breakpoints";
 
-import { RemoveAccountSchema, removeAccountSchema } from "./schema";
-
-interface Props {
-  onSubmit?: SubmitHandler<RemoveAccountSchema>;
-}
+import { RemoveAccountProps } from "./remove-account.props";
+import {
+  RemoveAccountSchema,
+  removeAccountSchema
+} from "./remove-account.schema";
 
 const RemoveAccountModal = (): React.ReactElement => (
   <React.Fragment>
@@ -52,10 +52,7 @@ const RemoveAccount = ({
   onSubmit,
   vendor,
   onRemove
-}: Props & {
-  onRemove: () => void;
-  vendor: "Apple" | "Google";
-}): React.ReactElement => {
+}: RemoveAccountProps): React.ReactElement => {
   const toast = useToast();
   const isSmallerThanMobile = useMediaQuery(breakpoints.down("mobile"));
   const [updated, setUpdated] = React.useState<boolean>(false);

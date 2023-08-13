@@ -13,16 +13,13 @@ import TwoFAIcon from "~/icons/TwoFA";
 import { useRemoveMfaMutation } from "~/redux/features";
 import { breakpoints } from "~/theme/breakpoints";
 
+import { Remove2FAProps } from "./remove-2fa.props";
 import {
   RECOVERY_CODE_MAX_LENGTH,
   RECOVERY_CODE_MIN_LENGTH,
   Remove2FASchema,
   remove2faSchema
-} from "./schema";
-
-interface Props {
-  onSubmit?: SubmitHandler<Remove2FASchema>;
-}
+} from "./remove-2fa.schema";
 
 const Remove2FAModal = (): React.ReactElement => (
   <React.Fragment>
@@ -58,9 +55,7 @@ const Remove2FAModal = (): React.ReactElement => (
 const Remove2FA = ({
   onSubmit,
   setEnabled
-}: Props & {
-  setEnabled: React.Dispatch<React.SetStateAction<boolean>>;
-}): React.ReactElement => {
+}: Remove2FAProps): React.ReactElement => {
   const toast = useToast();
   const isSmallerThanMobile = useMediaQuery(breakpoints.down("mobile"));
   const form = useForm<Remove2FASchema>({

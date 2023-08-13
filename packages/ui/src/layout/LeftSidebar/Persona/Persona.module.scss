@@ -67,6 +67,21 @@
 
 /* Meta text */
 .text {
+  //font-weight: var(--font-weight-bold);
+  color: var(--fg-major) !important; // Force links to be darker
+
+  //&:last-child {
+  //  align-items: center;
+  //}
+  //
+  //& > span {
+  //  font-weight: var(--font-weight-medium);
+  //}
+}
+
+
+/* Follower count */
+.follower-count {
   font-weight: var(--font-weight-bold);
   color: var(--fg-major) !important; // Force links to be darker
 

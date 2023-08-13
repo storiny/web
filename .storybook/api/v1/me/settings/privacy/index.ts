@@ -1,3 +1,9 @@
 import "./private-account";
 import "./read-history";
 import "./sensitive-content";
+import "./incoming-friend-requests";
+import "./friend-list";
+import "./following-list";
+import "./export-data";
+import "./delete-account";
+import "./disable-account";

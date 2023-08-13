@@ -1,14 +1,12 @@
 import { ContentType } from "@storiny/shared";
+import { UpdatePasswordSchema } from "@storiny/web/src/app/(check-user)/(dashboard)/me/(splash)/(default-lsb)/(default-rsb)/account/credentials/password-settings/update-password";
 
 import { apiSlice } from "~/redux/features/api/slice";
 
 const SEGMENT = "me/settings/password/update";
 
 export interface UpdatePasswordResponse {}
-export interface UpdatePasswordPayload {
-  "current-password": string;
-  "new-password": string;
-}
+export type UpdatePasswordPayload = UpdatePasswordSchema;
 
 export const { useUpdatePasswordMutation } = apiSlice.injectEndpoints({
   endpoints: (builder) => ({

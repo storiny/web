@@ -1,3 +1,11 @@
-import { GetCredentialsResponse } from "~/common/grpc";
+import { GetCredentialSettingsResponse } from "~/common/grpc";
+import { SubmitHandler } from "~/components/Form";
 
-export type EmailGroupProps = Pick<GetCredentialsResponse, "has_password">;
+import { EmailSettingsSchema } from "./email-group.schema";
+
+export type EmailGroupProps = Pick<
+  GetCredentialSettingsResponse,
+  "has_password"
+> & {
+  onSubmit?: SubmitHandler<EmailSettingsSchema>;
+};

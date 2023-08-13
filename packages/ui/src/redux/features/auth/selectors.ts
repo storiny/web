@@ -6,6 +6,8 @@ import { AppState } from "~/redux/store";
 // Predicate
 
 export const selectLoggedIn = (state: AppState): boolean => state.auth.loggedIn;
+export const selectIsPrivateAccount = (state: AppState): boolean =>
+  Boolean(state.auth.user?.is_private);
 
 // Misc
 

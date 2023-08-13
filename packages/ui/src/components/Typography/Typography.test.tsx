@@ -23,6 +23,13 @@ describe("<Typography />", () => {
     expect(container.firstChild).toMatchSnapshot();
   });
 
+  it("matches snapshot with `ellipsis` set to `true`", () => {
+    const { container } = renderTestWithProvider(
+      <Typography ellipsis>Test</Typography>
+    );
+    expect(container.firstChild).toMatchSnapshot();
+  });
+
   it("does not have any accessibility violations", async () => {
     const { container } = renderTestWithProvider(<Typography>Test</Typography>);
     await waitFor(async () =>
@@ -245,7 +252,6 @@ describe("<Typography />", () => {
   it("passes props to the element slots", () => {
     const { getByTestId } = renderTestWithProvider(
       <Typography
-        data-testid={"typography"}
         level={"mention"}
         slotProps={
           {
@@ -260,5 +266,24 @@ describe("<Typography />", () => {
     );
 
     expect(getByTestId("link")).toBeInTheDocument();
+  });
+
+  it("passes props to the ellipsis slot", () => {
+    const { getByTestId } = renderTestWithProvider(
+      <Typography
+        ellipsis
+        slotProps={
+          {
+            ellipsisCell: {
+              "data-testid": "ellipsis-cell"
+            }
+          } as TypographyProps["slotProps"]
+        }
+      >
+        test
+      </Typography>
+    );
+
+    expect(getByTestId("ellipsis-cell")).toBeInTheDocument();
   });
 });

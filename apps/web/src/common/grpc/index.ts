@@ -2,7 +2,9 @@ import "server-only";
 
 import { credentials, ServiceError } from "@grpc/grpc-js";
 import { ApiServiceClient } from "@storiny/proto/gen/ts/api_service/v1/service";
-import { GetCredentialsResponse } from "@storiny/proto/gen/ts/credentials_def/v1/def";
+import { GetConnectionSettingsResponse } from "@storiny/proto/gen/ts/connection_settings_def/v1/def";
+import { GetCredentialSettingsResponse } from "@storiny/proto/gen/ts/credential_settings_def/v1/def";
+import { GetNotificationSettingsResponse } from "@storiny/proto/gen/ts/notification_settings_def/v1/def";
 import { GetPrivacySettingsResponse } from "@storiny/proto/gen/ts/privacy_settings_def/v1/def";
 import { GetProfileResponse } from "@storiny/proto/gen/ts/profile_def/v1/def";
 import { GetTagResponse } from "@storiny/proto/gen/ts/tag_def/v1/def";
@@ -42,7 +44,9 @@ const promisify =
     });
 
 export {
-  GetCredentialsResponse,
+  GetConnectionSettingsResponse,
+  GetCredentialSettingsResponse,
+  GetNotificationSettingsResponse,
   GetPrivacySettingsResponse,
   GetProfileResponse,
   GetTagResponse,
@@ -55,12 +59,21 @@ export const getUserId = promisify<GetUserIdResponse>(
   global.grpcClient.getUserId
 );
 
-export const getCredentials = promisify<GetCredentialsResponse>(
-  global.grpcClient.getCredentials
+export const getCredentialSettings = promisify<GetCredentialSettingsResponse>(
+  global.grpcClient.getCredentialSettings
 );
 
 export const getPrivacySettings = promisify<GetPrivacySettingsResponse>(
   global.grpcClient.getPrivacySettings
+);
+
+export const getNotificationSettings =
+  promisify<GetNotificationSettingsResponse>(
+    global.grpcClient.getNotificationSettings
+  );
+
+export const getConnectionSettings = promisify<GetConnectionSettingsResponse>(
+  global.grpcClient.getConnectionSettings
 );
 
 export const getTag = promisify<GetTagResponse>(global.grpcClient.getTag);

@@ -17,11 +17,11 @@ import { mutateUser, useUsernameSettingsMutation } from "~/redux/features";
 import { useAppDispatch } from "~/redux/hooks";
 import { breakpoints } from "~/theme/breakpoints";
 
-import { UsernameSettingsSchema, usernameSettingsSchema } from "./schema";
-
-interface Props {
-  onSubmit?: SubmitHandler<UsernameSettingsSchema>;
-}
+import { UsernameSettingsProps } from "./username-settings.props";
+import {
+  UsernameSettingsSchema,
+  usernameSettingsSchema
+} from "./username-settings.schema";
 
 const UsernameSettingsModal = (): React.ReactElement => (
   <React.Fragment>
@@ -66,7 +66,9 @@ const UsernameSettingsModal = (): React.ReactElement => (
   </React.Fragment>
 );
 
-const UsernameSettings = ({ onSubmit }: Props): React.ReactElement => {
+const UsernameSettings = ({
+  onSubmit
+}: UsernameSettingsProps): React.ReactElement => {
   const dispatch = useAppDispatch();
   const toast = useToast();
   const isSmallerThanMobile = useMediaQuery(breakpoints.down("mobile"));

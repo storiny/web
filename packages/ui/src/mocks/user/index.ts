@@ -130,7 +130,7 @@ export const mockUsers: User[] = [
     follower_count: 0,
     following_count: 0,
     story_count: 0,
-    is_private: true,
+    is_private: false,
     public_flags: 0,
     bio: "",
     email: "brennan.austin@example.com",

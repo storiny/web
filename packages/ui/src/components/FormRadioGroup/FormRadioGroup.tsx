@@ -48,13 +48,17 @@ const FormRadioGroup = React.forwardRef<
           ref={ref}
           required={required}
         >
-          <FormLabel {...formSlotProps?.label}>{label}</FormLabel>
+          {label && <FormLabel {...formSlotProps?.label}>{label}</FormLabel>}
           <FormControl {...formSlotProps?.control}>
             <RadioGroup
               {...rest}
               color={invalid || error ? "ruby" : rest?.color}
               defaultValue={field.value}
-              onValueChange={field.onChange}
+              disabled={disabled}
+              onValueChange={(value): void => {
+                field.onChange(value);
+                rest?.onValueChange?.(value);
+              }}
             >
               {children}
             </RadioGroup>

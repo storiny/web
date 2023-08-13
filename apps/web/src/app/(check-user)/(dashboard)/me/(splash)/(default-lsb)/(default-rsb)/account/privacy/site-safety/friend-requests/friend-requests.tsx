@@ -1,44 +1,46 @@
-import { RelationVisibility } from "@storiny/shared";
+import { IncomingFriendRequest } from "@storiny/shared";
 import { clsx } from "clsx";
 import React from "react";
 
-import { GetPrivacySettingsResponse } from "~/common/grpc";
 import Form, { SubmitHandler, useForm, zodResolver } from "~/components/Form";
 import FormRadio from "~/components/FormRadio";
 import FormRadioGroup from "~/components/FormRadioGroup";
 import Spacer from "~/components/Spacer";
 import { useToast } from "~/components/Toast";
 import Typography from "~/components/Typography";
-import { useSensitiveContentMutation } from "~/redux/features";
+import { useIncomingFriendRequestsMutation } from "~/redux/features";
 
 import styles from "../site-safety.module.scss";
-import { FriendRequestsSchema, friendRequestsSchema } from "./schema";
-
-type Props = {
-  onSubmit?: SubmitHandler<FriendRequestsSchema>;
-} & Pick<GetPrivacySettingsResponse, "friends_list_visibility">;
+import { FriendRequestsProps } from "./friend-requests.props";
+import {
+  FriendRequestsSchema,
+  friendRequestsSchema
+} from "./friend-requests.schema";
 
 const FriendRequests = ({
   onSubmit,
-  friends_list_visibility
-}: Props): React.ReactElement => {
+  incoming_friend_requests
+}: FriendRequestsProps): React.ReactElement => {
   const toast = useToast();
+  const prevValuesRef = React.useRef<FriendRequestsSchema>();
   const form = useForm<FriendRequestsSchema>({
     resolver: zodResolver(friendRequestsSchema),
     defaultValues: {
-      "friend-requests": String(friends_list_visibility) as any
+      "friend-requests": `${incoming_friend_requests}` as `${1 | 2 | 3 | 4}`
     }
   });
-  const [sensitiveContent, { isLoading }] = useSensitiveContentMutation();
+  const [incomingFriendRequests, { isLoading }] =
+    useIncomingFriendRequestsMutation();
 
   const handleSubmit: SubmitHandler<FriendRequestsSchema> = (values) => {
     if (onSubmit) {
       onSubmit(values);
     } else {
-      sensitiveContent(values)
+      incomingFriendRequests(values)
         .unwrap()
-        .then(() => toast("Friend request settings updated", "success"))
+        .then(() => (prevValuesRef.current = values))
         .catch((e) => {
+          form.reset(prevValuesRef.current);
           toast(
             e?.data?.error || "Could not change your friend request settings",
             "error"
@@ -56,31 +58,40 @@ const FriendRequests = ({
       <Typography className={"t-minor"} level={"body2"}>
         Choose who can send you a friend request.
       </Typography>
-      <Spacer orientation={"vertical"} size={0.5} />
+      <Spacer orientation={"vertical"} />
       <Form<FriendRequestsSchema>
-        className={clsx("flex-col", styles.form)}
+        className={clsx("flex-col", styles.x, styles.form)}
         disabled={isLoading}
         onSubmit={handleSubmit}
         providerProps={form}
       >
         <FormRadioGroup
-          helperText={
-            <React.Fragment>
-              Allow images and other media containing suggestive nudity,
-              violence, or sensitive content to be displayed in stories without
-              a warning. This setting only affects the accounts on this browser.
-            </React.Fragment>
-          }
-          label={"Friend requests"}
+          autoSize
+          className={clsx(styles.x, styles["radio-group"])}
           name={"friend-requests"}
-          // onCheckedChange={(): void => {
-          //   form.handleSubmit(handleSubmit)();
-          // }}
+          onValueChange={(): void => {
+            form.handleSubmit(handleSubmit)();
+          }}
         >
           <FormRadio
             aria-label={"Everyone"}
             label={"Everyone"}
-            value={`${RelationVisibility.EVERYONE}`}
+            value={`${IncomingFriendRequest.EVERYONE}`}
+          />
+          <FormRadio
+            aria-label={"Users I follow"}
+            label={"Users I follow"}
+            value={`${IncomingFriendRequest.FOLLOWING}`}
+          />
+          <FormRadio
+            aria-label={"Friends of friends"}
+            label={"Friends of friends"}
+            value={`${IncomingFriendRequest.FOF}`}
+          />
+          <FormRadio
+            aria-label={"No one"}
+            label={"No one"}
+            value={`${IncomingFriendRequest.NONE}`}
           />
         </FormRadioGroup>
       </Form>

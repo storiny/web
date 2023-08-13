@@ -19,7 +19,7 @@ pub struct GetPrivacySettingsResponse {
     #[prost(enumeration="RelationVisibility", tag="5")]
     pub following_list_visibility: i32,
     #[prost(enumeration="RelationVisibility", tag="6")]
-    pub friends_list_visibility: i32,
+    pub friend_list_visibility: i32,
 }
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
 #[repr(i32)]

@@ -8,7 +8,6 @@ import Spacer from "~/components/Spacer";
 import { useToast } from "~/components/Toast";
 import Typography from "~/components/Typography";
 import Gallery from "~/entities/Gallery";
-import { useMediaQuery } from "~/hooks/useMediaQuery";
 import PencilIcon from "~/icons/Pencil";
 import TrashIcon from "~/icons/Trash";
 import {
@@ -17,7 +16,6 @@ import {
   useAvatarSettingsMutation
 } from "~/redux/features";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
-import { breakpoints } from "~/theme/breakpoints";
 
 import styles from "./avatar-settings.module.scss";
 

@@ -115,6 +115,15 @@ export interface Connection {
   url: string;
 }
 
+export interface ConnectionSetting {
+  id: string;
+  provider: Provider;
+  hidden: boolean;
+  display_name: string;
+  url: string;
+  created_at: string;
+}
+
 function createBaseConnection(): Connection {
   return { provider: 0, url: "" };
 }
@@ -185,6 +194,140 @@ export const Connection = {
     const message = createBaseConnection();
     message.provider = object.provider ?? 0;
     message.url = object.url ?? "";
+    return message;
+  },
+};
+
+function createBaseConnectionSetting(): ConnectionSetting {
+  return { id: "", provider: 0, hidden: false, display_name: "", url: "", created_at: "" };
+}
+
+export const ConnectionSetting = {
+  encode(message: ConnectionSetting, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.id !== "") {
+      writer.uint32(10).string(message.id);
+    }
+    if (message.provider !== 0) {
+      writer.uint32(16).int32(message.provider);
+    }
+    if (message.hidden === true) {
+      writer.uint32(24).bool(message.hidden);
+    }
+    if (message.display_name !== "") {
+      writer.uint32(34).string(message.display_name);
+    }
+    if (message.url !== "") {
+      writer.uint32(42).string(message.url);
+    }
+    if (message.created_at !== "") {
+      writer.uint32(50).string(message.created_at);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): ConnectionSetting {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseConnectionSetting();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.id = reader.string();
+          continue;
+        case 2:
+          if (tag !== 16) {
+            break;
+          }
+
+          message.provider = reader.int32() as any;
+          continue;
+        case 3:
+          if (tag !== 24) {
+            break;
+          }
+
+          message.hidden = reader.bool();
+          continue;
+        case 4:
+          if (tag !== 34) {
+            break;
+          }
+
+          message.display_name = reader.string();
+          continue;
+        case 5:
+          if (tag !== 42) {
+            break;
+          }
+
+          message.url = reader.string();
+          continue;
+        case 6:
+          if (tag !== 50) {
+            break;
+          }
+
+          message.created_at = reader.string();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): ConnectionSetting {
+    return {
+      id: isSet(object.id) ? String(object.id) : "",
+      provider: isSet(object.provider) ? providerFromJSON(object.provider) : 0,
+      hidden: isSet(object.hidden) ? Boolean(object.hidden) : false,
+      display_name: isSet(object.display_name) ? String(object.display_name) : "",
+      url: isSet(object.url) ? String(object.url) : "",
+      created_at: isSet(object.created_at) ? String(object.created_at) : "",
+    };
+  },
+
+  toJSON(message: ConnectionSetting): unknown {
+    const obj: any = {};
+    if (message.id !== "") {
+      obj.id = message.id;
+    }
+    if (message.provider !== 0) {
+      obj.provider = providerToJSON(message.provider);
+    }
+    if (message.hidden === true) {
+      obj.hidden = message.hidden;
+    }
+    if (message.display_name !== "") {
+      obj.display_name = message.display_name;
+    }
+    if (message.url !== "") {
+      obj.url = message.url;
+    }
+    if (message.created_at !== "") {
+      obj.created_at = message.created_at;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<ConnectionSetting>, I>>(base?: I): ConnectionSetting {
+    return ConnectionSetting.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<ConnectionSetting>, I>>(object: I): ConnectionSetting {
+    const message = createBaseConnectionSetting();
+    message.id = object.id ?? "";
+    message.provider = object.provider ?? 0;
+    message.hidden = object.hidden ?? false;
+    message.display_name = object.display_name ?? "";
+    message.url = object.url ?? "";
+    message.created_at = object.created_at ?? "";
     return message;
   },
 };

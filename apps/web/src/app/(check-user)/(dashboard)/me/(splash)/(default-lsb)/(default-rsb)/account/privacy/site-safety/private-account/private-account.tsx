@@ -1,7 +1,7 @@
 import { clsx } from "clsx";
+import { useRouter } from "next/navigation";
 import React from "react";
 
-import { GetPrivacySettingsResponse } from "~/common/grpc";
 import { useConfirmation } from "~/components/Confirmation";
 import Form, { SubmitHandler, useForm, zodResolver } from "~/components/Form";
 import FormSwitch from "~/components/FormSwitch";
@@ -11,22 +11,21 @@ import { useToast } from "~/components/Toast";
 import Typography from "~/components/Typography";
 import LockIcon from "~/icons/Lock";
 import LockOpenIcon from "~/icons/LockOpen";
-import { mutateUser, usePrivateAccountMutation } from "~/redux/features";
-import { useAppDispatch } from "~/redux/hooks";
+import { usePrivateAccountMutation } from "~/redux/features";
 
 import styles from "../site-safety.module.scss";
-import { PrivateAccountSchema, privateAccountSchema } from "./schema";
-
-type Props = {
-  onSubmit?: SubmitHandler<PrivateAccountSchema>;
-} & Pick<GetPrivacySettingsResponse, "is_private_account">;
+import { PrivateAccountProps } from "./private-account.props";
+import {
+  PrivateAccountSchema,
+  privateAccountSchema
+} from "./private-account.schema";
 
 const PrivateAccount = ({
   onSubmit,
   is_private_account
-}: Props): React.ReactElement => {
+}: PrivateAccountProps): React.ReactElement => {
   const toast = useToast();
-  const dispatch = useAppDispatch();
+  const router = useRouter();
   const form = useForm<PrivateAccountSchema>({
     resolver: zodResolver(privateAccountSchema),
     defaultValues: {
@@ -52,15 +51,9 @@ const PrivateAccount = ({
       "private-account": value
     })
       .unwrap()
-      .then(() => {
-        toast(`Account set to ${value ? "private" : "public"}`, "success");
-        dispatch(
-          mutateUser({
-            is_private: value
-          })
-        );
-      })
+      .then(() => router.refresh())
       .catch((e) => {
+        form.reset();
         toast(e?.data?.error || "Could not change your account type", "error");
       });
   };
@@ -117,7 +110,7 @@ const PrivateAccount = ({
       </Typography>
       <Spacer orientation={"vertical"} size={0.5} />
       <Form<PrivateAccountSchema>
-        className={clsx("flex-col", styles.form)}
+        className={clsx("flex-col", styles.x, styles.form)}
         disabled={isLoading}
         onSubmit={handleSubmit}
         providerProps={form}

@@ -19,7 +19,7 @@ const meta: Meta<typeof AccountPrivacyPage> = {
     is_private_account: false,
     allow_sensitive_media: true,
     following_list_visibility: RelationVisibility.EVERYONE,
-    friends_list_visibility: RelationVisibility.EVERYONE,
+    friend_list_visibility: RelationVisibility.EVERYONE,
     incoming_friend_requests: IncomingFriendRequest.EVERYONE,
     record_read_history: true
   },

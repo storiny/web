@@ -2,7 +2,6 @@
 
 import React from "react";
 
-import { GetCredentialsResponse } from "~/common/grpc";
 import Divider from "~/components/Divider";
 import Spacer from "~/components/Spacer";
 import Typography from "~/components/Typography";
@@ -12,12 +11,11 @@ import DashboardTitle from "../../../dashboard-title";
 import DashboardWrapper from "../../../dashboard-wrapper";
 import CredentialsTwoFactorAuthSettings from "./2fa-settings";
 import CredentialsConnectedAccountsGroup from "./connected-accounts-group";
+import { CredentialsProps } from "./credentials.props";
 import CredentialsEmailGroup from "./email-group";
 import CredentialsPasswordSettings from "./password-settings";
 
-type Props = GetCredentialsResponse;
-
-const CredentialsClient = (props: Props): React.ReactElement => {
+const CredentialsClient = (props: CredentialsProps): React.ReactElement => {
   const { mfa_enabled, login_google_id, login_apple_id, has_password } = props;
   return (
     <React.Fragment>

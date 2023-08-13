@@ -1,6 +1,7 @@
 export * from "./accounts";
 export * from "./avatar";
 export * from "./banner";
+export * from "./connections";
 export * from "./email";
 export * from "./mfa";
 export * from "./notifications";

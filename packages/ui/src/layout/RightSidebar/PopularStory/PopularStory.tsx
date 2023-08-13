@@ -45,7 +45,7 @@ const PopularStory = (props: PopularStoryProps): React.ReactElement => {
               className={"t-muted"}
               level={"body2"}
             >
-              &#x2022;
+              &bull;
             </Typography>
             <Typography
               as={"span"}

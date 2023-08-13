@@ -8,3 +8,4 @@ import "./password";
 import "./mfa";
 import "./accounts";
 import "./privacy";
+import "./connections";

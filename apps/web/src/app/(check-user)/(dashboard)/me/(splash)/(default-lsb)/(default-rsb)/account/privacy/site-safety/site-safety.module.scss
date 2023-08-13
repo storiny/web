@@ -1,4 +1,11 @@
-/* Form */
-.form {
-  padding: 12px 16px;
+.x {
+  /* Form */
+  &.form {
+    padding: 12px 16px;
+  }
+
+  /* Radio group */
+  &.radio-group {
+    gap: 16px;
+  }
 }

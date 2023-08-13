@@ -23,3 +23,12 @@ message Connection {
   Provider provider = 1;
   string url = 2;
 }
+
+message ConnectionSetting {
+  string id = 1;
+  Provider provider = 2;
+  bool hidden = 3;
+  string display_name = 4;
+  string url = 5;
+  string created_at = 6;
+}

@@ -107,7 +107,7 @@ export interface GetPrivacySettingsResponse {
   allow_sensitive_media: boolean;
   incoming_friend_requests: IncomingFriendRequest;
   following_list_visibility: RelationVisibility;
-  friends_list_visibility: RelationVisibility;
+  friend_list_visibility: RelationVisibility;
 }
 
 function createBaseGetPrivacySettingsRequest(): GetPrivacySettingsRequest {
@@ -174,7 +174,7 @@ function createBaseGetPrivacySettingsResponse(): GetPrivacySettingsResponse {
     allow_sensitive_media: false,
     incoming_friend_requests: 0,
     following_list_visibility: 0,
-    friends_list_visibility: 0,
+    friend_list_visibility: 0,
   };
 }
 
@@ -195,8 +195,8 @@ export const GetPrivacySettingsResponse = {
     if (message.following_list_visibility !== 0) {
       writer.uint32(40).int32(message.following_list_visibility);
     }
-    if (message.friends_list_visibility !== 0) {
-      writer.uint32(48).int32(message.friends_list_visibility);
+    if (message.friend_list_visibility !== 0) {
+      writer.uint32(48).int32(message.friend_list_visibility);
     }
     return writer;
   },
@@ -248,7 +248,7 @@ export const GetPrivacySettingsResponse = {
             break;
           }
 
-          message.friends_list_visibility = reader.int32() as any;
+          message.friend_list_visibility = reader.int32() as any;
           continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
@@ -270,8 +270,8 @@ export const GetPrivacySettingsResponse = {
       following_list_visibility: isSet(object.following_list_visibility)
         ? relationVisibilityFromJSON(object.following_list_visibility)
         : 0,
-      friends_list_visibility: isSet(object.friends_list_visibility)
-        ? relationVisibilityFromJSON(object.friends_list_visibility)
+      friend_list_visibility: isSet(object.friend_list_visibility)
+        ? relationVisibilityFromJSON(object.friend_list_visibility)
         : 0,
     };
   },
@@ -293,8 +293,8 @@ export const GetPrivacySettingsResponse = {
     if (message.following_list_visibility !== 0) {
       obj.following_list_visibility = relationVisibilityToJSON(message.following_list_visibility);
     }
-    if (message.friends_list_visibility !== 0) {
-      obj.friends_list_visibility = relationVisibilityToJSON(message.friends_list_visibility);
+    if (message.friend_list_visibility !== 0) {
+      obj.friend_list_visibility = relationVisibilityToJSON(message.friend_list_visibility);
     }
     return obj;
   },
@@ -309,7 +309,7 @@ export const GetPrivacySettingsResponse = {
     message.allow_sensitive_media = object.allow_sensitive_media ?? false;
     message.incoming_friend_requests = object.incoming_friend_requests ?? 0;
     message.following_list_visibility = object.following_list_visibility ?? 0;
-    message.friends_list_visibility = object.friends_list_visibility ?? 0;
+    message.friend_list_visibility = object.friend_list_visibility ?? 0;
     return message;
   },
 };

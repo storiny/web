@@ -15,11 +15,11 @@ import PasswordIcon from "~/icons/Password";
 import { useUpdatePasswordMutation } from "~/redux/features";
 import { breakpoints } from "~/theme/breakpoints";
 
-import { UpdatePasswordSchema, updatePasswordSchema } from "./schema";
-
-interface Props {
-  onSubmit?: SubmitHandler<UpdatePasswordSchema>;
-}
+import { UpdatePasswordProps } from "./update-password.props";
+import {
+  UpdatePasswordSchema,
+  updatePasswordSchema
+} from "./update-password.schema";
 
 const UpdatePasswordModal = ({
   updated
@@ -71,7 +71,9 @@ const UpdatePasswordModal = ({
   </React.Fragment>
 );
 
-const UpdatePassword = ({ onSubmit }: Props): React.ReactElement => {
+const UpdatePassword = ({
+  onSubmit
+}: UpdatePasswordProps): React.ReactElement => {
   const router = useRouter();
   const toast = useToast();
   const isSmallerThanMobile = useMediaQuery(breakpoints.down("mobile"));

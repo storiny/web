@@ -20,11 +20,12 @@ import { useRequestMfaMutation, useVerfyMfaMutation } from "~/redux/features";
 import { breakpoints } from "~/theme/breakpoints";
 
 import styles from "./enable-2fa.module.scss";
-import { Enable2FASchema, enable2faSchema, MFA_CODE_LENGTH } from "./schema";
-
-interface Props {
-  onSubmit?: SubmitHandler<Enable2FASchema>;
-}
+import { Enable2FAProps } from "./enable-2fa.props";
+import {
+  Enable2FASchema,
+  enable2faSchema,
+  MFA_CODE_LENGTH
+} from "./enable-2fa.schema";
 
 const testingEnv = isTestEnv();
 
@@ -137,10 +138,7 @@ const Enable2FA = ({
   onSubmit,
   has_password,
   setEnabled
-}: Props & {
-  has_password: boolean;
-  setEnabled: React.Dispatch<React.SetStateAction<boolean>>;
-}): React.ReactElement => {
+}: Enable2FAProps): React.ReactElement => {
   const toast = useToast();
   const isSmallerThanMobile = useMediaQuery(breakpoints.down("mobile"));
   const form = useForm<Enable2FASchema>({

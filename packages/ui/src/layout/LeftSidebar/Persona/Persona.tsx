@@ -98,21 +98,26 @@ const LeftSidebarPersona = (): React.ReactElement => {
           </>
         ) : (
           <>
-            <Link
-              className={clsx("flex-col", "ellipsis", styles.text)}
-              href={"/profile"}
-              level={"body1"}
-            >
-              {user?.name}
-              <Typography
-                as={"span"}
-                className={clsx("t-minor", "ellipsis")}
+            <div className={"flex-col"}>
+              <Link
+                className={clsx("t-bold")}
+                ellipsis
+                fixedColor
+                href={"/profile"}
+                level={"body1"}
+              >
+                {user?.name}
+              </Link>
+              <Link
+                className={clsx("t-minor", "t-medium")}
+                ellipsis
+                href={"/profile"}
                 level={"body2"}
               >
                 @{user?.username}
-              </Typography>
-            </Link>
-            <Typography className={clsx("flex-col", styles.text)}>
+              </Link>
+            </div>
+            <Typography className={clsx("flex-col", styles["follower-count"])}>
               {abbreviateNumber(user?.follower_count || 0)}
               <Typography className={clsx("t-minor")} level={"body2"}>
                 followers

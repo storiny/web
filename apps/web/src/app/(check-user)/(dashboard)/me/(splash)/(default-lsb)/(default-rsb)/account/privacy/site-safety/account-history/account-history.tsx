@@ -1,7 +1,6 @@
 import { clsx } from "clsx";
 import React from "react";
 
-import { GetPrivacySettingsResponse } from "~/common/grpc";
 import Form, { SubmitHandler, useForm, zodResolver } from "~/components/Form";
 import FormSwitch from "~/components/FormSwitch";
 import Spacer from "~/components/Spacer";
@@ -10,17 +9,18 @@ import Typography from "~/components/Typography";
 import { useReadHistoryMutation } from "~/redux/features";
 
 import styles from "../site-safety.module.scss";
-import { AccountHistorySchema, accountHistorySchema } from "./schema";
+import { AccountHistoryProps } from "./account-history.props";
+import {
+  AccountHistorySchema,
+  accountHistorySchema
+} from "./account-history.schema";
 
-type Props = {
-  onSubmit?: SubmitHandler<AccountHistorySchema>;
-} & Pick<GetPrivacySettingsResponse, "record_read_history">;
-
-const PrivateAccount = ({
+const AccountHistory = ({
   onSubmit,
   record_read_history
-}: Props): React.ReactElement => {
+}: AccountHistoryProps): React.ReactElement => {
   const toast = useToast();
+  const prevValuesRef = React.useRef<AccountHistorySchema>();
   const form = useForm<AccountHistorySchema>({
     resolver: zodResolver(accountHistorySchema),
     defaultValues: {
@@ -35,8 +35,9 @@ const PrivateAccount = ({
     } else {
       readHistory({ "read-history": !values["read-history"] })
         .unwrap()
-        .then(() => toast("History settings updated", "success"))
+        .then(() => (prevValuesRef.current = values))
         .catch((e) => {
+          form.reset(prevValuesRef.current);
           toast(
             e?.data?.error || "Could not change your history settings",
             "error"
@@ -52,7 +53,7 @@ const PrivateAccount = ({
       </Typography>
       <Spacer orientation={"vertical"} size={0.5} />
       <Form<AccountHistorySchema>
-        className={clsx("flex-col", styles.form)}
+        className={clsx("flex-col", styles.x, styles.form)}
         disabled={isLoading}
         onSubmit={handleSubmit}
         providerProps={form}
@@ -77,4 +78,4 @@ const PrivateAccount = ({
   );
 };
 
-export default PrivateAccount;
+export default AccountHistory;

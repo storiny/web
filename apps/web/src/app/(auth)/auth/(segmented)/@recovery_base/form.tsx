@@ -30,12 +30,12 @@ const RecoveryForm = ({ onSubmit }: Props): React.ReactElement => {
   });
   const [recover, { isLoading }] = useRecoveryMutation();
 
-  const handleSubmit: SubmitHandler<RecoverySchema> = ({ email }) => {
+  const handleSubmit: SubmitHandler<RecoverySchema> = (values) => {
     if (onSubmit) {
-      onSubmit({ email });
+      onSubmit(values);
     } else {
-      actions.setRecoveryState({ email });
-      recover({ email })
+      actions.setRecoveryState(values);
+      recover(values)
         .unwrap()
         .then(() => actions.switchSegment("recovery_inbox"))
         .catch((e) =>

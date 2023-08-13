@@ -5,9 +5,15 @@ import { redirect } from "next/navigation";
 
 import { SESSION_COOKIE_ID } from "~/common/utils/getUser";
 
-const LogoutPage = (): void => {
+const LogoutPage = ({
+  searchParams
+}: {
+  searchParams: { [key: string]: string | string[] | undefined };
+}): void => {
   cookies().delete(SESSION_COOKIE_ID);
-  redirect("/login");
+  redirect(
+    searchParams.to ? decodeURIComponent(String(searchParams.to)) : "/login"
+  );
 };
 
 export default LogoutPage;

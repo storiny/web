@@ -7,6 +7,8 @@ import React from "react";
 
 import { useFormField } from "~/components/Form";
 import { RadioGroupContext } from "~/components/RadioGroup";
+import { useMediaQuery } from "~/hooks/useMediaQuery";
+import { breakpoints } from "~/theme/breakpoints";
 
 import styles from "./Radio.module.scss";
 import { RadioProps } from "./Radio.props";
@@ -14,19 +16,23 @@ import { RadioProps } from "./Radio.props";
 const Radio = React.forwardRef<HTMLButtonElement, RadioProps>((props, ref) => {
   const {
     color: colorProp = "inverted",
-    size: sizeProp = "md",
+    size: nativeSizeProp = "md",
+    autoSize: autoSizeProp,
     label,
     className,
     disabled,
     slotProps,
     ...rest
   } = props;
+  const isSmallerThanTablet = useMediaQuery(breakpoints.down("tablet"));
   const radioId = React.useId();
   const labelId = React.useId();
   const radioGroupContext = React.useContext(RadioGroupContext) || {};
   const { itemId } = useFormField(true);
+  const autoSize = radioGroupContext.autoSize || autoSizeProp;
   const color = radioGroupContext.color || colorProp;
-  const size = radioGroupContext.size || sizeProp;
+  const sizeProp = radioGroupContext.size || nativeSizeProp;
+  const size = autoSize ? (isSmallerThanTablet ? "lg" : sizeProp) : sizeProp;
 
   return (
     <div

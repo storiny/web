@@ -15,6 +15,7 @@ const Link = React.forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => {
     level = "inherit",
     underline = "hover",
     color = "body",
+    slotProps,
     fixedColor,
     target,
     rel,
@@ -32,7 +33,6 @@ const Link = React.forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => {
       className={clsx(
         "focusable",
         styles.link,
-        ellipsis && "ellipsis",
         ellipsis && typographyStyles.ellipsis,
         fixedColor && styles["fixed-color"],
         styles[`color-${color}`],
@@ -53,7 +53,20 @@ const Link = React.forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => {
       }
       target={target}
     >
-      {children}
+      {ellipsis ? (
+        <span
+          {...slotProps?.ellipsisCell}
+          className={clsx(
+            "ellipsis",
+            typographyStyles["ellipsis-child"],
+            slotProps?.ellipsisCell?.className
+          )}
+        >
+          {children}
+        </span>
+      ) : (
+        children
+      )}
     </NextLink>
   );
 });

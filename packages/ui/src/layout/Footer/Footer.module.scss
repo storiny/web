@@ -85,6 +85,10 @@
   &:not(:last-child) {
     margin-right: 64px;
   }
+
+  @include breakpoints.media("<=mobile") {
+    margin-bottom: 16px;
+  }
 }
 
 /* List */

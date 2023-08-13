@@ -11,7 +11,12 @@ import {
   ServiceError,
   UntypedServiceImplementation,
 } from "@grpc/grpc-js";
-import { GetCredentialsRequest, GetCredentialsResponse } from "../../credentials_def/v1/def";
+import { GetConnectionSettingsRequest, GetConnectionSettingsResponse } from "../../connection_settings_def/v1/def";
+import { GetCredentialSettingsRequest, GetCredentialSettingsResponse } from "../../credential_settings_def/v1/def";
+import {
+  GetNotificationSettingsRequest,
+  GetNotificationSettingsResponse,
+} from "../../notification_settings_def/v1/def";
 import { GetPrivacySettingsRequest, GetPrivacySettingsResponse } from "../../privacy_settings_def/v1/def";
 import { GetProfileRequest, GetProfileResponse } from "../../profile_def/v1/def";
 import { GetTagRequest, GetTagResponse } from "../../tag_def/v1/def";
@@ -73,15 +78,17 @@ export const ApiServiceService = {
     responseSerialize: (value: VerifyEmailResponse) => Buffer.from(VerifyEmailResponse.encode(value).finish()),
     responseDeserialize: (value: Buffer) => VerifyEmailResponse.decode(value),
   },
-  /** Returns the user's credentials */
-  getCredentials: {
-    path: "/api_service.v1.ApiService/GetCredentials",
+  /** Returns the user's credentials settings */
+  getCredentialSettings: {
+    path: "/api_service.v1.ApiService/GetCredentialSettings",
     requestStream: false,
     responseStream: false,
-    requestSerialize: (value: GetCredentialsRequest) => Buffer.from(GetCredentialsRequest.encode(value).finish()),
-    requestDeserialize: (value: Buffer) => GetCredentialsRequest.decode(value),
-    responseSerialize: (value: GetCredentialsResponse) => Buffer.from(GetCredentialsResponse.encode(value).finish()),
-    responseDeserialize: (value: Buffer) => GetCredentialsResponse.decode(value),
+    requestSerialize: (value: GetCredentialSettingsRequest) =>
+      Buffer.from(GetCredentialSettingsRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer) => GetCredentialSettingsRequest.decode(value),
+    responseSerialize: (value: GetCredentialSettingsResponse) =>
+      Buffer.from(GetCredentialSettingsResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => GetCredentialSettingsResponse.decode(value),
   },
   /** Returns the user's privacy settings */
   getPrivacySettings: {
@@ -94,6 +101,30 @@ export const ApiServiceService = {
     responseSerialize: (value: GetPrivacySettingsResponse) =>
       Buffer.from(GetPrivacySettingsResponse.encode(value).finish()),
     responseDeserialize: (value: Buffer) => GetPrivacySettingsResponse.decode(value),
+  },
+  /** Returns the user's notification settings */
+  getNotificationSettings: {
+    path: "/api_service.v1.ApiService/GetNotificationSettings",
+    requestStream: false,
+    responseStream: false,
+    requestSerialize: (value: GetNotificationSettingsRequest) =>
+      Buffer.from(GetNotificationSettingsRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer) => GetNotificationSettingsRequest.decode(value),
+    responseSerialize: (value: GetNotificationSettingsResponse) =>
+      Buffer.from(GetNotificationSettingsResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => GetNotificationSettingsResponse.decode(value),
+  },
+  /** Returns the user's connection settings */
+  getConnectionSettings: {
+    path: "/api_service.v1.ApiService/GetConnectionSettings",
+    requestStream: false,
+    responseStream: false,
+    requestSerialize: (value: GetConnectionSettingsRequest) =>
+      Buffer.from(GetConnectionSettingsRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer) => GetConnectionSettingsRequest.decode(value),
+    responseSerialize: (value: GetConnectionSettingsResponse) =>
+      Buffer.from(GetConnectionSettingsResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => GetConnectionSettingsResponse.decode(value),
   },
 } as const;
 
@@ -108,10 +139,14 @@ export interface ApiServiceServer extends UntypedServiceImplementation {
   getToken: handleUnaryCall<GetTokenRequest, GetTokenResponse>;
   /** Verifies a user's email using the provided token identifier */
   verifyEmail: handleUnaryCall<VerifyEmailRequest, VerifyEmailResponse>;
-  /** Returns the user's credentials */
-  getCredentials: handleUnaryCall<GetCredentialsRequest, GetCredentialsResponse>;
+  /** Returns the user's credentials settings */
+  getCredentialSettings: handleUnaryCall<GetCredentialSettingsRequest, GetCredentialSettingsResponse>;
   /** Returns the user's privacy settings */
   getPrivacySettings: handleUnaryCall<GetPrivacySettingsRequest, GetPrivacySettingsResponse>;
+  /** Returns the user's notification settings */
+  getNotificationSettings: handleUnaryCall<GetNotificationSettingsRequest, GetNotificationSettingsResponse>;
+  /** Returns the user's connection settings */
+  getConnectionSettings: handleUnaryCall<GetConnectionSettingsRequest, GetConnectionSettingsResponse>;
 }
 
 export interface ApiServiceClient extends Client {
@@ -195,21 +230,21 @@ export interface ApiServiceClient extends Client {
     options: Partial<CallOptions>,
     callback: (error: ServiceError | null, response: VerifyEmailResponse) => void,
   ): ClientUnaryCall;
-  /** Returns the user's credentials */
-  getCredentials(
-    request: GetCredentialsRequest,
-    callback: (error: ServiceError | null, response: GetCredentialsResponse) => void,
+  /** Returns the user's credentials settings */
+  getCredentialSettings(
+    request: GetCredentialSettingsRequest,
+    callback: (error: ServiceError | null, response: GetCredentialSettingsResponse) => void,
   ): ClientUnaryCall;
-  getCredentials(
-    request: GetCredentialsRequest,
+  getCredentialSettings(
+    request: GetCredentialSettingsRequest,
     metadata: Metadata,
-    callback: (error: ServiceError | null, response: GetCredentialsResponse) => void,
+    callback: (error: ServiceError | null, response: GetCredentialSettingsResponse) => void,
   ): ClientUnaryCall;
-  getCredentials(
-    request: GetCredentialsRequest,
+  getCredentialSettings(
+    request: GetCredentialSettingsRequest,
     metadata: Metadata,
     options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: GetCredentialsResponse) => void,
+    callback: (error: ServiceError | null, response: GetCredentialSettingsResponse) => void,
   ): ClientUnaryCall;
   /** Returns the user's privacy settings */
   getPrivacySettings(
@@ -226,6 +261,38 @@ export interface ApiServiceClient extends Client {
     metadata: Metadata,
     options: Partial<CallOptions>,
     callback: (error: ServiceError | null, response: GetPrivacySettingsResponse) => void,
+  ): ClientUnaryCall;
+  /** Returns the user's notification settings */
+  getNotificationSettings(
+    request: GetNotificationSettingsRequest,
+    callback: (error: ServiceError | null, response: GetNotificationSettingsResponse) => void,
+  ): ClientUnaryCall;
+  getNotificationSettings(
+    request: GetNotificationSettingsRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: GetNotificationSettingsResponse) => void,
+  ): ClientUnaryCall;
+  getNotificationSettings(
+    request: GetNotificationSettingsRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: GetNotificationSettingsResponse) => void,
+  ): ClientUnaryCall;
+  /** Returns the user's connection settings */
+  getConnectionSettings(
+    request: GetConnectionSettingsRequest,
+    callback: (error: ServiceError | null, response: GetConnectionSettingsResponse) => void,
+  ): ClientUnaryCall;
+  getConnectionSettings(
+    request: GetConnectionSettingsRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: GetConnectionSettingsResponse) => void,
+  ): ClientUnaryCall;
+  getConnectionSettings(
+    request: GetConnectionSettingsRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: GetConnectionSettingsResponse) => void,
   ): ClientUnaryCall;
 }
 

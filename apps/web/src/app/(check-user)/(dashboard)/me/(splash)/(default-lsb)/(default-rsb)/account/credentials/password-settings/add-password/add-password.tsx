@@ -21,17 +21,14 @@ import {
 } from "~/redux/features";
 import { breakpoints } from "~/theme/breakpoints";
 
-import { AddPasswordScreen, addPasswordScreenAtom } from "./atom";
+import { AddPasswordProps } from "./add-password.props";
 import {
   AddPasswordSchema,
   addPasswordSchema,
   VERIFICATION_CODE_MAX_LENGTH,
   VERIFICATION_CODE_MIN_LENGTH
-} from "./schema";
-
-interface Props {
-  onSubmit?: SubmitHandler<AddPasswordSchema>;
-}
+} from "./add-password.schema";
+import { AddPasswordScreen, addPasswordScreenAtom } from "./atom";
 
 const screenToMessageMap: Record<AddPasswordScreen, string> = {
   confirmation:
@@ -109,7 +106,7 @@ const AddPasswordModal = (): React.ReactElement => {
   );
 };
 
-const Component = ({ onSubmit }: Props): React.ReactElement => {
+const Component = ({ onSubmit }: AddPasswordProps): React.ReactElement => {
   const router = useRouter();
   const toast = useToast();
   const [screen, setScreen] = useAtom(addPasswordScreenAtom);
@@ -245,7 +242,7 @@ const Component = ({ onSubmit }: Props): React.ReactElement => {
   return element;
 };
 
-const AddPassword = (props: Props): React.ReactElement => (
+const AddPassword = (props: AddPasswordProps): React.ReactElement => (
   <Provider>
     <Component {...props} />
   </Provider>

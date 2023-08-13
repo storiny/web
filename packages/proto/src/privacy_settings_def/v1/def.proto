@@ -27,5 +27,5 @@ message GetPrivacySettingsResponse {
   bool allow_sensitive_media = 3;
   IncomingFriendRequest incoming_friend_requests = 4;
   RelationVisibility following_list_visibility = 5;
-  RelationVisibility friends_list_visibility = 6;
+  RelationVisibility friend_list_visibility = 6;
 }

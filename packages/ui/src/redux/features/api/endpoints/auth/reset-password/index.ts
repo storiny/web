@@ -1,17 +1,14 @@
 import { ContentType } from "@storiny/shared";
+import { ResetSchema } from "@storiny/web/src/app/(auth)/auth/(segmented)/@reset_base/schema";
 
 import { apiSlice } from "~/redux/features/api/slice";
 
 const SEGMENT = "auth/reset-password";
 
 export interface ResetPasswordResponse {}
-
-export interface ResetPasswordPayload {
-  email: string;
-  "logout-of-all-devices": boolean;
-  password: string;
+export type ResetPasswordPayload = ResetSchema & {
   token: string;
-}
+};
 
 export const { useResetPasswordMutation } = apiSlice.injectEndpoints({
   endpoints: (builder) => ({

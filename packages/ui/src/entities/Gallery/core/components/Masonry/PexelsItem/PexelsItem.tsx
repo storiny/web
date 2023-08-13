@@ -65,7 +65,7 @@ const PexelsMasonryItem = React.memo(
             paddingTop: `${(data.height / data.width) * 100}%`
           }}
         />
-        <div className={clsx("flex-col", styles.overlay)}>
+        <div className={clsx("flex-col", commonStyles.overlay, styles.overlay)}>
           <Link
             className={styles.link}
             ellipsis

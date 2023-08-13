@@ -25,11 +25,7 @@ import { breakpoints } from "~/theme/breakpoints";
 
 import DashboardGroup from "../../../../dashboard-group";
 import { EmailGroupProps } from "./email-group.props";
-import { EmailSettingsSchema, emailSettingsSchema } from "./schema";
-
-interface Props {
-  onSubmit?: SubmitHandler<EmailSettingsSchema>;
-}
+import { EmailSettingsSchema, emailSettingsSchema } from "./email-group.schema";
 
 const EmailSettingsModal = ({
   updated
@@ -78,6 +74,7 @@ const EmailSettingsModal = ({
           placeholder={"Your current password"}
           required
         />
+        <Spacer orientation={"vertical"} size={2} />
       </React.Fragment>
     )}
   </React.Fragment>
@@ -87,7 +84,7 @@ const EmailSettingsModal = ({
 export const EmailSettings = ({
   onSubmit,
   has_password
-}: Props & { has_password?: boolean }): React.ReactElement => {
+}: EmailGroupProps): React.ReactElement => {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const toast = useToast();

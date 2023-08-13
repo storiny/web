@@ -2,7 +2,9 @@ syntax = "proto3";
 
 package api_service.v1;
 
-import "credentials_def/v1/def.proto";
+import "connection_settings_def/v1/def.proto";
+import "credential_settings_def/v1/def.proto";
+import "notification_settings_def/v1/def.proto";
 import "privacy_settings_def/v1/def.proto";
 import "profile_def/v1/def.proto";
 import "tag_def/v1/def.proto";
@@ -32,11 +34,19 @@ service ApiService {
    */
   rpc VerifyEmail(token_def.v1.VerifyEmailRequest) returns (token_def.v1.VerifyEmailResponse) {}
   /**
-   * Returns the user's credentials
+   * Returns the user's credentials settings
    */
-  rpc GetCredentials(credentials_def.v1.GetCredentialsRequest) returns (credentials_def.v1.GetCredentialsResponse) {}
+  rpc GetCredentialSettings(credential_settings_def.v1.GetCredentialSettingsRequest) returns (credential_settings_def.v1.GetCredentialSettingsResponse) {}
   /**
    * Returns the user's privacy settings
    */
   rpc GetPrivacySettings(privacy_settings_def.v1.GetPrivacySettingsRequest) returns (privacy_settings_def.v1.GetPrivacySettingsResponse) {}
+  /**
+   * Returns the user's notification settings
+   */
+  rpc GetNotificationSettings(notification_settings_def.v1.GetNotificationSettingsRequest) returns (notification_settings_def.v1.GetNotificationSettingsResponse) {}
+  /**
+   * Returns the user's connection settings
+   */
+  rpc GetConnectionSettings(connection_settings_def.v1.GetConnectionSettingsRequest) returns (connection_settings_def.v1.GetConnectionSettingsResponse) {}
 }

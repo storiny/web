@@ -78,6 +78,7 @@ export type TypographyProps = PolymorphicProps<TypographyElement> & {
    * The props passed to the individual component elements.
    */
   slotProps?: {
+    ellipsisCell?: React.ComponentPropsWithoutRef<"span">;
     link?: Partial<LinkProps> & React.ComponentPropsWithoutRef<"a">;
   };
 };

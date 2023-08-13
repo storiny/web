@@ -1,7 +1,6 @@
 import { clsx } from "clsx";
 import React from "react";
 
-import { GetPrivacySettingsResponse } from "~/common/grpc";
 import Form, { SubmitHandler, useForm, zodResolver } from "~/components/Form";
 import FormSwitch from "~/components/FormSwitch";
 import Spacer from "~/components/Spacer";
@@ -10,17 +9,18 @@ import Typography from "~/components/Typography";
 import { useSensitiveContentMutation } from "~/redux/features";
 
 import styles from "../site-safety.module.scss";
-import { SensitiveContentSchema, sensitiveContentSchema } from "./schema";
-
-type Props = {
-  onSubmit?: SubmitHandler<SensitiveContentSchema>;
-} & Pick<GetPrivacySettingsResponse, "allow_sensitive_media">;
+import { SensitiveContentProps } from "./sensitive-content.props";
+import {
+  SensitiveContentSchema,
+  sensitiveContentSchema
+} from "./sensitive-content.schema";
 
 const SensitiveContent = ({
   onSubmit,
   allow_sensitive_media
-}: Props): React.ReactElement => {
+}: SensitiveContentProps): React.ReactElement => {
   const toast = useToast();
+  const prevValuesRef = React.useRef<SensitiveContentSchema>();
   const form = useForm<SensitiveContentSchema>({
     resolver: zodResolver(sensitiveContentSchema),
     defaultValues: {
@@ -35,8 +35,9 @@ const SensitiveContent = ({
     } else {
       sensitiveContent(values)
         .unwrap()
-        .then(() => toast("Sensitive media settings updated", "success"))
+        .then(() => (prevValuesRef.current = values))
         .catch((e) => {
+          form.reset(prevValuesRef.current);
           toast(
             e?.data?.error || "Could not change your sensitive media settings",
             "error"
@@ -52,7 +53,7 @@ const SensitiveContent = ({
       </Typography>
       <Spacer orientation={"vertical"} size={0.5} />
       <Form<SensitiveContentSchema>
-        className={clsx("flex-col", styles.form)}
+        className={clsx("flex-col", styles.x, styles.form)}
         disabled={isLoading}
         onSubmit={handleSubmit}
         providerProps={form}

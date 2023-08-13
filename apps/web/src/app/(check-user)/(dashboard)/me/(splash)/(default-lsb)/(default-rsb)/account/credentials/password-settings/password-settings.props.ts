@@ -1,6 +1,6 @@
-import { GetCredentialsResponse } from "~/common/grpc";
+import { GetCredentialSettingsResponse } from "~/common/grpc";
 
 export type PasswordSettingsProps = Pick<
-  GetCredentialsResponse,
+  GetCredentialSettingsResponse,
   "has_password"
 >;

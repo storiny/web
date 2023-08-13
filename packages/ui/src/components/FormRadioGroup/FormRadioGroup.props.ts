@@ -26,7 +26,7 @@ export interface FormRadioGroupProps extends RadioGroupProps {
   /**
    * The label for the form component.
    */
-  label: React.ReactNode;
+  label?: React.ReactNode;
   /**
    * The name of the form element.
    */

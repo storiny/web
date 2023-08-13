@@ -1,4 +1,11 @@
 /* Ellipsis */
 .ellipsis {
-  display: inline-block;
+  display: table;
+  table-layout: fixed;
+  width: 100%;
+}
+
+/* Ellipsis child */
+.ellipsis-child {
+  display: table-cell;
 }

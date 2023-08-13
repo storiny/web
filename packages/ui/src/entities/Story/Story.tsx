@@ -129,7 +129,7 @@ const Story = (props: StoryProps): React.ReactElement => {
                       className={"t-muted"}
                       level={"body2"}
                     >
-                      &#x2022;
+                      &bull;
                     </Typography>
                     <Typography
                       as={"time"}
@@ -251,7 +251,7 @@ const Story = (props: StoryProps): React.ReactElement => {
               className={"t-muted"}
               level={"body2"}
             >
-              &#x2022;
+              &bull;
             </Typography>
             <Typography
               aria-label={`${story.stats.read_count} reads`}
@@ -279,7 +279,7 @@ const Story = (props: StoryProps): React.ReactElement => {
                     className={"t-muted"}
                     level={"body2"}
                   >
-                    &#x2022;
+                    &bull;
                   </Typography>
                 )}
                 <div className={clsx("flex", styles["tags-container"])}>

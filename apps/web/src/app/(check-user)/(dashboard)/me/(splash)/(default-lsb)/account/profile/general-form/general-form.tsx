@@ -17,21 +17,19 @@ import Grow from "~/components/Grow";
 import Link from "~/components/Link";
 import Spacer from "~/components/Spacer";
 import { useToast } from "~/components/Toast";
-import { useMediaQuery } from "~/hooks/useMediaQuery";
 import {
   mutateUser,
   selectUser,
   useProfileSettingsMutation
 } from "~/redux/features";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
-import { breakpoints } from "~/theme/breakpoints";
 
 import styles from "./general-form.module.scss";
-import { AccountGeneralSchema, accountGeneralSchema } from "./schema";
-
-interface Props {
-  onSubmit?: SubmitHandler<AccountGeneralSchema>;
-}
+import { GeneralFormProps } from "./general-form.props";
+import {
+  AccountGeneralSchema,
+  accountGeneralSchema
+} from "./general-form.schema";
 
 // Save button
 
@@ -56,7 +54,9 @@ const SaveButton = ({
   );
 };
 
-const AccountGeneralForm = ({ onSubmit }: Props): React.ReactElement => {
+const AccountGeneralForm = ({
+  onSubmit
+}: GeneralFormProps): React.ReactElement => {
   const dispatch = useAppDispatch();
   const toast = useToast();
   const user = useAppSelector(selectUser)!;

@@ -28,11 +28,11 @@ const SignupWPMForm = ({ onSubmit }: Props): React.ReactElement => {
     }
   });
 
-  const handleSubmit: SubmitHandler<SignupWPMSchema> = ({ wpm }) => {
-    actions.setSignupState({ wpm });
+  const handleSubmit: SubmitHandler<SignupWPMSchema> = (values) => {
+    actions.setSignupState(values);
 
     if (onSubmit) {
-      onSubmit({ wpm });
+      onSubmit(values);
     } else {
       handleSignup();
     }

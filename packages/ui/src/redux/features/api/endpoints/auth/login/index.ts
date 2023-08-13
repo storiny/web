@@ -1,10 +1,11 @@
 import { ContentType } from "@storiny/shared";
+import { LoginSchema } from "@storiny/web/src/app/(auth)/auth/(segmented)/@login/schema";
 
 import { apiSlice } from "~/redux/features/api/slice";
 
 const SEGMENT = "auth/login";
 
-export interface LoginResponse extends ApiResponse {
+export interface LoginResponse {
   result:
     | "success" // Login success
     | "suspended" // Account suspended
@@ -12,11 +13,7 @@ export interface LoginResponse extends ApiResponse {
     | "verification_pending"; // Pending email verification
 }
 
-export interface LoginPayload {
-  email: string;
-  password: string;
-  "remember-me": boolean;
-}
+export type LoginPayload = LoginSchema;
 
 export const { useLoginMutation } = apiSlice.injectEndpoints({
   endpoints: (builder) => ({

@@ -51,7 +51,6 @@ const Typography = forwardRef<TypographyProps, TypographyElement>(
         <Element
           {...rest}
           className={clsx(
-            ellipsis && "ellipsis",
             ellipsis && typographyStyles.ellipsis,
             isInlineColor && styles["inline-color"],
             level === "legible" || color === "legible"
@@ -74,12 +73,28 @@ const Typography = forwardRef<TypographyProps, TypographyElement>(
           {(["mention", "tag"] as TypographyLevel[]).includes(level) ? (
             <NextLink
               {...slotProps?.link}
-              className={clsx(styles.link, slotProps?.link?.className)}
+              className={clsx(
+                styles.link,
+                ellipsis && "ellipsis",
+                ellipsis && typographyStyles["ellipsis-child"],
+                slotProps?.link?.className
+              )}
               href={`${level === "tag" ? "/tag/" : "/"}${children}`}
             >
               {prefixMap[level] || ""}
               {children}
             </NextLink>
+          ) : ellipsis ? (
+            <span
+              {...slotProps?.ellipsisCell}
+              className={clsx(
+                "ellipsis",
+                typographyStyles["ellipsis-child"],
+                slotProps?.ellipsisCell?.className
+              )}
+            >
+              {children}
+            </span>
           ) : (
             children
           )}

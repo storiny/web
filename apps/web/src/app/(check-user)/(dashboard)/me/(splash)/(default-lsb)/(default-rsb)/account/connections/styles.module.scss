@@ -1,0 +1,38 @@
+@use "breakpoints" as breakpoints;
+
+/* Connections list */
+.list {
+  gap: 24px;
+  list-style: none;
+}
+
+/* Connections list item */
+.item {
+  padding: 8px 16px;
+  max-width: 100%;
+  gap: 24px;
+  align-items: center;
+  justify-content: space-between;
+
+  @include breakpoints.media("<=mobile") {
+    &.connected {
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+  }
+}
+
+/* Details */
+.details {
+  gap: 16px;
+}
+
+/* Icon */
+.icon {
+  --icon-size: 36px;
+}
+
+/* Actions */
+.actions {
+  gap: 8px;
+}

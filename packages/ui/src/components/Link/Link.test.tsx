@@ -7,7 +7,13 @@ import { renderTestWithProvider } from "~/redux/testUtils";
 import { levelToClassNameMap, scaleToClassNameMap } from "../common/typography";
 import Link from "./Link";
 import styles from "./Link.module.scss";
-import { LinkColor, LinkLevel, LinkScale, LinkUnderline } from "./Link.props";
+import {
+  LinkColor,
+  LinkLevel,
+  LinkProps,
+  LinkScale,
+  LinkUnderline
+} from "./Link.props";
 
 const linkScales = Object.keys(scaleToClassNameMap) as LinkScale[];
 const linkLevels = Object.keys(levelToClassNameMap) as LinkLevel[];
@@ -15,6 +21,15 @@ const linkLevels = Object.keys(levelToClassNameMap) as LinkLevel[];
 describe("<Link />", () => {
   it("matches snapshot", () => {
     const { container } = renderTestWithProvider(<Link href={"/"}>Test</Link>);
+    expect(container.firstChild).toMatchSnapshot();
+  });
+
+  it("matches snapshot with `ellipsis` set to `true`", () => {
+    const { container } = renderTestWithProvider(
+      <Link ellipsis href={"/"}>
+        Test
+      </Link>
+    );
     expect(container.firstChild).toMatchSnapshot();
   });
 
@@ -140,5 +155,25 @@ describe("<Link />", () => {
     );
 
     expect(getByTestId("link")).toHaveAttribute("rel", "noreferrer");
+  });
+
+  it("passes props to the element slots", () => {
+    const { getByTestId } = renderTestWithProvider(
+      <Link
+        ellipsis
+        href={"/"}
+        slotProps={
+          {
+            ellipsisCell: {
+              "data-testid": "ellipsis-cell"
+            }
+          } as LinkProps["slotProps"]
+        }
+      >
+        Test
+      </Link>
+    );
+
+    expect(getByTestId("ellipsis-cell")).toBeInTheDocument();
   });
 });
