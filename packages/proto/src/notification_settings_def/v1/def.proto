@@ -8,16 +8,16 @@ message GetNotificationSettingsRequest {
 
 message GetNotificationSettingsResponse {
   // Site notifications
-  bool features_and_updates = 1;
-  bool stories = 2;
-  bool tags = 3;
-  bool comments = 4;
-  bool replies = 5;
-  bool new_followers = 6;
-  bool friend_requests = 7;
+  bool features_and_updates /*     */ = 1;
+  bool stories /*                  */ = 2;
+  bool tags /*                     */ = 3;
+  bool comments /*                 */ = 4;
+  bool replies /*                  */ = 5;
+  bool new_followers /*            */ = 6;
+  bool friend_requests /*          */ = 7;
   // Mail notifications
-  bool mail_login_activity = 8;
-  bool mail_features_and_updates = 9;
-  bool mail_newsletters = 10;
-  bool mail_digest = 11;
+  bool mail_login_activity /*      */ = 8;
+  bool mail_features_and_updates /**/ = 9;
+  bool mail_newsletters /*         */ = 10;
+  bool mail_digest /*              */ = 11;
 }

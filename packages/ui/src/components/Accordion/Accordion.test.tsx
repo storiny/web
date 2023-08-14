@@ -81,7 +81,18 @@ describe("<Accordion />", () => {
         type={"single"}
       >
         <AccordionItem as={"aside"} data-testid={"item"} value="test">
-          <AccordionTrigger as={"aside"} data-testid={"trigger"}>
+          <AccordionTrigger
+            as={"aside"}
+            data-testid={"trigger"}
+            slotProps={
+              {
+                header: {
+                  as: "aside",
+                  "data-testid": "header"
+                }
+              } as AccordionTriggerProps["slotProps"]
+            }
+          >
             Trigger
           </AccordionTrigger>
           <AccordionContent as={"aside"} data-testid={"content"}>
@@ -91,7 +102,7 @@ describe("<Accordion />", () => {
       </Accordion>
     );
 
-    ["accordion", "item", "trigger", "content"].forEach((id) => {
+    ["accordion", "item", "trigger", "header", "content"].forEach((id) => {
       expect(getByTestId(id).nodeName.toLowerCase()).toEqual("aside");
     });
   });

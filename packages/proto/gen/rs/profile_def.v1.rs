@@ -33,17 +33,17 @@ pub struct GetProfileResponse {
     pub location: ::prost::alloc::string::String,
     #[prost(string, tag="11")]
     pub created_at: ::prost::alloc::string::String,
-    #[prost(int64, tag="12")]
-    pub public_flags: i64,
-    #[prost(int32, tag="13")]
-    pub story_count: i32,
-    #[prost(int32, tag="14")]
-    pub follower_count: i32,
+    #[prost(uint64, tag="12")]
+    pub public_flags: u64,
+    #[prost(uint32, tag="13")]
+    pub story_count: u32,
+    #[prost(uint32, tag="14")]
+    pub follower_count: u32,
     /// Following and friend lists can be private
-    #[prost(int32, optional, tag="15")]
-    pub following_count: ::core::option::Option<i32>,
-    #[prost(int32, optional, tag="16")]
-    pub friend_count: ::core::option::Option<i32>,
+    #[prost(uint32, optional, tag="15")]
+    pub following_count: ::core::option::Option<u32>,
+    #[prost(uint32, optional, tag="16")]
+    pub friend_count: ::core::option::Option<u32>,
     #[prost(bool, tag="17")]
     pub is_private: bool,
     #[prost(message, repeated, tag="18")]

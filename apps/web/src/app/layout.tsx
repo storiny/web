@@ -6,7 +6,7 @@ import "~/theme/main.scss";
 
 import React from "react";
 
-import { getUser } from "~/common/utils/getUser";
+import { getSessionToken } from "~/common/utils/getSessionToken";
 import CriticalStyles from "~/theme/Critical";
 
 import Fonts from "./fonts";
@@ -16,12 +16,14 @@ import StateProvider from "./state-provider";
 // @ts-ignore
 import themeSync from "./theme-sync.txt";
 
-const RootLayout = async ({
+const RootLayout = ({
   children
 }: {
   children: React.ReactNode;
-}): Promise<React.ReactElement> => {
-  const loggedIn = await getUser(true);
+}): React.ReactElement => {
+  const sessionToken = getSessionToken();
+  const loggedIn = Boolean(sessionToken);
+
   return (
     <html
       lang="en"

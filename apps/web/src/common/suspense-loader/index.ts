@@ -1,1 +1,2 @@
-export { default } from "./SuspenseLoader";
+export { default } from "./suspense-loader";
+export * from "./suspense-loader.props";

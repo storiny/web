@@ -4,6 +4,7 @@ import { credentials, ServiceError } from "@grpc/grpc-js";
 import { ApiServiceClient } from "@storiny/proto/gen/ts/api_service/v1/service";
 import { GetConnectionSettingsResponse } from "@storiny/proto/gen/ts/connection_settings_def/v1/def";
 import { GetCredentialSettingsResponse } from "@storiny/proto/gen/ts/credential_settings_def/v1/def";
+import { GetLoginActivityResponse } from "@storiny/proto/gen/ts/login_activity_def/v1/def";
 import { GetNotificationSettingsResponse } from "@storiny/proto/gen/ts/notification_settings_def/v1/def";
 import { GetPrivacySettingsResponse } from "@storiny/proto/gen/ts/privacy_settings_def/v1/def";
 import { GetProfileResponse } from "@storiny/proto/gen/ts/profile_def/v1/def";
@@ -46,6 +47,7 @@ const promisify =
 export {
   GetConnectionSettingsResponse,
   GetCredentialSettingsResponse,
+  GetLoginActivityResponse,
   GetNotificationSettingsResponse,
   GetPrivacySettingsResponse,
   GetProfileResponse,
@@ -74,6 +76,10 @@ export const getNotificationSettings =
 
 export const getConnectionSettings = promisify<GetConnectionSettingsResponse>(
   global.grpcClient.getConnectionSettings
+);
+
+export const getLoginActivity = promisify<GetLoginActivityResponse>(
+  global.grpcClient.getLoginActivity
 );
 
 export const getTag = promisify<GetTagResponse>(global.grpcClient.getTag);

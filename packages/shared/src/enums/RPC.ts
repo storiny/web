@@ -1,4 +1,5 @@
 export { Provider } from "@storiny/proto/gen/ts/connection_def/v1/def";
+export { DeviceType } from "@storiny/proto/gen/ts/login_activity_def/v1/def";
 export {
   IncomingFriendRequest,
   RelationVisibility

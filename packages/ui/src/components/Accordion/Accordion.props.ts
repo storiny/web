@@ -1,6 +1,6 @@
 import {
   AccordionContentProps as AccordionContentPrimitiveProps,
-  AccordionHeaderProps,
+  AccordionHeaderProps as AccordionHeaderPrimitiveProps,
   AccordionItemProps as AccordionItemPrimitiveProps,
   AccordionMultipleProps,
   AccordionSingleProps,
@@ -16,6 +16,9 @@ export type AccordionProps = (AccordionSingleProps | AccordionMultipleProps) &
 
 export type AccordionItemProps = AccordionItemPrimitiveProps &
   PolymorphicProps<"div">;
+
+export type AccordionHeaderProps = AccordionHeaderPrimitiveProps &
+  PolymorphicProps<"h3">;
 
 export type AccordionTriggerProps = AccordionTriggerPrimitiveProps &
   PolymorphicProps<"button"> & {
@@ -37,5 +40,3 @@ export type AccordionContentProps = AccordionContentPrimitiveProps &
       wrapper?: React.ComponentPropsWithoutRef<"div">;
     };
   };
-
-export type { AccordionHeaderProps };

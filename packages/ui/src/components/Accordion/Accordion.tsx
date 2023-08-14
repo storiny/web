@@ -3,7 +3,7 @@
 import {
   Accordion as AccordionPrimitive,
   AccordionContent as AccordionContentPrimitive,
-  AccordionHeader,
+  AccordionHeader as AccordionHeaderPrimitive,
   AccordionItem as AccordionItemPrimitive,
   AccordionMultipleProps,
   AccordionSingleProps,
@@ -19,6 +19,7 @@ import buttonStyles from "../common/ButtonReset.module.scss";
 import styles from "./Accordion.module.scss";
 import {
   AccordionContentProps,
+  AccordionHeaderProps,
   AccordionItemProps,
   AccordionProps,
   AccordionTriggerProps
@@ -74,6 +75,23 @@ const AccordionItem = forwardRef<AccordionItemProps, "div">(
 
 AccordionItem.displayName = "AccordionItem";
 
+// Header
+
+const AccordionHeader = forwardRef<AccordionHeaderProps, "h3">(
+  ({ as: Component = "h3", className, children, ...rest }, ref) => (
+    <AccordionHeaderPrimitive
+      {...rest}
+      asChild
+      className={clsx("flex", className)}
+      ref={ref}
+    >
+      <Component>{children}</Component>
+    </AccordionHeaderPrimitive>
+  )
+);
+
+AccordionHeader.displayName = "AccordionHeader";
+
 // Trigger
 
 const AccordionTrigger = forwardRef<AccordionTriggerProps, "div">(
@@ -81,10 +99,7 @@ const AccordionTrigger = forwardRef<AccordionTriggerProps, "div">(
     { as: Component = "button", className, children, slotProps, ...rest },
     ref
   ) => (
-    <AccordionHeader
-      {...slotProps?.header}
-      className={clsx("flex", slotProps?.header?.className)}
-    >
+    <AccordionHeader {...slotProps?.header}>
       <AccordionTriggerPrimitive
         {...rest}
         asChild

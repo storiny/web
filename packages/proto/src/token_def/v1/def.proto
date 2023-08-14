@@ -3,21 +3,21 @@ syntax = "proto3";
 package token_def.v1;
 
 enum TokenType {
-  TOKEN_TYPE_UNSPECIFIED = 0;
-  TOKEN_TYPE_EMAIL_VERIFICATION = 1;
-  TOKEN_TYPE_PASSWORD_RESET = 2;
-  TOKEN_TYPE_PASSWORD_ADD = 3;
+  TOKEN_TYPE_UNSPECIFIED /*       */ = 0;
+  TOKEN_TYPE_EMAIL_VERIFICATION /**/ = 1;
+  TOKEN_TYPE_PASSWORD_RESET /*    */ = 2;
+  TOKEN_TYPE_PASSWORD_ADD /*      */ = 3;
 }
 
 message GetTokenRequest {
-  string identifier = 1;
-  TokenType type = 2;
+  string identifier /**/ = 1;
+  TokenType type /*   */ = 2;
 }
 
 message GetTokenResponse {
   // Base props
-  bool is_valid = 1;
-  bool is_expired = 2;
+  bool is_valid /*  */ = 1;
+  bool is_expired /**/ = 2;
 }
 
 // E-mail verification

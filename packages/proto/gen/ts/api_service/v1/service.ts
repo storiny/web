@@ -13,6 +13,7 @@ import {
 } from "@grpc/grpc-js";
 import { GetConnectionSettingsRequest, GetConnectionSettingsResponse } from "../../connection_settings_def/v1/def";
 import { GetCredentialSettingsRequest, GetCredentialSettingsResponse } from "../../credential_settings_def/v1/def";
+import { GetLoginActivityRequest, GetLoginActivityResponse } from "../../login_activity_def/v1/def";
 import {
   GetNotificationSettingsRequest,
   GetNotificationSettingsResponse,
@@ -126,6 +127,17 @@ export const ApiServiceService = {
       Buffer.from(GetConnectionSettingsResponse.encode(value).finish()),
     responseDeserialize: (value: Buffer) => GetConnectionSettingsResponse.decode(value),
   },
+  /** Returns the user's login activity */
+  getLoginActivity: {
+    path: "/api_service.v1.ApiService/GetLoginActivity",
+    requestStream: false,
+    responseStream: false,
+    requestSerialize: (value: GetLoginActivityRequest) => Buffer.from(GetLoginActivityRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer) => GetLoginActivityRequest.decode(value),
+    responseSerialize: (value: GetLoginActivityResponse) =>
+      Buffer.from(GetLoginActivityResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => GetLoginActivityResponse.decode(value),
+  },
 } as const;
 
 export interface ApiServiceServer extends UntypedServiceImplementation {
@@ -147,6 +159,8 @@ export interface ApiServiceServer extends UntypedServiceImplementation {
   getNotificationSettings: handleUnaryCall<GetNotificationSettingsRequest, GetNotificationSettingsResponse>;
   /** Returns the user's connection settings */
   getConnectionSettings: handleUnaryCall<GetConnectionSettingsRequest, GetConnectionSettingsResponse>;
+  /** Returns the user's login activity */
+  getLoginActivity: handleUnaryCall<GetLoginActivityRequest, GetLoginActivityResponse>;
 }
 
 export interface ApiServiceClient extends Client {
@@ -293,6 +307,22 @@ export interface ApiServiceClient extends Client {
     metadata: Metadata,
     options: Partial<CallOptions>,
     callback: (error: ServiceError | null, response: GetConnectionSettingsResponse) => void,
+  ): ClientUnaryCall;
+  /** Returns the user's login activity */
+  getLoginActivity(
+    request: GetLoginActivityRequest,
+    callback: (error: ServiceError | null, response: GetLoginActivityResponse) => void,
+  ): ClientUnaryCall;
+  getLoginActivity(
+    request: GetLoginActivityRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: GetLoginActivityResponse) => void,
+  ): ClientUnaryCall;
+  getLoginActivity(
+    request: GetLoginActivityRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: GetLoginActivityResponse) => void,
   ): ClientUnaryCall;
 }
 

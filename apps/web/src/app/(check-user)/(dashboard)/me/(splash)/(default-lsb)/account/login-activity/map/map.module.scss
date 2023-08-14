@@ -1,0 +1,44 @@
+@use "breakpoints" as breakpoints;
+
+.x {
+  /* Base styles */
+  &.map {
+    filter: grayscale(85%);
+  }
+
+  /* Marker */
+  &.marker {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 32px;
+    height: 32px;
+    will-change: transform;
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIGZpbGw9Im5vbmUiIHZpZXdCb3g9IjAgMCAzMiAzMiI+PHBhdGggZmlsbD0iIzA1MDUwNSIgZmlsbC1ydWxlPSJldmVub2RkIiBzdHJva2U9IiMwNTA1MDUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgc3Ryb2tlLXdpZHRoPSIyIiBkPSJtMjMuNTQgMjIuMi01LjY1IDUuNjdhMi42NyAyLjY3IDAgMCAxLTMuNzcgMEw4LjQ2IDIyLjJhMTAuNjcgMTAuNjcgMCAxIDEgMTUuMDggMFpNMTYgMTguNjhhNCA0IDAgMSAwIDAtOCA0IDQgMCAwIDAgMCA4WiIgY2xpcC1ydWxlPSJldmVub2RkIi8+PC9zdmc+Cg");
+    filter: drop-shadow(0 8px 32px rgba(54 62 74 / 8%));
+  }
+
+  /* Copyright */
+  &.copyright {
+    position: absolute;
+    font-size: 10.3px;
+    line-height: 12.5px;
+    bottom: 4px;
+    right: 4px;
+    border: 1px solid var(--divider);
+    border-radius: 3px;
+    text-align: right;
+    padding: 6px 10px;
+    backdrop-filter: blur(10px);
+  }
+}
+
+// Dark mode filter
+@at-root html[data-theme="dark"] {
+  .x.map {
+    filter: grayscale(85%) invert(100%) hue-rotate(220deg);
+  }
+}

@@ -3,17 +3,17 @@ syntax = "proto3";
 package user_def.v1;
 
 enum StatusVisibility {
-  STATUS_VISIBILITY_UNSPECIFIED = 0;
-  STATUS_VISIBILITY_GLOBAL = 1;
-  STATUS_VISIBILITY_FOLLOWERS = 2;
-  STATUS_VISIBILITY_FRIENDS = 3;
+  STATUS_VISIBILITY_UNSPECIFIED /**/ = 0;
+  STATUS_VISIBILITY_GLOBAL /*     */ = 1;
+  STATUS_VISIBILITY_FOLLOWERS /*  */ = 2;
+  STATUS_VISIBILITY_FRIENDS /*    */ = 3;
 }
 
 message Status {
-  optional string emoji = 1;
-  optional string text = 2;
-  optional string expires_at = 3;
-  StatusVisibility visibility = 4;
+  optional string emoji /*      */ = 1;
+  optional string text /*       */ = 2;
+  optional string expires_at /* */ = 3;
+  StatusVisibility visibility /**/ = 4;
 }
 
 // Get user ID

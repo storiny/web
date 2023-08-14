@@ -4,6 +4,7 @@ package api_service.v1;
 
 import "connection_settings_def/v1/def.proto";
 import "credential_settings_def/v1/def.proto";
+import "login_activity_def/v1/def.proto";
 import "notification_settings_def/v1/def.proto";
 import "privacy_settings_def/v1/def.proto";
 import "profile_def/v1/def.proto";
@@ -49,4 +50,8 @@ service ApiService {
    * Returns the user's connection settings
    */
   rpc GetConnectionSettings(connection_settings_def.v1.GetConnectionSettingsRequest) returns (connection_settings_def.v1.GetConnectionSettingsResponse) {}
+  /**
+   * Returns the user's login activity
+   */
+  rpc GetLoginActivity(login_activity_def.v1.GetLoginActivityRequest) returns (login_activity_def.v1.GetLoginActivityResponse) {}
 }

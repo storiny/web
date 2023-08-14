@@ -1,0 +1,41 @@
+syntax = "proto3";
+
+package login_activity_def.v1;
+
+enum DeviceType {
+  DEVICE_TYPE_UNSPECIFIED /* */ = 0;
+  DEVICE_TYPE_COMPUTER /*    */ = 1;
+  DEVICE_TYPE_CONSOLE /*     */ = 2;
+  DEVICE_TYPE_MOBILE /*      */ = 3;
+  DEVICE_TYPE_SMART_TV /*    */ = 4;
+  DEVICE_TYPE_TABLET /*      */ = 5;
+  DEVICE_TYPE_UNKNOWN /*     */ = 6;
+}
+
+message Device {
+  string display_name /**/ = 1;
+  DeviceType type /*    */ = 2;
+}
+
+message Location {
+  string display_name = 1;
+  optional sint32 lat = 2;
+  optional sint32 lng = 3;
+}
+
+message Login {
+  string id /*        */ = 1;
+  Device device /*    */ = 2;
+  Location location /**/ = 3;
+  bool is_active /*   */ = 4;
+  string created_at /**/ = 5;
+}
+
+message GetLoginActivityRequest {
+  string token = 1; // Token from the session cookie (used to determine if the current device is active)
+}
+
+message GetLoginActivityResponse {
+  optional Login recent = 1;
+  repeated Login logins = 2;
+}

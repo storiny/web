@@ -3,32 +3,32 @@ syntax = "proto3";
 package connection_def.v1;
 
 enum Provider {
-  PROVIDER_UNSPECIFIED = 0;
-  PROVIDER_TWITTER = 1;
-  PROVIDER_GITHUB = 2;
-  PROVIDER_TWITCH = 3;
-  PROVIDER_SPOTIFY = 4;
-  PROVIDER_REDDIT = 5;
-  PROVIDER_FACEBOOK = 6;
-  PROVIDER_INSTAGRAM = 7;
-  PROVIDER_DISCORD = 8;
-  PROVIDER_YOUTUBE = 9;
-  PROVIDER_LINKED_IN = 10;
-  PROVIDER_FIGMA = 11;
-  PROVIDER_DRIBBBLE = 12;
-  PROVIDER_SNAPCHAT = 13;
+  PROVIDER_UNSPECIFIED /**/ = 0;
+  PROVIDER_TWITTER /*    */ = 1;
+  PROVIDER_GITHUB /*     */ = 2;
+  PROVIDER_TWITCH /*     */ = 3;
+  PROVIDER_SPOTIFY /*    */ = 4;
+  PROVIDER_REDDIT /*     */ = 5;
+  PROVIDER_FACEBOOK /*   */ = 6;
+  PROVIDER_INSTAGRAM /*  */ = 7;
+  PROVIDER_DISCORD /*    */ = 8;
+  PROVIDER_YOUTUBE /*    */ = 9;
+  PROVIDER_LINKED_IN /*  */ = 10;
+  PROVIDER_FIGMA /*      */ = 11;
+  PROVIDER_DRIBBBLE /*   */ = 12;
+  PROVIDER_SNAPCHAT /*   */ = 13;
 }
 
 message Connection {
-  Provider provider = 1;
-  string url = 2;
+  Provider provider /**/ = 1;
+  string url /*       */ = 2;
 }
 
 message ConnectionSetting {
-  string id = 1;
-  Provider provider = 2;
-  bool hidden = 3;
-  string display_name = 4;
-  string url = 5;
-  string created_at = 6;
+  string id /*          */ = 1;
+  Provider provider /*  */ = 2;
+  bool hidden /*        */ = 3;
+  string display_name /**/ = 4;
+  string url /*         */ = 5;
+  string created_at /*  */ = 6;
 }

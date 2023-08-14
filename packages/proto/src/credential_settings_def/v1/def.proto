@@ -7,8 +7,8 @@ message GetCredentialSettingsRequest {
 }
 
 message GetCredentialSettingsResponse {
-  bool has_password = 1;
-  bool mfa_enabled = 2;
-  optional string login_apple_id = 3;
-  optional string login_google_id = 4;
+  bool has_password /*              */ = 1;
+  bool mfa_enabled /*               */ = 2;
+  optional string login_apple_id /* */ = 3;
+  optional string login_google_id /**/ = 4;
 }

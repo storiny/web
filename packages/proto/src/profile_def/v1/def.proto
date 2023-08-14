@@ -6,39 +6,39 @@ import "connection_def/v1/def.proto";
 import "user_def/v1/def.proto";
 
 message GetProfileRequest {
-  string username = 1;
-  optional string current_user_id = 2;
+  string username /*                */ = 1;
+  optional string current_user_id /**/ = 2;
 }
 
 message GetProfileResponse {
   // Base props
-  string id = 1;
-  string name = 2;
-  string username = 3;
-  optional user_def.v1.Status status = 4;
-  optional string bio = 5;
-  optional string avatar_id = 6;
-  optional string avatar_hex = 7;
-  optional string banner_id = 8;
-  optional string banner_hex = 9;
-  string location = 10;
-  string created_at = 11;
-  int64 public_flags = 12;
-  int32 story_count = 13;
-  int32 follower_count = 14;
+  string id /*                                        */ = 1;
+  string name /*                                      */ = 2;
+  string username /*                                  */ = 3;
+  optional user_def.v1.Status status /*               */ = 4;
+  optional string bio /*                              */ = 5;
+  optional string avatar_id /*                        */ = 6;
+  optional string avatar_hex /*                       */ = 7;
+  optional string banner_id /*                        */ = 8;
+  optional string banner_hex /*                       */ = 9;
+  string location /*                                  */ = 10;
+  string created_at /*                                */ = 11;
+  uint64 public_flags /*                              */ = 12;
+  uint32 story_count /*                               */ = 13;
+  uint32 follower_count /*                            */ = 14;
   // Following and friend lists can be private
-  optional int32 following_count = 15;
-  optional int32 friend_count = 16;
-  bool is_private = 17;
-  repeated connection_def.v1.Connection connections = 18;
+  optional uint32 following_count /*                  */ = 15;
+  optional uint32 friend_count /*                     */ = 16;
+  bool is_private /*                                  */ = 17;
+  repeated connection_def.v1.Connection connections /**/ = 18;
   // User specific props
-  optional bool is_following = 19;
-  optional bool is_follower = 20;
-  optional bool is_friend = 21;
-  optional bool is_subscribed = 22;
-  optional bool is_friend_request_sent = 23;
-  optional bool is_blocked_by_user = 24;
-  optional bool is_blocking = 25;
-  optional bool is_muted = 26;
-  optional bool is_self = 27;
+  optional bool is_following /*                       */ = 19;
+  optional bool is_follower /*                        */ = 20;
+  optional bool is_friend /*                          */ = 21;
+  optional bool is_subscribed /*                      */ = 22;
+  optional bool is_friend_request_sent /*             */ = 23;
+  optional bool is_blocked_by_user /*                 */ = 24;
+  optional bool is_blocking /*                        */ = 25;
+  optional bool is_muted /*                           */ = 26;
+  optional bool is_self /*                            */ = 27;
 }

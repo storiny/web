@@ -186,19 +186,19 @@ export const GetProfileResponse = {
       writer.uint32(90).string(message.created_at);
     }
     if (message.public_flags !== 0) {
-      writer.uint32(96).int64(message.public_flags);
+      writer.uint32(96).uint64(message.public_flags);
     }
     if (message.story_count !== 0) {
-      writer.uint32(104).int32(message.story_count);
+      writer.uint32(104).uint32(message.story_count);
     }
     if (message.follower_count !== 0) {
-      writer.uint32(112).int32(message.follower_count);
+      writer.uint32(112).uint32(message.follower_count);
     }
     if (message.following_count !== undefined) {
-      writer.uint32(120).int32(message.following_count);
+      writer.uint32(120).uint32(message.following_count);
     }
     if (message.friend_count !== undefined) {
-      writer.uint32(128).int32(message.friend_count);
+      writer.uint32(128).uint32(message.friend_count);
     }
     if (message.is_private === true) {
       writer.uint32(136).bool(message.is_private);
@@ -325,35 +325,35 @@ export const GetProfileResponse = {
             break;
           }
 
-          message.public_flags = longToNumber(reader.int64() as Long);
+          message.public_flags = longToNumber(reader.uint64() as Long);
           continue;
         case 13:
           if (tag !== 104) {
             break;
           }
 
-          message.story_count = reader.int32();
+          message.story_count = reader.uint32();
           continue;
         case 14:
           if (tag !== 112) {
             break;
           }
 
-          message.follower_count = reader.int32();
+          message.follower_count = reader.uint32();
           continue;
         case 15:
           if (tag !== 120) {
             break;
           }
 
-          message.following_count = reader.int32();
+          message.following_count = reader.uint32();
           continue;
         case 16:
           if (tag !== 128) {
             break;
           }
 
-          message.friend_count = reader.int32();
+          message.friend_count = reader.uint32();
           continue;
         case 17:
           if (tag !== 136) {

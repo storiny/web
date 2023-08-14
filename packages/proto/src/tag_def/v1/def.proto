@@ -3,17 +3,17 @@ syntax = "proto3";
 package tag_def.v1;
 
 message GetTagRequest {
-  string name = 1;
-  optional string current_user_id = 2;
+  string name /*                    */ = 1;
+  optional string current_user_id /**/ = 2;
 }
 
 message GetTagResponse {
   // Base props
-  string id = 1;
-  string name = 2;
-  int32 story_count = 3;
-  int32 follower_count = 4;
-  string created_at = 5;
+  string id /*                 */ = 1;
+  string name /*               */ = 2;
+  int32 story_count /*         */ = 3;
+  int32 follower_count /*      */ = 4;
+  string created_at /*         */ = 5;
   // User specific props
-  optional bool is_following = 6;
+  optional bool is_following /**/ = 6;
 }
