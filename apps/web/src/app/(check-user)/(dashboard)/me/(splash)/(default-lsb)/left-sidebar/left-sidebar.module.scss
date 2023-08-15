@@ -1,8 +1,7 @@
 .x {
   /* Base styles */
   &.left-sidebar {
-    padding-top: 8px;
-    max-height: calc(100vh - 76px);
+    max-height: calc(100vh - calc(76px + var(--banner-height, 0px)));
     height: 100%;
   }
 

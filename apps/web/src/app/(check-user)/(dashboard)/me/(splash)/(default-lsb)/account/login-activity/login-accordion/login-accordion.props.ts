@@ -1,6 +1,6 @@
 import { LoginActivityProps } from "../login-activity.props";
 
-export interface LoginItemProps {
+export interface LoginAccordionProps {
   login: LoginActivityProps["logins"][number];
-  ratio?: number;
+  onLogout: () => void;
 }

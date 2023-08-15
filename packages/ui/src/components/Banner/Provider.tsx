@@ -3,15 +3,21 @@
 import { ToastProvider as BannerPrimitiveProvider } from "@radix-ui/react-toast";
 import React from "react";
 
-import BannerViewport from "./Viewport";
+import BannerViewport, { BannerViewportProps } from "./Viewport";
 
-const BannerProvider = ({ children }: { children: React.ReactNode }) => (
+const BannerProvider = ({
+  children,
+  viewportProps
+}: {
+  children?: React.ReactNode;
+  viewportProps?: BannerViewportProps;
+}): React.ReactElement => (
   <BannerPrimitiveProvider
     duration={Infinity}
     label={"Background notification"}
   >
     {children}
-    <BannerViewport />
+    <BannerViewport {...viewportProps} />
   </BannerPrimitiveProvider>
 );
 

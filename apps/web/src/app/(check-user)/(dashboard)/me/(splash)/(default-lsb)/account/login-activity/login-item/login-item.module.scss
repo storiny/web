@@ -1,45 +1,23 @@
 .x {
-  /* Map loader */
-  &.loader {
-    background-color: var(--bg-elevation-sm);
-  }
-
   /* Base styles */
   &.login-item {
-    border: none;
-    padding: 8px 16px;
+    border: 1px solid var(--divider);
+    border-radius: var(--radius-md);
+    overflow: hidden;
   }
 
-  /* Wrapper */
-  &.wrapper {
+  /* Device */
+  &.device {
     --icon-size: 36px;
     --icon-stroke: var(--fg-minor);
-  }
 
-  /* Trigger */
-  &.trigger {
-    height: fit-content;
-    padding: 0;
-    outline-offset: 5px;
-    border-radius: var(--radius-xs); // For outline
-
-    &:hover,
-    &[data-state="open"] {
-      background-color: transparent;
-    }
-  }
-
-  /* Content wrapper */
-  &.content-wrapper {
-    padding: 0;
+    padding: 12px 8px;
   }
 
   /* Content */
-  &.content {
-    border-radius: var(--radius-lg);
-    border: 1px solid var(--divider);
+  &.map {
     background-color: var(--bg-elevation-xs);
-    overflow: hidden;
+    border-block: 1px solid var(--divider);
   }
 
   /* Details */
@@ -52,19 +30,15 @@
     color: var(--melon-200);
   }
 
-  /* Chevron icon */
-  &.icon {
-    --icon-size: 22px;
-
-    margin-right: 16px;
+  /* Footer label */
+  &.footer-label {
+    padding: 6px 8px;
   }
 
   /* Logout button */
   &.button {
+    width: 100%;
     border-radius: 0;
-    padding-block: 7.5px;
-    height: fit-content;
-    background-color: var(--bg-body);
     border-top: 1px solid var(--divider);
   }
 }

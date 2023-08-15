@@ -32,11 +32,13 @@ const meta: Meta<typeof Banner> = {
 export default meta;
 type Story = StoryObj<typeof Banner>;
 
-const BannerComponent = (props?: BannerProps) => {
+const BannerComponent = (props?: BannerProps): React.ReactElement => {
   const banner = useBanner();
 
   return (
-    <Button onClick={() => banner("This is a banner notification", props)}>
+    <Button
+      onClick={(): void => banner("This is a banner notification", props)}
+    >
       Show banner
     </Button>
   );

@@ -9,3 +9,4 @@ import "./mfa";
 import "./accounts";
 import "./privacy";
 import "./connections";
+import "./sessions";

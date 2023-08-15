@@ -1,7 +1,6 @@
 import { clsx } from "clsx";
 import React from "react";
 
-import Button from "~/components/Button";
 import Link from "~/components/Link";
 import Spacer from "~/components/Spacer";
 import Typography from "~/components/Typography";

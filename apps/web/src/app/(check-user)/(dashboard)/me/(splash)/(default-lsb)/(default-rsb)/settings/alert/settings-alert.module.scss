@@ -1,0 +1,50 @@
+@use "breakpoints" as breakpoints;
+
+/* Base styles */
+.alert {
+  width: auto;
+  display: flex;
+  align-items: flex-start;
+  padding-block: 12px;
+  padding-inline: 16px;
+  margin-inline: var(--grid-compensation);
+  margin-top: -24px;
+  background-color: var(--inverted-400);
+  border-bottom: 1px solid var(--divider);
+
+  @include breakpoints.media("<desktop", ">mobile") {
+    width: calc(100vw - 72px);
+    margin-left: 50%;
+    transform: translateX(-50%);
+  }
+}
+
+/* Decorator */
+.decorator {
+  --icon-size: 16px;
+  --icon-stroke: var(--inverted-0);
+
+  margin-right: 18px;
+}
+
+/* Description */
+.description {
+  margin-right: 24px;
+  flex-grow: 1;
+  text-align: center;
+  align-items: center;
+  color: var(--inverted-0);
+  font-size: calc(var(--font-size-sm) - 1px);
+  line-height: calc(var(--line-height-sm) - 1px);
+}
+
+/* Close action */
+.close {
+  --icon-size: 16px;
+  --icon-stroke: var(--inverted-0);
+
+  cursor: pointer;
+  border-radius: var(--radius-md); // Focus outline radius
+  width: var(--icon-size);
+  height: var(--icon-size);
+}

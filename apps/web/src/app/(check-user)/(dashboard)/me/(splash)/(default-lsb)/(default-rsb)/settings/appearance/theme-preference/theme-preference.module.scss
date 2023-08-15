@@ -1,0 +1,20 @@
+@use "breakpoints" as breakpoints;
+
+.x {
+  /* Preview */
+  &.preview {
+    &.clip {
+      &-left {
+        clip-path: polygon(0 0, 50% 0, 50% 100%, 0 100%);
+      }
+
+      &-right {
+        clip-path: polygon(50% 0, 100% 0, 100% 100%, 50% 100%);
+      }
+    }
+
+    @include breakpoints.media("<=mobile") {
+      transform: scale(135%) translateY(13%);
+    }
+  }
+}

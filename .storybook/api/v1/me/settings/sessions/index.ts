@@ -1,0 +1,2 @@
+import "./logout";
+import "./destroy";

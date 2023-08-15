@@ -149,15 +149,15 @@
      * to the `body` and only provide the variables
      */
     &-slim {
-      --t-legible-font-size: var(--font-size-md);
-      --t-legible-line-height: 24px;
+      --t-legible-font-size: var(--font-size-md) !important;
+      --t-legible-line-height: 24px !important;
     }
 
     &-oversized {
-      --t-legible-font-size: 20px;
-      --t-legible-line-height: 33.5px;
-      --t-legible-font-size-sm: 19.2px;
-      --t-legible-line-height-sm: 32.5px;
+      --t-legible-font-size: 20px !important;
+      --t-legible-line-height: 33.5px !important;
+      --t-legible-font-size-sm: 19.2px !important;
+      --t-legible-line-height-sm: 32.5px !important;
     }
   }
 }

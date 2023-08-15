@@ -8,7 +8,11 @@ import { breakpoints } from "~/theme/breakpoints";
 
 import styles from "./right-sidebar.module.scss";
 
-const AccountLoginActivityRightSidebar = (): React.ReactElement | null => {
+const AccountLoginActivityRightSidebar = ({
+  children
+}: {
+  children: React.ReactNode;
+}): React.ReactElement | null => {
   const shouldRender = useMediaQuery(breakpoints.up("desktop"));
 
   if (!shouldRender) {
@@ -17,7 +21,7 @@ const AccountLoginActivityRightSidebar = (): React.ReactElement | null => {
 
   return (
     <RightSidebar className={clsx(styles.x, styles["right-sidebar"])}>
-      Sidebar
+      {children}
       {/* Push the footer to the bottom of the viewport */}
       <Grow />
     </RightSidebar>

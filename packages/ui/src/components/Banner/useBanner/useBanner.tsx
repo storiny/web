@@ -1,11 +1,15 @@
-import React from "react";
-
 import { renderBanner } from "~/redux/features/banner/slice";
 import { useAppDispatch } from "~/redux/hooks";
 
 import { BannerProps } from "../Banner.props";
 
-export const useBanner = () => {
+/**
+ * Hook for using banner
+ */
+export const useBanner = (): ((
+  message: string,
+  { icon, color }?: Pick<BannerProps, "icon" | "color">
+) => void) => {
   const dispatch = useAppDispatch();
 
   return (
