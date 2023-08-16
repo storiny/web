@@ -8,8 +8,10 @@
     padding: 12px 8px;
 
     @include breakpoints.media("<=mobile") {
-      flex-direction: column;
-      gap: 18px;
+      &:not(.wrap) {
+        flex-direction: column;
+        gap: 18px;
+      }
     }
   }
 

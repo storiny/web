@@ -70,6 +70,7 @@ const StatusBar = (): React.ReactElement => (
     className={clsx(
       "flex-center",
       "f-grow",
+      "t-mono",
       "t-minor",
       styles.x,
       styles["status-bar"]

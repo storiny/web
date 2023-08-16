@@ -105,8 +105,8 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>((props, ref) => {
           autoFocus={autoFocus}
           className={clsx(
             "unset",
+            monospaced && "t-mono",
             styles.input,
-            monospaced && styles.monospaced,
             className
           )}
           disabled={disabled}

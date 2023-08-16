@@ -117,6 +117,46 @@ const ThemePreview = ({
   </svg>
 );
 
+// Item
+
+const ThemeItem = ({
+  preview,
+  isActive,
+  ratio,
+  label,
+  value
+}: {
+  isActive: boolean;
+  label: React.ReactNode;
+  preview: React.ReactNode;
+  ratio: number;
+  value: string;
+}): React.ReactElement => (
+  <div
+    className={clsx(
+      "flex-col",
+      commonStyles.x,
+      commonStyles.item,
+      isActive && commonStyles.selected
+    )}
+  >
+    <AspectRatio className={"full-w"} ratio={ratio}>
+      {preview}
+    </AspectRatio>
+    <Divider />
+    <Radio
+      className={clsx(commonStyles.x, commonStyles.radio)}
+      label={label}
+      slotProps={{
+        container: {
+          className: clsx(commonStyles.x, commonStyles["radio-container"])
+        }
+      }}
+      value={value}
+    />
+  </div>
+);
+
 const ThemePreference = (): React.ReactElement => {
   const isSmallerThanMobile = useMediaQuery(breakpoints.down("mobile"));
   const dispatch = useAppDispatch();
@@ -138,76 +178,32 @@ const ThemePreference = (): React.ReactElement => {
         orientation={isSmallerThanMobile ? "vertical" : "horizontal"}
         value={theme}
       >
-        <div
-          className={clsx(
-            "flex-col",
-            commonStyles.x,
-            commonStyles.item,
-            theme === "system" && commonStyles.selected
-          )}
-        >
-          <AspectRatio className={"full-w"} ratio={ratio}>
-            <ThemePreview className={styles["clip-left"]} theme={"light"} />
-            <ThemePreview className={styles["clip-right"]} theme={"dark"} />
-          </AspectRatio>
-          <Divider />
-          <Radio
-            className={clsx(commonStyles.x, commonStyles.radio)}
-            label={"Sync with system"}
-            slotProps={{
-              container: {
-                className: clsx(commonStyles.x, commonStyles["radio-container"])
-              }
-            }}
-            value={"system"}
-          />
-        </div>
-        <div
-          className={clsx(
-            "flex-col",
-            commonStyles.x,
-            commonStyles.item,
-            theme === "light" && commonStyles.selected
-          )}
-        >
-          <AspectRatio className={"full-w"} ratio={ratio}>
-            <ThemePreview theme={"light"} />
-          </AspectRatio>
-          <Divider />
-          <Radio
-            className={clsx(commonStyles.x, commonStyles.radio)}
-            label={"Light theme"}
-            slotProps={{
-              container: {
-                className: clsx(commonStyles.x, commonStyles["radio-container"])
-              }
-            }}
-            value={"light"}
-          />
-        </div>
-        <div
-          className={clsx(
-            "flex-col",
-            commonStyles.x,
-            commonStyles.item,
-            theme === "dark" && commonStyles.selected
-          )}
-        >
-          <AspectRatio className={"full-w"} ratio={ratio}>
-            <ThemePreview theme={"dark"} />
-          </AspectRatio>
-          <Divider />
-          <Radio
-            className={clsx(commonStyles.x, commonStyles.radio)}
-            label={"Dark theme"}
-            slotProps={{
-              container: {
-                className: clsx(commonStyles.x, commonStyles["radio-container"])
-              }
-            }}
-            value={"dark"}
-          />
-        </div>
+        <ThemeItem
+          isActive={theme === "system"}
+          label={"Sync with system"}
+          preview={
+            <React.Fragment>
+              <ThemePreview className={styles["clip-left"]} theme={"light"} />
+              <ThemePreview className={styles["clip-right"]} theme={"dark"} />
+            </React.Fragment>
+          }
+          ratio={ratio}
+          value={"system"}
+        />
+        <ThemeItem
+          isActive={theme === "light"}
+          label={"Light theme"}
+          preview={<ThemePreview theme={"light"} />}
+          ratio={ratio}
+          value={"light"}
+        />
+        <ThemeItem
+          isActive={theme === "dark"}
+          label={"Dark theme"}
+          preview={<ThemePreview theme={"dark"} />}
+          ratio={ratio}
+          value={"dark"}
+        />
       </RadioGroup>
       <ThemePreviewSymbol />
     </DashboardGroup>

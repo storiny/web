@@ -4,17 +4,20 @@ import "server-only";
 import "normalize.css/normalize.css";
 import "~/theme/main.scss";
 
+import dynamic from "next/dynamic";
 import React from "react";
 
 import { getSessionToken } from "~/common/utils/getSessionToken";
 import CriticalStyles from "~/theme/Critical";
 
-import Fonts from "./fonts";
+import CriticalFonts from "./fonts/critical";
 import ObserverErrorHandler from "./observer";
 import { PreloadResources } from "./preload-resources";
 import StateProvider from "./state-provider";
 // @ts-ignore
 import themeSync from "./theme-sync.txt";
+
+const LazyFonts = dynamic(() => import("./fonts/lazy"));
 
 const RootLayout = ({
   children
@@ -52,8 +55,9 @@ const RootLayout = ({
           title="Storiny"
           type="application/opensearchdescription+xml"
         />
-        <Fonts />
         <CriticalStyles />
+        <CriticalFonts />
+        <LazyFonts />
       </head>
       <body dir={"ltr"}>
         <StateProvider loggedIn={loggedIn}>{children}</StateProvider>

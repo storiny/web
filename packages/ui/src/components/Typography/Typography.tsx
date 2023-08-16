@@ -51,6 +51,7 @@ const Typography = forwardRef<TypographyProps, TypographyElement>(
         <Element
           {...rest}
           className={clsx(
+            level === "inline-code" && "t-mono",
             ellipsis && typographyStyles.ellipsis,
             isInlineColor && styles["inline-color"],
             level === "legible" || color === "legible"

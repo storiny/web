@@ -78,7 +78,7 @@ const Enable2FAModal = (): React.ReactElement => {
             <AspectRatio className={styles["aspect-ratio"]} ratio={1}>
               <Image alt={"QR code"} src={qr} />
             </AspectRatio>
-            <Typography className={styles.code} level={"body2"}>
+            <Typography className={clsx("t-mono", styles.code)} level={"body2"}>
               {code}
             </Typography>
           </div>

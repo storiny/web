@@ -1,7 +1,20 @@
 @mixin main {
+  /**
+   * Use local font for grave character as the grave from Satoshi
+   * overlaps over each other
+   */
+  @font-face {
+    font-family: "Storiny Charfix";
+    src: local("system-ui"), local("sans-serif");
+    unicode-range: U+60; // Grave unicode
+  }
+
+  --font-system: -apple-system, "BlinkMacSystemFont", avenir next, avenir,
+    segoe ui, helvetica neue, helvetica, "Cantarell", "Ubuntu", roboto, noto,
+    arial, sans-serif;
+  --font-system-mono: "Menlo", "Consolas", "Monaco", "Liberation Mono",
+    "Lucida Console", monospace;
   --font-primary: var(--font-cabinet-grotesk), var(--font-secondary);
-  --font-secondary: "Storiny Charfix", "Storiny PUA", var(--font-satoshi),
-    "Segoe UI", -apple-system, blinkmacsystemfont, system-ui, roboto, oxygen,
-    ubuntu, cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
-  --font-monospace: "Storiny Mono", consolas, menlo, monospace;
+  --font-secondary: "Storiny Charfix", var(--font-satoshi), var(--font-system);
+  --font-monospace: var(--font-system-mono);
 }

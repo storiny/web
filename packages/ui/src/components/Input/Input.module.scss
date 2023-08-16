@@ -48,10 +48,6 @@
     user-select: none;
   }
 
-  &.monospaced {
-    font-family: var(--font-monospace);
-  }
-
   &[type="number"] {
     // noinspection Stylelint
     -moz-appearance: textfield;

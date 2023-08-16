@@ -1,5 +1,6 @@
 "use client";
 
+import { devConsole } from "@storiny/shared/src/utils/devLog";
 import React from "react";
 
 import { UseStickyProps } from "./useSticky.props";
@@ -54,7 +55,7 @@ try {
   window.addEventListener("testPassive", () => {}, options);
   window.removeEventListener("testPassive", () => {}, options);
 } catch (e) {
-  // noop
+  devConsole.error(e);
 }
 
 const getScrollParent = (node: HTMLElement): Window | HTMLElement => {

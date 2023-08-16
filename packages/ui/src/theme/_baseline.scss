@@ -139,6 +139,11 @@ body {
     --global-bottom-gutter: 72px;
   }
 
+  // Programming ligatures
+  &.ligatures {
+    font-variant-ligatures: contextual;
+  }
+
   @media print {
     background-color: hsl(0deg 0% 100%);
   }

@@ -1,0 +1,33 @@
+.x {
+  /* Radio group */
+  &.radio-group {
+    flex-wrap: wrap;
+  }
+
+  /* Item */
+  &.item {
+    --typeface-preview-fill: var(--fg-minor);
+
+    flex: 1;
+    min-width: 145px;
+
+    &.selected {
+      --typeface-preview-fill: var(--fg-major);
+    }
+  }
+
+  /* Decorator */
+  &.decorator {
+    max-width: 100%;
+    padding-inline: 16px;
+    padding-block: 16px 10px;
+    background-color: var(--bg-elevation-sm);
+  }
+
+  /* Decorator SVG */
+  &.svg {
+    width: 100%;
+    height: 100%;
+    max-width: 56px;
+  }
+}

@@ -1,9 +1,12 @@
 "use client";
 
+import { devConsole } from "@storiny/shared/src/utils/devLog";
+import { isTestEnv } from "@storiny/shared/src/utils/isTestEnv";
 import clsx from "clsx";
 import React from "react";
 
 import { useMediaQuery } from "~/hooks/useMediaQuery";
+import { selectHapticFeedback } from "~/redux/features";
 import { selectLoggedIn } from "~/redux/features/auth/selectors";
 import { useAppSelector } from "~/redux/hooks";
 import { breakpoints } from "~/theme/breakpoints";
@@ -40,9 +43,32 @@ const IconButton = forwardRef<IconButtonProps, "button">((props, ref) => {
   } = React.useContext(InputContext) || {};
   const disabled = Boolean(inputDisabled || disabledProp || loading);
   const loggedIn = useAppSelector(selectLoggedIn);
+  const hapticFeedback = useAppSelector(selectHapticFeedback);
   const shouldLogin = checkAuth && !loggedIn;
   const Component = shouldLogin ? "a" : as;
   const size = autoSize ? (isSmallerThanTablet ? "lg" : sizeProp) : sizeProp;
+
+  /**
+   * Handles click event
+   * @param event Click event
+   */
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>): void => {
+    if (shouldLogin) {
+      if (isTestEnv()) {
+        event.preventDefault(); // Prevent navigation when testing
+      }
+    } else {
+      onClick?.(event);
+    }
+
+    try {
+      if ("vibrate" in navigator && hapticFeedback) {
+        navigator.vibrate(26);
+      }
+    } catch (e) {
+      devConsole.error(e);
+    }
+  };
 
   React.useImperativeHandle(ref, () => buttonRef.current!);
 
@@ -61,14 +87,7 @@ const IconButton = forwardRef<IconButtonProps, "button">((props, ref) => {
         styles[inputSize || size],
         className
       )}
-      onClick={(event: React.MouseEvent<HTMLButtonElement>): void => {
-        shouldLogin
-          ? // Prevent navigation when testing
-            process.env.NODE_ENV === "test"
-            ? event.preventDefault()
-            : undefined
-          : onClick?.(event);
-      }}
+      onClick={handleClick}
       ref={buttonRef}
       tabIndex={disabled ? -1 : 0}
       {...(shouldLogin

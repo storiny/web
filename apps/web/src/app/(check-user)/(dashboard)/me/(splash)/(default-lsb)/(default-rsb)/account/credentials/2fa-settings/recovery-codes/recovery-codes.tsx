@@ -122,7 +122,11 @@ const RecoveryCodesModal = (): React.ReactElement => {
               {codes.map((code) => (
                 <Typography
                   as={"span"}
-                  className={clsx(styles.code, code.used && styles.used)}
+                  className={clsx(
+                    "t-mono",
+                    styles.code,
+                    code.used && styles.used
+                  )}
                   key={code.value}
                   level={"body2"}
                 >

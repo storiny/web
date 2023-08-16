@@ -1,0 +1,9 @@
+@use "breakpoints" as breakpoints;
+
+.x {
+  /* Radio group */
+  &.radio-group {
+    gap: 12px;
+    padding: 12px 8px;
+  }
+}

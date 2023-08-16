@@ -1,4 +1,5 @@
 import { createSlice, isAnyOf, PayloadAction } from "@reduxjs/toolkit";
+import { devConsole } from "@storiny/shared/src/utils/devLog";
 import { z } from "zod";
 
 import { AppStartListening } from "../../listenerMiddleware";
@@ -10,6 +11,12 @@ const preferencesSchema = z.object({
   theme: z.union([z.literal("system"), z.literal("light"), z.literal("dark")]),
   showAppearanceAlert: z.boolean(),
   showAccessibilityAlert: z.boolean(),
+  hapticFeedback: z.boolean(),
+  reducedMotion: z.union([
+    z.literal("system"),
+    z.literal("enabled"),
+    z.literal("disabled")
+  ]),
   readingFontSize: z.union([
     z.literal("slim"),
     z.literal("regular"),
@@ -26,8 +33,8 @@ const preferencesSchema = z.object({
     z.literal("merriweather")
   ]),
   codeFont: z.union([
-    z.literal("plex_mono"),
-    z.literal("source_code_pro"),
+    z.literal("plex-mono"),
+    z.literal("source-code-pro"),
     z.literal("system")
   ]),
   enableCodeLigatures: z.boolean()
@@ -38,11 +45,13 @@ export type Theme = PreferencesState["theme"];
 
 export const preferencesInitialState: PreferencesState = {
   theme: "system",
+  reducedMotion: "system",
+  hapticFeedback: false,
   showAppearanceAlert: true,
   showAccessibilityAlert: true,
   readingFont: "satoshi",
   readingFontSize: "regular",
-  codeFont: "plex_mono",
+  codeFont: "system",
   enableCodeLigatures: false
 };
 
@@ -51,24 +60,14 @@ export const preferencesSlice = createSlice({
   initialState: preferencesInitialState,
   reducers: {
     /**
-     * Sycns the theme to the browser
+     * Sycns the state to the browser
      */
     syncToBrowser: () => {},
     /**
      * Hydrates state from localStorage
      */
-    hydrateState: (state, action: PayloadAction<PreferencesState>) =>
+    hydrateState: (_, action: PayloadAction<PreferencesState>) =>
       action.payload,
-    /**
-     * Mutates the preferences
-     */
-    mutatePreferences: (
-      state,
-      action: PayloadAction<Partial<PreferencesState>>
-    ) => {
-      state = { ...state, ...action.payload };
-      return state;
-    },
     /**
      * Mutates alert visibility
      */
@@ -83,6 +82,58 @@ export const preferencesSlice = createSlice({
       ] = action.payload[1];
     },
     /**
+     * Changes the reduced motion settings
+     */
+    setReducedMotion: (
+      state,
+      action: PayloadAction<PreferencesState["reducedMotion"]>
+    ) => {
+      state.reducedMotion = action.payload;
+    },
+    /**
+     * Changes the reading font size
+     */
+    setReadingFontSize: (
+      state,
+      action: PayloadAction<PreferencesState["readingFontSize"]>
+    ) => {
+      state.readingFontSize = action.payload;
+    },
+    /**
+     * Changes the reading font
+     */
+    setReadingFont: (
+      state,
+      action: PayloadAction<PreferencesState["readingFont"]>
+    ) => {
+      state.readingFont = action.payload;
+    },
+    /**
+     * Changes the code font
+     */
+    setCodeFont: (
+      state,
+      action: PayloadAction<PreferencesState["codeFont"]>
+    ) => {
+      if (action.payload === "system") {
+        state.enableCodeLigatures = false; // Ligatures are not available with system font
+      }
+
+      state.codeFont = action.payload;
+    },
+    /**
+     * Toggles the code ligatures
+     */
+    toggleCodeLigatures: (state, action: PayloadAction<boolean>) => {
+      state.enableCodeLigatures = action.payload;
+    },
+    /**
+     * Toggles haptic feeback
+     */
+    toggleHapticFeedback: (state, action: PayloadAction<boolean>) => {
+      state.hapticFeedback = action.payload;
+    },
+    /**
      * Changes the theme
      */
     setTheme: (state, action: PayloadAction<Theme>) => {
@@ -95,11 +146,75 @@ const {
   syncToBrowser,
   hydrateState,
   setTheme,
-  mutatePreferences,
-  setAlertVisibility
+  setReducedMotion,
+  setAlertVisibility,
+  setReadingFont,
+  setReadingFontSize,
+  setCodeFont,
+  toggleCodeLigatures,
+  toggleHapticFeedback
 } = preferencesSlice.actions;
 
-export { mutatePreferences, setAlertVisibility, setTheme, syncToBrowser };
+export {
+  hydrateState,
+  setAlertVisibility,
+  setCodeFont,
+  setReadingFont,
+  setReadingFontSize,
+  setReducedMotion,
+  setTheme,
+  syncToBrowser,
+  toggleCodeLigatures,
+  toggleHapticFeedback
+};
+
+/**
+ * Syncs the reading font to the browser
+ * @param font Reading font
+ */
+const syncReadingFont = (font: PreferencesState["readingFont"]): void => {
+  if (font !== "satoshi") {
+    document.body.style.setProperty("--font-reading", `var(--font-${font})`);
+  } else {
+    document.body.style.removeProperty("--font-reading");
+  }
+};
+
+/**
+ * Syncs the reading font size to the browser
+ * @param fontSize Reading font size
+ */
+const syncReadingFontSize = (
+  fontSize: PreferencesState["readingFontSize"]
+): void => {
+  document.body.classList.remove(
+    "t-legible-slim",
+    "t-legible-regular",
+    "t-legible-oversized"
+  );
+  document.body.classList.add(`t-legible-${fontSize}`);
+};
+
+/**
+ * Syncs the code font to the browser
+ * @param font Code font
+ * @param ligatures Ligatures flag
+ */
+const syncCodeFont = (
+  font: PreferencesState["codeFont"],
+  ligatures: boolean
+): void => {
+  document.body.classList.toggle("ligatures", ligatures);
+
+  if (font !== "system") {
+    document.body.style.setProperty(
+      "--font-code",
+      `var(--font-${font}${ligatures ? "-lig" : ""})`
+    );
+  } else {
+    document.body.style.removeProperty("--font-code");
+  }
+};
 
 export const addPreferencesListeners = (
   startListening: AppStartListening
@@ -109,7 +224,7 @@ export const addPreferencesListeners = (
    */
   startListening({
     actionCreator: syncToBrowser,
-    effect: (action, listenerApi) => {
+    effect: (_, listenerApi) => {
       try {
         const storedValue = localStorage.getItem(LOCAL_STORAGE_KEY);
 
@@ -119,8 +234,21 @@ export const addPreferencesListeners = (
           );
         }
       } catch (e) {
-        // noop
+        devConsole.error(e);
       }
+    }
+  });
+
+  /**
+   * Apply the hydrate state to the browser
+   */
+  startListening({
+    actionCreator: hydrateState,
+    effect: (action) => {
+      const state = action.payload;
+      syncReadingFont(state.readingFont);
+      syncReadingFontSize(state.readingFontSize);
+      syncCodeFont(state.codeFont, state.enableCodeLigatures);
     }
   });
 
@@ -128,7 +256,7 @@ export const addPreferencesListeners = (
    * Sync the `data-theme` attribute on the body element with the state
    */
   startListening({
-    actionCreator: setTheme,
+    matcher: isAnyOf(setTheme, hydrateState),
     effect: (_, listenerApi) => {
       const { theme } = listenerApi.getState().preferences;
       let finalTheme = theme;
@@ -150,18 +278,88 @@ export const addPreferencesListeners = (
   });
 
   /**
+   * Sync reduced motion settings
+   */
+  startListening({
+    matcher: isAnyOf(setReducedMotion, hydrateState),
+    effect: (_, listenerApi) => {
+      const { reducedMotion } = listenerApi.getState().preferences;
+      let finalReducedMotion = reducedMotion;
+
+      if (reducedMotion === "system") {
+        try {
+          if (window.matchMedia(`(prefers-reduced-motion: reduce)`).matches) {
+            finalReducedMotion = "enabled";
+          } else {
+            finalReducedMotion = "disabled";
+          }
+        } catch (e) {
+          finalReducedMotion = "disabled";
+        }
+      }
+
+      if (finalReducedMotion === "enabled") {
+        if (!document.body.classList.contains("reduced-motion")) {
+          document.body.classList.add("reduced-motion");
+        }
+      } else {
+        document.body.classList.remove("reduced-motion");
+      }
+    }
+  });
+
+  /**
+   * Sync the reading font
+   */
+  startListening({
+    actionCreator: setReadingFont,
+    effect: (action) => syncReadingFont(action.payload)
+  });
+
+  /**
+   * Sync the reading font size
+   */
+  startListening({
+    actionCreator: setReadingFontSize,
+    effect: (action) => syncReadingFontSize(action.payload)
+  });
+
+  /**
+   * Sync the code font
+   */
+  startListening({
+    matcher: isAnyOf(setCodeFont, toggleCodeLigatures),
+    effect: (_, listenerApi) => {
+      const state = listenerApi.getState();
+      syncCodeFont(
+        state.preferences.codeFont,
+        state.preferences.enableCodeLigatures
+      );
+    }
+  });
+
+  /**
    * Persist the preferences state in the browser
    */
   startListening({
-    matcher: isAnyOf(setTheme, setAlertVisibility, mutatePreferences),
-    effect: (action, listenerApi) => {
+    matcher: isAnyOf(
+      setTheme,
+      setAlertVisibility,
+      setReducedMotion,
+      setCodeFont,
+      setReadingFont,
+      setReadingFontSize,
+      toggleCodeLigatures,
+      toggleHapticFeedback
+    ),
+    effect: (_, listenerApi) => {
       try {
         localStorage.setItem(
           LOCAL_STORAGE_KEY,
           JSON.stringify(listenerApi.getState().preferences)
         );
       } catch (e) {
-        // noop
+        devConsole.error(e);
       }
     }
   });

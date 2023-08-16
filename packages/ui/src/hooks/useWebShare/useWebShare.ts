@@ -1,5 +1,7 @@
 "use client";
 
+import { devConsole } from "@storiny/shared/src/utils/devLog";
+
 import { webShare } from "~/utils/webShare";
 
 /**
@@ -28,6 +30,6 @@ export const useWebShare =
         onShareEnd && onShareEnd();
       });
     } catch (e) {
-      // noop
+      devConsole.error(e);
     }
   };

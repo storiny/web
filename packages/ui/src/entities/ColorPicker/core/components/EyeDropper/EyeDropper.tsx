@@ -1,5 +1,6 @@
 "use client";
 
+import { devConsole } from "@storiny/shared/src/utils/devLog";
 import React from "react";
 import useEyeDropper from "use-eye-dropper";
 
@@ -26,7 +27,7 @@ const EyeDropper = (props: EyeDropperProps): React.ReactElement => {
           state.setB(parsedColor.b);
         }
       } catch (e) {
-        // noop
+        devConsole.error(e);
       }
     })();
   }, [open, state]);

@@ -121,6 +121,7 @@
     --t-legible-regular-font-size-sm: 17px;
     --t-legible-regular-line-height-sm: 27px;
 
+    font-family: var(--font-reading, var(--font-secondary));
     font-size: var(--t-legible-font-size, var(--t-legible-regular-font-size));
     line-height: var(
       --t-legible-line-height,
@@ -153,6 +154,14 @@
       --t-legible-line-height: 24px !important;
     }
 
+    /* Used to force regular size */
+    &-regular {
+      --t-legible-font-size: 18px !important;
+      --t-legible-line-height: 31.5px !important;
+      --t-legible-font-size-sm: 17px !important;
+      --t-legible-line-height-sm: 27px !important;
+    }
+
     &-oversized {
       --t-legible-font-size: 20px !important;
       --t-legible-line-height: 33.5px !important;
@@ -175,6 +184,13 @@
       font-size: 18px;
       line-height: 25px;
     }
+  }
+}
+
+/* Code */
+@mixin mono {
+  &-mono {
+    font-family: var(--font-code, var(--font-monospace));
   }
 }
 
@@ -204,5 +220,6 @@
     @include body;
     @include quote;
     @include legible;
+    @include mono;
   }
 }

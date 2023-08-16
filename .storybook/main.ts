@@ -29,8 +29,8 @@ const config: StorybookConfig = {
     "./addons/theme",
   ],
   webpackFinal: async (config) => {
-    config.resolve.alias = {
-      ...config.resolve.alias,
+    config.resolve!.alias = {
+      ...config.resolve!.alias,
       // Typescript absolute paths
       // @storiny/web
       "~/common": path.resolve(__dirname, "../apps/web/src/common"),
