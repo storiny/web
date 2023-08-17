@@ -19,6 +19,10 @@ type TStory = StoryObj<typeof Story>;
 
 export const Default: TStory = {};
 
+export const Draft: TStory = {
+  args: { isDraft: true }
+};
+
 export const Skeleton: TStory = {
   render: () => <StorySkeleton />
 };

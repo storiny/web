@@ -7,7 +7,7 @@ import { renderWithState } from "~/redux/mock";
 
 import DefaultLayout from "../../../../layout";
 import LegalLayout from "../../../layout";
-import DMCAPolicy from "./page";
+import DMCAPolicy from "./client";
 
 const meta: Meta<typeof DMCAPolicy> = {
   title: "pages/Legal/policies/dmca",

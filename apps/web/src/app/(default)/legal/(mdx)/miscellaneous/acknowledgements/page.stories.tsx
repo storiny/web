@@ -7,7 +7,7 @@ import { renderWithState } from "~/redux/mock";
 
 import DefaultLayout from "../../../../layout";
 import LegalLayout from "../../../layout";
-import Acknowledgements from "./page";
+import Acknowledgements from "./client";
 
 const meta: Meta<typeof Acknowledgements> = {
   title: "pages/Legal/miscellaneous/acknowledgements",

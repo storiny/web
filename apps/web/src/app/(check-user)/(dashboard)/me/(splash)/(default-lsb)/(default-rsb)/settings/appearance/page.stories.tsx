@@ -9,7 +9,7 @@ import DashboardLayout from "../../../../../../layout";
 import DashboardSplashLayout from "../../../../layout";
 import DefaultDashboardLeftSidebarLayout from "../../../layout";
 import DefaultDashboardRightSidebarLayout from "../../layout";
-import SettingsAppearancePage from "./page";
+import SettingsAppearancePage from "./client";
 
 const meta: Meta<typeof SettingsAppearancePage> = {
   title: "dashboard/Settings/appearance",

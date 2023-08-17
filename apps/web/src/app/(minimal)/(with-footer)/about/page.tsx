@@ -1,3 +1,5 @@
+import "server-only";
+
 import { ImageSize } from "@storiny/shared";
 import { clsx } from "clsx";
 import Image from "next/image";
@@ -13,7 +15,7 @@ import TwitterIcon from "~/icons/Twitter";
 import styles from "./styles.module.scss";
 
 const Page = (): React.ReactElement => (
-  <>
+  <React.Fragment>
     <div className={clsx(styles.x, styles.splash)}>
       <Image
         alt={""}
@@ -208,7 +210,8 @@ const Page = (): React.ReactElement => (
       </section>
     </article>
     <Spacer orientation={"vertical"} size={10} />
-  </>
+  </React.Fragment>
 );
 
+export * from "./metadata";
 export default Page;

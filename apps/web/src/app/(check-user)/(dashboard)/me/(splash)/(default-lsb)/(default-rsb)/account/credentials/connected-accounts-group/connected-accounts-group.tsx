@@ -109,6 +109,7 @@ const AppleAccount = ({
         ) : (
           <Button
             autoSize
+            checkAuth
             disabled={Boolean(login_apple_id) && !has_password}
             variant={"hollow"}
           >
@@ -147,6 +148,7 @@ const GoogleAccount = ({
         ) : (
           <Button
             autoSize
+            checkAuth
             disabled={Boolean(login_google_id) && !has_password}
             variant={"hollow"}
           >

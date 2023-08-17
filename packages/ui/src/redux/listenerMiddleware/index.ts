@@ -6,7 +6,8 @@ import {
 import {
   addEntitiesListeners,
   addNotificationsListeners,
-  addPreferencesListeners
+  addPreferencesListeners,
+  addToastListeners
 } from "~/redux/features";
 
 import { AppDispatch, AppState } from "../store";
@@ -18,5 +19,6 @@ export const listenerMiddleware = createListenerMiddleware();
 [
   addPreferencesListeners,
   addEntitiesListeners,
-  addNotificationsListeners
+  addNotificationsListeners,
+  addToastListeners
 ].forEach((cb) => cb(listenerMiddleware.startListening as AppStartListening));

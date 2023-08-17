@@ -90,7 +90,7 @@ export const handler = (r: Request): void | undefined => {
       r,
       `internal${resizeOption || "/"}plain/${baseBucket}/${key}`
     );
-  } catch (e) {
+  } catch {
     prepareTextResponse(r);
     r.return(500, "Internal server error");
   }

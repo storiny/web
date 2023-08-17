@@ -173,6 +173,7 @@ const Enable2FA = ({
     ({ openModal }) => (
       <Button
         autoSize
+        checkAuth
         className={"fit-w"}
         disabled={!has_password}
         onClick={openModal}

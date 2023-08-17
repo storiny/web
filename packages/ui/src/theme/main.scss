@@ -75,22 +75,10 @@ main {
   grid-area: main;
 }
 
-// Takes up the entire width, excluding the sidebars and the sidenav.
-.page-header {
+.full-bleed {
   width: auto;
   margin-inline: var(--grid-compensation);
-  align-items: stretch;
-  margin-top: -12px; // Tackle padding
-  position: sticky;
-  top: var(--header-height);
-  z-index: calc(var(--z-index-header) - 2);
-  box-shadow: var(--shadow-sm);
-  background-color: var(--bg-elevation-xs);
   border-bottom: 1px solid var(--divider);
-
-  &.with-page-title {
-    top: calc(var(--header-height) + 43px);
-  }
 
   @include breakpoints.media("<=desktop", ">tablet") {
     margin-left: 47%;
@@ -114,5 +102,20 @@ main {
     width: 100vw;
     margin-left: 50%;
     transform: translateX(-50%);
+  }
+}
+
+// Takes up the entire width, excluding the sidebars and the sidenav.
+.page-header {
+  align-items: stretch;
+  margin-top: -12px; // Tackle padding
+  position: sticky;
+  top: var(--header-height);
+  z-index: calc(var(--z-index-header) - 2);
+  box-shadow: var(--shadow-sm);
+  background-color: var(--bg-elevation-xs);
+
+  &.with-page-title {
+    top: calc(var(--header-height) + 43px);
   }
 }

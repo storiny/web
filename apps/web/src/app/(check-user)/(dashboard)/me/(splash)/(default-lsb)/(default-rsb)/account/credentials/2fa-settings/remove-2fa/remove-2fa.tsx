@@ -89,6 +89,7 @@ const Remove2FA = ({
     ({ openModal }) => (
       <Button
         autoSize
+        checkAuth
         className={"fit-w"}
         color={"ruby"}
         onClick={openModal}

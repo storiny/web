@@ -9,3 +9,17 @@ exports[`<Link /> matches snapshot 1`] = `
   Test
 </a>
 `;
+
+exports[`<Link /> matches snapshot with \`ellipsis\` set to \`true\` 1`] = `
+<a
+  class="focusable link ellipsis color-body underline-hover inherit"
+  href="/"
+  rel=""
+>
+  <span
+    class="ellipsis ellipsis-child"
+  >
+    Test
+  </span>
+</a>
+`;

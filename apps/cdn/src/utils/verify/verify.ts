@@ -22,7 +22,7 @@ export const verify = (
     if (hmac.digest("hex") === digest) {
       return true;
     }
-  } catch (e) {
+  } catch {
     return false;
   }
 

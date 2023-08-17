@@ -7,7 +7,7 @@ import { renderWithState } from "~/redux/mock";
 
 import DefaultLayout from "../../../../layout";
 import LegalLayout from "../../../layout";
-import MisinformationPolicy from "./page";
+import MisinformationPolicy from "./client";
 
 const meta: Meta<typeof MisinformationPolicy> = {
   title: "pages/Legal/use-policies/misinformation",

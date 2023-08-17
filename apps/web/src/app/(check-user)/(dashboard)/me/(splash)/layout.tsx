@@ -42,6 +42,7 @@ const DashboardSplashLayout = ({
             </Typography>
             <Spacer orientation={"vertical"} size={2} />
             <Button
+              checkAuth
               decorator={<RetryIcon />}
               loading={loading}
               onClick={(): void => {

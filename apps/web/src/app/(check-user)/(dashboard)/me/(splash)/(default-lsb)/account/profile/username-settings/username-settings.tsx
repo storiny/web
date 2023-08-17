@@ -105,7 +105,12 @@ const UsernameSettings = ({
 
   const [element, , closeModal] = useModal(
     ({ openModal }) => (
-      <Button className={"fit-w"} onClick={openModal} variant={"hollow"}>
+      <Button
+        checkAuth
+        className={"fit-w"}
+        onClick={openModal}
+        variant={"hollow"}
+      >
         Change username
       </Button>
     ),

@@ -7,7 +7,7 @@ import { renderWithState } from "~/redux/mock";
 
 import DefaultLayout from "../../../../layout";
 import LegalLayout from "../../../layout";
-import PrivacyPolicy from "./page";
+import PrivacyPolicy from "./client";
 
 const meta: Meta<typeof PrivacyPolicy> = {
   title: "pages/Legal/policies/privacy",

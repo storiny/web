@@ -105,6 +105,7 @@ const UpdatePassword = ({
     ({ openModal }) => (
       <Button
         autoSize
+        checkAuth
         className={"fit-w"}
         onClick={openModal}
         variant={"hollow"}

@@ -7,7 +7,7 @@ import { renderWithState } from "~/redux/mock";
 
 import DefaultLayout from "../../../../layout";
 import LegalLayout from "../../../layout";
-import DisturbingUXPolicy from "./page";
+import DisturbingUXPolicy from "./client";
 
 const meta: Meta<typeof DisturbingUXPolicy> = {
   title: "pages/Legal/use-policies/disturbing-ux",

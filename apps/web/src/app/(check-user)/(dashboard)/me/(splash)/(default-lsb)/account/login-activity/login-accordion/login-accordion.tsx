@@ -55,6 +55,7 @@ const LogoutButton = (props: LoginAccordionProps): React.ReactElement => {
 
   return (
     <Button
+      checkAuth
       className={clsx("focus-invert", "f-grow", styles.x, styles.button)}
       decorator={<LogoutIcon />}
       loading={isLoading}

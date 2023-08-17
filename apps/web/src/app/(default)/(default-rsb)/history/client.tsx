@@ -34,7 +34,14 @@ const PageHeader = ({
   onQueryChange: (newQuery: string) => void;
   query: string;
 }): React.ReactElement => (
-  <div className={clsx("flex-center", "page-header", "with-page-title")}>
+  <div
+    className={clsx(
+      "flex-center",
+      "full-bleed",
+      "page-header",
+      "with-page-title"
+    )}
+  >
     <Input
       decorator={<SearchIcon />}
       disabled={disabled}

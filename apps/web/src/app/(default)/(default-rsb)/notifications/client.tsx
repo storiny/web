@@ -51,7 +51,7 @@ const PageHeader = ({
   value: NotificationsTabValue;
 }): React.ReactElement => (
   <Tabs
-    className={clsx("page-header", styles.x, styles.tabs)}
+    className={clsx("full-bleed", "page-header", styles.x, styles.tabs)}
     onValueChange={(newValue): void =>
       onChange(newValue as NotificationsTabValue)
     }
@@ -88,7 +88,14 @@ const StatusHeader = ({
 
   return (
     <>
-      <div className={clsx("flex-center", styles.x, styles["status-header"])}>
+      <div
+        className={clsx(
+          "full-bleed",
+          "flex-center",
+          styles.x,
+          styles["status-header"]
+        )}
+      >
         <Typography level={"body2"}>
           {status === "loading" ? (
             <Skeleton height={14} width={64} />
@@ -139,7 +146,7 @@ const StatusHeader = ({
             as={NextLink}
             autoSize
             checkAuth
-            href={"/me/notifications"}
+            href={"/me/account/notifications"}
             title={"Notification settings"}
             variant={"ghost"}
           >

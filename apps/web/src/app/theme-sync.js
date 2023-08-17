@@ -14,5 +14,5 @@
     }
 
     document.documentElement.setAttribute("data-theme", finalTheme);
-  } catch (e) {}
+  } catch {}
 })();

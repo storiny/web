@@ -1,5 +1,6 @@
 export * from "./assets";
 export * from "./bookmarks";
+export * from "./drafts";
 export * from "./gallery";
 export * from "./history";
 export * from "./liked-stories";

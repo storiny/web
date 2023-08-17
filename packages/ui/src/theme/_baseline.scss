@@ -144,6 +144,14 @@ body {
     font-variant-ligatures: contextual;
   }
 
+  // Reduced motion settings
+  &.reduced-motion {
+    * {
+      animation: none !important;
+      transition-duration: 0s !important;
+    }
+  }
+
   @media print {
     background-color: hsl(0deg 0% 100%);
   }

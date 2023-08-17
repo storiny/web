@@ -7,7 +7,7 @@ import { renderWithState } from "~/redux/mock";
 
 import DefaultLayout from "../../../../layout";
 import LegalLayout from "../../../layout";
-import HateSpeechPolicy from "./page";
+import HateSpeechPolicy from "./client";
 
 const meta: Meta<typeof HateSpeechPolicy> = {
   title: "pages/Legal/use-policies/hate-speech",

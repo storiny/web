@@ -7,7 +7,7 @@ import { renderWithState } from "~/redux/mock";
 
 import DefaultLayout from "../../../../layout";
 import LegalLayout from "../../../layout";
-import DoxxingPolicy from "./page";
+import DoxxingPolicy from "./client";
 
 const meta: Meta<typeof DoxxingPolicy> = {
   title: "pages/Legal/use-policies/doxxing",

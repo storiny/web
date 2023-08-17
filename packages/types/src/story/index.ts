@@ -17,8 +17,11 @@ interface UserSpecificStoryProps {
 
 export type Story = {
   created_at: string;
+  deleted_at: string | null;
   description: string | null;
+  edited_at: string | null;
   id: string;
+  published_at: string | null;
   slug: string;
   splash_hex: string | null;
   splash_id: string | null;

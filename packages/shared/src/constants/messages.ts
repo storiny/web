@@ -3,7 +3,7 @@ import { capitalize } from "@storiny/ui/src/utils/capitalize";
 /**
  * Error messages used during client-side schema validation
  */
-export const zodMessages = {
+export const ZOD_MESSAGES = {
   /**
    * Non-empty fields
    * @param field Field name

@@ -8,6 +8,7 @@ import "login_activity_def/v1/def.proto";
 import "notification_settings_def/v1/def.proto";
 import "privacy_settings_def/v1/def.proto";
 import "profile_def/v1/def.proto";
+import "story_def/v1/def.proto";
 import "tag_def/v1/def.proto";
 import "token_def/v1/def.proto";
 import "user_def/v1/def.proto";
@@ -54,4 +55,8 @@ service ApiService {
    * Returns the user's login activity
    */
   rpc GetLoginActivity(login_activity_def.v1.GetLoginActivityRequest) returns (login_activity_def.v1.GetLoginActivityResponse) {}
+  /**
+   * Returns the user's drafts details
+   */
+  rpc GetDraftsInfo(story_def.v1.GetDraftsInfoRequest) returns (story_def.v1.GetDraftsInfoResponse) {}
 }

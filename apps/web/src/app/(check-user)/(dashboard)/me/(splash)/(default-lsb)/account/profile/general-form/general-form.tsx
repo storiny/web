@@ -44,6 +44,7 @@ const SaveButton = ({
       <Grow />
       <Button
         autoSize
+        checkAuth
         disabled={!formState.isDirty}
         loading={isLoading}
         type={"submit"}

@@ -136,6 +136,7 @@ const RecoveryCodesModal = (): React.ReactElement => {
             </div>
             <div className={clsx("full-w", "flex-col", styles.actions)}>
               <Button
+                checkAuth
                 decorator={<DownloadIcon />}
                 onClick={(): void => {
                   downloadAsFile(
@@ -149,6 +150,7 @@ const RecoveryCodesModal = (): React.ReactElement => {
                 Download
               </Button>
               <Button
+                checkAuth
                 decorator={<CopyIcon />}
                 onClick={copyCodesToClipboard}
                 size={"sm"}
@@ -186,6 +188,7 @@ const RecoveryCodes = (): React.ReactElement => {
     ({ openModal }) => (
       <Button
         autoSize
+        checkAuth
         className={"fit-w"}
         onClick={openModal}
         variant={"hollow"}

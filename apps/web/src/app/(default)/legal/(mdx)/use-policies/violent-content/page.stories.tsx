@@ -7,7 +7,7 @@ import { renderWithState } from "~/redux/mock";
 
 import DefaultLayout from "../../../../layout";
 import LegalLayout from "../../../layout";
-import ViolentContentPolicy from "./page";
+import ViolentContentPolicy from "./client";
 
 const meta: Meta<typeof ViolentContentPolicy> = {
   title: "pages/Legal/use-policies/violent-content",

@@ -1,14 +1,10 @@
-"use client";
+import "server-only";
 
 import React from "react";
 
-import MDXPattern from "../../pattern";
-import Content, { meta } from "./content.mdx";
+import ImpersonationPolicyClient from "./client";
 
-const Page = (): React.ReactElement => (
-  <MDXPattern meta={meta}>
-    <Content />
-  </MDXPattern>
-);
+const Page = (): React.ReactElement => <ImpersonationPolicyClient />;
 
+export * from "./metadata";
 export default Page;

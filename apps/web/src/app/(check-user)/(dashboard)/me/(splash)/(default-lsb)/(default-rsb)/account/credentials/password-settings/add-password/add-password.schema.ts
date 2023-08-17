@@ -1,5 +1,5 @@
 import { userSchema } from "@storiny/shared";
-import { zodMessages } from "@storiny/shared/src/constants/messages";
+import { ZOD_MESSAGES } from "@storiny/shared/src/constants/messages";
 import { z } from "zod";
 
 export type AddPasswordSchema = z.infer<typeof addPasswordSchema>;
@@ -12,12 +12,12 @@ export const addPasswordSchema = z.object({
     .string()
     .min(
       VERIFICATION_CODE_MIN_LENGTH,
-      zodMessages.min("verification code", VERIFICATION_CODE_MIN_LENGTH)
+      ZOD_MESSAGES.min("verification code", VERIFICATION_CODE_MIN_LENGTH)
     )
     .max(
       VERIFICATION_CODE_MAX_LENGTH,
-      zodMessages.max("verification code", VERIFICATION_CODE_MAX_LENGTH)
+      ZOD_MESSAGES.max("verification code", VERIFICATION_CODE_MAX_LENGTH)
     )
-    .nonempty(zodMessages.nonEmpty("verification code")),
+    .nonempty(ZOD_MESSAGES.nonEmpty("verification code")),
   "new-password": userSchema.password
 });

@@ -31,6 +31,7 @@ const VisibilityButton = ({
   return (
     <Button
       autoSize
+      checkAuth
       disabled={isLoading}
       onClick={handleVisibility}
       variant={hidden ? "rigid" : "hollow"}

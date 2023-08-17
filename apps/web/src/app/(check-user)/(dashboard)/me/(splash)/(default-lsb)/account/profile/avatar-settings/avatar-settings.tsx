@@ -30,6 +30,7 @@ const AvatarSettings = (): React.ReactElement | null => {
     ({ openConfirmation }) => (
       <Button
         autoSize
+        checkAuth
         decorator={<TrashIcon />}
         disabled={!avatarId || isLoading}
         onClick={openConfirmation}
@@ -95,6 +96,7 @@ const AvatarSettings = (): React.ReactElement | null => {
           >
             <Button
               autoSize
+              checkAuth
               decorator={<PencilIcon />}
               disabled={isLoading}
               variant={"hollow"}

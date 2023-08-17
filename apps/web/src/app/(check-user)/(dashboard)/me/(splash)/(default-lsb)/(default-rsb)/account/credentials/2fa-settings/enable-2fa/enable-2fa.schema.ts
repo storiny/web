@@ -1,4 +1,4 @@
-import { zodMessages } from "@storiny/shared/src/constants/messages";
+import { ZOD_MESSAGES } from "@storiny/shared/src/constants/messages";
 import { z } from "zod";
 
 export type Enable2FASchema = z.infer<typeof enable2faSchema>;
@@ -9,5 +9,5 @@ export const enable2faSchema = z.object({
   code: z
     .string()
     .length(6, "Code must be exactly 6 digits")
-    .nonempty(zodMessages.nonEmpty("code"))
+    .nonempty(ZOD_MESSAGES.nonEmpty("code"))
 });

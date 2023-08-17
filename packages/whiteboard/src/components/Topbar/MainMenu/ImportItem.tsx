@@ -26,7 +26,7 @@ const ImportItem = (): React.ReactElement => {
         try {
           const file = filesContent[0];
           importFromFile(canvas.current, new Uint8Array(file.content as any));
-        } catch (e) {
+        } catch {
           toast("Unable to import the sketch file", "error");
         }
       } else {

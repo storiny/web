@@ -74,7 +74,7 @@ const ExportImageModal = React.forwardRef<
           }
         });
       }
-    } catch (e) {
+    } catch {
       onExportEnd("fail");
     }
   }, [

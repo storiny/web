@@ -7,6 +7,10 @@ export interface StoryProps extends React.ComponentPropsWithoutRef<"article"> {
    */
   enableSsr?: boolean;
   /**
+   * If `true`, renders with draft properties
+   */
+  isDraft?: boolean;
+  /**
    * If `true`, renders an unlike button.
    * @default false
    */

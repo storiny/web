@@ -7,7 +7,7 @@ import { renderWithState } from "~/redux/mock";
 
 import DefaultLayout from "../../../../layout";
 import LegalLayout from "../../../layout";
-import ImpersonationPolicy from "./page";
+import ImpersonationPolicy from "./client";
 
 const meta: Meta<typeof ImpersonationPolicy> = {
   title: "pages/Legal/use-policies/impersonation",

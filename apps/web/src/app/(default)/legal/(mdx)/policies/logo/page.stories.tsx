@@ -7,7 +7,7 @@ import { renderWithState } from "~/redux/mock";
 
 import DefaultLayout from "../../../../layout";
 import LegalLayout from "../../../layout";
-import LogoPolicy from "./page";
+import LogoPolicy from "./client";
 
 const meta: Meta<typeof LogoPolicy> = {
   title: "pages/Legal/policies/logo",

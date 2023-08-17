@@ -19,7 +19,7 @@ const LocalCopyItem = (): React.ReactElement => {
       if (canvas.current.getObjects().length) {
         try {
           exportToFile(canvas.current);
-        } catch (e) {
+        } catch {
           toast("Unable to export the sketch file", "error");
         }
       } else {

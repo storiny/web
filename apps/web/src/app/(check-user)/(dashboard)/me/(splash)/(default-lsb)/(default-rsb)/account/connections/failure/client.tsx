@@ -61,6 +61,7 @@ const ConnectionFailureClient = ({
           <Button
             as={NextLink}
             autoSize
+            checkAuth
             className={"fit-w"}
             href={"/me/settings/connections"}
           >

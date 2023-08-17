@@ -42,7 +42,7 @@ export const useClipboard = (): ((
           toast("Copied to clipboard");
         }
       });
-    } catch (e) {
+    } catch {
       if (!disableToast) {
         toast("Unable to copy", "error");
       }

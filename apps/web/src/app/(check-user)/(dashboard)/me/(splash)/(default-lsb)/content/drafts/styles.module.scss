@@ -1,0 +1,48 @@
+.x {
+  /* Input field and select trigger */
+  &.input,
+  &.select-trigger {
+    border-radius: 0;
+  }
+
+  /* Input */
+  &.input {
+    &:not([data-focused="true"]) {
+      border: none;
+    }
+  }
+
+  /* Select trigger */
+  &.select-trigger {
+    border: none;
+  }
+
+  /* Control bar */
+  &.control-bar {
+    align-items: stretch;
+    margin-top: -12px;
+  }
+
+  /* Tabs */
+  &.tabs {
+    padding-inline: 20px;
+  }
+
+  /* Tabs list */
+  &.tabs-list {
+    display: flex;
+    justify-content: space-around;
+  }
+
+  /* Status header */
+  &.status-header {
+    padding-left: 20px;
+    min-height: 40px;
+  }
+
+  /* Header button */
+  &.header-button {
+    border-radius: 0;
+    height: 100%;
+  }
+}

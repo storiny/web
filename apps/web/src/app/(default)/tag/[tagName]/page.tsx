@@ -26,4 +26,5 @@ const Page = async ({
   }
 };
 
+export * from "./metadata";
 export default Page;

@@ -1,6 +1,6 @@
 import localFont from "next/font/local";
 
 export const satoshiFont = localFont({
-  src: "../../../../../../packages/ui/src/static/fonts/satoshi.woff2",
+  src: "../../../../../../../packages/ui/src/static/fonts/satoshi.woff2",
   preload: true
 });

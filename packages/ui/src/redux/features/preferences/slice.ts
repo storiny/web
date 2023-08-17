@@ -268,7 +268,7 @@ export const addPreferencesListeners = (
           } else {
             finalTheme = "light";
           }
-        } catch (e) {
+        } catch {
           finalTheme = "light";
         }
       }
@@ -293,7 +293,7 @@ export const addPreferencesListeners = (
           } else {
             finalReducedMotion = "disabled";
           }
-        } catch (e) {
+        } catch {
           finalReducedMotion = "disabled";
         }
       }

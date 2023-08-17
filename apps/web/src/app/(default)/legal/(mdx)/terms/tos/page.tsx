@@ -1,14 +1,10 @@
-"use client";
+import "server-only";
 
 import React from "react";
 
-import MDXPattern from "../../pattern";
-import Content, { meta } from "./content.mdx";
+import TermsOfServiceClient from "./client";
 
-const Page = (): React.ReactElement => (
-  <MDXPattern meta={meta}>
-    <Content />
-  </MDXPattern>
-);
+const Page = (): React.ReactElement => <TermsOfServiceClient />;
 
+export * from "./metadata";
 export default Page;

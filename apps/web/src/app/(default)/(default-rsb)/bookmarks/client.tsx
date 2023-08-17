@@ -38,7 +38,7 @@ const PageHeader = ({
   query: string;
   sort: BookmarksSortValue;
 }): React.ReactElement => (
-  <div className={clsx("flex-center", "page-header")}>
+  <div className={clsx("flex-center", "full-bleed", "page-header")}>
     <Input
       decorator={<SearchIcon />}
       disabled={disabled}

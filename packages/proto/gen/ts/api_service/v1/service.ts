@@ -20,6 +20,7 @@ import {
 } from "../../notification_settings_def/v1/def";
 import { GetPrivacySettingsRequest, GetPrivacySettingsResponse } from "../../privacy_settings_def/v1/def";
 import { GetProfileRequest, GetProfileResponse } from "../../profile_def/v1/def";
+import { GetDraftsInfoRequest, GetDraftsInfoResponse } from "../../story_def/v1/def";
 import { GetTagRequest, GetTagResponse } from "../../tag_def/v1/def";
 import { GetTokenRequest, GetTokenResponse, VerifyEmailRequest, VerifyEmailResponse } from "../../token_def/v1/def";
 import { GetUserIdRequest, GetUserIdResponse } from "../../user_def/v1/def";
@@ -138,6 +139,16 @@ export const ApiServiceService = {
       Buffer.from(GetLoginActivityResponse.encode(value).finish()),
     responseDeserialize: (value: Buffer) => GetLoginActivityResponse.decode(value),
   },
+  /** Returns the user's drafts details */
+  getDraftsInfo: {
+    path: "/api_service.v1.ApiService/GetDraftsInfo",
+    requestStream: false,
+    responseStream: false,
+    requestSerialize: (value: GetDraftsInfoRequest) => Buffer.from(GetDraftsInfoRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer) => GetDraftsInfoRequest.decode(value),
+    responseSerialize: (value: GetDraftsInfoResponse) => Buffer.from(GetDraftsInfoResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => GetDraftsInfoResponse.decode(value),
+  },
 } as const;
 
 export interface ApiServiceServer extends UntypedServiceImplementation {
@@ -161,6 +172,8 @@ export interface ApiServiceServer extends UntypedServiceImplementation {
   getConnectionSettings: handleUnaryCall<GetConnectionSettingsRequest, GetConnectionSettingsResponse>;
   /** Returns the user's login activity */
   getLoginActivity: handleUnaryCall<GetLoginActivityRequest, GetLoginActivityResponse>;
+  /** Returns the user's drafts details */
+  getDraftsInfo: handleUnaryCall<GetDraftsInfoRequest, GetDraftsInfoResponse>;
 }
 
 export interface ApiServiceClient extends Client {
@@ -323,6 +336,22 @@ export interface ApiServiceClient extends Client {
     metadata: Metadata,
     options: Partial<CallOptions>,
     callback: (error: ServiceError | null, response: GetLoginActivityResponse) => void,
+  ): ClientUnaryCall;
+  /** Returns the user's drafts details */
+  getDraftsInfo(
+    request: GetDraftsInfoRequest,
+    callback: (error: ServiceError | null, response: GetDraftsInfoResponse) => void,
+  ): ClientUnaryCall;
+  getDraftsInfo(
+    request: GetDraftsInfoRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: GetDraftsInfoResponse) => void,
+  ): ClientUnaryCall;
+  getDraftsInfo(
+    request: GetDraftsInfoRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: GetDraftsInfoResponse) => void,
   ): ClientUnaryCall;
 }
 

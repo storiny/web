@@ -84,6 +84,7 @@ const DestroySessions = ({
     ({ openConfirmation }) => (
       <Button
         autoSize
+        checkAuth
         className={"fit-w"}
         color={"ruby"}
         disabled={disabled}

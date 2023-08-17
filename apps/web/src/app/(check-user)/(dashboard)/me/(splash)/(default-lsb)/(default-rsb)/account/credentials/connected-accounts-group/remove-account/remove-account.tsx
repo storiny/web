@@ -90,7 +90,13 @@ const RemoveAccount = ({
 
   const [element, , closeModal] = useModal(
     ({ openModal }) => (
-      <Button autoSize color={"ruby"} onClick={openModal} variant={"hollow"}>
+      <Button
+        autoSize
+        checkAuth
+        color={"ruby"}
+        onClick={openModal}
+        variant={"hollow"}
+      >
         Disconnect
       </Button>
     ),

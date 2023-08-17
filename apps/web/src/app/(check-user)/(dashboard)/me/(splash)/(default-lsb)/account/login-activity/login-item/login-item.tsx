@@ -42,6 +42,7 @@ const LogoutButton = (
 
   return (
     <Button
+      checkAuth
       className={clsx("focus-invert", "f-grow", styles.x, styles.button)}
       disabled={isLoading}
       onClick={sessionLogoutImpl}
@@ -120,6 +121,7 @@ const LoginItem = (props: LoginItemProps): React.ReactElement => {
           {status === null && (
             <div className={"flex-center"}>
               <Button
+                checkAuth
                 className={clsx(
                   "focus-invert",
                   "f-grow",

@@ -30,7 +30,7 @@ const PageHeader = ({
   value: IndexTabValue;
 }): React.ReactElement => (
   <Tabs
-    className={clsx("page-header", styles.x, styles.tabs)}
+    className={clsx("full-bleed", "page-header", styles.x, styles.tabs)}
     onValueChange={(newValue): void => onChange(newValue as IndexTabValue)}
     value={value}
   >

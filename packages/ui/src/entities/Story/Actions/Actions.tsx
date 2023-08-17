@@ -8,6 +8,7 @@ import IconButton from "~/components/IconButton";
 import Menu from "~/components/Menu";
 import MenuItem from "~/components/MenuItem";
 import Separator from "~/components/Separator";
+import { useToast } from "~/components/Toast";
 import { useClipboard } from "~/hooks/useClipboard";
 import { useMediaQuery } from "~/hooks/useMediaQuery";
 import { useWebShare } from "~/hooks/useWebShare";
@@ -16,21 +17,31 @@ import DotsIcon from "~/icons/Dots";
 import MuteIcon from "~/icons/Mute";
 import ReportIcon from "~/icons/Report";
 import ShareIcon from "~/icons/Share";
+import TrashIcon from "~/icons/Trash";
 import UserBlockIcon from "~/icons/UserBlock";
+import { useDraftDeleteMutation } from "~/redux/features";
 import { selectLoggedIn } from "~/redux/features/auth/selectors";
 import { selectBlock, selectMute } from "~/redux/features/entities/selectors";
 import { toggleBlock, toggleMute } from "~/redux/features/entities/slice";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 import { breakpoints } from "~/theme/breakpoints";
 
-const Actions = ({ story }: { story: Story }): React.ReactElement => {
+const Actions = ({
+  story,
+  isDraft
+}: {
+  isDraft?: boolean;
+  story: Story;
+}): React.ReactElement => {
   const share = useWebShare();
   const copy = useClipboard();
+  const toast = useToast();
   const dispatch = useAppDispatch();
   const isMobile = useMediaQuery(breakpoints.down("mobile"));
   const loggedIn = useAppSelector(selectLoggedIn);
   const isBlocking = useAppSelector(selectBlock(story.user!.id));
   const isMuted = useAppSelector(selectMute(story.user!.id));
+  const [deleteDraft] = useDraftDeleteMutation();
   const [element] = useConfirmation(
     ({ openConfirmation }) => (
       <MenuItem
@@ -53,6 +64,17 @@ const Actions = ({ story }: { story: Story }): React.ReactElement => {
     }
   );
 
+  /**
+   * Deletes a draft
+   */
+  const handleDelete = (): void => {
+    deleteDraft({ id: story.id })
+      .unwrap()
+      .catch((e) =>
+        toast(e?.data?.error || "Could not delete your draft", "error")
+      );
+  };
+
   return (
     <Menu
       trigger={
@@ -67,43 +89,51 @@ const Actions = ({ story }: { story: Story }): React.ReactElement => {
         </IconButton>
       }
     >
-      <MenuItem
-        decorator={<ShareIcon />}
-        onClick={(): void =>
-          share(story.title, `/${story.user!.username}/${story.slug}`)
-        }
-      >
-        Share this story
-      </MenuItem>
-      <MenuItem
-        decorator={<CopyIcon />}
-        onClick={(): void => copy(`/${story.user!.username}/${story.slug}`)}
-      >
-        Copy link to story
-      </MenuItem>
-      <Separator />
-      <MenuItem
-        as={NextLink}
-        decorator={<ReportIcon />}
-        href={`/report?id=${story.id}&type=story`}
-        rel={"noreferrer"}
-        target={"_blank"}
-      >
-        Report this story
-      </MenuItem>
-      {loggedIn && (
-        <>
+      {isDraft ? (
+        <MenuItem decorator={<TrashIcon />} onClick={handleDelete}>
+          Delete this draft
+        </MenuItem>
+      ) : (
+        <React.Fragment>
+          <MenuItem
+            decorator={<ShareIcon />}
+            onClick={(): void =>
+              share(story.title, `/${story.user!.username}/${story.slug}`)
+            }
+          >
+            Share this story
+          </MenuItem>
+          <MenuItem
+            decorator={<CopyIcon />}
+            onClick={(): void => copy(`/${story.user!.username}/${story.slug}`)}
+          >
+            Copy link to story
+          </MenuItem>
           <Separator />
           <MenuItem
-            decorator={<MuteIcon />}
-            onClick={(): void => {
-              dispatch(toggleMute(story.user!.id));
-            }}
+            as={NextLink}
+            decorator={<ReportIcon />}
+            href={`/report?id=${story.id}&type=story`}
+            rel={"noreferrer"}
+            target={"_blank"}
           >
-            {isMuted ? "Unmute" : "Mute"} this writer
+            Report this story
           </MenuItem>
-          {element}
-        </>
+          {loggedIn && (
+            <>
+              <Separator />
+              <MenuItem
+                decorator={<MuteIcon />}
+                onClick={(): void => {
+                  dispatch(toggleMute(story.user!.id));
+                }}
+              >
+                {isMuted ? "Unmute" : "Mute"} this writer
+              </MenuItem>
+              {element}
+            </>
+          )}
+        </React.Fragment>
       )}
     </Menu>
   );

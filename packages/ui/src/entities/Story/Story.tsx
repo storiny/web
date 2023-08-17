@@ -18,7 +18,6 @@ import Spacer from "~/components/Spacer";
 import Tooltip from "~/components/Tooltip";
 import Typography from "~/components/Typography";
 import Persona from "~/entities/Persona";
-import Tag from "~/entities/Tag";
 import TagChip from "~/entities/TagChip";
 import { useMediaQuery } from "~/hooks/useMediaQuery";
 import BookmarkIcon from "~/icons/Bookmark";
@@ -33,7 +32,6 @@ import {
   selectLikedStory
 } from "~/redux/features/entities/selectors";
 import {
-  overwriteBookmark,
   overwriteLikedStory,
   syncWithStory,
   toggleBookmark
@@ -50,7 +48,8 @@ import styles from "./Story.module.scss";
 import { StoryProps } from "./Story.props";
 
 const Story = (props: StoryProps): React.ReactElement => {
-  const { className, story, enableSsr, showUnlikeButton, ...rest } = props;
+  const { isDraft, className, story, enableSsr, showUnlikeButton, ...rest } =
+    props;
   const router = useRouter();
   const isMobile = useMediaQuery(breakpoints.down("mobile"));
   const dispatch = useAppDispatch();
@@ -96,7 +95,11 @@ const Story = (props: StoryProps): React.ReactElement => {
             <div className={clsx("flex-col", styles.meta)}>
               <Typography
                 as={NextLink}
-                className={clsx("focusable", styles.title)}
+                className={clsx(
+                  "focusable",
+                  styles.title,
+                  isDraft && styles.draft
+                )}
                 href={storyUrl}
                 level={"h2"}
               >
@@ -134,12 +137,12 @@ const Story = (props: StoryProps): React.ReactElement => {
                     <Typography
                       as={"time"}
                       className={"t-minor"}
-                      dateTime={story.created_at}
+                      dateTime={story.published_at || story.created_at}
                       level={"body2"}
-                      title={formatDate(story.created_at)}
+                      title={formatDate(story.published_at || story.created_at)}
                     >
                       {formatDate(
-                        story.created_at,
+                        story.published_at || story.created_at,
                         DateFormat.RELATIVE_CAPITALIZED
                       )}
                     </Typography>
@@ -161,7 +164,7 @@ const Story = (props: StoryProps): React.ReactElement => {
               <AspectRatio
                 aria-label={"Read this story"}
                 as={isMobile ? undefined : NextLink}
-                className={styles.splash}
+                className={clsx(styles.splash, isDraft && styles.draft)}
                 ratio={16 / 9}
                 tabIndex={-1}
                 // Use onClick to avoid nesting anchor inside another anchor
@@ -227,48 +230,66 @@ const Story = (props: StoryProps): React.ReactElement => {
             )}
           </div>
           <footer className={clsx("flex", styles.footer)}>
-            <Typography
-              aria-label={`${getReadTime(
-                story.word_count,
-                user?.wpm
-              )} min read`}
-              as={"span"}
-              className={clsx(
-                "flex-center",
-                "t-medium",
-                "t-minor",
-                styles.stat
-              )}
-              level={"body2"}
-              title={`${getReadTime(story.word_count, user?.wpm)} min read`}
-            >
-              <ClockIcon />
-              {getReadTime(story.word_count, user?.wpm)} min
-            </Typography>
-            <Typography
-              aria-hidden
-              as={"span"}
-              className={"t-muted"}
-              level={"body2"}
-            >
-              &bull;
-            </Typography>
-            <Typography
-              aria-label={`${story.stats.read_count} reads`}
-              as={"span"}
-              className={clsx(
-                "flex-center",
-                "t-medium",
-                "t-minor",
-                styles.stat
-              )}
-              level={"body2"}
-              title={`${abbreviateNumber(story.stats.read_count)} reads`}
-            >
-              <ReadsIcon />
-              {abbreviateNumber(story.stats.read_count)}
-            </Typography>
-            {story.tags.length ? (
+            {isDraft ? (
+              <Typography
+                as={"span"}
+                className={clsx(
+                  "flex-center",
+                  "t-medium",
+                  "t-minor",
+                  styles.stat
+                )}
+                level={"body2"}
+                title={story.word_count.toLocaleString()}
+              >
+                {abbreviateNumber(story.word_count)} words
+              </Typography>
+            ) : (
+              <React.Fragment>
+                <Typography
+                  aria-label={`${getReadTime(
+                    story.word_count,
+                    user?.wpm
+                  )} min read`}
+                  as={"span"}
+                  className={clsx(
+                    "flex-center",
+                    "t-medium",
+                    "t-minor",
+                    styles.stat
+                  )}
+                  level={"body2"}
+                  title={`${getReadTime(story.word_count, user?.wpm)} min read`}
+                >
+                  <ClockIcon />
+                  {getReadTime(story.word_count, user?.wpm)} min
+                </Typography>
+                <Typography
+                  aria-hidden
+                  as={"span"}
+                  className={"t-muted"}
+                  level={"body2"}
+                >
+                  &bull;
+                </Typography>
+                <Typography
+                  aria-label={`${story.stats.read_count} reads`}
+                  as={"span"}
+                  className={clsx(
+                    "flex-center",
+                    "t-medium",
+                    "t-minor",
+                    styles.stat
+                  )}
+                  level={"body2"}
+                  title={`${abbreviateNumber(story.stats.read_count)} reads`}
+                >
+                  <ReadsIcon />
+                  {abbreviateNumber(story.stats.read_count)}
+                </Typography>
+              </React.Fragment>
+            )}
+            {!isDraft && story.tags.length ? (
               <>
                 {isMobile ? (
                   <Grow />
@@ -302,7 +323,7 @@ const Story = (props: StoryProps): React.ReactElement => {
               <>
                 <Grow />
                 <div className={clsx("flex", styles.actions)}>
-                  {showUnlikeButton && isLiked ? (
+                  {!isDraft && showUnlikeButton && isLiked ? (
                     <Tooltip content={"Unlike this story"}>
                       <IconButton
                         aria-label={"Unlike this story"}
@@ -314,29 +335,31 @@ const Story = (props: StoryProps): React.ReactElement => {
                       </IconButton>
                     </Tooltip>
                   ) : null}
-                  <Tooltip
-                    content={`${
-                      isBookmarked ? "Un-bookmark" : "Bookmark"
-                    } this story`}
-                  >
-                    <IconButton
-                      aria-label={`${
+                  {!isDraft && (
+                    <Tooltip
+                      content={`${
                         isBookmarked ? "Un-bookmark" : "Bookmark"
                       } this story`}
-                      checkAuth
-                      onClick={(): void => {
-                        dispatch(toggleBookmark(story.id));
-                      }}
-                      variant={"ghost"}
                     >
-                      {isBookmarked ? (
-                        <BookmarkIcon noStroke />
-                      ) : (
-                        <BookmarkPlusIcon />
-                      )}
-                    </IconButton>
-                  </Tooltip>
-                  <Actions story={story} />
+                      <IconButton
+                        aria-label={`${
+                          isBookmarked ? "Un-bookmark" : "Bookmark"
+                        } this story`}
+                        checkAuth
+                        onClick={(): void => {
+                          dispatch(toggleBookmark(story.id));
+                        }}
+                        variant={"ghost"}
+                      >
+                        {isBookmarked ? (
+                          <BookmarkIcon noStroke />
+                        ) : (
+                          <BookmarkPlusIcon />
+                        )}
+                      </IconButton>
+                    </Tooltip>
+                  )}
+                  <Actions isDraft={isDraft} story={story} />
                 </div>
               </>
             )}

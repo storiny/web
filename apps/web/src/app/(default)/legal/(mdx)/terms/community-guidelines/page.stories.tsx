@@ -7,7 +7,7 @@ import { renderWithState } from "~/redux/mock";
 
 import DefaultLayout from "../../../../layout";
 import LegalLayout from "../../../layout";
-import CommunityGuidelines from "./page";
+import CommunityGuidelines from "./client";
 
 const meta: Meta<typeof CommunityGuidelines> = {
   title: "pages/Legal/terms/community-guidelines",

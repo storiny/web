@@ -1,5 +1,6 @@
 "use client";
 
+import { VIBRATION_PATTERNS } from "@storiny/shared";
 import { devConsole } from "@storiny/shared/src/utils/devLog";
 import { isTestEnv } from "@storiny/shared/src/utils/isTestEnv";
 import clsx from "clsx";
@@ -62,7 +63,7 @@ const Button = forwardRef<ButtonProps, "button">((props, ref) => {
 
     try {
       if ("vibrate" in navigator && hapticFeedback) {
-        navigator.vibrate(26);
+        navigator.vibrate(VIBRATION_PATTERNS.click);
       }
     } catch (e) {
       devConsole.error(e);

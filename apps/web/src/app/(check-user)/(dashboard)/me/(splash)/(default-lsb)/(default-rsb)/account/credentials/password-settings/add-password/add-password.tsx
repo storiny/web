@@ -170,6 +170,7 @@ const Component = ({ onSubmit }: AddPasswordProps): React.ReactElement => {
     ({ openModal }) => (
       <Button
         autoSize
+        checkAuth
         className={"fit-w"}
         onClick={openModal}
         variant={"hollow"}

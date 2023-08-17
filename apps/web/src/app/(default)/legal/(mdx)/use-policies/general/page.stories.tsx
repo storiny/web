@@ -7,7 +7,7 @@ import { renderWithState } from "~/redux/mock";
 
 import DefaultLayout from "../../../../layout";
 import LegalLayout from "../../../layout";
-import GeneralUsePolicy from "./page";
+import GeneralUsePolicy from "./client";
 
 const meta: Meta<typeof GeneralUsePolicy> = {
   title: "pages/Legal/use-policies/general",

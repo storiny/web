@@ -7,7 +7,7 @@ import { renderWithState } from "~/redux/mock";
 
 import DefaultLayout from "../../../../layout";
 import LegalLayout from "../../../layout";
-import GovernmentTakedownPolicy from "./page";
+import GovernmentTakedownPolicy from "./client";
 
 const meta: Meta<typeof GovernmentTakedownPolicy> = {
   title: "pages/Legal/policies/government-takedown",

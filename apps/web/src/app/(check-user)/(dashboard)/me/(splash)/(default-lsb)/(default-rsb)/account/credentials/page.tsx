@@ -27,4 +27,5 @@ const Page = async (): Promise<React.ReactElement | undefined> => {
   }
 };
 
+export * from "./metadata";
 export default Page;

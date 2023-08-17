@@ -59,6 +59,7 @@ const TabsHeader = ({
 }): React.ReactElement => (
   <div
     className={clsx(
+      "full-bleed",
       "page-header",
       styles.x,
       styles.tabs,
@@ -106,6 +107,7 @@ const PageHeader = ({
   <div
     className={clsx(
       "flex-center",
+      "full-bleed",
       "page-header",
       "with-page-title",
       styles.x,

@@ -48,6 +48,7 @@ const ConnectionButton = ({
     ({ openConfirmation }) => (
       <Button
         autoSize
+        checkAuth
         color={"ruby"}
         disabled={isLoading}
         onClick={openConfirmation}
@@ -72,6 +73,7 @@ const ConnectionButton = ({
     <Button
       as={NextLink}
       autoSize
+      checkAuth
       href={`/api/oauth/${providerKeyMap[provider]}`}
     >
       Connect

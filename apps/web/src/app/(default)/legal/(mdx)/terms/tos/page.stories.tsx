@@ -7,7 +7,7 @@ import { renderWithState } from "~/redux/mock";
 
 import DefaultLayout from "../../../../layout";
 import LegalLayout from "../../../layout";
-import TOS from "./page";
+import TOS from "./client";
 
 const meta: Meta<typeof TOS> = {
   title: "pages/Legal/terms/tos",

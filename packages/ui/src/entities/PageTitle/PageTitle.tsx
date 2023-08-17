@@ -25,6 +25,7 @@ const PageTitle = (props: PageTitleProps): React.ReactElement => {
     <header
       {...rest}
       className={clsx(
+        "full-bleed",
         "page-header",
         "flex",
         "t-bold",

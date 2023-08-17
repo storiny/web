@@ -54,6 +54,7 @@ const DashboardNavigationScreen = (): React.ReactElement => {
       <div
         className={clsx(
           "flex-center",
+          "full-bleed",
           "page-header",
           "dashboard-header",
           "with-page-title"

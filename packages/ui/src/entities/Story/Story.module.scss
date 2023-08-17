@@ -45,6 +45,10 @@
   line-height: 24px;
   border-radius: var(--radius-xs); // Focus outline radius
   outline-offset: 3px;
+
+  &.draft {
+    font-size: 20px;
+  }
 }
 
 /* Persona */
@@ -55,6 +59,10 @@
 /* Splash */
 .splash {
   --size: 270px;
+
+  &.draft {
+    --size: 230px;
+  }
 
   min-width: var(--size);
   max-width: var(--size);

@@ -7,7 +7,7 @@ import { renderWithState } from "~/redux/mock";
 
 import DefaultLayout from "../../../../layout";
 import LegalLayout from "../../../layout";
-import ObsceneContentPolicy from "./page";
+import ObsceneContentPolicy from "./client";
 
 const meta: Meta<typeof ObsceneContentPolicy> = {
   title: "pages/Legal/use-policies/obscene-content",

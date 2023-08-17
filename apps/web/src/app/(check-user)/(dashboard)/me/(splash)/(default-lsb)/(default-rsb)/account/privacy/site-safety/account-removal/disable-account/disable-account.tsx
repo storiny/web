@@ -90,6 +90,7 @@ const DisableAccount = ({
     ({ openModal }) => (
       <Button
         autoSize
+        checkAuth
         className={"fit-w"}
         color={"ruby"}
         onClick={openModal}

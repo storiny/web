@@ -9,7 +9,7 @@ import DashboardLayout from "../../../../../../layout";
 import DashboardSplashLayout from "../../../../layout";
 import DefaultDashboardLeftSidebarLayout from "../../../layout";
 import DefaultDashboardRightSidebarLayout from "../../layout";
-import SettingsAccessibilityPage from "./page";
+import SettingsAccessibilityPage from "./client";
 
 const meta: Meta<typeof SettingsAccessibilityPage> = {
   title: "dashboard/Settings/accessibility",

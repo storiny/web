@@ -8,7 +8,9 @@ const getSplashId = (identifier: string): string => `${identifier}.jpg`;
 export const testStory: Story = {
   splash_hex: "000000",
   splash_id: "/splash.ext",
-  created_at: "2022-05-18T01:07:02.000Z",
+  published_at: "2022-05-18T01:07:02.000Z",
+  created_at: "2022-04-18T01:07:02.000Z",
+  edited_at: null,
   title: "Test story",
   slug: "test-slug",
   word_count: 750,
@@ -40,12 +42,18 @@ export const mockStories: Story[] = [
     },
     description:
       "The importance of mindfulness practices and practical tips on how to cultivate a sense of calm and peace in the midst of a busy and chaotic lifestyle.",
-    id: "1632665205526338688"
+    id: "1632665205526338688",
+    edited_at: null,
+    deleted_at: null,
+    published_at: "2022-05-18T01:07:02.000Z"
   },
   {
     splash_hex: "4e3d2d",
     splash_id: getSplashId("z6SXax6vhm0"),
-    created_at: "2021-04-18T01:07:02.000Z",
+    published_at: "2021-04-18T01:07:02.000Z",
+    created_at: "2021-03-18T01:07:02.000Z",
+    edited_at: "2023-04-18T01:07:02.000Z",
+    deleted_at: null,
     title:
       "Exploring the Great Outdoors: A Journey into Nature's Healing Powers",
     slug: "exploring-the-great-outdoors-a-journey-into-natures-healing-powers",
@@ -64,7 +72,10 @@ export const mockStories: Story[] = [
   {
     splash_hex: "312f29",
     splash_id: getSplashId("P-yzuyWFEIk"),
+    published_at: "2021-02-18T01:07:02.000Z",
     created_at: "2021-02-18T01:07:02.000Z",
+    edited_at: null,
+    deleted_at: null,
     title: "From Clutter to Zen: Decluttering Your Space for Inner Peace",
     slug: "from-clutter-to-zen-decluttering-your-space-for-inner-peace",
     tags: [mockTags[1], mockTags[4], mockTags[7]],
@@ -82,7 +93,10 @@ export const mockStories: Story[] = [
   {
     splash_hex: "a39756",
     splash_id: getSplashId("Z26qv5wkyZw"),
-    created_at: "2022-03-24T01:07:02.000Z",
+    published_at: "2022-03-24T01:07:02.000Z",
+    created_at: "2022-02-24T01:07:02.000Z",
+    edited_at: null,
+    deleted_at: null,
     title: "Garden Delights: DIY Tips for a Thriving Vegetable Patch",
     slug: "garden-delights-diy-tips-for-a-thriving-vegetable-patch",
     tags: [],
@@ -99,7 +113,10 @@ export const mockStories: Story[] = [
   {
     splash_hex: "2b3c46",
     splash_id: null,
-    created_at: "2022-01-24T01:07:02.000Z",
+    published_at: "2022-01-24T01:07:02.000Z",
+    created_at: "2022-01-22T01:07:02.000Z",
+    edited_at: null,
+    deleted_at: null,
     title: "Office Shenanigans: Pranks, Memes, and Workplace Woes",
     slug: "office-shenanigans-pranks-memes-and-workplace-woes",
     tags: [mockTags[9]],
@@ -117,7 +134,10 @@ export const mockStories: Story[] = [
   {
     splash_hex: "b3a494",
     splash_id: getSplashId("lq-w5bRrNcc"),
-    created_at: "2023-02-03T01:07:02.000Z",
+    published_at: "2023-02-03T01:07:02.000Z",
+    created_at: "2022-02-03T01:07:02.000Z",
+    edited_at: "2023-04-03T01:07:02.000Z",
+    deleted_at: null,
     title: "Pets Gone Wild: The Funniest Antics of Our Furry Friends",
     slug: "pets-gone-wild-the-funniest-antics-of-our-furry-friends",
     tags: [mockTags[2], mockTags[1], mockTags[3], mockTags[7], mockTags[4]],
@@ -135,7 +155,10 @@ export const mockStories: Story[] = [
   {
     splash_hex: "8a8a92",
     splash_id: getSplashId("jNpvVRvFcrI"),
-    created_at: "2022-11-23T01:07:02.000Z",
+    published_at: "2022-11-23T01:07:02.000Z",
+    created_at: "2021-11-23T01:07:02.000Z",
+    edited_at: "2023-11-23T01:07:02.000Z",
+    deleted_at: null,
     title: "Wanderlust Chronicles: Tales from Around the Globe",
     slug: "wanderlust-chronicles-tales-from-around-the-globe",
     tags: [mockTags[2], mockTags[6], mockTags[1]],
@@ -153,7 +176,10 @@ export const mockStories: Story[] = [
   {
     splash_hex: "455f75",
     splash_id: getSplashId("d2YMQ-hZ3og"),
-    created_at: "2021-09-04T01:07:02.000Z",
+    published_at: "2021-09-04T01:07:02.000Z",
+    created_at: "2021-09-02T01:07:02.000Z",
+    edited_at: null,
+    deleted_at: null,
     title: "Beyond the Stars: Exploring the Mysteries of Deep Space",
     slug: "beyond-the-stars-exploring-the-mysteries-of-deep-space",
     tags: [],
@@ -171,7 +197,10 @@ export const mockStories: Story[] = [
   {
     splash_hex: "71b343",
     splash_id: getSplashId("HWQXIYbs8PM"),
-    created_at: "2022-07-13T01:07:02.000Z",
+    published_at: "2022-07-13T01:07:02.000Z",
+    created_at: "2022-06-13T01:07:02.000Z",
+    edited_at: null,
+    deleted_at: null,
     title:
       "The Search for Extraterrestrial Life: Are We Alone in the Universe?",
     slug: "the-search-for-extraterrestrial-life-are-we-alone-in-the-universe",
@@ -190,7 +219,10 @@ export const mockStories: Story[] = [
   {
     splash_hex: "191d24",
     splash_id: getSplashId("uKJ56vo9k3U"),
-    created_at: "2021-08-08T01:07:02.000Z",
+    published_at: "2021-08-08T01:07:02.000Z",
+    created_at: "2021-05-08T01:07:02.000Z",
+    edited_at: "2021-11-08T01:07:02.000Z",
+    deleted_at: null,
     title: "Unusual Travel Tales: Strange Adventures and Bizarre Encounters",
     slug: "unusual-travel-tales-strange-adventures-and-bizarre-encounters",
     tags: [mockTags[1], mockTags[8]],

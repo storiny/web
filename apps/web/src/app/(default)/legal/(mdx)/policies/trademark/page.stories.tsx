@@ -7,7 +7,7 @@ import { renderWithState } from "~/redux/mock";
 
 import DefaultLayout from "../../../../layout";
 import LegalLayout from "../../../layout";
-import TrademarkPolicy from "./page";
+import TrademarkPolicy from "./client";
 
 const meta: Meta<typeof TrademarkPolicy> = {
   title: "pages/Legal/policies/trademark",

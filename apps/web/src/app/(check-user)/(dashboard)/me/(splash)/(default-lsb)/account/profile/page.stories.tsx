@@ -8,7 +8,7 @@ import { renderWithState } from "~/redux/mock";
 import DashboardLayout from "../../../../../layout";
 import DashboardSplashLayout from "../../../layout";
 import DefaultDashboardLeftSidebarLayout from "../../layout";
-import AccountProfilePage from "./page";
+import AccountProfilePage from "./client";
 
 const meta: Meta<typeof AccountProfilePage> = {
   title: "dashboard/Account/profile",

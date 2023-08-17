@@ -7,7 +7,7 @@ import { renderWithState } from "~/redux/mock";
 
 import DefaultLayout from "../../../../layout";
 import LegalLayout from "../../../layout";
-import UsernamePolicy from "./page";
+import UsernamePolicy from "./client";
 
 const meta: Meta<typeof UsernamePolicy> = {
   title: "pages/Legal/policies/username",

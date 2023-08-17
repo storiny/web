@@ -8,6 +8,6 @@ export const apiSlice = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: `${process.env.NEXT_PUBLIC_API_URL}/v${API_VERSION}`
   }),
-  tagTypes: ["Notification", "Asset"],
+  tagTypes: ["Notification", "Asset", "Story"],
   endpoints: () => ({})
 });

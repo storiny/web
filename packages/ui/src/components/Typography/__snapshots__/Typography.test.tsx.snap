@@ -7,3 +7,15 @@ exports[`<Typography /> matches snapshot 1`] = `
   Test
 </p>
 `;
+
+exports[`<Typography /> matches snapshot with \`ellipsis\` set to \`true\` 1`] = `
+<p
+  class="ellipsis t-major t-body-1"
+>
+  <span
+    class="ellipsis ellipsis-child"
+  >
+    Test
+  </span>
+</p>
+`;

@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { zodMessages } from "./messages";
+import { ZOD_MESSAGES } from "./messages";
 
 /**
  * Alphanumeric regex
@@ -39,71 +39,71 @@ export const userSchema = {
     .string()
     .max(
       userProps.bio.maxLength,
-      zodMessages.max("bio", userProps.bio.maxLength)
+      ZOD_MESSAGES.max("bio", userProps.bio.maxLength)
     ),
   location: z
     .string()
     .max(
       userProps.location.maxLength,
-      zodMessages.max("location", userProps.location.maxLength)
+      ZOD_MESSAGES.max("location", userProps.location.maxLength)
     ),
   email: z
     .string()
     .min(
       userProps.email.minLength,
-      zodMessages.min("e-mail", userProps.email.minLength)
+      ZOD_MESSAGES.min("e-mail", userProps.email.minLength)
     )
     .max(
       userProps.email.maxLength,
-      zodMessages.max("e-mail", userProps.email.maxLength)
+      ZOD_MESSAGES.max("e-mail", userProps.email.maxLength)
     )
     .email("Invalid e-mail")
-    .nonempty(zodMessages.nonEmpty("e-mail")),
+    .nonempty(ZOD_MESSAGES.nonEmpty("e-mail")),
   name: z
     .string()
     .min(
       userProps.name.minLength,
-      zodMessages.min("name", userProps.name.minLength)
+      ZOD_MESSAGES.min("name", userProps.name.minLength)
     )
     .max(
       userProps.name.maxLength,
-      zodMessages.max("name", userProps.name.maxLength)
+      ZOD_MESSAGES.max("name", userProps.name.maxLength)
     )
-    .nonempty(zodMessages.nonEmpty("name")),
+    .nonempty(ZOD_MESSAGES.nonEmpty("name")),
   password: z
     .string()
     .min(
       userProps.password.minLength,
-      zodMessages.min("password", userProps.password.minLength)
+      ZOD_MESSAGES.min("password", userProps.password.minLength)
     )
     .max(
       userProps.password.maxLength,
-      zodMessages.max("password", userProps.password.maxLength)
+      ZOD_MESSAGES.max("password", userProps.password.maxLength)
     )
-    .nonempty(zodMessages.nonEmpty("password")),
+    .nonempty(ZOD_MESSAGES.nonEmpty("password")),
   username: z
     .string()
     .min(
       userProps.username.minLength,
-      zodMessages.min("username", userProps.username.minLength)
+      ZOD_MESSAGES.min("username", userProps.username.minLength)
     )
     .max(
       userProps.username.maxLength,
-      zodMessages.max("username", userProps.username.maxLength)
+      ZOD_MESSAGES.max("username", userProps.username.maxLength)
     )
     .regex(
       USERNAME_REGEX,
       "Username must only contain underscores and alphanumeric characters"
     )
-    .nonempty(zodMessages.nonEmpty("username")),
+    .nonempty(ZOD_MESSAGES.nonEmpty("username")),
   wpm: z
     .number()
     .min(
       userProps.wpm.min,
-      zodMessages.min("reading speed", userProps.wpm.min, "number")
+      ZOD_MESSAGES.min("reading speed", userProps.wpm.min, "number")
     )
     .max(
       userProps.wpm.max,
-      zodMessages.max("reading speed", userProps.wpm.max, "number")
+      ZOD_MESSAGES.max("reading speed", userProps.wpm.max, "number")
     )
 } as const;

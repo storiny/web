@@ -48,7 +48,9 @@ const normalizeCategory = (category: Props["category"]): string =>
 // Page header tabs
 
 const PageTabsHeader = (): React.ReactElement => (
-  <TabsList className={clsx("page-header", styles.x, styles["tabs-list"])}>
+  <TabsList
+    className={clsx("full-bleed", "page-header", styles.x, styles["tabs-list"])}
+  >
     <Tab value={"all"}>All</Tab>
     <Tab value={"stories"}>Stories</Tab>
     <Tab value={"writers"}>Writers</Tab>
@@ -72,6 +74,7 @@ const PageInputHeader = ({
   <div
     className={clsx(
       "flex-center",
+      "full-bleed",
       "page-header",
       "with-page-title",
       styles.x,

@@ -5,6 +5,7 @@ import "./unread-notifications";
 import "./notifications";
 import "./gallery";
 import "./assets";
+import "./drafts";
 import "./settings";
 import "./validation";
 
