@@ -2,6 +2,7 @@ import { Story } from "@storiny/types";
 import { VirtuosoProps } from "react-virtuoso";
 
 import { StoryProps } from "~/entities/Story";
+import { StorySkeletonProps } from "~/entities/Story/Skeleton";
 
 export interface VirtualizedStoryListProps extends VirtuosoProps<Story, any> {
   /**
@@ -12,6 +13,10 @@ export interface VirtualizedStoryListProps extends VirtuosoProps<Story, any> {
    * A callback function to fetch more stories.
    */
   loadMore: () => void;
+  /**
+   * Props passed down to individual story skeleton entities.
+   */
+  skeletonProps?: Partial<StorySkeletonProps>;
   /**
    * Array of stories to render.
    */

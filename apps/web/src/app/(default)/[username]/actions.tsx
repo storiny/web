@@ -27,6 +27,11 @@ import {
   selectMute,
   selectSentRequest,
   selectSubscribed,
+  setBlock,
+  setFriend,
+  setMute,
+  setSentRequest,
+  setSubscription,
   syncWithUser,
   toggleBlock,
   toggleFriend,
@@ -68,7 +73,7 @@ const Actions = ({ profile, isInsideSidebar }: Props): React.ReactElement => {
     ),
     {
       color: isBlocking ? "inverted" : "ruby",
-      onConfirm: () => dispatch(toggleBlock(profile.id)),
+      onConfirm: () => dispatch(setBlock([profile.id])),
       title: `${isBlocking ? "Unblock" : "Block"} @${profile.username}?`,
       description: isBlocking
         ? `The public content you publish will be available to them as well as the ability to follow you.`
@@ -117,7 +122,7 @@ const Actions = ({ profile, isInsideSidebar }: Props): React.ReactElement => {
             <MenuItem
               decorator={<XIcon />}
               onClick={(): void => {
-                dispatch(toggleSentRequest(profile.id));
+                dispatch(setSentRequest([profile.id]));
               }}
             >
               Cancel request
@@ -126,7 +131,7 @@ const Actions = ({ profile, isInsideSidebar }: Props): React.ReactElement => {
             <MenuItem
               decorator={<HeartPlusIcon />}
               onClick={(): void => {
-                dispatch(toggleFriend(profile.id));
+                dispatch(setFriend([profile.id]));
               }}
             >
               Remove friend
@@ -135,7 +140,7 @@ const Actions = ({ profile, isInsideSidebar }: Props): React.ReactElement => {
             <MenuItem
               decorator={<HeartPlusIcon />}
               onClick={(): void => {
-                dispatch(toggleSentRequest(profile.id));
+                dispatch(setSentRequest([profile.id]));
               }}
             >
               Send friend request
@@ -145,7 +150,7 @@ const Actions = ({ profile, isInsideSidebar }: Props): React.ReactElement => {
             <MenuItem
               decorator={isSubscribed ? <BellFilledIcon /> : <BellPlusIcon />}
               onClick={(): void => {
-                dispatch(toggleSubscription(profile.id));
+                dispatch(setSubscription([profile.id]));
               }}
             >
               {isSubscribed ? "Unsubscribe" : "Subscribe"}
@@ -177,7 +182,7 @@ const Actions = ({ profile, isInsideSidebar }: Props): React.ReactElement => {
           <MenuItem
             decorator={<MuteIcon />}
             onClick={(): void => {
-              dispatch(toggleMute(profile.id));
+              dispatch(setMute([profile.id]));
             }}
           >
             {isMuted ? "Unmute" : "Mute"} this user

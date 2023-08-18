@@ -20,7 +20,13 @@ import {
 } from "../../notification_settings_def/v1/def";
 import { GetPrivacySettingsRequest, GetPrivacySettingsResponse } from "../../privacy_settings_def/v1/def";
 import { GetProfileRequest, GetProfileResponse } from "../../profile_def/v1/def";
-import { GetDraftsInfoRequest, GetDraftsInfoResponse } from "../../story_def/v1/def";
+import { GetResponsesInfoRequest, GetResponsesInfoResponse } from "../../response_def/v1/def";
+import {
+  GetDraftsInfoRequest,
+  GetDraftsInfoResponse,
+  GetStoriesInfoRequest,
+  GetStoriesInfoResponse,
+} from "../../story_def/v1/def";
 import { GetTagRequest, GetTagResponse } from "../../tag_def/v1/def";
 import { GetTokenRequest, GetTokenResponse, VerifyEmailRequest, VerifyEmailResponse } from "../../token_def/v1/def";
 import { GetUserIdRequest, GetUserIdResponse } from "../../user_def/v1/def";
@@ -149,6 +155,27 @@ export const ApiServiceService = {
     responseSerialize: (value: GetDraftsInfoResponse) => Buffer.from(GetDraftsInfoResponse.encode(value).finish()),
     responseDeserialize: (value: Buffer) => GetDraftsInfoResponse.decode(value),
   },
+  /** Returns the user's stories details */
+  getStoriesInfo: {
+    path: "/api_service.v1.ApiService/GetStoriesInfo",
+    requestStream: false,
+    responseStream: false,
+    requestSerialize: (value: GetStoriesInfoRequest) => Buffer.from(GetStoriesInfoRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer) => GetStoriesInfoRequest.decode(value),
+    responseSerialize: (value: GetStoriesInfoResponse) => Buffer.from(GetStoriesInfoResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => GetStoriesInfoResponse.decode(value),
+  },
+  /** Returns the user's responses details */
+  getResponsesInfo: {
+    path: "/api_service.v1.ApiService/GetResponsesInfo",
+    requestStream: false,
+    responseStream: false,
+    requestSerialize: (value: GetResponsesInfoRequest) => Buffer.from(GetResponsesInfoRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer) => GetResponsesInfoRequest.decode(value),
+    responseSerialize: (value: GetResponsesInfoResponse) =>
+      Buffer.from(GetResponsesInfoResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => GetResponsesInfoResponse.decode(value),
+  },
 } as const;
 
 export interface ApiServiceServer extends UntypedServiceImplementation {
@@ -174,6 +201,10 @@ export interface ApiServiceServer extends UntypedServiceImplementation {
   getLoginActivity: handleUnaryCall<GetLoginActivityRequest, GetLoginActivityResponse>;
   /** Returns the user's drafts details */
   getDraftsInfo: handleUnaryCall<GetDraftsInfoRequest, GetDraftsInfoResponse>;
+  /** Returns the user's stories details */
+  getStoriesInfo: handleUnaryCall<GetStoriesInfoRequest, GetStoriesInfoResponse>;
+  /** Returns the user's responses details */
+  getResponsesInfo: handleUnaryCall<GetResponsesInfoRequest, GetResponsesInfoResponse>;
 }
 
 export interface ApiServiceClient extends Client {
@@ -352,6 +383,38 @@ export interface ApiServiceClient extends Client {
     metadata: Metadata,
     options: Partial<CallOptions>,
     callback: (error: ServiceError | null, response: GetDraftsInfoResponse) => void,
+  ): ClientUnaryCall;
+  /** Returns the user's stories details */
+  getStoriesInfo(
+    request: GetStoriesInfoRequest,
+    callback: (error: ServiceError | null, response: GetStoriesInfoResponse) => void,
+  ): ClientUnaryCall;
+  getStoriesInfo(
+    request: GetStoriesInfoRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: GetStoriesInfoResponse) => void,
+  ): ClientUnaryCall;
+  getStoriesInfo(
+    request: GetStoriesInfoRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: GetStoriesInfoResponse) => void,
+  ): ClientUnaryCall;
+  /** Returns the user's responses details */
+  getResponsesInfo(
+    request: GetResponsesInfoRequest,
+    callback: (error: ServiceError | null, response: GetResponsesInfoResponse) => void,
+  ): ClientUnaryCall;
+  getResponsesInfo(
+    request: GetResponsesInfoRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: GetResponsesInfoResponse) => void,
+  ): ClientUnaryCall;
+  getResponsesInfo(
+    request: GetResponsesInfoRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: GetResponsesInfoResponse) => void,
   ): ClientUnaryCall;
 }
 

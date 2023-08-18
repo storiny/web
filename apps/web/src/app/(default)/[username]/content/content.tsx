@@ -28,8 +28,8 @@ import UserXIcon from "~/icons/UserX";
 import {
   selectBlock,
   selectFollowing,
-  toggleBlock,
-  toggleFollowing
+  setBlock,
+  setFollowing
 } from "~/redux/features";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 import { breakpoints } from "~/theme/breakpoints";
@@ -88,7 +88,7 @@ const Actions = ({
             )
           }
           onClick={(): void => {
-            dispatch((isBlocking ? toggleBlock : toggleFollowing)(profile.id));
+            dispatch((isBlocking ? setBlock : setFollowing)([profile.id]));
           }}
           size={isInsideSidebar ? "md" : "lg"}
           variant={isSelf || isFollowing ? "hollow" : "rigid"}

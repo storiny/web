@@ -1,5 +1,6 @@
 import bundleAnalyzer from "@next/bundle-analyzer";
 import mdx from "@next/mdx";
+import { polyfill } from "interweave-ssr";
 import { customAlphabet } from "nanoid";
 import * as path from "path";
 import { fileURLToPath } from "url";
@@ -7,6 +8,8 @@ import { fileURLToPath } from "url";
 import { mdxConfig } from "./mdx.config.mjs";
 import * as pkg from "./package.json" assert { type: "json" };
 import { webpackConfig } from "./webpack.config.mjs";
+
+polyfill();
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const nanoid = customAlphabet("1234567890abcdef", 6);

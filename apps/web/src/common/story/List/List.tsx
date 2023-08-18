@@ -17,11 +17,12 @@ const VirtualizedStoryList = React.memo(
     stories,
     hasMore,
     loadMore,
-    storyProps,
+    storyProps = {},
+    skeletonProps = {},
     className,
     ...rest
   }: VirtualizedStoryListProps) => (
-    <VirtualizedStoryListContext.Provider value={storyProps || {}}>
+    <VirtualizedStoryListContext.Provider value={{ storyProps, skeletonProps }}>
       <Virtuoso
         increaseViewportBy={750}
         scrollSeekConfiguration={{

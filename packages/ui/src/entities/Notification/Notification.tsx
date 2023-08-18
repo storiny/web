@@ -8,7 +8,6 @@ import React from "react";
 import Avatar from "~/components/Avatar";
 import Badge from "~/components/Badge";
 import Grow from "~/components/Grow";
-import NoSsr from "~/components/NoSsr";
 import Typography from "~/components/Typography";
 import NotificationParser from "~/entities/Notification/Parser";
 import { useMediaQuery } from "~/hooks/useMediaQuery";
@@ -132,10 +131,8 @@ const Notification = (props: NotificationProps): React.ReactElement => {
         )}
       </Badge>
       <div className={"flex-col"}>
-        <Typography className={styles.content}>
-          <NoSsr>
-            <NotificationParser content={notification.rendered_content} />
-          </NoSsr>
+        <Typography as={"div"} className={styles.content}>
+          <NotificationParser content={notification.rendered_content} />
         </Typography>
         <Typography className={"t-minor"} level={"body2"}>
           {formatDate(notification.created_at, DateFormat.RELATIVE_CAPITALIZED)}

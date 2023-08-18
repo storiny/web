@@ -1,1 +1,1 @@
-!function(){try{var t=JSON.parse(localStorage.getItem("preferences")||"{}")["theme"];let e=t||"system";"system"===t&&(e=window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"),document.documentElement.setAttribute("data-theme",e)}catch(e){}}();
+!function(){try{var t=JSON.parse(localStorage.getItem("preferences")||"{}")["theme"];let e=t||"system";"system"===t&&(e=window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"),document.documentElement.setAttribute("data-theme",e)}catch{}}();

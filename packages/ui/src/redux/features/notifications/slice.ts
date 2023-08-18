@@ -2,9 +2,9 @@ import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Notification } from "@storiny/types";
 
 import {
-  changeEntityValue,
+  decrementAction,
   selectReadNotification,
-  toggleEntityValue
+  setEntityValue
 } from "~/redux/features";
 import { AppStartListening } from "~/redux/listenerMiddleware";
 import { AppState } from "~/redux/store";
@@ -77,13 +77,13 @@ export const notificationsSlice = createSlice({
   name: "notifications",
   initialState: notificationsInitialState,
   reducers: {
-    // Predicate
-    toggleReadNotification:
-      toggleEntityValue<NotificationsState>("readNotifications"),
-    // Integral
-    decrementUnreadNotificationCount: changeEntityValue<NotificationsState>(
+    setReadNotification: setEntityValue<NotificationsState, "boolean">(
+      "readNotifications",
+      "boolean"
+    ),
+    setUnreadNotificationCount: setEntityValue<NotificationsState, "number">(
       "unreadCount",
-      "decrement"
+      "number"
     ),
     // Syncing
     syncWithNotification: (
@@ -118,9 +118,9 @@ export const notificationsSlice = createSlice({
 
 const {
   markAllAsRead,
-  toggleReadNotification,
   syncWithNotification,
-  decrementUnreadNotificationCount
+  setUnreadNotificationCount,
+  setReadNotification
 } = notificationsSlice.actions;
 
 export const addNotificationsListeners = (
@@ -130,22 +130,27 @@ export const addNotificationsListeners = (
    * Decrement unread notification count
    */
   startListening({
-    actionCreator: toggleReadNotification,
+    actionCreator: setReadNotification,
     effect: ({ payload }, listenerApi) => {
-      const isRead = selectReadNotification(payload)(listenerApi.getState());
+      const notificationId = payload[0];
+      const isRead = selectReadNotification(notificationId)(
+        listenerApi.getState()
+      );
 
       if (!isRead) {
-        listenerApi.dispatch(decrementUnreadNotificationCount(payload));
+        listenerApi.dispatch(
+          setUnreadNotificationCount([notificationId, decrementAction])
+        );
       }
     }
   });
 };
 
 export {
-  decrementUnreadNotificationCount,
   markAllAsRead,
-  syncWithNotification,
-  toggleReadNotification
+  setReadNotification,
+  setUnreadNotificationCount,
+  syncWithNotification
 };
 
 export default notificationsSlice.reducer;

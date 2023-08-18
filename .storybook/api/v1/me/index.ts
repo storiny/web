@@ -6,6 +6,7 @@ import "./notifications";
 import "./gallery";
 import "./assets";
 import "./drafts";
+import "./stories";
 import "./settings";
 import "./validation";
 

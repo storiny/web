@@ -1,0 +1,20 @@
+import { apiSlice } from "~/redux/features/api/slice";
+
+const SEGMENT = (id: string): string => `me/stories/${id}/recover`;
+
+export interface StoryRecoverResponse {}
+export interface StoryRecoverPayload {
+  id: string;
+}
+
+export const { useStoryRecoverMutation } = apiSlice.injectEndpoints({
+  endpoints: (builder) => ({
+    storyRecover: builder.mutation<StoryRecoverResponse, StoryRecoverPayload>({
+      query: (body) => ({
+        url: `/${SEGMENT(body.id)}`,
+        method: "POST"
+      }),
+      invalidatesTags: (result, error, arg) => [{ type: "Story", id: arg.id }]
+    })
+  })
+});

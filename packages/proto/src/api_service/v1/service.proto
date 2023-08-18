@@ -8,6 +8,7 @@ import "login_activity_def/v1/def.proto";
 import "notification_settings_def/v1/def.proto";
 import "privacy_settings_def/v1/def.proto";
 import "profile_def/v1/def.proto";
+import "response_def/v1/def.proto";
 import "story_def/v1/def.proto";
 import "tag_def/v1/def.proto";
 import "token_def/v1/def.proto";
@@ -59,4 +60,12 @@ service ApiService {
    * Returns the user's drafts details
    */
   rpc GetDraftsInfo(story_def.v1.GetDraftsInfoRequest) returns (story_def.v1.GetDraftsInfoResponse) {}
+  /**
+   * Returns the user's stories details
+   */
+  rpc GetStoriesInfo(story_def.v1.GetStoriesInfoRequest) returns (story_def.v1.GetStoriesInfoResponse) {}
+  /**
+   * Returns the user's responses details
+   */
+  rpc GetResponsesInfo(response_def.v1.GetResponsesInfoRequest) returns (response_def.v1.GetResponsesInfoResponse) {}
 }

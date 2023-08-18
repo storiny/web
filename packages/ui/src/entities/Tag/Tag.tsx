@@ -16,6 +16,7 @@ import UsersIcon from "~/icons/Users";
 import {
   selectFollowedTag,
   selectTagFollowerCount,
+  setFollowedTag,
   syncWithTag,
   toggleFollowedTag
 } from "~/redux/features";
@@ -52,11 +53,11 @@ const Tag = (props: TagProps): React.ReactElement => {
         </NextLink>
         <Grow />
         <Button
+          autoSize
           checkAuth
           onClick={(): void => {
-            dispatch(toggleFollowedTag(tag.id));
+            dispatch(setFollowedTag([tag.id]));
           }}
-          size={isMobile ? "lg" : "md"}
           variant={isFollowing ? "hollow" : "rigid"}
         >
           {isFollowing ? "Following" : "Follow"}

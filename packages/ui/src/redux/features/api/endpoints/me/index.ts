@@ -6,4 +6,5 @@ export * from "./history";
 export * from "./liked-stories";
 export * from "./notifications";
 export * from "./settings";
+export * from "./stories";
 export * from "./validation";

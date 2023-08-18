@@ -17,9 +17,8 @@ import { TitleWithIcon, UserWithActionSkeleton } from "~/layout/RightSidebar";
 import UserWithAction from "~/layout/RightSidebar/UserWithAction";
 import {
   getQueryErrorType,
-  overwriteFollowedTag,
   selectFollowedTag,
-  toggleFollowedTag,
+  setFollowedTag,
   useGetTagWritersQuery
 } from "~/redux/features";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
@@ -39,7 +38,9 @@ const Actions = ({ tag }: Props): React.ReactElement => {
   const isFollowing = useAppSelector(selectFollowedTag(tag.id));
 
   React.useEffect(() => {
-    dispatch(overwriteFollowedTag([tag.id, Boolean(tag.is_following)]));
+    dispatch(
+      setFollowedTag([tag.id, (): boolean => Boolean(tag.is_following)])
+    );
   }, [dispatch, tag.is_following, tag.id]);
 
   return (
@@ -48,7 +49,7 @@ const Actions = ({ tag }: Props): React.ReactElement => {
         checkAuth
         decorator={isFollowing ? <CheckIcon /> : <PlusIcon />}
         onClick={(): void => {
-          dispatch(toggleFollowedTag(tag.id));
+          dispatch(setFollowedTag([tag.id]));
         }}
         variant={isFollowing ? "hollow" : "rigid"}
       >

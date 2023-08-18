@@ -7,8 +7,8 @@ import { useMediaQuery } from "~/hooks/useMediaQuery";
 import BellOffIcon from "~/icons/BellOff";
 import CheckIcon from "~/icons/Check";
 import {
+  setReadNotification,
   syncWithNotification,
-  toggleReadNotification,
   useUnsubscribeNotificationMutation
 } from "~/redux/features";
 import { useAppDispatch } from "~/redux/hooks";
@@ -44,7 +44,7 @@ const Actions = ({
         aria-label={"Mark notification as read"}
         checkAuth
         onClick={(): void => {
-          dispatch(toggleReadNotification(notification.id));
+          dispatch(setReadNotification([notification.id]));
         }}
         title={"Mark as read"}
         variant={"ghost"}

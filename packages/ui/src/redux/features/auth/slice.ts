@@ -2,6 +2,7 @@ import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { User } from "@storiny/types";
 
 import { AppState } from "~/redux/store";
+import { clamp } from "~/utils/clamp";
 
 export type AuthStatus = "idle" | "loading" | "complete" | "error";
 
@@ -54,63 +55,37 @@ export const authSlice = createSlice({
         return state;
       }
     },
-    /**
-     * Increments follower count
-     */
-    incrementSelfFollowerCount: (state) => {
+    setSelfFollowerCount: (
+      state,
+      action: PayloadAction<(prevState: number) => number>
+    ) => {
       if (state.user !== null) {
-        state.user.follower_count++;
+        const callback = action.payload;
+        const newValue = callback(state.user.follower_count);
+        state.user.follower_count = clamp(0, newValue, Infinity);
       }
     },
-    /**
-     * Increments following count
-     */
-    incrementSelfFollowingCount: (state) => {
+    setSelfFollowingCount: (
+      state,
+      action: PayloadAction<(prevState: number) => number>
+    ) => {
       if (
         state.user !== null &&
         typeof state.user?.following_count === "number"
       ) {
-        state.user.following_count++;
+        const callback = action.payload;
+        const newValue = callback(state.user.following_count);
+        state.user.following_count = clamp(0, newValue, Infinity);
       }
     },
-    /**
-     * Increments friend count
-     */
-    incrementSelfFriendCount: (state) => {
+    setSelfFriendCount: (
+      state,
+      action: PayloadAction<(prevState: number) => number>
+    ) => {
       if (state.user !== null && typeof state.user?.friend_count === "number") {
-        state.user.friend_count++;
-      }
-    },
-    /**
-     * Decrements follower count
-     */
-    decrementSelfFollowerCount: (state) => {
-      if (state.user !== null && state.user.follower_count > 0) {
-        state.user.follower_count--;
-      }
-    },
-    /**
-     * Decrements following count
-     */
-    decrementSelfFollowingCount: (state) => {
-      if (
-        state.user !== null &&
-        typeof state.user?.following_count === "number" &&
-        state.user.following_count > 0
-      ) {
-        state.user.following_count--;
-      }
-    },
-    /**
-     * Decrements friend count
-     */
-    decrementSelfFriendCount: (state) => {
-      if (
-        state.user !== null &&
-        typeof state.user?.friend_count === "number" &&
-        state.user.friend_count > 0
-      ) {
-        state.user.friend_count--;
+        const callback = action.payload;
+        const newValue = callback(state.user.friend_count);
+        state.user.friend_count = clamp(0, newValue, Infinity);
       }
     }
   },
@@ -133,22 +108,16 @@ export const authSlice = createSlice({
 
 const {
   mutateUser,
-  incrementSelfFriendCount,
-  incrementSelfFollowingCount,
-  incrementSelfFollowerCount,
-  decrementSelfFriendCount,
-  decrementSelfFollowingCount,
-  decrementSelfFollowerCount
+  setSelfFollowingCount,
+  setSelfFollowerCount,
+  setSelfFriendCount
 } = authSlice.actions;
 
 export {
-  decrementSelfFollowerCount,
-  decrementSelfFollowingCount,
-  decrementSelfFriendCount,
-  incrementSelfFollowerCount,
-  incrementSelfFollowingCount,
-  incrementSelfFriendCount,
-  mutateUser
+  mutateUser,
+  setSelfFollowerCount,
+  setSelfFollowingCount,
+  setSelfFriendCount
 };
 
 export default authSlice.reducer;

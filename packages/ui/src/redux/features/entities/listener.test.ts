@@ -1,7 +1,18 @@
+import {
+  falseAction,
+  selectCommentLikeCount,
+  selectReplyLikeCount,
+  setBlock,
+  setFollowedTag,
+  setFriendCount,
+  setLikedComment,
+  setLikedReply,
+  setLikedStory,
+  trueAction
+} from "~/redux/features";
 import { setupStore } from "~/redux/store";
 
 import {
-  selectBlock,
   selectFollower,
   selectFollowerCount,
   selectFollowing,
@@ -13,20 +24,11 @@ import {
   selectTagFollowerCount
 } from "./selectors";
 import {
-  overwriteBlock,
-  overwriteFollowedTag,
-  overwriteFollower,
-  overwriteFollowing,
-  overwriteFriend,
-  overwriteFriendCount,
-  overwriteLikedStory,
-  overwriteSentRequest,
-  overwriteSubscription,
-  toggleBlock,
-  toggleFollowedTag,
-  toggleFollowing,
-  toggleFriend,
-  toggleLikedStory
+  setFollower,
+  setFollowing,
+  setFriend,
+  setSentRequest,
+  setSubscription
 } from "./slice";
 
 const testId = "0000-0000-0000-0000";
@@ -35,18 +37,16 @@ describe("entitiesListener", () => {
   it("unfollows, unsubscribes, removes friend request, and removes user from followers and friends list when they are blocked", () => {
     const store = setupStore(undefined, true);
 
-    // Using `overwriteBlock`
-
     // Follow user
-    store.dispatch(overwriteFollowing([testId, true]));
+    store.dispatch(setFollowing([testId, trueAction]));
     // Subscribe
-    store.dispatch(overwriteSubscription([testId, true]));
+    store.dispatch(setSubscription([testId, trueAction]));
     // Add user to follower list
-    store.dispatch(overwriteFollower([testId, true]));
+    store.dispatch(setFollower([testId, trueAction]));
     // Add user to friend list
-    store.dispatch(overwriteFriend([testId, true]));
+    store.dispatch(setFriend([testId, trueAction]));
     // Send request
-    store.dispatch(overwriteSentRequest([testId, true]));
+    store.dispatch(setSentRequest([testId, trueAction]));
 
     expect(selectFollowing(testId)(store.getState())).toBeTruthy();
     expect(selectSubscribed(testId)(store.getState())).toBeTruthy();
@@ -55,34 +55,7 @@ describe("entitiesListener", () => {
     expect(selectSentRequest(testId)(store.getState())).toBeTruthy();
 
     // Block the user
-    store.dispatch(overwriteBlock([testId, true]));
-
-    expect(selectFollowing(testId)(store.getState())).toBeFalsy();
-    expect(selectSubscribed(testId)(store.getState())).toBeFalsy();
-    expect(selectFollower(testId)(store.getState())).toBeFalsy();
-    expect(selectFriend(testId)(store.getState())).toBeFalsy();
-    expect(selectSentRequest(testId)(store.getState())).toBeFalsy();
-
-    // Using `toggleBlock`
-
-    // Unblock user
-    store.dispatch(toggleBlock(testId));
-
-    expect(selectBlock(testId)(store.getState())).toBeFalsy();
-
-    // Follow user again
-    store.dispatch(overwriteFollowing([testId, true]));
-    // Subscribe
-    store.dispatch(overwriteSubscription([testId, true]));
-    // Add user to follower list again
-    store.dispatch(overwriteFollower([testId, true]));
-    // Add user to friend list again
-    store.dispatch(overwriteFriend([testId, true]));
-    // Send friend request again
-    store.dispatch(overwriteSentRequest([testId, true]));
-
-    // Block the user
-    store.dispatch(toggleBlock(testId));
+    store.dispatch(setBlock([testId, trueAction]));
 
     expect(selectFollowing(testId)(store.getState())).toBeFalsy();
     expect(selectSubscribed(testId)(store.getState())).toBeFalsy();
@@ -95,13 +68,13 @@ describe("entitiesListener", () => {
     const store = setupStore(undefined, true);
 
     // Follow user
-    store.dispatch(overwriteFollowing([testId, true]));
+    store.dispatch(setFollowing([testId, trueAction]));
 
     expect(selectFollowing(testId)(store.getState())).toBeTruthy();
     expect(selectSubscribed(testId)(store.getState())).toBeTruthy();
 
     // Unfollow user
-    store.dispatch(overwriteFollowing([testId, false]));
+    store.dispatch(setFollowing([testId, falseAction]));
 
     expect(selectFollowing(testId)(store.getState())).toBeFalsy();
     expect(selectSubscribed(testId)(store.getState())).toBeFalsy();
@@ -109,50 +82,76 @@ describe("entitiesListener", () => {
 
   it("syncs count on toggling following", () => {
     const store = setupStore(undefined, true);
-    store.dispatch(overwriteFollowing([testId, false]));
+    store.dispatch(setFollowing([testId, falseAction]));
 
     // Follow user
-    store.dispatch(toggleFollowing(testId));
+    store.dispatch(setFollowing([testId]));
     expect(selectFollowerCount(testId)(store.getState())).toEqual(1);
 
     // Unfollow user
-    store.dispatch(toggleFollowing(testId));
+    store.dispatch(setFollowing([testId]));
     expect(selectFollowerCount(testId)(store.getState())).toEqual(0);
   });
 
   it("syncs count on toggling friends", () => {
     const store = setupStore(undefined, true);
-    store.dispatch(overwriteFriend([testId, true]));
-    store.dispatch(overwriteFriendCount([testId, 5]));
+    store.dispatch(setFriend([testId, trueAction]));
+    store.dispatch(setFriendCount([testId, (): number => 5]));
 
     // Remove friend
-    store.dispatch(toggleFriend(testId));
+    store.dispatch(setFriend([testId]));
     expect(selectFriendCount(testId)(store.getState())).toEqual(4);
   });
 
   it("syncs count on toggling story like", () => {
     const store = setupStore(undefined, true);
-    store.dispatch(overwriteLikedStory([testId, false]));
+    store.dispatch(setLikedStory([testId, falseAction]));
 
     // Like story
-    store.dispatch(toggleLikedStory(testId));
+    store.dispatch(setLikedStory([testId]));
     expect(selectStoryLikeCount(testId)(store.getState())).toEqual(1);
 
     // Unlike story
-    store.dispatch(toggleLikedStory(testId));
+    store.dispatch(setLikedStory([testId]));
     expect(selectStoryLikeCount(testId)(store.getState())).toEqual(0);
+  });
+
+  it("syncs count on toggling comment like", () => {
+    const store = setupStore(undefined, true);
+    store.dispatch(setLikedComment([testId, falseAction]));
+
+    // Like comment
+    store.dispatch(setLikedComment([testId]));
+    expect(selectCommentLikeCount(testId)(store.getState())).toEqual(1);
+
+    // Unlike comment
+    store.dispatch(setLikedComment([testId]));
+    expect(selectCommentLikeCount(testId)(store.getState())).toEqual(0);
+  });
+
+  it("syncs count on toggling reply like", () => {
+    const store = setupStore(undefined, true);
+    store.dispatch(setLikedReply([testId, falseAction]));
+
+    // Like reply
+    store.dispatch(setLikedReply([testId]));
+    expect(selectReplyLikeCount(testId)(store.getState())).toEqual(1);
+
+    // Unlike reply
+    store.dispatch(setLikedReply([testId]));
+    expect(selectReplyLikeCount(testId)(store.getState())).toEqual(0);
   });
 
   it("syncs count on toggling tag follower", () => {
     const store = setupStore(undefined, true);
-    store.dispatch(overwriteFollowedTag([testId, false]));
+    store.dispatch(setFollowedTag([testId, falseAction]));
 
     // Follow tag
-    store.dispatch(toggleFollowedTag(testId));
+    store.dispatch(setFollowedTag([testId]));
     expect(selectTagFollowerCount(testId)(store.getState())).toEqual(1);
 
     // Unfollow tag
-    store.dispatch(toggleFollowedTag(testId));
+    store.dispatch(setFollowedTag([testId]));
     expect(selectTagFollowerCount(testId)(store.getState())).toEqual(0);
   });
 });

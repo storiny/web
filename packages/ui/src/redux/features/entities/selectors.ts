@@ -74,6 +74,16 @@ export const selectStoryLikeCount =
   (state: AppState): number =>
     state.entities.storyLikeCounts[storyId] || 0;
 
+export const selectCommentLikeCount =
+  (commentId: string) =>
+  (state: AppState): number =>
+    state.entities.commentLikeCounts[commentId] || 0;
+
+export const selectReplyLikeCount =
+  (replyId: string) =>
+  (state: AppState): number =>
+    state.entities.replyLikeCounts[replyId] || 0;
+
 export const selectTagFollowerCount =
   (tagId: string) =>
   (state: AppState): number =>

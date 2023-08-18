@@ -1,0 +1,260 @@
+"use client";
+
+import { clsx } from "clsx";
+import dynamic from "next/dynamic";
+import React from "react";
+
+import { StoryListSkeleton, VirtualizedStoryList } from "~/common/story";
+import SuspenseLoader from "~/common/suspense-loader";
+import Divider from "~/components/Divider";
+import Input from "~/components/Input";
+import Option from "~/components/Option";
+import Select from "~/components/Select";
+import Spacer from "~/components/Spacer";
+import Tab from "~/components/Tab";
+import Tabs from "~/components/Tabs";
+import TabsList from "~/components/TabsList";
+import Typography from "~/components/Typography";
+import ErrorState from "~/entities/ErrorState";
+import { useDebounce } from "~/hooks/useDebounce";
+import SearchIcon from "~/icons/Search";
+import { getQueryErrorType, useGetStoriesQuery } from "~/redux/features";
+import { abbreviateNumber } from "~/utils/abbreviateNumber";
+
+import DashboardTitle from "../../../dashboard-title";
+import { ResponsesProps } from "./responses.props";
+import styles from "./styles.module.scss";
+
+const EmptyState = dynamic(() => import("./empty-state"), {
+  loading: () => <SuspenseLoader />
+});
+
+type SortOrder = "dsc" | "asc";
+
+export type ResponsesTabValue = "comments" | "replies";
+export type ResponsesSortValue =
+  | "recent"
+  | "old"
+  | `replies-${SortOrder}`
+  | `likes-${SortOrder}`;
+
+// Page header tabs
+
+const PageHeader = ({
+  value,
+  onChange
+}: {
+  onChange: (newValue: ResponsesTabValue) => void;
+  value: ResponsesTabValue;
+}): React.ReactElement => (
+  <Tabs
+    className={clsx(
+      "full-bleed",
+      "page-header",
+      "dashboard-header",
+      "with-page-title",
+      styles.x,
+      styles.tabs
+    )}
+    onValueChange={(newValue): void => onChange(newValue as ResponsesTabValue)}
+    value={value}
+  >
+    <TabsList className={clsx("full-w", styles.x, styles["tabs-list"])}>
+      <Tab aria-controls={undefined} value={"comments"}>
+        Comments
+      </Tab>
+      <Tab aria-controls={undefined} value={"replies"}>
+        Replies
+      </Tab>
+    </TabsList>
+  </Tabs>
+);
+
+// Status header
+
+const StatusHeader = ({
+  tab,
+  comment_count,
+  reply_count
+}: {
+  tab: ResponsesTabValue;
+} & ResponsesProps): React.ReactElement => {
+  const count_param = tab === "comments" ? comment_count : reply_count;
+  return (
+    <div
+      className={clsx(
+        "full-bleed",
+        "dashboard-header",
+        "flex-center",
+        styles.x,
+        styles["status-header"]
+      )}
+    >
+      <Typography ellipsis level={"body2"}>
+        {count_param === 0 ? (
+          tab === "comments" ? (
+            "You have not commented on any story yet."
+          ) : (
+            "You have not replied to any comment yet."
+          )
+        ) : (
+          <>
+            You have posted{" "}
+            <span className={"t-bold"}>{abbreviateNumber(count_param)}</span>{" "}
+            {count_param === 1
+              ? tab === "comments"
+                ? "comment"
+                : "reply"
+              : tab}
+          </>
+        )}
+      </Typography>
+    </div>
+  );
+};
+
+// Control bar
+
+const ControlBar = ({
+  tab,
+  query,
+  sort,
+  onSortChange,
+  onQueryChange,
+  disabled
+}: {
+  disabled?: boolean;
+  onQueryChange: (newQuery: string) => void;
+  onSortChange: (newSort: ResponsesSortValue) => void;
+  query: string;
+  sort: ResponsesSortValue;
+  tab: ResponsesTabValue;
+}): React.ReactElement => (
+  <div
+    className={clsx(
+      "flex-center",
+      "full-bleed",
+      "dashboard-header",
+      styles.x,
+      styles["control-bar"]
+    )}
+  >
+    <Input
+      decorator={<SearchIcon />}
+      disabled={disabled}
+      onChange={(event): void => onQueryChange(event.target.value)}
+      placeholder={`Search your ${tab}`}
+      size={"lg"}
+      slotProps={{
+        container: {
+          className: clsx("f-grow", styles.x, styles.input)
+        }
+      }}
+      type={"search"}
+      value={query}
+    />
+    <Divider orientation={"vertical"} />
+    <Select
+      disabled={disabled}
+      onValueChange={onSortChange}
+      slotProps={{
+        trigger: {
+          className: clsx("focus-invert", styles.x, styles["select-trigger"])
+        }
+      }}
+      value={sort}
+    >
+      <Option value={"recent"}>Recent</Option>
+      <Option value={"old"}>Old</Option>
+      <Option value={"likes-dsc"}>Most liked</Option>
+      <Option value={"likes-asc"}>Least liked</Option>
+      {tab !== "replies" && (
+        <React.Fragment>
+          <Option value={"replies-dsc"}>Most replied</Option>
+          <Option value={"replies-asc"}>Least replied</Option>
+        </React.Fragment>
+      )}
+    </Select>
+  </div>
+);
+
+const ContentResponsesClient = (props: ResponsesProps): React.ReactElement => {
+  const [sort, setSort] = React.useState<ResponsesSortValue>("recent");
+  const [query, setQuery] = React.useState<string>("");
+  const [value, setValue] = React.useState<ResponsesTabValue>("comments");
+  const [page, setPage] = React.useState<number>(1);
+  const debouncedQuery = useDebounce(query);
+  const { data, isLoading, isFetching, isError, error, refetch } =
+    useGetStoriesQuery({
+      page,
+      sort,
+      query: debouncedQuery,
+      type: value
+    });
+  const { items = [], hasMore } = data || {};
+  const isTyping = query !== debouncedQuery;
+
+  const loadMore = React.useCallback(
+    () => setPage((prevState) => prevState + 1),
+    []
+  );
+
+  const handleChange = React.useCallback(
+    (newValue: ResponsesTabValue) => setValue(newValue),
+    []
+  );
+
+  const handleSortChange = React.useCallback(
+    (newSort: ResponsesSortValue) => setSort(newSort),
+    []
+  );
+
+  const handleQueryChange = React.useCallback(
+    (newQuery: string) => setQuery(newQuery),
+    []
+  );
+
+  return (
+    <React.Fragment>
+      <DashboardTitle>Responses</DashboardTitle>
+      <PageHeader onChange={handleChange} value={value} />
+      <StatusHeader {...props} tab={value} />
+      <ControlBar
+        disabled={!items.length}
+        onQueryChange={handleQueryChange}
+        onSortChange={handleSortChange}
+        query={query}
+        sort={sort}
+        tab={value}
+      />
+      {isLoading || isTyping ? <StoryListSkeleton isSmall /> : null}
+      {isError ? (
+        <ErrorState
+          autoSize
+          componentProps={{
+            button: { loading: isFetching }
+          }}
+          retry={refetch}
+          type={getQueryErrorType(error)}
+        />
+      ) : !isFetching && !items.length ? (
+        <EmptyState value={value} />
+      ) : (
+        <VirtualizedStoryList
+          hasMore={Boolean(hasMore)}
+          loadMore={loadMore}
+          skeletonProps={{
+            isSmall: true
+          }}
+          stories={items}
+          storyProps={{
+            isExtended: true
+          }}
+        />
+      )}
+      <Spacer orientation={"vertical"} size={10} />
+    </React.Fragment>
+  );
+};
+
+export default ContentResponsesClient;

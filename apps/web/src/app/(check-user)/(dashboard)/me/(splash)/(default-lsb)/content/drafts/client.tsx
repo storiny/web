@@ -18,6 +18,7 @@ import Tabs from "~/components/Tabs";
 import TabsList from "~/components/TabsList";
 import Typography from "~/components/Typography";
 import ErrorState from "~/entities/ErrorState";
+import { useDebounce } from "~/hooks/useDebounce";
 import PlusIcon from "~/icons/Plus";
 import SearchIcon from "~/icons/Search";
 import { getQueryErrorType, useGetDraftsQuery } from "~/redux/features";
@@ -25,7 +26,7 @@ import { abbreviateNumber } from "~/utils/abbreviateNumber";
 
 import DashboardTitle from "../../dashboard-title";
 import { DraftsProps } from "./drafts.props";
-import AccountProfileRightSidebar from "./right-sidebar";
+import ContentDraftsRightSidebar from "./right-sidebar";
 import styles from "./styles.module.scss";
 
 const EmptyState = dynamic(() => import("./empty-state"), {
@@ -123,7 +124,7 @@ const StatusHeader = ({
         styles["status-header"]
       )}
     >
-      <Typography level={"body2"}>
+      <Typography ellipsis level={"body2"}>
         {count_param === 0 ? (
           `You have no ${tab === "pending" ? "pending" : "deleted"} drafts.`
         ) : (
@@ -179,6 +180,7 @@ const ControlBar = ({
     className={clsx(
       "flex-center",
       "full-bleed",
+      "dashboard-header",
       styles.x,
       styles["control-bar"]
     )}
@@ -208,14 +210,16 @@ const ContentDraftsClient = (props: DraftsProps): React.ReactElement => {
   const [query, setQuery] = React.useState<string>("");
   const [value, setValue] = React.useState<DraftsTabValue>("pending");
   const [page, setPage] = React.useState<number>(1);
+  const debouncedQuery = useDebounce(query);
   const { data, isLoading, isFetching, isError, error, refetch } =
     useGetDraftsQuery({
       page,
       sort,
-      query,
+      query: debouncedQuery,
       type: value
     });
   const { items = [], hasMore } = data || {};
+  const isTyping = query !== debouncedQuery;
 
   const loadMore = React.useCallback(
     () => setPage((prevState) => prevState + 1),
@@ -259,7 +263,7 @@ const ContentDraftsClient = (props: DraftsProps): React.ReactElement => {
             sort={sort}
           />
         )}
-        {isLoading ? <StoryListSkeleton /> : null}
+        {isLoading || isTyping ? <StoryListSkeleton isSmall /> : null}
         {isError ? (
           <ErrorState
             autoSize
@@ -275,12 +279,19 @@ const ContentDraftsClient = (props: DraftsProps): React.ReactElement => {
           <VirtualizedStoryList
             hasMore={Boolean(hasMore)}
             loadMore={loadMore}
+            skeletonProps={{
+              isSmall: true
+            }}
             stories={items}
+            storyProps={{
+              isDraft: true,
+              isDeleted: value === "deleted"
+            }}
           />
         )}
         <Spacer orientation={"vertical"} size={10} />
       </main>
-      <AccountProfileRightSidebar />
+      <ContentDraftsRightSidebar latest_draft={latest_draft} tab={value} />
     </React.Fragment>
   );
 };

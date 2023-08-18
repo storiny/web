@@ -1,11 +1,10 @@
-import { createSlice, isAnyOf, PayloadAction } from "@reduxjs/toolkit";
-import { Story, Tag, User } from "@storiny/types";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { Comment, Reply, Story, Tag, User } from "@storiny/types";
 
 import {
-  decrementSelfFollowerCount,
-  decrementSelfFollowingCount,
-  decrementSelfFriendCount,
-  incrementSelfFollowingCount,
+  decrementAction,
+  falseAction,
+  incrementAction,
   renderToast,
   selectBlock,
   selectFollowedTag,
@@ -13,9 +12,14 @@ import {
   selectFollowing,
   selectFriend,
   selectLikedStory,
-  selectSentRequest
+  selectSentRequest,
+  setSelfFollowerCount,
+  setSelfFollowingCount,
+  setSelfFriendCount,
+  trueAction
 } from "~/redux/features";
 import { AppStartListening } from "~/redux/listenerMiddleware";
+import { clamp } from "~/utils/clamp";
 
 interface EntitiesPredicateState {
   blocks: Record<string, boolean>;
@@ -24,6 +28,8 @@ interface EntitiesPredicateState {
   followers: Record<string, boolean>;
   following: Record<string, boolean>;
   friends: Record<string, boolean>;
+  likedComments: Record<string, boolean>;
+  likedReplies: Record<string, boolean>;
   likedStories: Record<string, boolean>;
   mutes: Record<string, boolean>;
   sentRequests: Record<string, boolean>;
@@ -31,9 +37,13 @@ interface EntitiesPredicateState {
 }
 
 interface EntitesIntegralState {
+  commentLikeCounts: Record<string, number>;
+  commentReplyCounts: Record<string, number>;
   followerCounts: Record<string, number>;
   followingCounts: Record<string, number>;
   friendCounts: Record<string, number>;
+  replyLikeCounts: Record<string, number>;
+  storyCommentCounts: Record<string, number>;
   storyLikeCounts: Record<string, number>;
   tagFollowerCounts: Record<string, number>;
 }
@@ -62,21 +72,37 @@ type SyncableStory = Pick<
 
 type SyncableTag = Pick<Tag, "id" | "follower_count" | "is_following">;
 
+type SyncableComment = Pick<
+  Comment,
+  "id" | "like_count" | "reply_count" | "is_liked" | "story" | "user"
+>;
+
+type SyncableReply = Pick<
+  Reply,
+  "id" | "like_count" | "is_liked" | "comment" | "user"
+>;
+
 export const entitiesInitialState: EntitiesState = {
-  following: {},
-  followers: {},
-  friends: {},
-  subscriptions: {},
-  bookmarks: {},
-  likedStories: {},
-  followedTags: {},
   blocks: {},
-  mutes: {},
-  sentRequests: {},
+  bookmarks: {},
+  commentLikeCounts: {},
+  commentReplyCounts: {},
+  followedTags: {},
   followerCounts: {},
+  followers: {},
+  following: {},
   followingCounts: {},
   friendCounts: {},
+  friends: {},
+  likedComments: {},
+  likedReplies: {},
+  likedStories: {},
+  mutes: {},
+  replyLikeCounts: {},
+  sentRequests: {},
+  storyCommentCounts: {},
   storyLikeCounts: {},
+  subscriptions: {},
   tagFollowerCounts: {}
 };
 
@@ -95,56 +121,50 @@ export const isBool = (value?: boolean): value is boolean =>
   typeof value === "boolean";
 
 /**
- * Toggles boolean entity value
+ * Sets integral entity value
  * @param key Entity key
+ * @param type Type of the entity
  */
-export const toggleEntityValue =
-  <T extends Record<any, any>>(key: keyof T) =>
-  (state: T, action: PayloadAction<string>): void => {
-    const entityId = action.payload;
-    const prevState = state[key][entityId];
+export const setEntityValue =
+  <
+    T extends Record<any, any>,
+    Q extends "boolean" | "number",
+    K = Q extends "boolean" ? boolean : number
+  >(
+    key: keyof T,
+    type: Q
+  ) =>
+  (
+    state: T,
+    action: PayloadAction<
+      K extends boolean
+        ? [string] | [string, ((prevState: K) => K) | undefined] // Allow `undefined` for `boolean` type to toggle the value
+        : [string, (prevState: K) => K]
+    >
+  ): void => {
+    const [entityId, callback] = action.payload;
+    const prevState = state[key][entityId] as K | undefined;
 
-    if (typeof prevState !== "undefined") {
-      state[key][entityId] = !prevState;
-    } else {
-      // Set to `true` when absent from the map.
+    if (typeof prevState === "undefined" && type === "boolean") {
+      // Set to `true` when absent from the map
       state[key][entityId] = true;
     }
-  };
 
-/**
- * Increments or decrements integral entity value
- * @param key Entity key
- * @param mode Mode of operation
- */
-export const changeEntityValue =
-  <T extends Record<any, any>>(key: keyof T, mode: "increment" | "decrement") =>
-  (state: T, action: PayloadAction<string>): void => {
-    const entityId = action.payload;
-    const prevState = state[key][entityId] as number;
-
-    if (typeof prevState !== "undefined") {
-      state[key][entityId] =
-        mode === "increment"
-          ? prevState + 1
-          : prevState > 0
-          ? prevState - 1
-          : prevState;
+    if (type === "boolean") {
+      if (!callback) {
+        state[key][entityId] = !prevState;
+      } else {
+        state[key][entityId] = callback(
+          (typeof prevState === "undefined" ? 0 : prevState) as K
+        );
+      }
     } else {
-      // When absent from the map
-      state[key][entityId] = mode === "increment" ? 1 : 0;
-    }
-  };
+      const newValue = callback!(
+        (typeof prevState === "undefined" ? 0 : prevState) as K
+      );
 
-/**
- * Overwrites entity value if exists
- * @param key Entity key
- */
-export const overwriteEntityValue =
-  <T extends Record<any, any>>(key: keyof T) =>
-  (state: T, action: PayloadAction<[string, number | boolean]>): void => {
-    const [entityId, value] = action.payload;
-    state[key][entityId] = value;
+      state[key][entityId] = clamp(0, newValue as number, Infinity);
+    }
   };
 
 /**
@@ -219,6 +239,10 @@ const syncWithStoryImpl = (
     state.storyLikeCounts[story.id] = story.stats.like_count;
   }
 
+  if (isNum(story.stats.comment_count)) {
+    state.storyCommentCounts[story.id] = story.stats.comment_count;
+  }
+
   // Other
   if (story.user) {
     syncWithUserImpl(state, story.user);
@@ -242,131 +266,190 @@ const syncWithTagImpl = (state: EntitiesState, tag: SyncableTag): void => {
   }
 };
 
+/**
+ * Sync incoming comment to the store
+ * @param state App state
+ * @param comment Incoming comment
+ */
+const syncWithCommentImpl = (
+  state: EntitiesState,
+  comment: SyncableComment
+): void => {
+  // Predicates
+  if (isBool(comment.is_liked)) {
+    state.likedComments[comment.id] = comment.is_liked;
+  }
+
+  // Integral
+  if (isNum(comment.like_count)) {
+    state.commentLikeCounts[comment.id] = comment.like_count;
+  }
+
+  if (isNum(comment.reply_count)) {
+    state.commentReplyCounts[comment.id] = comment.reply_count;
+  }
+
+  // Other
+  if (comment.user) {
+    syncWithUserImpl(state, comment.user);
+  }
+
+  if (comment.story) {
+    syncWithStoryImpl(state, comment.story);
+  }
+};
+
+/**
+ * Sync incoming comment to the store
+ * @param state App state
+ * @param reply Incoming reply
+ */
+const syncWithReplyImpl = (
+  state: EntitiesState,
+  reply: SyncableReply
+): void => {
+  // Predicates
+  if (isBool(reply.is_liked)) {
+    state.likedReplies[reply.id] = reply.is_liked;
+  }
+
+  // Integral
+  if (isNum(reply.like_count)) {
+    state.replyLikeCounts[reply.id] = reply.like_count;
+  }
+
+  // Other
+  if (reply.user) {
+    syncWithUserImpl(state, reply.user);
+  }
+
+  if (reply.comment) {
+    syncWithCommentImpl(state, reply.comment);
+  }
+};
+
 export const entitiesSlice = createSlice({
   name: "entities",
   initialState: entitiesInitialState,
   reducers: {
-    // Predicate toggle
-    toggleFollowing: toggleEntityValue<EntitiesState>("following"),
-    toggleFollower: toggleEntityValue<EntitiesState>("followers"),
-    toggleFriend: toggleEntityValue<EntitiesState>("friends"),
-    toggleBookmark: toggleEntityValue<EntitiesState>("bookmarks"),
-    toggleBlock: toggleEntityValue<EntitiesState>("blocks"),
-    toggleMute: toggleEntityValue<EntitiesState>("mutes"),
-    toggleLikedStory: toggleEntityValue<EntitiesState>("likedStories"),
-    toggleFollowedTag: toggleEntityValue<EntitiesState>("followedTags"),
-    toggleSubscription: toggleEntityValue<EntitiesState>("subscriptions"),
-    toggleSentRequest: toggleEntityValue<EntitiesState>("sentRequests"),
-    // Integral
-    incrementFollowerCount: changeEntityValue<EntitiesState>(
+    // Boolean
+    setFollowing: setEntityValue<EntitiesState, "boolean">(
+      "following",
+      "boolean"
+    ),
+    setFollower: setEntityValue<EntitiesState, "boolean">(
+      "followers",
+      "boolean"
+    ),
+    setFriend: setEntityValue<EntitiesState, "boolean">("friends", "boolean"),
+    setBookmark: setEntityValue<EntitiesState, "boolean">(
+      "bookmarks",
+      "boolean"
+    ),
+    setBlock: setEntityValue<EntitiesState, "boolean">("blocks", "boolean"),
+    setMute: setEntityValue<EntitiesState, "boolean">("mutes", "boolean"),
+    setLikedStory: setEntityValue<EntitiesState, "boolean">(
+      "likedStories",
+      "boolean"
+    ),
+    setLikedComment: setEntityValue<EntitiesState, "boolean">(
+      "likedComments",
+      "boolean"
+    ),
+    setLikedReply: setEntityValue<EntitiesState, "boolean">(
+      "likedReplies",
+      "boolean"
+    ),
+    setFollowedTag: setEntityValue<EntitiesState, "boolean">(
+      "followedTags",
+      "boolean"
+    ),
+    setSubscription: setEntityValue<EntitiesState, "boolean">(
+      "subscriptions",
+      "boolean"
+    ),
+    setSentRequest: setEntityValue<EntitiesState, "boolean">(
+      "sentRequests",
+      "boolean"
+    ),
+    // Number
+    setFollowerCount: setEntityValue<EntitiesState, "number">(
       "followerCounts",
-      "increment"
+      "number"
     ),
-    incrementFollowingCount: changeEntityValue<EntitiesState>(
+    setFollowingCount: setEntityValue<EntitiesState, "number">(
       "followingCounts",
-      "increment"
+      "number"
     ),
-    incrementFriendsCount: changeEntityValue<EntitiesState>(
+    setFriendCount: setEntityValue<EntitiesState, "number">(
       "friendCounts",
-      "increment"
+      "number"
     ),
-    incrementStoryLikeCount: changeEntityValue<EntitiesState>(
+    setStoryLikeCount: setEntityValue<EntitiesState, "number">(
       "storyLikeCounts",
-      "increment"
+      "number"
     ),
-    incrementTagFollowerCount: changeEntityValue<EntitiesState>(
+    setStoryCommentCount: setEntityValue<EntitiesState, "number">(
+      "storyCommentCounts",
+      "number"
+    ),
+    setCommentLikeCount: setEntityValue<EntitiesState, "number">(
+      "commentLikeCounts",
+      "number"
+    ),
+    setCommentReplyCount: setEntityValue<EntitiesState, "number">(
+      "commentReplyCounts",
+      "number"
+    ),
+    setReplyLikeCount: setEntityValue<EntitiesState, "number">(
+      "replyLikeCounts",
+      "number"
+    ),
+    setTagFollowerCount: setEntityValue<EntitiesState, "number">(
       "tagFollowerCounts",
-      "increment"
+      "number"
     ),
-    decrementFollowerCount: changeEntityValue<EntitiesState>(
-      "followerCounts",
-      "decrement"
-    ),
-    decrementFollowingCount: changeEntityValue<EntitiesState>(
-      "followingCounts",
-      "decrement"
-    ),
-    decrementFriendCount: changeEntityValue<EntitiesState>(
-      "friendCounts",
-      "decrement"
-    ),
-    decrementStoryLikeCount: changeEntityValue<EntitiesState>(
-      "storyLikeCounts",
-      "decrement"
-    ),
-    decrementTagFollowerCount: changeEntityValue<EntitiesState>(
-      "tagFollowerCounts",
-      "decrement"
-    ),
-    // Overwrite
-    overwriteFollowing: overwriteEntityValue<EntitiesState>("following"),
-    overwriteFollower: overwriteEntityValue<EntitiesState>("followers"),
-    overwriteFriend: overwriteEntityValue<EntitiesState>("friends"),
-    overwriteBookmark: overwriteEntityValue<EntitiesState>("bookmarks"),
-    overwriteBlock: overwriteEntityValue<EntitiesState>("blocks"),
-    overwriteMute: overwriteEntityValue<EntitiesState>("mutes"),
-    overwriteLikedStory: overwriteEntityValue<EntitiesState>("likedStories"),
-    overwriteFollowedTag: overwriteEntityValue<EntitiesState>("followedTags"),
-    overwriteSubscription: overwriteEntityValue<EntitiesState>("subscriptions"),
-    overwriteSentRequest: overwriteEntityValue<EntitiesState>("sentRequests"),
-    overwriteFollowerCount:
-      overwriteEntityValue<EntitiesState>("followerCounts"),
-    overwriteFollowingCount:
-      overwriteEntityValue<EntitiesState>("followingCounts"),
-    overwriteFriendCount: overwriteEntityValue<EntitiesState>("friendCounts"),
-    overwriteStoryLikeCount:
-      overwriteEntityValue<EntitiesState>("storyLikeCounts"),
-    overwriteTagFollowerCount:
-      overwriteEntityValue<EntitiesState>("tagFollowerCounts"),
     // Syncing utils
     syncWithUser: (state, action: PayloadAction<SyncableUser>) =>
       syncWithUserImpl(state, action.payload),
     syncWithStory: (state, action: PayloadAction<SyncableStory>) =>
       syncWithStoryImpl(state, action.payload),
     syncWithTag: (state, action: PayloadAction<SyncableTag>) =>
-      syncWithTagImpl(state, action.payload)
+      syncWithTagImpl(state, action.payload),
+    syncWithComment: (state, action: PayloadAction<SyncableComment>) =>
+      syncWithCommentImpl(state, action.payload),
+    syncWithReply: (state, action: PayloadAction<SyncableReply>) =>
+      syncWithReplyImpl(state, action.payload)
   }
 });
 
 const {
-  toggleFollowing,
-  toggleFollower,
-  toggleFriend,
-  toggleBookmark,
-  toggleBlock,
-  toggleMute,
-  toggleLikedStory,
-  toggleFollowedTag,
-  toggleSubscription,
-  toggleSentRequest,
-  incrementFollowingCount,
-  incrementFollowerCount,
-  incrementFriendsCount,
-  incrementStoryLikeCount,
-  incrementTagFollowerCount,
-  decrementFollowingCount,
-  decrementFollowerCount,
-  decrementFriendCount,
-  decrementStoryLikeCount,
-  decrementTagFollowerCount,
-  overwriteFollowing,
-  overwriteFollower,
-  overwriteFriend,
-  overwriteBookmark,
-  overwriteBlock,
-  overwriteMute,
-  overwriteLikedStory,
-  overwriteFollowedTag,
-  overwriteSubscription,
-  overwriteSentRequest,
-  overwriteFollowingCount,
-  overwriteFollowerCount,
-  overwriteFriendCount,
-  overwriteStoryLikeCount,
-  overwriteTagFollowerCount,
+  setFollowingCount,
+  setFollowing,
+  setFollowerCount,
+  setTagFollowerCount,
+  setBookmark,
+  setFollowedTag,
+  setFollower,
+  setFriendCount,
+  setFriend,
+  setLikedReply,
+  setReplyLikeCount,
+  setCommentLikeCount,
+  setCommentReplyCount,
+  setLikedComment,
+  setStoryLikeCount,
+  setLikedStory,
+  setStoryCommentCount,
+  setMute,
+  setSubscription,
+  setBlock,
+  setSentRequest,
   syncWithStory,
   syncWithUser,
-  syncWithTag
+  syncWithTag,
+  syncWithComment,
+  syncWithReply
 } = entitiesSlice.actions;
 
 export const addEntitiesListeners = (
@@ -377,17 +460,17 @@ export const addEntitiesListeners = (
    * follower list and friend list when they are blocked
    */
   startListening({
-    matcher: isAnyOf(toggleBlock, overwriteBlock),
+    actionCreator: setBlock,
     effect: ({ payload }, listenerApi) => {
-      const userId = Array.isArray(payload) ? payload[0] : payload; // Payload is an array for overwriteBlock
+      const userId = payload[0];
       const isBlocked = selectBlock(userId)(listenerApi.getState());
 
       if (isBlocked) {
-        listenerApi.dispatch(overwriteFollowing([userId, false]));
-        listenerApi.dispatch(overwriteFollower([userId, false]));
-        listenerApi.dispatch(overwriteFriend([userId, false]));
-        listenerApi.dispatch(overwriteSubscription([userId, false]));
-        listenerApi.dispatch(overwriteSentRequest([userId, false]));
+        listenerApi.dispatch(setFollowing([userId, falseAction]));
+        listenerApi.dispatch(setFollower([userId, falseAction]));
+        listenerApi.dispatch(setFriend([userId, falseAction]));
+        listenerApi.dispatch(setSubscription([userId, falseAction]));
+        listenerApi.dispatch(setSentRequest([userId, falseAction]));
       }
     }
   });
@@ -396,9 +479,9 @@ export const addEntitiesListeners = (
    * Render a toast on sending a friend request
    */
   startListening({
-    actionCreator: toggleSentRequest,
+    actionCreator: setSentRequest,
     effect: ({ payload }, listenerApi) => {
-      const isFriendRequestSent = selectSentRequest(payload)(
+      const isFriendRequestSent = selectSentRequest(payload[0])(
         listenerApi.getState()
       );
 
@@ -411,56 +494,42 @@ export const addEntitiesListeners = (
   });
 
   /**
-   * Subscribe to user when following them by default, and unsubscribe from them when unfollowing
+   * Subscribe to user when following them by default, and unsubscribe from them when unfollowing. Also
+   * update the following count
    */
   startListening({
-    matcher: isAnyOf(toggleFollowing, overwriteFollowing),
+    actionCreator: setFollowing,
     effect: ({ payload }, listenerApi) => {
-      const userId = Array.isArray(payload) ? payload[0] : payload; // Payload is an array for overwriteFollowing
+      const userId = payload[0];
       const isFollowing = selectFollowing(userId)(listenerApi.getState());
 
       if (isFollowing) {
-        listenerApi.dispatch(overwriteSubscription([userId, true]));
+        listenerApi.dispatch(setSelfFollowingCount(incrementAction));
+        listenerApi.dispatch(setFollowerCount([userId, incrementAction]));
+        listenerApi.dispatch(setSubscription([userId, trueAction]));
       } else {
-        listenerApi.dispatch(overwriteSubscription([userId, false]));
+        listenerApi.dispatch(setSelfFollowingCount(decrementAction));
+        listenerApi.dispatch(setFollowerCount([userId, decrementAction]));
+        listenerApi.dispatch(setSubscription([userId, falseAction]));
       }
     }
   });
 
   /**
-   * Increment and decrement following count
-   */
-  startListening({
-    actionCreator: toggleFollowing,
-    effect: ({ payload }, listenerApi) => {
-      const userId = payload;
-      const hasFollowed = selectFollowing(userId)(listenerApi.getState());
-
-      if (hasFollowed) {
-        listenerApi.dispatch(incrementSelfFollowingCount());
-        listenerApi.dispatch(incrementFollowerCount(userId));
-      } else {
-        listenerApi.dispatch(decrementSelfFollowingCount());
-        listenerApi.dispatch(decrementFollowerCount(userId));
-      }
-    }
-  });
-
-  /**
-   * Increment and decrement on follower toggle. Follower can only
+   * Increment and decrement on follower mutation. Follower can only
    * be removed using the `Remove this follower` option.
    */
   startListening({
-    actionCreator: toggleFollower,
+    actionCreator: setFollower,
     effect: ({ payload }, listenerApi) => {
-      const userId = payload;
+      const userId = payload[0];
       const hasRemovedFollower = !selectFollower(userId)(
         listenerApi.getState()
       );
 
       if (hasRemovedFollower) {
-        listenerApi.dispatch(decrementSelfFollowerCount());
-        listenerApi.dispatch(decrementFollowingCount(userId));
+        listenerApi.dispatch(setSelfFollowerCount(decrementAction));
+        listenerApi.dispatch(setFollowingCount([userId, decrementAction]));
       }
     }
   });
@@ -470,14 +539,14 @@ export const addEntitiesListeners = (
    * and to add a friend, the friend request needs to be accepted by the recipient.
    */
   startListening({
-    actionCreator: toggleFriend,
+    actionCreator: setFriend,
     effect: ({ payload }, listenerApi) => {
-      const userId = payload;
+      const userId = payload[0];
       const hasRemovedFriend = !selectFriend(userId)(listenerApi.getState());
 
       if (hasRemovedFriend) {
-        listenerApi.dispatch(decrementSelfFriendCount());
-        listenerApi.dispatch(decrementFriendCount(userId));
+        listenerApi.dispatch(setSelfFriendCount(decrementAction));
+        listenerApi.dispatch(setFriendCount([userId, decrementAction]));
       }
     }
   });
@@ -486,16 +555,17 @@ export const addEntitiesListeners = (
    * Increment and decrement story like count
    */
   startListening({
-    actionCreator: toggleLikedStory,
+    actionCreator: setLikedStory,
     effect: ({ payload }, listenerApi) => {
-      const storyId = payload;
+      const storyId = payload[0];
       const hasLiked = selectLikedStory(storyId)(listenerApi.getState());
 
-      if (hasLiked) {
-        listenerApi.dispatch(incrementStoryLikeCount(storyId));
-      } else {
-        listenerApi.dispatch(decrementStoryLikeCount(storyId));
-      }
+      listenerApi.dispatch(
+        setStoryLikeCount([
+          storyId,
+          hasLiked ? incrementAction : decrementAction
+        ])
+      );
     }
   });
 
@@ -503,59 +573,48 @@ export const addEntitiesListeners = (
    * Increment and decrement tag follower count
    */
   startListening({
-    actionCreator: toggleFollowedTag,
+    actionCreator: setFollowedTag,
     effect: ({ payload }, listenerApi) => {
-      const tagId = payload;
+      const tagId = payload[0];
       const hasFollowed = selectFollowedTag(tagId)(listenerApi.getState());
 
-      if (hasFollowed) {
-        listenerApi.dispatch(incrementTagFollowerCount(tagId));
-      } else {
-        listenerApi.dispatch(decrementTagFollowerCount(tagId));
-      }
+      listenerApi.dispatch(
+        setTagFollowerCount([
+          tagId,
+          hasFollowed ? incrementAction : decrementAction
+        ])
+      );
     }
   });
 };
 
 export {
-  decrementFollowerCount,
-  decrementFollowingCount,
-  decrementFriendCount,
-  decrementStoryLikeCount,
-  decrementTagFollowerCount,
-  incrementFollowerCount,
-  incrementFollowingCount,
-  incrementFriendsCount,
-  incrementStoryLikeCount,
-  incrementTagFollowerCount,
-  overwriteBlock,
-  overwriteBookmark,
-  overwriteFollowedTag,
-  overwriteFollower,
-  overwriteFollowerCount,
-  overwriteFollowing,
-  overwriteFollowingCount,
-  overwriteFriend,
-  overwriteFriendCount,
-  overwriteLikedStory,
-  overwriteMute,
-  overwriteSentRequest,
-  overwriteStoryLikeCount,
-  overwriteSubscription,
-  overwriteTagFollowerCount,
+  setBlock,
+  setBookmark,
+  setCommentLikeCount,
+  setCommentReplyCount,
+  setFollowedTag,
+  setFollower,
+  setFollowerCount,
+  setFollowing,
+  setFollowingCount,
+  setFriend,
+  setFriendCount,
+  setLikedComment,
+  setLikedReply,
+  setLikedStory,
+  setMute,
+  setReplyLikeCount,
+  setSentRequest,
+  setStoryCommentCount,
+  setStoryLikeCount,
+  setSubscription,
+  setTagFollowerCount,
+  syncWithComment,
+  syncWithReply,
   syncWithStory,
   syncWithTag,
-  syncWithUser,
-  toggleBlock,
-  toggleBookmark,
-  toggleFollowedTag,
-  toggleFollower,
-  toggleFollowing,
-  toggleFriend,
-  toggleLikedStory,
-  toggleMute,
-  toggleSentRequest,
-  toggleSubscription
+  syncWithUser
 };
 
 export default entitiesSlice.reducer;

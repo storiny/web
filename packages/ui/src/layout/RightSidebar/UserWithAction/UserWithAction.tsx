@@ -12,11 +12,7 @@ import {
   selectBlock,
   selectFollowing
 } from "~/redux/features/entities/selectors";
-import {
-  overwriteFollowing,
-  syncWithUser,
-  toggleFollowing
-} from "~/redux/features/entities/slice";
+import { setFollowing, syncWithUser } from "~/redux/features/entities/slice";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 
 import styles from "./UserWithAction.module.scss";
@@ -54,7 +50,7 @@ const UserWithAction = (props: UserWithActionProps): React.ReactElement => {
         checkAuth
         disabled={isBlocked}
         onClick={(): void => {
-          dispatch(toggleFollowing(user.id));
+          dispatch(setFollowing([user.id]));
         }}
         title={`${isFollowing ? "Unfollow" : "Follow"} ${user.name}`}
         variant={isFollowing ? "rigid" : "hollow"}

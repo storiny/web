@@ -13,7 +13,7 @@ import StoryIcon from "~/icons/Story";
 import UserCheckIcon from "~/icons/UserCheck";
 import UserPlusIcon from "~/icons/UserPlus";
 import UsersIcon from "~/icons/Users";
-import { selectFollowing, toggleFollowing } from "~/redux/features";
+import { selectFollowing, setFollowing } from "~/redux/features";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 import { breakpoints } from "~/theme/breakpoints";
 import { abbreviateNumber } from "~/utils/abbreviateNumber";
@@ -88,12 +88,12 @@ const User = (props: UserProps): React.ReactElement => {
         <Grow />
         <div className={clsx("flex", styles.actions)}>
           <Button
+            autoSize
             checkAuth
             decorator={isFollowing ? <UserCheckIcon /> : <UserPlusIcon />}
             onClick={(): void => {
-              dispatch(toggleFollowing(user.id));
+              dispatch(setFollowing([user.id]));
             }}
-            size={isMobile ? "lg" : "md"}
             variant={isFollowing ? "hollow" : "rigid"}
           >
             {isFollowing ? "Following" : "Follow"}

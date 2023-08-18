@@ -11,6 +11,7 @@ export const testStory: Story = {
   published_at: "2022-05-18T01:07:02.000Z",
   created_at: "2022-04-18T01:07:02.000Z",
   edited_at: null,
+  deleted_at: null,
   title: "Test story",
   slug: "test-slug",
   word_count: 750,
@@ -19,7 +20,8 @@ export const testStory: Story = {
   tags: [mockTags[0]],
   stats: {
     like_count: 1,
-    read_count: 1
+    read_count: 1,
+    comment_count: 1
   },
   description: "Test description",
   id: "0"
@@ -38,7 +40,8 @@ export const mockStories: Story[] = [
     word_count: 2004,
     stats: {
       like_count: 923,
-      read_count: 20234
+      read_count: 20234,
+      comment_count: 239
     },
     description:
       "The importance of mindfulness practices and practical tips on how to cultivate a sense of calm and peace in the midst of a busy and chaotic lifestyle.",
@@ -63,7 +66,8 @@ export const mockStories: Story[] = [
     word_count: 2400,
     stats: {
       like_count: 249,
-      read_count: 39842
+      read_count: 39842,
+      comment_count: 29
     },
     description:
       "A virtual journey into the wonders of nature and the physical, mental, and emotional benefits of spending time outdoors.",
@@ -84,7 +88,8 @@ export const mockStories: Story[] = [
     word_count: 991,
     stats: {
       like_count: 349,
-      read_count: 48291
+      read_count: 48291,
+      comment_count: 190
     },
     description:
       "Discover the transformative power of decluttering and organizing your physical environment.",
@@ -105,7 +110,8 @@ export const mockStories: Story[] = [
     word_count: 3002,
     stats: {
       like_count: 954,
-      read_count: 99214
+      read_count: 99214,
+      comment_count: 91
     },
     description: null,
     id: "1662662558539886592"
@@ -125,7 +131,8 @@ export const mockStories: Story[] = [
     word_count: 293,
     stats: {
       like_count: 402,
-      read_count: 13492
+      read_count: 13492,
+      comment_count: 0
     },
     description:
       "Unleash your green thumb with these expert tips and step-by-step instructions to create a bountiful vegetable patch in your own backyard.",
@@ -146,7 +153,8 @@ export const mockStories: Story[] = [
     word_count: 4511,
     stats: {
       like_count: 49592,
-      read_count: 3952915
+      read_count: 3952915,
+      comment_count: 3
     },
     description:
       "Prepare for a dose of cuteness overload and uncontrollable laughter as we showcase the hilarious and adorable antics of pets that prove they rule the internet.",
@@ -167,7 +175,8 @@ export const mockStories: Story[] = [
     word_count: 1239,
     stats: {
       like_count: 395,
-      read_count: 94532
+      read_count: 94532,
+      comment_count: 13
     },
     description:
       "Embark on a virtual journey as we share captivating travel stories, hidden gems, and insider tips from our adventures around the world.",
@@ -188,7 +197,8 @@ export const mockStories: Story[] = [
     word_count: 1342,
     stats: {
       like_count: 210,
-      read_count: 902349
+      read_count: 902349,
+      comment_count: 934
     },
     description:
       "A cosmic journey into the enigmatic wonders of deep space, uncovering the mysteries of black holes, distant galaxies, and the birth of stars.",
@@ -210,7 +220,8 @@ export const mockStories: Story[] = [
     word_count: 3540,
     stats: {
       like_count: 109,
-      read_count: 93592
+      read_count: 93592,
+      comment_count: 1023
     },
     description:
       "Dive into the captivating quest for extraterrestrial life as we explore the latest discoveries, scientific theories, and the ongoing efforts to find signs of life beyond Earth.",
@@ -231,7 +242,8 @@ export const mockStories: Story[] = [
     word_count: 992,
     stats: {
       like_count: 3495,
-      read_count: 924915
+      read_count: 924915,
+      comment_count: 910
     },
     description:
       "Embark on an offbeat journey as we share bizarre travel tales, strange encounters, and unexpected adventures that will make you question the sanity of the world.",

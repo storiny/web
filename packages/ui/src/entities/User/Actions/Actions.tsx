@@ -24,6 +24,9 @@ import {
   selectMute
 } from "~/redux/features/entities/selectors";
 import {
+  setBlock,
+  setFollower,
+  setMute,
   syncWithUser,
   toggleBlock,
   toggleFollower,
@@ -55,7 +58,7 @@ const Actions = ({ user }: { user: User }): React.ReactElement | null => {
     ),
     {
       color: isBlocking ? "inverted" : "ruby",
-      onConfirm: () => dispatch(toggleBlock(user.id)),
+      onConfirm: () => dispatch(setBlock([user.id])),
       title: `${isBlocking ? "Unblock" : "Block"} @${user.username}?`,
       description: isBlocking
         ? `The public content you publish will be available to them as well as the ability to follow you.`
@@ -76,7 +79,7 @@ const Actions = ({ user }: { user: User }): React.ReactElement | null => {
       trigger={
         <IconButton
           aria-label={"More options"}
-          size={isMobile ? "lg" : "md"}
+          autoSize
           title={"More options"}
           variant={"ghost"}
         >
@@ -104,7 +107,7 @@ const Actions = ({ user }: { user: User }): React.ReactElement | null => {
           <MenuItem
             decorator={<UserXIcon />}
             onClick={(): void => {
-              dispatch(toggleFollower(user.id));
+              dispatch(setFollower([user.id]));
             }}
           >
             Remove this follower
@@ -117,7 +120,7 @@ const Actions = ({ user }: { user: User }): React.ReactElement | null => {
           <MenuItem
             decorator={<MuteIcon />}
             onClick={(): void => {
-              dispatch(toggleMute(user.id));
+              dispatch(setMute([user.id]));
             }}
           >
             {isMuted ? "Unmute" : "Mute"} this user

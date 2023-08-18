@@ -22,6 +22,7 @@
     "@storiny/ui": "*",
     "client-only": "^0.0.1",
     "fuse.js": "^6.6.2",
+    "interweave-ssr": "^2.0.0",
     "jotai": "^2.3.1",
     "little-state-machine": "^4.8.0",
     "maplibre-gl": "^3.3.0",

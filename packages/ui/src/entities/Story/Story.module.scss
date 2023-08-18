@@ -46,7 +46,7 @@
   border-radius: var(--radius-xs); // Focus outline radius
   outline-offset: 3px;
 
-  &.draft {
+  &.small {
     font-size: 20px;
   }
 }
@@ -56,11 +56,19 @@
   width: fit-content;
 }
 
+/* Deleted label */
+.deleted-label {
+  --icon-size: 16px;
+  --icon-stroke: var(--fg-minor);
+
+  align-items: center;
+}
+
 /* Splash */
 .splash {
   --size: 270px;
 
-  &.draft {
+  &.small {
     --size: 230px;
   }
 
@@ -71,11 +79,11 @@
   position: relative;
 
   @include breakpoints.media("<=800px") {
-    --size: 200px;
+    --size: 200px !important;
   }
 
   @include breakpoints.media("<=mobile") {
-    --size: 100vw;
+    --size: 100vw !important;
 
     margin-inline: var(--grid-compensation);
     width: auto;

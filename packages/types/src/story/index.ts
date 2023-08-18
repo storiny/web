@@ -2,6 +2,7 @@ import { Tag } from "../tag";
 import { User } from "../user";
 
 export interface StoryStats {
+  comment_count: number;
   like_count: number;
   read_count: number;
 }

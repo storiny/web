@@ -6,12 +6,14 @@ import Grow from "~/components/Grow";
 import NoSsr from "~/components/NoSsr";
 import Skeleton from "~/components/Skeleton";
 import Spacer from "~/components/Spacer";
+import { StorySkeletonProps } from "~/entities/Story/Skeleton/Skeleton.props";
 import { useMediaQuery } from "~/hooks/useMediaQuery";
 import { breakpoints } from "~/theme/breakpoints";
 
 import storyStyles from "../Story.module.scss";
 
-const StorySkeleton = () => {
+const StorySkeleton = (props: StorySkeletonProps): React.ReactElement => {
+  const { isSmall } = props;
   const isMobile = useMediaQuery(breakpoints.down("mobile"));
 
   return (
@@ -37,7 +39,7 @@ const StorySkeleton = () => {
             )}
           </div>
           <AspectRatio
-            className={storyStyles.splash}
+            className={clsx(storyStyles.splash, isSmall && storyStyles.small)}
             ratio={16 / 9}
             tabIndex={-1}
           >
@@ -45,10 +47,16 @@ const StorySkeleton = () => {
           </AspectRatio>
         </div>
         <footer className={clsx("flex", storyStyles.footer)}>
-          <Skeleton height={16} width={54} />
-          <Skeleton height={16} width={54} />
-          <Grow />
-          <Skeleton height={16} width={54} />
+          {isSmall && isMobile ? (
+            <Skeleton height={16} width={130} />
+          ) : (
+            <React.Fragment>
+              {!isSmall && <Skeleton height={16} width={54} />}
+              <Skeleton height={16} width={54} />
+              <Grow />
+              <Skeleton height={16} width={isSmall ? 32 : 54} />
+            </React.Fragment>
+          )}
         </footer>
       </div>
     </NoSsr>

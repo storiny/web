@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package response_def.v1;
+
+message GetResponsesInfoRequest {
+  string id = 1;
+}
+
+message GetResponsesInfoResponse {
+  uint32 comment_count /**/ = 1;
+  uint32 reply_count /*  */ = 2;
+}

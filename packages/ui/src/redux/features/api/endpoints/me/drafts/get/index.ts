@@ -7,7 +7,7 @@ const ITEMS_PER_PAGE = 10;
 
 export type GetDraftsResponse = Story[];
 
-export const { useGetDraftsQuery } = apiSlice.injectEndpoints({
+export const getDraftsApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getDrafts: builder.query<
       { hasMore: boolean; items: Story[] },
@@ -54,3 +54,5 @@ export const { useGetDraftsQuery } = apiSlice.injectEndpoints({
     })
   })
 });
+
+export const { useGetDraftsQuery } = getDraftsApi;

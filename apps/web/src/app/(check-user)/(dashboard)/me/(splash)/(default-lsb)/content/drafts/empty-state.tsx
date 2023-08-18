@@ -1,28 +1,27 @@
 import React from "react";
 
 import CustomState from "~/entities/CustomState";
+import StoryIcon from "~/icons/Story";
+import TrashIcon from "~/icons/Trash";
 
 import { DraftsTabValue } from "./client";
 
-interface DraftEmptyStateProps {
+interface DraftsEmptyStateProps {
   value: DraftsTabValue;
 }
 
 const DraftsEmptyState = ({
   value
-}: DraftEmptyStateProps): React.ReactElement => (
+}: DraftsEmptyStateProps): React.ReactElement => (
   <CustomState
     autoSize
     description={
       value === "deleted"
-        ? "We were unable to find enough relevant stories to populate your feed. Perhaps you could follow some writers or tags?"
-        : "Stories published by your friends and the writers you follow will appear here."
+        ? "You have not deleted any drafts recently."
+        : "When you create a draft, unpublish a story, or restore a story, it will show up here."
     }
-    title={
-      value === "deleted"
-        ? "It feels a little empty down here"
-        : "No content available here yet"
-    }
+    icon={value === "pending" ? <StoryIcon /> : <TrashIcon />}
+    title={`No ${value === "pending" ? "pending" : "deleted"} drafts`}
   />
 );
 

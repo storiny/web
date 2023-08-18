@@ -5,6 +5,7 @@ import React from "react";
 
 import { useConfirmation } from "~/components/Confirmation";
 import IconButton from "~/components/IconButton";
+import Link from "~/components/Link";
 import Menu from "~/components/Menu";
 import MenuItem from "~/components/MenuItem";
 import Separator from "~/components/Separator";
@@ -12,25 +13,38 @@ import { useToast } from "~/components/Toast";
 import { useClipboard } from "~/hooks/useClipboard";
 import { useMediaQuery } from "~/hooks/useMediaQuery";
 import { useWebShare } from "~/hooks/useWebShare";
+import CommentIcon from "~/icons/Comment";
 import CopyIcon from "~/icons/Copy";
 import DotsIcon from "~/icons/Dots";
+import EditIcon from "~/icons/Edit";
+import EyeOffIcon from "~/icons/EyeOff";
 import MuteIcon from "~/icons/Mute";
 import ReportIcon from "~/icons/Report";
 import ShareIcon from "~/icons/Share";
+import StoriesMetricsIcon from "~/icons/StoriesMetrics";
 import TrashIcon from "~/icons/Trash";
 import UserBlockIcon from "~/icons/UserBlock";
-import { useDraftDeleteMutation } from "~/redux/features";
+import {
+  getDraftsApi,
+  getStoriesApi,
+  setBlock,
+  setMute,
+  useDraftDeleteMutation,
+  useStoryDeleteMutation,
+  useStoryUnpublishMutation
+} from "~/redux/features";
 import { selectLoggedIn } from "~/redux/features/auth/selectors";
 import { selectBlock, selectMute } from "~/redux/features/entities/selectors";
-import { toggleBlock, toggleMute } from "~/redux/features/entities/slice";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 import { breakpoints } from "~/theme/breakpoints";
 
-const Actions = ({
+const StoryActions = ({
   story,
-  isDraft
+  isDraft,
+  isExtended
 }: {
   isDraft?: boolean;
+  isExtended?: boolean;
   story: Story;
 }): React.ReactElement => {
   const share = useWebShare();
@@ -42,7 +56,9 @@ const Actions = ({
   const isBlocking = useAppSelector(selectBlock(story.user!.id));
   const isMuted = useAppSelector(selectMute(story.user!.id));
   const [deleteDraft] = useDraftDeleteMutation();
-  const [element] = useConfirmation(
+  const [deleteStory] = useStoryDeleteMutation();
+  const [unpublishStory] = useStoryUnpublishMutation();
+  const [blockElement] = useConfirmation(
     ({ openConfirmation }) => (
       <MenuItem
         decorator={<UserBlockIcon />}
@@ -56,7 +72,7 @@ const Actions = ({
     ),
     {
       color: isBlocking ? "inverted" : "ruby",
-      onConfirm: () => dispatch(toggleBlock(story.user!.id)),
+      onConfirm: () => dispatch(setBlock([story.user!.id])),
       title: `${isBlocking ? "Unblock" : "Block"} @${story.user!.username}?`,
       description: isBlocking
         ? `The public content you publish will be available to them as well as the ability to follow you.`
@@ -67,21 +83,130 @@ const Actions = ({
   /**
    * Deletes a draft
    */
-  const handleDelete = (): void => {
+  const handleDraftDelete = (): void => {
     deleteDraft({ id: story.id })
       .unwrap()
+      .then(() => {
+        toast("Draft deleted", "success");
+        dispatch(getDraftsApi.util.resetApiState());
+      })
       .catch((e) =>
         toast(e?.data?.error || "Could not delete your draft", "error")
       );
   };
+
+  const [deleteDraftElement] = useConfirmation(
+    ({ openConfirmation }) => (
+      <MenuItem
+        decorator={<TrashIcon />}
+        onSelect={(event): void => {
+          event.preventDefault(); // Do not auto-close the menu
+          openConfirmation();
+        }}
+      >
+        Delete this draft
+      </MenuItem>
+    ),
+    {
+      color: "ruby",
+      onConfirm: handleDraftDelete,
+      title: "Delete this draft?",
+      decorator: <TrashIcon />,
+      description:
+        "This action will delete the draft and transfer it to the deleted section. It can be restored from there within the specified time before permanent deletion."
+    }
+  );
+
+  /**
+   * Deletes a draft
+   */
+  const handleStoryDelete = (): void => {
+    deleteStory({ id: story.id })
+      .unwrap()
+      .then(() => {
+        toast("Story deleted", "success");
+        dispatch(getStoriesApi.util.resetApiState());
+      })
+      .catch((e) =>
+        toast(e?.data?.error || "Could not delete your story", "error")
+      );
+  };
+
+  const [deleteStoryElement] = useConfirmation(
+    ({ openConfirmation }) => (
+      <MenuItem
+        decorator={<TrashIcon />}
+        onSelect={(event): void => {
+          event.preventDefault(); // Do not auto-close the menu
+          openConfirmation();
+        }}
+      >
+        Delete this story
+      </MenuItem>
+    ),
+    {
+      color: "ruby",
+      onConfirm: handleStoryDelete,
+      title: "Delete this story?",
+      decorator: <TrashIcon />,
+      description:
+        "This action will delete the story and transfer it to the deleted section. It can be restored from there within the specified time before permanent deletion."
+    }
+  );
+
+  /**
+   * Deletes a draft
+   */
+  const handleStoryUnpublish = (): void => {
+    unpublishStory({ id: story.id })
+      .unwrap()
+      .then(() => {
+        toast("Story unpublished", "success");
+        dispatch(getStoriesApi.util.resetApiState());
+        dispatch(getDraftsApi.util.resetApiState());
+      })
+      .catch((e) =>
+        toast(e?.data?.error || "Could not unpublish your story", "error")
+      );
+  };
+
+  const [unpublishStoryElement] = useConfirmation(
+    ({ openConfirmation }) => (
+      <MenuItem
+        decorator={<EyeOffIcon />}
+        onSelect={(event): void => {
+          event.preventDefault(); // Do not auto-close the menu
+          openConfirmation();
+        }}
+      >
+        Unpublish this story
+      </MenuItem>
+    ),
+    {
+      color: "ruby",
+      onConfirm: handleStoryUnpublish,
+      title: "Unpublish this story?",
+      decorator: <EyeOffIcon />,
+      description: (
+        <React.Fragment>
+          This will move the story to your drafts, from where you can publish it
+          again anytime with some limitations, such as your subscribers not
+          being notified.{" "}
+          <Link href={"/guides/unpublishing"} underline={"always"}>
+            Learn more
+          </Link>
+        </React.Fragment>
+      )
+    }
+  );
 
   return (
     <Menu
       trigger={
         <IconButton
           aria-label={"More options"}
+          autoSize
           className={clsx(isMobile && "force-light-mode")}
-          size={isMobile ? "lg" : "md"}
           title={"More options"}
           variant={isMobile ? "rigid" : "ghost"}
         >
@@ -90,48 +215,88 @@ const Actions = ({
       }
     >
       {isDraft ? (
-        <MenuItem decorator={<TrashIcon />} onClick={handleDelete}>
-          Delete this draft
-        </MenuItem>
+        deleteDraftElement
       ) : (
         <React.Fragment>
           <MenuItem
             decorator={<ShareIcon />}
             onClick={(): void =>
-              share(story.title, `/${story.user!.username}/${story.slug}`)
+              share(
+                story.title,
+                `${process.env.NEXT_PUBLIC_WEB_URL}/${story.user!.username}/${
+                  story.slug
+                }`
+              )
             }
           >
             Share this story
           </MenuItem>
           <MenuItem
             decorator={<CopyIcon />}
-            onClick={(): void => copy(`/${story.user!.username}/${story.slug}`)}
+            onClick={(): void =>
+              copy(
+                `${process.env.NEXT_PUBLIC_WEB_URL}/${story.user!.username}/${
+                  story.slug
+                }`
+              )
+            }
           >
             Copy link to story
           </MenuItem>
           <Separator />
-          <MenuItem
-            as={NextLink}
-            decorator={<ReportIcon />}
-            href={`/report?id=${story.id}&type=story`}
-            rel={"noreferrer"}
-            target={"_blank"}
-          >
-            Report this story
-          </MenuItem>
-          {loggedIn && (
-            <>
-              <Separator />
+          {isExtended ? (
+            <React.Fragment>
               <MenuItem
-                decorator={<MuteIcon />}
-                onClick={(): void => {
-                  dispatch(toggleMute(story.user!.id));
-                }}
+                as={NextLink}
+                decorator={<EditIcon />}
+                href={`/me/content/stories/${story.id}`}
               >
-                {isMuted ? "Unmute" : "Mute"} this writer
+                Edit this story
               </MenuItem>
-              {element}
-            </>
+              <MenuItem
+                as={NextLink}
+                decorator={<CommentIcon />}
+                href={`/me/content/stories/${story.id}/responses`}
+              >
+                View comments
+              </MenuItem>
+              <MenuItem
+                as={NextLink}
+                decorator={<StoriesMetricsIcon />}
+                href={`/me/content/stories/${story.id}/metrics`}
+              >
+                View metrics
+              </MenuItem>
+              <Separator />
+              {unpublishStoryElement}
+              {deleteStoryElement}
+            </React.Fragment>
+          ) : (
+            <React.Fragment>
+              <MenuItem
+                as={NextLink}
+                decorator={<ReportIcon />}
+                href={`/report?id=${story.id}&type=story`}
+                rel={"noreferrer"}
+                target={"_blank"}
+              >
+                Report this story
+              </MenuItem>
+              {loggedIn && (
+                <>
+                  <Separator />
+                  <MenuItem
+                    decorator={<MuteIcon />}
+                    onClick={(): void => {
+                      dispatch(setMute([story.user!.id]));
+                    }}
+                  >
+                    {isMuted ? "Unmute" : "Mute"} this writer
+                  </MenuItem>
+                  {blockElement}
+                </>
+              )}
+            </React.Fragment>
           )}
         </React.Fragment>
       )}
@@ -139,4 +304,4 @@ const Actions = ({
   );
 };
 
-export default Actions;
+export default StoryActions;

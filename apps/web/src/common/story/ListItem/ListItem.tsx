@@ -14,7 +14,7 @@ import styles from "./ListItem.module.scss";
 const VirtualizedStoryItem = React.memo(
   ({ item, ...rest }: ItemProps<TStory>) => {
     // Props from context
-    const storyProps = React.useContext(VirtualizedStoryListContext);
+    const { storyProps } = React.useContext(VirtualizedStoryListContext);
 
     return (
       <div

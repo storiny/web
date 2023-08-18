@@ -8,7 +8,11 @@ import { GetLoginActivityResponse } from "@storiny/proto/gen/ts/login_activity_d
 import { GetNotificationSettingsResponse } from "@storiny/proto/gen/ts/notification_settings_def/v1/def";
 import { GetPrivacySettingsResponse } from "@storiny/proto/gen/ts/privacy_settings_def/v1/def";
 import { GetProfileResponse } from "@storiny/proto/gen/ts/profile_def/v1/def";
-import { GetDraftsInfoResponse } from "@storiny/proto/gen/ts/story_def/v1/def";
+import { GetResponsesInfoResponse } from "@storiny/proto/gen/ts/response_def/v1/def";
+import {
+  GetDraftsInfoResponse,
+  GetStoriesInfoResponse
+} from "@storiny/proto/gen/ts/story_def/v1/def";
 import { GetTagResponse } from "@storiny/proto/gen/ts/tag_def/v1/def";
 import {
   GetTokenResponse,
@@ -53,6 +57,8 @@ export {
   GetNotificationSettingsResponse,
   GetPrivacySettingsResponse,
   GetProfileResponse,
+  GetResponsesInfoResponse,
+  GetStoriesInfoResponse,
   GetTagResponse,
   GetTokenResponse,
   GetUserIdResponse,
@@ -86,6 +92,14 @@ export const getLoginActivity = promisify<GetLoginActivityResponse>(
 
 export const getDraftsInfo = promisify<GetDraftsInfoResponse>(
   global.grpcClient.getDraftsInfo
+);
+
+export const getStoriesInfo = promisify<GetStoriesInfoResponse>(
+  global.grpcClient.getStoriesInfo
+);
+
+export const getResponsesInfo = promisify<GetResponsesInfoResponse>(
+  global.grpcClient.getResponsesInfo
 );
 
 export const getTag = promisify<GetTagResponse>(global.grpcClient.getTag);

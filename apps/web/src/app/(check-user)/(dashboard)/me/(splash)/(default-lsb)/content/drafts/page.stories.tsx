@@ -21,11 +21,8 @@ const meta: Meta<typeof ContentDraftsPage> = {
       ...mockStories[0],
       edited_at: mockStories[0].edited_at || undefined,
       published_at: mockStories[0].published_at || undefined,
-      description: mockStories[0].description || undefined,
       splash_hex: mockStories[0].splash_hex || undefined,
-      splash_id: mockStories[0].splash_id || undefined,
-      like_count: mockStories[0].stats.like_count,
-      read_count: mockStories[0].stats.read_count
+      splash_id: mockStories[0].splash_id || undefined
     }
   },
   parameters: {

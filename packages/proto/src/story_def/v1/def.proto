@@ -5,7 +5,7 @@ package story_def.v1;
 message Story {
   string id /*                   */ = 1;
   string title /*                */ = 2;
-  string slug /*                 */ = 3;
+  optional string slug /*        */ = 3;
   optional string description /* */ = 4;
   optional string splash_id /*   */ = 5;
   optional string splash_hex /*  */ = 6;
@@ -17,6 +17,19 @@ message Story {
   optional string published_at /**/ = 12;
 }
 
+message Draft {
+  string id /*                   */ = 1;
+  string title /*                */ = 2;
+  optional string splash_id /*   */ = 5;
+  optional string splash_hex /*  */ = 6;
+  uint32 word_count /*           */ = 9;
+  string created_at /*           */ = 10;
+  optional string edited_at /*   */ = 11;
+  optional string published_at /**/ = 12;
+}
+
+// Drafts information request
+
 message GetDraftsInfoRequest {
   string id = 1;
 }
@@ -24,5 +37,16 @@ message GetDraftsInfoRequest {
 message GetDraftsInfoResponse {
   uint32 pending_drafts_count = 1;
   uint32 deleted_drafts_count = 2;
-  optional Story latest_draft = 3;
+  optional Draft latest_draft = 3;
+}
+
+// Stories information request
+
+message GetStoriesInfoRequest {
+  string id = 1;
+}
+
+message GetStoriesInfoResponse {
+  uint32 published_stories_count /**/ = 1;
+  uint32 deleted_stories_count /*  */ = 2;
 }

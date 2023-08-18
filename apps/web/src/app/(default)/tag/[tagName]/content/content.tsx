@@ -11,11 +11,7 @@ import CheckIcon from "~/icons/Check";
 import PencilPlusIcon from "~/icons/PencilPlus";
 import PlusIcon from "~/icons/Plus";
 import TagIcon from "~/icons/Tag";
-import {
-  overwriteFollowedTag,
-  selectFollowedTag,
-  toggleFollowedTag
-} from "~/redux/features";
+import { selectFollowedTag, setFollowedTag } from "~/redux/features";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 import { abbreviateNumber } from "~/utils/abbreviateNumber";
 
@@ -33,7 +29,9 @@ const Actions = ({ tag }: Props): React.ReactElement => {
   const isFollowing = useAppSelector(selectFollowedTag(tag.id));
 
   React.useEffect(() => {
-    dispatch(overwriteFollowedTag([tag.id, Boolean(tag.is_following)]));
+    dispatch(
+      setFollowedTag([tag.id, (): boolean => Boolean(tag.is_following)])
+    );
   }, [dispatch, tag.is_following, tag.id]);
 
   return (
@@ -42,7 +40,7 @@ const Actions = ({ tag }: Props): React.ReactElement => {
         checkAuth
         decorator={isFollowing ? <CheckIcon /> : <PlusIcon />}
         onClick={(): void => {
-          dispatch(toggleFollowedTag(tag.id));
+          dispatch(setFollowedTag([tag.id]));
         }}
         size={"lg"}
         variant={isFollowing ? "hollow" : "rigid"}
