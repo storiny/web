@@ -4,42 +4,43 @@ import React from "react";
 
 import { renderTestWithProvider } from "~/redux/testUtils";
 
-import { testStory } from "../../mocks";
-import Story from "./Story";
+import { testComment } from "../../mocks";
+import Comment from "./Comment";
 
-describe("<Story />", () => {
+describe("<Comment />", () => {
   it("renders", () => {
-    renderTestWithProvider(<Story enableSsr story={testStory} />);
+    renderTestWithProvider(<Comment comment={testComment} enableSsr />);
   });
 
   it("renders when logged in", () => {
-    renderTestWithProvider(<Story enableSsr story={testStory} />, {
+    renderTestWithProvider(<Comment comment={testComment} enableSsr />, {
       loggedIn: true
     });
   });
 
   it("renders extended mode", () => {
-    renderTestWithProvider(<Story enableSsr isExtended story={testStory} />, {
-      loggedIn: true
-    });
+    renderTestWithProvider(
+      <Comment comment={testComment} enableSsr isExtended />,
+      {
+        loggedIn: true
+      }
+    );
   });
 
-  it("renders draft mode", () => {
-    renderTestWithProvider(<Story enableSsr isDraft story={testStory} />, {
-      loggedIn: true
-    });
-  });
-
-  it("renders deleted mode", () => {
-    renderTestWithProvider(<Story enableSsr isDeleted story={testStory} />, {
-      loggedIn: true
-    });
+  it("renders static mode", () => {
+    renderTestWithProvider(
+      <Comment comment={testComment} enableSsr isStatic />,
+      {
+        loggedIn: true
+      }
+    );
   });
 
   it("does not have any accessibility violations", async () => {
     const { container } = renderTestWithProvider(
-      <Story enableSsr story={testStory} />
+      <Comment comment={testComment} enableSsr />
     );
+
     await waitFor(async () =>
       expect(await axe(container)).toHaveNoViolations()
     );
@@ -47,7 +48,7 @@ describe("<Story />", () => {
 
   it("does not have any accessibility violations when logged in", async () => {
     const { container } = renderTestWithProvider(
-      <Story enableSsr story={testStory} />,
+      <Comment comment={testComment} enableSsr />,
       {
         loggedIn: true
       }
@@ -60,7 +61,7 @@ describe("<Story />", () => {
 
   it("does not have any accessibility violations in extended mode", async () => {
     const { container } = renderTestWithProvider(
-      <Story enableSsr isExtended story={testStory} />,
+      <Comment comment={testComment} enableSsr isExtended />,
       {
         loggedIn: true
       }
@@ -71,22 +72,9 @@ describe("<Story />", () => {
     );
   });
 
-  it("does not have any accessibility violations in draft mode", async () => {
+  it("does not have any accessibility violations in static mode", async () => {
     const { container } = renderTestWithProvider(
-      <Story enableSsr isDraft story={testStory} />,
-      {
-        loggedIn: true
-      }
-    );
-
-    await waitFor(async () =>
-      expect(await axe(container)).toHaveNoViolations()
-    );
-  });
-
-  it("does not have any accessibility violations in deleted mode", async () => {
-    const { container } = renderTestWithProvider(
-      <Story enableSsr isDeleted story={testStory} />,
+      <Comment comment={testComment} enableSsr isStatic />,
       {
         loggedIn: true
       }

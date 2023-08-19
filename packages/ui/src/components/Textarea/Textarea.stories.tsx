@@ -3,6 +3,8 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
 
+import Typography from "~/components/Typography";
+
 import Textarea from "./Textarea";
 
 const meta: Meta<typeof Textarea> = {
@@ -25,6 +27,16 @@ export default meta;
 type Story = StoryObj<typeof Textarea>;
 
 export const Default: Story = {};
+
+export const WithEndDecorator: Story = {
+  args: {
+    endDecorator: (
+      <Typography level={"body2"} style={{ padding: "8px" }}>
+        Decorator
+      </Typography>
+    )
+  }
+};
 
 export const ColorInverted: Story = {
   args: {

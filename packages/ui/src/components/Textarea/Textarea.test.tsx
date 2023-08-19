@@ -41,6 +41,14 @@ describe("<Textarea />", () => {
     expect(getByTestId("container").nodeName.toLowerCase()).toEqual("aside");
   });
 
+  it("renders end decorator", () => {
+    const { getByTestId } = renderTestWithProvider(
+      <Textarea endDecorator={<span data-testid={"end-decorator"} />} />
+    );
+
+    expect(getByTestId("end-decorator")).toBeInTheDocument();
+  });
+
   it("renders with size `md` and color `inverted` by default", () => {
     const { getByTestId } = renderTestWithProvider(
       <Textarea

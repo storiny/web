@@ -33,12 +33,7 @@ export const getStoriesApi = apiSlice.injectEndpoints({
         hasMore: response.length === ITEMS_PER_PAGE
       }),
       merge: (currentCache, newItems) => {
-        currentCache.items.push(
-          ...newItems.items.filter(
-            (item) =>
-              !currentCache.items.some((cacheItem) => cacheItem.id === item.id)
-          )
-        );
+        currentCache.items.push(...newItems.items);
       },
       providesTags: (result) =>
         result

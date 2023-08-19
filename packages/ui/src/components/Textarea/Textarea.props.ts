@@ -12,6 +12,10 @@ export interface TextareaProps extends React.ComponentPropsWithRef<"textarea"> {
    */
   color?: TextareaColor;
   /**
+   * The element placed after the textarea.
+   */
+  endDecorator?: React.ReactNode;
+  /**
    * The size of the component.
    * @default 'md'
    */

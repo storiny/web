@@ -28,8 +28,8 @@ export const useMediaQuery = (query: UseMediaQueryProps): boolean => {
     const mediaQueryList = matchMedia(query);
 
     return [
-      () => mediaQueryList.matches,
-      (handler: () => void) => {
+      (): boolean => mediaQueryList.matches,
+      (handler: () => void): (() => void) => {
         // Safari < 14 does not support `addEventListener`
         if (mediaQueryList?.addEventListener) {
           mediaQueryList.addEventListener("change", handler);

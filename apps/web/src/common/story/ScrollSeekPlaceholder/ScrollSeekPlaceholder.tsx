@@ -3,11 +3,11 @@
 import { clsx } from "clsx";
 import React from "react";
 
-import { VirtualizedStoryListContext } from "~/common/story/List/ListContext";
 import Divider from "~/components/Divider";
 import { StorySkeleton } from "~/entities/Story";
 
-import styles from "../ListItem/ListItem.module.scss";
+import styles from "../../virtual/virtual.module.scss";
+import { VirtualizedStoryListContext } from "../List/ListContext";
 
 const VirtualizedStoryScrollSeekPlaceholder = React.memo(() => {
   const { skeletonProps } = React.useContext(VirtualizedStoryListContext);

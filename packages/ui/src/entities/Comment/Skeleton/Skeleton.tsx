@@ -5,62 +5,55 @@ import AspectRatio from "~/components/AspectRatio";
 import Grow from "~/components/Grow";
 import NoSsr from "~/components/NoSsr";
 import Skeleton from "~/components/Skeleton";
-import Spacer from "~/components/Spacer";
-import { StorySkeletonProps } from "~/entities/Story/Skeleton/Skeleton.props";
 import { useMediaQuery } from "~/hooks/useMediaQuery";
 import { breakpoints } from "~/theme/breakpoints";
 
-import storyStyles from "../Comment.module.scss";
+import commentStyles from "../Comment.module.scss";
+import { CommentSkeletonProps } from "./Skeleton.props";
 
-const StorySkeleton = (props: StorySkeletonProps): React.ReactElement => {
-  const { isSmall } = props;
+const CommentSkeleton = (props: CommentSkeletonProps): React.ReactElement => {
+  const { isExtended } = props;
   const isMobile = useMediaQuery(breakpoints.down("mobile"));
 
   return (
     <NoSsr>
-      <div aria-busy={"true"} className={clsx("flex-col", storyStyles.story)}>
-        <div className={clsx("flex", storyStyles.main)}>
-          <div className={clsx("flex-col", storyStyles.meta)}>
-            <Skeleton className={storyStyles.title} height={24} width={256} />
-            <div
-              className={clsx("flex-center", storyStyles.persona)}
-              style={{ paddingBlock: isMobile ? "10px" : "6px" }}
+      <div
+        aria-busy={"true"}
+        className={clsx("flex-col", commentStyles.comment)}
+      >
+        <div
+          className={clsx("flex", commentStyles["story-persona"])}
+          style={{ alignItems: "center" }}
+        >
+          {isExtended ? (
+            <AspectRatio
+              className={commentStyles["story-splash"]}
+              ratio={1.77}
+              tabIndex={-1}
             >
-              <Skeleton height={24} shape={"circular"} width={24} />
-              <Spacer />
-              <Skeleton height={16} width={152} />
-            </div>
-            {!isMobile && (
-              <>
-                <Spacer orientation={"vertical"} size={0.5} />
-                <Skeleton height={14} width={156} />
-                <Skeleton height={14} width={196} />
-              </>
-            )}
-          </div>
-          <AspectRatio
-            className={clsx(storyStyles.splash, isSmall && storyStyles.small)}
-            ratio={16 / 9}
-            tabIndex={-1}
-          >
-            <Skeleton />
-          </AspectRatio>
-        </div>
-        <footer className={clsx("flex", storyStyles.footer)}>
-          {isSmall && isMobile ? (
-            <Skeleton height={16} width={130} />
+              <Skeleton />
+            </AspectRatio>
           ) : (
-            <React.Fragment>
-              {!isSmall && <Skeleton height={16} width={54} />}
-              <Skeleton height={16} width={54} />
-              <Grow />
-              <Skeleton height={16} width={isSmall ? 32 : 54} />
-            </React.Fragment>
+            <Skeleton height={32} shape={"circular"} width={32} />
           )}
-        </footer>
+          <Skeleton height={18} width={114} />
+        </div>
+        <div className={"flex-col"} style={{ gap: "6px" }}>
+          <Skeleton height={10} width={236} />
+          <Skeleton height={10} width={140} />
+          <Skeleton height={10} width={200} />
+        </div>
+        <div className={clsx("flex-center")}>
+          <Skeleton
+            height={isMobile || isExtended ? 18 : 14}
+            width={isMobile || isExtended ? 52 : 48}
+          />
+          <Grow />
+          <Skeleton height={isMobile || isExtended ? 18 : 14} width={60} />
+        </div>
       </div>
     </NoSsr>
   );
 };
 
-export default React.memo(StorySkeleton);
+export default React.memo(CommentSkeleton);

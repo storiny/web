@@ -20,12 +20,7 @@ export const { useGetUserAssetsQuery } = apiSlice.injectEndpoints({
       }),
       serializeQueryArgs: ({ endpointName }) => endpointName,
       merge: (currentCache, newItems) => {
-        currentCache.items.push(
-          ...newItems.items.filter(
-            (item) =>
-              !currentCache.items.some((cacheItem) => cacheItem.id === item.id)
-          )
-        );
+        currentCache.items.push(...newItems.items);
       },
       providesTags: (result) =>
         result

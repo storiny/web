@@ -4,8 +4,8 @@ import { clsx } from "clsx";
 import React from "react";
 import { Virtuoso } from "react-virtuoso";
 
+import VirtualFooter from "../../virtual/footer";
 import {
-  VirtualizedStoryFooter,
   VirtualizedStoryItem,
   VirtualizedStoryScrollSeekPlaceholder
 } from "..";
@@ -35,7 +35,7 @@ const VirtualizedStoryList = React.memo(
         components={{
           Item: VirtualizedStoryItem,
           ScrollSeekPlaceholder: VirtualizedStoryScrollSeekPlaceholder,
-          ...(hasMore && { Footer: VirtualizedStoryFooter })
+          ...(hasMore && { Footer: VirtualFooter })
         }}
         data={stories}
         endReached={hasMore ? loadMore : (): void => undefined}

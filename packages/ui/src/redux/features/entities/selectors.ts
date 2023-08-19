@@ -37,6 +37,16 @@ export const selectLikedStory =
   (state: AppState): boolean =>
     state.entities.likedStories[storyId];
 
+export const selectLikedComment =
+  (commentId: string) =>
+  (state: AppState): boolean =>
+    state.entities.likedComments[commentId];
+
+export const selectLikedReply =
+  (replyId: string) =>
+  (state: AppState): boolean =>
+    state.entities.likedReplies[replyId];
+
 export const selectFollowedTag =
   (tagId: string) =>
   (state: AppState): boolean =>

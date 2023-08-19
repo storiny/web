@@ -6,7 +6,7 @@ import React from "react";
 import Divider from "~/components/Divider";
 import { NotificationSkeleton } from "~/entities/Notification";
 
-import styles from "../ListItem/ListItem.module.scss";
+import styles from "../../virtual/virtual.module.scss";
 
 const VirtualizedNotificationScrollSeekPlaceholder = React.memo(() => (
   <div className={clsx("flex-col", styles.x, styles["list-item"])}>

@@ -10,7 +10,7 @@ import CommentSkeleton from "./Skeleton";
 const meta: Meta<typeof Comment> = {
   title: "Entities/Comment",
   component: Comment,
-  args: { comment: mockComments[8] },
+  args: { comment: { ...mockComments[8], hidden: false } },
   tags: ["autodocs"]
 };
 
@@ -18,6 +18,10 @@ export default meta;
 type Story = StoryObj<typeof Comment>;
 
 export const Default: Story = {};
+
+export const Hidden: Story = {
+  args: { comment: { ...mockComments[8], hidden: true } }
+};
 
 export const Extended: Story = {
   args: { isExtended: true }
@@ -29,4 +33,11 @@ export const Static: Story = {
 
 export const Skeleton: Story = {
   render: () => <CommentSkeleton />
+};
+
+export const ExtendedSkeleton: Story = {
+  render: () => <CommentSkeleton />,
+  args: {
+    isExtended: true
+  }
 };

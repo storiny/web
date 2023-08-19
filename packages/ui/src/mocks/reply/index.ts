@@ -11,6 +11,8 @@ export const testReply: Reply = {
   like_count: 1,
   user_id: testUser.id,
   comment_id: testComment.id,
+  user: testUser,
+  comment: testComment,
   edited_at: null,
   hidden: false
 };

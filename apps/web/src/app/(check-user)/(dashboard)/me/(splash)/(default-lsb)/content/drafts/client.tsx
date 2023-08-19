@@ -226,10 +226,12 @@ const ContentDraftsClient = (props: DraftsProps): React.ReactElement => {
     []
   );
 
-  const handleChange = React.useCallback(
-    (newValue: DraftsTabValue) => setValue(newValue),
-    []
-  );
+  const handleChange = React.useCallback((newValue: DraftsTabValue) => {
+    setPage(1);
+    setSort("recent");
+    setQuery("");
+    setValue(newValue);
+  }, []);
 
   const handleSortChange = React.useCallback(
     (newSort: DraftsSortValue) => setSort(newSort),

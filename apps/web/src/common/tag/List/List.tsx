@@ -4,11 +4,8 @@ import { clsx } from "clsx";
 import React from "react";
 import { Virtuoso } from "react-virtuoso";
 
-import {
-  VirtualizedTagFooter,
-  VirtualizedTagItem,
-  VirtualizedTagScrollSeekPlaceholder
-} from "..";
+import VirtualFooter from "../../virtual/footer";
+import { VirtualizedTagItem, VirtualizedTagScrollSeekPlaceholder } from "..";
 import { VirtualizedTagListProps } from "./List.props";
 import { VirtualizedTagListContext } from "./ListContext";
 
@@ -34,7 +31,7 @@ const VirtualizedTagList = React.memo(
         components={{
           Item: VirtualizedTagItem,
           ScrollSeekPlaceholder: VirtualizedTagScrollSeekPlaceholder,
-          ...(hasMore && { Footer: VirtualizedTagFooter })
+          ...(hasMore && { Footer: VirtualFooter })
         }}
         data={tags}
         endReached={hasMore ? loadMore : (): void => undefined}

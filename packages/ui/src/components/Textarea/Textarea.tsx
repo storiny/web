@@ -30,6 +30,7 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
       autoFocus,
       color = "inverted",
       size = "md",
+      endDecorator,
       className,
       disabled,
       slotProps,
@@ -53,7 +54,7 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
       <Container
         {...slotProps?.container}
         className={clsx(
-          "flex-center",
+          "flex-col",
           styles.container,
           styles[color],
           styles[size],
@@ -72,6 +73,7 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
           onFocus={handleFocus}
           ref={ref}
         />
+        {endDecorator}
       </Container>
     );
   }

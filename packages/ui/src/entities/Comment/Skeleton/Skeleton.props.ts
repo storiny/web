@@ -1,6 +1,6 @@
-export interface StorySkeletonProps {
+export interface CommentSkeletonProps {
   /**
-   * If `true`, renders a compact skeleton
+   * If `true`, renders with extended properties
    */
-  isSmall?: boolean;
+  isExtended?: boolean;
 }

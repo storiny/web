@@ -250,10 +250,12 @@ const ContentStoriesClient = (props: StoriesProps): React.ReactElement => {
     []
   );
 
-  const handleChange = React.useCallback(
-    (newValue: StoriesTabValue) => setValue(newValue),
-    []
-  );
+  const handleChange = React.useCallback((newValue: StoriesTabValue) => {
+    setPage(1);
+    setSort("recent");
+    setQuery("");
+    setValue(newValue);
+  }, []);
 
   const handleSortChange = React.useCallback(
     (newSort: StoriesSortValue) => setSort(newSort),

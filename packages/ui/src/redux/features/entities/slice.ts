@@ -11,6 +11,8 @@ import {
   selectFollower,
   selectFollowing,
   selectFriend,
+  selectLikedComment,
+  selectLikedReply,
   selectLikedStory,
   selectSentRequest,
   setSelfFollowerCount,
@@ -563,6 +565,42 @@ export const addEntitiesListeners = (
       listenerApi.dispatch(
         setStoryLikeCount([
           storyId,
+          hasLiked ? incrementAction : decrementAction
+        ])
+      );
+    }
+  });
+
+  /**
+   * Increment and decrement comment like count
+   */
+  startListening({
+    actionCreator: setLikedComment,
+    effect: ({ payload }, listenerApi) => {
+      const commentId = payload[0];
+      const hasLiked = selectLikedComment(commentId)(listenerApi.getState());
+
+      listenerApi.dispatch(
+        setCommentLikeCount([
+          commentId,
+          hasLiked ? incrementAction : decrementAction
+        ])
+      );
+    }
+  });
+
+  /**
+   * Increment and decrement reply like count
+   */
+  startListening({
+    actionCreator: setLikedReply,
+    effect: ({ payload }, listenerApi) => {
+      const replyId = payload[0];
+      const hasLiked = selectLikedReply(replyId)(listenerApi.getState());
+
+      listenerApi.dispatch(
+        setReplyLikeCount([
+          replyId,
           hasLiked ? incrementAction : decrementAction
         ])
       );

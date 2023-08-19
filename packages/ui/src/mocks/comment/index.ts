@@ -12,6 +12,8 @@ export const testComment: Comment = {
   like_count: 1,
   user_id: testUser.id,
   story_id: testStory.id,
+  story: testStory,
+  user: testUser,
   edited_at: null,
   hidden: false
 };

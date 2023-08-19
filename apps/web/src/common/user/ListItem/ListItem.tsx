@@ -8,8 +8,8 @@ import { ItemProps } from "react-virtuoso";
 import Divider from "~/components/Divider";
 import User from "~/entities/User";
 
+import styles from "../../virtual/virtual.module.scss";
 import { VirtualizedUserListContext } from "../List/ListContext";
-import styles from "./ListItem.module.scss";
 
 const VirtualizedUserItem = React.memo(
   ({ item, ...rest }: ItemProps<TUser>) => {

@@ -4,7 +4,8 @@ import { clsx } from "clsx";
 import dynamic from "next/dynamic";
 import React from "react";
 
-import { StoryListSkeleton, VirtualizedStoryList } from "~/common/story";
+import { CommentListSkeleton, VirtualizedCommentList } from "~/common/comment";
+import { ReplyListSkeleton, VirtualizedReplyList } from "~/common/reply";
 import SuspenseLoader from "~/common/suspense-loader";
 import Divider from "~/components/Divider";
 import Input from "~/components/Input";
@@ -18,7 +19,11 @@ import Typography from "~/components/Typography";
 import ErrorState from "~/entities/ErrorState";
 import { useDebounce } from "~/hooks/useDebounce";
 import SearchIcon from "~/icons/Search";
-import { getQueryErrorType, useGetStoriesQuery } from "~/redux/features";
+import {
+  getQueryErrorType,
+  useGetCommentsQuery,
+  useGetRepliesQuery
+} from "~/redux/features";
 import { abbreviateNumber } from "~/utils/abbreviateNumber";
 
 import DashboardTitle from "../../../dashboard-title";
@@ -178,31 +183,142 @@ const ControlBar = ({
   </div>
 );
 
+// Comment list
+
+const CommentList = (props: {
+  handleQueryChange: (newValue: string) => void;
+  handleSortChange: (newValue: ResponsesSortValue) => void;
+  loadMore: () => void;
+  page: number;
+  query: string;
+  sort: ResponsesSortValue;
+}): React.ReactElement => {
+  const { page, sort, query, handleQueryChange, handleSortChange, loadMore } =
+    props;
+  const debouncedQuery = useDebounce(query);
+  const { data, isLoading, isFetching, isError, error, refetch } =
+    useGetCommentsQuery({
+      page,
+      sort,
+      query: debouncedQuery
+    });
+  const { items = [], hasMore } = data || {};
+  const isTyping = query !== debouncedQuery;
+
+  return (
+    <React.Fragment>
+      <ControlBar
+        disabled={!items.length}
+        onQueryChange={handleQueryChange}
+        onSortChange={handleSortChange}
+        query={query}
+        sort={sort}
+        tab={"comments"}
+      />
+      {isLoading || isTyping ? <CommentListSkeleton isExtended /> : null}
+      {isError ? (
+        <ErrorState
+          autoSize
+          componentProps={{
+            button: { loading: isFetching }
+          }}
+          retry={refetch}
+          type={getQueryErrorType(error)}
+        />
+      ) : !isFetching && !items.length ? (
+        <EmptyState value={"comments"} />
+      ) : (
+        <VirtualizedCommentList
+          commentProps={{
+            isExtended: true
+          }}
+          comments={items}
+          hasMore={Boolean(hasMore)}
+          loadMore={loadMore}
+          skeletonProps={{
+            isExtended: true
+          }}
+        />
+      )}
+    </React.Fragment>
+  );
+};
+
+// Reply list
+
+const ReplyList = (props: {
+  handleQueryChange: (newValue: string) => void;
+  handleSortChange: (newValue: ResponsesSortValue) => void;
+  loadMore: () => void;
+  page: number;
+  query: string;
+  sort: ResponsesSortValue;
+}): React.ReactElement => {
+  const { page, sort, query, handleSortChange, handleQueryChange, loadMore } =
+    props;
+  const debouncedQuery = useDebounce(query);
+  const { data, isLoading, isFetching, isError, error, refetch } =
+    useGetRepliesQuery({
+      page,
+      sort,
+      query: debouncedQuery
+    } as { page: number; query: string; sort: "recent" | "old" | `likes-${"dsc" | "asc"}` });
+  const { items = [], hasMore } = data || {};
+  const isTyping = query !== debouncedQuery;
+
+  return (
+    <React.Fragment>
+      <ControlBar
+        disabled={!items.length}
+        onQueryChange={handleQueryChange}
+        onSortChange={handleSortChange}
+        query={query}
+        sort={sort}
+        tab={"replies"}
+      />
+      {isLoading || isTyping ? <ReplyListSkeleton /> : null}
+      {isError ? (
+        <ErrorState
+          autoSize
+          componentProps={{
+            button: { loading: isFetching }
+          }}
+          retry={refetch}
+          type={getQueryErrorType(error)}
+        />
+      ) : !isFetching && !items.length ? (
+        <EmptyState value={"replies"} />
+      ) : (
+        <VirtualizedReplyList
+          hasMore={Boolean(hasMore)}
+          loadMore={loadMore}
+          replies={items}
+          replyProps={{
+            isStatic: true
+          }}
+        />
+      )}
+    </React.Fragment>
+  );
+};
+
 const ContentResponsesClient = (props: ResponsesProps): React.ReactElement => {
   const [sort, setSort] = React.useState<ResponsesSortValue>("recent");
   const [query, setQuery] = React.useState<string>("");
   const [value, setValue] = React.useState<ResponsesTabValue>("comments");
   const [page, setPage] = React.useState<number>(1);
-  const debouncedQuery = useDebounce(query);
-  const { data, isLoading, isFetching, isError, error, refetch } =
-    useGetStoriesQuery({
-      page,
-      sort,
-      query: debouncedQuery,
-      type: value
-    });
-  const { items = [], hasMore } = data || {};
-  const isTyping = query !== debouncedQuery;
 
   const loadMore = React.useCallback(
     () => setPage((prevState) => prevState + 1),
     []
   );
 
-  const handleChange = React.useCallback(
-    (newValue: ResponsesTabValue) => setValue(newValue),
-    []
-  );
+  const handleChange = React.useCallback((newValue: ResponsesTabValue) => {
+    setPage(1);
+    setSort("recent");
+    setQuery("");
+    setValue(newValue);
+  }, []);
 
   const handleSortChange = React.useCallback(
     (newSort: ResponsesSortValue) => setSort(newSort),
@@ -219,37 +335,23 @@ const ContentResponsesClient = (props: ResponsesProps): React.ReactElement => {
       <DashboardTitle>Responses</DashboardTitle>
       <PageHeader onChange={handleChange} value={value} />
       <StatusHeader {...props} tab={value} />
-      <ControlBar
-        disabled={!items.length}
-        onQueryChange={handleQueryChange}
-        onSortChange={handleSortChange}
-        query={query}
-        sort={sort}
-        tab={value}
-      />
-      {isLoading || isTyping ? <StoryListSkeleton isSmall /> : null}
-      {isError ? (
-        <ErrorState
-          autoSize
-          componentProps={{
-            button: { loading: isFetching }
-          }}
-          retry={refetch}
-          type={getQueryErrorType(error)}
-        />
-      ) : !isFetching && !items.length ? (
-        <EmptyState value={value} />
-      ) : (
-        <VirtualizedStoryList
-          hasMore={Boolean(hasMore)}
+      {value === "comments" ? (
+        <CommentList
+          handleQueryChange={handleQueryChange}
+          handleSortChange={handleSortChange}
           loadMore={loadMore}
-          skeletonProps={{
-            isSmall: true
-          }}
-          stories={items}
-          storyProps={{
-            isExtended: true
-          }}
+          page={page}
+          query={query}
+          sort={sort}
+        />
+      ) : (
+        <ReplyList
+          handleQueryChange={handleQueryChange}
+          handleSortChange={handleSortChange}
+          loadMore={loadMore}
+          page={page}
+          query={query}
+          sort={sort}
         />
       )}
       <Spacer orientation={"vertical"} size={10} />

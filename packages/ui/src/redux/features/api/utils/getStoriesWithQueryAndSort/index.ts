@@ -15,7 +15,7 @@ export type ApiQueryBuilder = EndpointBuilder<
     {},
     FetchBaseQueryMeta
   >,
-  "Notification" | "Asset" | "Story", // Tags
+  "Notification" | "Asset" | "Story" | "Comment" | "Reply", // Tags
   "api"
 >;
 
@@ -53,12 +53,7 @@ export const getStoriesWithQueryAndSort = (
       hasMore: response.length === ITEMS_PER_PAGE
     }),
     merge: (currentCache, newItems) => {
-      currentCache.items.push(
-        ...newItems.items.filter(
-          (item) =>
-            !currentCache.items.some((cacheItem) => cacheItem.id === item.id)
-        )
-      );
+      currentCache.items.push(...newItems.items);
     },
     forceRefetch: ({ currentArg, previousArg }) =>
       currentArg?.page !== previousArg?.page ||

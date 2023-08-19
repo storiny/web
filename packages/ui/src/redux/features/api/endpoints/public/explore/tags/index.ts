@@ -25,12 +25,7 @@ export const { useGetExploreTagsQuery } = apiSlice.injectEndpoints({
         hasMore: response.length === ITEMS_PER_PAGE
       }),
       merge: (currentCache, newItems) => {
-        currentCache.items.push(
-          ...newItems.items.filter(
-            (item) =>
-              !currentCache.items.some((cacheItem) => cacheItem.id === item.id)
-          )
-        );
+        currentCache.items.push(...newItems.items);
       },
       forceRefetch: ({ currentArg, previousArg }) =>
         currentArg?.page !== previousArg?.page ||

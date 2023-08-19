@@ -8,8 +8,8 @@ import { ItemProps } from "react-virtuoso";
 import Divider from "~/components/Divider";
 import Notification from "~/entities/Notification";
 
+import styles from "../../virtual/virtual.module.scss";
 import { VirtualizedNotificationListContext } from "../List/ListContext";
-import styles from "./ListItem.module.scss";
 
 const VirtualizedNotificationItem = React.memo(
   ({ item, ...rest }: ItemProps<TNotification>) => {

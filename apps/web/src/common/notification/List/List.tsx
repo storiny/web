@@ -4,8 +4,8 @@ import { clsx } from "clsx";
 import React from "react";
 import { Virtuoso } from "react-virtuoso";
 
+import VirtualFooter from "../../virtual/footer";
 import {
-  VirtualizedNotificationFooter,
   VirtualizedNotificationItem,
   VirtualizedNotificationScrollSeekPlaceholder
 } from "..";
@@ -36,7 +36,7 @@ const VirtualizedNotificationList = React.memo(
         components={{
           Item: VirtualizedNotificationItem,
           ScrollSeekPlaceholder: VirtualizedNotificationScrollSeekPlaceholder,
-          ...(hasMore && { Footer: VirtualizedNotificationFooter })
+          ...(hasMore && { Footer: VirtualFooter })
         }}
         data={notifications}
         endReached={hasMore ? loadMore : (): void => undefined}

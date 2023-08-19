@@ -8,8 +8,8 @@ import { ItemProps } from "react-virtuoso";
 import Divider from "~/components/Divider";
 import Tag from "~/entities/Tag";
 
+import styles from "../../virtual/virtual.module.scss";
 import { VirtualizedTagListContext } from "../List/ListContext";
-import styles from "./ListItem.module.scss";
 
 const VirtualizedTagItem = React.memo(({ item, ...rest }: ItemProps<TTag>) => {
   // Props from context

@@ -46,7 +46,7 @@ const StorySkeleton = (props: StorySkeletonProps): React.ReactElement => {
             <Skeleton />
           </AspectRatio>
         </div>
-        <footer className={clsx("flex", storyStyles.footer)}>
+        <div className={clsx("flex", storyStyles.footer)}>
           {isSmall && isMobile ? (
             <Skeleton height={16} width={130} />
           ) : (
@@ -57,7 +57,7 @@ const StorySkeleton = (props: StorySkeletonProps): React.ReactElement => {
               <Skeleton height={16} width={isSmall ? 32 : 54} />
             </React.Fragment>
           )}
-        </footer>
+        </div>
       </div>
     </NoSsr>
   );
