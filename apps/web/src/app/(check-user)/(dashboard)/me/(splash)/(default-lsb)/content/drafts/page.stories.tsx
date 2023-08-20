@@ -15,8 +15,8 @@ const meta: Meta<typeof ContentDraftsPage> = {
   title: "dashboard/Content/drafts",
   component: ContentDraftsPage,
   args: {
-    deleted_drafts_count: 5,
-    pending_drafts_count: 5,
+    deleted_draft_count: 5,
+    pending_draft_count: 5,
     latest_draft: {
       ...mockStories[0],
       edited_at: mockStories[0].edited_at || undefined,

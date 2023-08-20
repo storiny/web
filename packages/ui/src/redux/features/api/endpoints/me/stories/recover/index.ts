@@ -1,3 +1,9 @@
+import {
+  decrementAction,
+  incrementAction,
+  setSelfDeletedStoryCount,
+  setSelfPendingDraftCount
+} from "~/redux/features";
 import { apiSlice } from "~/redux/features/api/slice";
 
 const SEGMENT = (id: string): string => `me/stories/${id}/recover`;
@@ -14,7 +20,13 @@ export const { useStoryRecoverMutation } = apiSlice.injectEndpoints({
         url: `/${SEGMENT(body.id)}`,
         method: "POST"
       }),
-      invalidatesTags: (result, error, arg) => [{ type: "Story", id: arg.id }]
+      invalidatesTags: (result, error, arg) => [{ type: "Story", id: arg.id }],
+      onQueryStarted: async (arg, { dispatch, queryFulfilled }) => {
+        queryFulfilled.then(() => {
+          dispatch(setSelfDeletedStoryCount(decrementAction));
+          dispatch(setSelfPendingDraftCount(incrementAction)); // Recovered story is moved into drafts
+        });
+      }
     })
   })
 });

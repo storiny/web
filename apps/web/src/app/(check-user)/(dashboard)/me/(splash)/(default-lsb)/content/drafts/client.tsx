@@ -21,7 +21,13 @@ import ErrorState from "~/entities/ErrorState";
 import { useDebounce } from "~/hooks/useDebounce";
 import PlusIcon from "~/icons/Plus";
 import SearchIcon from "~/icons/Search";
-import { getQueryErrorType, useGetDraftsQuery } from "~/redux/features";
+import {
+  getQueryErrorType,
+  setSelfDeletedDraftCount,
+  setSelfPendingDraftCount,
+  useGetDraftsQuery
+} from "~/redux/features";
+import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 import { abbreviateNumber } from "~/utils/abbreviateNumber";
 
 import DashboardTitle from "../../dashboard-title";
@@ -98,8 +104,8 @@ const SortControl = ({
 
 const StatusHeader = ({
   tab,
-  pending_drafts_count,
-  deleted_drafts_count,
+  pending_draft_count,
+  deleted_draft_count,
   disabled,
   onSortChange,
   sort
@@ -110,10 +116,22 @@ const StatusHeader = ({
   tab: DraftsTabValue;
 } & Pick<
   DraftsProps,
-  "pending_drafts_count" | "deleted_drafts_count"
+  "pending_draft_count" | "deleted_draft_count"
 >): React.ReactElement => {
-  const count_param =
-    tab === "pending" ? pending_drafts_count : deleted_drafts_count;
+  const dispatch = useAppDispatch();
+  const pendingDraftCount = useAppSelector(
+    (state) => state.entities.selfPendingDraftCount
+  );
+  const deletedDraftCount = useAppSelector(
+    (state) => state.entities.selfDeletedDraftCount
+  );
+  const count_param = tab === "pending" ? pendingDraftCount : deletedDraftCount;
+
+  React.useEffect(() => {
+    dispatch(setSelfPendingDraftCount(() => pending_draft_count));
+    dispatch(setSelfDeletedDraftCount(() => deleted_draft_count));
+  }, [deleted_draft_count, dispatch, pending_draft_count]);
+
   return (
     <div
       className={clsx(
@@ -205,7 +223,7 @@ const ControlBar = ({
 );
 
 const ContentDraftsClient = (props: DraftsProps): React.ReactElement => {
-  const { latest_draft, deleted_drafts_count, pending_drafts_count } = props;
+  const { latest_draft, deleted_draft_count, pending_draft_count } = props;
   const [sort, setSort] = React.useState<DraftsSortValue>("recent");
   const [query, setQuery] = React.useState<string>("");
   const [value, setValue] = React.useState<DraftsTabValue>("pending");
@@ -249,10 +267,10 @@ const ContentDraftsClient = (props: DraftsProps): React.ReactElement => {
         <DashboardTitle>Drafts</DashboardTitle>
         <PageHeader onChange={handleChange} value={value} />
         <StatusHeader
-          deleted_drafts_count={deleted_drafts_count}
+          deleted_draft_count={deleted_draft_count}
           disabled={!items.length}
           onSortChange={handleSortChange}
-          pending_drafts_count={pending_drafts_count}
+          pending_draft_count={pending_draft_count}
           sort={sort}
           tab={value}
         />

@@ -1,3 +1,9 @@
+import {
+  decrementAction,
+  incrementAction,
+  setSelfDeletedStoryCount,
+  setSelfPublishedStoryCount
+} from "~/redux/features";
 import { apiSlice } from "~/redux/features/api/slice";
 
 const SEGMENT = (id: string): string => `me/stories/${id}`;
@@ -14,7 +20,13 @@ export const { useStoryDeleteMutation } = apiSlice.injectEndpoints({
         url: `/${SEGMENT(body.id)}`,
         method: "DELETE"
       }),
-      invalidatesTags: (result, error, arg) => [{ type: "Story", id: arg.id }]
+      invalidatesTags: (result, error, arg) => [{ type: "Story", id: arg.id }],
+      onQueryStarted: async (arg, { dispatch, queryFulfilled }) => {
+        queryFulfilled.then(() => {
+          dispatch(setSelfPublishedStoryCount(decrementAction));
+          dispatch(setSelfDeletedStoryCount(incrementAction));
+        });
+      }
     })
   })
 });

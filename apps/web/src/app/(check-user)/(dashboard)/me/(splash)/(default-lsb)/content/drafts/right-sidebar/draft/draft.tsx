@@ -29,6 +29,7 @@ const Draft = (props: DraftProps): React.ReactElement => {
         className={clsx("full-w", styles.x, styles.splash)}
         href={href}
         ratio={1.76}
+        title={"Edit this draft"}
       >
         {!latest_draft.splash_id ? (
           <div className={clsx("flex-center", styles.x, styles.placeholder)}>

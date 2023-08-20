@@ -21,9 +21,12 @@ import { useDebounce } from "~/hooks/useDebounce";
 import SearchIcon from "~/icons/Search";
 import {
   getQueryErrorType,
+  setSelfCommentCount,
+  setSelfReplyCount,
   useGetCommentsQuery,
   useGetRepliesQuery
 } from "~/redux/features";
+import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 import { abbreviateNumber } from "~/utils/abbreviateNumber";
 
 import DashboardTitle from "../../../dashboard-title";
@@ -84,7 +87,18 @@ const StatusHeader = ({
 }: {
   tab: ResponsesTabValue;
 } & ResponsesProps): React.ReactElement => {
-  const count_param = tab === "comments" ? comment_count : reply_count;
+  const dispatch = useAppDispatch();
+  const commentCount = useAppSelector(
+    (state) => state.entities.selfCommentCount
+  );
+  const replyCount = useAppSelector((state) => state.entities.selfReplyCount);
+  const count_param = tab === "comments" ? commentCount : replyCount;
+
+  React.useEffect(() => {
+    dispatch(setSelfCommentCount(() => comment_count));
+    dispatch(setSelfReplyCount(() => reply_count));
+  }, [comment_count, dispatch, reply_count]);
+
   return (
     <div
       className={clsx(

@@ -2,7 +2,7 @@
 
 exports[`<Textarea /> matches snapshot 1`] = `
 <div
-  class="flex-center container inverted md"
+  class="flex-col container inverted md"
   data-focused="false"
 >
   <textarea

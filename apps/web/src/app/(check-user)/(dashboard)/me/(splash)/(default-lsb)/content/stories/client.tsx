@@ -21,7 +21,13 @@ import ErrorState from "~/entities/ErrorState";
 import { useDebounce } from "~/hooks/useDebounce";
 import PlusIcon from "~/icons/Plus";
 import SearchIcon from "~/icons/Search";
-import { getQueryErrorType, useGetStoriesQuery } from "~/redux/features";
+import {
+  getQueryErrorType,
+  setSelfDeletedStoryCount,
+  setSelfPublishedStoryCount,
+  useGetStoriesQuery
+} from "~/redux/features";
+import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 import { abbreviateNumber } from "~/utils/abbreviateNumber";
 
 import DashboardTitle from "../../dashboard-title";
@@ -114,8 +120,8 @@ const SortControl = ({
 
 const StatusHeader = ({
   tab,
-  published_stories_count,
-  deleted_stories_count,
+  published_story_count,
+  deleted_story_count,
   disabled,
   onSortChange,
   sort
@@ -125,8 +131,21 @@ const StatusHeader = ({
   sort: StoriesSortValue;
   tab: StoriesTabValue;
 } & StoriesProps): React.ReactElement => {
+  const dispatch = useAppDispatch();
+  const publishedStoryCount = useAppSelector(
+    (state) => state.entities.selfPublishedStoryCount
+  );
+  const deletedStoryCount = useAppSelector(
+    (state) => state.entities.selfDeletedStoryCount
+  );
   const count_param =
-    tab === "published" ? published_stories_count : deleted_stories_count;
+    tab === "published" ? publishedStoryCount : deletedStoryCount;
+
+  React.useEffect(() => {
+    dispatch(setSelfPublishedStoryCount(() => published_story_count));
+    dispatch(setSelfDeletedStoryCount(() => deleted_story_count));
+  }, [deleted_story_count, dispatch, published_story_count]);
+
   return (
     <div
       className={clsx(

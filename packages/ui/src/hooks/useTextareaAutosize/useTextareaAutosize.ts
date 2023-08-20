@@ -2,8 +2,6 @@ import React from "react";
 
 import { clamp } from "~/utils/clamp";
 
-const EXTRA_HEIGHT = 5; // Add extra height to hide the scrollbar
-
 /**
  * Hook for automatic mutation of the height of a textarea to accomodate
  * its content
@@ -12,16 +10,33 @@ const EXTRA_HEIGHT = 5; // Add extra height to hide the scrollbar
  */
 export const useTextareaAutosize =
   (
-    textareaRef: React.MutableRefObject<HTMLTextAreaElement>,
+    textareaRef: React.MutableRefObject<HTMLTextAreaElement | undefined | null>,
     maxHeight: number = Infinity
   ) =>
   (): void => {
-    // We need to reset the height momentarily to get the correct `scrollHeight` for the textarea
-    textareaRef.current.style.height = "0px";
-    const scrollHeight = textareaRef.current.scrollHeight;
-    textareaRef.current.style.height = `${clamp(
-      0,
-      scrollHeight + EXTRA_HEIGHT,
-      maxHeight
-    )}px`;
+    const { current: textarea } = textareaRef;
+    if (textarea) {
+      // We need to reset the height momentarily to get the correct `scrollHeight` for the textarea
+      textarea.style.height = "0px";
+      let paddingY = parseFloat(
+        textarea.getAttribute("data-padding-block") || ""
+      );
+
+      if (Number.isNaN(paddingY)) {
+        const computedStyle = getComputedStyle(textarea);
+        const paddingBlock =
+          parseFloat(computedStyle.paddingTop) +
+          parseFloat(computedStyle.paddingBottom);
+
+        if (!Number.isNaN(paddingBlock)) {
+          paddingY = paddingBlock;
+          textarea.setAttribute("data-padding-block", String(paddingBlock));
+        } else {
+          paddingY = 0;
+        }
+      }
+
+      const scrollHeight = textarea.scrollHeight - paddingY;
+      textarea.style.height = `${clamp(0, scrollHeight, maxHeight)}px`;
+    }
   };

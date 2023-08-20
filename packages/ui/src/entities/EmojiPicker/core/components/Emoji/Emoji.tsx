@@ -60,7 +60,7 @@ const Emoji = (props: EmojiProps): React.ReactElement => {
       {...rest}
       aria-label={emojiSkin.native}
       className={clsx("focusable", styles.emoji, className)}
-      onClick={(): void => onEmojiSelect?.(emoji.id as any)}
+      onClick={(): void => onEmojiSelect?.(emojiSkin.native)}
       onMouseEnter={(): void => setHovered(emoji.id as any)}
       onMouseLeave={(): void => setHovered(null)}
       style={

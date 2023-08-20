@@ -35,8 +35,8 @@ message GetDraftsInfoRequest {
 }
 
 message GetDraftsInfoResponse {
-  uint32 pending_drafts_count = 1;
-  uint32 deleted_drafts_count = 2;
+  uint32 pending_draft_count = 1;
+  uint32 deleted_draft_count = 2;
   optional Draft latest_draft = 3;
 }
 
@@ -47,6 +47,6 @@ message GetStoriesInfoRequest {
 }
 
 message GetStoriesInfoResponse {
-  uint32 published_stories_count /**/ = 1;
-  uint32 deleted_stories_count /*  */ = 2;
+  uint32 published_story_count /**/ = 1;
+  uint32 deleted_story_count /*  */ = 2;
 }

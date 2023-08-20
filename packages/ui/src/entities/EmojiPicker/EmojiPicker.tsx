@@ -24,7 +24,6 @@ import SearchIcon from "~/icons/Search";
 import XIcon from "~/icons/X";
 
 import SkinTone from "./core/components/SkinTone";
-import { Emoji } from "./core/types";
 import styles from "./EmojiPicker.module.scss";
 import { EmojiPickerProps } from "./EmojiPicker.props";
 import { EmojiPickerContext } from "./EmojiPickerContext";
@@ -71,7 +70,7 @@ const EmojiPicker = (props: EmojiPickerProps): React.ReactElement => {
    * Close popover when selecting an emoji
    */
   const onEmojiSelectImpl = React.useCallback(
-    (emoji: Emoji) => {
+    (emoji: string) => {
       setOpen(false);
       onEmojiSelect?.(emoji);
     },

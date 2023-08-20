@@ -15,8 +15,8 @@ const meta: Meta<typeof ContentStoriesPage> = {
   title: "dashboard/Content/stories",
   component: ContentStoriesPage,
   args: {
-    deleted_stories_count: 5,
-    published_stories_count: 5
+    deleted_story_count: 5,
+    published_story_count: 5
   },
   parameters: {
     layout: "fullscreen"

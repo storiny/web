@@ -10,15 +10,20 @@ worker.use(
       res(
         ctx.delay(1200),
         ctx.json(
-          mockComments
-            .slice(0, 10)
-            .map((comment) => ({
-              ...comment,
-              id: nanoid(),
-              user_id: mockUsers[4].id,
-            }))
+          mockComments.slice(0, 10).map((comment) => ({
+            ...comment,
+            id: nanoid(),
+            user_id: mockUsers[4].id,
+          }))
         )
       )
+  )
+);
+
+worker.use(
+  rest.patch(
+    `${process.env.NEXT_PUBLIC_API_URL}/v1/me/comments/:commentId/edit`,
+    (req, res, ctx) => res(ctx.delay(750), ctx.status(204))
   )
 );
 

@@ -38,7 +38,7 @@ interface EntitiesPredicateState {
   subscriptions: Record<string, boolean>;
 }
 
-interface EntitesIntegralState {
+interface EntitiesIntegralState {
   commentLikeCounts: Record<string, number>;
   commentReplyCounts: Record<string, number>;
   followerCounts: Record<string, number>;
@@ -50,7 +50,18 @@ interface EntitesIntegralState {
   tagFollowerCounts: Record<string, number>;
 }
 
-export type EntitiesState = EntitiesPredicateState & EntitesIntegralState;
+interface EntitiesSelfState {
+  selfCommentCount: number;
+  selfDeletedDraftCount: number;
+  selfDeletedStoryCount: number;
+  selfPendingDraftCount: number;
+  selfPublishedStoryCount: number;
+  selfReplyCount: number;
+}
+
+export type EntitiesState = EntitiesPredicateState &
+  EntitiesIntegralState &
+  EntitiesSelfState;
 
 type SyncableUser = Pick<
   User,
@@ -105,7 +116,13 @@ export const entitiesInitialState: EntitiesState = {
   storyCommentCounts: {},
   storyLikeCounts: {},
   subscriptions: {},
-  tagFollowerCounts: {}
+  tagFollowerCounts: {},
+  selfReplyCount: 0,
+  selfCommentCount: 0,
+  selfDeletedDraftCount: 0,
+  selfDeletedStoryCount: 0,
+  selfPendingDraftCount: 0,
+  selfPublishedStoryCount: 0
 };
 
 /**
@@ -123,7 +140,7 @@ export const isBool = (value?: boolean): value is boolean =>
   typeof value === "boolean";
 
 /**
- * Sets integral entity value
+ * Sets the entity value
  * @param key Entity key
  * @param type Type of the entity
  */
@@ -167,6 +184,20 @@ export const setEntityValue =
 
       state[key][entityId] = clamp(0, newValue as number, Infinity);
     }
+  };
+
+/**
+ * Sets the integral entity value for the user
+ * @param key Entity key
+ */
+export const setSelfEntityValue =
+  <T extends Record<any, any>>(key: keyof T) =>
+  (state: T, action: PayloadAction<(prevState: number) => number>): void => {
+    const callback = action.payload;
+    const prevState = state[key] as number | undefined;
+    const newValue = callback(typeof prevState === "undefined" ? 0 : prevState);
+
+    state[key] = clamp(0, newValue, Infinity) as any;
   };
 
 /**
@@ -411,6 +442,21 @@ export const entitiesSlice = createSlice({
       "tagFollowerCounts",
       "number"
     ),
+    // Self
+    setSelfReplyCount: setSelfEntityValue<EntitiesState>("selfReplyCount"),
+    setSelfCommentCount: setSelfEntityValue<EntitiesState>("selfCommentCount"),
+    setSelfPublishedStoryCount: setSelfEntityValue<EntitiesState>(
+      "selfPublishedStoryCount"
+    ),
+    setSelfDeletedStoryCount: setSelfEntityValue<EntitiesState>(
+      "selfDeletedStoryCount"
+    ),
+    setSelfPendingDraftCount: setSelfEntityValue<EntitiesState>(
+      "selfPendingDraftCount"
+    ),
+    setSelfDeletedDraftCount: setSelfEntityValue<EntitiesState>(
+      "selfDeletedDraftCount"
+    ),
     // Syncing utils
     syncWithUser: (state, action: PayloadAction<SyncableUser>) =>
       syncWithUserImpl(state, action.payload),
@@ -447,6 +493,12 @@ const {
   setSubscription,
   setBlock,
   setSentRequest,
+  setSelfDeletedDraftCount,
+  setSelfPendingDraftCount,
+  setSelfDeletedStoryCount,
+  setSelfCommentCount,
+  setSelfPublishedStoryCount,
+  setSelfReplyCount,
   syncWithStory,
   syncWithUser,
   syncWithTag,
@@ -643,6 +695,12 @@ export {
   setLikedStory,
   setMute,
   setReplyLikeCount,
+  setSelfCommentCount,
+  setSelfDeletedDraftCount,
+  setSelfDeletedStoryCount,
+  setSelfPendingDraftCount,
+  setSelfPublishedStoryCount,
+  setSelfReplyCount,
   setSentRequest,
   setStoryCommentCount,
   setStoryLikeCount,

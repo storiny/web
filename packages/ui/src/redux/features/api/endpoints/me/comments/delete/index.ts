@@ -1,4 +1,8 @@
-import { decrementAction, setStoryCommentCount } from "~/redux/features";
+import {
+  decrementAction,
+  setSelfCommentCount,
+  setStoryCommentCount
+} from "~/redux/features";
 import { apiSlice } from "~/redux/features/api/slice";
 
 const SEGMENT = (id: string): string => `me/comments/${id}`;
@@ -25,6 +29,7 @@ export const { useCommentDeleteMutation } = apiSlice.injectEndpoints({
       onQueryStarted: async (arg, { dispatch, queryFulfilled }) => {
         queryFulfilled.then(() => {
           dispatch(setStoryCommentCount([arg.storyId, decrementAction]));
+          dispatch(setSelfCommentCount(decrementAction));
         });
       }
     })

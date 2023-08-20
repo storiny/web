@@ -59,9 +59,9 @@ pub struct GetDraftsInfoRequest {
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct GetDraftsInfoResponse {
     #[prost(uint32, tag="1")]
-    pub pending_drafts_count: u32,
+    pub pending_draft_count: u32,
     #[prost(uint32, tag="2")]
-    pub deleted_drafts_count: u32,
+    pub deleted_draft_count: u32,
     #[prost(message, optional, tag="3")]
     pub latest_draft: ::core::option::Option<Draft>,
 }
@@ -77,8 +77,8 @@ pub struct GetStoriesInfoRequest {
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct GetStoriesInfoResponse {
     #[prost(uint32, tag="1")]
-    pub published_stories_count: u32,
+    pub published_story_count: u32,
     #[prost(uint32, tag="2")]
-    pub deleted_stories_count: u32,
+    pub deleted_story_count: u32,
 }
 // @@protoc_insertion_point(module)

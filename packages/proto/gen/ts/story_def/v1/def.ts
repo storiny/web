@@ -35,8 +35,8 @@ export interface GetDraftsInfoRequest {
 }
 
 export interface GetDraftsInfoResponse {
-  pending_drafts_count: number;
-  deleted_drafts_count: number;
+  pending_draft_count: number;
+  deleted_draft_count: number;
   latest_draft?: Draft | undefined;
 }
 
@@ -45,8 +45,8 @@ export interface GetStoriesInfoRequest {
 }
 
 export interface GetStoriesInfoResponse {
-  published_stories_count: number;
-  deleted_stories_count: number;
+  published_story_count: number;
+  deleted_story_count: number;
 }
 
 function createBaseStory(): Story {
@@ -517,16 +517,16 @@ export const GetDraftsInfoRequest = {
 };
 
 function createBaseGetDraftsInfoResponse(): GetDraftsInfoResponse {
-  return { pending_drafts_count: 0, deleted_drafts_count: 0, latest_draft: undefined };
+  return { pending_draft_count: 0, deleted_draft_count: 0, latest_draft: undefined };
 }
 
 export const GetDraftsInfoResponse = {
   encode(message: GetDraftsInfoResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.pending_drafts_count !== 0) {
-      writer.uint32(8).uint32(message.pending_drafts_count);
+    if (message.pending_draft_count !== 0) {
+      writer.uint32(8).uint32(message.pending_draft_count);
     }
-    if (message.deleted_drafts_count !== 0) {
-      writer.uint32(16).uint32(message.deleted_drafts_count);
+    if (message.deleted_draft_count !== 0) {
+      writer.uint32(16).uint32(message.deleted_draft_count);
     }
     if (message.latest_draft !== undefined) {
       Draft.encode(message.latest_draft, writer.uint32(26).fork()).ldelim();
@@ -546,14 +546,14 @@ export const GetDraftsInfoResponse = {
             break;
           }
 
-          message.pending_drafts_count = reader.uint32();
+          message.pending_draft_count = reader.uint32();
           continue;
         case 2:
           if (tag !== 16) {
             break;
           }
 
-          message.deleted_drafts_count = reader.uint32();
+          message.deleted_draft_count = reader.uint32();
           continue;
         case 3:
           if (tag !== 26) {
@@ -573,19 +573,19 @@ export const GetDraftsInfoResponse = {
 
   fromJSON(object: any): GetDraftsInfoResponse {
     return {
-      pending_drafts_count: isSet(object.pending_drafts_count) ? Number(object.pending_drafts_count) : 0,
-      deleted_drafts_count: isSet(object.deleted_drafts_count) ? Number(object.deleted_drafts_count) : 0,
+      pending_draft_count: isSet(object.pending_draft_count) ? Number(object.pending_draft_count) : 0,
+      deleted_draft_count: isSet(object.deleted_draft_count) ? Number(object.deleted_draft_count) : 0,
       latest_draft: isSet(object.latest_draft) ? Draft.fromJSON(object.latest_draft) : undefined,
     };
   },
 
   toJSON(message: GetDraftsInfoResponse): unknown {
     const obj: any = {};
-    if (message.pending_drafts_count !== 0) {
-      obj.pending_drafts_count = Math.round(message.pending_drafts_count);
+    if (message.pending_draft_count !== 0) {
+      obj.pending_draft_count = Math.round(message.pending_draft_count);
     }
-    if (message.deleted_drafts_count !== 0) {
-      obj.deleted_drafts_count = Math.round(message.deleted_drafts_count);
+    if (message.deleted_draft_count !== 0) {
+      obj.deleted_draft_count = Math.round(message.deleted_draft_count);
     }
     if (message.latest_draft !== undefined) {
       obj.latest_draft = Draft.toJSON(message.latest_draft);
@@ -598,8 +598,8 @@ export const GetDraftsInfoResponse = {
   },
   fromPartial<I extends Exact<DeepPartial<GetDraftsInfoResponse>, I>>(object: I): GetDraftsInfoResponse {
     const message = createBaseGetDraftsInfoResponse();
-    message.pending_drafts_count = object.pending_drafts_count ?? 0;
-    message.deleted_drafts_count = object.deleted_drafts_count ?? 0;
+    message.pending_draft_count = object.pending_draft_count ?? 0;
+    message.deleted_draft_count = object.deleted_draft_count ?? 0;
     message.latest_draft = (object.latest_draft !== undefined && object.latest_draft !== null)
       ? Draft.fromPartial(object.latest_draft)
       : undefined;
@@ -665,16 +665,16 @@ export const GetStoriesInfoRequest = {
 };
 
 function createBaseGetStoriesInfoResponse(): GetStoriesInfoResponse {
-  return { published_stories_count: 0, deleted_stories_count: 0 };
+  return { published_story_count: 0, deleted_story_count: 0 };
 }
 
 export const GetStoriesInfoResponse = {
   encode(message: GetStoriesInfoResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.published_stories_count !== 0) {
-      writer.uint32(8).uint32(message.published_stories_count);
+    if (message.published_story_count !== 0) {
+      writer.uint32(8).uint32(message.published_story_count);
     }
-    if (message.deleted_stories_count !== 0) {
-      writer.uint32(16).uint32(message.deleted_stories_count);
+    if (message.deleted_story_count !== 0) {
+      writer.uint32(16).uint32(message.deleted_story_count);
     }
     return writer;
   },
@@ -691,14 +691,14 @@ export const GetStoriesInfoResponse = {
             break;
           }
 
-          message.published_stories_count = reader.uint32();
+          message.published_story_count = reader.uint32();
           continue;
         case 2:
           if (tag !== 16) {
             break;
           }
 
-          message.deleted_stories_count = reader.uint32();
+          message.deleted_story_count = reader.uint32();
           continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
@@ -711,18 +711,18 @@ export const GetStoriesInfoResponse = {
 
   fromJSON(object: any): GetStoriesInfoResponse {
     return {
-      published_stories_count: isSet(object.published_stories_count) ? Number(object.published_stories_count) : 0,
-      deleted_stories_count: isSet(object.deleted_stories_count) ? Number(object.deleted_stories_count) : 0,
+      published_story_count: isSet(object.published_story_count) ? Number(object.published_story_count) : 0,
+      deleted_story_count: isSet(object.deleted_story_count) ? Number(object.deleted_story_count) : 0,
     };
   },
 
   toJSON(message: GetStoriesInfoResponse): unknown {
     const obj: any = {};
-    if (message.published_stories_count !== 0) {
-      obj.published_stories_count = Math.round(message.published_stories_count);
+    if (message.published_story_count !== 0) {
+      obj.published_story_count = Math.round(message.published_story_count);
     }
-    if (message.deleted_stories_count !== 0) {
-      obj.deleted_stories_count = Math.round(message.deleted_stories_count);
+    if (message.deleted_story_count !== 0) {
+      obj.deleted_story_count = Math.round(message.deleted_story_count);
     }
     return obj;
   },
@@ -732,8 +732,8 @@ export const GetStoriesInfoResponse = {
   },
   fromPartial<I extends Exact<DeepPartial<GetStoriesInfoResponse>, I>>(object: I): GetStoriesInfoResponse {
     const message = createBaseGetStoriesInfoResponse();
-    message.published_stories_count = object.published_stories_count ?? 0;
-    message.deleted_stories_count = object.deleted_stories_count ?? 0;
+    message.published_story_count = object.published_story_count ?? 0;
+    message.deleted_story_count = object.deleted_story_count ?? 0;
     return message;
   },
 };

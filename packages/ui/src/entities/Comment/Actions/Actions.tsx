@@ -8,10 +8,10 @@ import Menu from "~/components/Menu";
 import MenuItem from "~/components/MenuItem";
 import Separator from "~/components/Separator";
 import { useToast } from "~/components/Toast";
+import ResponseEditor from "~/entities/common/ResponseEditor";
 import { useClipboard } from "~/hooks/useClipboard";
 import CopyIcon from "~/icons/Copy";
 import DotsIcon from "~/icons/Dots";
-import EditIcon from "~/icons/Edit";
 import EyeIcon from "~/icons/Eye";
 import EyeOffIcon from "~/icons/EyeOff";
 import ReportIcon from "~/icons/Report";
@@ -153,13 +153,13 @@ const CommentActions = ({
       <Separator />
       {isSelf ? (
         <React.Fragment>
-          <MenuItem
-            as={NextLink}
-            decorator={<EditIcon />}
-            href={`/me/content/responses/${comment.id}/edit`}
-          >
-            Edit comment
-          </MenuItem>
+          <ResponseEditor
+            responseId={comment.id}
+            responseTextareaProps={{
+              defaultValue: comment.content
+            }}
+            responseType={"comment"}
+          />
           {deleteElement}
         </React.Fragment>
       ) : (
