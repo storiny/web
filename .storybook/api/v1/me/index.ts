@@ -3,6 +3,7 @@ import "./liked-stories";
 import "./history";
 import "./unread-notifications";
 import "./notifications";
+import "./friend-requests";
 import "./gallery";
 import "./assets";
 import "./drafts";
@@ -10,7 +11,11 @@ import "./comments";
 import "./replies";
 import "./stories";
 import "./settings";
+import "./tags";
 import "./validation";
+import "./relations";
+import "./blocked-users";
+import "./muted-users";
 
 import { mockUsers } from "@storiny/ui/src/mocks";
 

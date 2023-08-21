@@ -87,7 +87,11 @@ const CommentActions = ({
    * Mutates a comment's visibility
    */
   const handleCommentVisibility = (): void => {
-    commentVisibility({ id: comment.id, hidden: !hidden })
+    commentVisibility({
+      id: comment.id,
+      hidden: !hidden,
+      storyId: comment.story_id
+    })
       .unwrap()
       .then(() => {
         setHidden(!hidden);

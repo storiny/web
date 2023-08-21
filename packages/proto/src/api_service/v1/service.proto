@@ -68,4 +68,20 @@ service ApiService {
    * Returns the user's responses details
    */
   rpc GetResponsesInfo(response_def.v1.GetResponsesInfoRequest) returns (response_def.v1.GetResponsesInfoResponse) {}
+  /**
+   * Returns the story's responses details
+   */
+  rpc GetStoryResponsesInfo(response_def.v1.GetStoryResponsesInfoRequest) returns (response_def.v1.GetStoryResponsesInfoResponse) {}
+  /**
+   * Returns the user's followed tag count
+   */
+  rpc GetFollowedTagCount(tag_def.v1.GetFollowedTagCountRequest) returns (tag_def.v1.GetFollowedTagCountResponse) {}
+  /**
+   * Returns the user's relations details
+   */
+  rpc GetUserRelationsInfo(user_def.v1.GetUserRelationsInfoRequest) returns (user_def.v1.GetUserRelationsInfoResponse) {}
+  /**
+   * Returns the user's block count
+   */
+  rpc GetUserBlockCount(user_def.v1.GetUserBlockCountRequest) returns (user_def.v1.GetUserBlockCountResponse) {}
 }

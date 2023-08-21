@@ -108,6 +108,11 @@ const Client = ({ category }: Props): React.ReactElement => {
   const normalizedCategory = normalizeCategory(category);
   const isTyping = query !== debouncedQuery;
 
+  const handleChange = (newValue: ExploreTabValue): void => {
+    setQuery("");
+    setValue(newValue);
+  };
+
   const handleQueryChange = React.useCallback(
     (newQuery: string) => setQuery(newQuery),
     []
@@ -116,7 +121,7 @@ const Client = ({ category }: Props): React.ReactElement => {
   return (
     <Tabs
       className={clsx("flex-col", styles.x, styles.tabs)}
-      onValueChange={(newValue): void => setValue(newValue as ExploreTabValue)}
+      onValueChange={handleChange}
       value={value}
     >
       <PageTabsHeader />

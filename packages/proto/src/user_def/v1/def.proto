@@ -25,3 +25,26 @@ message GetUserIdRequest {
 message GetUserIdResponse {
   string id = 1;
 }
+
+// Get user relations info
+
+message GetUserRelationsInfoRequest {
+  string id = 1;
+}
+
+message GetUserRelationsInfoResponse {
+  uint32 follower_count /*              */ = 1;
+  uint32 following_count /*             */ = 2;
+  uint32 friend_count /*                */ = 3;
+  uint32 pending_friend_request_count /**/ = 4;
+}
+
+// Get user blocks count
+
+message GetUserBlockCountRequest {
+  string id = 1;
+}
+
+message GetUserBlockCountResponse {
+  uint32 block_count = 1;
+}

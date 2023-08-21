@@ -78,8 +78,15 @@ const StoryPersona = (props: {
 };
 
 const Comment = (props: CommentProps): React.ReactElement => {
-  const { isStatic, isExtended, className, comment, enableSsr, ...rest } =
-    props;
+  const {
+    hideHiddenOverlay,
+    isStatic,
+    isExtended,
+    className,
+    comment,
+    enableSsr,
+    ...rest
+  } = props;
   const dispatch = useAppDispatch();
   const isMobile = useMediaQuery(breakpoints.down("mobile"));
   const isUserBlocked = useAppSelector(selectBlock(comment.user_id));
@@ -169,7 +176,7 @@ const Comment = (props: CommentProps): React.ReactElement => {
               setHidden={setHiddenImpl}
             />
           </div>
-          {hidden ? (
+          {hidden && !hideHiddenOverlay ? (
             <Typography
               className={clsx("t-minor", styles.hidden)}
               level={"body2"}

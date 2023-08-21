@@ -62,6 +62,7 @@ describe("entitiesListener", () => {
     expect(selectFollower(testId)(store.getState())).toBeFalsy();
     expect(selectFriend(testId)(store.getState())).toBeFalsy();
     expect(selectSentRequest(testId)(store.getState())).toBeFalsy();
+    expect(store.getState().entities.selfBlockCount).toEqual(1);
   });
 
   it("subscribes/unsubscribes to/from user when following/unfollowing them", () => {

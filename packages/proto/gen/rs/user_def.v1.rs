@@ -26,6 +26,40 @@ pub struct GetUserIdResponse {
     #[prost(string, tag="1")]
     pub id: ::prost::alloc::string::String,
 }
+// Get user relations info
+
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct GetUserRelationsInfoRequest {
+    #[prost(string, tag="1")]
+    pub id: ::prost::alloc::string::String,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct GetUserRelationsInfoResponse {
+    #[prost(uint32, tag="1")]
+    pub follower_count: u32,
+    #[prost(uint32, tag="2")]
+    pub following_count: u32,
+    #[prost(uint32, tag="3")]
+    pub friend_count: u32,
+    #[prost(uint32, tag="4")]
+    pub pending_friend_request_count: u32,
+}
+// Get user blocks count
+
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct GetUserBlockCountRequest {
+    #[prost(string, tag="1")]
+    pub id: ::prost::alloc::string::String,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct GetUserBlockCountResponse {
+    #[prost(uint32, tag="1")]
+    pub block_count: u32,
+}
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
 #[repr(i32)]
 pub enum StatusVisibility {

@@ -5,7 +5,7 @@
   "sideEffects": false,
   "scripts": {
     "lint": "buf lint src --config buf.yaml",
-    "build": "buf generate src --config buf.yaml --template buf.gen.yaml",
+    "build": "yarn lint && yarn format && buf generate src --config buf.yaml --template buf.gen.yaml",
     "format": "buf format src -w",
     "gen-certs": "make certs"
   },

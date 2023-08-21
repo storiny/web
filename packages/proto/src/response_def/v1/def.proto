@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package response_def.v1;
 
+// Self responses
+
 message GetResponsesInfoRequest {
   string id = 1;
 }
@@ -9,4 +11,16 @@ message GetResponsesInfoRequest {
 message GetResponsesInfoResponse {
   uint32 comment_count /**/ = 1;
   uint32 reply_count /*  */ = 2;
+}
+
+// Story responses
+
+message GetStoryResponsesInfoRequest {
+  string user_id /* */ = 1;
+  string story_id /**/ = 2;
+}
+
+message GetStoryResponsesInfoResponse {
+  uint32 total_count /* */ = 1;
+  uint32 hidden_count /**/ = 2;
 }

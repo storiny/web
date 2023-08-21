@@ -14,6 +14,7 @@ import {
   selectLikedComment,
   selectLikedReply,
   selectLikedStory,
+  selectMute,
   selectSentRequest,
   setSelfFollowerCount,
   setSelfFollowingCount,
@@ -46,15 +47,20 @@ interface EntitiesIntegralState {
   friendCounts: Record<string, number>;
   replyLikeCounts: Record<string, number>;
   storyCommentCounts: Record<string, number>;
+  storyHiddenCommentCounts: Record<string, number>;
   storyLikeCounts: Record<string, number>;
   tagFollowerCounts: Record<string, number>;
 }
 
 interface EntitiesSelfState {
+  selfBlockCount: number;
   selfCommentCount: number;
   selfDeletedDraftCount: number;
   selfDeletedStoryCount: number;
+  selfFollowedTagCount: number;
+  selfMuteCount: number;
   selfPendingDraftCount: number;
+  selfPendingFriendRequestCount: number;
   selfPublishedStoryCount: number;
   selfReplyCount: number;
 }
@@ -112,17 +118,22 @@ export const entitiesInitialState: EntitiesState = {
   likedStories: {},
   mutes: {},
   replyLikeCounts: {},
-  sentRequests: {},
-  storyCommentCounts: {},
-  storyLikeCounts: {},
-  subscriptions: {},
-  tagFollowerCounts: {},
-  selfReplyCount: 0,
+  selfBlockCount: 0,
   selfCommentCount: 0,
   selfDeletedDraftCount: 0,
   selfDeletedStoryCount: 0,
+  selfFollowedTagCount: 0,
+  selfMuteCount: 0,
   selfPendingDraftCount: 0,
-  selfPublishedStoryCount: 0
+  selfPendingFriendRequestCount: 0,
+  selfPublishedStoryCount: 0,
+  selfReplyCount: 0,
+  sentRequests: {},
+  storyCommentCounts: {},
+  storyHiddenCommentCounts: {},
+  storyLikeCounts: {},
+  subscriptions: {},
+  tagFollowerCounts: {}
 };
 
 /**
@@ -426,6 +437,10 @@ export const entitiesSlice = createSlice({
       "storyCommentCounts",
       "number"
     ),
+    setStoryHiddenCommentCount: setEntityValue<EntitiesState, "number">(
+      "storyHiddenCommentCounts",
+      "number"
+    ),
     setCommentLikeCount: setEntityValue<EntitiesState, "number">(
       "commentLikeCounts",
       "number"
@@ -457,6 +472,14 @@ export const entitiesSlice = createSlice({
     setSelfDeletedDraftCount: setSelfEntityValue<EntitiesState>(
       "selfDeletedDraftCount"
     ),
+    setSelfFollowedTagCount: setSelfEntityValue<EntitiesState>(
+      "selfFollowedTagCount"
+    ),
+    setSelfPendingFriendRequestCount: setSelfEntityValue<EntitiesState>(
+      "selfPendingFriendRequestCount"
+    ),
+    setSelfBlockCount: setSelfEntityValue<EntitiesState>("selfBlockCount"),
+    setSelfMuteCount: setSelfEntityValue<EntitiesState>("selfMuteCount"),
     // Syncing utils
     syncWithUser: (state, action: PayloadAction<SyncableUser>) =>
       syncWithUserImpl(state, action.payload),
@@ -489,6 +512,7 @@ const {
   setStoryLikeCount,
   setLikedStory,
   setStoryCommentCount,
+  setStoryHiddenCommentCount,
   setMute,
   setSubscription,
   setBlock,
@@ -498,7 +522,11 @@ const {
   setSelfDeletedStoryCount,
   setSelfCommentCount,
   setSelfPublishedStoryCount,
+  setSelfBlockCount,
+  setSelfMuteCount,
   setSelfReplyCount,
+  setSelfFollowedTagCount,
+  setSelfPendingFriendRequestCount,
   syncWithStory,
   syncWithUser,
   syncWithTag,
@@ -525,7 +553,24 @@ export const addEntitiesListeners = (
         listenerApi.dispatch(setFriend([userId, falseAction]));
         listenerApi.dispatch(setSubscription([userId, falseAction]));
         listenerApi.dispatch(setSentRequest([userId, falseAction]));
+        listenerApi.dispatch(setSelfBlockCount(incrementAction));
+      } else {
+        listenerApi.dispatch(setSelfBlockCount(decrementAction));
       }
+    }
+  });
+
+  /**
+   * Update mute count
+   */
+  startListening({
+    actionCreator: setMute,
+    effect: ({ payload }, listenerApi) => {
+      const userId = payload[0];
+      const isMuted = selectMute(userId)(listenerApi.getState());
+      listenerApi.dispatch(
+        setSelfMuteCount(isMuted ? incrementAction : decrementAction)
+      );
     }
   });
 
@@ -669,6 +714,10 @@ export const addEntitiesListeners = (
       const hasFollowed = selectFollowedTag(tagId)(listenerApi.getState());
 
       listenerApi.dispatch(
+        setSelfFollowedTagCount(hasFollowed ? incrementAction : decrementAction)
+      );
+
+      listenerApi.dispatch(
         setTagFollowerCount([
           tagId,
           hasFollowed ? incrementAction : decrementAction
@@ -695,14 +744,19 @@ export {
   setLikedStory,
   setMute,
   setReplyLikeCount,
+  setSelfBlockCount,
   setSelfCommentCount,
   setSelfDeletedDraftCount,
   setSelfDeletedStoryCount,
+  setSelfFollowedTagCount,
+  setSelfMuteCount,
   setSelfPendingDraftCount,
+  setSelfPendingFriendRequestCount,
   setSelfPublishedStoryCount,
   setSelfReplyCount,
   setSentRequest,
   setStoryCommentCount,
+  setStoryHiddenCommentCount,
   setStoryLikeCount,
   setSubscription,
   setTagFollowerCount,

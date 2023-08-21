@@ -7,21 +7,31 @@ import TrashIcon from "~/icons/Trash";
 import { DraftsTabValue } from "./client";
 
 interface DraftsEmptyStateProps {
+  query: string;
   value: DraftsTabValue;
 }
 
 const DraftsEmptyState = ({
-  value
+  value,
+  query
 }: DraftsEmptyStateProps): React.ReactElement => (
   <CustomState
     autoSize
     description={
-      value === "deleted"
+      query
+        ? "Your search criteria did not match anything, make sure you've spelled it correctly or try again by being more specific."
+        : value === "deleted"
         ? "You have not deleted any drafts recently."
         : "When you create a draft, unpublish a story, or restore a story, it will show up here."
     }
-    icon={value === "pending" ? <StoryIcon /> : <TrashIcon />}
-    title={`No ${value === "pending" ? "pending" : "deleted"} drafts`}
+    icon={
+      query ? undefined : value === "pending" ? <StoryIcon /> : <TrashIcon />
+    }
+    title={
+      query
+        ? `Could not find any draft for "${query}"`
+        : `No ${value === "pending" ? "pending" : "deleted"} drafts`
+    }
   />
 );
 

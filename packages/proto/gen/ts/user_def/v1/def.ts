@@ -60,6 +60,25 @@ export interface GetUserIdResponse {
   id: string;
 }
 
+export interface GetUserRelationsInfoRequest {
+  id: string;
+}
+
+export interface GetUserRelationsInfoResponse {
+  follower_count: number;
+  following_count: number;
+  friend_count: number;
+  pending_friend_request_count: number;
+}
+
+export interface GetUserBlockCountRequest {
+  id: string;
+}
+
+export interface GetUserBlockCountResponse {
+  block_count: number;
+}
+
 function createBaseStatus(): Status {
   return { emoji: undefined, text: undefined, expires_at: undefined, visibility: 0 };
 }
@@ -274,6 +293,283 @@ export const GetUserIdResponse = {
   fromPartial<I extends Exact<DeepPartial<GetUserIdResponse>, I>>(object: I): GetUserIdResponse {
     const message = createBaseGetUserIdResponse();
     message.id = object.id ?? "";
+    return message;
+  },
+};
+
+function createBaseGetUserRelationsInfoRequest(): GetUserRelationsInfoRequest {
+  return { id: "" };
+}
+
+export const GetUserRelationsInfoRequest = {
+  encode(message: GetUserRelationsInfoRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.id !== "") {
+      writer.uint32(10).string(message.id);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): GetUserRelationsInfoRequest {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseGetUserRelationsInfoRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.id = reader.string();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): GetUserRelationsInfoRequest {
+    return { id: isSet(object.id) ? String(object.id) : "" };
+  },
+
+  toJSON(message: GetUserRelationsInfoRequest): unknown {
+    const obj: any = {};
+    if (message.id !== "") {
+      obj.id = message.id;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<GetUserRelationsInfoRequest>, I>>(base?: I): GetUserRelationsInfoRequest {
+    return GetUserRelationsInfoRequest.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<GetUserRelationsInfoRequest>, I>>(object: I): GetUserRelationsInfoRequest {
+    const message = createBaseGetUserRelationsInfoRequest();
+    message.id = object.id ?? "";
+    return message;
+  },
+};
+
+function createBaseGetUserRelationsInfoResponse(): GetUserRelationsInfoResponse {
+  return { follower_count: 0, following_count: 0, friend_count: 0, pending_friend_request_count: 0 };
+}
+
+export const GetUserRelationsInfoResponse = {
+  encode(message: GetUserRelationsInfoResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.follower_count !== 0) {
+      writer.uint32(8).uint32(message.follower_count);
+    }
+    if (message.following_count !== 0) {
+      writer.uint32(16).uint32(message.following_count);
+    }
+    if (message.friend_count !== 0) {
+      writer.uint32(24).uint32(message.friend_count);
+    }
+    if (message.pending_friend_request_count !== 0) {
+      writer.uint32(32).uint32(message.pending_friend_request_count);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): GetUserRelationsInfoResponse {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseGetUserRelationsInfoResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 8) {
+            break;
+          }
+
+          message.follower_count = reader.uint32();
+          continue;
+        case 2:
+          if (tag !== 16) {
+            break;
+          }
+
+          message.following_count = reader.uint32();
+          continue;
+        case 3:
+          if (tag !== 24) {
+            break;
+          }
+
+          message.friend_count = reader.uint32();
+          continue;
+        case 4:
+          if (tag !== 32) {
+            break;
+          }
+
+          message.pending_friend_request_count = reader.uint32();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): GetUserRelationsInfoResponse {
+    return {
+      follower_count: isSet(object.follower_count) ? Number(object.follower_count) : 0,
+      following_count: isSet(object.following_count) ? Number(object.following_count) : 0,
+      friend_count: isSet(object.friend_count) ? Number(object.friend_count) : 0,
+      pending_friend_request_count: isSet(object.pending_friend_request_count)
+        ? Number(object.pending_friend_request_count)
+        : 0,
+    };
+  },
+
+  toJSON(message: GetUserRelationsInfoResponse): unknown {
+    const obj: any = {};
+    if (message.follower_count !== 0) {
+      obj.follower_count = Math.round(message.follower_count);
+    }
+    if (message.following_count !== 0) {
+      obj.following_count = Math.round(message.following_count);
+    }
+    if (message.friend_count !== 0) {
+      obj.friend_count = Math.round(message.friend_count);
+    }
+    if (message.pending_friend_request_count !== 0) {
+      obj.pending_friend_request_count = Math.round(message.pending_friend_request_count);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<GetUserRelationsInfoResponse>, I>>(base?: I): GetUserRelationsInfoResponse {
+    return GetUserRelationsInfoResponse.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<GetUserRelationsInfoResponse>, I>>(object: I): GetUserRelationsInfoResponse {
+    const message = createBaseGetUserRelationsInfoResponse();
+    message.follower_count = object.follower_count ?? 0;
+    message.following_count = object.following_count ?? 0;
+    message.friend_count = object.friend_count ?? 0;
+    message.pending_friend_request_count = object.pending_friend_request_count ?? 0;
+    return message;
+  },
+};
+
+function createBaseGetUserBlockCountRequest(): GetUserBlockCountRequest {
+  return { id: "" };
+}
+
+export const GetUserBlockCountRequest = {
+  encode(message: GetUserBlockCountRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.id !== "") {
+      writer.uint32(10).string(message.id);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): GetUserBlockCountRequest {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseGetUserBlockCountRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.id = reader.string();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): GetUserBlockCountRequest {
+    return { id: isSet(object.id) ? String(object.id) : "" };
+  },
+
+  toJSON(message: GetUserBlockCountRequest): unknown {
+    const obj: any = {};
+    if (message.id !== "") {
+      obj.id = message.id;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<GetUserBlockCountRequest>, I>>(base?: I): GetUserBlockCountRequest {
+    return GetUserBlockCountRequest.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<GetUserBlockCountRequest>, I>>(object: I): GetUserBlockCountRequest {
+    const message = createBaseGetUserBlockCountRequest();
+    message.id = object.id ?? "";
+    return message;
+  },
+};
+
+function createBaseGetUserBlockCountResponse(): GetUserBlockCountResponse {
+  return { block_count: 0 };
+}
+
+export const GetUserBlockCountResponse = {
+  encode(message: GetUserBlockCountResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.block_count !== 0) {
+      writer.uint32(8).uint32(message.block_count);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): GetUserBlockCountResponse {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseGetUserBlockCountResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 8) {
+            break;
+          }
+
+          message.block_count = reader.uint32();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): GetUserBlockCountResponse {
+    return { block_count: isSet(object.block_count) ? Number(object.block_count) : 0 };
+  },
+
+  toJSON(message: GetUserBlockCountResponse): unknown {
+    const obj: any = {};
+    if (message.block_count !== 0) {
+      obj.block_count = Math.round(message.block_count);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<GetUserBlockCountResponse>, I>>(base?: I): GetUserBlockCountResponse {
+    return GetUserBlockCountResponse.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<GetUserBlockCountResponse>, I>>(object: I): GetUserBlockCountResponse {
+    const message = createBaseGetUserBlockCountResponse();
+    message.block_count = object.block_count ?? 0;
     return message;
   },
 };

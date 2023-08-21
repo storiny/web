@@ -76,6 +76,7 @@ const ResponseEditor = (props: ResponseEditorProps): React.ReactElement => {
     <ResponseTextarea
       placeholder={"What do you think?"}
       {...responseTextareaProps}
+      disabled={isLoading}
       hidePostButton
       maxLength={
         (responseType === "comment" ? commentProps : replyProps).content

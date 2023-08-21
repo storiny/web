@@ -1,0 +1,46 @@
+@use "breakpoints" as breakpoints;
+
+.x {
+  /* Modal content */
+  &.content {
+    height: 100%;
+
+    @include breakpoints.media(">mobile") {
+      height: 400px;
+    }
+  }
+
+  /* Input field and select trigger */
+  &.input,
+  &.select-trigger {
+    border-radius: 0;
+    background-color: transparent;
+  }
+
+  /* Input */
+  &.input {
+    &:not([data-focused="true"]) {
+      border: none;
+    }
+  }
+
+  /* Select trigger */
+  &.select-trigger {
+    border: none;
+    align-self: stretch;
+  }
+
+  /* Control bar */
+  &.control-bar {
+    align-items: stretch;
+    border-bottom: 1px solid var(--divider);
+  }
+
+  /* Scroll area */
+  &.scroll-area {
+    overflow: hidden;
+    height: 100%;
+    padding-inline: 16px;
+    padding-top: 12px;
+  }
+}

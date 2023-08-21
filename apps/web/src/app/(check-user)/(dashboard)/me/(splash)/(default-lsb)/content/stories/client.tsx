@@ -98,7 +98,11 @@ const SortControl = ({
     onValueChange={onSortChange}
     slotProps={{
       trigger: {
+        "aria-label": "Sort items",
         className: clsx("focus-invert", styles.x, styles["select-trigger"])
+      },
+      value: {
+        placeholder: "Sort"
       }
     }}
     value={sort}
@@ -319,7 +323,7 @@ const ContentStoriesClient = (props: StoriesProps): React.ReactElement => {
             type={getQueryErrorType(error)}
           />
         ) : !isFetching && !items.length ? (
-          <EmptyState value={value} />
+          <EmptyState query={query} value={value} />
         ) : (
           <VirtualizedStoryList
             hasMore={Boolean(hasMore)}

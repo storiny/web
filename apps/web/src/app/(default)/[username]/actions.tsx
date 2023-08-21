@@ -32,12 +32,7 @@ import {
   setMute,
   setSentRequest,
   setSubscription,
-  syncWithUser,
-  toggleBlock,
-  toggleFriend,
-  toggleMute,
-  toggleSentRequest,
-  toggleSubscription
+  syncWithUser
 } from "~/redux/features";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 

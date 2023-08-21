@@ -59,7 +59,11 @@ const PageHeader = ({
       onValueChange={onSortChange}
       slotProps={{
         trigger: {
+          "aria-label": "Sort items",
           className: clsx("focus-invert", styles.x, styles["select-trigger"])
+        },
+        value: {
+          placeholder: "Sort"
         }
       }}
       value={sort}

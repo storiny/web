@@ -19,6 +19,14 @@ export interface GetTagResponse {
   is_following?: boolean | undefined;
 }
 
+export interface GetFollowedTagCountRequest {
+  id: string;
+}
+
+export interface GetFollowedTagCountResponse {
+  followed_tag_count: number;
+}
+
 function createBaseGetTagRequest(): GetTagRequest {
   return { name: "", current_user_id: undefined };
 }
@@ -223,6 +231,120 @@ export const GetTagResponse = {
     message.follower_count = object.follower_count ?? 0;
     message.created_at = object.created_at ?? "";
     message.is_following = object.is_following ?? undefined;
+    return message;
+  },
+};
+
+function createBaseGetFollowedTagCountRequest(): GetFollowedTagCountRequest {
+  return { id: "" };
+}
+
+export const GetFollowedTagCountRequest = {
+  encode(message: GetFollowedTagCountRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.id !== "") {
+      writer.uint32(10).string(message.id);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): GetFollowedTagCountRequest {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseGetFollowedTagCountRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.id = reader.string();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): GetFollowedTagCountRequest {
+    return { id: isSet(object.id) ? String(object.id) : "" };
+  },
+
+  toJSON(message: GetFollowedTagCountRequest): unknown {
+    const obj: any = {};
+    if (message.id !== "") {
+      obj.id = message.id;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<GetFollowedTagCountRequest>, I>>(base?: I): GetFollowedTagCountRequest {
+    return GetFollowedTagCountRequest.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<GetFollowedTagCountRequest>, I>>(object: I): GetFollowedTagCountRequest {
+    const message = createBaseGetFollowedTagCountRequest();
+    message.id = object.id ?? "";
+    return message;
+  },
+};
+
+function createBaseGetFollowedTagCountResponse(): GetFollowedTagCountResponse {
+  return { followed_tag_count: 0 };
+}
+
+export const GetFollowedTagCountResponse = {
+  encode(message: GetFollowedTagCountResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.followed_tag_count !== 0) {
+      writer.uint32(8).uint32(message.followed_tag_count);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): GetFollowedTagCountResponse {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseGetFollowedTagCountResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 8) {
+            break;
+          }
+
+          message.followed_tag_count = reader.uint32();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): GetFollowedTagCountResponse {
+    return { followed_tag_count: isSet(object.followed_tag_count) ? Number(object.followed_tag_count) : 0 };
+  },
+
+  toJSON(message: GetFollowedTagCountResponse): unknown {
+    const obj: any = {};
+    if (message.followed_tag_count !== 0) {
+      obj.followed_tag_count = Math.round(message.followed_tag_count);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<GetFollowedTagCountResponse>, I>>(base?: I): GetFollowedTagCountResponse {
+    return GetFollowedTagCountResponse.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<GetFollowedTagCountResponse>, I>>(object: I): GetFollowedTagCountResponse {
+    const message = createBaseGetFollowedTagCountResponse();
+    message.followed_tag_count = object.followed_tag_count ?? 0;
     return message;
   },
 };

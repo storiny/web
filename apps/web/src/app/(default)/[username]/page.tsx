@@ -1,5 +1,7 @@
 import "server-only";
 
+import { userProps } from "@storiny/shared";
+import { notFound } from "next/navigation";
 import React from "react";
 
 import { getProfile } from "~/common/grpc";
@@ -14,6 +16,13 @@ const Page = async ({
   params: { username: string };
 }): Promise<React.ReactElement | undefined> => {
   try {
+    if (
+      username.length < userProps.username.minLength ||
+      username.length > userProps.username.maxLength
+    ) {
+      notFound();
+    }
+
     const userId = await getUser();
     const profile = await getProfile({
       username,

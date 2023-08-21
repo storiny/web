@@ -258,7 +258,7 @@ const StoryActions = ({
                 decorator={<CommentIcon />}
                 href={`/me/content/stories/${story.id}/responses`}
               >
-                View comments
+                View responses
               </MenuItem>
               <MenuItem
                 as={NextLink}

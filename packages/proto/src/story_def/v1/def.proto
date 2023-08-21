@@ -3,18 +3,18 @@ syntax = "proto3";
 package story_def.v1;
 
 message Story {
-  string id /*                   */ = 1;
-  string title /*                */ = 2;
-  optional string slug /*        */ = 3;
-  optional string description /* */ = 4;
-  optional string splash_id /*   */ = 5;
-  optional string splash_hex /*  */ = 6;
-  uint64 like_count /*           */ = 7;
-  uint64 read_count /*           */ = 8;
-  uint32 word_count /*           */ = 9;
-  string created_at /*           */ = 10;
-  optional string edited_at /*   */ = 11;
-  optional string published_at /**/ = 12;
+  string id /*                            */ = 1;
+  string title /*                         */ = 2;
+  optional string slug /*                 */ = 3;
+  optional string description /*          */ = 4;
+  optional string splash_id /*            */ = 5;
+  optional string splash_hex /*           */ = 6;
+  uint64 like_count /*                    */ = 7;
+  uint64 read_count /*                    */ = 8;
+  uint32 word_count /*                    */ = 9;
+  string created_at /*                    */ = 10;
+  optional string edited_at /*            */ = 11;
+  optional string published_at /*         */ = 12;
 }
 
 message Draft {

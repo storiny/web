@@ -1,4 +1,6 @@
 // @generated
+// Tag
+
 #[allow(clippy::derive_partial_eq_without_eq)]
 #[derive(Clone, PartialEq, ::prost::Message)]
 pub struct GetTagRequest {
@@ -24,5 +26,19 @@ pub struct GetTagResponse {
     /// User specific props
     #[prost(bool, optional, tag="6")]
     pub is_following: ::core::option::Option<bool>,
+}
+// Followed tag count
+
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct GetFollowedTagCountRequest {
+    #[prost(string, tag="1")]
+    pub id: ::prost::alloc::string::String,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct GetFollowedTagCountResponse {
+    #[prost(uint32, tag="1")]
+    pub followed_tag_count: u32,
 }
 // @@protoc_insertion_point(module)

@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package tag_def.v1;
 
+// Tag
+
 message GetTagRequest {
   string name /*                    */ = 1;
   optional string current_user_id /**/ = 2;
@@ -16,4 +18,14 @@ message GetTagResponse {
   string created_at /*         */ = 5;
   // User specific props
   optional bool is_following /**/ = 6;
+}
+
+// Followed tag count
+
+message GetFollowedTagCountRequest {
+  string id = 1;
+}
+
+message GetFollowedTagCountResponse {
+  uint32 followed_tag_count = 1;
 }

@@ -1,7 +1,6 @@
 import { ImageSize } from "@storiny/shared";
 import { clsx } from "clsx";
 import NextLink from "next/link";
-import { useRouter } from "next/navigation";
 import React from "react";
 
 import AspectRatio from "~/components/AspectRatio";
@@ -60,7 +59,7 @@ const Draft = (props: DraftProps): React.ReactElement => {
         >
           {latest_draft.title}
         </Link>
-        <footer className={clsx("flex", styles.x, styles.footer)}>
+        <footer className={"flex"}>
           <Typography className={clsx("t-minor", "t-medium")} level={"body3"}>
             {abbreviateNumber(latest_draft.word_count)} words{" "}
             <span className={"t-muted"}>&bull;</span> Edited{" "}

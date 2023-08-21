@@ -178,7 +178,11 @@ const ControlBar = ({
       onValueChange={onSortChange}
       slotProps={{
         trigger: {
+          "aria-label": "Sort items",
           className: clsx("focus-invert", styles.x, styles["select-trigger"])
+        },
+        value: {
+          placeholder: "Sort"
         }
       }}
       value={sort}
@@ -240,7 +244,7 @@ const CommentList = (props: {
           type={getQueryErrorType(error)}
         />
       ) : !isFetching && !items.length ? (
-        <EmptyState value={"comments"} />
+        <EmptyState query={query} value={"comments"} />
       ) : (
         <VirtualizedCommentList
           commentProps={{
@@ -301,7 +305,7 @@ const ReplyList = (props: {
           type={getQueryErrorType(error)}
         />
       ) : !isFetching && !items.length ? (
-        <EmptyState value={"replies"} />
+        <EmptyState query={query} value={"replies"} />
       ) : (
         <VirtualizedReplyList
           hasMore={Boolean(hasMore)}

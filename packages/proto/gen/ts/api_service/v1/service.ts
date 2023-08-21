@@ -20,16 +20,33 @@ import {
 } from "../../notification_settings_def/v1/def";
 import { GetPrivacySettingsRequest, GetPrivacySettingsResponse } from "../../privacy_settings_def/v1/def";
 import { GetProfileRequest, GetProfileResponse } from "../../profile_def/v1/def";
-import { GetResponsesInfoRequest, GetResponsesInfoResponse } from "../../response_def/v1/def";
+import {
+  GetResponsesInfoRequest,
+  GetResponsesInfoResponse,
+  GetStoryResponsesInfoRequest,
+  GetStoryResponsesInfoResponse,
+} from "../../response_def/v1/def";
 import {
   GetDraftsInfoRequest,
   GetDraftsInfoResponse,
   GetStoriesInfoRequest,
   GetStoriesInfoResponse,
 } from "../../story_def/v1/def";
-import { GetTagRequest, GetTagResponse } from "../../tag_def/v1/def";
+import {
+  GetFollowedTagCountRequest,
+  GetFollowedTagCountResponse,
+  GetTagRequest,
+  GetTagResponse,
+} from "../../tag_def/v1/def";
 import { GetTokenRequest, GetTokenResponse, VerifyEmailRequest, VerifyEmailResponse } from "../../token_def/v1/def";
-import { GetUserIdRequest, GetUserIdResponse } from "../../user_def/v1/def";
+import {
+  GetUserBlockCountRequest,
+  GetUserBlockCountResponse,
+  GetUserIdRequest,
+  GetUserIdResponse,
+  GetUserRelationsInfoRequest,
+  GetUserRelationsInfoResponse,
+} from "../../user_def/v1/def";
 
 export const protobufPackage = "api_service.v1";
 
@@ -176,6 +193,53 @@ export const ApiServiceService = {
       Buffer.from(GetResponsesInfoResponse.encode(value).finish()),
     responseDeserialize: (value: Buffer) => GetResponsesInfoResponse.decode(value),
   },
+  /** Returns the story's responses details */
+  getStoryResponsesInfo: {
+    path: "/api_service.v1.ApiService/GetStoryResponsesInfo",
+    requestStream: false,
+    responseStream: false,
+    requestSerialize: (value: GetStoryResponsesInfoRequest) =>
+      Buffer.from(GetStoryResponsesInfoRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer) => GetStoryResponsesInfoRequest.decode(value),
+    responseSerialize: (value: GetStoryResponsesInfoResponse) =>
+      Buffer.from(GetStoryResponsesInfoResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => GetStoryResponsesInfoResponse.decode(value),
+  },
+  /** Returns the user's followed tag count */
+  getFollowedTagCount: {
+    path: "/api_service.v1.ApiService/GetFollowedTagCount",
+    requestStream: false,
+    responseStream: false,
+    requestSerialize: (value: GetFollowedTagCountRequest) =>
+      Buffer.from(GetFollowedTagCountRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer) => GetFollowedTagCountRequest.decode(value),
+    responseSerialize: (value: GetFollowedTagCountResponse) =>
+      Buffer.from(GetFollowedTagCountResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => GetFollowedTagCountResponse.decode(value),
+  },
+  /** Returns the user's relations details */
+  getUserRelationsInfo: {
+    path: "/api_service.v1.ApiService/GetUserRelationsInfo",
+    requestStream: false,
+    responseStream: false,
+    requestSerialize: (value: GetUserRelationsInfoRequest) =>
+      Buffer.from(GetUserRelationsInfoRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer) => GetUserRelationsInfoRequest.decode(value),
+    responseSerialize: (value: GetUserRelationsInfoResponse) =>
+      Buffer.from(GetUserRelationsInfoResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => GetUserRelationsInfoResponse.decode(value),
+  },
+  /** Returns the user's block count */
+  getUserBlockCount: {
+    path: "/api_service.v1.ApiService/GetUserBlockCount",
+    requestStream: false,
+    responseStream: false,
+    requestSerialize: (value: GetUserBlockCountRequest) => Buffer.from(GetUserBlockCountRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer) => GetUserBlockCountRequest.decode(value),
+    responseSerialize: (value: GetUserBlockCountResponse) =>
+      Buffer.from(GetUserBlockCountResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => GetUserBlockCountResponse.decode(value),
+  },
 } as const;
 
 export interface ApiServiceServer extends UntypedServiceImplementation {
@@ -205,6 +269,14 @@ export interface ApiServiceServer extends UntypedServiceImplementation {
   getStoriesInfo: handleUnaryCall<GetStoriesInfoRequest, GetStoriesInfoResponse>;
   /** Returns the user's responses details */
   getResponsesInfo: handleUnaryCall<GetResponsesInfoRequest, GetResponsesInfoResponse>;
+  /** Returns the story's responses details */
+  getStoryResponsesInfo: handleUnaryCall<GetStoryResponsesInfoRequest, GetStoryResponsesInfoResponse>;
+  /** Returns the user's followed tag count */
+  getFollowedTagCount: handleUnaryCall<GetFollowedTagCountRequest, GetFollowedTagCountResponse>;
+  /** Returns the user's relations details */
+  getUserRelationsInfo: handleUnaryCall<GetUserRelationsInfoRequest, GetUserRelationsInfoResponse>;
+  /** Returns the user's block count */
+  getUserBlockCount: handleUnaryCall<GetUserBlockCountRequest, GetUserBlockCountResponse>;
 }
 
 export interface ApiServiceClient extends Client {
@@ -415,6 +487,70 @@ export interface ApiServiceClient extends Client {
     metadata: Metadata,
     options: Partial<CallOptions>,
     callback: (error: ServiceError | null, response: GetResponsesInfoResponse) => void,
+  ): ClientUnaryCall;
+  /** Returns the story's responses details */
+  getStoryResponsesInfo(
+    request: GetStoryResponsesInfoRequest,
+    callback: (error: ServiceError | null, response: GetStoryResponsesInfoResponse) => void,
+  ): ClientUnaryCall;
+  getStoryResponsesInfo(
+    request: GetStoryResponsesInfoRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: GetStoryResponsesInfoResponse) => void,
+  ): ClientUnaryCall;
+  getStoryResponsesInfo(
+    request: GetStoryResponsesInfoRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: GetStoryResponsesInfoResponse) => void,
+  ): ClientUnaryCall;
+  /** Returns the user's followed tag count */
+  getFollowedTagCount(
+    request: GetFollowedTagCountRequest,
+    callback: (error: ServiceError | null, response: GetFollowedTagCountResponse) => void,
+  ): ClientUnaryCall;
+  getFollowedTagCount(
+    request: GetFollowedTagCountRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: GetFollowedTagCountResponse) => void,
+  ): ClientUnaryCall;
+  getFollowedTagCount(
+    request: GetFollowedTagCountRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: GetFollowedTagCountResponse) => void,
+  ): ClientUnaryCall;
+  /** Returns the user's relations details */
+  getUserRelationsInfo(
+    request: GetUserRelationsInfoRequest,
+    callback: (error: ServiceError | null, response: GetUserRelationsInfoResponse) => void,
+  ): ClientUnaryCall;
+  getUserRelationsInfo(
+    request: GetUserRelationsInfoRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: GetUserRelationsInfoResponse) => void,
+  ): ClientUnaryCall;
+  getUserRelationsInfo(
+    request: GetUserRelationsInfoRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: GetUserRelationsInfoResponse) => void,
+  ): ClientUnaryCall;
+  /** Returns the user's block count */
+  getUserBlockCount(
+    request: GetUserBlockCountRequest,
+    callback: (error: ServiceError | null, response: GetUserBlockCountResponse) => void,
+  ): ClientUnaryCall;
+  getUserBlockCount(
+    request: GetUserBlockCountRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: GetUserBlockCountResponse) => void,
+  ): ClientUnaryCall;
+  getUserBlockCount(
+    request: GetUserBlockCountRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: GetUserBlockCountResponse) => void,
   ): ClientUnaryCall;
 }
 

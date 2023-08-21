@@ -12,6 +12,10 @@ export interface CommentProps
    */
   enableSsr?: boolean;
   /**
+   * If `true`, does not render an overlay for hidden comments
+   */
+  hideHiddenOverlay?: boolean;
+  /**
    * If `true`, renders with extended properties
    */
   isExtended?: boolean;

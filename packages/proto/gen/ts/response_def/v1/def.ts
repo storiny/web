@@ -12,6 +12,16 @@ export interface GetResponsesInfoResponse {
   reply_count: number;
 }
 
+export interface GetStoryResponsesInfoRequest {
+  user_id: string;
+  story_id: string;
+}
+
+export interface GetStoryResponsesInfoResponse {
+  total_count: number;
+  hidden_count: number;
+}
+
 function createBaseGetResponsesInfoRequest(): GetResponsesInfoRequest {
   return { id: "" };
 }
@@ -139,6 +149,156 @@ export const GetResponsesInfoResponse = {
     const message = createBaseGetResponsesInfoResponse();
     message.comment_count = object.comment_count ?? 0;
     message.reply_count = object.reply_count ?? 0;
+    return message;
+  },
+};
+
+function createBaseGetStoryResponsesInfoRequest(): GetStoryResponsesInfoRequest {
+  return { user_id: "", story_id: "" };
+}
+
+export const GetStoryResponsesInfoRequest = {
+  encode(message: GetStoryResponsesInfoRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.user_id !== "") {
+      writer.uint32(10).string(message.user_id);
+    }
+    if (message.story_id !== "") {
+      writer.uint32(18).string(message.story_id);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): GetStoryResponsesInfoRequest {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseGetStoryResponsesInfoRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.user_id = reader.string();
+          continue;
+        case 2:
+          if (tag !== 18) {
+            break;
+          }
+
+          message.story_id = reader.string();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): GetStoryResponsesInfoRequest {
+    return {
+      user_id: isSet(object.user_id) ? String(object.user_id) : "",
+      story_id: isSet(object.story_id) ? String(object.story_id) : "",
+    };
+  },
+
+  toJSON(message: GetStoryResponsesInfoRequest): unknown {
+    const obj: any = {};
+    if (message.user_id !== "") {
+      obj.user_id = message.user_id;
+    }
+    if (message.story_id !== "") {
+      obj.story_id = message.story_id;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<GetStoryResponsesInfoRequest>, I>>(base?: I): GetStoryResponsesInfoRequest {
+    return GetStoryResponsesInfoRequest.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<GetStoryResponsesInfoRequest>, I>>(object: I): GetStoryResponsesInfoRequest {
+    const message = createBaseGetStoryResponsesInfoRequest();
+    message.user_id = object.user_id ?? "";
+    message.story_id = object.story_id ?? "";
+    return message;
+  },
+};
+
+function createBaseGetStoryResponsesInfoResponse(): GetStoryResponsesInfoResponse {
+  return { total_count: 0, hidden_count: 0 };
+}
+
+export const GetStoryResponsesInfoResponse = {
+  encode(message: GetStoryResponsesInfoResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.total_count !== 0) {
+      writer.uint32(8).uint32(message.total_count);
+    }
+    if (message.hidden_count !== 0) {
+      writer.uint32(16).uint32(message.hidden_count);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): GetStoryResponsesInfoResponse {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseGetStoryResponsesInfoResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 8) {
+            break;
+          }
+
+          message.total_count = reader.uint32();
+          continue;
+        case 2:
+          if (tag !== 16) {
+            break;
+          }
+
+          message.hidden_count = reader.uint32();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): GetStoryResponsesInfoResponse {
+    return {
+      total_count: isSet(object.total_count) ? Number(object.total_count) : 0,
+      hidden_count: isSet(object.hidden_count) ? Number(object.hidden_count) : 0,
+    };
+  },
+
+  toJSON(message: GetStoryResponsesInfoResponse): unknown {
+    const obj: any = {};
+    if (message.total_count !== 0) {
+      obj.total_count = Math.round(message.total_count);
+    }
+    if (message.hidden_count !== 0) {
+      obj.hidden_count = Math.round(message.hidden_count);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<GetStoryResponsesInfoResponse>, I>>(base?: I): GetStoryResponsesInfoResponse {
+    return GetStoryResponsesInfoResponse.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<GetStoryResponsesInfoResponse>, I>>(
+    object: I,
+  ): GetStoryResponsesInfoResponse {
+    const message = createBaseGetStoryResponsesInfoResponse();
+    message.total_count = object.total_count ?? 0;
+    message.hidden_count = object.hidden_count ?? 0;
     return message;
   },
 };

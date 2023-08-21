@@ -2,13 +2,8 @@
 
 /* Base styles */
 .tag {
-  padding-inline: 20px;
   padding-block: 12px;
   gap: 12px;
-
-  @include breakpoints.media("<=mobile") {
-    padding-inline: 16px;
-  }
 }
 
 /* Main */
