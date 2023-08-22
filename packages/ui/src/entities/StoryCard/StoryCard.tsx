@@ -52,6 +52,7 @@ const StoryCard = (props: StoryCardProps): React.ReactElement => {
           <ExternalLinkIcon />
         </IconButton>
       </AspectRatio>
+
       <div className={clsx("flex-col", styles.meta)}>
         <Link
           className={"t-medium"}

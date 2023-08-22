@@ -2,7 +2,7 @@ import { clsx } from "clsx";
 import dynamic from "next/dynamic";
 import React from "react";
 
-import SuspenseLoader from "~/common/suspense-loader";
+import { dynamicLoader } from "~/common/dynamic";
 import Grow from "~/components/Grow";
 import { useMediaQuery } from "~/hooks/useMediaQuery";
 import RightSidebar from "~/layout/RightSidebar";
@@ -16,7 +16,7 @@ import { DraftsRightSidebarProps } from "./right-sidebar.props";
 const SuspendedDashboardRightSidebarContent = dynamic(
   () => import("../../../(default-rsb)/right-sidebar/content"),
   {
-    loading: () => <SuspenseLoader />
+    loading: dynamicLoader()
   }
 );
 
@@ -25,7 +25,7 @@ const SuspendedDashboardRightSidebarContent = dynamic(
 const SuspendedContentDraftsRightSidebarContent = dynamic(
   () => import("./content"),
   {
-    loading: () => <SuspenseLoader />
+    loading: dynamicLoader()
   }
 );
 

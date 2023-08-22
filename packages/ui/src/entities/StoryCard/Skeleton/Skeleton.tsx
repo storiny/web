@@ -19,7 +19,7 @@ const StoryCardSkeleton = (
       className={clsx(cardStyles["story-card"], className)}
     >
       <AspectRatio className={clsx("full-w", cardStyles.splash)} ratio={1.76}>
-        <Skeleton />
+        <Skeleton noRadius />
       </AspectRatio>
       <div className={clsx("flex-col", cardStyles.meta)}>
         <Skeleton height={16} width={214} />

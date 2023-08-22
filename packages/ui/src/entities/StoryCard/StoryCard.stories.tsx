@@ -10,7 +10,7 @@ import StoryCard from "./StoryCard";
 const meta: Meta<typeof StoryCard> = {
   title: "Entities/StoryCard",
   args: {
-    story: mockStories[4],
+    story: mockStories[8],
     style: {
       maxWidth: "300px"
     }

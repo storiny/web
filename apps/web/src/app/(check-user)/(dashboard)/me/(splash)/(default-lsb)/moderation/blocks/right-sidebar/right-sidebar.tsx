@@ -4,7 +4,7 @@ import { clsx } from "clsx";
 import dynamic from "next/dynamic";
 import React from "react";
 
-import SuspenseLoader from "~/common/suspense-loader";
+import { dynamicLoader } from "~/common/dynamic";
 import Grow from "~/components/Grow";
 import { useMediaQuery } from "~/hooks/useMediaQuery";
 import RightSidebar from "~/layout/RightSidebar";
@@ -15,7 +15,7 @@ import styles from "./right-sidebar.module.scss";
 const SuspendedModerationBlocksRightSidebarContent = dynamic(
   () => import("./content"),
   {
-    loading: () => <SuspenseLoader />
+    loading: dynamicLoader()
   }
 );
 

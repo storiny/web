@@ -83,6 +83,7 @@ const GroupComponent = ({ group }: { group: Group }): React.ReactElement => (
 const SuspendedDashboardLeftSidebarContent = (): React.ReactElement => {
   const [query, setQuery] = React.useState<string>("");
   const [results, setResults] = React.useState<Group[]>([]);
+  // TODO: Update segments
   const segments = useSelectedLayoutSegments();
   const user = useAppSelector(selectUser)!;
   segments.shift(); // Remove (mdx) layout

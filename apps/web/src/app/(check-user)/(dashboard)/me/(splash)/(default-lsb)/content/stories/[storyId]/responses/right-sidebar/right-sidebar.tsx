@@ -2,7 +2,7 @@ import { clsx } from "clsx";
 import dynamic from "next/dynamic";
 import React from "react";
 
-import SuspenseLoader from "~/common/suspense-loader";
+import { dynamicLoader } from "~/common/dynamic";
 import Grow from "~/components/Grow";
 import { useMediaQuery } from "~/hooks/useMediaQuery";
 import RightSidebar from "~/layout/RightSidebar";
@@ -14,7 +14,7 @@ import { StoryResponsesRightSidebarProps } from "./right-sidebar.props";
 const SuspendedContentStoryResponsesRightSidebarContent = dynamic(
   () => import("./content"),
   {
-    loading: () => <SuspenseLoader />
+    loading: dynamicLoader()
   }
 );
 

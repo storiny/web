@@ -45,7 +45,7 @@ const LeftSidebarPersona = (): React.ReactElement => {
         ratio={66 / 25}
       >
         {loading ? (
-          <Skeleton />
+          <Skeleton noRadius />
         ) : user?.banner_id ? (
           <Image
             alt={""}

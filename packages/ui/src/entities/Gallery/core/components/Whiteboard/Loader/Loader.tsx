@@ -22,7 +22,7 @@ const WhiteboardLoader = (): React.ReactElement => {
   return (
     <div className={clsx("flex-col", "flex-center")}>
       <Typography className={"t-medium"} level={"body3"}>
-        Loading whiteboard...
+        Loading whiteboard…
       </Typography>
       <Spacer orientation={"vertical"} size={1.5} />
       <ProgressBar

@@ -12,6 +12,7 @@ const Skeleton = forwardRef<SkeletonProps, "span">((props, ref) => {
   const {
     as: Component = "span",
     shape = "rectangular",
+    noRadius,
     width,
     height,
     className,
@@ -23,7 +24,12 @@ const Skeleton = forwardRef<SkeletonProps, "span">((props, ref) => {
     <Component
       {...rest}
       aria-hidden={"true"}
-      className={clsx(styles.skeleton, styles[shape], className)}
+      className={clsx(
+        styles.skeleton,
+        styles[shape],
+        noRadius && styles["no-radius"],
+        className
+      )}
       ref={ref}
       style={{
         ...style,

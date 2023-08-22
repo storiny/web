@@ -31,7 +31,7 @@ const CommentSkeleton = (props: CommentSkeletonProps): React.ReactElement => {
               ratio={1.77}
               tabIndex={-1}
             >
-              <Skeleton />
+              <Skeleton noRadius />
             </AspectRatio>
           ) : (
             <Skeleton height={32} shape={"circular"} width={32} />

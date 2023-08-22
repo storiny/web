@@ -6,14 +6,11 @@ import { useMediaQuery } from "~/hooks/useMediaQuery";
 import RightSidebar from "~/layout/RightSidebar";
 import { breakpoints } from "~/theme/breakpoints";
 
-const SuspendedDashboardRightSidebarContent = dynamic(
-  () => import("./content"),
-  {
-    loading: dynamicLoader()
-  }
-);
+const SuspendedEditorRightSidebarContent = dynamic(() => import("./content"), {
+  loading: dynamicLoader()
+});
 
-const DefaultDashboardRightSidebar = (): React.ReactElement | null => {
+const EditorRightSidebar = (): React.ReactElement | null => {
   const shouldRender = useMediaQuery(breakpoints.up("desktop"));
 
   if (!shouldRender) {
@@ -21,10 +18,10 @@ const DefaultDashboardRightSidebar = (): React.ReactElement | null => {
   }
 
   return (
-    <RightSidebar>
-      <SuspendedDashboardRightSidebarContent />
+    <RightSidebar hideFooter>
+      <SuspendedEditorRightSidebarContent />
     </RightSidebar>
   );
 };
 
-export default DefaultDashboardRightSidebar;
+export default EditorRightSidebar;

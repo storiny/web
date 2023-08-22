@@ -8,6 +8,11 @@ export interface SkeletonProps extends PolymorphicProps<"span"> {
    */
   height?: number;
   /**
+   * If `true`, does not apply border radius to the rectangular shape.
+   * @default false
+   */
+  noRadius?: boolean;
+  /**
    * The component shape.
    * @default 'rectangular'
    */

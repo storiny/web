@@ -10,7 +10,9 @@
 
 /* Shapes */
 .rectangular {
-  border-radius: var(--radius-md);
+  &:not(.no-radius) {
+    border-radius: var(--radius-md);
+  }
 }
 
 .circular {

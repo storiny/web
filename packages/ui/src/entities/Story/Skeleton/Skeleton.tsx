@@ -43,7 +43,7 @@ const StorySkeleton = (props: StorySkeletonProps): React.ReactElement => {
             ratio={16 / 9}
             tabIndex={-1}
           >
-            <Skeleton />
+            <Skeleton noRadius />
           </AspectRatio>
         </div>
         <div className={clsx("flex", storyStyles.footer)}>

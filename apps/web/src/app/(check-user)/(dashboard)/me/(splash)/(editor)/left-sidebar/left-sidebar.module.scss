@@ -1,0 +1,13 @@
+.x {
+  /* Content */
+  &.content {
+    padding-block: 8px;
+    gap: 16px;
+  }
+
+  /* Padded divider */
+  &.padded-divider {
+    width: 100%;
+    padding: 8px 12px;
+  }
+}
