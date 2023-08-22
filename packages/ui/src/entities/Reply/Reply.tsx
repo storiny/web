@@ -17,10 +17,6 @@ import ExternalLinkIcon from "~/icons/ExternalLink";
 import HeartIcon from "~/icons/Heart";
 import ReplyIcon from "~/icons/Reply";
 import { selectUser } from "~/redux/features";
-import {
-  selectBlock,
-  selectLikedReply
-} from "~/redux/features/entities/selectors";
 import { setLikedReply, syncWithReply } from "~/redux/features/entities/slice";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 import { breakpoints } from "~/theme/breakpoints";
@@ -37,8 +33,12 @@ const Reply = (props: ReplyProps): React.ReactElement => {
   const dispatch = useAppDispatch();
   const isMobile = useMediaQuery(breakpoints.down("mobile"));
   const user = useAppSelector(selectUser);
-  const isUserBlocked = useAppSelector(selectBlock(reply.user_id));
-  const isLiked = useAppSelector(selectLikedReply(reply.id));
+  const isUserBlocked = useAppSelector(
+    (state) => state.entities.blocks[reply.user_id]
+  );
+  const isLiked = useAppSelector(
+    (state) => state.entities.likedReplies[reply.id]
+  );
   const isSelf = user?.id === reply.user_id;
   const [hidden, setHidden] = React.useState(Boolean(reply.hidden));
   const [collapsed, setCollapsed] = React.useState(isUserBlocked);

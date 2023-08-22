@@ -10,13 +10,7 @@
     --rigid-bg: #000;
   }
 
-  /* Apple button */
-  &.twitter-button {
-    --rigid-fg: #fff;
-    --rigid-bg: #1e8eee;
-  }
-
-  /* Apple button */
+  /* Google button */
   &.google-button {
     --rigid-fg: #000;
     --rigid-bg: #fff;
@@ -24,7 +18,6 @@
 
   /* Social buttons */
   &.apple-button,
-  &.twitter-button,
   &.google-button {
     border: 1px solid var(--divider);
 

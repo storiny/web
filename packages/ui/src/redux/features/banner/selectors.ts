@@ -1,5 +1,8 @@
 import { AppState } from "~/redux/store";
 
-export const selectBannerState = (state: AppState) => state.banner;
+import { BannerState } from "./slice";
 
-export const selectBannerHeight = (state: AppState) => state.banner.height;
+export const selectBannerState = (state: AppState): BannerState => state.banner;
+
+export const selectBannerHeight = (state: AppState): number =>
+  state.banner.height;

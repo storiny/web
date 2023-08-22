@@ -16,7 +16,7 @@ import { breakpoints } from "~/theme/breakpoints";
 import pageStyles from "../../styles.module.scss";
 import commonStyles from "../common.module.scss";
 
-const PrimaryTypeface = () => (
+const PrimaryTypeface = (): React.ReactElement => (
   <div className={clsx("flex-col", pageStyles["sub-section"])}>
     <Typography level={"h3"}>Primary Typeface</Typography>
     <Typography level={"legible"}>
@@ -249,7 +249,7 @@ const PrimaryTypeface = () => (
   </div>
 );
 
-const SecondaryTypeface = () => (
+const SecondaryTypeface = (): React.ReactElement => (
   <div className={clsx("flex-col", pageStyles["sub-section"])}>
     <Typography level={"h3"}>Secondary Typeface</Typography>
     <Typography level={"legible"}>
@@ -307,7 +307,7 @@ const SecondaryTypeface = () => (
   </div>
 );
 
-const FallbackTypeface = () => (
+const FallbackTypeface = (): React.ReactElement => (
   <div className={clsx("flex-col", pageStyles["sub-section"])}>
     <Typography level={"h3"}>Fallback fonts</Typography>
     <Typography level={"legible"}>

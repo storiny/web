@@ -13,12 +13,12 @@ import { SkinTone as SkinToneEnum } from "../../constants";
 import styles from "./SkinTone.module.scss";
 
 const skinToneColorMap: Record<SkinToneEnum, string> = {
-  [SkinToneEnum.DARK]: "#60463A",
-  [SkinToneEnum.LIGHT]: "#FFDFBD",
-  [SkinToneEnum.MEDIUM]: "#C88E62",
-  [SkinToneEnum.MEDIUM_LIGHT]: "#E9C197",
-  [SkinToneEnum.MEDIUM_DARK]: "#A86637",
-  [SkinToneEnum.DEFAULT]: "#FFD225"
+  [SkinToneEnum.DARK /*        */]: "#60463A",
+  [SkinToneEnum.LIGHT /*       */]: "#FFDFBD",
+  [SkinToneEnum.MEDIUM /*      */]: "#C88E62",
+  [SkinToneEnum.MEDIUM_LIGHT /**/]: "#E9C197",
+  [SkinToneEnum.MEDIUM_DARK /* */]: "#A86637",
+  [SkinToneEnum.DEFAULT /*     */]: "#FFD225"
 };
 
 const SkinTone = (): React.ReactElement => {

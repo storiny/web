@@ -8,7 +8,7 @@ import Typography from "~/components/Typography";
 
 import styles from "./Loader.module.scss";
 
-const WhiteboardLoader = (): any => {
+const WhiteboardLoader = (): React.ReactElement => {
   const [loading, setLoading] = React.useState<boolean>(true);
   const { progress, isFinished, animationDuration } = useNProgress({
     isAnimating: loading

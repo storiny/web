@@ -6,7 +6,7 @@ import Typography from "~/components/Typography";
 
 import styles from "./Footer.module.scss";
 
-const RightSidebarFooter = () => (
+const RightSidebarFooter = (): React.ReactElement => (
   <footer className={styles.footer}>
     <Link href={"/about"} level={"body3"}>
       About

@@ -6,11 +6,11 @@ import { capitalize } from "~/utils/capitalize";
 dayjs.extend(relativeTime);
 
 export enum DateFormat {
-  LONG = "MMM D, YYYY h:mm A",
-  RELATIVE = "relative",
-  RELATIVE_CAPITALIZED = "relativeCapitalized",
-  SHORT = "MMM D",
-  STANDARD = "MMM D, YYYY"
+  LONG /*                */ = "MMM D, YYYY h:mm A",
+  RELATIVE /*            */ = "relative",
+  RELATIVE_CAPITALIZED /**/ = "relativeCapitalized",
+  SHORT /*               */ = "MMM D",
+  STANDARD /*            */ = "MMM D, YYYY"
 }
 
 /**

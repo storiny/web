@@ -1,14 +1,15 @@
 "use client";
+
 import { clsx } from "clsx";
 import dynamic from "next/dynamic";
 import NextLink from "next/link";
 import React from "react";
 
+import { dynamicLoader } from "~/common/dynamic";
 import {
   NotificationListSkeleton,
   VirtualizedNotificationList
 } from "~/common/notification";
-import SuspenseLoader from "~/common/suspense-loader";
 import Button from "~/components/Button";
 import Divider from "~/components/Divider";
 import Grow from "~/components/Grow";
@@ -36,7 +37,7 @@ import { abbreviateNumber } from "~/utils/abbreviateNumber";
 import styles from "./styles.module.scss";
 
 const EmptyState = dynamic(() => import("./empty-state"), {
-  loading: () => <SuspenseLoader />
+  loading: dynamicLoader()
 });
 
 export type NotificationsTabValue = "unread" | "following" | "friends" | "all";

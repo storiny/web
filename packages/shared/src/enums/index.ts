@@ -1,3 +1,4 @@
+export * from "./AccountActivityType";
 export * from "./AssetRating";
 export * from "./ContentType";
 export * from "./ImageSize";

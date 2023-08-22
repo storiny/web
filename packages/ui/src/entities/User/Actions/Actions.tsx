@@ -1,7 +1,7 @@
-import { User } from "@storiny/types";
 import NextLink from "next/link";
 import React from "react";
 
+import Button from "~/components/Button";
 import { useConfirmation } from "~/components/Confirmation";
 import IconButton from "~/components/IconButton";
 import Menu from "~/components/Menu";
@@ -19,31 +19,28 @@ import UserBlockIcon from "~/icons/UserBlock";
 import UserXIcon from "~/icons/UserX";
 import { selectLoggedIn } from "~/redux/features/auth/selectors";
 import {
-  selectBlock,
-  selectFollower,
-  selectMute
-} from "~/redux/features/entities/selectors";
-import {
   setBlock,
   setFollower,
   setMute,
-  syncWithUser,
-  toggleBlock,
-  toggleFollower,
-  toggleMute
+  syncWithUser
 } from "~/redux/features/entities/slice";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 import { breakpoints } from "~/theme/breakpoints";
 
-const Actions = ({ user }: { user: User }): React.ReactElement | null => {
+import { UserActionsProps } from "./Actions.props";
+
+const UserActions = (props: UserActionsProps): React.ReactElement | null => {
+  const { user, actionType } = props;
   const share = useWebShare();
   const copy = useClipboard();
   const dispatch = useAppDispatch();
   const isMobile = useMediaQuery(breakpoints.down("mobile"));
   const loggedIn = useAppSelector(selectLoggedIn);
-  const isBlocking = useAppSelector(selectBlock(user.id));
-  const isMuted = useAppSelector(selectMute(user.id));
-  const isFollower = useAppSelector(selectFollower(user.id));
+  const isBlocking = useAppSelector((state) => state.entities.blocks[user.id]);
+  const isMuted = useAppSelector((state) => state.entities.mutes[user.id]);
+  const isFollower = useAppSelector(
+    (state) => state.entities.followers[user.id]
+  );
   const [element] = useConfirmation(
     ({ openConfirmation }) => (
       <MenuItem
@@ -70,11 +67,11 @@ const Actions = ({ user }: { user: User }): React.ReactElement | null => {
     dispatch(syncWithUser(user));
   }, [dispatch, user]);
 
-  if (isMobile) {
+  if (isMobile && actionType === "default") {
     return null;
   }
 
-  return (
+  return actionType === "default" ? (
     <Menu
       trigger={
         <IconButton
@@ -138,7 +135,26 @@ const Actions = ({ user }: { user: User }): React.ReactElement | null => {
         Report this user
       </MenuItem>
     </Menu>
+  ) : (
+    <Button
+      autoSize
+      checkAuth
+      onClick={(): void => {
+        dispatch((actionType === "block" ? setBlock : setMute)([user.id]));
+      }}
+      variant={
+        (actionType === "block" ? isBlocking : isMuted) ? "rigid" : "hollow"
+      }
+    >
+      {actionType === "block"
+        ? isBlocking
+          ? "Unblock"
+          : "Block"
+        : isMuted
+        ? "Unmute"
+        : "Mute"}
+    </Button>
   );
 };
 
-export default Actions;
+export default UserActions;

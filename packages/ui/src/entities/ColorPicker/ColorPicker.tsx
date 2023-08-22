@@ -14,10 +14,13 @@ import { Provider } from "jotai";
 import dynamic from "next/dynamic";
 import React from "react";
 
+import Button from "~/components/Button";
 import Grow from "~/components/Grow";
 import IconButton from "~/components/IconButton";
+import Spacer from "~/components/Spacer";
 import Typography from "~/components/Typography";
 import { previewColorAtom } from "~/entities/ColorPicker/core/atoms";
+import CloudOffIcon from "~/icons/CloudOff";
 import XIcon from "~/icons/X";
 
 import styles from "./ColorPicker.module.scss";
@@ -27,9 +30,26 @@ import Preview from "./core/components/Preview";
 import { defaultColor } from "./core/defaultColor";
 
 const ColorPickerCore = dynamic(() => import("./core/components/ColorPicker"), {
-  loading: () => (
+  loading: ({ error, isLoading, retry }) => (
     <div className={"flex-center"} style={{ minHeight: "300px" }}>
-      <SuspenseLoader />
+      {error && !isLoading ? (
+        <div
+          className={clsx("flex-col", "flex-center")}
+          style={{ "--icon-size": "36px" } as React.CSSProperties}
+        >
+          <CloudOffIcon />
+          <Spacer orientation={"vertical"} />
+          <Typography className={"t-minor"} level={"body3"}>
+            Network error
+          </Typography>
+          <Spacer orientation={"vertical"} size={2} />
+          <Button onClick={retry} size={"sm"}>
+            Retry
+          </Button>
+        </div>
+      ) : (
+        <SuspenseLoader />
+      )}
     </div>
   )
 });

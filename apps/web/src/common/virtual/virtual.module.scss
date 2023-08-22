@@ -3,5 +3,9 @@
   &.list-item {
     padding-block: 12px;
     gap: 24px;
+
+    &.large {
+      padding-block: 20px;
+    }
   }
 }

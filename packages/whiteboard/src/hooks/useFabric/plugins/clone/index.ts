@@ -4,7 +4,6 @@ import hotkeys from "hotkeys-js";
 import { CLONE_PROPS } from "../../../../lib";
 import {
   isActiveSelection,
-  isArrowObject,
   isLinearObject,
   recoverObject
 } from "../../../../utils";

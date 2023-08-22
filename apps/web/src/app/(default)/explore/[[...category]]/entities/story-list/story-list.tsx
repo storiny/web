@@ -2,13 +2,13 @@ import { StoryCategory } from "@storiny/shared";
 import dynamic from "next/dynamic";
 import React from "react";
 
+import { dynamicLoader } from "~/common/dynamic";
 import { StoryListSkeleton, VirtualizedStoryList } from "~/common/story";
-import SuspenseLoader from "~/common/suspense-loader";
 import ErrorState from "~/entities/ErrorState";
 import { getQueryErrorType, useGetExploreStoriesQuery } from "~/redux/features";
 
 const EmptyState = dynamic(() => import("./empty-state"), {
-  loading: () => <SuspenseLoader />
+  loading: dynamicLoader()
 });
 
 const StoryList = ({

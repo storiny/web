@@ -19,7 +19,7 @@ export const useWebShare =
       onShareEnd?: () => void;
       onShareStart?: () => void;
     } = {}
-  ) => {
+  ): void => {
     try {
       onShareStart && onShareStart();
 

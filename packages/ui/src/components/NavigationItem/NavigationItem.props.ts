@@ -8,9 +8,14 @@ export interface NavigationItemProps extends PolymorphicProps<"button"> {
    */
   decorator?: React.ReactNode;
   /**
+   * The element placed after the children
+   */
+  endDecorator?: React.ReactNode;
+  /**
    * The props passed to the individual component elements
    */
   slotProps?: {
     decorator?: React.ComponentPropsWithoutRef<"span">;
+    endDecorator?: React.ComponentPropsWithoutRef<"span">;
   };
 }

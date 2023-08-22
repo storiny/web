@@ -30,14 +30,14 @@ import styles from "./Layer.module.scss";
 import { LayerProps } from "./Layer.props";
 
 const layerTypeToIconMap: Record<LayerType, React.ReactNode> = {
-  [LayerType.IMAGE]: <ImageIcon />,
-  [LayerType.ARROW]: <ArrowIcon rotation={45} />,
-  [LayerType.ELLIPSE]: <CircleIcon />,
-  [LayerType.RECTANGLE]: <RectangleIcon />,
-  [LayerType.TEXT]: <TypographyIcon />,
-  [LayerType.LINE]: <LineIcon rotation={45} />,
-  [LayerType.PEN]: <PencilIcon />,
-  [LayerType.DIAMOND]: <DiamondIcon />
+  [LayerType.IMAGE /*    */]: <ImageIcon />,
+  [LayerType.ARROW /*    */]: <ArrowIcon rotation={45} />,
+  [LayerType.ELLIPSE /*  */]: <CircleIcon />,
+  [LayerType.RECTANGLE /**/]: <RectangleIcon />,
+  [LayerType.TEXT /*     */]: <TypographyIcon />,
+  [LayerType.LINE /*     */]: <LineIcon rotation={45} />,
+  [LayerType.PEN /*      */]: <PencilIcon />,
+  [LayerType.DIAMOND /*  */]: <DiamondIcon />
 };
 
 // Lock filled ico

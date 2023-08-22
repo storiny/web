@@ -5,7 +5,7 @@ import dynamic from "next/dynamic";
 import React from "react";
 
 import { CommentListSkeleton, VirtualizedCommentList } from "~/common/comment";
-import SuspenseLoader from "~/common/suspense-loader";
+import { dynamicLoader } from "~/common/dynamic";
 import Divider from "~/components/Divider";
 import Input from "~/components/Input";
 import Option from "~/components/Option";
@@ -33,7 +33,7 @@ import ContentStoryResponsesRightSidebar from "./right-sidebar";
 import styles from "./styles.module.scss";
 
 const EmptyState = dynamic(() => import("./empty-state"), {
-  loading: () => <SuspenseLoader />
+  loading: dynamicLoader()
 });
 
 type SortOrder = "dsc" | "asc";
@@ -90,12 +90,12 @@ const StatusHeader = ({
   tab: StoryResponsesTabValue;
 } & StoryResponsesProps): React.ReactElement => {
   const dispatch = useAppDispatch();
-  const totalCount = useAppSelector(
-    (state) => state.entities.storyCommentCounts[storyId]
-  );
-  const hiddenCount = useAppSelector(
-    (state) => state.entities.storyHiddenCommentCounts[storyId]
-  );
+  const totalCount =
+    useAppSelector((state) => state.entities.storyCommentCounts[storyId]) || 0;
+  const hiddenCount =
+    useAppSelector(
+      (state) => state.entities.storyHiddenCommentCounts[storyId]
+    ) || 0;
   const count_param = tab === "all" ? totalCount : hiddenCount;
 
   React.useEffect(() => {

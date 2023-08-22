@@ -10,16 +10,11 @@ export { axe } from "jest-axe";
 
 expect.extend(toHaveNoViolations);
 
-declare global {
-  // noinspection ES6ConvertVarToLetConst
-  var waitForPosition: () => Promise<void>;
-}
+// Wait for popper's position
+export const waitForPosition = (): Promise<void> => act(async () => {});
 
 // Mock fetch
 global.fetch = jest.fn();
-
-// Wait for popper's position
-global.waitForPosition = (): Promise<void> => act(async () => {});
 
 // Polyfill resize observer
 global.ResizeObserver = require("resize-observer-polyfill");

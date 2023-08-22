@@ -84,4 +84,8 @@ service ApiService {
    * Returns the user's block count
    */
   rpc GetUserBlockCount(user_def.v1.GetUserBlockCountRequest) returns (user_def.v1.GetUserBlockCountResponse) {}
+  /**
+   * Returns the user's mute count
+   */
+  rpc GetUserMuteCount(user_def.v1.GetUserMuteCountRequest) returns (user_def.v1.GetUserMuteCountResponse) {}
 }

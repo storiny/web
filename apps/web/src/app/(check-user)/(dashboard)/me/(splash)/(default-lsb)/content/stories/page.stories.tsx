@@ -1,6 +1,5 @@
 // noinspection JSUnusedGlobalSymbols
 
-import { mockStories } from "@storiny/ui/src/mocks";
 import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
 

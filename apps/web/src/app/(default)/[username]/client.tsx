@@ -5,8 +5,8 @@ import { clsx } from "clsx";
 import dynamic from "next/dynamic";
 import React from "react";
 
+import { dynamicLoader } from "~/common/dynamic";
 import { GetProfileResponse } from "~/common/grpc";
-import SuspenseLoader from "~/common/suspense-loader";
 import Button from "~/components/Button";
 import Divider from "~/components/Divider";
 import Image from "~/components/Image";
@@ -23,7 +23,6 @@ import BanIcon from "~/icons/Ban";
 import ForbidIcon from "~/icons/Forbid";
 import LockIcon from "~/icons/Lock";
 import SearchIcon from "~/icons/Search";
-import { selectBlock } from "~/redux/features";
 import { useAppSelector } from "~/redux/hooks";
 import { breakpoints } from "~/theme/breakpoints";
 import { getCdnUrl } from "~/utils/getCdnUrl";
@@ -34,7 +33,7 @@ import EntitiesTab from "./tabs/entities";
 import StoriesTab from "./tabs/stories";
 
 const CustomState = dynamic(() => import("~/entities/CustomState"), {
-  loading: () => <SuspenseLoader />
+  loading: dynamicLoader()
 });
 
 export type ProfileTabValue = "stories" | "followers" | "following" | "friends";
@@ -168,7 +167,9 @@ const Page = ({
     Boolean(profile.is_blocking)
   );
   const hasBanner = Boolean(profile.banner_id);
-  const isBlocking = useAppSelector(selectBlock(profile.id));
+  const isBlocking = useAppSelector(
+    (state) => state.entities.blocks[profile.id]
+  );
 
   const handleQueryChange = React.useCallback(
     (newQuery: string) => setQuery(newQuery),

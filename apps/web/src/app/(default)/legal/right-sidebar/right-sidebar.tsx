@@ -1,11 +1,11 @@
 import dynamic from "next/dynamic";
 import React from "react";
 
-import SuspenseLoader from "~/common/suspense-loader";
+import { dynamicLoader } from "~/common/dynamic";
 import RightSidebar from "~/layout/RightSidebar";
 
 const SuspendedLegalRightSidebarContent = dynamic(() => import("./content"), {
-  loading: () => <SuspenseLoader />
+  loading: dynamicLoader()
 });
 
 const LegalRightSidebar = (): React.ReactElement => (

@@ -4,7 +4,7 @@
  * Copies text to the clipboard
  * @param text The text to copy
  */
-export const copyToClipboard = async (text: string) => {
+export const copyToClipboard = async (text: string): Promise<void> => {
   if (navigator.clipboard) {
     navigator.clipboard.writeText(text).then(() => undefined);
   } else {

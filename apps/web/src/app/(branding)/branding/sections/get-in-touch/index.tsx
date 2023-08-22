@@ -6,7 +6,7 @@ import Typography from "~/components/Typography";
 
 import pageStyles from "../../styles.module.scss";
 
-const GetInTouchSection = () => (
+const GetInTouchSection = (): React.ReactElement => (
   <section className={clsx(pageStyles.section)}>
     <Typography
       as={"h2"}

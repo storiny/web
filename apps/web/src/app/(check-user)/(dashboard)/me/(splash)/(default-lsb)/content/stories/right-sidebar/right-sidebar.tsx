@@ -20,7 +20,7 @@ const SuspendedDashboardRightSidebarContent = dynamic(
   }
 );
 
-// Draft content
+// Stories content
 
 const SuspendedContentStoriesRightSidebarContent = dynamic(
   () => import("./content"),

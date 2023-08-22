@@ -38,10 +38,10 @@ import styles from "./LibraryItem.module.scss";
 import { LibraryItemProps } from "./LibraryItem.props";
 
 const ratingToDisplayNameMap: Record<AssetRating, string> = {
-  [AssetRating.SENSITIVE]: "Rated as sensitive",
-  [AssetRating.SUGGESTIVE_NUDITY]: "Rated as containing suggestive nudity",
-  [AssetRating.VIOLENCE]: "Rated as violent",
-  [AssetRating.NOT_RATED]: ""
+  [AssetRating.SENSITIVE /*        */]: "Rated as sensitive",
+  [AssetRating.SUGGESTIVE_NUDITY /**/]: "Rated as containing suggestive nudity",
+  [AssetRating.VIOLENCE /*         */]: "Rated as violent",
+  [AssetRating.NOT_RATED /*        */]: ""
 };
 
 // Rating modal

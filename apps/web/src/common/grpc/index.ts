@@ -55,6 +55,8 @@ import {
   GetUserBlockCountResponse,
   GetUserIdRequest,
   GetUserIdResponse,
+  GetUserMuteCountRequest,
+  GetUserMuteCountResponse,
   GetUserRelationsInfoRequest,
   GetUserRelationsInfoResponse
 } from "@storiny/proto/gen/ts/user_def/v1/def";
@@ -104,6 +106,7 @@ export {
   GetTokenResponse,
   GetUserBlockCountResponse,
   GetUserIdResponse,
+  GetUserMuteCountResponse,
   GetUserRelationsInfoResponse,
   VerifyEmailResponse
 };
@@ -171,6 +174,11 @@ export const getUserBlockCount = promisify<
   GetUserBlockCountRequest,
   GetUserBlockCountResponse
 >(global.grpcClient.getUserBlockCount);
+
+export const getUserMuteCount = promisify<
+  GetUserMuteCountRequest,
+  GetUserMuteCountResponse
+>(global.grpcClient.getUserMuteCount);
 
 export const getTag = promisify<GetTagRequest, GetTagResponse>(
   global.grpcClient.getTag

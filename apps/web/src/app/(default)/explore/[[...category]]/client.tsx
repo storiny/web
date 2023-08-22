@@ -5,7 +5,7 @@ import { clsx } from "clsx";
 import dynamic from "next/dynamic";
 import React from "react";
 
-import SuspenseLoader from "~/common/suspense-loader";
+import { dynamicLoader } from "~/common/dynamic";
 import Input from "~/components/Input";
 import Tab from "~/components/Tab";
 import TabPanel from "~/components/TabPanel";
@@ -21,11 +21,11 @@ import WritersPreview from "./previews/writers";
 import styles from "./styles.module.scss";
 
 const WriterList = dynamic(() => import("./entities/writer-list"), {
-  loading: () => <SuspenseLoader />
+  loading: dynamicLoader()
 });
 
 const TagList = dynamic(() => import("./entities/tag-list"), {
-  loading: () => <SuspenseLoader />
+  loading: dynamicLoader()
 });
 
 interface Props {

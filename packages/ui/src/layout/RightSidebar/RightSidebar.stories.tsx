@@ -24,7 +24,7 @@ export const Default: Story = {};
 
 export const Loading: Story = {
   decorators: [
-    (Story) =>
+    (Story): React.ReactElement =>
       renderWithState(<Story />, {
         loading: true
       })
@@ -32,5 +32,8 @@ export const Loading: Story = {
 };
 
 export const LoggedIn: Story = {
-  decorators: [(Story) => renderWithState(<Story />, { loggedIn: true })]
+  decorators: [
+    (Story): React.ReactElement =>
+      renderWithState(<Story />, { loggedIn: true })
+  ]
 };

@@ -1,3 +1,4 @@
+export * from "./accountActivity";
 export * from "./asset";
 export * from "./comment";
 export * from "./notification";

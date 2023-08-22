@@ -18,7 +18,6 @@ import Typography from "~/components/Typography";
 import BellIcon from "~/icons/Bell";
 import BookmarksIcon from "~/icons/Bookmarks";
 import CompassIcon from "~/icons/Compass";
-import ContributionIcon from "~/icons/Contribution";
 import DotsIcon from "~/icons/Dots";
 import HistoryIcon from "~/icons/History";
 import HomeIcon from "~/icons/Home";

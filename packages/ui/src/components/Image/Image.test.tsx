@@ -1,6 +1,6 @@
+import { AssetRating } from "@storiny/shared";
 import { axe } from "@storiny/test-utils";
-import { waitFor } from "@testing-library/react";
-import { screen } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
 import React from "react";
 
 import { renderTestWithProvider } from "~/redux/testUtils";
@@ -45,7 +45,7 @@ describe("<Image />", () => {
     expect(getByTestId("image").nodeName.toLowerCase()).toEqual("aside");
   });
 
-  it("passes props to the fallback slot", async () => {
+  it("passes props to the overlay slot", async () => {
     const { getByTestId } = renderTestWithProvider(
       <Image
         alt={"Test image"}
@@ -60,6 +60,23 @@ describe("<Image />", () => {
 
     await screen.findByTestId("fallback");
     expect(getByTestId("fallback")).toBeInTheDocument();
+  });
+
+  it("passes props to the fallback slot", () => {
+    const { getByTestId } = renderTestWithProvider(
+      <Image
+        alt={"Test image"}
+        imgId={""}
+        rating={AssetRating.SENSITIVE}
+        slotProps={
+          {
+            overlay: { "data-testid": "overlay" }
+          } as ImageProps["slotProps"]
+        }
+      />
+    );
+
+    expect(getByTestId("overlay")).toBeInTheDocument();
   });
 
   it("renders with hex color", () => {
@@ -80,6 +97,29 @@ describe("<Image />", () => {
     expect(getByTestId("image")).toHaveStyle({
       "--width": "64px",
       "--height": "32px"
+    });
+  });
+
+  [
+    AssetRating.VIOLENCE,
+    AssetRating.SENSITIVE,
+    AssetRating.SUGGESTIVE_NUDITY
+  ].forEach((rating) => {
+    it(`renders overlay for \`${rating}\` rating`, () => {
+      const { getByTestId } = renderTestWithProvider(
+        <Image
+          alt={"Test image"}
+          imgId={""}
+          rating={rating}
+          slotProps={
+            {
+              overlay: { "data-testid": "overlay" }
+            } as ImageProps["slotProps"]
+          }
+        />
+      );
+
+      expect(getByTestId("overlay")).toBeInTheDocument();
     });
   });
 });

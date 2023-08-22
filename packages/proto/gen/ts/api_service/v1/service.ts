@@ -44,6 +44,8 @@ import {
   GetUserBlockCountResponse,
   GetUserIdRequest,
   GetUserIdResponse,
+  GetUserMuteCountRequest,
+  GetUserMuteCountResponse,
   GetUserRelationsInfoRequest,
   GetUserRelationsInfoResponse,
 } from "../../user_def/v1/def";
@@ -240,6 +242,17 @@ export const ApiServiceService = {
       Buffer.from(GetUserBlockCountResponse.encode(value).finish()),
     responseDeserialize: (value: Buffer) => GetUserBlockCountResponse.decode(value),
   },
+  /** Returns the user's mute count */
+  getUserMuteCount: {
+    path: "/api_service.v1.ApiService/GetUserMuteCount",
+    requestStream: false,
+    responseStream: false,
+    requestSerialize: (value: GetUserMuteCountRequest) => Buffer.from(GetUserMuteCountRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer) => GetUserMuteCountRequest.decode(value),
+    responseSerialize: (value: GetUserMuteCountResponse) =>
+      Buffer.from(GetUserMuteCountResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => GetUserMuteCountResponse.decode(value),
+  },
 } as const;
 
 export interface ApiServiceServer extends UntypedServiceImplementation {
@@ -277,6 +290,8 @@ export interface ApiServiceServer extends UntypedServiceImplementation {
   getUserRelationsInfo: handleUnaryCall<GetUserRelationsInfoRequest, GetUserRelationsInfoResponse>;
   /** Returns the user's block count */
   getUserBlockCount: handleUnaryCall<GetUserBlockCountRequest, GetUserBlockCountResponse>;
+  /** Returns the user's mute count */
+  getUserMuteCount: handleUnaryCall<GetUserMuteCountRequest, GetUserMuteCountResponse>;
 }
 
 export interface ApiServiceClient extends Client {
@@ -551,6 +566,22 @@ export interface ApiServiceClient extends Client {
     metadata: Metadata,
     options: Partial<CallOptions>,
     callback: (error: ServiceError | null, response: GetUserBlockCountResponse) => void,
+  ): ClientUnaryCall;
+  /** Returns the user's mute count */
+  getUserMuteCount(
+    request: GetUserMuteCountRequest,
+    callback: (error: ServiceError | null, response: GetUserMuteCountResponse) => void,
+  ): ClientUnaryCall;
+  getUserMuteCount(
+    request: GetUserMuteCountRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: GetUserMuteCountResponse) => void,
+  ): ClientUnaryCall;
+  getUserMuteCount(
+    request: GetUserMuteCountRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: GetUserMuteCountResponse) => void,
   ): ClientUnaryCall;
 }
 

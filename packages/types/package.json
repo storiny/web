@@ -3,6 +3,9 @@
   "version": "0.0.0",
   "private": true,
   "sideEffects": false,
+  "scripts": {
+    "lint": "eslint \"**/*.ts*\""
+  },
   "devDependencies": {
     "@storiny/eslint-config": "*",
     "@storiny/prettier-config": "*",

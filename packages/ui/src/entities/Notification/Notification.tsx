@@ -34,36 +34,36 @@ import { NotificationProps } from "./Notification.props";
 const Actions = dynamic(() => import("./Actions"));
 
 const notificationBadgeContentMap: Record<NotificationType, React.ReactNode> = {
-  [NotificationType.STORY_LIKE]: <HeartIcon noStroke />,
-  [NotificationType.FRIEND_REQ_ACCEPT]: <UserCheckIcon />,
-  [NotificationType.FRIEND_REQ_RECEIVED]: <UserHeartIcon />,
-  [NotificationType.FOLLOWER_ADD]: <UserPlusIcon />,
-  [NotificationType.STORY_MENTION]: <AtIcon />,
-  [NotificationType.COMMENT_ADD]: <CommentIcon noStroke />,
-  [NotificationType.REPLY_ADD]: <ReplyIcon noStroke />,
-  [NotificationType.STORY_ADD_BY_USER]: <StoryIcon />,
-  [NotificationType.STORY_ADD_BY_TAG]: <TagIcon noStroke />,
-  [NotificationType.SYSTEM]: <VerifiedIcon />,
-  [NotificationType.LOGIN_ATTEMPT]: <VerifiedIcon />
+  [NotificationType.STORY_LIKE /*         */]: <HeartIcon noStroke />,
+  [NotificationType.FRIEND_REQ_ACCEPT /*  */]: <UserCheckIcon />,
+  [NotificationType.FRIEND_REQ_RECEIVED /**/]: <UserHeartIcon />,
+  [NotificationType.FOLLOWER_ADD /*       */]: <UserPlusIcon />,
+  [NotificationType.STORY_MENTION /*      */]: <AtIcon />,
+  [NotificationType.COMMENT_ADD /*        */]: <CommentIcon noStroke />,
+  [NotificationType.REPLY_ADD /*          */]: <ReplyIcon noStroke />,
+  [NotificationType.STORY_ADD_BY_USER /*  */]: <StoryIcon />,
+  [NotificationType.STORY_ADD_BY_TAG /*   */]: <TagIcon noStroke />,
+  [NotificationType.SYSTEM /*             */]: <VerifiedIcon />,
+  [NotificationType.LOGIN_ATTEMPT /*      */]: <VerifiedIcon />
 };
 
 const notificationBadgeColorMap: Record<NotificationType, string> = {
-  [NotificationType.STORY_LIKE]: "var(--blush-100)",
-  [NotificationType.FRIEND_REQ_ACCEPT]: "var(--blush-100)",
-  [NotificationType.FRIEND_REQ_RECEIVED]: "var(--beryl-200)",
-  [NotificationType.FOLLOWER_ADD]: "var(--beryl-200)",
-  [NotificationType.STORY_MENTION]: "var(--beryl-200)",
-  [NotificationType.COMMENT_ADD]: "var(--melon-100)",
-  [NotificationType.REPLY_ADD]: "var(--melon-100)",
-  [NotificationType.STORY_ADD_BY_USER]: "var(--plum-200)",
-  [NotificationType.STORY_ADD_BY_TAG]: "var(--plum-200)",
-  [NotificationType.SYSTEM]: "transparent",
-  [NotificationType.LOGIN_ATTEMPT]: "transparent"
+  [NotificationType.STORY_LIKE /*         */]: "var(--blush-100)",
+  [NotificationType.FRIEND_REQ_ACCEPT /*  */]: "var(--blush-100)",
+  [NotificationType.FRIEND_REQ_RECEIVED /**/]: "var(--beryl-200)",
+  [NotificationType.FOLLOWER_ADD /*       */]: "var(--beryl-200)",
+  [NotificationType.STORY_MENTION /*      */]: "var(--beryl-200)",
+  [NotificationType.COMMENT_ADD /*        */]: "var(--melon-100)",
+  [NotificationType.REPLY_ADD /*          */]: "var(--melon-100)",
+  [NotificationType.STORY_ADD_BY_USER /*  */]: "var(--plum-200)",
+  [NotificationType.STORY_ADD_BY_TAG /*   */]: "var(--plum-200)",
+  [NotificationType.SYSTEM /*             */]: "transparent",
+  [NotificationType.LOGIN_ATTEMPT /*      */]: "transparent"
 };
 
 const systemIconMap: Record<number, React.ReactNode> = {
-  [NotificationType.SYSTEM]: <ShieldIcon noStroke />,
-  [NotificationType.LOGIN_ATTEMPT]: <LoginIcon />
+  [NotificationType.SYSTEM /*       */]: <ShieldIcon noStroke />,
+  [NotificationType.LOGIN_ATTEMPT /**/]: <LoginIcon />
 };
 
 const Notification = (props: NotificationProps): React.ReactElement => {

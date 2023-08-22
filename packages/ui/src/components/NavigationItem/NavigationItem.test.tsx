@@ -45,13 +45,24 @@ describe("<NavigationItem />", () => {
     expect(getByTestId("decorator")).toBeInTheDocument();
   });
 
+  it("renders custom end decorator", () => {
+    const { getByTestId } = renderTestWithProvider(
+      <NavigationItem endDecorator={<span data-testid={"end-decorator"} />}>
+        Test
+      </NavigationItem>
+    );
+
+    expect(getByTestId("end-decorator")).toBeInTheDocument();
+  });
+
   it("passes props to the element slots", () => {
     const { getByTestId } = renderTestWithProvider(
       <NavigationItem
         decorator={<span />}
         slotProps={
           {
-            decorator: { "data-testid": "decorator" }
+            decorator: { "data-testid": "decorator" },
+            endDecorator: { "data-testid": "end-decorator" }
           } as NavigationItemProps["slotProps"]
         }
       >
@@ -59,6 +70,8 @@ describe("<NavigationItem />", () => {
       </NavigationItem>
     );
 
-    expect(getByTestId("decorator")).toBeInTheDocument();
+    ["decorator", "end-decorator"].forEach((element) => {
+      expect(getByTestId(element)).toBeInTheDocument();
+    });
   });
 });

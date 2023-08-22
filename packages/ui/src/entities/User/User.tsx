@@ -13,20 +13,22 @@ import StoryIcon from "~/icons/Story";
 import UserCheckIcon from "~/icons/UserCheck";
 import UserPlusIcon from "~/icons/UserPlus";
 import UsersIcon from "~/icons/Users";
-import { selectFollowing, setFollowing } from "~/redux/features";
+import { setFollowing } from "~/redux/features";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 import { breakpoints } from "~/theme/breakpoints";
 import { abbreviateNumber } from "~/utils/abbreviateNumber";
 
-import Actions from "./Actions";
+import UserActions from "./Actions";
 import styles from "./User.module.scss";
 import { UserProps } from "./User.props";
 
 const User = (props: UserProps): React.ReactElement => {
-  const { className, user, ...rest } = props;
+  const { actionType = "default", className, user, ...rest } = props;
   const dispatch = useAppDispatch();
   const isMobile = useMediaQuery(breakpoints.down("mobile"));
-  const isFollowing = useAppSelector(selectFollowing(user.id));
+  const isFollowing = useAppSelector(
+    (state) => state.entities.following[user.id]
+  );
   const userUrl = `/${user.username}`;
 
   // User-specific props are synced in `Actions`
@@ -43,7 +45,7 @@ const User = (props: UserProps): React.ReactElement => {
             size={"lg"}
           />
           <div className={"flex-col"}>
-            <Typography>
+            <Typography ellipsis>
               <span className={isMobile ? "t-medium" : "t-bold"}>
                 {user.name}
               </span>
@@ -87,18 +89,20 @@ const User = (props: UserProps): React.ReactElement => {
         </NextLink>
         <Grow />
         <div className={clsx("flex", styles.actions)}>
-          <Button
-            autoSize
-            checkAuth
-            decorator={isFollowing ? <UserCheckIcon /> : <UserPlusIcon />}
-            onClick={(): void => {
-              dispatch(setFollowing([user.id]));
-            }}
-            variant={isFollowing ? "hollow" : "rigid"}
-          >
-            {isFollowing ? "Following" : "Follow"}
-          </Button>
-          <Actions user={user} />
+          {actionType === "default" && (
+            <Button
+              autoSize
+              checkAuth
+              decorator={isFollowing ? <UserCheckIcon /> : <UserPlusIcon />}
+              onClick={(): void => {
+                dispatch(setFollowing([user.id]));
+              }}
+              variant={isFollowing ? "hollow" : "rigid"}
+            >
+              {isFollowing ? "Following" : "Follow"}
+            </Button>
+          )}
+          <UserActions actionType={actionType} user={user} />
         </div>
       </div>
       {Boolean(user.bio) && (

@@ -8,10 +8,6 @@ import IconButton from "~/components/IconButton";
 import Persona from "~/entities/Persona";
 import UserCheckIcon from "~/icons/UserCheck";
 import UserPlusIcon from "~/icons/UserPlus";
-import {
-  selectBlock,
-  selectFollowing
-} from "~/redux/features/entities/selectors";
 import { setFollowing, syncWithUser } from "~/redux/features/entities/slice";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 
@@ -21,8 +17,10 @@ import { UserWithActionProps } from "./UserWithAction.props";
 const UserWithAction = (props: UserWithActionProps): React.ReactElement => {
   const { user } = props;
   const dispatch = useAppDispatch();
-  const isBlocked = useAppSelector(selectBlock(user.id));
-  const isFollowing = useAppSelector(selectFollowing(user.id));
+  const isBlocked = useAppSelector((state) => state.entities.blocks[user.id]);
+  const isFollowing = useAppSelector(
+    (state) => state.entities.following[user.id]
+  );
 
   React.useEffect(() => {
     dispatch(syncWithUser(user));

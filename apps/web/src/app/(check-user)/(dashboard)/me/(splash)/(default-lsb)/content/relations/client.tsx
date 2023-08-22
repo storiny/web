@@ -4,7 +4,7 @@ import { clsx } from "clsx";
 import dynamic from "next/dynamic";
 import React from "react";
 
-import SuspenseLoader from "~/common/suspense-loader";
+import { dynamicLoader } from "~/common/dynamic";
 import { UserListSkeleton, VirtualizedUserList } from "~/common/user";
 import Divider from "~/components/Divider";
 import Input from "~/components/Input";
@@ -37,7 +37,7 @@ import ContentRelationsRightSidebar from "./right-sidebar";
 import styles from "./styles.module.scss";
 
 const EmptyState = dynamic(() => import("./empty-state"), {
-  loading: () => <SuspenseLoader />
+  loading: dynamicLoader()
 });
 
 const FriendRequests = dynamic(() => import("./right-sidebar/friend-requests"));

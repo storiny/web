@@ -3,7 +3,7 @@ import { clsx } from "clsx";
 import dynamic from "next/dynamic";
 import React from "react";
 
-import SuspenseLoader from "~/common/suspense-loader";
+import { dynamicLoader } from "~/common/dynamic";
 import AspectRatio from "~/components/AspectRatio";
 import Button from "~/components/Button";
 import Divider from "~/components/Divider";
@@ -18,7 +18,7 @@ import styles from "./login-item.module.scss";
 import { LoginItemProps } from "./login-item.props";
 
 const Map = dynamic(() => import("../map"), {
-  loading: () => <SuspenseLoader className={"full-h"} />
+  loading: dynamicLoader()
 });
 
 const LogoutButton = (

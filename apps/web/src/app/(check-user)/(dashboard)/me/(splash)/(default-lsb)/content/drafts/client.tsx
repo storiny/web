@@ -5,8 +5,8 @@ import dynamic from "next/dynamic";
 import NextLink from "next/link";
 import React from "react";
 
+import { dynamicLoader } from "~/common/dynamic";
 import { StoryListSkeleton, VirtualizedStoryList } from "~/common/story";
-import SuspenseLoader from "~/common/suspense-loader";
 import Button from "~/components/Button";
 import Divider from "~/components/Divider";
 import Input from "~/components/Input";
@@ -36,7 +36,7 @@ import ContentDraftsRightSidebar from "./right-sidebar";
 import styles from "./styles.module.scss";
 
 const EmptyState = dynamic(() => import("./empty-state"), {
-  loading: () => <SuspenseLoader />
+  loading: dynamicLoader()
 });
 
 export type DraftsTabValue = "pending" | "deleted";
@@ -123,12 +123,10 @@ const StatusHeader = ({
   "pending_draft_count" | "deleted_draft_count"
 >): React.ReactElement => {
   const dispatch = useAppDispatch();
-  const pendingDraftCount = useAppSelector(
-    (state) => state.entities.selfPendingDraftCount
-  );
-  const deletedDraftCount = useAppSelector(
-    (state) => state.entities.selfDeletedDraftCount
-  );
+  const pendingDraftCount =
+    useAppSelector((state) => state.entities.selfPendingDraftCount) || 0;
+  const deletedDraftCount =
+    useAppSelector((state) => state.entities.selfDeletedDraftCount) || 0;
   const count_param = tab === "pending" ? pendingDraftCount : deletedDraftCount;
 
   React.useEffect(() => {

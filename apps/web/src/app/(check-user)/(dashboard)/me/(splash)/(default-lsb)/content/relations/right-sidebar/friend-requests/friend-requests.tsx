@@ -3,6 +3,7 @@ import { atom, useAtomValue, useSetAtom } from "jotai";
 import dynamic from "next/dynamic";
 import React from "react";
 
+import { dynamicLoader } from "~/common/dynamic";
 import { VirtualizedFriendRequestList } from "~/common/friend-request";
 import SuspenseLoader from "~/common/suspense-loader";
 import Button from "~/components/Button";
@@ -23,7 +24,7 @@ import { breakpoints } from "~/theme/breakpoints";
 import styles from "./friend-requests.module.scss";
 
 const EmptyState = dynamic(() => import("./empty-state"), {
-  loading: () => <SuspenseLoader />
+  loading: dynamicLoader()
 });
 
 export type FriendRequestsSortValue = "popular" | "recent" | "old";

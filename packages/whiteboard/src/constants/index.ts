@@ -7,6 +7,5 @@ export * from "./layer";
 export * from "./opacity";
 export * from "./recovery";
 export * from "./rotation";
-export * from "./tab";
 export * from "./tool";
 export * from "./zoom";

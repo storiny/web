@@ -1,3 +1,4 @@
+import { API_VERSION } from "@storiny/shared";
 import { screen } from "@testing-library/react";
 import { rest } from "msw";
 import { setupServer } from "msw/node";
@@ -12,7 +13,7 @@ import { RightSidebarProps } from "./RightSidebar.props";
 
 const server = setupServer(
   rest.get(
-    `${process.env.NEXT_PUBLIC_API_URL}/v1/rsb-content`,
+    `${process.env.NEXT_PUBLIC_API_URL}/v${API_VERSION}/rsb-content`,
     (req, res, ctx) =>
       res(
         ctx.json({

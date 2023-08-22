@@ -25,12 +25,7 @@ import MapPinIcon from "~/icons/MapPin";
 import UserCheckIcon from "~/icons/UserCheck";
 import UserPlusIcon from "~/icons/UserPlus";
 import UserXIcon from "~/icons/UserX";
-import {
-  selectBlock,
-  selectFollowing,
-  setBlock,
-  setFollowing
-} from "~/redux/features";
+import { setBlock, setFollowing } from "~/redux/features";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 import { breakpoints } from "~/theme/breakpoints";
 import { abbreviateNumber } from "~/utils/abbreviateNumber";
@@ -57,8 +52,12 @@ const Actions = ({
   isInsideSidebar
 }: Pick<Props, "isInsideSidebar" | "profile">): React.ReactElement => {
   const dispatch = useAppDispatch();
-  const isFollowing = useAppSelector(selectFollowing(profile.id));
-  const isBlocking = useAppSelector(selectBlock(profile.id));
+  const isFollowing = useAppSelector(
+    (state) => state.entities.following[profile.id]
+  );
+  const isBlocking = useAppSelector(
+    (state) => state.entities.blocks[profile.id]
+  );
   const isSelf = Boolean(profile.is_self);
 
   // Received state with synced with the browser state in `ProfileActions`.

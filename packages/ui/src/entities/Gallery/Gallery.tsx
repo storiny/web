@@ -1,4 +1,4 @@
-import SuspenseLoader from "@storiny/web/src/common/suspense-loader";
+import { dynamicLoader } from "@storiny/web/src/common/dynamic";
 import clsx from "clsx";
 import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import dynamic from "next/dynamic";
@@ -38,7 +38,7 @@ import styles from "./Gallery.module.scss";
 import { GalleryProps } from "./Gallery.props";
 
 const UploadsTab = dynamic(() => import("./core/components/Uploads"), {
-  loading: () => <SuspenseLoader />
+  loading: dynamicLoader()
 });
 
 // Footer

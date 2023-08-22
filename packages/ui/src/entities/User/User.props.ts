@@ -3,6 +3,11 @@ import React from "react";
 
 export interface UserProps extends React.ComponentPropsWithoutRef<"div"> {
   /**
+   * The type of action to render
+   * @default 'default'
+   */
+  actionType?: "default" | "block" | "mute";
+  /**
    * The user object.
    */
   user: User;

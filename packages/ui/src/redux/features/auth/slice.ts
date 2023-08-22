@@ -1,4 +1,5 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { API_VERSION } from "@storiny/shared";
 import { User } from "@storiny/types";
 
 import { AppState } from "~/redux/store";
@@ -24,7 +25,9 @@ export const authInitialState: AuthState = {
 export const fetchUser = createAsyncThunk<User>(
   "auth/fetchUser",
   async () => {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/v1/me`);
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/v${API_VERSION}/me`
+    );
     return res.json();
   },
   {

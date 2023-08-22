@@ -5,8 +5,8 @@ import dynamic from "next/dynamic";
 import NextLink from "next/link";
 import React from "react";
 
+import { dynamicLoader } from "~/common/dynamic";
 import { StoryListSkeleton, VirtualizedStoryList } from "~/common/story";
-import SuspenseLoader from "~/common/suspense-loader";
 import Divider from "~/components/Divider";
 import IconButton from "~/components/IconButton";
 import Input from "~/components/Input";
@@ -20,7 +20,7 @@ import { getQueryErrorType, useGetHistoryQuery } from "~/redux/features";
 import styles from "./styles.module.scss";
 
 const EmptyState = dynamic(() => import("./empty-state"), {
-  loading: () => <SuspenseLoader />
+  loading: dynamicLoader()
 });
 
 // Page header

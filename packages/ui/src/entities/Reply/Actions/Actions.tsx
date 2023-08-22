@@ -1,7 +1,6 @@
 import { Reply } from "@storiny/types";
 import NextLink from "next/link";
 import React from "react";
-import * as repl from "repl";
 
 import { useConfirmation } from "~/components/Confirmation";
 import IconButton from "~/components/IconButton";
@@ -13,7 +12,6 @@ import ResponseEditor from "~/entities/common/ResponseEditor";
 import { useClipboard } from "~/hooks/useClipboard";
 import CopyIcon from "~/icons/Copy";
 import DotsIcon from "~/icons/Dots";
-import EditIcon from "~/icons/Edit";
 import EyeIcon from "~/icons/Eye";
 import EyeOffIcon from "~/icons/EyeOff";
 import ReportIcon from "~/icons/Report";

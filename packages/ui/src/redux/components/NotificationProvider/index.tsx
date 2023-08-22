@@ -7,7 +7,7 @@ import { selectNotificationState } from "~/redux/features/notification/selectors
 import { setNotificationOpen } from "~/redux/features/notification/slice";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 
-const NotificationWithState = () => {
+const NotificationWithState = (): React.ReactElement => {
   const dispatch = useAppDispatch();
   const { open, icon, message, primaryText, secondaryText } = useAppSelector(
     selectNotificationState
@@ -17,7 +17,9 @@ const NotificationWithState = () => {
     <NotificationProvider>
       <Notification
         icon={icon}
-        onOpenChange={(newState) => dispatch(setNotificationOpen(newState))}
+        onOpenChange={(newState): void => {
+          dispatch(setNotificationOpen(newState));
+        }}
         open={open}
         primaryButtonText={primaryText}
         secondaryButtonText={secondaryText}

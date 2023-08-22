@@ -4,8 +4,8 @@ import { clsx } from "clsx";
 import dynamic from "next/dynamic";
 import React from "react";
 
+import { dynamicLoader } from "~/common/dynamic";
 import { StoryListSkeleton, VirtualizedStoryList } from "~/common/story";
-import SuspenseLoader from "~/common/suspense-loader";
 import Tab from "~/components/Tab";
 import Tabs from "~/components/Tabs";
 import TabsList from "~/components/TabsList";
@@ -15,7 +15,7 @@ import { getQueryErrorType, useGetHomeFeedQuery } from "~/redux/features";
 import styles from "./styles.module.scss";
 
 const EmptyState = dynamic(() => import("./empty-state"), {
-  loading: () => <SuspenseLoader />
+  loading: dynamicLoader()
 });
 
 export type IndexTabValue = "suggested" | "friends-and-following";

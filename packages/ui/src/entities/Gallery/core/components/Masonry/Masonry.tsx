@@ -1,6 +1,6 @@
 "use client";
 
-import SuspenseLoader from "@storiny/web/src/common/suspense-loader";
+import { dynamicLoader } from "@storiny/web/src/common/dynamic";
 import clsx from "clsx";
 import { useAtomValue, useSetAtom } from "jotai";
 import dynamic from "next/dynamic";
@@ -30,7 +30,7 @@ import { GalleryMasonryProps } from "./Masonry.props";
 import PexelsMasonryItem from "./PexelsItem";
 
 const EmptyState = dynamic(() => import("./EmptyState"), {
-  loading: () => <SuspenseLoader />
+  loading: dynamicLoader()
 });
 
 // Pexels

@@ -9,14 +9,14 @@ import { UseStickyProps } from "./useSticky.props";
  * Original implementation: https://github.com/codecks-io/react-sticky-box
  */
 
-const enum MODE {
-  stickyTop,
-  stickyBottom,
-  relative,
-  small
+const enum Mode {
+  STICKY_TOP /*   */ = 1,
+  STICKY_BOTTOM /**/ = 2,
+  RELATIVE /*     */ = 3,
+  SMALL /*        */ = 4
 }
 
-type StickyMode = null | (typeof MODE)[keyof typeof MODE];
+type StickyMode = null | (typeof Mode)[keyof typeof Mode];
 type UnsubscribeList = (() => void)[];
 type MeasureFn<T extends object> = (options: {
   height: number;
@@ -58,6 +58,10 @@ try {
   devConsole.error(e);
 }
 
+/**
+ * Returns a node's scroll parent
+ * @param node Child node
+ */
 const getScrollParent = (node: HTMLElement): Window | HTMLElement => {
   let parent: HTMLElement | null = node;
   while ((parent = parent.parentElement)) {
@@ -81,16 +85,25 @@ const getScrollParent = (node: HTMLElement): Window | HTMLElement => {
   return window;
 };
 
+/**
+ * Predicate function for determining offset elements
+ * @param element Element
+ */
 const isOffsetElement = (element: HTMLElement): boolean =>
   element.firstChild
     ? (element.firstChild as HTMLElement).offsetParent === element
     : true;
 
+/**
+ * Computes the offset length
+ * @param node Node
+ * @param target Target element
+ */
 const offsetTill = (node: HTMLElement, target: HTMLElement): number => {
   let current: HTMLElement = node;
   let offset: number = 0;
 
-  // If target is not an offsetParent itself, subtract its offsetTop and set correct target.
+  // If target is not an `offsetParent` itself, subtract its `offsetTop` and set the correct target
   if (!isOffsetElement(target)) {
     offset += node.offsetTop - target.offsetTop;
     target = node.offsetParent as HTMLElement;
@@ -105,6 +118,10 @@ const offsetTill = (node: HTMLElement, target: HTMLElement): number => {
   return offset;
 };
 
+/**
+ * Returns a node's parent node
+ * @param node Child node
+ */
 const getParentNode = (node: HTMLElement): HTMLElement | Window => {
   let currentParent = node.parentElement;
 
@@ -121,6 +138,10 @@ const getParentNode = (node: HTMLElement): HTMLElement | Window => {
   return currentParent || window;
 };
 
+/**
+ * Computes dimensions
+ * @param options Options
+ */
 const getDimensions = <T extends object>(options: {
   element: HTMLElement | Window;
   measure: MeasureFn<T>;
@@ -169,6 +190,10 @@ const getDimensions = <T extends object>(options: {
   }
 };
 
+/**
+ * Computes vertical (block) padding
+ * @param node Element
+ */
 const getVerticalPadding = (
   node: HTMLElement
 ): { bottom: number; top: number } => {
@@ -185,6 +210,12 @@ const getVerticalPadding = (
   return { top: parentPaddingTop, bottom: parentPaddingBottom };
 };
 
+/**
+ * Sets up the scroller and events
+ * @param node Element
+ * @param unsubscribes Unsubscribe list
+ * @param options Options
+ */
 const setup = (
   node: HTMLElement,
   unsubscribes: UnsubscribeList,
@@ -227,12 +258,12 @@ const setup = (
     const { height: viewPortHeight } = scrollPaneDims;
     const { height: nodeHeight } = nodeDims;
     if (nodeHeight + offsetTop + offsetBottom <= viewPortHeight) {
-      return MODE.small;
+      return Mode.SMALL;
     } else {
       if (isContainerTooLow(latestScrollY)) {
-        return MODE.stickyBottom;
+        return Mode.STICKY_BOTTOM;
       } else {
-        return MODE.relative;
+        return Mode.RELATIVE;
       }
     }
   };
@@ -277,17 +308,17 @@ const setup = (
   });
 
   let relativeOffset: number = 0;
-  let mode: MODE | null = onLayout();
+  let mode: Mode | null = onLayout();
 
   const changeMode = (newMode: StickyMode): void => {
     const prevMode = mode;
     mode = newMode;
 
-    if (prevMode === MODE.relative) {
+    if (prevMode === Mode.RELATIVE) {
       relativeOffset = -1;
     }
 
-    if (newMode === MODE.small) {
+    if (newMode === Mode.SMALL) {
       node.style.position = stickyProp as string;
       if (bottom) {
         node.style.bottom = `${offsetBottom}px`;
@@ -302,10 +333,10 @@ const setup = (
       scrollPaneDims;
     const { height: parentHeight, naturalTop } = parentDims;
     const { height: nodeHeight } = nodeDims;
-    if (newMode === MODE.relative) {
+    if (newMode === Mode.RELATIVE) {
       node.style.position = "relative";
       relativeOffset =
-        prevMode === MODE.stickyTop
+        prevMode === Mode.STICKY_TOP
           ? Math.max(
               0,
               scrollPaneOffset + latestScrollY - naturalTop + offsetTop
@@ -329,14 +360,14 @@ const setup = (
       }
     } else {
       node.style.position = stickyProp as string;
-      if (newMode === MODE.stickyBottom) {
+      if (newMode === Mode.STICKY_BOTTOM) {
         if (bottom) {
           node.style.bottom = `${offsetBottom}px`;
         } else {
           node.style.top = `${viewPortHeight - nodeHeight - offsetBottom}px`;
         }
       } else {
-        // stickyTop
+        // STICKY_TOP
         if (bottom) {
           node.style.bottom = `${viewPortHeight - nodeHeight - offsetBottom}px`;
         } else {
@@ -356,7 +387,7 @@ const setup = (
     const scrollDelta = scrollY - latestScrollY;
     latestScrollY = scrollY;
 
-    if (mode === MODE.small) {
+    if (mode === Mode.SMALL) {
       return;
     }
 
@@ -367,7 +398,7 @@ const setup = (
 
     if (scrollDelta > 0) {
       // Scroll down
-      if (mode === MODE.stickyTop) {
+      if (mode === Mode.STICKY_TOP) {
         if (scrollY + scrollPaneOffset + offsetTop > naturalTop) {
           const topOffset = Math.max(
             0,
@@ -378,19 +409,19 @@ const setup = (
             scrollY + scrollPaneOffset + viewPortHeight <=
             naturalTop + nodeHeight + topOffset + offsetBottom
           ) {
-            changeMode(MODE.relative);
+            changeMode(Mode.RELATIVE);
           } else {
-            changeMode(MODE.stickyBottom);
+            changeMode(Mode.STICKY_BOTTOM);
           }
         }
-      } else if (mode === MODE.relative) {
+      } else if (mode === Mode.RELATIVE) {
         if (isContainerTooLow(scrollY)) {
-          changeMode(MODE.stickyBottom);
+          changeMode(Mode.STICKY_BOTTOM);
         }
       }
     } else {
       // Scroll up
-      if (mode === MODE.stickyBottom) {
+      if (mode === Mode.STICKY_BOTTOM) {
         if (
           scrollPaneOffset + scrollY + viewPortHeight <
           naturalTop + parentHeight + offsetBottom
@@ -407,17 +438,17 @@ const setup = (
             scrollPaneOffset + scrollY + offsetTop >=
             naturalTop + bottomOffset
           ) {
-            changeMode(MODE.relative);
+            changeMode(Mode.RELATIVE);
           } else {
-            changeMode(MODE.stickyTop);
+            changeMode(Mode.STICKY_TOP);
           }
         }
-      } else if (mode === MODE.relative) {
+      } else if (mode === Mode.RELATIVE) {
         if (
           scrollPaneOffset + scrollY + offsetTop <
           naturalTop + relativeOffset
         ) {
-          changeMode(MODE.stickyTop);
+          changeMode(Mode.STICKY_TOP);
         }
       }
     }

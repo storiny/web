@@ -5,7 +5,7 @@
     "dev": "dotenv -e ./.env.local -- concurrently --raw \"docker-compose up -d\" \"turbo run dev --color --parallel\"",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "test:e2e": "playwright test",
+    "test": "jest",
     "storybook:dev": "dotenv -e ./.env.local -- storybook dev -p 6006",
     "storybook:build": "storybook build"
   },
@@ -15,7 +15,6 @@
   ],
   "devDependencies": {
     "@grpc/grpc-js": "^1.8.15",
-    "@playwright/test": "^1.34.3",
     "@storiny/eslint-config": "*",
     "@storybook/addon-a11y": "^7.2.1",
     "@storybook/addon-essentials": "7.2.1",

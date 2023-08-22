@@ -1,13 +1,13 @@
 export enum VerticalAlign {
-  BOTTOM = "bottom",
-  MIDDLE = "middle",
-  TOP = "top"
+  BOTTOM /**/ = "bottom",
+  MIDDLE /**/ = "middle",
+  TOP /*   */ = "top"
 }
 
 export enum TextAlign {
-  CENTER = "center",
-  LEFT = "left",
-  RIGHT = "right"
+  CENTER /**/ = "center",
+  LEFT /*  */ = "left",
+  RIGHT /* */ = "right"
 }
 
 export const DEFAULT_TEXT_ALIGN = TextAlign.LEFT;

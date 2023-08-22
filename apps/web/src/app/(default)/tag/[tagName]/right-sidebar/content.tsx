@@ -17,7 +17,6 @@ import { TitleWithIcon, UserWithActionSkeleton } from "~/layout/RightSidebar";
 import UserWithAction from "~/layout/RightSidebar/UserWithAction";
 import {
   getQueryErrorType,
-  selectFollowedTag,
   setFollowedTag,
   useGetTagWritersQuery
 } from "~/redux/features";
@@ -35,7 +34,9 @@ interface Props {
 
 const Actions = ({ tag }: Props): React.ReactElement => {
   const dispatch = useAppDispatch();
-  const isFollowing = useAppSelector(selectFollowedTag(tag.id));
+  const isFollowing = useAppSelector(
+    (state) => state.entities.followedTags[tag.id]
+  );
 
   React.useEffect(() => {
     dispatch(

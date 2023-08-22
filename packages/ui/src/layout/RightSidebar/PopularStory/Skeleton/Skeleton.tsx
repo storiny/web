@@ -7,7 +7,7 @@ import Skeleton from "~/components/Skeleton";
 
 import styles from "./Skeleton.module.scss";
 
-const PopularStorySkeleton = () => (
+const PopularStorySkeleton = (): React.ReactElement => (
   <div className={clsx("flex-col", styles.skeleton)}>
     <Skeleton height={16} />
     <span className={styles.persona}>

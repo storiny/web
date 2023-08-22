@@ -4,8 +4,8 @@ import { clsx } from "clsx";
 import dynamic from "next/dynamic";
 import React from "react";
 
+import { dynamicLoader } from "~/common/dynamic";
 import { StoryListSkeleton, VirtualizedStoryList } from "~/common/story";
-import SuspenseLoader from "~/common/suspense-loader";
 import Divider from "~/components/Divider";
 import Input from "~/components/Input";
 import Option from "~/components/Option";
@@ -19,7 +19,7 @@ import { getQueryErrorType, useGetLikedStoriesQuery } from "~/redux/features";
 import styles from "./styles.module.scss";
 
 const EmptyState = dynamic(() => import("./empty-state"), {
-  loading: () => <SuspenseLoader />
+  loading: dynamicLoader()
 });
 
 export type LikedStoriesSortValue = "recent" | "old";

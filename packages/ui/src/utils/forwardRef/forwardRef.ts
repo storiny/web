@@ -15,5 +15,5 @@ export const forwardRef = <Props extends object, Component extends As>(
       as?: As;
     }
   >
-) =>
+): ComponentWithAs<Component, Props> =>
   React.forwardRef(component) as unknown as ComponentWithAs<Component, Props>;

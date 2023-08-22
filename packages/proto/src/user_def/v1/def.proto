@@ -48,3 +48,13 @@ message GetUserBlockCountRequest {
 message GetUserBlockCountResponse {
   uint32 block_count = 1;
 }
+
+// Get user mutes count
+
+message GetUserMuteCountRequest {
+  string id = 1;
+}
+
+message GetUserMuteCountResponse {
+  uint32 mute_count = 1;
+}

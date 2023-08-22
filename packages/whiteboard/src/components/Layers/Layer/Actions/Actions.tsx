@@ -13,11 +13,7 @@ import TrashIcon from "~/icons/Trash";
 
 import { useActiveObject } from "../../../../hooks";
 import { CLONE_PROPS } from "../../../../lib";
-import {
-  isArrowObject,
-  isLinearObject,
-  recoverObject
-} from "../../../../utils";
+import { isLinearObject, recoverObject } from "../../../../utils";
 import styles from "./Actions.module.scss";
 
 const POPOVER_ID = "object-popover";

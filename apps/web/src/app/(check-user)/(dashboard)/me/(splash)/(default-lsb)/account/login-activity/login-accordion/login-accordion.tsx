@@ -4,6 +4,7 @@ import dynamic from "next/dynamic";
 import NextLink from "next/link";
 import React from "react";
 
+import { dynamicLoader } from "~/common/dynamic";
 import SuspenseLoader from "~/common/suspense-loader";
 import {
   AccordionContent,
@@ -25,14 +26,14 @@ import styles from "./login-accordion.module.scss";
 import { LoginAccordionProps } from "./login-accordion.props";
 
 const Map = dynamic(() => import("../map"), {
-  loading: () => (
+  loading: dynamicLoader(() => (
     <AspectRatio
       className={clsx("full-w", styles.x, styles.loader)}
       ratio={2.85}
     >
       <SuspenseLoader className={"full-h"} />
     </AspectRatio>
-  )
+  ))
 });
 
 const LogoutButton = (props: LoginAccordionProps): React.ReactElement => {

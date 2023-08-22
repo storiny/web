@@ -1,5 +1,7 @@
 import "./bookmarks";
 import "./liked-stories";
+import "./liked-comments";
+import "./liked-replies";
 import "./history";
 import "./unread-notifications";
 import "./notifications";
@@ -11,11 +13,15 @@ import "./comments";
 import "./replies";
 import "./stories";
 import "./settings";
-import "./tags";
+import "./followed-tags";
 import "./validation";
 import "./relations";
 import "./blocked-users";
 import "./muted-users";
+import "./account-activity";
+import "./following";
+import "./followers";
+import "./friends";
 
 import { mockUsers } from "@storiny/ui/src/mocks";
 

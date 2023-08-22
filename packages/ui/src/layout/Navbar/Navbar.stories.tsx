@@ -11,7 +11,7 @@ const meta: Meta<typeof Navbar> = {
   title: "Layout/Navbar",
   component: Navbar,
   decorators: [
-    (Story) => (
+    (Story): React.ReactElement => (
       <div className={"grid"}>
         <Story />
       </div>
@@ -30,11 +30,16 @@ type Story = StoryObj<typeof Navbar>;
 export const Default: Story = {};
 
 export const Loading: Story = {
-  decorators: [(Story) => renderWithState(<Story />, { loading: true })]
+  decorators: [
+    (Story): React.ReactElement => renderWithState(<Story />, { loading: true })
+  ]
 };
 
 export const LoggedIn: Story = {
-  decorators: [(Story) => renderWithState(<Story />, { loggedIn: true })]
+  decorators: [
+    (Story): React.ReactElement =>
+      renderWithState(<Story />, { loggedIn: true })
+  ]
 };
 
 export const VariantMinimal: Story = {

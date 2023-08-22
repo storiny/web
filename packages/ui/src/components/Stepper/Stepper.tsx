@@ -12,7 +12,9 @@ const Step = ({
   className,
   active,
   ...rest
-}: React.ComponentPropsWithoutRef<"span"> & { active?: boolean }) => (
+}: React.ComponentPropsWithoutRef<"span"> & {
+  active?: boolean;
+}): React.ReactElement => (
   <span
     {...rest}
     className={clsx(styles.step, active && styles.active, className)}

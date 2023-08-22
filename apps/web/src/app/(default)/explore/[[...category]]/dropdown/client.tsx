@@ -29,21 +29,21 @@ import { breakpoints } from "~/theme/breakpoints";
 import styles from "./dropdown.module.scss";
 
 const categoryIconMap: Record<StoryCategory | "all", React.ReactNode> = {
-  all: <CategoryIcon />,
-  [StoryCategory.BUSINESS_AND_FINANCE]: <CoinsIcon />,
-  [StoryCategory.DIY]: <ToolsIcon />,
-  [StoryCategory.DIGITAL_GRAPHICS]: <BrushIcon />,
-  [StoryCategory.ENTERTAINMENT]: <DeviceTVIcon />,
-  [StoryCategory.GAMING]: <GamepadIcon />,
-  [StoryCategory.HEALTH_AND_WELLNESS]: <HeartbeatIcon />,
-  [StoryCategory.LEARNING]: <BooksIcon />,
-  [StoryCategory.LIFESTYLE]: <CupIcon />,
-  [StoryCategory.MUSIC]: <MusicIcon />,
-  [StoryCategory.NEWS]: <StoryIcon />,
-  [StoryCategory.PROGRAMMING]: <ScriptIcon />,
-  [StoryCategory.SCIENCE_AND_TECHNOLOGY]: <BulbIcon />,
-  [StoryCategory.SPORTS]: <BasketballIcon />,
-  [StoryCategory.TRAVEL]: <MapIcon />
+  ["all" /*                               */]: <CategoryIcon />,
+  [StoryCategory.BUSINESS_AND_FINANCE /*  */]: <CoinsIcon />,
+  [StoryCategory.DIY /*                   */]: <ToolsIcon />,
+  [StoryCategory.DIGITAL_GRAPHICS /*      */]: <BrushIcon />,
+  [StoryCategory.ENTERTAINMENT /*         */]: <DeviceTVIcon />,
+  [StoryCategory.GAMING /*                */]: <GamepadIcon />,
+  [StoryCategory.HEALTH_AND_WELLNESS /*   */]: <HeartbeatIcon />,
+  [StoryCategory.LEARNING /*              */]: <BooksIcon />,
+  [StoryCategory.LIFESTYLE /*             */]: <CupIcon />,
+  [StoryCategory.MUSIC /*                 */]: <MusicIcon />,
+  [StoryCategory.NEWS /*                  */]: <StoryIcon />,
+  [StoryCategory.PROGRAMMING /*           */]: <ScriptIcon />,
+  [StoryCategory.SCIENCE_AND_TECHNOLOGY /**/]: <BulbIcon />,
+  [StoryCategory.SPORTS /*                */]: <BasketballIcon />,
+  [StoryCategory.TRAVEL /*                */]: <MapIcon />
 };
 
 // Anchor option

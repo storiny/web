@@ -30,6 +30,7 @@ export const getDraftsApi = apiSlice.injectEndpoints({
       }),
       merge: (currentCache, newItems) => {
         currentCache.items.push(...newItems.items);
+        currentCache.hasMore = newItems.hasMore;
       },
       providesTags: (result) =>
         result

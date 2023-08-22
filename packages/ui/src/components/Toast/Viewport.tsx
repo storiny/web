@@ -5,7 +5,7 @@ import React from "react";
 
 import styles from "./Toast.module.scss";
 
-const ToastViewport = () => (
+const ToastViewport = (): React.ReactElement => (
   <Viewport
     className={styles.viewport}
     hotkey={["F9"]}

@@ -1,5 +1,5 @@
 import { Queries, queries } from "@testing-library/dom";
-import type { RenderOptions } from "@testing-library/react";
+import { RenderOptions, RenderResult } from "@testing-library/react";
 import * as testingLibrary from "@testing-library/react";
 import {
   renderHook,
@@ -17,7 +17,11 @@ import { AppStore, setupStore } from "~/redux/store";
  * Extends the default options for render from RTL, as well
  * as allows to specify other things such as state init callback and store
  */
-interface ExtendedRenderOptions extends Omit<RenderOptions, "queries"> {
+interface ExtendedRenderOptions<
+  Q extends Queries = typeof queries,
+  Container extends Element | DocumentFragment = HTMLElement,
+  BaseElement extends Element | DocumentFragment = Container
+> extends Omit<RenderOptions<Q, Container, BaseElement>, "queries"> {
   ignorePrimitiveProviders?: boolean;
   loading?: boolean;
   loggedIn?: boolean;
@@ -32,7 +36,11 @@ interface ExtendedRenderOptions extends Omit<RenderOptions, "queries"> {
  * @param ignorePrimitiveProviders Whether or not to wrap the UI with primitve providers
  * @param renderOptions Options passed to RTL's `render` function
  */
-export const renderTestWithProvider = (
+export const renderTestWithProvider = <
+  Q extends Queries = typeof queries,
+  Container extends Element | DocumentFragment = HTMLElement,
+  BaseElement extends Element | DocumentFragment = Container
+>(
   ui: React.ReactElement,
   {
     loggedIn,
@@ -40,8 +48,12 @@ export const renderTestWithProvider = (
     // Ignore providers as the primitives are explicitly wrapped in tests.
     ignorePrimitiveProviders = true,
     ...renderOptions
-  }: ExtendedRenderOptions = {}
-) => {
+  }: ExtendedRenderOptions<Q, Container, BaseElement> = {}
+): { store: AppStore; wrapper: React.FC } & RenderResult<
+  Q,
+  Container,
+  BaseElement
+> => {
   const store = setupStore(
     loggedIn || loading
       ? loggedInState(loading ? "loading" : "complete")
@@ -63,7 +75,10 @@ export const renderTestWithProvider = (
   return {
     store,
     wrapper: Wrapper,
-    ...testingLibrary.render(ui, { wrapper: Wrapper, ...renderOptions })
+    ...testingLibrary.render<Q, Container, BaseElement>(ui, {
+      wrapper: Wrapper,
+      ...renderOptions
+    })
   };
 };
 

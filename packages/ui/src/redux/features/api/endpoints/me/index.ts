@@ -1,8 +1,10 @@
+export * from "./account-activity";
 export * from "./assets";
 export * from "./blocked-users";
 export * from "./bookmarks";
 export * from "./comments";
 export * from "./drafts";
+export * from "./followed-tags";
 export * from "./friend-requests";
 export * from "./gallery";
 export * from "./history";
@@ -13,5 +15,4 @@ export * from "./relations";
 export * from "./replies";
 export * from "./settings";
 export * from "./stories";
-export * from "./tags";
 export * from "./validation";

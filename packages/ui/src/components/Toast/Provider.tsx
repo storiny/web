@@ -5,7 +5,11 @@ import React from "react";
 
 import ToastViewport from "./Viewport";
 
-const ToastProvider = ({ children }: { children: React.ReactNode }) => (
+const ToastProvider = ({
+  children
+}: {
+  children: React.ReactNode;
+}): React.ReactElement => (
   <ToastPrimitiveProvider duration={5000} label={"Toast notification"}>
     {children}
     <ToastViewport />

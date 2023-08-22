@@ -1,7 +1,7 @@
 // noinspection JSUnusedGlobalSymbols
 
+import { AssetRating } from "@storiny/shared";
 import type { Meta, StoryObj } from "@storybook/react";
-import React from "react";
 
 import Image from "./Image";
 
@@ -10,7 +10,7 @@ const meta: Meta<typeof Image> = {
   component: Image,
   tags: ["autodocs"],
   args: {
-    imgId: "/images/display/tokyo.jpg",
+    imgId: "tokyo.jpg",
     alt: "Test image",
     width: 640,
     height: 320,
@@ -27,6 +27,13 @@ export default meta;
 type Story = StoryObj<typeof Image>;
 
 export const Default: Story = {};
+
+export const Rated: Story = {
+  args: {
+    ...Default.args,
+    rating: AssetRating.SENSITIVE
+  }
+};
 
 export const Fallback: Story = {
   args: {

@@ -19,10 +19,6 @@ import ExternalLinkIcon from "~/icons/ExternalLink";
 import HeartIcon from "~/icons/Heart";
 import ReplyIcon from "~/icons/Reply";
 import {
-  selectBlock,
-  selectLikedComment
-} from "~/redux/features/entities/selectors";
-import {
   setLikedComment,
   syncWithComment
 } from "~/redux/features/entities/slice";
@@ -89,8 +85,12 @@ const Comment = (props: CommentProps): React.ReactElement => {
   } = props;
   const dispatch = useAppDispatch();
   const isMobile = useMediaQuery(breakpoints.down("mobile"));
-  const isUserBlocked = useAppSelector(selectBlock(comment.user_id));
-  const isLiked = useAppSelector(selectLikedComment(comment.id));
+  const isUserBlocked = useAppSelector(
+    (state) => state.entities.blocks[comment.user_id]
+  );
+  const isLiked = useAppSelector(
+    (state) => state.entities.likedComments[comment.id]
+  );
   const [hidden, setHidden] = React.useState(Boolean(comment.hidden));
   const [collapsed, setCollapsed] = React.useState(isUserBlocked);
   const commentUrl = `/${comment.story?.user?.username || "story"}/${

@@ -11,7 +11,6 @@ const meta: Meta<typeof Sidenav> = {
   title: "Layout/Sidenav",
   component: Sidenav,
   args: {
-    forceMount: true,
     style: {
       width: "72px",
       position: "relative"
@@ -29,5 +28,8 @@ type Story = StoryObj<typeof Sidenav>;
 export const Default: Story = {};
 
 export const LoggedIn: Story = {
-  decorators: [(Story) => renderWithState(<Story />, { loggedIn: true })]
+  decorators: [
+    (Story): React.ReactElement =>
+      renderWithState(<Story />, { loggedIn: true })
+  ]
 };

@@ -60,6 +60,20 @@ pub struct GetUserBlockCountResponse {
     #[prost(uint32, tag="1")]
     pub block_count: u32,
 }
+// Get user mutes count
+
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct GetUserMuteCountRequest {
+    #[prost(string, tag="1")]
+    pub id: ::prost::alloc::string::String,
+}
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct GetUserMuteCountResponse {
+    #[prost(uint32, tag="1")]
+    pub mute_count: u32,
+}
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
 #[repr(i32)]
 pub enum StatusVisibility {

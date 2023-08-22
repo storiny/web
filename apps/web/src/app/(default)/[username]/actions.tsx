@@ -20,13 +20,7 @@ import ShareIcon from "~/icons/Share";
 import UserBlockIcon from "~/icons/UserBlock";
 import XIcon from "~/icons/X";
 import {
-  selectBlock,
-  selectFollowing,
-  selectFriend,
   selectLoggedIn,
-  selectMute,
-  selectSentRequest,
-  selectSubscribed,
   setBlock,
   setFriend,
   setMute,
@@ -46,12 +40,22 @@ const Actions = ({ profile, isInsideSidebar }: Props): React.ReactElement => {
   const copy = useClipboard();
   const dispatch = useAppDispatch();
   const loggedIn = useAppSelector(selectLoggedIn);
-  const isFollowing = useAppSelector(selectFollowing(profile.id));
-  const isBlocking = useAppSelector(selectBlock(profile.id));
-  const isMuted = useAppSelector(selectMute(profile.id));
-  const isSubscribed = useAppSelector(selectSubscribed(profile.id));
-  const isFriend = useAppSelector(selectFriend(profile.id));
-  const isFriendRequestSent = useAppSelector(selectSentRequest(profile.id));
+  const isFollowing = useAppSelector(
+    (state) => state.entities.following[profile.id]
+  );
+  const isBlocking = useAppSelector(
+    (state) => state.entities.blocks[profile.id]
+  );
+  const isMuted = useAppSelector((state) => state.entities.mutes[profile.id]);
+  const isSubscribed = useAppSelector(
+    (state) => state.entities.subscriptions[profile.id]
+  );
+  const isFriend = useAppSelector(
+    (state) => state.entities.friends[profile.id]
+  );
+  const isFriendRequestSent = useAppSelector(
+    (state) => state.entities.sentRequests[profile.id]
+  );
   const isSelf = Boolean(profile.is_self);
   const isBlockedByUser = Boolean(profile.is_blocked_by_user);
   const [element] = useConfirmation(

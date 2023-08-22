@@ -11,12 +11,12 @@ import QuestionMarkIcon from "~/icons/QuestionMark";
 const NullComponent = (): null => null;
 
 export const deviceTypeToIconMap: Record<DeviceType, React.ReactNode> = {
-  [DeviceType.COMPUTER]: <DeviceComputerIcon />,
-  [DeviceType.MOBILE]: <DeviceMobileIcon />,
-  [DeviceType.TABLET]: <DeviceTabletIcon />,
-  [DeviceType.SMART_TV]: <DeviceTVIcon />,
-  [DeviceType.CONSOLE]: <DeviceConsoleIcon />,
-  [DeviceType.UNKNOWN]: <QuestionMarkIcon />,
-  [DeviceType.UNRECOGNIZED]: <NullComponent />,
-  [DeviceType.UNSPECIFIED]: <NullComponent />
+  [DeviceType.COMPUTER /*    */]: <DeviceComputerIcon />,
+  [DeviceType.MOBILE /*      */]: <DeviceMobileIcon />,
+  [DeviceType.TABLET /*      */]: <DeviceTabletIcon />,
+  [DeviceType.SMART_TV /*    */]: <DeviceTVIcon />,
+  [DeviceType.CONSOLE /*     */]: <DeviceConsoleIcon />,
+  [DeviceType.UNKNOWN /*     */]: <QuestionMarkIcon />,
+  [DeviceType.UNRECOGNIZED /**/]: <NullComponent />,
+  [DeviceType.UNSPECIFIED /* */]: <NullComponent />
 };

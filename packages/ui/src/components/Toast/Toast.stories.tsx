@@ -32,12 +32,14 @@ const meta: Meta<typeof Toast> = {
 export default meta;
 type Story = StoryObj<typeof Toast>;
 
-const ToastComponent = (props?: ToastProps) => {
+const ToastComponent = (props?: ToastProps): React.ReactElement => {
   const toast = useToast();
 
   return (
     <Button
-      onClick={() => toast("This is a toast notification", props?.severity)}
+      onClick={(): void =>
+        toast("This is a toast notification", props?.severity)
+      }
     >
       Show toast
     </Button>

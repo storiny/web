@@ -15,6 +15,8 @@ import Spinner from "../Spinner";
 import styles from "./MultiSelect.module.scss";
 import { MultiSelectProps } from "./MultiSelect.props";
 
+// Remove button
+
 const MultiValueRemove = <
   Option,
   IsMulti extends boolean,
@@ -22,7 +24,7 @@ const MultiValueRemove = <
 >({
   children,
   innerProps
-}: MultiValueRemoveProps<Option, IsMulti, Group>) => (
+}: MultiValueRemoveProps<Option, IsMulti, Group>): React.ReactElement => (
   <div
     {...innerProps}
     className={clsx(
@@ -37,15 +39,16 @@ const MultiValueRemove = <
   </div>
 );
 
+// Loading indicator
+
 const LoadingIndicator = <
   Option,
   IsMulti extends boolean,
   Group extends GroupBase<Option>
 >(
   props: LoadingIndicatorProps<Option, IsMulti, Group>
-) => {
+): React.ReactElement => {
   const { innerProps } = props;
-
   return (
     <Spinner
       {...({ ...innerProps, size: undefined, color: undefined } as any)}
@@ -88,29 +91,29 @@ const MultiSelect = React.forwardRef<
         className
       )}
       classNames={{
-        container: (props) => props.isFocused && styles.focused,
-        input: () => styles.input,
-        control: () => styles.control,
-        placeholder: () => styles.placeholder,
-        multiValue: () => styles.value,
-        valueContainer: () => styles["value-container"],
-        multiValueLabel: () => clsx("t-body-2", styles["value-label"]),
-        option: (props) =>
+        container: (props): boolean => props.isFocused && styles.focused,
+        input: (): string => styles.input,
+        control: (): string => styles.control,
+        placeholder: (): string => styles.placeholder,
+        multiValue: (): string => styles.value,
+        valueContainer: (): string => styles["value-container"],
+        multiValueLabel: (): string => clsx("t-body-2", styles["value-label"]),
+        option: (optionProps): string =>
           clsx(
-            props.isFocused && styles.focused,
-            props.isDisabled && styles.disabled,
+            optionProps.isFocused && styles.focused,
+            optionProps.isDisabled && styles.disabled,
             styles.option
           ),
-        menu: () => styles.menu,
-        noOptionsMessage: () => clsx("t-body-2", "t-minor"),
-        loadingMessage: () => clsx("t-body-2", "t-minor")
+        menu: (): string => styles.menu,
+        noOptionsMessage: (): string => clsx("t-body-2", "t-minor"),
+        loadingMessage: (): string => clsx("t-body-2", "t-minor")
       }}
       components={{
         MultiValueRemove,
         LoadingIndicator
       }}
       data-limited={isOptionDisabled}
-      formatCreateLabel={(inputValue) =>
+      formatCreateLabel={(inputValue): string =>
         isOptionDisabled
           ? "Delete the already selected options to create new ones."
           : `Create "${inputValue}"`
@@ -118,13 +121,13 @@ const MultiSelect = React.forwardRef<
       isDisabled={disabled}
       isLoading={loading}
       isMulti
-      isOptionDisabled={() => isOptionDisabled}
-      noOptionsMessage={() =>
+      isOptionDisabled={(): boolean => isOptionDisabled}
+      noOptionsMessage={(): string =>
         isOptionDisabled
           ? "You've reached the maximum limit"
           : "No options available"
       }
-      onChange={(newValue, actionMeta) => {
+      onChange={(newValue, actionMeta): void => {
         setValue(newValue);
         rest?.onChange?.(newValue!, actionMeta);
       }}
@@ -133,11 +136,12 @@ const MultiSelect = React.forwardRef<
       ref={ref}
       styles={{
         ...selectStyles,
-        container: (base) => ({ ...base, ...style }),
-        dropdownIndicator: () => ({
+        container: (base): React.CSSProperties =>
+          ({ ...base, ...style } as React.CSSProperties),
+        dropdownIndicator: (): React.CSSProperties => ({
           display: "none"
         }),
-        clearIndicator: () => ({
+        clearIndicator: (): React.CSSProperties => ({
           display: "none"
         })
       }}

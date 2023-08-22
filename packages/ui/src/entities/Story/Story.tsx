@@ -31,11 +31,6 @@ import XIcon from "~/icons/X";
 import { falseAction } from "~/redux/features";
 import { selectUser } from "~/redux/features/auth/selectors";
 import {
-  selectBlock,
-  selectBookmark,
-  selectLikedStory
-} from "~/redux/features/entities/selectors";
-import {
   setBookmark,
   setLikedStory,
   syncWithStory
@@ -178,8 +173,12 @@ const Splash = (props: StoryProps): React.ReactElement => {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const isMobile = useMediaQuery(breakpoints.down("mobile"));
-  const isBookmarked = useAppSelector(selectBookmark(story.id));
-  const isLiked = useAppSelector(selectLikedStory(story.id));
+  const isBookmarked = useAppSelector(
+    (state) => state.entities.bookmarks[story.id]
+  );
+  const isLiked = useAppSelector(
+    (state) => state.entities.likedStories[story.id]
+  );
   const storyUrl = getStoryUrl(props);
   const isSmall = isExtended || isDeleted || isDraft;
   const showInteractiveButtons = Boolean(!isExtended && !isDeleted && !isDraft);
@@ -273,8 +272,12 @@ const Footer = (props: StoryProps): React.ReactElement => {
   const isMobile = useMediaQuery(breakpoints.down("mobile"));
   const dispatch = useAppDispatch();
   const user = useAppSelector(selectUser);
-  const isBookmarked = useAppSelector(selectBookmark(story.id));
-  const isLiked = useAppSelector(selectLikedStory(story.id));
+  const isBookmarked = useAppSelector(
+    (state) => state.entities.bookmarks[story.id]
+  );
+  const isLiked = useAppSelector(
+    (state) => state.entities.likedStories[story.id]
+  );
   const showWordCount = isDraft || isDeleted;
   const showTags = Boolean(!isDraft && !isDeleted);
   const showInteractiveButtons = Boolean(!isExtended && !isDeleted && !isDraft);
@@ -532,7 +535,9 @@ const Story = (props: StoryProps): React.ReactElement => {
     ...rest
   } = props;
   const dispatch = useAppDispatch();
-  const isUserBlocked = useAppSelector(selectBlock(story.user_id));
+  const isUserBlocked = useAppSelector(
+    (state) => state.entities.blocks[story.user_id]
+  );
   const [collapsed, setCollapsed] = React.useState(isUserBlocked);
   const storyUrl = getStoryUrl(props);
   const isSmall = isExtended || isDeleted || isDraft;

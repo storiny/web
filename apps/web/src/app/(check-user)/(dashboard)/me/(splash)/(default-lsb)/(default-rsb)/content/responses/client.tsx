@@ -5,8 +5,8 @@ import dynamic from "next/dynamic";
 import React from "react";
 
 import { CommentListSkeleton, VirtualizedCommentList } from "~/common/comment";
+import { dynamicLoader } from "~/common/dynamic";
 import { ReplyListSkeleton, VirtualizedReplyList } from "~/common/reply";
-import SuspenseLoader from "~/common/suspense-loader";
 import Divider from "~/components/Divider";
 import Input from "~/components/Input";
 import Option from "~/components/Option";
@@ -34,7 +34,7 @@ import { ResponsesProps } from "./responses.props";
 import styles from "./styles.module.scss";
 
 const EmptyState = dynamic(() => import("./empty-state"), {
-  loading: () => <SuspenseLoader />
+  loading: dynamicLoader()
 });
 
 type SortOrder = "dsc" | "asc";
@@ -88,10 +88,10 @@ const StatusHeader = ({
   tab: ResponsesTabValue;
 } & ResponsesProps): React.ReactElement => {
   const dispatch = useAppDispatch();
-  const commentCount = useAppSelector(
-    (state) => state.entities.selfCommentCount
-  );
-  const replyCount = useAppSelector((state) => state.entities.selfReplyCount);
+  const commentCount =
+    useAppSelector((state) => state.entities.selfCommentCount) || 0;
+  const replyCount =
+    useAppSelector((state) => state.entities.selfReplyCount) || 0;
   const count_param = tab === "comments" ? commentCount : replyCount;
 
   React.useEffect(() => {

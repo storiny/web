@@ -11,7 +11,7 @@ import CheckIcon from "~/icons/Check";
 import PencilPlusIcon from "~/icons/PencilPlus";
 import PlusIcon from "~/icons/Plus";
 import TagIcon from "~/icons/Tag";
-import { selectFollowedTag, setFollowedTag } from "~/redux/features";
+import { setFollowedTag } from "~/redux/features";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 import { abbreviateNumber } from "~/utils/abbreviateNumber";
 
@@ -26,7 +26,9 @@ interface Props {
 
 const Actions = ({ tag }: Props): React.ReactElement => {
   const dispatch = useAppDispatch();
-  const isFollowing = useAppSelector(selectFollowedTag(tag.id));
+  const isFollowing = useAppSelector(
+    (state) => state.entities.followedTags[tag.id]
+  );
 
   React.useEffect(() => {
     dispatch(

@@ -120,7 +120,7 @@ const Confirmation = forwardRef<ConfirmationProps, "div">((props, ref) => {
                     styles.action,
                     slotProps?.cancelButton?.className
                   )}
-                  onClick={(event) => {
+                  onClick={(event): void => {
                     onCancel?.(event);
                     slotProps?.cancelButton?.onClick?.(event);
                   }}
@@ -136,7 +136,7 @@ const Confirmation = forwardRef<ConfirmationProps, "div">((props, ref) => {
                     styles.action,
                     slotProps?.confirmButton?.className
                   )}
-                  onClick={(event) => {
+                  onClick={(event): void => {
                     onConfirm?.(event);
                     slotProps?.confirmButton?.onClick?.(event);
                   }}

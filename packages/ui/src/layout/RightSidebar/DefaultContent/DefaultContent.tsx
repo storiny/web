@@ -6,7 +6,6 @@ import Separator from "~/components/Separator";
 import Skeleton from "~/components/Skeleton";
 import Typography, { TypographyProps } from "~/components/Typography";
 import ErrorState from "~/entities/ErrorState";
-import Tag from "~/entities/Tag";
 import TagChip from "~/entities/TagChip";
 import ChevronIcon from "~/icons/Chevron";
 import StoriesIcon from "~/icons/Stories";

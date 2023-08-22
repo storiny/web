@@ -7,7 +7,6 @@ import Grow from "~/components/Grow";
 import Link from "~/components/Link";
 import Skeleton from "~/components/Skeleton";
 import Typography from "~/components/Typography";
-import Tag from "~/entities/Tag";
 import TagChip from "~/entities/TagChip";
 import { useMediaQuery } from "~/hooks/useMediaQuery";
 import ChevronIcon from "~/icons/Chevron";

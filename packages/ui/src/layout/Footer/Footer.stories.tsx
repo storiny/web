@@ -14,7 +14,7 @@ const meta: Meta<typeof Footer> = {
     layout: "fullscreen"
   },
   decorators: [
-    (Story) => (
+    (Story): React.ReactElement => (
       <div className={"grid"}>
         <Story />
       </div>
@@ -29,5 +29,8 @@ type Story = StoryObj<typeof Footer>;
 export const Default: Story = {};
 
 export const LoggedIn: Story = {
-  decorators: [(Story) => renderWithState(<Story />, { loggedIn: true })]
+  decorators: [
+    (Story): React.ReactElement =>
+      renderWithState(<Story />, { loggedIn: true })
+  ]
 };

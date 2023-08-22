@@ -1,0 +1,14 @@
+.x {
+  /* Dashboard wrapper */
+  &.wrapper {
+    gap: 24px;
+  }
+
+  /* Container */
+  &.container {
+    background-color: var(--bg-elevation-xs);
+    border: 1px solid var(--divider);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+  }
+}

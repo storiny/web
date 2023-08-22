@@ -8,7 +8,6 @@ import IconButton from "~/components/IconButton";
 import Image from "~/components/Image";
 import { useToast } from "~/components/Toast";
 import Gallery from "~/entities/Gallery";
-import { useMediaQuery } from "~/hooks/useMediaQuery";
 import PencilIcon from "~/icons/Pencil";
 import PhotoPlusIcon from "~/icons/PhotoPlus";
 import TrashIcon from "~/icons/Trash";

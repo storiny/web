@@ -1,7 +1,5 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-
-// Use latest
-const API_VERSION = 1;
+import { API_VERSION } from "@storiny/shared";
 
 export const apiSlice = createApi({
   reducerPath: "api",

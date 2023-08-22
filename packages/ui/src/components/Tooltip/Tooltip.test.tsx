@@ -1,5 +1,5 @@
 import { TooltipProvider } from "@radix-ui/react-tooltip";
-import { axe } from "@storiny/test-utils";
+import {axe, waitForPosition} from "@storiny/test-utils";
 import { waitFor } from "@testing-library/react";
 import React from "react";
 

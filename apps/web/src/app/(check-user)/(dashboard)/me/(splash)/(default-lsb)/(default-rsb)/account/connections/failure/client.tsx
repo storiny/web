@@ -3,6 +3,7 @@ import React from "react";
 
 import Button from "~/components/Button";
 import Link from "~/components/Link";
+import Spacer from "~/components/Spacer";
 import CustomState from "~/entities/CustomState";
 import LockExclamationIcon from "~/icons/LockExclamation";
 import UnlinkIcon from "~/icons/Unlink";
@@ -70,6 +71,7 @@ const ConnectionFailureClient = ({
         </div>
       </DashboardGroup>
     </DashboardWrapper>
+    <Spacer orientation={"vertical"} size={10} />
   </React.Fragment>
 );
 

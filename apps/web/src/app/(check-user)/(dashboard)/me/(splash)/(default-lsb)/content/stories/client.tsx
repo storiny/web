@@ -5,8 +5,8 @@ import dynamic from "next/dynamic";
 import NextLink from "next/link";
 import React from "react";
 
+import { dynamicLoader } from "~/common/dynamic";
 import { StoryListSkeleton, VirtualizedStoryList } from "~/common/story";
-import SuspenseLoader from "~/common/suspense-loader";
 import Button from "~/components/Button";
 import Divider from "~/components/Divider";
 import Input from "~/components/Input";
@@ -36,7 +36,7 @@ import { StoriesProps } from "./stories.props";
 import styles from "./styles.module.scss";
 
 const EmptyState = dynamic(() => import("./empty-state"), {
-  loading: () => <SuspenseLoader />
+  loading: dynamicLoader()
 });
 
 type SortOrder = "dsc" | "asc";
@@ -136,12 +136,10 @@ const StatusHeader = ({
   tab: StoriesTabValue;
 } & StoriesProps): React.ReactElement => {
   const dispatch = useAppDispatch();
-  const publishedStoryCount = useAppSelector(
-    (state) => state.entities.selfPublishedStoryCount
-  );
-  const deletedStoryCount = useAppSelector(
-    (state) => state.entities.selfDeletedStoryCount
-  );
+  const publishedStoryCount =
+    useAppSelector((state) => state.entities.selfPublishedStoryCount) || 0;
+  const deletedStoryCount =
+    useAppSelector((state) => state.entities.selfDeletedStoryCount) || 0;
   const count_param =
     tab === "published" ? publishedStoryCount : deletedStoryCount;
 

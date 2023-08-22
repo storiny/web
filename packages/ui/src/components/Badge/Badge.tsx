@@ -8,7 +8,18 @@ import { forwardRef } from "~/utils/forwardRef";
 import styles from "./Badge.module.scss";
 import { BadgeOrigin, BadgeProps } from "./Badge.props";
 
-export const getTranslationProps = (anchorOrigin: BadgeOrigin) => ({
+/**
+ * Returns badge translation props
+ * @param anchorOrigin Anchor origin
+ */
+export const getTranslationProps = (
+  anchorOrigin: BadgeOrigin
+): {
+  transformOriginX: string;
+  transformOriginY: string;
+  translateX: string;
+  translateY: string;
+} => ({
   translateY:
     anchorOrigin?.vertical === "top" ? "translateY(-50%)" : "translateY(50%)",
   translateX:
@@ -19,7 +30,18 @@ export const getTranslationProps = (anchorOrigin: BadgeOrigin) => ({
   transformOriginX: anchorOrigin?.horizontal === "left" ? "0%" : "100%"
 });
 
-export const getInsetPosition = (badgeInset: BadgeProps["inset"]) => {
+/**
+ * Returns badge inset position
+ * @param badgeInset Badge inset
+ */
+export const getInsetPosition = (
+  badgeInset: BadgeProps["inset"]
+): {
+  bottom: string | number | undefined;
+  left: string | number | undefined;
+  right: string | number | undefined;
+  top: string | number | undefined;
+} => {
   const inset = {
     top: badgeInset,
     left: badgeInset,

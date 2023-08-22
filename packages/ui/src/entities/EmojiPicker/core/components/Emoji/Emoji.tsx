@@ -16,12 +16,12 @@ import { EmojiProps } from "./Emoji.props";
 const EMOJI_MAP = data.emojis;
 
 const skinToneToIndexMap: Record<SkinTone, number> = {
-  [SkinTone.DARK]: 5,
-  [SkinTone.DEFAULT]: 6,
-  [SkinTone.LIGHT]: 1,
-  [SkinTone.MEDIUM]: 3,
-  [SkinTone.MEDIUM_DARK]: 4,
-  [SkinTone.MEDIUM_LIGHT]: 2
+  [SkinTone.DARK /*        */]: 5,
+  [SkinTone.DEFAULT /*     */]: 6,
+  [SkinTone.LIGHT /*       */]: 1,
+  [SkinTone.MEDIUM /*      */]: 3,
+  [SkinTone.MEDIUM_DARK /* */]: 4,
+  [SkinTone.MEDIUM_LIGHT /**/]: 2
 };
 
 // Fake emoji

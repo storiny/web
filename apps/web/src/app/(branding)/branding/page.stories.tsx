@@ -22,7 +22,7 @@ type Story = StoryObj<typeof Branding>;
 
 export const Default: Story = {
   decorators: [
-    (Story) =>
+    (Story): React.ReactElement =>
       renderWithState(
         <BrandingLayout>
           <Story />

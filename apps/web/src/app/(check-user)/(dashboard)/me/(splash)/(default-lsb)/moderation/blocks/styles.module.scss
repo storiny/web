@@ -1,0 +1,34 @@
+@use "breakpoints" as breakpoints;
+
+.x {
+  /* Input field and select trigger */
+  &.input,
+  &.select-trigger {
+    border-radius: 0;
+  }
+
+  /* Input */
+  &.input {
+    &:not([data-focused="true"]) {
+      border: none;
+    }
+  }
+
+  /* Select trigger */
+  &.select-trigger {
+    border: none;
+    align-self: stretch;
+  }
+
+  /* Control bar */
+  &.control-bar {
+    align-items: stretch;
+    margin-top: -12px;
+  }
+
+  /* Status header */
+  &.status-header {
+    padding-inline: 20px;
+    padding-block: 16px;
+  }
+}

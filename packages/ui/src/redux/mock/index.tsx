@@ -41,7 +41,7 @@ export const renderWithState = (
     loading?: boolean;
     loggedIn?: boolean;
   } = {}
-) => {
+): React.ReactElement => {
   const store = setupStore(
     loggedIn || loading
       ? loggedInState(loading ? "loading" : "complete")

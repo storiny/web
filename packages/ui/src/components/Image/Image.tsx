@@ -5,15 +5,29 @@ import {
   Image as ImagePrimitive,
   Root
 } from "@radix-ui/react-avatar";
+import { AssetRating } from "@storiny/shared";
 import clsx from "clsx";
 import React from "react";
 
+import Button from "~/components/Button";
+import Spacer from "~/components/Spacer";
 import Typography from "~/components/Typography";
+import WarningIcon from "~/icons/Warning";
 import { forwardRef } from "~/utils/forwardRef";
 import { getCdnUrl } from "~/utils/getCdnUrl";
 
 import styles from "./Image.module.scss";
 import { ImageProps } from "./Image.props";
+
+const assetRatingDescriptionMap: Record<AssetRating, string> = {
+  [AssetRating.VIOLENCE /*         */]:
+    "This image may contain violent content.",
+  [AssetRating.SENSITIVE /*        */]:
+    "This image may contain sensitive content.",
+  [AssetRating.SUGGESTIVE_NUDITY /**/]:
+    "This image may depict suggestive nudity.",
+  [AssetRating.NOT_RATED /*        */]: ""
+};
 
 const Image = forwardRef<ImageProps, "div">((props, ref) => {
   const {
@@ -23,6 +37,7 @@ const Image = forwardRef<ImageProps, "div">((props, ref) => {
     hex,
     src,
     alt,
+    rating,
     width,
     height,
     className,
@@ -32,6 +47,14 @@ const Image = forwardRef<ImageProps, "div">((props, ref) => {
     ...rest
   } = props;
   const [loaded, setLoaded] = React.useState<boolean>(false);
+  const [showOverlay, setShowOverlay] = React.useState<boolean>(
+    typeof rating !== "undefined" &&
+      [
+        AssetRating.SENSITIVE,
+        AssetRating.SUGGESTIVE_NUDITY,
+        AssetRating.VIOLENCE
+      ].includes(rating)
+  );
   let finalSrc = src;
 
   if (imgId) {
@@ -81,6 +104,36 @@ const Image = forwardRef<ImageProps, "div">((props, ref) => {
             Image not available
           </Typography>
         </Fallback>
+        {showOverlay && (
+          <div
+            {...slotProps?.overlay}
+            className={clsx(
+              "force-dark-mode",
+              "flex-col",
+              "flex-center",
+              styles.overlay,
+              slotProps?.overlay?.className
+            )}
+          >
+            <WarningIcon />
+            <Spacer orientation={"vertical"} size={2.5} />
+            <Typography as={"p"} level={"h4"}>
+              Content warning
+            </Typography>
+            <Spacer orientation={"vertical"} size={0.5} />
+            <Typography className={"t-medium"} level={"body2"}>
+              {assetRatingDescriptionMap[rating!]}
+            </Typography>
+            <Spacer orientation={"vertical"} size={2} />
+            <Button
+              autoSize
+              onClick={(): void => setShowOverlay(false)}
+              variant={"hollow"}
+            >
+              View
+            </Button>
+          </div>
+        )}
       </Component>
     </Root>
   );

@@ -5,7 +5,6 @@ import { VIBRATION_PATTERNS } from "@storiny/shared";
 import { devConsole } from "@storiny/shared/src/utils/devLog";
 
 import { ToastSeverity } from "~/components/Toast";
-import { LOCAL_STORAGE_KEY } from "~/redux/features";
 import { AppStartListening } from "~/redux/listenerMiddleware";
 
 export interface ToastState {

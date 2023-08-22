@@ -1,5 +1,8 @@
 /** @type {import('eslint').ESLint.ConfigData} */
 module.exports = {
   root: true,
-  extends: ["@storiny/eslint-config"]
+  extends: ["@storiny/eslint-config"],
+  globals: {
+    NginxHTTPRequest: "readonly"
+  }
 };

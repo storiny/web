@@ -4,7 +4,7 @@ import { clsx } from "clsx";
 import dynamic from "next/dynamic";
 import React from "react";
 
-import SuspenseLoader from "~/common/suspense-loader";
+import { dynamicLoader } from "~/common/dynamic";
 import { TagListSkeleton, VirtualizedTagList } from "~/common/tag";
 import Divider from "~/components/Divider";
 import Input from "~/components/Input";
@@ -18,7 +18,7 @@ import SearchIcon from "~/icons/Search";
 import {
   getQueryErrorType,
   setSelfFollowedTagCount,
-  useGetTagsQuery
+  useGetFollowedTagsQuery
 } from "~/redux/features";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 import { abbreviateNumber } from "~/utils/abbreviateNumber";
@@ -28,7 +28,7 @@ import styles from "./styles.module.scss";
 import { TagsProps } from "./tags.props";
 
 const EmptyState = dynamic(() => import("./empty-state"), {
-  loading: () => <SuspenseLoader />
+  loading: dynamicLoader()
 });
 
 type SortOrder = "dsc" | "asc";
@@ -41,9 +41,8 @@ const StatusHeader = ({
   followed_tag_count
 }: TagsProps): React.ReactElement => {
   const dispatch = useAppDispatch();
-  const followedTagCount = useAppSelector(
-    (state) => state.entities.selfFollowedTagCount
-  );
+  const followedTagCount =
+    useAppSelector((state) => state.entities.selfFollowedTagCount) || 0;
 
   React.useEffect(() => {
     dispatch(setSelfFollowedTagCount(() => followed_tag_count));
@@ -143,7 +142,7 @@ const ContentTagsClient = (props: TagsProps): React.ReactElement => {
   const [page, setPage] = React.useState<number>(1);
   const debouncedQuery = useDebounce(query);
   const { data, isLoading, isFetching, isError, error, refetch } =
-    useGetTagsQuery({
+    useGetFollowedTagsQuery({
       page,
       sort,
       query: debouncedQuery

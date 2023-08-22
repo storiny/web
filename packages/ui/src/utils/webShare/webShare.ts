@@ -13,7 +13,7 @@ export const webShare = async ({
 }: {
   text: string;
   url: string | null;
-}) => {
+}): Promise<void> => {
   const data = {
     text,
     title: "Storiny",

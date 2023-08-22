@@ -1,5 +1,5 @@
 import { AvatarFallbackProps, AvatarImageProps } from "@radix-ui/react-avatar";
-import { ImageSize } from "@storiny/shared";
+import { AssetRating, ImageSize } from "@storiny/shared";
 import React from "react";
 
 import { PolymorphicProps } from "~/types/index";
@@ -22,6 +22,10 @@ export interface ImageProps extends PolymorphicProps<"div"> {
    */
   imgId?: string | null;
   /**
+   * The image rating, used to render an overlay warning
+   */
+  rating?: AssetRating;
+  /**
    * The size of the component for generating the CDN URL.
    */
   size?: ImageSize;
@@ -31,6 +35,7 @@ export interface ImageProps extends PolymorphicProps<"div"> {
   slotProps?: {
     fallback?: AvatarFallbackProps;
     image?: AvatarImageProps;
+    overlay?: React.ComponentPropsWithoutRef<"div">;
   };
   /**
    * The source of the image.

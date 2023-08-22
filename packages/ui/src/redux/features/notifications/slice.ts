@@ -1,4 +1,5 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { API_VERSION } from "@storiny/shared";
 import { Notification } from "@storiny/types";
 
 import {
@@ -30,7 +31,7 @@ export const fetchUnreadNotificationsCount = createAsyncThunk(
   "notifications/fetchUnreadNotificationsCount",
   async () => {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/v1/me/unread-notifications`
+      `${process.env.NEXT_PUBLIC_API_URL}/v${API_VERSION}/me/unread-notifications`
     );
     return res.json();
   },

@@ -79,6 +79,14 @@ export interface GetUserBlockCountResponse {
   block_count: number;
 }
 
+export interface GetUserMuteCountRequest {
+  id: string;
+}
+
+export interface GetUserMuteCountResponse {
+  mute_count: number;
+}
+
 function createBaseStatus(): Status {
   return { emoji: undefined, text: undefined, expires_at: undefined, visibility: 0 };
 }
@@ -570,6 +578,120 @@ export const GetUserBlockCountResponse = {
   fromPartial<I extends Exact<DeepPartial<GetUserBlockCountResponse>, I>>(object: I): GetUserBlockCountResponse {
     const message = createBaseGetUserBlockCountResponse();
     message.block_count = object.block_count ?? 0;
+    return message;
+  },
+};
+
+function createBaseGetUserMuteCountRequest(): GetUserMuteCountRequest {
+  return { id: "" };
+}
+
+export const GetUserMuteCountRequest = {
+  encode(message: GetUserMuteCountRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.id !== "") {
+      writer.uint32(10).string(message.id);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): GetUserMuteCountRequest {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseGetUserMuteCountRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.id = reader.string();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): GetUserMuteCountRequest {
+    return { id: isSet(object.id) ? String(object.id) : "" };
+  },
+
+  toJSON(message: GetUserMuteCountRequest): unknown {
+    const obj: any = {};
+    if (message.id !== "") {
+      obj.id = message.id;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<GetUserMuteCountRequest>, I>>(base?: I): GetUserMuteCountRequest {
+    return GetUserMuteCountRequest.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<GetUserMuteCountRequest>, I>>(object: I): GetUserMuteCountRequest {
+    const message = createBaseGetUserMuteCountRequest();
+    message.id = object.id ?? "";
+    return message;
+  },
+};
+
+function createBaseGetUserMuteCountResponse(): GetUserMuteCountResponse {
+  return { mute_count: 0 };
+}
+
+export const GetUserMuteCountResponse = {
+  encode(message: GetUserMuteCountResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.mute_count !== 0) {
+      writer.uint32(8).uint32(message.mute_count);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): GetUserMuteCountResponse {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseGetUserMuteCountResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 8) {
+            break;
+          }
+
+          message.mute_count = reader.uint32();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): GetUserMuteCountResponse {
+    return { mute_count: isSet(object.mute_count) ? Number(object.mute_count) : 0 };
+  },
+
+  toJSON(message: GetUserMuteCountResponse): unknown {
+    const obj: any = {};
+    if (message.mute_count !== 0) {
+      obj.mute_count = Math.round(message.mute_count);
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<GetUserMuteCountResponse>, I>>(base?: I): GetUserMuteCountResponse {
+    return GetUserMuteCountResponse.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<GetUserMuteCountResponse>, I>>(object: I): GetUserMuteCountResponse {
+    const message = createBaseGetUserMuteCountResponse();
+    message.mute_count = object.mute_count ?? 0;
     return message;
   },
 };

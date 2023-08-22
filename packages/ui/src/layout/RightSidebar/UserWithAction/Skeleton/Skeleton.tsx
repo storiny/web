@@ -8,7 +8,7 @@ import Skeleton from "~/components/Skeleton";
 
 import styles from "./Skeleton.module.scss";
 
-const UserWithActionSkeleton = () => (
+const UserWithActionSkeleton = (): React.ReactElement => (
   <div className={clsx(styles.skeleton)}>
     <Skeleton height={32} shape={"circular"} width={32} />
     <span className={styles.meta}>

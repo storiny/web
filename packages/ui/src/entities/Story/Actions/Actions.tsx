@@ -34,7 +34,6 @@ import {
   useStoryUnpublishMutation
 } from "~/redux/features";
 import { selectLoggedIn } from "~/redux/features/auth/selectors";
-import { selectBlock, selectMute } from "~/redux/features/entities/selectors";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 import { breakpoints } from "~/theme/breakpoints";
 
@@ -53,8 +52,12 @@ const StoryActions = ({
   const dispatch = useAppDispatch();
   const isMobile = useMediaQuery(breakpoints.down("mobile"));
   const loggedIn = useAppSelector(selectLoggedIn);
-  const isBlocking = useAppSelector(selectBlock(story.user!.id));
-  const isMuted = useAppSelector(selectMute(story.user!.id));
+  const isBlocking = useAppSelector(
+    (state) => state.entities.blocks[story.user!.id]
+  );
+  const isMuted = useAppSelector(
+    (state) => state.entities.mutes[story.user!.id]
+  );
   const [deleteDraft] = useDraftDeleteMutation();
   const [deleteStory] = useStoryDeleteMutation();
   const [unpublishStory] = useStoryUnpublishMutation();

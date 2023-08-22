@@ -14,11 +14,14 @@ import { Provider, useSetAtom } from "jotai";
 import dynamic from "next/dynamic";
 import React from "react";
 
+import Button from "~/components/Button";
 import Grow from "~/components/Grow";
 import IconButton from "~/components/IconButton";
 import Input from "~/components/Input";
+import Spacer from "~/components/Spacer";
 import Typography from "~/components/Typography";
 import { queryAtom } from "~/entities/EmojiPicker/core/atoms";
+import CloudOffIcon from "~/icons/CloudOff";
 import HandClickIcon from "~/icons/HandClick";
 import SearchIcon from "~/icons/Search";
 import XIcon from "~/icons/X";
@@ -33,12 +36,29 @@ const HoveredEmoji = dynamic(() => import("./core/components/Emoji/Hovered"), {
 });
 
 const Main = dynamic(() => import("./core/components/Main"), {
-  loading: () => (
+  loading: ({ error, isLoading, retry }) => (
     <div
       className={clsx("full-w", "flex-center")}
       style={{ minHeight: "292px" }}
     >
-      <SuspenseLoader />
+      {error && !isLoading ? (
+        <div
+          className={clsx("flex-col", "flex-center")}
+          style={{ "--icon-size": "36px" } as React.CSSProperties}
+        >
+          <CloudOffIcon />
+          <Spacer orientation={"vertical"} />
+          <Typography className={"t-minor"} level={"body3"}>
+            Network error
+          </Typography>
+          <Spacer orientation={"vertical"} size={2} />
+          <Button onClick={retry} size={"sm"}>
+            Retry
+          </Button>
+        </div>
+      ) : (
+        <SuspenseLoader />
+      )}
     </div>
   )
 });

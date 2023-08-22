@@ -1,3 +1,4 @@
+import { waitForPosition } from "@storiny/test-utils";
 import React from "react";
 
 import { renderTestWithProvider } from "~/redux/testUtils";

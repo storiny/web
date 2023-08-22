@@ -24,7 +24,7 @@ const SuspendedDashboardRightSidebarContent = dynamic(
   }
 );
 
-// Draft content
+// Relations content
 
 const SuspendedContentRelationsRightSidebarContent = dynamic(
   () => import("./content"),
@@ -38,9 +38,9 @@ const ContentRelationsRightSidebar = (
 ): React.ReactElement | null => {
   const { tab, pending_friend_request_count } = props;
   const dispatch = useAppDispatch();
-  const pendingRequestCount = useAppSelector(
-    (state) => state.entities.selfPendingFriendRequestCount
-  );
+  const pendingRequestCount =
+    useAppSelector((state) => state.entities.selfPendingFriendRequestCount) ||
+    0;
   const shouldRender = useMediaQuery(breakpoints.up("desktop"));
 
   React.useEffect(() => {

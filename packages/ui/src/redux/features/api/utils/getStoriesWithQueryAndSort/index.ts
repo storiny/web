@@ -54,6 +54,7 @@ export const getStoriesWithQueryAndSort = (
     }),
     merge: (currentCache, newItems) => {
       currentCache.items.push(...newItems.items);
+      currentCache.hasMore = newItems.hasMore;
     },
     forceRefetch: ({ currentArg, previousArg }) =>
       currentArg?.page !== previousArg?.page ||

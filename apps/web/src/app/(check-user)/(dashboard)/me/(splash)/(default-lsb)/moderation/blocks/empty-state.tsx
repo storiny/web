@@ -1,0 +1,36 @@
+import React from "react";
+
+import Link from "~/components/Link";
+import CustomState from "~/entities/CustomState";
+import BanIcon from "~/icons/Ban";
+
+interface BlocksEmptyStateProps {
+  query: string;
+}
+
+const BlocksEmptyState = ({
+  query
+}: BlocksEmptyStateProps): React.ReactElement => (
+  <CustomState
+    autoSize
+    description={
+      query ? (
+        "Your search criteria did not match anything, make sure you've spelled it correctly or try again by being more specific."
+      ) : (
+        <React.Fragment>
+          If you block someone, they will appear here. Blocking someone prevents
+          them from following you or reading your stories.{" "}
+          <Link href={"/guides/blocked-accounts"} underline={"always"}>
+            Learn more
+          </Link>
+        </React.Fragment>
+      )
+    }
+    icon={query ? undefined : <BanIcon />}
+    title={
+      query ? `Could not find any user for "${query}"` : "No blocked users"
+    }
+  />
+);
+
+export default BlocksEmptyState;

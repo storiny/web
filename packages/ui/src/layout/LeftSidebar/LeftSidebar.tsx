@@ -1,6 +1,6 @@
 "use client";
 
-import SuspenseLoader from "@storiny/web/src/common/suspense-loader";
+import { dynamicLoader } from "@storiny/web/src/common/dynamic";
 import clsx from "clsx";
 import dynamic from "next/dynamic";
 import React from "react";
@@ -17,7 +17,7 @@ import styles from "./LeftSidebar.module.scss";
 import { LeftSidebarProps } from "./LeftSidebar.props";
 
 const LeftSidebarDefaultContent = dynamic(() => import("./DefaultContent"), {
-  loading: () => <SuspenseLoader />
+  loading: dynamicLoader()
 });
 
 const LeftSidebar = (props: LeftSidebarProps): React.ReactElement | null => {

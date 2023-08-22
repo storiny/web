@@ -28,21 +28,6 @@ const AppleIcon = (): React.ReactElement => (
   </svg>
 );
 
-const TwitterIcon = (): React.ReactElement => (
-  <svg
-    fill="none"
-    height={18}
-    viewBox="0 0 19 18"
-    width={18}
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    <path
-      d="M16.04 5.61v.48c0 4.84-3.68 10.43-10.42 10.43-2 0-3.94-.57-5.62-1.65a7.44 7.44 0 0 0 5.42-1.52A3.67 3.67 0 0 1 2 10.81c.55.1 1.12.08 1.66-.07A3.67 3.67 0 0 1 .7 7.15V7.1c.51.29 1.08.45 1.67.46a3.67 3.67 0 0 1-1.14-4.9A10.4 10.4 0 0 0 8.8 6.5a3.67 3.67 0 0 1 6.24-3.35 7.38 7.38 0 0 0 2.33-.88 3.68 3.68 0 0 1-1.6 2.02 7.29 7.29 0 0 0 2.1-.57 7.45 7.45 0 0 1-1.83 1.9Z"
-      fill="#fff"
-    />
-  </svg>
-);
-
 const GoogleIcon = (): React.ReactElement => (
   <svg
     fill="none"
@@ -113,13 +98,6 @@ const Page = (): React.ReactElement => {
           size={"lg"}
         >
           Continue with Apple
-        </Button>
-        <Button
-          className={clsx(styles.x, styles["twitter-button"])}
-          decorator={<TwitterIcon />}
-          size={"lg"}
-        >
-          Continue with Twitter
         </Button>
         <Button
           className={clsx(styles.x, styles["google-button"])}
