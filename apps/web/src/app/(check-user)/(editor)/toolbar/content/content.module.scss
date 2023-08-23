@@ -1,0 +1,14 @@
+.x {
+  /* Base styles */
+  &.content {
+    align-items: stretch;
+    flex-grow: 1;
+  }
+
+  /* Thumb */
+  &.thumb {
+    &::before {
+      content: none; // Hide touch capture pseudo element
+    }
+  }
+}

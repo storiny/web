@@ -4,9 +4,9 @@ import React from "react";
 
 import { renderTestWithProvider } from "~/redux/testUtils";
 
+import styles from "../common/Menu.module.scss";
 import Menu from "../Menu";
 import MenuItem from "../MenuItem";
-import styles from "./Menu.module.scss";
 import { MenuProps, MenuSize } from "./Menu.props";
 
 describe("<Menu />", () => {

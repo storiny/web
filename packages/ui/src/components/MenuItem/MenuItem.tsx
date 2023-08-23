@@ -6,7 +6,7 @@ import React from "react";
 
 import { forwardRef } from "~/utils/forwardRef";
 
-import styles from "./MenuItem.module.scss";
+import menuItemStyles from "../common/MenuItem.module.scss";
 import { MenuItemProps } from "./MenuItem.props";
 
 const MenuItem = forwardRef<MenuItemProps, "div">((props, ref) => {
@@ -21,12 +21,20 @@ const MenuItem = forwardRef<MenuItemProps, "div">((props, ref) => {
   } = props;
 
   return (
-    <Item {...rest} asChild className={clsx(styles.item, className)} ref={ref}>
+    <Item
+      {...rest}
+      asChild
+      className={clsx(menuItemStyles.item, className)}
+      ref={ref}
+    >
       <Component>
         {decorator && (
           <span
             {...slotProps?.decorator}
-            className={clsx(styles.decorator, slotProps?.decorator?.className)}
+            className={clsx(
+              menuItemStyles.decorator,
+              slotProps?.decorator?.className
+            )}
           >
             {decorator}
           </span>
@@ -36,7 +44,7 @@ const MenuItem = forwardRef<MenuItemProps, "div">((props, ref) => {
           <span
             {...slotProps?.rightSlot}
             className={clsx(
-              styles["right-slot"],
+              menuItemStyles["right-slot"],
               slotProps?.rightSlot?.className
             )}
           >

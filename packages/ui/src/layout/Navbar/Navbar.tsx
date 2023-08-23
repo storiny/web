@@ -14,7 +14,7 @@ import Actions from "./Actions";
 import styles from "./Navbar.module.scss";
 import { NavbarProps } from "./Navbar.props";
 
-export const Navbar = (props: NavbarProps): React.ReactElement => {
+const Navbar = (props: NavbarProps): React.ReactElement => {
   const { variant = "default", className, children, ...rest } = props;
   const loggedIn = useAppSelector(selectLoggedIn);
 

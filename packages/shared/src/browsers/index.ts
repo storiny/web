@@ -1,14 +1,42 @@
-export const isDarwin = /Mac|iPod|iPhone|iPad/.test(navigator.platform);
-export const isWindows = /^Win/.test(navigator.platform);
-export const isAndroid = /\b(android)\b/i.test(navigator.userAgent);
-export const isFirefox =
-  "netscape" in window &&
-  navigator.userAgent.indexOf("rv:") > 1 &&
-  navigator.userAgent.indexOf("Gecko") > 1;
-export const isChrome = navigator.userAgent.indexOf("Chrome") !== -1;
-export const isSafari =
-  !isChrome && navigator.userAgent.indexOf("Safari") !== -1;
+declare global {
+  interface Document {
+    documentMode?: unknown;
+  }
 
-// For mocking in tests
-export const isBrave = (): boolean =>
-  (navigator as any).brave?.isBrave?.name === "isBrave";
+  interface Window {
+    MSStream?: unknown;
+  }
+}
+
+export const CAN_USE_DOM: boolean =
+  typeof window !== "undefined" &&
+  typeof window.document !== "undefined" &&
+  typeof window.document.createElement !== "undefined";
+
+const documentMode =
+  CAN_USE_DOM && "documentMode" in document ? document.documentMode : null;
+
+export const IS_APPLE: boolean =
+  CAN_USE_DOM && /Mac|iPod|iPhone|iPad/.test(navigator.platform);
+
+export const IS_SAFARI: boolean =
+  CAN_USE_DOM && /Version\/[\d.]+.*Safari/.test(navigator.userAgent);
+
+export const IS_IOS: boolean =
+  CAN_USE_DOM &&
+  /iPad|iPhone|iPod/.test(navigator.userAgent) &&
+  !window.MSStream;
+
+export const IS_CHROME: boolean =
+  CAN_USE_DOM && /^(?=.*Chrome).*/i.test(navigator.userAgent);
+
+export const IS_APPLE_WEBKIT =
+  CAN_USE_DOM && /AppleWebKit\/[\d.]+/.test(navigator.userAgent) && !IS_CHROME;
+
+export const IS_FIREFOX: boolean =
+  CAN_USE_DOM && /^(?!.*Seamonkey)(?=.*Firefox).*/i.test(navigator.userAgent);
+
+export const CAN_USE_BEFORE_INPUT: boolean =
+  CAN_USE_DOM && "InputEvent" in window && !documentMode
+    ? "getTargetRanges" in new window.InputEvent("input")
+    : false;

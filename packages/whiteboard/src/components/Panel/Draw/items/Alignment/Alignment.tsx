@@ -5,12 +5,12 @@ import Divider from "~/components/Divider";
 import IconButton, { IconButtonProps } from "~/components/IconButton";
 import Spacer from "~/components/Spacer";
 import Tooltip from "~/components/Tooltip";
-import AlignBottomIcon from "~/icons/AlignBottom";
-import AlignCenterIcon from "~/icons/AlignCenter";
-import AlignLeftIcon from "~/icons/AlignLeft";
-import AlignMiddleIcon from "~/icons/AlignMiddle";
-import AlignRightIcon from "~/icons/AlignRight";
-import AlignTopIcon from "~/icons/AlignTop";
+import LayoutAlignBottomIcon from "~/icons/LayoutAlignBottom";
+import LayoutAlignCenterIcon from "~/icons/LayoutAlignCenter";
+import LayoutAlignLeftIcon from "~/icons/LayoutAlignLeft";
+import LayoutAlignMiddleIcon from "~/icons/LayoutAlignMiddle";
+import LayoutAlignRightIcon from "~/icons/LayoutAlignRight";
+import LayoutAlignTopIcon from "~/icons/LayoutAlignTop";
 
 import { useCanvas, useEventRender } from "../../../../../hooks";
 import { isGroup, modifyObject } from "../../../../../utils";
@@ -130,42 +130,42 @@ const Alignment = (): React.ReactElement | null => {
             onClick={(): void => changeAlignment("left")}
             tooltipContent={"Align left"}
           >
-            <AlignLeftIcon />
+            <LayoutAlignLeftIcon />
           </AlignButton>
           <AlignButton
             aria-label={"Align center"}
             onClick={(): void => changeAlignment("center")}
             tooltipContent={"Align center"}
           >
-            <AlignCenterIcon />
+            <LayoutAlignCenterIcon />
           </AlignButton>
           <AlignButton
             aria-label={"Align right"}
             onClick={(): void => changeAlignment("right")}
             tooltipContent={"Align right"}
           >
-            <AlignRightIcon />
+            <LayoutAlignRightIcon />
           </AlignButton>
           <AlignButton
             aria-label={"Align top"}
             onClick={(): void => changeAlignment("top")}
             tooltipContent={"Align top"}
           >
-            <AlignTopIcon />
+            <LayoutAlignTopIcon />
           </AlignButton>
           <AlignButton
             aria-label={"Align middle"}
             onClick={(): void => changeAlignment("middle")}
             tooltipContent={"Align middle"}
           >
-            <AlignMiddleIcon />
+            <LayoutAlignMiddleIcon />
           </AlignButton>
           <AlignButton
             aria-label={"Align bottom"}
             onClick={(): void => changeAlignment("bottom")}
             tooltipContent={"Align bottom"}
           >
-            <AlignBottomIcon />
+            <LayoutAlignBottomIcon />
           </AlignButton>
         </DrawItemRow>
       </DrawItem>

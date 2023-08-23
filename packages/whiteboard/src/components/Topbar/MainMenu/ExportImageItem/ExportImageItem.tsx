@@ -30,7 +30,7 @@ const ExportImageItem = (): React.ReactElement => {
         }}
         onSelect={(event): void => event.preventDefault()}
       >
-        Export image...
+        Export image…
       </MenuItem>
     ),
     <ExportImageModal

@@ -60,7 +60,7 @@ const ImportItem = (): React.ReactElement => {
         onClick={importFile}
         onSelect={importFile as any}
       >
-        Open
+        Open…
       </MenuItem>
     ),
     {

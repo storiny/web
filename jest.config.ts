@@ -16,6 +16,7 @@ const config: Config = {
       ],
       moduleNameMapper: {
         // Typescript absolute paths
+        "~/common/(.*)": `<rootDir>/apps/web/src/common/$1`,
         "~/(.*)": `<rootDir>/packages/ui/src/$1`,
       },
     },
@@ -33,6 +34,7 @@ const config: Config = {
       ],
       moduleNameMapper: {
         // Typescript absolute paths
+        "~/common/(.*)": `<rootDir>/apps/web/src/common/$1`,
         "~/(.*)": `<rootDir>/packages/ui/src/$1`,
       },
     },

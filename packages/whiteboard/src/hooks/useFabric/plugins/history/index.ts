@@ -1,3 +1,4 @@
+import { getShortcutKey } from "@storiny/shared/src/utils/getShortcutKey";
 import { Canvas } from "fabric";
 import hotkeys from "hotkeys-js";
 
@@ -239,13 +240,17 @@ export class HistoryPlugin {
       "object:skewing": this.saveAction.bind(this)
     });
 
-    hotkeys("ctrl+z,ctrl+y,ctrl+shift+z", (_, hotkeysEvent) => {
+    const undoKey = getShortcutKey({ cmd: true, key: "z" });
+    const redoKey = getShortcutKey({ cmd: true, key: "y" });
+    const redoAltKey = getShortcutKey({ cmd: true, shift: true, key: "z" });
+
+    hotkeys([undoKey, redoKey, redoAltKey].join(","), (_, hotkeysEvent) => {
       switch (hotkeysEvent.key) {
-        case "ctrl+z":
+        case undoKey:
           this.undo();
           break;
-        case "ctrl+y":
-        case "ctrl+shift+z":
+        case redoKey:
+        case redoAltKey:
           this.redo();
           break;
         default:

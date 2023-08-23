@@ -12,7 +12,7 @@ import React from "react";
 
 import { forwardRef } from "~/utils/forwardRef";
 
-import styles from "./Menu.module.scss";
+import menuStyles from "../common/Menu.module.scss";
 import { MenuProps } from "./Menu.props";
 
 const Menu = forwardRef<MenuProps, "div">((props, ref) => {
@@ -37,14 +37,14 @@ const Menu = forwardRef<MenuProps, "div">((props, ref) => {
           sideOffset={5}
           {...slotProps?.content}
           asChild
-          className={clsx(styles.content, styles[size], className)}
+          className={clsx(menuStyles.content, menuStyles[size], className)}
           ref={ref}
         >
           <Component>
             {children}
             <Arrow
               {...slotProps?.arrow}
-              className={clsx(styles.arrow, slotProps?.arrow?.className)}
+              className={clsx(menuStyles.arrow, slotProps?.arrow?.className)}
             />
           </Component>
         </Content>

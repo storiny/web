@@ -3515,6 +3515,35 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@radix-ui/react-menubar@npm:^1.0.3":
+  version: 1.0.3
+  resolution: "@radix-ui/react-menubar@npm:1.0.3"
+  dependencies:
+    "@babel/runtime": ^7.13.10
+    "@radix-ui/primitive": 1.0.1
+    "@radix-ui/react-collection": 1.0.3
+    "@radix-ui/react-compose-refs": 1.0.1
+    "@radix-ui/react-context": 1.0.1
+    "@radix-ui/react-direction": 1.0.1
+    "@radix-ui/react-id": 1.0.1
+    "@radix-ui/react-menu": 2.0.5
+    "@radix-ui/react-primitive": 1.0.3
+    "@radix-ui/react-roving-focus": 1.0.4
+    "@radix-ui/react-use-controllable-state": 1.0.1
+  peerDependencies:
+    "@types/react": "*"
+    "@types/react-dom": "*"
+    react: ^16.8 || ^17.0 || ^18.0
+    react-dom: ^16.8 || ^17.0 || ^18.0
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+    "@types/react-dom":
+      optional: true
+  checksum: 48873bd0ea7d2615137f7d95658eb5a78bd735050d8e460e5b670e756a3130f35ce73a3ca651c6916969ae2f54f6ffffdc7f75c2729a2b2f64e460a12b99387a
+  languageName: node
+  linkType: hard
+
 "@radix-ui/react-popover@npm:^1.0.6":
   version: 1.0.6
   resolution: "@radix-ui/react-popover@npm:1.0.6"
@@ -4535,6 +4564,7 @@ __metadata:
     "@radix-ui/react-dialog": ^1.0.3
     "@radix-ui/react-dropdown-menu": ^2.0.4
     "@radix-ui/react-label": ^2.0.2
+    "@radix-ui/react-menubar": ^1.0.3
     "@radix-ui/react-popover": ^1.0.6
     "@radix-ui/react-progress": ^1.0.2
     "@radix-ui/react-radio-group": ^1.1.2

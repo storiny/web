@@ -1,3 +1,4 @@
+import { getShortcutKey } from "@storiny/shared/src/utils/getShortcutKey";
 import { ActiveSelection, BaseFabricObject, Canvas } from "fabric";
 import hotkeys from "hotkeys-js";
 
@@ -101,34 +102,35 @@ class ClonePlugin {
    * @private
    */
   private bindEvents(): void {
+    const copyKey = getShortcutKey({ cmd: true, key: "c" });
+    const pasteKey = getShortcutKey({ cmd: true, key: "v" });
+    const cutKey = getShortcutKey({ cmd: true, key: "x" });
+    const duplicateKey = getShortcutKey({ cmd: true, key: "d" });
+
     hotkeys(
-      "ctrl+c,cmd+c,ctrl+v,cmd+v,ctrl+x,cmd+x,ctrl+d,cmd+d",
+      [copyKey, pasteKey, cutKey, duplicateKey].join(","),
       (keyboardEvent, hotkeysEvent) => {
         switch (hotkeysEvent.key) {
           // Cut and copy
-          case "ctrl+c":
-          case "ctrl+x":
-          case "cmd+c":
-          case "cmd+x":
+          case copyKey:
+          case cutKey:
             this.cache = this.canvas.getActiveObject() || null;
             this.cloneCount = 0;
 
             // Cut
-            if (hotkeysEvent.key === "ctrl+x") {
+            if (hotkeysEvent.key === cutKey) {
               this.removeActiveObject();
             }
 
             break;
           // Paste
-          case "ctrl+v":
-          case "cmd+v":
+          case pasteKey:
             if (this.cache) {
               this.clone(this.cache);
             }
             break;
           // Duplicate
-          case "ctrl+d":
-          case "cmd+d":
+          case duplicateKey:
             keyboardEvent.preventDefault();
             this.clone();
             break;

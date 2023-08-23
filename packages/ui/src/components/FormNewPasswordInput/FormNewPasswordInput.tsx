@@ -1,6 +1,7 @@
 "use client";
 
 import { userProps } from "@storiny/shared";
+import { isTestEnv } from "@storiny/shared/src/utils/isTestEnv";
 import clsx from "clsx";
 import React from "react";
 import { useFormContext } from "react-hook-form";
@@ -112,18 +113,20 @@ const FormNewPasswordInput = React.forwardRef<
    */
   const computePasswordStrength = React.useCallback(
     async (password: string) => {
-      // Lazily load zxcvbn
-      const zxcvbn = (await import("zxcvbn")).default;
-      const results = zxcvbn(password);
+      if (!isTestEnv()) {
+        // Lazily load zxcvbn
+        const zxcvbn = (await import("zxcvbn")).default;
+        const results = zxcvbn(password);
 
-      if (results.feedback.suggestions.length) {
-        setSuggestion(results.feedback.suggestions[0]);
-      } else {
-        setSuggestion("");
+        if (results.feedback.suggestions.length) {
+          setSuggestion(results.feedback.suggestions[0]);
+        } else {
+          setSuggestion("");
+        }
+
+        // Scale the score
+        setScore(results.score);
       }
-
-      // Scale the score
-      setScore(results.score);
     },
     []
   );

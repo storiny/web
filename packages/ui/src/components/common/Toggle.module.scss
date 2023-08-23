@@ -1,5 +1,7 @@
 /* Base styles */
 .toggle-button {
+  --icon-stroke: var(--fg-minor);
+
   display: inline-flex;
   justify-content: center;
   align-items: center;
@@ -23,6 +25,7 @@
 
   &[data-state="on"] {
     --bg: var(--bg-toggle);
+    --icon-stroke: var(--fg-major);
     --icon-stroke-width: 0.8px;
 
     &:disabled {

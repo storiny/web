@@ -1,0 +1,47 @@
+.x {
+  /* Base styles */
+  &.editor-navbar {
+    padding-block: 10px;
+    min-height: var(--header-height);
+    z-index: var(--z-index-header);
+    grid-area: hd;
+    position: sticky;
+    top: var(--banner-height, 0);
+    display: flex;
+    align-items: center;
+
+    &::before {
+      content: "";
+      position: absolute;
+      width: 200vw;
+      height: 100%;
+      top: 0;
+      z-index: -1;
+      left: -50vw;
+      speak: none;
+      box-shadow: var(--shadow-sm);
+      background-color: var(--bg-elevation-sm);
+      border-bottom: 1px solid var(--divider);
+    }
+  }
+
+  /* Full height bleed */
+  &.full-height {
+    margin-block: -10px;
+    height: auto;
+  }
+
+  /* Dropdown menu */
+  &.menu {
+    gap: 6px;
+    padding: 0 6px;
+    height: 100%;
+    border-radius: 0;
+  }
+
+  /* Dropdown chevron */
+  &.chevron {
+    --icon-size: 12px;
+    --icon-stroke: var(--fg-minor);
+  }
+}
