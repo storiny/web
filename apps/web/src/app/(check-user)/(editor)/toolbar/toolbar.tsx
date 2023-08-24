@@ -14,14 +14,17 @@ import { springConfig } from "../constants";
 import styles from "./toolbar.module.scss";
 
 const SuspendedEditorToolbarContent = dynamic(() => import("./content"), {
-  loading: ({ isLoading, retry, error }) =>
-    error && !isLoading ? (
-      <Button color={"ruby"} onClick={retry} size={"sm"} variant={"hollow"}>
-        Retry
-      </Button>
-    ) : (
-      <Spinner size={"sm"} />
-    )
+  loading: ({ isLoading, retry, error }) => (
+    <div className={"flex-center"} style={{ height: "40px" }}>
+      {error && !isLoading ? (
+        <Button color={"ruby"} onClick={retry} size={"sm"} variant={"hollow"}>
+          Retry
+        </Button>
+      ) : (
+        <Spinner size={"sm"} />
+      )}
+    </div>
+  )
 });
 
 const EditorToolbar = (): React.ReactElement => {

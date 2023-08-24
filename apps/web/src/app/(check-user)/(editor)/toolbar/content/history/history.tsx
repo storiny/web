@@ -12,7 +12,7 @@ const ToolbarHistoryItem = (): React.ReactElement => (
   <div className={"flex-center"}>
     <Tooltip content={"Undo"}>
       <IconButton
-        className={clsx(toolbarStyles.x, toolbarStyles.button)}
+        className={clsx("focus-invert", toolbarStyles.x, toolbarStyles.button)}
         size={"lg"}
         variant={"ghost"}
       >
@@ -21,7 +21,7 @@ const ToolbarHistoryItem = (): React.ReactElement => (
     </Tooltip>
     <Tooltip content={"Redo"}>
       <IconButton
-        className={clsx(toolbarStyles.x, toolbarStyles.button)}
+        className={clsx("focus-invert", toolbarStyles.x, toolbarStyles.button)}
         size={"lg"}
         variant={"ghost"}
       >

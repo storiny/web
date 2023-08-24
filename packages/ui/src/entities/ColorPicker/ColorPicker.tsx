@@ -1,13 +1,5 @@
 "use client";
 
-import {
-  Arrow,
-  Close,
-  Content,
-  Portal,
-  Root,
-  Trigger
-} from "@radix-ui/react-popover";
 import SuspenseLoader from "@storiny/web/src/common/suspense-loader";
 import clsx from "clsx";
 import { Provider } from "jotai";
@@ -17,6 +9,7 @@ import React from "react";
 import Button from "~/components/Button";
 import Grow from "~/components/Grow";
 import IconButton from "~/components/IconButton";
+import Popover, { Close } from "~/components/Popover";
 import Spacer from "~/components/Spacer";
 import Typography from "~/components/Typography";
 import { previewColorAtom } from "~/entities/ColorPicker/core/atoms";
@@ -57,44 +50,40 @@ const ColorPickerCore = dynamic(() => import("./core/components/ColorPicker"), {
 const ColorPicker = (props: ColorPickerProps): React.ReactElement => {
   const { children, ...rest } = props;
   return (
-    <Root>
-      <Trigger aria-label="Pick a color" asChild>
-        {children}
-      </Trigger>
-      <Portal>
-        <Content className={styles.content} collisionPadding={8} sideOffset={5}>
-          <Provider>
-            <HydrateAtoms
-              initialValues={[
-                [
-                  previewColorAtom,
-                  rest?.defaultValue?.str ||
-                    rest?.value?.str ||
-                    defaultColor.str
-                ]
-              ]}
-            >
-              <div className={clsx("flex-center", styles.header)}>
-                <Preview />
-                <Typography className={"t-bold"} level={"body2"}>
-                  Pick a color
-                </Typography>
-                <Grow />
-                <div className={clsx("flex-center", styles.close)}>
-                  <Close aria-label={"Close"} asChild title={"Close"}>
-                    <IconButton variant={"ghost"}>
-                      <XIcon />
-                    </IconButton>
-                  </Close>
-                </div>
-              </div>
-              <ColorPickerCore {...rest} />
-            </HydrateAtoms>
-          </Provider>
-          <Arrow className={styles.arrow} />
-        </Content>
-      </Portal>
-    </Root>
+    <Popover
+      className={styles.popover}
+      slotProps={{
+        trigger: { "aria-label": "Pick a color" }
+      }}
+      trigger={children}
+    >
+      <Provider>
+        <HydrateAtoms
+          initialValues={[
+            [
+              previewColorAtom,
+              rest?.defaultValue?.str || rest?.value?.str || defaultColor.str
+            ]
+          ]}
+        >
+          <div className={clsx("flex-center", styles.header)}>
+            <Preview />
+            <Typography className={"t-bold"} level={"body2"}>
+              Pick a color
+            </Typography>
+            <Grow />
+            <div className={clsx("flex-center", styles.close)}>
+              <Close aria-label={"Close"} asChild title={"Close"}>
+                <IconButton variant={"ghost"}>
+                  <XIcon />
+                </IconButton>
+              </Close>
+            </div>
+          </div>
+          <ColorPickerCore {...rest} />
+        </HydrateAtoms>
+      </Provider>
+    </Popover>
   );
 };
 

@@ -17,11 +17,20 @@ import toolbarStyles from "../../toolbar.module.scss";
 
 const ToolbarInsertItem = (): React.ReactElement => (
   <Menu
+    slotProps={{
+      content: {
+        side: "top"
+      }
+    }}
     trigger={
       <div>
         <Tooltip content={"Insert"}>
           <IconButton
-            className={clsx(toolbarStyles.x, toolbarStyles.button)}
+            className={clsx(
+              "focus-invert",
+              toolbarStyles.x,
+              toolbarStyles.button
+            )}
             size={"lg"}
             variant={"ghost"}
           >

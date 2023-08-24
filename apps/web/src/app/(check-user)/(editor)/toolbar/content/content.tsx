@@ -45,7 +45,11 @@ const SuspendedEditorToolbarContent = (): React.ReactElement => {
         ) : (
           <Tooltip content={"Expand sidebars"}>
             <IconButton
-              className={clsx(toolbarStyles.x, toolbarStyles.button)}
+              className={clsx(
+                "focus-invert",
+                toolbarStyles.x,
+                toolbarStyles.button
+              )}
               onClick={(): void => setSidebarsCollapsed(false)}
               size={"lg"}
               variant={"ghost"}

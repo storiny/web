@@ -6,9 +6,12 @@ import React from "react";
 
 import MenubarCheckboxItem from "~/components/MenubarCheckboxItem";
 import MenubarItem from "~/components/MenubarItem";
+import MenubarRadioGroup from "~/components/MenubarRadioGroup";
+import MenubarRadioItem from "~/components/MenubarRadioItem";
 import MenubarSub from "~/components/MenubarSub";
 import Separator from "~/components/Separator";
 import { useMediaQuery } from "~/hooks/useMediaQuery";
+import AdjustIcon from "~/icons/Adjust";
 import AlignCenterIcon from "~/icons/AlignCenter";
 import AlignJustifiedIcon from "~/icons/AlignJustified";
 import AlignLeftIcon from "~/icons/AlignLeft";
@@ -25,6 +28,7 @@ import IndentIcon from "~/icons/Indent";
 import ItalicIcon from "~/icons/Italic";
 import LinkIcon from "~/icons/Link";
 import MoodSmileIcon from "~/icons/MoodSmile";
+import MoonIcon from "~/icons/Moon";
 import NumberedListIcon from "~/icons/NumberedList";
 import OmegaIcon from "~/icons/Omega";
 import OutdentIcon from "~/icons/Outdent";
@@ -33,8 +37,11 @@ import QuoteIcon from "~/icons/Quote";
 import RedoIcon from "~/icons/Redo";
 import StrikethroughIcon from "~/icons/Strikethrough";
 import SubheadingIcon from "~/icons/Subheading";
+import SunIcon from "~/icons/Sun";
 import UnderlineIcon from "~/icons/Underline";
 import UndoIcon from "~/icons/Undo";
+import { selectTheme, setTheme } from "~/redux/features";
+import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 import { breakpoints } from "~/theme/breakpoints";
 
 import { sidebarsCollapsedAtom } from "../../atoms";
@@ -131,7 +138,7 @@ const TextItem = (): React.ReactElement => (
     >
       Strikethrough
     </MenubarCheckboxItem>
-    <MenubarCheckboxItem decorator={<CodeIcon />} rightSlot={"⌘+W"}>
+    <MenubarCheckboxItem decorator={<CodeIcon />} rightSlot={"⌘+`"}>
       Code
     </MenubarCheckboxItem>
     <MenubarCheckboxItem decorator={<LinkIcon />} rightSlot={"⌘+K"}>
@@ -204,6 +211,46 @@ const HelpItem = (): React.ReactElement => (
   </MenubarSub>
 );
 
+// Theme item
+
+const ThemeItem = (): React.ReactElement => {
+  const dispatch = useAppDispatch();
+  const theme = useAppSelector(selectTheme);
+
+  return (
+    <MenubarSub trigger={"Theme"}>
+      <MenubarRadioGroup
+        onValueChange={(newValue): void => {
+          dispatch(setTheme(newValue as typeof theme));
+        }}
+        value={theme}
+      >
+        <MenubarRadioItem
+          decorator={<AdjustIcon rotation={90} />}
+          onSelect={(event): void => event.preventDefault()}
+          value={"system"}
+        >
+          System
+        </MenubarRadioItem>
+        <MenubarRadioItem
+          decorator={<SunIcon />}
+          onSelect={(event): void => event.preventDefault()}
+          value={"light"}
+        >
+          Light
+        </MenubarRadioItem>
+        <MenubarRadioItem
+          decorator={<MoonIcon />}
+          onSelect={(event): void => event.preventDefault()}
+          value={"dark"}
+        >
+          Dark
+        </MenubarRadioItem>
+      </MenubarRadioGroup>
+    </MenubarSub>
+  );
+};
+
 const EditorMenubarItems = (): React.ReactElement => (
   <React.Fragment>
     <MenubarItem as={NextLink} href={"/me/account/stories"}>
@@ -219,6 +266,8 @@ const EditorMenubarItems = (): React.ReactElement => (
     <TextItem />
     <AlignItem />
     <InsertItem />
+    <Separator />
+    <ThemeItem />
     <Separator />
     <HelpItem />
   </React.Fragment>

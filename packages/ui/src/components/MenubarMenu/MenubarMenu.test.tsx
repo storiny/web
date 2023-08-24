@@ -1,5 +1,3 @@
-import { axe } from "@storiny/test-utils";
-import { waitFor } from "@testing-library/react";
 import React from "react";
 
 import { renderTestWithProvider } from "~/redux/testUtils";

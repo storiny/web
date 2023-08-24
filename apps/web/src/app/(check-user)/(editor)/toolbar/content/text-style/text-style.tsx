@@ -106,6 +106,9 @@ const ToolbarTextStyleItem = (): React.ReactElement => {
           },
           value: {
             placeholder: "Text style"
+          },
+          content: {
+            side: "top"
           }
         }}
         value={value}
@@ -131,11 +134,20 @@ const ToolbarTextStyleItem = (): React.ReactElement => {
       <Divider orientation={"vertical"} />
       <TextStyleToggleGroup />
       <Menu
+        slotProps={{
+          content: {
+            side: "top"
+          }
+        }}
         trigger={
           <div>
             <Tooltip content={"More formatting options"}>
               <IconButton
-                className={clsx(toolbarStyles.x, toolbarStyles.button)}
+                className={clsx(
+                  "focus-invert",
+                  toolbarStyles.x,
+                  toolbarStyles.button
+                )}
                 size={"lg"}
                 variant={"ghost"}
               >

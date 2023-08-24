@@ -15,6 +15,7 @@ import Separator from "~/components/Separator";
 import Skeleton from "~/components/Skeleton";
 import Persona from "~/entities/Persona";
 import Status from "~/entities/Status";
+import AdjustIcon from "~/icons/Adjust";
 import BookmarksIcon from "~/icons/Bookmarks";
 import ChevronIcon from "~/icons/Chevron";
 import CloudOffIcon from "~/icons/CloudOff";
@@ -22,6 +23,7 @@ import DotsIcon from "~/icons/Dots";
 import ExplicitIcon from "~/icons/Explicit";
 import HistoryIcon from "~/icons/History";
 import LogoutIcon from "~/icons/Logout";
+import MoonIcon from "~/icons/Moon";
 import QuestionMarkIcon from "~/icons/QuestionMark";
 import SettingsIcon from "~/icons/Settings";
 import StoryIcon from "~/icons/Story";
@@ -47,9 +49,17 @@ const ThemeToggleItem = (): React.ReactElement => {
 
   return (
     <MenuItem
-      decorator={<SunIcon />}
+      decorator={
+        theme === "light" ? (
+          <SunIcon />
+        ) : theme === "dark" ? (
+          <MoonIcon />
+        ) : (
+          <AdjustIcon rotation={90} />
+        )
+      }
       onSelect={(event): void => {
-        // Prevent menu from closing
+        // Prevent the menu from closing
         event.preventDefault();
         dispatch(
           setTheme(

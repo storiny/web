@@ -2,18 +2,25 @@
 
 import clsx from "clsx";
 import dynamic from "next/dynamic";
+import NextLink from "next/link";
 import React from "react";
 
 import Logo from "~/brand/Logo";
 import SuspenseLoader from "~/common/suspense-loader";
 import Button from "~/components/Button";
+import IconButton from "~/components/IconButton";
 import Menubar from "~/components/Menubar";
 import MenubarMenu from "~/components/MenubarMenu";
 import Spacer from "~/components/Spacer";
+import Tooltip from "~/components/Tooltip";
+import { useMediaQuery } from "~/hooks/useMediaQuery";
 import ChevronIcon from "~/icons/Chevron";
-import { selectUser } from "~/redux/features/auth/selectors";
-import { useAppSelector } from "~/redux/hooks";
+import CloudSyncingIcon from "~/icons/CloudSyncing";
+import QuestionMarkIcon from "~/icons/QuestionMark";
+import VersionHistoryIcon from "~/icons/VersionHistory";
+import { breakpoints } from "~/theme/breakpoints";
 
+import MusicItem from "./music-item";
 import styles from "./navbar.module.scss";
 
 const EditorMenubarItems = dynamic(() => import("./menubar-items"), {
@@ -30,7 +37,7 @@ const EditorMenubarItems = dynamic(() => import("./menubar-items"), {
 });
 
 const EditorMenubar = (): React.ReactElement => (
-  <Menubar>
+  <Menubar className={"full-h"}>
     <MenubarMenu
       slotProps={{
         content: {
@@ -55,14 +62,48 @@ const EditorMenubar = (): React.ReactElement => (
 );
 
 const EditorNavbar = (): React.ReactElement => {
-  const user = useAppSelector(selectUser)!;
+  const isSmallerThanTablet = useMediaQuery(breakpoints.down("tablet"));
   return (
     <header className={clsx(styles.x, styles["editor-navbar"])} role={"banner"}>
       <div className={clsx("flex-center", styles.x, styles["full-height"])}>
         <EditorMenubar />
+        {!isSmallerThanTablet && (
+          <React.Fragment>
+            <Tooltip content={"Version history"}>
+              <IconButton
+                className={clsx(styles.x, styles.button)}
+                size={"lg"}
+                variant={"ghost"}
+              >
+                <VersionHistoryIcon />
+              </IconButton>
+            </Tooltip>
+            <MusicItem />
+            <Tooltip content={"Help"}>
+              <IconButton
+                as={NextLink}
+                className={clsx(styles.x, styles.button)}
+                href={"/help"}
+                size={"lg"}
+                target={"_blank"}
+                variant={"ghost"}
+              >
+                <QuestionMarkIcon />
+              </IconButton>
+            </Tooltip>
+          </React.Fragment>
+        )}
       </div>
       <Spacer className={"f-grow"} size={2} />
       <div className={clsx("flex-center")}>
+        <Tooltip content={"Syncing…"}>
+          <span
+            className={clsx("flex-center", styles.x, styles["status-icon"])}
+          >
+            <CloudSyncingIcon />
+          </span>
+        </Tooltip>
+        <Spacer size={2} />
         <Button variant={"hollow"}>Share</Button>
         <Spacer />
         <Button>Publish</Button>

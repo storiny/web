@@ -1,0 +1,119 @@
+import React from "react";
+
+import { renderTestWithProvider } from "~/redux/testUtils";
+
+import Menubar from "../Menubar";
+import MenubarMenu from "../MenubarMenu";
+import MenubarRadioGroup from "../MenubarRadioGroup";
+import MenubarRadioItem from "./MenubarRadioItem";
+import { MenubarRadioItemProps } from "./MenubarRadioItem.props";
+
+describe("<MenubarRadioItem />", () => {
+  it("renders and matches snapshot", () => {
+    const { baseElement, getByRole } = renderTestWithProvider(
+      <Menubar value={"test"}>
+        <MenubarMenu trigger={<button>Trigger</button>} value={"test"}>
+          <MenubarRadioGroup>
+            <MenubarRadioItem value={"test"}>Radio item</MenubarRadioItem>
+          </MenubarRadioGroup>
+        </MenubarMenu>
+      </Menubar>
+    );
+
+    expect(baseElement).toMatchSnapshot();
+    expect(getByRole("menuitemradio")).toBeInTheDocument();
+  });
+
+  it("renders as a polymorphic element", () => {
+    const { getByRole } = renderTestWithProvider(
+      <Menubar value={"test"}>
+        <MenubarMenu trigger={<button>Trigger</button>} value={"test"}>
+          <MenubarRadioGroup>
+            <MenubarRadioItem as={"aside"} value={"test"}>
+              Radio item
+            </MenubarRadioItem>
+          </MenubarRadioGroup>
+        </MenubarMenu>
+      </Menubar>
+    );
+
+    expect(getByRole("menuitemradio").nodeName.toLowerCase()).toEqual("aside");
+  });
+
+  it("renders decorator", () => {
+    const { getByTestId } = renderTestWithProvider(
+      <Menubar value={"test"}>
+        <MenubarMenu trigger={<button>Trigger</button>} value={"test"}>
+          <MenubarRadioGroup>
+            <MenubarRadioItem
+              decorator={"Test"}
+              slotProps={
+                {
+                  decorator: { "data-testid": "decorator" }
+                } as MenubarRadioItemProps["slotProps"]
+              }
+              value={"test"}
+            >
+              Radio item
+            </MenubarRadioItem>
+          </MenubarRadioGroup>
+        </MenubarMenu>
+      </Menubar>
+    );
+
+    expect(getByTestId("decorator")).toBeInTheDocument();
+  });
+
+  it("renders right slot", () => {
+    const { getByTestId } = renderTestWithProvider(
+      <Menubar value={"test"}>
+        <MenubarMenu trigger={<button>Trigger</button>} value={"test"}>
+          <MenubarRadioGroup>
+            <MenubarRadioItem
+              rightSlot={"Test"}
+              slotProps={
+                {
+                  rightSlot: { "data-testid": "right-slot" }
+                } as MenubarRadioItemProps["slotProps"]
+              }
+              value={"test"}
+            >
+              Radio item
+            </MenubarRadioItem>
+          </MenubarRadioGroup>
+        </MenubarMenu>
+      </Menubar>
+    );
+
+    expect(getByTestId("right-slot")).toBeInTheDocument();
+  });
+
+  it("passes props to the element slots", () => {
+    const { getByTestId } = renderTestWithProvider(
+      <Menubar value={"test"}>
+        <MenubarMenu trigger={<button>Trigger</button>} value={"test"}>
+          <MenubarRadioGroup value={"test"}>
+            <MenubarRadioItem
+              decorator={"Test"}
+              rightSlot={"Test"}
+              slotProps={
+                {
+                  decorator: { "data-testid": "decorator" },
+                  rightSlot: { "data-testid": "right-slot" },
+                  indicator: { "data-testid": "indicator" }
+                } as MenubarRadioItemProps["slotProps"]
+              }
+              value={"test"}
+            >
+              Radio item
+            </MenubarRadioItem>
+          </MenubarRadioGroup>
+        </MenubarMenu>
+      </Menubar>
+    );
+
+    ["decorator", "indicator", "right-slot"].forEach((element) => {
+      expect(getByTestId(element)).toBeInTheDocument();
+    });
+  });
+});

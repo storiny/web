@@ -16,7 +16,7 @@
     left: 0;
     z-index: 1;
     overflow: hidden;
-    height: 40px; // Toolbar height (prevents jumping when the toolbar exits)
+    min-height: 40px; // Toolbar height (prevents jumping when the toolbar exits)
     margin-left: var(--grid-compensation);
     width: calc(100% + calc(-2 * var(--grid-compensation)));
 

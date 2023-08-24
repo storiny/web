@@ -8,8 +8,8 @@ import MenubarCheckboxItem from "./MenubarCheckboxItem";
 import { MenubarCheckboxItemProps } from "./MenubarCheckboxItem.props";
 
 describe("<MenubarCheckboxItem />", () => {
-  it("renders", () => {
-    const { getByRole } = renderTestWithProvider(
+  it("renders and matches snapshot", () => {
+    const { baseElement, getByRole } = renderTestWithProvider(
       <Menubar value={"test"}>
         <MenubarMenu trigger={<button>Trigger</button>} value={"test"}>
           <MenubarCheckboxItem>Checkbox item</MenubarCheckboxItem>
@@ -17,6 +17,7 @@ describe("<MenubarCheckboxItem />", () => {
       </Menubar>
     );
 
+    expect(baseElement).toMatchSnapshot();
     expect(getByRole("menuitemcheckbox")).toBeInTheDocument();
   });
 

@@ -1,17 +1,17 @@
 "use client";
 
-import { CheckboxItem, ItemIndicator } from "@radix-ui/react-menubar";
+import { ItemIndicator, RadioItem } from "@radix-ui/react-menubar";
 import clsx from "clsx";
 import React from "react";
 
-import CheckIcon from "~/icons/Check";
+import PointIcon from "~/icons/Point";
 import { forwardRef } from "~/utils/forwardRef";
 
 import menuItemStyles from "../common/MenuItem.module.scss";
-import styles from "./MenubarCheckboxItem.module.scss";
-import { MenubarCheckboxItemProps } from "./MenubarCheckboxItem.props";
+import styles from "./MenubarRadioItem.module.scss";
+import { MenubarRadioItemProps } from "./MenubarRadioItem.props";
 
-const MenubarCheckboxItem = forwardRef<MenubarCheckboxItemProps, "div">(
+const MenubarRadioItem = forwardRef<MenubarRadioItemProps, "div">(
   (props, ref) => {
     const {
       as: Component = "div",
@@ -24,7 +24,7 @@ const MenubarCheckboxItem = forwardRef<MenubarCheckboxItemProps, "div">(
     } = props;
 
     return (
-      <CheckboxItem
+      <RadioItem
         {...rest}
         asChild
         className={clsx(menuItemStyles.item, styles.item, className)}
@@ -39,7 +39,7 @@ const MenubarCheckboxItem = forwardRef<MenubarCheckboxItemProps, "div">(
               slotProps?.indicator?.className
             )}
           >
-            <CheckIcon />
+            <PointIcon />
           </ItemIndicator>
           {decorator && (
             <span
@@ -65,12 +65,12 @@ const MenubarCheckboxItem = forwardRef<MenubarCheckboxItemProps, "div">(
             </span>
           )}
         </Component>
-      </CheckboxItem>
+      </RadioItem>
     );
   }
 );
 
-MenubarCheckboxItem.displayName = "MenubarCheckboxItem";
+MenubarRadioItem.displayName = "MenubarRadioItem";
 
-export { CheckboxItem as MenubarCheckboxItemUnstyled };
-export default MenubarCheckboxItem;
+export { RadioItem as MenubarRadioItemUnstyled };
+export default MenubarRadioItem;

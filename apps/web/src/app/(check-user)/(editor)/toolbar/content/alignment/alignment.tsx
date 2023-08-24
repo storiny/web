@@ -37,6 +37,9 @@ const ToolbarAlignmentItem = (): React.ReactElement => {
         },
         value: {
           placeholder: "Alignment"
+        },
+        content: {
+          side: "top"
         }
       }}
       value={value}

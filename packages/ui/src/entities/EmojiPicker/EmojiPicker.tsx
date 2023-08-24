@@ -1,13 +1,5 @@
 "use client";
 
-import {
-  Arrow,
-  Close,
-  Content,
-  Portal,
-  Root,
-  Trigger
-} from "@radix-ui/react-popover";
 import SuspenseLoader from "@storiny/web/src/common/suspense-loader";
 import clsx from "clsx";
 import { Provider, useSetAtom } from "jotai";
@@ -18,6 +10,7 @@ import Button from "~/components/Button";
 import Grow from "~/components/Grow";
 import IconButton from "~/components/IconButton";
 import Input from "~/components/Input";
+import Popover, { Close } from "~/components/Popover";
 import Spacer from "~/components/Spacer";
 import Typography from "~/components/Typography";
 import { queryAtom } from "~/entities/EmojiPicker/core/atoms";
@@ -98,43 +91,43 @@ const EmojiPicker = (props: EmojiPickerProps): React.ReactElement => {
   );
 
   return (
-    <Root onOpenChange={setOpen} open={open}>
-      <Trigger aria-label="Pick an emoji" asChild>
-        {children}
-      </Trigger>
-      <Portal>
-        <Content className={styles.content} collisionPadding={8} sideOffset={5}>
-          <Provider>
-            <div className={clsx("flex-center", styles.header)}>
-              <span className={clsx("flex-center", styles.icon)}>
-                <HoveredEmoji />
-              </span>
-              <Typography className={"t-bold"} level={"body2"}>
-                Pick an emoji
-              </Typography>
-              <Grow />
-              <div className={clsx("flex-center", styles.close)}>
-                <Close aria-label={"Close"} asChild title={"Close"}>
-                  <IconButton variant={"ghost"}>
-                    <XIcon />
-                  </IconButton>
-                </Close>
-              </div>
-            </div>
-            <EmojiPickerContext.Provider
-              value={{ onEmojiSelect: onEmojiSelectImpl }}
-            >
-              <Main />
-            </EmojiPickerContext.Provider>
-            <div className={clsx("flex-center", styles.footer)}>
-              <SearchInput />
-              <SkinTone />
-            </div>
-          </Provider>
-          <Arrow className={styles.arrow} />
-        </Content>
-      </Portal>
-    </Root>
+    <Popover
+      className={styles.popover}
+      onOpenChange={setOpen}
+      open={open}
+      slotProps={{
+        trigger: { "aria-label": "Pick an emoji" }
+      }}
+      trigger={children}
+    >
+      <Provider>
+        <div className={clsx("flex-center", styles.header)}>
+          <span className={clsx("flex-center", styles.icon)}>
+            <HoveredEmoji />
+          </span>
+          <Typography className={"t-bold"} level={"body2"}>
+            Pick an emoji
+          </Typography>
+          <Grow />
+          <div className={clsx("flex-center", styles.close)}>
+            <Close aria-label={"Close"} asChild title={"Close"}>
+              <IconButton variant={"ghost"}>
+                <XIcon />
+              </IconButton>
+            </Close>
+          </div>
+        </div>
+        <EmojiPickerContext.Provider
+          value={{ onEmojiSelect: onEmojiSelectImpl }}
+        >
+          <Main />
+        </EmojiPickerContext.Provider>
+        <div className={clsx("flex-center", styles.footer)}>
+          <SearchInput />
+          <SkinTone />
+        </div>
+      </Provider>
+    </Popover>
   );
 };
 

@@ -23,7 +23,7 @@ const Item = ({
 }): React.ReactElement => (
   <Button
     as={"li"}
-    className={clsx("flex", styles.x, styles.item)}
+    className={clsx("focus-invert", styles.x, styles.item)}
     variant={"ghost"}
   >
     <span className={clsx("flex-center", styles.x, styles.icon)}>

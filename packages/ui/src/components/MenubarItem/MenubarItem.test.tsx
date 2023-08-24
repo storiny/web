@@ -8,8 +8,8 @@ import MenubarItem from "./MenubarItem";
 import { MenubarItemProps } from "./MenubarItem.props";
 
 describe("<MenubarItem />", () => {
-  it("renders", () => {
-    const { getByTestId } = renderTestWithProvider(
+  it("renders and matches snapshot", () => {
+    const { baseElement, getByTestId } = renderTestWithProvider(
       <Menubar value={"test"}>
         <MenubarMenu trigger={<button>Trigger</button>} value={"test"}>
           <MenubarItem data-testid={"item"}>Menubar item</MenubarItem>
@@ -17,6 +17,7 @@ describe("<MenubarItem />", () => {
       </Menubar>
     );
 
+    expect(baseElement).toMatchSnapshot();
     expect(getByTestId("item")).toBeInTheDocument();
   });
 
