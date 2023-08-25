@@ -13,13 +13,6 @@
 
 $dark-theme-selector: 'html[data-theme="dark"]';
 
-@font-face {
-  font-family: "Storiny Charfix";
-  src: local("'Segoe UI'"), local("system-ui"), local("-apple-system"),
-    local("sans-serif");
-  unicode-range: U+60; // Satoshi does not render graves correctly
-}
-
 :root,
 .force-light-mode {
   /* Misc */

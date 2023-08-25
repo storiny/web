@@ -1,7 +1,7 @@
 import React from "react";
 
-import { WhiteboardContext } from "../../components/Context";
-import { WhiteboardCoreProps } from "../../components/Main";
+import { WhiteboardContext } from "../../components/context";
+import { WhiteboardCoreProps } from "../../components/whiteboard";
 
 /**
  * Hook for consuming whiteboard props

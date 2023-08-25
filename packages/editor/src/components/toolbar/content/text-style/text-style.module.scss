@@ -1,0 +1,10 @@
+@use "../../../../../../ui/src/theme/breakpoints" as breakpoints;
+
+.x {
+  /* Select */
+  &.select {
+    @include breakpoints.media(">mobile") {
+      flex-grow: 1;
+    }
+  }
+}

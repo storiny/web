@@ -1,0 +1,47 @@
+@use "../../../../ui/src/theme/breakpoints" as breakpoints;
+
+.x {
+  /* Base styles */
+  &.toolbar {
+    background-color: var(--bg-elevation-sm);
+    border-top: 1px solid var(--divider);
+    width: 100%;
+    height: 100%;
+  }
+
+  /* Viewport */
+  &.viewport {
+    position: sticky;
+    bottom: 0;
+    left: 0;
+    z-index: 1;
+    overflow: hidden;
+    min-height: 40px; // Toolbar height (prevents jumping when the toolbar exits)
+    margin-top: auto;
+    margin-left: var(--grid-compensation);
+    width: calc(100% + calc(-2 * var(--grid-compensation)));
+
+    @include breakpoints.media("<desktop") {
+      position: fixed;
+      margin-left: 0;
+      width: 100vw;
+    }
+  }
+
+  /* Button and select */
+  &.button,
+  &.select {
+    --size: 40px;
+
+    border-radius: 0;
+    border: none;
+    height: 100%;
+  }
+
+  /* Select */
+  &.select {
+    &:not(:hover) {
+      --bg: transparent;
+    }
+  }
+}

@@ -1,2 +1,2 @@
-export { default } from "./src/components/Main";
-export * from "./src/components/Main";
+export { default } from "./src/components/whiteboard";
+export * from "./src/components/whiteboard";

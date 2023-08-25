@@ -40,7 +40,7 @@
 @keyframes slide-up-and-fade {
   from {
     opacity: 0;
-    transform: translateY(2px);
+    transform: translateY(4px);
   }
 
   to {
@@ -52,7 +52,7 @@
 @keyframes slide-right-and-fade {
   from {
     opacity: 0;
-    transform: translateX(-2px);
+    transform: translateX(-4px);
   }
 
   to {
@@ -64,7 +64,7 @@
 @keyframes slide-down-and-fade {
   from {
     opacity: 0;
-    transform: translateY(-2px);
+    transform: translateY(-4px);
   }
 
   to {
@@ -76,7 +76,7 @@
 @keyframes slide-left-and-fade {
   from {
     opacity: 0;
-    transform: translateX(2px);
+    transform: translateX(4px);
   }
 
   to {

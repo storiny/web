@@ -1,0 +1,8 @@
+.x {
+  /* Viewport */
+  &.viewport {
+    min-height: 180px;
+    border: 1px solid var(--divider);
+    border-radius: var(--radius-md);
+  }
+}

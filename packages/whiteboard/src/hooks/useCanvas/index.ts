@@ -1,7 +1,7 @@
 import { Canvas } from "fabric";
 import React from "react";
 
-import { FabricContext } from "../../components/Context";
+import { FabricContext } from "../../components/context";
 
 /**
  * Hook for consuming canvas context

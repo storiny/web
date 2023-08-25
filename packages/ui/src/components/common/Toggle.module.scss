@@ -13,23 +13,26 @@
   min-height: var(--size);
   min-width: var(--size);
 
-  &:disabled {
-    --icon-stroke: var(--fg-muted);
+  &[data-disabled] {
+    --icon-stroke: var(--inverted-100);
 
     cursor: not-allowed;
   }
 
-  &:not(:disabled):hover {
+  &:not([data-disabled]):hover {
     --bg: var(--inverted-50);
   }
 
   &[data-state="on"] {
-    --bg: var(--bg-toggle);
-    --icon-stroke: var(--fg-major);
     --icon-stroke-width: 0.8px;
 
-    &:disabled {
+    &[data-disabled] {
       --bg: var(--inverted-50);
+    }
+
+    &:not([data-disabled]) {
+      --bg: var(--bg-toggle);
+      --icon-stroke: var(--fg-major);
     }
   }
 }

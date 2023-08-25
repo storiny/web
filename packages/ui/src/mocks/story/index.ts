@@ -139,7 +139,7 @@ export const mockStories: Story[] = [
     id: "1662482155938364800"
   },
   {
-    splash_hex: "b3a494",
+    splash_hex: "f6c4ed",
     splash_id: getSplashId("lq-w5bRrNcc"),
     published_at: "2023-02-03T01:07:02.000Z",
     created_at: "2022-02-03T01:07:02.000Z",

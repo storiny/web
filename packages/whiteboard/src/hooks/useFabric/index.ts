@@ -4,7 +4,7 @@ import React from "react";
 import { selectTheme } from "~/redux/features";
 import { useAppSelector } from "~/redux/hooks";
 
-import { FabricContext } from "../../components/Context";
+import { FabricContext } from "../../components/context";
 import { CURSORS, SWATCH } from "../../constants";
 import { Image } from "../../lib";
 import { useWhiteboard } from "../useWhiteboard";
