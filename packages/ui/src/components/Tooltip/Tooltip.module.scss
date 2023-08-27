@@ -1,6 +1,5 @@
 /* Base styles */
 .content {
-  display: block;
   padding: 5px 10px;
   background-color: var(--bg-elevation-sm);
   border-radius: var(--radius-md);
@@ -34,6 +33,11 @@
       animation-name: slide-right-and-fade;
     }
   }
+}
+
+/* Right slot */
+.right-slot {
+  font-size: 11px;
 }
 
 /* Arrow */

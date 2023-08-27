@@ -8,6 +8,7 @@ import PointIcon from "~/icons/Point";
 import { forwardRef } from "~/utils/forwardRef";
 
 import menuItemStyles from "../common/MenuItem.module.scss";
+import rightSlotStyles from "../common/RightSlot.module.scss";
 import styles from "./MenubarRadioItem.module.scss";
 import { MenubarRadioItemProps } from "./MenubarRadioItem.props";
 
@@ -57,7 +58,7 @@ const MenubarRadioItem = forwardRef<MenubarRadioItemProps, "div">(
             <span
               {...slotProps?.rightSlot}
               className={clsx(
-                menuItemStyles["right-slot"],
+                rightSlotStyles["right-slot"],
                 slotProps?.rightSlot?.className
               )}
             >

@@ -8,6 +8,7 @@ import CheckIcon from "~/icons/Check";
 import { forwardRef } from "~/utils/forwardRef";
 
 import menuItemStyles from "../common/MenuItem.module.scss";
+import rightSlotStyles from "../common/RightSlot.module.scss";
 import styles from "./MenubarCheckboxItem.module.scss";
 import { MenubarCheckboxItemProps } from "./MenubarCheckboxItem.props";
 
@@ -57,7 +58,7 @@ const MenubarCheckboxItem = forwardRef<MenubarCheckboxItemProps, "div">(
             <span
               {...slotProps?.rightSlot}
               className={clsx(
-                menuItemStyles["right-slot"],
+                rightSlotStyles["right-slot"],
                 slotProps?.rightSlot?.className
               )}
             >

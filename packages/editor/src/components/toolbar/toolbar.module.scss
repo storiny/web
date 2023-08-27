@@ -40,7 +40,8 @@
 
   /* Select */
   &.select {
-    &:not(:hover) {
+    &:not(:hover),
+    &[data-disabled] {
       --bg: transparent;
     }
   }

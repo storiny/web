@@ -1,7 +1,6 @@
 import { $isLinkNode } from "@lexical/link";
 import { $isListNode, ListNode, ListType } from "@lexical/list";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { $isHeadingNode } from "@lexical/rich-text";
 import {
   $findMatchingParent,
   $getNearestNodeOfType,
@@ -23,6 +22,8 @@ import React from "react";
 import {
   alignmentAtom,
   boldAtom,
+  canIndentAtom,
+  canOutdentAtom,
   canRedoAtom,
   canUndoAtom,
   codeAtom,
@@ -34,7 +35,13 @@ import {
   textStyleAtom,
   underlineAtom
 } from "../../atoms";
-import { Alignment, TextStyle } from "../../constants";
+import {
+  Alignment,
+  MAX_INDENT_LEVEL,
+  nodeToTextStyleMap,
+  TextStyle
+} from "../../constants";
+import { $isHeadingNode } from "../../nodes/heading";
 import { getSelectedNode } from "../../utils/getSelectedNode";
 
 const listTypeToTextStyleMap: Record<Exclude<ListType, "check">, TextStyle> = {
@@ -58,9 +65,14 @@ export const useRegisterTools = (): void => {
   const setSubscript = useSetAtom(subscriptAtom);
   const setSuperscript = useSetAtom(superscriptAtom);
   const setCode = useSetAtom(codeAtom);
+  const setCanIndent = useSetAtom(canIndentAtom);
+  const setCanOutdent = useSetAtom(canOutdentAtom);
   const setCanUndo = useSetAtom(canUndoAtom);
   const setCanRedo = useSetAtom(canRedoAtom);
 
+  /**
+   * Updates tools
+   */
   const $updateTools = React.useCallback(() => {
     const selection = $getSelection();
 
@@ -115,12 +127,23 @@ export const useRegisterTools = (): void => {
           const type = $isHeadingNode(element)
             ? element.getTag()
             : element.getType();
-          console.log("heading:", type);
-          // if (type in blockTypeToBlockName) {
-          //   setBlockType(type as keyof typeof blockTypeToBlockName);
-          // }
+
+          if (type in nodeToTextStyleMap) {
+            setTextStyle(nodeToTextStyleMap[type]);
+          }
         }
       }
+
+      // Update indentation
+
+      const indentation = $isElementNode(node)
+        ? node.getIndent()
+        : parent?.getIndent() || 0;
+
+      setCanIndent(indentation < MAX_INDENT_LEVEL);
+      setCanOutdent(indentation > 0);
+
+      // Update alignment
 
       const alignment =
         ($isElementNode(node)
@@ -204,12 +227,4 @@ export const useRegisterTools = (): void => {
   //     ),
   //   [activeEditor, link]
   // );
-  //
-  // const insertLink = React.useCallback(() => {
-  //   if (!link) {
-  //     editor.dispatchCommand(TOGGLE_LINK_COMMAND, sanitizeUrl("https://"));
-  //   } else {
-  //     editor.dispatchCommand(TOGGLE_LINK_COMMAND, null);
-  //   }
-  // }, [editor, link]);
 };

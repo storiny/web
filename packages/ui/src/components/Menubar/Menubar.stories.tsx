@@ -18,6 +18,13 @@ import { MenubarProps } from "./Menubar.props";
 const meta: Meta<typeof Menubar> = {
   title: "Components/Menubar",
   component: Menubar,
+  args: {
+    children: [...Array(5)].map((_, index) => (
+      <MenubarItem decorator={<RectangleIcon />} key={index} rightSlot={"⌘+T"}>
+        Menubar item
+      </MenubarItem>
+    ))
+  },
   tags: ["autodocs"]
 };
 
@@ -35,14 +42,7 @@ const MenuComponent = (args?: MenubarProps): React.ReactElement => (
 );
 
 export const Default: Story = {
-  render: (args) => <MenuComponent {...args} />,
-  args: {
-    children: [...Array(5)].map((_, index) => (
-      <MenubarItem decorator={<RectangleIcon />} key={index} rightSlot={"⌘+T"}>
-        Menubar item
-      </MenubarItem>
-    ))
-  }
+  render: (args) => <MenuComponent {...args} />
 };
 
 export const Submenu: Story = {

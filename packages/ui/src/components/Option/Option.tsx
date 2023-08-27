@@ -7,12 +7,14 @@ import React from "react";
 import CheckIcon from "~/icons/Check";
 import { forwardRef } from "~/utils/forwardRef";
 
+import rightSlotStyles from "../common/RightSlot.module.scss";
 import styles from "./Option.module.scss";
 import { OptionProps } from "./Option.props";
 
 const Option = forwardRef<OptionProps, "div">((props, ref) => {
   const {
     as: Component = "div",
+    rightSlot,
     decorator,
     children,
     className,
@@ -37,6 +39,17 @@ const Option = forwardRef<OptionProps, "div">((props, ref) => {
           </span>
         )}
         <ItemText {...slotProps?.text}>{children}</ItemText>
+        {rightSlot && (
+          <span
+            {...slotProps?.rightSlot}
+            className={clsx(
+              rightSlotStyles["right-slot"],
+              slotProps?.rightSlot?.className
+            )}
+          >
+            {rightSlot}
+          </span>
+        )}
         <ItemIndicator
           {...slotProps?.indicator}
           className={clsx(styles.indicator, slotProps?.indicator?.className)}

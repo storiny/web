@@ -24,7 +24,7 @@ const ToggleGroup = forwardRef<ToggleGroupProps, "div">((props, ref) => {
 
   return (
     // Disable hover-able content for seamless tooltip swap animation
-    <TooltipProvider disableHoverableContent>
+    <TooltipProvider disableHoverableContent skipDelayDuration={1500}>
       <ToggleGroupContext.Provider value={{ size }}>
         <Root
           {...(rest as any)}

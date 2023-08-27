@@ -3,6 +3,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
 
+import MenuCheckboxItem from "~/components/MenuCheckboxItem";
 import RectangleIcon from "~/icons/Rectangle";
 
 import Button from "../Button";
@@ -16,7 +17,15 @@ const meta: Meta<typeof Menu> = {
   component: Menu,
   tags: ["autodocs"],
   args: {
-    size: "md"
+    size: "md",
+    children: [...Array(5)].map((_, index) => (
+      <React.Fragment key={index}>
+        <MenuItem decorator={<RectangleIcon />} rightSlot={"⌘+T"}>
+          Menu item
+        </MenuItem>
+        {index === 2 && <Separator />}
+      </React.Fragment>
+    ))
   },
   argTypes: {
     open: {
@@ -36,19 +45,26 @@ type Story = StoryObj<typeof Menu>;
 
 const MenuComponent = (args?: MenuProps): React.ReactElement => (
   <Menu {...args} trigger={<Button aria-label={"Show menu"}>Show menu</Button>}>
-    {[...Array(5)].map((_, index) => (
-      <React.Fragment key={index}>
-        <MenuItem decorator={<RectangleIcon />} rightSlot={"⌘+T"}>
-          Menu item
-        </MenuItem>
-        {index === 2 && <Separator />}
-      </React.Fragment>
-    ))}
+    {args?.children}
   </Menu>
 );
 
 export const Default: Story = {
   render: (args) => <MenuComponent {...args} />
+};
+
+export const CheckboxItem: Story = {
+  ...Default,
+  args: {
+    children: [...Array(5)].map((_, index) => (
+      <React.Fragment key={index}>
+        <MenuCheckboxItem decorator={<RectangleIcon />} rightSlot={"⌘+T"}>
+          Checkbox item
+        </MenuCheckboxItem>
+        {index === 2 && <Separator />}
+      </React.Fragment>
+    ))
+  }
 };
 
 export const SizeMD: Story = {

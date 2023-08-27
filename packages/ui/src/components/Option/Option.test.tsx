@@ -29,6 +29,18 @@ describe("<Option />", () => {
     expect(getByRole("option").nodeName.toLowerCase()).toEqual("aside");
   });
 
+  it("renders right slot", () => {
+    const { getByTestId } = renderTestWithProvider(
+      <Select open>
+        <Option rightSlot={<span data-testid={"right-slot"} />} value={"test"}>
+          Test
+        </Option>
+      </Select>
+    );
+
+    expect(getByTestId("right-slot")).toBeInTheDocument();
+  });
+
   it("renders decorator", () => {
     const { getByTestId } = renderTestWithProvider(
       <Select open>
@@ -54,11 +66,13 @@ describe("<Option />", () => {
       <Select defaultValue={"test"} open>
         <Option
           decorator={"Test"}
+          rightSlot={"test"}
           slotProps={
             {
               text: { "data-testid": "text" },
               indicator: { "data-testid": "indicator" },
-              decorator: { "data-testid": "decorator" }
+              decorator: { "data-testid": "decorator" },
+              rightSlot: { "data-testid": "right-slot" }
             } as OptionProps["slotProps"]
           }
           value={"test"}
@@ -68,7 +82,7 @@ describe("<Option />", () => {
       </Select>
     );
 
-    ["text", "indicator", "decorator"].forEach((element) => {
+    ["text", "indicator", "decorator", "right-slot"].forEach((element) => {
       expect(getByTestId(element)).toBeInTheDocument();
     });
   });

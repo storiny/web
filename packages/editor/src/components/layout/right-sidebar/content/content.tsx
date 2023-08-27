@@ -1,6 +1,5 @@
 "use client";
 
-import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { animated, useTransition } from "@react-spring/web";
 import { clsx } from "clsx";
 import { useAtomValue } from "jotai";
@@ -20,7 +19,6 @@ import PaddedDivider from "./padded-divider";
 import TextStyle from "./text-style";
 
 const SuspendedEditorRightSidebarContent = (): React.ReactElement => {
-  const [editor] = useLexicalComposerContext();
   const isCollapsed = useAtomValue(sidebarsCollapsedAtom);
   const documentLoading = useAtomValue(documentLoadingAtom);
   const transitions = useTransition(!isCollapsed, {

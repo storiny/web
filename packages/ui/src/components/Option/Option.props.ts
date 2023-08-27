@@ -15,11 +15,16 @@ export interface OptionProps extends OptionPrimitive {
    */
   decorator?: React.ReactNode;
   /**
+   * The element placed after the children.
+   */
+  rightSlot?: React.ReactNode;
+  /**
    * The props passed to the individual component elements.
    */
   slotProps?: {
     decorator?: React.ComponentPropsWithoutRef<"span">;
     indicator?: SelectItemIndicatorProps;
+    rightSlot?: React.ComponentPropsWithoutRef<"span">;
     text?: SelectItemTextProps;
   };
 }

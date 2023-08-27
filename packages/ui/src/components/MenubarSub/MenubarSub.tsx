@@ -9,6 +9,7 @@ import { forwardRef } from "~/utils/forwardRef";
 
 import menuStyles from "../common/Menu.module.scss";
 import menuItemStyles from "../common/MenuItem.module.scss";
+import rightSlotStyles from "../common/RightSlot.module.scss";
 import styles from "./MenubarSub.module.scss";
 import { MenubarSubProps } from "./MenubarSub.props";
 
@@ -30,7 +31,7 @@ const MenubarSub = forwardRef<MenubarSubProps, "div">((props, ref) => {
       >
         {trigger}
         <span
-          className={clsx(menuItemStyles["right-slot"], styles["right-slot"])}
+          className={clsx(rightSlotStyles["right-slot"], styles["right-slot"])}
         >
           <ChevronIcon rotation={90} />
         </span>

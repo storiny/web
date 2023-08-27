@@ -1,0 +1,9 @@
+/* Base styles */
+.right-slot {
+  display: inherit;
+  padding-left: 24px;
+  margin-left: auto;
+  font-size: var(--font-size);
+  color: var(--fg, var(--fg-muted));
+  text-align: right;
+}

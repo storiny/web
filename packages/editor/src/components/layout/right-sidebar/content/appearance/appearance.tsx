@@ -1,3 +1,4 @@
+import { getShortcutLabel } from "@storiny/shared/src/utils/get-shortcut-label";
 import { clsx } from "clsx";
 import { useSetAtom } from "jotai";
 import React from "react";
@@ -11,6 +12,7 @@ import CaretDefaultIcon from "~/icons/CaretDefault";
 import SidebarCollapseIcon from "~/icons/SidebarCollapse";
 
 import { sidebarsCollapsedAtom } from "../../../../../atoms";
+import { EDITOR_SHORTCUTS } from "../../../../../constants/shortcuts";
 
 const Appearance = ({
   disabled
@@ -51,7 +53,10 @@ const Appearance = ({
           </div>
         </Tooltip>
         <Spacer />
-        <Tooltip content={"Collapse sidebars"}>
+        <Tooltip
+          content={"Collapse sidebars"}
+          rightSlot={getShortcutLabel(EDITOR_SHORTCUTS.sidebars)}
+        >
           <IconButton
             disabled={disabled}
             onClick={(): void => setSidebarsCollapsed(true)}

@@ -1,13 +1,17 @@
 import { clsx } from "clsx";
+import { useAtomValue } from "jotai/index";
 import React from "react";
 
 import Option from "~/components/Option";
 import Select from "~/components/Select";
 
+import { documentLoadingAtom } from "../../../../atoms";
 import {
+  Alignment,
   Alignment as AlignmentEnum,
   alignmentToIconMap
 } from "../../../../constants";
+import { useAlignment } from "../../../../hooks/useAlignment";
 import toolbarStyles from "../../toolbar.module.scss";
 
 // Item
@@ -25,10 +29,12 @@ const Item = ({
 );
 
 const ToolbarAlignmentItem = (): React.ReactElement => {
-  const [value, setValue] = React.useState<AlignmentEnum>(AlignmentEnum.LEFT);
+  const documentLoading = useAtomValue(documentLoadingAtom);
+  const [alignment, setAlignment] = useAlignment();
   return (
     <Select
-      onValueChange={(newValue): void => setValue(newValue as AlignmentEnum)}
+      disabled={documentLoading}
+      onValueChange={setAlignment}
       size={"lg"}
       slotProps={{
         trigger: {
@@ -42,9 +48,11 @@ const ToolbarAlignmentItem = (): React.ReactElement => {
           side: "top"
         }
       }}
-      value={value}
+      value={alignment}
       valueChildren={
-        <span className={"flex-center"}>{alignmentToIconMap[value]}</span>
+        <span className={"flex-center"}>
+          {alignmentToIconMap[alignment || Alignment.LEFT]}
+        </span>
       }
     >
       <Item alignment={AlignmentEnum.LEFT} label={"Left align"} />

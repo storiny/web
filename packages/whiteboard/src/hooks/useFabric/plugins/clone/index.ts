@@ -1,4 +1,4 @@
-import { getShortcutKey } from "@storiny/shared/src/utils/getShortcutKey";
+import { getShortcutSlug } from "@storiny/shared/src/utils/get-shortcut-slug";
 import { ActiveSelection, BaseFabricObject, Canvas } from "fabric";
 import hotkeys from "hotkeys-js";
 
@@ -16,6 +16,15 @@ const CLONED_OBJECT_OFFSET = 15; // px
  */
 class ClonePlugin {
   /**
+   * Ctor
+   * @param canvas Canvas
+   */
+  constructor(canvas: Canvas) {
+    this.canvas = canvas;
+    this.cache = null;
+    this.cloneCount = 0;
+  }
+  /**
    * Canvas
    * @private
    */
@@ -30,16 +39,6 @@ class ClonePlugin {
    * @private
    */
   private cloneCount: number;
-
-  /**
-   * Ctor
-   * @param canvas Canvas
-   */
-  constructor(canvas: Canvas) {
-    this.canvas = canvas;
-    this.cache = null;
-    this.cloneCount = 0;
-  }
 
   /**
    * Clones a single object
@@ -102,10 +101,10 @@ class ClonePlugin {
    * @private
    */
   private bindEvents(): void {
-    const copyKey = getShortcutKey({ cmd: true, key: "c" });
-    const pasteKey = getShortcutKey({ cmd: true, key: "v" });
-    const cutKey = getShortcutKey({ cmd: true, key: "x" });
-    const duplicateKey = getShortcutKey({ cmd: true, key: "d" });
+    const copyKey = getShortcutSlug({ ctrl: true, key: "c" });
+    const pasteKey = getShortcutSlug({ ctrl: true, key: "v" });
+    const cutKey = getShortcutSlug({ ctrl: true, key: "x" });
+    const duplicateKey = getShortcutSlug({ ctrl: true, key: "d" });
 
     hotkeys(
       [copyKey, pasteKey, cutKey, duplicateKey].join(","),

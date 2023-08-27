@@ -1,4 +1,4 @@
-import { getShortcutKey } from "@storiny/shared/src/utils/getShortcutKey";
+import { getShortcutSlug } from "@storiny/shared/src/utils/get-shortcut-slug";
 import { Canvas } from "fabric";
 import hotkeys from "hotkeys-js";
 
@@ -41,6 +41,18 @@ function throttle<T extends (...args: any) => any>(
  */
 export class HistoryPlugin {
   /**
+   * Ctor
+   * @param canvas Canvas
+   */
+  constructor(canvas: Canvas) {
+    this.canvas = canvas;
+    this.undoStack = [];
+    this.redoStack = [];
+    this.nextState = this.getNextState();
+    this.isProcessing = false;
+    this.debouncedSaveAction = throttle(this.saveActionImpl.bind(this), 100);
+  }
+  /**
    * Canvas
    * @private
    */
@@ -77,19 +89,6 @@ export class HistoryPlugin {
    * @private
    */
   private readonly debouncedSaveAction: () => void;
-
-  /**
-   * Ctor
-   * @param canvas Canvas
-   */
-  constructor(canvas: Canvas) {
-    this.canvas = canvas;
-    this.undoStack = [];
-    this.redoStack = [];
-    this.nextState = this.getNextState();
-    this.isProcessing = false;
-    this.debouncedSaveAction = throttle(this.saveActionImpl.bind(this), 100);
-  }
 
   /**
    * Returns current stringified canvas state
@@ -240,9 +239,9 @@ export class HistoryPlugin {
       "object:skewing": this.saveAction.bind(this)
     });
 
-    const undoKey = getShortcutKey({ cmd: true, key: "z" });
-    const redoKey = getShortcutKey({ cmd: true, key: "y" });
-    const redoAltKey = getShortcutKey({ cmd: true, shift: true, key: "z" });
+    const undoKey = getShortcutSlug({ ctrl: true, key: "z" });
+    const redoKey = getShortcutSlug({ ctrl: true, key: "y" });
+    const redoAltKey = getShortcutSlug({ ctrl: true, shift: true, key: "z" });
 
     hotkeys([undoKey, redoKey, redoAltKey].join(","), (_, hotkeysEvent) => {
       switch (hotkeysEvent.key) {

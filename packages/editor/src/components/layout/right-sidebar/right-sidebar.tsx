@@ -1,7 +1,7 @@
+import { dynamicLoader } from "@storiny/web/src/common/dynamic";
 import dynamic from "next/dynamic";
 import React from "react";
 
-import { dynamicLoader } from "~/common/dynamic";
 import { useMediaQuery } from "~/hooks/useMediaQuery";
 import RightSidebar from "~/layout/RightSidebar";
 import { breakpoints } from "~/theme/breakpoints";

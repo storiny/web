@@ -43,17 +43,16 @@ const MusicItem = (): React.ReactElement => (
       trigger: { "aria-label": "Choose music" }
     }}
     trigger={
-      <div className={clsx("flex-center", "full-h")}>
-        <Tooltip content={"Music"}>
-          <IconButton
-            className={clsx(navbarStyles.x, navbarStyles.button)}
-            size={"lg"}
-            variant={"ghost"}
-          >
-            <MusicIcon />
-          </IconButton>
-        </Tooltip>
-      </div>
+      // TODO: Add tooltip once `data-state` clash resolves
+      <IconButton
+        aria-label={"Music"}
+        className={clsx("focus-invert", navbarStyles.x, navbarStyles.button)}
+        size={"lg"}
+        title={"Music"}
+        variant={"ghost"}
+      >
+        <MusicIcon />
+      </IconButton>
     }
   >
     <MusicItemContent />

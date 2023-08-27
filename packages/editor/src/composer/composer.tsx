@@ -6,6 +6,7 @@ import { devConsole } from "@storiny/shared/src/utils/devLog";
 import React from "react";
 
 import { EditorNamespace } from "../constants";
+import { editorNodes } from "../nodes";
 
 const EditorComposer = ({
   children
@@ -15,6 +16,7 @@ const EditorComposer = ({
   const initialConfig: InitialConfigType = {
     namespace: EditorNamespace.MAIN,
     onError: devConsole.error,
+    nodes: editorNodes,
     editable: true
   };
 

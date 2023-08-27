@@ -1,5 +1,5 @@
 import { TooltipProvider } from "@radix-ui/react-tooltip";
-import {axe, waitForPosition} from "@storiny/test-utils";
+import { axe, waitForPosition } from "@storiny/test-utils";
 import { waitFor } from "@testing-library/react";
 import React from "react";
 
@@ -63,6 +63,20 @@ describe("<Tooltip />", () => {
     expect(getByTestId("content").nodeName.toLowerCase()).toEqual("aside");
   });
 
+  it("renders right slot", async () => {
+    const { getByTestId } = renderTestWithProvider(
+      <Tooltip
+        content={"Tooltip content"}
+        open
+        rightSlot={<span data-testid={"right-slot"} />}
+      >
+        Test
+      </Tooltip>
+    );
+
+    expect(getByTestId("right-slot")).toBeInTheDocument();
+  });
+
   it("passes props to the element slots", async () => {
     const { getByTestId } = renderTestWithProvider(
       <TooltipProvider delayDuration={0}>
@@ -71,12 +85,9 @@ describe("<Tooltip />", () => {
           open
           slotProps={
             {
-              arrow: {
-                "data-testid": "arrow"
-              },
-              content: {
-                "data-testid": "content"
-              }
+              arrow: { "data-testid": "arrow" },
+              content: { "data-testid": "content" },
+              rightSlot: { "data-testid": "right-slot" }
             } as TooltipProps["slotProps"]
           }
         >
@@ -87,7 +98,7 @@ describe("<Tooltip />", () => {
 
     await waitForPosition();
 
-    ["arrow", "content"].forEach((element) => {
+    ["arrow", "content", "right-slot"].forEach((element) => {
       expect(getByTestId(element)).toBeInTheDocument();
     });
   });

@@ -33,3 +33,10 @@ export const textStyleToLabelMap: Record<TextStyle, string> = {
   [TextStyle.BULLETED_LIST /**/]: "Bulleted list",
   [TextStyle.NUMBERED_LIST /**/]: "Numbered list"
 };
+
+export const nodeToTextStyleMap: Record<string, TextStyle> = {
+  h2 /*       */: TextStyle.HEADING,
+  h3 /*       */: TextStyle.SUBHEADING,
+  quote /*    */: TextStyle.QUOTE,
+  paragraph /**/: TextStyle.PARAGRAPH
+};

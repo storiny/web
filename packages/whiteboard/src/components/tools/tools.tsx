@@ -6,7 +6,6 @@ import { useFilePicker } from "use-file-picker";
 
 import ScrollArea from "~/components/ScrollArea";
 import Separator from "~/components/Separator";
-import Spacer from "~/components/Spacer";
 import Tab from "~/components/Tab";
 import Tabs from "~/components/Tabs";
 import TabsList from "~/components/TabsList";
@@ -44,28 +43,12 @@ import { useShortcuts } from "./useShortcuts";
 const PositionedTooltip = ({
   slotProps,
   children,
-  content,
   shortcutKey,
   ...rest
 }: TooltipProps & { shortcutKey?: string }): React.ReactElement => (
   <Tooltip
     {...rest}
-    content={
-      <span className={"flex-center"}>
-        {content}
-        {shortcutKey && (
-          <React.Fragment>
-            <Spacer />
-            <span
-              aria-label={`Shortcut: ${shortcutKey}`}
-              className={clsx("t-muted", styles.x, styles["shortcut-key"])}
-            >
-              {shortcutKey}
-            </span>
-          </React.Fragment>
-        )}
-      </span>
-    }
+    rightSlot={shortcutKey}
     slotProps={{
       ...slotProps,
       content: { ...slotProps?.content, side: "right" }

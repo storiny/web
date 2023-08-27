@@ -18,12 +18,17 @@ export interface TooltipProps extends TooltipPrimitive {
    */
   content?: React.ReactNode;
   /**
+   * The element placed after the content.
+   */
+  rightSlot?: React.ReactNode;
+  /**
    * The props passed to the individual component elements.
    */
   slotProps?: {
     arrow?: TooltipArrowProps;
     content?: TooltipContentProps;
     portal?: TooltipPortalProps;
+    rightSlot?: React.ComponentPropsWithoutRef<"span">;
     trigger?: TooltipTriggerProps;
   };
 }

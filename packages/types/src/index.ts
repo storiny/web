@@ -5,6 +5,7 @@ export * from "./connection";
 export * from "./friendRequest";
 export * from "./notification";
 export * from "./reply";
+export * from "./shortcut";
 export * from "./story";
 export * from "./tag";
 export * from "./user";

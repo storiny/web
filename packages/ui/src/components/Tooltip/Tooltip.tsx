@@ -4,6 +4,7 @@ import { Arrow, Content, Portal, Root, Trigger } from "@radix-ui/react-tooltip";
 import clsx from "clsx";
 import React from "react";
 
+import Spacer from "~/components/Spacer";
 import { forwardRef } from "~/utils/forwardRef";
 
 import styles from "./Tooltip.module.scss";
@@ -14,6 +15,7 @@ export { TooltipProvider } from "@radix-ui/react-tooltip";
 const Tooltip = forwardRef<TooltipProps, "div">((props, ref) => {
   const {
     as: Component = "div",
+    rightSlot,
     children,
     className,
     content,
@@ -36,6 +38,22 @@ const Tooltip = forwardRef<TooltipProps, "div">((props, ref) => {
         >
           <Component>
             {content}
+            {rightSlot && (
+              <React.Fragment>
+                <Spacer />
+                <span
+                  {...slotProps?.rightSlot}
+                  className={clsx(
+                    "t-muted",
+                    styles.x,
+                    styles["right-slot"],
+                    slotProps?.rightSlot?.className
+                  )}
+                >
+                  {rightSlot}
+                </span>
+              </React.Fragment>
+            )}
             <Arrow
               {...slotProps?.arrow}
               className={clsx(styles.arrow, slotProps?.arrow?.className)}

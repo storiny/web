@@ -1,12 +1,12 @@
 "use client";
 
+import SuspenseLoader from "@storiny/web/src/common/suspense-loader";
 import clsx from "clsx";
 import dynamic from "next/dynamic";
 import NextLink from "next/link";
 import React from "react";
 
 import Logo from "~/brand/Logo";
-import SuspenseLoader from "~/common/suspense-loader";
 import Button from "~/components/Button";
 import IconButton from "~/components/IconButton";
 import Menubar from "~/components/Menubar";
@@ -46,7 +46,7 @@ const EditorMenubar = (): React.ReactElement => (
       }}
       trigger={
         <Button
-          className={clsx("flex-center", styles.x, styles.menu)}
+          className={clsx("focus-invert", "flex-center", styles.x, styles.menu)}
           variant={"ghost"}
         >
           <Logo size={26} />
@@ -71,7 +71,7 @@ const EditorNavbar = (): React.ReactElement => {
           <React.Fragment>
             <Tooltip content={"Version history"}>
               <IconButton
-                className={clsx(styles.x, styles.button)}
+                className={clsx("focus-invert", styles.x, styles.button)}
                 size={"lg"}
                 variant={"ghost"}
               >
@@ -82,7 +82,7 @@ const EditorNavbar = (): React.ReactElement => {
             <Tooltip content={"Help"}>
               <IconButton
                 as={NextLink}
-                className={clsx(styles.x, styles.button)}
+                className={clsx("focus-invert", styles.x, styles.button)}
                 href={"/help"}
                 size={"lg"}
                 target={"_blank"}

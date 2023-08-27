@@ -7,6 +7,7 @@ import React from "react";
 import { forwardRef } from "~/utils/forwardRef";
 
 import menuItemStyles from "../common/MenuItem.module.scss";
+import rightSlotStyles from "../common/RightSlot.module.scss";
 import { MenubarItemProps } from "./MenubarItem.props";
 
 const MenubarItem = forwardRef<MenubarItemProps, "div">((props, ref) => {
@@ -44,7 +45,7 @@ const MenubarItem = forwardRef<MenubarItemProps, "div">((props, ref) => {
           <span
             {...slotProps?.rightSlot}
             className={clsx(
-              menuItemStyles["right-slot"],
+              rightSlotStyles["right-slot"],
               slotProps?.rightSlot?.className
             )}
           >

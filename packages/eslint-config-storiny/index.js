@@ -29,7 +29,12 @@ module.exports = {
       },
     },
   ],
-  plugins: ["jest", "prefer-arrow-functions", "simple-import-sort"],
+  plugins: [
+    "jest",
+    "prefer-arrow-functions",
+    "simple-import-sort",
+    "sort-class-members",
+  ],
   rules: {
     "@next/next/no-html-link-for-pages": "off",
     "no-unused-vars": "off",
@@ -48,5 +53,20 @@ module.exports = {
     "simple-import-sort/exports": "error",
     "simple-import-sort/imports": "error",
     "turbo/no-undeclared-env-vars": "off",
+    "sort-class-members/sort-class-members": [
+      2,
+      {
+        order: [
+          "constructor",
+          "[static-properties]",
+          "[static-methods]",
+          "[properties]",
+          "[conventional-private-properties]",
+          "[methods]",
+          "[conventional-private-methods]",
+        ],
+        accessorPairPositioning: "getThenSet",
+      },
+    ],
   },
 };
