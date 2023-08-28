@@ -19,6 +19,10 @@
     background-color: var(--bg-elevation-xs);
     border-top: 1px solid var(--divider);
   }
+
+  @media print {
+    display: none;
+  }
 }
 
 /* Container */

@@ -11,6 +11,10 @@
   align-items: stretch;
   gap: 18px;
   z-index: calc(var(--z-index-header) + 1);
+
+  @media print {
+    display: none !important;
+  }
 }
 
 /* Logo */

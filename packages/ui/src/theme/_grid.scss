@@ -99,4 +99,10 @@
     grid-column-gap: 0;
     grid-template-columns: var(--grid-gutter) repeat(2, 1fr) var(--grid-gutter);
   }
+
+  @media print {
+    --grid-area: ". main main main main main main main main main main main main ." !important;
+
+    grid-template-rows: minmax(var(--main-height), 1fr) !important;
+  }
 }

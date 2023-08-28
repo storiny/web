@@ -23,6 +23,10 @@
       background-color: var(--bg-elevation-sm);
       border-bottom: 1px solid var(--divider);
     }
+
+    @media print {
+      display: none !important;
+    }
   }
 
   /* Full height bleed */

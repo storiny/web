@@ -16,9 +16,12 @@ import OutdentIcon from "~/icons/Outdent";
 import { Alignment } from "../../../../../constants";
 import { EDITOR_SHORTCUTS } from "../../../../../constants/shortcuts";
 import { useAlignment } from "../../../../../hooks/useAlignment";
+import { useIndentation } from "../../../../../hooks/useIndentation";
 
 const AlignItem = (): React.ReactElement => {
   const [alignment, setAlignment] = useAlignment();
+  const { outdent, canOutdent, canIndent, indent } = useIndentation();
+
   return (
     <MenubarSub trigger={"Align"}>
       <MenubarRadioGroup value={alignment}>
@@ -32,6 +35,7 @@ const AlignItem = (): React.ReactElement => {
         </MenubarRadioItem>
         <MenubarRadioItem
           decorator={<AlignCenterIcon />}
+          onClick={(): void => setAlignment(Alignment.CENTER)}
           rightSlot={getShortcutLabel(EDITOR_SHORTCUTS.centerAlign)}
           value={Alignment.CENTER}
         >
@@ -39,6 +43,7 @@ const AlignItem = (): React.ReactElement => {
         </MenubarRadioItem>
         <MenubarRadioItem
           decorator={<AlignRightIcon />}
+          onClick={(): void => setAlignment(Alignment.RIGHT)}
           rightSlot={getShortcutLabel(EDITOR_SHORTCUTS.rightAlign)}
           value={Alignment.RIGHT}
         >
@@ -46,6 +51,7 @@ const AlignItem = (): React.ReactElement => {
         </MenubarRadioItem>
         <MenubarRadioItem
           decorator={<AlignJustifyIcon />}
+          onClick={(): void => setAlignment(Alignment.JUSTIFY)}
           rightSlot={getShortcutLabel(EDITOR_SHORTCUTS.justifyAlign)}
           value={Alignment.JUSTIFY}
         >
@@ -54,12 +60,16 @@ const AlignItem = (): React.ReactElement => {
         <Separator />
         <MenubarItem
           decorator={<IndentIcon />}
+          disabled={!canIndent}
+          onClick={indent}
           rightSlot={getShortcutLabel(EDITOR_SHORTCUTS.indent)}
         >
           Indent
         </MenubarItem>
         <MenubarItem
           decorator={<OutdentIcon />}
+          disabled={!canOutdent}
+          onClick={outdent}
           rightSlot={getShortcutLabel(EDITOR_SHORTCUTS.outdent)}
         >
           Outdent

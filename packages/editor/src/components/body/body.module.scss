@@ -1,0 +1,10 @@
+.x {
+  /* Base styles */
+  &.body {
+    position: relative;
+    width: 680px;
+    height: 100%;
+    max-width: 100%;
+    margin-inline: auto;
+  }
+}

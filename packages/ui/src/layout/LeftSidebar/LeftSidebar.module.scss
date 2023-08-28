@@ -6,6 +6,10 @@
     border-right: 1px solid var(--divider);
     right: 0;
   }
+
+  @media print {
+    display: none !important;
+  }
 }
 
 /* Wrapper */

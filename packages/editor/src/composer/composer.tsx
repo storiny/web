@@ -7,6 +7,7 @@ import React from "react";
 
 import { EditorNamespace } from "../constants";
 import { editorNodes } from "../nodes";
+import { editorTheme } from "../theme";
 
 const EditorComposer = ({
   children
@@ -17,6 +18,7 @@ const EditorComposer = ({
     namespace: EditorNamespace.MAIN,
     onError: devConsole.error,
     nodes: editorNodes,
+    theme: editorTheme,
     editable: true
   };
 

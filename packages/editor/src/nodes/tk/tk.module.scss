@@ -1,0 +1,11 @@
+.tk {
+  position: relative;
+  color: var(--plum-300);
+
+  &::before {
+    // content: "TK";
+    position: absolute;
+    top: 0;
+    left: -48px;
+  }
+}

@@ -63,6 +63,10 @@
       }
     }
   }
+
+  @media print {
+    display: none !important;
+  }
 }
 
 /* Nav */

@@ -2,6 +2,8 @@ import { getShortcutLabel } from "@storiny/shared/src/utils/get-shortcut-label";
 import React from "react";
 
 import MenubarCheckboxItem from "~/components/MenubarCheckboxItem";
+import MenubarRadioGroup from "~/components/MenubarRadioGroup";
+import MenubarRadioItem from "~/components/MenubarRadioItem";
 import MenubarSub from "~/components/MenubarSub";
 import Separator from "~/components/Separator";
 import BoldIcon from "~/icons/Bold";
@@ -19,97 +21,169 @@ import SubscriptIcon from "~/icons/Subscript";
 import SuperscriptIcon from "~/icons/Superscript";
 import UnderlineIcon from "~/icons/Underline";
 
+import { TextStyle } from "../../../../../constants";
 import { EDITOR_SHORTCUTS } from "../../../../../constants/shortcuts";
+import { useBold } from "../../../../../hooks/useBold";
+import { useCode } from "../../../../../hooks/useCode";
+import { useItalic } from "../../../../../hooks/useItalic";
+import { useLink } from "../../../../../hooks/useLink";
+import { useStrikethrough } from "../../../../../hooks/useStrikethrough";
+import { useSubscript } from "../../../../../hooks/useSubscript";
+import { useSuperscript } from "../../../../../hooks/useSuperscript";
+import { useTextStyle } from "../../../../../hooks/useTextStyle";
+import { useUnderline } from "../../../../../hooks/useUnderline";
+
+const TextNodeItem = (): React.ReactElement => {
+  const {
+    formatBulletedList,
+    formatNumberedList,
+    formatParagraph,
+    formatQuote,
+    formatHeading,
+    textStyle
+  } = useTextStyle();
+
+  return (
+    <MenubarRadioGroup value={textStyle}>
+      <MenubarRadioItem
+        decorator={<ParagraphIcon />}
+        onClick={formatParagraph}
+        rightSlot={getShortcutLabel(EDITOR_SHORTCUTS.paragraph)}
+        value={TextStyle.PARAGRAPH}
+      >
+        Paragraph
+      </MenubarRadioItem>
+      <MenubarRadioItem
+        decorator={<HeadingIcon />}
+        onClick={(): void => formatHeading("h2")}
+        rightSlot={getShortcutLabel(EDITOR_SHORTCUTS.heading)}
+        value={TextStyle.HEADING}
+      >
+        Heading
+      </MenubarRadioItem>
+      <MenubarRadioItem
+        decorator={<SubheadingIcon />}
+        onClick={(): void => formatHeading("h3")}
+        rightSlot={getShortcutLabel(EDITOR_SHORTCUTS.subheading)}
+        value={TextStyle.SUBHEADING}
+      >
+        Subheading
+      </MenubarRadioItem>
+      <MenubarRadioItem
+        decorator={<QuoteIcon />}
+        onClick={formatQuote}
+        rightSlot={getShortcutLabel(EDITOR_SHORTCUTS.quote)}
+        value={TextStyle.QUOTE}
+      >
+        Quote
+      </MenubarRadioItem>
+      <Separator />
+      <MenubarRadioItem
+        decorator={<BulletedListIcon />}
+        onClick={formatBulletedList}
+        rightSlot={getShortcutLabel(EDITOR_SHORTCUTS.bulletedList)}
+        value={TextStyle.BULLETED_LIST}
+      >
+        Bulleted list
+      </MenubarRadioItem>
+      <MenubarRadioItem
+        decorator={<NumberedListIcon />}
+        onClick={formatNumberedList}
+        rightSlot={getShortcutLabel(EDITOR_SHORTCUTS.numberedList)}
+        value={TextStyle.NUMBERED_LIST}
+      >
+        Numbered list
+      </MenubarRadioItem>
+    </MenubarRadioGroup>
+  );
+};
+
+const TextStyleItem = (): React.ReactElement => {
+  const [bold, toggleBold] = useBold();
+  const [italic, toggleItalic] = useItalic();
+  const [underline, toggleUnderline] = useUnderline();
+  const [strikethrough, toggleStrikethrough] = useStrikethrough();
+  const [subscript, toggleSubscript] = useSubscript();
+  const [superscript, toggleSuperscript] = useSuperscript();
+  const [code, toggleCode] = useCode();
+  const [link, insertLink] = useLink();
+
+  return (
+    <React.Fragment>
+      <MenubarCheckboxItem
+        checked={bold}
+        decorator={<BoldIcon />}
+        onCheckedChange={toggleBold}
+        rightSlot={getShortcutLabel(EDITOR_SHORTCUTS.bold)}
+      >
+        Bold
+      </MenubarCheckboxItem>
+      <MenubarCheckboxItem
+        checked={italic}
+        decorator={<ItalicIcon />}
+        onCheckedChange={toggleItalic}
+        rightSlot={getShortcutLabel(EDITOR_SHORTCUTS.italic)}
+      >
+        Italic
+      </MenubarCheckboxItem>
+      <MenubarCheckboxItem
+        checked={underline}
+        decorator={<UnderlineIcon />}
+        onCheckedChange={toggleUnderline}
+        rightSlot={getShortcutLabel(EDITOR_SHORTCUTS.underline)}
+      >
+        Underline
+      </MenubarCheckboxItem>
+      <MenubarCheckboxItem
+        checked={strikethrough}
+        decorator={<StrikethroughIcon />}
+        onCheckedChange={toggleStrikethrough}
+        rightSlot={getShortcutLabel(EDITOR_SHORTCUTS.strikethrough)}
+      >
+        Strikethrough
+      </MenubarCheckboxItem>
+      <MenubarCheckboxItem
+        checked={code}
+        decorator={<CodeIcon />}
+        onCheckedChange={toggleCode}
+        rightSlot={getShortcutLabel(EDITOR_SHORTCUTS.code)}
+      >
+        Code
+      </MenubarCheckboxItem>
+      <MenubarCheckboxItem
+        checked={link}
+        decorator={<LinkIcon />}
+        onCheckedChange={insertLink}
+        rightSlot={getShortcutLabel(EDITOR_SHORTCUTS.link)}
+      >
+        Link
+      </MenubarCheckboxItem>
+      <Separator />
+      <MenubarCheckboxItem
+        checked={subscript}
+        decorator={<SubscriptIcon />}
+        onCheckedChange={toggleSubscript}
+        rightSlot={getShortcutLabel(EDITOR_SHORTCUTS.subscript)}
+      >
+        Subscript
+      </MenubarCheckboxItem>
+      <MenubarCheckboxItem
+        checked={superscript}
+        decorator={<SuperscriptIcon />}
+        onCheckedChange={toggleSuperscript}
+        rightSlot={getShortcutLabel(EDITOR_SHORTCUTS.superscript)}
+      >
+        Superscript
+      </MenubarCheckboxItem>
+    </React.Fragment>
+  );
+};
 
 const TextItem = (): React.ReactElement => (
   <MenubarSub trigger={"Text"}>
-    <MenubarCheckboxItem
-      decorator={<ParagraphIcon />}
-      rightSlot={getShortcutLabel(EDITOR_SHORTCUTS.paragraph)}
-    >
-      Paragraph
-    </MenubarCheckboxItem>
-    <MenubarCheckboxItem
-      decorator={<HeadingIcon />}
-      rightSlot={getShortcutLabel(EDITOR_SHORTCUTS.heading)}
-    >
-      Heading
-    </MenubarCheckboxItem>
-    <MenubarCheckboxItem
-      decorator={<SubheadingIcon />}
-      rightSlot={getShortcutLabel(EDITOR_SHORTCUTS.subheading)}
-    >
-      Subheading
-    </MenubarCheckboxItem>
-    <MenubarCheckboxItem
-      decorator={<QuoteIcon />}
-      rightSlot={getShortcutLabel(EDITOR_SHORTCUTS.quote)}
-    >
-      Quote
-    </MenubarCheckboxItem>
+    <TextNodeItem />
     <Separator />
-    <MenubarCheckboxItem
-      decorator={<BulletedListIcon />}
-      rightSlot={getShortcutLabel(EDITOR_SHORTCUTS.bulletedList)}
-    >
-      Bulleted list
-    </MenubarCheckboxItem>
-    <MenubarCheckboxItem
-      decorator={<NumberedListIcon />}
-      rightSlot={getShortcutLabel(EDITOR_SHORTCUTS.numberedList)}
-    >
-      Numbered list
-    </MenubarCheckboxItem>
-    <Separator />
-    <MenubarCheckboxItem
-      decorator={<BoldIcon />}
-      rightSlot={getShortcutLabel(EDITOR_SHORTCUTS.bold)}
-    >
-      Bold
-    </MenubarCheckboxItem>
-    <MenubarCheckboxItem
-      decorator={<ItalicIcon />}
-      rightSlot={getShortcutLabel(EDITOR_SHORTCUTS.italic)}
-    >
-      Italic
-    </MenubarCheckboxItem>
-    <MenubarCheckboxItem
-      decorator={<UnderlineIcon />}
-      rightSlot={getShortcutLabel(EDITOR_SHORTCUTS.underline)}
-    >
-      Underline
-    </MenubarCheckboxItem>
-    <MenubarCheckboxItem
-      decorator={<StrikethroughIcon />}
-      rightSlot={getShortcutLabel(EDITOR_SHORTCUTS.strikethrough)}
-    >
-      Strikethrough
-    </MenubarCheckboxItem>
-    <MenubarCheckboxItem
-      decorator={<CodeIcon />}
-      rightSlot={getShortcutLabel(EDITOR_SHORTCUTS.code)}
-    >
-      Code
-    </MenubarCheckboxItem>
-    <MenubarCheckboxItem
-      decorator={<LinkIcon />}
-      rightSlot={getShortcutLabel(EDITOR_SHORTCUTS.link)}
-    >
-      Link
-    </MenubarCheckboxItem>
-    <Separator />
-    <MenubarCheckboxItem
-      decorator={<SubscriptIcon />}
-      rightSlot={getShortcutLabel(EDITOR_SHORTCUTS.subscript)}
-    >
-      Subscript
-    </MenubarCheckboxItem>
-    <MenubarCheckboxItem
-      decorator={<SuperscriptIcon />}
-      rightSlot={getShortcutLabel(EDITOR_SHORTCUTS.superscript)}
-    >
-      Superscript
-    </MenubarCheckboxItem>
+    <TextStyleItem />
   </MenubarSub>
 );
 

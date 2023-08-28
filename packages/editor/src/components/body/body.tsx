@@ -1,18 +1,23 @@
 import LexicalErrorBoundary from "@lexical/react/LexicalErrorBoundary";
 import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
+import { ListPlugin } from "@lexical/react/LexicalListPlugin";
+import { clsx } from "clsx";
 import { useSetAtom } from "jotai";
 import React from "react";
 
 import { documentLoadingAtom } from "../../atoms";
 import { useRegisterTools } from "../../hooks/useRegisterTools";
 import AutoFocusPlugin from "../../plugins/auto-focus";
+import ColorPlugin from "../../plugins/color/color";
 import LinkPlugin from "../../plugins/link";
 import ListMaxIndentLevelPlugin from "../../plugins/list-max-indent-level";
 import MaxLengthPlugin from "../../plugins/max-length";
 import RichTextPlugin from "../../plugins/rich-text";
 import TabFocusPlugin from "../../plugins/tab-focus";
+import TKPlugin from "../../plugins/tk/tk";
 import EditorContentEditable from "../content-editable";
 import EditorPlaceholder from "../placeholder";
+import styles from "./body.module.scss";
 
 const EditorBody = (): React.ReactElement => {
   useRegisterTools();
@@ -24,7 +29,7 @@ const EditorBody = (): React.ReactElement => {
   }, []);
 
   return (
-    <React.Fragment>
+    <article className={clsx(styles.x, styles.body)}>
       <RichTextPlugin
         ErrorBoundary={LexicalErrorBoundary}
         contentEditable={<EditorContentEditable />}
@@ -32,11 +37,14 @@ const EditorBody = (): React.ReactElement => {
       />
       <HistoryPlugin />
       <LinkPlugin />
+      <ListPlugin />
+      <ColorPlugin />
+      <TKPlugin />
       <ListMaxIndentLevelPlugin />
       <MaxLengthPlugin />
       <TabFocusPlugin />
       <AutoFocusPlugin />
-    </React.Fragment>
+    </article>
   );
 };
 

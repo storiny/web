@@ -9,6 +9,10 @@
   justify-content: center;
   z-index: calc(var(--z-index-tooltip) + 1);
   background-color: var(--bg-body);
+
+  @media print {
+    display: none !important;
+  }
 }
 
 /* Children */
