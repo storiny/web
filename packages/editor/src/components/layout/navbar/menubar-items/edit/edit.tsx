@@ -7,7 +7,7 @@ import RedoIcon from "~/icons/Redo";
 import UndoIcon from "~/icons/Undo";
 
 import { EDITOR_SHORTCUTS } from "../../../../../constants/shortcuts";
-import { useHistory } from "../../../../../hooks/useHistory";
+import { useHistory } from "../../../../../hooks/use-history";
 
 const EditItem = (): React.ReactElement => {
   const { canRedo, canUndo, redo, undo } = useHistory();

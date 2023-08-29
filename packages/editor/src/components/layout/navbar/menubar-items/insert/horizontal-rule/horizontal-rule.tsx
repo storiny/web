@@ -1,0 +1,20 @@
+import React from "react";
+
+import MenubarItem from "~/components/MenubarItem";
+import HorizontalRuleIcon from "~/icons/HorizontalRule";
+
+import { useInsertHorizontalRule } from "../../../../../../hooks/use-insert-horizontal-rule";
+
+const HorizontalRuleMenubarItem = (): React.ReactElement => {
+  const [insertHorizontalRule] = useInsertHorizontalRule();
+  return (
+    <MenubarItem
+      decorator={<HorizontalRuleIcon />}
+      onSelect={insertHorizontalRule}
+    >
+      Horizontal rule
+    </MenubarItem>
+  );
+};
+
+export default HorizontalRuleMenubarItem;

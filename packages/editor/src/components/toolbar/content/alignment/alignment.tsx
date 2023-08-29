@@ -11,7 +11,7 @@ import {
   Alignment as AlignmentEnum,
   alignmentToIconMap
 } from "../../../../constants";
-import { useAlignment } from "../../../../hooks/useAlignment";
+import { useAlignment } from "../../../../hooks/use-alignment";
 import toolbarStyles from "../../toolbar.module.scss";
 
 // Item

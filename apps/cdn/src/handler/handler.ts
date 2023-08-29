@@ -46,21 +46,25 @@ export const handler = (r: Request): void | undefined => {
     const uri = r.uri || "";
 
     // Remote image URI with digest and hex
-    if (uri.startsWith("/remote") && REMOTE_REGEX.test(uri)) {
-      const [, parsedWidth, digest, hex] = REMOTE_REGEX.exec(uri) || [];
-      const decodedUrl = decodeHex(hex);
-      const resizeOption = getResizeOption(parsedWidth);
+    if (uri.startsWith("/remote")) {
+      const matches = REMOTE_REGEX.exec(uri);
 
-      if (decodedUrl && verify(digest, decodedUrl)) {
-        return passToProxy(
-          r,
-          `internal${resizeOption || "/"}plain/${decodedUrl}`
-        );
+      if (matches !== null) {
+        const [, parsedWidth, digest, hex] = matches;
+        const decodedUrl = decodeHex(hex);
+        const resizeOption = getResizeOption(parsedWidth);
+
+        if (decodedUrl && verify(digest, decodedUrl)) {
+          return passToProxy(
+            r,
+            `internal${resizeOption || "/"}plain/${decodedUrl}`
+          );
+        }
+
+        prepareTextResponse(r);
+        r.return(400, "Invalid signature");
+        return;
       }
-
-      prepareTextResponse(r);
-      r.return(400, "Invalid signature");
-      return;
     }
 
     // Native S3 bucket

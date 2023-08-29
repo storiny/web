@@ -6,5 +6,30 @@
     height: 100%;
     max-width: 100%;
     margin-inline: auto;
+
+    & hr {
+      display: block;
+      position: relative;
+      margin-bottom: 40px;
+      height: 36px;
+      border: none;
+      outline: none;
+
+      &::before {
+        content: "***";
+        position: absolute;
+        top: 24px;
+        left: 50%;
+        color: var(--fg-muted);
+        font-family: var(--font-satoshi);
+        font-weight: 300; // Light
+        font-size: 36px;
+        line-height: 100%;
+        letter-spacing: 10px;
+        text-align: center;
+        user-select: none;
+        transform: translate(-50%, -50%);
+      }
+    }
   }
 }

@@ -76,7 +76,7 @@ const SearchInput = (): React.ReactElement => {
 };
 
 const EmojiPicker = (props: EmojiPickerProps): React.ReactElement => {
-  const { onEmojiSelect, children } = props;
+  const { onEmojiSelect, popoverProps, children } = props;
   const [open, setOpen] = React.useState<boolean>(false);
 
   /**
@@ -92,12 +92,13 @@ const EmojiPicker = (props: EmojiPickerProps): React.ReactElement => {
 
   return (
     <Popover
-      className={styles.popover}
-      onOpenChange={setOpen}
-      open={open}
       slotProps={{
         trigger: { "aria-label": "Pick an emoji" }
       }}
+      {...popoverProps}
+      className={clsx(styles.popover, popoverProps?.className)}
+      onOpenChange={setOpen}
+      open={open}
       trigger={children}
     >
       <Provider>

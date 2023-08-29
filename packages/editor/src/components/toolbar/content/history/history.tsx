@@ -6,7 +6,7 @@ import Tooltip from "~/components/Tooltip";
 import RedoIcon from "~/icons/Redo";
 import UndoIcon from "~/icons/Undo";
 
-import { useHistory } from "../../../../hooks/useHistory";
+import { useHistory } from "../../../../hooks/use-history";
 import toolbarStyles from "../../toolbar.module.scss";
 
 const ToolbarHistoryItem = (): React.ReactElement => {

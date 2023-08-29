@@ -1,6 +1,14 @@
-import { EditorConfig, LexicalNode, NodeKey, TextNode } from "lexical";
+import {
+  EditorConfig,
+  LexicalNode,
+  NodeKey,
+  SerializedTextNode,
+  TextNode
+} from "lexical";
 
 import typographyStyles from "~/components/Typography/Typography.module.scss";
+
+const TYPE = "color";
 
 export class ColorNode extends TextNode {
   constructor(text: string, key?: NodeKey) {
@@ -8,7 +16,7 @@ export class ColorNode extends TextNode {
   }
 
   static getType(): string {
-    return "color";
+    return TYPE;
   }
 
   static override clone(node: ColorNode): ColorNode {
@@ -29,14 +37,31 @@ export class ColorNode extends TextNode {
 
     return dom;
   }
+
+  override canInsertTextAfter(): boolean {
+    return false;
+  }
+
+  override canInsertTextBefore(): boolean {
+    return false;
+  }
+
+  override isUnmergeable(): boolean {
+    return true;
+  }
+
+  override exportJSON(): SerializedTextNode {
+    return { ...super.exportJSON(), type: TYPE };
+  }
 }
 
 /**
  * Predicate function for determining color nodes
  * @param node Node
  */
-export const $isColorNode = (node: LexicalNode | null | undefined): boolean =>
-  node instanceof ColorNode;
+export const $isColorNode = (
+  node: LexicalNode | null | undefined
+): node is ColorNode => node instanceof ColorNode;
 
 /**
  * Creates a new color node

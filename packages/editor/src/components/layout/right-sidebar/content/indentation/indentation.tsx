@@ -7,7 +7,7 @@ import IndentIcon from "~/icons/Indent";
 import OutdentIcon from "~/icons/Outdent";
 
 import { EDITOR_SHORTCUTS } from "../../../../../constants/shortcuts";
-import { useIndentation } from "../../../../../hooks/useIndentation";
+import { useIndentation } from "../../../../../hooks/use-indentation";
 
 const Indentation = ({
   disabled

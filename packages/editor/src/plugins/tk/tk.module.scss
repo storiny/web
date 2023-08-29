@@ -1,0 +1,23 @@
+@use "breakpoints" as breakpoints;
+
+/* Base styles */
+.tk {
+  &::before {
+    content: "TK";
+    position: absolute;
+    left: -42px;
+    top: 1px;
+    color: var(--plum-300);
+    pointer-events: none;
+    user-select: none;
+    speak: none;
+    font-size: 14px;
+    font-weight: var(--font-weight-medium);
+  }
+
+  @include breakpoints.media("<=mobile") {
+    &::before {
+      content: none;
+    }
+  }
+}

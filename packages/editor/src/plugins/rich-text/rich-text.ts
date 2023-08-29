@@ -81,7 +81,7 @@ import {
 import { clamp } from "~/utils/clamp";
 
 import { MAX_INDENT_LEVEL } from "../../constants";
-import { caretFromPoint } from "../../utils/caretFromPoint";
+import { caretFromPoint } from "../../utils/caret-from-point";
 
 export const DRAG_DROP_PASTE: LexicalCommand<Array<File>> = createCommand(
   "DRAG_DROP_PASTE_FILE"

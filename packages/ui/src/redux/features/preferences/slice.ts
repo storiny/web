@@ -6,54 +6,69 @@ import { AppStartListening } from "../../listenerMiddleware";
 
 export const LOCAL_STORAGE_KEY = "preferences";
 
+/**
+ * Returns the defautl values of a schema
+ * @param schema Schema
+ */
+const getDefaults = <Schema extends z.AnyZodObject>(
+  schema: Schema
+): PreferencesState =>
+  Object.fromEntries(
+    Object.entries(schema.shape).map(([key, value]) => {
+      if (value instanceof z.ZodDefault) {
+        return [key, value._def.defaultValue()];
+      }
+
+      return [key, undefined];
+    })
+  ) as PreferencesState;
+
 // Schema to validate preferences stored in the browser (localStorage)
 const preferencesSchema = z.object({
-  theme: z.union([z.literal("system"), z.literal("light"), z.literal("dark")]),
-  showAppearanceAlert: z.boolean(),
-  showAccessibilityAlert: z.boolean(),
-  hapticFeedback: z.boolean(),
-  reducedMotion: z.union([
-    z.literal("system"),
-    z.literal("enabled"),
-    z.literal("disabled")
-  ]),
-  readingFontSize: z.union([
-    z.literal("slim"),
-    z.literal("regular"),
-    z.literal("oversized")
-  ]),
-  readingFont: z.union([
-    z.literal("satoshi"),
-    z.literal("system"),
-    z.literal("nunito"),
-    z.literal("synonym"),
-    z.literal("lora"),
-    z.literal("erode"),
-    z.literal("recia"),
-    z.literal("merriweather")
-  ]),
-  codeFont: z.union([
-    z.literal("plex-mono"),
-    z.literal("source-code-pro"),
-    z.literal("system")
-  ]),
-  enableCodeLigatures: z.boolean()
+  theme: z
+    .union([z.literal("system"), z.literal("light"), z.literal("dark")])
+    .default("system")
+    .catch("system"),
+  showAppearanceAlert: z.boolean().default(true).catch(true),
+  showAccessibilityAlert: z.boolean().default(true).catch(true),
+  hapticFeedback: z.boolean().default(false).catch(false),
+  reducedMotion: z
+    .union([z.literal("system"), z.literal("enabled"), z.literal("disabled")])
+    .default("system")
+    .catch("system"),
+  readingFontSize: z
+    .union([z.literal("slim"), z.literal("regular"), z.literal("oversized")])
+    .default("regular")
+    .catch("regular"),
+  readingFont: z
+    .union([
+      z.literal("satoshi"),
+      z.literal("system"),
+      z.literal("nunito"),
+      z.literal("synonym"),
+      z.literal("lora"),
+      z.literal("erode"),
+      z.literal("recia"),
+      z.literal("merriweather")
+    ])
+    .default("satoshi")
+    .catch("satoshi"),
+  codeFont: z
+    .union([
+      z.literal("plex-mono"),
+      z.literal("source-code-pro"),
+      z.literal("system")
+    ])
+    .default("system")
+    .catch("system"),
+  enableCodeLigatures: z.boolean().default(false).catch(false)
 });
 
 export type PreferencesState = z.infer<typeof preferencesSchema>;
 export type Theme = PreferencesState["theme"];
 
-export const preferencesInitialState: PreferencesState = {
-  theme: "system",
-  reducedMotion: "system",
-  hapticFeedback: false,
-  showAppearanceAlert: true,
-  showAccessibilityAlert: true,
-  readingFont: "satoshi",
-  readingFontSize: "regular",
-  codeFont: "system",
-  enableCodeLigatures: false
-};
+export const preferencesInitialState: PreferencesState =
+  getDefaults(preferencesSchema);
 
 export const preferencesSlice = createSlice({
   name: "preferences",

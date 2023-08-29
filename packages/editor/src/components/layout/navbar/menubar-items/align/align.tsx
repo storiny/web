@@ -15,8 +15,8 @@ import OutdentIcon from "~/icons/Outdent";
 
 import { Alignment } from "../../../../../constants";
 import { EDITOR_SHORTCUTS } from "../../../../../constants/shortcuts";
-import { useAlignment } from "../../../../../hooks/useAlignment";
-import { useIndentation } from "../../../../../hooks/useIndentation";
+import { useAlignment } from "../../../../../hooks/use-alignment";
+import { useIndentation } from "../../../../../hooks/use-indentation";
 
 const AlignItem = (): React.ReactElement => {
   const [alignment, setAlignment] = useAlignment();

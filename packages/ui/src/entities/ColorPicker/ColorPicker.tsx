@@ -48,13 +48,14 @@ const ColorPickerCore = dynamic(() => import("./core/components/ColorPicker"), {
 });
 
 const ColorPicker = (props: ColorPickerProps): React.ReactElement => {
-  const { children, ...rest } = props;
+  const { children, popoverProps, ...rest } = props;
   return (
     <Popover
-      className={styles.popover}
       slotProps={{
         trigger: { "aria-label": "Pick a color" }
       }}
+      {...popoverProps}
+      className={clsx(styles.popover, popoverProps?.className)}
       trigger={children}
     >
       <Provider>

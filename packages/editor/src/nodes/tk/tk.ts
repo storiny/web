@@ -1,6 +1,14 @@
-import { EditorConfig, LexicalNode, NodeKey, TextNode } from "lexical";
+import {
+  EditorConfig,
+  LexicalNode,
+  NodeKey,
+  SerializedTextNode,
+  TextNode
+} from "lexical";
 
 import styles from "./tk.module.scss";
+
+const TYPE = "tk";
 
 export class TKNode extends TextNode {
   constructor(text: string, key?: NodeKey) {
@@ -8,7 +16,7 @@ export class TKNode extends TextNode {
   }
 
   static getType(): string {
-    return "tk";
+    return TYPE;
   }
 
   static override clone(node: TKNode): TKNode {
@@ -17,7 +25,7 @@ export class TKNode extends TextNode {
 
   override createDOM(config: EditorConfig): HTMLElement {
     const dom = super.createDOM(config);
-    //  dom.classList.add("t-body-2", "t-medium", styles.tk);
+    dom.setAttribute("spellcheck", "false");
     dom.classList.add(styles.tk);
     return dom;
   }
@@ -33,17 +41,23 @@ export class TKNode extends TextNode {
   override isUnmergeable(): boolean {
     return true;
   }
+
+  override exportJSON(): SerializedTextNode {
+    return { ...super.exportJSON(), type: TYPE };
+  }
 }
 
 /**
  * Predicate function for determining TK nodes
  * @param node Node
  */
-export const $isTKNode = (node: LexicalNode | null | undefined): boolean =>
-  node instanceof TKNode;
+export const $isTKNode = (
+  node: LexicalNode | null | undefined
+): node is TKNode => node instanceof TKNode;
 
 /**
  * Creates a new TK node
  * @param text Text content
  */
-export const $createTKNode = (text: string): TKNode => new TKNode(text);
+export const $createTKNode = (text: string): TKNode =>
+  new TKNode(text).setMode("token");

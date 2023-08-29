@@ -5,9 +5,9 @@ const validSizes = Object.values(ImageSize)
   .join("|");
 
 export const NATIVE_REGEX = new RegExp(
-  `\\/(?:(uploads|dl)\\/)?(?:(w@(?:auto|${validSizes}))\\/)?((?!uploads|dl)[\\/a-zA-Z0-9_-]+)$`
+  `\\/(?:(uploads|dl)\\/)?(?:(w@(?:auto|${validSizes}))\\/)?((?!uploads|dl)[\\/a-zA-Z0-9._-]+)$`
 );
 
 export const REMOTE_REGEX = new RegExp(
-  `\\/remote\\/(?:(w@(?:auto|${validSizes}))\\/)?([a-zA-Z0-9_-]+)\\/([a-zA-Z0-9_-]+)$`
+  `\\/remote\\/(?:(w@(?:auto|${validSizes}))\\/)?([a-zA-Z0-9_-]+)\\/([a-zA-Z0-9._-]+)$`
 );

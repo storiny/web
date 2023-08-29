@@ -1,4 +1,4 @@
-import { AutoLinkNode, LinkNode } from "@lexical/link";
+import { LinkNode } from "@lexical/link";
 import { ListItemNode, ListNode } from "@lexical/list";
 import { HorizontalRuleNode } from "@lexical/react/LexicalHorizontalRuleNode";
 import { Klass, LexicalNode } from "lexical";
@@ -21,7 +21,6 @@ export const editorNodes: (
   ListNode,
   ListItemNode,
   QuoteNode,
-  AutoLinkNode,
   LinkNode,
   HorizontalRuleNode,
   ColorNode,

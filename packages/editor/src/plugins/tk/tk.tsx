@@ -1,114 +1,278 @@
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { $createTextNode, LexicalEditor, NodeKey, TextNode } from "lexical";
+import { mergeRegister } from "@lexical/utils";
+import { useAtomValue } from "jotai";
+import {
+  $createTextNode,
+  $getNodeByKey,
+  $getRoot,
+  $isParagraphNode,
+  $isTextNode,
+  LexicalEditor,
+  NodeKey,
+  ParagraphNode,
+  TextNode
+} from "lexical";
 import React from "react";
 
-import { $createTKNode, TKNode } from "../../nodes/tk";
+import { enableTKAtom } from "../../atoms";
+import { $createTKNode, $isTKNode, TKNode } from "../../nodes/tk";
+import styles from "./tk.module.scss";
+
+type ParagraphNodeKey = NodeKey;
+type TKNodeKey = NodeKey;
 
 const TK_TOKEN_REGEX = /(?:[^a-zA-Z0-9]|^)TK(?:[^a-zA-Z0-9]|$)/g;
-const tkSet = new Set<NodeKey>();
-const paragraphTkMap = new Map<NodeKey, Set<NodeKey>>();
+
+// Keeps the record of all the TK nodes insde the individual paragraph nodes
+const paragraphTkMap = new Map<ParagraphNodeKey, Set<TKNodeKey>>();
+
+/**
+ * Adds a TK node to the paragraph-TK map
+ * @param editor Editor
+ * @param paragraphKey Parent paragraph key
+ * @param tkNodeKey TK node key
+ */
+const addTkNodeToMap = (
+  editor: LexicalEditor,
+  paragraphKey: ParagraphNodeKey,
+  tkNodeKey: TKNodeKey
+): void => {
+  const paragraphMap = paragraphTkMap.get(paragraphKey);
+
+  if (paragraphMap) {
+    paragraphMap.add(tkNodeKey);
+  } else {
+    paragraphTkMap.set(paragraphKey, new Set([tkNodeKey]));
+  }
+
+  const element = editor.getElementByKey(paragraphKey);
+
+  if (element && !element.classList.contains(styles.tk)) {
+    element.classList.add(styles.tk);
+  }
+};
+
+/**
+ * Removes a TK node from the paragraph-TK map
+ * @param editor Editor
+ * @param tkNode TK node
+ * @param paragraphKey Paragraph key that overrides parent key
+ */
+const removeTkNodeFromMap = (
+  editor: LexicalEditor,
+  tkNode: TKNode,
+  paragraphKey?: NodeKey
+): void => {
+  const parentNode = tkNode.getParent();
+
+  if (parentNode) {
+    const parentNodeKey = paragraphKey ?? parentNode.getKey();
+    const paragraphMap = paragraphTkMap.get(parentNodeKey);
+
+    if (paragraphMap) {
+      paragraphMap.delete(tkNode.getKey());
+
+      if (!paragraphMap.size) {
+        paragraphTkMap.delete(parentNodeKey);
+
+        if ($isParagraphNode(parentNode)) {
+          const element = editor.getElementByKey(parentNodeKey);
+
+          if (element) {
+            element.classList.remove(styles.tk);
+          }
+        }
+      }
+    }
+  }
+};
 
 /**
  * Text to TK node transformer
- * @param editor Editor
+ * @param node Text node
  */
-const tkTransform =
-  (editor: LexicalEditor) =>
-  (node: TextNode): void => {
-    if (node.getFormat() === 0) {
-      const textContent = node.getTextContent();
-      const matches = TK_TOKEN_REGEX.exec(textContent);
-
-      if (matches !== null) {
-        const index = matches.index;
-        let targetNode: TKNode;
-
-        if (index === 0) {
-          [targetNode] = node.splitText(index + 2);
-        } else {
-          [, targetNode] = node.splitText(index + 1, index + 3);
-        }
-
-        if (targetNode) {
-          const tkNode = $createTKNode(targetNode.getTextContent());
-          const parent = targetNode.getParent();
-
-          if (parent && parent.getType() === "paragraph") {
-            const map = paragraphTkMap.get(parent.getKey());
-            if (map) {
-              map.add(`${parseInt(tkNode.getKey()) + 1}`);
-            } else {
-              paragraphTkMap.set(
-                parent.getKey(),
-                new Set([`${parseInt(tkNode.getKey()) + 1}`])
-              );
-            }
-
-            const element = editor.getElementByKey(parent.getKey());
-
-            if (element) {
-              element.style.setProperty("background-color", "red");
-            }
-          }
-
-          targetNode.replace($createTKNode(targetNode.getTextContent()));
-        }
-      }
-    }
-  };
-
-/**
- * TK to text node transformer
- * @param editor Editor
- */
-const textTransform =
-  (editor: LexicalEditor) =>
-  (node: TKNode): void => {
+const tkTransform = (node: TextNode): void => {
+  if (node.getFormat() === 0 && $isParagraphNode(node.getParent())) {
     const textContent = node.getTextContent();
 
-    // Skip the transform when it happens for the first
-    // time (fires when a new TK node gets created)
-    if (tkSet.has(node.getKey()) && !TK_TOKEN_REGEX.test(textContent)) {
-      tkSet.delete(node.getKey());
+    if (TK_TOKEN_REGEX.test(textContent)) {
+      const index = textContent.indexOf("TK");
+      let targetNode: TKNode;
 
-      const parent = node.getParent();
-
-      if (parent && parent.getType() === "paragraph") {
-        const map = paragraphTkMap.get(parent.getKey());
-        console.log(map, node.getKey());
-        if (map) {
-          map.delete(node.getKey());
-          console.log(map.size);
-
-          const element = editor.getElementByKey(parent.getKey());
-
-          if (element && !map.size) {
-            element.style.removeProperty("background-color");
-          }
-        }
+      if (index === 0) {
+        [targetNode] = node.splitText(index + 2);
+      } else {
+        [, targetNode] = node.splitText(index, index + 3);
       }
 
-      //    node.replace($createTextNode(textContent));
+      if (targetNode) {
+        targetNode.replace($createTKNode(targetNode.getTextContent()));
+      }
     }
+  }
+};
 
-    // Add the node key to the set at the end of the first call
-    tkSet.add(node.getKey());
-  };
-
-const TKPlugin = (): null => {
+const TKPluginImpl = (): null => {
   const [editor] = useLexicalComposerContext();
 
-  React.useEffect(() => {
-    editor.registerNodeTransform<TextNode>(TextNode, tkTransform(editor));
-  }, [editor]);
-
-  // Revert back the text node when the TK is erased
   React.useEffect(
-    () => editor.registerNodeTransform<TKNode>(TKNode, textTransform(editor)),
+    () =>
+      mergeRegister(
+        editor.registerNodeTransform<TextNode>(TextNode, tkTransform),
+        // Handle TK node mutations
+        editor.registerMutationListener(
+          TKNode,
+          (nodes, { prevEditorState }) => {
+            for (const [nodeKey, mutation] of nodes) {
+              if (mutation === "created") {
+                editor.getEditorState().read(() => {
+                  const tkNode = $getNodeByKey<TKNode>(nodeKey);
+
+                  if (tkNode) {
+                    const paragraphNode = tkNode.getParent();
+
+                    if ($isParagraphNode(paragraphNode)) {
+                      addTkNodeToMap(
+                        editor,
+                        paragraphNode.getKey(),
+                        tkNode.getKey()
+                      );
+                    }
+                  }
+                });
+              } else if (mutation === "updated") {
+                editor.getEditorState().read(() => {
+                  const tkNode = $getNodeByKey<TKNode>(nodeKey);
+
+                  if (tkNode) {
+                    const tkNodeKey = tkNode.getKey();
+                    const paragraphNode = tkNode.getParent();
+
+                    if ($isParagraphNode(paragraphNode)) {
+                      const paragraphKey = paragraphNode.getKey();
+
+                      // TK nodes can move under a different parent paragraph node, so when
+                      // they get updated, clean all the previous paragraph node sets that
+                      // include this TK node.
+                      for (const [
+                        paragraphNodeKey,
+                        paragraphNodeSet
+                      ] of paragraphTkMap.entries()) {
+                        if (
+                          paragraphNodeKey !== paragraphKey &&
+                          paragraphNodeSet.has(tkNodeKey)
+                        ) {
+                          removeTkNodeFromMap(editor, tkNode, paragraphNodeKey);
+                        }
+                      }
+
+                      addTkNodeToMap(editor, paragraphKey, tkNode.getKey());
+                    } else {
+                      removeTkNodeFromMap(editor, tkNode);
+                      editor.update(
+                        () => {
+                          tkNode.replace(
+                            $createTextNode(tkNode.getTextContent())
+                          );
+                        },
+                        { tag: "history-merge" }
+                      );
+                    }
+                  }
+                });
+              } else if (mutation === "destroyed") {
+                prevEditorState.read(() => {
+                  const tkNode = $getNodeByKey<TKNode>(
+                    nodeKey,
+                    prevEditorState
+                  );
+                  if (tkNode) {
+                    removeTkNodeFromMap(editor, tkNode);
+                  }
+                });
+              }
+            }
+          }
+        ),
+        // Convert the TK node to a text node when the parent paragraph node is changed to
+        // something else (for example, a heading node)
+        editor.registerMutationListener(
+          ParagraphNode,
+          (nodes, { dirtyLeaves }) => {
+            for (const [, mutation] of nodes) {
+              if (mutation === "destroyed") {
+                editor.update(
+                  () => {
+                    for (const key of dirtyLeaves) {
+                      const node = $getNodeByKey(key);
+
+                      if ($isTKNode(node)) {
+                        node.replace($createTextNode(node.getTextContent()));
+                      }
+                    }
+                  },
+                  { tag: "history-merge" }
+                );
+              }
+            }
+          }
+        )
+      ),
     [editor]
   );
 
   return null;
+};
+
+const TKPlugin = (): React.ReactElement | null => {
+  const [editor] = useLexicalComposerContext();
+  const firstRenderRef = React.useRef<boolean>(true);
+  const enableTk = useAtomValue(enableTKAtom);
+
+  React.useEffect(() => {
+    if (!firstRenderRef.current) {
+      editor.update(
+        () => {
+          // Filter out all the paragraph nodes
+          const paragraphNodes = $getRoot()
+            .getChildren()
+            .filter($isParagraphNode);
+
+          if (enableTk) {
+            // Create TK nodes
+            for (const paragraphNode of paragraphNodes) {
+              for (const childNode of paragraphNode
+                .getChildren()
+                .filter($isTextNode)) {
+                tkTransform(childNode);
+              }
+            }
+          } else {
+            // Replace TK nodes with text nodes
+            for (const paragraphNode of paragraphNodes) {
+              for (const childNode of paragraphNode.getChildren()) {
+                if ($isTKNode(childNode)) {
+                  removeTkNodeFromMap(editor, childNode);
+                  childNode.replace(
+                    $createTextNode(childNode.getTextContent())
+                  );
+                }
+              }
+            }
+          }
+        },
+        { tag: "history-merge" }
+      );
+    }
+
+    firstRenderRef.current = false;
+  }, [enableTk, editor]);
+
+  if (!enableTk) {
+    return null;
+  }
+
+  return <TKPluginImpl />;
 };
 
 export default TKPlugin;

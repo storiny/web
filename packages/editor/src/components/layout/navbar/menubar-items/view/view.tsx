@@ -1,32 +1,73 @@
 import { getShortcutLabel } from "@storiny/shared/src/utils/get-shortcut-label";
-import { useAtom } from "jotai/index";
+import { useAtom } from "jotai";
 import React from "react";
 
-import MenubarItem from "~/components/MenubarItem";
+import MenubarCheckboxItem from "~/components/MenubarCheckboxItem";
 import MenubarSub from "~/components/MenubarSub";
 import { useMediaQuery } from "~/hooks/useMediaQuery";
 import { breakpoints } from "~/theme/breakpoints";
 
-import { sidebarsCollapsedAtom } from "../../../../../atoms";
+import {
+  enableInlineDecoratorsAtom,
+  enableTKAtom,
+  sidebarsCollapsedAtom
+} from "../../../../../atoms";
 import { EDITOR_SHORTCUTS } from "../../../../../constants/shortcuts";
 
-const ViewItem = (): React.ReactElement | null => {
-  const isSmallerThanDesktop = useMediaQuery(breakpoints.down("desktop"));
+// Sidebar collapsed item
+
+const SidebarsCollapsedItem = (): React.ReactElement => {
   const [sidebarsCollapsed, setSidebarsCollapsed] = useAtom(
     sidebarsCollapsedAtom
   );
+  return (
+    <MenubarCheckboxItem
+      checked={!sidebarsCollapsed}
+      onCheckedChange={(newValue): void => setSidebarsCollapsed(!newValue)}
+      onSelect={
+        (event): void => event.preventDefault() // Prevent closing the menubar
+      }
+      rightSlot={getShortcutLabel(EDITOR_SHORTCUTS.sidebars)}
+    >
+      Show sidebars
+    </MenubarCheckboxItem>
+  );
+};
 
-  return isSmallerThanDesktop ? null : (
+// Enable TK item
+
+const EnableTKItem = (): React.ReactElement => {
+  const [enableTk, setEnableTk] = useAtom(enableTKAtom);
+  return (
+    <MenubarCheckboxItem checked={enableTk} onCheckedChange={setEnableTk}>
+      Enable TK
+    </MenubarCheckboxItem>
+  );
+};
+
+// Enable inline decorators item
+
+const EnableInlineDecoratorsItem = (): React.ReactElement => {
+  const [enableInlineDecorators, setEnableInlineDecorators] = useAtom(
+    enableInlineDecoratorsAtom
+  );
+  return (
+    <MenubarCheckboxItem
+      checked={enableInlineDecorators}
+      onCheckedChange={setEnableInlineDecorators}
+    >
+      Enable inline decorators
+    </MenubarCheckboxItem>
+  );
+};
+
+const ViewItem = (): React.ReactElement => {
+  const isSmallerThanDesktop = useMediaQuery(breakpoints.down("desktop"));
+  return (
     <MenubarSub trigger={"View"}>
-      <MenubarItem
-        onSelect={(event): void => {
-          event.preventDefault(); // Prevent closing the menubar
-          setSidebarsCollapsed((prev) => !prev);
-        }}
-        rightSlot={getShortcutLabel(EDITOR_SHORTCUTS.sidebars)}
-      >
-        {sidebarsCollapsed ? "Show" : "Hide"} sidebars
-      </MenubarItem>
+      {!isSmallerThanDesktop && <SidebarsCollapsedItem />}
+      <EnableTKItem />
+      <EnableInlineDecoratorsItem />
     </MenubarSub>
   );
 };

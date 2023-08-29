@@ -1,0 +1,24 @@
+.x {
+  /* Base styles */
+  &.item {
+    --icon-size: 16px;
+
+    width: 100%;
+    gap: 8px;
+    padding: 4px 8px;
+    justify-content: flex-start;
+    align-items: center;
+    height: fit-content;
+    border-radius: 0;
+  }
+
+  /* Item icon */
+  &.icon {
+    padding: 4px;
+  }
+
+  /* Label */
+  &.label {
+    color: inherit;
+  }
+}

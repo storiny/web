@@ -23,15 +23,15 @@ import {
   textStyleToLabelMap
 } from "../../../../../constants";
 import { EDITOR_SHORTCUTS } from "../../../../../constants/shortcuts";
-import { useBold } from "../../../../../hooks/useBold";
-import { useCode } from "../../../../../hooks/useCode";
-import { useItalic } from "../../../../../hooks/useItalic";
-import { useLink } from "../../../../../hooks/useLink";
-import { useStrikethrough } from "../../../../../hooks/useStrikethrough";
-import { useSubscript } from "../../../../../hooks/useSubscript";
-import { useSuperscript } from "../../../../../hooks/useSuperscript";
-import { useTextStyle } from "../../../../../hooks/useTextStyle";
-import { useUnderline } from "../../../../../hooks/useUnderline";
+import { useBold } from "../../../../../hooks/use-bold";
+import { useCode } from "../../../../../hooks/use-code";
+import { useItalic } from "../../../../../hooks/use-italic";
+import { useLink } from "../../../../../hooks/use-link";
+import { useStrikethrough } from "../../../../../hooks/use-strikethrough";
+import { useSubscript } from "../../../../../hooks/use-subscript";
+import { useSuperscript } from "../../../../../hooks/use-superscript";
+import { useTextStyle } from "../../../../../hooks/use-text-style";
+import { useUnderline } from "../../../../../hooks/use-underline";
 import PaddedDivider from "../padded-divider";
 
 // Option

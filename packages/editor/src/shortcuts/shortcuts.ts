@@ -7,14 +7,14 @@ import { Options, useHotkeys } from "react-hotkeys-hook";
 import { sidebarsCollapsedAtom } from "../atoms";
 import { Alignment } from "../constants";
 import { EDITOR_SHORTCUTS } from "../constants/shortcuts";
-import { useAlignment } from "../hooks/useAlignment";
-import { useCode } from "../hooks/useCode";
-import { useIndentation } from "../hooks/useIndentation";
-import { useLink } from "../hooks/useLink";
-import { useStrikethrough } from "../hooks/useStrikethrough";
-import { useSubscript } from "../hooks/useSubscript";
-import { useSuperscript } from "../hooks/useSuperscript";
-import { useTextStyle } from "../hooks/useTextStyle";
+import { useAlignment } from "../hooks/use-alignment";
+import { useCode } from "../hooks/use-code";
+import { useIndentation } from "../hooks/use-indentation";
+import { useLink } from "../hooks/use-link";
+import { useStrikethrough } from "../hooks/use-strikethrough";
+import { useSubscript } from "../hooks/use-subscript";
+import { useSuperscript } from "../hooks/use-superscript";
+import { useTextStyle } from "../hooks/use-text-style";
 
 const hotkeysOptions: Options = {
   preventDefault: true,

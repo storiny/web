@@ -9,7 +9,7 @@ import {
   alignmentToIconMap
 } from "../../../../../constants";
 import { EDITOR_SHORTCUTS } from "../../../../../constants/shortcuts";
-import { useAlignment } from "../../../../../hooks/useAlignment";
+import { useAlignment } from "../../../../../hooks/use-alignment";
 
 // Item
 

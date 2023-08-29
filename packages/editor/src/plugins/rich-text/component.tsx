@@ -2,9 +2,9 @@ import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext
 import useLexicalEditable from "@lexical/react/useLexicalEditable";
 import React from "react";
 
-import { useCanShowPlaceholder } from "../../hooks/useCanShowPlaceholder";
-import { ErrorBoundaryType, useDecorators } from "../../hooks/useDecorators";
-import { useRichText } from "../../hooks/useRichText";
+import { useCanShowPlaceholder } from "../../hooks/use-can-show-placeholder";
+import { ErrorBoundaryType, useDecorators } from "../../hooks/use-decorators";
+import { useRichText } from "../../hooks/use-rich-text";
 
 const Placeholder = ({
   content
