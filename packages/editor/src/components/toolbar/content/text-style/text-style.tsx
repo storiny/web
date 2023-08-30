@@ -129,7 +129,7 @@ const TextStyleGroup = (): React.ReactElement => {
             toolbarStyles.x,
             toolbarStyles.button
           )}
-          onClick={insertLink}
+          onClick={(): void => insertLink()}
           size={"lg"}
           tooltipContent={"Link"}
           value={"link"}

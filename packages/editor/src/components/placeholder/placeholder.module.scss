@@ -12,7 +12,6 @@
     pointer-events: none;
 
     @include breakpoints.media("<=tablet") {
-      top: 18px;
       left: 0;
     }
   }

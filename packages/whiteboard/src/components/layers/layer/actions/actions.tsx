@@ -1,7 +1,7 @@
 import { waitForElement } from "@storiny/shared/src/utils/waitForElement";
 import clsx from "clsx";
 import React from "react";
-import ReactDOM from "react-dom";
+import { createPortal } from "react-dom";
 
 import Divider from "~/components/Divider";
 import IconButton from "~/components/IconButton";
@@ -90,7 +90,7 @@ const Actions = (): React.ReactElement | null => {
     }
   };
 
-  return ReactDOM.createPortal(
+  return createPortal(
     <div className={clsx(clsx("flex-center", styles.x, styles.actions))}>
       <TooltipProvider disableHoverableContent>
         <Tooltip content={"Flip vertically"}>

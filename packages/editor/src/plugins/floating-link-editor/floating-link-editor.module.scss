@@ -1,0 +1,12 @@
+.x {
+  /* Base styles */
+  &.floating-element {
+    border: none;
+  }
+
+  /* Input */
+  &.input {
+    width: 214px;
+    max-width: calc(100vw - 32px);
+  }
+}

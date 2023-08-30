@@ -153,7 +153,7 @@ const TextStyleItem = (): React.ReactElement => {
       <MenubarCheckboxItem
         checked={link}
         decorator={<LinkIcon />}
-        onCheckedChange={insertLink}
+        onCheckedChange={(): void => insertLink()}
         rightSlot={getShortcutLabel(EDITOR_SHORTCUTS.link)}
       >
         Link

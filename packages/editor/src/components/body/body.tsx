@@ -10,6 +10,8 @@ import { documentLoadingAtom } from "../../atoms";
 import { useRegisterTools } from "../../hooks/use-register-tools";
 import AutoFocusPlugin from "../../plugins/auto-focus";
 import ColorPlugin from "../../plugins/color/color";
+import FloatingLinkEditorPlugin from "../../plugins/floating-link-editor";
+import FloatingTextStylePlugin from "../../plugins/floating-text-style";
 import LinkPlugin from "../../plugins/link";
 import ListMaxIndentLevelPlugin from "../../plugins/list-max-indent-level";
 import MaxLengthPlugin from "../../plugins/max-length";
@@ -48,6 +50,8 @@ const EditorBody = (): React.ReactElement => {
       <AutoFocusPlugin />
       <HorizontalRulePlugin />
       <TextEntityPlugin />
+      <FloatingTextStylePlugin />
+      <FloatingLinkEditorPlugin />
     </article>
   );
 };

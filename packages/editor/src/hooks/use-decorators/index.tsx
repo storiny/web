@@ -1,6 +1,6 @@
 import { LexicalEditor } from "lexical";
 import React from "react";
-import ReactDOM from "react-dom";
+import { createPortal, flushSync } from "react-dom";
 
 import { useLayoutEffect } from "../../utils/use-layout-effect";
 
@@ -30,7 +30,7 @@ export const useDecorators = (
   useLayoutEffect(
     () =>
       editor.registerDecoratorListener<React.ReactElement>((nextDecorators) => {
-        ReactDOM.flushSync(() => {
+        flushSync(() => {
           setDecorators(nextDecorators);
         });
       }),
@@ -59,9 +59,7 @@ export const useDecorators = (
       const element = editor.getElementByKey(nodeKey);
 
       if (element !== null) {
-        decoratedPortals.push(
-          ReactDOM.createPortal(reactDecorator, element, nodeKey)
-        );
+        decoratedPortals.push(createPortal(reactDecorator, element, nodeKey));
       }
     }
 

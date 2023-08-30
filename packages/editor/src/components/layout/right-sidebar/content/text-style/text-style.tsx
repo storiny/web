@@ -147,7 +147,7 @@ const TextStyleToggleGroup = ({
         <CodeIcon />
       </ToggleGroupItem>
       <ToggleGroupItem
-        onClick={insertLink}
+        onClick={(): void => insertLink()}
         slotProps={{
           tooltip: {
             rightSlot: getShortcutLabel(EDITOR_SHORTCUTS.link)

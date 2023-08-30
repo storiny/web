@@ -10,6 +10,6 @@
   padding: 32px 48px;
 
   @include breakpoints.media("<=tablet") {
-    padding: 18px 0;
+    padding-inline: 0;
   }
 }
