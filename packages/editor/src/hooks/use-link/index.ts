@@ -16,10 +16,7 @@ export const useLink = (): [boolean, (value?: string) => void] => {
   const insertLink = React.useCallback(
     (value?: string) => {
       if (!link || typeof value === "string") {
-        editor.dispatchCommand(
-          TOGGLE_LINK_COMMAND,
-          sanitizeUrl(value || "https://")
-        );
+        editor.dispatchCommand(TOGGLE_LINK_COMMAND, sanitizeUrl(value || "/"));
       } else {
         editor.dispatchCommand(TOGGLE_LINK_COMMAND, null);
       }

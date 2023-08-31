@@ -104,10 +104,7 @@ const FloatingTextStylePopover = (): React.ReactElement => {
       rootElement !== null &&
       rootElement.contains(nativeSelection.anchorNode)
     ) {
-      setFloatingElementPosition(
-        popoverElement,
-        rootElement.getBoundingClientRect()
-      );
+      setFloatingElementPosition(popoverElement, rootElement);
     }
   }, [editor]);
 
@@ -138,7 +135,7 @@ const FloatingTextStylePopover = (): React.ReactElement => {
   }, [editor, updatePopover]);
 
   React.useEffect(() => {
-    editor.getEditorState().read(() => updatePopover);
+    editor.getEditorState().read(updatePopover);
 
     return mergeRegister(
       editor.registerUpdateListener(({ editorState }) => {

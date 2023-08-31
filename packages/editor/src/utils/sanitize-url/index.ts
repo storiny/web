@@ -13,7 +13,10 @@ export const sanitizeUrl = (url: string): string => {
   try {
     const parsedUrl = new URL(url);
 
-    if (!SUPPORTED_URL_PROTOCOLS.has(parsedUrl.protocol)) {
+    if (
+      !SUPPORTED_URL_PROTOCOLS.has(parsedUrl.protocol) ||
+      !parsedUrl.pathname
+    ) {
       return "about:blank";
     }
   } catch {
@@ -28,4 +31,4 @@ export const sanitizeUrl = (url: string): string => {
  * @param url URL
  */
 export const validateUrl = (url: string): boolean =>
-  url === "https://" || urlRegExp.test(url);
+  url === "/" || urlRegExp.test(url);

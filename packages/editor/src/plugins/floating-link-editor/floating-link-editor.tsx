@@ -1,4 +1,4 @@
-import { $isLinkNode } from "@lexical/link";
+import { $isLinkNode, TOGGLE_LINK_COMMAND } from "@lexical/link";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { mergeRegister } from "@lexical/utils";
 import { clsx } from "clsx";
@@ -18,17 +18,20 @@ import { useState } from "react";
 import React from "react";
 import { createPortal } from "react-dom";
 
+import Divider from "~/components/Divider";
 import IconButton from "~/components/IconButton";
 import Input from "~/components/Input";
-import CheckIcon from "~/icons/Check";
+import Link from "~/components/Link";
+import EditIcon from "~/icons/Edit";
 import LinkIcon from "~/icons/Link";
-import TrashIcon from "~/icons/Trash";
 
 import { linkAtom } from "../../atoms";
 import { useLink } from "../../hooks/use-link";
 import { getSelectedNode } from "../../utils/get-selected-node";
+import { sanitizeUrl, validateUrl } from "../../utils/sanitize-url";
 import { setFloatingElementPosition } from "../../utils/set-floating-element-position";
 import floatingElementStyles from "../common/floating-element.module.scss";
+import FloatingElementArrow from "../common/floating-element-arrow";
 import styles from "./floating-link-editor.module.scss";
 
 const FloatingLinkEditorPopover = (): React.ReactElement => {
@@ -79,20 +82,14 @@ const FloatingLinkEditorPopover = (): React.ReactElement => {
       rootElement.contains(nativeSelection.anchorNode) &&
       editor.isEditable()
     ) {
-      setFloatingElementPosition(
-        popoverElement,
-        rootElement.getBoundingClientRect()
-      );
+      setFloatingElementPosition(popoverElement, rootElement);
       setLastSelection(selection);
     } else if (
       !activeElement ||
       !activeElement.getAttribute("data-link-input")
     ) {
       if (rootElement !== null) {
-        setFloatingElementPosition(
-          popoverElement,
-          rootElement.getBoundingClientRect()
-        );
+        setFloatingElementPosition(popoverElement, rootElement);
       }
 
       setLastSelection(null);
@@ -124,8 +121,10 @@ const FloatingLinkEditorPopover = (): React.ReactElement => {
    */
   const handleLinkSubmission = (): void => {
     if (lastSelection !== null) {
-      if (linkUrl !== "") {
-        insertLink(editedLinkUrl);
+      if (linkUrl !== "" && validateUrl(editedLinkUrl)) {
+        editor.dispatchCommand(TOGGLE_LINK_COMMAND, sanitizeUrl(editedLinkUrl));
+      } else {
+        editor.dispatchCommand(TOGGLE_LINK_COMMAND, null);
       }
 
       setEditMode(false);
@@ -190,45 +189,60 @@ const FloatingLinkEditorPopover = (): React.ReactElement => {
   return (
     <div
       className={clsx(
+        "flex-center",
         floatingElementStyles.x,
         floatingElementStyles["floating-element"],
         styles.x,
-        styles["floating-element"]
+        styles["floating-element"],
+        editMode && styles["edit-mode"]
       )}
       ref={popoverRef}
     >
-      <Input
-        autoComplete={"url"}
-        data-link-input
-        decorator={<LinkIcon />}
-        endDecorator={
-          <IconButton
-            aria-label={editMode ? "Confirm link" : "Remove link"}
-            onClick={(): void => {
-              if (editMode) {
-                handleLinkSubmission();
-              } else {
-                insertLink();
-              }
-            }}
-            title={editMode ? "Confirm link" : "Remove link"}
+      {editMode ? (
+        <Input
+          autoComplete={"url"}
+          data-link-input
+          decorator={<LinkIcon />}
+          onBlur={(): void => setEditMode(false)}
+          onChange={(event): void => setEditedLinkUrl(event.target.value)}
+          onFocus={(): void => setEditMode(true)}
+          onKeyDown={(event): void => monitorInputInteraction(event)}
+          placeholder={"Link"}
+          ref={inputRef}
+          slotProps={{
+            container: {
+              className: "f-grow"
+            }
+          }}
+          value={editedLinkUrl}
+        />
+      ) : (
+        <React.Fragment>
+          <Link
+            className={clsx("f-grow", "ellipsis", styles.x, styles.link)}
+            href={sanitizeUrl(linkUrl)}
+            level={"body2"}
+            target={"_blank"}
+            title={sanitizeUrl(linkUrl)}
           >
-            {editMode ? <CheckIcon /> : <TrashIcon />}
+            {sanitizeUrl(linkUrl)}
+          </Link>
+          <Divider orientation={"vertical"} />
+          <IconButton
+            aria-label={"Edit link"}
+            className={clsx(styles.x, styles.button)}
+            onClick={(): void => {
+              setEditedLinkUrl(linkUrl);
+              setEditMode(true);
+            }}
+            title={"Edit link"}
+            variant={"ghost"}
+          >
+            <EditIcon />
           </IconButton>
-        }
-        onBlur={(): void => setEditMode(false)}
-        onChange={(event): void => setEditedLinkUrl(event.target.value)}
-        onFocus={(): void => setEditMode(true)}
-        onKeyDown={(event): void => monitorInputInteraction(event)}
-        placeholder={"Link"}
-        ref={inputRef}
-        slotProps={{
-          container: {
-            className: clsx(styles.x, styles.input)
-          }
-        }}
-        value={editedLinkUrl}
-      />
+        </React.Fragment>
+      )}
+      <FloatingElementArrow />
     </div>
   );
 };

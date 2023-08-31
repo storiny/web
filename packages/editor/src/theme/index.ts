@@ -1,6 +1,7 @@
 import { clsx } from "clsx";
 import type { EditorThemeClasses } from "lexical";
 
+import linkStyles from "~/components/Link/Link.module.scss";
 import typographyStyles from "~/components/Typography/Typography.module.scss";
 
 import styles from "./theme.module.scss";
@@ -11,11 +12,15 @@ export const editorTheme: EditorThemeClasses = {
     base: styles["embed-block"],
     focus: clsx(styles["embed-block"], styles.focus)
   },
-  hashtag: styles.hashtag,
   // image: "editor-image",
   indent: styles.indent,
   // inlineImage: "inline-editor-image",
-  link: styles.link,
+  link: clsx(
+    "focusable",
+    linkStyles.link,
+    linkStyles["color-beryl"],
+    linkStyles["underline-hover"]
+  ),
   list: {
     listitem: styles.li,
     nested: {

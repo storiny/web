@@ -1,12 +1,21 @@
 .x {
   /* Base styles */
   &.floating-element {
-    border: none;
-  }
-
-  /* Input */
-  &.input {
     width: 214px;
     max-width: calc(100vw - 32px);
+
+    &.edit-mode {
+      border: none;
+    }
+  }
+
+  /* Link */
+  &.link {
+    padding-inline: 8px;
+  }
+
+  /* Button */
+  &.button {
+    border-radius: 0;
   }
 }

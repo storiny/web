@@ -1,0 +1,36 @@
+.x {
+  &.menu {
+    --icon-size: 16px;
+
+    position: absolute;
+    left: 0;
+    top: 0;
+    padding: 3px 2px;
+    opacity: 0;
+    cursor: grab;
+    border: 1px solid var(--divider);
+    border-radius: var(--radius-sm);
+    background-color: var(--bg-elevation-sm);
+    box-shadow: var(--shadow-sm), var(--ridge-xs);
+    will-change: transform;
+
+    &:active {
+      cursor: grabbing;
+    }
+
+    &:hover {
+      background-color: var(--bg-elevation-md);
+    }
+  }
+
+  &.target-line {
+    pointer-events: none;
+    background: deepskyblue;
+    height: 4px;
+    position: absolute;
+    left: 0;
+    top: 0;
+    opacity: 0;
+    will-change: transform;
+  }
+}

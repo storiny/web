@@ -1,7 +1,17 @@
+/* Base styles */
+.h2,
+.h3 {
+  & + *:not(p) {
+    margin-top: 18px;
+  }
+}
+
+/* Heading */
 .h2 {
   margin-bottom: 12px;
 }
 
+/* Subheading */
 .h3 {
   margin-bottom: 8px;
 }

@@ -177,9 +177,6 @@ export const useRegisterTools = (): void => {
   React.useEffect(
     () =>
       mergeRegister(
-        // editor.registerEditableListener((editable) => {
-        //   setIsEditable(editable);
-        // }),
         activeEditor.registerUpdateListener(({ editorState }) => {
           editorState.read(() => {
             $updateTools();
@@ -205,26 +202,4 @@ export const useRegisterTools = (): void => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [$updateTools, activeEditor, editor]
   );
-
-  // React.useEffect(
-  //   () =>
-  //     activeEditor.registerCommand(
-  //       KEY_MODIFIER_COMMAND,
-  //       (payload) => {
-  //         const event: KeyboardEvent = payload;
-  //         const { code, ctrlKey, metaKey } = event;
-  //
-  //         if (code === "KeyK" && (ctrlKey || metaKey)) {
-  //           event.preventDefault();
-  //           return activeEditor.dispatchCommand(
-  //             TOGGLE_LINK_COMMAND,
-  //             sanitizeUrl("https://")
-  //           );
-  //         }
-  //         return false;
-  //       },
-  //       COMMAND_PRIORITY_NORMAL
-  //     ),
-  //   [activeEditor, link]
-  // );
 };

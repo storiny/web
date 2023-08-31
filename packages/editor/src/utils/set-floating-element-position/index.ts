@@ -6,19 +6,20 @@ const TOP_OFFSET = 70; // Offset till the popover gets flipped vertically (in px
 /**
  * Sets the position of floating popover element relative to the text selection
  * @param floatingElement Floating popover element
- * @param rootRect Editor root element bounding rect
+ * @param rootElement Editor root element
  */
 export const setFloatingElementPosition = (
   floatingElement: HTMLElement,
-  rootRect: DOMRect
+  rootElement: HTMLElement | null
 ): void => {
   const selectionRange = window.getSelection()?.getRangeAt(0);
   const selectionRect = selectionRange?.getBoundingClientRect();
   const floatingElementRect = floatingElement.getBoundingClientRect();
   const bodyRect = document.body.getBoundingClientRect();
+  const rootRect = rootElement?.getBoundingClientRect();
   let flipped: boolean = false;
 
-  if (!selectionRect) {
+  if (!selectionRect || !rootRect) {
     floatingElement.style.visibility = "hidden";
     return;
   }

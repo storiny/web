@@ -9,6 +9,7 @@ import React from "react";
 import { documentLoadingAtom } from "../../atoms";
 import { useRegisterTools } from "../../hooks/use-register-tools";
 import AutoFocusPlugin from "../../plugins/auto-focus";
+import BlockDraggerPlugin from "../../plugins/block-dragger";
 import ColorPlugin from "../../plugins/color/color";
 import FloatingLinkEditorPlugin from "../../plugins/floating-link-editor";
 import FloatingTextStylePlugin from "../../plugins/floating-text-style";
@@ -52,6 +53,7 @@ const EditorBody = (): React.ReactElement => {
       <TextEntityPlugin />
       <FloatingTextStylePlugin />
       <FloatingLinkEditorPlugin />
+      <BlockDraggerPlugin />
     </article>
   );
 };
