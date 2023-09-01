@@ -1,3 +1,3 @@
 import { atom } from "jotai";
 
-export const queryAtom = atom<string>("");
+export const emojiQueryAtom = atom<string>("");

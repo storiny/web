@@ -7,7 +7,7 @@ import EmbedMenubarItem from "./embed";
 import EmojiMenubarItem from "./emoji";
 import HorizontalRuleMenubarItem from "./horizontal-rule";
 import ImageMenubarItem from "./image";
-import SpecialCharacterMenubarItem from "./special-character";
+import SymbolMenubarItem from "./symbol";
 
 const InsertItem = (): React.ReactElement => (
   <MenubarSub trigger={"Insert"}>
@@ -16,7 +16,7 @@ const InsertItem = (): React.ReactElement => (
     <CodeBlockMenubarItem />
     <EmbedMenubarItem />
     <EmojiMenubarItem />
-    <SpecialCharacterMenubarItem />
+    <SymbolMenubarItem />
   </MenubarSub>
 );
 

@@ -2,7 +2,7 @@ import { Asset } from "@storiny/types";
 
 import { apiSlice } from "~/redux/features/api/slice";
 
-const GET_SEGMENT = "me/assets";
+const SEGMENT = "me/assets";
 const ITEMS_PER_PAGE = 15;
 
 export type GetUserAssetsResponse = Asset[];
@@ -13,7 +13,7 @@ export const { useGetUserAssetsQuery } = apiSlice.injectEndpoints({
       { hasMore: boolean; items: Asset[] },
       { page: number }
     >({
-      query: ({ page }) => `/${GET_SEGMENT}?page=${page}`,
+      query: ({ page }) => `/${SEGMENT}?page=${page}`,
       transformResponse: (response: Asset[]) => ({
         items: response,
         hasMore: response.length === ITEMS_PER_PAGE

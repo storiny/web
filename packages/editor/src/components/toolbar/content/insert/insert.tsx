@@ -13,7 +13,7 @@ import EmbedMenuItem from "./embed";
 import EmojiMenuItem from "./emoji";
 import HorizontalRuleMenuItem from "./horizontal-rule";
 import ImageMenuItem from "./image";
-import SpecialCharacterMenuItem from "./special-character";
+import SymbolMenuItem from "./symbol";
 
 const ToolbarInsertItem = (): React.ReactElement => {
   const documentLoading = useAtomValue(documentLoadingAtom);
@@ -47,7 +47,7 @@ const ToolbarInsertItem = (): React.ReactElement => {
       <CodeBlockMenuItem />
       <EmbedMenuItem />
       <EmojiMenuItem />
-      <SpecialCharacterMenuItem />
+      <SymbolMenuItem />
     </Menu>
   );
 };

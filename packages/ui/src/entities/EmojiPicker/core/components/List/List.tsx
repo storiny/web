@@ -14,10 +14,10 @@ import Spacer from "~/components/Spacer";
 import Typography from "~/components/Typography";
 import { capitalize } from "~/utils/capitalize";
 
-import { emojiCategoryAtom, queryAtom } from "../../atoms";
+import { emojiCategoryAtom, emojiQueryAtom } from "../../atoms";
 import { EmojiCategory, EMOJIS_PER_ROW, LIST_HEIGHT } from "../../constants";
 import data from "../../data.json";
-import { useSearch } from "../../hooks";
+import { useEmojiSearch } from "../../hooks";
 import { Emoji, PlaceholderEmoji } from "../Emoji";
 import styles from "./List.module.scss";
 
@@ -84,7 +84,7 @@ const getEmojiRow = (
 const Scroller = React.memo(
   React.forwardRef<HTMLDivElement, React.ComponentPropsWithRef<"div">>(
     ({ children, className, ...rest }, ref) => {
-      const query = useAtomValue(queryAtom);
+      const query = useAtomValue(emojiQueryAtom);
       return (
         <>
           <Viewport
@@ -180,8 +180,8 @@ const EmojiRow = React.memo<
   return (
     <div {...rest} className={clsx("flex", styles["emoji-row"], className)}>
       {emojiIds.map(
-        (emojiId): React.ReactElement => (
-          <Emoji emojiId={emojiId} key={emojiId} />
+        (emojiId, index): React.ReactElement => (
+          <Emoji emojiId={emojiId} key={emojiId || index} />
         )
       )}
     </div>
@@ -213,8 +213,8 @@ const EmojiList = React.forwardRef<
 >((props, ref) => {
   const { className, ...rest } = props;
   const setCategory = useSetAtom(emojiCategoryAtom);
-  const query = useAtomValue(queryAtom);
-  const searchResults = useSearch();
+  const query = useAtomValue(emojiQueryAtom);
+  const searchResults = useEmojiSearch();
   const hasSearchResults = Boolean(searchResults.length);
 
   const handleCategoryChange = React.useCallback(
@@ -230,7 +230,10 @@ const EmojiList = React.forwardRef<
   return (
     <Root className={clsx("flex-center", styles.list)} type={"auto"}>
       {Boolean(query) && !hasSearchResults ? (
-        <div className={clsx("flex-col", styles.empty)}>
+        <div
+          className={clsx("flex-col", styles.empty)}
+          style={{ height: LIST_HEIGHT }}
+        >
           <Typography className={"t-medium"} level={"body2"}>
             Could not find any emoji for &quot;
             <span style={{ wordBreak: "break-all" }}>{query}</span>&quot;

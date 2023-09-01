@@ -3,7 +3,7 @@ import React from "react";
 import EmojiPicker from "~/entities/EmojiPicker";
 import MoodSmileIcon from "~/icons/MoodSmile";
 
-import { useInsertEmoji } from "../../../../../../hooks/use-insert-emoji";
+import { useInsertTextEntity } from "../../../../../../hooks/use-insert-text-entity";
 import InsertItem from "../insert-item";
 
 const EmojiItem = ({
@@ -11,7 +11,7 @@ const EmojiItem = ({
 }: {
   disabled?: boolean;
 }): React.ReactElement => {
-  const [insertEmoji] = useInsertEmoji();
+  const [insertEmoji] = useInsertTextEntity();
   return (
     <EmojiPicker onEmojiSelect={insertEmoji}>
       <InsertItem

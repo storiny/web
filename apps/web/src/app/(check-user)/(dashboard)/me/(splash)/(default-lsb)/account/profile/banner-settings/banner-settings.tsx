@@ -7,7 +7,6 @@ import { useConfirmation } from "~/components/Confirmation";
 import IconButton from "~/components/IconButton";
 import Image from "~/components/Image";
 import { useToast } from "~/components/Toast";
-import Gallery from "~/entities/Gallery";
 import PencilIcon from "~/icons/Pencil";
 import PhotoPlusIcon from "~/icons/PhotoPlus";
 import TrashIcon from "~/icons/Trash";
@@ -20,6 +19,7 @@ import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 import { breakpoints } from "~/theme/breakpoints";
 import { getCdnUrl } from "~/utils/getCdnUrl";
 
+import Gallery from "../../../../../../../../../../../../packages/ui/src/entities/gallery";
 import styles from "./banner-settings.module.scss";
 
 const BannerSettings = (): React.ReactElement => {
@@ -27,7 +27,6 @@ const BannerSettings = (): React.ReactElement => {
   const user = useAppSelector(selectUser)!;
   const toast = useToast();
   const [bannerId, setBannerId] = React.useState<string | null>(user.banner_id);
-  const [source, setSource] = React.useState<"pexels" | "native" | null>(null);
   const [bannerSettings, { isLoading }] = useBannerSettingsMutation();
   const [element] = useConfirmation(
     ({ openConfirmation }) => (
@@ -46,7 +45,6 @@ const BannerSettings = (): React.ReactElement => {
       decorator: <TrashIcon />,
       onConfirm: (): void => {
         setBannerId(null);
-        setSource(null);
         dispatchBannerSettings();
       },
       title: "Remove banner?",
@@ -59,7 +57,7 @@ const BannerSettings = (): React.ReactElement => {
    * Dispatches the current banner settings
    */
   const dispatchBannerSettings = React.useCallback(() => {
-    bannerSettings({ banner_id: bannerId, source })
+    bannerSettings({ banner_id: bannerId })
       .unwrap()
       .then((res) => {
         dispatch(
@@ -76,7 +74,7 @@ const BannerSettings = (): React.ReactElement => {
       .catch((e) =>
         toast(e?.data?.error || "Could not update your banner", "error")
       );
-  }, [bannerId, bannerSettings, dispatch, source, toast]);
+  }, [bannerId, bannerSettings, dispatch, toast]);
 
   return (
     <AspectRatio
@@ -114,8 +112,7 @@ const BannerSettings = (): React.ReactElement => {
       <div className={clsx("flex-center", styles.x, styles["banner-actions"])}>
         <Gallery
           onConfirm={(asset): void => {
-            setBannerId(asset.id);
-            setSource(asset.source);
+            setBannerId(asset.key);
             dispatchBannerSettings();
           }}
         >

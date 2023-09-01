@@ -93,7 +93,10 @@ const useHeadingsObserver = (setActiveId: (id: string) => void): void => {
 
     headingElements.forEach((element) => observer.observe(element));
 
-    return () => observer.disconnect();
+    return () => {
+      headingElementsRef.current = {};
+      observer.disconnect();
+    };
   }, [setActiveId]);
 };
 
@@ -115,11 +118,11 @@ const LegalToc = (): React.ReactElement => {
   };
 
   React.useEffect(() => {
-    const newNestedHeadings = getNestedHeadings(
-      Array.from(document.querySelectorAll("main h2, main h3"))
+    setNestedHeadings(
+      getNestedHeadings(
+        Array.from(document.querySelectorAll("main h2, main h3"))
+      )
     );
-
-    setNestedHeadings(newNestedHeadings);
   }, []);
 
   if (!nestedHeadings.length) {

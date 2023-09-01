@@ -28,6 +28,12 @@
   --lexical-indent-base-value: 32px;
 }
 
+.link {
+  &:hover {
+    --bg: transparent;
+  }
+}
+
 .t-italic {
   font-style: italic;
 }
@@ -94,10 +100,8 @@
   }
 }
 
-
 @keyframes cursor-blink {
   to {
     visibility: hidden;
   }
 }
-

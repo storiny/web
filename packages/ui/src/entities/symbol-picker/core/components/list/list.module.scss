@@ -1,0 +1,45 @@
+$list-height: 292px;
+
+/* Base styles */
+.list {
+  width: 100%;
+  overflow: hidden;
+}
+
+/* List wrapper */
+.list-wrapper {
+  margin-right: 10px;
+  position: relative;
+  height: calc($list-height + 10px);
+}
+
+/* Viewport */
+.viewport {
+  padding-inline: 12px;
+}
+
+/* Category group header */
+.group-header {
+  &:not(:first-of-type) {
+    padding-block: 18px 4px;
+  }
+}
+
+/* Group title */
+.group-title {
+  padding-block: 8px;
+}
+
+/* Symbol row */
+.symbol-row {
+  justify-content: space-between;
+}
+
+/* Empty */
+.empty {
+  text-align: center;
+  width: 100%;
+  padding: 18px 12px;
+  align-self: stretch;
+  align-items: center;
+}

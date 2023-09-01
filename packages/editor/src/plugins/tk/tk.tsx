@@ -32,7 +32,7 @@ const paragraphTkMap = new Map<ParagraphNodeKey, Set<TKNodeKey>>();
  * @param paragraphKey Parent paragraph key
  * @param tkNodeKey TK node key
  */
-const addTkNodeToMap = (
+const $addTkNodeToMap = (
   editor: LexicalEditor,
   paragraphKey: ParagraphNodeKey,
   tkNodeKey: TKNodeKey
@@ -58,7 +58,7 @@ const addTkNodeToMap = (
  * @param tkNode TK node
  * @param paragraphKey Paragraph key that overrides parent key
  */
-const removeTkNodeFromMap = (
+const $removeTkNodeFromMap = (
   editor: LexicalEditor,
   tkNode: TKNode,
   paragraphKey?: NodeKey
@@ -132,7 +132,7 @@ const TKPluginImpl = (): null => {
                     const paragraphNode = tkNode.getParent();
 
                     if ($isParagraphNode(paragraphNode)) {
-                      addTkNodeToMap(
+                      $addTkNodeToMap(
                         editor,
                         paragraphNode.getKey(),
                         tkNode.getKey()
@@ -162,13 +162,17 @@ const TKPluginImpl = (): null => {
                           paragraphNodeKey !== paragraphKey &&
                           paragraphNodeSet.has(tkNodeKey)
                         ) {
-                          removeTkNodeFromMap(editor, tkNode, paragraphNodeKey);
+                          $removeTkNodeFromMap(
+                            editor,
+                            tkNode,
+                            paragraphNodeKey
+                          );
                         }
                       }
 
-                      addTkNodeToMap(editor, paragraphKey, tkNode.getKey());
+                      $addTkNodeToMap(editor, paragraphKey, tkNode.getKey());
                     } else {
-                      removeTkNodeFromMap(editor, tkNode);
+                      $removeTkNodeFromMap(editor, tkNode);
                       editor.update(
                         () => {
                           tkNode.replace(
@@ -187,7 +191,7 @@ const TKPluginImpl = (): null => {
                     prevEditorState
                   );
                   if (tkNode) {
-                    removeTkNodeFromMap(editor, tkNode);
+                    $removeTkNodeFromMap(editor, tkNode);
                   }
                 });
               }
@@ -252,7 +256,7 @@ const TKPlugin = (): React.ReactElement | null => {
             for (const paragraphNode of paragraphNodes) {
               for (const childNode of paragraphNode.getChildren()) {
                 if ($isTKNode(childNode)) {
-                  removeTkNodeFromMap(editor, childNode);
+                  $removeTkNodeFromMap(editor, childNode);
                   childNode.replace(
                     $createTextNode(childNode.getTextContent())
                   );

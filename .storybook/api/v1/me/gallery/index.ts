@@ -4,6 +4,7 @@ import {
   PhotosWithTotalResults,
   ErrorResponse,
 } from "pexels";
+import { mockAssets } from "@storiny/ui/src/mocks";
 
 const { worker, rest } = window.msw;
 const client = createClient(process.env.PEXELS_API_KEY || "");
@@ -49,6 +50,14 @@ worker.use(
 
       return res(ctx.json(response.photos));
     }
+  )
+);
+
+worker.use(
+  rest.post(
+    `${process.env.NEXT_PUBLIC_API_URL}/v1/me/gallery`,
+    (req, res, ctx) =>
+      res(ctx.delay(3400), ctx.status(201), ctx.json(mockAssets[0]))
   )
 );
 

@@ -16,7 +16,7 @@ import PawIcon from "~/icons/Paw";
 import ReportIcon from "~/icons/Report";
 import SymbolsIcon from "~/icons/Symbols";
 
-import { emojiCategoryAtom, queryAtom } from "../../atoms";
+import { emojiCategoryAtom, emojiQueryAtom } from "../../atoms";
 import { EmojiCategory } from "../../constants";
 import styles from "./Tabs.module.scss";
 import { EmojiPickerTabsProps } from "./Tabs.props";
@@ -24,7 +24,7 @@ import { EmojiPickerTabsProps } from "./Tabs.props";
 const EmojiPickerTabs = (props: EmojiPickerTabsProps): React.ReactElement => {
   const { listRef, ...rest } = props;
   const [value, setValue] = useAtom(emojiCategoryAtom);
-  const queryValue = useAtomValue(queryAtom);
+  const queryValue = useAtomValue(emojiQueryAtom);
   const disabled = Boolean(queryValue);
 
   /**

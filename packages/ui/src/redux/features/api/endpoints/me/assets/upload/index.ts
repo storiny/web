@@ -2,7 +2,7 @@ import { Asset } from "@storiny/types";
 
 import { apiSlice } from "~/redux/features/api/slice";
 
-const POST_SEGMENT = "me/assets";
+const SEGMENT = "me/assets";
 
 export type AssetUploadResponse = Asset;
 export interface AssetUploadPayload {
@@ -20,7 +20,7 @@ export const { useAssetUploadMutation } = apiSlice.injectEndpoints({
         body.append("alt", alt);
 
         return {
-          url: `/${POST_SEGMENT}`,
+          url: `/${SEGMENT}`,
           method: "POST",
           body
         };

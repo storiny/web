@@ -1,7 +1,6 @@
 import { clsx } from "clsx";
 import React from "react";
 
-import Button, { ButtonProps } from "~/components/Button";
 import ScrollArea from "~/components/ScrollArea";
 import Spacer from "~/components/Spacer";
 import Typography from "~/components/Typography";
@@ -12,7 +11,7 @@ import EmojiItem from "./emoji";
 import HorizontalRuleItem from "./horizontal-rule";
 import ImageItem from "./image";
 import styles from "./insert.module.scss";
-import SpecialCharacterItem from "./special-character";
+import SymbolItem from "./symbol";
 
 const Insert = ({ disabled }: { disabled?: boolean }): React.ReactElement => (
   <div className={"flex-col"}>
@@ -31,7 +30,7 @@ const Insert = ({ disabled }: { disabled?: boolean }): React.ReactElement => (
         <CodeBlockItem disabled={disabled} />
         <EmbedItem disabled={disabled} />
         <EmojiItem disabled={disabled} />
-        <SpecialCharacterItem disabled={disabled} />
+        <SymbolItem disabled={disabled} />
       </ul>
     </ScrollArea>
   </div>

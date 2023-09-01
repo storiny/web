@@ -6,7 +6,7 @@
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "test": "jest",
-    "storybook:dev": "dotenv -e ./.env.local -- storybook dev -p 6006",
+    "storybook:dev": "dotenv -e ./.env.local -- storybook dev -p 6006 && npx y-websocket",
     "storybook:build": "storybook build"
   },
   "workspaces": [
@@ -51,7 +51,8 @@
     "ts-node": "^10.9.1",
     "turbo": "latest",
     "typescript": "5.0.4",
-    "webpack": "^5.88.0"
+    "webpack": "^5.88.0",
+    "y-websocket": "^1.5.0"
   },
   "packageManager": "yarn@3.6.0",
   "name": "@storiny/monorepo",

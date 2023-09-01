@@ -4,7 +4,6 @@ import { clsx } from "clsx";
 import {
   $getNearestNodeFromDOMNode,
   $getNodeByKey,
-  $getRoot,
   COMMAND_PRIORITY_HIGH,
   COMMAND_PRIORITY_LOW,
   DRAGOVER_COMMAND,
@@ -14,26 +13,34 @@ import {
 import React from "react";
 import { createPortal } from "react-dom";
 
+import NoSsr from "~/components/NoSsr";
+import { useMediaQuery } from "~/hooks/useMediaQuery";
 import GripIcon from "~/icons/Grip";
+import { breakpoints } from "~/theme/breakpoints";
 
+import { getCollapsedMargins } from "../../utils/get-collapsed-margins";
+import { getTopLevelNodeKeys } from "../../utils/get-top-level-node-keys";
 import { isHTMLElement } from "../../utils/is-html-element";
 import { Point } from "../../utils/point";
 import { Rect } from "../../utils/rect";
 import { eventFiles } from "../rich-text";
 import styles from "./block-dragger.module.scss";
 
-const SPACE = 4;
 const TARGET_LINE_HALF_HEIGHT = 2;
-const DRAGGABLE_BLOCK_MENU_CLASSNAME = "draggable-block-menu";
 const DRAG_DATA_FORMAT = "application/x-storiny-drag-block";
-const TEXT_BOX_HORIZONTAL_PADDING = 28;
 
-const Downward = 1;
-const Upward = -1;
-const Indeterminate = 0;
+enum Direction {
+  UPWARD /*       */ = -1,
+  INDETERMINATE /**/ = 0,
+  DOWNWARD /*     */ = 1
+}
 
 let prevIndex = Infinity;
 
+/**
+ * Returns the current index in the keys
+ * @param keysLength Keys length
+ */
 const getCurrentIndex = (keysLength: number): number => {
   if (keysLength === 0) {
     return Infinity;
@@ -46,49 +53,18 @@ const getCurrentIndex = (keysLength: number): number => {
   return Math.floor(keysLength / 2);
 };
 
-const getTopLevelNodeKeys = (editor: LexicalEditor): string[] =>
-  editor.getEditorState().read(() => $getRoot().getChildrenKeys());
-
-const getMargin = (
-  element: Element | null,
-  margin: "marginTop" | "marginBottom"
-): number =>
-  element ? parseFloat(window.getComputedStyle(element)[margin]) : 0;
-
-const getCollapsedMargins = (
-  elem: HTMLElement
-): {
-  marginBottom: number;
-  marginTop: number;
-} => {
-  const { marginTop, marginBottom } = window.getComputedStyle(elem);
-  const prevElemSiblingMarginBottom = getMargin(
-    elem.previousElementSibling,
-    "marginBottom"
-  );
-  const nextElemSiblingMarginTop = getMargin(
-    elem.nextElementSibling,
-    "marginTop"
-  );
-  const collapsedTopMargin = Math.max(
-    parseFloat(marginTop),
-    prevElemSiblingMarginBottom
-  );
-  const collapsedBottomMargin = Math.max(
-    parseFloat(marginBottom),
-    nextElemSiblingMarginTop
-  );
-
-  return { marginBottom: collapsedBottomMargin, marginTop: collapsedTopMargin };
-};
-
+/**
+ * Returns the block element
+ * @param editor Editor
+ * @param event Mouse event
+ * @param useEdgeAsDefault Whether to use edge as default
+ */
 const getBlockElement = (
-  anchorElem: HTMLElement,
   editor: LexicalEditor,
   event: MouseEvent,
   useEdgeAsDefault = false
 ): HTMLElement | null => {
-  const anchorElementRect = anchorElem.getBoundingClientRect();
+  const docRect = document.body.getBoundingClientRect();
   const topLevelNodeKeys = getTopLevelNodeKeys(editor);
   let blockElem: HTMLElement | null = null;
 
@@ -115,7 +91,7 @@ const getBlockElement = (
     }
 
     let index = getCurrentIndex(topLevelNodeKeys.length);
-    let direction = Indeterminate;
+    let direction = Direction.INDETERMINATE;
 
     while (index >= 0 && index < topLevelNodeKeys.length) {
       const key = topLevelNodeKeys[index];
@@ -130,8 +106,8 @@ const getBlockElement = (
       const { marginTop, marginBottom } = getCollapsedMargins(element);
       const rect = domRect.generateNewRect({
         bottom: domRect.bottom + marginBottom,
-        left: anchorElementRect.left,
-        right: anchorElementRect.right,
+        left: docRect.left,
+        right: docRect.right,
         top: domRect.top - marginTop
       });
       const {
@@ -145,11 +121,11 @@ const getBlockElement = (
         break;
       }
 
-      if (direction === Indeterminate) {
+      if (direction === Direction.INDETERMINATE) {
         if (isOnTopSide) {
-          direction = Upward;
+          direction = Direction.UPWARD;
         } else if (isOnBottomSide) {
-          direction = Downward;
+          direction = Direction.DOWNWARD;
         } else {
           // Stop searching
           direction = Infinity;
@@ -163,165 +139,185 @@ const getBlockElement = (
   return blockElem;
 };
 
-const isOnMenu = (element: HTMLElement): boolean =>
-  !!element.closest(`.${DRAGGABLE_BLOCK_MENU_CLASSNAME}`);
+/**
+ * Predicate function for determining whether the element is on the dragger
+ * @param element Element
+ */
+const isOnDragger = (element: HTMLElement): boolean =>
+  !!element.closest("[data-dragger]");
 
-const setMenuPosition = (
-  targetElem: HTMLElement | null,
-  floatingElem: HTMLElement,
-  anchorElem: HTMLElement
+/**
+ * Sets the dragger position
+ * @param targetElement Target element
+ * @param draggerElement Dragger element
+ */
+const setDraggerPosition = (
+  targetElement: HTMLElement | null,
+  draggerElement: HTMLElement
 ): void => {
-  if (!targetElem) {
-    floatingElem.style.opacity = "0";
-    floatingElem.style.transform = "translate(-10000px, -10000px)";
+  if (!targetElement) {
+    draggerElement.style.display = "none";
     return;
   }
 
-  const targetRect = targetElem.getBoundingClientRect();
-  const targetStyle = window.getComputedStyle(targetElem);
-  const floatingElemRect = floatingElem.getBoundingClientRect();
-  const anchorElementRect = anchorElem.getBoundingClientRect();
+  const targetRect = targetElement.getBoundingClientRect();
+  const targetStyle = window.getComputedStyle(targetElement);
+  const draggerRect = draggerElement.getBoundingClientRect();
+  const mainRect = document.querySelector("main")?.getBoundingClientRect();
 
-  const top =
-    targetRect.top +
-    (parseInt(targetStyle.lineHeight, 10) - floatingElemRect.height) / 2 -
-    anchorElementRect.top;
+  if (mainRect) {
+    const top =
+      targetRect.top -
+      mainRect.top +
+      (parseInt(targetStyle.lineHeight, 10) - draggerRect.height) / 2;
+    const left = targetRect.left - mainRect.left - 42;
 
-  const left = SPACE;
-
-  floatingElem.style.opacity = "1";
-  floatingElem.style.transform = `translate(${left}px, ${top}px)`;
+    draggerElement.style.display = "flex";
+    draggerElement.style.transform = `translate3d(${left}px, ${top}px, 0)`;
+  }
 };
 
+/**
+ * Sets the drag image
+ * @param dataTransfer Data transfer
+ * @param draggableBlockElement Block element
+ */
 const setDragImage = (
   dataTransfer: DataTransfer,
-  draggableBlockElem: HTMLElement
+  draggableBlockElement: HTMLElement
 ): void => {
-  const { transform } = draggableBlockElem.style;
+  const { transform } = draggableBlockElement.style;
 
   // Remove `dragImage` borders
-  draggableBlockElem.style.transform = "translateZ(0)";
-  dataTransfer.setDragImage(draggableBlockElem, 0, 0);
+  draggableBlockElement.style.transform = "translateZ(0)";
+  dataTransfer.setDragImage(draggableBlockElement, 0, 0);
 
   setTimeout(() => {
-    draggableBlockElem.style.transform = transform;
+    draggableBlockElement.style.transform = transform;
   });
 };
 
+/**
+ * Sets the position of the target line
+ * @param targetLineElement Target line element
+ * @param targetBlockElement Target block element
+ * @param mouseY Mouse Y
+ */
 const setTargetLine = (
-  targetLineElem: HTMLElement,
-  targetBlockElem: HTMLElement,
-  mouseY: number,
-  anchorElem: HTMLElement
+  targetLineElement: HTMLElement,
+  targetBlockElement: HTMLElement,
+  mouseY: number
 ): void => {
-  const { top: targetBlockElemTop, height: targetBlockElemHeight } =
-    targetBlockElem.getBoundingClientRect();
-  const { top: anchorTop, width: anchorWidth } =
-    anchorElem.getBoundingClientRect();
-  const { marginTop, marginBottom } = getCollapsedMargins(targetBlockElem);
-  let lineTop = targetBlockElemTop;
+  const targetBlockRect = targetBlockElement.getBoundingClientRect();
+  const mainRect = document.querySelector("main")?.getBoundingClientRect();
+  const { marginTop, marginBottom } = getCollapsedMargins(targetBlockElement);
+  let lineTop = targetBlockRect.top;
 
-  if (mouseY >= targetBlockElemTop) {
-    lineTop += targetBlockElemHeight + marginBottom / 2;
+  if (mouseY >= lineTop) {
+    lineTop += targetBlockRect.height + marginBottom / 2;
   } else {
     lineTop -= marginTop / 2;
   }
 
-  const top = lineTop - anchorTop - TARGET_LINE_HALF_HEIGHT;
-  const left = TEXT_BOX_HORIZONTAL_PADDING - SPACE;
+  if (mainRect) {
+    const top = lineTop - mainRect.top - TARGET_LINE_HALF_HEIGHT;
 
-  targetLineElem.style.transform = `translate(${left}px, ${top}px)`;
-  targetLineElem.style.width = `${
-    anchorWidth - (TEXT_BOX_HORIZONTAL_PADDING - SPACE) * 2
-  }px`;
-  targetLineElem.style.opacity = ".4";
-};
-
-const hideTargetLine = (targetLineElem: HTMLElement | null): void => {
-  if (targetLineElem) {
-    targetLineElem.style.opacity = "0";
-    targetLineElem.style.transform = "translate(-10000px, -10000px)";
+    targetLineElement.style.transform = `translateY(${top}px)`;
+    targetLineElement.style.display = "block";
   }
 };
 
-const BlockDraggerPlugin = (): React.ReactElement => {
+/**
+ * Hides the target line
+ * @param targetLineElement Target line element
+ */
+const hideTargetLine = (targetLineElement: HTMLElement | null): void => {
+  if (targetLineElement) {
+    targetLineElement.style.display = "none";
+  }
+};
+
+const BlockDraggerPluginImpl = (): React.ReactElement | null => {
   const [editor] = useLexicalComposerContext();
-  const anchorElem = document.body;
-  const scrollerElem = document.body;
-  const menuRef = React.useRef<HTMLDivElement>(null);
-  const targetLineRef = React.useRef<HTMLDivElement>(null);
+  const mainElement = document.querySelector("main");
+  const isSmallerThanDesktop = useMediaQuery(breakpoints.down("desktop"));
+  const draggerRef = React.useRef<HTMLDivElement | null>(null);
+  const targetLineRef = React.useRef<HTMLDivElement | null>(null);
   const isDraggingBlockRef = React.useRef<boolean>(false);
-  const [draggableBlockElem, setDraggableBlockElem] =
+  const [draggableBlockElement, setDraggableBlockElement] =
     React.useState<HTMLElement | null>(null);
 
   React.useEffect(() => {
+    /**
+     * Mouse move listener
+     * @param event Mouse event
+     */
     const onMouseMove = (event: MouseEvent): void => {
       const target = event.target as HTMLElement;
 
       if (!isHTMLElement(target)) {
-        setDraggableBlockElem(null);
-        return;
+        setDraggableBlockElement(null);
+      } else if (!isOnDragger(target)) {
+        setDraggableBlockElement(getBlockElement(editor, event));
       }
-
-      if (target && isOnMenu(target)) {
-        return;
-      }
-
-      const _draggableBlockElem = getBlockElement(anchorElem, editor, event);
-
-      setDraggableBlockElem(_draggableBlockElem);
     };
 
+    /**
+     * Mouse leave listener
+     */
     const onMouseLeave = (): void => {
-      setDraggableBlockElem(null);
+      setDraggableBlockElement(null);
     };
 
-    scrollerElem?.addEventListener("mousemove", onMouseMove);
-    scrollerElem?.addEventListener("mouseleave", onMouseLeave);
+    mainElement?.addEventListener("mousemove", onMouseMove);
+    mainElement?.addEventListener("mouseleave", onMouseLeave);
 
     return () => {
-      scrollerElem?.removeEventListener("mousemove", onMouseMove);
-      scrollerElem?.removeEventListener("mouseleave", onMouseLeave);
+      mainElement?.removeEventListener("mousemove", onMouseMove);
+      mainElement?.removeEventListener("mouseleave", onMouseLeave);
     };
-  }, [scrollerElem, anchorElem, editor]);
+  }, [editor, mainElement]);
 
   React.useEffect(() => {
-    if (menuRef.current) {
-      setMenuPosition(draggableBlockElem, menuRef.current, anchorElem);
+    if (draggerRef.current) {
+      setDraggerPosition(draggableBlockElement, draggerRef.current);
     }
-  }, [anchorElem, draggableBlockElem]);
+  }, [draggableBlockElement]);
 
   React.useEffect(() => {
+    /**
+     * Drag over listener
+     * @param event Drag event
+     */
     const onDragover = (event: DragEvent): boolean => {
       if (!isDraggingBlockRef.current) {
         return false;
       }
 
       const [isFileTransfer] = eventFiles(event);
-
-      if (isFileTransfer) {
-        return false;
-      }
-
       const { pageY, target } = event;
 
-      if (!isHTMLElement(target)) {
+      if (isFileTransfer || !isHTMLElement(target)) {
         return false;
       }
 
-      const targetBlockElem = getBlockElement(anchorElem, editor, event, true);
-      const targetLineElem = targetLineRef.current;
+      const targetBlockElement = getBlockElement(editor, event, true);
+      const targetLineElement = targetLineRef.current;
 
-      if (targetBlockElem === null || targetLineElem === null) {
+      if (targetBlockElement === null || targetLineElement === null) {
         return false;
       }
 
-      setTargetLine(targetLineElem, targetBlockElem, pageY, anchorElem);
+      setTargetLine(targetLineElement, targetBlockElement, pageY);
       // Prevent default event to be able to trigger `onDrop` events
       event.preventDefault();
       return true;
     };
 
+    /**
+     * Drop listener
+     * @param event Event
+     */
     const onDrop = (event: DragEvent): boolean => {
       if (!isDraggingBlockRef.current) {
         return false;
@@ -337,31 +333,23 @@ const BlockDraggerPlugin = (): React.ReactElement => {
       const dragData = dataTransfer?.getData(DRAG_DATA_FORMAT) || "";
       const draggedNode = $getNodeByKey(dragData);
 
-      if (!draggedNode) {
+      if (!draggedNode || !isHTMLElement(target)) {
         return false;
       }
 
-      if (!isHTMLElement(target)) {
+      const targetBlockElement = getBlockElement(editor, event, true);
+
+      if (!targetBlockElement) {
         return false;
       }
 
-      const targetBlockElem = getBlockElement(anchorElem, editor, event, true);
+      const targetNode = $getNearestNodeFromDOMNode(targetBlockElement);
 
-      if (!targetBlockElem) {
-        return false;
-      }
-
-      const targetNode = $getNearestNodeFromDOMNode(targetBlockElem);
-
-      if (!targetNode) {
-        return false;
-      }
-
-      if (targetNode === draggedNode) {
+      if (!targetNode || targetNode === draggedNode) {
         return true;
       }
 
-      const targetBlockElemTop = targetBlockElem.getBoundingClientRect().top;
+      const targetBlockElemTop = targetBlockElement.getBoundingClientRect().top;
 
       if (pageY >= targetBlockElemTop) {
         targetNode.insertAfter(draggedNode);
@@ -369,8 +357,7 @@ const BlockDraggerPlugin = (): React.ReactElement => {
         targetNode.insertBefore(draggedNode);
       }
 
-      setDraggableBlockElem(null);
-
+      setDraggableBlockElement(null);
       return true;
     };
 
@@ -386,20 +373,24 @@ const BlockDraggerPlugin = (): React.ReactElement => {
         COMMAND_PRIORITY_HIGH
       )
     );
-  }, [anchorElem, editor]);
+  }, [editor]);
 
+  /**
+   * Drag start listener
+   * @param event Drag event
+   */
   const onDragStart = (event: React.DragEvent<HTMLDivElement>): void => {
     const dataTransfer = event.dataTransfer;
 
-    if (!dataTransfer || !draggableBlockElem) {
+    if (!dataTransfer || !draggableBlockElement) {
       return;
     }
 
-    setDragImage(dataTransfer, draggableBlockElem);
+    setDragImage(dataTransfer, draggableBlockElement);
     let nodeKey = "";
 
     editor.update(() => {
-      const node = $getNearestNodeFromDOMNode(draggableBlockElem);
+      const node = $getNearestNodeFromDOMNode(draggableBlockElement);
       if (node) {
         nodeKey = node.getKey();
       }
@@ -409,29 +400,45 @@ const BlockDraggerPlugin = (): React.ReactElement => {
     dataTransfer.setData(DRAG_DATA_FORMAT, nodeKey);
   };
 
+  /**
+   * Drag end listener
+   */
   const onDragEnd = (): void => {
     isDraggingBlockRef.current = false;
     hideTargetLine(targetLineRef.current);
   };
 
+  if (isSmallerThanDesktop || !mainElement) {
+    return null;
+  }
+
   return createPortal(
     <>
       <div
-        className={clsx(styles.x, styles.menu)}
+        aria-hidden
+        className={clsx("flex-center", styles.x, styles.dragger)}
+        data-dragger={"true"}
         draggable={true}
         onDragEnd={onDragEnd}
         onDragStart={onDragStart}
-        ref={menuRef}
+        ref={draggerRef}
       >
-        <GripIcon />
+        <GripIcon style={{ pointerEvents: "none" }} />
       </div>
       <div
+        aria-hidden
         className={clsx(styles.x, styles["target-line"])}
         ref={targetLineRef}
       />
     </>,
-    document.body
+    mainElement
   );
 };
+
+const BlockDraggerPlugin = (): React.ReactElement => (
+  <NoSsr>
+    <BlockDraggerPluginImpl />
+  </NoSsr>
+);
 
 export default BlockDraggerPlugin;

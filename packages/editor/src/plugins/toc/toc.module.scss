@@ -1,0 +1,39 @@
+.x {
+  /* Base styles */
+  &.toc {
+    list-style: none;
+    padding: 12px 32px 12px 0;
+  }
+
+  /* Item */
+  &.item {
+    padding: 4px 16px;
+    cursor: pointer;
+    border-left: 1px solid var(--border, transparent);
+
+    &:not(.sub) + .sub {
+      margin-top: 8px;
+    }
+
+    /* Subheading item */
+    &.sub {
+      --border: var(--divider);
+
+      margin-left: 16px;
+
+      & + :not(.sub) {
+        margin-top: 16px;
+      }
+    }
+
+    /* Selected item */
+    &.selected {
+      --border: var(--inverted-400) !important;
+
+      &:not(.empty) {
+        color: var(--fg-major);
+        font-weight: var(--font-weight-bold);
+      }
+    }
+  }
+}

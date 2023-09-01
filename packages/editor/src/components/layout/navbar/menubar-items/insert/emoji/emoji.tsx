@@ -4,10 +4,10 @@ import MenubarItem from "~/components/MenubarItem";
 import EmojiPicker from "~/entities/EmojiPicker";
 import MoodSmileIcon from "~/icons/MoodSmile";
 
-import { useInsertEmoji } from "../../../../../../hooks/use-insert-emoji";
+import { useInsertTextEntity } from "../../../../../../hooks/use-insert-text-entity";
 
 const EmojiMenubarItem = (): React.ReactElement => {
-  const [insertEmoji] = useInsertEmoji();
+  const [insertEmoji] = useInsertTextEntity();
   return (
     <EmojiPicker onEmojiSelect={insertEmoji} popoverProps={{ modal: true }}>
       <MenubarItem

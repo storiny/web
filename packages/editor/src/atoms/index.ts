@@ -6,3 +6,4 @@ export * from "./history";
 export * from "./indentation";
 export * from "./sidebars-collapsed";
 export * from "./text-style";
+export * from "./toc-disabled";

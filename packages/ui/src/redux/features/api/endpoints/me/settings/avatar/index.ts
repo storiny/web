@@ -8,7 +8,6 @@ const SEGMENT = "me/settings/avatar";
 export type AvatarSettingsResponse = Pick<User, "avatar_id" | "avatar_hex">;
 export interface AvatarSettingsPayload {
   avatar_id: string | null;
-  source: "pexels" | "native" | null;
 }
 
 export const { useAvatarSettingsMutation } = apiSlice.injectEndpoints({

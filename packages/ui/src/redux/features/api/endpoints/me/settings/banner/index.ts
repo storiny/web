@@ -8,7 +8,6 @@ const SEGMENT = "me/settings/banner";
 export type BannerSettingsResponse = Pick<User, "banner_id" | "banner_hex">;
 export interface BannerSettingsPayload {
   banner_id: string | null;
-  source: "pexels" | "native" | null;
 }
 
 export const { useBannerSettingsMutation } = apiSlice.injectEndpoints({

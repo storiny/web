@@ -1,0 +1,40 @@
+$symbol-size: 26px;
+
+/* Symbol and fake symbol */
+.symbol,
+.fake-symbol {
+  all: unset;
+  position: relative;
+  width: calc($symbol-size + 10px);
+  height: calc($symbol-size + 10px);
+}
+
+/* Symbol */
+.symbol {
+  --fg: var(--fg-minor);
+
+  cursor: pointer;
+  text-align: center;
+  vertical-align: middle;
+  color: var(--fg);
+  font-size: var(--font-size-md);
+  border-radius: var(--radius-md);
+  outline-offset: -2px;
+
+  &:hover {
+    --fg: var(--fg-major);
+
+    background-color: var(--bg-elevation-lg);
+  }
+}
+
+/* Placeholder */
+.placeholder {
+  display: block;
+  position: relative;
+  width: calc($symbol-size - 3px);
+  height: calc($symbol-size - 3px);
+  margin: 6px;
+  border-radius: var(--radius-lg);
+  background-color: var(--bg-elevation-lg);
+}

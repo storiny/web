@@ -7,7 +7,6 @@ import { useConfirmation } from "~/components/Confirmation";
 import Spacer from "~/components/Spacer";
 import { useToast } from "~/components/Toast";
 import Typography from "~/components/Typography";
-import Gallery from "~/entities/Gallery";
 import PencilIcon from "~/icons/Pencil";
 import TrashIcon from "~/icons/Trash";
 import {
@@ -17,6 +16,7 @@ import {
 } from "~/redux/features";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 
+import Gallery from "../../../../../../../../../../../../packages/ui/src/entities/gallery";
 import styles from "./avatar-settings.module.scss";
 
 const AvatarSettings = (): React.ReactElement | null => {
@@ -24,7 +24,6 @@ const AvatarSettings = (): React.ReactElement | null => {
   const user = useAppSelector(selectUser)!;
   const toast = useToast();
   const [avatarId, setAvatarId] = React.useState<string | null>(user.avatar_id);
-  const [source, setSource] = React.useState<"pexels" | "native" | null>(null);
   const [avatarSettings, { isLoading }] = useAvatarSettingsMutation();
   const [element] = useConfirmation(
     ({ openConfirmation }) => (
@@ -44,7 +43,6 @@ const AvatarSettings = (): React.ReactElement | null => {
       decorator: <TrashIcon />,
       onConfirm: (): void => {
         setAvatarId(null);
-        setSource(null);
         dispatchAvatarSettings();
       },
       title: "Remove avatar?",
@@ -57,7 +55,7 @@ const AvatarSettings = (): React.ReactElement | null => {
    * Dispatches the current avatar settings
    */
   const dispatchAvatarSettings = React.useCallback(() => {
-    avatarSettings({ avatar_id: avatarId, source })
+    avatarSettings({ avatar_id: avatarId })
       .unwrap()
       .then((res) => {
         dispatch(
@@ -74,7 +72,7 @@ const AvatarSettings = (): React.ReactElement | null => {
       .catch((e) =>
         toast(e?.data?.error || "Could not update your avatar", "error")
       );
-  }, [avatarId, avatarSettings, dispatch, source, toast]);
+  }, [avatarId, avatarSettings, dispatch, toast]);
 
   return (
     <div className={clsx("flex-col", styles.x, styles["avatar-settings"])}>
@@ -89,8 +87,7 @@ const AvatarSettings = (): React.ReactElement | null => {
         <div className={"flex-col"}>
           <Gallery
             onConfirm={(asset): void => {
-              setAvatarId(asset.id);
-              setSource(asset.source);
+              setAvatarId(asset.key);
               dispatchAvatarSettings();
             }}
           >

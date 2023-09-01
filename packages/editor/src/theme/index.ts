@@ -19,7 +19,8 @@ export const editorTheme: EditorThemeClasses = {
     "focusable",
     linkStyles.link,
     linkStyles["color-beryl"],
-    linkStyles["underline-hover"]
+    linkStyles["underline-hover"],
+    styles.link
   ),
   list: {
     listitem: styles.li,

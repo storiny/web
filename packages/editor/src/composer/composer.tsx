@@ -15,6 +15,7 @@ const EditorComposer = ({
   children: React.ReactElement;
 }): React.ReactElement => {
   const initialConfig: InitialConfigType = {
+    editorState: null, // `null` is required here to allow yjs to set the initial state
     namespace: EditorNamespace.MAIN,
     onError: devConsole.error,
     nodes: editorNodes,

@@ -13,12 +13,12 @@ import Input from "~/components/Input";
 import Popover, { Close } from "~/components/Popover";
 import Spacer from "~/components/Spacer";
 import Typography from "~/components/Typography";
-import { queryAtom } from "~/entities/EmojiPicker/core/atoms";
 import CloudOffIcon from "~/icons/CloudOff";
 import HandClickIcon from "~/icons/HandClick";
 import SearchIcon from "~/icons/Search";
 import XIcon from "~/icons/X";
 
+import { emojiQueryAtom } from "./core/atoms";
 import SkinTone from "./core/components/SkinTone";
 import styles from "./EmojiPicker.module.scss";
 import { EmojiPickerProps } from "./EmojiPicker.props";
@@ -59,7 +59,7 @@ const Main = dynamic(() => import("./core/components/Main"), {
 // Search input
 
 const SearchInput = (): React.ReactElement => {
-  const setQuery = useSetAtom(queryAtom);
+  const setQuery = useSetAtom(emojiQueryAtom);
   return (
     <Input
       autoFocus
