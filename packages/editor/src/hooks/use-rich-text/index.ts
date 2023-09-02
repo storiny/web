@@ -3,7 +3,7 @@ import { mergeRegister } from "@lexical/utils";
 import type { LexicalEditor } from "lexical";
 
 import { registerRichText } from "../../plugins/rich-text";
-import { useLayoutEffect } from "../../utils/use-layout-effect";
+import { useLayoutEffect } from "../use-layout-effect";
 
 /**
  * Hook for using rich text

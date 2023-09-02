@@ -6,7 +6,8 @@
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "test": "jest",
-    "storybook:dev": "dotenv -e ./.env.local -- storybook dev -p 6006 && npx y-websocket",
+    "multiplayer:dev": "cross-env HOST=localhost PORT=1234 npx y-websocket-server",
+    "storybook:dev": "dotenv -e ./.env.local -- concurrently --raw \"yarn multiplayer:dev\" \"storybook dev -p 6006\"",
     "storybook:build": "storybook build"
   },
   "workspaces": [
@@ -52,7 +53,7 @@
     "turbo": "latest",
     "typescript": "5.0.4",
     "webpack": "^5.88.0",
-    "y-websocket": "^1.5.0"
+    "y-websocket-server": "^1.0.2"
   },
   "packageManager": "yarn@3.6.0",
   "name": "@storiny/monorepo",

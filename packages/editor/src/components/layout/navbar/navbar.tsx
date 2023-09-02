@@ -2,6 +2,7 @@
 
 import SuspenseLoader from "@storiny/web/src/common/suspense-loader";
 import clsx from "clsx";
+import { useAtomValue } from "jotai";
 import dynamic from "next/dynamic";
 import NextLink from "next/link";
 import React from "react";
@@ -15,11 +16,12 @@ import Spacer from "~/components/Spacer";
 import Tooltip from "~/components/Tooltip";
 import { useMediaQuery } from "~/hooks/useMediaQuery";
 import ChevronIcon from "~/icons/Chevron";
-import CloudSyncingIcon from "~/icons/CloudSyncing";
 import QuestionMarkIcon from "~/icons/QuestionMark";
 import VersionHistoryIcon from "~/icons/VersionHistory";
 import { breakpoints } from "~/theme/breakpoints";
 
+import { docStatusAtom } from "../../../atoms";
+import DocStatus from "./doc-status";
 import MusicItem from "./music-item";
 import styles from "./navbar.module.scss";
 
@@ -63,6 +65,9 @@ const EditorMenubar = (): React.ReactElement => (
 
 const EditorNavbar = (): React.ReactElement => {
   const isSmallerThanTablet = useMediaQuery(breakpoints.down("tablet"));
+  const docStatus = useAtomValue(docStatusAtom);
+  const documentLoading = ["connecting", "reconnecting"].includes(docStatus);
+
   return (
     <header className={clsx(styles.x, styles["editor-navbar"])} role={"banner"}>
       <div className={clsx("flex-center", styles.x, styles["full-height"])}>
@@ -96,17 +101,13 @@ const EditorNavbar = (): React.ReactElement => {
       </div>
       <Spacer className={"f-grow"} size={2} />
       <div className={clsx("flex-center")}>
-        <Tooltip content={"Syncing…"}>
-          <span
-            className={clsx("flex-center", styles.x, styles["status-icon"])}
-          >
-            <CloudSyncingIcon />
-          </span>
-        </Tooltip>
+        <DocStatus />
         <Spacer size={2} />
-        <Button variant={"hollow"}>Share</Button>
+        <Button disabled={documentLoading} variant={"hollow"}>
+          Share
+        </Button>
         <Spacer />
-        <Button>Publish</Button>
+        <Button disabled={documentLoading}>Publish</Button>
       </div>
     </header>
   );

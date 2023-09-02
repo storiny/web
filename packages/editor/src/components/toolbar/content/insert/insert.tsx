@@ -6,7 +6,7 @@ import IconButton from "~/components/IconButton";
 import Menu from "~/components/Menu";
 import PlusIcon from "~/icons/Plus";
 
-import { documentLoadingAtom } from "../../../../atoms";
+import { docStatusAtom } from "../../../../atoms";
 import toolbarStyles from "../../toolbar.module.scss";
 import CodeBlockMenuItem from "./code-block";
 import EmbedMenuItem from "./embed";
@@ -16,7 +16,9 @@ import ImageMenuItem from "./image";
 import SymbolMenuItem from "./symbol";
 
 const ToolbarInsertItem = (): React.ReactElement => {
-  const documentLoading = useAtomValue(documentLoadingAtom);
+  const docStatus = useAtomValue(docStatusAtom);
+  const documentLoading = ["connecting", "reconnecting"].includes(docStatus);
+
   return (
     <Menu
       slotProps={{

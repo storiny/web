@@ -1,4 +1,6 @@
+import { LinkNode } from "@lexical/link";
 import { AssetRating } from "@storiny/shared";
+import { devConsole } from "@storiny/shared/src/utils/devLog";
 import {
   $applyNodeReplacement,
   createEditor,
@@ -13,15 +15,13 @@ import {
   Spread
 } from "lexical";
 import React from "react";
-import { Suspense } from "react";
 
 import { clamp } from "~/utils/clamp";
 import { getCdnUrl } from "~/utils/getCdnUrl";
 
-const ImageComponent = React.lazy(
-  // @ts-ignore
-  () => import("./ImageComponent")
-);
+import { EditorNamespace } from "../../constants";
+import { ColorNode } from "../color";
+import ImageComponent from "./component";
 
 export interface ImagePayload {
   alt: string;
@@ -83,7 +83,13 @@ export class ImageNode extends DecoratorNode<React.ReactElement> {
     this.__hex = hex;
     this.__width = width;
     this.__height = height;
-    this.__caption = caption || createEditor();
+    this.__caption =
+      caption ||
+      createEditor({
+        namespace: EditorNamespace.IMAGE_CAPTION,
+        nodes: [ColorNode, LinkNode],
+        onError: devConsole.error
+      });
     this.__scaleFactor = scaleFactor || 1;
     this.__rating = rating;
   }
@@ -223,30 +229,42 @@ export class ImageNode extends DecoratorNode<React.ReactElement> {
     return figure;
   }
 
+  isInline(): false {
+    return false;
+  }
+
   updateDOM(): false {
     return false;
   }
 
   decorate(): React.ReactElement {
     return (
-      <Suspense fallback={null}>
-        <ImageComponent
-          altText={this.__altText}
-          caption={this.__caption}
-          captionsEnabled={this.__captionsEnabled}
-          height={this.__height}
-          maxWidth={this.__maxWidth}
-          nodeKey={this.getKey()}
-          resizable={true}
-          showCaption={this.__showCaption}
-          src={this.__src}
-          width={this.__width}
-        />
-      </Suspense>
+      <ImageComponent
+        alt={this.__alt}
+        caption={this.__caption}
+        height={this.__height}
+        imgKey={this.__imgKey}
+        nodeKey={this.getKey()}
+        resizable={true}
+        scaleFactor={this.__scaleFactor}
+        width={this.__width}
+      />
     );
   }
 }
 
+/**
+ * Creates a new image node
+ * @param alt Alt text
+ * @param imgKey CDN key
+ * @param hex Average hex color of the image
+ * @param height Image height
+ * @param width Image width
+ * @param caption Image caption
+ * @param rating Image rating
+ * @param scaleFactor Scale factor
+ * @param key Node key
+ */
 export const $createImageNode = ({
   alt,
   imgKey,

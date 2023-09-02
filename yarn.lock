@@ -2716,7 +2716,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lexical/offset@npm:0.12.0":
+"@lexical/offset@npm:0.12.0, @lexical/offset@npm:^0.12.0":
   version: 0.12.0
   resolution: "@lexical/offset@npm:0.12.0"
   peerDependencies:
@@ -2830,7 +2830,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lexical/yjs@npm:0.12.0, @lexical/yjs@npm:^0.12.0":
+"@lexical/yjs@npm:0.12.0":
   version: 0.12.0
   resolution: "@lexical/yjs@npm:0.12.0"
   dependencies:
@@ -4670,11 +4670,11 @@ __metadata:
     "@lexical/link": ^0.12.0
     "@lexical/list": ^0.12.0
     "@lexical/markdown": ^0.12.0
+    "@lexical/offset": ^0.12.0
     "@lexical/react": ^0.12.0
     "@lexical/selection": ^0.12.0
     "@lexical/text": ^0.12.0
     "@lexical/utils": ^0.12.0
-    "@lexical/yjs": ^0.12.0
     "@storiny/eslint-config": "*"
     "@storiny/prettier-config": "*"
     "@storiny/stylelint-config": "*"
@@ -4683,6 +4683,7 @@ __metadata:
     "@storiny/ui": "*"
     "@types/react": ^18.2.18
     "@types/react-dom": ^18.2.7
+    "@y-presence/react": ^2.0.1
     clsx: ^1.2.1
     eslint: ^8.42.0
     jotai: ^2.2.2
@@ -4693,6 +4694,7 @@ __metadata:
     react-hotkeys-hook: ^4.4.1
     typescript: ^5.1.5
     use-file-picker: ^1.7.0
+    y-indexeddb: ^9.0.11
     y-websocket: ^1.5.0
     yjs: ^13.6.7
   languageName: unknown
@@ -4761,7 +4763,7 @@ __metadata:
     turbo: latest
     typescript: 5.0.4
     webpack: ^5.88.0
-    y-websocket: ^1.5.0
+    y-websocket-server: ^1.0.2
   languageName: unknown
   linkType: soft
 
@@ -7750,6 +7752,29 @@ __metadata:
   version: 4.2.2
   resolution: "@xtuc/long@npm:4.2.2"
   checksum: 8ed0d477ce3bc9c6fe2bf6a6a2cc316bb9c4127c5a7827bae947fa8ec34c7092395c5a283cc300c05b5fa01cbbfa1f938f410a7bf75db7c7846fea41949989ec
+  languageName: node
+  linkType: hard
+
+"@y-presence/client@npm:*":
+  version: 2.0.1
+  resolution: "@y-presence/client@npm:2.0.1"
+  dependencies:
+    y-webrtc: ^10.2.3
+    y-websocket: ^1.4.3
+  checksum: 6ca0e4baa0a030300f67a72c9c9a853a459c0d679fdd0430d9f23b8dfe97fd1cd486e0db3c27f8d2132e4ebd705bf2e1bbb31f6927983b021a2faa011c658e4e
+  languageName: node
+  linkType: hard
+
+"@y-presence/react@npm:^2.0.1":
+  version: 2.0.1
+  resolution: "@y-presence/react@npm:2.0.1"
+  dependencies:
+    "@y-presence/client": "*"
+    y-webrtc: ^10.2.3
+    y-websocket: ^1.4.3
+  peerDependencies:
+    react: ^18.0.0
+  checksum: ff96a744e554dc57874909745d8547fbfc55c2335e1d993621cb44f36153aae31ae7b9e4beba36aab05cf0873b3653b4197c6fa81633265088e610e9d9c81806
   languageName: node
   linkType: hard
 
@@ -10752,6 +10777,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"err-code@npm:^3.0.1":
+  version: 3.0.1
+  resolution: "err-code@npm:3.0.1"
+  checksum: aede1f1d5ebe6d6b30b5e3175e3cc13e67de2e2e1ad99ce4917e957d7b59e8451ed10ee37dbc6493521920a47082c479b9097e5c39438d4aff4cc84438568a5a
+  languageName: node
+  linkType: hard
+
 "errno@npm:~0.1.1":
   version: 0.1.8
   resolution: "errno@npm:0.1.8"
@@ -12285,6 +12317,13 @@ __metadata:
   version: 3.2.1
   resolution: "geojson-vt@npm:3.2.1"
   checksum: 7c7973cfaf9e3bb1c1dc9578ec00e602efb6f8d57f4dd7f6b28baeb7825bcaeb1684018b850211e333ab4b90a4a89a02ff7793732c505d67101ccbc38e307e02
+  languageName: node
+  linkType: hard
+
+"get-browser-rtc@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "get-browser-rtc@npm:1.1.0"
+  checksum: 90dd17ca3ba2a61aaa57b7497efea49afa718b5d048cac155a7f84ac850c921006946893e6a5d981c66c5ca69d19f6aadc5c773ffdf2e860896781a8e7e0a2e0
   languageName: node
   linkType: hard
 
@@ -18102,7 +18141,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"queue-microtask@npm:^1.2.2":
+"queue-microtask@npm:^1.2.2, queue-microtask@npm:^1.2.3":
   version: 1.2.3
   resolution: "queue-microtask@npm:1.2.3"
   checksum: b676f8c040cdc5b12723ad2f91414d267605b26419d5c821ff03befa817ddd10e238d22b25d604920340fd73efd8ba795465a0377c4adf45a4a41e4234e42dc4
@@ -19602,6 +19641,21 @@ __metadata:
     once: ^1.3.1
     simple-concat: ^1.0.0
   checksum: 80195e70bf171486e75c31e28e5485468195cc42f85940f8b45c4a68472160144d223eb4d07bc82ef80cb974b7c401db021a540deb2d34ac4b3b8883da2d6401
+  languageName: node
+  linkType: hard
+
+"simple-peer@npm:^9.11.0":
+  version: 9.11.1
+  resolution: "simple-peer@npm:9.11.1"
+  dependencies:
+    buffer: ^6.0.3
+    debug: ^4.3.2
+    err-code: ^3.0.1
+    get-browser-rtc: ^1.1.0
+    queue-microtask: ^1.2.3
+    randombytes: ^2.1.0
+    readable-stream: ^3.6.0
+  checksum: 1d9950851f86ff827cfd6646620503143b840c751eb6bfffffbee6e69ebc065dd5b7cfa629010f9a3e1a98312549a6411ef15ce3652a523c8cc042052192fa55
   languageName: node
   linkType: hard
 
@@ -22110,7 +22164,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ws@npm:^7.3.1":
+"ws@npm:^7.2.0, ws@npm:^7.3.1":
   version: 7.5.9
   resolution: "ws@npm:7.5.9"
   peerDependencies:
@@ -22161,6 +22215,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"y-indexeddb@npm:^9.0.11":
+  version: 9.0.11
+  resolution: "y-indexeddb@npm:9.0.11"
+  dependencies:
+    lib0: ^0.2.74
+  peerDependencies:
+    yjs: ^13.0.0
+  checksum: 890b745b420badeadcc0925b517628a50a4f74b88739647aaa3098b7e60a47db351ebbaef9f2bcdf74a50739a3a8e3fe4a3b47281f21f53b5e19cd1725d4dd8b
+  languageName: node
+  linkType: hard
+
 "y-leveldb@npm:^0.1.0":
   version: 0.1.2
   resolution: "y-leveldb@npm:0.1.2"
@@ -22182,7 +22247,33 @@ __metadata:
   languageName: node
   linkType: hard
 
-"y-websocket@npm:^1.5.0":
+"y-webrtc@npm:^10.2.3":
+  version: 10.2.5
+  resolution: "y-webrtc@npm:10.2.5"
+  dependencies:
+    lib0: ^0.2.42
+    simple-peer: ^9.11.0
+    ws: ^7.2.0
+    y-protocols: ^1.0.5
+  dependenciesMeta:
+    ws:
+      optional: true
+  bin:
+    y-webrtc-signaling: bin/server.js
+  checksum: 9ad2662082fccd448d4b986bb1be875a79f17f414921eeac440945a443be8e4bf739ad284e8767db97e6d3a59d13e81f7daed1374cf21db53d52364b8bf4bcbb
+  languageName: node
+  linkType: hard
+
+"y-websocket-server@npm:^1.0.2":
+  version: 1.0.2
+  resolution: "y-websocket-server@npm:1.0.2"
+  bin:
+    y-websocket-server: bin.js
+  checksum: 77a587ebe2f5ba1609abb576b18fad65467021bb7275a55b0dfe9c3917f1f4ca5b509b29a904b2ac4ac71b5c35334a9247464c09380bec4049e9911b0f5d3ba4
+  languageName: node
+  linkType: hard
+
+"y-websocket@npm:^1.4.3, y-websocket@npm:^1.5.0":
   version: 1.5.0
   resolution: "y-websocket@npm:1.5.0"
   dependencies:

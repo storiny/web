@@ -23,7 +23,7 @@ import SuperscriptIcon from "~/icons/Superscript";
 import UnderlineIcon from "~/icons/Underline";
 import { breakpoints } from "~/theme/breakpoints";
 
-import { documentLoadingAtom } from "../../../../atoms";
+import { docStatusAtom } from "../../../../atoms";
 import {
   TextStyle as TextStyleEnum,
   textStyleToIconMap,
@@ -56,7 +56,7 @@ const TextStyleOption = ({
 // Text style group
 
 const TextStyleGroup = (): React.ReactElement => {
-  const documentLoading = useAtomValue(documentLoadingAtom);
+  const docStatus = useAtomValue(docStatusAtom);
   const [bold, toggleBold] = useBold();
   const [italic, toggleItalic] = useItalic();
   const [underline, toggleUnderline] = useUnderline();
@@ -65,6 +65,7 @@ const TextStyleGroup = (): React.ReactElement => {
   const [superscript, toggleSuperscript] = useSuperscript();
   const [code, toggleCode] = useCode();
   const [link, insertLink] = useLink();
+  const documentLoading = ["connecting", "reconnecting"].includes(docStatus);
 
   const value = React.useMemo(
     () =>
@@ -197,7 +198,7 @@ const TextStyleGroup = (): React.ReactElement => {
 
 const TextStyleSelect = (): React.ReactElement => {
   const isSmallerThanMobile = useMediaQuery(breakpoints.down("mobile"));
-  const documentLoading = useAtomValue(documentLoadingAtom);
+  const docStatus = useAtomValue(docStatusAtom);
   const {
     formatNumberedList,
     formatBulletedList,
@@ -206,6 +207,7 @@ const TextStyleSelect = (): React.ReactElement => {
     formatQuote,
     formatHeading
   } = useTextStyle();
+  const documentLoading = ["connecting", "reconnecting"].includes(docStatus);
 
   /**
    * Handles select value change

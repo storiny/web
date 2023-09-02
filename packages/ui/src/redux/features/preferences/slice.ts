@@ -1,5 +1,6 @@
 import { createSlice, isAnyOf, PayloadAction } from "@reduxjs/toolkit";
 import { devConsole } from "@storiny/shared/src/utils/devLog";
+import { compressToUTF16, decompressFromUTF16 } from "lz-string";
 import { z } from "zod";
 
 import { AppStartListening } from "../../listenerMiddleware";
@@ -15,8 +16,11 @@ const getDefaults = <Schema extends z.AnyZodObject>(
 ): PreferencesState =>
   Object.fromEntries(
     Object.entries(schema.shape).map(([key, value]) => {
-      if (value instanceof z.ZodDefault) {
-        return [key, value._def.defaultValue()];
+      if (value instanceof z.ZodCatch) {
+        return [
+          key,
+          value._def.catchValue({ error: new z.ZodError([]), input: "" })
+        ];
       }
 
       return [key, undefined];
@@ -27,18 +31,15 @@ const getDefaults = <Schema extends z.AnyZodObject>(
 const preferencesSchema = z.object({
   theme: z
     .union([z.literal("system"), z.literal("light"), z.literal("dark")])
-    .default("system")
     .catch("system"),
-  showAppearanceAlert: z.boolean().default(true).catch(true),
-  showAccessibilityAlert: z.boolean().default(true).catch(true),
-  hapticFeedback: z.boolean().default(false).catch(false),
+  showAppearanceAlert: z.boolean().catch(true),
+  showAccessibilityAlert: z.boolean().catch(true),
+  hapticFeedback: z.boolean().catch(false),
   reducedMotion: z
     .union([z.literal("system"), z.literal("enabled"), z.literal("disabled")])
-    .default("system")
     .catch("system"),
   readingFontSize: z
     .union([z.literal("slim"), z.literal("regular"), z.literal("oversized")])
-    .default("regular")
     .catch("regular"),
   readingFont: z
     .union([
@@ -51,7 +52,6 @@ const preferencesSchema = z.object({
       z.literal("recia"),
       z.literal("merriweather")
     ])
-    .default("satoshi")
     .catch("satoshi"),
   codeFont: z
     .union([
@@ -59,9 +59,8 @@ const preferencesSchema = z.object({
       z.literal("source-code-pro"),
       z.literal("system")
     ])
-    .default("system")
     .catch("system"),
-  enableCodeLigatures: z.boolean().default(false).catch(false)
+  enableCodeLigatures: z.boolean().catch(false)
 });
 
 export type PreferencesState = z.infer<typeof preferencesSchema>;
@@ -245,7 +244,11 @@ export const addPreferencesListeners = (
 
         if (storedValue) {
           listenerApi.dispatch(
-            hydrateState(preferencesSchema.parse(JSON.parse(storedValue)))
+            hydrateState(
+              preferencesSchema.parse(
+                JSON.parse(decompressFromUTF16(storedValue))
+              )
+            )
           );
         }
       } catch (e) {
@@ -371,7 +374,7 @@ export const addPreferencesListeners = (
       try {
         localStorage.setItem(
           LOCAL_STORAGE_KEY,
-          JSON.stringify(listenerApi.getState().preferences)
+          compressToUTF16(JSON.stringify(listenerApi.getState().preferences))
         );
       } catch (e) {
         devConsole.error(e);

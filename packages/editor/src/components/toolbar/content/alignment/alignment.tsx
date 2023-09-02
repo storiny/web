@@ -1,11 +1,11 @@
 import { clsx } from "clsx";
-import { useAtomValue } from "jotai/index";
+import { useAtomValue } from "jotai";
 import React from "react";
 
 import Option from "~/components/Option";
 import Select from "~/components/Select";
 
-import { documentLoadingAtom } from "../../../../atoms";
+import { docStatusAtom } from "../../../../atoms";
 import {
   Alignment,
   Alignment as AlignmentEnum,
@@ -29,8 +29,10 @@ const Item = ({
 );
 
 const ToolbarAlignmentItem = (): React.ReactElement => {
-  const documentLoading = useAtomValue(documentLoadingAtom);
+  const docStatus = useAtomValue(docStatusAtom);
   const [alignment, setAlignment] = useAlignment();
+  const documentLoading = ["connecting", "reconnecting"].includes(docStatus);
+
   return (
     <Select
       disabled={documentLoading}

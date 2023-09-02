@@ -4,6 +4,13 @@
     width: 100%;
     height: 100%;
     gap: 12px;
+    background-color: var(--bg-body);
+
+    /* Overlay */
+    &.overlay {
+      position: absolute;
+      inset: 0;
+    }
   }
 
   /* Progress bar */

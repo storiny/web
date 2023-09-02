@@ -3,7 +3,7 @@ import { mergeRegister } from "@lexical/utils";
 import { LexicalEditor } from "lexical";
 import React from "react";
 
-import { useLayoutEffect } from "../../utils/use-layout-effect";
+import { useLayoutEffect } from "../use-layout-effect";
 
 /**
  * Predicate function for determining whether the placeholder can

@@ -24,12 +24,13 @@
     "@lexical/link": "^0.12.0",
     "@lexical/list": "^0.12.0",
     "@lexical/markdown": "^0.12.0",
+    "@lexical/offset": "^0.12.0",
     "@lexical/react": "^0.12.0",
     "@lexical/selection": "^0.12.0",
     "@lexical/text": "^0.12.0",
     "@lexical/utils": "^0.12.0",
-    "@lexical/yjs": "^0.12.0",
     "@storiny/ui": "*",
+    "@y-presence/react": "^2.0.1",
     "clsx": "^1.2.1",
     "jotai": "^2.2.2",
     "lexical": "^0.12.0",
@@ -37,6 +38,7 @@
     "react-dom": "^18.2.0",
     "react-hotkeys-hook": "^4.4.1",
     "use-file-picker": "^1.7.0",
+    "y-indexeddb": "^9.0.11",
     "y-websocket": "^1.5.0",
     "yjs": "^13.6.7"
   }

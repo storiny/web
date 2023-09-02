@@ -4,10 +4,12 @@ import LexicalErrorBoundary from "@lexical/react/LexicalErrorBoundary";
 import { HorizontalRulePlugin } from "@lexical/react/LexicalHorizontalRulePlugin";
 import { ListPlugin } from "@lexical/react/LexicalListPlugin";
 import { clsx } from "clsx";
-import { useSetAtom } from "jotai";
+import { useAtomValue } from "jotai";
 import React from "react";
 
-import { documentLoadingAtom } from "../../atoms";
+import { capitalize } from "~/utils/capitalize";
+
+import { docStatusAtom } from "../../atoms";
 import { useRegisterTools } from "../../hooks/use-register-tools";
 import AutoFocusPlugin from "../../plugins/auto-focus";
 import BlockDraggerPlugin from "../../plugins/block-dragger";
@@ -15,6 +17,7 @@ import CollaborationPlugin from "../../plugins/collaboration";
 import ColorPlugin from "../../plugins/color/color";
 import FloatingLinkEditorPlugin from "../../plugins/floating-link-editor";
 import FloatingTextStylePlugin from "../../plugins/floating-text-style";
+import ImagePlugin from "../../plugins/image/image";
 import LinkPlugin from "../../plugins/link";
 import ListMaxIndentLevelPlugin from "../../plugins/list-max-indent-level";
 import MarkdownPlugin from "../../plugins/markdown";
@@ -25,19 +28,15 @@ import TextEntityPlugin from "../../plugins/text-entity";
 import TKPlugin from "../../plugins/tk/tk";
 import { createWebsocketProvider } from "../../utils/create-ws-provider";
 import EditorContentEditable from "../content-editable";
+import EditorLoader from "../loader";
 import EditorPlaceholder from "../placeholder";
 import styles from "./body.module.scss";
 
 const EditorBody = (): React.ReactElement => {
   useRegisterTools();
   const [editor] = useLexicalComposerContext();
-  const setDocumentLoading = useSetAtom(documentLoadingAtom);
   const isEditable = editor.isEditable();
-
-  React.useEffect(() => {
-    setDocumentLoading(false);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const docStatus = useAtomValue(docStatusAtom);
 
   return (
     <article className={clsx(styles.x, styles.body)}>
@@ -48,6 +47,7 @@ const EditorBody = (): React.ReactElement => {
       />
       <CollaborationPlugin
         id={"main"}
+        isMainEditor
         providerFactory={createWebsocketProvider}
         shouldBootstrap={true}
       />
@@ -65,7 +65,19 @@ const EditorBody = (): React.ReactElement => {
       <MarkdownPlugin />
       <HorizontalRulePlugin />
       <TextEntityPlugin />
+      <ImagePlugin />
       {!isEditable && <LexicalClickableLinkPlugin />}
+      {["connecting", "reconnecting", "disconnected"].includes(docStatus) && (
+        <EditorLoader
+          hideProgress={["disconnected", "reconnecting"].includes(docStatus)}
+          label={
+            docStatus === "disconnected"
+              ? "Connection lost"
+              : `${capitalize(docStatus)}…`
+          }
+          overlay
+        />
+      )}
     </article>
   );
 };

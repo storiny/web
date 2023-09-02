@@ -2,7 +2,7 @@ import { LexicalEditor } from "lexical";
 import React from "react";
 import { createPortal, flushSync } from "react-dom";
 
-import { useLayoutEffect } from "../../utils/use-layout-effect";
+import { useLayoutEffect } from "../use-layout-effect";
 
 interface ErrorBoundaryProps {
   children: React.ReactElement;

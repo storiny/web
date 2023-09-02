@@ -55,13 +55,4 @@
     width: 40px;
     border-radius: 0;
   }
-
-  /* Document status icon */
-  &.status-icon {
-    --icon-size: 18px;
-    --icon-stroke: var(--fg-muted);
-
-    padding: 6px;
-    cursor: help;
-  }
 }

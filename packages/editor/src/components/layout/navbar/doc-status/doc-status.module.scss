@@ -1,0 +1,10 @@
+.x {
+  /* Document status icon */
+  &.icon {
+    --icon-size: 18px;
+    --icon-stroke: var(--fg-muted);
+
+    padding: 6px;
+    cursor: help;
+  }
+}

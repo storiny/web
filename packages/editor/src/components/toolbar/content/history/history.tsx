@@ -1,4 +1,5 @@
 import { clsx } from "clsx";
+import { useAtomValue } from "jotai";
 import React from "react";
 
 import IconButton from "~/components/IconButton";
@@ -6,11 +7,15 @@ import Tooltip from "~/components/Tooltip";
 import RedoIcon from "~/icons/Redo";
 import UndoIcon from "~/icons/Undo";
 
+import { docStatusAtom } from "../../../../atoms";
 import { useHistory } from "../../../../hooks/use-history";
 import toolbarStyles from "../../toolbar.module.scss";
 
 const ToolbarHistoryItem = (): React.ReactElement => {
   const { undo, canUndo, canRedo, redo } = useHistory();
+  const docStatus = useAtomValue(docStatusAtom);
+  const documentLoading = ["connecting", "reconnecting"].includes(docStatus);
+
   return (
     <div className={"flex-center"}>
       <Tooltip content={"Undo"}>
@@ -20,7 +25,7 @@ const ToolbarHistoryItem = (): React.ReactElement => {
             toolbarStyles.x,
             toolbarStyles.button
           )}
-          disabled={!canUndo}
+          disabled={documentLoading || !canUndo}
           onClick={undo}
           size={"lg"}
           variant={"ghost"}
@@ -35,7 +40,7 @@ const ToolbarHistoryItem = (): React.ReactElement => {
             toolbarStyles.x,
             toolbarStyles.button
           )}
-          disabled={!canRedo}
+          disabled={documentLoading || !canRedo}
           onClick={redo}
           size={"lg"}
           variant={"ghost"}

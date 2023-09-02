@@ -26,6 +26,7 @@ import { Rect } from "../../utils/rect";
 import { eventFiles } from "../rich-text";
 import styles from "./block-dragger.module.scss";
 
+const DRAGGER_HEIGHT = 30; // (px)
 const TARGET_LINE_HALF_HEIGHT = 2;
 const DRAG_DATA_FORMAT = "application/x-storiny-drag-block";
 
@@ -162,14 +163,13 @@ const setDraggerPosition = (
 
   const targetRect = targetElement.getBoundingClientRect();
   const targetStyle = window.getComputedStyle(targetElement);
-  const draggerRect = draggerElement.getBoundingClientRect();
   const mainRect = document.querySelector("main")?.getBoundingClientRect();
 
   if (mainRect) {
     const top =
       targetRect.top -
       mainRect.top +
-      (parseInt(targetStyle.lineHeight, 10) - draggerRect.height) / 2;
+      (parseInt(targetStyle.lineHeight, 10) - DRAGGER_HEIGHT) / 2;
     const left = targetRect.left - mainRect.left - 42;
 
     draggerElement.style.display = "flex";

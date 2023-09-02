@@ -1,5 +1,6 @@
 export * from "./alignment";
-export * from "./document-loading";
+export * from "./awareness";
+export * from "./doc-status";
 export * from "./enable-inline-decorators";
 export * from "./enable-tk";
 export * from "./history";

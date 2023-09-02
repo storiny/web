@@ -1,0 +1,18 @@
+@use "breakpoints" as breakpoints;
+
+.x {
+  /* Base styles */
+  &.placeholder {
+    display: inline-block;
+    position: absolute;
+    top: 32px;
+    left: 48px;
+    user-select: none;
+    color: var(--fg-muted);
+    pointer-events: none;
+
+    @include breakpoints.media("<=tablet") {
+      left: 0;
+    }
+  }
+}

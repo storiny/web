@@ -5,6 +5,7 @@ import { Klass, LexicalNode } from "lexical";
 
 import { ColorNode } from "./color";
 import { HeadingNode } from "./heading";
+import { ImageNode } from "./image";
 import { QuoteNode } from "./quote";
 import { TKNode } from "./tk";
 
@@ -24,5 +25,6 @@ export const editorNodes: (
   LinkNode,
   HorizontalRuleNode,
   ColorNode,
-  TKNode
+  TKNode,
+  ImageNode
 ];

@@ -1,4 +1,5 @@
 import { mockStories } from "@storiny/ui/src/mocks";
+import { RoomProvider } from "@y-presence/react";
 import { Provider } from "jotai";
 import React from "react";
 

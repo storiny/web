@@ -7,7 +7,7 @@ import React from "react";
 
 import Divider from "~/components/Divider";
 
-import { documentLoadingAtom, sidebarsCollapsedAtom } from "../../../../atoms";
+import { docStatusAtom, sidebarsCollapsedAtom } from "../../../../atoms";
 import { springConfig } from "../../../../constants";
 import styles from "../right-sidebar.module.scss";
 import Alignment from "./alignment";
@@ -18,15 +18,20 @@ import Insert from "./insert";
 import PaddedDivider from "./padded-divider";
 import TextStyle from "./text-style";
 
-const SuspendedEditorRightSidebarContent = (): React.ReactElement => {
+const SuspendedEditorRightSidebarContent = (): React.ReactElement | null => {
   const isCollapsed = useAtomValue(sidebarsCollapsedAtom);
-  const documentLoading = useAtomValue(documentLoadingAtom);
+  const docStatus = useAtomValue(docStatusAtom);
   const transitions = useTransition(!isCollapsed, {
     from: { opacity: 0, transform: "translate3d(10%,0,0) scale(0.97)" },
     enter: { opacity: 1, transform: "translate3d(0%,0,0) scale(1)" },
     leave: { opacity: 0, transform: "translate3d(10%,0,0) scale(0.97)" },
     config: springConfig
   });
+  const documentLoading = ["connecting", "reconnecting"].includes(docStatus);
+
+  if (docStatus === "disconnected") {
+    return null;
+  }
 
   return transitions((style, item) =>
     item ? (

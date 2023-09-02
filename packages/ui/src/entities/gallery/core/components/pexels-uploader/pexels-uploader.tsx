@@ -38,7 +38,8 @@ const PexelsUploader = (props: PexelsUploaderProps): React.ReactElement => {
   ]);
 
   // Upload on mount
-  React.useEffect(handleUpload, [handleUpload]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  React.useEffect(handleUpload, []);
 
   return (
     <div
