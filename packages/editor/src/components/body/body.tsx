@@ -39,7 +39,16 @@ const EditorBody = (): React.ReactElement => {
   const docStatus = useAtomValue(docStatusAtom);
 
   return (
-    <article className={clsx(styles.x, styles.body)}>
+    <article
+      className={clsx(styles.x, styles.body)}
+      style={{
+        pointerEvents: ["connecting", "reconnecting", "disconnected"].includes(
+          docStatus
+        )
+          ? "none"
+          : "auto"
+      }}
+    >
       <RichTextPlugin
         ErrorBoundary={LexicalErrorBoundary}
         contentEditable={<EditorContentEditable />}
