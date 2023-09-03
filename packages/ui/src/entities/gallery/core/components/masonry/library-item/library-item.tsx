@@ -259,7 +259,7 @@ const LibraryMasonryItem = React.memo(
           )}
           <AspectRatio
             className={commonStyles.image}
-            ratio={data.height / data.width}
+            ratio={data.width / data.height}
           >
             <Image
               alt={data.alt || ""}

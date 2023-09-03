@@ -58,6 +58,7 @@ const EditorBody = (): React.ReactElement => {
         id={"main"}
         isMainEditor
         providerFactory={createWebsocketProvider}
+        role={"editor"}
         shouldBootstrap={true}
       />
       <TabFocusPlugin />

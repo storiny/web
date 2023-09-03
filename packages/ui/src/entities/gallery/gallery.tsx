@@ -109,6 +109,7 @@ const GalleryImpl = (props: GalleryProps): React.ReactElement => {
   const [whiteboardUploading, setWhiteboardUploading] =
     React.useState<boolean>(false);
   const [value, setValue] = useAtom(sidebarTabAtom);
+  const [selected, setSelected] = useAtom(selectedAtom);
   const setQuery = useSetAtom(queryAtom);
   const uploading = useAtomValue(uploadingAtom);
   const fullscreen = value === "whiteboard" && !whiteboardUploading;
@@ -117,17 +118,21 @@ const GalleryImpl = (props: GalleryProps): React.ReactElement => {
    * Handles Pexels image upload
    * @param asset Asset
    */
-  const handlePexelsUpload = (asset: Asset): void => {
-    onConfirm?.({
-      hex: asset.hex,
-      key: asset.key,
-      rating: asset.rating,
-      height: asset.height,
-      width: asset.width,
-      alt: asset.alt
-    });
-    setOpen(false);
-  };
+  const handlePexelsUpload = React.useCallback(
+    (asset: Asset): void => {
+      onConfirm?.({
+        hex: asset.hex,
+        key: asset.key,
+        rating: asset.rating,
+        height: asset.height,
+        width: asset.width,
+        alt: asset.alt,
+        credits: selected?.credits
+      });
+      setOpen(false);
+    },
+    [onConfirm, selected]
+  );
 
   return (
     <Modal
@@ -138,6 +143,7 @@ const GalleryImpl = (props: GalleryProps): React.ReactElement => {
         setOpen(open);
         if (!open) {
           // Reset values
+          setSelected(null);
           setValue("pexels");
           setQuery("");
         }

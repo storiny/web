@@ -34,19 +34,34 @@ export type HeadingTagType = "h2" | "h3";
 const TYPE = "heading";
 
 export class HeadingNode extends ElementNode {
+  /**
+   * Ctor
+   * @param tag Heading tag
+   * @param key Node key
+   */
   constructor(tag: HeadingTagType, key?: NodeKey) {
     super(key);
     this.__tag = tag;
   }
 
+  /**
+   * Returns the type of the node
+   */
   static getType(): string {
     return TYPE;
   }
 
+  /**
+   * Clones the node
+   * @param node Node
+   */
   static clone(node: HeadingNode): HeadingNode {
     return new HeadingNode(node.__tag, node.__key);
   }
 
+  /**
+   * Imports node from DOM elements
+   */
   static importDOM(): DOMConversionMap | null {
     return {
       h1: () => ({
@@ -79,7 +94,7 @@ export class HeadingNode extends ElementNode {
         conversion: (element: HTMLElement) => DOMConversionOutput | null;
         priority: 3;
       } => {
-        // domNode is a <p> since we matched it by nodeName
+        // `domNode` is a <p> since we matched it by nodeName
         const paragraph = node as HTMLParagraphElement;
         const firstChild = paragraph.firstChild;
 
@@ -111,6 +126,10 @@ export class HeadingNode extends ElementNode {
     };
   }
 
+  /**
+   * Imports a serialized node
+   * @param serializedNode Serialized node
+   */
   static importJSON(serializedNode: SerializedHeadingNode): HeadingNode {
     const node = $createHeadingNode(serializedNode.tag);
     node.setFormat(serializedNode.format);
@@ -119,16 +138,20 @@ export class HeadingNode extends ElementNode {
   }
 
   /**
-   * @internal
+   * Heading tag nodename
    */
-  __tag: HeadingTagType;
+  private readonly __tag: HeadingTagType;
 
+  /**
+   * Returns the tag type
+   */
   getTag(): HeadingTagType {
     return this.__tag;
   }
 
-  // View
-
+  /**
+   * Creates DOM
+   */
   createDOM(): HTMLElement {
     const tag = this.__tag;
     const element = document.createElement(tag);
@@ -141,10 +164,17 @@ export class HeadingNode extends ElementNode {
     return element;
   }
 
+  /**
+   * Skip updating the DOM
+   */
   updateDOM(): boolean {
     return false;
   }
 
+  /**
+   * Exports node to element
+   * @param editor Editor
+   */
   exportDOM(editor: LexicalEditor): DOMExportOutput {
     const { element } = super.exportDOM(editor);
 
@@ -161,6 +191,9 @@ export class HeadingNode extends ElementNode {
     };
   }
 
+  /**
+   * Serializes the node to JSON
+   */
   exportJSON(): SerializedHeadingNode {
     return {
       ...super.exportJSON(),
@@ -170,8 +203,11 @@ export class HeadingNode extends ElementNode {
     };
   }
 
-  // Mutation
-
+  /**
+   * Inserts node after the new element
+   * @param selection Selection
+   * @param restoreSelection Whether to restore the selection
+   */
   insertNewAfter(
     selection?: RangeSelection,
     restoreSelection = true
@@ -186,6 +222,9 @@ export class HeadingNode extends ElementNode {
     return newElement;
   }
 
+  /**
+   * Whether to collapse at the start
+   */
   collapseAtStart(): true {
     const newElement = !this.isEmpty()
       ? $createHeadingNode(this.getTag())
@@ -196,6 +235,9 @@ export class HeadingNode extends ElementNode {
     return true;
   }
 
+  /**
+   * Extracts the node with child
+   */
   extractWithChild(): boolean {
     return true;
   }

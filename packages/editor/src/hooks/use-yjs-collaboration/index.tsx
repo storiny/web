@@ -10,16 +10,18 @@ import React from "react";
 import { createPortal } from "react-dom";
 import { Doc, Transaction, UndoManager, YEvent } from "yjs";
 
-import { docStatusAtom } from "../../atoms";
+import { awarenessAtom, docStatusAtom } from "../../atoms";
 import { ExcludedProperties } from "../../collab/bindings";
 import { Binding, createBinding } from "../../collab/bindings";
 import { CONNECTED_COMMAND } from "../../collab/commands";
-import { initLocalState, Provider } from "../../collab/provider";
+import {
+  CollabLocalState,
+  initLocalState,
+  Provider
+} from "../../collab/provider";
 import { syncCursorPositions } from "../../utils/sync-cursor-positions";
 import { syncLexicalUpdateToYjs } from "../../utils/sync-lexical-update-to-yjs";
 import { syncYjsChangesToLexical } from "../../utils/sync-yjs-changes-to-lexical";
-
-export type CursorsContainerRef = React.MutableRefObject<HTMLElement | null>;
 
 /**
  * Initializes the editor
@@ -139,52 +141,42 @@ const clearEditorSkipCollab = (
  * @param editor Editor
  * @param id ID
  * @param name User name
- * @param color User color
- * @param avatarId User avatar ID
- * @param avatarHex User avatar hex
- * @param provider Provider
  * @param docMap Document map
  * @param shouldBootstrap Whether to bootstrap
  * @param initialEditorState Initial editor state
  * @param excludedProperties Excluded properties
  * @param isMainEditor Main editor flag
- * @param awarenessData Awareness data
- * @param cursorsContainerRef Cursors container ref
+ * @param localState Local collab state
  */
 export const useYjsCollaboration = ({
   id,
   docMap,
   editor,
   provider,
-  color,
-  name,
-  avatarHex,
-  avatarId,
   initialEditorState,
   excludedProperties,
   shouldBootstrap,
   isMainEditor,
-  awarenessData,
-  cursorsContainerRef
+  localState
 }: {
-  avatarHex: string | null;
-  avatarId: string | null;
-  awarenessData?: object;
-  color: string;
-  cursorsContainerRef?: CursorsContainerRef;
   docMap: Map<string, Doc>;
   editor: LexicalEditor;
   excludedProperties?: ExcludedProperties;
   id: string;
   initialEditorState?: InitialEditorStateType;
   isMainEditor?: boolean;
-  name: string;
+  localState: Omit<
+    CollabLocalState,
+    "provider" | "awarenessData" | "focusing"
+  > &
+    Partial<Pick<CollabLocalState, "awarenessData">>;
   provider: Provider;
   shouldBootstrap: boolean;
 }): [React.ReactElement, Binding] => {
   const isReloadingDoc = React.useRef(false);
   const connectedOnceRef = React.useRef<boolean>(false);
   const setDocStatus = useSetAtom(docStatusAtom);
+  const setAwareness = useSetAtom(awarenessAtom);
   const [doc, setDoc] = React.useState(docMap.get(id));
   const binding = React.useMemo(
     () => createBinding(editor, id, doc, docMap, excludedProperties),
@@ -206,6 +198,8 @@ export const useYjsCollaboration = ({
   React.useEffect(() => {
     const { root } = binding;
     const { awareness } = provider;
+
+    // TODO: Handle `overloaded` status
 
     /**
      * Handles status updates
@@ -276,14 +270,12 @@ export const useYjsCollaboration = ({
       syncCursorPositions(binding, provider);
     };
 
+    setAwareness(awareness);
     initLocalState({
+      ...localState,
       provider,
-      name,
-      color,
-      avatarHex,
-      avatarId,
       focusing: document.activeElement === editor.getRootElement(),
-      awarenessData: awarenessData || {}
+      awarenessData: localState.awarenessData || {}
     });
 
     provider.on("reload", handleReload);
@@ -330,6 +322,7 @@ export const useYjsCollaboration = ({
       }
     );
 
+    // Connect to server
     connect();
 
     return () => {
@@ -347,11 +340,7 @@ export const useYjsCollaboration = ({
       removeListener();
     };
   }, [
-    avatarHex,
-    avatarId,
-    awarenessData,
     binding,
-    color,
     connect,
     disconnect,
     docMap,
@@ -359,22 +348,29 @@ export const useYjsCollaboration = ({
     id,
     initialEditorState,
     isMainEditor,
-    name,
     provider,
+    localState,
+    setAwareness,
     setDocStatus,
     shouldBootstrap
   ]);
 
-  const cursorsContainer = React.useMemo(() => {
-    const ref = (element: null | HTMLElement): void => {
-      binding.cursorsContainer = element;
-    };
-
-    return createPortal(
-      <div ref={ref} />,
-      (cursorsContainerRef && cursorsContainerRef.current) || document.body
-    );
-  }, [binding, cursorsContainerRef]);
+  /**
+   * Cursors container
+   */
+  const cursorsContainer = React.useMemo(
+    () =>
+      createPortal(
+        <div
+          aria-hidden
+          ref={(element: HTMLElement | null): void => {
+            binding.cursorsContainer = element;
+          }}
+        />,
+        document.body
+      ),
+    [binding]
+  );
 
   return [cursorsContainer, binding];
 };

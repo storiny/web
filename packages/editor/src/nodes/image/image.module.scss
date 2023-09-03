@@ -1,0 +1,16 @@
+/* Image wrapper */
+.image-wrapper {
+  cursor: default;
+  display: inline-block;
+  position: relative;
+  user-select: none;
+  max-width: 100%;
+}
+
+/* Draggable image */
+.draggable {
+  outline: 1.5px solid var(--inverted-400);
+  filter: drop-shadow(
+    var(--shadow-sm)
+  ); // Drop shadow for images with transparent background
+}

@@ -24,18 +24,32 @@ export type SerializedQuoteNode = SerializedElementNode;
 const TYPE = "quote";
 
 export class QuoteNode extends ElementNode {
+  /**
+   * Ctor
+   * @param key Node key
+   */
   constructor(key?: NodeKey) {
     super(key);
   }
 
+  /**
+   * Returns the type of the node
+   */
   static getType(): string {
     return TYPE;
   }
 
+  /**
+   * Clones the node
+   * @param node Node
+   */
   static clone(node: QuoteNode): QuoteNode {
     return new QuoteNode(node.__key);
   }
 
+  /**
+   * Imports node from DOM element
+   */
   static importDOM(): DOMConversionMap | null {
     return {
       blockquote: () => ({
@@ -53,6 +67,10 @@ export class QuoteNode extends ElementNode {
     };
   }
 
+  /**
+   * Imports serialized node
+   * @param serializedNode Serialized node
+   */
   static importJSON(serializedNode: SerializedQuoteNode): QuoteNode {
     const node = $createQuoteNode();
     node.setFormat(serializedNode.format);
@@ -60,8 +78,9 @@ export class QuoteNode extends ElementNode {
     return node;
   }
 
-  // View
-
+  /**
+   * Creates DOM
+   */
   createDOM(): HTMLElement {
     const element = document.createElement("blockquote");
     addClassNamesToElement(
@@ -72,10 +91,17 @@ export class QuoteNode extends ElementNode {
     return element;
   }
 
+  /**
+   * Skip updating the DOM
+   */
   updateDOM(): boolean {
     return false;
   }
 
+  /**
+   * Exports node to element
+   * @param editor Editor
+   */
   exportDOM(editor: LexicalEditor): DOMExportOutput {
     const { element } = super.exportDOM(editor);
 
@@ -92,6 +118,9 @@ export class QuoteNode extends ElementNode {
     };
   }
 
+  /**
+   * Serializes the node to JSON
+   */
   exportJSON(): SerializedElementNode {
     return {
       ...super.exportJSON(),
@@ -99,14 +128,20 @@ export class QuoteNode extends ElementNode {
     };
   }
 
-  // Mutation
-
+  /**
+   * Inserts node after the new element
+   * @param _ Selection
+   * @param restoreSelection Whether to restore the selection
+   */
   insertNewAfter(_: RangeSelection, restoreSelection?: boolean): ParagraphNode {
     const newBlock = $createParagraphNode();
     this.insertAfter(newBlock, restoreSelection);
     return newBlock;
   }
 
+  /**
+   * Whether to collapse at the start
+   */
   collapseAtStart(): true {
     const paragraph = $createParagraphNode();
     const children = this.getChildren();

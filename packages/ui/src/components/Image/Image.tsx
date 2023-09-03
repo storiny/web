@@ -34,6 +34,7 @@ const Image = forwardRef<ImageProps, "div">((props, ref) => {
     as: Component = "div",
     size,
     imgId,
+    imgRef,
     hex,
     src,
     alt,
@@ -88,6 +89,7 @@ const Image = forwardRef<ImageProps, "div">((props, ref) => {
             onLoadingStatusChange={(status): void =>
               setLoaded(status === "loaded")
             }
+            ref={imgRef}
             src={finalSrc}
           />
         )}

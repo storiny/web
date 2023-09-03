@@ -210,15 +210,18 @@ export class CollabTextNode {
   ): void {
     const lexicalNode = this.getNode();
 
-    if (lexicalNode) {
-      syncPropertiesFromYjs(binding, this._map, lexicalNode, keysChanged);
+    if (lexicalNode === null) {
+      throw new Error(
+        "`syncPropertiesAndTextFromYjs`: could not find the text node"
+      );
+    }
 
-      const collabText = this._text;
+    syncPropertiesFromYjs(binding, this._map, lexicalNode, keysChanged);
+    const collabText = this._text;
 
-      if (lexicalNode.__text !== collabText) {
-        const writable = lexicalNode.getWritable();
-        writable.__text = collabText;
-      }
+    if (lexicalNode.__text !== collabText) {
+      const writable = lexicalNode.getWritable();
+      writable.__text = collabText;
     }
   }
 

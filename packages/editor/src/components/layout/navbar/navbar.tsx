@@ -25,6 +25,7 @@ import DocStatus from "./doc-status";
 import MusicItem from "./music-item";
 import styles from "./navbar.module.scss";
 
+const EditorPresence = dynamic(() => import("./presence"));
 const EditorMenubarItems = dynamic(() => import("./menubar-items"), {
   loading: ({ isLoading, error, retry }) =>
     error && !isLoading ? (
@@ -38,7 +39,11 @@ const EditorMenubarItems = dynamic(() => import("./menubar-items"), {
     )
 });
 
-const EditorMenubar = (): React.ReactElement => (
+const EditorMenubar = ({
+  disabled
+}: {
+  disabled?: boolean;
+}): React.ReactElement => (
   <Menubar className={"full-h"}>
     <MenubarMenu
       slotProps={{
@@ -49,6 +54,7 @@ const EditorMenubar = (): React.ReactElement => (
       trigger={
         <Button
           className={clsx("focus-invert", "flex-center", styles.x, styles.menu)}
+          disabled={disabled}
           variant={"ghost"}
         >
           <Logo size={26} />
@@ -65,29 +71,32 @@ const EditorMenubar = (): React.ReactElement => (
 
 const EditorNavbar = (): React.ReactElement => {
   const isSmallerThanTablet = useMediaQuery(breakpoints.down("tablet"));
+  const isSmallerThanMobile = useMediaQuery(breakpoints.down("mobile"));
   const docStatus = useAtomValue(docStatusAtom);
   const documentLoading = ["connecting", "reconnecting"].includes(docStatus);
 
   return (
     <header className={clsx(styles.x, styles["editor-navbar"])} role={"banner"}>
       <div className={clsx("flex-center", styles.x, styles["full-height"])}>
-        <EditorMenubar />
+        <EditorMenubar disabled={documentLoading} />
         {!isSmallerThanTablet && (
           <React.Fragment>
             <Tooltip content={"Version history"}>
               <IconButton
                 className={clsx("focus-invert", styles.x, styles.button)}
+                disabled={documentLoading}
                 size={"lg"}
                 variant={"ghost"}
               >
                 <VersionHistoryIcon />
               </IconButton>
             </Tooltip>
-            <MusicItem />
+            <MusicItem disabled={documentLoading} />
             <Tooltip content={"Help"}>
               <IconButton
                 as={NextLink}
                 className={clsx("focus-invert", styles.x, styles.button)}
+                disabled={documentLoading}
                 href={"/help"}
                 size={"lg"}
                 target={"_blank"}
@@ -99,6 +108,12 @@ const EditorNavbar = (): React.ReactElement => {
           </React.Fragment>
         )}
       </div>
+      {!isSmallerThanMobile && (
+        <React.Fragment>
+          <Spacer className={"f-grow"} size={2} />
+          <EditorPresence />
+        </React.Fragment>
+      )}
       <Spacer className={"f-grow"} size={2} />
       <div className={clsx("flex-center")}>
         <DocStatus />

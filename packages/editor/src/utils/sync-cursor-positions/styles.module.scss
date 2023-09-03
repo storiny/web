@@ -3,8 +3,7 @@
   position: absolute;
   top: 0;
   bottom: 0;
-  right: -1px;
-  height: 20px;
+  right: -2px;
   width: 2px;
   background-color: var(--color);
   z-index: calc(var(--z-index-header) - 3);
@@ -15,12 +14,26 @@
   position: absolute;
   left: 12px;
   top: 50%;
-  gap: 4px;
+  width: fit-content;
+  max-width: var(--offset-width, 114px);
   padding: 2px;
-  border-radius: 22px;
+  pointer-events: none;
+  border-radius: var(--radius-md);
   background-color: var(--color);
   box-shadow: var(--shadow-md);
   transform: translateY(-50%);
+
+  /* Horizontally flipped */
+  &.flipped {
+    transform: translate(calc(-100% - 12px), -50%);
+    left: 100%;
+    right: 12px;
+
+    &::before {
+      left: 100%;
+      right: -10px;
+    }
+  }
 
   &::before {
     content: "";
@@ -36,19 +49,40 @@
 
 /* Avatar */
 .avatar {
-  height: 18px;
-  width: 18px;
-  border-radius: 50%;
+  height: 20px;
+  width: 21px; // +1px border
+  border-radius: var(--radius-sm) 0 0 var(--radius-sm);
+  border-right: 1px solid var(--divider);
+  background-color: var(--hex);
 }
 
 /* Name */
 .name {
-  max-width: 76px;
+  max-width: 100%;
+  align-self: stretch;
   padding: 3px 8px;
   color: var(--fg-major);
   font-size: var(--font-size-xs);
   font-weight: var(--font-weight-medium);
   line-height: 100%;
-  border-radius: 16px;
+  box-shadow: var(--ridge-xs);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
   background-color: var(--bg-body);
+}
+
+/* Selection and selection background */
+.selection,
+.selection-bg {
+  position: absolute;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Selection background */
+.selection-bg {
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.35;
 }

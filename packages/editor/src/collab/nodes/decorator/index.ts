@@ -138,10 +138,14 @@ export class CollabDecoratorNode {
   ): void {
     const lexicalNode = this.getNode();
 
-    if (lexicalNode) {
-      const xmlElem = this._xmlElem;
-      syncPropertiesFromYjs(binding, xmlElem, lexicalNode, keysChanged);
+    if (lexicalNode === null) {
+      throw new Error(
+        "`syncPropertiesFromYjs`: could not find the decorator node"
+      );
     }
+
+    const xmlElem = this._xmlElem;
+    syncPropertiesFromYjs(binding, xmlElem, lexicalNode, keysChanged);
   }
 
   /**

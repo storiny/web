@@ -12,7 +12,7 @@ export const getNodeTypeFromSharedType = (
       ? sharedType.get("__type")
       : sharedType.getAttribute("__type");
 
-  if (type === null) {
+  if (!type) {
     throw new Error("Expected shared type to include type attribute");
   }
 

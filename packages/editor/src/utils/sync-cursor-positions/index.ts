@@ -81,11 +81,11 @@ const destroyCursor = (binding: Binding, cursor: Cursor): void => {
 
 /**
  * Creates cursor selection
- * @param cursor
- * @param anchorKey
- * @param anchorOffset
- * @param focusKey
- * @param focusOffset
+ * @param cursor Cursor
+ * @param anchorKey Anchor key
+ * @param anchorOffset Anchor offset
+ * @param focusKey Focus key
+ * @param focusOffset Focus offset
  */
 const createCursorSelection = (
   cursor: Cursor,
@@ -105,15 +105,28 @@ const createCursorSelection = (
 
   if (cursor.avatarId) {
     const avatar = document.createElement("img");
+    avatar.alt = "";
     avatar.src = getCdnUrl(cursor.avatarId, ImageSize.W_32);
     avatar.className = styles.avatar;
+    avatar.style.setProperty(
+      "--hex",
+      cursor.avatarHex ? `#${cursor.avatarHex}` : "transparent"
+    );
+
+    avatar.onload = (): void => {
+      avatar.style.removeProperty("--hex");
+    };
+
+    avatar.onerror = (): void => {
+      avatar.style.display = "none";
+    };
 
     wrapper.appendChild(avatar);
   }
 
   const name = document.createElement("span");
   name.textContent = cursor.name;
-  name.className = clsx("ellipsis", styles.name);
+  name.className = clsx("ellipsis", "f-grow", styles.name);
 
   wrapper.appendChild(name);
   caret.appendChild(wrapper);
@@ -136,10 +149,10 @@ const createCursorSelection = (
 
 /**
  * Updates a cursor
- * @param binding
- * @param cursor
- * @param nextSelection
- * @param nodeMap
+ * @param binding Binding
+ * @param cursor Cursor
+ * @param nextSelection Next selection
+ * @param nodeMap Node map
  */
 const updateCursor = (
   binding: Binding,
@@ -150,14 +163,14 @@ const updateCursor = (
   const editor = binding.editor;
   const rootElement = editor.getRootElement();
   const cursorsContainer = binding.cursorsContainer;
+  const cursorsContainerOffsetParent = cursorsContainer?.offsetParent;
+  const mainRect = document.querySelector("main")?.getBoundingClientRect();
 
-  if (cursorsContainer === null || rootElement === null) {
-    return;
-  }
-
-  const cursorsContainerOffsetParent = cursorsContainer.offsetParent;
-
-  if (cursorsContainerOffsetParent === null) {
+  if (
+    cursorsContainer === null ||
+    rootElement === null ||
+    !cursorsContainerOffsetParent
+  ) {
     return;
   }
 
@@ -181,6 +194,7 @@ const updateCursor = (
   const selections = nextSelection.selections;
   const anchor = nextSelection.anchor;
   const focus = nextSelection.focus;
+  const presenceChild = caret.firstChild as HTMLSpanElement;
   const anchorKey = anchor.key;
   const focusKey = focus.key;
   const anchorNode = nodeMap.get(anchorKey);
@@ -194,7 +208,7 @@ const updateCursor = (
 
   // In the case of a collapsed selection on a linebreak, we need
   // to improvise as the browser will return nothing here as <br>
-  // apparantly take up no visual space.
+  // apparantly takes up no visual space.
   // This won't work in all cases, but it's better than just showing
   // nothing all the time.
   if (anchorNode === focusNode && $isLineBreakNode(anchorNode)) {
@@ -228,8 +242,11 @@ const updateCursor = (
     if (selection === undefined) {
       selection = document.createElement("span");
       selections[i] = selection;
+      selection.className = styles.selection;
 
       const selectionBg = document.createElement("span");
+      selectionBg.className = styles["selection-bg"];
+      selectionBg.style.backgroundColor = color;
 
       selection.appendChild(selectionBg);
       cursorsContainer.appendChild(selection);
@@ -237,15 +254,27 @@ const updateCursor = (
 
     const top = selectionRect.top - containerRect.top;
     const left = selectionRect.left - containerRect.left;
-    const style = `position:absolute;top:${top}px;left:${left}px;height:${selectionRect.height}px;width:${selectionRect.width}px;pointer-events:none;z-index:5;`;
 
-    selection.style.cssText = style;
-
-    (
-      selection.firstChild as HTMLSpanElement
-    ).style.cssText = `${style}left:0;top:0;background-color:${color};opacity:0.3;`;
+    selection.style.top = `${top}px`;
+    selection.style.left = `${left}px`;
+    selection.style.height = `${selectionRect.height}px`;
+    selection.style.width = `${selectionRect.width}px`;
 
     if (i === selectionRectsLength - 1) {
+      if (presenceChild && mainRect) {
+        const presenceRect = presenceChild.getBoundingClientRect();
+        // Flip horizontally
+        presenceChild.classList.toggle(
+          styles.flipped,
+          presenceRect.right +
+            (presenceChild.classList.contains(styles.flipped)
+              ? presenceRect.width + 18 // Compensate 12px transform with 6px offset
+              : 0) -
+            mainRect.right >
+            0
+        );
+      }
+
       if (caret.parentNode !== selection) {
         selection.appendChild(caret);
       }

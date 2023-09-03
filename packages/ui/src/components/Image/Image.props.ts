@@ -22,6 +22,10 @@ export interface ImageProps extends PolymorphicProps<"div"> {
    */
   imgId?: string | null;
   /**
+   * Ref passed to the native image element
+   */
+  imgRef?: React.RefObject<HTMLImageElement>;
+  /**
    * The image rating, used to render an overlay warning
    */
   rating?: AssetRating;

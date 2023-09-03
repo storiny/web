@@ -4,6 +4,11 @@
   & + *:not(p) {
     margin-top: 18px;
   }
+
+  & + h3,
+  & + h2 {
+    margin-top: 36px;
+  }
 }
 
 /* Heading */

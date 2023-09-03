@@ -21,7 +21,8 @@ const ImageItem = ({
           hex: image.hex,
           rating: image.rating,
           width: image.width,
-          height: image.height
+          height: image.height,
+          credits: image.credits
         })
       }
     >

@@ -62,6 +62,8 @@ const syncEvent = (binding: Binding, event: any): void => {
     if (attributesChanged.size > 0) {
       collabNode.syncPropertiesFromYjs(binding, attributesChanged);
     }
+  } else {
+    throw new Error("Unknown node event");
   }
 };
 

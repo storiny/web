@@ -31,7 +31,11 @@ const PexelsMasonryItem = React.memo(
         alt: data.alt || "",
         width: data.width,
         height: data.height,
-        source: "pexels"
+        source: "pexels",
+        credits: {
+          author: data.photographer,
+          url: data.url
+        }
       });
     };
 
@@ -55,7 +59,7 @@ const PexelsMasonryItem = React.memo(
       >
         <AspectRatio
           className={commonStyles.image}
-          ratio={data.height / data.width}
+          ratio={data.width / data.height}
         >
           <Image
             alt={data.alt || ""}

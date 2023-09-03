@@ -4,11 +4,12 @@
     "build": "turbo run build",
     "dev": "dotenv -e ./.env.local -- concurrently --raw \"docker-compose up -d\" \"turbo run dev --color --parallel\"",
     "lint": "turbo run lint",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "format": "prettier --write \"**/*.{ts,tsx,md,mdx}\"",
     "test": "jest",
-    "multiplayer:dev": "cross-env HOST=localhost PORT=1234 npx y-websocket-server",
-    "storybook:dev": "dotenv -e ./.env.local -- concurrently --raw \"yarn multiplayer:dev\" \"storybook dev -p 6006\"",
-    "storybook:build": "storybook build"
+    "storybook:dev": "dotenv -e ./.env.local -- storybook dev -p 6006 --no-open",
+    "storybook:build": "storybook build",
+    "multiplayer:server": "cross-env HOST=localhost PORT=1234 npx y-websocket-server",
+    "multiplayer:dev": "dotenv -e ./.env.local -- concurrently --raw \"yarn multiplayer:server\" \"yarn storybook:dev\""
   },
   "workspaces": [
     "apps/*",

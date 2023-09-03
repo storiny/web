@@ -4694,7 +4694,6 @@ __metadata:
     react-hotkeys-hook: ^4.4.1
     typescript: ^5.1.5
     use-file-picker: ^1.7.0
-    y-indexeddb: ^9.0.11
     y-websocket: ^1.5.0
     yjs: ^13.6.7
   languageName: unknown
@@ -22212,17 +22211,6 @@ __metadata:
   version: 4.0.2
   resolution: "xtend@npm:4.0.2"
   checksum: ac5dfa738b21f6e7f0dd6e65e1b3155036d68104e67e5d5d1bde74892e327d7e5636a076f625599dc394330a731861e87343ff184b0047fef1360a7ec0a5a36a
-  languageName: node
-  linkType: hard
-
-"y-indexeddb@npm:^9.0.11":
-  version: 9.0.11
-  resolution: "y-indexeddb@npm:9.0.11"
-  dependencies:
-    lib0: ^0.2.74
-  peerDependencies:
-    yjs: ^13.0.0
-  checksum: 890b745b420badeadcc0925b517628a50a4f74b88739647aaa3098b7e60a47db351ebbaef9f2bcdf74a50739a3a8e3fe4a3b47281f21f53b5e19cd1725d4dd8b
   languageName: node
   linkType: hard
 

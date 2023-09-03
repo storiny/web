@@ -36,7 +36,11 @@ const MusicItemContent = dynamic(() => import("./content"), {
     )
 });
 
-const MusicItem = (): React.ReactElement => (
+const MusicItem = ({
+  disabled
+}: {
+  disabled?: boolean;
+}): React.ReactElement => (
   <Popover
     className={clsx("flex-col", "flex-center", styles.x, styles.popover)}
     slotProps={{
@@ -47,6 +51,7 @@ const MusicItem = (): React.ReactElement => (
       <IconButton
         aria-label={"Music"}
         className={clsx("focus-invert", navbarStyles.x, navbarStyles.button)}
+        disabled={disabled}
         size={"lg"}
         title={"Music"}
         variant={"ghost"}

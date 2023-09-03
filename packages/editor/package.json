@@ -38,7 +38,6 @@
     "react-dom": "^18.2.0",
     "react-hotkeys-hook": "^4.4.1",
     "use-file-picker": "^1.7.0",
-    "y-indexeddb": "^9.0.11",
     "y-websocket": "^1.5.0",
     "yjs": "^13.6.7"
   }

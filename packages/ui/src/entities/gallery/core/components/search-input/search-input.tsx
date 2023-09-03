@@ -10,7 +10,8 @@ import {
   fetchingAtom,
   GallerySidebarTabsValue,
   queryAtom,
-  sidebarTabAtom
+  sidebarTabAtom,
+  uploadingAtom
 } from "../../atoms";
 
 const SearchInput = (props: InputProps): React.ReactElement => {
@@ -18,6 +19,7 @@ const SearchInput = (props: InputProps): React.ReactElement => {
   const debouncedValue = useDebounce(value);
   const tab = useAtomValue(sidebarTabAtom);
   const isFetching = useAtomValue(fetchingAtom);
+  const isUploading = useAtomValue(uploadingAtom);
   const isTyping = value !== debouncedValue;
 
   return (
@@ -31,6 +33,7 @@ const SearchInput = (props: InputProps): React.ReactElement => {
           <SearchIcon />
         )
       }
+      disabled={isUploading}
       onChange={(event): void => setValue(event.target.value)}
       placeholder={"Search"}
       size={"sm"}

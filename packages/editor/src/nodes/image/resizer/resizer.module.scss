@@ -1,0 +1,48 @@
+/* Resize anchor */
+.resizer {
+  display: block;
+  width: 12px;
+  height: 12px;
+  position: absolute;
+  border-radius: 1px;
+  box-shadow: var(--shadow-sm);
+  background-color: var(--inverted-50);
+  outline: 1.5px solid var(--inverted-400);
+
+  &:hover {
+    background-color: var(--inverted-200);
+  }
+
+  /* North-west */
+  &.nw {
+    top: -6px;
+    left: -6px;
+    cursor: nw-resize;
+  }
+
+  /* North-east */
+  &.ne {
+    top: -6px;
+    right: -6px;
+    cursor: ne-resize;
+  }
+
+  /* South-east */
+  &.se {
+    bottom: -6px;
+    right: -6px;
+    cursor: nwse-resize;
+  }
+
+  /* South-west */
+  &.sw {
+    bottom: -6px;
+    left: -6px;
+    cursor: sw-resize;
+  }
+}
+
+/* Resizing state */
+.resizing {
+  touch-action: none;
+}

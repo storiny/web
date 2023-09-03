@@ -152,7 +152,7 @@ export class CollabElementNode {
   ): void {
     const lexicalNode = this.getNode();
 
-    if (!lexicalNode) {
+    if (lexicalNode === null) {
       throw new Error(
         "`syncPropertiesFromYjs`: could not find the collab element node"
       );
@@ -288,7 +288,7 @@ export class CollabElementNode {
     const lexicalNode = this.getNode();
 
     if (lexicalNode === null) {
-      return;
+      throw new Error("`syncChildrenFromYjs`: could not find the element node");
     }
 
     const key = lexicalNode.__key;
@@ -330,6 +330,10 @@ export class CollabElementNode {
             childCollabNode.syncPropertiesAndTextFromYjs(binding, null);
           } else if (childCollabNode instanceof CollabDecoratorNode) {
             childCollabNode.syncPropertiesFromYjs(binding, null);
+          } else if (
+            !((childCollabNode as unknown) instanceof CollabLineBreakNode)
+          ) {
+            throw new Error("`syncChildrenFromYjs`: unknown collab node");
           }
         }
 
@@ -605,14 +609,20 @@ export class CollabElementNode {
     const child = children[index];
 
     if (child === undefined) {
-      if (collabNode) {
-        this.append(collabNode);
+      if (collabNode === undefined) {
+        throw new Error("`splice`: could not find the collab element node");
       }
 
+      this.append(collabNode);
       return;
     }
 
     const offset = child.getOffset();
+
+    if (offset === -1) {
+      throw new Error("`splice`: expected offset to be greater than zero");
+    }
+
     const xmlText = this._xmlText;
 
     if (delCount !== 0) {

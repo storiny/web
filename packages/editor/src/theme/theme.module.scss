@@ -1,3 +1,109 @@
+/* Paragraph node */
+.paragraph {
+  margin: 0;
+  position: relative;
+
+  // Add margin-top to the adjacent block nodes
+  & + *:not(.paragraph) {
+    margin-top: 40px;
+  }
+}
+
+/* Indent */
+.indent {
+  --lexical-indent-base-value: 32px;
+}
+
+/* Link node */
+.link {
+  &:hover {
+    --bg: transparent;
+  }
+}
+
+/* Italic text style */
+.t-italic {
+  font-style: italic;
+}
+
+/* Underline text style */
+.t-underline {
+  text-decoration: underline;
+}
+
+/* Strikethrough text style */
+.t-strikethrough {
+  text-decoration: line-through;
+}
+
+/* Strikethrough and underline text style */
+.t-underline-strikethrough {
+  text-decoration: underline line-through;
+}
+
+/* Subscript text style */
+.t-subscript {
+  font-size: 0.8em;
+  vertical-align: sub !important;
+}
+
+/* Superscript text style */
+.t-superscript {
+  font-size: 0.8em;
+  vertical-align: super;
+}
+
+/* Ordered and unordered list */
+.ol,
+.ul {
+  padding: 0;
+  margin: 0 0 40px;
+  list-style-position: inside;
+}
+
+/* Ordered list */
+.ol {
+  &-2 {
+    margin-block: 24px;
+    list-style-type: upper-alpha;
+  }
+
+  &-3 {
+    margin-block: 24px;
+    list-style-type: lower-alpha;
+  }
+}
+
+/* List item */
+.li {
+  margin: 0 32px 12px;
+
+  & ul {
+    margin-bottom: 0;
+  }
+}
+
+/* Nested list item */
+.nested-li {
+  list-style-type: none;
+  margin-block: 12px 24px;
+}
+
+/* Block node */
+.block {
+  margin-bottom: 40px;
+  width: 100%;
+
+  /* Immediate sibling paragraph of a block node acts as its caption */
+  & + .paragraph {
+    margin-block: -28px 40px;
+    font-size: var(--font-size-md) !important;
+    line-height: var(--line-height-md) !important;
+    color: var(--fg-minor) !important;
+  }
+}
+
+/* Block cursor */
 .block-cursor {
   display: block;
   pointer-events: none;
@@ -11,92 +117,6 @@
     width: 18px;
     border-top: 1px solid var(--fg-major);
     animation: cursor-blink 1.5s steps(2, start) infinite;
-  }
-}
-
-.paragraph {
-  margin: 0;
-  position: relative;
-
-  // Add margin-top to the adjacent block nodes
-  & + *:not(.paragraph) {
-    margin-top: 40px;
-  }
-}
-
-.indent {
-  --lexical-indent-base-value: 32px;
-}
-
-.link {
-  &:hover {
-    --bg: transparent;
-  }
-}
-
-.t-italic {
-  font-style: italic;
-}
-
-.t-underline {
-  text-decoration: underline;
-}
-
-.t-strikethrough {
-  text-decoration: line-through;
-}
-
-.t-underline-strikethrough {
-  text-decoration: underline line-through;
-}
-
-.t-subscript {
-  font-size: 0.8em;
-  vertical-align: sub !important;
-}
-
-.t-superscript {
-  font-size: 0.8em;
-  vertical-align: super;
-}
-
-.ol,
-.ul {
-  padding: 0;
-  margin: 0 0 40px;
-  list-style-position: inside;
-}
-
-.ol {
-  &-2 {
-    margin-block: 24px;
-    list-style-type: upper-alpha;
-  }
-
-  &-3 {
-    margin-block: 24px;
-    list-style-type: lower-alpha;
-  }
-}
-
-.li {
-  margin: 0 32px 12px;
-
-  & ul {
-    margin-bottom: 0;
-  }
-}
-
-.nested-li {
-  list-style-type: none;
-  margin-block: 12px 24px;
-}
-
-.embed-block {
-  user-select: none;
-
-  &.focus {
-    outline: 2px solid rgb(60 132 244);
   }
 }
 

@@ -10,7 +10,13 @@ export interface UserState {
   focusPos: null | RelativePosition;
   focusing: boolean;
   name: string;
+  role: "editor" | "viewer";
+  userId: string;
 }
+
+export type CollabLocalState = Omit<UserState, "anchorPos" | "focusPos"> & {
+  provider: Provider;
+};
 
 export interface Operation {
   attributes: {
@@ -22,14 +28,6 @@ export interface Operation {
 export type Delta = Array<Operation>;
 export type YjsNode = Record<string, unknown>;
 export type YjsEvent = Record<string, unknown>;
-
-// export interface ProviderAwareness {
-//   getLocalState: () => UserState | null;
-//   getStates: () => Map<number, UserState>;
-//   off: (type: "update", cb: () => void) => void;
-//   on: (type: "update", cb: () => void) => void;
-//   setLocalState: (arg0: UserState) => void;
-// }
 
 export type ProviderAwareness = WebsocketProvider["awareness"];
 
@@ -64,15 +62,7 @@ export declare interface Provider {
 export const initLocalState = ({
   provider,
   ...rest
-}: {
-  avatarHex: string | null;
-  avatarId: string | null;
-  awarenessData: object;
-  color: string;
-  focusing: boolean;
-  name: string;
-  provider: Provider;
-}): void => {
+}: CollabLocalState): void => {
   provider.awareness.setLocalState({
     ...rest,
     anchorPos: null,
@@ -84,15 +74,7 @@ export const setLocalStateFocus = ({
   provider,
   focusing,
   ...rest
-}: {
-  avatarHex: string | null;
-  avatarId: string | null;
-  awarenessData: object;
-  color: string;
-  focusing: boolean;
-  name: string;
-  provider: Provider;
-}): void => {
+}: CollabLocalState): void => {
   const { awareness } = provider;
   let localState = awareness.getLocalState();
 

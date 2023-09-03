@@ -1,13 +1,15 @@
 import React from "react";
 import { Doc } from "yjs";
 
-interface CollaborationContextType {
-  avatarHex: string | null;
-  avatarId: string | null;
+import { UserState } from "../../collab/provider";
+
+interface CollaborationContextType
+  extends Omit<
+    UserState,
+    "awarenessData" | "focusPos" | "anchorPos" | "focusing"
+  > {
   clientID: number;
-  color: string;
   isCollabActive: boolean;
-  name: string;
   yjsDocMap: Map<string, Doc>;
 }
 
@@ -19,7 +21,9 @@ export const CollaborationContext =
     avatarHex: null,
     avatarId: null,
     color: "",
-    name: ""
+    name: "",
+    role: "viewer",
+    userId: ""
   });
 
 /**
@@ -29,14 +33,24 @@ export const useCollaborationContext = ({
   name,
   color,
   avatarId,
-  avatarHex
-}: {
-  avatarHex?: string | null;
-  avatarId?: string | null;
-  color?: string;
-  name?: string;
-}): CollaborationContextType => {
+  avatarHex,
+  role,
+  userId
+}: Partial<
+  Pick<
+    CollaborationContextType,
+    "userId" | "name" | "color" | "avatarId" | "avatarHex" | "role"
+  >
+>): CollaborationContextType => {
   const context = React.useContext(CollaborationContext);
+
+  if (userId !== undefined) {
+    context.userId = userId;
+  }
+
+  if (role !== undefined) {
+    context.role = role;
+  }
 
   if (name !== undefined) {
     context.name = name;

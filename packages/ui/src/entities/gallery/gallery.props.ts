@@ -16,6 +16,7 @@ export interface GalleryProps {
    */
   onConfirm?: (asset: {
     alt: string;
+    credits?: { author: string; url: string };
     height: number;
     hex: string;
     key: string;

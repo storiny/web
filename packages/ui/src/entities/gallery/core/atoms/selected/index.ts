@@ -3,6 +3,7 @@ import { atom } from "jotai";
 
 export type SelectedAtomValue = {
   alt: string;
+  credits?: { author: string; url: string };
   height: number;
   hex: string;
   key: string;

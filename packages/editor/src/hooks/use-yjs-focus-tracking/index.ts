@@ -7,27 +7,27 @@ import {
 } from "lexical";
 import React from "react";
 
-import { Provider, setLocalStateFocus } from "../../collab/provider";
+import {
+  CollabLocalState,
+  Provider,
+  setLocalStateFocus
+} from "../../collab/provider";
 
 /**
  * Hook for using yjs focus tracking
  * @param editor Editor
- * @param awarenessData Awareness data
- * @param rest Local state props
+ * @param provider Provider
+ * @param localState Collab local state
  */
-export const useYjsFocusTracking = ({
-  editor,
-  awarenessData,
-  ...rest
-}: {
-  avatarHex: string | null;
-  avatarId: string | null;
-  awarenessData?: object;
-  color: string;
-  editor: LexicalEditor;
-  name: string;
-  provider: Provider;
-}): void => {
+export const useYjsFocusTracking = (
+  editor: LexicalEditor,
+  provider: Provider,
+  localState: Omit<
+    CollabLocalState,
+    "provider" | "focusing" | "awarenessData"
+  > &
+    Partial<Pick<CollabLocalState, "awarenessData">>
+): void => {
   React.useEffect(
     () =>
       mergeRegister(
@@ -35,9 +35,10 @@ export const useYjsFocusTracking = ({
           FOCUS_COMMAND,
           () => {
             setLocalStateFocus({
-              ...rest,
+              ...localState,
+              provider,
               focusing: true,
-              awarenessData: awarenessData || {}
+              awarenessData: localState.awarenessData || {}
             });
             return false;
           },
@@ -47,15 +48,16 @@ export const useYjsFocusTracking = ({
           BLUR_COMMAND,
           () => {
             setLocalStateFocus({
-              ...rest,
+              ...localState,
+              provider,
               focusing: false,
-              awarenessData: awarenessData || {}
+              awarenessData: localState.awarenessData || {}
             });
             return false;
           },
           COMMAND_PRIORITY_EDITOR
         )
       ),
-    [awarenessData, editor, rest]
+    [localState, editor]
   );
 };

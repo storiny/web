@@ -1,41 +1,30 @@
 import { InitialEditorStateType } from "@lexical/react/LexicalComposer";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { useSetAtom } from "jotai";
 import React from "react";
 import { Doc } from "yjs";
 
 import { selectUser } from "~/redux/features";
 import { useAppSelector } from "~/redux/hooks";
 
-import { awarenessAtom } from "../../atoms";
 import { ExcludedProperties } from "../../collab/bindings";
 import { Provider } from "../../collab/provider";
-import {
-  CursorsContainerRef,
-  useYjsCollaboration
-} from "../../hooks/use-yjs-collaboration";
+import { useYjsCollaboration } from "../../hooks/use-yjs-collaboration";
 import { useYjsFocusTracking } from "../../hooks/use-yjs-focus-tracking";
 import { useYjsHistory } from "../../hooks/use-yjs-history";
+import { getUserColor } from "../../utils/get-user-color";
 import { useCollaborationContext } from "./context";
 
 interface Props {
   // `awarenessData` parameter allows arbitrary data to be added to the awareness
   awarenessData?: object;
-  cursorsContainerRef?: CursorsContainerRef;
   excludedProperties?: ExcludedProperties;
   id: string;
   initialEditorState?: InitialEditorStateType;
   isMainEditor?: boolean;
-  providerFactory: (
-    // eslint-disable-next-line no-shadow
-    id: string,
-    yjsDocMap: Map<string, Doc>
-  ) => Provider;
+  providerFactory: (id: string, yjsDocMap: Map<string, Doc>) => Provider;
+  role: "editor" | "viewer";
   shouldBootstrap: boolean;
 }
-
-// TODO: Gen random
-const COLOR = "#000";
 
 const CollaborationPlugin = ({
   id,
@@ -44,18 +33,51 @@ const CollaborationPlugin = ({
   initialEditorState,
   excludedProperties,
   isMainEditor,
-  cursorsContainerRef,
+  role,
   awarenessData
 }: Props): React.ReactElement => {
   const user = useAppSelector(selectUser)!;
-  const collabContext = useCollaborationContext({
-    name: user.name,
-    color: COLOR,
-    avatarId: user.avatar_id,
-    avatarHex: user.avatar_hex
-  });
-  const { yjsDocMap } = collabContext;
+  const localState = React.useMemo(
+    () =>
+      ({
+        name: user.name,
+        userId: user.id,
+        role,
+        color: getUserColor(user.username),
+        avatarId: user.avatar_id,
+        avatarHex: user.avatar_hex,
+        awarenessData
+      } as const),
+    [
+      awarenessData,
+      role,
+      user.avatar_hex,
+      user.avatar_id,
+      user.id,
+      user.name,
+      user.username
+    ]
+  );
   const [editor] = useLexicalComposerContext();
+  const collabContext = useCollaborationContext(localState);
+  const { yjsDocMap } = collabContext;
+  const provider = React.useMemo(
+    () => providerFactory(id, yjsDocMap),
+    [id, providerFactory, yjsDocMap]
+  );
+  const [cursors, binding] = useYjsCollaboration({
+    id,
+    editor,
+    provider,
+    docMap: yjsDocMap,
+    shouldBootstrap,
+    initialEditorState,
+    excludedProperties,
+    isMainEditor,
+    localState
+  });
+  useYjsHistory(editor, binding);
+  useYjsFocusTracking(editor, provider, localState);
 
   React.useEffect(() => {
     collabContext.isCollabActive = true;
@@ -69,39 +91,7 @@ const CollaborationPlugin = ({
     };
   }, [collabContext, editor]);
 
-  const provider = React.useMemo(
-    () => providerFactory(id, yjsDocMap),
-    [id, providerFactory, yjsDocMap]
-  );
-  const [cursors, binding] = useYjsCollaboration({
-    id,
-    editor,
-    provider,
-    name: user.name,
-    color: COLOR,
-    avatarId: user.avatar_id,
-    avatarHex: user.avatar_hex,
-    docMap: yjsDocMap,
-    shouldBootstrap,
-    initialEditorState,
-    excludedProperties,
-    isMainEditor,
-    cursorsContainerRef,
-    awarenessData
-  });
-
   collabContext.clientID = binding.clientID;
-
-  useYjsHistory(editor, binding);
-  useYjsFocusTracking({
-    awarenessData,
-    name: user.name,
-    color: COLOR,
-    avatarId: user.avatar_id,
-    avatarHex: user.avatar_hex,
-    editor,
-    provider
-  });
 
   return cursors;
 };

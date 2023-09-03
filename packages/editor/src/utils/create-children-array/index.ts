@@ -15,6 +15,7 @@ export const createChildrenArray = (
   while (nodeKey !== null) {
     const node =
       nodeMap === null ? $getNodeByKey(nodeKey) : nodeMap.get(nodeKey);
+
     if (node === null || node === undefined) {
       throw new Error("`createChildrenArray`: node does not exist in nodeMap");
     }
