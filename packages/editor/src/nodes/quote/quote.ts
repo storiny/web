@@ -22,6 +22,7 @@ import styles from "./quote.module.scss";
 export type SerializedQuoteNode = SerializedElementNode;
 
 const TYPE = "quote";
+const VERSION = 1;
 
 export class QuoteNode extends ElementNode {
   /**
@@ -35,7 +36,7 @@ export class QuoteNode extends ElementNode {
   /**
    * Returns the type of the node
    */
-  static getType(): string {
+  static override getType(): string {
     return TYPE;
   }
 
@@ -43,7 +44,7 @@ export class QuoteNode extends ElementNode {
    * Clones the node
    * @param node Node
    */
-  static clone(node: QuoteNode): QuoteNode {
+  static override clone(node: QuoteNode): QuoteNode {
     return new QuoteNode(node.__key);
   }
 
@@ -71,7 +72,7 @@ export class QuoteNode extends ElementNode {
    * Imports serialized node
    * @param serializedNode Serialized node
    */
-  static importJSON(serializedNode: SerializedQuoteNode): QuoteNode {
+  static override importJSON(serializedNode: SerializedQuoteNode): QuoteNode {
     const node = $createQuoteNode();
     node.setFormat(serializedNode.format);
     node.setIndent(serializedNode.indent);
@@ -81,7 +82,7 @@ export class QuoteNode extends ElementNode {
   /**
    * Creates DOM
    */
-  createDOM(): HTMLElement {
+  override createDOM(): HTMLElement {
     const element = document.createElement("blockquote");
     addClassNamesToElement(
       element,
@@ -92,9 +93,9 @@ export class QuoteNode extends ElementNode {
   }
 
   /**
-   * Skip updating the DOM
+   * Skips updating the DOM
    */
-  updateDOM(): boolean {
+  override updateDOM(): boolean {
     return false;
   }
 
@@ -102,7 +103,7 @@ export class QuoteNode extends ElementNode {
    * Exports node to element
    * @param editor Editor
    */
-  exportDOM(editor: LexicalEditor): DOMExportOutput {
+  override exportDOM(editor: LexicalEditor): DOMExportOutput {
     const { element } = super.exportDOM(editor);
 
     if (element && isHTMLElement(element)) {
@@ -121,10 +122,11 @@ export class QuoteNode extends ElementNode {
   /**
    * Serializes the node to JSON
    */
-  exportJSON(): SerializedElementNode {
+  override exportJSON(): SerializedElementNode {
     return {
       ...super.exportJSON(),
-      type: TYPE
+      type: TYPE,
+      version: VERSION
     };
   }
 
@@ -133,16 +135,20 @@ export class QuoteNode extends ElementNode {
    * @param _ Selection
    * @param restoreSelection Whether to restore the selection
    */
-  insertNewAfter(_: RangeSelection, restoreSelection?: boolean): ParagraphNode {
+  override insertNewAfter(
+    _: RangeSelection,
+    restoreSelection?: boolean
+  ): ParagraphNode {
     const newBlock = $createParagraphNode();
     this.insertAfter(newBlock, restoreSelection);
     return newBlock;
   }
 
   /**
-   * Whether to collapse at the start
+   * Wraps the content in a paragraph node when the backspace key is pressed
+   * and the selection is at the start of the quote node
    */
-  collapseAtStart(): true {
+  override collapseAtStart(): true {
     const paragraph = $createParagraphNode();
     const children = this.getChildren();
     children.forEach((child) => paragraph.append(child));

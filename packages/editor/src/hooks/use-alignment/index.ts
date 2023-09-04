@@ -1,8 +1,8 @@
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { useAtomValue } from "jotai/index";
+import { useAtomValue } from "jotai";
 import { ElementFormatType, FORMAT_ELEMENT_COMMAND } from "lexical";
 
-import { alignmentAtom } from "../../atoms";
+import { alignmentAtom, isCaptionSelectionAtom } from "../../atoms";
 import { Alignment } from "../../constants";
 
 /**
@@ -10,10 +10,12 @@ import { Alignment } from "../../constants";
  */
 export const useAlignment = (): [
   Alignment | undefined,
-  (newValue: string) => void
+  (newValue: string) => void,
+  boolean
 ] => {
   const [editor] = useLexicalComposerContext();
   const value = useAtomValue(alignmentAtom);
+  const isCaptionSelection = useAtomValue(isCaptionSelectionAtom);
 
   /**
    * Updates the node alignment
@@ -26,5 +28,5 @@ export const useAlignment = (): [
     );
   };
 
-  return [value, setValue];
+  return [value, setValue, isCaptionSelection];
 };

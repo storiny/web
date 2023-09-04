@@ -1,0 +1,27 @@
+/* Base styles */
+.caption {
+  position: relative;
+  width: 100%;
+  text-align: center;
+  margin-top: 12px;
+  color: var(--fg-minor) !important;
+  font-family: var(--font-satoshi) !important;
+  font-size: var(--font-size-md) !important;
+  line-height: var(--line-height-md) !important;
+
+  /* Placeholder */
+  &[data-empty="true"] {
+    &::before {
+      content: "Enter caption";
+      position: absolute;
+      pointer-events: none;
+      user-select: none;
+      speak: none;
+      top: 0;
+      left: 50%;
+      width: 100%;
+      color: var(--fg-muted) !important;
+      transform: translateX(-50%);
+    }
+  }
+}

@@ -51,6 +51,7 @@ const RightSidebar = (props: RightSidebarProps): React.ReactElement | null => {
           styles["right-sidebar"],
           className
         )}
+        data-rsb={"true"}
       >
         <div
           {...componentProps?.wrapper}

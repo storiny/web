@@ -1,5 +1,3 @@
-import "server-only";
-
 import { ImageSize } from "@storiny/shared";
 import { clsx } from "clsx";
 import Image from "next/image";

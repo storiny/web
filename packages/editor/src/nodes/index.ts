@@ -3,7 +3,9 @@ import { ListItemNode, ListNode } from "@lexical/list";
 import { HorizontalRuleNode } from "@lexical/react/LexicalHorizontalRuleNode";
 import { Klass, LexicalNode } from "lexical";
 
+import { CaptionNode } from "./caption";
 import { ColorNode } from "./color";
+import { FigureNode } from "./figure";
 import { HeadingNode } from "./heading";
 import { ImageNode } from "./image";
 import { QuoteNode } from "./quote";
@@ -26,5 +28,7 @@ export const editorNodes: (
   HorizontalRuleNode,
   ColorNode,
   TKNode,
-  ImageNode
+  ImageNode,
+  CaptionNode,
+  FigureNode
 ];

@@ -1,7 +1,6 @@
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { useLexicalNodeSelection } from "@lexical/react/useLexicalNodeSelection";
 import { mergeRegister } from "@lexical/utils";
-import { clsx } from "clsx";
 import {
   $getNodeByKey,
   $getSelection,
@@ -17,12 +16,15 @@ import {
 } from "lexical";
 import React from "react";
 
-import styles from "../../theme/theme.module.scss";
+import { $isFigureNode } from "../figure";
+import styles from "./block.module.scss";
 
 export type SerializedBlockNode = SerializedLexicalNode;
 
 const TYPE = "block";
+const VERSION = 1;
 
+// noinspection TypeScriptFieldCanBeMadeReadonly
 export abstract class BlockNode extends DecoratorNode<React.ReactElement> {
   /**
    * Ctor
@@ -36,35 +38,49 @@ export abstract class BlockNode extends DecoratorNode<React.ReactElement> {
   /**
    * Serializes the node to JSON
    */
-  exportJSON(): SerializedBlockNode {
+  override exportJSON(): SerializedBlockNode {
     return {
       type: TYPE,
-      version: 1
+      version: VERSION
     };
   }
 
   /**
    * Creates DOM
    */
-  createDOM(): HTMLElement {
+  override createDOM(): HTMLElement {
     const element = document.createElement("div");
-    element.className = clsx("flex-center", styles.block);
+    element.classList.add("flex-center", styles.block);
     return element;
   }
 
   /**
-   * Determines whether the DOM needs to be updated based on the returned
-   * boolean value
+   * Skips updating the DOM
    */
-  updateDOM(): false {
+  override updateDOM(): false {
     return false;
   }
 
   /**
-   * Determines whether the node is inline
+   * Marks the node as block node
    */
-  isInline(): false {
+  override isInline(): false {
     return false;
+  }
+
+  /**
+   * Called when the node is about to get removed
+   * @param preserveEmptyParent Whether to preserve empty parent
+   */
+  override remove(preserveEmptyParent?: boolean): void {
+    const figureNode = this.getParent();
+
+    // Remove the entire figure node
+    if ($isFigureNode(figureNode)) {
+      figureNode.remove();
+    } else {
+      super.remove(preserveEmptyParent);
+    }
   }
 }
 

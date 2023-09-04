@@ -7,15 +7,17 @@ import Typography from "~/components/Typography";
 import pageStyles from "../../styles.module.scss";
 
 const GetInTouchSection = (): React.ReactElement => (
-  <section className={clsx(pageStyles.section)}>
+  <section className={clsx(pageStyles.x, pageStyles.section)}>
     <Typography
       as={"h2"}
-      className={pageStyles["section-title"]}
+      className={clsx(pageStyles.x, pageStyles["section-title"])}
       level={"display2"}
     >
       Get in touch
     </Typography>
-    <div className={clsx("flex-col", pageStyles["section-content"])}>
+    <div
+      className={clsx("flex-col", pageStyles.x, pageStyles["section-content"])}
+    >
       <Typography level={"legible"}>
         For any inquiries related to the contents of these branding guidelines
         or if there is uncertainty in ensuring that your communication aligns

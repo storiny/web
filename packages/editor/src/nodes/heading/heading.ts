@@ -32,6 +32,7 @@ export type SerializedHeadingNode = Spread<
 export type HeadingTagType = "h2" | "h3";
 
 const TYPE = "heading";
+const VERSION = 1;
 
 export class HeadingNode extends ElementNode {
   /**
@@ -47,7 +48,7 @@ export class HeadingNode extends ElementNode {
   /**
    * Returns the type of the node
    */
-  static getType(): string {
+  static override getType(): string {
     return TYPE;
   }
 
@@ -55,7 +56,7 @@ export class HeadingNode extends ElementNode {
    * Clones the node
    * @param node Node
    */
-  static clone(node: HeadingNode): HeadingNode {
+  static override clone(node: HeadingNode): HeadingNode {
     return new HeadingNode(node.__tag, node.__key);
   }
 
@@ -121,6 +122,7 @@ export class HeadingNode extends ElementNode {
             priority: 3
           };
         }
+
         return null;
       }
     };
@@ -130,7 +132,9 @@ export class HeadingNode extends ElementNode {
    * Imports a serialized node
    * @param serializedNode Serialized node
    */
-  static importJSON(serializedNode: SerializedHeadingNode): HeadingNode {
+  static override importJSON(
+    serializedNode: SerializedHeadingNode
+  ): HeadingNode {
     const node = $createHeadingNode(serializedNode.tag);
     node.setFormat(serializedNode.format);
     node.setIndent(serializedNode.indent);
@@ -139,20 +143,21 @@ export class HeadingNode extends ElementNode {
 
   /**
    * Heading tag nodename
+   * @private
    */
   private readonly __tag: HeadingTagType;
 
   /**
    * Returns the tag type
    */
-  getTag(): HeadingTagType {
+  public getTag(): HeadingTagType {
     return this.__tag;
   }
 
   /**
    * Creates DOM
    */
-  createDOM(): HTMLElement {
+  override createDOM(): HTMLElement {
     const tag = this.__tag;
     const element = document.createElement(tag);
     const className = levelToClassNameMap[tag];
@@ -167,7 +172,7 @@ export class HeadingNode extends ElementNode {
   /**
    * Skip updating the DOM
    */
-  updateDOM(): boolean {
+  override updateDOM(): boolean {
     return false;
   }
 
@@ -175,7 +180,7 @@ export class HeadingNode extends ElementNode {
    * Exports node to element
    * @param editor Editor
    */
-  exportDOM(editor: LexicalEditor): DOMExportOutput {
+  override exportDOM(editor: LexicalEditor): DOMExportOutput {
     const { element } = super.exportDOM(editor);
 
     if (element && isHTMLElement(element)) {
@@ -194,12 +199,12 @@ export class HeadingNode extends ElementNode {
   /**
    * Serializes the node to JSON
    */
-  exportJSON(): SerializedHeadingNode {
+  override exportJSON(): SerializedHeadingNode {
     return {
       ...super.exportJSON(),
       tag: this.getTag(),
       type: TYPE,
-      version: 1
+      version: VERSION
     };
   }
 
@@ -208,7 +213,7 @@ export class HeadingNode extends ElementNode {
    * @param selection Selection
    * @param restoreSelection Whether to restore the selection
    */
-  insertNewAfter(
+  override insertNewAfter(
     selection?: RangeSelection,
     restoreSelection = true
   ): ParagraphNode | HeadingNode {
@@ -225,7 +230,7 @@ export class HeadingNode extends ElementNode {
   /**
    * Whether to collapse at the start
    */
-  collapseAtStart(): true {
+  override collapseAtStart(): true {
     const newElement = !this.isEmpty()
       ? $createHeadingNode(this.getTag())
       : $createParagraphNode();
@@ -238,7 +243,7 @@ export class HeadingNode extends ElementNode {
   /**
    * Extracts the node with child
    */
-  extractWithChild(): boolean {
+  override extractWithChild(): boolean {
     return true;
   }
 }

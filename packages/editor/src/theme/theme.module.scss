@@ -89,20 +89,6 @@
   margin-block: 12px 24px;
 }
 
-/* Block node */
-.block {
-  margin-bottom: 40px;
-  width: 100%;
-
-  /* Immediate sibling paragraph of a block node acts as its caption */
-  & + .paragraph {
-    margin-block: -28px 40px;
-    font-size: var(--font-size-md) !important;
-    line-height: var(--line-height-md) !important;
-    color: var(--fg-minor) !important;
-  }
-}
-
 /* Block cursor */
 .block-cursor {
   display: block;

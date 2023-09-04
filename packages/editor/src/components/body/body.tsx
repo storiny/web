@@ -13,11 +13,12 @@ import { docStatusAtom } from "../../atoms";
 import { useRegisterTools } from "../../hooks/use-register-tools";
 import AutoFocusPlugin from "../../plugins/auto-focus";
 import BlockDraggerPlugin from "../../plugins/block-dragger";
+import CaptionPlugin from "../../plugins/caption/caption";
 import CollaborationPlugin from "../../plugins/collaboration";
 import ColorPlugin from "../../plugins/color/color";
 import FloatingLinkEditorPlugin from "../../plugins/floating-link-editor";
 import FloatingTextStylePlugin from "../../plugins/floating-text-style";
-import ImagePlugin from "../../plugins/image/image";
+import ImagePlugin from "../../plugins/image";
 import LinkPlugin from "../../plugins/link";
 import ListMaxIndentLevelPlugin from "../../plugins/list-max-indent-level";
 import MarkdownPlugin from "../../plugins/markdown";
@@ -76,6 +77,7 @@ const EditorBody = (): React.ReactElement => {
       <HorizontalRulePlugin />
       <TextEntityPlugin />
       <ImagePlugin />
+      <CaptionPlugin />
       {!isEditable && <LexicalClickableLinkPlugin />}
       {["connecting", "reconnecting", "disconnected"].includes(docStatus) && (
         <EditorLoader

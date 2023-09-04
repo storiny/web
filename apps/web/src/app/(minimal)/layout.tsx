@@ -9,7 +9,7 @@ const MinimalLayout = ({
 }: {
   children: React.ReactNode;
 }): React.ReactElement => (
-  <div className={clsx("grid", "minimal")}>
+  <div className={clsx("grid", "grid-container", "minimal")}>
     <Navbar variant={"minimal"} />
     {children}
     <BottomNavigation />

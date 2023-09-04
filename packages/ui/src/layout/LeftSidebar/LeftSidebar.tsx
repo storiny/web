@@ -41,6 +41,7 @@ const LeftSidebar = (props: LeftSidebarProps): React.ReactElement | null => {
           styles["left-sidebar"],
           className
         )}
+        data-lsb={"true"}
       >
         <div
           {...componentProps?.wrapper}

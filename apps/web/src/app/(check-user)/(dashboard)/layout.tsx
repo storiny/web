@@ -9,7 +9,7 @@ const DashboardLayout = ({
 }: {
   children: React.ReactNode;
 }): React.ReactElement => (
-  <div className={clsx("grid", "dashboard")}>
+  <div className={clsx("grid", "grid-container", "dashboard")}>
     <Navbar />
     <Sidenav isDashboard />
     {children}

@@ -9,6 +9,7 @@ import {
 import styles from "./tk.module.scss";
 
 const TYPE = "tk";
+const VERSION = 1;
 
 export class TKNode extends TextNode {
   /**
@@ -23,7 +24,7 @@ export class TKNode extends TextNode {
   /**
    * Returns the type of the node
    */
-  static getType(): string {
+  static override getType(): string {
     return TYPE;
   }
 
@@ -71,7 +72,7 @@ export class TKNode extends TextNode {
    * Serializes the node to JSON
    */
   override exportJSON(): SerializedTextNode {
-    return { ...super.exportJSON(), type: TYPE };
+    return { ...super.exportJSON(), type: TYPE, version: VERSION };
   }
 }
 

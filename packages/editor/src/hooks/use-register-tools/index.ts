@@ -27,6 +27,7 @@ import {
   canRedoAtom,
   canUndoAtom,
   codeAtom,
+  isCaptionSelectionAtom,
   italicAtom,
   linkAtom,
   strikethroughAtom,
@@ -41,6 +42,7 @@ import {
   nodeToTextStyleMap,
   TextStyle
 } from "../../constants";
+import { $isCaptionNode } from "../../nodes/caption";
 import { $isHeadingNode } from "../../nodes/heading";
 import { getSelectedNode } from "../../utils/get-selected-node";
 
@@ -69,6 +71,7 @@ export const useRegisterTools = (): void => {
   const setCanOutdent = useSetAtom(canOutdentAtom);
   const setCanUndo = useSetAtom(canUndoAtom);
   const setCanRedo = useSetAtom(canRedoAtom);
+  const setIsCaptionSelection = useSetAtom(isCaptionSelectionAtom);
 
   /**
    * Updates tools
@@ -102,12 +105,17 @@ export const useRegisterTools = (): void => {
       setSuperscript(selection.hasFormat("superscript"));
       setCode(selection.hasFormat("code"));
 
-      // Update links
       const node = getSelectedNode(selection);
       const parent = node.getParent();
+      let isCaption = $isCaptionNode(node) || $isCaptionNode(parent);
 
+      // Update links
       if ($isLinkNode(parent) || $isLinkNode(node)) {
         setLink(true);
+
+        // When the selection is around a link, the parent is resolved to link node,
+        // so we need to resolve the parent caption node if it is present
+        isCaption = $isCaptionNode(parent?.getParent());
       } else {
         setLink(false);
       }
@@ -134,14 +142,17 @@ export const useRegisterTools = (): void => {
         }
       }
 
+      // Update caption predicate
+      setIsCaptionSelection(isCaption);
+
       // Update indentation
 
       const indentation = $isElementNode(node)
         ? node.getIndent()
         : parent?.getIndent() || 0;
 
-      setCanIndent(indentation < MAX_INDENT_LEVEL);
-      setCanOutdent(indentation > 0);
+      setCanIndent(!isCaption && indentation < MAX_INDENT_LEVEL);
+      setCanOutdent(!isCaption && indentation > 0);
 
       // Update alignment
 
@@ -150,7 +161,10 @@ export const useRegisterTools = (): void => {
           ? node.getFormatType()
           : parent?.getFormatType()) || Alignment.LEFT;
 
-      if (Object.values(Alignment).includes(alignment as Alignment)) {
+      if (
+        !isCaption &&
+        Object.values(Alignment).includes(alignment as Alignment)
+      ) {
         setAlignment(alignment as Alignment);
       } else {
         setAlignment(undefined);
@@ -177,11 +191,9 @@ export const useRegisterTools = (): void => {
   React.useEffect(
     () =>
       mergeRegister(
-        activeEditor.registerUpdateListener(({ editorState }) => {
-          editorState.read(() => {
-            $updateTools();
-          });
-        }),
+        activeEditor.registerUpdateListener(({ editorState }) =>
+          editorState.read($updateTools)
+        ),
         activeEditor.registerCommand<boolean>(
           CAN_UNDO_COMMAND,
           (payload) => {

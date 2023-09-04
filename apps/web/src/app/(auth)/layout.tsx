@@ -12,7 +12,7 @@ const AuthLayout = ({
 }: {
   children: React.ReactNode;
 }): React.ReactElement => (
-  <div className={clsx("grid", "minimal")}>
+  <div className={clsx("grid", "grid-container", "minimal")}>
     <Navbar variant={"minimal"} />
     <div
       className={clsx("full-w", "full-h")}

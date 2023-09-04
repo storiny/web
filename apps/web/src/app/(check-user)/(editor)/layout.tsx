@@ -8,7 +8,7 @@ const DashboardEditorLayout = ({
 }: {
   children: React.ReactNode;
 }): React.ReactElement => (
-  <div className={clsx("grid", "dashboard", "no-sidenav")}>
+  <div className={clsx("grid", "grid-container", "dashboard", "no-sidenav")}>
     <DashboardSplashLayout>{children}</DashboardSplashLayout>
   </div>
 );

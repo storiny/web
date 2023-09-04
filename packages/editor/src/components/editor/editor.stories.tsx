@@ -24,7 +24,9 @@ export const Default: Story = {
   decorators: [
     (Story): React.ReactElement =>
       renderWithState(
-        <div className={clsx("grid", "dashboard", "no-sidenav")}>
+        <div
+          className={clsx("grid", "grid-container", "dashboard", "no-sidenav")}
+        >
           <Story />
         </div>,
         { ignorePrimitiveProviders: false, loggedIn: true }

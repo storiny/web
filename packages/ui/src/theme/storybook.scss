@@ -190,7 +190,7 @@ body {
 }
 
 .grid {
-  overflow-x: clip;
+  overflow-x: clip; // Clip overflow
 
   @include grid.main;
 }

@@ -30,12 +30,12 @@ const Item = ({
 
 const ToolbarAlignmentItem = (): React.ReactElement => {
   const docStatus = useAtomValue(docStatusAtom);
-  const [alignment, setAlignment] = useAlignment();
+  const [alignment, setAlignment, disabled] = useAlignment();
   const documentLoading = ["connecting", "reconnecting"].includes(docStatus);
 
   return (
     <Select
-      disabled={documentLoading}
+      disabled={documentLoading || disabled}
       onValueChange={setAlignment}
       size={"lg"}
       slotProps={{

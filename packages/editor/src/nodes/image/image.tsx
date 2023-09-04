@@ -7,12 +7,15 @@ import { clamp } from "~/utils/clamp";
 import { BlockNode, SerializedBlockNode } from "../block";
 import ImageComponent from "./component";
 
+export type ImageNodeLayout = "fit" | "fill" | "overflow";
+
 export interface ImagePayload {
   alt: string;
   height: number;
   hex: string;
   imgKey: string;
   key?: NodeKey;
+  layout?: ImageNodeLayout;
   rating: AssetRating;
   scaleFactor?: number;
   width: number;
@@ -24,6 +27,7 @@ export type SerializedImageNode = Spread<
     height: number;
     hex: string;
     imgKey: string;
+    layout: ImageNodeLayout;
     rating: AssetRating;
     scaleFactor: number;
     width: number;
@@ -32,9 +36,12 @@ export type SerializedImageNode = Spread<
 >;
 
 const TYPE = "image";
+const VERSION = 1;
+
 export const MIN_SCALE_FACTOR = 0.15;
 export const MAX_SCALE_FACTOR = 1.5;
 
+// noinspection TypeScriptFieldCanBeMadeReadonly
 export class ImageNode extends BlockNode {
   /**
    * Ctor
@@ -45,6 +52,7 @@ export class ImageNode extends BlockNode {
    * @param height Image height
    * @param alt Alt text
    * @param scaleFactor Scale factor
+   * @param layout Image layout
    * @param key Node key
    */
   constructor(
@@ -55,6 +63,7 @@ export class ImageNode extends BlockNode {
       width,
       height,
       alt,
+      layout,
       scaleFactor
     }: Omit<ImagePayload, "key"> = {} as any,
     key?: NodeKey
@@ -67,12 +76,13 @@ export class ImageNode extends BlockNode {
     this.__height = height;
     this.__scaleFactor = scaleFactor || 1;
     this.__rating = rating;
+    this.__layout = layout || "fit";
   }
 
   /**
    * Returns the type of the node
    */
-  static getType(): string {
+  static override getType(): string {
     return TYPE;
   }
 
@@ -80,7 +90,7 @@ export class ImageNode extends BlockNode {
    * Clones the node
    * @param node Node
    */
-  static clone(node: ImageNode): ImageNode {
+  static override clone(node: ImageNode): ImageNode {
     return new ImageNode(
       {
         rating: node.__rating,
@@ -89,7 +99,8 @@ export class ImageNode extends BlockNode {
         hex: node.__hex,
         imgKey: node.__imgKey,
         alt: node.__alt,
-        scaleFactor: node.__scaleFactor
+        scaleFactor: node.__scaleFactor,
+        layout: node.__layout
       },
       node.__key
     );
@@ -99,53 +110,64 @@ export class ImageNode extends BlockNode {
    * Imports a serialized node
    * @param serializedNode Serialized node
    */
-  static importJSON(serializedNode: SerializedImageNode): ImageNode {
-    const { alt, height, width, scaleFactor, imgKey, hex, rating } =
-      serializedNode;
+  static override importJSON(serializedNode: SerializedImageNode): ImageNode {
     return $createImageNode({
-      alt,
-      height,
-      width,
-      scaleFactor,
-      imgKey,
-      hex,
-      rating
+      alt: serializedNode.alt,
+      height: serializedNode.height,
+      width: serializedNode.width,
+      scaleFactor: serializedNode.scaleFactor,
+      imgKey: serializedNode.imgKey,
+      hex: serializedNode.hex,
+      rating: serializedNode.rating,
+      layout: serializedNode.layout
     });
   }
 
   /**
    * CDN image key
+   * @private
    */
-  __imgKey: string;
-  /**
-   * Alt text for the image
-   */
-  __alt: string;
+  private readonly __imgKey: string;
   /**
    * Image hex color value
+   * @private
    */
-  __hex: string;
+  private readonly __hex: string;
   /**
    * Image rating
+   * @private
    */
-  __rating: AssetRating;
+  private readonly __rating: AssetRating;
   /**
    * Original image width
+   * @private
    */
-  __width: number;
+  private readonly __width: number;
   /**
    * Original image height
+   * @private
    */
-  __height: number;
+  private readonly __height: number;
+  /**
+   * Image layout
+   * @private
+   */
+  private __layout: ImageNodeLayout;
+  /**
+   * Alt text for the image
+   * @private
+   */
+  private __alt: string;
   /**
    * The scale factor (used for resizing the image)
+   * @private
    */
-  __scaleFactor: number;
+  private __scaleFactor: number;
 
   /**
    * Serializes the node to JSON
    */
-  exportJSON(): SerializedImageNode {
+  override exportJSON(): SerializedImageNode {
     return {
       ...super.exportJSON(),
       alt: this.__alt,
@@ -155,16 +177,33 @@ export class ImageNode extends BlockNode {
       imgKey: this.__imgKey,
       scaleFactor: this.__scaleFactor,
       rating: this.__rating,
+      layout: this.__layout,
       type: TYPE,
-      version: 1
+      version: VERSION
     };
+  }
+
+  /**
+   * Returns the layout of the node
+   */
+  public getLayout(): ImageNodeLayout {
+    return this.__layout;
+  }
+
+  /**
+   * Sets the layout of the node
+   * @param layout Layout
+   */
+  public setLayout(layout: ImageNodeLayout): void {
+    const writable = this.getWritable();
+    writable.__layout = layout;
   }
 
   /**
    * Sets the scale factor
    * @param scaleFactor New scale factor
    */
-  setScaleFactor(scaleFactor: number): void {
+  public setScaleFactor(scaleFactor: number): void {
     const writable = this.getWritable();
     writable.__scaleFactor = clamp(
       MIN_SCALE_FACTOR,
@@ -174,17 +213,27 @@ export class ImageNode extends BlockNode {
   }
 
   /**
-   * Renders the decorators
+   * Sets the alt text
+   * @param altText New alt text
    */
-  decorate(): React.ReactElement {
+  public setAltText(altText: string): void {
+    const writable = this.getWritable();
+    writable.__alt = altText;
+  }
+
+  /**
+   * Renders the decorator
+   */
+  override decorate(): React.ReactElement {
     return (
       <ImageComponent
         alt={this.__alt}
         height={this.__height}
         imgKey={this.__imgKey}
+        layout={this.__layout}
         nodeKey={this.getKey()}
         rating={this.__rating}
-        resizable={true}
+        resizable={this.__layout === "fit"}
         scaleFactor={this.__scaleFactor}
         width={this.__width}
       />
@@ -210,7 +259,8 @@ export const $createImageNode = ({
   height,
   width,
   rating,
-  scaleFactor
+  scaleFactor,
+  layout
 }: ImagePayload): ImageNode =>
   new ImageNode({
     alt,
@@ -219,7 +269,8 @@ export const $createImageNode = ({
     height,
     width,
     scaleFactor,
-    rating
+    rating,
+    layout
   });
 
 /**

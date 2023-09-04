@@ -66,7 +66,18 @@ main,
 
 main {
   grid-area: main;
-  position: relative;
+}
+
+.grid-container {
+  @include grid.row-template;
+
+  min-height: 100%;
+
+  &.dashboard {
+    main {
+      padding-block: 0; // Disable padding
+    }
+  }
 }
 
 .full-bleed {

@@ -30,7 +30,6 @@
     "@lexical/text": "^0.12.0",
     "@lexical/utils": "^0.12.0",
     "@storiny/ui": "*",
-    "@y-presence/react": "^2.0.1",
     "clsx": "^1.2.1",
     "jotai": "^2.2.2",
     "lexical": "^0.12.0",
@@ -38,6 +37,7 @@
     "react-dom": "^18.2.0",
     "react-hotkeys-hook": "^4.4.1",
     "use-file-picker": "^1.7.0",
+    "use-resize-observer": "^9.1.0",
     "y-websocket": "^1.5.0",
     "yjs": "^13.6.7"
   }

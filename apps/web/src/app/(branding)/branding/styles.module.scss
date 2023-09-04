@@ -15,7 +15,6 @@
   /* Splash */
   &.splash {
     height: calc(100vh - var(--header-height));
-    min-height: initial;
     width: 100%;
     position: absolute;
     top: var(--header-height);
@@ -70,6 +69,7 @@
   &.section-title {
     position: sticky;
     top: calc(var(--header-height) + 24px);
+    height: fit-content;
   }
 
   /* Section content */

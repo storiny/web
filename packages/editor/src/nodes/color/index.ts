@@ -9,6 +9,7 @@ import {
 import typographyStyles from "~/components/Typography/Typography.module.scss";
 
 const TYPE = "color";
+const VERSION = 1;
 
 export class ColorNode extends TextNode {
   /**
@@ -23,7 +24,7 @@ export class ColorNode extends TextNode {
   /**
    * Returns the type of the node
    */
-  static getType(): string {
+  static override getType(): string {
     return TYPE;
   }
 
@@ -79,7 +80,7 @@ export class ColorNode extends TextNode {
    * Serializes the node to JSON
    */
   override exportJSON(): SerializedTextNode {
-    return { ...super.exportJSON(), type: TYPE };
+    return { ...super.exportJSON(), type: TYPE, version: VERSION };
   }
 }
 

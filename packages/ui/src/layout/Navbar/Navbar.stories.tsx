@@ -1,6 +1,7 @@
 // noinspection JSUnusedGlobalSymbols
 
 import type { Meta, StoryObj } from "@storybook/react";
+import clsx from "clsx";
 import React from "react";
 
 import { renderWithState } from "~/redux/mock";
@@ -12,7 +13,7 @@ const meta: Meta<typeof Navbar> = {
   component: Navbar,
   decorators: [
     (Story): React.ReactElement => (
-      <div className={"grid"}>
+      <div className={clsx("grid", "grid-container")}>
         <Story />
       </div>
     )

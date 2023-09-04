@@ -13,6 +13,19 @@
     "sn . ft ft ft ft ft ft ft ft .";
 }
 
+/* Grid rows */
+@mixin row-template {
+  /* Make the `main` take up the entire free space,
+ * forcing the header and the footer to stick
+ * to their extreme positions.
+ */
+  grid-template-rows: auto minmax(var(--main-height), 1fr) auto;
+
+  @media print {
+    grid-template-rows: minmax(var(--main-height), 1fr) !important;
+  }
+}
+
 /* Grid */
 @mixin main {
   --header-height: 52px;
@@ -27,30 +40,15 @@
   grid-template-columns:
     minmax(var(--grid-gutter), 1fr) repeat(12, minmax(0, 90px))
     minmax(var(--grid-gutter), 1fr);
-
-  /* Make the `main` take up the entire free space,
-   * forcing the header and the footer to stick
-   * and their extreme positions.
-   */
-  grid-template-rows: auto minmax(var(--main-height), 1fr) auto;
-
-  // noinspection Stylelint
   grid-template-areas: var(--grid-area);
   grid-column-gap: 20px;
   place-content: start center;
-  min-height: 100%;
   width: 100vw;
 
   &.minimal {
     --grid-area: ". hd hd hd hd hd hd hd hd hd hd hd hd ."
       ". . . main main main main main main main main . . ."
       ". ft ft ft ft ft ft ft ft ft ft ft ft .";
-  }
-
-  &.dashboard {
-    main {
-      padding-block: 0; // Disable padding
-    }
   }
 
   @include breakpoints.media("<=desktop", ">tablet") {
@@ -102,7 +100,5 @@
 
   @media print {
     --grid-area: ". main main main main main main main main main main main main ." !important;
-
-    grid-template-rows: minmax(var(--main-height), 1fr) !important;
   }
 }

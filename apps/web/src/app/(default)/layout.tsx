@@ -1,3 +1,4 @@
+import { clsx } from "clsx";
 import React from "react";
 
 import BottomNavigation from "~/layout/BottomNavigation";
@@ -9,7 +10,7 @@ const DefaultLayout = ({
 }: {
   children: React.ReactNode;
 }): React.ReactElement => (
-  <div className={"grid"}>
+  <div className={clsx("grid", "grid-container")}>
     <Navbar />
     <Sidenav />
     {children}

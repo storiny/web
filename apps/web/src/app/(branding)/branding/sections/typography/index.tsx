@@ -17,7 +17,7 @@ import pageStyles from "../../styles.module.scss";
 import commonStyles from "../common.module.scss";
 
 const PrimaryTypeface = (): React.ReactElement => (
-  <div className={clsx("flex-col", pageStyles["sub-section"])}>
+  <div className={clsx("flex-col", pageStyles.x, pageStyles["sub-section"])}>
     <Typography level={"h3"}>Primary Typeface</Typography>
     <Typography level={"legible"}>
       Our primary typeface is Cabinet Grotesk.
@@ -27,8 +27,10 @@ const PrimaryTypeface = (): React.ReactElement => (
       className={clsx(
         "flex-col",
         "t-center",
+        pageStyles.x,
         pageStyles.figure,
         pageStyles["with-background"],
+        commonStyles.x,
         commonStyles["figure-with-caption"]
       )}
     >
@@ -75,12 +77,14 @@ const PrimaryTypeface = (): React.ReactElement => (
       className={clsx(
         "flex-col",
         "t-center",
+        commonStyles.x,
         commonStyles["figure-with-caption"]
       )}
     >
       <div
         className={clsx(
           "flex-col",
+          pageStyles.x,
           pageStyles.figure,
           pageStyles["with-background"]
         )}
@@ -108,12 +112,14 @@ const PrimaryTypeface = (): React.ReactElement => (
       className={clsx(
         "flex-col",
         "t-center",
+        commonStyles.x,
         commonStyles["figure-with-caption"]
       )}
     >
       <div
         className={clsx(
           "flex-col",
+          pageStyles.x,
           pageStyles.figure,
           pageStyles["with-background"]
         )}
@@ -145,12 +151,14 @@ const PrimaryTypeface = (): React.ReactElement => (
       className={clsx(
         "flex-col",
         "t-center",
+        commonStyles.x,
         commonStyles["figure-with-caption"]
       )}
     >
       <figure
         className={clsx(
           "flex-col",
+          pageStyles.x,
           pageStyles.figure,
           pageStyles["with-background"]
         )}
@@ -180,7 +188,9 @@ const PrimaryTypeface = (): React.ReactElement => (
       className={clsx(
         "flex-col",
         "t-center",
+        pageStyles.x,
         pageStyles.figure,
+        commonStyles.x,
         commonStyles["figure-with-caption"],
         commonStyles["image-with-border"]
       )}
@@ -198,7 +208,9 @@ const PrimaryTypeface = (): React.ReactElement => (
       className={clsx(
         "flex-col",
         "t-center",
+        pageStyles.x,
         pageStyles.figure,
+        commonStyles.x,
         commonStyles["figure-with-caption"],
         commonStyles["image-with-border"]
       )}
@@ -250,7 +262,7 @@ const PrimaryTypeface = (): React.ReactElement => (
 );
 
 const SecondaryTypeface = (): React.ReactElement => (
-  <div className={clsx("flex-col", pageStyles["sub-section"])}>
+  <div className={clsx("flex-col", pageStyles.x, pageStyles["sub-section"])}>
     <Typography level={"h3"}>Secondary Typeface</Typography>
     <Typography level={"legible"}>
       Our primary secondary typeface is Satoshi.
@@ -260,8 +272,10 @@ const SecondaryTypeface = (): React.ReactElement => (
       className={clsx(
         "flex-col",
         "t-center",
+        pageStyles.x,
         pageStyles.figure,
         pageStyles["with-background"],
+        commonStyles.x,
         commonStyles["figure-with-caption"]
       )}
     >
@@ -308,7 +322,7 @@ const SecondaryTypeface = (): React.ReactElement => (
 );
 
 const FallbackTypeface = (): React.ReactElement => (
-  <div className={clsx("flex-col", pageStyles["sub-section"])}>
+  <div className={clsx("flex-col", pageStyles.x, pageStyles["sub-section"])}>
     <Typography level={"h3"}>Fallback fonts</Typography>
     <Typography level={"legible"}>
       In rare instances when the designated font families are not feasible, the
@@ -328,19 +342,25 @@ const TypographySection = (): React.ReactElement => {
   const isTablet = useMediaQuery(breakpoints.down("tablet"));
 
   return (
-    <section className={clsx(pageStyles.section)}>
+    <section className={clsx(pageStyles.x, pageStyles.section)}>
       <Typography
         // Hide inner text to assistive technologies because of hyphen
         aria-label={"Typography"}
         as={"h2"}
-        className={pageStyles["section-title"]}
+        className={clsx(pageStyles.x, pageStyles["section-title"])}
         level={"display2"}
       >
         <NoSsr>
           <span aria-hidden>{isTablet ? "Typography" : "Typo-graphy"}</span>
         </NoSsr>
       </Typography>
-      <div className={clsx("flex-col", pageStyles["section-content"])}>
+      <div
+        className={clsx(
+          "flex-col",
+          pageStyles.x,
+          pageStyles["section-content"]
+        )}
+      >
         <Typography level={"legible"}>
           Our typographical selection consists of two unique fonts: Cabinet
           Grotesk, a display font, and Satoshi, a legible sans-serif font. Both

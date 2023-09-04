@@ -39,30 +39,30 @@ const Alignment = ({
 }: {
   disabled?: boolean;
 }): React.ReactElement => {
-  const [alignment, setAlignment] = useAlignment();
+  const [alignment, setAlignment, alignmentDisabled] = useAlignment();
   return (
     <ToggleGroup onValueChange={setAlignment} value={alignment}>
       <Item
         alignment={AlignmentEnum.LEFT}
-        disabled={disabled}
+        disabled={disabled || alignmentDisabled}
         label={"Left align"}
         shortcut={getShortcutLabel(EDITOR_SHORTCUTS.leftAlign)}
       />
       <Item
         alignment={AlignmentEnum.CENTER}
-        disabled={disabled}
+        disabled={disabled || alignmentDisabled}
         label={"Center align"}
         shortcut={getShortcutLabel(EDITOR_SHORTCUTS.centerAlign)}
       />
       <Item
         alignment={AlignmentEnum.RIGHT}
-        disabled={disabled}
+        disabled={disabled || alignmentDisabled}
         label={"Right align"}
         shortcut={getShortcutLabel(EDITOR_SHORTCUTS.rightAlign)}
       />
       <Item
         alignment={AlignmentEnum.JUSTIFY}
-        disabled={disabled}
+        disabled={disabled || alignmentDisabled}
         label={"Justify align"}
         shortcut={getShortcutLabel(EDITOR_SHORTCUTS.justifyAlign)}
       />
