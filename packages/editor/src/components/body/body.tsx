@@ -1,6 +1,5 @@
 import LexicalClickableLinkPlugin from "@lexical/react/LexicalClickableLinkPlugin";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import LexicalErrorBoundary from "@lexical/react/LexicalErrorBoundary";
 import { HorizontalRulePlugin } from "@lexical/react/LexicalHorizontalRulePlugin";
 import { ListPlugin } from "@lexical/react/LexicalListPlugin";
 import { clsx } from "clsx";
@@ -12,10 +11,10 @@ import { capitalize } from "~/utils/capitalize";
 import { docStatusAtom } from "../../atoms";
 import { useRegisterTools } from "../../hooks/use-register-tools";
 import AutoFocusPlugin from "../../plugins/auto-focus";
-import BlockDraggerPlugin from "../../plugins/block-dragger";
 import CaptionPlugin from "../../plugins/caption/caption";
 import CollaborationPlugin from "../../plugins/collaboration";
 import ColorPlugin from "../../plugins/color/color";
+import EmbedPlugin from "../../plugins/embed";
 import FloatingLinkEditorPlugin from "../../plugins/floating-link-editor";
 import FloatingTextStylePlugin from "../../plugins/floating-text-style";
 import ImagePlugin from "../../plugins/image";
@@ -29,6 +28,7 @@ import TextEntityPlugin from "../../plugins/text-entity";
 import TKPlugin from "../../plugins/tk/tk";
 import { createWebsocketProvider } from "../../utils/create-ws-provider";
 import EditorContentEditable from "../content-editable";
+import EditorErrorBoundary from "../error-boundary";
 import EditorLoader from "../loader";
 import EditorPlaceholder from "../placeholder";
 import styles from "./body.module.scss";
@@ -51,7 +51,7 @@ const EditorBody = (): React.ReactElement => {
       }}
     >
       <RichTextPlugin
-        ErrorBoundary={LexicalErrorBoundary}
+        ErrorBoundary={EditorErrorBoundary}
         contentEditable={<EditorContentEditable />}
         placeholder={<EditorPlaceholder />}
       />
@@ -72,12 +72,12 @@ const EditorBody = (): React.ReactElement => {
       <MaxLengthPlugin />
       <FloatingTextStylePlugin />
       <FloatingLinkEditorPlugin />
-      <BlockDraggerPlugin />
       <MarkdownPlugin />
       <HorizontalRulePlugin />
       <TextEntityPlugin />
       <ImagePlugin />
       <CaptionPlugin />
+      <EmbedPlugin />
       {!isEditable && <LexicalClickableLinkPlugin />}
       {["connecting", "reconnecting", "disconnected"].includes(docStatus) && (
         <EditorLoader

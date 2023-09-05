@@ -7,11 +7,7 @@ import React from "react";
 
 import Divider from "~/components/Divider";
 
-import {
-  docStatusAtom,
-  figureOffsetsAtom,
-  sidebarsCollapsedAtom
-} from "../../../../atoms";
+import { docStatusAtom, sidebarsCollapsedAtom } from "../../../../atoms";
 import { springConfig } from "../../../../constants";
 import styles from "../right-sidebar.module.scss";
 import Alignment from "./alignment";
@@ -33,12 +29,6 @@ const SuspendedEditorRightSidebarContent = (): React.ReactElement | null => {
   });
   const documentLoading = ["connecting", "reconnecting"].includes(docStatus);
 
-  const figureOffsets = useAtomValue(figureOffsetsAtom);
-  const hei = React.useMemo(
-    () => Math.max(...Object.values(figureOffsets).map(([, offset]) => offset)),
-    [figureOffsets]
-  );
-
   if (docStatus === "disconnected") {
     return null;
   }
@@ -50,7 +40,6 @@ const SuspendedEditorRightSidebarContent = (): React.ReactElement | null => {
         className={clsx("flex-col", styles.x, styles.content)}
         style={{
           ...style,
-          transform: `translateY(calc(100vh - 52px + ${hei}px))`,
           pointerEvents: documentLoading ? "none" : "auto"
         }}
       >

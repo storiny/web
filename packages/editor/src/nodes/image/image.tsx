@@ -7,30 +7,30 @@ import { clamp } from "~/utils/clamp";
 import { BlockNode, SerializedBlockNode } from "../block";
 import ImageComponent from "./component";
 
-export type ImageNodeLayout = "fit" | "fill" | "overflow";
+export type ImageNodeLayout = "fit" | "fill" | "overflow" | "screen-width";
 
-export interface ImagePayload {
+export interface ImageItem {
   alt: string;
   height: number;
   hex: string;
-  imgKey: string;
+  key: string;
+  rating: AssetRating;
+  scaleFactor: number;
+  width: number;
+}
+
+export interface ImagePayload {
+  images: Array<
+    Omit<ImageItem, "scaleFactor"> & Partial<Pick<ImageItem, "scaleFactor">>
+  >;
   key?: NodeKey;
   layout?: ImageNodeLayout;
-  rating: AssetRating;
-  scaleFactor?: number;
-  width: number;
 }
 
 export type SerializedImageNode = Spread<
   {
-    alt: string;
-    height: number;
-    hex: string;
-    imgKey: string;
+    images: ImageItem[];
     layout: ImageNodeLayout;
-    rating: AssetRating;
-    scaleFactor: number;
-    width: number;
   },
   SerializedBlockNode
 >;
@@ -40,43 +40,28 @@ const VERSION = 1;
 
 export const MIN_SCALE_FACTOR = 0.15;
 export const MAX_SCALE_FACTOR = 1.5;
+export const MAX_IMAGE_ITEMS = 3;
 
 // noinspection TypeScriptFieldCanBeMadeReadonly
 export class ImageNode extends BlockNode {
   /**
    * Ctor
-   * @param rating Image rating
-   * @param imgKey CDN key
-   * @param hex Image average hex color value
-   * @param width Image width
-   * @param height Image height
-   * @param alt Alt text
-   * @param scaleFactor Scale factor
+   * @param images Image items
    * @param layout Image layout
    * @param key Node key
    */
   constructor(
-    {
-      rating,
-      imgKey,
-      hex,
-      width,
-      height,
-      alt,
-      layout,
-      scaleFactor
-    }: Omit<ImagePayload, "key"> = {} as any,
+    { images = [], layout }: Omit<ImagePayload, "key"> = {} as any,
     key?: NodeKey
   ) {
     super(key);
-    this.__imgKey = imgKey;
-    this.__alt = alt;
-    this.__hex = hex;
-    this.__width = width;
-    this.__height = height;
-    this.__scaleFactor = scaleFactor || 1;
-    this.__rating = rating;
     this.__layout = layout || "fit";
+    this.__images = [
+      ...images.map((image) => ({
+        ...image,
+        scaleFactor: image.scaleFactor || 1
+      }))
+    ];
   }
 
   /**
@@ -93,13 +78,7 @@ export class ImageNode extends BlockNode {
   static override clone(node: ImageNode): ImageNode {
     return new ImageNode(
       {
-        rating: node.__rating,
-        height: node.__height,
-        width: node.__width,
-        hex: node.__hex,
-        imgKey: node.__imgKey,
-        alt: node.__alt,
-        scaleFactor: node.__scaleFactor,
+        images: [...node.__images],
         layout: node.__layout
       },
       node.__key
@@ -112,57 +91,21 @@ export class ImageNode extends BlockNode {
    */
   static override importJSON(serializedNode: SerializedImageNode): ImageNode {
     return $createImageNode({
-      alt: serializedNode.alt,
-      height: serializedNode.height,
-      width: serializedNode.width,
-      scaleFactor: serializedNode.scaleFactor,
-      imgKey: serializedNode.imgKey,
-      hex: serializedNode.hex,
-      rating: serializedNode.rating,
+      images: [...serializedNode.images],
       layout: serializedNode.layout
     });
   }
 
   /**
-   * CDN image key
+   * Image items
    * @private
    */
-  private readonly __imgKey: string;
-  /**
-   * Image hex color value
-   * @private
-   */
-  private readonly __hex: string;
-  /**
-   * Image rating
-   * @private
-   */
-  private readonly __rating: AssetRating;
-  /**
-   * Original image width
-   * @private
-   */
-  private readonly __width: number;
-  /**
-   * Original image height
-   * @private
-   */
-  private readonly __height: number;
+  private readonly __images: ImageItem[];
   /**
    * Image layout
    * @private
    */
   private __layout: ImageNodeLayout;
-  /**
-   * Alt text for the image
-   * @private
-   */
-  private __alt: string;
-  /**
-   * The scale factor (used for resizing the image)
-   * @private
-   */
-  private __scaleFactor: number;
 
   /**
    * Serializes the node to JSON
@@ -170,13 +113,7 @@ export class ImageNode extends BlockNode {
   override exportJSON(): SerializedImageNode {
     return {
       ...super.exportJSON(),
-      alt: this.__alt,
-      hex: this.__hex,
-      height: this.__height,
-      width: this.__width,
-      imgKey: this.__imgKey,
-      scaleFactor: this.__scaleFactor,
-      rating: this.__rating,
+      images: this.__images,
       layout: this.__layout,
       type: TYPE,
       version: VERSION
@@ -188,6 +125,62 @@ export class ImageNode extends BlockNode {
    */
   public getLayout(): ImageNodeLayout {
     return this.__layout;
+  }
+
+  /**
+   * Adds a new image item
+   * @param imageItem Image item
+   */
+  public addImageItem(imageItem: ImageItem): void {
+    if (this.__images.length < MAX_IMAGE_ITEMS) {
+      const writable = this.getWritable();
+      writable.__images.push(imageItem);
+
+      // Switch to fill layout
+      if (this.__layout === "fit") {
+        writable.__layout = "fill";
+      }
+    } else {
+      throw new Error("Maximum number of image items reached");
+    }
+  }
+
+  /**
+   * Removes an image item
+   * @param index Index of the item to be removed
+   */
+  public removeImageItem(index: number): void {
+    if (this.__images.length) {
+      if (this.__images.length === 1) {
+        this.remove(); // Remove the entire node when only a single item is present
+      } else {
+        const writable = this.getWritable();
+        writable.__images.splice(index, 1);
+      }
+    } else {
+      throw new Error("There are no more items to remove");
+    }
+  }
+
+  /**
+   * Returns all the image items
+   */
+  public getImageItems(): ImageItem[] {
+    return this.__images;
+  }
+
+  /**
+   * Changes the positions of image items in an anti-clockwise direction
+   */
+  public changeItemPositions(): void {
+    if (this.__images.length > 1) {
+      const writable = this.getWritable();
+      const popped = writable.__images.pop();
+
+      if (popped) {
+        writable.__images.unshift(popped);
+      }
+    }
   }
 
   /**
@@ -204,21 +197,27 @@ export class ImageNode extends BlockNode {
    * @param scaleFactor New scale factor
    */
   public setScaleFactor(scaleFactor: number): void {
-    const writable = this.getWritable();
-    writable.__scaleFactor = clamp(
-      MIN_SCALE_FACTOR,
-      scaleFactor,
-      MAX_SCALE_FACTOR
-    );
+    if (this.__images.length === 1) {
+      const writable = this.getWritable();
+      writable.__images[0].scaleFactor = clamp(
+        MIN_SCALE_FACTOR,
+        scaleFactor,
+        MAX_SCALE_FACTOR
+      );
+    }
   }
 
   /**
    * Sets the alt text
+   * @param index Image index
    * @param altText New alt text
    */
-  public setAltText(altText: string): void {
+  public setAltText(index: number, altText: string): void {
     const writable = this.getWritable();
-    writable.__alt = altText;
+
+    if (writable.__images[index]) {
+      writable.__images[index].alt = altText;
+    }
   }
 
   /**
@@ -227,15 +226,10 @@ export class ImageNode extends BlockNode {
   override decorate(): React.ReactElement {
     return (
       <ImageComponent
-        alt={this.__alt}
-        height={this.__height}
-        imgKey={this.__imgKey}
+        images={this.__images}
         layout={this.__layout}
         nodeKey={this.getKey()}
-        rating={this.__rating}
         resizable={this.__layout === "fit"}
-        scaleFactor={this.__scaleFactor}
-        width={this.__width}
       />
     );
   }
@@ -243,33 +237,12 @@ export class ImageNode extends BlockNode {
 
 /**
  * Creates a new image node
- * @param alt Alt text
- * @param imgKey CDN key
- * @param hex Average hex color of the image
- * @param height Image height
- * @param width Image width
- * @param caption Image caption
- * @param rating Image rating
- * @param scaleFactor Scale factor
+ * @param images Image items
+ * @param layout Node layout
  */
-export const $createImageNode = ({
-  alt,
-  imgKey,
-  hex,
-  height,
-  width,
-  rating,
-  scaleFactor,
-  layout
-}: ImagePayload): ImageNode =>
+export const $createImageNode = ({ images, layout }: ImagePayload): ImageNode =>
   new ImageNode({
-    alt,
-    imgKey,
-    hex,
-    height,
-    width,
-    scaleFactor,
-    rating,
+    images,
     layout
   });
 

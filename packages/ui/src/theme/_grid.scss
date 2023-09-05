@@ -60,6 +60,7 @@
       ". main main main main main main main main main rsb rsb rsb ."
       ". ft ft ft ft ft ft ft ft ft ft ft ft .";
 
+    // Hide both the sidebars
     &.minimal,
     &.dashboard {
       --grid-area: ". hd hd hd hd hd hd hd hd hd hd hd hd ."
@@ -67,6 +68,7 @@
         ". ft ft ft ft ft ft ft ft ft ft ft ft .";
     }
 
+    // Add sidenav to the dashboard layout
     &.dashboard:not(.no-sidenav) {
       @include sidenav;
     }
@@ -98,6 +100,7 @@
     grid-template-columns: var(--grid-gutter) repeat(2, 1fr) var(--grid-gutter);
   }
 
+  // Only show main on print
   @media print {
     --grid-area: ". main main main main main main main main main main main main ." !important;
   }

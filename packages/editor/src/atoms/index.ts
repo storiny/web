@@ -3,7 +3,6 @@ export * from "./awareness";
 export * from "./doc-status";
 export * from "./enable-inline-decorators";
 export * from "./enable-tk";
-export * from "./figure-offsets";
 export * from "./history";
 export * from "./indentation";
 export * from "./is-caption-selection";

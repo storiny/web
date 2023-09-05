@@ -1,6 +1,6 @@
 "use client";
 
-import { AssetRating, ImageSize } from "@storiny/shared";
+import { assetProps, AssetRating, ImageSize } from "@storiny/shared";
 import clsx from "clsx";
 import { useAtom } from "jotai";
 import React from "react";
@@ -308,6 +308,8 @@ const LibraryMasonryItem = React.memo(
                 <CheckIcon />
               </IconButton>
             }
+            maxLength={assetProps.alt.maxLength}
+            minLength={assetProps.alt.minLength}
             onChange={(event): void => setAltText(event.target.value)}
             onKeyUp={(event): void => {
               // Save on enter

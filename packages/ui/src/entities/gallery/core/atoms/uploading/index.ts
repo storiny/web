@@ -1,3 +1,3 @@
-import { atom } from "jotai";
+import { atomWithReset } from "jotai/utils";
 
-export const uploadingAtom = atom<boolean>(false);
+export const uploadingAtom = atomWithReset<boolean>(false);

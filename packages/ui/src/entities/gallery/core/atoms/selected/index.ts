@@ -1,5 +1,5 @@
 import { AssetRating } from "@storiny/shared";
-import { atom } from "jotai";
+import { atomWithReset } from "jotai/utils";
 
 export type SelectedAtomValue = {
   alt: string;
@@ -13,4 +13,4 @@ export type SelectedAtomValue = {
   width: number;
 } | null;
 
-export const selectedAtom = atom<SelectedAtomValue>(null);
+export const selectedAtom = atomWithReset<SelectedAtomValue>(null);

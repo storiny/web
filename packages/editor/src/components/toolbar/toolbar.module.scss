@@ -5,6 +5,7 @@
   &.toolbar {
     background-color: var(--bg-elevation-sm);
     border-top: 1px solid var(--divider);
+    border-inline: 1px solid var(--divider);
     width: 100%;
     height: 100%;
   }
@@ -18,8 +19,10 @@
     overflow: hidden;
     min-height: 40px; // Toolbar height (prevents jumping when the toolbar exits)
     margin-top: auto;
-    margin-left: var(--grid-compensation);
-    width: calc(100% + calc(-2 * var(--grid-compensation)));
+    margin-left: calc(var(--grid-compensation) - 1px);
+    width: calc(
+      100% + 2px + calc(-2 * var(--grid-compensation))
+    ); // Add 2px for inline border (visible on overflowing nodes)
 
     @include breakpoints.media("<desktop") {
       position: fixed;

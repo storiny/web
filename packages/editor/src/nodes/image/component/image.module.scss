@@ -1,0 +1,272 @@
+@use "../../../../../ui/src/theme/breakpoints" as breakpoints;
+
+$banner-gradient: linear-gradient(
+  to var(--grad-dir),
+  hsl(var(--grad)) 5%,
+  hsla(var(--grad) / 98.7%) 13.1%,
+  hsla(var(--grad) / 95.1%) 20.5%,
+  hsla(var(--grad) / 89.6%) 27.5%,
+  hsla(var(--grad) / 82.5%) 34%,
+  hsla(var(--grad) / 74.1%) 39.3%,
+  hsla(var(--grad) / 64.8%) 46.2%,
+  hsla(var(--grad) / 55%) 53.1%,
+  hsla(var(--grad) / 45%) 57.9%,
+  hsla(var(--grad) / 35.2%) 63.8%,
+  hsla(var(--grad) / 25.9%) 69.7%,
+  hsla(var(--grad) / 17.5%) 76%,
+  hsla(var(--grad) / 10.4%) 82.5%,
+  hsla(var(--grad) / 4.9%) 89.5%,
+  hsla(var(--grad) / 1.3%) 96.9%,
+  hsla(var(--grad) / 0%) 100%
+);
+
+@at-root html[data-theme="dark"] {
+  .left-banner,
+  .right-banner {
+    &::before,
+    &::after {
+      --grad: 223deg 12% 12%;
+    }
+  }
+}
+
+/* Base styles */
+.image {
+  display: inline-block;
+  position: relative;
+  user-select: none;
+  max-width: 100%;
+  width: 100%;
+}
+
+/* Items container (holds images) */
+.items-container {
+  position: relative;
+  outline: none !important; // Disable focus outline
+  background-color: var(--bg-body); // For transparent images
+  z-index: 1; // Move above the left and right banners
+  display: grid;
+  grid-gap: 12px;
+  grid: "first" 1fr / 1fr;
+
+  /* Pseudo element for focused outline */
+  &::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    outline-offset: -1px;
+  }
+
+  &[data-item-count="2"] {
+    grid: "first second" 1fr / 1fr 1fr;
+  }
+
+  &[data-item-count="3"] {
+    grid: "first first third" 1fr "first first second" 1fr / 1fr 1fr 1fr;
+  }
+
+  /* Image item */
+  & .item {
+    &[data-index="0"] {
+      grid-area: first;
+    }
+
+    &[data-index="1"] {
+      grid-area: second;
+    }
+
+    &[data-index="2"] {
+      grid-area: third;
+    }
+  }
+
+  /* Fit layout */
+  &[data-layout="fit"] {
+    max-width: 100%;
+  }
+
+  /* Fill layout */
+  &[data-layout="fill"] {
+    width: auto;
+    grid-column: 5 / -5;
+    margin-inline: var(--grid-compensation);
+  }
+
+  /* Overflow layout (stretch over both the sidebars) */
+  &[data-layout="overflow"] {
+    grid-column: 2 / -2;
+  }
+
+  /* Screen width layout */
+  &[data-layout="screen-width"] {
+    grid-column: 1 / -1;
+  }
+
+  /* Stretch over the entire screen for layouts other than `fit` */
+  &:not([data-layout="fit"]) {
+    @include breakpoints.media("<desktop") {
+      width: 100vw;
+      margin-inline: 0;
+      grid-column: unset;
+    }
+  }
+}
+
+/* Image container */
+.container {
+  /* Layout other than fit */
+  &:not([data-layout="fit"]) {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1; // Stay below the sidebars
+
+    &:not([data-layout="fill"]) {
+      // Stay above the sidebars
+      z-index: calc(var(--z-index-header) - 1);
+    }
+  }
+
+  /* Image items container */
+  & .items-container {
+    cursor: default;
+  }
+
+  /* Editable */
+  &.editable {
+    &:not(.focused) {
+      & .items-container {
+        cursor: pointer;
+      }
+    }
+
+    /* Show a focused outline */
+    &:not([data-layout="fit"]).focused {
+      & .items-container {
+        &::after {
+          outline: 1px solid var(--inverted-400);
+        }
+      }
+    }
+
+    /* Fit layout */
+    &[data-layout="fit"] {
+      /* Hover and focused state */
+      &:hover,
+      &.focused {
+        outline: 1.5px solid var(--inverted-400);
+        filter: drop-shadow(
+          var(--shadow-sm)
+        ); // Drop shadow for images with transparent background
+      }
+    }
+  }
+}
+
+/* Banners */
+.left-banner,
+.right-banner {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  width: 100%;
+  pointer-events: none;
+  box-shadow: 0 0 0 1px var(--divider);
+
+  &[data-visible="true"] {
+    &::before,
+    &::after {
+      opacity: 1;
+    }
+  }
+
+  &::before,
+  &::after {
+    --grad: 0deg 0% 96%; // Light
+    --grad-size: 100vh;
+
+    content: "";
+    position: absolute;
+    height: var(--grad-size);
+    width: calc(100% + 64px); // Extra width to cover sidebar collapse animation
+    opacity: 0;
+    background-image: $banner-gradient;
+    transition: opacity 250ms ease-out;
+  }
+
+  &::before {
+    --grad-dir: top;
+
+    top: calc(-1 * calc(var(--grad-size) + 1px));
+  }
+
+  &::after {
+    --grad-dir: bottom;
+
+    bottom: calc(-1 * calc(var(--grad-size) + 1px));
+  }
+
+  @include breakpoints.media("<desktop") {
+    display: none;
+  }
+}
+
+/* Left banner */
+.left-banner {
+  grid-column: 2 / 5; // Overflow
+
+  &[data-layout="screen-width"] {
+    grid-column: 1 / 5;
+  }
+
+  &::before,
+  &::after {
+    left: -65px;
+  }
+}
+
+/* Right banner */
+.right-banner {
+  grid-column: 11 / -2; // Overflow
+
+  &[data-layout="screen-width"] {
+    grid-column: 11 / -1;
+  }
+
+  &::before,
+  &::after {
+    right: -65px;
+  }
+}
+
+.x {
+  /* Image item */
+  &.item {
+    width: 100%;
+  }
+
+  /* Button */
+  &.button {
+    border-radius: 0;
+  }
+
+  /* Image item remove button */
+  &.remove-button {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+  }
+
+  /* Popover */
+  &.popover {
+    border: none;
+    box-shadow: var(--ridge-xs);
+    z-index: calc(var(--z-index-header) - 1);
+    align-items: stretch;
+  }
+}

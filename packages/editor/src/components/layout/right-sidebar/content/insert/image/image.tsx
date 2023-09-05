@@ -16,12 +16,16 @@ const ImageItem = ({
     <Gallery
       onConfirm={(image): void =>
         insertImage({
-          alt: image.alt,
-          imgKey: image.key,
-          hex: image.hex,
-          rating: image.rating,
-          width: image.width,
-          height: image.height,
+          images: [
+            {
+              alt: image.alt,
+              key: image.key,
+              hex: image.hex,
+              rating: image.rating,
+              width: image.width,
+              height: image.height
+            }
+          ],
           credits: image.credits
         })
       }

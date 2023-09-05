@@ -94,17 +94,19 @@ export const $isBlockNode = (
 
 // Block component
 
-export const Block = ({
-  nodeKey,
-  children,
-  ...rest
-}: {
-  nodeKey: NodeKey;
-} & React.ComponentPropsWithoutRef<"div">): React.ReactElement => {
+export const Block = React.forwardRef<
+  HTMLDivElement,
+  {
+    nodeKey: NodeKey;
+  } & React.ComponentPropsWithRef<"div">
+>((props, refProp) => {
+  const { nodeKey, children, ...rest } = props;
   const [editor] = useLexicalComposerContext();
   const [isSelected, setSelected, clearSelection] =
     useLexicalNodeSelection(nodeKey);
   const ref = React.useRef<HTMLDivElement | null>(null);
+
+  React.useImperativeHandle(refProp, () => ref.current!);
 
   /**
    * Deletes the node
@@ -166,4 +168,6 @@ export const Block = ({
       {children}
     </div>
   );
-};
+});
+
+Block.displayName = "Block";

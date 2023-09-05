@@ -12,6 +12,7 @@ import ModalSidebarItem from "~/components/Modal/SidebarItem";
 import ModalSidebarList from "~/components/Modal/SidebarList";
 import Spacer from "~/components/Spacer";
 import TabPanel from "~/components/TabPanel";
+import { useResetGalleryAtoms } from "~/entities/gallery/core/hooks/use-reset-gallery-atoms";
 import { useMediaQuery } from "~/hooks/useMediaQuery";
 import AlbumIcon from "~/icons/Album";
 import ChevronIcon from "~/icons/Chevron";
@@ -98,6 +99,7 @@ const GalleryFooter = (
 
 const GalleryImpl = (props: GalleryProps): React.ReactElement => {
   const { children, onConfirm, onCancel } = props;
+  const resetAtoms = useResetGalleryAtoms();
   const [open, setOpen] = React.useState<boolean>(false);
   const [uploaderProps, setUploaderProps] = React.useState<{
     alt: string;
@@ -109,10 +111,19 @@ const GalleryImpl = (props: GalleryProps): React.ReactElement => {
   const [whiteboardUploading, setWhiteboardUploading] =
     React.useState<boolean>(false);
   const [value, setValue] = useAtom(sidebarTabAtom);
-  const [selected, setSelected] = useAtom(selectedAtom);
+  const selected = useAtomValue(selectedAtom);
   const setQuery = useSetAtom(queryAtom);
   const uploading = useAtomValue(uploadingAtom);
   const fullscreen = value === "whiteboard" && !whiteboardUploading;
+
+  /**
+   * Resets the gallery state
+   */
+  const reset = React.useCallback(() => {
+    resetAtoms();
+    setUploaderProps(null);
+    setWhiteboardUploading(false);
+  }, [resetAtoms]);
 
   /**
    * Handles Pexels image upload
@@ -130,8 +141,9 @@ const GalleryImpl = (props: GalleryProps): React.ReactElement => {
         credits: selected?.credits
       });
       setOpen(false);
+      reset();
     },
-    [onConfirm, selected]
+    [onConfirm, reset, selected?.credits]
   );
 
   return (
@@ -142,10 +154,7 @@ const GalleryImpl = (props: GalleryProps): React.ReactElement => {
       onOpenChange={(open): void => {
         setOpen(open);
         if (!open) {
-          // Reset values
-          setSelected(null);
-          setValue("pexels");
-          setQuery("");
+          reset();
         }
       }}
       open={open}

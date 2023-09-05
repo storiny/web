@@ -13,7 +13,7 @@ const originalFetch = window.fetch;
 type ApiResponse = Photos | PhotosWithTotalResults | ErrorResponse;
 
 /**
- * Predicate function for determining an error response
+ * Predicate function for determining error responses
  * @param res Resposne
  */
 const isErrorResponse = (res: Photos | ErrorResponse): res is ErrorResponse =>
@@ -57,7 +57,7 @@ worker.use(
   rest.post(
     `${process.env.NEXT_PUBLIC_API_URL}/v1/me/gallery`,
     (req, res, ctx) =>
-      res(ctx.delay(3400), ctx.status(201), ctx.json(mockAssets[0]))
+      res(ctx.delay(3400), ctx.status(201), ctx.json(mockAssets[1]))
   )
 );
 

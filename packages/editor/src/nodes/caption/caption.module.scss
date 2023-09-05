@@ -6,8 +6,8 @@
   margin-top: 12px;
   color: var(--fg-minor) !important;
   font-family: var(--font-satoshi) !important;
-  font-size: var(--font-size-md) !important;
-  line-height: var(--line-height-md) !important;
+  font-size: var(--font-size-sm) !important;
+  line-height: var(--line-height-sm) !important;
 
   /* Placeholder */
   &[data-empty="true"] {

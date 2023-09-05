@@ -56,7 +56,6 @@ const listTypeToTextStyleMap: Record<Exclude<ListType, "check">, TextStyle> = {
  */
 export const useRegisterTools = (): void => {
   const [editor] = useLexicalComposerContext();
-  const [activeEditor, setActiveEditor] = React.useState(editor);
   const setTextStyle = useSetAtom(textStyleAtom);
   const setAlignment = useSetAtom(alignmentAtom);
   const setLink = useSetAtom(linkAtom);
@@ -94,7 +93,7 @@ export const useRegisterTools = (): void => {
       }
 
       const elementKey = element.getKey();
-      const elementDOM = activeEditor.getElementByKey(elementKey);
+      const elementDOM = editor.getElementByKey(elementKey);
 
       // Update text format
       setBold(selection.hasFormat("bold"));
@@ -172,29 +171,23 @@ export const useRegisterTools = (): void => {
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeEditor]);
-
-  React.useEffect(
-    () =>
-      editor.registerCommand(
-        SELECTION_CHANGE_COMMAND,
-        (_payload, newEditor) => {
-          $updateTools();
-          setActiveEditor(newEditor);
-          return false;
-        },
-        COMMAND_PRIORITY_CRITICAL
-      ),
-    [editor, $updateTools]
-  );
+  }, []);
 
   React.useEffect(
     () =>
       mergeRegister(
-        activeEditor.registerUpdateListener(({ editorState }) =>
+        editor.registerUpdateListener(({ editorState }) =>
           editorState.read($updateTools)
         ),
-        activeEditor.registerCommand<boolean>(
+        editor.registerCommand(
+          SELECTION_CHANGE_COMMAND,
+          () => {
+            $updateTools();
+            return false;
+          },
+          COMMAND_PRIORITY_CRITICAL
+        ),
+        editor.registerCommand<boolean>(
           CAN_UNDO_COMMAND,
           (payload) => {
             setCanUndo(payload);
@@ -202,7 +195,7 @@ export const useRegisterTools = (): void => {
           },
           COMMAND_PRIORITY_CRITICAL
         ),
-        activeEditor.registerCommand<boolean>(
+        editor.registerCommand<boolean>(
           CAN_REDO_COMMAND,
           (payload) => {
             setCanRedo(payload);
@@ -212,6 +205,6 @@ export const useRegisterTools = (): void => {
         )
       ),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [$updateTools, activeEditor, editor]
+    [$updateTools, editor]
   );
 };
