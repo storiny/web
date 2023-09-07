@@ -27,6 +27,7 @@ mod error;
 mod middleware;
 mod providers;
 mod routes;
+mod utils;
 
 /// 404 response
 async fn not_found() -> impl Responder {
