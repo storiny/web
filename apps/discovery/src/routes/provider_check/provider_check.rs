@@ -1,3 +1,7 @@
+use crate::utils::{
+    decompress_url,
+    resolve_provider,
+};
 use actix_web::{
     get,
     http::header::ContentType,
@@ -5,20 +9,21 @@ use actix_web::{
     HttpResponse,
     Responder,
 };
-use lz_str::decompress_from_encoded_uri_component;
-
-#[path = "../../providers/mod.rs"]
-mod providers;
 
 #[get("/provider_check/{compressed_url}")]
 async fn get(compressed_url: web::Path<String>) -> impl Responder {
-    let decompressed_url = decompress_from_encoded_uri_component(&compressed_url.to_string());
+    let decompressed_url = decompress_url(&compressed_url.to_string());
 
     match decompressed_url {
-        Some(decompressed_url) => match String::from_utf16(&decompressed_url) {
-            Ok(url) => HttpResponse::Ok()
-                .content_type(ContentType::plaintext())
-                .body(format!("URL: {}", url)),
+        Some(result) => match result {
+            Ok(url) => match resolve_provider(&url) {
+                None => HttpResponse::UnprocessableEntity()
+                    .content_type(ContentType::plaintext())
+                    .body("Provider not supported yet"),
+                Some(provider) => HttpResponse::Ok()
+                    .content_type(ContentType::plaintext())
+                    .body(format!("OK ({})", provider.name)),
+            },
             Err(_) => HttpResponse::InternalServerError()
                 .content_type(ContentType::plaintext())
                 .body("Could not resolve the provider"),

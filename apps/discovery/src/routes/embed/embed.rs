@@ -1,3 +1,7 @@
+use crate::utils::{
+    decompress_url,
+    resolve_provider,
+};
 use actix_web::{
     get,
     http::header::ContentType,
@@ -5,13 +9,35 @@ use actix_web::{
     HttpResponse,
     Responder,
 };
+use serde::Deserialize;
+
+#[derive(Deserialize)]
+struct EmbedQueryParams {
+    theme: Option<String>,
+}
 
 #[get("/embed/{compressed_url}")]
 async fn get(compressed_url: web::Path<String>) -> impl Responder {
-    let compressed_url = compressed_url.to_string();
-    HttpResponse::Ok()
-        .content_type(ContentType::plaintext())
-        .body(format!("Compressed: {}", compressed_url))
+    let decompressed_url = decompress_url(&compressed_url.to_string());
+
+    match decompressed_url {
+        Some(result) => match result {
+            Ok(url) => match resolve_provider(&url) {
+                None => HttpResponse::UnprocessableEntity()
+                    .content_type(ContentType::plaintext())
+                    .body("Provider not supported yet"),
+                Some(provider) => HttpResponse::Ok()
+                    .content_type(ContentType::plaintext())
+                    .body(format!("OK ({})", provider.name)),
+            },
+            Err(_) => HttpResponse::InternalServerError()
+                .content_type(ContentType::plaintext())
+                .body("Could not resolve the provider"),
+        },
+        None => HttpResponse::UnprocessableEntity()
+            .content_type(ContentType::plaintext())
+            .body("Provider not supported yet"),
+    }
 }
 
 /// Registers embed routes
