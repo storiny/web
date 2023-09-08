@@ -121,11 +121,14 @@ export const syncYjsChangesToLexical = (
             );
             const [start, end] =
               prevOffsetView.getOffsetsFromSelection(prevSelection);
-            const nextSelection = nextOffsetView.createSelectionFromOffsets(
-              start,
-              end,
-              prevOffsetView
-            );
+            const nextSelection =
+              start >= 0 && end >= 0
+                ? nextOffsetView.createSelectionFromOffsets(
+                    start,
+                    end,
+                    prevOffsetView
+                  )
+                : null;
 
             if (nextSelection !== null) {
               $setSelection(nextSelection);
