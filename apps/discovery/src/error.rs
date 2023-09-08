@@ -1,41 +1,41 @@
-use actix_web::{
-    error::ResponseError,
-    http::{
-        header::ContentType,
-        StatusCode,
-    },
-    HttpResponse,
-};
-use derive_more::{
+use std::fmt::{
+    self,
     Display,
-    Error,
 };
 
-/// Custom error
-#[derive(Debug, Display, Error)]
-pub enum ServiceError {
-    #[display(fmt = "Internal server error")]
-    InternalError,
-
-    #[display(fmt = "Bad request")]
-    BadClientData,
-
-    #[display(fmt = "Gateway timeout")]
-    Timeout,
+#[derive(Debug)]
+pub enum Error {
+    Serde(serde_json::Error),
+    Reqwest(reqwest::Error),
+    Url(url::ParseError),
 }
 
-impl ResponseError for ServiceError {
-    fn status_code(&self) -> StatusCode {
-        match *self {
-            ServiceError::InternalError => StatusCode::INTERNAL_SERVER_ERROR,
-            ServiceError::BadClientData => StatusCode::BAD_REQUEST,
-            ServiceError::Timeout => StatusCode::GATEWAY_TIMEOUT,
-        }
-    }
+impl std::error::Error for Error {}
 
-    fn error_response(&self) -> HttpResponse {
-        HttpResponse::build(self.status_code())
-            .insert_header(ContentType::plaintext())
-            .body(self.to_string())
+impl From<serde_json::Error> for Error {
+    fn from(err: serde_json::Error) -> Self {
+        Self::Serde(err)
+    }
+}
+
+impl From<reqwest::Error> for Error {
+    fn from(err: reqwest::Error) -> Self {
+        Self::Reqwest(err)
+    }
+}
+
+impl From<url::ParseError> for Error {
+    fn from(err: url::ParseError) -> Self {
+        Self::Url(err)
+    }
+}
+
+impl Display for Error {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Error::Serde(err) => err.fmt(f),
+            Error::Reqwest(err) => err.fmt(f),
+            Error::Url(err) => err.fmt(f),
+        }
     }
 }

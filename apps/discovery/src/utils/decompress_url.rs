@@ -10,3 +10,18 @@ pub fn decompress_url(compressed_url: &str) -> Option<Result<String, FromUtf16Er
         None => None,
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use lz_str::compress_to_encoded_uri_component;
+
+    #[test]
+    fn can_decompress_url() {
+        let url = "https://storiny.com/some-path?with=query";
+        let compressed_url = compress_to_encoded_uri_component(url);
+        let decompressed_url = decompress_url(&compressed_url).unwrap().unwrap();
+
+        assert_eq!(decompressed_url, url);
+    }
+}

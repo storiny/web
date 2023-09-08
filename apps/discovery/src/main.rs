@@ -27,6 +27,7 @@ mod error;
 mod middleware;
 mod providers;
 mod routes;
+mod spec;
 mod utils;
 
 /// 404 response

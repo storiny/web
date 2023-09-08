@@ -1,5 +1,9 @@
-pub mod resolve_provider;
-pub use resolve_provider::resolve_provider;
-
 pub mod decompress_url;
-pub use decompress_url::decompress_url;
+pub mod fetch_embed;
+pub mod parse_html;
+pub mod resolve_provider;
+
+pub use decompress_url::*;
+pub use fetch_embed::*;
+pub use parse_html::*;
+pub use resolve_provider::*;
