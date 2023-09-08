@@ -1,6 +1,6 @@
-use crate::providers::{
-    Provider,
-    PROVIDERS,
+use crate::{
+    providers::PROVIDERS,
+    spec::Provider,
 };
 use url::Url;
 
@@ -12,11 +12,11 @@ pub fn resolve_provider(input_url: &str) -> Option<&'static Provider> {
     // Url sanity check
     return match Url::parse(input_url) {
         Ok(url) => {
-            match PROVIDERS.iter().find(|&&provider| {
+            match PROVIDERS.iter().find(|&provider| {
                 provider
-                    .schemas
+                    .matchers
                     .iter()
-                    .any(|schema| schema.is_match(&url.to_string()))
+                    .any(|matcher| matcher.is_match(&url.to_string()))
             }) {
                 None => None,
                 Some(provider) => Some(provider),
@@ -24,4 +24,42 @@ pub fn resolve_provider(input_url: &str) -> Option<&'static Provider> {
         }
         Err(_) => None,
     };
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn can_resolve_provider() {
+        let url = "https://twitter.com/user/status/12345?s=20";
+        let provider = resolve_provider(url).unwrap();
+
+        assert_eq!(provider.name, "Twitter");
+    }
+
+    #[test]
+    fn can_resolve_provider_with_query() {
+        let url = "https://www.youtube.com/watch?v=abcd";
+        let provider = resolve_provider(url).unwrap();
+
+        assert_eq!(provider.name, "YouTube");
+    }
+
+    #[test]
+    fn can_resolve_non_standard_provider() {
+        let url = "spotify:abcd";
+        let provider = resolve_provider(url).unwrap();
+
+        assert_eq!(provider.name, "Spotify");
+    }
+
+    #[test]
+    fn can_reject_invalid_providers() {
+        let url = "https://youtube.com/watch_now?v=abcd";
+        assert!(resolve_provider(url).is_none());
+
+        let url = "https://www.unknown.com/path";
+        assert!(resolve_provider(url).is_none());
+    }
 }
