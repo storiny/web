@@ -16,6 +16,7 @@ use actix_web::{
     Responder,
 };
 use dotenv::dotenv;
+use sailfish::TemplateOnce;
 use std::{
     env,
     io,
@@ -26,9 +27,27 @@ use std::{
 mod error;
 mod middleware;
 mod providers;
+mod request;
 mod routes;
 mod spec;
 mod utils;
+
+#[derive(TemplateOnce)]
+#[template(path = "iframe.stpl")]
+pub struct IframeTemplate {
+    iframe_html: String,
+    wrapper_styles: String,
+    title: String,
+    embed_data: String,
+}
+
+#[derive(TemplateOnce)]
+#[template(path = "photo.stpl")]
+pub struct PhotoTemplate {
+    photo_html: String,
+    title: String,
+    embed_data: String,
+}
 
 /// 404 response
 async fn not_found() -> impl Responder {
