@@ -10,7 +10,7 @@ use actix_web::{
 async fn get() -> impl Responder {
     HttpResponse::Ok()
         .content_type(ContentType::plaintext())
-        .body("Discovery — Media service for Storiny")
+        .body("Discovery — Media proxy service for Storiny")
 }
 
 /// Registers index routes

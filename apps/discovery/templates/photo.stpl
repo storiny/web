@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title><%= title %></title>
+    <meta content="initial-scale=1, width=device-width, shrink-to-fit=no" name="viewport">
+    <meta content="noindex,nofollow" name="robots">
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        border: none;
+        outline: none;
+        background: transparent;
+      }
+    </style>
+</head>
+<body dir="ltr">
+  <%- photo_html %>
+</body>
+<script type="application/storiny.embed.rich+json"><%- embed_data %></script>
+</html>

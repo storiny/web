@@ -1,27 +1,23 @@
 use crate::{
     error::Error,
+    request::{
+        REQUEST_CLIENT,
+        USER_AGENT,
+    },
     spec::EmbedResponse,
 };
-use lazy_static::lazy_static;
+use hashbrown::HashMap;
 use reqwest::header;
-use std::{
-    collections::HashMap,
-    env,
-};
+use std::env;
 use url::Url;
 
-static USER_AGENT: &'static str = "storiny-bot/1.0";
-
-lazy_static! {
-    static ref CLIENT: reqwest::Client = reqwest::Client::new();
-}
-
-/// Request for fetching the oEmbed data
-///
-/// See the [oembed specification](https://oembed.com/#section2.2) for more information
+/// Request for fetching the oembed data.
+/// See the [oembed specification](https://oembed.com/#section2.2)
 #[derive(Default)]
 pub struct ConsumerRequest<'a> {
+    /// URL provided by the client
     pub url: &'a str,
+    /// Additional params for the request
     pub params: Option<HashMap<&'a str, &'a str>>,
 }
 
@@ -29,7 +25,7 @@ pub struct ConsumerRequest<'a> {
 #[derive(Clone)]
 pub struct Client(reqwest::Client);
 
-/// Returns the Facebook graph token
+/// Returns the Facebook graph token.
 fn get_facebook_graph_token() -> String {
     format!(
         "{}|{}",
@@ -38,20 +34,21 @@ fn get_facebook_graph_token() -> String {
     )
 }
 
-/// Predicate function for determining endpoints that
-/// depend on the Facebook graph API
+/// Predicate function for determining endpoints that depend on the Facebook graph API, thus
+/// requiring a Facebook graph token to work.
 ///
 /// * `endpoint` - Embed endpoint
 fn is_facebook_graph_dependent(endpoint: &str) -> bool {
-    endpoint.starts_with("graph.facebook.com")
+    endpoint.starts_with("https://graph.facebook.com")
 }
 
 impl Client {
+    /// Create a new request client
     pub fn new(client: reqwest::Client) -> Self {
         Self(client)
     }
 
-    /// Fetch oEmbed data from the endpoint of a provider
+    /// Fetches oembed data from the endpoint of a provider
     pub async fn fetch(
         &self,
         endpoint: &str,
@@ -97,7 +94,7 @@ impl Client {
     }
 }
 
-/// Fetches oEmbed data from the endpoint of a provider
+/// Fetches oembed data from the endpoint of a provider
 ///
 /// * `endpoint` - Provider oEmbed endpoint
 /// * `request` - Client request data
@@ -105,7 +102,9 @@ pub async fn fetch_embed(
     endpoint: &str,
     request: ConsumerRequest<'_>,
 ) -> Result<EmbedResponse, Error> {
-    Client::new(CLIENT.clone()).fetch(endpoint, request).await
+    Client::new(REQUEST_CLIENT.clone())
+        .fetch(endpoint, request)
+        .await
 }
 
 #[cfg(test)]
@@ -144,7 +143,6 @@ mod tests {
                 author_url: None,
                 provider_name: None,
                 provider_url: None,
-                cache_age: None,
                 thumbnail_url: None,
                 thumbnail_width: None,
                 thumbnail_height: None,

@@ -1,3 +1,4 @@
+use hashbrown::HashMap;
 use regex::Regex;
 use serde::{
     de,
@@ -6,10 +7,7 @@ use serde::{
     Serialize,
 };
 use serde_json::Value;
-use std::{
-    collections::HashMap,
-    str::FromStr,
-};
+use std::str::FromStr;
 
 /// Deserializes u16 from a number or a string, since some providers could return numbers as
 /// string in the JSON response.
@@ -37,6 +35,7 @@ where
             }
         }
         Value::String(s) => {
+            println!("{}", s);
             if let Ok(parsed) = s.parse::<u16>() {
                 Ok(Some(parsed))
             } else {
@@ -74,28 +73,7 @@ pub struct Provider {
     pub origin_params: Option<HashMap<&'static str, &'static str>>,
 }
 
-// /// oEmbed provider response
-// ///
-// /// See the [oembed spec](https://oembed.com/#section7.1)
-// #[derive(Debug, Deserialize)]
-// pub struct ProviderResponse {
-//     pub provider_name: String,
-//     pub provider_url: String,
-//     pub endpoints: Vec<Endpoint>,
-// }
-//
-// /// oEmbed provider response endpoint
-// #[derive(Debug, Deserialize)]
-// pub struct Endpoint {
-//     #[serde(default)]
-//     pub schemes: Vec<String>,
-//     pub url: String,
-//     #[serde(default)]
-//     pub discovery: bool,
-// }
-
 /// Represents one of the oEmbed data types
-#[cfg_attr(feature = "jsonschema", derive(schemars::JsonSchema))]
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(tag = "type")]
 pub enum EmbedType {
@@ -124,12 +102,13 @@ pub enum EmbedType {
 /// Video type
 ///
 /// See section 2.3.4.2. of the [oembed spec](https://oembed.com)
-#[cfg_attr(feature = "jsonschema", derive(schemars::JsonSchema))]
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
 pub struct Video {
     pub html: String,
+    #[serde(default)]
     #[serde(deserialize_with = "deserialize_u16_from_maybe_string")]
     pub width: Option<u16>,
+    #[serde(default)]
     #[serde(deserialize_with = "deserialize_u16_from_maybe_string")]
     pub height: Option<u16>,
 }
@@ -137,12 +116,13 @@ pub struct Video {
 /// Photo type
 ///
 /// See section 2.3.4.1. of the [oembed spec](https://oembed.com)
-#[cfg_attr(feature = "jsonschema", derive(schemars::JsonSchema))]
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
 pub struct Photo {
     pub url: String,
+    #[serde(default)]
     #[serde(deserialize_with = "deserialize_u16_from_maybe_string")]
     pub width: Option<u16>,
+    #[serde(default)]
     #[serde(deserialize_with = "deserialize_u16_from_maybe_string")]
     pub height: Option<u16>,
 }
@@ -150,12 +130,13 @@ pub struct Photo {
 /// Rich type
 ///
 /// See section 2.3.4.4. of the [oembed spec](https://oembed.com)
-#[cfg_attr(feature = "jsonschema", derive(schemars::JsonSchema))]
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq)]
 pub struct Rich {
     pub html: String,
+    #[serde(default)]
     #[serde(deserialize_with = "deserialize_u16_from_maybe_string")]
     pub width: Option<u16>,
+    #[serde(default)]
     #[serde(deserialize_with = "deserialize_u16_from_maybe_string")]
     pub height: Option<u16>,
 }
@@ -163,21 +144,22 @@ pub struct Rich {
 /// oEmbed response
 ///
 /// See the [oembed spec](https://oembed.com/#section2.3)
-#[cfg_attr(feature = "jsonschema", derive(schemars::JsonSchema))]
 #[derive(Debug, Serialize, Deserialize, PartialEq)]
 pub struct EmbedResponse {
     #[serde(flatten)]
     pub oembed_type: EmbedType,
+    #[serde(default)]
     pub version: String,
     pub title: Option<String>,
     pub author_name: Option<String>,
     pub author_url: Option<String>,
     pub provider_name: Option<String>,
     pub provider_url: Option<String>,
-    pub cache_age: Option<String>,
     pub thumbnail_url: Option<String>,
+    #[serde(default)]
     #[serde(deserialize_with = "deserialize_u16_from_maybe_string")]
     pub thumbnail_width: Option<u16>,
+    #[serde(default)]
     #[serde(deserialize_with = "deserialize_u16_from_maybe_string")]
     pub thumbnail_height: Option<u16>,
     #[serde(flatten)]
