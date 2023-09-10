@@ -7,7 +7,6 @@ use serde::{
     Serialize,
 };
 use serde_json::Value;
-use std::str::FromStr;
 
 /// Deserializes u16 from a number or a string, since some providers could return numbers as
 /// string in the JSON response.
@@ -35,7 +34,6 @@ where
             }
         }
         Value::String(s) => {
-            println!("{}", s);
             if let Ok(parsed) = s.parse::<u16>() {
                 Ok(Some(parsed))
             } else {

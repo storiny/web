@@ -5,4 +5,4 @@ fmt:
     cargo +nightly fmt
 
 udeps:
-    cargo +nightly udeps
+    cargo +nightly udeps --all-tagets

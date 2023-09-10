@@ -16,7 +16,7 @@ lazy_static! {
                 .map(|schema| {
                     let regex_pattern = schema
                         .replace(".", "\\.")
-                        .replace("*", "(.*)")
+                        .replace("*", "(.+)")
                         .replace("?", "\\?");
                     Regex::new(&regex_pattern).expect(&format!("Invalid regex pattern: {}", schema))
                 })

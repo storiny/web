@@ -26,7 +26,10 @@ use std::{
     default::Default,
     io,
 };
-use url::Url;
+use url::{
+    ParseError,
+    Url,
+};
 
 /// Minimum width for a large image.
 const LARGE_IMAGE_WIDTH_LOWER_BOUND: u16 = 600;
@@ -455,10 +458,40 @@ fn text_content(handle: &Handle) -> Option<String> {
     }
 }
 
+/// Converts a relative image URL to an absolute URL based on a provided base URL object.
+///
+/// * `src` - A string representing the source URL (can be relative or absolute)
+/// * `base` - Base URL object
+fn process_image_src(src: &str, base: &mut Url) -> Option<String> {
+    match Url::parse(src) {
+        Ok(url) => Some(url.to_string()), // Already an absolute URL
+        Err(error) => {
+            if ParseError::RelativeUrlWithoutBase == error {
+                // Relative URL
+                base.set_path(""); // Remove paths
+                let joined = base.join(src).ok();
+
+                if let Some(joined) = joined {
+                    Some(joined.to_string())
+                } else {
+                    None
+                }
+            } else {
+                None
+            }
+        }
+    }
+}
+
 /// Returns the metadata for a given URL.
 ///
 /// * `url` - The URL of the target site.
-pub async fn get_metadata(url_prop: &str) -> Result<MetadataResult, Error> {
+/// * `skip_encoding_image` - Boolean flag indicating whether to skip encoding image URLs for CDN
+///   usage (used during testing)
+pub async fn get_metadata(
+    url_prop: &str,
+    skip_encoding_image: bool,
+) -> Result<MetadataResult, Error> {
     let url = Url::parse(url_prop)?;
     let html = Client::new(REQUEST_CLIENT.clone())
         .fetch(url.clone())
@@ -491,9 +524,11 @@ pub async fn get_metadata(url_prop: &str) -> Result<MetadataResult, Error> {
 
             Some(MetadataImage {
                 src: if has_opengraph_image {
-                    og_image.clone().unwrap().url
+                    process_image_src(&og_image.clone().unwrap().url, &mut url.clone())
+                        .unwrap_or_default()
                 } else {
-                    tc_image.clone().unwrap().url
+                    process_image_src(&tc_image.clone().unwrap().url, &mut url.clone())
+                        .unwrap_or_default()
                 },
                 width: if has_opengraph_image {
                     og_image.clone().unwrap().width
@@ -510,19 +545,25 @@ pub async fn get_metadata(url_prop: &str) -> Result<MetadataResult, Error> {
                 } else {
                     tc_image.clone().unwrap().alt
                 },
-                is_large: if has_opengraph_image {
+                is_large: if has_twitter_card_image && tc_image.clone().unwrap().is_large {
+                    true
+                } else if has_opengraph_image {
                     og_image.clone().unwrap().width.unwrap_or_default()
                         > LARGE_IMAGE_WIDTH_LOWER_BOUND
                         && og_image.clone().unwrap().height.unwrap_or_default()
                             > LARGE_IMAGE_HEIGHT_LOWER_BOUND
                 } else {
-                    tc_image.clone().unwrap().is_large
+                    false
                 },
             })
         } else {
             None
         },
-        favicon: doc_metadata.favicon,
+        favicon: if doc_metadata.favicon.is_some() {
+            process_image_src(&doc_metadata.favicon.unwrap(), &mut url.clone())
+        } else {
+            None
+        },
     })
 }
 
@@ -530,7 +571,6 @@ pub async fn get_metadata(url_prop: &str) -> Result<MetadataResult, Error> {
 mod tests {
     use super::*;
     use mockito::Server;
-    use std::fmt::format;
 
     #[test]
     fn can_extend_opengraph_tags() {
@@ -684,7 +724,7 @@ mod tests {
                <head>
                    <title>Some title</title>
                    <meta name="description" content="Some description">
-                   <link rel="icon" href="/favicon.ico">
+                   <link rel="icon" href="https://example.com/favicon.ico">
                </head>
            </html>
              "#
@@ -693,7 +733,10 @@ mod tests {
 
         assert_eq!(html.title, Some("Some title".to_string()));
         assert_eq!(html.description, Some("Some description".to_string()));
-        assert_eq!(html.favicon, Some("/favicon.ico".to_string()));
+        assert_eq!(
+            html.favicon,
+            Some("https://example.com/favicon.ico".to_string())
+        );
     }
 
     #[actix_web::test]
@@ -743,7 +786,7 @@ mod tests {
                     alt: Some("Some alt text".to_string()),
                     is_large: true,
                 }),
-                favicon: Some("/favicon.ico".to_string()),
+                favicon: Some(format!("{}/{}", &server.url().as_str(), "favicon.ico")),
             })
         );
 
