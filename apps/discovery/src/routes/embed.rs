@@ -60,6 +60,23 @@ struct PhotoEmbedData {
     provider: String,
 }
 
+/// Sends a webpage metadata object for the provided URL.
+///
+/// * `url` - URL to fetch the metadata for
+async fn respond_with_metadata(url: &str) -> HttpResponse {
+    let metadata = get_metadata(url).await;
+
+    if let Ok(metadata) = metadata {
+        HttpResponse::Ok()
+            .content_type(ContentType::json())
+            .json(metadata)
+    } else {
+        HttpResponse::UnprocessableEntity()
+            .content_type(ContentType::plaintext())
+            .body("Invalid response from the provider")
+    }
+}
+
 #[get("/embed/{compressed_url}")]
 async fn get(
     compressed_url: web::Path<String>,
@@ -137,17 +154,7 @@ async fn get(
                                 }
                                 EmbedType::Link => {
                                     // Handle link response
-                                    let metadata = get_metadata(&url).await;
-
-                                    if let Ok(metadata) = metadata {
-                                        HttpResponse::Ok()
-                                            .content_type(ContentType::json())
-                                            .json(metadata)
-                                    } else {
-                                        HttpResponse::UnprocessableEntity()
-                                            .content_type(ContentType::plaintext())
-                                            .body("Invalid response from the provider")
-                                    }
+                                    respond_with_metadata(&url).await
                                 }
                                 EmbedType::Video(_) | EmbedType::Rich(_) => {
                                     match parse_html(&json, &provider.iframe_params) {
@@ -200,18 +207,8 @@ async fn get(
                             .body("Cannot retrieve the embed"),
                     }
                 } else {
-                    // Handle embeds
-                    let metadata = get_metadata(&url).await;
-
-                    if let Ok(metadata) = metadata {
-                        HttpResponse::Ok()
-                            .content_type(ContentType::json())
-                            .json(metadata)
-                    } else {
-                        HttpResponse::UnprocessableEntity()
-                            .content_type(ContentType::plaintext())
-                            .body("Invalid response from the provider")
-                    }
+                    // Handle web embeds
+                    respond_with_metadata(&url).await
                 }
             }
             Err(_) => HttpResponse::InternalServerError()

@@ -1,8 +1,9 @@
 use actix_cors::Cors;
-use actix_governor::{
-    Governor,
-    GovernorConfigBuilder,
+use actix_extensible_rate_limit::{
+    backend::SimpleInputFunctionBuilder,
+    RateLimiter,
 };
+use actix_files as fs;
 use actix_web::{
     http::{
         header,
@@ -16,12 +17,12 @@ use actix_web::{
     Responder,
 };
 use dotenv::dotenv;
+use redis::aio::ConnectionManager;
 use sailfish::TemplateOnce;
 use std::{
     env,
     io,
-    net::IpAddr,
-    str::FromStr,
+    time::Duration,
 };
 
 mod error;
@@ -32,6 +33,7 @@ mod routes;
 mod spec;
 mod utils;
 
+/// Iframe embed template
 #[derive(TemplateOnce)]
 #[template(path = "iframe.stpl")]
 pub struct IframeTemplate {
@@ -41,6 +43,7 @@ pub struct IframeTemplate {
     embed_data: String,
 }
 
+/// Photo embed template
 #[derive(TemplateOnce)]
 #[template(path = "photo.stpl")]
 pub struct PhotoTemplate {
@@ -60,29 +63,40 @@ async fn not_found() -> impl Responder {
 async fn main() -> io::Result<()> {
     dotenv().ok();
     env_logger::init_from_env(env_logger::Env::default().default_filter_or("info"));
-    log::info!("starting HTTP server at http://localhost:8080");
 
-    let reverse_proxy_ip =
-        IpAddr::from_str(&env::var("REVERSE_PROXY_IP").expect("Reverse proxy IP not set")).unwrap(); //
     let host = env::var("HOST").expect("Host not set");
-    let port: u16 = (env::var("PORT").expect("Port not set")).parse().unwrap();
-    let allowed_origin = env::var("ALLOWED_ORIGIN").expect("Allowed origin not set");
-
-    // TODO: Initialize store
-    // Allow bursts with up to five requests per IP address
-    // and replenishes one element every two seconds
-    let governor_conf = GovernorConfigBuilder::default()
-        .per_second(3)
-        .burst_size(30)
-        .key_extractor(middleware::rate_limiter::RealIpKeyExtractor)
-        .use_headers()
-        .finish()
+    let port = (env::var("PORT").expect("Port not set"))
+        .parse::<u16>()
         .unwrap();
 
+    log::info!(
+        "{}",
+        format!("Starting HTTP server at http://{host}:{port}")
+    );
+
+    let allowed_origin = env::var("ALLOWED_ORIGIN").expect("Allowed origin not set");
+    let redis_host = env::var("REDIS_HOST").unwrap_or("localhost".to_string());
+    let redis_port = env::var("REDIS_PORT").unwrap_or("7000".to_string());
+    let redis_client = redis::Client::open(format!("redis://{redis_host}:{redis_port}"))
+        .expect("Cannot build Redis client");
+    let redis_connection_manager = ConnectionManager::new(redis_client)
+        .await
+        .expect("Cannot build Redis connection manager");
+    let backend = middleware::rate_limiter::RedisBackend::builder(redis_connection_manager)
+        .key_prefix(Some("dsc_")) // Add prefix to avoid collisions with other servicse
+        .build();
+
     HttpServer::new(move || {
+        let input = SimpleInputFunctionBuilder::new(Duration::from_secs(5), 25) // 25 requests / 5s
+            .real_ip_key()
+            .build();
+
         App::new()
-            .app_data(web::Data::new(reverse_proxy_ip))
-            .wrap(Governor::new(&governor_conf))
+            .wrap(
+                RateLimiter::builder(backend.clone(), input)
+                    .add_headers()
+                    .build(),
+            )
             .wrap(
                 Cors::default()
                     .allowed_origin(&allowed_origin)
@@ -93,6 +107,7 @@ async fn main() -> io::Result<()> {
             .wrap(Logger::new(
                 "%a %t \"%r\" %s %b \"%{Referer}i\" \"%{User-Agent}i\" %T",
             ))
+            .service(fs::Files::new("/", "./static"))
             .configure(routes::init_routes)
             .default_service(web::route().to(not_found))
     })

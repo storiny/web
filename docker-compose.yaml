@@ -34,22 +34,22 @@ services:
       exit 0;
       "
 
-#  redis:
-#    container_name: "storiny-redis"
-#    image: bitnami/redis
-#    restart: always
-#    environment:
-#      REDIS_AOF_ENABLED: "no"
-#      REDIS_PASSWORD: "redis_local"
-#      REDIS_PORT_NUMBER: 7000
-#      REDIS_ACLFILE: "/opt/bitnami/redis/mounted-etc/users.acl"
-#    ports:
-#      - "7000:7000"
-#    volumes:
-#      - ./docker/tmp/redis:/bitnami/redis/data
-#      - ./docker/redis/overrides.conf:/opt/bitnami/redis/mounted-etc/overrides.conf
-#      - ./docker/redis/users.acl:/opt/bitnami/redis/mounted-etc/users.acl
-#    command: /opt/bitnami/scripts/redis/run.sh --maxmemory 100mb
+  redis:
+    container_name: "storiny-redis"
+    image: bitnami/redis
+    restart: always
+    environment:
+      REDIS_AOF_ENABLED: "no"
+      REDIS_PASSWORD: "redis_local"
+      REDIS_PORT_NUMBER: 7000
+      REDIS_ACLFILE: "/opt/bitnami/redis/mounted-etc/users.acl"
+    ports:
+      - "7000:7000"
+    volumes:
+      - ./docker/tmp/redis:/bitnami/redis/data
+      - ./docker/redis/overrides.conf:/opt/bitnami/redis/mounted-etc/overrides.conf
+      - ./docker/redis/users.acl:/opt/bitnami/redis/mounted-etc/users.acl
+    command: /opt/bitnami/scripts/redis/run.sh --maxmemory 100mb
 #
 #  postgres:
 #    container_name: "storiny-postgres"
