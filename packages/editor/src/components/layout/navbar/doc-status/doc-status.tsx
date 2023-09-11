@@ -10,9 +10,15 @@ import CloudSyncingIcon from "~/icons/CloudSyncing";
 import { DocStatus as TDocStatus, docStatusAtom } from "../../../../atoms";
 import styles from "./doc-status.module.scss";
 
-type DocStatusWithoutConnected = Exclude<TDocStatus, "connected">;
+type DocStatusWithoutConnectedAndOverflow = Exclude<
+  TDocStatus,
+  "connected" | "overloaded"
+>;
 
-const DOC_STATUS_TO_TOOLTIP_MAP: Record<DocStatusWithoutConnected, string> = {
+const DOC_STATUS_TO_TOOLTIP_MAP: Record<
+  DocStatusWithoutConnectedAndOverflow,
+  string
+> = {
   connecting /*  */: "Connecting…",
   reconnecting /**/: "Reconnecting…",
   syncing /*     */: "Syncing…",
@@ -20,7 +26,7 @@ const DOC_STATUS_TO_TOOLTIP_MAP: Record<DocStatusWithoutConnected, string> = {
 };
 
 const DOC_STATUS_TO_ICON_MAP: Record<
-  DocStatusWithoutConnected,
+  DocStatusWithoutConnectedAndOverflow,
   React.ReactElement
 > = {
   connecting /*  */: <CloudIcon />,
@@ -32,7 +38,7 @@ const DOC_STATUS_TO_ICON_MAP: Record<
 const DocStatus = (): React.ReactElement | null => {
   const docStatus = useAtomValue(docStatusAtom);
 
-  if (docStatus === "connected") {
+  if (docStatus === "connected" || docStatus === "overloaded") {
     return null;
   }
 

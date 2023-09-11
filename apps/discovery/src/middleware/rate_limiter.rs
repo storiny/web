@@ -305,10 +305,11 @@ mod tests {
             .await
             .unwrap();
         // In which case nothing should happen
-        assert!(!con
-            .exists::<_, bool>("test_rollback_key_gone")
-            .await
-            .unwrap());
+        assert!(
+            !con.exists::<_, bool>("test_rollback_key_gone")
+                .await
+                .unwrap()
+        );
     }
 
     #[actix_web::test]
@@ -342,15 +343,17 @@ mod tests {
             key: "test_key_prefix".to_string(),
         };
         backend.request(input.clone()).await.unwrap();
-        assert!(con
-            .exists::<_, bool>("prefix:test_key_prefix")
-            .await
-            .unwrap());
+        assert!(
+            con.exists::<_, bool>("prefix:test_key_prefix")
+                .await
+                .unwrap()
+        );
 
         backend.remove_key("test_key_prefix").await.unwrap();
-        assert!(!con
-            .exists::<_, bool>("prefix:test_key_prefix")
-            .await
-            .unwrap());
+        assert!(
+            !con.exists::<_, bool>("prefix:test_key_prefix")
+                .await
+                .unwrap()
+        );
     }
 }
