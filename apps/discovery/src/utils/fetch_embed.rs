@@ -6,10 +6,19 @@ use crate::{
     },
     spec::EmbedResponse,
 };
+use dotenv;
 use hashbrown::HashMap;
+use lazy_static::lazy_static;
 use reqwest::header;
-use std::env;
 use url::Url;
+
+lazy_static! {
+    static ref FB_GRAPH_TOKEN: String = format!(
+        "{}|{}",
+        dotenv::var("OAUTH_FACEBOOK_CLIENT_ID").expect("Facebook client ID is not set"),
+        dotenv::var("OAUTH_FACEBOOK_CLIENT_SECRET",).expect("Facebook client secret is not set")
+    );
+}
 
 /// Request for fetching the oembed data.
 /// See the [oembed specification](https://oembed.com/#section2.2)
@@ -24,15 +33,6 @@ pub struct ConsumerRequest<'a> {
 /// oEmbed client
 #[derive(Clone)]
 pub struct Client(reqwest::Client);
-
-/// Returns the Facebook graph token.
-fn get_facebook_graph_token() -> String {
-    format!(
-        "{}|{}",
-        env::var("OAUTH_FACEBOOK_CLIENT_ID").expect("Facebook client ID is not set"),
-        env::var("OAUTH_FACEBOOK_CLIENT_SECRET").expect("Facebook client secret is not set")
-    )
-}
 
 /// Predicate function for determining endpoints that depend on the Facebook graph API, thus
 /// requiring a Facebook graph token to work.
@@ -57,24 +57,45 @@ impl Client {
         let mut url = Url::parse(endpoint)?;
 
         {
-            let mut query = url.query_pairs_mut();
+            let mut query_map: HashMap<String, String> = HashMap::new();
 
-            query.append_pair("url", request.url);
-            query.append_pair("format", "json");
+            query_map.insert("url".to_string(), request.url.to_string());
+            query_map.insert("format".to_string(), "json".to_string());
 
             // Append Facebook access token
             if is_facebook_graph_dependent(&endpoint.to_string()) {
-                query.append_pair("access_token", &get_facebook_graph_token());
+                query_map.insert("access_token".to_string(), FB_GRAPH_TOKEN.to_string());
             }
 
             // Append custom params
             if let Some(params) = request.params {
+                let primitive_keys = vec!["url", "format", "access_token"];
+
+                // Filter request params
+                let params_not_in_request = url
+                    .query_pairs()
+                    .clone()
+                    .into_iter()
+                    .filter(|(key, _)| {
+                        let cloned_key = key.clone();
+                        !params.contains_key(cloned_key.as_ref())
+                            && !primitive_keys.contains(&cloned_key.as_ref())
+                    })
+                    .collect::<HashMap<_, _>>();
+
+                for (key, value) in params_not_in_request {
+                    query_map.insert(key.to_string(), value.to_string());
+                }
+
                 for (key, value) in params {
-                    query.append_pair(key, value);
+                    query_map.insert(key.to_string(), value.to_string());
                 }
             }
 
-            query.finish();
+            url.query_pairs_mut()
+                .clear()
+                .extend_pairs(query_map)
+                .finish();
         }
 
         Ok(self

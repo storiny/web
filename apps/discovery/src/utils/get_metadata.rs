@@ -4,6 +4,7 @@ use crate::{
         REQUEST_CLIENT,
         USER_AGENT,
     },
+    utils::encode_cdn_url,
 };
 use html5ever::{
     driver::ParseOpts,
@@ -524,8 +525,14 @@ pub async fn get_metadata(
 
             Some(MetadataImage {
                 src: if has_opengraph_image {
-                    process_image_src(&og_image.clone().unwrap().url, &mut url.clone())
-                        .unwrap_or_default()
+                    let src = process_image_src(&og_image.clone().unwrap().url, &mut url.clone())
+                        .unwrap_or_default();
+
+                    if skip_encoding_image {
+                        src
+                    } else {
+                        encode_cdn_url(&src, None)
+                    }
                 } else {
                     process_image_src(&tc_image.clone().unwrap().url, &mut url.clone())
                         .unwrap_or_default()
@@ -560,7 +567,15 @@ pub async fn get_metadata(
             None
         },
         favicon: if doc_metadata.favicon.is_some() {
-            process_image_src(&doc_metadata.favicon.unwrap(), &mut url.clone())
+            if let Some(src) = process_image_src(&doc_metadata.favicon.unwrap(), &mut url.clone()) {
+                if skip_encoding_image {
+                    Some(src)
+                } else {
+                    Some(encode_cdn_url(&src, None))
+                }
+            } else {
+                None
+            }
         } else {
             None
         },
@@ -770,7 +785,7 @@ mod tests {
             .create_async()
             .await;
 
-        let result = get_metadata(&server.url().as_str()).await;
+        let result = get_metadata(&server.url().as_str(), true).await;
 
         assert_eq!(
             result.ok(),
@@ -818,7 +833,7 @@ mod tests {
             .create_async()
             .await;
 
-        let result = get_metadata(&server.url().as_str()).await;
+        let result = get_metadata(&server.url().as_str(), true).await;
 
         assert_eq!(
             result.ok(),

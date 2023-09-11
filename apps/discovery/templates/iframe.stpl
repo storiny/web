@@ -7,16 +7,21 @@
     <meta content="noindex,nofollow" name="robots">
     <style>
       body {
-        margin: 0;
-        padding: 0;
-        border: none;
-        outline: none;
-        background: transparent;
+          margin: 0;
+          padding: 0;
+          border: none;
+          outline: none;
+          background: transparent;
       }
 
       body > div {
-        position: relative;
-        margin: 0;
+          position: relative;
+          margin: 0;
+          padding-bottom: var(--padding-desktop, 0);
+
+          @media (max-width: 648px) {
+              padding-bottom: var(--padding-mobile, var(--padding-desktop, 0));
+          }
       }
 
       iframe {

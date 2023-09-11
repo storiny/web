@@ -7,7 +7,8 @@
   {
     "name": "CodePen",
     "endpoint": "https://codepen.io/api/oembed",
-    "padding": 52.25,
+    "desktop_padding": 52.25,
+    "mobile_padding": 75,
     "schemas": ["codepen.io/*"],
     "supports_binary_theme": true,
     "iframe_params": { "theme-id": "{theme}" }
@@ -18,6 +19,38 @@
     "schemas": ["codesandbox.io/s/*", "codesandbox.io/embed/*"],
     "supports_binary_theme": true,
     "iframe_params": { "codemirror": "1", "theme": "{theme}" }
+  },
+  {
+    "name": "CodeSandbox VM",
+    "schemas": ["codesandbox.io/p/sandbox/*"],
+    "supports_oembed": false,
+    "desktop_padding": 40,
+    "mobile_padding": 75,
+    "iframe_params": { "embed": "1" }
+  },
+  {
+    "name": "StackBlitz",
+    "schemas": ["stackblitz.com/edit/*"],
+    "supports_binary_theme": true,
+    "supports_oembed": false,
+    "desktop_padding": 40,
+    "mobile_padding": 75,
+    "iframe_params": { "ctl": "0", "embed": "1", "theme": "{theme}" }
+  },
+  {
+    "name": "Figma",
+    "embed_endpoint": "https://www.figma.com/embed",
+    "schemas": ["figma.com/file/*", "figma.com/proto/*"],
+    "supports_oembed": false,
+    "desktop_padding": 40,
+    "mobile_padding": 75,
+    "iframe_params": {
+      "embed_host": "storiny",
+      "url": "{url}"
+    },
+    "iframe_attrs": {
+      "allowfullscreen": "true"
+    }
   },
   {
     "name": "Coub",

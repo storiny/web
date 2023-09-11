@@ -44,16 +44,28 @@ where
     }
 }
 
+/// Returns `true`
+fn true_value() -> bool {
+    true
+}
+
 /// Embed provider
 #[derive(Debug, Deserialize)]
 pub struct Provider {
     /// Name of the provider
     pub name: &'static str,
-    /// Provider oEmbed enpoint
-    pub endpoint: &'static str,
-    /// Optional aspect ratio padding for the embed node
+    /// Provider oembed enpoint
     #[serde(default)]
-    pub padding: Option<f64>,
+    pub endpoint: &'static str,
+    /// Provider raw embed enpoint (providers that supports embedding using a dedicated endpoint)
+    #[serde(default)]
+    pub embed_endpoint: Option<&'static str>,
+    /// Optional aspect ratio padding for the embed node (desktop viewport)
+    #[serde(default)]
+    pub desktop_padding: Option<f64>,
+    /// Optional aspect ratio padding for the embed node (mobile viewport)
+    #[serde(default)]
+    pub mobile_padding: Option<f64>,
     /// Schema patterns
     pub schemas: Vec<String>,
     /// Schema matchers
@@ -63,7 +75,14 @@ pub struct Provider {
     /// both `light` and `dark` modes
     #[serde(default)]
     pub supports_binary_theme: bool,
+    /// Boolean flag indicating whether the provider supports
+    /// the oembed spec
+    #[serde(default = "true_value")]
+    pub supports_oembed: bool,
     /// DOM attributes for the embed iframe element
+    #[serde(default)]
+    pub iframe_attrs: Option<HashMap<&'static str, &'static str>>,
+    /// Iframe source query params for the embed iframe element
     #[serde(default)]
     pub iframe_params: Option<HashMap<&'static str, &'static str>>,
     /// Optional key-value pairs to append to the provider endpoint URL

@@ -107,8 +107,8 @@ async fn main() -> io::Result<()> {
             .wrap(Logger::new(
                 "%a %t \"%r\" %s %b \"%{Referer}i\" \"%{User-Agent}i\" %T",
             ))
-            .service(fs::Files::new("/", "./static"))
             .configure(routes::init_routes)
+            .service(fs::Files::new("/", "./static"))
             .default_service(web::route().to(not_found))
     })
     .bind((host, port))?
