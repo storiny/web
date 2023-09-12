@@ -72,6 +72,8 @@ pub struct MetadataResult {
     image: Option<MetadataImage>,
     /// Favicon object relevant to this object
     favicon: Option<String>,
+    /// Type of the embed result
+    embed_type: String,
 }
 
 /// Opengraph image object.
@@ -502,6 +504,7 @@ pub async fn get_metadata(
     let has_twitter_card_image = doc_metadata.twitter_card.image.is_some();
 
     Ok(MetadataResult {
+        embed_type: "metadata".to_string(),
         title: doc_metadata.title.unwrap_or(
             doc_metadata
                 .opengraph
@@ -790,6 +793,7 @@ mod tests {
         assert_eq!(
             result.ok(),
             Some(MetadataResult {
+                embed_type: "metadata".to_string(),
                 title: "Some title".to_string(),
                 host: "Some site".to_string(),
                 url: format!("{}/", server.url().to_string()),
@@ -838,6 +842,7 @@ mod tests {
         assert_eq!(
             result.ok(),
             Some(MetadataResult {
+                embed_type: "metadata".to_string(),
                 title: "Some title".to_string(),
                 host: server.host_with_port().split(":").collect::<Vec<_>>()[0].to_string(),
                 url: format!("{}/", server.url().to_string()),

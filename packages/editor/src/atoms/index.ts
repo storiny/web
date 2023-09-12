@@ -6,6 +6,7 @@ export * from "./enable-tk";
 export * from "./history";
 export * from "./indentation";
 export * from "./is-caption-selection";
+export * from "./overflowing-figures";
 export * from "./sidebars-collapsed";
 export * from "./text-style";
 export * from "./toc-disabled";

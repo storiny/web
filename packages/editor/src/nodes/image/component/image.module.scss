@@ -1,38 +1,8 @@
-@use "../../../../../ui/src/theme/breakpoints" as breakpoints;
-
-$banner-gradient: linear-gradient(
-  to var(--grad-dir),
-  hsl(var(--grad)) 5%,
-  hsla(var(--grad) / 98.7%) 13.1%,
-  hsla(var(--grad) / 95.1%) 20.5%,
-  hsla(var(--grad) / 89.6%) 27.5%,
-  hsla(var(--grad) / 82.5%) 34%,
-  hsla(var(--grad) / 74.1%) 39.3%,
-  hsla(var(--grad) / 64.8%) 46.2%,
-  hsla(var(--grad) / 55%) 53.1%,
-  hsla(var(--grad) / 45%) 57.9%,
-  hsla(var(--grad) / 35.2%) 63.8%,
-  hsla(var(--grad) / 25.9%) 69.7%,
-  hsla(var(--grad) / 17.5%) 76%,
-  hsla(var(--grad) / 10.4%) 82.5%,
-  hsla(var(--grad) / 4.9%) 89.5%,
-  hsla(var(--grad) / 1.3%) 96.9%,
-  hsla(var(--grad) / 0%) 100%
-);
-
-@at-root html[data-theme="dark"] {
-  .left-banner,
-  .right-banner {
-    &::before,
-    &::after {
-      --grad: 223deg 12% 12%;
-    }
-  }
-}
+@use "breakpoints" as breakpoints;
 
 /* Base styles */
 .image {
-  display: inline-block;
+  display: block;
   position: relative;
   user-select: none;
   max-width: 100%;
@@ -109,9 +79,9 @@ $banner-gradient: linear-gradient(
   /* Stretch over the entire screen for layouts other than `fit` */
   &:not([data-layout="fit"]) {
     @include breakpoints.media("<desktop") {
-      width: 100vw;
-      margin-inline: 0;
-      grid-column: unset;
+      width: 100vw !important;
+      margin-inline: 0 !important;
+      grid-column: unset !important;
     }
   }
 }
@@ -165,82 +135,6 @@ $banner-gradient: linear-gradient(
         ); // Drop shadow for images with transparent background
       }
     }
-  }
-}
-
-/* Banners */
-.left-banner,
-.right-banner {
-  position: absolute;
-  top: 0;
-  height: 100%;
-  width: 100%;
-  pointer-events: none;
-  box-shadow: 0 0 0 1px var(--divider);
-
-  &[data-visible="true"] {
-    &::before,
-    &::after {
-      opacity: 1;
-    }
-  }
-
-  &::before,
-  &::after {
-    --grad: 0deg 0% 96%; // Light
-    --grad-size: 100vh;
-
-    content: "";
-    position: absolute;
-    height: var(--grad-size);
-    width: calc(100% + 64px); // Extra width to cover sidebar collapse animation
-    opacity: 0;
-    background-image: $banner-gradient;
-    transition: opacity 250ms ease-out;
-  }
-
-  &::before {
-    --grad-dir: top;
-
-    top: calc(-1 * calc(var(--grad-size) + 1px));
-  }
-
-  &::after {
-    --grad-dir: bottom;
-
-    bottom: calc(-1 * calc(var(--grad-size) + 1px));
-  }
-
-  @include breakpoints.media("<desktop") {
-    display: none;
-  }
-}
-
-/* Left banner */
-.left-banner {
-  grid-column: 2 / 5; // Overflow
-
-  &[data-layout="screen-width"] {
-    grid-column: 1 / 5;
-  }
-
-  &::before,
-  &::after {
-    left: -65px;
-  }
-}
-
-/* Right banner */
-.right-banner {
-  grid-column: 11 / -2; // Overflow
-
-  &[data-layout="screen-width"] {
-    grid-column: 11 / -1;
-  }
-
-  &::before,
-  &::after {
-    right: -65px;
   }
 }
 

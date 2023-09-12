@@ -140,7 +140,7 @@ mod tests {
         let mock = server
             .mock("GET", "/?url=https%3A%2F%2Fexample.com&format=json")
             .with_status(200)
-            .with_body(r#"{"version": "1.0", "type": "link"}"#)
+            .with_body(r#"{"type": "link"}"#)
             .with_header("content-type", "application/json")
             .create_async()
             .await;
@@ -158,15 +158,7 @@ mod tests {
             result.ok(),
             Some(EmbedResponse {
                 oembed_type: crate::spec::EmbedType::Link,
-                version: "1.0".to_string(),
                 title: None,
-                author_name: None,
-                author_url: None,
-                provider_name: None,
-                provider_url: None,
-                thumbnail_url: None,
-                thumbnail_width: None,
-                thumbnail_height: None,
                 extra: HashMap::default(),
             })
         );
@@ -175,7 +167,7 @@ mod tests {
     }
 
     #[actix_web::test]
-    async fn test_fetch_error() {
+    async fn can_throw_fetch_error() {
         let mut server = Server::new_async().await;
 
         let mock = server

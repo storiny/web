@@ -1,25 +1,44 @@
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
+import { useLexicalNodeSelection } from "@lexical/react/useLexicalNodeSelection";
+import { mergeRegister } from "@lexical/utils";
+import SuspenseLoader from "@storiny/web/src/common/suspense-loader";
 import { clsx } from "clsx";
-import { NodeKey } from "lexical";
+import { useSetAtom } from "jotai";
+import {
+  $getNodeByKey,
+  $getSelection,
+  $isNodeSelection,
+  CLICK_COMMAND,
+  COMMAND_PRIORITY_LOW,
+  GridSelection,
+  NodeKey,
+  NodeSelection,
+  RangeSelection
+} from "lexical";
+import dynamic from "next/dynamic";
 import React from "react";
+import { useHotkeys } from "react-hotkeys-hook";
 import { useIntersectionObserver } from "react-intersection-observer-hook";
 import useResizeObserver from "use-resize-observer";
 
 import Popover from "~/components/Popover";
+import Spinner from "~/components/Spinner";
+import Typography from "~/components/Typography";
 import { selectTheme } from "~/redux/features";
 import { useAppSelector } from "~/redux/hooks";
 
-import { Block } from "../../block";
-import { EmbedNodeLayout } from "../embed";
+import { overflowingFiguresAtom } from "../../../atoms";
+import figureStyles from "../../common/figure.module.scss";
+import { $isEmbedNode, EmbedNodeLayout } from "../embed";
 import styles from "./embed.module.scss";
 
-// const ImageNodeControls = dynamic(() => import("./node-controls"), {
-//   loading: () => (
-//     <div className={"flex-center"} style={{ padding: "24px 48px" }}>
-//       <Spinner />
-//     </div>
-//   )
-// });
+const EmbedNodeControls = dynamic(() => import("./node-controls"), {
+  loading: () => (
+    <div className={"flex-center"} style={{ padding: "12px 24px" }}>
+      <Spinner />
+    </div>
+  )
+});
 
 const DATA_REGEX =
   /<script type="application\/storiny\.embed\.(rich|photo)\+json">(.+)<\/script>/i;
@@ -50,29 +69,71 @@ const EmbedComponent = ({
 }): React.ReactElement | null => {
   const theme = useAppSelector(selectTheme);
   const [editor] = useLexicalComposerContext();
-  const containerRef = React.useRef<HTMLDivElement | null>(null);
-  const previousUrlRef = React.useRef<string>("");
-  const { height: containerHeight, ref: resizeObserverRef } =
-    useResizeObserver();
-  const [ref, { entry }] = useIntersectionObserver({
-    rootMargin: "-52px 0px 0px 0px"
-  });
+  const setOverflowingFigures = useSetAtom(overflowingFiguresAtom);
   const [loading, setLoading] = React.useState<boolean>(true);
   const [error, setError] = React.useState<boolean>(false);
+  const containerRef = React.useRef<HTMLDivElement | null>(null);
+  const contentRef = React.useRef<HTMLDivElement | null>(null);
+  const supportsBinaryThemeRef = React.useRef<boolean>(false);
+  const prevDataRef = React.useRef<{ theme: string; url: string }>({
+    url: "",
+    theme: ""
+  });
+  const [selected, setSelected, clearSelection] =
+    useLexicalNodeSelection(nodeKey);
+  const [selection, setSelection] = React.useState<
+    RangeSelection | NodeSelection | GridSelection | null
+  >(null);
+  const { height: containerHeight, ref: resizeObserverRef } =
+    useResizeObserver();
+  const [intersectionObserverRef, { entry }] = useIntersectionObserver({
+    rootMargin: "-52px 0px 0px 0px"
+  });
+  useHotkeys(
+    "backspace,delete",
+    (event) => {
+      if (selected && $isNodeSelection(selection)) {
+        event.preventDefault();
+        setSelected(false);
+
+        editor.update(() => {
+          const node = $getNodeByKey(nodeKey);
+          if ($isEmbedNode(node)) {
+            node.remove();
+          }
+        });
+      }
+    },
+    { enableOnContentEditable: true }
+  );
   const editable = editor.isEditable();
   const visible = Boolean(entry && entry.isIntersecting);
 
+  /**
+   * Generates the embed
+   */
   const generateEmbed = React.useCallback(() => {
-    const embedUrl = `${
-      process.env.NEXT_PUBLIC_DISCOVERY_URL
-    }/embed/${url}?theme=${theme === "system" ? parseSystemTheme() : theme}`;
+    const parsedTheme = theme === "system" ? parseSystemTheme() : theme;
+    const embedUrl = `${process.env.NEXT_PUBLIC_DISCOVERY_URL}/embed/${url}?theme=${parsedTheme}`;
 
     fetch(embedUrl)
       .then(async (response) => {
-        let data;
+        if (!response.ok) {
+          setError(true);
+          return;
+        }
+
+        if (!contentRef.current) {
+          return;
+        }
 
         try {
-          data = await response.clone().json();
+          // Embed with script sourcse
+          const data = (await response.clone().json()) as {
+            html: string;
+            sources: string[];
+            supports_binary_theme: boolean;
+          };
 
           if (data.sources) {
             for (const source of data.sources) {
@@ -81,14 +142,16 @@ const EmbedComponent = ({
               script.async = true;
 
               document.body.appendChild(script);
-              script.onerror = (): void => setError(true);
             }
           }
 
-          if (data?.html) {
-            containerRef.current!.innerHTML = data.html;
+          if (data.html) {
+            contentRef.current.innerHTML = data.html;
           }
-        } catch (e) {
+
+          supportsBinaryThemeRef.current = Boolean(data.supports_binary_theme);
+        } catch {
+          // Embeds with iframe
           try {
             const html = await response.clone().text();
             const dataMatch = html.match(DATA_REGEX);
@@ -96,13 +159,43 @@ const EmbedComponent = ({
             if (dataMatch?.length) {
               try {
                 const embedData = JSON.parse(dataMatch[2]);
-                containerRef.current!.setAttribute("style", embedData.styles);
-              } catch (e) {
+                const style =
+                  embedData.height && embedData.width
+                    ? `--padding-desktop:${(
+                        (embedData.height / embedData.width) *
+                        100
+                      ).toFixed(2)}%`
+                    : embedData.styles || "";
+
+                contentRef.current.setAttribute("style", style);
+
+                if (typeof embedData.supports_binary_theme !== "undefined") {
+                  supportsBinaryThemeRef.current = Boolean(
+                    embedData.supports_binary_theme
+                  );
+                }
+              } catch {
                 setError(true);
               }
             }
 
-            containerRef.current!.innerHTML = `<iframe frameborder="0" style="position:absolute;width:100%;height:100%;top:0;left:0;" src=${embedUrl}></iframe>`;
+            contentRef.current.innerHTML = `
+              <iframe
+                loading="lazy"
+                style="${Object.entries({
+                  "color-scheme": parsedTheme,
+                  border: "none",
+                  outline: "none",
+                  position: "absolute",
+                  width: "100%",
+                  height: "100%",
+                  top: 0,
+                  left: 0,
+                  background: "var(--bg-body)"
+                })
+                  .map(([key, value]) => `${key}:${value}`)
+                  .join(";")}" 
+                src="${embedUrl}"></iframe>`;
           } catch {
             setError(true);
           }
@@ -110,33 +203,95 @@ const EmbedComponent = ({
       })
       .catch(() => setError(true))
       .finally(() => setLoading(false));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [url, theme]);
+  }, [theme, url]);
 
   React.useEffect(() => {
-    if (url !== previousUrlRef.current) {
+    if (
+      url !== prevDataRef.current.url ||
+      (theme !== prevDataRef.current.theme && supportsBinaryThemeRef.current)
+    ) {
       setLoading(true);
       generateEmbed();
-      previousUrlRef.current = url;
+      prevDataRef.current = {
+        url,
+        theme
+      };
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [generateEmbed, url]);
+  }, [generateEmbed, url, theme]);
+
+  React.useEffect(() => {
+    let isMounted = true;
+
+    const unregister = mergeRegister(
+      editor.registerUpdateListener(({ editorState }) => {
+        if (isMounted) {
+          setSelection(editorState.read($getSelection));
+        }
+      }),
+      editor.registerCommand<MouseEvent>(
+        CLICK_COMMAND,
+        (event) => {
+          if (event.target === containerRef.current) {
+            if (event.shiftKey) {
+              setSelected(!selected);
+            } else {
+              clearSelection();
+              setSelected(true);
+            }
+
+            return true;
+          }
+
+          return false;
+        },
+        COMMAND_PRIORITY_LOW
+      )
+    );
+
+    return () => {
+      isMounted = false;
+      unregister();
+    };
+  }, [clearSelection, editor, nodeKey, selected, setSelected]);
+
+  React.useEffect(() => {
+    setOverflowingFigures((prev) => {
+      if (visible && layout === "overflow") {
+        prev.add(nodeKey);
+      } else {
+        prev.delete(nodeKey);
+      }
+
+      return new Set(prev);
+    });
+
+    return () => {
+      setOverflowingFigures((prev) => {
+        prev.delete(nodeKey);
+        return new Set(prev);
+      });
+    };
+  }, [layout, nodeKey, setOverflowingFigures, visible]);
+
+  React.useImperativeHandle(resizeObserverRef, () => containerRef.current!);
 
   return (
-    <Block className={styles.image} nodeKey={nodeKey} ref={ref}>
+    <div className={styles.embed} ref={intersectionObserverRef}>
       <div
         className={clsx(
           styles.container,
-          // Grid for overflowing the image
+          editable && styles.editable,
+          selected && styles.selected,
+          // Grid for overflowing the embed
           ["grid", "dashboard", "no-sidenav"]
         )}
         data-layout={layout}
-        ref={resizeObserverRef}
+        ref={containerRef}
       >
         {layout === "overflow" && (
           <span
             aria-hidden
-            className={styles["left-banner"]}
+            className={figureStyles["left-banner"]}
             data-layout={layout}
             data-visible={String(visible)}
           />
@@ -144,11 +299,11 @@ const EmbedComponent = ({
         <Popover
           className={clsx("flex-center", "flex-col", styles.x, styles.popover)}
           onOpenChange={(newOpen): void => {
-            // if (!newOpen && !resizing) {
-            //   setSelected(false);
-            // }
+            if (!newOpen) {
+              setSelected(false);
+            }
           }}
-          // open={editable && focused && !resizing && $isNodeSelection(selection)}
+          open={editable && selected && $isNodeSelection(selection)}
           slotProps={{
             content: {
               collisionPadding: { top: 64 }, // Prevent header collision
@@ -156,18 +311,35 @@ const EmbedComponent = ({
               side: "top"
             }
           }}
-          trigger={<div ref={containerRef} />}
+          trigger={
+            error ? (
+              <div
+                className={clsx("flex-center", styles.content, styles.error)}
+                data-layout={layout}
+              >
+                <Typography
+                  className={clsx("t-center", "t-minor")}
+                  level={"body2"}
+                >
+                  Embed unavailable
+                </Typography>
+              </div>
+            ) : (
+              <div
+                className={clsx("flex-center", styles.content)}
+                data-layout={layout}
+                data-loading={String(loading)}
+                ref={contentRef}
+              />
+            )
+          }
         >
-          {/*<ImageNodeControls*/}
-          {/*  images={images}*/}
-          {/*  layout={layout}*/}
-          {/*  nodeKey={nodeKey}*/}
-          {/*/>*/}
+          <EmbedNodeControls layout={layout} nodeKey={nodeKey} />
         </Popover>
         {layout === "overflow" && (
           <span
             aria-hidden
-            className={styles["right-banner"]}
+            className={figureStyles["right-banner"]}
             data-layout={layout}
             data-visible={String(visible)}
           />
@@ -180,7 +352,7 @@ const EmbedComponent = ({
           height: containerHeight
         }}
       />
-    </Block>
+    </div>
   );
 };
 

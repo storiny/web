@@ -1,18 +1,14 @@
 import { NodeKey } from "lexical";
 
-import { ImageItem, ImageNodeLayout } from "../../embed";
+import { EmbedNodeLayout } from "../../embed";
 
-export interface ImageNodeControlsProps {
+export interface EmbedNodeControlsProps {
   /**
-   * Image items
+   * Embed node layout
    */
-  images: ImageItem[];
+  layout: EmbedNodeLayout;
   /**
-   * Image node layout
-   */
-  layout: ImageNodeLayout;
-  /**
-   * Image node key
+   * Embed node key
    */
   nodeKey: NodeKey;
 }

@@ -1,7 +1,6 @@
 use hashbrown::HashMap;
 use regex::Regex;
 use serde::{
-    de,
     Deserialize,
     Deserializer,
     Serialize,
@@ -24,20 +23,17 @@ where
                 if parsed <= u16::MAX as u64 {
                     Ok(Some(parsed as u16))
                 } else {
-                    Err(de::Error::custom(format!(
-                        "Value {} is out of range for u16",
-                        parsed
-                    )))
+                    Ok(None)
                 }
             } else {
-                Err(de::Error::custom("Failed to convert number to u16"))
+                Ok(None)
             }
         }
         Value::String(s) => {
             if let Ok(parsed) = s.parse::<u16>() {
                 Ok(Some(parsed))
             } else {
-                Err(de::Error::custom("Failed to parse string as u16"))
+                Ok(None)
             }
         }
         _ => Ok(None),
@@ -165,20 +161,7 @@ pub struct Rich {
 pub struct EmbedResponse {
     #[serde(flatten)]
     pub oembed_type: EmbedType,
-    #[serde(default)]
-    pub version: String,
     pub title: Option<String>,
-    pub author_name: Option<String>,
-    pub author_url: Option<String>,
-    pub provider_name: Option<String>,
-    pub provider_url: Option<String>,
-    pub thumbnail_url: Option<String>,
-    #[serde(default)]
-    #[serde(deserialize_with = "deserialize_u16_from_maybe_string")]
-    pub thumbnail_width: Option<u16>,
-    #[serde(default)]
-    #[serde(deserialize_with = "deserialize_u16_from_maybe_string")]
-    pub thumbnail_height: Option<u16>,
     #[serde(flatten)]
     pub extra: HashMap<String, Value>,
 }

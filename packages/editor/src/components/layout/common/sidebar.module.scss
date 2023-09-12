@@ -1,0 +1,26 @@
+.x {
+  /* Sidebar content */
+  &.content {
+    position: relative;
+
+    &::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 100%;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 240ms ease;
+      background-color: var(--bg-elevation-xs);
+    }
+
+    &[data-hidden="true"] {
+      &::after {
+        opacity: 1;
+        pointer-events: auto;
+      }
+    }
+  }
+}
