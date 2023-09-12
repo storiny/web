@@ -7,8 +7,13 @@ import React from "react";
 
 import Divider from "~/components/Divider";
 
-import { docStatusAtom, sidebarsCollapsedAtom } from "../../../../atoms";
+import {
+  docStatusAtom,
+  overflowingFiguresAtom,
+  sidebarsCollapsedAtom
+} from "../../../../atoms";
 import { springConfig } from "../../../../constants";
+import commonStyles from "../../common/sidebar.module.scss";
 import styles from "../right-sidebar.module.scss";
 import Alignment from "./alignment";
 import Appearance from "./appearance";
@@ -21,6 +26,7 @@ import TextStyle from "./text-style";
 const SuspendedEditorRightSidebarContent = (): React.ReactElement | null => {
   const isCollapsed = useAtomValue(sidebarsCollapsedAtom);
   const docStatus = useAtomValue(docStatusAtom);
+  const overflowingFigures = useAtomValue(overflowingFiguresAtom);
   const transitions = useTransition(!isCollapsed, {
     from: { opacity: 0, transform: "translate3d(10%,0,0) scale(0.97)" },
     enter: { opacity: 1, transform: "translate3d(0%,0,0) scale(1)" },
@@ -37,7 +43,14 @@ const SuspendedEditorRightSidebarContent = (): React.ReactElement | null => {
     item ? (
       <animated.div
         aria-busy={documentLoading}
-        className={clsx("flex-col", styles.x, styles.content)}
+        className={clsx(
+          "flex-col",
+          styles.x,
+          styles.content,
+          commonStyles.x,
+          commonStyles.content
+        )}
+        data-hidden={String(Boolean(overflowingFigures.size))}
         style={{
           ...style,
           pointerEvents: documentLoading ? "none" : "auto"
@@ -59,7 +72,6 @@ const SuspendedEditorRightSidebarContent = (): React.ReactElement | null => {
         <div
           style={{
             width: "5px",
-            //    height: `calc(100vh - ${hei}px)`,
             background: "red",
             marginRight: "-64px"
           }}

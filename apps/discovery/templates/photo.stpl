@@ -1,18 +1,33 @@
 <!DOCTYPE html>
-<html lang="en">
+<html data-theme="<%= theme %>" lang="en">
 <head>
     <meta charset="utf-8">
     <title><%= title %></title>
     <meta content="initial-scale=1,width=device-width,shrink-to-fit=no" name="viewport">
     <meta content="noindex,nofollow" name="robots">
     <style>
-      body {
-        margin: 0;
-        padding: 0;
-        border: none;
-        outline: none;
-        background: transparent;
-      }
+        html,
+        body {
+            color-scheme: <%= theme %>;
+            background: hsl(0deg 0% 98%);
+        }
+
+        html[data-theme="dark"],
+        html[data-theme="dark"] body {
+            background: hsl(214deg 8% 10%);
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            border: none;
+            outline: none;
+        }
+
+        img {
+            width: 100%;
+            height: 100%;
+        }
     </style>
 </head>
 <body dir="ltr">

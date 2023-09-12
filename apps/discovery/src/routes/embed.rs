@@ -93,6 +93,7 @@ async fn get(
 
     if let Ok(url) = &mut decompressed_url {
         if let Some(provider) = resolve_provider(&url.to_string()) {
+            let theme = query.theme.clone().unwrap_or("light".to_string());
             let padding_styles = format!(
                 "{}{}",
                 if provider.desktop_padding.is_some() {
@@ -109,7 +110,6 @@ async fn get(
 
             if provider.supports_oembed {
                 let response = if let Some(origin_params) = &provider.origin_params {
-                    let theme = query.theme.clone().unwrap_or("light".to_string());
                     let mut origin_params_cloned = origin_params.clone(); // Extra params for the provider
 
                     // Replace theme placeholders
@@ -144,13 +144,11 @@ async fn get(
                             EmbedType::Photo(photo_json) => {
                                 // Handle photo response
                                 let photo_html = format!(
-                                    r#"<img src="{}" alt="{}" width="{}" height="{}" loading="lazy">"#,
+                                    r#"<img src="{}" alt="{}" loading="lazy">"#,
                                     photo_json.url,
                                     json.title.clone().unwrap_or("".to_string()),
-                                    photo_json.width.unwrap_or(0),
-                                    photo_json.height.unwrap_or(0)
                                 )
-                                    .to_string();
+                                .to_string();
 
                                 let title = json.title.unwrap_or("".to_string());
                                 let embed_data = serde_json::to_string(&PhotoEmbedData {
@@ -163,6 +161,7 @@ async fn get(
 
                                 HttpResponse::Ok().content_type(ContentType::html()).body(
                                     PhotoTemplate {
+                                        theme,
                                         photo_html,
                                         title,
                                         embed_data,
@@ -176,7 +175,34 @@ async fn get(
                                 respond_with_metadata(&url.to_string()).await
                             }
                             EmbedType::Video(_) | EmbedType::Rich(_) => {
-                                match parse_html(&json, &provider.iframe_params) {
+                                let theme_str = theme.clone().to_string();
+                                let iframe_params = {
+                                    if let Some(iframe_params) = &provider.iframe_params {
+                                        let mut iframe_params_cloned = iframe_params.clone(); // Extra params for the iframe
+
+                                        if provider.supports_binary_theme {
+                                            iframe_params_cloned.iter_mut().for_each(
+                                                |(_, value)| {
+                                                    // Replace theme placeholders
+                                                    if *value == "{theme}" {
+                                                        *value = &theme_str;
+                                                    }
+                                                },
+                                            );
+                                        }
+
+                                        Some(iframe_params_cloned)
+                                    } else {
+                                        None
+                                    }
+                                };
+
+                                match parse_html(
+                                    &json,
+                                    &iframe_params,
+                                    &provider.iframe_attrs,
+                                    &provider.supports_binary_theme,
+                                ) {
                                     None => HttpResponse::Ok()
                                         .content_type(ContentType::json())
                                         .json(&json),
@@ -188,6 +214,7 @@ async fn get(
                                                     .content_type(ContentType::html())
                                                     .body(
                                                         IframeTemplate {
+                                                            theme,
                                                             iframe_html: result.iframe_html,
                                                             title: result.title,
                                                             wrapper_styles: result
@@ -251,7 +278,6 @@ async fn get(
 
                 // Append params
                 if let Some(iframe_params) = &provider.iframe_params {
-                    let theme = query.theme.clone().unwrap_or("light".to_string());
                     let url_cloned = url.clone();
                     let mut iframe_params_cloned = iframe_params.clone(); // Extra params for the iframe
 
@@ -292,6 +318,7 @@ async fn get(
 
                 HttpResponse::Ok().content_type(ContentType::html()).body(
                     IframeTemplate {
+                        theme,
                         iframe_html: format!(
                             r#"
                                 <iframe

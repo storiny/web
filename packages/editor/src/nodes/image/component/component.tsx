@@ -3,6 +3,7 @@ import { useLexicalNodeSelection } from "@lexical/react/useLexicalNodeSelection"
 import { mergeRegister } from "@lexical/utils";
 import { ImageSize } from "@storiny/shared";
 import { clsx } from "clsx";
+import { useSetAtom } from "jotai/index";
 import {
   $getNodeByKey,
   $getSelection,
@@ -30,6 +31,8 @@ import TrashIcon from "~/icons/Trash";
 import { breakpoints } from "~/theme/breakpoints";
 import { getCdnUrl } from "~/utils/getCdnUrl";
 
+import { overflowingFiguresAtom } from "../../../atoms";
+import figureStyles from "../../common/figure.module.scss";
 import { $isImageNode, ImageItem, ImageNodeLayout } from "../image";
 import styles from "./image.module.scss";
 import ImageResizer from "./resizer";
@@ -103,6 +106,7 @@ const ImageComponent = ({
   const [selection, setSelection] = React.useState<
     RangeSelection | NodeSelection | GridSelection | null
   >(null);
+  const setOverflowingFigures = useSetAtom(overflowingFiguresAtom);
   const { height: containerHeight, ref: containerRef } = useResizeObserver();
   const [ref, { entry }] = useIntersectionObserver({
     rootMargin: "-52px 0px 0px 0px"
@@ -226,6 +230,25 @@ const ImageComponent = ({
     };
   }, [clearSelection, editor, resizing, selected, setSelected]);
 
+  React.useEffect(() => {
+    setOverflowingFigures((prev) => {
+      if (visible && ["overflow", "screen-width"].includes(layout)) {
+        prev.add(nodeKey);
+      } else {
+        prev.delete(nodeKey);
+      }
+
+      return new Set(prev);
+    });
+
+    return () => {
+      setOverflowingFigures((prev) => {
+        prev.delete(nodeKey);
+        return new Set(prev);
+      });
+    };
+  }, [layout, nodeKey, setOverflowingFigures, visible]);
+
   return (
     <div className={styles.image} ref={ref}>
       <div
@@ -242,7 +265,7 @@ const ImageComponent = ({
         {["overflow", "screen-width"].includes(layout) && (
           <span
             aria-hidden
-            className={styles["left-banner"]}
+            className={figureStyles["left-banner"]}
             data-layout={layout}
             data-visible={String(visible)}
           />
@@ -332,7 +355,7 @@ const ImageComponent = ({
         {["overflow", "screen-width"].includes(layout) && (
           <span
             aria-hidden
-            className={styles["right-banner"]}
+            className={figureStyles["right-banner"]}
             data-layout={layout}
             data-visible={String(visible)}
           />

@@ -41,6 +41,7 @@ pub struct IframeTemplate {
     wrapper_styles: String,
     title: String,
     embed_data: String,
+    theme: String,
 }
 
 /// Photo embed template
@@ -50,6 +51,7 @@ pub struct PhotoTemplate {
     photo_html: String,
     title: String,
     embed_data: String,
+    theme: String,
 }
 
 /// 404 response

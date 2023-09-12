@@ -7,19 +7,14 @@ edition = "2021"
 actix-cors = "0.6.4"
 actix-extensible-rate-limit = { version = "0.2.1", features = ["redis"] }
 actix-files = "0.6.2"
-actix-governor = "0.4.1"
 actix-http = "3.4.0"
-actix-limitation = "0.4.0"
-actix-session = "0.7.2"
 actix-web = "4.4.0"
 async-trait = "0.1.73"
-crypto = "0.5.1"
 derive_more = "0.99.17"
 dotenv = "0.15.0"
 env_logger = "0.10.0"
 hashbrown = { version = "0.14.0", features = ["serde"] }
 hex = "0.4.3"
-hex-literal = "0.4.1"
 hmac = "0.12.1"
 html5ever = "0.26.0"
 lazy_static = "1.4.0"
@@ -38,7 +33,7 @@ sha1 = "0.10.5"
 thiserror = "1.0.48"
 tokio = "1.32.0"
 url = "2.4.1"
-visdom = { version = "0.5.10", features = ["insertion", "destory"] }
+visdom = { version = "1.0.0", features = ["insertion", "destroy"] }
 
 [dev-dependencies]
 just = "1.14.0"

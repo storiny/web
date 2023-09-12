@@ -106,8 +106,6 @@ export const Block = React.forwardRef<
     useLexicalNodeSelection(nodeKey);
   const ref = React.useRef<HTMLDivElement | null>(null);
 
-  React.useImperativeHandle(refProp, () => ref.current!);
-
   /**
    * Deletes the node
    */
@@ -162,6 +160,8 @@ export const Block = React.forwardRef<
       ),
     [clearSelection, editor, isSelected, nodeKey, onDelete, setSelected]
   );
+
+  React.useImperativeHandle(refProp, () => ref.current!);
 
   return (
     <div {...rest} ref={ref}>

@@ -39,6 +39,10 @@ pub struct ScriptResult {
     pub html: String,
     /// A list of script sources.
     pub sources: Vec<String>,
+    /// Type of the embed
+    pub embed_type: String,
+    /// Binary theme flag
+    pub supports_binary_theme: bool,
 }
 
 /// Represents the result of parsing the response.
@@ -57,12 +61,16 @@ pub enum ParseResult {
 /// * `height_prop` - Height value
 /// * `title_prop` - Embed title value
 /// * `iframe_params` - Optional extra iframe params (appended to the iframe src)
+/// * `iframe_attrs` - Optional iframe attributes
+/// * `supports_binary_theme` - Binary theme flag
 fn parse_response_impl(
     html: &str,
     width_prop: &Option<u16>,
     height_prop: &Option<u16>,
     title_prop: &Option<String>,
     iframe_params: &Option<HashMap<&str, &str>>,
+    iframe_attrs: &Option<HashMap<&str, &str>>,
+    supports_binary_theme: &bool,
 ) -> Option<ParseResult> {
     let mut width = width_prop.unwrap_or(DEFAULT_WIDTH);
     let mut height = height_prop.unwrap_or(DEFAULT_HEIGHT);
@@ -110,6 +118,12 @@ fn parse_response_impl(
         iframe.remove_attr("height");
         iframe.remove_attr("style");
 
+        if let Some(iframe_attrs) = iframe_attrs {
+            for (key, value) in iframe_attrs.clone() {
+                iframe.set_attr(key, Some(value));
+            }
+        }
+
         // Replace the wrapper with the iframe element
         if has_wrapper {
             wrapper.replace_with(&mut iframe);
@@ -121,7 +135,7 @@ fn parse_response_impl(
                 style_attr
             } else if has_fixed_size {
                 format!(
-                    "padding-bottom:{:.2}%",
+                    "--padding-desktop:{:.2}%",
                     (height as f32 / width as f32) * 100.0
                 )
             } else {
@@ -156,6 +170,8 @@ fn parse_response_impl(
         scripts.remove();
 
         Some(ParseResult::ScriptResult(ScriptResult {
+            embed_type: "sourced_oembed".to_string(),
+            supports_binary_theme: supports_binary_theme.clone(),
             html: root.outer_html(),
             sources,
         }))
@@ -166,9 +182,13 @@ fn parse_response_impl(
 ///
 /// * `response` - Provider response
 /// * `iframe_params` - Optional extra iframe params
+/// * `iframe_attrs` - Optional iframe attributes
+/// * `supports_binary_theme` - Boolean flag indicating whether the provider supports binary theme
 pub fn parse_html(
     response: &EmbedResponse,
     iframe_params: &Option<HashMap<&str, &str>>,
+    iframe_attrs: &Option<HashMap<&str, &str>>,
+    supports_binary_theme: &bool,
 ) -> Option<ParseResult> {
     match &response.oembed_type {
         EmbedType::Video(data) => parse_response_impl(
@@ -177,6 +197,8 @@ pub fn parse_html(
             &data.height,
             &response.title,
             iframe_params,
+            iframe_attrs,
+            supports_binary_theme,
         ),
         EmbedType::Rich(data) => parse_response_impl(
             &data.html,
@@ -184,6 +206,8 @@ pub fn parse_html(
             &data.height,
             &response.title,
             iframe_params,
+            iframe_attrs,
+            supports_binary_theme,
         ),
         _ => None,
     }
@@ -206,18 +230,10 @@ mod tests {
                 width: Some(640),
                 height: Some(320),
             }),
-            version: "1".to_string(),
             title: Some("Video embed title".to_string()),
-            author_name: None,
-            author_url: None,
-            provider_name: None,
-            provider_url: None,
-            thumbnail_url: None,
-            thumbnail_width: None,
-            thumbnail_height: None,
             extra: Default::default(),
         };
-        let result = parse_html(&video_response, &None).unwrap();
+        let result = parse_html(&video_response, &None, &None, &false).unwrap();
 
         assert_eq!(
             result,
@@ -225,7 +241,7 @@ mod tests {
                 iframe_html: r#"<iframe src="https://example.com" loading="lazy"></iframe>"#
                     .to_string(),
                 title: video_response.title.unwrap(),
-                wrapper_styles: "padding-bottom:50.00%".to_string(),
+                wrapper_styles: "--padding-desktop:50.00%".to_string(),
             })
         );
     }
@@ -238,18 +254,10 @@ mod tests {
                 width: Some(640),
                 height: Some(320),
             }),
-            version: "1".to_string(),
             title: Some("Rich embed title".to_string()),
-            author_name: None,
-            author_url: None,
-            provider_name: None,
-            provider_url: None,
-            thumbnail_url: None,
-            thumbnail_width: None,
-            thumbnail_height: None,
             extra: Default::default(),
         };
-        let result = parse_html(&rich_response, &None).unwrap();
+        let result = parse_html(&rich_response, &None, &None, &false).unwrap();
 
         assert_eq!(
             result,
@@ -257,7 +265,7 @@ mod tests {
                 iframe_html: r#"<iframe src="https://example.com" loading="lazy"></iframe>"#
                     .to_string(),
                 title: rich_response.title.unwrap(),
-                wrapper_styles: "padding-bottom:50.00%".to_string(),
+                wrapper_styles: "--padding-desktop:50.00%".to_string(),
             })
         );
     }
@@ -270,18 +278,10 @@ mod tests {
                 width: Some(640),
                 height: Some(320),
             }),
-            version: "1".to_string(),
             title: Some("Embed title".to_string()),
-            author_name: None,
-            author_url: None,
-            provider_name: None,
-            provider_url: None,
-            thumbnail_url: None,
-            thumbnail_width: None,
-            thumbnail_height: None,
             extra: Default::default(),
         };
-        let result = parse_html(&response, &None);
+        let result = parse_html(&response, &None, &None, &false);
 
         assert_eq!(result, None);
     }
@@ -294,18 +294,10 @@ mod tests {
                 width: Some(1440),
                 height: Some(860),
             }),
-            version: "1".to_string(),
             title: Some("Embed title".to_string()),
-            author_name: None,
-            author_url: None,
-            provider_name: None,
-            provider_url: None,
-            thumbnail_url: None,
-            thumbnail_width: None,
-            thumbnail_height: None,
             extra: Default::default(),
         };
-        let result = parse_html(&response, &None).unwrap();
+        let result = parse_html(&response, &None, &None, &false).unwrap();
 
         assert_eq!(
             result,
@@ -313,7 +305,7 @@ mod tests {
                 iframe_html: r#"<iframe src="https://example.com" loading="lazy"></iframe>"#
                     .to_string(),
                 title: response.title.unwrap(),
-                wrapper_styles: "padding-bottom:59.72%".to_string(),
+                wrapper_styles: "--padding-desktop:59.72%".to_string(),
             })
         );
     }
@@ -326,18 +318,10 @@ mod tests {
                 width: Some(640),
                 height: Some(320),
             }),
-            version: "1".to_string(),
             title: Some("Embed title".to_string()),
-            author_name: None,
-            author_url: None,
-            provider_name: None,
-            provider_url: None,
-            thumbnail_url: None,
-            thumbnail_width: None,
-            thumbnail_height: None,
             extra: Default::default(),
         };
-        let result = parse_html(&response, &None).unwrap();
+        let result = parse_html(&response, &None, &None, &false).unwrap();
 
         assert_eq!(
             result,
@@ -345,7 +329,7 @@ mod tests {
                 iframe_html: r#"<iframe src="https://example.com" loading="lazy"></iframe>"#
                     .to_string(),
                 title: response.title.unwrap(),
-                wrapper_styles: "padding-bottom:50.00%".to_string(),
+                wrapper_styles: "--padding-desktop:50.00%".to_string(),
             })
         );
     }
@@ -360,18 +344,10 @@ mod tests {
                 width: Some(640),
                 height: Some(320),
             }),
-            version: "1".to_string(),
             title: Some("Embed title".to_string()),
-            author_name: None,
-            author_url: None,
-            provider_name: None,
-            provider_url: None,
-            thumbnail_url: None,
-            thumbnail_width: None,
-            thumbnail_height: None,
             extra: Default::default(),
         };
-        let result = parse_html(&response, &None).unwrap();
+        let result = parse_html(&response, &None, &None, &false).unwrap();
 
         assert_eq!(
             result,
@@ -392,18 +368,10 @@ mod tests {
                 width: Some(640),
                 height: Some(320),
             }),
-            version: "1".to_string(),
             title: Some("Embed title".to_string()),
-            author_name: None,
-            author_url: None,
-            provider_name: None,
-            provider_url: None,
-            thumbnail_url: None,
-            thumbnail_width: None,
-            thumbnail_height: None,
             extra: Default::default(),
         };
-        let result = parse_html(&response, &None).unwrap();
+        let result = parse_html(&response, &None, &None, &false).unwrap();
 
         assert_eq!(
             result,
@@ -425,22 +393,14 @@ mod tests {
                 width: Some(640),
                 height: Some(320),
             }),
-            version: "1".to_string(),
             title: Some("Embed title".to_string()),
-            author_name: None,
-            author_url: None,
-            provider_name: None,
-            provider_url: None,
-            thumbnail_url: None,
-            thumbnail_width: None,
-            thumbnail_height: None,
             extra: Default::default(),
         };
         let mut iframe_params = HashMap::new();
 
         iframe_params.insert("some_param", "some_value");
 
-        let result = parse_html(&response, &Some(iframe_params)).unwrap();
+        let result = parse_html(&response, &Some(iframe_params), &None, &false).unwrap();
 
         assert_eq!(
             result,
@@ -448,7 +408,7 @@ mod tests {
                 iframe_html: r#"<iframe src="https://example.com/?some_param=some_value" loading="lazy"></iframe>"#
                     .to_string(),
                 title: response.title.unwrap(),
-                wrapper_styles: "padding-bottom:50.00%".to_string(),
+                wrapper_styles: "--padding-desktop:50.00%".to_string(),
             })
         );
     }
@@ -461,22 +421,14 @@ mod tests {
                 width: Some(640),
                 height: Some(320),
             }),
-            version: "1".to_string(),
             title: Some("Embed title".to_string()),
-            author_name: None,
-            author_url: None,
-            provider_name: None,
-            provider_url: None,
-            thumbnail_url: None,
-            thumbnail_width: None,
-            thumbnail_height: None,
             extra: Default::default(),
         };
         let mut iframe_params = HashMap::new();
 
         iframe_params.insert("some_param", "some_value");
 
-        let result = parse_html(&response, &Some(iframe_params)).unwrap();
+        let result = parse_html(&response, &Some(iframe_params), &None, &false).unwrap();
 
         assert_eq!(
             result,
@@ -484,7 +436,34 @@ mod tests {
                 iframe_html: r#"<iframe src="https://example.com/?param=value&some_param=some_value" loading="lazy"></iframe>"#
                     .to_string(),
                 title: response.title.unwrap(),
-                wrapper_styles: "padding-bottom:50.00%".to_string(),
+                wrapper_styles: "--padding-desktop:50.00%".to_string(),
+            })
+        );
+    }
+
+    #[test]
+    fn can_append_iframe_attributes() {
+        let response = EmbedResponse {
+            oembed_type: EmbedType::Rich(Rich {
+                html: r#"<iframe src="https://example.com"></iframe>"#.to_string(),
+                width: Some(640),
+                height: Some(320),
+            }),
+            title: Some("Embed title".to_string()),
+            extra: Default::default(),
+        };
+        let mut iframe_attrs = HashMap::new();
+
+        iframe_attrs.insert("allowfullscreen", "true");
+
+        let result = parse_html(&response, &None, &Some(iframe_attrs), &false).unwrap();
+
+        assert_eq!(
+            result,
+            ParseResult::IframeResult(IframeResult {
+                iframe_html: r#"<iframe src="https://example.com" loading="lazy" allowfullscreen="true"></iframe>"#.to_string(),
+                title: response.title.unwrap(),
+                wrapper_styles: "--padding-desktop:50.00%".to_string(),
             })
         );
     }
@@ -497,23 +476,17 @@ mod tests {
                 width: Some(640),
                 height: Some(320),
             }),
-            version: "1".to_string(),
             title: Some("Embed title".to_string()),
-            author_name: None,
-            author_url: None,
-            provider_name: None,
-            provider_url: None,
-            thumbnail_url: None,
-            thumbnail_width: None,
-            thumbnail_height: None,
             extra: Default::default(),
         };
-        let result = parse_html(&response, &None).unwrap();
+        let result = parse_html(&response, &None, &None, &false).unwrap();
 
         assert_eq!(
             result,
             ParseResult::ScriptResult(ScriptResult {
+                embed_type: "sourced_oembed".to_string(),
                 html: r#"<blockquote></blockquote>"#.to_string(),
+                supports_binary_theme: false,
                 sources: vec![]
             })
         );
@@ -528,23 +501,17 @@ mod tests {
                 width: Some(640),
                 height: Some(320),
             }),
-            version: "1".to_string(),
             title: Some("Embed title".to_string()),
-            author_name: None,
-            author_url: None,
-            provider_name: None,
-            provider_url: None,
-            thumbnail_url: None,
-            thumbnail_width: None,
-            thumbnail_height: None,
             extra: Default::default(),
         };
-        let result = parse_html(&response, &None).unwrap();
+        let result = parse_html(&response, &None, &None, &false).unwrap();
 
         assert_eq!(
             result,
             ParseResult::ScriptResult(ScriptResult {
+                embed_type: "sourced_oembed".to_string(),
                 html: r#"<blockquote></blockquote>"#.to_string(),
+                supports_binary_theme: false,
                 sources: vec![
                     "https://example.com/some.js".to_string(),
                     "https://example.com/other.js".to_string()
