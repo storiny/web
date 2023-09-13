@@ -1,10 +1,39 @@
 import React from "react";
 
 import MenubarItem from "~/components/MenubarItem";
+import Gallery from "~/entities/gallery";
 import ImageIcon from "~/icons/Image";
 
-const ImageMenubarItem = (): React.ReactElement => (
-  <MenubarItem decorator={<ImageIcon />}>Image</MenubarItem>
-);
+import { useInsertImage } from "../../../../../../hooks/use-insert-image";
+
+const ImageMenubarItem = (): React.ReactElement => {
+  const [insertImage] = useInsertImage();
+  return (
+    <Gallery
+      onConfirm={(image): void =>
+        insertImage({
+          images: [
+            {
+              alt: image.alt,
+              key: image.key,
+              hex: image.hex,
+              rating: image.rating,
+              width: image.width,
+              height: image.height
+            }
+          ],
+          credits: image.credits
+        })
+      }
+    >
+      <MenubarItem
+        decorator={<ImageIcon />}
+        onSelect={(event): void => event.preventDefault()}
+      >
+        Image
+      </MenubarItem>
+    </Gallery>
+  );
+};
 
 export default ImageMenubarItem;

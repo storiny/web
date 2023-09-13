@@ -1,3 +1,5 @@
+"use client";
+
 import { InitialEditorStateType } from "@lexical/react/LexicalComposer";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import React from "react";

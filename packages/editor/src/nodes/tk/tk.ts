@@ -69,6 +69,14 @@ export class TKNode extends TextNode {
   }
 
   /**
+   * Imports node from JSON data
+   * @param serializedNode Serialized node
+   */
+  importJSON(serializedNode: SerializedTextNode): TKNode {
+    return $createTKNode(serializedNode.text);
+  }
+
+  /**
    * Serializes the node to JSON
    */
   override exportJSON(): SerializedTextNode {

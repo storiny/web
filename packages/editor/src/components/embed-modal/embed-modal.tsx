@@ -4,6 +4,7 @@ import React from "react";
 
 import Form, { SubmitHandler, useForm, zodResolver } from "~/components/Form";
 import FormInput from "~/components/FormInput";
+import Link from "~/components/Link";
 import { Description, ModalFooterButton, useModal } from "~/components/Modal";
 import Spacer from "~/components/Spacer";
 import Typography from "~/components/Typography";
@@ -19,10 +20,16 @@ const EmbedModalContent = (): React.ReactElement => (
   <React.Fragment>
     <Description asChild>
       <Typography className={"t-minor"} level={"body2"}>
-        Enter the URL
+        You can embed content from sites like Twitter and YouTube. If embedding
+        from a specific site is not supported, a website preview will be
+        displayed instead.{" "}
+        <Link href={"/guides/embeds"} underline={"always"}>
+          Learn more about embedding external content in your story
+        </Link>
+        .
       </Typography>
     </Description>
-    <Spacer orientation={"vertical"} size={5} />
+    <Spacer orientation={"vertical"} size={4} />
     <FormInput
       autoComplete={"url"}
       autoSize
@@ -31,17 +38,21 @@ const EmbedModalContent = (): React.ReactElement => (
           className: "f-grow"
         }
       }}
-      label={"URL"}
+      label={"Link to the content"}
       name={"url"}
       placeholder={"Embed URL"}
       required
     />
-    <Spacer orientation={"vertical"} size={2} />
+    <Spacer orientation={"vertical"} />
   </React.Fragment>
 );
 
-const EmbedModal = ({ trigger }: EmbedModalProps): React.ReactElement => {
+const EmbedModal = ({
+  trigger,
+  modal
+}: EmbedModalProps): React.ReactElement => {
   const isSmallerThanMobile = useMediaQuery(breakpoints.down("mobile"));
+  const [open, setOpen] = React.useState<boolean>(false);
   const [insertEmbed] = useInsertEmbed();
   const form = useForm<EmbedSchema>({
     resolver: zodResolver(embedSchema),
@@ -52,7 +63,10 @@ const EmbedModal = ({ trigger }: EmbedModalProps): React.ReactElement => {
 
   const handleSubmit: SubmitHandler<EmbedSchema> = ({ url }) => {
     insertEmbed({ url: compressToEncodedURIComponent(url) });
+    setOpen(false);
   };
+
+  React.useEffect(() => console.log(open), [open]);
 
   const [element] = useModal(
     trigger,
@@ -64,6 +78,12 @@ const EmbedModal = ({ trigger }: EmbedModalProps): React.ReactElement => {
       <EmbedModalContent />
     </Form>,
     {
+      modal,
+      open,
+      onOpenChange: (newOpen: boolean) => {
+        form.reset();
+        setOpen(newOpen);
+      },
       fullscreen: isSmallerThanMobile,
       footer: (
         <>
@@ -72,7 +92,8 @@ const EmbedModal = ({ trigger }: EmbedModalProps): React.ReactElement => {
           </ModalFooterButton>
           <ModalFooterButton
             compact={isSmallerThanMobile}
-            onClick={(): void => {
+            onClick={(event): void => {
+              event.preventDefault(); // Prevent closing of modal
               form.handleSubmit(handleSubmit)(); // Submit manually
             }}
           >
@@ -86,12 +107,12 @@ const EmbedModal = ({ trigger }: EmbedModalProps): React.ReactElement => {
         },
         content: {
           style: {
-            width: isSmallerThanMobile ? "100%" : "350px"
+            width: isSmallerThanMobile ? "100%" : "420px"
           }
         },
         header: {
           decorator: <EmbedIcon />,
-          children: "Insert an embed"
+          children: "Add an embed"
         }
       }
     }

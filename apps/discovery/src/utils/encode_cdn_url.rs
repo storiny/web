@@ -13,7 +13,8 @@ type HmacSha1 = Hmac<Sha1>;
 ///
 /// * `url` - URL of the image
 /// * `key` - Optional IMG_PROXY_KEY for testing
-pub fn encode_cdn_url(url: &str, key: Option<String>) -> String {
+/// * `size` - Image size
+pub fn encode_cdn_url(url: &str, key: Option<String>, size: String) -> String {
     let cdn_url = dotenv::var("CDN_URL").expect("CDN_URL is not set").clone();
     let proxy_key = key.unwrap_or_else(|| {
         dotenv::var("IMG_PROXY_KEY")
@@ -28,7 +29,8 @@ pub fn encode_cdn_url(url: &str, key: Option<String>) -> String {
     let code_bytes = result.into_bytes();
 
     format!(
-        "{cdn_url}/remote/{}/{}",
+        "{cdn_url}/remote/{}/{}/{}",
+        size,
         encode_hex(code_bytes),
         encode_hex(url.as_bytes())
     )
@@ -46,9 +48,14 @@ mod tests {
         let cdn_url = dotenv::var("CDN_URL").expect("CDN_URL is not set").clone();
 
         assert_eq!(
-            encode_cdn_url("http://storiny.com/example.jpg", Some(key.to_string())),
+            encode_cdn_url(
+                "http://storiny.com/example.jpg",
+                Some(key.to_string()),
+                "w@640".to_string()
+            ),
             format!(
-                "{cdn_url}/remote/{}/{}",
+                "{cdn_url}/remote/{}/{}/{}",
+                "w@640".to_string(),
                 digest.to_string(),
                 url_hex.to_string()
             )

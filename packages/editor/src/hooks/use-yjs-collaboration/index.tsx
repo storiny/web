@@ -1,3 +1,5 @@
+"use client";
+
 import { InitialEditorStateType } from "@lexical/react/LexicalComposer";
 import { useSetAtom } from "jotai";
 import {

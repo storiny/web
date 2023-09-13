@@ -1,3 +1,5 @@
+"use client";
+
 import LexicalClickableLinkPlugin from "@lexical/react/LexicalClickableLinkPlugin";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { HorizontalRulePlugin } from "@lexical/react/LexicalHorizontalRulePlugin";
@@ -6,6 +8,7 @@ import { clsx } from "clsx";
 import { useAtomValue } from "jotai";
 import React from "react";
 
+import NoSsr from "~/components/NoSsr";
 import { capitalize } from "~/utils/capitalize";
 
 import { docStatusAtom } from "../../atoms";
@@ -42,26 +45,24 @@ const EditorBody = (): React.ReactElement => {
   return (
     <article
       className={clsx(styles.x, styles.body)}
-      style={{
-        pointerEvents: ["connecting", "reconnecting", "disconnected"].includes(
-          docStatus
-        )
-          ? "none"
-          : "auto"
-      }}
+      {...(["connecting", "reconnecting", "disconnected"].includes(docStatus)
+        ? { style: { pointerEvents: "none", userSelect: "none" } }
+        : {})}
     >
       <RichTextPlugin
         ErrorBoundary={EditorErrorBoundary}
         contentEditable={<EditorContentEditable />}
         placeholder={<EditorPlaceholder />}
       />
-      <CollaborationPlugin
-        id={"main"}
-        isMainEditor
-        providerFactory={createWebsocketProvider}
-        role={"editor"}
-        shouldBootstrap={true}
-      />
+      <NoSsr>
+        <CollaborationPlugin
+          id={"main"}
+          isMainEditor
+          providerFactory={createWebsocketProvider}
+          role={"editor"}
+          shouldBootstrap={true}
+        />
+      </NoSsr>
       <TabFocusPlugin />
       <AutoFocusPlugin />
       <LinkPlugin />

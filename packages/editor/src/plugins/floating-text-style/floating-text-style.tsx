@@ -1,3 +1,5 @@
+"use client";
+
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { mergeRegister } from "@lexical/utils";
 import { getShortcutLabel } from "@storiny/shared/src/utils/get-shortcut-label";
@@ -10,7 +12,6 @@ import {
   COMMAND_PRIORITY_LOW,
   SELECTION_CHANGE_COMMAND
 } from "lexical";
-import { useState } from "react";
 import React from "react";
 import { createPortal } from "react-dom";
 
@@ -222,7 +223,7 @@ const FloatingTextStylePopover = (): React.ReactElement => {
 
 const FloatingTextStylePlugin = (): React.ReactElement | null => {
   const [editor] = useLexicalComposerContext();
-  const [isText, setIsText] = useState(false);
+  const [isText, setIsText] = React.useState(false);
   const link = useAtomValue(linkAtom);
 
   /**

@@ -1,3 +1,5 @@
+"use client";
+
 import { $isLinkNode, TOGGLE_LINK_COMMAND } from "@lexical/link";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { mergeRegister } from "@lexical/utils";
@@ -14,7 +16,6 @@ import {
   RangeSelection,
   SELECTION_CHANGE_COMMAND
 } from "lexical";
-import { useState } from "react";
 import React from "react";
 import { createPortal } from "react-dom";
 
@@ -39,10 +40,10 @@ const FloatingLinkEditorPopover = (): React.ReactElement => {
   const inputRef = React.useRef<HTMLInputElement | null>(null);
   const [link, insertLink] = useLink();
   const [editor] = useLexicalComposerContext();
-  const [linkUrl, setLinkUrl] = useState("");
-  const [editedLinkUrl, setEditedLinkUrl] = useState("");
-  const [editMode, setEditMode] = useState(false);
-  const [lastSelection, setLastSelection] = useState<
+  const [linkUrl, setLinkUrl] = React.useState("");
+  const [editedLinkUrl, setEditedLinkUrl] = React.useState("");
+  const [editMode, setEditMode] = React.useState(false);
+  const [lastSelection, setLastSelection] = React.useState<
     RangeSelection | GridSelection | NodeSelection | null
   >(null);
 

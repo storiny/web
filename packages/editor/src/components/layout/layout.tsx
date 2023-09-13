@@ -1,3 +1,5 @@
+"use client";
+
 import { mockStories } from "@storiny/ui/src/mocks";
 import { Provider } from "jotai";
 import React from "react";

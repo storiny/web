@@ -1,3 +1,5 @@
+"use client";
+
 import { animated, useTransition } from "@react-spring/web";
 import { clsx } from "clsx";
 import { useAtomValue } from "jotai";

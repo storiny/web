@@ -9,6 +9,7 @@
     "storybook:dev": "dotenv -e ./.env.local -- storybook dev -p 6006 --no-open",
     "storybook:build": "storybook build",
     "multiplayer:server": "cross-env HOST=localhost PORT=1234 npx y-websocket-server",
+    "multiplayer:test": "dotenv -e ./.env.local -- concurrently --raw \"yarn multiplayer:server\" \"turbo run dev --filter=@storiny/editor\"",
     "multiplayer:dev": "dotenv -e ./.env.local -- concurrently --raw \"yarn multiplayer:server\" \"yarn storybook:dev\""
   },
   "workspaces": [
@@ -17,6 +18,7 @@
   ],
   "devDependencies": {
     "@grpc/grpc-js": "^1.8.15",
+    "@playwright/test": "^1.37.1",
     "@storiny/eslint-config": "*",
     "@storybook/addon-a11y": "^7.3.2",
     "@storybook/addon-essentials": "7.3.2",
@@ -42,7 +44,7 @@
     "msw": "^1.2.1",
     "msw-storybook-addon": "^1.8.0",
     "nanoid": "3",
-    "next": "v13.4.14-canary.1",
+    "next": "^13.4.19",
     "nodemon": "^2.0.22",
     "pexels": "^1.4.0",
     "prettier": "^2.5.1",

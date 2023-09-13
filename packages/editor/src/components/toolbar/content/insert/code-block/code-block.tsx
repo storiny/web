@@ -4,7 +4,9 @@ import MenuItem from "~/components/MenuItem";
 import CodeBlockIcon from "~/icons/CodeBlock";
 
 const CodeBlockMenuItem = (): React.ReactElement => (
-  <MenuItem decorator={<CodeBlockIcon />}>Code block</MenuItem>
+  <MenuItem decorator={<CodeBlockIcon />} disabled>
+    Code block
+  </MenuItem>
 );
 
 export default CodeBlockMenuItem;

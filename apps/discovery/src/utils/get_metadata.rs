@@ -525,20 +525,41 @@ pub async fn get_metadata(
         image: if has_opengraph_image || has_twitter_card_image {
             let og_image = doc_metadata.opengraph.image;
             let tc_image = doc_metadata.twitter_card.image;
+            let is_large = if has_twitter_card_image && tc_image.clone().unwrap().is_large {
+                true
+            } else if has_opengraph_image {
+                og_image.clone().unwrap().width.unwrap_or_default() > LARGE_IMAGE_WIDTH_LOWER_BOUND
+                    && og_image.clone().unwrap().height.unwrap_or_default()
+                        > LARGE_IMAGE_HEIGHT_LOWER_BOUND
+            } else {
+                false
+            };
 
             Some(MetadataImage {
-                src: if has_opengraph_image {
-                    let src = process_image_src(&og_image.clone().unwrap().url, &mut url.clone())
-                        .unwrap_or_default();
+                src: {
+                    let src;
+
+                    if has_opengraph_image {
+                        src = process_image_src(&og_image.clone().unwrap().url, &mut url.clone())
+                            .unwrap_or_default();
+                    } else {
+                        src = process_image_src(&tc_image.clone().unwrap().url, &mut url.clone())
+                            .unwrap_or_default()
+                    };
 
                     if skip_encoding_image {
                         src
                     } else {
-                        encode_cdn_url(&src, None)
+                        encode_cdn_url(
+                            &src,
+                            None,
+                            if is_large {
+                                "w@640".to_string()
+                            } else {
+                                "w@128".to_string()
+                            },
+                        )
                     }
-                } else {
-                    process_image_src(&tc_image.clone().unwrap().url, &mut url.clone())
-                        .unwrap_or_default()
                 },
                 width: if has_opengraph_image {
                     og_image.clone().unwrap().width
@@ -555,16 +576,7 @@ pub async fn get_metadata(
                 } else {
                     tc_image.clone().unwrap().alt
                 },
-                is_large: if has_twitter_card_image && tc_image.clone().unwrap().is_large {
-                    true
-                } else if has_opengraph_image {
-                    og_image.clone().unwrap().width.unwrap_or_default()
-                        > LARGE_IMAGE_WIDTH_LOWER_BOUND
-                        && og_image.clone().unwrap().height.unwrap_or_default()
-                            > LARGE_IMAGE_HEIGHT_LOWER_BOUND
-                } else {
-                    false
-                },
+                is_large,
             })
         } else {
             None
@@ -574,7 +586,7 @@ pub async fn get_metadata(
                 if skip_encoding_image {
                     Some(src)
                 } else {
-                    Some(encode_cdn_url(&src, None))
+                    Some(encode_cdn_url(&src, None, "w@32".to_string()))
                 }
             } else {
                 None
