@@ -88,7 +88,7 @@
   }
 
   /* Editable */
-  &.editable {
+  &.editable:not(.metadata) {
     &:not(.selected) {
       & .content {
         cursor: pointer;

@@ -1,7 +1,6 @@
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { useLexicalNodeSelection } from "@lexical/react/useLexicalNodeSelection";
 import { mergeRegister } from "@lexical/utils";
-import SuspenseLoader from "@storiny/web/src/common/suspense-loader";
 import { clsx } from "clsx";
 import { useSetAtom } from "jotai";
 import {
@@ -31,6 +30,8 @@ import { overflowingFiguresAtom } from "../../../atoms";
 import figureStyles from "../../common/figure.module.scss";
 import { $isEmbedNode, EmbedNodeLayout } from "../embed";
 import styles from "./embed.module.scss";
+import WebpageEmbed from "./webpage";
+import { WebpageMetadata } from "./webpage/webpage.props";
 
 const EmbedNodeControls = dynamic(() => import("./node-controls"), {
   loading: () => (
@@ -40,6 +41,7 @@ const EmbedNodeControls = dynamic(() => import("./node-controls"), {
   )
 });
 
+// Regex to match inlined json data
 const DATA_REGEX =
   /<script type="application\/storiny\.embed\.(rich|photo)\+json">(.+)<\/script>/i;
 
@@ -72,6 +74,7 @@ const EmbedComponent = ({
   const setOverflowingFigures = useSetAtom(overflowingFiguresAtom);
   const [loading, setLoading] = React.useState<boolean>(true);
   const [error, setError] = React.useState<boolean>(false);
+  const [metadata, setMetadata] = React.useState<null | WebpageMetadata>(null);
   const containerRef = React.useRef<HTMLDivElement | null>(null);
   const contentRef = React.useRef<HTMLDivElement | null>(null);
   const supportsBinaryThemeRef = React.useRef<boolean>(false);
@@ -128,28 +131,41 @@ const EmbedComponent = ({
         }
 
         try {
-          // Embed with script sourcse
-          const data = (await response.clone().json()) as {
-            html: string;
-            sources: string[];
-            supports_binary_theme: boolean;
-          };
+          const data = await response.clone().json();
 
-          if (data.sources) {
-            for (const source of data.sources) {
-              const script = document.createElement("script");
-              script.src = source;
-              script.async = true;
+          // Webpage metadata
+          if (data.embed_type === "metadata") {
+            setMetadata(data);
 
-              document.body.appendChild(script);
+            supportsBinaryThemeRef.current = false;
+            editor.update(() => {
+              const node = $getNodeByKey(nodeKey);
+              if ($isEmbedNode(node)) {
+                node.setLayout("fill"); // Reset layout
+              }
+            });
+          } else {
+            // Embed with script sourcse
+            if (data.sources) {
+              for (const source of data.sources) {
+                const script = document.createElement("script");
+                script.src = source;
+                script.async = true;
+
+                document.body.appendChild(script);
+              }
+            }
+
+            if (data.html) {
+              contentRef.current.innerHTML = data.html;
+            }
+
+            if (typeof data.supports_binary_theme !== "undefined") {
+              supportsBinaryThemeRef.current = Boolean(
+                data.supports_binary_theme
+              );
             }
           }
-
-          if (data.html) {
-            contentRef.current.innerHTML = data.html;
-          }
-
-          supportsBinaryThemeRef.current = Boolean(data.supports_binary_theme);
         } catch {
           // Embeds with iframe
           try {
@@ -203,7 +219,7 @@ const EmbedComponent = ({
       })
       .catch(() => setError(true))
       .finally(() => setLoading(false));
-  }, [theme, url]);
+  }, [editor, nodeKey, theme, url]);
 
   React.useEffect(() => {
     if (
@@ -231,7 +247,10 @@ const EmbedComponent = ({
       editor.registerCommand<MouseEvent>(
         CLICK_COMMAND,
         (event) => {
-          if (event.target === containerRef.current) {
+          if (
+            event.target === containerRef.current ||
+            containerRef.current?.contains(event.target as HTMLElement)
+          ) {
             if (event.shiftKey) {
               setSelected(!selected);
             } else {
@@ -282,6 +301,7 @@ const EmbedComponent = ({
           styles.container,
           editable && styles.editable,
           selected && styles.selected,
+          Boolean(metadata) && styles.metadata,
           // Grid for overflowing the embed
           ["grid", "dashboard", "no-sidenav"]
         )}
@@ -296,46 +316,60 @@ const EmbedComponent = ({
             data-visible={String(visible)}
           />
         )}
-        <Popover
-          className={clsx("flex-center", "flex-col", styles.x, styles.popover)}
-          onOpenChange={(newOpen): void => {
-            if (!newOpen) {
-              setSelected(false);
-            }
-          }}
-          open={editable && selected && $isNodeSelection(selection)}
-          slotProps={{
-            content: {
-              collisionPadding: { top: 64 }, // Prevent header collision
-              sideOffset: 12,
-              side: "top"
-            }
-          }}
-          trigger={
-            error ? (
-              <div
-                className={clsx("flex-center", styles.content, styles.error)}
-                data-layout={layout}
-              >
-                <Typography
-                  className={clsx("t-center", "t-minor")}
-                  level={"body2"}
+        {metadata ? (
+          <div
+            className={clsx("flex-center", styles.content)}
+            data-layout={layout}
+          >
+            <WebpageEmbed metadata={metadata} selected={selected} />
+          </div>
+        ) : (
+          <Popover
+            className={clsx(
+              "flex-center",
+              "flex-col",
+              styles.x,
+              styles.popover
+            )}
+            onOpenChange={(newOpen): void => {
+              if (!newOpen) {
+                setSelected(false);
+              }
+            }}
+            open={editable && selected && $isNodeSelection(selection)}
+            slotProps={{
+              content: {
+                collisionPadding: { top: 64 }, // Prevent header collision
+                sideOffset: 12,
+                side: "top"
+              }
+            }}
+            trigger={
+              error ? (
+                <div
+                  className={clsx("flex-center", styles.content, styles.error)}
+                  data-layout={layout}
                 >
-                  Embed unavailable
-                </Typography>
-              </div>
-            ) : (
-              <div
-                className={clsx("flex-center", styles.content)}
-                data-layout={layout}
-                data-loading={String(loading)}
-                ref={contentRef}
-              />
-            )
-          }
-        >
-          <EmbedNodeControls layout={layout} nodeKey={nodeKey} />
-        </Popover>
+                  <Typography
+                    className={clsx("t-center", "t-minor")}
+                    level={"body2"}
+                  >
+                    Embed unavailable
+                  </Typography>
+                </div>
+              ) : (
+                <div
+                  className={clsx("flex-center", styles.content)}
+                  data-layout={layout}
+                  data-loading={String(loading)}
+                  ref={contentRef}
+                />
+              )
+            }
+          >
+            <EmbedNodeControls layout={layout} nodeKey={nodeKey} />
+          </Popover>
+        )}
         {layout === "overflow" && (
           <span
             aria-hidden

@@ -1,3 +1,5 @@
+"use client";
+
 import { LexicalEditor } from "lexical";
 import React from "react";
 import { createPortal, flushSync } from "react-dom";

@@ -84,7 +84,8 @@ const EditorNavbar = (): React.ReactElement => {
             <Tooltip content={"Version history"}>
               <IconButton
                 className={clsx("focus-invert", styles.x, styles.button)}
-                disabled={documentLoading}
+                // TODO: disabled={documentLoading}
+                disabled
                 size={"lg"}
                 variant={"ghost"}
               >

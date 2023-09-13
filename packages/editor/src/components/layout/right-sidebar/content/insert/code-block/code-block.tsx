@@ -1,19 +1,16 @@
 import React from "react";
 
+import Tooltip from "~/components/Tooltip";
 import CodeBlockIcon from "~/icons/CodeBlock";
 
 import InsertItem from "../insert-item";
 
-const CodeBlockItem = ({
-  disabled
-}: {
-  disabled?: boolean;
-}): React.ReactElement => (
-  <InsertItem
-    decorator={<CodeBlockIcon />}
-    disabled={disabled}
-    label={"Code block"}
-  />
+const CodeBlockItem = (_: { disabled?: boolean }): React.ReactElement => (
+  <Tooltip content={"Available soon"}>
+    <div>
+      <InsertItem decorator={<CodeBlockIcon />} disabled label={"Code block"} />
+    </div>
+  </Tooltip>
 );
 
 export default CodeBlockItem;

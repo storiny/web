@@ -27,7 +27,7 @@
     "little-state-machine": "^4.8.0",
     "maplibre-gl": "^3.3.0",
     "nanoid": "^4.0.2",
-    "next": "v13.4.14-canary.1",
+    "next": "^13.4.19",
     "normalize.css": "^8.0.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
