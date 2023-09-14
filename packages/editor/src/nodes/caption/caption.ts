@@ -2,7 +2,6 @@ import { isHTMLElement } from "@lexical/utils";
 import {
   $applyNodeReplacement,
   $createParagraphNode,
-  $isTextNode,
   DOMExportOutput,
   EditorConfig,
   ElementFormatType,

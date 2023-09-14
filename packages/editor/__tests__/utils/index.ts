@@ -1,5 +1,5 @@
 import { expect, Frame, Locator, Page, test as base } from "@playwright/test";
-import prettier from "prettier";
+import * as prettier from "prettier";
 
 import { selectAll } from "../keyboard-shortcuts";
 
@@ -69,11 +69,11 @@ const assertHTMLOnFrame = async (
 ): Promise<void> => {
   const actualHtml =
     (await frame?.innerHTML('div[contenteditable="true"]')) || "";
-  const actual = prettifyHTML(actualHtml.replace(/\n/gm, ""), {
+  const actual = await prettifyHTML(actualHtml.replace(/\n/gm, ""), {
     ignoreClasses,
     ignoreInlineStyles
   });
-  const expected = prettifyHTML(expectedHtml.replace(/\n/gm, ""), {
+  const expected = await prettifyHTML(expectedHtml.replace(/\n/gm, ""), {
     ignoreClasses,
     ignoreInlineStyles
   });
@@ -380,11 +380,8 @@ export const sleep = async (delay: number): Promise<void> => {
 export const sleepInsertImage = async (count = 1): Promise<void> =>
   await sleep(1000 * count);
 
-export const focusEditor = async (
-  page: Page,
-  parentSelector = ".editor-shell"
-): Promise<void> => {
-  const selector = `${parentSelector} div[contenteditable="true"]`;
+export const focusEditor = async (page: Page): Promise<void> => {
+  const selector = 'div[contenteditable="true"]';
   await page.waitForSelector('iframe[name="left"]');
   const leftFrame = page.frame("left");
 
@@ -637,7 +634,10 @@ export const prettifyHTML = async (
 
 // This function does not suppose to do anything, it's only used as a trigger
 // for prettier auto-formatting (https://prettier.io/blog/2020/08/24/2.1.0.html#api)
-export const html = (partials: string, ...params: any[]): string => {
+export const html = (
+  partials: TemplateStringsArray,
+  ...params: any[]
+): string => {
   let output = "";
 
   for (let i = 0; i < partials.length; i++) {

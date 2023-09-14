@@ -16,7 +16,7 @@ import { TSymbol } from "~/entities/symbol-picker";
 import { symbolQueryAtom } from "~/entities/symbol-picker/core/atoms";
 
 import { LIST_HEIGHT, SYMBOLS_PER_ROW } from "../../constants";
-import data from "../../data.json";
+import { default as data } from "../../data.json";
 import { useSymbolSearch } from "../../hooks";
 import { PlaceholderSymbol, Symbol } from "../symbol";
 import styles from "./list.module.scss";

@@ -9,6 +9,7 @@ const EditorPlaceholder = (): React.ReactElement => (
   <Typography
     as={"span"}
     className={clsx(styles.x, styles.placeholder)}
+    data-testid={"placeholder"}
     ellipsis
     level={"legible"}
   >

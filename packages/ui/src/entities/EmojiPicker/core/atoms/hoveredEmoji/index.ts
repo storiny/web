@@ -1,5 +1,5 @@
 import { atom } from "jotai";
 
-import type { emojis } from "../../data.json";
+import type { default as data } from "../../data.json";
 
-export const hoveredEmojiAtom = atom<keyof typeof emojis | null>(null);
+export const hoveredEmojiAtom = atom<keyof typeof data.emojis | null>(null);

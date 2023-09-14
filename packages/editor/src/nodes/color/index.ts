@@ -37,6 +37,13 @@ export class ColorNode extends TextNode {
   }
 
   /**
+   * Imports node from JSON data
+   * @param serializedNode Serialized node
+   */
+  static importJSON(serializedNode: SerializedTextNode): ColorNode {
+    return $createColorNode(serializedNode.text);
+  }
+  /**
    * Creates DOM
    * @param config Editor config
    */
@@ -74,14 +81,6 @@ export class ColorNode extends TextNode {
    */
   override isUnmergeable(): boolean {
     return true;
-  }
-
-  /**
-   * Imports node from JSON data
-   * @param serializedNode Serialized node
-   */
-  importJSON(serializedNode: SerializedTextNode): ColorNode {
-    return $createColorNode(serializedNode.text);
   }
 
   /**

@@ -4,7 +4,7 @@ import { useAtomValue } from "jotai";
 import { TSymbol } from "~/entities/symbol-picker";
 
 import { symbolQueryAtom } from "../../atoms";
-import * as data from "../../data.json";
+import { default as data } from "../../data.json";
 
 const SymbolFuse = new Fuse<TSymbol>(
   data.symbols.map(({ items }) => items).flat(),

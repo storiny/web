@@ -16,7 +16,7 @@ import { capitalize } from "~/utils/capitalize";
 
 import { emojiCategoryAtom, emojiQueryAtom } from "../../atoms";
 import { EmojiCategory, EMOJIS_PER_ROW, LIST_HEIGHT } from "../../constants";
-import data from "../../data.json";
+import { default as data } from "../../data.json";
 import { useEmojiSearch } from "../../hooks";
 import { Emoji, PlaceholderEmoji } from "../Emoji";
 import styles from "./List.module.scss";

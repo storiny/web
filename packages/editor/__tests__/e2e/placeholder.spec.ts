@@ -1,3 +1,4 @@
+import { editorClassNames } from "../constants/class-names";
 import {
   assertHTML,
   assertSelection,
@@ -16,11 +17,14 @@ test.describe("placeholder", () => {
     page
   }) => {
     await focusEditor(page);
-    const content = await textContent(page, ".Placeholder__root");
+    const content = await textContent(page, '[data-testid="placeholder"]');
 
-    expect(content).toBe("Share your story");
+    expect(content).toBe("Share your story…");
 
-    await assertHTML(page, html(` <p class="paragraph"><br /></p> `));
+    await assertHTML(
+      page,
+      html`<p class="${editorClassNames.paragraph}"><br /></p>`
+    );
     await assertSelection(page, {
       anchorOffset: 0,
       anchorPath: [0],
