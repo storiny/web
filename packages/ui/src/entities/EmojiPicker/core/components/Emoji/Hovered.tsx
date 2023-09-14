@@ -6,7 +6,7 @@ import React from "react";
 import HandClickIcon from "~/icons/HandClick";
 
 import { hoveredEmojiAtom } from "../../atoms";
-import data from "../../data.json";
+import { default as data } from "../../data.json";
 import Emoji from "./Emoji";
 import styles from "./Emoji.module.scss";
 

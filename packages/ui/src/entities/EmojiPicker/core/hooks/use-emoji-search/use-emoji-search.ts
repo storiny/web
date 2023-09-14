@@ -2,9 +2,9 @@ import Fuse from "fuse.js";
 import { useAtomValue } from "jotai";
 
 import { emojiQueryAtom } from "../../atoms";
-import { emojis } from "../../data.json";
+import { default as data } from "../../data.json";
 
-const EMOJI_IDS = Object.keys(emojis);
+const EMOJI_IDS = Object.keys(data.emojis);
 
 const EmojiFuse = new Fuse<string>(EMOJI_IDS, {
   isCaseSensitive: false,

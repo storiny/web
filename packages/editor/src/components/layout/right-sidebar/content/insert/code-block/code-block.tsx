@@ -5,6 +5,7 @@ import CodeBlockIcon from "~/icons/CodeBlock";
 
 import InsertItem from "../insert-item";
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const CodeBlockItem = (_: { disabled?: boolean }): React.ReactElement => (
   <Tooltip content={"Available soon"}>
     <div>

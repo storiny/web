@@ -14,19 +14,20 @@ export default defineConfig({
   projects: [
     {
       name: "chromium",
-      testDir: "./packages/editor/__tests__/",
-      use: { ...devices["Desktop Chrome"] },
+      testDir: "./__tests__/",
+      use: { ...devices["Desktop Chrome"] }
     },
     {
       name: "firefox",
-      testDir: "./packages/editor/__tests__/",
-      use: { ...devices["Desktop Firefox"] },
-    },
-    {
-      name: "webkit",
-      testDir: "./packages/editor/__tests__/",
-      use: { ...devices["Desktop Safari"] },
-    },
+      testDir: "./__tests__/",
+      use: { ...devices["Desktop Firefox"] }
+    }
+    // TODO: Enable on release (missing deps for Ubuntu 23)
+    // {
+    //   name: "webkit",
+    //   testDir: "./__tests__/",
+    //   use: { ...devices["Desktop Safari"] }
+    // }
   ],
   retries: IS_CI ? 4 : 1,
   timeout: 150000,
@@ -34,12 +35,12 @@ export default defineConfig({
     navigationTimeout: 30000,
     // this causes issues in the CI on on current version.
     //trace: 'retain-on-failure',
-    video: "on-first-retry",
+    video: "on-first-retry"
   },
   webServer: {
     command: "yarn multiplayer:test",
     port: 3000,
     reuseExistingServer: true,
-    timeout: 120 * 1000,
-  },
+    timeout: 120 * 1000
+  }
 });

@@ -9,7 +9,7 @@ import { capitalize } from "~/utils/capitalize";
 
 import { hoveredEmojiAtom, skinToneAtom } from "../../atoms";
 import { SkinTone } from "../../constants";
-import data from "../../data.json";
+import { default as data } from "../../data.json";
 import styles from "./Emoji.module.scss";
 import { EmojiProps } from "./Emoji.props";
 

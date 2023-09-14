@@ -37,6 +37,13 @@ export class TKNode extends TextNode {
   }
 
   /**
+   * Imports node from JSON data
+   * @param serializedNode Serialized node
+   */
+  static importJSON(serializedNode: SerializedTextNode): TKNode {
+    return $createTKNode(serializedNode.text);
+  }
+  /**
    * Creates DOM
    * @param config Editor config
    */
@@ -66,14 +73,6 @@ export class TKNode extends TextNode {
    */
   override isUnmergeable(): boolean {
     return true;
-  }
-
-  /**
-   * Imports node from JSON data
-   * @param serializedNode Serialized node
-   */
-  importJSON(serializedNode: SerializedTextNode): TKNode {
-    return $createTKNode(serializedNode.text);
   }
 
   /**

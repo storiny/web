@@ -58,6 +58,6 @@ export const useYjsFocusTracking = (
           COMMAND_PRIORITY_EDITOR
         )
       ),
-    [localState, editor]
+    [localState, editor, provider]
   );
 };

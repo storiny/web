@@ -6,7 +6,6 @@ import Button from "~/components/Button";
 import IconButton from "~/components/IconButton";
 import Popover from "~/components/Popover";
 import Spinner from "~/components/Spinner";
-import Tooltip from "~/components/Tooltip";
 import Typography from "~/components/Typography";
 import MusicIcon from "~/icons/Music";
 

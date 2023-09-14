@@ -66,8 +66,6 @@ const EmbedModal = ({
     setOpen(false);
   };
 
-  React.useEffect(() => console.log(open), [open]);
-
   const [element] = useModal(
     trigger,
     <Form<EmbedSchema>
