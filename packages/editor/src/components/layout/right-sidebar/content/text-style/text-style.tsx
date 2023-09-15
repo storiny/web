@@ -86,6 +86,7 @@ const TextStyleToggleGroup = ({
   return (
     <ToggleGroup disabled={disabled} type={"multiple"} value={value}>
       <ToggleGroupItem
+        data-testid={"bold-toggle"}
         onClick={toggleBold}
         slotProps={{
           tooltip: {
@@ -98,6 +99,7 @@ const TextStyleToggleGroup = ({
         <BoldIcon />
       </ToggleGroupItem>
       <ToggleGroupItem
+        data-testid={"italic-toggle"}
         onClick={toggleItalic}
         slotProps={{
           tooltip: {
@@ -110,6 +112,7 @@ const TextStyleToggleGroup = ({
         <ItalicIcon />
       </ToggleGroupItem>
       <ToggleGroupItem
+        data-testid={"underline-toggle"}
         onClick={toggleUnderline}
         slotProps={{
           tooltip: {
@@ -122,6 +125,7 @@ const TextStyleToggleGroup = ({
         <UnderlineIcon />
       </ToggleGroupItem>
       <ToggleGroupItem
+        data-testid={"strikethrough-toggle"}
         onClick={toggleStrikethrough}
         slotProps={{
           tooltip: {
@@ -135,6 +139,7 @@ const TextStyleToggleGroup = ({
       </ToggleGroupItem>
       <PaddedDivider />
       <ToggleGroupItem
+        data-testid={"code-toggle"}
         onClick={toggleCode}
         slotProps={{
           tooltip: {
@@ -147,6 +152,7 @@ const TextStyleToggleGroup = ({
         <CodeIcon />
       </ToggleGroupItem>
       <ToggleGroupItem
+        data-testid={"link-toggle"}
         onClick={(): void => insertLink()}
         slotProps={{
           tooltip: {
@@ -160,6 +166,7 @@ const TextStyleToggleGroup = ({
       </ToggleGroupItem>
       <PaddedDivider />
       <ToggleGroupItem
+        data-testid={"subscript-toggle"}
         onClick={toggleSubscript}
         slotProps={{
           tooltip: {
@@ -172,6 +179,7 @@ const TextStyleToggleGroup = ({
         <SubscriptIcon />
       </ToggleGroupItem>
       <ToggleGroupItem
+        data-testid={"superscript-toggle"}
         onClick={toggleSuperscript}
         slotProps={{
           tooltip: {

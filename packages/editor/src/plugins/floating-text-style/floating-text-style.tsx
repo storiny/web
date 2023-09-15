@@ -166,6 +166,7 @@ const FloatingTextStylePopover = (): React.ReactElement => {
     >
       <ToggleGroupItem
         className={clsx(styles.x, styles.toggle)}
+        data-testid={"floating-bold-toggle"}
         onClick={toggleBold}
         slotProps={{
           tooltip: {
@@ -179,6 +180,7 @@ const FloatingTextStylePopover = (): React.ReactElement => {
       </ToggleGroupItem>
       <ToggleGroupItem
         className={clsx(styles.x, styles.toggle)}
+        data-testid={"floating-italic-toggle"}
         onClick={toggleItalic}
         slotProps={{
           tooltip: {
@@ -192,6 +194,7 @@ const FloatingTextStylePopover = (): React.ReactElement => {
       </ToggleGroupItem>
       <ToggleGroupItem
         className={clsx(styles.x, styles.toggle)}
+        data-testid={"floating-underline-toggle"}
         onClick={toggleUnderline}
         slotProps={{
           tooltip: {
@@ -205,6 +208,7 @@ const FloatingTextStylePopover = (): React.ReactElement => {
       </ToggleGroupItem>
       <ToggleGroupItem
         className={clsx(styles.x, styles.toggle)}
+        data-testid={"floating-link-toggle"}
         onClick={(): void => insertLink()}
         slotProps={{
           tooltip: {

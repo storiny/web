@@ -1,4 +1,6 @@
-import { expect, Frame, Locator, Page, test as base } from "@playwright/test";
+import { expect, Frame, Locator, Page } from "@playwright/test";
+import { nanoid } from "nanoid";
+import { PageFunction } from "playwright-core/types/structs";
 import * as prettier from "prettier";
 
 import { selectAll } from "../keyboard-shortcuts";
@@ -24,19 +26,16 @@ export const LEXICAL_IMAGE_BASE64 =
 export const YOUTUBE_SAMPLE_URL =
   "https://www.youtube-nocookie.com/embed/jNQXAC9IVRw";
 
-export const test = base;
-export { expect } from "@playwright/test";
-
 export const initialize = async (page: Page): Promise<void> => {
-  const url = `http://localhost:${E2E_PORT}/split`;
+  const url = `http://localhost:${E2E_PORT}/split/?collab_id=${nanoid()}`;
 
-  await page.setViewportSize({ height: 1000, width: 1250 });
+  await page.setViewportSize({ height: 1000, width: 3000 });
   await page.goto(url);
   await exposeLexicalEditor(page);
 };
 
 const exposeLexicalEditor = async (page: Page): Promise<void> => {
-  await page.frame("left")?.evaluate(() => {
+  await page.frame("left")!.evaluate(() => {
     (window as any).lexicalEditor = (
       document.querySelector(`[data-lexical-editor="true"]`) as any
     )?.__lexicalEditor;
@@ -67,8 +66,7 @@ const assertHTMLOnFrame = async (
   ignoreClasses: boolean,
   ignoreInlineStyles: boolean
 ): Promise<void> => {
-  const actualHtml =
-    (await frame?.innerHTML('div[contenteditable="true"]')) || "";
+  const actualHtml = await frame!.innerHTML('div[contenteditable="true"]');
   const actual = await prettifyHTML(actualHtml.replace(/\n/gm, ""), {
     ignoreClasses,
     ignoreInlineStyles
@@ -88,55 +86,59 @@ export const assertHTML = async (
   { ignoreClasses = false, ignoreInlineStyles = false } = {}
 ): Promise<void> => {
   const withRetry = async (fn: (...args: any) => any): Promise<void> =>
-    await retryAsync(page, fn, 5);
+    await retryAsync(fn, 5);
 
   await Promise.all([
-    withRetry(async () => {
-      const leftFrame = page.frame("left");
-      return assertHTMLOnFrame(
-        leftFrame,
-        expectedHtml,
-        ignoreClasses,
-        ignoreInlineStyles
-      );
-    }),
-    withRetry(async () => {
-      const rightFrame = page.frame("right");
-      return assertHTMLOnFrame(
-        rightFrame,
-        expectedHtmlFrameRight,
-        ignoreClasses,
-        ignoreInlineStyles
-      );
-    })
+    withRetry(
+      async () =>
+        await assertHTMLOnFrame(
+          page.frame("left"),
+          expectedHtml,
+          ignoreClasses,
+          ignoreInlineStyles
+        )
+    ),
+    withRetry(
+      async () =>
+        await assertHTMLOnFrame(
+          page.frame("right"),
+          expectedHtmlFrameRight,
+          ignoreClasses,
+          ignoreInlineStyles
+        )
+    )
   ]);
 };
 
 const retryAsync = async (
-  page: Page,
   fn: (...args: any) => any,
   attempts: number
 ): Promise<void> => {
   while (attempts > 0) {
     let failed = false;
+
     try {
       await fn();
     } catch (e) {
       if (attempts === 1) {
         throw e;
       }
+
       failed = true;
     }
+
     if (!failed) {
       break;
     }
+
     attempts--;
+
     await sleep(500);
   }
 };
 
-const assertSelectionOnFrame = async (
-  frame: Frame | null,
+export const assertSelection = async (
+  page: Page,
   expected: {
     anchorOffset: number | number[];
     anchorPath: number[];
@@ -144,6 +146,8 @@ const assertSelectionOnFrame = async (
     focusPath: number[];
   }
 ): Promise<void> => {
+  const frame = page.frame("left");
+
   if (!frame) {
     return;
   }
@@ -208,19 +212,6 @@ const assertSelectionOnFrame = async (
   } else {
     expect(selection.focusOffset).toEqual(expected.focusOffset);
   }
-};
-
-export const assertSelection = async (
-  page: Page,
-  expected: {
-    anchorOffset: number | number[];
-    anchorPath: number[];
-    focusOffset: number | number[];
-    focusPath: number[];
-  }
-): Promise<void> => {
-  const frame = page.frame("left");
-  await assertSelectionOnFrame(frame, expected);
 };
 
 export const isMac = async (page: Page): Promise<boolean> =>
@@ -327,13 +318,13 @@ export const pasteFromClipboard = async (
       if (files.length > 0) {
         eventClipboardData = {
           files,
-          getData: (type: string) => _clipboardData[type],
+          getData: (type) => _clipboardData[type],
           types: [...Object.keys(_clipboardData), "Files"]
         };
       } else {
         eventClipboardData = {
           files,
-          getData: (type: string) => _clipboardData[type],
+          getData: (type) => _clipboardData[type],
           types: Object.keys(_clipboardData)
         };
       }
@@ -385,15 +376,19 @@ export const focusEditor = async (page: Page): Promise<void> => {
   await page.waitForSelector('iframe[name="left"]');
   const leftFrame = page.frame("left");
 
-  if (await leftFrame?.$(".loading")) {
-    await leftFrame?.waitForSelector(".loading", {
+  if (!leftFrame) {
+    return;
+  }
+
+  if (leftFrame.locator('[data-testid="overlay"]')) {
+    await leftFrame.waitForSelector('[data-testid="overlay"]', {
       state: "detached"
     });
 
     await sleep(500);
   }
 
-  await leftFrame?.focus(selector);
+  await leftFrame.focus(selector);
 };
 
 export const getHTML = async (
@@ -466,11 +461,11 @@ export const textContent = async (
 ): Promise<string | null | undefined> =>
   await page.frame("left")?.textContent(selector, options);
 
-export const evaluate = async (
+export const evaluate = async <T, Arg>(
   page: Page,
-  fn: (...args: any) => any,
-  args: any
-): Promise<unknown> => await page.frame("left")?.evaluate(fn, args);
+  fn: PageFunction<Arg, T>,
+  args: Arg
+): Promise<T> => (await page.frame("left")?.evaluate<T, Arg>(fn, args)) as T;
 
 export const clearEditor = async (page: Page): Promise<void> => {
   await selectAll(page);
@@ -478,16 +473,9 @@ export const clearEditor = async (page: Page): Promise<void> => {
   await page.keyboard.press("Backspace");
 };
 
-// export const insertSampleImage = async (page: Page, modifier) => {
-//   await selectFromInsertDropdown(page, ".image");
-//   if (modifier === "alt") {
-//     await page.keyboard.down("Alt");
-//   }
-//   await click(page, 'button[data-test-id="image-modal-option-sample"]');
-//   if (modifier === "alt") {
-//     await page.keyboard.up("Alt");
-//   }
-// };
+export const insertImage = async (page: Page): Promise<void> => {
+  await click(page, 'button[data-testid="insert-image"]');
+};
 
 // export const insertUrlImage = async (page, url, altText) => {
 //   await selectFromInsertDropdown(page, ".image");
@@ -611,7 +599,8 @@ export const prettifyHTML = async (
   html: string,
   { ignoreClasses = false, ignoreInlineStyles = false } = {}
 ): Promise<string> => {
-  let output = html;
+  // Remove `data-key` attribute from heading nodes
+  let output = html.replace(/\sdata-key="(\d+)"/g, "");
 
   if (ignoreClasses) {
     output = output.replace(/\sclass="([^"]*)"/g, "");
@@ -622,13 +611,18 @@ export const prettifyHTML = async (
   }
 
   return (
-    await prettier.format(output, {
-      // attributeGroups: ["$DEFAULT", "^data-"],
-      // attributeSort: "ASC",
-      bracketSameLine: true,
-      htmlWhitespaceSensitivity: "ignore",
-      parser: "html"
-    })
+    await prettier.format(
+      output,
+      Object.assign(
+        {
+          plugins: ["prettier-plugin-organize-attributes"],
+          bracketSameLine: true,
+          htmlWhitespaceSensitivity: "ignore",
+          parser: "html"
+        },
+        { attributeGroups: ["$DEFAULT", "^data-"], attributeSort: "ASC" } as any
+      )
+    )
   ).trim();
 };
 

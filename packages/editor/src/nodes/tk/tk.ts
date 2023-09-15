@@ -14,11 +14,10 @@ const VERSION = 1;
 export class TKNode extends TextNode {
   /**
    * Ctor
-   * @param text Node text
    * @param key Node key
    */
-  constructor(text: string, key?: NodeKey) {
-    super(text, key);
+  constructor(key?: NodeKey) {
+    super("TK", key);
   }
 
   /**
@@ -33,15 +32,14 @@ export class TKNode extends TextNode {
    * @param node Node
    */
   static override clone(node: TKNode): TKNode {
-    return new TKNode(node.__text, node.__key);
+    return new TKNode(node.__key);
   }
 
   /**
    * Imports node from JSON data
-   * @param serializedNode Serialized node
    */
-  static importJSON(serializedNode: SerializedTextNode): TKNode {
-    return $createTKNode(serializedNode.text);
+  static importJSON(): TKNode {
+    return $createTKNode();
   }
   /**
    * Creates DOM
@@ -93,7 +91,5 @@ export const $isTKNode = (
 
 /**
  * Creates a new TK node
- * @param text Text content
  */
-export const $createTKNode = (text: string): TKNode =>
-  new TKNode(text).setMode("token");
+export const $createTKNode = (): TKNode => new TKNode().setMode("token");
