@@ -22,6 +22,7 @@ const Indentation = ({
         rightSlot={getShortcutLabel(EDITOR_SHORTCUTS.indent)}
       >
         <IconButton
+          data-testid={"indent"}
           disabled={disabled || !canIndent}
           onClick={indent}
           variant={"ghost"}
@@ -34,6 +35,7 @@ const Indentation = ({
         rightSlot={getShortcutLabel(EDITOR_SHORTCUTS.outdent)}
       >
         <IconButton
+          data-testid={"outdent"}
           disabled={disabled || !canOutdent}
           onClick={outdent}
           variant={"ghost"}

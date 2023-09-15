@@ -1,21 +1,19 @@
+import { expect, test } from "@playwright/test";
+
 import { editorClassNames } from "../constants/class-names";
 import {
   assertHTML,
   assertSelection,
-  expect,
   focusEditor,
   html,
   initialize,
-  test,
   textContent
 } from "../utils";
 
 test.describe("placeholder", () => {
   test.beforeEach(({ page }) => initialize(page));
 
-  test("displays a placeholder when no content is present", async ({
-    page
-  }) => {
+  test("displays a placeholder when the editor is empty", async ({ page }) => {
     await focusEditor(page);
     const content = await textContent(page, '[data-testid="placeholder"]');
 
@@ -25,6 +23,7 @@ test.describe("placeholder", () => {
       page,
       html`<p class="${editorClassNames.paragraph}"><br /></p>`
     );
+
     await assertSelection(page, {
       anchorOffset: 0,
       anchorPath: [0],

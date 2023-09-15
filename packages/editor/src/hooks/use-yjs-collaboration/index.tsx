@@ -1,6 +1,7 @@
 "use client";
 
 import { InitialEditorStateType } from "@lexical/react/LexicalComposer";
+import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { useSetAtom } from "jotai";
 import {
   $createParagraphNode,
@@ -140,7 +141,6 @@ const clearEditorSkipCollab = (
 
 /**
  * Hook for using yjs collaboration
- * @param editor Editor
  * @param id ID
  * @param name User name
  * @param docMap Document map
@@ -153,7 +153,6 @@ const clearEditorSkipCollab = (
 export const useYjsCollaboration = ({
   id,
   docMap,
-  editor,
   provider,
   initialEditorState,
   excludedProperties,
@@ -162,7 +161,6 @@ export const useYjsCollaboration = ({
   localState
 }: {
   docMap: Map<string, Doc>;
-  editor: LexicalEditor;
   excludedProperties?: ExcludedProperties;
   id: string;
   initialEditorState?: InitialEditorStateType;
@@ -175,6 +173,7 @@ export const useYjsCollaboration = ({
   provider: Provider;
   shouldBootstrap: boolean;
 }): [React.ReactElement, Binding] => {
+  const [editor] = useLexicalComposerContext();
   const isReloadingDoc = React.useRef(false);
   const connectedOnceRef = React.useRef<boolean>(false);
   const setDocStatus = useSetAtom(docStatusAtom);
@@ -341,6 +340,8 @@ export const useYjsCollaboration = ({
       docMap.delete(id);
       removeListener();
     };
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     binding,
     connect,
@@ -352,8 +353,6 @@ export const useYjsCollaboration = ({
     isMainEditor,
     provider,
     localState,
-    setAwareness,
-    setDocStatus,
     shouldBootstrap
   ]);
 

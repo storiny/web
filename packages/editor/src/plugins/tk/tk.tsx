@@ -21,7 +21,7 @@ import styles from "./tk.module.scss";
 type ParagraphNodeKey = NodeKey;
 type TKNodeKey = NodeKey;
 
-const TK_TOKEN_REGEX = /(?:[^a-zA-Z0-9]|^)TK(?:[^a-zA-Z0-9]|$)/g;
+const TK_TOKEN_REGEX = /(?:\s|^)TK(?:[^a-zA-Z0-9]|$)/g; // Allow punctuations at the end
 
 // Keeps the record of all the TK nodes insde the individual paragraph nodes
 const paragraphTkMap = new Map<ParagraphNodeKey, Set<TKNodeKey>>();
@@ -45,11 +45,15 @@ const $addTkNodeToMap = (
     paragraphTkMap.set(paragraphKey, new Set([tkNodeKey]));
   }
 
-  const element = editor.getElementByKey(paragraphKey);
+  editor.getEditorState().read(() => {
+    if ($isParagraphNode($getNodeByKey(paragraphKey))) {
+      const element = editor.getElementByKey(paragraphKey);
 
-  if (element && !element.classList.contains(styles.tk)) {
-    element.classList.add(styles.tk);
-  }
+      if (element && !element.classList.contains(styles.tk)) {
+        element.classList.add(styles.tk);
+      }
+    }
+  });
 };
 
 /**
@@ -92,7 +96,7 @@ const $removeTkNodeFromMap = (
  * @param node Text node
  */
 const tkTransform = (node: TextNode): void => {
-  if (node.getFormat() === 0 && $isParagraphNode(node.getParent())) {
+  if ($isParagraphNode(node.getParent())) {
     const textContent = node.getTextContent();
 
     if (TK_TOKEN_REGEX.test(textContent)) {
@@ -106,7 +110,12 @@ const tkTransform = (node: TextNode): void => {
       }
 
       if (targetNode) {
-        targetNode.replace($createTKNode(targetNode.getTextContent()));
+        // Handle punctuation at the end
+        if (targetNode.getTextContent().trim().length === 3) {
+          [targetNode] = targetNode.splitText(2);
+        }
+
+        targetNode.replace($createTKNode());
       }
     }
   }
@@ -131,12 +140,14 @@ const TKPluginImpl = (): null => {
                   if (tkNode) {
                     const paragraphNode = tkNode.getParent();
 
-                    if ($isParagraphNode(paragraphNode)) {
-                      $addTkNodeToMap(
-                        editor,
-                        paragraphNode.getKey(),
-                        tkNode.getKey()
-                      );
+                    if (paragraphNode) {
+                      if ($isParagraphNode(paragraphNode)) {
+                        $addTkNodeToMap(
+                          editor,
+                          paragraphNode.getKey(),
+                          tkNode.getKey()
+                        );
+                      }
                     }
                   }
                 });
@@ -175,9 +186,7 @@ const TKPluginImpl = (): null => {
                       $removeTkNodeFromMap(editor, tkNode);
                       editor.update(
                         () => {
-                          tkNode.replace(
-                            $createTextNode(tkNode.getTextContent())
-                          );
+                          tkNode.replace($createTextNode("TK"));
                         },
                         { tag: "history-merge" }
                       );
@@ -210,8 +219,11 @@ const TKPluginImpl = (): null => {
                     for (const key of dirtyLeaves) {
                       const node = $getNodeByKey(key);
 
-                      if ($isTKNode(node)) {
-                        node.replace($createTextNode(node.getTextContent()));
+                      if (
+                        $isTKNode(node) &&
+                        !$isParagraphNode(node.getParent())
+                      ) {
+                        node.replace($createTextNode("TK"));
                       }
                     }
                   },

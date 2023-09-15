@@ -23,7 +23,11 @@ interface Props {
   id: string;
   initialEditorState?: InitialEditorStateType;
   isMainEditor?: boolean;
-  providerFactory: (id: string, yjsDocMap: Map<string, Doc>) => Provider;
+  providerFactory: (
+    window: Window,
+    id: string,
+    yjsDocMap: Map<string, Doc>
+  ) => Provider;
   role: "editor" | "viewer";
   shouldBootstrap: boolean;
 }
@@ -64,15 +68,18 @@ const CollaborationPlugin = ({
   const collabContext = useCollaborationContext(localState);
   const { yjsDocMap } = collabContext;
   const provider = React.useMemo(
-    () => providerFactory(id, yjsDocMap),
+    () => providerFactory(window, id, yjsDocMap),
     [id, providerFactory, yjsDocMap]
   );
   const [cursors, binding] = useYjsCollaboration({
     id,
-    editor,
     provider,
     docMap: yjsDocMap,
-    shouldBootstrap,
+    shouldBootstrap:
+      // Skip bootstraping the right iframe during tests
+      window.parent != null && (window.parent.frames as any).right === window
+        ? false
+        : shouldBootstrap,
     initialEditorState,
     excludedProperties,
     isMainEditor,

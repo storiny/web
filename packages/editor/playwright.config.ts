@@ -16,12 +16,13 @@ export default defineConfig({
       name: "chromium",
       testDir: "./__tests__/",
       use: { ...devices["Desktop Chrome"] }
-    },
-    {
-      name: "firefox",
-      testDir: "./__tests__/",
-      use: { ...devices["Desktop Firefox"] }
     }
+    // TODO: Enable after writing tests
+    // {
+    //   name: "firefox",
+    //   testDir: "./__tests__/",
+    //   use: { ...devices["Desktop Firefox"] }
+    // }
     // TODO: Enable on release (missing deps for Ubuntu 23)
     // {
     //   name: "webkit",

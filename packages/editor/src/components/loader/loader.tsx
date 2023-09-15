@@ -38,6 +38,7 @@ const EditorLoader = ({
         styles.loader,
         overlay && styles.overlay
       )}
+      data-testid={"overlay"}
     >
       <Typography className={"t-minor"} level={"body2"}>
         {label}

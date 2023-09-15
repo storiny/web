@@ -45,6 +45,7 @@ const EditorBody = (): React.ReactElement => {
   return (
     <article
       className={clsx(styles.x, styles.body)}
+      data-testid={"editor-container"}
       {...(["connecting", "reconnecting", "disconnected"].includes(docStatus)
         ? { style: { pointerEvents: "none", userSelect: "none" } }
         : {})}
