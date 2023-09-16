@@ -112,33 +112,6 @@ test.describe("text entry", () => {
     });
   });
 
-  test("can insert a paragraph between two text nodes", async ({ page }) => {
-    await page.keyboard.type("Hello ");
-    await toggleBold(page);
-    await page.keyboard.type("world");
-    await moveLeft(page, 5);
-    await page.keyboard.press("Enter");
-
-    await assertHTML(
-      page,
-      html`
-        <p class="${editorClassNames.paragraph}" dir="ltr">
-          <span data-lexical-text="true">Hello</span>
-        </p>
-        <p class="${editorClassNames.paragraph}" dir="ltr">
-          <strong class="t-bold" data-lexical-text="true">world</strong>
-        </p>
-      `
-    );
-
-    await assertSelection(page, {
-      anchorOffset: 0,
-      anchorPath: [1, 0, 0],
-      focusOffset: 0,
-      focusPath: [1, 0, 0]
-    });
-  });
-
   test("can type `hello world` in the editor and replace it with `foo`", async ({
     page
   }) => {

@@ -1,14 +1,14 @@
 import { test } from "@playwright/test";
 
-import { editorClassNames } from "../constants/class-names";
-import { moveRight, moveToEditorBeginning } from "../keyboard-shortcuts";
+import { editorClassNames } from "../../constants/class-names";
+import { moveRight, moveToEditorBeginning } from "../../keyboard-shortcuts";
 import {
   assertHTML,
   assertSelection,
   focusEditor,
   html,
   initialize
-} from "../utils";
+} from "../../utils";
 
 test.describe("heading", () => {
   test.beforeEach(async ({ page }) => {

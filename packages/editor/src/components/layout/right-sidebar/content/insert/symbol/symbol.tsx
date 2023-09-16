@@ -15,6 +15,7 @@ const SymbolItem = ({
   return (
     <SymbolPicker onSymbolSelect={insertSymbol}>
       <InsertItem
+        data-testid={"insert-symbol"}
         decorator={<OmegaIcon />}
         disabled={disabled}
         label={"Symbol"}

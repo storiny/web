@@ -44,6 +44,7 @@ export class FigureNode extends ElementNode {
   override createDOM(): HTMLElement {
     const element = document.createElement("figure");
     element.classList.add("flex-center", "flex-col", styles.figure);
+    element.setAttribute("data-testid", "figure-node");
     return element;
   }
 

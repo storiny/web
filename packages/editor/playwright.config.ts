@@ -15,6 +15,7 @@ export default defineConfig({
     {
       name: "chromium",
       testDir: "./__tests__/",
+      testMatch: "**/*.spec.[jt]s?(x)",
       use: { ...devices["Desktop Chrome"] }
     }
     // TODO: Enable after writing tests

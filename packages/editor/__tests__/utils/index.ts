@@ -64,16 +64,19 @@ const assertHTMLOnFrame = async (
   frame: Frame | null,
   expectedHtml: string,
   ignoreClasses: boolean,
-  ignoreInlineStyles: boolean
+  ignoreInlineStyles: boolean,
+  customIgnorePattern?: RegExp
 ): Promise<void> => {
   const actualHtml = await frame!.innerHTML('div[contenteditable="true"]');
   const actual = await prettifyHTML(actualHtml.replace(/\n/gm, ""), {
     ignoreClasses,
-    ignoreInlineStyles
+    ignoreInlineStyles,
+    customIgnorePattern
   });
   const expected = await prettifyHTML(expectedHtml.replace(/\n/gm, ""), {
     ignoreClasses,
-    ignoreInlineStyles
+    ignoreInlineStyles,
+    customIgnorePattern
   });
 
   expect(actual).toEqual(expected);
@@ -83,7 +86,15 @@ export const assertHTML = async (
   page: Page,
   expectedHtml: string,
   expectedHtmlFrameRight = expectedHtml,
-  { ignoreClasses = false, ignoreInlineStyles = false } = {}
+  {
+    ignoreClasses = false,
+    ignoreInlineStyles = false,
+    customIgnorePattern = undefined
+  }: {
+    customIgnorePattern?: RegExp;
+    ignoreClasses?: boolean;
+    ignoreInlineStyles?: boolean;
+  } = {}
 ): Promise<void> => {
   const withRetry = async (fn: (...args: any) => any): Promise<void> =>
     await retryAsync(fn, 5);
@@ -95,7 +106,8 @@ export const assertHTML = async (
           page.frame("left"),
           expectedHtml,
           ignoreClasses,
-          ignoreInlineStyles
+          ignoreInlineStyles,
+          customIgnorePattern
         )
     ),
     withRetry(
@@ -104,7 +116,8 @@ export const assertHTML = async (
           page.frame("right"),
           expectedHtmlFrameRight,
           ignoreClasses,
-          ignoreInlineStyles
+          ignoreInlineStyles,
+          customIgnorePattern
         )
     )
   ]);
@@ -410,13 +423,13 @@ export const getEditorElement = (
 export const waitForSelector = async (
   page: Page,
   selector: string,
-  options: Parameters<Frame["waitForSelector"]>[1]
+  options: Parameters<Frame["waitForSelector"]>[1] = {}
 ): Promise<void> => {
   await page.frame("left")?.waitForSelector(selector, options);
 };
 
-export const locate = (page: Page, selector: string): Locator | undefined =>
-  page.frame("left")?.locator(selector);
+export const locate = (page: Page, selector: string): Locator =>
+  page.frame("left")!.locator(selector);
 
 export const selectorBoundingBox = async (
   page: Page,
@@ -470,11 +483,36 @@ export const evaluate = async <T, Arg>(
 export const clearEditor = async (page: Page): Promise<void> => {
   await selectAll(page);
   await page.keyboard.press("Backspace");
-  await page.keyboard.press("Backspace");
+};
+
+export const insertHorizontalRule = async (page: Page): Promise<void> => {
+  await click(page, '[data-testid="insert-hr"]');
 };
 
 export const insertImage = async (page: Page): Promise<void> => {
-  await click(page, 'button[data-testid="insert-image"]');
+  // Open gallery
+  await click(page, '[data-testid="insert-image"]');
+  await click(page, `button[role="tab"]:text("Library")`);
+
+  // Click the only library image item
+  await waitForSelector(page, `[role="listitem"][data-grid-item]`);
+  await click(page, `[role="listitem"][data-grid-item]`);
+
+  // Confirm the image
+  await click(page, `button:text("Confirm")`);
+  await waitForSelector(page, `[data-testid="image-node"]`);
+};
+
+export const insertEmbed = async (page: Page): Promise<void> => {
+  // Open embed modal
+  await click(page, '[data-testid="insert-embed"]');
+  await page
+    .frame("left")!
+    .locator(`input[name="url"]`)
+    .fill("https://example.com");
+  // Confirm the embed
+  await click(page, `button:text("Confirm")`);
+  await waitForSelector(page, `[data-testid="embed-node"]`);
 };
 
 // export const insertUrlImage = async (page, url, altText) => {
@@ -597,10 +635,25 @@ export const mouseMoveToSelector = async (
 
 export const prettifyHTML = async (
   html: string,
-  { ignoreClasses = false, ignoreInlineStyles = false } = {}
+  {
+    ignoreClasses = false,
+    ignoreInlineStyles = false,
+    customIgnorePattern
+  }: {
+    customIgnorePattern?: RegExp;
+    ignoreClasses?: boolean;
+    ignoreInlineStyles?: boolean;
+  } = {}
 ): Promise<string> => {
   // Remove `data-key` attribute from heading nodes
-  let output = html.replace(/\sdata-key="(\d+)"/g, "");
+  let output = html
+    .replace(/\sdata-key="(\d+)"/g, "")
+    // Replace dynamic ID (generated using React.useId) from radix
+    .replace(/([a-zA-Z-_0-9]+)="radix-:(.+):"/g, "");
+
+  if (customIgnorePattern) {
+    output = output.replace(customIgnorePattern, "");
+  }
 
   if (ignoreClasses) {
     output = output.replace(/\sclass="([^"]*)"/g, "");

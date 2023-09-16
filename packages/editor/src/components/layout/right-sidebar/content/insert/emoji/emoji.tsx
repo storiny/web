@@ -15,6 +15,7 @@ const EmojiItem = ({
   return (
     <EmojiPicker onEmojiSelect={insertEmoji}>
       <InsertItem
+        data-testid={"insert-emoji"}
         decorator={<MoodSmileIcon />}
         disabled={disabled}
         label={"Emoji"}
