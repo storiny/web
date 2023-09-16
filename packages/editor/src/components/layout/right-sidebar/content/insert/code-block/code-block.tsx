@@ -9,7 +9,12 @@ import InsertItem from "../insert-item";
 const CodeBlockItem = (_: { disabled?: boolean }): React.ReactElement => (
   <Tooltip content={"Available soon"}>
     <div>
-      <InsertItem decorator={<CodeBlockIcon />} disabled label={"Code block"} />
+      <InsertItem
+        data-testid={"insert-code-block"}
+        decorator={<CodeBlockIcon />}
+        disabled
+        label={"Code block"}
+      />
     </div>
   </Tooltip>
 );

@@ -13,6 +13,7 @@ const HorizontalRuleItem = ({
   const [insertHorizontalRule] = useInsertHorizontalRule();
   return (
     <InsertItem
+      data-testid={"insert-hr"}
       decorator={<HorizontalRuleIcon />}
       disabled={disabled}
       label={"Horizontal rule"}

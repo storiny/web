@@ -1,8 +1,8 @@
 import { test } from "@playwright/test";
 
-import { EDITOR_SHORTCUTS } from "../../src/constants/shortcuts";
-import { editorClassNames } from "../constants/class-names";
-import { moveLeft, pressBackspace } from "../keyboard-shortcuts";
+import { EDITOR_SHORTCUTS } from "../../../src/constants/shortcuts";
+import { editorClassNames } from "../../constants/class-names";
+import { moveLeft, pressBackspace } from "../../keyboard-shortcuts";
 import {
   assertHTML,
   assertSelection,
@@ -11,7 +11,7 @@ import {
   initialize,
   keyDownCtrlOrMeta,
   keyUpCtrlOrMeta
-} from "../utils";
+} from "../../utils";
 
 test.describe("tk", () => {
   test.beforeEach(async ({ page }) => {

@@ -306,6 +306,7 @@ const EmbedComponent = ({
           ["grid", "dashboard", "no-sidenav"]
         )}
         data-layout={layout}
+        data-testid={"embed-node"}
         ref={containerRef}
       >
         {layout === "overflow" && (
@@ -349,6 +350,7 @@ const EmbedComponent = ({
                 <div
                   className={clsx("flex-center", styles.content, styles.error)}
                   data-layout={layout}
+                  role={"button"}
                 >
                   <Typography
                     className={clsx("t-center", "t-minor")}
@@ -363,6 +365,7 @@ const EmbedComponent = ({
                   data-layout={layout}
                   data-loading={String(loading)}
                   ref={contentRef}
+                  role={"button"}
                 />
               )
             }

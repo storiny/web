@@ -3,7 +3,7 @@ import { useLexicalNodeSelection } from "@lexical/react/useLexicalNodeSelection"
 import { mergeRegister } from "@lexical/utils";
 import { ImageSize } from "@storiny/shared";
 import { clsx } from "clsx";
-import { useSetAtom } from "jotai/index";
+import { useSetAtom } from "jotai";
 import {
   $getNodeByKey,
   $getSelection,
@@ -291,7 +291,9 @@ const ImageComponent = ({
               data-item-container={""}
               data-item-count={String(images.length)}
               data-layout={layout}
+              data-testid={"image-node"}
               ref={itemsContainerRef}
+              role={"button"}
               style={{
                 width:
                   layout === "fit" && images.length === 1

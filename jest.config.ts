@@ -21,6 +21,24 @@ const config: Config = {
       },
     },
     {
+      displayName: "editor",
+      setupFilesAfterEnv: [`<rootDir>/packages/editor/jest.setup.ts`],
+      testEnvironment: "jsdom",
+      transform: {
+        "^.+\\.(t|j)sx?$": "@swc/jest",
+        ".+\\.(css|styl|less|sass|scss)$": "jest-css-modules-transform",
+      },
+      testMatch: [
+        "<rootDir>/packages/editor/**/*.test.ts",
+        "<rootDir>/packages/editor/**/*.test.tsx",
+      ],
+      moduleNameMapper: {
+        // Typescript absolute paths
+        "~/common/(.*)": `<rootDir>/apps/web/src/common/$1`,
+        "~/(.*)": `<rootDir>/packages/ui/src/$1`,
+      },
+    },
+    {
       displayName: "ui",
       setupFilesAfterEnv: [`<rootDir>/packages/ui/jest.setup.ts`],
       testEnvironment: "jsdom",
