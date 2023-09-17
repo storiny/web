@@ -7,11 +7,20 @@ export const editorClassNames = {
   tUnderlineStrikethrough: "theme_t-underline-strikethrough__RBtoW",
   tSubscript: "theme_t-subscript__JG5Mi",
   tSuperscript: "theme_t-superscript__LdyVm",
-  inlineCode: "Typography_inline-code__JAv_5",
+  inlineCode: "t-mono Typography_inline-code__JAv_5",
   indent: "theme_indent___oXfv",
-  link: "Link_link__gw0Nt Link_color-beryl__Uvj79 Link_underline-hover__kChxk theme_link__cwNL8",
-  heading: "heading_h2__rPPrq",
-  subheading: "heading_h3__sk5fh",
+  link: "focusable Link_link__gw0Nt Link_color-beryl__Uvj79 Link_underline-hover__kChxk theme_link__cwNL8",
+  color:
+    "t-mono Typography_inline-code__JAv_5 Typography_inline-color__xNrvA Typography_legible__bFxAE",
+  heading: "t-major t-head-xl heading_h2__rPPrq",
+  subheading: "t-major t-head-lg heading_h3__sk5fh",
   tk: "tk_tk__NzKXq",
-  tkParagraph: "tk_tk__JXxbU"
+  tkParagraph: "tk_tk__JXxbU",
+  ul: "theme_ul__AvXwi",
+  li: "theme_li__sZEg_",
+  nestedLi: "theme_li__sZEg_ theme_nested-li__mCPoz",
+  ol1: "theme_ol__GG2sm",
+  ol2: "theme_ol-2__L9_Em",
+  ol3: "theme_ol-3__6pEl7",
+  quote: "t-quote quote_quote__kAZGn"
 } as const;

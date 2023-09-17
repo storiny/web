@@ -10,10 +10,9 @@ const EditorBody = dynamic(() => import("../body"), {
   loading: dynamicLoader(() => <EditorLoader />)
 });
 
-const Editor = (): React.ReactElement => (
+const Editor = ({ docId }: { docId: string }): React.ReactElement => (
   <EditorLayout>
-    <EditorBody />
-    {/* TODO: <Spacer className={"f-grow"} orientation={"vertical"} size={10} />*/}
+    <EditorBody docId={docId} />
     <EditorShortcuts />
   </EditorLayout>
 );

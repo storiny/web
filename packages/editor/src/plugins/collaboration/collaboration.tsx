@@ -23,11 +23,7 @@ interface Props {
   id: string;
   initialEditorState?: InitialEditorStateType;
   isMainEditor?: boolean;
-  providerFactory: (
-    window: Window,
-    id: string,
-    yjsDocMap: Map<string, Doc>
-  ) => Provider;
+  providerFactory: (id: string, yjsDocMap: Map<string, Doc>) => Provider;
   role: "editor" | "viewer";
   shouldBootstrap: boolean;
 }
@@ -68,11 +64,10 @@ const CollaborationPlugin = ({
   const collabContext = useCollaborationContext(localState);
   const { yjsDocMap } = collabContext;
   const provider = React.useMemo(
-    () => providerFactory(window, id, yjsDocMap),
+    () => providerFactory(id, yjsDocMap),
     [id, providerFactory, yjsDocMap]
   );
   const [cursors, binding] = useYjsCollaboration({
-    id,
     provider,
     docMap: yjsDocMap,
     shouldBootstrap:
@@ -92,8 +87,7 @@ const CollaborationPlugin = ({
     collabContext.isCollabActive = true;
 
     return () => {
-      // Reset the flag only when unmounting the top level editor collab plugin. Nested
-      // editors (e.g., image caption) should unmount without affecting it
+      // Reset the flag only when unmounting the top level editor collaboration plugin.
       if (editor._parentEditor == null) {
         collabContext.isCollabActive = false;
       }

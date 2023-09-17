@@ -43,7 +43,7 @@ test.describe("element format", () => {
           <a
             href="/"
             rel="noreferrer"
-            class="focusable ${editorClassNames.link}"
+            class="${editorClassNames.link}"
             dir="ltr"
           >
             <span data-lexical-text="true">https://storiny.com</span>

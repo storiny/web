@@ -79,7 +79,7 @@ test.describe("text entry", () => {
     await assertHTML(
       page,
       html`
-        <h2 class="t-major t-head-xl ${editorClassNames.heading}" dir="ltr">
+        <h2 class="${editorClassNames.heading}" dir="ltr">
           <span data-lexical-text="true">hello</span>
         </h2>
       `
@@ -98,7 +98,7 @@ test.describe("text entry", () => {
       page,
       html`
         <p class="${editorClassNames.paragraph}"><br /></p>
-        <h2 class="t-major t-head-xl ${editorClassNames.heading}" dir="ltr">
+        <h2 class="${editorClassNames.heading}" dir="ltr">
           <span data-lexical-text="true">hello</span>
         </h2>
       `

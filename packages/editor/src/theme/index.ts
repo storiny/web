@@ -12,9 +12,7 @@ export const editorTheme: EditorThemeClasses = {
     base: styles["embed-block"],
     focus: clsx(styles["embed-block"], styles.focus)
   },
-  // image: "editor-image",
   indent: styles.indent,
-  // inlineImage: "inline-editor-image",
   link: clsx(
     "focusable",
     linkStyles.link,

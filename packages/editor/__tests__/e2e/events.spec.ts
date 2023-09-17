@@ -11,98 +11,94 @@ test.describe("events", () => {
 
   test("autocapitalization (MacOS specific)", async ({ page }) => {
     await page.keyboard.type("i");
-    await evaluate(
-      page,
-      () => {
-        const editable = document.querySelector(
-          '[contenteditable="true"]'
-        ) as HTMLElement;
-        const span = editable.querySelector("span");
+    await evaluate(page, () => {
+      const editable = document.querySelector(
+        '[contenteditable="true"]'
+      ) as HTMLElement;
+      const span = editable.querySelector("span");
 
-        if (!span) {
-          return;
-        }
+      if (!span) {
+        return;
+      }
 
-        const textNode = span.firstChild;
-        const singleRangeFn =
-          (
-            startContainer: Node,
-            startOffset: number,
-            endContainer: Node,
-            endOffset: number
-          ) =>
-          (): [StaticRange] =>
-            [
-              new StaticRange({
-                endContainer,
-                endOffset,
-                startContainer,
-                startOffset
-              })
-            ];
+      const textNode = span.firstChild;
+      const singleRangeFn =
+        (
+          startContainer: Node,
+          startOffset: number,
+          endContainer: Node,
+          endOffset: number
+        ) =>
+        (): [StaticRange] =>
+          [
+            new StaticRange({
+              endContainer,
+              endOffset,
+              startContainer,
+              startOffset
+            })
+          ];
 
-        if (!textNode) {
-          return;
-        }
+      if (!textNode) {
+        return;
+      }
 
-        const character = "S"; // S for space because the space itself gets trimmed in the assertHTML
-        const replacementCharacter = "I";
-        const dataTransfer = new DataTransfer();
+      const character = "S"; // S for space because the space itself gets trimmed in the assertHTML
+      const replacementCharacter = "I";
+      const dataTransfer = new DataTransfer();
 
-        dataTransfer.setData("text/plain", replacementCharacter);
-        dataTransfer.setData("text/html", replacementCharacter);
+      dataTransfer.setData("text/plain", replacementCharacter);
+      dataTransfer.setData("text/html", replacementCharacter);
 
-        const characterBeforeInputEvent = new InputEvent("beforeinput", {
-          bubbles: true,
-          cancelable: true,
-          data: character,
-          inputType: "insertText"
-        });
+      const characterBeforeInputEvent = new InputEvent("beforeinput", {
+        bubbles: true,
+        cancelable: true,
+        data: character,
+        inputType: "insertText"
+      });
 
-        characterBeforeInputEvent.getTargetRanges = singleRangeFn(
-          textNode,
-          1,
-          textNode,
-          1
-        );
+      characterBeforeInputEvent.getTargetRanges = singleRangeFn(
+        textNode,
+        1,
+        textNode,
+        1
+      );
 
-        const replacementBeforeInputEvent = new InputEvent(
-          "beforeinput",
-          Object.assign(
-            {
-              bubbles: true,
-              cancelable: true,
-              data: replacementCharacter,
-              dataTransfer,
-              inputType: "insertReplacementText"
-            },
-            {
-              clipboardData: dataTransfer
-            }
-          )
-        );
+      const replacementBeforeInputEvent = new InputEvent(
+        "beforeinput",
+        Object.assign(
+          {
+            bubbles: true,
+            cancelable: true,
+            data: replacementCharacter,
+            dataTransfer,
+            inputType: "insertReplacementText"
+          },
+          {
+            clipboardData: dataTransfer
+          }
+        )
+      );
 
-        replacementBeforeInputEvent.getTargetRanges = singleRangeFn(
-          textNode,
-          0,
-          textNode,
-          1
-        );
+      replacementBeforeInputEvent.getTargetRanges = singleRangeFn(
+        textNode,
+        0,
+        textNode,
+        1
+      );
 
-        const characterInputEvent = new InputEvent("input", {
-          bubbles: true,
-          cancelable: true,
-          data: character,
-          inputType: "insertText"
-        });
+      const characterInputEvent = new InputEvent("input", {
+        bubbles: true,
+        cancelable: true,
+        data: character,
+        inputType: "insertText"
+      });
 
-        editable.dispatchEvent(characterBeforeInputEvent);
-        textNode.textContent += character;
-        editable.dispatchEvent(replacementBeforeInputEvent);
-        editable.dispatchEvent(characterInputEvent);
-      },
-      undefined
-    );
+      editable.dispatchEvent(characterBeforeInputEvent);
+      textNode.textContent += character;
+      editable.dispatchEvent(replacementBeforeInputEvent);
+      editable.dispatchEvent(characterInputEvent);
+    });
 
     await assertHTML(
       page,

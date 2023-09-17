@@ -42,7 +42,7 @@ const Editor = ({
     <>
       <CollaborationPlugin
         awarenessData={awarenessData}
-        id="main"
+        id="test"
         providerFactory={(): Provider => provider as unknown as Provider}
         role={"editor"}
         shouldBootstrap={true}

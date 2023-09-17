@@ -36,7 +36,7 @@ import EditorLoader from "../loader";
 import EditorPlaceholder from "../placeholder";
 import styles from "./body.module.scss";
 
-const EditorBody = (): React.ReactElement => {
+const EditorBody = ({ docId }: { docId: string }): React.ReactElement => {
   useRegisterTools();
   const [editor] = useLexicalComposerContext();
   const isEditable = editor.isEditable();
@@ -57,7 +57,7 @@ const EditorBody = (): React.ReactElement => {
       />
       <NoSsr>
         <CollaborationPlugin
-          id={"main"}
+          id={docId}
           isMainEditor
           providerFactory={createWebsocketProvider}
           role={"editor"}

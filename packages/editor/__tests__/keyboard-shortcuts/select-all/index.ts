@@ -15,25 +15,19 @@ import {
 export const selectAll = async (page: Page): Promise<void> => {
   // TODO: Follow-up https://github.com/facebook/lexical/issues/4665
   if (E2E_BROWSER === "firefox" && IS_LINUX) {
-    await evaluate(
-      page,
-      () => {
-        const rootElement = document.querySelector(
-          'div[contenteditable="true"]'
-        );
+    await evaluate(page, () => {
+      const rootElement = document.querySelector('div[contenteditable="true"]');
 
-        if (rootElement) {
-          const selection = window.getSelection();
-          selection?.setBaseAndExtent(
-            rootElement,
-            0,
-            rootElement,
-            rootElement.childNodes.length
-          );
-        }
-      },
-      {}
-    );
+      if (rootElement) {
+        const selection = window.getSelection();
+        selection?.setBaseAndExtent(
+          rootElement,
+          0,
+          rootElement,
+          rootElement.childNodes.length
+        );
+      }
+    });
   } else {
     await keyDownCtrlOrMeta(page);
     await page.keyboard.press("a");
