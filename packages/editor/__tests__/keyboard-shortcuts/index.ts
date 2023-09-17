@@ -1,3 +1,5 @@
+export * from "./click-indent-button";
+export * from "./click-outdent-button";
 export * from "./delete-backward";
 export * from "./delete-forward";
 export * from "./delete-next-word";
@@ -23,9 +25,11 @@ export * from "./redo";
 export * from "./select-all";
 export * from "./select-characters";
 export * from "./toggle-bold";
+export * from "./toggle-bulleted-list";
 export * from "./toggle-code";
 export * from "./toggle-italic";
 export * from "./toggle-link";
+export * from "./toggle-numbered-list";
 export * from "./toggle-strikethrough";
 export * from "./toggle-subscript";
 export * from "./toggle-superscript";

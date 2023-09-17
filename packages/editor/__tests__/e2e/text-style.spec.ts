@@ -300,7 +300,7 @@ test.describe("text style shortcuts", () => {
         <p class="${editorClassNames.paragraph}" dir="ltr">
           <span data-lexical-text="true">Hello</span>
           <code spellcheck="false" data-lexical-text="true">
-            <span class="t-mono ${editorClassNames.inlineCode}"> world </span>
+            <span class="${editorClassNames.inlineCode}"> world </span>
           </code>
         </p>
       `
@@ -322,7 +322,7 @@ test.describe("text style shortcuts", () => {
         <p class="${editorClassNames.paragraph}" dir="ltr">
           <span data-lexical-text="true">Hello</span>
           <code spellcheck="false" data-lexical-text="true">
-            <span class="t-mono ${editorClassNames.inlineCode}"> world </span>
+            <span class="${editorClassNames.inlineCode}"> world </span>
           </code>
           <span data-lexical-text="true">!</span>
         </p>
@@ -629,7 +629,7 @@ test.describe("text style shortcuts when a part of text is selected", () => {
         <p class="${editorClassNames.paragraph}" dir="ltr">
           <span data-lexical-text="true">Hello</span>
           <code spellcheck="false" data-lexical-text="true">
-            <span class="t-mono ${editorClassNames.inlineCode}"> world </span>
+            <span class="${editorClassNames.inlineCode}"> world </span>
           </code>
           <span data-lexical-text="true">!</span>
         </p>
@@ -1105,8 +1105,7 @@ test.describe("text style", () => {
           ) &&
           !!document.querySelector(
             `[data-testid="subscript-toggle"][data-state="off"]`
-          ),
-        void 0
+          )
       )
     ).toBeTruthy();
 
@@ -1153,8 +1152,7 @@ test.describe("text style", () => {
           ) &&
           !!document.querySelector(
             `[data-testid="subscript-toggle"][data-state="on"]`
-          ),
-        void 0
+          )
       )
     ).toBeTruthy();
   });

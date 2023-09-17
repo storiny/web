@@ -15,14 +15,9 @@ test.describe("extensions", () => {
 
   test(`document.execCommand("insertText")`, async ({ page }) => {
     await focusEditor(page);
-
-    await evaluate(
-      page,
-      () => {
-        document.execCommand("insertText", false, "hello");
-      },
-      []
-    );
+    await evaluate(page, () => {
+      document.execCommand("insertText", false, "hello");
+    });
 
     await assertHTML(
       page,
@@ -50,34 +45,30 @@ test.describe("extensions", () => {
 
     await focusEditor(page);
 
-    await evaluate(
-      page,
-      () => {
-        const paste = (): ((target: Element, text: string) => void) => {
-          const dataTransfer = new DataTransfer();
+    await evaluate(page, () => {
+      const paste = (): ((target: Element, text: string) => void) => {
+        const dataTransfer = new DataTransfer();
 
-          return (target: Element, text: string): void => {
-            dataTransfer.setData("text/plain", text);
-            target.dispatchEvent(
-              new ClipboardEvent("paste", {
-                bubbles: true,
-                cancelable: true,
-                clipboardData: dataTransfer
-              })
-            );
-            dataTransfer.clearData();
-          };
+        return (target: Element, text: string): void => {
+          dataTransfer.setData("text/plain", text);
+          target.dispatchEvent(
+            new ClipboardEvent("paste", {
+              bubbles: true,
+              cancelable: true,
+              clipboardData: dataTransfer
+            })
+          );
+          dataTransfer.clearData();
         };
+      };
 
-        const editor = document.querySelector('div[contenteditable="true"]');
-        const dispatchPaste = paste();
+      const editor = document.querySelector('div[contenteditable="true"]');
+      const dispatchPaste = paste();
 
-        if (editor) {
-          dispatchPaste(editor, "hello");
-        }
-      },
-      []
-    );
+      if (editor) {
+        dispatchPaste(editor, "hello");
+      }
+    });
 
     await assertHTML(
       page,
@@ -95,34 +86,30 @@ test.describe("extensions", () => {
       focusPath: [0, 0, 0]
     });
 
-    await evaluate(
-      page,
-      () => {
-        const paste = (): ((target: Element, text: string) => void) => {
-          const dataTransfer = new DataTransfer();
+    await evaluate(page, () => {
+      const paste = (): ((target: Element, text: string) => void) => {
+        const dataTransfer = new DataTransfer();
 
-          return (target: Element, text: string): void => {
-            dataTransfer.setData("text/plain", text);
-            target.dispatchEvent(
-              new ClipboardEvent("paste", {
-                bubbles: true,
-                cancelable: true,
-                clipboardData: dataTransfer
-              })
-            );
-            dataTransfer.clearData();
-          };
+        return (target: Element, text: string): void => {
+          dataTransfer.setData("text/plain", text);
+          target.dispatchEvent(
+            new ClipboardEvent("paste", {
+              bubbles: true,
+              cancelable: true,
+              clipboardData: dataTransfer
+            })
+          );
+          dataTransfer.clearData();
         };
+      };
 
-        const editor = document.querySelector('div[contenteditable="true"]');
-        const dispatchPaste = paste();
+      const editor = document.querySelector('div[contenteditable="true"]');
+      const dispatchPaste = paste();
 
-        if (editor) {
-          dispatchPaste(editor, " world");
-        }
-      },
-      undefined
-    );
+      if (editor) {
+        dispatchPaste(editor, " world");
+      }
+    });
 
     await assertHTML(
       page,
@@ -146,37 +133,32 @@ test.describe("extensions", () => {
     browserName
   }) => {
     await focusEditor(page);
+    await evaluate(page, () => {
+      const paste = (): ((target: Element, text: string) => void) => {
+        const dataTransfer = new DataTransfer();
 
-    await evaluate(
-      page,
-      () => {
-        const paste = (): ((target: Element, text: string) => void) => {
-          const dataTransfer = new DataTransfer();
-
-          return (target: Element, text: string): void => {
-            dataTransfer.setData("text/plain", text);
-            target.dispatchEvent(
-              new ClipboardEvent("paste", {
-                bubbles: true,
-                cancelable: true,
-                clipboardData: dataTransfer
-              })
-            );
-            dataTransfer.clearData();
-          };
+        return (target: Element, text: string): void => {
+          dataTransfer.setData("text/plain", text);
+          target.dispatchEvent(
+            new ClipboardEvent("paste", {
+              bubbles: true,
+              cancelable: true,
+              clipboardData: dataTransfer
+            })
+          );
+          dataTransfer.clearData();
         };
+      };
 
-        const editor = document.querySelector('div[contenteditable="true"]');
-        const dispatchPaste = paste();
+      const editor = document.querySelector('div[contenteditable="true"]');
+      const dispatchPaste = paste();
 
-        if (editor) {
-          dispatchPaste(editor, "hello");
-        }
+      if (editor) {
+        dispatchPaste(editor, "hello");
+      }
 
-        document.execCommand("InsertText", false, " world");
-      },
-      undefined
-    );
+      document.execCommand("InsertText", false, " world");
+    });
 
     // Pasting this way doesn't work in FF due to content
     // privacy reasons. So we only look for the execCommand output.
@@ -226,32 +208,28 @@ test.describe("extensions", () => {
     await page.keyboard.press("ArrowUp");
 
     // Selection is at the last paragraph
-    await evaluate(
-      page,
-      async () => {
-        const editor = document.querySelector('div[contenteditable="true"]');
-        const selection = window.getSelection();
-        const secondParagraphTextNode =
-          editor?.firstChild?.nextSibling?.firstChild?.firstChild;
+    await evaluate(page, async () => {
+      const editor = document.querySelector('div[contenteditable="true"]');
+      const selection = window.getSelection();
+      const secondParagraphTextNode =
+        editor?.firstChild?.nextSibling?.firstChild?.firstChild;
 
-        if (secondParagraphTextNode) {
-          selection?.setBaseAndExtent(
-            secondParagraphTextNode,
-            0,
-            secondParagraphTextNode,
-            3
-          );
-        }
+      if (secondParagraphTextNode) {
+        selection?.setBaseAndExtent(
+          secondParagraphTextNode,
+          0,
+          secondParagraphTextNode,
+          3
+        );
+      }
 
-        await new Promise<void>((resolve) => {
-          setTimeout(() => {
-            document.execCommand("insertText", false, "and");
-            resolve();
-          }, 500);
-        });
-      },
-      []
-    );
+      await new Promise<void>((resolve) => {
+        setTimeout(() => {
+          document.execCommand("insertText", false, "and");
+          resolve();
+        }, 500);
+      });
+    });
 
     await assertHTML(
       page,

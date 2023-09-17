@@ -1,7 +1,11 @@
 import { Page, test } from "@playwright/test";
 import { compressToEncodedURIComponent } from "lz-string";
 
-import { moveLeft, pressBackspace } from "../../keyboard-shortcuts";
+import {
+  moveLeft,
+  moveToParagraphBeginning,
+  pressBackspace
+} from "../../keyboard-shortcuts";
 import {
   assertHTML,
   assertSelection,
@@ -152,8 +156,6 @@ test.describe("caption", () => {
     await page.keyboard.press("Enter");
     await page.keyboard.press("Enter");
 
-    await new Promise(() => {});
-
     await assertHTML(
       page,
       html`
@@ -185,7 +187,8 @@ test.describe("caption", () => {
             <span data-lexical-text="true">text inside</span>
           </figcaption>
         </figure>
-        <p><span data-lexical-text="true"> caption</span></p>
+        <p><br /></p>
+        <p dir="ltr"><span data-lexical-text="true">caption</span></p>
       `,
       undefined,
       {
@@ -195,10 +198,200 @@ test.describe("caption", () => {
     );
 
     await assertSelection(page, {
-      anchorOffset: 19,
-      anchorPath: [1, 1, 0, 0],
-      focusOffset: 19,
-      focusPath: [1, 1, 0, 0]
+      anchorOffset: 0,
+      anchorPath: [3, 0, 0],
+      focusOffset: 0,
+      focusPath: [3, 0, 0]
+    });
+  });
+
+  test("can merge with other text nodes", async ({ page }) => {
+    await pressBackspace(page, 2);
+    await page.keyboard.type("text inside caption");
+    await page.keyboard.press("Enter");
+
+    await assertHTML(
+      page,
+      html`
+        <p><br /></p>
+        <figure data-testid="figure-node">
+          <div
+            contenteditable="false"
+            data-lexical-decorator="true"
+            data-testid="block-node"
+          >
+            <div>
+              <div data-layout="fill" data-testid="embed-node">
+                <div
+                  aria-expanded="false"
+                  aria-haspopup="dialog"
+                  role="button"
+                  type="button"
+                  data-layout="fill"
+                  data-loading="false"
+                  data-state="closed"
+                >
+                  <span></span>
+                </div>
+              </div>
+              <div aria-hidden="true"></div>
+            </div>
+          </div>
+          <figcaption dir="ltr" data-empty="false">
+            <span data-lexical-text="true">text inside caption</span>
+          </figcaption>
+        </figure>
+        <p><br /></p>
+      `,
+      undefined,
+      {
+        ignoreClasses: true,
+        ignoreInlineStyles: true
+      }
+    );
+
+    await page.keyboard.type("hello world");
+
+    await assertHTML(
+      page,
+      html`
+        <p><br /></p>
+        <figure data-testid="figure-node">
+          <div
+            contenteditable="false"
+            data-lexical-decorator="true"
+            data-testid="block-node"
+          >
+            <div>
+              <div data-layout="fill" data-testid="embed-node">
+                <div
+                  aria-expanded="false"
+                  aria-haspopup="dialog"
+                  role="button"
+                  type="button"
+                  data-layout="fill"
+                  data-loading="false"
+                  data-state="closed"
+                >
+                  <span></span>
+                </div>
+              </div>
+              <div aria-hidden="true"></div>
+            </div>
+          </div>
+          <figcaption dir="ltr" data-empty="false">
+            <span data-lexical-text="true">text inside caption</span>
+          </figcaption>
+        </figure>
+        <p dir="ltr">
+          <span data-lexical-text="true">hello world</span>
+        </p>
+      `,
+      undefined,
+      {
+        ignoreClasses: true,
+        ignoreInlineStyles: true
+      }
+    );
+
+    await moveToParagraphBeginning(page);
+    await page.keyboard.type(" ");
+    await moveLeft(page, 1);
+    await pressBackspace(page);
+
+    await assertHTML(
+      page,
+      html`
+        <p><br /></p>
+        <figure data-testid="figure-node">
+          <div
+            contenteditable="false"
+            data-lexical-decorator="true"
+            data-testid="block-node"
+          >
+            <div>
+              <div data-layout="fill" data-testid="embed-node">
+                <div
+                  aria-expanded="false"
+                  aria-haspopup="dialog"
+                  role="button"
+                  type="button"
+                  data-layout="fill"
+                  data-loading="false"
+                  data-state="closed"
+                >
+                  <span></span>
+                </div>
+              </div>
+              <div aria-hidden="true"></div>
+            </div>
+          </div>
+          <figcaption dir="ltr" data-empty="false">
+            <span data-lexical-text="true"
+              >text inside caption hello world</span
+            >
+          </figcaption>
+        </figure>
+      `,
+      undefined,
+      {
+        ignoreClasses: true,
+        ignoreInlineStyles: true
+      }
+    );
+  });
+
+  test("can delete the entire figure node when backspace is pressed at the start of the caption node", async ({
+    page
+  }) => {
+    await pressBackspace(page, 2);
+    await page.keyboard.type("caption");
+
+    await assertHTML(
+      page,
+      html`
+        <p><br /></p>
+        <figure data-testid="figure-node">
+          <div
+            contenteditable="false"
+            data-lexical-decorator="true"
+            data-testid="block-node"
+          >
+            <div>
+              <div data-layout="fill" data-testid="embed-node">
+                <div
+                  aria-expanded="false"
+                  aria-haspopup="dialog"
+                  role="button"
+                  type="button"
+                  data-layout="fill"
+                  data-loading="false"
+                  data-state="closed"
+                >
+                  <span></span>
+                </div>
+              </div>
+              <div aria-hidden="true"></div>
+            </div>
+          </div>
+          <figcaption dir="ltr" data-empty="false">
+            <span data-lexical-text="true">caption</span>
+          </figcaption>
+        </figure>
+      `,
+      undefined,
+      {
+        ignoreClasses: true,
+        ignoreInlineStyles: true
+      }
+    );
+
+    // Move to the start of the caption node
+    await moveLeft(page, 7);
+    await pressBackspace(page);
+
+    await assertHTML(page, html`<p><br /></p>`, undefined, {
+      ignoreClasses: true
     });
   });
 });

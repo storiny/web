@@ -11,11 +11,11 @@ const IS_CI = CI === "true";
  */
 export default defineConfig({
   forbidOnly: IS_CI,
+  testMatch: "**/*.spec.[jt]s?(x)",
+  testDir: "./__tests__/",
   projects: [
     {
       name: "chromium",
-      testDir: "./__tests__/",
-      testMatch: "**/*.spec.[jt]s?(x)",
       use: { ...devices["Desktop Chrome"] }
     }
     // TODO: Enable after writing tests
@@ -35,8 +35,6 @@ export default defineConfig({
   timeout: 150000,
   use: {
     navigationTimeout: 30000,
-    // this causes issues in the CI on on current version.
-    //trace: 'retain-on-failure',
     video: "on-first-retry"
   },
   webServer: {

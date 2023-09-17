@@ -81,4 +81,6 @@ export abstract class BlockNode extends DecoratorNode<React.ReactElement> {
  */
 export const $isBlockNode = (
   node: LexicalNode | null | undefined
-): node is BlockNode => node instanceof BlockNode;
+): node is BlockNode =>
+  node instanceof BlockNode ||
+  Object.getPrototypeOf(node) === BlockNode.prototype; // Check for derived classes

@@ -25,7 +25,6 @@ export interface Binding {
   docMap: Map<string, Doc>;
   editor: LexicalEditor;
   excludedProperties: ExcludedProperties;
-  id: string;
   nodeProperties: Map<string, Array<string>>;
   root: CollabElementNode;
 }
@@ -33,14 +32,12 @@ export interface Binding {
 /**
  * Creates yjs editor binding
  * @param editor Editor
- * @param id ID
  * @param doc Document
  * @param docMap Document map
  * @param excludedProperties Excluded properties
  */
 export const createBinding = (
   editor: LexicalEditor,
-  id: string,
   doc: Doc | null | undefined,
   docMap: Map<string, Doc>,
   excludedProperties?: ExcludedProperties
@@ -66,7 +63,6 @@ export const createBinding = (
     docMap,
     editor,
     excludedProperties: excludedProperties || new Map(),
-    id,
     nodeProperties: new Map(),
     root
   };

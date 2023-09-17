@@ -459,7 +459,7 @@ test.describe("tk", () => {
     await assertHTML(
       page,
       html`
-        <h3 class="t-major t-head-lg ${editorClassNames.subheading}" dir="ltr">
+        <h3 class="${editorClassNames.subheading}" dir="ltr">
           <span data-lexical-text="true">This is a heading with a TK</span>
         </h3>
       `
@@ -504,7 +504,7 @@ test.describe("tk", () => {
     await assertHTML(
       page,
       html`
-        <h2 class="t-major t-head-xl ${editorClassNames.heading}" dir="ltr">
+        <h2 class="${editorClassNames.heading}" dir="ltr">
           <span data-lexical-text="true">This is a paragraph with TK</span>
         </h2>
       `

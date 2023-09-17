@@ -141,7 +141,6 @@ const clearEditorSkipCollab = (
 
 /**
  * Hook for using yjs collaboration
- * @param id ID
  * @param name User name
  * @param docMap Document map
  * @param shouldBootstrap Whether to bootstrap
@@ -151,7 +150,6 @@ const clearEditorSkipCollab = (
  * @param localState Local collab state
  */
 export const useYjsCollaboration = ({
-  id,
   docMap,
   provider,
   initialEditorState,
@@ -162,7 +160,6 @@ export const useYjsCollaboration = ({
 }: {
   docMap: Map<string, Doc>;
   excludedProperties?: ExcludedProperties;
-  id: string;
   initialEditorState?: InitialEditorStateType;
   isMainEditor?: boolean;
   localState: Omit<
@@ -178,10 +175,10 @@ export const useYjsCollaboration = ({
   const connectedOnceRef = React.useRef<boolean>(false);
   const setDocStatus = useSetAtom(docStatusAtom);
   const setAwareness = useSetAtom(awarenessAtom);
-  const [doc, setDoc] = React.useState(docMap.get(id));
+  const [doc, setDoc] = React.useState(docMap.get("main"));
   const binding = React.useMemo(
-    () => createBinding(editor, id, doc, docMap, excludedProperties),
-    [editor, id, docMap, doc, excludedProperties]
+    () => createBinding(editor, doc, docMap, excludedProperties),
+    [doc, docMap, editor, excludedProperties]
   );
 
   const connect = React.useCallback(() => {
@@ -255,7 +252,7 @@ export const useYjsCollaboration = ({
     const handleReload = (ydoc: Doc): void => {
       clearEditorSkipCollab(editor, binding);
       setDoc(ydoc);
-      docMap.set(id, ydoc);
+      docMap.set("main", ydoc);
 
       if (isMainEditor) {
         setDocStatus("syncing");
@@ -337,7 +334,7 @@ export const useYjsCollaboration = ({
       awareness.off("update", handleAwarenessUpdate);
 
       root.getSharedType().unobserveDeep(onYjsTreeChanges);
-      docMap.delete(id);
+      docMap.delete("main");
       removeListener();
     };
 
@@ -348,7 +345,6 @@ export const useYjsCollaboration = ({
     disconnect,
     docMap,
     editor,
-    id,
     initialEditorState,
     isMainEditor,
     provider,
