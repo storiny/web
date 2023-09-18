@@ -1,4 +1,4 @@
-import { Binding } from "../../collab/bindings";
+import { Binding } from "../../collaboration/bindings";
 
 /**
  * Syncs with transaction

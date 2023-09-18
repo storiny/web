@@ -1,7 +1,7 @@
 import { createEditor, LexicalNode } from "lexical";
 import { Doc, Map as YMap, XmlElement, XmlText } from "yjs";
 
-import { Binding } from "../../collab/bindings";
+import { Binding } from "../../collaboration/bindings";
 import { isExcludedProperty } from "../is-excluded-property";
 
 /**

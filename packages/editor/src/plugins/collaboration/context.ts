@@ -1,7 +1,7 @@
 import React from "react";
 import { Doc } from "yjs";
 
-import { UserState } from "../../collab/provider";
+import { UserState } from "../../collaboration/provider";
 
 interface CollaborationContextType
   extends Omit<

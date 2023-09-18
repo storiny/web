@@ -119,7 +119,11 @@ const EditorNavbar = (): React.ReactElement => {
       <div className={clsx("flex-center")}>
         <DocStatus />
         <Spacer size={2} />
-        <Button disabled={documentLoading} variant={"hollow"}>
+        <Button
+          disabled
+          // TODO: Fix on stable disabled={documentLoading}
+          variant={"hollow"}
+        >
           Share
         </Button>
         <Spacer />

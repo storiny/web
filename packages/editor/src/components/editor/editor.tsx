@@ -4,15 +4,16 @@ import React from "react";
 
 import EditorLayout from "../layout";
 import EditorLoader from "../loader";
+import { EditorProps } from "./editor.props";
 
 const EditorShortcuts = dynamic(() => import("../../shortcuts"));
 const EditorBody = dynamic(() => import("../body"), {
   loading: dynamicLoader(() => <EditorLoader />)
 });
 
-const Editor = ({ docId }: { docId: string }): React.ReactElement => (
+const Editor = (props: EditorProps): React.ReactElement => (
   <EditorLayout>
-    <EditorBody docId={docId} />
+    <EditorBody {...props} />
     <EditorShortcuts />
   </EditorLayout>
 );

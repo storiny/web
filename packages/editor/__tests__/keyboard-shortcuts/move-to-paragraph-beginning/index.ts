@@ -1,6 +1,7 @@
 import { Page } from "@playwright/test";
 
-import { IS_MAC, keyDownCtrlOrAlt, keyUpCtrlOrAlt } from "../../utils";
+import { IS_MAC } from "../../constants";
+import { keyDownCtrlOrAlt, keyUpCtrlOrAlt, sleep } from "../../utils";
 
 /**
  * Moves to the beginning of the paragraph in the current selection
@@ -14,4 +15,6 @@ export const moveToParagraphBeginning = async (page: Page): Promise<void> => {
   } else {
     await page.keyboard.press("Home");
   }
+
+  await sleep(500);
 };

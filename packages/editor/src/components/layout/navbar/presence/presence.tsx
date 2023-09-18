@@ -11,7 +11,7 @@ import { breakpoints } from "~/theme/breakpoints";
 import { capitalize } from "~/utils/capitalize";
 
 import { awarenessAtom } from "../../../../atoms";
-import { UserState } from "../../../../collab/provider";
+import { UserState } from "../../../../collaboration/provider";
 import styles from "./presence.module.scss";
 
 type UserStateWithClientId = UserState & { clientID: number };

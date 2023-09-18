@@ -1,7 +1,7 @@
 import { Page, test } from "@playwright/test";
 import { testAsset } from "@storiny/ui/src/mocks";
 
-import { editorClassNames } from "../../constants/class-names";
+import { EDITOR_CLASSNAMES } from "../../constants";
 import { pressBackspace } from "../../keyboard-shortcuts";
 import {
   assertHTML,
@@ -31,7 +31,10 @@ test.describe("image", () => {
     await page.unroute(ROUTE, assetsRouteHandler);
   });
 
-  test("can add image nodes and delete them correctly", async ({ page }) => {
+  test("can add image nodes and delete them correctly", async ({
+    page,
+    browserName
+  }) => {
     await insertImage(page);
 
     await assertHTML(
@@ -108,11 +111,11 @@ test.describe("image", () => {
     // Remove image node using backspace
 
     await focusEditor(page);
-    await pressBackspace(page, 3);
+    await pressBackspace(page, browserName === "firefox" ? 4 : 3);
 
     await assertHTML(
       page,
-      html` <p class="${editorClassNames.paragraph}"><br /></p> `
+      html` <p class="${EDITOR_CLASSNAMES.paragraph}"><br /></p> `
     );
 
     await assertSelection(page, {
@@ -198,9 +201,9 @@ test.describe("image", () => {
       await assertHTML(
         page,
         html`
-          <p class="${editorClassNames.paragraph}"><br /></p>
-          <p class="${editorClassNames.paragraph}"><br /></p>
-          <p class="${editorClassNames.paragraph}"><br /></p>
+          <p class="${EDITOR_CLASSNAMES.paragraph}"><br /></p>
+          <p class="${EDITOR_CLASSNAMES.paragraph}"><br /></p>
+          <p class="${EDITOR_CLASSNAMES.paragraph}"><br /></p>
         `
       );
     }

@@ -1,6 +1,6 @@
 import { test } from "@playwright/test";
 
-import { editorClassNames } from "../../constants/class-names";
+import { EDITOR_CLASSNAMES } from "../../constants";
 import { pressBackspace } from "../../keyboard-shortcuts";
 import {
   assertHTML,
@@ -24,9 +24,9 @@ test.describe("color", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}">
+        <p class="${EDITOR_CLASSNAMES.paragraph}">
           <code spellcheck="false" data-lexical-text="true">
-            <span class="${editorClassNames.color}" style="--color: #000">
+            <span class="${EDITOR_CLASSNAMES.color}" style="--color: #000">
               #000
             </span>
           </code>
@@ -49,9 +49,9 @@ test.describe("color", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}">
+        <p class="${EDITOR_CLASSNAMES.paragraph}">
           <code spellcheck="false" data-lexical-text="true">
-            <span class="${editorClassNames.color}" style="--color: #000">
+            <span class="${EDITOR_CLASSNAMES.color}" style="--color: #000">
               #000
             </span>
           </code>
@@ -64,7 +64,7 @@ test.describe("color", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}">
+        <p class="${EDITOR_CLASSNAMES.paragraph}">
           <br />
         </p>
       `

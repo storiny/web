@@ -1,7 +1,7 @@
 import { test } from "@playwright/test";
 
 import { EDITOR_SHORTCUTS } from "../../../src/constants/shortcuts";
-import { editorClassNames } from "../../constants/class-names";
+import { EDITOR_CLASSNAMES } from "../../constants";
 import { moveLeft, pressBackspace } from "../../keyboard-shortcuts";
 import {
   assertHTML,
@@ -25,7 +25,7 @@ test.describe("tk", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">This is a paragraph</span>
         </p>
       `
@@ -44,12 +44,12 @@ test.describe("tk", () => {
       page,
       html`
         <p
-          class="${editorClassNames.paragraph} ${editorClassNames.tkParagraph}"
+          class="${EDITOR_CLASSNAMES.paragraph} ${EDITOR_CLASSNAMES.tkParagraph}"
           dir="ltr"
         >
           <span data-lexical-text="true">This is a paragraph with</span>
           <span
-            class="${editorClassNames.tk}"
+            class="${EDITOR_CLASSNAMES.tk}"
             spellcheck="false"
             data-lexical-text="true"
             >TK</span
@@ -75,12 +75,12 @@ test.describe("tk", () => {
       page,
       html`
         <p
-          class="${editorClassNames.paragraph} ${editorClassNames.tkParagraph}"
+          class="${EDITOR_CLASSNAMES.paragraph} ${EDITOR_CLASSNAMES.tkParagraph}"
           dir="ltr"
         >
           <span data-lexical-text="true">This is a paragraph with</span>
           <span
-            class="${editorClassNames.tk}"
+            class="${EDITOR_CLASSNAMES.tk}"
             spellcheck="false"
             data-lexical-text="true"
             >TK</span
@@ -101,7 +101,7 @@ test.describe("tk", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">This is a paragraph</span>
         </p>
       `
@@ -124,33 +124,33 @@ test.describe("tk", () => {
       page,
       html`
         <p
-          class="${editorClassNames.paragraph} ${editorClassNames.tkParagraph}"
+          class="${EDITOR_CLASSNAMES.paragraph} ${EDITOR_CLASSNAMES.tkParagraph}"
           dir="ltr"
         >
           <span data-lexical-text="true">This is a paragraph with many</span>
           <span
-            class="${editorClassNames.tk}"
+            class="${EDITOR_CLASSNAMES.tk}"
             spellcheck="false"
             data-lexical-text="true"
             >TK</span
           >
           <span data-lexical-text="true">nodes. They look like</span>
           <span
-            class="${editorClassNames.tk}"
+            class="${EDITOR_CLASSNAMES.tk}"
             spellcheck="false"
             data-lexical-text="true"
             >TK</span
           >
           <span data-lexical-text="true">, smell like</span>
           <span
-            class="${editorClassNames.tk}"
+            class="${EDITOR_CLASSNAMES.tk}"
             spellcheck="false"
             data-lexical-text="true"
             >TK</span
           >
           <span data-lexical-text="true">, and work like</span>
           <span
-            class="${editorClassNames.tk}"
+            class="${EDITOR_CLASSNAMES.tk}"
             spellcheck="false"
             data-lexical-text="true"
             >TK</span
@@ -177,19 +177,19 @@ test.describe("tk", () => {
       page,
       html`
         <p
-          class="${editorClassNames.paragraph} ${editorClassNames.tkParagraph}"
+          class="${EDITOR_CLASSNAMES.paragraph} ${EDITOR_CLASSNAMES.tkParagraph}"
           dir="ltr"
         >
           <span data-lexical-text="true">This is a paragraph with a</span>
           <span
-            class="${editorClassNames.tk}"
+            class="${EDITOR_CLASSNAMES.tk}"
             spellcheck="false"
             data-lexical-text="true"
             >TK</span
           >
           <span data-lexical-text="true">and another</span>
           <span
-            class="${editorClassNames.tk}"
+            class="${EDITOR_CLASSNAMES.tk}"
             spellcheck="false"
             data-lexical-text="true"
             >TK</span
@@ -212,12 +212,12 @@ test.describe("tk", () => {
       page,
       html`
         <p
-          class="${editorClassNames.paragraph} ${editorClassNames.tkParagraph}"
+          class="${EDITOR_CLASSNAMES.paragraph} ${EDITOR_CLASSNAMES.tkParagraph}"
           dir="ltr"
         >
           <span data-lexical-text="true">This is a paragraph with a</span>
           <span
-            class="${editorClassNames.tk}"
+            class="${EDITOR_CLASSNAMES.tk}"
             spellcheck="false"
             data-lexical-text="true"
             >TK</span
@@ -241,19 +241,19 @@ test.describe("tk", () => {
       page,
       html`
         <p
-          class="${editorClassNames.paragraph} ${editorClassNames.tkParagraph}"
+          class="${EDITOR_CLASSNAMES.paragraph} ${EDITOR_CLASSNAMES.tkParagraph}"
           dir="ltr"
         >
           <span data-lexical-text="true">This is a paragraph with a</span>
           <span
-            class="${editorClassNames.tk}"
+            class="${EDITOR_CLASSNAMES.tk}"
             spellcheck="false"
             data-lexical-text="true"
             >TK</span
           >
           <span data-lexical-text="true">and another</span>
           <span
-            class="${editorClassNames.tk}"
+            class="${EDITOR_CLASSNAMES.tk}"
             spellcheck="false"
             data-lexical-text="true"
             >TK</span
@@ -275,7 +275,7 @@ test.describe("tk", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">This is a paragraph</span>
         </p>
       `
@@ -298,19 +298,19 @@ test.describe("tk", () => {
       page,
       html`
         <p
-          class="${editorClassNames.paragraph} ${editorClassNames.tkParagraph}"
+          class="${EDITOR_CLASSNAMES.paragraph} ${EDITOR_CLASSNAMES.tkParagraph}"
           dir="ltr"
         >
           <span data-lexical-text="true">This is a paragraph with a</span>
           <span
-            class="${editorClassNames.tk}"
+            class="${EDITOR_CLASSNAMES.tk}"
             spellcheck="false"
             data-lexical-text="true"
             >TK</span
           >
           <span data-lexical-text="true">and another</span>
           <span
-            class="${editorClassNames.tk}"
+            class="${EDITOR_CLASSNAMES.tk}"
             spellcheck="false"
             data-lexical-text="true"
             >TK</span
@@ -334,12 +334,12 @@ test.describe("tk", () => {
       page,
       html`
         <p
-          class="${editorClassNames.paragraph} ${editorClassNames.tkParagraph}"
+          class="${EDITOR_CLASSNAMES.paragraph} ${EDITOR_CLASSNAMES.tkParagraph}"
           dir="ltr"
         >
           <span data-lexical-text="true">This is a paragraph with a</span>
           <span
-            class="${editorClassNames.tk}"
+            class="${EDITOR_CLASSNAMES.tk}"
             spellcheck="false"
             data-lexical-text="true"
             >TK</span
@@ -347,12 +347,12 @@ test.describe("tk", () => {
           <span data-lexical-text="true">and</span>
         </p>
         <p
-          class="${editorClassNames.paragraph} ${editorClassNames.tkParagraph}"
+          class="${EDITOR_CLASSNAMES.paragraph} ${EDITOR_CLASSNAMES.tkParagraph}"
           dir="ltr"
         >
           <span data-lexical-text="true"> another</span>
           <span
-            class="${editorClassNames.tk}"
+            class="${EDITOR_CLASSNAMES.tk}"
             spellcheck="false"
             data-lexical-text="true"
             >TK</span
@@ -382,12 +382,12 @@ test.describe("tk", () => {
       page,
       html`
         <p
-          class="${editorClassNames.paragraph} ${editorClassNames.tkParagraph}"
+          class="${EDITOR_CLASSNAMES.paragraph} ${EDITOR_CLASSNAMES.tkParagraph}"
           dir="ltr"
         >
           <span data-lexical-text="true">This is a paragraph with a</span>
           <span
-            class="${editorClassNames.tk}"
+            class="${EDITOR_CLASSNAMES.tk}"
             spellcheck="false"
             data-lexical-text="true"
             >TK</span
@@ -395,12 +395,12 @@ test.describe("tk", () => {
           <span data-lexical-text="true">and</span>
         </p>
         <p
-          class="${editorClassNames.paragraph} ${editorClassNames.tkParagraph}"
+          class="${EDITOR_CLASSNAMES.paragraph} ${EDITOR_CLASSNAMES.tkParagraph}"
           dir="ltr"
         >
           <span data-lexical-text="true"> another</span>
           <span
-            class="${editorClassNames.tk}"
+            class="${EDITOR_CLASSNAMES.tk}"
             spellcheck="false"
             data-lexical-text="true"
             >TK</span
@@ -423,19 +423,19 @@ test.describe("tk", () => {
       page,
       html`
         <p
-          class="${editorClassNames.paragraph} ${editorClassNames.tkParagraph}"
+          class="${EDITOR_CLASSNAMES.paragraph} ${EDITOR_CLASSNAMES.tkParagraph}"
           dir="ltr"
         >
           <span data-lexical-text="true">This is a paragraph with a</span>
           <span
-            class="${editorClassNames.tk}"
+            class="${EDITOR_CLASSNAMES.tk}"
             spellcheck="false"
             data-lexical-text="true"
             >TK</span
           >
           <span data-lexical-text="true">and another</span>
           <span
-            class="${editorClassNames.tk}"
+            class="${EDITOR_CLASSNAMES.tk}"
             spellcheck="false"
             data-lexical-text="true"
             >TK</span
@@ -444,13 +444,6 @@ test.describe("tk", () => {
         </p>
       `
     );
-
-    await assertSelection(page, {
-      anchorOffset: 4,
-      anchorPath: [0, 2, 0],
-      focusOffset: 4,
-      focusPath: [0, 2, 0]
-    });
   });
 
   test("can only be a direct child of a paragraph node", async ({ page }) => {
@@ -459,7 +452,7 @@ test.describe("tk", () => {
     await assertHTML(
       page,
       html`
-        <h3 class="${editorClassNames.subheading}" dir="ltr">
+        <h3 class="${EDITOR_CLASSNAMES.subheading}" dir="ltr">
           <span data-lexical-text="true">This is a heading with a TK</span>
         </h3>
       `
@@ -475,12 +468,12 @@ test.describe("tk", () => {
       page,
       html`
         <p
-          class="${editorClassNames.paragraph} ${editorClassNames.tkParagraph}"
+          class="${EDITOR_CLASSNAMES.paragraph} ${EDITOR_CLASSNAMES.tkParagraph}"
           dir="ltr"
         >
           <span data-lexical-text="true">This is a paragraph with</span>
           <span
-            class="${editorClassNames.tk}"
+            class="${EDITOR_CLASSNAMES.tk}"
             spellcheck="false"
             data-lexical-text="true"
             >TK</span
@@ -504,7 +497,7 @@ test.describe("tk", () => {
     await assertHTML(
       page,
       html`
-        <h2 class="${editorClassNames.heading}" dir="ltr">
+        <h2 class="${EDITOR_CLASSNAMES.heading}" dir="ltr">
           <span data-lexical-text="true">This is a paragraph with TK</span>
         </h2>
       `

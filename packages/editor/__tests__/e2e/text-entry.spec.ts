@@ -1,12 +1,11 @@
 import { test } from "@playwright/test";
 
-import { editorClassNames } from "../constants/class-names";
+import { EDITOR_CLASSNAMES } from "../constants";
 import {
   moveLeft,
   moveToLineBeginning,
   selectAll,
-  selectCharacters,
-  toggleBold
+  selectCharacters
 } from "../keyboard-shortcuts";
 import {
   assertHTML,
@@ -31,7 +30,7 @@ test.describe("text entry", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">hello world</span>
         </p>
       `
@@ -55,7 +54,7 @@ test.describe("text entry", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">front updated</span>
         </p>
       `
@@ -79,7 +78,7 @@ test.describe("text entry", () => {
     await assertHTML(
       page,
       html`
-        <h2 class="${editorClassNames.heading}" dir="ltr">
+        <h2 class="${EDITOR_CLASSNAMES.heading}" dir="ltr">
           <span data-lexical-text="true">hello</span>
         </h2>
       `
@@ -97,8 +96,8 @@ test.describe("text entry", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}"><br /></p>
-        <h2 class="${editorClassNames.heading}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}"><br /></p>
+        <h2 class="${EDITOR_CLASSNAMES.heading}" dir="ltr">
           <span data-lexical-text="true">hello</span>
         </h2>
       `
@@ -126,7 +125,7 @@ test.describe("text entry", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">foo</span>
         </p>
       `
@@ -154,7 +153,7 @@ test.describe("text entry", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}">
+        <p class="${EDITOR_CLASSNAMES.paragraph}">
           <span data-lexical-text="true"></span>
         </p>
       `
@@ -188,10 +187,10 @@ test.describe("text entry", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">Hello world.</span>
         </p>
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">This is another paragraph.</span>
         </p>
       `
@@ -217,7 +216,7 @@ test.describe("text entry", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">Delete some of these characte</span>
         </p>
       `
@@ -239,7 +238,7 @@ test.describe("text entry", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">Hello world.</span>
         </p>
       `
@@ -268,7 +267,7 @@ test.describe("text entry", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">Hello my world.</span>
         </p>
       `
@@ -309,7 +308,7 @@ test.describe("text entry", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">Delete some of these</span>
         </p>
       `
@@ -333,10 +332,10 @@ test.describe("text entry", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}">
+        <p class="${EDITOR_CLASSNAMES.paragraph}">
           <span data-lexical-text="true"></span>
         </p>
-        <p class="${editorClassNames.paragraph}"><br /></p>
+        <p class="${EDITOR_CLASSNAMES.paragraph}"><br /></p>
       `
     );
 
@@ -353,7 +352,7 @@ test.describe("text entry", () => {
 
     await assertHTML(
       page,
-      html` <p class="${editorClassNames.paragraph}"><br /></p> `
+      html` <p class="${EDITOR_CLASSNAMES.paragraph}"><br /></p> `
     );
 
     await assertSelection(page, {
@@ -377,7 +376,7 @@ test.describe("text entry", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}">
+        <p class="${EDITOR_CLASSNAMES.paragraph}">
           <br />
           <br />
           <br />
@@ -411,8 +410,8 @@ test.describe("text entry", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}"><br /></p>
-        <p class="${editorClassNames.paragraph}">
+        <p class="${EDITOR_CLASSNAMES.paragraph}"><br /></p>
+        <p class="${EDITOR_CLASSNAMES.paragraph}">
           <br />
           <br />
           <br />
@@ -435,10 +434,10 @@ test.describe("text entry", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="rtl">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="rtl">
           <span data-lexical-text="true">هَ</span>
         </p>
-        <p class="${editorClassNames.paragraph}">
+        <p class="${EDITOR_CLASSNAMES.paragraph}">
           <br />
           <br />
           <br />
@@ -462,8 +461,8 @@ test.describe("text entry", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}"><br /></p>
-        <p class="${editorClassNames.paragraph}"><br /></p>
+        <p class="${EDITOR_CLASSNAMES.paragraph}"><br /></p>
+        <p class="${EDITOR_CLASSNAMES.paragraph}"><br /></p>
       `
     );
 
@@ -508,7 +507,7 @@ test.describe("text entry", () => {
 
     await assertHTML(
       page,
-      html` <p class="${editorClassNames.paragraph}"><br /></p> `
+      html` <p class="${EDITOR_CLASSNAMES.paragraph}"><br /></p> `
     );
 
     await assertSelection(page, {
@@ -526,7 +525,7 @@ test.describe("text entry", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}">
+        <p class="${EDITOR_CLASSNAMES.paragraph}">
           <br />
           <br />
         </p>
@@ -545,7 +544,7 @@ test.describe("text entry", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}">
+        <p class="${EDITOR_CLASSNAMES.paragraph}">
           <br />
           <br />
         </p>
@@ -564,7 +563,7 @@ test.describe("text entry", () => {
 
     await assertHTML(
       page,
-      html` <p class="${editorClassNames.paragraph}"><br /></p> `
+      html` <p class="${EDITOR_CLASSNAMES.paragraph}"><br /></p> `
     );
 
     await assertSelection(page, {

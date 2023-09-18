@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-import { editorClassNames } from "../constants/class-names";
+import { EDITOR_CLASSNAMES } from "../constants";
 import {
   moveLeft,
   moveRight,
@@ -39,9 +39,9 @@ test.describe("text style shortcuts", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">Hello</span>
-          <strong class="${editorClassNames.tBold}" data-lexical-text="true">
+          <strong class="${EDITOR_CLASSNAMES.tBold}" data-lexical-text="true">
             world
           </strong>
         </p>
@@ -61,9 +61,9 @@ test.describe("text style shortcuts", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">Hello</span>
-          <strong class="${editorClassNames.tBold}" data-lexical-text="true">
+          <strong class="${EDITOR_CLASSNAMES.tBold}" data-lexical-text="true">
             world
           </strong>
           <span data-lexical-text="true">!</span>
@@ -87,9 +87,9 @@ test.describe("text style shortcuts", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">Hello</span>
-          <em class="${editorClassNames.tItalic}" data-lexical-text="true">
+          <em class="${EDITOR_CLASSNAMES.tItalic}" data-lexical-text="true">
             world
           </em>
         </p>
@@ -109,9 +109,9 @@ test.describe("text style shortcuts", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">Hello</span>
-          <em class="${editorClassNames.tItalic}" data-lexical-text="true">
+          <em class="${EDITOR_CLASSNAMES.tItalic}" data-lexical-text="true">
             world
           </em>
           <span data-lexical-text="true">!</span>
@@ -135,9 +135,12 @@ test.describe("text style shortcuts", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">Hello</span>
-          <span class="${editorClassNames.tUnderline}" data-lexical-text="true">
+          <span
+            class="${EDITOR_CLASSNAMES.tUnderline}"
+            data-lexical-text="true"
+          >
             world
           </span>
         </p>
@@ -157,9 +160,12 @@ test.describe("text style shortcuts", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">Hello</span>
-          <span class="${editorClassNames.tUnderline}" data-lexical-text="true">
+          <span
+            class="${EDITOR_CLASSNAMES.tUnderline}"
+            data-lexical-text="true"
+          >
             world
           </span>
           <span data-lexical-text="true">!</span>
@@ -185,10 +191,10 @@ test.describe("text style shortcuts", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">Hello</span>
           <span
-            class="${editorClassNames.tStrikethrough}"
+            class="${EDITOR_CLASSNAMES.tStrikethrough}"
             data-lexical-text="true"
           >
             world
@@ -210,10 +216,10 @@ test.describe("text style shortcuts", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">Hello</span>
           <span
-            class="${editorClassNames.tStrikethrough}"
+            class="${EDITOR_CLASSNAMES.tStrikethrough}"
             data-lexical-text="true"
           >
             world
@@ -242,10 +248,10 @@ test.describe("text style shortcuts", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">Hello</span>
           <span
-            class="${editorClassNames.tUnderlineStrikethrough}"
+            class="${EDITOR_CLASSNAMES.tUnderlineStrikethrough}"
             data-lexical-text="true"
           >
             world
@@ -268,10 +274,10 @@ test.describe("text style shortcuts", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">Hello</span>
           <span
-            class="${editorClassNames.tUnderlineStrikethrough}"
+            class="${EDITOR_CLASSNAMES.tUnderlineStrikethrough}"
             data-lexical-text="true"
           >
             world
@@ -297,10 +303,10 @@ test.describe("text style shortcuts", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">Hello</span>
           <code spellcheck="false" data-lexical-text="true">
-            <span class="${editorClassNames.inlineCode}"> world </span>
+            <span class="${EDITOR_CLASSNAMES.inlineCode}"> world </span>
           </code>
         </p>
       `
@@ -319,10 +325,10 @@ test.describe("text style shortcuts", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">Hello</span>
           <code spellcheck="false" data-lexical-text="true">
-            <span class="${editorClassNames.inlineCode}"> world </span>
+            <span class="${EDITOR_CLASSNAMES.inlineCode}"> world </span>
           </code>
           <span data-lexical-text="true">!</span>
         </p>
@@ -345,10 +351,10 @@ test.describe("text style shortcuts", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">Hello</span>
           <sub data-lexical-text="true">
-            <span class="${editorClassNames.tSubscript}"> world </span>
+            <span class="${EDITOR_CLASSNAMES.tSubscript}"> world </span>
           </sub>
         </p>
       `
@@ -367,10 +373,10 @@ test.describe("text style shortcuts", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">Hello</span>
           <sub data-lexical-text="true">
-            <span class="${editorClassNames.tSubscript}"> world </span>
+            <span class="${EDITOR_CLASSNAMES.tSubscript}"> world </span>
           </sub>
           <span data-lexical-text="true">!</span>
         </p>
@@ -393,10 +399,10 @@ test.describe("text style shortcuts", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">Hello</span>
           <sup data-lexical-text="true">
-            <span class="${editorClassNames.tSuperscript}"> world </span>
+            <span class="${EDITOR_CLASSNAMES.tSuperscript}"> world </span>
           </sup>
         </p>
       `
@@ -415,10 +421,10 @@ test.describe("text style shortcuts", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">Hello</span>
           <sup data-lexical-text="true">
-            <span class="${editorClassNames.tSuperscript}"> world </span>
+            <span class="${EDITOR_CLASSNAMES.tSuperscript}"> world </span>
           </sup>
           <span data-lexical-text="true">!</span>
         </p>
@@ -456,7 +462,7 @@ test.describe("text style shortcuts when a part of text is selected", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">Hello world!</span>
         </p>
       `
@@ -478,9 +484,9 @@ test.describe("text style shortcuts when a part of text is selected", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">Hello</span>
-          <strong class="${editorClassNames.tBold}" data-lexical-text="true">
+          <strong class="${EDITOR_CLASSNAMES.tBold}" data-lexical-text="true">
             world
           </strong>
           <span data-lexical-text="true">!</span>
@@ -506,9 +512,9 @@ test.describe("text style shortcuts when a part of text is selected", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">Hello</span>
-          <em class="${editorClassNames.tItalic}" data-lexical-text="true">
+          <em class="${EDITOR_CLASSNAMES.tItalic}" data-lexical-text="true">
             world
           </em>
           <span data-lexical-text="true">!</span>
@@ -534,9 +540,12 @@ test.describe("text style shortcuts when a part of text is selected", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">Hello</span>
-          <span class="${editorClassNames.tUnderline}" data-lexical-text="true">
+          <span
+            class="${EDITOR_CLASSNAMES.tUnderline}"
+            data-lexical-text="true"
+          >
             world
           </span>
           <span data-lexical-text="true">!</span>
@@ -562,10 +571,10 @@ test.describe("text style shortcuts when a part of text is selected", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">Hello</span>
           <span
-            class="${editorClassNames.tStrikethrough}"
+            class="${EDITOR_CLASSNAMES.tStrikethrough}"
             data-lexical-text="true"
           >
             world
@@ -594,10 +603,10 @@ test.describe("text style shortcuts when a part of text is selected", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">Hello</span>
           <span
-            class="${editorClassNames.tUnderlineStrikethrough}"
+            class="${EDITOR_CLASSNAMES.tUnderlineStrikethrough}"
             data-lexical-text="true"
           >
             world
@@ -626,10 +635,10 @@ test.describe("text style shortcuts when a part of text is selected", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">Hello</span>
           <code spellcheck="false" data-lexical-text="true">
-            <span class="${editorClassNames.inlineCode}"> world </span>
+            <span class="${EDITOR_CLASSNAMES.inlineCode}"> world </span>
           </code>
           <span data-lexical-text="true">!</span>
         </p>
@@ -654,10 +663,10 @@ test.describe("text style shortcuts when a part of text is selected", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">Hello</span>
           <sub data-lexical-text="true">
-            <span class="${editorClassNames.tSubscript}"> world </span>
+            <span class="${EDITOR_CLASSNAMES.tSubscript}"> world </span>
           </sub>
           <span data-lexical-text="true">!</span>
         </p>
@@ -682,10 +691,10 @@ test.describe("text style shortcuts when a part of text is selected", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">Hello</span>
           <sup data-lexical-text="true">
-            <span class="${editorClassNames.tSuperscript}"> world </span>
+            <span class="${EDITOR_CLASSNAMES.tSuperscript}"> world </span>
           </sup>
           <span data-lexical-text="true">!</span>
         </p>
@@ -734,12 +743,12 @@ test.describe("text style", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="ltr">
-          <strong class="${editorClassNames.tBold}" data-lexical-text="true">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
+          <strong class="${EDITOR_CLASSNAMES.tBold}" data-lexical-text="true">
             hello world
           </strong>
         </p>
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">hello world</span>
         </p>
       `
@@ -765,9 +774,9 @@ test.describe("text style", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">Hello</span>
-          <strong class="${editorClassNames.tBold}" data-lexical-text="true">
+          <strong class="${EDITOR_CLASSNAMES.tBold}" data-lexical-text="true">
             world
           </strong>
           <span data-lexical-text="true">!</span>
@@ -798,18 +807,18 @@ test.describe("text style", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">Hello</span>
-          <strong class="${editorClassNames.tBold}" data-lexical-text="true">
+          <strong class="${EDITOR_CLASSNAMES.tBold}" data-lexical-text="true">
             w
           </strong>
           <strong
-            class="${editorClassNames.tBold} ${editorClassNames.tItalic}"
+            class="${EDITOR_CLASSNAMES.tBold} ${EDITOR_CLASSNAMES.tItalic}"
             data-lexical-text="true"
           >
             or
           </strong>
-          <strong class="${editorClassNames.tBold}" data-lexical-text="true">
+          <strong class="${EDITOR_CLASSNAMES.tBold}" data-lexical-text="true">
             ld
           </strong>
           <span data-lexical-text="true">!</span>
@@ -829,15 +838,15 @@ test.describe("text style", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">Hello</span>
-          <strong class="${editorClassNames.tBold}" data-lexical-text="true">
+          <strong class="${EDITOR_CLASSNAMES.tBold}" data-lexical-text="true">
             w
           </strong>
-          <em class="${editorClassNames.tItalic}" data-lexical-text="true">
+          <em class="${EDITOR_CLASSNAMES.tItalic}" data-lexical-text="true">
             or
           </em>
-          <strong class="${editorClassNames.tBold}" data-lexical-text="true">
+          <strong class="${EDITOR_CLASSNAMES.tBold}" data-lexical-text="true">
             ld
           </strong>
           <span data-lexical-text="true">!</span>
@@ -867,9 +876,9 @@ test.describe("text style", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">Hello w</span>
-          <em class="${editorClassNames.tItalic}" data-lexical-text="true">
+          <em class="${EDITOR_CLASSNAMES.tItalic}" data-lexical-text="true">
             or
           </em>
           <span data-lexical-text="true">ld!</span>
@@ -889,9 +898,9 @@ test.describe("text style", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">Hello</span>
-          <em class="${editorClassNames.tItalic}" data-lexical-text="true">
+          <em class="${EDITOR_CLASSNAMES.tItalic}" data-lexical-text="true">
             world
           </em>
           <span data-lexical-text="true">!</span>
@@ -911,7 +920,7 @@ test.describe("text style", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">Hello world!</span>
         </p>
       `
@@ -955,15 +964,15 @@ test.describe("text style", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">123</span>
-          <strong class="${editorClassNames.tBold}" data-lexical-text="true">
+          <strong class="${EDITOR_CLASSNAMES.tBold}" data-lexical-text="true">
             456
           </strong>
           <span data-lexical-text="true">789</span>
           <br />
           <span data-lexical-text="true">abc</span>
-          <strong class="${editorClassNames.tBold}" data-lexical-text="true">
+          <strong class="${EDITOR_CLASSNAMES.tBold}" data-lexical-text="true">
             def
           </strong>
           <span data-lexical-text="true">ghi</span>
@@ -1002,7 +1011,7 @@ test.describe("text style", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">12z</span>
         </p>
       `
@@ -1036,8 +1045,8 @@ test.describe("text style", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}">
-          <strong class="${editorClassNames.tBold}" data-lexical-text="true">
+        <p class="${EDITOR_CLASSNAMES.paragraph}">
+          <strong class="${EDITOR_CLASSNAMES.tBold}" data-lexical-text="true">
             12
           </strong>
           <span data-lexical-text="true">3456</span>
@@ -1051,8 +1060,8 @@ test.describe("text style", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}">
-          <strong class="${editorClassNames.tBold}" data-lexical-text="true">
+        <p class="${EDITOR_CLASSNAMES.paragraph}">
+          <strong class="${EDITOR_CLASSNAMES.tBold}" data-lexical-text="true">
             123456
           </strong>
         </p>

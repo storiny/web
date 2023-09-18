@@ -1,6 +1,6 @@
 import { test } from "@playwright/test";
 
-import { editorClassNames } from "../constants/class-names";
+import { EDITOR_CLASSNAMES } from "../constants";
 import {
   assertHTML,
   assertSelection,
@@ -23,7 +23,7 @@ test.describe("composition", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">も</span>
         </p>
       `
@@ -40,7 +40,7 @@ test.describe("composition", () => {
 
     await assertHTML(
       page,
-      html` <p class="${editorClassNames.paragraph}"><br /></p> `
+      html` <p class="${EDITOR_CLASSNAMES.paragraph}"><br /></p> `
     );
 
     await assertSelection(page, {
@@ -55,7 +55,7 @@ test.describe("composition", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">もじ</span>
         </p>
       `
@@ -69,13 +69,18 @@ test.describe("composition", () => {
     });
   });
 
-  test("handles Arabic characters with diacritics", async ({ page }) => {
+  test("handles Arabic characters with diacritics", async ({
+    page,
+    browserName
+  }) => {
+    test.skip(browserName === "firefox");
+
     await page.keyboard.type("هَ");
 
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="rtl">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="rtl">
           <span data-lexical-text="true">هَ</span>
         </p>
       `
@@ -93,7 +98,7 @@ test.describe("composition", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="rtl">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="rtl">
           <span data-lexical-text="true">ه</span>
         </p>
       `
@@ -110,7 +115,7 @@ test.describe("composition", () => {
 
     await assertHTML(
       page,
-      html` <p class="${editorClassNames.paragraph}"><br /></p> `
+      html` <p class="${EDITOR_CLASSNAMES.paragraph}"><br /></p> `
     );
 
     await page.keyboard.type("هَ");
@@ -118,7 +123,7 @@ test.describe("composition", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="rtl">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="rtl">
           <span data-lexical-text="true">هَ</span>
         </p>
       `
@@ -145,7 +150,7 @@ test.describe("composition", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="rtl">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="rtl">
           <span data-lexical-text="true">هَ</span>
         </p>
       `

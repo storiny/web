@@ -4,7 +4,7 @@ import { mockStories } from "@storiny/ui/src/mocks";
 import { Provider } from "jotai";
 import React from "react";
 
-import EditorComposer from "../../composer";
+import EditorComposer from "../composer";
 import EditorToolbar from "../toolbar";
 import EditorLeftSidebar from "./left-sidebar";
 import EditorNavbar from "./navbar";

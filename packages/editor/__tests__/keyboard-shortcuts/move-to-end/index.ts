@@ -1,6 +1,7 @@
 import { Page } from "@playwright/test";
 
-import { IS_MAC } from "../../utils";
+import { IS_MAC } from "../../constants";
+import { sleep } from "../../utils";
 
 /**
  * Moves to the end of the selection
@@ -16,4 +17,6 @@ export const moveToEnd = async (page: Page): Promise<void> => {
     await page.keyboard.press("ArrowRight");
     await page.keyboard.up("Control");
   }
+
+  await sleep(500);
 };

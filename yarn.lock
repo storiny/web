@@ -1786,6 +1786,32 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@dotenv-run/cli@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "@dotenv-run/cli@npm:1.1.0"
+  dependencies:
+    "@dotenv-run/core": ^1.1.0
+    chalk: ^4.1.0
+    cross-spawn: ^7.0.3
+    minimist: ^1.2.8
+  bin:
+    dotenv-run: dist/index.mjs
+  checksum: 545cf2e9b86da3e481ec26e393b6f125f450e139007c1503b8b3a448191b9d71b384dbec09e9296edc72aa684e94fcbe1854102024cea4c1cda6abe084a02f18
+  languageName: node
+  linkType: hard
+
+"@dotenv-run/core@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "@dotenv-run/core@npm:1.1.0"
+  dependencies:
+    chalk: ^4.1.0
+    dotenv: ^16.1.4
+    dotenv-expand: ^10.0.0
+    find-up: ^5.0.0
+  checksum: 14bfd7a06f22d1b718df9a68b5f9e5e03a720d17703cc7eca4ab0e1f661ff6f77c445370f37a33ab017d8a9168bc40fce7019afd38e7542738aa2aff4efe1607
+  languageName: node
+  linkType: hard
+
 "@emotion/babel-plugin@npm:^11.11.0":
   version: 11.11.0
   resolution: "@emotion/babel-plugin@npm:11.11.0"
@@ -4705,9 +4731,9 @@ __metadata:
     eslint: ^8.42.0
     jotai: ^2.2.2
     lexical: ^0.12.2
+    lib0: ^0.2.85
     next: ^13.4.19
     prettier: ^3.0.3
-    prettier-plugin-organize-attributes: ^1.0.0
     react: ^18.2.0
     react-dom: ^18.2.0
     react-error-boundary: ^4.0.11
@@ -4716,6 +4742,7 @@ __metadata:
     typescript: ^5.1.5
     use-file-picker: ^1.7.0
     use-resize-observer: ^9.1.0
+    y-protocols: ^1.0.6
     y-websocket: ^1.5.0
     y-websocket-server: ^1.0.2
     yjs: ^13.6.7
@@ -4747,6 +4774,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@storiny/monorepo@workspace:."
   dependencies:
+    "@dotenv-run/cli": ^1.1.0
     "@grpc/grpc-js": ^1.8.15
     "@playwright/test": ^1.37.1
     "@storiny/eslint-config": "*"
@@ -4778,6 +4806,7 @@ __metadata:
     nodemon: ^2.0.22
     pexels: ^1.4.0
     prettier: ^2.5.1
+    prettier-plugin-organize-attributes: ^1.0.0
     react: ^18.2.0
     react-dom: ^18.2.0
     storybook: 7.3.2
@@ -10565,7 +10594,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dotenv@npm:^16.0.0, dotenv@npm:^16.3.1":
+"dotenv@npm:^16.0.0, dotenv@npm:^16.1.4, dotenv@npm:^16.3.1":
   version: 16.3.1
   resolution: "dotenv@npm:16.3.1"
   checksum: 15d75e7279018f4bafd0ee9706593dd14455ddb71b3bcba9c52574460b7ccaf67d5cf8b2c08a5af1a9da6db36c956a04a1192b101ee102a3e0cf8817bbcf3dfd
@@ -14962,7 +14991,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lib0@npm:^0.2.31, lib0@npm:^0.2.42, lib0@npm:^0.2.52, lib0@npm:^0.2.74":
+"lib0@npm:^0.2.31, lib0@npm:^0.2.52, lib0@npm:^0.2.85":
+  version: 0.2.85
+  resolution: "lib0@npm:0.2.85"
+  dependencies:
+    isomorphic.js: ^0.2.4
+  bin:
+    0gentesthtml: bin/gentesthtml.js
+    0serve: bin/0serve.js
+  checksum: 6a3c5c5c3f37f0940eff9309b2595f9a77822f521773db773e0d809309ccf5e6ecab8f39cc47b55b6b167f60b3824c44bb7d92b5c9ffb81a3f331b21277906d2
+  languageName: node
+  linkType: hard
+
+"lib0@npm:^0.2.74":
   version: 0.2.83
   resolution: "lib0@npm:0.2.83"
   dependencies:
@@ -22245,12 +22286,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"y-protocols@npm:^1.0.5":
-  version: 1.0.5
-  resolution: "y-protocols@npm:1.0.5"
+"y-protocols@npm:^1.0.5, y-protocols@npm:^1.0.6":
+  version: 1.0.6
+  resolution: "y-protocols@npm:1.0.6"
   dependencies:
-    lib0: ^0.2.42
-  checksum: d19404a4ebafcf3761c28b881abe8c32ab6e457db0e5ffc7dbb749cbc2c3bb98e003a43f3e8eba7f245b2698c76f2c4cdd1c2db869f8ec0c6ef94736d9a88652
+    lib0: ^0.2.85
+  peerDependencies:
+    yjs: ^13.0.0
+  checksum: 4b57c8811befcf2e45c3d47830005f8a33e626c734f78a42fe8a4fa3caad2233ba85a7c8bceefbd52ffc40130d3f3faee664fd0d1c324ff1fa8817a056ccdc1c
   languageName: node
   linkType: hard
 

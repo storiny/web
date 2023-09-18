@@ -2,20 +2,23 @@
   "private": true,
   "scripts": {
     "build": "turbo run build",
-    "dev": "dotenv -e ./.env.local -- concurrently --raw \"docker-compose up -d\" \"turbo run dev --color --parallel\"",
+    "dev": "dotenv -c -- concurrently --raw \"docker-compose up -d\" \"turbo run dev --color --parallel\"",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md,mdx}\"",
-    "test": "jest",
-    "storybook:dev": "dotenv -e ./.env.local -- storybook dev -p 6006 --no-open",
+    "storybook:dev": "dotenv -c -- storybook dev -p 6006 --no-open",
     "storybook:build": "storybook build",
-    "multiplayer:server": "cross-env HOST=localhost PORT=1234 npx y-websocket-server",
-    "multiplayer:dev": "dotenv -e ./.env.local -- concurrently --raw \"yarn multiplayer:server\" \"yarn storybook:dev\""
+    "test": "jest",
+    "test:e2e": "dotenv -v E2E_PORT=3000 -- playwright test",
+    "test:e2e:chromium": "dotenv -v E2E_PORT=3000 -v E2E_BROWSER=chromium -- playwright test --project=\"chromium\"",
+    "test:e2e:firefox": "dotenv -v E2E_PORT=3000 -v E2E_BROWSER=firefox -- playwright test --project=\"firefox\"",
+    "test:e2e:webkit": "dotenv -v E2E_PORT=3000 -v E2E_BROWSER=webkit -- playwright test --project=\"webkit\""
   },
   "workspaces": [
     "apps/*",
     "packages/*"
   ],
   "devDependencies": {
+    "@dotenv-run/cli": "^1.1.0",
     "@grpc/grpc-js": "^1.8.15",
     "@playwright/test": "^1.37.1",
     "@storiny/eslint-config": "*",
@@ -47,6 +50,7 @@
     "nodemon": "^2.0.22",
     "pexels": "^1.4.0",
     "prettier": "^2.5.1",
+    "prettier-plugin-organize-attributes": "^1.0.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "storybook": "7.3.2",

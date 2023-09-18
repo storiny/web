@@ -5,8 +5,8 @@ import Divider from "~/components/Divider";
 import Skeleton from "~/components/Skeleton";
 import Spacer from "~/components/Spacer";
 
+import { EditorStoryCardSkeleton } from "../content/story-card";
 import styles from "../left-sidebar.module.scss";
-import { EditorStoryCardSkeleton } from "../story-card";
 
 const EditorLeftSidebarSkeleton = (): React.ReactElement => (
   <React.Fragment>

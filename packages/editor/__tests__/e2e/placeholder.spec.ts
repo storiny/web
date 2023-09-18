@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-import { editorClassNames } from "../constants/class-names";
+import { EDITOR_CLASSNAMES } from "../constants";
 import {
   assertHTML,
   assertSelection,
@@ -21,7 +21,7 @@ test.describe("placeholder", () => {
 
     await assertHTML(
       page,
-      html`<p class="${editorClassNames.paragraph}"><br /></p>`
+      html`<p class="${EDITOR_CLASSNAMES.paragraph}"><br /></p>`
     );
 
     await assertSelection(page, {

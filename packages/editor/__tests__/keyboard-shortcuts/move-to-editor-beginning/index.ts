@@ -1,11 +1,7 @@
 import { Page } from "@playwright/test";
 
-import {
-  E2E_BROWSER,
-  IS_MAC,
-  keyDownCtrlOrMeta,
-  keyUpCtrlOrMeta
-} from "../../utils";
+import { E2E_BROWSER, IS_MAC } from "../../constants";
+import { keyDownCtrlOrMeta, keyUpCtrlOrMeta, sleep } from "../../utils";
 
 /**
  * Moves to the beginning of the editor root
@@ -23,4 +19,6 @@ export const moveToEditorBeginning = async (page: Page): Promise<void> => {
       await page.keyboard.press("Home");
     }
   }
+
+  await sleep(500);
 };

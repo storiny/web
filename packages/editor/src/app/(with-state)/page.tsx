@@ -7,7 +7,7 @@ import Editor from "../../components/editor";
 
 const Page = (): React.ReactElement => {
   const collabId = useSearchParams().get("collab_id") || "";
-  return <Editor docId={collabId} />;
+  return <Editor docId={collabId} role={"editor"} />;
 };
 
 export default Page;

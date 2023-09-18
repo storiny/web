@@ -8,8 +8,8 @@ import {
   Point
 } from "lexical";
 
-import { Binding } from "../../collab/bindings";
-import { Provider } from "../../collab/provider";
+import { Binding } from "../../collaboration/bindings";
+import { Provider } from "../../collaboration/provider";
 import { createAbsolutePosition } from "../create-absolute-position";
 import { getCollabNodeAndOffset } from "../get-collab-node-and-offset";
 

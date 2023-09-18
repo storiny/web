@@ -4,6 +4,7 @@ export type DocStatus =
   | "connecting"
   | "connected"
   | "syncing"
+  | "forbidden"
   | "overloaded"
   | "disconnected"
   | "reconnecting";

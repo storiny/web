@@ -1,6 +1,6 @@
 import { test } from "@playwright/test";
 
-import { editorClassNames } from "../../constants/class-names";
+import { EDITOR_CLASSNAMES } from "../../constants";
 import {
   moveLeft,
   moveToLineBeginning,
@@ -10,7 +10,6 @@ import {
 import {
   assertHTML,
   assertSelection,
-  click,
   copyToClipboard,
   focusEditor,
   html,
@@ -36,9 +35,9 @@ test.describe("horizontal rule", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}"><br /></p>
+        <p class="${EDITOR_CLASSNAMES.paragraph}"><br /></p>
         <hr class="" contenteditable="false" data-lexical-decorator="true" />
-        <p class="${editorClassNames.paragraph}"><br /></p>
+        <p class="${EDITOR_CLASSNAMES.paragraph}"><br /></p>
       `
     );
 
@@ -95,11 +94,11 @@ test.describe("horizontal rule", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">Some text</span>
         </p>
         <hr class="" contenteditable="false" data-lexical-decorator="true" />
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">Some more text</span>
         </p>
       `
@@ -160,7 +159,7 @@ test.describe("horizontal rule", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">Test</span>
         </p>
       `
@@ -172,11 +171,11 @@ test.describe("horizontal rule", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">Test</span>
         </p>
         <hr class="" contenteditable="false" data-lexical-decorator="true" />
-        <p class="${editorClassNames.paragraph}"><br /></p>
+        <p class="${EDITOR_CLASSNAMES.paragraph}"><br /></p>
       `
     );
 
@@ -203,7 +202,7 @@ test.describe("horizontal rule", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">Test</span>
         </p>
       `
@@ -224,11 +223,11 @@ test.describe("horizontal rule", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">Te</span>
         </p>
         <hr class="" contenteditable="false" data-lexical-decorator="true" />
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">st</span>
         </p>
       `
@@ -249,9 +248,9 @@ test.describe("horizontal rule", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}"><br /></p>
+        <p class="${EDITOR_CLASSNAMES.paragraph}"><br /></p>
         <hr class="" contenteditable="false" data-lexical-decorator="true" />
-        <p class="${editorClassNames.paragraph}"><br /></p>
+        <p class="${EDITOR_CLASSNAMES.paragraph}"><br /></p>
       `
     );
 
@@ -273,9 +272,9 @@ test.describe("horizontal rule", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}"><br /></p>
+        <p class="${EDITOR_CLASSNAMES.paragraph}"><br /></p>
         <hr class="" contenteditable="false" data-lexical-decorator="true" />
-        <p class="${editorClassNames.paragraph}"><br /></p>
+        <p class="${EDITOR_CLASSNAMES.paragraph}"><br /></p>
       `
     );
 
@@ -294,11 +293,11 @@ test.describe("horizontal rule", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}"><br /></p>
+        <p class="${EDITOR_CLASSNAMES.paragraph}"><br /></p>
         <hr class="" contenteditable="false" data-lexical-decorator="true" />
-        <p class="${editorClassNames.paragraph}"><br /></p>
+        <p class="${EDITOR_CLASSNAMES.paragraph}"><br /></p>
         <hr class="" contenteditable="false" data-lexical-decorator="true" />
-        <p class="${editorClassNames.paragraph}"><br /></p>
+        <p class="${EDITOR_CLASSNAMES.paragraph}"><br /></p>
       `
     );
 

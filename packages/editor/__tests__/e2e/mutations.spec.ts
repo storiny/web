@@ -1,6 +1,6 @@
 import { Page, test } from "@playwright/test";
 
-import { editorClassNames } from "../constants/class-names";
+import { EDITOR_CLASSNAMES } from "../constants";
 import { toggleCode } from "../keyboard-shortcuts";
 import {
   assertHTML,
@@ -19,10 +19,10 @@ const validateContent = async (page: Page): Promise<void> => {
   await assertHTML(
     page,
     html`
-      <p class="${editorClassNames.paragraph}" dir="ltr">
+      <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
         <span data-lexical-text="true">hello world</span>
         <code spellcheck="false" data-lexical-text="true">
-          <span class="${editorClassNames.color}" style="--color: #000">
+          <span class="${EDITOR_CLASSNAMES.color}" style="--color: #000">
             #000
           </span>
         </code>

@@ -6,11 +6,11 @@ import {
   TextNode
 } from "lexical";
 
-import { Binding } from "../../collab/bindings";
-import { CollabDecoratorNode } from "../../collab/nodes/decorator";
-import { CollabElementNode } from "../../collab/nodes/element";
-import { CollabLineBreakNode } from "../../collab/nodes/line-break";
-import { CollabTextNode } from "../../collab/nodes/text";
+import { Binding } from "../../collaboration/bindings";
+import { CollabDecoratorNode } from "../../collaboration/nodes/decorator";
+import { CollabElementNode } from "../../collaboration/nodes/element";
+import { CollabLineBreakNode } from "../../collaboration/nodes/line-break";
+import { CollabTextNode } from "../../collaboration/nodes/text";
 
 /**
  * Creates a lexical node from a collab node

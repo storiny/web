@@ -1,7 +1,7 @@
 import { Page, test } from "@playwright/test";
 import { compressToEncodedURIComponent } from "lz-string";
 
-import { editorClassNames } from "../../constants/class-names";
+import { EDITOR_CLASSNAMES } from "../../constants";
 import { pressBackspace } from "../../keyboard-shortcuts";
 import {
   assertHTML,
@@ -102,7 +102,10 @@ test.describe("embed", () => {
     await page.unroute(ROUTE);
   });
 
-  test("can add embed nodes and delete them correctly", async ({ page }) => {
+  test("can add embed nodes and delete them correctly", async ({
+    page,
+    browserName
+  }) => {
     await page.route(ROUTE, sourcedEmbedHandler);
     await insertEmbed(page);
 
@@ -155,11 +158,11 @@ test.describe("embed", () => {
     // Remove embed node using backspace
 
     await focusEditor(page);
-    await pressBackspace(page, 3);
+    await pressBackspace(page, browserName === "firefox" ? 4 : 3);
 
     await assertHTML(
       page,
-      html` <p class="${editorClassNames.paragraph}"><br /></p> `
+      html`<p class="${EDITOR_CLASSNAMES.paragraph}"><br /></p>`
     );
 
     await assertSelection(page, {
@@ -217,9 +220,9 @@ test.describe("embed", () => {
       await assertHTML(
         page,
         html`
-          <p class="${editorClassNames.paragraph}"><br /></p>
-          <p class="${editorClassNames.paragraph}"><br /></p>
-          <p class="${editorClassNames.paragraph}"><br /></p>
+          <p class="${EDITOR_CLASSNAMES.paragraph}"><br /></p>
+          <p class="${EDITOR_CLASSNAMES.paragraph}"><br /></p>
+          <p class="${EDITOR_CLASSNAMES.paragraph}"><br /></p>
         `
       );
     }

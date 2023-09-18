@@ -1,6 +1,7 @@
 import { Page } from "@playwright/test";
 
-import { IS_MAC, keyDownCtrlOrAlt, keyUpCtrlOrMeta } from "../../utils";
+import { IS_MAC } from "../../constants";
+import { keyDownCtrlOrAlt, keyUpCtrlOrMeta, sleep } from "../../utils";
 
 /**
  * Moves to the end of the paragraph in the current selection
@@ -14,4 +15,6 @@ export const moveToParagraphEnd = async (page: Page): Promise<void> => {
   } else {
     await page.keyboard.press("End");
   }
+
+  await sleep(500);
 };

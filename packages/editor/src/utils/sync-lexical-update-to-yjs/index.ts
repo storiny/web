@@ -7,9 +7,9 @@ import {
   NodeKey
 } from "lexical";
 
-import { Binding } from "../../collab/bindings";
-import { CollabTextNode } from "../../collab/nodes/text";
-import { Provider } from "../../collab/provider";
+import { Binding } from "../../collaboration/bindings";
+import { CollabTextNode } from "../../collaboration/nodes/text";
+import { Provider } from "../../collaboration/provider";
 import { syncLexicalSelectionToYjs } from "../sync-lexical-selection-to-yjs";
 import { syncWithTransaction } from "../sync-with-transaction";
 

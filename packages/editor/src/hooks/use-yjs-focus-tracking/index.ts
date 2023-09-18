@@ -11,7 +11,7 @@ import {
   CollabLocalState,
   Provider,
   setLocalStateFocus
-} from "../../collab/provider";
+} from "../../collaboration/provider";
 
 /**
  * Hook for using yjs focus tracking

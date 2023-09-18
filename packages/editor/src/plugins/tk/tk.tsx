@@ -1,12 +1,9 @@
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { mergeRegister } from "@lexical/utils";
-import { useAtomValue } from "jotai";
 import {
   $createTextNode,
   $getNodeByKey,
-  $getRoot,
   $isParagraphNode,
-  $isTextNode,
   LexicalEditor,
   NodeKey,
   ParagraphNode,
@@ -14,7 +11,6 @@ import {
 } from "lexical";
 import React from "react";
 
-import { enableTKAtom } from "../../atoms";
 import { $createTKNode, $isTKNode, TKNode } from "../../nodes/tk";
 import styles from "./tk.module.scss";
 
@@ -121,7 +117,7 @@ const tkTransform = (node: TextNode): void => {
   }
 };
 
-const TKPluginImpl = (): null => {
+const TKPlugin = (): null => {
   const [editor] = useLexicalComposerContext();
 
   React.useEffect(
@@ -238,57 +234,6 @@ const TKPluginImpl = (): null => {
   );
 
   return null;
-};
-
-const TKPlugin = (): React.ReactElement | null => {
-  const [editor] = useLexicalComposerContext();
-  const firstRenderRef = React.useRef<boolean>(true);
-  const enableTk = useAtomValue(enableTKAtom);
-
-  React.useEffect(() => {
-    if (!firstRenderRef.current) {
-      editor.update(
-        () => {
-          // Filter out all the paragraph nodes
-          const paragraphNodes = $getRoot()
-            .getChildren()
-            .filter($isParagraphNode);
-
-          if (enableTk) {
-            // Create TK nodes
-            for (const paragraphNode of paragraphNodes) {
-              for (const childNode of paragraphNode
-                .getChildren()
-                .filter($isTextNode)) {
-                tkTransform(childNode);
-              }
-            }
-          } else {
-            // Replace TK nodes with text nodes
-            for (const paragraphNode of paragraphNodes) {
-              for (const childNode of paragraphNode.getChildren()) {
-                if ($isTKNode(childNode)) {
-                  $removeTkNodeFromMap(editor, childNode);
-                  childNode.replace(
-                    $createTextNode(childNode.getTextContent())
-                  );
-                }
-              }
-            }
-          }
-        },
-        { tag: "history-merge" }
-      );
-    }
-
-    firstRenderRef.current = false;
-  }, [enableTk, editor]);
-
-  if (!enableTk) {
-    return null;
-  }
-
-  return <TKPluginImpl />;
 };
 
 export default TKPlugin;

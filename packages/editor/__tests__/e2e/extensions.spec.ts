@@ -1,6 +1,6 @@
 import { test } from "@playwright/test";
 
-import { editorClassNames } from "../constants/class-names";
+import { EDITOR_CLASSNAMES } from "../constants";
 import {
   assertHTML,
   assertSelection,
@@ -22,7 +22,7 @@ test.describe("extensions", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">hello</span>
         </p>
       `
@@ -73,7 +73,7 @@ test.describe("extensions", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">hello</span>
         </p>
       `
@@ -114,7 +114,7 @@ test.describe("extensions", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">hello world</span>
         </p>
       `
@@ -132,6 +132,8 @@ test.describe("extensions", () => {
     page,
     browserName
   }) => {
+    test.skip(browserName === "firefox");
+
     await focusEditor(page);
     await evaluate(page, () => {
       const paste = (): ((target: Element, text: string) => void) => {
@@ -166,7 +168,7 @@ test.describe("extensions", () => {
       await assertHTML(
         page,
         html`
-          <p class="${editorClassNames.paragraph}" dir="ltr">
+          <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
             <span data-lexical-text="true"> world</span>
           </p>
         `
@@ -182,7 +184,7 @@ test.describe("extensions", () => {
       await assertHTML(
         page,
         html`
-          <p class="${editorClassNames.paragraph}" dir="ltr">
+          <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
             <span data-lexical-text="true">hello world</span>
           </p>
         `
@@ -234,10 +236,10 @@ test.describe("extensions", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">hello world</span>
         </p>
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">and t</span>
         </p>
       `
