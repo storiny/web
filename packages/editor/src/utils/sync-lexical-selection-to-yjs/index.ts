@@ -12,10 +12,10 @@ import {
   RelativePosition
 } from "yjs";
 
-import { Binding } from "../../collab/bindings";
-import { CollabElementNode } from "../../collab/nodes/element";
-import { CollabTextNode } from "../../collab/nodes/text";
-import { Provider } from "../../collab/provider";
+import { Binding } from "../../collaboration/bindings";
+import { CollabElementNode } from "../../collaboration/nodes/element";
+import { CollabTextNode } from "../../collaboration/nodes/text";
+import { Provider } from "../../collaboration/provider";
 
 /**
  * Creates relative position using a point

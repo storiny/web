@@ -9,11 +9,11 @@ import {
 } from "lexical";
 import { Text as YText, YEvent, YMapEvent, YTextEvent, YXmlEvent } from "yjs";
 
-import { Binding } from "../../collab/bindings";
-import { CollabDecoratorNode } from "../../collab/nodes/decorator";
-import { CollabElementNode } from "../../collab/nodes/element";
-import { CollabTextNode } from "../../collab/nodes/text";
-import { Provider } from "../../collab/provider";
+import { Binding } from "../../collaboration/bindings";
+import { CollabDecoratorNode } from "../../collaboration/nodes/decorator";
+import { CollabElementNode } from "../../collaboration/nodes/element";
+import { CollabTextNode } from "../../collaboration/nodes/text";
+import { Provider } from "../../collaboration/provider";
 import { doesSelectionNeedRecovering } from "../does-selection-need-recovering";
 import { getOrInitCollabNodeFromSharedType } from "../get-or-init-collab-node-from-shared-type";
 import { syncCursorPositions } from "../sync-cursor-positions";

@@ -1,7 +1,7 @@
 import { Page, test } from "@playwright/test";
 
 import { EDITOR_SHORTCUTS } from "../../src/constants/shortcuts";
-import { editorClassNames } from "../constants/class-names";
+import { EDITOR_CLASSNAMES } from "../constants";
 import {
   deleteBackward,
   moveLeft,
@@ -23,7 +23,8 @@ import {
   html,
   initialize,
   keyDownCtrlOrMeta,
-  pasteFromClipboard
+  pasteFromClipboard,
+  sleep
 } from "../utils";
 
 type InsertMethod = "type" | "paste:plain" | "paste:html" | "paste:lexical";
@@ -53,7 +54,7 @@ test.describe("link", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">Hello</span>
         </p>
       `
@@ -64,11 +65,11 @@ test.describe("link", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <a
             href="/"
             rel="noreferrer"
-            class="${editorClassNames.link}"
+            class="${EDITOR_CLASSNAMES.link}"
             dir="ltr"
           >
             <span data-lexical-text="true">Hello</span>
@@ -90,11 +91,11 @@ test.describe("link", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <a
             href="https://storiny.com"
             rel="noreferrer"
-            class="${editorClassNames.link}"
+            class="${EDITOR_CLASSNAMES.link}"
             dir="ltr"
           >
             <span data-lexical-text="true">Hello</span>
@@ -115,7 +116,7 @@ test.describe("link", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">Hello</span>
         </p>
       `
@@ -147,12 +148,12 @@ test.describe("link", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">abc</span>
-          <strong class="${editorClassNames.tBold}" data-lexical-text="true">
+          <strong class="${EDITOR_CLASSNAMES.tBold}" data-lexical-text="true">
             def
           </strong>
-          <em class="${editorClassNames.tItalic}" data-lexical-text="true">
+          <em class="${EDITOR_CLASSNAMES.tItalic}" data-lexical-text="true">
             ghi
           </em>
           <span data-lexical-text="true"></span>
@@ -175,19 +176,19 @@ test.describe("link", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}">
+        <p class="${EDITOR_CLASSNAMES.paragraph}">
           <span data-lexical-text="true"></span>
           <a
-            class="${editorClassNames.link}"
+            class="${EDITOR_CLASSNAMES.link}"
             dir="ltr"
             href="/"
             rel="noreferrer"
           >
             <span data-lexical-text="true">abc</span>
-            <strong class="${editorClassNames.tBold}" data-lexical-text="true">
+            <strong class="${EDITOR_CLASSNAMES.tBold}" data-lexical-text="true">
               def
             </strong>
-            <em class="${editorClassNames.tItalic}" data-lexical-text="true">
+            <em class="${EDITOR_CLASSNAMES.tItalic}" data-lexical-text="true">
               ghi
             </em>
           </a>
@@ -201,19 +202,19 @@ test.describe("link", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}">
+        <p class="${EDITOR_CLASSNAMES.paragraph}">
           <span data-lexical-text="true"></span>
           <a
-            class="${editorClassNames.link}"
+            class="${EDITOR_CLASSNAMES.link}"
             dir="ltr"
             href="https://storiny.com"
             rel="noreferrer"
           >
             <span data-lexical-text="true">abc</span>
-            <strong class="${editorClassNames.tBold}" data-lexical-text="true">
+            <strong class="${EDITOR_CLASSNAMES.tBold}" data-lexical-text="true">
               def
             </strong>
-            <em class="${editorClassNames.tItalic}" data-lexical-text="true">
+            <em class="${EDITOR_CLASSNAMES.tItalic}" data-lexical-text="true">
               ghi
             </em>
           </a>
@@ -241,12 +242,12 @@ test.describe("link", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">abc</span>
-          <strong class="${editorClassNames.tBold}" data-lexical-text="true">
+          <strong class="${EDITOR_CLASSNAMES.tBold}" data-lexical-text="true">
             def
           </strong>
-          <em class="${editorClassNames.tItalic}" data-lexical-text="true">
+          <em class="${EDITOR_CLASSNAMES.tItalic}" data-lexical-text="true">
             ghi
           </em>
           <span data-lexical-text="true"></span>
@@ -269,19 +270,19 @@ test.describe("link", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}">
+        <p class="${EDITOR_CLASSNAMES.paragraph}">
           <span data-lexical-text="true"></span>
           <a
-            class="${editorClassNames.link}"
+            class="${EDITOR_CLASSNAMES.link}"
             dir="ltr"
             href="/"
             rel="noreferrer"
           >
             <span data-lexical-text="true">abc</span>
-            <strong class="${editorClassNames.tBold}" data-lexical-text="true">
+            <strong class="${EDITOR_CLASSNAMES.tBold}" data-lexical-text="true">
               def
             </strong>
-            <em class="${editorClassNames.tItalic}" data-lexical-text="true">
+            <em class="${EDITOR_CLASSNAMES.tItalic}" data-lexical-text="true">
               ghi
             </em>
           </a>
@@ -295,19 +296,19 @@ test.describe("link", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}">
+        <p class="${EDITOR_CLASSNAMES.paragraph}">
           <span data-lexical-text="true"></span>
           <a
-            class="${editorClassNames.link}"
+            class="${EDITOR_CLASSNAMES.link}"
             dir="ltr"
             href="https://storiny.com"
             rel="noreferrer"
           >
             <span data-lexical-text="true">abc</span>
-            <strong class="${editorClassNames.tBold}" data-lexical-text="true">
+            <strong class="${EDITOR_CLASSNAMES.tBold}" data-lexical-text="true">
               def
             </strong>
-            <em class="${editorClassNames.tItalic}" data-lexical-text="true">
+            <em class="${EDITOR_CLASSNAMES.tItalic}" data-lexical-text="true">
               ghi
             </em>
           </a>
@@ -328,10 +329,10 @@ test.describe("link", () => {
     await assertHTML(
       page,
       html`
-        <ul class="${editorClassNames.ul}">
-          <li class="${editorClassNames.li}" dir="ltr" value="1">
+        <ul class="${EDITOR_CLASSNAMES.ul}">
+          <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="1">
             <a
-              class="${editorClassNames.link}"
+              class="${EDITOR_CLASSNAMES.link}"
               dir="ltr"
               href="/"
               rel="noreferrer"
@@ -348,11 +349,11 @@ test.describe("link", () => {
     await assertHTML(
       page,
       html`
-        <ul class="${editorClassNames.ul}">
-          <li class="${editorClassNames.li}" value="1"><br /></li>
-          <li class="${editorClassNames.li}" value="2">
+        <ul class="${EDITOR_CLASSNAMES.ul}">
+          <li class="${EDITOR_CLASSNAMES.li}" value="1"><br /></li>
+          <li class="${EDITOR_CLASSNAMES.li}" value="2">
             <a
-              class="${editorClassNames.link}"
+              class="${EDITOR_CLASSNAMES.link}"
               dir="ltr"
               href="/"
               rel="noreferrer"
@@ -376,10 +377,10 @@ test.describe("link", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true"></span>
           <a
-            class="${editorClassNames.link}"
+            class="${EDITOR_CLASSNAMES.link}"
             dir="ltr"
             href="/"
             rel="noreferrer"
@@ -393,15 +394,16 @@ test.describe("link", () => {
 
     await moveLeft(page, 1, 50);
     await moveRight(page, 2, 50);
+    await sleep(500);
     await page.keyboard.press("Enter");
 
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}">
+        <p class="${EDITOR_CLASSNAMES.paragraph}">
           <span data-lexical-text="true"></span>
           <a
-            class="${editorClassNames.link}"
+            class="${EDITOR_CLASSNAMES.link}"
             dir="ltr"
             href="/"
             rel="noreferrer"
@@ -409,9 +411,9 @@ test.describe("link", () => {
             <span data-lexical-text="true">ab</span>
           </a>
         </p>
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <a
-            class="${editorClassNames.link}"
+            class="${EDITOR_CLASSNAMES.link}"
             dir="ltr"
             href="/"
             rel="noreferrer"
@@ -428,10 +430,10 @@ test.describe("link", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true"></span>
           <a
-            class="${editorClassNames.link}"
+            class="${EDITOR_CLASSNAMES.link}"
             dir="ltr"
             href="/"
             rel="noreferrer"
@@ -439,7 +441,7 @@ test.describe("link", () => {
             <span data-lexical-text="true">ab</span>
           </a>
           <a
-            class="${editorClassNames.link}"
+            class="${EDITOR_CLASSNAMES.link}"
             dir="ltr"
             href="/"
             rel="noreferrer"
@@ -463,10 +465,10 @@ test.describe("link", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}">
+        <p class="${EDITOR_CLASSNAMES.paragraph}">
           <span data-lexical-text="true"></span>
           <a
-            class="${editorClassNames.link}"
+            class="${EDITOR_CLASSNAMES.link}"
             dir="ltr"
             href="/"
             rel="noreferrer"
@@ -483,7 +485,7 @@ test.describe("link", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">a</span>
         </p>
       `
@@ -505,7 +507,7 @@ test.describe("link", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">a</span>
         </p>
       `
@@ -527,10 +529,10 @@ test.describe("link", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true"></span>
           <a
-            class="${editorClassNames.link}"
+            class="${EDITOR_CLASSNAMES.link}"
             dir="ltr"
             href="/"
             rel="noreferrer"
@@ -561,12 +563,12 @@ test.describe("link", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">abc</span>
-          <strong class="${editorClassNames.tBold}" data-lexical-text="true">
+          <strong class="${EDITOR_CLASSNAMES.tBold}" data-lexical-text="true">
             def
           </strong>
-          <em class="${editorClassNames.tItalic}" data-lexical-text="true">
+          <em class="${EDITOR_CLASSNAMES.tItalic}" data-lexical-text="true">
             ghi
           </em>
           <span data-lexical-text="true"></span>
@@ -588,19 +590,19 @@ test.describe("link", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}">
+        <p class="${EDITOR_CLASSNAMES.paragraph}">
           <span data-lexical-text="true"></span>
           <a
-            class="${editorClassNames.link}"
+            class="${EDITOR_CLASSNAMES.link}"
             dir="ltr"
             href="/"
             rel="noreferrer"
           >
             <span data-lexical-text="true">abc</span>
-            <strong class="${editorClassNames.tBold}" data-lexical-text="true">
+            <strong class="${EDITOR_CLASSNAMES.tBold}" data-lexical-text="true">
               def
             </strong>
-            <em class="${editorClassNames.tItalic}" data-lexical-text="true">
+            <em class="${EDITOR_CLASSNAMES.tItalic}" data-lexical-text="true">
               ghi
             </em>
           </a>
@@ -615,19 +617,19 @@ test.describe("link", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true"></span>
           <a
-            class="${editorClassNames.link}"
+            class="${EDITOR_CLASSNAMES.link}"
             dir="ltr"
             href="/"
             rel="noreferrer"
           >
             <span data-lexical-text="true">abc</span>
-            <strong class="${editorClassNames.tBold}" data-lexical-text="true">
+            <strong class="${EDITOR_CLASSNAMES.tBold}" data-lexical-text="true">
               def
             </strong>
-            <em class="${editorClassNames.tItalic}" data-lexical-text="true">
+            <em class="${EDITOR_CLASSNAMES.tItalic}" data-lexical-text="true">
               ghi
             </em>
           </a>
@@ -657,9 +659,9 @@ test.describe("link", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <a
-            class="${editorClassNames.link}"
+            class="${EDITOR_CLASSNAMES.link}"
             dir="ltr"
             href="/"
             rel="noreferrer"
@@ -682,15 +684,15 @@ test.describe("link", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <a
-            class="${editorClassNames.link}"
+            class="${EDITOR_CLASSNAMES.link}"
             dir="ltr"
             href="/"
             rel="noreferrer"
           >
             <span data-lexical-text="true">This is the</span>
-            <strong class="${editorClassNames.tBold}" data-lexical-text="true">
+            <strong class="${EDITOR_CLASSNAMES.tBold}" data-lexical-text="true">
               bold
             </strong>
             <span data-lexical-text="true">link</span>
@@ -707,15 +709,15 @@ test.describe("link", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <a
-            class="${editorClassNames.link}"
+            class="${EDITOR_CLASSNAMES.link}"
             dir="ltr"
             href="/"
             rel="noreferrer"
           >
             <span data-lexical-text="true">This is the</span>
-            <strong class="${editorClassNames.tBold}" data-lexical-text="true">
+            <strong class="${EDITOR_CLASSNAMES.tBold}" data-lexical-text="true">
               boldest
             </strong>
             <span data-lexical-text="true">link</span>
@@ -738,9 +740,9 @@ test.describe("link", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <a
-            class="${editorClassNames.link}"
+            class="${EDITOR_CLASSNAMES.link}"
             dir="ltr"
             href="/"
             rel="noreferrer"
@@ -763,15 +765,15 @@ test.describe("link", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <a
-            class="${editorClassNames.link}"
+            class="${EDITOR_CLASSNAMES.link}"
             dir="ltr"
             href="/"
             rel="noreferrer"
           >
             <span data-lexical-text="true">This is a</span>
-            <strong class="${editorClassNames.tBold}" data-lexical-text="true">
+            <strong class="${EDITOR_CLASSNAMES.tBold}" data-lexical-text="true">
               bold
             </strong>
             <span data-lexical-text="true">link</span>
@@ -790,15 +792,15 @@ test.describe("link", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <a
-            class="${editorClassNames.link}"
+            class="${EDITOR_CLASSNAMES.link}"
             dir="ltr"
             href="/"
             rel="noreferrer"
           >
             <span data-lexical-text="true">This is the</span>
-            <strong class="${editorClassNames.tBold}" data-lexical-text="true">
+            <strong class="${EDITOR_CLASSNAMES.tBold}" data-lexical-text="true">
               bold
             </strong>
             <span data-lexical-text="true">link</span>
@@ -816,9 +818,9 @@ test.describe("link", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <a
-            class="${editorClassNames.link}"
+            class="${EDITOR_CLASSNAMES.link}"
             dir="ltr"
             href="/"
             rel="noreferrer"
@@ -835,9 +837,9 @@ test.describe("link", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <a
-            class="${editorClassNames.link}"
+            class="${EDITOR_CLASSNAMES.link}"
             dir="ltr"
             href="https://storiny.com"
             rel="noreferrer"
@@ -856,7 +858,7 @@ test.describe("link", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">link text</span>
         </p>
       `
@@ -867,11 +869,11 @@ test.describe("link", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <a
             href="/"
             rel="noreferrer"
-            class="${editorClassNames.link}"
+            class="${EDITOR_CLASSNAMES.link}"
             dir="ltr"
           >
             <span data-lexical-text="true">link text</span>
@@ -888,12 +890,12 @@ test.describe("link", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">text before link </span>
           <a
             href="/"
             rel="noreferrer"
-            class="${editorClassNames.link}"
+            class="${EDITOR_CLASSNAMES.link}"
             dir="ltr"
           >
             <span data-lexical-text="true">link text</span>
@@ -913,7 +915,7 @@ test.describe("link", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">some random text</span>
         </p>
       `
@@ -925,10 +927,10 @@ test.describe("link", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">some </span>
           <a
-            class="${editorClassNames.link}"
+            class="${EDITOR_CLASSNAMES.link}"
             href="/"
             rel="noreferrer"
             dir="ltr"
@@ -949,12 +951,12 @@ test.describe("link", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">some </span>
           <a
             href="/"
             rel="noreferrer"
-            class="${editorClassNames.link}"
+            class="${EDITOR_CLASSNAMES.link}"
             dir="ltr"
           >
             <span data-lexical-text="true">random</span>
@@ -974,7 +976,7 @@ test.describe("link", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">Hello world</span>
         </p>
       `
@@ -987,12 +989,12 @@ test.describe("link", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">Hello</span>
           <a
             href="/"
             rel="noreferrer"
-            class="${editorClassNames.link}"
+            class="${EDITOR_CLASSNAMES.link}"
             dir="ltr"
           >
             <span data-lexical-text="true">world</span>
@@ -1022,12 +1024,12 @@ test.describe("link", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">Hello</span>
           <a
             href="https://storiny.com"
             rel="noreferrer"
-            class="${editorClassNames.link}"
+            class="${EDITOR_CLASSNAMES.link}"
             dir="ltr"
           >
             <span data-lexical-text="true">world</span>
@@ -1057,7 +1059,7 @@ test.describe("link", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">Hello world</span>
         </p>
       `
@@ -1080,7 +1082,7 @@ test.describe("link", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">Hello world</span>
         </p>
       `
@@ -1092,12 +1094,12 @@ test.describe("link", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">Hello</span>
           <a
             href="/"
             rel="noreferrer"
-            class="${editorClassNames.link}"
+            class="${EDITOR_CLASSNAMES.link}"
             dir="ltr"
           >
             <span data-lexical-text="true">world</span>
@@ -1127,12 +1129,12 @@ test.describe("link", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">Hello</span>
           <a
             href="https://storiny.com"
             rel="noreferrer"
-            class="${editorClassNames.link}"
+            class="${EDITOR_CLASSNAMES.link}"
             dir="ltr"
           >
             <span data-lexical-text="true">world</span>
@@ -1162,7 +1164,7 @@ test.describe("link", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">Hello world</span>
         </p>
       `
@@ -1186,12 +1188,12 @@ test.describe("link", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">Hello</span>
           <a
             href="/"
             rel="noreferrer"
-            class="${editorClassNames.link}"
+            class="${EDITOR_CLASSNAMES.link}"
             dir="ltr"
           >
             <span data-lexical-text="true">world</span>
@@ -1210,12 +1212,12 @@ test.describe("link", () => {
     await assertHTML(
       page,
       html`
-        <h2 class="${editorClassNames.heading}" dir="ltr">
+        <h2 class="${EDITOR_CLASSNAMES.heading}" dir="ltr">
           <span data-lexical-text="true">Hello</span>
           <a
             href="/"
             rel="noreferrer"
-            class="${editorClassNames.link}"
+            class="${EDITOR_CLASSNAMES.link}"
             dir="ltr"
           >
             <span data-lexical-text="true">world</span>
@@ -1238,9 +1240,9 @@ test.describe("link", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <a
-            class="${editorClassNames.link}"
+            class="${EDITOR_CLASSNAMES.link}"
             dir="ltr"
             href="/"
             rel="noreferrer"
@@ -1248,9 +1250,9 @@ test.describe("link", () => {
             <span data-lexical-text="true">Hello world</span>
           </a>
         </p>
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <a
-            class="${editorClassNames.link}"
+            class="${EDITOR_CLASSNAMES.link}"
             dir="ltr"
             href="/"
             rel="noreferrer"
@@ -1258,9 +1260,9 @@ test.describe("link", () => {
             <span data-lexical-text="true">Hello world</span>
           </a>
         </p>
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <a
-            class="${editorClassNames.link}"
+            class="${EDITOR_CLASSNAMES.link}"
             dir="ltr"
             href="/"
             rel="noreferrer"
@@ -1285,13 +1287,14 @@ test.describe("link", () => {
     await moveRight(page, 6);
 
     await page.keyboard.press("Enter");
+    await sleep(500);
 
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <a
-            class="${editorClassNames.link}"
+            class="${EDITOR_CLASSNAMES.link}"
             dir="ltr"
             href="/"
             rel="noreferrer"
@@ -1299,9 +1302,9 @@ test.describe("link", () => {
             <span data-lexical-text="true">Hello</span>
           </a>
         </p>
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <a
-            class="${editorClassNames.link}"
+            class="${EDITOR_CLASSNAMES.link}"
             dir="ltr"
             href="/"
             rel="noreferrer"
@@ -1331,10 +1334,10 @@ test.describe("link", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}"><br /></p>
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}"><br /></p>
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <a
-            class="${editorClassNames.link}"
+            class="${EDITOR_CLASSNAMES.link}"
             dir="ltr"
             href="/"
             rel="noreferrer"
@@ -1404,10 +1407,10 @@ test.describe("link", () => {
           await assertHTML(
             page,
             html`
-              <p class="${editorClassNames.paragraph}" dir="ltr">
+              <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
                 <span data-lexical-text="true">x</span>
                 <a
-                  class="${editorClassNames.link}"
+                  class="${EDITOR_CLASSNAMES.link}"
                   dir="ltr"
                   href="/"
                   rel="noreferrer"
@@ -1479,10 +1482,10 @@ test.describe("link", () => {
           await assertHTML(
             page,
             html`
-              <p class="${editorClassNames.paragraph}" dir="ltr">
+              <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
                 <span data-lexical-text="true">ax</span>
                 <a
-                  class="${editorClassNames.link}"
+                  class="${EDITOR_CLASSNAMES.link}"
                   dir="ltr"
                   href="/"
                   rel="noreferrer"
@@ -1550,10 +1553,10 @@ test.describe("link", () => {
           await assertHTML(
             page,
             html`
-              <p class="${editorClassNames.paragraph}" dir="ltr">
+              <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
                 <span data-lexical-text="true">ax</span>
                 <a
-                  class="${editorClassNames.link}"
+                  class="${EDITOR_CLASSNAMES.link}"
                   dir="ltr"
                   href="/"
                   rel="noreferrer"
@@ -1626,9 +1629,9 @@ test.describe("link", () => {
           await assertHTML(
             page,
             html`
-              <p class="${editorClassNames.paragraph}" dir="ltr">
+              <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
                 <a
-                  class="${editorClassNames.link}"
+                  class="${EDITOR_CLASSNAMES.link}"
                   dir="ltr"
                   href="/"
                   rel="noreferrer"
@@ -1700,10 +1703,10 @@ test.describe("link", () => {
           await assertHTML(
             page,
             html`
-              <p class="${editorClassNames.paragraph}" dir="ltr">
+              <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
                 <span data-lexical-text="true">a</span>
                 <a
-                  class="${editorClassNames.link}"
+                  class="${EDITOR_CLASSNAMES.link}"
                   dir="ltr"
                   href="/"
                   rel="noreferrer"
@@ -1774,10 +1777,10 @@ test.describe("link", () => {
           await assertHTML(
             page,
             html`
-              <p class="${editorClassNames.paragraph}" dir="ltr">
+              <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
                 <span data-lexical-text="true">a</span>
                 <a
-                  class="${editorClassNames.link}"
+                  class="${EDITOR_CLASSNAMES.link}"
                   dir="ltr"
                   href="/"
                   rel="noreferrer"

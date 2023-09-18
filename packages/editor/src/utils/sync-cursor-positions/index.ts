@@ -5,8 +5,8 @@ import { $isLineBreakNode, NodeKey, NodeMap } from "lexical";
 
 import { getCdnUrl } from "~/utils/getCdnUrl";
 
-import { Binding } from "../../collab/bindings";
-import { Provider } from "../../collab/provider";
+import { Binding } from "../../collaboration/bindings";
+import { Provider } from "../../collaboration/provider";
 import { createAbsolutePosition } from "../create-absolute-position";
 import { getCollabNodeAndOffset } from "../get-collab-node-and-offset";
 import styles from "./styles.module.scss";

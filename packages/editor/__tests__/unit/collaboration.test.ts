@@ -21,7 +21,7 @@ import {
   stopClients,
   testClientsForEquality,
   waitForReact
-} from "../utils/unit";
+} from "./client";
 
 /**
  * Creates and inserts a paragraph node with the provided children

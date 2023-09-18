@@ -1,6 +1,6 @@
 import { test } from "@playwright/test";
 
-import { editorClassNames } from "../constants/class-names";
+import { EDITOR_CLASSNAMES } from "../constants";
 import { assertHTML, evaluate, focusEditor, html, initialize } from "../utils";
 
 test.describe("events", () => {
@@ -103,7 +103,7 @@ test.describe("events", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">IS</span>
         </p>
       `

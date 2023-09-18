@@ -8,8 +8,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "multiplayer:test": "dotenv -e ../../.env.local cross-env NODE_ENV=test -- concurrently --raw \"yarn y-websocket-server\" \"yarn start\"",
-    "test:e2e": "playwright test"
+    "multiplayer:server": "dotenv -v HOST=localhost -v PORT=1234 -- npx y-websocket-server",
+    "multiplayer:test": "dotenv-run -- concurrently --raw \"yarn multiplayer:server\" \"yarn start\""
   },
   "devDependencies": {
     "@playwright/test": "^1.37.1",
@@ -24,8 +24,8 @@
     "eslint": "^8.42.0",
     "next": "^13.4.19",
     "prettier": "^3.0.3",
-    "prettier-plugin-organize-attributes": "^1.0.0",
     "typescript": "^5.1.5",
+    "y-websocket": "^1.5.0",
     "y-websocket-server": "^1.0.2"
   },
   "dependencies": {
@@ -43,6 +43,7 @@
     "clsx": "^1.2.1",
     "jotai": "^2.2.2",
     "lexical": "^0.12.2",
+    "lib0": "^0.2.85",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-error-boundary": "^4.0.11",
@@ -50,7 +51,7 @@
     "react-intersection-observer-hook": "^2.1.1",
     "use-file-picker": "^1.7.0",
     "use-resize-observer": "^9.1.0",
-    "y-websocket": "^1.5.0",
+    "y-protocols": "^1.0.6",
     "yjs": "^13.6.7"
   }
 }

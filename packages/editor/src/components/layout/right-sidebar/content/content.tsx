@@ -35,7 +35,11 @@ const SuspendedEditorRightSidebarContent = (): React.ReactElement | null => {
   });
   const documentLoading = ["connecting", "reconnecting"].includes(docStatus);
 
-  if (docStatus === "disconnected") {
+  if (
+    docStatus === "disconnected" ||
+    docStatus === "forbidden" ||
+    docStatus === "overloaded"
+  ) {
     return null;
   }
 

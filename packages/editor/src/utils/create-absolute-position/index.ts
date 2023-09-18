@@ -4,7 +4,7 @@ import {
   RelativePosition
 } from "yjs";
 
-import { Binding } from "../../collab/bindings";
+import { Binding } from "../../collaboration/bindings";
 
 /**
  * Creates absolute position from relative position

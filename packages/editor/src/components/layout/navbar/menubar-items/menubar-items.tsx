@@ -13,7 +13,6 @@ import HelpItem from "./help";
 import InsertItem from "./insert";
 import TextItem from "./text";
 import ThemeItem from "./theme";
-import ViewItem from "./view";
 
 const EditorMenubarItems = (): React.ReactElement => (
   <React.Fragment>
@@ -26,7 +25,6 @@ const EditorMenubarItems = (): React.ReactElement => (
     <Separator />
     <FileItem />
     <EditItem />
-    <ViewItem />
     <TextItem />
     <AlignItem />
     <InsertItem />

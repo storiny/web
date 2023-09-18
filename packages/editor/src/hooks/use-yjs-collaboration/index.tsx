@@ -12,16 +12,17 @@ import {
 import React from "react";
 import { createPortal } from "react-dom";
 import { Doc, Transaction, UndoManager, YEvent } from "yjs";
+import * as Y from "yjs";
 
 import { awarenessAtom, docStatusAtom } from "../../atoms";
-import { ExcludedProperties } from "../../collab/bindings";
-import { Binding, createBinding } from "../../collab/bindings";
-import { CONNECTED_COMMAND } from "../../collab/commands";
+import { ExcludedProperties } from "../../collaboration/bindings";
+import { Binding, createBinding } from "../../collaboration/bindings";
+import { CONNECTED_COMMAND } from "../../collaboration/commands";
 import {
   CollabLocalState,
   initLocalState,
   Provider
-} from "../../collab/provider";
+} from "../../collaboration/provider";
 import { syncCursorPositions } from "../../utils/sync-cursor-positions";
 import { syncLexicalUpdateToYjs } from "../../utils/sync-lexical-update-to-yjs";
 import { syncYjsChangesToLexical } from "../../utils/sync-yjs-changes-to-lexical";
@@ -197,8 +198,6 @@ export const useYjsCollaboration = ({
     const { root } = binding;
     const { awareness } = provider;
 
-    // TODO: Handle `overloaded` status
-
     /**
      * Handles status updates
      * @param status Status
@@ -224,6 +223,16 @@ export const useYjsCollaboration = ({
     };
 
     /**
+     * Handles provider authentication
+     * @param reason Rejection reason
+     */
+    const handleAuth = (reason: "forbidden" | "overloaded"): void => {
+      if (isMainEditor) {
+        setDocStatus(reason);
+      }
+    };
+
+    /**
      * Handles sync event
      * @param isSynced Synced flag
      */
@@ -245,14 +254,19 @@ export const useYjsCollaboration = ({
       isReloadingDoc.current = false;
     };
 
+    window.d = doc;
+    window.y = Y;
+
     /**
      * Handles reload event
-     * @param ydoc YDoc
+     * @param newDoc YDoc
      */
-    const handleReload = (ydoc: Doc): void => {
+    const handleReload = (newDoc: Doc): void => {
       clearEditorSkipCollab(editor, binding);
-      setDoc(ydoc);
-      docMap.set("main", ydoc);
+      setDoc(newDoc);
+      docMap.set("main", newDoc);
+
+      window.d = newDoc;
 
       if (isMainEditor) {
         setDocStatus("syncing");
@@ -279,6 +293,7 @@ export const useYjsCollaboration = ({
     provider.on("reload", handleReload);
     provider.on("status", handleStatus);
     provider.on("sync", handleSync);
+    provider.on("auth", handleAuth);
     awareness.on("update", handleAwarenessUpdate);
 
     const onYjsTreeChanges = (
@@ -331,6 +346,7 @@ export const useYjsCollaboration = ({
       provider.off("reload", handleReload);
       provider.off("status", handleStatus);
       provider.off("sync", handleSync);
+      provider.off("auth", handleAuth);
       awareness.off("update", handleAwarenessUpdate);
 
       root.getSharedType().unobserveDeep(onYjsTreeChanges);

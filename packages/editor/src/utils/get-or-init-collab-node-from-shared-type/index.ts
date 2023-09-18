@@ -1,19 +1,22 @@
 import { Map as YMap, XmlElement, XmlText } from "yjs";
 
-import { Binding } from "../../collab/bindings";
+import { Binding } from "../../collaboration/bindings";
 import {
   $createCollabDecoratorNode,
   CollabDecoratorNode
-} from "../../collab/nodes/decorator";
+} from "../../collaboration/nodes/decorator";
 import {
   $createCollabElementNode,
   CollabElementNode
-} from "../../collab/nodes/element";
+} from "../../collaboration/nodes/element";
 import {
   $createCollabLineBreakNode,
   CollabLineBreakNode
-} from "../../collab/nodes/line-break";
-import { $createCollabTextNode, CollabTextNode } from "../../collab/nodes/text";
+} from "../../collaboration/nodes/line-break";
+import {
+  $createCollabTextNode,
+  CollabTextNode
+} from "../../collaboration/nodes/text";
 import { getNodeTypeFromSharedType } from "../get-node-type-from-shared-type";
 
 /**

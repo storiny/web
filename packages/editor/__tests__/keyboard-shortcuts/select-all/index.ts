@@ -1,12 +1,8 @@
 import { Page } from "@playwright/test";
 
-import {
-  E2E_BROWSER,
-  evaluate,
-  IS_LINUX,
-  keyDownCtrlOrMeta,
-  keyUpCtrlOrMeta
-} from "../../utils";
+import { IS_LINUX } from "../../constants";
+import { E2E_BROWSER } from "../../constants";
+import { evaluate, keyDownCtrlOrMeta, keyUpCtrlOrMeta } from "../../utils";
 
 /**
  * Selects all the text present in the editor root

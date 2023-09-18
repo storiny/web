@@ -1,10 +1,11 @@
 "use client";
 
-import { WebsocketProvider } from "y-websocket";
 import { Doc } from "yjs";
 
-import { Provider } from "../../collab/provider";
+import { Provider } from "../../collaboration/provider";
+import { WebsocketProvider } from "../../collaboration/websocket";
 
+// TODO: Change endpoint
 const WEBSOCKET_ENDPOINT = "ws://localhost:1234";
 
 /**

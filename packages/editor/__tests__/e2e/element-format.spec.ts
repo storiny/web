@@ -1,6 +1,6 @@
 import { test } from "@playwright/test";
 
-import { editorClassNames } from "../constants/class-names";
+import { EDITOR_CLASSNAMES } from "../constants";
 import {
   moveLeft,
   moveRight,
@@ -35,7 +35,7 @@ test.describe("element format", () => {
       page,
       html`
         <p
-          class="${editorClassNames.paragraph} ${editorClassNames.indent}"
+          class="${EDITOR_CLASSNAMES.paragraph} ${EDITOR_CLASSNAMES.indent}"
           style="padding-inline-start: calc(64px); text-align: center;"
           dir="ltr"
         >
@@ -43,7 +43,7 @@ test.describe("element format", () => {
           <a
             href="/"
             rel="noreferrer"
-            class="${editorClassNames.link}"
+            class="${EDITOR_CLASSNAMES.link}"
             dir="ltr"
           >
             <span data-lexical-text="true">https://storiny.com</span>
@@ -60,7 +60,7 @@ test.describe("element format", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" style="text-align: center">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" style="text-align: center">
           <br />
         </p>
       `

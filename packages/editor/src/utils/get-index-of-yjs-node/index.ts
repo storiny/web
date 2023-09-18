@@ -1,4 +1,4 @@
-import { YjsNode } from "../../collab/provider";
+import { YjsNode } from "../../collaboration/provider";
 
 /**
  * Returns the index of yjs node

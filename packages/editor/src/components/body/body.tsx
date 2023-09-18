@@ -31,12 +31,14 @@ import TextEntityPlugin from "../../plugins/text-entity";
 import TKPlugin from "../../plugins/tk/tk";
 import { createWebsocketProvider } from "../../utils/create-ws-provider";
 import EditorContentEditable from "../content-editable";
+import { EditorProps } from "../editor";
 import EditorErrorBoundary from "../error-boundary";
 import EditorLoader from "../loader";
 import EditorPlaceholder from "../placeholder";
 import styles from "./body.module.scss";
 
-const EditorBody = ({ docId }: { docId: string }): React.ReactElement => {
+const EditorBody = (props: EditorProps): React.ReactElement => {
+  const { role, docId } = props;
   useRegisterTools();
   const [editor] = useLexicalComposerContext();
   const isEditable = editor.isEditable();
@@ -46,7 +48,7 @@ const EditorBody = ({ docId }: { docId: string }): React.ReactElement => {
     <article
       className={clsx(styles.x, styles.body)}
       data-testid={"editor-container"}
-      {...(["connecting", "reconnecting", "disconnected"].includes(docStatus)
+      {...(!["connected", "syncing"].includes(docStatus)
         ? { style: { pointerEvents: "none", userSelect: "none" } }
         : {})}
     >
@@ -60,7 +62,7 @@ const EditorBody = ({ docId }: { docId: string }): React.ReactElement => {
           id={docId}
           isMainEditor
           providerFactory={createWebsocketProvider}
-          role={"editor"}
+          role={role}
           shouldBootstrap={true}
         />
       </NoSsr>
@@ -81,12 +83,21 @@ const EditorBody = ({ docId }: { docId: string }): React.ReactElement => {
       <CaptionPlugin />
       <EmbedPlugin />
       {!isEditable && <LexicalClickableLinkPlugin />}
-      {["connecting", "reconnecting", "disconnected"].includes(docStatus) && (
+      {!["connected", "syncing"].includes(docStatus) && (
         <EditorLoader
-          hideProgress={["disconnected", "reconnecting"].includes(docStatus)}
+          hideProgress={[
+            "disconnected",
+            "reconnecting",
+            "overloaded",
+            "forbidden"
+          ].includes(docStatus)}
           label={
             docStatus === "disconnected"
               ? "Connection lost"
+              : docStatus === "overloaded"
+              ? "This story has reached the maximum number of editors."
+              : docStatus === "forbidden"
+              ? "You do not have the access to edit this story."
               : `${capitalize(docStatus)}…`
           }
           overlay

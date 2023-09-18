@@ -1,6 +1,6 @@
 import { Page } from "@playwright/test";
 
-import { IS_MAC } from "../../utils";
+import { IS_MAC } from "../../constants";
 
 /**
  * Deletes text in forward direction

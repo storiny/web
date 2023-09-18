@@ -12,7 +12,8 @@ import {
   focusEditor,
   html,
   initialize,
-  insertEmbed
+  insertEmbed,
+  sleep
 } from "../../utils";
 
 const EMBED_SLUG = compressToEncodedURIComponent("https://example.com");
@@ -155,6 +156,7 @@ test.describe("caption", () => {
 
     await page.keyboard.press("Enter");
     await page.keyboard.press("Enter");
+    await sleep(500);
 
     await assertHTML(
       page,
@@ -389,6 +391,7 @@ test.describe("caption", () => {
     // Move to the start of the caption node
     await moveLeft(page, 7);
     await pressBackspace(page);
+    await sleep(500);
 
     await assertHTML(page, html`<p><br /></p>`, undefined, {
       ignoreClasses: true

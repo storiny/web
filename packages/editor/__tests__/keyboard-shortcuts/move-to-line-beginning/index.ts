@@ -1,6 +1,7 @@
 import { Page } from "@playwright/test";
 
-import { IS_MAC, keyDownCtrlOrMeta, keyUpCtrlOrMeta } from "../../utils";
+import { IS_MAC } from "../../constants";
+import { keyDownCtrlOrMeta, keyUpCtrlOrMeta, sleep } from "../../utils";
 
 /**
  * Moves to the beginning of the line in the current selection
@@ -14,4 +15,6 @@ export const moveToLineBeginning = async (page: Page): Promise<void> => {
   } else {
     await page.keyboard.press("Home");
   }
+
+  await sleep(500);
 };

@@ -1,7 +1,7 @@
-import { CollabDecoratorNode } from "../../collab/nodes/decorator";
-import { CollabElementNode } from "../../collab/nodes/element";
-import { CollabLineBreakNode } from "../../collab/nodes/line-break";
-import { CollabTextNode } from "../../collab/nodes/text";
+import { CollabDecoratorNode } from "../../collaboration/nodes/decorator";
+import { CollabElementNode } from "../../collaboration/nodes/element";
+import { CollabLineBreakNode } from "../../collaboration/nodes/line-break";
+import { CollabTextNode } from "../../collaboration/nodes/text";
 import { getPositionFromElementAndOffset } from "../get-position-from-element-and-offset";
 
 /**

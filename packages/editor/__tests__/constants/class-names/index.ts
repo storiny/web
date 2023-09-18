@@ -1,4 +1,4 @@
-export const editorClassNames = {
+export const EDITOR_CLASSNAMES = {
   paragraph: "theme_paragraph__K77T4",
   tBold: "t-bold",
   tItalic: "theme_t-italic__lPTjt",

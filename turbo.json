@@ -4,16 +4,15 @@
   "globalDotEnv": [".env.local", ".env"],
   "globalEnv": ["NODE_ENV"],
   "pipeline": {
+    "dev": {
+      "cache": false
+    },
     "build": {
       "outputs": [".next/**", "!.next/cache/**", "dist/**"],
       "dependsOn": ["^build"]
     },
-    "dev": {
-      "cache": false
-    },
-    "test": {
-      "dependsOn": ["lint", "build"]
-    },
+    "test": {},
+    "multiplayer:test": {},
     "deploy": {
       "dependsOn": ["build", "test"]
     },

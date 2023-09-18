@@ -1,7 +1,7 @@
 import { Page, test } from "@playwright/test";
 
 import { EDITOR_SHORTCUTS } from "../../src/constants/shortcuts";
-import { editorClassNames } from "../constants/class-names";
+import { EDITOR_CLASSNAMES } from "../constants";
 import {
   clickIndentButton,
   clickOutdentButton,
@@ -45,7 +45,7 @@ test.describe("list", () => {
   test("can toggle an empty list on/off", async ({ page }) => {
     await assertHTML(
       page,
-      html`<p class="${editorClassNames.paragraph}"><br /></p>`
+      html`<p class="${EDITOR_CLASSNAMES.paragraph}"><br /></p>`
     );
 
     await toggleBulletedList(page);
@@ -53,8 +53,8 @@ test.describe("list", () => {
     await assertHTML(
       page,
       html`
-        <ul class="${editorClassNames.ul}">
-          <li class="${editorClassNames.li}" value="1"><br /></li>
+        <ul class="${EDITOR_CLASSNAMES.ul}">
+          <li class="${EDITOR_CLASSNAMES.li}" value="1"><br /></li>
         </ul>
       `
     );
@@ -63,7 +63,7 @@ test.describe("list", () => {
 
     await assertHTML(
       page,
-      html`<p class="${editorClassNames.paragraph}"><br /></p>`
+      html`<p class="${EDITOR_CLASSNAMES.paragraph}"><br /></p>`
     );
   });
 
@@ -73,8 +73,8 @@ test.describe("list", () => {
     await assertHTML(
       page,
       html`
-        <ul class="${editorClassNames.ul}">
-          <li class="${editorClassNames.li}" value="1"><br /></li>
+        <ul class="${EDITOR_CLASSNAMES.ul}">
+          <li class="${EDITOR_CLASSNAMES.li}" value="1"><br /></li>
         </ul>
       `
     );
@@ -85,12 +85,12 @@ test.describe("list", () => {
     await assertHTML(
       page,
       html`
-        <ul class="${editorClassNames.ul}">
-          <li class="${editorClassNames.nestedLi}" value="1">
-            <ul class="${editorClassNames.ul}">
-              <li class="${editorClassNames.nestedLi}" value="1">
-                <ul class="${editorClassNames.ul}">
-                  <li class="${editorClassNames.li}" value="1">
+        <ul class="${EDITOR_CLASSNAMES.ul}">
+          <li class="${EDITOR_CLASSNAMES.nestedLi}" value="1">
+            <ul class="${EDITOR_CLASSNAMES.ul}">
+              <li class="${EDITOR_CLASSNAMES.nestedLi}" value="1">
+                <ul class="${EDITOR_CLASSNAMES.ul}">
+                  <li class="${EDITOR_CLASSNAMES.li}" value="1">
                     <br />
                   </li>
                 </ul>
@@ -108,8 +108,8 @@ test.describe("list", () => {
     await assertHTML(
       page,
       html`
-        <ul class="${editorClassNames.ul}">
-          <li class="${editorClassNames.li}" value="1"><br /></li>
+        <ul class="${EDITOR_CLASSNAMES.ul}">
+          <li class="${EDITOR_CLASSNAMES.li}" value="1"><br /></li>
         </ul>
       `
     );
@@ -127,20 +127,20 @@ test.describe("list", () => {
     await assertHTML(
       page,
       html`
-        <ul class="${editorClassNames.ul}">
-          <li class="${editorClassNames.li}" dir="ltr" value="1">
+        <ul class="${EDITOR_CLASSNAMES.ul}">
+          <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="1">
             <span data-lexical-text="true">hello</span>
           </li>
-          <li class="${editorClassNames.li}" dir="ltr" value="2">
+          <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="2">
             <span data-lexical-text="true">from</span>
           </li>
-          <li class="${editorClassNames.li}" dir="ltr" value="3">
+          <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="3">
             <span data-lexical-text="true">the</span>
           </li>
-          <li class="${editorClassNames.li}" dir="ltr" value="4">
+          <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="4">
             <span data-lexical-text="true">other</span>
           </li>
-          <li class="${editorClassNames.li}" dir="ltr" value="5">
+          <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="5">
             <span data-lexical-text="true">side</span>
           </li>
         </ul>
@@ -161,15 +161,15 @@ test.describe("list", () => {
     await assertHTML(
       page,
       html`
-        <ul class="${editorClassNames.ul}">
-          <li value="1" class="${editorClassNames.li}" dir="ltr">
+        <ul class="${EDITOR_CLASSNAMES.ul}">
+          <li value="1" class="${EDITOR_CLASSNAMES.li}" dir="ltr">
             <span data-lexical-text="true">hello</span>
           </li>
-          <li value="2" class="${editorClassNames.nestedLi}">
-            <ul class="${editorClassNames.ul}">
-              <li value="1" class="${editorClassNames.nestedLi}">
-                <ul class="${editorClassNames.ul}">
-                  <li value="1" class="${editorClassNames.li}">
+          <li value="2" class="${EDITOR_CLASSNAMES.nestedLi}">
+            <ul class="${EDITOR_CLASSNAMES.ul}">
+              <li value="1" class="${EDITOR_CLASSNAMES.nestedLi}">
+                <ul class="${EDITOR_CLASSNAMES.ul}">
+                  <li value="1" class="${EDITOR_CLASSNAMES.li}">
                     <br />
                   </li>
                 </ul>
@@ -185,13 +185,13 @@ test.describe("list", () => {
     await assertHTML(
       page,
       html`
-        <ul class="${editorClassNames.ul}">
-          <li value="1" class="${editorClassNames.li}" dir="ltr">
+        <ul class="${EDITOR_CLASSNAMES.ul}">
+          <li value="1" class="${EDITOR_CLASSNAMES.li}" dir="ltr">
             <span data-lexical-text="true">hello</span>
           </li>
-          <li value="2" class="${editorClassNames.nestedLi}">
-            <ul class="${editorClassNames.ul}">
-              <li value="1" class="${editorClassNames.li}"><br /></li>
+          <li value="2" class="${EDITOR_CLASSNAMES.nestedLi}">
+            <ul class="${EDITOR_CLASSNAMES.ul}">
+              <li value="1" class="${EDITOR_CLASSNAMES.li}"><br /></li>
             </ul>
           </li>
         </ul>
@@ -207,8 +207,8 @@ test.describe("list", () => {
     await assertHTML(
       page,
       html`
-        <ul class="${editorClassNames.ul}">
-          <li value="1" class="${editorClassNames.li}"><br /></li>
+        <ul class="${EDITOR_CLASSNAMES.ul}">
+          <li value="1" class="${EDITOR_CLASSNAMES.li}"><br /></li>
         </ul>
       `
     );
@@ -222,13 +222,13 @@ test.describe("list", () => {
     await assertHTML(
       page,
       html`
-        <ul class="${editorClassNames.ul}">
-          <li value="1" class="${editorClassNames.li}" dir="ltr">
+        <ul class="${EDITOR_CLASSNAMES.ul}">
+          <li value="1" class="${EDITOR_CLASSNAMES.li}" dir="ltr">
             <span data-lexical-text="true">hello</span>
           </li>
-          <li value="2" class="${editorClassNames.nestedLi}">
-            <ul class="${editorClassNames.ul}">
-              <li value="1" class="${editorClassNames.li}" dir="ltr">
+          <li value="2" class="${EDITOR_CLASSNAMES.nestedLi}">
+            <ul class="${EDITOR_CLASSNAMES.ul}">
+              <li value="1" class="${EDITOR_CLASSNAMES.li}" dir="ltr">
                 <span data-lexical-text="true">from</span>
               </li>
             </ul>
@@ -243,15 +243,15 @@ test.describe("list", () => {
     await assertHTML(
       page,
       html`
-        <ul class="${editorClassNames.ul}">
-          <li value="1" class="${editorClassNames.nestedLi}">
-            <ul class="${editorClassNames.ul}">
-              <li value="1" class="${editorClassNames.li}" dir="ltr">
+        <ul class="${EDITOR_CLASSNAMES.ul}">
+          <li value="1" class="${EDITOR_CLASSNAMES.nestedLi}">
+            <ul class="${EDITOR_CLASSNAMES.ul}">
+              <li value="1" class="${EDITOR_CLASSNAMES.li}" dir="ltr">
                 <span data-lexical-text="true">hello</span>
               </li>
-              <li value="2" class="${editorClassNames.nestedLi}">
-                <ul class="${editorClassNames.ul}">
-                  <li value="1" class="${editorClassNames.li}" dir="ltr">
+              <li value="2" class="${EDITOR_CLASSNAMES.nestedLi}">
+                <ul class="${EDITOR_CLASSNAMES.ul}">
+                  <li value="1" class="${EDITOR_CLASSNAMES.li}" dir="ltr">
                     <span data-lexical-text="true">from</span>
                   </li>
                 </ul>
@@ -267,13 +267,13 @@ test.describe("list", () => {
     await assertHTML(
       page,
       html`
-        <ul class="${editorClassNames.ul}">
-          <li value="1" class="${editorClassNames.li}" dir="ltr">
+        <ul class="${EDITOR_CLASSNAMES.ul}">
+          <li value="1" class="${EDITOR_CLASSNAMES.li}" dir="ltr">
             <span data-lexical-text="true">hello</span>
           </li>
-          <li value="2" class="${editorClassNames.nestedLi}">
-            <ul class="${editorClassNames.ul}">
-              <li value="1" class="${editorClassNames.li}" dir="ltr">
+          <li value="2" class="${EDITOR_CLASSNAMES.nestedLi}">
+            <ul class="${EDITOR_CLASSNAMES.ul}">
+              <li value="1" class="${EDITOR_CLASSNAMES.li}" dir="ltr">
                 <span data-lexical-text="true">from</span>
               </li>
             </ul>
@@ -295,24 +295,24 @@ test.describe("list", () => {
     await assertHTML(
       page,
       html`
-        <ul class="${editorClassNames.ul}">
-          <li value="1" class="${editorClassNames.li}" dir="ltr">
+        <ul class="${EDITOR_CLASSNAMES.ul}">
+          <li value="1" class="${EDITOR_CLASSNAMES.li}" dir="ltr">
             <span data-lexical-text="true">hello</span>
           </li>
-          <li value="2" class="${editorClassNames.nestedLi}">
-            <ul class="${editorClassNames.ul}">
-              <li value="1" class="${editorClassNames.li}" dir="ltr">
+          <li value="2" class="${EDITOR_CLASSNAMES.nestedLi}">
+            <ul class="${EDITOR_CLASSNAMES.ul}">
+              <li value="1" class="${EDITOR_CLASSNAMES.li}" dir="ltr">
                 <span data-lexical-text="true">from</span>
               </li>
-              <li value="2" class="${editorClassNames.li}" dir="ltr">
+              <li value="2" class="${EDITOR_CLASSNAMES.li}" dir="ltr">
                 <span data-lexical-text="true">the</span>
               </li>
-              <li value="3" class="${editorClassNames.li}" dir="ltr">
+              <li value="3" class="${EDITOR_CLASSNAMES.li}" dir="ltr">
                 <span data-lexical-text="true">other</span>
               </li>
             </ul>
           </li>
-          <li value="2" class="${editorClassNames.li}" dir="ltr">
+          <li value="2" class="${EDITOR_CLASSNAMES.li}" dir="ltr">
             <span data-lexical-text="true">side</span>
           </li>
         </ul>
@@ -325,26 +325,26 @@ test.describe("list", () => {
     await assertHTML(
       page,
       html`
-        <ul class="${editorClassNames.ul}">
-          <li value="1" class="${editorClassNames.nestedLi}">
-            <ul class="${editorClassNames.ul}">
-              <li value="1" class="${editorClassNames.li}" dir="ltr">
+        <ul class="${EDITOR_CLASSNAMES.ul}">
+          <li value="1" class="${EDITOR_CLASSNAMES.nestedLi}">
+            <ul class="${EDITOR_CLASSNAMES.ul}">
+              <li value="1" class="${EDITOR_CLASSNAMES.li}" dir="ltr">
                 <span data-lexical-text="true">hello</span>
               </li>
-              <li value="2" class="${editorClassNames.nestedLi}">
-                <ul class="${editorClassNames.ul}">
-                  <li value="1" class="${editorClassNames.li}" dir="ltr">
+              <li value="2" class="${EDITOR_CLASSNAMES.nestedLi}">
+                <ul class="${EDITOR_CLASSNAMES.ul}">
+                  <li value="1" class="${EDITOR_CLASSNAMES.li}" dir="ltr">
                     <span data-lexical-text="true">from</span>
                   </li>
-                  <li value="2" class="${editorClassNames.li}" dir="ltr">
+                  <li value="2" class="${EDITOR_CLASSNAMES.li}" dir="ltr">
                     <span data-lexical-text="true">the</span>
                   </li>
-                  <li value="3" class="${editorClassNames.li}" dir="ltr">
+                  <li value="3" class="${EDITOR_CLASSNAMES.li}" dir="ltr">
                     <span data-lexical-text="true">other</span>
                   </li>
                 </ul>
               </li>
-              <li value="2" class="${editorClassNames.li}" dir="ltr">
+              <li value="2" class="${EDITOR_CLASSNAMES.li}" dir="ltr">
                 <span data-lexical-text="true">side</span>
               </li>
             </ul>
@@ -358,24 +358,24 @@ test.describe("list", () => {
     await assertHTML(
       page,
       html`
-        <ul class="${editorClassNames.ul}">
-          <li value="1" class="${editorClassNames.li}" dir="ltr">
+        <ul class="${EDITOR_CLASSNAMES.ul}">
+          <li value="1" class="${EDITOR_CLASSNAMES.li}" dir="ltr">
             <span data-lexical-text="true">hello</span>
           </li>
-          <li value="2" class="${editorClassNames.nestedLi}">
-            <ul class="${editorClassNames.ul}">
-              <li value="1" class="${editorClassNames.li}" dir="ltr">
+          <li value="2" class="${EDITOR_CLASSNAMES.nestedLi}">
+            <ul class="${EDITOR_CLASSNAMES.ul}">
+              <li value="1" class="${EDITOR_CLASSNAMES.li}" dir="ltr">
                 <span data-lexical-text="true">from</span>
               </li>
-              <li value="2" class="${editorClassNames.li}" dir="ltr">
+              <li value="2" class="${EDITOR_CLASSNAMES.li}" dir="ltr">
                 <span data-lexical-text="true">the</span>
               </li>
-              <li value="3" class="${editorClassNames.li}" dir="ltr">
+              <li value="3" class="${EDITOR_CLASSNAMES.li}" dir="ltr">
                 <span data-lexical-text="true">other</span>
               </li>
             </ul>
           </li>
-          <li value="2" class="${editorClassNames.li}" dir="ltr">
+          <li value="2" class="${EDITOR_CLASSNAMES.li}" dir="ltr">
             <span data-lexical-text="true">side</span>
           </li>
         </ul>
@@ -402,22 +402,22 @@ test.describe("list", () => {
     await assertHTML(
       page,
       html`
-        <ul class="${editorClassNames.ul}">
-          <li class="${editorClassNames.nestedLi}" value="1">
-            <ul class="${editorClassNames.ul}">
-              <li class="${editorClassNames.nestedLi}" value="1">
-                <ul class="${editorClassNames.ul}">
-                  <li class="${editorClassNames.li}" value="1" dir="ltr">
+        <ul class="${EDITOR_CLASSNAMES.ul}">
+          <li class="${EDITOR_CLASSNAMES.nestedLi}" value="1">
+            <ul class="${EDITOR_CLASSNAMES.ul}">
+              <li class="${EDITOR_CLASSNAMES.nestedLi}" value="1">
+                <ul class="${EDITOR_CLASSNAMES.ul}">
+                  <li class="${EDITOR_CLASSNAMES.li}" value="1" dir="ltr">
                     <span data-lexical-text="true">foo</span>
                   </li>
                 </ul>
               </li>
-              <li class="${editorClassNames.li}" value="1" dir="ltr">
+              <li class="${EDITOR_CLASSNAMES.li}" value="1" dir="ltr">
                 <span data-lexical-text="true">bar</span>
               </li>
-              <li class="${editorClassNames.nestedLi}" value="2">
-                <ul class="${editorClassNames.ul}">
-                  <li class="${editorClassNames.li}" value="1" dir="ltr">
+              <li class="${EDITOR_CLASSNAMES.nestedLi}" value="2">
+                <ul class="${EDITOR_CLASSNAMES.ul}">
+                  <li class="${EDITOR_CLASSNAMES.li}" value="1" dir="ltr">
                     <span data-lexical-text="true">baz</span>
                   </li>
                 </ul>
@@ -434,7 +434,7 @@ test.describe("list", () => {
   }) => {
     await assertHTML(
       page,
-      html`<p class="${editorClassNames.paragraph}"><br /></p>`
+      html`<p class="${EDITOR_CLASSNAMES.paragraph}"><br /></p>`
     );
 
     await page.keyboard.type("hello");
@@ -443,8 +443,8 @@ test.describe("list", () => {
     await assertHTML(
       page,
       html`
-        <ul class="${editorClassNames.ul}">
-          <li class="${editorClassNames.li}" dir="ltr" value="1">
+        <ul class="${EDITOR_CLASSNAMES.ul}">
+          <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="1">
             <span data-lexical-text="true">hello</span>
           </li>
         </ul>
@@ -456,7 +456,7 @@ test.describe("list", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">hello</span>
         </p>
       `
@@ -474,19 +474,19 @@ test.describe("list", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">hello</span>
         </p>
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">from</span>
         </p>
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">the</span>
         </p>
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">other</span>
         </p>
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">side</span>
         </p>
       `
@@ -498,20 +498,20 @@ test.describe("list", () => {
     await assertHTML(
       page,
       html`
-        <ul class="${editorClassNames.ul}">
-          <li class="${editorClassNames.li}" dir="ltr" value="1">
+        <ul class="${EDITOR_CLASSNAMES.ul}">
+          <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="1">
             <span data-lexical-text="true">hello</span>
           </li>
-          <li class="${editorClassNames.li}" dir="ltr" value="2">
+          <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="2">
             <span data-lexical-text="true">from</span>
           </li>
-          <li class="${editorClassNames.li}" dir="ltr" value="3">
+          <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="3">
             <span data-lexical-text="true">the</span>
           </li>
-          <li class="${editorClassNames.li}" dir="ltr" value="4">
+          <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="4">
             <span data-lexical-text="true">other</span>
           </li>
-          <li class="${editorClassNames.li}" dir="ltr" value="5">
+          <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="5">
             <span data-lexical-text="true">side</span>
           </li>
         </ul>
@@ -523,19 +523,19 @@ test.describe("list", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">hello</span>
         </p>
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">from</span>
         </p>
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">the</span>
         </p>
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">other</span>
         </p>
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">side</span>
         </p>
       `
@@ -548,24 +548,24 @@ test.describe("list", () => {
     await assertHTML(
       page,
       html`
-        <ul class="${editorClassNames.ul}">
-          <li class="${editorClassNames.nestedLi}" value="1">
-            <ul class="${editorClassNames.ul}">
-              <li class="${editorClassNames.nestedLi}" value="1">
-                <ul class="${editorClassNames.ul}">
-                  <li class="${editorClassNames.li}" dir="ltr" value="1">
+        <ul class="${EDITOR_CLASSNAMES.ul}">
+          <li class="${EDITOR_CLASSNAMES.nestedLi}" value="1">
+            <ul class="${EDITOR_CLASSNAMES.ul}">
+              <li class="${EDITOR_CLASSNAMES.nestedLi}" value="1">
+                <ul class="${EDITOR_CLASSNAMES.ul}">
+                  <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="1">
                     <span data-lexical-text="true">hello</span>
                   </li>
-                  <li class="${editorClassNames.li}" dir="ltr" value="2">
+                  <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="2">
                     <span data-lexical-text="true">from</span>
                   </li>
-                  <li class="${editorClassNames.li}" dir="ltr" value="3">
+                  <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="3">
                     <span data-lexical-text="true">the</span>
                   </li>
-                  <li class="${editorClassNames.li}" dir="ltr" value="4">
+                  <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="4">
                     <span data-lexical-text="true">other</span>
                   </li>
-                  <li class="${editorClassNames.li}" dir="ltr" value="5">
+                  <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="5">
                     <span data-lexical-text="true">side</span>
                   </li>
                 </ul>
@@ -581,19 +581,19 @@ test.describe("list", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">hello</span>
         </p>
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">from</span>
         </p>
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">the</span>
         </p>
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">other</span>
         </p>
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">side</span>
         </p>
       `
@@ -605,7 +605,7 @@ test.describe("list", () => {
   }) => {
     await assertHTML(
       page,
-      html`<p class="${editorClassNames.paragraph}"><br /></p>`
+      html`<p class="${EDITOR_CLASSNAMES.paragraph}"><br /></p>`
     );
 
     await page.keyboard.type("One two three");
@@ -613,7 +613,7 @@ test.describe("list", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">One two three</span>
         </p>
       `
@@ -626,12 +626,12 @@ test.describe("list", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">One</span>
           <a
             href="/"
             rel="noreferrer"
-            class="${editorClassNames.link}"
+            class="${EDITOR_CLASSNAMES.link}"
             dir="ltr"
           >
             <span data-lexical-text="true">two</span>
@@ -648,13 +648,13 @@ test.describe("list", () => {
     await assertHTML(
       page,
       html`
-        <ul class="${editorClassNames.ul}">
-          <li class="${editorClassNames.li}" dir="ltr" value="1">
+        <ul class="${EDITOR_CLASSNAMES.ul}">
+          <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="1">
             <span data-lexical-text="true">One </span>
             <a
               href="/"
               rel="noreferrer"
-              class="${editorClassNames.link}"
+              class="${EDITOR_CLASSNAMES.link}"
               dir="ltr"
             >
               <span data-lexical-text="true">two</span>
@@ -670,12 +670,12 @@ test.describe("list", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">One</span>
           <a
             href="/"
             rel="noreferrer"
-            class="${editorClassNames.link}"
+            class="${EDITOR_CLASSNAMES.link}"
             dir="ltr"
           >
             <span data-lexical-text="true">two</span>
@@ -691,7 +691,7 @@ test.describe("list", () => {
   }) => {
     await assertHTML(
       page,
-      html` <p class="${editorClassNames.paragraph}"><br /></p> `
+      html` <p class="${EDITOR_CLASSNAMES.paragraph}"><br /></p> `
     );
 
     await page.keyboard.type("hello");
@@ -720,24 +720,24 @@ test.describe("list", () => {
     await assertHTML(
       page,
       html`
-        <ul class="${editorClassNames.ul}">
-          <li class="${editorClassNames.li}" dir="ltr" value="1">
+        <ul class="${EDITOR_CLASSNAMES.ul}">
+          <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="1">
             <span data-lexical-text="true">hello</span>
           </li>
-          <li class="${editorClassNames.li}" dir="ltr" value="2">
+          <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="2">
             <span data-lexical-text="true">from</span>
           </li>
         </ul>
-        <p class="${editorClassNames.paragraph}"><br /></p>
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}"><br /></p>
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">the</span>
         </p>
-        <p class="${editorClassNames.paragraph}"><br /></p>
-        <ul class="${editorClassNames.ul}">
-          <li class="${editorClassNames.li}" dir="ltr" value="1">
+        <p class="${EDITOR_CLASSNAMES.paragraph}"><br /></p>
+        <ul class="${EDITOR_CLASSNAMES.ul}">
+          <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="1">
             <span data-lexical-text="true">other</span>
           </li>
-          <li class="${editorClassNames.li}" dir="ltr" value="2">
+          <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="2">
             <span data-lexical-text="true">side</span>
           </li>
         </ul>
@@ -750,21 +750,21 @@ test.describe("list", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">hello</span>
         </p>
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">from</span>
         </p>
-        <p class="${editorClassNames.paragraph}"><br /></p>
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}"><br /></p>
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">the</span>
         </p>
-        <p class="${editorClassNames.paragraph}"><br /></p>
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}"><br /></p>
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">other</span>
         </p>
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">side</span>
         </p>
       `
@@ -775,22 +775,22 @@ test.describe("list", () => {
     await assertHTML(
       page,
       html`
-        <ul class="${editorClassNames.ul}">
-          <li class="${editorClassNames.li}" dir="ltr" value="1">
+        <ul class="${EDITOR_CLASSNAMES.ul}">
+          <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="1">
             <span data-lexical-text="true">hello</span>
           </li>
-          <li class="${editorClassNames.li}" dir="ltr" value="2">
+          <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="2">
             <span data-lexical-text="true">from</span>
           </li>
-          <li class="${editorClassNames.li}" value="3"><br /></li>
-          <li class="${editorClassNames.li}" dir="ltr" value="4">
+          <li class="${EDITOR_CLASSNAMES.li}" value="3"><br /></li>
+          <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="4">
             <span data-lexical-text="true">the</span>
           </li>
-          <li class="${editorClassNames.li}" value="5"><br /></li>
-          <li class="${editorClassNames.li}" dir="ltr" value="6">
+          <li class="${EDITOR_CLASSNAMES.li}" value="5"><br /></li>
+          <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="6">
             <span data-lexical-text="true">other</span>
           </li>
-          <li class="${editorClassNames.li}" dir="ltr" value="7">
+          <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="7">
             <span data-lexical-text="true">side</span>
           </li>
         </ul>
@@ -806,8 +806,8 @@ test.describe("list", () => {
     await assertHTML(
       page,
       html`
-        <ul class="${editorClassNames.ul}">
-          <li class="${editorClassNames.li}" value="1"><br /></li>
+        <ul class="${EDITOR_CLASSNAMES.ul}">
+          <li class="${EDITOR_CLASSNAMES.li}" value="1"><br /></li>
         </ul>
       `
     );
@@ -817,8 +817,8 @@ test.describe("list", () => {
     await assertHTML(
       page,
       html`
-        <ol class="${editorClassNames.ol1}">
-          <li class="${editorClassNames.li}" value="1"><br /></li>
+        <ol class="${EDITOR_CLASSNAMES.ol1}">
+          <li class="${EDITOR_CLASSNAMES.li}" value="1"><br /></li>
         </ol>
       `
     );
@@ -828,8 +828,8 @@ test.describe("list", () => {
     await assertHTML(
       page,
       html`
-        <ul class="${editorClassNames.ul}">
-          <li class="${editorClassNames.li}" value="1"><br /></li>
+        <ul class="${EDITOR_CLASSNAMES.ul}">
+          <li class="${EDITOR_CLASSNAMES.li}" value="1"><br /></li>
         </ul>
       `
     );
@@ -845,8 +845,8 @@ test.describe("list", () => {
     await assertHTML(
       page,
       html`
-        <ol class="${editorClassNames.ol1}">
-          <li class="${editorClassNames.li}" dir="ltr" value="1">
+        <ol class="${EDITOR_CLASSNAMES.ol1}">
+          <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="1">
             <span data-lexical-text="true">hello</span>
           </li>
         </ol>
@@ -858,8 +858,8 @@ test.describe("list", () => {
     await assertHTML(
       page,
       html`
-        <ul class="${editorClassNames.ul}">
-          <li class="${editorClassNames.li}" dir="ltr" value="1">
+        <ul class="${EDITOR_CLASSNAMES.ul}">
+          <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="1">
             <span data-lexical-text="true">hello</span>
           </li>
         </ul>
@@ -885,20 +885,20 @@ test.describe("list", () => {
     await assertHTML(
       page,
       html`
-        <ul class="${editorClassNames.ul}">
-          <li class="${editorClassNames.li}" dir="ltr" value="1">
+        <ul class="${EDITOR_CLASSNAMES.ul}">
+          <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="1">
             <span data-lexical-text="true">hello</span>
           </li>
-          <li class="${editorClassNames.li}" dir="ltr" value="2">
+          <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="2">
             <span data-lexical-text="true">from</span>
           </li>
-          <li class="${editorClassNames.li}" dir="ltr" value="3">
+          <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="3">
             <span data-lexical-text="true">the</span>
           </li>
-          <li class="${editorClassNames.li}" dir="ltr" value="4">
+          <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="4">
             <span data-lexical-text="true">other</span>
           </li>
-          <li class="${editorClassNames.li}" dir="ltr" value="5">
+          <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="5">
             <span data-lexical-text="true">side</span>
           </li>
         </ul>
@@ -910,20 +910,20 @@ test.describe("list", () => {
     await assertHTML(
       page,
       html`
-        <ol class="${editorClassNames.ol1}">
-          <li class="${editorClassNames.li}" dir="ltr" value="1">
+        <ol class="${EDITOR_CLASSNAMES.ol1}">
+          <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="1">
             <span data-lexical-text="true">hello</span>
           </li>
-          <li class="${editorClassNames.li}" dir="ltr" value="2">
+          <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="2">
             <span data-lexical-text="true">from</span>
           </li>
-          <li class="${editorClassNames.li}" dir="ltr" value="3">
+          <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="3">
             <span data-lexical-text="true">the</span>
           </li>
-          <li class="${editorClassNames.li}" dir="ltr" value="4">
+          <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="4">
             <span data-lexical-text="true">other</span>
           </li>
-          <li class="${editorClassNames.li}" dir="ltr" value="5">
+          <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="5">
             <span data-lexical-text="true">side</span>
           </li>
         </ol>
@@ -935,20 +935,20 @@ test.describe("list", () => {
     await assertHTML(
       page,
       html`
-        <ul class="${editorClassNames.ul}">
-          <li class="${editorClassNames.li}" dir="ltr" value="1">
+        <ul class="${EDITOR_CLASSNAMES.ul}">
+          <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="1">
             <span data-lexical-text="true">hello</span>
           </li>
-          <li class="${editorClassNames.li}" dir="ltr" value="2">
+          <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="2">
             <span data-lexical-text="true">from</span>
           </li>
-          <li class="${editorClassNames.li}" dir="ltr" value="3">
+          <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="3">
             <span data-lexical-text="true">the</span>
           </li>
-          <li class="${editorClassNames.li}" dir="ltr" value="4">
+          <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="4">
             <span data-lexical-text="true">other</span>
           </li>
-          <li class="${editorClassNames.li}" dir="ltr" value="5">
+          <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="5">
             <span data-lexical-text="true">side</span>
           </li>
         </ul>
@@ -973,20 +973,20 @@ test.describe("list", () => {
     await assertHTML(
       page,
       html`
-        <ul class="${editorClassNames.ul}">
-          <li class="${editorClassNames.li}" dir="ltr" value="1">
+        <ul class="${EDITOR_CLASSNAMES.ul}">
+          <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="1">
             <span data-lexical-text="true">hello</span>
           </li>
-          <li class="${editorClassNames.li}" dir="ltr" value="2">
+          <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="2">
             <span data-lexical-text="true">from</span>
           </li>
-          <li class="${editorClassNames.li}" dir="ltr" value="3">
+          <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="3">
             <span data-lexical-text="true">the</span>
           </li>
-          <li class="${editorClassNames.li}" dir="ltr" value="4">
+          <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="4">
             <span data-lexical-text="true">other</span>
           </li>
-          <li class="${editorClassNames.li}" value="5"><br /></li>
+          <li class="${EDITOR_CLASSNAMES.li}" value="5"><br /></li>
         </ul>
       `
     );
@@ -996,20 +996,20 @@ test.describe("list", () => {
     await assertHTML(
       page,
       html`
-        <ol class="${editorClassNames.ol1}">
-          <li class="${editorClassNames.li}" dir="ltr" value="1">
+        <ol class="${EDITOR_CLASSNAMES.ol1}">
+          <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="1">
             <span data-lexical-text="true">hello</span>
           </li>
-          <li class="${editorClassNames.li}" dir="ltr" value="2">
+          <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="2">
             <span data-lexical-text="true">from</span>
           </li>
-          <li class="${editorClassNames.li}" dir="ltr" value="3">
+          <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="3">
             <span data-lexical-text="true">the</span>
           </li>
-          <li class="${editorClassNames.li}" dir="ltr" value="4">
+          <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="4">
             <span data-lexical-text="true">other</span>
           </li>
-          <li class="${editorClassNames.li}" value="5"><br /></li>
+          <li class="${EDITOR_CLASSNAMES.li}" value="5"><br /></li>
         </ol>
       `
     );
@@ -1019,20 +1019,20 @@ test.describe("list", () => {
     await assertHTML(
       page,
       html`
-        <ul class="${editorClassNames.ul}">
-          <li class="${editorClassNames.li}" dir="ltr" value="1">
+        <ul class="${EDITOR_CLASSNAMES.ul}">
+          <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="1">
             <span data-lexical-text="true">hello</span>
           </li>
-          <li class="${editorClassNames.li}" dir="ltr" value="2">
+          <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="2">
             <span data-lexical-text="true">from</span>
           </li>
-          <li class="${editorClassNames.li}" dir="ltr" value="3">
+          <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="3">
             <span data-lexical-text="true">the</span>
           </li>
-          <li class="${editorClassNames.li}" dir="ltr" value="4">
+          <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="4">
             <span data-lexical-text="true">other</span>
           </li>
-          <li class="${editorClassNames.li}" value="5"><br /></li>
+          <li class="${EDITOR_CLASSNAMES.li}" value="5"><br /></li>
         </ul>
       `
     );
@@ -1067,28 +1067,28 @@ test.describe("list", () => {
     await assertHTML(
       page,
       html`
-        <ul class="${editorClassNames.ul}">
-          <li class="${editorClassNames.li}" dir="ltr" value="1">
+        <ul class="${EDITOR_CLASSNAMES.ul}">
+          <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="1">
             <span data-lexical-text="true">hello</span>
           </li>
-          <li class="${editorClassNames.nestedLi}" value="2">
-            <ul class="${editorClassNames.ul}">
-              <li class="${editorClassNames.li}" dir="ltr" value="1">
+          <li class="${EDITOR_CLASSNAMES.nestedLi}" value="2">
+            <ul class="${EDITOR_CLASSNAMES.ul}">
+              <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="1">
                 <span data-lexical-text="true">from</span>
               </li>
-              <li class="${editorClassNames.nestedLi}" value="2">
-                <ul class="${editorClassNames.ul}">
-                  <li class="${editorClassNames.li}" dir="ltr" value="1">
+              <li class="${EDITOR_CLASSNAMES.nestedLi}" value="2">
+                <ul class="${EDITOR_CLASSNAMES.ul}">
+                  <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="1">
                     <span data-lexical-text="true">the</span>
                   </li>
                 </ul>
               </li>
-              <li class="${editorClassNames.li}" dir="ltr" value="2">
+              <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="2">
                 <span data-lexical-text="true">other</span>
               </li>
             </ul>
           </li>
-          <li class="${editorClassNames.li}" dir="ltr" value="2">
+          <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="2">
             <span data-lexical-text="true">side</span>
           </li>
         </ul>
@@ -1101,28 +1101,28 @@ test.describe("list", () => {
     await assertHTML(
       page,
       html`
-        <ol class="${editorClassNames.ol1}">
-          <li class="${editorClassNames.li}" dir="ltr" value="1">
+        <ol class="${EDITOR_CLASSNAMES.ol1}">
+          <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="1">
             <span data-lexical-text="true">hello</span>
           </li>
-          <li class="${editorClassNames.nestedLi}" value="2">
-            <ol class="${editorClassNames.ol2}">
-              <li class="${editorClassNames.li}" dir="ltr" value="1">
+          <li class="${EDITOR_CLASSNAMES.nestedLi}" value="2">
+            <ol class="${EDITOR_CLASSNAMES.ol2}">
+              <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="1">
                 <span data-lexical-text="true">from</span>
               </li>
-              <li class="${editorClassNames.nestedLi}" value="2">
-                <ol class="${editorClassNames.ol3}">
-                  <li class="${editorClassNames.li}" dir="ltr" value="1">
+              <li class="${EDITOR_CLASSNAMES.nestedLi}" value="2">
+                <ol class="${EDITOR_CLASSNAMES.ol3}">
+                  <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="1">
                     <span data-lexical-text="true">the</span>
                   </li>
                 </ol>
               </li>
-              <li class="${editorClassNames.li}" dir="ltr" value="2">
+              <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="2">
                 <span data-lexical-text="true">other</span>
               </li>
             </ol>
           </li>
-          <li class="${editorClassNames.li}" dir="ltr" value="2">
+          <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="2">
             <span data-lexical-text="true">side</span>
           </li>
         </ol>
@@ -1134,28 +1134,28 @@ test.describe("list", () => {
     await assertHTML(
       page,
       html`
-        <ul class="${editorClassNames.ul}">
-          <li class="${editorClassNames.li}" dir="ltr" value="1">
+        <ul class="${EDITOR_CLASSNAMES.ul}">
+          <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="1">
             <span data-lexical-text="true">hello</span>
           </li>
-          <li class="${editorClassNames.nestedLi}" value="2">
-            <ul class="${editorClassNames.ul}">
-              <li class="${editorClassNames.li}" dir="ltr" value="1">
+          <li class="${EDITOR_CLASSNAMES.nestedLi}" value="2">
+            <ul class="${EDITOR_CLASSNAMES.ul}">
+              <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="1">
                 <span data-lexical-text="true">from</span>
               </li>
-              <li class="${editorClassNames.nestedLi}" value="2">
-                <ul class="${editorClassNames.ul}">
-                  <li class="${editorClassNames.li}" dir="ltr" value="1">
+              <li class="${EDITOR_CLASSNAMES.nestedLi}" value="2">
+                <ul class="${EDITOR_CLASSNAMES.ul}">
+                  <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="1">
                     <span data-lexical-text="true">the</span>
                   </li>
                 </ul>
               </li>
-              <li class="${editorClassNames.li}" dir="ltr" value="2">
+              <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="2">
                 <span data-lexical-text="true">other</span>
               </li>
             </ul>
           </li>
-          <li class="${editorClassNames.li}" dir="ltr" value="2">
+          <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="2">
             <span data-lexical-text="true">side</span>
           </li>
         </ul>
@@ -1192,28 +1192,28 @@ test.describe("list", () => {
     await assertHTML(
       page,
       html`
-        <ul class="${editorClassNames.ul}">
-          <li class="${editorClassNames.li}" dir="ltr" value="1">
+        <ul class="${EDITOR_CLASSNAMES.ul}">
+          <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="1">
             <span data-lexical-text="true">hello</span>
           </li>
-          <li class="${editorClassNames.nestedLi}" value="2">
-            <ul class="${editorClassNames.ul}">
-              <li class="${editorClassNames.li}" dir="ltr" value="1">
+          <li class="${EDITOR_CLASSNAMES.nestedLi}" value="2">
+            <ul class="${EDITOR_CLASSNAMES.ul}">
+              <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="1">
                 <span data-lexical-text="true">from</span>
               </li>
-              <li class="${editorClassNames.nestedLi}" value="2">
-                <ul class="${editorClassNames.ul}">
-                  <li class="${editorClassNames.li}" dir="ltr" value="1">
+              <li class="${EDITOR_CLASSNAMES.nestedLi}" value="2">
+                <ul class="${EDITOR_CLASSNAMES.ul}">
+                  <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="1">
                     <span data-lexical-text="true">the</span>
                   </li>
                 </ul>
               </li>
-              <li class="${editorClassNames.li}" dir="ltr" value="2">
+              <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="2">
                 <span data-lexical-text="true">other</span>
               </li>
             </ul>
           </li>
-          <li class="${editorClassNames.li}" dir="ltr" value="2">
+          <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="2">
             <span data-lexical-text="true">side</span>
           </li>
         </ul>
@@ -1225,28 +1225,28 @@ test.describe("list", () => {
     await assertHTML(
       page,
       html`
-        <ol class="${editorClassNames.ol1}">
-          <li class="${editorClassNames.li}" dir="ltr" value="1">
+        <ol class="${EDITOR_CLASSNAMES.ol1}">
+          <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="1">
             <span data-lexical-text="true">hello</span>
           </li>
-          <li class="${editorClassNames.nestedLi}" value="2">
-            <ul class="${editorClassNames.ul}">
-              <li class="${editorClassNames.li}" dir="ltr" value="1">
+          <li class="${EDITOR_CLASSNAMES.nestedLi}" value="2">
+            <ul class="${EDITOR_CLASSNAMES.ul}">
+              <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="1">
                 <span data-lexical-text="true">from</span>
               </li>
-              <li class="${editorClassNames.nestedLi}" value="2">
-                <ul class="${editorClassNames.ul}">
-                  <li class="${editorClassNames.li}" dir="ltr" value="1">
+              <li class="${EDITOR_CLASSNAMES.nestedLi}" value="2">
+                <ul class="${EDITOR_CLASSNAMES.ul}">
+                  <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="1">
                     <span data-lexical-text="true">the</span>
                   </li>
                 </ul>
               </li>
-              <li class="${editorClassNames.li}" dir="ltr" value="2">
+              <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="2">
                 <span data-lexical-text="true">other</span>
               </li>
             </ul>
           </li>
-          <li class="${editorClassNames.li}" dir="ltr" value="2">
+          <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="2">
             <span data-lexical-text="true">side</span>
           </li>
         </ol>
@@ -1258,28 +1258,28 @@ test.describe("list", () => {
     await assertHTML(
       page,
       html`
-        <ul class="${editorClassNames.ul}">
-          <li class="${editorClassNames.li}" dir="ltr" value="1">
+        <ul class="${EDITOR_CLASSNAMES.ul}">
+          <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="1">
             <span data-lexical-text="true">hello</span>
           </li>
-          <li class="${editorClassNames.nestedLi}" value="2">
-            <ul class="${editorClassNames.ul}">
-              <li class="${editorClassNames.li}" dir="ltr" value="1">
+          <li class="${EDITOR_CLASSNAMES.nestedLi}" value="2">
+            <ul class="${EDITOR_CLASSNAMES.ul}">
+              <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="1">
                 <span data-lexical-text="true">from</span>
               </li>
-              <li class="${editorClassNames.nestedLi}" value="2">
-                <ul class="${editorClassNames.ul}">
-                  <li class="${editorClassNames.li}" dir="ltr" value="1">
+              <li class="${EDITOR_CLASSNAMES.nestedLi}" value="2">
+                <ul class="${EDITOR_CLASSNAMES.ul}">
+                  <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="1">
                     <span data-lexical-text="true">the</span>
                   </li>
                 </ul>
               </li>
-              <li class="${editorClassNames.li}" dir="ltr" value="2">
+              <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="2">
                 <span data-lexical-text="true">other</span>
               </li>
             </ul>
           </li>
-          <li class="${editorClassNames.li}" dir="ltr" value="2">
+          <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="2">
             <span data-lexical-text="true">side</span>
           </li>
         </ul>
@@ -1293,28 +1293,28 @@ test.describe("list", () => {
     await assertHTML(
       page,
       html`
-        <ul class="${editorClassNames.ul}">
-          <li class="${editorClassNames.li}" dir="ltr" value="1">
+        <ul class="${EDITOR_CLASSNAMES.ul}">
+          <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="1">
             <span data-lexical-text="true">hello</span>
           </li>
-          <li class="${editorClassNames.nestedLi}" value="2">
-            <ol class="${editorClassNames.ol2}">
-              <li class="${editorClassNames.li}" dir="ltr" value="1">
+          <li class="${EDITOR_CLASSNAMES.nestedLi}" value="2">
+            <ol class="${EDITOR_CLASSNAMES.ol2}">
+              <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="1">
                 <span data-lexical-text="true">from</span>
               </li>
-              <li class="${editorClassNames.nestedLi}" value="2">
-                <ul class="${editorClassNames.ul}">
-                  <li class="${editorClassNames.li}" dir="ltr" value="1">
+              <li class="${EDITOR_CLASSNAMES.nestedLi}" value="2">
+                <ul class="${EDITOR_CLASSNAMES.ul}">
+                  <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="1">
                     <span data-lexical-text="true">the</span>
                   </li>
                 </ul>
               </li>
-              <li class="${editorClassNames.li}" dir="ltr" value="2">
+              <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="2">
                 <span data-lexical-text="true">other</span>
               </li>
             </ol>
           </li>
-          <li class="${editorClassNames.li}" dir="ltr" value="2">
+          <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="2">
             <span data-lexical-text="true">side</span>
           </li>
         </ul>
@@ -1326,28 +1326,28 @@ test.describe("list", () => {
     await assertHTML(
       page,
       html`
-        <ul class="${editorClassNames.ul}">
-          <li class="${editorClassNames.li}" dir="ltr" value="1">
+        <ul class="${EDITOR_CLASSNAMES.ul}">
+          <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="1">
             <span data-lexical-text="true">hello</span>
           </li>
-          <li class="${editorClassNames.nestedLi}" value="2">
-            <ul class="${editorClassNames.ul}">
-              <li class="${editorClassNames.li}" dir="ltr" value="1">
+          <li class="${EDITOR_CLASSNAMES.nestedLi}" value="2">
+            <ul class="${EDITOR_CLASSNAMES.ul}">
+              <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="1">
                 <span data-lexical-text="true">from</span>
               </li>
-              <li class="${editorClassNames.nestedLi}" value="2">
-                <ul class="${editorClassNames.ul}">
-                  <li class="${editorClassNames.li}" dir="ltr" value="1">
+              <li class="${EDITOR_CLASSNAMES.nestedLi}" value="2">
+                <ul class="${EDITOR_CLASSNAMES.ul}">
+                  <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="1">
                     <span data-lexical-text="true">the</span>
                   </li>
                 </ul>
               </li>
-              <li class="${editorClassNames.li}" dir="ltr" value="2">
+              <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="2">
                 <span data-lexical-text="true">other</span>
               </li>
             </ul>
           </li>
-          <li class="${editorClassNames.li}" dir="ltr" value="2">
+          <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="2">
             <span data-lexical-text="true">side</span>
           </li>
         </ul>
@@ -1361,28 +1361,28 @@ test.describe("list", () => {
     await assertHTML(
       page,
       html`
-        <ul class="${editorClassNames.ul}">
-          <li class="${editorClassNames.li}" dir="ltr" value="1">
+        <ul class="${EDITOR_CLASSNAMES.ul}">
+          <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="1">
             <span data-lexical-text="true">hello</span>
           </li>
-          <li class="${editorClassNames.nestedLi}" value="2">
-            <ul class="${editorClassNames.ul}">
-              <li class="${editorClassNames.li}" dir="ltr" value="1">
+          <li class="${EDITOR_CLASSNAMES.nestedLi}" value="2">
+            <ul class="${EDITOR_CLASSNAMES.ul}">
+              <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="1">
                 <span data-lexical-text="true">from</span>
               </li>
-              <li class="${editorClassNames.nestedLi}" value="2">
-                <ol class="${editorClassNames.ol3}">
-                  <li class="${editorClassNames.li}" dir="ltr" value="1">
+              <li class="${EDITOR_CLASSNAMES.nestedLi}" value="2">
+                <ol class="${EDITOR_CLASSNAMES.ol3}">
+                  <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="1">
                     <span data-lexical-text="true">the</span>
                   </li>
                 </ol>
               </li>
-              <li class="${editorClassNames.li}" dir="ltr" value="2">
+              <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="2">
                 <span data-lexical-text="true">other</span>
               </li>
             </ul>
           </li>
-          <li class="${editorClassNames.li}" dir="ltr" value="2">
+          <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="2">
             <span data-lexical-text="true">side</span>
           </li>
         </ul>
@@ -1394,28 +1394,28 @@ test.describe("list", () => {
     await assertHTML(
       page,
       html`
-        <ul class="${editorClassNames.ul}">
-          <li class="${editorClassNames.li}" dir="ltr" value="1">
+        <ul class="${EDITOR_CLASSNAMES.ul}">
+          <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="1">
             <span data-lexical-text="true">hello</span>
           </li>
-          <li class="${editorClassNames.nestedLi}" value="2">
-            <ul class="${editorClassNames.ul}">
-              <li class="${editorClassNames.li}" dir="ltr" value="1">
+          <li class="${EDITOR_CLASSNAMES.nestedLi}" value="2">
+            <ul class="${EDITOR_CLASSNAMES.ul}">
+              <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="1">
                 <span data-lexical-text="true">from</span>
               </li>
-              <li class="${editorClassNames.nestedLi}" value="2">
-                <ul class="${editorClassNames.ul}">
-                  <li class="${editorClassNames.li}" dir="ltr" value="1">
+              <li class="${EDITOR_CLASSNAMES.nestedLi}" value="2">
+                <ul class="${EDITOR_CLASSNAMES.ul}">
+                  <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="1">
                     <span data-lexical-text="true">the</span>
                   </li>
                 </ul>
               </li>
-              <li class="${editorClassNames.li}" dir="ltr" value="2">
+              <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="2">
                 <span data-lexical-text="true">other</span>
               </li>
             </ul>
           </li>
-          <li class="${editorClassNames.li}" dir="ltr" value="2">
+          <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="2">
             <span data-lexical-text="true">side</span>
           </li>
         </ul>
@@ -1452,23 +1452,23 @@ test.describe("list", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">hello</span>
         </p>
-        <ul class="${editorClassNames.ul}">
-          <li class="${editorClassNames.li}" dir="ltr" value="1">
+        <ul class="${EDITOR_CLASSNAMES.ul}">
+          <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="1">
             <span data-lexical-text="true">from</span>
           </li>
         </ul>
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">the</span>
         </p>
-        <ul class="${editorClassNames.ul}">
-          <li class="${editorClassNames.li}" dir="ltr" value="1">
+        <ul class="${EDITOR_CLASSNAMES.ul}">
+          <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="1">
             <span data-lexical-text="true">other</span>
           </li>
         </ul>
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">side</span>
         </p>
       `
@@ -1480,20 +1480,20 @@ test.describe("list", () => {
     await assertHTML(
       page,
       html`
-        <ul class="${editorClassNames.ul}">
-          <li class="${editorClassNames.li}" dir="ltr" value="1">
+        <ul class="${EDITOR_CLASSNAMES.ul}">
+          <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="1">
             <span data-lexical-text="true">hello</span>
           </li>
-          <li class="${editorClassNames.li}" dir="ltr" value="2">
+          <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="2">
             <span data-lexical-text="true">from</span>
           </li>
-          <li class="${editorClassNames.li}" dir="ltr" value="3">
+          <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="3">
             <span data-lexical-text="true">the</span>
           </li>
-          <li class="${editorClassNames.li}" dir="ltr" value="4">
+          <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="4">
             <span data-lexical-text="true">other</span>
           </li>
-          <li class="${editorClassNames.li}" dir="ltr" value="5">
+          <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="5">
             <span data-lexical-text="true">side</span>
           </li>
         </ul>
@@ -1522,16 +1522,16 @@ test.describe("list", () => {
     await assertHTML(
       page,
       html`
-        <ul class="${editorClassNames.ul}">
-          <li value="1" class="${editorClassNames.li}" dir="ltr">
+        <ul class="${EDITOR_CLASSNAMES.ul}">
+          <li value="1" class="${EDITOR_CLASSNAMES.li}" dir="ltr">
             <span data-lexical-text="true">hello</span>
           </li>
-          <li value="2" class="${editorClassNames.li}" dir="ltr">
+          <li value="2" class="${EDITOR_CLASSNAMES.li}" dir="ltr">
             <span data-lexical-text="true">from</span>
           </li>
         </ul>
-        <ol class="${editorClassNames.ol1}">
-          <li value="1" class="${editorClassNames.li}" dir="ltr">
+        <ol class="${EDITOR_CLASSNAMES.ol1}">
+          <li value="1" class="${EDITOR_CLASSNAMES.li}" dir="ltr">
             <span data-lexical-text="true">the</span>
           </li>
         </ol>
@@ -1559,14 +1559,14 @@ test.describe("list", () => {
     await assertHTML(
       page,
       html`
-        <ol class="${editorClassNames.ol1}">
-          <li value="1" class="${editorClassNames.li}" dir="ltr">
+        <ol class="${EDITOR_CLASSNAMES.ol1}">
+          <li value="1" class="${EDITOR_CLASSNAMES.li}" dir="ltr">
             <span data-lexical-text="true">hello</span>
           </li>
-          <li value="2" class="${editorClassNames.li}" dir="ltr">
+          <li value="2" class="${EDITOR_CLASSNAMES.li}" dir="ltr">
             <span data-lexical-text="true">from</span>
           </li>
-          <li value="3" class="${editorClassNames.li}" dir="ltr">
+          <li value="3" class="${EDITOR_CLASSNAMES.li}" dir="ltr">
             <span data-lexical-text="true">the</span>
           </li>
         </ol>
@@ -1581,8 +1581,8 @@ test.describe("list", () => {
     await assertHTML(
       page,
       html`
-        <ol start="321" class="${editorClassNames.ol1}">
-          <li value="321" class="${editorClassNames.li}"><br /></li>
+        <ol start="321" class="${EDITOR_CLASSNAMES.ol1}">
+          <li value="321" class="${EDITOR_CLASSNAMES.li}"><br /></li>
         </ol>
       `
     );
@@ -1597,8 +1597,8 @@ test.describe("list", () => {
     await assertHTML(
       page,
       html`
-        <ul class="${editorClassNames.ul}">
-          <li value="1" class="${editorClassNames.li}">
+        <ul class="${EDITOR_CLASSNAMES.ul}">
+          <li value="1" class="${EDITOR_CLASSNAMES.li}">
             <span data-lexical-text="true"># </span>
           </li>
         </ul>
@@ -1619,13 +1619,13 @@ test.describe("list", () => {
     await assertHTML(
       page,
       html`
-        <ul class="${editorClassNames.ul}">
-          <li value="1" class="${editorClassNames.li}" dir="ltr">
+        <ul class="${EDITOR_CLASSNAMES.ul}">
+          <li value="1" class="${EDITOR_CLASSNAMES.li}" dir="ltr">
             <span data-lexical-text="true">a</span>
           </li>
-          <li value="2" class="${editorClassNames.nestedLi}">
-            <ul class="${editorClassNames.ul}">
-              <li value="1" class="${editorClassNames.li}"><br /></li>
+          <li value="2" class="${EDITOR_CLASSNAMES.nestedLi}">
+            <ul class="${EDITOR_CLASSNAMES.ul}">
+              <li value="1" class="${EDITOR_CLASSNAMES.li}"><br /></li>
             </ul>
           </li>
         </ul>
@@ -1637,11 +1637,11 @@ test.describe("list", () => {
     await assertHTML(
       page,
       html`
-        <ul class="${editorClassNames.ul}">
-          <li value="1" class="${editorClassNames.li}" dir="ltr">
+        <ul class="${EDITOR_CLASSNAMES.ul}">
+          <li value="1" class="${EDITOR_CLASSNAMES.li}" dir="ltr">
             <span data-lexical-text="true">a</span>
           </li>
-          <li value="2" class="${editorClassNames.li}"><br /></li>
+          <li value="2" class="${EDITOR_CLASSNAMES.li}"><br /></li>
         </ul>
       `
     );
@@ -1651,12 +1651,12 @@ test.describe("list", () => {
     await assertHTML(
       page,
       html`
-        <ul class="${editorClassNames.ul}">
-          <li value="1" class="${editorClassNames.li}" dir="ltr">
+        <ul class="${EDITOR_CLASSNAMES.ul}">
+          <li value="1" class="${EDITOR_CLASSNAMES.li}" dir="ltr">
             <span data-lexical-text="true">a</span>
           </li>
         </ul>
-        <p class="${editorClassNames.paragraph}"><br /></p>
+        <p class="${EDITOR_CLASSNAMES.paragraph}"><br /></p>
       `
     );
   });
@@ -1670,8 +1670,8 @@ test.describe("list", () => {
     await assertHTML(
       page,
       html`
-        <ul class="${editorClassNames.ul}">
-          <li class="${editorClassNames.li}" value="1" dir="ltr">
+        <ul class="${EDITOR_CLASSNAMES.ul}">
+          <li class="${EDITOR_CLASSNAMES.li}" value="1" dir="ltr">
             <span data-lexical-text="true">a</span>
           </li>
         </ul>
@@ -1683,7 +1683,7 @@ test.describe("list", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">a</span>
         </p>
       `
@@ -1701,11 +1701,11 @@ test.describe("list", () => {
     await assertHTML(
       page,
       html`
-        <ul class="${editorClassNames.ul}">
-          <li class="${editorClassNames.li}" value="1" dir="ltr">
+        <ul class="${EDITOR_CLASSNAMES.ul}">
+          <li class="${EDITOR_CLASSNAMES.li}" value="1" dir="ltr">
             <span data-lexical-text="true">a</span>
           </li>
-          <li class="${editorClassNames.li}" value="2" dir="ltr">
+          <li class="${EDITOR_CLASSNAMES.li}" value="2" dir="ltr">
             <span data-lexical-text="true">b</span>
           </li>
         </ul>
@@ -1717,12 +1717,12 @@ test.describe("list", () => {
     await assertHTML(
       page,
       html`
-        <ul class="${editorClassNames.ul}">
-          <li class="${editorClassNames.li}" value="1" dir="ltr">
+        <ul class="${EDITOR_CLASSNAMES.ul}">
+          <li class="${EDITOR_CLASSNAMES.li}" value="1" dir="ltr">
             <span data-lexical-text="true">a</span>
           </li>
         </ul>
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">b</span>
         </p>
       `
@@ -1743,14 +1743,14 @@ test.describe("list", () => {
     await assertHTML(
       page,
       html`
-        <ul class="${editorClassNames.ul}">
-          <li class="${editorClassNames.li}" value="1" dir="ltr">
+        <ul class="${EDITOR_CLASSNAMES.ul}">
+          <li class="${EDITOR_CLASSNAMES.li}" value="1" dir="ltr">
             <span data-lexical-text="true">a</span>
           </li>
-          <li class="${editorClassNames.li}" value="2" dir="ltr">
+          <li class="${EDITOR_CLASSNAMES.li}" value="2" dir="ltr">
             <span data-lexical-text="true">b</span>
           </li>
-          <li class="${editorClassNames.li}" value="3" dir="ltr">
+          <li class="${EDITOR_CLASSNAMES.li}" value="3" dir="ltr">
             <span data-lexical-text="true">c</span>
           </li>
         </ul>
@@ -1762,16 +1762,16 @@ test.describe("list", () => {
     await assertHTML(
       page,
       html`
-        <ul class="${editorClassNames.ul}">
-          <li class="${editorClassNames.li}" value="1" dir="ltr">
+        <ul class="${EDITOR_CLASSNAMES.ul}">
+          <li class="${EDITOR_CLASSNAMES.li}" value="1" dir="ltr">
             <span data-lexical-text="true">a</span>
           </li>
         </ul>
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">b</span>
         </p>
-        <ul class="${editorClassNames.ul}">
-          <li class="${editorClassNames.li}" value="1" dir="ltr">
+        <ul class="${EDITOR_CLASSNAMES.ul}">
+          <li class="${EDITOR_CLASSNAMES.li}" value="1" dir="ltr">
             <span data-lexical-text="true">c</span>
           </li>
         </ul>
@@ -1792,11 +1792,11 @@ test.describe("list", () => {
     await assertHTML(
       page,
       html`
-        <ul class="${editorClassNames.ul}">
-          <li class="${editorClassNames.li}" dir="ltr" value="1">
+        <ul class="${EDITOR_CLASSNAMES.ul}">
+          <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="1">
             <span data-lexical-text="true">hello from</span>
           </li>
-          <li class="${editorClassNames.li}" dir="ltr" value="2">
+          <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="2">
             <span data-lexical-text="true">the other side</span>
           </li>
         </ul>
@@ -1817,10 +1817,10 @@ test.describe("list", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">hello world</span>
         </p>
-        <p class="${editorClassNames.paragraph}"><br /></p>
+        <p class="${EDITOR_CLASSNAMES.paragraph}"><br /></p>
       `
     );
 

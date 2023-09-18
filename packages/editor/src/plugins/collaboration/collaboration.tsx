@@ -8,8 +8,8 @@ import { Doc } from "yjs";
 import { selectUser } from "~/redux/features";
 import { useAppSelector } from "~/redux/hooks";
 
-import { ExcludedProperties } from "../../collab/bindings";
-import { Provider } from "../../collab/provider";
+import { ExcludedProperties } from "../../collaboration/bindings";
+import { Provider } from "../../collaboration/provider";
 import { useYjsCollaboration } from "../../hooks/use-yjs-collaboration";
 import { useYjsFocusTracking } from "../../hooks/use-yjs-focus-tracking";
 import { useYjsHistory } from "../../hooks/use-yjs-history";
@@ -49,7 +49,7 @@ const CollaborationPlugin = ({
         avatarId: user.avatar_id,
         avatarHex: user.avatar_hex,
         awarenessData
-      } as const),
+      }) as const,
     [
       awarenessData,
       role,

@@ -15,7 +15,8 @@ const meta: Meta<typeof Editor> = {
     layout: "fullscreen"
   },
   args: {
-    docId: "demo"
+    docId: "demo",
+    role: "editor"
   },
   tags: ["autodocs"]
 };

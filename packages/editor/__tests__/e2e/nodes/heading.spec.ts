@@ -1,6 +1,6 @@
 import { test } from "@playwright/test";
 
-import { editorClassNames } from "../../constants/class-names";
+import { EDITOR_CLASSNAMES } from "../../constants";
 import { moveRight, moveToEditorBeginning } from "../../keyboard-shortcuts";
 import {
   assertHTML,
@@ -26,10 +26,10 @@ test.describe("heading", () => {
     await assertHTML(
       page,
       html`
-        <h2 class="${editorClassNames.heading}" dir="ltr">
+        <h2 class="${EDITOR_CLASSNAMES.heading}" dir="ltr">
           <span data-lexical-text="true">heading 1</span>
         </h2>
-        <h2 class="${editorClassNames.heading}" dir="ltr">
+        <h2 class="${EDITOR_CLASSNAMES.heading}" dir="ltr">
           <span data-lexical-text="true">heading 2</span>
         </h2>
       `
@@ -57,16 +57,16 @@ test.describe("heading", () => {
     await assertHTML(
       page,
       html`
-        <h3 class="${editorClassNames.subheading}" dir="ltr">
+        <h3 class="${EDITOR_CLASSNAMES.subheading}" dir="ltr">
           <span data-lexical-text="true">heading 3</span>
         </h3>
-        <h3 class="${editorClassNames.subheading}" dir="ltr">
+        <h3 class="${EDITOR_CLASSNAMES.subheading}" dir="ltr">
           <span data-lexical-text="true">heading 4</span>
         </h3>
-        <h3 class="${editorClassNames.subheading}" dir="ltr">
+        <h3 class="${EDITOR_CLASSNAMES.subheading}" dir="ltr">
           <span data-lexical-text="true">heading 5</span>
         </h3>
-        <h3 class="${editorClassNames.subheading}" dir="ltr">
+        <h3 class="${EDITOR_CLASSNAMES.subheading}" dir="ltr">
           <span data-lexical-text="true">heading 6</span>
         </h3>
       `
@@ -88,7 +88,7 @@ test.describe("heading", () => {
     await assertHTML(
       page,
       html`
-        <h2 class="${editorClassNames.heading}" dir="ltr">
+        <h2 class="${EDITOR_CLASSNAMES.heading}" dir="ltr">
           <span data-lexical-text="true">hello world</span>
         </h2>
       `
@@ -100,7 +100,7 @@ test.describe("heading", () => {
     await assertHTML(
       page,
       html`
-        <h2 class="${editorClassNames.heading}" dir="ltr">
+        <h2 class="${EDITOR_CLASSNAMES.heading}" dir="ltr">
           <span data-lexical-text="true">hello world</span>
         </h2>
       `
@@ -115,7 +115,7 @@ test.describe("heading", () => {
     await assertHTML(
       page,
       html`
-        <h2 class="${editorClassNames.heading}" dir="ltr">
+        <h2 class="${EDITOR_CLASSNAMES.heading}" dir="ltr">
           <span data-lexical-text="true">hello world</span>
         </h2>
       `
@@ -128,10 +128,10 @@ test.describe("heading", () => {
     await assertHTML(
       page,
       html`
-        <h2 class="${editorClassNames.heading}" dir="ltr">
+        <h2 class="${EDITOR_CLASSNAMES.heading}" dir="ltr">
           <span data-lexical-text="true">hello</span>
         </h2>
-        <h2 class="${editorClassNames.heading}" dir="ltr">
+        <h2 class="${EDITOR_CLASSNAMES.heading}" dir="ltr">
           <span data-lexical-text="true"> world</span>
         </h2>
       `
@@ -146,7 +146,7 @@ test.describe("heading", () => {
     await assertHTML(
       page,
       html`
-        <h2 class="${editorClassNames.heading}" dir="ltr">
+        <h2 class="${EDITOR_CLASSNAMES.heading}" dir="ltr">
           <span data-lexical-text="true">hello world</span>
         </h2>
       `
@@ -157,10 +157,10 @@ test.describe("heading", () => {
     await assertHTML(
       page,
       html`
-        <h2 class="${editorClassNames.heading}" dir="ltr">
+        <h2 class="${EDITOR_CLASSNAMES.heading}" dir="ltr">
           <span data-lexical-text="true">hello world</span>
         </h2>
-        <p class="${editorClassNames.paragraph}"><br /></p>
+        <p class="${EDITOR_CLASSNAMES.paragraph}"><br /></p>
       `
     );
   });

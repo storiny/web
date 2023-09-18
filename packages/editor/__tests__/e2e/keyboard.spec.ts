@@ -1,14 +1,7 @@
 import { test } from "@playwright/test";
 
-import { editorClassNames } from "../constants/class-names";
-import {
-  assertHTML,
-  E2E_BROWSER,
-  focusEditor,
-  html,
-  initialize,
-  IS_MAC
-} from "../utils";
+import { E2E_BROWSER, EDITOR_CLASSNAMES, IS_MAC } from "../constants";
+import { assertHTML, focusEditor, html, initialize } from "../utils";
 
 const SUPPORTS_TRANSPOSE = IS_MAC && E2E_BROWSER !== "firefox";
 
@@ -33,7 +26,7 @@ test.describe("keyboard shortcuts", () => {
     await assertHTML(
       page,
       html`
-        <p class="${editorClassNames.paragraph}" dir="ltr">
+        <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">bca</span>
         </p>
       `

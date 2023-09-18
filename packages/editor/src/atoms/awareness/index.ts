@@ -1,5 +1,5 @@
 import { atom } from "jotai";
 
-import { ProviderAwareness } from "../../collab/provider";
+import { Provider } from "../../collaboration/provider";
 
-export const awarenessAtom = atom<ProviderAwareness | null>(null);
+export const awarenessAtom = atom<Provider["awareness"] | null>(null);

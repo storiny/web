@@ -6,7 +6,7 @@ import {
   LexicalNode
 } from "lexical";
 
-import { Binding } from "../../collab/bindings";
+import { Binding } from "../../collaboration/bindings";
 
 const baseExcludedProperties = new Set<string>([
   "__key",

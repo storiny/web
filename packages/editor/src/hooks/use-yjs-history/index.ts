@@ -9,8 +9,8 @@ import {
 } from "lexical";
 import React from "react";
 
-import { Binding } from "../../collab/bindings";
-import { createUndoManager } from "../../collab/history";
+import { Binding } from "../../collaboration/bindings";
+import { createUndoManager } from "../../collaboration/history";
 
 /**
  * Hook for using yjs history

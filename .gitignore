@@ -1,5 +1,3 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
 # dependencies
 node_modules
 .pnp.*
@@ -9,10 +7,6 @@ node_modules
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
-
-# testing
-coverage
-test-results
 
 # docker
 docker/tmp/elasticsearch/*
@@ -31,14 +25,9 @@ packages/proto/certs/*
 !packages/proto/certs/gen.sh
 
 # next.js
-.next/
-out/
-build
-
-# misc
-.DS_Store
-*.pem
-migration-storybook.log
+**/.next/
+**/out/
+**/build
 
 # debug
 npm-debug.log*
@@ -59,6 +48,12 @@ apps/web/.env.local
 .vercel
 
 # playwright
-/test-results/
-/playwright-report/
-/playwright/.cache/
+**/coverage
+**/test-results/
+**/playwright-report/
+**/playwright/.cache/
+
+# misc
+.DS_Store
+*.pem
+migration-storybook.log
