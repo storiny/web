@@ -73,18 +73,26 @@ const syncEvent = (binding: Binding, event: any): void => {
  * @param provider Provider
  * @param events Events
  * @param isFromUndoManger Whether the changes are from the undo manager
+ * @param readOnly If `true`, skips handling selection and cursors
  */
-export const syncYjsChangesToLexical = (
-  binding: Binding,
-  provider: Provider,
-  events: Array<YEvent<YText>>,
-  isFromUndoManger: boolean
-): void => {
+export const syncYjsChangesToLexical = ({
+  provider,
+  binding,
+  isFromUndoManger,
+  readOnly,
+  events
+}: {
+  binding: Binding;
+  events: Array<YEvent<YText>>;
+  isFromUndoManger: boolean;
+  provider?: Provider;
+  readOnly?: boolean;
+}): void => {
   const editor = binding.editor;
   const currentEditorState = editor._editorState;
 
   // This line precomputes the delta before the editor updates. The reason is
-  // delta is computed when it is accessed. Note that this can only be
+  // that the delta is computed when it is accessed. Note that this can only be
   // safely computed during the event call. If it is accessed after the event
   // call, it might result in unexpected behavior.
   // https://github.com/yjs/yjs/blob/00ef472d68545cb260abd35c2de4b3b78719c9e4/src/utils/YEvent.js#L132
@@ -92,13 +100,16 @@ export const syncYjsChangesToLexical = (
 
   editor.update(
     () => {
-      const pendingEditorState: EditorState | null = editor._pendingEditorState;
-
       for (let i = 0; i < events.length; i++) {
         const event = events[i];
         syncEvent(binding, event);
       }
 
+      if (!provider || readOnly) {
+        return;
+      }
+
+      const pendingEditorState: EditorState | null = editor._pendingEditorState;
       const selection = $getSelection();
 
       if ($isRangeSelection(selection)) {
@@ -163,7 +174,10 @@ export const syncYjsChangesToLexical = (
       }
     },
     {
-      onUpdate: () => syncCursorPositions(binding, provider),
+      onUpdate:
+        !provider || readOnly
+          ? undefined
+          : (): void => syncCursorPositions(binding, provider),
       skipTransforms: true,
       tag: isFromUndoManger ? "historic" : "collaboration"
     }

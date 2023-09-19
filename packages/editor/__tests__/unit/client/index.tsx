@@ -165,10 +165,14 @@ export class Client {
   public connect(): void {
     if (!this.connected) {
       this.connected = true;
-      const update = Y.encodeStateAsUpdate(this.doc);
+      const update = Y.encodeStateAsUpdateV2(this.doc);
 
       if (this.updates.length > 0) {
-        Y.applyUpdate(this.doc, Y.mergeUpdates(this.updates), this.connection);
+        Y.applyUpdateV2(
+          this.doc,
+          Y.mergeUpdates(this.updates),
+          this.connection
+        );
         this.updates = [];
       }
 
@@ -319,7 +323,7 @@ export class Client {
     this.connection.clients.forEach((client) => {
       if (client !== this) {
         if (client.connected) {
-          Y.applyUpdate(client.doc, update, this.connection);
+          Y.applyUpdateV2(client.doc, update, this.connection);
         } else {
           client.updates.push(update);
         }

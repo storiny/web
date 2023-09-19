@@ -12,11 +12,13 @@ import { editorTheme } from "../../theme";
 const EditorComposer = ({
   children,
   ignoreTheme,
-  ignoreNodes
+  ignoreNodes,
+  readOnly
 }: {
   children: React.ReactElement;
   ignoreNodes?: boolean;
   ignoreTheme?: boolean;
+  readOnly?: boolean;
 }): React.ReactElement => {
   const initialConfig: InitialConfigType = {
     editorState: null, // `null` is required here to allow yjs to set the initial state
@@ -24,7 +26,7 @@ const EditorComposer = ({
     onError: devConsole.error,
     nodes: ignoreNodes ? undefined : editorNodes,
     theme: ignoreTheme ? undefined : editorTheme,
-    editable: true
+    editable: !readOnly
   };
 
   return (

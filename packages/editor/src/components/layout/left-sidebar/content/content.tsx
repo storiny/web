@@ -6,6 +6,7 @@ import { useAtomValue } from "jotai";
 import React from "react";
 
 import Divider from "~/components/Divider";
+import LeftSidebarDefaultContent from "~/layout/LeftSidebar/DefaultContent";
 
 import {
   docStatusAtom,
@@ -23,7 +24,8 @@ import EditorToc from "./toc";
 const SuspendedEditorLeftSidebarContent = (
   props: EditorLeftSidebarProps
 ): React.ReactElement | null => {
-  const { story } = props;
+  const { story, readOnly } = props;
+  const mountedRef = React.useRef<boolean>(false);
   const docStatus = useAtomValue(docStatusAtom);
   const isCollapsed = useAtomValue(sidebarsCollapsedAtom);
   const overflowingFigures = useAtomValue(overflowingFiguresAtom);
@@ -31,14 +33,24 @@ const SuspendedEditorLeftSidebarContent = (
     from: { opacity: 0, transform: "translate3d(-10%,0,0) scale(0.97)" },
     enter: { opacity: 1, transform: "translate3d(0%,0,0) scale(1)" },
     leave: { opacity: 0, transform: "translate3d(-10%,0,0) scale(0.97)" },
-    config: springConfig
+    config: springConfig,
+    immediate: Boolean(readOnly) && !mountedRef.current
   });
-  const documentLoading = ["connecting", "reconnecting"].includes(docStatus);
+  const documentLoading =
+    !readOnly && ["connecting", "reconnecting"].includes(docStatus);
+
+  React.useEffect(() => {
+    mountedRef.current = true;
+    return () => {
+      mountedRef.current = false;
+    };
+  }, []);
 
   if (
-    docStatus === "disconnected" ||
-    docStatus === "forbidden" ||
-    docStatus === "overloaded"
+    !readOnly &&
+    (docStatus === "disconnected" ||
+      docStatus === "forbidden" ||
+      docStatus === "overloaded")
   ) {
     return null;
   }
@@ -60,11 +72,13 @@ const SuspendedEditorLeftSidebarContent = (
           pointerEvents: documentLoading ? "none" : "auto"
         }}
       >
-        {documentLoading ? (
+        {readOnly ? (
+          <LeftSidebarDefaultContent />
+        ) : documentLoading ? (
           <EditorLeftSidebarSkeleton />
         ) : (
           <React.Fragment>
-            <EditorStoryCard story={story} />
+            <EditorStoryCard story={story!} />
             <div className={clsx(styles.x, styles["padded-divider"])}>
               <Divider />
             </div>

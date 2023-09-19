@@ -6,11 +6,15 @@ import { useMediaQuery } from "~/hooks/useMediaQuery";
 import RightSidebar from "~/layout/RightSidebar";
 import { breakpoints } from "~/theme/breakpoints";
 
+import { EditorRightSidebarProps } from "./right-sidebar.props";
+
 const SuspendedEditorRightSidebarContent = dynamic(() => import("./content"), {
   loading: dynamicLoader()
 });
 
-const EditorRightSidebar = (): React.ReactElement | null => {
+const EditorRightSidebar = (
+  props: EditorRightSidebarProps
+): React.ReactElement | null => {
   const shouldRender = useMediaQuery(breakpoints.up("desktop"));
 
   if (!shouldRender) {
@@ -19,7 +23,7 @@ const EditorRightSidebar = (): React.ReactElement | null => {
 
   return (
     <RightSidebar hideFooter>
-      <SuspendedEditorRightSidebarContent />
+      <SuspendedEditorRightSidebarContent {...props} />
     </RightSidebar>
   );
 };

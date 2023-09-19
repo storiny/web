@@ -1,1 +1,1 @@
-export * from "./tk";
+export { default } from "./tk";

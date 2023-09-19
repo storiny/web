@@ -1,30 +1,36 @@
 "use client";
 
-import { mockStories } from "@storiny/ui/src/mocks";
 import { Provider } from "jotai";
+import dynamic from "next/dynamic";
 import React from "react";
 
+import Navbar from "~/layout/Navbar";
+
 import EditorComposer from "../composer";
-import EditorToolbar from "../toolbar";
+import { EditorProps } from "../editor";
 import EditorLeftSidebar from "./left-sidebar";
 import EditorNavbar from "./navbar";
 import EditorRightSidebar from "./right-sidebar";
 
+const EditorToolbar = dynamic(() => import("../toolbar"));
+
 const EditorLayout = ({
-  children
+  children,
+  readOnly,
+  story
 }: {
   children: React.ReactNode;
-}): React.ReactElement => (
+} & Pick<EditorProps, "readOnly" | "story">): React.ReactElement => (
   <Provider>
-    <EditorComposer>
+    <EditorComposer readOnly={readOnly}>
       <React.Fragment>
-        <EditorNavbar />
-        <EditorLeftSidebar story={mockStories[5]} />
+        {readOnly ? <Navbar /> : <EditorNavbar />}
+        <EditorLeftSidebar readOnly={readOnly} story={story} />
         <main>
           {children}
-          <EditorToolbar />
+          {!readOnly && <EditorToolbar />}
         </main>
-        <EditorRightSidebar />
+        <EditorRightSidebar readOnly={readOnly} />
       </React.Fragment>
     </EditorComposer>
   </Provider>

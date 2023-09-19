@@ -9,7 +9,7 @@ import {
 } from "lexical";
 import React from "react";
 
-// 5 (average chars / words in english) x 8k words
+// 5 (average chars / words in English) x 8k words
 const MAX_LENGTH = 40_000;
 
 const MaxLengthPlugin = (): null => {

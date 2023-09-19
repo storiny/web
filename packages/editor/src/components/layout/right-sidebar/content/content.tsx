@@ -15,6 +15,7 @@ import {
 import { springConfig } from "../../../../constants";
 import commonStyles from "../../common/sidebar.module.scss";
 import styles from "../right-sidebar.module.scss";
+import { EditorRightSidebarProps } from "../right-sidebar.props";
 import Alignment from "./alignment";
 import Appearance from "./appearance";
 import History from "./history";
@@ -23,7 +24,11 @@ import Insert from "./insert";
 import PaddedDivider from "./padded-divider";
 import TextStyle from "./text-style";
 
-const SuspendedEditorRightSidebarContent = (): React.ReactElement | null => {
+const SuspendedEditorRightSidebarContent = (
+  props: EditorRightSidebarProps
+): React.ReactElement | null => {
+  const { readOnly } = props;
+  const mountedRef = React.useRef<boolean>(false);
   const isCollapsed = useAtomValue(sidebarsCollapsedAtom);
   const docStatus = useAtomValue(docStatusAtom);
   const overflowingFigures = useAtomValue(overflowingFiguresAtom);
@@ -31,14 +36,24 @@ const SuspendedEditorRightSidebarContent = (): React.ReactElement | null => {
     from: { opacity: 0, transform: "translate3d(10%,0,0) scale(0.97)" },
     enter: { opacity: 1, transform: "translate3d(0%,0,0) scale(1)" },
     leave: { opacity: 0, transform: "translate3d(10%,0,0) scale(0.97)" },
-    config: springConfig
+    config: springConfig,
+    immediate: Boolean(readOnly) && !mountedRef.current
   });
-  const documentLoading = ["connecting", "reconnecting"].includes(docStatus);
+  const documentLoading =
+    !readOnly && ["connecting", "reconnecting"].includes(docStatus);
+
+  React.useEffect(() => {
+    mountedRef.current = true;
+    return () => {
+      mountedRef.current = false;
+    };
+  }, []);
 
   if (
-    docStatus === "disconnected" ||
-    docStatus === "forbidden" ||
-    docStatus === "overloaded"
+    !readOnly &&
+    (docStatus === "disconnected" ||
+      docStatus === "forbidden" ||
+      docStatus === "overloaded")
   ) {
     return null;
   }
@@ -60,26 +75,32 @@ const SuspendedEditorRightSidebarContent = (): React.ReactElement | null => {
           pointerEvents: documentLoading ? "none" : "auto"
         }}
       >
-        <div className={"flex-center"}>
-          <History disabled={documentLoading} />
-          <PaddedDivider />
-          <Alignment disabled={documentLoading} />
-          <PaddedDivider />
-          <Indentation disabled={documentLoading} />
-        </div>
-        <Divider />
-        <TextStyle disabled={documentLoading} />
-        <Divider />
-        <Insert disabled={documentLoading} />
-        <Divider />
-        <Appearance disabled={documentLoading} />
-        <div
-          style={{
-            width: "5px",
-            background: "red",
-            marginRight: "-64px"
-          }}
-        />
+        {readOnly ? (
+          "CONTENT"
+        ) : (
+          <React.Fragment>
+            <div className={"flex-center"}>
+              <History disabled={documentLoading} />
+              <PaddedDivider />
+              <Alignment disabled={documentLoading} />
+              <PaddedDivider />
+              <Indentation disabled={documentLoading} />
+            </div>
+            <Divider />
+            <TextStyle disabled={documentLoading} />
+            <Divider />
+            <Insert disabled={documentLoading} />
+            <Divider />
+            <Appearance disabled={documentLoading} />
+            <div
+              style={{
+                width: "5px",
+                background: "red",
+                marginRight: "-64px"
+              }}
+            />
+          </React.Fragment>
+        )}
       </animated.div>
     ) : null
   );

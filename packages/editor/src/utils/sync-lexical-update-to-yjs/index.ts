@@ -125,7 +125,6 @@ export const syncLexicalUpdateToYjs = ({
           nextLexicalRoot,
           prevNodeMap
         );
-
         collabRoot.syncChildrenFromLexical(
           binding,
           nextLexicalRoot,

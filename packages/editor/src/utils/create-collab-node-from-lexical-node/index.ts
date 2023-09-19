@@ -64,11 +64,11 @@ export const $createCollabNodeFromLexicalNode = (
     map.set("__type", "linebreak");
     collabNode = $createCollabLineBreakNode(map, parent);
   } else if ($isDecoratorNode(lexicalNode)) {
-    const xmlElem = new XmlElement();
+    const xmlElem = new XmlElement(lexicalNode.getType());
     collabNode = $createCollabDecoratorNode(xmlElem, parent, nodeType);
     collabNode.syncPropertiesFromLexical(binding, lexicalNode, null);
   } else {
-    throw new Error("Expected text, element, decorator, or linebreak node");
+    throw new Error("Expected text, element, decorator, or a linebreak node");
   }
 
   collabNode._key = lexicalNode.__key;

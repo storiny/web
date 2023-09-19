@@ -1,6 +1,5 @@
 "use client";
 
-import { InitialEditorStateType } from "@lexical/react/LexicalComposer";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import React from "react";
 import { Doc } from "yjs";
@@ -13,6 +12,7 @@ import { Provider } from "../../collaboration/provider";
 import { useYjsCollaboration } from "../../hooks/use-yjs-collaboration";
 import { useYjsFocusTracking } from "../../hooks/use-yjs-focus-tracking";
 import { useYjsHistory } from "../../hooks/use-yjs-history";
+import { createWebsocketProvider } from "../../utils/create-ws-provider";
 import { getUserColor } from "../../utils/get-user-color";
 import { useCollaborationContext } from "./context";
 
@@ -21,18 +21,16 @@ interface Props {
   awarenessData?: object;
   excludedProperties?: ExcludedProperties;
   id: string;
-  initialEditorState?: InitialEditorStateType;
   isMainEditor?: boolean;
-  providerFactory: (id: string, yjsDocMap: Map<string, Doc>) => Provider;
+  providerFactory?: (id: string, yjsDocMap: Map<string, Doc>) => Provider;
   role: "editor" | "viewer";
   shouldBootstrap: boolean;
 }
 
 const CollaborationPlugin = ({
   id,
-  providerFactory,
+  providerFactory = createWebsocketProvider,
   shouldBootstrap,
-  initialEditorState,
   excludedProperties,
   isMainEditor,
   role,
@@ -75,7 +73,6 @@ const CollaborationPlugin = ({
       window.parent != null && (window.parent.frames as any).right === window
         ? false
         : shouldBootstrap,
-    initialEditorState,
     excludedProperties,
     isMainEditor,
     localState
