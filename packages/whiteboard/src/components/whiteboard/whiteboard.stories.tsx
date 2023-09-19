@@ -11,7 +11,6 @@ const meta: Meta<typeof Whiteboard> = {
     layout: "fullscreen"
   },
   args: {
-    onConfirm: console.log,
     style: {
       height: "100vh"
     }

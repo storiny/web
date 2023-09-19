@@ -12,9 +12,9 @@ const EditorBody = dynamic(() => import("../body"), {
 });
 
 const Editor = (props: EditorProps): React.ReactElement => (
-  <EditorLayout>
+  <EditorLayout readOnly={props.readOnly} story={props.story}>
     <EditorBody {...props} />
-    <EditorShortcuts />
+    {!props.readOnly && <EditorShortcuts />}
   </EditorLayout>
 );
 

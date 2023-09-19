@@ -1,6 +1,5 @@
 import { Story } from "@storiny/types";
 
-export interface EditorLeftSidebarProps {
+export interface EditorRightSidebarProps {
   readOnly?: boolean;
-  story?: Story;
 }

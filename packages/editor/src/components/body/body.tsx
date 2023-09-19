@@ -1,11 +1,9 @@
 "use client";
 
-import LexicalClickableLinkPlugin from "@lexical/react/LexicalClickableLinkPlugin";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { HorizontalRulePlugin } from "@lexical/react/LexicalHorizontalRulePlugin";
-import { ListPlugin } from "@lexical/react/LexicalListPlugin";
 import { clsx } from "clsx";
 import { useAtomValue } from "jotai";
+import dynamic from "next/dynamic";
 import React from "react";
 
 import NoSsr from "~/components/NoSsr";
@@ -13,23 +11,9 @@ import { capitalize } from "~/utils/capitalize";
 
 import { docStatusAtom } from "../../atoms";
 import { useRegisterTools } from "../../hooks/use-register-tools";
-import AutoFocusPlugin from "../../plugins/auto-focus";
-import CaptionPlugin from "../../plugins/caption/caption";
-import CollaborationPlugin from "../../plugins/collaboration";
-import ColorPlugin from "../../plugins/color/color";
-import EmbedPlugin from "../../plugins/embed";
-import FloatingLinkEditorPlugin from "../../plugins/floating-link-editor";
-import FloatingTextStylePlugin from "../../plugins/floating-text-style";
-import ImagePlugin from "../../plugins/image";
-import LinkPlugin from "../../plugins/link";
-import ListMaxIndentLevelPlugin from "../../plugins/list-max-indent-level";
-import MarkdownPlugin from "../../plugins/markdown";
-import MaxLengthPlugin from "../../plugins/max-length";
+import ReadOnlyPlugin from "../../plugins/read-only";
 import RichTextPlugin from "../../plugins/rich-text";
-import TabFocusPlugin from "../../plugins/tab-focus";
-import TextEntityPlugin from "../../plugins/text-entity";
-import TKPlugin from "../../plugins/tk/tk";
-import { createWebsocketProvider } from "../../utils/create-ws-provider";
+import { useSidebarsShortcut } from "../../shortcuts/shortcuts";
 import EditorContentEditable from "../content-editable";
 import { EditorProps } from "../editor";
 import EditorErrorBoundary from "../error-boundary";
@@ -37,9 +21,47 @@ import EditorLoader from "../loader";
 import EditorPlaceholder from "../placeholder";
 import styles from "./body.module.scss";
 
+const CollaborationPlugin = dynamic(
+  () => import("../../plugins/collaboration")
+);
+const ClickableLinkPlugin = dynamic(
+  () => import("@lexical/react/LexicalClickableLinkPlugin")
+);
+const FloatingLinkEditorPlugin = dynamic(
+  () => import("../../plugins/floating-link-editor")
+);
+const FloatingTextStylePlugin = dynamic(
+  () => import("../../plugins/floating-text-style")
+);
+const ListMaxIndentLevelPlugin = dynamic(
+  () => import("../../plugins/list-max-indent-level")
+);
+const AutoFocusPlugin = dynamic(() => import("../../plugins/auto-focus"));
+const TabFocusPlugin = dynamic(() => import("../../plugins/tab-focus"));
+const MarkdownPlugin = dynamic(() => import("../../plugins/markdown"));
+const MaxLengthPlugin = dynamic(() => import("../../plugins/max-length"));
+const TextEntityPlugin = dynamic(() => import("../../plugins/text-entity"));
+const TKPlugin = dynamic(() => import("../../plugins/tk"));
+const ColorPlugin = dynamic(() => import("../../plugins/color"));
+const CaptionPlugin = dynamic(() => import("../../plugins/caption"));
+const EmbedPlugin = dynamic(() => import("../../plugins/embed"));
+const ImagePlugin = dynamic(() => import("../../plugins/image"));
+const LinkPlugin = dynamic(() => import("../../plugins/link"));
+const ListPlugin = dynamic(() =>
+  import("@lexical/react/LexicalListPlugin").then(
+    ({ ListPlugin: Plugin }) => Plugin
+  )
+);
+const HorizontalRulePlugin = dynamic(() =>
+  import("@lexical/react/LexicalHorizontalRulePlugin").then(
+    ({ HorizontalRulePlugin: Plugin }) => Plugin
+  )
+);
+
 const EditorBody = (props: EditorProps): React.ReactElement => {
-  const { role, docId } = props;
+  const { role, docId, initialDoc, readOnly } = props;
   useRegisterTools();
+  useSidebarsShortcut();
   const [editor] = useLexicalComposerContext();
   const isEditable = editor.isEditable();
   const docStatus = useAtomValue(docStatusAtom);
@@ -48,7 +70,7 @@ const EditorBody = (props: EditorProps): React.ReactElement => {
     <article
       className={clsx(styles.x, styles.body)}
       data-testid={"editor-container"}
-      {...(!["connected", "syncing"].includes(docStatus)
+      {...(!readOnly && !["connected", "syncing"].includes(docStatus)
         ? { style: { pointerEvents: "none", userSelect: "none" } }
         : {})}
     >
@@ -57,33 +79,38 @@ const EditorBody = (props: EditorProps): React.ReactElement => {
         contentEditable={<EditorContentEditable />}
         placeholder={<EditorPlaceholder />}
       />
-      <NoSsr>
-        <CollaborationPlugin
-          id={docId}
-          isMainEditor
-          providerFactory={createWebsocketProvider}
-          role={role}
-          shouldBootstrap={true}
-        />
-      </NoSsr>
-      <TabFocusPlugin />
-      <AutoFocusPlugin />
-      <LinkPlugin />
-      <ListPlugin />
-      <ColorPlugin />
-      <TKPlugin />
-      <ListMaxIndentLevelPlugin />
-      <MaxLengthPlugin />
-      <FloatingTextStylePlugin />
-      <FloatingLinkEditorPlugin />
-      <MarkdownPlugin />
-      <HorizontalRulePlugin />
-      <TextEntityPlugin />
-      <ImagePlugin />
-      <CaptionPlugin />
-      <EmbedPlugin />
-      {!isEditable && <LexicalClickableLinkPlugin />}
-      {!["connected", "syncing"].includes(docStatus) && (
+      {readOnly ? (
+        <ReadOnlyPlugin initialDoc={initialDoc!} />
+      ) : (
+        <React.Fragment>
+          <NoSsr>
+            <CollaborationPlugin
+              id={docId}
+              isMainEditor
+              role={role}
+              shouldBootstrap={true}
+            />
+          </NoSsr>
+          <TabFocusPlugin />
+          <AutoFocusPlugin />
+          <LinkPlugin />
+          <ListPlugin />
+          <TKPlugin />
+          <ColorPlugin />
+          <CaptionPlugin />
+          <EmbedPlugin />
+          <ImagePlugin />
+          <HorizontalRulePlugin />
+          <TextEntityPlugin />
+          <ListMaxIndentLevelPlugin />
+          <MaxLengthPlugin />
+          <FloatingTextStylePlugin />
+          <FloatingLinkEditorPlugin />
+          <MarkdownPlugin />
+        </React.Fragment>
+      )}
+      {!isEditable || readOnly ? <ClickableLinkPlugin /> : null}
+      {!readOnly && !["connected", "syncing"].includes(docStatus) && (
         <EditorLoader
           hideProgress={[
             "disconnected",

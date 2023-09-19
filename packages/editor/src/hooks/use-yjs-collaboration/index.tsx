@@ -1,18 +1,11 @@
 "use client";
 
-import { InitialEditorStateType } from "@lexical/react/LexicalComposer";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { useSetAtom } from "jotai";
-import {
-  $createParagraphNode,
-  $getRoot,
-  $getSelection,
-  LexicalEditor
-} from "lexical";
+import { $getRoot, LexicalEditor } from "lexical";
 import React from "react";
 import { createPortal } from "react-dom";
 import { Doc, Transaction, UndoManager, YEvent } from "yjs";
-import * as Y from "yjs";
 
 import { awarenessAtom, docStatusAtom } from "../../atoms";
 import { ExcludedProperties } from "../../collaboration/bindings";
@@ -23,73 +16,10 @@ import {
   initLocalState,
   Provider
 } from "../../collaboration/provider";
+import { initializeEditor } from "../../utils/initialize-editor";
 import { syncCursorPositions } from "../../utils/sync-cursor-positions";
 import { syncLexicalUpdateToYjs } from "../../utils/sync-lexical-update-to-yjs";
 import { syncYjsChangesToLexical } from "../../utils/sync-yjs-changes-to-lexical";
-
-/**
- * Initializes the editor
- * @param editor Editor
- * @param initialEditorState Initial editor state
- */
-const initializeEditor = (
-  editor: LexicalEditor,
-  initialEditorState?: InitialEditorStateType
-): void => {
-  editor.update(
-    () => {
-      const root = $getRoot();
-
-      if (root.isEmpty()) {
-        if (initialEditorState) {
-          switch (typeof initialEditorState) {
-            case "string": {
-              const parsedEditorState =
-                editor.parseEditorState(initialEditorState);
-              editor.setEditorState(parsedEditorState, {
-                tag: "history-merge"
-              });
-              break;
-            }
-            case "object": {
-              editor.setEditorState(initialEditorState, {
-                tag: "history-merge"
-              });
-              break;
-            }
-            case "function": {
-              editor.update(
-                () => {
-                  const root1 = $getRoot();
-                  if (root1.isEmpty()) {
-                    initialEditorState(editor);
-                  }
-                },
-                { tag: "history-merge" }
-              );
-              break;
-            }
-          }
-        } else {
-          const paragraph = $createParagraphNode();
-          root.append(paragraph);
-          const { activeElement } = document;
-
-          if (
-            $getSelection() !== null ||
-            (activeElement !== null &&
-              activeElement === editor.getRootElement())
-          ) {
-            paragraph.select();
-          }
-        }
-      }
-    },
-    {
-      tag: "history-merge"
-    }
-  );
-};
 
 /**
  * Creates the editor (skipping collab)
@@ -145,7 +75,6 @@ const clearEditorSkipCollab = (
  * @param name User name
  * @param docMap Document map
  * @param shouldBootstrap Whether to bootstrap
- * @param initialEditorState Initial editor state
  * @param excludedProperties Excluded properties
  * @param isMainEditor Main editor flag
  * @param localState Local collab state
@@ -153,7 +82,6 @@ const clearEditorSkipCollab = (
 export const useYjsCollaboration = ({
   docMap,
   provider,
-  initialEditorState,
   excludedProperties,
   shouldBootstrap,
   isMainEditor,
@@ -161,7 +89,6 @@ export const useYjsCollaboration = ({
 }: {
   docMap: Map<string, Doc>;
   excludedProperties?: ExcludedProperties;
-  initialEditorState?: InitialEditorStateType;
   isMainEditor?: boolean;
   localState: Omit<
     CollabLocalState,
@@ -244,7 +171,7 @@ export const useYjsCollaboration = ({
         root._xmlText._length === 0 &&
         !isReloadingDoc.current
       ) {
-        initializeEditor(editor, initialEditorState);
+        initializeEditor(editor);
       }
 
       if (isMainEditor) {
@@ -254,9 +181,6 @@ export const useYjsCollaboration = ({
       isReloadingDoc.current = false;
     };
 
-    window.d = doc;
-    window.y = Y;
-
     /**
      * Handles reload event
      * @param newDoc YDoc
@@ -265,8 +189,6 @@ export const useYjsCollaboration = ({
       clearEditorSkipCollab(editor, binding);
       setDoc(newDoc);
       docMap.set("main", newDoc);
-
-      window.d = newDoc;
 
       if (isMainEditor) {
         setDocStatus("syncing");
@@ -304,11 +226,16 @@ export const useYjsCollaboration = ({
       const origin = transaction.origin;
       if (origin !== binding) {
         const isFromUndoManger = origin instanceof UndoManager;
-        syncYjsChangesToLexical(binding, provider, events, isFromUndoManger);
+        syncYjsChangesToLexical({
+          binding,
+          provider,
+          events,
+          isFromUndoManger
+        });
       }
     };
 
-    // This updates the local editor state when we recieve updates from other clients
+    // This updates the local editor state when we receive updates from other clients
     root.getSharedType().observeDeep(onYjsTreeChanges);
 
     const removeListener = editor.registerUpdateListener(
@@ -361,7 +288,6 @@ export const useYjsCollaboration = ({
     disconnect,
     docMap,
     editor,
-    initialEditorState,
     isMainEditor,
     provider,
     localState,

@@ -21,9 +21,9 @@ const hotkeysOptions: Options = {
   enableOnContentEditable: true
 };
 
-// Sidebars
+// Sidebars (export this function as this will be present irrespective of whether the editor is in read-only mode)
 
-const useSidebarsShortcut = (): void => {
+export const useSidebarsShortcut = (): void => {
   const setCollapsed = useSetAtom(sidebarsCollapsedAtom);
   useHotkeys(
     getShortcutSlug(EDITOR_SHORTCUTS.sidebars),
@@ -186,7 +186,6 @@ const useIndentationShortcut = (): void => {
 };
 
 const EditorShortcuts = (): null => {
-  useSidebarsShortcut();
   useAlignmentShortcut();
   useTextNodeShortcut();
   useTextStyleShortcut();

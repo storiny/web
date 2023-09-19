@@ -284,7 +284,7 @@ export class CollabElementNode {
    * @param binding Binding
    */
   syncChildrenFromYjs(binding: Binding): void {
-    // Now diff the children of the collab node with that of our existing Lexical node
+    // Diff the children of the collab node with that of our existing Lexical node
     const lexicalNode = this.getNode();
 
     if (lexicalNode === null) {

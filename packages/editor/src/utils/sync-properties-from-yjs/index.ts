@@ -1,5 +1,5 @@
-import { createEditor, LexicalNode } from "lexical";
-import { Doc, Map as YMap, XmlElement, XmlText } from "yjs";
+import { LexicalNode } from "lexical";
+import { Map as YMap, XmlElement, XmlText } from "yjs";
 
 import { Binding } from "../../collaboration/bindings";
 import { isExcludedProperty } from "../is-excluded-property";
@@ -39,21 +39,6 @@ export const syncPropertiesFromYjs = (
         : sharedType.getAttribute(property);
 
     if (prevValue !== nextValue) {
-      if (nextValue instanceof Doc) {
-        const yjsDocMap = binding.docMap;
-
-        if (prevValue instanceof Doc) {
-          yjsDocMap.delete(prevValue.guid);
-        }
-
-        const nestedEditor = createEditor();
-        const key = nextValue.guid;
-        nestedEditor._key = key;
-        yjsDocMap.set(key, nextValue);
-
-        nextValue = nestedEditor;
-      }
-
       if (writableNode === undefined) {
         writableNode = lexicalNode.getWritable();
       }
