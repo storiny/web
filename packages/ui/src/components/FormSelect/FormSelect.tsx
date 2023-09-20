@@ -26,6 +26,7 @@ const FormSelect = React.forwardRef<HTMLFieldSetElement, FormSelectProps>(
       helperText,
       formSlotProps,
       children,
+      renderTrigger = (trigger): React.ReactNode => trigger,
       ...rest
     } = props;
     const form = useFormContext();
@@ -54,7 +55,9 @@ const FormSelect = React.forwardRef<HTMLFieldSetElement, FormSelectProps>(
               disabled={disabled}
               onValueChange={field.onChange}
               renderTrigger={(trigger): React.ReactNode => (
-                <FormControl {...formSlotProps?.control}>{trigger}</FormControl>
+                <FormControl {...formSlotProps?.control}>
+                  {renderTrigger(trigger)}
+                </FormControl>
               )}
               required={required}
             >

@@ -10,7 +10,6 @@ import NoSsr from "~/components/NoSsr";
 import { capitalize } from "~/utils/capitalize";
 
 import { docStatusAtom } from "../../atoms";
-import { useRegisterTools } from "../../hooks/use-register-tools";
 import ReadOnlyPlugin from "../../plugins/read-only";
 import RichTextPlugin from "../../plugins/rich-text";
 import { useSidebarsShortcut } from "../../shortcuts/shortcuts";
@@ -57,10 +56,10 @@ const HorizontalRulePlugin = dynamic(() =>
     ({ HorizontalRulePlugin: Plugin }) => Plugin
   )
 );
+const RegisterTools = dynamic(() => import("../register-tools"));
 
 const EditorBody = (props: EditorProps): React.ReactElement => {
   const { role, docId, initialDoc, readOnly } = props;
-  useRegisterTools();
   useSidebarsShortcut();
   const [editor] = useLexicalComposerContext();
   const isEditable = editor.isEditable();
@@ -76,13 +75,14 @@ const EditorBody = (props: EditorProps): React.ReactElement => {
     >
       <RichTextPlugin
         ErrorBoundary={EditorErrorBoundary}
-        contentEditable={<EditorContentEditable />}
+        contentEditable={<EditorContentEditable editable={!readOnly} />}
         placeholder={<EditorPlaceholder />}
       />
       {readOnly ? (
         <ReadOnlyPlugin initialDoc={initialDoc!} />
       ) : (
         <React.Fragment>
+          <RegisterTools />
           <NoSsr>
             <CollaborationPlugin
               id={docId}

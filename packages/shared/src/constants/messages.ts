@@ -29,17 +29,17 @@ export const ZOD_MESSAGES = {
   /**
    * String fields with a maximum length
    * @param field Field name
-   * @param minLength maximum length of the field
+   * @param maxLength Maximum length of the field
    * @param type Data type of the field
    */
   max: (
     field: string,
-    minLength: number,
+    maxLength: number,
     type: "string" | "number" = "string"
   ): string =>
     type === "number"
-      ? `${capitalize(field)} must be less than ${minLength}`
-      : `${capitalize(field)} must contain at most ${minLength} ${
-          minLength === 1 ? "character" : "characters"
+      ? `${capitalize(field)} must be less than ${maxLength}`
+      : `${capitalize(field)} must contain at most ${maxLength} ${
+          maxLength === 1 ? "character" : "characters"
         }`
 };

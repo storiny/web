@@ -1,0 +1,27 @@
+.x {
+  /* Body */
+  &.body {
+    min-height: 0;
+    padding: 0;
+    height: 45vh;
+  }
+
+  /* Tab panel */
+  &.tab-panel {
+    height: 100%;
+    gap: 24px;
+  }
+
+  /* Scroll area */
+  &.scroll-area {
+    height: 100%;
+    max-height: 100%;
+  }
+
+  /* Scroll area viewport */
+  &.viewport {
+    padding: 16px 16px 96px;
+    max-height: 100%;
+    align-items: flex-start;
+  }
+}

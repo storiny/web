@@ -9,6 +9,12 @@
   height: 100%;
   padding: 32px 48px 50vh;
 
+  @include breakpoints.media("<desktop") {
+    &.editable {
+      padding-top: 86px; // Metadata bar
+    }
+  }
+
   @include breakpoints.media("<=tablet") {
     padding-inline: 0;
   }

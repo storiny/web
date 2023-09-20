@@ -31,7 +31,7 @@ import {
   sidebarTabAtom,
   uploadingAtom
 } from "./core/atoms";
-import NavigationScreen from "./core/components/navigation-screen/navigation-screen";
+import NavigationScreen from "./core/components/navigation-screen";
 import ImagePreview from "./core/components/preview";
 import SearchInput from "./core/components/search-input";
 import Whiteboard from "./core/components/whiteboard";

@@ -7,13 +7,13 @@ import {
   LoadingIndicatorProps,
   MultiValueRemoveProps
 } from "react-select";
-import CreatableSelect from "react-select/creatable";
+import CreatableSelect from "react-select/async-creatable";
 
 import XIcon from "~/icons/X";
 
 import Spinner from "../Spinner";
 import styles from "./MultiSelect.module.scss";
-import { MultiSelectProps } from "./MultiSelect.props";
+import { MultiSelectOption, MultiSelectProps } from "./MultiSelect.props";
 
 // Remove button
 
@@ -74,15 +74,19 @@ const MultiSelect = React.forwardRef<
     className,
     style,
     styles: selectStyles,
+    menuPlacement,
+    noOptionsMessage,
     ...rest
   } = props;
-  const [value, setValue] = React.useState<typeof valueProp>(valueProp || []);
-  const isOptionDisabled =
-    typeof max === "number" && (value as any).length >= max;
+  const [value, setValue] = React.useState<MultiSelectOption[]>(
+    options.filter((option) => valueProp.includes(option.value)) || []
+  );
+  const isOptionDisabled = typeof max === "number" && value.length >= max;
 
   return (
-    <CreatableSelect<typeof options>
+    <CreatableSelect<MultiSelectOption[]>
       {...(rest as any)}
+      cacheOptions={false} // Options are cached in Redux
       className={clsx(
         styles.container,
         styles[size],
@@ -91,7 +95,7 @@ const MultiSelect = React.forwardRef<
         className
       )}
       classNames={{
-        container: (props): boolean => props.isFocused && styles.focused,
+        container: (props): string => clsx(props.isFocused && styles.focused),
         input: (): string => styles.input,
         control: (): string => styles.control,
         placeholder: (): string => styles.placeholder,
@@ -104,7 +108,8 @@ const MultiSelect = React.forwardRef<
             optionProps.isDisabled && styles.disabled,
             styles.option
           ),
-        menu: (): string => styles.menu,
+        menu: (): string =>
+          clsx(styles.menu, menuPlacement === "top" && styles["is-top"]),
         noOptionsMessage: (): string => clsx("t-body-2", "t-minor"),
         loadingMessage: (): string => clsx("t-body-2", "t-minor")
       }}
@@ -113,6 +118,7 @@ const MultiSelect = React.forwardRef<
         LoadingIndicator
       }}
       data-limited={isOptionDisabled}
+      defaultOptions={isOptionDisabled ? [] : options}
       formatCreateLabel={(inputValue): string =>
         isOptionDisabled
           ? "Delete the already selected options to create new ones."
@@ -122,16 +128,20 @@ const MultiSelect = React.forwardRef<
       isLoading={loading}
       isMulti
       isOptionDisabled={(): boolean => isOptionDisabled}
-      noOptionsMessage={(): string =>
-        isOptionDisabled
-          ? "You've reached the maximum limit"
-          : "No options available"
+      menuPlacement={menuPlacement}
+      noOptionsMessage={
+        noOptionsMessage ||
+        ((): string =>
+          isOptionDisabled
+            ? "You've reached the maximum limit"
+            : "No options available")
       }
-      onChange={(newValue, actionMeta): void => {
-        setValue(newValue);
-        rest?.onChange?.(newValue!, actionMeta);
+      onChange={(newValue): void => {
+        if (newValue) {
+          setValue(newValue);
+          rest?.onChange?.(newValue.map(({ value }) => value));
+        }
       }}
-      options={isOptionDisabled ? [] : options}
       placeholder={placeholder}
       ref={ref}
       styles={{

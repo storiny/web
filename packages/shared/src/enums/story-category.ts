@@ -9,6 +9,7 @@ export enum StoryCategory {
   LIFESTYLE /*             */ = "lifestyle",
   MUSIC /*                 */ = "music",
   NEWS /*                  */ = "news",
+  OTHERS /*                */ = "others",
   PROGRAMMING /*           */ = "programming",
   SCIENCE_AND_TECHNOLOGY /**/ = "science-and-technology",
   SPORTS /*                */ = "sports",

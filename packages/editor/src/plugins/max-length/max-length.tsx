@@ -1,6 +1,7 @@
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { trimTextContentFromAnchor } from "@lexical/selection";
 import { $restoreEditorState } from "@lexical/utils";
+import { STORY_MAX_LENGTH } from "@storiny/shared/src/constants/story";
 import {
   $getSelection,
   $isRangeSelection,
@@ -8,9 +9,6 @@ import {
   RootNode
 } from "lexical";
 import React from "react";
-
-// 5 (average chars / words in English) x 8k words
-const MAX_LENGTH = 40_000;
 
 const MaxLengthPlugin = (): null => {
   const [editor] = useLexicalComposerContext();
@@ -32,14 +30,14 @@ const MaxLengthPlugin = (): null => {
       const textContentSize = rootNode.getTextContentSize();
 
       if (prevTextContentSize !== textContentSize) {
-        const delCount = textContentSize - MAX_LENGTH;
+        const delCount = textContentSize - STORY_MAX_LENGTH;
         const anchor = selection.anchor;
 
         if (delCount > 0) {
           // Restore the old editor state instead if the last
           // text content was already at the limit.
           if (
-            prevTextContentSize === MAX_LENGTH &&
+            prevTextContentSize === STORY_MAX_LENGTH &&
             lastRestoredEditorState !== prevEditorState
           ) {
             lastRestoredEditorState = prevEditorState;
