@@ -1,100 +1,67 @@
 import { StoryCategory } from "@storiny/shared";
-import React from "react";
 
-import BasketballIcon from "~/icons/Basketball";
-import BooksIcon from "~/icons/Books";
-import BrushIcon from "~/icons/Brush";
-import BulbIcon from "~/icons/Bulb";
-import CategoryIcon from "~/icons/Category";
-import CoinsIcon from "~/icons/Coins";
-import CupIcon from "~/icons/Cup";
-import DeviceTVIcon from "~/icons/DeviceTV";
-import GamepadIcon from "~/icons/Gamepad";
-import HeartbeatIcon from "~/icons/Heartbeat";
-import MapIcon from "~/icons/Map";
-import MusicIcon from "~/icons/Music";
-import ScriptIcon from "~/icons/Script";
-import StoryIcon from "~/icons/Story";
-import ToolsIcon from "~/icons/Tools";
-
-export const categories: Array<{
-  Icon: React.FC;
+export const CATEGORIES: Array<{
   id: StoryCategory | "all";
   title: string;
 }> = [
   {
     id: "all",
-    title: "All categories",
-    Icon: CategoryIcon
+    title: "All categories"
   },
   {
     id: StoryCategory.SCIENCE_AND_TECHNOLOGY,
-    title: "Science & technology",
-    Icon: BulbIcon
+    title: "Science & technology"
   },
   {
     id: StoryCategory.PROGRAMMING,
-    title: "Programming",
-    Icon: ScriptIcon
+    title: "Programming"
   },
   {
     id: StoryCategory.LIFESTYLE,
-    title: "Lifestyle",
-    Icon: CupIcon
+    title: "Lifestyle"
   },
   {
     id: StoryCategory.HEALTH_AND_WELLNESS,
-    title: "Health & wellness",
-    Icon: HeartbeatIcon
+    title: "Health & wellness"
   },
   {
     id: StoryCategory.ENTERTAINMENT,
-    title: "Entertainment",
-    Icon: DeviceTVIcon
+    title: "Entertainment"
   },
   {
     id: StoryCategory.DIGITAL_GRAPHICS,
-    title: "Digital graphics",
-    Icon: BrushIcon
+    title: "Digital graphics"
   },
   {
     id: StoryCategory.TRAVEL,
-    title: "Travel",
-    Icon: MapIcon
+    title: "Travel"
   },
   {
     id: StoryCategory.DIY,
-    title: "DIY",
-    Icon: ToolsIcon
+    title: "DIY"
   },
   {
     id: StoryCategory.NEWS,
-    title: "News",
-    Icon: StoryIcon
+    title: "News"
   },
   {
     id: StoryCategory.SPORTS,
-    title: "Sports",
-    Icon: BasketballIcon
+    title: "Sports"
   },
   {
     id: StoryCategory.GAMING,
-    title: "Gaming",
-    Icon: GamepadIcon
+    title: "Gaming"
   },
   {
     id: StoryCategory.MUSIC,
-    title: "Music",
-    Icon: MusicIcon
+    title: "Music"
   },
   {
     id: StoryCategory.LEARNING,
-    title: "Learning",
-    Icon: BooksIcon
+    title: "Learning"
   },
   {
     id: StoryCategory.BUSINESS_AND_FINANCE,
-    title: "Business & finance",
-    Icon: CoinsIcon
+    title: "Business & finance"
   }
 ];

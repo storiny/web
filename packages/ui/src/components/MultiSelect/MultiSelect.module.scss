@@ -110,7 +110,15 @@
   border-radius: var(--radius-md);
   background-color: var(--bg-elevation-sm);
   padding: 9px 0;
+
+  /* Bottom placement */
   top: calc(100% + var(--menu-margin-top)) !important;
+
+  /* Top placement */
+  &.is-top {
+    top: unset !important;
+    bottom: calc(100% + var(--menu-margin-top)) !important;
+  }
 }
 
 /* Option */

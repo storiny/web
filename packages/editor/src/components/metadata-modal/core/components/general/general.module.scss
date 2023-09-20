@@ -1,0 +1,27 @@
+.x {
+  /* Splash editor */
+  &.splash {
+    gap: 4px;
+  }
+
+  /* Splash image container */
+  &.splash-container {
+    padding-block: 18px;
+  }
+
+  /* Splash image */
+  &.splash-image {
+    position: relative;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--divider);
+    width: 292px;
+    max-width: 100%;
+  }
+
+  /* Splash actions */
+  &.splash-actions {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+  }
+}

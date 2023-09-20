@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 
-import { categories } from "../categories";
+import { CATEGORIES } from "../categories";
 
 interface Props {
   params: { category: string[] };
@@ -10,7 +10,7 @@ export const generateMetadata = async ({
   params
 }: Props): Promise<Metadata> => {
   const categorySegment = (params.category || [])[0];
-  const category = categories.find((item) => item.id === categorySegment);
+  const category = CATEGORIES.find((item) => item.id === categorySegment);
 
   return {
     title: `Explore${

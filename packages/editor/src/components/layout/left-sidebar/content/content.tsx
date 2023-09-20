@@ -24,7 +24,7 @@ import EditorToc from "./toc";
 const SuspendedEditorLeftSidebarContent = (
   props: EditorLeftSidebarProps
 ): React.ReactElement | null => {
-  const { story, readOnly } = props;
+  const { readOnly } = props;
   const mountedRef = React.useRef<boolean>(false);
   const docStatus = useAtomValue(docStatusAtom);
   const isCollapsed = useAtomValue(sidebarsCollapsedAtom);
@@ -78,7 +78,7 @@ const SuspendedEditorLeftSidebarContent = (
           <EditorLeftSidebarSkeleton />
         ) : (
           <React.Fragment>
-            <EditorStoryCard story={story!} />
+            <EditorStoryCard />
             <div className={clsx(styles.x, styles["padded-divider"])}>
               <Divider />
             </div>

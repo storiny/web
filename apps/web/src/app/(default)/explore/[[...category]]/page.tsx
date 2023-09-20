@@ -4,7 +4,7 @@ import { StoryCategory } from "@storiny/shared";
 import { notFound } from "next/navigation";
 import React from "react";
 
-import { categories } from "../categories";
+import { CATEGORIES } from "../categories";
 import Client from "./client";
 
 const Page = ({
@@ -14,7 +14,7 @@ const Page = ({
 }): React.ReactElement => {
   const category = (params.category || [""])[0] as StoryCategory | "";
 
-  if (!categories.find((item) => item.id === category) && category !== "") {
+  if (!CATEGORIES.find((item) => item.id === category) && category !== "") {
     notFound();
   }
 

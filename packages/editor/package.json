@@ -41,6 +41,7 @@
     "@lexical/utils": "^0.12.2",
     "@storiny/ui": "*",
     "clsx": "^1.2.1",
+    "fflate": "^0.8.1",
     "jotai": "^2.2.2",
     "lexical": "^0.12.2",
     "lib0": "^0.2.85",

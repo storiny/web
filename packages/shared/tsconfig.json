@@ -1,4 +1,4 @@
 {
-  "extends": "@storiny/tsconfig/base.json",
+  "extends": "@storiny/tsconfig/react-library.json",
   "include": ["."]
 }
