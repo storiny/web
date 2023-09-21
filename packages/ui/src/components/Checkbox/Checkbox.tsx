@@ -6,7 +6,9 @@ import clsx from "clsx";
 import React from "react";
 
 import { useFormField } from "~/components/Form";
+import { useMediaQuery } from "~/hooks/useMediaQuery";
 import CheckIcon from "~/icons/Check";
+import { breakpoints } from "~/theme/breakpoints";
 
 import styles from "./Checkbox.module.scss";
 import { CheckboxProps } from "./Checkbox.props";
@@ -15,7 +17,8 @@ const Checkbox = React.forwardRef<HTMLButtonElement, CheckboxProps>(
   (props, ref) => {
     const {
       color = "inverted",
-      size = "md",
+      size: sizeProp = "md",
+      autoSize,
       label,
       className,
       disabled,
@@ -25,6 +28,8 @@ const Checkbox = React.forwardRef<HTMLButtonElement, CheckboxProps>(
     const checkboxId = React.useId();
     const labelId = React.useId();
     const { itemId } = useFormField(true);
+    const isSmallerThanTablet = useMediaQuery(breakpoints.down("tablet"));
+    const size = autoSize ? (isSmallerThanTablet ? "lg" : sizeProp) : sizeProp;
 
     return (
       <div

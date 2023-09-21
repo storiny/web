@@ -5,12 +5,17 @@ import EmbedIcon from "~/icons/Embed";
 
 import EmbedModal from "../../../../../embed-modal";
 
-const EmbedMenubarItem = (): React.ReactElement => (
+const EmbedMenubarItem = ({
+  disabled
+}: {
+  disabled?: boolean;
+}): React.ReactElement => (
   <EmbedModal
     modal
     trigger={({ openModal }): React.ReactElement => (
       <MenubarItem
         decorator={<EmbedIcon />}
+        disabled={disabled}
         onClick={openModal}
         onSelect={(event): void => event.preventDefault()}
       >

@@ -46,6 +46,7 @@ const $addTkNodeToMap = (
       const element = editor.getElementByKey(paragraphKey);
 
       if (element && !element.classList.contains(styles.tk)) {
+        element.setAttribute("data-tk-parent", "true");
         element.classList.add(styles.tk);
       }
     }
@@ -79,6 +80,7 @@ const $removeTkNodeFromMap = (
           const element = editor.getElementByKey(parentNodeKey);
 
           if (element) {
+            element.removeAttribute("data-tk-parent");
             element.classList.remove(styles.tk);
           }
         }

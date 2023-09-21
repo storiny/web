@@ -8,4 +8,3 @@ export * from "./overflowing-figures";
 export * from "./sidebars-collapsed";
 export * from "./story-metadata";
 export * from "./text-style";
-export * from "./toc-disabled";

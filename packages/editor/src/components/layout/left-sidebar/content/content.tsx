@@ -3,9 +3,10 @@
 import { animated, useTransition } from "@react-spring/web";
 import { clsx } from "clsx";
 import { useAtomValue } from "jotai";
+import dynamic from "next/dynamic";
 import React from "react";
 
-import Divider from "~/components/Divider";
+import { dynamicLoader } from "~/common/dynamic";
 import LeftSidebarDefaultContent from "~/layout/LeftSidebar/DefaultContent";
 
 import {
@@ -17,14 +18,18 @@ import { springConfig } from "../../../../constants";
 import commonStyles from "../../common/sidebar.module.scss";
 import styles from "../left-sidebar.module.scss";
 import { EditorLeftSidebarProps } from "../left-sidebar.props";
-import EditorLeftSidebarSkeleton from "../skeleton";
-import EditorStoryCard from "./story-card";
-import EditorToc from "./toc";
+
+const SuspendedEditorLeftSidebarEditableContent = dynamic(
+  () => import("./editable"),
+  {
+    loading: dynamicLoader()
+  }
+);
 
 const SuspendedEditorLeftSidebarContent = (
   props: EditorLeftSidebarProps
 ): React.ReactElement | null => {
-  const { readOnly } = props;
+  const { readOnly, status } = props;
   const mountedRef = React.useRef<boolean>(false);
   const docStatus = useAtomValue(docStatusAtom);
   const isCollapsed = useAtomValue(sidebarsCollapsedAtom);
@@ -37,7 +42,9 @@ const SuspendedEditorLeftSidebarContent = (
     immediate: Boolean(readOnly) && !mountedRef.current
   });
   const documentLoading =
-    !readOnly && ["connecting", "reconnecting"].includes(docStatus);
+    !readOnly &&
+    status !== "deleted" &&
+    ["connecting", "reconnecting"].includes(docStatus);
 
   React.useEffect(() => {
     mountedRef.current = true;
@@ -74,16 +81,8 @@ const SuspendedEditorLeftSidebarContent = (
       >
         {readOnly ? (
           <LeftSidebarDefaultContent />
-        ) : documentLoading ? (
-          <EditorLeftSidebarSkeleton />
         ) : (
-          <React.Fragment>
-            <EditorStoryCard />
-            <div className={clsx(styles.x, styles["padded-divider"])}>
-              <Divider />
-            </div>
-            <EditorToc />
-          </React.Fragment>
+          <SuspendedEditorLeftSidebarEditableContent status={status} />
         )}
       </animated.div>
     ) : null

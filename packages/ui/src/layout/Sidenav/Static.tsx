@@ -133,6 +133,7 @@ const SidenavStatic = (
               >
                 <MenuItem
                   as={NextLink}
+                  checkAuth
                   decorator={<StoryHeartIcon />}
                   href={"/liked"}
                 >
@@ -140,6 +141,7 @@ const SidenavStatic = (
                 </MenuItem>
                 <MenuItem
                   as={NextLink}
+                  checkAuth
                   decorator={<HistoryIcon />}
                   href={"/history"}
                 >
@@ -147,6 +149,7 @@ const SidenavStatic = (
                 </MenuItem>
                 <MenuItem
                   as={NextLink}
+                  checkAuth
                   decorator={<SettingsIcon />}
                   href={"/me"}
                 >

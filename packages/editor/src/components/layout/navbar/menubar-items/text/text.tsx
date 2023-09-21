@@ -33,7 +33,11 @@ import { useSuperscript } from "../../../../../hooks/use-superscript";
 import { useTextStyle } from "../../../../../hooks/use-text-style";
 import { useUnderline } from "../../../../../hooks/use-underline";
 
-const TextNodeItem = (): React.ReactElement => {
+const TextNodeItem = ({
+  disabled
+}: {
+  disabled?: boolean;
+}): React.ReactElement => {
   const {
     formatBulletedList,
     formatNumberedList,
@@ -47,6 +51,7 @@ const TextNodeItem = (): React.ReactElement => {
     <MenubarRadioGroup value={textStyle}>
       <MenubarRadioItem
         decorator={<ParagraphIcon />}
+        disabled={disabled}
         onClick={formatParagraph}
         rightSlot={getShortcutLabel(EDITOR_SHORTCUTS.paragraph)}
         value={TextStyle.PARAGRAPH}
@@ -55,6 +60,7 @@ const TextNodeItem = (): React.ReactElement => {
       </MenubarRadioItem>
       <MenubarRadioItem
         decorator={<HeadingIcon />}
+        disabled={disabled}
         onClick={(): void => formatHeading("h2")}
         rightSlot={getShortcutLabel(EDITOR_SHORTCUTS.heading)}
         value={TextStyle.HEADING}
@@ -63,6 +69,7 @@ const TextNodeItem = (): React.ReactElement => {
       </MenubarRadioItem>
       <MenubarRadioItem
         decorator={<SubheadingIcon />}
+        disabled={disabled}
         onClick={(): void => formatHeading("h3")}
         rightSlot={getShortcutLabel(EDITOR_SHORTCUTS.subheading)}
         value={TextStyle.SUBHEADING}
@@ -71,6 +78,7 @@ const TextNodeItem = (): React.ReactElement => {
       </MenubarRadioItem>
       <MenubarRadioItem
         decorator={<QuoteIcon />}
+        disabled={disabled}
         onClick={formatQuote}
         rightSlot={getShortcutLabel(EDITOR_SHORTCUTS.quote)}
         value={TextStyle.QUOTE}
@@ -80,6 +88,7 @@ const TextNodeItem = (): React.ReactElement => {
       <Separator />
       <MenubarRadioItem
         decorator={<BulletedListIcon />}
+        disabled={disabled}
         onClick={formatBulletedList}
         rightSlot={getShortcutLabel(EDITOR_SHORTCUTS.bulletedList)}
         value={TextStyle.BULLETED_LIST}
@@ -88,6 +97,7 @@ const TextNodeItem = (): React.ReactElement => {
       </MenubarRadioItem>
       <MenubarRadioItem
         decorator={<NumberedListIcon />}
+        disabled={disabled}
         onClick={formatNumberedList}
         rightSlot={getShortcutLabel(EDITOR_SHORTCUTS.numberedList)}
         value={TextStyle.NUMBERED_LIST}
@@ -98,7 +108,11 @@ const TextNodeItem = (): React.ReactElement => {
   );
 };
 
-const TextStyleItem = (): React.ReactElement => {
+const TextStyleItem = ({
+  disabled
+}: {
+  disabled?: boolean;
+}): React.ReactElement => {
   const [bold, toggleBold] = useBold();
   const [italic, toggleItalic] = useItalic();
   const [underline, toggleUnderline] = useUnderline();
@@ -113,6 +127,7 @@ const TextStyleItem = (): React.ReactElement => {
       <MenubarCheckboxItem
         checked={bold}
         decorator={<BoldIcon />}
+        disabled={disabled}
         onCheckedChange={toggleBold}
         rightSlot={getShortcutLabel(EDITOR_SHORTCUTS.bold)}
       >
@@ -121,6 +136,7 @@ const TextStyleItem = (): React.ReactElement => {
       <MenubarCheckboxItem
         checked={italic}
         decorator={<ItalicIcon />}
+        disabled={disabled}
         onCheckedChange={toggleItalic}
         rightSlot={getShortcutLabel(EDITOR_SHORTCUTS.italic)}
       >
@@ -129,6 +145,7 @@ const TextStyleItem = (): React.ReactElement => {
       <MenubarCheckboxItem
         checked={underline}
         decorator={<UnderlineIcon />}
+        disabled={disabled}
         onCheckedChange={toggleUnderline}
         rightSlot={getShortcutLabel(EDITOR_SHORTCUTS.underline)}
       >
@@ -137,6 +154,7 @@ const TextStyleItem = (): React.ReactElement => {
       <MenubarCheckboxItem
         checked={strikethrough}
         decorator={<StrikethroughIcon />}
+        disabled={disabled}
         onCheckedChange={toggleStrikethrough}
         rightSlot={getShortcutLabel(EDITOR_SHORTCUTS.strikethrough)}
       >
@@ -145,6 +163,7 @@ const TextStyleItem = (): React.ReactElement => {
       <MenubarCheckboxItem
         checked={code}
         decorator={<CodeIcon />}
+        disabled={disabled}
         onCheckedChange={toggleCode}
         rightSlot={getShortcutLabel(EDITOR_SHORTCUTS.code)}
       >
@@ -153,6 +172,7 @@ const TextStyleItem = (): React.ReactElement => {
       <MenubarCheckboxItem
         checked={link}
         decorator={<LinkIcon />}
+        disabled={disabled}
         onCheckedChange={(): void => insertLink()}
         rightSlot={getShortcutLabel(EDITOR_SHORTCUTS.link)}
       >
@@ -162,6 +182,7 @@ const TextStyleItem = (): React.ReactElement => {
       <MenubarCheckboxItem
         checked={subscript}
         decorator={<SubscriptIcon />}
+        disabled={disabled}
         onCheckedChange={toggleSubscript}
         rightSlot={getShortcutLabel(EDITOR_SHORTCUTS.subscript)}
       >
@@ -170,6 +191,7 @@ const TextStyleItem = (): React.ReactElement => {
       <MenubarCheckboxItem
         checked={superscript}
         decorator={<SuperscriptIcon />}
+        disabled={disabled}
         onCheckedChange={toggleSuperscript}
         rightSlot={getShortcutLabel(EDITOR_SHORTCUTS.superscript)}
       >
@@ -179,11 +201,11 @@ const TextStyleItem = (): React.ReactElement => {
   );
 };
 
-const TextItem = (): React.ReactElement => (
+const TextItem = ({ disabled }: { disabled?: boolean }): React.ReactElement => (
   <MenubarSub trigger={"Text"}>
-    <TextNodeItem />
+    <TextNodeItem disabled={disabled} />
     <Separator />
-    <TextStyleItem />
+    <TextStyleItem disabled={disabled} />
   </MenubarSub>
 );
 

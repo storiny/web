@@ -40,7 +40,7 @@ const EditorToolbar = (): React.ReactElement | null => {
     config: springConfig
   });
 
-  if (docStatus === "disconnected") {
+  if (["disconnected", "publishing"].includes(docStatus)) {
     return null;
   }
 

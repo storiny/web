@@ -7,6 +7,11 @@ type MenuItemPrimitive = DropdownMenuItemProps & PolymorphicProps<"div">;
 
 export interface MenuItemProps extends MenuItemPrimitive {
   /**
+   * The authentication flag to redirect the user to the login page if they are logged out.
+   * @default false
+   */
+  checkAuth?: boolean;
+  /**
    * The element placed before the children.
    */
   decorator?: React.ReactNode;

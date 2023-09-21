@@ -159,6 +159,7 @@ const LibraryMasonryItem = React.memo(
     const [ratingElement] = useModal(
       ({ openModal }) => (
         <MenuItem
+          checkAuth
           decorator={<ExplicitIcon />}
           onClick={openModal}
           onSelect={(event): void => event.preventDefault()}
@@ -200,6 +201,7 @@ const LibraryMasonryItem = React.memo(
     const [deleteElement] = useConfirmation(
       ({ openConfirmation }) => (
         <MenuItem
+          checkAuth
           decorator={<TrashIcon />}
           onSelect={(event): void => {
             event.preventDefault(); // Do not auto-close the menu
@@ -359,6 +361,7 @@ const LibraryMasonryItem = React.memo(
               }
             >
               <MenuItem
+                checkAuth
                 decorator={<EditIcon />}
                 onClick={(): void => setEditingMode(true)}
               >

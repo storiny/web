@@ -21,7 +21,7 @@ export const { useStoryRecoverMutation } = apiSlice.injectEndpoints({
         method: "POST"
       }),
       invalidatesTags: (result, error, arg) => [{ type: "Story", id: arg.id }],
-      onQueryStarted: async (arg, { dispatch, queryFulfilled }) => {
+      onQueryStarted: async (_, { dispatch, queryFulfilled }) => {
         queryFulfilled.then(() => {
           dispatch(setSelfDeletedStoryCount(decrementAction));
           dispatch(setSelfPendingDraftCount(incrementAction)); // Recovered story is moved into drafts

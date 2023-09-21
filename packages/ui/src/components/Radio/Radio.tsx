@@ -22,6 +22,7 @@ const Radio = React.forwardRef<HTMLButtonElement, RadioProps>((props, ref) => {
     className,
     disabled,
     slotProps,
+    children,
     ...rest
   } = props;
   const isSmallerThanTablet = useMediaQuery(breakpoints.down("tablet"));
@@ -38,7 +39,7 @@ const Radio = React.forwardRef<HTMLButtonElement, RadioProps>((props, ref) => {
     <div
       {...slotProps?.container}
       className={clsx(
-        "flex-center",
+        "flex",
         styles.container,
         slotProps?.container?.className
       )}
@@ -58,21 +59,31 @@ const Radio = React.forwardRef<HTMLButtonElement, RadioProps>((props, ref) => {
         id={itemId || radioId}
         ref={ref}
       />
-      {label && (
-        <Label
-          {...slotProps?.label}
-          className={clsx(
-            size === "lg" ? "t-body-1" : "t-body-2",
-            disabled ? "t-muted" : "t-major",
-            styles.label,
-            slotProps?.label?.className
-          )}
-          htmlFor={itemId || radioId}
-          id={labelId}
-        >
-          {label}
-        </Label>
-      )}
+      <div
+        {...slotProps?.childrenContainer}
+        className={clsx(
+          "flex-col",
+          styles["children-container"],
+          slotProps?.childrenContainer?.className
+        )}
+      >
+        {label && (
+          <Label
+            {...slotProps?.label}
+            className={clsx(
+              size === "lg" ? "t-body-1" : "t-body-2",
+              disabled ? "t-muted" : "t-major",
+              styles.label,
+              slotProps?.label?.className
+            )}
+            htmlFor={itemId || radioId}
+            id={labelId}
+          >
+            {label}
+          </Label>
+        )}
+        {children}
+      </div>
     </div>
   );
 });

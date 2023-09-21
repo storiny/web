@@ -117,30 +117,34 @@ const LoggedInMenu = ({
       </MenuItemUnstyled>
     </div>
     <Separator />
-    <MenuItemWithLink decorator={<UserIcon />} href={"/profile"}>
+    <MenuItemWithLink checkAuth decorator={<UserIcon />} href={"/profile"}>
       Your profile
     </MenuItemWithLink>
-    <MenuItemWithLink decorator={<StoryIcon />} href={"/me/stories"}>
+    <MenuItemWithLink checkAuth decorator={<StoryIcon />} href={"/me/stories"}>
       Your stories
     </MenuItemWithLink>
-    <MenuItemWithLink decorator={<BookmarksIcon />} href={"/bookmarks"}>
+    <MenuItemWithLink
+      checkAuth
+      decorator={<BookmarksIcon />}
+      href={"/bookmarks"}
+    >
       Bookmarks
     </MenuItemWithLink>
-    <MenuItemWithLink decorator={<StoryHeartIcon />} href={"/liked"}>
+    <MenuItemWithLink checkAuth decorator={<StoryHeartIcon />} href={"/liked"}>
       Liked stories
     </MenuItemWithLink>
-    <MenuItemWithLink decorator={<HistoryIcon />} href={"/history"}>
+    <MenuItemWithLink checkAuth decorator={<HistoryIcon />} href={"/history"}>
       History
     </MenuItemWithLink>
     <Separator />
     <ThemeToggleItem />
     <MenuItem decorator={<ExplicitIcon />}>Safe mode</MenuItem>
     <Separator />
-    <MenuItemWithLink decorator={<SettingsIcon />} href={"/me"}>
+    <MenuItemWithLink checkAuth decorator={<SettingsIcon />} href={"/me"}>
       Settings
     </MenuItemWithLink>
     <MenuItem decorator={<QuestionMarkIcon />}>Help</MenuItem>
-    <MenuItemWithLink decorator={<LogoutIcon />} href={"/logout"}>
+    <MenuItemWithLink checkAuth decorator={<LogoutIcon />} href={"/logout"}>
       Logout
     </MenuItemWithLink>
   </Menu>

@@ -24,6 +24,7 @@ const FormCheckbox = React.forwardRef<HTMLFieldSetElement, FormCheckboxProps>(
       label,
       helperText,
       formSlotProps,
+      inverted,
       ...rest
     } = props;
     const form = useFormContext();
@@ -47,13 +48,14 @@ const FormCheckbox = React.forwardRef<HTMLFieldSetElement, FormCheckboxProps>(
             <FormControl {...formSlotProps?.control}>
               <Checkbox
                 {...rest}
-                checked={field.value}
+                checked={inverted ? !field.value : field.value}
                 color={invalid || error ? "ruby" : rest?.color}
                 disabled={disabled}
                 label={label}
                 onCheckedChange={(checked): void => {
-                  field.onChange(checked);
-                  rest?.onCheckedChange?.(checked);
+                  const nextChecked = inverted ? !checked : checked;
+                  field.onChange(nextChecked);
+                  rest?.onCheckedChange?.(nextChecked);
                 }}
                 required={required}
                 slotProps={{

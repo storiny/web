@@ -24,6 +24,11 @@ export interface FormSelectProps extends SelectProps {
    */
   helperText?: React.ReactNode;
   /**
+   * If `true`, casts the value as number in the `onChange` event.
+   * @default false
+   */
+  isNumericValue?: boolean;
+  /**
    * The label for the form component.
    */
   label: React.ReactNode;

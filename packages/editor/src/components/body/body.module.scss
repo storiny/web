@@ -1,3 +1,5 @@
+@use "breakpoints" as breakpoints;
+
 .x {
   /* Base styles */
   &.body {
@@ -7,6 +9,16 @@
     max-width: 100%;
     margin-inline: auto;
 
+    /* Read-only */
+    &.read-only {
+      padding: 32px 28px;
+
+      @include breakpoints.media("<=tablet") {
+        padding: 0;
+      }
+    }
+
+    /* Horizontal rule node */
     & hr {
       display: block;
       position: relative;

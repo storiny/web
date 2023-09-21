@@ -22,7 +22,7 @@ import {
 } from "./Typography.props";
 import { TypographyNestedContext } from "./TypographyContext";
 
-// TODO: add hover-cards for mention and tag
+// TODO: Add hover-cards for mention and tag
 
 const Typography = forwardRef<TypographyProps, TypographyElement>(
   (props, ref) => {

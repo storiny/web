@@ -27,6 +27,7 @@ const FormSelect = React.forwardRef<HTMLFieldSetElement, FormSelectProps>(
       formSlotProps,
       children,
       renderTrigger = (trigger): React.ReactNode => trigger,
+      isNumericValue,
       ...rest
     } = props;
     const form = useFormContext();
@@ -51,9 +52,17 @@ const FormSelect = React.forwardRef<HTMLFieldSetElement, FormSelectProps>(
             <Select
               {...rest}
               color={invalid || error ? "ruby" : rest?.color}
-              defaultValue={field.value}
+              defaultValue={
+                typeof field.value !== "undefined"
+                  ? String(field.value)
+                  : undefined
+              }
               disabled={disabled}
-              onValueChange={field.onChange}
+              onValueChange={(value): void => {
+                field.onChange(
+                  isNumericValue ? Number.parseInt(value, 10) : value
+                );
+              }}
               renderTrigger={(trigger): React.ReactNode => (
                 <FormControl {...formSlotProps?.control}>
                   {renderTrigger(trigger)}

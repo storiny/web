@@ -6,12 +6,17 @@ import MoodSmileIcon from "~/icons/MoodSmile";
 
 import { useInsertTextEntity } from "../../../../../../hooks/use-insert-text-entity";
 
-const EmojiMenubarItem = (): React.ReactElement => {
+const EmojiMenubarItem = ({
+  disabled
+}: {
+  disabled?: boolean;
+}): React.ReactElement => {
   const [insertEmoji] = useInsertTextEntity();
   return (
     <EmojiPicker onEmojiSelect={insertEmoji} popoverProps={{ modal: true }}>
       <MenubarItem
         decorator={<MoodSmileIcon />}
+        disabled={disabled}
         onSelect={(event): void => event.preventDefault()}
       >
         Emoji

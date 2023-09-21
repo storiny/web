@@ -63,6 +63,7 @@ const CommentActions = ({
   const [deleteElement] = useConfirmation(
     ({ openConfirmation }) => (
       <MenuItem
+        checkAuth
         decorator={<TrashIcon />}
         disabled={isDeleteLoading}
         onSelect={(event): void => {
@@ -110,6 +111,7 @@ const CommentActions = ({
   const [visibilityElement] = useConfirmation(
     ({ openConfirmation }) => (
       <MenuItem
+        checkAuth
         decorator={hidden ? <EyeIcon /> : <EyeOffIcon />}
         disabled={isVisibilityLoading}
         onSelect={(event): void => {

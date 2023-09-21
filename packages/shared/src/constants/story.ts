@@ -1,5 +1,6 @@
 import { z } from "zod";
 
+import { StoryCategory } from "../enums";
 import { ZOD_MESSAGES } from "./messages";
 import { TAG_SCHEMA } from "./tag";
 
@@ -12,14 +13,14 @@ export enum StoryVisibility {
 }
 
 export enum StoryLicense {
-  RESERVED /*   */ = 0,
-  CC_BY /*      */ = 1,
-  CC_BY_NC /*   */ = 2,
-  CC_BY_NC_ND /**/ = 3,
-  CC_BY_NC_SA /**/ = 4,
-  CC_BY_ND /*   */ = 5,
-  CC_BY_SA /*   */ = 6,
-  CC_ZERO /*    */ = 7
+  CC_ZERO /*    */ = 0,
+  RESERVED /*   */ = 1,
+  CC_BY /*      */ = 2,
+  CC_BY_SA /*   */ = 3,
+  CC_BY_ND /*   */ = 4,
+  CC_BY_NC /*   */ = 5,
+  CC_BY_NC_SA /**/ = 6,
+  CC_BY_NC_ND /**/ = 7
 }
 
 export enum StoryAgeRestriction {
@@ -63,27 +64,29 @@ export const STORY_SCHEMA = {
     .max(
       STORY_PROPS.description.maxLength,
       ZOD_MESSAGES.max("description", STORY_PROPS.description.maxLength)
-    ),
-  splashId: z.string().nullable(),
-  splashHex: z.string().nullable(),
+    )
+    .nullable(),
+  "splash-id": z.string().nullable(),
+  "splash-hex": z.string().nullable(),
+  "preview-image": z.string().nullable(),
   tags: z
     .array(TAG_SCHEMA.name)
     .max(MAX_STORY_TAGS, ZOD_MESSAGES.max("tags", MAX_STORY_TAGS)),
-  seoTitle: z
+  "seo-title": z
     .string()
     .max(
       STORY_PROPS.seoTitle.maxLength,
       ZOD_MESSAGES.max("seo title", STORY_PROPS.seoTitle.maxLength)
     )
     .nullable(),
-  seoDescription: z
+  "seo-description": z
     .string()
     .max(
       STORY_PROPS.seoDescription.maxLength,
       ZOD_MESSAGES.max("seo description", STORY_PROPS.seoDescription.maxLength)
     )
     .nullable(),
-  canonicalUrl: z
+  "canonical-url": z
     .string()
     .url()
     .max(
@@ -93,8 +96,9 @@ export const STORY_SCHEMA = {
     .nullable(),
   license: z.nativeEnum(StoryLicense),
   visibility: z.nativeEnum(StoryVisibility),
-  ageRestriction: z.nativeEnum(StoryAgeRestriction),
-  disableToc: z.boolean(),
-  allowComments: z.boolean(),
-  allowPublicRevisionHistory: z.boolean()
+  "age-restriction": z.nativeEnum(StoryAgeRestriction),
+  category: z.nativeEnum(StoryCategory),
+  "disable-toc": z.boolean(),
+  "disable-comments": z.boolean(),
+  "disable-public-revision-history": z.boolean()
 } as const;

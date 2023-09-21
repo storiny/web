@@ -5,11 +5,16 @@ import HorizontalRuleIcon from "~/icons/HorizontalRule";
 
 import { useInsertHorizontalRule } from "../../../../../../hooks/use-insert-horizontal-rule";
 
-const HorizontalRuleMenubarItem = (): React.ReactElement => {
+const HorizontalRuleMenubarItem = ({
+  disabled
+}: {
+  disabled?: boolean;
+}): React.ReactElement => {
   const [insertHorizontalRule] = useInsertHorizontalRule();
   return (
     <MenubarItem
       decorator={<HorizontalRuleIcon />}
+      disabled={disabled}
       onSelect={insertHorizontalRule}
     >
       Horizontal rule

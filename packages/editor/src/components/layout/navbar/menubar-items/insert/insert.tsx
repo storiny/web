@@ -9,14 +9,18 @@ import HorizontalRuleMenubarItem from "./horizontal-rule";
 import ImageMenubarItem from "./image";
 import SymbolMenubarItem from "./symbol";
 
-const InsertItem = (): React.ReactElement => (
+const InsertItem = ({
+  disabled
+}: {
+  disabled?: boolean;
+}): React.ReactElement => (
   <MenubarSub trigger={"Insert"}>
-    <HorizontalRuleMenubarItem />
-    <ImageMenubarItem />
-    <CodeBlockMenubarItem />
-    <EmbedMenubarItem />
-    <EmojiMenubarItem />
-    <SymbolMenubarItem />
+    <HorizontalRuleMenubarItem disabled={disabled} />
+    <ImageMenubarItem disabled={disabled} />
+    <CodeBlockMenubarItem disabled={disabled} />
+    <EmbedMenubarItem disabled={disabled} />
+    <EmojiMenubarItem disabled={disabled} />
+    <SymbolMenubarItem disabled={disabled} />
   </MenubarSub>
 );
 

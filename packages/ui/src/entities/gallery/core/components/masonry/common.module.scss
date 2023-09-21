@@ -29,8 +29,8 @@
 
   &[data-selected="true"] {
     &::after {
-      box-shadow: 0 0 0 3px var(--inverted-400) inset,
-        0 0 0 6px var(--bg-elevation-xs) inset;
+      box-shadow: 0 0 0 2px var(--inverted-400) inset,
+        0 0 0 5px var(--bg-elevation-xs) inset;
     }
   }
 }

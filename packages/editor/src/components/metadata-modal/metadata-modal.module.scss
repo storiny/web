@@ -9,7 +9,6 @@
   /* Tab panel */
   &.tab-panel {
     height: 100%;
-    gap: 24px;
   }
 
   /* Scroll area */
@@ -22,6 +21,5 @@
   &.viewport {
     padding: 16px 16px 96px;
     max-height: 100%;
-    align-items: flex-start;
   }
 }

@@ -18,6 +18,7 @@ import { EditorProps } from "../editor";
 import EditorErrorBoundary from "../error-boundary";
 import EditorLoader from "../loader";
 import EditorPlaceholder from "../placeholder";
+import StoryHeader from "../story-header";
 import styles from "./body.module.scss";
 
 const CollaborationPlugin = dynamic(
@@ -67,12 +68,13 @@ const EditorBody = (props: EditorProps): React.ReactElement => {
 
   return (
     <article
-      className={clsx(styles.x, styles.body)}
+      className={clsx(styles.x, styles.body, readOnly && styles["read-only"])}
       data-testid={"editor-container"}
       {...(!readOnly && !["connected", "syncing"].includes(docStatus)
         ? { style: { pointerEvents: "none", userSelect: "none" } }
         : {})}
     >
+      {readOnly && <StoryHeader />}
       <RichTextPlugin
         ErrorBoundary={EditorErrorBoundary}
         contentEditable={<EditorContentEditable editable={!readOnly} />}
@@ -91,8 +93,6 @@ const EditorBody = (props: EditorProps): React.ReactElement => {
               shouldBootstrap={true}
             />
           </NoSsr>
-          <TabFocusPlugin />
-          <AutoFocusPlugin />
           <LinkPlugin />
           <ListPlugin />
           <TKPlugin />
@@ -104,9 +104,15 @@ const EditorBody = (props: EditorProps): React.ReactElement => {
           <TextEntityPlugin />
           <ListMaxIndentLevelPlugin />
           <MaxLengthPlugin />
-          <FloatingTextStylePlugin />
-          <FloatingLinkEditorPlugin />
           <MarkdownPlugin />
+          {docStatus !== "publishing" && (
+            <React.Fragment>
+              <TabFocusPlugin />
+              <AutoFocusPlugin />
+              <FloatingTextStylePlugin />
+              <FloatingLinkEditorPlugin />
+            </React.Fragment>
+          )}
         </React.Fragment>
       )}
       {!isEditable || readOnly ? <ClickableLinkPlugin /> : null}
@@ -119,7 +125,9 @@ const EditorBody = (props: EditorProps): React.ReactElement => {
             "forbidden"
           ].includes(docStatus)}
           label={
-            docStatus === "disconnected"
+            docStatus === "publishing"
+              ? "Publishing…"
+              : docStatus === "disconnected"
               ? "Connection lost"
               : docStatus === "overloaded"
               ? "This story has reached the maximum number of editors."

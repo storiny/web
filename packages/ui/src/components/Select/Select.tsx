@@ -14,7 +14,9 @@ import {
 import clsx from "clsx";
 import React from "react";
 
+import { useMediaQuery } from "~/hooks/useMediaQuery";
 import ChevronIcon from "~/icons/Chevron";
+import { breakpoints } from "~/theme/breakpoints";
 import { forwardRef } from "~/utils/forwardRef";
 
 import { InputContext } from "../Input";
@@ -24,8 +26,9 @@ import { SelectProps } from "./Select.props";
 const Select = forwardRef<SelectProps, "div">((props, ref) => {
   const {
     as: Component = "div",
-    size = "md",
+    size: sizeProp = "md",
     color = "inverted",
+    autoSize,
     renderTrigger = (trigger): React.ReactNode => trigger,
     valueChildren,
     disabled,
@@ -37,7 +40,9 @@ const Select = forwardRef<SelectProps, "div">((props, ref) => {
     color: inputColor,
     size: inputSize,
     disabled: inputDisabled
-  } = React.useContext(InputContext) || {};
+  } = React.useContext(InputContext) || {}; // Size when the select is rendered as the `endDecorator` of an `Input` component
+  const isSmallerThanTablet = useMediaQuery(breakpoints.down("tablet"));
+  const size = autoSize ? (isSmallerThanTablet ? "lg" : sizeProp) : sizeProp;
 
   return (
     <Root {...rest} disabled={inputDisabled || disabled}>

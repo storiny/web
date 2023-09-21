@@ -64,6 +64,7 @@ const ResponseEditor = (props: ResponseEditorProps): React.ReactElement => {
   const [element, , closeModal] = useModal(
     ({ openModal }) => (
       <MenuItem
+        checkAuth
         decorator={<EditIcon />}
         onSelect={(event): void => {
           event.preventDefault();

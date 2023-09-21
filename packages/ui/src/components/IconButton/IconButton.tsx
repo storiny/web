@@ -41,7 +41,7 @@ const IconButton = forwardRef<IconButtonProps, "button">((props, ref) => {
     size: inputSize,
     color: inputColor,
     disabled: inputDisabled
-  } = React.useContext(InputContext) || {};
+  } = React.useContext(InputContext) || {}; // Size when the button is rendered as the `endDecorator` of an `Input` component
   const disabled = Boolean(inputDisabled || disabledProp || loading);
   const loggedIn = useAppSelector(selectLoggedIn);
   const hapticFeedback = useAppSelector(selectHapticFeedback);
