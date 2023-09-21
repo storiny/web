@@ -11,6 +11,10 @@
     color: var(--fg-muted);
     pointer-events: none;
 
+    @include breakpoints.media("<desktop") {
+      top: 86px;
+    }
+
     @include breakpoints.media("<=tablet") {
       left: 0;
     }

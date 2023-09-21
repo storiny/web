@@ -35,6 +35,7 @@ export interface RadioProps extends RadioGroupPrimitive {
    * The props passed to the individual component elements.
    */
   slotProps?: {
+    childrenContainer?: React.ComponentPropsWithoutRef<"div">;
     container?: React.ComponentPropsWithoutRef<"div">;
     label?: React.ComponentPropsWithoutRef<"label">;
   };

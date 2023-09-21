@@ -1,5 +1,7 @@
 import { Story } from "@storiny/types";
 
+export type StoryStatus = "draft" | "published" | "deleted";
+
 export interface EditorProps {
   /**
    * ID of the document
@@ -18,6 +20,11 @@ export interface EditorProps {
    * Role of the user
    */
   role: "editor" | "viewer";
+  /**
+   * Document status
+   * @default 'draft'
+   */
+  status?: StoryStatus;
   /**
    * The story object
    */

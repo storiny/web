@@ -9,7 +9,9 @@ import {
 } from "react-select";
 import CreatableSelect from "react-select/async-creatable";
 
+import { useMediaQuery } from "~/hooks/useMediaQuery";
 import XIcon from "~/icons/X";
+import { breakpoints } from "~/theme/breakpoints";
 
 import Spinner from "../Spinner";
 import styles from "./MultiSelect.module.scss";
@@ -63,10 +65,11 @@ const MultiSelect = React.forwardRef<
   MultiSelectProps
 >((props, ref) => {
   const {
-    size = "md",
+    size: sizeProp = "md",
     color = "inverted",
     value: valueProp = [],
     placeholder = "Select an option...",
+    autoSize,
     options,
     max,
     disabled,
@@ -76,12 +79,19 @@ const MultiSelect = React.forwardRef<
     styles: selectStyles,
     menuPlacement,
     noOptionsMessage,
+    loadOptions,
     ...rest
   } = props;
   const [value, setValue] = React.useState<MultiSelectOption[]>(
-    options.filter((option) => valueProp.includes(option.value)) || []
+    options.length
+      ? options.filter((option) => valueProp.includes(option.value))
+      : valueProp.length
+      ? valueProp.map((item) => ({ value: item, label: item }))
+      : []
   );
   const isOptionDisabled = typeof max === "number" && value.length >= max;
+  const isSmallerThanTablet = useMediaQuery(breakpoints.down("tablet"));
+  const size = autoSize ? (isSmallerThanTablet ? "lg" : sizeProp) : sizeProp;
 
   return (
     <CreatableSelect<MultiSelectOption[]>
@@ -128,6 +138,7 @@ const MultiSelect = React.forwardRef<
       isLoading={loading}
       isMulti
       isOptionDisabled={(): boolean => isOptionDisabled}
+      loadOptions={isOptionDisabled ? undefined : loadOptions}
       menuPlacement={menuPlacement}
       noOptionsMessage={
         noOptionsMessage ||

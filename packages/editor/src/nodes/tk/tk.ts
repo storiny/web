@@ -48,6 +48,7 @@ export class TKNode extends TextNode {
   override createDOM(config: EditorConfig): HTMLElement {
     const dom = super.createDOM(config);
     dom.setAttribute("spellcheck", "false");
+    dom.setAttribute("data-tk-node", "true");
     dom.classList.add(styles.tk);
     return dom;
   }

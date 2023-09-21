@@ -1,3 +1,10 @@
+import { StoryCategory } from "@storiny/shared";
+import {
+  StoryAgeRestriction,
+  StoryLicense,
+  StoryVisibility
+} from "@storiny/shared/src/constants/story";
+
 import { Tag } from "../tag";
 import { User } from "../user";
 
@@ -16,12 +23,25 @@ interface UserSpecificStoryProps {
   is_liked?: boolean;
 }
 
+interface StorySeoProps {
+  canonical_url: string | null;
+  seo_description: string | null;
+  seo_title: string | null;
+}
+
 export type Story = {
+  age_restriction: StoryAgeRestriction;
+  category: StoryCategory;
   created_at: string;
   deleted_at: string | null;
   description: string | null;
+  disable_comments: boolean;
+  disable_public_revision_history: boolean;
+  disable_toc: boolean;
   edited_at: string | null;
   id: string;
+  license: StoryLicense;
+  preview_image: string | null;
   published_at: string | null;
   slug: string;
   splash_hex: string | null;
@@ -30,6 +50,8 @@ export type Story = {
   tags: Tag[];
   title: string;
   user_id: string;
+  visibility: StoryVisibility;
   word_count: number;
-} & StoryOptionalProps &
+} & StorySeoProps &
+  StoryOptionalProps &
   UserSpecificStoryProps;

@@ -44,6 +44,7 @@ const UserActions = (props: UserActionsProps): React.ReactElement | null => {
   const [element] = useConfirmation(
     ({ openConfirmation }) => (
       <MenuItem
+        checkAuth
         decorator={<UserBlockIcon />}
         onSelect={(event): void => {
           event.preventDefault(); // Do not auto-close the menu
@@ -87,7 +88,10 @@ const UserActions = (props: UserActionsProps): React.ReactElement | null => {
       <MenuItem
         decorator={<ShareIcon />}
         onClick={(): void =>
-          share(`${user.name} (@${user.username})`, `/${user.username}`)
+          share(
+            `${user.name} (@${user.username})`,
+            `${process.env.NEXT_PUBLIC_WEB_URL}/${user.username}`
+          )
         }
       >
         Share this user
@@ -102,6 +106,7 @@ const UserActions = (props: UserActionsProps): React.ReactElement | null => {
         <>
           <Separator />
           <MenuItem
+            checkAuth
             decorator={<UserXIcon />}
             onClick={(): void => {
               dispatch(setFollower([user.id]));
@@ -115,6 +120,7 @@ const UserActions = (props: UserActionsProps): React.ReactElement | null => {
       {loggedIn && (
         <>
           <MenuItem
+            checkAuth
             decorator={<MuteIcon />}
             onClick={(): void => {
               dispatch(setMute([user.id]));

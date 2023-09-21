@@ -9,13 +9,13 @@ import UndoIcon from "~/icons/Undo";
 import { EDITOR_SHORTCUTS } from "../../../../../constants/shortcuts";
 import { useHistory } from "../../../../../hooks/use-history";
 
-const EditItem = (): React.ReactElement => {
+const EditItem = ({ disabled }: { disabled?: boolean }): React.ReactElement => {
   const { canRedo, canUndo, redo, undo } = useHistory();
   return (
     <MenubarSub trigger={"Edit"}>
       <MenubarItem
         decorator={<UndoIcon />}
-        disabled={!canUndo}
+        disabled={disabled || !canUndo}
         onClick={undo}
         rightSlot={getShortcutLabel(EDITOR_SHORTCUTS.undo)}
       >
@@ -23,7 +23,7 @@ const EditItem = (): React.ReactElement => {
       </MenubarItem>
       <MenubarItem
         decorator={<RedoIcon />}
-        disabled={!canRedo}
+        disabled={disabled || !canRedo}
         onClick={redo}
         rightSlot={getShortcutLabel(EDITOR_SHORTCUTS.redo)}
       >

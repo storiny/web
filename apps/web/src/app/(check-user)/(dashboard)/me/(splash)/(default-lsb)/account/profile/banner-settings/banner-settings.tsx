@@ -105,7 +105,15 @@ const BannerSettings = (): React.ReactElement => {
           }}
         />
       ) : (
-        <div className={clsx("flex-center", styles.x, styles.placeholder)}>
+        <div
+          className={clsx(
+            "flex-center",
+            "full-h",
+            "full-w",
+            styles.x,
+            styles.placeholder
+          )}
+        >
           <PhotoPlusIcon />
         </div>
       )}

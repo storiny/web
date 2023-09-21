@@ -208,6 +208,12 @@ const ProfileContent = ({
   const willAvatarOverflow = useMediaQuery(
     `${breakpoints.up("tablet")} and ${breakpoints.down("desktop")}`
   );
+  const followerCount =
+    useAppSelector((state) => state.entities.followerCounts[profile.id]) || 0;
+  const followingCount =
+    useAppSelector((state) => state.entities.followingCounts[profile.id]) || 0;
+  const friendCount =
+    useAppSelector((state) => state.entities.friendCounts[profile.id]) || 0;
 
   return (
     <>
@@ -302,25 +308,25 @@ const ProfileContent = ({
                 <Stat
                   pluralLabel={"followers"}
                   singularLabel={"follower"}
-                  value={profile.follower_count}
+                  value={followerCount}
                 />
                 {!isPrivate && (
                   <>
                     {/* Following and friend count are returned as `null` when they are private */}
                     {typeof profile.following_count === "number" &&
-                    profile.following_count > 0 ? (
+                    followingCount > 0 ? (
                       <Stat
                         pluralLabel={"following"}
                         singularLabel={"following"}
-                        value={profile.following_count}
+                        value={followingCount}
                       />
                     ) : null}
                     {typeof profile.friend_count === "number" &&
-                    profile.friend_count > 0 ? (
+                    friendCount > 0 ? (
                       <Stat
                         pluralLabel={"friends"}
                         singularLabel={"friend"}
-                        value={profile.friend_count}
+                        value={friendCount}
                       />
                     ) : null}
                   </>

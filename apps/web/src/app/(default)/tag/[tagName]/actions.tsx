@@ -35,7 +35,9 @@ const Actions = ({ tag }: Props): React.ReactElement => {
     >
       <MenuItem
         decorator={<ShareIcon />}
-        onClick={(): void => share(tag.name, `/tag/${tag.name}`)}
+        onClick={(): void =>
+          share(tag.name, `${process.env.NEXT_PUBLIC_WEB_URL}/tag/${tag.name}`)
+        }
       >
         Share this tag
       </MenuItem>

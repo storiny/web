@@ -1,13 +1,19 @@
 /* Container */
 .container {
   width: fit-content;
+  padding-inline: 8px;
+}
+
+/* Children container */
+.children-container {
+  padding-left: 8px;
+  gap: 4px;
 }
 
 /* Label */
 .label {
   --fg: var(--fg-major);
 
-  padding-left: 8px;
   color: var(--fg);
 }
 
@@ -15,6 +21,9 @@
 .radio {
   height: var(--size);
   width: var(--size);
+  min-height: var(--size);
+  min-width: var(--size);
+  margin-top: 2px;
   border-radius: 100%;
   background-color: var(--bg, var(--bg-body));
   border: 2px solid var(--border);

@@ -24,6 +24,11 @@ export interface FormCheckboxProps extends Omit<CheckboxProps, "ref"> {
    */
   helperText?: React.ReactNode;
   /**
+   * If `true`, inverts the boolean checked flag.
+   * @default false
+   */
+  inverted?: boolean;
+  /**
    * The label for the form component.
    */
   label: React.ReactNode;

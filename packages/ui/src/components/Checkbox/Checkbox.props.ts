@@ -15,6 +15,12 @@ type CheckboxPrimitive = Omit<
 
 export interface CheckboxProps extends CheckboxPrimitive {
   /**
+   * Automatically resize the component to `lg` when the viewport width is smaller than or
+   * equal to tablet
+   * @default false
+   */
+  autoSize?: boolean;
+  /**
    * The color of the component.
    * @default 'inverted'
    */

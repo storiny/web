@@ -77,6 +77,18 @@ describe("<Radio />", () => {
     expect(getByTestId("label")).toHaveTextContent(/^Test$/);
   });
 
+  it("renders children", () => {
+    const { getByTestId } = renderTestWithProvider(
+      <RadioGroup>
+        <Radio label={"Test"} value={"test"}>
+          <span data-testid={"child"} />
+        </Radio>
+      </RadioGroup>
+    );
+
+    expect(getByTestId("child")).toBeInTheDocument();
+  });
+
   it("passes the same id to input and label", () => {
     const { getByTestId } = renderTestWithProvider(
       <RadioGroup>
@@ -105,7 +117,8 @@ describe("<Radio />", () => {
           slotProps={
             {
               label: { "data-testid": "label" },
-              container: { "data-testid": "container" }
+              container: { "data-testid": "container" },
+              childrenContainer: { "data-testid": "children-container" }
             } as RadioProps["slotProps"]
           }
           value={"test"}
@@ -113,7 +126,7 @@ describe("<Radio />", () => {
       </RadioGroup>
     );
 
-    ["label", "container"].forEach((element) => {
+    ["label", "container", "children-container"].forEach((element) => {
       expect(getByTestId(element)).toBeInTheDocument();
     });
   });

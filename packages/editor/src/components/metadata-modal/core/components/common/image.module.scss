@@ -1,0 +1,35 @@
+.x {
+  /* Image editor */
+  &.block {
+    gap: 4px;
+  }
+
+  /* Image container */
+  &.container {
+    padding-block: 18px;
+  }
+
+  /* image */
+  &.image {
+    position: relative;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--divider);
+    width: 292px;
+    max-width: 100%;
+  }
+
+  /* Actions */
+  &.actions {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+  }
+
+  /* Image placeholder */
+  &.placeholder {
+    --icon-size: 24px;
+
+    background-color: var(--bg-elevation-md);
+    cursor: pointer;
+  }
+}

@@ -1,5 +1,5 @@
 import { clsx } from "clsx";
-import { useAtomValue } from "jotai";
+import { useAtom } from "jotai";
 import React from "react";
 
 import IconButton from "~/components/IconButton";
@@ -14,7 +14,7 @@ import StoryMetadataModal from "../metadata-modal";
 import styles from "./metadata-bar.module.scss";
 
 const StoryMetadataBar = (): React.ReactElement | null => {
-  const story = useAtomValue(storyMetadataAtom);
+  const [story, setStory] = useAtom(storyMetadataAtom);
   const shouldRender = useMediaQuery(breakpoints.down("desktop"));
 
   if (!shouldRender) {
@@ -34,7 +34,7 @@ const StoryMetadataBar = (): React.ReactElement | null => {
         {story.title}
       </Typography>
       <Spacer className={"f-grow"} />
-      <StoryMetadataModal story={story}>
+      <StoryMetadataModal setStory={setStory} story={story}>
         <IconButton
           aria-label={"Edit metadata"}
           size={"lg"}

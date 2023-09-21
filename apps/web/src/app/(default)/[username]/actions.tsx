@@ -61,6 +61,7 @@ const Actions = ({ profile, isInsideSidebar }: Props): React.ReactElement => {
   const [element] = useConfirmation(
     ({ openConfirmation }) => (
       <MenuItem
+        checkAuth
         decorator={<UserBlockIcon />}
         onSelect={(event): void => {
           event.preventDefault(); // Do not auto-close the menu
@@ -83,19 +84,11 @@ const Actions = ({ profile, isInsideSidebar }: Props): React.ReactElement => {
   React.useEffect(() => {
     dispatch(
       syncWithUser({
-        id: profile.id,
-        is_following: profile.is_following,
-        is_follower: profile.is_follower,
-        is_friend: profile.is_friend,
-        is_muted: profile.is_muted,
-        is_blocking: profile.is_blocking,
-        is_subscribed: profile.is_subscribed,
-        is_friend_request_sent: profile.is_friend_request_sent,
+        ...profile,
         following_count:
           typeof profile.following_count === "number"
             ? profile.following_count
             : null,
-        follower_count: profile.follower_count,
         friend_count:
           typeof profile.friend_count === "number" ? profile.friend_count : null
       })
@@ -119,6 +112,7 @@ const Actions = ({ profile, isInsideSidebar }: Props): React.ReactElement => {
         <>
           {isFriendRequestSent ? (
             <MenuItem
+              checkAuth
               decorator={<XIcon />}
               onClick={(): void => {
                 dispatch(setSentRequest([profile.id]));
@@ -128,6 +122,7 @@ const Actions = ({ profile, isInsideSidebar }: Props): React.ReactElement => {
             </MenuItem>
           ) : isFriend ? (
             <MenuItem
+              checkAuth
               decorator={<HeartPlusIcon />}
               onClick={(): void => {
                 dispatch(setFriend([profile.id]));
@@ -137,6 +132,7 @@ const Actions = ({ profile, isInsideSidebar }: Props): React.ReactElement => {
             </MenuItem>
           ) : (
             <MenuItem
+              checkAuth
               decorator={<HeartPlusIcon />}
               onClick={(): void => {
                 dispatch(setSentRequest([profile.id]));
@@ -147,6 +143,7 @@ const Actions = ({ profile, isInsideSidebar }: Props): React.ReactElement => {
           )}
           {isFollowing && (
             <MenuItem
+              checkAuth
               decorator={isSubscribed ? <BellFilledIcon /> : <BellPlusIcon />}
               onClick={(): void => {
                 dispatch(setSubscription([profile.id]));
@@ -163,7 +160,7 @@ const Actions = ({ profile, isInsideSidebar }: Props): React.ReactElement => {
         onClick={(): void =>
           share(
             `${profile.name} (@${profile.username})`,
-            `/${profile.username}`
+            `${process.env.NEXT_PUBLIC_WEB_URL}/${profile.username}`
           )
         }
       >
@@ -179,6 +176,7 @@ const Actions = ({ profile, isInsideSidebar }: Props): React.ReactElement => {
       {!isSelf && !isBlockedByUser && loggedIn ? (
         <>
           <MenuItem
+            checkAuth
             decorator={<MuteIcon />}
             onClick={(): void => {
               dispatch(setMute([profile.id]));

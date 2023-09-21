@@ -28,6 +28,7 @@ const FormRadioGroup = React.forwardRef<
     helperText,
     children,
     formSlotProps,
+    isNumericValue,
     ...rest
   } = props;
   const form = useFormContext();
@@ -53,10 +54,16 @@ const FormRadioGroup = React.forwardRef<
             <RadioGroup
               {...rest}
               color={invalid || error ? "ruby" : rest?.color}
-              defaultValue={field.value}
+              defaultValue={
+                typeof field.value !== "undefined"
+                  ? String(field.value)
+                  : undefined
+              }
               disabled={disabled}
               onValueChange={(value): void => {
-                field.onChange(value);
+                field.onChange(
+                  isNumericValue ? Number.parseInt(value, 10) : value
+                );
                 rest?.onValueChange?.(value);
               }}
             >

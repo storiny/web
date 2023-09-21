@@ -1,3 +1,7 @@
+import "./metadata";
+import "./publish";
+import "./recover";
+import "./unpublish";
 import { mockStories } from "@storiny/ui/src/mocks";
 import { nanoid } from "nanoid";
 
@@ -19,20 +23,6 @@ worker.use(
 worker.use(
   rest.delete(
     `${process.env.NEXT_PUBLIC_API_URL}/v1/me/stories/:storyId`,
-    (req, res, ctx) => res(ctx.delay(750), ctx.status(204))
-  )
-);
-
-worker.use(
-  rest.post(
-    `${process.env.NEXT_PUBLIC_API_URL}/v1/me/stories/:storyId/recover`,
-    (req, res, ctx) => res(ctx.delay(750), ctx.status(204))
-  )
-);
-
-worker.use(
-  rest.post(
-    `${process.env.NEXT_PUBLIC_API_URL}/v1/me/stories/:storyId/unpublish`,
     (req, res, ctx) => res(ctx.delay(750), ctx.status(204))
   )
 );

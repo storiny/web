@@ -20,6 +20,12 @@ export interface MultiSelectProps
     "isDisabled" | "isLoading" | "options" | "value" | "onChange"
   > {
   /**
+   * Automatically resize the component to `lg` when the viewport width is smaller than or
+   * equal to tablet
+   * @default false
+   */
+  autoSize?: boolean;
+  /**
    * The size of the component.
    * @default 'inverted'
    */

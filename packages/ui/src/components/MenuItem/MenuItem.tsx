@@ -1,9 +1,12 @@
 "use client";
 
 import { Item } from "@radix-ui/react-dropdown-menu";
+import { isTestEnv } from "@storiny/shared/src/utils/isTestEnv";
 import clsx from "clsx";
 import React from "react";
 
+import { selectLoggedIn } from "~/redux/features";
+import { useAppSelector } from "~/redux/hooks";
 import { forwardRef } from "~/utils/forwardRef";
 
 import menuItemStyles from "../common/MenuItem.module.scss";
@@ -12,21 +15,65 @@ import { MenuItemProps } from "./MenuItem.props";
 
 const MenuItem = forwardRef<MenuItemProps, "div">((props, ref) => {
   const {
-    as: Component = "div",
+    as = "div",
     className,
     decorator,
     rightSlot,
     slotProps,
     children,
+    checkAuth,
+    onClick,
+    onSelect,
     ...rest
   } = props;
+  const loggedIn = useAppSelector(selectLoggedIn);
+  const shouldLogin = checkAuth && !loggedIn;
+  const Component = shouldLogin ? "a" : as;
+  const to = (rest as any)?.href
+    ? `?to=${encodeURIComponent((rest as any).href)}`
+    : "";
+
+  /**
+   * Handles click event
+   * @param event Click event
+   */
+  const handleClick = (event: React.MouseEvent<HTMLDivElement>): void => {
+    if (shouldLogin) {
+      if (isTestEnv()) {
+        event.preventDefault(); // Prevent navigation when testing
+      }
+    } else {
+      onClick?.(event);
+    }
+  };
+
+  /**
+   * Handles select event
+   * @param event Select event
+   */
+  const handleSelect = (event: Event): void => {
+    if (shouldLogin) {
+      if (isTestEnv()) {
+        event.preventDefault(); // Prevent navigation when testing
+      }
+    } else {
+      onSelect?.(event);
+    }
+  };
 
   return (
     <Item
       {...rest}
       asChild
       className={clsx(menuItemStyles.item, className)}
+      onClick={handleClick}
+      onSelect={handleSelect}
       ref={ref}
+      {...(shouldLogin
+        ? {
+            href: `/login${to}`
+          }
+        : {})}
     >
       <Component>
         {decorator && (

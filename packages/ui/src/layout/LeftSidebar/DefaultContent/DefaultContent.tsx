@@ -134,6 +134,7 @@ const LeftSidebarDefaultContent = (): React.ReactElement => {
               >
                 <MenuItem
                   as={NextLink}
+                  checkAuth
                   decorator={<UserIcon />}
                   href={"/profile"}
                 >
@@ -141,6 +142,7 @@ const LeftSidebarDefaultContent = (): React.ReactElement => {
                 </MenuItem>
                 <MenuItem
                   as={NextLink}
+                  checkAuth
                   decorator={<StoryHeartIcon />}
                   href={"/liked"}
                 >
@@ -148,6 +150,7 @@ const LeftSidebarDefaultContent = (): React.ReactElement => {
                 </MenuItem>
                 <MenuItem
                   as={NextLink}
+                  checkAuth
                   decorator={<HistoryIcon />}
                   href={"/history"}
                 >
@@ -155,6 +158,7 @@ const LeftSidebarDefaultContent = (): React.ReactElement => {
                 </MenuItem>
                 <MenuItem
                   as={NextLink}
+                  checkAuth
                   decorator={<SettingsIcon />}
                   href={"/me"}
                 >

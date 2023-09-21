@@ -7,6 +7,7 @@ export type DocStatus =
   | "forbidden"
   | "overloaded"
   | "disconnected"
-  | "reconnecting";
+  | "reconnecting"
+  | "publishing";
 
 export const docStatusAtom = atom<DocStatus>("connecting");

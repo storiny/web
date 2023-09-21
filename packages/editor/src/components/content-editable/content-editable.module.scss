@@ -9,6 +9,25 @@
   height: 100%;
   padding: 32px 48px 50vh;
 
+  /* Read-only */
+  &:not(.editable) {
+    height: fit-content;
+    padding: 0;
+
+    /* Normalize TK nodes in read-only mode */
+    & [data-tk-node] {
+      color: inherit !important;
+      font-weight: inherit !important;
+    }
+
+    /* Normalize TK parent nodes in read-only mode */
+    & [data-tk-parent] {
+      &::before {
+        content: none !important;
+      }
+    }
+  }
+
   @include breakpoints.media("<desktop") {
     &.editable {
       padding-top: 86px; // Metadata bar

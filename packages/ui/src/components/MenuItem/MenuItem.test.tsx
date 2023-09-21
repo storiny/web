@@ -1,3 +1,4 @@
+import { userEvent } from "@storiny/test-utils";
 import React from "react";
 
 import { renderTestWithProvider } from "~/redux/testUtils";
@@ -63,6 +64,35 @@ describe("<MenuItem />", () => {
     );
 
     expect(getByTestId("right-slot")).toBeInTheDocument();
+  });
+
+  it("renders as an anchor with correct `href` when `checkAuth` is set to `true` and the user is logged out", () => {
+    const { getByRole } = renderTestWithProvider(
+      <Menu open trigger={<button>Trigger</button>}>
+        <MenuItem checkAuth>Menu item</MenuItem>
+      </Menu>
+    );
+    const menuItem = getByRole("menuitem");
+
+    expect(menuItem.nodeName.toLowerCase()).toEqual("a");
+    expect(menuItem).toHaveAttribute("href", "/login");
+  });
+
+  it("does not fire the click and select events when `checkAuth` is set to `true` and the user is logged out", async () => {
+    const user = userEvent.setup();
+    const onClick = jest.fn();
+    const onSelect = jest.fn();
+    const { getByRole } = renderTestWithProvider(
+      <Menu open trigger={<button>Trigger</button>}>
+        <MenuItem checkAuth onClick={onClick} onSelect={onSelect}>
+          Menu item
+        </MenuItem>
+      </Menu>
+    );
+
+    await user.click(getByRole("menuitem"));
+    expect(onClick).toHaveBeenCalledTimes(0);
+    expect(onSelect).toHaveBeenCalledTimes(0);
   });
 
   it("passes props to the element slots", () => {

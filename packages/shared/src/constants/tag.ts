@@ -10,20 +10,20 @@ export const TAG_PROPS = {
 } as const;
 
 export const TAG_NAME_REGEX = new RegExp(
-  `^[\w-]{${TAG_PROPS.name.minLength},${TAG_PROPS.name.maxLength}}$`
+  `^[\\w-]{${TAG_PROPS.name.minLength},${TAG_PROPS.name.maxLength}}$`
 );
 
 export const TAG_SCHEMA = {
   name: z
     .string()
-    .regex(TAG_NAME_REGEX, "Tag name is invalid")
     .min(
       TAG_PROPS.name.minLength,
-      ZOD_MESSAGES.min("name", TAG_PROPS.name.minLength)
+      ZOD_MESSAGES.min("tag name", TAG_PROPS.name.minLength)
     )
     .max(
       TAG_PROPS.name.maxLength,
-      ZOD_MESSAGES.max("name", TAG_PROPS.name.maxLength)
+      ZOD_MESSAGES.max("tag name", TAG_PROPS.name.maxLength)
     )
-    .nonempty(ZOD_MESSAGES.nonEmpty("name"))
+    .nonempty(ZOD_MESSAGES.nonEmpty("tag name"))
+    .regex(TAG_NAME_REGEX, "Tag name is invalid")
 } as const;

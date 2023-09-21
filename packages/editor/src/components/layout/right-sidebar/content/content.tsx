@@ -3,9 +3,11 @@
 import { animated, useTransition } from "@react-spring/web";
 import { clsx } from "clsx";
 import { useAtomValue } from "jotai";
+import dynamic from "next/dynamic";
 import React from "react";
 
-import Divider from "~/components/Divider";
+import { dynamicLoader } from "~/common/dynamic";
+import Typography from "~/components/Typography";
 
 import {
   docStatusAtom,
@@ -16,18 +18,21 @@ import { springConfig } from "../../../../constants";
 import commonStyles from "../../common/sidebar.module.scss";
 import styles from "../right-sidebar.module.scss";
 import { EditorRightSidebarProps } from "../right-sidebar.props";
-import Alignment from "./alignment";
-import Appearance from "./appearance";
-import History from "./history";
-import Indentation from "./indentation";
-import Insert from "./insert";
-import PaddedDivider from "./padded-divider";
-import TextStyle from "./text-style";
+
+const SuspendedEditorRightSidebarEditableContent = dynamic(
+  () => import("./editable"),
+  { loading: dynamicLoader() }
+);
+
+const SuspendedEditorRightSidebarReadOnlyContent = dynamic(
+  () => import("./read-only"),
+  { loading: dynamicLoader() }
+);
 
 const SuspendedEditorRightSidebarContent = (
   props: EditorRightSidebarProps
 ): React.ReactElement | null => {
-  const { readOnly } = props;
+  const { readOnly, status } = props;
   const mountedRef = React.useRef<boolean>(false);
   const isCollapsed = useAtomValue(sidebarsCollapsedAtom);
   const docStatus = useAtomValue(docStatusAtom);
@@ -41,6 +46,8 @@ const SuspendedEditorRightSidebarContent = (
   });
   const documentLoading =
     !readOnly && ["connecting", "reconnecting"].includes(docStatus);
+  const publishing = docStatus === "publishing";
+  const disabled = documentLoading || publishing;
 
   React.useEffect(() => {
     mountedRef.current = true;
@@ -72,34 +79,19 @@ const SuspendedEditorRightSidebarContent = (
         data-hidden={String(Boolean(overflowingFigures.size))}
         style={{
           ...style,
-          pointerEvents: documentLoading ? "none" : "auto"
+          pointerEvents: disabled ? "none" : "auto"
         }}
       >
         {readOnly ? (
-          "CONTENT"
+          <SuspendedEditorRightSidebarReadOnlyContent />
+        ) : status === "deleted" ? (
+          <Typography className={"t-minor"} level={"body2"}>
+            You are currently viewing a static version of this deleted story. If
+            you do not restore it, the story will be permanently pruned within
+            30 days from the date of deletion.
+          </Typography>
         ) : (
-          <React.Fragment>
-            <div className={"flex-center"}>
-              <History disabled={documentLoading} />
-              <PaddedDivider />
-              <Alignment disabled={documentLoading} />
-              <PaddedDivider />
-              <Indentation disabled={documentLoading} />
-            </div>
-            <Divider />
-            <TextStyle disabled={documentLoading} />
-            <Divider />
-            <Insert disabled={documentLoading} />
-            <Divider />
-            <Appearance disabled={documentLoading} />
-            <div
-              style={{
-                width: "5px",
-                background: "red",
-                marginRight: "-64px"
-              }}
-            />
-          </React.Fragment>
+          <SuspendedEditorRightSidebarEditableContent />
         )}
       </animated.div>
     ) : null

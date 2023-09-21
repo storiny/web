@@ -5,7 +5,7 @@ import React from "react";
 import NavigationItem from "~/components/NavigationItem";
 import Separator from "~/components/Separator";
 import FileIcon from "~/icons/file";
-import ScriptIcon from "~/icons/Script";
+import LicenseIcon from "~/icons/license";
 import SeoIcon from "~/icons/seo";
 import SettingsIcon from "~/icons/Settings";
 
@@ -32,7 +32,7 @@ const NavigationScreen = (): React.ReactElement => {
         </NavigationItem>
         <Separator invertMargin />
         <NavigationItem
-          decorator={<ScriptIcon />}
+          decorator={<LicenseIcon />}
           onClick={(): void => setNavSegment("license")}
         >
           License

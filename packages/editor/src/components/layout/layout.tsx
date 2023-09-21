@@ -9,7 +9,7 @@ import Navbar from "~/layout/Navbar";
 import { storyMetadataAtom } from "../../atoms";
 import EditorComposer from "../composer";
 import { EditorProps } from "../editor";
-import HydrateAtoms from "../hydrate-atoms";
+import HydrateMetadata from "../hydrate-metadata";
 import EditorLeftSidebar from "./left-sidebar";
 import EditorNavbar from "./navbar";
 import EditorRightSidebar from "./right-sidebar";
@@ -20,25 +20,26 @@ const StoryMetadataBar = dynamic(() => import("../metadata-bar"));
 const EditorLayout = ({
   children,
   readOnly,
-  story
+  story,
+  status = "draft"
 }: {
   children: React.ReactNode;
-} & Pick<EditorProps, "readOnly" | "story">): React.ReactElement => (
+} & Pick<EditorProps, "readOnly" | "story" | "status">): React.ReactElement => (
   <Provider>
-    <HydrateAtoms values={[[storyMetadataAtom, story]]}>
-      <EditorComposer readOnly={readOnly}>
+    <HydrateMetadata story={story}>
+      <EditorComposer readOnly={status === "deleted" || readOnly}>
         <React.Fragment>
-          {readOnly ? <Navbar /> : <EditorNavbar />}
-          <EditorLeftSidebar readOnly={readOnly} />
+          {readOnly ? <Navbar /> : <EditorNavbar status={status} />}
+          <EditorLeftSidebar readOnly={readOnly} status={status} />
           <main>
-            {!readOnly && <StoryMetadataBar />}
+            {status !== "deleted" && !readOnly ? <StoryMetadataBar /> : null}
             {children}
-            {!readOnly && <EditorToolbar />}
+            {status !== "deleted" && !readOnly ? <EditorToolbar /> : null}
           </main>
-          <EditorRightSidebar readOnly={readOnly} />
+          <EditorRightSidebar readOnly={readOnly} status={status} />
         </React.Fragment>
       </EditorComposer>
-    </HydrateAtoms>
+    </HydrateMetadata>
   </Provider>
 );
 

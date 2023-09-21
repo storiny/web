@@ -6,7 +6,11 @@ import ImageIcon from "~/icons/Image";
 
 import { useInsertImage } from "../../../../../../hooks/use-insert-image";
 
-const ImageMenubarItem = (): React.ReactElement => {
+const ImageMenubarItem = ({
+  disabled
+}: {
+  disabled?: boolean;
+}): React.ReactElement => {
   const [insertImage] = useInsertImage();
   return (
     <Gallery
@@ -28,6 +32,7 @@ const ImageMenubarItem = (): React.ReactElement => {
     >
       <MenubarItem
         decorator={<ImageIcon />}
+        disabled={disabled}
         onSelect={(event): void => event.preventDefault()}
       >
         Image

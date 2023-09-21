@@ -64,6 +64,7 @@ const StoryActions = ({
   const [blockElement] = useConfirmation(
     ({ openConfirmation }) => (
       <MenuItem
+        checkAuth
         decorator={<UserBlockIcon />}
         onSelect={(event): void => {
           event.preventDefault(); // Do not auto-close the menu
@@ -101,6 +102,7 @@ const StoryActions = ({
   const [deleteDraftElement] = useConfirmation(
     ({ openConfirmation }) => (
       <MenuItem
+        checkAuth
         decorator={<TrashIcon />}
         onSelect={(event): void => {
           event.preventDefault(); // Do not auto-close the menu
@@ -138,6 +140,7 @@ const StoryActions = ({
   const [deleteStoryElement] = useConfirmation(
     ({ openConfirmation }) => (
       <MenuItem
+        checkAuth
         decorator={<TrashIcon />}
         onSelect={(event): void => {
           event.preventDefault(); // Do not auto-close the menu
@@ -176,6 +179,7 @@ const StoryActions = ({
   const [unpublishStoryElement] = useConfirmation(
     ({ openConfirmation }) => (
       <MenuItem
+        checkAuth
         decorator={<EyeOffIcon />}
         onSelect={(event): void => {
           event.preventDefault(); // Do not auto-close the menu
@@ -251,6 +255,7 @@ const StoryActions = ({
             <React.Fragment>
               <MenuItem
                 as={NextLink}
+                checkAuth
                 decorator={<EditIcon />}
                 href={`/me/content/stories/${story.id}`}
               >
@@ -258,6 +263,7 @@ const StoryActions = ({
               </MenuItem>
               <MenuItem
                 as={NextLink}
+                checkAuth
                 decorator={<CommentIcon />}
                 href={`/me/content/stories/${story.id}/responses`}
               >
@@ -265,6 +271,7 @@ const StoryActions = ({
               </MenuItem>
               <MenuItem
                 as={NextLink}
+                checkAuth
                 decorator={<StoriesMetricsIcon />}
                 href={`/me/content/stories/${story.id}/metrics`}
               >
@@ -289,6 +296,7 @@ const StoryActions = ({
                 <>
                   <Separator />
                   <MenuItem
+                    checkAuth
                     decorator={<MuteIcon />}
                     onClick={(): void => {
                       dispatch(setMute([story.user!.id]));
