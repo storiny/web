@@ -41,7 +41,6 @@ exports[`<FormSelect /> matches snapshot 1`] = `
         <svg
           aria-hidden="true"
           class="svg-icon"
-          data-testid="chevron-icon"
           style="transform: rotate(180deg);"
           viewBox="0 0 12 12"
         >

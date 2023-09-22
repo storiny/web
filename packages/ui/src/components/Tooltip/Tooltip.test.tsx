@@ -64,7 +64,7 @@ describe("<Tooltip />", () => {
   });
 
   it("renders right slot", async () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getAllByTestId } = renderTestWithProvider(
       <Tooltip
         content={"Tooltip content"}
         open
@@ -74,15 +74,16 @@ describe("<Tooltip />", () => {
       </Tooltip>
     );
 
-    expect(getByTestId("right-slot")).toBeInTheDocument();
+    expect(getAllByTestId("right-slot").length).not.toEqual(0);
   });
 
   it("passes props to the element slots", async () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId, getAllByTestId } = renderTestWithProvider(
       <TooltipProvider delayDuration={0}>
         <Tooltip
           content={"Tooltip content"}
           open
+          rightSlot={"Test"}
           slotProps={
             {
               arrow: { "data-testid": "arrow" },
@@ -98,7 +99,8 @@ describe("<Tooltip />", () => {
 
     await waitForPosition();
 
-    ["arrow", "content", "right-slot"].forEach((element) => {
+    expect(getAllByTestId("right-slot").length).not.toEqual(0);
+    ["arrow", "content"].forEach((element) => {
       expect(getByTestId(element)).toBeInTheDocument();
     });
   });

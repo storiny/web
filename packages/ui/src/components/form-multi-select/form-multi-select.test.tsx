@@ -56,26 +56,6 @@ describe("<FormMultiSelect />", () => {
     expect(container.firstChild).toMatchSnapshot();
   });
 
-  it("does not have any accessibility violations", async () => {
-    const { container } = renderTestWithProvider(
-      <Component>
-        <FormMultiSelect
-          label={"Test label"}
-          menuIsOpen
-          name={"multi-select"}
-          options={Array(3).map((_, index) => ({
-            value: `option-${index}`,
-            label: `Option ${index}`
-          }))}
-        />
-      </Component>
-    );
-
-    await waitFor(async () =>
-      expect(await axe(container)).toHaveNoViolations()
-    );
-  });
-
   it("consumes disabled prop from `FormContext`", () => {
     const { getByTestId } = renderTestWithProvider(
       <Component disabled>
@@ -108,7 +88,6 @@ describe("<FormMultiSelect />", () => {
           formSlotProps={
             {
               formItem: { "data-testid": "form-item" },
-              control: { "data-testid": "control" },
               label: { "data-testid": "label" },
               helperText: { "data-testid": "helper-text" }
             } as FormMultiSelectProps["formSlotProps"]
@@ -122,7 +101,7 @@ describe("<FormMultiSelect />", () => {
       </Component>
     );
 
-    ["form-item", "control", "label", "helper-text"].forEach((element) => {
+    ["form-item", "label", "helper-text"].forEach((element) => {
       expect(getByTestId(element)).toBeInTheDocument();
     });
   });

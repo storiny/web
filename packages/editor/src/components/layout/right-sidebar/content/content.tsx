@@ -7,7 +7,10 @@ import dynamic from "next/dynamic";
 import React from "react";
 
 import { dynamicLoader } from "~/common/dynamic";
+import Grow from "~/components/Grow";
+import Separator from "~/components/Separator";
 import Typography from "~/components/Typography";
+import RightSidebarFooter from "~/layout/RightSidebar/Footer";
 
 import {
   docStatusAtom,
@@ -83,7 +86,12 @@ const SuspendedEditorRightSidebarContent = (
         }}
       >
         {readOnly ? (
-          <SuspendedEditorRightSidebarReadOnlyContent />
+          <React.Fragment>
+            <SuspendedEditorRightSidebarReadOnlyContent />
+            <Grow />
+            <Separator />
+            <RightSidebarFooter />
+          </React.Fragment>
         ) : status === "deleted" ? (
           <Typography className={"t-minor"} level={"body2"}>
             You are currently viewing a static version of this deleted story. If

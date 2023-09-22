@@ -2,6 +2,7 @@
   /* Sidebar content */
   &.content {
     position: relative;
+    height: 100%;
 
     &::after {
       content: "";
@@ -11,6 +12,7 @@
       height: 100%;
       width: 100%;
       opacity: 0;
+      z-index: 1;
       pointer-events: none;
       transition: opacity 240ms ease;
       background-color: var(--bg-elevation-xs);

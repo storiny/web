@@ -39,7 +39,7 @@ exports[`<MenubarSub /> matches snapshot 1`] = `
     <div
       aria-labelledby="radix-:r5:"
       aria-orientation="vertical"
-      class="content md"
+      class="content sub-content md"
       data-align="start"
       data-orientation="vertical"
       data-radix-menu-content=""
@@ -106,7 +106,6 @@ exports[`<MenubarSub /> matches snapshot 1`] = `
           <svg
             aria-hidden="true"
             class="svg-icon"
-            data-testid="chevron-icon"
             style="--rotation: 90deg;"
             viewBox="0 0 12 12"
           >

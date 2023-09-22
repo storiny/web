@@ -6,7 +6,7 @@ import { apiSlice } from "~/redux/features/api/slice";
 const SEGMENT = (id: string): string => `me/stories/${id}/metadata`;
 
 export type StoryMetadataResponse = Story;
-export interface StoryMetadataPayload extends StoryMetadataSchema {
+export interface StoryMetadataPayload extends Partial<StoryMetadataSchema> {
   id: string;
 }
 

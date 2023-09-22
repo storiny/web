@@ -36,3 +36,22 @@ export const CATEGORY_ICON_MAP: Record<StoryCategory | "all", React.ReactNode> =
     [StoryCategory.SPORTS /*                */]: <BasketballIcon />,
     [StoryCategory.TRAVEL /*                */]: <MapIcon />
   };
+
+export const CATEGORY_LABEL_MAP: Record<StoryCategory | "all", string> = {
+  ["all" /*                               */]: "All categories",
+  [StoryCategory.OTHERS /*                */]: "Others",
+  [StoryCategory.BUSINESS_AND_FINANCE /*  */]: "Business & finance",
+  [StoryCategory.DIY /*                   */]: "DIY",
+  [StoryCategory.DIGITAL_GRAPHICS /*      */]: "Digital graphics",
+  [StoryCategory.ENTERTAINMENT /*         */]: "Entertainment",
+  [StoryCategory.GAMING /*                */]: "Gaming",
+  [StoryCategory.HEALTH_AND_WELLNESS /*   */]: "Health & wellness",
+  [StoryCategory.LEARNING /*              */]: "Learning",
+  [StoryCategory.LIFESTYLE /*             */]: "Lifestyle",
+  [StoryCategory.MUSIC /*                 */]: "Music",
+  [StoryCategory.NEWS /*                  */]: "News",
+  [StoryCategory.PROGRAMMING /*           */]: "Programming",
+  [StoryCategory.SCIENCE_AND_TECHNOLOGY /**/]: "Science & technology",
+  [StoryCategory.SPORTS /*                */]: "Sports",
+  [StoryCategory.TRAVEL /*                */]: "Travel"
+};

@@ -1,5 +1,5 @@
 import { clsx } from "clsx";
-import { useAtomValue } from "jotai/index";
+import { useAtomValue } from "jotai";
 import React from "react";
 
 import Divider from "~/components/Divider";

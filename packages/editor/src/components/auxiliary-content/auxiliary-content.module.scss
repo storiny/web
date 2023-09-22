@@ -1,0 +1,43 @@
+@use "breakpoints" as breakpoints;
+
+/* Top divider */
+.content-divider {
+  width: auto;
+  margin-inline: var(--grid-compensation);
+
+  @include breakpoints.media("<desktop") {
+    width: 100vw;
+    margin-inline: 0;
+  }
+}
+
+/* Content header */
+.header {
+  border-bottom: 1px solid var(--divider);
+}
+
+/* Base styles */
+.auxiliary-content {
+  margin-top: -12px; // Tackle the gap on `main`
+  padding-bottom: 15vh;
+}
+
+/* Response area */
+.response-area {
+  padding-block: 16px;
+  gap: 12px;
+}
+
+.x {
+  /* Header label */
+  &.header-label {
+    margin-right: 20px;
+  }
+
+  /* Select trigger */
+  &.select-trigger {
+    border-radius: 0;
+    border: none;
+    margin-right: var(--grid-compensation);
+  }
+}

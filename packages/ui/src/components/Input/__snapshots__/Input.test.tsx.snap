@@ -35,7 +35,6 @@ exports[`<Input /> spinner renders spinner and matches snapshot 1`] = `
       <svg
         aria-hidden="true"
         class="svg-icon"
-        data-testid="minus-icon"
         viewBox="0 0 12 12"
       >
         <path
@@ -55,7 +54,6 @@ exports[`<Input /> spinner renders spinner and matches snapshot 1`] = `
       <svg
         aria-hidden="true"
         class="svg-icon"
-        data-testid="plus-icon"
         viewBox="0 0 12 12"
       >
         <path

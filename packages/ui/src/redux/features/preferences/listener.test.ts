@@ -1,3 +1,5 @@
+import { compressToUTF16 } from "lz-string";
+
 import { setupStore } from "~/redux/store";
 
 import {
@@ -86,7 +88,9 @@ describe("preferencesListener", () => {
 
     expect(localStorage.setItem).toHaveBeenCalledWith(
       LOCAL_STORAGE_KEY,
-      JSON.stringify({ ...preferencesInitialState, theme: "dark" })
+      compressToUTF16(
+        JSON.stringify({ ...preferencesInitialState, theme: "dark" })
+      )
     );
   });
 });

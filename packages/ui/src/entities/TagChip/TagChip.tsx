@@ -36,7 +36,7 @@ const TagChip = (props: TagChipProps): React.ReactElement => {
         styles["tag-chip"],
         className
       )}
-      decorator={withDecorator ? <HashIcon /> : null}
+      decorator={withDecorator ? <HashIcon data-testid={"hash-icon"} /> : null}
       disabled={disabled}
       href={`/tag/${value}`}
       title={`Explore #${value}`}

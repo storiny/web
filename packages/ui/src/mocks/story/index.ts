@@ -213,7 +213,7 @@ export const mockStories: Story[] = [
   {
     age_restriction: StoryAgeRestriction.NOT_RATED,
     canonical_url: null,
-    category: StoryCategory.OTHERS,
+    category: StoryCategory.LIFESTYLE,
     created_at: "2022-02-03T01:07:02.000Z",
     deleted_at: null,
     description:
@@ -223,7 +223,7 @@ export const mockStories: Story[] = [
     disable_toc: false,
     edited_at: "2023-04-03T01:07:02.000Z",
     id: "1662654838398690172",
-    license: StoryLicense.RESERVED,
+    license: StoryLicense.CC_BY_NC_ND,
     preview_image: null,
     published_at: "2023-02-03T01:07:02.000Z",
     seo_description: null,

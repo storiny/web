@@ -6,6 +6,7 @@ import EditorLayout from "../layout";
 import { EditorProps } from "./editor.props";
 
 const EditorShortcuts = dynamic(() => import("../../shortcuts"));
+const EditorAuxiliaryContent = dynamic(() => import("../auxiliary-content"));
 
 const Editor = (props: EditorProps): React.ReactElement => (
   <EditorLayout
@@ -18,6 +19,7 @@ const Editor = (props: EditorProps): React.ReactElement => (
       readOnly={props.readOnly || props.status === "deleted"}
     />
     {!props.readOnly && props.status !== "deleted" ? <EditorShortcuts /> : null}
+    {props.readOnly && <EditorAuxiliaryContent />}
   </EditorLayout>
 );
 

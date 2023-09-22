@@ -43,7 +43,7 @@ const sourcedEmbedHandler: Parameters<Page["route"]>[1] = async (route) => {
 const iframeEmbedHandler: Parameters<Page["route"]>[1] = async (route) => {
   await route.fulfill({
     body: html`
-      <!DOCTYPE html>
+      <!doctype html>
       <html data-theme="light" lang="en">
         <head>
           <meta charset="utf-8" />
@@ -379,11 +379,7 @@ test.describe("embed", () => {
                         target="_blank"
                         title="https://example.com"
                       >
-                        <svg
-                          aria-hidden="true"
-                          viewBox="0 0 12 12"
-                          data-testid="external-link-icon"
-                        >
+                        <svg aria-hidden="true" viewBox="0 0 12 12">
                           <path
                             d="M6 3H3a1 1 0 0 0-1 1v5a1 1 0 0 0 1 1h5a1 1 0 0 0 1-1V6m-3.5.5L10 2m0 0H7.5M10 2v2.5"
                           ></path>

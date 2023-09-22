@@ -1,7 +1,10 @@
 "use client";
 
-import { StoryCategory } from "@storiny/shared";
-import { CATEGORY_ICON_MAP } from "@storiny/shared/src/constants/category-icon-map";
+import {
+  CATEGORY_ICON_MAP,
+  CATEGORY_LABEL_MAP,
+  StoryCategory
+} from "@storiny/shared";
 import { clsx } from "clsx";
 import NextLink from "next/link";
 import { useSelectedLayoutSegment } from "next/navigation";
@@ -52,9 +55,13 @@ const SuspendedExploreRightSidebarContent = (): React.ReactElement => {
           loop={false}
           role={undefined}
         >
-          {CATEGORIES.map(({ id, title }) => (
-            <AnchorTab decorator={CATEGORY_ICON_MAP[id]} key={id} value={id}>
-              {title}
+          {CATEGORIES.map((category) => (
+            <AnchorTab
+              decorator={CATEGORY_ICON_MAP[category]}
+              key={category}
+              value={category}
+            >
+              {CATEGORY_LABEL_MAP[category]}
             </AnchorTab>
           ))}
         </TabsList>

@@ -1,5 +1,9 @@
-import { ImageSize, StoryCategory } from "@storiny/shared";
-import { CATEGORY_ICON_MAP } from "@storiny/shared/src/constants/category-icon-map";
+import {
+  CATEGORY_ICON_MAP,
+  CATEGORY_LABEL_MAP,
+  ImageSize,
+  StoryCategory
+} from "@storiny/shared";
 import {
   MAX_STORY_TAGS,
   STORY_PROPS
@@ -253,75 +257,33 @@ const GeneralTab = (): React.ReactElement => (
         }
       }}
     >
-      <Option decorator={CATEGORY_ICON_MAP.others} value={StoryCategory.OTHERS}>
-        Others
-      </Option>
-      <Option
-        decorator={CATEGORY_ICON_MAP["science-and-technology"]}
-        value={StoryCategory.SCIENCE_AND_TECHNOLOGY}
-      >
-        Science & technology
-      </Option>
-      <Option
-        decorator={CATEGORY_ICON_MAP.programming}
-        value={StoryCategory.PROGRAMMING}
-      >
-        Programming
-      </Option>
-      <Option
-        decorator={CATEGORY_ICON_MAP.lifestyle}
-        value={StoryCategory.LIFESTYLE}
-      >
-        Lifestyle
-      </Option>
-      <Option
-        decorator={CATEGORY_ICON_MAP["health-and-wellness"]}
-        value={StoryCategory.HEALTH_AND_WELLNESS}
-      >
-        Health & wellness
-      </Option>
-      <Option
-        decorator={CATEGORY_ICON_MAP.entertainment}
-        value={StoryCategory.ENTERTAINMENT}
-      >
-        Entertainment
-      </Option>
-      <Option
-        decorator={CATEGORY_ICON_MAP["digital-graphics"]}
-        value={StoryCategory.DIGITAL_GRAPHICS}
-      >
-        Digital graphics
-      </Option>
-      <Option decorator={CATEGORY_ICON_MAP.travel} value={StoryCategory.TRAVEL}>
-        Travel
-      </Option>
-      <Option decorator={CATEGORY_ICON_MAP.diy} value={StoryCategory.DIY}>
-        DIY
-      </Option>
-      <Option decorator={CATEGORY_ICON_MAP.news} value={StoryCategory.NEWS}>
-        News
-      </Option>
-      <Option decorator={CATEGORY_ICON_MAP.sports} value={StoryCategory.SPORTS}>
-        Sports
-      </Option>
-      <Option decorator={CATEGORY_ICON_MAP.gaming} value={StoryCategory.GAMING}>
-        Gaming
-      </Option>
-      <Option decorator={CATEGORY_ICON_MAP.music} value={StoryCategory.MUSIC}>
-        Music
-      </Option>
-      <Option
-        decorator={CATEGORY_ICON_MAP.learning}
-        value={StoryCategory.LEARNING}
-      >
-        Learning
-      </Option>
-      <Option
-        decorator={CATEGORY_ICON_MAP["business-and-finance"]}
-        value={StoryCategory.BUSINESS_AND_FINANCE}
-      >
-        Business & finance
-      </Option>
+      {(
+        [
+          StoryCategory.OTHERS,
+          StoryCategory.SCIENCE_AND_TECHNOLOGY,
+          StoryCategory.PROGRAMMING,
+          StoryCategory.LIFESTYLE,
+          StoryCategory.HEALTH_AND_WELLNESS,
+          StoryCategory.ENTERTAINMENT,
+          StoryCategory.DIGITAL_GRAPHICS,
+          StoryCategory.TRAVEL,
+          StoryCategory.DIY,
+          StoryCategory.NEWS,
+          StoryCategory.SPORTS,
+          StoryCategory.GAMING,
+          StoryCategory.MUSIC,
+          StoryCategory.LEARNING,
+          StoryCategory.BUSINESS_AND_FINANCE
+        ] as StoryCategory[]
+      ).map((category) => (
+        <Option
+          decorator={CATEGORY_ICON_MAP[category]}
+          key={category}
+          value={category}
+        >
+          {CATEGORY_LABEL_MAP[category]}
+        </Option>
+      ))}
     </FormSelect>
   </React.Fragment>
 );

@@ -71,7 +71,8 @@ const SuspendedEditorLeftSidebarContent = (
           styles.x,
           styles.content,
           commonStyles.x,
-          commonStyles.content
+          commonStyles.content,
+          readOnly && styles["read-only"]
         )}
         data-hidden={String(Boolean(overflowingFigures.size))}
         style={{

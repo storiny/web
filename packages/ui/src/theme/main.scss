@@ -83,7 +83,10 @@ main {
 .full-bleed {
   width: auto;
   margin-inline: var(--grid-compensation);
-  border-bottom: 1px solid var(--divider);
+
+  &:not(.no-border) {
+    border-bottom: 1px solid var(--divider);
+  }
 
   @include breakpoints.media("<=desktop", ">tablet") {
     margin-left: 47%;
