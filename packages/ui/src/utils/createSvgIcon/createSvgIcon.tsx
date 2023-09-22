@@ -17,11 +17,7 @@ export const createSvgIcon = (
 ): React.MemoExoticComponent<typeof SvgIcon> => {
   const Component = React.forwardRef<SVGSVGElement, SvgIconProps>(
     (props, ref) => (
-      <SvgIcon
-        {...{ ...props, ...componentProps }}
-        data-testid={`${displayName}-icon`}
-        ref={ref}
-      >
+      <SvgIcon {...Object.assign({}, props, componentProps)} ref={ref}>
         {path}
       </SvgIcon>
     )

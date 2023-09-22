@@ -6,7 +6,6 @@ import React from "react";
 
 import Navbar from "~/layout/Navbar";
 
-import { storyMetadataAtom } from "../../atoms";
 import EditorComposer from "../composer";
 import { EditorProps } from "../editor";
 import HydrateMetadata from "../hydrate-metadata";

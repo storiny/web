@@ -1,6 +1,7 @@
 /* Base styles */
 .separator {
   height: 1px;
+  min-height: 1px;
   background-color: var(--divider);
   margin: 8px 0;
 }

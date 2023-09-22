@@ -29,7 +29,6 @@ exports[`<Accordion /> matches snapshot for \`multiple\` type 1`] = `
         <svg
           aria-hidden="true"
           class="svg-icon icon"
-          data-testid="chevron-icon"
           viewBox="0 0 12 12"
         >
           <path
@@ -86,7 +85,6 @@ exports[`<Accordion /> matches snapshot for \`single\` type 1`] = `
         <svg
           aria-hidden="true"
           class="svg-icon icon"
-          data-testid="chevron-icon"
           viewBox="0 0 12 12"
         >
           <path

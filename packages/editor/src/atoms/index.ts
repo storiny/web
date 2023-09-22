@@ -3,6 +3,7 @@ export * from "./awareness";
 export * from "./doc-status";
 export * from "./history";
 export * from "./indentation";
+export * from "./is-auxiliary-content-visible";
 export * from "./is-caption-selection";
 export * from "./overflowing-figures";
 export * from "./sidebars-collapsed";

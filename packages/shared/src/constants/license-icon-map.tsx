@@ -45,3 +45,14 @@ export const LICENSE_ICON_MAP: Record<StoryLicense, React.ReactNode> = {
     </React.Fragment>
   )
 };
+
+export const LICENSE_LABEL_MAP: Record<StoryLicense, string> = {
+  [StoryLicense.RESERVED /*   */]: "Reserved",
+  [StoryLicense.CC_ZERO /*    */]: "Public domain",
+  [StoryLicense.CC_BY /*      */]: "CC BY",
+  [StoryLicense.CC_BY_SA /*   */]: "CC BY-SA",
+  [StoryLicense.CC_BY_NC /*   */]: "CC BY-NC",
+  [StoryLicense.CC_BY_ND /*   */]: "CC BY-ND",
+  [StoryLicense.CC_BY_NC_SA /**/]: "CC BY-NC-SA",
+  [StoryLicense.CC_BY_NC_ND /**/]: "CC BY-NC-ND"
+};

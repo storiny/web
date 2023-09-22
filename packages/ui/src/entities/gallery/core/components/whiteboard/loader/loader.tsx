@@ -30,6 +30,7 @@ const WhiteboardLoader = (): React.ReactElement => {
         max={100}
         slotProps={{
           indicator: {
+            className: "force-animation",
             style: {
               transition: `transform ${animationDuration}ms ease-out`
             }

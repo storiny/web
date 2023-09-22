@@ -10,6 +10,7 @@ import Separator from "~/components/Separator";
 import Spacer from "~/components/Spacer";
 import Typography from "~/components/Typography";
 import { useClipboard } from "~/hooks/useClipboard";
+import { useMediaQuery } from "~/hooks/useMediaQuery";
 import { useWebShare } from "~/hooks/useWebShare";
 import BookmarkIcon from "~/icons/Bookmark";
 import BookmarkPlusIcon from "~/icons/BookmarkPlus";
@@ -22,6 +23,7 @@ import ReportIcon from "~/icons/Report";
 import ShareIcon from "~/icons/Share";
 import { selectUser, setBookmark, setMute } from "~/redux/features";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
+import { breakpoints } from "~/theme/breakpoints";
 import { DateFormat, formatDate } from "~/utils/formatDate";
 import { getReadTime } from "~/utils/getReadTime";
 
@@ -118,6 +120,7 @@ const StoryActions = (): React.ReactElement => {
 };
 
 const StoryHeader = (): React.ReactElement => {
+  const isMobile = useMediaQuery(breakpoints.down("mobile"));
   const story = useAtomValue(storyMetadataAtom);
   const user = useAppSelector(selectUser);
 
@@ -134,7 +137,12 @@ const StoryHeader = (): React.ReactElement => {
           title={formatDate(story.published_at!, DateFormat.LONG)}
         >
           <CalendarIcon />
-          <span>{formatDate(story.published_at!, DateFormat.STANDARD)}</span>
+          <span>
+            {formatDate(
+              story.published_at!,
+              isMobile ? DateFormat.SHORT : DateFormat.STANDARD
+            )}
+          </span>
         </Typography>
         <Typography
           aria-label={`${getReadTime(story.word_count, user?.wpm)} min read`}

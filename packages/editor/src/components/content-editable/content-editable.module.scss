@@ -7,12 +7,18 @@
   border: 0;
   outline: 0;
   height: 100%;
-  padding: 32px 48px 50vh;
+
+  /**
+   * 100vh is needed here as the sidebars would never be
+   * visible if an overflowing node was inserted at the end
+   * of the editor.
+   */
+  padding: 32px 48px 100vh;
 
   /* Read-only */
   &:not(.editable) {
     height: fit-content;
-    padding: 0;
+    padding: 0 0 10vh;
 
     /* Normalize TK nodes in read-only mode */
     & [data-tk-node] {
@@ -31,6 +37,7 @@
   @include breakpoints.media("<desktop") {
     &.editable {
       padding-top: 86px; // Metadata bar
+      padding-bottom: 10vh;
     }
   }
 

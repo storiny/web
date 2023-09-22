@@ -86,7 +86,6 @@ exports[`useModal renders modal, matches snapshot, and passes props to the root 
           <svg
             aria-hidden="true"
             class="svg-icon"
-            data-testid="x-icon"
             viewBox="0 0 12 12"
           >
             <path

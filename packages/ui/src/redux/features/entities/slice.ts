@@ -146,7 +146,7 @@ export const setEntityValue =
   (
     state: T,
     action: PayloadAction<
-      K extends boolean
+      Q extends "boolean"
         ? [string] | [string, ((prevState: K) => K) | undefined] // Allow `undefined` for `boolean` type to toggle the value
         : [string, (prevState: K) => K]
     >

@@ -1,0 +1,20 @@
+/* Footer row item */
+.footer-row {
+  gap: 12px;
+}
+
+/* Tag row */
+.tag-row {
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.x {
+  /* Stat */
+  &.stat {
+    --icon-size: 14px;
+    --icon-stroke: var(--fg-minor);
+
+    gap: 6px;
+  }
+}

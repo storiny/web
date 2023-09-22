@@ -16,7 +16,6 @@ exports[`<NavigationItem /> matches snapshot 1`] = `
     <svg
       aria-hidden="true"
       class="svg-icon"
-      data-testid="chevron-icon"
       style="--rotation: 90deg;"
       viewBox="0 0 12 12"
     >

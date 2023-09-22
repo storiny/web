@@ -74,7 +74,6 @@ exports[`<ModalFooterButton /> matches snapshot 1`] = `
           <svg
             aria-hidden="true"
             class="svg-icon"
-            data-testid="x-icon"
             viewBox="0 0 12 12"
           >
             <path
@@ -170,7 +169,6 @@ exports[`<ModalFooterButton /> renders \`compact\` version 1`] = `
           <svg
             aria-hidden="true"
             class="svg-icon"
-            data-testid="x-icon"
             viewBox="0 0 12 12"
           >
             <path

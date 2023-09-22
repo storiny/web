@@ -14,7 +14,7 @@ const Page = ({
 }): React.ReactElement => {
   const category = (params.category || [""])[0] as StoryCategory | "";
 
-  if (!CATEGORIES.find((item) => item.id === category) && category !== "") {
+  if (!CATEGORIES.find((item) => item === category) && category !== "") {
     notFound();
   }
 

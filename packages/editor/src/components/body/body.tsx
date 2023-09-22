@@ -18,6 +18,7 @@ import { EditorProps } from "../editor";
 import EditorErrorBoundary from "../error-boundary";
 import EditorLoader from "../loader";
 import EditorPlaceholder from "../placeholder";
+import StoryFooter from "../story-footer";
 import StoryHeader from "../story-header";
 import styles from "./body.module.scss";
 
@@ -138,6 +139,7 @@ const EditorBody = (props: EditorProps): React.ReactElement => {
           overlay
         />
       )}
+      {readOnly && <StoryFooter />}
     </article>
   );
 };

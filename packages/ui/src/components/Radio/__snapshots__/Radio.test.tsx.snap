@@ -10,7 +10,7 @@ exports[`<Radio /> matches snapshot 1`] = `
   tabindex="0"
 >
   <div
-    class="flex-center container"
+    class="flex container"
   >
     <button
       aria-checked="false"
@@ -24,13 +24,17 @@ exports[`<Radio /> matches snapshot 1`] = `
       type="button"
       value="test"
     />
-    <label
-      class="t-body-2 t-major label"
-      for=":r0:"
-      id=":r1:"
+    <div
+      class="flex-col children-container"
     >
-      Test
-    </label>
+      <label
+        class="t-body-2 t-major label"
+        for=":r0:"
+        id=":r1:"
+      >
+        Test
+      </label>
+    </div>
   </div>
 </div>
 `;

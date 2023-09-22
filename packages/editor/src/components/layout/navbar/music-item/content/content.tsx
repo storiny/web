@@ -62,7 +62,12 @@ const MusicItemContent = (): React.ReactElement => {
         <div className={clsx("flex", styles.x, styles.player)}>
           <span
             aria-label={src ? "Change track" : "Pick a track"}
-            className={clsx(styles.x, styles.record, playing && styles.playing)}
+            className={clsx(
+              "force-animation",
+              styles.x,
+              styles.record,
+              playing && styles.playing
+            )}
             onClick={openFileSelector}
             role={"button"}
             title={src ? "Change track" : "Pick a track"}
