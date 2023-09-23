@@ -13,9 +13,9 @@ export interface StoryUnpublishPayload {
   id: string;
 }
 
-export const { useStoryUnpublishMutation } = apiSlice.injectEndpoints({
+export const { useUnpublishStoryMutation } = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    storyUnpublish: builder.mutation<
+    unpublishStory: builder.mutation<
       StoryUnpublishResponse,
       StoryUnpublishPayload
     >({

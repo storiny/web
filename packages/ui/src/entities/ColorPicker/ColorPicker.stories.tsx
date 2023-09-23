@@ -8,7 +8,7 @@ import Button from "~/components/Button";
 import ColorPicker from "./ColorPicker";
 
 const meta: Meta<typeof ColorPicker> = {
-  title: "Entities/ColorPicker",
+  title: "entities/ColorPicker",
   component: ColorPicker,
   args: {
     children: <Button>Pick a color</Button>

@@ -1,4 +1,4 @@
-export { default as VirtualizedNotificationList } from "./List";
-export { default as VirtualizedNotificationItem } from "./ListItem";
-export { default as NotificationListSkeleton } from "./ListSkeleton";
-export { default as VirtualizedNotificationScrollSeekPlaceholder } from "./ScrollSeekPlaceholder";
+export { default as VirtualizedNotificationList } from "./list";
+export { default as VirtualizedNotificationItem } from "./list-item";
+export { default as NotificationListSkeleton } from "./list-skeleton";
+export { default as VirtualizedNotificationScrollSeekPlaceholder } from "./scroll-seek-placeholder";

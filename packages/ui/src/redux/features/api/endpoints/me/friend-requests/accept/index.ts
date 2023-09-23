@@ -13,9 +13,9 @@ export interface FriendRequestAcceptPayload {
   id: string;
 }
 
-export const { useFriendRequestAcceptMutation } = apiSlice.injectEndpoints({
+export const { useAcceptFriendRequestMutation } = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    friendRequestAccept: builder.mutation<
+    acceptFriendRequest: builder.mutation<
       FriendRequestAcceptResponse,
       FriendRequestAcceptPayload
     >({

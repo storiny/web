@@ -27,13 +27,13 @@ const AccountHistory = ({
       "read-history": !record_read_history
     }
   });
-  const [readHistory, { isLoading }] = useReadHistoryMutation();
+  const [mutateReadHistory, { isLoading }] = useReadHistoryMutation();
 
   const handleSubmit: SubmitHandler<AccountHistorySchema> = (values) => {
     if (onSubmit) {
       onSubmit({ "read-history": !values["read-history"] });
     } else {
-      readHistory({ "read-history": !values["read-history"] })
+      mutateReadHistory({ "read-history": !values["read-history"] })
         .unwrap()
         .then(() => (prevValuesRef.current = values))
         .catch((e) => {

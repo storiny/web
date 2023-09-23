@@ -8,7 +8,7 @@ import UserIcon from "~/icons/User";
 import CustomState from "./CustomState";
 
 const meta: Meta<typeof CustomState> = {
-  title: "Entities/CustomState",
+  title: "entities/CustomState",
   component: CustomState,
   args: { size: "md", title: "Title", description: "Description" },
   tags: ["autodocs"]

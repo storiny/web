@@ -13,11 +13,11 @@ export const useSignup = (): {
   isLoading: boolean;
 } => {
   const { state, actions } = useAuthState();
-  const [signup, { isLoading }] = useSignupMutation();
+  const [mutateSignup, { isLoading }] = useSignupMutation();
   const toast = useToast();
 
   const handleSignup = (): void => {
-    signup({
+    mutateSignup({
       ...state.signup,
       wpm: state.signup.wpm || DEFAULT_WPM
     })

@@ -34,13 +34,13 @@ const FollowingList = ({
       "following-list": `${following_list_visibility}` as `${1 | 2 | 3}`
     }
   });
-  const [followingList, { isLoading }] = useFollowingListMutation();
+  const [mutateFollowingList, { isLoading }] = useFollowingListMutation();
 
   const handleSubmit: SubmitHandler<FollowingListSchema> = (values) => {
     if (onSubmit) {
       onSubmit(values);
     } else {
-      followingList(values)
+      mutateFollowingList(values)
         .unwrap()
         .then(() => (prevValuesRef.current = values))
         .catch((e) => {

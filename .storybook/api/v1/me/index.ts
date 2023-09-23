@@ -14,7 +14,6 @@ import "./replies";
 import "./stories";
 import "./settings";
 import "./followed-tags";
-import "./validation";
 import "./relations";
 import "./blocked-users";
 import "./muted-users";

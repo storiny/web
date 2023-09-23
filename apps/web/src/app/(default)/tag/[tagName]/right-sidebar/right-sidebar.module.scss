@@ -22,5 +22,7 @@
   /* Actions */
   &.actions {
     gap: 8px;
+    flex-wrap: wrap;
+    max-width: 100%;
   }
 }

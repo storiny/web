@@ -10,9 +10,9 @@ export interface CommentEditPayload {
   id: string;
 }
 
-export const { useCommentEditMutation } = apiSlice.injectEndpoints({
+export const { useEditCommentMutation } = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    commentEdit: builder.mutation<CommentEditResponse, CommentEditPayload>({
+    editComment: builder.mutation<CommentEditResponse, CommentEditPayload>({
       query: (body) => ({
         url: `/${SEGMENT(body.id)}`,
         method: "PATCH",

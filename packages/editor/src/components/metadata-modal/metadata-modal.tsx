@@ -67,7 +67,7 @@ const StoryMetadataModalImpl = (
     },
     resolver: zodResolver(storyMetadataSchema)
   });
-  const [storyMetadata, { isLoading }] = useStoryMetadataMutation();
+  const [mutateStoryMetadata, { isLoading }] = useStoryMetadataMutation();
 
   /**
    * Resets the modal state
@@ -81,7 +81,7 @@ const StoryMetadataModalImpl = (
   );
 
   const handleSubmit: SubmitHandler<StoryMetadataSchema> = (values) => {
-    storyMetadata({ ...values, id: story.id })
+    mutateStoryMetadata({ ...values, id: story.id })
       .unwrap()
       .then((res) => {
         setOpen(false);

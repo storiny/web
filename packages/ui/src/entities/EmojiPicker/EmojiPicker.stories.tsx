@@ -8,7 +8,7 @@ import Button from "~/components/Button";
 import EmojiPicker from "./EmojiPicker";
 
 const meta: Meta<typeof EmojiPicker> = {
-  title: "Entities/EmojiPicker",
+  title: "entities/EmojiPicker",
   component: EmojiPicker,
   args: {
     children: <Button>Pick an emoji</Button>

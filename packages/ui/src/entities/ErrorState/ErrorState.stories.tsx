@@ -5,7 +5,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import ErrorState from "./ErrorState";
 
 const meta: Meta<typeof ErrorState> = {
-  title: "Entities/ErrorState",
+  title: "entities/ErrorState",
   component: ErrorState,
   args: { size: "md", type: "network" },
   tags: ["autodocs"]

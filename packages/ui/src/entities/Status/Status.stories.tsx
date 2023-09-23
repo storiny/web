@@ -5,7 +5,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import Status from "./Status";
 
 const meta: Meta<typeof Status> = {
-  title: "Entities/Status",
+  title: "entities/Status",
   component: Status,
   args: {
     text: "This is a status",

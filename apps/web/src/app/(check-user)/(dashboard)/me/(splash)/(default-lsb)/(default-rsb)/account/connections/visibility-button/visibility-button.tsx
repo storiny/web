@@ -13,14 +13,14 @@ const VisibilityButton = ({
   const [hidden, setHidden] = React.useState<boolean>(
     Boolean(connection.hidden)
   );
-  const [connectionVisibility, { isLoading }] =
+  const [mutateConnectionVisibility, { isLoading }] =
     useConnectionVisibilityMutation();
 
   /**
    * Handles visibility mutations
    */
   const handleVisibility = (): void => {
-    connectionVisibility({ id: connection.id, visible: hidden })
+    mutateConnectionVisibility({ id: connection.id, visible: hidden })
       .unwrap()
       .then(() => setHidden((prevState) => !prevState))
       .catch((e) =>

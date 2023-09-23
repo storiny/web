@@ -60,7 +60,6 @@ main,
 .base {
   display: flex;
   flex-direction: column;
-  gap: 12px;
   padding-block: 12px;
 }
 
@@ -76,6 +75,10 @@ main {
   &.dashboard {
     main {
       padding-block: 0; // Disable padding
+
+      & .page-header {
+        margin-top: 0;
+      }
     }
   }
 }
@@ -124,6 +127,6 @@ main {
   background-color: var(--bg-elevation-xs);
 
   &.with-page-title {
-    top: calc(var(--header-height) + 43px);
+    top: calc(var(--header-height) + 42px);
   }
 }

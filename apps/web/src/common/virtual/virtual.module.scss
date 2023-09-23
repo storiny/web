@@ -1,11 +1,9 @@
-.x {
-  /* Virtual list item */
-  &.list-item {
-    padding-block: 12px;
-    gap: 24px;
+.list {
+  padding-block: 12px;
+}
 
-    &.large {
-      padding-block: 20px;
-    }
+.list-item {
+  &:first-of-type {
+    margin-top: 12px;
   }
 }

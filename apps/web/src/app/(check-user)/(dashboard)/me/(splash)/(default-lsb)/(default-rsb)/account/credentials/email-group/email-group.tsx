@@ -97,13 +97,13 @@ export const EmailSettings = ({
       "current-password": ""
     }
   });
-  const [emailSettings, { isLoading }] = useEmailSettingsMutation();
+  const [mutateEmailSettings, { isLoading }] = useEmailSettingsMutation();
 
   const handleSubmit: SubmitHandler<EmailSettingsSchema> = (values) => {
     if (onSubmit) {
       onSubmit(values);
     } else {
-      emailSettings(values)
+      mutateEmailSettings(values)
         .unwrap()
         .then(() => {
           setUpdated(true);

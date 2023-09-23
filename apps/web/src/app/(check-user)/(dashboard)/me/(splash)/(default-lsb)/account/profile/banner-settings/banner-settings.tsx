@@ -7,6 +7,7 @@ import { useConfirmation } from "~/components/Confirmation";
 import IconButton from "~/components/IconButton";
 import Image from "~/components/Image";
 import { useToast } from "~/components/Toast";
+import Gallery from "~/entities/gallery";
 import PencilIcon from "~/icons/Pencil";
 import PhotoPlusIcon from "~/icons/PhotoPlus";
 import TrashIcon from "~/icons/Trash";
@@ -19,7 +20,6 @@ import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 import { breakpoints } from "~/theme/breakpoints";
 import { getCdnUrl } from "~/utils/getCdnUrl";
 
-import Gallery from "../../../../../../../../../../../../packages/ui/src/entities/gallery";
 import styles from "./banner-settings.module.scss";
 
 const BannerSettings = (): React.ReactElement => {
@@ -27,7 +27,7 @@ const BannerSettings = (): React.ReactElement => {
   const user = useAppSelector(selectUser)!;
   const toast = useToast();
   const [bannerId, setBannerId] = React.useState<string | null>(user.banner_id);
-  const [bannerSettings, { isLoading }] = useBannerSettingsMutation();
+  const [mutateBannerSettings, { isLoading }] = useBannerSettingsMutation();
   const [element] = useConfirmation(
     ({ openConfirmation }) => (
       <IconButton
@@ -57,7 +57,7 @@ const BannerSettings = (): React.ReactElement => {
    * Dispatches the current banner settings
    */
   const dispatchBannerSettings = React.useCallback(() => {
-    bannerSettings({ banner_id: bannerId })
+    mutateBannerSettings({ banner_id: bannerId })
       .unwrap()
       .then((res) => {
         dispatch(
@@ -74,7 +74,7 @@ const BannerSettings = (): React.ReactElement => {
       .catch((e) =>
         toast(e?.data?.error || "Could not update your banner", "error")
       );
-  }, [bannerId, bannerSettings, dispatch, toast]);
+  }, [bannerId, mutateBannerSettings, dispatch, toast]);
 
   return (
     <AspectRatio

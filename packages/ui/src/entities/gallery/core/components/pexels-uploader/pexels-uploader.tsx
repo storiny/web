@@ -6,7 +6,7 @@ import Button from "~/components/Button";
 import Spacer from "~/components/Spacer";
 import Typography from "~/components/Typography";
 import { pendingImageAtom, uploadingAtom } from "~/entities/gallery/core/atoms";
-import { useGalleryUploadMutation } from "~/redux/features";
+import { useUploadGalleryMutation } from "~/redux/features";
 
 import UploadProgress from "../upload-progress";
 import styles from "./pexels-uploader.module.scss";
@@ -16,7 +16,7 @@ const PexelsUploader = (props: PexelsUploaderProps): React.ReactElement => {
   const { onUploadFinish } = props;
   const [pendingImage, setPendingImage] = useAtom(pendingImageAtom);
   const setUploading = useSetAtom(uploadingAtom);
-  const [uploadImage, result] = useGalleryUploadMutation();
+  const [uploadImage, result] = useUploadGalleryMutation();
 
   /**
    * Handles the uploading of the image

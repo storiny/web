@@ -79,13 +79,13 @@ const UsernameSettings = ({
       "current-password": ""
     }
   });
-  const [usernameSettings, { isLoading }] = useUsernameSettingsMutation();
+  const [mutateUsernameSettings, { isLoading }] = useUsernameSettingsMutation();
 
   const handleSubmit: SubmitHandler<UsernameSettingsSchema> = (values) => {
     if (onSubmit) {
       onSubmit(values);
     } else {
-      usernameSettings(values)
+      mutateUsernameSettings(values)
         .unwrap()
         .then(() => {
           dispatch(

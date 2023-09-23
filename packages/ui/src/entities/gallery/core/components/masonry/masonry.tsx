@@ -18,8 +18,8 @@ import {
   GetGalleryPhotosResponse,
   getQueryErrorType,
   GetUserAssetsResponse,
-  useGetGalleryPhotosQuery,
-  useGetUserAssetsQuery
+  useGetAssetsQuery,
+  useGetGalleryPhotosQuery
 } from "~/redux/features";
 import { breakpoints } from "~/theme/breakpoints";
 
@@ -121,7 +121,7 @@ const Library = ({
 }): React.ReactElement => {
   const [page, setPage] = React.useState<number>(1);
   const { data, isFetching, isLoading, isError, error, refetch } =
-    useGetUserAssetsQuery({
+    useGetAssetsQuery({
       page
     });
   const { items = [], hasMore } = data || {};

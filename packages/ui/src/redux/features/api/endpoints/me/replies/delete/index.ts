@@ -13,9 +13,9 @@ export interface ReplyDeletePayload {
   id: string;
 }
 
-export const { useReplyDeleteMutation } = apiSlice.injectEndpoints({
+export const { useDeleteReplyMutation } = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    replyDelete: builder.mutation<ReplyDeleteResponse, ReplyDeletePayload>({
+    deleteReply: builder.mutation<ReplyDeleteResponse, ReplyDeletePayload>({
       query: (body) => ({
         url: `/${SEGMENT(body.id)}`,
         method: "DELETE"

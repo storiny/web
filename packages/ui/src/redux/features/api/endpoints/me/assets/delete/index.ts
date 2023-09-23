@@ -7,9 +7,9 @@ export interface AssetDeletePayload {
   id: string;
 }
 
-export const { useAssetDeleteMutation } = apiSlice.injectEndpoints({
+export const { useDeleteAssetMutation } = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    assetDelete: builder.mutation<AssetDeleteResponse, AssetDeletePayload>({
+    deleteAsset: builder.mutation<AssetDeleteResponse, AssetDeletePayload>({
       query: (body) => ({
         url: `/${SEGMENT(body.id)}`,
         method: "DELETE"

@@ -7,6 +7,7 @@ import { useConfirmation } from "~/components/Confirmation";
 import Spacer from "~/components/Spacer";
 import { useToast } from "~/components/Toast";
 import Typography from "~/components/Typography";
+import Gallery from "~/entities/gallery";
 import PencilIcon from "~/icons/Pencil";
 import TrashIcon from "~/icons/Trash";
 import {
@@ -16,7 +17,6 @@ import {
 } from "~/redux/features";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 
-import Gallery from "../../../../../../../../../../../../packages/ui/src/entities/gallery";
 import styles from "./avatar-settings.module.scss";
 
 const AvatarSettings = (): React.ReactElement | null => {
@@ -24,7 +24,7 @@ const AvatarSettings = (): React.ReactElement | null => {
   const user = useAppSelector(selectUser)!;
   const toast = useToast();
   const [avatarId, setAvatarId] = React.useState<string | null>(user.avatar_id);
-  const [avatarSettings, { isLoading }] = useAvatarSettingsMutation();
+  const [mutateAvatarSettings, { isLoading }] = useAvatarSettingsMutation();
   const [element] = useConfirmation(
     ({ openConfirmation }) => (
       <Button
@@ -55,7 +55,7 @@ const AvatarSettings = (): React.ReactElement | null => {
    * Dispatches the current avatar settings
    */
   const dispatchAvatarSettings = React.useCallback(() => {
-    avatarSettings({ avatar_id: avatarId })
+    mutateAvatarSettings({ avatar_id: avatarId })
       .unwrap()
       .then((res) => {
         dispatch(
@@ -72,7 +72,7 @@ const AvatarSettings = (): React.ReactElement | null => {
       .catch((e) =>
         toast(e?.data?.error || "Could not update your avatar", "error")
       );
-  }, [avatarId, avatarSettings, dispatch, toast]);
+  }, [avatarId, mutateAvatarSettings, dispatch, toast]);
 
   return (
     <div className={clsx("flex-col", styles.x, styles["avatar-settings"])}>

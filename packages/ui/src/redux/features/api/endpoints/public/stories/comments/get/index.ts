@@ -8,7 +8,7 @@ const ITEMS_PER_PAGE = 10;
 
 export type GetStoryCommentsResponse = Comment[];
 
-export const { useGetStoryCommentsQuery } = apiSlice.injectEndpoints({
+export const getStoryCommentsApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getStoryComments: builder.query<
       { hasMore: boolean; items: Comment[] },
@@ -57,3 +57,5 @@ export const { useGetStoryCommentsQuery } = apiSlice.injectEndpoints({
     })
   })
 });
+
+export const { useGetStoryCommentsQuery } = getStoryCommentsApi;

@@ -1,0 +1,58 @@
+@use "../../theme/breakpoints" as breakpoints;
+
+/* Base styles */
+.user {
+  padding-block: 8px;
+
+  @include breakpoints.media("<=mobile") {
+    gap: 4px;
+  }
+
+  &.virtual {
+    padding-block: 26px;
+
+    @include breakpoints.media("<=mobile") {
+      padding-block: 16px;
+    }
+  }
+}
+
+/* Main */
+.main {
+  gap: 24px;
+}
+
+/* Meta */
+.meta {
+  gap: 10px;
+}
+
+/* Actions */
+.actions {
+  gap: 8px;
+}
+
+/* Stats */
+.stats {
+  gap: 8px;
+}
+
+/* Stat */
+.stat {
+  gap: 6px;
+}
+
+/* Stat icon */
+.stat-icon {
+  --icon-size: 14px;
+  --icon-stroke: var(--fg-minor);
+}
+
+/* Bio */
+.bio {
+  gap: 8px; // Gap for skeleton
+
+  @include breakpoints.media(">mobile") {
+    padding-left: 58px;
+  }
+}

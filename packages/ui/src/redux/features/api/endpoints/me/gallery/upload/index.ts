@@ -10,9 +10,9 @@ export interface GalleryUploadPayload {
   id: string; // ID of the pexels image
 }
 
-export const { useGalleryUploadMutation } = apiSlice.injectEndpoints({
+export const { useUploadGalleryMutation } = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    galleryUpload: builder.mutation<
+    uploadGallery: builder.mutation<
       GalleryUploadResponse,
       GalleryUploadPayload
     >({

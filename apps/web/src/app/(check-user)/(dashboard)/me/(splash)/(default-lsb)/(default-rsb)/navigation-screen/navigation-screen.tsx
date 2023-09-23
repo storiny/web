@@ -103,7 +103,7 @@ const DashboardNavigationScreen = (): React.ReactElement => {
           ))
         )}
       </div>
-      <Spacer className={"f-grow"} orientation={"vertical"} size={5} />
+      <Spacer className={"f-grow"} orientation={"vertical"} size={12} />
     </React.Fragment>
   );
 };

@@ -88,77 +88,70 @@ const StatusHeader = ({
   const status = useAppSelector(selectUnreadNotificationsStatus);
 
   return (
-    <>
-      <div
-        className={clsx(
-          "full-bleed",
-          "flex-center",
-          styles.x,
-          styles["status-header"]
+    <div
+      className={clsx(
+        "full-bleed",
+        "flex-center",
+        styles.x,
+        styles["status-header"]
+      )}
+    >
+      <Typography level={"body2"}>
+        {status === "loading" ? (
+          <Skeleton height={14} width={64} />
+        ) : unreadCount === 0 && tab !== "all" ? (
+          "You do not have any unread notifications"
+        ) : (
+          <>
+            You have{" "}
+            <span className={"t-bold"}>{abbreviateNumber(unreadCount)}</span>{" "}
+            unread {unreadCount === 1 ? "notification" : "notifications"}
+          </>
         )}
-      >
-        <Typography level={"body2"}>
-          {status === "loading" ? (
-            <Skeleton height={14} width={64} />
-          ) : unreadCount === 0 && tab !== "all" ? (
-            "You do not have any unread notifications"
-          ) : (
-            <>
-              You have{" "}
-              <span className={"t-bold"}>{abbreviateNumber(unreadCount)}</span>{" "}
-              unread {unreadCount === 1 ? "notification" : "notifications"}
-            </>
-          )}
-        </Typography>
-        <Grow />
-        <div
-          className={clsx("flex-center", styles.x, styles["header-actions"])}
-        >
-          {isMobile ? (
-            <IconButton
-              aria-label={"Mark all as read"}
-              checkAuth
-              disabled={unreadCount === 0}
-              onClick={(): void => {
-                dispatch(markAllAsRead());
-              }}
-              size={"lg"}
-              title={"Mark all as read"}
-              variant={"ghost"}
-            >
-              <ChecksIcon />
-            </IconButton>
-          ) : (
-            <Button
-              autoSize
-              checkAuth
-              decorator={<ChecksIcon />}
-              disabled={unreadCount === 0}
-              onClick={(): void => {
-                dispatch(markAllAsRead());
-              }}
-              variant={"hollow"}
-            >
-              Mark all as read
-            </Button>
-          )}
+      </Typography>
+      <Grow />
+      <div className={clsx("flex-center", styles.x, styles["header-actions"])}>
+        {isMobile ? (
           <IconButton
-            aria-label={"Notification settings"}
-            as={NextLink}
-            autoSize
+            aria-label={"Mark all as read"}
             checkAuth
-            href={"/me/account/notifications"}
-            title={"Notification settings"}
+            disabled={unreadCount === 0}
+            onClick={(): void => {
+              dispatch(markAllAsRead());
+            }}
+            size={"lg"}
+            title={"Mark all as read"}
             variant={"ghost"}
           >
-            <SettingsIcon />
+            <ChecksIcon />
           </IconButton>
-        </div>
+        ) : (
+          <Button
+            autoSize
+            checkAuth
+            decorator={<ChecksIcon />}
+            disabled={unreadCount === 0}
+            onClick={(): void => {
+              dispatch(markAllAsRead());
+            }}
+            variant={"hollow"}
+          >
+            Mark all as read
+          </Button>
+        )}
+        <IconButton
+          aria-label={"Notification settings"}
+          as={NextLink}
+          autoSize
+          checkAuth
+          href={"/me/account/notifications"}
+          title={"Notification settings"}
+          variant={"ghost"}
+        >
+          <SettingsIcon />
+        </IconButton>
       </div>
-      <Divider
-        style={{ marginInline: "var(--grid-compensation)", marginTop: "-12px" }}
-      />
-    </>
+    </div>
   );
 };
 

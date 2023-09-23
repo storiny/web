@@ -67,7 +67,11 @@ export const setupStore = (
     },
     devTools: !["production", "test"].includes(process.env.NODE_ENV || ""),
     middleware: (getDefaultMiddleware) =>
-      getDefaultMiddleware().concat([
+      getDefaultMiddleware({
+        serializableCheck: {
+          ignoreActions: true
+        }
+      }).concat([
         apiSlice.middleware,
         listenerMiddleware.middleware,
         ...(doNotSync

@@ -314,6 +314,9 @@ const ReplyList = (props: {
           replyProps={{
             isStatic: true
           }}
+          skeletonProps={{
+            isStatic: true
+          }}
         />
       )}
     </React.Fragment>

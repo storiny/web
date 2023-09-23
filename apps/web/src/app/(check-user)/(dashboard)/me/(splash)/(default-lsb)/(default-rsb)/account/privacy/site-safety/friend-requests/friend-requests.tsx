@@ -29,14 +29,14 @@ const FriendRequests = ({
       "friend-requests": `${incoming_friend_requests}` as `${1 | 2 | 3 | 4}`
     }
   });
-  const [incomingFriendRequests, { isLoading }] =
+  const [mutateIncomingFriendRequests, { isLoading }] =
     useIncomingFriendRequestsMutation();
 
   const handleSubmit: SubmitHandler<FriendRequestsSchema> = (values) => {
     if (onSubmit) {
       onSubmit(values);
     } else {
-      incomingFriendRequests(values)
+      mutateIncomingFriendRequests(values)
         .unwrap()
         .then(() => (prevValuesRef.current = values))
         .catch((e) => {

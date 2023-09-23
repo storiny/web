@@ -13,9 +13,9 @@ export interface DraftDeletePayload {
   id: string;
 }
 
-export const { useDraftDeleteMutation } = apiSlice.injectEndpoints({
+export const { useDeleteDraftMutation } = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    draftDelete: builder.mutation<DraftDeleteResponse, DraftDeletePayload>({
+    deleteDraft: builder.mutation<DraftDeleteResponse, DraftDeletePayload>({
       query: (body) => ({
         url: `/${SEGMENT(body.id)}`,
         method: "DELETE"
