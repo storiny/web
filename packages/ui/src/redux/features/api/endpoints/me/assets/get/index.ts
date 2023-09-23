@@ -7,9 +7,9 @@ const ITEMS_PER_PAGE = 15;
 
 export type GetUserAssetsResponse = Asset[];
 
-export const { useGetUserAssetsQuery } = apiSlice.injectEndpoints({
+export const { useGetAssetsQuery } = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    getUserAssets: builder.query<
+    getAssets: builder.query<
       { hasMore: boolean; items: Asset[] },
       { page: number }
     >({

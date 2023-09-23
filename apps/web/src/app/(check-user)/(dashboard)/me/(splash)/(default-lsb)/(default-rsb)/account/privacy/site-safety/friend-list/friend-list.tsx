@@ -31,13 +31,13 @@ const FriendList = ({
       "friend-list": `${friend_list_visibility}` as `${1 | 2 | 3}`
     }
   });
-  const [friendList, { isLoading }] = useFriendListMutation();
+  const [mutateFriendList, { isLoading }] = useFriendListMutation();
 
   const handleSubmit: SubmitHandler<FriendListSchema> = (values) => {
     if (onSubmit) {
       onSubmit(values);
     } else {
-      friendList(values)
+      mutateFriendList(values)
         .unwrap()
         .then(() => (prevValuesRef.current = values))
         .catch((e) => {

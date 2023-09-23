@@ -33,13 +33,13 @@ const ResetForm = ({ onSubmit, token }: Props): React.ReactElement => {
       "logout-of-all-devices": false
     }
   });
-  const [reset, { isLoading }] = useResetPasswordMutation();
+  const [mutateResetPassword, { isLoading }] = useResetPasswordMutation();
 
   const handleSubmit: SubmitHandler<ResetSchema> = (values) => {
     if (onSubmit) {
       onSubmit(values);
     } else {
-      reset({ ...values, token })
+      mutateResetPassword({ ...values, token })
         .unwrap()
         .then(() => actions.switchSegment("reset_success"))
         .catch((e) =>

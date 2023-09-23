@@ -13,9 +13,9 @@ export interface StoryDeletePayload {
   id: string;
 }
 
-export const { useStoryDeleteMutation } = apiSlice.injectEndpoints({
+export const { useDeleteStoryMutation } = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    storyDelete: builder.mutation<StoryDeleteResponse, StoryDeletePayload>({
+    deleteStory: builder.mutation<StoryDeleteResponse, StoryDeletePayload>({
       query: (body) => ({
         url: `/${SEGMENT(body.id)}`,
         method: "DELETE"

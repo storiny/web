@@ -26,8 +26,8 @@ import ChevronIcon from "~/icons/Chevron";
 import QuestionMarkIcon from "~/icons/QuestionMark";
 import VersionHistoryIcon from "~/icons/VersionHistory";
 import {
-  useStoryPublishMutation,
-  useStoryRecoverMutation
+  usePublishStoryMutation,
+  useRecoverStoryMutation
 } from "~/redux/features";
 import { breakpoints } from "~/theme/breakpoints";
 import { abbreviateNumber } from "~/utils/abbreviateNumber";
@@ -99,7 +99,7 @@ const Publish = ({
   const [editor] = useLexicalComposerContext();
   const [tkCount, setTkCount] = React.useState<number>(0);
   const [docStatus, setDocStatus] = useAtom(docStatusAtom);
-  const [publishStory] = useStoryPublishMutation();
+  const [publishStory] = usePublishStoryMutation();
 
   /**
    * Publishes the story
@@ -175,7 +175,7 @@ const Recover = (): React.ReactElement => {
   const toast = useToast();
   const story = useAtomValue(storyMetadataAtom);
   const [loading, setLoading] = React.useState<boolean>(false);
-  const [recoverStory] = useStoryRecoverMutation();
+  const [recoverStory] = useRecoverStoryMutation();
 
   /**
    * Publishes the story

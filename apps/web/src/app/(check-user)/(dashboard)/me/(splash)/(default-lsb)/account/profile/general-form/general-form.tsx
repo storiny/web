@@ -69,13 +69,13 @@ const AccountGeneralForm = ({
       location: user.location
     }
   });
-  const [profileSettings, { isLoading }] = useProfileSettingsMutation();
+  const [mutateProfileSettings, { isLoading }] = useProfileSettingsMutation();
 
   const handleSubmit: SubmitHandler<AccountGeneralSchema> = (values) => {
     if (onSubmit) {
       onSubmit(values);
     } else {
-      profileSettings(values)
+      mutateProfileSettings(values)
         .unwrap()
         .then(() => {
           dispatch(mutateUser(values));

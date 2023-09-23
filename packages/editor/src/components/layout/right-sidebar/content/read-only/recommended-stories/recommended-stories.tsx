@@ -109,7 +109,7 @@ const RecommendedStories = (): React.ReactElement => {
           [...Array(5)].map((_, index) => (
             <RecommendedStorySkeleton key={index} />
           ))
-        ) : items.length === 0 ? (
+        ) : !isFetching && items.length === 0 ? (
           <RecommendedStoriesEmptyState />
         ) : (
           items

@@ -35,13 +35,13 @@ const LoginForm = ({ onSubmit }: Props): React.ReactElement => {
       "remember-me": false
     }
   });
-  const [login, { isLoading }] = useLoginMutation();
+  const [mutateLogin, { isLoading }] = useLoginMutation();
 
   const handleSubmit: SubmitHandler<LoginSchema> = (values) => {
     if (onSubmit) {
       onSubmit(values);
     } else {
-      login(values)
+      mutateLogin(values)
         .unwrap()
         .then((res) => {
           if (res.result === "success") {

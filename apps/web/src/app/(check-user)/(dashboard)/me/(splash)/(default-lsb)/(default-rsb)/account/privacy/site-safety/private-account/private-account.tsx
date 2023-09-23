@@ -33,7 +33,7 @@ const PrivateAccount = ({
     }
   });
   const value = form.watch("private-account");
-  const [privateAccount, { isLoading }] = usePrivateAccountMutation();
+  const [mutatePrivateAccount, { isLoading }] = usePrivateAccountMutation();
 
   const handleSubmit: SubmitHandler<PrivateAccountSchema> = (values) => {
     if (onSubmit) {
@@ -47,7 +47,7 @@ const PrivateAccount = ({
    * Handles confirmation
    */
   const handleConfirm = (): void => {
-    privateAccount({
+    mutatePrivateAccount({
       "private-account": value
     })
       .unwrap()

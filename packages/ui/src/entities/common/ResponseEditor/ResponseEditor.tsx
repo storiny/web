@@ -1,4 +1,4 @@
-import { commentProps, replyProps } from "@storiny/shared";
+import { COMMENT_PROPS, REPLY_PROPS } from "@storiny/shared";
 import React from "react";
 
 import MenuItem from "~/components/MenuItem";
@@ -12,8 +12,8 @@ import ReplyIcon from "~/icons/Reply";
 import {
   getCommentsApi,
   getRepliesApi,
-  useCommentEditMutation,
-  useReplyEditMutation
+  useEditCommentMutation,
+  useEditReplyMutation
 } from "~/redux/features";
 import { useAppDispatch } from "~/redux/hooks";
 import { breakpoints } from "~/theme/breakpoints";
@@ -28,8 +28,8 @@ const ResponseEditor = (props: ResponseEditorProps): React.ReactElement => {
   const dispatch = useAppDispatch();
   const isSmallerThanMobile = useMediaQuery(breakpoints.down("mobile"));
   const [editComment, { isLoading: isCommentLoading }] =
-    useCommentEditMutation();
-  const [editReply, { isLoading: isReplyLoading }] = useReplyEditMutation();
+    useEditCommentMutation();
+  const [editReply, { isLoading: isReplyLoading }] = useEditReplyMutation();
   const isLoading = isCommentLoading || isReplyLoading;
 
   /**
@@ -80,11 +80,11 @@ const ResponseEditor = (props: ResponseEditorProps): React.ReactElement => {
       disabled={isLoading}
       hidePostButton
       maxLength={
-        (responseType === "comment" ? commentProps : replyProps).content
+        (responseType === "comment" ? COMMENT_PROPS : REPLY_PROPS).content
           .maxLength
       }
       minLength={
-        (responseType === "comment" ? commentProps : replyProps).content
+        (responseType === "comment" ? COMMENT_PROPS : REPLY_PROPS).content
           .minLength
       }
       ref={textareaRef}

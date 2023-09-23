@@ -3,26 +3,44 @@ import { useAtomValue, useSetAtom } from "jotai";
 import React from "react";
 import { useIntersectionObserver } from "react-intersection-observer-hook";
 
-import Avatar from "~/components/Avatar";
+import { CommentListSkeleton, VirtualizedCommentList } from "~/common/comment";
 import Divider from "~/components/Divider";
 import Option from "~/components/Option";
 import Select from "~/components/Select";
+import Spacer from "~/components/Spacer";
 import Typography from "~/components/Typography";
-import ResponseTextarea from "~/entities/ResponseTextarea";
-import { selectUser } from "~/redux/features";
+import ErrorState from "~/entities/ErrorState";
+import { getQueryErrorType, useGetStoryCommentsQuery } from "~/redux/features";
 import { useAppSelector } from "~/redux/hooks";
 import { abbreviateNumber } from "~/utils/abbreviateNumber";
 
 import { isAuxiliaryContentVisibleAtom, storyMetadataAtom } from "../../atoms";
 import styles from "./auxiliary-content.module.scss";
+import EditorAuxiliaryContentEmptyState from "./empty-state";
+import PostComment from "./post-comment";
+
+type StoryCommentsSortValue = "likes-dsc" | "recent";
 
 // Content
 
 const Content = (): React.ReactElement => {
   const story = useAtomValue(storyMetadataAtom);
-  const user = useAppSelector(selectUser);
   const commentCount =
     useAppSelector((state) => state.entities.storyCommentCounts[story.id]) || 0;
+  const [page, setPage] = React.useState<number>(1);
+  const [sort, setSort] = React.useState<StoryCommentsSortValue>("likes-dsc");
+  const { data, isLoading, isFetching, isError, error, refetch } =
+    useGetStoryCommentsQuery({
+      storyId: story.id,
+      page,
+      sort,
+      type: "all"
+    });
+  const { items = [], hasMore } = data || {};
+  const loadMore = React.useCallback(
+    () => setPage((prevState) => prevState + 1),
+    []
+  );
 
   return (
     <React.Fragment>
@@ -36,6 +54,9 @@ const Content = (): React.ReactElement => {
         </Typography>
         <Divider orientation={"vertical"} />
         <Select
+          onValueChange={(nextValue): void =>
+            setSort(nextValue as StoryCommentsSortValue)
+          }
           slotProps={{
             trigger: {
               "aria-label": "Sort comments",
@@ -49,27 +70,45 @@ const Content = (): React.ReactElement => {
               placeholder: "Sort"
             }
           }}
+          value={sort}
         >
-          <Option value={"relevant"}>Relevant</Option>
+          <Option value={"likes-dsc"}>Relevant</Option>
           <Option value={"recent"}>Recent</Option>
         </Select>
       </header>
-      <div className={clsx("flex", styles["response-area"])}>
-        <Avatar
-          alt={""}
-          avatarId={user?.avatar_id}
-          hex={user?.avatar_hex}
-          label={user?.name}
-        />
-        <ResponseTextarea
-          placeholder={"Leave a comment"}
-          slotProps={{
-            container: {
-              className: "f-grow"
-            }
+      <Spacer
+        className={styles["header-spacer"]}
+        orientation={"vertical"}
+        size={4.75}
+      />
+      <PostComment
+        // Show the newly added comment
+        onPost={(): void => setSort("recent")}
+      />
+      <Divider className={clsx(styles.x, styles["full-width-divider"])} />
+      {isLoading ? <CommentListSkeleton /> : null}
+      {isError ? (
+        <ErrorState
+          autoSize
+          componentProps={{
+            button: { loading: isFetching }
           }}
+          retry={refetch}
+          type={getQueryErrorType(error)}
         />
-      </div>
+      ) : !isFetching && !items.length ? (
+        <EditorAuxiliaryContentEmptyState />
+      ) : (
+        <VirtualizedCommentList
+          comments={items}
+          hasMore={Boolean(hasMore)}
+          loadMore={loadMore}
+          // Disable Virtualization as when the boundary elements exit the viewport, their reply
+          // list will collapse, causing a jump in the layout.
+          overscan={Infinity}
+          scrollSeekConfiguration={undefined}
+        />
+      )}
     </React.Fragment>
   );
 };
@@ -88,7 +127,6 @@ const EditorAuxiliaryContent = (): React.ReactElement => {
 
   return (
     <React.Fragment>
-      <Divider className={styles["content-divider"]} />
       <section
         className={clsx("flex-col", styles["auxiliary-content"])}
         ref={ref}

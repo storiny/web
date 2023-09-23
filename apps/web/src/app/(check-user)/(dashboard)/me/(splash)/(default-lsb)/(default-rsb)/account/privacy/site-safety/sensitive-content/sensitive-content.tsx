@@ -27,13 +27,13 @@ const SensitiveContent = ({
       "sensitive-content": allow_sensitive_media
     }
   });
-  const [sensitiveContent, { isLoading }] = useSensitiveContentMutation();
+  const [mutateSensitiveContent, { isLoading }] = useSensitiveContentMutation();
 
   const handleSubmit: SubmitHandler<SensitiveContentSchema> = (values) => {
     if (onSubmit) {
       onSubmit(values);
     } else {
-      sensitiveContent(values)
+      mutateSensitiveContent(values)
         .unwrap()
         .then(() => (prevValuesRef.current = values))
         .catch((e) => {

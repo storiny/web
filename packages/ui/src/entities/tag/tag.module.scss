@@ -1,0 +1,63 @@
+@use "../../theme/breakpoints" as breakpoints;
+
+/* Base styles */
+.tag {
+  padding-block: 8px;
+  gap: 12px;
+
+  &.virtual {
+    padding-block: 26px;
+
+    @include breakpoints.media("<=mobile") {
+      padding-block: 16px;
+    }
+  }
+}
+
+/* Main */
+.main {
+  gap: 24px;
+}
+
+/* Meta */
+.meta {
+  --icon-size: 14px;
+
+  gap: 8px;
+  max-width: 64%; // Ellipsis width limit
+
+  @include breakpoints.media("<=mobile") {
+    --icon-size: 18px;
+  }
+}
+
+/* Avatar */
+.avatar {
+  --size: 30px;
+
+  @include breakpoints.media("<=mobile") {
+    --size: 36px;
+  }
+}
+
+/* Tag name */
+.tag-name {
+  font-size: 18px;
+  font-weight: var(--font-weight-bold);
+}
+
+/* Stats */
+.stats {
+  gap: 8px;
+}
+
+/* Stat */
+.stat {
+  gap: 6px;
+}
+
+/* Stat icon */
+.stat-icon {
+  --icon-size: 14px;
+  --icon-stroke: var(--fg-minor);
+}

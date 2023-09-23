@@ -49,7 +49,8 @@ const RecoveryCodesModal = (): React.ReactElement => {
   const [error, setError] = React.useState<string>(
     "Could not get recovery codes."
   );
-  const [recoveryCodes, { isLoading, isError }] = useRecoveryCodesMutation();
+  const [mutateRecoveryCodes, { isLoading, isError }] =
+    useRecoveryCodesMutation();
   const [generateCodes, { isLoading: isRegenerating }] =
     useGenerateCodesMutation();
 
@@ -77,7 +78,7 @@ const RecoveryCodesModal = (): React.ReactElement => {
   };
 
   React.useEffect(() => {
-    recoveryCodes()
+    mutateRecoveryCodes()
       .unwrap()
       .then(setCodes)
       .catch((e) => {

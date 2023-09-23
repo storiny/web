@@ -1,0 +1,49 @@
+"use client";
+
+import { clsx } from "clsx";
+import React from "react";
+import { Virtuoso } from "react-virtuoso";
+
+import VirtualFooter from "../../virtual/footer";
+import {
+  VirtualizedStoryItem,
+  VirtualizedStoryScrollSeekPlaceholder
+} from "..";
+import { VirtualizedStoryListProps } from "./list.props";
+import { VirtualizedStoryListContext } from "./list-context";
+
+const VirtualizedStoryList = React.memo(
+  ({
+    stories,
+    hasMore,
+    loadMore,
+    storyProps = {},
+    skeletonProps = {},
+    className,
+    ...rest
+  }: VirtualizedStoryListProps) => (
+    <VirtualizedStoryListContext.Provider value={{ storyProps, skeletonProps }}>
+      <Virtuoso
+        increaseViewportBy={750}
+        scrollSeekConfiguration={{
+          enter: (velocity): boolean => Math.abs(velocity) > 950,
+          exit: (velocity): boolean => Math.abs(velocity) < 10
+        }}
+        useWindowScroll
+        {...rest}
+        className={clsx("full-w", "full-h", className)}
+        components={{
+          Item: VirtualizedStoryItem,
+          ScrollSeekPlaceholder: VirtualizedStoryScrollSeekPlaceholder,
+          ...(hasMore && { Footer: VirtualFooter })
+        }}
+        data={stories}
+        endReached={hasMore ? loadMore : (): void => undefined}
+      />
+    </VirtualizedStoryListContext.Provider>
+  )
+);
+
+VirtualizedStoryList.displayName = "VirtualizedStoryList";
+
+export default VirtualizedStoryList;

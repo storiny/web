@@ -8,7 +8,7 @@ import StoryCardSkeleton from "./Skeleton";
 import StoryCard from "./StoryCard";
 
 const meta: Meta<typeof StoryCard> = {
-  title: "Entities/StoryCard",
+  title: "entities/StoryCard",
   args: {
     story: mockStories[8],
     style: {

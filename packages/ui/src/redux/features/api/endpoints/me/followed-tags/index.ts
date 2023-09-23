@@ -6,7 +6,7 @@ import { apiSlice } from "~/redux/features/api/slice";
 const SEGMENT = "me/followed-tags";
 const ITEMS_PER_PAGE = 10;
 
-export type GetTagsResponse = Tag[];
+export type GetFollowedTagsResponse = Tag[];
 
 export const { useGetFollowedTagsQuery } = apiSlice.injectEndpoints({
   endpoints: (builder) => ({

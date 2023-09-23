@@ -8,7 +8,7 @@ import Spacer from "~/components/Spacer";
 import { useToast } from "~/components/Toast";
 import Typography from "~/components/Typography";
 import { selectedAtom } from "~/entities/gallery/core/atoms";
-import { useAssetUploadMutation } from "~/redux/features";
+import { useUploadAssetMutation } from "~/redux/features";
 import { getCdnUrl } from "~/utils/getCdnUrl";
 
 import UploadProgress from "../../upload-progress";
@@ -21,7 +21,7 @@ const WhiteboardUploader = (
   const { file, alt, onReset } = props;
   const setSelected = useSetAtom(selectedAtom);
   const toast = useToast();
-  const [uploadImage, result] = useAssetUploadMutation();
+  const [uploadImage, result] = useUploadAssetMutation();
 
   /**
    * Handles the uploading of the image

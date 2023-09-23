@@ -15,4 +15,3 @@ export * from "./relations";
 export * from "./replies";
 export * from "./settings";
 export * from "./stories";
-export * from "./validation";

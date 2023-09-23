@@ -27,9 +27,9 @@ import StarIcon from "~/icons/Star";
 import TrashIcon from "~/icons/Trash";
 import {
   useAssetAltMutation,
-  useAssetDeleteMutation,
-  useAssetFavouriteMutation,
-  useAssetRatingMutation
+  useAssetRatingMutation,
+  useDeleteAssetMutation,
+  useFavouriteAssetMutation
 } from "~/redux/features";
 import { getCdnUrl } from "~/utils/getCdnUrl";
 
@@ -87,10 +87,10 @@ const LibraryMasonryItem = React.memo(
     const [altText, setAltText] = React.useState<string>(data.alt);
     const [rating, setRating] = React.useState<AssetRating>(data.rating);
     const [deleted, setDeleted] = React.useState<boolean>(false);
-    const [favourite] = useAssetFavouriteMutation();
-    const [alt] = useAssetAltMutation();
-    const [dispatchRating] = useAssetRatingMutation();
-    const [dispatchDelete] = useAssetDeleteMutation();
+    const [mutateFavouriteAsset] = useFavouriteAssetMutation();
+    const [mutateAssetAlt] = useAssetAltMutation();
+    const [mutateAssetRating] = useAssetRatingMutation();
+    const [deleteAsset] = useDeleteAssetMutation();
     const isSelected = selected?.key === data.key;
 
     /**
@@ -123,27 +123,27 @@ const LibraryMasonryItem = React.memo(
      * Handles rating
      */
     const handleRating = React.useCallback(() => {
-      dispatchRating({ rating, id: data.id });
-    }, [data.id, dispatchRating, rating]);
+      mutateAssetRating({ rating, id: data.id });
+    }, [data.id, mutateAssetRating, rating]);
 
     /**
      * Handles item deletion
      */
     const handleDelete = React.useCallback(() => {
-      dispatchDelete({ id: data.id });
+      deleteAsset({ id: data.id });
       setDeleted(true);
 
       // Reset selection
       if (isSelected) {
         setSelected(null);
       }
-    }, [data.id, dispatchDelete, isSelected, setSelected]);
+    }, [data.id, deleteAsset, isSelected, setSelected]);
 
     /**
      * Marks the item as favourite
      */
     const handleFavourite = (): void => {
-      favourite({ id: data.id, value: !isFavourite });
+      mutateFavouriteAsset({ id: data.id, value: !isFavourite });
       setIsFavourite((prevState) => !prevState);
     };
 
@@ -151,7 +151,7 @@ const LibraryMasonryItem = React.memo(
      * Handles the alt text
      */
     const handleAlt = (): void => {
-      alt({ id: data.id, alt: altText });
+      mutateAssetAlt({ id: data.id, alt: altText });
       setEditingMode(false);
     };
 

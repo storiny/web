@@ -19,8 +19,14 @@ const ResponseTextarea = React.forwardRef<
   HTMLTextAreaElement,
   ResponseTextareaProps
 >((props, ref) => {
-  const { hidePostButton, postButtonProps, className, disabled, ...rest } =
-    props;
+  const {
+    size,
+    hidePostButton,
+    postButtonProps,
+    className,
+    disabled,
+    ...rest
+  } = props;
   const textareaRef = React.useRef<HTMLTextAreaElement>(null);
   const triggerResize = useTextareaAutosize(textareaRef, 280);
 
@@ -51,13 +57,27 @@ const ResponseTextarea = React.forwardRef<
       className={clsx(styles.textarea, className)}
       disabled={disabled}
       endDecorator={
-        <div className={clsx("full-w", "flex-center", styles.actions)}>
+        <div
+          className={clsx(
+            "full-w",
+            "flex-center",
+            styles.actions,
+            disabled && styles.disabled
+          )}
+          onClick={(): void => {
+            if (!disabled) {
+              textareaRef.current?.focus?.();
+            }
+          }}
+        >
           {hidePostButton && <Grow />}
           <EmojiPicker onEmojiSelect={insertEmoji}>
             <IconButton
               aria-label={"Insert an emoji"}
               autoSize
               disabled={disabled}
+              onClick={(event): void => event.stopPropagation()}
+              size={size}
               title={"Insert an emoji"}
               variant={"ghost"}
             >
@@ -68,7 +88,11 @@ const ResponseTextarea = React.forwardRef<
             aria-label={"Mention someone"}
             autoSize
             disabled={disabled}
-            onClick={insertMention}
+            onClick={(event): void => {
+              event.stopPropagation();
+              insertMention();
+            }}
+            size={size}
             title={"Mention someone"}
             variant={"ghost"}
           >
@@ -83,6 +107,11 @@ const ResponseTextarea = React.forwardRef<
                 autoSize
                 checkAuth
                 disabled={disabled}
+                onClick={(event): void => {
+                  event.stopPropagation();
+                  postButtonProps?.onClick?.(event);
+                }}
+                size={size}
                 title={"Post response"}
               >
                 <SendIcon />
@@ -96,6 +125,7 @@ const ResponseTextarea = React.forwardRef<
         rest?.onChange?.(event);
       }}
       ref={textareaRef}
+      size={size}
     />
   );
 });

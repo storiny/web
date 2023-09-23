@@ -10,9 +10,9 @@ export interface AssetUploadPayload {
   file: File;
 }
 
-export const { useAssetUploadMutation } = apiSlice.injectEndpoints({
+export const { useUploadAssetMutation } = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    assetUpload: builder.mutation<AssetUploadResponse, AssetUploadPayload>({
+    uploadAsset: builder.mutation<AssetUploadResponse, AssetUploadPayload>({
       query: ({ alt, file }) => {
         const body = new FormData();
         body.append("Content-Type", file.type);

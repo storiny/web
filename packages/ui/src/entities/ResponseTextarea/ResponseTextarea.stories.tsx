@@ -5,7 +5,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import ResponseTextarea from "./ResponseTextarea";
 
 const meta: Meta<typeof ResponseTextarea> = {
-  title: "Entities/ResponseTextarea",
+  title: "entities/ResponseTextarea",
   component: ResponseTextarea,
   tags: ["autodocs"]
 };

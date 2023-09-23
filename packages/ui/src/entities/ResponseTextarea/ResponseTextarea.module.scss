@@ -1,6 +1,10 @@
 /* Actions */
 .actions {
   padding: 8px;
+
+  &:not(.disabled) {
+    cursor: text;
+  }
 }
 
 /* Textarea */

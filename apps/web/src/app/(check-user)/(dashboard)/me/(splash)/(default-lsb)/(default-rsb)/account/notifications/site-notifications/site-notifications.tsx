@@ -40,14 +40,14 @@ const SiteNotifications = ({
       stories
     }
   });
-  const [siteNotificationSettings, { isLoading }] =
+  const [mutateSiteNotificationSettings, { isLoading }] =
     useSiteNotificationSettingsMutation();
 
   const handleSubmit: SubmitHandler<SiteNotificationsSchema> = (values) => {
     if (onSubmit) {
       onSubmit(values);
     } else {
-      siteNotificationSettings(values)
+      mutateSiteNotificationSettings(values)
         .unwrap()
         .then(() => (prevValuesRef.current = values))
         .catch((e) => {

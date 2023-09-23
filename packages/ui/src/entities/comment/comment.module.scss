@@ -1,0 +1,61 @@
+@use "breakpoints" as breakpoints;
+
+/* Base styles */
+.comment {
+  padding-block: 12px;
+  gap: 16px;
+
+  &.virtual {
+    padding-block: 24px;
+
+    @include breakpoints.media("<=tablet") {
+      padding-block: 30px;
+    }
+
+    @include breakpoints.media("<=mobile") {
+      padding-block: 20px;
+    }
+  }
+}
+
+/* Header */
+.header {
+  justify-content: space-between;
+  gap: 24px;
+}
+
+/* Content */
+.content {
+  font-size: 15px;
+  line-height: 20px;
+}
+
+/* Stat */
+.stat {
+  --icon-size: 14px;
+  --icon-stroke: var(--fg-minor);
+
+  gap: 6px;
+}
+
+/* Hidden */
+.hidden {
+  border: 1px solid var(--divider);
+  border-radius: var(--radius-md);
+  background-color: var(--bg-elevation-sm);
+  padding: 8px 12px;
+}
+
+/* Story persona */
+.story-persona {
+  gap: 10px;
+}
+
+/* Story splash */
+.story-splash {
+  width: 64px;
+  min-width: 64px;
+  border: 1px solid var(--divider);
+  border-radius: var(--radius-xs);
+  overflow: hidden;
+}

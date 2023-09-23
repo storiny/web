@@ -14,9 +14,9 @@ export interface StoryPublishPayload {
   status: "draft" | "published";
 }
 
-export const { useStoryPublishMutation } = apiSlice.injectEndpoints({
+export const { usePublishStoryMutation } = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    storyPublish: builder.mutation<StoryPublishResponse, StoryPublishPayload>({
+    publishStory: builder.mutation<StoryPublishResponse, StoryPublishPayload>({
       query: (body) => ({
         url: `/${SEGMENT(body.id)}`,
         method: body.status === "draft" ? "POST" : "PUT"

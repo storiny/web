@@ -34,14 +34,14 @@ const MailNotifications = ({
       newsletters: mail_newsletters
     }
   });
-  const [mailNotificationSettings, { isLoading }] =
+  const [mutateMailNotificationSettings, { isLoading }] =
     useMailNotificationSettingsMutation();
 
   const handleSubmit: SubmitHandler<MailNotificationsSchema> = (values) => {
     if (onSubmit) {
       onSubmit(values);
     } else {
-      mailNotificationSettings(values)
+      mutateMailNotificationSettings(values)
         .unwrap()
         .then(() => (prevValuesRef.current = values))
         .catch((e) => {

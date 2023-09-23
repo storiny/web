@@ -23,7 +23,7 @@ const EditorToc = ({
   const [loading, setLoading] = React.useState<boolean>(false);
   const docStatus = useAtomValue(docStatusAtom);
   const publishing = docStatus === "publishing";
-  const [storyMetadata] = useStoryMetadataMutation();
+  const [mutateStoryMetadata] = useStoryMetadataMutation();
   const onChange = React.useCallback(
     (nextValue: boolean): void => {
       if (loading) {
@@ -31,12 +31,12 @@ const EditorToc = ({
       }
 
       setLoading(true);
-      storyMetadata({ id: story.id, "disable-toc": nextValue })
+      mutateStoryMetadata({ id: story.id, "disable-toc": nextValue })
         .unwrap()
         .catch(() => undefined)
         .finally(() => setLoading(false));
     },
-    [loading, story.id, storyMetadata]
+    [loading, story.id, mutateStoryMetadata]
   );
 
   return (

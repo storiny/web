@@ -13,9 +13,9 @@ export interface StoryRecoverPayload {
   id: string;
 }
 
-export const { useStoryRecoverMutation } = apiSlice.injectEndpoints({
+export const { useRecoverStoryMutation } = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    storyRecover: builder.mutation<StoryRecoverResponse, StoryRecoverPayload>({
+    recoverStory: builder.mutation<StoryRecoverResponse, StoryRecoverPayload>({
       query: (body) => ({
         url: `/${SEGMENT(body.id)}`,
         method: "POST"

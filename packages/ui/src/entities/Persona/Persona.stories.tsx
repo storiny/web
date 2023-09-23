@@ -5,7 +5,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import Persona from "./Persona";
 
 const meta: Meta<typeof Persona> = {
-  title: "Entities/Persona",
+  title: "entities/Persona",
   component: Persona,
   args: { size: "md" },
   tags: ["autodocs"]

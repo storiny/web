@@ -10,7 +10,7 @@ import Spacer from "~/components/Spacer";
 import { useToast } from "~/components/Toast";
 import Typography from "~/components/Typography";
 import CameraIllustration from "~/illustrations/Camera";
-import { useAssetUploadMutation } from "~/redux/features";
+import { useUploadAssetMutation } from "~/redux/features";
 import { getCdnUrl } from "~/utils/getCdnUrl";
 
 import { selectedAtom, uploadingAtom } from "../../atoms";
@@ -29,7 +29,7 @@ const UploadsTab = (props: UploadsProps): React.ReactElement => {
   const setUploading = useSetAtom(uploadingAtom);
   const [file, setFile] = React.useState<FileWithPreview | null>(null);
   const [alt, setAlt] = React.useState<string>("");
-  const [uploadImage, result] = useAssetUploadMutation();
+  const [uploadImage, result] = useUploadAssetMutation();
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     maxFiles: 1,
     maxSize: TEN_MB_IN_BYTES,

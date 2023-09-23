@@ -1,0 +1,18 @@
+.response-area {
+  padding-block: 24px;
+  gap: 12px;
+
+  &.logged-out {
+    align-items: center;
+    justify-content: center;
+    padding-block: 36px;
+  }
+}
+
+.x {
+  &.response-textarea {
+    &:not([data-focused="true"]) {
+      border-color: transparent;
+    }
+  }
+}

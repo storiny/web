@@ -1,43 +1,46 @@
 @use "breakpoints" as breakpoints;
 
-/* Top divider */
-.content-divider {
+.header {
   width: auto;
+  min-height: 38px;
   margin-inline: var(--grid-compensation);
+  border-block: 1px solid var(--divider);
 
   @include breakpoints.media("<desktop") {
+    position: absolute;
     width: 100vw;
     margin-inline: 0;
+    left: 0;
   }
 }
 
-/* Content header */
-.header {
-  border-bottom: 1px solid var(--divider);
+.header-spacer {
+  @include breakpoints.media(">=desktop") {
+    display: none;
+  }
 }
 
-/* Base styles */
 .auxiliary-content {
-  margin-top: -12px; // Tackle the gap on `main`
   padding-bottom: 15vh;
 }
 
-/* Response area */
-.response-area {
-  padding-block: 16px;
-  gap: 12px;
-}
-
 .x {
-  /* Header label */
   &.header-label {
-    margin-right: 20px;
+    margin-inline: 20px;
+
+    @include breakpoints.media("<desktop") {
+      margin-inline: 16px;
+    }
   }
 
-  /* Select trigger */
   &.select-trigger {
     border-radius: 0;
     border: none;
-    margin-right: var(--grid-compensation);
+    align-self: stretch;
+  }
+
+  &.full-width-divider {
+    width: auto;
+    margin-inline: var(--grid-compensation);
   }
 }

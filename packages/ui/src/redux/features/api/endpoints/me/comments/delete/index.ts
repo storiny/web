@@ -13,9 +13,9 @@ export interface CommentDeletePayload {
   storyId: string;
 }
 
-export const { useCommentDeleteMutation } = apiSlice.injectEndpoints({
+export const { useDeleteCommentMutation } = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    commentDelete: builder.mutation<
+    deleteComment: builder.mutation<
       CommentDeleteResponse,
       CommentDeletePayload
     >({

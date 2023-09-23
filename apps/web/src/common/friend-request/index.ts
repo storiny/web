@@ -1,4 +1,4 @@
-export { default as VirtualizedFriendRequestList } from "./List";
-export { default as VirtualizedFriendRequestItem } from "./ListItem";
-export { default as FriendRequestListSkeleton } from "./ListSkeleton";
-export { default as VirtualizedFriendRequestScrollSeekPlaceholder } from "./ScrollSeekPlaceholder";
+export { default as VirtualizedFriendRequestList } from "./list";
+export { default as VirtualizedFriendRequestItem } from "./list-item";
+export { default as FriendRequestListSkeleton } from "./list-skeleton";
+export { default as VirtualizedFriendRequestScrollSeekPlaceholder } from "./scroll-seek-placeholder";

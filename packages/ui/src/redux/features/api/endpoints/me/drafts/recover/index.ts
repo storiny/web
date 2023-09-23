@@ -13,9 +13,9 @@ export interface DraftRecoverPayload {
   id: string;
 }
 
-export const { useDraftRecoverMutation } = apiSlice.injectEndpoints({
+export const { useRecoverDraftMutation } = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    draftRecover: builder.mutation<DraftRecoverResponse, DraftRecoverPayload>({
+    recoverDraft: builder.mutation<DraftRecoverResponse, DraftRecoverPayload>({
       query: (body) => ({
         url: `/${SEGMENT(body.id)}`,
         method: "POST"

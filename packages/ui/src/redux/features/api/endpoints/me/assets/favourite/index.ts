@@ -8,9 +8,9 @@ export interface AssetFavouritePayload {
   value: boolean;
 }
 
-export const { useAssetFavouriteMutation } = apiSlice.injectEndpoints({
+export const { useFavouriteAssetMutation } = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    assetFavourite: builder.mutation<
+    favouriteAsset: builder.mutation<
       AssetFavouriteResponse,
       AssetFavouritePayload
     >({
