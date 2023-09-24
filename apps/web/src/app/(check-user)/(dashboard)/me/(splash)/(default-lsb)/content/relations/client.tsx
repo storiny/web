@@ -247,15 +247,19 @@ const ContentRelationsClient = (props: RelationsProps): React.ReactElement => {
     setValue(newValue);
   }, []);
 
-  const handleSortChange = React.useCallback(
-    (newSort: RelationsSortValue) => setSort(newSort),
-    []
-  );
+  const handleSortChange = React.useCallback((newSort: RelationsSortValue) => {
+    setPage(1);
+    setSort(newSort);
+  }, []);
 
-  const handleQueryChange = React.useCallback(
-    (newQuery: string) => setQuery(newQuery),
-    []
-  );
+  const handleQueryChange = React.useCallback((newQuery: string) => {
+    setPage(1);
+    setQuery(newQuery);
+  }, []);
+
+  React.useEffect(() => {
+    setSort(1);
+  }, [value]);
 
   return (
     <React.Fragment>
@@ -271,8 +275,9 @@ const ContentRelationsClient = (props: RelationsProps): React.ReactElement => {
           sort={sort}
           tab={value}
         />
-        {isLoading || isTyping ? <UserListSkeleton /> : null}
-        {isError ? (
+        {isLoading || isTyping || (isFetching && page === 1) ? (
+          <UserListSkeleton />
+        ) : isError ? (
           <ErrorState
             autoSize
             componentProps={{

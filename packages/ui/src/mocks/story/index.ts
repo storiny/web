@@ -1,9 +1,9 @@
-import { StoryCategory } from "@storiny/shared";
 import {
   StoryAgeRestriction,
+  StoryCategory,
   StoryLicense,
   StoryVisibility
-} from "@storiny/shared/src/constants/story";
+} from "@storiny/shared";
 import { Story } from "@storiny/types";
 
 import { mockTags } from "../tag";
@@ -23,6 +23,7 @@ export const testStory: Story = {
   disable_toc: false,
   edited_at: null,
   id: "0",
+  doc_key: "",
   license: StoryLicense.RESERVED,
   preview_image: null,
   published_at: "2022-05-18T01:07:02.000Z",
@@ -58,6 +59,7 @@ export const mockStories: Story[] = [
     disable_toc: false,
     edited_at: null,
     id: "1632665205526338688",
+    doc_key: "",
     license: StoryLicense.RESERVED,
     preview_image: null,
     published_at: "2022-05-18T01:07:02.000Z",
@@ -91,6 +93,7 @@ export const mockStories: Story[] = [
     disable_toc: false,
     edited_at: "2023-04-18T01:07:02.000Z",
     id: "1638877680534708278",
+    doc_key: "",
     license: StoryLicense.RESERVED,
     preview_image: null,
     published_at: "2021-04-18T01:07:02.000Z",
@@ -125,6 +128,7 @@ export const mockStories: Story[] = [
     disable_toc: false,
     edited_at: null,
     id: "1637300061766836924",
+    doc_key: "",
     license: StoryLicense.RESERVED,
     preview_image: null,
     published_at: "2021-02-18T01:07:02.000Z",
@@ -157,6 +161,7 @@ export const mockStories: Story[] = [
     disable_toc: false,
     edited_at: null,
     id: "1662662558539886592",
+    doc_key: "",
     license: StoryLicense.RESERVED,
     preview_image: null,
     published_at: "2022-03-24T01:07:02.000Z",
@@ -190,6 +195,7 @@ export const mockStories: Story[] = [
     disable_toc: false,
     edited_at: null,
     id: "1662482155938364800",
+    doc_key: "",
     license: StoryLicense.RESERVED,
     preview_image: null,
     published_at: "2022-01-24T01:07:02.000Z",
@@ -223,6 +229,7 @@ export const mockStories: Story[] = [
     disable_toc: false,
     edited_at: "2023-04-03T01:07:02.000Z",
     id: "1662654838398690172",
+    doc_key: "",
     license: StoryLicense.CC_BY_NC_ND,
     preview_image: null,
     published_at: "2023-02-03T01:07:02.000Z",
@@ -256,6 +263,7 @@ export const mockStories: Story[] = [
     disable_toc: false,
     edited_at: "2023-11-23T01:07:02.000Z",
     id: "1222640969630781442",
+    doc_key: "",
     license: StoryLicense.RESERVED,
     preview_image: null,
     published_at: "2022-11-23T01:07:02.000Z",
@@ -289,6 +297,7 @@ export const mockStories: Story[] = [
     disable_toc: false,
     edited_at: null,
     id: "1662643586867775488",
+    doc_key: "",
     license: StoryLicense.RESERVED,
     preview_image: null,
     published_at: "2021-09-04T01:07:02.000Z",
@@ -322,6 +331,7 @@ export const mockStories: Story[] = [
     disable_toc: false,
     edited_at: null,
     id: "1663597389759266819",
+    doc_key: "",
     license: StoryLicense.RESERVED,
     preview_image: null,
     published_at: "2022-07-13T01:07:02.000Z",
@@ -356,6 +366,7 @@ export const mockStories: Story[] = [
     disable_toc: false,
     edited_at: "2021-11-08T01:07:02.000Z",
     id: "1662662933439431056",
+    doc_key: "",
     license: StoryLicense.RESERVED,
     preview_image: null,
     published_at: "2021-08-08T01:07:02.000Z",

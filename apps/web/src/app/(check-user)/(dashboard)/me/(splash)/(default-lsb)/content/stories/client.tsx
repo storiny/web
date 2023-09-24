@@ -278,15 +278,19 @@ const ContentStoriesClient = (props: StoriesProps): React.ReactElement => {
     setValue(newValue);
   }, []);
 
-  const handleSortChange = React.useCallback(
-    (newSort: StoriesSortValue) => setSort(newSort),
-    []
-  );
+  const handleSortChange = React.useCallback((newSort: StoriesSortValue) => {
+    setPage(1);
+    setSort(newSort);
+  }, []);
 
-  const handleQueryChange = React.useCallback(
-    (newQuery: string) => setQuery(newQuery),
-    []
-  );
+  const handleQueryChange = React.useCallback((newQuery: string) => {
+    setPage(1);
+    setQuery(newQuery);
+  }, []);
+
+  React.useEffect(() => {
+    setPage(1);
+  }, [value]);
 
   return (
     <React.Fragment>
@@ -310,8 +314,9 @@ const ContentStoriesClient = (props: StoriesProps): React.ReactElement => {
             tab={value}
           />
         )}
-        {isLoading || isTyping ? <StoryListSkeleton isSmall /> : null}
-        {isError ? (
+        {isLoading || isTyping || (isFetching && page === 1) ? (
+          <StoryListSkeleton isSmall />
+        ) : isError ? (
           <ErrorState
             autoSize
             componentProps={{

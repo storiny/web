@@ -15,7 +15,11 @@
       padding: 32px 28px;
 
       @include breakpoints.media("<=tablet") {
-        padding: 0;
+        padding-inline: 0;
+      }
+
+      @include breakpoints.media("<=mobile") {
+        padding-block: 18px;
       }
     }
 

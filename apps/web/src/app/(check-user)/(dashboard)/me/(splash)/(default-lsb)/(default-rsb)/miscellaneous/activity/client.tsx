@@ -53,8 +53,9 @@ const MiscellaneousActivityClient = (): React.ReactElement => {
     <React.Fragment>
       <DashboardTitle>Account activity</DashboardTitle>
       <StatusHeader />
-      {isLoading ? <AccountActivityListSkeleton /> : null}
-      {isError ? (
+      {isLoading || (isFetching && page === 1) ? (
+        <AccountActivityListSkeleton />
+      ) : isError ? (
         <ErrorState
           autoSize
           componentProps={{

@@ -217,7 +217,7 @@ const GalleryImpl = (props: GalleryProps): React.ReactElement => {
           }
         },
         body: {
-          className: styles.body
+          className: clsx("flex-col", styles.body)
         },
         closeButton: {
           style: { display: fullscreen ? "none" : "flex" }
@@ -252,10 +252,23 @@ const GalleryImpl = (props: GalleryProps): React.ReactElement => {
         {
           home: <NavigationScreen />,
           pexels: (
-            <GalleryMasonry
-              onPexelsUploadFinish={handlePexelsUpload}
-              tab={"pexels"}
-            />
+            <React.Fragment>
+              <SearchInput
+                disabled={value !== "pexels"}
+                size={"lg"}
+                slotProps={{
+                  container: {
+                    style: {
+                      borderRadius: 0
+                    }
+                  }
+                }}
+              />
+              <GalleryMasonry
+                onPexelsUploadFinish={handlePexelsUpload}
+                tab={"pexels"}
+              />
+            </React.Fragment>
           ),
           library: <GalleryMasonry tab={"library"} />,
           upload: <UploadsTab disableWhiteboardPrompt />

@@ -36,7 +36,9 @@ import {
   GetDraftsInfoRequest,
   GetDraftsInfoResponse,
   GetStoriesInfoRequest,
-  GetStoriesInfoResponse
+  GetStoriesInfoResponse,
+  GetStoryRequest,
+  GetStoryResponse
 } from "@storiny/proto/gen/ts/story_def/v1/def";
 import {
   GetFollowedTagCountRequest,
@@ -101,6 +103,7 @@ export {
   GetProfileResponse,
   GetResponsesInfoResponse,
   GetStoriesInfoResponse,
+  GetStoryResponse,
   GetStoryResponsesInfoResponse,
   GetTagResponse,
   GetTokenResponse,
@@ -194,4 +197,8 @@ export const getToken = promisify<GetTokenRequest, GetTokenResponse>(
 
 export const verifyEmail = promisify<VerifyEmailRequest, VerifyEmailResponse>(
   global.grpcClient.verifyEmail
+);
+
+export const getStory = promisify<GetStoryRequest, GetStoryResponse>(
+  global.grpcClient.getStory
 );

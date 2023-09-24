@@ -19,7 +19,7 @@ import { useAppDispatch } from "~/redux/hooks";
 import { breakpoints } from "~/theme/breakpoints";
 import { capitalize } from "~/utils/capitalize";
 
-import { ResponseEditorProps } from "./ResponseEditor.props";
+import { ResponseEditorProps } from "./response-editor.props";
 
 const ResponseEditor = (props: ResponseEditorProps): React.ReactElement => {
   const { responseType, responseTextareaProps, responseId } = props;
@@ -36,7 +36,7 @@ const ResponseEditor = (props: ResponseEditorProps): React.ReactElement => {
    * Handles response editing
    */
   const handleEdit = (): void => {
-    if (textareaRef.current) {
+    if (textareaRef.current?.value) {
       (responseType === "comment" ? editComment : editReply)({
         id: responseId,
         content: textareaRef.current.value
@@ -58,6 +58,8 @@ const ResponseEditor = (props: ResponseEditorProps): React.ReactElement => {
             "error"
           )
         );
+    } else {
+      toast("Response cannot be empty", "error");
     }
   };
 

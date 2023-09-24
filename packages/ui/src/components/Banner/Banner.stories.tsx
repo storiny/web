@@ -6,7 +6,6 @@ import React from "react";
 import Button from "../Button";
 import Banner from "./Banner";
 import { BannerProps } from "./Banner.props";
-import { useBanner } from "./useBanner";
 
 const meta: Meta<typeof Banner> = {
   title: "Components/Banner",
@@ -32,17 +31,14 @@ const meta: Meta<typeof Banner> = {
 export default meta;
 type Story = StoryObj<typeof Banner>;
 
-const BannerComponent = (props?: BannerProps): React.ReactElement => {
-  const banner = useBanner();
-
-  return (
-    <Button
-      onClick={(): void => banner("This is a banner notification", props)}
-    >
-      Show banner
-    </Button>
-  );
-};
+// TODO: Fix
+const BannerComponent = (props?: BannerProps): React.ReactElement => (
+  <Button
+  //  onClick={(): void => banner("This is a banner notification", props)}
+  >
+    Show banner
+  </Button>
+);
 
 export const Default: Story = {
   render: (args) => <BannerComponent {...args} />

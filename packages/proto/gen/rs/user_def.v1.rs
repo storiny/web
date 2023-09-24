@@ -11,6 +11,51 @@ pub struct Status {
     #[prost(enumeration="StatusVisibility", tag="4")]
     pub visibility: i32,
 }
+// User
+
+#[allow(clippy::derive_partial_eq_without_eq)]
+#[derive(Clone, PartialEq, ::prost::Message)]
+pub struct User {
+    #[prost(string, tag="1")]
+    pub id: ::prost::alloc::string::String,
+    #[prost(string, tag="2")]
+    pub name: ::prost::alloc::string::String,
+    #[prost(string, tag="3")]
+    pub username: ::prost::alloc::string::String,
+    #[prost(string, tag="4")]
+    pub bio: ::prost::alloc::string::String,
+    #[prost(string, optional, tag="5")]
+    pub avatar_id: ::core::option::Option<::prost::alloc::string::String>,
+    #[prost(string, optional, tag="6")]
+    pub avatar_hex: ::core::option::Option<::prost::alloc::string::String>,
+    #[prost(string, optional, tag="7")]
+    pub banner_id: ::core::option::Option<::prost::alloc::string::String>,
+    #[prost(string, optional, tag="8")]
+    pub banner_hex: ::core::option::Option<::prost::alloc::string::String>,
+    #[prost(uint64, tag="9")]
+    pub public_flags: u64,
+    #[prost(uint32, tag="10")]
+    pub wpm: u32,
+    #[prost(bool, tag="11")]
+    pub is_private: bool,
+    #[prost(string, tag="12")]
+    pub location: ::prost::alloc::string::String,
+    #[prost(string, tag="13")]
+    pub created_at: ::prost::alloc::string::String,
+    #[prost(uint32, tag="14")]
+    pub follower_count: u32,
+    /// User specific props
+    #[prost(bool, optional, tag="15")]
+    pub is_self: ::core::option::Option<bool>,
+    #[prost(bool, optional, tag="16")]
+    pub is_following: ::core::option::Option<bool>,
+    #[prost(bool, optional, tag="17")]
+    pub is_follower: ::core::option::Option<bool>,
+    #[prost(bool, optional, tag="18")]
+    pub is_friend: ::core::option::Option<bool>,
+    #[prost(bool, optional, tag="19")]
+    pub is_blocked_by_user: ::core::option::Option<bool>,
+}
 // Get user ID
 
 #[allow(clippy::derive_partial_eq_without_eq)]

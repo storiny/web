@@ -58,7 +58,7 @@ const EntitiesTab = (props: Props): React.ReactElement => {
         />
       ) : !isFetching && !items.length ? (
         <EmptyState entityType={entityType} query={query} username={username} />
-      ) : isLoading || isTyping ? (
+      ) : isLoading || isTyping || (isFetching && page === 1) ? (
         <UserListSkeleton />
       ) : (
         <VirtualizedUserList

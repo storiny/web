@@ -4,6 +4,16 @@ package tag_def.v1;
 
 // Tag
 
+message Tag {
+  string id /*                 */ = 1;
+  string name /*               */ = 2;
+  int32 story_count /*         */ = 3;
+  int32 follower_count /*      */ = 4;
+  string created_at /*         */ = 5;
+}
+
+// Get tag
+
 message GetTagRequest {
   string name /*                    */ = 1;
   optional string current_user_id /**/ = 2;

@@ -10,8 +10,8 @@ import NoSsr from "~/components/NoSsr";
 import Separator from "~/components/Separator";
 import { useMediaQuery } from "~/hooks/useMediaQuery";
 import { useSticky } from "~/hooks/useSticky";
-import { selectBannerHeight } from "~/redux/features/banner/selectors";
-import { useAppSelector } from "~/redux/hooks";
+// import { selectBannerHeight } from "~/redux/features/banner/selectors";
+// import { useAppSelector } from "~/redux/hooks";
 import { breakpoints } from "~/theme/breakpoints";
 
 import sidebarStyles from "../common/Sidebar.module.scss";
@@ -32,9 +32,13 @@ const RightSidebar = (props: RightSidebarProps): React.ReactElement | null => {
     hideFooter,
     ...rest
   } = props;
-  const bannerHeight = useAppSelector(selectBannerHeight);
+  // TODO: Uncommment after banner gets fixed
+  // const bannerHeight = useAppSelector(selectBannerHeight);
   // Add banner height to the offset
-  const stickyRef = useSticky({ offsetTop: 52 + bannerHeight });
+  const stickyRef = useSticky({
+    offsetTop: 52
+    // + bannerHeight
+  });
   const shouldRender = useMediaQuery(breakpoints.up("tablet"));
 
   if (!shouldRender && !forceMount) {

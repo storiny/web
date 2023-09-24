@@ -1,112 +1,158 @@
 import { clsx } from "clsx";
 import { useAtomValue, useSetAtom } from "jotai";
+import dynamic from "next/dynamic";
 import React from "react";
 import { useIntersectionObserver } from "react-intersection-observer-hook";
 
-import { CommentListSkeleton, VirtualizedCommentList } from "~/common/comment";
+import { dynamicLoader } from "~/common/dynamic";
 import Divider from "~/components/Divider";
 import Option from "~/components/Option";
 import Select from "~/components/Select";
 import Spacer from "~/components/Spacer";
+import Tab from "~/components/Tab";
+import Tabs from "~/components/Tabs";
+import TabsList from "~/components/TabsList";
 import Typography from "~/components/Typography";
-import ErrorState from "~/entities/ErrorState";
-import { getQueryErrorType, useGetStoryCommentsQuery } from "~/redux/features";
+import { useMediaQuery } from "~/hooks/useMediaQuery";
 import { useAppSelector } from "~/redux/hooks";
+import { breakpoints } from "~/theme/breakpoints";
 import { abbreviateNumber } from "~/utils/abbreviateNumber";
 
 import { isAuxiliaryContentVisibleAtom, storyMetadataAtom } from "../../atoms";
 import styles from "./auxiliary-content.module.scss";
-import EditorAuxiliaryContentEmptyState from "./empty-state";
-import PostComment from "./post-comment";
 
-type StoryCommentsSortValue = "likes-dsc" | "recent";
+const EditorAuxiliaryContentCommentList = dynamic(
+  () => import("./comment-list"),
+  {
+    loading: dynamicLoader()
+  }
+);
+
+const EditorAuxiliaryContentSuggestionList = dynamic(
+  () => import("./suggestion-list"),
+  {
+    loading: dynamicLoader()
+  }
+);
+
+export type StoryCommentsSortValue = "likes-dsc" | "recent";
+export type EditorAuxiliaryContentTabValue = "suggested" | "comments";
+
+// Header tabs
+
+const HeaderTabs = ({
+  value,
+  onChange
+}: {
+  onChange: (newValue: EditorAuxiliaryContentTabValue) => void;
+  value: EditorAuxiliaryContentTabValue;
+}): React.ReactElement => (
+  <Tabs
+    onValueChange={(newValue): void =>
+      onChange(newValue as EditorAuxiliaryContentTabValue)
+    }
+    value={value}
+  >
+    <TabsList className={clsx("full-w", styles.x, styles["tabs-list"])}>
+      <Tab aria-controls={undefined} value={"suggested"}>
+        Suggested
+      </Tab>
+      <Tab aria-controls={undefined} value={"comments"}>
+        Comments
+      </Tab>
+    </TabsList>
+  </Tabs>
+);
 
 // Content
 
 const Content = (): React.ReactElement => {
   const story = useAtomValue(storyMetadataAtom);
+  const isSmallerThanDesktop = useMediaQuery(breakpoints.down("desktop"));
   const commentCount =
     useAppSelector((state) => state.entities.storyCommentCounts[story.id]) || 0;
-  const [page, setPage] = React.useState<number>(1);
+  const [value, setValue] = React.useState<EditorAuxiliaryContentTabValue>(
+    isSmallerThanDesktop ? "suggested" : "comments"
+  );
   const [sort, setSort] = React.useState<StoryCommentsSortValue>("likes-dsc");
-  const { data, isLoading, isFetching, isError, error, refetch } =
-    useGetStoryCommentsQuery({
-      storyId: story.id,
-      page,
-      sort,
-      type: "all"
-    });
-  const { items = [], hasMore } = data || {};
-  const loadMore = React.useCallback(
-    () => setPage((prevState) => prevState + 1),
+
+  const handleSortChange = React.useCallback(
+    (nextSort: StoryCommentsSortValue) => {
+      setSort(nextSort);
+    },
     []
   );
 
+  React.useEffect(() => {
+    if (!isSmallerThanDesktop) {
+      setValue("comments");
+    }
+  }, [isSmallerThanDesktop]);
+
   return (
     <React.Fragment>
-      <header className={clsx("flex-center", styles.header)}>
-        <Typography
-          className={clsx("t-bold", "f-grow", styles.x, styles["header-label"])}
-          level={"body2"}
-        >
-          {abbreviateNumber(commentCount)}{" "}
-          {commentCount === 1 ? "comment" : "comments"}
-        </Typography>
-        <Divider orientation={"vertical"} />
-        <Select
-          onValueChange={(nextValue): void =>
-            setSort(nextValue as StoryCommentsSortValue)
-          }
-          slotProps={{
-            trigger: {
-              "aria-label": "Sort comments",
-              className: clsx(
-                "focus-invert",
+      <header className={clsx("flex-col", styles.header)}>
+        {isSmallerThanDesktop && (
+          <HeaderTabs onChange={setValue} value={value} />
+        )}
+        {value === "comments" && (
+          <div className={"flex-center"}>
+            <Typography
+              className={clsx(
+                "t-bold",
+                "f-grow",
                 styles.x,
-                styles["select-trigger"]
-              )
-            },
-            value: {
-              placeholder: "Sort"
-            }
-          }}
-          value={sort}
-        >
-          <Option value={"likes-dsc"}>Relevant</Option>
-          <Option value={"recent"}>Recent</Option>
-        </Select>
+                styles["header-label"]
+              )}
+              level={"body2"}
+            >
+              {abbreviateNumber(commentCount)}{" "}
+              {commentCount === 1 ? "comment" : "comments"}
+            </Typography>
+            <Divider orientation={"vertical"} />
+            <Select
+              onValueChange={(nextValue): void =>
+                handleSortChange(nextValue as StoryCommentsSortValue)
+              }
+              slotProps={{
+                trigger: {
+                  "aria-label": "Sort comments",
+                  className: clsx(
+                    "focus-invert",
+                    styles.x,
+                    styles["select-trigger"]
+                  )
+                },
+                value: {
+                  placeholder: "Sort"
+                }
+              }}
+              value={sort}
+            >
+              <Option value={"likes-dsc"}>Relevant</Option>
+              <Option value={"recent"}>Recent</Option>
+            </Select>
+          </div>
+        )}
       </header>
       <Spacer
         className={styles["header-spacer"]}
         orientation={"vertical"}
-        size={4.75}
+        size={5.25}
       />
-      <PostComment
-        // Show the newly added comment
-        onPost={(): void => setSort("recent")}
-      />
-      <Divider className={clsx(styles.x, styles["full-width-divider"])} />
-      {isLoading ? <CommentListSkeleton /> : null}
-      {isError ? (
-        <ErrorState
-          autoSize
-          componentProps={{
-            button: { loading: isFetching }
-          }}
-          retry={refetch}
-          type={getQueryErrorType(error)}
+      {value === "comments" && (
+        <Spacer
+          className={styles["header-spacer"]}
+          orientation={"vertical"}
+          size={4.75}
         />
-      ) : !isFetching && !items.length ? (
-        <EditorAuxiliaryContentEmptyState />
+      )}
+      {value === "suggested" ? (
+        <EditorAuxiliaryContentSuggestionList />
       ) : (
-        <VirtualizedCommentList
-          comments={items}
-          hasMore={Boolean(hasMore)}
-          loadMore={loadMore}
-          // Disable Virtualization as when the boundary elements exit the viewport, their reply
-          // list will collapse, causing a jump in the layout.
-          overscan={Infinity}
-          scrollSeekConfiguration={undefined}
+        <EditorAuxiliaryContentCommentList
+          setSort={handleSortChange}
+          sort={sort}
         />
       )}
     </React.Fragment>
@@ -129,6 +175,7 @@ const EditorAuxiliaryContent = (): React.ReactElement => {
     <React.Fragment>
       <section
         className={clsx("flex-col", styles["auxiliary-content"])}
+        id={"auxiliary-content"}
         ref={ref}
       >
         <Content />

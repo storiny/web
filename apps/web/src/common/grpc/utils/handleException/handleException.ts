@@ -5,7 +5,7 @@ import { Status } from "@grpc/grpc-js/build/src/constants";
 import { notFound, redirect } from "next/navigation";
 
 /**
- * Returns not found page, login and gateway error pages for errors from the gRPC service.
+ * Returns the 404, login, and gateway error pages for errors from the gRPC service.
  * @param err `ServiceError` object
  */
 export const handleException = (err: ServiceError): void => {

@@ -37,8 +37,9 @@ const TagList = ({
 
   return (
     <>
-      {loading ? <TagListSkeleton /> : null}
-      {isError ? (
+      {loading || (isFetching && page === 1) ? (
+        <TagListSkeleton />
+      ) : isError ? (
         <ErrorState
           autoSize
           componentProps={{

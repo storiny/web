@@ -1,4 +1,3 @@
-export * from "./fetching";
 export * from "./nav-segment";
 export * from "./pending-image";
 export * from "./query";

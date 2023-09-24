@@ -116,15 +116,15 @@ const Page = ({ tag }: Props): React.ReactElement => {
     []
   );
 
-  const handleQueryChange = React.useCallback(
-    (newQuery: string) => setQuery(newQuery),
-    []
-  );
+  const handleQueryChange = React.useCallback((newQuery: string) => {
+    setPage(1);
+    setQuery(newQuery);
+  }, []);
 
-  const handleChange = React.useCallback(
-    (newValue: TagTabValue) => setSort(newValue),
-    []
-  );
+  const handleChange = React.useCallback((newValue: TagTabValue) => {
+    setPage(1);
+    setSort(newValue);
+  }, []);
 
   return (
     <>
@@ -148,7 +148,7 @@ const Page = ({ tag }: Props): React.ReactElement => {
         />
       ) : !isFetching && !items.length ? (
         <EmptyState query={query} />
-      ) : isLoading || isTyping ? (
+      ) : isLoading || isTyping || (isFetching && page === 1) ? (
         <StoryListSkeleton />
       ) : (
         <VirtualizedStoryList

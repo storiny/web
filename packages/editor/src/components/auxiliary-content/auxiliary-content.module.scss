@@ -39,6 +39,12 @@
     align-self: stretch;
   }
 
+  &.tabs-list {
+    display: flex;
+    justify-content: space-around;
+    border-bottom: 1px solid var(--divider);
+  }
+
   &.full-width-divider {
     width: auto;
     margin-inline: var(--grid-compensation);

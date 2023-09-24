@@ -76,9 +76,16 @@ const FriendRequestsModal = (): React.ReactElement => {
   );
 
   const handleSortChange = React.useCallback(
-    (newSort: FriendRequestsSortValue) => setSort(newSort),
+    (newSort: FriendRequestsSortValue) => {
+      setPage(1);
+      setSort(newSort);
+    },
     []
   );
+
+  React.useEffect(() => {
+    setPage(1);
+  }, [query]);
 
   React.useEffect(() => {
     setRenderKey(`${page}:${query}`);
@@ -130,7 +137,7 @@ const FriendRequestsModal = (): React.ReactElement => {
           <Option value={"old"}>Old</Option>
         </Select>
       </div>
-      {isLoading || isTyping ? (
+      {isLoading || isTyping || (isFetching && page === 1) ? (
         <SuspenseLoader />
       ) : isError ? (
         <ErrorState

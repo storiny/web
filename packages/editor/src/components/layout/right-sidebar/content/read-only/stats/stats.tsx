@@ -47,6 +47,11 @@ const StoryStats = (): React.ReactElement => {
           })`}
           decorator={<CommentIcon />}
           disabled={story.disable_comments}
+          onClick={(): void => {
+            document
+              .getElementById("auxiliary-content")
+              ?.scrollIntoView({ behavior: "smooth" });
+          }}
           title={`Add a comment (${commentCount.toLocaleString()} ${
             commentCount === 1 ? "comment" : "comments"
           })`}

@@ -1,7 +1,6 @@
 import { COMMENT_PROPS } from "@storiny/shared";
 import { clsx } from "clsx";
 import { useAtomValue } from "jotai";
-import NextLink from "next/link";
 import React from "react";
 
 import Avatar from "~/components/Avatar";
@@ -33,23 +32,27 @@ const PostComment = ({
   const [addComment, { isLoading }] = useAddCommentMutation();
 
   const handlePost = (): void => {
-    addComment({
-      storyId: story.id,
-      content: textareaRef.current?.value || ""
-    })
-      .unwrap()
-      .then(() => {
-        if (textareaRef.current) {
-          textareaRef.current.value = "";
-        }
-
-        onPost();
-        toast("Comment added", "success");
-        dispatch(getStoryCommentsApi.util.resetApiState());
+    if (textareaRef.current?.value) {
+      addComment({
+        storyId: story.id,
+        content: textareaRef.current.value
       })
-      .catch((e) =>
-        toast(e?.data?.error || "Could not add your comment", "error")
-      );
+        .unwrap()
+        .then(() => {
+          if (textareaRef.current) {
+            textareaRef.current.value = "";
+          }
+
+          onPost();
+          toast("Comment added", "success");
+          dispatch(getStoryCommentsApi.util.resetApiState());
+        })
+        .catch((e) =>
+          toast(e?.data?.error || "Could not add your comment", "error")
+        );
+    } else {
+      toast("Comment content cannot be empty", "error");
+    }
   };
 
   return (
@@ -61,9 +64,7 @@ const PostComment = ({
       )}
     >
       {!loggedIn ? (
-        <Button as={NextLink} href={"/login"}>
-          Log in to leave a comment
-        </Button>
+        <Button checkAuth>Log in to leave a comment</Button>
       ) : (
         <React.Fragment>
           <Avatar

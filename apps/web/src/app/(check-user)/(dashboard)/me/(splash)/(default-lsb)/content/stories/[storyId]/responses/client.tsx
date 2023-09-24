@@ -238,14 +238,21 @@ const ContentStoryResponsesClient = (
   }, []);
 
   const handleSortChange = React.useCallback(
-    (newSort: StoryResponsesSortValue) => setSort(newSort),
+    (newSort: StoryResponsesSortValue) => {
+      setPage(1);
+      setSort(newSort);
+    },
     []
   );
 
-  const handleQueryChange = React.useCallback(
-    (newQuery: string) => setQuery(newQuery),
-    []
-  );
+  const handleQueryChange = React.useCallback((newQuery: string) => {
+    setPage(1);
+    setQuery(newQuery);
+  }, []);
+
+  React.useEffect(() => {
+    setPage(1);
+  }, [value]);
 
   return (
     <React.Fragment>
@@ -266,8 +273,9 @@ const ContentStoryResponsesClient = (
           sort={sort}
           tab={value}
         />
-        {isLoading || isTyping ? <CommentListSkeleton /> : null}
-        {isError ? (
+        {isLoading || isTyping || (isFetching && page === 1) ? (
+          <CommentListSkeleton />
+        ) : isError ? (
           <ErrorState
             autoSize
             componentProps={{

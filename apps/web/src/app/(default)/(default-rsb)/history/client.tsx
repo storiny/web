@@ -89,10 +89,10 @@ const Client = (): React.ReactElement => {
     []
   );
 
-  const handleQueryChange = React.useCallback(
-    (newQuery: string) => setQuery(newQuery),
-    []
-  );
+  const handleQueryChange = React.useCallback((newQuery: string) => {
+    setPage(1);
+    setQuery(newQuery);
+  }, []);
 
   return (
     <>
@@ -113,7 +113,7 @@ const Client = (): React.ReactElement => {
         />
       ) : !isFetching && !items.length ? (
         <EmptyState query={query} />
-      ) : isLoading || isTyping ? (
+      ) : isLoading || isTyping || (isFetching && page === 1) ? (
         <StoryListSkeleton />
       ) : (
         <VirtualizedStoryList

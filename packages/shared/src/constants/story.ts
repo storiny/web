@@ -1,32 +1,16 @@
 import { z } from "zod";
 
-import { StoryCategory } from "../enums";
+import {
+  StoryAgeRestriction,
+  StoryCategory,
+  StoryLicense,
+  StoryVisibility
+} from "../enums";
 import { ZOD_MESSAGES } from "./messages";
 import { TAG_SCHEMA } from "./tag";
 
 export const MAX_STORY_TAGS = 5;
 export const STORY_MAX_LENGTH = 60_000; // 5 (average chars/words in English) x 12k words
-
-export enum StoryVisibility {
-  UNLISTED /**/ = 0,
-  PUBLIC /*  */ = 1
-}
-
-export enum StoryLicense {
-  CC_ZERO /*    */ = 0,
-  RESERVED /*   */ = 1,
-  CC_BY /*      */ = 2,
-  CC_BY_SA /*   */ = 3,
-  CC_BY_ND /*   */ = 4,
-  CC_BY_NC /*   */ = 5,
-  CC_BY_NC_SA /**/ = 6,
-  CC_BY_NC_ND /**/ = 7
-}
-
-export enum StoryAgeRestriction {
-  NOT_RATED /**/ = 0,
-  RATED /*    */ = 1
-}
 
 export const STORY_PROPS = {
   title: {

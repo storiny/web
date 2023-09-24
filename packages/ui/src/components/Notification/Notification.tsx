@@ -4,21 +4,12 @@ import { Action, Close, Description, Root } from "@radix-ui/react-toast";
 import clsx from "clsx";
 import React from "react";
 
-import AlertSquareIcon from "~/icons/AlertSquare";
-import InfoIcon from "~/icons/Info";
-import TypographyIcon from "~/icons/Typography";
 import { forwardRef } from "~/utils/forwardRef";
 
 import commonStyles from "../common/Toast.module.scss";
 import Divider from "../Divider";
 import styles from "./Notification.module.scss";
-import { NotificationIcon, NotificationProps } from "./Notification.props";
-
-const iconMap: Record<NotificationIcon, React.ReactNode> = {
-  exclamation: <AlertSquareIcon />,
-  info: <InfoIcon />,
-  typography: <TypographyIcon />
-};
+import { NotificationProps } from "./Notification.props";
 
 const Notification = forwardRef<NotificationProps, "li">((props, ref) => {
   const {
@@ -56,7 +47,7 @@ const Notification = forwardRef<NotificationProps, "li">((props, ref) => {
                 slotProps?.decorator?.className
               )}
             >
-              {iconMap[icon]}
+              {icon}
             </span>
           )}
           {children}

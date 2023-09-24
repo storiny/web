@@ -16,6 +16,31 @@ message Status {
   StatusVisibility visibility /**/ = 4;
 }
 
+// User
+
+message User {
+  string id /*                       */ = 1;
+  string name /*                     */ = 2;
+  string username /*                 */ = 3;
+  string bio /*                      */ = 4;
+  optional string avatar_id /*       */ = 5;
+  optional string avatar_hex /*      */ = 6;
+  optional string banner_id /*       */ = 7;
+  optional string banner_hex /*      */ = 8;
+  uint64 public_flags /*             */ = 9;
+  uint32 wpm /*                      */ = 10;
+  bool is_private /*                 */ = 11;
+  string location /*                 */ = 12;
+  string created_at /*               */ = 13;
+  uint32 follower_count /*           */ = 14;
+  // User specific props
+  optional bool is_self /*           */ = 15;
+  optional bool is_following /*      */ = 16;
+  optional bool is_follower /*       */ = 17;
+  optional bool is_friend /*         */ = 18;
+  optional bool is_blocked_by_user /**/ = 19;
+}
+
 // Get user ID
 
 message GetUserIdRequest {

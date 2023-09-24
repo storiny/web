@@ -8,8 +8,8 @@ import React from "react";
 import NoSsr from "~/components/NoSsr";
 import { useMediaQuery } from "~/hooks/useMediaQuery";
 import { useSticky } from "~/hooks/useSticky";
-import { selectBannerHeight } from "~/redux/features/banner/selectors";
-import { useAppSelector } from "~/redux/hooks";
+// import { selectBannerHeight } from "~/redux/features/banner/selectors";
+// import { useAppSelector } from "~/redux/hooks";
 import { breakpoints } from "~/theme/breakpoints";
 
 import sidebarStyles from "../common/Sidebar.module.scss";
@@ -22,9 +22,13 @@ const LeftSidebarDefaultContent = dynamic(() => import("./DefaultContent"), {
 
 const LeftSidebar = (props: LeftSidebarProps): React.ReactElement | null => {
   const { className, forceMount, componentProps, children, ...rest } = props;
-  const bannerHeight = useAppSelector(selectBannerHeight);
+  // TODO: Uncommment after banner gets fixed
+  // const bannerHeight = useAppSelector(selectBannerHeight);
   // Add banner height to the offset
-  const stickyRef = useSticky({ offsetTop: 52 + bannerHeight });
+  const stickyRef = useSticky({
+    offsetTop: 52
+    // + bannerHeight
+  });
   const shouldRender = useMediaQuery(breakpoints.up("desktop"));
 
   if (!shouldRender && !forceMount) {

@@ -1,9 +1,9 @@
-import { StoryCategory } from "@storiny/shared";
 import {
   StoryAgeRestriction,
+  StoryCategory,
   StoryLicense,
   StoryVisibility
-} from "@storiny/shared/src/constants/story";
+} from "@storiny/shared";
 
 import { Tag } from "../tag";
 import { User } from "../user";
@@ -38,6 +38,7 @@ export type Story = {
   disable_comments: boolean;
   disable_public_revision_history: boolean;
   disable_toc: boolean;
+  doc_key: string;
   edited_at: string | null;
   id: string;
   license: StoryLicense;

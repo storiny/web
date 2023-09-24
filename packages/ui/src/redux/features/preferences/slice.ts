@@ -34,6 +34,7 @@ const preferencesSchema = z.object({
     .catch("system"),
   showAppearanceAlert: z.boolean().catch(true),
   showAccessibilityAlert: z.boolean().catch(true),
+  showFontSettingsNotification: z.boolean().catch(true),
   hapticFeedback: z.boolean().catch(false),
   reducedMotion: z
     .union([z.literal("system"), z.literal("enabled"), z.literal("disabled")])
@@ -94,6 +95,15 @@ export const preferencesSlice = createSlice({
           ? "showAppearanceAlert"
           : "showAccessibilityAlert"
       ] = action.payload[1];
+    },
+    /**
+     * Mutates the font settings notification visibility
+     */
+    setFontSettingsNotificationVisibility: (
+      state,
+      action: PayloadAction<boolean>
+    ) => {
+      state["showFontSettingsNotification"] = action.payload;
     },
     /**
      * Changes the reduced motion settings
@@ -166,13 +176,15 @@ const {
   setReadingFontSize,
   setCodeFont,
   toggleCodeLigatures,
-  toggleHapticFeedback
+  toggleHapticFeedback,
+  setFontSettingsNotificationVisibility
 } = preferencesSlice.actions;
 
 export {
   hydrateState,
   setAlertVisibility,
   setCodeFont,
+  setFontSettingsNotificationVisibility,
   setReadingFont,
   setReadingFontSize,
   setReducedMotion,

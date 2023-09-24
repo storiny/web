@@ -155,15 +155,15 @@ const ContentTagsClient = (props: TagsProps): React.ReactElement => {
     []
   );
 
-  const handleSortChange = React.useCallback(
-    (newSort: TagsSortValue) => setSort(newSort),
-    []
-  );
+  const handleSortChange = React.useCallback((newSort: TagsSortValue) => {
+    setPage(1);
+    setSort(newSort);
+  }, []);
 
-  const handleQueryChange = React.useCallback(
-    (newQuery: string) => setQuery(newQuery),
-    []
-  );
+  const handleQueryChange = React.useCallback((newQuery: string) => {
+    setPage(1);
+    setQuery(newQuery);
+  }, []);
 
   return (
     <React.Fragment>
@@ -176,8 +176,9 @@ const ContentTagsClient = (props: TagsProps): React.ReactElement => {
         query={query}
         sort={sort}
       />
-      {isLoading || isTyping ? <TagListSkeleton /> : null}
-      {isError ? (
+      {isLoading || isTyping || (isFetching && page === 1) ? (
+        <TagListSkeleton />
+      ) : isError ? (
         <ErrorState
           autoSize
           componentProps={{

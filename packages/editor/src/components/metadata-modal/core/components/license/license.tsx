@@ -1,4 +1,4 @@
-import { StoryLicense } from "@storiny/shared/src/constants/story";
+import { StoryLicense } from "@storiny/shared";
 import React from "react";
 
 import { useFormContext } from "~/components/Form";
@@ -8,14 +8,16 @@ import Spacer from "~/components/Spacer";
 import Typography from "~/components/Typography";
 
 const LICENSE_DESCRIPTION_MAP: Record<StoryLicense, React.ReactNode> = {
-  [StoryLicense.RESERVED /*   */]: (
+  [StoryLicense.UNRECOGNIZED /**/]: null,
+  [StoryLicense.UNSPECIFIED /* */]: null,
+  [StoryLicense.RESERVED /*    */]: (
     <>
       Under the standard reserved license, others are prohibited from copying,
       modifying, or distributing your work, while you retain all the rights to
       your content.
     </>
   ),
-  [StoryLicense.CC_ZERO /*    */]: (
+  [StoryLicense.CC_ZERO /*     */]: (
     <>
       Under the CC0 license, you waive all copyright and related rights,
       effectively placing your work in the public domain. Others can use,
@@ -23,42 +25,42 @@ const LICENSE_DESCRIPTION_MAP: Record<StoryLicense, React.ReactNode> = {
       requirements.
     </>
   ),
-  [StoryLicense.CC_BY /*      */]: (
+  [StoryLicense.CC_BY /*       */]: (
     <>
       Under the CC BY license, you allow others to use, modify, and distribute
       your work for any purpose, even commercially, as long as they provide
       appropriate attribution to you as the original creator.
     </>
   ),
-  [StoryLicense.CC_BY_SA /*   */]: (
+  [StoryLicense.CC_BY_SA /*    */]: (
     <>
       Under the CC BY-SA license, others can use, modify, and distribute your
       work for any purpose, but they must provide attribution and share their
       derivative works under the same CC BY-SA terms.
     </>
   ),
-  [StoryLicense.CC_BY_NC /*   */]: (
+  [StoryLicense.CC_BY_NC /*    */]: (
     <>
       Under the CC BY-NC license, your work can be used, modified, and
       distributed for non-commercial purposes only, as long as proper
       attribution is given to you.
     </>
   ),
-  [StoryLicense.CC_BY_ND /*   */]: (
+  [StoryLicense.CC_BY_ND /*    */]: (
     <>
       Under the CC BY-ND license, others can use your work for any purpose, even
       commercially, but they cannot create derivative works or modifications.
       Attribution is still required.
     </>
   ),
-  [StoryLicense.CC_BY_NC_SA /**/]: (
+  [StoryLicense.CC_BY_NC_SA /* */]: (
     <>
       Under the CC BY-NC-SA license, you allow others to use, modify, and
       distribute your work for non-commercial purposes, while requiring proper
       attribution and the use of the same license for derivative works.
     </>
   ),
-  [StoryLicense.CC_BY_NC_ND /**/]: (
+  [StoryLicense.CC_BY_NC_ND /* */]: (
     <>
       Under the CC BY-NC-ND license, others can use and share your work for
       non-commercial purposes, but they cannot create derivative works, and

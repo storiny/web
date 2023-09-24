@@ -37,8 +37,9 @@ const StoryList = ({
 
   return (
     <>
-      {loading ? <StoryListSkeleton /> : null}
-      {isError ? (
+      {loading || (isFetching && page === 1) ? (
+        <StoryListSkeleton />
+      ) : isError ? (
         <ErrorState
           autoSize
           componentProps={{

@@ -31,6 +31,16 @@ export const getFriendRequestsApi = apiSlice.injectEndpoints({
         currentCache.items.push(...newItems.items);
         currentCache.hasMore = newItems.hasMore;
       },
+      providesTags: (result) =>
+        result
+          ? [
+              ...result.items.map(({ id }) => ({
+                type: "FriendRequest" as const,
+                id
+              })),
+              "FriendRequest"
+            ]
+          : ["FriendRequest"],
       forceRefetch: ({ currentArg, previousArg }) =>
         currentArg?.page !== previousArg?.page ||
         currentArg?.sort !== previousArg?.sort ||

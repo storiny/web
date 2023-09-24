@@ -12,6 +12,7 @@
     "test": "jest"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.418.0",
     "@grpc/grpc-js": "^1.8.15",
     "@mdx-js/react": "^2.3.0",
     "@next/bundle-analyzer": "^13.4.4",
