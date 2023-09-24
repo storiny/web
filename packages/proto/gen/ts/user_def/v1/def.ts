@@ -1,4 +1,5 @@
 /* eslint-disable */
+import Long from "long";
 import _m0 from "protobufjs/minimal";
 
 export const protobufPackage = "user_def.v1";
@@ -49,6 +50,29 @@ export interface Status {
   text?: string | undefined;
   expires_at?: string | undefined;
   visibility: StatusVisibility;
+}
+
+export interface User {
+  id: string;
+  name: string;
+  username: string;
+  bio: string;
+  avatar_id?: string | undefined;
+  avatar_hex?: string | undefined;
+  banner_id?: string | undefined;
+  banner_hex?: string | undefined;
+  public_flags: number;
+  wpm: number;
+  is_private: boolean;
+  location: string;
+  created_at: string;
+  follower_count: number;
+  /** User specific props */
+  is_self?: boolean | undefined;
+  is_following?: boolean | undefined;
+  is_follower?: boolean | undefined;
+  is_friend?: boolean | undefined;
+  is_blocked_by_user?: boolean | undefined;
 }
 
 export interface GetUserIdRequest {
@@ -187,6 +211,355 @@ export const Status = {
     message.text = object.text ?? undefined;
     message.expires_at = object.expires_at ?? undefined;
     message.visibility = object.visibility ?? 0;
+    return message;
+  },
+};
+
+function createBaseUser(): User {
+  return {
+    id: "",
+    name: "",
+    username: "",
+    bio: "",
+    avatar_id: undefined,
+    avatar_hex: undefined,
+    banner_id: undefined,
+    banner_hex: undefined,
+    public_flags: 0,
+    wpm: 0,
+    is_private: false,
+    location: "",
+    created_at: "",
+    follower_count: 0,
+    is_self: undefined,
+    is_following: undefined,
+    is_follower: undefined,
+    is_friend: undefined,
+    is_blocked_by_user: undefined,
+  };
+}
+
+export const User = {
+  encode(message: User, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.id !== "") {
+      writer.uint32(10).string(message.id);
+    }
+    if (message.name !== "") {
+      writer.uint32(18).string(message.name);
+    }
+    if (message.username !== "") {
+      writer.uint32(26).string(message.username);
+    }
+    if (message.bio !== "") {
+      writer.uint32(34).string(message.bio);
+    }
+    if (message.avatar_id !== undefined) {
+      writer.uint32(42).string(message.avatar_id);
+    }
+    if (message.avatar_hex !== undefined) {
+      writer.uint32(50).string(message.avatar_hex);
+    }
+    if (message.banner_id !== undefined) {
+      writer.uint32(58).string(message.banner_id);
+    }
+    if (message.banner_hex !== undefined) {
+      writer.uint32(66).string(message.banner_hex);
+    }
+    if (message.public_flags !== 0) {
+      writer.uint32(72).uint64(message.public_flags);
+    }
+    if (message.wpm !== 0) {
+      writer.uint32(80).uint32(message.wpm);
+    }
+    if (message.is_private === true) {
+      writer.uint32(88).bool(message.is_private);
+    }
+    if (message.location !== "") {
+      writer.uint32(98).string(message.location);
+    }
+    if (message.created_at !== "") {
+      writer.uint32(106).string(message.created_at);
+    }
+    if (message.follower_count !== 0) {
+      writer.uint32(112).uint32(message.follower_count);
+    }
+    if (message.is_self !== undefined) {
+      writer.uint32(120).bool(message.is_self);
+    }
+    if (message.is_following !== undefined) {
+      writer.uint32(128).bool(message.is_following);
+    }
+    if (message.is_follower !== undefined) {
+      writer.uint32(136).bool(message.is_follower);
+    }
+    if (message.is_friend !== undefined) {
+      writer.uint32(144).bool(message.is_friend);
+    }
+    if (message.is_blocked_by_user !== undefined) {
+      writer.uint32(152).bool(message.is_blocked_by_user);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): User {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseUser();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.id = reader.string();
+          continue;
+        case 2:
+          if (tag !== 18) {
+            break;
+          }
+
+          message.name = reader.string();
+          continue;
+        case 3:
+          if (tag !== 26) {
+            break;
+          }
+
+          message.username = reader.string();
+          continue;
+        case 4:
+          if (tag !== 34) {
+            break;
+          }
+
+          message.bio = reader.string();
+          continue;
+        case 5:
+          if (tag !== 42) {
+            break;
+          }
+
+          message.avatar_id = reader.string();
+          continue;
+        case 6:
+          if (tag !== 50) {
+            break;
+          }
+
+          message.avatar_hex = reader.string();
+          continue;
+        case 7:
+          if (tag !== 58) {
+            break;
+          }
+
+          message.banner_id = reader.string();
+          continue;
+        case 8:
+          if (tag !== 66) {
+            break;
+          }
+
+          message.banner_hex = reader.string();
+          continue;
+        case 9:
+          if (tag !== 72) {
+            break;
+          }
+
+          message.public_flags = longToNumber(reader.uint64() as Long);
+          continue;
+        case 10:
+          if (tag !== 80) {
+            break;
+          }
+
+          message.wpm = reader.uint32();
+          continue;
+        case 11:
+          if (tag !== 88) {
+            break;
+          }
+
+          message.is_private = reader.bool();
+          continue;
+        case 12:
+          if (tag !== 98) {
+            break;
+          }
+
+          message.location = reader.string();
+          continue;
+        case 13:
+          if (tag !== 106) {
+            break;
+          }
+
+          message.created_at = reader.string();
+          continue;
+        case 14:
+          if (tag !== 112) {
+            break;
+          }
+
+          message.follower_count = reader.uint32();
+          continue;
+        case 15:
+          if (tag !== 120) {
+            break;
+          }
+
+          message.is_self = reader.bool();
+          continue;
+        case 16:
+          if (tag !== 128) {
+            break;
+          }
+
+          message.is_following = reader.bool();
+          continue;
+        case 17:
+          if (tag !== 136) {
+            break;
+          }
+
+          message.is_follower = reader.bool();
+          continue;
+        case 18:
+          if (tag !== 144) {
+            break;
+          }
+
+          message.is_friend = reader.bool();
+          continue;
+        case 19:
+          if (tag !== 152) {
+            break;
+          }
+
+          message.is_blocked_by_user = reader.bool();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): User {
+    return {
+      id: isSet(object.id) ? String(object.id) : "",
+      name: isSet(object.name) ? String(object.name) : "",
+      username: isSet(object.username) ? String(object.username) : "",
+      bio: isSet(object.bio) ? String(object.bio) : "",
+      avatar_id: isSet(object.avatar_id) ? String(object.avatar_id) : undefined,
+      avatar_hex: isSet(object.avatar_hex) ? String(object.avatar_hex) : undefined,
+      banner_id: isSet(object.banner_id) ? String(object.banner_id) : undefined,
+      banner_hex: isSet(object.banner_hex) ? String(object.banner_hex) : undefined,
+      public_flags: isSet(object.public_flags) ? Number(object.public_flags) : 0,
+      wpm: isSet(object.wpm) ? Number(object.wpm) : 0,
+      is_private: isSet(object.is_private) ? Boolean(object.is_private) : false,
+      location: isSet(object.location) ? String(object.location) : "",
+      created_at: isSet(object.created_at) ? String(object.created_at) : "",
+      follower_count: isSet(object.follower_count) ? Number(object.follower_count) : 0,
+      is_self: isSet(object.is_self) ? Boolean(object.is_self) : undefined,
+      is_following: isSet(object.is_following) ? Boolean(object.is_following) : undefined,
+      is_follower: isSet(object.is_follower) ? Boolean(object.is_follower) : undefined,
+      is_friend: isSet(object.is_friend) ? Boolean(object.is_friend) : undefined,
+      is_blocked_by_user: isSet(object.is_blocked_by_user) ? Boolean(object.is_blocked_by_user) : undefined,
+    };
+  },
+
+  toJSON(message: User): unknown {
+    const obj: any = {};
+    if (message.id !== "") {
+      obj.id = message.id;
+    }
+    if (message.name !== "") {
+      obj.name = message.name;
+    }
+    if (message.username !== "") {
+      obj.username = message.username;
+    }
+    if (message.bio !== "") {
+      obj.bio = message.bio;
+    }
+    if (message.avatar_id !== undefined) {
+      obj.avatar_id = message.avatar_id;
+    }
+    if (message.avatar_hex !== undefined) {
+      obj.avatar_hex = message.avatar_hex;
+    }
+    if (message.banner_id !== undefined) {
+      obj.banner_id = message.banner_id;
+    }
+    if (message.banner_hex !== undefined) {
+      obj.banner_hex = message.banner_hex;
+    }
+    if (message.public_flags !== 0) {
+      obj.public_flags = Math.round(message.public_flags);
+    }
+    if (message.wpm !== 0) {
+      obj.wpm = Math.round(message.wpm);
+    }
+    if (message.is_private === true) {
+      obj.is_private = message.is_private;
+    }
+    if (message.location !== "") {
+      obj.location = message.location;
+    }
+    if (message.created_at !== "") {
+      obj.created_at = message.created_at;
+    }
+    if (message.follower_count !== 0) {
+      obj.follower_count = Math.round(message.follower_count);
+    }
+    if (message.is_self !== undefined) {
+      obj.is_self = message.is_self;
+    }
+    if (message.is_following !== undefined) {
+      obj.is_following = message.is_following;
+    }
+    if (message.is_follower !== undefined) {
+      obj.is_follower = message.is_follower;
+    }
+    if (message.is_friend !== undefined) {
+      obj.is_friend = message.is_friend;
+    }
+    if (message.is_blocked_by_user !== undefined) {
+      obj.is_blocked_by_user = message.is_blocked_by_user;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<User>, I>>(base?: I): User {
+    return User.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<User>, I>>(object: I): User {
+    const message = createBaseUser();
+    message.id = object.id ?? "";
+    message.name = object.name ?? "";
+    message.username = object.username ?? "";
+    message.bio = object.bio ?? "";
+    message.avatar_id = object.avatar_id ?? undefined;
+    message.avatar_hex = object.avatar_hex ?? undefined;
+    message.banner_id = object.banner_id ?? undefined;
+    message.banner_hex = object.banner_hex ?? undefined;
+    message.public_flags = object.public_flags ?? 0;
+    message.wpm = object.wpm ?? 0;
+    message.is_private = object.is_private ?? false;
+    message.location = object.location ?? "";
+    message.created_at = object.created_at ?? "";
+    message.follower_count = object.follower_count ?? 0;
+    message.is_self = object.is_self ?? undefined;
+    message.is_following = object.is_following ?? undefined;
+    message.is_follower = object.is_follower ?? undefined;
+    message.is_friend = object.is_friend ?? undefined;
+    message.is_blocked_by_user = object.is_blocked_by_user ?? undefined;
     return message;
   },
 };
@@ -696,6 +1069,25 @@ export const GetUserMuteCountResponse = {
   },
 };
 
+declare const self: any | undefined;
+declare const window: any | undefined;
+declare const global: any | undefined;
+const tsProtoGlobalThis: any = (() => {
+  if (typeof globalThis !== "undefined") {
+    return globalThis;
+  }
+  if (typeof self !== "undefined") {
+    return self;
+  }
+  if (typeof window !== "undefined") {
+    return window;
+  }
+  if (typeof global !== "undefined") {
+    return global;
+  }
+  throw "Unable to locate global object";
+})();
+
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
 
 export type DeepPartial<T> = T extends Builtin ? T
@@ -706,6 +1098,18 @@ export type DeepPartial<T> = T extends Builtin ? T
 type KeysOfUnion<T> = T extends T ? keyof T : never;
 export type Exact<P, I extends P> = P extends Builtin ? P
   : P & { [K in keyof P]: Exact<P[K], I[K]> } & { [K in Exclude<keyof I, KeysOfUnion<P>>]: never };
+
+function longToNumber(long: Long): number {
+  if (long.gt(Number.MAX_SAFE_INTEGER)) {
+    throw new tsProtoGlobalThis.Error("Value is larger than Number.MAX_SAFE_INTEGER");
+  }
+  return long.toNumber();
+}
+
+if (_m0.util.Long !== Long) {
+  _m0.util.Long = Long as any;
+  _m0.configure();
+}
 
 function isSet(value: any): boolean {
   return value !== null && value !== undefined;

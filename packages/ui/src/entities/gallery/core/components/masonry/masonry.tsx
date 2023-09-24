@@ -2,7 +2,7 @@
 
 import { dynamicLoader } from "@storiny/web/src/common/dynamic";
 import clsx from "clsx";
-import { useAtomValue, useSetAtom } from "jotai";
+import { useAtomValue } from "jotai";
 import dynamic from "next/dynamic";
 import React from "react";
 import { useInView } from "react-intersection-observer";
@@ -23,7 +23,7 @@ import {
 } from "~/redux/features";
 import { breakpoints } from "~/theme/breakpoints";
 
-import { fetchingAtom, pendingImageAtom, queryAtom } from "../../atoms";
+import { pendingImageAtom, queryAtom } from "../../atoms";
 import LibraryMasonryItem from "./library-item";
 import styles from "./masonry.module.scss";
 import { GalleryMasonryProps } from "./masonry.props";
@@ -48,7 +48,6 @@ const Pexels = ({
 }): React.ReactElement => {
   const [page, setPage] = React.useState<number>(1);
   const query = useAtomValue(queryAtom);
-  const setFetching = useSetAtom(fetchingAtom);
   const debouncedQuery = useDebounce(query);
   const { data, isFetching, isLoading, isError, error, refetch } =
     useGetGalleryPhotosQuery({
@@ -56,18 +55,19 @@ const Pexels = ({
       query: debouncedQuery
     });
   const { items = [], hasMore } = data || {};
+  const isTyping = debouncedQuery !== query;
 
   const incrementPage = React.useCallback(() => {
     setPage((prevState) => prevState + 1);
   }, []);
 
   React.useEffect(() => {
-    setFetching(isLoading);
-  }, [isLoading, setFetching]);
+    setPage(1);
+  }, [query]);
 
   return (
     <React.Fragment>
-      {isLoading ? (
+      {isLoading || isTyping || (isFetching && page === 1) ? (
         <div
           aria-busy={"true"}
           className={clsx("full-w", "full-h", "flex-center")}
@@ -75,8 +75,7 @@ const Pexels = ({
         >
           <Spinner />
         </div>
-      ) : null}
-      {isError ? (
+      ) : isError ? (
         <ErrorState
           autoSize
           componentProps={{
@@ -88,24 +87,26 @@ const Pexels = ({
       ) : !isFetching && !items.length ? (
         <EmptyState tab={"pexels"} />
       ) : (
-        <Masonry<GetGalleryPhotosResponse[number]>
-          getItemKey={(data): string => String(data.id)}
-          gutterWidth={12}
-          items={items}
-          minCols={minCols}
-          overscanFactor={2.8}
-          renderItem={(args): React.ReactElement => (
-            <PexelsMasonryItem {...args} />
-          )}
-          scrollContainer={(): HTMLElement => containerRef.current!}
-        />
+        <React.Fragment>
+          <Masonry<GetGalleryPhotosResponse[number]>
+            getItemKey={(data): string => String(data.id)}
+            gutterWidth={12}
+            items={items}
+            minCols={minCols}
+            overscanFactor={2.8}
+            renderItem={(args): React.ReactElement => (
+              <PexelsMasonryItem {...args} />
+            )}
+            scrollContainer={(): HTMLElement => containerRef.current!}
+          />
+          <GalleryMasonryFooter
+            containerRef={containerRef}
+            hasMore={Boolean(hasMore)}
+            incrementPage={incrementPage}
+            isFetching={isFetching}
+          />
+        </React.Fragment>
       )}
-      <GalleryMasonryFooter
-        containerRef={containerRef}
-        hasMore={Boolean(hasMore)}
-        incrementPage={incrementPage}
-        isFetching={isFetching}
-      />
     </React.Fragment>
   );
 };
@@ -132,7 +133,7 @@ const Library = ({
 
   return (
     <React.Fragment>
-      {isLoading ? (
+      {isLoading || (isFetching && page === 1) ? (
         <div
           aria-busy={"true"}
           className={clsx("full-w", "full-h", "flex-center")}
@@ -140,8 +141,7 @@ const Library = ({
         >
           <Spinner />
         </div>
-      ) : null}
-      {isError ? (
+      ) : isError ? (
         <ErrorState
           autoSize
           componentProps={{

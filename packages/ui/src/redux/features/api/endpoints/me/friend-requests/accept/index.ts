@@ -23,6 +23,9 @@ export const { useAcceptFriendRequestMutation } = apiSlice.injectEndpoints({
         url: `/${SEGMENT(body.id)}`,
         method: "POST"
       }),
+      invalidatesTags: (result, error, arg) => [
+        { type: "FriendRequest", id: arg.id }
+      ],
       onQueryStarted: async (arg, { dispatch, queryFulfilled }) => {
         queryFulfilled.then(() => {
           dispatch(setSelfPendingFriendRequestCount(decrementAction));

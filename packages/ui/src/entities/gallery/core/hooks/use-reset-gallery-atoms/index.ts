@@ -2,7 +2,6 @@ import { useResetAtom } from "jotai/utils";
 import React from "react";
 
 import {
-  fetchingAtom,
   navSegmentAtom,
   pendingImageAtom,
   queryAtom,
@@ -15,7 +14,6 @@ import {
  * Hook for resetting gallery atom values
  */
 export const useResetGalleryAtoms = (): (() => void) => {
-  const resetFetching = useResetAtom(fetchingAtom);
   const resetNavSegment = useResetAtom(navSegmentAtom);
   const resetPendingImage = useResetAtom(pendingImageAtom);
   const resetQuery = useResetAtom(queryAtom);
@@ -24,7 +22,6 @@ export const useResetGalleryAtoms = (): (() => void) => {
   const resetUploading = useResetAtom(uploadingAtom);
 
   return React.useCallback(() => {
-    resetFetching();
     resetNavSegment();
     resetPendingImage();
     resetQuery();
@@ -32,7 +29,6 @@ export const useResetGalleryAtoms = (): (() => void) => {
     resetSidebarTab();
     resetUploading();
   }, [
-    resetFetching,
     resetNavSegment,
     resetPendingImage,
     resetQuery,

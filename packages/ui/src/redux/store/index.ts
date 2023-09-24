@@ -15,9 +15,7 @@ import { initialState } from "~/redux/state";
 
 import { apiSlice } from "../features/api/slice";
 import authSlice from "../features/auth/slice";
-import bannerSlice from "../features/banner/slice";
 import entitiesSlice from "../features/entities/slice";
-import notificationSlice from "../features/notification/slice";
 import notificationsSlice from "../features/notifications/slice";
 import preferencesSlice from "../features/preferences/slice";
 import toastSlice from "../features/toast/slice";
@@ -27,8 +25,6 @@ export const rootReducer = combineReducers({
   preferences: preferencesSlice,
   entities: entitiesSlice,
   auth: authSlice,
-  banner: bannerSlice,
-  notification: notificationSlice,
   notifications: notificationsSlice,
   toast: toastSlice,
   [apiSlice.reducerPath]: apiSlice.reducer

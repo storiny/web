@@ -26,7 +26,7 @@ export const { useAddReplyMutation } = apiSlice.injectEndpoints({
           "Content-type": ContentType.JSON
         }
       }),
-      invalidatesTags: () => [{ type: "Reply" }],
+      invalidatesTags: ["Reply"],
       onQueryStarted: async (arg, { dispatch, queryFulfilled }) => {
         queryFulfilled.then(() => {
           dispatch(setCommentReplyCount([arg.commentId, incrementAction]));

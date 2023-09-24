@@ -3,6 +3,14 @@ import _m0 from "protobufjs/minimal";
 
 export const protobufPackage = "tag_def.v1";
 
+export interface Tag {
+  id: string;
+  name: string;
+  story_count: number;
+  follower_count: number;
+  created_at: string;
+}
+
 export interface GetTagRequest {
   name: string;
   current_user_id?: string | undefined;
@@ -26,6 +34,125 @@ export interface GetFollowedTagCountRequest {
 export interface GetFollowedTagCountResponse {
   followed_tag_count: number;
 }
+
+function createBaseTag(): Tag {
+  return { id: "", name: "", story_count: 0, follower_count: 0, created_at: "" };
+}
+
+export const Tag = {
+  encode(message: Tag, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.id !== "") {
+      writer.uint32(10).string(message.id);
+    }
+    if (message.name !== "") {
+      writer.uint32(18).string(message.name);
+    }
+    if (message.story_count !== 0) {
+      writer.uint32(24).int32(message.story_count);
+    }
+    if (message.follower_count !== 0) {
+      writer.uint32(32).int32(message.follower_count);
+    }
+    if (message.created_at !== "") {
+      writer.uint32(42).string(message.created_at);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): Tag {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseTag();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.id = reader.string();
+          continue;
+        case 2:
+          if (tag !== 18) {
+            break;
+          }
+
+          message.name = reader.string();
+          continue;
+        case 3:
+          if (tag !== 24) {
+            break;
+          }
+
+          message.story_count = reader.int32();
+          continue;
+        case 4:
+          if (tag !== 32) {
+            break;
+          }
+
+          message.follower_count = reader.int32();
+          continue;
+        case 5:
+          if (tag !== 42) {
+            break;
+          }
+
+          message.created_at = reader.string();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): Tag {
+    return {
+      id: isSet(object.id) ? String(object.id) : "",
+      name: isSet(object.name) ? String(object.name) : "",
+      story_count: isSet(object.story_count) ? Number(object.story_count) : 0,
+      follower_count: isSet(object.follower_count) ? Number(object.follower_count) : 0,
+      created_at: isSet(object.created_at) ? String(object.created_at) : "",
+    };
+  },
+
+  toJSON(message: Tag): unknown {
+    const obj: any = {};
+    if (message.id !== "") {
+      obj.id = message.id;
+    }
+    if (message.name !== "") {
+      obj.name = message.name;
+    }
+    if (message.story_count !== 0) {
+      obj.story_count = Math.round(message.story_count);
+    }
+    if (message.follower_count !== 0) {
+      obj.follower_count = Math.round(message.follower_count);
+    }
+    if (message.created_at !== "") {
+      obj.created_at = message.created_at;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<Tag>, I>>(base?: I): Tag {
+    return Tag.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<Tag>, I>>(object: I): Tag {
+    const message = createBaseTag();
+    message.id = object.id ?? "";
+    message.name = object.name ?? "";
+    message.story_count = object.story_count ?? 0;
+    message.follower_count = object.follower_count ?? 0;
+    message.created_at = object.created_at ?? "";
+    return message;
+  },
+};
 
 function createBaseGetTagRequest(): GetTagRequest {
   return { name: "", current_user_id: undefined };

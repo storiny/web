@@ -23,7 +23,7 @@ import { breakpoints } from "~/theme/breakpoints";
 import { abbreviateNumber } from "~/utils/abbreviateNumber";
 import { DateFormat, formatDate } from "~/utils/formatDate";
 
-import ResponseParser from "../common/ResponseParser";
+import ResponseParser from "../common/response-parser";
 import Actions from "./actions";
 import styles from "./reply.module.scss";
 import { ReplyProps } from "./reply.props";

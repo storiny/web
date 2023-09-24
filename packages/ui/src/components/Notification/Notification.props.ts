@@ -7,15 +7,13 @@ import React from "react";
 
 import { PolymorphicProps } from "~/types/index";
 
-export type NotificationIcon = "info" | "typography" | "exclamation";
-
 type NotificationPrimitive = ToastPrimitiveProps & PolymorphicProps<"li">;
 
 export interface NotificationProps extends NotificationPrimitive {
   /**
    * The icon placed before the children.
    */
-  icon?: NotificationIcon;
+  icon?: React.ReactNode;
   /**
    * The text for primary button.
    * @default 'Confirm'

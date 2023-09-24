@@ -170,10 +170,10 @@ const Client = (): React.ReactElement => {
     []
   );
 
-  const handleChange = React.useCallback(
-    (newValue: NotificationsTabValue) => setValue(newValue),
-    []
-  );
+  const handleChange = React.useCallback((newValue: NotificationsTabValue) => {
+    setPage(1);
+    setValue(newValue);
+  }, []);
 
   return (
     <>
@@ -190,7 +190,7 @@ const Client = (): React.ReactElement => {
         />
       ) : !isFetching && !items.length ? (
         <EmptyState tab={value} />
-      ) : isLoading ? (
+      ) : isLoading || (isFetching && page === 1) ? (
         <NotificationListSkeleton />
       ) : (
         <VirtualizedNotificationList

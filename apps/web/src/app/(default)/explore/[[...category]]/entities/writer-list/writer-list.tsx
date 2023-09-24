@@ -37,8 +37,9 @@ const WriterList = ({
 
   return (
     <>
-      {loading ? <UserListSkeleton /> : null}
-      {isError ? (
+      {loading || (isFetching && page === 1) ? (
+        <UserListSkeleton />
+      ) : isError ? (
         <ErrorState
           autoSize
           componentProps={{

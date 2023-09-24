@@ -2,19 +2,31 @@ syntax = "proto3";
 
 package story_def.v1;
 
-message Story {
-  string id /*                            */ = 1;
-  string title /*                         */ = 2;
-  optional string slug /*                 */ = 3;
-  optional string description /*          */ = 4;
-  optional string splash_id /*            */ = 5;
-  optional string splash_hex /*           */ = 6;
-  uint64 like_count /*                    */ = 7;
-  uint64 read_count /*                    */ = 8;
-  uint32 word_count /*                    */ = 9;
-  string created_at /*                    */ = 10;
-  optional string edited_at /*            */ = 11;
-  optional string published_at /*         */ = 12;
+import "tag_def/v1/def.proto";
+import "user_def/v1/def.proto";
+
+enum StoryAgeRestriction {
+  STORY_AGE_RESTRICTION_UNSPECIFIED /**/ = 0;
+  STORY_AGE_RESTRICTION_NOT_RATED /*  */ = 1;
+  STORY_AGE_RESTRICTION_RATED /*      */ = 2;
+}
+
+enum StoryVisibility {
+  STORY_VISIBILITY_UNSPECIFIED /**/ = 0;
+  STORY_VISIBILITY_UNLISTED /*   */ = 1;
+  STORY_VISIBILITY_PUBLIC /*     */ = 2;
+}
+
+enum StoryLicense {
+  STORY_LICENSE_UNSPECIFIED /**/ = 0;
+  STORY_LICENSE_CC_ZERO /*    */ = 1;
+  STORY_LICENSE_RESERVED /*   */ = 2;
+  STORY_LICENSE_CC_BY /*      */ = 3;
+  STORY_LICENSE_CC_BY_SA /*   */ = 4;
+  STORY_LICENSE_CC_BY_ND /*   */ = 5;
+  STORY_LICENSE_CC_BY_NC /*   */ = 6;
+  STORY_LICENSE_CC_BY_NC_SA /**/ = 7;
+  STORY_LICENSE_CC_BY_NC_ND /**/ = 8;
 }
 
 message Draft {
@@ -49,4 +61,47 @@ message GetStoriesInfoRequest {
 message GetStoriesInfoResponse {
   uint32 published_story_count /**/ = 1;
   uint32 deleted_story_count /*  */ = 2;
+}
+
+// Main story request
+
+message GetStoryRequest {
+  string id_or_slug /*    */ = 1;
+  optional string token /**/ = 2;
+}
+
+message GetStoryResponse {
+  string id /*                           */ = 1;
+  string title /*                        */ = 2;
+  optional string slug /*                */ = 3;
+  optional string description /*         */ = 4;
+  optional string splash_id /*           */ = 5;
+  optional string splash_hex /*          */ = 6;
+  string doc_key /*                      */ = 7;
+  string category /*                     */ = 8;
+  string user_id /*                      */ = 9;
+  uint64 like_count /*                   */ = 10;
+  uint64 read_count /*                   */ = 11;
+  uint32 word_count /*                   */ = 12;
+  uint32 comment_count /*                */ = 13;
+  StoryAgeRestriction age_restriction /* */ = 14;
+  StoryLicense license /*                */ = 15;
+  StoryVisibility visibility /*          */ = 16;
+  // SEO
+  optional string canonical_url /*       */ = 17;
+  optional string seo_description /*     */ = 18;
+  optional string seo_title /*           */ = 19;
+  optional string preview_image /*       */ = 20;
+  string created_at /*                   */ = 21;
+  optional string edited_at /*           */ = 22;
+  optional string published_at /*        */ = 23;
+  optional string deleted_at /*          */ = 24;
+  user_def.v1.User user /*               */ = 25;
+  // User specific props
+  bool is_bookmarked /*                  */ = 26;
+  bool is_liked /*                       */ = 27;
+  bool disable_comments /*               */ = 28;
+  bool disable_public_revision_history /**/ = 29;
+  bool disable_toc /*                    */ = 30;
+  repeated tag_def.v1.Tag tags /*        */ = 31;
 }

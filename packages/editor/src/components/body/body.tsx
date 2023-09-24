@@ -59,6 +59,7 @@ const HorizontalRulePlugin = dynamic(() =>
   )
 );
 const RegisterTools = dynamic(() => import("../register-tools"));
+// const FontSettings = dynamic(() => import("../font-settings"));
 
 const EditorBody = (props: EditorProps): React.ReactElement => {
   const { role, docId, initialDoc, readOnly } = props;
@@ -139,7 +140,12 @@ const EditorBody = (props: EditorProps): React.ReactElement => {
           overlay
         />
       )}
-      {readOnly && <StoryFooter />}
+      {readOnly && (
+        <React.Fragment>
+          <StoryFooter />
+          {/*<FontSettings />*/}
+        </React.Fragment>
+      )}
     </article>
   );
 };

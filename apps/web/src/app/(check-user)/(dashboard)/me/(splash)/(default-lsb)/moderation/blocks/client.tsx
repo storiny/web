@@ -148,15 +148,15 @@ const ModerationBlocksClient = (props: BlocksProps): React.ReactElement => {
     []
   );
 
-  const handleSortChange = React.useCallback(
-    (newSort: BlocksSortValue) => setSort(newSort),
-    []
-  );
+  const handleSortChange = React.useCallback((newSort: BlocksSortValue) => {
+    setPage(1);
+    setSort(newSort);
+  }, []);
 
-  const handleQueryChange = React.useCallback(
-    (newQuery: string) => setQuery(newQuery),
-    []
-  );
+  const handleQueryChange = React.useCallback((newQuery: string) => {
+    setPage(1);
+    setQuery(newQuery);
+  }, []);
 
   return (
     <React.Fragment>
@@ -170,8 +170,9 @@ const ModerationBlocksClient = (props: BlocksProps): React.ReactElement => {
           query={query}
           sort={sort}
         />
-        {isLoading || isTyping ? <UserListSkeleton /> : null}
-        {isError ? (
+        {isLoading || isTyping || (isFetching && page === 1) ? (
+          <UserListSkeleton />
+        ) : isError ? (
           <ErrorState
             autoSize
             componentProps={{

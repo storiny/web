@@ -24,8 +24,9 @@ const CommentReplyList = (props: { commentId: string }): React.ReactElement => {
 
   return (
     <React.Fragment>
-      {isLoading ? <ReplyListSkeleton nested /> : null}
-      {isError ? (
+      {isLoading || (isFetching && page === 1) ? (
+        <ReplyListSkeleton nested />
+      ) : isError ? (
         <ErrorState
           autoSize
           componentProps={{
@@ -40,6 +41,8 @@ const CommentReplyList = (props: { commentId: string }): React.ReactElement => {
           loadMore={loadMore}
           replies={items}
           replyProps={{ nested: true }}
+          // Handle the reply list nicely
+          scrollSeekConfiguration={undefined}
           skeletonProps={{ nested: true }}
         />
       )}

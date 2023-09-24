@@ -1,6 +1,5 @@
 import { REPLY_PROPS } from "@storiny/shared";
 import { clsx } from "clsx";
-import NextLink from "next/link";
 import React from "react";
 
 import Avatar from "~/components/Avatar";
@@ -8,12 +7,11 @@ import Button from "~/components/Button";
 import { useToast } from "~/components/Toast";
 import ResponseTextarea from "~/entities/ResponseTextarea";
 import {
-  getCommentRepliesApi,
   selectLoggedIn,
   selectUser,
   useAddReplyMutation
 } from "~/redux/features";
-import { useAppDispatch, useAppSelector } from "~/redux/hooks";
+import { useAppSelector } from "~/redux/hooks";
 
 import styles from "./post-reply.module.scss";
 
@@ -25,29 +23,31 @@ const PostReply = ({
   placeholder: string;
 }): React.ReactElement => {
   const toast = useToast();
-  const dispatch = useAppDispatch();
   const user = useAppSelector(selectUser);
   const loggedIn = useAppSelector(selectLoggedIn);
   const textareaRef = React.useRef<HTMLTextAreaElement | null>(null);
   const [addReply, { isLoading }] = useAddReplyMutation();
 
   const handlePost = (): void => {
-    addReply({
-      commentId,
-      content: textareaRef.current?.value || ""
-    })
-      .unwrap()
-      .then(() => {
-        if (textareaRef.current) {
-          textareaRef.current.value = "";
-        }
-
-        toast("Reply added", "success");
-        dispatch(getCommentRepliesApi.util.resetApiState());
+    if (textareaRef.current?.value) {
+      addReply({
+        commentId,
+        content: textareaRef.current.value
       })
-      .catch((e) =>
-        toast(e?.data?.error || "Could not add your reply", "error")
-      );
+        .unwrap()
+        .then(() => {
+          if (textareaRef.current) {
+            textareaRef.current.value = "";
+          }
+
+          toast("Reply added", "success");
+        })
+        .catch((e) =>
+          toast(e?.data?.error || "Could not add your reply", "error")
+        );
+    } else {
+      toast("Reply content cannot be empty", "error");
+    }
   };
 
   return (
@@ -59,9 +59,7 @@ const PostReply = ({
       )}
     >
       {!loggedIn ? (
-        <Button as={NextLink} href={"/login"}>
-          Log in to leave a reply
-        </Button>
+        <Button checkAuth>Log in to leave a reply</Button>
       ) : (
         <React.Fragment>
           <Avatar

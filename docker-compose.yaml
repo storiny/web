@@ -28,8 +28,10 @@ services:
       /bin/sh -c "
       /usr/bin/mc config host add objstore http://storiny-minio:9000 minio_user minio_pass;
       /usr/bin/mc mb objstore/base;
+      /usr/bin/mc mb objstore/docs;
       /usr/bin/mc mb objstore/uploads;
       /usr/bin/mc anonymous set public objstore/base;
+      /usr/bin/mc anonymous set public objstore/docs;
       /usr/bin/mc anonymous set public objstore/uploads;
       exit 0;
       "

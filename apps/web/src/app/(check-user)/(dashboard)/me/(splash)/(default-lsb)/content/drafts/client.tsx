@@ -253,15 +253,15 @@ const ContentDraftsClient = (props: DraftsProps): React.ReactElement => {
     setValue(newValue);
   }, []);
 
-  const handleSortChange = React.useCallback(
-    (newSort: DraftsSortValue) => setSort(newSort),
-    []
-  );
+  const handleSortChange = React.useCallback((newSort: DraftsSortValue) => {
+    setPage(1);
+    setSort(newSort);
+  }, []);
 
-  const handleQueryChange = React.useCallback(
-    (newQuery: string) => setQuery(newQuery),
-    []
-  );
+  const handleQueryChange = React.useCallback((newQuery: string) => {
+    setPage(1);
+    setQuery(newQuery);
+  }, []);
 
   return (
     <React.Fragment>
@@ -285,8 +285,9 @@ const ContentDraftsClient = (props: DraftsProps): React.ReactElement => {
             sort={sort}
           />
         )}
-        {isLoading || isTyping ? <StoryListSkeleton isSmall /> : null}
-        {isError ? (
+        {isLoading || isTyping || (isFetching && page === 1) ? (
+          <StoryListSkeleton isSmall />
+        ) : isError ? (
           <ErrorState
             autoSize
             componentProps={{

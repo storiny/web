@@ -8,7 +8,6 @@ import Menu from "~/components/Menu";
 import MenuItem from "~/components/MenuItem";
 import Separator from "~/components/Separator";
 import { useToast } from "~/components/Toast";
-import ResponseEditor from "~/entities/common/ResponseEditor";
 import { useClipboard } from "~/hooks/useClipboard";
 import CopyIcon from "~/icons/Copy";
 import DotsIcon from "~/icons/Dots";
@@ -23,6 +22,8 @@ import {
   useReplyVisibilityMutation
 } from "~/redux/features";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
+
+import ResponseEditor from "../../common/response-editor";
 
 const ReplyActions = ({
   reply,

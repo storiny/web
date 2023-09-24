@@ -15,7 +15,6 @@ const GalleryEmptyState = ({
   const query = useAtomValue(queryAtom);
   return (
     <CustomState
-      autoSize
       description={
         query
           ? "Your search criteria did not match anything, make sure you've spelled it correctly or try again by being more specific."
@@ -23,6 +22,7 @@ const GalleryEmptyState = ({
           ? "Media you upload will appear here."
           : "Looks like we'll just have to use our imaginations for now."
       }
+      size={"sm"}
       title={
         query
           ? `Could not find any media for "${query}"`

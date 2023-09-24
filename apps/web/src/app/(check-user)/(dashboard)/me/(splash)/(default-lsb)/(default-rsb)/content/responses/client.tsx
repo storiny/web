@@ -233,8 +233,9 @@ const CommentList = (props: {
         sort={sort}
         tab={"comments"}
       />
-      {isLoading || isTyping ? <CommentListSkeleton isExtended /> : null}
-      {isError ? (
+      {isLoading || isTyping || (isFetching && page === 1) ? (
+        <CommentListSkeleton isExtended />
+      ) : isError ? (
         <ErrorState
           autoSize
           componentProps={{
@@ -294,8 +295,9 @@ const ReplyList = (props: {
         sort={sort}
         tab={"replies"}
       />
-      {isLoading || isTyping ? <ReplyListSkeleton /> : null}
-      {isError ? (
+      {isLoading || isTyping || (isFetching && page === 1) ? (
+        <ReplyListSkeleton />
+      ) : isError ? (
         <ErrorState
           autoSize
           componentProps={{
@@ -341,15 +343,15 @@ const ContentResponsesClient = (props: ResponsesProps): React.ReactElement => {
     setValue(newValue);
   }, []);
 
-  const handleSortChange = React.useCallback(
-    (newSort: ResponsesSortValue) => setSort(newSort),
-    []
-  );
+  const handleSortChange = React.useCallback((newSort: ResponsesSortValue) => {
+    setPage(1);
+    setSort(newSort);
+  }, []);
 
-  const handleQueryChange = React.useCallback(
-    (newQuery: string) => setQuery(newQuery),
-    []
-  );
+  const handleQueryChange = React.useCallback((newQuery: string) => {
+    setPage(1);
+    setQuery(newQuery);
+  }, []);
 
   return (
     <React.Fragment>

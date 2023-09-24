@@ -16,6 +16,7 @@ const robots = (): MetadataRoute.Robots => ({
       "/static/",
       "/vendor/",
       "/api/",
+      "/doc/",
       "/profile$",
       "/new$",
       "/handler$",

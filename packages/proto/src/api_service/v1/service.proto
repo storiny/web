@@ -88,4 +88,8 @@ service ApiService {
    * Returns the user's mute count
    */
   rpc GetUserMuteCount(user_def.v1.GetUserMuteCountRequest) returns (user_def.v1.GetUserMuteCountResponse) {}
+  /**
+   * Returns the story's data
+   */
+  rpc GetStory(story_def.v1.GetStoryRequest) returns (story_def.v1.GetStoryResponse) {}
 }

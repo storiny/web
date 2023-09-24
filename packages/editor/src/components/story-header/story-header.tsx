@@ -1,14 +1,17 @@
 import { clsx } from "clsx";
-import { useAtomValue } from "jotai";
+import { useAtom, useAtomValue } from "jotai";
 import NextLink from "next/link";
 import React from "react";
 
+import Button from "~/components/Button";
 import IconButton from "~/components/IconButton";
+import Link from "~/components/Link";
 import Menu from "~/components/Menu";
 import MenuItem from "~/components/MenuItem";
 import Separator from "~/components/Separator";
 import Spacer from "~/components/Spacer";
 import Typography from "~/components/Typography";
+import Persona from "~/entities/Persona";
 import { useClipboard } from "~/hooks/useClipboard";
 import { useMediaQuery } from "~/hooks/useMediaQuery";
 import { useWebShare } from "~/hooks/useWebShare";
@@ -21,19 +24,33 @@ import DotsIcon from "~/icons/Dots";
 import MuteIcon from "~/icons/Mute";
 import ReportIcon from "~/icons/Report";
 import ShareIcon from "~/icons/Share";
-import { selectUser, setBookmark, setMute } from "~/redux/features";
+import SidebarCollapseIcon from "~/icons/SidebarCollapse";
+import SidebarExpandIcon from "~/icons/SidebarExpand";
+import UserCheckIcon from "~/icons/UserCheck";
+import UserPlusIcon from "~/icons/UserPlus";
+import {
+  selectUser,
+  setBookmark,
+  setFollowing,
+  setMute
+} from "~/redux/features";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 import { breakpoints } from "~/theme/breakpoints";
+import { abbreviateNumber } from "~/utils/abbreviateNumber";
 import { DateFormat, formatDate } from "~/utils/formatDate";
 import { getReadTime } from "~/utils/getReadTime";
 
-import { storyMetadataAtom } from "../../atoms";
+import { sidebarsCollapsedAtom, storyMetadataAtom } from "../../atoms";
 import styles from "./story-header.module.scss";
 
 // Actions
 
 const StoryActions = (): React.ReactElement => {
+  const isLargerThanDesktop = useMediaQuery(breakpoints.up("desktop"));
   const story = useAtomValue(storyMetadataAtom);
+  const [sidebarsCollapsed, setSidebarsCollapsed] = useAtom(
+    sidebarsCollapsedAtom
+  );
   const share = useWebShare();
   const copy = useClipboard();
   const dispatch = useAppDispatch();
@@ -95,6 +112,23 @@ const StoryActions = (): React.ReactElement => {
         >
           Copy link to story
         </MenuItem>
+        {isLargerThanDesktop && (
+          <React.Fragment>
+            <Separator />
+            <MenuItem
+              decorator={
+                sidebarsCollapsed ? (
+                  <SidebarExpandIcon />
+                ) : (
+                  <SidebarCollapseIcon />
+                )
+              }
+              onClick={(): void => setSidebarsCollapsed((prev) => !prev)}
+            >
+              {sidebarsCollapsed ? "Expand" : "Collapse"} sidebars
+            </MenuItem>
+          </React.Fragment>
+        )}
         <Separator />
         <MenuItem
           checkAuth
@@ -119,14 +153,91 @@ const StoryActions = (): React.ReactElement => {
   );
 };
 
+// Sub-header
+
+const Subheader = (): React.ReactElement => {
+  const dispatch = useAppDispatch();
+  const isMobile = useMediaQuery(breakpoints.down("mobile"));
+  const story = useAtomValue(storyMetadataAtom);
+  const user = story.user!;
+  const followerCount =
+    useAppSelector((state) => state.entities.followerCounts[user.id]) || 0;
+  const isFollowing = useAppSelector(
+    (state) => state.entities.following[user.id]
+  );
+
+  return (
+    <div className={"flex-center"}>
+      <Persona
+        avatar={{
+          alt: `${user?.name}'s avatar`,
+          avatarId: user?.avatar_id,
+          label: user?.name,
+          hex: user?.avatar_hex
+        }}
+        componentProps={{
+          secondaryText: {
+            ellipsis: true
+          }
+        }}
+        primaryText={
+          <Link ellipsis fixedColor href={`/${user.username}`}>
+            {user.name}
+          </Link>
+        }
+        secondaryText={
+          <>
+            @{user.username} &bull; {abbreviateNumber(followerCount)}{" "}
+            {followerCount === 1 ? "follower" : "followers"}
+          </>
+        }
+        size={"lg"}
+      />
+      <Spacer className={"f-grow"} size={2} />
+      {isMobile ? (
+        <IconButton
+          autoSize
+          checkAuth
+          onClick={(): void => {
+            dispatch(setFollowing([user.id]));
+          }}
+          variant={isFollowing ? "hollow" : "rigid"}
+        >
+          {isFollowing ? <UserCheckIcon /> : <UserPlusIcon />}
+        </IconButton>
+      ) : (
+        <Button
+          autoSize
+          checkAuth
+          decorator={isFollowing ? <UserCheckIcon /> : <UserPlusIcon />}
+          onClick={(): void => {
+            dispatch(setFollowing([user.id]));
+          }}
+          variant={isFollowing ? "hollow" : "rigid"}
+        >
+          {isFollowing ? "Following" : "Follow"}
+        </Button>
+      )}
+    </div>
+  );
+};
+
 const StoryHeader = (): React.ReactElement => {
   const isMobile = useMediaQuery(breakpoints.down("mobile"));
+  const isSmallerThanDesktop = useMediaQuery(breakpoints.down("desktop"));
+  const sidebarsCollapsed = useAtomValue(sidebarsCollapsedAtom);
   const story = useAtomValue(storyMetadataAtom);
   const user = useAppSelector(selectUser);
 
   return (
     <header>
       <Typography level={"h1"}>{story.title}</Typography>
+      {isSmallerThanDesktop || sidebarsCollapsed ? (
+        <React.Fragment>
+          <Spacer orientation={"vertical"} size={sidebarsCollapsed ? 4 : 2} />
+          <Subheader />
+        </React.Fragment>
+      ) : null}
       <Spacer orientation={"vertical"} size={2} />
       <div className={clsx("flex-center", styles.metadata)}>
         <Typography

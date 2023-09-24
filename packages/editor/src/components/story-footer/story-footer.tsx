@@ -11,16 +11,23 @@ import { useAtomValue } from "jotai";
 import React from "react";
 
 import Divider from "~/components/Divider";
+import Grow from "~/components/Grow";
 import Spacer from "~/components/Spacer";
 import Typography from "~/components/Typography";
 import TagChip from "~/entities/TagChip";
 import { useMediaQuery } from "~/hooks/useMediaQuery";
+import CommentIcon from "~/icons/Comment";
 import EditIcon from "~/icons/Edit";
+import { useAppSelector } from "~/redux/hooks";
 import { breakpoints } from "~/theme/breakpoints";
+import { abbreviateNumber } from "~/utils/abbreviateNumber";
 import { DateFormat, formatDate } from "~/utils/formatDate";
 
 import { storyMetadataAtom } from "../../atoms";
+import LikeButton from "../layout/right-sidebar/content/read-only/stats/like-button";
 import styles from "./story-footer.module.scss";
+
+// License
 
 const License = (): React.ReactElement | null => {
   const story = useAtomValue(storyMetadataAtom);
@@ -42,8 +49,32 @@ const License = (): React.ReactElement | null => {
   );
 };
 
+// Actions
+
+const Actions = (): React.ReactElement => {
+  const story = useAtomValue(storyMetadataAtom);
+  const readCount = story.stats.read_count + 1; // Also include the current reading session
+
+  return (
+    <div className={"flex-center"}>
+      <Typography
+        className={"t-medium"}
+        level={"body2"}
+        title={`${readCount.toLocaleString()} ${
+          readCount === 1 ? "read" : "reads"
+        }`}
+      >
+        {abbreviateNumber(readCount)} {readCount === 1 ? "read" : "reads"}
+      </Typography>
+      <Grow />
+      <LikeButton />
+    </div>
+  );
+};
+
 const StoryFooter = (): React.ReactElement => {
   const isMobile = useMediaQuery(breakpoints.down("mobile"));
+  const isSmallerThanDesktop = useMediaQuery(breakpoints.down("desktop"));
   const story = useAtomValue(storyMetadataAtom);
 
   return (
@@ -51,6 +82,14 @@ const StoryFooter = (): React.ReactElement => {
       <Spacer orientation={"vertical"} size={15} />
       <Divider />
       <Spacer orientation={"vertical"} size={3} />
+      {isSmallerThanDesktop && (
+        <React.Fragment>
+          <Actions />
+          <Spacer orientation={"vertical"} size={3} />
+          <Divider />
+          <Spacer orientation={"vertical"} size={3} />
+        </React.Fragment>
+      )}
       {story.category !== StoryCategory.OTHERS || story.edited_at !== null ? (
         <div className={clsx("flex", styles["footer-row"])}>
           {story.category !== StoryCategory.OTHERS && (

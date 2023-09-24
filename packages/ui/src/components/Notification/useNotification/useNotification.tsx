@@ -1,33 +1,13 @@
-import { renderNotification } from "~/redux/features/notification/slice";
-import { useAppDispatch } from "~/redux/hooks";
+// import { useSetAtom } from "jotai";
+//
+// import { NotificationProps } from "~/components/Notification";
 
-import { NotificationIcon } from "../Notification.props";
+// TODO: Implement
 
-/**
- * Hook for rendering notifications
- */
-export const useNotification = (): ((
-  message: string,
-  {
-    icon,
-    primaryText,
-    secondaryText
-  }?: { icon?: NotificationIcon; primaryText?: string; secondaryText?: string }
-) => void) => {
-  const dispatch = useAppDispatch();
-
-  return (
-    message: string,
-    {
-      icon,
-      primaryText,
-      secondaryText
-    }: {
-      icon?: NotificationIcon;
-      primaryText?: string;
-      secondaryText?: string;
-    } = {}
-  ) => {
-    dispatch(renderNotification({ message, icon, primaryText, secondaryText }));
-  };
-};
+// /**
+//  * Hook for rendering notifications
+//  */
+// export const useNotification = (): ((props: NotificationProps) => void) => {
+//   const setProps = useSetAtom(notificationAtom);
+//   return (props: NotificationProps) => setProps(props);
+// };

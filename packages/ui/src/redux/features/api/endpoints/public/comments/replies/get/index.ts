@@ -8,7 +8,7 @@ const ITEMS_PER_PAGE = 10;
 
 export type GetCommentReliesResponse = Reply[];
 
-export const getCommentRepliesApi = apiSlice.injectEndpoints({
+export const { useGetCommentRepliesQuery } = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getCommentReplies: builder.query<
       { hasMore: boolean; items: Reply[] },
@@ -44,5 +44,3 @@ export const getCommentRepliesApi = apiSlice.injectEndpoints({
     })
   })
 });
-
-export const { useGetCommentRepliesQuery } = getCommentRepliesApi;

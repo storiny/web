@@ -104,6 +104,8 @@ const LikeButton = (): React.ReactElement => {
       } story (${likeCount.toLocaleString()} ${
         likeCount === 1 ? "like" : "likes"
       })`}
+      autoSize
+      checkAuth
       decorator={
         <Heart active={isLiked} shouldAnimate={shouldAnimateRef.current} />
       }

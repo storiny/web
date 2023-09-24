@@ -1,13 +1,10 @@
 /* eslint-disable */
-import {
+import { ChannelCredentials, Client, makeGenericClientConstructor, Metadata } from "@grpc/grpc-js";
+import type {
   CallOptions,
-  ChannelCredentials,
-  Client,
   ClientOptions,
   ClientUnaryCall,
   handleUnaryCall,
-  makeGenericClientConstructor,
-  Metadata,
   ServiceError,
   UntypedServiceImplementation,
 } from "@grpc/grpc-js";
@@ -31,6 +28,8 @@ import {
   GetDraftsInfoResponse,
   GetStoriesInfoRequest,
   GetStoriesInfoResponse,
+  GetStoryRequest,
+  GetStoryResponse,
 } from "../../story_def/v1/def";
 import {
   GetFollowedTagCountRequest,
@@ -253,6 +252,16 @@ export const ApiServiceService = {
       Buffer.from(GetUserMuteCountResponse.encode(value).finish()),
     responseDeserialize: (value: Buffer) => GetUserMuteCountResponse.decode(value),
   },
+  /** Returns the story's data */
+  getStory: {
+    path: "/api_service.v1.ApiService/GetStory",
+    requestStream: false,
+    responseStream: false,
+    requestSerialize: (value: GetStoryRequest) => Buffer.from(GetStoryRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer) => GetStoryRequest.decode(value),
+    responseSerialize: (value: GetStoryResponse) => Buffer.from(GetStoryResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => GetStoryResponse.decode(value),
+  },
 } as const;
 
 export interface ApiServiceServer extends UntypedServiceImplementation {
@@ -292,6 +301,8 @@ export interface ApiServiceServer extends UntypedServiceImplementation {
   getUserBlockCount: handleUnaryCall<GetUserBlockCountRequest, GetUserBlockCountResponse>;
   /** Returns the user's mute count */
   getUserMuteCount: handleUnaryCall<GetUserMuteCountRequest, GetUserMuteCountResponse>;
+  /** Returns the story's data */
+  getStory: handleUnaryCall<GetStoryRequest, GetStoryResponse>;
 }
 
 export interface ApiServiceClient extends Client {
@@ -582,6 +593,22 @@ export interface ApiServiceClient extends Client {
     metadata: Metadata,
     options: Partial<CallOptions>,
     callback: (error: ServiceError | null, response: GetUserMuteCountResponse) => void,
+  ): ClientUnaryCall;
+  /** Returns the story's data */
+  getStory(
+    request: GetStoryRequest,
+    callback: (error: ServiceError | null, response: GetStoryResponse) => void,
+  ): ClientUnaryCall;
+  getStory(
+    request: GetStoryRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: GetStoryResponse) => void,
+  ): ClientUnaryCall;
+  getStory(
+    request: GetStoryRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: GetStoryResponse) => void,
   ): ClientUnaryCall;
 }
 

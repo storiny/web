@@ -6,7 +6,6 @@ import React from "react";
 import Button from "../Button";
 import Notification from "./Notification";
 import { NotificationProps } from "./Notification.props";
-import { useNotification } from "./useNotification";
 
 const meta: Meta<typeof Notification> = {
   title: "Components/Notification",
@@ -32,21 +31,18 @@ const meta: Meta<typeof Notification> = {
 export default meta;
 type Story = StoryObj<typeof Notification>;
 
+// TODO: Fix
 const NotificationComponent = (
   props?: NotificationProps
-): React.ReactElement => {
-  const notify = useNotification();
-
-  return (
-    <Button
-      onClick={(): void =>
-        notify("This is a notification with a long notification content", props)
-      }
-    >
-      Show notification
-    </Button>
-  );
-};
+): React.ReactElement => (
+  <Button
+  // onClick={(): void =>
+  //  notify("This is a notification with a long notification content", props)
+  // }
+  >
+    Show notification
+  </Button>
+);
 
 export const Default: Story = {
   render: (args) => <NotificationComponent {...args} />

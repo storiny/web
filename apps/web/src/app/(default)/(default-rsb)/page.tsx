@@ -60,16 +60,17 @@ const Page = (): React.ReactElement => {
     []
   );
 
-  const handleChange = React.useCallback(
-    (newValue: IndexTabValue) => setValue(newValue),
-    []
-  );
+  const handleChange = React.useCallback((newValue: IndexTabValue) => {
+    setPage(1);
+    setValue(newValue);
+  }, []);
 
   return (
     <>
       <PageHeader onChange={handleChange} value={value} />
-      {isLoading ? <StoryListSkeleton /> : null}
-      {isError ? (
+      {isLoading || (isFetching && page === 1) ? (
+        <StoryListSkeleton />
+      ) : isError ? (
         <ErrorState
           autoSize
           componentProps={{
