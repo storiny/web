@@ -28,6 +28,13 @@ const EditorAuxiliaryContentCommentList = dynamic(
   }
 );
 
+const EditorAuxiliaryContentCommentListDisabledState = dynamic(
+  () => import("./comment-list/disabled-state"),
+  {
+    loading: dynamicLoader()
+  }
+);
+
 const EditorAuxiliaryContentSuggestionList = dynamic(
   () => import("./suggestion-list"),
   {
@@ -96,7 +103,7 @@ const Content = (): React.ReactElement => {
           <HeaderTabs onChange={setValue} value={value} />
         )}
         {value === "comments" && (
-          <div className={"flex-center"}>
+          <div className={clsx("full-h", "flex-center")}>
             <Typography
               className={clsx(
                 "t-bold",
@@ -106,11 +113,12 @@ const Content = (): React.ReactElement => {
               )}
               level={"body2"}
             >
-              {abbreviateNumber(commentCount)}{" "}
+              {story.disable_comments ? "No" : abbreviateNumber(commentCount)}{" "}
               {commentCount === 1 ? "comment" : "comments"}
             </Typography>
             <Divider orientation={"vertical"} />
             <Select
+              disabled={story.disable_comments}
               onValueChange={(nextValue): void =>
                 handleSortChange(nextValue as StoryCommentsSortValue)
               }
@@ -149,6 +157,8 @@ const Content = (): React.ReactElement => {
       )}
       {value === "suggested" ? (
         <EditorAuxiliaryContentSuggestionList />
+      ) : story.disable_comments ? (
+        <EditorAuxiliaryContentCommentListDisabledState />
       ) : (
         <EditorAuxiliaryContentCommentList
           setSort={handleSortChange}

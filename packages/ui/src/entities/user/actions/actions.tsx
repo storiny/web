@@ -98,7 +98,9 @@ const UserActions = (props: UserActionsProps): React.ReactElement | null => {
       </MenuItem>
       <MenuItem
         decorator={<CopyIcon />}
-        onClick={(): void => copy(`/${user.username}`)}
+        onClick={(): void =>
+          copy(`${process.env.NEXT_PUBLIC_WEB_URL}/${user.username}`)
+        }
       >
         Copy link to profile
       </MenuItem>

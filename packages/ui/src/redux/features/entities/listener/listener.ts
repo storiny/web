@@ -1,13 +1,13 @@
 import { AppStartListening } from "~/redux/listenerMiddleware";
 
 import { addBlockListener } from "./block";
-import { addFollowedTagListener } from "./followedTag";
+import { addFollowedTagListener } from "./followed-tag";
 import { addFollowerListener } from "./follower";
 import { addFollowingListener } from "./following";
 import { addFriendListener } from "./friend";
-import { addLikedCommentListener } from "./likedComment";
-import { addLikedReplyListener } from "./likedReply";
-import { addLikedStoryListener } from "./likedStory";
+import { addLikedCommentListener } from "./liked-comment";
+import { addLikedReplyListener } from "./liked-reply";
+import { addLikedStoryListener } from "./liked-story";
 import { addMuteListener } from "./mute";
 
 export const addEntitiesListeners = (

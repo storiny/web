@@ -59,10 +59,7 @@ export interface User {
   bio: string;
   avatar_id?: string | undefined;
   avatar_hex?: string | undefined;
-  banner_id?: string | undefined;
-  banner_hex?: string | undefined;
   public_flags: number;
-  wpm: number;
   is_private: boolean;
   location: string;
   created_at: string;
@@ -223,10 +220,7 @@ function createBaseUser(): User {
     bio: "",
     avatar_id: undefined,
     avatar_hex: undefined,
-    banner_id: undefined,
-    banner_hex: undefined,
     public_flags: 0,
-    wpm: 0,
     is_private: false,
     location: "",
     created_at: "",
@@ -259,44 +253,35 @@ export const User = {
     if (message.avatar_hex !== undefined) {
       writer.uint32(50).string(message.avatar_hex);
     }
-    if (message.banner_id !== undefined) {
-      writer.uint32(58).string(message.banner_id);
-    }
-    if (message.banner_hex !== undefined) {
-      writer.uint32(66).string(message.banner_hex);
-    }
     if (message.public_flags !== 0) {
-      writer.uint32(72).uint64(message.public_flags);
-    }
-    if (message.wpm !== 0) {
-      writer.uint32(80).uint32(message.wpm);
+      writer.uint32(56).uint64(message.public_flags);
     }
     if (message.is_private === true) {
-      writer.uint32(88).bool(message.is_private);
+      writer.uint32(64).bool(message.is_private);
     }
     if (message.location !== "") {
-      writer.uint32(98).string(message.location);
+      writer.uint32(74).string(message.location);
     }
     if (message.created_at !== "") {
-      writer.uint32(106).string(message.created_at);
+      writer.uint32(82).string(message.created_at);
     }
     if (message.follower_count !== 0) {
-      writer.uint32(112).uint32(message.follower_count);
+      writer.uint32(88).uint32(message.follower_count);
     }
     if (message.is_self !== undefined) {
-      writer.uint32(120).bool(message.is_self);
+      writer.uint32(96).bool(message.is_self);
     }
     if (message.is_following !== undefined) {
-      writer.uint32(128).bool(message.is_following);
+      writer.uint32(104).bool(message.is_following);
     }
     if (message.is_follower !== undefined) {
-      writer.uint32(136).bool(message.is_follower);
+      writer.uint32(112).bool(message.is_follower);
     }
     if (message.is_friend !== undefined) {
-      writer.uint32(144).bool(message.is_friend);
+      writer.uint32(120).bool(message.is_friend);
     }
     if (message.is_blocked_by_user !== undefined) {
-      writer.uint32(152).bool(message.is_blocked_by_user);
+      writer.uint32(128).bool(message.is_blocked_by_user);
     }
     return writer;
   },
@@ -351,91 +336,70 @@ export const User = {
           message.avatar_hex = reader.string();
           continue;
         case 7:
-          if (tag !== 58) {
-            break;
-          }
-
-          message.banner_id = reader.string();
-          continue;
-        case 8:
-          if (tag !== 66) {
-            break;
-          }
-
-          message.banner_hex = reader.string();
-          continue;
-        case 9:
-          if (tag !== 72) {
+          if (tag !== 56) {
             break;
           }
 
           message.public_flags = longToNumber(reader.uint64() as Long);
           continue;
-        case 10:
-          if (tag !== 80) {
+        case 8:
+          if (tag !== 64) {
             break;
           }
 
-          message.wpm = reader.uint32();
+          message.is_private = reader.bool();
+          continue;
+        case 9:
+          if (tag !== 74) {
+            break;
+          }
+
+          message.location = reader.string();
+          continue;
+        case 10:
+          if (tag !== 82) {
+            break;
+          }
+
+          message.created_at = reader.string();
           continue;
         case 11:
           if (tag !== 88) {
             break;
           }
 
-          message.is_private = reader.bool();
+          message.follower_count = reader.uint32();
           continue;
         case 12:
-          if (tag !== 98) {
+          if (tag !== 96) {
             break;
           }
 
-          message.location = reader.string();
+          message.is_self = reader.bool();
           continue;
         case 13:
-          if (tag !== 106) {
+          if (tag !== 104) {
             break;
           }
 
-          message.created_at = reader.string();
+          message.is_following = reader.bool();
           continue;
         case 14:
           if (tag !== 112) {
             break;
           }
 
-          message.follower_count = reader.uint32();
+          message.is_follower = reader.bool();
           continue;
         case 15:
           if (tag !== 120) {
             break;
           }
 
-          message.is_self = reader.bool();
+          message.is_friend = reader.bool();
           continue;
         case 16:
           if (tag !== 128) {
-            break;
-          }
-
-          message.is_following = reader.bool();
-          continue;
-        case 17:
-          if (tag !== 136) {
-            break;
-          }
-
-          message.is_follower = reader.bool();
-          continue;
-        case 18:
-          if (tag !== 144) {
-            break;
-          }
-
-          message.is_friend = reader.bool();
-          continue;
-        case 19:
-          if (tag !== 152) {
             break;
           }
 
@@ -458,10 +422,7 @@ export const User = {
       bio: isSet(object.bio) ? String(object.bio) : "",
       avatar_id: isSet(object.avatar_id) ? String(object.avatar_id) : undefined,
       avatar_hex: isSet(object.avatar_hex) ? String(object.avatar_hex) : undefined,
-      banner_id: isSet(object.banner_id) ? String(object.banner_id) : undefined,
-      banner_hex: isSet(object.banner_hex) ? String(object.banner_hex) : undefined,
       public_flags: isSet(object.public_flags) ? Number(object.public_flags) : 0,
-      wpm: isSet(object.wpm) ? Number(object.wpm) : 0,
       is_private: isSet(object.is_private) ? Boolean(object.is_private) : false,
       location: isSet(object.location) ? String(object.location) : "",
       created_at: isSet(object.created_at) ? String(object.created_at) : "",
@@ -494,17 +455,8 @@ export const User = {
     if (message.avatar_hex !== undefined) {
       obj.avatar_hex = message.avatar_hex;
     }
-    if (message.banner_id !== undefined) {
-      obj.banner_id = message.banner_id;
-    }
-    if (message.banner_hex !== undefined) {
-      obj.banner_hex = message.banner_hex;
-    }
     if (message.public_flags !== 0) {
       obj.public_flags = Math.round(message.public_flags);
-    }
-    if (message.wpm !== 0) {
-      obj.wpm = Math.round(message.wpm);
     }
     if (message.is_private === true) {
       obj.is_private = message.is_private;
@@ -547,10 +499,7 @@ export const User = {
     message.bio = object.bio ?? "";
     message.avatar_id = object.avatar_id ?? undefined;
     message.avatar_hex = object.avatar_hex ?? undefined;
-    message.banner_id = object.banner_id ?? undefined;
-    message.banner_hex = object.banner_hex ?? undefined;
     message.public_flags = object.public_flags ?? 0;
-    message.wpm = object.wpm ?? 0;
     message.is_private = object.is_private ?? false;
     message.location = object.location ?? "";
     message.created_at = object.created_at ?? "";

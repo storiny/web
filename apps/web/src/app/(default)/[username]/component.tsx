@@ -24,9 +24,9 @@ const generateJsonLd = (profile: Props["profile"]): Graph => ({
       alternateName: "Share your story.",
       image: {
         "@type": "ImageObject",
-        height: "128",
+        height: 128 as unknown as string,
         url: getCdnUrl("web-assets/brand/logos/plain/logo", ImageSize.W_128),
-        width: "128"
+        width: 128 as unknown as string
       },
       name: "Storiny",
       url: process.env.NEXT_PUBLIC_WEB_URL
@@ -39,9 +39,9 @@ const generateJsonLd = (profile: Props["profile"]): Graph => ({
       image: profile.avatar_id
         ? {
             "@type": "ImageObject",
-            height: "64",
+            height: 64 as unknown as string,
             url: getCdnUrl(profile.avatar_id, ImageSize.W_64),
-            width: "64"
+            width: 64 as unknown as string
           }
         : undefined,
       jobTitle: "Writer at Storiny",
@@ -52,7 +52,8 @@ const generateJsonLd = (profile: Props["profile"]): Graph => ({
           ? {
               "@type": "ImageObject",
               url: getCdnUrl(profile.avatar_id, ImageSize.W_256),
-              width: "256"
+              width: 256 as unknown as string,
+              height: 256 as unknown as string
             }
           : undefined,
         name: `${profile.name}'s profile on Storiny`
@@ -84,6 +85,19 @@ const Component = ({ profile }: Props): React.ReactElement => {
   ]);
   const isPrivate =
     Boolean(profile.is_private) && !profile.is_friend && !profile.is_self;
+
+  // Remove sensitive details
+  if (isPrivate) {
+    delete profile.avatar_id;
+    delete profile.avatar_hex;
+    delete profile.banner_id;
+    delete profile.banner_hex;
+    delete profile.bio;
+    delete profile.status;
+
+    profile.location = "";
+    profile.connections = [];
+  }
 
   return (
     <>

@@ -40,6 +40,7 @@ export type Story = {
   disable_toc: boolean;
   doc_key: string;
   edited_at: string | null;
+  first_published_at: string | null;
   id: string;
   license: StoryLicense;
   preview_image: string | null;

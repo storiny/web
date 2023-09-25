@@ -9,9 +9,9 @@ import { getQueryErrorType, useGetStoryCommentsQuery } from "~/redux/features";
 
 import { storyMetadataAtom } from "../../../atoms";
 import styles from "../auxiliary-content.module.scss";
-import EditorAuxiliaryContentEmptyState from "../empty-state";
 import PostComment from "../post-comment";
 import { EditorAuxiliaryContentCommentListProps } from "./comment-list.props";
+import EditorAuxiliaryContentEmptyState from "./empty-state";
 
 const EditorAuxiliaryContentCommentList = (
   props: EditorAuxiliaryContentCommentListProps

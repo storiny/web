@@ -114,21 +114,23 @@ pub struct GetStoryResponse {
     #[prost(string, optional, tag="23")]
     pub published_at: ::core::option::Option<::prost::alloc::string::String>,
     #[prost(string, optional, tag="24")]
+    pub first_published_at: ::core::option::Option<::prost::alloc::string::String>,
+    #[prost(string, optional, tag="25")]
     pub deleted_at: ::core::option::Option<::prost::alloc::string::String>,
-    #[prost(message, optional, tag="25")]
+    #[prost(message, optional, tag="26")]
     pub user: ::core::option::Option<super::super::user_def::v1::User>,
     /// User specific props
-    #[prost(bool, tag="26")]
-    pub is_bookmarked: bool,
     #[prost(bool, tag="27")]
-    pub is_liked: bool,
+    pub is_bookmarked: bool,
     #[prost(bool, tag="28")]
-    pub disable_comments: bool,
+    pub is_liked: bool,
     #[prost(bool, tag="29")]
-    pub disable_public_revision_history: bool,
+    pub disable_comments: bool,
     #[prost(bool, tag="30")]
+    pub disable_public_revision_history: bool,
+    #[prost(bool, tag="31")]
     pub disable_toc: bool,
-    #[prost(message, repeated, tag="31")]
+    #[prost(message, repeated, tag="32")]
     pub tags: ::prost::alloc::vec::Vec<super::super::tag_def::v1::Tag>,
 }
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]

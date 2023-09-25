@@ -62,6 +62,7 @@ import {
   GetUserRelationsInfoRequest,
   GetUserRelationsInfoResponse
 } from "@storiny/proto/gen/ts/user_def/v1/def";
+import { cache } from "react";
 
 declare global {
   // noinspection ES6ConvertVarToLetConst
@@ -114,91 +115,106 @@ export {
   VerifyEmailResponse
 };
 
-export const getUserId = promisify<GetUserIdRequest, GetUserIdResponse>(
-  global.grpcClient.getUserId
+export const getUserId = cache(
+  promisify<GetUserIdRequest, GetUserIdResponse>(global.grpcClient.getUserId)
 );
 
-export const getCredentialSettings = promisify<
-  GetCredentialSettingsRequest,
-  GetCredentialSettingsResponse
->(global.grpcClient.getCredentialSettings);
-
-export const getPrivacySettings = promisify<
-  GetPrivacySettingsRequest,
-  GetPrivacySettingsResponse
->(global.grpcClient.getPrivacySettings);
-
-export const getNotificationSettings = promisify<
-  GetNotificationSettingsRequest,
-  GetNotificationSettingsResponse
->(global.grpcClient.getNotificationSettings);
-
-export const getConnectionSettings = promisify<
-  GetConnectionSettingsRequest,
-  GetConnectionSettingsResponse
->(global.grpcClient.getConnectionSettings);
-
-export const getLoginActivity = promisify<
-  GetLoginActivityRequest,
-  GetLoginActivityResponse
->(global.grpcClient.getLoginActivity);
-
-export const getDraftsInfo = promisify<
-  GetDraftsInfoRequest,
-  GetDraftsInfoResponse
->(global.grpcClient.getDraftsInfo);
-
-export const getStoriesInfo = promisify<
-  GetStoriesInfoRequest,
-  GetStoriesInfoResponse
->(global.grpcClient.getStoriesInfo);
-
-export const getResponsesInfo = promisify<
-  GetResponsesInfoRequest,
-  GetResponsesInfoResponse
->(global.grpcClient.getResponsesInfo);
-
-export const getStoryResponsesInfo = promisify<
-  GetStoryResponsesInfoRequest,
-  GetStoryResponsesInfoResponse
->(global.grpcClient.getStoryResponsesInfo);
-
-export const getFollowedTagCount = promisify<
-  GetFollowedTagCountRequest,
-  GetFollowedTagCountResponse
->(global.grpcClient.getFollowedTagCount);
-
-export const getUserRelationsInfo = promisify<
-  GetUserRelationsInfoRequest,
-  GetUserRelationsInfoResponse
->(global.grpcClient.getUserRelationsInfo);
-
-export const getUserBlockCount = promisify<
-  GetUserBlockCountRequest,
-  GetUserBlockCountResponse
->(global.grpcClient.getUserBlockCount);
-
-export const getUserMuteCount = promisify<
-  GetUserMuteCountRequest,
-  GetUserMuteCountResponse
->(global.grpcClient.getUserMuteCount);
-
-export const getTag = promisify<GetTagRequest, GetTagResponse>(
-  global.grpcClient.getTag
+export const getCredentialSettings = cache(
+  promisify<GetCredentialSettingsRequest, GetCredentialSettingsResponse>(
+    global.grpcClient.getCredentialSettings
+  )
 );
 
-export const getProfile = promisify<GetProfileRequest, GetProfileResponse>(
-  global.grpcClient.getProfile
+export const getPrivacySettings = cache(
+  promisify<GetPrivacySettingsRequest, GetPrivacySettingsResponse>(
+    global.grpcClient.getPrivacySettings
+  )
 );
 
-export const getToken = promisify<GetTokenRequest, GetTokenResponse>(
-  global.grpcClient.getToken
+export const getNotificationSettings = cache(
+  promisify<GetNotificationSettingsRequest, GetNotificationSettingsResponse>(
+    global.grpcClient.getNotificationSettings
+  )
 );
 
-export const verifyEmail = promisify<VerifyEmailRequest, VerifyEmailResponse>(
-  global.grpcClient.verifyEmail
+export const getConnectionSettings = cache(
+  promisify<GetConnectionSettingsRequest, GetConnectionSettingsResponse>(
+    global.grpcClient.getConnectionSettings
+  )
 );
 
-export const getStory = promisify<GetStoryRequest, GetStoryResponse>(
-  global.grpcClient.getStory
+export const getLoginActivity = cache(
+  promisify<GetLoginActivityRequest, GetLoginActivityResponse>(
+    global.grpcClient.getLoginActivity
+  )
+);
+
+export const getDraftsInfo = cache(
+  promisify<GetDraftsInfoRequest, GetDraftsInfoResponse>(
+    global.grpcClient.getDraftsInfo
+  )
+);
+
+export const getStoriesInfo = cache(
+  promisify<GetStoriesInfoRequest, GetStoriesInfoResponse>(
+    global.grpcClient.getStoriesInfo
+  )
+);
+
+export const getResponsesInfo = cache(
+  promisify<GetResponsesInfoRequest, GetResponsesInfoResponse>(
+    global.grpcClient.getResponsesInfo
+  )
+);
+
+export const getStoryResponsesInfo = cache(
+  promisify<GetStoryResponsesInfoRequest, GetStoryResponsesInfoResponse>(
+    global.grpcClient.getStoryResponsesInfo
+  )
+);
+
+export const getFollowedTagCount = cache(
+  promisify<GetFollowedTagCountRequest, GetFollowedTagCountResponse>(
+    global.grpcClient.getFollowedTagCount
+  )
+);
+
+export const getUserRelationsInfo = cache(
+  promisify<GetUserRelationsInfoRequest, GetUserRelationsInfoResponse>(
+    global.grpcClient.getUserRelationsInfo
+  )
+);
+
+export const getUserBlockCount = cache(
+  promisify<GetUserBlockCountRequest, GetUserBlockCountResponse>(
+    global.grpcClient.getUserBlockCount
+  )
+);
+
+export const getUserMuteCount = cache(
+  promisify<GetUserMuteCountRequest, GetUserMuteCountResponse>(
+    global.grpcClient.getUserMuteCount
+  )
+);
+
+export const getTag = cache(
+  promisify<GetTagRequest, GetTagResponse>(global.grpcClient.getTag)
+);
+
+export const getProfile = cache(
+  promisify<GetProfileRequest, GetProfileResponse>(global.grpcClient.getProfile)
+);
+
+export const getToken = cache(
+  promisify<GetTokenRequest, GetTokenResponse>(global.grpcClient.getToken)
+);
+
+export const verifyEmail = cache(
+  promisify<VerifyEmailRequest, VerifyEmailResponse>(
+    global.grpcClient.verifyEmail
+  )
+);
+
+export const getStory = cache(
+  promisify<GetStoryRequest, GetStoryResponse>(global.grpcClient.getStory)
 );

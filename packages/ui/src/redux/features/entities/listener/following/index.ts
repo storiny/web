@@ -1,12 +1,9 @@
 import {
   decrementAction,
-  falseAction,
   incrementAction,
+  setEntityRecordValue,
   setFollowerCount,
-  setFollowing,
-  setSelfFollowingCount,
-  setSubscription,
-  trueAction
+  setSelfFollowingCount
 } from "~/redux/features";
 import { AppStartListening } from "~/redux/listenerMiddleware";
 
@@ -20,19 +17,25 @@ export const addFollowingListener = (
    * update the following count
    */
   startListening({
-    actionCreator: setFollowing,
+    actionCreator: setEntityRecordValue,
     effect: ({ payload }, listenerApi) => {
-      const userId = payload[0];
-      const isFollowing = listenerApi.getState().entities.following[userId];
+      if (payload[0] === "following") {
+        const [, userId, hasFollowed] = payload;
 
-      if (isFollowing) {
-        listenerApi.dispatch(setSelfFollowingCount(incrementAction));
-        listenerApi.dispatch(setFollowerCount([userId, incrementAction]));
-        listenerApi.dispatch(setSubscription([userId, trueAction]));
-      } else {
-        listenerApi.dispatch(setSelfFollowingCount(decrementAction));
-        listenerApi.dispatch(setFollowerCount([userId, decrementAction]));
-        listenerApi.dispatch(setSubscription([userId, falseAction]));
+        // TODO: ---
+        if (hasFollowed) {
+          listenerApi.dispatch(setSelfFollowingCount(incrementAction));
+          listenerApi.dispatch(setFollowerCount([userId, incrementAction]));
+          listenerApi.dispatch(
+            setEntityRecordValue(["subscriptions", userId, true])
+          );
+        } else {
+          listenerApi.dispatch(setSelfFollowingCount(decrementAction));
+          listenerApi.dispatch(setFollowerCount([userId, decrementAction]));
+          listenerApi.dispatch(
+            setEntityRecordValue(["subscriptions", userId, false])
+          );
+        }
       }
     }
   });
@@ -41,16 +44,16 @@ export const addFollowingListener = (
    * Send the following request to the server
    */
   startListening({
-    actionCreator: setFollowing,
+    actionCreator: setEntityRecordValue,
     effect: async ({ payload }, listenerApi) => {
-      await debounceEffect(listenerApi);
+      if (payload[0] === "following") {
+        await debounceEffect(listenerApi);
 
-      const userId = payload[0];
-      const isFollowing = listenerApi.getState().entities.following[userId];
-
-      await fetchApi(`me/following/${userId}`, listenerApi, {
-        method: isFollowing ? "POST" : "DELETE"
-      }).catch(() => undefined);
+        const [, userId, hasFollowed] = payload;
+        await fetchApi(`me/following/${userId}`, listenerApi, {
+          method: hasFollowed ? "POST" : "DELETE"
+        }).catch(() => undefined);
+      }
     }
   });
 };

@@ -64,7 +64,9 @@ const PostComment = ({
       )}
     >
       {!loggedIn ? (
-        <Button checkAuth>Log in to leave a comment</Button>
+        <Button checkAuth variant={"hollow"}>
+          Log in to leave a comment
+        </Button>
       ) : (
         <React.Fragment>
           <Avatar

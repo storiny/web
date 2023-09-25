@@ -95,13 +95,14 @@ message GetStoryResponse {
   string created_at /*                   */ = 21;
   optional string edited_at /*           */ = 22;
   optional string published_at /*        */ = 23;
-  optional string deleted_at /*          */ = 24;
-  user_def.v1.User user /*               */ = 25;
+  optional string first_published_at /*  */ = 24;
+  optional string deleted_at /*          */ = 25;
+  user_def.v1.User user /*               */ = 26;
   // User specific props
-  bool is_bookmarked /*                  */ = 26;
-  bool is_liked /*                       */ = 27;
-  bool disable_comments /*               */ = 28;
-  bool disable_public_revision_history /**/ = 29;
-  bool disable_toc /*                    */ = 30;
-  repeated tag_def.v1.Tag tags /*        */ = 31;
+  bool is_bookmarked /*                  */ = 27;
+  bool is_liked /*                       */ = 28;
+  bool disable_comments /*               */ = 29;
+  bool disable_public_revision_history /**/ = 30;
+  bool disable_toc /*                    */ = 31;
+  repeated tag_def.v1.Tag tags /*        */ = 32;
 }

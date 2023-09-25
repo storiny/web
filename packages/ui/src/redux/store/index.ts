@@ -43,13 +43,15 @@ export const setupStore = (
   loggedIn?: boolean
 ) =>
   configureStore({
-    reducer: withReduxStateSync(
-      rootReducer,
-      (prevState: AppState, nextState: AppState): AppState => ({
-        ...nextState,
-        api: prevState.api
-      })
-    ),
+    reducer: doNotSync
+      ? rootReducer
+      : withReduxStateSync(
+          rootReducer,
+          (prevState: AppState, nextState: AppState): AppState => ({
+            ...nextState,
+            api: prevState.api
+          })
+        ),
     preloadedState: {
       ...preloadedState,
       auth: {
@@ -63,11 +65,7 @@ export const setupStore = (
     },
     devTools: !["production", "test"].includes(process.env.NODE_ENV || ""),
     middleware: (getDefaultMiddleware) =>
-      getDefaultMiddleware({
-        serializableCheck: {
-          ignoreActions: true
-        }
-      }).concat([
+      getDefaultMiddleware({}).concat([
         apiSlice.middleware,
         listenerMiddleware.middleware,
         ...(doNotSync

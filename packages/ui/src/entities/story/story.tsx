@@ -53,12 +53,8 @@ import { StoryProps } from "./story.props";
 const getStoryUrl = (props: StoryProps): string => {
   const { story, isDeleted, isDraft } = props;
 
-  if (isDraft) {
-    return `/me/content/drafts/${story.id}`;
-  }
-
-  if (isDeleted) {
-    return `/me/content/deleted/${story.id}`;
+  if (isDraft || isDeleted) {
+    return `/doc/${story.id}`;
   }
 
   return `/${story.user?.username}/${story.slug}`;

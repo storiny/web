@@ -257,7 +257,7 @@ const StoryActions = ({
                 as={NextLink}
                 checkAuth
                 decorator={<EditIcon />}
-                href={`/me/content/stories/${story.id}`}
+                href={`/doc/${story.id}`}
               >
                 Edit this story
               </MenuItem>

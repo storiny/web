@@ -31,10 +31,9 @@ export const metadata: Metadata = {
     siteName: "Storiny",
     images: [
       {
-        url: "/og.png",
+        url: "/og.png", // TODO: Change
         width: 630,
-        height: 1200,
-        type: "image/png"
+        height: 1200
       }
     ],
     locale: "en_US",
@@ -45,14 +44,13 @@ export const metadata: Metadata = {
     title: "Storiny",
     description,
     site: "@storiny_intl",
-    images: [
-      {
-        url: "https://storiny.com/og.png",
-        height: 1200,
-        width: 630,
-        type: "image/png"
-      }
-    ]
+    images: ["https://storiny.com/twitter.png"] // TODO: Change
+  },
+  appLinks: {
+    web: {
+      url: process.env.NEXT_PUBLIC_CDN_URL,
+      should_fallback: true
+    }
   },
   appleWebApp: {
     title: "Storiny",
