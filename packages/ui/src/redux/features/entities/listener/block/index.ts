@@ -1,14 +1,8 @@
 import {
   decrementAction,
-  falseAction,
   incrementAction,
-  setBlock,
-  setFollower,
-  setFollowing,
-  setFriend,
-  setSelfBlockCount,
-  setSentRequest,
-  setSubscription
+  setEntityRecordValue,
+  setSelfBlockCount
 } from "~/redux/features";
 import { AppStartListening } from "~/redux/listenerMiddleware";
 
@@ -20,20 +14,25 @@ export const addBlockListener = (startListening: AppStartListening): void => {
    * follower list and friend list when they are blocked
    */
   startListening({
-    actionCreator: setBlock,
+    actionCreator: setEntityRecordValue,
     effect: ({ payload }, listenerApi) => {
-      const userId = payload[0];
-      const isBlocked = listenerApi.getState().entities.blocks[userId];
+      if (payload[0] === "blocks") {
+        const [, userId, isBlocked] = payload;
 
-      if (isBlocked) {
-        listenerApi.dispatch(setFollowing([userId, falseAction]));
-        listenerApi.dispatch(setFollower([userId, falseAction]));
-        listenerApi.dispatch(setFriend([userId, falseAction]));
-        listenerApi.dispatch(setSubscription([userId, falseAction]));
-        listenerApi.dispatch(setSentRequest([userId, falseAction]));
-        listenerApi.dispatch(setSelfBlockCount(incrementAction));
-      } else {
-        listenerApi.dispatch(setSelfBlockCount(decrementAction));
+        if (isBlocked) {
+          [
+            setEntityRecordValue(["following", userId, false]),
+            setEntityRecordValue(["followers", userId, false]),
+            setEntityRecordValue(["friends", userId, false]),
+            setEntityRecordValue(["subscriptions", userId, false]),
+            setEntityRecordValue(["sentRequests", userId, false])
+          ].forEach(listenerApi.dispatch);
+
+          // TODO: ___
+          listenerApi.dispatch(setSelfBlockCount(incrementAction));
+        } else {
+          listenerApi.dispatch(setSelfBlockCount(decrementAction));
+        }
       }
     }
   });
@@ -42,16 +41,16 @@ export const addBlockListener = (startListening: AppStartListening): void => {
    * Send block request to the server
    */
   startListening({
-    actionCreator: setBlock,
+    actionCreator: setEntityRecordValue,
     effect: async ({ payload }, listenerApi) => {
-      await debounceEffect(listenerApi);
+      if (payload[0] === "blocks") {
+        await debounceEffect(listenerApi);
 
-      const userId = payload[0];
-      const isBlocked = listenerApi.getState().entities.blocks[userId];
-
-      await fetchApi(`me/blocked-users/${userId}`, listenerApi, {
-        method: isBlocked ? "POST" : "DELETE"
-      }).catch(() => undefined);
+        const [, userId, isBlocked] = payload;
+        await fetchApi(`me/blocked-users/${userId}`, listenerApi, {
+          method: isBlocked ? "POST" : "DELETE"
+        }).catch(() => undefined);
+      }
     }
   });
 };

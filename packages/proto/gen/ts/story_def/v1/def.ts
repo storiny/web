@@ -215,6 +215,7 @@ export interface GetStoryResponse {
   created_at: string;
   edited_at?: string | undefined;
   published_at?: string | undefined;
+  first_published_at?: string | undefined;
   deleted_at?: string | undefined;
   user:
     | User
@@ -779,6 +780,7 @@ function createBaseGetStoryResponse(): GetStoryResponse {
     created_at: "",
     edited_at: undefined,
     published_at: undefined,
+    first_published_at: undefined,
     deleted_at: undefined,
     user: undefined,
     is_bookmarked: false,
@@ -861,29 +863,32 @@ export const GetStoryResponse = {
     if (message.published_at !== undefined) {
       writer.uint32(186).string(message.published_at);
     }
+    if (message.first_published_at !== undefined) {
+      writer.uint32(194).string(message.first_published_at);
+    }
     if (message.deleted_at !== undefined) {
-      writer.uint32(194).string(message.deleted_at);
+      writer.uint32(202).string(message.deleted_at);
     }
     if (message.user !== undefined) {
-      User.encode(message.user, writer.uint32(202).fork()).ldelim();
+      User.encode(message.user, writer.uint32(210).fork()).ldelim();
     }
     if (message.is_bookmarked === true) {
-      writer.uint32(208).bool(message.is_bookmarked);
+      writer.uint32(216).bool(message.is_bookmarked);
     }
     if (message.is_liked === true) {
-      writer.uint32(216).bool(message.is_liked);
+      writer.uint32(224).bool(message.is_liked);
     }
     if (message.disable_comments === true) {
-      writer.uint32(224).bool(message.disable_comments);
+      writer.uint32(232).bool(message.disable_comments);
     }
     if (message.disable_public_revision_history === true) {
-      writer.uint32(232).bool(message.disable_public_revision_history);
+      writer.uint32(240).bool(message.disable_public_revision_history);
     }
     if (message.disable_toc === true) {
-      writer.uint32(240).bool(message.disable_toc);
+      writer.uint32(248).bool(message.disable_toc);
     }
     for (const v of message.tags) {
-      Tag.encode(v!, writer.uint32(250).fork()).ldelim();
+      Tag.encode(v!, writer.uint32(258).fork()).ldelim();
     }
     return writer;
   },
@@ -1061,52 +1066,59 @@ export const GetStoryResponse = {
             break;
           }
 
-          message.deleted_at = reader.string();
+          message.first_published_at = reader.string();
           continue;
         case 25:
           if (tag !== 202) {
             break;
           }
 
-          message.user = User.decode(reader, reader.uint32());
+          message.deleted_at = reader.string();
           continue;
         case 26:
-          if (tag !== 208) {
+          if (tag !== 210) {
             break;
           }
 
-          message.is_bookmarked = reader.bool();
+          message.user = User.decode(reader, reader.uint32());
           continue;
         case 27:
           if (tag !== 216) {
             break;
           }
 
-          message.is_liked = reader.bool();
+          message.is_bookmarked = reader.bool();
           continue;
         case 28:
           if (tag !== 224) {
             break;
           }
 
-          message.disable_comments = reader.bool();
+          message.is_liked = reader.bool();
           continue;
         case 29:
           if (tag !== 232) {
             break;
           }
 
-          message.disable_public_revision_history = reader.bool();
+          message.disable_comments = reader.bool();
           continue;
         case 30:
           if (tag !== 240) {
             break;
           }
 
-          message.disable_toc = reader.bool();
+          message.disable_public_revision_history = reader.bool();
           continue;
         case 31:
-          if (tag !== 250) {
+          if (tag !== 248) {
+            break;
+          }
+
+          message.disable_toc = reader.bool();
+          continue;
+        case 32:
+          if (tag !== 258) {
             break;
           }
 
@@ -1146,6 +1158,7 @@ export const GetStoryResponse = {
       created_at: isSet(object.created_at) ? String(object.created_at) : "",
       edited_at: isSet(object.edited_at) ? String(object.edited_at) : undefined,
       published_at: isSet(object.published_at) ? String(object.published_at) : undefined,
+      first_published_at: isSet(object.first_published_at) ? String(object.first_published_at) : undefined,
       deleted_at: isSet(object.deleted_at) ? String(object.deleted_at) : undefined,
       user: isSet(object.user) ? User.fromJSON(object.user) : undefined,
       is_bookmarked: isSet(object.is_bookmarked) ? Boolean(object.is_bookmarked) : false,
@@ -1230,6 +1243,9 @@ export const GetStoryResponse = {
     if (message.published_at !== undefined) {
       obj.published_at = message.published_at;
     }
+    if (message.first_published_at !== undefined) {
+      obj.first_published_at = message.first_published_at;
+    }
     if (message.deleted_at !== undefined) {
       obj.deleted_at = message.deleted_at;
     }
@@ -1285,6 +1301,7 @@ export const GetStoryResponse = {
     message.created_at = object.created_at ?? "";
     message.edited_at = object.edited_at ?? undefined;
     message.published_at = object.published_at ?? undefined;
+    message.first_published_at = object.first_published_at ?? undefined;
     message.deleted_at = object.deleted_at ?? undefined;
     message.user = (object.user !== undefined && object.user !== null) ? User.fromPartial(object.user) : undefined;
     message.is_bookmarked = object.is_bookmarked ?? false;

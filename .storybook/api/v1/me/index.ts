@@ -21,6 +21,7 @@ import "./account-activity";
 import "./following";
 import "./followers";
 import "./friends";
+import "./flow";
 
 import { mockUsers } from "@storiny/ui/src/mocks";
 

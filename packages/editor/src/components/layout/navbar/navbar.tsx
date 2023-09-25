@@ -8,7 +8,7 @@ import { $getRoot } from "lexical";
 import { RedirectType } from "next/dist/client/components/redirect";
 import dynamic from "next/dynamic";
 import NextLink from "next/link";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 import React from "react";
 
 import Logo from "~/brand/Logo";
@@ -95,6 +95,7 @@ const Publish = ({
   status: Exclude<StoryStatus, "deleted">;
 }): React.ReactElement => {
   const toast = useToast();
+  const router = useRouter();
   const story = useAtomValue(storyMetadataAtom);
   const [editor] = useLexicalComposerContext();
   const [tkCount, setTkCount] = React.useState<number>(0);
@@ -108,9 +109,7 @@ const Publish = ({
     setDocStatus("publishing");
     publishStory({ id: story.id, status })
       .unwrap()
-      .then(() => {
-        redirect(`/story/${story.id}`, RedirectType.replace);
-      })
+      .then(() => router.refresh())
       .catch((e) => {
         setDocStatus("connected");
         toast(e?.data?.error || "Could not publish your story", "error");
@@ -185,7 +184,7 @@ const Recover = (): React.ReactElement => {
     recoverStory({ id: story.id })
       .unwrap()
       .then(() => {
-        redirect(`/me/content/drafts/${story.id}`, RedirectType.replace);
+        redirect(`/doc/${story.id}`, RedirectType.replace);
       })
       .catch((e) => {
         setLoading(false);

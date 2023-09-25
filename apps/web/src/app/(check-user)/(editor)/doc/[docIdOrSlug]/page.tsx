@@ -17,12 +17,6 @@ const Page = async ({
   params: { docIdOrSlug: string };
 }): Promise<React.ReactElement | undefined> => {
   try {
-    // const sessionToken = getSessionToken();
-    //
-    // if (!sessionToken) {
-    //   redirect("/login"); // Early return
-    // }
-    //
     const userId = await getUser();
 
     if (!userId) {

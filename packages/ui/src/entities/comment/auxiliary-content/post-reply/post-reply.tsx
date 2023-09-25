@@ -3,7 +3,6 @@ import { clsx } from "clsx";
 import React from "react";
 
 import Avatar from "~/components/Avatar";
-import Button from "~/components/Button";
 import { useToast } from "~/components/Toast";
 import ResponseTextarea from "~/entities/ResponseTextarea";
 import {
@@ -21,7 +20,7 @@ const PostReply = ({
 }: {
   commentId: string;
   placeholder: string;
-}): React.ReactElement => {
+}): React.ReactElement | null => {
   const toast = useToast();
   const user = useAppSelector(selectUser);
   const loggedIn = useAppSelector(selectLoggedIn);
@@ -50,6 +49,10 @@ const PostReply = ({
     }
   };
 
+  if (!loggedIn) {
+    return null;
+  }
+
   return (
     <div
       className={clsx(
@@ -58,34 +61,28 @@ const PostReply = ({
         !loggedIn && styles["logged-out"]
       )}
     >
-      {!loggedIn ? (
-        <Button checkAuth>Log in to leave a reply</Button>
-      ) : (
-        <React.Fragment>
-          <Avatar
-            alt={""}
-            avatarId={user?.avatar_id}
-            hex={user?.avatar_hex}
-            label={user?.name}
-          />
-          <ResponseTextarea
-            maxLength={REPLY_PROPS.content.maxLength}
-            minLength={REPLY_PROPS.content.minLength}
-            placeholder={placeholder}
-            postButtonProps={{
-              loading: isLoading,
-              onClick: handlePost
-            }}
-            ref={textareaRef}
-            size={"sm"}
-            slotProps={{
-              container: {
-                className: clsx("f-grow", styles.x, styles["response-textarea"])
-              }
-            }}
-          />
-        </React.Fragment>
-      )}
+      <Avatar
+        alt={""}
+        avatarId={user?.avatar_id}
+        hex={user?.avatar_hex}
+        label={user?.name}
+      />
+      <ResponseTextarea
+        maxLength={REPLY_PROPS.content.maxLength}
+        minLength={REPLY_PROPS.content.minLength}
+        placeholder={placeholder}
+        postButtonProps={{
+          loading: isLoading,
+          onClick: handlePost
+        }}
+        ref={textareaRef}
+        size={"sm"}
+        slotProps={{
+          container: {
+            className: clsx("f-grow", styles.x, styles["response-textarea"])
+          }
+        }}
+      />
     </div>
   );
 };

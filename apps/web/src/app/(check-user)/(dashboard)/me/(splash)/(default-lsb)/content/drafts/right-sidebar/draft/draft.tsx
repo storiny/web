@@ -18,7 +18,7 @@ import { DraftProps } from "./draft.props";
 
 const Draft = (props: DraftProps): React.ReactElement => {
   const { latest_draft } = props;
-  const href = `/me/content/drafts/${latest_draft.id}`;
+  const href = `/doc/${latest_draft.id}`;
 
   return (
     <article className={clsx(styles.x, styles.draft)}>

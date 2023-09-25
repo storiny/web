@@ -43,7 +43,9 @@ const Actions = ({ tag }: Props): React.ReactElement => {
       </MenuItem>
       <MenuItem
         decorator={<CopyIcon />}
-        onClick={(): void => copy(`/tag/${tag.name}`)}
+        onClick={(): void =>
+          copy(`${process.env.NEXT_PUBLIC_WEB_URL}/tag/${tag.name}`)
+        }
       >
         Copy link to tag
       </MenuItem>

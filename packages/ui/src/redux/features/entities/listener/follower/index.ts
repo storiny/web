@@ -1,6 +1,6 @@
 import {
   decrementAction,
-  setFollower,
+  setEntityRecordValue,
   setFollowingCount,
   setSelfFollowerCount
 } from "~/redux/features";
@@ -16,15 +16,17 @@ export const addFollowerListener = (
    * be removed using the `Remove this follower` option
    */
   startListening({
-    actionCreator: setFollower,
+    actionCreator: setEntityRecordValue,
     effect: ({ payload }, listenerApi) => {
-      const userId = payload[0];
-      const hasRemovedFollower =
-        !listenerApi.getState().entities.followers[userId];
+      if (payload[0] === "followers") {
+        const [, userId, hasAddedFollower] = payload;
 
-      if (hasRemovedFollower) {
-        listenerApi.dispatch(setSelfFollowerCount(decrementAction));
-        listenerApi.dispatch(setFollowingCount([userId, decrementAction]));
+        // User can only remove its followers
+        // TODO: ---
+        if (!hasAddedFollower) {
+          listenerApi.dispatch(setSelfFollowerCount(decrementAction));
+          listenerApi.dispatch(setFollowingCount([userId, decrementAction]));
+        }
       }
     }
   });
@@ -33,18 +35,19 @@ export const addFollowerListener = (
    * Send follower remove request to the server
    */
   startListening({
-    actionCreator: setFollower,
+    actionCreator: setEntityRecordValue,
     effect: async ({ payload }, listenerApi) => {
-      await debounceEffect(listenerApi);
+      if (payload[0] === "followers") {
+        await debounceEffect(listenerApi);
 
-      const userId = payload[0];
-      const hasRemovedFollower =
-        !listenerApi.getState().entities.followers[userId];
+        const [, userId, hasAddedFollower] = payload;
 
-      if (hasRemovedFollower) {
-        await fetchApi(`me/followers/${userId}`, listenerApi, {
-          method: "DELETE"
-        }).catch(() => undefined);
+        // User can only remove its followers
+        if (!hasAddedFollower) {
+          await fetchApi(`me/followers/${userId}`, listenerApi, {
+            method: "DELETE"
+          }).catch(() => undefined);
+        }
       }
     }
   });

@@ -33,6 +33,7 @@ interface ExtendedRenderOptions<
  * @param ui The UI to render
  * @param loggedIn Logged in flag
  * @param loading Loading flag
+ * @param store Optional predefined store
  * @param ignorePrimitiveProviders Whether or not to wrap the UI with primitve providers
  * @param renderOptions Options passed to RTL's `render` function
  */
@@ -45,6 +46,12 @@ export const renderTestWithProvider = <
   {
     loggedIn,
     loading,
+    store = setupStore(
+      loggedIn || loading
+        ? loggedInState(loading ? "loading" : "complete")
+        : initialState,
+      true
+    ),
     // Ignore providers as the primitives are explicitly wrapped in tests.
     ignorePrimitiveProviders = true,
     ...renderOptions
@@ -54,13 +61,6 @@ export const renderTestWithProvider = <
   Container,
   BaseElement
 > => {
-  const store = setupStore(
-    loggedIn || loading
-      ? loggedInState(loading ? "loading" : "complete")
-      : initialState,
-    true
-  );
-
   const Wrapper = ({
     children
   }: React.PropsWithChildren<{}>): React.ReactElement => (

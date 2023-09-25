@@ -22,9 +22,9 @@ const generateJsonLd = (tag: Props["tag"]): Graph => ({
       alternateName: "Share your story.",
       image: {
         "@type": "ImageObject",
-        height: "128",
+        height: 128 as unknown as string,
         url: getCdnUrl("web-assets/brand/logos/plain/logo", ImageSize.W_128),
-        width: "128"
+        width: 128 as unknown as string
       },
       name: "Storiny",
       url: process.env.NEXT_PUBLIC_WEB_URL

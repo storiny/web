@@ -1,19 +1,60 @@
-import type { Metadata, ResolvingMetadata } from "next";
+import { ImageSize } from "@storiny/shared";
+import type { Metadata } from "next";
 
-type Props = {
+import { getProfile } from "~/common/grpc";
+import { getUser } from "~/common/utils/getUser";
+import { getCdnUrl } from "~/utils/getCdnUrl";
+
+export const generateMetadata = async ({
+  params
+}: {
   params: { username: string };
-};
+}): Promise<Metadata> => {
+  const { username } = params;
 
-export const generateMetadata = async (
-  { params }: Props,
-  parent?: ResolvingMetadata
-): Promise<Metadata> => {
-  const previousImages = (await parent)?.openGraph?.images || [];
+  try {
+    const userId = await getUser();
+    const profile = await getProfile({
+      username,
+      current_user_id: userId || undefined
+    });
+    const description = `Read stories from ${profile.name} on Storiny.${
+      profile.bio ? ` ${profile.bio}` : ""
+    }`;
 
-  return {
-    title: `@${params.username}` || "Unknown",
-    openGraph: {
-      images: previousImages
-    }
-  };
+    return {
+      title: `${profile.name} (@${username})`,
+      description,
+      openGraph: {
+        type: "profile",
+        siteName: "Storiny",
+        title: `${profile.name} (@${username})`,
+        url: `${process.env.NEXT_PUBLIC_WEB_URL}/${username}`,
+        description,
+        images:
+          profile.is_private || !profile.avatar_id
+            ? []
+            : [
+                {
+                  url: getCdnUrl(profile.avatar_id, ImageSize.W_256),
+                  width: 256,
+                  height: 256
+                }
+              ]
+      },
+      twitter: {
+        card: "summary",
+        title: `${profile.name} (@${username})`,
+        description,
+        images:
+          profile.is_private || !profile.avatar_id
+            ? []
+            : [getCdnUrl(profile.avatar_id, ImageSize.W_256)]
+      }
+    };
+  } catch {
+    return {
+      title: `@${username}`
+    };
+  }
 };

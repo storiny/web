@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Comment, Reply, Story, Tag, User } from "@storiny/types";
 
+import { useAppDispatch } from "~/redux/hooks";
 import { clamp } from "~/utils/clamp";
 
 interface EntitiesPredicateState {
@@ -48,37 +49,36 @@ export type EntitiesState = EntitiesPredicateState &
   EntitiesIntegralState &
   EntitiesSelfState;
 
-type SyncableUser = Pick<
-  User,
-  | "id"
-  | "is_follower"
-  | "is_following"
-  | "is_friend"
-  | "is_subscribed"
-  | "is_friend_request_sent"
-  | "is_muted"
-  | "is_blocking"
-  | "follower_count"
-  | "following_count"
-  | "friend_count"
->;
+type SyncableUser = Pick<User, "id"> &
+  Partial<
+    Pick<
+      User,
+      | "is_follower"
+      | "is_following"
+      | "is_friend"
+      | "is_subscribed"
+      | "is_friend_request_sent"
+      | "is_muted"
+      | "is_blocking"
+      | "follower_count"
+      | "following_count"
+      | "friend_count"
+    >
+  >;
 
-type SyncableStory = Pick<
-  Story,
-  "id" | "is_liked" | "is_bookmarked" | "stats" | "user"
->;
+type SyncableStory = Pick<Story, "id"> &
+  Partial<Pick<Story, "is_liked" | "is_bookmarked" | "stats" | "user">>;
 
-type SyncableTag = Pick<Tag, "id" | "follower_count" | "is_following">;
+type SyncableTag = Pick<Tag, "id"> &
+  Partial<Pick<Tag, "follower_count" | "is_following">>;
 
-type SyncableComment = Pick<
-  Comment,
-  "id" | "like_count" | "reply_count" | "is_liked" | "story" | "user"
->;
+type SyncableComment = Pick<Comment, "id"> &
+  Partial<
+    Pick<Comment, "like_count" | "reply_count" | "is_liked" | "story" | "user">
+  >;
 
-type SyncableReply = Pick<
-  Reply,
-  "id" | "like_count" | "is_liked" | "comment" | "user"
->;
+type SyncableReply = Pick<Reply, "id"> &
+  Partial<Pick<Reply, "like_count" | "is_liked" | "comment" | "user">>;
 
 export const entitiesInitialState: EntitiesState = {
   blocks: {},
@@ -128,6 +128,69 @@ export const isNum = (value?: number | string | null): value is number =>
  */
 export const isBool = (value?: boolean): value is boolean =>
   typeof value === "boolean";
+
+type KeysWithRecordOfNumber<T> = {
+  [K in keyof T]: T[K] extends Record<string, number> ? K : never;
+}[keyof T];
+
+type KeysWithRecordOfBoolean<T> = {
+  [K in keyof T]: T[K] extends Record<string, boolean> ? K : never;
+}[keyof T];
+
+type RecordKeys<T> = {
+  [K in keyof T]: T[K] extends Record<string, number | boolean> ? K : never;
+}[keyof T];
+
+export const useEntityNumberDispatch = (): ((
+  key: KeysWithRecordOfNumber<EntitiesState>,
+  id: string,
+  valueOrCallback: number | ((prevValue: number) => number)
+) => void) => {
+  const dispatch = useAppDispatch();
+  return (
+    key: KeysWithRecordOfNumber<EntitiesState>,
+    id: string,
+    valueOrCallback: number | ((prevValue: number) => number)
+  ): void => {
+    dispatch((dispatchAction, getState) => {
+      const prevValue = getState().entities[key][id] as number | undefined;
+      const nextValue = clamp(
+        0,
+        typeof valueOrCallback === "number"
+          ? valueOrCallback
+          : valueOrCallback(typeof prevValue === "undefined" ? 0 : prevValue),
+        Infinity
+      );
+
+      dispatchAction(setEntityRecordValue([key, id, nextValue]));
+    });
+  };
+};
+
+export const useEntityBooleanDispatch = (): ((
+  key: KeysWithRecordOfBoolean<EntitiesState>,
+  id: string,
+  callback?: (prevValue: boolean) => boolean
+) => void) => {
+  const dispatch = useAppDispatch();
+  return (
+    key: KeysWithRecordOfBoolean<EntitiesState>,
+    id: string,
+    callback?: (prevValue: boolean) => boolean
+  ): void => {
+    dispatch((dispatchAction, getState) => {
+      const prevValue = getState().entities[key][id] as boolean | undefined;
+      // Set to `true` when absent from the map
+      const currValue = typeof prevValue === "undefined" ? true : prevValue;
+
+      if (!callback) {
+        dispatchAction(setEntityRecordValue([key, id, !currValue])); // Toggle value
+      } else {
+        dispatchAction(setEntityRecordValue([key, id, callback(currValue)]));
+      }
+    });
+  };
+};
 
 /**
  * Sets the entity value
@@ -257,13 +320,15 @@ const syncWithStoryImpl = (
     state.likedStories[story.id] = story.is_liked;
   }
 
-  // Integral
-  if (isNum(story.stats.like_count)) {
-    state.storyLikeCounts[story.id] = story.stats.like_count;
-  }
+  if (story.stats) {
+    // Integral
+    if (isNum(story.stats.like_count)) {
+      state.storyLikeCounts[story.id] = story.stats.like_count;
+    }
 
-  if (isNum(story.stats.comment_count)) {
-    state.storyCommentCounts[story.id] = story.stats.comment_count;
+    if (isNum(story.stats.comment_count)) {
+      state.storyCommentCounts[story.id] = story.stats.comment_count;
+    }
   }
 
   // Other
@@ -355,6 +420,15 @@ export const entitiesSlice = createSlice({
   name: "entities",
   initialState: entitiesInitialState,
   reducers: {
+    setEntityRecordValue: (
+      state: EntitiesState,
+      action: PayloadAction<
+        [RecordKeys<EntitiesState>, string, number | boolean]
+      >
+    ) => {
+      const [key, id, value] = action.payload;
+      state[key][id] = value;
+    },
     // Boolean
     setFollowing: setEntityValue<EntitiesState, "boolean">(
       "following",
@@ -474,6 +548,7 @@ export const entitiesSlice = createSlice({
 });
 
 export const {
+  setEntityRecordValue,
   setBlock,
   setBookmark,
   setCommentLikeCount,

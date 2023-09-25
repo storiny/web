@@ -168,7 +168,9 @@ const Actions = ({ profile, isInsideSidebar }: Props): React.ReactElement => {
       </MenuItem>
       <MenuItem
         decorator={<CopyIcon />}
-        onClick={(): void => copy(`/${profile.username}`)}
+        onClick={(): void =>
+          copy(`${process.env.NEXT_PUBLIC_WEB_URL}/${profile.username}`)
+        }
       >
         Copy link to profile
       </MenuItem>

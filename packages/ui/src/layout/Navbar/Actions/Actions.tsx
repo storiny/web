@@ -138,7 +138,7 @@ const LoggedInMenu = ({
     </MenuItemWithLink>
     <Separator />
     <ThemeToggleItem />
-    <MenuItem decorator={<ExplicitIcon />}>Safe mode</MenuItem>
+    {/* TODO(future): <MenuItem decorator={<ExplicitIcon />}>Safe mode</MenuItem>*/}
     <Separator />
     <MenuItemWithLink checkAuth decorator={<SettingsIcon />} href={"/me"}>
       Settings

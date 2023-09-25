@@ -1,10 +1,8 @@
 import {
   decrementAction,
   renderToast,
-  setFriend,
-  setFriendCount,
-  setSelfFriendCount,
-  setSentRequest
+  setEntityRecordValue,
+  setSelfFriendCount
 } from "~/redux/features";
 import { AppStartListening } from "~/redux/listenerMiddleware";
 
@@ -15,43 +13,43 @@ export const addFriendListener = (startListening: AppStartListening): void => {
    * Send friend request to the server
    */
   startListening({
-    actionCreator: setSentRequest,
+    actionCreator: setEntityRecordValue,
     effect: async ({ payload }, listenerApi) => {
-      await debounceEffect(listenerApi);
+      if (payload[0] === "sentRequests") {
+        await debounceEffect(listenerApi);
+        const [, userId, hasSentFriendRequest] = payload;
 
-      const userId = payload[0];
-      const isFriendRequestSent =
-        listenerApi.getState().entities.sentRequests[userId];
-
-      if (isFriendRequestSent) {
-        await fetchApi(`me/friends/${userId}`, listenerApi, {
-          method: "POST"
-        })
-          .then((res) => {
-            if (res) {
-              if (res.ok) {
-                listenerApi.dispatch(
-                  renderToast({
-                    message: "Friend request sent",
-                    severity: "success"
-                  })
-                );
-              } else {
-                res
-                  .json()
-                  .then((json) => {
-                    listenerApi.dispatch(
-                      renderToast({
-                        message: json?.error || "Could not send friend request",
-                        severity: "error"
-                      })
-                    );
-                  })
-                  .catch(() => undefined);
-              }
-            }
+        if (hasSentFriendRequest) {
+          await fetchApi(`me/friends/${userId}`, listenerApi, {
+            method: "POST"
           })
-          .catch(() => undefined);
+            .then((res) => {
+              if (res) {
+                if (res.ok) {
+                  listenerApi.dispatch(
+                    renderToast({
+                      message: "Friend request sent",
+                      severity: "success"
+                    })
+                  );
+                } else {
+                  res
+                    .json()
+                    .then((json) => {
+                      listenerApi.dispatch(
+                        renderToast({
+                          message:
+                            json?.error || "Could not send your friend request",
+                          severity: "error"
+                        })
+                      );
+                    })
+                    .catch(() => undefined);
+                }
+              }
+            })
+            .catch(() => undefined);
+        }
       }
     }
   });
@@ -61,14 +59,18 @@ export const addFriendListener = (startListening: AppStartListening): void => {
    * and to add a friend, the friend request needs to be accepted by the recipient
    */
   startListening({
-    actionCreator: setFriend,
+    actionCreator: setEntityRecordValue,
     effect: ({ payload }, listenerApi) => {
-      const userId = payload[0];
-      const hasRemovedFriend = !listenerApi.getState().entities.friends[userId];
+      if (payload[0] === "friends") {
+        const [, userId, hasAddedFriend] = payload;
 
-      if (hasRemovedFriend) {
-        listenerApi.dispatch(setSelfFriendCount(decrementAction));
-        listenerApi.dispatch(setFriendCount([userId, decrementAction]));
+        // TODO: ---
+        if (!hasAddedFriend) {
+          listenerApi.dispatch(setSelfFriendCount(decrementAction));
+          listenerApi.dispatch(
+            setEntityRecordValue(["friendCounts", userId, false])
+          );
+        }
       }
     }
   });
@@ -77,17 +79,17 @@ export const addFriendListener = (startListening: AppStartListening): void => {
    * Send friend remove request to the server
    */
   startListening({
-    actionCreator: setFriend,
+    actionCreator: setEntityRecordValue,
     effect: async ({ payload }, listenerApi) => {
-      await debounceEffect(listenerApi);
+      if (payload[0] === "friends") {
+        await debounceEffect(listenerApi);
+        const [, userId, hasAddedFriend] = payload;
 
-      const userId = payload[0];
-      const hasRemovedFriend = !listenerApi.getState().entities.friends[userId];
-
-      if (hasRemovedFriend) {
-        await fetchApi(`me/friends/${userId}`, listenerApi, {
-          method: "DELETE"
-        }).catch(() => undefined);
+        if (!hasAddedFriend) {
+          await fetchApi(`me/friends/${userId}`, listenerApi, {
+            method: "DELETE"
+          }).catch(() => undefined);
+        }
       }
     }
   });
