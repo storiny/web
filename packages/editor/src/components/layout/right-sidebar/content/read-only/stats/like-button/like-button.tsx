@@ -4,7 +4,7 @@ import React from "react";
 
 import Button from "~/components/Button";
 import HeartIcon from "~/icons/Heart";
-import { setLikedStory } from "~/redux/features";
+import { boolean_action, setLikedStory } from "~/redux/features";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 import { abbreviateNumber } from "~/utils/abbreviateNumber";
 
@@ -111,7 +111,7 @@ const LikeButton = (): React.ReactElement => {
       }
       onClick={(): void => {
         shouldAnimateRef.current = true;
-        dispatch(setLikedStory([story.id]));
+        dispatch(boolean_action("liked_stories", story.id));
       }}
       title={`${
         isLiked ? "Unlike" : "Like"

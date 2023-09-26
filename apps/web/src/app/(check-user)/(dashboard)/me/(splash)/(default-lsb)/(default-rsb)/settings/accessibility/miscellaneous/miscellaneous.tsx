@@ -12,8 +12,8 @@ import styles from "./miscellaneous.module.scss";
 
 const MiscellaneousPreferences = (): React.ReactElement => {
   const dispatch = useAppDispatch();
-  const hapticFeedback = useAppSelector(
-    (state) => state.preferences.hapticFeedback
+  const haptic_feedback = useAppSelector(
+    (state) => state.preferences.haptic_feedback
   );
 
   return (
@@ -37,7 +37,7 @@ const MiscellaneousPreferences = (): React.ReactElement => {
           </Typography>
           <Spacer className={"f-grow"} size={2} />
           <Switch
-            checked={hapticFeedback}
+            checked={haptic_feedback}
             name={"haptic-feedback"}
             onCheckedChange={(newChecked): void => {
               dispatch(toggleHapticFeedback(newChecked));

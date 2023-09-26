@@ -13,7 +13,7 @@ import CalendarIcon from "~/icons/Calendar";
 import StoryIcon from "~/icons/Story";
 import TagIcon from "~/icons/Tag";
 import UsersIcon from "~/icons/Users";
-import { setFollowedTag, syncWithTag } from "~/redux/features";
+import { boolean_action, setFollowedTag, syncWithTag } from "~/redux/features";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 import { breakpoints } from "~/theme/breakpoints";
 import { abbreviateNumber } from "~/utils/abbreviateNumber";
@@ -61,7 +61,7 @@ const Tag = (props: TagProps): React.ReactElement => {
           autoSize
           checkAuth
           onClick={(): void => {
-            dispatch(setFollowedTag([tag.id]));
+            dispatch(boolean_action("followed_tags", tag.id));
           }}
           variant={isFollowing ? "hollow" : "rigid"}
         >

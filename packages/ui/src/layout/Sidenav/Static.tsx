@@ -24,7 +24,7 @@ import PencilPlusIcon from "~/icons/PencilPlus";
 import SettingsIcon from "~/icons/Settings";
 import StoryHeartIcon from "~/icons/StoryHeart";
 import UserIcon from "~/icons/User";
-import { selectUnreadNotificationCount } from "~/redux/features";
+import { select_unread_notification_count } from "~/redux/features";
 import { selectLoggedIn, selectUser } from "~/redux/features/auth/selectors";
 import { useAppSelector } from "~/redux/hooks";
 
@@ -37,7 +37,9 @@ const SidenavStatic = (
   const { className, ...rest } = props;
   const loggedIn = useAppSelector(selectLoggedIn);
   const user = useAppSelector(selectUser);
-  const unreadNotificationCount = useAppSelector(selectUnreadNotificationCount);
+  const unreadNotificationCount = useAppSelector(
+    select_unread_notification_count
+  );
 
   return (
     <aside {...rest} className={clsx("flex-col", styles.sidenav, className)}>

@@ -23,8 +23,7 @@ import PlusIcon from "~/icons/Plus";
 import SearchIcon from "~/icons/Search";
 import {
   getQueryErrorType,
-  setSelfDeletedStoryCount,
-  setSelfPublishedStoryCount,
+  self_action,
   useGetStoriesQuery
 } from "~/redux/features";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
@@ -137,15 +136,17 @@ const StatusHeader = ({
 } & StoriesProps): React.ReactElement => {
   const dispatch = useAppDispatch();
   const publishedStoryCount =
-    useAppSelector((state) => state.entities.selfPublishedStoryCount) || 0;
+    useAppSelector((state) => state.entities.self_published_story_count) || 0;
   const deletedStoryCount =
-    useAppSelector((state) => state.entities.selfDeletedStoryCount) || 0;
+    useAppSelector((state) => state.entities.self_deleted_story_count) || 0;
   const count_param =
     tab === "published" ? publishedStoryCount : deletedStoryCount;
 
   React.useEffect(() => {
-    dispatch(setSelfPublishedStoryCount(() => published_story_count));
-    dispatch(setSelfDeletedStoryCount(() => deleted_story_count));
+    [
+      self_action("self_published_story_count", published_story_count),
+      self_action("self_deleted_story_count", deleted_story_count)
+    ].forEach(dispatch);
   }, [deleted_story_count, dispatch, published_story_count]);
 
   return (

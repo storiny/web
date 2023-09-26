@@ -26,8 +26,8 @@ import SettingsIcon from "~/icons/Settings";
 import {
   getQueryErrorType,
   markAllAsRead,
-  selectUnreadNotificationCount,
-  selectUnreadNotificationsStatus,
+  select_notifications_status,
+  select_unread_notification_count,
   useGetNotificationsQuery
 } from "~/redux/features";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
@@ -84,8 +84,8 @@ const StatusHeader = ({
 }): React.ReactElement => {
   const dispatch = useAppDispatch();
   const isMobile = useMediaQuery(breakpoints.down("mobile"));
-  const unreadCount = useAppSelector(selectUnreadNotificationCount);
-  const status = useAppSelector(selectUnreadNotificationsStatus);
+  const unreadCount = useAppSelector(select_unread_notification_count);
+  const status = useAppSelector(select_notifications_status);
 
   return (
     <div

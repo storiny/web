@@ -16,6 +16,7 @@ import UsersIcon from "~/icons/Users";
 import { TitleWithIcon, UserWithActionSkeleton } from "~/layout/RightSidebar";
 import UserWithAction from "~/layout/RightSidebar/UserWithAction";
 import {
+  boolean_action,
   getQueryErrorType,
   setFollowedTag,
   useGetTagWritersQuery
@@ -35,12 +36,12 @@ interface Props {
 const Actions = ({ tag }: Props): React.ReactElement => {
   const dispatch = useAppDispatch();
   const isFollowing = useAppSelector(
-    (state) => state.entities.followedTags[tag.id]
+    (state) => state.entities.followed_tags[tag.id]
   );
 
   React.useEffect(() => {
     dispatch(
-      setFollowedTag([tag.id, (): boolean => Boolean(tag.is_following)])
+      boolean_action("followed_tags", tag.id, Boolean(tag.is_following))
     );
   }, [dispatch, tag.is_following, tag.id]);
 
@@ -50,7 +51,7 @@ const Actions = ({ tag }: Props): React.ReactElement => {
         checkAuth
         decorator={isFollowing ? <CheckIcon /> : <PlusIcon />}
         onClick={(): void => {
-          dispatch(setFollowedTag([tag.id]));
+          dispatch(boolean_action("followed_tags", tag.id));
         }}
         variant={isFollowing ? "hollow" : "rigid"}
       >

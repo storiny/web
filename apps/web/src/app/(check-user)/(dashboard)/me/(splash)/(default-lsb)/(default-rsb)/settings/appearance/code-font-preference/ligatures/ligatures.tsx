@@ -93,9 +93,9 @@ const TypefaceItem = ({
 const LigaturesPreference = (): React.ReactElement => {
   const isSmallerThanMobile = useMediaQuery(breakpoints.down("mobile"));
   const dispatch = useAppDispatch();
-  const typeface = useAppSelector((state) => state.preferences.codeFont);
+  const typeface = useAppSelector((state) => state.preferences.code_font);
   const ligatures = useAppSelector(
-    (state) => state.preferences.enableCodeLigatures
+    (state) => state.preferences.enable_code_ligatures
   );
 
   return (

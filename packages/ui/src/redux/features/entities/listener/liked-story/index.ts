@@ -1,48 +1,44 @@
-import {
-  decrementAction,
-  incrementAction,
-  setLikedStory,
-  setStoryLikeCount
-} from "~/redux/features";
+import { number_action, set_entity_record_value } from "~/redux/features";
 import { AppStartListening } from "~/redux/listenerMiddleware";
 
-import { debounceEffect, fetchApi } from "../utils";
+import { debounce_effect, fetch_api } from "../utils";
 
-export const addLikedStoryListener = (
-  startListening: AppStartListening
+export const add_liked_story_listener = (
+  start_listening: AppStartListening
 ): void => {
   /**
    * Increment and decrement story like count
    */
-  startListening({
-    actionCreator: setLikedStory,
-    effect: ({ payload }, listenerApi) => {
-      const storyId = payload[0];
-      const hasLiked = listenerApi.getState().entities.likedStories[storyId];
-
-      listenerApi.dispatch(
-        setStoryLikeCount([
-          storyId,
-          hasLiked ? incrementAction : decrementAction
-        ])
-      );
+  start_listening({
+    actionCreator: set_entity_record_value,
+    effect: ({ payload }, { dispatch }) => {
+      if (payload[0] === "liked_stories") {
+        const [, story_id, has_liked] = payload;
+        dispatch(
+          number_action(
+            "story_like_counts",
+            story_id,
+            has_liked ? "increment" : "decrement"
+          )
+        );
+      }
     }
   });
 
   /**
    * Send the story like request to the server
    */
-  startListening({
-    actionCreator: setLikedStory,
-    effect: async ({ payload }, listenerApi) => {
-      await debounceEffect(listenerApi);
+  start_listening({
+    actionCreator: set_entity_record_value,
+    effect: async ({ payload }, listener_api) => {
+      if (payload[0] === "liked_stories") {
+        await debounce_effect(listener_api);
 
-      const storyId = payload[0];
-      const hasLiked = listenerApi.getState().entities.likedStories[storyId];
-
-      await fetchApi(`me/liked-stories/${storyId}`, listenerApi, {
-        method: hasLiked ? "POST" : "DELETE"
-      }).catch(() => undefined);
+        const [, story_id, has_liked] = payload;
+        await fetch_api(`me/liked-stories/${story_id}`, listener_api, {
+          method: has_liked ? "POST" : "DELETE"
+        }).catch(() => undefined);
+      }
     }
   });
 };

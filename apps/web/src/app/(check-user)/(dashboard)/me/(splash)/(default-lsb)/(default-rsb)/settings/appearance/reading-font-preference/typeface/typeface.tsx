@@ -178,7 +178,7 @@ const TypefaceItem = ({
 const ReadingFontTypefacePreference = (): React.ReactElement => {
   const isSmallerThanMobile = useMediaQuery(breakpoints.down("mobile"));
   const dispatch = useAppDispatch();
-  const typeface = useAppSelector((state) => state.preferences.readingFont);
+  const typeface = useAppSelector((state) => state.preferences.reading_font);
 
   return (
     <React.Fragment>

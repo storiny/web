@@ -23,7 +23,7 @@ import UserCheckIcon from "~/icons/UserCheck";
 import UserHeartIcon from "~/icons/UserHeart";
 import UserPlusIcon from "~/icons/UserPlus";
 import VerifiedIcon from "~/icons/Verified";
-import { selectReadNotification } from "~/redux/features";
+import { select_read_notification } from "~/redux/features";
 import { useAppSelector } from "~/redux/hooks";
 import { breakpoints } from "~/theme/breakpoints";
 import { DateFormat, formatDate } from "~/utils/formatDate";
@@ -72,7 +72,7 @@ const SYSTEM_ICON_MAP: Record<number, React.ReactNode> = {
 const Notification = (props: NotificationProps): React.ReactElement => {
   const { className, notification, virtual, ...rest } = props;
   const isMobile = useMediaQuery(breakpoints.down("mobile"));
-  const isRead = useAppSelector(selectReadNotification(notification.id));
+  const isRead = useAppSelector(select_read_notification(notification.id));
   const isSystem = [
     NotificationType.SYSTEM,
     NotificationType.LOGIN_ATTEMPT

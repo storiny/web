@@ -28,13 +28,9 @@ import HeartIcon from "~/icons/Heart";
 import ReadsIcon from "~/icons/Reads";
 import TrashIcon from "~/icons/Trash";
 import XIcon from "~/icons/X";
-import { falseAction } from "~/redux/features";
+import { boolean_action, falseAction } from "~/redux/features";
 import { selectUser } from "~/redux/features/auth/selectors";
-import {
-  setBookmark,
-  setLikedStory,
-  syncWithStory
-} from "~/redux/features/entities/slice";
+import { syncWithStory } from "~/redux/features/entities/slice";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 import { breakpoints } from "~/theme/breakpoints";
 import { abbreviateNumber } from "~/utils/abbreviateNumber";
@@ -222,7 +218,7 @@ const Splash = (props: StoryProps): React.ReactElement => {
                   checkAuth
                   className={"force-light-mode"}
                   onClick={(): void => {
-                    dispatch(setLikedStory([story.id, falseAction]));
+                    dispatch(boolean_action("liked_stories", story.id, false));
                   }}
                   size={"lg"}
                 >
@@ -237,7 +233,7 @@ const Splash = (props: StoryProps): React.ReactElement => {
                   checkAuth
                   className={"force-light-mode"}
                   onClick={(): void => {
-                    dispatch(setBookmark([story.id]));
+                    dispatch(boolean_action("bookmarks", story.id));
                   }}
                   size={"lg"}
                 >
@@ -472,7 +468,9 @@ const Footer = (props: StoryProps): React.ReactElement => {
                       aria-label={"Unlike this story"}
                       checkAuth
                       onClick={(): void => {
-                        dispatch(setLikedStory([story.id, falseAction]));
+                        dispatch(
+                          boolean_action("liked_stories", story.id, false)
+                        );
                       }}
                       variant={"ghost"}
                     >
@@ -491,7 +489,7 @@ const Footer = (props: StoryProps): React.ReactElement => {
                     } this story`}
                     checkAuth
                     onClick={(): void => {
-                      dispatch(setBookmark([story.id]));
+                      dispatch(boolean_action("bookmarks", story.id));
                     }}
                     variant={"ghost"}
                   >

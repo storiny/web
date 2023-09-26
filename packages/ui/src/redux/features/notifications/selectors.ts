@@ -1,20 +1,14 @@
 import { UnreadNotificationsStatus } from "~/redux/features";
 import { AppState } from "~/redux/store";
 
-// Predicate
-
-export const selectReadNotification =
+export const select_read_notification =
   (notificationId: string) =>
   (state: AppState): boolean =>
-    state.notifications.readNotifications[notificationId];
+    state.notifications.read_notifications[notificationId];
 
-// Integral
+export const select_unread_notification_count = (state: AppState): number =>
+  state.notifications.unread_count;
 
-export const selectUnreadNotificationCount = (state: AppState): number =>
-  state.notifications.unreadCount;
-
-// Misc
-
-export const selectUnreadNotificationsStatus = (
+export const select_notifications_status = (
   state: AppState
 ): UnreadNotificationsStatus => state.notifications.status;

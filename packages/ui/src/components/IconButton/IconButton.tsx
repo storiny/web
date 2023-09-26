@@ -44,7 +44,7 @@ const IconButton = forwardRef<IconButtonProps, "button">((props, ref) => {
   } = React.useContext(InputContext) || {}; // Size when the button is rendered as the `endDecorator` of an `Input` component
   const disabled = Boolean(inputDisabled || disabledProp || loading);
   const loggedIn = useAppSelector(selectLoggedIn);
-  const hapticFeedback = useAppSelector(selectHapticFeedback);
+  const haptic_feedback = useAppSelector(selectHapticFeedback);
   const shouldLogin = checkAuth && !loggedIn;
   const Component = shouldLogin ? "a" : as;
   const size = autoSize ? (isSmallerThanTablet ? "lg" : sizeProp) : sizeProp;
@@ -63,7 +63,7 @@ const IconButton = forwardRef<IconButtonProps, "button">((props, ref) => {
     }
 
     try {
-      if ("vibrate" in navigator && hapticFeedback) {
+      if ("vibrate" in navigator && haptic_feedback) {
         navigator.vibrate(VIBRATION_PATTERNS.click);
       }
     } catch (e) {

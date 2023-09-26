@@ -20,8 +20,7 @@ import { useDebounce } from "~/hooks/useDebounce";
 import SearchIcon from "~/icons/Search";
 import {
   getQueryErrorType,
-  setStoryCommentCount,
-  setStoryHiddenCommentCount,
+  number_action,
   useGetStoryCommentsQuery
 } from "~/redux/features";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
@@ -91,16 +90,19 @@ const StatusHeader = ({
 } & StoryResponsesProps): React.ReactElement => {
   const dispatch = useAppDispatch();
   const totalCount =
-    useAppSelector((state) => state.entities.storyCommentCounts[storyId]) || 0;
+    useAppSelector((state) => state.entities.story_comment_counts[storyId]) ||
+    0;
   const hiddenCount =
     useAppSelector(
-      (state) => state.entities.storyHiddenCommentCounts[storyId]
+      (state) => state.entities.story_hidden_comment_counts[storyId]
     ) || 0;
   const count_param = tab === "all" ? totalCount : hiddenCount;
 
   React.useEffect(() => {
-    dispatch(setStoryCommentCount([storyId, (): number => total_count]));
-    dispatch(setStoryHiddenCommentCount([storyId, (): number => hidden_count]));
+    dispatch(number_action("story_comment_counts", storyId, total_count));
+    dispatch(
+      number_action("story_hidden_comment_counts", storyId, hidden_count)
+    );
   }, [total_count, dispatch, hidden_count, storyId]);
 
   return (

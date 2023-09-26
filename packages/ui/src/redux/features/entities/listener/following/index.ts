@@ -1,40 +1,41 @@
 import {
+  boolean_action,
   decrementAction,
   incrementAction,
-  setEntityRecordValue,
-  setFollowerCount,
+  number_action,
+  set_entity_record_value,
   setSelfFollowingCount
 } from "~/redux/features";
 import { AppStartListening } from "~/redux/listenerMiddleware";
 
-import { debounceEffect, fetchApi } from "../utils";
+import { debounce_effect, fetch_api } from "../utils";
 
-export const addFollowingListener = (
-  startListening: AppStartListening
+export const add_following_listener = (
+  start_listening: AppStartListening
 ): void => {
   /**
    * Subscribe to the user when following them by default, and unsubscribe from them when unfollowing. Also
    * update the following count
    */
-  startListening({
-    actionCreator: setEntityRecordValue,
-    effect: ({ payload }, listenerApi) => {
+  start_listening({
+    actionCreator: set_entity_record_value,
+    effect: ({ payload }, { dispatch }) => {
       if (payload[0] === "following") {
-        const [, userId, hasFollowed] = payload;
+        const [, user_id, has_followed] = payload;
 
         // TODO: ---
-        if (hasFollowed) {
-          listenerApi.dispatch(setSelfFollowingCount(incrementAction));
-          listenerApi.dispatch(setFollowerCount([userId, incrementAction]));
-          listenerApi.dispatch(
-            setEntityRecordValue(["subscriptions", userId, true])
-          );
+        if (has_followed) {
+          dispatch(setSelfFollowingCount(incrementAction));
+          [
+            number_action("follower_counts", user_id, "increment"),
+            boolean_action("subscriptions", user_id, true)
+          ].forEach(dispatch);
         } else {
-          listenerApi.dispatch(setSelfFollowingCount(decrementAction));
-          listenerApi.dispatch(setFollowerCount([userId, decrementAction]));
-          listenerApi.dispatch(
-            setEntityRecordValue(["subscriptions", userId, false])
-          );
+          dispatch(setSelfFollowingCount(decrementAction));
+          [
+            number_action("follower_counts", user_id, "decrement"),
+            boolean_action("subscriptions", user_id, false)
+          ].forEach(dispatch);
         }
       }
     }
@@ -43,15 +44,15 @@ export const addFollowingListener = (
   /**
    * Send the following request to the server
    */
-  startListening({
-    actionCreator: setEntityRecordValue,
-    effect: async ({ payload }, listenerApi) => {
+  start_listening({
+    actionCreator: set_entity_record_value,
+    effect: async ({ payload }, listener_api) => {
       if (payload[0] === "following") {
-        await debounceEffect(listenerApi);
+        await debounce_effect(listener_api);
 
-        const [, userId, hasFollowed] = payload;
-        await fetchApi(`me/following/${userId}`, listenerApi, {
-          method: hasFollowed ? "POST" : "DELETE"
+        const [, user_id, has_followed] = payload;
+        await fetch_api(`me/following/${user_id}`, listener_api, {
+          method: has_followed ? "POST" : "DELETE"
         }).catch(() => undefined);
       }
     }

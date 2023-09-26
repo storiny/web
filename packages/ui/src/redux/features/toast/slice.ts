@@ -43,18 +43,18 @@ const { setToastOpen, renderToast } = toastSlice.actions;
 
 export { renderToast, setToastOpen };
 
-export const addToastListeners = (startListening: AppStartListening): void => {
+export const addToastListeners = (start_listening: AppStartListening): void => {
   /**
    * Parse, validate and store the state from localStorage
    */
-  startListening({
+  start_listening({
     actionCreator: renderToast,
-    effect: (action, listenerApi) => {
+    effect: (action, listener_api) => {
       try {
-        const state = listenerApi.getState();
+        const state = listener_api.getState();
         const { severity } = action.payload;
 
-        if (severity === "error" && state.preferences.hapticFeedback) {
+        if (severity === "error" && state.preferences.haptic_feedback) {
           if ("vibrate" in navigator) {
             navigator.vibrate(VIBRATION_PATTERNS.error); // Vibrate on error
           }

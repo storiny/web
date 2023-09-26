@@ -1,7 +1,4 @@
-import {
-  decrementAction,
-  setSelfPendingFriendRequestCount
-} from "~/redux/features";
+import { self_action } from "~/redux/features";
 import { apiSlice } from "~/redux/features/api/slice";
 
 const SEGMENT = (id: string): string => `me/friend-requests/${id}/reject`;
@@ -26,7 +23,9 @@ export const { useRejectFriendRequestMutation } = apiSlice.injectEndpoints({
       ],
       onQueryStarted: async (arg, { dispatch, queryFulfilled }) => {
         queryFulfilled.then(() => {
-          dispatch(setSelfPendingFriendRequestCount(decrementAction));
+          dispatch(
+            self_action("self_pending_friend_request_count", "decrement")
+          );
         });
       }
     })

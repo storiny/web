@@ -8,7 +8,11 @@ import IconButton from "~/components/IconButton";
 import Persona from "~/entities/Persona";
 import UserCheckIcon from "~/icons/UserCheck";
 import UserPlusIcon from "~/icons/UserPlus";
-import { setFollowing, syncWithUser } from "~/redux/features/entities/slice";
+import {
+  boolean_action,
+  setFollowing,
+  syncWithUser
+} from "~/redux/features/entities/slice";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 
 import styles from "./UserWithAction.module.scss";
@@ -48,7 +52,7 @@ const UserWithAction = (props: UserWithActionProps): React.ReactElement => {
         checkAuth
         disabled={isBlocked}
         onClick={(): void => {
-          dispatch(setFollowing([user.id]));
+          dispatch(boolean_action("following", user.id));
         }}
         title={`${isFollowing ? "Unfollow" : "Follow"} ${user.name}`}
         variant={isFollowing ? "rigid" : "hollow"}

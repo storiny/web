@@ -26,8 +26,8 @@ import SettingsIcon from "~/icons/Settings";
 import StoryHeartIcon from "~/icons/StoryHeart";
 import UserIcon from "~/icons/User";
 import {
-  selectLoggedIn,
-  selectUnreadNotificationCount
+  select_unread_notification_count,
+  selectLoggedIn
 } from "~/redux/features";
 import { useAppSelector } from "~/redux/hooks";
 
@@ -49,7 +49,9 @@ const AnchorTab = (props: TabProps & { href: string }): React.ReactElement => (
 const LeftSidebarDefaultContent = (): React.ReactElement => {
   const pathname = usePathname();
   const loggedIn = useAppSelector(selectLoggedIn);
-  const unreadNotificationCount = useAppSelector(selectUnreadNotificationCount);
+  const unreadNotificationCount = useAppSelector(
+    select_unread_notification_count
+  );
 
   return (
     <>
@@ -68,7 +70,7 @@ const LeftSidebarDefaultContent = (): React.ReactElement => {
           pathname === "/"
             ? "home"
             : pathname === "/explore" ||
-              // pathname is null in tests
+              // Pathname is null in tests
               (pathname || "").startsWith("/explore/")
             ? "explore"
             : (pathname || "").substring(1)

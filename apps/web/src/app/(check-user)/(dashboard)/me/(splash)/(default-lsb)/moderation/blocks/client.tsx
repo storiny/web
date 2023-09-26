@@ -17,7 +17,7 @@ import { useDebounce } from "~/hooks/useDebounce";
 import SearchIcon from "~/icons/Search";
 import {
   getQueryErrorType,
-  setSelfBlockCount,
+  self_action,
   useGetBlockedUsersQuery
 } from "~/redux/features";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
@@ -39,10 +39,10 @@ export type BlocksSortValue = "recent" | "old";
 const StatusHeader = ({ block_count }: BlocksProps): React.ReactElement => {
   const dispatch = useAppDispatch();
   const blockCount =
-    useAppSelector((state) => state.entities.selfBlockCount) || 0;
+    useAppSelector((state) => state.entities.self_block_count) || 0;
 
   React.useEffect(() => {
-    dispatch(setSelfBlockCount(() => block_count));
+    dispatch(self_action("self_block_count", block_count));
   }, [dispatch, block_count]);
 
   return (

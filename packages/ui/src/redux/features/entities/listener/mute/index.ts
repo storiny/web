@@ -1,42 +1,38 @@
-import {
-  decrementAction,
-  incrementAction,
-  setMute,
-  setSelfMuteCount
-} from "~/redux/features";
+import { self_action, set_entity_record_value } from "~/redux/features";
 import { AppStartListening } from "~/redux/listenerMiddleware";
 
-import { debounceEffect, fetchApi } from "../utils";
+import { debounce_effect, fetch_api } from "../utils";
 
-export const addMuteListener = (startListening: AppStartListening): void => {
+export const add_mute_listener = (start_listening: AppStartListening): void => {
   /**
    * Update mute count
    */
-  startListening({
-    actionCreator: setMute,
-    effect: ({ payload }, listenerApi) => {
-      const userId = payload[0];
-      const isMuted = listenerApi.getState().entities.mutes[userId];
-      listenerApi.dispatch(
-        setSelfMuteCount(isMuted ? incrementAction : decrementAction)
-      );
+  start_listening({
+    actionCreator: set_entity_record_value,
+    effect: ({ payload }, { dispatch }) => {
+      if (payload[0] === "mutes") {
+        const [, , has_muted] = payload;
+        dispatch(
+          self_action("self_mute_count", has_muted ? "increment" : "decrement")
+        );
+      }
     }
   });
 
   /**
    * Send mute request to the server
    */
-  startListening({
-    actionCreator: setMute,
-    effect: async ({ payload }, listenerApi) => {
-      await debounceEffect(listenerApi);
+  start_listening({
+    actionCreator: set_entity_record_value,
+    effect: async ({ payload }, listener_api) => {
+      if (payload[0] === "mutes") {
+        await debounce_effect(listener_api);
 
-      const userId = payload[0];
-      const isMuted = listenerApi.getState().entities.mutes[userId];
-
-      await fetchApi(`me/muted-users/${userId}`, listenerApi, {
-        method: isMuted ? "POST" : "DELETE"
-      }).catch(() => undefined);
+        const [, userId, hasMuted] = payload;
+        await fetch_api(`me/muted-users/${userId}`, listener_api, {
+          method: hasMuted ? "POST" : "DELETE"
+        }).catch(() => undefined);
+      }
     }
   });
 };

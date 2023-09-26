@@ -4,18 +4,18 @@ import { API_VERSION } from "@storiny/shared";
 import { AppDispatch, AppState } from "~/redux/store";
 
 /**
- * Sends a request to the server, cancellable using the `listenerApi` signal
+ * Sends a request to the server, cancellable using the `listener_api` signal
  * @param path URL path
- * @param listenerApi Listener API
+ * @param listener_api Listener API
  * @param init Fetch options
  */
-export const fetchApi = async (
+export const fetch_api = async (
   path: string,
-  listenerApi: ListenerEffectAPI<AppState, AppDispatch>,
+  listener_api: ListenerEffectAPI<AppState, AppDispatch>,
   init?: Parameters<typeof fetch>[1]
 ): Promise<Response | undefined> =>
   await fetch(`${process.env.NEXT_PUBLIC_API_URL}/v${API_VERSION}/${path}`, {
     ...init,
     credentials: "include",
-    signal: listenerApi.signal
+    signal: listener_api.signal
   });

@@ -1,32 +1,35 @@
 import {
   decrementAction,
+  number_action,
   renderToast,
-  setEntityRecordValue,
+  set_entity_record_value,
   setSelfFriendCount
 } from "~/redux/features";
 import { AppStartListening } from "~/redux/listenerMiddleware";
 
-import { debounceEffect, fetchApi } from "../utils";
+import { debounce_effect, fetch_api } from "../utils";
 
-export const addFriendListener = (startListening: AppStartListening): void => {
+export const add_friend_listener = (
+  start_listening: AppStartListening
+): void => {
   /**
    * Send friend request to the server
    */
-  startListening({
-    actionCreator: setEntityRecordValue,
-    effect: async ({ payload }, listenerApi) => {
-      if (payload[0] === "sentRequests") {
-        await debounceEffect(listenerApi);
-        const [, userId, hasSentFriendRequest] = payload;
+  start_listening({
+    actionCreator: set_entity_record_value,
+    effect: async ({ payload }, listener_api) => {
+      if (payload[0] === "sent_requests") {
+        await debounce_effect(listener_api);
+        const [, user_id, has_sent_friend_request] = payload;
 
-        if (hasSentFriendRequest) {
-          await fetchApi(`me/friends/${userId}`, listenerApi, {
+        if (has_sent_friend_request) {
+          await fetch_api(`me/friends/${user_id}`, listener_api, {
             method: "POST"
           })
             .then((res) => {
               if (res) {
                 if (res.ok) {
-                  listenerApi.dispatch(
+                  listener_api.dispatch(
                     renderToast({
                       message: "Friend request sent",
                       severity: "success"
@@ -36,7 +39,7 @@ export const addFriendListener = (startListening: AppStartListening): void => {
                   res
                     .json()
                     .then((json) => {
-                      listenerApi.dispatch(
+                      listener_api.dispatch(
                         renderToast({
                           message:
                             json?.error || "Could not send your friend request",
@@ -58,18 +61,16 @@ export const addFriendListener = (startListening: AppStartListening): void => {
    * Increment and decrement friend count. The client can only remove a friend,
    * and to add a friend, the friend request needs to be accepted by the recipient
    */
-  startListening({
-    actionCreator: setEntityRecordValue,
-    effect: ({ payload }, listenerApi) => {
+  start_listening({
+    actionCreator: set_entity_record_value,
+    effect: ({ payload }, { dispatch }) => {
       if (payload[0] === "friends") {
-        const [, userId, hasAddedFriend] = payload;
+        const [, user_id, has_added_friend] = payload;
 
         // TODO: ---
-        if (!hasAddedFriend) {
-          listenerApi.dispatch(setSelfFriendCount(decrementAction));
-          listenerApi.dispatch(
-            setEntityRecordValue(["friendCounts", userId, false])
-          );
+        if (!has_added_friend) {
+          dispatch(setSelfFriendCount(decrementAction));
+          dispatch(number_action("friend_counts", user_id, "decrement"));
         }
       }
     }
@@ -78,15 +79,15 @@ export const addFriendListener = (startListening: AppStartListening): void => {
   /**
    * Send friend remove request to the server
    */
-  startListening({
-    actionCreator: setEntityRecordValue,
-    effect: async ({ payload }, listenerApi) => {
+  start_listening({
+    actionCreator: set_entity_record_value,
+    effect: async ({ payload }, listener_api) => {
       if (payload[0] === "friends") {
-        await debounceEffect(listenerApi);
-        const [, userId, hasAddedFriend] = payload;
+        await debounce_effect(listener_api);
+        const [, user_id, has_added_friend] = payload;
 
-        if (!hasAddedFriend) {
-          await fetchApi(`me/friends/${userId}`, listenerApi, {
+        if (!has_added_friend) {
+          await fetch_api(`me/friends/${user_id}`, listener_api, {
             method: "DELETE"
           }).catch(() => undefined);
         }

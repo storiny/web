@@ -1,48 +1,44 @@
-import {
-  decrementAction,
-  incrementAction,
-  setCommentLikeCount,
-  setLikedComment
-} from "~/redux/features";
+import { number_action, set_entity_record_value } from "~/redux/features";
 import { AppStartListening } from "~/redux/listenerMiddleware";
 
-import { debounceEffect, fetchApi } from "../utils";
+import { debounce_effect, fetch_api } from "../utils";
 
-export const addLikedCommentListener = (
-  startListening: AppStartListening
+export const add_liked_comment_listener = (
+  start_listening: AppStartListening
 ): void => {
   /**
    * Increment and decrement comment like count
    */
-  startListening({
-    actionCreator: setLikedComment,
-    effect: ({ payload }, listenerApi) => {
-      const commentId = payload[0];
-      const hasLiked = listenerApi.getState().entities.likedComments[commentId];
-
-      listenerApi.dispatch(
-        setCommentLikeCount([
-          commentId,
-          hasLiked ? incrementAction : decrementAction
-        ])
-      );
+  start_listening({
+    actionCreator: set_entity_record_value,
+    effect: ({ payload }, { dispatch }) => {
+      if (payload[0] === "liked_comments") {
+        const [, comment_id, has_liked] = payload;
+        dispatch(
+          number_action(
+            "comment_like_counts",
+            comment_id,
+            has_liked ? "increment" : "decrement"
+          )
+        );
+      }
     }
   });
 
   /**
    * Send the comment like request to the server
    */
-  startListening({
-    actionCreator: setLikedComment,
-    effect: async ({ payload }, listenerApi) => {
-      await debounceEffect(listenerApi);
+  start_listening({
+    actionCreator: set_entity_record_value,
+    effect: async ({ payload }, listener_api) => {
+      if (payload[0] === "liked_comments") {
+        await debounce_effect(listener_api);
 
-      const commentId = payload[0];
-      const hasLiked = listenerApi.getState().entities.likedComments[commentId];
-
-      await fetchApi(`me/liked-comments/${commentId}`, listenerApi, {
-        method: hasLiked ? "POST" : "DELETE"
-      }).catch(() => undefined);
+        const [, comment_id, has_liked] = payload;
+        await fetch_api(`me/liked-comments/${comment_id}`, listener_api, {
+          method: has_liked ? "POST" : "DELETE"
+        }).catch(() => undefined);
+      }
     }
   });
 };

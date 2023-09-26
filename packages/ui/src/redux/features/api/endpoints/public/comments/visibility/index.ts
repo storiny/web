@@ -1,8 +1,4 @@
-import {
-  decrementAction,
-  incrementAction,
-  setStoryHiddenCommentCount
-} from "~/redux/features";
+import { number_action } from "~/redux/features";
 import { apiSlice } from "~/redux/features/api/slice";
 
 const SEGMENT = (id: string): string => `public/comments/${id}/visibility`;
@@ -30,10 +26,11 @@ export const { useCommentVisibilityMutation } = apiSlice.injectEndpoints({
       onQueryStarted: async (arg, { dispatch, queryFulfilled }) => {
         queryFulfilled.then(() => {
           dispatch(
-            setStoryHiddenCommentCount([
+            number_action(
+              "story_hidden_comment_counts",
               arg.storyId,
-              arg.hidden ? incrementAction : decrementAction
-            ])
+              arg.hidden ? "increment" : "decrement"
+            )
           );
         });
       }

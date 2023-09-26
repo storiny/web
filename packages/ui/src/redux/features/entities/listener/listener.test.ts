@@ -1,8 +1,5 @@
-import { falseAction, trueAction } from "~/redux/features";
+import { boolean_action, number_action } from "~/redux/features";
 import { setupStore } from "~/redux/store";
-import { renderHookWithProvider } from "~/redux/testUtils";
-
-import { useEntityBooleanDispatch, useEntityNumberDispatch } from "../slice";
 
 const testId = "0";
 
@@ -10,22 +7,17 @@ describe("entitiesListener", () => {
   describe("block", () => {
     it("unfollows, unsubscribes, removes friend request, and removes user from followers and friends list when they are blocked", async () => {
       const store = setupStore(undefined, true);
-      const { result } = renderHookWithProvider(
-        () => useEntityBooleanDispatch(),
-        {},
-        { store }
-      );
 
       // Follow user
-      result.current("following", testId, trueAction);
+      store.dispatch(boolean_action("following", testId, true));
       // Subscribe
-      result.current("subscriptions", testId, trueAction);
+      store.dispatch(boolean_action("subscriptions", testId, true));
       // Add user to the follower list
-      result.current("followers", testId, trueAction);
+      store.dispatch(boolean_action("followers", testId, true));
       // Add user to the friend list
-      result.current("friends", testId, trueAction);
+      store.dispatch(boolean_action("friends", testId, true));
       // Send request
-      result.current("sentRequests", testId, trueAction);
+      store.dispatch(boolean_action("sentRequests", testId, true));
 
       expect(store.getState().entities.following[testId]).toBeTruthy();
       expect(store.getState().entities.followers[testId]).toBeTruthy();
@@ -34,7 +26,7 @@ describe("entitiesListener", () => {
       expect(store.getState().entities.sentRequests[testId]).toBeTruthy();
 
       // Block the user
-      result.current("blocks", testId, trueAction);
+      store.dispatch(boolean_action("blocks", testId, true));
 
       expect(store.getState().entities.following[testId]).toBeFalsy();
       expect(store.getState().entities.followers[testId]).toBeFalsy();
@@ -48,20 +40,15 @@ describe("entitiesListener", () => {
   describe("following", () => {
     it("subscribes/unsubscribes to/from user when following/unfollowing them", () => {
       const store = setupStore(undefined, true);
-      const { result } = renderHookWithProvider(
-        () => useEntityBooleanDispatch(),
-        {},
-        { store }
-      );
 
       // Follow user
-      result.current("following", testId, trueAction);
+      store.dispatch(boolean_action("following", testId, true));
 
       expect(store.getState().entities.following[testId]).toBeTruthy();
       expect(store.getState().entities.subscriptions[testId]).toBeTruthy();
 
       // Unfollow user
-      result.current("following", testId, falseAction);
+      store.dispatch(boolean_action("following", testId, true));
 
       expect(store.getState().entities.following[testId]).toBeFalsy();
       expect(store.getState().entities.subscriptions[testId]).toBeFalsy();
@@ -69,18 +56,13 @@ describe("entitiesListener", () => {
 
     it("syncs count on toggling following", () => {
       const store = setupStore(undefined, true);
-      const { result } = renderHookWithProvider(
-        () => useEntityBooleanDispatch(),
-        {},
-        { store }
-      );
 
       // Follow user
-      result.current("following", testId);
+      store.dispatch(boolean_action("following", testId));
       expect(store.getState().entities.followerCounts[testId]).toEqual(1);
 
       // Unfollow user
-      result.current("following", testId);
+      store.dispatch(boolean_action("following", testId));
       expect(store.getState().entities.followerCounts[testId]).toEqual(0);
     });
   });
@@ -88,22 +70,12 @@ describe("entitiesListener", () => {
   describe("friend", () => {
     it("syncs count on toggling friends", () => {
       const store = setupStore(undefined, true);
-      const { result: booleanResult } = renderHookWithProvider(
-        () => useEntityBooleanDispatch(),
-        {},
-        { store }
-      );
-      const { result: numberResult } = renderHookWithProvider(
-        () => useEntityNumberDispatch(),
-        {},
-        { store }
-      );
 
-      booleanResult.current("friends", testId, trueAction);
-      numberResult.current("friendCounts", testId, 5);
+      store.dispatch(boolean_action("friends", testId, true));
+      store.dispatch(number_action("friendCounts", testId, 5));
 
       // Remove friend
-      booleanResult.current("friends", testId);
+      store.dispatch(boolean_action("friends", testId));
       expect(store.getState().entities.friendCounts[testId]).toEqual(4);
     });
   });
@@ -111,18 +83,13 @@ describe("entitiesListener", () => {
   describe("story", () => {
     it("syncs count on toggling story like", () => {
       const store = setupStore(undefined, true);
-      const { result } = renderHookWithProvider(
-        () => useEntityBooleanDispatch(),
-        {},
-        { store }
-      );
 
       // Like story
-      result.current("likedStories", testId);
+      store.dispatch(boolean_action("likedStories", testId));
       expect(store.getState().entities.storyLikeCounts[testId]).toEqual(1);
 
       // Unlike story
-      result.current("likedStories", testId);
+      store.dispatch(boolean_action("likedStories", testId));
       expect(store.getState().entities.storyLikeCounts[testId]).toEqual(0);
     });
   });
@@ -130,18 +97,13 @@ describe("entitiesListener", () => {
   describe("comment", () => {
     it("syncs count on toggling comment like", () => {
       const store = setupStore(undefined, true);
-      const { result } = renderHookWithProvider(
-        () => useEntityBooleanDispatch(),
-        {},
-        { store }
-      );
 
       // Like comment
-      result.current("likedComments", testId);
+      store.dispatch(boolean_action("likedComments", testId));
       expect(store.getState().entities.commentLikeCounts[testId]).toEqual(1);
 
       // Unlike comment
-      result.current("likedComments", testId);
+      store.dispatch(boolean_action("likedComments", testId));
       expect(store.getState().entities.commentLikeCounts[testId]).toEqual(0);
     });
   });
@@ -149,18 +111,13 @@ describe("entitiesListener", () => {
   describe("reply", () => {
     it("syncs count on toggling reply like", () => {
       const store = setupStore(undefined, true);
-      const { result } = renderHookWithProvider(
-        () => useEntityBooleanDispatch(),
-        {},
-        { store }
-      );
 
       // Like reply
-      result.current("likedReplies", testId);
+      store.dispatch(boolean_action("likedReplies", testId));
       expect(store.getState().entities.replyLikeCounts[testId]).toEqual(1);
 
       // Unlike reply
-      result.current("likedReplies", testId);
+      store.dispatch(boolean_action("likedReplies", testId));
       expect(store.getState().entities.replyLikeCounts[testId]).toEqual(0);
     });
   });
@@ -168,18 +125,13 @@ describe("entitiesListener", () => {
   describe("tag follower", () => {
     it("syncs count on toggling tag follower", () => {
       const store = setupStore(undefined, true);
-      const { result } = renderHookWithProvider(
-        () => useEntityBooleanDispatch(),
-        {},
-        { store }
-      );
 
       // Follow tag
-      result.current("followedTags", testId);
+      store.dispatch(boolean_action("followedTags", testId));
       expect(store.getState().entities.tagFollowerCounts[testId]).toEqual(1);
 
       // Unfollow tag
-      result.current("followedTags", testId);
+      store.dispatch(boolean_action("followedTags", testId));
       expect(store.getState().entities.tagFollowerCounts[testId]).toEqual(0);
     });
   });

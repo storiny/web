@@ -21,8 +21,7 @@ import { useDebounce } from "~/hooks/useDebounce";
 import SearchIcon from "~/icons/Search";
 import {
   getQueryErrorType,
-  setSelfCommentCount,
-  setSelfReplyCount,
+  self_action,
   useGetCommentsQuery,
   useGetRepliesQuery
 } from "~/redux/features";
@@ -89,14 +88,16 @@ const StatusHeader = ({
 } & ResponsesProps): React.ReactElement => {
   const dispatch = useAppDispatch();
   const commentCount =
-    useAppSelector((state) => state.entities.selfCommentCount) || 0;
+    useAppSelector((state) => state.entities.self_comment_count) || 0;
   const replyCount =
-    useAppSelector((state) => state.entities.selfReplyCount) || 0;
+    useAppSelector((state) => state.entities.self_reply_count) || 0;
   const count_param = tab === "comments" ? commentCount : replyCount;
 
   React.useEffect(() => {
-    dispatch(setSelfCommentCount(() => comment_count));
-    dispatch(setSelfReplyCount(() => reply_count));
+    [
+      self_action("self_comment_count", comment_count),
+      self_action("self_reply_count", reply_count)
+    ].forEach(disaptch);
   }, [comment_count, dispatch, reply_count]);
 
   return (
