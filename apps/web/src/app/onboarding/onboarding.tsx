@@ -22,9 +22,9 @@ import { useMediaQuery } from "~/hooks/useMediaQuery";
 import CheckIcon from "~/icons/Check";
 import PlusIcon from "~/icons/Plus";
 import {
+  boolean_action,
   GetOnboardingTagsResponse,
   getQueryErrorType,
-  setFollowedTag,
   useGetOnboardingTagsQuery
 } from "~/redux/features";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
@@ -119,7 +119,7 @@ const Tag = ({
     <Chip
       className={clsx("flex-center", styles.tag)}
       onClick={(): void => {
-        dispatch(setFollowedTag([tagId]));
+        dispatch(boolean_action("followed_tags", tagId));
       }}
       type={"clickable"}
       variant={isFollowing ? "rigid" : "soft"}

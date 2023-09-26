@@ -40,7 +40,7 @@ const Button = forwardRef<ButtonProps, "button">((props, ref) => {
   const buttonRef = React.useRef<HTMLElement>(null);
   const disabled = Boolean(disabledProp || loading);
   const loggedIn = useAppSelector(selectLoggedIn);
-  const hapticFeedback = useAppSelector(selectHapticFeedback);
+  const haptic_feedback = useAppSelector(selectHapticFeedback);
   const shouldLogin = checkAuth && !loggedIn;
   const Component = shouldLogin ? "a" : as;
   const size = autoSize ? (isSmallerThanTablet ? "lg" : sizeProp) : sizeProp;
@@ -62,7 +62,7 @@ const Button = forwardRef<ButtonProps, "button">((props, ref) => {
     }
 
     try {
-      if ("vibrate" in navigator && hapticFeedback) {
+      if ("vibrate" in navigator && haptic_feedback) {
         navigator.vibrate(VIBRATION_PATTERNS.click);
       }
     } catch (e) {

@@ -7,8 +7,10 @@ export const selectAlertVisibility =
   (type: "appearance" | "accessibility") =>
   (state: AppState): boolean =>
     state.preferences[
-      type === "appearance" ? "showAppearanceAlert" : "showAccessibilityAlert"
+      type === "appearance"
+        ? "show_appearance_alert"
+        : "show_accessibility_alert"
     ];
 
 export const selectHapticFeedback = (state: AppState): boolean =>
-  state.preferences.hapticFeedback;
+  state.preferences.haptic_feedback;

@@ -20,12 +20,9 @@ import ShareIcon from "~/icons/Share";
 import UserBlockIcon from "~/icons/UserBlock";
 import XIcon from "~/icons/X";
 import {
+  boolean_action,
   selectLoggedIn,
-  setBlock,
-  setFriend,
-  setMute,
   setSentRequest,
-  setSubscription,
   syncWithUser
 } from "~/redux/features";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
@@ -73,7 +70,7 @@ const Actions = ({ profile, isInsideSidebar }: Props): React.ReactElement => {
     ),
     {
       color: isBlocking ? "inverted" : "ruby",
-      onConfirm: () => dispatch(setBlock([profile.id])),
+      onConfirm: () => dispatch(boolean_action("blocks", profile.id)),
       title: `${isBlocking ? "Unblock" : "Block"} @${profile.username}?`,
       description: isBlocking
         ? `The public content you publish will be available to them as well as the ability to follow you.`
@@ -115,7 +112,7 @@ const Actions = ({ profile, isInsideSidebar }: Props): React.ReactElement => {
               checkAuth
               decorator={<XIcon />}
               onClick={(): void => {
-                dispatch(setSentRequest([profile.id]));
+                dispatch(boolean_action("sent_requests", profile.id));
               }}
             >
               Cancel request
@@ -125,7 +122,7 @@ const Actions = ({ profile, isInsideSidebar }: Props): React.ReactElement => {
               checkAuth
               decorator={<HeartPlusIcon />}
               onClick={(): void => {
-                dispatch(setFriend([profile.id]));
+                dispatch(boolean_action("friends", profile.id, false));
               }}
             >
               Remove friend
@@ -135,7 +132,7 @@ const Actions = ({ profile, isInsideSidebar }: Props): React.ReactElement => {
               checkAuth
               decorator={<HeartPlusIcon />}
               onClick={(): void => {
-                dispatch(setSentRequest([profile.id]));
+                dispatch(boolean_action("sent_requests", profile.id));
               }}
             >
               Send friend request
@@ -146,7 +143,7 @@ const Actions = ({ profile, isInsideSidebar }: Props): React.ReactElement => {
               checkAuth
               decorator={isSubscribed ? <BellFilledIcon /> : <BellPlusIcon />}
               onClick={(): void => {
-                dispatch(setSubscription([profile.id]));
+                dispatch(boolean_action("subscriptions", profile.id));
               }}
             >
               {isSubscribed ? "Unsubscribe" : "Subscribe"}
@@ -181,7 +178,7 @@ const Actions = ({ profile, isInsideSidebar }: Props): React.ReactElement => {
             checkAuth
             decorator={<MuteIcon />}
             onClick={(): void => {
-              dispatch(setMute([profile.id]));
+              dispatch(boolean_action("mutes", profile.id));
             }}
           >
             {isMuted ? "Unmute" : "Mute"} this user

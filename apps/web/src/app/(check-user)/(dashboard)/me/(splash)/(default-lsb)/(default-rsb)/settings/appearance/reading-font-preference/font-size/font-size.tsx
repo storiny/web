@@ -59,7 +59,9 @@ const FontSizeItem = ({
 const ReadingFontSizePreference = (): React.ReactElement => {
   const isSmallerThanMobile = useMediaQuery(breakpoints.down("mobile"));
   const dispatch = useAppDispatch();
-  const fontSize = useAppSelector((state) => state.preferences.readingFontSize);
+  const fontSize = useAppSelector(
+    (state) => state.preferences.reading_font_size
+  );
 
   return (
     <React.Fragment>

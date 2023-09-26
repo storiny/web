@@ -1,9 +1,4 @@
-import {
-  decrementAction,
-  incrementAction,
-  setSelfDeletedDraftCount,
-  setSelfPendingDraftCount
-} from "~/redux/features";
+import { self_action } from "~/redux/features";
 import { apiSlice } from "~/redux/features/api/slice";
 
 const SEGMENT = (id: string): string => `me/drafts/${id}/recover`;
@@ -23,8 +18,10 @@ export const { useRecoverDraftMutation } = apiSlice.injectEndpoints({
       invalidatesTags: (result, error, arg) => [{ type: "Story", id: arg.id }],
       onQueryStarted: async (arg, { dispatch, queryFulfilled }) => {
         queryFulfilled.then(() => {
-          dispatch(setSelfPendingDraftCount(incrementAction));
-          dispatch(setSelfDeletedDraftCount(decrementAction));
+          [
+            self_action("self_pending_draft_count", "increment"),
+            self_action("self_deleted_draft_count", "decrement")
+          ].forEach(dispatch);
         });
       }
     })

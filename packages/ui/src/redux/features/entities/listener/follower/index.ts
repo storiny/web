@@ -1,31 +1,31 @@
 import {
   decrementAction,
-  setEntityRecordValue,
-  setFollowingCount,
+  number_action,
+  set_entity_record_value,
   setSelfFollowerCount
 } from "~/redux/features";
 import { AppStartListening } from "~/redux/listenerMiddleware";
 
-import { debounceEffect, fetchApi } from "../utils";
+import { debounce_effect, fetch_api } from "../utils";
 
-export const addFollowerListener = (
-  startListening: AppStartListening
+export const add_follower_listener = (
+  start_listening: AppStartListening
 ): void => {
   /**
    * Increment and decrement on follower mutation. Follower can only
    * be removed using the `Remove this follower` option
    */
-  startListening({
-    actionCreator: setEntityRecordValue,
-    effect: ({ payload }, listenerApi) => {
+  start_listening({
+    actionCreator: set_entity_record_value,
+    effect: ({ payload }, { dispatch }) => {
       if (payload[0] === "followers") {
-        const [, userId, hasAddedFollower] = payload;
+        const [, user_id, has_added_follower] = payload;
 
         // User can only remove its followers
         // TODO: ---
-        if (!hasAddedFollower) {
-          listenerApi.dispatch(setSelfFollowerCount(decrementAction));
-          listenerApi.dispatch(setFollowingCount([userId, decrementAction]));
+        if (!has_added_follower) {
+          dispatch(setSelfFollowerCount(decrementAction));
+          dispatch(number_action("following_counts", user_id, "decrement"));
         }
       }
     }
@@ -34,17 +34,16 @@ export const addFollowerListener = (
   /**
    * Send follower remove request to the server
    */
-  startListening({
-    actionCreator: setEntityRecordValue,
-    effect: async ({ payload }, listenerApi) => {
+  start_listening({
+    actionCreator: set_entity_record_value,
+    effect: async ({ payload }, listener_api) => {
       if (payload[0] === "followers") {
-        await debounceEffect(listenerApi);
+        await debounce_effect(listener_api);
 
-        const [, userId, hasAddedFollower] = payload;
-
+        const [, user_id, has_added_follower] = payload;
         // User can only remove its followers
-        if (!hasAddedFollower) {
-          await fetchApi(`me/followers/${userId}`, listenerApi, {
+        if (!has_added_follower) {
+          await fetch_api(`me/followers/${user_id}`, listener_api, {
             method: "DELETE"
           }).catch(() => undefined);
         }

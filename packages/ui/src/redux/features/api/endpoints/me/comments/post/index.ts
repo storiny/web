@@ -1,10 +1,6 @@
 import { ContentType } from "@storiny/shared";
 
-import {
-  incrementAction,
-  setSelfCommentCount,
-  setStoryCommentCount
-} from "~/redux/features";
+import { number_action, self_action } from "~/redux/features";
 import { apiSlice } from "~/redux/features/api/slice";
 
 const SEGMENT = "me/comments";
@@ -29,8 +25,10 @@ export const { useAddCommentMutation } = apiSlice.injectEndpoints({
       invalidatesTags: ["Comment"],
       onQueryStarted: async (arg, { dispatch, queryFulfilled }) => {
         queryFulfilled.then(() => {
-          dispatch(setStoryCommentCount([arg.storyId, incrementAction]));
-          dispatch(setSelfCommentCount(incrementAction));
+          [
+            number_action("story_comment_counts", arg.storyId, "increment"),
+            self_action("self_comment_count", "increment")
+          ].forEach(dispatch);
         });
       }
     })

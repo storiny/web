@@ -1,44 +1,44 @@
-// import { useRouter } from "next/navigation";
-// import React from "react";
+// Import { useRouter } from "next/navigation";
+// Import React from "react";
 //
-// import { useNotification } from "~/components/Notification";
-// import TypographyIcon from "~/icons/Typography";
-// import { setFontSettingsNotificationVisibility } from "~/redux/features";
-// import { useAppDispatch, useAppSelector } from "~/redux/hooks";
+// Import { useNotification } from "~/components/Notification";
+// Import TypographyIcon from "~/icons/Typography";
+// Import { setFontSettingsNotificationVisibility } from "~/redux/features";
+// Import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 
 // TODO: Implement once `useNotification` gets fixed
 //
-// const EditorFontSettingsNotification = (): null => {
-//   const router = useRouter();
-//   const notify = useNotification();
-//   const dispatch = useAppDispatch();
-//   const showNotification = useAppSelector(
-//     (state) => state.preferences.showFontSettingsNotification
+// Const EditorFontSettingsNotification = (): null => {
+//   Const router = useRouter();
+//   Const notify = useNotification();
+//   Const dispatch = useAppDispatch();
+//   Const showNotification = useAppSelector(
+//     (state) => state.preferences.show_font_settings_notification
 //   );
 //
 //   React.useEffect(() => {
-//     if (showNotification) {
-//       notify({
-//         open: true,
-//         children:
+//     If (showNotification) {
+//       Notify({
+//         Open: true,
+//         Children:
 //           "Difficulty reading? Try adjusting font properties in your settings.",
-//         primaryButtonText: "Settings",
-//         slotProps: {
-//           primaryButton: {
-//             onClick: (): void => router.push("/me/settings/appearance")
+//         PrimaryButtonText: "Settings",
+//         SlotProps: {
+//           PrimaryButton: {
+//             OnClick: (): void => router.push("/me/settings/appearance")
 //           },
-//           secondaryButton: {
-//             onClick: (): void => {
-//               dispatch(setFontSettingsNotificationVisibility(false));
+//           SecondaryButton: {
+//             OnClick: (): void => {
+//               Dispatch(setFontSettingsNotificationVisibility(false));
 //             }
 //           }
 //         },
-//         icon: <TypographyIcon />
+//         Icon: <TypographyIcon />
 //       });
 //     }
 //   }, [dispatch, notify, router, showNotification]);
 //
-//   return null;
+//   Return null;
 // };
 //
-// export default EditorFontSettingsNotification;
+// Export default EditorFontSettingsNotification;

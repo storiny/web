@@ -17,7 +17,7 @@ import { useDebounce } from "~/hooks/useDebounce";
 import SearchIcon from "~/icons/Search";
 import {
   getQueryErrorType,
-  setSelfFollowedTagCount,
+  self_action,
   useGetFollowedTagsQuery
 } from "~/redux/features";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
@@ -42,10 +42,10 @@ const StatusHeader = ({
 }: TagsProps): React.ReactElement => {
   const dispatch = useAppDispatch();
   const followedTagCount =
-    useAppSelector((state) => state.entities.selfFollowedTagCount) || 0;
+    useAppSelector((state) => state.entities.self_followed_tag_count) || 0;
 
   React.useEffect(() => {
-    dispatch(setSelfFollowedTagCount(() => followed_tag_count));
+    dispatch(self_action("self_followed_tag_count", followed_tag_count));
   }, [dispatch, followed_tag_count]);
 
   return (

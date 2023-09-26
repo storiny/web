@@ -108,7 +108,7 @@ const TypefaceItem = ({
 const CodeFontTypefacePreference = (): React.ReactElement => {
   const isSmallerThanMobile = useMediaQuery(breakpoints.down("mobile"));
   const dispatch = useAppDispatch();
-  const typeface = useAppSelector((state) => state.preferences.codeFont);
+  const typeface = useAppSelector((state) => state.preferences.code_font);
 
   return (
     <React.Fragment>

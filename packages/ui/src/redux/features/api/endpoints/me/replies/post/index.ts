@@ -1,10 +1,6 @@
 import { ContentType } from "@storiny/shared";
 
-import {
-  incrementAction,
-  setCommentReplyCount,
-  setSelfReplyCount
-} from "~/redux/features";
+import { number_action, self_action } from "~/redux/features";
 import { apiSlice } from "~/redux/features/api/slice";
 
 const SEGMENT = "me/replies";
@@ -29,8 +25,10 @@ export const { useAddReplyMutation } = apiSlice.injectEndpoints({
       invalidatesTags: ["Reply"],
       onQueryStarted: async (arg, { dispatch, queryFulfilled }) => {
         queryFulfilled.then(() => {
-          dispatch(setCommentReplyCount([arg.commentId, incrementAction]));
-          dispatch(setSelfReplyCount(incrementAction));
+          [
+            number_action("comment_reply_counts", arg.commentId, "increment"),
+            self_action("self_reply_count", "increment")
+          ].forEach(dispatch);
         });
       }
     })

@@ -13,7 +13,7 @@ import StoryIcon from "~/icons/Story";
 import UserCheckIcon from "~/icons/UserCheck";
 import UserPlusIcon from "~/icons/UserPlus";
 import UsersIcon from "~/icons/Users";
-import { setFollowing } from "~/redux/features";
+import { boolean_action, setFollowing } from "~/redux/features";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 import { breakpoints } from "~/theme/breakpoints";
 import { abbreviateNumber } from "~/utils/abbreviateNumber";
@@ -103,7 +103,7 @@ const User = (props: UserProps): React.ReactElement => {
               checkAuth
               decorator={isFollowing ? <UserCheckIcon /> : <UserPlusIcon />}
               onClick={(): void => {
-                dispatch(setFollowing([user.id]));
+                dispatch(boolean_action("following", user.id));
               }}
               variant={isFollowing ? "hollow" : "rigid"}
             >

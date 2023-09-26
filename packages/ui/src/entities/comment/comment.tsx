@@ -19,11 +19,8 @@ import { useMediaQuery } from "~/hooks/useMediaQuery";
 import ExternalLinkIcon from "~/icons/ExternalLink";
 import HeartIcon from "~/icons/Heart";
 import ReplyIcon from "~/icons/Reply";
-import { selectLoggedIn } from "~/redux/features";
-import {
-  setLikedComment,
-  syncWithComment
-} from "~/redux/features/entities/slice";
+import { boolean_action, selectLoggedIn } from "~/redux/features";
+import { syncWithComment } from "~/redux/features/entities/slice";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 import { breakpoints } from "~/theme/breakpoints";
 import { abbreviateNumber } from "~/utils/abbreviateNumber";
@@ -268,7 +265,7 @@ const Comment = (props: CommentProps): React.ReactElement => {
                       checkAuth
                       decorator={<HeartIcon noStroke={isLiked} />}
                       onClick={(): void => {
-                        dispatch(setLikedComment([comment.id]));
+                        dispatch(boolean_action("liked_comments", comment.id));
                       }}
                       size={isMobile ? "md" : "sm"}
                       title={`${isLiked ? "Unlike" : "Like"} comment`}

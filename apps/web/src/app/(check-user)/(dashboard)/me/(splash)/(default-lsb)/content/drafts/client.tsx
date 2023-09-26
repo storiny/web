@@ -23,8 +23,7 @@ import PlusIcon from "~/icons/Plus";
 import SearchIcon from "~/icons/Search";
 import {
   getQueryErrorType,
-  setSelfDeletedDraftCount,
-  setSelfPendingDraftCount,
+  self_action,
   useGetDraftsQuery
 } from "~/redux/features";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
@@ -124,14 +123,16 @@ const StatusHeader = ({
 >): React.ReactElement => {
   const dispatch = useAppDispatch();
   const pendingDraftCount =
-    useAppSelector((state) => state.entities.selfPendingDraftCount) || 0;
+    useAppSelector((state) => state.entities.self_pending_draft_count) || 0;
   const deletedDraftCount =
-    useAppSelector((state) => state.entities.selfDeletedDraftCount) || 0;
+    useAppSelector((state) => state.entities.self_deleted_draft_count) || 0;
   const count_param = tab === "pending" ? pendingDraftCount : deletedDraftCount;
 
   React.useEffect(() => {
-    dispatch(setSelfPendingDraftCount(() => pending_draft_count));
-    dispatch(setSelfDeletedDraftCount(() => deleted_draft_count));
+    [
+      self_action("self_pending_draft_count", pending_draft_count),
+      self_action("self_deleted_draft_count", deleted_draft_count)
+    ].forEach(dispatch);
   }, [deleted_draft_count, dispatch, pending_draft_count]);
 
   return (

@@ -15,7 +15,7 @@ import HomeIcon from "~/icons/Home";
 import PencilPlusIcon from "~/icons/PencilPlus";
 import SearchIcon from "~/icons/Search";
 import UserIcon from "~/icons/User";
-import { selectUnreadNotificationCount } from "~/redux/features";
+import { select_unread_notification_count } from "~/redux/features";
 import { selectLoggedIn } from "~/redux/features/auth/selectors";
 import { useAppSelector } from "~/redux/hooks";
 import { breakpoints } from "~/theme/breakpoints";
@@ -41,7 +41,9 @@ const BottomNavigation = (
   const { className, forceMount, ...rest } = props;
   const shouldRender = useMediaQuery(breakpoints.down("mobile"));
   const loggedIn = useAppSelector(selectLoggedIn);
-  const unreadNotificationCount = useAppSelector(selectUnreadNotificationCount);
+  const unreadNotificationCount = useAppSelector(
+    select_unread_notification_count
+  );
 
   // Adds padding-bottom to the body to compensate the height of the component
   React.useEffect(() => {

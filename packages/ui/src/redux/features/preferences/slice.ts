@@ -11,7 +11,7 @@ export const LOCAL_STORAGE_KEY = "preferences";
  * Returns the defautl values of a schema
  * @param schema Schema
  */
-const getDefaults = <Schema extends z.AnyZodObject>(
+const get_defaults = <Schema extends z.AnyZodObject>(
   schema: Schema
 ): PreferencesState =>
   Object.fromEntries(
@@ -28,21 +28,21 @@ const getDefaults = <Schema extends z.AnyZodObject>(
   ) as PreferencesState;
 
 // Schema to validate preferences stored in the browser (localStorage)
-const preferencesSchema = z.object({
-  theme: z
+const preferences_schema = z.object({
+  theme: /*                          */ z
     .union([z.literal("system"), z.literal("light"), z.literal("dark")])
     .catch("system"),
-  showAppearanceAlert: z.boolean().catch(true),
-  showAccessibilityAlert: z.boolean().catch(true),
-  showFontSettingsNotification: z.boolean().catch(true),
-  hapticFeedback: z.boolean().catch(false),
-  reducedMotion: z
+  show_appearance_alert: /*          */ z.boolean().catch(true),
+  show_accessibility_alert: /*       */ z.boolean().catch(true),
+  show_font_settings_notification: /**/ z.boolean().catch(true),
+  haptic_feedback: /*                */ z.boolean().catch(false),
+  reduced_motion: /*                 */ z
     .union([z.literal("system"), z.literal("enabled"), z.literal("disabled")])
     .catch("system"),
-  readingFontSize: z
+  reading_font_size: /*              */ z
     .union([z.literal("slim"), z.literal("regular"), z.literal("oversized")])
     .catch("regular"),
-  readingFont: z
+  reading_font: /*                   */ z
     .union([
       z.literal("satoshi"),
       z.literal("system"),
@@ -54,21 +54,21 @@ const preferencesSchema = z.object({
       z.literal("merriweather")
     ])
     .catch("satoshi"),
-  codeFont: z
+  code_font: /*                      */ z
     .union([
       z.literal("plex-mono"),
       z.literal("source-code-pro"),
       z.literal("system")
     ])
     .catch("system"),
-  enableCodeLigatures: z.boolean().catch(false)
+  enable_code_ligatures: /*          */ z.boolean().catch(false)
 });
 
-export type PreferencesState = z.infer<typeof preferencesSchema>;
+export type PreferencesState = z.infer<typeof preferences_schema>;
 export type Theme = PreferencesState["theme"];
 
 export const preferencesInitialState: PreferencesState =
-  getDefaults(preferencesSchema);
+  get_defaults(preferences_schema);
 
 export const preferencesSlice = createSlice({
   name: "preferences",
@@ -92,8 +92,8 @@ export const preferencesSlice = createSlice({
     ) => {
       state[
         action.payload[0] === "appearance"
-          ? "showAppearanceAlert"
-          : "showAccessibilityAlert"
+          ? "show_appearance_alert"
+          : "show_accessibility_alert"
       ] = action.payload[1];
     },
     /**
@@ -103,59 +103,59 @@ export const preferencesSlice = createSlice({
       state,
       action: PayloadAction<boolean>
     ) => {
-      state["showFontSettingsNotification"] = action.payload;
+      state["show_font_settings_notification"] = action.payload;
     },
     /**
      * Changes the reduced motion settings
      */
     setReducedMotion: (
       state,
-      action: PayloadAction<PreferencesState["reducedMotion"]>
+      action: PayloadAction<PreferencesState["reduced_motion"]>
     ) => {
-      state.reducedMotion = action.payload;
+      state.reduced_motion = action.payload;
     },
     /**
      * Changes the reading font size
      */
     setReadingFontSize: (
       state,
-      action: PayloadAction<PreferencesState["readingFontSize"]>
+      action: PayloadAction<PreferencesState["reading_font_size"]>
     ) => {
-      state.readingFontSize = action.payload;
+      state.reading_font_size = action.payload;
     },
     /**
      * Changes the reading font
      */
     setReadingFont: (
       state,
-      action: PayloadAction<PreferencesState["readingFont"]>
+      action: PayloadAction<PreferencesState["reading_font"]>
     ) => {
-      state.readingFont = action.payload;
+      state.reading_font = action.payload;
     },
     /**
      * Changes the code font
      */
     setCodeFont: (
       state,
-      action: PayloadAction<PreferencesState["codeFont"]>
+      action: PayloadAction<PreferencesState["code_font"]>
     ) => {
       if (action.payload === "system") {
-        state.enableCodeLigatures = false; // Ligatures are not available with system font
+        state.enable_code_ligatures = false; // Ligatures are not available with system font
       }
 
-      state.codeFont = action.payload;
+      state.code_font = action.payload;
     },
     /**
      * Toggles the code ligatures
      */
     toggleCodeLigatures: (state, action: PayloadAction<boolean>) => {
-      state.enableCodeLigatures = action.payload;
+      state.enable_code_ligatures = action.payload;
     },
     /**
      * Toggles haptic feeback
      */
     toggleHapticFeedback: (state, action: PayloadAction<boolean>) => {
-      state.hapticFeedback = action.payload;
+      state.haptic_feedback = action.payload;
     },
     /**
      * Changes the theme
@@ -198,7 +198,7 @@ export {
  * Syncs the reading font to the browser
  * @param font Reading font
  */
-const syncReadingFont = (font: PreferencesState["readingFont"]): void => {
+const syncReadingFont = (font: PreferencesState["reading_font"]): void => {
   if (font !== "satoshi") {
     document.body.style.setProperty("--font-reading", `var(--font-${font})`);
   } else {
@@ -211,7 +211,7 @@ const syncReadingFont = (font: PreferencesState["readingFont"]): void => {
  * @param fontSize Reading font size
  */
 const syncReadingFontSize = (
-  fontSize: PreferencesState["readingFontSize"]
+  fontSize: PreferencesState["reading_font_size"]
 ): void => {
   document.body.classList.remove(
     "t-legible-slim",
@@ -227,7 +227,7 @@ const syncReadingFontSize = (
  * @param ligatures Ligatures flag
  */
 const syncCodeFont = (
-  font: PreferencesState["codeFont"],
+  font: PreferencesState["code_font"],
   ligatures: boolean
 ): void => {
   document.body.classList.toggle("ligatures", ligatures);
@@ -243,19 +243,19 @@ const syncCodeFont = (
 };
 
 export const addPreferencesListeners = (
-  startListening: AppStartListening
+  start_listening: AppStartListening
 ): void => {
   /**
    * Parse, validate and store the state from localStorage
    */
-  startListening({
+  start_listening({
     actionCreator: syncToBrowser,
-    effect: (_, listenerApi) => {
+    effect: (_, listener_api) => {
       try {
         const storedValue = localStorage.getItem(LOCAL_STORAGE_KEY);
 
         if (storedValue) {
-          listenerApi.dispatch(
+          listener_api.dispatch(
             hydrateState(
               preferencesSchema.parse(
                 JSON.parse(decompressFromUTF16(storedValue))
@@ -272,23 +272,23 @@ export const addPreferencesListeners = (
   /**
    * Apply the hydrate state to the browser
    */
-  startListening({
+  start_listening({
     actionCreator: hydrateState,
     effect: (action) => {
       const state = action.payload;
-      syncReadingFont(state.readingFont);
-      syncReadingFontSize(state.readingFontSize);
-      syncCodeFont(state.codeFont, state.enableCodeLigatures);
+      syncReadingFont(state.reading_font);
+      syncReadingFontSize(state.reading_font_size);
+      syncCodeFont(state.code_font, state.enable_code_ligatures);
     }
   });
 
   /**
    * Sync the `data-theme` attribute on the body element with the state
    */
-  startListening({
+  start_listening({
     matcher: isAnyOf(setTheme, hydrateState),
-    effect: (_, listenerApi) => {
-      const { theme } = listenerApi.getState().preferences;
+    effect: (_, listener_api) => {
+      const { theme } = listener_api.getState().preferences;
       let finalTheme = theme;
 
       if (finalTheme === "system") {
@@ -310,13 +310,13 @@ export const addPreferencesListeners = (
   /**
    * Sync reduced motion settings
    */
-  startListening({
+  start_listening({
     matcher: isAnyOf(setReducedMotion, hydrateState),
-    effect: (_, listenerApi) => {
-      const { reducedMotion } = listenerApi.getState().preferences;
-      let finalReducedMotion = reducedMotion;
+    effect: (_, listener_api) => {
+      const { reduced_motion } = listener_api.getState().preferences;
+      let finalReducedMotion = reduced_motion;
 
-      if (reducedMotion === "system") {
+      if (reduced_motion === "system") {
         try {
           if (window.matchMedia(`(prefers-reduced-motion: reduce)`).matches) {
             finalReducedMotion = "enabled";
@@ -341,7 +341,7 @@ export const addPreferencesListeners = (
   /**
    * Sync the reading font
    */
-  startListening({
+  start_listening({
     actionCreator: setReadingFont,
     effect: (action) => syncReadingFont(action.payload)
   });
@@ -349,7 +349,7 @@ export const addPreferencesListeners = (
   /**
    * Sync the reading font size
    */
-  startListening({
+  start_listening({
     actionCreator: setReadingFontSize,
     effect: (action) => syncReadingFontSize(action.payload)
   });
@@ -357,13 +357,13 @@ export const addPreferencesListeners = (
   /**
    * Sync the code font
    */
-  startListening({
+  start_listening({
     matcher: isAnyOf(setCodeFont, toggleCodeLigatures),
-    effect: (_, listenerApi) => {
-      const state = listenerApi.getState();
+    effect: (_, listener_api) => {
+      const state = listener_api.getState();
       syncCodeFont(
-        state.preferences.codeFont,
-        state.preferences.enableCodeLigatures
+        state.preferences.code_font,
+        state.preferences.enable_code_ligatures
       );
     }
   });
@@ -371,7 +371,7 @@ export const addPreferencesListeners = (
   /**
    * Persist the preferences state in the browser
    */
-  startListening({
+  start_listening({
     matcher: isAnyOf(
       setTheme,
       setAlertVisibility,
@@ -382,11 +382,11 @@ export const addPreferencesListeners = (
       toggleCodeLigatures,
       toggleHapticFeedback
     ),
-    effect: (_, listenerApi) => {
+    effect: (_, listener_api) => {
       try {
         localStorage.setItem(
           LOCAL_STORAGE_KEY,
-          compressToUTF16(JSON.stringify(listenerApi.getState().preferences))
+          compressToUTF16(JSON.stringify(listener_api.getState().preferences))
         );
       } catch (e) {
         devConsole.error(e);

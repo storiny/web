@@ -16,7 +16,7 @@ import { useMediaQuery } from "~/hooks/useMediaQuery";
 import ExternalLinkIcon from "~/icons/ExternalLink";
 import HeartIcon from "~/icons/Heart";
 import ReplyIcon from "~/icons/Reply";
-import { selectUser } from "~/redux/features";
+import { boolean_action, selectUser } from "~/redux/features";
 import { setLikedReply, syncWithReply } from "~/redux/features/entities/slice";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 import { breakpoints } from "~/theme/breakpoints";
@@ -225,7 +225,7 @@ const Reply = (props: ReplyProps): React.ReactElement => {
                       checkAuth
                       decorator={<HeartIcon noStroke={isLiked} />}
                       onClick={(): void => {
-                        dispatch(setLikedReply([reply.id]));
+                        dispatch(boolean_action("liked_replies", reply.id));
                       }}
                       size={isMobile ? "md" : "sm"}
                       title={`${isLiked ? "Unlike" : "Like"} reply`}

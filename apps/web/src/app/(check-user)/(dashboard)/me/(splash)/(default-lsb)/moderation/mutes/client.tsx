@@ -17,7 +17,7 @@ import { useDebounce } from "~/hooks/useDebounce";
 import SearchIcon from "~/icons/Search";
 import {
   getQueryErrorType,
-  setSelfMuteCount,
+  self_action,
   useGetMutedUsersQuery
 } from "~/redux/features";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
@@ -39,10 +39,10 @@ export type MutesSortValue = "recent" | "old";
 const StatusHeader = ({ mute_count }: MutesProps): React.ReactElement => {
   const dispatch = useAppDispatch();
   const muteCount =
-    useAppSelector((state) => state.entities.selfMuteCount) || 0;
+    useAppSelector((state) => state.entities.self_mute_count) || 0;
 
   React.useEffect(() => {
-    dispatch(setSelfMuteCount(() => mute_count));
+    dispatch(self_action("self_mute_count", mute_count));
   }, [dispatch, mute_count]);
 
   return (

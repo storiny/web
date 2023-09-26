@@ -1,39 +1,34 @@
 import {
-  decrementAction,
-  incrementAction,
-  setEntityRecordValue,
-  setSelfFollowedTagCount,
-  setTagFollowerCount
+  number_action,
+  self_action,
+  set_entity_record_value
 } from "~/redux/features";
 import { AppStartListening } from "~/redux/listenerMiddleware";
 
-import { debounceEffect, fetchApi } from "../utils";
+import { debounce_effect, fetch_api } from "../utils";
 
-export const addFollowedTagListener = (
-  startListening: AppStartListening
+export const add_followed_tag_listener = (
+  start_listening: AppStartListening
 ): void => {
   /**
    * Increment and decrement tag follower count
    */
-  startListening({
-    actionCreator: setEntityRecordValue,
-    effect: ({ payload }, listenerApi) => {
-      if (payload[0] === "followedTags") {
-        const [, tagId, hasFollowed] = payload;
-
-        // TODO: ___
-        listenerApi.dispatch(
-          setSelfFollowedTagCount(
-            hasFollowed ? incrementAction : decrementAction
+  start_listening({
+    actionCreator: set_entity_record_value,
+    effect: ({ payload }, { dispatch }) => {
+      if (payload[0] === "followed_tags") {
+        const [, tag_id, has_followed] = payload;
+        [
+          number_action(
+            "tag_follower_counts",
+            tag_id,
+            has_followed ? "increment" : "decrement"
+          ),
+          self_action(
+            "self_followed_tag_count",
+            has_followed ? "increment" : "decrement"
           )
-        );
-
-        listenerApi.dispatch(
-          setTagFollowerCount([
-            tagId,
-            hasFollowed ? incrementAction : decrementAction
-          ])
-        );
+        ].forEach(dispatch);
       }
     }
   });
@@ -41,15 +36,15 @@ export const addFollowedTagListener = (
   /**
    * Send the followed tag request to the server
    */
-  startListening({
-    actionCreator: setEntityRecordValue,
-    effect: async ({ payload }, listenerApi) => {
-      if (payload[0] === "followedTags") {
-        await debounceEffect(listenerApi);
+  start_listening({
+    actionCreator: set_entity_record_value,
+    effect: async ({ payload }, listener_api) => {
+      if (payload[0] === "followed_tags") {
+        await debounce_effect(listener_api);
 
-        const [, tagId, hasFollowed] = payload;
-        await fetchApi(`me/followed-tags/${tagId}`, listenerApi, {
-          method: hasFollowed ? "POST" : "DELETE"
+        const [, tag_id, has_followed] = payload;
+        await fetch_api(`me/followed-tags/${tag_id}`, listener_api, {
+          method: has_followed ? "POST" : "DELETE"
         }).catch(() => undefined);
       }
     }

@@ -19,8 +19,7 @@ import UserBlockIcon from "~/icons/UserBlock";
 import UserXIcon from "~/icons/UserX";
 import { selectLoggedIn } from "~/redux/features/auth/selectors";
 import {
-  setBlock,
-  setFollower,
+  boolean_action,
   setMute,
   syncWithUser
 } from "~/redux/features/entities/slice";
@@ -56,7 +55,7 @@ const UserActions = (props: UserActionsProps): React.ReactElement | null => {
     ),
     {
       color: isBlocking ? "inverted" : "ruby",
-      onConfirm: () => dispatch(setBlock([user.id])),
+      onConfirm: () => dispatch(boolean_action("blocks", user.id)),
       title: `${isBlocking ? "Unblock" : "Block"} @${user.username}?`,
       description: isBlocking
         ? `The public content you publish will be available to them as well as the ability to follow you.`
@@ -111,7 +110,7 @@ const UserActions = (props: UserActionsProps): React.ReactElement | null => {
             checkAuth
             decorator={<UserXIcon />}
             onClick={(): void => {
-              dispatch(setFollower([user.id]));
+              dispatch(boolean_action("followers", user.id, false));
             }}
           >
             Remove this follower
@@ -125,7 +124,7 @@ const UserActions = (props: UserActionsProps): React.ReactElement | null => {
             checkAuth
             decorator={<MuteIcon />}
             onClick={(): void => {
-              dispatch(setMute([user.id]));
+              dispatch(boolean_action("mutes", user.id));
             }}
           >
             {isMuted ? "Unmute" : "Mute"} this user
@@ -148,7 +147,9 @@ const UserActions = (props: UserActionsProps): React.ReactElement | null => {
       autoSize
       checkAuth
       onClick={(): void => {
-        dispatch((actionType === "block" ? setBlock : setMute)([user.id]));
+        dispatch(
+          boolean_action(actionType === "block" ? "blocks" : "mutes", user.id)
+        );
       }}
       variant={
         (actionType === "block" ? isBlocking : isMuted) ? "rigid" : "hollow"

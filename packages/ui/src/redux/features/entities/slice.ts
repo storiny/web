@@ -1,48 +1,53 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import {
+  AnyAction,
+  createSlice,
+  PayloadAction,
+  ThunkDispatch
+} from "@reduxjs/toolkit";
 import { Comment, Reply, Story, Tag, User } from "@storiny/types";
 
-import { useAppDispatch } from "~/redux/hooks";
+import { AppState } from "~/redux/store";
 import { clamp } from "~/utils/clamp";
 
 interface EntitiesPredicateState {
   blocks: Record<string, boolean>;
   bookmarks: Record<string, boolean>;
-  followedTags: Record<string, boolean>;
+  followed_tags: Record<string, boolean>;
   followers: Record<string, boolean>;
   following: Record<string, boolean>;
   friends: Record<string, boolean>;
-  likedComments: Record<string, boolean>;
-  likedReplies: Record<string, boolean>;
-  likedStories: Record<string, boolean>;
+  liked_comments: Record<string, boolean>;
+  liked_replies: Record<string, boolean>;
+  liked_stories: Record<string, boolean>;
   mutes: Record<string, boolean>;
-  sentRequests: Record<string, boolean>;
+  sent_requests: Record<string, boolean>;
   subscriptions: Record<string, boolean>;
 }
 
 interface EntitiesIntegralState {
-  commentLikeCounts: Record<string, number>;
-  commentReplyCounts: Record<string, number>;
-  followerCounts: Record<string, number>;
-  followingCounts: Record<string, number>;
-  friendCounts: Record<string, number>;
-  replyLikeCounts: Record<string, number>;
-  storyCommentCounts: Record<string, number>;
-  storyHiddenCommentCounts: Record<string, number>;
-  storyLikeCounts: Record<string, number>;
-  tagFollowerCounts: Record<string, number>;
+  comment_like_counts: Record<string, number>;
+  comment_reply_counts: Record<string, number>;
+  follower_counts: Record<string, number>;
+  following_counts: Record<string, number>;
+  friend_counts: Record<string, number>;
+  reply_like_counts: Record<string, number>;
+  story_comment_counts: Record<string, number>;
+  story_hidden_comment_counts: Record<string, number>;
+  story_like_counts: Record<string, number>;
+  tag_follower_counts: Record<string, number>;
 }
 
 interface EntitiesSelfState {
-  selfBlockCount: number;
-  selfCommentCount: number;
-  selfDeletedDraftCount: number;
-  selfDeletedStoryCount: number;
-  selfFollowedTagCount: number;
-  selfMuteCount: number;
-  selfPendingDraftCount: number;
-  selfPendingFriendRequestCount: number;
-  selfPublishedStoryCount: number;
-  selfReplyCount: number;
+  self_block_count: number;
+  self_comment_count: number;
+  self_deleted_draft_count: number;
+  self_deleted_story_count: number;
+  self_followed_tag_count: number;
+  self_mute_count: number;
+  self_pending_draft_count: number;
+  self_pending_friend_request_count: number;
+  self_published_story_count: number;
+  self_reply_count: number;
 }
 
 export type EntitiesState = EntitiesPredicateState &
@@ -80,117 +85,128 @@ type SyncableComment = Pick<Comment, "id"> &
 type SyncableReply = Pick<Reply, "id"> &
   Partial<Pick<Reply, "like_count" | "is_liked" | "comment" | "user">>;
 
-export const entitiesInitialState: EntitiesState = {
-  blocks: {},
-  bookmarks: {},
-  commentLikeCounts: {},
-  commentReplyCounts: {},
-  followedTags: {},
-  followerCounts: {},
-  followers: {},
-  following: {},
-  followingCounts: {},
-  friendCounts: {},
-  friends: {},
-  likedComments: {},
-  likedReplies: {},
-  likedStories: {},
-  mutes: {},
-  replyLikeCounts: {},
-  selfBlockCount: 0,
-  selfCommentCount: 0,
-  selfDeletedDraftCount: 0,
-  selfDeletedStoryCount: 0,
-  selfFollowedTagCount: 0,
-  selfMuteCount: 0,
-  selfPendingDraftCount: 0,
-  selfPendingFriendRequestCount: 0,
-  selfPublishedStoryCount: 0,
-  selfReplyCount: 0,
-  sentRequests: {},
-  storyCommentCounts: {},
-  storyHiddenCommentCounts: {},
-  storyLikeCounts: {},
-  subscriptions: {},
-  tagFollowerCounts: {}
+export const entities_initial_state: EntitiesState = {
+  blocks: /*                           */ {},
+  bookmarks: /*                        */ {},
+  comment_like_counts: /*              */ {},
+  comment_reply_counts: /*             */ {},
+  followed_tags: /*                    */ {},
+  follower_counts: /*                  */ {},
+  followers: /*                        */ {},
+  following: /*                        */ {},
+  following_counts: /*                 */ {},
+  friend_counts: /*                    */ {},
+  friends: /*                          */ {},
+  liked_comments: /*                   */ {},
+  liked_replies: /*                    */ {},
+  liked_stories: /*                    */ {},
+  mutes: /*                            */ {},
+  reply_like_counts: /*                */ {},
+  sent_requests: /*                    */ {},
+  story_comment_counts: /*             */ {},
+  story_hidden_comment_counts: /*      */ {},
+  story_like_counts: /*                */ {},
+  subscriptions: /*                    */ {},
+  tag_follower_counts: /*              */ {},
+  self_block_count: /*                 */ 0,
+  self_comment_count: /*               */ 0,
+  self_deleted_draft_count: /*         */ 0,
+  self_deleted_story_count: /*         */ 0,
+  self_followed_tag_count: /*          */ 0,
+  self_mute_count: /*                  */ 0,
+  self_pending_draft_count: /*         */ 0,
+  self_pending_friend_request_count: /**/ 0,
+  self_published_story_count: /*       */ 0,
+  self_reply_count: /*                 */ 0
 };
 
 /**
  * Predicate function for validating numbers
  * @param value Value to check
  */
-export const isNum = (value?: number | string | null): value is number =>
+export const is_num = (value?: number | string | null): value is number =>
   typeof value === "number";
 
 /**
  * Predicate function for validating boolean values
  * @param value Value to check
  */
-export const isBool = (value?: boolean): value is boolean =>
+export const is_bool = (value?: boolean): value is boolean =>
   typeof value === "boolean";
 
-type KeysWithRecordOfNumber<T> = {
-  [K in keyof T]: T[K] extends Record<string, number> ? K : never;
-}[keyof T];
-
-type KeysWithRecordOfBoolean<T> = {
-  [K in keyof T]: T[K] extends Record<string, boolean> ? K : never;
-}[keyof T];
-
-type RecordKeys<T> = {
-  [K in keyof T]: T[K] extends Record<string, number | boolean> ? K : never;
-}[keyof T];
-
-export const useEntityNumberDispatch = (): ((
-  key: KeysWithRecordOfNumber<EntitiesState>,
-  id: string,
-  valueOrCallback: number | ((prevValue: number) => number)
-) => void) => {
-  const dispatch = useAppDispatch();
-  return (
-    key: KeysWithRecordOfNumber<EntitiesState>,
+export const number_action =
+  (
+    key: {
+      [K in keyof EntitiesState]: EntitiesState[K] extends Record<
+        string,
+        number
+      >
+        ? K
+        : never;
+    }[keyof EntitiesState],
     id: string,
-    valueOrCallback: number | ((prevValue: number) => number)
+    value_or_callback:
+      | "increment"
+      | "decrement"
+      | number
+      | ((prev_value: number) => number)
+  ) =>
+  (
+    dispatch: ThunkDispatch<AppState, unknown, AnyAction>,
+    get_state: () => AppState
   ): void => {
-    dispatch((dispatchAction, getState) => {
-      const prevValue = getState().entities[key][id] as number | undefined;
-      const nextValue = clamp(
+    if (typeof value_or_callback === "number") {
+      dispatch(set_entity_record_value([key, id, value_or_callback]));
+    } else {
+      const prev_value = get_state().entities[key][id] as number | undefined;
+      const curr_value = typeof prev_value === "undefined" ? 0 : prev_value;
+      const next_value = clamp(
         0,
-        typeof valueOrCallback === "number"
-          ? valueOrCallback
-          : valueOrCallback(typeof prevValue === "undefined" ? 0 : prevValue),
+        value_or_callback === "increment"
+          ? curr_value + 1
+          : value_or_callback === "decrement"
+          ? curr_value - 1
+          : value_or_callback(curr_value),
         Infinity
       );
 
-      dispatchAction(setEntityRecordValue([key, id, nextValue]));
-    });
+      dispatch(set_entity_record_value([key, id, next_value]));
+    }
   };
-};
 
-export const useEntityBooleanDispatch = (): ((
-  key: KeysWithRecordOfBoolean<EntitiesState>,
-  id: string,
-  callback?: (prevValue: boolean) => boolean
-) => void) => {
-  const dispatch = useAppDispatch();
-  return (
-    key: KeysWithRecordOfBoolean<EntitiesState>,
+export const boolean_action =
+  (
+    key: {
+      [K in keyof EntitiesState]: EntitiesState[K] extends Record<
+        string,
+        boolean
+      >
+        ? K
+        : never;
+    }[keyof EntitiesState],
     id: string,
-    callback?: (prevValue: boolean) => boolean
+    valueOrCallback?: boolean | ((prevValue: boolean) => boolean)
+  ) =>
+  (
+    dispatchAction: ThunkDispatch<AppState, unknown, AnyAction>,
+    getState: () => AppState
   ): void => {
-    dispatch((dispatchAction, getState) => {
+    if (typeof valueOrCallback === "boolean") {
+      dispatchAction(set_entity_record_value([key, id, valueOrCallback]));
+    } else {
       const prevValue = getState().entities[key][id] as boolean | undefined;
       // Set to `true` when absent from the map
       const currValue = typeof prevValue === "undefined" ? true : prevValue;
 
-      if (!callback) {
-        dispatchAction(setEntityRecordValue([key, id, !currValue])); // Toggle value
+      if (typeof valueOrCallback === "undefined") {
+        dispatchAction(set_entity_record_value([key, id, !currValue])); // Toggle value
       } else {
-        dispatchAction(setEntityRecordValue([key, id, callback(currValue)]));
+        dispatchAction(
+          set_entity_record_value([key, id, valueOrCallback(currValue)])
+        );
       }
-    });
+    }
   };
-};
 
 /**
  * Sets the entity value
@@ -239,18 +255,38 @@ export const setEntityValue =
     }
   };
 
-/**
- * Sets the integral entity value for the user
- * @param key Entity key
- */
-export const setSelfEntityValue =
-  <T extends Record<any, any>>(key: keyof T) =>
-  (state: T, action: PayloadAction<(prevState: number) => number>): void => {
-    const callback = action.payload;
-    const prevState = state[key] as number | undefined;
-    const newValue = callback(typeof prevState === "undefined" ? 0 : prevState);
+export const self_action =
+  (
+    key: {
+      [K in keyof EntitiesState]: EntitiesState[K] extends number ? K : never;
+    }[keyof EntitiesState],
+    value_or_callback:
+      | "increment"
+      | "decrement"
+      | number
+      | ((prev_value: number) => number)
+  ) =>
+  (
+    dispatch: ThunkDispatch<AppState, unknown, AnyAction>,
+    get_state: () => AppState
+  ): void => {
+    if (typeof value_or_callback === "number") {
+      dispatch(set_entity_value([key, value_or_callback]));
+    } else {
+      const prev_value = get_state().entities[key] as number | undefined;
+      const curr_value = typeof prev_value === "undefined" ? 0 : prev_value;
+      const next_value = clamp(
+        0,
+        value_or_callback === "increment"
+          ? curr_value + 1
+          : value_or_callback === "decrement"
+          ? curr_value - 1
+          : value_or_callback(curr_value),
+        Infinity
+      );
 
-    state[key] = clamp(0, newValue, Infinity) as any;
+      dispatch(set_entity_value([key, next_value]));
+    }
   };
 
 /**
@@ -260,45 +296,45 @@ export const setSelfEntityValue =
  */
 const syncWithUserImpl = (state: EntitiesState, user: SyncableUser): void => {
   // Predicates
-  if (isBool(user.is_following)) {
+  if (is_bool(user.is_following)) {
     state.following[user.id] = user.is_following;
   }
 
-  if (isBool(user.is_follower)) {
+  if (is_bool(user.is_follower)) {
     state.followers[user.id] = user.is_follower;
   }
 
-  if (isBool(user.is_friend)) {
+  if (is_bool(user.is_friend)) {
     state.friends[user.id] = user.is_friend;
   }
 
-  if (isBool(user.is_muted)) {
+  if (is_bool(user.is_muted)) {
     state.mutes[user.id] = user.is_muted;
   }
 
-  if (isBool(user.is_blocking)) {
+  if (is_bool(user.is_blocking)) {
     state.blocks[user.id] = user.is_blocking;
   }
 
-  if (isBool(user.is_subscribed)) {
+  if (is_bool(user.is_subscribed)) {
     state.subscriptions[user.id] = user.is_subscribed;
   }
 
-  if (isBool(user.is_friend_request_sent)) {
-    state.sentRequests[user.id] = user.is_friend_request_sent;
+  if (is_bool(user.is_friend_request_sent)) {
+    state.sent_requests[user.id] = user.is_friend_request_sent;
   }
 
   // Integral
-  if (isNum(user.follower_count)) {
-    state.followerCounts[user.id] = user.follower_count;
+  if (is_num(user.follower_count)) {
+    state.follower_counts[user.id] = user.follower_count;
   }
 
-  if (isNum(user.following_count)) {
-    state.followingCounts[user.id] = user.following_count;
+  if (is_num(user.following_count)) {
+    state.following_counts[user.id] = user.following_count;
   }
 
-  if (isNum(user.friend_count)) {
-    state.friendCounts[user.id] = user.friend_count;
+  if (is_num(user.friend_count)) {
+    state.friend_counts[user.id] = user.friend_count;
   }
 };
 
@@ -312,22 +348,22 @@ const syncWithStoryImpl = (
   story: SyncableStory
 ): void => {
   // Predicates
-  if (isBool(story.is_bookmarked)) {
+  if (is_bool(story.is_bookmarked)) {
     state.bookmarks[story.id] = story.is_bookmarked;
   }
 
-  if (isBool(story.is_liked)) {
-    state.likedStories[story.id] = story.is_liked;
+  if (is_bool(story.is_liked)) {
+    state.liked_stories[story.id] = story.is_liked;
   }
 
   if (story.stats) {
     // Integral
-    if (isNum(story.stats.like_count)) {
-      state.storyLikeCounts[story.id] = story.stats.like_count;
+    if (is_num(story.stats.like_count)) {
+      state.story_like_counts[story.id] = story.stats.like_count;
     }
 
-    if (isNum(story.stats.comment_count)) {
-      state.storyCommentCounts[story.id] = story.stats.comment_count;
+    if (is_num(story.stats.comment_count)) {
+      state.story_comment_counts[story.id] = story.stats.comment_count;
     }
   }
 
@@ -344,13 +380,13 @@ const syncWithStoryImpl = (
  */
 const syncWithTagImpl = (state: EntitiesState, tag: SyncableTag): void => {
   // Predicates
-  if (isBool(tag.is_following)) {
-    state.followedTags[tag.id] = tag.is_following;
+  if (is_bool(tag.is_following)) {
+    state.followed_tags[tag.id] = tag.is_following;
   }
 
   // Integral
-  if (isNum(tag.follower_count)) {
-    state.tagFollowerCounts[tag.id] = tag.follower_count;
+  if (is_num(tag.follower_count)) {
+    state.tag_follower_counts[tag.id] = tag.follower_count;
   }
 };
 
@@ -364,17 +400,17 @@ const syncWithCommentImpl = (
   comment: SyncableComment
 ): void => {
   // Predicates
-  if (isBool(comment.is_liked)) {
-    state.likedComments[comment.id] = comment.is_liked;
+  if (is_bool(comment.is_liked)) {
+    state.liked_comments[comment.id] = comment.is_liked;
   }
 
   // Integral
-  if (isNum(comment.like_count)) {
-    state.commentLikeCounts[comment.id] = comment.like_count;
+  if (is_num(comment.like_count)) {
+    state.comment_like_counts[comment.id] = comment.like_count;
   }
 
-  if (isNum(comment.reply_count)) {
-    state.commentReplyCounts[comment.id] = comment.reply_count;
+  if (is_num(comment.reply_count)) {
+    state.comment_reply_counts[comment.id] = comment.reply_count;
   }
 
   // Other
@@ -397,13 +433,13 @@ const syncWithReplyImpl = (
   reply: SyncableReply
 ): void => {
   // Predicates
-  if (isBool(reply.is_liked)) {
-    state.likedReplies[reply.id] = reply.is_liked;
+  if (is_bool(reply.is_liked)) {
+    state.liked_replies[reply.id] = reply.is_liked;
   }
 
   // Integral
-  if (isNum(reply.like_count)) {
-    state.replyLikeCounts[reply.id] = reply.like_count;
+  if (is_num(reply.like_count)) {
+    state.reply_like_counts[reply.id] = reply.like_count;
   }
 
   // Other
@@ -416,123 +452,46 @@ const syncWithReplyImpl = (
   }
 };
 
-export const entitiesSlice = createSlice({
+export const entities_slice = createSlice({
   name: "entities",
-  initialState: entitiesInitialState,
+  initialState: entities_initial_state,
   reducers: {
-    setEntityRecordValue: (
+    set_entity_record_value: (
       state: EntitiesState,
       action: PayloadAction<
-        [RecordKeys<EntitiesState>, string, number | boolean]
+        [
+          {
+            [K in keyof EntitiesState]: EntitiesState[K] extends Record<
+              string,
+              number | boolean
+            >
+              ? K
+              : never;
+          }[keyof EntitiesState],
+          string,
+          number | boolean
+        ]
       >
     ) => {
       const [key, id, value] = action.payload;
       state[key][id] = value;
     },
-    // Boolean
-    setFollowing: setEntityValue<EntitiesState, "boolean">(
-      "following",
-      "boolean"
-    ),
-    setFollower: setEntityValue<EntitiesState, "boolean">(
-      "followers",
-      "boolean"
-    ),
-    setFriend: setEntityValue<EntitiesState, "boolean">("friends", "boolean"),
-    setBookmark: setEntityValue<EntitiesState, "boolean">(
-      "bookmarks",
-      "boolean"
-    ),
-    setBlock: setEntityValue<EntitiesState, "boolean">("blocks", "boolean"),
-    setMute: setEntityValue<EntitiesState, "boolean">("mutes", "boolean"),
-    setLikedStory: setEntityValue<EntitiesState, "boolean">(
-      "likedStories",
-      "boolean"
-    ),
-    setLikedComment: setEntityValue<EntitiesState, "boolean">(
-      "likedComments",
-      "boolean"
-    ),
-    setLikedReply: setEntityValue<EntitiesState, "boolean">(
-      "likedReplies",
-      "boolean"
-    ),
-    setFollowedTag: setEntityValue<EntitiesState, "boolean">(
-      "followedTags",
-      "boolean"
-    ),
-    setSubscription: setEntityValue<EntitiesState, "boolean">(
-      "subscriptions",
-      "boolean"
-    ),
-    setSentRequest: setEntityValue<EntitiesState, "boolean">(
-      "sentRequests",
-      "boolean"
-    ),
-    // Number
-    setFollowerCount: setEntityValue<EntitiesState, "number">(
-      "followerCounts",
-      "number"
-    ),
-    setFollowingCount: setEntityValue<EntitiesState, "number">(
-      "followingCounts",
-      "number"
-    ),
-    setFriendCount: setEntityValue<EntitiesState, "number">(
-      "friendCounts",
-      "number"
-    ),
-    setStoryLikeCount: setEntityValue<EntitiesState, "number">(
-      "storyLikeCounts",
-      "number"
-    ),
-    setStoryCommentCount: setEntityValue<EntitiesState, "number">(
-      "storyCommentCounts",
-      "number"
-    ),
-    setStoryHiddenCommentCount: setEntityValue<EntitiesState, "number">(
-      "storyHiddenCommentCounts",
-      "number"
-    ),
-    setCommentLikeCount: setEntityValue<EntitiesState, "number">(
-      "commentLikeCounts",
-      "number"
-    ),
-    setCommentReplyCount: setEntityValue<EntitiesState, "number">(
-      "commentReplyCounts",
-      "number"
-    ),
-    setReplyLikeCount: setEntityValue<EntitiesState, "number">(
-      "replyLikeCounts",
-      "number"
-    ),
-    setTagFollowerCount: setEntityValue<EntitiesState, "number">(
-      "tagFollowerCounts",
-      "number"
-    ),
-    // Self
-    setSelfReplyCount: setSelfEntityValue<EntitiesState>("selfReplyCount"),
-    setSelfCommentCount: setSelfEntityValue<EntitiesState>("selfCommentCount"),
-    setSelfPublishedStoryCount: setSelfEntityValue<EntitiesState>(
-      "selfPublishedStoryCount"
-    ),
-    setSelfDeletedStoryCount: setSelfEntityValue<EntitiesState>(
-      "selfDeletedStoryCount"
-    ),
-    setSelfPendingDraftCount: setSelfEntityValue<EntitiesState>(
-      "selfPendingDraftCount"
-    ),
-    setSelfDeletedDraftCount: setSelfEntityValue<EntitiesState>(
-      "selfDeletedDraftCount"
-    ),
-    setSelfFollowedTagCount: setSelfEntityValue<EntitiesState>(
-      "selfFollowedTagCount"
-    ),
-    setSelfPendingFriendRequestCount: setSelfEntityValue<EntitiesState>(
-      "selfPendingFriendRequestCount"
-    ),
-    setSelfBlockCount: setSelfEntityValue<EntitiesState>("selfBlockCount"),
-    setSelfMuteCount: setSelfEntityValue<EntitiesState>("selfMuteCount"),
+    set_entity_value: (
+      state: EntitiesState,
+      action: PayloadAction<
+        [
+          {
+            [K in keyof EntitiesState]: EntitiesState[K] extends number
+              ? K
+              : never;
+          }[keyof EntitiesState],
+          number
+        ]
+      >
+    ) => {
+      const [key, value] = action.payload;
+      state[key] = value;
+    },
     // Syncing utils
     syncWithUser: (state, action: PayloadAction<SyncableUser>) =>
       syncWithUserImpl(state, action.payload),
@@ -548,44 +507,13 @@ export const entitiesSlice = createSlice({
 });
 
 export const {
-  setEntityRecordValue,
-  setBlock,
-  setBookmark,
-  setCommentLikeCount,
-  setCommentReplyCount,
-  setFollowedTag,
-  setFollower,
-  setFollowerCount,
-  setFollowing,
-  setFollowingCount,
-  setFriend,
-  setFriendCount,
-  setLikedComment,
-  setLikedReply,
-  setLikedStory,
-  setMute,
-  setReplyLikeCount,
-  setSelfBlockCount,
-  setSelfCommentCount,
-  setSelfDeletedDraftCount,
-  setSelfDeletedStoryCount,
-  setSelfFollowedTagCount,
-  setSelfMuteCount,
-  setSelfPendingDraftCount,
-  setSelfPendingFriendRequestCount,
-  setSelfPublishedStoryCount,
-  setSelfReplyCount,
-  setSentRequest,
-  setStoryCommentCount,
-  setStoryHiddenCommentCount,
-  setStoryLikeCount,
-  setSubscription,
-  setTagFollowerCount,
+  set_entity_record_value,
+  set_entity_value,
   syncWithComment,
   syncWithReply,
   syncWithStory,
   syncWithTag,
   syncWithUser
-} = entitiesSlice.actions;
+} = entities_slice.actions;
 
-export default entitiesSlice.reducer;
+export default entities_slice.reducer;

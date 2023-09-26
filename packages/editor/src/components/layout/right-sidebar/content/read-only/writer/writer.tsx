@@ -13,7 +13,7 @@ import Status from "~/entities/Status";
 import MailPlusIcon from "~/icons/mail-plus";
 import UserCheckIcon from "~/icons/UserCheck";
 import UserPlusIcon from "~/icons/UserPlus";
-import { setFollowing } from "~/redux/features";
+import { boolean_action, setFollowing } from "~/redux/features";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 import { abbreviateNumber } from "~/utils/abbreviateNumber";
 
@@ -32,7 +32,7 @@ const StoryActions = ({ user }: { user: User }): React.ReactElement => {
         className={"fit-w"}
         decorator={isFollowing ? <UserCheckIcon /> : <UserPlusIcon />}
         onClick={(): void => {
-          dispatch(setFollowing([user.id]));
+          dispatch(boolean_action("following", user.id));
         }}
         variant={isFollowing ? "hollow" : "rigid"}
       >

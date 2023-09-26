@@ -25,7 +25,7 @@ import MapPinIcon from "~/icons/MapPin";
 import UserCheckIcon from "~/icons/UserCheck";
 import UserPlusIcon from "~/icons/UserPlus";
 import UserXIcon from "~/icons/UserX";
-import { setBlock, setFollowing } from "~/redux/features";
+import { boolean_action } from "~/redux/features";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 import { breakpoints } from "~/theme/breakpoints";
 import { abbreviateNumber } from "~/utils/abbreviateNumber";
@@ -87,7 +87,9 @@ const Actions = ({
             )
           }
           onClick={(): void => {
-            dispatch((isBlocking ? setBlock : setFollowing)([profile.id]));
+            dispatch(
+              boolean_action(isBlocking ? "blocks" : "following", profile.id)
+            );
           }}
           size={isInsideSidebar ? "md" : "lg"}
           variant={isSelf || isFollowing ? "hollow" : "rigid"}

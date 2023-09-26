@@ -25,6 +25,7 @@ import StoriesMetricsIcon from "~/icons/StoriesMetrics";
 import TrashIcon from "~/icons/Trash";
 import UserBlockIcon from "~/icons/UserBlock";
 import {
+  boolean_action,
   getDraftsApi,
   getStoriesApi,
   setBlock,
@@ -76,7 +77,7 @@ const StoryActions = ({
     ),
     {
       color: isBlocking ? "inverted" : "ruby",
-      onConfirm: () => dispatch(setBlock([story.user!.id])),
+      onConfirm: () => dispatch(boolean_action("blocks", story.user!.id)),
       title: `${isBlocking ? "Unblock" : "Block"} @${story.user!.username}?`,
       description: isBlocking
         ? `The public content you publish will be available to them as well as the ability to follow you.`
@@ -299,7 +300,7 @@ const StoryActions = ({
                     checkAuth
                     decorator={<MuteIcon />}
                     onClick={(): void => {
-                      dispatch(setMute([story.user!.id]));
+                      dispatch(boolean_action("mutes", story.user!.id));
                     }}
                   >
                     {isMuted ? "Unmute" : "Mute"} this writer

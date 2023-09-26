@@ -13,8 +13,8 @@ import styles from "./motion.module.scss";
 
 const MotionPreference = (): React.ReactElement => {
   const dispatch = useAppDispatch();
-  const reducedMotion = useAppSelector(
-    (state) => state.preferences.reducedMotion
+  const reduced_motion = useAppSelector(
+    (state) => state.preferences.reduced_motion
   );
 
   return (
@@ -35,9 +35,9 @@ const MotionPreference = (): React.ReactElement => {
       <RadioGroup
         className={clsx(styles.x, styles["radio-group"])}
         onValueChange={(newValue): void => {
-          dispatch(setReducedMotion(newValue as typeof reducedMotion));
+          dispatch(setReducedMotion(newValue as typeof reduced_motion));
         }}
-        value={reducedMotion}
+        value={reduced_motion}
       >
         <Radio label={"Sync with system"} value={"system"} />
         <Radio label={"Enabled"} value={"enabled"} />

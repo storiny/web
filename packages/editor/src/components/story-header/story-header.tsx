@@ -28,12 +28,7 @@ import SidebarCollapseIcon from "~/icons/SidebarCollapse";
 import SidebarExpandIcon from "~/icons/SidebarExpand";
 import UserCheckIcon from "~/icons/UserCheck";
 import UserPlusIcon from "~/icons/UserPlus";
-import {
-  selectUser,
-  setBookmark,
-  setFollowing,
-  setMute
-} from "~/redux/features";
+import { boolean_action, selectUser } from "~/redux/features";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 import { breakpoints } from "~/theme/breakpoints";
 import { abbreviateNumber } from "~/utils/abbreviateNumber";
@@ -68,7 +63,7 @@ const StoryActions = (): React.ReactElement => {
         autoSize
         checkAuth
         onClick={(): void => {
-          dispatch(setBookmark([story.id]));
+          dispatch(boolean_action("bookmarks", story.id));
         }}
         title={`${isBookmarked ? "Un-bookmark" : "Bbookmark"} story`}
         variant={"ghost"}
@@ -134,7 +129,7 @@ const StoryActions = (): React.ReactElement => {
           checkAuth
           decorator={<MuteIcon />}
           onClick={(): void => {
-            dispatch(setMute([story.user!.id]));
+            dispatch(boolean_action("mutes", story.user!.id));
           }}
         >
           {isMuted ? "Unmute" : "Mute"} this writer
@@ -199,7 +194,7 @@ const Subheader = (): React.ReactElement => {
           autoSize
           checkAuth
           onClick={(): void => {
-            dispatch(setFollowing([user.id]));
+            dispatch(boolean_action("following", user.id));
           }}
           variant={isFollowing ? "hollow" : "rigid"}
         >
@@ -211,7 +206,7 @@ const Subheader = (): React.ReactElement => {
           checkAuth
           decorator={isFollowing ? <UserCheckIcon /> : <UserPlusIcon />}
           onClick={(): void => {
-            dispatch(setFollowing([user.id]));
+            dispatch(boolean_action("following", user.id));
           }}
           variant={isFollowing ? "hollow" : "rigid"}
         >

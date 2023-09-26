@@ -2,13 +2,9 @@ import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { API_VERSION } from "@storiny/shared";
 import { Notification } from "@storiny/types";
 
-import {
-  decrementAction,
-  selectReadNotification,
-  setEntityValue
-} from "~/redux/features";
 import { AppStartListening } from "~/redux/listenerMiddleware";
 import { AppState } from "~/redux/store";
+import { clamp } from "~/utils/clamp";
 
 export type UnreadNotificationsStatus =
   | "idle"
@@ -17,9 +13,9 @@ export type UnreadNotificationsStatus =
   | "error";
 
 export interface NotificationsState {
-  readNotifications: Record<string, boolean>;
+  read_notifications: Record<string, boolean>;
   status: UnreadNotificationsStatus;
-  unreadCount: number;
+  unread_count: number;
 }
 
 type SyncableNotification = Pick<Notification, "id" | "read_at">;
@@ -54,10 +50,10 @@ export const fetchUnreadNotificationsCount = createAsyncThunk(
   }
 );
 
-export const notificationsInitialState: NotificationsState = {
-  readNotifications: {},
-  unreadCount: 0,
-  status: "idle"
+export const notifications_initial_state: NotificationsState = {
+  read_notifications: /**/ {},
+  unread_count: /*      */ 0,
+  status: /*            */ "idle"
 };
 
 /**
@@ -70,22 +66,24 @@ const syncWithNotificationImpl = (
   notification: SyncableNotification
 ): void => {
   if (typeof notification.read_at !== "undefined") {
-    state.readNotifications[notification.id] = Boolean(notification.read_at);
+    state.read_notifications[notification.id] = Boolean(notification.read_at);
   }
 };
 
-export const notificationsSlice = createSlice({
+export const notifications_slice = createSlice({
   name: "notifications",
-  initialState: notificationsInitialState,
+  initialState: notifications_initial_state,
   reducers: {
-    setReadNotification: setEntityValue<NotificationsState, "boolean">(
-      "readNotifications",
-      "boolean"
-    ),
-    setUnreadNotificationCount: setEntityValue<NotificationsState, "number">(
-      "unreadCount",
-      "number"
-    ),
+    set_read_notification: (
+      state,
+      action: PayloadAction<[string, boolean]>
+    ) => {
+      const [notification_id, value] = action.payload;
+      state.read_notifications[notification_id] = value;
+    },
+    decrement_unread_notification_count: (state) => {
+      state.unread_count = clamp(0, state.unread_count--, Infinity);
+    },
     // Syncing
     syncWithNotification: (
       state,
@@ -93,65 +91,59 @@ export const notificationsSlice = createSlice({
     ) => syncWithNotificationImpl(state, action.payload),
     // Misc
     markAllAsRead: (state) => {
-      Object.keys(state.readNotifications).forEach((id) => {
-        state.readNotifications[id] = true;
+      Object.keys(state.read_notifications).forEach((id) => {
+        state.read_notifications[id] = true;
       });
 
-      state.unreadCount = 0;
+      state.unread_count = 0;
     }
   },
   extraReducers: (builder) => {
     builder
       .addCase(fetchUnreadNotificationsCount.fulfilled, (state, action) => {
         state.status = "complete";
-        state.unreadCount = action.payload || 0;
+        state.unread_count = action.payload || 0;
       })
       .addCase(fetchUnreadNotificationsCount.pending, (state) => {
-        state.unreadCount = 0;
+        state.unread_count = 0;
         state.status = "loading";
       })
       .addCase(fetchUnreadNotificationsCount.rejected, (state) => {
         state.status = "error";
-        state.unreadCount = 0;
+        state.unread_count = 0;
       });
   }
 });
 
 const {
+  decrement_unread_notification_count,
+  set_read_notification,
   markAllAsRead,
-  syncWithNotification,
-  setUnreadNotificationCount,
-  setReadNotification
-} = notificationsSlice.actions;
+  syncWithNotification
+} = notifications_slice.actions;
 
-export const addNotificationsListeners = (
-  startListening: AppStartListening
+export const add_notifications_listeners = (
+  start_listening: AppStartListening
 ): void => {
   /**
    * Decrement unread notification count
    */
-  startListening({
-    actionCreator: setReadNotification,
-    effect: ({ payload }, listenerApi) => {
-      const notificationId = payload[0];
-      const isRead = selectReadNotification(notificationId)(
-        listenerApi.getState()
-      );
-
-      if (!isRead) {
-        listenerApi.dispatch(
-          setUnreadNotificationCount([notificationId, decrementAction])
-        );
+  start_listening({
+    actionCreator: set_read_notification,
+    effect: ({ payload }, listener_api) => {
+      const [, has_read] = payload;
+      if (has_read) {
+        listener_api.dispatch(decrement_unread_notification_count());
       }
     }
   });
 };
 
 export {
+  decrement_unread_notification_count,
   markAllAsRead,
-  setReadNotification,
-  setUnreadNotificationCount,
+  set_read_notification,
   syncWithNotification
 };
 
-export default notificationsSlice.reducer;
+export default notifications_slice.reducer;

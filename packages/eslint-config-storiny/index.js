@@ -16,8 +16,7 @@ module.exports = {
   overrides: [
     {
       extends: [
-        // TODO: Currently throws `TypeError: Cannot read properties of undefined (reading 'getTokens')`
-        // "plugin:@typescript-eslint/recommended",
+        "plugin:@typescript-eslint/recommended",
         "plugin:typescript-sort-keys/recommended",
       ],
       files: ["*.{ts,tsx}"],
@@ -67,6 +66,11 @@ module.exports = {
         ],
         accessorPairPositioning: "getThenSet",
       },
+    ],
+    "capitalized-comments": [
+      "error",
+      "always",
+      { ignorePattern: "pragma|noInspection" },
     ],
   },
 };
