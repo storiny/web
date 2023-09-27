@@ -22,11 +22,11 @@ import { useDebounce } from "~/hooks/useDebounce";
 import PlusIcon from "~/icons/Plus";
 import SearchIcon from "~/icons/Search";
 import {
-  getQueryErrorType,
+  get_query_error_type,
   self_action,
-  useGetStoriesQuery
+  use_get_stories_query
 } from "~/redux/features";
-import { useAppDispatch, useAppSelector } from "~/redux/hooks";
+import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 import { abbreviateNumber } from "~/utils/abbreviateNumber";
 
 import DashboardTitle from "../../dashboard-title";
@@ -95,7 +95,7 @@ const SortControl = ({
   <Select
     disabled={disabled}
     onValueChange={onSortChange}
-    slotProps={{
+    slot_props={{
       trigger: {
         "aria-label": "Sort items",
         className: clsx("focus-invert", styles.x, styles["select-trigger"])
@@ -134,11 +134,11 @@ const StatusHeader = ({
   sort: StoriesSortValue;
   tab: StoriesTabValue;
 } & StoriesProps): React.ReactElement => {
-  const dispatch = useAppDispatch();
+  const dispatch = use_app_dispatch();
   const publishedStoryCount =
-    useAppSelector((state) => state.entities.self_published_story_count) || 0;
+    use_app_selector((state) => state.entities.self_published_story_count) || 0;
   const deletedStoryCount =
-    useAppSelector((state) => state.entities.self_deleted_story_count) || 0;
+    use_app_selector((state) => state.entities.self_deleted_story_count) || 0;
   const count_param =
     tab === "published" ? publishedStoryCount : deletedStoryCount;
 
@@ -233,7 +233,7 @@ const ControlBar = ({
       onChange={(event): void => onQueryChange(event.target.value)}
       placeholder={"Search your published stories"}
       size={"lg"}
-      slotProps={{
+      slot_props={{
         container: {
           className: clsx("f-grow", styles.x, styles.input)
         }
@@ -258,13 +258,13 @@ const ContentStoriesClient = (props: StoriesProps): React.ReactElement => {
   const [page, setPage] = React.useState<number>(1);
   const debouncedQuery = useDebounce(query);
   const { data, isLoading, isFetching, isError, error, refetch } =
-    useGetStoriesQuery({
+    use_get_stories_query({
       page,
       sort,
       query: debouncedQuery,
       type: value
     });
-  const { items = [], hasMore } = data || {};
+  const { items = [], has_more } = data || {};
   const isTyping = query !== debouncedQuery;
 
   const loadMore = React.useCallback(
@@ -320,17 +320,17 @@ const ContentStoriesClient = (props: StoriesProps): React.ReactElement => {
         ) : isError ? (
           <ErrorState
             autoSize
-            componentProps={{
+            component_props={{
               button: { loading: isFetching }
             }}
             retry={refetch}
-            type={getQueryErrorType(error)}
+            type={get_query_error_type(error)}
           />
         ) : !isFetching && !items.length ? (
           <EmptyState query={query} value={value} />
         ) : (
           <VirtualizedStoryList
-            hasMore={Boolean(hasMore)}
+            has_more={Boolean(has_more)}
             loadMore={loadMore}
             skeletonProps={{
               isSmall: true

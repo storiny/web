@@ -8,7 +8,7 @@ import FormRadioGroup from "~/components/FormRadioGroup";
 import Spacer from "~/components/Spacer";
 import { useToast } from "~/components/Toast";
 import Typography from "~/components/Typography";
-import { useIncomingFriendRequestsMutation } from "~/redux/features";
+import { use_incoming_friend_requests_mutation } from "~/redux/features";
 
 import styles from "../site-safety.module.scss";
 import { FriendRequestsProps } from "./friend-requests.props";
@@ -30,7 +30,7 @@ const FriendRequests = ({
     }
   });
   const [mutateIncomingFriendRequests, { isLoading }] =
-    useIncomingFriendRequestsMutation();
+    use_incoming_friend_requests_mutation();
 
   const handleSubmit: SubmitHandler<FriendRequestsSchema> = (values) => {
     if (onSubmit) {

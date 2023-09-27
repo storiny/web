@@ -6,7 +6,7 @@ import FormSwitch from "~/components/FormSwitch";
 import Spacer from "~/components/Spacer";
 import { useToast } from "~/components/Toast";
 import Typography from "~/components/Typography";
-import { useReadHistoryMutation } from "~/redux/features";
+import { use_read_history_mutation } from "~/redux/features";
 
 import styles from "../site-safety.module.scss";
 import { AccountHistoryProps } from "./account-history.props";
@@ -27,7 +27,7 @@ const AccountHistory = ({
       "read-history": !record_read_history
     }
   });
-  const [mutateReadHistory, { isLoading }] = useReadHistoryMutation();
+  const [mutateReadHistory, { isLoading }] = use_read_history_mutation();
 
   const handleSubmit: SubmitHandler<AccountHistorySchema> = (values) => {
     if (onSubmit) {

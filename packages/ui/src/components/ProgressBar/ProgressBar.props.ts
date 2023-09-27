@@ -18,7 +18,7 @@ export interface ProgressBarProps extends ProgressBarPrimitive {
   /**
    * The props passed to the individual component elements.
    */
-  slotProps?: {
+  slot_props?: {
     indicator?: ProgressIndicatorProps;
   };
   /**

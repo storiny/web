@@ -4,7 +4,7 @@ import clsx from "clsx";
 import NextLink from "next/link";
 import React from "react";
 
-import Logo from "~/brand/Logo";
+import Logo from "src/brand/logo";
 import Badge from "~/components/Badge";
 import Grow from "~/components/Grow";
 import IconButton from "~/components/IconButton";
@@ -25,8 +25,11 @@ import SettingsIcon from "~/icons/Settings";
 import StoryHeartIcon from "~/icons/StoryHeart";
 import UserIcon from "~/icons/User";
 import { select_unread_notification_count } from "~/redux/features";
-import { selectLoggedIn, selectUser } from "~/redux/features/auth/selectors";
-import { useAppSelector } from "~/redux/hooks";
+import {
+  select_is_logged_in,
+  select_user
+} from "~/redux/features/auth/selectors";
+import { use_app_selector } from "~/redux/hooks";
 
 import styles from "./Sidenav.module.scss";
 import { SidenavProps } from "./Sidenav.props";
@@ -35,9 +38,9 @@ const SidenavStatic = (
   props: Omit<SidenavProps, "forceMount">
 ): React.ReactElement | null => {
   const { className, ...rest } = props;
-  const loggedIn = useAppSelector(selectLoggedIn);
-  const user = useAppSelector(selectUser);
-  const unreadNotificationCount = useAppSelector(
+  const loggedIn = use_app_selector(select_is_logged_in);
+  const user = use_app_selector(select_user);
+  const unreadNotificationCount = use_app_selector(
     select_unread_notification_count
   );
 
@@ -85,7 +88,7 @@ const SidenavStatic = (
             <>
               <Badge
                 anchorOrigin={{ vertical: "top", horizontal: "right" }}
-                slotProps={{
+                slot_props={{
                   container: { tabIndex: -1 }
                 }}
                 style={{

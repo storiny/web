@@ -1,11 +1,11 @@
 import {
   decrementAction,
   number_action,
-  renderToast,
+  render_toast,
   set_entity_record_value,
-  setSelfFriendCount
+  set_self_friend_count
 } from "~/redux/features";
-import { AppStartListening } from "~/redux/listenerMiddleware";
+import { AppStartListening } from "src/redux/listener-middleware";
 
 import { debounce_effect, fetch_api } from "../utils";
 
@@ -30,7 +30,7 @@ export const add_friend_listener = (
               if (res) {
                 if (res.ok) {
                   listener_api.dispatch(
-                    renderToast({
+                    render_toast({
                       message: "Friend request sent",
                       severity: "success"
                     })
@@ -40,7 +40,7 @@ export const add_friend_listener = (
                     .json()
                     .then((json) => {
                       listener_api.dispatch(
-                        renderToast({
+                        render_toast({
                           message:
                             json?.error || "Could not send your friend request",
                           severity: "error"
@@ -67,10 +67,11 @@ export const add_friend_listener = (
       if (payload[0] === "friends") {
         const [, user_id, has_added_friend] = payload;
 
-        // TODO: ---
         if (!has_added_friend) {
-          dispatch(setSelfFriendCount(decrementAction));
-          dispatch(number_action("friend_counts", user_id, "decrement"));
+          [
+            set_self_friend_count("decrement"),
+            number_action("friend_counts", user_id, "decrement")
+          ].forEach(dispatch);
         }
       }
     }

@@ -2,7 +2,7 @@ import {
   InitialConfigType,
   LexicalComposer
 } from "@lexical/react/LexicalComposer";
-import { devConsole } from "@storiny/shared/src/utils/devLog";
+import { dev_console } from "@storiny/shared/src/utils/devLog";
 import React from "react";
 
 import { EditorNamespace } from "../../constants";
@@ -23,7 +23,7 @@ const EditorComposer = ({
   const initialConfig: InitialConfigType = {
     editorState: null, // `null` is required here to allow yjs to set the initial state
     namespace: EditorNamespace.MAIN,
-    onError: devConsole.error,
+    onError: dev_console.error,
     nodes: ignoreNodes ? undefined : editorNodes,
     theme: ignoreTheme ? undefined : editorTheme,
     editable: !readOnly

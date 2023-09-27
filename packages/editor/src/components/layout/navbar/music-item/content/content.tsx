@@ -106,7 +106,7 @@ const MusicItemContent = (): React.ReactElement => {
         <div className={clsx("full-w", "flex-center")}>
           <Select
             disabled
-            slotProps={{
+            slot_props={{
               content: {
                 style: {
                   zIndex: "calc(var(--z-index-popover) + 1)"

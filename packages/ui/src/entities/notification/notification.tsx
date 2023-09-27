@@ -24,7 +24,7 @@ import UserHeartIcon from "~/icons/UserHeart";
 import UserPlusIcon from "~/icons/UserPlus";
 import VerifiedIcon from "~/icons/Verified";
 import { select_read_notification } from "~/redux/features";
-import { useAppSelector } from "~/redux/hooks";
+import { use_app_selector } from "~/redux/hooks";
 import { breakpoints } from "~/theme/breakpoints";
 import { DateFormat, formatDate } from "~/utils/formatDate";
 
@@ -72,7 +72,7 @@ const SYSTEM_ICON_MAP: Record<number, React.ReactNode> = {
 const Notification = (props: NotificationProps): React.ReactElement => {
   const { className, notification, virtual, ...rest } = props;
   const isMobile = useMediaQuery(breakpoints.down("mobile"));
-  const isRead = useAppSelector(select_read_notification(notification.id));
+  const isRead = use_app_selector(select_read_notification(notification.id));
   const isSystem = [
     NotificationType.SYSTEM,
     NotificationType.LOGIN_ATTEMPT
@@ -94,7 +94,7 @@ const Notification = (props: NotificationProps): React.ReactElement => {
         badgeContent={NOTIFICATION_BADGE_CONTENT_MAP[notification.type]}
         className={clsx(styles.badge, isSystem && styles.system)}
         inset={"16%"}
-        slotProps={{
+        slot_props={{
           container: {
             style: {
               height: "fit-content"
@@ -113,7 +113,7 @@ const Notification = (props: NotificationProps): React.ReactElement => {
             borderless={!isMobile}
             className={styles["system-avatar"]}
             size={isMobile ? "md" : "lg"}
-            slotProps={{
+            slot_props={{
               fallback: {
                 style: {
                   "--bg": "var(--inverted-400)"

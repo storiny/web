@@ -22,20 +22,20 @@ const Menu = forwardRef<MenuProps, "div">((props, ref) => {
     children,
     trigger,
     size = "md",
-    slotProps,
+    slot_props,
     ...rest
   } = props;
 
   return (
     <Root modal={false} {...rest}>
-      <Trigger {...slotProps?.trigger} asChild>
+      <Trigger {...slot_props?.trigger} asChild>
         {trigger}
       </Trigger>
-      <Portal {...slotProps?.portal}>
+      <Portal {...slot_props?.portal}>
         <Content
           collisionPadding={8}
           sideOffset={5}
-          {...slotProps?.content}
+          {...slot_props?.content}
           asChild
           className={clsx(menuStyles.content, menuStyles[size], className)}
           ref={ref}
@@ -43,8 +43,8 @@ const Menu = forwardRef<MenuProps, "div">((props, ref) => {
           <Component>
             {children}
             <Arrow
-              {...slotProps?.arrow}
-              className={clsx(menuStyles.arrow, slotProps?.arrow?.className)}
+              {...slot_props?.arrow}
+              className={clsx(menuStyles.arrow, slot_props?.arrow?.className)}
             />
           </Component>
         </Content>

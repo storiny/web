@@ -1,35 +1,34 @@
 import { number_action, self_action } from "~/redux/features";
-import { apiSlice } from "~/redux/features/api/slice";
+import { api_slice } from "~/redux/features/api/slice";
 
 const SEGMENT = (id: string): string => `me/comments/${id}`;
 
-export interface CommentDeleteResponse {}
 export interface CommentDeletePayload {
   id: string;
-  storyId: string;
+  story_id: string;
 }
 
-export const { useDeleteCommentMutation } = apiSlice.injectEndpoints({
-  endpoints: (builder) => ({
-    deleteComment: builder.mutation<
-      CommentDeleteResponse,
-      CommentDeletePayload
-    >({
-      query: (body) => ({
-        url: `/${SEGMENT(body.id)}`,
-        method: "DELETE"
-      }),
-      invalidatesTags: (result, error, arg) => [
-        { type: "Comment", id: arg.id }
-      ],
-      onQueryStarted: async (arg, { dispatch, queryFulfilled }) => {
-        queryFulfilled.then(() => {
-          [
-            number_action("story_comment_counts", arg.storyId, "decrement"),
-            self_action("self_comment_count", "decrement")
-          ].forEach(dispatch);
-        });
-      }
+export const { useDeleteCommentMutation: use_delete_comment_mutation } =
+  api_slice.injectEndpoints({
+    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+    endpoints: (builder) => ({
+      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+      deleteComment: builder.mutation<void, CommentDeletePayload>({
+        query: (body) => ({
+          url: `/${SEGMENT(body.id)}`,
+          method: "DELETE"
+        }),
+        invalidatesTags: (result, error, arg) => [
+          { type: "Comment", id: arg.id }
+        ],
+        onQueryStarted: async (arg, { dispatch, queryFulfilled }) => {
+          queryFulfilled.then(() => {
+            [
+              number_action("story_comment_counts", arg.story_id, "decrement"),
+              self_action("self_comment_count", "decrement")
+            ].forEach(dispatch);
+          });
+        }
+      })
     })
-  })
-});
+  });

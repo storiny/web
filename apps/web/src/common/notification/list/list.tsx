@@ -15,7 +15,7 @@ import { VirtualizedNotificationListContext } from "./list-context";
 const VirtualizedNotificationList = React.memo(
   ({
     notifications,
-    hasMore,
+    has_more,
     loadMore,
     notificationProps,
     className,
@@ -36,10 +36,10 @@ const VirtualizedNotificationList = React.memo(
         components={{
           Item: VirtualizedNotificationItem,
           ScrollSeekPlaceholder: VirtualizedNotificationScrollSeekPlaceholder,
-          ...(hasMore && { Footer: VirtualFooter })
+          ...(has_more && { Footer: VirtualFooter })
         }}
         data={notifications}
-        endReached={hasMore ? loadMore : (): void => undefined}
+        endReached={has_more ? loadMore : (): void => undefined}
       />
     </VirtualizedNotificationListContext.Provider>
   )

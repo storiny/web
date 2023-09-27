@@ -88,7 +88,7 @@ const TextStyleToggleGroup = ({
       <ToggleGroupItem
         data-testid={"bold-toggle"}
         onClick={toggleBold}
-        slotProps={{
+        slot_props={{
           tooltip: {
             rightSlot: getShortcutLabel(EDITOR_SHORTCUTS.bold)
           }
@@ -101,7 +101,7 @@ const TextStyleToggleGroup = ({
       <ToggleGroupItem
         data-testid={"italic-toggle"}
         onClick={toggleItalic}
-        slotProps={{
+        slot_props={{
           tooltip: {
             rightSlot: getShortcutLabel(EDITOR_SHORTCUTS.italic)
           }
@@ -114,7 +114,7 @@ const TextStyleToggleGroup = ({
       <ToggleGroupItem
         data-testid={"underline-toggle"}
         onClick={toggleUnderline}
-        slotProps={{
+        slot_props={{
           tooltip: {
             rightSlot: getShortcutLabel(EDITOR_SHORTCUTS.underline)
           }
@@ -127,7 +127,7 @@ const TextStyleToggleGroup = ({
       <ToggleGroupItem
         data-testid={"strikethrough-toggle"}
         onClick={toggleStrikethrough}
-        slotProps={{
+        slot_props={{
           tooltip: {
             rightSlot: getShortcutLabel(EDITOR_SHORTCUTS.strikethrough)
           }
@@ -141,7 +141,7 @@ const TextStyleToggleGroup = ({
       <ToggleGroupItem
         data-testid={"code-toggle"}
         onClick={toggleCode}
-        slotProps={{
+        slot_props={{
           tooltip: {
             rightSlot: getShortcutLabel(EDITOR_SHORTCUTS.code)
           }
@@ -154,7 +154,7 @@ const TextStyleToggleGroup = ({
       <ToggleGroupItem
         data-testid={"link-toggle"}
         onClick={(): void => insertLink()}
-        slotProps={{
+        slot_props={{
           tooltip: {
             rightSlot: getShortcutLabel(EDITOR_SHORTCUTS.link)
           }
@@ -168,7 +168,7 @@ const TextStyleToggleGroup = ({
       <ToggleGroupItem
         data-testid={"subscript-toggle"}
         onClick={toggleSubscript}
-        slotProps={{
+        slot_props={{
           tooltip: {
             rightSlot: getShortcutLabel(EDITOR_SHORTCUTS.subscript)
           }
@@ -181,7 +181,7 @@ const TextStyleToggleGroup = ({
       <ToggleGroupItem
         data-testid={"superscript-toggle"}
         onClick={toggleSuperscript}
-        slotProps={{
+        slot_props={{
           tooltip: {
             rightSlot: getShortcutLabel(EDITOR_SHORTCUTS.superscript)
           }
@@ -240,7 +240,7 @@ const TextStyleSelect = ({
     <Select
       disabled={disabled}
       onValueChange={handleValueChange}
-      slotProps={{
+      slot_props={{
         trigger: {
           "aria-label": "Text style"
         },

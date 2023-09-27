@@ -2,7 +2,7 @@ import { axe } from "@storiny/test-utils";
 import { waitFor } from "@testing-library/react";
 import React from "react";
 
-import { renderTestWithProvider } from "~/redux/testUtils";
+import { render_test_with_provider } from "src/redux/test-utils";
 
 import CustomState from "./CustomState";
 import styles from "./CustomState.module.scss";
@@ -10,11 +10,11 @@ import { CustomStateSize } from "./CustomState.props";
 
 describe("<CustomState />", () => {
   it("renders", () => {
-    renderTestWithProvider(<CustomState title={"test"} />);
+    render_test_with_provider(<CustomState title={"test"} />);
   });
 
   it("does not have any accessibility violations", async () => {
-    const { container } = renderTestWithProvider(
+    const { container } = render_test_with_provider(
       <CustomState title={"test"} />
     );
 
@@ -24,7 +24,7 @@ describe("<CustomState />", () => {
   });
 
   it("renders size `md` by default", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <CustomState data-testid={"custom-state"} title={"test"} />
     );
 
@@ -33,7 +33,7 @@ describe("<CustomState />", () => {
 
   (["md", "sm"] as CustomStateSize[]).forEach((size) => {
     it(`renders \`${size}\` size`, () => {
-      const { getByTestId } = renderTestWithProvider(
+      const { getByTestId } = render_test_with_provider(
         <CustomState data-testid={"custom-state"} size={size} title={"test"} />
       );
 
@@ -42,7 +42,7 @@ describe("<CustomState />", () => {
   });
 
   it("renders icon", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <CustomState icon={<span data-testid={"icon"} />} title={"test"} />
     );
 
@@ -50,7 +50,7 @@ describe("<CustomState />", () => {
   });
 
   it("renders description", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <CustomState
         description={<span data-testid={"description"} />}
         title={"test"}

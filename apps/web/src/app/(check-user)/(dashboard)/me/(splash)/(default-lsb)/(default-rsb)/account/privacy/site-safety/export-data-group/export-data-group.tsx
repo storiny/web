@@ -12,7 +12,7 @@ import TitleBlock from "~/entities/TitleBlock";
 import { useMediaQuery } from "~/hooks/useMediaQuery";
 import ExportIcon from "~/icons/Export";
 import PasswordIcon from "~/icons/Password";
-import { useExportDataMutation } from "~/redux/features";
+import { use_export_data_mutation } from "~/redux/features";
 import { breakpoints } from "~/theme/breakpoints";
 
 import DashboardGroup from "../../../../../dashboard-group";
@@ -59,7 +59,7 @@ export const ExportData = ({
       "current-password": ""
     }
   });
-  const [exportData, { isLoading }] = useExportDataMutation();
+  const [exportData, { isLoading }] = use_export_data_mutation();
 
   const handleSubmit: SubmitHandler<ExportDataSchema> = (values) => {
     if (onSubmit) {
@@ -120,7 +120,7 @@ export const ExportData = ({
           </ModalFooterButton>
         </>
       ),
-      slotProps: {
+      slot_props: {
         footer: {
           compact: isSmallerThanMobile
         },

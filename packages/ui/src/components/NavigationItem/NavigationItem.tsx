@@ -18,7 +18,7 @@ const NavigationItem = forwardRef<NavigationItemProps, "button">(
       decorator,
       endDecorator,
       disabled,
-      slotProps,
+      slot_props,
       className,
       children,
       ...rest
@@ -41,11 +41,11 @@ const NavigationItem = forwardRef<NavigationItemProps, "button">(
       >
         {decorator && (
           <span
-            {...slotProps?.decorator}
+            {...slot_props?.decorator}
             className={clsx(
               "flex-center",
               styles.decorator,
-              slotProps?.decorator?.className
+              slot_props?.decorator?.className
             )}
           >
             {decorator}
@@ -54,11 +54,11 @@ const NavigationItem = forwardRef<NavigationItemProps, "button">(
         {children}
         <Grow />
         <span
-          {...slotProps?.endDecorator}
+          {...slot_props?.endDecorator}
           className={clsx(
             "flex-center",
             styles.chevron,
-            slotProps?.endDecorator?.className
+            slot_props?.endDecorator?.className
           )}
         >
           {endDecorator || <ChevronIcon rotation={90} />}

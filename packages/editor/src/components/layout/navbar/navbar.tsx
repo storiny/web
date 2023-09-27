@@ -11,7 +11,7 @@ import NextLink from "next/link";
 import { useRouter } from "next/navigation";
 import React from "react";
 
-import Logo from "~/brand/Logo";
+import Logo from "../../../../../ui/src/brand/logo";
 import Button from "~/components/Button";
 import { useConfirmation } from "~/components/Confirmation";
 import IconButton from "~/components/IconButton";
@@ -26,8 +26,8 @@ import ChevronIcon from "~/icons/Chevron";
 import QuestionMarkIcon from "~/icons/QuestionMark";
 import VersionHistoryIcon from "~/icons/VersionHistory";
 import {
-  usePublishStoryMutation,
-  useRecoverStoryMutation
+  use_publish_story_mutation,
+  use_recover_story_mutation
 } from "~/redux/features";
 import { breakpoints } from "~/theme/breakpoints";
 import { abbreviateNumber } from "~/utils/abbreviateNumber";
@@ -63,7 +63,7 @@ const EditorMenubar = ({
 }): React.ReactElement => (
   <Menubar className={"full-h"}>
     <MenubarMenu
-      slotProps={{
+      slot_props={{
         content: {
           style: { minWidth: "176px" }
         }
@@ -100,7 +100,7 @@ const Publish = ({
   const [editor] = useLexicalComposerContext();
   const [tkCount, setTkCount] = React.useState<number>(0);
   const [docStatus, setDocStatus] = useAtom(docStatusAtom);
-  const [publishStory] = usePublishStoryMutation();
+  const [publishStory] = use_publish_story_mutation();
 
   /**
    * Publishes the story
@@ -174,7 +174,7 @@ const Recover = (): React.ReactElement => {
   const toast = useToast();
   const story = useAtomValue(storyMetadataAtom);
   const [loading, setLoading] = React.useState<boolean>(false);
-  const [recoverStory] = useRecoverStoryMutation();
+  const [recoverStory] = use_recover_story_mutation();
 
   /**
    * Publishes the story

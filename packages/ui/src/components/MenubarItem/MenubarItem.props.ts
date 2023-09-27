@@ -17,7 +17,7 @@ export interface MenubarItemProps extends MenubarItemPrimitive {
   /**
    * The props passed to the individual component elements.
    */
-  slotProps?: {
+  slot_props?: {
     decorator?: React.ComponentPropsWithoutRef<"span">;
     rightSlot?: React.ComponentPropsWithoutRef<"span">;
   };

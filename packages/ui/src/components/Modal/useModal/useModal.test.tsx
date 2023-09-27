@@ -2,16 +2,16 @@ import { act } from "@testing-library/react";
 import React from "react";
 
 import {
-  renderHookWithProvider,
-  renderTestWithProvider
-} from "~/redux/testUtils";
+  render_hook_with_provider,
+  render_test_with_provider
+} from "src/redux/test-utils";
 
 import { ModalProps } from "../Modal.props";
 import { useModal } from "./useModal";
 
 describe("useModal", () => {
   it("returns the modal element, invocation callback, and open state", () => {
-    const { result } = renderHookWithProvider(() =>
+    const { result } = render_hook_with_provider(() =>
       useModal(() => <span />, <span />)
     );
 
@@ -22,9 +22,9 @@ describe("useModal", () => {
   });
 
   it("renders modal, matches snapshot, and passes props to the root component", () => {
-    const { result } = renderHookWithProvider(() =>
+    const { result } = render_hook_with_provider(() =>
       useModal(() => <span />, "Test", {
-        slotProps: {
+        slot_props: {
           content: {
             "data-testid": "modal-content"
           }
@@ -37,7 +37,7 @@ describe("useModal", () => {
       result.current[1](); // Open modal
     });
 
-    const { baseElement, getByTestId } = renderTestWithProvider(
+    const { baseElement, getByTestId } = render_test_with_provider(
       result.current[0]
     );
 
@@ -46,7 +46,7 @@ describe("useModal", () => {
   });
 
   it("renders modal with children", () => {
-    const { result } = renderHookWithProvider(() =>
+    const { result } = render_hook_with_provider(() =>
       useModal(() => <span />, <p data-testid={"modal-child"}></p>, {
         open: true
       })
@@ -56,7 +56,7 @@ describe("useModal", () => {
       result.current[1](); // Open modal
     });
 
-    const { getByTestId } = renderTestWithProvider(result.current[0]);
+    const { getByTestId } = render_test_with_provider(result.current[0]);
 
     expect(getByTestId("modal-child")).toBeInTheDocument();
   });

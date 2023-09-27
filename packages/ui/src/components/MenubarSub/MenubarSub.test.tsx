@@ -2,7 +2,7 @@ import { axe } from "@storiny/test-utils";
 import { waitFor } from "@testing-library/react";
 import React from "react";
 
-import { renderTestWithProvider } from "~/redux/testUtils";
+import { render_test_with_provider } from "src/redux/test-utils";
 
 import Menubar from "../Menubar";
 import MenubarItem from "../MenubarItem";
@@ -12,7 +12,7 @@ import { MenubarSubProps } from "./MenubarSub.props";
 
 describe("<MenubarSub />", () => {
   it("matches snapshot", () => {
-    const { baseElement } = renderTestWithProvider(
+    const { baseElement } = render_test_with_provider(
       <Menubar value={"test"}>
         <MenubarMenu trigger={<button>Trigger</button>} value={"test"}>
           <MenubarSub open trigger={<button>Trigger</button>}>
@@ -26,7 +26,7 @@ describe("<MenubarSub />", () => {
   });
 
   it("does not have any accessibility violations", async () => {
-    const { baseElement } = renderTestWithProvider(
+    const { baseElement } = render_test_with_provider(
       <Menubar value={"test"}>
         <MenubarMenu trigger={<button>Trigger</button>} value={"test"}>
           <MenubarSub open trigger={<button>Trigger</button>}>
@@ -49,16 +49,16 @@ describe("<MenubarSub />", () => {
   });
 
   it("renders as a polymorphic element", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Menubar value={"test"}>
         <MenubarMenu trigger={<button>Trigger</button>} value={"test"}>
           <MenubarSub
             as={"aside"}
             open
-            slotProps={
+            slot_props={
               {
                 content: { "data-testid": "content" }
-              } as MenubarSubProps["slotProps"]
+              } as MenubarSubProps["slot_props"]
             }
             trigger={<button>Trigger</button>}
           >
@@ -72,7 +72,7 @@ describe("<MenubarSub />", () => {
   });
 
   it("renders trigger", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Menubar value={"test"}>
         <MenubarMenu trigger={<button>Trigger</button>} value={"test"}>
           <MenubarSub open trigger={<span data-testid={"trigger"} />}>
@@ -86,16 +86,16 @@ describe("<MenubarSub />", () => {
   });
 
   it("passes props to the element slots", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Menubar value={"test"}>
         <MenubarMenu trigger={<button>Trigger</button>} value={"test"}>
           <MenubarSub
             open
-            slotProps={
+            slot_props={
               {
                 content: { "data-testid": "content" },
                 trigger: { "data-testid": "trigger" }
-              } as MenubarSubProps["slotProps"]
+              } as MenubarSubProps["slot_props"]
             }
             trigger={<button>Trigger</button>}
           >

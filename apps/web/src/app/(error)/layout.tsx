@@ -71,7 +71,7 @@ const ErrorLayout = ({
               decorator={<SearchIcon />}
               placeholder={"Search Storiny"}
               size={"lg"}
-              slotProps={{
+              slot_props={{
                 container: { className: clsx(styles.x, styles.input) }
               }}
               type={"search"}

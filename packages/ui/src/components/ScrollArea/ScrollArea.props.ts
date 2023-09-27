@@ -27,7 +27,7 @@ export interface ScrollAreaProps extends ScrollAreaPrimitive {
   /**
    * The props passed to the individual component elements.
    */
-  slotProps?: {
+  slot_props?: {
     corner?: ScrollAreaCornerProps;
     scrollbar?: ScrollAreaScrollbarProps;
     thumb?: ScrollAreaThumbProps;

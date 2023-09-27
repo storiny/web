@@ -19,7 +19,7 @@ import { ScrollAreaProps } from "./ScrollArea.props";
 
 const Root = React.forwardRef<
   HTMLDivElement,
-  Omit<ScrollAreaProps, "as" | "enableHorizontal" | "slotProps">
+  Omit<ScrollAreaProps, "as" | "enableHorizontal" | "slot_props">
 >(({ children, className, size = "md", ...rest }, ref) => (
   <RootPrimitive
     {...rest}
@@ -36,7 +36,7 @@ Root.displayName = "Root";
 
 const Viewport = React.forwardRef<
   HTMLDivElement,
-  NonNullable<NonNullable<ScrollAreaProps["slotProps"]>["viewport"]>
+  NonNullable<NonNullable<ScrollAreaProps["slot_props"]>["viewport"]>
 >(({ className, children, ...rest }, ref) => (
   <ViewportPrimitive
     {...rest}
@@ -55,7 +55,7 @@ const Thumb = ({
   className,
   ...rest
 }: NonNullable<
-  NonNullable<ScrollAreaProps["slotProps"]>["thumb"]
+  NonNullable<ScrollAreaProps["slot_props"]>["thumb"]
 >): React.ReactElement => (
   <ThumbPrimitive {...rest} className={clsx(styles.thumb, className)} />
 );
@@ -66,7 +66,7 @@ const Corner = ({
   className,
   ...rest
 }: NonNullable<
-  NonNullable<ScrollAreaProps["slotProps"]>["corner"]
+  NonNullable<ScrollAreaProps["slot_props"]>["corner"]
 >): React.ReactElement => (
   <CornerPrimitive {...rest} className={clsx(styles.corner, className)} />
 );
@@ -78,7 +78,7 @@ const Scrollbar = ({
   children,
   ...rest
 }: NonNullable<
-  NonNullable<ScrollAreaProps["slotProps"]>["scrollbar"]
+  NonNullable<ScrollAreaProps["slot_props"]>["scrollbar"]
 >): React.ReactElement => (
   <ScrollbarPrimitive {...rest} className={clsx(styles.scrollbar, className)}>
     {children}
@@ -91,7 +91,7 @@ const ScrollArea = forwardRef<ScrollAreaProps, "div">((props, ref) => {
     enableHorizontal,
     className,
     children,
-    slotProps,
+    slot_props,
     ...rest
   } = props;
 
@@ -99,36 +99,36 @@ const ScrollArea = forwardRef<ScrollAreaProps, "div">((props, ref) => {
     <Root {...rest} asChild className={className} ref={ref}>
       <Component>
         <Viewport
-          {...slotProps?.viewport}
-          className={slotProps?.viewport?.className}
+          {...slot_props?.viewport}
+          className={slot_props?.viewport?.className}
         >
           {children}
         </Viewport>
         <Scrollbar
-          {...slotProps?.scrollbar}
-          className={slotProps?.scrollbar?.className}
+          {...slot_props?.scrollbar}
+          className={slot_props?.scrollbar?.className}
           orientation="vertical"
         >
           <Thumb
-            {...slotProps?.thumb}
-            className={slotProps?.thumb?.className}
+            {...slot_props?.thumb}
+            className={slot_props?.thumb?.className}
           />
         </Scrollbar>
         {enableHorizontal && (
           <>
             <Scrollbar
-              {...slotProps?.scrollbar}
-              className={slotProps?.scrollbar?.className}
+              {...slot_props?.scrollbar}
+              className={slot_props?.scrollbar?.className}
               orientation="horizontal"
             >
               <Thumb
-                {...slotProps?.thumb}
-                className={slotProps?.thumb?.className}
+                {...slot_props?.thumb}
+                className={slot_props?.thumb?.className}
               />
             </Scrollbar>
             <Corner
-              {...slotProps?.corner}
-              className={slotProps?.corner?.className}
+              {...slot_props?.corner}
+              className={slot_props?.corner?.className}
             />
           </>
         )}

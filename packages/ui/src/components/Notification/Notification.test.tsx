@@ -2,7 +2,7 @@ import { axe } from "@storiny/test-utils";
 import { waitFor } from "@testing-library/react";
 import React from "react";
 
-import { renderTestWithProvider } from "~/redux/testUtils";
+import { render_test_with_provider } from "src/redux/test-utils";
 
 import Notification from "./Notification";
 import { NotificationProps } from "./Notification.props";
@@ -10,7 +10,7 @@ import NotificationProvider from "./Provider";
 
 describe("<Notification />", () => {
   it("renders and matches snapshot", () => {
-    const { baseElement, getByTestId } = renderTestWithProvider(
+    const { baseElement, getByTestId } = render_test_with_provider(
       <NotificationProvider>
         <Notification data-testid={"notification"} open>
           Test
@@ -23,7 +23,7 @@ describe("<Notification />", () => {
   });
 
   it("does not have any accessibility violations", async () => {
-    const { baseElement } = renderTestWithProvider(
+    const { baseElement } = render_test_with_provider(
       <NotificationProvider>
         <Notification open>Test</Notification>
       </NotificationProvider>
@@ -42,7 +42,7 @@ describe("<Notification />", () => {
   });
 
   it("renders as a polymorphic element", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <NotificationProvider>
         <Notification as={"aside"} data-testid={"notification"} open>
           Test
@@ -54,15 +54,15 @@ describe("<Notification />", () => {
   });
 
   it("renders decorator", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <NotificationProvider>
         <Notification
           icon={"info"}
           open
-          slotProps={
+          slot_props={
             {
               decorator: { "data-testid": "decorator" }
-            } as NotificationProps["slotProps"]
+            } as NotificationProps["slot_props"]
           }
         >
           Test
@@ -74,18 +74,18 @@ describe("<Notification />", () => {
   });
 
   it("passes props to the element slots", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <NotificationProvider>
         <Notification
           icon={"info"}
           open
-          slotProps={
+          slot_props={
             {
               decorator: { "data-testid": "decorator" },
               actions: { "data-testid": "actions" },
               primaryButton: { "data-testid": "primary-button" },
               secondaryButton: { "data-testid": "secondary-button" }
-            } as NotificationProps["slotProps"]
+            } as NotificationProps["slot_props"]
           }
         >
           Test

@@ -2,25 +2,25 @@ import { axe } from "@storiny/test-utils";
 import { waitFor } from "@testing-library/react";
 import React from "react";
 
-import { renderTestWithProvider } from "~/redux/testUtils";
+import { render_test_with_provider } from "src/redux/test-utils";
 
 import PageTitle from "./PageTitle";
 import { PageTitleProps } from "./PageTitle.props";
 
 describe("<PageTitle />", () => {
   it("renders", () => {
-    renderTestWithProvider(<PageTitle />);
+    render_test_with_provider(<PageTitle />);
   });
 
   it("does not have any accessibility violations", async () => {
-    const { container } = renderTestWithProvider(<PageTitle />);
+    const { container } = render_test_with_provider(<PageTitle />);
     await waitFor(async () =>
       expect(await axe(container)).toHaveNoViolations()
     );
   });
 
   it("renders children", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <PageTitle>
         <span data-testid={"child"} />
       </PageTitle>
@@ -30,12 +30,12 @@ describe("<PageTitle />", () => {
   });
 
   it("passes props to the component slots", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <PageTitle
-        componentProps={
+        component_props={
           {
             backButton: { "data-testid": "back-button" }
-          } as PageTitleProps["componentProps"]
+          } as PageTitleProps["component_props"]
         }
       />
     );

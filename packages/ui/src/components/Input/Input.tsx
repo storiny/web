@@ -16,7 +16,7 @@ import { InputContext } from "./InputContext";
 // Container
 
 const Container = forwardRef<
-  NonNullable<NonNullable<InputProps["slotProps"]>["container"]>,
+  NonNullable<NonNullable<InputProps["slot_props"]>["container"]>,
   "div"
 >((props, ref) => {
   const { as: Component = "div", children, ...rest } = props;
@@ -41,7 +41,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>((props, ref) => {
     monospaced,
     disabled,
     className,
-    slotProps,
+    slot_props,
     ...rest
   } = props;
   const isSmallerThanTablet = useMediaQuery(breakpoints.down("tablet"));
@@ -79,7 +79,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>((props, ref) => {
   return (
     <InputContext.Provider value={{ color, size, disabled }}>
       <Container
-        {...slotProps?.container}
+        {...slot_props?.container}
         className={clsx(
           "flex-center",
           styles.container,
@@ -87,15 +87,15 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>((props, ref) => {
           styles[size],
           focused && styles.focused,
           disabled && styles.disabled,
-          slotProps?.container?.className
+          slot_props?.container?.className
         )}
         data-focused={String(focused)}
         ref={ref}
       >
         {decorator && (
           <span
-            {...slotProps?.decorator}
-            className={clsx(styles.decorator, slotProps?.decorator?.className)}
+            {...slot_props?.decorator}
+            className={clsx(styles.decorator, slot_props?.decorator?.className)}
           >
             {decorator}
           </span>
@@ -117,55 +117,55 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>((props, ref) => {
         />
         {type === "number" && size !== "sm" ? (
           <span
-            {...slotProps?.spinnerContainer}
+            {...slot_props?.spinnerContainer}
             className={clsx(
               "flex-center",
               styles["spinner-container"],
-              slotProps?.spinnerContainer?.className
+              slot_props?.spinnerContainer?.className
             )}
           >
             <button
               disabled={disabled}
               type={"button"}
-              {...slotProps?.spinnerDecrementButton}
+              {...slot_props?.spinnerDecrementButton}
               aria-label={"decrement-value"}
               className={clsx(
                 "unset",
                 "focusable",
                 "focus-invert",
                 styles.spinner,
-                slotProps?.spinnerDecrementButton?.className
+                slot_props?.spinnerDecrementButton?.className
               )}
               onClick={(event): void => {
                 innerRef.current?.stepDown?.();
-                slotProps?.spinnerDecrementButton?.onClick?.(event);
+                slot_props?.spinnerDecrementButton?.onClick?.(event);
               }}
             >
               <MinusIcon />
             </button>
             <span
               aria-hidden
-              {...slotProps?.spinnerSeparator}
+              {...slot_props?.spinnerSeparator}
               className={clsx(
                 styles["spinner-separator"],
-                slotProps?.spinnerSeparator?.className
+                slot_props?.spinnerSeparator?.className
               )}
             />
             <button
               disabled={disabled}
               type={"button"}
-              {...slotProps?.spinnerIncrementButton}
+              {...slot_props?.spinnerIncrementButton}
               aria-label={"Increment value"}
               className={clsx(
                 "unset",
                 "focusable",
                 "focus-invert",
                 styles.spinner,
-                slotProps?.spinnerIncrementButton?.className
+                slot_props?.spinnerIncrementButton?.className
               )}
               onClick={(event): void => {
                 innerRef.current?.stepUp?.();
-                slotProps?.spinnerIncrementButton?.onClick?.(event);
+                slot_props?.spinnerIncrementButton?.onClick?.(event);
               }}
             >
               <PlusIcon />
@@ -173,13 +173,13 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>((props, ref) => {
           </span>
         ) : endDecorator ? (
           <span
-            {...slotProps?.endDecorator}
+            {...slot_props?.endDecorator}
             className={clsx(
               "fit-w",
               "flex-center",
               disabled && styles.disabled,
               styles["end-decorator"],
-              slotProps?.endDecorator?.className
+              slot_props?.endDecorator?.className
             )}
           >
             {endDecorator}

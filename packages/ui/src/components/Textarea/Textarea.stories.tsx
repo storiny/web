@@ -14,7 +14,7 @@ const meta: Meta<typeof Textarea> = {
   args: {
     size: "md",
     color: "inverted",
-    slotProps: {
+    slot_props: {
       container: {
         style: { maxWidth: "300px" }
       }

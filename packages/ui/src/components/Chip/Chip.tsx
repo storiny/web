@@ -19,7 +19,7 @@ const Chip = forwardRef<ChipProps, "span" | "button">((props, ref) => {
     variant = "rigid",
     decorator,
     disabled,
-    slotProps,
+    slot_props,
     ...rest
   } = props;
 
@@ -46,8 +46,8 @@ const Chip = forwardRef<ChipProps, "span" | "button">((props, ref) => {
     >
       {decorator && (
         <span
-          {...slotProps?.decorator}
-          className={clsx(styles.decorator, slotProps?.decorator?.className)}
+          {...slot_props?.decorator}
+          className={clsx(styles.decorator, slot_props?.decorator?.className)}
         >
           {decorator}
         </span>
@@ -57,11 +57,11 @@ const Chip = forwardRef<ChipProps, "span" | "button">((props, ref) => {
         <button
           aria-label={"Delete"}
           type={"button"}
-          {...slotProps?.action}
+          {...slot_props?.action}
           className={clsx(
             styles.reset,
             styles.action,
-            slotProps?.action?.className
+            slot_props?.action?.className
           )}
         >
           <XIcon />

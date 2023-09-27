@@ -48,7 +48,7 @@ const ImageLayoutToggleGroup = (
       <ToggleGroupItem
         className={clsx("focus-invert", styles.x, styles.button)}
         disabled={fitDisabled}
-        slotProps={{
+        slot_props={{
           tooltip: {
             rightSlot: fitDisabled
               ? "(Not available for multiple images)"

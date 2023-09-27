@@ -5,7 +5,7 @@ export interface RightSidebarProps
   /**
    * The props passed to the individual layout components.
    */
-  componentProps?: { wrapper?: React.ComponentPropsWithoutRef<"div"> };
+  component_props?: { wrapper?: React.ComponentPropsWithoutRef<"div"> };
   /**
    * Force the component to render, ignoring the desktop breakpoint.
    * @default false

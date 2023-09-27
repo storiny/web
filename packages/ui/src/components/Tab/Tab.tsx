@@ -15,7 +15,7 @@ const Tab = forwardRef<TabProps, "button">((props, ref) => {
     as: Component = "button",
     size,
     decorator,
-    slotProps,
+    slot_props,
     className,
     children,
     ...rest
@@ -41,11 +41,11 @@ const Tab = forwardRef<TabProps, "button">((props, ref) => {
       <Component>
         {decorator && hasChildren ? (
           <span
-            {...slotProps?.decorator}
+            {...slot_props?.decorator}
             className={clsx(
               "flex-center",
               styles.decorator,
-              slotProps?.decorator?.className
+              slot_props?.decorator?.className
             )}
           >
             {decorator}

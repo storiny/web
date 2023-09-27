@@ -50,7 +50,7 @@ const Page = (): React.ReactElement => {
       <ScrollArea
         as={"article"}
         className={clsx(styles.x, styles["scroll-area"])}
-        slotProps={{
+        slot_props={{
           viewport: {
             className: clsx(styles.x, styles.viewport)
           }

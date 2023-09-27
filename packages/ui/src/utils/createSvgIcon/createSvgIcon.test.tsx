@@ -1,7 +1,7 @@
 import React from "react";
 
 import { SvgIconProps } from "~/components/SvgIcon";
-import { renderTestWithProvider } from "~/redux/testUtils";
+import { render_test_with_provider } from "src/redux/test-utils";
 
 import { createSvgIcon } from "./createSvgIcon";
 
@@ -11,7 +11,7 @@ describe("createSvgIcon", () => {
       "data-test": ""
     } as SvgIconProps);
 
-    const { getByTestId } = renderTestWithProvider(<Icon />);
+    const { getByTestId } = render_test_with_provider(<Icon />);
     expect(getByTestId("child")).toBeInTheDocument();
   });
 
@@ -20,7 +20,7 @@ describe("createSvgIcon", () => {
       "data-test": ""
     } as SvgIconProps);
 
-    const { container } = renderTestWithProvider(<Icon />);
+    const { container } = render_test_with_provider(<Icon />);
     expect(container.querySelector("[data-test]")).toBeInTheDocument();
   });
 });

@@ -2,7 +2,7 @@ import { axe } from "@storiny/test-utils";
 import { waitFor } from "@testing-library/react";
 import React from "react";
 
-import { renderTestWithProvider } from "~/redux/testUtils";
+import { render_test_with_provider } from "src/redux/test-utils";
 
 import Modal from "./Modal";
 import styles from "./Modal.module.scss";
@@ -10,15 +10,15 @@ import { ModalProps } from "./Modal.props";
 
 describe("<Modal />", () => {
   it("matches snapshot", () => {
-    const { baseElement } = renderTestWithProvider(<Modal open />);
+    const { baseElement } = render_test_with_provider(<Modal open />);
     expect(baseElement).toMatchSnapshot();
   });
 
   it("does not have any accessibility violations", async () => {
-    const { baseElement } = renderTestWithProvider(
+    const { baseElement } = render_test_with_provider(
       <Modal
         open
-        slotProps={{
+        slot_props={{
           header: { children: "Test" }
         }}
       />
@@ -30,14 +30,14 @@ describe("<Modal />", () => {
   });
 
   it("renders as a polymorphic element", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Modal
         as={"aside"}
         open
-        slotProps={
+        slot_props={
           {
             content: { "data-testid": "content" }
-          } as ModalProps["slotProps"]
+          } as ModalProps["slot_props"]
         }
       />
     );
@@ -46,14 +46,14 @@ describe("<Modal />", () => {
   });
 
   it("renders `default` mode by default", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Modal
         mode={"default"}
         open
-        slotProps={
+        slot_props={
           {
             container: { "data-testid": "container" }
-          } as ModalProps["slotProps"]
+          } as ModalProps["slot_props"]
         }
       />
     );
@@ -65,7 +65,7 @@ describe("<Modal />", () => {
   });
 
   it("renders trigger", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Modal open trigger={<span data-testid={"trigger"} />} />
     );
 
@@ -73,7 +73,7 @@ describe("<Modal />", () => {
   });
 
   it("renders footer", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Modal footer={<span data-testid={"footer"} />} open />
     );
 
@@ -81,7 +81,7 @@ describe("<Modal />", () => {
   });
 
   it("renders sidebar", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Modal open sidebar={<span data-testid={"sidebar"} />} />
     );
 
@@ -89,14 +89,14 @@ describe("<Modal />", () => {
   });
 
   it("renders in fullscreen", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Modal
         fullscreen
         open
-        slotProps={
+        slot_props={
           {
             content: { "data-testid": "content" }
-          } as ModalProps["slotProps"]
+          } as ModalProps["slot_props"]
         }
       />
     );
@@ -105,15 +105,15 @@ describe("<Modal />", () => {
   });
 
   it("renders expected tabbed mode", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Modal
         mode={"tabbed"}
         open
         sidebar={<span />}
-        slotProps={
+        slot_props={
           {
             container: { "data-testid": "container" }
-          } as ModalProps["slotProps"]
+          } as ModalProps["slot_props"]
         }
       />
     );
@@ -125,14 +125,14 @@ describe("<Modal />", () => {
   });
 
   it("skips rendering tabbed mode when sidebar is absent", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Modal
         mode={"tabbed"}
         open
-        slotProps={
+        slot_props={
           {
             container: { "data-testid": "container" }
-          } as ModalProps["slotProps"]
+          } as ModalProps["slot_props"]
         }
       />
     );
@@ -144,14 +144,14 @@ describe("<Modal />", () => {
   });
 
   it("hides close button", () => {
-    const { queryByTestId } = renderTestWithProvider(
+    const { queryByTestId } = render_test_with_provider(
       <Modal
         hideCloseButton
         open
-        slotProps={
+        slot_props={
           {
             closeButton: { "data-testid": "close-button" }
-          } as ModalProps["slotProps"]
+          } as ModalProps["slot_props"]
         }
       />
     );
@@ -160,13 +160,13 @@ describe("<Modal />", () => {
   });
 
   it("passes props to the element slots", () => {
-    const { getByTestId, baseElement } = renderTestWithProvider(
+    const { getByTestId, baseElement } = render_test_with_provider(
       <Modal
         footer={<span />}
         mode={"tabbed"}
         open
         sidebar={<span />}
-        slotProps={
+        slot_props={
           {
             container: { "data-testid": "container" },
             content: { "data-testid": "content" },
@@ -179,7 +179,7 @@ describe("<Modal />", () => {
             overlay: { "data-testid": "overlay" },
             closeButton: { "data-testid": "close-button" },
             tabs: { "data-tabs": "" }
-          } as ModalProps["slotProps"]
+          } as ModalProps["slot_props"]
         }
         trigger={<button>Trigger</button>}
       >

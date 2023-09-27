@@ -7,6 +7,7 @@ module.exports = {
     "eslint:recommended",
     "plugin:react/recommended",
     "plugin:jest-dom/recommended",
+    "plugin:prefer-snakecase/recommended",
   ],
   env: {
     "jest/globals": true,
@@ -31,6 +32,7 @@ module.exports = {
   plugins: [
     "jest",
     "prefer-arrow-functions",
+    "prefer-snakecase",
     "simple-import-sort",
     "sort-class-members",
   ],
@@ -47,13 +49,39 @@ module.exports = {
         singleReturnOnly: false,
       },
     ],
+    "prefer-snakecase/prefer-snakecase": [
+      "error",
+      "always",
+      {
+        allowPascalCase: true,
+        allowDestructuringAssignment: true,
+        whitelist: [
+          "serializeQueryArgs",
+          "endpointName",
+          "queryArgs",
+          "transformResponse",
+          "forceRefetch",
+          "currentArg",
+          "previousArg",
+          "invalidatesTags",
+          "providesTags",
+          "onQueryStarted",
+          "queryFulfilled",
+          "initialState",
+          "actionCreator",
+          "extraReducers",
+          "getByTestId",
+          "queryByTestId",
+        ],
+      },
+    ],
     "react/jsx-sort-props": "warn",
     "react/prop-types": "off",
     "simple-import-sort/exports": "error",
     "simple-import-sort/imports": "error",
     "turbo/no-undeclared-env-vars": "off",
     "sort-class-members/sort-class-members": [
-      2,
+      "error",
       {
         order: [
           "constructor",
@@ -70,7 +98,7 @@ module.exports = {
     "capitalized-comments": [
       "error",
       "always",
-      { ignorePattern: "pragma|noInspection" },
+      { ignorePattern: "pragma|noinspection" },
     ],
   },
 };

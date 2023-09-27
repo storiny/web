@@ -1,5 +1,5 @@
 // import { renderBanner } from "~/redux/features/banner/slice";
-// import { useAppDispatch } from "~/redux/hooks";
+// import { use_app_dispatch } from "~/redux/hooks";
 //
 // import { BannerProps } from "../Banner.props";
 //
@@ -10,7 +10,7 @@
 //   message: string,
 //   { icon, color }?: Pick<BannerProps, "icon" | "color">
 // ) => void) => {
-//   const dispatch = useAppDispatch();
+//   const dispatch = use_app_dispatch();
 //
 //   return (
 //     message: string,

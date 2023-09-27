@@ -8,8 +8,8 @@ import RadioGroup from "~/components/RadioGroup";
 import Spacer from "~/components/Spacer";
 import TitleBlock from "~/entities/TitleBlock";
 import { useMediaQuery } from "~/hooks/useMediaQuery";
-import { selectTheme, setTheme } from "~/redux/features";
-import { useAppDispatch, useAppSelector } from "~/redux/hooks";
+import { select_theme, set_theme } from "~/redux/features";
+import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 import { breakpoints } from "~/theme/breakpoints";
 
 import DashboardGroup from "../../../../dashboard-group";
@@ -147,7 +147,7 @@ const ThemeItem = ({
     <Radio
       className={clsx(commonStyles.x, commonStyles.radio)}
       label={label}
-      slotProps={{
+      slot_props={{
         container: {
           className: clsx(commonStyles.x, commonStyles["radio-container"])
         }
@@ -159,8 +159,8 @@ const ThemeItem = ({
 
 const ThemePreference = (): React.ReactElement => {
   const isSmallerThanMobile = useMediaQuery(breakpoints.down("mobile"));
-  const dispatch = useAppDispatch();
-  const theme = useAppSelector(selectTheme);
+  const dispatch = use_app_dispatch();
+  const theme = use_app_selector(select_theme);
   const ratio = isSmallerThanMobile ? 2.21 : 1.62;
 
   return (
@@ -173,7 +173,7 @@ const ThemePreference = (): React.ReactElement => {
       <RadioGroup
         className={clsx(commonStyles.x, commonStyles["radio-group"])}
         onValueChange={(newValue): void => {
-          dispatch(setTheme(newValue as "light" | "dark" | "system"));
+          dispatch(set_theme(newValue as "light" | "dark" | "system"));
         }}
         orientation={isSmallerThanMobile ? "vertical" : "horizontal"}
         value={theme}

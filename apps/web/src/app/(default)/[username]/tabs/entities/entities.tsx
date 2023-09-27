@@ -6,9 +6,9 @@ import { UserListSkeleton, VirtualizedUserList } from "~/common/user";
 import ErrorState from "~/entities/ErrorState";
 import { useDebounce } from "~/hooks/useDebounce";
 import {
-  getQueryErrorType,
+  get_query_error_type,
   GetUserEntityType,
-  useGetUserEntitiesQuery
+  use_get_user_entities_query
 } from "~/redux/features";
 
 import { ProfileEntitySortValue } from "../../client";
@@ -30,14 +30,14 @@ const EntitiesTab = (props: Props): React.ReactElement => {
   const [page, setPage] = React.useState<number>(1);
   const debouncedQuery = useDebounce(query);
   const { data, isLoading, isFetching, isError, error, refetch } =
-    useGetUserEntitiesQuery({
+    use_get_user_entities_query({
       page,
       sort,
       userId,
       entityType,
       query: debouncedQuery
     });
-  const { items = [], hasMore } = data || {};
+  const { items = [], has_more } = data || {};
   const isTyping = query !== debouncedQuery;
 
   const loadMore = React.useCallback(
@@ -50,11 +50,11 @@ const EntitiesTab = (props: Props): React.ReactElement => {
       {isError ? (
         <ErrorState
           autoSize
-          componentProps={{
+          component_props={{
             button: { loading: isFetching }
           }}
           retry={refetch}
-          type={getQueryErrorType(error)}
+          type={get_query_error_type(error)}
         />
       ) : !isFetching && !items.length ? (
         <EmptyState entityType={entityType} query={query} username={username} />
@@ -62,7 +62,7 @@ const EntitiesTab = (props: Props): React.ReactElement => {
         <UserListSkeleton />
       ) : (
         <VirtualizedUserList
-          hasMore={Boolean(hasMore)}
+          has_more={Boolean(has_more)}
           loadMore={loadMore}
           users={items}
         />

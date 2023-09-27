@@ -2,7 +2,7 @@ import { axe, waitForPosition } from "@storiny/test-utils";
 import { waitFor } from "@testing-library/react";
 import React from "react";
 
-import { renderTestWithProvider } from "~/redux/testUtils";
+import { render_test_with_provider } from "src/redux/test-utils";
 
 import toggleStyles from "../common/Toggle.module.scss";
 import Toggle from "./Toggle";
@@ -10,21 +10,21 @@ import { ToggleProps, ToggleSize } from "./Toggle.props";
 
 describe("<Toggle />", () => {
   it("matches snapshot", () => {
-    const { container } = renderTestWithProvider(<Toggle>Test</Toggle>);
+    const { container } = render_test_with_provider(<Toggle>Test</Toggle>);
     expect(container.firstChild).toMatchSnapshot();
   });
 
   it("does not have any accessibility violations", async () => {
-    const { container } = renderTestWithProvider(<Toggle>Test</Toggle>);
+    const { container } = render_test_with_provider(<Toggle>Test</Toggle>);
     await waitFor(async () =>
       expect(await axe(container)).toHaveNoViolations()
     );
   });
 
   it("renders without tooltip and size `md` by default", async () => {
-    const { getByRole, queryByRole } = renderTestWithProvider(
+    const { getByRole, queryByRole } = render_test_with_provider(
       <Toggle
-        slotProps={{
+        slot_props={{
           tooltip: { open: true }
         }}
       >
@@ -40,7 +40,7 @@ describe("<Toggle />", () => {
 
   (["lg", "md", "sm", "xs"] as ToggleSize[]).forEach((size) => {
     it(`renders \`${size}\` size`, () => {
-      const { getByRole } = renderTestWithProvider(
+      const { getByRole } = render_test_with_provider(
         <Toggle size={size}>Test</Toggle>
       );
 
@@ -49,9 +49,9 @@ describe("<Toggle />", () => {
   });
 
   it("renders tooltip", async () => {
-    const { getByRole } = renderTestWithProvider(
+    const { getByRole } = render_test_with_provider(
       <Toggle
-        slotProps={{
+        slot_props={{
           tooltip: { open: true }
         }}
         tooltipContent={"Tooltip content"}
@@ -67,20 +67,20 @@ describe("<Toggle />", () => {
   });
 
   it("passes props to the element slots", async () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Toggle
-        slotProps={
+        slot_props={
           {
             tooltip: {
               open: true,
-              slotProps: {
+              slot_props: {
                 content: {
                   "data-testid": "tooltip-content"
                 }
               }
             },
             container: { "data-testid": "container" }
-          } as ToggleProps["slotProps"]
+          } as ToggleProps["slot_props"]
         }
         tooltipContent={"Tooltip content"}
       >

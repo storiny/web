@@ -8,12 +8,12 @@ import Button from "~/components/Button";
 import { useToast } from "~/components/Toast";
 import ResponseTextarea from "~/entities/ResponseTextarea";
 import {
-  getStoryCommentsApi,
-  selectLoggedIn,
-  selectUser,
-  useAddCommentMutation
+  get_story_comments_api,
+  select_is_logged_in,
+  select_user,
+  use_add_comment_mutation
 } from "~/redux/features";
-import { useAppDispatch, useAppSelector } from "~/redux/hooks";
+import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 
 import { storyMetadataAtom } from "../../../atoms";
 import styles from "./post-comment.module.scss";
@@ -24,17 +24,17 @@ const PostComment = ({
   onPost: () => void;
 }): React.ReactElement => {
   const toast = useToast();
-  const dispatch = useAppDispatch();
+  const dispatch = use_app_dispatch();
   const story = useAtomValue(storyMetadataAtom);
-  const user = useAppSelector(selectUser);
-  const loggedIn = useAppSelector(selectLoggedIn);
+  const user = use_app_selector(select_user);
+  const loggedIn = use_app_selector(select_is_logged_in);
   const textareaRef = React.useRef<HTMLTextAreaElement | null>(null);
-  const [addComment, { isLoading }] = useAddCommentMutation();
+  const [addComment, { isLoading }] = use_add_comment_mutation();
 
   const handlePost = (): void => {
     if (textareaRef.current?.value) {
       addComment({
-        storyId: story.id,
+        story_id: story.id,
         content: textareaRef.current.value
       })
         .unwrap()
@@ -45,7 +45,7 @@ const PostComment = ({
 
           onPost();
           toast("Comment added", "success");
-          dispatch(getStoryCommentsApi.util.resetApiState());
+          dispatch(get_story_comments_api.util.resetApiState());
         })
         .catch((e) =>
           toast(e?.data?.error || "Could not add your comment", "error")
@@ -84,7 +84,7 @@ const PostComment = ({
               onClick: handlePost
             }}
             ref={textareaRef}
-            slotProps={{
+            slot_props={{
               container: {
                 className: clsx("f-grow", styles.x, styles["response-textarea"])
               }

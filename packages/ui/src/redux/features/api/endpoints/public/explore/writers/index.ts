@@ -1,37 +1,39 @@
 import { StoryCategory } from "@storiny/shared";
 import { User } from "@storiny/types";
 
-import { apiSlice } from "~/redux/features/api/slice";
+import { api_slice } from "~/redux/features/api/slice";
 
 const SEGMENT = "public/explore/writers";
 const ITEMS_PER_PAGE = 10;
 
 export type GetExploreWritersResponse = User[];
 
-export const { useGetExploreWritersQuery } = apiSlice.injectEndpoints({
-  endpoints: (builder) => ({
-    getExploreWriters: builder.query<
-      { hasMore: boolean; items: User[] },
-      { category?: StoryCategory | "all"; page: number; query?: string }
-    >({
-      query: ({ page, category = "all", query }) =>
-        `/${SEGMENT}?page=${page}&category=${category}${
-          query ? `&query=${encodeURIComponent(query)}` : ""
-        }`,
-      serializeQueryArgs: ({ endpointName, queryArgs }) =>
-        `${endpointName}:${queryArgs.category}:${queryArgs.query}`,
-      transformResponse: (response: User[]) => ({
-        items: response,
-        hasMore: response.length === ITEMS_PER_PAGE
-      }),
-      merge: (currentCache, newItems) => {
-        currentCache.items.push(...newItems.items);
-        currentCache.hasMore = newItems.hasMore;
-      },
-      forceRefetch: ({ currentArg, previousArg }) =>
-        currentArg?.page !== previousArg?.page ||
-        currentArg?.category !== previousArg?.category ||
-        currentArg?.query !== previousArg?.query
+export const { useGetExploreWritersQuery: use_get_explore_writers_query } =
+  api_slice.injectEndpoints({
+    endpoints: (builder) => ({
+      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+      getExploreWriters: builder.query<
+        { has_more: boolean; items: User[] },
+        { category?: StoryCategory | "all"; page: number; query?: string }
+      >({
+        query: ({ page, category = "all", query }) =>
+          `/${SEGMENT}?page=${page}&category=${category}${
+            query ? `&query=${encodeURIComponent(query)}` : ""
+          }`,
+        serializeQueryArgs: ({ endpointName, queryArgs }) =>
+          `${endpointName}:${queryArgs.category}:${queryArgs.query}`,
+        transformResponse: (response: User[]) => ({
+          items: response,
+          has_more: response.length === ITEMS_PER_PAGE
+        }),
+        merge: (current_cache, new_items) => {
+          current_cache.items.push(...new_items.items);
+          current_cache.has_more = new_items.has_more;
+        },
+        forceRefetch: ({ currentArg, previousArg }) =>
+          currentArg?.page !== previousArg?.page ||
+          currentArg?.category !== previousArg?.category ||
+          currentArg?.query !== previousArg?.query
+      })
     })
-  })
-});
+  });

@@ -3,7 +3,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
 
-import { renderWithState } from "~/redux/mock";
+import { render_with_state } from "~/redux/mock";
 
 import BrandingLayout from "../layout";
 import Branding from "./page";
@@ -23,7 +23,7 @@ type Story = StoryObj<typeof Branding>;
 export const Default: Story = {
   decorators: [
     (Story): React.ReactElement =>
-      renderWithState(
+      render_with_state(
         <BrandingLayout>
           <Story />
         </BrandingLayout>,

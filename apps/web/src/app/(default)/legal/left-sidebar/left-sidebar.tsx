@@ -10,7 +10,7 @@ const SuspendedLegalLeftSidebarContent = dynamic(() => import("./content"), {
 
 const LegalLeftSidebar = (): React.ReactElement => (
   <LeftSidebar
-    componentProps={{
+    component_props={{
       wrapper: {
         style: {
           padding: 0

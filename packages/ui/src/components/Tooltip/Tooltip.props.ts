@@ -24,7 +24,7 @@ export interface TooltipProps extends TooltipPrimitive {
   /**
    * The props passed to the individual component elements.
    */
-  slotProps?: {
+  slot_props?: {
     arrow?: TooltipArrowProps;
     content?: TooltipContentProps;
     portal?: TooltipPortalProps;

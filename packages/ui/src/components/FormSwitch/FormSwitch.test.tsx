@@ -5,7 +5,7 @@ import React from "react";
 import { z } from "zod";
 
 import Form, { useForm } from "~/components/Form";
-import { renderTestWithProvider } from "~/redux/testUtils";
+import { render_test_with_provider } from "src/redux/test-utils";
 
 import FormSwitch from "./FormSwitch";
 import { FormSwitchProps } from "./FormSwitch.props";
@@ -39,7 +39,7 @@ const Component = ({
 
 describe("<FormSwitch />", () => {
   it("matches snapshot", () => {
-    const { container } = renderTestWithProvider(
+    const { container } = render_test_with_provider(
       <Component>
         <FormSwitch
           aria-label={"Sample switch"}
@@ -53,7 +53,7 @@ describe("<FormSwitch />", () => {
   });
 
   it("does not have any accessibility violations", async () => {
-    const { container } = renderTestWithProvider(
+    const { container } = render_test_with_provider(
       <Component>
         <FormSwitch
           aria-label={"Sample switch"}
@@ -69,7 +69,7 @@ describe("<FormSwitch />", () => {
   });
 
   it("consumes disabled prop from `FormContext`", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Component disabled>
         <FormSwitch
           formSlotProps={
@@ -89,7 +89,7 @@ describe("<FormSwitch />", () => {
   });
 
   it("passes props to the element slots", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Component>
         <FormSwitch
           aria-label={"Sample switch"}

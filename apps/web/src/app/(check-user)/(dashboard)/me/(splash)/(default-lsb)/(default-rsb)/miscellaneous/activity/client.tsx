@@ -11,8 +11,8 @@ import Spacer from "~/components/Spacer";
 import Typography from "~/components/Typography";
 import ErrorState from "~/entities/ErrorState";
 import {
-  getQueryErrorType,
-  useGetAccountActivityQuery
+  get_query_error_type,
+  use_get_account_activity_query
 } from "~/redux/features";
 
 import DashboardTitle from "../../../dashboard-title";
@@ -39,10 +39,10 @@ const StatusHeader = (): React.ReactElement => (
 const MiscellaneousActivityClient = (): React.ReactElement => {
   const [page, setPage] = React.useState<number>(1);
   const { data, isLoading, isFetching, isError, error, refetch } =
-    useGetAccountActivityQuery({
+    use_get_account_activity_query({
       page
     });
-  const { items = [], hasMore } = data || {};
+  const { items = [], has_more } = data || {};
 
   const loadMore = React.useCallback(
     () => setPage((prevState) => prevState + 1),
@@ -58,16 +58,16 @@ const MiscellaneousActivityClient = (): React.ReactElement => {
       ) : isError ? (
         <ErrorState
           autoSize
-          componentProps={{
+          component_props={{
             button: { loading: isFetching }
           }}
           retry={refetch}
-          type={getQueryErrorType(error)}
+          type={get_query_error_type(error)}
         />
       ) : (
         <VirtualizedAccountActivityList
           accountActivities={items}
-          hasMore={Boolean(hasMore)}
+          has_more={Boolean(has_more)}
           loadMore={loadMore}
         />
       )}

@@ -103,7 +103,7 @@ const FillControl = ({
         }}
         placeholder={"Fill"}
         size={"sm"}
-        slotProps={{
+        slot_props={{
           container: {
             style: {
               flex: "0.6"
@@ -130,7 +130,7 @@ const FillControl = ({
         }}
         placeholder={"Fill opacity"}
         size={"sm"}
-        slotProps={{
+        slot_props={{
           container: {
             style: {
               flex: "0.4"
@@ -208,7 +208,7 @@ const FillStyleControl = ({
             changeFillStyle(newValue)
           }
           size={"sm"}
-          slotProps={{
+          slot_props={{
             content: {
               style: {
                 zIndex: "calc(var(--z-index-modal) + 2)"
@@ -261,7 +261,7 @@ const FillStyleControl = ({
           }}
           placeholder={"Fill weight"}
           size={"sm"}
-          slotProps={{
+          slot_props={{
             container: {
               style: { flex: "0.4" }
             }

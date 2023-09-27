@@ -1,1 +1,1 @@
-export { default } from "./RootProvider";
+export { default } from "./root-provider";

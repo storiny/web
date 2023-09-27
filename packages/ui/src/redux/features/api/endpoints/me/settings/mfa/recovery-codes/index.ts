@@ -1,4 +1,4 @@
-import { apiSlice } from "~/redux/features/api/slice";
+import { api_slice } from "~/redux/features/api/slice";
 
 const SEGMENT = "me/settings/mfa/recovery-codes";
 
@@ -7,13 +7,15 @@ export type RecoveryCodesResponse = {
   value: string;
 }[];
 
-export const { useRecoveryCodesMutation } = apiSlice.injectEndpoints({
-  endpoints: (builder) => ({
-    recoveryCodes: builder.mutation<RecoveryCodesResponse, void>({
-      query: () => ({
-        url: `/${SEGMENT}`,
-        method: "GET"
+export const { useRecoveryCodesMutation: use_recovery_codes_mutation } =
+  api_slice.injectEndpoints({
+    endpoints: (builder) => ({
+      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+      recoveryCodes: builder.mutation<RecoveryCodesResponse, void>({
+        query: () => ({
+          url: `/${SEGMENT}`,
+          method: "GET"
+        })
       })
     })
-  })
-});
+  });

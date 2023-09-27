@@ -1,16 +1,17 @@
 import { Story } from "@storiny/types";
 
-import { apiSlice } from "~/redux/features/api/slice";
+import { api_slice } from "~/redux/features/api/slice";
 
 const SEGMENT = "me/drafts";
 const ITEMS_PER_PAGE = 10;
 
 export type GetDraftsResponse = Story[];
 
-export const getDraftsApi = apiSlice.injectEndpoints({
+export const get_drafts_api = api_slice.injectEndpoints({
   endpoints: (builder) => ({
+    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     getDrafts: builder.query<
-      { hasMore: boolean; items: Story[] },
+      { has_more: boolean; items: Story[] },
       {
         page: number;
         query?: string;
@@ -26,11 +27,11 @@ export const getDraftsApi = apiSlice.injectEndpoints({
         `${endpointName}:${queryArgs.type}:${queryArgs.sort}:${queryArgs.query}`,
       transformResponse: (response: Story[]) => ({
         items: response,
-        hasMore: response.length === ITEMS_PER_PAGE
+        has_more: response.length === ITEMS_PER_PAGE
       }),
-      merge: (currentCache, newItems) => {
-        currentCache.items.push(...newItems.items);
-        currentCache.hasMore = newItems.hasMore;
+      merge: (current_cache, new_items) => {
+        current_cache.items.push(...new_items.items);
+        current_cache.has_more = new_items.has_more;
       },
       providesTags: (result) =>
         result
@@ -51,4 +52,4 @@ export const getDraftsApi = apiSlice.injectEndpoints({
   })
 });
 
-export const { useGetDraftsQuery } = getDraftsApi;
+export const { useGetDraftsQuery: use_get_drafts_query } = get_drafts_api;

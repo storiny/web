@@ -2,7 +2,7 @@ import { userEvent } from "@storiny/test-utils";
 import { act, screen, waitFor } from "@testing-library/react";
 import React from "react";
 
-import { renderTestWithProvider } from "~/redux/testUtils";
+import { render_test_with_provider } from "../../../../../../../../../../../../../../packages/ui/src/redux/test-utils";
 
 import UpdatePassword from "./update-password";
 
@@ -10,7 +10,7 @@ describe("<UpdatePassword />", () => {
   it("renders validation messages", async () => {
     const mockSubmit = jest.fn();
     const user = userEvent.setup();
-    renderTestWithProvider(<UpdatePassword onSubmit={mockSubmit} />, {
+    render_test_with_provider(<UpdatePassword onSubmit={mockSubmit} />, {
       loggedIn: true
     });
 
@@ -34,7 +34,7 @@ describe("<UpdatePassword />", () => {
   it("submits correct form data", async () => {
     const mockSubmit = jest.fn();
     const user = userEvent.setup();
-    renderTestWithProvider(<UpdatePassword onSubmit={mockSubmit} />, {
+    render_test_with_provider(<UpdatePassword onSubmit={mockSubmit} />, {
       loggedIn: true
     });
 

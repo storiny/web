@@ -16,7 +16,7 @@ export interface VirtualizedFriendRequestListProps
   /**
    * Flag indicating whether there are more friend requests to render.
    */
-  hasMore: boolean;
+  has_more: boolean;
   /**
    * A callback function to fetch more friend requests.
    */

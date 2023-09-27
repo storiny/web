@@ -1,6 +1,6 @@
 import React from "react";
 
-import { renderTestWithProvider } from "~/redux/testUtils";
+import { render_test_with_provider } from "src/redux/test-utils";
 
 import Tabs from "../Tabs";
 import TabsList from "../TabsList";
@@ -10,7 +10,7 @@ import { TabProps, TabSize } from "./Tab.props";
 
 describe("<Tab />", () => {
   it("matches snapshot", () => {
-    const { container } = renderTestWithProvider(
+    const { container } = render_test_with_provider(
       <Tabs>
         <TabsList>
           <Tab value={"test"} />
@@ -22,7 +22,7 @@ describe("<Tab />", () => {
   });
 
   it("renders as a polymorphic element", () => {
-    const { getByRole } = renderTestWithProvider(
+    const { getByRole } = render_test_with_provider(
       <Tabs>
         <TabsList>
           <Tab as={"aside"} value={"test"} />
@@ -34,7 +34,7 @@ describe("<Tab />", () => {
   });
 
   it("renders size `md` by default", () => {
-    const { getByRole } = renderTestWithProvider(
+    const { getByRole } = render_test_with_provider(
       <Tabs>
         <TabsList>
           <Tab value={"test"} />
@@ -47,7 +47,7 @@ describe("<Tab />", () => {
 
   (["lg", "md"] as TabSize[]).forEach((size) => {
     it(`renders \`${size}\` size`, () => {
-      const { getByRole } = renderTestWithProvider(
+      const { getByRole } = render_test_with_provider(
         <Tabs>
           <TabsList>
             <Tab size={size} value={"test"} />
@@ -60,7 +60,7 @@ describe("<Tab />", () => {
   });
 
   it("infers size from TabsList context", () => {
-    const { getByRole } = renderTestWithProvider(
+    const { getByRole } = render_test_with_provider(
       <Tabs>
         <TabsList size={"lg"}>
           <Tab value={"test"} />
@@ -72,7 +72,7 @@ describe("<Tab />", () => {
   });
 
   it("renders children", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Tabs>
         <TabsList>
           <Tab value={"test"}>
@@ -86,7 +86,7 @@ describe("<Tab />", () => {
   });
 
   it("renders decorator", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Tabs>
         <TabsList>
           <Tab decorator={<span data-testid={"decorator"} />} value={"test"}>
@@ -100,7 +100,7 @@ describe("<Tab />", () => {
   });
 
   it("renders decorator in the root slot when children are absent", () => {
-    const { getByRole } = renderTestWithProvider(
+    const { getByRole } = render_test_with_provider(
       <Tabs>
         <TabsList>
           <Tab decorator={<span data-test="" />} value={"test"} />
@@ -112,15 +112,15 @@ describe("<Tab />", () => {
   });
 
   it("passes props to the element slots", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Tabs>
         <TabsList>
           <Tab
             decorator={<span />}
-            slotProps={
+            slot_props={
               {
                 decorator: { "data-testid": "decorator" }
-              } as TabProps["slotProps"]
+              } as TabProps["slot_props"]
             }
             value={"test"}
           >

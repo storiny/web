@@ -2,7 +2,7 @@ import { axe } from "@storiny/test-utils";
 import { waitFor } from "@testing-library/react";
 import React from "react";
 
-import { renderTestWithProvider } from "~/redux/testUtils";
+import { render_test_with_provider } from "src/redux/test-utils";
 
 import Banner from "./Banner";
 import styles from "./Banner.module.scss";
@@ -11,7 +11,7 @@ import BannerProvider from "./Provider";
 
 describe("<Banner />", () => {
   it("renders and matches snapshot", () => {
-    const { baseElement, getByTestId } = renderTestWithProvider(
+    const { baseElement, getByTestId } = render_test_with_provider(
       <BannerProvider>
         <Banner data-testid={"banner"} open>
           Test
@@ -24,7 +24,7 @@ describe("<Banner />", () => {
   });
 
   it("does not have any accessibility violations", async () => {
-    const { baseElement } = renderTestWithProvider(
+    const { baseElement } = render_test_with_provider(
       <BannerProvider>
         <Banner open>Test</Banner>
       </BannerProvider>
@@ -43,7 +43,7 @@ describe("<Banner />", () => {
   });
 
   it("renders as a polymorphic element", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <BannerProvider>
         <Banner as={"aside"} data-testid={"banner"} open>
           Test
@@ -55,7 +55,7 @@ describe("<Banner />", () => {
   });
 
   it("renders color `inverted` by default", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <BannerProvider>
         <Banner data-testid={"banner"} open>
           Test
@@ -68,7 +68,7 @@ describe("<Banner />", () => {
 
   (["inverted", "ruby", "lemon"] as BannerColor[]).forEach((color) => {
     it(`renders ${color} color`, () => {
-      const { getByTestId } = renderTestWithProvider(
+      const { getByTestId } = render_test_with_provider(
         <BannerProvider>
           <Banner color={color} data-testid={"banner"} open>
             Test
@@ -81,15 +81,15 @@ describe("<Banner />", () => {
   });
 
   it("renders icon", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <BannerProvider>
         <Banner
           icon={"info"}
           open
-          slotProps={
+          slot_props={
             {
               decorator: { "data-testid": "decorator" }
-            } as BannerProps["slotProps"]
+            } as BannerProps["slot_props"]
           }
         >
           Test
@@ -101,16 +101,16 @@ describe("<Banner />", () => {
   });
 
   it("passes props to the element slots", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <BannerProvider>
         <Banner
           icon={"info"}
           open
-          slotProps={
+          slot_props={
             {
               decorator: { "data-testid": "decorator" },
               close: { "data-testid": "close" }
-            } as BannerProps["slotProps"]
+            } as BannerProps["slot_props"]
           }
         >
           Test

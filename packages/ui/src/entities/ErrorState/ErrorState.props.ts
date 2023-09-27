@@ -14,7 +14,7 @@ export interface ErrorStateProps extends React.ComponentPropsWithRef<"div"> {
   /**
    * The props passed to the individual entity components.
    */
-  componentProps?: { button?: ButtonProps };
+  component_props?: { button?: ButtonProps };
   /**
    * The retry callback.
    */

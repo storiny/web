@@ -6,7 +6,7 @@ import FormCheckbox from "~/components/FormCheckbox";
 import Spacer from "~/components/Spacer";
 import { useToast } from "~/components/Toast";
 import TitleBlock from "~/entities/TitleBlock";
-import { useSiteNotificationSettingsMutation } from "~/redux/features";
+import { use_site_notification_settings_mutation } from "~/redux/features";
 
 import DashboardGroup from "../../../../dashboard-group";
 import styles from "../styles.module.scss";
@@ -41,7 +41,7 @@ const SiteNotifications = ({
     }
   });
   const [mutateSiteNotificationSettings, { isLoading }] =
-    useSiteNotificationSettingsMutation();
+    use_site_notification_settings_mutation();
 
   const handleSubmit: SubmitHandler<SiteNotificationsSchema> = (values) => {
     if (onSubmit) {

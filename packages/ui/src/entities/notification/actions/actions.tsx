@@ -8,10 +8,10 @@ import BellOffIcon from "~/icons/BellOff";
 import CheckIcon from "~/icons/Check";
 import {
   set_read_notification,
-  syncWithNotification,
-  useUnsubscribeNotificationMutation
+  sync_with_notification,
+  use_unsubscribe_notification_mutation
 } from "~/redux/features";
-import { useAppDispatch } from "~/redux/hooks";
+import { use_app_dispatch } from "~/redux/hooks";
 import { breakpoints } from "~/theme/breakpoints";
 
 import styles from "../notification.module.scss";
@@ -21,13 +21,13 @@ const Actions = ({
 }: {
   notification: Notification;
 }): React.ReactElement | null => {
-  const dispatch = useAppDispatch();
+  const dispatch = use_app_dispatch();
   const isMobile = useMediaQuery(breakpoints.down("mobile"));
   const [unsubscribe, { isLoading, isError, isSuccess }] =
-    useUnsubscribeNotificationMutation();
+    use_unsubscribe_notification_mutation();
 
   React.useEffect(() => {
-    dispatch(syncWithNotification(notification));
+    dispatch(sync_with_notification(notification));
   }, [dispatch, notification]);
 
   const unsubscribeImpl = (): void => {

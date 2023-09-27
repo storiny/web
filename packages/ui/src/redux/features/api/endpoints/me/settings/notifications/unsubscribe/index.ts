@@ -1,20 +1,23 @@
 import { ContentType } from "@storiny/shared";
 import { NotificationType } from "@storiny/types";
 
-import { apiSlice } from "~/redux/features/api/slice";
+import { api_slice } from "~/redux/features/api/slice";
 
 const SEGMENT = "me/settings/notifications/unsubscribe";
 
-export interface UnsubscribeNotificationResponse {}
 export interface UnsubscribeNotificationPayload {
   id?: string; // Notification ID for invalidating the cache
   type: NotificationType;
 }
 
-export const { useUnsubscribeNotificationMutation } = apiSlice.injectEndpoints({
+export const {
+  // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+  useUnsubscribeNotificationMutation: use_unsubscribe_notification_mutation
+} = api_slice.injectEndpoints({
   endpoints: (builder) => ({
+    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     unsubscribeNotification: builder.mutation<
-      UnsubscribeNotificationResponse,
+      void,
       UnsubscribeNotificationPayload
     >({
       query: (body) => ({

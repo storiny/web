@@ -1,6 +1,6 @@
 import { act } from "@testing-library/react";
 
-import { renderHookWithProvider } from "~/redux/testUtils";
+import { render_hook_with_provider } from "src/redux/test-utils";
 
 import { useWebShare } from "./useWebShare";
 
@@ -21,7 +21,7 @@ describe("useWebShare", () => {
 
   it("calls the web share api", async () => {
     const data = { text: "test", url: "https://storiny.com" };
-    const { result } = renderHookWithProvider(() => useWebShare());
+    const { result } = render_hook_with_provider(() => useWebShare());
 
     await act(async () => {
       await result.current(data.text, data.url);

@@ -2,19 +2,19 @@ import { axe } from "@storiny/test-utils";
 import { waitFor } from "@testing-library/react";
 import React from "react";
 
-import { renderTestWithProvider } from "~/redux/testUtils";
+import { render_test_with_provider } from "src/redux/test-utils";
 
 import TagChip from "./TagChip";
 
 describe("<TagChip />", () => {
   it("renders", () => {
-    renderTestWithProvider(
+    render_test_with_provider(
       <TagChip followerCount={1} storyCount={1} value={"test"} />
     );
   });
 
   it("does not have any accessibility violations", async () => {
-    const { container } = renderTestWithProvider(
+    const { container } = render_test_with_provider(
       <TagChip followerCount={1} storyCount={1} value={"test"} />
     );
 
@@ -24,7 +24,7 @@ describe("<TagChip />", () => {
   });
 
   it("renders `HashIcon` decorator", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <TagChip value={"test"} withDecorator />
     );
 
@@ -33,7 +33,7 @@ describe("<TagChip />", () => {
 
   it("renders follower and story count", () => {
     // Renders even when stats are zero
-    const { getByLabelText, rerender } = renderTestWithProvider(
+    const { getByLabelText, rerender } = render_test_with_provider(
       <TagChip followerCount={0} storyCount={0} value={"test"} />
     );
 
@@ -62,7 +62,7 @@ describe("<TagChip />", () => {
   });
 
   it("renders only follower count and adds `data-first-child` to it", () => {
-    const { getByLabelText } = renderTestWithProvider(
+    const { getByLabelText } = render_test_with_provider(
       <TagChip followerCount={1} value={"test"} />
     );
 

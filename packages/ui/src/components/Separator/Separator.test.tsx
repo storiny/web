@@ -2,14 +2,14 @@ import { axe } from "@storiny/test-utils";
 import { waitFor } from "@testing-library/react";
 import React from "react";
 
-import { renderTestWithProvider } from "~/redux/testUtils";
+import { render_test_with_provider } from "src/redux/test-utils";
 
 import Menu from "../Menu";
 import Separator from "../Separator";
 
 describe("<Separator />", () => {
   it("matches snapshot", () => {
-    const { baseElement } = renderTestWithProvider(
+    const { baseElement } = render_test_with_provider(
       <Menu open trigger={<button>Trigger</button>}>
         <Separator />
       </Menu>
@@ -19,7 +19,7 @@ describe("<Separator />", () => {
   });
 
   it("renders with inverted margin", () => {
-    const { baseElement } = renderTestWithProvider(
+    const { baseElement } = render_test_with_provider(
       <Menu open trigger={<button>Trigger</button>}>
         <Separator invertMargin />
       </Menu>
@@ -29,7 +29,7 @@ describe("<Separator />", () => {
   });
 
   it("does not have any accessibility violations", async () => {
-    const { baseElement } = renderTestWithProvider(
+    const { baseElement } = render_test_with_provider(
       <Menu open trigger={<button>Trigger</button>}>
         <Separator />
       </Menu>
@@ -48,7 +48,7 @@ describe("<Separator />", () => {
   });
 
   it("renders as a polymorphic element", () => {
-    const { getByRole } = renderTestWithProvider(
+    const { getByRole } = render_test_with_provider(
       <Menu open trigger={<button>Trigger</button>}>
         <Separator as={"aside"} />
       </Menu>

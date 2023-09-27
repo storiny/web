@@ -6,7 +6,7 @@ import FormCheckbox from "~/components/FormCheckbox";
 import Spacer from "~/components/Spacer";
 import { useToast } from "~/components/Toast";
 import TitleBlock from "~/entities/TitleBlock";
-import { useMailNotificationSettingsMutation } from "~/redux/features";
+import { use_mail_notification_settings_mutation } from "~/redux/features";
 
 import DashboardGroup from "../../../../dashboard-group";
 import styles from "../styles.module.scss";
@@ -35,7 +35,7 @@ const MailNotifications = ({
     }
   });
   const [mutateMailNotificationSettings, { isLoading }] =
-    useMailNotificationSettingsMutation();
+    use_mail_notification_settings_mutation();
 
   const handleSubmit: SubmitHandler<MailNotificationsSchema> = (values) => {
     if (onSubmit) {

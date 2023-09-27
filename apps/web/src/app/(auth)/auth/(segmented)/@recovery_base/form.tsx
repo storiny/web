@@ -10,7 +10,7 @@ import FormInput from "~/components/FormInput";
 import Grow from "~/components/Grow";
 import Spacer from "~/components/Spacer";
 import { useToast } from "~/components/Toast";
-import { useRecoveryMutation } from "~/redux/features";
+import { use_recovery_mutation } from "~/redux/features";
 
 import { useAuthState } from "../../../actions";
 import { RecoverySchema, recoverySchema } from "./schema";
@@ -28,7 +28,7 @@ const RecoveryForm = ({ onSubmit }: Props): React.ReactElement => {
       email: state.recovery.email
     }
   });
-  const [mutateRecover, { isLoading }] = useRecoveryMutation();
+  const [mutateRecover, { isLoading }] = use_recovery_mutation();
 
   const handleSubmit: SubmitHandler<RecoverySchema> = (values) => {
     if (onSubmit) {

@@ -36,7 +36,7 @@ export interface ImageProps extends PolymorphicProps<"div"> {
   /**
    * The props passed to the individual component elements.
    */
-  slotProps?: {
+  slot_props?: {
     fallback?: AvatarFallbackProps;
     image?: AvatarImageProps;
     overlay?: React.ComponentPropsWithoutRef<"div">;

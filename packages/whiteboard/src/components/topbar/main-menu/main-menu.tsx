@@ -15,7 +15,7 @@ import ResetCanvasItem from "./reset-canvas-item";
 const MainMenu = (): React.ReactElement => (
   <Menu
     size={"sm"}
-    slotProps={{
+    slot_props={{
       content: {
         style: {
           zIndex: "calc(var(--z-index-modal) + 2)"

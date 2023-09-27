@@ -42,7 +42,7 @@ export const WithFooter: Story = {
   ...Default,
   args: {
     ...Default.args,
-    slotProps: {
+    slot_props: {
       header: { decorator: <RectangleIcon />, children: "Modal title" },
       content: { style: { minHeight: "45vh", minWidth: "40vw" } }
     },
@@ -93,8 +93,8 @@ export const ModeTabbed: Story = {
         </TabPanel>
       </>
     ),
-    slotProps: {
-      ...WithFooter?.args?.slotProps,
+    slot_props: {
+      ...WithFooter?.args?.slot_props,
       tabs: { defaultValue: "one" },
       content: { style: { minHeight: "45vh", minWidth: "40vw" } },
       body: {

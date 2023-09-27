@@ -33,7 +33,7 @@ const Select = forwardRef<SelectProps, "div">((props, ref) => {
     valueChildren,
     disabled,
     children,
-    slotProps,
+    slot_props,
     ...rest
   } = props;
   const {
@@ -48,7 +48,7 @@ const Select = forwardRef<SelectProps, "div">((props, ref) => {
     <Root {...rest} disabled={inputDisabled || disabled}>
       {renderTrigger(
         <Trigger
-          {...slotProps?.trigger}
+          {...slot_props?.trigger}
           className={clsx(
             "focusable",
             "flex-center",
@@ -57,55 +57,55 @@ const Select = forwardRef<SelectProps, "div">((props, ref) => {
             styles[inputColor || color],
             // Check if inside context provider
             Boolean(inputSize) && styles.context,
-            slotProps?.trigger?.className
+            slot_props?.trigger?.className
           )}
           disabled={disabled}
         >
-          <Value {...slotProps?.value} data-value>
+          <Value {...slot_props?.value} data-value>
             {valueChildren}
           </Value>
           <Icon
-            {...slotProps?.icon}
-            className={clsx(styles.icon, slotProps?.icon?.className)}
+            {...slot_props?.icon}
+            className={clsx(styles.icon, slot_props?.icon?.className)}
           >
             <ChevronIcon style={{ transform: "rotate(180deg)" }} />
           </Icon>
         </Trigger>
       )}
-      <Portal {...slotProps?.portal}>
+      <Portal {...slot_props?.portal}>
         <Content
-          {...slotProps?.content}
+          {...slot_props?.content}
           asChild
           className={clsx(
             styles.content,
             styles[inputSize || size],
-            slotProps?.content?.className
+            slot_props?.content?.className
           )}
           ref={ref}
         >
           <Component>
             <ScrollUpButton
-              {...slotProps?.scrollUpButton}
+              {...slot_props?.scrollUpButton}
               className={clsx(
                 "flex-center",
                 styles["scroll-button"],
-                slotProps?.scrollUpButton?.className
+                slot_props?.scrollUpButton?.className
               )}
             >
               <ChevronIcon />
             </ScrollUpButton>
             <Viewport
-              {...slotProps?.viewport}
-              className={clsx(styles.viewport, slotProps?.viewport?.className)}
+              {...slot_props?.viewport}
+              className={clsx(styles.viewport, slot_props?.viewport?.className)}
             >
               {children}
             </Viewport>
             <ScrollDownButton
-              {...slotProps?.scrollDownButton}
+              {...slot_props?.scrollDownButton}
               className={clsx(
                 "flex-center",
                 styles["scroll-button"],
-                slotProps?.scrollDownButton?.className
+                slot_props?.scrollDownButton?.className
               )}
             >
               <ChevronIcon style={{ transform: "rotate(180deg)" }} />

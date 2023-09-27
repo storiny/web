@@ -7,8 +7,8 @@ import Spacer from "~/components/Spacer";
 import Typography from "~/components/Typography";
 import RetryIcon from "~/icons/Retry";
 import SplashScreen from "~/layout/SplashScreen";
-import { fetchUser, selectAuthStatus, selectUser } from "~/redux/features";
-import { useAppDispatch, useAppSelector } from "~/redux/hooks";
+import { fetchUser, select_auth_status, select_user } from "~/redux/features";
+import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 
 // Handles client-side user authentication logic
 const DashboardSplashLayout = ({
@@ -18,9 +18,9 @@ const DashboardSplashLayout = ({
 }): React.ReactElement | null => {
   const redirect = useLoginRedirect();
   const [visible, setVisible] = React.useState<boolean>(true);
-  const dispatch = useAppDispatch();
-  const authStatus = useAppSelector(selectAuthStatus);
-  const user = useAppSelector(selectUser);
+  const dispatch = use_app_dispatch();
+  const authStatus = use_app_selector(select_auth_status);
+  const user = use_app_selector(select_user);
   const loading = authStatus === "loading";
 
   React.useEffect(() => {

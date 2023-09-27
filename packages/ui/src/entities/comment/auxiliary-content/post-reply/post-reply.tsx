@@ -6,11 +6,11 @@ import Avatar from "~/components/Avatar";
 import { useToast } from "~/components/Toast";
 import ResponseTextarea from "~/entities/ResponseTextarea";
 import {
-  selectLoggedIn,
-  selectUser,
-  useAddReplyMutation
+  select_is_logged_in,
+  select_user,
+  use_add_reply_mutation
 } from "~/redux/features";
-import { useAppSelector } from "~/redux/hooks";
+import { use_app_selector } from "~/redux/hooks";
 
 import styles from "./post-reply.module.scss";
 
@@ -22,10 +22,10 @@ const PostReply = ({
   placeholder: string;
 }): React.ReactElement | null => {
   const toast = useToast();
-  const user = useAppSelector(selectUser);
-  const loggedIn = useAppSelector(selectLoggedIn);
+  const user = use_app_selector(select_user);
+  const loggedIn = use_app_selector(select_is_logged_in);
   const textareaRef = React.useRef<HTMLTextAreaElement | null>(null);
-  const [addReply, { isLoading }] = useAddReplyMutation();
+  const [addReply, { isLoading }] = use_add_reply_mutation();
 
   const handlePost = (): void => {
     if (textareaRef.current?.value) {
@@ -77,7 +77,7 @@ const PostReply = ({
         }}
         ref={textareaRef}
         size={"sm"}
-        slotProps={{
+        slot_props={{
           container: {
             className: clsx("f-grow", styles.x, styles["response-textarea"])
           }

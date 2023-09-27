@@ -26,7 +26,7 @@ const meta: Meta<typeof MasonryImpl> = {
     items: getItems(),
     gutterWidth: 24,
     minCols: 3,
-    slotProps: {
+    slot_props: {
       container: { style: { maxHeight: "450px", overflow: "auto" } }
     },
     renderItem: ({ data }) => (

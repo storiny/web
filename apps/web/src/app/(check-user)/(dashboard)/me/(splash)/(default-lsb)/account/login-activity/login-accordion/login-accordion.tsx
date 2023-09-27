@@ -10,7 +10,7 @@ import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger
-} from "~/components/Accordion";
+} from "../../../../../../../../../../../../packages/ui/src/components/accordion";
 import AspectRatio from "~/components/AspectRatio";
 import Button from "~/components/Button";
 import Divider from "~/components/Divider";
@@ -18,7 +18,7 @@ import Spacer from "~/components/Spacer";
 import { useToast } from "~/components/Toast";
 import Typography from "~/components/Typography";
 import LogoutIcon from "~/icons/Logout";
-import { useSessionLogoutMutation } from "~/redux/features";
+import { use_session_logout_mutation } from "~/redux/features";
 import { DateFormat, formatDate } from "~/utils/formatDate";
 
 import { deviceTypeToIconMap } from "../icon-map";
@@ -39,7 +39,7 @@ const Map = dynamic(() => import("../map"), {
 const LogoutButton = (props: LoginAccordionProps): React.ReactElement => {
   const { login, onLogout } = props;
   const toast = useToast();
-  const [sessionLogout, { isLoading }] = useSessionLogoutMutation();
+  const [sessionLogout, { isLoading }] = use_session_logout_mutation();
 
   /**
    * Destroys a session
@@ -80,7 +80,7 @@ const LoginAccordion = (props: LoginAccordionProps): React.ReactElement => {
       >
         <AccordionTrigger
           className={clsx(styles.x, styles.trigger)}
-          slotProps={{
+          slot_props={{
             header: {
               as: "div"
             },
@@ -129,7 +129,7 @@ const LoginAccordion = (props: LoginAccordionProps): React.ReactElement => {
           <Spacer className={"f-grow"} size={3} />
         </AccordionTrigger>
         <AccordionContent
-          slotProps={{
+          slot_props={{
             wrapper: { className: clsx(styles.x, styles["content-wrapper"]) }
           }}
         >

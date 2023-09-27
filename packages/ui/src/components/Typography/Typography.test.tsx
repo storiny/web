@@ -2,7 +2,7 @@ import { axe } from "@storiny/test-utils";
 import { waitFor } from "@testing-library/react";
 import React from "react";
 
-import { renderTestWithProvider } from "~/redux/testUtils";
+import { render_test_with_provider } from "src/redux/test-utils";
 
 import { levelToClassNameMap, scaleToClassNameMap } from "../common/typography";
 import Typography from "./Typography";
@@ -19,26 +19,30 @@ const typographyLevels = Object.keys(levelToClassNameMap) as TypographyLevel[];
 
 describe("<Typography />", () => {
   it("matches snapshot", () => {
-    const { container } = renderTestWithProvider(<Typography>Test</Typography>);
+    const { container } = render_test_with_provider(
+      <Typography>Test</Typography>
+    );
     expect(container.firstChild).toMatchSnapshot();
   });
 
   it("matches snapshot with `ellipsis` set to `true`", () => {
-    const { container } = renderTestWithProvider(
+    const { container } = render_test_with_provider(
       <Typography ellipsis>Test</Typography>
     );
     expect(container.firstChild).toMatchSnapshot();
   });
 
   it("does not have any accessibility violations", async () => {
-    const { container } = renderTestWithProvider(<Typography>Test</Typography>);
+    const { container } = render_test_with_provider(
+      <Typography>Test</Typography>
+    );
     await waitFor(async () =>
       expect(await axe(container)).toHaveNoViolations()
     );
   });
 
   it("renders with level `body1`, color `major`, and ellipsis `false` by default", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Typography data-testid={"typography"}>Test</Typography>
     );
 
@@ -50,7 +54,7 @@ describe("<Typography />", () => {
 
   typographyLevels.forEach((level) => {
     it(`renders \`${level}\` level`, () => {
-      const { getByTestId } = renderTestWithProvider(
+      const { getByTestId } = render_test_with_provider(
         <Typography data-testid={"typography"} level={level}>
           Test
         </Typography>
@@ -64,7 +68,7 @@ describe("<Typography />", () => {
 
   typographyScales.forEach((scale) => {
     it(`renders \`${scale}\` scale`, () => {
-      const { getByTestId } = renderTestWithProvider(
+      const { getByTestId } = render_test_with_provider(
         <Typography data-testid={"typography"} scale={scale}>
           Test
         </Typography>
@@ -91,7 +95,7 @@ describe("<Typography />", () => {
     ] as TypographyElement[]
   ).forEach((element) => {
     it(`renders as ${element} element`, () => {
-      const { getByTestId } = renderTestWithProvider(
+      const { getByTestId } = render_test_with_provider(
         <Typography as={element} data-testid={"typography"}>
           Test
         </Typography>
@@ -110,7 +114,7 @@ describe("<Typography />", () => {
     ] as [TypographyColor, string][]
   ).forEach(([color, className]) => {
     it(`renders \`${color}\` color`, () => {
-      const { getByTestId } = renderTestWithProvider(
+      const { getByTestId } = render_test_with_provider(
         <Typography color={color} data-testid={"typography"}>
           Test
         </Typography>
@@ -121,7 +125,7 @@ describe("<Typography />", () => {
   });
 
   it("renders a custom element", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Typography as={"div"} data-testid={"typography"}>
         Test
       </Typography>
@@ -132,7 +136,7 @@ describe("<Typography />", () => {
 
   describe("nested", () => {
     it("renders as a span element when nested", () => {
-      const { getByTestId } = renderTestWithProvider(
+      const { getByTestId } = render_test_with_provider(
         <Typography>
           <Typography data-testid={"nested"}>Nested</Typography>
         </Typography>
@@ -142,7 +146,7 @@ describe("<Typography />", () => {
     });
 
     it("element prop overrides the nested span element", () => {
-      const { getByTestId } = renderTestWithProvider(
+      const { getByTestId } = render_test_with_provider(
         <Typography>
           <Typography as={"code"} data-testid={"nested"}>
             Nested
@@ -154,7 +158,7 @@ describe("<Typography />", () => {
     });
 
     it("does not render as a span element for inline code and blockquote", () => {
-      const { getByTestId } = renderTestWithProvider(
+      const { getByTestId } = render_test_with_provider(
         <Typography>
           <Typography data-testid={"nested"} level={"inline-code"}>
             Nested
@@ -167,7 +171,7 @@ describe("<Typography />", () => {
   });
 
   it("renders with a truncated text when using the ellipsis prop", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Typography data-testid={"typography"} ellipsis>
         Text
       </Typography>
@@ -177,7 +181,7 @@ describe("<Typography />", () => {
   });
 
   it("renders color preview when a hex color code is passed to the inline code element", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Typography data-testid={"typography"} level={"inline-code"}>
         #000
       </Typography>
@@ -189,7 +193,7 @@ describe("<Typography />", () => {
   });
 
   it("scale prop overrides the level prop", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Typography data-testid={"typography"} level={"body2"} scale={"display1"}>
         Test
       </Typography>
@@ -202,16 +206,16 @@ describe("<Typography />", () => {
   });
 
   it("renders mention and adds a @ prefix", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Typography
         data-testid={"typography"}
         level={"mention"}
-        slotProps={
+        slot_props={
           {
             link: {
               "data-testid": "link"
             }
-          } as TypographyProps["slotProps"]
+          } as TypographyProps["slot_props"]
         }
       >
         test
@@ -226,16 +230,16 @@ describe("<Typography />", () => {
   });
 
   it("renders tag and adds a # prefix", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Typography
         data-testid={"typography"}
         level={"tag"}
-        slotProps={
+        slot_props={
           {
             link: {
               "data-testid": "link"
             }
-          } as TypographyProps["slotProps"]
+          } as TypographyProps["slot_props"]
         }
       >
         test
@@ -250,15 +254,15 @@ describe("<Typography />", () => {
   });
 
   it("passes props to the element slots", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Typography
         level={"mention"}
-        slotProps={
+        slot_props={
           {
             link: {
               "data-testid": "link"
             }
-          } as TypographyProps["slotProps"]
+          } as TypographyProps["slot_props"]
         }
       >
         test
@@ -269,15 +273,15 @@ describe("<Typography />", () => {
   });
 
   it("passes props to the ellipsis slot", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Typography
         ellipsis
-        slotProps={
+        slot_props={
           {
             ellipsisCell: {
               "data-testid": "ellipsis-cell"
             }
-          } as TypographyProps["slotProps"]
+          } as TypographyProps["slot_props"]
         }
       >
         test

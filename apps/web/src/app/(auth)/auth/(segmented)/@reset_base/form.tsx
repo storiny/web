@@ -12,7 +12,7 @@ import FormNewPasswordInput from "~/components/FormNewPasswordInput";
 import Grow from "~/components/Grow";
 import Spacer from "~/components/Spacer";
 import { useToast } from "~/components/Toast";
-import { useResetPasswordMutation } from "~/redux/features";
+import { use_reset_password_mutation } from "~/redux/features";
 
 import { useAuthState } from "../../../actions";
 import { ResetSchema, resetSchema } from "./schema";
@@ -33,7 +33,7 @@ const ResetForm = ({ onSubmit, token }: Props): React.ReactElement => {
       "logout-of-all-devices": false
     }
   });
-  const [mutateResetPassword, { isLoading }] = useResetPasswordMutation();
+  const [mutateResetPassword, { isLoading }] = use_reset_password_mutation();
 
   const handleSubmit: SubmitHandler<ResetSchema> = (values) => {
     if (onSubmit) {

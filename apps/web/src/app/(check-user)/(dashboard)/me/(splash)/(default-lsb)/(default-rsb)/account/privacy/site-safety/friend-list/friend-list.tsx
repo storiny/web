@@ -9,10 +9,10 @@ import Spacer from "~/components/Spacer";
 import { useToast } from "~/components/Toast";
 import Typography from "~/components/Typography";
 import {
-  selectIsPrivateAccount,
-  useFriendListMutation
+  select_is_private_account,
+  use_friend_list_mutation
 } from "~/redux/features";
-import { useAppSelector } from "~/redux/hooks";
+import { use_app_selector } from "~/redux/hooks";
 
 import styles from "../site-safety.module.scss";
 import { FriendListProps } from "./friend-list.props";
@@ -23,7 +23,7 @@ const FriendList = ({
   friend_list_visibility
 }: FriendListProps): React.ReactElement => {
   const toast = useToast();
-  const isPrivate = useAppSelector(selectIsPrivateAccount);
+  const isPrivate = use_app_selector(select_is_private_account);
   const prevValuesRef = React.useRef<FriendListSchema>();
   const form = useForm<FriendListSchema>({
     resolver: zodResolver(friendListSchema),
@@ -31,7 +31,7 @@ const FriendList = ({
       "friend-list": `${friend_list_visibility}` as `${1 | 2 | 3}`
     }
   });
-  const [mutateFriendList, { isLoading }] = useFriendListMutation();
+  const [mutateFriendList, { isLoading }] = use_friend_list_mutation();
 
   const handleSubmit: SubmitHandler<FriendListSchema> = (values) => {
     if (onSubmit) {

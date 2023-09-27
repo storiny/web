@@ -12,8 +12,8 @@ import Typography from "~/components/Typography";
 import ErrorState from "~/entities/ErrorState";
 import Persona from "~/entities/Persona";
 import {
-  getQueryErrorType,
-  useGetStoryRecommendationsQuery
+  get_query_error_type,
+  use_get_story_recommendations_query
 } from "~/redux/features";
 import { DateFormat, formatDate } from "~/utils/formatDate";
 
@@ -81,19 +81,19 @@ const RecommendedStory = ({ story }: { story: Story }): React.ReactElement => {
 const RecommendedStories = (): React.ReactElement => {
   const story = useAtomValue(storyMetadataAtom);
   const { data, isLoading, isFetching, isError, error, refetch } =
-    useGetStoryRecommendationsQuery({ storyId: story.id, page: 1 });
+    use_get_story_recommendations_query({ storyId: story.id, page: 1 });
   const { items = [] } = data || {};
 
   return isError ? (
     <ErrorState
-      componentProps={{
+      component_props={{
         button: {
           loading: isFetching
         }
       }}
       retry={refetch}
       size={"sm"}
-      type={getQueryErrorType(error)}
+      type={get_query_error_type(error)}
     />
   ) : (
     <>

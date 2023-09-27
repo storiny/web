@@ -1,37 +1,37 @@
 import { compressToUTF16 } from "lz-string";
 
-import { setupStore } from "~/redux/store";
+import { setup_store } from "~/redux/store";
 
 import {
-  hydrateState,
+  hydrate_state,
   LOCAL_STORAGE_KEY,
-  preferencesInitialState,
-  setCodeFont,
-  setReadingFont,
-  setReadingFontSize,
-  setReducedMotion,
-  setTheme,
-  toggleCodeLigatures
+  preferences_initial_state,
+  set_code_font,
+  set_reading_font,
+  set_reading_font_size,
+  set_reduced_motion,
+  set_theme,
+  toggle_code_ligatures
 } from "./slice";
 
-describe("preferencesListener", () => {
+describe("preferences_listener", () => {
   it("adds a `data-theme` attribute to the `html` element", async () => {
-    const store = setupStore(undefined, true);
-    store.dispatch(setTheme("dark"));
+    const store = setup_store(undefined, true);
+    store.dispatch(set_theme("dark"));
 
     expect(document.documentElement).toHaveAttribute("data-theme", "dark");
   });
 
   it("applies reduced motion settings to the `body`", async () => {
-    const store = setupStore(undefined, true);
-    store.dispatch(setReducedMotion("enabled"));
+    const store = setup_store(undefined, true);
+    store.dispatch(set_reduced_motion("enabled"));
 
     expect(document.body).toHaveClass("reduced-motion");
   });
 
   it("`body` does not contain default reading font property", async () => {
-    const store = setupStore(undefined, true);
-    store.dispatch(hydrateState(preferencesInitialState));
+    const store = setup_store(undefined, true);
+    store.dispatch(hydrate_state(preferences_initial_state));
 
     expect(
       getComputedStyle(document.body).getPropertyValue("--font-reading")
@@ -39,8 +39,8 @@ describe("preferencesListener", () => {
   });
 
   it("`body` does not contain default code font property", async () => {
-    const store = setupStore(undefined, true);
-    store.dispatch(hydrateState(preferencesInitialState));
+    const store = setup_store(undefined, true);
+    store.dispatch(hydrate_state(preferences_initial_state));
 
     expect(
       getComputedStyle(document.body).getPropertyValue("--font-code")
@@ -48,8 +48,8 @@ describe("preferencesListener", () => {
   });
 
   it("applies reading font variable to the `body`", async () => {
-    const store = setupStore(undefined, true);
-    store.dispatch(setReadingFont("synonym"));
+    const store = setup_store(undefined, true);
+    store.dispatch(set_reading_font("synonym"));
 
     expect(
       getComputedStyle(document.body).getPropertyValue("--font-reading")
@@ -57,15 +57,15 @@ describe("preferencesListener", () => {
   });
 
   it("applies reading font size class to the `body`", async () => {
-    const store = setupStore(undefined, true);
-    store.dispatch(setReadingFontSize("slim"));
+    const store = setup_store(undefined, true);
+    store.dispatch(set_reading_font_size("slim"));
 
     expect(document.body).toHaveClass("t-legible-slim");
   });
 
   it("applies code font variable to the `body`", async () => {
-    const store = setupStore(undefined, true);
-    store.dispatch(setCodeFont("source-code-pro"));
+    const store = setup_store(undefined, true);
+    store.dispatch(set_code_font("source-code-pro"));
 
     expect(
       getComputedStyle(document.body).getPropertyValue("--font-code")
@@ -73,9 +73,9 @@ describe("preferencesListener", () => {
   });
 
   it("applies code font variable with ligatures to the `body`", async () => {
-    const store = setupStore(undefined, true);
-    store.dispatch(setCodeFont("source-code-pro"));
-    store.dispatch(toggleCodeLigatures(true));
+    const store = setup_store(undefined, true);
+    store.dispatch(set_code_font("source-code-pro"));
+    store.dispatch(toggle_code_ligatures(true));
 
     expect(
       getComputedStyle(document.body).getPropertyValue("--font-code")
@@ -83,13 +83,13 @@ describe("preferencesListener", () => {
   });
 
   it("serializes state to localStorage", () => {
-    const store = setupStore(undefined, true);
-    store.dispatch(setTheme("dark"));
+    const store = setup_store(undefined, true);
+    store.dispatch(set_theme("dark"));
 
     expect(localStorage.setItem).toHaveBeenCalledWith(
       LOCAL_STORAGE_KEY,
       compressToUTF16(
-        JSON.stringify({ ...preferencesInitialState, theme: "dark" })
+        JSON.stringify({ ...preferences_initial_state, theme: "dark" })
       )
     );
   });

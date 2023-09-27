@@ -49,7 +49,7 @@ export interface ModalProps extends ModalPrimitive {
   /**
    * The props passed to the individual component elements.
    */
-  slotProps?: {
+  slot_props?: {
     body?: React.ComponentPropsWithoutRef<"div">;
     closeButton?: IconButtonProps;
     container?: Omit<

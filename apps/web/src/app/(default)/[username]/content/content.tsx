@@ -26,7 +26,7 @@ import UserCheckIcon from "~/icons/UserCheck";
 import UserPlusIcon from "~/icons/UserPlus";
 import UserXIcon from "~/icons/UserX";
 import { boolean_action } from "~/redux/features";
-import { useAppDispatch, useAppSelector } from "~/redux/hooks";
+import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 import { breakpoints } from "~/theme/breakpoints";
 import { abbreviateNumber } from "~/utils/abbreviateNumber";
 import { DateFormat, formatDate } from "~/utils/formatDate";
@@ -51,11 +51,11 @@ const Actions = ({
   profile,
   isInsideSidebar
 }: Pick<Props, "isInsideSidebar" | "profile">): React.ReactElement => {
-  const dispatch = useAppDispatch();
-  const isFollowing = useAppSelector(
+  const dispatch = use_app_dispatch();
+  const isFollowing = use_app_selector(
     (state) => state.entities.following[profile.id]
   );
-  const isBlocking = useAppSelector(
+  const isBlocking = use_app_selector(
     (state) => state.entities.blocks[profile.id]
   );
   const isSelf = Boolean(profile.is_self);
@@ -211,11 +211,12 @@ const ProfileContent = ({
     `${breakpoints.up("tablet")} and ${breakpoints.down("desktop")}`
   );
   const followerCount =
-    useAppSelector((state) => state.entities.followerCounts[profile.id]) || 0;
+    use_app_selector((state) => state.entities.followerCounts[profile.id]) || 0;
   const followingCount =
-    useAppSelector((state) => state.entities.followingCounts[profile.id]) || 0;
+    use_app_selector((state) => state.entities.followingCounts[profile.id]) ||
+    0;
   const friendCount =
-    useAppSelector((state) => state.entities.friendCounts[profile.id]) || 0;
+    use_app_selector((state) => state.entities.friendCounts[profile.id]) || 0;
 
   return (
     <>
@@ -248,7 +249,7 @@ const ProfileContent = ({
                 isInsideSidebar && styles["inside-sidebar"]
               )}
               size={willAvatarOverflow ? "xl" : "xl2"}
-              slotProps={{
+              slot_props={{
                 fallback: {
                   style: {
                     "--icon-size": "32px",

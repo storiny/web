@@ -16,7 +16,7 @@ const MenubarItem = forwardRef<MenubarItemProps, "div">((props, ref) => {
     className,
     decorator,
     rightSlot,
-    slotProps,
+    slot_props,
     children,
     ...rest
   } = props;
@@ -31,10 +31,10 @@ const MenubarItem = forwardRef<MenubarItemProps, "div">((props, ref) => {
       <Component>
         {decorator && (
           <span
-            {...slotProps?.decorator}
+            {...slot_props?.decorator}
             className={clsx(
               menuItemStyles.decorator,
-              slotProps?.decorator?.className
+              slot_props?.decorator?.className
             )}
           >
             {decorator}
@@ -43,10 +43,10 @@ const MenubarItem = forwardRef<MenubarItemProps, "div">((props, ref) => {
         {children}
         {rightSlot && (
           <span
-            {...slotProps?.rightSlot}
+            {...slot_props?.rightSlot}
             className={clsx(
               rightSlotStyles["right-slot"],
-              slotProps?.rightSlot?.className
+              slot_props?.rightSlot?.className
             )}
           >
             {rightSlot}

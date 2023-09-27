@@ -2,7 +2,7 @@ import { axe } from "@storiny/test-utils";
 import { waitFor } from "@testing-library/react";
 import React from "react";
 
-import { renderTestWithProvider } from "~/redux/testUtils";
+import { render_test_with_provider } from "src/redux/test-utils";
 
 import Textarea from "./Textarea";
 import styles from "./Textarea.module.scss";
@@ -10,7 +10,7 @@ import { TextareaColor, TextareaProps, TextareaSize } from "./Textarea.props";
 
 describe("<Textarea />", () => {
   it("matches snapshot", () => {
-    const { container } = renderTestWithProvider(
+    const { container } = render_test_with_provider(
       <Textarea placeholder={"Test"} />
     );
 
@@ -18,7 +18,7 @@ describe("<Textarea />", () => {
   });
 
   it("does not have any accessibility violations", async () => {
-    const { container } = renderTestWithProvider(
+    const { container } = render_test_with_provider(
       <Textarea placeholder={"Test"} />
     );
 
@@ -28,12 +28,12 @@ describe("<Textarea />", () => {
   });
 
   it("renders as a polymorphic element", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Textarea
-        slotProps={
+        slot_props={
           {
             container: { as: "aside", "data-testid": "container" }
-          } as TextareaProps["slotProps"]
+          } as TextareaProps["slot_props"]
         }
       />
     );
@@ -42,7 +42,7 @@ describe("<Textarea />", () => {
   });
 
   it("renders end decorator", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Textarea endDecorator={<span data-testid={"end-decorator"} />} />
     );
 
@@ -50,12 +50,12 @@ describe("<Textarea />", () => {
   });
 
   it("renders with size `md` and color `inverted` by default", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Textarea
-        slotProps={
+        slot_props={
           {
             container: { "data-testid": "container" }
-          } as TextareaProps["slotProps"]
+          } as TextareaProps["slot_props"]
         }
       />
     );
@@ -67,13 +67,13 @@ describe("<Textarea />", () => {
 
   (["inverted", "ruby"] as TextareaColor[]).forEach((color) => {
     it(`renders \`${color}\` color`, () => {
-      const { getByTestId } = renderTestWithProvider(
+      const { getByTestId } = render_test_with_provider(
         <Textarea
           color={color}
-          slotProps={
+          slot_props={
             {
               container: { "data-testid": "container" }
-            } as TextareaProps["slotProps"]
+            } as TextareaProps["slot_props"]
           }
         />
       );
@@ -84,13 +84,13 @@ describe("<Textarea />", () => {
 
   (["md", "sm"] as TextareaSize[]).forEach((size) => {
     it(`renders \`${size}\` size`, () => {
-      const { getByTestId } = renderTestWithProvider(
+      const { getByTestId } = render_test_with_provider(
         <Textarea
           size={size}
-          slotProps={
+          slot_props={
             {
               container: { "data-testid": "container" }
-            } as TextareaProps["slotProps"]
+            } as TextareaProps["slot_props"]
           }
         />
       );
@@ -100,12 +100,12 @@ describe("<Textarea />", () => {
   });
 
   it("passes props to the container slot", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Textarea
-        slotProps={
+        slot_props={
           {
             container: { "data-testid": "container" }
-          } as TextareaProps["slotProps"]
+          } as TextareaProps["slot_props"]
         }
       />
     );

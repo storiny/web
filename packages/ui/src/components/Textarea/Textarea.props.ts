@@ -23,7 +23,7 @@ export interface TextareaProps extends React.ComponentPropsWithRef<"textarea"> {
   /**
    * The props passed to the individual component elements.
    */
-  slotProps?: {
+  slot_props?: {
     container?: PolymorphicProps<"div">;
   };
 }

@@ -17,7 +17,7 @@ const AvatarGroup = forwardRef<AvatarGroupProps, "div">((props, ref) => {
     size = "md",
     className,
     children,
-    slotProps,
+    slot_props,
     ...rest
   } = props;
   const childAvatars = React.Children.toArray(children).reverse();
@@ -38,7 +38,10 @@ const AvatarGroup = forwardRef<AvatarGroupProps, "div">((props, ref) => {
       >
         {/* Show a maximum of 3 avatars */}
         {childAvatars.length > 3 && (
-          <Avatar {...slotProps?.overflow} alt={`${overflowCount} more people`}>
+          <Avatar
+            {...slot_props?.overflow}
+            alt={`${overflowCount} more people`}
+          >
             +{Math.min(overflowCount, 9)}
           </Avatar>
         )}

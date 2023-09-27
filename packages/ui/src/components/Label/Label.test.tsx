@@ -2,13 +2,13 @@ import { axe } from "@storiny/test-utils";
 import { waitFor } from "@testing-library/react";
 import React from "react";
 
-import { renderTestWithProvider } from "~/redux/testUtils";
+import { render_test_with_provider } from "src/redux/test-utils";
 
 import Label from "./Label";
 
 describe("<Label />", () => {
   it("matches snapshot", () => {
-    const { container, getByTestId } = renderTestWithProvider(
+    const { container, getByTestId } = render_test_with_provider(
       <fieldset>
         <Label data-testid={"label"} htmlFor={"sample"} />
         <input id={"sample"} placeholder={"Sample input"} />
@@ -20,7 +20,7 @@ describe("<Label />", () => {
   });
 
   it("does not have any accessibility violations", async () => {
-    const { container } = renderTestWithProvider(
+    const { container } = render_test_with_provider(
       <fieldset>
         <Label htmlFor={"sample"} />
         <input id={"sample"} placeholder={"Sample input"} />
@@ -33,7 +33,7 @@ describe("<Label />", () => {
   });
 
   it("renders with `disabled` prop", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <fieldset>
         <Label data-testid={"label"} disabled htmlFor={"sample"} />
         <input disabled id={"sample"} placeholder={"Sample input"} />

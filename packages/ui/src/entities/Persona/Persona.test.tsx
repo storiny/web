@@ -2,7 +2,7 @@ import { axe } from "@storiny/test-utils";
 import { waitFor } from "@testing-library/react";
 import React from "react";
 
-import { renderTestWithProvider } from "~/redux/testUtils";
+import { render_test_with_provider } from "src/redux/test-utils";
 
 import { testUser } from "../../mocks";
 import Persona from "./Persona";
@@ -11,7 +11,7 @@ import { PersonaProps, PersonaSize } from "./Persona.props";
 
 describe("<Persona />", () => {
   it("renders", () => {
-    renderTestWithProvider(
+    render_test_with_provider(
       <Persona
         avatar={{ alt: "" }}
         primaryText={"test"}
@@ -21,7 +21,7 @@ describe("<Persona />", () => {
   });
 
   it("does not have any accessibility violations", async () => {
-    const { container } = renderTestWithProvider(
+    const { container } = render_test_with_provider(
       <Persona
         avatar={{
           alt: "",
@@ -39,7 +39,7 @@ describe("<Persona />", () => {
   });
 
   it("does not have any accessibility violations for multiple avatars", async () => {
-    const { container } = renderTestWithProvider(
+    const { container } = render_test_with_provider(
       <Persona
         avatar={Array(3).fill({
           alt: "",
@@ -57,16 +57,16 @@ describe("<Persona />", () => {
   });
 
   it("renders size `md`, skips rendering secondary text and AvatarGroup by default", () => {
-    const { getByTestId, queryByTestId } = renderTestWithProvider(
+    const { getByTestId, queryByTestId } = render_test_with_provider(
       <Persona
         avatar={{
           alt: ""
         }}
-        componentProps={
+        component_props={
           {
             secondaryText: { "data-testid": "secondary-text" },
             avatarGroup: { "data-testid": "avatar-group" }
-          } as PersonaProps["componentProps"]
+          } as PersonaProps["component_props"]
         }
         data-testid={"persona"}
         primaryText={"test"}
@@ -80,7 +80,7 @@ describe("<Persona />", () => {
 
   (["lg", "md", "sm", "xs"] as PersonaSize[]).forEach((size) => {
     it(`renders \`${size}\` size`, () => {
-      const { getByTestId } = renderTestWithProvider(
+      const { getByTestId } = render_test_with_provider(
         <Persona
           avatar={{
             alt: ""
@@ -96,15 +96,15 @@ describe("<Persona />", () => {
   });
 
   it("renders secondary text", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Persona
         avatar={{
           alt: ""
         }}
-        componentProps={
+        component_props={
           {
             secondaryText: { "data-testid": "secondary-text" }
-          } as PersonaProps["componentProps"]
+          } as PersonaProps["component_props"]
         }
         primaryText={"test"}
         secondaryText={"test"}
@@ -115,15 +115,15 @@ describe("<Persona />", () => {
   });
 
   it("skips rendering secondary text for size xs", () => {
-    const { queryByTestId } = renderTestWithProvider(
+    const { queryByTestId } = render_test_with_provider(
       <Persona
         avatar={{
           alt: ""
         }}
-        componentProps={
+        component_props={
           {
             secondaryText: { "data-testid": "secondary-text" }
-          } as PersonaProps["componentProps"]
+          } as PersonaProps["component_props"]
         }
         primaryText={"test"}
         secondaryText={"test"}
@@ -136,7 +136,7 @@ describe("<Persona />", () => {
 
   describe("multiple avatars", () => {
     it("renders AvatarGroup when an array is passed to the `avatar` prop", () => {
-      const { getByTestId } = renderTestWithProvider(
+      const { getByTestId } = render_test_with_provider(
         <Persona
           avatar={[
             {
@@ -146,10 +146,10 @@ describe("<Persona />", () => {
               alt: ""
             }
           ]}
-          componentProps={
+          component_props={
             {
               avatarGroup: { "data-testid": "avatar-group" }
-            } as PersonaProps["componentProps"]
+            } as PersonaProps["component_props"]
           }
           primaryText={"test"}
         />
@@ -159,17 +159,17 @@ describe("<Persona />", () => {
     });
 
     it("renders Avatar instead of AvatarGroup for single avatar", () => {
-      const { queryByTestId } = renderTestWithProvider(
+      const { queryByTestId } = render_test_with_provider(
         <Persona
           avatar={[
             {
               alt: ""
             }
           ]}
-          componentProps={
+          component_props={
             {
               avatarGroup: { "data-testid": "avatar-group" }
-            } as PersonaProps["componentProps"]
+            } as PersonaProps["component_props"]
           }
           primaryText={"test"}
         />
@@ -180,7 +180,7 @@ describe("<Persona />", () => {
   });
 
   it("passes props to the component slots", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Persona
         avatar={[
           {
@@ -190,12 +190,12 @@ describe("<Persona />", () => {
             alt: ""
           }
         ]}
-        componentProps={
+        component_props={
           {
             secondaryText: { "data-testid": "secondary-text" },
             primaryText: { "data-testid": "primary-text" },
             avatarGroup: { "data-testid": "avatar-group" }
-          } as PersonaProps["componentProps"]
+          } as PersonaProps["component_props"]
         }
         primaryText={"test"}
         secondaryText={"test"}

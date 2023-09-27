@@ -210,7 +210,7 @@ const FloatingLinkEditorPopover = (): React.ReactElement => {
           onKeyDown={(event): void => monitorInputInteraction(event)}
           placeholder={"Link"}
           ref={inputRef}
-          slotProps={{
+          slot_props={{
             container: {
               className: "f-grow"
             }

@@ -26,10 +26,10 @@ import ExplicitIcon from "~/icons/Explicit";
 import StarIcon from "~/icons/Star";
 import TrashIcon from "~/icons/Trash";
 import {
-  useAssetAltMutation,
-  useAssetRatingMutation,
-  useDeleteAssetMutation,
-  useFavouriteAssetMutation
+  use_asset_alt_mutation,
+  use_delete_asset_mutation,
+  use_asset_rating_mutation,
+  use_favourite_asset_mutation
 } from "~/redux/features";
 import { getCdnUrl } from "~/utils/getCdnUrl";
 
@@ -87,10 +87,10 @@ const LibraryMasonryItem = React.memo(
     const [altText, setAltText] = React.useState<string>(data.alt);
     const [rating, setRating] = React.useState<AssetRating>(data.rating);
     const [deleted, setDeleted] = React.useState<boolean>(false);
-    const [mutateFavouriteAsset] = useFavouriteAssetMutation();
-    const [mutateAssetAlt] = useAssetAltMutation();
-    const [mutateAssetRating] = useAssetRatingMutation();
-    const [deleteAsset] = useDeleteAssetMutation();
+    const [mutateFavouriteAsset] = use_favourite_asset_mutation();
+    const [mutateAssetAlt] = use_asset_alt_mutation();
+    const [mutateAssetRating] = use_asset_rating_mutation();
+    const [deleteAsset] = use_delete_asset_mutation();
     const isSelected = selected?.key === data.key;
 
     /**
@@ -177,7 +177,7 @@ const LibraryMasonryItem = React.memo(
             </ModalFooterButton>
           </>
         ),
-        slotProps: {
+        slot_props: {
           content: {
             style: {
               width: "360px",
@@ -217,7 +217,7 @@ const LibraryMasonryItem = React.memo(
         onConfirm: handleDelete,
         title: "Delete image?",
         description: `The image will be permanently deleted and cannot be recovered. If this image is used in a story or profile, it will be replaced by a placeholder.`,
-        slotProps: {
+        slot_props: {
           content: {
             style: {
               zIndex: "calc(var(--z-index-modal) + 2)"
@@ -267,7 +267,7 @@ const LibraryMasonryItem = React.memo(
               alt={data.alt || ""}
               imgId={data.key}
               size={ImageSize.W_640}
-              slotProps={{
+              slot_props={{
                 fallback: {
                   style: { display: "none" }
                 }
@@ -342,7 +342,7 @@ const LibraryMasonryItem = React.memo(
             <Menu
               // Force close menu when deleted
               open={deleted ? false : undefined}
-              slotProps={{
+              slot_props={{
                 content: {
                   style: {
                     zIndex: "calc(var(--z-index-modal) + 1)"

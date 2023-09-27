@@ -5,7 +5,7 @@ import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger
-} from "~/components/Accordion";
+} from "../../../../../../../ui/src/components/accordion";
 import Slider from "~/components/Slider";
 
 import { useActiveObject, useImageFilter } from "../../../../../hooks";

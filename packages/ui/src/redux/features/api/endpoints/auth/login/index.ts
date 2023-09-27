@@ -1,7 +1,7 @@
 import { ContentType } from "@storiny/shared";
 import { LoginSchema } from "@storiny/web/src/app/(auth)/auth/(segmented)/@login/schema";
 
-import { apiSlice } from "~/redux/features/api/slice";
+import { api_slice } from "~/redux/features/api/slice";
 
 const SEGMENT = "auth/login";
 
@@ -15,17 +15,18 @@ export interface LoginResponse {
 
 export type LoginPayload = LoginSchema;
 
-export const { useLoginMutation } = apiSlice.injectEndpoints({
-  endpoints: (builder) => ({
-    login: builder.mutation<LoginResponse, LoginPayload>({
-      query: (body) => ({
-        url: `/${SEGMENT}`,
-        method: "POST",
-        body,
-        headers: {
-          "Content-type": ContentType.JSON
-        }
+export const { useLoginMutation: use_login_mutation } =
+  api_slice.injectEndpoints({
+    endpoints: (builder) => ({
+      login: builder.mutation<LoginResponse, LoginPayload>({
+        query: (body) => ({
+          url: `/${SEGMENT}`,
+          method: "POST",
+          body,
+          headers: {
+            "Content-type": ContentType.JSON
+          }
+        })
       })
     })
-  })
-});
+  });

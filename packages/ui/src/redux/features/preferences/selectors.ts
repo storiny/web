@@ -1,9 +1,9 @@
 import { AppState } from "~/redux/store";
 
-export const selectTheme = (state: AppState): "light" | "dark" | "system" =>
+export const select_theme = (state: AppState): "light" | "dark" | "system" =>
   state.preferences.theme;
 
-export const selectAlertVisibility =
+export const select_alert_visibility =
   (type: "appearance" | "accessibility") =>
   (state: AppState): boolean =>
     state.preferences[
@@ -12,5 +12,5 @@ export const selectAlertVisibility =
         : "show_accessibility_alert"
     ];
 
-export const selectHapticFeedback = (state: AppState): boolean =>
+export const select_haptic_feedback = (state: AppState): boolean =>
   state.preferences.haptic_feedback;

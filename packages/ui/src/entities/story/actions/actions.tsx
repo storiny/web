@@ -26,16 +26,14 @@ import TrashIcon from "~/icons/Trash";
 import UserBlockIcon from "~/icons/UserBlock";
 import {
   boolean_action,
-  getDraftsApi,
-  getStoriesApi,
-  setBlock,
-  setMute,
-  useDeleteDraftMutation,
-  useDeleteStoryMutation,
-  useUnpublishStoryMutation
+  get_drafts_api,
+  get_stories_api,
+  use_delete_draft_mutation,
+  use_delete_story_mutation,
+  use_unpublish_story_mutation
 } from "~/redux/features";
-import { selectLoggedIn } from "~/redux/features/auth/selectors";
-import { useAppDispatch, useAppSelector } from "~/redux/hooks";
+import { select_is_logged_in } from "~/redux/features/auth/selectors";
+import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 import { breakpoints } from "~/theme/breakpoints";
 
 const StoryActions = ({
@@ -50,18 +48,18 @@ const StoryActions = ({
   const share = useWebShare();
   const copy = useClipboard();
   const toast = useToast();
-  const dispatch = useAppDispatch();
+  const dispatch = use_app_dispatch();
   const isMobile = useMediaQuery(breakpoints.down("mobile"));
-  const loggedIn = useAppSelector(selectLoggedIn);
-  const isBlocking = useAppSelector(
+  const loggedIn = use_app_selector(select_is_logged_in);
+  const isBlocking = use_app_selector(
     (state) => state.entities.blocks[story.user!.id]
   );
-  const isMuted = useAppSelector(
+  const isMuted = use_app_selector(
     (state) => state.entities.mutes[story.user!.id]
   );
-  const [deleteDraft] = useDeleteDraftMutation();
-  const [deleteStory] = useDeleteStoryMutation();
-  const [unpublishStory] = useUnpublishStoryMutation();
+  const [deleteDraft] = use_delete_draft_mutation();
+  const [deleteStory] = use_delete_story_mutation();
+  const [unpublishStory] = use_unpublish_story_mutation();
   const [blockElement] = useConfirmation(
     ({ openConfirmation }) => (
       <MenuItem
@@ -93,7 +91,7 @@ const StoryActions = ({
       .unwrap()
       .then(() => {
         toast("Draft deleted", "success");
-        dispatch(getDraftsApi.util.resetApiState());
+        dispatch(get_drafts_api.util.resetApiState());
       })
       .catch((e) =>
         toast(e?.data?.error || "Could not delete your draft", "error")
@@ -131,7 +129,7 @@ const StoryActions = ({
       .unwrap()
       .then(() => {
         toast("Story deleted", "success");
-        dispatch(getStoriesApi.util.resetApiState());
+        dispatch(get_stories_api.util.resetApiState());
       })
       .catch((e) =>
         toast(e?.data?.error || "Could not delete your story", "error")
@@ -169,8 +167,8 @@ const StoryActions = ({
       .unwrap()
       .then(() => {
         toast("Story unpublished", "success");
-        dispatch(getStoriesApi.util.resetApiState());
-        dispatch(getDraftsApi.util.resetApiState());
+        dispatch(get_stories_api.util.resetApiState());
+        dispatch(get_drafts_api.util.resetApiState());
       })
       .catch((e) =>
         toast(e?.data?.error || "Could not unpublish your story", "error")

@@ -58,8 +58,8 @@ const FormCheckbox = React.forwardRef<HTMLFieldSetElement, FormCheckboxProps>(
                   rest?.onCheckedChange?.(nextChecked);
                 }}
                 required={required}
-                slotProps={{
-                  ...rest?.slotProps,
+                slot_props={{
+                  ...rest?.slot_props,
                   label: formSlotProps?.label
                 }}
               />

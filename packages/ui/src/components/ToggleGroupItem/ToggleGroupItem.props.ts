@@ -19,7 +19,7 @@ export interface ToggleGroupItemProps extends ToggleGroupItemPrimitive {
   /**
    * The props passed to the individual component elements.
    */
-  slotProps?: {
+  slot_props?: {
     container?: React.ComponentPropsWithoutRef<"span">;
     tooltip?: TooltipProps;
   };

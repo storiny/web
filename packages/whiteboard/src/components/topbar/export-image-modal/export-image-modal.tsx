@@ -178,7 +178,7 @@ const ExportImageModal = React.forwardRef<
             onChange={(event): void => setAlt(event.target.value)}
             placeholder={"Alt text"}
             size={"sm"}
-            slotProps={{
+            slot_props={{
               container: {
                 className: "f-grow"
               }
@@ -192,7 +192,7 @@ const ExportImageModal = React.forwardRef<
             onChange={(event): void => setName(event.target.value)}
             placeholder={"Name"}
             size={"sm"}
-            slotProps={{
+            slot_props={{
               container: {
                 className: "f-grow"
               }
@@ -214,7 +214,7 @@ const ExportImageModal = React.forwardRef<
           }}
           placeholder={"Padding"}
           size={"sm"}
-          slotProps={{
+          slot_props={{
             container: {
               style: {
                 flex: "0.4"

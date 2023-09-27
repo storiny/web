@@ -12,7 +12,7 @@ import Typography from "~/components/Typography";
 import { useMediaQuery } from "~/hooks/useMediaQuery";
 import PasswordIcon from "~/icons/Password";
 import UserIcon from "~/icons/User";
-import { useDeleteAccountMutation } from "~/redux/features";
+import { use_delete_account_mutation } from "~/redux/features";
 import { breakpoints } from "~/theme/breakpoints";
 
 import { DeleteAccountProps } from "./delete-account.props";
@@ -70,7 +70,7 @@ const DeleteAccount = ({
       "current-password": ""
     }
   });
-  const [deleteAccount, { isLoading }] = useDeleteAccountMutation();
+  const [deleteAccount, { isLoading }] = use_delete_account_mutation();
 
   const handleSubmit: SubmitHandler<DeleteAccountSchema> = (values) => {
     if (onSubmit) {
@@ -136,7 +136,7 @@ const DeleteAccount = ({
           </ModalFooterButton>
         </>
       ),
-      slotProps: {
+      slot_props: {
         footer: {
           compact: isSmallerThanMobile
         },

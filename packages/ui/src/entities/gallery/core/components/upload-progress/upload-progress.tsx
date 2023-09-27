@@ -14,7 +14,7 @@ const UploadProgress = (): React.ReactElement => {
     <ProgressBar
       className={styles.progress}
       max={100}
-      slotProps={{
+      slot_props={{
         indicator: {
           className: "force-animation",
           style: {

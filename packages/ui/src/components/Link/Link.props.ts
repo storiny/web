@@ -61,7 +61,7 @@ export interface LinkProps extends LinkPrimitive {
   /**
    * The props passed to the individual component elements.
    */
-  slotProps?: {
+  slot_props?: {
     ellipsisCell?: React.ComponentPropsWithoutRef<"span">;
   };
   /**

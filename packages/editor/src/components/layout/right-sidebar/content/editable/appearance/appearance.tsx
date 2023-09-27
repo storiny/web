@@ -33,7 +33,7 @@ const Appearance = ({
             <Select
               defaultValue={"default"}
               disabled
-              slotProps={{
+              slot_props={{
                 trigger: {
                   className: "full-w",
                   "aria-label": "Caret style"

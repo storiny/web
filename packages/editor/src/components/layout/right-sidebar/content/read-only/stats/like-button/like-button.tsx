@@ -5,7 +5,7 @@ import React from "react";
 import Button from "~/components/Button";
 import HeartIcon from "~/icons/Heart";
 import { boolean_action, setLikedStory } from "~/redux/features";
-import { useAppDispatch, useAppSelector } from "~/redux/hooks";
+import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 import { abbreviateNumber } from "~/utils/abbreviateNumber";
 
 import { storyMetadataAtom } from "../../../../../../../atoms";
@@ -88,12 +88,12 @@ const Heart = ({
 };
 
 const LikeButton = (): React.ReactElement => {
-  const dispatch = useAppDispatch();
+  const dispatch = use_app_dispatch();
   const story = useAtomValue(storyMetadataAtom);
   const shouldAnimateRef = React.useRef<boolean>(false);
   const likeCount =
-    useAppSelector((state) => state.entities.storyLikeCounts[story.id]) || 0;
-  const isLiked = useAppSelector(
+    use_app_selector((state) => state.entities.storyLikeCounts[story.id]) || 0;
+  const isLiked = use_app_selector(
     (state) => state.entities.likedStories[story.id]
   );
 

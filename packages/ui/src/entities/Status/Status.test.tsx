@@ -2,18 +2,18 @@ import { axe } from "@storiny/test-utils";
 import { waitFor } from "@testing-library/react";
 import React from "react";
 
-import { renderTestWithProvider } from "~/redux/testUtils";
+import { render_test_with_provider } from "src/redux/test-utils";
 
 import Status from "./Status";
 import styles from "./Status.module.scss";
 
 describe("<Status />", () => {
   it("renders", () => {
-    renderTestWithProvider(<Status />);
+    render_test_with_provider(<Status />);
   });
 
   it("does not have any accessibility violations", async () => {
-    const { container } = renderTestWithProvider(<Status />);
+    const { container } = render_test_with_provider(<Status />);
 
     await waitFor(async () =>
       expect(await axe(container)).toHaveNoViolations()
@@ -21,7 +21,7 @@ describe("<Status />", () => {
   });
 
   it("renders as editable", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Status data-testid={"status"} editable />
     );
 
@@ -29,7 +29,7 @@ describe("<Status />", () => {
   });
 
   it("renders with emoji", () => {
-    const { getByRole } = renderTestWithProvider(
+    const { getByRole } = render_test_with_provider(
       <Status data-testid={"status"} emoji={"/emoji.png"} />
     );
 

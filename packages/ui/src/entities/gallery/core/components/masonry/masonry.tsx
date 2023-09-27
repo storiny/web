@@ -15,11 +15,11 @@ import ErrorState from "~/entities/ErrorState";
 import { useDebounce } from "~/hooks/useDebounce";
 import { useMediaQuery } from "~/hooks/useMediaQuery";
 import {
+  get_query_error_type,
   GetGalleryPhotosResponse,
-  getQueryErrorType,
   GetUserAssetsResponse,
-  useGetAssetsQuery,
-  useGetGalleryPhotosQuery
+  use_get_assets_query,
+  use_get_gallery_photos_query
 } from "~/redux/features";
 import { breakpoints } from "~/theme/breakpoints";
 
@@ -50,11 +50,11 @@ const Pexels = ({
   const query = useAtomValue(queryAtom);
   const debouncedQuery = useDebounce(query);
   const { data, isFetching, isLoading, isError, error, refetch } =
-    useGetGalleryPhotosQuery({
+    use_get_gallery_photos_query({
       page,
       query: debouncedQuery
     });
-  const { items = [], hasMore } = data || {};
+  const { items = [], has_more } = data || {};
   const isTyping = debouncedQuery !== query;
 
   const incrementPage = React.useCallback(() => {
@@ -78,11 +78,11 @@ const Pexels = ({
       ) : isError ? (
         <ErrorState
           autoSize
-          componentProps={{
+          component_props={{
             button: { loading: isFetching }
           }}
           retry={refetch}
-          type={getQueryErrorType(error)}
+          type={get_query_error_type(error)}
         />
       ) : !isFetching && !items.length ? (
         <EmptyState tab={"pexels"} />
@@ -101,7 +101,7 @@ const Pexels = ({
           />
           <GalleryMasonryFooter
             containerRef={containerRef}
-            hasMore={Boolean(hasMore)}
+            has_more={Boolean(has_more)}
             incrementPage={incrementPage}
             isFetching={isFetching}
           />
@@ -122,10 +122,10 @@ const Library = ({
 }): React.ReactElement => {
   const [page, setPage] = React.useState<number>(1);
   const { data, isFetching, isLoading, isError, error, refetch } =
-    useGetAssetsQuery({
+    use_get_assets_query({
       page
     });
-  const { items = [], hasMore } = data || {};
+  const { items = [], has_more } = data || {};
 
   const incrementPage = React.useCallback(() => {
     setPage((prevState) => prevState + 1);
@@ -144,11 +144,11 @@ const Library = ({
       ) : isError ? (
         <ErrorState
           autoSize
-          componentProps={{
+          component_props={{
             button: { loading: isFetching }
           }}
           retry={refetch}
-          type={getQueryErrorType(error)}
+          type={get_query_error_type(error)}
         />
       ) : !isFetching && !items.length ? (
         <EmptyState tab={"library"} />
@@ -167,7 +167,7 @@ const Library = ({
       )}
       <GalleryMasonryFooter
         containerRef={containerRef}
-        hasMore={Boolean(hasMore)}
+        has_more={Boolean(has_more)}
         incrementPage={incrementPage}
         isFetching={isFetching}
       />
@@ -179,10 +179,10 @@ const Library = ({
 
 const GalleryMasonryFooter = React.memo<{
   containerRef: React.RefObject<HTMLElement>;
-  hasMore: boolean;
+  has_more: boolean;
   incrementPage: () => void;
   isFetching: boolean;
-}>(({ containerRef, hasMore, isFetching, incrementPage }) => {
+}>(({ containerRef, has_more, isFetching, incrementPage }) => {
   const { ref, inView } = useInView({
     threshold: 0.1,
     root: containerRef.current,
@@ -190,14 +190,14 @@ const GalleryMasonryFooter = React.memo<{
   });
 
   React.useEffect(() => {
-    if (inView && hasMore && !isFetching) {
+    if (inView && has_more && !isFetching) {
       incrementPage();
     }
-  }, [hasMore, inView, incrementPage, isFetching]);
+  }, [has_more, inView, incrementPage, isFetching]);
 
   return (
     <div className={clsx("flex-col", "flex-center")} ref={ref}>
-      {hasMore && (
+      {has_more && (
         <>
           <Spacer orientation={"vertical"} size={5} />
           <Spinner />
@@ -224,7 +224,7 @@ const GalleryMasonry = (props: GalleryMasonryProps): React.ReactElement => {
   return (
     <ScrollArea
       className={styles.scroller}
-      slotProps={{
+      slot_props={{
         viewport: {
           tabIndex: -1,
           ref: containerRef,

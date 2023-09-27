@@ -8,8 +8,8 @@ import { dynamicLoader } from "~/common/dynamic";
 import { StoryListSkeleton, VirtualizedStoryList } from "~/common/story";
 import ErrorState from "~/entities/ErrorState";
 import {
-  getQueryErrorType,
-  useGetStoryRecommendationsQuery
+  get_query_error_type,
+  use_get_story_recommendations_query
 } from "~/redux/features";
 
 import { storyMetadataAtom } from "../../../atoms";
@@ -22,11 +22,11 @@ const EditorAuxiliaryContentSuggestionList = (): React.ReactElement => {
   const story = useAtomValue(storyMetadataAtom);
   const [page, setPage] = React.useState<number>(1);
   const { data, isLoading, isFetching, isError, error, refetch } =
-    useGetStoryRecommendationsQuery({
+    use_get_story_recommendations_query({
       page,
       storyId: story.id
     });
-  const { items = [], hasMore } = data || {};
+  const { items = [], has_more } = data || {};
   const loadMore = React.useCallback(
     () => setPage((prevState) => prevState + 1),
     []
@@ -37,11 +37,11 @@ const EditorAuxiliaryContentSuggestionList = (): React.ReactElement => {
       {isError ? (
         <ErrorState
           autoSize
-          componentProps={{
+          component_props={{
             button: { loading: isFetching }
           }}
           retry={refetch}
-          type={getQueryErrorType(error)}
+          type={get_query_error_type(error)}
         />
       ) : !isFetching && !items.length ? (
         <EmptyState />
@@ -49,7 +49,7 @@ const EditorAuxiliaryContentSuggestionList = (): React.ReactElement => {
         <StoryListSkeleton />
       ) : (
         <VirtualizedStoryList
-          hasMore={Boolean(hasMore)}
+          has_more={Boolean(has_more)}
           loadMore={loadMore}
           stories={items}
         />

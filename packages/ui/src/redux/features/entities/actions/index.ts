@@ -1,1 +1,3 @@
-export * from "./actions";
+export * from "./boolean";
+export * from "./number";
+export * from "./self";

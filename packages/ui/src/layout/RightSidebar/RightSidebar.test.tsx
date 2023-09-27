@@ -5,7 +5,7 @@ import { setupServer } from "msw/node";
 import React from "react";
 
 import { GetRightSidebarContentResponse } from "~/redux/features";
-import { renderTestWithProvider } from "~/redux/testUtils";
+import { render_test_with_provider } from "src/redux/test-utils";
 
 import { testStory, testTag, testUser } from "../../mocks";
 import RightSidebar from "./RightSidebar";
@@ -31,11 +31,13 @@ afterAll(() => server.close());
 
 describe("<RightSidebar />", () => {
   it("renders", () => {
-    renderTestWithProvider(<RightSidebar forceMount />);
+    render_test_with_provider(<RightSidebar forceMount />);
   });
 
   it("renders with data and default children", async () => {
-    const { container } = renderTestWithProvider(<RightSidebar forceMount />);
+    const { container } = render_test_with_provider(
+      <RightSidebar forceMount />
+    );
     await screen.findAllByText("Test story");
 
     // Renders stories
@@ -47,7 +49,7 @@ describe("<RightSidebar />", () => {
   });
 
   it("renders with custom children", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <RightSidebar forceMount>
         <span data-testid={"child"} />
       </RightSidebar>
@@ -57,12 +59,12 @@ describe("<RightSidebar />", () => {
   });
 
   it("passes props to the component slots", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <RightSidebar
-        componentProps={
+        component_props={
           {
             wrapper: { "data-testid": "wrapper" }
-          } as RightSidebarProps["componentProps"]
+          } as RightSidebarProps["component_props"]
         }
         forceMount
       />

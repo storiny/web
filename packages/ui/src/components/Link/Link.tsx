@@ -15,7 +15,7 @@ const Link = React.forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => {
     level = "inherit",
     underline = "hover",
     color = "body",
-    slotProps,
+    slot_props,
     fixedColor,
     target,
     rel,
@@ -55,11 +55,11 @@ const Link = React.forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => {
     >
       {ellipsis ? (
         <span
-          {...slotProps?.ellipsisCell}
+          {...slot_props?.ellipsisCell}
           className={clsx(
             "ellipsis",
             typographyStyles["ellipsis-child"],
-            slotProps?.ellipsisCell?.className
+            slot_props?.ellipsisCell?.className
           )}
         >
           {children}

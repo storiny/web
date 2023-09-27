@@ -9,7 +9,7 @@ import Grow from "~/components/Grow";
 import { useMediaQuery } from "~/hooks/useMediaQuery";
 import RightSidebar from "~/layout/RightSidebar";
 import { self_action } from "~/redux/features";
-import { useAppDispatch, useAppSelector } from "~/redux/hooks";
+import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 import { breakpoints } from "~/theme/breakpoints";
 
 import styles from "./right-sidebar.module.scss";
@@ -37,9 +37,9 @@ const ContentRelationsRightSidebar = (
   props: RelationsRightSidebarProps
 ): React.ReactElement | null => {
   const { tab, pending_friend_request_count } = props;
-  const dispatch = useAppDispatch();
+  const dispatch = use_app_dispatch();
   const pendingRequestCount =
-    useAppSelector(
+    use_app_selector(
       (state) => state.entities.self_pending_friend_request_count
     ) || 0;
   const shouldRender = useMediaQuery(breakpoints.up("desktop"));

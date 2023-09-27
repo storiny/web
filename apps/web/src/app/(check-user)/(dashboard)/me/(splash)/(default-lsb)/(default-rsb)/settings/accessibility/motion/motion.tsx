@@ -5,15 +5,15 @@ import Radio from "~/components/Radio";
 import RadioGroup from "~/components/RadioGroup";
 import Spacer from "~/components/Spacer";
 import Typography from "~/components/Typography";
-import { setReducedMotion } from "~/redux/features";
-import { useAppDispatch, useAppSelector } from "~/redux/hooks";
+import { set_reduced_motion } from "~/redux/features";
+import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 
 import DashboardGroup from "../../../../dashboard-group";
 import styles from "./motion.module.scss";
 
 const MotionPreference = (): React.ReactElement => {
-  const dispatch = useAppDispatch();
-  const reduced_motion = useAppSelector(
+  const dispatch = use_app_dispatch();
+  const reduced_motion = use_app_selector(
     (state) => state.preferences.reduced_motion
   );
 
@@ -35,7 +35,7 @@ const MotionPreference = (): React.ReactElement => {
       <RadioGroup
         className={clsx(styles.x, styles["radio-group"])}
         onValueChange={(newValue): void => {
-          dispatch(setReducedMotion(newValue as typeof reduced_motion));
+          dispatch(set_reduced_motion(newValue as typeof reduced_motion));
         }}
         value={reduced_motion}
       >

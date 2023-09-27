@@ -99,7 +99,7 @@ const EmbedModal = ({
           </ModalFooterButton>
         </>
       ),
-      slotProps: {
+      slot_props: {
         footer: {
           compact: isSmallerThanMobile
         },

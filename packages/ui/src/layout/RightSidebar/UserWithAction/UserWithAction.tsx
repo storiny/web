@@ -11,23 +11,23 @@ import UserPlusIcon from "~/icons/UserPlus";
 import {
   boolean_action,
   setFollowing,
-  syncWithUser
+  sync_with_user
 } from "~/redux/features/entities/slice";
-import { useAppDispatch, useAppSelector } from "~/redux/hooks";
+import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 
 import styles from "./UserWithAction.module.scss";
 import { UserWithActionProps } from "./UserWithAction.props";
 
 const UserWithAction = (props: UserWithActionProps): React.ReactElement => {
   const { user } = props;
-  const dispatch = useAppDispatch();
-  const isBlocked = useAppSelector((state) => state.entities.blocks[user.id]);
-  const isFollowing = useAppSelector(
+  const dispatch = use_app_dispatch();
+  const isBlocked = use_app_selector((state) => state.entities.blocks[user.id]);
+  const isFollowing = use_app_selector(
     (state) => state.entities.following[user.id]
   );
 
   React.useEffect(() => {
-    dispatch(syncWithUser(user));
+    dispatch(sync_with_user(user));
   }, [dispatch, user]);
 
   return (

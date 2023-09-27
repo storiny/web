@@ -12,22 +12,22 @@ import PencilIcon from "~/icons/Pencil";
 import PhotoPlusIcon from "~/icons/PhotoPlus";
 import TrashIcon from "~/icons/Trash";
 import {
-  mutateUser,
-  selectUser,
-  useBannerSettingsMutation
+  mutate_user,
+  select_user,
+  use_banner_settings_mutation
 } from "~/redux/features";
-import { useAppDispatch, useAppSelector } from "~/redux/hooks";
+import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 import { breakpoints } from "~/theme/breakpoints";
 import { getCdnUrl } from "~/utils/getCdnUrl";
 
 import styles from "./banner-settings.module.scss";
 
 const BannerSettings = (): React.ReactElement => {
-  const dispatch = useAppDispatch();
-  const user = useAppSelector(selectUser)!;
+  const dispatch = use_app_dispatch();
+  const user = use_app_selector(select_user)!;
   const toast = useToast();
   const [bannerId, setBannerId] = React.useState<string | null>(user.banner_id);
-  const [mutateBannerSettings, { isLoading }] = useBannerSettingsMutation();
+  const [mutateBannerSettings, { isLoading }] = use_banner_settings_mutation();
   const [element] = useConfirmation(
     ({ openConfirmation }) => (
       <IconButton
@@ -61,7 +61,7 @@ const BannerSettings = (): React.ReactElement => {
       .unwrap()
       .then((res) => {
         dispatch(
-          mutateUser({ banner_id: res.banner_id, banner_hex: res.banner_hex })
+          mutate_user({ banner_id: res.banner_id, banner_hex: res.banner_hex })
         );
         setBannerId(res.banner_id);
         toast(
@@ -87,7 +87,7 @@ const BannerSettings = (): React.ReactElement => {
           className={clsx(styles.x, styles.banner)}
           hex={user.banner_hex}
           imgId={user.banner_id}
-          slotProps={{
+          slot_props={{
             image: {
               sizes: [
                 `${breakpoints.up("desktop")} 680px`,

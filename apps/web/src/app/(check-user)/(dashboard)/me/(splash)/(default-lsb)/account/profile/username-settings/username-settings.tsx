@@ -13,8 +13,8 @@ import Typography from "~/components/Typography";
 import { useMediaQuery } from "~/hooks/useMediaQuery";
 import AtIcon from "~/icons/At";
 import PasswordIcon from "~/icons/Password";
-import { mutateUser, useUsernameSettingsMutation } from "~/redux/features";
-import { useAppDispatch } from "~/redux/hooks";
+import { mutate_user, use_username_settings_mutation } from "~/redux/features";
+import { use_app_dispatch } from "~/redux/hooks";
 import { breakpoints } from "~/theme/breakpoints";
 
 import { UsernameSettingsProps } from "./username-settings.props";
@@ -69,7 +69,7 @@ const UsernameSettingsModal = (): React.ReactElement => (
 const UsernameSettings = ({
   onSubmit
 }: UsernameSettingsProps): React.ReactElement => {
-  const dispatch = useAppDispatch();
+  const dispatch = use_app_dispatch();
   const toast = useToast();
   const isSmallerThanMobile = useMediaQuery(breakpoints.down("mobile"));
   const form = useForm<UsernameSettingsSchema>({
@@ -79,7 +79,8 @@ const UsernameSettings = ({
       "current-password": ""
     }
   });
-  const [mutateUsernameSettings, { isLoading }] = useUsernameSettingsMutation();
+  const [mutateUsernameSettings, { isLoading }] =
+    use_username_settings_mutation();
 
   const handleSubmit: SubmitHandler<UsernameSettingsSchema> = (values) => {
     if (onSubmit) {
@@ -89,7 +90,7 @@ const UsernameSettings = ({
         .unwrap()
         .then(() => {
           dispatch(
-            mutateUser({
+            mutate_user({
               username: values["new-username"]
             })
           );
@@ -142,7 +143,7 @@ const UsernameSettings = ({
           </ModalFooterButton>
         </>
       ),
-      slotProps: {
+      slot_props: {
         footer: {
           compact: isSmallerThanMobile
         },

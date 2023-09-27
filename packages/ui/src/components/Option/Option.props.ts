@@ -21,7 +21,7 @@ export interface OptionProps extends OptionPrimitive {
   /**
    * The props passed to the individual component elements.
    */
-  slotProps?: {
+  slot_props?: {
     decorator?: React.ComponentPropsWithoutRef<"span">;
     indicator?: SelectItemIndicatorProps;
     rightSlot?: React.ComponentPropsWithoutRef<"span">;

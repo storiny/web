@@ -19,15 +19,15 @@ const MenubarSub = forwardRef<MenubarSubProps, "div">((props, ref) => {
     className,
     children,
     trigger,
-    slotProps,
+    slot_props,
     ...rest
   } = props;
 
   return (
     <Sub {...rest}>
       <SubTrigger
-        {...slotProps?.trigger}
-        className={clsx(menuItemStyles.item, slotProps?.trigger?.className)}
+        {...slot_props?.trigger}
+        className={clsx(menuItemStyles.item, slot_props?.trigger?.className)}
       >
         {trigger}
         <span
@@ -36,12 +36,12 @@ const MenubarSub = forwardRef<MenubarSubProps, "div">((props, ref) => {
           <ChevronIcon rotation={90} />
         </span>
       </SubTrigger>
-      <Portal {...slotProps?.portal}>
+      <Portal {...slot_props?.portal}>
         <SubContent
           alignOffset={-5}
           collisionPadding={8}
           sideOffset={5}
-          {...slotProps?.content}
+          {...slot_props?.content}
           asChild
           className={clsx(
             menuStyles.content,

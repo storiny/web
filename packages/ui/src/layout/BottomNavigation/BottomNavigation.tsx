@@ -16,8 +16,8 @@ import PencilPlusIcon from "~/icons/PencilPlus";
 import SearchIcon from "~/icons/Search";
 import UserIcon from "~/icons/User";
 import { select_unread_notification_count } from "~/redux/features";
-import { selectLoggedIn } from "~/redux/features/auth/selectors";
-import { useAppSelector } from "~/redux/hooks";
+import { select_is_logged_in } from "~/redux/features/auth/selectors";
+import { use_app_selector } from "~/redux/hooks";
 import { breakpoints } from "~/theme/breakpoints";
 
 import styles from "./BottomNavigation.module.scss";
@@ -40,8 +40,8 @@ const BottomNavigation = (
 ): React.ReactElement | null => {
   const { className, forceMount, ...rest } = props;
   const shouldRender = useMediaQuery(breakpoints.down("mobile"));
-  const loggedIn = useAppSelector(selectLoggedIn);
-  const unreadNotificationCount = useAppSelector(
+  const loggedIn = use_app_selector(select_is_logged_in);
+  const unreadNotificationCount = use_app_selector(
     select_unread_notification_count
   );
 
@@ -106,7 +106,7 @@ const BottomNavigation = (
           </IconButton>
           <Badge
             anchorOrigin={{ vertical: "top", horizontal: "right" }}
-            slotProps={{
+            slot_props={{
               container: { tabIndex: -1 }
             }}
             style={{

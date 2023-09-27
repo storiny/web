@@ -1,6 +1,6 @@
 /* eslint-disable no-dupe-class-members */
 
-import { devConsole } from "@storiny/shared/src/utils/devLog";
+import { dev_console } from "@storiny/shared/src/utils/devLog";
 import { publish, subscribe, unsubscribe } from "lib0/broadcastchannel";
 import * as decoding from "lib0/decoding";
 import * as encoding from "lib0/encoding";
@@ -150,7 +150,7 @@ const readMessage = (
   if (messageHandler) {
     messageHandler(encoder, decoder, provider, emitSynced, messageType);
   } else {
-    devConsole.error("Unable to compute the message");
+    dev_console.error("Unable to compute the message");
   }
 
   return encoder;
@@ -211,7 +211,7 @@ const setupWS = (provider: WebsocketProvider): void => {
       }
 
       // Start with no reconnect timeout and increase the timeout by
-      // using exponential backoff starting with 100ms
+      // Using exponential backoff starting with 100ms
       setTimeout(
         setupWS,
         Math.min(
@@ -465,7 +465,7 @@ export class WebsocketProvider {
         MESSAGE_RECONNECT_TIMEOUT < Date.now() - this.wsLastMessageReceived
       ) {
         // Close the connection when no messages are received since a long duration,
-        // not even the client's own awareness updates (which are updated every 15 seconds)
+        // Not even the client's own awareness updates (which are updated every 15 seconds)
         this.ws?.close();
       }
     }, MESSAGE_RECONNECT_TIMEOUT / 10);
@@ -654,7 +654,7 @@ export class WebsocketProvider {
    */
   public emit(name: ProviderEvent, args: any[]): void {
     // Copy all listeners to an array first to make sure that no event is emitted to the
-    // listeners that are subscribed while the event handler is being called
+    // Listeners that are subscribed while the event handler is being called
     return Array.from((this.observers.get(name) || new Map()).values()).forEach(
       (fn) => fn(...args)
     );

@@ -1,29 +1,30 @@
 import { ContentType } from "@storiny/shared";
 import { MailNotificationsSchema } from "@storiny/web/src/app/(check-user)/(dashboard)/me/(splash)/(default-lsb)/(default-rsb)/account/notifications/mail-notifications";
 
-import { apiSlice } from "~/redux/features/api/slice";
+import { api_slice } from "~/redux/features/api/slice";
 
 const SEGMENT = "me/settings/notifications/mail";
 
-export interface MailNotificationSettingsResponse {}
 export type MailNotificationSettingsPayload = MailNotificationsSchema;
 
-export const { useMailNotificationSettingsMutation } = apiSlice.injectEndpoints(
-  {
-    endpoints: (builder) => ({
-      mailNotificationSettings: builder.mutation<
-        MailNotificationSettingsResponse,
-        MailNotificationSettingsPayload
-      >({
-        query: (body) => ({
-          url: `/${SEGMENT}`,
-          method: "PATCH",
-          body,
-          headers: {
-            "Content-type": ContentType.JSON
-          }
-        })
+export const {
+  // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+  useMailNotificationSettingsMutation: use_mail_notification_settings_mutation
+} = api_slice.injectEndpoints({
+  endpoints: (builder) => ({
+    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+    mailNotificationSettings: builder.mutation<
+      void,
+      MailNotificationSettingsPayload
+    >({
+      query: (body) => ({
+        url: `/${SEGMENT}`,
+        method: "PATCH",
+        body,
+        headers: {
+          "Content-type": ContentType.JSON
+        }
       })
     })
-  }
-);
+  })
+});

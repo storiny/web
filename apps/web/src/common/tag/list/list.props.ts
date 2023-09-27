@@ -7,7 +7,7 @@ export interface VirtualizedTagListProps extends VirtuosoProps<Tag, any> {
   /**
    * Flag indicating whether there are more tags to render.
    */
-  hasMore: boolean;
+  has_more: boolean;
   /**
    * A callback function to fetch more tags.
    */

@@ -2,7 +2,7 @@ import { axe } from "@storiny/test-utils";
 import { waitFor } from "@testing-library/react";
 import React from "react";
 
-import { renderTestWithProvider } from "~/redux/testUtils";
+import { render_test_with_provider } from "src/redux/test-utils";
 
 import { levelToClassNameMap, scaleToClassNameMap } from "../common/typography";
 import Link from "./Link";
@@ -20,12 +20,14 @@ const linkLevels = Object.keys(levelToClassNameMap) as LinkLevel[];
 
 describe("<Link />", () => {
   it("matches snapshot", () => {
-    const { container } = renderTestWithProvider(<Link href={"/"}>Test</Link>);
+    const { container } = render_test_with_provider(
+      <Link href={"/"}>Test</Link>
+    );
     expect(container.firstChild).toMatchSnapshot();
   });
 
   it("matches snapshot with `ellipsis` set to `true`", () => {
-    const { container } = renderTestWithProvider(
+    const { container } = render_test_with_provider(
       <Link ellipsis href={"/"}>
         Test
       </Link>
@@ -34,7 +36,7 @@ describe("<Link />", () => {
   });
 
   it("does not have any accessibility violations", async () => {
-    const { container } = renderTestWithProvider(
+    const { container } = render_test_with_provider(
       <Link href={"https://storiny.com"}>Test</Link>
     );
 
@@ -44,7 +46,7 @@ describe("<Link />", () => {
   });
 
   it("renders with level `inherit`, color `body`, underline `hover`, and ellipsis `false` by default", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Link data-testid={"link"} href={"/"}>
         Test
       </Link>
@@ -60,7 +62,7 @@ describe("<Link />", () => {
 
   linkLevels.forEach((level) => {
     it(`renders \`${level}\` level`, () => {
-      const { getByTestId } = renderTestWithProvider(
+      const { getByTestId } = render_test_with_provider(
         <Link data-testid={"link"} href={"/"} level={level}>
           Test
         </Link>
@@ -72,7 +74,7 @@ describe("<Link />", () => {
 
   linkScales.forEach((scale) => {
     it(`renders \`${scale}\` scale`, () => {
-      const { getByTestId } = renderTestWithProvider(
+      const { getByTestId } = render_test_with_provider(
         <Link data-testid={"link"} href={"/"} scale={scale}>
           Test
         </Link>
@@ -84,7 +86,7 @@ describe("<Link />", () => {
 
   (["body", "beryl"] as LinkColor[]).forEach((color) => {
     it(`renders \`${color}\` color`, () => {
-      const { getByTestId } = renderTestWithProvider(
+      const { getByTestId } = render_test_with_provider(
         <Link color={color} data-testid={"link"} href={"/"}>
           Test
         </Link>
@@ -96,7 +98,7 @@ describe("<Link />", () => {
 
   (["always", "hover", "never"] as LinkUnderline[]).forEach((underline) => {
     it(`${underline} renders an underline`, () => {
-      const { getByTestId } = renderTestWithProvider(
+      const { getByTestId } = render_test_with_provider(
         <Link data-testid={"link"} href={"/"} underline={underline}>
           Test
         </Link>
@@ -107,7 +109,7 @@ describe("<Link />", () => {
   });
 
   it("renders with a truncated text when using the ellipsis prop", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Link data-testid={"link"} ellipsis href={"/"}>
         Text
       </Link>
@@ -117,7 +119,7 @@ describe("<Link />", () => {
   });
 
   it("scale prop overrides the level prop", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Link data-testid={"link"} href={"/"} level={"body2"} scale={"display1"}>
         Test
       </Link>
@@ -130,7 +132,7 @@ describe("<Link />", () => {
   });
 
   it("renders fixed color", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Link data-testid={"link"} fixedColor href={"/"}>
         Test
       </Link>
@@ -140,7 +142,7 @@ describe("<Link />", () => {
   });
 
   it("adds noreferrer rel for absolute links and _blank targets", () => {
-    const { getByTestId, rerender } = renderTestWithProvider(
+    const { getByTestId, rerender } = render_test_with_provider(
       <Link data-testid={"link"} href={"https://storiny.com"}>
         Test
       </Link>
@@ -158,16 +160,16 @@ describe("<Link />", () => {
   });
 
   it("passes props to the element slots", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Link
         ellipsis
         href={"/"}
-        slotProps={
+        slot_props={
           {
             ellipsisCell: {
               "data-testid": "ellipsis-cell"
             }
-          } as LinkProps["slotProps"]
+          } as LinkProps["slot_props"]
         }
       >
         Test

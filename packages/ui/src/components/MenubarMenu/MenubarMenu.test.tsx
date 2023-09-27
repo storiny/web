@@ -1,6 +1,6 @@
 import React from "react";
 
-import { renderTestWithProvider } from "~/redux/testUtils";
+import { render_test_with_provider } from "src/redux/test-utils";
 
 import Menubar from "../Menubar";
 import MenubarItem from "../MenubarItem";
@@ -9,7 +9,7 @@ import { MenubarMenuProps } from "./MenubarMenu.props";
 
 describe("<MenubarMenu />", () => {
   it("renders as a polymorphic element", () => {
-    const { getByRole } = renderTestWithProvider(
+    const { getByRole } = render_test_with_provider(
       <Menubar value={"test"}>
         <MenubarMenu
           as={"aside"}
@@ -25,7 +25,7 @@ describe("<MenubarMenu />", () => {
   });
 
   it("renders trigger", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Menubar value={"test"}>
         <MenubarMenu trigger={<span data-testid={"trigger"} />} value={"test"}>
           <MenubarItem>Test</MenubarItem>
@@ -37,15 +37,15 @@ describe("<MenubarMenu />", () => {
   });
 
   it("passes props to the element slots", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Menubar value={"test"}>
         <MenubarMenu
-          slotProps={
+          slot_props={
             {
               arrow: { "data-testid": "arrow" },
               content: { "data-testid": "content" },
               trigger: { "data-testid": "trigger" }
-            } as MenubarMenuProps["slotProps"]
+            } as MenubarMenuProps["slot_props"]
           }
           trigger={<button>Trigger</button>}
           value={"test"}

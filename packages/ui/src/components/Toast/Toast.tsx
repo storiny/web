@@ -29,7 +29,7 @@ const Toast = forwardRef<ToastProps, "li">((props, ref) => {
     children,
     className,
     severity = "blank",
-    slotProps,
+    slot_props,
     ...rest
   } = props;
 
@@ -50,11 +50,11 @@ const Toast = forwardRef<ToastProps, "li">((props, ref) => {
         <Description className={clsx("ellipsis", styles.description)}>
           {severity !== "blank" && (
             <span
-              {...slotProps?.decorator}
+              {...slot_props?.decorator}
               className={clsx(
                 styles.decorator,
                 styles[severity],
-                slotProps?.decorator?.className
+                slot_props?.decorator?.className
               )}
             >
               {severityToComponentMap[severity]}
@@ -65,8 +65,8 @@ const Toast = forwardRef<ToastProps, "li">((props, ref) => {
         <Close
           aria-label="Dismiss"
           title={"Dismiss"}
-          {...slotProps?.close}
-          className={clsx("unset", styles.close, slotProps?.close?.className)}
+          {...slot_props?.close}
+          className={clsx("unset", styles.close, slot_props?.close?.className)}
         >
           <span
             aria-hidden

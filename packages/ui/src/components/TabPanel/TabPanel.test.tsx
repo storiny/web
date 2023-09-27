@@ -2,7 +2,7 @@ import { axe } from "@storiny/test-utils";
 import { waitFor } from "@testing-library/react";
 import React from "react";
 
-import { renderTestWithProvider } from "~/redux/testUtils";
+import { render_test_with_provider } from "src/redux/test-utils";
 
 import Tab from "../Tab";
 import Tabs from "../Tabs";
@@ -11,7 +11,7 @@ import TabPanel from "./TabPanel";
 
 describe("<TabPanel />", () => {
   it("matches snapshot", () => {
-    const { container } = renderTestWithProvider(
+    const { container } = render_test_with_provider(
       <Tabs>
         <TabsList>
           <Tab value={"test"} />
@@ -24,7 +24,7 @@ describe("<TabPanel />", () => {
   });
 
   it("does not have any accessibility violations", async () => {
-    const { container } = renderTestWithProvider(
+    const { container } = render_test_with_provider(
       <Tabs>
         <TabsList>
           <Tab value={"test"}>Test</Tab>
@@ -39,7 +39,7 @@ describe("<TabPanel />", () => {
   });
 
   it("renders as a polymorphic element", () => {
-    const { getByRole } = renderTestWithProvider(
+    const { getByRole } = render_test_with_provider(
       <Tabs defaultValue={"test"}>
         <TabsList>
           <Tab value={"test"} />

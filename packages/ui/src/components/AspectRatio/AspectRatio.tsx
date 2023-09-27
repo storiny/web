@@ -15,7 +15,7 @@ const AspectRatio = forwardRef<AspectRatioProps, "div">((props, ref) => {
     children,
     objectFit = "cover",
     className,
-    slotProps,
+    slot_props,
     style,
     ...rest
   } = props;
@@ -34,8 +34,8 @@ const AspectRatio = forwardRef<AspectRatioProps, "div">((props, ref) => {
       }
     >
       <div
-        {...slotProps?.wrapper}
-        className={clsx(styles.wrapper, slotProps?.wrapper?.className)}
+        {...slot_props?.wrapper}
+        className={clsx(styles.wrapper, slot_props?.wrapper?.className)}
       >
         {React.Children.map(children, (child, index) =>
           index === 0 && React.isValidElement(child)

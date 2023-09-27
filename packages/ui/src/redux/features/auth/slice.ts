@@ -7,23 +7,25 @@ import { clamp } from "~/utils/clamp";
 
 export type AuthStatus = "idle" | "loading" | "complete" | "error";
 
+type NumberActionPayload = "increment" | "decrement" | number;
+
 export interface AuthState {
-  loggedIn: boolean;
+  logged_in: boolean;
   status: AuthStatus;
   user: User | null;
 }
 
-export const authInitialState: AuthState = {
-  status: "idle",
-  loggedIn: false,
-  user: null
+export const auth_initial_state: AuthState = {
+  status: /*   */ "idle",
+  logged_in: /**/ false,
+  user: /*     */ null
 };
 
 /**
  * Fetch the user object from the server
  */
-export const fetchUser = createAsyncThunk<User>(
-  "auth/fetchUser",
+export const fetch_user = createAsyncThunk<User>(
+  "auth/fetch_user",
   async () => {
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/v${API_VERSION}/me`
@@ -33,76 +35,94 @@ export const fetchUser = createAsyncThunk<User>(
   {
     condition: (_, { getState }) => {
       const {
-        auth: { loggedIn, status, user }
+        auth: { logged_in, status, user }
       } = getState() as AppState;
 
-      if (!loggedIn || user !== null || status === "loading") {
+      if (!logged_in || user !== null || status === "loading") {
         // Do not send a request if logged out, a user object is already populated,
-        // or the status is `loading`
+        // Or the status is `loading`
         return false;
       }
     }
   }
 );
 
-export const authSlice = createSlice({
+/**
+ * Computes the next number value based on the supplied action payload and the previous state
+ * @param supplied_value Supplied value
+ * @param prev_value Previous value
+ */
+const get_next_value = (
+  supplied_value: NumberActionPayload,
+  prev_value: number
+): number =>
+  supplied_value === "increment"
+    ? prev_value + 1
+    : supplied_value === "decrement"
+    ? prev_value - 1
+    : supplied_value;
+
+export const auth_slice = createSlice({
   name: "auth",
-  initialState: authInitialState,
+  initialState: auth_initial_state,
   reducers: {
     /**
      * Mutates the user
      */
-    mutateUser: (state, action: PayloadAction<Partial<User>>) => {
+    mutate_user: (state, action: PayloadAction<Partial<User>>) => {
       if (state.user !== null) {
         state.user = { ...state.user, ...action.payload };
         return state;
       }
     },
-    setSelfFollowerCount: (
+    set_self_follower_count: (
       state,
-      action: PayloadAction<(prevState: number) => number>
+      action: PayloadAction<NumberActionPayload>
     ) => {
       if (state.user !== null) {
-        const callback = action.payload;
-        const newValue = callback(state.user.follower_count);
-        state.user.follower_count = clamp(0, newValue, Infinity);
+        const value = action.payload;
+        const prev_value = state.user.follower_count;
+        const next_value = get_next_value(value, prev_value);
+        state.user.follower_count = clamp(0, next_value, Infinity);
       }
     },
-    setSelfFollowingCount: (
+    set_self_following_count: (
       state,
-      action: PayloadAction<(prevState: number) => number>
+      action: PayloadAction<NumberActionPayload>
     ) => {
       if (
         state.user !== null &&
         typeof state.user?.following_count === "number"
       ) {
-        const callback = action.payload;
-        const newValue = callback(state.user.following_count);
-        state.user.following_count = clamp(0, newValue, Infinity);
+        const value = action.payload;
+        const prev_value = state.user.following_count;
+        const next_value = get_next_value(value, prev_value);
+        state.user.following_count = clamp(0, next_value, Infinity);
       }
     },
-    setSelfFriendCount: (
+    set_self_friend_count: (
       state,
-      action: PayloadAction<(prevState: number) => number>
+      action: PayloadAction<NumberActionPayload>
     ) => {
       if (state.user !== null && typeof state.user?.friend_count === "number") {
-        const callback = action.payload;
-        const newValue = callback(state.user.friend_count);
-        state.user.friend_count = clamp(0, newValue, Infinity);
+        const value = action.payload;
+        const prev_value = state.user.friend_count;
+        const next_value = get_next_value(value, prev_value);
+        state.user.friend_count = clamp(0, next_value, Infinity);
       }
     }
   },
   extraReducers: (builder) => {
     builder
-      .addCase(fetchUser.fulfilled, (state, action) => {
+      .addCase(fetch_user.fulfilled, (state, action) => {
         state.status = "complete";
         state.user = action.payload;
       })
-      .addCase(fetchUser.pending, (state) => {
-        state.user = null;
+      .addCase(fetch_user.pending, (state) => {
         state.status = "loading";
+        state.user = null;
       })
-      .addCase(fetchUser.rejected, (state) => {
+      .addCase(fetch_user.rejected, (state) => {
         state.status = "error";
         state.user = null;
       });
@@ -110,17 +130,17 @@ export const authSlice = createSlice({
 });
 
 const {
-  mutateUser,
-  setSelfFollowingCount,
-  setSelfFollowerCount,
-  setSelfFriendCount
-} = authSlice.actions;
+  mutate_user,
+  set_self_following_count,
+  set_self_follower_count,
+  set_self_friend_count
+} = auth_slice.actions;
 
 export {
-  mutateUser,
-  setSelfFollowerCount,
-  setSelfFollowingCount,
-  setSelfFriendCount
+  mutate_user,
+  set_self_follower_count,
+  set_self_following_count,
+  set_self_friend_count
 };
 
-export default authSlice.reducer;
+export default auth_slice.reducer;

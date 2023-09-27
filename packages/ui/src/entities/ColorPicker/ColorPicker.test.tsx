@@ -2,17 +2,17 @@ import { axe } from "@storiny/test-utils";
 import { screen, waitFor } from "@testing-library/react";
 import React from "react";
 
-import { renderTestWithProvider } from "~/redux/testUtils";
+import { render_test_with_provider } from "src/redux/test-utils";
 
 import ColorPicker from "./core/components/ColorPicker";
 
 describe("<ColorPicker />", () => {
   it("renders", () => {
-    renderTestWithProvider(<ColorPicker />);
+    render_test_with_provider(<ColorPicker />);
   });
 
   it("does not have any accessibility violations", async () => {
-    const { container } = renderTestWithProvider(<ColorPicker />);
+    const { container } = render_test_with_provider(<ColorPicker />);
     await waitFor(async () =>
       expect(
         await axe(container, {
@@ -27,7 +27,7 @@ describe("<ColorPicker />", () => {
   });
 
   it("renders with pre-defined value", async () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <ColorPicker
         defaultValue={{
           h: 223,

@@ -8,8 +8,8 @@ import RadioGroup from "~/components/RadioGroup";
 import Spacer from "~/components/Spacer";
 import Typography from "~/components/Typography";
 import { useMediaQuery } from "~/hooks/useMediaQuery";
-import { setReadingFontSize } from "~/redux/features";
-import { useAppDispatch, useAppSelector } from "~/redux/hooks";
+import { set_reading_font_size } from "~/redux/features";
+import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 import { breakpoints } from "~/theme/breakpoints";
 
 import commonStyles from "../../styles.module.scss";
@@ -46,7 +46,7 @@ const FontSizeItem = ({
     <Radio
       className={clsx(commonStyles.x, commonStyles.radio)}
       label={label}
-      slotProps={{
+      slot_props={{
         container: {
           className: clsx(commonStyles.x, commonStyles["radio-container"])
         }
@@ -58,8 +58,8 @@ const FontSizeItem = ({
 
 const ReadingFontSizePreference = (): React.ReactElement => {
   const isSmallerThanMobile = useMediaQuery(breakpoints.down("mobile"));
-  const dispatch = useAppDispatch();
-  const fontSize = useAppSelector(
+  const dispatch = use_app_dispatch();
+  const fontSize = use_app_selector(
     (state) => state.preferences.reading_font_size
   );
 
@@ -76,7 +76,7 @@ const ReadingFontSizePreference = (): React.ReactElement => {
       <RadioGroup
         className={clsx(commonStyles.x, commonStyles["radio-group"])}
         onValueChange={(newValue): void => {
-          dispatch(setReadingFontSize(newValue as typeof fontSize));
+          dispatch(set_reading_font_size(newValue as typeof fontSize));
         }}
         orientation={isSmallerThanMobile ? "vertical" : "horizontal"}
         value={fontSize}

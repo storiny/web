@@ -2,20 +2,20 @@ import { act } from "@testing-library/react";
 import React from "react";
 
 import {
-  renderHookWithProvider,
-  renderTestWithProvider
-} from "~/redux/testUtils";
+  render_hook_with_provider,
+  render_test_with_provider
+} from "src/redux/test-utils";
 
 import { useToast } from "./useToast";
 
 describe("useToast", () => {
   it("returns the toast invocation callback", () => {
-    const { result } = renderHookWithProvider(() => useToast());
+    const { result } = render_hook_with_provider(() => useToast());
     expect(result.current).toEqual(expect.any(Function));
   });
 
   it("renders toast", async () => {
-    const { result, unmount } = renderHookWithProvider(
+    const { result, unmount } = render_hook_with_provider(
       () => useToast(),
       {},
       { ignorePrimitiveProviders: false }
@@ -27,7 +27,7 @@ describe("useToast", () => {
 
     unmount();
 
-    const { getByTestId } = renderTestWithProvider(<span />);
+    const { getByTestId } = render_test_with_provider(<span />);
     await getByTestId("toast");
     expect(getByTestId("toast")).toHaveTextContent("Toast message");
   });

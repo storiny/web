@@ -1,16 +1,17 @@
 import { Comment } from "@storiny/types";
 
-import { apiSlice } from "~/redux/features/api/slice";
+import { api_slice } from "~/redux/features/api/slice";
 
 const SEGMENT = "me/comments";
 const ITEMS_PER_PAGE = 10;
 
 export type GetCommentsResponse = Comment[];
 
-export const getCommentsApi = apiSlice.injectEndpoints({
+export const get_comments_api = api_slice.injectEndpoints({
   endpoints: (builder) => ({
+    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     getComments: builder.query<
-      { hasMore: boolean; items: Comment[] },
+      { has_more: boolean; items: Comment[] },
       {
         page: number;
         query?: string;
@@ -29,11 +30,11 @@ export const getCommentsApi = apiSlice.injectEndpoints({
         `${endpointName}:${queryArgs.sort}:${queryArgs.query}`,
       transformResponse: (response: Comment[]) => ({
         items: response,
-        hasMore: response.length === ITEMS_PER_PAGE
+        has_more: response.length === ITEMS_PER_PAGE
       }),
-      merge: (currentCache, newItems) => {
-        currentCache.items.push(...newItems.items);
-        currentCache.hasMore = newItems.hasMore;
+      merge: (current_cache, new_items) => {
+        current_cache.items.push(...new_items.items);
+        current_cache.has_more = new_items.has_more;
       },
       providesTags: (result) =>
         result
@@ -53,4 +54,4 @@ export const getCommentsApi = apiSlice.injectEndpoints({
   })
 });
 
-export const { useGetCommentsQuery } = getCommentsApi;
+export const { useGetCommentsQuery: use_get_comments_query } = get_comments_api;

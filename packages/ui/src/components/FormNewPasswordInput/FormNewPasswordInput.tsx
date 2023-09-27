@@ -64,7 +64,7 @@ const StrengthIndicator = ({
         as={"span"}
         className={styles["strength-ring"]}
         role={undefined}
-        slotProps={{
+        slot_props={{
           progress: {
             className: styles["strength-progress"],
             style: {

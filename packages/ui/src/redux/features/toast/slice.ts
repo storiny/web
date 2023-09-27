@@ -2,10 +2,10 @@
 
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { VIBRATION_PATTERNS } from "@storiny/shared";
-import { devConsole } from "@storiny/shared/src/utils/devLog";
+import { dev_console } from "@storiny/shared/src/utils/devLog";
 
 import { ToastSeverity } from "~/components/Toast";
-import { AppStartListening } from "~/redux/listenerMiddleware";
+import { AppStartListening } from "src/redux/listener-middleware";
 
 export interface ToastState {
   message: string;
@@ -13,42 +13,43 @@ export interface ToastState {
   severity: ToastSeverity;
 }
 
-export const toastInitialState: ToastState = {
-  open: false,
-  severity: "blank",
-  message: ""
+export const toast_initial_state: ToastState = {
+  open: /*    */ false,
+  severity: /**/ "blank",
+  message: /* */ ""
 };
 
-export const toastSlice = createSlice({
+export const toast_slice = createSlice({
   name: "toast",
-  initialState: toastInitialState,
+  initialState: toast_initial_state,
   reducers: {
-    setToastOpen: (state, action: PayloadAction<boolean>) => {
+    set_toast_open: (state, action: PayloadAction<boolean>) => {
       state.open = action.payload;
     },
-    renderToast: (
+    render_toast: (
       state,
       action: PayloadAction<{ message: string; severity?: ToastSeverity }>
     ) => {
       const { message, severity } = action.payload;
-
       state.open = true;
       state.message = message;
-      state.severity = severity || toastInitialState.severity;
+      state.severity = severity || toast_initial_state.severity;
     }
   }
 });
 
-const { setToastOpen, renderToast } = toastSlice.actions;
+const { set_toast_open, render_toast } = toast_slice.actions;
 
-export { renderToast, setToastOpen };
+export { render_toast, set_toast_open };
 
-export const addToastListeners = (start_listening: AppStartListening): void => {
+export const add_toast_listeners = (
+  start_listening: AppStartListening
+): void => {
   /**
    * Parse, validate and store the state from localStorage
    */
   start_listening({
-    actionCreator: renderToast,
+    actionCreator: render_toast,
     effect: (action, listener_api) => {
       try {
         const state = listener_api.getState();
@@ -60,10 +61,10 @@ export const addToastListeners = (start_listening: AppStartListening): void => {
           }
         }
       } catch (e) {
-        devConsole.error(e);
+        dev_console.error(e);
       }
     }
   });
 };
 
-export default toastSlice.reducer;
+export default toast_slice.reducer;

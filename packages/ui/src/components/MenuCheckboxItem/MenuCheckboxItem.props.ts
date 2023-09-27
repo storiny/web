@@ -21,7 +21,7 @@ export interface MenuCheckboxItemProps extends MenuCheckboxItemPrimitive {
   /**
    * The props passed to the individual component elements.
    */
-  slotProps?: {
+  slot_props?: {
     decorator?: React.ComponentPropsWithoutRef<"span">;
     indicator?: DropdownMenuItemIndicatorProps;
     rightSlot?: React.ComponentPropsWithoutRef<"span">;

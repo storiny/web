@@ -1,6 +1,6 @@
 import React from "react";
 
-import { renderTestWithProvider } from "~/redux/testUtils";
+import { render_test_with_provider } from "src/redux/test-utils";
 
 import Menu from "../Menu";
 import MenuCheckboxItem from "./MenuCheckboxItem";
@@ -8,7 +8,7 @@ import { MenuCheckboxItemProps } from "./MenuCheckboxItem.props";
 
 describe("<MenuCheckboxItem />", () => {
   it("renders and matches snapshot", () => {
-    const { baseElement, getByRole } = renderTestWithProvider(
+    const { baseElement, getByRole } = render_test_with_provider(
       <Menu open trigger={<button>Trigger</button>}>
         <MenuCheckboxItem>Checkbox item</MenuCheckboxItem>
       </Menu>
@@ -19,7 +19,7 @@ describe("<MenuCheckboxItem />", () => {
   });
 
   it("renders as a polymorphic element", () => {
-    const { getByRole } = renderTestWithProvider(
+    const { getByRole } = render_test_with_provider(
       <Menu open trigger={<button>Trigger</button>}>
         <MenuCheckboxItem as={"aside"}>Checkbox item</MenuCheckboxItem>
       </Menu>
@@ -31,14 +31,14 @@ describe("<MenuCheckboxItem />", () => {
   });
 
   it("renders decorator", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Menu open trigger={<button>Trigger</button>}>
         <MenuCheckboxItem
           decorator={"Test"}
-          slotProps={
+          slot_props={
             {
               decorator: { "data-testid": "decorator" }
-            } as MenuCheckboxItemProps["slotProps"]
+            } as MenuCheckboxItemProps["slot_props"]
           }
         >
           Test
@@ -50,14 +50,14 @@ describe("<MenuCheckboxItem />", () => {
   });
 
   it("renders right slot", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Menu open trigger={<button>Trigger</button>}>
         <MenuCheckboxItem
           rightSlot={"Test"}
-          slotProps={
+          slot_props={
             {
               rightSlot: { "data-testid": "right-slot" }
-            } as MenuCheckboxItemProps["slotProps"]
+            } as MenuCheckboxItemProps["slot_props"]
           }
         >
           Test
@@ -69,18 +69,18 @@ describe("<MenuCheckboxItem />", () => {
   });
 
   it("passes props to the element slots", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Menu open trigger={<button>Trigger</button>}>
         <MenuCheckboxItem
           checked
           decorator={"Test"}
           rightSlot={"Test"}
-          slotProps={
+          slot_props={
             {
               decorator: { "data-testid": "decorator" },
               rightSlot: { "data-testid": "right-slot" },
               indicator: { "data-testid": "indicator" }
-            } as MenuCheckboxItemProps["slotProps"]
+            } as MenuCheckboxItemProps["slot_props"]
           }
         >
           Test

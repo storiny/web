@@ -16,7 +16,7 @@ export interface VirtualizedAccountActivityListProps
   /**
    * Flag indicating whether there are more account activities to render.
    */
-  hasMore: boolean;
+  has_more: boolean;
   /**
    * A callback function to fetch more account activities.
    */

@@ -2,18 +2,18 @@ import { axe } from "@storiny/test-utils";
 import { screen, waitFor } from "@testing-library/react";
 import React from "react";
 
-import { renderTestWithProvider } from "~/redux/testUtils";
+import { render_test_with_provider } from "src/redux/test-utils";
 
 import LeftSidebar from "./LeftSidebar";
 import { LeftSidebarProps } from "./LeftSidebar.props";
 
 describe("<LeftSidebar />", () => {
   it("renders", () => {
-    renderTestWithProvider(<LeftSidebar forceMount />);
+    render_test_with_provider(<LeftSidebar forceMount />);
   });
 
   it("does not have any accessibility violations", async () => {
-    const { container } = renderTestWithProvider(<LeftSidebar forceMount />);
+    const { container } = render_test_with_provider(<LeftSidebar forceMount />);
     await screen.findByRole("button", { name: /log in/i });
     await waitFor(async () =>
       expect(await axe(container)).toHaveNoViolations()
@@ -21,9 +21,12 @@ describe("<LeftSidebar />", () => {
   });
 
   it("does not have any accessibility violations when logged in", async () => {
-    const { container } = renderTestWithProvider(<LeftSidebar forceMount />, {
-      loggedIn: true
-    });
+    const { container } = render_test_with_provider(
+      <LeftSidebar forceMount />,
+      {
+        loggedIn: true
+      }
+    );
 
     await screen.findByRole("button", { name: /write/i });
     await waitFor(async () =>
@@ -32,7 +35,7 @@ describe("<LeftSidebar />", () => {
   });
 
   it("renders logged out state with default content", () => {
-    renderTestWithProvider(<LeftSidebar forceMount />);
+    render_test_with_provider(<LeftSidebar forceMount />);
 
     expect(screen.getByRole("button", { name: /log in/i })).toBeInTheDocument();
     expect(
@@ -41,23 +44,23 @@ describe("<LeftSidebar />", () => {
   });
 
   it("renders logged in state", () => {
-    renderTestWithProvider(<LeftSidebar forceMount />, { loggedIn: true });
+    render_test_with_provider(<LeftSidebar forceMount />, { loggedIn: true });
     expect(screen.getByRole("button", { name: /write/i })).toBeInTheDocument();
   });
 
   it("does not render persona when logged out", () => {
-    renderTestWithProvider(<LeftSidebar forceMount />);
+    render_test_with_provider(<LeftSidebar forceMount />);
     expect(screen.queryByTestId("lsb-banner")).not.toBeInTheDocument();
   });
 
   it("renders persona when logged in", async () => {
-    renderTestWithProvider(<LeftSidebar forceMount />, { loggedIn: true });
+    render_test_with_provider(<LeftSidebar forceMount />, { loggedIn: true });
     await screen.findByTestId("lsb-banner");
     expect(screen.getByTestId("lsb-banner")).toBeInTheDocument();
   });
 
   it("renders with custom children", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <LeftSidebar forceMount>
         <span data-testid={"child"} />
       </LeftSidebar>
@@ -67,12 +70,12 @@ describe("<LeftSidebar />", () => {
   });
 
   it("passes props to the component slots", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <LeftSidebar
-        componentProps={
+        component_props={
           {
             wrapper: { "data-testid": "wrapper" }
-          } as LeftSidebarProps["componentProps"]
+          } as LeftSidebarProps["component_props"]
         }
         forceMount
       />

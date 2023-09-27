@@ -43,7 +43,7 @@ const Switch = forwardRef<SwitchProps, "button">((props, ref) => {
     color = "inverted",
     size = "md",
     className,
-    slotProps,
+    slot_props,
     ...rest
   } = props;
 
@@ -63,16 +63,16 @@ const Switch = forwardRef<SwitchProps, "button">((props, ref) => {
     >
       <Component>
         <Thumb
-          {...slotProps?.thumb}
+          {...slot_props?.thumb}
           className={clsx(
             "flex-center",
             styles.thumb,
-            slotProps?.thumb?.className
+            slot_props?.thumb?.className
           )}
         >
-          <BarIndicator {...slotProps?.barIndicator} />
+          <BarIndicator {...slot_props?.barIndicator} />
           <span />
-          <RingIndicator {...slotProps?.ringIndicator} />
+          <RingIndicator {...slot_props?.ringIndicator} />
         </Thumb>
       </Component>
     </Root>

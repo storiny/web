@@ -14,7 +14,10 @@ import ErrorState from "~/entities/ErrorState";
 import PageTitle from "~/entities/PageTitle";
 import { useDebounce } from "~/hooks/useDebounce";
 import SearchIcon from "~/icons/Search";
-import { getQueryErrorType, useGetLikedStoriesQuery } from "~/redux/features";
+import {
+  get_query_error_type,
+  use_get_liked_stories_query
+} from "~/redux/features";
 
 import styles from "./styles.module.scss";
 
@@ -53,7 +56,7 @@ const PageHeader = ({
       onChange={(event): void => onQueryChange(event.target.value)}
       placeholder={"Search for liked stories"}
       size={"lg"}
-      slotProps={{
+      slot_props={{
         container: {
           className: clsx("f-grow", styles.x, styles.input)
         }
@@ -65,7 +68,7 @@ const PageHeader = ({
     <Select
       disabled={disabled}
       onValueChange={onSortChange}
-      slotProps={{
+      slot_props={{
         trigger: {
           "aria-label": "Sort items",
           className: clsx("focus-invert", styles.x, styles["select-trigger"])
@@ -88,12 +91,12 @@ const Client = (): React.ReactElement => {
   const [page, setPage] = React.useState<number>(1);
   const debouncedQuery = useDebounce(query);
   const { data, isLoading, isFetching, isError, error, refetch } =
-    useGetLikedStoriesQuery({
+    use_get_liked_stories_query({
       page,
       sort,
       query: debouncedQuery
     });
-  const { items = [], hasMore } = data || {};
+  const { items = [], has_more } = data || {};
   const isTyping = query !== debouncedQuery;
 
   const loadMore = React.useCallback(
@@ -127,11 +130,11 @@ const Client = (): React.ReactElement => {
       {isError ? (
         <ErrorState
           autoSize
-          componentProps={{
+          component_props={{
             button: { loading: isFetching }
           }}
           retry={refetch}
-          type={getQueryErrorType(error)}
+          type={get_query_error_type(error)}
         />
       ) : !isFetching && !items.length ? (
         <EmptyState query={query} />
@@ -139,7 +142,7 @@ const Client = (): React.ReactElement => {
         <StoryListSkeleton />
       ) : (
         <VirtualizedStoryList
-          hasMore={Boolean(hasMore)}
+          has_more={Boolean(has_more)}
           loadMore={loadMore}
           stories={items}
           storyProps={{

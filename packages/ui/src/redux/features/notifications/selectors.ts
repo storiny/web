@@ -2,9 +2,9 @@ import { UnreadNotificationsStatus } from "~/redux/features";
 import { AppState } from "~/redux/store";
 
 export const select_read_notification =
-  (notificationId: string) =>
+  (notification_id: string) =>
   (state: AppState): boolean =>
-    state.notifications.read_notifications[notificationId];
+    state.notifications.read_notifications[notification_id];
 
 export const select_unread_notification_count = (state: AppState): number =>
   state.notifications.unread_count;

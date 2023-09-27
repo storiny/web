@@ -12,7 +12,7 @@ import { VirtualizedUserListContext } from "./list-context";
 const VirtualizedUserList = React.memo(
   ({
     users,
-    hasMore,
+    has_more,
     loadMore,
     userProps,
     className,
@@ -31,10 +31,10 @@ const VirtualizedUserList = React.memo(
         components={{
           Item: VirtualizedUserItem,
           ScrollSeekPlaceholder: VirtualizedUserScrollSeekPlaceholder,
-          ...(hasMore && { Footer: VirtualFooter })
+          ...(has_more && { Footer: VirtualFooter })
         }}
         data={users}
-        endReached={hasMore ? loadMore : (): void => undefined}
+        endReached={has_more ? loadMore : (): void => undefined}
       />
     </VirtualizedUserListContext.Provider>
   )

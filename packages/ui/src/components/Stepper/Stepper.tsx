@@ -28,7 +28,7 @@ const Stepper = forwardRef<StepperProps, "div">((props, ref) => {
     totalSteps,
     activeSteps = 1,
     className,
-    slotProps,
+    slot_props,
     ...rest
   } = props;
 
@@ -49,7 +49,7 @@ const Stepper = forwardRef<StepperProps, "div">((props, ref) => {
     >
       {[...Array(totalSteps)].map((_, index) => (
         <Step
-          {...slotProps?.step}
+          {...slot_props?.step}
           active={index + 1 <= activeSteps}
           key={index}
         />

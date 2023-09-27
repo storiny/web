@@ -2,14 +2,14 @@ import { axe } from "@storiny/test-utils";
 import { waitFor } from "@testing-library/react";
 import React from "react";
 
-import { renderTestWithProvider } from "~/redux/testUtils";
+import { render_test_with_provider } from "src/redux/test-utils";
 
 import Popover from "./Popover";
 import { PopoverProps } from "./Popover.props";
 
 describe("<Popover />", () => {
   it("matches snapshot", () => {
-    const { baseElement } = renderTestWithProvider(
+    const { baseElement } = render_test_with_provider(
       <Popover open trigger={<button>Trigger</button>}>
         Test
       </Popover>
@@ -19,7 +19,7 @@ describe("<Popover />", () => {
   });
 
   it("does not have any accessibility violations", async () => {
-    const { baseElement } = renderTestWithProvider(
+    const { baseElement } = render_test_with_provider(
       <Popover open trigger={<button>Trigger</button>}>
         Test
       </Popover>
@@ -37,7 +37,7 @@ describe("<Popover />", () => {
   });
 
   it("renders as a polymorphic element", () => {
-    const { getByRole } = renderTestWithProvider(
+    const { getByRole } = render_test_with_provider(
       <Popover as={"aside"} open trigger={<button>Trigger</button>}>
         Test
       </Popover>
@@ -47,7 +47,7 @@ describe("<Popover />", () => {
   });
 
   it("renders trigger", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Popover open trigger={<span data-testid={"trigger"} />}>
         Test
       </Popover>
@@ -57,15 +57,15 @@ describe("<Popover />", () => {
   });
 
   it("passes props to the element slots", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Popover
         open
-        slotProps={
+        slot_props={
           {
             arrow: { "data-testid": "arrow" },
             content: { "data-testid": "content" },
             trigger: { "data-testid": "trigger" }
-          } as PopoverProps["slotProps"]
+          } as PopoverProps["slot_props"]
         }
         trigger={<button>Trigger</button>}
       >

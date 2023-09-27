@@ -2,7 +2,7 @@ import { axe, userEvent } from "@storiny/test-utils";
 import { waitFor } from "@testing-library/react";
 import React from "react";
 
-import { renderTestWithProvider } from "~/redux/testUtils";
+import { render_test_with_provider } from "src/redux/test-utils";
 
 import IconButton from "./IconButton";
 import styles from "./IconButton.module.scss";
@@ -14,26 +14,32 @@ import {
 
 describe("<IconButton />", () => {
   it("matches snapshot", () => {
-    const { container } = renderTestWithProvider(<IconButton>Test</IconButton>);
+    const { container } = render_test_with_provider(
+      <IconButton>Test</IconButton>
+    );
     expect(container.firstChild).toMatchSnapshot();
   });
 
   it("does not have any accessibility violations", async () => {
-    const { container } = renderTestWithProvider(<IconButton>Test</IconButton>);
+    const { container } = render_test_with_provider(
+      <IconButton>Test</IconButton>
+    );
     await waitFor(async () =>
       expect(await axe(container)).toHaveNoViolations()
     );
   });
 
   it("renders as a polymorphic element", () => {
-    const { getByRole } = renderTestWithProvider(
+    const { getByRole } = render_test_with_provider(
       <IconButton as={"aside"}>Test</IconButton>
     );
     expect(getByRole("button").nodeName.toLowerCase()).toEqual("aside");
   });
 
   it("renders size `md`, variant `rigid`, color `inverted`, aria-disabled `false`, and native element as `button` by default", () => {
-    const { getByRole } = renderTestWithProvider(<IconButton>Test</IconButton>);
+    const { getByRole } = render_test_with_provider(
+      <IconButton>Test</IconButton>
+    );
     const button = getByRole("button");
 
     expect(button.nodeName.toLowerCase()).toEqual("button");
@@ -45,7 +51,7 @@ describe("<IconButton />", () => {
 
   (["inverted", "ruby"] as IconButtonColor[]).forEach((color) => {
     it(`renders \`${color}\` color`, () => {
-      const { getByRole } = renderTestWithProvider(
+      const { getByRole } = render_test_with_provider(
         <IconButton color={color}>Test</IconButton>
       );
 
@@ -55,7 +61,7 @@ describe("<IconButton />", () => {
 
   (["rigid", "hollow", "ghost"] as IconButtonVariant[]).forEach((variant) => {
     it(`renders \`${variant}\` variant`, () => {
-      const { getByRole } = renderTestWithProvider(
+      const { getByRole } = render_test_with_provider(
         <IconButton variant={variant}>Test</IconButton>
       );
 
@@ -65,7 +71,7 @@ describe("<IconButton />", () => {
 
   (["lg", "md", "sm", "xs"] as IconButtonSize[]).forEach((size) => {
     it(`renders \`${size}\` size`, () => {
-      const { getByRole } = renderTestWithProvider(
+      const { getByRole } = render_test_with_provider(
         <IconButton size={size}>Test</IconButton>
       );
 
@@ -75,21 +81,21 @@ describe("<IconButton />", () => {
 
   describe("loading state", () => {
     it("renders loading state", () => {
-      const { getByRole } = renderTestWithProvider(
+      const { getByRole } = render_test_with_provider(
         <IconButton loading>Test</IconButton>
       );
       expect(getByRole("button")).toHaveClass("loading");
     });
 
     it("disables the button", () => {
-      const { getByRole } = renderTestWithProvider(
+      const { getByRole } = render_test_with_provider(
         <IconButton loading>Test</IconButton>
       );
       expect(getByRole("button")).toBeDisabled();
     });
 
     it("renders a spinner", () => {
-      const { getByRole } = renderTestWithProvider(
+      const { getByRole } = render_test_with_provider(
         <IconButton loading>Test</IconButton>
       );
       expect(getByRole("progressbar")).toBeInTheDocument();
@@ -98,7 +104,7 @@ describe("<IconButton />", () => {
 
   describe("polymorphic", () => {
     it("passes the `button` role to the native non-button element", () => {
-      const { getByTestId } = renderTestWithProvider(
+      const { getByTestId } = render_test_with_provider(
         <IconButton as={"aside"} data-testid={"button"}>
           Test
         </IconButton>
@@ -108,7 +114,7 @@ describe("<IconButton />", () => {
     });
 
     it("passes aria-disabled `true` attribute when disabled", () => {
-      const { getByRole } = renderTestWithProvider(
+      const { getByRole } = render_test_with_provider(
         <IconButton as={"aside"} disabled>
           Test
         </IconButton>
@@ -120,7 +126,7 @@ describe("<IconButton />", () => {
     it("mimics a button click on pressing the space key", async () => {
       const user = userEvent.setup();
       const onClick = jest.fn();
-      const { getByRole } = renderTestWithProvider(
+      const { getByRole } = render_test_with_provider(
         <IconButton as={"aside"} onClick={onClick}>
           Test
         </IconButton>
@@ -135,7 +141,7 @@ describe("<IconButton />", () => {
     it("does not fire the click event on pressing the space key when disabled", async () => {
       const user = userEvent.setup();
       const onClick = jest.fn();
-      const { getByRole } = renderTestWithProvider(
+      const { getByRole } = render_test_with_provider(
         <IconButton as={"aside"} disabled onClick={onClick}>
           Test
         </IconButton>
@@ -149,7 +155,7 @@ describe("<IconButton />", () => {
   });
 
   it("renders as an anchor with correct `href` when `checkAuth` is set to `true` and the user is logged out", () => {
-    const { getByRole } = renderTestWithProvider(
+    const { getByRole } = render_test_with_provider(
       <IconButton checkAuth>Test</IconButton>
     );
     const button = getByRole("button");
@@ -161,7 +167,7 @@ describe("<IconButton />", () => {
   it("does not fire the click event when `checkAuth` is set to `true` and the user is logged out", async () => {
     const user = userEvent.setup();
     const onClick = jest.fn();
-    const { getByRole } = renderTestWithProvider(
+    const { getByRole } = render_test_with_provider(
       <IconButton checkAuth onClick={onClick}>
         Test
       </IconButton>

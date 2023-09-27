@@ -1,7 +1,7 @@
 import { userEvent } from "@storiny/test-utils";
 import React from "react";
 
-import { renderTestWithProvider } from "~/redux/testUtils";
+import { render_test_with_provider } from "src/redux/test-utils";
 
 import Menu from "../Menu";
 import MenuItem from "./MenuItem";
@@ -9,7 +9,7 @@ import { MenuItemProps } from "./MenuItem.props";
 
 describe("<MenuItem />", () => {
   it("renders", () => {
-    const { getByRole } = renderTestWithProvider(
+    const { getByRole } = render_test_with_provider(
       <Menu open trigger={<button>Trigger</button>}>
         <MenuItem>Menu item</MenuItem>
       </Menu>
@@ -19,7 +19,7 @@ describe("<MenuItem />", () => {
   });
 
   it("renders as a polymorphic element", () => {
-    const { getByRole } = renderTestWithProvider(
+    const { getByRole } = render_test_with_provider(
       <Menu open trigger={<button>Trigger</button>}>
         <MenuItem as={"aside"}>Menu item</MenuItem>
       </Menu>
@@ -29,14 +29,14 @@ describe("<MenuItem />", () => {
   });
 
   it("renders decorator", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Menu open trigger={<button>Trigger</button>}>
         <MenuItem
           decorator={"Test"}
-          slotProps={
+          slot_props={
             {
               decorator: { "data-testid": "decorator" }
-            } as MenuItemProps["slotProps"]
+            } as MenuItemProps["slot_props"]
           }
         >
           Test
@@ -48,14 +48,14 @@ describe("<MenuItem />", () => {
   });
 
   it("renders right slot", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Menu open trigger={<button>Trigger</button>}>
         <MenuItem
           rightSlot={"Test"}
-          slotProps={
+          slot_props={
             {
               rightSlot: { "data-testid": "right-slot" }
-            } as MenuItemProps["slotProps"]
+            } as MenuItemProps["slot_props"]
           }
         >
           Test
@@ -67,7 +67,7 @@ describe("<MenuItem />", () => {
   });
 
   it("renders as an anchor with correct `href` when `checkAuth` is set to `true` and the user is logged out", () => {
-    const { getByRole } = renderTestWithProvider(
+    const { getByRole } = render_test_with_provider(
       <Menu open trigger={<button>Trigger</button>}>
         <MenuItem checkAuth>Menu item</MenuItem>
       </Menu>
@@ -82,7 +82,7 @@ describe("<MenuItem />", () => {
     const user = userEvent.setup();
     const onClick = jest.fn();
     const onSelect = jest.fn();
-    const { getByRole } = renderTestWithProvider(
+    const { getByRole } = render_test_with_provider(
       <Menu open trigger={<button>Trigger</button>}>
         <MenuItem checkAuth onClick={onClick} onSelect={onSelect}>
           Menu item
@@ -96,16 +96,16 @@ describe("<MenuItem />", () => {
   });
 
   it("passes props to the element slots", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Menu open trigger={<button>Trigger</button>}>
         <MenuItem
           decorator={"Test"}
           rightSlot={"Test"}
-          slotProps={
+          slot_props={
             {
               decorator: { "data-testid": "decorator" },
               rightSlot: { "data-testid": "right-slot" }
-            } as MenuItemProps["slotProps"]
+            } as MenuItemProps["slot_props"]
           }
         >
           Test

@@ -79,7 +79,7 @@ const Params = (props: ParamsProps): React.ReactElement => {
       endDecorator={
         <Select
           onValueChange={(newMode): void => setMode(newMode as Mode)}
-          slotProps={{
+          slot_props={{
             content: {
               style: {
                 zIndex: "calc(var(--z-index-popover) + 1)"

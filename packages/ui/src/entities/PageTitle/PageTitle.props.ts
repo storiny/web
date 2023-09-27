@@ -11,7 +11,7 @@ export interface PageTitleProps
   /**
    * The props passed to the individual entity components
    */
-  componentProps?: {
+  component_props?: {
     backButton?: IconButtonProps;
   };
   /**

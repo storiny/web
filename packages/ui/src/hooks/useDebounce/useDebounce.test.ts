@@ -1,4 +1,4 @@
-import { renderHookWithProvider } from "~/redux/testUtils";
+import { render_hook_with_provider } from "src/redux/test-utils";
 
 import { useDebounce } from "./useDebounce";
 
@@ -16,14 +16,14 @@ describe("useDebounce", () => {
     const value = "test";
     const {
       result: { current: debouncedValue }
-    } = renderHookWithProvider(() => useDebounce(value));
+    } = render_hook_with_provider(() => useDebounce(value));
 
     expect(value).toEqual(debouncedValue);
   });
 
   it("uses a default debounce timeout of 500ms", () => {
     mockSetTimeout();
-    renderHookWithProvider(() => useDebounce("test"));
+    render_hook_with_provider(() => useDebounce("test"));
 
     expect(setTimeout).toHaveBeenCalledTimes(1);
     expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 500);
@@ -31,7 +31,7 @@ describe("useDebounce", () => {
 
   it("uses a custom debounce timeout", () => {
     mockSetTimeout();
-    renderHookWithProvider(() => useDebounce("test", 1440));
+    render_hook_with_provider(() => useDebounce("test", 1440));
 
     expect(setTimeout).toHaveBeenCalledTimes(1);
     expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 1440);

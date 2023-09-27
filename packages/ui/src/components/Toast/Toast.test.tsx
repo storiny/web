@@ -2,7 +2,7 @@ import { axe } from "@storiny/test-utils";
 import { waitFor } from "@testing-library/react";
 import React from "react";
 
-import { renderTestWithProvider } from "~/redux/testUtils";
+import { render_test_with_provider } from "src/redux/test-utils";
 
 import ToastProvider from "./Provider";
 import Toast from "./Toast";
@@ -11,7 +11,7 @@ import { ToastProps, ToastSeverity } from "./Toast.props";
 
 describe("<Toast />", () => {
   it("renders and matches snapshot", () => {
-    const { baseElement, getByTestId } = renderTestWithProvider(
+    const { baseElement, getByTestId } = render_test_with_provider(
       <ToastProvider>
         <Toast data-testid={"toast"} open>
           Test
@@ -24,7 +24,7 @@ describe("<Toast />", () => {
   });
 
   it("does not have any accessibility violations", async () => {
-    const { baseElement } = renderTestWithProvider(
+    const { baseElement } = render_test_with_provider(
       <ToastProvider>
         <Toast open>Test</Toast>
       </ToastProvider>
@@ -43,7 +43,7 @@ describe("<Toast />", () => {
   });
 
   it("renders as a polymorphic element", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <ToastProvider>
         <Toast as={"aside"} data-testid={"toast"} open>
           Toast
@@ -55,7 +55,7 @@ describe("<Toast />", () => {
   });
 
   it("renders severity `blank` by default", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <ToastProvider>
         <Toast data-testid={"toast"} open>
           Test
@@ -71,12 +71,12 @@ describe("<Toast />", () => {
   (["info", "success", "error", "warning"] as ToastSeverity[]).forEach(
     (severity) => {
       it(`renders \`${severity}\` severity and passes props to the decorator slot`, () => {
-        const { getByTestId } = renderTestWithProvider(
+        const { getByTestId } = render_test_with_provider(
           <ToastProvider>
             <Toast
               open
               severity={severity}
-              slotProps={{
+              slot_props={{
                 decorator: {
                   "data-testid": "decorator"
                 } as React.ComponentPropsWithoutRef<"span">
@@ -94,14 +94,14 @@ describe("<Toast />", () => {
   );
 
   it("passes props to the close slot", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <ToastProvider>
         <Toast
           open
-          slotProps={
+          slot_props={
             {
               close: { "data-testid": "close" }
-            } as ToastProps["slotProps"]
+            } as ToastProps["slot_props"]
           }
         >
           Test

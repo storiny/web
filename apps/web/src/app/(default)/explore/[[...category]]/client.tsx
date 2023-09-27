@@ -89,7 +89,7 @@ const PageInputHeader = ({
         tabValue === "all" ? "" : `for ${tabValue} `
       }in ${normalizeCategory(category)}`}
       size={"lg"}
-      slotProps={{
+      slot_props={{
         container: {
           className: clsx("f-grow", styles.x, styles.input)
         }

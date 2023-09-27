@@ -17,13 +17,13 @@ import ReportIcon from "~/icons/Report";
 import ShareIcon from "~/icons/Share";
 import UserBlockIcon from "~/icons/UserBlock";
 import UserXIcon from "~/icons/UserX";
-import { selectLoggedIn } from "~/redux/features/auth/selectors";
+import { select_is_logged_in } from "~/redux/features/auth/selectors";
 import {
   boolean_action,
   setMute,
-  syncWithUser
+  sync_with_user
 } from "~/redux/features/entities/slice";
-import { useAppDispatch, useAppSelector } from "~/redux/hooks";
+import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 import { breakpoints } from "~/theme/breakpoints";
 
 import { UserActionsProps } from "./actions.props";
@@ -32,12 +32,14 @@ const UserActions = (props: UserActionsProps): React.ReactElement | null => {
   const { user, actionType } = props;
   const share = useWebShare();
   const copy = useClipboard();
-  const dispatch = useAppDispatch();
+  const dispatch = use_app_dispatch();
   const isMobile = useMediaQuery(breakpoints.down("mobile"));
-  const loggedIn = useAppSelector(selectLoggedIn);
-  const isBlocking = useAppSelector((state) => state.entities.blocks[user.id]);
-  const isMuted = useAppSelector((state) => state.entities.mutes[user.id]);
-  const isFollower = useAppSelector(
+  const loggedIn = use_app_selector(select_is_logged_in);
+  const isBlocking = use_app_selector(
+    (state) => state.entities.blocks[user.id]
+  );
+  const isMuted = use_app_selector((state) => state.entities.mutes[user.id]);
+  const isFollower = use_app_selector(
     (state) => state.entities.followers[user.id]
   );
   const [element] = useConfirmation(
@@ -64,7 +66,7 @@ const UserActions = (props: UserActionsProps): React.ReactElement | null => {
   );
 
   React.useEffect(() => {
-    dispatch(syncWithUser(user));
+    dispatch(sync_with_user(user));
   }, [dispatch, user]);
 
   if (isMobile && actionType === "default") {

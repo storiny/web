@@ -21,7 +21,7 @@ const Radio = React.forwardRef<HTMLButtonElement, RadioProps>((props, ref) => {
     label,
     className,
     disabled,
-    slotProps,
+    slot_props,
     children,
     ...rest
   } = props;
@@ -37,11 +37,11 @@ const Radio = React.forwardRef<HTMLButtonElement, RadioProps>((props, ref) => {
 
   return (
     <div
-      {...slotProps?.container}
+      {...slot_props?.container}
       className={clsx(
         "flex",
         styles.container,
-        slotProps?.container?.className
+        slot_props?.container?.className
       )}
     >
       <Item
@@ -60,21 +60,21 @@ const Radio = React.forwardRef<HTMLButtonElement, RadioProps>((props, ref) => {
         ref={ref}
       />
       <div
-        {...slotProps?.childrenContainer}
+        {...slot_props?.childrenContainer}
         className={clsx(
           "flex-col",
           styles["children-container"],
-          slotProps?.childrenContainer?.className
+          slot_props?.childrenContainer?.className
         )}
       >
         {label && (
           <Label
-            {...slotProps?.label}
+            {...slot_props?.label}
             className={clsx(
               size === "lg" ? "t-body-1" : "t-body-2",
               disabled ? "t-muted" : "t-major",
               styles.label,
-              slotProps?.label?.className
+              slot_props?.label?.className
             )}
             htmlFor={itemId || radioId}
             id={labelId}

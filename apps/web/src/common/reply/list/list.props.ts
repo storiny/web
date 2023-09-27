@@ -8,7 +8,7 @@ export interface VirtualizedReplyListProps extends VirtuosoProps<Reply, any> {
   /**
    * Flag indicating whether there are more replies to render.
    */
-  hasMore: boolean;
+  has_more: boolean;
   /**
    * A callback function to fetch more replies.
    */

@@ -87,7 +87,7 @@ const LicenseTab = (): React.ReactElement => {
         label={"Select a license"}
         name={"license"}
         required
-        slotProps={{
+        slot_props={{
           trigger: {
             "aria-label": "Story license"
           },

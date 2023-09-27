@@ -8,8 +8,8 @@ import RadioGroup from "~/components/RadioGroup";
 import Spacer from "~/components/Spacer";
 import Typography from "~/components/Typography";
 import { useMediaQuery } from "~/hooks/useMediaQuery";
-import { setCodeFont } from "~/redux/features";
-import { useAppDispatch, useAppSelector } from "~/redux/hooks";
+import { set_code_font } from "~/redux/features";
+import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 import { breakpoints } from "~/theme/breakpoints";
 
 import commonStyles from "../../styles.module.scss";
@@ -95,7 +95,7 @@ const TypefaceItem = ({
     <Radio
       className={clsx(commonStyles.x, commonStyles.radio)}
       label={label}
-      slotProps={{
+      slot_props={{
         container: {
           className: clsx(commonStyles.x, commonStyles["radio-container"])
         }
@@ -107,8 +107,8 @@ const TypefaceItem = ({
 
 const CodeFontTypefacePreference = (): React.ReactElement => {
   const isSmallerThanMobile = useMediaQuery(breakpoints.down("mobile"));
-  const dispatch = useAppDispatch();
-  const typeface = useAppSelector((state) => state.preferences.code_font);
+  const dispatch = use_app_dispatch();
+  const typeface = use_app_selector((state) => state.preferences.code_font);
 
   return (
     <React.Fragment>
@@ -130,7 +130,7 @@ const CodeFontTypefacePreference = (): React.ReactElement => {
           typefaceStyles["radio-group"]
         )}
         onValueChange={(newValue): void => {
-          dispatch(setCodeFont(newValue as typeof typeface));
+          dispatch(set_code_font(newValue as typeof typeface));
         }}
         orientation={isSmallerThanMobile ? "vertical" : "horizontal"}
         value={typeface}

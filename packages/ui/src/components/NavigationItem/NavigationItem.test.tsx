@@ -2,14 +2,14 @@ import { axe } from "@storiny/test-utils";
 import { waitFor } from "@testing-library/react";
 import React from "react";
 
-import { renderTestWithProvider } from "~/redux/testUtils";
+import { render_test_with_provider } from "src/redux/test-utils";
 
 import NavigationItem from "./NavigationItem";
 import { NavigationItemProps } from "./NavigationItem.props";
 
 describe("<NavigationItem />", () => {
   it("matches snapshot", () => {
-    const { container } = renderTestWithProvider(
+    const { container } = render_test_with_provider(
       <NavigationItem>Test</NavigationItem>
     );
 
@@ -17,7 +17,7 @@ describe("<NavigationItem />", () => {
   });
 
   it("does not have any accessibility violations", async () => {
-    const { container } = renderTestWithProvider(
+    const { container } = render_test_with_provider(
       <NavigationItem>Test</NavigationItem>
     );
 
@@ -27,7 +27,7 @@ describe("<NavigationItem />", () => {
   });
 
   it("renders as a polymorphic element", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <NavigationItem as={"aside"} data-testid={"navigation-item"} />
     );
     expect(getByTestId("navigation-item").nodeName.toLowerCase()).toEqual(
@@ -36,7 +36,7 @@ describe("<NavigationItem />", () => {
   });
 
   it("renders decorator", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <NavigationItem decorator={<span data-testid={"decorator"} />}>
         Test
       </NavigationItem>
@@ -46,7 +46,7 @@ describe("<NavigationItem />", () => {
   });
 
   it("renders custom end decorator", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <NavigationItem endDecorator={<span data-testid={"end-decorator"} />}>
         Test
       </NavigationItem>
@@ -56,14 +56,14 @@ describe("<NavigationItem />", () => {
   });
 
   it("passes props to the element slots", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <NavigationItem
         decorator={<span />}
-        slotProps={
+        slot_props={
           {
             decorator: { "data-testid": "decorator" },
             endDecorator: { "data-testid": "end-decorator" }
-          } as NavigationItemProps["slotProps"]
+          } as NavigationItemProps["slot_props"]
         }
       >
         Test

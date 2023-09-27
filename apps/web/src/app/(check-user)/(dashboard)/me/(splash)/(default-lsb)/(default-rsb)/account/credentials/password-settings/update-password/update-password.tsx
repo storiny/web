@@ -12,7 +12,7 @@ import { useToast } from "~/components/Toast";
 import Typography from "~/components/Typography";
 import { useMediaQuery } from "~/hooks/useMediaQuery";
 import PasswordIcon from "~/icons/Password";
-import { useUpdatePasswordMutation } from "~/redux/features";
+import { use_update_password_mutation } from "~/redux/features";
 import { breakpoints } from "~/theme/breakpoints";
 
 import { UpdatePasswordProps } from "./update-password.props";
@@ -85,7 +85,7 @@ const UpdatePassword = ({
       "new-password": ""
     }
   });
-  const [updatePassword, { isLoading }] = useUpdatePasswordMutation();
+  const [updatePassword, { isLoading }] = use_update_password_mutation();
 
   const handleSubmit: SubmitHandler<UpdatePasswordSchema> = (values) => {
     if (onSubmit) {
@@ -149,7 +149,7 @@ const UpdatePassword = ({
           </ModalFooterButton>
         </>
       ),
-      slotProps: {
+      slot_props: {
         footer: {
           compact: isSmallerThanMobile
         },

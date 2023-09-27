@@ -2,24 +2,27 @@ import { axe } from "@storiny/test-utils";
 import { waitFor } from "@testing-library/react";
 import React from "react";
 
-import { renderTestWithProvider } from "~/redux/testUtils";
+import { render_test_with_provider } from "src/redux/test-utils";
 
 import { testNotification } from "../../mocks";
 import Notification from "./notification";
 
 describe("<Notification />", () => {
   it("renders", () => {
-    renderTestWithProvider(<Notification notification={testNotification} />);
+    render_test_with_provider(<Notification notification={testNotification} />);
   });
 
   it("renders when logged in", () => {
-    renderTestWithProvider(<Notification notification={testNotification} />, {
-      loggedIn: true
-    });
+    render_test_with_provider(
+      <Notification notification={testNotification} />,
+      {
+        loggedIn: true
+      }
+    );
   });
 
   it("does not have any accessibility violations", async () => {
-    const { container } = renderTestWithProvider(
+    const { container } = render_test_with_provider(
       <Notification notification={testNotification} />
     );
 
@@ -29,7 +32,7 @@ describe("<Notification />", () => {
   });
 
   it("does not have any accessibility violations when logged in", async () => {
-    const { container } = renderTestWithProvider(
+    const { container } = render_test_with_provider(
       <Notification notification={testNotification} />,
       {
         loggedIn: true

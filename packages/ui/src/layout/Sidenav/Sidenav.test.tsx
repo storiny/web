@@ -1,16 +1,16 @@
 import React from "react";
 
-import { renderTestWithProvider } from "~/redux/testUtils";
+import { render_test_with_provider } from "src/redux/test-utils";
 
 import Sidenav from "./Static";
 
 describe("<Sidenav />", () => {
   it("renders", () => {
-    renderTestWithProvider(<Sidenav />);
+    render_test_with_provider(<Sidenav />);
   });
 
   it("renders logged out state", () => {
-    const { queryByRole, getByRole } = renderTestWithProvider(<Sidenav />);
+    const { queryByRole, getByRole } = render_test_with_provider(<Sidenav />);
 
     expect(
       queryByRole("button", { name: /more menu options/i })
@@ -22,7 +22,7 @@ describe("<Sidenav />", () => {
   });
 
   it("renders logged in state", () => {
-    const { getByRole } = renderTestWithProvider(<Sidenav />, {
+    const { getByRole } = render_test_with_provider(<Sidenav />, {
       loggedIn: true
     });
 

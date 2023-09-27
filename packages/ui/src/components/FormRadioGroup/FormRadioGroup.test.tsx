@@ -6,7 +6,7 @@ import { z } from "zod";
 
 import Form, { useForm } from "~/components/Form";
 import FormRadio from "~/components/FormRadio/FormRadio";
-import { renderTestWithProvider } from "~/redux/testUtils";
+import { render_test_with_provider } from "src/redux/test-utils";
 
 import FormRadioGroup from "./FormRadioGroup";
 import { FormRadioGroupProps } from "./FormRadioGroup.props";
@@ -40,7 +40,7 @@ const Component = ({
 
 describe("<FormRadioGroup />", () => {
   it("matches snapshot", () => {
-    const { container } = renderTestWithProvider(
+    const { container } = render_test_with_provider(
       <Component>
         <FormRadioGroup label={"Test label"} name={"radioGroup"}>
           {[...Array(3)].map((_, index) => (
@@ -59,7 +59,7 @@ describe("<FormRadioGroup />", () => {
   });
 
   it("does not have any accessibility violations", async () => {
-    const { container } = renderTestWithProvider(
+    const { container } = render_test_with_provider(
       <Component>
         <FormRadioGroup label={"Test label"} name={"radioGroup"}>
           {[...Array(3)].map((_, index) => (
@@ -80,7 +80,7 @@ describe("<FormRadioGroup />", () => {
   });
 
   it("consumes disabled prop from `FormContext`", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Component disabled>
         <FormRadioGroup
           formSlotProps={
@@ -107,7 +107,7 @@ describe("<FormRadioGroup />", () => {
   });
 
   it("passes props to the element slots", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Component>
         <FormRadioGroup
           formSlotProps={

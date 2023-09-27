@@ -4,7 +4,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import clsx from "clsx";
 import React from "react";
 
-import { renderWithState } from "~/redux/mock";
+import { render_with_state } from "~/redux/mock";
 
 import Footer from "./Footer";
 
@@ -32,6 +32,6 @@ export const Default: Story = {};
 export const LoggedIn: Story = {
   decorators: [
     (Story): React.ReactElement =>
-      renderWithState(<Story />, { loggedIn: true })
+      render_with_state(<Story />, { loggedIn: true })
   ]
 };

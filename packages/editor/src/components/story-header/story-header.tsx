@@ -28,8 +28,8 @@ import SidebarCollapseIcon from "~/icons/SidebarCollapse";
 import SidebarExpandIcon from "~/icons/SidebarExpand";
 import UserCheckIcon from "~/icons/UserCheck";
 import UserPlusIcon from "~/icons/UserPlus";
-import { boolean_action, selectUser } from "~/redux/features";
-import { useAppDispatch, useAppSelector } from "~/redux/hooks";
+import { boolean_action, select_user } from "~/redux/features";
+import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 import { breakpoints } from "~/theme/breakpoints";
 import { abbreviateNumber } from "~/utils/abbreviateNumber";
 import { DateFormat, formatDate } from "~/utils/formatDate";
@@ -48,11 +48,11 @@ const StoryActions = (): React.ReactElement => {
   );
   const share = useWebShare();
   const copy = useClipboard();
-  const dispatch = useAppDispatch();
-  const isBookmarked = useAppSelector(
+  const dispatch = use_app_dispatch();
+  const isBookmarked = use_app_selector(
     (state) => state.entities.bookmarks[story.id]
   );
-  const isMuted = useAppSelector(
+  const isMuted = use_app_selector(
     (state) => state.entities.mutes[story.user!.id]
   );
 
@@ -151,13 +151,13 @@ const StoryActions = (): React.ReactElement => {
 // Sub-header
 
 const Subheader = (): React.ReactElement => {
-  const dispatch = useAppDispatch();
+  const dispatch = use_app_dispatch();
   const isMobile = useMediaQuery(breakpoints.down("mobile"));
   const story = useAtomValue(storyMetadataAtom);
   const user = story.user!;
   const followerCount =
-    useAppSelector((state) => state.entities.followerCounts[user.id]) || 0;
-  const isFollowing = useAppSelector(
+    use_app_selector((state) => state.entities.followerCounts[user.id]) || 0;
+  const isFollowing = use_app_selector(
     (state) => state.entities.following[user.id]
   );
 
@@ -170,7 +170,7 @@ const Subheader = (): React.ReactElement => {
           label: user?.name,
           hex: user?.avatar_hex
         }}
-        componentProps={{
+        component_props={{
           secondaryText: {
             ellipsis: true
           }
@@ -222,7 +222,7 @@ const StoryHeader = (): React.ReactElement => {
   const isSmallerThanDesktop = useMediaQuery(breakpoints.down("desktop"));
   const sidebarsCollapsed = useAtomValue(sidebarsCollapsedAtom);
   const story = useAtomValue(storyMetadataAtom);
-  const user = useAppSelector(selectUser);
+  const user = use_app_selector(select_user);
 
   return (
     <header>

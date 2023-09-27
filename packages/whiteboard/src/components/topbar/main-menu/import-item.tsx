@@ -66,7 +66,7 @@ const ImportItem = (): React.ReactElement => {
     {
       color: "ruby",
       onConfirm: openFileSelector,
-      slotProps: {
+      slot_props: {
         content: {
           style: {
             zIndex: "calc(var(--z-index-modal) + 2)"

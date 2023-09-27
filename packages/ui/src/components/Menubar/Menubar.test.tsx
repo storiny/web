@@ -2,7 +2,7 @@ import { axe } from "@storiny/test-utils";
 import { waitFor } from "@testing-library/react";
 import React from "react";
 
-import { renderTestWithProvider } from "~/redux/testUtils";
+import { render_test_with_provider } from "src/redux/test-utils";
 
 import MenubarItem from "../MenubarItem";
 import MenubarMenu from "../MenubarMenu";
@@ -10,7 +10,7 @@ import Menubar from "./Menubar";
 
 describe("<Menubar />", () => {
   it("matches snapshot", () => {
-    const { baseElement } = renderTestWithProvider(
+    const { baseElement } = render_test_with_provider(
       <Menubar value={"test"}>
         <MenubarMenu trigger={<button>Trigger</button>} value={"test"}>
           <MenubarItem>Menubar item</MenubarItem>
@@ -22,7 +22,7 @@ describe("<Menubar />", () => {
   });
 
   it("does not have any accessibility violations", async () => {
-    const { baseElement } = renderTestWithProvider(
+    const { baseElement } = render_test_with_provider(
       <Menubar value={"test"}>
         <MenubarMenu trigger={<button>Trigger</button>} value={"test"}>
           <MenubarItem>Menubar item</MenubarItem>
@@ -43,7 +43,7 @@ describe("<Menubar />", () => {
   });
 
   it("renders as a polymorphic element", () => {
-    const { getByRole } = renderTestWithProvider(
+    const { getByRole } = render_test_with_provider(
       <Menubar as={"aside"} value={"test"}>
         <MenubarMenu trigger={<button>Trigger</button>} value={"test"}>
           <MenubarItem>Menubar item</MenubarItem>

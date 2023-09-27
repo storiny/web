@@ -1,12 +1,12 @@
 import { boolean_action, number_action } from "~/redux/features";
-import { setupStore } from "~/redux/store";
+import { setup_store } from "~/redux/store";
 
 const testId = "0";
 
 describe("entitiesListener", () => {
   describe("block", () => {
     it("unfollows, unsubscribes, removes friend request, and removes user from followers and friends list when they are blocked", async () => {
-      const store = setupStore(undefined, true);
+      const store = setup_store(undefined, true);
 
       // Follow user
       store.dispatch(boolean_action("following", testId, true));
@@ -39,7 +39,7 @@ describe("entitiesListener", () => {
 
   describe("following", () => {
     it("subscribes/unsubscribes to/from user when following/unfollowing them", () => {
-      const store = setupStore(undefined, true);
+      const store = setup_store(undefined, true);
 
       // Follow user
       store.dispatch(boolean_action("following", testId, true));
@@ -55,7 +55,7 @@ describe("entitiesListener", () => {
     });
 
     it("syncs count on toggling following", () => {
-      const store = setupStore(undefined, true);
+      const store = setup_store(undefined, true);
 
       // Follow user
       store.dispatch(boolean_action("following", testId));
@@ -69,7 +69,7 @@ describe("entitiesListener", () => {
 
   describe("friend", () => {
     it("syncs count on toggling friends", () => {
-      const store = setupStore(undefined, true);
+      const store = setup_store(undefined, true);
 
       store.dispatch(boolean_action("friends", testId, true));
       store.dispatch(number_action("friendCounts", testId, 5));
@@ -82,7 +82,7 @@ describe("entitiesListener", () => {
 
   describe("story", () => {
     it("syncs count on toggling story like", () => {
-      const store = setupStore(undefined, true);
+      const store = setup_store(undefined, true);
 
       // Like story
       store.dispatch(boolean_action("likedStories", testId));
@@ -96,7 +96,7 @@ describe("entitiesListener", () => {
 
   describe("comment", () => {
     it("syncs count on toggling comment like", () => {
-      const store = setupStore(undefined, true);
+      const store = setup_store(undefined, true);
 
       // Like comment
       store.dispatch(boolean_action("likedComments", testId));
@@ -110,7 +110,7 @@ describe("entitiesListener", () => {
 
   describe("reply", () => {
     it("syncs count on toggling reply like", () => {
-      const store = setupStore(undefined, true);
+      const store = setup_store(undefined, true);
 
       // Like reply
       store.dispatch(boolean_action("likedReplies", testId));
@@ -124,7 +124,7 @@ describe("entitiesListener", () => {
 
   describe("tag follower", () => {
     it("syncs count on toggling tag follower", () => {
-      const store = setupStore(undefined, true);
+      const store = setup_store(undefined, true);
 
       // Follow tag
       store.dispatch(boolean_action("followedTags", testId));

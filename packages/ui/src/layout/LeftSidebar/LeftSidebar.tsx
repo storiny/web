@@ -9,7 +9,7 @@ import NoSsr from "~/components/NoSsr";
 import { useMediaQuery } from "~/hooks/useMediaQuery";
 import { useSticky } from "~/hooks/useSticky";
 // import { selectBannerHeight } from "~/redux/features/banner/selectors";
-// import { useAppSelector } from "~/redux/hooks";
+// import { use_app_selector } from "~/redux/hooks";
 import { breakpoints } from "~/theme/breakpoints";
 
 import sidebarStyles from "../common/Sidebar.module.scss";
@@ -21,9 +21,9 @@ const LeftSidebarDefaultContent = dynamic(() => import("./DefaultContent"), {
 });
 
 const LeftSidebar = (props: LeftSidebarProps): React.ReactElement | null => {
-  const { className, forceMount, componentProps, children, ...rest } = props;
+  const { className, forceMount, component_props, children, ...rest } = props;
   // TODO: Uncommment after banner gets fixed
-  // const bannerHeight = useAppSelector(selectBannerHeight);
+  // const bannerHeight = use_app_selector(selectBannerHeight);
   // Add banner height to the offset
   const stickyRef = useSticky({
     offsetTop: 52
@@ -48,13 +48,13 @@ const LeftSidebar = (props: LeftSidebarProps): React.ReactElement | null => {
         data-lsb={"true"}
       >
         <div
-          {...componentProps?.wrapper}
+          {...component_props?.wrapper}
           className={clsx(
             "flex-col",
             "full-w",
             styles.wrapper,
             sidebarStyles.wrapper,
-            componentProps?.wrapper?.className
+            component_props?.wrapper?.className
           )}
           ref={stickyRef}
         >

@@ -2,7 +2,7 @@
 
 import React from "react";
 
-import Accordion from "~/components/Accordion";
+import Accordion from "../../../../../ui/src/components/accordion";
 
 import BrightnessTool from "./items/brightness";
 

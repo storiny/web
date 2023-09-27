@@ -22,7 +22,7 @@ export interface MenuProps extends MenuPrimitive {
   /**
    * The props passed to the individual component elements.
    */
-  slotProps?: {
+  slot_props?: {
     arrow?: DropdownMenuArrowProps;
     content?: DropdownMenuContentProps;
     portal?: DropdownMenuPortalProps;

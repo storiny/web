@@ -34,7 +34,7 @@ const meta: Meta<typeof Input> = {
           </IconButton>
         ),
         Select: (
-          <Select slotProps={{ value: { placeholder: "Select" } }}>
+          <Select slot_props={{ value: { placeholder: "Select" } }}>
             {[...Array(3)].map((_, index) => (
               <Option key={`option-${index}`} value={`option-${index}`}>
                 Option
@@ -51,7 +51,7 @@ const meta: Meta<typeof Input> = {
     color: "inverted",
     type: "text",
     placeholder: "Input placeholder",
-    slotProps: {
+    slot_props: {
       container: {
         style: { maxWidth: "300px" }
       }

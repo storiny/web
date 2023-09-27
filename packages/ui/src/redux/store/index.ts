@@ -11,92 +11,96 @@ import {
   withReduxStateSync
 } from "redux-state-sync";
 
-import { initialState } from "~/redux/state";
+import { initial_state } from "~/redux/state";
 
-import { apiSlice } from "../features/api/slice";
-import authSlice from "../features/auth/slice";
-import entitiesSlice from "../features/entities/slice";
+import { api_slice } from "../features/api/slice";
+import auth_slice from "../features/auth/slice";
+import entities_slice from "../features/entities/slice";
 import notifications_slice from "../features/notifications/slice";
-import preferencesSlice from "../features/preferences/slice";
-import toastSlice from "../features/toast/slice";
-import { listenerMiddleware } from "../listenerMiddleware";
+import preferences_slice from "../features/preferences/slice";
+import toast_slice from "../features/toast/slice";
+import { listener_middleware } from "../listener-middleware";
 
-export const rootReducer = combineReducers({
-  preferences: preferencesSlice,
-  entities: entitiesSlice,
-  auth: authSlice,
+export const root_reducer = combineReducers({
+  preferences: preferences_slice,
+  entities: entities_slice,
+  auth: auth_slice,
   notifications: notifications_slice,
-  toast: toastSlice,
-  [apiSlice.reducerPath]: apiSlice.reducer
+  toast: toast_slice,
+  [api_slice.reducerPath]: api_slice.reducer
 });
 
 /**
  * Builds up the root store
- * @param preloadedState Optional preloaded state to consume
- * @param doNotSync Skip the syncing behaviour across tabs
- * @param loggedIn Populate the store with logged in data
+ * @param preloaded_state Optional preloaded state to consume
+ * @param do_not_sync Skip the syncing behaviour across tabs
+ * @param logged_in Populate the store with logged in data
  */
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export const setupStore = (
-  preloadedState: PreloadedState<AppState> = initialState,
-  doNotSync?: boolean,
-  loggedIn?: boolean
+export const setup_store = (
+  preloaded_state: PreloadedState<AppState> = initial_state,
+  do_not_sync?: boolean,
+  logged_in?: boolean
 ) =>
   configureStore({
-    reducer: doNotSync
-      ? rootReducer
+    reducer: do_not_sync
+      ? root_reducer
       : withReduxStateSync(
-          rootReducer,
-          (prevState: AppState, nextState: AppState): AppState => ({
-            ...nextState,
-            api: prevState.api
+          root_reducer,
+          (prev_state: AppState, next_state: AppState): AppState => ({
+            ...next_state,
+            api: prev_state.api
           })
         ),
+    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     preloadedState: {
-      ...preloadedState,
+      ...preloaded_state,
       auth: {
-        ...preloadedState.auth!,
-        loggedIn: Boolean(
-          typeof loggedIn !== "undefined"
-            ? loggedIn
-            : preloadedState.auth?.loggedIn
+        ...preloaded_state.auth!,
+        logged_in: Boolean(
+          typeof logged_in !== "undefined"
+            ? logged_in
+            : preloaded_state.auth?.logged_in
         )
       }
     },
+    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     devTools: !["production", "test"].includes(process.env.NODE_ENV || ""),
-    middleware: (getDefaultMiddleware) =>
-      getDefaultMiddleware({}).concat([
-        apiSlice.middleware,
-        listenerMiddleware.middleware,
-        ...(doNotSync
+    middleware: (get_default_middleware) =>
+      get_default_middleware().concat([
+        api_slice.middleware,
+        listener_middleware.middleware,
+        ...(do_not_sync
           ? []
           : [
               createStateSyncMiddleware({
                 channel: "__state_sync_channel__",
-                blacklist: ["preferences/syncToBrowser"],
+                blacklist: ["preferences/sync_to_browser"],
                 predicate: (action) => !/api\//.test(action.type),
+                // eslint-disable-next-line prefer-snakecase/prefer-snakecase
                 prepareState: (state: AppState) => ({
                   ...state,
                   api: undefined
                 }),
+                // eslint-disable-next-line prefer-snakecase/prefer-snakecase
                 receiveState: (
-                  prevState: AppState,
-                  nextState: AppState
+                  prev_state: AppState,
+                  next_state: AppState
                 ): AppState => ({
-                  ...nextState,
-                  api: prevState.api
+                  ...next_state,
+                  api: prev_state.api
                 })
               })
             ])
       ])
   });
 
-export const store = setupStore();
+export const store = setup_store();
 
 if (process.env.NODE_ENV !== "test" && typeof window !== "undefined") {
   initStateWithPrevTab(store);
 }
 
-export type AppState = ReturnType<typeof rootReducer>;
-export type AppStore = ReturnType<typeof setupStore>;
+export type AppState = ReturnType<typeof root_reducer>;
+export type AppStore = ReturnType<typeof setup_store>;
 export type AppDispatch = AppStore["dispatch"];

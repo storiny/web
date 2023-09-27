@@ -21,11 +21,11 @@ import UserBlockIcon from "~/icons/UserBlock";
 import XIcon from "~/icons/X";
 import {
   boolean_action,
-  selectLoggedIn,
+  select_is_logged_in,
   setSentRequest,
-  syncWithUser
+  sync_with_user
 } from "~/redux/features";
-import { useAppDispatch, useAppSelector } from "~/redux/hooks";
+import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 
 interface Props {
   isInsideSidebar?: boolean;
@@ -35,22 +35,22 @@ interface Props {
 const Actions = ({ profile, isInsideSidebar }: Props): React.ReactElement => {
   const share = useWebShare();
   const copy = useClipboard();
-  const dispatch = useAppDispatch();
-  const loggedIn = useAppSelector(selectLoggedIn);
-  const isFollowing = useAppSelector(
+  const dispatch = use_app_dispatch();
+  const loggedIn = use_app_selector(select_is_logged_in);
+  const isFollowing = use_app_selector(
     (state) => state.entities.following[profile.id]
   );
-  const isBlocking = useAppSelector(
+  const isBlocking = use_app_selector(
     (state) => state.entities.blocks[profile.id]
   );
-  const isMuted = useAppSelector((state) => state.entities.mutes[profile.id]);
-  const isSubscribed = useAppSelector(
+  const isMuted = use_app_selector((state) => state.entities.mutes[profile.id]);
+  const isSubscribed = use_app_selector(
     (state) => state.entities.subscriptions[profile.id]
   );
-  const isFriend = useAppSelector(
+  const isFriend = use_app_selector(
     (state) => state.entities.friends[profile.id]
   );
-  const isFriendRequestSent = useAppSelector(
+  const isFriendRequestSent = use_app_selector(
     (state) => state.entities.sentRequests[profile.id]
   );
   const isSelf = Boolean(profile.is_self);
@@ -80,7 +80,7 @@ const Actions = ({ profile, isInsideSidebar }: Props): React.ReactElement => {
 
   React.useEffect(() => {
     dispatch(
-      syncWithUser({
+      sync_with_user({
         ...profile,
         following_count:
           typeof profile.following_count === "number"

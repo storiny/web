@@ -42,7 +42,7 @@ const Image = forwardRef<ImageProps, "div">((props, ref) => {
     width,
     height,
     className,
-    slotProps,
+    slot_props,
     style,
     children,
     ...rest
@@ -80,11 +80,11 @@ const Image = forwardRef<ImageProps, "div">((props, ref) => {
       <Component>
         {!children && (
           <ImagePrimitive
-            {...slotProps?.image}
+            {...slot_props?.image}
             alt={alt}
             className={clsx(
               styles["native-image"],
-              slotProps?.image?.className
+              slot_props?.image?.className
             )}
             onLoadingStatusChange={(status): void =>
               setLoaded(status === "loaded")
@@ -95,11 +95,11 @@ const Image = forwardRef<ImageProps, "div">((props, ref) => {
         )}
         <Fallback
           delayMs={500}
-          {...slotProps?.fallback}
+          {...slot_props?.fallback}
           className={clsx(
             "flex-center",
             styles.fallback,
-            slotProps?.fallback?.className
+            slot_props?.fallback?.className
           )}
         >
           <Typography className={"t-minor"} level={"body2"}>
@@ -108,13 +108,13 @@ const Image = forwardRef<ImageProps, "div">((props, ref) => {
         </Fallback>
         {showOverlay && (
           <div
-            {...slotProps?.overlay}
+            {...slot_props?.overlay}
             className={clsx(
               "force-dark-mode",
               "flex-col",
               "flex-center",
               styles.overlay,
-              slotProps?.overlay?.className
+              slot_props?.overlay?.className
             )}
           >
             <WarningIcon />

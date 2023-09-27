@@ -2,7 +2,7 @@ import { axe } from "@storiny/test-utils";
 import { waitFor } from "@testing-library/react";
 import React from "react";
 
-import { renderTestWithProvider } from "~/redux/testUtils";
+import { render_test_with_provider } from "src/redux/test-utils";
 
 import ErrorState from "./ErrorState";
 import styles from "./ErrorState.module.scss";
@@ -14,18 +14,18 @@ import {
 
 describe("<ErrorState />", () => {
   it("renders", () => {
-    renderTestWithProvider(<ErrorState />);
+    render_test_with_provider(<ErrorState />);
   });
 
   it("does not have any accessibility violations", async () => {
-    const { container } = renderTestWithProvider(<ErrorState />);
+    const { container } = render_test_with_provider(<ErrorState />);
     await waitFor(async () =>
       expect(await axe(container)).toHaveNoViolations()
     );
   });
 
   it("renders size `md` and type `network` by default", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <ErrorState data-testid={"error-state"} />
     );
     const errorState = getByTestId("error-state");
@@ -36,7 +36,7 @@ describe("<ErrorState />", () => {
 
   (["md", "sm"] as ErrorStateSize[]).forEach((size) => {
     it(`renders \`${size}\` size`, () => {
-      const { getByTestId } = renderTestWithProvider(
+      const { getByTestId } = render_test_with_provider(
         <ErrorState data-testid={"error-state"} size={size} />
       );
 
@@ -46,7 +46,7 @@ describe("<ErrorState />", () => {
 
   (["network", "server"] as ErrorStateType[]).forEach((type) => {
     it(`renders \`${type}\` type`, () => {
-      const { getByTestId } = renderTestWithProvider(
+      const { getByTestId } = render_test_with_provider(
         <ErrorState data-testid={"error-state"} type={type} />
       );
 
@@ -58,12 +58,12 @@ describe("<ErrorState />", () => {
   });
 
   it("passes props to the component slots", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <ErrorState
-        componentProps={
+        component_props={
           {
             button: { "data-testid": "retry-button" }
-          } as ErrorStateProps["componentProps"]
+          } as ErrorStateProps["component_props"]
         }
       />
     );

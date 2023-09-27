@@ -4,7 +4,7 @@ import React from "react";
 import Button from "~/components/Button";
 import { useConfirmation } from "~/components/Confirmation";
 import { useToast } from "~/components/Toast";
-import { useRemoveConnectionMutation } from "~/redux/features";
+import { use_remove_connection_mutation } from "~/redux/features";
 
 import {
   providerDisplayNameMap,
@@ -22,7 +22,7 @@ const ConnectionButton = ({
   const [connected, setConnected] = React.useState<boolean>(
     Boolean(connection)
   );
-  const [removeConnection, { isLoading }] = useRemoveConnectionMutation();
+  const [removeConnection, { isLoading }] = use_remove_connection_mutation();
   const displayName = providerDisplayNameMap[connection?.provider || 0];
 
   /**

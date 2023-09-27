@@ -20,7 +20,7 @@ const ToggleGroupItem = forwardRef<ToggleGroupItemProps, "button">(
       className,
       children,
       tooltipContent,
-      slotProps,
+      slot_props,
       ...rest
     } = props;
     const Container = tooltipContent ? Tooltip : React.Fragment;
@@ -30,7 +30,7 @@ const ToggleGroupItem = forwardRef<ToggleGroupItemProps, "button">(
     return (
       <Container
         {...(tooltipContent && {
-          ...slotProps?.tooltip,
+          ...slot_props?.tooltip,
           content: tooltipContent
         })}
       >
@@ -39,11 +39,11 @@ const ToggleGroupItem = forwardRef<ToggleGroupItemProps, "button">(
           attribute from Tooltip and Toggle primitives.
         */}
         <span
-          {...slotProps?.container}
+          {...slot_props?.container}
           className={clsx(
             "flex-center",
             toggleStyles.container,
-            slotProps?.container?.className
+            slot_props?.container?.className
           )}
         >
           <Item

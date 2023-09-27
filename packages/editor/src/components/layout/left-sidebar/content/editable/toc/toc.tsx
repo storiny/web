@@ -6,7 +6,7 @@ import Link from "~/components/Link";
 import ScrollArea, { ScrollAreaProps } from "~/components/ScrollArea";
 import Spacer from "~/components/Spacer";
 import Typography from "~/components/Typography";
-import { useStoryMetadataMutation } from "~/redux/features";
+import { use_story_metadata_mutation } from "~/redux/features";
 
 import { docStatusAtom, storyMetadataAtom } from "../../../../../../atoms";
 import TableOfContentsPlugin from "../../../../../../plugins/toc";
@@ -23,7 +23,7 @@ const EditorToc = ({
   const [loading, setLoading] = React.useState<boolean>(false);
   const docStatus = useAtomValue(docStatusAtom);
   const publishing = docStatus === "publishing";
-  const [mutateStoryMetadata] = useStoryMetadataMutation();
+  const [mutateStoryMetadata] = use_story_metadata_mutation();
   const onChange = React.useCallback(
     (nextValue: boolean): void => {
       if (loading) {
@@ -69,7 +69,7 @@ const EditorToc = ({
       <Spacer orientation={"vertical"} size={2} />
       <ScrollArea
         className={clsx(readOnly && "full-h")}
-        slotProps={
+        slot_props={
           {
             viewport: {
               className: clsx(
@@ -85,7 +85,7 @@ const EditorToc = ({
                 backgroundColor: "transparent"
               }
             }
-          } as ScrollAreaProps["slotProps"]
+          } as ScrollAreaProps["slot_props"]
         }
         type={"auto"}
       >

@@ -81,7 +81,7 @@ const ZoomControl = (): React.ReactElement => {
         <MinusIcon />
       </IconButton>
       <Menu
-        slotProps={{
+        slot_props={{
           content: {
             style: {
               zIndex: "calc(var(--z-index-modal) + 2)"

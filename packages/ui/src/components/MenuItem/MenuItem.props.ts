@@ -22,7 +22,7 @@ export interface MenuItemProps extends MenuItemPrimitive {
   /**
    * The props passed to the individual component elements.
    */
-  slotProps?: {
+  slot_props?: {
     decorator?: React.ComponentPropsWithoutRef<"span">;
     rightSlot?: React.ComponentPropsWithoutRef<"span">;
   };

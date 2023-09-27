@@ -5,7 +5,10 @@ import React from "react";
 import { CommentListSkeleton, VirtualizedCommentList } from "~/common/comment";
 import Divider from "~/components/Divider";
 import ErrorState from "~/entities/ErrorState";
-import { getQueryErrorType, useGetStoryCommentsQuery } from "~/redux/features";
+import {
+  get_query_error_type,
+  use_get_story_comments_query
+} from "~/redux/features";
 
 import { storyMetadataAtom } from "../../../atoms";
 import styles from "../auxiliary-content.module.scss";
@@ -20,13 +23,13 @@ const EditorAuxiliaryContentCommentList = (
   const story = useAtomValue(storyMetadataAtom);
   const [page, setPage] = React.useState<number>(1);
   const { data, isLoading, isFetching, isError, error, refetch } =
-    useGetStoryCommentsQuery({
+    use_get_story_comments_query({
       storyId: story.id,
       page,
       sort,
       type: "all"
     });
-  const { items = [], hasMore } = data || {};
+  const { items = [], has_more } = data || {};
   const loadMore = React.useCallback(
     () => setPage((prevState) => prevState + 1),
     []
@@ -44,18 +47,18 @@ const EditorAuxiliaryContentCommentList = (
       ) : isError ? (
         <ErrorState
           autoSize
-          componentProps={{
+          component_props={{
             button: { loading: isFetching }
           }}
           retry={refetch}
-          type={getQueryErrorType(error)}
+          type={get_query_error_type(error)}
         />
       ) : !isFetching && !items.length ? (
         <EditorAuxiliaryContentEmptyState />
       ) : (
         <VirtualizedCommentList
           comments={items}
-          hasMore={Boolean(hasMore)}
+          has_more={Boolean(has_more)}
           loadMore={loadMore}
           // Disable scroll seekers to handle expanded reply lists.
           scrollSeekConfiguration={undefined}

@@ -17,7 +17,7 @@ const Notification = forwardRef<NotificationProps, "li">((props, ref) => {
     children,
     className,
     icon,
-    slotProps,
+    slot_props,
     primaryButtonText = "Confirm",
     secondaryButtonText = "Dismiss",
     ...rest
@@ -40,11 +40,11 @@ const Notification = forwardRef<NotificationProps, "li">((props, ref) => {
         <Description className={clsx("flex-center", styles.description)}>
           {icon && (
             <span
-              {...slotProps?.decorator}
+              {...slot_props?.decorator}
               className={clsx(
                 "flex-center",
                 styles.decorator,
-                slotProps?.decorator?.className
+                slot_props?.decorator?.className
               )}
             >
               {icon}
@@ -59,22 +59,22 @@ const Notification = forwardRef<NotificationProps, "li">((props, ref) => {
         />
         <Divider aria-hidden className={"only-mobile"} />
         <div
-          {...slotProps?.actions}
-          className={clsx(styles.actions, slotProps?.actions?.className)}
+          {...slot_props?.actions}
+          className={clsx(styles.actions, slot_props?.actions?.className)}
         >
           <Action
-            altText={slotProps?.primaryButton?.altText || primaryButtonText}
+            altText={slot_props?.primaryButton?.altText || primaryButtonText}
             asChild
           >
             <button
-              {...slotProps?.primaryButton}
+              {...slot_props?.primaryButton}
               className={clsx(
                 "unset",
                 "focusable",
                 "focus-invert",
                 "t-center",
                 styles.button,
-                slotProps?.secondaryButton?.className
+                slot_props?.secondaryButton?.className
               )}
             >
               {primaryButtonText}
@@ -87,14 +87,14 @@ const Notification = forwardRef<NotificationProps, "li">((props, ref) => {
             orientation={"vertical"}
           />
           <Close
-            {...slotProps?.secondaryButton}
+            {...slot_props?.secondaryButton}
             aria-label={secondaryButtonText}
             className={clsx(
               "unset",
               "focusable",
               "t-center",
               styles.button,
-              slotProps?.secondaryButton?.className
+              slot_props?.secondaryButton?.className
             )}
           >
             {secondaryButtonText}

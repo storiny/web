@@ -11,7 +11,7 @@ import Typography from "~/components/Typography";
 import { useMediaQuery } from "~/hooks/useMediaQuery";
 import PasswordIcon from "~/icons/Password";
 import UnlinkIcon from "~/icons/Unlink";
-import { useRemoveAccountMutation } from "~/redux/features";
+import { use_remove_account_mutation } from "~/redux/features";
 import { breakpoints } from "~/theme/breakpoints";
 
 import { RemoveAccountProps } from "./remove-account.props";
@@ -62,7 +62,7 @@ const RemoveAccount = ({
       "current-password": ""
     }
   });
-  const [removeAccount, { isLoading }] = useRemoveAccountMutation();
+  const [removeAccount, { isLoading }] = use_remove_account_mutation();
 
   const handleSubmit: SubmitHandler<RemoveAccountSchema> = (values) => {
     if (onSubmit) {
@@ -128,7 +128,7 @@ const RemoveAccount = ({
           </ModalFooterButton>
         </>
       ),
-      slotProps: {
+      slot_props: {
         footer: {
           compact: isSmallerThanMobile
         },

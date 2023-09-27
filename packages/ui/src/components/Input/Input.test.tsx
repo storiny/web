@@ -2,7 +2,7 @@ import { axe, userEvent } from "@storiny/test-utils";
 import { waitFor } from "@testing-library/react";
 import React from "react";
 
-import { renderTestWithProvider } from "~/redux/testUtils";
+import { render_test_with_provider } from "src/redux/test-utils";
 
 import Input from "./Input";
 import styles from "./Input.module.scss";
@@ -10,7 +10,7 @@ import { InputColor, InputProps, InputSize } from "./Input.props";
 
 describe("<Input />", () => {
   it("matches snapshot", () => {
-    const { container } = renderTestWithProvider(
+    const { container } = render_test_with_provider(
       <Input placeholder={"Test"} />
     );
 
@@ -18,7 +18,7 @@ describe("<Input />", () => {
   });
 
   it("does not have any accessibility violations", async () => {
-    const { container } = renderTestWithProvider(
+    const { container } = render_test_with_provider(
       <Input placeholder={"Test"} />
     );
 
@@ -28,12 +28,12 @@ describe("<Input />", () => {
   });
 
   it("renders as a polymorphic element", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Input
-        slotProps={
+        slot_props={
           {
             container: { as: "aside", "data-testid": "container" }
-          } as InputProps["slotProps"]
+          } as InputProps["slot_props"]
         }
       />
     );
@@ -42,12 +42,12 @@ describe("<Input />", () => {
   });
 
   it("renders with size `md` and color `inverted` by default", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Input
-        slotProps={
+        slot_props={
           {
             container: { "data-testid": "container" }
-          } as InputProps["slotProps"]
+          } as InputProps["slot_props"]
         }
       />
     );
@@ -59,13 +59,13 @@ describe("<Input />", () => {
 
   (["inverted", "ruby"] as InputColor[]).forEach((color) => {
     it(`renders \`${color}\` color`, () => {
-      const { getByTestId } = renderTestWithProvider(
+      const { getByTestId } = render_test_with_provider(
         <Input
           color={color}
-          slotProps={
+          slot_props={
             {
               container: { "data-testid": "container" }
-            } as InputProps["slotProps"]
+            } as InputProps["slot_props"]
           }
         />
       );
@@ -76,13 +76,13 @@ describe("<Input />", () => {
 
   (["lg", "md", "sm"] as InputSize[]).forEach((size) => {
     it(`renders \`${size}\` size`, () => {
-      const { getByTestId } = renderTestWithProvider(
+      const { getByTestId } = render_test_with_provider(
         <Input
           size={size}
-          slotProps={
+          slot_props={
             {
               container: { "data-testid": "container" }
-            } as InputProps["slotProps"]
+            } as InputProps["slot_props"]
           }
         />
       );
@@ -92,13 +92,13 @@ describe("<Input />", () => {
   });
 
   it("renders decorator", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Input
         decorator={<span>Decorator</span>}
-        slotProps={
+        slot_props={
           {
             decorator: { "data-testid": "decorator" }
-          } as InputProps["slotProps"]
+          } as InputProps["slot_props"]
         }
       />
     );
@@ -107,13 +107,13 @@ describe("<Input />", () => {
   });
 
   it("renders end decorator", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Input
         endDecorator={<span>End decorator</span>}
-        slotProps={
+        slot_props={
           {
             endDecorator: { "data-testid": "end-decorator" }
-          } as InputProps["slotProps"]
+          } as InputProps["slot_props"]
         }
       />
     );
@@ -122,17 +122,17 @@ describe("<Input />", () => {
   });
 
   it("passes props to the element slots", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Input
         data-testid={"input"}
         decorator={<span />}
         endDecorator={<span />}
-        slotProps={
+        slot_props={
           {
             container: { "data-testid": "container" },
             decorator: { "data-testid": "decorator" },
             endDecorator: { "data-testid": "end-decorator" }
-          } as InputProps["slotProps"]
+          } as InputProps["slot_props"]
         }
       />
     );
@@ -144,13 +144,13 @@ describe("<Input />", () => {
 
   describe("spinner", () => {
     it("renders spinner and matches snapshot", async () => {
-      const { getByTestId, container } = renderTestWithProvider(
+      const { getByTestId, container } = render_test_with_provider(
         <Input
           placeholder={"Test"}
-          slotProps={
+          slot_props={
             {
               spinnerContainer: { "data-testid": "spinner-container" }
-            } as InputProps["slotProps"]
+            } as InputProps["slot_props"]
           }
           type={"number"}
         />
@@ -165,9 +165,9 @@ describe("<Input />", () => {
     });
 
     it("passes props to the spinner slots", () => {
-      const { getByTestId } = renderTestWithProvider(
+      const { getByTestId } = render_test_with_provider(
         <Input
-          slotProps={
+          slot_props={
             {
               spinnerContainer: { "data-testid": "spinner-container" },
               spinnerSeparator: { "data-testid": "spinner-separator" },
@@ -177,7 +177,7 @@ describe("<Input />", () => {
               spinnerIncrementButton: {
                 "data-testid": "spinner-increment-button"
               }
-            } as InputProps["slotProps"]
+            } as InputProps["slot_props"]
           }
           type={"number"}
         />
@@ -195,11 +195,11 @@ describe("<Input />", () => {
 
     it("increments and decrements value", async () => {
       const user = userEvent.setup();
-      const { getByTestId } = renderTestWithProvider(
+      const { getByTestId } = render_test_with_provider(
         <Input
           data-testid={"input"}
           defaultValue={0}
-          slotProps={
+          slot_props={
             {
               spinnerIncrementButton: {
                 "data-testid": "spinner-increment-button"
@@ -207,7 +207,7 @@ describe("<Input />", () => {
               spinnerDecrementButton: {
                 "data-testid": "spinner-decrement-button"
               }
-            } as InputProps["slotProps"]
+            } as InputProps["slot_props"]
           }
           step={1}
           type={"number"}
@@ -226,13 +226,13 @@ describe("<Input />", () => {
     });
 
     it("replaces end decorator with spinner", () => {
-      const { queryByTestId } = renderTestWithProvider(
+      const { queryByTestId } = render_test_with_provider(
         <Input
           endDecorator={<span />}
-          slotProps={
+          slot_props={
             {
               endDecorator: { "data-testid": "end-decorator" }
-            } as InputProps["slotProps"]
+            } as InputProps["slot_props"]
           }
           type={"number"}
         />

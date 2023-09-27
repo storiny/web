@@ -64,7 +64,7 @@ const PexelsMasonryItem = React.memo(
           <Image
             alt={data.alt || ""}
             hex={(data.avg_color || "").substring(1)}
-            slotProps={{
+            slot_props={{
               fallback: {
                 style: { display: "none" }
               }

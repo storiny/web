@@ -39,7 +39,7 @@ export interface InputProps
   /**
    * The props passed to the individual component elements.
    */
-  slotProps?: {
+  slot_props?: {
     container?: PolymorphicProps<"div">;
     decorator?: React.ComponentPropsWithoutRef<"span">;
     endDecorator?: React.ComponentPropsWithRef<"span">;

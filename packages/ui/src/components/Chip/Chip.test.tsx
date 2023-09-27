@@ -2,7 +2,7 @@ import { axe } from "@storiny/test-utils";
 import { waitFor } from "@testing-library/react";
 import React from "react";
 
-import { renderTestWithProvider } from "~/redux/testUtils";
+import { render_test_with_provider } from "src/redux/test-utils";
 
 import Chip from "./Chip";
 import styles from "./Chip.module.scss";
@@ -10,19 +10,19 @@ import { ChipProps, ChipSize, ChipType, ChipVariant } from "./Chip.props";
 
 describe("<Chip />", () => {
   it("matches snapshot", () => {
-    const { container } = renderTestWithProvider(<Chip>Test</Chip>);
+    const { container } = render_test_with_provider(<Chip>Test</Chip>);
     expect(container.firstChild).toMatchSnapshot();
   });
 
   it("does not have any accessibility violations", async () => {
-    const { container } = renderTestWithProvider(<Chip>Test</Chip>);
+    const { container } = render_test_with_provider(<Chip>Test</Chip>);
     await waitFor(async () =>
       expect(await axe(container)).toHaveNoViolations()
     );
   });
 
   it("renders as a polymorphic element", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Chip as={"aside"} data-testid={"chip"}>
         Test
       </Chip>
@@ -32,7 +32,7 @@ describe("<Chip />", () => {
   });
 
   it("renders with role `button` on the polymorphic element when clickable", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Chip as={"aside"} data-testid={"chip"} type={"clickable"}>
         Test
       </Chip>
@@ -42,7 +42,7 @@ describe("<Chip />", () => {
   });
 
   it("renders size `md`, variant `rigid`, and type `static` by default", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Chip data-testid={"chip"}>Test</Chip>
     );
     const element = getByTestId("chip");
@@ -53,7 +53,7 @@ describe("<Chip />", () => {
 
   (["static", "clickable", "deletable"] as ChipType[]).forEach((type) => {
     it(`renders \`${type}\` type`, async () => {
-      const { container, getByTestId } = renderTestWithProvider(
+      const { container, getByTestId } = render_test_with_provider(
         <Chip data-testid={"chip"} type={type}>
           Test
         </Chip>
@@ -76,7 +76,7 @@ describe("<Chip />", () => {
 
   (["rigid", "soft"] as ChipVariant[]).forEach((variant) => {
     it(`renders \`${variant}\` variant`, () => {
-      const { getByTestId } = renderTestWithProvider(
+      const { getByTestId } = render_test_with_provider(
         <Chip data-testid={"chip"} variant={variant}>
           Test
         </Chip>
@@ -88,7 +88,7 @@ describe("<Chip />", () => {
 
   (["lg", "md"] as ChipSize[]).forEach((size) => {
     it(`renders \`${size}\` size`, () => {
-      const { getByTestId } = renderTestWithProvider(
+      const { getByTestId } = render_test_with_provider(
         <Chip data-testid={"chip"} size={size}>
           Test
         </Chip>
@@ -99,13 +99,13 @@ describe("<Chip />", () => {
   });
 
   it("renders decorator", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Chip
         decorator={<span>Decorator</span>}
-        slotProps={
+        slot_props={
           {
             decorator: { "data-testid": "decorator" }
-          } as ChipProps["slotProps"]
+          } as ChipProps["slot_props"]
         }
       >
         Test
@@ -116,12 +116,12 @@ describe("<Chip />", () => {
   });
 
   it("renders action", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Chip
-        slotProps={
+        slot_props={
           {
             action: { "data-testid": "action" }
-          } as ChipProps["slotProps"]
+          } as ChipProps["slot_props"]
         }
         type={"deletable"}
       >
@@ -133,14 +133,14 @@ describe("<Chip />", () => {
   });
 
   it("passes props to the element slots", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Chip
         decorator={<span>Decorator</span>}
-        slotProps={
+        slot_props={
           {
             decorator: { "data-testid": "decorator" },
             action: { "data-testid": "action" }
-          } as ChipProps["slotProps"]
+          } as ChipProps["slot_props"]
         }
         type={"deletable"}
       >

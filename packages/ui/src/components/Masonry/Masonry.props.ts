@@ -44,7 +44,7 @@ export type MasonryProps<T> = {
   /**
    * The props passed to the individual component elements.
    */
-  slotProps?: {
+  slot_props?: {
     container?: React.ComponentPropsWithoutRef<"div">;
     item?: React.ComponentPropsWithoutRef<"div">;
   };

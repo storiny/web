@@ -28,7 +28,7 @@ import Gallery from "~/entities/gallery";
 import EditIcon from "~/icons/Edit";
 import PhotoPlusIcon from "~/icons/PhotoPlus";
 import TrashIcon from "~/icons/Trash";
-import { useLazyGetTagsQuery } from "~/redux/features";
+import { use_lazy_get_tags_query } from "~/redux/features";
 
 import imageStyles from "../common/image.module.scss";
 
@@ -159,7 +159,7 @@ const Splash = (): React.ReactElement => {
 // Tags
 
 const Tags = (): React.ReactElement => {
-  const [getTags, { isError }] = useLazyGetTagsQuery();
+  const [getTags, { isError }] = use_lazy_get_tags_query();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const loadOptionsDebounced = React.useCallback(
     debounce(
@@ -243,7 +243,7 @@ const GeneralTab = (): React.ReactElement => (
       label={"Category"}
       name={"category"}
       required
-      slotProps={{
+      slot_props={{
         trigger: {
           "aria-label": "Story category"
         },

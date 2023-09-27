@@ -19,19 +19,19 @@ const Tooltip = forwardRef<TooltipProps, "div">((props, ref) => {
     children,
     className,
     content,
-    slotProps,
+    slot_props,
     ...rest
   } = props;
 
   return (
     <Root {...rest}>
-      <Trigger {...slotProps?.trigger} asChild>
+      <Trigger {...slot_props?.trigger} asChild>
         {children}
       </Trigger>
-      <Portal {...slotProps?.portal}>
+      <Portal {...slot_props?.portal}>
         <Content
           sideOffset={5}
-          {...slotProps?.content}
+          {...slot_props?.content}
           asChild
           className={clsx("flex-center", styles.content, className)}
           ref={ref}
@@ -42,12 +42,12 @@ const Tooltip = forwardRef<TooltipProps, "div">((props, ref) => {
               <React.Fragment>
                 <Spacer />
                 <span
-                  {...slotProps?.rightSlot}
+                  {...slot_props?.rightSlot}
                   className={clsx(
                     "t-muted",
                     styles.x,
                     styles["right-slot"],
-                    slotProps?.rightSlot?.className
+                    slot_props?.rightSlot?.className
                   )}
                 >
                   {rightSlot}
@@ -55,8 +55,8 @@ const Tooltip = forwardRef<TooltipProps, "div">((props, ref) => {
               </React.Fragment>
             )}
             <Arrow
-              {...slotProps?.arrow}
-              className={clsx(styles.arrow, slotProps?.arrow?.className)}
+              {...slot_props?.arrow}
+              className={clsx(styles.arrow, slot_props?.arrow?.className)}
             />
           </Component>
         </Content>

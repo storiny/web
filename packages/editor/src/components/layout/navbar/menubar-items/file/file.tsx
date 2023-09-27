@@ -40,7 +40,7 @@ const FileItem = (): React.ReactElement => {
 
   return (
     <MenubarSub
-      slotProps={{
+      slot_props={{
         trigger: { disabled: true }
       }}
       trigger={"File"}

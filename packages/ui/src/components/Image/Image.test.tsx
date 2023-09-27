@@ -3,22 +3,22 @@ import { axe } from "@storiny/test-utils";
 import { screen, waitFor } from "@testing-library/react";
 import React from "react";
 
-import { renderTestWithProvider } from "~/redux/testUtils";
+import { render_test_with_provider } from "src/redux/test-utils";
 
 import Image from "./Image";
 import { ImageProps } from "./Image.props";
 
 describe("<Image />", () => {
   it("matches snapshot", async () => {
-    const { container } = renderTestWithProvider(
+    const { container } = render_test_with_provider(
       <Image
         alt={"Test image"}
         hex={"fff"}
         imgId={""}
-        slotProps={
+        slot_props={
           {
             fallback: { "data-testid": "fallback", delayMs: 0 }
-          } as ImageProps["slotProps"]
+          } as ImageProps["slot_props"]
         }
       />
     );
@@ -28,7 +28,7 @@ describe("<Image />", () => {
   });
 
   it("does not have any accessibility violations", async () => {
-    const { container } = renderTestWithProvider(
+    const { container } = render_test_with_provider(
       <Image alt={"Test image"} src={""} />
     );
 
@@ -38,7 +38,7 @@ describe("<Image />", () => {
   });
 
   it("renders as a polymorphic element", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Image alt={"Test image"} as={"aside"} data-testid={"image"} />
     );
 
@@ -46,14 +46,14 @@ describe("<Image />", () => {
   });
 
   it("passes props to the overlay slot", async () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Image
         alt={"Test image"}
         imgId={""}
-        slotProps={
+        slot_props={
           {
             fallback: { "data-testid": "fallback", delayMs: 0 }
-          } as ImageProps["slotProps"]
+          } as ImageProps["slot_props"]
         }
       />
     );
@@ -63,15 +63,15 @@ describe("<Image />", () => {
   });
 
   it("passes props to the fallback slot", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Image
         alt={"Test image"}
         imgId={""}
         rating={AssetRating.SENSITIVE}
-        slotProps={
+        slot_props={
           {
             overlay: { "data-testid": "overlay" }
-          } as ImageProps["slotProps"]
+          } as ImageProps["slot_props"]
         }
       />
     );
@@ -80,7 +80,7 @@ describe("<Image />", () => {
   });
 
   it("renders with hex color", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Image alt={"Test image"} data-testid={"image"} hex={"000"} />
     );
 
@@ -90,7 +90,7 @@ describe("<Image />", () => {
   });
 
   it("renders with explicit width and height", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Image alt={"Test image"} data-testid={"image"} height={32} width={64} />
     );
 
@@ -106,15 +106,15 @@ describe("<Image />", () => {
     AssetRating.SUGGESTIVE_NUDITY
   ].forEach((rating) => {
     it(`renders overlay for \`${rating}\` rating`, () => {
-      const { getByTestId } = renderTestWithProvider(
+      const { getByTestId } = render_test_with_provider(
         <Image
           alt={"Test image"}
           imgId={""}
           rating={rating}
-          slotProps={
+          slot_props={
             {
               overlay: { "data-testid": "overlay" }
-            } as ImageProps["slotProps"]
+            } as ImageProps["slot_props"]
           }
         />
       );

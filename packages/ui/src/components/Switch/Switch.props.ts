@@ -25,7 +25,7 @@ export interface SwitchProps extends SwitchPrimitive {
   /**
    * The props passed to the individual component elements.
    */
-  slotProps?: {
+  slot_props?: {
     barIndicator?: React.ComponentPropsWithoutRef<"svg">;
     ringIndicator?: React.ComponentPropsWithoutRef<"svg">;
     thumb?: SwitchThumbProps;

@@ -16,11 +16,11 @@ import { useMediaQuery } from "~/hooks/useMediaQuery";
 import MailIcon from "~/icons/Mail";
 import PasswordIcon from "~/icons/Password";
 import {
-  mutateUser,
-  selectUser,
-  useEmailSettingsMutation
+  mutate_user,
+  select_user,
+  use_email_settings_mutation
 } from "~/redux/features";
-import { useAppDispatch, useAppSelector } from "~/redux/hooks";
+import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 import { breakpoints } from "~/theme/breakpoints";
 
 import DashboardGroup from "../../../../dashboard-group";
@@ -86,7 +86,7 @@ export const EmailSettings = ({
   has_password
 }: EmailGroupProps): React.ReactElement => {
   const router = useRouter();
-  const dispatch = useAppDispatch();
+  const dispatch = use_app_dispatch();
   const toast = useToast();
   const isSmallerThanMobile = useMediaQuery(breakpoints.down("mobile"));
   const [updated, setUpdated] = React.useState<boolean>(false);
@@ -97,7 +97,7 @@ export const EmailSettings = ({
       "current-password": ""
     }
   });
-  const [mutateEmailSettings, { isLoading }] = useEmailSettingsMutation();
+  const [mutateEmailSettings, { isLoading }] = use_email_settings_mutation();
 
   const handleSubmit: SubmitHandler<EmailSettingsSchema> = (values) => {
     if (onSubmit) {
@@ -108,7 +108,7 @@ export const EmailSettings = ({
         .then(() => {
           setUpdated(true);
           dispatch(
-            mutateUser({
+            mutate_user({
               email: values["new-email"]
             })
           );
@@ -169,7 +169,7 @@ export const EmailSettings = ({
           </ModalFooterButton>
         </>
       ),
-      slotProps: {
+      slot_props: {
         footer: {
           compact: isSmallerThanMobile
         },
@@ -196,7 +196,7 @@ export const EmailSettings = ({
 
 const CredentialsEmailGroup = (props: EmailGroupProps): React.ReactElement => {
   const { has_password } = props;
-  const user = useAppSelector(selectUser)!;
+  const user = use_app_selector(select_user)!;
 
   return (
     <DashboardGroup>

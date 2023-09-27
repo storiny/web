@@ -43,7 +43,7 @@ export interface AvatarProps extends AvatarPrimitive {
   /**
    * The props passed to the individual component elements.
    */
-  slotProps?: {
+  slot_props?: {
     fallback?: AvatarFallbackProps;
     image?: AvatarImageProps;
   };

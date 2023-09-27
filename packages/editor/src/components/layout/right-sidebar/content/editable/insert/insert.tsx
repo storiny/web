@@ -20,7 +20,7 @@ const Insert = ({ disabled }: { disabled?: boolean }): React.ReactElement => (
     </Typography>
     <Spacer orientation={"vertical"} size={2} />
     <ScrollArea
-      slotProps={{
+      slot_props={{
         viewport: { asChild: true }
       }}
     >

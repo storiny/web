@@ -18,7 +18,7 @@ import TagChip from "~/entities/TagChip";
 import { useMediaQuery } from "~/hooks/useMediaQuery";
 import CommentIcon from "~/icons/Comment";
 import EditIcon from "~/icons/Edit";
-import { useAppSelector } from "~/redux/hooks";
+import { use_app_selector } from "~/redux/hooks";
 import { breakpoints } from "~/theme/breakpoints";
 import { abbreviateNumber } from "~/utils/abbreviateNumber";
 import { DateFormat, formatDate } from "~/utils/formatDate";

@@ -10,12 +10,12 @@ import CommentIcon from "~/icons/Comment";
 import EditIcon from "~/icons/Edit";
 import ReplyIcon from "~/icons/Reply";
 import {
-  getCommentsApi,
-  getRepliesApi,
-  useEditCommentMutation,
-  useEditReplyMutation
+  get_comments_api,
+  get_replies_api,
+  use_edit_comment_mutation,
+  use_edit_reply_mutation
 } from "~/redux/features";
-import { useAppDispatch } from "~/redux/hooks";
+import { use_app_dispatch } from "~/redux/hooks";
 import { breakpoints } from "~/theme/breakpoints";
 import { capitalize } from "~/utils/capitalize";
 
@@ -25,11 +25,11 @@ const ResponseEditor = (props: ResponseEditorProps): React.ReactElement => {
   const { responseType, responseTextareaProps, responseId } = props;
   const textareaRef = React.useRef<HTMLTextAreaElement>(null);
   const toast = useToast();
-  const dispatch = useAppDispatch();
+  const dispatch = use_app_dispatch();
   const isSmallerThanMobile = useMediaQuery(breakpoints.down("mobile"));
   const [editComment, { isLoading: isCommentLoading }] =
-    useEditCommentMutation();
-  const [editReply, { isLoading: isReplyLoading }] = useEditReplyMutation();
+    use_edit_comment_mutation();
+  const [editReply, { isLoading: isReplyLoading }] = use_edit_reply_mutation();
   const isLoading = isCommentLoading || isReplyLoading;
 
   /**
@@ -47,8 +47,8 @@ const ResponseEditor = (props: ResponseEditorProps): React.ReactElement => {
           toast(`${capitalize(responseType)} edited`);
           dispatch(
             (responseType === "comment"
-              ? getCommentsApi
-              : getRepliesApi
+              ? get_comments_api
+              : get_replies_api
             ).util.resetApiState()
           );
         })
@@ -114,7 +114,7 @@ const ResponseEditor = (props: ResponseEditorProps): React.ReactElement => {
           </ModalFooterButton>
         </>
       ),
-      slotProps: {
+      slot_props: {
         footer: { compact: isSmallerThanMobile },
         content: {
           style: {

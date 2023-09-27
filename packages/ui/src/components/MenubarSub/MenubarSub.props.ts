@@ -14,7 +14,7 @@ export interface MenubarSubProps extends MenubarSubPrimitive {
   /**
    * The props passed to the individual component elements.
    */
-  slotProps?: {
+  slot_props?: {
     content?: MenubarSubContentProps;
     portal?: MenubarPortalProps;
     trigger?: MenubarSubTriggerProps;

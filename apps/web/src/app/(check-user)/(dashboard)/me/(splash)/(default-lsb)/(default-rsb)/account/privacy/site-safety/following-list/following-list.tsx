@@ -9,10 +9,10 @@ import Spacer from "~/components/Spacer";
 import { useToast } from "~/components/Toast";
 import Typography from "~/components/Typography";
 import {
-  selectIsPrivateAccount,
-  useFollowingListMutation
+  select_is_private_account,
+  use_following_list_mutation
 } from "~/redux/features";
-import { useAppSelector } from "~/redux/hooks";
+import { use_app_selector } from "~/redux/hooks";
 
 import styles from "../site-safety.module.scss";
 import { FollowingListProps } from "./following-list.props";
@@ -26,7 +26,7 @@ const FollowingList = ({
   following_list_visibility
 }: FollowingListProps): React.ReactElement => {
   const toast = useToast();
-  const isPrivate = useAppSelector(selectIsPrivateAccount);
+  const isPrivate = use_app_selector(select_is_private_account);
   const prevValuesRef = React.useRef<FollowingListSchema>();
   const form = useForm<FollowingListSchema>({
     resolver: zodResolver(followingListSchema),
@@ -34,7 +34,7 @@ const FollowingList = ({
       "following-list": `${following_list_visibility}` as `${1 | 2 | 3}`
     }
   });
-  const [mutateFollowingList, { isLoading }] = useFollowingListMutation();
+  const [mutateFollowingList, { isLoading }] = use_following_list_mutation();
 
   const handleSubmit: SubmitHandler<FollowingListSchema> = (values) => {
     if (onSubmit) {

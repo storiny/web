@@ -2,7 +2,7 @@ import { axe, userEvent } from "@storiny/test-utils";
 import { waitFor } from "@testing-library/react";
 import React from "react";
 
-import { renderTestWithProvider } from "~/redux/testUtils";
+import { render_test_with_provider } from "src/redux/test-utils";
 
 import Button from "./Button";
 import styles from "./Button.module.scss";
@@ -15,26 +15,26 @@ import {
 
 describe("<Button />", () => {
   it("matches snapshot", () => {
-    const { container } = renderTestWithProvider(<Button>Test</Button>);
+    const { container } = render_test_with_provider(<Button>Test</Button>);
     expect(container.firstChild).toMatchSnapshot();
   });
 
   it("does not have any accessibility violations", async () => {
-    const { container } = renderTestWithProvider(<Button>Test</Button>);
+    const { container } = render_test_with_provider(<Button>Test</Button>);
     await waitFor(async () =>
       expect(await axe(container)).toHaveNoViolations()
     );
   });
 
   it("renders as a polymorphic element", () => {
-    const { getByRole } = renderTestWithProvider(
+    const { getByRole } = render_test_with_provider(
       <Button as={"aside"}>Test</Button>
     );
     expect(getByRole("button").nodeName.toLowerCase()).toEqual("aside");
   });
 
   it("renders size `md`, variant `rigid`, color `inverted`, aria-disabled `false`, and native element as `button` by default", () => {
-    const { getByRole } = renderTestWithProvider(<Button>Test</Button>);
+    const { getByRole } = render_test_with_provider(<Button>Test</Button>);
     const button = getByRole("button");
 
     expect(button.nodeName.toLowerCase()).toEqual("button");
@@ -46,7 +46,7 @@ describe("<Button />", () => {
 
   (["inverted", "ruby"] as ButtonColor[]).forEach((color) => {
     it(`renders \`${color}\` color`, () => {
-      const { getByRole } = renderTestWithProvider(
+      const { getByRole } = render_test_with_provider(
         <Button color={color}>Test</Button>
       );
 
@@ -56,7 +56,7 @@ describe("<Button />", () => {
 
   (["rigid", "hollow", "ghost"] as ButtonVariant[]).forEach((variant) => {
     it(`renders \`${variant}\` variant`, () => {
-      const { getByRole } = renderTestWithProvider(
+      const { getByRole } = render_test_with_provider(
         <Button variant={variant}>Test</Button>
       );
 
@@ -66,7 +66,7 @@ describe("<Button />", () => {
 
   (["lg", "md", "sm", "xs"] as ButtonSize[]).forEach((size) => {
     it(`renders \`${size}\` size`, () => {
-      const { getByRole } = renderTestWithProvider(
+      const { getByRole } = render_test_with_provider(
         <Button size={size}>Test</Button>
       );
 
@@ -75,13 +75,13 @@ describe("<Button />", () => {
   });
 
   it("renders decorator", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Button
         decorator={<span>Decorator</span>}
-        slotProps={
+        slot_props={
           {
             decorator: { "data-testid": "decorator" }
-          } as ButtonProps["slotProps"]
+          } as ButtonProps["slot_props"]
         }
       >
         Test
@@ -92,13 +92,13 @@ describe("<Button />", () => {
   });
 
   it("passes props to the element slots", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Button
         decorator={<span>Decorator</span>}
-        slotProps={
+        slot_props={
           {
             decorator: { "data-testid": "decorator" }
-          } as ButtonProps["slotProps"]
+          } as ButtonProps["slot_props"]
         }
       >
         Test
@@ -110,21 +110,21 @@ describe("<Button />", () => {
 
   describe("loading state", () => {
     it("renders loading state", () => {
-      const { getByRole } = renderTestWithProvider(
+      const { getByRole } = render_test_with_provider(
         <Button loading>Test</Button>
       );
       expect(getByRole("button")).toHaveClass("loading");
     });
 
     it("disables the button", () => {
-      const { getByRole } = renderTestWithProvider(
+      const { getByRole } = render_test_with_provider(
         <Button loading>Test</Button>
       );
       expect(getByRole("button")).toBeDisabled();
     });
 
     it("renders a spinner", () => {
-      const { getByRole } = renderTestWithProvider(
+      const { getByRole } = render_test_with_provider(
         <Button loading>Test</Button>
       );
       expect(getByRole("progressbar")).toBeInTheDocument();
@@ -133,7 +133,7 @@ describe("<Button />", () => {
 
   describe("polymorphic", () => {
     it("passes the `button` role to the native non-button element", () => {
-      const { getByTestId } = renderTestWithProvider(
+      const { getByTestId } = render_test_with_provider(
         <Button as={"aside"} data-testid={"button"}>
           Test
         </Button>
@@ -143,7 +143,7 @@ describe("<Button />", () => {
     });
 
     it("passes aria-disabled `true` attribute when disabled", () => {
-      const { getByRole } = renderTestWithProvider(
+      const { getByRole } = render_test_with_provider(
         <Button as={"aside"} disabled>
           Test
         </Button>
@@ -155,7 +155,7 @@ describe("<Button />", () => {
     it("mimics a button click on pressing the space key", async () => {
       const user = userEvent.setup();
       const onClick = jest.fn();
-      const { getByRole } = renderTestWithProvider(
+      const { getByRole } = render_test_with_provider(
         <Button as={"aside"} onClick={onClick}>
           Test
         </Button>
@@ -170,7 +170,7 @@ describe("<Button />", () => {
     it("does not fire the click event on pressing the space key when disabled", async () => {
       const user = userEvent.setup();
       const onClick = jest.fn();
-      const { getByRole } = renderTestWithProvider(
+      const { getByRole } = render_test_with_provider(
         <Button as={"aside"} disabled onClick={onClick}>
           Test
         </Button>
@@ -184,7 +184,7 @@ describe("<Button />", () => {
   });
 
   it("renders as an anchor with correct `href` when `checkAuth` is set to `true` and the user is logged out", () => {
-    const { getByRole } = renderTestWithProvider(
+    const { getByRole } = render_test_with_provider(
       <Button checkAuth>Test</Button>
     );
     const button = getByRole("button");
@@ -196,7 +196,7 @@ describe("<Button />", () => {
   it("does not fire the click event when `checkAuth` is set to `true` and the user is logged out", async () => {
     const user = userEvent.setup();
     const onClick = jest.fn();
-    const { getByRole } = renderTestWithProvider(
+    const { getByRole } = render_test_with_provider(
       <Button checkAuth onClick={onClick}>
         Test
       </Button>

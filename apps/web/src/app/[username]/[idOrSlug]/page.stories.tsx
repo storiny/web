@@ -5,7 +5,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
 
 import { GetStoryResponse } from "~/common/grpc";
-import { renderWithState } from "~/redux/mock";
+import { render_with_state } from "~/redux/mock";
 
 import StoryComponent from "./component";
 import RestrictedStory from "./restricted";
@@ -123,14 +123,14 @@ export const Default: Story = {};
 export const LoggedIn: Story = {
   decorators: [
     (Story): React.ReactElement =>
-      renderWithState(<Story />, { loggedIn: true })
+      render_with_state(<Story />, { loggedIn: true })
   ]
 };
 
 export const Unpublished: Story = {
   decorators: [
     (): React.ReactElement =>
-      renderWithState(
+      render_with_state(
         <RestrictedStory type={"unpublished"} user={STORY_USER} />,
         {
           ignorePrimitiveProviders: true
@@ -142,7 +142,7 @@ export const Unpublished: Story = {
 export const Blocked: Story = {
   decorators: [
     (): React.ReactElement =>
-      renderWithState(
+      render_with_state(
         <RestrictedStory type={"user-blocked"} user={STORY_USER} />,
         {
           ignorePrimitiveProviders: true

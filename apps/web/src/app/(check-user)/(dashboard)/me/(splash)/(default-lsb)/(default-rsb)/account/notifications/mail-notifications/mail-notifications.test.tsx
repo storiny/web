@@ -2,7 +2,7 @@ import { userEvent } from "@storiny/test-utils";
 import { act, screen, waitFor } from "@testing-library/react";
 import React from "react";
 
-import { renderTestWithProvider } from "~/redux/testUtils";
+import { render_test_with_provider } from "../../../../../../../../../../../../../packages/ui/src/redux/test-utils";
 
 import MailNotifications from "./mail-notifications";
 
@@ -10,7 +10,7 @@ describe("<MailNotifications />", () => {
   it("submits correct form data", async () => {
     const mockSubmit = jest.fn();
     const user = userEvent.setup();
-    renderTestWithProvider(
+    render_test_with_provider(
       <MailNotifications
         mail_digest
         mail_features_and_updates

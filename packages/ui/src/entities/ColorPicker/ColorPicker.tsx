@@ -51,7 +51,7 @@ const ColorPicker = (props: ColorPickerProps): React.ReactElement => {
   const { children, popoverProps, ...rest } = props;
   return (
     <Popover
-      slotProps={{
+      slot_props={{
         trigger: { "aria-label": "Pick a color" }
       }}
       {...popoverProps}

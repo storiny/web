@@ -1,15 +1,15 @@
 "use client";
 
 import { VIBRATION_PATTERNS } from "@storiny/shared";
-import { devConsole } from "@storiny/shared/src/utils/devLog";
+import { dev_console } from "@storiny/shared/src/utils/devLog";
 import { isTestEnv } from "@storiny/shared/src/utils/isTestEnv";
 import clsx from "clsx";
 import React from "react";
 
 import { useMediaQuery } from "~/hooks/useMediaQuery";
-import { selectHapticFeedback } from "~/redux/features";
-import { selectLoggedIn } from "~/redux/features/auth/selectors";
-import { useAppSelector } from "~/redux/hooks";
+import { select_haptic_feedback } from "~/redux/features";
+import { select_is_logged_in } from "~/redux/features/auth/selectors";
+import { use_app_selector } from "~/redux/hooks";
 import { breakpoints } from "~/theme/breakpoints";
 import { forwardRef } from "~/utils/forwardRef";
 
@@ -43,8 +43,8 @@ const IconButton = forwardRef<IconButtonProps, "button">((props, ref) => {
     disabled: inputDisabled
   } = React.useContext(InputContext) || {}; // Size when the button is rendered as the `endDecorator` of an `Input` component
   const disabled = Boolean(inputDisabled || disabledProp || loading);
-  const loggedIn = useAppSelector(selectLoggedIn);
-  const haptic_feedback = useAppSelector(selectHapticFeedback);
+  const loggedIn = use_app_selector(select_is_logged_in);
+  const haptic_feedback = use_app_selector(select_haptic_feedback);
   const shouldLogin = checkAuth && !loggedIn;
   const Component = shouldLogin ? "a" : as;
   const size = autoSize ? (isSmallerThanTablet ? "lg" : sizeProp) : sizeProp;
@@ -67,7 +67,7 @@ const IconButton = forwardRef<IconButtonProps, "button">((props, ref) => {
         navigator.vibrate(VIBRATION_PATTERNS.click);
       }
     } catch (e) {
-      devConsole.error(e);
+      dev_console.error(e);
     }
   };
 

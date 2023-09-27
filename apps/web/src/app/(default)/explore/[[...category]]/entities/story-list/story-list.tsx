@@ -5,7 +5,10 @@ import React from "react";
 import { dynamicLoader } from "~/common/dynamic";
 import { StoryListSkeleton, VirtualizedStoryList } from "~/common/story";
 import ErrorState from "~/entities/ErrorState";
-import { getQueryErrorType, useGetExploreStoriesQuery } from "~/redux/features";
+import {
+  get_query_error_type,
+  use_get_explore_stories_query
+} from "~/redux/features";
 
 const EmptyState = dynamic(() => import("./empty-state"), {
   loading: dynamicLoader()
@@ -22,12 +25,12 @@ const StoryList = ({
 }): React.ReactElement => {
   const [page, setPage] = React.useState<number>(1);
   const { data, isLoading, isFetching, isError, error, refetch } =
-    useGetExploreStoriesQuery({
+    use_get_explore_stories_query({
       page,
       category,
       query: debouncedQuery
     });
-  const { items = [], hasMore } = data || {};
+  const { items = [], has_more } = data || {};
   const loading = isLoading || loadingProp;
 
   const loadMore = React.useCallback(
@@ -42,17 +45,17 @@ const StoryList = ({
       ) : isError ? (
         <ErrorState
           autoSize
-          componentProps={{
+          component_props={{
             button: { loading: isFetching }
           }}
           retry={refetch}
-          type={getQueryErrorType(error)}
+          type={get_query_error_type(error)}
         />
       ) : !isFetching && !items.length ? (
         <EmptyState query={debouncedQuery} />
       ) : (
         <VirtualizedStoryList
-          hasMore={Boolean(hasMore)}
+          has_more={Boolean(has_more)}
           loadMore={loadMore}
           stories={items}
         />

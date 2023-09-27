@@ -15,7 +15,7 @@ export interface MenubarMenuProps extends MenubarPrimitive {
   /**
    * The props passed to the individual component elements.
    */
-  slotProps?: {
+  slot_props?: {
     arrow?: MenubarArrowProps;
     content?: MenubarContentProps;
     portal?: MenubarPortalProps;

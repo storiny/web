@@ -141,7 +141,7 @@ const LegalToc = (): React.ReactElement => {
     <ScrollArea
       aria-label={"Table of contents"}
       as={"nav"}
-      slotProps={{
+      slot_props={{
         viewport: {
           className: clsx(styles.x, styles.toc)
         }

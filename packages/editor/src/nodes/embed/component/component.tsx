@@ -23,8 +23,8 @@ import useResizeObserver from "use-resize-observer";
 import Popover from "~/components/Popover";
 import Spinner from "~/components/Spinner";
 import Typography from "~/components/Typography";
-import { selectTheme } from "~/redux/features";
-import { useAppSelector } from "~/redux/hooks";
+import { select_theme } from "~/redux/features";
+import { use_app_selector } from "~/redux/hooks";
 
 import { overflowingFiguresAtom } from "../../../atoms";
 import figureStyles from "../../common/figure.module.scss";
@@ -69,7 +69,7 @@ const EmbedComponent = ({
   nodeKey: NodeKey;
   url: string;
 }): React.ReactElement | null => {
-  const theme = useAppSelector(selectTheme);
+  const theme = use_app_selector(select_theme);
   const [editor] = useLexicalComposerContext();
   const setOverflowingFigures = useSetAtom(overflowingFiguresAtom);
   const [loading, setLoading] = React.useState<boolean>(true);
@@ -338,7 +338,7 @@ const EmbedComponent = ({
               }
             }}
             open={editable && selected && $isNodeSelection(selection)}
-            slotProps={{
+            slot_props={{
               content: {
                 collisionPadding: { top: 64 }, // Prevent header collision
                 sideOffset: 12,

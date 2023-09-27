@@ -101,7 +101,7 @@ const FillControl = ({ canvas }: { canvas: Canvas }): React.ReactElement => {
           }}
           placeholder={"Fill"}
           size={"sm"}
-          slotProps={{
+          slot_props={{
             container: {
               style: {
                 flex: "0.6"
@@ -128,7 +128,7 @@ const FillControl = ({ canvas }: { canvas: Canvas }): React.ReactElement => {
           }}
           placeholder={"Fill opacity"}
           size={"sm"}
-          slotProps={{
+          slot_props={{
             container: {
               style: {
                 flex: "0.4"
@@ -164,7 +164,7 @@ const FillControl = ({ canvas }: { canvas: Canvas }): React.ReactElement => {
           <ToggleGroupItem
             aria-label={"Dark fill"}
             className={clsx(styles.x, styles.swatch)}
-            slotProps={{
+            slot_props={{
               container: { className: "f-grow" }
             }}
             style={{ "--color": SWATCH.dark } as React.CSSProperties}
@@ -174,7 +174,7 @@ const FillControl = ({ canvas }: { canvas: Canvas }): React.ReactElement => {
           <ToggleGroupItem
             aria-label={"Light fill"}
             className={clsx(styles.x, styles.swatch)}
-            slotProps={{
+            slot_props={{
               container: { className: "f-grow" }
             }}
             style={{ "--color": SWATCH.light } as React.CSSProperties}
@@ -184,7 +184,7 @@ const FillControl = ({ canvas }: { canvas: Canvas }): React.ReactElement => {
           <ToggleGroupItem
             aria-label={"Transparent fill"}
             className={clsx(styles.x, styles.swatch, styles.transparent)}
-            slotProps={{
+            slot_props={{
               container: { className: "f-grow" }
             }}
             style={{ "--color": SWATCH.transparent } as React.CSSProperties}

@@ -37,7 +37,7 @@ export interface CheckboxProps extends CheckboxPrimitive {
   /**
    * The props passed to the individual component elements.
    */
-  slotProps?: {
+  slot_props?: {
     container?: React.ComponentPropsWithoutRef<"div">;
     indicator?: CheckboxIndicatorProps;
     label?: React.ComponentPropsWithoutRef<"label">;

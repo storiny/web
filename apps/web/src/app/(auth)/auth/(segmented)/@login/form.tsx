@@ -14,7 +14,7 @@ import Grow from "~/components/Grow";
 import Link from "~/components/Link";
 import Spacer from "~/components/Spacer";
 import { useToast } from "~/components/Toast";
-import { useLoginMutation } from "~/redux/features";
+import { use_login_mutation } from "~/redux/features";
 
 import { useAuthState } from "../../../actions";
 import { LoginSchema, loginSchema } from "./schema";
@@ -35,7 +35,7 @@ const LoginForm = ({ onSubmit }: Props): React.ReactElement => {
       "remember-me": false
     }
   });
-  const [mutateLogin, { isLoading }] = useLoginMutation();
+  const [mutateLogin, { isLoading }] = use_login_mutation();
 
   const handleSubmit: SubmitHandler<LoginSchema> = (values) => {
     if (onSubmit) {

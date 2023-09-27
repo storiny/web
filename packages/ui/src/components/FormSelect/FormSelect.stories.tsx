@@ -51,7 +51,7 @@ const meta: Meta<typeof FormSelect> = {
       </Option>
     )),
     size: "md",
-    slotProps: {
+    slot_props: {
       trigger: {
         "aria-label": "Sample select"
       }

@@ -19,7 +19,7 @@ const meta: Meta<typeof Select> = {
   args: {
     size: "md",
     color: "inverted",
-    slotProps: {
+    slot_props: {
       trigger: {
         "aria-label": "Sample select"
       },

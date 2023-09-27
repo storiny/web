@@ -16,7 +16,7 @@ export interface PersonaProps extends React.ComponentPropsWithRef<"div"> {
   /**
    * The props passed to the individual entity components.
    */
-  componentProps?: {
+  component_props?: {
     avatarGroup?: AvatarGroupProps;
     primaryText?: TypographyProps;
     secondaryText?: TypographyProps;

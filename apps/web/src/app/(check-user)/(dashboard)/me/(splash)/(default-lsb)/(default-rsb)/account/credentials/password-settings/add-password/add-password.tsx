@@ -16,8 +16,8 @@ import Typography from "~/components/Typography";
 import { useMediaQuery } from "~/hooks/useMediaQuery";
 import PasswordIcon from "~/icons/Password";
 import {
-  useAddPasswordMutation,
-  useAddPasswordRequestVerificationMutation
+  use_add_password_mutation,
+  use_add_password_request_verification_mutation
 } from "~/redux/features";
 import { breakpoints } from "~/theme/breakpoints";
 
@@ -119,11 +119,11 @@ const Component = ({ onSubmit }: AddPasswordProps): React.ReactElement => {
     }
   });
   const [addPassword, { isLoading: addPasswordLoading }] =
-    useAddPasswordMutation();
+    use_add_password_mutation();
   const [
     addPasswordRequestVerification,
     { isLoading: requestVerificationLoading }
-  ] = useAddPasswordRequestVerificationMutation();
+  ] = use_add_password_request_verification_mutation();
 
   /**
    * Requests verification code to be dispatched to the user's email
@@ -218,7 +218,7 @@ const Component = ({ onSubmit }: AddPasswordProps): React.ReactElement => {
           </ModalFooterButton>
         </>
       ),
-      slotProps: {
+      slot_props: {
         footer: {
           compact: isSmallerThanMobile
         },

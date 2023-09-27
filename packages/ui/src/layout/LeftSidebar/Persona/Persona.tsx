@@ -12,22 +12,25 @@ import ErrorState from "~/entities/ErrorState";
 import Status from "~/entities/Status";
 import PhotoPlusIcon from "~/icons/PhotoPlus";
 import { fetchUser } from "~/redux/features";
-import { selectAuthStatus, selectUser } from "~/redux/features/auth/selectors";
-import { useAppDispatch, useAppSelector } from "~/redux/hooks";
+import {
+  select_auth_status,
+  select_user
+} from "~/redux/features/auth/selectors";
+import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 import { abbreviateNumber } from "~/utils/abbreviateNumber";
 
 import styles from "./Persona.module.scss";
 
 const LeftSidebarPersona = (): React.ReactElement => {
-  const dispatch = useAppDispatch();
-  const authStatus = useAppSelector(selectAuthStatus);
-  const user = useAppSelector(selectUser);
+  const dispatch = use_app_dispatch();
+  const authStatus = use_app_selector(select_auth_status);
+  const user = use_app_selector(select_user);
   const loading = authStatus === "loading";
 
   if (authStatus === "error") {
     return (
       <ErrorState
-        componentProps={{
+        component_props={{
           button: { loading }
         }}
         retry={(): void => {

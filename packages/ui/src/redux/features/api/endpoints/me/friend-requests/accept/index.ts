@@ -1,23 +1,19 @@
-import {
-  incrementAction,
-  self_action,
-  setSelfFriendCount
-} from "~/redux/features";
-import { apiSlice } from "~/redux/features/api/slice";
+import { self_action, set_self_friend_count } from "~/redux/features";
+import { api_slice } from "~/redux/features/api/slice";
 
 const SEGMENT = (id: string): string => `me/friend-requests/${id}/accept`;
 
-export interface FriendRequestAcceptResponse {}
 export interface FriendRequestAcceptPayload {
   id: string;
 }
 
-export const { useAcceptFriendRequestMutation } = apiSlice.injectEndpoints({
+export const {
+  // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+  useAcceptFriendRequestMutation: use_accept_friend_request_mutation
+} = api_slice.injectEndpoints({
   endpoints: (builder) => ({
-    acceptFriendRequest: builder.mutation<
-      FriendRequestAcceptResponse,
-      FriendRequestAcceptPayload
-    >({
+    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+    acceptFriendRequest: builder.mutation<void, FriendRequestAcceptPayload>({
       query: (body) => ({
         url: `/${SEGMENT(body.id)}`,
         method: "POST"
@@ -28,10 +24,9 @@ export const { useAcceptFriendRequestMutation } = apiSlice.injectEndpoints({
       onQueryStarted: async (arg, { dispatch, queryFulfilled }) => {
         queryFulfilled.then(() => {
           [
+            set_self_friend_count("increment"),
             self_action("self_pending_friend_request_count", "decrement")
           ].forEach(dispatch);
-          // TODO: ---
-          dispatch(setSelfFriendCount(incrementAction));
         });
       }
     })
