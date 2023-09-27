@@ -8,8 +8,8 @@ import RadioGroup from "~/components/RadioGroup";
 import Spacer from "~/components/Spacer";
 import Typography from "~/components/Typography";
 import { useMediaQuery } from "~/hooks/useMediaQuery";
-import { toggleCodeLigatures } from "~/redux/features";
-import { useAppDispatch, useAppSelector } from "~/redux/hooks";
+import { toggle_code_ligatures } from "~/redux/features";
+import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 import { breakpoints } from "~/theme/breakpoints";
 
 import commonStyles from "../../styles.module.scss";
@@ -80,7 +80,7 @@ const TypefaceItem = ({
     <Radio
       className={clsx(commonStyles.x, commonStyles.radio)}
       label={label}
-      slotProps={{
+      slot_props={{
         container: {
           className: clsx(commonStyles.x, commonStyles["radio-container"])
         }
@@ -92,9 +92,9 @@ const TypefaceItem = ({
 
 const LigaturesPreference = (): React.ReactElement => {
   const isSmallerThanMobile = useMediaQuery(breakpoints.down("mobile"));
-  const dispatch = useAppDispatch();
-  const typeface = useAppSelector((state) => state.preferences.code_font);
-  const ligatures = useAppSelector(
+  const dispatch = use_app_dispatch();
+  const typeface = use_app_selector((state) => state.preferences.code_font);
+  const ligatures = use_app_selector(
     (state) => state.preferences.enable_code_ligatures
   );
 
@@ -115,7 +115,7 @@ const LigaturesPreference = (): React.ReactElement => {
         className={clsx(commonStyles.x, commonStyles["radio-group"])}
         disabled={typeface === "system"}
         onValueChange={(newValue): void => {
-          dispatch(toggleCodeLigatures(newValue !== "disabled"));
+          dispatch(toggle_code_ligatures(newValue !== "disabled"));
         }}
         orientation={isSmallerThanMobile ? "vertical" : "horizontal"}
         value={ligatures ? "enabled" : "disabled"}

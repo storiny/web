@@ -1,6 +1,6 @@
 import { Story, Tag, User } from "@storiny/types";
 
-import { apiSlice } from "~/redux/features/api/slice";
+import { api_slice } from "~/redux/features/api/slice";
 
 const SEGMENT = "rsb-content";
 
@@ -10,8 +10,11 @@ export interface GetRightSidebarContentResponse {
   users: User[];
 }
 
-export const { useGetRightSidebarContentQuery } = apiSlice.injectEndpoints({
+export const {
+  useGetRightSidebarContentQuery: use_get_right_sidebar_content_query
+} = api_slice.injectEndpoints({
   endpoints: (builder) => ({
+    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     getRightSidebarContent: builder.query<GetRightSidebarContentResponse, void>(
       {
         query: () => `/${SEGMENT}`

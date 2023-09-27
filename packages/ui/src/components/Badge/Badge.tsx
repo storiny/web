@@ -89,7 +89,7 @@ const Badge = forwardRef<BadgeProps, "span">((props, ref) => {
     children,
     className,
     style,
-    slotProps,
+    slot_props,
     ...rest
   } = props;
   const inset = getInsetPosition(badgeInset);
@@ -98,8 +98,8 @@ const Badge = forwardRef<BadgeProps, "span">((props, ref) => {
 
   return (
     <div
-      {...slotProps?.container}
-      className={clsx(styles.container, slotProps?.container?.className)}
+      {...slot_props?.container}
+      className={clsx(styles.container, slot_props?.container?.className)}
     >
       {children}
       <Component

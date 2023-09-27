@@ -1,3 +1,3 @@
-// Do not export `getStoriesWithQueryAndSort` to avoid circular deps
+// Do not export `get_stories_with_query_and_sort` to avoid circular deps
 
-export * from "./getQueryErrorType";
+export * from "./get-query-error-type";

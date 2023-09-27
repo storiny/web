@@ -19,7 +19,7 @@ const MenubarRadioItem = forwardRef<MenubarRadioItemProps, "div">(
       className,
       decorator,
       rightSlot,
-      slotProps,
+      slot_props,
       children,
       ...rest
     } = props;
@@ -33,21 +33,21 @@ const MenubarRadioItem = forwardRef<MenubarRadioItemProps, "div">(
       >
         <Component>
           <ItemIndicator
-            {...slotProps?.indicator}
+            {...slot_props?.indicator}
             className={clsx(
               "flex-center",
               styles.indicator,
-              slotProps?.indicator?.className
+              slot_props?.indicator?.className
             )}
           >
             <PointIcon />
           </ItemIndicator>
           {decorator && (
             <span
-              {...slotProps?.decorator}
+              {...slot_props?.decorator}
               className={clsx(
                 menuItemStyles.decorator,
-                slotProps?.decorator?.className
+                slot_props?.decorator?.className
               )}
             >
               {decorator}
@@ -56,10 +56,10 @@ const MenubarRadioItem = forwardRef<MenubarRadioItemProps, "div">(
           {children}
           {rightSlot && (
             <span
-              {...slotProps?.rightSlot}
+              {...slot_props?.rightSlot}
               className={clsx(
                 rightSlotStyles["right-slot"],
-                slotProps?.rightSlot?.className
+                slot_props?.rightSlot?.className
               )}
             >
               {rightSlot}

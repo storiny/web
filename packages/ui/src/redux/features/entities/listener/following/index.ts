@@ -1,12 +1,10 @@
 import {
   boolean_action,
-  decrementAction,
-  incrementAction,
   number_action,
   set_entity_record_value,
-  setSelfFollowingCount
+  set_self_following_count
 } from "~/redux/features";
-import { AppStartListening } from "~/redux/listenerMiddleware";
+import { AppStartListening } from "src/redux/listener-middleware";
 
 import { debounce_effect, fetch_api } from "../utils";
 
@@ -23,16 +21,15 @@ export const add_following_listener = (
       if (payload[0] === "following") {
         const [, user_id, has_followed] = payload;
 
-        // TODO: ---
         if (has_followed) {
-          dispatch(setSelfFollowingCount(incrementAction));
           [
+            set_self_following_count("increment"),
             number_action("follower_counts", user_id, "increment"),
             boolean_action("subscriptions", user_id, true)
           ].forEach(dispatch);
         } else {
-          dispatch(setSelfFollowingCount(decrementAction));
           [
+            set_self_following_count("decrement"),
             number_action("follower_counts", user_id, "decrement"),
             boolean_action("subscriptions", user_id, false)
           ].forEach(dispatch);

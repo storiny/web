@@ -1,6 +1,6 @@
 import { act } from "@testing-library/react";
 
-import { renderHookWithProvider } from "~/redux/testUtils";
+import { render_hook_with_provider } from "src/redux/test-utils";
 
 import { TColor } from "../../types";
 import { useColorState } from "./useColorState";
@@ -19,7 +19,7 @@ const defaultValue: TColor = {
 
 describe("useColorState", () => {
   it("initializes with a default value", () => {
-    const { result } = renderHookWithProvider(() =>
+    const { result } = render_hook_with_provider(() =>
       useColorState({
         defaultValue
       })
@@ -30,7 +30,7 @@ describe("useColorState", () => {
 
   it("invokes `onChange` callback function with valid values", async () => {
     const onChange = jest.fn();
-    const { result } = renderHookWithProvider(() =>
+    const { result } = render_hook_with_provider(() =>
       useColorState({
         defaultValue,
         onChange
@@ -49,7 +49,7 @@ describe("useColorState", () => {
   });
 
   it("computes solid color value", () => {
-    const { result } = renderHookWithProvider(() =>
+    const { result } = render_hook_with_provider(() =>
       useColorState({
         defaultValue
       })
@@ -59,7 +59,7 @@ describe("useColorState", () => {
   });
 
   it("assigns RGB color values", async () => {
-    const { result } = renderHookWithProvider(() =>
+    const { result } = render_hook_with_provider(() =>
       useColorState({
         defaultValue
       })
@@ -81,7 +81,7 @@ describe("useColorState", () => {
   });
 
   it("assigns HSV color values", async () => {
-    const { result } = renderHookWithProvider(() =>
+    const { result } = render_hook_with_provider(() =>
       useColorState({
         defaultValue
       })
@@ -103,7 +103,7 @@ describe("useColorState", () => {
   });
 
   it("assigns alpha and saturation color values", async () => {
-    const { result } = renderHookWithProvider(() =>
+    const { result } = render_hook_with_provider(() =>
       useColorState({
         defaultValue
       })
@@ -124,7 +124,7 @@ describe("useColorState", () => {
   });
 
   it("assigns hex color value", async () => {
-    const { result } = renderHookWithProvider(() =>
+    const { result } = render_hook_with_provider(() =>
       useColorState({
         defaultValue
       })
@@ -138,7 +138,7 @@ describe("useColorState", () => {
   });
 
   it("rotates HSVA color values", async () => {
-    const { result } = renderHookWithProvider(() =>
+    const { result } = render_hook_with_provider(() =>
       useColorState({
         defaultValue
       })

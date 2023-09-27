@@ -42,7 +42,7 @@ const MusicItem = ({
 }): React.ReactElement => (
   <Popover
     className={clsx("flex-col", "flex-center", styles.x, styles.popover)}
-    slotProps={{
+    slot_props={{
       trigger: { "aria-label": "Choose music" }
     }}
     trigger={

@@ -1,7 +1,7 @@
 import "../packages/ui/src/theme/main.scss";
 import "../packages/ui/src/theme/storybook.scss";
 import { Preview } from "@storybook/react";
-import AppStateProvider from "../packages/ui/src/redux/components/RootProvider";
+import AppStateProvider from "../packages/ui/src/redux/components/root-provider";
 // noinspection ES6PreferShortImport
 import { store } from "../packages/ui/src/redux/store";
 import * as React from "react";

@@ -6,7 +6,7 @@ import { clsx } from "clsx";
 import { decompressSync } from "fflate";
 import React from "react";
 
-import { renderWithState } from "~/redux/mock";
+import { render_with_state } from "~/redux/mock";
 
 import Editor from "./editor";
 
@@ -30,7 +30,7 @@ type Story = StoryObj<typeof Editor>;
 export const Default: Story = {
   decorators: [
     (Story): React.ReactElement =>
-      renderWithState(
+      render_with_state(
         <div
           className={clsx("grid", "grid-container", "dashboard", "no-sidenav")}
         >

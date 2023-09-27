@@ -22,7 +22,7 @@ const Checkbox = React.forwardRef<HTMLButtonElement, CheckboxProps>(
       label,
       className,
       disabled,
-      slotProps,
+      slot_props,
       ...rest
     } = props;
     const checkboxId = React.useId();
@@ -33,11 +33,11 @@ const Checkbox = React.forwardRef<HTMLButtonElement, CheckboxProps>(
 
     return (
       <div
-        {...slotProps?.container}
+        {...slot_props?.container}
         className={clsx(
           "fit-w",
           "flex-center",
-          slotProps?.container?.className
+          slot_props?.container?.className
         )}
       >
         <Root
@@ -56,11 +56,11 @@ const Checkbox = React.forwardRef<HTMLButtonElement, CheckboxProps>(
           ref={ref}
         >
           <Indicator
-            {...slotProps?.indicator}
+            {...slot_props?.indicator}
             className={clsx(
               "flex-center",
               styles.indicator,
-              slotProps?.indicator?.className
+              slot_props?.indicator?.className
             )}
           >
             <CheckIcon />
@@ -68,12 +68,12 @@ const Checkbox = React.forwardRef<HTMLButtonElement, CheckboxProps>(
         </Root>
         {label && (
           <Label
-            {...slotProps?.label}
+            {...slot_props?.label}
             className={clsx(
               size === "lg" ? "t-body-1" : "t-body-2",
               disabled ? "t-muted" : "t-major",
               styles.label,
-              slotProps?.label?.className
+              slot_props?.label?.className
             )}
             htmlFor={itemId || checkboxId}
             id={labelId}

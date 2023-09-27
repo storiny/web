@@ -60,7 +60,7 @@ const ExportImageItem = (): React.ReactElement => {
           </ModalFooterButton>
         </>
       ),
-      slotProps: {
+      slot_props: {
         content: {
           style: {
             zIndex: "calc(var(--z-index-modal) + 2)"

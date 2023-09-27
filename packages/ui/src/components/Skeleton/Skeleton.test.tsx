@@ -2,7 +2,7 @@ import { axe } from "@storiny/test-utils";
 import { waitFor } from "@testing-library/react";
 import React from "react";
 
-import { renderTestWithProvider } from "~/redux/testUtils";
+import { render_test_with_provider } from "src/redux/test-utils";
 
 import Skeleton from "./Skeleton";
 import styles from "./Skeleton.module.scss";
@@ -10,19 +10,19 @@ import { SkeletonShape } from "./Skeleton.props";
 
 describe("<Skeleton />", () => {
   it("matches snapshot", () => {
-    const { container } = renderTestWithProvider(<Skeleton />);
+    const { container } = render_test_with_provider(<Skeleton />);
     expect(container.firstChild).toMatchSnapshot();
   });
 
   it("does not have any accessibility violations", async () => {
-    const { container } = renderTestWithProvider(<Skeleton />);
+    const { container } = render_test_with_provider(<Skeleton />);
     await waitFor(async () =>
       expect(await axe(container)).toHaveNoViolations()
     );
   });
 
   it("renders as a polymorphic element", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Skeleton as={"aside"} data-testid={"skeleton"} />
     );
 
@@ -30,7 +30,7 @@ describe("<Skeleton />", () => {
   });
 
   it("renders `rectangular` shape by default", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Skeleton data-testid={"skeleton"} />
     );
 
@@ -39,7 +39,7 @@ describe("<Skeleton />", () => {
 
   (["rectangular", "circular"] as SkeletonShape[]).forEach((shape) => {
     it(`renders \`${shape}\` shape`, () => {
-      const { getByTestId } = renderTestWithProvider(
+      const { getByTestId } = render_test_with_provider(
         <Skeleton data-testid={"skeleton"} shape={shape} />
       );
 
@@ -48,7 +48,7 @@ describe("<Skeleton />", () => {
   });
 
   it("renders with explicit width and height", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Skeleton data-testid={"skeleton"} height={32} width={32} />
     );
 

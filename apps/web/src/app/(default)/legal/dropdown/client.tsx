@@ -111,7 +111,7 @@ const DropdownClient = (): React.ReactElement => {
     <Select
       onValueChange={(value): void => router.push(`/legal/${value}`)}
       size={"lg"}
-      slotProps={{
+      slot_props={{
         content: {
           position: "popper",
           style: {

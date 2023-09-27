@@ -1,9 +1,9 @@
 import { createSlice, isAnyOf, PayloadAction } from "@reduxjs/toolkit";
-import { devConsole } from "@storiny/shared/src/utils/devLog";
+import { dev_console } from "@storiny/shared/src/utils/devLog";
 import { compressToUTF16, decompressFromUTF16 } from "lz-string";
 import { z } from "zod";
 
-import { AppStartListening } from "../../listenerMiddleware";
+import { AppStartListening } from "../../listener-middleware";
 
 export const LOCAL_STORAGE_KEY = "preferences";
 
@@ -67,26 +67,26 @@ const preferences_schema = z.object({
 export type PreferencesState = z.infer<typeof preferences_schema>;
 export type Theme = PreferencesState["theme"];
 
-export const preferencesInitialState: PreferencesState =
+export const preferences_initial_state: PreferencesState =
   get_defaults(preferences_schema);
 
-export const preferencesSlice = createSlice({
+export const preferences_slice = createSlice({
   name: "preferences",
-  initialState: preferencesInitialState,
+  initialState: preferences_initial_state,
   reducers: {
     /**
      * Sycns the state to the browser
      */
-    syncToBrowser: () => {},
+    sync_to_browser: () => undefined,
     /**
      * Hydrates state from localStorage
      */
-    hydrateState: (_, action: PayloadAction<PreferencesState>) =>
+    hydrate_state: (_, action: PayloadAction<PreferencesState>) =>
       action.payload,
     /**
      * Mutates alert visibility
      */
-    setAlertVisibility: (
+    set_alert_visibility: (
       state,
       action: PayloadAction<["appearance" | "accessibility", boolean]>
     ) => {
@@ -99,7 +99,7 @@ export const preferencesSlice = createSlice({
     /**
      * Mutates the font settings notification visibility
      */
-    setFontSettingsNotificationVisibility: (
+    set_font_settings_notification_visibility: (
       state,
       action: PayloadAction<boolean>
     ) => {
@@ -108,7 +108,7 @@ export const preferencesSlice = createSlice({
     /**
      * Changes the reduced motion settings
      */
-    setReducedMotion: (
+    set_reduced_motion: (
       state,
       action: PayloadAction<PreferencesState["reduced_motion"]>
     ) => {
@@ -117,7 +117,7 @@ export const preferencesSlice = createSlice({
     /**
      * Changes the reading font size
      */
-    setReadingFontSize: (
+    set_reading_font_size: (
       state,
       action: PayloadAction<PreferencesState["reading_font_size"]>
     ) => {
@@ -126,7 +126,7 @@ export const preferencesSlice = createSlice({
     /**
      * Changes the reading font
      */
-    setReadingFont: (
+    set_reading_font: (
       state,
       action: PayloadAction<PreferencesState["reading_font"]>
     ) => {
@@ -135,7 +135,7 @@ export const preferencesSlice = createSlice({
     /**
      * Changes the code font
      */
-    setCodeFont: (
+    set_code_font: (
       state,
       action: PayloadAction<PreferencesState["code_font"]>
     ) => {
@@ -148,57 +148,57 @@ export const preferencesSlice = createSlice({
     /**
      * Toggles the code ligatures
      */
-    toggleCodeLigatures: (state, action: PayloadAction<boolean>) => {
+    toggle_code_ligatures: (state, action: PayloadAction<boolean>) => {
       state.enable_code_ligatures = action.payload;
     },
     /**
      * Toggles haptic feeback
      */
-    toggleHapticFeedback: (state, action: PayloadAction<boolean>) => {
+    toggle_haptic_feedback: (state, action: PayloadAction<boolean>) => {
       state.haptic_feedback = action.payload;
     },
     /**
      * Changes the theme
      */
-    setTheme: (state, action: PayloadAction<Theme>) => {
+    set_theme: (state, action: PayloadAction<Theme>) => {
       state.theme = action.payload;
     }
   }
 });
 
 const {
-  syncToBrowser,
-  hydrateState,
-  setTheme,
-  setReducedMotion,
-  setAlertVisibility,
-  setReadingFont,
-  setReadingFontSize,
-  setCodeFont,
-  toggleCodeLigatures,
-  toggleHapticFeedback,
-  setFontSettingsNotificationVisibility
-} = preferencesSlice.actions;
+  sync_to_browser,
+  hydrate_state,
+  set_theme,
+  set_reduced_motion,
+  set_alert_visibility,
+  set_reading_font,
+  set_reading_font_size,
+  set_code_font,
+  toggle_code_ligatures,
+  toggle_haptic_feedback,
+  set_font_settings_notification_visibility
+} = preferences_slice.actions;
 
 export {
-  hydrateState,
-  setAlertVisibility,
-  setCodeFont,
-  setFontSettingsNotificationVisibility,
-  setReadingFont,
-  setReadingFontSize,
-  setReducedMotion,
-  setTheme,
-  syncToBrowser,
-  toggleCodeLigatures,
-  toggleHapticFeedback
+  hydrate_state,
+  set_alert_visibility,
+  set_code_font,
+  set_font_settings_notification_visibility,
+  set_reading_font,
+  set_reading_font_size,
+  set_reduced_motion,
+  set_theme,
+  sync_to_browser,
+  toggle_code_ligatures,
+  toggle_haptic_feedback
 };
 
 /**
  * Syncs the reading font to the browser
  * @param font Reading font
  */
-const syncReadingFont = (font: PreferencesState["reading_font"]): void => {
+const sync_reading_font = (font: PreferencesState["reading_font"]): void => {
   if (font !== "satoshi") {
     document.body.style.setProperty("--font-reading", `var(--font-${font})`);
   } else {
@@ -208,17 +208,17 @@ const syncReadingFont = (font: PreferencesState["reading_font"]): void => {
 
 /**
  * Syncs the reading font size to the browser
- * @param fontSize Reading font size
+ * @param font_size Reading font size
  */
-const syncReadingFontSize = (
-  fontSize: PreferencesState["reading_font_size"]
+const sync_reading_font_size = (
+  font_size: PreferencesState["reading_font_size"]
 ): void => {
   document.body.classList.remove(
     "t-legible-slim",
     "t-legible-regular",
     "t-legible-oversized"
   );
-  document.body.classList.add(`t-legible-${fontSize}`);
+  document.body.classList.add(`t-legible-${font_size}`);
 };
 
 /**
@@ -226,7 +226,7 @@ const syncReadingFontSize = (
  * @param font Code font
  * @param ligatures Ligatures flag
  */
-const syncCodeFont = (
+const sync_code_font = (
   font: PreferencesState["code_font"],
   ligatures: boolean
 ): void => {
@@ -242,43 +242,43 @@ const syncCodeFont = (
   }
 };
 
-export const addPreferencesListeners = (
+export const add_preferences_listeners = (
   start_listening: AppStartListening
 ): void => {
   /**
    * Parse, validate and store the state from localStorage
    */
   start_listening({
-    actionCreator: syncToBrowser,
+    actionCreator: sync_to_browser,
     effect: (_, listener_api) => {
       try {
-        const storedValue = localStorage.getItem(LOCAL_STORAGE_KEY);
+        const client_value = localStorage.getItem(LOCAL_STORAGE_KEY);
 
-        if (storedValue) {
+        if (client_value) {
           listener_api.dispatch(
-            hydrateState(
-              preferencesSchema.parse(
-                JSON.parse(decompressFromUTF16(storedValue))
+            hydrate_state(
+              preferences_schema.parse(
+                JSON.parse(decompressFromUTF16(client_value))
               )
             )
           );
         }
       } catch (e) {
-        devConsole.error(e);
+        dev_console.error(e);
       }
     }
   });
 
   /**
-   * Apply the hydrate state to the browser
+   * Apply the hydrated state to the browser
    */
   start_listening({
-    actionCreator: hydrateState,
+    actionCreator: hydrate_state,
     effect: (action) => {
       const state = action.payload;
-      syncReadingFont(state.reading_font);
-      syncReadingFontSize(state.reading_font_size);
-      syncCodeFont(state.code_font, state.enable_code_ligatures);
+      sync_reading_font(state.reading_font);
+      sync_reading_font_size(state.reading_font_size);
+      sync_code_font(state.code_font, state.enable_code_ligatures);
     }
   });
 
@@ -286,24 +286,24 @@ export const addPreferencesListeners = (
    * Sync the `data-theme` attribute on the body element with the state
    */
   start_listening({
-    matcher: isAnyOf(setTheme, hydrateState),
+    matcher: isAnyOf(set_theme, hydrate_state),
     effect: (_, listener_api) => {
       const { theme } = listener_api.getState().preferences;
-      let finalTheme = theme;
+      let next_theme = theme;
 
-      if (finalTheme === "system") {
+      if (next_theme === "system") {
         try {
           if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-            finalTheme = "dark";
+            next_theme = "dark";
           } else {
-            finalTheme = "light";
+            next_theme = "light";
           }
         } catch {
-          finalTheme = "light";
+          next_theme = "light";
         }
       }
 
-      document.documentElement.setAttribute("data-theme", finalTheme);
+      document.documentElement.setAttribute("data-theme", next_theme);
     }
   });
 
@@ -311,24 +311,24 @@ export const addPreferencesListeners = (
    * Sync reduced motion settings
    */
   start_listening({
-    matcher: isAnyOf(setReducedMotion, hydrateState),
+    matcher: isAnyOf(set_reduced_motion, hydrate_state),
     effect: (_, listener_api) => {
       const { reduced_motion } = listener_api.getState().preferences;
-      let finalReducedMotion = reduced_motion;
+      let next_reduced_motion = reduced_motion;
 
       if (reduced_motion === "system") {
         try {
           if (window.matchMedia(`(prefers-reduced-motion: reduce)`).matches) {
-            finalReducedMotion = "enabled";
+            next_reduced_motion = "enabled";
           } else {
-            finalReducedMotion = "disabled";
+            next_reduced_motion = "disabled";
           }
         } catch {
-          finalReducedMotion = "disabled";
+          next_reduced_motion = "disabled";
         }
       }
 
-      if (finalReducedMotion === "enabled") {
+      if (next_reduced_motion === "enabled") {
         if (!document.body.classList.contains("reduced-motion")) {
           document.body.classList.add("reduced-motion");
         }
@@ -342,26 +342,26 @@ export const addPreferencesListeners = (
    * Sync the reading font
    */
   start_listening({
-    actionCreator: setReadingFont,
-    effect: (action) => syncReadingFont(action.payload)
+    actionCreator: set_reading_font,
+    effect: (action) => sync_reading_font(action.payload)
   });
 
   /**
    * Sync the reading font size
    */
   start_listening({
-    actionCreator: setReadingFontSize,
-    effect: (action) => syncReadingFontSize(action.payload)
+    actionCreator: set_reading_font_size,
+    effect: (action) => sync_reading_font_size(action.payload)
   });
 
   /**
    * Sync the code font
    */
   start_listening({
-    matcher: isAnyOf(setCodeFont, toggleCodeLigatures),
+    matcher: isAnyOf(set_code_font, toggle_code_ligatures),
     effect: (_, listener_api) => {
       const state = listener_api.getState();
-      syncCodeFont(
+      sync_code_font(
         state.preferences.code_font,
         state.preferences.enable_code_ligatures
       );
@@ -373,26 +373,26 @@ export const addPreferencesListeners = (
    */
   start_listening({
     matcher: isAnyOf(
-      setTheme,
-      setAlertVisibility,
-      setReducedMotion,
-      setCodeFont,
-      setReadingFont,
-      setReadingFontSize,
-      toggleCodeLigatures,
-      toggleHapticFeedback
+      set_theme,
+      set_alert_visibility,
+      set_reduced_motion,
+      set_code_font,
+      set_reading_font,
+      set_reading_font_size,
+      toggle_code_ligatures,
+      toggle_haptic_feedback
     ),
     effect: (_, listener_api) => {
       try {
-        localStorage.setItem(
-          LOCAL_STORAGE_KEY,
-          compressToUTF16(JSON.stringify(listener_api.getState().preferences))
+        const serialized_state = compressToUTF16(
+          JSON.stringify(listener_api.getState().preferences)
         );
+        localStorage.setItem(LOCAL_STORAGE_KEY, serialized_state);
       } catch (e) {
-        devConsole.error(e);
+        dev_console.error(e);
       }
     }
   });
 };
 
-export default preferencesSlice.reducer;
+export default preferences_slice.reducer;

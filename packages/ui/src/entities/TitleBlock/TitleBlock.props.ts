@@ -7,7 +7,7 @@ export interface TitleBlockProps
   /**
    * The props passed to the individual entity components
    */
-  componentProps?: {
+  component_props?: {
     content?: TypographyProps;
     title?: TypographyProps;
   };

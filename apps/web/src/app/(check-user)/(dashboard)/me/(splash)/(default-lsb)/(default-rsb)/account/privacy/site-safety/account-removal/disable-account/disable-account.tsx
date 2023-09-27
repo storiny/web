@@ -12,7 +12,7 @@ import Typography from "~/components/Typography";
 import { useMediaQuery } from "~/hooks/useMediaQuery";
 import PasswordIcon from "~/icons/Password";
 import UserIcon from "~/icons/User";
-import { useDisableAccountMutation } from "~/redux/features";
+import { use_disable_account_mutation } from "~/redux/features";
 import { breakpoints } from "~/theme/breakpoints";
 
 import { DisableAccountProps } from "./disable-account.props";
@@ -70,7 +70,7 @@ const DisableAccount = ({
       "current-password": ""
     }
   });
-  const [disableAccount, { isLoading }] = useDisableAccountMutation();
+  const [disableAccount, { isLoading }] = use_disable_account_mutation();
 
   const handleSubmit: SubmitHandler<DisableAccountSchema> = (values) => {
     if (onSubmit) {
@@ -136,7 +136,7 @@ const DisableAccount = ({
           </ModalFooterButton>
         </>
       ),
-      slotProps: {
+      slot_props: {
         footer: {
           compact: isSmallerThanMobile
         },

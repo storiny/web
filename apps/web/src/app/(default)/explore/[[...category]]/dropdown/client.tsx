@@ -44,7 +44,7 @@ const DropdownClient = (): React.ReactElement => {
           router.push(`/explore${value === "all" ? "" : `/${value}`}`)
         }
         size={"lg"}
-        slotProps={{
+        slot_props={{
           trigger: {
             className: clsx(
               "focus-invert",

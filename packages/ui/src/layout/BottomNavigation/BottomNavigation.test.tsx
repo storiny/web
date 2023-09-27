@@ -2,13 +2,13 @@ import { axe } from "@storiny/test-utils";
 import { screen, waitFor } from "@testing-library/react";
 import React from "react";
 
-import { renderTestWithProvider } from "~/redux/testUtils";
+import { render_test_with_provider } from "src/redux/test-utils";
 
 import BottomNavigation from "./BottomNavigation";
 
 describe("<BottomNavigation />", () => {
   it("renders default state", () => {
-    const { getByRole } = renderTestWithProvider(
+    const { getByRole } = render_test_with_provider(
       <BottomNavigation forceMount />,
       {
         loggedIn: true
@@ -22,7 +22,7 @@ describe("<BottomNavigation />", () => {
   });
 
   it("does not have any accessibility violations", async () => {
-    const { container } = renderTestWithProvider(
+    const { container } = render_test_with_provider(
       <BottomNavigation forceMount />,
       { loggedIn: true }
     );
@@ -39,7 +39,9 @@ describe("<BottomNavigation />", () => {
   });
 
   it("adds `bottom-navigation` class to the body", () => {
-    renderTestWithProvider(<BottomNavigation forceMount />, { loggedIn: true });
+    render_test_with_provider(<BottomNavigation forceMount />, {
+      loggedIn: true
+    });
     expect(document.body).toHaveClass("bottom-navigation");
   });
 });

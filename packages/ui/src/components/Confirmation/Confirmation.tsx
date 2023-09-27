@@ -32,7 +32,7 @@ const Confirmation = forwardRef<ConfirmationProps, "div">((props, ref) => {
     confirmLabel = "Confirm",
     cancelLabel = "Cancel",
     color = "inverted",
-    slotProps,
+    slot_props,
     onConfirm,
     onCancel,
     className,
@@ -41,88 +41,88 @@ const Confirmation = forwardRef<ConfirmationProps, "div">((props, ref) => {
 
   return (
     <Root {...rest}>
-      <Trigger asChild {...slotProps?.trigger}>
+      <Trigger asChild {...slot_props?.trigger}>
         {trigger}
       </Trigger>
-      <Portal {...slotProps?.portal}>
+      <Portal {...slot_props?.portal}>
         <Overlay
-          {...slotProps?.overlay}
-          className={clsx(overlayStyles.overlay, slotProps?.overlay)}
+          {...slot_props?.overlay}
+          className={clsx(overlayStyles.overlay, slot_props?.overlay)}
         />
         <Content
-          {...slotProps?.content}
+          {...slot_props?.content}
           asChild
           className={clsx("flex-center", styles.content, className)}
           ref={ref}
         >
           <Component>
             <div
-              {...slotProps?.container}
+              {...slot_props?.container}
               className={clsx(
                 "flex-center",
                 styles.container,
-                slotProps?.container?.className
+                slot_props?.container?.className
               )}
             >
               {decorator && (
                 <span
-                  {...slotProps?.decorator}
+                  {...slot_props?.decorator}
                   className={clsx(
                     "flex-center",
                     styles.decorator,
-                    slotProps?.decorator?.className
+                    slot_props?.decorator?.className
                   )}
                 >
                   {decorator}
                 </span>
               )}
               <Title
-                {...slotProps?.title}
+                {...slot_props?.title}
                 className={clsx(
                   "t-body-1",
                   "t-major",
                   "t-center",
                   styles.title,
-                  slotProps?.title?.className
+                  slot_props?.title?.className
                 )}
               >
                 {title}
               </Title>
               <Description
-                {...slotProps?.description}
+                {...slot_props?.description}
                 className={clsx(
                   "t-body-2",
                   "t-minor",
                   "t-center",
-                  slotProps?.description?.className
+                  slot_props?.description?.className
                 )}
               >
                 {description}
               </Description>
             </div>
             <Divider
-              {...slotProps?.divider}
-              className={clsx("only-mobile", slotProps?.divider?.className)}
+              {...slot_props?.divider}
+              className={clsx("only-mobile", slot_props?.divider?.className)}
             />
             <div
-              {...slotProps?.footer}
+              {...slot_props?.footer}
               className={clsx(
                 "flex-center",
                 styles.footer,
-                slotProps?.footer?.className
+                slot_props?.footer?.className
               )}
             >
               <Cancel asChild>
                 <Button
                   variant={"ghost"}
-                  {...slotProps?.cancelButton}
+                  {...slot_props?.cancelButton}
                   className={clsx(
                     styles.action,
-                    slotProps?.cancelButton?.className
+                    slot_props?.cancelButton?.className
                   )}
                   onClick={(event): void => {
                     onCancel?.(event);
-                    slotProps?.cancelButton?.onClick?.(event);
+                    slot_props?.cancelButton?.onClick?.(event);
                   }}
                 >
                   {cancelLabel}
@@ -131,14 +131,14 @@ const Confirmation = forwardRef<ConfirmationProps, "div">((props, ref) => {
               <Action asChild>
                 <Button
                   color={color}
-                  {...slotProps?.confirmButton}
+                  {...slot_props?.confirmButton}
                   className={clsx(
                     styles.action,
-                    slotProps?.confirmButton?.className
+                    slot_props?.confirmButton?.className
                   )}
                   onClick={(event): void => {
                     onConfirm?.(event);
-                    slotProps?.confirmButton?.onClick?.(event);
+                    slot_props?.confirmButton?.onClick?.(event);
                   }}
                 >
                   {confirmLabel}

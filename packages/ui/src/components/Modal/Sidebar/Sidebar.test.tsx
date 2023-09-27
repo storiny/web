@@ -2,13 +2,13 @@ import { axe } from "@storiny/test-utils";
 import { waitFor } from "@testing-library/react";
 import React from "react";
 
-import { renderTestWithProvider } from "~/redux/testUtils";
+import { render_test_with_provider } from "src/redux/test-utils";
 
 import ModalSidebar from "./Sidebar";
 
 describe("<ModalSidebar />", () => {
   it("matches snapshot", () => {
-    const { container } = renderTestWithProvider(
+    const { container } = render_test_with_provider(
       <ModalSidebar>Test</ModalSidebar>
     );
 
@@ -16,7 +16,7 @@ describe("<ModalSidebar />", () => {
   });
 
   it("does not have any accessibility violations", async () => {
-    const { container } = renderTestWithProvider(
+    const { container } = render_test_with_provider(
       <ModalSidebar>Test</ModalSidebar>
     );
 

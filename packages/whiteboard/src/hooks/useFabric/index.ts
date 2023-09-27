@@ -1,8 +1,8 @@
 import { Canvas } from "fabric";
 import React from "react";
 
-import { selectTheme } from "~/redux/features";
-import { useAppSelector } from "~/redux/hooks";
+import { select_theme } from "~/redux/features";
+import { use_app_selector } from "~/redux/hooks";
 
 import { FabricContext } from "../../components/context";
 import { CURSORS, SWATCH } from "../../constants";
@@ -43,7 +43,7 @@ export const useFabric = (): ((
 ) => Promise<boolean> | undefined) => {
   const { initialImageUrl } = useWhiteboard();
   const canvas = React.useContext(FabricContext);
-  const theme = useAppSelector(selectTheme);
+  const theme = use_app_selector(select_theme);
   return React.useCallback((element: HTMLCanvasElement) => {
     if (!element) {
       return canvas.current?.dispose();

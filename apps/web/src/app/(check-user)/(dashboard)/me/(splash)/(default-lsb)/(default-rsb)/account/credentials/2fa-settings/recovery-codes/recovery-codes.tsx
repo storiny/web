@@ -16,11 +16,11 @@ import DownloadIcon from "~/icons/Download";
 import ScriptIcon from "~/icons/Script";
 import {
   RecoveryCodesResponse,
-  selectUser,
-  useGenerateCodesMutation,
-  useRecoveryCodesMutation
+  select_user,
+  use_generate_codes_mutation,
+  use_recovery_codes_mutation
 } from "~/redux/features";
-import { useAppSelector } from "~/redux/hooks";
+import { use_app_selector } from "~/redux/hooks";
 import { breakpoints } from "~/theme/breakpoints";
 
 import styles from "./recovery-codes.module.scss";
@@ -42,7 +42,7 @@ const formatRecoveryCodes = (
   ].join("\n");
 
 const RecoveryCodesModal = (): React.ReactElement => {
-  const user = useAppSelector(selectUser)!;
+  const user = use_app_selector(select_user)!;
   const copy = useClipboard();
   const toast = useToast();
   const [codes, setCodes] = React.useState<RecoveryCodesResponse>([]);
@@ -50,9 +50,9 @@ const RecoveryCodesModal = (): React.ReactElement => {
     "Could not get recovery codes."
   );
   const [mutateRecoveryCodes, { isLoading, isError }] =
-    useRecoveryCodesMutation();
+    use_recovery_codes_mutation();
   const [generateCodes, { isLoading: isRegenerating }] =
-    useGenerateCodesMutation();
+    use_generate_codes_mutation();
 
   /**
    * Copies codes to clipboard
@@ -207,7 +207,7 @@ const RecoveryCodes = (): React.ReactElement => {
           </ModalFooterButton>
         </>
       ),
-      slotProps: {
+      slot_props: {
         footer: {
           compact: isSmallerThanMobile
         },

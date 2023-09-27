@@ -23,7 +23,7 @@ import BanIcon from "~/icons/Ban";
 import ForbidIcon from "~/icons/Forbid";
 import LockIcon from "~/icons/Lock";
 import SearchIcon from "~/icons/Search";
-import { useAppSelector } from "~/redux/hooks";
+import { use_app_selector } from "~/redux/hooks";
 import { breakpoints } from "~/theme/breakpoints";
 import { getCdnUrl } from "~/utils/getCdnUrl";
 
@@ -120,7 +120,7 @@ const PageHeader = ({
       onChange={(event): void => onQueryChange(event.target.value)}
       placeholder={placeholder}
       size={"lg"}
-      slotProps={{
+      slot_props={{
         container: {
           className: clsx("f-grow", styles.x, styles.input)
         }
@@ -132,7 +132,7 @@ const PageHeader = ({
     <Select
       disabled={disabled}
       onValueChange={onSortChange}
-      slotProps={{
+      slot_props={{
         trigger: {
           "aria-label": "Sort items",
           className: clsx("focus-invert", styles.x, styles["select-trigger"])
@@ -167,7 +167,7 @@ const Page = ({
     Boolean(profile.is_blocking)
   );
   const hasBanner = Boolean(profile.banner_id);
-  const isBlocking = useAppSelector(
+  const isBlocking = use_app_selector(
     (state) => state.entities.blocks[profile.id]
   );
 
@@ -182,7 +182,7 @@ const Page = ({
   );
 
   React.useEffect(() => {
-    // isBlocking is false on first render due to `useAppSelector`
+    // isBlocking is false on first render due to `use_app_selector`
     if (!isBlocking && !firstRender.current) {
       setContentHidden(false);
     } else {
@@ -203,7 +203,7 @@ const Page = ({
               className={clsx(styles.x, styles.banner)}
               hex={profile.banner_hex}
               imgId={profile.banner_id}
-              slotProps={{
+              slot_props={{
                 image: {
                   sizes: [
                     `${breakpoints.up("tablet")} calc(100vw - 360px)`,

@@ -3,8 +3,8 @@
 import { clsx } from "clsx";
 import React from "react";
 
-import Logo from "~/brand/Logo";
-import Wordmark from "~/brand/Wordmark";
+import Logo from "../../../../../../../../packages/ui/src/brand/logo";
+import Wordmark from "../../../../../../../../packages/ui/src/brand/wordmark";
 import Divider from "~/components/Divider";
 import Link from "~/components/Link";
 import Spacer from "~/components/Spacer";

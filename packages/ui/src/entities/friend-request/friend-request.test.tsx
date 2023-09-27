@@ -3,7 +3,7 @@ import { FriendRequest as TFriendRequest } from "@storiny/types";
 import { waitFor } from "@testing-library/react";
 import React from "react";
 
-import { renderTestWithProvider } from "~/redux/testUtils";
+import { render_test_with_provider } from "src/redux/test-utils";
 
 import { testUser } from "../../mocks";
 import FriendRequest from "./friend-request";
@@ -16,11 +16,13 @@ const testFriendRequest: TFriendRequest = {
 
 describe("<FriendRequest />", () => {
   it("renders", () => {
-    renderTestWithProvider(<FriendRequest friendRequest={testFriendRequest} />);
+    render_test_with_provider(
+      <FriendRequest friendRequest={testFriendRequest} />
+    );
   });
 
   it("does not have any accessibility violations", async () => {
-    const { container } = renderTestWithProvider(
+    const { container } = render_test_with_provider(
       <FriendRequest friendRequest={testFriendRequest} />
     );
 

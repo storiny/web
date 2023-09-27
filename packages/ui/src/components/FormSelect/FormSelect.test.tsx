@@ -6,7 +6,7 @@ import { z } from "zod";
 
 import Form, { useForm } from "~/components/Form";
 import Option from "~/components/Option";
-import { renderTestWithProvider } from "~/redux/testUtils";
+import { render_test_with_provider } from "src/redux/test-utils";
 
 import FormSelect from "./FormSelect";
 import { FormSelectProps } from "./FormSelect.props";
@@ -40,7 +40,7 @@ const Component = ({
 
 describe("<FormSelect />", () => {
   it("matches snapshot", () => {
-    const { container } = renderTestWithProvider(
+    const { container } = render_test_with_provider(
       <Component>
         <FormSelect label={"Test label"} name={"select"} open>
           {[...Array(3)].map((_, index) => (
@@ -56,7 +56,7 @@ describe("<FormSelect />", () => {
   });
 
   it("does not have any accessibility violations", async () => {
-    const { container } = renderTestWithProvider(
+    const { container } = render_test_with_provider(
       <Component>
         <FormSelect label={"Test label"} name={"select"} open>
           {[...Array(3)].map((_, index) => (
@@ -74,7 +74,7 @@ describe("<FormSelect />", () => {
   });
 
   it("consumes disabled prop from `FormContext`", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Component disabled>
         <FormSelect
           formSlotProps={
@@ -101,7 +101,7 @@ describe("<FormSelect />", () => {
   });
 
   it("passes props to the element slots", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Component>
         <FormSelect
           formSlotProps={

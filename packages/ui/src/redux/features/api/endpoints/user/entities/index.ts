@@ -1,46 +1,48 @@
 import { User } from "@storiny/types";
 
-import { apiSlice } from "~/redux/features/api/slice";
+import { api_slice } from "~/redux/features/api/slice";
 
 const ITEMS_PER_PAGE = 10;
-const SEGMENT = (userId: string, entityType: GetUserEntityType): string =>
-  `user/${userId}/${entityType}`;
+const SEGMENT = (user_id: string, entity_type: GetUserEntityType): string =>
+  `user/${user_id}/${entity_type}`;
 
 export type GetUserFollowersResponse = User[];
 export type GetUserEntityType = "followers" | "following" | "friends";
 
-export const { useGetUserEntitiesQuery } = apiSlice.injectEndpoints({
-  endpoints: (builder) => ({
-    getUserEntities: builder.query<
-      { hasMore: boolean; items: User[] },
-      {
-        entityType: GetUserEntityType;
-        page: number;
-        query?: string;
-        sort: "recent" | "popular" | "old";
-        userId: string;
-      }
-    >({
-      query: ({ page, sort = "recent", query, userId, entityType }) =>
-        `/${SEGMENT(userId, entityType)}?page=${page}&sort=${sort}${
-          query ? `&query=${encodeURIComponent(query)}` : ""
-        }`,
-      serializeQueryArgs: ({ endpointName, queryArgs }) =>
-        `${endpointName}:${queryArgs.entityType}:${queryArgs.userId}:${queryArgs.sort}:${queryArgs.query}`,
-      transformResponse: (response: User[]) => ({
-        items: response,
-        hasMore: response.length === ITEMS_PER_PAGE
-      }),
-      merge: (currentCache, newItems) => {
-        currentCache.items.push(...newItems.items);
-        currentCache.hasMore = newItems.hasMore;
-      },
-      forceRefetch: ({ currentArg, previousArg }) =>
-        currentArg?.userId !== previousArg?.userId ||
-        currentArg?.entityType !== previousArg?.entityType ||
-        currentArg?.page !== previousArg?.page ||
-        currentArg?.sort !== previousArg?.sort ||
-        currentArg?.query !== previousArg?.query
+export const { useGetUserEntitiesQuery: use_get_user_entities_query } =
+  api_slice.injectEndpoints({
+    endpoints: (builder) => ({
+      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+      getUserEntities: builder.query<
+        { has_more: boolean; items: User[] },
+        {
+          entity_type: GetUserEntityType;
+          page: number;
+          query?: string;
+          sort: "recent" | "popular" | "old";
+          user_id: string;
+        }
+      >({
+        query: ({ page, sort = "recent", query, user_id, entity_type }) =>
+          `/${SEGMENT(user_id, entity_type)}?page=${page}&sort=${sort}${
+            query ? `&query=${encodeURIComponent(query)}` : ""
+          }`,
+        serializeQueryArgs: ({ endpointName, queryArgs }) =>
+          `${endpointName}:${queryArgs.entity_type}:${queryArgs.user_id}:${queryArgs.sort}:${queryArgs.query}`,
+        transformResponse: (response: User[]) => ({
+          items: response,
+          has_more: response.length === ITEMS_PER_PAGE
+        }),
+        merge: (current_cache, new_items) => {
+          current_cache.items.push(...new_items.items);
+          current_cache.has_more = new_items.has_more;
+        },
+        forceRefetch: ({ currentArg, previousArg }) =>
+          currentArg?.user_id !== previousArg?.user_id ||
+          currentArg?.entity_type !== previousArg?.entity_type ||
+          currentArg?.page !== previousArg?.page ||
+          currentArg?.sort !== previousArg?.sort ||
+          currentArg?.query !== previousArg?.query
+      })
     })
-  })
-});
+  });

@@ -31,7 +31,7 @@ const Persona = React.forwardRef<HTMLDivElement, PersonaProps>((props, ref) => {
     primaryText,
     secondaryText,
     className,
-    componentProps,
+    component_props,
     ...rest
   } = props;
   const firstAvatar = Array.isArray(avatar) ? avatar[0] : avatar;
@@ -44,10 +44,10 @@ const Persona = React.forwardRef<HTMLDivElement, PersonaProps>((props, ref) => {
     >
       {Array.isArray(avatar) && avatar.length > 1 ? (
         <AvatarGroup
-          {...componentProps?.avatarGroup}
+          {...component_props?.avatarGroup}
           className={clsx(
             styles["avatar-item"],
-            componentProps?.avatarGroup?.className
+            component_props?.avatarGroup?.className
           )}
           size={size}
         >
@@ -63,22 +63,22 @@ const Persona = React.forwardRef<HTMLDivElement, PersonaProps>((props, ref) => {
         />
       )}
       <Typography
-        {...componentProps?.primaryText}
+        {...component_props?.primaryText}
         as={"span"}
         className={clsx(
           styles["primary-text"],
-          componentProps?.primaryText?.className
+          component_props?.primaryText?.className
         )}
         level={sizeToPrimaryTextLevelMap[size]}
       >
         {primaryText}
         {secondaryText && size !== "xs" ? (
           <Typography
-            {...componentProps?.secondaryText}
+            {...component_props?.secondaryText}
             className={clsx(
               "t-minor",
               styles["secondary-text"],
-              componentProps?.secondaryText?.className
+              component_props?.secondaryText?.className
             )}
             level={sizeToSecondaryTextLevelMap[size]}
           >

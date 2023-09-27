@@ -1,40 +1,44 @@
 import { Photos } from "pexels";
 
-import { apiSlice } from "~/redux/features/api/slice";
+import { api_slice } from "~/redux/features/api/slice";
 
 const SEGMENT = "me/gallery";
 const ITEMS_PER_PAGE = 15;
 
 export type GetGalleryPhotosResponse = Photos["photos"];
 
-export const { useGetGalleryPhotosQuery } = apiSlice.injectEndpoints({
-  endpoints: (builder) => ({
-    getGalleryPhotos: builder.query<
-      { hasMore: boolean; items: Photos["photos"] },
-      { page: number; query?: string }
-    >({
-      query: ({ page, query }) =>
-        `/${SEGMENT}?page=${page}${
-          query ? `&query=${encodeURIComponent(query)}` : ""
-        }`,
-      serializeQueryArgs: ({ endpointName, queryArgs }) =>
-        `${endpointName}:${queryArgs.query}`,
-      transformResponse: (response: Photos["photos"]) => ({
-        items: response,
-        hasMore: response.length === ITEMS_PER_PAGE
-      }),
-      merge: (currentCache, newItems) => {
-        currentCache.items.push(
-          ...newItems.items.filter(
-            (item) =>
-              !currentCache.items.some((cacheItem) => cacheItem.id === item.id)
-          )
-        );
-        currentCache.hasMore = newItems.hasMore;
-      },
-      forceRefetch: ({ currentArg, previousArg }) =>
-        currentArg?.page !== previousArg?.page ||
-        currentArg?.query !== previousArg?.query
+export const { useGetGalleryPhotosQuery: use_get_gallery_photos_query } =
+  api_slice.injectEndpoints({
+    endpoints: (builder) => ({
+      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+      getGalleryPhotos: builder.query<
+        { has_more: boolean; items: Photos["photos"] },
+        { page: number; query?: string }
+      >({
+        query: ({ page, query }) =>
+          `/${SEGMENT}?page=${page}${
+            query ? `&query=${encodeURIComponent(query)}` : ""
+          }`,
+        serializeQueryArgs: ({ endpointName, queryArgs }) =>
+          `${endpointName}:${queryArgs.query}`,
+        transformResponse: (response: Photos["photos"]) => ({
+          items: response,
+          has_more: response.length === ITEMS_PER_PAGE
+        }),
+        merge: (current_cache, new_items) => {
+          current_cache.items.push(
+            ...new_items.items.filter(
+              (item) =>
+                !current_cache.items.some(
+                  (cache_item) => cache_item.id === item.id
+                )
+            )
+          );
+          current_cache.has_more = new_items.has_more;
+        },
+        forceRefetch: ({ currentArg, previousArg }) =>
+          currentArg?.page !== previousArg?.page ||
+          currentArg?.query !== previousArg?.query
+      })
     })
-  })
-});
+  });

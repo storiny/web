@@ -5,7 +5,7 @@ import React from "react";
 import { z } from "zod";
 
 import Form, { useForm } from "~/components/Form";
-import { renderTestWithProvider } from "~/redux/testUtils";
+import { render_test_with_provider } from "src/redux/test-utils";
 
 import FormTextarea from "./FormTextarea";
 import { FormTextareaProps } from "./FormTextarea.props";
@@ -39,7 +39,7 @@ const Component = ({
 
 describe("<FormTextarea />", () => {
   it("matches snapshot", () => {
-    const { container } = renderTestWithProvider(
+    const { container } = render_test_with_provider(
       <Component>
         <FormTextarea label={"Test label"} name={"textarea"} />
       </Component>
@@ -49,7 +49,7 @@ describe("<FormTextarea />", () => {
   });
 
   it("does not have any accessibility violations", async () => {
-    const { container } = renderTestWithProvider(
+    const { container } = render_test_with_provider(
       <Component>
         <FormTextarea label={"Test label"} name={"textarea"} />
       </Component>
@@ -61,7 +61,7 @@ describe("<FormTextarea />", () => {
   });
 
   it("consumes disabled prop from `FormContext`", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Component disabled>
         <FormTextarea
           formSlotProps={
@@ -79,7 +79,7 @@ describe("<FormTextarea />", () => {
   });
 
   it("passes props to the element slots", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Component>
         <FormTextarea
           formSlotProps={

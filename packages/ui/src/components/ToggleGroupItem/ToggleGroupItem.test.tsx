@@ -1,7 +1,7 @@
 import { waitForPosition } from "@storiny/test-utils";
 import React from "react";
 
-import { renderTestWithProvider } from "~/redux/testUtils";
+import { render_test_with_provider } from "src/redux/test-utils";
 
 import toggleStyles from "../common/Toggle.module.scss";
 import ToggleGroup from "../ToggleGroup";
@@ -13,7 +13,7 @@ import {
 
 describe("<ToggleGroupItem />", () => {
   it("matches snapshot", () => {
-    const { container } = renderTestWithProvider(
+    const { container } = render_test_with_provider(
       <ToggleGroup>
         <ToggleGroupItem value={"test"} />
       </ToggleGroup>
@@ -23,7 +23,7 @@ describe("<ToggleGroupItem />", () => {
   });
 
   it("renders as a polymorphic element", () => {
-    const { getByRole } = renderTestWithProvider(
+    const { getByRole } = render_test_with_provider(
       <ToggleGroup>
         <ToggleGroupItem as={"aside"} value={"test"} />
       </ToggleGroup>
@@ -33,10 +33,10 @@ describe("<ToggleGroupItem />", () => {
   });
 
   it("renders without tooltip and size `md` by default", async () => {
-    const { getByRole, queryByRole } = renderTestWithProvider(
+    const { getByRole, queryByRole } = render_test_with_provider(
       <ToggleGroup>
         <ToggleGroupItem
-          slotProps={{
+          slot_props={{
             tooltip: { open: true }
           }}
           value={"test"}
@@ -54,7 +54,7 @@ describe("<ToggleGroupItem />", () => {
 
   (["lg", "md", "sm", "xs"] as ToggleGroupItemSize[]).forEach((size) => {
     it(`renders \`${size}\` size`, () => {
-      const { getByRole } = renderTestWithProvider(
+      const { getByRole } = render_test_with_provider(
         <ToggleGroup>
           <ToggleGroupItem size={size} value={"test"}>
             Test
@@ -67,7 +67,7 @@ describe("<ToggleGroupItem />", () => {
   });
 
   it("infers size from ToggleGroup context", () => {
-    const { getByRole } = renderTestWithProvider(
+    const { getByRole } = render_test_with_provider(
       <ToggleGroup size={"lg"}>
         <ToggleGroupItem value={"test"} />
       </ToggleGroup>
@@ -77,10 +77,10 @@ describe("<ToggleGroupItem />", () => {
   });
 
   it("renders tooltip", async () => {
-    const { getByRole } = renderTestWithProvider(
+    const { getByRole } = render_test_with_provider(
       <ToggleGroup>
         <ToggleGroupItem
-          slotProps={{
+          slot_props={{
             tooltip: { open: true }
           }}
           tooltipContent={"Tooltip content"}
@@ -98,21 +98,21 @@ describe("<ToggleGroupItem />", () => {
   });
 
   it("passes props to the element slots", async () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <ToggleGroup>
         <ToggleGroupItem
-          slotProps={
+          slot_props={
             {
               tooltip: {
                 open: true,
-                slotProps: {
+                slot_props: {
                   content: {
                     "data-testid": "tooltip-content"
                   }
                 }
               },
               container: { "data-testid": "container" }
-            } as ToggleGroupItemProps["slotProps"]
+            } as ToggleGroupItemProps["slot_props"]
           }
           tooltipContent={"Tooltip content"}
           value={"test"}

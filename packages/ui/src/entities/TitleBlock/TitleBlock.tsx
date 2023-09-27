@@ -7,17 +7,17 @@ import Typography from "~/components/Typography";
 import { TitleBlockProps } from "./TitleBlock.props";
 
 const TitleBlock = (props: TitleBlockProps): React.ReactElement => {
-  const { title, className, componentProps, children, ...rest } = props;
+  const { title, className, component_props, children, ...rest } = props;
   return (
     <div {...rest} className={clsx("flex-col", className)}>
-      <Typography as={"h2"} level={"h4"} {...componentProps?.title}>
+      <Typography as={"h2"} level={"h4"} {...component_props?.title}>
         {title}
       </Typography>
       <Spacer orientation={"vertical"} />
       <Typography
         className={"t-minor"}
         level={"body2"}
-        {...componentProps?.content}
+        {...component_props?.content}
       >
         {children}
       </Typography>

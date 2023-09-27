@@ -18,7 +18,7 @@ import LicenseIcon from "~/icons/license";
 import SeoIcon from "~/icons/seo";
 import SettingsIcon from "~/icons/Settings";
 import StoryIcon from "~/icons/Story";
-import { useStoryMetadataMutation } from "~/redux/features";
+import { use_story_metadata_mutation } from "~/redux/features";
 import { breakpoints } from "~/theme/breakpoints";
 
 import {
@@ -67,7 +67,7 @@ const StoryMetadataModalImpl = (
     },
     resolver: zodResolver(storyMetadataSchema)
   });
-  const [mutateStoryMetadata, { isLoading }] = useStoryMetadataMutation();
+  const [mutateStoryMetadata, { isLoading }] = use_story_metadata_mutation();
 
   /**
    * Resets the modal state
@@ -141,7 +141,7 @@ const StoryMetadataModalImpl = (
           </ModalSidebarList>
         </>
       }
-      slotProps={{
+      slot_props={{
         tabs: {
           value,
           onValueChange: (newValue): void => {
@@ -184,7 +184,7 @@ const StoryMetadataModalImpl = (
     >
       <ScrollArea
         className={clsx(styles.x, styles["scroll-area"])}
-        slotProps={{
+        slot_props={{
           viewport: { className: clsx(styles.x, styles.viewport) }
         }}
       >

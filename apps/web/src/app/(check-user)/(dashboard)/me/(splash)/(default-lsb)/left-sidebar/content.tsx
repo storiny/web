@@ -16,8 +16,8 @@ import TabsList from "~/components/TabsList";
 import Typography from "~/components/Typography";
 import Persona from "~/entities/Persona";
 import SearchIcon from "~/icons/Search";
-import { selectUser } from "~/redux/features";
-import { useAppSelector } from "~/redux/hooks";
+import { select_user } from "~/redux/features";
+import { use_app_selector } from "~/redux/hooks";
 
 import { dashboardGroups, Group, searchDashboardGroups } from "../../../groups";
 import { DashboardSegment } from "../../../types";
@@ -85,7 +85,7 @@ const SuspendedDashboardLeftSidebarContent = (): React.ReactElement => {
   const [results, setResults] = React.useState<Group[]>([]);
   // TODO: Update segments
   const segments = useSelectedLayoutSegments();
-  const user = useAppSelector(selectUser)!;
+  const user = use_app_selector(select_user)!;
   segments.shift(); // Remove (mdx) layout
   const currentSegment = segments.join("/");
 
@@ -111,7 +111,7 @@ const SuspendedDashboardLeftSidebarContent = (): React.ReactElement => {
             hex: user.avatar_hex
           }}
           className={clsx(styles.x, styles.persona)}
-          componentProps={{
+          component_props={{
             primaryText: {
               className: "ellipsis"
             },
@@ -138,7 +138,7 @@ const SuspendedDashboardLeftSidebarContent = (): React.ReactElement => {
       </div>
       <ScrollArea
         className={clsx(styles.x, styles.scroller)}
-        slotProps={{
+        slot_props={{
           viewport: {
             tabIndex: -1,
             className: clsx("flex", styles.x, styles.viewport)

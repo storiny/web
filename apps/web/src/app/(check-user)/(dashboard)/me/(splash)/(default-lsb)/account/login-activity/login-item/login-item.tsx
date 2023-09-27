@@ -10,7 +10,7 @@ import Divider from "~/components/Divider";
 import Spacer from "~/components/Spacer";
 import { useToast } from "~/components/Toast";
 import Typography from "~/components/Typography";
-import { useSessionLogoutMutation } from "~/redux/features";
+import { use_session_logout_mutation } from "~/redux/features";
 import { DateFormat, formatDate } from "~/utils/formatDate";
 
 import { deviceTypeToIconMap } from "../icon-map";
@@ -26,7 +26,7 @@ const LogoutButton = (
 ): React.ReactElement => {
   const { login, onLogout } = props;
   const toast = useToast();
-  const [sessionLogout, { isLoading }] = useSessionLogoutMutation();
+  const [sessionLogout, { isLoading }] = use_session_logout_mutation();
 
   /**
    * Destroys a session

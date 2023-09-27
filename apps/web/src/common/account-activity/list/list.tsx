@@ -15,7 +15,7 @@ import { VirtualizedAccountActivityListContext } from "./list-context";
 const VirtualizedAccountActivityList = React.memo(
   ({
     accountActivities,
-    hasMore,
+    has_more,
     loadMore,
     accountActivityProps = {},
     className,
@@ -38,10 +38,10 @@ const VirtualizedAccountActivityList = React.memo(
           Item: VirtualizedAccountActivityItem,
           ScrollSeekPlaceholder:
             VirtualizedAccountActivityScrollSeekPlaceholder,
-          ...(hasMore && { Footer: VirtualFooter })
+          ...(has_more && { Footer: VirtualFooter })
         }}
         data={accountActivities}
-        endReached={hasMore ? loadMore : (): void => undefined}
+        endReached={has_more ? loadMore : (): void => undefined}
       />
     </VirtualizedAccountActivityListContext.Provider>
   )

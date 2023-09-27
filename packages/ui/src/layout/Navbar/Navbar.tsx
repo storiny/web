@@ -4,11 +4,11 @@ import clsx from "clsx";
 import NextLink from "next/link";
 import React from "react";
 
-import Wordmark from "~/brand/Wordmark";
+import Wordmark from "src/brand/wordmark";
 import Input from "~/components/Input";
 import SearchIcon from "~/icons/Search";
-import { selectLoggedIn } from "~/redux/features/auth/selectors";
-import { useAppSelector } from "~/redux/hooks";
+import { select_is_logged_in } from "~/redux/features/auth/selectors";
+import { use_app_selector } from "~/redux/hooks";
 
 import Actions from "./Actions";
 import styles from "./Navbar.module.scss";
@@ -16,7 +16,7 @@ import { NavbarProps } from "./Navbar.props";
 
 const Navbar = (props: NavbarProps): React.ReactElement => {
   const { variant = "default", className, children, ...rest } = props;
-  const loggedIn = useAppSelector(selectLoggedIn);
+  const loggedIn = use_app_selector(select_is_logged_in);
 
   return (
     <header
@@ -43,12 +43,12 @@ const Navbar = (props: NavbarProps): React.ReactElement => {
           title={"Go to homepage"}
         >
           <Wordmark
-            componentProps={{
+            component_props={{
               label: { className: styles["wordmark-label"] },
-              betaLabel: { className: styles["wordmark-label"] }
+              beta_label: { className: styles["wordmark-label"] }
             }}
             role={"presentation"}
-            showBeta
+            show_beta
             size={"sm"}
           />
         </NextLink>
@@ -64,7 +64,7 @@ const Navbar = (props: NavbarProps): React.ReactElement => {
               name={"navbar-search"}
               placeholder={"Search Storiny"}
               results={5}
-              slotProps={{
+              slot_props={{
                 container: { className: styles.search }
               }}
               type={"search"}

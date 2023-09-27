@@ -16,12 +16,12 @@ import EyeOffIcon from "~/icons/EyeOff";
 import ReportIcon from "~/icons/Report";
 import TrashIcon from "~/icons/Trash";
 import {
-  getCommentsApi,
-  selectUser,
-  useCommentVisibilityMutation,
-  useDeleteCommentMutation
+  get_comments_api,
+  select_user,
+  use_delete_comment_mutation,
+  use_comment_visibility_mutation
 } from "~/redux/features";
-import { useAppDispatch, useAppSelector } from "~/redux/hooks";
+import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 
 import ResponseEditor from "../../common/response-editor";
 
@@ -36,25 +36,25 @@ const CommentActions = ({
 }): React.ReactElement => {
   const copy = useClipboard();
   const toast = useToast();
-  const dispatch = useAppDispatch();
-  const user = useAppSelector(selectUser);
+  const dispatch = use_app_dispatch();
+  const user = use_app_selector(select_user);
   const isSelf = user?.id === comment.user_id;
   const isStoryAuthor = user?.id === comment.story?.user_id;
   const [hidden, setHidden] = React.useState(hiddenProp);
   const [deleteComment, { isLoading: isDeleteLoading }] =
-    useDeleteCommentMutation();
+    use_delete_comment_mutation();
   const [mutateCommentVisibility, { isLoading: isVisibilityLoading }] =
-    useCommentVisibilityMutation();
+    use_comment_visibility_mutation();
 
   /**
    * Deletes a comment
    */
   const handleCommentDelete = (): void => {
-    deleteComment({ id: comment.id, storyId: comment.story_id })
+    deleteComment({ id: comment.id, story_id: comment.story_id })
       .unwrap()
       .then(() => {
         toast("Comment deleted", "success");
-        dispatch(getCommentsApi.util.resetApiState());
+        dispatch(get_comments_api.util.resetApiState());
       })
       .catch((e) =>
         toast(e?.data?.error || "Could not delete your comment", "error")
@@ -99,7 +99,7 @@ const CommentActions = ({
         setHidden(!hidden);
         setHiddenProp(!hidden);
         toast(`Comment ${hidden ? "unhidden" : "hidden"}`, "success");
-        dispatch(getCommentsApi.util.resetApiState());
+        dispatch(get_comments_api.util.resetApiState());
       })
       .catch((e) =>
         toast(

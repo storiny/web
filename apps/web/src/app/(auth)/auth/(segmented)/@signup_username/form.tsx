@@ -16,7 +16,7 @@ import Grow from "~/components/Grow";
 import Spacer from "~/components/Spacer";
 import Spinner from "~/components/Spinner";
 import { useDebounce } from "~/hooks/useDebounce";
-import { useUsernameValidationMutation } from "~/redux/features";
+import { use_username_validation_mutation } from "~/redux/features";
 
 import { useAuthState } from "../../../actions";
 import { SignupUsernameSchema, signupUsernameSchema } from "./schema";
@@ -37,7 +37,7 @@ const UsernameField = ({
   const { watch, getFieldState } = useFormContext();
   const { invalid } = getFieldState("username");
   const [validateUsername, { isLoading, isError, isSuccess }] =
-    useUsernameValidationMutation();
+    use_username_validation_mutation();
   const username = watch("username", state.signup.username);
   const debouncedUsername = useDebounce(username);
   const loading =

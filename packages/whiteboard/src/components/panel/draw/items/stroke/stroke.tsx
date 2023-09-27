@@ -137,7 +137,7 @@ const StrokeControl = ({
         }}
         placeholder={"Stroke"}
         size={"sm"}
-        slotProps={{
+        slot_props={{
           container: {
             style: { flex: "0.6" }
           }
@@ -162,7 +162,7 @@ const StrokeControl = ({
         }}
         placeholder={"Stroke opacity"}
         size={"sm"}
-        slotProps={{
+        slot_props={{
           container: {
             style: {
               flex: "0.4"
@@ -212,7 +212,7 @@ const StrokeWidthControl = ({
       }}
       placeholder={"Stroke width"}
       size={"sm"}
-      slotProps={{
+      slot_props={{
         container: {
           style: {
             flex: disableStrokeStyle ? "1" : "0.4"
@@ -262,7 +262,7 @@ const StrokeStyleControl = ({
         changeStrokeStyle(newValue)
       }
       size={"sm"}
-      slotProps={{
+      slot_props={{
         content: {
           style: {
             zIndex: "calc(var(--z-index-modal) + 2)"
@@ -346,7 +346,7 @@ const ArrowheadControl = ({
           changeArrowhead(newValue, "start")
         }
         size={"sm"}
-        slotProps={{
+        slot_props={{
           content: {
             style: {
               zIndex: "calc(var(--z-index-modal) + 2)"
@@ -397,7 +397,7 @@ const ArrowheadControl = ({
           changeArrowhead(newValue, "end")
         }
         size={"sm"}
-        slotProps={{
+        slot_props={{
           content: {
             style: {
               zIndex: "calc(var(--z-index-modal) + 2)"

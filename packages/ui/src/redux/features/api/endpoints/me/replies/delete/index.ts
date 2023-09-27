@@ -1,30 +1,37 @@
 import { number_action, self_action } from "~/redux/features";
-import { apiSlice } from "~/redux/features/api/slice";
+import { api_slice } from "~/redux/features/api/slice";
 
 const SEGMENT = (id: string): string => `me/replies/${id}`;
 
-export interface ReplyDeleteResponse {}
 export interface ReplyDeletePayload {
-  commentId: string;
+  comment_id: string;
   id: string;
 }
 
-export const { useDeleteReplyMutation } = apiSlice.injectEndpoints({
-  endpoints: (builder) => ({
-    deleteReply: builder.mutation<ReplyDeleteResponse, ReplyDeletePayload>({
-      query: (body) => ({
-        url: `/${SEGMENT(body.id)}`,
-        method: "DELETE"
-      }),
-      invalidatesTags: (result, error, arg) => [{ type: "Reply", id: arg.id }],
-      onQueryStarted: async (arg, { dispatch, queryFulfilled }) => {
-        queryFulfilled.then(() => {
-          [
-            number_action("comment_reply_counts", arg.commentId, "decrement"),
-            self_action("self_reply_count", "decrement")
-          ].forEach(dispatch);
-        });
-      }
+export const { useDeleteReplyMutation: use_delete_reply_mutation } =
+  api_slice.injectEndpoints({
+    endpoints: (builder) => ({
+      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+      deleteReply: builder.mutation<void, ReplyDeletePayload>({
+        query: (body) => ({
+          url: `/${SEGMENT(body.id)}`,
+          method: "DELETE"
+        }),
+        invalidatesTags: (result, error, arg) => [
+          { type: "Reply", id: arg.id }
+        ],
+        onQueryStarted: async (arg, { dispatch, queryFulfilled }) => {
+          queryFulfilled.then(() => {
+            [
+              number_action(
+                "comment_reply_counts",
+                arg.comment_id,
+                "decrement"
+              ),
+              self_action("self_reply_count", "decrement")
+            ].forEach(dispatch);
+          });
+        }
+      })
     })
-  })
-});
+  });

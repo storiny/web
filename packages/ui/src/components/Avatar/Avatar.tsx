@@ -41,7 +41,7 @@ const Avatar = forwardRef<AvatarProps, "span">((props, ref) => {
     alt,
     borderless,
     className,
-    slotProps,
+    slot_props,
     style,
     children,
     ...rest
@@ -77,9 +77,9 @@ const Avatar = forwardRef<AvatarProps, "span">((props, ref) => {
       <Component>
         {!children && (
           <Image
-            {...slotProps?.image}
+            {...slot_props?.image}
             alt={alt}
-            className={clsx(styles.image, slotProps?.image?.className)}
+            className={clsx(styles.image, slot_props?.image?.className)}
             onLoadingStatusChange={(status): void =>
               setLoaded(status === "loaded")
             }
@@ -88,11 +88,11 @@ const Avatar = forwardRef<AvatarProps, "span">((props, ref) => {
         )}
         <Fallback
           delayMs={children ? 0 : 500}
-          {...slotProps?.fallback}
+          {...slot_props?.fallback}
           className={clsx(
             "flex-center",
             styles.fallback,
-            slotProps?.fallback?.className
+            slot_props?.fallback?.className
           )}
           style={
             {
@@ -100,7 +100,7 @@ const Avatar = forwardRef<AvatarProps, "span">((props, ref) => {
                 ? "var(--bg-elevation-lg)"
                 : `hsl(${strToHue(label || alt)} 35% 50%)`,
               "--fg": children ? "var(--fg-major)" : "var(--snow)",
-              ...slotProps?.fallback?.style
+              ...slot_props?.fallback?.style
             } as React.CSSProperties
           }
         >

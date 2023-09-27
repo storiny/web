@@ -8,16 +8,16 @@ import SvgIcon, { SvgIconProps } from "~/components/SvgIcon";
  * HOC for creating `SvgIcon` component from path data
  * @param path Path components
  * @param displayName Display name of the component
- * @param componentProps `SvgIcon` props
+ * @param component_props `SvgIcon` props
  */
 export const createSvgIcon = (
   path: React.ReactElement,
   displayName: string,
-  componentProps?: SvgIconProps
+  component_props?: SvgIconProps
 ): React.MemoExoticComponent<typeof SvgIcon> => {
   const Component = React.forwardRef<SVGSVGElement, SvgIconProps>(
     (props, ref) => (
-      <SvgIcon {...Object.assign({}, props, componentProps)} ref={ref}>
+      <SvgIcon {...Object.assign({}, props, component_props)} ref={ref}>
         {path}
       </SvgIcon>
     )

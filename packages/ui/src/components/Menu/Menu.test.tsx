@@ -2,7 +2,7 @@ import { axe } from "@storiny/test-utils";
 import { waitFor } from "@testing-library/react";
 import React from "react";
 
-import { renderTestWithProvider } from "~/redux/testUtils";
+import { render_test_with_provider } from "src/redux/test-utils";
 
 import styles from "../common/Menu.module.scss";
 import Menu from "../Menu";
@@ -11,7 +11,7 @@ import { MenuProps, MenuSize } from "./Menu.props";
 
 describe("<Menu />", () => {
   it("matches snapshot", () => {
-    const { baseElement } = renderTestWithProvider(
+    const { baseElement } = render_test_with_provider(
       <Menu open trigger={<button>Trigger</button>}>
         <MenuItem>Menu item</MenuItem>
       </Menu>
@@ -21,7 +21,7 @@ describe("<Menu />", () => {
   });
 
   it("does not have any accessibility violations", async () => {
-    const { baseElement } = renderTestWithProvider(
+    const { baseElement } = render_test_with_provider(
       <Menu open trigger={<button>Trigger</button>}>
         <MenuItem>Menu item</MenuItem>
       </Menu>
@@ -40,7 +40,7 @@ describe("<Menu />", () => {
   });
 
   it("renders as a polymorphic element", () => {
-    const { getByRole } = renderTestWithProvider(
+    const { getByRole } = render_test_with_provider(
       <Menu as={"aside"} open trigger={<button>Trigger</button>}>
         <MenuItem>Menu item</MenuItem>
       </Menu>
@@ -51,7 +51,7 @@ describe("<Menu />", () => {
 
   (["md", "sm"] as MenuSize[]).forEach((size) => {
     it(`renders \`${size}\` size`, () => {
-      const { getByRole } = renderTestWithProvider(
+      const { getByRole } = render_test_with_provider(
         <Menu open size={size} trigger={<button>Trigger</button>}>
           <MenuItem>Test</MenuItem>
         </Menu>
@@ -62,7 +62,7 @@ describe("<Menu />", () => {
   });
 
   it("renders trigger", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Menu open trigger={<span data-testid={"trigger"} />}>
         <MenuItem>Test</MenuItem>
       </Menu>
@@ -72,15 +72,15 @@ describe("<Menu />", () => {
   });
 
   it("passes props to the element slots", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Menu
         open
-        slotProps={
+        slot_props={
           {
             arrow: { "data-testid": "arrow" },
             content: { "data-testid": "content" },
             trigger: { "data-testid": "trigger" }
-          } as MenuProps["slotProps"]
+          } as MenuProps["slot_props"]
         }
         trigger={<button>Trigger</button>}
       >

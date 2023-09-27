@@ -16,9 +16,12 @@ import { useMediaQuery } from "~/hooks/useMediaQuery";
 import ExternalLinkIcon from "~/icons/ExternalLink";
 import HeartIcon from "~/icons/Heart";
 import ReplyIcon from "~/icons/Reply";
-import { boolean_action, selectUser } from "~/redux/features";
-import { setLikedReply, syncWithReply } from "~/redux/features/entities/slice";
-import { useAppDispatch, useAppSelector } from "~/redux/hooks";
+import { boolean_action, select_user } from "~/redux/features";
+import {
+  setLikedReply,
+  sync_with_reply
+} from "~/redux/features/entities/slice";
+import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 import { breakpoints } from "~/theme/breakpoints";
 import { abbreviateNumber } from "~/utils/abbreviateNumber";
 import { DateFormat, formatDate } from "~/utils/formatDate";
@@ -31,17 +34,17 @@ import { ReplyProps } from "./reply.props";
 const Reply = (props: ReplyProps): React.ReactElement => {
   const { isStatic, className, reply, enableSsr, virtual, nested, ...rest } =
     props;
-  const dispatch = useAppDispatch();
+  const dispatch = use_app_dispatch();
   const isMobile = useMediaQuery(breakpoints.down("mobile"));
-  const user = useAppSelector(selectUser);
-  const isUserBlocked = useAppSelector(
+  const user = use_app_selector(select_user);
+  const isUserBlocked = use_app_selector(
     (state) => state.entities.blocks[reply.user_id]
   );
-  const isLiked = useAppSelector(
+  const isLiked = use_app_selector(
     (state) => state.entities.likedReplies[reply.id]
   );
   const likeCount =
-    useAppSelector((state) => state.entities.replyLikeCounts[reply.id]) || 0;
+    use_app_selector((state) => state.entities.replyLikeCounts[reply.id]) || 0;
   const isSelf = user?.id === reply.user_id;
   const [hidden, setHidden] = React.useState(Boolean(reply.hidden));
   const [collapsed, setCollapsed] = React.useState(isUserBlocked);
@@ -55,7 +58,7 @@ const Reply = (props: ReplyProps): React.ReactElement => {
   const setHiddenImpl = React.useCallback(setHidden, [setHidden]);
 
   React.useEffect(() => {
-    dispatch(syncWithReply(reply));
+    dispatch(sync_with_reply(reply));
   }, [dispatch, reply]);
 
   // Collapse on block
@@ -104,7 +107,7 @@ const Reply = (props: ReplyProps): React.ReactElement => {
                   ? {
                       children: <ReplyIcon />,
                       className: styles.avatar,
-                      slotProps: {
+                      slot_props: {
                         fallback: {
                           className: styles.fallback
                         }

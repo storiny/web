@@ -2,7 +2,7 @@ import { axe } from "@storiny/test-utils";
 import { waitFor } from "@testing-library/react";
 import React from "react";
 
-import { renderTestWithProvider } from "~/redux/testUtils";
+import { render_test_with_provider } from "src/redux/test-utils";
 
 import Spacer from "./Spacer";
 import styles from "./Spacer.module.scss";
@@ -10,26 +10,26 @@ import { SpacerOrientation } from "./Spacer.props";
 
 describe("<Spacer />", () => {
   it("matches snapshot", () => {
-    const { container } = renderTestWithProvider(<Spacer />);
+    const { container } = render_test_with_provider(<Spacer />);
     expect(container.firstChild).toMatchSnapshot();
   });
 
   it("does not have any accessibility violations", async () => {
-    const { container } = renderTestWithProvider(<Spacer />);
+    const { container } = render_test_with_provider(<Spacer />);
     await waitFor(async () =>
       expect(await axe(container)).toHaveNoViolations()
     );
   });
 
   it("renders as a polymorphic element", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Spacer as={"aside"} data-testid={"spacer"} />
     );
     expect(getByTestId("spacer").nodeName.toLowerCase()).toEqual("aside");
   });
 
   it("renders `horizontal` orientation, size `1`, and inline `false` by default", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Spacer data-testid={"spacer"} />
     );
     const spacer = getByTestId("spacer");
@@ -41,7 +41,7 @@ describe("<Spacer />", () => {
 
   (["horizontal", "vertical"] as SpacerOrientation[]).forEach((orientation) => {
     it(`renders \`${orientation}\` orientation`, () => {
-      const { getByTestId } = renderTestWithProvider(
+      const { getByTestId } = render_test_with_provider(
         <Spacer data-testid={"spacer"} orientation={orientation} />
       );
 
@@ -50,7 +50,7 @@ describe("<Spacer />", () => {
   });
 
   it("renders inline", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Spacer data-testid={"spacer"} inline />
     );
     expect(getByTestId("spacer")).toHaveClass(styles.inline);

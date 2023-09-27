@@ -1,6 +1,6 @@
 import React from "react";
 
-import { renderTestWithProvider } from "~/redux/testUtils";
+import { render_test_with_provider } from "src/redux/test-utils";
 
 import Tab from "../Tab";
 import tabStyles from "../Tab/Tab.module.scss";
@@ -10,7 +10,7 @@ import { TabsListSize } from "./TabsList.props";
 
 describe("<TabsList />", () => {
   it("matches snapshot", () => {
-    const { container } = renderTestWithProvider(
+    const { container } = render_test_with_provider(
       <Tabs>
         <TabsList />
       </Tabs>
@@ -20,7 +20,7 @@ describe("<TabsList />", () => {
   });
 
   it("renders as a polymorphic element", () => {
-    const { getByRole } = renderTestWithProvider(
+    const { getByRole } = render_test_with_provider(
       <Tabs>
         <TabsList as={"aside"} />
       </Tabs>
@@ -30,7 +30,7 @@ describe("<TabsList />", () => {
   });
 
   it("passes size `md` to the context by default", () => {
-    const { getByRole } = renderTestWithProvider(
+    const { getByRole } = render_test_with_provider(
       <Tabs>
         <TabsList>
           <Tab value={"test"} />
@@ -43,7 +43,7 @@ describe("<TabsList />", () => {
 
   (["lg", "md"] as TabsListSize[]).forEach((size) => {
     it(`passes \`${size}\` size to the context`, () => {
-      const { getByRole } = renderTestWithProvider(
+      const { getByRole } = render_test_with_provider(
         <Tabs>
           <TabsList size={size}>
             <Tab value={"test"} />

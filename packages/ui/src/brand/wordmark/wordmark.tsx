@@ -1,0 +1,66 @@
+"use client";
+
+import clsx from "clsx";
+import React from "react";
+import Logo from "src/brand/logo";
+
+import Typography from "~/components/Typography";
+import { forwardRef } from "~/utils/forwardRef";
+
+import styles from "./wordmark.module.scss";
+import { WordmarkProps, WordmarkSize } from "./wordmark.props";
+
+const LOGO_SIZE_MAP: Record<WordmarkSize, number> = {
+  sm: 26,
+  md: 34,
+  lg: 56
+};
+
+const Wordmark = forwardRef<WordmarkProps, "span">((props, ref) => {
+  const {
+    as: Component = "span",
+    size = "md",
+    show_beta,
+    component_props,
+    className,
+    ...rest
+  } = props;
+  return (
+    <Component
+      {...rest}
+      className={clsx(
+        "fit-w",
+        "flex-center",
+        styles.wordmark,
+        styles[size],
+        className
+      )}
+      ref={ref}
+    >
+      <Logo {...component_props?.logo} size={LOGO_SIZE_MAP[size]} />
+      <Typography
+        {...component_props?.label}
+        as={"span"}
+        className={clsx(styles.label, component_props?.label?.className)}
+        level={"h4"}
+      >
+        Storiny
+        {show_beta && (
+          <Typography
+            {...component_props?.beta_label}
+            className={clsx(
+              styles.beta,
+              component_props?.beta_label?.className
+            )}
+          >
+            Beta
+          </Typography>
+        )}
+      </Typography>
+    </Component>
+  );
+});
+
+Wordmark.displayName = "Wordmark";
+
+export default Wordmark;

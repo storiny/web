@@ -2,8 +2,8 @@ import { Story } from "@storiny/types";
 import { useHydrateAtoms } from "jotai/react/utils";
 import React from "react";
 
-import { syncWithStory } from "~/redux/features";
-import { useAppDispatch } from "~/redux/hooks";
+import { sync_with_story } from "~/redux/features";
+import { use_app_dispatch } from "~/redux/hooks";
 
 import { storyMetadataAtom } from "../../atoms";
 
@@ -14,11 +14,11 @@ const HydrateMetadata = ({
   children: React.ReactElement;
   story: Story;
 }): React.ReactElement => {
-  const dispatch = useAppDispatch();
+  const dispatch = use_app_dispatch();
   useHydrateAtoms([[storyMetadataAtom, story]]);
 
   React.useEffect(() => {
-    dispatch(syncWithStory(story));
+    dispatch(sync_with_story(story));
   }, [dispatch, story]);
 
   return children;

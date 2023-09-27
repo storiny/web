@@ -28,7 +28,7 @@ const Cancel = (): React.ReactElement => {
           onCancel();
         }
       },
-      slotProps: {
+      slot_props: {
         content: {
           style: {
             zIndex: "calc(var(--z-index-modal) + 2)"

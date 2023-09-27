@@ -40,7 +40,7 @@ export interface ButtonProps extends PolymorphicProps<"button"> {
   /**
    * The props passed to the individual component elements.
    */
-  slotProps?: {
+  slot_props?: {
     decorator?: React.ComponentPropsWithoutRef<"span">;
   };
   /**

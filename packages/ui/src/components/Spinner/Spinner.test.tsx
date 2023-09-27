@@ -2,7 +2,7 @@ import { axe } from "@storiny/test-utils";
 import { waitFor } from "@testing-library/react";
 import React from "react";
 
-import { renderTestWithProvider } from "~/redux/testUtils";
+import { render_test_with_provider } from "src/redux/test-utils";
 
 import Spinner from "./Spinner";
 import styles from "./Spinner.module.scss";
@@ -10,12 +10,12 @@ import { SpinnerColor, SpinnerProps, SpinnerSize } from "./Spinner.props";
 
 describe("<Spinner />", () => {
   it("matches snapshot", () => {
-    const { container } = renderTestWithProvider(<Spinner />);
+    const { container } = render_test_with_provider(<Spinner />);
     expect(container.firstChild).toMatchSnapshot();
   });
 
   it("does not have any accessibility violations", async () => {
-    const { container } = renderTestWithProvider(
+    const { container } = render_test_with_provider(
       <Spinner aria-label={"Test spinner"} />
     );
 
@@ -25,12 +25,12 @@ describe("<Spinner />", () => {
   });
 
   it("renders as a polymorphic element", () => {
-    const { getByRole } = renderTestWithProvider(<Spinner as={"aside"} />);
+    const { getByRole } = render_test_with_provider(<Spinner as={"aside"} />);
     expect(getByRole("progressbar").nodeName.toLowerCase()).toEqual("aside");
   });
 
   it("renders size `md` and color `inverted` by default", () => {
-    const { getByRole } = renderTestWithProvider(<Spinner />);
+    const { getByRole } = render_test_with_provider(<Spinner />);
 
     expect(getByRole("progressbar")).toHaveClass(
       ...[styles.md, styles.inverted]
@@ -39,25 +39,27 @@ describe("<Spinner />", () => {
 
   (["lg", "md", "sm", "xs"] as SpinnerSize[]).forEach((size) => {
     it(`renders \`${size}\` size`, () => {
-      const { getByRole } = renderTestWithProvider(<Spinner size={size} />);
+      const { getByRole } = render_test_with_provider(<Spinner size={size} />);
       expect(getByRole("progressbar")).toHaveClass(styles[size]);
     });
   });
 
   (["inverted", "ruby"] as SpinnerColor[]).forEach((color) => {
     it(`renders \`${color}\` color`, () => {
-      const { getByRole } = renderTestWithProvider(<Spinner color={color} />);
+      const { getByRole } = render_test_with_provider(
+        <Spinner color={color} />
+      );
       expect(getByRole("progressbar")).toHaveClass(styles[color]);
     });
   });
 
   it("renders determinate variant", () => {
-    const { getByRole } = renderTestWithProvider(<Spinner value={50} />);
+    const { getByRole } = render_test_with_provider(<Spinner value={50} />);
     expect(getByRole("progressbar")).toHaveAttribute("data-state", "loading");
   });
 
   it("renders nested children", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Spinner>
         <span data-testid={"child"} />
       </Spinner>
@@ -67,15 +69,15 @@ describe("<Spinner />", () => {
   });
 
   it("passes props to the element slots", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Spinner
-        slotProps={
+        slot_props={
           {
             indicator: { "data-testid": "indicator" },
             svg: { "data-testid": "svg" },
             progress: { "data-testid": "progress" },
             track: { "data-testid": "track" }
-          } as SpinnerProps["slotProps"]
+          } as SpinnerProps["slot_props"]
         }
       />
     );

@@ -2,7 +2,7 @@ import { axe } from "@storiny/test-utils";
 import { waitFor } from "@testing-library/react";
 import React from "react";
 
-import { renderTestWithProvider } from "~/redux/testUtils";
+import { render_test_with_provider } from "src/redux/test-utils";
 
 import Badge, { getInsetPosition, getTranslationProps } from "./Badge";
 import styles from "./Badge.module.scss";
@@ -16,26 +16,26 @@ import {
 
 describe("<Badge />", () => {
   it("matches snapshot", () => {
-    const { container } = renderTestWithProvider(<Badge />);
+    const { container } = render_test_with_provider(<Badge />);
     expect(container.firstChild).toMatchSnapshot();
   });
 
   it("does not have any accessibility violations", async () => {
-    const { container } = renderTestWithProvider(<Badge />);
+    const { container } = render_test_with_provider(<Badge />);
     await waitFor(async () =>
       expect(await axe(container)).toHaveNoViolations()
     );
   });
 
   it("renders as a polymorphic element", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Badge as={"aside"} data-testid={"badge"} />
     );
     expect(getByTestId("badge").nodeName.toLowerCase()).toEqual("aside");
   });
 
   it("renders with size `md`, color `inverted`, elevation `body`, inset `14%`, visible `true`, and `bottom-right` anchor origin by default", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Badge data-testid={"badge"} />
     );
     const badge = getByTestId("badge");
@@ -48,7 +48,7 @@ describe("<Badge />", () => {
 
   (["xl", "lg", "md", "sm"] as BadgeSize[]).forEach((size) => {
     it(`renders \`${size}\` size`, () => {
-      const { getByTestId } = renderTestWithProvider(
+      const { getByTestId } = render_test_with_provider(
         <Badge data-testid={"badge"} size={size} />
       );
 
@@ -59,7 +59,7 @@ describe("<Badge />", () => {
   (["inverted", "beryl", "melon", "lemon", "ruby"] as BadgeColor[]).forEach(
     (color) => {
       it(`renders \`${color}\` color`, () => {
-        const { getByTestId } = renderTestWithProvider(
+        const { getByTestId } = render_test_with_provider(
           <Badge color={color} data-testid={"badge"} />
         );
 
@@ -71,7 +71,7 @@ describe("<Badge />", () => {
   (["body", "xs", "sm", "md", "lg"] as BadgeElevation[]).forEach(
     (elevation) => {
       it(`renders \`${elevation}\` elevation`, () => {
-        const { getByTestId } = renderTestWithProvider(
+        const { getByTestId } = render_test_with_provider(
           <Badge data-testid={"badge"} elevation={elevation} />
         );
 
@@ -93,7 +93,7 @@ describe("<Badge />", () => {
     ] as BadgeOrigin[]
   ).forEach((anchorOrigin) => {
     it(`renders \`${anchorOrigin.vertical}-${anchorOrigin.horizontal}\` anchor origin`, () => {
-      const { getByTestId } = renderTestWithProvider(
+      const { getByTestId } = render_test_with_provider(
         <Badge anchorOrigin={anchorOrigin} data-testid={"badge"} />
       );
       const { transformOriginX, transformOriginY, translateY, translateX } =
@@ -107,7 +107,7 @@ describe("<Badge />", () => {
   });
 
   it("renders badge content", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Badge badgeContent={<span data-testid={"badge-content"} />} />
     );
 
@@ -115,7 +115,7 @@ describe("<Badge />", () => {
   });
 
   it("renders invisible component", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Badge data-testid={"badge"} visible={false} />
     );
 
@@ -125,12 +125,12 @@ describe("<Badge />", () => {
   });
 
   it("passes props to the container slot", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Badge
-        slotProps={
+        slot_props={
           {
             container: { "data-testid": "container" }
-          } as BadgeProps["slotProps"]
+          } as BadgeProps["slot_props"]
         }
       />
     );
@@ -139,7 +139,7 @@ describe("<Badge />", () => {
   });
 
   it("renders children", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Badge>
         <span data-testid={"child"} />
       </Badge>

@@ -3,16 +3,16 @@
 //
 // Import { useNotification } from "~/components/Notification";
 // Import TypographyIcon from "~/icons/Typography";
-// Import { setFontSettingsNotificationVisibility } from "~/redux/features";
-// Import { useAppDispatch, useAppSelector } from "~/redux/hooks";
+// Import { set_font_settings_notification_visibility } from "~/redux/features";
+// Import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 
 // TODO: Implement once `useNotification` gets fixed
 //
 // Const EditorFontSettingsNotification = (): null => {
 //   Const router = useRouter();
 //   Const notify = useNotification();
-//   Const dispatch = useAppDispatch();
-//   Const showNotification = useAppSelector(
+//   Const dispatch = use_app_dispatch();
+//   Const showNotification = use_app_selector(
 //     (state) => state.preferences.show_font_settings_notification
 //   );
 //
@@ -29,7 +29,7 @@
 //           },
 //           SecondaryButton: {
 //             OnClick: (): void => {
-//               Dispatch(setFontSettingsNotificationVisibility(false));
+//               Dispatch(set_font_settings_notification_visibility(false));
 //             }
 //           }
 //         },

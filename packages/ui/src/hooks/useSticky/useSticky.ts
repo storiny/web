@@ -1,6 +1,6 @@
 "use client";
 
-import { devConsole } from "@storiny/shared/src/utils/devLog";
+import { dev_console } from "@storiny/shared/src/utils/devLog";
 import React from "react";
 
 import { UseStickyProps } from "./useSticky.props";
@@ -55,7 +55,7 @@ try {
   window.addEventListener("testPassive", () => {}, options);
   window.removeEventListener("testPassive", () => {}, options);
 } catch (e) {
-  devConsole.error(e);
+  dev_console.error(e);
 }
 
 /**
@@ -101,7 +101,7 @@ const isOffsetElement = (element: HTMLElement): boolean =>
  */
 const offsetTill = (node: HTMLElement, target: HTMLElement): number => {
   let current: HTMLElement = node;
-  let offset: number = 0;
+  let offset = 0;
 
   // If target is not an `offsetParent` itself, subtract its `offsetTop` and set the correct target
   if (!isOffsetElement(target)) {
@@ -223,7 +223,7 @@ const setup = (
 ): void => {
   const { bottom, offsetBottom, offsetTop } = options;
   const scrollPane: Window | HTMLElement = getScrollParent(node);
-  let isScheduled: boolean = false;
+  let isScheduled = false;
 
   const scheduleOnLayout = (): void => {
     if (!isScheduled) {
@@ -307,7 +307,7 @@ const setup = (
     measure: ({ height }) => ({ height })
   });
 
-  let relativeOffset: number = 0;
+  let relativeOffset = 0;
   let mode: Mode | null = onLayout();
 
   const changeMode = (newMode: StickyMode): void => {

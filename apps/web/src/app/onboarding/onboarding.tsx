@@ -7,7 +7,7 @@ import { clsx } from "clsx";
 import { compressToEncodedURIComponent } from "lz-string";
 import React from "react";
 
-import Logo from "~/brand/Logo";
+import Logo from "../../../../../packages/ui/src/brand/logo";
 import SuspenseLoader from "~/common/suspense-loader";
 import Chip from "~/components/Chip";
 import Divider from "~/components/Divider";
@@ -23,11 +23,11 @@ import CheckIcon from "~/icons/Check";
 import PlusIcon from "~/icons/Plus";
 import {
   boolean_action,
+  get_query_error_type,
   GetOnboardingTagsResponse,
-  getQueryErrorType,
-  useGetOnboardingTagsQuery
+  use_get_onboarding_tags_query
 } from "~/redux/features";
-import { useAppDispatch, useAppSelector } from "~/redux/hooks";
+import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 import { breakpoints } from "~/theme/breakpoints";
 
 import styles from "./onboarding.module.scss";
@@ -110,8 +110,8 @@ const Tag = ({
   tagId: string;
   tagName: string;
 }): React.ReactElement => {
-  const dispatch = useAppDispatch();
-  const isFollowing = useAppSelector(
+  const dispatch = use_app_dispatch();
+  const isFollowing = use_app_selector(
     (state) => state.entities.followedTags[tagId]
   );
 
@@ -138,7 +138,7 @@ const TagsSegment = ({
   categoriesHash: string;
 }): React.ReactElement => {
   const { data, isLoading, isFetching, isError, error, refetch } =
-    useGetOnboardingTagsQuery(categoriesHash);
+    use_get_onboarding_tags_query(categoriesHash);
 
   return (
     <Segment
@@ -151,7 +151,7 @@ const TagsSegment = ({
       title={"Follow some tags"}
     >
       <ScrollArea
-        slotProps={{
+        slot_props={{
           scrollbar: {
             className: clsx(styles.x, styles["scroll-area-scrollbar"])
           },
@@ -169,11 +169,11 @@ const TagsSegment = ({
         ) : isError ? (
           <ErrorState
             autoSize
-            componentProps={{
+            component_props={{
               button: { loading: isFetching }
             }}
             retry={refetch}
-            type={getQueryErrorType(error)}
+            type={get_query_error_type(error)}
           />
         ) : (
           <div className={"flex-col"}>
@@ -275,7 +275,7 @@ const Onboarding = (): React.ReactElement => {
       fullscreen={isSmallerThanMobile}
       onOpenChange={setOpen}
       open={open}
-      slotProps={{
+      slot_props={{
         header: {
           decorator: <Logo size={16} />,
           children: "Welcome to Storiny"

@@ -3,7 +3,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
 
-import { renderWithState } from "~/redux/mock";
+import { render_with_state } from "~/redux/mock";
 
 import BottomNavigation from "./BottomNavigation";
 
@@ -12,7 +12,7 @@ const meta: Meta<typeof BottomNavigation> = {
   component: BottomNavigation,
   decorators: [
     (Story): React.ReactElement =>
-      renderWithState(<Story />, { loggedIn: true })
+      render_with_state(<Story />, { loggedIn: true })
   ],
   args: {
     forceMount: true,

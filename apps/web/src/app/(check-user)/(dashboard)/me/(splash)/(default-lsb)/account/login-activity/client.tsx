@@ -3,7 +3,7 @@
 import { clsx } from "clsx";
 import React from "react";
 
-import Accordion from "~/components/Accordion";
+import Accordion from "../../../../../../../../../../../packages/ui/src/components/accordion";
 import Button from "~/components/Button";
 import { useConfirmation } from "~/components/Confirmation";
 import Divider from "~/components/Divider";
@@ -15,7 +15,7 @@ import TitleBlock from "~/entities/TitleBlock";
 import { useMediaQuery } from "~/hooks/useMediaQuery";
 import DevicesIcon from "~/icons/Devices";
 import LogoutIcon from "~/icons/Logout";
-import { useDestroySessionsMutation } from "~/redux/features";
+import { use_destroy_settings_mutation } from "~/redux/features";
 import { breakpoints } from "~/theme/breakpoints";
 
 import DashboardGroup from "../../dashboard-group";
@@ -63,7 +63,7 @@ const DestroySessions = ({
   onDestroy: () => void;
 }): React.ReactElement => {
   const toast = useToast();
-  const [destroySessions, { isLoading }] = useDestroySessionsMutation();
+  const [destroySessions, { isLoading }] = use_destroy_settings_mutation();
 
   /**
    * Destroys all sessions except the current one

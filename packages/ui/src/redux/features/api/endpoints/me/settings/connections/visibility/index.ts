@@ -1,20 +1,23 @@
 import { ContentType } from "@storiny/shared";
 
-import { apiSlice } from "~/redux/features/api/slice";
+import { api_slice } from "~/redux/features/api/slice";
 
 const SEGMENT = (id: string): string =>
   `me/settings/connections/${id}/visibility`;
 
-export interface ConnectionVisibilitySettingsResponse {}
 export type ConnectionVisibilitySettingsPayload = {
   id: string;
   visible: boolean;
 };
 
-export const { useConnectionVisibilityMutation } = apiSlice.injectEndpoints({
+export const {
+  // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+  useConnectionVisibilityMutation: use_connection_visibility_mutation
+} = api_slice.injectEndpoints({
   endpoints: (builder) => ({
+    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     connectionVisibility: builder.mutation<
-      ConnectionVisibilitySettingsResponse,
+      void,
       ConnectionVisibilitySettingsPayload
     >({
       query: (body) => ({

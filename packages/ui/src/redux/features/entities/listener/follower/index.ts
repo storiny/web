@@ -1,10 +1,9 @@
 import {
-  decrementAction,
   number_action,
   set_entity_record_value,
-  setSelfFollowerCount
+  set_self_follower_count
 } from "~/redux/features";
-import { AppStartListening } from "~/redux/listenerMiddleware";
+import { AppStartListening } from "src/redux/listener-middleware";
 
 import { debounce_effect, fetch_api } from "../utils";
 
@@ -22,10 +21,11 @@ export const add_follower_listener = (
         const [, user_id, has_added_follower] = payload;
 
         // User can only remove its followers
-        // TODO: ---
         if (!has_added_follower) {
-          dispatch(setSelfFollowerCount(decrementAction));
-          dispatch(number_action("following_counts", user_id, "decrement"));
+          [
+            set_self_follower_count("decrement"),
+            number_action("following_counts", user_id, "decrement")
+          ].forEach(dispatch);
         }
       }
     }

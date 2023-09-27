@@ -4,15 +4,15 @@ import React from "react";
 import Spacer from "~/components/Spacer";
 import Switch from "~/components/Switch";
 import Typography from "~/components/Typography";
-import { toggleHapticFeedback } from "~/redux/features";
-import { useAppDispatch, useAppSelector } from "~/redux/hooks";
+import { toggle_haptic_feedback } from "~/redux/features";
+import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 
 import DashboardGroup from "../../../../dashboard-group";
 import styles from "./miscellaneous.module.scss";
 
 const MiscellaneousPreferences = (): React.ReactElement => {
-  const dispatch = useAppDispatch();
-  const haptic_feedback = useAppSelector(
+  const dispatch = use_app_dispatch();
+  const haptic_feedback = use_app_selector(
     (state) => state.preferences.haptic_feedback
   );
 
@@ -40,7 +40,7 @@ const MiscellaneousPreferences = (): React.ReactElement => {
             checked={haptic_feedback}
             name={"haptic-feedback"}
             onCheckedChange={(newChecked): void => {
-              dispatch(toggleHapticFeedback(newChecked));
+              dispatch(toggle_haptic_feedback(newChecked));
             }}
           />
         </div>

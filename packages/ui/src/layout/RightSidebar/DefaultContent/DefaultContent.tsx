@@ -19,8 +19,8 @@ import UserWithAction, {
   UserWithActionSkeleton
 } from "~/layout/RightSidebar/UserWithAction";
 import {
-  getQueryErrorType,
-  useGetRightSidebarContentQuery
+  get_query_error_type,
+  use_get_right_sidebar_content_query
 } from "~/redux/features";
 
 import styles from "./DefaultContent.module.scss";
@@ -48,18 +48,18 @@ const RightSidebarDefaultContent = ({
   hidePopularStories
 }: DefaultContentProps): React.ReactElement => {
   const { data, isLoading, isFetching, isError, error, refetch } =
-    useGetRightSidebarContentQuery();
+    use_get_right_sidebar_content_query();
 
   return isError ? (
     <ErrorState
-      componentProps={{
+      component_props={{
         button: {
           loading: isFetching
         }
       }}
       retry={refetch}
       size={"sm"}
-      type={getQueryErrorType(error)}
+      type={get_query_error_type(error)}
     />
   ) : (
     <>

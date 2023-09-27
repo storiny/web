@@ -29,9 +29,9 @@ import ReadsIcon from "~/icons/Reads";
 import TrashIcon from "~/icons/Trash";
 import XIcon from "~/icons/X";
 import { boolean_action, falseAction } from "~/redux/features";
-import { selectUser } from "~/redux/features/auth/selectors";
-import { syncWithStory } from "~/redux/features/entities/slice";
-import { useAppDispatch, useAppSelector } from "~/redux/hooks";
+import { select_user } from "~/redux/features/auth/selectors";
+import { sync_with_story } from "~/redux/features/entities/slice";
+import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 import { breakpoints } from "~/theme/breakpoints";
 import { abbreviateNumber } from "~/utils/abbreviateNumber";
 import { DateFormat, formatDate } from "~/utils/formatDate";
@@ -163,12 +163,12 @@ const Meta = (props: StoryProps): React.ReactElement | null => {
 const Splash = (props: StoryProps): React.ReactElement => {
   const { isExtended, isDeleted, isDraft, showUnlikeButton, story } = props;
   const router = useRouter();
-  const dispatch = useAppDispatch();
+  const dispatch = use_app_dispatch();
   const isMobile = useMediaQuery(breakpoints.down("mobile"));
-  const isBookmarked = useAppSelector(
+  const isBookmarked = use_app_selector(
     (state) => state.entities.bookmarks[story.id]
   );
-  const isLiked = useAppSelector(
+  const isLiked = use_app_selector(
     (state) => state.entities.likedStories[story.id]
   );
   const storyUrl = getStoryUrl(props);
@@ -193,7 +193,7 @@ const Splash = (props: StoryProps): React.ReactElement => {
         alt={""}
         hex={story.splash_hex}
         imgId={story.splash_id}
-        slotProps={{
+        slot_props={{
           image: {
             sizes: [
               "(min-width: 800px) 320px",
@@ -262,12 +262,12 @@ const Splash = (props: StoryProps): React.ReactElement => {
 const Footer = (props: StoryProps): React.ReactElement => {
   const { isExtended, isDeleted, isDraft, story, showUnlikeButton } = props;
   const isMobile = useMediaQuery(breakpoints.down("mobile"));
-  const dispatch = useAppDispatch();
-  const user = useAppSelector(selectUser);
-  const isBookmarked = useAppSelector(
+  const dispatch = use_app_dispatch();
+  const user = use_app_selector(select_user);
+  const isBookmarked = use_app_selector(
     (state) => state.entities.bookmarks[story.id]
   );
-  const isLiked = useAppSelector(
+  const isLiked = use_app_selector(
     (state) => state.entities.likedStories[story.id]
   );
   const showWordCount = isDraft || isDeleted;
@@ -529,8 +529,8 @@ const Story = (props: StoryProps): React.ReactElement => {
     virtual,
     ...rest
   } = props;
-  const dispatch = useAppDispatch();
-  const isUserBlocked = useAppSelector(
+  const dispatch = use_app_dispatch();
+  const isUserBlocked = use_app_selector(
     (state) => state.entities.blocks[story.user_id]
   );
   const [collapsed, setCollapsed] = React.useState(isUserBlocked);
@@ -538,7 +538,7 @@ const Story = (props: StoryProps): React.ReactElement => {
   const isSmall = isExtended || isDeleted || isDraft;
 
   React.useEffect(() => {
-    dispatch(syncWithStory(story));
+    dispatch(sync_with_story(story));
   }, [dispatch, story]);
 
   // Collapse on block

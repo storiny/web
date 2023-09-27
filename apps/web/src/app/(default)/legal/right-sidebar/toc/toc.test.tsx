@@ -1,12 +1,12 @@
 import React from "react";
 
-import { renderTestWithProvider } from "~/redux/testUtils";
+import { render_test_with_provider } from "../../../../../../../../packages/ui/src/redux/test-utils";
 
 import LegalToc from "./toc";
 
 describe("<LegalToc />", () => {
   it("matches snapshot", () => {
-    const { container } = renderTestWithProvider(
+    const { container } = render_test_with_provider(
       <div>
         <main>
           <h2 id={"h2-1"}>H2</h2>

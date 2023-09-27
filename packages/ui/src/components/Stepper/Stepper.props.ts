@@ -18,7 +18,7 @@ export interface StepperProps extends PolymorphicProps<"div"> {
   /**
    * The props passed to the individual component elements.
    */
-  slotProps?: {
+  slot_props?: {
     step?: React.ComponentPropsWithoutRef<"span">;
   };
   /**

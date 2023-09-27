@@ -14,14 +14,14 @@ import MailPlusIcon from "~/icons/mail-plus";
 import UserCheckIcon from "~/icons/UserCheck";
 import UserPlusIcon from "~/icons/UserPlus";
 import { boolean_action, setFollowing } from "~/redux/features";
-import { useAppDispatch, useAppSelector } from "~/redux/hooks";
+import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 import { abbreviateNumber } from "~/utils/abbreviateNumber";
 
 import { storyMetadataAtom } from "../../../../../../atoms";
 
 const StoryActions = ({ user }: { user: User }): React.ReactElement => {
-  const dispatch = useAppDispatch();
-  const isFollowing = useAppSelector(
+  const dispatch = use_app_dispatch();
+  const isFollowing = use_app_selector(
     (state) => state.entities.following[user.id]
   );
 
@@ -59,7 +59,7 @@ const StoryWriter = (): React.ReactElement => {
   const story = useAtomValue(storyMetadataAtom);
   const user = story.user!;
   const followerCount =
-    useAppSelector((state) => state.entities.followerCounts[user.id]) || 0;
+    use_app_selector((state) => state.entities.followerCounts[user.id]) || 0;
 
   return (
     <div className={"flex-col"}>
@@ -71,7 +71,7 @@ const StoryWriter = (): React.ReactElement => {
           hex: user?.avatar_hex
         }}
         className={"fit-w"}
-        componentProps={{
+        component_props={{
           secondaryText: {
             ellipsis: true
           }

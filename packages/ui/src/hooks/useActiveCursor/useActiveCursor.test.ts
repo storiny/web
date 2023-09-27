@@ -1,10 +1,10 @@
-import { renderHookWithProvider } from "~/redux/testUtils";
+import { render_hook_with_provider } from "src/redux/test-utils";
 
 import { useActiveCursor } from "./useActiveCursor";
 
 describe("useActiveCursor", () => {
   it("adds cursor style to body when the element gets active", () => {
-    const { result } = renderHookWithProvider(() =>
+    const { result } = render_hook_with_provider(() =>
       useActiveCursor("grabbing")
     );
 

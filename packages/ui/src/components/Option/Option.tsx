@@ -18,7 +18,7 @@ const Option = forwardRef<OptionProps, "div">((props, ref) => {
     decorator,
     children,
     className,
-    slotProps,
+    slot_props,
     ...rest
   } = props;
 
@@ -32,27 +32,27 @@ const Option = forwardRef<OptionProps, "div">((props, ref) => {
       <Component>
         {decorator && (
           <span
-            {...slotProps?.decorator}
-            className={clsx(styles.decorator, slotProps?.decorator?.className)}
+            {...slot_props?.decorator}
+            className={clsx(styles.decorator, slot_props?.decorator?.className)}
           >
             {decorator}
           </span>
         )}
-        <ItemText {...slotProps?.text}>{children}</ItemText>
+        <ItemText {...slot_props?.text}>{children}</ItemText>
         {rightSlot && (
           <span
-            {...slotProps?.rightSlot}
+            {...slot_props?.rightSlot}
             className={clsx(
               rightSlotStyles["right-slot"],
-              slotProps?.rightSlot?.className
+              slot_props?.rightSlot?.className
             )}
           >
             {rightSlot}
           </span>
         )}
         <ItemIndicator
-          {...slotProps?.indicator}
-          className={clsx(styles.indicator, slotProps?.indicator?.className)}
+          {...slot_props?.indicator}
+          className={clsx(styles.indicator, slot_props?.indicator?.className)}
         >
           <CheckIcon />
         </ItemIndicator>

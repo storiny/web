@@ -17,7 +17,7 @@ export interface VirtualizedCommentListProps
   /**
    * Flag indicating whether there are more comments to render.
    */
-  hasMore: boolean;
+  has_more: boolean;
   /**
    * A callback function to fetch more comments.
    */

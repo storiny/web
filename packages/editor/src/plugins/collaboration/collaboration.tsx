@@ -4,8 +4,8 @@ import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext
 import React from "react";
 import { Doc } from "yjs";
 
-import { selectUser } from "~/redux/features";
-import { useAppSelector } from "~/redux/hooks";
+import { select_user } from "~/redux/features";
+import { use_app_selector } from "~/redux/hooks";
 
 import { ExcludedProperties } from "../../collaboration/bindings";
 import { Provider } from "../../collaboration/provider";
@@ -36,7 +36,7 @@ const CollaborationPlugin = ({
   role,
   awarenessData
 }: Props): React.ReactElement => {
-  const user = useAppSelector(selectUser)!;
+  const user = use_app_selector(select_user)!;
   const localState = React.useMemo(
     () =>
       ({

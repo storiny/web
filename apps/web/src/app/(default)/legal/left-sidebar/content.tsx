@@ -140,7 +140,7 @@ const SuspendedLegalLeftSidebarContent = (): React.ReactElement => {
       className={clsx("full-w", styles.x, styles.tabs)}
       orientation={"vertical"}
       role={undefined}
-      slotProps={{
+      slot_props={{
         viewport: {
           className: clsx(styles.x, styles.viewport)
         },

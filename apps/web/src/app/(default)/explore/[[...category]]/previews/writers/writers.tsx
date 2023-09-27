@@ -13,7 +13,7 @@ import Link from "~/components/Link";
 import Skeleton from "~/components/Skeleton";
 import Typography from "~/components/Typography";
 import ChevronIcon from "~/icons/Chevron";
-import { useGetExploreWritersQuery } from "~/redux/features";
+import { use_get_explore_writers_query } from "~/redux/features";
 import { abbreviateNumber } from "~/utils/abbreviateNumber";
 
 import WriterSkeleton from "./skeleton";
@@ -60,11 +60,12 @@ const WritersPreview = ({
   loading: loadingProp,
   debouncedQuery
 }: Props): React.ReactElement | null => {
-  const { data, isLoading, isFetching, isError } = useGetExploreWritersQuery({
-    page: 1,
-    category,
-    query: debouncedQuery
-  });
+  const { data, isLoading, isFetching, isError } =
+    use_get_explore_writers_query({
+      page: 1,
+      category,
+      query: debouncedQuery
+    });
   const { items = [] } = data || {};
   const loading = isLoading || loadingProp;
 

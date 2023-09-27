@@ -20,14 +20,14 @@ import { useDebounce } from "~/hooks/useDebounce";
 import { useMediaQuery } from "~/hooks/useMediaQuery";
 import SearchIcon from "~/icons/Search";
 import {
-  getQueryErrorType,
-  selectUser,
-  setSelfFollowerCount,
-  setSelfFollowingCount,
-  setSelfFriendCount,
-  useGetRelationsQuery
+  get_query_error_type,
+  select_user,
+  set_self_follower_count,
+  set_self_following_count,
+  set_self_friend_count,
+  use_get_relations_query
 } from "~/redux/features";
-import { useAppDispatch, useAppSelector } from "~/redux/hooks";
+import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 import { breakpoints } from "~/theme/breakpoints";
 import { abbreviateNumber } from "~/utils/abbreviateNumber";
 
@@ -94,8 +94,8 @@ const StatusHeader = ({
   "pending_friend_request_count"
 >): React.ReactElement => {
   const isSmallerThanDesktop = useMediaQuery(breakpoints.down("desktop"));
-  const dispatch = useAppDispatch();
-  const user = useAppSelector(selectUser)!;
+  const dispatch = use_app_dispatch();
+  const user = use_app_selector(select_user)!;
   const count_param =
     (tab === "followers"
       ? user.follower_count
@@ -104,9 +104,11 @@ const StatusHeader = ({
       : user.friend_count) || 0;
 
   React.useEffect(() => {
-    dispatch(setSelfFollowingCount(() => following_count));
-    dispatch(setSelfFollowerCount(() => follower_count));
-    dispatch(setSelfFriendCount(() => friend_count));
+    [
+      set_self_following_count(following_count),
+      set_self_follower_count(follower_count),
+      set_self_friend_count(friend_count)
+    ].forEach(dispatch);
   }, [dispatch, follower_count, following_count, friend_count]);
 
   return (
@@ -188,7 +190,7 @@ const ControlBar = ({
         tab === "following" ? "Search users you follow" : `Search your ${tab}`
       }
       size={"lg"}
-      slotProps={{
+      slot_props={{
         container: {
           className: clsx("f-grow", styles.x, styles.input)
         }
@@ -200,7 +202,7 @@ const ControlBar = ({
     <Select
       disabled={disabled}
       onValueChange={onSortChange}
-      slotProps={{
+      slot_props={{
         trigger: {
           "aria-label": "Sort items",
           className: clsx("focus-invert", styles.x, styles["select-trigger"])
@@ -226,13 +228,13 @@ const ContentRelationsClient = (props: RelationsProps): React.ReactElement => {
   const [page, setPage] = React.useState<number>(1);
   const debouncedQuery = useDebounce(query);
   const { data, isLoading, isFetching, isError, error, refetch } =
-    useGetRelationsQuery({
+    use_get_relations_query({
       page,
       sort,
       query: debouncedQuery,
       relationType: value
     });
-  const { items = [], hasMore } = data || {};
+  const { items = [], has_more } = data || {};
   const isTyping = query !== debouncedQuery;
 
   const loadMore = React.useCallback(
@@ -280,17 +282,17 @@ const ContentRelationsClient = (props: RelationsProps): React.ReactElement => {
         ) : isError ? (
           <ErrorState
             autoSize
-            componentProps={{
+            component_props={{
               button: { loading: isFetching }
             }}
             retry={refetch}
-            type={getQueryErrorType(error)}
+            type={get_query_error_type(error)}
           />
         ) : !isFetching && !items.length ? (
           <EmptyState query={query} value={value} />
         ) : (
           <VirtualizedUserList
-            hasMore={Boolean(hasMore)}
+            has_more={Boolean(has_more)}
             loadMore={loadMore}
             users={items}
           />

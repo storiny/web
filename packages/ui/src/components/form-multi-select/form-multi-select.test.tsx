@@ -5,7 +5,7 @@ import React from "react";
 import { z } from "zod";
 
 import Form, { useForm } from "~/components/Form";
-import { renderTestWithProvider } from "~/redux/testUtils";
+import { render_test_with_provider } from "src/redux/test-utils";
 
 import FormMultiSelect from "./form-multi-select";
 import { FormMultiSelectProps } from "./form-multi-select.props";
@@ -39,7 +39,7 @@ const Component = ({
 
 describe("<FormMultiSelect />", () => {
   it("matches snapshot", () => {
-    const { container } = renderTestWithProvider(
+    const { container } = render_test_with_provider(
       <Component>
         <FormMultiSelect
           label={"Test label"}
@@ -57,7 +57,7 @@ describe("<FormMultiSelect />", () => {
   });
 
   it("consumes disabled prop from `FormContext`", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Component disabled>
         <FormMultiSelect
           formSlotProps={
@@ -82,7 +82,7 @@ describe("<FormMultiSelect />", () => {
   });
 
   it("passes props to the element slots", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Component>
         <FormMultiSelect
           formSlotProps={

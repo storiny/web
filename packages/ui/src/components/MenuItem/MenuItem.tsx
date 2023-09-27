@@ -5,8 +5,8 @@ import { isTestEnv } from "@storiny/shared/src/utils/isTestEnv";
 import clsx from "clsx";
 import React from "react";
 
-import { selectLoggedIn } from "~/redux/features";
-import { useAppSelector } from "~/redux/hooks";
+import { select_is_logged_in } from "~/redux/features";
+import { use_app_selector } from "~/redux/hooks";
 import { forwardRef } from "~/utils/forwardRef";
 
 import menuItemStyles from "../common/MenuItem.module.scss";
@@ -19,14 +19,14 @@ const MenuItem = forwardRef<MenuItemProps, "div">((props, ref) => {
     className,
     decorator,
     rightSlot,
-    slotProps,
+    slot_props,
     children,
     checkAuth,
     onClick,
     onSelect,
     ...rest
   } = props;
-  const loggedIn = useAppSelector(selectLoggedIn);
+  const loggedIn = use_app_selector(select_is_logged_in);
   const shouldLogin = checkAuth && !loggedIn;
   const Component = shouldLogin ? "a" : as;
   const to = (rest as any)?.href
@@ -78,10 +78,10 @@ const MenuItem = forwardRef<MenuItemProps, "div">((props, ref) => {
       <Component>
         {decorator && (
           <span
-            {...slotProps?.decorator}
+            {...slot_props?.decorator}
             className={clsx(
               menuItemStyles.decorator,
-              slotProps?.decorator?.className
+              slot_props?.decorator?.className
             )}
           >
             {decorator}
@@ -90,10 +90,10 @@ const MenuItem = forwardRef<MenuItemProps, "div">((props, ref) => {
         {children}
         {rightSlot && (
           <span
-            {...slotProps?.rightSlot}
+            {...slot_props?.rightSlot}
             className={clsx(
               rightSlotStyles["right-slot"],
-              slotProps?.rightSlot?.className
+              slot_props?.rightSlot?.className
             )}
           >
             {rightSlot}

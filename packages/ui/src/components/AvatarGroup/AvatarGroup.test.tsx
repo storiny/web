@@ -3,7 +3,7 @@ import { waitFor } from "@testing-library/react";
 import { screen } from "@testing-library/react";
 import React from "react";
 
-import { renderTestWithProvider } from "~/redux/testUtils";
+import { render_test_with_provider } from "src/redux/test-utils";
 
 import Avatar from "../Avatar";
 import commonStyles from "../common/AvatarSize.module.scss";
@@ -14,16 +14,16 @@ import { AvatarGroupProps } from "./AvatarGroup.props";
 
 describe("<AvatarGroup />", () => {
   it("matches snapshot", async () => {
-    const { container } = renderTestWithProvider(
+    const { container } = render_test_with_provider(
       <AvatarGroup
-        slotProps={
+        slot_props={
           {
             overflow: {
-              slotProps: {
+              slot_props: {
                 fallback: { "data-testid": "overflow", delayMs: 0 }
               }
             }
-          } as AvatarGroupProps["slotProps"]
+          } as AvatarGroupProps["slot_props"]
         }
       >
         {[...Array(5)].map((_, index) => (
@@ -37,14 +37,14 @@ describe("<AvatarGroup />", () => {
   });
 
   it("does not have any accessibility violations", async () => {
-    const { container } = renderTestWithProvider(<AvatarGroup />);
+    const { container } = render_test_with_provider(<AvatarGroup />);
     await waitFor(async () =>
       expect(await axe(container)).toHaveNoViolations()
     );
   });
 
   it("renders as a polymorphic element", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <AvatarGroup as={"aside"} data-testid={"avatar-group"} />
     );
 
@@ -52,7 +52,7 @@ describe("<AvatarGroup />", () => {
   });
 
   it("renders with size `md` by default", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <AvatarGroup data-testid={"avatar-group"}>
         <Avatar alt={"Test"} />
       </AvatarGroup>
@@ -62,7 +62,7 @@ describe("<AvatarGroup />", () => {
   });
 
   it("renders without children", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <AvatarGroup data-testid={"avatar-group"} />
     );
 
@@ -72,7 +72,7 @@ describe("<AvatarGroup />", () => {
   (["xl2", "xl", "lg", "md", "sm", "xs"] as AvatarGroupSize[]).forEach(
     (size) => {
       it(`renders \`${size}\` size`, () => {
-        const { getByTestId } = renderTestWithProvider(
+        const { getByTestId } = render_test_with_provider(
           <AvatarGroup data-testid={"avatar-group"} size={size} />
         );
 
@@ -82,12 +82,12 @@ describe("<AvatarGroup />", () => {
   );
 
   it("passes props to the overflow slot", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <AvatarGroup
-        slotProps={
+        slot_props={
           {
             overflow: { "data-testid": "overflow" }
-          } as AvatarGroupProps["slotProps"]
+          } as AvatarGroupProps["slot_props"]
         }
       >
         {[...Array(5)].map((_, index) => (
@@ -100,12 +100,12 @@ describe("<AvatarGroup />", () => {
   });
 
   it("does not render overflow for less than 3 children", () => {
-    const { container } = renderTestWithProvider(
+    const { container } = render_test_with_provider(
       <AvatarGroup
-        slotProps={
+        slot_props={
           {
             overflow: { "data-overflow": "" }
-          } as AvatarGroupProps["slotProps"]
+          } as AvatarGroupProps["slot_props"]
         }
       >
         {[...Array(2)].map((_, index) => (
@@ -118,16 +118,16 @@ describe("<AvatarGroup />", () => {
   });
 
   it("truncates child avatars to 3", async () => {
-    const { container, getByTestId } = renderTestWithProvider(
+    const { container, getByTestId } = render_test_with_provider(
       <AvatarGroup
-        slotProps={
+        slot_props={
           {
             overflow: {
-              slotProps: {
+              slot_props: {
                 fallback: { "data-testid": "overflow-fallback", delayMs: 0 }
               }
             }
-          } as AvatarGroupProps["slotProps"]
+          } as AvatarGroupProps["slot_props"]
         }
       >
         {[...Array(5)].map((_, index) => (

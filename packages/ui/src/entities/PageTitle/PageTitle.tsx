@@ -15,7 +15,7 @@ const PageTitle = (props: PageTitleProps): React.ReactElement => {
     backButtonHref,
     hideBackButton,
     className,
-    componentProps,
+    component_props,
     children,
     ...rest
   } = props;
@@ -40,7 +40,7 @@ const PageTitle = (props: PageTitleProps): React.ReactElement => {
           {...(backButtonHref
             ? { as: NextLink, href: backButtonHref }
             : { onClick: (): void => router.back() })}
-          {...componentProps?.backButton}
+          {...component_props?.backButton}
           size={"sm"}
           title={"Back"}
           variant={"ghost"}

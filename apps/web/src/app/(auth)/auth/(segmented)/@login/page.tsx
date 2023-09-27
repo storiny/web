@@ -6,15 +6,15 @@ import React from "react";
 import Link from "~/components/Link";
 import Spacer from "~/components/Spacer";
 import Typography from "~/components/Typography";
-import { selectLoggedIn } from "~/redux/features";
-import { useAppSelector } from "~/redux/hooks";
+import { select_is_logged_in } from "~/redux/features";
+import { use_app_selector } from "~/redux/hooks";
 
 import { useAuthState } from "../../../actions";
 import LoginForm from "./form";
 
 const Page = (): React.ReactElement => {
   const { actions } = useAuthState();
-  const loggedIn = useAppSelector(selectLoggedIn);
+  const loggedIn = use_app_selector(select_is_logged_in);
 
   React.useEffect(() => {
     if (loggedIn) {

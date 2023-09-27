@@ -15,7 +15,10 @@ import ErrorState from "~/entities/ErrorState";
 import { useDebounce } from "~/hooks/useDebounce";
 import { useMediaQuery } from "~/hooks/useMediaQuery";
 import SearchIcon from "~/icons/Search";
-import { getQueryErrorType, useGetTagStoriesQuery } from "~/redux/features";
+import {
+  get_query_error_type,
+  use_get_tag_stories_query
+} from "~/redux/features";
 import { breakpoints } from "~/theme/breakpoints";
 
 import styles from "./styles.module.scss";
@@ -66,7 +69,7 @@ const PageHeader = ({
       onChange={(event): void => onQueryChange(event.target.value)}
       placeholder={`Search in #${tagName}`}
       size={"lg"}
-      slotProps={{
+      slot_props={{
         container: {
           className: clsx("f-grow", styles.x, styles.input)
         }
@@ -78,7 +81,7 @@ const PageHeader = ({
     <Select
       disabled={disabled}
       onValueChange={onSortChange}
-      slotProps={{
+      slot_props={{
         trigger: {
           "aria-label": "Sort items",
           className: clsx("focus-invert", styles.x, styles["select-trigger"])
@@ -102,13 +105,13 @@ const Page = ({ tag }: Props): React.ReactElement => {
   const [page, setPage] = React.useState<number>(1);
   const debouncedQuery = useDebounce(query);
   const { data, isLoading, isFetching, isError, error, refetch } =
-    useGetTagStoriesQuery({
+    use_get_tag_stories_query({
       page,
       sort,
       tagName: tag.name,
       query: debouncedQuery
     });
-  const { items = [], hasMore } = data || {};
+  const { items = [], has_more } = data || {};
   const isTyping = query !== debouncedQuery;
 
   const loadMore = React.useCallback(
@@ -140,11 +143,11 @@ const Page = ({ tag }: Props): React.ReactElement => {
       {isError ? (
         <ErrorState
           autoSize
-          componentProps={{
+          component_props={{
             button: { loading: isFetching }
           }}
           retry={refetch}
-          type={getQueryErrorType(error)}
+          type={get_query_error_type(error)}
         />
       ) : !isFetching && !items.length ? (
         <EmptyState query={query} />
@@ -152,7 +155,7 @@ const Page = ({ tag }: Props): React.ReactElement => {
         <StoryListSkeleton />
       ) : (
         <VirtualizedStoryList
-          hasMore={Boolean(hasMore)}
+          has_more={Boolean(has_more)}
           loadMore={loadMore}
           stories={items}
         />

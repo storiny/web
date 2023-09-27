@@ -2,7 +2,7 @@ import { axe } from "@storiny/test-utils";
 import { waitFor } from "@testing-library/react";
 import React from "react";
 
-import { renderTestWithProvider } from "~/redux/testUtils";
+import { render_test_with_provider } from "src/redux/test-utils";
 
 import Radio from "../Radio";
 import radioClasses from "../Radio/Radio.module.scss";
@@ -11,7 +11,7 @@ import { RadioGroupProps } from "./RadioGroup.props";
 
 describe("<RadioGroup />", () => {
   it("matches snapshot", () => {
-    const { container } = renderTestWithProvider(
+    const { container } = render_test_with_provider(
       <RadioGroup defaultValue={"1"}>
         {[...Array(3)].map((_, index) => (
           <Radio key={index} label={"Radio label"} value={String(index)} />
@@ -22,7 +22,7 @@ describe("<RadioGroup />", () => {
   });
 
   it("does not have any accessibility violations", async () => {
-    const { container } = renderTestWithProvider(
+    const { container } = render_test_with_provider(
       <RadioGroup defaultValue={"1"}>
         <Radio label={"Radio label"} value={"1"} />
       </RadioGroup>
@@ -34,7 +34,7 @@ describe("<RadioGroup />", () => {
   });
 
   it("renders as a polymorphic element", () => {
-    const { getByRole } = renderTestWithProvider(
+    const { getByRole } = render_test_with_provider(
       <RadioGroup as={"aside"} defaultValue={"1"}>
         <Radio label={"Test"} value={"1"} />
       </RadioGroup>
@@ -45,7 +45,7 @@ describe("<RadioGroup />", () => {
 
   (["lg", "md"] as NonNullable<RadioGroupProps["size"]>[]).forEach((size) => {
     it(`passes \`${size}\` size to the context`, () => {
-      const { getByTestId } = renderTestWithProvider(
+      const { getByTestId } = render_test_with_provider(
         <RadioGroup size={size}>
           <Radio data-testid={"radio"} value={"test"} />
         </RadioGroup>
@@ -58,7 +58,7 @@ describe("<RadioGroup />", () => {
   (["inverted", "ruby"] as NonNullable<RadioGroupProps["color"]>[]).forEach(
     (color) => {
       it(`passes \`${color}\` color to the context`, () => {
-        const { getByTestId } = renderTestWithProvider(
+        const { getByTestId } = render_test_with_provider(
           <RadioGroup color={color}>
             <Radio data-testid={"radio"} value={"test"} />
           </RadioGroup>

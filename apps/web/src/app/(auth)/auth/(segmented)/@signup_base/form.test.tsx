@@ -2,7 +2,7 @@ import { userEvent } from "@storiny/test-utils";
 import { act, screen, waitFor } from "@testing-library/react";
 import React from "react";
 
-import { renderTestWithProvider } from "~/redux/testUtils";
+import { render_test_with_provider } from "../../../../../../../../packages/ui/src/redux/test-utils";
 
 import AuthState from "../../../state";
 import SignupBaseForm from "./form";
@@ -11,7 +11,7 @@ describe("<SignupBaseForm />", () => {
   it("renders validation messages", async () => {
     const mockSubmit = jest.fn();
     const user = userEvent.setup();
-    renderTestWithProvider(
+    render_test_with_provider(
       <AuthState>
         <SignupBaseForm onSubmit={mockSubmit} />
       </AuthState>
@@ -30,7 +30,7 @@ describe("<SignupBaseForm />", () => {
   it("submits correct form data", async () => {
     const mockSubmit = jest.fn();
     const user = userEvent.setup();
-    renderTestWithProvider(
+    render_test_with_provider(
       <AuthState>
         <SignupBaseForm onSubmit={(values): void => mockSubmit(values)} />
       </AuthState>

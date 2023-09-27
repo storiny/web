@@ -15,7 +15,7 @@ import { VirtualizedCommentListContext } from "./list-context";
 const VirtualizedCommentList = React.memo(
   ({
     comments,
-    hasMore,
+    has_more,
     loadMore,
     commentProps = {},
     skeletonProps = {},
@@ -37,10 +37,10 @@ const VirtualizedCommentList = React.memo(
         components={{
           Item: VirtualizedCommentItem,
           ScrollSeekPlaceholder: VirtualizedCommentScrollSeekPlaceholder,
-          ...(hasMore && { Footer: VirtualFooter })
+          ...(has_more && { Footer: VirtualFooter })
         }}
         data={comments}
-        endReached={hasMore ? loadMore : (): void => undefined}
+        endReached={has_more ? loadMore : (): void => undefined}
       />
     </VirtualizedCommentListContext.Provider>
   )

@@ -35,7 +35,7 @@ const ImageAltEditorModal = (
           alt={image.alt}
           hex={image.hex}
           imgId={image.key}
-          slotProps={{
+          slot_props={{
             image: {
               sizes: [
                 `${breakpoints.up("mobile")} 320px`,
@@ -59,7 +59,7 @@ const ImageAltEditorModal = (
         minLength={assetProps.alt.minLength}
         placeholder={"Alt text"}
         ref={inputRef}
-        slotProps={{ container: { className: "full-w" } }}
+        slot_props={{ container: { className: "full-w" } }}
       />
     </div>
   );
@@ -109,7 +109,7 @@ const ImageAltEditor = (props: ImageAltEditorProps): React.ReactElement => {
           </ModalFooterButton>
         </>
       ),
-      slotProps: {
+      slot_props: {
         footer: {
           compact: isSmallerThanMobile
         },

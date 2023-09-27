@@ -22,20 +22,20 @@ const Popover = forwardRef<PopoverProps, "div">((props, ref) => {
     className,
     children,
     trigger,
-    slotProps,
+    slot_props,
     ...rest
   } = props;
 
   return (
     <Root modal={false} {...rest}>
-      <Trigger {...slotProps?.trigger} asChild>
+      <Trigger {...slot_props?.trigger} asChild>
         {trigger}
       </Trigger>
-      <Portal {...slotProps?.portal}>
+      <Portal {...slot_props?.portal}>
         <Content
           collisionPadding={8}
           sideOffset={5}
-          {...slotProps?.content}
+          {...slot_props?.content}
           asChild
           className={clsx(styles.content, className)}
           ref={ref}
@@ -43,8 +43,8 @@ const Popover = forwardRef<PopoverProps, "div">((props, ref) => {
           <Component>
             {children}
             <Arrow
-              {...slotProps?.arrow}
-              className={clsx(styles.arrow, slotProps?.arrow?.className)}
+              {...slot_props?.arrow}
+              className={clsx(styles.arrow, slot_props?.arrow?.className)}
             />
           </Component>
         </Content>

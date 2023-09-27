@@ -112,7 +112,7 @@ const ShadowColorControl = ({
         }}
         placeholder={"Shadow color"}
         size={"sm"}
-        slotProps={{
+        slot_props={{
           container: {
             style: { flex: "0.6" }
           }
@@ -137,7 +137,7 @@ const ShadowColorControl = ({
         }}
         placeholder={"Shadow opacity"}
         size={"sm"}
-        slotProps={{
+        slot_props={{
           container: {
             style: {
               flex: "0.4"

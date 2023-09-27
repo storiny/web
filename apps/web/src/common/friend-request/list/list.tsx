@@ -15,7 +15,7 @@ import { VirtualizedFriendRequestListContext } from "./list-context";
 const VirtualizedFriendRequestList = React.memo(
   ({
     friendRequests,
-    hasMore,
+    has_more,
     loadMore,
     friendRequestProps,
     className,
@@ -37,10 +37,10 @@ const VirtualizedFriendRequestList = React.memo(
           ...rest?.components,
           Item: VirtualizedFriendRequestItem,
           ScrollSeekPlaceholder: VirtualizedFriendRequestScrollSeekPlaceholder,
-          ...(hasMore && { Footer: VirtualFooter })
+          ...(has_more && { Footer: VirtualFooter })
         }}
         data={friendRequests}
-        endReached={hasMore ? loadMore : (): void => undefined}
+        endReached={has_more ? loadMore : (): void => undefined}
       />
     </VirtualizedFriendRequestListContext.Provider>
   )

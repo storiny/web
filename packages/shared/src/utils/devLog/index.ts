@@ -5,7 +5,7 @@
 const isDev = (): boolean => process.env.NODE_ENV === "development";
 const noop = (): void => {};
 
-export const devConsole: {
+export const dev_console: {
   error: typeof console.error;
   info: typeof console.info;
   log: typeof console.log;

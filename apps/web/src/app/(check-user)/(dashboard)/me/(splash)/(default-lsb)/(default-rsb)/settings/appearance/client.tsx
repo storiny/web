@@ -4,8 +4,11 @@ import React from "react";
 
 import Divider from "~/components/Divider";
 import Spacer from "~/components/Spacer";
-import { selectAlertVisibility, setAlertVisibility } from "~/redux/features";
-import { useAppDispatch, useAppSelector } from "~/redux/hooks";
+import {
+  select_alert_visibility,
+  set_alert_visibility
+} from "~/redux/features";
+import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 
 import DashboardTitle from "../../../dashboard-title";
 import DashboardWrapper from "../../../dashboard-wrapper";
@@ -17,11 +20,11 @@ import ThemePreference from "./theme-preference";
 // Alert
 
 const Alert = (): React.ReactElement | null => {
-  const dispatch = useAppDispatch();
-  const isVisible = useAppSelector(selectAlertVisibility("appearance"));
+  const dispatch = use_app_dispatch();
+  const isVisible = use_app_selector(select_alert_visibility("appearance"));
 
   const handleDismiss = React.useCallback(() => {
-    dispatch(setAlertVisibility(["appearance", false]));
+    dispatch(set_alert_visibility(["appearance", false]));
   }, [dispatch]);
 
   if (!isVisible) {

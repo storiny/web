@@ -8,7 +8,7 @@ export interface VirtualizedStoryListProps extends VirtuosoProps<Story, any> {
   /**
    * Flag indicating whether there are more stories to render.
    */
-  hasMore: boolean;
+  has_more: boolean;
   /**
    * A callback function to fetch more stories.
    */

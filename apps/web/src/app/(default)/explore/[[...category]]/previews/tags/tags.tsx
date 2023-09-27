@@ -10,7 +10,7 @@ import Typography from "~/components/Typography";
 import TagChip from "~/entities/TagChip";
 import { useMediaQuery } from "~/hooks/useMediaQuery";
 import ChevronIcon from "~/icons/Chevron";
-import { useGetExploreTagsQuery } from "~/redux/features";
+import { use_get_explore_tag_query } from "~/redux/features";
 import { breakpoints } from "~/theme/breakpoints";
 
 import TagSkeleton from "./skeleton";
@@ -30,7 +30,7 @@ const TagsPreview = ({
   normalizedCategory
 }: Props): React.ReactElement | null => {
   const isMobile = useMediaQuery(breakpoints.down("mobile"));
-  const { data, isLoading, isFetching, isError } = useGetExploreTagsQuery({
+  const { data, isLoading, isFetching, isError } = use_get_explore_tag_query({
     page: 1,
     category,
     query: debouncedQuery

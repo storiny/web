@@ -25,7 +25,7 @@ export interface ChipProps
   /**
    * The props passed to the individual component elements.
    */
-  slotProps?: {
+  slot_props?: {
     action?: React.ComponentPropsWithoutRef<"button">;
     decorator?: React.ComponentPropsWithoutRef<"span">;
   };

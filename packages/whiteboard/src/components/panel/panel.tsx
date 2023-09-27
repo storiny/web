@@ -30,7 +30,7 @@ const ToolsPanel = (): React.ReactElement => {
   return (
     <ScrollArea
       className={"full-h"}
-      slotProps={{
+      slot_props={{
         viewport: {
           ref,
           style: {

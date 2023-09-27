@@ -26,10 +26,10 @@ import SettingsIcon from "~/icons/Settings";
 import StoryHeartIcon from "~/icons/StoryHeart";
 import UserIcon from "~/icons/User";
 import {
-  select_unread_notification_count,
-  selectLoggedIn
+  select_is_logged_in,
+  select_unread_notification_count
 } from "~/redux/features";
-import { useAppSelector } from "~/redux/hooks";
+import { use_app_selector } from "~/redux/hooks";
 
 import LeftSidebarPersona from "../Persona";
 import styles from "./DefaultContent.module.scss";
@@ -48,8 +48,8 @@ const AnchorTab = (props: TabProps & { href: string }): React.ReactElement => (
 
 const LeftSidebarDefaultContent = (): React.ReactElement => {
   const pathname = usePathname();
-  const loggedIn = useAppSelector(selectLoggedIn);
-  const unreadNotificationCount = useAppSelector(
+  const loggedIn = use_app_selector(select_is_logged_in);
+  const unreadNotificationCount = use_app_selector(
     select_unread_notification_count
   );
 

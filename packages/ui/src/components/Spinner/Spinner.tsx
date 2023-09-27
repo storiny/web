@@ -16,7 +16,7 @@ const Spinner = forwardRef<SpinnerProps, "div">((props, ref) => {
     size = "md",
     color = "inverted",
     className,
-    slotProps,
+    slot_props,
     style,
     children,
     ...rest
@@ -33,23 +33,23 @@ const Spinner = forwardRef<SpinnerProps, "div">((props, ref) => {
     >
       <Component>
         <Indicator
-          {...slotProps?.indicator}
-          className={clsx(styles.indicator, slotProps?.indicator?.className)}
+          {...slot_props?.indicator}
+          className={clsx(styles.indicator, slot_props?.indicator?.className)}
         >
           <svg
             aria-hidden
-            {...slotProps?.svg}
-            className={clsx(styles.svg, slotProps?.svg?.className)}
+            {...slot_props?.svg}
+            className={clsx(styles.svg, slot_props?.svg?.className)}
           >
             <circle
-              {...slotProps?.track}
-              className={clsx(styles.track, slotProps?.track?.className)}
+              {...slot_props?.track}
+              className={clsx(styles.track, slot_props?.track?.className)}
               cx={"50%"}
               cy={"50%"}
             />
             <circle
-              {...slotProps?.progress}
-              className={clsx(styles.progress, slotProps?.progress?.className)}
+              {...slot_props?.progress}
+              className={clsx(styles.progress, slot_props?.progress?.className)}
               cx={"50%"}
               cy={"50%"}
             />

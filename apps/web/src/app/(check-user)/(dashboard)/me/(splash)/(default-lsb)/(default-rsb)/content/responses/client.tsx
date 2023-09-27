@@ -20,12 +20,12 @@ import ErrorState from "~/entities/ErrorState";
 import { useDebounce } from "~/hooks/useDebounce";
 import SearchIcon from "~/icons/Search";
 import {
-  getQueryErrorType,
+  get_query_error_type,
   self_action,
-  useGetCommentsQuery,
-  useGetRepliesQuery
+  use_get_comments_query,
+  use_get_replies_query
 } from "~/redux/features";
-import { useAppDispatch, useAppSelector } from "~/redux/hooks";
+import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 import { abbreviateNumber } from "~/utils/abbreviateNumber";
 
 import DashboardTitle from "../../../dashboard-title";
@@ -86,11 +86,11 @@ const StatusHeader = ({
 }: {
   tab: ResponsesTabValue;
 } & ResponsesProps): React.ReactElement => {
-  const dispatch = useAppDispatch();
+  const dispatch = use_app_dispatch();
   const commentCount =
-    useAppSelector((state) => state.entities.self_comment_count) || 0;
+    use_app_selector((state) => state.entities.self_comment_count) || 0;
   const replyCount =
-    useAppSelector((state) => state.entities.self_reply_count) || 0;
+    use_app_selector((state) => state.entities.self_reply_count) || 0;
   const count_param = tab === "comments" ? commentCount : replyCount;
 
   React.useEffect(() => {
@@ -165,7 +165,7 @@ const ControlBar = ({
       onChange={(event): void => onQueryChange(event.target.value)}
       placeholder={`Search your ${tab}`}
       size={"lg"}
-      slotProps={{
+      slot_props={{
         container: {
           className: clsx("f-grow", styles.x, styles.input)
         }
@@ -177,7 +177,7 @@ const ControlBar = ({
     <Select
       disabled={disabled}
       onValueChange={onSortChange}
-      slotProps={{
+      slot_props={{
         trigger: {
           "aria-label": "Sort items",
           className: clsx("focus-invert", styles.x, styles["select-trigger"])
@@ -216,12 +216,12 @@ const CommentList = (props: {
     props;
   const debouncedQuery = useDebounce(query);
   const { data, isLoading, isFetching, isError, error, refetch } =
-    useGetCommentsQuery({
+    use_get_comments_query({
       page,
       sort,
       query: debouncedQuery
     });
-  const { items = [], hasMore } = data || {};
+  const { items = [], has_more } = data || {};
   const isTyping = query !== debouncedQuery;
 
   return (
@@ -239,11 +239,11 @@ const CommentList = (props: {
       ) : isError ? (
         <ErrorState
           autoSize
-          componentProps={{
+          component_props={{
             button: { loading: isFetching }
           }}
           retry={refetch}
-          type={getQueryErrorType(error)}
+          type={get_query_error_type(error)}
         />
       ) : !isFetching && !items.length ? (
         <EmptyState query={query} value={"comments"} />
@@ -253,7 +253,7 @@ const CommentList = (props: {
             isExtended: true
           }}
           comments={items}
-          hasMore={Boolean(hasMore)}
+          has_more={Boolean(has_more)}
           loadMore={loadMore}
           skeletonProps={{
             isExtended: true
@@ -278,12 +278,12 @@ const ReplyList = (props: {
     props;
   const debouncedQuery = useDebounce(query);
   const { data, isLoading, isFetching, isError, error, refetch } =
-    useGetRepliesQuery({
+    use_get_replies_query({
       page,
       sort,
       query: debouncedQuery
     } as { page: number; query: string; sort: "recent" | "old" | `likes-${"dsc" | "asc"}` });
-  const { items = [], hasMore } = data || {};
+  const { items = [], has_more } = data || {};
   const isTyping = query !== debouncedQuery;
 
   return (
@@ -301,17 +301,17 @@ const ReplyList = (props: {
       ) : isError ? (
         <ErrorState
           autoSize
-          componentProps={{
+          component_props={{
             button: { loading: isFetching }
           }}
           retry={refetch}
-          type={getQueryErrorType(error)}
+          type={get_query_error_type(error)}
         />
       ) : !isFetching && !items.length ? (
         <EmptyState query={query} value={"replies"} />
       ) : (
         <VirtualizedReplyList
-          hasMore={Boolean(hasMore)}
+          has_more={Boolean(has_more)}
           loadMore={loadMore}
           replies={items}
           replyProps={{

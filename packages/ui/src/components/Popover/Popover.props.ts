@@ -15,7 +15,7 @@ export interface PopoverProps extends PopoverPrimitive {
   /**
    * The props passed to the individual component elements.
    */
-  slotProps?: {
+  slot_props?: {
     arrow?: PopoverArrowProps;
     content?: PopoverContentProps;
     portal?: PopoverPortalProps;

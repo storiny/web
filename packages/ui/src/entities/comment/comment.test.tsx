@@ -2,24 +2,24 @@ import { axe } from "@storiny/test-utils";
 import { waitFor } from "@testing-library/react";
 import React from "react";
 
-import { renderTestWithProvider } from "~/redux/testUtils";
+import { render_test_with_provider } from "src/redux/test-utils";
 
 import { testComment } from "../../mocks";
 import Comment from "./comment";
 
 describe("<Comment />", () => {
   it("renders", () => {
-    renderTestWithProvider(<Comment comment={testComment} enableSsr />);
+    render_test_with_provider(<Comment comment={testComment} enableSsr />);
   });
 
   it("renders when logged in", () => {
-    renderTestWithProvider(<Comment comment={testComment} enableSsr />, {
+    render_test_with_provider(<Comment comment={testComment} enableSsr />, {
       loggedIn: true
     });
   });
 
   it("renders extended mode", () => {
-    renderTestWithProvider(
+    render_test_with_provider(
       <Comment comment={testComment} enableSsr isExtended />,
       {
         loggedIn: true
@@ -28,7 +28,7 @@ describe("<Comment />", () => {
   });
 
   it("renders static mode", () => {
-    renderTestWithProvider(
+    render_test_with_provider(
       <Comment comment={testComment} enableSsr isStatic />,
       {
         loggedIn: true
@@ -37,7 +37,7 @@ describe("<Comment />", () => {
   });
 
   it("does not have any accessibility violations", async () => {
-    const { container } = renderTestWithProvider(
+    const { container } = render_test_with_provider(
       <Comment comment={testComment} enableSsr />
     );
 
@@ -47,7 +47,7 @@ describe("<Comment />", () => {
   });
 
   it("does not have any accessibility violations when logged in", async () => {
-    const { container } = renderTestWithProvider(
+    const { container } = render_test_with_provider(
       <Comment comment={testComment} enableSsr />,
       {
         loggedIn: true
@@ -60,7 +60,7 @@ describe("<Comment />", () => {
   });
 
   it("does not have any accessibility violations in extended mode", async () => {
-    const { container } = renderTestWithProvider(
+    const { container } = render_test_with_provider(
       <Comment comment={testComment} enableSsr isExtended />,
       {
         loggedIn: true
@@ -73,7 +73,7 @@ describe("<Comment />", () => {
   });
 
   it("does not have any accessibility violations in static mode", async () => {
-    const { container } = renderTestWithProvider(
+    const { container } = render_test_with_provider(
       <Comment comment={testComment} enableSsr isStatic />,
       {
         loggedIn: true

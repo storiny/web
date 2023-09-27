@@ -196,7 +196,7 @@ const GalleryImpl = (props: GalleryProps): React.ReactElement => {
           <ImagePreview />
         </>
       }
-      slotProps={{
+      slot_props={{
         tabs: {
           value,
           onValueChange: (newValue): void => {
@@ -256,7 +256,7 @@ const GalleryImpl = (props: GalleryProps): React.ReactElement => {
               <SearchInput
                 disabled={value !== "pexels"}
                 size={"lg"}
-                slotProps={{
+                slot_props={{
                   container: {
                     style: {
                       borderRadius: 0

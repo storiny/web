@@ -14,7 +14,7 @@ import Tabs from "~/components/Tabs";
 import TabsList from "~/components/TabsList";
 import Typography from "~/components/Typography";
 import { useMediaQuery } from "~/hooks/useMediaQuery";
-import { useAppSelector } from "~/redux/hooks";
+import { use_app_selector } from "~/redux/hooks";
 import { breakpoints } from "~/theme/breakpoints";
 import { abbreviateNumber } from "~/utils/abbreviateNumber";
 
@@ -77,7 +77,8 @@ const Content = (): React.ReactElement => {
   const story = useAtomValue(storyMetadataAtom);
   const isSmallerThanDesktop = useMediaQuery(breakpoints.down("desktop"));
   const commentCount =
-    useAppSelector((state) => state.entities.storyCommentCounts[story.id]) || 0;
+    use_app_selector((state) => state.entities.storyCommentCounts[story.id]) ||
+    0;
   const [value, setValue] = React.useState<EditorAuxiliaryContentTabValue>(
     isSmallerThanDesktop ? "suggested" : "comments"
   );
@@ -122,7 +123,7 @@ const Content = (): React.ReactElement => {
               onValueChange={(nextValue): void =>
                 handleSortChange(nextValue as StoryCommentsSortValue)
               }
-              slotProps={{
+              slot_props={{
                 trigger: {
                   "aria-label": "Sort comments",
                   className: clsx(

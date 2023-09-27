@@ -22,7 +22,7 @@ const ErrorState = React.forwardRef<HTMLDivElement, ErrorStateProps>(
       size: sizeProp = "md",
       autoSize,
       retry,
-      componentProps,
+      component_props,
       ...rest
     } = props;
     const isMobile = useMediaQuery(breakpoints.down("mobile"));
@@ -68,11 +68,11 @@ const ErrorState = React.forwardRef<HTMLDivElement, ErrorStateProps>(
         </div>
         <Spacer orientation={"vertical"} />
         <Button
-          {...componentProps?.button}
+          {...component_props?.button}
           decorator={<RetryIcon />}
           onClick={(event): void => {
             retry?.(event);
-            componentProps?.button?.onClick?.(event);
+            component_props?.button?.onClick?.(event);
           }}
           size={"sm"}
         >

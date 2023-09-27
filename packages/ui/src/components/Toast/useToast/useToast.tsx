@@ -1,5 +1,5 @@
-import { renderToast } from "~/redux/features/toast/slice";
-import { useAppDispatch } from "~/redux/hooks";
+import { render_toast } from "~/redux/features/toast/slice";
+import { use_app_dispatch } from "~/redux/hooks";
 
 import { ToastSeverity } from "../Toast.props";
 
@@ -10,8 +10,8 @@ export const useToast = (): ((
   message: string,
   severity?: ToastSeverity
 ) => void) => {
-  const dispatch = useAppDispatch();
+  const dispatch = use_app_dispatch();
   return (message: string, severity?: ToastSeverity): void => {
-    dispatch(renderToast({ message, severity }));
+    dispatch(render_toast({ message, severity }));
   };
 };

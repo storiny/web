@@ -2,7 +2,7 @@ import { axe } from "@storiny/test-utils";
 import { screen, waitFor } from "@testing-library/react";
 import React from "react";
 
-import { renderTestWithProvider } from "~/redux/testUtils";
+import { render_test_with_provider } from "src/redux/test-utils";
 
 import commonStyles from "../common/AvatarSize.module.scss";
 import Avatar from "./Avatar";
@@ -11,14 +11,14 @@ import { AvatarProps, AvatarSize } from "./Avatar.props";
 
 describe("<Avatar />", () => {
   it("matches snapshot", async () => {
-    const { container } = renderTestWithProvider(
+    const { container } = render_test_with_provider(
       <Avatar
         alt={"Test avatar"}
         hex={"fff"}
-        slotProps={
+        slot_props={
           {
             fallback: { "data-testid": "fallback", delayMs: 0 }
-          } as AvatarProps["slotProps"]
+          } as AvatarProps["slot_props"]
         }
         src={""}
       />
@@ -29,7 +29,7 @@ describe("<Avatar />", () => {
   });
 
   it("does not have any accessibility violations", async () => {
-    const { container } = renderTestWithProvider(
+    const { container } = render_test_with_provider(
       <Avatar alt={"Test avatar"} src={"/some-img.png"} />
     );
 
@@ -39,7 +39,7 @@ describe("<Avatar />", () => {
   });
 
   it("renders as a polymorphic element", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Avatar alt={"Test avatar"} as={"aside"} data-testid={"avatar"} />
     );
 
@@ -47,7 +47,7 @@ describe("<Avatar />", () => {
   });
 
   it("renders with size `md` and border by default", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Avatar alt={"Test avatar"} data-testid={"avatar"} />
     );
 
@@ -60,7 +60,7 @@ describe("<Avatar />", () => {
 
   (["xl2", "xl", "lg", "md", "sm", "xs"] as AvatarSize[]).forEach((size) => {
     it(`renders \`${size}\` size`, () => {
-      const { getByTestId } = renderTestWithProvider(
+      const { getByTestId } = render_test_with_provider(
         <Avatar alt={"Test avatar"} data-testid={"avatar"} size={size} />
       );
 
@@ -69,14 +69,14 @@ describe("<Avatar />", () => {
   });
 
   it("computes and applies the `--bg` variable to the fallback", async () => {
-    renderTestWithProvider(
+    render_test_with_provider(
       <Avatar
         alt={"Test avatar"}
         label={"Test"}
-        slotProps={
+        slot_props={
           {
             fallback: { "data-testid": "fallback", delayMs: 0 }
-          } as AvatarProps["slotProps"]
+          } as AvatarProps["slot_props"]
         }
         src={""}
       />
@@ -90,14 +90,14 @@ describe("<Avatar />", () => {
 
   describe("fallback initials", () => {
     it("renders with first and last name initials", async () => {
-      const { getByTestId } = renderTestWithProvider(
+      const { getByTestId } = render_test_with_provider(
         <Avatar
           alt={"Test avatar"}
           label={"First Last"}
-          slotProps={
+          slot_props={
             {
               fallback: { "data-testid": "fallback", delayMs: 0 }
-            } as AvatarProps["slotProps"]
+            } as AvatarProps["slot_props"]
           }
           src={""}
         />
@@ -108,14 +108,14 @@ describe("<Avatar />", () => {
     });
 
     it("renders with first, middle, and last name initials", async () => {
-      const { getByTestId } = renderTestWithProvider(
+      const { getByTestId } = render_test_with_provider(
         <Avatar
           alt={"Test avatar"}
           label={"First Middle Last"}
-          slotProps={
+          slot_props={
             {
               fallback: { "data-testid": "fallback", delayMs: 0 }
-            } as AvatarProps["slotProps"]
+            } as AvatarProps["slot_props"]
           }
           src={""}
         />
@@ -126,14 +126,14 @@ describe("<Avatar />", () => {
     });
 
     it("renders with just first name initial", async () => {
-      const { getByTestId } = renderTestWithProvider(
+      const { getByTestId } = render_test_with_provider(
         <Avatar
           alt={"Test avatar"}
           label={"First"}
-          slotProps={
+          slot_props={
             {
               fallback: { "data-testid": "fallback", delayMs: 0 }
-            } as AvatarProps["slotProps"]
+            } as AvatarProps["slot_props"]
           }
           src={""}
         />
@@ -144,13 +144,13 @@ describe("<Avatar />", () => {
     });
 
     it("uses `alt` when `label` is not provided", async () => {
-      const { getByTestId } = renderTestWithProvider(
+      const { getByTestId } = render_test_with_provider(
         <Avatar
           alt={"First Last"}
-          slotProps={
+          slot_props={
             {
               fallback: { "data-testid": "fallback", delayMs: 0 }
-            } as AvatarProps["slotProps"]
+            } as AvatarProps["slot_props"]
           }
           src={""}
         />
@@ -161,14 +161,14 @@ describe("<Avatar />", () => {
     });
 
     it("handles empty names", async () => {
-      const { getByTestId } = renderTestWithProvider(
+      const { getByTestId } = render_test_with_provider(
         <Avatar
           alt={""}
           label={""}
-          slotProps={
+          slot_props={
             {
               fallback: { "data-testid": "fallback", delayMs: 0 }
-            } as AvatarProps["slotProps"]
+            } as AvatarProps["slot_props"]
           }
           src={""}
         />
@@ -179,14 +179,14 @@ describe("<Avatar />", () => {
     });
 
     it("does not break on non-english names", async () => {
-      const { getByTestId } = renderTestWithProvider(
+      const { getByTestId } = render_test_with_provider(
         <Avatar
           alt={"Test avatar"}
           label={"あやか"}
-          slotProps={
+          slot_props={
             {
               fallback: { "data-testid": "fallback", delayMs: 0 }
-            } as AvatarProps["slotProps"]
+            } as AvatarProps["slot_props"]
           }
           src={""}
         />
@@ -198,13 +198,13 @@ describe("<Avatar />", () => {
   });
 
   it("passes props to the fallback slot", async () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Avatar
         alt={"Test avatar"}
-        slotProps={
+        slot_props={
           {
             fallback: { "data-testid": "fallback", delayMs: 0 }
-          } as AvatarProps["slotProps"]
+          } as AvatarProps["slot_props"]
         }
         src={""}
       />
@@ -215,13 +215,13 @@ describe("<Avatar />", () => {
   });
 
   it("renders children", async () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Avatar
         alt={"Test avatar"}
-        slotProps={
+        slot_props={
           {
             fallback: { "data-testid": "fallback", delayMs: 0 }
-          } as AvatarProps["slotProps"]
+          } as AvatarProps["slot_props"]
         }
       >
         AB
@@ -233,7 +233,7 @@ describe("<Avatar />", () => {
   });
 
   it("does not render image when children are passed", async () => {
-    const { container } = renderTestWithProvider(
+    const { container } = render_test_with_provider(
       <Avatar alt={"Test avatar"}>AB</Avatar>
     );
 

@@ -168,7 +168,7 @@ const FloatingTextStylePopover = (): React.ReactElement => {
         className={clsx(styles.x, styles.toggle)}
         data-testid={"floating-bold-toggle"}
         onClick={toggleBold}
-        slotProps={{
+        slot_props={{
           tooltip: {
             rightSlot: getShortcutLabel(EDITOR_SHORTCUTS.bold)
           }
@@ -182,7 +182,7 @@ const FloatingTextStylePopover = (): React.ReactElement => {
         className={clsx(styles.x, styles.toggle)}
         data-testid={"floating-italic-toggle"}
         onClick={toggleItalic}
-        slotProps={{
+        slot_props={{
           tooltip: {
             rightSlot: getShortcutLabel(EDITOR_SHORTCUTS.italic)
           }
@@ -196,7 +196,7 @@ const FloatingTextStylePopover = (): React.ReactElement => {
         className={clsx(styles.x, styles.toggle)}
         data-testid={"floating-underline-toggle"}
         onClick={toggleUnderline}
-        slotProps={{
+        slot_props={{
           tooltip: {
             rightSlot: getShortcutLabel(EDITOR_SHORTCUTS.underline)
           }
@@ -210,7 +210,7 @@ const FloatingTextStylePopover = (): React.ReactElement => {
         className={clsx(styles.x, styles.toggle)}
         data-testid={"floating-link-toggle"}
         onClick={(): void => insertLink()}
-        slotProps={{
+        slot_props={{
           tooltip: {
             rightSlot: getShortcutLabel(EDITOR_SHORTCUTS.link)
           }

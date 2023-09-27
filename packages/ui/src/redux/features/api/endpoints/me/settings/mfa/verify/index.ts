@@ -1,25 +1,26 @@
 import { ContentType } from "@storiny/shared";
 
-import { apiSlice } from "~/redux/features/api/slice";
+import { api_slice } from "~/redux/features/api/slice";
 
 const SEGMENT = "me/settings/mfa/verify";
 
-export interface VerifyMFAResponse {}
 export interface VerifyMFAPayload {
   code: string;
 }
 
-export const { useVerfyMfaMutation } = apiSlice.injectEndpoints({
-  endpoints: (builder) => ({
-    verfyMfa: builder.mutation<VerifyMFAResponse, VerifyMFAPayload>({
-      query: (body) => ({
-        url: `/${SEGMENT}`,
-        method: "POST",
-        body,
-        headers: {
-          "Content-type": ContentType.JSON
-        }
+export const { useVerfyMfaMutation: use_verify_mfa_mutation } =
+  api_slice.injectEndpoints({
+    endpoints: (builder) => ({
+      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+      verfyMfa: builder.mutation<void, VerifyMFAPayload>({
+        query: (body) => ({
+          url: `/${SEGMENT}`,
+          method: "POST",
+          body,
+          headers: {
+            "Content-type": ContentType.JSON
+          }
+        })
       })
     })
-  })
-});
+  });

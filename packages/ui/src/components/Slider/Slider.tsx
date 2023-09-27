@@ -14,7 +14,7 @@ const Slider = forwardRef<SliderProps, "span">((props, ref) => {
     as: Component = "span",
     className,
     orientation = "horizontal",
-    slotProps,
+    slot_props,
     ...rest
   } = props;
 
@@ -28,17 +28,17 @@ const Slider = forwardRef<SliderProps, "span">((props, ref) => {
     >
       <Component>
         <Track
-          {...slotProps?.track}
-          className={clsx(styles.track, slotProps?.track?.className)}
+          {...slot_props?.track}
+          className={clsx(styles.track, slot_props?.track?.className)}
         >
           <Range
-            {...slotProps?.range}
-            className={clsx(styles.range, slotProps?.range?.className)}
+            {...slot_props?.range}
+            className={clsx(styles.range, slot_props?.range?.className)}
           />
         </Track>
         <Thumb
-          {...slotProps?.thumb}
-          className={clsx(styles.thumb, slotProps?.thumb?.className)}
+          {...slot_props?.thumb}
+          className={clsx(styles.thumb, slot_props?.thumb?.className)}
         />
       </Component>
     </Root>

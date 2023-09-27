@@ -31,7 +31,7 @@ const SkinTone = (): React.ReactElement => {
           active: newValue as SkinToneEnum
         }))
       }
-      slotProps={{
+      slot_props={{
         content: {
           sideOffset: 8,
           position: "popper",

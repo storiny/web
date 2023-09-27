@@ -1,39 +1,37 @@
 import { number_action } from "~/redux/features";
-import { apiSlice } from "~/redux/features/api/slice";
+import { api_slice } from "~/redux/features/api/slice";
 
 const SEGMENT = (id: string): string => `public/comments/${id}/visibility`;
 
-export interface CommentVisibilityResponse {}
 export interface CommentVisibilityPayload {
   hidden: boolean;
   id: string;
-  storyId: string;
+  story_id: string;
 }
 
-export const { useCommentVisibilityMutation } = apiSlice.injectEndpoints({
-  endpoints: (builder) => ({
-    commentVisibility: builder.mutation<
-      CommentVisibilityResponse,
-      CommentVisibilityPayload
-    >({
-      query: (body) => ({
-        url: `/${SEGMENT(body.id)}`,
-        method: "POST"
-      }),
-      invalidatesTags: (result, error, arg) => [
-        { type: "Comment", id: arg.id }
-      ],
-      onQueryStarted: async (arg, { dispatch, queryFulfilled }) => {
-        queryFulfilled.then(() => {
-          dispatch(
-            number_action(
-              "story_hidden_comment_counts",
-              arg.storyId,
-              arg.hidden ? "increment" : "decrement"
-            )
-          );
-        });
-      }
+export const { useCommentVisibilityMutation: use_comment_visibility_mutation } =
+  api_slice.injectEndpoints({
+    endpoints: (builder) => ({
+      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+      commentVisibility: builder.mutation<void, CommentVisibilityPayload>({
+        query: (body) => ({
+          url: `/${SEGMENT(body.id)}`,
+          method: "POST"
+        }),
+        invalidatesTags: (result, error, arg) => [
+          { type: "Comment", id: arg.id }
+        ],
+        onQueryStarted: async (arg, { dispatch, queryFulfilled }) => {
+          queryFulfilled.then(() => {
+            dispatch(
+              number_action(
+                "story_hidden_comment_counts",
+                arg.story_id,
+                arg.hidden ? "increment" : "decrement"
+              )
+            );
+          });
+        }
+      })
     })
-  })
-});
+  });

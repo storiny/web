@@ -1,8 +1,8 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { API_VERSION } from "@storiny/shared";
 import { Notification } from "@storiny/types";
+import { AppStartListening } from "src/redux/listener-middleware";
 
-import { AppStartListening } from "~/redux/listenerMiddleware";
 import { AppState } from "~/redux/store";
 import { clamp } from "~/utils/clamp";
 
@@ -21,10 +21,10 @@ export interface NotificationsState {
 type SyncableNotification = Pick<Notification, "id" | "read_at">;
 
 /**
- * Fetch unread notifications count from the server
+ * Fetches unread notifications count from the server
  */
-export const fetchUnreadNotificationsCount = createAsyncThunk(
-  "notifications/fetchUnreadNotificationsCount",
+export const fetch_unread_notifications_count = createAsyncThunk(
+  "notifications/fetch_unread_notifications_count",
   async () => {
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/v${API_VERSION}/me/unread-notifications`
@@ -32,16 +32,16 @@ export const fetchUnreadNotificationsCount = createAsyncThunk(
     return res.json();
   },
   {
-    condition: (_, { getState }) => {
+    condition: (_, { getState: get_state }) => {
       const {
-        auth: { loggedIn, status: authStatus },
-        notifications: { status: notificationsStatus }
-      } = getState() as AppState;
+        auth: { logged_in, status: auth_status },
+        notifications: { status: notifications_status }
+      } = get_state() as AppState;
 
       if (
-        !loggedIn ||
-        authStatus === "loading" ||
-        notificationsStatus === "loading"
+        !logged_in ||
+        auth_status === "loading" ||
+        notifications_status === "loading"
       ) {
         // Do not send a request if logged out or status is `loading`
         return false;
@@ -57,11 +57,11 @@ export const notifications_initial_state: NotificationsState = {
 };
 
 /**
- * Sync incoming notification to the store
+ * Syncs an incoming notification to the store
  * @param state App state
  * @param notification Incoming notification
  */
-const syncWithNotificationImpl = (
+const sync_with_notification_impl = (
   state: NotificationsState,
   notification: SyncableNotification
 ): void => {
@@ -85,12 +85,12 @@ export const notifications_slice = createSlice({
       state.unread_count = clamp(0, state.unread_count--, Infinity);
     },
     // Syncing
-    syncWithNotification: (
+    sync_with_notification: (
       state,
       action: PayloadAction<SyncableNotification>
-    ) => syncWithNotificationImpl(state, action.payload),
+    ) => sync_with_notification_impl(state, action.payload),
     // Misc
-    markAllAsRead: (state) => {
+    mark_all_as_read: (state) => {
       Object.keys(state.read_notifications).forEach((id) => {
         state.read_notifications[id] = true;
       });
@@ -100,15 +100,15 @@ export const notifications_slice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(fetchUnreadNotificationsCount.fulfilled, (state, action) => {
+      .addCase(fetch_unread_notifications_count.fulfilled, (state, action) => {
         state.status = "complete";
         state.unread_count = action.payload || 0;
       })
-      .addCase(fetchUnreadNotificationsCount.pending, (state) => {
+      .addCase(fetch_unread_notifications_count.pending, (state) => {
         state.unread_count = 0;
         state.status = "loading";
       })
-      .addCase(fetchUnreadNotificationsCount.rejected, (state) => {
+      .addCase(fetch_unread_notifications_count.rejected, (state) => {
         state.status = "error";
         state.unread_count = 0;
       });
@@ -118,8 +118,8 @@ export const notifications_slice = createSlice({
 const {
   decrement_unread_notification_count,
   set_read_notification,
-  markAllAsRead,
-  syncWithNotification
+  mark_all_as_read,
+  sync_with_notification
 } = notifications_slice.actions;
 
 export const add_notifications_listeners = (
@@ -141,9 +141,9 @@ export const add_notifications_listeners = (
 
 export {
   decrement_unread_notification_count,
-  markAllAsRead,
+  mark_all_as_read,
   set_read_notification,
-  syncWithNotification
+  sync_with_notification
 };
 
 export default notifications_slice.reducer;

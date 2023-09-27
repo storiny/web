@@ -11,7 +11,7 @@ import { TextareaProps } from "./Textarea.props";
 // Container
 
 const Container = forwardRef<
-  NonNullable<NonNullable<TextareaProps["slotProps"]>["container"]>,
+  NonNullable<NonNullable<TextareaProps["slot_props"]>["container"]>,
   "div"
 >((props, ref) => {
   const { as: Component = "div", children, ...rest } = props;
@@ -33,7 +33,7 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
       endDecorator,
       className,
       disabled,
-      slotProps,
+      slot_props,
       ...rest
     } = props;
     const [focused, setFocused] = React.useState<boolean>(Boolean(autoFocus));
@@ -52,7 +52,7 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
 
     return (
       <Container
-        {...slotProps?.container}
+        {...slot_props?.container}
         className={clsx(
           "flex-col",
           styles.container,
@@ -60,7 +60,7 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
           styles[size],
           focused && styles.focused,
           disabled && styles.disabled,
-          slotProps?.container?.className
+          slot_props?.container?.className
         )}
         data-focused={String(focused)}
       >

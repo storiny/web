@@ -38,7 +38,7 @@ const ToolbarAlignmentItem = (): React.ReactElement => {
       disabled={documentLoading || disabled}
       onValueChange={setAlignment}
       size={"lg"}
-      slotProps={{
+      slot_props={{
         trigger: {
           "aria-label": "Alignment",
           className: clsx("focus-invert", toolbarStyles.x, toolbarStyles.select)

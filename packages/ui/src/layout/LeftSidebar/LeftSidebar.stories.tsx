@@ -3,7 +3,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
 
-import { renderWithState } from "~/redux/mock";
+import { render_with_state } from "~/redux/mock";
 
 import LeftSidebar from "./LeftSidebar";
 
@@ -31,7 +31,7 @@ export const Default: Story = {};
 export const Loading: Story = {
   decorators: [
     (Story): React.ReactElement =>
-      renderWithState(<Story />, {
+      render_with_state(<Story />, {
         loading: true
       })
   ]
@@ -40,6 +40,6 @@ export const Loading: Story = {
 export const LoggedIn: Story = {
   decorators: [
     (Story): React.ReactElement =>
-      renderWithState(<Story />, { loggedIn: true })
+      render_with_state(<Story />, { loggedIn: true })
   ]
 };

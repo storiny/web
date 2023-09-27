@@ -3,7 +3,7 @@
 import clsx from "clsx";
 import React from "react";
 
-import Logo from "~/brand/Logo";
+import Logo from "src/brand/logo";
 
 import styles from "./SplashScreen.module.scss";
 import { SplashScreenProps } from "./SplashScreen.props";

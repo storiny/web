@@ -2,7 +2,7 @@ import { axe } from "@storiny/test-utils";
 import { waitFor } from "@testing-library/react";
 import React from "react";
 
-import { renderTestWithProvider } from "~/redux/testUtils";
+import { render_test_with_provider } from "src/redux/test-utils";
 
 import Option from "../Option";
 import Select from "../Select";
@@ -11,7 +11,7 @@ import { SelectColor, SelectProps, SelectSize } from "./Select.props";
 
 describe("<Select />", () => {
   it("renders and matches snapshot", () => {
-    const { container, getByRole } = renderTestWithProvider(
+    const { container, getByRole } = render_test_with_provider(
       <Select open>
         {[...Array(3)].map((_, index) => (
           <Option key={index} value={`${index}`}>
@@ -26,9 +26,9 @@ describe("<Select />", () => {
   });
 
   it("does not have any accessibility violations", async () => {
-    const { container } = renderTestWithProvider(
+    const { container } = render_test_with_provider(
       <Select
-        slotProps={{
+        slot_props={{
           trigger: {
             "aria-label": "Test"
           },
@@ -55,16 +55,16 @@ describe("<Select />", () => {
   });
 
   it("renders as a polymorphic element", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Select
         as={"aside"}
         open
-        slotProps={
+        slot_props={
           {
             content: {
               "data-testid": "content"
             }
-          } as SelectProps["slotProps"]
+          } as SelectProps["slot_props"]
         }
       >
         <Option value={"test"}>Option</Option>
@@ -75,13 +75,13 @@ describe("<Select />", () => {
   });
 
   it("renders with size `md` and color `inverted` by default", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Select
         open
-        slotProps={
+        slot_props={
           {
             trigger: { "data-testid": "trigger" }
-          } as SelectProps["slotProps"]
+          } as SelectProps["slot_props"]
         }
       >
         <Option value={"test"}>Option</Option>
@@ -91,7 +91,7 @@ describe("<Select />", () => {
   });
 
   it("renders value children", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Select open valueChildren={<span data-testid={"value-children"} />}>
         <Option value={"test"}>Option</Option>
       </Select>
@@ -101,18 +101,18 @@ describe("<Select />", () => {
   });
 
   it("renders trigger with custom rendering function", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Select
         open
         renderTrigger={(trigger): React.ReactNode => (
           <div data-testid={"wrapper"}>{trigger}</div>
         )}
-        slotProps={
+        slot_props={
           {
             trigger: {
               "data-testid": "trigger"
             }
-          } as SelectProps["slotProps"]
+          } as SelectProps["slot_props"]
         }
       >
         <Option value={"test"}>Option</Option>
@@ -124,14 +124,14 @@ describe("<Select />", () => {
 
   (["lg", "md", "sm"] as SelectSize[]).forEach((size) => {
     it(`renders \`${size}\` size`, () => {
-      const { getByTestId } = renderTestWithProvider(
+      const { getByTestId } = render_test_with_provider(
         <Select
           open
           size={size}
-          slotProps={
+          slot_props={
             {
               trigger: { "data-testid": "trigger" }
-            } as SelectProps["slotProps"]
+            } as SelectProps["slot_props"]
           }
         >
           <Option value={"test"}>Option</Option>
@@ -144,14 +144,14 @@ describe("<Select />", () => {
 
   (["inverted", "ruby"] as SelectColor[]).forEach((color) => {
     it(`renders \`${color}\` color`, () => {
-      const { getByTestId } = renderTestWithProvider(
+      const { getByTestId } = render_test_with_provider(
         <Select
           color={color}
           open
-          slotProps={
+          slot_props={
             {
               trigger: { "data-testid": "trigger" }
-            } as SelectProps["slotProps"]
+            } as SelectProps["slot_props"]
           }
         >
           <Option value={"test"}>Option</Option>
@@ -163,17 +163,17 @@ describe("<Select />", () => {
   });
 
   it("passes props to the element slots", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Select
         open
-        slotProps={
+        slot_props={
           {
             value: { "data-testid": "value" },
             content: { "data-testid": "content" },
             trigger: { "data-testid": "trigger" },
             icon: { "data-testid": "icon" },
             viewport: { "data-testid": "viewport" }
-          } as SelectProps["slotProps"]
+          } as SelectProps["slot_props"]
         }
       >
         <Option value={"test"}>Option</Option>

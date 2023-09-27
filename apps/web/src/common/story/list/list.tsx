@@ -15,7 +15,7 @@ import { VirtualizedStoryListContext } from "./list-context";
 const VirtualizedStoryList = React.memo(
   ({
     stories,
-    hasMore,
+    has_more,
     loadMore,
     storyProps = {},
     skeletonProps = {},
@@ -35,10 +35,10 @@ const VirtualizedStoryList = React.memo(
         components={{
           Item: VirtualizedStoryItem,
           ScrollSeekPlaceholder: VirtualizedStoryScrollSeekPlaceholder,
-          ...(hasMore && { Footer: VirtualFooter })
+          ...(has_more && { Footer: VirtualFooter })
         }}
         data={stories}
-        endReached={hasMore ? loadMore : (): void => undefined}
+        endReached={has_more ? loadMore : (): void => undefined}
       />
     </VirtualizedStoryListContext.Provider>
   )

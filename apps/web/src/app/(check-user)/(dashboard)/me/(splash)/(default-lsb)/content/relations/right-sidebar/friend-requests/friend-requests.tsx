@@ -18,7 +18,10 @@ import { useDebounce } from "~/hooks/useDebounce";
 import { useMediaQuery } from "~/hooks/useMediaQuery";
 import SearchIcon from "~/icons/Search";
 import UserHeartIcon from "~/icons/UserHeart";
-import { getQueryErrorType, useGetFriendRequestsQuery } from "~/redux/features";
+import {
+  get_query_error_type,
+  use_get_friend_requests_query
+} from "~/redux/features";
 import { breakpoints } from "~/theme/breakpoints";
 
 import styles from "./friend-requests.module.scss";
@@ -62,12 +65,12 @@ const FriendRequestsModal = (): React.ReactElement => {
   const setRenderKey = useSetAtom(renderKeyAtom);
   const debouncedQuery = useDebounce(query);
   const { data, isLoading, isFetching, isError, error, refetch } =
-    useGetFriendRequestsQuery({
+    use_get_friend_requests_query({
       page,
       sort,
       query: debouncedQuery
     });
-  const { items = [], hasMore } = data || {};
+  const { items = [], has_more } = data || {};
   const isTyping = query !== debouncedQuery;
 
   const loadMore = React.useCallback(
@@ -100,7 +103,7 @@ const FriendRequestsModal = (): React.ReactElement => {
           disabled={!items.length}
           onChange={(event): void => setQuery(event.target.value)}
           placeholder={"Search"}
-          slotProps={{
+          slot_props={{
             container: {
               className: clsx("f-grow", styles.x, styles.input)
             }
@@ -112,7 +115,7 @@ const FriendRequestsModal = (): React.ReactElement => {
         <Select
           disabled={!items.length}
           onValueChange={handleSortChange}
-          slotProps={{
+          slot_props={{
             trigger: {
               "aria-label": "Sort items",
               className: clsx(
@@ -142,11 +145,11 @@ const FriendRequestsModal = (): React.ReactElement => {
       ) : isError ? (
         <ErrorState
           autoSize
-          componentProps={{
+          component_props={{
             button: { loading: isFetching }
           }}
           retry={refetch}
-          type={getQueryErrorType(error)}
+          type={get_query_error_type(error)}
         />
       ) : !isFetching && !items.length ? (
         <EmptyState query={query} />
@@ -155,7 +158,7 @@ const FriendRequestsModal = (): React.ReactElement => {
           <VirtualizedFriendRequestList
             components={{ Scroller }}
             friendRequests={items}
-            hasMore={Boolean(hasMore)}
+            has_more={Boolean(has_more)}
             loadMore={loadMore}
             useWindowScroll={false}
           />
@@ -190,7 +193,7 @@ const FriendRequests = (): React.ReactElement => {
           </ModalFooterButton>
         </>
       ),
-      slotProps: {
+      slot_props: {
         footer: {
           compact: isSmallerThanMobile
         },

@@ -11,7 +11,7 @@ import { useToast } from "~/components/Toast";
 import Typography from "~/components/Typography";
 import LockIcon from "~/icons/Lock";
 import LockOpenIcon from "~/icons/LockOpen";
-import { usePrivateAccountMutation } from "~/redux/features";
+import { use_private_account_mutation } from "~/redux/features";
 
 import styles from "../site-safety.module.scss";
 import { PrivateAccountProps } from "./private-account.props";
@@ -33,7 +33,7 @@ const PrivateAccount = ({
     }
   });
   const value = form.watch("private-account");
-  const [mutatePrivateAccount, { isLoading }] = usePrivateAccountMutation();
+  const [mutatePrivateAccount, { isLoading }] = use_private_account_mutation();
 
   const handleSubmit: SubmitHandler<PrivateAccountSchema> = (values) => {
     if (onSubmit) {

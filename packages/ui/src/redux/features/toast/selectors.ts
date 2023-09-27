@@ -2,4 +2,4 @@ import { AppState } from "~/redux/store";
 
 import { ToastState } from "./slice";
 
-export const selectToastState = (state: AppState): ToastState => state.toast;
+export const select_toast_state = (state: AppState): ToastState => state.toast;

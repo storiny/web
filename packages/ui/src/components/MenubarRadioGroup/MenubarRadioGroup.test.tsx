@@ -1,6 +1,6 @@
 import React from "react";
 
-import { renderTestWithProvider } from "~/redux/testUtils";
+import { render_test_with_provider } from "src/redux/test-utils";
 
 import Menubar from "../Menubar";
 import MenubarMenu from "../MenubarMenu";
@@ -9,7 +9,7 @@ import MenubarRadioGroup from "./MenubarRadioGroup";
 
 describe("<MenubarRadioGroup />", () => {
   it("renders and matches snapshot", () => {
-    const { baseElement, getByRole } = renderTestWithProvider(
+    const { baseElement, getByRole } = render_test_with_provider(
       <Menubar value={"test"}>
         <MenubarMenu trigger={<button>Trigger</button>} value={"test"}>
           <MenubarRadioGroup>
@@ -24,7 +24,7 @@ describe("<MenubarRadioGroup />", () => {
   });
 
   it("renders as a polymorphic element", () => {
-    const { getByRole } = renderTestWithProvider(
+    const { getByRole } = render_test_with_provider(
       <Menubar value={"test"}>
         <MenubarMenu trigger={<button>Trigger</button>} value={"test"}>
           <MenubarRadioGroup as={"aside"}>

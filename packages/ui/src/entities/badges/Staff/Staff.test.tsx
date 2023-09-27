@@ -2,17 +2,17 @@ import { axe } from "@storiny/test-utils";
 import { waitFor } from "@testing-library/react";
 import React from "react";
 
-import { renderTestWithProvider } from "~/redux/testUtils";
+import { render_test_with_provider } from "src/redux/test-utils";
 
 import StaffBadge from "./Staff";
 
 describe("<StaffBadge />", () => {
   it("renders", () => {
-    renderTestWithProvider(<StaffBadge />);
+    render_test_with_provider(<StaffBadge />);
   });
 
   it("does not have any accessibility violations", async () => {
-    const { container } = renderTestWithProvider(<StaffBadge />);
+    const { container } = render_test_with_provider(<StaffBadge />);
     await waitFor(async () =>
       expect(await axe(container)).toHaveNoViolations()
     );

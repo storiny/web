@@ -113,7 +113,7 @@ const PenFillControl = ({
         }}
         placeholder={"Fill"}
         size={"sm"}
-        slotProps={{
+        slot_props={{
           container: {
             style: { flex: "0.6" }
           }
@@ -138,7 +138,7 @@ const PenFillControl = ({
         }}
         placeholder={"Fill opacity"}
         size={"sm"}
-        slotProps={{
+        slot_props={{
           container: {
             style: {
               flex: "0.4"
@@ -243,7 +243,7 @@ const PenStyleControl = ({
     <Select
       onValueChange={(newValue: PenStyle): void => changePenStyle(newValue)}
       size={"sm"}
-      slotProps={{
+      slot_props={{
         content: {
           style: {
             zIndex: "calc(var(--z-index-modal) + 2)"

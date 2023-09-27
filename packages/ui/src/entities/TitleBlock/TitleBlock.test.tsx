@@ -2,18 +2,18 @@ import { axe } from "@storiny/test-utils";
 import { waitFor } from "@testing-library/react";
 import React from "react";
 
-import { renderTestWithProvider } from "~/redux/testUtils";
+import { render_test_with_provider } from "src/redux/test-utils";
 
 import TitleBlock from "./TitleBlock";
 import { TitleBlockProps } from "./TitleBlock.props";
 
 describe("<TitleBlock />", () => {
   it("renders", () => {
-    renderTestWithProvider(<TitleBlock title={"test"}>Content</TitleBlock>);
+    render_test_with_provider(<TitleBlock title={"test"}>Content</TitleBlock>);
   });
 
   it("does not have any accessibility violations", async () => {
-    const { container } = renderTestWithProvider(
+    const { container } = render_test_with_provider(
       <TitleBlock title={"test"}>Content</TitleBlock>
     );
     await waitFor(async () =>
@@ -22,7 +22,7 @@ describe("<TitleBlock />", () => {
   });
 
   it("renders children", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <TitleBlock title={"test"}>
         <span data-testid={"child"} />
       </TitleBlock>
@@ -32,13 +32,13 @@ describe("<TitleBlock />", () => {
   });
 
   it("passes props to the component slots", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <TitleBlock
-        componentProps={
+        component_props={
           {
             title: { "data-testid": "title" },
             content: { "data-testid": "content" }
-          } as TitleBlockProps["componentProps"]
+          } as TitleBlockProps["component_props"]
         }
         title={"test"}
       >

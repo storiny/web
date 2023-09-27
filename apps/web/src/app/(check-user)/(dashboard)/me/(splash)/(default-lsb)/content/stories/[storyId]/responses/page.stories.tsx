@@ -4,7 +4,7 @@ import { mockStories } from "@storiny/ui/src/mocks";
 import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
 
-import { renderWithState } from "~/redux/mock";
+import { render_with_state } from "~/redux/mock";
 
 import DashboardLayout from "../../../../../../../layout";
 import DashboardSplashLayout from "../../../../../layout";
@@ -31,7 +31,7 @@ type Story = StoryObj<typeof ContentStoryResponsesPage>;
 export const Default: Story = {
   decorators: [
     (Story): React.ReactElement =>
-      renderWithState(
+      render_with_state(
         <DashboardLayout>
           <DashboardSplashLayout>
             <DefaultDashboardLeftSidebarLayout>

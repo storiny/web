@@ -2,14 +2,14 @@ import { axe, userEvent } from "@storiny/test-utils";
 import { waitFor } from "@testing-library/react";
 import React from "react";
 
-import { renderTestWithProvider } from "~/redux/testUtils";
+import { render_test_with_provider } from "src/redux/test-utils";
 
 import Confirmation from "./Confirmation";
 import { ConfirmationColor, ConfirmationProps } from "./Confirmation.props";
 
 describe("<Confirmation />", () => {
   it("matches snapshot", () => {
-    const { baseElement } = renderTestWithProvider(
+    const { baseElement } = render_test_with_provider(
       <Confirmation description={"test"} open title={"test"} />
     );
 
@@ -17,7 +17,7 @@ describe("<Confirmation />", () => {
   });
 
   it("does not have any accessibility violations", async () => {
-    const { baseElement } = renderTestWithProvider(
+    const { baseElement } = render_test_with_provider(
       <Confirmation description={"test"} open title={"test"} />
     );
 
@@ -27,15 +27,15 @@ describe("<Confirmation />", () => {
   });
 
   it("renders as a polymorphic element", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Confirmation
         as={"aside"}
         description={"test"}
         open
-        slotProps={
+        slot_props={
           {
             content: { "data-testid": "content" }
-          } as ConfirmationProps["slotProps"]
+          } as ConfirmationProps["slot_props"]
         }
         title={"test"}
       />
@@ -45,15 +45,15 @@ describe("<Confirmation />", () => {
   });
 
   it("renders color `inverted` with `Cancel` and `Confirm` labels by default", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Confirmation
         description={"test"}
         open
-        slotProps={
+        slot_props={
           {
             confirmButton: { "data-testid": "confirm-button" },
             cancelButton: { "data-testid": "cancel-button" }
-          } as ConfirmationProps["slotProps"]
+          } as ConfirmationProps["slot_props"]
         }
         title={"test"}
       />
@@ -66,15 +66,15 @@ describe("<Confirmation />", () => {
 
   (["inverted", "ruby"] as ConfirmationColor[]).forEach((color) => {
     it(`renders \`${color}\` color`, () => {
-      const { getByTestId } = renderTestWithProvider(
+      const { getByTestId } = render_test_with_provider(
         <Confirmation
           color={color}
           description={"test"}
           open
-          slotProps={
+          slot_props={
             {
               confirmButton: { "data-testid": "confirm-button" }
-            } as ConfirmationProps["slotProps"]
+            } as ConfirmationProps["slot_props"]
           }
           title={"test"}
         />
@@ -85,7 +85,7 @@ describe("<Confirmation />", () => {
   });
 
   it("renders decorator", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Confirmation
         decorator={<span data-testid={"decorator"} />}
         description={"test"}
@@ -98,17 +98,17 @@ describe("<Confirmation />", () => {
   });
 
   it("renders labels", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Confirmation
         cancelLabel={"test-cancel"}
         confirmLabel={"test-confirm"}
         description={"test"}
         open
-        slotProps={
+        slot_props={
           {
             confirmButton: { "data-testid": "confirm-button" },
             cancelButton: { "data-testid": "cancel-button" }
-          } as ConfirmationProps["slotProps"]
+          } as ConfirmationProps["slot_props"]
         }
         title={"test"}
       />
@@ -123,17 +123,17 @@ describe("<Confirmation />", () => {
     const onConfirm = jest.fn();
     const onCancel = jest.fn();
 
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Confirmation
         description={"test"}
         onCancel={onCancel}
         onConfirm={onConfirm}
         open
-        slotProps={
+        slot_props={
           {
             confirmButton: { "data-testid": "confirm-button" },
             cancelButton: { "data-testid": "cancel-button" }
-          } as ConfirmationProps["slotProps"]
+          } as ConfirmationProps["slot_props"]
         }
         title={"test"}
       />
@@ -146,12 +146,12 @@ describe("<Confirmation />", () => {
   });
 
   it("passes props to the element slots", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Confirmation
         decorator={<span />}
         description={"test"}
         open
-        slotProps={
+        slot_props={
           {
             content: { "data-testid": "content" },
             trigger: { "data-testid": "trigger" },
@@ -164,7 +164,7 @@ describe("<Confirmation />", () => {
             footer: { "data-testid": "footer" },
             title: { "data-testid": "title" },
             overlay: { "data-testid": "overlay" }
-          } as ConfirmationProps["slotProps"]
+          } as ConfirmationProps["slot_props"]
         }
         title={"test"}
         trigger={<button>Trigger</button>}

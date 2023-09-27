@@ -21,7 +21,7 @@ const ToolbarInsertItem = (): React.ReactElement => {
 
   return (
     <Menu
-      slotProps={{
+      slot_props={{
         content: {
           side: "top"
         }

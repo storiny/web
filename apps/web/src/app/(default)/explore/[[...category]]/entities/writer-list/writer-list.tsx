@@ -5,7 +5,10 @@ import React from "react";
 import { dynamicLoader } from "~/common/dynamic";
 import { UserListSkeleton, VirtualizedUserList } from "~/common/user";
 import ErrorState from "~/entities/ErrorState";
-import { getQueryErrorType, useGetExploreWritersQuery } from "~/redux/features";
+import {
+  get_query_error_type,
+  useGetExploreWritersQuery
+} from "~/redux/features";
 
 const EmptyState = dynamic(() => import("./empty-state"), {
   loading: dynamicLoader()
@@ -27,7 +30,7 @@ const WriterList = ({
       category,
       query: debouncedQuery
     });
-  const { items = [], hasMore } = data || {};
+  const { items = [], has_more } = data || {};
   const loading = isLoading || loadingProp;
 
   const loadMore = React.useCallback(
@@ -42,17 +45,17 @@ const WriterList = ({
       ) : isError ? (
         <ErrorState
           autoSize
-          componentProps={{
+          component_props={{
             button: { loading: isFetching }
           }}
           retry={refetch}
-          type={getQueryErrorType(error)}
+          type={get_query_error_type(error)}
         />
       ) : !isFetching && !items.length ? (
         <EmptyState query={debouncedQuery} />
       ) : (
         <VirtualizedUserList
-          hasMore={Boolean(hasMore)}
+          has_more={Boolean(has_more)}
           loadMore={loadMore}
           users={items}
         />

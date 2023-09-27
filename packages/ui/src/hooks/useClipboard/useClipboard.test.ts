@@ -1,6 +1,6 @@
 import { act } from "@testing-library/react";
 
-import { renderHookWithProvider } from "~/redux/testUtils";
+import { render_hook_with_provider } from "src/redux/test-utils";
 
 import { useClipboard } from "./useClipboard";
 
@@ -32,7 +32,7 @@ describe("useClipboard", () => {
   });
 
   it("copies text to the clipboard", async () => {
-    const { result } = renderHookWithProvider(() => useClipboard());
+    const { result } = render_hook_with_provider(() => useClipboard());
 
     await act(async () => {
       await result.current("test");

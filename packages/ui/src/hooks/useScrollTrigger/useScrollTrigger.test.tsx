@@ -1,7 +1,7 @@
 import { act } from "@testing-library/react";
 import React from "react";
 
-import { renderTestWithProvider } from "~/redux/testUtils";
+import { render_test_with_provider } from "src/redux/test-utils";
 
 import { useScrollTrigger } from "./useScrollTrigger";
 
@@ -12,7 +12,7 @@ describe("useScrollTrigger", () => {
       return <span data-testid="trigger">{`${trigger}`}</span>;
     };
 
-    const { getByTestId } = renderTestWithProvider(<Component />);
+    const { getByTestId } = render_test_with_provider(<Component />);
     expect(getByTestId("trigger")).toHaveTextContent("false");
   });
 
@@ -36,7 +36,7 @@ describe("useScrollTrigger", () => {
     };
 
     it("triggers correctly", () => {
-      renderTestWithProvider(<Component />);
+      render_test_with_provider(<Component />);
       [
         { offset: 100, result: "false" },
         { offset: 101, result: "true" },
@@ -62,7 +62,7 @@ describe("useScrollTrigger", () => {
     });
 
     it("does not trigger at exact threshold value", () => {
-      renderTestWithProvider(<Component />);
+      render_test_with_provider(<Component />);
       [
         { offset: 100, result: "false" },
         { offset: 99, result: "false" },
@@ -86,7 +86,7 @@ describe("useScrollTrigger", () => {
           value: test.offset
         });
 
-        renderTestWithProvider(<Component />);
+        render_test_with_provider(<Component />);
         expect(getTriggerValue()).toEqual(test.result);
       });
     });

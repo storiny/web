@@ -24,13 +24,13 @@ import { useMediaQuery } from "~/hooks/useMediaQuery";
 import ChecksIcon from "~/icons/Checks";
 import SettingsIcon from "~/icons/Settings";
 import {
-  getQueryErrorType,
-  markAllAsRead,
+  get_query_error_type,
+  mark_all_as_read,
   select_notifications_status,
   select_unread_notification_count,
-  useGetNotificationsQuery
+  use_get_notifications_query
 } from "~/redux/features";
-import { useAppDispatch, useAppSelector } from "~/redux/hooks";
+import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 import { breakpoints } from "~/theme/breakpoints";
 import { abbreviateNumber } from "~/utils/abbreviateNumber";
 
@@ -82,10 +82,10 @@ const StatusHeader = ({
 }: {
   tab: NotificationsTabValue;
 }): React.ReactElement => {
-  const dispatch = useAppDispatch();
+  const dispatch = use_app_dispatch();
   const isMobile = useMediaQuery(breakpoints.down("mobile"));
-  const unreadCount = useAppSelector(select_unread_notification_count);
-  const status = useAppSelector(select_notifications_status);
+  const unreadCount = use_app_selector(select_unread_notification_count);
+  const status = use_app_selector(select_notifications_status);
 
   return (
     <div
@@ -117,7 +117,7 @@ const StatusHeader = ({
             checkAuth
             disabled={unreadCount === 0}
             onClick={(): void => {
-              dispatch(markAllAsRead());
+              dispatch(mark_all_as_read());
             }}
             size={"lg"}
             title={"Mark all as read"}
@@ -132,7 +132,7 @@ const StatusHeader = ({
             decorator={<ChecksIcon />}
             disabled={unreadCount === 0}
             onClick={(): void => {
-              dispatch(markAllAsRead());
+              dispatch(mark_all_as_read());
             }}
             variant={"hollow"}
           >
@@ -159,11 +159,11 @@ const Client = (): React.ReactElement => {
   const [value, setValue] = React.useState<NotificationsTabValue>("unread");
   const [page, setPage] = React.useState<number>(1);
   const { data, isLoading, isFetching, isError, error, refetch } =
-    useGetNotificationsQuery({
+    use_get_notifications_query({
       page,
       type: value
     });
-  const { items = [], hasMore } = data || {};
+  const { items = [], has_more } = data || {};
 
   const loadMore = React.useCallback(
     () => setPage((prevState) => prevState + 1),
@@ -182,11 +182,11 @@ const Client = (): React.ReactElement => {
       {isError ? (
         <ErrorState
           autoSize
-          componentProps={{
+          component_props={{
             button: { loading: isFetching }
           }}
           retry={refetch}
-          type={getQueryErrorType(error)}
+          type={get_query_error_type(error)}
         />
       ) : !isFetching && !items.length ? (
         <EmptyState tab={value} />
@@ -194,7 +194,7 @@ const Client = (): React.ReactElement => {
         <NotificationListSkeleton />
       ) : (
         <VirtualizedNotificationList
-          hasMore={Boolean(hasMore)}
+          has_more={Boolean(has_more)}
           loadMore={loadMore}
           notifications={items}
         />

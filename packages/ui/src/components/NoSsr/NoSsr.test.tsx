@@ -1,12 +1,12 @@
 import React from "react";
 
-import { renderTestWithProvider } from "~/redux/testUtils";
+import { render_test_with_provider } from "src/redux/test-utils";
 
 import NoSsr from "./NoSsr";
 
 describe("<NoSsr />", () => {
   it("renders children", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <NoSsr>
         <span data-testid={"child"} />
       </NoSsr>

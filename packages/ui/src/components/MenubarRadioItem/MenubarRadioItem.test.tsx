@@ -1,6 +1,6 @@
 import React from "react";
 
-import { renderTestWithProvider } from "~/redux/testUtils";
+import { render_test_with_provider } from "src/redux/test-utils";
 
 import Menubar from "../Menubar";
 import MenubarMenu from "../MenubarMenu";
@@ -10,7 +10,7 @@ import { MenubarRadioItemProps } from "./MenubarRadioItem.props";
 
 describe("<MenubarRadioItem />", () => {
   it("renders and matches snapshot", () => {
-    const { baseElement, getByRole } = renderTestWithProvider(
+    const { baseElement, getByRole } = render_test_with_provider(
       <Menubar value={"test"}>
         <MenubarMenu trigger={<button>Trigger</button>} value={"test"}>
           <MenubarRadioGroup>
@@ -25,7 +25,7 @@ describe("<MenubarRadioItem />", () => {
   });
 
   it("renders as a polymorphic element", () => {
-    const { getByRole } = renderTestWithProvider(
+    const { getByRole } = render_test_with_provider(
       <Menubar value={"test"}>
         <MenubarMenu trigger={<button>Trigger</button>} value={"test"}>
           <MenubarRadioGroup>
@@ -41,16 +41,16 @@ describe("<MenubarRadioItem />", () => {
   });
 
   it("renders decorator", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Menubar value={"test"}>
         <MenubarMenu trigger={<button>Trigger</button>} value={"test"}>
           <MenubarRadioGroup>
             <MenubarRadioItem
               decorator={"Test"}
-              slotProps={
+              slot_props={
                 {
                   decorator: { "data-testid": "decorator" }
-                } as MenubarRadioItemProps["slotProps"]
+                } as MenubarRadioItemProps["slot_props"]
               }
               value={"test"}
             >
@@ -65,16 +65,16 @@ describe("<MenubarRadioItem />", () => {
   });
 
   it("renders right slot", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Menubar value={"test"}>
         <MenubarMenu trigger={<button>Trigger</button>} value={"test"}>
           <MenubarRadioGroup>
             <MenubarRadioItem
               rightSlot={"Test"}
-              slotProps={
+              slot_props={
                 {
                   rightSlot: { "data-testid": "right-slot" }
-                } as MenubarRadioItemProps["slotProps"]
+                } as MenubarRadioItemProps["slot_props"]
               }
               value={"test"}
             >
@@ -89,19 +89,19 @@ describe("<MenubarRadioItem />", () => {
   });
 
   it("passes props to the element slots", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Menubar value={"test"}>
         <MenubarMenu trigger={<button>Trigger</button>} value={"test"}>
           <MenubarRadioGroup value={"test"}>
             <MenubarRadioItem
               decorator={"Test"}
               rightSlot={"Test"}
-              slotProps={
+              slot_props={
                 {
                   decorator: { "data-testid": "decorator" },
                   rightSlot: { "data-testid": "right-slot" },
                   indicator: { "data-testid": "indicator" }
-                } as MenubarRadioItemProps["slotProps"]
+                } as MenubarRadioItemProps["slot_props"]
               }
               value={"test"}
             >

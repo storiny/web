@@ -4,7 +4,7 @@ import clsx from "clsx";
 import NextLink from "next/link";
 import React from "react";
 
-import Wordmark from "~/brand/Wordmark";
+import Wordmark from "src/brand/wordmark";
 import Button from "~/components/Button";
 import Divider from "~/components/Divider";
 import Grow from "~/components/Grow";

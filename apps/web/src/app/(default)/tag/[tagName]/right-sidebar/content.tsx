@@ -17,11 +17,11 @@ import { TitleWithIcon, UserWithActionSkeleton } from "~/layout/RightSidebar";
 import UserWithAction from "~/layout/RightSidebar/UserWithAction";
 import {
   boolean_action,
-  getQueryErrorType,
+  get_query_error_type,
   setFollowedTag,
-  useGetTagWritersQuery
+  use_get_tag_writers_query
 } from "~/redux/features";
-import { useAppDispatch, useAppSelector } from "~/redux/hooks";
+import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 import { abbreviateNumber } from "~/utils/abbreviateNumber";
 
 import TagActions from "../actions";
@@ -34,8 +34,8 @@ interface Props {
 // Actions
 
 const Actions = ({ tag }: Props): React.ReactElement => {
-  const dispatch = useAppDispatch();
-  const isFollowing = useAppSelector(
+  const dispatch = use_app_dispatch();
+  const isFollowing = use_app_selector(
     (state) => state.entities.followed_tags[tag.id]
   );
 
@@ -74,18 +74,18 @@ const Actions = ({ tag }: Props): React.ReactElement => {
 
 const TopWriters = ({ tagName }: { tagName: string }): React.ReactElement => {
   const { isLoading, isFetching, error, isError, data, refetch } =
-    useGetTagWritersQuery({ tagName });
+    use_get_tag_writers_query({ tagName });
 
   return (
     <>
       {isError ? (
         <ErrorState
-          componentProps={{
+          component_props={{
             button: { loading: isFetching }
           }}
           retry={refetch}
           size={"sm"}
-          type={getQueryErrorType(error)}
+          type={get_query_error_type(error)}
         />
       ) : isLoading ? (
         [...Array(5)].map((_, index) => <UserWithActionSkeleton key={index} />)

@@ -2,7 +2,7 @@ import { axe } from "@storiny/test-utils";
 import { waitFor } from "@testing-library/react";
 import React from "react";
 
-import { renderTestWithProvider } from "~/redux/testUtils";
+import { render_test_with_provider } from "src/redux/test-utils";
 
 import Checkbox from "./Checkbox";
 import styles from "./Checkbox.module.scss";
@@ -10,19 +10,23 @@ import { CheckboxColor, CheckboxProps, CheckboxSize } from "./Checkbox.props";
 
 describe("<Checkbox />", () => {
   it("matches snapshot", () => {
-    const { container } = renderTestWithProvider(<Checkbox label={"Test"} />);
+    const { container } = render_test_with_provider(
+      <Checkbox label={"Test"} />
+    );
     expect(container.firstChild).toMatchSnapshot();
   });
 
   it("does not have any accessibility violations", async () => {
-    const { container } = renderTestWithProvider(<Checkbox label={"Test"} />);
+    const { container } = render_test_with_provider(
+      <Checkbox label={"Test"} />
+    );
     await waitFor(async () =>
       expect(await axe(container)).toHaveNoViolations()
     );
   });
 
   it("renders size `md` and color `inverted` by default", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Checkbox data-testid={"checkbox"} label={"Test"} />
     );
     expect(getByTestId("checkbox")).toHaveClass(
@@ -32,7 +36,7 @@ describe("<Checkbox />", () => {
 
   (["inverted", "ruby"] as CheckboxColor[]).forEach((color) => {
     it(`renders \`${color}\` color`, () => {
-      const { getByTestId } = renderTestWithProvider(
+      const { getByTestId } = render_test_with_provider(
         <Checkbox color={color} data-testid={"checkbox"} />
       );
 
@@ -42,7 +46,7 @@ describe("<Checkbox />", () => {
 
   (["lg", "md"] as CheckboxSize[]).forEach((size) => {
     it(`renders \`${size}\` size`, () => {
-      const { getByTestId } = renderTestWithProvider(
+      const { getByTestId } = render_test_with_provider(
         <Checkbox data-testid={"checkbox"} size={size} />
       );
 
@@ -51,11 +55,11 @@ describe("<Checkbox />", () => {
   });
 
   it("renders label", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Checkbox
         label={"Test"}
-        slotProps={
-          { label: { "data-testid": "label" } } as CheckboxProps["slotProps"]
+        slot_props={
+          { label: { "data-testid": "label" } } as CheckboxProps["slot_props"]
         }
       />
     );
@@ -64,12 +68,12 @@ describe("<Checkbox />", () => {
   });
 
   it("passes the same id to input and label", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Checkbox
         data-testid={"checkbox"}
         label={"Test"}
-        slotProps={
-          { label: { "data-testid": "label" } } as CheckboxProps["slotProps"]
+        slot_props={
+          { label: { "data-testid": "label" } } as CheckboxProps["slot_props"]
         }
       />
     );
@@ -81,16 +85,16 @@ describe("<Checkbox />", () => {
   });
 
   it("passes props to the element slots", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Checkbox
         checked
         label={"Test"}
-        slotProps={
+        slot_props={
           {
             label: { "data-testid": "label" },
             container: { "data-testid": "container" },
             indicator: { "data-testid": "indicator" }
-          } as CheckboxProps["slotProps"]
+          } as CheckboxProps["slot_props"]
         }
       />
     );

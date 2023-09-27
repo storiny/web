@@ -31,12 +31,12 @@ import StoryHeartIcon from "~/icons/StoryHeart";
 import SunIcon from "~/icons/Sun";
 import UserIcon from "~/icons/User";
 import {
-  selectAuthStatus,
-  selectLoggedIn,
-  selectUser
+  select_auth_status,
+  select_is_logged_in,
+  select_user
 } from "~/redux/features/auth/selectors";
-import { setTheme } from "~/redux/features/preferences/slice";
-import { useAppDispatch, useAppSelector } from "~/redux/hooks";
+import { set_theme } from "~/redux/features/preferences/slice";
+import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 import { capitalize } from "~/utils/capitalize";
 
 import styles from "./Actions.module.scss";
@@ -44,8 +44,8 @@ import styles from "./Actions.module.scss";
 // MenuItem used to toggle theme
 
 const ThemeToggleItem = (): React.ReactElement => {
-  const dispatch = useAppDispatch();
-  const theme = useAppSelector((state) => state.preferences.theme);
+  const dispatch = use_app_dispatch();
+  const theme = use_app_selector((state) => state.preferences.theme);
 
   return (
     <MenuItem
@@ -62,7 +62,7 @@ const ThemeToggleItem = (): React.ReactElement => {
         // Prevent the menu from closing
         event.preventDefault();
         dispatch(
-          setTheme(
+          set_theme(
             theme === "system" ? "light" : theme === "light" ? "dark" : "system"
           )
         );
@@ -163,9 +163,9 @@ const LoggedOutMenu = ({
 );
 
 const Actions = (): React.ReactElement => {
-  const loggedIn = useAppSelector(selectLoggedIn);
-  const authStatus = useAppSelector(selectAuthStatus);
-  const user = useAppSelector(selectUser);
+  const loggedIn = use_app_selector(select_is_logged_in);
+  const authStatus = use_app_selector(select_auth_status);
+  const user = use_app_selector(select_user);
 
   return (
     <div className={clsx("flex-center", styles.actions)}>

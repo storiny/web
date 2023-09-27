@@ -2,7 +2,7 @@ import { axe } from "@storiny/test-utils";
 import { waitFor } from "@testing-library/react";
 import React from "react";
 
-import { renderTestWithProvider } from "~/redux/testUtils";
+import { render_test_with_provider } from "src/redux/test-utils";
 
 import Stepper from "./Stepper";
 import styles from "./Stepper.module.scss";
@@ -10,12 +10,12 @@ import { StepperProps, StepperSize } from "./Stepper.props";
 
 describe("<Stepper />", () => {
   it("matches snapshot", () => {
-    const { container } = renderTestWithProvider(<Stepper totalSteps={3} />);
+    const { container } = render_test_with_provider(<Stepper totalSteps={3} />);
     expect(container.firstChild).toMatchSnapshot();
   });
 
   it("does not have any accessibility violations", async () => {
-    const { container } = renderTestWithProvider(
+    const { container } = render_test_with_provider(
       <Stepper aria-label={"Test stepper"} totalSteps={3} />
     );
 
@@ -25,7 +25,7 @@ describe("<Stepper />", () => {
   });
 
   it("renders as a polymorphic element", () => {
-    const { getByRole } = renderTestWithProvider(
+    const { getByRole } = render_test_with_provider(
       <Stepper as={"aside"} totalSteps={3} />
     );
 
@@ -33,7 +33,7 @@ describe("<Stepper />", () => {
   });
 
   it("renders size `md` and `1` active step by default", () => {
-    const { getByRole } = renderTestWithProvider(<Stepper totalSteps={3} />);
+    const { getByRole } = render_test_with_provider(<Stepper totalSteps={3} />);
     const stepper = getByRole("progressbar");
 
     expect(stepper).toHaveClass(styles.md);
@@ -41,7 +41,7 @@ describe("<Stepper />", () => {
   });
 
   it("renders active steps", () => {
-    const { getByRole } = renderTestWithProvider(
+    const { getByRole } = render_test_with_provider(
       <Stepper activeSteps={2} totalSteps={3} />
     );
 
@@ -50,7 +50,7 @@ describe("<Stepper />", () => {
 
   (["md", "sm"] as StepperSize[]).forEach((size) => {
     it(`renders \`${size}\` size`, () => {
-      const { getByRole } = renderTestWithProvider(
+      const { getByRole } = render_test_with_provider(
         <Stepper size={size} totalSteps={3} />
       );
 
@@ -59,10 +59,10 @@ describe("<Stepper />", () => {
   });
 
   it("passes props to the element slots", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Stepper
-        slotProps={
-          { step: { "data-testid": "step" } } as StepperProps["slotProps"]
+        slot_props={
+          { step: { "data-testid": "step" } } as StepperProps["slot_props"]
         }
         totalSteps={1}
       />

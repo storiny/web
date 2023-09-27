@@ -19,11 +19,11 @@ import ErrorState from "~/entities/ErrorState";
 import { useDebounce } from "~/hooks/useDebounce";
 import SearchIcon from "~/icons/Search";
 import {
-  getQueryErrorType,
+  get_query_error_type,
   number_action,
-  useGetStoryCommentsQuery
+  use_get_story_comments_query
 } from "~/redux/features";
-import { useAppDispatch, useAppSelector } from "~/redux/hooks";
+import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 import { abbreviateNumber } from "~/utils/abbreviateNumber";
 
 import DashboardTitle from "../../../../dashboard-title";
@@ -88,12 +88,12 @@ const StatusHeader = ({
 }: {
   tab: StoryResponsesTabValue;
 } & StoryResponsesProps): React.ReactElement => {
-  const dispatch = useAppDispatch();
+  const dispatch = use_app_dispatch();
   const totalCount =
-    useAppSelector((state) => state.entities.story_comment_counts[storyId]) ||
+    use_app_selector((state) => state.entities.story_comment_counts[storyId]) ||
     0;
   const hiddenCount =
-    useAppSelector(
+    use_app_selector(
       (state) => state.entities.story_hidden_comment_counts[storyId]
     ) || 0;
   const count_param = tab === "all" ? totalCount : hiddenCount;
@@ -174,7 +174,7 @@ const ControlBar = ({
         tab === "hidden" ? "Search hidden comments" : "Search comments"
       }
       size={"lg"}
-      slotProps={{
+      slot_props={{
         container: {
           className: clsx("f-grow", styles.x, styles.input)
         }
@@ -186,7 +186,7 @@ const ControlBar = ({
     <Select
       disabled={disabled}
       onValueChange={onSortChange}
-      slotProps={{
+      slot_props={{
         trigger: {
           "aria-label": "Sort items",
           className: clsx("focus-invert", styles.x, styles["select-trigger"])
@@ -217,14 +217,14 @@ const ContentStoryResponsesClient = (
   const [page, setPage] = React.useState<number>(1);
   const debouncedQuery = useDebounce(query);
   const { data, isLoading, isFetching, isError, error, refetch } =
-    useGetStoryCommentsQuery({
+    use_get_story_comments_query({
       storyId,
       page,
       sort,
       type: value,
       query: debouncedQuery
     });
-  const { items = [], hasMore } = data || {};
+  const { items = [], has_more } = data || {};
   const isTyping = query !== debouncedQuery;
 
   const loadMore = React.useCallback(
@@ -280,11 +280,11 @@ const ContentStoryResponsesClient = (
         ) : isError ? (
           <ErrorState
             autoSize
-            componentProps={{
+            component_props={{
               button: { loading: isFetching }
             }}
             retry={refetch}
-            type={getQueryErrorType(error)}
+            type={get_query_error_type(error)}
           />
         ) : !isFetching && !items.length ? (
           <EmptyState query={query} value={value} />
@@ -295,7 +295,7 @@ const ContentStoryResponsesClient = (
               hideHiddenOverlay: true
             }}
             comments={items}
-            hasMore={Boolean(hasMore)}
+            has_more={Boolean(has_more)}
             loadMore={loadMore}
           />
         )}

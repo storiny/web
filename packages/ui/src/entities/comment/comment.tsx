@@ -19,9 +19,9 @@ import { useMediaQuery } from "~/hooks/useMediaQuery";
 import ExternalLinkIcon from "~/icons/ExternalLink";
 import HeartIcon from "~/icons/Heart";
 import ReplyIcon from "~/icons/Reply";
-import { boolean_action, selectLoggedIn } from "~/redux/features";
-import { syncWithComment } from "~/redux/features/entities/slice";
-import { useAppDispatch, useAppSelector } from "~/redux/hooks";
+import { boolean_action, select_is_logged_in } from "~/redux/features";
+import { sync_with_comment } from "~/redux/features/entities/slice";
+import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 import { breakpoints } from "~/theme/breakpoints";
 import { abbreviateNumber } from "~/utils/abbreviateNumber";
 import { DateFormat, formatDate } from "~/utils/formatDate";
@@ -85,21 +85,22 @@ const Comment = (props: CommentProps): React.ReactElement => {
     virtual,
     ...rest
   } = props;
-  const dispatch = useAppDispatch();
+  const dispatch = use_app_dispatch();
   const isMobile = useMediaQuery(breakpoints.down("mobile"));
-  const loggedIn = useAppSelector(selectLoggedIn);
-  const isUserBlocked = useAppSelector(
+  const loggedIn = use_app_selector(select_is_logged_in);
+  const isUserBlocked = use_app_selector(
     (state) => state.entities.blocks[comment.user_id]
   );
-  const isLiked = useAppSelector(
+  const isLiked = use_app_selector(
     (state) => state.entities.likedComments[comment.id]
   );
   const likeCount =
-    useAppSelector((state) => state.entities.commentLikeCounts[comment.id]) ||
+    use_app_selector((state) => state.entities.commentLikeCounts[comment.id]) ||
     0;
   const replyCount =
-    useAppSelector((state) => state.entities.commentReplyCounts[comment.id]) ||
-    0;
+    use_app_selector(
+      (state) => state.entities.commentReplyCounts[comment.id]
+    ) || 0;
   const [hidden, setHidden] = React.useState(Boolean(comment.hidden));
   const [collapsed, setCollapsed] = React.useState(isUserBlocked);
   const [showReplyList, setShowReplyList] = React.useState<boolean>(false);
@@ -113,7 +114,7 @@ const Comment = (props: CommentProps): React.ReactElement => {
   const setHiddenImpl = React.useCallback(setHidden, [setHidden]);
 
   React.useEffect(() => {
-    dispatch(syncWithComment(comment));
+    dispatch(sync_with_comment(comment));
   }, [dispatch, comment]);
 
   // Collapse on block

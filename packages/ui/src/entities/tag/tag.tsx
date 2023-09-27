@@ -13,8 +13,12 @@ import CalendarIcon from "~/icons/Calendar";
 import StoryIcon from "~/icons/Story";
 import TagIcon from "~/icons/Tag";
 import UsersIcon from "~/icons/Users";
-import { boolean_action, setFollowedTag, syncWithTag } from "~/redux/features";
-import { useAppDispatch, useAppSelector } from "~/redux/hooks";
+import {
+  boolean_action,
+  setFollowedTag,
+  sync_with_tag
+} from "~/redux/features";
+import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 import { breakpoints } from "~/theme/breakpoints";
 import { abbreviateNumber } from "~/utils/abbreviateNumber";
 import { DateFormat, formatDate } from "~/utils/formatDate";
@@ -24,17 +28,17 @@ import { TagProps } from "./tag.props";
 
 const Tag = (props: TagProps): React.ReactElement => {
   const { className, tag, virtual, ...rest } = props;
-  const dispatch = useAppDispatch();
+  const dispatch = use_app_dispatch();
   const isMobile = useMediaQuery(breakpoints.down("mobile"));
-  const isFollowing = useAppSelector(
+  const isFollowing = use_app_selector(
     (state) => state.entities.followedTags[tag.id]
   );
   const followerCount =
-    useAppSelector((state) => state.entities.tagFollowerCounts[tag.id]) || 0;
+    use_app_selector((state) => state.entities.tagFollowerCounts[tag.id]) || 0;
   const tagUrl = `/tag/${tag.name}`;
 
   React.useEffect(() => {
-    dispatch(syncWithTag(tag));
+    dispatch(sync_with_tag(tag));
   }, [dispatch, tag]);
 
   return (

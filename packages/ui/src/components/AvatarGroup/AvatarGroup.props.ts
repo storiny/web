@@ -13,7 +13,7 @@ export interface AvatarGroupProps extends PolymorphicProps<"div"> {
   /**
    * The props passed to the individual component elements.
    */
-  slotProps?: {
+  slot_props?: {
     overflow?: Omit<AvatarProps, "alt">;
   };
 }

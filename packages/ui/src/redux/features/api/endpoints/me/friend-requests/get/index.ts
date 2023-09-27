@@ -1,16 +1,17 @@
 import { FriendRequest } from "@storiny/types";
 
-import { apiSlice } from "~/redux/features/api/slice";
+import { api_slice } from "~/redux/features/api/slice";
 
 const ITEMS_PER_PAGE = 10;
 const SEGMENT = "me/friend-requests";
 
 export type GetFriendRequestsResponse = FriendRequest[];
 
-export const getFriendRequestsApi = apiSlice.injectEndpoints({
+export const get_friend_requests_api = api_slice.injectEndpoints({
   endpoints: (builder) => ({
+    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     getFriendRequests: builder.query<
-      { hasMore: boolean; items: FriendRequest[] },
+      { has_more: boolean; items: FriendRequest[] },
       {
         page: number;
         query?: string;
@@ -25,11 +26,11 @@ export const getFriendRequestsApi = apiSlice.injectEndpoints({
         `${endpointName}:${queryArgs.sort}:${queryArgs.query}`,
       transformResponse: (response: FriendRequest[]) => ({
         items: response,
-        hasMore: response.length === ITEMS_PER_PAGE
+        has_more: response.length === ITEMS_PER_PAGE
       }),
-      merge: (currentCache, newItems) => {
-        currentCache.items.push(...newItems.items);
-        currentCache.hasMore = newItems.hasMore;
+      merge: (current_cache, new_items) => {
+        current_cache.items.push(...new_items.items);
+        current_cache.has_more = new_items.has_more;
       },
       providesTags: (result) =>
         result
@@ -49,4 +50,5 @@ export const getFriendRequestsApi = apiSlice.injectEndpoints({
   })
 });
 
-export const { useGetFriendRequestsQuery } = getFriendRequestsApi;
+export const { useGetFriendRequestsQuery: use_get_friend_requests_query } =
+  get_friend_requests_api;

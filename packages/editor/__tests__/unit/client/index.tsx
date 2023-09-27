@@ -4,7 +4,7 @@ import { EditorState, LexicalEditor } from "lexical";
 import React from "react";
 import * as Y from "yjs";
 
-import { renderTestWithProvider } from "~/redux/testUtils";
+import { render_test_with_provider } from "../../../../ui/src/redux/test-utils";
 
 import { Provider, UserState } from "../../../src/collaboration/provider";
 import EditorComposer from "../../../src/components/composer";
@@ -197,7 +197,7 @@ export class Client {
     this.container = container;
     rootContainer?.appendChild(container);
 
-    renderTestWithProvider(
+    render_test_with_provider(
       <EditorComposer ignoreNodes ignoreTheme>
         <Editor
           awarenessData={awarenessData}

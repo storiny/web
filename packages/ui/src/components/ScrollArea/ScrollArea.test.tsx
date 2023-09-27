@@ -2,7 +2,7 @@ import { axe } from "@storiny/test-utils";
 import { waitFor } from "@testing-library/react";
 import React from "react";
 
-import { renderTestWithProvider } from "~/redux/testUtils";
+import { render_test_with_provider } from "src/redux/test-utils";
 
 import ScrollArea from "./ScrollArea";
 import styles from "./ScrollArea.module.scss";
@@ -10,7 +10,7 @@ import { ScrollAreaProps, ScrollAreaSize } from "./ScrollArea.props";
 
 describe("<ScrollArea />", () => {
   it("matches snapshot", () => {
-    const { container } = renderTestWithProvider(
+    const { container } = render_test_with_provider(
       <ScrollArea enableHorizontal type={"always"}>
         Test
       </ScrollArea>
@@ -20,14 +20,16 @@ describe("<ScrollArea />", () => {
   });
 
   it("does not have any accessibility violations", async () => {
-    const { container } = renderTestWithProvider(<ScrollArea>Test</ScrollArea>);
+    const { container } = render_test_with_provider(
+      <ScrollArea>Test</ScrollArea>
+    );
     await waitFor(async () =>
       expect(await axe(container)).toHaveNoViolations()
     );
   });
 
   it("renders as a polymorphic element", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <ScrollArea as={"aside"} data-testid={"scroll-area"}>
         Test
       </ScrollArea>
@@ -37,13 +39,13 @@ describe("<ScrollArea />", () => {
   });
 
   it("renders only vertical scrollbar and size `md` by default", () => {
-    const { getByTestId, queryAllByTestId } = renderTestWithProvider(
+    const { getByTestId, queryAllByTestId } = render_test_with_provider(
       <ScrollArea
         data-testid={"scroll-area"}
-        slotProps={
+        slot_props={
           {
             scrollbar: { "data-testid": "scrollbar" }
-          } as ScrollAreaProps["slotProps"]
+          } as ScrollAreaProps["slot_props"]
         }
         type={"always"}
       >
@@ -60,7 +62,7 @@ describe("<ScrollArea />", () => {
 
   (["lg", "md"] as ScrollAreaSize[]).forEach((size) => {
     it(`renders \`${size}\` size`, () => {
-      const { getByTestId } = renderTestWithProvider(
+      const { getByTestId } = render_test_with_provider(
         <ScrollArea data-testid={"scroll-area"} size={size}>
           Test
         </ScrollArea>
@@ -71,13 +73,13 @@ describe("<ScrollArea />", () => {
   });
 
   it("renders horizontal scrollbar", () => {
-    const { queryAllByTestId } = renderTestWithProvider(
+    const { queryAllByTestId } = render_test_with_provider(
       <ScrollArea
         enableHorizontal
-        slotProps={
+        slot_props={
           {
             scrollbar: { "data-testid": "scrollbar" }
-          } as ScrollAreaProps["slotProps"]
+          } as ScrollAreaProps["slot_props"]
         }
         type={"always"}
       >
@@ -89,13 +91,13 @@ describe("<ScrollArea />", () => {
   });
 
   it("passes props to the element slots", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <ScrollArea
-        slotProps={
+        slot_props={
           {
             viewport: { "data-testid": "viewport" },
             scrollbar: { "data-testid": "scrollbar" }
-          } as ScrollAreaProps["slotProps"]
+          } as ScrollAreaProps["slot_props"]
         }
         type={"always"}
       />

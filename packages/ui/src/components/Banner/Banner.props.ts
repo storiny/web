@@ -25,7 +25,7 @@ export interface BannerProps extends BannerPrimitive {
   /**
    * The props passed to the individual component elements.
    */
-  slotProps?: {
+  slot_props?: {
     close?: ToastCloseProps;
     decorator?: React.ComponentPropsWithoutRef<"span">;
   };

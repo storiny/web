@@ -6,7 +6,7 @@ import FormSwitch from "~/components/FormSwitch";
 import Spacer from "~/components/Spacer";
 import { useToast } from "~/components/Toast";
 import Typography from "~/components/Typography";
-import { useSensitiveContentMutation } from "~/redux/features";
+import { use_sensitive_content_mutation } from "~/redux/features";
 
 import styles from "../site-safety.module.scss";
 import { SensitiveContentProps } from "./sensitive-content.props";
@@ -27,7 +27,8 @@ const SensitiveContent = ({
       "sensitive-content": allow_sensitive_media
     }
   });
-  const [mutateSensitiveContent, { isLoading }] = useSensitiveContentMutation();
+  const [mutateSensitiveContent, { isLoading }] =
+    use_sensitive_content_mutation();
 
   const handleSubmit: SubmitHandler<SensitiveContentSchema> = (values) => {
     if (onSubmit) {

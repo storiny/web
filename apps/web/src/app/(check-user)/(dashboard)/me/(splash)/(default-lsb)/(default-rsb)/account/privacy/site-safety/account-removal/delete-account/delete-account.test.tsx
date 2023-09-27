@@ -2,7 +2,7 @@ import { userEvent } from "@storiny/test-utils";
 import { act, screen, waitFor } from "@testing-library/react";
 import React from "react";
 
-import { renderTestWithProvider } from "~/redux/testUtils";
+import { render_test_with_provider } from "../../../../../../../../../../../../../../../packages/ui/src/redux/test-utils";
 
 import DeleteAccount from "./delete-account";
 
@@ -10,7 +10,7 @@ describe("<DeleteAccount />", () => {
   it("renders validation messages", async () => {
     const mockSubmit = jest.fn();
     const user = userEvent.setup();
-    renderTestWithProvider(<DeleteAccount onSubmit={mockSubmit} />, {
+    render_test_with_provider(<DeleteAccount onSubmit={mockSubmit} />, {
       loggedIn: true
     });
 
@@ -34,7 +34,7 @@ describe("<DeleteAccount />", () => {
   it("submits correct form data", async () => {
     const mockSubmit = jest.fn();
     const user = userEvent.setup();
-    renderTestWithProvider(<DeleteAccount onSubmit={mockSubmit} />, {
+    render_test_with_provider(<DeleteAccount onSubmit={mockSubmit} />, {
       loggedIn: true
     });
 

@@ -47,7 +47,7 @@ const EditorLoader = ({
         <ProgressBar
           className={clsx(styles.x, styles.progress)}
           max={100}
-          slotProps={{
+          slot_props={{
             indicator: {
               className: "force-animation",
               style: {

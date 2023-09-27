@@ -16,12 +16,12 @@ import EyeOffIcon from "~/icons/EyeOff";
 import ReportIcon from "~/icons/Report";
 import TrashIcon from "~/icons/Trash";
 import {
-  getRepliesApi,
-  selectUser,
-  useDeleteReplyMutation,
-  useReplyVisibilityMutation
+  get_replies_api,
+  select_user,
+  use_delete_reply_mutation,
+  use_reply_visibility_mutation
 } from "~/redux/features";
-import { useAppDispatch, useAppSelector } from "~/redux/hooks";
+import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 
 import ResponseEditor from "../../common/response-editor";
 
@@ -36,15 +36,15 @@ const ReplyActions = ({
 }): React.ReactElement => {
   const copy = useClipboard();
   const toast = useToast();
-  const dispatch = useAppDispatch();
-  const user = useAppSelector(selectUser);
+  const dispatch = use_app_dispatch();
+  const user = use_app_selector(select_user);
   const isSelf = user?.id === reply.user_id;
   const isStoryAuthor = user?.id === reply.comment?.story?.user_id;
   const [hidden, setHidden] = React.useState(hiddenProp);
   const [deleteReply, { isLoading: isDeleteLoading }] =
-    useDeleteReplyMutation();
+    use_delete_reply_mutation();
   const [mutateReplyVisibility, { isLoading: isVisibilityLoading }] =
-    useReplyVisibilityMutation();
+    use_reply_visibility_mutation();
 
   /**
    * Deletes a reply
@@ -54,7 +54,7 @@ const ReplyActions = ({
       .unwrap()
       .then(() => {
         toast("Reply deleted", "success");
-        dispatch(getRepliesApi.util.resetApiState());
+        dispatch(get_replies_api.util.resetApiState());
       })
       .catch((e) =>
         toast(e?.data?.error || "Could not delete your reply", "error")
@@ -95,7 +95,7 @@ const ReplyActions = ({
         setHidden(!hidden);
         setHiddenProp(!hidden);
         toast(`Reply ${hidden ? "unhidden" : "hidden"}`, "success");
-        dispatch(getRepliesApi.util.resetApiState());
+        dispatch(get_replies_api.util.resetApiState());
       })
       .catch((e) =>
         toast(

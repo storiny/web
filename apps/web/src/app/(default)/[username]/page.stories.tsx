@@ -6,7 +6,7 @@ import { mockUsers } from "@storiny/ui/src/mocks";
 import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
 
-import { renderWithState } from "~/redux/mock";
+import { render_with_state } from "~/redux/mock";
 
 import DefaultLayout from "../layout";
 import Profile from "./component";
@@ -52,7 +52,7 @@ export const Default: Story = {
   },
   decorators: [
     (Story): React.ReactElement =>
-      renderWithState(
+      render_with_state(
         <DefaultLayout>
           <Story />
         </DefaultLayout>,
@@ -67,7 +67,7 @@ export const LoggedIn: Story = {
   },
   decorators: [
     (Story): React.ReactElement =>
-      renderWithState(
+      render_with_state(
         <DefaultLayout>
           <Story />
         </DefaultLayout>,
@@ -82,7 +82,7 @@ export const SelfPrivate: Story = {
   },
   decorators: [
     (Story): React.ReactElement =>
-      renderWithState(
+      render_with_state(
         <DefaultLayout>
           <Story />
         </DefaultLayout>,
@@ -97,7 +97,7 @@ export const Private: Story = {
   },
   decorators: [
     (Story): React.ReactElement =>
-      renderWithState(
+      render_with_state(
         <DefaultLayout>
           <Story />
         </DefaultLayout>,
@@ -112,7 +112,7 @@ export const Blocking: Story = {
   },
   decorators: [
     (Story): React.ReactElement =>
-      renderWithState(
+      render_with_state(
         <DefaultLayout>
           <Story />
         </DefaultLayout>,
@@ -127,7 +127,7 @@ export const BlockedByUser: Story = {
   },
   decorators: [
     (Story): React.ReactElement =>
-      renderWithState(
+      render_with_state(
         <DefaultLayout>
           <Story />
         </DefaultLayout>,
@@ -142,7 +142,7 @@ export const Suspended: Story = {
   },
   decorators: [
     (Story): React.ReactElement =>
-      renderWithState(
+      render_with_state(
         <DefaultLayout>
           <Story />
         </DefaultLayout>,

@@ -27,7 +27,7 @@ export interface NotificationProps extends NotificationPrimitive {
   /**
    * The props passed to the individual component elements.
    */
-  slotProps?: {
+  slot_props?: {
     actions?: React.ComponentPropsWithoutRef<"div">;
     decorator?: React.ComponentPropsWithoutRef<"span">;
     primaryButton?: Omit<ToastActionProps, "altText"> & {

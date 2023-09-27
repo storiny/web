@@ -43,7 +43,7 @@ export interface SelectProps extends SelectPrimitive {
   /**
    * The props passed to the individual component elements.
    */
-  slotProps?: {
+  slot_props?: {
     content?: SelectContentProps;
     icon?: SelectIconProps;
     portal?: SelectPortalProps;

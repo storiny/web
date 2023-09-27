@@ -11,20 +11,20 @@ import Gallery from "~/entities/gallery";
 import PencilIcon from "~/icons/Pencil";
 import TrashIcon from "~/icons/Trash";
 import {
-  mutateUser,
-  selectUser,
-  useAvatarSettingsMutation
+  mutate_user,
+  select_user,
+  use_avatar_settings_mutation
 } from "~/redux/features";
-import { useAppDispatch, useAppSelector } from "~/redux/hooks";
+import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 
 import styles from "./avatar-settings.module.scss";
 
 const AvatarSettings = (): React.ReactElement | null => {
-  const dispatch = useAppDispatch();
-  const user = useAppSelector(selectUser)!;
+  const dispatch = use_app_dispatch();
+  const user = use_app_selector(select_user)!;
   const toast = useToast();
   const [avatarId, setAvatarId] = React.useState<string | null>(user.avatar_id);
-  const [mutateAvatarSettings, { isLoading }] = useAvatarSettingsMutation();
+  const [mutateAvatarSettings, { isLoading }] = use_avatar_settings_mutation();
   const [element] = useConfirmation(
     ({ openConfirmation }) => (
       <Button
@@ -59,7 +59,7 @@ const AvatarSettings = (): React.ReactElement | null => {
       .unwrap()
       .then((res) => {
         dispatch(
-          mutateUser({ avatar_id: res.avatar_id, avatar_hex: res.avatar_hex })
+          mutate_user({ avatar_id: res.avatar_id, avatar_hex: res.avatar_hex })
         );
         setAvatarId(res.avatar_id);
         toast(

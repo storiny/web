@@ -16,7 +16,10 @@ import { useToast } from "~/components/Toast";
 import Typography from "~/components/Typography";
 import { useMediaQuery } from "~/hooks/useMediaQuery";
 import QRCodeIcon from "~/icons/QRCode";
-import { useRequestMfaMutation, useVerfyMfaMutation } from "~/redux/features";
+import {
+  use_request_mfa_mutation,
+  use_verify_mfa_mutation
+} from "~/redux/features";
 import { breakpoints } from "~/theme/breakpoints";
 
 import styles from "./enable-2fa.module.scss";
@@ -35,7 +38,7 @@ const Enable2FAModal = (): React.ReactElement => {
   const [error, setError] = React.useState<string>(
     "Could not generate authentication credentials."
   );
-  const [requestMfa, { isLoading, isError }] = useRequestMfaMutation();
+  const [requestMfa, { isLoading, isError }] = use_request_mfa_mutation();
 
   React.useEffect(() => {
     requestMfa()
@@ -147,7 +150,7 @@ const Enable2FA = ({
       code: ""
     }
   });
-  const [verifyMfa, { isLoading }] = useVerfyMfaMutation();
+  const [verifyMfa, { isLoading }] = use_verify_mfa_mutation();
 
   const handleSubmit: SubmitHandler<Enable2FASchema> = (values) => {
     if (onSubmit) {
@@ -209,7 +212,7 @@ const Enable2FA = ({
           </ModalFooterButton>
         </>
       ),
-      slotProps: {
+      slot_props: {
         footer: {
           compact: isSmallerThanMobile
         },

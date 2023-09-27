@@ -6,18 +6,18 @@ import MenubarSub from "~/components/MenubarSub";
 import AdjustIcon from "~/icons/Adjust";
 import MoonIcon from "~/icons/Moon";
 import SunIcon from "~/icons/Sun";
-import { selectTheme, setTheme } from "~/redux/features";
-import { useAppDispatch, useAppSelector } from "~/redux/hooks";
+import { select_theme, set_theme } from "~/redux/features";
+import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 
 const ThemeItem = (): React.ReactElement => {
-  const dispatch = useAppDispatch();
-  const theme = useAppSelector(selectTheme);
+  const dispatch = use_app_dispatch();
+  const theme = use_app_selector(select_theme);
 
   return (
     <MenubarSub trigger={"Theme"}>
       <MenubarRadioGroup
         onValueChange={(newValue): void => {
-          dispatch(setTheme(newValue as typeof theme));
+          dispatch(set_theme(newValue as typeof theme));
         }}
         value={theme}
       >

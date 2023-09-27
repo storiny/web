@@ -5,7 +5,7 @@ import React from "react";
 import { dynamicLoader } from "~/common/dynamic";
 import { TagListSkeleton, VirtualizedTagList } from "~/common/tag";
 import ErrorState from "~/entities/ErrorState";
-import { getQueryErrorType, useGetExploreTagsQuery } from "~/redux/features";
+import { get_query_error_type, useGetExploreTagsQuery } from "~/redux/features";
 
 const EmptyState = dynamic(() => import("./empty-state"), {
   loading: dynamicLoader()
@@ -27,7 +27,7 @@ const TagList = ({
       category,
       query: debouncedQuery
     });
-  const { items = [], hasMore } = data || {};
+  const { items = [], has_more } = data || {};
   const loading = isLoading || loadingProp;
 
   const loadMore = React.useCallback(
@@ -42,17 +42,17 @@ const TagList = ({
       ) : isError ? (
         <ErrorState
           autoSize
-          componentProps={{
+          component_props={{
             button: { loading: isFetching }
           }}
           retry={refetch}
-          type={getQueryErrorType(error)}
+          type={get_query_error_type(error)}
         />
       ) : !isFetching && !items.length ? (
         <EmptyState query={debouncedQuery} />
       ) : (
         <VirtualizedTagList
-          hasMore={Boolean(hasMore)}
+          has_more={Boolean(has_more)}
           loadMore={loadMore}
           tags={items}
         />

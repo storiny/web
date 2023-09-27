@@ -213,7 +213,7 @@ const Layer = React.forwardRef<HTMLLIElement, LayerProps>((props, ref) => {
           }}
           placeholder={"Layer name"}
           size={"sm"}
-          slotProps={{
+          slot_props={{
             container: {
               className: clsx(styles.x, styles.input)
             }

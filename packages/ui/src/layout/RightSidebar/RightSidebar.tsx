@@ -11,7 +11,7 @@ import Separator from "~/components/Separator";
 import { useMediaQuery } from "~/hooks/useMediaQuery";
 import { useSticky } from "~/hooks/useSticky";
 // import { selectBannerHeight } from "~/redux/features/banner/selectors";
-// import { useAppSelector } from "~/redux/hooks";
+// import { use_app_selector } from "~/redux/hooks";
 import { breakpoints } from "~/theme/breakpoints";
 
 import sidebarStyles from "../common/Sidebar.module.scss";
@@ -27,13 +27,13 @@ const RightSidebar = (props: RightSidebarProps): React.ReactElement | null => {
   const {
     className,
     forceMount,
-    componentProps,
+    component_props,
     children,
     hideFooter,
     ...rest
   } = props;
   // TODO: Uncommment after banner gets fixed
-  // const bannerHeight = useAppSelector(selectBannerHeight);
+  // const bannerHeight = use_app_selector(selectBannerHeight);
   // Add banner height to the offset
   const stickyRef = useSticky({
     offsetTop: 52
@@ -58,13 +58,13 @@ const RightSidebar = (props: RightSidebarProps): React.ReactElement | null => {
         data-rsb={"true"}
       >
         <div
-          {...componentProps?.wrapper}
+          {...component_props?.wrapper}
           className={clsx(
             "flex-col",
             "full-w",
             styles.wrapper,
             sidebarStyles.wrapper,
-            componentProps?.wrapper?.className
+            component_props?.wrapper?.className
           )}
           ref={stickyRef}
         >

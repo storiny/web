@@ -139,7 +139,7 @@ const TextStyleGroup = (): React.ReactElement => {
         </ToggleGroupItem>
       </ToggleGroup>
       <Menu
-        slotProps={{
+        slot_props={{
           content: {
             side: "top"
           }
@@ -241,7 +241,7 @@ const TextStyleSelect = (): React.ReactElement => {
       disabled={documentLoading}
       onValueChange={handleValueChange}
       size={"lg"}
-      slotProps={{
+      slot_props={{
         trigger: {
           "aria-label": "Text style",
           className: clsx(

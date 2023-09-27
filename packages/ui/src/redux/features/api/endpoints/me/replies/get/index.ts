@@ -1,16 +1,17 @@
 import { Reply } from "@storiny/types";
 
-import { apiSlice } from "~/redux/features/api/slice";
+import { api_slice } from "~/redux/features/api/slice";
 
 const SEGMENT = "me/replies";
 const ITEMS_PER_PAGE = 10;
 
 export type GetRepliesResponse = Reply[];
 
-export const getRepliesApi = apiSlice.injectEndpoints({
+export const get_replies_api = api_slice.injectEndpoints({
   endpoints: (builder) => ({
+    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     getReplies: builder.query<
-      { hasMore: boolean; items: Reply[] },
+      { has_more: boolean; items: Reply[] },
       {
         page: number;
         query?: string;
@@ -25,11 +26,11 @@ export const getRepliesApi = apiSlice.injectEndpoints({
         `${endpointName}:${queryArgs.sort}:${queryArgs.query}`,
       transformResponse: (response: Reply[]) => ({
         items: response,
-        hasMore: response.length === ITEMS_PER_PAGE
+        has_more: response.length === ITEMS_PER_PAGE
       }),
-      merge: (currentCache, newItems) => {
-        currentCache.items.push(...newItems.items);
-        currentCache.hasMore = newItems.hasMore;
+      merge: (current_cache, new_items) => {
+        current_cache.items.push(...new_items.items);
+        current_cache.has_more = new_items.has_more;
       },
       providesTags: (result) =>
         result
@@ -49,4 +50,4 @@ export const getRepliesApi = apiSlice.injectEndpoints({
   })
 });
 
-export const { useGetRepliesQuery } = getRepliesApi;
+export const { useGetRepliesQuery: use_get_replies_query } = get_replies_api;

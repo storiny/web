@@ -15,7 +15,7 @@ import { VirtualizedReplyListContext } from "./list-context";
 const VirtualizedReplyList = React.memo(
   ({
     replies,
-    hasMore,
+    has_more,
     loadMore,
     replyProps = {},
     skeletonProps = {},
@@ -35,10 +35,10 @@ const VirtualizedReplyList = React.memo(
         components={{
           Item: VirtualizedReplyItem,
           ScrollSeekPlaceholder: VirtualizedReplyScrollSeekPlaceholder,
-          ...(hasMore && { Footer: VirtualFooter })
+          ...(has_more && { Footer: VirtualFooter })
         }}
         data={replies}
-        endReached={hasMore ? loadMore : (): void => undefined}
+        endReached={has_more ? loadMore : (): void => undefined}
       />
     </VirtualizedReplyListContext.Provider>
   )

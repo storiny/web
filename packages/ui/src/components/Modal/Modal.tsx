@@ -33,7 +33,7 @@ const Modal = forwardRef<ModalProps, "div">((props, ref) => {
     sidebar,
     footer,
     trigger,
-    slotProps,
+    slot_props,
     hideCloseButton,
     className,
     children,
@@ -44,65 +44,65 @@ const Modal = forwardRef<ModalProps, "div">((props, ref) => {
 
   return (
     <Root {...rest}>
-      <Trigger asChild {...slotProps?.trigger}>
+      <Trigger asChild {...slot_props?.trigger}>
         {trigger}
       </Trigger>
-      <Portal {...slotProps?.portal}>
+      <Portal {...slot_props?.portal}>
         <Overlay
-          {...slotProps?.overlay}
+          {...slot_props?.overlay}
           className={clsx(
             overlayStyles.overlay,
             fullscreen && overlayStyles.fullscreen,
-            slotProps?.overlay
+            slot_props?.overlay
           )}
         />
         <Content
-          {...slotProps?.content}
+          {...slot_props?.content}
           asChild
           className={clsx(
             "flex-center",
             styles.content,
             fullscreen && styles.fullscreen,
             className,
-            slotProps?.content?.className
+            slot_props?.content?.className
           )}
           ref={ref}
         >
           <Component>
             <Container
-              {...slotProps?.container}
+              {...slot_props?.container}
               className={clsx(
                 "flex-center",
                 styles.container,
-                slotProps?.container?.className
+                slot_props?.container?.className
               )}
               // Props passed to the Tabs component
               {...(isTabbedMode && {
-                ...slotProps?.tabs,
+                ...slot_props?.tabs,
                 orientation: "vertical",
                 activationMode: "manual"
               })}
             >
               {sidebar && (
-                <ModalSidebar {...slotProps?.sidebar}>{sidebar}</ModalSidebar>
+                <ModalSidebar {...slot_props?.sidebar}>{sidebar}</ModalSidebar>
               )}
               <div
-                {...slotProps?.main}
+                {...slot_props?.main}
                 className={clsx(
                   "flex-center",
                   styles.main,
-                  slotProps?.main?.className
+                  slot_props?.main?.className
                 )}
               >
-                <ModalHeader {...slotProps?.header} />
+                <ModalHeader {...slot_props?.header} />
                 <div
-                  {...slotProps?.body}
-                  className={clsx(styles.body, slotProps?.body?.className)}
+                  {...slot_props?.body}
+                  className={clsx(styles.body, slot_props?.body?.className)}
                 >
                   {children}
                 </div>
                 {footer && (
-                  <ModalFooter {...slotProps?.footer}>{footer}</ModalFooter>
+                  <ModalFooter {...slot_props?.footer}>{footer}</ModalFooter>
                 )}
                 {/*
                   Close button is positioned with absolute position so that it's the
@@ -113,10 +113,10 @@ const Modal = forwardRef<ModalProps, "div">((props, ref) => {
                     <IconButton
                       aria-label={"Close"}
                       title={"Close"}
-                      {...slotProps?.closeButton}
+                      {...slot_props?.closeButton}
                       className={clsx(
                         styles.close,
-                        slotProps?.closeButton?.className
+                        slot_props?.closeButton?.className
                       )}
                       variant={"ghost"}
                     >

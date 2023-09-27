@@ -69,7 +69,7 @@ const DashboardNavigationScreen = (): React.ReactElement => {
           }}
           placeholder={"Search settings"}
           size={"lg"}
-          slotProps={{
+          slot_props={{
             container: {
               className: clsx("f-grow", styles.x, styles.input)
             }

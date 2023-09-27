@@ -46,7 +46,7 @@ export interface BadgeProps extends PolymorphicProps<"span"> {
   /**
    * The props passed to the individual component elements.
    */
-  slotProps?: {
+  slot_props?: {
     container?: React.ComponentPropsWithoutRef<"div">;
   };
   /**

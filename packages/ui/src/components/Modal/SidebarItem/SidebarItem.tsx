@@ -12,7 +12,7 @@ const ModalSidebarItem = React.forwardRef<
   HTMLButtonElement,
   ModalSidebarItemProps
 >((props, ref) => {
-  const { decorator, slotProps, className, children, ...rest } = props;
+  const { decorator, slot_props, className, children, ...rest } = props;
 
   return (
     <Trigger
@@ -28,11 +28,11 @@ const ModalSidebarItem = React.forwardRef<
     >
       {decorator && (
         <span
-          {...slotProps?.decorator}
+          {...slot_props?.decorator}
           className={clsx(
             "flex-center",
             styles.decorator,
-            slotProps?.decorator?.className
+            slot_props?.decorator?.className
           )}
         >
           {decorator}

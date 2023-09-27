@@ -10,7 +10,7 @@ import { ModalHeaderProps } from "./Header.props";
 
 const ModalHeader = React.forwardRef<HTMLDivElement, ModalHeaderProps>(
   (props, ref) => {
-    const { decorator, className, children, slotProps, ...rest } = props;
+    const { decorator, className, children, slot_props, ...rest } = props;
 
     return (
       <div
@@ -22,11 +22,11 @@ const ModalHeader = React.forwardRef<HTMLDivElement, ModalHeaderProps>(
         {decorator && (
           <>
             <span
-              {...slotProps?.decorator}
+              {...slot_props?.decorator}
               className={clsx(
                 "flex-center",
                 styles.decorator,
-                slotProps?.decorator?.className
+                slot_props?.decorator?.className
               )}
             >
               {decorator}
@@ -35,12 +35,12 @@ const ModalHeader = React.forwardRef<HTMLDivElement, ModalHeaderProps>(
           </>
         )}
         <Title
-          {...slotProps?.title}
+          {...slot_props?.title}
           className={clsx(
             "t-body-2",
             "t-major",
             styles.title,
-            slotProps?.title?.className
+            slot_props?.title?.className
           )}
         >
           {children}

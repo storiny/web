@@ -4,7 +4,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import clsx from "clsx";
 import React from "react";
 
-import { renderWithState } from "~/redux/mock";
+import { render_with_state } from "~/redux/mock";
 
 import Navbar from "./Navbar";
 
@@ -32,14 +32,15 @@ export const Default: Story = {};
 
 export const Loading: Story = {
   decorators: [
-    (Story): React.ReactElement => renderWithState(<Story />, { loading: true })
+    (Story): React.ReactElement =>
+      render_with_state(<Story />, { loading: true })
   ]
 };
 
 export const LoggedIn: Story = {
   decorators: [
     (Story): React.ReactElement =>
-      renderWithState(<Story />, { loggedIn: true })
+      render_with_state(<Story />, { loggedIn: true })
   ]
 };
 

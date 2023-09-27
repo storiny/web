@@ -15,7 +15,7 @@ const ProgressBar = forwardRef<ProgressBarProps, "div">((props, ref) => {
     value,
     size = "md",
     className,
-    slotProps,
+    slot_props,
     ...rest
   } = props;
 
@@ -29,10 +29,10 @@ const ProgressBar = forwardRef<ProgressBarProps, "div">((props, ref) => {
     >
       <Component>
         <Indicator
-          {...slotProps?.indicator}
-          className={clsx(styles.indicator, slotProps?.indicator?.className)}
+          {...slot_props?.indicator}
+          className={clsx(styles.indicator, slot_props?.indicator?.className)}
           style={{
-            ...slotProps?.indicator?.style,
+            ...slot_props?.indicator?.style,
             transform: `translateX(-${100 - value}%)`
           }}
         />

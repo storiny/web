@@ -30,7 +30,7 @@ const Item = ({
   <ToggleGroupItem
     {...rest}
     disabled={disabled}
-    slotProps={{ tooltip: { rightSlot: shortcut } }}
+    slot_props={{ tooltip: { rightSlot: shortcut } }}
     tooltipContent={label}
     value={alignment}
   >

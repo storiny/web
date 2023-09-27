@@ -21,7 +21,7 @@ export interface TabProps extends TabPrimitive {
   /**
    * The props passed to the individual component elements.
    */
-  slotProps?: {
+  slot_props?: {
     decorator?: React.ComponentPropsWithoutRef<"span">;
   };
 }

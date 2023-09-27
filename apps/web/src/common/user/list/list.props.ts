@@ -7,7 +7,7 @@ export interface VirtualizedUserListProps extends VirtuosoProps<User, any> {
   /**
    * Flag indicating whether there are more users to render.
    */
-  hasMore: boolean;
+  has_more: boolean;
   /**
    * A callback function to fetch more users.
    */

@@ -2,7 +2,7 @@ import { userEvent } from "@storiny/test-utils";
 import { act, screen, waitFor } from "@testing-library/react";
 import React from "react";
 
-import { renderTestWithProvider } from "~/redux/testUtils";
+import { render_test_with_provider } from "../../../../../../../../../../../../../../packages/ui/src/redux/test-utils";
 
 import Enable2FA from "./enable-2fa";
 
@@ -12,7 +12,7 @@ describe("<Enable2FA />", () => {
   it("renders validation messages", async () => {
     const mockSubmit = jest.fn();
     const user = userEvent.setup();
-    renderTestWithProvider(
+    render_test_with_provider(
       <Enable2FA has_password onSubmit={mockSubmit} setEnabled={noop} />,
       {
         loggedIn: true
@@ -39,7 +39,7 @@ describe("<Enable2FA />", () => {
   it("submits correct form data", async () => {
     const mockSubmit = jest.fn();
     const user = userEvent.setup();
-    renderTestWithProvider(
+    render_test_with_provider(
       <Enable2FA has_password onSubmit={mockSubmit} setEnabled={noop} />,
       {
         loggedIn: true

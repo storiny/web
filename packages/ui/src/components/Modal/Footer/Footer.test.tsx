@@ -2,13 +2,13 @@ import { axe } from "@storiny/test-utils";
 import { waitFor } from "@testing-library/react";
 import React from "react";
 
-import { renderTestWithProvider } from "~/redux/testUtils";
+import { render_test_with_provider } from "src/redux/test-utils";
 
 import ModalFooter from "./Footer";
 
 describe("<ModalFooter />", () => {
   it("matches snapshot", () => {
-    const { container } = renderTestWithProvider(
+    const { container } = render_test_with_provider(
       <ModalFooter>Test</ModalFooter>
     );
 
@@ -16,7 +16,7 @@ describe("<ModalFooter />", () => {
   });
 
   it("renders `compact` version", () => {
-    const { container } = renderTestWithProvider(
+    const { container } = render_test_with_provider(
       <ModalFooter compact>Test</ModalFooter>
     );
 
@@ -24,7 +24,7 @@ describe("<ModalFooter />", () => {
   });
 
   it("does not have any accessibility violations", async () => {
-    const { container } = renderTestWithProvider(
+    const { container } = render_test_with_provider(
       <ModalFooter>Test</ModalFooter>
     );
 

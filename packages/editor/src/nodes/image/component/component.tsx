@@ -278,7 +278,7 @@ const ImageComponent = ({
             }
           }}
           open={editable && focused && !resizing && $isNodeSelection(selection)}
-          slotProps={{
+          slot_props={{
             content: {
               collisionPadding: { top: 64 }, // Prevent header collision
               sideOffset: 12,
@@ -313,7 +313,7 @@ const ImageComponent = ({
                     hex={image.hex}
                     imgId={image.key}
                     rating={editable ? undefined : image.rating}
-                    slotProps={{
+                    slot_props={{
                       image: {
                         sizes: getImageSizes(layout, images.length, index),
                         srcSet: [

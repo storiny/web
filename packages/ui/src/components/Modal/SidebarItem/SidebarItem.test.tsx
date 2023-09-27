@@ -3,7 +3,7 @@ import { waitFor } from "@testing-library/react";
 import React from "react";
 
 import { ModalSidebarItemProps } from "~/components/Modal";
-import { renderTestWithProvider } from "~/redux/testUtils";
+import { render_test_with_provider } from "src/redux/test-utils";
 
 import Tabs from "../../Tabs";
 import ModalSidebarList from "../SidebarList";
@@ -11,7 +11,7 @@ import ModalSidebarItem from "./SidebarItem";
 
 describe("<ModalSidebarItem />", () => {
   it("matches snapshot", () => {
-    const { container } = renderTestWithProvider(
+    const { container } = render_test_with_provider(
       <Tabs>
         <ModalSidebarList>
           <ModalSidebarItem value={"test"}>Test</ModalSidebarItem>
@@ -23,7 +23,7 @@ describe("<ModalSidebarItem />", () => {
   });
 
   it("does not have any accessibility violations", async () => {
-    const { container } = renderTestWithProvider(
+    const { container } = render_test_with_provider(
       <Tabs>
         <ModalSidebarList>
           <ModalSidebarItem value={"test"}>Test</ModalSidebarItem>
@@ -37,7 +37,7 @@ describe("<ModalSidebarItem />", () => {
   });
 
   it("renders children", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Tabs>
         <ModalSidebarList>
           <ModalSidebarItem value={"test"}>
@@ -51,7 +51,7 @@ describe("<ModalSidebarItem />", () => {
   });
 
   it("renders decorator", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Tabs>
         <ModalSidebarList>
           <ModalSidebarItem
@@ -68,15 +68,15 @@ describe("<ModalSidebarItem />", () => {
   });
 
   it("passes props to the element slots", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Tabs>
         <ModalSidebarList>
           <ModalSidebarItem
             decorator={<span />}
-            slotProps={
+            slot_props={
               {
                 decorator: { "data-testid": "decorator" }
-              } as ModalSidebarItemProps["slotProps"]
+              } as ModalSidebarItemProps["slot_props"]
             }
             value={"test"}
           >

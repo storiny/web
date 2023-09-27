@@ -13,20 +13,20 @@ import Navbar from "~/layout/Navbar";
 import RightSidebar from "~/layout/RightSidebar";
 import Sidenav from "~/layout/Sidenav";
 import SplashScreen from "~/layout/SplashScreen";
-import { syncWithUser } from "~/redux/features";
-import { useAppDispatch, useAppSelector } from "~/redux/hooks";
+import { sync_with_user } from "~/redux/features";
+import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 import { abbreviateNumber } from "~/utils/abbreviateNumber";
 
 import { RestrictedStoryProps } from "./restricted.props";
 
 const RestrictedStory = (props: RestrictedStoryProps): React.ReactElement => {
   const { user, type } = props;
-  const dispatch = useAppDispatch();
+  const dispatch = use_app_dispatch();
   const followerCount =
-    useAppSelector((state) => state.entities.followerCounts[user.id]) || 0;
+    use_app_selector((state) => state.entities.followerCounts[user.id]) || 0;
 
   React.useEffect(() => {
-    dispatch(syncWithUser(user));
+    dispatch(sync_with_user(user));
   }, [dispatch, user]);
 
   return (
@@ -68,7 +68,7 @@ const RestrictedStory = (props: RestrictedStoryProps): React.ReactElement => {
               hex: user.avatar_hex
             }}
             className={"fit-w"}
-            componentProps={{
+            component_props={{
               secondaryText: {
                 ellipsis: true
               }

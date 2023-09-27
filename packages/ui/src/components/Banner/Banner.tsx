@@ -26,7 +26,7 @@ const Banner = forwardRef<BannerProps, "li">((props, ref) => {
     className,
     icon,
     color = "inverted",
-    slotProps,
+    slot_props,
     ...rest
   } = props;
 
@@ -54,11 +54,11 @@ const Banner = forwardRef<BannerProps, "li">((props, ref) => {
         <Description className={clsx("flex", "t-center", styles.description)}>
           {icon && (
             <span
-              {...slotProps?.decorator}
+              {...slot_props?.decorator}
               className={clsx(
                 "flex-center",
                 styles.decorator,
-                slotProps?.decorator?.className
+                slot_props?.decorator?.className
               )}
             >
               {iconMap[icon]}
@@ -69,12 +69,12 @@ const Banner = forwardRef<BannerProps, "li">((props, ref) => {
         <Close
           aria-label="Dismiss"
           title={"Dismiss"}
-          {...slotProps?.close}
+          {...slot_props?.close}
           className={clsx(
             "unset",
             "focusable",
             styles.close,
-            slotProps?.close?.className
+            slot_props?.close?.className
           )}
         >
           <XIcon />

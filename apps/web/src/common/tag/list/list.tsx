@@ -12,7 +12,7 @@ import { VirtualizedTagListContext } from "./list-context";
 const VirtualizedTagList = React.memo(
   ({
     tags,
-    hasMore,
+    has_more,
     loadMore,
     tagProps,
     className,
@@ -31,10 +31,10 @@ const VirtualizedTagList = React.memo(
         components={{
           Item: VirtualizedTagItem,
           ScrollSeekPlaceholder: VirtualizedTagScrollSeekPlaceholder,
-          ...(hasMore && { Footer: VirtualFooter })
+          ...(has_more && { Footer: VirtualFooter })
         }}
         data={tags}
-        endReached={hasMore ? loadMore : (): void => undefined}
+        endReached={has_more ? loadMore : (): void => undefined}
       />
     </VirtualizedTagListContext.Provider>
   )

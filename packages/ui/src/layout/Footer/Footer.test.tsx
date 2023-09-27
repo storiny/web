@@ -2,17 +2,17 @@ import { axe } from "@storiny/test-utils";
 import { screen, waitFor } from "@testing-library/react";
 import React from "react";
 
-import { renderTestWithProvider } from "~/redux/testUtils";
+import { render_test_with_provider } from "src/redux/test-utils";
 
 import Footer from "./Footer";
 
 describe("<Footer />", () => {
   it("renders", () => {
-    renderTestWithProvider(<Footer />);
+    render_test_with_provider(<Footer />);
   });
 
   it("does not have any accessibility violations", async () => {
-    const { container } = renderTestWithProvider(<Footer />);
+    const { container } = render_test_with_provider(<Footer />);
 
     await waitFor(() =>
       expect(screen.getByRole("button", { name: /write/i })).toHaveAttribute(
@@ -27,7 +27,7 @@ describe("<Footer />", () => {
   });
 
   it("renders logged out state", () => {
-    const { getByRole } = renderTestWithProvider(<Footer />);
+    const { getByRole } = render_test_with_provider(<Footer />);
 
     expect(getByRole("button", { name: /write/i })).toHaveAttribute(
       "href",
@@ -36,7 +36,7 @@ describe("<Footer />", () => {
   });
 
   it("renders logged in state", () => {
-    const { getByRole } = renderTestWithProvider(<Footer />, {
+    const { getByRole } = render_test_with_provider(<Footer />, {
       loggedIn: true
     });
 

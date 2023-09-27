@@ -2,7 +2,10 @@ import React from "react";
 
 import ErrorState from "~/entities/ErrorState";
 import StoryCard, { StoryCardSkeleton } from "~/entities/StoryCard";
-import { getQueryErrorType, useGetStoryPreviewQuery } from "~/redux/features";
+import {
+  get_query_error_type,
+  use_get_story_preview_query
+} from "~/redux/features";
 
 import { StoryResponsesRightSidebarProps } from "./right-sidebar.props";
 
@@ -11,16 +14,16 @@ const ContentStoryResponsesRightSidebarContent = (
 ): React.ReactElement => {
   const { storyId } = props;
   const { data, isLoading, isFetching, isError, error, refetch } =
-    useGetStoryPreviewQuery({ storyId });
+    use_get_story_preview_query(storyId);
 
   return isError ? (
     <ErrorState
       autoSize
-      componentProps={{
+      component_props={{
         button: { loading: isFetching }
       }}
       retry={refetch}
-      type={getQueryErrorType(error)}
+      type={get_query_error_type(error)}
     />
   ) : !data || isLoading || isFetching ? (
     <StoryCardSkeleton />

@@ -7,7 +7,7 @@ import Divider from "~/components/Divider";
 import Separator from "~/components/Separator";
 import Typography from "~/components/Typography";
 import CommentIcon from "~/icons/Comment";
-import { useAppSelector } from "~/redux/hooks";
+import { use_app_selector } from "~/redux/hooks";
 import { abbreviateNumber } from "~/utils/abbreviateNumber";
 
 import { storyMetadataAtom } from "../../../../../../atoms";
@@ -18,7 +18,8 @@ const StoryStats = (): React.ReactElement => {
   const story = useAtomValue(storyMetadataAtom);
   const readCount = story.stats.read_count + 1; // Also include the current reading session
   const commentCount =
-    useAppSelector((state) => state.entities.storyCommentCounts[story.id]) || 0;
+    use_app_selector((state) => state.entities.storyCommentCounts[story.id]) ||
+    0;
 
   return (
     <div className={clsx("flex-col", styles.stats)}>

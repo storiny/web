@@ -18,11 +18,11 @@ import Link from "~/components/Link";
 import Spacer from "~/components/Spacer";
 import { useToast } from "~/components/Toast";
 import {
-  mutateUser,
-  selectUser,
-  useProfileSettingsMutation
+  mutate_user,
+  select_user,
+  use_profile_settings_mutation
 } from "~/redux/features";
-import { useAppDispatch, useAppSelector } from "~/redux/hooks";
+import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 
 import styles from "./general-form.module.scss";
 import { GeneralFormProps } from "./general-form.props";
@@ -58,9 +58,9 @@ const SaveButton = ({
 const AccountGeneralForm = ({
   onSubmit
 }: GeneralFormProps): React.ReactElement => {
-  const dispatch = useAppDispatch();
+  const dispatch = use_app_dispatch();
   const toast = useToast();
-  const user = useAppSelector(selectUser)!;
+  const user = use_app_selector(select_user)!;
   const form = useForm<AccountGeneralSchema>({
     resolver: zodResolver(accountGeneralSchema),
     defaultValues: {
@@ -69,7 +69,8 @@ const AccountGeneralForm = ({
       location: user.location
     }
   });
-  const [mutateProfileSettings, { isLoading }] = useProfileSettingsMutation();
+  const [mutateProfileSettings, { isLoading }] =
+    use_profile_settings_mutation();
 
   const handleSubmit: SubmitHandler<AccountGeneralSchema> = (values) => {
     if (onSubmit) {
@@ -78,7 +79,7 @@ const AccountGeneralForm = ({
       mutateProfileSettings(values)
         .unwrap()
         .then(() => {
-          dispatch(mutateUser(values));
+          dispatch(mutate_user(values));
           form.reset(values);
           toast("Profile updated successfully", "success");
         })

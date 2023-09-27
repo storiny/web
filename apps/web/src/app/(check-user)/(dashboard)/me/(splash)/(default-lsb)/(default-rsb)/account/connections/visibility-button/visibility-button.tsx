@@ -2,7 +2,7 @@ import React from "react";
 
 import Button from "~/components/Button";
 import { useToast } from "~/components/Toast";
-import { useConnectionVisibilityMutation } from "~/redux/features";
+import { use_connection_visibility_mutation } from "~/redux/features";
 
 import { VisibilityButtonProps } from "./visibility-button.props";
 
@@ -14,7 +14,7 @@ const VisibilityButton = ({
     Boolean(connection.hidden)
   );
   const [mutateConnectionVisibility, { isLoading }] =
-    useConnectionVisibilityMutation();
+    use_connection_visibility_mutation();
 
   /**
    * Handles visibility mutations

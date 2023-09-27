@@ -1,16 +1,16 @@
 import React from "react";
 
-import { renderTestWithProvider } from "~/redux/testUtils";
+import { render_test_with_provider } from "src/redux/test-utils";
 
 import SplashScreen from "./SplashScreen";
 
 describe("<SplashScreen />", () => {
   it("renders", () => {
-    renderTestWithProvider(<SplashScreen forceMount />);
+    render_test_with_provider(<SplashScreen forceMount />);
   });
 
   it("renders with children", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <SplashScreen forceMount>
         <span data-testid={"child"} />
       </SplashScreen>

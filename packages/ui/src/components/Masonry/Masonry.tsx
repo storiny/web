@@ -319,7 +319,7 @@ export default class Masonry<T extends {}> extends React.Component<
       scrollContainer,
       overscanFactor,
       getItemKey,
-      slotProps
+      slot_props
     } = this.props;
     const { top, left, width, height } = position;
     let isVisible: boolean;
@@ -346,17 +346,17 @@ export default class Masonry<T extends {}> extends React.Component<
 
     return (
       <div
-        {...slotProps?.item}
+        {...slot_props?.item}
         className={clsx(
           styles.item,
           styles.mounted,
-          slotProps?.item?.className
+          slot_props?.item?.className
         )}
         data-grid-item={""}
         key={getItemKey ? getItemKey(itemData) : `item-${index}`}
         role="listitem"
         style={{
-          ...slotProps?.item?.style,
+          ...slot_props?.item?.style,
           top: 0,
           left: 0,
           transform: `translateX(${left}px) translateY(${top}px)`,
@@ -386,7 +386,7 @@ export default class Masonry<T extends {}> extends React.Component<
       renderItem,
       getItemKey,
       scrollContainer,
-      slotProps
+      slot_props
     } = this.props;
     const { hasPendingMeasurements, measurementStore, width } = this.state;
     const getPositions = getItemsPosition({
@@ -403,19 +403,19 @@ export default class Masonry<T extends {}> extends React.Component<
       // and the measurement store is empty
       gridBody = (
         <div
-          {...slotProps?.container}
-          className={clsx(styles.masonry, slotProps?.container?.className)}
+          {...slot_props?.container}
+          className={clsx(styles.masonry, slot_props?.container?.className)}
           ref={this.setGridWrapperRef}
           role="list"
           style={{
-            ...slotProps?.container?.style,
+            ...slot_props?.container?.style,
             height: 0,
             width: "100%"
           }}
         >
           {items.filter(Boolean).map((item, i) => (
             <div
-              {...slotProps?.item}
+              {...slot_props?.item}
               data-grid-item={""}
               key={getItemKey ? getItemKey(item) : i}
               ref={(element): void => {
@@ -425,7 +425,7 @@ export default class Masonry<T extends {}> extends React.Component<
               }}
               role="listitem"
               style={{
-                ...slotProps?.item?.style,
+                ...slot_props?.item?.style,
                 top: 0,
                 left: 0,
                 transform: "translateX(0px) translateY(0px)",
@@ -474,11 +474,11 @@ export default class Masonry<T extends {}> extends React.Component<
           }}
         >
           <div
-            {...slotProps?.container}
-            className={clsx(styles.masonry, slotProps?.container?.className)}
+            {...slot_props?.container}
+            className={clsx(styles.masonry, slot_props?.container?.className)}
             role="list"
             style={{
-              ...slotProps?.container?.style,
+              ...slot_props?.container?.style,
               height,
               width
             }}
@@ -488,15 +488,15 @@ export default class Masonry<T extends {}> extends React.Component<
             )}
           </div>
           <div
-            {...slotProps?.container}
-            className={clsx(styles.masonry, slotProps?.container?.className)}
+            {...slot_props?.container}
+            className={clsx(styles.masonry, slot_props?.container?.className)}
             style={{
-              ...slotProps?.container?.style,
+              ...slot_props?.container?.style,
               width
             }}
           >
             <MeasureItems
-              {...slotProps?.item}
+              {...slot_props?.item}
               baseIndex={itemsWithMeasurements.length}
               getPositions={getPositions}
               items={itemsToMeasure}

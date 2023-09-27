@@ -54,7 +54,7 @@ export interface ConfirmationProps extends ConfirmationPrimitive {
   /**
    * The props passed to the individual component elements.
    */
-  slotProps?: {
+  slot_props?: {
     cancelButton?: ButtonProps;
     confirmButton?: ButtonProps;
     container?: React.ComponentPropsWithoutRef<"div">;

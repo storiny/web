@@ -41,7 +41,7 @@ import { useShortcuts } from "./useShortcuts";
 // Tooltip with right position
 
 const PositionedTooltip = ({
-  slotProps,
+  slot_props,
   children,
   shortcutKey,
   ...rest
@@ -49,9 +49,9 @@ const PositionedTooltip = ({
   <Tooltip
     {...rest}
     rightSlot={shortcutKey}
-    slotProps={{
-      ...slotProps,
-      content: { ...slotProps?.content, side: "right" }
+    slot_props={{
+      ...slot_props,
+      content: { ...slot_props?.content, side: "right" }
     }}
   >
     <span>{children}</span>
@@ -271,7 +271,7 @@ const Tools = (): React.ReactElement => {
   return (
     <ScrollArea
       className={clsx("fit-w", styles.x, styles.tools)}
-      slotProps={{
+      slot_props={{
         thumb: {
           className: clsx(styles.x, styles.thumb)
         },

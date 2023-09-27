@@ -1,11 +1,11 @@
 "use client";
 
 import React from "react";
+import AppStateProvider from "src/redux/components/root-provider";
 
-import AppStateProvider from "~/redux/components/RootProvider";
 import { AuthStatus } from "~/redux/features/auth/slice";
-import { initialState } from "~/redux/state";
-import { AppState, setupStore } from "~/redux/store";
+import { initial_state } from "~/redux/state";
+import { AppState, setup_store } from "~/redux/store";
 
 import { mockUsers } from "../../mocks";
 
@@ -13,11 +13,11 @@ import { mockUsers } from "../../mocks";
  * Logged in state
  * @param status Authentication status
  */
-export const loggedInState = (
+export const logged_in_state = (
   status: AuthStatus = "complete"
 ): Partial<AppState> => ({
   auth: {
-    loggedIn: true,
+    logged_in: true,
     status,
     user: mockUsers[4]
   }
@@ -27,31 +27,31 @@ export const loggedInState = (
  * Renders children with state provider
  * @param children The children to render
  * @param loading Loading flag
- * @param loggedIn Logged in flag
- * @param ignorePrimitiveProviders Whether or not to wrap the children with primitve providers
+ * @param logged_in Logged in flag
+ * @param ignore_primitive_providers Whether or not to wrap the children with primitve providers
  */
-export const renderWithState = (
+export const render_with_state = (
   children: React.ReactElement,
   {
     loading,
-    loggedIn,
-    ignorePrimitiveProviders
+    logged_in,
+    ignore_primitive_providers
   }: {
-    ignorePrimitiveProviders?: boolean;
+    ignore_primitive_providers?: boolean;
     loading?: boolean;
-    loggedIn?: boolean;
+    logged_in?: boolean;
   } = {}
 ): React.ReactElement => {
-  const store = setupStore(
-    loggedIn || loading
-      ? loggedInState(loading ? "loading" : "complete")
-      : initialState,
+  const store = setup_store(
+    logged_in || loading
+      ? logged_in_state(loading ? "loading" : "complete")
+      : initial_state,
     true
   );
 
   return (
     <AppStateProvider
-      ignorePrimitiveProviders={ignorePrimitiveProviders}
+      ignore_primitive_providers={ignore_primitive_providers}
       store={store}
     >
       {children}

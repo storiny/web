@@ -2,21 +2,21 @@ import { axe } from "@storiny/test-utils";
 import { waitFor } from "@testing-library/react";
 import React from "react";
 
-import { renderTestWithProvider } from "~/redux/testUtils";
+import { render_test_with_provider } from "src/redux/test-utils";
 
 import Slider from "./Slider";
 import { SliderOrientation, SliderProps } from "./Slider.props";
 
 describe("<Slider />", () => {
   it("matches snapshot", () => {
-    const { container } = renderTestWithProvider(<Slider />);
+    const { container } = render_test_with_provider(<Slider />);
     expect(container.firstChild).toMatchSnapshot();
   });
 
   it("does not have any accessibility violations", async () => {
-    const { container } = renderTestWithProvider(
+    const { container } = render_test_with_provider(
       <Slider
-        slotProps={{
+        slot_props={{
           thumb: { "aria-label": "Test slider" }
         }}
       />
@@ -28,7 +28,7 @@ describe("<Slider />", () => {
   });
 
   it("renders as a polymorphic element", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Slider as={"aside"} data-testid={"slider"} />
     );
 
@@ -36,7 +36,7 @@ describe("<Slider />", () => {
   });
 
   it("renders with horizontal orientation by default", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Slider data-testid={"slider"} />
     );
 
@@ -48,7 +48,7 @@ describe("<Slider />", () => {
 
   (["horizontal", "vertical"] as SliderOrientation[]).forEach((orientation) => {
     it(`renders \`${orientation}\` orientation`, () => {
-      const { getByTestId } = renderTestWithProvider(
+      const { getByTestId } = render_test_with_provider(
         <Slider data-testid={"slider"} orientation={orientation} />
       );
 
@@ -60,14 +60,14 @@ describe("<Slider />", () => {
   });
 
   it("passes props to the element slots", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Slider
-        slotProps={
+        slot_props={
           {
             range: { "data-testid": "range" },
             thumb: { "data-testid": "thumb" },
             track: { "data-testid": "track" }
-          } as SliderProps["slotProps"]
+          } as SliderProps["slot_props"]
         }
       />
     );

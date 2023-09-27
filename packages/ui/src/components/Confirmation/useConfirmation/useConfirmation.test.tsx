@@ -2,16 +2,16 @@ import { act } from "@testing-library/react";
 import React from "react";
 
 import {
-  renderHookWithProvider,
-  renderTestWithProvider
-} from "~/redux/testUtils";
+  render_hook_with_provider,
+  render_test_with_provider
+} from "src/redux/test-utils";
 
 import { ConfirmationProps } from "../Confirmation.props";
 import { useConfirmation } from "./useConfirmation";
 
 describe("useConfirmation", () => {
   it("returns the confirmation element, invocation callback, and open state", () => {
-    const { result } = renderHookWithProvider(() =>
+    const { result } = render_hook_with_provider(() =>
       useConfirmation(() => <span />, {
         title: "Test title",
         description: "Test description"
@@ -25,11 +25,11 @@ describe("useConfirmation", () => {
   });
 
   it("renders confirmation modal, matches snapshot, and passes props to the root component", () => {
-    const { result } = renderHookWithProvider(() =>
+    const { result } = render_hook_with_provider(() =>
       useConfirmation(() => <span />, {
         title: "Test title",
         description: "Test description",
-        slotProps: {
+        slot_props: {
           content: {
             "data-testid": "confirmation-content"
           }
@@ -42,7 +42,7 @@ describe("useConfirmation", () => {
       result.current[1](); // Open confirmation
     });
 
-    const { baseElement, getByTestId } = renderTestWithProvider(
+    const { baseElement, getByTestId } = render_test_with_provider(
       result.current[0]
     );
 

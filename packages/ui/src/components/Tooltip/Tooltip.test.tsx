@@ -3,14 +3,14 @@ import { axe, waitForPosition } from "@storiny/test-utils";
 import { waitFor } from "@testing-library/react";
 import React from "react";
 
-import { renderTestWithProvider } from "~/redux/testUtils";
+import { render_test_with_provider } from "src/redux/test-utils";
 
 import Tooltip from "./Tooltip";
 import { TooltipProps } from "./Tooltip.props";
 
 describe("<Tooltip />", () => {
   it("matches snapshot", async () => {
-    const { baseElement, getByRole } = renderTestWithProvider(
+    const { baseElement, getByRole } = render_test_with_provider(
       <Tooltip content={"Tooltip content"} open>
         Test
       </Tooltip>
@@ -23,7 +23,7 @@ describe("<Tooltip />", () => {
   });
 
   it("does not have any accessibility violations", async () => {
-    const { baseElement } = renderTestWithProvider(
+    const { baseElement } = render_test_with_provider(
       <TooltipProvider delayDuration={0}>
         <Tooltip content={"Tooltip content"} open>
           Test
@@ -43,17 +43,17 @@ describe("<Tooltip />", () => {
   });
 
   it("renders as a polymorphic element", async () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Tooltip
         as={"aside"}
         content={"Tooltip content"}
         open
-        slotProps={
+        slot_props={
           {
             content: {
               "data-testid": "content"
             }
-          } as TooltipProps["slotProps"]
+          } as TooltipProps["slot_props"]
         }
       >
         Test
@@ -64,7 +64,7 @@ describe("<Tooltip />", () => {
   });
 
   it("renders right slot", async () => {
-    const { getAllByTestId } = renderTestWithProvider(
+    const { getAllByTestId } = render_test_with_provider(
       <Tooltip
         content={"Tooltip content"}
         open
@@ -78,18 +78,18 @@ describe("<Tooltip />", () => {
   });
 
   it("passes props to the element slots", async () => {
-    const { getByTestId, getAllByTestId } = renderTestWithProvider(
+    const { getByTestId, getAllByTestId } = render_test_with_provider(
       <TooltipProvider delayDuration={0}>
         <Tooltip
           content={"Tooltip content"}
           open
           rightSlot={"Test"}
-          slotProps={
+          slot_props={
             {
               arrow: { "data-testid": "arrow" },
               content: { "data-testid": "content" },
               rightSlot: { "data-testid": "right-slot" }
-            } as TooltipProps["slotProps"]
+            } as TooltipProps["slot_props"]
           }
         >
           Test

@@ -3,7 +3,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
 
-import { renderWithState } from "~/redux/mock";
+import { render_with_state } from "~/redux/mock";
 
 import Error404Page from "./404";
 
@@ -22,6 +22,6 @@ type Story = StoryObj<typeof Error404Page>;
 export const Default: Story = {
   decorators: [
     (Story): React.ReactElement =>
-      renderWithState(<Story />, { ignorePrimitiveProviders: true })
+      render_with_state(<Story />, { ignorePrimitiveProviders: true })
   ]
 };

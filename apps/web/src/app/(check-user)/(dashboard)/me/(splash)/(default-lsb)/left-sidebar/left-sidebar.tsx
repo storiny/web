@@ -13,7 +13,7 @@ const SuspendedDashboardLeftSidebarContent = dynamic(
 
 const DefaultDashboardLeftSidebar = (): React.ReactElement => (
   <LeftSidebar
-    componentProps={{
+    component_props={{
       wrapper: {
         style: {
           paddingInline: 0,

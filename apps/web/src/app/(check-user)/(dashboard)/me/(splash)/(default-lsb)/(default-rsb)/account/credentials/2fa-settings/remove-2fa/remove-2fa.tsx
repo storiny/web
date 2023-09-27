@@ -10,7 +10,7 @@ import { useToast } from "~/components/Toast";
 import Typography from "~/components/Typography";
 import { useMediaQuery } from "~/hooks/useMediaQuery";
 import TwoFAIcon from "~/icons/TwoFA";
-import { useRemoveMfaMutation } from "~/redux/features";
+import { use_remove_mfa_mutation } from "~/redux/features";
 import { breakpoints } from "~/theme/breakpoints";
 
 import { Remove2FAProps } from "./remove-2fa.props";
@@ -64,7 +64,7 @@ const Remove2FA = ({
       code: ""
     }
   });
-  const [removeMfa, { isLoading }] = useRemoveMfaMutation();
+  const [removeMfa, { isLoading }] = use_remove_mfa_mutation();
 
   const handleSubmit: SubmitHandler<Remove2FASchema> = (values) => {
     if (onSubmit) {
@@ -127,7 +127,7 @@ const Remove2FA = ({
           </ModalFooterButton>
         </>
       ),
-      slotProps: {
+      slot_props: {
         footer: {
           compact: isSmallerThanMobile
         },

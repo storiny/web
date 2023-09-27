@@ -2,17 +2,17 @@ import { axe } from "@storiny/test-utils";
 import { waitFor } from "@testing-library/react";
 import React from "react";
 
-import { renderTestWithProvider } from "~/redux/testUtils";
+import { render_test_with_provider } from "src/redux/test-utils";
 
 import Modal from "../Modal";
 import { ModalHeaderProps } from "./Header.props";
 
 describe("<ModalHeader />", () => {
   it("matches snapshot", () => {
-    const { baseElement } = renderTestWithProvider(
+    const { baseElement } = render_test_with_provider(
       <Modal
         open
-        slotProps={{
+        slot_props={{
           header: { children: "Test" }
         }}
       />
@@ -22,10 +22,10 @@ describe("<ModalHeader />", () => {
   });
 
   it("does not have any accessibility violations", async () => {
-    const { baseElement } = renderTestWithProvider(
+    const { baseElement } = render_test_with_provider(
       <Modal
         open
-        slotProps={{
+        slot_props={{
           header: { children: "Test" }
         }}
       />
@@ -37,10 +37,10 @@ describe("<ModalHeader />", () => {
   });
 
   it("renders decorator and children", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Modal
         open
-        slotProps={{
+        slot_props={{
           header: {
             decorator: <span data-testid={"decorator"} />,
             children: <span data-testid={"child"} />
@@ -54,17 +54,17 @@ describe("<ModalHeader />", () => {
   });
 
   it("passes props to the element slots", () => {
-    const { getByTestId } = renderTestWithProvider(
+    const { getByTestId } = render_test_with_provider(
       <Modal
         open
-        slotProps={{
+        slot_props={{
           header: {
             children: "Test",
             decorator: <span />,
-            slotProps: {
+            slot_props: {
               decorator: { "data-testid": "decorator" },
               title: { "data-testid": "title" }
-            } as ModalHeaderProps["slotProps"]
+            } as ModalHeaderProps["slot_props"]
           }
         }}
       />

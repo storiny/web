@@ -2,14 +2,14 @@ import { axe } from "@storiny/test-utils";
 import { waitFor } from "@testing-library/react";
 import React from "react";
 
-import { renderTestWithProvider } from "~/redux/testUtils";
+import { render_test_with_provider } from "src/redux/test-utils";
 
 import Modal from "../Modal";
 import ModalFooterButton from "./FooterButton";
 
 describe("<ModalFooterButton />", () => {
   it("matches snapshot", () => {
-    const { baseElement } = renderTestWithProvider(
+    const { baseElement } = render_test_with_provider(
       <Modal open>
         <ModalFooterButton>Test</ModalFooterButton>
       </Modal>
@@ -19,7 +19,7 @@ describe("<ModalFooterButton />", () => {
   });
 
   it("renders `compact` version", () => {
-    const { baseElement } = renderTestWithProvider(
+    const { baseElement } = render_test_with_provider(
       <Modal open>
         <ModalFooterButton compact>Test</ModalFooterButton>
       </Modal>
@@ -29,10 +29,10 @@ describe("<ModalFooterButton />", () => {
   });
 
   it("does not have any accessibility violations", async () => {
-    const { baseElement } = renderTestWithProvider(
+    const { baseElement } = render_test_with_provider(
       <Modal
         open
-        slotProps={{
+        slot_props={{
           header: { children: "Test" }
         }}
       >

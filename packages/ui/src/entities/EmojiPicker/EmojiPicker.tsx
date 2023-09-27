@@ -67,7 +67,7 @@ const SearchInput = (): React.ReactElement => {
       defaultValue={""}
       onChange={(event): void => setQuery(event.target.value)}
       placeholder={"Search"}
-      slotProps={{
+      slot_props={{
         container: { className: "f-grow" }
       }}
       type={"search"}
@@ -92,7 +92,7 @@ const EmojiPicker = (props: EmojiPickerProps): React.ReactElement => {
 
   return (
     <Popover
-      slotProps={{
+      slot_props={{
         trigger: { "aria-label": "Pick an emoji" }
       }}
       {...popoverProps}

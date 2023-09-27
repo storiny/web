@@ -14,7 +14,7 @@ import UserCheckIcon from "~/icons/UserCheck";
 import UserPlusIcon from "~/icons/UserPlus";
 import UsersIcon from "~/icons/Users";
 import { boolean_action, setFollowing } from "~/redux/features";
-import { useAppDispatch, useAppSelector } from "~/redux/hooks";
+import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 import { breakpoints } from "~/theme/breakpoints";
 import { abbreviateNumber } from "~/utils/abbreviateNumber";
 
@@ -24,9 +24,9 @@ import { UserProps } from "./user.props";
 
 const User = (props: UserProps): React.ReactElement => {
   const { actionType = "default", className, user, virtual, ...rest } = props;
-  const dispatch = useAppDispatch();
+  const dispatch = use_app_dispatch();
   const isMobile = useMediaQuery(breakpoints.down("mobile"));
-  const isFollowing = useAppSelector(
+  const isFollowing = use_app_selector(
     (state) => state.entities.following[user.id]
   );
   const userUrl = `/${user.username}`;

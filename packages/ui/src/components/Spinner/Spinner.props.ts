@@ -25,7 +25,7 @@ export interface SpinnerProps extends SpinnerPrimitive {
   /**
    * The props passed to the individual component elements.
    */
-  slotProps?: {
+  slot_props?: {
     indicator?: ProgressIndicatorProps;
     progress?: React.ComponentPropsWithoutRef<"circle">;
     svg?: React.ComponentPropsWithoutRef<"svg">;

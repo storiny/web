@@ -1,16 +1,16 @@
-import { apiSlice } from "~/redux/features/api/slice";
+import { api_slice } from "~/redux/features/api/slice";
 
 const SEGMENT = "me/settings/sessions/destroy";
 
-export interface DestroySessionsResponse {}
-
-export const { useDestroySessionsMutation } = apiSlice.injectEndpoints({
-  endpoints: (builder) => ({
-    destroySessions: builder.mutation<DestroySessionsResponse, void>({
-      query: () => ({
-        url: `/${SEGMENT}`,
-        method: "POST"
+export const { useDestroySessionsMutation: use_destroy_sessions_mutation } =
+  api_slice.injectEndpoints({
+    endpoints: (builder) => ({
+      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+      destroySessions: builder.mutation<void, void>({
+        query: () => ({
+          url: `/${SEGMENT}`,
+          method: "POST"
+        })
       })
     })
-  })
-});
+  });

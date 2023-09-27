@@ -34,7 +34,7 @@ const Typography = forwardRef<TypographyProps, TypographyElement>(
       ellipsis,
       className,
       children,
-      slotProps,
+      slot_props,
       ...rest
     } = props;
     const isNested = React.useContext(TypographyNestedContext);
@@ -73,12 +73,12 @@ const Typography = forwardRef<TypographyProps, TypographyElement>(
         >
           {(["mention", "tag"] as TypographyLevel[]).includes(level) ? (
             <NextLink
-              {...slotProps?.link}
+              {...slot_props?.link}
               className={clsx(
                 styles.link,
                 ellipsis && "ellipsis",
                 ellipsis && typographyStyles["ellipsis-child"],
-                slotProps?.link?.className
+                slot_props?.link?.className
               )}
               href={`${level === "tag" ? "/tag/" : "/"}${children}`}
             >
@@ -87,11 +87,11 @@ const Typography = forwardRef<TypographyProps, TypographyElement>(
             </NextLink>
           ) : ellipsis ? (
             <span
-              {...slotProps?.ellipsisCell}
+              {...slot_props?.ellipsisCell}
               className={clsx(
                 "ellipsis",
                 typographyStyles["ellipsis-child"],
-                slotProps?.ellipsisCell?.className
+                slot_props?.ellipsisCell?.className
               )}
             >
               {children}

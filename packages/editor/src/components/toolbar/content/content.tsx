@@ -30,7 +30,7 @@ const SuspendedEditorToolbarContent = (): React.ReactElement => {
     <ScrollArea
       className={"f-grow"}
       enableHorizontal
-      slotProps={{
+      slot_props={{
         scrollbar: {
           style: { background: "none", "--size": "8px" } as React.CSSProperties
         },
