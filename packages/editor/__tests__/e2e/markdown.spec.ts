@@ -1,7 +1,7 @@
 import { test } from "@playwright/test";
 
 import { EDITOR_CLASSNAMES } from "../constants";
-import { toggleBold, toggleUnderline } from "../keyboard-shortcuts";
+import { toggle_bold, toggle_underline } from "../keyboard-shortcuts";
 import { assertHTML, focusEditor, html, initialize } from "../utils";
 
 const HEADING_HTML = html`
@@ -324,13 +324,13 @@ test.describe("markdown", () => {
   test("can convert already styled text (overlapping ranges)", async ({
     page
   }) => {
-    await toggleBold(page);
-    await toggleUnderline(page);
+    await toggle_bold(page);
+    await toggle_underline(page);
 
     await page.keyboard.type("h*e~~llo");
 
-    await toggleBold(page);
-    await toggleUnderline(page);
+    await toggle_bold(page);
+    await toggle_underline(page);
 
     await page.keyboard.type(" wo~~r*ld");
 

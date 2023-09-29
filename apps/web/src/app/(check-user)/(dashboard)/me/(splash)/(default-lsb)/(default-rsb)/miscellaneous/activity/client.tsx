@@ -38,7 +38,7 @@ const StatusHeader = (): React.ReactElement => (
 
 const MiscellaneousActivityClient = (): React.ReactElement => {
   const [page, set_page] = React.useState<number>(1);
-  const { data, isLoading, isFetching, isError, error, refetch } =
+  const { data, isLoading, is_fetching, isError, error, refetch } =
     use_get_account_activity_query({
       page
     });
@@ -53,13 +53,13 @@ const MiscellaneousActivityClient = (): React.ReactElement => {
     <React.Fragment>
       <DashboardTitle>Account activity</DashboardTitle>
       <StatusHeader />
-      {isLoading || (isFetching && page === 1) ? (
+      {isLoading || (is_fetching && page === 1) ? (
         <AccountActivityListSkeleton />
       ) : isError ? (
         <ErrorState
           auto_size
           component_props={{
-            button: { loading: isFetching }
+            button: { loading: is_fetching }
           }}
           retry={refetch}
           type={get_query_error_type(error)}

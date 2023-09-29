@@ -12,20 +12,19 @@ import Image from "../../../../../../../ui/src/components/image";
 import Spacer from "../../../../../../../ui/src/components/spacer";
 import Typography from "../../../../../../../ui/src/components/typography";
 import Gallery from "~/entities/gallery";
-import EditIcon from "~/icons/Edit";
-import PhotoEditIcon from "~/icons/PhotoEdit";
-import TrashIcon from "~/icons/Trash";
+import EditIcon from "../../../../../../../ui/src/icons/edit";
+import PhotoEditIcon from "../../../../../../../ui/src/icons/photo-edit";
+import TrashIcon from "../../../../../../../ui/src/icons/trash";
 
-import imageStyles from "../common/image.module.scss";
+import image_styles from "../common/image.module.scss";
 
 // Preview image
 
 const PreviewImage = (): React.ReactElement => {
   const form = use_form_context();
-  const previewImage = form.watch("preview-image");
-
+  const preview_image = form.watch("preview_image");
   return (
-    <div className={clsx("flex-col", imageStyles.x, imageStyles.block)}>
+    <div className={clsx("flex-col", image_styles.x, image_styles.block)}>
       <Typography className={"t-bold"} level={"body2"}>
         Preview image
       </Typography>
@@ -35,26 +34,26 @@ const PreviewImage = (): React.ReactElement => {
         width and 630px height, or leave it to the default image.
       </Typography>
       <div
-        className={clsx("flex-center", imageStyles.x, imageStyles.container)}
+        className={clsx("flex-center", image_styles.x, image_styles.container)}
       >
         <AspectRatio
-          className={clsx(imageStyles.x, imageStyles.image)}
+          className={clsx(image_styles.x, image_styles.image)}
           ratio={1.9}
         >
-          {previewImage ? (
+          {preview_image ? (
             <React.Fragment>
-              <Image alt={""} img_key={previewImage} size={ImageSize.W_320} />
+              <Image alt={""} img_key={preview_image} size={ImageSize.W_320} />
               <div
                 className={clsx(
                   "force-light-mode",
                   "flex-col",
-                  imageStyles.x,
-                  imageStyles.actions
+                  image_styles.x,
+                  image_styles.actions
                 )}
               >
                 <Gallery
                   on_confirm={(asset): void => {
-                    form.setValue("preview-image", asset.key, {
+                    form.setValue("preview_image", asset.key, {
                       shouldDirty: true
                     });
                   }}
@@ -72,7 +71,7 @@ const PreviewImage = (): React.ReactElement => {
                   aria-label={"Reset preview image"}
                   auto_size
                   onClick={(): void => {
-                    form.setValue("preview-image", null, { shouldDirty: true });
+                    form.setValue("preview_image", null, { shouldDirty: true });
                   }}
                   title={"Reset preview image"}
                 >
@@ -83,7 +82,7 @@ const PreviewImage = (): React.ReactElement => {
           ) : (
             <Gallery
               on_confirm={(asset): void => {
-                form.setValue("preview-image", asset.key, {
+                form.setValue("preview_image", asset.key, {
                   shouldDirty: true
                 });
               }}
@@ -94,8 +93,8 @@ const PreviewImage = (): React.ReactElement => {
                   "flex-center",
                   "full-h",
                   "full-w",
-                  imageStyles.x,
-                  imageStyles.placeholder
+                  image_styles.x,
+                  image_styles.placeholder
                 )}
                 role={"button"}
                 title={"Add a custom preview image"}
@@ -125,8 +124,8 @@ const SeoTab = (): React.ReactElement => (
         </>
       }
       label={"SEO title"}
-      maxLength={STORY_PROPS.seoTitle.maxLength}
-      name={"seo-title"}
+      maxLength={STORY_PROPS.seoTitle.max_length}
+      name={"seo_title"}
       placeholder={"40–60 characters"}
     />
     <Spacer orientation={"vertical"} size={4} />
@@ -138,8 +137,8 @@ const SeoTab = (): React.ReactElement => (
         </>
       }
       label={"SEO description"}
-      maxLength={STORY_PROPS.seoDescription.maxLength}
-      name={"seo-description"}
+      maxLength={STORY_PROPS.seoDescription.max_length}
+      name={"seo_description"}
       placeholder={"80–120 characters"}
     />
     <Spacer orientation={"vertical"} size={4} />
@@ -154,8 +153,8 @@ const SeoTab = (): React.ReactElement => (
         </>
       }
       label={"Canonical URL"}
-      maxLength={STORY_PROPS.canonicalUrl.maxLength}
-      name={"canonical-url"}
+      maxLength={STORY_PROPS.canonicalUrl.max_length}
+      name={"canonical_url"}
       placeholder={"Link to the original source"}
     />
   </React.Fragment>

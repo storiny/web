@@ -2,48 +2,48 @@ import { LexicalNode } from "lexical";
 import { Map as YMap, XmlElement, XmlText } from "yjs";
 
 import { Binding } from "../../collaboration/bindings";
-import { isExcludedProperty } from "../is-excluded-property";
+import { is_excluded_property } from "../is-excluded-property";
 
 /**
  * Syncs properties from yjs
  * @param binding Binding
- * @param sharedType Shared type
- * @param lexicalNode Lexical node
- * @param keysChanged Set of changed keys
+ * @param shared_type Shared type
+ * @param lexical_node Lexical node
+ * @param keys_changed Set of changed keys
  */
-export const syncPropertiesFromYjs = (
+export const sync_properties_from_yjs = (
   binding: Binding,
-  sharedType: XmlText | YMap<unknown> | XmlElement,
-  lexicalNode: LexicalNode,
-  keysChanged: null | Set<string>
+  shared_type: XmlText | YMap<unknown> | XmlElement,
+  lexical_node: LexicalNode,
+  keys_changed: null | Set<string>
 ): void => {
   const properties =
-    keysChanged === null
-      ? sharedType instanceof YMap
-        ? Array.from(sharedType.keys())
-        : Object.keys(sharedType.getAttributes())
-      : Array.from(keysChanged);
-  let writableNode: LexicalNode | undefined;
+    keys_changed === null
+      ? shared_type instanceof YMap
+        ? Array.from(shared_type.keys())
+        : Object.keys(shared_type.getAttributes())
+      : Array.from(keys_changed);
+  let writable_node: LexicalNode | undefined;
 
   for (let i = 0; i < properties.length; i++) {
     const property = properties[i];
 
-    if (isExcludedProperty(property, lexicalNode, binding)) {
+    if (is_excluded_property(property, lexical_node, binding)) {
       continue;
     }
 
-    const prevValue = lexicalNode[property];
-    let nextValue =
-      sharedType instanceof YMap
-        ? sharedType.get(property)
-        : sharedType.getAttribute(property);
+    const prev_value = lexical_node[property];
+    const next_value =
+      shared_type instanceof YMap
+        ? shared_type.get(property)
+        : shared_type.getAttribute(property);
 
-    if (prevValue !== nextValue) {
-      if (writableNode === undefined) {
-        writableNode = lexicalNode.getWritable();
+    if (prev_value !== next_value) {
+      if (writable_node === undefined) {
+        writable_node = lexical_node.getWritable();
       }
 
-      writableNode[property] = nextValue;
+      writable_node[property] = next_value;
     }
   }
 };

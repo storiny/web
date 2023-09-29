@@ -2,14 +2,14 @@ import React from "react";
 
 import MenuItem from "../../../../../../../ui/src/components/menu-item";
 import EmojiPicker from "../../../../../../../ui/src/entities/emoji-picker";
-import MoodSmileIcon from "~/icons/MoodSmile";
+import MoodSmileIcon from "../../../../../../../ui/src/icons/mood-smile";
 
-import { useInsertTextEntity } from "../../../../../hooks/use-insert-text-entity";
+import { use_insert_text_entity } from "../../../../../hooks/use-insert-text-entity";
 
 const EmojiMenuItem = (): React.ReactElement => {
-  const [insertEmoji] = useInsertTextEntity();
+  const [insert_emoji] = use_insert_text_entity();
   return (
-    <EmojiPicker on_emoji_select={insertEmoji} popover_props={{ modal: true }}>
+    <EmojiPicker on_emoji_select={insert_emoji} popover_props={{ modal: true }}>
       <MenuItem
         decorator={<MoodSmileIcon />}
         onSelect={(event): void => event.preventDefault()}

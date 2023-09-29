@@ -1,6 +1,6 @@
 "use client";
 
-import { userProps } from "@storiny/shared";
+import { USER_PROPS } from "@storiny/shared";
 import { is_test_env } from "@storiny/shared/src/utils/is-test-env";
 import clsx from "clsx";
 import React from "react";
@@ -10,9 +10,9 @@ import { ZXCVBNScore } from "zxcvbn";
 import FormInput from "src/components/form-input";
 import IconButton from "src/components/icon-button";
 import Spinner from "src/components/spinner";
-import EyeIcon from "~/icons/Eye";
-import EyeClosedIcon from "~/icons/EyeClosed";
-import LockIcon from "~/icons/Lock";
+import EyeIcon from "src/icons/eye";
+import EyeClosedIcon from "src/icons/eye-closed";
+import LockIcon from "src/icons/lock";
 import { scale_number } from "src/utils/scale-number";
 
 import styles from "./form-new-password-input.module.scss";
@@ -173,8 +173,8 @@ const FormNewPasswordInput = React.forwardRef<
       }
       helper_text={suggestion ? suggestion : undefined}
       label={label}
-      maxLength={userProps.password.maxLength}
-      minLength={userProps.password.minLength}
+      maxLength={USER_PROPS.password.max_length}
+      minLength={USER_PROPS.password.min_length}
       name={name}
       onInput={handle_input}
       ref={ref}

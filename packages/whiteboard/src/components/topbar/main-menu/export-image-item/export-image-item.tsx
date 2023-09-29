@@ -4,21 +4,21 @@ import MenuItem from "../../../../../../ui/src/components/menu-item";
 import { use_modal } from "../../../../../../ui/src/components/modal";
 import ModalFooterButton from "../../../../../../ui/src/components/modal/footer-button";
 import { use_toast } from "../../../../../../ui/src/components/toast";
-import ImageIcon from "~/icons/Image";
+import ImageIcon from "../../../../../../ui/src/icons/image";
 
-import { useCanvas } from "../../../../hooks";
+import { use_canvas } from "../../../../hooks";
 import ExportImageModal, { ExportHandleRef } from "../../export-image-modal";
 
 const ExportImageItem = (): React.ReactElement => {
-  const canvas = useCanvas();
+  const canvas = use_canvas();
   const toast = use_toast();
-  const [loading, setLoading] = React.useState<boolean>(false);
-  const exportRef = React.useRef<ExportHandleRef>(null);
+  const [loading, set_loading] = React.useState<boolean>(false);
+  const export_ref = React.useRef<ExportHandleRef>(null);
   const [element] = use_modal(
     ({ open_modal }) => (
       <MenuItem
         decorator={<ImageIcon />}
-        onClick={(event): void => {
+        onClick={(event: Event): void => {
           if (canvas.current) {
             if (canvas.current.getObjects().length) {
               open_modal();
@@ -28,21 +28,21 @@ const ExportImageItem = (): React.ReactElement => {
             }
           }
         }}
-        onSelect={(event): void => event.preventDefault()}
+        onSelect={(event: Event): void => event.preventDefault()}
       >
         Export image…
       </MenuItem>
     ),
     <ExportImageModal
-      onExportEnd={(status): void => {
-        setLoading(false);
+      on_export_end={(status): void => {
+        set_loading(false);
 
         if (status === "fail") {
           toast("Unable to export the sketch", "error");
         }
       }}
-      onExportStart={(): void => setLoading(true)}
-      ref={exportRef}
+      on_export_start={(): void => set_loading(true)}
+      ref={export_ref}
     />,
     {
       footer: (
@@ -51,8 +51,8 @@ const ExportImageItem = (): React.ReactElement => {
           <ModalFooterButton
             loading={loading}
             onClick={(): void => {
-              if (exportRef.current) {
-                exportRef.current.export();
+              if (export_ref.current) {
+                export_ref.current.export();
               }
             }}
           >

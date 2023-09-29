@@ -8,13 +8,13 @@ import ColorPicker, {
   str_to_color,
   TColor
 } from "../../../../../../../ui/src/entities/color-picker";
-import BlurIcon from "~/icons/Blur";
-import LetterXIcon from "~/icons/LetterX";
-import LetterYIcon from "~/icons/LetterY";
+import BlurIcon from "../../../../../../../ui/src/icons/blur";
+import LetterXIcon from "../../../../../../../ui/src/icons/letter-x";
+import LetterYIcon from "../../../../../../../ui/src/icons/letter-y";
 
 import { MAX_OPACITY, MIN_OPACITY } from "../../../../../constants";
-import { useActiveObject, useCanvas } from "../../../../../hooks";
-import { modifyObject } from "../../../../../utils";
+import { use_active_object, use_canvas } from "../../../../../hooks";
+import { modify_object } from "../../../../../utils";
 import DrawItem, { DrawItemRow } from "../../item";
 import common_styles from "../common.module.scss";
 
@@ -23,68 +23,65 @@ const DEFAULT_SHADOW_COLOR = "rgba(0,0,0,0)";
 // Shadow color
 
 const ShadowColorControl = ({
-  activeObject,
+  active_object,
   canvas
 }: {
-  activeObject?: BaseFabricObject;
+  active_object?: BaseFabricObject;
   canvas: Canvas;
 }): React.ReactElement => {
-  const [color, setColor] = React.useState<TColor>(
+  const [color, set_color] = React.useState<TColor>(
     str_to_color(
-      (activeObject?.shadow?.color as string) ||
+      (active_object?.shadow?.color as string) ||
         canvas.freeDrawingBrush?.shadow?.color ||
         DEFAULT_SHADOW_COLOR
     )!
   );
-  const [value, setValue] = React.useState(`#${color.hex}`);
+  const [value, set_value] = React.useState(`#${color.hex}`);
 
   /**
    * Mutates the shadow color of the object
    */
-  const changeColor = React.useCallback(
-    (newColor: TColor) => {
-      setColor(newColor);
+  const change_color = React.useCallback(
+    (next_color: TColor) => {
+      set_color(next_color);
 
-      if (activeObject) {
-        modifyObject(activeObject, {
+      if (active_object) {
+        modify_object(active_object, {
           shadow: new ObjectShadow({
-            ...activeObject.shadow,
-            color: newColor.str
+            ...active_object.shadow,
+            color: next_color.str
           })
         });
       } else if (canvas.freeDrawingBrush) {
         canvas.freeDrawingBrush.shadow = new ObjectShadow({
           ...canvas.freeDrawingBrush.shadow,
-          color: newColor.str
+          color: next_color.str
         });
       }
     },
-    [activeObject, canvas.freeDrawingBrush]
+    [active_object, canvas.freeDrawingBrush]
   );
 
   React.useEffect(() => {
-    setValue(`#${color.hex}`);
+    set_value(`#${color.hex}`);
   }, [color]);
 
   React.useEffect(() => {
-    setColor(
+    set_color(
       str_to_color(
-        (activeObject?.shadow?.color as string) ||
+        (active_object?.shadow?.color as string) ||
           canvas.freeDrawingBrush?.shadow?.color ||
           DEFAULT_SHADOW_COLOR
       )!
     );
-  }, [activeObject?.shadow?.color, canvas.freeDrawingBrush?.shadow?.color]);
+  }, [active_object?.shadow?.color, canvas.freeDrawingBrush?.shadow?.color]);
 
   return (
     <DrawItemRow>
       <Input
         aria-label={"Layer shadow color"}
         decorator={
-          <ColorPicker
-            defaultValue={color}
-            onChange={(value): void => changeColor(value)}
-          >
+          <ColorPicker default_value={color} on_change={change_color}>
             <button
               aria-label={"Pick a color"}
               className={clsx(
@@ -103,11 +100,10 @@ const ShadowColorControl = ({
         }
         monospaced
         onChange={(event): void => {
-          setValue(event.target.value);
-          const newColor = str_to_color(event.target.value);
-
-          if (newColor) {
-            changeColor(newColor);
+          set_value(event.target.value);
+          const next_color = str_to_color(event.target.value);
+          if (next_color) {
+            change_color(next_color);
           }
         }}
         placeholder={"Shadow color"}
@@ -129,7 +125,7 @@ const ShadowColorControl = ({
           const a = Number.parseInt(event.target.value) || 0;
           const { r, g, b } = hex_to_rgb(color.hex);
 
-          changeColor({
+          change_color({
             ...color,
             str: `rgba(${r},${g},${b},${a / 100})`,
             a
@@ -155,34 +151,34 @@ const ShadowColorControl = ({
 // Shadow blur
 
 const ShadowBlurControl = ({
-  activeObject,
+  active_object,
   canvas
 }: {
-  activeObject?: BaseFabricObject;
+  active_object?: BaseFabricObject;
   canvas: Canvas;
 }): React.ReactElement => {
   /**
    * Mutates the shadow blur of the object
    */
-  const changeBlur = React.useCallback(
-    (blur: number) => {
-      if (activeObject) {
-        modifyObject(activeObject, {
+  const change_blur = React.useCallback(
+    (next_blur: number) => {
+      if (active_object) {
+        modify_object(active_object, {
           shadow: new ObjectShadow({
             color: DEFAULT_SHADOW_COLOR,
-            ...activeObject.shadow,
-            blur
+            ...active_object.shadow,
+            blur: next_blur
           })
         });
       } else if (canvas.freeDrawingBrush) {
         canvas.freeDrawingBrush.shadow = new ObjectShadow({
           color: DEFAULT_SHADOW_COLOR,
           ...canvas.freeDrawingBrush.shadow,
-          blur
+          blur: next_blur
         });
       }
     },
-    [activeObject, canvas.freeDrawingBrush]
+    [active_object, canvas.freeDrawingBrush]
   );
 
   return (
@@ -190,12 +186,14 @@ const ShadowBlurControl = ({
       aria-label={"Layer shadow blur"}
       decorator={<BlurIcon />}
       defaultValue={
-        activeObject?.shadow?.blur ?? canvas.freeDrawingBrush?.shadow?.blur ?? 0
+        active_object?.shadow?.blur ??
+        canvas.freeDrawingBrush?.shadow?.blur ??
+        0
       }
       min={0}
       monospaced
       onChange={(event): void => {
-        changeBlur(Number.parseInt(event.target.value, 10) ?? 0);
+        change_blur(Number.parseInt(event.target.value, 10) ?? 0);
       }}
       placeholder={"Shadow blur"}
       size={"sm"}
@@ -208,39 +206,39 @@ const ShadowBlurControl = ({
 // Shadow offsets
 
 const ShadowOffsetsControl = ({
-  activeObject,
+  active_object,
   canvas
 }: {
-  activeObject?: BaseFabricObject;
+  active_object?: BaseFabricObject;
   canvas: Canvas;
 }): React.ReactElement => {
   /**
    * Mutates the shadow blur of the object
    */
-  const changeOffset = React.useCallback(
+  const change_offset = React.useCallback(
     (offset: number, axis: "x" | "y") => {
-      const offsetProp =
+      const offset_prop =
         `offset${axis.toUpperCase()}` as `offset${typeof axis extends "x"
           ? "X"
           : "Y"}`;
 
-      if (activeObject) {
-        modifyObject(activeObject, {
+      if (active_object) {
+        modify_object(active_object, {
           shadow: new ObjectShadow({
             color: DEFAULT_SHADOW_COLOR,
-            ...activeObject.shadow,
-            [offsetProp]: offset
+            ...active_object.shadow,
+            [offset_prop]: offset
           })
         });
       } else if (canvas.freeDrawingBrush) {
         canvas.freeDrawingBrush.shadow = new ObjectShadow({
           color: DEFAULT_SHADOW_COLOR,
           ...canvas.freeDrawingBrush.shadow,
-          [offsetProp]: offset
+          [offset_prop]: offset
         });
       }
     },
-    [activeObject, canvas.freeDrawingBrush]
+    [active_object, canvas.freeDrawingBrush]
   );
 
   return (
@@ -249,13 +247,13 @@ const ShadowOffsetsControl = ({
         aria-label={"Shadow offset X"}
         decorator={<LetterXIcon />}
         defaultValue={Math.round(
-          activeObject?.shadow?.offsetX ??
+          active_object?.shadow?.offsetX ??
             canvas.freeDrawingBrush?.shadow?.offsetX ??
             0
         )}
         monospaced
         onChange={(event): void =>
-          changeOffset(Number.parseInt(event.target.value, 10) ?? 0, "x")
+          change_offset(Number.parseInt(event.target.value, 10) ?? 0, "x")
         }
         placeholder={"Offset X"}
         size={"sm"}
@@ -266,13 +264,13 @@ const ShadowOffsetsControl = ({
         aria-label={"Shadow offset Y"}
         decorator={<LetterYIcon />}
         defaultValue={Math.round(
-          activeObject?.shadow?.offsetY ??
+          active_object?.shadow?.offsetY ??
             canvas.freeDrawingBrush?.shadow?.offsetY ??
             0
         )}
         monospaced
         onChange={(event): void =>
-          changeOffset(Number.parseInt(event.target.value, 10) ?? 0, "y")
+          change_offset(Number.parseInt(event.target.value, 10) ?? 0, "y")
         }
         placeholder={"Offset Y"}
         size={"sm"}
@@ -283,29 +281,33 @@ const ShadowOffsetsControl = ({
   );
 };
 
-const Shadow = ({ isPen }: { isPen?: boolean }): React.ReactElement | null => {
-  const canvas = useCanvas();
-  const activeObject = useActiveObject();
+const Shadow = ({
+  is_pen
+}: {
+  is_pen?: boolean;
+}): React.ReactElement | null => {
+  const canvas = use_canvas();
+  const active_object = use_active_object();
 
-  if (!canvas.current || (!activeObject && !isPen)) {
+  if (!canvas.current || (!active_object && !is_pen)) {
     return null;
   }
 
   return (
-    <DrawItem key={activeObject?.get("id")} label={"Shadow"}>
+    <DrawItem key={active_object?.get("id")} label={"Shadow"}>
       <ShadowColorControl
-        activeObject={activeObject || undefined}
+        active_object={active_object || undefined}
         canvas={canvas.current}
       />
       <DrawItemRow>
         <ShadowBlurControl
-          activeObject={activeObject || undefined}
+          active_object={active_object || undefined}
           canvas={canvas.current}
         />
       </DrawItemRow>
       <DrawItemRow>
         <ShadowOffsetsControl
-          activeObject={activeObject || undefined}
+          active_object={active_object || undefined}
           canvas={canvas.current}
         />
       </DrawItemRow>

@@ -14,7 +14,7 @@ import Spacer from "../../../../../../../../../../../packages/ui/src/components/
 import Typography from "../../../../../../../../../../../packages/ui/src/components/typography";
 import ErrorState from "../../../../../../../../../../../packages/ui/src/entities/error-state";
 import { use_debounce } from "../../../../../../../../../../../packages/ui/src/hooks/use-debounce";
-import SearchIcon from "~/icons/Search";
+import SearchIcon from "../../../../../../../../../../../packages/ui/src/icons/search";
 import {
   get_query_error_type,
   self_action,
@@ -130,11 +130,11 @@ const ControlBar = ({
 );
 
 const ModerationMutesClient = (props: MutesProps): React.ReactElement => {
-  const [sort, setSort] = React.useState<MutesSortValue>("recent");
+  const [sort, set_sort] = React.useState<MutesSortValue>("recent");
   const [query, setQuery] = React.useState<string>("");
   const [page, set_page] = React.useState<number>(1);
   const debounced_query = use_debounce(query);
-  const { data, isLoading, isFetching, isError, error, refetch } =
+  const { data, isLoading, is_fetching, isError, error, refetch } =
     use_get_muted_users_query({
       page,
       sort,
@@ -150,7 +150,7 @@ const ModerationMutesClient = (props: MutesProps): React.ReactElement => {
 
   const handleSortChange = React.useCallback((newSort: MutesSortValue) => {
     set_page(1);
-    setSort(newSort);
+    set_sort(newSort);
   }, []);
 
   const handleQueryChange = React.useCallback((newQuery: string) => {
@@ -170,18 +170,18 @@ const ModerationMutesClient = (props: MutesProps): React.ReactElement => {
           query={query}
           sort={sort}
         />
-        {isLoading || is_typing || (isFetching && page === 1) ? (
+        {isLoading || is_typing || (is_fetching && page === 1) ? (
           <UserListSkeleton />
         ) : isError ? (
           <ErrorState
             auto_size
             component_props={{
-              button: { loading: isFetching }
+              button: { loading: is_fetching }
             }}
             retry={refetch}
             type={get_query_error_type(error)}
           />
-        ) : !isFetching && !items.length ? (
+        ) : !is_fetching && !items.length ? (
           <EmptyState query={query} />
         ) : (
           <VirtualizedUserList

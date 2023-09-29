@@ -2,8 +2,8 @@
  * Console logging for development environment
  */
 
-const isDev = (): boolean => process.env.NODE_ENV === "development";
-const noop = (): void => {};
+const is_dev = (): boolean => process.env.NODE_ENV === "development";
+const noop = (): void => undefined;
 
 export const dev_console: {
   error: typeof console.error;
@@ -11,8 +11,8 @@ export const dev_console: {
   log: typeof console.log;
   warn: typeof console.warn;
 } = {
-  log: isDev() ? noop : console.log,
-  info: isDev() ? noop : console.info,
-  warn: isDev() ? noop : console.warn,
-  error: isDev() ? noop : console.error
+  log: is_dev() ? console.log : noop,
+  info: is_dev() ? console.info : noop,
+  warn: is_dev() ? console.warn : noop,
+  error: is_dev() ? console.error : noop
 };

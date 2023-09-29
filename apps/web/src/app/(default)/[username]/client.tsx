@@ -19,10 +19,10 @@ import TabPanel from "../../../../../../packages/ui/src/components/tab-panel";
 import Tabs from "../../../../../../packages/ui/src/components/tabs";
 import TabsList from "../../../../../../packages/ui/src/components/tabs-list";
 import { use_media_query } from "../../../../../../packages/ui/src/hooks/use-media-query";
-import BanIcon from "~/icons/Ban";
-import ForbidIcon from "~/icons/Forbid";
-import LockIcon from "~/icons/Lock";
-import SearchIcon from "~/icons/Search";
+import BanIcon from "../../../../../../packages/ui/src/icons/ban";
+import ForbidIcon from "../../../../../../packages/ui/src/icons/forbid";
+import LockIcon from "../../../../../../packages/ui/src/icons/lock";
+import SearchIcon from "../../../../../../packages/ui/src/icons/search";
 import { use_app_selector } from "~/redux/hooks";
 import { BREAKPOINTS } from "~/theme/breakpoints";
 import { get_cdn_url } from "../../../../../../packages/ui/src/utils/get-cdn-url";
@@ -161,7 +161,7 @@ const Page = ({
   const is_smaller_than_tablet = use_media_query(BREAKPOINTS.down("tablet"));
   const firstRender = React.useRef<boolean>(true);
   const [tab, setTab] = React.useState<ProfileTabValue>("stories");
-  const [sort, setSort] = React.useState<ProfileEntitySortValue>(
+  const [sort, set_sort] = React.useState<ProfileEntitySortValue>(
     tab === "stories" ? "recent" : "popular"
   );
   const [query, setQuery] = React.useState<string>("");
@@ -180,7 +180,7 @@ const Page = ({
   );
 
   const handleSortChange = React.useCallback(
-    (newSort: ProfileEntitySortValue) => setSort(newSort),
+    (newSort: ProfileEntitySortValue) => set_sort(newSort),
     []
   );
 
@@ -342,7 +342,7 @@ const Page = ({
             <StoriesTab
               query={query}
               sort={sort}
-              userId={profile.id}
+              user_id={profile.id}
               username={profile.username}
             />
           </TabPanel>
@@ -351,7 +351,7 @@ const Page = ({
               entityType={"followers"}
               query={query}
               sort={sort}
-              userId={profile.id}
+              user_id={profile.id}
               username={profile.username}
             />
           </TabPanel>
@@ -362,7 +362,7 @@ const Page = ({
                 entityType={"following"}
                 query={query}
                 sort={sort}
-                userId={profile.id}
+                user_id={profile.id}
                 username={profile.username}
               />
             </TabPanel>
@@ -374,7 +374,7 @@ const Page = ({
                 entityType={"friends"}
                 query={query}
                 sort={sort}
-                userId={profile.id}
+                user_id={profile.id}
                 username={profile.username}
               />
             </TabPanel>

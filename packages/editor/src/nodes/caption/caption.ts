@@ -1,7 +1,7 @@
-import { isHTMLElement } from "@lexical/utils";
+import { is_html_element as is_html_element } from "@lexical/utils";
 import {
-  $applyNodeReplacement,
-  $createParagraphNode,
+  $applyNodeReplacement as $apply_node_replacement,
+  $createParagraphNode as $create_paragraph_node,
   DOMExportOutput,
   EditorConfig,
   ElementFormatType,
@@ -38,12 +38,12 @@ export class CaptionNode extends ElementNode {
 
   /**
    * Imports a serialized node
-   * @param serializedNode Serialized node
+   * @param serialized_node Serialized node
    */
   static override importJSON(
-    serializedNode: SerializedCaptionNode
+    serialized_node: SerializedCaptionNode
   ): CaptionNode {
-    return $createCaptionNode().setFormat(serializedNode.format);
+    return $create_caption_node().setFormat(serialized_node.format);
   }
 
   /**
@@ -77,7 +77,7 @@ export class CaptionNode extends ElementNode {
   override exportDOM(editor: LexicalEditor): DOMExportOutput {
     const { element } = super.exportDOM(editor);
 
-    if (element && isHTMLElement(element)) {
+    if (element && is_html_element(element)) {
       if (this.isEmpty()) {
         element.append(document.createElement("br"));
       }
@@ -142,28 +142,28 @@ export class CaptionNode extends ElementNode {
   /**
    * Inserts new paragraph node after the node
    * @param _ Range selection
-   * @param restoreSelection Whether to try to restore the selection
+   * @param restore_selection Whether to try to restore the selection
    */
   override insertNewAfter(
     _: RangeSelection,
-    restoreSelection: boolean
+    restore_selection: boolean
   ): ParagraphNode {
-    const newElement = $createParagraphNode();
-    this.insertAfter(newElement, restoreSelection);
-    return newElement;
+    const next_element = $create_paragraph_node();
+    this.insertAfter(next_element, restore_selection);
+    return next_element;
   }
 }
 
 /**
  * Creates a new caption node
  */
-export const $createCaptionNode = (): CaptionNode =>
-  $applyNodeReplacement(new CaptionNode());
+export const $create_caption_node = (): CaptionNode =>
+  $apply_node_replacement(new CaptionNode());
 
 /**
  * Predicate function for determining caption nodes
  * @param node Node
  */
-export const $isCaptionNode = (
+export const $is_caption_node = (
   node: LexicalNode | null | undefined
 ): node is CaptionNode => node instanceof CaptionNode;

@@ -1,6 +1,6 @@
 export const EDITOR_SHORTCUTS = {
   // Menu
-  importFile /*   */: { key: "o", ctrl: true },
+  import_file /*  */: { key: "o", ctrl: true },
   // Text style
   bold /*         */: { key: "b", ctrl: true },
   italic /*       */: { key: "i", ctrl: true },
@@ -15,19 +15,19 @@ export const EDITOR_SHORTCUTS = {
   heading /*      */: { key: "h", ctrl: true },
   subheading /*   */: { key: "h", ctrl: true, shift: true },
   quote /*        */: { key: "q", ctrl: true, shift: true },
-  bulletedList /* */: { key: "8", ctrl: true, shift: true },
-  numberedList /* */: { key: "7", ctrl: true, shift: true },
+  bulleted_list /**/: { key: "8", ctrl: true, shift: true },
+  numbered_list /**/: { key: "7", ctrl: true, shift: true },
   // Alignment
-  leftAlign /*    */: { key: "l", ctrl: true, alt: true },
-  centerAlign /*  */: { key: "t", ctrl: true, alt: true },
-  rightAlign /*   */: { key: "r", ctrl: true, alt: true },
-  justifyAlign /* */: { key: "j", ctrl: true, alt: true },
+  left_align /*   */: { key: "l", ctrl: true, alt: true },
+  center_align /* */: { key: "t", ctrl: true, alt: true },
+  right_align /*  */: { key: "r", ctrl: true, alt: true },
+  justify_align /**/: { key: "j", ctrl: true, alt: true },
   indent /*       */: { key: "[", ctrl: true },
   outdent /*      */: { key: "]", ctrl: true },
   // History
   undo /*         */: { key: "z", ctrl: true },
   redo /*         */: { key: "y", ctrl: true },
-  redoAlt /*      */: { key: "z", ctrl: true, shift: true },
+  redo_alt /*     */: { key: "z", ctrl: true, shift: true },
   // Layout
   sidebars /*     */: { key: "\\", ctrl: true }
 } as const;

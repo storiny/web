@@ -1,13 +1,18 @@
-import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { mergeRegister } from "@lexical/utils";
+import { useLexicalComposerContext as use_lexical_composer_context } from "@lexical/react/LexicalComposerContext";
+import { mergeRegister as merge_register } from "@lexical/utils";
 import { clsx } from "clsx";
-import { $getNodeByKey, $getRoot, NodeKey, TextNode } from "lexical";
+import {
+  $getNodeByKey as $get_node_by_key,
+  $getRoot as $get_root,
+  NodeKey,
+  TextNode
+} from "lexical";
 import React from "react";
 
 import Typography from "../../../../ui/src/components/typography";
 
 import {
-  $isHeadingNode,
+  $is_heading_node,
   HeadingNode,
   HeadingTagType
 } from "../../nodes/heading";
@@ -22,58 +27,58 @@ interface IntersectionObserverCallback {
 /**
  * Observes the heading elements on the editor, and selects the active
  * heading
- * @param tableOfContents Table of contents
- * @param setActiveHeading Callback function invoked when the active heading changes
+ * @param table_of_contents Table of contents
+ * @param set_active_heading Callback function invoked when the active heading changes
  */
-const useHeadingsObserver = (
-  tableOfContents: TableOfContentsEntry[],
-  setActiveHeading: (nodeKey: NodeKey) => void
+const use_headings_observer = (
+  table_of_contents: TableOfContentsEntry[],
+  set_active_heading: (node_key: NodeKey) => void
 ): void => {
-  const [editor] = useLexicalComposerContext();
-  const headingElementsRef = React.useRef<IntersectionObserverEntry | {}>({});
+  const [editor] = use_lexical_composer_context();
+  const heading_elements_ref = React.useRef<IntersectionObserverEntry | {}>({});
 
   React.useEffect(() => {
     const callback: IntersectionObserverCallback = (headings) => {
-      headingElementsRef.current = headings.reduce<any>(
-        (map, headingElement) => {
-          map[headingElement.target.getAttribute("data-key") || ""] =
-            headingElement;
+      heading_elements_ref.current = headings.reduce<any>(
+        (map, heading_element) => {
+          map[heading_element.target.getAttribute("data-key") || ""] =
+            heading_element;
           return map;
         },
-        headingElementsRef.current
+        heading_elements_ref.current
       );
 
       // Get all headings that are currently visible on the page
-      const visibleHeadings: IntersectionObserverEntry[] = [];
-      Object.keys(headingElementsRef.current).forEach((key) => {
-        const headingElement = (headingElementsRef.current as any)[
+      const visible_headings: IntersectionObserverEntry[] = [];
+      Object.keys(heading_elements_ref.current).forEach((key) => {
+        const heading_element = (heading_elements_ref.current as any)[
           key
         ] as IntersectionObserverEntry;
-        if (headingElement.isIntersecting) {
-          visibleHeadings.push(headingElement);
+        if (heading_element.isIntersecting) {
+          visible_headings.push(heading_element);
         }
       });
 
-      const getIndexFromKey = (key: NodeKey): number =>
-        tableOfContents.findIndex((heading) => heading[0] === key);
+      const get_index_from_key = (key: NodeKey): number =>
+        table_of_contents.findIndex((heading) => heading[0] === key);
 
       // Handle single visible heading
-      if (visibleHeadings.length === 1) {
-        setActiveHeading(
-          visibleHeadings[0].target.getAttribute("data-key") || ""
+      if (visible_headings.length === 1) {
+        set_active_heading(
+          visible_headings[0].target.getAttribute("data-key") || ""
         );
         // If there is more than one visible heading,
         // choose the one that is closest to the top of the page
-      } else if (visibleHeadings.length > 1) {
-        const sortedVisibleHeadings = visibleHeadings.sort((a, b) =>
-          getIndexFromKey(a.target.getAttribute("data-key") || "") >
-          getIndexFromKey(b.target.getAttribute("data-key") || "")
+      } else if (visible_headings.length > 1) {
+        const sorted_visible_headings = visible_headings.sort((a, b) =>
+          get_index_from_key(a.target.getAttribute("data-key") || "") >
+          get_index_from_key(b.target.getAttribute("data-key") || "")
             ? -1
             : 0
         );
 
-        setActiveHeading(
-          sortedVisibleHeadings[0].target.getAttribute("data-key") || ""
+        set_active_heading(
+          sorted_visible_headings[0].target.getAttribute("data-key") || ""
         );
       }
     };
@@ -82,159 +87,158 @@ const useHeadingsObserver = (
       rootMargin: "-52px 0px 0px 0px"
     });
 
-    for (const [headingKey] of tableOfContents) {
-      const element = editor.getElementByKey(headingKey);
+    for (const [heading_key] of table_of_contents) {
+      const element = editor.getElementByKey(heading_key);
 
       if (element) {
-        element.setAttribute("data-key", headingKey);
+        element.setAttribute("data-key", heading_key);
         observer.observe(element);
       }
     }
 
     return () => {
-      headingElementsRef.current = {};
+      heading_elements_ref.current = {};
       observer.disconnect();
     };
-  }, [editor, setActiveHeading, tableOfContents]);
+  }, [editor, set_active_heading, table_of_contents]);
 };
 
 /**
  * Converts a heading node to a heading entry
  * @param heading Heading node
  */
-const toEntry = (heading: HeadingNode): TableOfContentsEntry => [
+const to_entry = (heading: HeadingNode): TableOfContentsEntry => [
   heading.getKey(),
   heading.getTextContent(),
-  heading.getTag()
+  heading.get_tag()
 ];
 
 /**
  * Inserts a heading into the table of contents
- * @param prevHeading Previous heading
- * @param newHeading New heading
- * @param currentTableOfContents Current table of contents
+ * @param prev_heading Previous heading
+ * @param pext_heading New heading
+ * @param current_table_of_contents Current table of contents
  */
-const $insertHeadingIntoTableOfContents = (
-  prevHeading: HeadingNode | null,
-  newHeading: HeadingNode | null,
-  currentTableOfContents: TableOfContentsEntry[]
+const $insert_heading_into_table_of_contents = (
+  prev_heading: HeadingNode | null,
+  pext_heading: HeadingNode | null,
+  current_table_of_contents: TableOfContentsEntry[]
 ): TableOfContentsEntry[] => {
-  if (newHeading === null) {
-    return currentTableOfContents;
+  if (pext_heading === null) {
+    return current_table_of_contents;
   }
 
-  const newEntry: TableOfContentsEntry = toEntry(newHeading);
-  let newTableOfContents: TableOfContentsEntry[] = [];
+  const next_entry: TableOfContentsEntry = to_entry(pext_heading);
+  let next_table_of_contents: TableOfContentsEntry[] = [];
 
-  if (prevHeading === null) {
-    newTableOfContents = [newEntry, ...currentTableOfContents];
+  if (prev_heading === null) {
+    next_table_of_contents = [next_entry, ...current_table_of_contents];
   } else {
-    for (let i = 0; i < currentTableOfContents.length; i++) {
-      const key = currentTableOfContents[i][0];
-      newTableOfContents.push(currentTableOfContents[i]);
+    for (let i = 0; i < current_table_of_contents.length; i++) {
+      const key = current_table_of_contents[i][0];
+      next_table_of_contents.push(current_table_of_contents[i]);
 
-      if (key === prevHeading.getKey() && key !== newHeading.getKey()) {
-        newTableOfContents.push(newEntry);
+      if (key === prev_heading.getKey() && key !== pext_heading.getKey()) {
+        next_table_of_contents.push(next_entry);
       }
     }
   }
 
-  return newTableOfContents;
+  return next_table_of_contents;
 };
 
 /**
  * Removes a heading from the table of contents
  * @param key Heading key
- * @param currentTableOfContents Current table of contents
+ * @param current_table_of_contents Current table of contents
  */
-const $deleteHeadingFromTableOfContents = (
+const $delete_heading_from_table_of_contents = (
   key: NodeKey,
-  currentTableOfContents: TableOfContentsEntry[]
+  current_table_of_contents: TableOfContentsEntry[]
 ): TableOfContentsEntry[] => {
-  const newTableOfContents = [];
+  const next_table_of_contents = [];
 
-  for (const heading of currentTableOfContents) {
+  for (const heading of current_table_of_contents) {
     if (heading[0] !== key) {
-      newTableOfContents.push(heading);
+      next_table_of_contents.push(heading);
     }
   }
 
-  return newTableOfContents;
+  return next_table_of_contents;
 };
 
 /**
  * Updates a heading in the table of contents
  * @param heading Heading to update
- * @param currentTableOfContents Current table of contents
+ * @param current_table_of_contents Current table of contents
  */
-const $updateHeadingInTableOfContents = (
+const $update_heading_in_table_of_contents = (
   heading: HeadingNode,
-  currentTableOfContents: TableOfContentsEntry[]
+  current_table_of_contents: TableOfContentsEntry[]
 ): TableOfContentsEntry[] => {
-  const newTableOfContents: TableOfContentsEntry[] = [];
+  const next_table_of_contents: TableOfContentsEntry[] = [];
 
-  for (const oldHeading of currentTableOfContents) {
-    if (oldHeading[0] === heading.getKey()) {
-      newTableOfContents.push(toEntry(heading));
+  for (const old_heading of current_table_of_contents) {
+    if (old_heading[0] === heading.getKey()) {
+      next_table_of_contents.push(to_entry(heading));
     } else {
-      newTableOfContents.push(oldHeading);
+      next_table_of_contents.push(old_heading);
     }
   }
 
-  return newTableOfContents;
+  return next_table_of_contents;
 };
 
 /**
  * Returns the updated table of contents, placing the given `heading` before the given
- * `prevHeading`. If `prevHeading` is `undefined`, `heading` is placed at the start.
- * @param prevHeading Previous heading
+ * `prev_heading`. If `prev_heading` is `undefined`, `heading` is placed at the start.
+ * @param prev_heading Previous heading
  * @param heading Heading
- * @param currentTableOfContents Latest table of contents
+ * @param current_table_of_contents Latest table of contents
  */
-const $updateHeadingPosition = (
-  prevHeading: HeadingNode | null,
+const $update_heading_position = (
+  prev_heading: HeadingNode | null,
   heading: HeadingNode,
-  currentTableOfContents: TableOfContentsEntry[]
+  current_table_of_contents: TableOfContentsEntry[]
 ): TableOfContentsEntry[] => {
-  const newTableOfContents: TableOfContentsEntry[] = [];
-  const newEntry: TableOfContentsEntry = toEntry(heading);
+  const next_table_of_contents: TableOfContentsEntry[] = [];
+  const next_entry: TableOfContentsEntry = to_entry(heading);
 
-  if (!prevHeading) {
-    newTableOfContents.push(newEntry);
+  if (!prev_heading) {
+    next_table_of_contents.push(next_entry);
   }
 
-  for (const oldHeading of currentTableOfContents) {
-    if (oldHeading[0] === heading.getKey()) {
+  for (const old_heading of current_table_of_contents) {
+    if (old_heading[0] === heading.getKey()) {
       continue;
     }
 
-    newTableOfContents.push(oldHeading);
+    next_table_of_contents.push(old_heading);
 
-    if (prevHeading && oldHeading[0] === prevHeading.getKey()) {
-      newTableOfContents.push(newEntry);
+    if (prev_heading && old_heading[0] === prev_heading.getKey()) {
+      next_table_of_contents.push(next_entry);
     }
   }
 
-  return newTableOfContents;
+  return next_table_of_contents;
 };
 
 const TableOfContentsPlugin = (): React.ReactElement => {
-  const [editor] = useLexicalComposerContext();
-  const [tableOfContents, setTableOfContents] = React.useState<
+  const [editor] = use_lexical_composer_context();
+  const [table_of_contents, set_table_of_contents] = React.useState<
     TableOfContentsEntry[]
   >([]);
-  const [selectedKey, setSelectedKey] = React.useState("");
-  useHeadingsObserver(tableOfContents, setSelectedKey);
+  const [selected_key, set_selected_key] = React.useState("");
+  use_headings_observer(table_of_contents, set_selected_key);
 
   /**
    * Scrolls to the specified node
    * @param key Key of the node to scroll to
    */
-  const scrollToNode = (key: NodeKey): void => {
+  const scroll_to_node = (key: NodeKey): void => {
     editor.getEditorState().read(() => {
-      const domElement = editor.getElementByKey(key);
-
-      if (domElement) {
+      const dom_element = editor.getElementByKey(key);
+      if (dom_element) {
         domElement.scrollIntoView({ behavior: "smooth" });
       }
     });
@@ -242,83 +246,92 @@ const TableOfContentsPlugin = (): React.ReactElement => {
 
   React.useEffect(() => {
     // Set table of contents initial state
-    let currentTableOfContents: TableOfContentsEntry[] = [];
+    let current_table_of_contents: TableOfContentsEntry[] = [];
     editor.getEditorState().read(() => {
-      for (const child of $getRoot().getChildren().filter($isHeadingNode)) {
-        currentTableOfContents.push([
+      for (const child of $get_root().getChildren().filter($is_heading_node)) {
+        current_table_of_contents.push([
           child.getKey(),
           child.getTextContent(),
-          child.getTag()
+          child.get_tag()
         ]);
       }
 
-      setTableOfContents(currentTableOfContents);
+      set_table_of_contents(current_table_of_contents);
     });
 
-    return mergeRegister(
+    return merge_register(
       // Listen to updates to heading mutations and update state
-      editor.registerMutationListener(HeadingNode, (mutatedNodes) => {
+      editor.registerMutationListener(HeadingNode, (mutated_nodes) => {
         editor.getEditorState().read(() => {
-          for (const [nodeKey, mutation] of mutatedNodes) {
+          for (const [node_key, mutation] of mutated_nodes) {
             if (mutation === "created") {
-              const newHeading = $getNodeByKey<HeadingNode>(nodeKey);
+              const pext_heading = $get_node_by_key<HeadingNode>(node_key);
 
-              if (newHeading !== null) {
-                let prevHeading = newHeading.getPreviousSibling();
+              if (pext_heading !== null) {
+                let prev_heading = pext_heading.getPreviousSibling();
 
-                while (prevHeading !== null && !$isHeadingNode(prevHeading)) {
-                  prevHeading = prevHeading.getPreviousSibling();
+                while (
+                  prev_heading !== null &&
+                  !$is_heading_node(prev_heading)
+                ) {
+                  prev_heading = prev_heading.getPreviousSibling();
                 }
 
-                currentTableOfContents = $insertHeadingIntoTableOfContents(
-                  prevHeading,
-                  newHeading,
-                  currentTableOfContents
-                );
+                current_table_of_contents =
+                  $insert_heading_into_table_of_contents(
+                    prev_heading,
+                    pext_heading,
+                    current_table_of_contents
+                  );
               }
             } else if (mutation === "destroyed") {
-              currentTableOfContents = $deleteHeadingFromTableOfContents(
-                nodeKey,
-                currentTableOfContents
-              );
+              current_table_of_contents =
+                $delete_heading_from_table_of_contents(
+                  node_key,
+                  current_table_of_contents
+                );
             } else if (mutation === "updated") {
-              const newHeading = $getNodeByKey<HeadingNode>(nodeKey);
+              const pext_heading = $getNodeByKey<HeadingNode>(node_key);
 
-              if (newHeading !== null) {
-                let prevHeading = newHeading.getPreviousSibling();
+              if (pext_heading !== null) {
+                let prev_heading = pext_heading.getPreviousSibling();
 
-                while (prevHeading !== null && !$isHeadingNode(prevHeading)) {
-                  prevHeading = prevHeading.getPreviousSibling();
+                while (
+                  prev_heading !== null &&
+                  !$is_heading_node(prev_heading)
+                ) {
+                  prev_heading = prev_heading.getPreviousSibling();
                 }
 
-                currentTableOfContents = $updateHeadingPosition(
-                  prevHeading,
-                  newHeading,
-                  currentTableOfContents
+                current_table_of_contents = $update_heading_position(
+                  prev_heading,
+                  pext_heading,
+                  current_table_of_contents
                 );
               }
             }
           }
 
-          setTableOfContents(currentTableOfContents);
+          set_table_of_contents(current_table_of_contents);
         });
       }),
       // Listen to text node mutation updates
-      editor.registerMutationListener(TextNode, (mutatedNodes) => {
+      editor.registerMutationListener(TextNode, (mutated_nodes) => {
         editor.getEditorState().read(() => {
-          for (const [nodeKey, mutation] of mutatedNodes) {
+          for (const [node_key, mutation] of mutated_nodes) {
             if (mutation === "updated") {
-              const currNode = $getNodeByKey(nodeKey);
+              const curr_node = $get_node_by_key(node_key);
 
-              if (currNode !== null) {
-                const parentNode = currNode.getParentOrThrow();
+              if (curr_node !== null) {
+                const parent_node = curr_node.getParentOrThrow();
 
-                if ($isHeadingNode(parentNode)) {
-                  currentTableOfContents = $updateHeadingInTableOfContents(
-                    parentNode,
-                    currentTableOfContents
-                  );
-                  setTableOfContents(currentTableOfContents);
+                if ($is_heading_node(parent_node)) {
+                  current_table_of_contents =
+                    $update_heading_in_table_of_contents(
+                      parent_node,
+                      current_table_of_contents
+                    );
+                  set_table_of_contents(current_table_of_contents);
                 }
               }
             }
@@ -328,9 +341,9 @@ const TableOfContentsPlugin = (): React.ReactElement => {
     );
   }, [editor]);
 
-  return tableOfContents.length ? (
+  return table_of_contents.length ? (
     <ul className={clsx(styles.x, styles.toc)}>
-      {tableOfContents.map(([key, text, tag]) => (
+      {table_of_contents.map(([key, text, tag]) => (
         <Typography
           as={"li"}
           className={clsx(
@@ -340,12 +353,12 @@ const TableOfContentsPlugin = (): React.ReactElement => {
             styles.item,
             tag === "h3" && styles.sub,
             !text.trim() && styles.empty,
-            selectedKey === key && styles.selected
+            selected_key === key && styles.selected
           )}
           ellipsis
           key={key}
           level={"body2"}
-          onClick={(): void => scrollToNode(key)}
+          onClick={(): void => scroll_to_node(key)}
           role="button"
           tabIndex={0}
           title={text}

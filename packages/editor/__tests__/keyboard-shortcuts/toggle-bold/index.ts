@@ -7,7 +7,7 @@ import { keyDownCtrlOrMeta, keyUpCtrlOrMeta } from "../../utils";
  * Toggles bold text style
  * @param page Page
  */
-export const toggleBold = async (page: Page): Promise<void> => {
+export const toggle_bold = async (page: Page): Promise<void> => {
   await keyDownCtrlOrMeta(page);
   await page.keyboard.press(EDITOR_SHORTCUTS.bold.key);
   await keyUpCtrlOrMeta(page);

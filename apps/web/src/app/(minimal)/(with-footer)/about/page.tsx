@@ -7,8 +7,8 @@ import Button from "../../../../../../../packages/ui/src/components/button";
 import Divider from "../../../../../../../packages/ui/src/components/divider";
 import Spacer from "../../../../../../../packages/ui/src/components/spacer";
 import Typography from "../../../../../../../packages/ui/src/components/typography";
-import MailIcon from "~/icons/Mail";
-import TwitterIcon from "~/icons/Twitter";
+import MailIcon from "../../../../../../../packages/ui/src/icons/mail";
+import TwitterIcon from "../../../../../../../packages/ui/src/icons/twitter";
 
 import styles from "./styles.module.scss";
 

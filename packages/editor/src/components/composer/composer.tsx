@@ -2,35 +2,37 @@ import {
   InitialConfigType,
   LexicalComposer
 } from "@lexical/react/LexicalComposer";
-import { dev_console } from "../../../../shared/src/utils/dev-log";
+import { dev_console } from "@storiny/shared/src/utils/dev-log";
 import React from "react";
 
 import { EditorNamespace } from "../../constants";
-import { editorNodes } from "../../nodes";
-import { editorTheme } from "../../theme";
+import { EDITOR_NODES } from "../../nodes";
+import { EDITOR_THEME } from "../../theme";
 
 const EditorComposer = ({
   children,
-  ignoreTheme,
-  ignoreNodes,
-  readOnly
+  ignore_theme,
+  ignore_nodes,
+  read_only
 }: {
   children: React.ReactElement;
-  ignoreNodes?: boolean;
-  ignoreTheme?: boolean;
-  readOnly?: boolean;
+  ignore_nodes?: boolean;
+  ignore_theme?: boolean;
+  read_only?: boolean;
 }): React.ReactElement => {
-  const initialConfig: InitialConfigType = {
+  const INITIAL_CONFIG: InitialConfigType = {
+    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     editorState: null, // `null` is required here to allow yjs to set the initial state
     namespace: EditorNamespace.MAIN,
+    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     onError: dev_console.error,
-    nodes: ignoreNodes ? undefined : editorNodes,
-    theme: ignoreTheme ? undefined : editorTheme,
-    editable: !readOnly
+    nodes: ignore_nodes ? undefined : EDITOR_NODES,
+    theme: ignore_theme ? undefined : EDITOR_THEME,
+    editable: !read_only
   };
 
   return (
-    <LexicalComposer initialConfig={initialConfig}>{children}</LexicalComposer>
+    <LexicalComposer initialConfig={INITIAL_CONFIG}>{children}</LexicalComposer>
   );
 };
 

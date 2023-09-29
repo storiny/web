@@ -1,13 +1,13 @@
 import { clsx } from "clsx";
-import { useAtomValue } from "jotai";
+import { useAtomValue as use_atom_value } from "jotai";
 import React from "react";
 
 import IconButton from "../../../../../../ui/src/components/icon-button";
 import Menu from "../../../../../../ui/src/components/menu";
-import PlusIcon from "~/icons/Plus";
+import PlusIcon from "../../../../../../ui/src/icons/plus";
 
-import { docStatusAtom } from "../../../../atoms";
-import toolbarStyles from "../../toolbar.module.scss";
+import { doc_status_atom } from "../../../../atoms";
+import toolbar_styles from "../../toolbar.module.scss";
 import CodeBlockMenuItem from "./code-block";
 import EmbedMenuItem from "./embed";
 import EmojiMenuItem from "./emoji";
@@ -16,8 +16,8 @@ import ImageMenuItem from "./image";
 import SymbolMenuItem from "./symbol";
 
 const ToolbarInsertItem = (): React.ReactElement => {
-  const docStatus = use_atom_value(docStatusAtom);
-  const documentLoading = ["connecting", "reconnecting"].includes(docStatus);
+  const doc_status = use_atom_value(doc_status_atom);
+  const document_loading = ["connecting", "reconnecting"].includes(doc_status);
 
   return (
     <Menu
@@ -32,10 +32,10 @@ const ToolbarInsertItem = (): React.ReactElement => {
           aria-label={"Insert"}
           className={clsx(
             "focus-invert",
-            toolbarStyles.x,
-            toolbarStyles.button
+            toolbar_styles.x,
+            toolbar_styles.button
           )}
-          disabled={documentLoading}
+          disabled={document_loading}
           size={"lg"}
           title={"Insert"}
           variant={"ghost"}

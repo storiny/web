@@ -12,14 +12,13 @@ import ColorPicker, {
   str_to_color,
   TColor
 } from "../../../../../ui/src/entities/color-picker";
-
 import {
   DEFAULT_CANVAS_FILL,
   MAX_OPACITY,
   MIN_OPACITY,
   SWATCH
 } from "../../../constants";
-import { useCanvas } from "../../../hooks";
+import { use_canvas } from "../../../hooks";
 import DrawItem, { DrawItemRow } from "../draw/item";
 import common_styles from "../draw/items/common.module.scss";
 import styles from "./canvas.module.scss";
@@ -29,7 +28,7 @@ import styles from "./canvas.module.scss";
  * @param hex Hex string
  * @param a Alpha value
  */
-const hex_to_rgbaString = (hex: string, a: number): string => {
+const hex_to_rgba_string = (hex: string, a: number): string => {
   const { r, g, b } = hex_to_rgb(hex);
   return `rgba(${r},${g},${b},${a / 100})`;
 };
@@ -37,29 +36,29 @@ const hex_to_rgbaString = (hex: string, a: number): string => {
 // Canvas fill
 
 const FillControl = ({ canvas }: { canvas: Canvas }): React.ReactElement => {
-  const [fill, setFill] = React.useState<TColor>(
+  const [fill, set_fill] = React.useState<TColor>(
     str_to_color((canvas.backgroundColor as string) || DEFAULT_CANVAS_FILL)!
   );
-  const [value, setValue] = React.useState(`#${fill.hex}`);
+  const [value, set_value] = React.useState(`#${fill.hex}`);
 
   /**
    * Mutates the fill of the canvas
    */
-  const changeFill = React.useCallback(
-    (newFill: TColor) => {
-      setFill(newFill);
-      canvas.backgroundColor = newFill.str;
+  const change_fill = React.useCallback(
+    (next_fill: TColor) => {
+      set_fill(next_fill);
+      canvas.backgroundColor = next_fill.str;
       canvas.requestRenderAll();
     },
     [canvas]
   );
 
   React.useEffect(() => {
-    setValue(`#${fill.hex}`);
+    set_value(`#${fill.hex}`);
   }, [fill]);
 
   React.useEffect(() => {
-    setFill(
+    set_fill(
       str_to_color((canvas.backgroundColor as string) || DEFAULT_CANVAS_FILL)!
     );
   }, [canvas.backgroundColor]);
@@ -70,10 +69,7 @@ const FillControl = ({ canvas }: { canvas: Canvas }): React.ReactElement => {
         <Input
           aria-label={"Canvas fill"}
           decorator={
-            <ColorPicker
-              defaultValue={fill}
-              onChange={(value): void => changeFill(value)}
-            >
+            <ColorPicker default_value={fill} on_change={change_fill}>
               <button
                 aria-label={"Pick a color"}
                 className={clsx(
@@ -92,11 +88,10 @@ const FillControl = ({ canvas }: { canvas: Canvas }): React.ReactElement => {
           }
           monospaced
           onChange={(event): void => {
-            setValue(event.target.value);
-            const newColor = str_to_color(event.target.value);
-
-            if (newColor) {
-              changeFill(newColor);
+            set_value(event.target.value);
+            const next_color = str_to_color(event.target.value);
+            if (next_color) {
+              change_fill(next_color);
             }
           }}
           placeholder={"Fill"}
@@ -120,7 +115,7 @@ const FillControl = ({ canvas }: { canvas: Canvas }): React.ReactElement => {
             const a = Number.parseInt(event.target.value) || 0;
             const { r, g, b } = hex_to_rgb(fill.hex);
 
-            changeFill({
+            change_fill({
               ...fill,
               str: `rgba(${r},${g},${b},${a / 100})`,
               a
@@ -144,17 +139,17 @@ const FillControl = ({ canvas }: { canvas: Canvas }): React.ReactElement => {
         <ToggleGroup
           className={"f-grow"}
           onValueChange={(newValue: string): void => {
-            const newColor = SWATCH[newValue as keyof typeof SWATCH];
-            if (newColor) {
-              changeFill(str_to_color(newColor || DEFAULT_CANVAS_FILL)!);
+            const next_color = SWATCH[newValue as keyof typeof SWATCH];
+            if (next_color) {
+              change_fill(str_to_color(next_color || DEFAULT_CANVAS_FILL)!);
             }
           }}
           size={"xs"}
           style={{ gap: "8px" }}
           value={
-            hex_to_rgbaString(fill.hex, fill.a) === SWATCH.dark
+            hex_to_rgba_string(fill.hex, fill.a) === SWATCH.dark
               ? "dark"
-              : hex_to_rgbaString(fill.hex, fill.a) === SWATCH.light
+              : hex_to_rgba_string(fill.hex, fill.a) === SWATCH.light
               ? "light"
               : fill.a === 0
               ? "transparent"
@@ -198,7 +193,7 @@ const FillControl = ({ canvas }: { canvas: Canvas }): React.ReactElement => {
 };
 
 const CanvasTools = (): React.ReactElement | null => {
-  const canvas = useCanvas();
+  const canvas = use_canvas();
 
   if (!canvas.current) {
     return null;

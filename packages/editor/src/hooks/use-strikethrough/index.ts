@@ -1,20 +1,20 @@
-import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { useAtomValue } from "jotai";
+import { useLexicalComposerContext as use_lexical_composer_context } from "@lexical/react/LexicalComposerContext";
+import { useAtomValue as use_atom_value } from "jotai";
 import { FORMAT_TEXT_COMMAND } from "lexical";
 import React from "react";
 
-import { strikethroughAtom } from "../../atoms";
+import { strikethrough_atom } from "../../atoms";
 
 /**
  * Hooks for using strikethrough text style
  */
-export const useStrikethrough = (): [boolean, () => void] => {
-  const strikethrough = use_atom_value(strikethroughAtom);
-  const [editor] = useLexicalComposerContext();
+export const use_strikethrough = (): [boolean, () => void] => {
+  const strikethrough = use_atom_value(strikethrough_atom);
+  const [editor] = use_lexical_composer_context();
 
-  const toggleStrikethrough = React.useCallback(() => {
+  const toggle_strikethrough = React.useCallback(() => {
     editor.dispatchCommand(FORMAT_TEXT_COMMAND, "strikethrough");
   }, [editor]);
 
-  return [strikethrough, toggleStrikethrough];
+  return [strikethrough, toggle_strikethrough];
 };

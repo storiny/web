@@ -6,7 +6,7 @@ export interface ImageLayoutToggleGroupProps {
   /**
    * Whether the `fit` layout is disabled
    */
-  fitDisabled: boolean;
+  fit_disabled: boolean;
   /**
    * Image node layout
    */
@@ -14,5 +14,5 @@ export interface ImageLayoutToggleGroupProps {
   /**
    * Image node key
    */
-  nodeKey: NodeKey;
+  node_key: NodeKey;
 }

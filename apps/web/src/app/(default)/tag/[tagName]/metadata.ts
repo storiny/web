@@ -11,10 +11,10 @@ export const generateMetadata = async ({
   const { tagName } = params;
 
   try {
-    const userId = await getUser();
+    const user_id = await getUser();
     const tag = await getTag({
       name: tagName,
-      current_user_id: userId || undefined
+      current_user_id: user_id || undefined
     });
     const description = `Read stories tagged with #${tag.name} on Storiny.`;
 

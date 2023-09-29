@@ -10,7 +10,7 @@ import { keyDownCtrlOrMeta, keyUpCtrlOrMeta } from "../../utils";
 export const toggleNumberedList = async (page: Page): Promise<void> => {
   await keyDownCtrlOrMeta(page);
   await page.keyboard.down("Shift");
-  await page.keyboard.press(EDITOR_SHORTCUTS.numberedList.key);
+  await page.keyboard.press(EDITOR_SHORTCUTS.numbered_list.key);
   await page.keyboard.up("Shift");
   await keyUpCtrlOrMeta(page);
 };

@@ -1,30 +1,30 @@
 import clsx from "clsx";
-import { useAtom, useSetAtom } from "jotai";
+import { useAtom as use_atom, useSetAtom as use_set_atom } from "jotai";
 import React from "react";
-import { useHotkeys } from "react-hotkeys-hook";
-import { useFilePicker } from "use-file-picker";
+import { useHotkeys as use_hot_keys } from "react-hotkeys-hook";
+import { useFilePicker as use_file_picker } from "use-file-picker";
 
 import ScrollArea from "../../../../ui/src/components/scroll-area";
 import Separator from "../../../../ui/src/components/separator";
 import Tab from "../../../../ui/src/components/tab";
 import Tabs from "../../../../ui/src/components/tabs";
 import TabsList from "../../../../ui/src/components/tabs-list";
-import { use_toast } from "../../../../ui/src/components/toast";
+import { use_toast } from "~/components/toast";
 import Tooltip, { TooltipProps } from "../../../../ui/src/components/tooltip";
-import ArrowIcon from "~/icons/Arrow";
-import CircleIcon from "~/icons/Circle";
-import DiamondIcon from "~/icons/Diamond";
-import FiltersIcon from "~/icons/Filters";
-import HandIcon from "~/icons/Hand";
-import ImageIcon from "~/icons/Image";
-import LineIcon from "~/icons/Line";
-import PencilIcon from "~/icons/Pencil";
-import RectangleIcon from "~/icons/Rectangle";
-import SelectIcon from "~/icons/Select";
-import TypographyIcon from "~/icons/Typography";
+import ArrowIcon from "../../../../ui/src/icons/arrow";
+import CircleIcon from "../../../../ui/src/icons/circle";
+import DiamondIcon from "../../../../ui/src/icons/diamond";
+import FiltersIcon from "../../../../ui/src/icons/filters";
+import HandIcon from "../../../../ui/src/icons/hand";
+import ImageIcon from "../../../../ui/src/icons/image";
+import LineIcon from "../../../../ui/src/icons/line";
+import PencilIcon from "../../../../ui/src/icons/pencil";
+import RectangleIcon from "../../../../ui/src/icons/rectangle";
+import SelectIcon from "../../../../ui/src/icons/select";
+import TypographyIcon from "../../../../ui/src/icons/typography";
 import { truncate } from "~/utils/truncate";
 
-import { isPenModeAtom, toolAtom } from "../../atoms";
+import { is_pen_mode_atom, tool_atom } from "../../atoms";
 import {
   CURSORS,
   DEFAULT_LAYER_COLOR,
@@ -33,22 +33,22 @@ import {
   LayerType,
   Tool
 } from "../../constants";
-import { useCanvas } from "../../hooks";
+import { use_canvas } from "../../hooks";
 import { Image, PenBrush } from "../../lib";
 import styles from "./tools.module.scss";
-import { useShortcuts } from "./useShortcuts";
+import { use_shortcuts } from "./use-shortcuts";
 
 // Tooltip with right position
 
 const PositionedTooltip = ({
   slot_props,
   children,
-  shortcutKey,
+  shortcut_key,
   ...rest
-}: TooltipProps & { shortcutKey?: string }): React.ReactElement => (
+}: TooltipProps & { shortcut_key?: string }): React.ReactElement => (
   <Tooltip
     {...rest}
-    right_slot={shortcutKey}
+    right_slot={shortcut_key}
     slot_props={{
       ...slot_props,
       content: { ...slot_props?.content, side: "right" }
@@ -62,7 +62,7 @@ const PositionedTooltip = ({
 
 const ShapeTools = (): React.ReactElement => (
   <React.Fragment>
-    <PositionedTooltip content={"Rectangle tool"} shortcutKey={"R"}>
+    <PositionedTooltip content={"Rectangle tool"} shortcut_key={"R"}>
       <Tab
         aria-controls={undefined}
         aria-label={"Rectangle tool"}
@@ -72,7 +72,7 @@ const ShapeTools = (): React.ReactElement => (
         value={Tool.RECTANGLE}
       />
     </PositionedTooltip>
-    <PositionedTooltip content={"Diamond tool"} shortcutKey={"D"}>
+    <PositionedTooltip content={"Diamond tool"} shortcut_key={"D"}>
       <Tab
         aria-controls={undefined}
         aria-label={"Diamond tool"}
@@ -82,7 +82,7 @@ const ShapeTools = (): React.ReactElement => (
         value={Tool.DIAMOND}
       />
     </PositionedTooltip>
-    <PositionedTooltip content={"Ellipse tool"} shortcutKey={"O"}>
+    <PositionedTooltip content={"Ellipse tool"} shortcut_key={"O"}>
       <Tab
         aria-controls={undefined}
         aria-label={"Ellipse tool"}
@@ -92,7 +92,7 @@ const ShapeTools = (): React.ReactElement => (
         value={Tool.ELLIPSE}
       />
     </PositionedTooltip>
-    <PositionedTooltip content={"Line tool"} shortcutKey={"L"}>
+    <PositionedTooltip content={"Line tool"} shortcut_key={"L"}>
       <Tab
         aria-controls={undefined}
         aria-label={"Line tool"}
@@ -104,7 +104,7 @@ const ShapeTools = (): React.ReactElement => (
         value={Tool.LINE}
       />
     </PositionedTooltip>
-    <PositionedTooltip content={"Arrow tool"} shortcutKey={"Shift+L"}>
+    <PositionedTooltip content={"Arrow tool"} shortcut_key={"Shift+L"}>
       <Tab
         aria-controls={undefined}
         aria-label={"Arrow tool"}
@@ -134,19 +134,23 @@ const ShapeTools = (): React.ReactElement => (
 // Image tool
 
 const ImageTool = (): React.ReactElement => {
-  const canvas = useCanvas();
+  const canvas = use_canvas();
   const toast = use_toast();
-  const [openFileSelector] = useFilePicker({
+  const [open_file_selector] = use_file_picker({
+    /* eslint-disable prefer-snakecase/prefer-snakecase */
     readAs: "DataURL",
     accept: "image/*",
     multiple: false,
     limitFilesConfig: { max: 1, min: 1 },
+    /* eslint-enable prefer-snakecase/prefer-snakecase */
+    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     onFilesRejected: () => {
       toast("Unable to import the image", "error");
     },
-    onFilesSuccessfulySelected: ({ filesContent }) => {
-      if (filesContent[0]) {
-        const file = filesContent[0];
+    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+    onFilesSuccessfulySelected: ({ filesContent: files_content }) => {
+      if (files_content[0]) {
+        const file = files_content[0];
         Image.fromURL(file.content).then((loaded) => {
           if (canvas.current) {
             loaded.set({
@@ -163,16 +167,16 @@ const ImageTool = (): React.ReactElement => {
       }
     }
   });
-  useHotkeys("i", () => openFileSelector());
+  use_hot_keys("i", () => open_file_selector());
 
   return (
-    <PositionedTooltip content={"Image tool"} shortcutKey={"I"}>
+    <PositionedTooltip content={"Image tool"} shortcut_key={"I"}>
       <Tab
         aria-controls={undefined}
         aria-label={"Image tool"}
         className={clsx(styles.x, styles.tool)}
         decorator={<ImageIcon className={clsx(styles.x, styles.icon)} />}
-        onClick={openFileSelector}
+        onClick={open_file_selector}
         role={undefined}
         value={Tool.IMAGE}
       />
@@ -181,40 +185,38 @@ const ImageTool = (): React.ReactElement => {
 };
 
 const Tools = (): React.ReactElement => {
-  const canvas = useCanvas();
-  // const activeObject = useActiveObject();
-  const [tool, setTool] = use_atom(toolAtom);
-  const setPenMode = use_set_atom(isPenModeAtom);
-  // const isImageObjectActive = activeObject && isImageObject(activeObject);
-  useShortcuts();
+  const canvas = use_canvas();
+  const [tool, set_tool] = use_atom(tool_atom);
+  const set_pen_mode = use_set_atom(is_pen_mode_atom);
+  use_shortcuts();
 
   /**
    * Toggles shape drawing mode
    */
-  const toggleDrawMode = React.useCallback(
+  const toggle_draw_mode = React.useCallback(
     (shape: DrawableLayerType | null): void => {
       if (canvas.current) {
         if (shape) {
-          canvas.current.drawManager.setLayerType(shape);
-          canvas.current.drawManager.setEnabled(true);
-          canvas.current.drawManager.setDrawComplete(() =>
-            setTool(DEFAULT_TOOL)
+          canvas.current.draw_manager.set_layer_type(shape);
+          canvas.current.draw_manager.set_enabled(true);
+          canvas.current.draw_manager.set_draw_complete(() =>
+            set_tool(DEFAULT_TOOL)
           );
         } else {
-          canvas.current.drawManager.setEnabled(false);
+          canvas.current.draw_manager.set_enabled(false);
         }
       }
     },
-    [canvas, setTool]
+    [canvas, set_tool]
   );
 
   /**
    * Toggles panning mode
    */
-  const togglePanMode = React.useCallback(
+  const toggle_pan_mode = React.useCallback(
     (enabled: boolean): void => {
       if (canvas.current) {
-        canvas.current.panManager.setEnabled(enabled);
+        canvas.current.pan_manager.set_enabled(enabled);
       }
     },
     [canvas]
@@ -223,50 +225,50 @@ const Tools = (): React.ReactElement => {
   /**
    * Toggles pen mode
    */
-  const togglePenMode = React.useCallback(
+  const toggle_pen_mode = React.useCallback(
     (enabled: boolean): void => {
       if (canvas.current) {
         if (enabled) {
-          setPenMode(true);
+          set_pen_mode(true);
           canvas.current.isDrawingMode = true;
           canvas.current.freeDrawingBrush = new PenBrush(canvas.current);
           canvas.current.freeDrawingBrush.color = DEFAULT_LAYER_COLOR;
           canvas.current.freeDrawingCursor = CURSORS.pen(DEFAULT_LAYER_COLOR);
         } else {
-          setPenMode(false);
+          set_pen_mode(false);
           canvas.current.isDrawingMode = false;
         }
       }
     },
-    [canvas, setPenMode]
+    [canvas, set_pen_mode]
   );
 
   React.useEffect(() => {
-    togglePenMode(tool === Tool.PEN);
+    toggle_pen_mode(tool === Tool.PEN);
 
     switch (tool) {
       case Tool.RECTANGLE:
-        toggleDrawMode(LayerType.RECTANGLE);
+        toggle_draw_mode(LayerType.RECTANGLE);
         break;
       case Tool.DIAMOND:
-        toggleDrawMode(LayerType.DIAMOND);
+        toggle_draw_mode(LayerType.DIAMOND);
         break;
       case Tool.ELLIPSE:
-        toggleDrawMode(LayerType.ELLIPSE);
+        toggle_draw_mode(LayerType.ELLIPSE);
         break;
       case Tool.LINE:
-        toggleDrawMode(LayerType.LINE);
+        toggle_draw_mode(LayerType.LINE);
         break;
       case Tool.ARROW:
-        toggleDrawMode(LayerType.ARROW);
+        toggle_draw_mode(LayerType.ARROW);
         break;
       default:
-        toggleDrawMode(null);
+        toggle_draw_mode(null);
         break;
     }
 
-    togglePanMode(tool === Tool.HAND);
-  }, [toggleDrawMode, togglePanMode, togglePenMode, tool]);
+    toggle_pan_mode(tool === Tool.HAND);
+  }, [toggle_draw_mode, toggle_pan_mode, toggle_pen_mode, tool]);
 
   return (
     <ScrollArea
@@ -276,16 +278,17 @@ const Tools = (): React.ReactElement => {
           className: clsx(styles.x, styles.thumb)
         },
         scrollbar: {
+          // eslint-disable-next-line prefer-snakecase/prefer-snakecase
           style: { backgroundColor: "transparent", border: "none", zIndex: 1 }
         }
       }}
       type={"hover"}
     >
       <Tabs
-        onValueChange={(newValue): void => {
+        onValueChange={(next_value: Tool): void => {
           // Do not select image tool
-          if (newValue !== Tool.IMAGE) {
-            setTool(newValue as Tool);
+          if (next_value !== Tool.IMAGE) {
+            set_tool(next_value);
           }
         }}
         orientation={"vertical"}
@@ -293,7 +296,7 @@ const Tools = (): React.ReactElement => {
         value={tool}
       >
         <TabsList aria-orientation={undefined} loop={false} role={undefined}>
-          <PositionedTooltip content={"Select tool"} shortcutKey={"V"}>
+          <PositionedTooltip content={"Select tool"} shortcut_key={"V"}>
             <Tab
               aria-controls={undefined}
               aria-label={"Select tool"}
@@ -303,7 +306,7 @@ const Tools = (): React.ReactElement => {
               value={Tool.SELECT}
             />
           </PositionedTooltip>
-          <PositionedTooltip content={"Hand tool"} shortcutKey={"H"}>
+          <PositionedTooltip content={"Hand tool"} shortcut_key={"H"}>
             <Tab
               aria-controls={undefined}
               aria-label={"Hand tool"}
@@ -313,7 +316,7 @@ const Tools = (): React.ReactElement => {
               value={Tool.HAND}
             />
           </PositionedTooltip>
-          <PositionedTooltip content={"Pen tool"} shortcutKey={"P"}>
+          <PositionedTooltip content={"Pen tool"} shortcut_key={"P"}>
             <Tab
               aria-controls={undefined}
               aria-label={"Pen tool"}
@@ -333,7 +336,6 @@ const Tools = (): React.ReactElement => {
               decorator={
                 <FiltersIcon className={clsx(styles.x, styles.icon)} />
               }
-              // disabled={!isImageObjectActive}
               disabled
               role={undefined}
               value={Tool.FILTERS}

@@ -3,7 +3,7 @@
 import { MOCK_STORIES } from "@storiny/ui/src/mocks";
 import type { Meta, StoryObj } from "@storybook/react";
 import { clsx } from "clsx";
-import { decompressSync } from "fflate";
+import { decompressSync as decompress_sync } from "fflate";
 import React from "react";
 
 import { render_with_state } from "~/redux/mock";
@@ -17,7 +17,7 @@ const meta: Meta<typeof Editor> = {
     layout: "fullscreen"
   },
   args: {
-    docId: "demo",
+    doc_id: "demo",
     role: "editor",
     story: MOCK_STORIES[5]
   },
@@ -42,7 +42,7 @@ export const Default: Story = {
 };
 
 // Binary sample document
-const READ_ONLY_DATA = decompressSync(
+const READ_ONLY_DATA = decompress_sync(
   Uint8Array.from([
     31, 139, 8, 0, 167, 40, 12, 101, 2, 3, 205, 86, 205, 138, 29, 69, 20, 238,
     190, 127, 19, 39, 33, 152, 152, 7, 56, 100, 51, 89, 220, 25, 66, 124, 0,
@@ -127,8 +127,8 @@ export const ReadOnly: Story = {
   ...Default,
   args: {
     ...Default.args,
-    readOnly: true,
-    initialDoc: READ_ONLY_DATA
+    read_only: true,
+    initial_doc: READ_ONLY_DATA
   }
 };
 
@@ -137,7 +137,7 @@ export const Published: Story = {
   args: {
     ...Default.args,
     status: "published",
-    initialDoc: READ_ONLY_DATA
+    initial_doc: READ_ONLY_DATA
   }
 };
 
@@ -146,6 +146,6 @@ export const Deleted: Story = {
   args: {
     ...Default.args,
     status: "deleted",
-    initialDoc: READ_ONLY_DATA
+    initial_doc: READ_ONLY_DATA
   }
 };

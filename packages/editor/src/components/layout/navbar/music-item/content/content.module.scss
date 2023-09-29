@@ -2,7 +2,6 @@ $default-record-cover: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQAAAA
 $record-spin-duration: 3600ms;
 
 .x {
-  /* Turntable */
   &.turntable {
     min-height: 148px;
     padding: 12px;
@@ -13,12 +12,10 @@ $record-spin-duration: 3600ms;
     background-color: var(--bg-elevation-md);
   }
 
-  /* Player */
   &.player {
     gap: 4px;
   }
 
-  /* Record */
   &.record {
     $offset: 10; // Strip offset
 
@@ -34,11 +31,17 @@ $record-spin-duration: 3600ms;
     background-position: center;
     background-size: cover;
     background-image: var(--cover, $default-record-cover);
-    box-shadow: 0 0 0 #{$offset}px #000, 0 0 0 #{$offset + 1}px #343434,
-      0 0 0 #{$offset + 4}px #000, 0 0 0 #{$offset + 5}px #343434,
-      0 0 0 #{$offset + 8}px #000, 0 0 0 #{$offset + 9}px #343434,
-      0 0 0 #{$offset + 12}px #000, 0 0 0 #{$offset + 13}px #343434,
-      0 0 0 #{$offset + 16}px #000, 0 0 0 #{$offset + 17}px #343434,
+    box-shadow:
+      0 0 0 #{$offset}px #000,
+      0 0 0 #{$offset + 1}px #343434,
+      0 0 0 #{$offset + 4}px #000,
+      0 0 0 #{$offset + 5}px #343434,
+      0 0 0 #{$offset + 8}px #000,
+      0 0 0 #{$offset + 9}px #343434,
+      0 0 0 #{$offset + 12}px #000,
+      0 0 0 #{$offset + 13}px #343434,
+      0 0 0 #{$offset + 16}px #000,
+      0 0 0 #{$offset + 17}px #343434,
       0 0 0 #{$offset + 21}px #000;
     animation: record-spin $record-spin-duration linear infinite forwards paused;
 
@@ -92,13 +95,11 @@ $record-spin-duration: 3600ms;
     }
   }
 
-  /* Tone arm and base */
   &.tone-arm,
   &.base {
     transition: transform 450ms ease;
   }
 
-  /* Tone arm */
   &.tone-arm {
     filter: drop-shadow(var(--shadow-xs));
     transform-origin: calc(100% - 8px) 8px; // 8px = Tone arm base radius
@@ -129,15 +130,12 @@ $record-spin-duration: 3600ms;
     filter: drop-shadow(0 1px 1px rgba(0 0 0 / 25%));
   }
 
-  /* Actions */
   &.actions {
     align-self: stretch;
     justify-content: flex-end;
     gap: 8px;
   }
 }
-
-/* Animations */
 
 @keyframes record-spin {
   from {

@@ -7,15 +7,14 @@ import IconButton, {
 } from "../../../../../../../ui/src/components/icon-button";
 import Spacer from "../../../../../../../ui/src/components/spacer";
 import Tooltip from "../../../../../../../ui/src/components/tooltip";
-import LayoutAlignBottomIcon from "~/icons/LayoutAlignBottom";
-import LayoutAlignCenterIcon from "~/icons/LayoutAlignCenter";
-import LayoutAlignLeftIcon from "~/icons/LayoutAlignLeft";
-import LayoutAlignMiddleIcon from "~/icons/LayoutAlignMiddle";
-import LayoutAlignRightIcon from "~/icons/LayoutAlignRight";
-import LayoutAlignTopIcon from "~/icons/LayoutAlignTop";
-
-import { useCanvas, useEventRender } from "../../../../../hooks";
-import { isGroup, modifyObject } from "../../../../../utils";
+import LayoutAlignBottomIcon from "../../../../../../../ui/src/icons/layout-align-bottom";
+import LayoutAlignCenterIcon from "../../../../../../../ui/src/icons/layout-align-center";
+import LayoutAlignLeftIcon from "../../../../../../../ui/src/icons/layout-align-left";
+import LayoutAlignMiddleIcon from "../../../../../../../ui/src/icons/layout-align-middle";
+import LayoutAlignRightIcon from "../../../../../../../ui/src/icons/layout-align-right";
+import LayoutAlignTopIcon from "../../../../../../../ui/src/icons/layout-align-top";
+import { use_canvas, use_event_render } from "../../../../../hooks";
+import { is_group, modify_object } from "../../../../../utils";
 import DrawItem, { DrawItemRow } from "../../item";
 import styles from "./alignment.module.scss";
 
@@ -36,71 +35,71 @@ const AlignButton = ({
 );
 
 const Alignment = (): React.ReactElement | null => {
-  const canvas = useCanvas();
-  const activeObjects = canvas.current?.getActiveObjects();
-  const group = activeObjects?.length > 1 && activeObjects?.[0]?.group;
+  const canvas = use_canvas();
+  const active_objects = canvas.current?.getActiveObjects();
+  const group = active_objects?.length > 1 && active_objects?.[0]?.group;
 
-  useEventRender("selection:created", () => false);
-  useEventRender("selection:updated", () => true);
-  useEventRender("selection:cleared", () => true);
+  use_event_render("selection:created", () => false);
+  use_event_render("selection:updated", () => true);
+  use_event_render("selection:cleared", () => true);
 
   /**
    * Changes the alignment of the object
-   * @param newAlignment New alignment
+   * @param next_alignemnt New alignment
    */
-  const changeAlignment = React.useCallback(
-    (newAlignemnt: TAlignment) => {
+  const change_alignment = React.useCallback(
+    (next_alignemnt: TAlignment) => {
       if (!group) {
         return;
       }
 
       for (const object of group.getObjects()) {
-        const boundingRect = object.getBoundingRect(true);
+        const bounding_rect = object.getBoundingRect(true);
 
-        switch (newAlignemnt) {
+        switch (next_alignemnt) {
           case "top":
-            modifyObject(object, {
-              top: group.top - boundingRect.top + object.top
+            modify_object(object, {
+              top: group.top - bounding_rect.top + object.top
             });
             break;
           case "left":
-            modifyObject(object, {
-              left: group.left - boundingRect.left + object.left
+            modify_object(object, {
+              left: group.left - bounding_rect.left + object.left
             });
             break;
           case "bottom":
-            modifyObject(object, {
+            modify_object(object, {
               top:
                 group.top +
                 group.height -
-                (boundingRect.top + boundingRect.height) +
+                (bounding_rect.top + bounding_rect.height) +
                 object.top
             });
             break;
           case "right":
-            modifyObject(object, {
+            modify_object(object, {
               left:
                 group.left +
                 group.width -
-                (boundingRect.left + boundingRect.width) +
+                (bounding_rect.left + bounding_rect.width) +
                 object.left
             });
             break;
           case "center":
-            modifyObject(object, {
+            modify_object(object, {
               left:
                 group.left +
                 group.width / 2 -
-                (boundingRect.left + boundingRect.width / 2) +
+                (bounding_rect.left + bounding_rect.width / 2) +
                 object.left
             });
             break;
           case "middle":
-            modifyObject(object, {
+            modify_object(object, {
               top:
                 group.top +
                 group.height / 2 -
-                (boundingRect.top + boundingRect.height / 2) +
+                (bounding_rect.top + bounding_rect.height / 2) +
                 object.top
             });
             break;
@@ -113,7 +112,7 @@ const Alignment = (): React.ReactElement | null => {
     [canvas, group]
   );
 
-  if (!group || !isGroup(group)) {
+  if (!group || !is_group(group)) {
     return null;
   }
 
@@ -129,42 +128,42 @@ const Alignment = (): React.ReactElement | null => {
         >
           <AlignButton
             aria-label={"Align left"}
-            onClick={(): void => changeAlignment("left")}
+            onClick={(): void => change_alignment("left")}
             tooltip_content={"Align left"}
           >
             <LayoutAlignLeftIcon />
           </AlignButton>
           <AlignButton
             aria-label={"Align center"}
-            onClick={(): void => changeAlignment("center")}
+            onClick={(): void => change_alignment("center")}
             tooltip_content={"Align center"}
           >
             <LayoutAlignCenterIcon />
           </AlignButton>
           <AlignButton
             aria-label={"Align right"}
-            onClick={(): void => changeAlignment("right")}
+            onClick={(): void => change_alignment("right")}
             tooltip_content={"Align right"}
           >
             <LayoutAlignRightIcon />
           </AlignButton>
           <AlignButton
             aria-label={"Align top"}
-            onClick={(): void => changeAlignment("top")}
+            onClick={(): void => change_alignment("top")}
             tooltip_content={"Align top"}
           >
             <LayoutAlignTopIcon />
           </AlignButton>
           <AlignButton
             aria-label={"Align middle"}
-            onClick={(): void => changeAlignment("middle")}
+            onClick={(): void => change_alignment("middle")}
             tooltip_content={"Align middle"}
           >
             <LayoutAlignMiddleIcon />
           </AlignButton>
           <AlignButton
             aria-label={"Align bottom"}
-            onClick={(): void => changeAlignment("bottom")}
+            onClick={(): void => change_alignment("bottom")}
             tooltip_content={"Align bottom"}
           >
             <LayoutAlignBottomIcon />

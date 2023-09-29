@@ -3,4 +3,4 @@ export * from "./indentation";
 export * from "./namespace";
 export * from "./nodes";
 export * from "./spring";
-export * from "./textStyle";
+export * from "./text-style";

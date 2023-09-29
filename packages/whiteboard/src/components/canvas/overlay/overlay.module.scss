@@ -1,5 +1,4 @@
 .x {
-  /* Zoom menu and canvas pattern */
   &.primary-controls {
     position: absolute;
     gap: 8px;
@@ -8,7 +7,6 @@
     transform: translateX(-50%);
   }
 
-  /* Zoom */
   &.zoom {
     border: 1px solid var(--divider);
     border-radius: var(--radius-md);
@@ -17,7 +15,6 @@
     box-shadow: var(--ridge-sm);
   }
 
-  /* Zoom icon button */
   &.zoom-icon-button {
     --icon-size: 12px;
 
@@ -27,7 +24,6 @@
     border-radius: 0;
   }
 
-  /* Zoom trigger button */
   &.zoom-trigger {
     --icon-size: 12px;
 
@@ -39,13 +35,11 @@
     border-inline: 1px solid var(--divider);
   }
 
-  /* Zoom input wrapper */
   &.zoom-input-wrapper {
     padding: 2px 8px;
     width: 128px;
   }
 
-  /* Viewport */
   &.viewport {
     --viewport-padding: 8px;
 
@@ -55,7 +49,6 @@
     height: 76px;
   }
 
-  /* Option */
   &.option {
     display: block;
     width: 16px;
@@ -78,13 +71,11 @@
     }
   }
 
-  /* Pattern trigger */
   &.pattern-trigger {
     background-color: var(--inverted-0);
     box-shadow: var(--ridge-sm);
   }
 
-  /* Pattern SVG */
   &.pattern-svg {
     position: absolute;
     width: 100%;
@@ -92,7 +83,6 @@
     inset: 0;
   }
 
-  /* Stats button */
   &.stats-button {
     position: absolute;
     bottom: 10px;

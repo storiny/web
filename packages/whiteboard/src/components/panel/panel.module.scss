@@ -1,25 +1,21 @@
 .x {
-  /* Base styles */
   &.panel {
     border-left: 1px solid var(--divider);
     background-color: var(--bg-elevation-sm);
     grid-area: panel;
   }
 
-  /* Scrollbar */
   &.scrollbar {
     border-left: 1px solid var(--divider);
     background-color: var(--bg-elevation-xs);
     overflow: hidden; // Hide the scrollbar pseudo layer that is used to increase the interactive area
   }
 
-  /* Dots */
   &.dots {
     fill: var(--inverted-200);
     width: 10px;
   }
 
-  /* Resizer */
   &.resizer {
     position: relative;
     height: 6px;
@@ -52,7 +48,6 @@
     }
   }
 
-  /* Tools wrapper */
   &.tools-wrapper {
     max-width: calc(199px - var(--scrollbar-width, 0px));
   }

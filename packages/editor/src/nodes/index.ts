@@ -12,7 +12,7 @@ import { ImageNode } from "./image";
 import { QuoteNode } from "./quote";
 import { TKNode } from "./tk";
 
-export const editorNodes: (
+export const EDITOR_NODES: (
   | Klass<LexicalNode>
   | {
       replace: Klass<LexicalNode>;

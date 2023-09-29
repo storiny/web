@@ -1,5 +1,4 @@
 .x {
-  /* Base styles */
   &.layer {
     padding-left: 4px;
     gap: 8px;
@@ -44,7 +43,6 @@
     }
   }
 
-  /* Icon */
   &.icon {
     --icon-size: 14px;
     --icon-stroke: var(--fg-minor);
@@ -53,14 +51,12 @@
     position: relative;
   }
 
-  /* Label */
   &.label {
     font-size: 11px;
     text-align: center;
     color: var(--fg-minor);
   }
 
-  /* Grabber */
   &.grabber {
     width: 10px;
     height: 24px;
@@ -70,7 +66,6 @@
     border-radius: 0;
   }
 
-  /* Button */
   &.button {
     height: 24px;
     width: 24px;
@@ -81,7 +76,6 @@
     }
   }
 
-  /* Selected dashed border */
   &.selected-border {
     position: absolute;
     width: 100%;
@@ -89,7 +83,6 @@
     inset: 0;
   }
 
-  /* Label input */
   &.input {
     border-radius: 0;
 
@@ -98,7 +91,6 @@
     }
   }
 
-  /* Lock filled icon */
   &.lock-icon {
     fill: none;
     display: inline-block;

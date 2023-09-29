@@ -10,15 +10,15 @@ import ColorPicker, {
   str_to_color,
   TColor
 } from "../../../../../../../ui/src/entities/color-picker";
-import CrossHatchFillIcon from "~/icons/CrossHatchFill";
-import DashedFillIcon from "~/icons/DashedFill";
-import DottedFillIcon from "~/icons/DottedFill";
-import HachureFillIcon from "~/icons/HachureFill";
-import HachureGapIcon from "~/icons/HachureGap";
-import RulerMeasureIcon from "~/icons/RulerMeasure";
-import SolidFillIcon from "~/icons/SolidFill";
-import ZigzagFillIcon from "~/icons/ZigzagFill";
-import ZigzagLineFillIcon from "~/icons/ZigzagLineFill";
+import CrossHatchFillIcon from "../../../../../../../ui/src/icons/cross-hatch-fill";
+import DashedFillIcon from "../../../../../../../ui/src/icons/dashed-fill";
+import DottedFillIcon from "../../../../../../../ui/src/icons/dotted-fill";
+import HachureFillIcon from "../../../../../../../ui/src/icons/hachure-fill";
+import HachureGapIcon from "../../../../../../../ui/src/icons/hachure-gap";
+import RulerMeasureIcon from "../../../../../../../ui/src/icons/ruler-measure";
+import SolidFillIcon from "../../../../../../../ui/src/icons/solid-fill";
+import ZigzagFillIcon from "../../../../../../../ui/src/icons/zigzag-fill";
+import ZigzagLineFillIcon from "../../../../../../../ui/src/icons/zigzag-line-fill";
 
 import {
   DEFAULT_LAYER_COLOR,
@@ -26,58 +26,55 @@ import {
   MAX_OPACITY,
   MIN_OPACITY
 } from "../../../../../constants";
-import { useActiveObject } from "../../../../../hooks";
-import { modifyObject } from "../../../../../utils";
+import { use_active_object } from "../../../../../hooks";
+import { modify_object } from "../../../../../utils";
 import DrawItem, { DrawItemRow } from "../../item";
 import common_styles from "../common.module.scss";
 
 // Fill
 
 const FillControl = ({
-  activeObject
+  active_object
 }: {
-  activeObject: BaseFabricObject;
+  active_object: BaseFabricObject;
 }): React.ReactElement => {
-  const [fill, setFill] = React.useState<TColor>(
-    str_to_color((activeObject?.fill as string) || DEFAULT_LAYER_COLOR)!
+  const [fill, set_fill] = React.useState<TColor>(
+    str_to_color((active_object?.fill as string) || DEFAULT_LAYER_COLOR)!
   );
-  const [value, setValue] = React.useState(`#${fill.hex}`);
+  const [value, set_value] = React.useState(`#${fill.hex}`);
 
   /**
    * Mutates the fill of the object
    */
-  const changeFill = React.useCallback(
-    (newFill: TColor) => {
-      setFill(newFill);
+  const change_fill = React.useCallback(
+    (next_fill: TColor) => {
+      set_fill(next_fill);
 
-      if (activeObject) {
-        modifyObject(activeObject, {
-          fill: newFill.str
+      if (active_object) {
+        modify_object(active_object, {
+          fill: next_fill.str
         });
       }
     },
-    [activeObject]
+    [active_object]
   );
 
   React.useEffect(() => {
-    setValue(`#${fill.hex}`);
+    set_value(`#${fill.hex}`);
   }, [fill]);
 
   React.useEffect(() => {
-    setFill(
-      str_to_color((activeObject?.fill as string) || DEFAULT_LAYER_COLOR)!
+    set_fill(
+      str_to_color((active_object?.fill as string) || DEFAULT_LAYER_COLOR)!
     );
-  }, [activeObject?.fill]);
+  }, [active_object?.fill]);
 
   return (
     <DrawItemRow>
       <Input
         aria-label={"Layer fill"}
         decorator={
-          <ColorPicker
-            defaultValue={fill}
-            onChange={(value): void => changeFill(value)}
-          >
+          <ColorPicker default_value={fill} on_change={change_fill}>
             <button
               aria-label={"Pick a color"}
               className={clsx(
@@ -96,11 +93,10 @@ const FillControl = ({
         }
         monospaced
         onChange={(event): void => {
-          setValue(event.target.value);
-          const newColor = str_to_color(event.target.value);
-
-          if (newColor) {
-            changeFill(newColor);
+          set_value(event.target.value);
+          const next_color = str_to_color(event.target.value);
+          if (next_color) {
+            change_fill(next_color);
           }
         }}
         placeholder={"Fill"}
@@ -124,7 +120,7 @@ const FillControl = ({
           const a = Number.parseInt(event.target.value) || 0;
           const { r, g, b } = hex_to_rgb(fill.hex);
 
-          changeFill({
+          change_fill({
             ...fill,
             str: `rgba(${r},${g},${b},${a / 100})`,
             a
@@ -150,64 +146,64 @@ const FillControl = ({
 // Fill style
 
 const FillStyleControl = ({
-  activeObject
+  active_object
 }: {
-  activeObject: BaseFabricObject;
+  active_object: BaseFabricObject;
 }): React.ReactElement => {
-  const [fillStyle, setFillStyle] = React.useState<FillStyle>(
-    activeObject?.get("fillStyle") || FillStyle.SOLID
+  const [fill_style, set_fill_style] = React.useState<FillStyle>(
+    active_object?.get("fillStyle") || FillStyle.SOLID
   );
 
   /**
    * Mutates the fill style of the object
    */
-  const changeFillStyle = React.useCallback(
-    (fillStyle: FillStyle) => {
-      setFillStyle(fillStyle);
+  const change_fill_style = React.useCallback(
+    (next_fill_style: FillStyle) => {
+      set_fill_style(next_fill_style);
 
-      if (activeObject) {
-        modifyObject(activeObject, {
-          fillStyle
+      if (active_object) {
+        modify_object(active_object, {
+          fillStyle: next_fill_style
         });
       }
     },
-    [activeObject]
+    [active_object]
   );
 
   /**
    * Mutates the fill weight of the object
    */
-  const changeFillWeight = React.useCallback(
-    (fillWeight: number) => {
-      if (activeObject) {
-        modifyObject(activeObject, { fillWeight });
+  const change_fill_weight = React.useCallback(
+    (next_fill_weight: number) => {
+      if (active_object) {
+        modify_object(active_object, { fillWeight: next_fill_weight });
       }
     },
-    [activeObject]
+    [active_object]
   );
 
   /**
    * Mutates the hachure gap of the object
    */
-  const changeHachureGap = React.useCallback(
-    (hachureGap: number) => {
-      if (activeObject) {
-        modifyObject(activeObject, { hachureGap });
+  const change_hachure_gap = React.useCallback(
+    (next_hachure_gap: number) => {
+      if (active_object) {
+        modify_object(active_object, { hachureGap: next_hachure_gap });
       }
     },
-    [activeObject]
+    [active_object]
   );
 
   React.useEffect(() => {
-    setFillStyle(activeObject?.get("fillStyle") || FillStyle.SOLID);
-  }, [activeObject]);
+    set_fill_style(active_object?.get("fillStyle") || FillStyle.SOLID);
+  }, [active_object]);
 
   return (
     <>
       <DrawItemRow>
         <Select
           onValueChange={(newValue: FillStyle): void =>
-            changeFillStyle(newValue)
+            change_fill_style(newValue)
           }
           size={"sm"}
           slot_props={{
@@ -221,7 +217,7 @@ const FillStyleControl = ({
               style: { flex: "0.6" }
             }
           }}
-          value={fillStyle}
+          value={fill_style}
         >
           <Option decorator={<SolidFillIcon />} value={FillStyle.SOLID}>
             Solid
@@ -254,12 +250,12 @@ const FillStyleControl = ({
         <Input
           aria-label={"Layer fill weight"}
           decorator={<RulerMeasureIcon />}
-          defaultValue={activeObject.get("fillWeight") ?? 1}
-          disabled={fillStyle === FillStyle.SOLID}
+          defaultValue={active_object.get("fillWeight") ?? 1}
+          disabled={fill_style === FillStyle.SOLID}
           min={0.1}
           monospaced
           onChange={(event): void => {
-            changeFillWeight(Number.parseFloat(event.target.value) ?? 1);
+            change_fill_weight(Number.parseFloat(event.target.value) ?? 1);
           }}
           placeholder={"Fill weight"}
           size={"sm"}
@@ -277,12 +273,12 @@ const FillStyleControl = ({
         <Input
           aria-label={"Layer hachure gap"}
           decorator={<HachureGapIcon />}
-          defaultValue={activeObject.get("hachureGap") ?? 1}
-          disabled={fillStyle === FillStyle.SOLID}
+          defaultValue={active_object.get("hachureGap") ?? 1}
+          disabled={fill_style === FillStyle.SOLID}
           min={0.1}
           monospaced
           onChange={(event): void => {
-            changeHachureGap(Number.parseFloat(event.target.value) ?? 1);
+            change_hachure_gap(Number.parseFloat(event.target.value) ?? 1);
           }}
           placeholder={"Hachure gap"}
           size={"sm"}
@@ -296,16 +292,16 @@ const FillStyleControl = ({
 };
 
 const Fill = (): React.ReactElement | null => {
-  const activeObject = useActiveObject();
+  const active_object = use_active_object();
 
-  if (!activeObject) {
+  if (!active_object) {
     return null;
   }
 
   return (
-    <DrawItem key={activeObject.get("id")} label={"Fill"}>
-      <FillControl activeObject={activeObject} />
-      <FillStyleControl activeObject={activeObject} />
+    <DrawItem key={active_object.get("id")} label={"Fill"}>
+      <FillControl active_object={active_object} />
+      <FillStyleControl active_object={active_object} />
     </DrawItem>
   );
 };

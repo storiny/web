@@ -1,6 +1,6 @@
 import "server-only";
 
-import { userProps } from "@storiny/shared";
+import { USER_PROPS } from "@storiny/shared";
 import { notFound } from "next/navigation";
 import React from "react";
 
@@ -17,16 +17,16 @@ const Page = async ({
 }): Promise<React.ReactElement | undefined> => {
   try {
     if (
-      username.length < userProps.username.minLength ||
-      username.length > userProps.username.maxLength
+      username.length < USER_PROPS.username.min_length ||
+      username.length > USER_PROPS.username.max_length
     ) {
       notFound();
     }
 
-    const userId = await getUser();
+    const user_id = await getUser();
     const profile = await getProfile({
       username,
-      current_user_id: userId || undefined
+      current_user_id: user_id || undefined
     });
 
     return <Component profile={profile} />;

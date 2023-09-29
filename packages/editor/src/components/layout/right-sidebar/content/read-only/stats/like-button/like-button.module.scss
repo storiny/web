@@ -27,7 +27,6 @@ $active-color: #ff4680;
   transform: translate(-50%, -50%);
 }
 
-/* Heart */
 .heart {
   position: relative;
   width: 16px;
@@ -61,7 +60,6 @@ $active-color: #ff4680;
     box-shadow: var(--spread-active);
   }
 
-  /* Active state */
   &.active {
     --icon-stroke: #{$active-color};
 

@@ -7,7 +7,7 @@ import { keyDownCtrlOrMeta, keyUpCtrlOrMeta } from "../../utils";
  * Toggles strikethrough text style
  * @param page Page
  */
-export const toggleStrikethrough = async (page: Page): Promise<void> => {
+export const toggle_strikethrough = async (page: Page): Promise<void> => {
   await keyDownCtrlOrMeta(page);
   await page.keyboard.down("Shift");
   await page.keyboard.press(EDITOR_SHORTCUTS.strikethrough.key);

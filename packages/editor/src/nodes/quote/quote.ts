@@ -1,7 +1,10 @@
-import { addClassNamesToElement, isHTMLElement } from "@lexical/utils";
 import {
-  $applyNodeReplacement,
-  $createParagraphNode,
+  addClassNamesToElement as add_class_names_to_element,
+  is_html_element as is_html_element
+} from "@lexical/utils";
+import {
+  $applyNodeReplacement as $apply_node_replacement,
+  $createParagraphNode as $create_paragraph_node,
   DOMConversionMap,
   DOMConversionOutput,
   DOMExportOutput,
@@ -55,7 +58,7 @@ export class QuoteNode extends ElementNode {
     return {
       blockquote: () => ({
         conversion: (element: HTMLElement): DOMConversionOutput => {
-          const node = $createQuoteNode();
+          const node = $create_quote_node();
 
           if (element.style !== null) {
             node.setFormat(element.style.textAlign as ElementFormatType);
@@ -70,12 +73,12 @@ export class QuoteNode extends ElementNode {
 
   /**
    * Imports serialized node
-   * @param serializedNode Serialized node
+   * @param serialized_node Serialized node
    */
-  static override importJSON(serializedNode: SerializedQuoteNode): QuoteNode {
-    const node = $createQuoteNode();
-    node.setFormat(serializedNode.format);
-    node.setIndent(serializedNode.indent);
+  static override importJSON(serialized_node: SerializedQuoteNode): QuoteNode {
+    const node = $create_quote_node();
+    node.setFormat(serialized_node.format);
+    node.setIndent(serialized_node.indent);
     return node;
   }
 
@@ -84,9 +87,9 @@ export class QuoteNode extends ElementNode {
    */
   override createDOM(): HTMLElement {
     const element = document.createElement("blockquote");
-    addClassNamesToElement(
+    add_class_names_to_element(
       element,
-      ...[TYPOGRAPHY_LEVEL_TO_CLASSNAME_MAP["quote"], styles.quote]
+      ...[TYPOGRAPHY_LEVEL_TO_CLASSNAME_MAP.quote, styles.quote]
     );
 
     return element;
@@ -106,7 +109,7 @@ export class QuoteNode extends ElementNode {
   override exportDOM(editor: LexicalEditor): DOMExportOutput {
     const { element } = super.exportDOM(editor);
 
-    if (element && isHTMLElement(element)) {
+    if (element && is_html_element(element)) {
       if (this.isEmpty()) {
         element.append(document.createElement("br"));
       }
@@ -133,15 +136,15 @@ export class QuoteNode extends ElementNode {
   /**
    * Inserts node after the new element
    * @param _ Selection
-   * @param restoreSelection Whether to restore the selection
+   * @param restore_selection Whether to restore the selection
    */
   override insertNewAfter(
     _: RangeSelection,
-    restoreSelection?: boolean
+    restore_selection?: boolean
   ): ParagraphNode {
-    const newBlock = $createParagraphNode();
-    this.insertAfter(newBlock, restoreSelection);
-    return newBlock;
+    const next_node = $create_paragraph_node();
+    this.insertAfter(next_node, restore_selection);
+    return next_node;
   }
 
   /**
@@ -149,7 +152,7 @@ export class QuoteNode extends ElementNode {
    * and the selection is at the start of the quote node
    */
   override collapseAtStart(): true {
-    const paragraph = $createParagraphNode();
+    const paragraph = $create_paragraph_node();
     const children = this.getChildren();
     children.forEach((child) => paragraph.append(child));
     this.replace(paragraph);
@@ -160,13 +163,13 @@ export class QuoteNode extends ElementNode {
 /**
  * Creates a new quote node
  */
-export const $createQuoteNode = (): QuoteNode =>
-  $applyNodeReplacement(new QuoteNode());
+export const $create_quote_node = (): QuoteNode =>
+  $apply_node_replacement(new QuoteNode());
 
 /**
  * Predicate function for determining quote nodes
  * @param node Node
  */
-export const $isQuoteNode = (
+export const $is_quote_node = (
   node: LexicalNode | null | undefined
 ): node is QuoteNode => node instanceof QuoteNode;

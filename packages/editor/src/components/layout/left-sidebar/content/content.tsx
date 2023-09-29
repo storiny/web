@@ -1,8 +1,8 @@
 "use client";
 
-import { animated, useTransition } from "@react-spring/web";
+import { animated, useTransition as use_transition } from "@react-spring/web";
 import { clsx } from "clsx";
-import { useAtomValue } from "jotai";
+import { useAtomValue as use_atom_value } from "jotai";
 import dynamic from "next/dynamic";
 import React from "react";
 
@@ -10,11 +10,11 @@ import { dynamicLoader } from "~/common/dynamic";
 import LeftSidebarDefaultContent from "../../../../../../ui/src/layout/left-sidebar/default-content";
 
 import {
-  docStatusAtom,
-  overflowingFiguresAtom,
-  sidebarsCollapsedAtom
+  doc_status_atom,
+  overflowing_figures_atom,
+  sidebars_collapsed_atom
 } from "../../../../atoms";
-import { springConfig } from "../../../../constants";
+import { SPRING_CONFIG } from "../../../../constants";
 import common_styles from "../../common/sidebar.module.scss";
 import styles from "../left-sidebar.module.scss";
 import { EditorLeftSidebarProps } from "../left-sidebar.props";
@@ -29,35 +29,35 @@ const SuspendedEditorLeftSidebarEditableContent = dynamic(
 const SuspendedEditorLeftSidebarContent = (
   props: EditorLeftSidebarProps
 ): React.ReactElement | null => {
-  const { readOnly, status } = props;
-  const mountedRef = React.useRef<boolean>(false);
-  const docStatus = use_atom_value(docStatusAtom);
-  const isCollapsed = use_atom_value(sidebarsCollapsedAtom);
-  const overflowingFigures = use_atom_value(overflowingFiguresAtom);
-  const transitions = useTransition(!isCollapsed, {
+  const { read_only, status } = props;
+  const mounted_ref = React.useRef<boolean>(false);
+  const doc_status = use_atom_value(doc_status_atom);
+  const is_collapsed = use_atom_value(sidebars_collapsed_atom);
+  const overflowing_figures = use_atom_value(overflowing_figures_atom);
+  const transitions = use_transition(!is_collapsed, {
     from: { opacity: 0, transform: "translate3d(-10%,0,0) scale(0.97)" },
     enter: { opacity: 1, transform: "translate3d(0%,0,0) scale(1)" },
     leave: { opacity: 0, transform: "translate3d(-10%,0,0) scale(0.97)" },
-    config: springConfig,
-    immediate: Boolean(readOnly) && !mountedRef.current
+    config: SPRING_CONFIG,
+    immediate: Boolean(read_only) && !mounted_ref.current
   });
-  const documentLoading =
-    !readOnly &&
+  const document_loading =
+    !read_only &&
     status !== "deleted" &&
-    ["connecting", "reconnecting"].includes(docStatus);
+    ["connecting", "reconnecting"].includes(doc_status);
 
   React.useEffect(() => {
-    mountedRef.current = true;
+    mounted_ref.current = true;
     return () => {
-      mountedRef.current = false;
+      mounted_ref.current = false;
     };
   }, []);
 
   if (
-    !readOnly &&
-    (docStatus === "disconnected" ||
-      docStatus === "forbidden" ||
-      docStatus === "overloaded")
+    !read_only &&
+    (doc_status === "disconnected" ||
+      doc_status === "forbidden" ||
+      doc_status === "overloaded")
   ) {
     return null;
   }
@@ -65,22 +65,22 @@ const SuspendedEditorLeftSidebarContent = (
   return transitions((style, item) =>
     item ? (
       <animated.div
-        aria-busy={documentLoading}
+        aria-busy={document_loading}
         className={clsx(
           "flex-col",
           styles.x,
           styles.content,
           common_styles.x,
           common_styles.content,
-          readOnly && styles["read-only"]
+          read_only && styles["read-only"]
         )}
-        data-hidden={String(Boolean(overflowingFigures.size))}
+        data-hidden={String(Boolean(overflowing_figures.size))}
         style={{
           ...style,
-          pointerEvents: documentLoading ? "none" : "auto"
+          pointerEvents: document_loading ? "none" : "auto"
         }}
       >
-        {readOnly ? (
+        {read_only ? (
           <LeftSidebarDefaultContent />
         ) : (
           <SuspendedEditorLeftSidebarEditableContent status={status} />

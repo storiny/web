@@ -1,5 +1,4 @@
 .x {
-  /* Base styles */
   &.editor-navbar {
     padding-block: 10px;
     min-height: var(--header-height);
@@ -29,13 +28,11 @@
     }
   }
 
-  /* Full height bleed */
   &.full-height {
     margin-block: -10px;
     height: calc(100% + 20px);
   }
 
-  /* Dropdown menu */
   &.menu {
     gap: 6px;
     padding: 0 6px;
@@ -49,7 +46,6 @@
     --icon-stroke: var(--fg-minor);
   }
 
-  /* Full height button */
   &.button {
     height: 100%;
     width: 40px;

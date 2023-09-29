@@ -6,7 +6,7 @@ import {
 } from "lexical";
 import React from "react";
 
-import { $isFigureNode } from "../figure";
+import { $is_figure_node } from "../figure";
 import styles from "./block.module.scss";
 
 export type SerializedBlockNode = SerializedLexicalNode;
@@ -61,16 +61,16 @@ export abstract class BlockNode extends DecoratorNode<React.ReactElement> {
 
   /**
    * Called when the node is about to get removed
-   * @param preserveEmptyParent Whether to preserve empty parent
+   * @param preserve_empty_parent Whether to preserve empty parent
    */
-  override remove(preserveEmptyParent?: boolean): void {
-    const figureNode = this.getParent();
+  override remove(preserve_empty_parent?: boolean): void {
+    const figure_node = this.getParent();
 
     // Remove the entire figure node
-    if ($isFigureNode(figureNode)) {
-      figureNode.remove();
+    if ($is_figure_node(figure_node)) {
+      figure_node.remove();
     } else {
-      super.remove(preserveEmptyParent);
+      super.remove(preserve_empty_parent);
     }
   }
 }
@@ -79,7 +79,7 @@ export abstract class BlockNode extends DecoratorNode<React.ReactElement> {
  * Predicate function for determining block nodes
  * @param node Node
  */
-export const $isBlockNode = (
+export const $is_block_node = (
   node: LexicalNode | null | undefined
 ): node is BlockNode =>
   node instanceof BlockNode ||

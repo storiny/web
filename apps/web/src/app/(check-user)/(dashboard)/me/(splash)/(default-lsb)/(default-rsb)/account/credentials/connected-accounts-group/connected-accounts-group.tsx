@@ -6,7 +6,7 @@ import Grow from "../../../../../../../../../../../../../packages/ui/src/compone
 import Spacer from "../../../../../../../../../../../../../packages/ui/src/components/spacer";
 import Typography from "../../../../../../../../../../../../../packages/ui/src/components/typography";
 import TitleBlock from "../../../../../../../../../../../../../packages/ui/src/entities/title-block";
-import CheckIcon from "~/icons/Check";
+import CheckIcon from "../../../../../../../../../../../../../packages/ui/src/icons/check";
 
 import DashboardGroup from "../../../../dashboard-group";
 import styles from "./connected-accounts-group.module.scss";

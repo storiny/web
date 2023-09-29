@@ -18,24 +18,27 @@ const StoryMetadataBar = dynamic(() => import("../metadata-bar"));
 
 const EditorLayout = ({
   children,
-  readOnly,
+  read_only,
   story,
   status = "draft"
 }: {
   children: React.ReactNode;
-} & Pick<EditorProps, "readOnly" | "story" | "status">): React.ReactElement => (
+} & Pick<
+  EditorProps,
+  "read_only" | "story" | "status"
+>): React.ReactElement => (
   <Provider>
     <HydrateMetadata story={story}>
-      <EditorComposer readOnly={status === "deleted" || readOnly}>
+      <EditorComposer read_only={status === "deleted" || read_only}>
         <React.Fragment>
-          {readOnly ? <Navbar /> : <EditorNavbar status={status} />}
-          <EditorLeftSidebar readOnly={readOnly} status={status} />
+          {read_only ? <Navbar /> : <EditorNavbar status={status} />}
+          <EditorLeftSidebar read_only={read_only} status={status} />
           <main>
-            {status !== "deleted" && !readOnly ? <StoryMetadataBar /> : null}
+            {status !== "deleted" && !read_only ? <StoryMetadataBar /> : null}
             {children}
-            {status !== "deleted" && !readOnly ? <EditorToolbar /> : null}
+            {status !== "deleted" && !read_only ? <EditorToolbar /> : null}
           </main>
-          <EditorRightSidebar readOnly={readOnly} status={status} />
+          <EditorRightSidebar read_only={read_only} status={status} />
         </React.Fragment>
       </EditorComposer>
     </HydrateMetadata>

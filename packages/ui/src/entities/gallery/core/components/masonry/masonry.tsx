@@ -197,7 +197,6 @@ const GalleryMasonryFooter = React.memo<{
   const { ref, inView: in_view } = use_in_view({
     threshold: 0.1,
     root: container_ref.current,
-    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     rootMargin: "0px 0px 500px 0px"
   });
 

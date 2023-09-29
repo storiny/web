@@ -1,3 +1,3 @@
 import { atom } from "jotai";
 
-export const sidebarsCollapsedAtom = atom<boolean>(false);
+export const sidebars_collapsed_atom = atom<boolean>(false);

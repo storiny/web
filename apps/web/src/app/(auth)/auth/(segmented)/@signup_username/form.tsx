@@ -1,6 +1,6 @@
 "use client";
 
-import { userProps } from "@storiny/shared";
+import { USER_PROPS } from "@storiny/shared";
 import { clsx } from "clsx";
 import React from "react";
 
@@ -41,13 +41,13 @@ const UsernameField = ({
   const username = watch("username", state.signup.username);
   const debouncedUsername = use_debounce(username);
   const loading =
-    username.length >= userProps.username.minLength &&
+    username.length >= USER_PROPS.username.min_length &&
     (isLoading || username !== debouncedUsername);
 
   React.useEffect(() => {
     if (
       !invalid &&
-      debouncedUsername.length >= userProps.username.minLength &&
+      debouncedUsername.length >= USER_PROPS.username.min_length &&
       // Skip fetching when switching between segments
       mounted.current
     ) {
@@ -58,7 +58,7 @@ const UsernameField = ({
   React.useEffect(
     () =>
       setValid(
-        username.length < userProps.username.minLength
+        username.length < USER_PROPS.username.min_length
           ? true
           : loading
           ? false
@@ -79,7 +79,9 @@ const UsernameField = ({
       autoComplete={"username"}
       color={
         invalid ||
-        (username.length >= userProps.username.minLength && isError && !loading)
+        (username.length >= USER_PROPS.username.min_length &&
+          isError &&
+          !loading)
           ? "ruby"
           : "inverted"
       }
@@ -97,7 +99,7 @@ const UsernameField = ({
       }}
       helper_text={
         invalid ||
-        username.length < userProps.username.minLength ? undefined : (
+        username.length < USER_PROPS.username.min_length ? undefined : (
           <span className={"flex"} style={{ alignItems: "center" }}>
             {loading ? (
               <>
@@ -114,8 +116,8 @@ const UsernameField = ({
         )
       }
       label={"Username"}
-      maxLength={userProps.username.maxLength}
-      minLength={userProps.username.minLength}
+      maxLength={USER_PROPS.username.max_length}
+      minLength={USER_PROPS.username.min_length}
       name={"username"}
       required
       size={"lg"}

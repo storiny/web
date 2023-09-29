@@ -2,7 +2,7 @@ import React from "react";
 
 import { WhiteboardCoreProps } from "../whiteboard";
 
-type WhiteboardPropsWithoutMount = Omit<WhiteboardCoreProps, "onMount">;
+type WhiteboardPropsWithoutMount = Omit<WhiteboardCoreProps, "on_mount">;
 
 /**
  * Context

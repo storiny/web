@@ -1,32 +1,32 @@
-import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { useAtomValue } from "jotai";
+import { useLexicalComposerContext as use_lexical_composer_context } from "@lexical/react/LexicalComposerContext";
+import { useAtomValue as use_atom_value } from "jotai";
 import { ElementFormatType, FORMAT_ELEMENT_COMMAND } from "lexical";
 
-import { alignmentAtom, isCaptionSelectionAtom } from "../../atoms";
+import { alignment_atom, is_caption_selection_atom } from "../../atoms";
 import { Alignment } from "../../constants";
 
 /**
  * Hook for handling node alignment
  */
-export const useAlignment = (): [
+export const use_alignment = (): [
   Alignment | undefined,
   (newValue: string) => void,
   boolean
 ] => {
-  const [editor] = useLexicalComposerContext();
-  const value = use_atom_value(alignmentAtom);
-  const isCaptionSelection = use_atom_value(isCaptionSelectionAtom);
+  const [editor] = use_lexical_composer_context();
+  const value = use_atom_value(alignment_atom);
+  const is_caption_selection = use_atom_value(is_caption_selection_atom);
 
   /**
    * Updates the node alignment
-   * @param newValue New alignment
+   * @param next_value New alignment
    */
-  const setValue = (newValue: string): void => {
+  const set_value = (next_value: string): void => {
     editor.dispatchCommand(
       FORMAT_ELEMENT_COMMAND,
-      newValue as ElementFormatType
+      next_value as ElementFormatType
     );
   };
 
-  return [value, setValue, isCaptionSelection];
+  return [value, set_value, is_caption_selection];
 };

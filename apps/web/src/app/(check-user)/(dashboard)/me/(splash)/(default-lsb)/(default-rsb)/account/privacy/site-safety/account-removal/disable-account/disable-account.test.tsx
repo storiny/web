@@ -1,4 +1,4 @@
-import { userEvent } from "@storiny/test-utils";
+import { user_event } from "@storiny/test-utils";
 import { act, screen, waitFor } from "@testing-library/react";
 import React from "react";
 
@@ -9,7 +9,7 @@ import DisableAccount from "./disable-account";
 describe("<DisableAccount />", () => {
   it("renders validation messages", async () => {
     const mockSubmit = jest.fn();
-    const user = userEvent.setup();
+    const user = user_event.setup();
     render_test_with_provider(<DisableAccount on_submit={mockSubmit} />, {
       logged_in: true
     });
@@ -33,7 +33,7 @@ describe("<DisableAccount />", () => {
 
   it("submits correct form data", async () => {
     const mockSubmit = jest.fn();
-    const user = userEvent.setup();
+    const user = user_event.setup();
     render_test_with_provider(<DisableAccount on_submit={mockSubmit} />, {
       logged_in: true
     });

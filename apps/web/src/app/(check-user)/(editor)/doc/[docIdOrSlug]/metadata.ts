@@ -5,9 +5,9 @@ import { getStory } from "~/common/grpc";
 export const generateMetadata = async ({
   params
 }: {
-  params: { docIdOrSlug: string };
+  params: { doc_id_or_slug: string };
 }): Promise<Metadata> => {
-  const { docIdOrSlug } = params;
+  const { doc_id_or_slug } = params;
 
   try {
     const storyResponse = await getStory({

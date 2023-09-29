@@ -2,15 +2,17 @@ import { CollabDecoratorNode } from "../../collaboration/nodes/decorator";
 import { CollabElementNode } from "../../collaboration/nodes/element";
 import { CollabLineBreakNode } from "../../collaboration/nodes/line-break";
 import { CollabTextNode } from "../../collaboration/nodes/text";
-import { getPositionFromElementAndOffset } from "../get-position-from-element-and-offset";
+import { get_position_from_element_and_offset } from "../get-position-from-element-and-offset";
+import { XmlElement, XmlText } from "yjs";
+import { YMap } from "yjs/dist/src/internals";
 
 /**
  * Returns the collab node with offset
- * @param sharedType Shared type
+ * @param shared_type Shared type
  * @param offset Offset
  */
-export const getCollabNodeAndOffset = (
-  sharedType: any,
+export const get_collab_node_and_offset = (
+  shared_type: XmlElement | XmlText | YMap<unknown>,
   offset: number
 ): [
   (
@@ -22,23 +24,20 @@ export const getCollabNodeAndOffset = (
   ),
   number
 ] => {
-  const collabNode = sharedType._collabNode;
+  const collab_node = shared_type._collab_node;
 
-  if (collabNode === undefined) {
+  if (collab_node === undefined) {
     return [null, 0];
   }
 
-  if (collabNode instanceof CollabElementNode) {
-    const { node, offset: collabNodeOffset } = getPositionFromElementAndOffset(
-      collabNode,
-      offset,
-      true
-    );
+  if (collab_node instanceof CollabElementNode) {
+    const { node, offset: collab_node_offset } =
+      get_position_from_element_and_offset(collab_node, offset, true);
 
     if (node === null) {
-      return [collabNode, 0];
+      return [collab_node, 0];
     } else {
-      return [node, collabNodeOffset];
+      return [node, collab_node_offset];
     }
   }
 

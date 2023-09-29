@@ -1,4 +1,4 @@
-import { userEvent } from "@storiny/test-utils";
+import { user_event } from "@storiny/test-utils";
 import { act, screen, waitFor } from "@testing-library/react";
 import React from "react";
 
@@ -10,7 +10,7 @@ import ResetForm from "./form";
 describe("<ResetForm />", () => {
   it("renders validation messages", async () => {
     const mockSubmit = jest.fn();
-    const user = userEvent.setup();
+    const user = user_event.setup();
     render_test_with_provider(
       <AuthState>
         <ResetForm on_submit={mockSubmit} token={""} />
@@ -29,7 +29,7 @@ describe("<ResetForm />", () => {
 
   it("submits correct form data", async () => {
     const mockSubmit = jest.fn();
-    const user = userEvent.setup();
+    const user = user_event.setup();
     render_test_with_provider(
       <AuthState>
         <ResetForm

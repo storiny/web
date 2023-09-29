@@ -6,14 +6,14 @@ import React from "react";
 
 import Avatar from "src/components/avatar";
 import Typography from "src/components/typography";
-import ExportIcon from "~/icons/Export";
-import ForbidIcon from "~/icons/Forbid";
-import KeyIcon from "~/icons/Key";
-import MailIcon from "~/icons/Mail";
-import MoodSmileIcon from "~/icons/MoodSmile";
-import PasswordIcon from "~/icons/Password";
-import PencilIcon from "~/icons/Pencil";
-import TwoFAIcon from "~/icons/TwoFA";
+import ExportIcon from "src/icons/export";
+import ForbidIcon from "src/icons/forbid";
+import KeyIcon from "src/icons/key";
+import MailIcon from "src/icons/mail";
+import MoodSmileIcon from "src/icons/mood-smile";
+import PasswordIcon from "src/icons/password";
+import PencilIcon from "src/icons/pencil";
+import TwoFAIcon from "src/icons/two-fa";
 import { DateFormat, format_date } from "src/utils/format-date";
 
 import styles from "./account-activity.module.scss";

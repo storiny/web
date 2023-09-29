@@ -5,9 +5,9 @@ import React from "react";
 import Chip from "src/components/chip";
 import Grow from "src/components/grow";
 import Typography from "src/components/typography";
-import HashIcon from "~/icons/Hash";
-import StoriesIcon from "~/icons/Stories";
-import UsersIcon from "~/icons/Users";
+import HashIcon from "src/icons/hash";
+import StoriesIcon from "src/icons/stories";
+import UsersIcon from "src/icons/users";
 import { abbreviate_number } from "src/utils/abbreviate-number";
 
 import styles from "./tag-chip.module.scss";

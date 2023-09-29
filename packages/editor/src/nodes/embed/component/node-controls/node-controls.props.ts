@@ -10,5 +10,5 @@ export interface EmbedNodeControlsProps {
   /**
    * Embed node key
    */
-  nodeKey: NodeKey;
+  node_key: NodeKey;
 }

@@ -75,8 +75,9 @@ module.exports = {
           "argTypes",
           "delayMs", // Radix avatar fallback
           "defaultValue", // Storybook
-          "defaultValues", // react-hook-form
+          "defaultValues", // React hook form
           "fieldState",
+          "shouldDirty",
           "baseElement", // RTL
           "queryByTestId",
           "queryAllByTestId",
@@ -91,6 +92,52 @@ module.exports = {
           "defaultProps",
           "getDerivedStateFromProps",
           "zIndex",
+          "scaleX", // Fabric
+          "scaleY",
+          "originX",
+          "originY",
+          "objectCaching",
+          "hasControls",
+          "isDrawing",
+          "startArrowhead",
+          "endArrowhead",
+          "strokeStyle",
+          "strokeWidth",
+          "hachureGap",
+          "lockScalingX",
+          "lockScalingY",
+          "getType",
+          "fillStyle",
+          "fillWeight",
+          "penStyle",
+          "penWidth",
+          "cornerStrokeColor",
+          "cornerDashArray",
+          "cornerColor",
+          "onMouseDown",
+          "onMouseMove",
+          "onMouseUp",
+          "simulatePressure",
+          "preserveVertices",
+          "hasBorders",
+          "rootMargin", // Intersection observer
+          "enableOnContentEditable", // Hotkeys
+          "exportJSON", // Lexical
+          "importJSON",
+          "importDOM",
+          "createDOM",
+          "updateDOM",
+          "exportDOM",
+          "isInline",
+          "setFormat",
+          "canBeEmpty",
+          "canIndent",
+          "canInsertTextAfter",
+          "canInsertTextBefore",
+          "collapseAtStart",
+          "extractWithChild",
+          "insertNewAfter",
+          "isUnmergeable",
         ],
       },
     ],
@@ -117,7 +164,7 @@ module.exports = {
     "capitalized-comments": [
       "error",
       "always",
-      { ignorePattern: "pragma|noinspection" },
+      { ignorePattern: "pragma|noinspection", ignoreConsecutiveComments: true },
     ],
   },
 };

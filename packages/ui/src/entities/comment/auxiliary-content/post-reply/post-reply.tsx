@@ -68,8 +68,8 @@ const PostReply = ({
         label={user?.name}
       />
       <ResponseTextarea
-        maxLength={REPLY_PROPS.content.maxLength}
-        minLength={REPLY_PROPS.content.minLength}
+        maxLength={REPLY_PROPS.content.max_length}
+        minLength={REPLY_PROPS.content.min_length}
         placeholder={placeholder}
         post_button_props={{
           loading: is_loading,

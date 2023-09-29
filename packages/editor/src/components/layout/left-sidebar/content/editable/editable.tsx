@@ -1,10 +1,10 @@
 import { clsx } from "clsx";
-import { useAtomValue } from "jotai";
+import { useAtomValue as use_atom_value } from "jotai";
 import React from "react";
 
 import Divider from "../../../../../../../ui/src/components/divider";
 
-import { docStatusAtom } from "../../../../../atoms";
+import { doc_status_atom } from "../../../../../atoms";
 import { StoryStatus } from "../../../../editor";
 import styles from "../../left-sidebar.module.scss";
 import EditorLeftSidebarEditableContentSkeleton from "./skeleton";
@@ -16,11 +16,11 @@ const SuspendedEditorLeftSidebarEditableContent = ({
 }: {
   status: StoryStatus;
 }): React.ReactElement => {
-  const docStatus = use_atom_value(docStatusAtom);
-  const documentLoading =
-    status !== "deleted" && ["connecting", "reconnecting"].includes(docStatus);
+  const doc_status = use_atom_value(doc_status_atom);
+  const document_loading =
+    status !== "deleted" && ["connecting", "reconnecting"].includes(doc_status);
 
-  if (documentLoading) {
+  if (document_loading) {
     return <EditorLeftSidebarEditableContentSkeleton />;
   }
 

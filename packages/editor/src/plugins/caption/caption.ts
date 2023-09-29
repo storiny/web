@@ -1,33 +1,33 @@
-import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { mergeRegister } from "@lexical/utils";
-import { $getNodeByKey, LexicalNode } from "lexical";
+import { useLexicalComposerContext as use_lexical_composer_context } from "@lexical/react/LexicalComposerContext";
+import { mergeRegister as merge_register } from "@lexical/utils";
+import { $getNodeByKey as $get_node_by_key, LexicalNode } from "lexical";
 import React from "react";
 
-import { $isBlockNode } from "../../nodes/block";
+import { $is_block_node } from "../../nodes/block";
 import {
-  $createCaptionNode,
-  $isCaptionNode,
+  $create_caption_node,
+  $is_caption_node,
   CaptionNode
 } from "../../nodes/caption";
 import { FigureNode } from "../../nodes/figure";
 
 const CaptionPlugin = (): null => {
-  const [editor] = useLexicalComposerContext();
+  const [editor] = use_lexical_composer_context();
 
   React.useEffect(
     () =>
-      mergeRegister(
-        editor.registerMutationListener(CaptionNode, (mutatedNodes) => {
-          for (const [nodeKey, mutation] of mutatedNodes) {
+      merge_register(
+        editor.registerMutationListener(CaptionNode, (mutated_nodes) => {
+          for (const [node_key, mutation] of mutated_nodes) {
             if (mutation === "updated") {
               editor.getEditorState().read(() => {
-                const captionNode = $getNodeByKey<CaptionNode>(nodeKey);
-                const captionElement = editor.getElementByKey(nodeKey);
+                const caption_node = $get_node_by_key<CaptionNode>(node_key);
+                const caption_element = editor.getElementByKey(node_key);
 
-                if (captionNode !== null && captionElement !== null) {
-                  captionElement.setAttribute(
+                if (caption_node !== null && caption_element !== null) {
+                  caption_element.setAttribute(
                     "data-empty",
-                    String(captionNode.isEmpty())
+                    String(caption_node.isEmpty())
                   );
                 }
               });
@@ -36,28 +36,28 @@ const CaptionPlugin = (): null => {
         }),
         editor.registerMutationListener(
           FigureNode,
-          (mutatedNodes, { updateTags }) => {
-            if (!updateTags.has("collaboration")) {
-              for (const [nodeKey, mutation] of mutatedNodes) {
+          (mutated_nodes, { updateTags: update_tags }) => {
+            if (!update_tags.has("collaboration")) {
+              for (const [node_key, mutation] of mutated_nodes) {
                 if (mutation === "updated") {
                   editor.update(() => {
-                    const figureNode = $getNodeByKey<FigureNode>(nodeKey);
+                    const figure_node = $get_node_by_key<FigureNode>(node_key);
 
-                    if (figureNode !== null) {
-                      const $isFirstChild = (node: LexicalNode): boolean =>
+                    if (figure_node !== null) {
+                      const $is_first_child = (node: LexicalNode): boolean =>
                         node.getIndexWithinParent() === 0;
 
-                      for (const node of figureNode.getChildren()) {
+                      for (const node of figure_node.getChildren()) {
                         if (
-                          ($isBlockNode(node) && !$isFirstChild(node)) || // Block node should be the first child of the figure node
-                          (!$isBlockNode(node) && !$isCaptionNode(node)) // The last child should always be a caption node
+                          ($is_block_node(node) && !$is_first_child(node)) || // Block node should be the first child of the figure node
+                          (!$is_block_node(node) && !$is_caption_node(node)) // The last child should always be a caption node
                         ) {
-                          figureNode.insertAfter(node);
+                          figure_node.insertAfter(node);
                         }
                       }
 
-                      if (!$isCaptionNode(figureNode.getLastChild())) {
-                        figureNode.append($createCaptionNode());
+                      if (!$is_caption_node(figure_node.getLastChild())) {
+                        figure_node.append($create_caption_node());
                       }
                     }
                   });

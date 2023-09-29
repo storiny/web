@@ -1,14 +1,14 @@
 import { clsx } from "clsx";
-import { useAtomValue } from "jotai";
+import { useAtomValue as use_atom_value } from "jotai";
 import React from "react";
 
 import Button from "../../../../../../../../../ui/src/components/button";
-import HeartIcon from "~/icons/Heart";
-import { boolean_action, setLikedStory } from "~/redux/features";
+import HeartIcon from "../../../../../../../../../ui/src/icons/heart";
+import { boolean_action } from "~/redux/features";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 import { abbreviate_number } from "../../../../../../../../../ui/src/utils/abbreviate-number";
 
-import { storyMetadataAtom } from "../../../../../../../atoms";
+import { story_metadata_atom } from "../../../../../../../atoms";
 import styles from "./like-button.module.scss";
 
 const MAX_PARTICLES = 8;
@@ -21,33 +21,36 @@ const NUM_SPARKLES = 2;
 
 /**
  * Generates heart sparkles
- * @param spreadFactor Spread factor
- * @param groupCount Number of sparkle groups
+ * @param spread_factor Spread factor
+ * @param group_count Number of sparkle groups
  */
-const generateSparkles = (spreadFactor: number, groupCount: number): string => {
+const generate_sparkles = (
+  spread_factor: number,
+  group_count: number
+): string => {
   const items: string[] = [];
-  const groupBaseAngle = 360 / groupCount;
-  const groupDistrRad = (1 + spreadFactor * 0.25) * BUBBLE_RAD;
-  const sparkleBaseAngle = 360 / NUM_SPARKLES;
-  const sparkleOffAngle = 60;
-  const spreadRad = -spreadFactor * SPARKLE_RAD;
+  const group_base_angle = 360 / group_count;
+  const group_distr_rad = (1 + spread_factor * 0.25) * BUBBLE_RAD;
+  const sparkle_base_angle = 360 / NUM_SPARKLES;
+  const sparkle_off_angle = 60;
+  const spread_rad = -spread_factor * SPARKLE_RAD;
 
-  for (let i = 0; i < groupCount; i++) {
-    const groupCurrAngle = i * groupBaseAngle - 90;
-    const xGroup = groupDistrRad * Math.cos(groupCurrAngle);
-    const yGroup = groupDistrRad * Math.sin(groupCurrAngle);
+  for (let i = 0; i < group_count; i++) {
+    const group_curr_angle = i * group_base_angle - 90;
+    const x_group = group_distr_rad * Math.cos(group_curr_angle);
+    const y_group = group_distr_rad * Math.sin(group_curr_angle);
 
     for (let j = 0; j < NUM_SPARKLES; j++) {
-      const sparkleCurrAngle =
-        groupCurrAngle + sparkleOffAngle + j * sparkleBaseAngle;
-      const xSparkle = xGroup + SPARKLE_DIA * Math.cos(sparkleCurrAngle);
-      const ySparkle = yGroup + SPARKLE_DIA * Math.sin(sparkleCurrAngle);
+      const sparkle_curr_angle =
+        group_curr_angle + sparkle_off_angle + j * sparkle_base_angle;
+      const x_sparkle = x_group + SPARKLE_DIA * Math.cos(sparkle_curr_angle);
+      const y_sparkle = y_group + SPARKLE_DIA * Math.sin(sparkle_curr_angle);
 
       items.push(
-        `${xSparkle.toFixed(3)}rem ${ySparkle.toFixed(
+        `${x_sparkle.toFixed(3)}rem ${y_sparkle.toFixed(
           3
-        )}rem 0 ${spreadRad.toFixed(3)}rem hsl(${
-          (i + j) * groupBaseAngle
+        )}rem 0 ${spread_rad.toFixed(3)}rem hsl(${
+          (i + j) * group_base_angle
         }deg, 100%, 70%)`
       );
     }
@@ -58,23 +61,26 @@ const generateSparkles = (spreadFactor: number, groupCount: number): string => {
 
 const Heart = ({
   active,
-  shouldAnimate
+  should_animate
 }: {
   active: boolean;
-  shouldAnimate: boolean;
+  should_animate: boolean;
 }): React.ReactElement => {
   const sparkles = React.useMemo(() => {
-    const groupCount = Math.floor(
+    const group_count = Math.floor(
       Math.random() * (MAX_PARTICLES - MIN_PARTICLES + 1) + MIN_PARTICLES
     );
-    return [generateSparkles(0, groupCount), generateSparkles(1, groupCount)];
+    return [
+      generate_sparkles(0, group_count),
+      generate_sparkles(1, group_count)
+    ];
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [active]);
 
   return (
     <span
       className={clsx(styles.heart, active && styles.active)}
-      data-animate={String(shouldAnimate)}
+      data-animate={String(should_animate)}
       style={
         {
           "--spread-none": sparkles[0],
@@ -89,38 +95,39 @@ const Heart = ({
 
 const LikeButton = (): React.ReactElement => {
   const dispatch = use_app_dispatch();
-  const story = use_atom_value(storyMetadataAtom);
-  const shouldAnimateRef = React.useRef<boolean>(false);
-  const likeCount =
-    use_app_selector((state) => state.entities.storyLikeCounts[story.id]) || 0;
-  const isLiked = use_app_selector(
-    (state) => state.entities.likedStories[story.id]
+  const story = use_atom_value(story_metadata_atom);
+  const should_animate_ref = React.useRef<boolean>(false);
+  const like_count =
+    use_app_selector((state) => state.entities.story_like_counts[story.id]) ||
+    0;
+  const is_liked = use_app_selector(
+    (state) => state.entities.liked_stories[story.id]
   );
 
   return (
     <Button
       aria-label={`${
-        isLiked ? "Unlike" : "Like"
-      } story (${likeCount.toLocaleString()} ${
-        likeCount === 1 ? "like" : "likes"
+        is_liked ? "Unlike" : "Like"
+      } story (${like_count.toLocaleString()} ${
+        like_count === 1 ? "like" : "likes"
       })`}
       auto_size
       check_auth
       decorator={
-        <Heart active={isLiked} shouldAnimate={shouldAnimateRef.current} />
+        <Heart active={is_liked} should_animate={should_animate_ref.current} />
       }
       onClick={(): void => {
-        shouldAnimateRef.current = true;
+        should_animate_ref.current = true;
         dispatch(boolean_action("liked_stories", story.id));
       }}
       title={`${
-        isLiked ? "Unlike" : "Like"
-      } story (${likeCount.toLocaleString()} ${
-        likeCount === 1 ? "like" : "likes"
+        is_liked ? "Unlike" : "Like"
+      } story (${like_count.toLocaleString()} ${
+        like_count === 1 ? "like" : "likes"
       })`}
       variant={"hollow"}
     >
-      {abbreviate_number(likeCount)}
+      {abbreviate_number(like_count)}
     </Button>
   );
 };

@@ -4,7 +4,7 @@ import { Portal, Sub, SubContent, SubTrigger } from "@radix-ui/react-menubar";
 import clsx from "clsx";
 import React from "react";
 
-import ChevronIcon from "~/icons/Chevron";
+import ChevronIcon from "src/icons/chevron";
 import { forward_ref } from "src/utils/forward-ref";
 
 import menu_styles from "../common/menu.module.scss";

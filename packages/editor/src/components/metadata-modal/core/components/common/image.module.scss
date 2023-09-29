@@ -1,15 +1,12 @@
 .x {
-  /* Image editor */
   &.block {
     gap: 4px;
   }
 
-  /* Image container */
   &.container {
     padding-block: 18px;
   }
 
-  /* image */
   &.image {
     position: relative;
     border-radius: var(--radius-md);
@@ -18,7 +15,6 @@
     max-width: 100%;
   }
 
-  /* Actions */
   &.actions {
     position: absolute;
     top: 12px;

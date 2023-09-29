@@ -1,20 +1,20 @@
-import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { useAtomValue } from "jotai";
+import { useLexicalComposerContext as use_lexical_composer_context } from "@lexical/react/LexicalComposerContext";
+import { useAtomValue as use_atom_value } from "jotai";
 import { FORMAT_TEXT_COMMAND } from "lexical";
 import React from "react";
 
-import { superscriptAtom } from "../../atoms";
+import { superscript_atom } from "../../atoms";
 
 /**
  * Hooks for using superscript text style
  */
-export const useSuperscript = (): [boolean, () => void] => {
-  const superscript = use_atom_value(superscriptAtom);
-  const [editor] = useLexicalComposerContext();
+export const use_superscript = (): [boolean, () => void] => {
+  const superscript = use_atom_value(superscript_atom);
+  const [editor] = use_lexical_composer_context();
 
-  const toggleSuperscript = React.useCallback(() => {
+  const toggle_superscript = React.useCallback(() => {
     editor.dispatchCommand(FORMAT_TEXT_COMMAND, "superscript");
   }, [editor]);
 
-  return [superscript, toggleSuperscript];
+  return [superscript, toggle_superscript];
 };

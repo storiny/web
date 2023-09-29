@@ -15,7 +15,7 @@ import clsx from "clsx";
 import React from "react";
 
 import { use_media_query } from "src/hooks/use-media-query";
-import ChevronIcon from "~/icons/Chevron";
+import ChevronIcon from "src/icons/chevron";
 import { BREAKPOINTS } from "~/theme/breakpoints";
 import { forward_ref } from "src/utils/forward-ref";
 

@@ -1,5 +1,5 @@
 import { clsx } from "clsx";
-import { useAtomValue } from "jotai";
+import { useAtomValue as use_atom_value } from "jotai";
 import React from "react";
 
 import Avatar from "../../../../../../ui/src/components/avatar";
@@ -10,11 +10,11 @@ import { use_media_query } from "../../../../../../ui/src/hooks/use-media-query"
 import { BREAKPOINTS } from "~/theme/breakpoints";
 import { capitalize } from "~/utils/capitalize";
 
-import { awarenessAtom } from "../../../../atoms";
+import { awareness_atom } from "../../../../atoms";
 import { UserState } from "../../../../collaboration/provider";
 import styles from "./presence.module.scss";
 
-type UserStateWithClientId = UserState & { clientID: number };
+type UserStateWithClientId = UserState & { client_id: number };
 
 // Participant
 
@@ -33,7 +33,7 @@ const Participant = ({
         presence.role === "viewer" && styles.viewer,
         presence.focusing && styles.focusing
       )}
-      hex={presence.avatarHex}
+      hex={presence.avatar_hex}
       label={presence.name}
       style={{ "--color": presence.color } as React.CSSProperties}
     />
@@ -42,32 +42,32 @@ const Participant = ({
 
 const EditorPresence = (): React.ReactElement => {
   const is_smaller_than_tablet = use_media_query(BREAKPOINTS.down("tablet"));
-  const awareness = use_atom_value(awarenessAtom);
-  const [editors, setEditors] = React.useState<UserStateWithClientId[]>([]);
-  const [viewers, setViewers] = React.useState<UserStateWithClientId[]>([]);
+  const awareness = use_atom_value(awareness_atom);
+  const [editors, set_editors] = React.useState<UserStateWithClientId[]>([]);
+  const [viewers, set_viewers] = React.useState<UserStateWithClientId[]>([]);
 
   React.useEffect(() => {
-    const updatePresences = (): void => {
+    const update_presences = (): void => {
       if (awareness) {
         const presences = Array.from(awareness.getStates().entries())
-          .filter(([clientID]) => clientID !== awareness.clientID)
-          .map(([clientID, value]) => ({
+          .filter(([client_id]) => client_id !== awareness.client_id)
+          .map(([client_id, value]) => ({
             ...value,
-            clientID
+            client_id
           })) as UserStateWithClientId[];
 
-        setEditors(presences.filter((presence) => presence.role === "editor"));
-        setViewers(presences.filter((presence) => presence.role === "viewer"));
+        set_editors(presences.filter((presence) => presence.role === "editor"));
+        set_viewers(presences.filter((presence) => presence.role === "viewer"));
       }
     };
 
     if (awareness) {
-      awareness.on("update", updatePresences);
+      awareness.on("update", update_presences);
     }
 
     return () => {
       if (awareness) {
-        awareness.off("update", updatePresences);
+        awareness.off("update", update_presences);
       }
     };
   }, [awareness]);

@@ -1,48 +1,53 @@
 import {
-  $getNodeByKey,
-  $isDecoratorNode,
+  $getNodeByKey as $get_node_by_key,
+  $isDecoratorNode as $is_decorator_node,
   DecoratorNode,
   NodeKey,
   NodeMap
 } from "lexical";
 import { XmlElement } from "yjs";
 
-import { syncPropertiesFromLexical } from "../../../utils/sync-properties-from-lexical";
-import { syncPropertiesFromYjs } from "../../../utils/sync-properties-from-yjs";
+import { sync_properties_from_lexical } from "../../../utils/sync-properties-from-lexical";
+import { sync_properties_from_yjs } from "../../../utils/sync-properties-from-yjs";
 import { Binding } from "../../bindings";
 import { CollabElementNode } from "../element";
 
 export class CollabDecoratorNode {
   /**
    * Ctor
-   * @param xmlElement XML element
+   * @param xml_element XML element
    * @param parent Parent node
    * @param type Node type
    */
-  constructor(xmlElement: XmlElement, parent: CollabElementNode, type: string) {
+  constructor(
+    xml_element: XmlElement,
+    parent: CollabElementNode,
+    type: string
+  ) {
     this._key = "";
-    this._xmlElem = xmlElement;
+    this._xml_elem = xml_element;
     this._parent = parent;
     this._type = type;
+    // TODO: These observers seem to do nothing?
     this._unobservers = new Set();
   }
 
   /**
    * XML element
    */
-  _xmlElem: XmlElement;
+  public _xml_elem: XmlElement;
   /**
    * Node key
    */
-  _key: NodeKey;
+  public _key: NodeKey;
   /**
    * Parent node
    */
-  _parent: CollabElementNode;
+  public _parent: CollabElementNode;
   /**
    * Node type
    */
-  _type: string;
+  public _type: string;
   /**
    * Set of unobservers
    */
@@ -50,111 +55,112 @@ export class CollabDecoratorNode {
 
   /**
    * Returns the previous node
-   * @param nodeMap Node map
+   * @param node_map Node map
    */
-  getPrevNode(nodeMap: null | NodeMap): null | DecoratorNode<unknown> {
-    if (nodeMap === null) {
+  public get_prev_node(
+    node_map: null | NodeMap
+  ): null | DecoratorNode<unknown> {
+    if (node_map === null) {
       return null;
     }
 
-    const node = nodeMap.get(this._key);
-    return $isDecoratorNode(node) ? node : null;
+    const node = node_map.get(this._key);
+    return $is_decorator_node(node) ? node : null;
   }
 
   /**
    * Returns the node
    */
-  getNode(): null | DecoratorNode<unknown> {
-    const node = $getNodeByKey(this._key);
-    return $isDecoratorNode(node) ? node : null;
+  public get_node(): null | DecoratorNode<unknown> {
+    const node = $get_node_by_key(this._key);
+    return $is_decorator_node(node) ? node : null;
   }
 
   /**
    * Returns the shared type
    */
-  getSharedType(): XmlElement {
-    return this._xmlElem;
+  public get_shared_type(): XmlElement {
+    return this._xml_elem;
   }
 
   /**
    * Returns the node type
    */
-  getType(): string {
+  public get_type(): string {
     return this._type;
   }
 
   /**
    * Returns the node key
    */
-  getKey(): NodeKey {
+  public get_key(): NodeKey {
     return this._key;
   }
 
   /**
    * Returns the node size
    */
-  getSize(): number {
+  public get_size(): number {
     return 1;
   }
 
   /**
    * Returns the node offset
    */
-  getOffset(): number {
-    const collabElementNode = this._parent;
-    return collabElementNode.getChildOffset(this);
+  public get_offset(): number {
+    const collab_element_node = this._parent;
+    return collab_element_node.get_child_offset(this);
   }
 
   /**
    * Syncs properties from the editor
    * @param binding Binding
-   * @param nextLexicalNode Next node
-   * @param prevNodeMap Previous node map
+   * @param next_lexical_node Next node
+   * @param prev_node_map Previous node map
    */
-  syncPropertiesFromLexical(
+  public sync_properties_from_lexical(
     binding: Binding,
-    nextLexicalNode: DecoratorNode<unknown>,
-    prevNodeMap: null | NodeMap
+    next_lexical_node: DecoratorNode<unknown>,
+    prev_node_map: null | NodeMap
   ): void {
-    const prevLexicalNode = this.getPrevNode(prevNodeMap);
-    const xmlElem = this._xmlElem;
-
-    syncPropertiesFromLexical(
+    const prev_lexical_node = this.get_prev_node(prev_node_map);
+    const xml_element = this._xml_elem;
+    sync_properties_from_lexical(
       binding,
-      xmlElem,
-      prevLexicalNode,
-      nextLexicalNode
+      xml_element,
+      prev_lexical_node,
+      next_lexical_node
     );
   }
 
   /**
    * Syncs properties from yjs
    * @param binding Binding
-   * @param keysChanged Set of changed keys
+   * @param keys_changed Set of changed keys
    */
-  syncPropertiesFromYjs(
+  public sync_properties_from_yjs(
     binding: Binding,
-    keysChanged: null | Set<string>
+    keys_changed: null | Set<string>
   ): void {
-    const lexicalNode = this.getNode();
+    const lexical_node = this.get_node();
+    const xml_element = this._xml_elem;
 
-    if (lexicalNode === null) {
+    if (lexical_node === null) {
       throw new Error(
-        "`syncPropertiesFromYjs`: could not find the decorator node"
+        "`sync_properties_from_yjs`: could not find the decorator node"
       );
     }
 
-    const xmlElem = this._xmlElem;
-    syncPropertiesFromYjs(binding, xmlElem, lexicalNode, keysChanged);
+    sync_properties_from_yjs(binding, xml_element, lexical_node, keys_changed);
   }
 
   /**
    * Destroys the node
    * @param binding Binding
    */
-  destroy(binding: Binding): void {
-    const collabNodeMap = binding.collabNodeMap;
-    collabNodeMap.delete(this._key);
+  public destroy(binding: Binding): void {
+    const collab_node_map = binding.collab_node_map;
+    collab_node_map.delete(this._key);
 
     this._unobservers.forEach((unobserver) => unobserver());
     this._unobservers.clear();
@@ -163,17 +169,16 @@ export class CollabDecoratorNode {
 
 /**
  * Creates a new collab decorator node
- * @param xmlElement XML element
+ * @param xml_element XML element
  * @param parent Parent node
  * @param type Node type
  */
-export const $createCollabDecoratorNode = (
-  xmlElement: XmlElement,
+export const $create_collab_decorator_node = (
+  xml_element: XmlElement,
   parent: CollabElementNode,
   type: string
 ): CollabDecoratorNode => {
-  const collabNode = new CollabDecoratorNode(xmlElement, parent, type);
-  // @ts-expect-error: internal field
-  xmlElement._collabNode = collabNode;
-  return collabNode;
+  const node = new CollabDecoratorNode(xml_element, parent, type);
+  xml_element._collab_node = node;
+  return node;
 };

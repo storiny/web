@@ -14,5 +14,5 @@ export interface ImageAltEditorProps {
   /**
    * Image node key
    */
-  nodeKey: NodeKey;
+  node_key: NodeKey;
 }

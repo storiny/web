@@ -1,24 +1,24 @@
-import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
+import { useLexicalComposerContext as use_lexical_composer_context } from "@lexical/react/LexicalComposerContext";
 import {
-  $getSelection,
-  $isRangeSelection,
-  $setSelection,
+  $getSelection as $get_selection,
+  $isRangeSelection as $is_range_selection,
+  $setSelection as $set_selection,
   COMMAND_PRIORITY_LOW,
   FOCUS_COMMAND
 } from "lexical";
 import React from "react";
-import { useHotkeys } from "react-hotkeys-hook";
+import { useHotkeys as use_hot_keys } from "react-hotkeys-hook";
 
 const TAB_TO_FOCUS_INTERVAL = 100;
 
 const TabFocusPlugin = (): null => {
-  const [editor] = useLexicalComposerContext();
-  const lastTabKeyDownTimestampRef = React.useRef<number>(0);
+  const [editor] = use_lexical_composer_context();
+  const last_tab_key_down_timestamp_ref = React.useRef<number>(0);
 
-  useHotkeys(
+  use_hot_keys(
     "tab",
-    (keyboardEvent) =>
-      (lastTabKeyDownTimestampRef.current = keyboardEvent.timeStamp),
+    (keyboard_event) =>
+      (last_tab_key_down_timestamp_ref.current = keyboard_event.timeStamp),
     {
       enableOnContentEditable: true
     }
@@ -29,13 +29,13 @@ const TabFocusPlugin = (): null => {
       editor.registerCommand(
         FOCUS_COMMAND,
         (event: FocusEvent) => {
-          const selection = $getSelection();
-          if ($isRangeSelection(selection)) {
+          const selection = $get_selection();
+          if ($is_range_selection(selection)) {
             if (
-              lastTabKeyDownTimestampRef.current + TAB_TO_FOCUS_INTERVAL >
+              last_tab_key_down_timestamp_ref.current + TAB_TO_FOCUS_INTERVAL >
               event.timeStamp
             ) {
-              $setSelection(selection.clone());
+              $set_selection(selection.clone());
             }
           }
           return false;

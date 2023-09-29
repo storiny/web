@@ -1,24 +1,24 @@
-import { getShortcutLabel } from "@storiny/shared/src/utils/get-shortcut-label";
+import { get_shortcut_label } from "@storiny/shared/src/utils/get-shortcut-label";
 import React from "react";
 
 import IconButton from "../../../../../../../../ui/src/components/icon-button";
 import Tooltip from "../../../../../../../../ui/src/components/tooltip";
-import RedoIcon from "~/icons/Redo";
-import UndoIcon from "~/icons/Undo";
+import RedoIcon from "../../../../../../../../ui/src/icons/redo";
+import UndoIcon from "../../../../../../../../ui/src/icons/undo";
 
 import { EDITOR_SHORTCUTS } from "../../../../../../constants/shortcuts";
-import { useHistory } from "../../../../../../hooks/use-history";
+import { use_history } from "../../../../../../hooks/use-history";
 
 const History = ({ disabled }: { disabled?: boolean }): React.ReactElement => {
-  const { canUndo, undo, canRedo, redo } = useHistory();
+  const { can_redo, undo, can_undo, redo } = use_history();
   return (
     <div className={"flex-center"}>
       <Tooltip
         content={"Undo"}
-        right_slot={getShortcutLabel(EDITOR_SHORTCUTS.undo)}
+        right_slot={get_shortcut_label(EDITOR_SHORTCUTS.undo)}
       >
         <IconButton
-          disabled={disabled || !canUndo}
+          disabled={disabled || !can_undo}
           onClick={undo}
           variant={"ghost"}
         >
@@ -27,10 +27,10 @@ const History = ({ disabled }: { disabled?: boolean }): React.ReactElement => {
       </Tooltip>
       <Tooltip
         content={"Redo"}
-        right_slot={getShortcutLabel(EDITOR_SHORTCUTS.redo)}
+        right_slot={get_shortcut_label(EDITOR_SHORTCUTS.redo)}
       >
         <IconButton
-          disabled={disabled || !canRedo}
+          disabled={disabled || !can_redo}
           onClick={redo}
           variant={"ghost"}
         >

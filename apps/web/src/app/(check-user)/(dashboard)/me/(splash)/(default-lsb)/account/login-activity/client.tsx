@@ -13,8 +13,8 @@ import Typography from "../../../../../../../../../../../packages/ui/src/compone
 import CustomState from "../../../../../../../../../../../packages/ui/src/entities/custom-state";
 import TitleBlock from "../../../../../../../../../../../packages/ui/src/entities/title-block";
 import { use_media_query } from "../../../../../../../../../../../packages/ui/src/hooks/use-media-query";
-import DevicesIcon from "~/icons/Devices";
-import LogoutIcon from "~/icons/Logout";
+import DevicesIcon from "../../../../../../../../../../../packages/ui/src/icons/devices";
+import LogoutIcon from "../../../../../../../../../../../packages/ui/src/icons/logout";
 import { use_destroy_settings_mutation } from "~/redux/features";
 import { BREAKPOINTS } from "~/theme/breakpoints";
 

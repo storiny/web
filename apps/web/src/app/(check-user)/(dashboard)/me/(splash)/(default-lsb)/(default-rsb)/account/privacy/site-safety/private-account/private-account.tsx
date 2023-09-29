@@ -13,8 +13,8 @@ import Link from "../../../../../../../../../../../../../../packages/ui/src/comp
 import Spacer from "../../../../../../../../../../../../../../packages/ui/src/components/spacer";
 import { use_toast } from "../../../../../../../../../../../../../../packages/ui/src/components/toast";
 import Typography from "../../../../../../../../../../../../../../packages/ui/src/components/typography";
-import LockIcon from "~/icons/Lock";
-import LockOpenIcon from "~/icons/LockOpen";
+import LockIcon from "../../../../../../../../../../../../../../packages/ui/src/icons/lock";
+import LockOpenIcon from "../../../../../../../../../../../../../../packages/ui/src/icons/lock-open";
 import { use_private_account_mutation } from "~/redux/features";
 
 import styles from "../site-safety.module.scss";

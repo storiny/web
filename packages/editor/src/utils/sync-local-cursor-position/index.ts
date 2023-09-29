@@ -1,17 +1,19 @@
 import {
-  $getNodeByKey,
-  $getSelection,
-  $isElementNode,
-  $isRangeSelection,
-  $isTextNode,
+  $getNodeByKey as $get_node_by_key,
+  $getSelection as $get_selection,
+  $isElementNode as $is_element_node,
+  $isRangeSelection as $is_range_selection,
+  $isTextNode as $is_text_node,
   NodeKey,
   Point
 } from "lexical";
+import { XmlElement, XmlText } from "yjs";
+import { YMap } from "yjs/dist/src/internals";
 
 import { Binding } from "../../collaboration/bindings";
 import { Provider } from "../../collaboration/provider";
-import { createAbsolutePosition } from "../create-absolute-position";
-import { getCollabNodeAndOffset } from "../get-collab-node-and-offset";
+import { create_absolute_position } from "../create-absolute-position";
+import { get_collab_node_and_offset } from "../get-collab-node-and-offset";
 
 /**
  * Sets a point
@@ -19,22 +21,22 @@ import { getCollabNodeAndOffset } from "../get-collab-node-and-offset";
  * @param key Node key
  * @param offset Offset
  */
-const setPoint = (point: Point, key: NodeKey, offset: number): void => {
+const set_point = (point: Point, key: NodeKey, offset: number): void => {
   if (point.key !== key || point.offset !== offset) {
-    let anchorNode = $getNodeByKey(key);
+    let anchor_node = $get_node_by_key(key);
 
     if (
-      anchorNode !== null &&
-      !$isElementNode(anchorNode) &&
-      !$isTextNode(anchorNode)
+      anchor_node !== null &&
+      !$is_element_node(anchor_node) &&
+      !$is_text_node(anchor_node)
     ) {
-      const parent = anchorNode.getParentOrThrow();
+      const parent = anchor_node.getParentOrThrow();
       key = parent.getKey();
-      offset = anchorNode.getIndexWithinParent();
-      anchorNode = parent;
+      offset = anchor_node.getIndexWithinParent();
+      anchor_node = parent;
     }
 
-    point.set(key, offset, $isElementNode(anchorNode) ? "element" : "text");
+    point.set(key, offset, $is_element_node(anchor_node) ? "element" : "text");
   }
 };
 
@@ -43,48 +45,48 @@ const setPoint = (point: Point, key: NodeKey, offset: number): void => {
  * @param binding Binding
  * @param provider Provider
  */
-export const syncLocalCursorPosition = (
+export const sync_local_cursor_position = (
   binding: Binding,
   provider: Provider
 ): void => {
   const awareness = provider.awareness;
-  const localState = awareness.getLocalState();
+  const local_state = awareness.getLocalState();
 
-  if (localState === null) {
+  if (local_state === null) {
     return;
   }
 
-  const anchorPos = localState.anchorPos;
-  const focusPos = localState.focusPos;
+  const anchor_pos = local_state.anchor_pos;
+  const focus_pos = local_state.focus_pos;
 
-  if (anchorPos !== null && focusPos !== null) {
-    const anchorAbsPos = createAbsolutePosition(anchorPos, binding);
-    const focusAbsPos = createAbsolutePosition(focusPos, binding);
+  if (anchor_pos !== null && focus_pos !== null) {
+    const anchor_abs_pos = create_absolute_position(anchor_pos, binding);
+    const focus_abs_pos = create_absolute_position(focus_pos, binding);
 
-    if (anchorAbsPos !== null && focusAbsPos !== null) {
-      const [anchorCollabNode, anchorOffset] = getCollabNodeAndOffset(
-        anchorAbsPos.type,
-        anchorAbsPos.index
+    if (anchor_abs_pos !== null && focus_abs_pos !== null) {
+      const [anchor_collab_node, anchor_offset] = get_collab_node_and_offset(
+        anchor_abs_pos.type as XmlElement | XmlText | YMap<unknown>,
+        anchor_abs_pos.index
       );
-      const [focusCollabNode, focusOffset] = getCollabNodeAndOffset(
-        focusAbsPos.type,
-        focusAbsPos.index
+      const [focus_collab_node, focus_offset] = get_collab_node_and_offset(
+        focus_abs_pos.type as XmlElement | XmlText | YMap<unknown>,
+        focus_abs_pos.index
       );
 
-      if (anchorCollabNode !== null && focusCollabNode !== null) {
-        const anchorKey = anchorCollabNode.getKey();
-        const focusKey = focusCollabNode.getKey();
-        const selection = $getSelection();
+      if (anchor_collab_node !== null && focus_collab_node !== null) {
+        const anchor_key = anchor_collab_node.get_key();
+        const focus_key = focus_collab_node.get_key();
+        const selection = $get_selection();
 
-        if (!$isRangeSelection(selection)) {
+        if (!$is_range_selection(selection)) {
           return;
         }
 
         const anchor = selection.anchor;
         const focus = selection.focus;
 
-        setPoint(anchor, anchorKey, anchorOffset);
-        setPoint(focus, focusKey, focusOffset);
+        set_point(anchor, anchor_key, anchor_offset);
+        set_point(focus, focus_key, focus_offset);
       }
     }
   }

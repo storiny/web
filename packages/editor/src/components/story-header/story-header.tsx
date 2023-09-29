@@ -1,5 +1,5 @@
 import { clsx } from "clsx";
-import { useAtom, useAtomValue } from "jotai";
+import { useAtom as use_atom, useAtomValue as use_atom_value } from "jotai";
 import NextLink from "next/link";
 import React from "react";
 
@@ -15,19 +15,19 @@ import Persona from "../../../../ui/src/entities/persona";
 import { use_clipboard } from "../../../../ui/src/hooks/use-clipboard";
 import { use_media_query } from "../../../../ui/src/hooks/use-media-query";
 import { use_web_share } from "../../../../ui/src/hooks/use-web-share";
-import BookmarkIcon from "~/icons/Bookmark";
-import BookmarkPlusIcon from "~/icons/BookmarkPlus";
-import CalendarIcon from "~/icons/Calendar";
-import ClockIcon from "~/icons/Clock";
-import CopyIcon from "~/icons/Copy";
-import DotsIcon from "~/icons/Dots";
-import MuteIcon from "~/icons/Mute";
-import ReportIcon from "~/icons/Report";
-import ShareIcon from "~/icons/Share";
-import SidebarCollapseIcon from "~/icons/SidebarCollapse";
-import SidebarExpandIcon from "~/icons/SidebarExpand";
-import UserCheckIcon from "~/icons/UserCheck";
-import UserPlusIcon from "~/icons/UserPlus";
+import BookmarkIcon from "../../../../ui/src/icons/bookmark";
+import BookmarkPlusIcon from "../../../../ui/src/icons/bookmark-plus";
+import CalendarIcon from "../../../../ui/src/icons/calendar";
+import ClockIcon from "../../../../ui/src/icons/clock";
+import CopyIcon from "../../../../ui/src/icons/copy";
+import DotsIcon from "../../../../ui/src/icons/dots";
+import MuteIcon from "../../../../ui/src/icons/mute";
+import ReportIcon from "../../../../ui/src/icons/report";
+import ShareIcon from "../../../../ui/src/icons/share";
+import SidebarCollapseIcon from "../../../../ui/src/icons/sidebar-collapse";
+import SidebarExpandIcon from "../../../../ui/src/icons/sidebar-expand";
+import UserCheckIcon from "../../../../ui/src/icons/user-check";
+import UserPlusIcon from "../../../../ui/src/icons/user-plus";
 import { boolean_action, select_user } from "~/redux/features";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 import { BREAKPOINTS } from "~/theme/breakpoints";
@@ -35,40 +35,40 @@ import { abbreviate_number } from "../../../../ui/src/utils/abbreviate-number";
 import { DateFormat, format_date } from "../../../../ui/src/utils/format-date";
 import { get_read_time } from "../../../../ui/src/utils/get-read-time";
 
-import { sidebarsCollapsedAtom, storyMetadataAtom } from "../../atoms";
+import { sidebars_collapsed_atom, story_metadata_atom } from "../../atoms";
 import styles from "./story-header.module.scss";
 
 // Actions
 
 const StoryActions = (): React.ReactElement => {
-  const isLargerThanDesktop = use_media_query(BREAKPOINTS.up("desktop"));
-  const story = use_atom_value(storyMetadataAtom);
-  const [sidebarsCollapsed, setSidebarsCollapsed] = use_atom(
-    sidebarsCollapsedAtom
+  const is_larger_than_desktop = use_media_query(BREAKPOINTS.up("desktop"));
+  const story = use_atom_value(story_metadata_atom);
+  const [sidebars_collapsed, set_sidebars_collapsed] = use_atom(
+    sidebars_collapsed_atom
   );
   const share = use_web_share();
   const copy = use_clipboard();
   const dispatch = use_app_dispatch();
-  const isBookmarked = use_app_selector(
+  const is_bookmarked = use_app_selector(
     (state) => state.entities.bookmarks[story.id]
   );
-  const isMuted = use_app_selector(
+  const is_muted = use_app_selector(
     (state) => state.entities.mutes[story.user!.id]
   );
 
   return (
     <div className={"flex-center"}>
       <IconButton
-        aria-label={`${isBookmarked ? "Un-bookmark" : "Bbookmark"} story`}
+        aria-label={`${is_bookmarked ? "Un-bookmark" : "Bbookmark"} story`}
         auto_size
         check_auth
         onClick={(): void => {
           dispatch(boolean_action("bookmarks", story.id));
         }}
-        title={`${isBookmarked ? "Un-bookmark" : "Bbookmark"} story`}
+        title={`${is_bookmarked ? "Un-bookmark" : "Bbookmark"} story`}
         variant={"ghost"}
       >
-        {isBookmarked ? <BookmarkIcon no_stroke /> : <BookmarkPlusIcon />}
+        {is_bookmarked ? <BookmarkIcon no_stroke /> : <BookmarkPlusIcon />}
       </IconButton>
       <Menu
         trigger={
@@ -107,20 +107,20 @@ const StoryActions = (): React.ReactElement => {
         >
           Copy link to story
         </MenuItem>
-        {isLargerThanDesktop && (
+        {is_larger_than_desktop && (
           <React.Fragment>
             <Separator />
             <MenuItem
               decorator={
-                sidebarsCollapsed ? (
+                sidebars_collapsed ? (
                   <SidebarExpandIcon />
                 ) : (
                   <SidebarCollapseIcon />
                 )
               }
-              onClick={(): void => setSidebarsCollapsed((prev) => !prev)}
+              onClick={(): void => set_sidebars_collapsed((prev) => !prev)}
             >
-              {sidebarsCollapsed ? "Expand" : "Collapse"} sidebars
+              {sidebars_collapsed ? "Expand" : "Collapse"} sidebars
             </MenuItem>
           </React.Fragment>
         )}
@@ -132,7 +132,7 @@ const StoryActions = (): React.ReactElement => {
             dispatch(boolean_action("mutes", story.user!.id));
           }}
         >
-          {isMuted ? "Unmute" : "Mute"} this writer
+          {is_muted ? "Unmute" : "Mute"} this writer
         </MenuItem>
         <MenuItem
           as={NextLink}
@@ -153,11 +153,11 @@ const StoryActions = (): React.ReactElement => {
 const Subheader = (): React.ReactElement => {
   const dispatch = use_app_dispatch();
   const is_mobile = use_media_query(BREAKPOINTS.down("mobile"));
-  const story = use_atom_value(storyMetadataAtom);
+  const story = use_atom_value(story_metadata_atom);
   const user = story.user!;
   const follower_count =
     use_app_selector((state) => state.entities.follower_counts[user.id]) || 0;
-  const isFollowing = use_app_selector(
+  const is_following = use_app_selector(
     (state) => state.entities.following[user.id]
   );
 
@@ -196,21 +196,21 @@ const Subheader = (): React.ReactElement => {
           onClick={(): void => {
             dispatch(boolean_action("following", user.id));
           }}
-          variant={isFollowing ? "hollow" : "rigid"}
+          variant={is_following ? "hollow" : "rigid"}
         >
-          {isFollowing ? <UserCheckIcon /> : <UserPlusIcon />}
+          {is_following ? <UserCheckIcon /> : <UserPlusIcon />}
         </IconButton>
       ) : (
         <Button
           auto_size
           check_auth
-          decorator={isFollowing ? <UserCheckIcon /> : <UserPlusIcon />}
+          decorator={is_following ? <UserCheckIcon /> : <UserPlusIcon />}
           onClick={(): void => {
             dispatch(boolean_action("following", user.id));
           }}
-          variant={isFollowing ? "hollow" : "rigid"}
+          variant={is_following ? "hollow" : "rigid"}
         >
-          {isFollowing ? "Following" : "Follow"}
+          {is_following ? "Following" : "Follow"}
         </Button>
       )}
     </div>
@@ -220,16 +220,16 @@ const Subheader = (): React.ReactElement => {
 const StoryHeader = (): React.ReactElement => {
   const is_mobile = use_media_query(BREAKPOINTS.down("mobile"));
   const is_smaller_than_desktop = use_media_query(BREAKPOINTS.down("desktop"));
-  const sidebarsCollapsed = use_atom_value(sidebarsCollapsedAtom);
-  const story = use_atom_value(storyMetadataAtom);
+  const sidebars_collapsed = use_atom_value(sidebars_collapsed_atom);
+  const story = use_atom_value(story_metadata_atom);
   const user = use_app_selector(select_user);
 
   return (
     <header>
       <Typography level={"h1"}>{story.title}</Typography>
-      {is_smaller_than_desktop || sidebarsCollapsed ? (
+      {is_smaller_than_desktop || sidebars_collapsed ? (
         <React.Fragment>
-          <Spacer orientation={"vertical"} size={sidebarsCollapsed ? 4 : 2} />
+          <Spacer orientation={"vertical"} size={sidebars_collapsed ? 4 : 2} />
           <Subheader />
         </React.Fragment>
       ) : null}

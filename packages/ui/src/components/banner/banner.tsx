@@ -4,7 +4,7 @@ import { Close, Description, Root } from "@radix-ui/react-toast";
 import clsx from "clsx";
 import React from "react";
 
-import XIcon from "~/icons/X";
+import XIcon from "src/icons/x";
 import { forward_ref } from "src/utils/forward-ref";
 
 import styles from "./banner.module.scss";

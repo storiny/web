@@ -51,7 +51,7 @@ const PageHeader = ({
 const Page = (): React.ReactElement => {
   const [value, setValue] = React.useState<IndexTabValue>("suggested");
   const [page, set_page] = React.useState<number>(1);
-  const { data, isLoading, isFetching, isError, error, refetch } =
+  const { data, isLoading, is_fetching, isError, error, refetch } =
     use_get_home_feed_query({
       page,
       type: value
@@ -71,18 +71,18 @@ const Page = (): React.ReactElement => {
   return (
     <>
       <PageHeader onChange={handleChange} value={value} />
-      {isLoading || (isFetching && page === 1) ? (
+      {isLoading || (is_fetching && page === 1) ? (
         <StoryListSkeleton />
       ) : isError ? (
         <ErrorState
           auto_size
           component_props={{
-            button: { loading: isFetching }
+            button: { loading: is_fetching }
           }}
           retry={refetch}
           type={get_query_error_type(error)}
         />
-      ) : !isFetching && !items.length ? (
+      ) : !is_fetching && !items.length ? (
         <EmptyState value={value} />
       ) : (
         <VirtualizedStoryList

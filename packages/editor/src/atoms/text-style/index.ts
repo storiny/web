@@ -2,15 +2,15 @@ import { atom } from "jotai";
 
 import { TextStyle } from "../../constants";
 
-export const textStyleAtom = atom<TextStyle>(TextStyle.PARAGRAPH);
+export const text_style_atom = atom<TextStyle>(TextStyle.PARAGRAPH);
 
-export const boldAtom = atom<boolean>(false);
-export const italicAtom = atom<boolean>(false);
-export const underlineAtom = atom<boolean>(false);
-export const strikethroughAtom = atom<boolean>(false);
+export const bold_atom = atom<boolean>(false);
+export const italic_atom = atom<boolean>(false);
+export const underline_atom = atom<boolean>(false);
+export const strikethrough_atom = atom<boolean>(false);
 
-export const linkAtom = atom<boolean>(false);
-export const codeAtom = atom<boolean>(false);
+export const link_atom = atom<boolean>(false);
+export const code_atom = atom<boolean>(false);
 
-export const superscriptAtom = atom<boolean>(false);
-export const subscriptAtom = atom<boolean>(false);
+export const superscript_atom = atom<boolean>(false);
+export const subscript_atom = atom<boolean>(false);

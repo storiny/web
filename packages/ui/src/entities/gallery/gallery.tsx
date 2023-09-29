@@ -18,12 +18,12 @@ import Spacer from "src/components/spacer";
 import TabPanel from "src/components/tab-panel";
 import { use_media_query } from "src/hooks/use-media-query";
 
-import AlbumIcon from "~/icons/Album";
-import ChevronIcon from "~/icons/Chevron";
-import PenIcon from "~/icons/Pen";
-import PexelsIcon from "~/icons/Pexels";
-import PhotoSearchIcon from "~/icons/PhotoSearch";
-import UploadIcon from "~/icons/Upload";
+import AlbumIcon from "src/icons/album";
+import ChevronIcon from "src/icons/chevron";
+import PenIcon from "src/icons/pen";
+import PexelsIcon from "src/icons/pexels";
+import PhotoSearchIcon from "src/icons/photo-search";
+import UploadIcon from "src/icons/upload";
 import { BREAKPOINTS } from "~/theme/breakpoints";
 
 import {
@@ -309,8 +309,8 @@ const GalleryImpl = (props: GalleryProps): React.ReactElement => {
               />
             ) : (
               <Whiteboard
-                initialImageUrl={upload_image_url.current}
-                onMount={(): void => {
+                initial_image_url={upload_image_url.current}
+                on_mount={(): void => {
                   upload_image_url.current = null;
                 }}
                 on_cancel={(): void => {

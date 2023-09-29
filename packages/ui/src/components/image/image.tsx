@@ -12,7 +12,7 @@ import React from "react";
 import Button from "~/components/button";
 import Spacer from "src/components/spacer";
 import Typography from "src/components/typography";
-import WarningIcon from "~/icons/Warning";
+import WarningIcon from "src/icons/warning";
 import { forward_ref } from "src/utils/forward-ref";
 import { get_cdn_url } from "src/utils/get-cdn-url";
 

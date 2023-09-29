@@ -8,11 +8,11 @@ import Grow from "../../../../../../../../packages/ui/src/components/grow";
 import Separator from "../../../../../../../../packages/ui/src/components/separator";
 import Typography from "../../../../../../../../packages/ui/src/components/typography";
 import ErrorState from "../../../../../../../../packages/ui/src/entities/error-state";
-import CheckIcon from "~/icons/Check";
-import PencilPlusIcon from "~/icons/PencilPlus";
-import PlusIcon from "~/icons/Plus";
-import TagIcon from "~/icons/Tag";
-import UsersIcon from "~/icons/Users";
+import CheckIcon from "../../../../../../../../packages/ui/src/icons/check";
+import PencilPlusIcon from "../../../../../../../../packages/ui/src/icons/pencil-plus";
+import PlusIcon from "../../../../../../../../packages/ui/src/icons/plus";
+import TagIcon from "../../../../../../../../packages/ui/src/icons/tag";
+import UsersIcon from "../../../../../../../../packages/ui/src/icons/users";
 import {
   TitleWithIcon,
   UserWithActionSkeleton
@@ -76,7 +76,7 @@ const Actions = ({ tag }: Props): React.ReactElement => {
 // Top writers
 
 const TopWriters = ({ tagName }: { tagName: string }): React.ReactElement => {
-  const { isLoading, isFetching, error, isError, data, refetch } =
+  const { isLoading, is_fetching, error, isError, data, refetch } =
     use_get_tag_writers_query({ tagName });
 
   return (
@@ -84,7 +84,7 @@ const TopWriters = ({ tagName }: { tagName: string }): React.ReactElement => {
       {isError ? (
         <ErrorState
           component_props={{
-            button: { loading: isFetching }
+            button: { loading: is_fetching }
           }}
           retry={refetch}
           size={"sm"}

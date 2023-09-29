@@ -7,13 +7,13 @@ import {
   moveToLineBeginning,
   moveToLineEnd,
   selectCharacters,
-  toggleBold,
-  toggleCode,
-  toggleItalic,
-  toggleStrikethrough,
-  toggleSubscript,
-  toggleSuperscript,
-  toggleUnderline
+  toggle_bold,
+  toggle_code,
+  toggle_italic,
+  toggle_strikethrough,
+  toggle_subscript,
+  toggle_superscript,
+  toggle_underline
 } from "../keyboard-shortcuts";
 import {
   assertHTML,
@@ -33,7 +33,7 @@ test.describe("text style shortcuts", () => {
 
   test("can create `bold` text using the shortcut", async ({ page }) => {
     await page.keyboard.type("Hello");
-    await toggleBold(page);
+    await toggle_bold(page);
     await page.keyboard.type(" world");
 
     await assertHTML(
@@ -55,7 +55,7 @@ test.describe("text style shortcuts", () => {
       focusPath: [0, 1, 0]
     });
 
-    await toggleBold(page);
+    await toggle_bold(page);
     await page.keyboard.type("!");
 
     await assertHTML(
@@ -81,7 +81,7 @@ test.describe("text style shortcuts", () => {
 
   test("can create `italic` text using the shortcut", async ({ page }) => {
     await page.keyboard.type("Hello");
-    await toggleItalic(page);
+    await toggle_italic(page);
     await page.keyboard.type(" world");
 
     await assertHTML(
@@ -103,7 +103,7 @@ test.describe("text style shortcuts", () => {
       focusPath: [0, 1, 0]
     });
 
-    await toggleItalic(page);
+    await toggle_italic(page);
     await page.keyboard.type("!");
 
     await assertHTML(
@@ -129,7 +129,7 @@ test.describe("text style shortcuts", () => {
 
   test("can create `underline` text using the shortcut", async ({ page }) => {
     await page.keyboard.type("Hello");
-    await toggleUnderline(page);
+    await toggle_underline(page);
     await page.keyboard.type(" world");
 
     await assertHTML(
@@ -154,7 +154,7 @@ test.describe("text style shortcuts", () => {
       focusPath: [0, 1, 0]
     });
 
-    await toggleUnderline(page);
+    await toggle_underline(page);
     await page.keyboard.type("!");
 
     await assertHTML(
@@ -185,7 +185,7 @@ test.describe("text style shortcuts", () => {
     page
   }) => {
     await page.keyboard.type("Hello");
-    await toggleStrikethrough(page);
+    await toggle_strikethrough(page);
     await page.keyboard.type(" world");
 
     await assertHTML(
@@ -210,7 +210,7 @@ test.describe("text style shortcuts", () => {
       focusPath: [0, 1, 0]
     });
 
-    await toggleStrikethrough(page);
+    await toggle_strikethrough(page);
     await page.keyboard.type("!");
 
     await assertHTML(
@@ -241,8 +241,8 @@ test.describe("text style shortcuts", () => {
     page
   }) => {
     await page.keyboard.type("Hello");
-    await toggleUnderline(page);
-    await toggleStrikethrough(page);
+    await toggle_underline(page);
+    await toggle_strikethrough(page);
     await page.keyboard.type(" world");
 
     await assertHTML(
@@ -267,8 +267,8 @@ test.describe("text style shortcuts", () => {
       focusPath: [0, 1, 0]
     });
 
-    await toggleUnderline(page);
-    await toggleStrikethrough(page);
+    await toggle_underline(page);
+    await toggle_strikethrough(page);
     await page.keyboard.type("!");
 
     await assertHTML(
@@ -297,7 +297,7 @@ test.describe("text style shortcuts", () => {
 
   test("can create `code` text using the shortcut", async ({ page }) => {
     await page.keyboard.type("Hello");
-    await toggleCode(page);
+    await toggle_code(page);
     await page.keyboard.type(" world");
 
     await assertHTML(
@@ -319,7 +319,7 @@ test.describe("text style shortcuts", () => {
       focusPath: [0, 1, 0, 0]
     });
 
-    await toggleCode(page);
+    await toggle_code(page);
     await page.keyboard.type("!");
 
     await assertHTML(
@@ -345,7 +345,7 @@ test.describe("text style shortcuts", () => {
 
   test("can create `subscript` text using the shortcut", async ({ page }) => {
     await page.keyboard.type("Hello");
-    await toggleSubscript(page);
+    await toggle_subscript(page);
     await page.keyboard.type(" world");
 
     await assertHTML(
@@ -367,7 +367,7 @@ test.describe("text style shortcuts", () => {
       focusPath: [0, 1, 0, 0]
     });
 
-    await toggleSubscript(page);
+    await toggle_subscript(page);
     await page.keyboard.type("!");
 
     await assertHTML(
@@ -393,7 +393,7 @@ test.describe("text style shortcuts", () => {
 
   test("can create `superscript` text using the shortcut", async ({ page }) => {
     await page.keyboard.type("Hello");
-    await toggleSuperscript(page);
+    await toggle_superscript(page);
     await page.keyboard.type(" world");
 
     await assertHTML(
@@ -415,7 +415,7 @@ test.describe("text style shortcuts", () => {
       focusPath: [0, 1, 0, 0]
     });
 
-    await toggleSuperscript(page);
+    await toggle_superscript(page);
     await page.keyboard.type("!");
 
     await assertHTML(
@@ -479,7 +479,7 @@ test.describe("text style shortcuts when a part of text is selected", () => {
   test("can select text and make it `bold` with the shortcut", async ({
     page
   }) => {
-    await toggleBold(page);
+    await toggle_bold(page);
 
     await assertHTML(
       page,
@@ -501,13 +501,13 @@ test.describe("text style shortcuts when a part of text is selected", () => {
       focusPath: [0, 1, 0]
     });
 
-    await toggleBold(page);
+    await toggle_bold(page);
   });
 
   test("can select text and make it `italic` with the shortcut", async ({
     page
   }) => {
-    await toggleItalic(page);
+    await toggle_italic(page);
 
     await assertHTML(
       page,
@@ -529,13 +529,13 @@ test.describe("text style shortcuts when a part of text is selected", () => {
       focusPath: [0, 1, 0]
     });
 
-    await toggleItalic(page);
+    await toggle_italic(page);
   });
 
   test("can select text and make it `underline` with the shortcut", async ({
     page
   }) => {
-    await toggleUnderline(page);
+    await toggle_underline(page);
 
     await assertHTML(
       page,
@@ -560,13 +560,13 @@ test.describe("text style shortcuts when a part of text is selected", () => {
       focusPath: [0, 1, 0]
     });
 
-    await toggleUnderline(page);
+    await toggle_underline(page);
   });
 
   test("can select text and make it `strikethrough` with the shortcut", async ({
     page
   }) => {
-    await toggleStrikethrough(page);
+    await toggle_strikethrough(page);
 
     await assertHTML(
       page,
@@ -591,14 +591,14 @@ test.describe("text style shortcuts when a part of text is selected", () => {
       focusPath: [0, 1, 0]
     });
 
-    await toggleStrikethrough(page);
+    await toggle_strikethrough(page);
   });
 
   test("can select text and make it `underline+strikethrough` with the shortcut", async ({
     page
   }) => {
-    await toggleUnderline(page);
-    await toggleStrikethrough(page);
+    await toggle_underline(page);
+    await toggle_strikethrough(page);
 
     await assertHTML(
       page,
@@ -623,14 +623,14 @@ test.describe("text style shortcuts when a part of text is selected", () => {
       focusPath: [0, 1, 0]
     });
 
-    await toggleUnderline(page);
-    await toggleStrikethrough(page);
+    await toggle_underline(page);
+    await toggle_strikethrough(page);
   });
 
   test("can select text and make it `code` with the shortcut", async ({
     page
   }) => {
-    await toggleCode(page);
+    await toggle_code(page);
 
     await assertHTML(
       page,
@@ -652,13 +652,13 @@ test.describe("text style shortcuts when a part of text is selected", () => {
       focusPath: [0, 1, 0, 0]
     });
 
-    await toggleCode(page);
+    await toggle_code(page);
   });
 
   test("can select text and make it `subscript` with the shortcut", async ({
     page
   }) => {
-    await toggleSubscript(page);
+    await toggle_subscript(page);
 
     await assertHTML(
       page,
@@ -680,13 +680,13 @@ test.describe("text style shortcuts when a part of text is selected", () => {
       focusPath: [0, 1, 0, 0]
     });
 
-    await toggleSubscript(page);
+    await toggle_subscript(page);
   });
 
   test("can select text and make it `superscript` with the shortcut", async ({
     page
   }) => {
-    await toggleSuperscript(page);
+    await toggle_superscript(page);
 
     await assertHTML(
       page,
@@ -708,7 +708,7 @@ test.describe("text style shortcuts when a part of text is selected", () => {
       focusPath: [0, 1, 0, 0]
     });
 
-    await toggleSuperscript(page);
+    await toggle_superscript(page);
   });
 });
 
@@ -738,7 +738,7 @@ test.describe("text style", () => {
       delay: 100
     });
 
-    await toggleBold(page);
+    await toggle_bold(page);
 
     await assertHTML(
       page,
@@ -769,7 +769,7 @@ test.describe("text style", () => {
       focusPath: [0, 0, 0]
     });
 
-    await toggleBold(page);
+    await toggle_bold(page);
 
     await assertHTML(
       page,
@@ -802,7 +802,7 @@ test.describe("text style", () => {
       focusPath: [0, 1, 0]
     });
 
-    await toggleItalic(page);
+    await toggle_italic(page);
 
     await assertHTML(
       page,
@@ -833,7 +833,7 @@ test.describe("text style", () => {
       focusPath: [0, 2, 0]
     });
 
-    await toggleBold(page);
+    await toggle_bold(page);
 
     await assertHTML(
       page,
@@ -871,7 +871,7 @@ test.describe("text style", () => {
       focusPath: [0, 3, 0]
     });
 
-    await toggleBold(page);
+    await toggle_bold(page);
 
     await assertHTML(
       page,
@@ -893,7 +893,7 @@ test.describe("text style", () => {
       focusPath: [0, 2, 0]
     });
 
-    await toggleItalic(page);
+    await toggle_italic(page);
 
     await assertHTML(
       page,
@@ -915,7 +915,7 @@ test.describe("text style", () => {
       focusPath: [0, 1, 0]
     });
 
-    await toggleItalic(page);
+    await toggle_italic(page);
 
     await assertHTML(
       page,
@@ -939,11 +939,11 @@ test.describe("text style", () => {
   }) => {
     await page.keyboard.type("123");
 
-    await toggleBold(page);
+    await toggle_bold(page);
 
     await page.keyboard.type("456");
 
-    await toggleBold(page);
+    await toggle_bold(page);
 
     await page.keyboard.type("789");
 
@@ -953,11 +953,11 @@ test.describe("text style", () => {
 
     await page.keyboard.type("abc");
 
-    await toggleBold(page);
+    await toggle_bold(page);
 
     await page.keyboard.type("def");
 
-    await toggleBold(page);
+    await toggle_bold(page);
 
     await page.keyboard.type("ghi");
 
@@ -1034,13 +1034,13 @@ test.describe("text style", () => {
     await page.keyboard.down("Shift");
     await moveLeft(page, 3);
     await page.keyboard.up("Shift");
-    await toggleBold(page);
+    await toggle_bold(page);
 
     await moveToLineEnd(page);
     await page.keyboard.down("Shift");
     await moveLeft(page, 4);
     await page.keyboard.up("Shift");
-    await toggleBold(page);
+    await toggle_bold(page);
 
     await assertHTML(
       page,
@@ -1055,7 +1055,7 @@ test.describe("text style", () => {
     );
 
     // Toggle once more
-    await toggleBold(page);
+    await toggle_bold(page);
 
     await assertHTML(
       page,
@@ -1118,13 +1118,13 @@ test.describe("text style", () => {
       )
     ).toBeTruthy();
 
-    await toggleBold(page);
-    await toggleItalic(page);
-    await toggleUnderline(page);
-    await toggleStrikethrough(page);
-    await toggleCode(page);
-    await toggleSubscript(page);
-    await toggleSuperscript(page);
+    await toggle_bold(page);
+    await toggle_italic(page);
+    await toggle_underline(page);
+    await toggle_strikethrough(page);
+    await toggle_code(page);
+    await toggle_subscript(page);
+    await toggle_superscript(page);
 
     expect(
       await evaluate(

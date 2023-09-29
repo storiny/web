@@ -1,4 +1,4 @@
-import { userEvent } from "@storiny/test-utils";
+import { user_event } from "@storiny/test-utils";
 import { act, screen, waitFor } from "@testing-library/react";
 import React from "react";
 
@@ -11,7 +11,7 @@ const noop = (): void => undefined;
 describe("<RemoveAccount />", () => {
   it("renders validation messages", async () => {
     const mockSubmit = jest.fn();
-    const user = userEvent.setup();
+    const user = user_event.setup();
     render_test_with_provider(
       <RemoveAccount onRemove={noop} on_submit={mockSubmit} vendor={"Apple"} />,
       {
@@ -38,7 +38,7 @@ describe("<RemoveAccount />", () => {
 
   it("submits correct form data", async () => {
     const mockSubmit = jest.fn();
-    const user = userEvent.setup();
+    const user = user_event.setup();
     render_test_with_provider(
       <RemoveAccount onRemove={noop} on_submit={mockSubmit} vendor={"Apple"} />,
       {

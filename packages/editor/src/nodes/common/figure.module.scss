@@ -1,6 +1,5 @@
 @use "breakpoints";
 
-/* Banners */
 .left-banner,
 .right-banner {
   position: absolute;
@@ -15,7 +14,6 @@
   }
 }
 
-/* Left banner */
 .left-banner {
   grid-column: 2 / 5; // Overflow
 
@@ -24,7 +22,6 @@
   }
 }
 
-/* Right banner */
 .right-banner {
   grid-column: 11 / -2; // Overflow
 

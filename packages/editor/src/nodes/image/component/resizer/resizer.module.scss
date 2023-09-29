@@ -1,4 +1,3 @@
-/* Resize anchor */
 .resizer {
   display: block;
   width: 12px;
@@ -45,12 +44,9 @@
   }
 }
 
-/* Resizing state */
 .resizing {
   touch-action: none;
 }
-
-/* Animations */
 
 @keyframes anchor-grow {
   to {

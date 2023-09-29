@@ -1,21 +1,21 @@
-import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
+import { useLexicalComposerContext as use_lexical_composer_context } from "@lexical/react/LexicalComposerContext";
 import {
   COMMAND_PRIORITY_EDITOR,
-  createCommand,
+  createCommand as create_command,
   LexicalCommand
 } from "lexical";
 import React from "react";
 
-import { $createEmbedNode, EmbedNode, EmbedPayload } from "../../nodes/embed";
-import { $createFigureNodeWithCaption } from "../../utils/create-figure-node-with-caption";
+import { $create_embed_node, EmbedNode, EmbedPayload } from "../../nodes/embed";
+import { $create_figure_node_with_caption } from "../../utils/create-figure-node-with-caption";
 
 export type InsertEmbedPayload = Readonly<EmbedPayload>;
 
 export const INSERT_EMBED_COMMAND: LexicalCommand<InsertEmbedPayload> =
-  createCommand("INSERT_EMBED_COMMAND");
+  create_command("INSERT_EMBED_COMMAND");
 
 const EmbedPlugin = (): React.ReactElement | null => {
-  const [editor] = useLexicalComposerContext();
+  const [editor] = use_lexical_composer_context();
 
   React.useEffect(() => {
     if (!editor.hasNodes([EmbedNode])) {
@@ -25,7 +25,7 @@ const EmbedPlugin = (): React.ReactElement | null => {
     return editor.registerCommand<InsertEmbedPayload>(
       INSERT_EMBED_COMMAND,
       (payload) => {
-        $createFigureNodeWithCaption($createEmbedNode(payload));
+        $create_figure_node_with_caption($create_embed_node(payload));
         return true;
       },
       COMMAND_PRIORITY_EDITOR

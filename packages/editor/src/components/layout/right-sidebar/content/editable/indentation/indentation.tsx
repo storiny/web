@@ -1,29 +1,29 @@
-import { getShortcutLabel } from "@storiny/shared/src/utils/get-shortcut-label";
+import { get_shortcut_label } from "@storiny/shared/src/utils/get-shortcut-label";
 import React from "react";
 
 import IconButton from "../../../../../../../../ui/src/components/icon-button";
 import Tooltip from "../../../../../../../../ui/src/components/tooltip";
-import IndentIcon from "~/icons/Indent";
-import OutdentIcon from "~/icons/Outdent";
+import IndentIcon from "../../../../../../../../ui/src/icons/indent";
+import OutdentIcon from "../../../../../../../../ui/src/icons/outdent";
 
 import { EDITOR_SHORTCUTS } from "../../../../../../constants/shortcuts";
-import { useIndentation } from "../../../../../../hooks/use-indentation";
+import { use_indentation } from "../../../../../../hooks/use-indentation";
 
 const Indentation = ({
   disabled
 }: {
   disabled?: boolean;
 }): React.ReactElement => {
-  const { indent, outdent, canIndent, canOutdent } = useIndentation();
+  const { indent, outdent, can_indent, can_outdent } = use_indentation();
   return (
     <div className={"flex-center"}>
       <Tooltip
         content={"Indent"}
-        right_slot={getShortcutLabel(EDITOR_SHORTCUTS.indent)}
+        right_slot={get_shortcut_label(EDITOR_SHORTCUTS.indent)}
       >
         <IconButton
           data-testid={"indent"}
-          disabled={disabled || !canIndent}
+          disabled={disabled || !can_indent}
           onClick={indent}
           variant={"ghost"}
         >
@@ -32,11 +32,11 @@ const Indentation = ({
       </Tooltip>
       <Tooltip
         content={"Outdent"}
-        right_slot={getShortcutLabel(EDITOR_SHORTCUTS.outdent)}
+        right_slot={get_shortcut_label(EDITOR_SHORTCUTS.outdent)}
       >
         <IconButton
           data-testid={"outdent"}
-          disabled={disabled || !canOutdent}
+          disabled={disabled || !can_outdent}
           onClick={outdent}
           variant={"ghost"}
         >

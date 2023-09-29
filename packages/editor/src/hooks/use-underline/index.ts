@@ -1,20 +1,20 @@
-import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { useAtomValue } from "jotai";
+import { useLexicalComposerContext as use_lexical_composer_context } from "@lexical/react/LexicalComposerContext";
+import { useAtomValue as use_atom_value } from "jotai";
 import { FORMAT_TEXT_COMMAND } from "lexical";
 import React from "react";
 
-import { underlineAtom } from "../../atoms";
+import { underline_atom } from "../../atoms";
 
 /**
  * Hooks for using underline text style
  */
-export const useUnderline = (): [boolean, () => void] => {
-  const underline = use_atom_value(underlineAtom);
-  const [editor] = useLexicalComposerContext();
+export const use_underline = (): [boolean, () => void] => {
+  const underline = use_atom_value(underline_atom);
+  const [editor] = use_lexical_composer_context();
 
-  const toggleUnderline = React.useCallback(() => {
+  const toggle_underline = React.useCallback(() => {
     editor.dispatchCommand(FORMAT_TEXT_COMMAND, "underline");
   }, [editor]);
 
-  return [underline, toggleUnderline];
+  return [underline, toggle_underline];
 };

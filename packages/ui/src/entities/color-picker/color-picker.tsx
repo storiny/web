@@ -13,8 +13,8 @@ import Spacer from "src/components/spacer";
 import Typography from "src/components/typography";
 
 import { preview_color_atom } from "~/entities/color-picker/core/atoms";
-import CloudOffIcon from "~/icons/CloudOff";
-import XIcon from "~/icons/X";
+import CloudOffIcon from "src/icons/cloud-off";
+import XIcon from "src/icons/x";
 
 import styles from "./color-picker.module.scss";
 import { ColorPickerProps } from "./color-picker.props";

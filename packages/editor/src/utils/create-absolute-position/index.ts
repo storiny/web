@@ -1,6 +1,6 @@
 import {
   AbsolutePosition,
-  createAbsolutePositionFromRelativePosition,
+  createAbsolutePositionFromRelativePosition as create_absolute_position_from_relative_position,
   RelativePosition
 } from "yjs";
 
@@ -8,11 +8,14 @@ import { Binding } from "../../collaboration/bindings";
 
 /**
  * Creates absolute position from relative position
- * @param relativePosition Relative position
+ * @param relative_position Relative position
  * @param binding Binding
  */
-export const createAbsolutePosition = (
-  relativePosition: RelativePosition,
+export const create_absolute_position = (
+  relative_position: RelativePosition,
   binding: Binding
 ): AbsolutePosition | null =>
-  createAbsolutePositionFromRelativePosition(relativePosition, binding.doc);
+  create_absolute_position_from_relative_position(
+    relative_position,
+    binding.doc
+  );

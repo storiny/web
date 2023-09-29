@@ -1,6 +1,6 @@
-import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
+import { useLexicalComposerContext as use_lexical_composer_context } from "@lexical/react/LexicalComposerContext";
 import { clsx } from "clsx";
-import { $getNodeByKey } from "lexical";
+import { $getNodeByKey as $get_node_by_key } from "lexical";
 import React from "react";
 
 import ToggleGroup from "../../../../../../../ui/src/components/toggle-group";
@@ -10,47 +10,47 @@ import FigureFitIcon from "~/icons/figure-fit";
 import FigureOverflowIcon from "~/icons/figure-overflow";
 import FigureScreenWidthIcon from "~/icons/figure-screen-width";
 
-import { $isImageNode, ImageNodeLayout } from "../../../image";
+import { $is_image_node, ImageNodeLayout } from "../../../image";
 import styles from "../../image.module.scss";
 import { ImageLayoutToggleGroupProps } from "./layout-toggle-group.props";
 
 const ImageLayoutToggleGroup = (
   props: ImageLayoutToggleGroupProps
 ): React.ReactElement => {
-  const { fitDisabled, layout, nodeKey } = props;
-  const [editor] = useLexicalComposerContext();
+  const { fit_disabled, layout, node_key } = props;
+  const [editor] = use_lexical_composer_context();
 
   /**
    * Updates the node layout
    */
-  const setLayout = React.useCallback(
-    (nextLayout: ImageNodeLayout) => {
+  const set_layout = React.useCallback(
+    (next_layout: ImageNodeLayout) => {
       editor.update(() => {
-        const node = $getNodeByKey(nodeKey);
+        const node = $get_node_by_key(node_key);
         if (
-          $isImageNode(node) &&
+          $is_image_node(node) &&
           (
             ["fit", "fill", "overflow", "screen-width"] as ImageNodeLayout[]
-          ).includes(nextLayout)
+          ).includes(next_layout)
         ) {
-          node.setLayout(nextLayout);
+          node.set_layout(next_layout);
         }
       });
     },
-    [editor, nodeKey]
+    [editor, node_key]
   );
 
   return (
     <ToggleGroup
-      onValueChange={(value: ImageNodeLayout): void => setLayout(value)}
+      onValueChange={(value: ImageNodeLayout): void => set_layout(value)}
       value={layout}
     >
       <ToggleGroupItem
         className={clsx("focus-invert", styles.x, styles.button)}
-        disabled={fitDisabled}
+        disabled={fit_disabled}
         slot_props={{
           tooltip: {
-            right_slot: fitDisabled
+            right_slot: fit_disabled
               ? "(Not available for multiple images)"
               : undefined
           }

@@ -17,7 +17,7 @@ import Tabs from "../../../../../../../../../../packages/ui/src/components/tabs"
 import TabsList from "../../../../../../../../../../packages/ui/src/components/tabs-list";
 import Typography from "../../../../../../../../../../packages/ui/src/components/typography";
 import Persona from "../../../../../../../../../../packages/ui/src/entities/persona";
-import SearchIcon from "~/icons/Search";
+import SearchIcon from "../../../../../../../../../../packages/ui/src/icons/search";
 import { select_user } from "~/redux/features";
 import { use_app_selector } from "~/redux/hooks";
 

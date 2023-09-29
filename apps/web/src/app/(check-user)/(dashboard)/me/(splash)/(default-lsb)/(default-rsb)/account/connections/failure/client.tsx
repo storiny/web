@@ -5,8 +5,8 @@ import Button from "../../../../../../../../../../../../../packages/ui/src/compo
 import Link from "../../../../../../../../../../../../../packages/ui/src/components/link";
 import Spacer from "../../../../../../../../../../../../../packages/ui/src/components/spacer";
 import CustomState from "../../../../../../../../../../../../../packages/ui/src/entities/custom-state";
-import LockExclamationIcon from "~/icons/LockExclamation";
-import UnlinkIcon from "~/icons/Unlink";
+import LockExclamationIcon from "../../../../../../../../../../../../../packages/ui/src/icons/lock-exclamation";
+import UnlinkIcon from "../../../../../../../../../../../../../packages/ui/src/icons/unlink";
 
 import DashboardGroup from "../../../../dashboard-group";
 import DashboardTitle from "../../../../dashboard-title";

@@ -20,14 +20,14 @@ const Page = async ({
       notFound();
     }
 
-    const userId = await getUser();
+    const user_id = await getUser();
 
-    if (!userId) {
+    if (!user_id) {
       redirect("/login");
     }
 
     const storyResponsesInfoResponse = await getStoryResponsesInfo({
-      user_id: userId,
+      user_id: user_id,
       story_id: storyId
     });
 

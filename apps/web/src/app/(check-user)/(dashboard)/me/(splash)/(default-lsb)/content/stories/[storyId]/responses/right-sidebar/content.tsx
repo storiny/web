@@ -15,19 +15,19 @@ const ContentStoryResponsesRightSidebarContent = (
   props: StoryResponsesRightSidebarProps
 ): React.ReactElement => {
   const { storyId } = props;
-  const { data, isLoading, isFetching, isError, error, refetch } =
+  const { data, isLoading, is_fetching, isError, error, refetch } =
     use_get_story_preview_query(storyId);
 
   return isError ? (
     <ErrorState
       auto_size
       component_props={{
-        button: { loading: isFetching }
+        button: { loading: is_fetching }
       }}
       retry={refetch}
       type={get_query_error_type(error)}
     />
-  ) : !data || isLoading || isFetching ? (
+  ) : !data || isLoading || is_fetching ? (
     <StoryCardSkeleton />
   ) : (
     <StoryCard story={data} />

@@ -1,4 +1,5 @@
-import { Notification, NotificationType } from "@storiny/types";
+import { Notification } from "@storiny/types";
+import { NotificationType } from "@storiny/shared";
 
 import { MOCK_STORIES } from "../story";
 import { MOCK_TAGS } from "../tag";

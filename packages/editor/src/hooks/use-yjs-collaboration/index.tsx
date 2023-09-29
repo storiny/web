@@ -1,39 +1,36 @@
-"use client";
-
-import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { useSetAtom } from "jotai";
-import { $getRoot, LexicalEditor } from "lexical";
+import { useLexicalComposerContext as use_lexical_composer_context } from "@lexical/react/LexicalComposerContext";
+import { useSetAtom as use_set_atom } from "jotai";
+import { $getRoot as $get_root, LexicalEditor } from "lexical";
 import React from "react";
-import { createPortal } from "react-dom";
+import { createPortal as create_portal } from "react-dom";
 import { Doc, Transaction, UndoManager, YEvent } from "yjs";
 
-import { awarenessAtom, docStatusAtom } from "../../atoms";
+import { awareness_atom, doc_status_atom } from "../../atoms";
 import { ExcludedProperties } from "../../collaboration/bindings";
-import { Binding, createBinding } from "../../collaboration/bindings";
-import { CONNECTED_COMMAND } from "../../collaboration/commands";
+import { Binding, create_binding } from "../../collaboration/bindings";
 import {
   CollabLocalState,
-  initLocalState,
+  init_local_state,
   Provider
 } from "../../collaboration/provider";
-import { initializeEditor } from "../../utils/initialize-editor";
-import { syncCursorPositions } from "../../utils/sync-cursor-positions";
-import { syncLexicalUpdateToYjs } from "../../utils/sync-lexical-update-to-yjs";
-import { syncYjsChangesToLexical } from "../../utils/sync-yjs-changes-to-lexical";
+import { initialize_editor } from "../../utils/initialize-editor";
+import { sync_cursor_positions } from "../../utils/sync-cursor-positions";
+import { sync_lexical_update_to_yjs } from "../../utils/sync-lexical-update-to-yjs";
+import { sync_yjs_changes_to_lexical } from "../../utils/sync-yjs-changes-to-lexical";
 
 /**
  * Creates the editor (skipping collab)
  * @param editor Editor
  * @param binding Binding
  */
-const clearEditorSkipCollab = (
+const clear_editor_skip_collab = (
   editor: LexicalEditor,
   binding: Binding
 ): void => {
   // Reset editor state
   editor.update(
     () => {
-      const root = $getRoot();
+      const root = $get_root();
       root.clear();
       root.select();
     },
@@ -47,24 +44,24 @@ const clearEditorSkipCollab = (
   }
 
   const cursors = binding.cursors;
-  const cursorsContainer = binding.cursorsContainer;
+  const cursors_container = binding.cursors_container;
 
-  if (cursors == null || cursorsContainer == null) {
+  if (cursors == null || cursors_container == null) {
     return;
   }
 
   // Reset cursors in the DOM
-  const cursorsArr = Array.from(cursors.values());
+  const cursors_arr = Array.from(cursors.values());
 
-  for (let i = 0; i < cursorsArr.length; i++) {
-    const cursor = cursorsArr[i];
+  for (let i = 0; i < cursors_arr.length; i++) {
+    const cursor = cursors_arr[i];
     const selection = cursor.selection;
 
     if (selection && selection.selections != null) {
       const selections = selection.selections;
 
       for (let j = 0; j < selections.length; j++) {
-        cursorsContainer.removeChild(selections[i]);
+        cursors_container.removeChild(selections[i]);
       }
     }
   }
@@ -73,40 +70,37 @@ const clearEditorSkipCollab = (
 /**
  * Hook for using yjs collaboration
  * @param name User name
- * @param docMap Document map
- * @param shouldBootstrap Whether to bootstrap
- * @param excludedProperties Excluded properties
- * @param isMainEditor Main editor flag
- * @param localState Local collab state
+ * @param doc_map Document map
+ * @param should_bootstrap Whether to bootstrap
+ * @param excluded_properties Excluded properties
+ * @param local_state Local collab state
  */
-export const useYjsCollaboration = ({
-  docMap,
+export const use_yjs_collaboration = ({
+  doc_map,
   provider,
-  excludedProperties,
-  shouldBootstrap,
-  isMainEditor,
-  localState
+  excluded_properties,
+  should_bootstrap,
+  local_state
 }: {
-  docMap: Map<string, Doc>;
-  excludedProperties?: ExcludedProperties;
-  isMainEditor?: boolean;
-  localState: Omit<
+  doc_map: Map<string, Doc>;
+  excluded_properties?: ExcludedProperties;
+  local_state: Omit<
     CollabLocalState,
-    "provider" | "awarenessData" | "focusing"
+    "provider" | "awareness_data" | "focusing"
   > &
-    Partial<Pick<CollabLocalState, "awarenessData">>;
+    Partial<Pick<CollabLocalState, "awareness_data">>;
   provider: Provider;
-  shouldBootstrap: boolean;
+  should_bootstrap: boolean;
 }): [React.ReactElement, Binding] => {
-  const [editor] = useLexicalComposerContext();
-  const isReloadingDoc = React.useRef(false);
-  const connectedOnceRef = React.useRef<boolean>(false);
-  const setDocStatus = use_set_atom(docStatusAtom);
-  const setAwareness = use_set_atom(awarenessAtom);
-  const [doc, setDoc] = React.useState(docMap.get("main"));
+  const [editor] = use_lexical_composer_context();
+  const is_reloading_doc = React.useRef(false);
+  const connected_once_ref = React.useRef<boolean>(false);
+  const set_doc_status = use_set_atom(doc_status_atom);
+  const set_awareness = use_set_atom(awareness_atom);
+  const [doc, set_doc] = React.useState(doc_map.get("main"));
   const binding = React.useMemo(
-    () => createBinding(editor, doc, docMap, excludedProperties),
-    [doc, docMap, editor, excludedProperties]
+    () => create_binding(editor, doc, doc_map, excluded_properties),
+    [doc, doc_map, editor, excluded_properties]
   );
 
   const connect = React.useCallback(() => {
@@ -117,7 +111,7 @@ export const useYjsCollaboration = ({
     try {
       provider.disconnect();
     } catch {
-      // noop
+      // NOOP
     }
   }, [provider]);
 
@@ -129,134 +123,121 @@ export const useYjsCollaboration = ({
      * Handles status updates
      * @param status Status
      */
-    const handleStatus = ({
+    const handle_status = ({
       status
     }: {
       status: "connecting" | "connected" | "disconnected";
     }): void => {
-      if (isMainEditor) {
-        setDocStatus(
-          status === "connecting" && connectedOnceRef.current
-            ? "reconnecting"
-            : status
-        );
-      }
+      set_doc_status(
+        status === "connecting" && connected_once_ref.current
+          ? "reconnecting"
+          : status
+      );
 
       if (status === "connected") {
-        connectedOnceRef.current = true;
+        connected_once_ref.current = true;
       }
-
-      editor.dispatchCommand(CONNECTED_COMMAND, status === "connected");
     };
 
     /**
      * Handles provider authentication
      * @param reason Rejection reason
      */
-    const handleAuth = (reason: "forbidden" | "overloaded"): void => {
-      if (isMainEditor) {
-        setDocStatus(reason);
-      }
+    const handle_auth = (reason: "forbidden" | "overloaded"): void => {
+      set_doc_status(reason);
     };
 
     /**
      * Handles sync event
-     * @param isSynced Synced flag
+     * @param is_synced Synced flag
      */
-    const handleSync = (isSynced: boolean): void => {
+    const handle_sync = (is_synced: boolean): void => {
       if (
-        shouldBootstrap &&
-        isSynced &&
-        root.isEmpty() &&
-        root._xmlText._length === 0 &&
-        !isReloadingDoc.current
+        should_bootstrap &&
+        is_synced &&
+        root.is_empty() &&
+        root._xml_text._length === 0 &&
+        !is_reloading_doc.current
       ) {
-        initializeEditor(editor);
+        initialize_editor(editor);
       }
 
-      if (isMainEditor) {
-        setDocStatus("connected");
-      }
-
-      isReloadingDoc.current = false;
+      set_doc_status("connected");
+      is_reloading_doc.current = false;
     };
 
     /**
      * Handles reload event
-     * @param newDoc YDoc
+     * @param next_doc YDoc
      */
-    const handleReload = (newDoc: Doc): void => {
-      clearEditorSkipCollab(editor, binding);
-      setDoc(newDoc);
-      docMap.set("main", newDoc);
-
-      if (isMainEditor) {
-        setDocStatus("syncing");
-      }
-
-      isReloadingDoc.current = true;
+    const handle_reload = (next_doc: Doc): void => {
+      clear_editor_skip_collab(editor, binding);
+      set_doc(next_doc);
+      doc_map.set("main", next_doc);
+      set_doc_status("syncing");
+      is_reloading_doc.current = true;
     };
 
     /**
      * Handles awareness update
      */
-    const handleAwarenessUpdate = (): void => {
-      syncCursorPositions(binding, provider);
+    const handle_awareness_update = (): void => {
+      sync_cursor_positions(binding, provider);
     };
 
-    setAwareness(awareness);
-    initLocalState({
-      ...localState,
+    set_awareness(awareness);
+    init_local_state({
+      ...local_state,
       provider,
       focusing: document.activeElement === editor.getRootElement(),
-      awarenessData: localState.awarenessData || {}
+      awareness_data: local_state.awareness_data || {}
     });
 
-    provider.on("reload", handleReload);
-    provider.on("status", handleStatus);
-    provider.on("sync", handleSync);
-    provider.on("auth", handleAuth);
-    awareness.on("update", handleAwarenessUpdate);
+    provider.on("reload", handle_reload);
+    provider.on("status", handle_status);
+    provider.on("sync", handle_sync);
+    provider.on("auth", handle_auth);
+    awareness.on("update", handle_awareness_update);
 
-    const onYjsTreeChanges = (
+    const on_yjs_tree_changes = (
       // The below `any` type is taken directly from the vendor types for yjs
       events: Array<YEvent<any>>,
       transaction: Transaction
     ): void => {
       const origin = transaction.origin;
       if (origin !== binding) {
-        const isFromUndoManger = origin instanceof UndoManager;
-        syncYjsChangesToLexical({
+        const is_from_undo_manager = origin instanceof UndoManager;
+        sync_yjs_changes_to_lexical({
           binding,
           provider,
           events,
-          isFromUndoManger
+          is_from_undo_manager
         });
       }
     };
 
     // This updates the local editor state when we receive updates from other clients
-    root.getSharedType().observeDeep(onYjsTreeChanges);
+    root.get_shared_type().observeDeep(on_yjs_tree_changes);
 
-    const removeListener = editor.registerUpdateListener(
+    const remove_listener = editor.registerUpdateListener(
       ({
-        prevEditorState,
-        editorState,
-        dirtyLeaves,
-        dirtyElements,
-        normalizedNodes,
+        prevEditorState: prev_editor_state,
+        editorState: curr_editor_state,
+        dirtyLeaves: dirty_leaves,
+        dirtyElements: dirty_elements,
+        normalizedNodes: normalized_nodes,
         tags
       }) => {
         if (!tags.has("skip-collab")) {
-          syncLexicalUpdateToYjs({
+          sync_lexical_update_to_yjs({
             binding,
             provider,
-            dirtyElements,
-            dirtyLeaves,
+            dirty_elements,
+            dirty_leaves,
             tags,
-            normalizedNodes,
-            prevEditorState,
-            currEditorState: editorState
+            normalized_nodes,
+            prev_editor_state,
+            curr_editor_state
           });
         }
       }
@@ -266,19 +247,18 @@ export const useYjsCollaboration = ({
     connect();
 
     return () => {
-      if (!isReloadingDoc.current) {
+      if (!is_reloading_doc.current) {
         disconnect();
       }
 
-      provider.off("reload", handleReload);
-      provider.off("status", handleStatus);
-      provider.off("sync", handleSync);
-      provider.off("auth", handleAuth);
-      awareness.off("update", handleAwarenessUpdate);
-
-      root.getSharedType().unobserveDeep(onYjsTreeChanges);
-      docMap.delete("main");
-      removeListener();
+      provider.off("reload", handle_reload);
+      provider.off("status", handle_status);
+      provider.off("sync", handle_sync);
+      provider.off("auth", handle_auth);
+      awareness.off("update", handle_awareness_update);
+      root.get_shared_type().unobserveDeep(on_yjs_tree_changes);
+      doc_map.delete("main");
+      remove_listener();
     };
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -286,24 +266,23 @@ export const useYjsCollaboration = ({
     binding,
     connect,
     disconnect,
-    docMap,
+    doc_map,
     editor,
-    isMainEditor,
     provider,
-    localState,
-    shouldBootstrap
+    local_state,
+    should_bootstrap
   ]);
 
   /**
    * Cursors container
    */
-  const cursorsContainer = React.useMemo(
+  const cursors_container = React.useMemo(
     () =>
-      createPortal(
+      create_portal(
         <div
           aria-hidden
           ref={(element: HTMLElement | null): void => {
-            binding.cursorsContainer = element;
+            binding.cursors_container = element;
           }}
         />,
         document.body
@@ -311,5 +290,5 @@ export const useYjsCollaboration = ({
     [binding]
   );
 
-  return [cursorsContainer, binding];
+  return [cursors_container, binding];
 };

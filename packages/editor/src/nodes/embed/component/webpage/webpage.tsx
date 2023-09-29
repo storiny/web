@@ -9,8 +9,8 @@ import Link from "../../../../../../ui/src/components/link";
 import Spacer from "../../../../../../ui/src/components/spacer";
 import Typography from "../../../../../../ui/src/components/typography";
 import Persona from "../../../../../../ui/src/entities/persona";
-import ExternalLinkIcon from "~/icons/ExternalLink";
-import LinkIcon from "~/icons/Link";
+import ExternalLinkIcon from "../../../../../../ui/src/icons/external-link";
+import LinkIcon from "../../../../../../ui/src/icons/link";
 
 import styles from "./webpage.module.scss";
 import { WebpageEmbedProps } from "./webpage.props";
@@ -19,18 +19,18 @@ const WebpageEmbed = ({
   metadata,
   selected
 }: WebpageEmbedProps): React.ReactElement => {
-  const isLargeCard = Boolean(!metadata.image || metadata.image?.is_large);
+  const is_large_card = Boolean(!metadata.image || metadata.image?.is_large);
   return (
     <div
       className={clsx(
-        isLargeCard ? "flex-col" : "flex-center",
+        is_large_card ? "flex-col" : "flex-center",
         styles.x,
         styles.webpage,
         selected && styles.selected,
-        !isLargeCard && styles.small
+        !is_large_card && styles.small
       )}
     >
-      {isLargeCard ? (
+      {is_large_card ? (
         <React.Fragment>
           <div className={clsx("flex", styles.x, styles.header)}>
             <Persona

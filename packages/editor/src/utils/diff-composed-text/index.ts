@@ -3,25 +3,25 @@
  * @param a Text
  * @param b Another text
  */
-export const diffComposedText = (
+export const diff_composed_text = (
   a: string,
   b: string
 ): [number, number, string] => {
-  const aLength = a.length;
-  const bLength = b.length;
+  const a_length = a.length;
+  const b_length = b.length;
   let left = 0;
   let right = 0;
 
-  while (left < aLength && left < bLength && a[left] === b[left]) {
+  while (left < a_length && left < b_length && a[left] === b[left]) {
     left++;
   }
   while (
-    right + left < aLength &&
-    right + left < bLength &&
-    a[aLength - right - 1] === b[bLength - right - 1]
+    right + left < a_length &&
+    right + left < b_length &&
+    a[a_length - right - 1] === b[b_length - right - 1]
   ) {
     right++;
   }
 
-  return [left, aLength - left - right, b.slice(left, bLength - right)];
+  return [left, a_length - left - right, b.slice(left, b_length - right)];
 };

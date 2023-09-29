@@ -3,9 +3,9 @@
 import React from "react";
 
 export const LayersContext = React.createContext<{
-  layerCount: number;
-  panelHeight: number;
+  layer_count: number;
+  panel_height: number;
 }>({
-  layerCount: 0,
-  panelHeight: 0
+  layer_count: 0,
+  panel_height: 0
 });

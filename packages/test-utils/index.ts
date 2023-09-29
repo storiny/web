@@ -3,15 +3,16 @@ import "expect-more-jest";
 import "whatwg-fetch";
 
 import { act } from "@testing-library/react";
-import { toHaveNoViolations } from "jest-axe";
+import { toHaveNoViolations as to_have_no_violations } from "jest-axe";
 
-export { default as userEvent } from "@testing-library/user-event";
+export { default as user_event } from "@testing-library/user-event";
 export { axe } from "jest-axe";
 
-expect.extend(toHaveNoViolations);
+expect.extend(to_have_no_violations);
 
 // Wait for popper's position
-export const wait_for_position = (): Promise<void> => act(async () => {});
+export const wait_for_position = (): Promise<void> =>
+  act(async () => undefined);
 
 // Mock fetch
 global.fetch = jest.fn();
@@ -20,9 +21,11 @@ global.fetch = jest.fn();
 global.ResizeObserver = require("resize-observer-polyfill");
 
 // Mock scrollIntoView (not available in jsdom yet)
-window.HTMLElement.prototype.scrollIntoView = (): void => {};
+window.HTMLElement.prototype.scrollIntoView = (): void => undefined;
 
 // Mock `matchMedia`
+
+/* eslint-disable prefer-snakecase/prefer-snakecase */
 Object.defineProperty(window, "matchMedia", {
   writable: true,
   value: jest.fn().mockImplementation((query) => ({
@@ -36,6 +39,7 @@ Object.defineProperty(window, "matchMedia", {
     dispatchEvent: jest.fn()
   }))
 });
+/* eslint-enable prefer-snakecase/prefer-snakecase */
 
 // Mock `localStorage`
 Storage.prototype.setItem = jest.fn();
@@ -47,6 +51,7 @@ jest.mock("nanoid", () => ({
 }));
 
 // Mock next.js navigation utilities
+/* eslint-disable prefer-snakecase/prefer-snakecase */
 jest.mock("next/navigation", () => ({
   useRouter: jest.fn(),
   useParams: jest.fn(),
@@ -55,13 +60,14 @@ jest.mock("next/navigation", () => ({
   useSelectedLayoutSegment: jest.fn(),
   useSelectedLayoutSegments: jest.fn()
 }));
+/* eslint-enable prefer-snakecase/prefer-snakecase */
 
 // Intersection observer mock
-const mockIntersectionObserver = jest.fn();
-mockIntersectionObserver.mockReturnValue({
+const mock_intersection_observer = jest.fn();
+mock_intersection_observer.mockReturnValue({
   observe: () => null,
   unobserve: () => null,
   disconnect: () => null
 });
 
-window.IntersectionObserver = mockIntersectionObserver;
+window.IntersectionObserver = mock_intersection_observer;

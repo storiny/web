@@ -3,7 +3,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
 
-import UserIcon from "~/icons/User";
+import UserIcon from "src/icons/user";
 
 import CustomState from "./custom-state";
 

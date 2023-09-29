@@ -1,6 +1,5 @@
 "use client";
 
-import { NotificationType } from "@storiny/types";
 import clsx from "clsx";
 import dynamic from "next/dynamic";
 import React from "react";
@@ -11,18 +10,18 @@ import Grow from "src/components/grow";
 import Typography from "src/components/typography";
 import NotificationParser from "~/entities/notification/parser";
 import { use_media_query } from "src/hooks/use-media-query";
-import AtIcon from "~/icons/At";
-import CommentIcon from "~/icons/Comment";
-import HeartIcon from "~/icons/Heart";
-import LoginIcon from "~/icons/Login";
-import ReplyIcon from "~/icons/Reply";
-import ShieldIcon from "~/icons/Shield";
-import StoryIcon from "~/icons/Story";
-import TagIcon from "~/icons/Tag";
-import UserCheckIcon from "~/icons/UserCheck";
-import UserHeartIcon from "~/icons/UserHeart";
-import UserPlusIcon from "~/icons/UserPlus";
-import VerifiedIcon from "~/icons/Verified";
+import AtIcon from "src/icons/at";
+import CommentIcon from "src/icons/comment";
+import HeartIcon from "src/icons/heart";
+import LoginIcon from "src/icons/login";
+import ReplyIcon from "src/icons/reply";
+import ShieldIcon from "src/icons/shield";
+import StoryIcon from "src/icons/story";
+import TagIcon from "src/icons/tag";
+import UserCheckIcon from "src/icons/user-check";
+import UserHeartIcon from "src/icons/user-heart";
+import UserPlusIcon from "src/icons/user-plus";
+import VerifiedIcon from "src/icons/verified";
 import { select_read_notification } from "~/redux/features";
 import { use_app_selector } from "~/redux/hooks";
 import { BREAKPOINTS } from "~/theme/breakpoints";
@@ -30,6 +29,7 @@ import { DateFormat, format_date } from "src/utils/format-date";
 
 import styles from "./notification.module.scss";
 import { NotificationProps } from "./notification.props";
+import { NotificationType } from "@storiny/shared";
 
 const Actions = dynamic(() => import("./actions"));
 

@@ -2,19 +2,19 @@ import React from "react";
 
 import MenubarItem from "../../../../../../../../ui/src/components/menubar-item";
 import SymbolPicker from "~/entities/symbol-picker";
-import OmegaIcon from "~/icons/Omega";
+import OmegaIcon from "../../../../../../../../ui/src/icons/omega";
 
-import { useInsertTextEntity } from "../../../../../../hooks/use-insert-text-entity";
+import { use_insert_text_entity } from "../../../../../../hooks/use-insert-text-entity";
 
 const SymbolMenubarItem = ({
   disabled
 }: {
   disabled?: boolean;
 }): React.ReactElement => {
-  const [insertSymbol] = useInsertTextEntity();
+  const [insert_symbol] = use_insert_text_entity();
   return (
     <SymbolPicker
-      on_symbol_select={insertSymbol}
+      on_symbol_select={insert_symbol}
       popover_props={{ modal: true }}
     >
       <MenubarItem

@@ -7,7 +7,7 @@ import Tooltip from "src/components/tooltip";
 import { css_color } from "src/entities/color-picker/core/color/css-color";
 import use_eye_dropper from "use-eye-dropper";
 
-import PickerIcon from "~/icons/Picker";
+import PickerIcon from "src/icons/picker";
 
 import { EyeDropperProps } from "./eye-dropper.props";
 

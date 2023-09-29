@@ -11,8 +11,8 @@ import {
   pressBackspace,
   selectAll,
   selectCharacters,
-  toggleBold,
-  toggleItalic,
+  toggle_bold,
+  toggle_italic,
   toggleLink
 } from "../keyboard-shortcuts";
 import {
@@ -135,13 +135,13 @@ test.describe("link", () => {
   }) => {
     await page.keyboard.type(" abc");
 
-    await toggleBold(page);
+    await toggle_bold(page);
     await page.keyboard.type("def");
-    await toggleBold(page);
+    await toggle_bold(page);
 
-    await toggleItalic(page);
+    await toggle_italic(page);
     await page.keyboard.type("ghi");
-    await toggleItalic(page);
+    await toggle_italic(page);
 
     await page.keyboard.type(" ");
 
@@ -229,13 +229,13 @@ test.describe("link", () => {
   }) => {
     await page.keyboard.type(" abc");
 
-    await toggleBold(page);
+    await toggle_bold(page);
     await page.keyboard.type("def");
-    await toggleBold(page);
+    await toggle_bold(page);
 
-    await toggleItalic(page);
+    await toggle_italic(page);
     await page.keyboard.type("ghi");
-    await toggleItalic(page);
+    await toggle_italic(page);
 
     await page.keyboard.type(" ");
 
@@ -550,13 +550,13 @@ test.describe("link", () => {
   }) => {
     await page.keyboard.type(" abc");
 
-    await toggleBold(page);
+    await toggle_bold(page);
     await page.keyboard.type("def");
-    await toggleBold(page);
+    await toggle_bold(page);
 
-    await toggleItalic(page);
+    await toggle_italic(page);
     await page.keyboard.type("ghi");
-    await toggleItalic(page);
+    await toggle_italic(page);
 
     await page.keyboard.type(" ");
 
@@ -679,7 +679,7 @@ test.describe("link", () => {
 
     // Select the word `bold`
     await selectCharacters(page, "left", 4);
-    await toggleBold(page);
+    await toggle_bold(page);
 
     await assertHTML(
       page,
@@ -760,7 +760,7 @@ test.describe("link", () => {
 
     // Select the word `bold`
     await selectCharacters(page, "left", 4);
-    await toggleBold(page);
+    await toggle_bold(page);
 
     await assertHTML(
       page,

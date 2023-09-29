@@ -4,21 +4,21 @@
  * @param b New text
  * @param cursor Cursor
  */
-export const simpleDiffWithCursor = (
+export const simple_diff_with_cursor = (
   a: string,
   b: string,
   cursor: number
 ): { index: number; insert: string; remove: number } => {
-  const aLength = a.length;
-  const bLength = b.length;
-  let left = 0; // number of same characters counting from the left
-  let right = 0; // number of same characters counting from the right
+  const a_length = a.length;
+  const b_length = b.length;
+  let left = 0; // Number of same characters counting from the left
+  let right = 0; // Number of same characters counting from the right
 
   // Iterate left to the right until we find a changed character.
   // First iteration considers the current cursor position
   while (
-    left < aLength &&
-    left < bLength &&
+    left < a_length &&
+    left < b_length &&
     a[left] === b[left] &&
     left < cursor
   ) {
@@ -27,17 +27,17 @@ export const simpleDiffWithCursor = (
 
   // Iterate right to the left until we find a changed character
   while (
-    right + left < aLength &&
-    right + left < bLength &&
-    a[aLength - right - 1] === b[bLength - right - 1]
+    right + left < a_length &&
+    right + left < b_length &&
+    a[a_length - right - 1] === b[b_length - right - 1]
   ) {
     right++;
   }
 
   // Try to iterate left further to the right without caring about the current cursor position
   while (
-    right + left < aLength &&
-    right + left < bLength &&
+    right + left < a_length &&
+    right + left < b_length &&
     a[left] === b[left]
   ) {
     left++;
@@ -45,7 +45,7 @@ export const simpleDiffWithCursor = (
 
   return {
     index: left,
-    insert: b.slice(left, bLength - right),
-    remove: aLength - left - right
+    insert: b.slice(left, b_length - right),
+    remove: a_length - left - right
   };
 };

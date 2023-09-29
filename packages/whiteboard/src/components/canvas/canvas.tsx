@@ -1,16 +1,16 @@
 import clsx from "clsx";
 import React from "react";
-import useResizeObserver from "use-resize-observer";
+import use_resize_observer from "use-resize-observer";
 
-import { useCanvas, useFabric } from "../../hooks";
+import { use_canvas, use_fabric } from "../../hooks";
 import Actions from "../layers/layer/actions";
 import styles from "./canvas.module.scss";
 import Overlay from "./overlay";
 
 const Canvas = (): React.ReactElement => {
-  const fabricRef = useFabric();
-  const canvas = useCanvas();
-  const { ref, width = 1, height = 1 } = useResizeObserver();
+  const fabric_ref = use_fabric();
+  const canvas = use_canvas();
+  const { ref, width = 1, height = 1 } = use_resize_observer();
 
   React.useEffect(() => {
     canvas.current?.setDimensions({ height, width });
@@ -23,7 +23,7 @@ const Canvas = (): React.ReactElement => {
         className={clsx("invert", styles["canvas-background"])}
         tabIndex={-1}
       />
-      <canvas className={styles.canvas} ref={fabricRef} />
+      <canvas className={styles.canvas} ref={fabric_ref} />
       <Overlay />
       <Actions />
     </div>

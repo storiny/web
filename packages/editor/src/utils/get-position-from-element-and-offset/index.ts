@@ -7,12 +7,12 @@ import { CollabTextNode } from "../../collaboration/nodes/text";
  * Returns the position from element and offset
  * @param node Collab node
  * @param offset Offset
- * @param boundaryIsEdge Whether to treat boundary as edge
+ * @param boundary_is_edge Whether to treat boundary as edge
  */
-export const getPositionFromElementAndOffset = (
+export const get_position_from_element_and_offset = (
   node: CollabElementNode,
   offset: number,
-  boundaryIsEdge: boolean
+  boundary_is_edge: boolean
 ): {
   length: number;
   node:
@@ -21,37 +21,39 @@ export const getPositionFromElementAndOffset = (
     | CollabDecoratorNode
     | CollabLineBreakNode
     | null;
-  nodeIndex: number;
+  node_index: number;
   offset: number;
 } => {
   let index = 0;
   let i = 0;
   const children = node._children;
-  const childrenLength = children.length;
+  const children_length = children.length;
 
-  for (; i < childrenLength; i++) {
+  for (; i < children_length; i++) {
     const child = children[i];
-    const childOffset = index;
-    const size = child.getSize();
+    const child_offset = index;
+    const size = child.get_size();
 
     index += size;
 
-    const exceedsBoundary = boundaryIsEdge ? index >= offset : index > offset;
+    const exceeds_boundary = boundary_is_edge
+      ? index >= offset
+      : index > offset;
 
-    if (exceedsBoundary && child instanceof CollabTextNode) {
-      let textOffset = offset - childOffset - 1;
+    if (exceeds_boundary && child instanceof CollabTextNode) {
+      let text_offset = offset - child_offset - 1;
 
-      if (textOffset < 0) {
-        textOffset = 0;
+      if (text_offset < 0) {
+        text_offset = 0;
       }
 
-      const diffLength = index - offset;
+      const diff_length = index - offset;
 
       return {
-        length: diffLength,
+        length: diff_length,
         node: child,
-        nodeIndex: i,
-        offset: textOffset
+        node_index: i,
+        offset: text_offset
       };
     }
 
@@ -59,15 +61,15 @@ export const getPositionFromElementAndOffset = (
       return {
         length: 0,
         node: child,
-        nodeIndex: i,
-        offset: childOffset
+        node_index: i,
+        offset: child_offset
       };
-    } else if (i === childrenLength - 1) {
+    } else if (i === children_length - 1) {
       return {
         length: 0,
         node: null,
-        nodeIndex: i + 1,
-        offset: childOffset + 1
+        node_index: i + 1,
+        offset: child_offset + 1
       };
     }
   }
@@ -75,7 +77,7 @@ export const getPositionFromElementAndOffset = (
   return {
     length: 0,
     node: null,
-    nodeIndex: 0,
+    node_index: 0,
     offset: 0
   };
 };

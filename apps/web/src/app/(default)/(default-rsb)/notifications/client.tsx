@@ -21,8 +21,8 @@ import TabsList from "../../../../../../../packages/ui/src/components/tabs-list"
 import Typography from "../../../../../../../packages/ui/src/components/typography";
 import ErrorState from "../../../../../../../packages/ui/src/entities/error-state";
 import { use_media_query } from "../../../../../../../packages/ui/src/hooks/use-media-query";
-import ChecksIcon from "~/icons/Checks";
-import SettingsIcon from "~/icons/Settings";
+import ChecksIcon from "../../../../../../../packages/ui/src/icons/checks";
+import SettingsIcon from "../../../../../../../packages/ui/src/icons/settings";
 import {
   get_query_error_type,
   mark_all_as_read,
@@ -158,7 +158,7 @@ const StatusHeader = ({
 const Client = (): React.ReactElement => {
   const [value, setValue] = React.useState<NotificationsTabValue>("unread");
   const [page, set_page] = React.useState<number>(1);
-  const { data, isLoading, isFetching, isError, error, refetch } =
+  const { data, isLoading, is_fetching, isError, error, refetch } =
     use_get_notifications_query({
       page,
       type: value
@@ -183,14 +183,14 @@ const Client = (): React.ReactElement => {
         <ErrorState
           auto_size
           component_props={{
-            button: { loading: isFetching }
+            button: { loading: is_fetching }
           }}
           retry={refetch}
           type={get_query_error_type(error)}
         />
-      ) : !isFetching && !items.length ? (
+      ) : !is_fetching && !items.length ? (
         <EmptyState tab={value} />
-      ) : isLoading || (isFetching && page === 1) ? (
+      ) : isLoading || (is_fetching && page === 1) ? (
         <NotificationListSkeleton />
       ) : (
         <VirtualizedNotificationList

@@ -3,7 +3,10 @@ import { Doc, XmlText } from "yjs";
 
 import { Cursor } from "../../utils/sync-cursor-positions";
 import { CollabDecoratorNode } from "../nodes/decorator";
-import { $createCollabElementNode, CollabElementNode } from "../nodes/element";
+import {
+  $create_collab_element_node,
+  CollabElementNode
+} from "../nodes/element";
 import { CollabLineBreakNode } from "../nodes/line-break";
 import { CollabTextNode } from "../nodes/text";
 
@@ -11,8 +14,8 @@ export type ClientID = number;
 export type ExcludedProperties = Map<Klass<LexicalNode>, Set<string>>;
 
 export interface Binding {
-  clientID: number;
-  collabNodeMap: Map<
+  client_id: number;
+  collab_node_map: Map<
     NodeKey,
     | CollabElementNode
     | CollabTextNode
@@ -20,12 +23,12 @@ export interface Binding {
     | CollabLineBreakNode
   >;
   cursors: Map<ClientID, Cursor>;
-  cursorsContainer: null | HTMLElement;
+  cursors_container: null | HTMLElement;
   doc: Doc;
-  docMap: Map<string, Doc>;
+  doc_map: Map<string, Doc>;
   editor: LexicalEditor;
-  excludedProperties: ExcludedProperties;
-  nodeProperties: Map<string, Array<string>>;
+  excluded_properties: ExcludedProperties;
+  node_properties: Map<string, Array<string>>;
   root: CollabElementNode;
 }
 
@@ -33,37 +36,37 @@ export interface Binding {
  * Creates yjs editor binding
  * @param editor Editor
  * @param doc Document
- * @param docMap Document map
- * @param excludedProperties Excluded properties
+ * @param doc_map Document map
+ * @param excluded_properties Excluded properties
  */
-export const createBinding = (
+export const create_binding = (
   editor: LexicalEditor,
   doc: Doc | null | undefined,
-  docMap: Map<string, Doc>,
-  excludedProperties?: ExcludedProperties
+  doc_map: Map<string, Doc>,
+  excluded_properties?: ExcludedProperties
 ): Binding => {
   if (doc === undefined || doc === null) {
-    throw new Error("`createBinding`: doc is null or undefined");
+    throw new Error("`create_binding`: doc is null or undefined");
   }
 
-  const rootXmlText = doc.get("root", XmlText) as XmlText;
-  const root: CollabElementNode = $createCollabElementNode(
-    rootXmlText,
+  const root_xml_text = doc.get("root", XmlText) as XmlText;
+  const root: CollabElementNode = $create_collab_element_node(
+    root_xml_text,
     null,
     "root"
   );
   root._key = "root";
 
   return {
-    clientID: doc.clientID,
-    collabNodeMap: new Map(),
+    client_id: doc.clientID,
+    collab_node_map: new Map(),
     cursors: new Map(),
-    cursorsContainer: null,
+    cursors_container: null,
     doc,
-    docMap,
+    doc_map,
     editor,
-    excludedProperties: excludedProperties || new Map(),
-    nodeProperties: new Map(),
+    excluded_properties: excluded_properties || new Map(),
+    node_properties: new Map(),
     root
   };
 };

@@ -1,5 +1,5 @@
 import { User } from "@storiny/types";
-import { useAtomValue } from "jotai";
+import { useAtomValue as use_atom_value } from "jotai";
 import React from "react";
 
 import Button from "../../../../../../../../ui/src/components/button";
@@ -11,17 +11,17 @@ import Typography from "../../../../../../../../ui/src/components/typography";
 import Persona from "../../../../../../../../ui/src/entities/persona";
 import Status from "../../../../../../../../ui/src/entities/status";
 import MailPlusIcon from "~/icons/mail-plus";
-import UserCheckIcon from "~/icons/UserCheck";
-import UserPlusIcon from "~/icons/UserPlus";
-import { boolean_action, setFollowing } from "~/redux/features";
+import UserCheckIcon from "../../../../../../../../ui/src/icons/user-check";
+import UserPlusIcon from "../../../../../../../../ui/src/icons/user-plus";
+import { boolean_action } from "~/redux/features";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
-import { abbreviate_number } from "../../../../../../../../ui/src/utils/abbreviate-number";
+import { abbreviate_number } from "~/utils/abbreviate-number";
 
-import { storyMetadataAtom } from "../../../../../../atoms";
+import { story_metadata_atom } from "../../../../../../atoms";
 
 const StoryActions = ({ user }: { user: User }): React.ReactElement => {
   const dispatch = use_app_dispatch();
-  const isFollowing = use_app_selector(
+  const is_following = use_app_selector(
     (state) => state.entities.following[user.id]
   );
 
@@ -30,13 +30,13 @@ const StoryActions = ({ user }: { user: User }): React.ReactElement => {
       <Button
         check_auth
         className={"fit-w"}
-        decorator={isFollowing ? <UserCheckIcon /> : <UserPlusIcon />}
+        decorator={is_following ? <UserCheckIcon /> : <UserPlusIcon />}
         onClick={(): void => {
           dispatch(boolean_action("following", user.id));
         }}
-        variant={isFollowing ? "hollow" : "rigid"}
+        variant={is_following ? "hollow" : "rigid"}
       >
-        {isFollowing ? "Following" : "Follow"}
+        {is_following ? "Following" : "Follow"}
       </Button>
       <Spacer />
       {/* TODO: Implement */}
@@ -56,7 +56,7 @@ const StoryActions = ({ user }: { user: User }): React.ReactElement => {
 };
 
 const StoryWriter = (): React.ReactElement => {
-  const story = use_atom_value(storyMetadataAtom);
+  const story = use_atom_value(story_metadata_atom);
   const user = story.user!;
   const follower_count =
     use_app_selector((state) => state.entities.follower_counts[user.id]) || 0;

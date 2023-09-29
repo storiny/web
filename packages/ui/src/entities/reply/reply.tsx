@@ -15,9 +15,9 @@ import { use_media_query } from "src/hooks/use-media-query";
 import { abbreviate_number } from "src/utils/abbreviate-number";
 import { DateFormat, format_date } from "src/utils/format-date";
 
-import ExternalLinkIcon from "~/icons/ExternalLink";
-import HeartIcon from "~/icons/Heart";
-import ReplyIcon from "~/icons/Reply";
+import ExternalLinkIcon from "src/icons/external-link";
+import HeartIcon from "src/icons/heart";
+import ReplyIcon from "src/icons/reply";
 import { boolean_action, select_user } from "~/redux/features";
 import { sync_with_reply } from "~/redux/features/entities/slice";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";

@@ -4,60 +4,60 @@ import { LexicalNode } from "lexical";
  * Removes a node from its parent
  * @param node Node
  */
-export const removeFromParent = (node: LexicalNode): void => {
-  const oldParent = node.getParent();
+export const remove_from_parent = (node: LexicalNode): void => {
+  const old_parent = node.getParent();
 
-  if (oldParent !== null) {
-    const writableNode = node.getWritable();
-    const writableParent = oldParent.getWritable();
-    const prevSibling = node.getPreviousSibling();
-    const nextSibling = node.getNextSibling();
+  if (old_parent !== null) {
+    const writable_node = node.getWritable();
+    const writable_parent = old_parent.getWritable();
+    const prev_sibling = node.getPreviousSibling();
+    const next_sibling = node.getNextSibling();
 
     // TODO: This function duplicates a bunch of operations, can be simplified
-    if (prevSibling === null) {
-      if (nextSibling !== null) {
-        const writableNextSibling = nextSibling.getWritable();
-        writableParent.__first = nextSibling.__key;
-        writableNextSibling.__prev = null;
+    if (prev_sibling === null) {
+      if (next_sibling !== null) {
+        const writable_next_sibling = next_sibling.getWritable();
+        writable_parent.__first = next_sibling.__key;
+        writable_next_sibling.__prev = null;
       } else {
-        writableParent.__first = null;
+        writable_parent.__first = null;
       }
     } else {
-      const writablePrevSibling = prevSibling.getWritable();
+      const writable_prev_sibling = prev_sibling.getWritable();
 
-      if (nextSibling !== null) {
-        const writableNextSibling = nextSibling.getWritable();
-        writableNextSibling.__prev = writablePrevSibling.__key;
-        writablePrevSibling.__next = writableNextSibling.__key;
+      if (next_sibling !== null) {
+        const writable_next_sibling = next_sibling.getWritable();
+        writable_next_sibling.__prev = writable_prev_sibling.__key;
+        writable_prev_sibling.__next = writable_next_sibling.__key;
       } else {
-        writablePrevSibling.__next = null;
+        writable_prev_sibling.__next = null;
       }
 
-      writableNode.__prev = null;
+      writable_node.__prev = null;
     }
-    if (nextSibling === null) {
-      if (prevSibling !== null) {
-        const writablePrevSibling = prevSibling.getWritable();
-        writableParent.__last = prevSibling.__key;
-        writablePrevSibling.__next = null;
+    if (next_sibling === null) {
+      if (prev_sibling !== null) {
+        const writable_prev_sibling = prev_sibling.getWritable();
+        writable_parent.__last = prev_sibling.__key;
+        writable_prev_sibling.__next = null;
       } else {
-        writableParent.__last = null;
+        writable_parent.__last = null;
       }
     } else {
-      const writableNextSibling = nextSibling.getWritable();
+      const writable_next_sibling = next_sibling.getWritable();
 
-      if (prevSibling !== null) {
-        const writablePrevSibling = prevSibling.getWritable();
-        writablePrevSibling.__next = writableNextSibling.__key;
-        writableNextSibling.__prev = writablePrevSibling.__key;
+      if (prev_sibling !== null) {
+        const writable_prev_sibling = prev_sibling.getWritable();
+        writable_prev_sibling.__next = writable_next_sibling.__key;
+        writable_next_sibling.__prev = writable_prev_sibling.__key;
       } else {
-        writableNextSibling.__prev = null;
+        writable_next_sibling.__prev = null;
       }
 
-      writableNode.__next = null;
+      writable_node.__next = null;
     }
 
-    writableParent.__size--;
-    writableNode.__parent = null;
+    writable_parent.__size--;
+    writable_node.__parent = null;
   }
 };

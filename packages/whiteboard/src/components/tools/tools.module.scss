@@ -1,12 +1,10 @@
 .x {
-  /* Base styles */
   &.tools {
     border-right: 1px solid var(--divider);
     background-color: var(--bg-elevation-sm);
     grid-area: tools;
   }
 
-  /* Tool */
   &.tool {
     --icon-size: 18px;
 
@@ -30,12 +28,10 @@
     }
   }
 
-  /* Shortcut key */
   &.shortcut-key {
     font-size: 11px;
   }
 
-  /* Scrollarea thumb */
   &.thumb {
     &::before {
       content: none; // Disable overflowing touch capture area

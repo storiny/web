@@ -12,7 +12,7 @@ import TabPanel from "../../../../../../../packages/ui/src/components/tab-panel"
 import Tabs from "../../../../../../../packages/ui/src/components/tabs";
 import TabsList from "../../../../../../../packages/ui/src/components/tabs-list";
 import { use_debounce } from "../../../../../../../packages/ui/src/hooks/use-debounce";
-import SearchIcon from "~/icons/Search";
+import SearchIcon from "../../../../../../../packages/ui/src/icons/search";
 
 import Dropdown from "./dropdown";
 import StoryList from "./entities/story-list";

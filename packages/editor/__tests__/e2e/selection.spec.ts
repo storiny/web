@@ -16,7 +16,7 @@ import {
   focusEditor,
   html,
   initialize,
-  insertImage,
+  insert_image,
   keyDownCtrlOrMeta,
   keyUpCtrlOrMeta,
   pasteFromClipboard,
@@ -130,7 +130,7 @@ test.describe("selection", () => {
 
   test("can select everything with node selection", async ({ page }) => {
     await page.keyboard.type("# Text before");
-    await insertImage(page);
+    await insert_image(page);
     await focusEditor(page);
     await page.keyboard.type("Text after");
     await selectAll(page);

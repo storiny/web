@@ -13,17 +13,17 @@ import { use_clipboard } from "src/hooks/use-clipboard";
 import { use_media_query } from "src/hooks/use-media-query";
 import { use_web_share } from "src/hooks/use-web-share";
 
-import CommentIcon from "~/icons/Comment";
-import CopyIcon from "~/icons/Copy";
-import DotsIcon from "~/icons/Dots";
-import EditIcon from "~/icons/Edit";
-import EyeOffIcon from "~/icons/EyeOff";
-import MuteIcon from "~/icons/Mute";
-import ReportIcon from "~/icons/Report";
-import ShareIcon from "~/icons/Share";
-import StoriesMetricsIcon from "~/icons/StoriesMetrics";
-import TrashIcon from "~/icons/Trash";
-import UserBlockIcon from "~/icons/UserBlock";
+import CommentIcon from "src/icons/comment";
+import CopyIcon from "src/icons/copy";
+import DotsIcon from "src/icons/dots";
+import EditIcon from "src/icons/edit";
+import EyeOffIcon from "src/icons/eye-off";
+import MuteIcon from "src/icons/mute";
+import ReportIcon from "src/icons/report";
+import ShareIcon from "src/icons/share";
+import StoriesMetricsIcon from "src/icons/stories-metrics";
+import TrashIcon from "src/icons/trash";
+import UserBlockIcon from "src/icons/user-block";
 import {
   boolean_action,
   get_drafts_api,

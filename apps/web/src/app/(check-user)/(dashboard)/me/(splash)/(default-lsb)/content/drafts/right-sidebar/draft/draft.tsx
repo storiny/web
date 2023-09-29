@@ -8,8 +8,8 @@ import IconButton from "../../../../../../../../../../../../../packages/ui/src/c
 import Image from "../../../../../../../../../../../../../packages/ui/src/components/image";
 import Link from "../../../../../../../../../../../../../packages/ui/src/components/link";
 import Typography from "../../../../../../../../../../../../../packages/ui/src/components/typography";
-import EditIcon from "~/icons/Edit";
-import ImageIcon from "~/icons/Image";
+import EditIcon from "../../../../../../../../../../../../../packages/ui/src/icons/edit";
+import ImageIcon from "../../../../../../../../../../../../../packages/ui/src/icons/image";
 import { abbreviate_number } from "../../../../../../../../../../../../../packages/ui/src/utils/abbreviate-number";
 import {
   DateFormat,

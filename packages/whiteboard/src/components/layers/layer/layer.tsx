@@ -1,35 +1,35 @@
 import clsx from "clsx";
-import { useAtomValue } from "jotai";
+import { useAtomValue as use_atom_value } from "jotai";
 import React from "react";
+
+import { capitalize } from "~/utils/capitalize";
+import { truncate } from "~/utils/truncate";
 
 import Grow from "../../../../../ui/src/components/grow";
 import IconButton from "../../../../../ui/src/components/icon-button";
 import Input from "../../../../../ui/src/components/input";
-import ArrowIcon from "~/icons/Arrow";
-import CircleIcon from "~/icons/Circle";
-import DiamondIcon from "~/icons/Diamond";
-import EyeIcon from "~/icons/Eye";
-import EyeClosedIcon from "~/icons/EyeClosed";
-import GripIcon from "~/icons/Grip";
-import ImageIcon from "~/icons/Image";
-import LineIcon from "~/icons/Line";
-import LockOpenIcon from "~/icons/LockOpen";
-import PencilIcon from "~/icons/Pencil";
-import RectangleIcon from "~/icons/Rectangle";
-import TrashIcon from "~/icons/Trash";
-import TypographyIcon from "~/icons/Typography";
-import { capitalize } from "~/utils/capitalize";
-import { truncate } from "~/utils/truncate";
-
-import { isLayersDraggingAtom } from "../../../atoms";
+import ArrowIcon from "../../../../../ui/src/icons/arrow";
+import CircleIcon from "../../../../../ui/src/icons/circle";
+import DiamondIcon from "../../../../../ui/src/icons/diamond";
+import EyeIcon from "../../../../../ui/src/icons/eye";
+import EyeClosedIcon from "../../../../../ui/src/icons/eye-closed";
+import GripIcon from "../../../../../ui/src/icons/grip";
+import ImageIcon from "../../../../../ui/src/icons/image";
+import LineIcon from "../../../../../ui/src/icons/line";
+import LockOpenIcon from "../../../../../ui/src/icons/lock-open";
+import PencilIcon from "../../../../../ui/src/icons/pencil";
+import RectangleIcon from "../../../../../ui/src/icons/rectangle";
+import TrashIcon from "../../../../../ui/src/icons/trash";
+import TypographyIcon from "../../../../../ui/src/icons/typography";
+import { is_layers_dragging_atom } from "../../../atoms";
 import { LayerType } from "../../../constants";
-import { useCanvas, useEventRender } from "../../../hooks";
-import { modifyObject } from "../../../utils";
+import { use_canvas, use_event_render } from "../../../hooks";
+import { modify_object } from "../../../utils";
 import { LayersContext } from "../layers-context";
 import styles from "./layer.module.scss";
 import { LayerProps } from "./layer.props";
 
-const layerTypeToIconMap: Record<LayerType, React.ReactNode> = {
+const LAYER_TYPE_ICON_MAP: Record<LayerType, React.ReactNode> = {
   [LayerType.IMAGE /*    */]: <ImageIcon />,
   [LayerType.ARROW /*    */]: <ArrowIcon rotation={45} />,
   [LayerType.ELLIPSE /*  */]: <CircleIcon />,
@@ -60,13 +60,13 @@ const LockFilledIcon = (): React.ReactElement => (
 );
 
 const Layer = React.forwardRef<HTMLLIElement, LayerProps>((props, ref) => {
-  const { layer, draggerProps, className, ...rest } = props;
-  const canvas = useCanvas();
-  const { layerCount } = React.useContext(LayersContext);
-  const [isEditing, setIsEditing] = React.useState<boolean>(false);
-  const [name, setName] = React.useState<string>(layer.get("name"));
-  const isDragging = use_atom_value(isLayersDraggingAtom);
-  useEventRender(
+  const { layer, dragger_props, className, ...rest } = props;
+  const canvas = use_canvas();
+  const { layer_count } = React.useContext(LayersContext);
+  const [is_editing, set_is_editing] = React.useState<boolean>(false);
+  const [name, set_name] = React.useState<string>(layer.get("name"));
+  const is_dragging = use_atom_value(is_layers_dragging_atom);
+  use_event_render(
     "object:modified",
     (options) => options.target.get("id") === layer.get("id")
   );
@@ -78,7 +78,7 @@ const Layer = React.forwardRef<HTMLLIElement, LayerProps>((props, ref) => {
   /**
    * Selects the current layer
    */
-  const selectLayerImpl = (): void => {
+  const select_layer_impl = (): void => {
     if (canvas.current) {
       canvas.current.setActiveObject(layer as any);
       canvas.current.requestRenderAll();
@@ -87,25 +87,25 @@ const Layer = React.forwardRef<HTMLLIElement, LayerProps>((props, ref) => {
 
   /**
    * Sets layer name
-   * @param shouldSave Whether to save the new name to the store
+   * @param should_save Whether to save the new name to the store
    */
-  const setLayerNameImpl = (shouldSave: boolean): void => {
-    setIsEditing(false);
+  const set_layer_name_impl = (should_save: boolean): void => {
+    set_is_editing(false);
 
-    if (shouldSave) {
-      modifyObject(layer, {
+    if (should_save) {
+      modify_object(layer, {
         name
       });
     } else {
-      setName(layer.get("name"));
+      set_name(layer.get("name"));
     }
   };
 
   /**
    * Toggles the layer's lock
    */
-  const toggleLayerLock = (): void => {
-    modifyObject(layer, {
+  const toggle_layer_lock = (): void => {
+    modify_object(layer, {
       locked: !layer.get("locked")
     });
   };
@@ -113,8 +113,8 @@ const Layer = React.forwardRef<HTMLLIElement, LayerProps>((props, ref) => {
   /**
    * Toggles the layer's visibility
    */
-  const toggleLayerVisibility = (): void => {
-    modifyObject(layer, {
+  const toggle_layer_visibility = (): void => {
+    modify_object(layer, {
       visible: !layer.visible
     });
   };
@@ -122,7 +122,7 @@ const Layer = React.forwardRef<HTMLLIElement, LayerProps>((props, ref) => {
   /**
    * Removes the current layer
    */
-  const removeLayer = (): void => {
+  const remove_layer = (): void => {
     canvas.current.remove(layer as any);
   };
 
@@ -135,34 +135,34 @@ const Layer = React.forwardRef<HTMLLIElement, LayerProps>((props, ref) => {
         "focus-invert",
         styles.x,
         styles.layer,
-        isDragging && styles.dragging,
+        is_dragging && styles.dragging,
         layer.get("selected") && styles.selected,
         !layer.visible && styles.hidden,
         className
       )}
-      onClick={selectLayerImpl}
+      onClick={select_layer_impl}
       onKeyUp={(event): void => {
-        if (isEditing) {
+        if (is_editing) {
           return;
         }
 
         if (event.key === "Enter" || event.key === " ") {
           event.preventDefault();
-          selectLayerImpl();
+          select_layer_impl();
         } else if (event.key === "Delete") {
           event.preventDefault();
-          removeLayer();
+          remove_layer();
         }
       }}
       ref={ref}
       role={"button"}
       tabIndex={0}
     >
-      {!isEditing && !layer.get("locked") && layerCount > 1 ? (
+      {!is_editing && !layer.get("locked") && layer_count > 1 ? (
         <IconButton
-          {...draggerProps}
+          {...dragger_props}
           aria-label={"Reorder layer"}
-          className={clsx(styles.x, styles.grabber, draggerProps?.className)}
+          className={clsx(styles.x, styles.grabber, dragger_props?.className)}
           size={"sm"}
           title={"Reorder layer"}
           variant={"ghost"}
@@ -174,7 +174,7 @@ const Layer = React.forwardRef<HTMLLIElement, LayerProps>((props, ref) => {
         className={clsx("flex-center", styles.x, styles.icon)}
         title={capitalize(layer.get("_type").replace(/-/g, " "))}
       >
-        {layerTypeToIconMap[layer.get("_type") as LayerType]}
+        {LAYER_TYPE_ICON_MAP[layer.get("_type") as LayerType]}
         {layer.get("selected") && (
           <svg
             aria-hidden
@@ -194,21 +194,21 @@ const Layer = React.forwardRef<HTMLLIElement, LayerProps>((props, ref) => {
           </svg>
         )}
       </span>
-      {isEditing ? (
+      {is_editing ? (
         <Input
           autoFocus
-          onBlur={(): void => setLayerNameImpl(true)} // Stop editing when the input focus is lost
-          onChange={(event): void => setName(truncate(event.target.value, 96))}
+          onBlur={(): void => set_layer_name_impl(true)} // Stop editing when the input focus is lost
+          onChange={(event): void => set_name(truncate(event.target.value, 96))}
           onFocus={(event): void => event.target.select()}
           onKeyUp={(event): void => {
             if (event.key === "Enter") {
               event.preventDefault();
               event.stopPropagation();
-              setLayerNameImpl(true);
+              set_layer_name_impl(true);
             } else if (event.key === "Escape") {
               event.preventDefault();
               event.stopPropagation();
-              setLayerNameImpl(false);
+              set_layer_name_impl(false);
             }
           }}
           placeholder={"Layer name"}
@@ -236,14 +236,14 @@ const Layer = React.forwardRef<HTMLLIElement, LayerProps>((props, ref) => {
         </span>
       )}
       <Grow />
-      {!isEditing && (
+      {!is_editing && (
         <div className={"flex-center"} tabIndex={-1}>
           <IconButton
             aria-label={"Edit layer name"}
             className={clsx("focus-invert", styles.x, styles["button"])}
-            onClick={(event): void => {
+            onClick={(event: Event): void => {
               event.stopPropagation();
-              setIsEditing(true);
+              set_is_editing(true);
             }}
             size={"sm"}
             title={"Edit layer name"}
@@ -259,9 +259,9 @@ const Layer = React.forwardRef<HTMLLIElement, LayerProps>((props, ref) => {
               styles["button"],
               layer.get("locked") && styles.pinned
             )}
-            onClick={(event): void => {
+            onClick={(event: Event): void => {
               event.stopPropagation();
-              toggleLayerLock();
+              toggle_layer_lock();
             }}
             size={"sm"}
             title={`${layer.get("locked") ? "Unlock" : "Lock"} layer`}
@@ -277,9 +277,9 @@ const Layer = React.forwardRef<HTMLLIElement, LayerProps>((props, ref) => {
               styles["button"],
               !layer.visible && styles.pinned
             )}
-            onClick={(event): void => {
+            onClick={(event: Event): void => {
               event.stopPropagation();
-              toggleLayerVisibility();
+              toggle_layer_visibility();
             }}
             size={"sm"}
             title={`${!layer.visible ? "Show" : "Hide"} layer`}
@@ -290,9 +290,9 @@ const Layer = React.forwardRef<HTMLLIElement, LayerProps>((props, ref) => {
           <IconButton
             aria-label={"Remove layer"}
             className={clsx("focus-invert", styles.x, styles["button"])}
-            onClick={(event): void => {
+            onClick={(event: Event): void => {
               event.stopPropagation();
-              removeLayer();
+              remove_layer();
             }}
             size={"sm"}
             style={

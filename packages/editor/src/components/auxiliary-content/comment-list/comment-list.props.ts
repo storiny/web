@@ -1,6 +1,6 @@
 import { StoryCommentsSortValue } from "../auxiliary-content";
 
 export interface EditorAuxiliaryContentCommentListProps {
-  setSort: (nextSort: StoryCommentsSortValue) => void;
+  set_sort: (next_sort: StoryCommentsSortValue) => void;
   sort: StoryCommentsSortValue;
 }

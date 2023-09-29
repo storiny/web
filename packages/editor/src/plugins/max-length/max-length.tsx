@@ -1,49 +1,48 @@
-import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { trimTextContentFromAnchor } from "@lexical/selection";
-import { $restoreEditorState } from "@lexical/utils";
+import { useLexicalComposerContext as use_lexical_composer_context } from "@lexical/react/LexicalComposerContext";
+import { trimTextContentFromAnchor as trim_text_content_from_anchor } from "@lexical/selection";
+import { $restoreEditorState as $restore_editor_state } from "@lexical/utils";
 import { STORY_MAX_LENGTH } from "@storiny/shared/src/constants/story";
 import {
-  $getSelection,
-  $isRangeSelection,
+  $getSelection as $get_selection,
+  $isRangeSelection as $is_range_selection,
   EditorState,
   RootNode
 } from "lexical";
 import React from "react";
 
 const MaxLengthPlugin = (): null => {
-  const [editor] = useLexicalComposerContext();
+  const [editor] = use_lexical_composer_context();
 
   React.useEffect(() => {
-    let lastRestoredEditorState: EditorState | null = null;
+    let last_restored_editor_state: EditorState | null = null;
 
-    return editor.registerNodeTransform(RootNode, (rootNode: RootNode) => {
-      const selection = $getSelection();
+    return editor.registerNodeTransform(RootNode, (root_node: RootNode) => {
+      const selection = $get_selection();
 
-      if (!$isRangeSelection(selection) || !selection.isCollapsed()) {
+      if (!$is_range_selection(selection) || !selection.isCollapsed()) {
         return;
       }
 
-      const prevEditorState = editor.getEditorState();
-      const prevTextContentSize = prevEditorState.read(() =>
-        rootNode.getTextContentSize()
+      const prev_editor_state = editor.getEditorState();
+      const prev_text_content_size = prev_editor_state.read(() =>
+        root_node.getTextContentSize()
       );
-      const textContentSize = rootNode.getTextContentSize();
+      const text_content_size = root_node.getTextContentSize();
 
-      if (prevTextContentSize !== textContentSize) {
-        const delCount = textContentSize - STORY_MAX_LENGTH;
+      if (prev_text_content_size !== text_content_size) {
+        const del_count = text_content_size - STORY_MAX_LENGTH;
         const anchor = selection.anchor;
 
-        if (delCount > 0) {
-          // Restore the old editor state instead if the last
-          // text content was already at the limit.
+        if (del_count > 0) {
+          // Restore the old editor state instead if the last text content was already at the limit.
           if (
-            prevTextContentSize === STORY_MAX_LENGTH &&
-            lastRestoredEditorState !== prevEditorState
+            prev_text_content_size === STORY_MAX_LENGTH &&
+            last_restored_editor_state !== prev_editor_state
           ) {
-            lastRestoredEditorState = prevEditorState;
-            $restoreEditorState(editor, prevEditorState);
+            last_restored_editor_state = prev_editor_state;
+            $restore_editor_state(editor, prev_editor_state);
           } else {
-            trimTextContentFromAnchor(editor, anchor, delCount);
+            trim_text_content_from_anchor(editor, anchor, del_count);
           }
         }
       }

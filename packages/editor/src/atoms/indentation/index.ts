@@ -1,4 +1,4 @@
 import { atom } from "jotai";
 
-export const canIndentAtom = atom<boolean>(true);
-export const canOutdentAtom = atom<boolean>(true);
+export const can_indent_atom = atom<boolean>(true);
+export const can_outdent_atom = atom<boolean>(true);

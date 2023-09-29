@@ -15,9 +15,9 @@ const CheckUserLayout = async ({
   children: React.ReactNode;
 }): Promise<React.ReactElement> => {
   const nextUrl = headers().get("next-url") || "/";
-  const userId = await getUser();
+  const user_id = await getUser();
 
-  if (!userId) {
+  if (!user_id) {
     const to = nextUrl === "/" ? "" : `?to=${encodeURIComponent(nextUrl)}`;
     redirect(`/login${to}`);
   }

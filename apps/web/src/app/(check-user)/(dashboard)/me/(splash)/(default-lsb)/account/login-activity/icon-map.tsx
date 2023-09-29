@@ -1,12 +1,12 @@
 import { DeviceType } from "@storiny/shared";
 import React from "react";
 
-import DeviceComputerIcon from "~/icons/DeviceComputer";
-import DeviceConsoleIcon from "~/icons/DeviceConsole";
-import DeviceMobileIcon from "~/icons/DeviceMobile";
-import DeviceTabletIcon from "~/icons/DeviceTablet";
-import DeviceTVIcon from "~/icons/DeviceTV";
-import QuestionMarkIcon from "~/icons/QuestionMark";
+import DeviceComputerIcon from "../../../../../../../../../../../packages/ui/src/icons/device-computer";
+import DeviceConsoleIcon from "../../../../../../../../../../../packages/ui/src/icons/device-console";
+import DeviceMobileIcon from "../../../../../../../../../../../packages/ui/src/icons/device-mobile";
+import DeviceTabletIcon from "../../../../../../../../../../../packages/ui/src/icons/device-tablet";
+import DeviceTVIcon from "../../../../../../../../../../../packages/ui/src/icons/device-tv";
+import QuestionMarkIcon from "../../../../../../../../../../../packages/ui/src/icons/question-mark";
 
 const NullComponent = (): null => null;
 

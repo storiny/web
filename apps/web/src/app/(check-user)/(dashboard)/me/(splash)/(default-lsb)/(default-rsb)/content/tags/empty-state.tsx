@@ -1,7 +1,7 @@
 import React from "react";
 
 import CustomState from "../../../../../../../../../../../../packages/ui/src/entities/custom-state";
-import TagsIcon from "~/icons/Tags";
+import TagsIcon from "../../../../../../../../../../../../packages/ui/src/icons/tags";
 
 interface TagsEmptyStateProps {
   query: string;

@@ -7,7 +7,7 @@ import { waitForSelector } from "../wait-for-selector";
  * Inserts an image into the editor
  * @param page Page
  */
-export const insertImage = async (page: Page): Promise<void> => {
+export const insert_image = async (page: Page): Promise<void> => {
   // Open gallery
   await click(page, '[data-testid="insert-image"]');
   await click(page, `button[role="tab"]:text("Library")`);

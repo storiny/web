@@ -1,5 +1,4 @@
 .x {
-  /* Base styles */
   &.item {
     gap: 8px;
     padding-inline: 8px;
@@ -9,13 +8,11 @@
     }
   }
 
-  /* Label */
   &.label {
     font-size: 11px;
     line-height: 14px;
   }
 
-  /* Content row */
   &.row {
     gap: 8px;
   }

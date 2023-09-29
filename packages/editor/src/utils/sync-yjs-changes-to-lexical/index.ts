@@ -1,10 +1,10 @@
-import { $createOffsetView } from "@lexical/offset";
+import { $createOffsetView as $create_offset_view } from "@lexical/offset";
 import {
-  $createParagraphNode,
-  $getRoot,
-  $getSelection,
-  $isRangeSelection,
-  $setSelection,
+  $createParagraphNode as $create_paragraph_node,
+  $getRoot as $get_root,
+  $getSelection as $get_selection,
+  $isRangeSelection as $is_range_selection,
+  $setSelection as $set_selection,
   EditorState
 } from "lexical";
 import { Text as YText, YEvent, YMapEvent, YTextEvent, YXmlEvent } from "yjs";
@@ -14,53 +14,60 @@ import { CollabDecoratorNode } from "../../collaboration/nodes/decorator";
 import { CollabElementNode } from "../../collaboration/nodes/element";
 import { CollabTextNode } from "../../collaboration/nodes/text";
 import { Provider } from "../../collaboration/provider";
-import { doesSelectionNeedRecovering } from "../does-selection-need-recovering";
-import { getOrInitCollabNodeFromSharedType } from "../get-or-init-collab-node-from-shared-type";
-import { syncCursorPositions } from "../sync-cursor-positions";
-import { syncLexicalSelectionToYjs } from "../sync-lexical-selection-to-yjs";
-import { syncLocalCursorPosition } from "../sync-local-cursor-position";
+import { does_selection_need_recovering } from "../does-selection-need-recovering";
+import { get_or_create_collab_node_from_shared_type } from "../get-or-create-collab-node-from-shared-type";
+import { sync_cursor_positions } from "../sync-cursor-positions";
+import { sync_lexical_selection_to_yjs } from "../sync-lexical-selection-to-yjs";
+import { sync_local_cursor_position } from "../sync-local-cursor-position";
 
 /**
  * Syncs data from a yjs event
  * @param binding Binding
  * @param event Event
  */
-const syncEvent = (binding: Binding, event: any): void => {
+const sync_event = (binding: Binding, event: YEvent<any>): void => {
   const { target } = event;
-  const collabNode = getOrInitCollabNodeFromSharedType(binding, target);
+  const collab_node = get_or_create_collab_node_from_shared_type(
+    binding,
+    target
+  );
 
-  if (collabNode instanceof CollabElementNode && event instanceof YTextEvent) {
+  if (collab_node instanceof CollabElementNode && event instanceof YTextEvent) {
     // @ts-expect-error We need to access the private property of the class
+    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     const { keysChanged, childListChanged, delta } = event;
 
     // Update
     if (keysChanged.size > 0) {
-      collabNode.syncPropertiesFromYjs(binding, keysChanged);
+      collab_node.sync_properties_from_yjs(binding, keysChanged);
     }
 
+    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     if (childListChanged) {
-      collabNode.applyChildrenYjsDelta(binding, delta);
-      collabNode.syncChildrenFromYjs(binding);
+      collab_node.apply_children_yjs_delta(binding, delta);
+      collab_node.sync_children_from_yjs(binding);
     }
   } else if (
-    collabNode instanceof CollabTextNode &&
+    collab_node instanceof CollabTextNode &&
     event instanceof YMapEvent
   ) {
+    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     const { keysChanged } = event;
 
     // Update
     if (keysChanged.size > 0) {
-      collabNode.syncPropertiesAndTextFromYjs(binding, keysChanged);
+      collab_node.sync_properties_and_text_from_yjs(binding, keysChanged);
     }
   } else if (
-    collabNode instanceof CollabDecoratorNode &&
+    collab_node instanceof CollabDecoratorNode &&
     event instanceof YXmlEvent
   ) {
+    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     const { attributesChanged } = event;
 
     // Update
     if (attributesChanged.size > 0) {
-      collabNode.syncPropertiesFromYjs(binding, attributesChanged);
+      collab_node.sync_properties_from_yjs(binding, attributesChanged);
     }
   } else {
     throw new Error("Unknown node event");
@@ -72,114 +79,120 @@ const syncEvent = (binding: Binding, event: any): void => {
  * @param binding Binding
  * @param provider Provider
  * @param events Events
- * @param isFromUndoManger Whether the changes are from the undo manager
- * @param readOnly If `true`, skips handling selection and cursors
+ * @param is_from_undo_manager Whether the changes are from the undo manager
+ * @param read_only If `true`, skips handling selection and cursors
  */
-export const syncYjsChangesToLexical = ({
+export const sync_yjs_changes_to_lexical = ({
   provider,
   binding,
-  isFromUndoManger,
-  readOnly,
+  is_from_undo_manager,
+  read_only,
   events
 }: {
   binding: Binding;
   events: Array<YEvent<YText>>;
-  isFromUndoManger: boolean;
+  is_from_undo_manager: boolean;
   provider?: Provider;
-  readOnly?: boolean;
+  read_only?: boolean;
 }): void => {
   const editor = binding.editor;
-  const currentEditorState = editor._editorState;
+  const curr_editor_state = editor._editorState;
 
-  // This line precomputes the delta before the editor updates. The reason is
-  // that the delta is computed when it is accessed. Note that this can only be
-  // safely computed during the event call. If it is accessed after the event
-  // call, it might result in unexpected behavior.
-  // https://github.com/yjs/yjs/blob/00ef472d68545cb260abd35c2de4b3b78719c9e4/src/utils/YEvent.js#L132
+  /**
+   * This line precomputes the delta before the editor updates. The reason is
+   * that the delta is computed when it is accessed. Note that this can only be
+   * safely computed during the event call. If it is accessed after the event
+   * call, it might result in unexpected behavior.
+   * @see https://github.com/yjs/yjs/blob/00ef472d68545cb260abd35c2de4b3b78719c9e4/src/utils/YEvent.js#L132
+   */
   events.forEach((event) => event.delta);
 
   editor.update(
     () => {
       for (let i = 0; i < events.length; i++) {
         const event = events[i];
-        syncEvent(binding, event);
+        sync_event(binding, event);
       }
 
-      if (!provider || readOnly) {
+      if (!provider || read_only) {
         return;
       }
 
-      const pendingEditorState: EditorState | null = editor._pendingEditorState;
-      const selection = $getSelection();
+      const pending_editor_state: EditorState | null =
+        editor._pendingEditorState;
+      const selection = $get_selection();
 
-      if ($isRangeSelection(selection)) {
-        // We can't use yjs's cursor position here, as it doesn't always
-        // handle selection recovery correctly – especially on elements that
-        // get moved around or split. So instead, we roll our own solution.
-        if (doesSelectionNeedRecovering(selection)) {
-          const prevSelection = currentEditorState._selection;
+      if ($is_range_selection(selection)) {
+        /**
+         * We can't use yjs's cursor position here, as it doesn't always
+         * handle selection recovery correctly – especially on elements that
+         * get moved around or split. So instead, we roll our own solution.
+         */
+        if (does_selection_need_recovering(selection)) {
+          const prev_selection = curr_editor_state._selection;
 
-          if ($isRangeSelection(prevSelection)) {
-            const prevOffsetView = $createOffsetView(
+          if ($is_range_selection(prev_selection)) {
+            const prev_offset_view = $create_offset_view(
               editor,
               0,
-              currentEditorState
+              curr_editor_state
             );
-            const nextOffsetView = $createOffsetView(
+            const next_offset_view = $create_offset_view(
               editor,
               0,
-              pendingEditorState
+              pending_editor_state
             );
             const [start, end] =
-              prevOffsetView.getOffsetsFromSelection(prevSelection);
-            const nextSelection =
+              prev_offset_view.getOffsetsFromSelection(prev_selection);
+            const next_selection =
               start >= 0 && end >= 0
-                ? nextOffsetView.createSelectionFromOffsets(
+                ? next_offset_view.createSelectionFromOffsets(
                     start,
                     end,
-                    prevOffsetView
+                    prev_offset_view
                   )
                 : null;
 
-            if (nextSelection !== null) {
-              $setSelection(nextSelection);
+            if (next_selection !== null) {
+              $set_selection(next_selection);
             } else {
               // Fallback is to use the Yjs cursor position
-              syncLocalCursorPosition(binding, provider);
+              sync_local_cursor_position(binding, provider);
 
-              if (doesSelectionNeedRecovering(selection)) {
-                const root = $getRoot();
+              if (does_selection_need_recovering(selection)) {
+                const root = $get_root();
 
-                // If there was a collision on the top level paragraph,
-                // we need to re-add a paragraph
+                // If there was a collision on the top level paragraph, we need to re-add a paragraph
                 if (root.getChildrenSize() === 0) {
-                  root.append($createParagraphNode());
+                  root.append($create_paragraph_node());
                 }
 
                 // Fallback
-                $getRoot().selectEnd();
+                $get_root().selectEnd();
               }
             }
           }
 
-          syncLexicalSelectionToYjs(
+          sync_lexical_selection_to_yjs(
             binding,
             provider,
-            prevSelection,
-            $getSelection()
+            prev_selection,
+            $get_selection()
           );
         } else {
-          syncLocalCursorPosition(binding, provider);
+          sync_local_cursor_position(binding, provider);
         }
       }
     },
     {
+      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
       onUpdate:
-        !provider || readOnly
+        !provider || read_only
           ? undefined
-          : (): void => syncCursorPositions(binding, provider),
+          : (): void => sync_cursor_positions(binding, provider),
+      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
       skipTransforms: true,
-      tag: isFromUndoManger ? "historic" : "collaboration"
+      tag: is_from_undo_manager ? "historic" : "collaboration"
     }
   );
 };

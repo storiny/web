@@ -1,4 +1,4 @@
-import { userEvent } from "@storiny/test-utils";
+import { user_event } from "@storiny/test-utils";
 import { act, screen, waitFor } from "@testing-library/react";
 import React from "react";
 
@@ -9,7 +9,7 @@ import { EmailSettings } from "./email-group";
 describe("<EmailSettings />", () => {
   it("renders validation messages", async () => {
     const mockSubmit = jest.fn();
-    const user = userEvent.setup();
+    const user = user_event.setup();
     render_test_with_provider(
       <EmailSettings has_password on_submit={mockSubmit} />,
       {
@@ -36,7 +36,7 @@ describe("<EmailSettings />", () => {
 
   it("submits correct form data", async () => {
     const mockSubmit = jest.fn();
-    const user = userEvent.setup();
+    const user = user_event.setup();
     render_test_with_provider(
       <EmailSettings has_password on_submit={mockSubmit} />,
       {

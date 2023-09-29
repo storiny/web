@@ -5,7 +5,7 @@ import React from "react";
 import Button from "src/components/button";
 import { use_toast } from "src/components/toast";
 import { use_media_query } from "src/hooks/use-media-query";
-import RestoreIcon from "~/icons/Restore";
+import RestoreIcon from "src/icons/restore";
 import { get_drafts_api, use_recover_draft_mutation } from "~/redux/features";
 import { use_app_dispatch } from "~/redux/hooks";
 import { BREAKPOINTS } from "~/theme/breakpoints";

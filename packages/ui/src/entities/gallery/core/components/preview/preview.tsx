@@ -3,7 +3,7 @@ import { useAtomValue as use_atom_value } from "jotai";
 import React from "react";
 
 import Image from "src/components/image";
-import PhotoIcon from "~/icons/Photo";
+import PhotoIcon from "src/icons/photo";
 
 import { selected_atom } from "../../atoms";
 import styles from "./preview.module.scss";

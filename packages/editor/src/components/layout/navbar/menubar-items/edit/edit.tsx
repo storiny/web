@@ -1,31 +1,31 @@
-import { getShortcutLabel } from "@storiny/shared/src/utils/get-shortcut-label";
+import { get_shortcut_label } from "@storiny/shared/src/utils/get-shortcut-label";
 import React from "react";
 
 import MenubarItem from "../../../../../../../ui/src/components/menubar-item";
 import MenubarSub from "../../../../../../../ui/src/components/menubar-sub";
-import RedoIcon from "~/icons/Redo";
-import UndoIcon from "~/icons/Undo";
+import RedoIcon from "../../../../../../../ui/src/icons/redo";
+import UndoIcon from "../../../../../../../ui/src/icons/undo";
 
 import { EDITOR_SHORTCUTS } from "../../../../../constants/shortcuts";
-import { useHistory } from "../../../../../hooks/use-history";
+import { use_history } from "../../../../../hooks/use-history";
 
 const EditItem = ({ disabled }: { disabled?: boolean }): React.ReactElement => {
-  const { canRedo, canUndo, redo, undo } = useHistory();
+  const { can_redo, can_undo, redo, undo } = use_history();
   return (
     <MenubarSub trigger={"Edit"}>
       <MenubarItem
         decorator={<UndoIcon />}
-        disabled={disabled || !canUndo}
+        disabled={disabled || !can_undo}
         onClick={undo}
-        right_slot={getShortcutLabel(EDITOR_SHORTCUTS.undo)}
+        right_slot={get_shortcut_label(EDITOR_SHORTCUTS.undo)}
       >
         Undo
       </MenubarItem>
       <MenubarItem
         decorator={<RedoIcon />}
-        disabled={disabled || !canRedo}
+        disabled={disabled || !can_redo}
         onClick={redo}
-        right_slot={getShortcutLabel(EDITOR_SHORTCUTS.redo)}
+        right_slot={get_shortcut_label(EDITOR_SHORTCUTS.redo)}
       >
         Redo
       </MenubarItem>

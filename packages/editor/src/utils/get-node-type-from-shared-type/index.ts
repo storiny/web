@@ -2,15 +2,15 @@ import { Map as YMap, XmlElement, XmlText } from "yjs";
 
 /**
  * Returns the node type from shared type
- * @param sharedType Shared type
+ * @param shared_type Shared type
  */
-export const getNodeTypeFromSharedType = (
-  sharedType: XmlText | YMap<unknown> | XmlElement
+export const get_node_type_from_shared_type = (
+  shared_type: XmlText | YMap<unknown> | XmlElement
 ): string => {
   const type =
-    sharedType instanceof YMap
-      ? sharedType.get("__type")
-      : sharedType.getAttribute("__type");
+    shared_type instanceof YMap
+      ? shared_type.get("__type")
+      : shared_type.getAttribute("__type");
 
   if (!type) {
     throw new Error("Expected shared type to include type attribute");

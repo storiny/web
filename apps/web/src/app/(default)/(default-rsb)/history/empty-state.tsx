@@ -2,7 +2,7 @@ import React from "react";
 
 import Link from "../../../../../../../packages/ui/src/components/link";
 import CustomState from "../../../../../../../packages/ui/src/entities/custom-state";
-import HistoryIcon from "~/icons/History";
+import HistoryIcon from "../../../../../../../packages/ui/src/icons/history";
 
 interface HistoryEmptyStateProps {
   query: string;

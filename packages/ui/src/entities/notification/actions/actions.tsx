@@ -4,8 +4,8 @@ import React from "react";
 
 import IconButton from "src/components/icon-button";
 import { use_media_query } from "src/hooks/use-media-query";
-import BellOffIcon from "~/icons/BellOff";
-import CheckIcon from "~/icons/Check";
+import BellOffIcon from "src/icons/bell-off";
+import CheckIcon from "src/icons/check";
 import {
   set_read_notification,
   sync_with_notification,

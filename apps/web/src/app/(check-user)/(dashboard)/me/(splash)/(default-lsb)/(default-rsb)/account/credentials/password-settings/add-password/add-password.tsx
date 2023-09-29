@@ -22,7 +22,7 @@ import Spacer from "../../../../../../../../../../../../../../packages/ui/src/co
 import { use_toast } from "../../../../../../../../../../../../../../packages/ui/src/components/toast";
 import Typography from "../../../../../../../../../../../../../../packages/ui/src/components/typography";
 import { use_media_query } from "../../../../../../../../../../../../../../packages/ui/src/hooks/use-media-query";
-import PasswordIcon from "~/icons/Password";
+import PasswordIcon from "../../../../../../../../../../../../../../packages/ui/src/icons/password";
 import {
   use_add_password_mutation,
   use_add_password_request_verification_mutation

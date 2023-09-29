@@ -1,10 +1,8 @@
 .x {
-  /* Base styles */
   &.presence {
     gap: 18px;
   }
 
-  /* Participant */
   &.participant {
     position: relative;
 
@@ -12,7 +10,9 @@
       --size: 26px;
 
       overflow: visible;
-      box-shadow: 0 0 0 1.25px var(--bg-elevation-sm), 0 0 0 2.75px var(--color);
+      box-shadow:
+        0 0 0 1.25px var(--bg-elevation-sm),
+        0 0 0 2.75px var(--color);
 
       &::after {
         content: "";

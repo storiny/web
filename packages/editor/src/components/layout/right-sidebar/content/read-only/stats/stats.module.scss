@@ -1,21 +1,17 @@
 @use "sass:math" as math;
 
-/* Base styles */
 .stats {
   gap: 12px;
 }
 
-/* Main content */
 .main {
   gap: 8px;
 }
 
-/* Padded separator */
 .padded-separator {
   margin-inline: 12px;
 }
 
-/* Vertical divider wrapper */
 .divider-wrapper {
   height: 100%;
 }

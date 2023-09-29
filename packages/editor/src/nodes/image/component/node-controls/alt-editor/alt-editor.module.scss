@@ -1,12 +1,10 @@
 .x {
-  /* Button */
   &.button {
     border-radius: 0;
     font-size: var(--font-size-xs);
     line-height: var(--line-height-xs);
   }
 
-  /* Image */
   &.image {
     overflow: hidden;
     width: 100%;

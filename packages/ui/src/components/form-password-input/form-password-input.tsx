@@ -1,12 +1,12 @@
 "use client";
 
-import { userProps } from "@storiny/shared";
+import { USER_PROPS } from "@storiny/shared";
 import React from "react";
 
 import FormInput from "src/components/form-input";
 import IconButton from "src/components/icon-button";
-import EyeIcon from "~/icons/Eye";
-import EyeClosedIcon from "~/icons/EyeClosed";
+import EyeIcon from "src/icons/eye";
+import EyeClosedIcon from "src/icons/eye-closed";
 
 import { FormPasswordInputProps } from "./form-password-input.props";
 
@@ -38,8 +38,8 @@ const FormPasswordInput = React.forwardRef<
         </IconButton>
       }
       label={label}
-      maxLength={userProps.password.maxLength}
-      minLength={userProps.password.minLength}
+      maxLength={USER_PROPS.password.max_length}
+      minLength={USER_PROPS.password.min_length}
       name={name}
       ref={ref}
       type={visible ? "text" : "password"}

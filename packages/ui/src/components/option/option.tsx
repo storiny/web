@@ -4,7 +4,7 @@ import { Item, ItemIndicator, ItemText } from "@radix-ui/react-select";
 import clsx from "clsx";
 import React from "react";
 
-import CheckIcon from "~/icons/Check";
+import CheckIcon from "src/icons/check";
 import { forward_ref } from "src/utils/forward-ref";
 
 import right_slot_styles from "../common/right-slot.module.scss";

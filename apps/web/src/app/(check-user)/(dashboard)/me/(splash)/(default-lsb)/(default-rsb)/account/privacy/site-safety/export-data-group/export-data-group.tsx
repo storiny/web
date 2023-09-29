@@ -18,8 +18,8 @@ import { use_toast } from "../../../../../../../../../../../../../../packages/ui
 import Typography from "../../../../../../../../../../../../../../packages/ui/src/components/typography";
 import TitleBlock from "../../../../../../../../../../../../../../packages/ui/src/entities/title-block";
 import { use_media_query } from "../../../../../../../../../../../../../../packages/ui/src/hooks/use-media-query";
-import ExportIcon from "~/icons/Export";
-import PasswordIcon from "~/icons/Password";
+import ExportIcon from "../../../../../../../../../../../../../../packages/ui/src/icons/export";
+import PasswordIcon from "../../../../../../../../../../../../../../packages/ui/src/icons/password";
 import { use_export_data_mutation } from "~/redux/features";
 import { BREAKPOINTS } from "~/theme/breakpoints";
 

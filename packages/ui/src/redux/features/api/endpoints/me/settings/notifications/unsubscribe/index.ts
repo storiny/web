@@ -1,5 +1,4 @@
-import { ContentType } from "@storiny/shared";
-import { NotificationType } from "@storiny/types";
+import { ContentType, NotificationType } from "@storiny/shared";
 
 import { api_slice } from "~/redux/features/api/slice";
 

@@ -1,4 +1,4 @@
-import { mergeRegister } from "@lexical/utils";
+import { mergeRegister as merge_register } from "@lexical/utils";
 import {
   CAN_REDO_COMMAND,
   CAN_UNDO_COMMAND,
@@ -10,32 +10,32 @@ import {
 import React from "react";
 
 import { Binding } from "../../collaboration/bindings";
-import { createUndoManager } from "../../collaboration/history";
+import { create_undo_manager } from "../../collaboration/history";
 
 /**
  * Hook for using yjs history
  * @param editor Editor
  * @param binding Binding
  */
-export const useYjsHistory = (
+export const use_yjs_history = (
   editor: LexicalEditor,
   binding: Binding
 ): (() => void) => {
-  const undoManager = React.useMemo(
-    () => createUndoManager(binding, binding.root.getSharedType()),
+  const undo_manager = React.useMemo(
+    () => create_undo_manager(binding, binding.root.get_shared_type()),
     [binding]
   );
 
   React.useEffect(() => {
     const undo = (): void => {
-      undoManager.undo();
+      undo_manager.undo();
     };
 
     const redo = (): void => {
-      undoManager.redo();
+      undo_manager.redo();
     };
 
-    return mergeRegister(
+    return merge_register(
       editor.registerCommand(
         UNDO_COMMAND,
         () => {
@@ -56,29 +56,29 @@ export const useYjsHistory = (
   });
 
   React.useEffect(() => {
-    const updateUndoRedoStates = (): void => {
+    const update_undo_redo_states = (): void => {
       editor.dispatchCommand(
         CAN_UNDO_COMMAND,
-        undoManager.undoStack.length > 0
+        undo_manager.undoStack.length > 0
       );
       editor.dispatchCommand(
         CAN_REDO_COMMAND,
-        undoManager.redoStack.length > 0
+        undo_manager.redoStack.length > 0
       );
     };
 
-    undoManager.on("stack-item-added", updateUndoRedoStates);
-    undoManager.on("stack-item-popped", updateUndoRedoStates);
-    undoManager.on("stack-cleared", updateUndoRedoStates);
+    undo_manager.on("stack-item-added", update_undo_redo_states);
+    undo_manager.on("stack-item-popped", update_undo_redo_states);
+    undo_manager.on("stack-cleared", update_undo_redo_states);
 
     return () => {
-      undoManager.off("stack-item-added", updateUndoRedoStates);
-      undoManager.off("stack-item-popped", updateUndoRedoStates);
-      undoManager.off("stack-cleared", updateUndoRedoStates);
+      undo_manager.off("stack-item-added", update_undo_redo_states);
+      undo_manager.off("stack-item-popped", update_undo_redo_states);
+      undo_manager.off("stack-cleared", update_undo_redo_states);
     };
-  }, [editor, undoManager]);
+  }, [editor, undo_manager]);
 
   return React.useCallback(() => {
-    undoManager.clear();
-  }, [undoManager]);
+    undo_manager.clear();
+  }, [undo_manager]);
 };

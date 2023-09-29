@@ -1,6 +1,6 @@
 import React from "react";
 
-import { ButtonProps } from "src/components/button";
+import { ButtonProps } from "~/components/button";
 
 export type ErrorStateSize = "md" | "sm";
 export type ErrorStateType = "server" | "network";

@@ -1,4 +1,4 @@
-import { mergeRegister } from "@lexical/utils";
+import { mergeRegister as merge_register } from "@lexical/utils";
 import {
   BLUR_COMMAND,
   COMMAND_PRIORITY_EDITOR,
@@ -10,35 +10,35 @@ import React from "react";
 import {
   CollabLocalState,
   Provider,
-  setLocalStateFocus
+  set_local_state_focus
 } from "../../collaboration/provider";
 
 /**
  * Hook for using yjs focus tracking
  * @param editor Editor
  * @param provider Provider
- * @param localState Collab local state
+ * @param local_state Collab local state
  */
-export const useYjsFocusTracking = (
+export const use_yjs_focus_tracking = (
   editor: LexicalEditor,
   provider: Provider,
-  localState: Omit<
+  local_state: Omit<
     CollabLocalState,
-    "provider" | "focusing" | "awarenessData"
+    "provider" | "focusing" | "awareness_data"
   > &
-    Partial<Pick<CollabLocalState, "awarenessData">>
+    Partial<Pick<CollabLocalState, "awareness_data">>
 ): void => {
   React.useEffect(
     () =>
-      mergeRegister(
+      merge_register(
         editor.registerCommand(
           FOCUS_COMMAND,
           () => {
-            setLocalStateFocus({
-              ...localState,
+            set_local_state_focus({
+              ...local_state,
               provider,
               focusing: true,
-              awarenessData: localState.awarenessData || {}
+              awareness_data: local_state.awareness_data || {}
             });
             return false;
           },
@@ -47,17 +47,17 @@ export const useYjsFocusTracking = (
         editor.registerCommand(
           BLUR_COMMAND,
           () => {
-            setLocalStateFocus({
-              ...localState,
+            set_local_state_focus({
+              ...local_state,
               provider,
               focusing: false,
-              awarenessData: localState.awarenessData || {}
+              awareness_data: local_state.awareness_data || {}
             });
             return false;
           },
           COMMAND_PRIORITY_EDITOR
         )
       ),
-    [localState, editor, provider]
+    [local_state, editor, provider]
   );
 };

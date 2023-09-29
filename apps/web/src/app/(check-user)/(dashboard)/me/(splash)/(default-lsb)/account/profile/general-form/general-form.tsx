@@ -1,6 +1,6 @@
 "use client";
 
-import { userProps } from "@storiny/shared";
+import { USER_PROPS } from "@storiny/shared";
 import { clsx } from "clsx";
 import React from "react";
 
@@ -113,8 +113,8 @@ const AccountGeneralForm = ({
             "Provide a name that you are commonly known by, such as your full name or nickname, to help others find you easily."
           }
           label={"Name"}
-          maxLength={userProps.name.maxLength}
-          minLength={userProps.name.minLength}
+          maxLength={USER_PROPS.name.max_length}
+          minLength={USER_PROPS.name.min_length}
           name={"name"}
           placeholder={"Your name"}
           required
@@ -132,7 +132,7 @@ const AccountGeneralForm = ({
             "Your location helps us improve your home feed and is also displayed on your public profile."
           }
           label={"Location"}
-          maxLength={userProps.location.maxLength}
+          maxLength={USER_PROPS.location.max_length}
           name={"location"}
           placeholder={"Your location"}
         />
@@ -152,7 +152,7 @@ const AccountGeneralForm = ({
           </React.Fragment>
         }
         label={"Bio"}
-        maxLength={userProps.bio.maxLength}
+        maxLength={USER_PROPS.bio.max_length}
         name={"bio"}
         placeholder={"Your bio"}
       />

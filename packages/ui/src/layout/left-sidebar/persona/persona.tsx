@@ -10,7 +10,7 @@ import Skeleton from "src/components/skeleton";
 import Typography from "src/components/typography";
 import ErrorState from "src/entities/error-state";
 import Status from "src/entities/status";
-import PhotoPlusIcon from "~/icons/PhotoPlus";
+import PhotoPlusIcon from "src/icons/photo-plus";
 import { fetch_user } from "~/redux/features";
 import {
   select_auth_status,

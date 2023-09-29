@@ -11,14 +11,14 @@ import ModerationBlocksClient from "./client";
 
 const Page = async (): Promise<React.ReactElement | undefined> => {
   try {
-    const userId = await getUser();
+    const user_id = await getUser();
 
-    if (!userId) {
+    if (!user_id) {
       redirect("/login");
     }
 
     const blockCountResponse = await getUserBlockCount({
-      id: userId
+      id: user_id
     });
 
     return <ModerationBlocksClient {...blockCountResponse} />;

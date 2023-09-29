@@ -1,46 +1,46 @@
 import {
-  $getNodeByKey,
-  $getSelection,
-  $isRangeSelection,
-  $isTextNode,
+  $getNodeByKey as $get_node_by_key,
+  $getSelection as $get_selection,
+  $isRangeSelection as $is_range_selection,
+  $isTextNode as $is_text_node,
   NodeKey,
   NodeMap,
   TextNode
 } from "lexical";
 import { Map as YMap } from "yjs";
 
-import { simpleDiffWithCursor } from "../../../utils/simple-diff-with-cursor";
-import { syncPropertiesFromLexical } from "../../../utils/sync-properties-from-lexical";
-import { syncPropertiesFromYjs } from "../../../utils/sync-properties-from-yjs";
+import { simple_diff_with_cursor } from "../../../utils/simple-diff-with-cursor";
+import { sync_properties_from_lexical } from "../../../utils/sync-properties-from-lexical";
+import { sync_properties_from_yjs } from "../../../utils/sync-properties-from-yjs";
 import { Binding } from "../../bindings";
 import { CollabElementNode } from "../element";
 
 /**
  * Diffs the text content of the node
- * @param collabNode Collab text node
+ * @param collab_node Collab text node
  * @param key Node key
- * @param prevText Previous text
- * @param nextText Next text
+ * @param prev_text Previous text
+ * @param next_text Next text
  */
-const diffTextContentAndApplyDelta = (
-  collabNode: CollabTextNode,
+const diff_text_content_and_apply_delta = (
+  collab_node: CollabTextNode,
   key: NodeKey,
-  prevText: string,
-  nextText: string
+  prev_text: string,
+  next_text: string
 ): void => {
-  const selection = $getSelection();
-  let cursorOffset = nextText.length;
+  const selection = $get_selection();
+  let cursor_offset = next_text.length;
 
-  if ($isRangeSelection(selection) && selection.isCollapsed()) {
+  if ($is_range_selection(selection) && selection.isCollapsed()) {
     const anchor = selection.anchor;
 
     if (anchor.key === key) {
-      cursorOffset = anchor.offset;
+      cursor_offset = anchor.offset;
     }
   }
 
-  const diff = simpleDiffWithCursor(prevText, nextText, cursorOffset);
-  collabNode.spliceText(diff.index, diff.remove, diff.insert);
+  const diff = simple_diff_with_cursor(prev_text, next_text, cursor_offset);
+  collab_node.splice_text(diff.index, diff.remove, diff.insert);
 };
 
 export class CollabTextNode {
@@ -68,133 +68,137 @@ export class CollabTextNode {
   /**
    * YMap
    */
-  _map: YMap<unknown>;
+  public _map: YMap<unknown>;
   /**
    * Node key
    */
-  _key: NodeKey;
+  public _key: NodeKey;
   /**
    * Parent node
    */
-  _parent: CollabElementNode;
+  public _parent: CollabElementNode;
   /**
    * Node text
    */
-  _text: string;
+  public _text: string;
   /**
    * Node type
    */
-  _type: string;
+  private readonly _type: string;
   /**
    * Normalized flag
    */
-  _normalized: boolean;
+  public _normalized: boolean;
 
   /**
    * Returns the previous text node
-   * @param nodeMap Node map
+   * @param node_map Node map
    */
-  getPrevNode(nodeMap: null | NodeMap): null | TextNode {
-    if (nodeMap === null) {
+  public get_prev_node(node_map: null | NodeMap): null | TextNode {
+    if (node_map === null) {
       return null;
     }
 
-    const node = nodeMap.get(this._key);
-    return $isTextNode(node) ? node : null;
+    const node = node_map.get(this._key);
+    return $is_text_node(node) ? node : null;
   }
 
   /**
    * Returns the text node
    */
-  getNode(): null | TextNode {
-    const node = $getNodeByKey(this._key);
-    return $isTextNode(node) ? node : null;
+  public get_node(): null | TextNode {
+    const node = $get_node_by_key(this._key);
+    return $is_text_node(node) ? node : null;
   }
 
   /**
    * Returns the shared map
    */
-  getSharedType(): YMap<unknown> {
+  public get_shared_type(): YMap<unknown> {
     return this._map;
   }
 
   /**
    * Returns the node type
    */
-  getType(): string {
+  public get_type(): string {
     return this._type;
   }
 
   /**
    * Returns the node key
    */
-  getKey(): NodeKey {
+  public get_key(): NodeKey {
     return this._key;
   }
 
   /**
    * Returns the node size
    */
-  getSize(): number {
+  public get_size(): number {
     return this._text.length + (this._normalized ? 0 : 1);
   }
 
   /**
    * Returns the node offset
    */
-  getOffset(): number {
-    const collabElementNode = this._parent;
-    return collabElementNode.getChildOffset(this);
+  public get_offset(): number {
+    const collab_element_node = this._parent;
+    return collab_element_node.get_child_offset(this);
   }
 
   /**
    * Slices node text content
    * @param index Index
-   * @param delCount Delete count
-   * @param newText New text
+   * @param del_count Delete count
+   * @param next_text New text
    */
-  spliceText(index: number, delCount: number, newText: string): void {
-    const collabElementNode = this._parent;
-    const xmlText = collabElementNode._xmlText;
-    const offset = this.getOffset() + 1 + index;
+  public splice_text(
+    index: number,
+    del_count: number,
+    next_text: string
+  ): void {
+    const collab_element_node = this._parent;
+    const xml_text = collab_element_node._xml_text;
+    const offset = this.get_offset() + 1 + index;
 
-    if (delCount !== 0) {
-      xmlText.delete(offset, delCount);
+    if (del_count !== 0) {
+      xml_text.delete(offset, del_count);
     }
 
-    if (newText !== "") {
-      xmlText.insert(offset, newText);
+    if (next_text !== "") {
+      xml_text.insert(offset, next_text);
     }
   }
 
   /**
    * Syncs properties and text from editor
    * @param binding Binding
-   * @param nextLexicalNode Next node
-   * @param prevNodeMap Previous node map
+   * @param next_lexical_node Next node
+   * @param prev_node_map Previous node map
    */
-  syncPropertiesAndTextFromLexical(
+  public sync_properties_and_text_from_lexical(
     binding: Binding,
-    nextLexicalNode: TextNode,
-    prevNodeMap: null | NodeMap
+    next_lexical_node: TextNode,
+    prev_node_map: null | NodeMap
   ): void {
-    const prevLexicalNode = this.getPrevNode(prevNodeMap);
-    const nextText = nextLexicalNode.__text;
+    const prev_lexical_node = this.get_prev_node(prev_node_map);
 
-    syncPropertiesFromLexical(
+    sync_properties_from_lexical(
       binding,
       this._map,
-      prevLexicalNode,
-      nextLexicalNode
+      prev_lexical_node,
+      next_lexical_node
     );
 
-    if (prevLexicalNode !== null) {
-      const prevText = prevLexicalNode.__text;
+    if (prev_lexical_node !== null) {
+      const prev_text = prev_lexical_node.__text;
+      const next_text = next_lexical_node.__text;
 
-      if (prevText !== nextText) {
-        const key = nextLexicalNode.__key;
-        diffTextContentAndApplyDelta(this, key, prevText, nextText);
-        this._text = nextText;
+      if (prev_text !== next_text) {
+        const key = next_lexical_node.__key;
+        diff_text_content_and_apply_delta(this, key, prev_text, next_text);
+        this._text = next_text;
       }
     }
   }
@@ -202,26 +206,26 @@ export class CollabTextNode {
   /**
    * Syncs properties and text from yjs
    * @param binding Binding
-   * @param keysChanged Set of changed keys
+   * @param keys_changed Set of changed keys
    */
-  syncPropertiesAndTextFromYjs(
+  public sync_properties_and_text_from_yjs(
     binding: Binding,
-    keysChanged: null | Set<string>
+    keys_changed: null | Set<string>
   ): void {
-    const lexicalNode = this.getNode();
+    const lexical_node = this.get_node();
 
-    if (lexicalNode === null) {
+    if (lexical_node === null) {
       throw new Error(
-        "`syncPropertiesAndTextFromYjs`: could not find the text node"
+        "`sync_properties_and_text_from_yjs`: could not find the text node"
       );
     }
 
-    syncPropertiesFromYjs(binding, this._map, lexicalNode, keysChanged);
-    const collabText = this._text;
+    sync_properties_from_yjs(binding, this._map, lexical_node, keys_changed);
+    const collab_text = this._text;
 
-    if (lexicalNode.__text !== collabText) {
-      const writable = lexicalNode.getWritable();
-      writable.__text = collabText;
+    if (lexical_node.__text !== collab_text) {
+      const writable = lexical_node.getWritable();
+      writable.__text = collab_text;
     }
   }
 
@@ -229,9 +233,9 @@ export class CollabTextNode {
    * Destroys the node
    * @param binding Binding
    */
-  destroy(binding: Binding): void {
-    const collabNodeMap = binding.collabNodeMap;
-    collabNodeMap.delete(this._key);
+  public destroy(binding: Binding): void {
+    const collab_node_map = binding.collab_node_map;
+    collab_node_map.delete(this._key);
   }
 }
 
@@ -242,14 +246,13 @@ export class CollabTextNode {
  * @param parent Parent node
  * @param type Node type
  */
-export const $createCollabTextNode = (
+export const $create_collab_text_node = (
   map: YMap<unknown>,
   text: string,
   parent: CollabElementNode,
   type: string
 ): CollabTextNode => {
-  const collabNode = new CollabTextNode(map, text, parent, type);
-  // @ts-expect-error: internal field
-  map._collabNode = collabNode;
-  return collabNode;
+  const collab_node = new CollabTextNode(map, text, parent, type);
+  map._collab_node = collab_node;
+  return collab_node;
 };

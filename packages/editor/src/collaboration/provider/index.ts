@@ -3,16 +3,16 @@ import { RelativePosition } from "yjs";
 import { WebsocketProvider } from "../websocket";
 
 export interface UserState {
-  anchorPos: null | RelativePosition;
-  avatarHex: string | null;
+  anchor_pos: null | RelativePosition;
+  avatar_hex: string | null;
   avatar_id: string | null;
-  awarenessData: object;
+  awareness_data: object;
   color: string;
-  focusPos: null | RelativePosition;
+  focus_pos: null | RelativePosition;
   focusing: boolean;
   name: string;
   role: "editor" | "viewer";
-  userId: string;
+  user_id: string;
 }
 
 export type CollabLocalState = Omit<UserState, "anchorPos" | "focusPos"> & {
@@ -30,36 +30,47 @@ export type Delta = Array<Operation>;
 export type YjsNode = Record<string, unknown>;
 export type YjsEvent = Record<string, unknown>;
 
-export declare interface Provider extends WebsocketProvider {}
+export declare type Provider = WebsocketProvider;
 
-export const initLocalState = ({
+/**
+ * Initializes the local client state
+ * @param provider Provider
+ * @param rest Local state
+ */
+export const init_local_state = ({
   provider,
   ...rest
 }: CollabLocalState): void => {
   provider.awareness.setLocalState({
     ...rest,
-    anchorPos: null,
-    focusPos: null
+    anchor_pos: null,
+    focus_pos: null
   });
 };
 
-export const setLocalStateFocus = ({
+/**
+ * Sets the focus props on the local client state
+ * @param provider Provider
+ * @param focusing Focusing boolean flag
+ * @param rest Local state
+ */
+export const set_local_state_focus = ({
   provider,
   focusing,
   ...rest
 }: CollabLocalState): void => {
   const { awareness } = provider;
-  let localState = awareness.getLocalState();
+  let local_state = awareness.getLocalState();
 
-  if (localState === null) {
-    localState = {
+  if (local_state === null) {
+    local_state = {
       ...rest,
       focusing,
-      anchorPos: null,
-      focusPos: null
+      anchor_pos: null,
+      focus_pos: null
     };
   }
 
-  localState.focusing = focusing;
-  awareness.setLocalState(localState);
+  local_state.focusing = focusing;
+  awareness.setLocalState(local_state);
 };

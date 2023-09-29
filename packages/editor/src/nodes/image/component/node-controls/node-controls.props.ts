@@ -14,5 +14,5 @@ export interface ImageNodeControlsProps {
   /**
    * Image node key
    */
-  nodeKey: NodeKey;
+  node_key: NodeKey;
 }

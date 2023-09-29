@@ -1,4 +1,4 @@
-import { getShortcutLabel } from "@storiny/shared/src/utils/get-shortcut-label";
+import { get_shortcut_label } from "@storiny/shared/src/utils/get-shortcut-label";
 import { clsx } from "clsx";
 import React from "react";
 
@@ -8,30 +8,30 @@ import Spacer from "../../../../../../../../ui/src/components/spacer";
 import ToggleGroup from "../../../../../../../../ui/src/components/toggle-group";
 import ToggleGroupItem from "../../../../../../../../ui/src/components/toggle-group-item";
 import Typography from "../../../../../../../../ui/src/components/typography";
-import BoldIcon from "~/icons/Bold";
-import CodeIcon from "~/icons/Code";
-import ItalicIcon from "~/icons/Italic";
-import LinkIcon from "~/icons/Link";
-import StrikethroughIcon from "~/icons/Strikethrough";
-import SubscriptIcon from "~/icons/Subscript";
-import SuperscriptIcon from "~/icons/Superscript";
-import UnderlineIcon from "~/icons/Underline";
+import BoldIcon from "../../../../../../../../ui/src/icons/bold";
+import CodeIcon from "../../../../../../../../ui/src/icons/code";
+import ItalicIcon from "../../../../../../../../ui/src/icons/italic";
+import LinkIcon from "../../../../../../../../ui/src/icons/link";
+import StrikethroughIcon from "../../../../../../../../ui/src/icons/strikethrough";
+import SubscriptIcon from "../../../../../../../../ui/src/icons/subscript";
+import SuperscriptIcon from "../../../../../../../../ui/src/icons/superscript";
+import UnderlineIcon from "../../../../../../../../ui/src/icons/underline";
 
 import {
   TextStyle as TextStyleEnum,
-  textStyleToIconMap,
-  textStyleToLabelMap
+  TEXT_STYLE_ICON_MAP,
+  TEXT_STYLE_LABEL_MAP
 } from "../../../../../../constants";
 import { EDITOR_SHORTCUTS } from "../../../../../../constants/shortcuts";
-import { useBold } from "../../../../../../hooks/use-bold";
-import { useCode } from "../../../../../../hooks/use-code";
-import { useItalic } from "../../../../../../hooks/use-italic";
-import { useLink } from "../../../../../../hooks/use-link";
-import { useStrikethrough } from "../../../../../../hooks/use-strikethrough";
-import { useSubscript } from "../../../../../../hooks/use-subscript";
-import { useSuperscript } from "../../../../../../hooks/use-superscript";
-import { useTextStyle } from "../../../../../../hooks/use-text-style";
-import { useUnderline } from "../../../../../../hooks/use-underline";
+import { use_bold } from "../../../../../../hooks/use-bold";
+import { use_code } from "../../../../../../hooks/use-code";
+import { use_italic } from "../../../../../../hooks/use-italic";
+import { use_link } from "../../../../../../hooks/use-link";
+import { use_strikethrough } from "../../../../../../hooks/use-strikethrough";
+import { use_subscript } from "../../../../../../hooks/use-subscript";
+import { use_superscript } from "../../../../../../hooks/use-superscript";
+import { use_text_style } from "../../../../../../hooks/use-text-style";
+import { use_underline } from "../../../../../../hooks/use-underline";
 import PaddedDivider from "../padded-divider";
 
 // Option
@@ -44,11 +44,11 @@ const TextStyleOption = ({
   value: TextStyleEnum;
 }): React.ReactElement => (
   <Option
-    decorator={textStyleToIconMap[value]}
+    decorator={TEXT_STYLE_ICON_MAP[value]}
     right_slot={shortcut}
     value={value}
   >
-    {textStyleToLabelMap[value]}
+    {TEXT_STYLE_LABEL_MAP[value]}
   </Option>
 );
 
@@ -59,14 +59,14 @@ const TextStyleToggleGroup = ({
 }: {
   disabled?: boolean;
 }): React.ReactElement => {
-  const [bold, toggleBold] = useBold();
-  const [italic, toggleItalic] = useItalic();
-  const [underline, toggleUnderline] = useUnderline();
-  const [strikethrough, toggleStrikethrough] = useStrikethrough();
-  const [subscript, toggleSubscript] = useSubscript();
-  const [superscript, toggleSuperscript] = useSuperscript();
-  const [code, toggleCode] = useCode();
-  const [link, insertLink] = useLink();
+  const [bold, toggle_bold] = use_bold();
+  const [italic, toggle_italic] = use_italic();
+  const [underline, toggle_underline] = use_underline();
+  const [strikethrough, toggle_strikethrough] = use_strikethrough();
+  const [subscript, toggle_subscript] = use_subscript();
+  const [superscript, toggle_superscript] = use_superscript();
+  const [code, toggle_code] = use_code();
+  const [link, insert_link] = use_link();
 
   const value = React.useMemo(
     () =>
@@ -87,10 +87,10 @@ const TextStyleToggleGroup = ({
     <ToggleGroup disabled={disabled} type={"multiple"} value={value}>
       <ToggleGroupItem
         data-testid={"bold-toggle"}
-        onClick={toggleBold}
+        onClick={toggle_bold}
         slot_props={{
           tooltip: {
-            right_slot: getShortcutLabel(EDITOR_SHORTCUTS.bold)
+            right_slot: get_shortcut_label(EDITOR_SHORTCUTS.bold)
           }
         }}
         tooltip_content={"Bold"}
@@ -100,10 +100,10 @@ const TextStyleToggleGroup = ({
       </ToggleGroupItem>
       <ToggleGroupItem
         data-testid={"italic-toggle"}
-        onClick={toggleItalic}
+        onClick={toggle_italic}
         slot_props={{
           tooltip: {
-            right_slot: getShortcutLabel(EDITOR_SHORTCUTS.italic)
+            right_slot: get_shortcut_label(EDITOR_SHORTCUTS.italic)
           }
         }}
         tooltip_content={"Italic"}
@@ -113,10 +113,10 @@ const TextStyleToggleGroup = ({
       </ToggleGroupItem>
       <ToggleGroupItem
         data-testid={"underline-toggle"}
-        onClick={toggleUnderline}
+        onClick={toggle_underline}
         slot_props={{
           tooltip: {
-            right_slot: getShortcutLabel(EDITOR_SHORTCUTS.underline)
+            right_slot: get_shortcut_label(EDITOR_SHORTCUTS.underline)
           }
         }}
         tooltip_content={"Underline"}
@@ -126,10 +126,10 @@ const TextStyleToggleGroup = ({
       </ToggleGroupItem>
       <ToggleGroupItem
         data-testid={"strikethrough-toggle"}
-        onClick={toggleStrikethrough}
+        onClick={toggle_strikethrough}
         slot_props={{
           tooltip: {
-            right_slot: getShortcutLabel(EDITOR_SHORTCUTS.strikethrough)
+            right_slot: get_shortcut_label(EDITOR_SHORTCUTS.strikethrough)
           }
         }}
         tooltip_content={"Strikethrough"}
@@ -140,10 +140,10 @@ const TextStyleToggleGroup = ({
       <PaddedDivider />
       <ToggleGroupItem
         data-testid={"code-toggle"}
-        onClick={toggleCode}
+        onClick={toggle_code}
         slot_props={{
           tooltip: {
-            right_slot: getShortcutLabel(EDITOR_SHORTCUTS.code)
+            right_slot: get_shortcut_label(EDITOR_SHORTCUTS.code)
           }
         }}
         tooltip_content={"Code"}
@@ -153,10 +153,10 @@ const TextStyleToggleGroup = ({
       </ToggleGroupItem>
       <ToggleGroupItem
         data-testid={"link-toggle"}
-        onClick={(): void => insertLink()}
+        onClick={(): void => insert_link()}
         slot_props={{
           tooltip: {
-            right_slot: getShortcutLabel(EDITOR_SHORTCUTS.link)
+            right_slot: get_shortcut_label(EDITOR_SHORTCUTS.link)
           }
         }}
         tooltip_content={"Link"}
@@ -167,10 +167,10 @@ const TextStyleToggleGroup = ({
       <PaddedDivider />
       <ToggleGroupItem
         data-testid={"subscript-toggle"}
-        onClick={toggleSubscript}
+        onClick={toggle_subscript}
         slot_props={{
           tooltip: {
-            right_slot: getShortcutLabel(EDITOR_SHORTCUTS.subscript)
+            right_slot: get_shortcut_label(EDITOR_SHORTCUTS.subscript)
           }
         }}
         tooltip_content={"Subscript"}
@@ -180,10 +180,10 @@ const TextStyleToggleGroup = ({
       </ToggleGroupItem>
       <ToggleGroupItem
         data-testid={"superscript-toggle"}
-        onClick={toggleSuperscript}
+        onClick={toggle_superscript}
         slot_props={{
           tooltip: {
-            right_slot: getShortcutLabel(EDITOR_SHORTCUTS.superscript)
+            right_slot: get_shortcut_label(EDITOR_SHORTCUTS.superscript)
           }
         }}
         tooltip_content={"Superscript"}
@@ -201,13 +201,13 @@ const TextStyleSelect = ({
   disabled?: boolean;
 }): React.ReactElement => {
   const {
-    formatNumberedList,
-    formatBulletedList,
-    formatParagraph,
-    textStyle,
-    formatQuote,
-    formatHeading
-  } = useTextStyle();
+    format_numbered_list,
+    format_bulleted_list,
+    format_paragraph,
+    text_style,
+    format_quote,
+    format_heading
+  } = use_text_style();
 
   /**
    * Handles select value change
@@ -216,22 +216,22 @@ const TextStyleSelect = ({
   const handleValueChange = (newValue: TextStyleEnum): void => {
     switch (newValue) {
       case TextStyleEnum.BULLETED_LIST:
-        formatBulletedList();
+        format_bulleted_list();
         break;
       case TextStyleEnum.NUMBERED_LIST:
-        formatNumberedList();
+        format_numbered_list();
         break;
       case TextStyleEnum.PARAGRAPH:
-        formatParagraph();
+        format_paragraph();
         break;
       case TextStyleEnum.QUOTE:
-        formatQuote();
+        format_quote();
         break;
       case TextStyleEnum.HEADING:
-        formatHeading("h2");
+        format_heading("h2");
         break;
       case TextStyleEnum.SUBHEADING:
-        formatHeading("h3");
+        format_heading("h3");
         break;
     }
   };
@@ -248,37 +248,37 @@ const TextStyleSelect = ({
           placeholder: "Text style"
         }
       }}
-      value={textStyle}
+      value={text_style}
       value_children={
         <span className={"flex-center"}>
-          {textStyleToIconMap[textStyle]}
+          {TEXT_STYLE_ICON_MAP[text_style]}
           <Spacer />
-          {textStyleToLabelMap[textStyle]}
+          {TEXT_STYLE_LABEL_MAP[text_style]}
         </span>
       }
     >
       <TextStyleOption
-        shortcut={getShortcutLabel(EDITOR_SHORTCUTS.paragraph)}
+        shortcut={get_shortcut_label(EDITOR_SHORTCUTS.paragraph)}
         value={TextStyleEnum.PARAGRAPH}
       />
       <TextStyleOption
-        shortcut={getShortcutLabel(EDITOR_SHORTCUTS.heading)}
+        shortcut={get_shortcut_label(EDITOR_SHORTCUTS.heading)}
         value={TextStyleEnum.HEADING}
       />
       <TextStyleOption
-        shortcut={getShortcutLabel(EDITOR_SHORTCUTS.subheading)}
+        shortcut={get_shortcut_label(EDITOR_SHORTCUTS.subheading)}
         value={TextStyleEnum.SUBHEADING}
       />
       <TextStyleOption
-        shortcut={getShortcutLabel(EDITOR_SHORTCUTS.quote)}
+        shortcut={get_shortcut_label(EDITOR_SHORTCUTS.quote)}
         value={TextStyleEnum.QUOTE}
       />
       <TextStyleOption
-        shortcut={getShortcutLabel(EDITOR_SHORTCUTS.bulletedList)}
+        shortcut={get_shortcut_label(EDITOR_SHORTCUTS.bulleted_list)}
         value={TextStyleEnum.BULLETED_LIST}
       />
       <TextStyleOption
-        shortcut={getShortcutLabel(EDITOR_SHORTCUTS.numberedList)}
+        shortcut={get_shortcut_label(EDITOR_SHORTCUTS.numbered_list)}
         value={TextStyleEnum.NUMBERED_LIST}
       />
     </Select>

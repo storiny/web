@@ -6,7 +6,7 @@ import React from "react";
 import Link from "src/components/link";
 import Typography from "src/components/typography";
 import Persona from "src/entities/persona";
-import TrendingUpIcon from "~/icons/TrendingUp";
+import TrendingUpIcon from "src/icons/trending-up";
 
 import styles from "./popular-story.module.scss";
 import { PopularStoryProps } from "./popular-story.props";

@@ -1,9 +1,9 @@
 import React from "react";
 
 import SymbolPicker from "~/entities/symbol-picker";
-import OmegaIcon from "~/icons/Omega";
+import OmegaIcon from "../../../../../../../../../ui/src/icons/omega";
 
-import { useInsertTextEntity } from "../../../../../../../hooks/use-insert-text-entity";
+import { use_insert_text_entity } from "../../../../../../../hooks/use-insert-text-entity";
 import InsertItem from "../insert-item";
 
 const SymbolItem = ({
@@ -11,9 +11,9 @@ const SymbolItem = ({
 }: {
   disabled?: boolean;
 }): React.ReactElement => {
-  const [insertSymbol] = useInsertTextEntity();
+  const [insert_symbol] = use_insert_text_entity();
   return (
-    <SymbolPicker on_symbol_select={insertSymbol}>
+    <SymbolPicker on_symbol_select={insert_symbol}>
       <InsertItem
         data-testid={"insert-symbol"}
         decorator={<OmegaIcon />}

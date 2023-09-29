@@ -9,7 +9,7 @@ import Skeleton from "../../../../../../../../../packages/ui/src/components/skel
 import Typography from "../../../../../../../../../packages/ui/src/components/typography";
 import TagChip from "../../../../../../../../../packages/ui/src/entities/tag-chip";
 import { use_media_query } from "../../../../../../../../../packages/ui/src/hooks/use-media-query";
-import ChevronIcon from "~/icons/Chevron";
+import ChevronIcon from "../../../../../../../../../packages/ui/src/icons/chevron";
 import { use_get_explore_tag_query } from "~/redux/features";
 import { BREAKPOINTS } from "~/theme/breakpoints";
 
@@ -30,7 +30,7 @@ const TagsPreview = ({
   normalizedCategory
 }: Props): React.ReactElement | null => {
   const is_mobile = use_media_query(BREAKPOINTS.down("mobile"));
-  const { data, isLoading, isFetching, isError } = use_get_explore_tag_query({
+  const { data, isLoading, is_fetching, isError } = use_get_explore_tag_query({
     page: 1,
     category,
     query: debounced_query
@@ -38,7 +38,7 @@ const TagsPreview = ({
   const { items = [] } = data || {};
   const loading = isLoading || loadingProp;
 
-  if (isError || (!items.length && !isFetching)) {
+  if (isError || (!items.length && !is_fetching)) {
     return null;
   }
 

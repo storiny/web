@@ -1,7 +1,7 @@
-import { useRegisterTools } from "../../hooks/use-register-tools";
+import { use_register_tools } from "../../hooks/use-register-tools";
 
 const RegisterTools = (): null => {
-  useRegisterTools();
+  use_register_tools();
   return null;
 };
 

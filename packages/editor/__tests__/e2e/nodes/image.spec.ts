@@ -11,7 +11,7 @@ import {
   focusEditor,
   html,
   initialize,
-  insertImage
+  insert_image
 } from "../../utils";
 
 const ROUTE = "*/**/v1/me/assets?page=1";
@@ -35,7 +35,7 @@ test.describe("image", () => {
     page,
     browserName
   }) => {
-    await insertImage(page);
+    await insert_image(page);
 
     await assertHTML(
       page,
@@ -125,7 +125,7 @@ test.describe("image", () => {
     for (const key of ["Backspace", "Delete"]) {
       await focusEditor(page);
       await clearEditor(page);
-      await insertImage(page);
+      await insert_image(page);
 
       await assertHTML(
         page,

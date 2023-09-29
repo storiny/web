@@ -2,7 +2,7 @@
  * Waits for an element to get appended to the document
  * @param selector Element selector
  */
-export const waitForElement = (
+export const wait_for_element = (
   selector: string
 ): Promise<HTMLElement | Element | null> =>
   new Promise((resolve) => {
@@ -18,6 +18,7 @@ export const waitForElement = (
     });
 
     observer.observe(document.body, {
+      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
       childList: true,
       subtree: true
     });

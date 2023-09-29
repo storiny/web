@@ -1,29 +1,28 @@
-import ModalFooterButton from "@storiny/ui/src/components/Modal/FooterButton";
+import { ModalFooterButton, use_modal } from "~/components/modal";
 import clsx from "clsx";
 import React from "react";
 
 import IconButton from "../../../../ui/src/components/icon-button";
-import { use_modal } from "../../../../ui/src/components/modal";
 import { use_toast } from "../../../../ui/src/components/toast";
-import CheckIcon from "~/icons/Check";
-import ImageIcon from "~/icons/Image";
+import CheckIcon from "../../../../ui/src/icons/check";
+import ImageIcon from "../../../../ui/src/icons/image";
 
-import { useCanvas, useWhiteboard } from "../../hooks";
+import { use_canvas, use_whiteboard } from "../../hooks";
 import ExportImageModal, { ExportHandleRef } from "./export-image-modal";
 import styles from "./topbar.module.scss";
 
 const Confirm = (): React.ReactElement => {
-  const { on_confirm } = useWhiteboard();
-  const canvas = useCanvas();
+  const { on_confirm } = use_whiteboard();
+  const canvas = use_canvas();
   const toast = use_toast();
-  const [loading, setLoading] = React.useState<boolean>(false);
-  const exportRef = React.useRef<ExportHandleRef>(null);
+  const [loading, set_loading] = React.useState<boolean>(false);
+  const export_ref = React.useRef<ExportHandleRef>(null);
   const [element] = use_modal(
     ({ open_modal }) => (
       <IconButton
         aria-label={"Confirm"}
         className={clsx("focus-invert", styles.x, styles["icon-button"])}
-        onClick={(event): void => {
+        onClick={(event: Event): void => {
           if (canvas.current) {
             if (canvas.current.getObjects().length) {
               open_modal();
@@ -38,9 +37,9 @@ const Confirm = (): React.ReactElement => {
       </IconButton>
     ),
     <ExportImageModal
-      isConfirming
-      onExportEnd={(status, data): void => {
-        setLoading(false);
+      is_confirming
+      on_export_end={(status, data): void => {
+        set_loading(false);
 
         if (status === "success") {
           if (on_confirm && data) {
@@ -50,8 +49,8 @@ const Confirm = (): React.ReactElement => {
           toast("Unable to export the sketch", "error");
         }
       }}
-      onExportStart={(): void => setLoading(true)}
-      ref={exportRef}
+      on_export_start={(): void => set_loading(true)}
+      ref={export_ref}
     />,
     {
       footer: (
@@ -60,8 +59,8 @@ const Confirm = (): React.ReactElement => {
           <ModalFooterButton
             loading={loading}
             onClick={(): void => {
-              if (exportRef.current) {
-                exportRef.current.export();
+              if (export_ref.current) {
+                export_ref.current.export();
               }
             }}
           >

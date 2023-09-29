@@ -15,13 +15,13 @@ export interface ImageItem {
   hex: string;
   key: string;
   rating: AssetRating;
-  scaleFactor: number;
+  scale_factor: number;
   width: number;
 }
 
 export interface ImagePayload {
   images: Array<
-    Omit<ImageItem, "scaleFactor"> & Partial<Pick<ImageItem, "scaleFactor">>
+    Omit<ImageItem, "scaleFactor"> & Partial<Pick<ImageItem, "scale_factor">>
   >;
   key?: NodeKey;
   layout?: ImageNodeLayout;
@@ -59,7 +59,7 @@ export class ImageNode extends BlockNode {
     this.__images = [
       ...images.map((image) => ({
         ...image,
-        scaleFactor: image.scaleFactor || 1
+        scale_factor: image.scale_factor || 1
       }))
     ];
   }
@@ -87,12 +87,12 @@ export class ImageNode extends BlockNode {
 
   /**
    * Imports a serialized node
-   * @param serializedNode Serialized node
+   * @param serialized_node Serialized node
    */
-  static override importJSON(serializedNode: SerializedImageNode): ImageNode {
-    return $createImageNode({
-      images: [...serializedNode.images],
-      layout: serializedNode.layout
+  static override importJSON(serialized_node: SerializedImageNode): ImageNode {
+    return $create_image_node({
+      images: [...serialized_node.images],
+      layout: serialized_node.layout
     });
   }
 
@@ -123,18 +123,18 @@ export class ImageNode extends BlockNode {
   /**
    * Returns the layout of the node
    */
-  public getLayout(): ImageNodeLayout {
+  public get_layout(): ImageNodeLayout {
     return this.__layout;
   }
 
   /**
    * Adds a new image item
-   * @param imageItem Image item
+   * @param image_item Image item
    */
-  public addImageItem(imageItem: ImageItem): void {
+  public add_image_item(image_item: ImageItem): void {
     if (this.__images.length < MAX_IMAGE_ITEMS) {
       const writable = this.getWritable();
-      writable.__images.push(imageItem);
+      writable.__images.push(image_item);
 
       // Switch to fill layout
       if (this.__layout === "fit") {
@@ -149,7 +149,7 @@ export class ImageNode extends BlockNode {
    * Removes an image item
    * @param index Index of the item to be removed
    */
-  public removeImageItem(index: number): void {
+  public remove_image_item(index: number): void {
     if (this.__images.length) {
       if (this.__images.length === 1) {
         this.remove(); // Remove the entire node when only a single item is present
@@ -165,14 +165,14 @@ export class ImageNode extends BlockNode {
   /**
    * Returns all the image items
    */
-  public getImageItems(): ImageItem[] {
+  public get_image_items(): ImageItem[] {
     return this.__images;
   }
 
   /**
    * Changes the positions of image items in an anti-clockwise direction
    */
-  public changeItemPositions(): void {
+  public change_item_positions(): void {
     if (this.__images.length > 1) {
       const writable = this.getWritable();
       const popped = writable.__images.pop();
@@ -185,23 +185,23 @@ export class ImageNode extends BlockNode {
 
   /**
    * Sets the layout of the node
-   * @param layout Layout
+   * @param next_layout Layout
    */
-  public setLayout(layout: ImageNodeLayout): void {
+  public set_layout(next_layout: ImageNodeLayout): void {
     const writable = this.getWritable();
-    writable.__layout = layout;
+    writable.__layout = next_layout;
   }
 
   /**
    * Sets the scale factor
-   * @param scaleFactor New scale factor
+   * @param next_scale_factor New scale factor
    */
-  public setScaleFactor(scaleFactor: number): void {
+  public set_scale_factor(next_scale_factor: number): void {
     if (this.__images.length === 1) {
       const writable = this.getWritable();
-      writable.__images[0].scaleFactor = clamp(
+      writable.__images[0].scale_factor = clamp(
         MIN_SCALE_FACTOR,
-        scaleFactor,
+        next_scale_factor,
         MAX_SCALE_FACTOR
       );
     }
@@ -210,13 +210,13 @@ export class ImageNode extends BlockNode {
   /**
    * Sets the alt text
    * @param index Image index
-   * @param altText New alt text
+   * @param alt_text New alt text
    */
-  public setAltText(index: number, altText: string): void {
+  public set_alt_text(index: number, alt_text: string): void {
     const writable = this.getWritable();
 
     if (writable.__images[index]) {
-      writable.__images[index].alt = altText;
+      writable.__images[index].alt = alt_text;
     }
   }
 
@@ -228,7 +228,7 @@ export class ImageNode extends BlockNode {
       <ImageComponent
         images={this.__images}
         layout={this.__layout}
-        nodeKey={this.getKey()}
+        node_key={this.getKey()}
         resizable={this.__layout === "fit"}
       />
     );
@@ -240,7 +240,10 @@ export class ImageNode extends BlockNode {
  * @param images Image items
  * @param layout Node layout
  */
-export const $createImageNode = ({ images, layout }: ImagePayload): ImageNode =>
+export const $create_image_node = ({
+  images,
+  layout
+}: ImagePayload): ImageNode =>
   new ImageNode({
     images,
     layout
@@ -250,6 +253,6 @@ export const $createImageNode = ({ images, layout }: ImagePayload): ImageNode =>
  * Predicate function for determining image nodes
  * @param node Node
  */
-export const $isImageNode = (
+export const $is_image_node = (
   node: LexicalNode | null | undefined
 ): node is ImageNode => node instanceof ImageNode;

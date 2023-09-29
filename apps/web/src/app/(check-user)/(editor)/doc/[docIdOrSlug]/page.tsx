@@ -17,9 +17,9 @@ const Page = async ({
   params: { docIdOrSlug: string };
 }): Promise<React.ReactElement | undefined> => {
   try {
-    const userId = await getUser();
+    const user_id = await getUser();
 
-    if (!userId) {
+    if (!user_id) {
       redirect("/login");
     }
 
@@ -27,7 +27,7 @@ const Page = async ({
       id_or_slug: docIdOrSlug
     });
 
-    if (storyResponse.user?.id !== userId) {
+    if (storyResponse.user?.id !== user_id) {
       notFound();
     }
 
@@ -35,8 +35,8 @@ const Page = async ({
       const doc = await getDocByKey(storyResponse.doc_key);
       return (
         <Editor
-          docId={storyResponse.id}
-          initialDoc={decompressSync(doc)}
+          doc_id={storyResponse.id}
+          initial_doc={decompressSync(doc)}
           role={"editor"}
           status={"deleted"}
           story={
@@ -55,7 +55,7 @@ const Page = async ({
 
     return (
       <Editor
-        docId={storyResponse.id}
+        doc_id={storyResponse.id}
         role={"editor"}
         status={
           typeof storyResponse.published_at !== "undefined"

@@ -13,10 +13,10 @@ export const generateMetadata = async ({
   const { username } = params;
 
   try {
-    const userId = await getUser();
+    const user_id = await getUser();
     const profile = await getProfile({
       username,
-      current_user_id: userId || undefined
+      current_user_id: user_id || undefined
     });
     const description = `Read stories from ${profile.name} on Storiny.${
       profile.bio ? ` ${profile.bio}` : ""

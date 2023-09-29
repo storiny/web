@@ -6,16 +6,16 @@ export interface EditorProps {
   /**
    * ID of the document
    */
-  docId: string;
+  doc_id: string;
   /**
    * Initial document data
    */
-  initialDoc?: Uint8Array;
+  initial_doc?: Uint8Array;
   /**
    * Whether to render a read-only editor
    * @default false
    */
-  readOnly?: boolean;
+  read_only?: boolean;
   /**
    * Role of the user
    */

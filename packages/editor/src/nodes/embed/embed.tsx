@@ -63,12 +63,12 @@ export class EmbedNode extends BlockNode {
 
   /**
    * Imports a serialized node
-   * @param serializedNode Serialized node
+   * @param serialized_node Serialized node
    */
-  static override importJSON(serializedNode: SerializedEmbedNode): EmbedNode {
-    return $createEmbedNode({
-      url: serializedNode.url,
-      layout: serializedNode.layout
+  static override importJSON(serialized_node: SerializedEmbedNode): EmbedNode {
+    return $create_embed_node({
+      url: serialized_node.url,
+      layout: serialized_node.layout
     });
   }
 
@@ -99,7 +99,7 @@ export class EmbedNode extends BlockNode {
   /**
    * Returns the layout of the node
    */
-  public getLayout(): EmbedNodeLayout {
+  public get_layout(): EmbedNodeLayout {
     return this.__layout;
   }
 
@@ -107,7 +107,7 @@ export class EmbedNode extends BlockNode {
    * Sets the layout of the node
    * @param layout Layout
    */
-  public setLayout(layout: EmbedNodeLayout): void {
+  public set_layout(layout: EmbedNodeLayout): void {
     const writable = this.getWritable();
     writable.__layout = layout;
   }
@@ -119,7 +119,7 @@ export class EmbedNode extends BlockNode {
     return (
       <EmbedComponent
         layout={this.__layout}
-        nodeKey={this.getKey()}
+        node_key={this.getKey()}
         url={this.__url}
       />
     );
@@ -131,7 +131,7 @@ export class EmbedNode extends BlockNode {
  * @param url Embed URL
  * @param layout Node layout
  */
-export const $createEmbedNode = ({ url, layout }: EmbedPayload): EmbedNode =>
+export const $create_embed_node = ({ url, layout }: EmbedPayload): EmbedNode =>
   new EmbedNode({
     url,
     layout
@@ -141,6 +141,6 @@ export const $createEmbedNode = ({ url, layout }: EmbedPayload): EmbedNode =>
  * Predicate function for determining embed nodes
  * @param node Node
  */
-export const $isEmbedNode = (
+export const $is_embed_node = (
   node: LexicalNode | null | undefined
 ): node is EmbedNode => node instanceof EmbedNode;

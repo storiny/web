@@ -1,7 +1,7 @@
 import { Page, test } from "@playwright/test";
 
 import { EDITOR_CLASSNAMES } from "../constants";
-import { toggleCode } from "../keyboard-shortcuts";
+import { toggle_code } from "../keyboard-shortcuts";
 import {
   assertHTML,
   assertSelection,
@@ -44,7 +44,7 @@ test.describe("mutations", () => {
   test("can restore the DOM to the editor state", async ({ page }) => {
     await focusEditor(page);
     await page.keyboard.type("hello world ");
-    await toggleCode(page);
+    await toggle_code(page);
     await page.keyboard.type("#000");
 
     await validateContent(page);

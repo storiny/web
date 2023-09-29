@@ -25,12 +25,12 @@ import Option from "../../../../../../../ui/src/components/option";
 import Spacer from "../../../../../../../ui/src/components/spacer";
 import Typography from "../../../../../../../ui/src/components/typography";
 import Gallery from "~/entities/gallery";
-import EditIcon from "~/icons/Edit";
-import PhotoPlusIcon from "~/icons/PhotoPlus";
-import TrashIcon from "~/icons/Trash";
+import EditIcon from "../../../../../../../ui/src/icons/edit";
+import PhotoPlusIcon from "../../../../../../../ui/src/icons/photo-plus";
+import TrashIcon from "../../../../../../../ui/src/icons/trash";
 import { use_lazy_get_tags_query } from "~/redux/features";
 
-import imageStyles from "../common/image.module.scss";
+import image_styles from "../common/image.module.scss";
 
 /**
  * Debounces a function for the provided delay
@@ -51,11 +51,11 @@ const debounce = <T extends (...args: any) => any>(fn: T, delay = 250): T => {
 
 const Splash = (): React.ReactElement => {
   const form = use_form_context();
-  const splashId = form.watch("splash-id");
-  const splashHex = form.watch("splash-hex");
+  const splash_id = form.watch("splash_id");
+  const splash_hex = form.watch("splash_hex");
 
   return (
-    <div className={clsx("flex-col", imageStyles.x, imageStyles.block)}>
+    <div className={clsx("flex-col", image_styles.x, image_styles.block)}>
       <Typography className={"t-bold"} level={"body2"}>
         Splash image
       </Typography>
@@ -69,34 +69,34 @@ const Splash = (): React.ReactElement => {
         .
       </Typography>
       <div
-        className={clsx("flex-center", imageStyles.x, imageStyles.container)}
+        className={clsx("flex-center", image_styles.x, image_styles.container)}
       >
         <AspectRatio
-          className={clsx(imageStyles.x, imageStyles.image)}
+          className={clsx(image_styles.x, image_styles.image)}
           ratio={1.77}
         >
-          {splashId ? (
+          {splash_id ? (
             <React.Fragment>
               <Image
                 alt={""}
-                hex={splashHex}
-                img_key={splashId}
+                hex={splash_hex}
+                img_key={splash_id}
                 size={ImageSize.W_320}
               />
               <div
                 className={clsx(
                   "force-light-mode",
                   "flex-col",
-                  imageStyles.x,
-                  imageStyles.actions
+                  image_styles.x,
+                  image_styles.actions
                 )}
               >
                 <Gallery
                   on_confirm={(asset): void => {
-                    form.setValue("splash-id", asset.key, {
+                    form.setValue("splash_id", asset.key, {
                       shouldDirty: true
                     });
-                    form.setValue("splash-hex", asset.hex, {
+                    form.setValue("splash_hex", asset.hex, {
                       shouldDirty: true
                     });
                   }}
@@ -114,8 +114,8 @@ const Splash = (): React.ReactElement => {
                   aria-label={"Remove splash"}
                   auto_size
                   onClick={(): void => {
-                    form.setValue("splash-id", null, { shouldDirty: true });
-                    form.setValue("splash-hex", null, { shouldDirty: true });
+                    form.setValue("splash_id", null, { shouldDirty: true });
+                    form.setValue("splash_hex", null, { shouldDirty: true });
                   }}
                   title={"Remove splash"}
                 >
@@ -126,10 +126,10 @@ const Splash = (): React.ReactElement => {
           ) : (
             <Gallery
               on_confirm={(asset): void => {
-                form.setValue("splash-id", asset.key, {
+                form.setValue("splash_id", asset.key, {
                   shouldDirty: true
                 });
-                form.setValue("splash-hex", asset.hex, {
+                form.setValue("splash_hex", asset.hex, {
                   shouldDirty: true
                 });
               }}
@@ -140,8 +140,8 @@ const Splash = (): React.ReactElement => {
                   "flex-center",
                   "full-h",
                   "full-w",
-                  imageStyles.x,
-                  imageStyles.placeholder
+                  image_styles.x,
+                  image_styles.placeholder
                 )}
                 role={"button"}
                 title={"Add a splash image"}
@@ -159,15 +159,17 @@ const Splash = (): React.ReactElement => {
 // Tags
 
 const Tags = (): React.ReactElement => {
-  const [getTags, { isError }] = use_lazy_get_tags_query();
+  const [get_tags, { isError: is_error }] = use_lazy_get_tags_query();
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const loadOptionsDebounced = React.useCallback(
+  const load_options_debounced = React.useCallback(
     debounce(
       (
-        inputValue: Parameters<NonNullable<MultiSelectProps["loadOptions"]>>[0],
+        input_value: Parameters<
+          NonNullable<MultiSelectProps["loadOptions"]>
+        >[0],
         callback: Parameters<NonNullable<MultiSelectProps["loadOptions"]>>[1]
       ) => {
-        getTags({ query: inputValue || "" }, true).then(({ data = [] }) =>
+        get_tags({ query: input_value || "" }, true).then(({ data = [] }) =>
           callback(data)
         );
       },
@@ -179,7 +181,7 @@ const Tags = (): React.ReactElement => {
   return (
     <FormMultiSelect
       auto_size
-      color={isError ? "ruby" : "inverted"}
+      color={is_error ? "ruby" : "inverted"}
       helper_text={
         <>
           Using tags can make it easier to focus your story on particular topics
@@ -188,7 +190,7 @@ const Tags = (): React.ReactElement => {
         </>
       }
       label={"Tags"}
-      loadOptions={loadOptionsDebounced}
+      loadOptions={load_options_debounced}
       max={MAX_STORY_TAGS}
       menuPlacement={"top"}
       name={"tags"}
@@ -214,8 +216,8 @@ const GeneralTab = (): React.ReactElement => (
         </>
       }
       label={"Title"}
-      maxLength={STORY_PROPS.title.maxLength}
-      minLength={STORY_PROPS.title.minLength}
+      maxLength={STORY_PROPS.title.max_length}
+      minLength={STORY_PROPS.title.min_length}
       name={"title"}
       placeholder={"A concise title"}
       required
@@ -230,7 +232,7 @@ const GeneralTab = (): React.ReactElement => (
         </>
       }
       label={"Description"}
-      maxLength={STORY_PROPS.description.maxLength}
+      maxLength={STORY_PROPS.description.max_length}
       name={"description"}
       placeholder={"A brief description of what your story is all about"}
     />

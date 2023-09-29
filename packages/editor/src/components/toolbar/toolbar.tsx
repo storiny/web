@@ -1,8 +1,8 @@
 "use client";
 
-import { animated, useTransition } from "@react-spring/web";
+import { animated, useTransition as use_transition } from "@react-spring/web";
 import { clsx } from "clsx";
-import { useAtomValue } from "jotai";
+import { useAtomValue as use_atom_value } from "jotai";
 import dynamic from "next/dynamic";
 import React from "react";
 
@@ -11,14 +11,14 @@ import Spinner from "../../../../ui/src/components/spinner";
 import { use_media_query } from "../../../../ui/src/hooks/use-media-query";
 import { BREAKPOINTS } from "~/theme/breakpoints";
 
-import { docStatusAtom, sidebarsCollapsedAtom } from "../../atoms";
-import { springConfig } from "../../constants";
+import { doc_status_atom, sidebars_collapsed_atom } from "../../atoms";
+import { SPRING_CONFIG } from "../../constants";
 import styles from "./toolbar.module.scss";
 
 const SuspendedEditorToolbarContent = dynamic(() => import("./content"), {
-  loading: ({ isLoading, retry, error }) => (
+  loading: ({ isLoading: is_loading, retry, error }) => (
     <div className={"flex-center"} style={{ height: "40px" }}>
-      {error && !isLoading ? (
+      {error && !is_loading ? (
         <Button color={"ruby"} onClick={retry} size={"sm"} variant={"hollow"}>
           Retry
         </Button>
@@ -31,19 +31,19 @@ const SuspendedEditorToolbarContent = dynamic(() => import("./content"), {
 
 const EditorToolbar = (): React.ReactElement | null => {
   const is_smaller_than_desktop = use_media_query(BREAKPOINTS.down("desktop"));
-  const sidebarsCollapsed = use_atom_value(sidebarsCollapsedAtom);
-  const docStatus = use_atom_value(docStatusAtom);
-  const transitions = useTransition(
-    sidebarsCollapsed || is_smaller_than_desktop,
+  const sidebars_collapsed = use_atom_value(sidebars_collapsed_atom);
+  const doc_status = use_atom_value(doc_status_atom);
+  const transitions = use_transition(
+    sidebars_collapsed || is_smaller_than_desktop,
     {
       from: { opacity: 1, transform: "translate3d(0,100%,0)" },
       enter: { opacity: 1, transform: "translate3d(0,0%,0)" },
       leave: { opacity: 1, transform: "translate3d(0,100%,0)" },
-      config: springConfig
+      config: SPRING_CONFIG
     }
   );
 
-  if (["disconnected", "publishing"].includes(docStatus)) {
+  if (["disconnected", "publishing"].includes(doc_status)) {
     return null;
   }
 

@@ -1,6 +1,6 @@
 import React from "react";
 
-import EmbedIcon from "~/icons/Embed";
+import EmbedIcon from "../../../../../../../../../ui/src/icons/embed";
 
 import EmbedModal from "../../../../../../embed-modal";
 import InsertItem from "../insert-item";

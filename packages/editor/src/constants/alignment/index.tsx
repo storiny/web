@@ -1,9 +1,9 @@
 import React from "react";
 
-import AlignCenterIcon from "~/icons/AlignCenter";
-import AlignJustifyIcon from "~/icons/AlignJustify";
-import AlignLeftIcon from "~/icons/AlignLeft";
-import AlignRightIcon from "~/icons/AlignRight";
+import AlignCenterIcon from "../../../../ui/src/icons/align-center";
+import AlignJustifyIcon from "../../../../ui/src/icons/align-justify";
+import AlignLeftIcon from "../../../../ui/src/icons/align-left";
+import AlignRightIcon from "../../../../ui/src/icons/align-right";
 
 export enum Alignment {
   CENTER /* */ = "center",
@@ -12,7 +12,7 @@ export enum Alignment {
   RIGHT /*  */ = "right"
 }
 
-export const alignmentToIconMap: Record<Alignment, React.ReactNode> = {
+export const ALIGNMENT_ICON_MAP: Record<Alignment, React.ReactNode> = {
   [Alignment.LEFT /*   */]: <AlignLeftIcon />,
   [Alignment.CENTER /* */]: <AlignCenterIcon />,
   [Alignment.RIGHT /*  */]: <AlignRightIcon />,

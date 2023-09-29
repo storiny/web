@@ -1,76 +1,86 @@
 import {
-  $isDecoratorNode,
-  $isElementNode,
-  $isLineBreakNode,
-  $isTextNode,
+  $isDecoratorNode as $is_decorator_node,
+  $isElementNode as $is_element_node,
+  $isLineBreakNode as $is_line_break_node,
+  $isTextNode as $is_text_node,
   LexicalNode
 } from "lexical";
 import { Map as YMap, XmlElement, XmlText } from "yjs";
 
 import { Binding } from "../../collaboration/bindings";
 import {
-  $createCollabDecoratorNode,
+  $create_collab_decorator_node,
   CollabDecoratorNode
 } from "../../collaboration/nodes/decorator";
 import {
-  $createCollabElementNode,
+  $create_collab_element_node,
   CollabElementNode
 } from "../../collaboration/nodes/element";
 import {
-  $createCollabLineBreakNode,
+  $create_collab_line_break_node,
   CollabLineBreakNode
 } from "../../collaboration/nodes/line-break";
 import {
-  $createCollabTextNode,
+  $create_collab_text_node,
   CollabTextNode
 } from "../../collaboration/nodes/text";
 
 /**
  * Creates a collab node from a lexical node
  * @param binding Binding
- * @param lexicalNode Lexical node
+ * @param lexical_node Lexical node
  * @param parent Parent collab node
  */
-export const $createCollabNodeFromLexicalNode = (
+export const $create_collab_node_from_lexical_node = (
   binding: Binding,
-  lexicalNode: LexicalNode,
+  lexical_node: LexicalNode,
   parent: CollabElementNode
 ):
   | CollabElementNode
   | CollabTextNode
   | CollabLineBreakNode
   | CollabDecoratorNode => {
-  const nodeType = lexicalNode.__type;
-  let collabNode;
+  const nodeType = lexical_node.__type;
+  let collab_node;
 
-  if ($isElementNode(lexicalNode)) {
-    const xmlText = new XmlText();
-    collabNode = $createCollabElementNode(xmlText, parent, nodeType);
-    collabNode.syncPropertiesFromLexical(binding, lexicalNode, null);
-    collabNode.syncChildrenFromLexical(binding, lexicalNode, null, null, null);
-  } else if ($isTextNode(lexicalNode)) {
+  if ($is_element_node(lexical_node)) {
+    const xml_text = new XmlText();
+    collab_node = $create_collab_element_node(xml_text, parent, nodeType);
+    collab_node.sync_properties_from_lexical(binding, lexical_node, null);
+    collab_node.sync_children_from_lexical(
+      binding,
+      lexical_node,
+      null,
+      null,
+      null
+    );
+  } else if ($is_text_node(lexical_node)) {
     // TODO: Create a token text node for `token`, `segmented` nodes
     const map = new YMap();
 
-    collabNode = $createCollabTextNode(
+    collab_node = $create_collab_text_node(
       map,
-      lexicalNode.__text,
+      lexical_node.__text,
       parent,
       nodeType
     );
-    collabNode.syncPropertiesAndTextFromLexical(binding, lexicalNode, null);
-  } else if ($isLineBreakNode(lexicalNode)) {
+    collab_node.sync_properties_and_text_from_lexical(
+      binding,
+      lexical_node,
+      null
+    );
+  } else if ($is_line_break_node(lexical_node)) {
     const map = new YMap();
     map.set("__type", "linebreak");
-    collabNode = $createCollabLineBreakNode(map, parent);
-  } else if ($isDecoratorNode(lexicalNode)) {
-    const xmlElem = new XmlElement(lexicalNode.getType());
-    collabNode = $createCollabDecoratorNode(xmlElem, parent, nodeType);
-    collabNode.syncPropertiesFromLexical(binding, lexicalNode, null);
+    collab_node = $create_collab_line_break_node(map, parent);
+  } else if ($is_decorator_node(lexical_node)) {
+    const xml_element = new XmlElement(lexical_node.getType());
+    collab_node = $create_collab_decorator_node(xml_element, parent, nodeType);
+    collab_node.sync_properties_from_lexical(binding, lexical_node, null);
   } else {
     throw new Error("Expected text, element, decorator, or a linebreak node");
   }
 
-  collabNode._key = lexicalNode.__key;
-  return collabNode;
+  collab_node._key = lexical_node.__key;
+  return collab_node;
 };

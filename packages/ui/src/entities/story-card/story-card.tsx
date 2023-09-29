@@ -8,11 +8,11 @@ import IconButton from "src/components/icon-button";
 import Image from "src/components/image";
 import Link from "src/components/link";
 import Typography from "src/components/typography";
-import CommentIcon from "~/icons/Comment";
-import ExternalLinkIcon from "~/icons/ExternalLink";
-import HeartIcon from "~/icons/Heart";
-import ImageIcon from "~/icons/Image";
-import ReadsIcon from "~/icons/Reads";
+import CommentIcon from "src/icons/comment";
+import ExternalLinkIcon from "src/icons/external-link";
+import HeartIcon from "src/icons/heart";
+import ImageIcon from "src/icons/image";
+import ReadsIcon from "src/icons/reads";
 import { abbreviate_number } from "src/utils/abbreviate-number";
 
 import styles from "./story-card.module.scss";

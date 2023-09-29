@@ -1,26 +1,26 @@
-import { $isElementNode, LexicalNode } from "lexical";
+import { $isElementNode as $is_element_node, LexicalNode } from "lexical";
 
 /**
  * Returns the children of a node by recursively collecting the children of all the child nodes
  * @param node Start node
  */
-export const $getChildrenRecursively = (node: LexicalNode): LexicalNode[] => {
+export const $get_children_recursively = (node: LexicalNode): LexicalNode[] => {
   const nodes: LexicalNode[] = [];
   const stack = [node];
 
   while (stack.length > 0) {
-    const currentNode = stack.pop();
+    const current_node = stack.pop();
 
-    if (currentNode === undefined) {
+    if (current_node === undefined) {
       throw new Error(`stack.length > 0; can't be undefined`);
     }
 
-    if ($isElementNode(currentNode)) {
-      stack.unshift(...currentNode.getChildren());
+    if ($is_element_node(current_node)) {
+      stack.unshift(...current_node.getChildren());
     }
 
-    if (currentNode !== node) {
-      nodes.push(currentNode);
+    if (current_node !== node) {
+      nodes.push(current_node);
     }
   }
 

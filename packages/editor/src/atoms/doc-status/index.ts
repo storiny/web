@@ -10,4 +10,4 @@ export type DocStatus =
   | "reconnecting"
   | "publishing";
 
-export const docStatusAtom = atom<DocStatus>("connecting");
+export const doc_status_atom = atom<DocStatus>("connecting");

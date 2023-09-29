@@ -72,7 +72,6 @@ const LICENSE_DESCRIPTION_MAP: Record<StoryLicense, React.ReactNode> = {
 const LicenseTab = (): React.ReactElement => {
   const form = use_form_context();
   const license = form.watch("license") as StoryLicense;
-
   return (
     <React.Fragment>
       <Typography className={"t-minor"} level={"body2"}>

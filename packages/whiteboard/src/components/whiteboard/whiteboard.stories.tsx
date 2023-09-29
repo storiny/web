@@ -5,7 +5,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import Whiteboard from "./whiteboard";
 
 const meta: Meta<typeof Whiteboard> = {
-  title: "packages/Whiteboard",
+  title: "packages/whiteboard",
   component: Whiteboard,
   parameters: {
     layout: "fullscreen"
