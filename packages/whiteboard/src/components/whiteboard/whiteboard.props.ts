@@ -9,13 +9,13 @@ export interface WhiteboardCoreProps {
   /**
    * Cancel callback
    */
-  onCancel?: () => void;
+  on_cancel?: () => void;
   /**
    * Confirm callback, invoked when the user has finished sketching
    * @param file Output file blob
    * @param alt Alt text for the sketch
    */
-  onConfirm?: (file: File, alt: string) => void;
+  on_confirm?: (file: File, alt: string) => void;
   /**
    * Mount callback
    */

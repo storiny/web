@@ -1,6 +1,6 @@
 import React from "react";
 
-import CustomState from "~/entities/CustomState";
+import CustomState from "../../../../../../../packages/ui/src/entities/custom-state";
 import BookmarksIcon from "~/icons/Bookmarks";
 
 interface BookmarksEmptyStateProps {
@@ -11,7 +11,7 @@ const BookmarksEmptyState = ({
   query
 }: BookmarksEmptyStateProps): React.ReactElement => (
   <CustomState
-    autoSize
+    auto_size
     description={
       query
         ? "Your search criteria did not match anything, make sure you've spelled it correctly or try again by being more specific."

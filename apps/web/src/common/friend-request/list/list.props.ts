@@ -20,5 +20,5 @@ export interface VirtualizedFriendRequestListProps
   /**
    * A callback function to fetch more friend requests.
    */
-  loadMore: () => void;
+  load_more: () => void;
 }

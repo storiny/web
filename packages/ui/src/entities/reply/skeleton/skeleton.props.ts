@@ -2,7 +2,7 @@ export interface ReplySkeletonProps {
   /**
    * If `true`, renders with static properties
    */
-  isStatic?: boolean;
+  is_static?: boolean;
   /**
    * Whether the skeleton is nested under a comment.
    */

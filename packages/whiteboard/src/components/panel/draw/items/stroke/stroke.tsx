@@ -2,16 +2,16 @@ import { clsx } from "clsx";
 import { BaseFabricObject } from "fabric";
 import React from "react";
 
-import IconButton from "~/components/IconButton";
-import Input from "~/components/Input";
-import Option from "~/components/Option";
-import Select from "~/components/Select";
-import Tooltip from "~/components/Tooltip";
+import IconButton from "../../../../../../../ui/src/components/icon-button";
+import Input from "../../../../../../../ui/src/components/input";
+import Option from "../../../../../../../ui/src/components/option";
+import Select from "../../../../../../../ui/src/components/select";
+import Tooltip from "../../../../../../../ui/src/components/tooltip";
 import ColorPicker, {
-  hexToRgb,
-  strToColor,
+  hex_to_rgb,
+  str_to_color,
   TColor
-} from "~/entities/ColorPicker";
+} from "../../../../../../../ui/src/entities/color-picker";
 import ArrowheadArrowIcon from "~/icons/ArrowheadArrow";
 import ArrowheadArrowLongIcon from "~/icons/ArrowheadArrowLong";
 import ArrowheadBarIcon from "~/icons/ArrowheadBar";
@@ -37,7 +37,7 @@ import {
 import { useActiveObject } from "../../../../../hooks";
 import { isArrowObject, modifyObject } from "../../../../../utils";
 import DrawItem, { DrawItemRow } from "../../item";
-import commonStyles from "../common.module.scss";
+import common_styles from "../common.module.scss";
 import styles from "./stroke.module.scss";
 
 const DEFAULT_LAYER_STROKE = "rgba(0,0,0,0)";
@@ -71,7 +71,7 @@ const StrokeControl = ({
   activeObject: BaseFabricObject;
 }): React.ReactElement => {
   const [stroke, setStroke] = React.useState<TColor>(
-    strToColor((activeObject.stroke as string) || DEFAULT_LAYER_STROKE)!
+    str_to_color((activeObject.stroke as string) || DEFAULT_LAYER_STROKE)!
   );
   const [value, setValue] = React.useState(`#${stroke.hex}`);
 
@@ -97,7 +97,7 @@ const StrokeControl = ({
 
   React.useEffect(() => {
     setStroke(
-      strToColor((activeObject?.stroke as string) || DEFAULT_LAYER_STROKE)!
+      str_to_color((activeObject?.stroke as string) || DEFAULT_LAYER_STROKE)!
     );
   }, [activeObject?.stroke]);
 
@@ -115,7 +115,7 @@ const StrokeControl = ({
               className={clsx(
                 "focusable",
                 "focus-invert",
-                commonStyles.indicator
+                common_styles.indicator
               )}
               style={
                 {
@@ -129,7 +129,7 @@ const StrokeControl = ({
         monospaced
         onChange={(event): void => {
           setValue(event.target.value);
-          const newColor = strToColor(event.target.value);
+          const newColor = str_to_color(event.target.value);
 
           if (newColor) {
             changeStroke(newColor);
@@ -152,7 +152,7 @@ const StrokeControl = ({
         monospaced
         onChange={(event): void => {
           const a = Number.parseInt(event.target.value) || 0;
-          const { r, g, b } = hexToRgb(stroke.hex);
+          const { r, g, b } = hex_to_rgb(stroke.hex);
 
           changeStroke({
             ...stroke,
@@ -357,7 +357,7 @@ const ArrowheadControl = ({
           }
         }}
         value={startArrowhead}
-        valueChildren={
+        value_children={
           <span className={clsx("flex-center", styles["arrowhead-value"])}>
             {getArrowheadIcon(startArrowhead, "start")}
           </span>
@@ -408,7 +408,7 @@ const ArrowheadControl = ({
           }
         }}
         value={endArrowhead}
-        valueChildren={
+        value_children={
           <span className={clsx("flex-center", styles["arrowhead-value"])}>
             {getArrowheadIcon(endArrowhead, "end")}
           </span>

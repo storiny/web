@@ -2,11 +2,11 @@ import { ImageSize } from "@storiny/shared";
 import { clsx } from "clsx";
 import React from "react";
 
-import AspectRatio from "~/components/AspectRatio";
-import { useConfirmation } from "~/components/Confirmation";
-import IconButton from "~/components/IconButton";
-import Image from "~/components/Image";
-import { useToast } from "~/components/Toast";
+import AspectRatio from "../../../../../../../../../../../../packages/ui/src/components/aspect-ratio";
+import { use_confirmation } from "../../../../../../../../../../../../packages/ui/src/components/confirmation";
+import IconButton from "../../../../../../../../../../../../packages/ui/src/components/icon-button";
+import Image from "../../../../../../../../../../../../packages/ui/src/components/image";
+import { use_toast } from "../../../../../../../../../../../../packages/ui/src/components/toast";
 import Gallery from "~/entities/gallery";
 import PencilIcon from "~/icons/Pencil";
 import PhotoPlusIcon from "~/icons/PhotoPlus";
@@ -17,24 +17,24 @@ import {
   use_banner_settings_mutation
 } from "~/redux/features";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
-import { breakpoints } from "~/theme/breakpoints";
-import { getCdnUrl } from "~/utils/getCdnUrl";
+import { BREAKPOINTS } from "~/theme/breakpoints";
+import { get_cdn_url } from "../../../../../../../../../../../../packages/ui/src/utils/get-cdn-url";
 
 import styles from "./banner-settings.module.scss";
 
 const BannerSettings = (): React.ReactElement => {
   const dispatch = use_app_dispatch();
   const user = use_app_selector(select_user)!;
-  const toast = useToast();
+  const toast = use_toast();
   const [bannerId, setBannerId] = React.useState<string | null>(user.banner_id);
   const [mutateBannerSettings, { isLoading }] = use_banner_settings_mutation();
-  const [element] = useConfirmation(
-    ({ openConfirmation }) => (
+  const [element] = use_confirmation(
+    ({ open_confirmation }) => (
       <IconButton
         aria-label={"Remove banner"}
-        autoSize
+        auto_size
         disabled={!bannerId || isLoading}
-        onClick={openConfirmation}
+        onClick={open_confirmation}
         title={"Remove banner"}
       >
         <TrashIcon />
@@ -43,7 +43,7 @@ const BannerSettings = (): React.ReactElement => {
     {
       color: "ruby",
       decorator: <TrashIcon />,
-      onConfirm: (): void => {
+      on_confirm: (): void => {
         setBannerId(null);
         dispatchBannerSettings();
       },
@@ -86,20 +86,20 @@ const BannerSettings = (): React.ReactElement => {
           alt={""}
           className={clsx(styles.x, styles.banner)}
           hex={user.banner_hex}
-          imgId={user.banner_id}
+          img_key={user.banner_id}
           slot_props={{
             image: {
               sizes: [
-                `${breakpoints.up("desktop")} 680px`,
-                `${breakpoints.up("mobile")} calc(100vw - 72px)`,
+                `${BREAKPOINTS.up("desktop")} 680px`,
+                `${BREAKPOINTS.up("mobile")} calc(100vw - 72px)`,
                 "100vw"
               ].join(","),
               srcSet: [
-                `${getCdnUrl(user.banner_id, ImageSize.W_1440)} 1440w`,
-                `${getCdnUrl(user.banner_id, ImageSize.W_1024)} 1024w`,
-                `${getCdnUrl(user.banner_id, ImageSize.W_860)} 860w`,
-                `${getCdnUrl(user.banner_id, ImageSize.W_640)} 640w`,
-                `${getCdnUrl(user.banner_id, ImageSize.W_320)} 320w`
+                `${get_cdn_url(user.banner_id, ImageSize.W_1440)} 1440w`,
+                `${get_cdn_url(user.banner_id, ImageSize.W_1024)} 1024w`,
+                `${get_cdn_url(user.banner_id, ImageSize.W_860)} 860w`,
+                `${get_cdn_url(user.banner_id, ImageSize.W_640)} 640w`,
+                `${get_cdn_url(user.banner_id, ImageSize.W_320)} 320w`
               ].join(",")
             }
           }}
@@ -119,14 +119,14 @@ const BannerSettings = (): React.ReactElement => {
       )}
       <div className={clsx("flex-center", styles.x, styles["banner-actions"])}>
         <Gallery
-          onConfirm={(asset): void => {
+          on_confirm={(asset): void => {
             setBannerId(asset.key);
             dispatchBannerSettings();
           }}
         >
           <IconButton
             aria-label={"Edit banner"}
-            autoSize
+            auto_size
             disabled={isLoading}
             title={"Edit banner"}
           >

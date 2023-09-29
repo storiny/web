@@ -1,8 +1,8 @@
 import { clsx } from "clsx";
 import React from "react";
 
-import Link from "~/components/Link";
-import Typography from "~/components/Typography";
+import Link from "../../../../../../../../../../../../packages/ui/src/components/link";
+import Typography from "../../../../../../../../../../../../packages/ui/src/components/typography";
 
 const ModerationBlocksRightSidebarContent = (): React.ReactElement => (
   <React.Fragment>

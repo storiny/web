@@ -1,6 +1,6 @@
 import React from "react";
 
-import { PopoverProps } from "~/components/Popover";
+import { PopoverProps } from "src/components/popover";
 
 export interface SymbolPickerProps {
   /**
@@ -10,9 +10,9 @@ export interface SymbolPickerProps {
   /**
    * Callback function called when selecting a symbol
    */
-  onSymbolSelect?: (symbol: string) => void;
+  on_symbol_select?: (symbol: string) => void;
   /**
    * Props passed to the Popover component
    */
-  popoverProps?: Partial<PopoverProps>;
+  popover_props?: Partial<PopoverProps>;
 }

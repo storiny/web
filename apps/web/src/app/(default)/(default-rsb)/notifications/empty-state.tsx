@@ -1,6 +1,6 @@
 import React from "react";
 
-import CustomState from "~/entities/CustomState";
+import CustomState from "../../../../../../../packages/ui/src/entities/custom-state";
 import NotificationIcon from "~/icons/Notification";
 
 import { NotificationsTabValue } from "./client";
@@ -13,7 +13,7 @@ const NotificationsEmptyState = ({
   tab
 }: NotificationsEmptyStateProps): React.ReactElement => (
   <CustomState
-    autoSize
+    auto_size
     description={
       tab === "following"
         ? "Stay up-to-date with the latest ideas from writers you follow here."

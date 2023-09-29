@@ -2,16 +2,16 @@ import { clsx } from "clsx";
 import { Canvas } from "fabric";
 import React from "react";
 
-import Divider from "~/components/Divider";
-import Input from "~/components/Input";
-import Spacer from "~/components/Spacer";
-import ToggleGroup from "~/components/ToggleGroup";
-import ToggleGroupItem from "~/components/ToggleGroupItem";
+import Divider from "../../../../../ui/src/components/divider";
+import Input from "../../../../../ui/src/components/input";
+import Spacer from "../../../../../ui/src/components/spacer";
+import ToggleGroup from "../../../../../ui/src/components/toggle-group";
+import ToggleGroupItem from "../../../../../ui/src/components/toggle-group-item";
 import ColorPicker, {
-  hexToRgb,
-  strToColor,
+  hex_to_rgb,
+  str_to_color,
   TColor
-} from "~/entities/ColorPicker";
+} from "../../../../../ui/src/entities/color-picker";
 
 import {
   DEFAULT_CANVAS_FILL,
@@ -21,7 +21,7 @@ import {
 } from "../../../constants";
 import { useCanvas } from "../../../hooks";
 import DrawItem, { DrawItemRow } from "../draw/item";
-import commonStyles from "../draw/items/common.module.scss";
+import common_styles from "../draw/items/common.module.scss";
 import styles from "./canvas.module.scss";
 
 /**
@@ -29,8 +29,8 @@ import styles from "./canvas.module.scss";
  * @param hex Hex string
  * @param a Alpha value
  */
-const hexToRgbaString = (hex: string, a: number): string => {
-  const { r, g, b } = hexToRgb(hex);
+const hex_to_rgbaString = (hex: string, a: number): string => {
+  const { r, g, b } = hex_to_rgb(hex);
   return `rgba(${r},${g},${b},${a / 100})`;
 };
 
@@ -38,7 +38,7 @@ const hexToRgbaString = (hex: string, a: number): string => {
 
 const FillControl = ({ canvas }: { canvas: Canvas }): React.ReactElement => {
   const [fill, setFill] = React.useState<TColor>(
-    strToColor((canvas.backgroundColor as string) || DEFAULT_CANVAS_FILL)!
+    str_to_color((canvas.backgroundColor as string) || DEFAULT_CANVAS_FILL)!
   );
   const [value, setValue] = React.useState(`#${fill.hex}`);
 
@@ -60,7 +60,7 @@ const FillControl = ({ canvas }: { canvas: Canvas }): React.ReactElement => {
 
   React.useEffect(() => {
     setFill(
-      strToColor((canvas.backgroundColor as string) || DEFAULT_CANVAS_FILL)!
+      str_to_color((canvas.backgroundColor as string) || DEFAULT_CANVAS_FILL)!
     );
   }, [canvas.backgroundColor]);
 
@@ -79,7 +79,7 @@ const FillControl = ({ canvas }: { canvas: Canvas }): React.ReactElement => {
                 className={clsx(
                   "focusable",
                   "focus-invert",
-                  commonStyles.indicator
+                  common_styles.indicator
                 )}
                 style={
                   {
@@ -93,7 +93,7 @@ const FillControl = ({ canvas }: { canvas: Canvas }): React.ReactElement => {
           monospaced
           onChange={(event): void => {
             setValue(event.target.value);
-            const newColor = strToColor(event.target.value);
+            const newColor = str_to_color(event.target.value);
 
             if (newColor) {
               changeFill(newColor);
@@ -118,7 +118,7 @@ const FillControl = ({ canvas }: { canvas: Canvas }): React.ReactElement => {
           monospaced
           onChange={(event): void => {
             const a = Number.parseInt(event.target.value) || 0;
-            const { r, g, b } = hexToRgb(fill.hex);
+            const { r, g, b } = hex_to_rgb(fill.hex);
 
             changeFill({
               ...fill,
@@ -146,15 +146,15 @@ const FillControl = ({ canvas }: { canvas: Canvas }): React.ReactElement => {
           onValueChange={(newValue: string): void => {
             const newColor = SWATCH[newValue as keyof typeof SWATCH];
             if (newColor) {
-              changeFill(strToColor(newColor || DEFAULT_CANVAS_FILL)!);
+              changeFill(str_to_color(newColor || DEFAULT_CANVAS_FILL)!);
             }
           }}
           size={"xs"}
           style={{ gap: "8px" }}
           value={
-            hexToRgbaString(fill.hex, fill.a) === SWATCH.dark
+            hex_to_rgbaString(fill.hex, fill.a) === SWATCH.dark
               ? "dark"
-              : hexToRgbaString(fill.hex, fill.a) === SWATCH.light
+              : hex_to_rgbaString(fill.hex, fill.a) === SWATCH.light
               ? "light"
               : fill.a === 0
               ? "transparent"
@@ -168,7 +168,7 @@ const FillControl = ({ canvas }: { canvas: Canvas }): React.ReactElement => {
               container: { className: "f-grow" }
             }}
             style={{ "--color": SWATCH.dark } as React.CSSProperties}
-            tooltipContent={"Dark"}
+            tooltip_content={"Dark"}
             value={"dark"}
           />
           <ToggleGroupItem
@@ -178,7 +178,7 @@ const FillControl = ({ canvas }: { canvas: Canvas }): React.ReactElement => {
               container: { className: "f-grow" }
             }}
             style={{ "--color": SWATCH.light } as React.CSSProperties}
-            tooltipContent={"Light"}
+            tooltip_content={"Light"}
             value={"light"}
           />
           <ToggleGroupItem
@@ -188,7 +188,7 @@ const FillControl = ({ canvas }: { canvas: Canvas }): React.ReactElement => {
               container: { className: "f-grow" }
             }}
             style={{ "--color": SWATCH.transparent } as React.CSSProperties}
-            tooltipContent={"Transparent"}
+            tooltip_content={"Transparent"}
             value={"transparent"}
           />
         </ToggleGroup>

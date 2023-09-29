@@ -4,8 +4,8 @@ import clsx from "clsx";
 import React from "react";
 import Logo from "src/brand/logo";
 
-import Typography from "~/components/Typography";
-import { forwardRef } from "~/utils/forwardRef";
+import Typography from "src/components/typography";
+import { forward_ref } from "src/utils/forward-ref";
 
 import styles from "./wordmark.module.scss";
 import { WordmarkProps, WordmarkSize } from "./wordmark.props";
@@ -16,7 +16,7 @@ const LOGO_SIZE_MAP: Record<WordmarkSize, number> = {
   lg: 56
 };
 
-const Wordmark = forwardRef<WordmarkProps, "span">((props, ref) => {
+const Wordmark = forward_ref<WordmarkProps, "span">((props, ref) => {
   const {
     as: Component = "span",
     size = "md",

@@ -30,7 +30,7 @@ export const Default: Story = {
             <Story />
           </DefaultRightSidebarLayout>
         </DefaultLayout>,
-        { ignorePrimitiveProviders: true, loggedIn: true }
+        { ignore_primitive_providers: true, logged_in: true }
       )
   ]
 };

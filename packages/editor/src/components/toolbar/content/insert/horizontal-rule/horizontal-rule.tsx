@@ -1,6 +1,6 @@
 import React from "react";
 
-import MenuItem from "~/components/MenuItem";
+import MenuItem from "../../../../../../../ui/src/components/menu-item";
 import HorizontalRuleIcon from "~/icons/HorizontalRule";
 
 import { useInsertHorizontalRule } from "../../../../../hooks/use-insert-horizontal-rule";

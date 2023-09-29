@@ -1,9 +1,9 @@
 import { clsx } from "clsx";
 import React from "react";
 
-import BottomNavigation from "~/layout/BottomNavigation";
-import Footer from "~/layout/Footer";
-import Navbar from "~/layout/Navbar";
+import BottomNavigation from "../../../../../packages/ui/src/layout/bottom-navigation";
+import Footer from "../../../../../packages/ui/src/layout/footer";
+import Navbar from "../../../../../packages/ui/src/layout/navbar";
 
 const BrandingLayout = ({
   children

@@ -1,21 +1,21 @@
 /**
- * Media above or equal to the breakpoint
- * @param breakpoint
+ * Selects media above or equal to the provided breakpoint
+ * @param breakpoint Breakpoint
  */
 const up = (breakpoint: Breakpoint): string =>
-  `(min-width: ${breakpoints[breakpoint] + 1}px)`;
+  `(min-width: ${BREAKPOINTS[breakpoint] + 1}px)`;
 
 /**
- * Media below the breakpoint
- * @param breakpoint
+ * Selects media below the provided breakpoint
+ * @param breakpoint Breakpoint
  */
 const down = (breakpoint: Breakpoint): string =>
-  `(max-width: ${breakpoints[breakpoint]}px)`;
+  `(max-width: ${BREAKPOINTS[breakpoint]}px)`;
 
-export const breakpoints = {
-  mobile: 648,
-  tablet: 1008,
-  desktop: 1280,
+export const BREAKPOINTS = {
+  mobile /* */: 648,
+  tablet /* */: 1008,
+  desktop /**/: 1280,
   up,
   down
 };

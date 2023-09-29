@@ -2,8 +2,8 @@
 
 import React from "react";
 
-import { createSvgIcon } from "~/utils/createSvgIcon";
+import { create_svg_icon } from "src/utils/create-svg-icon";
 
 const AlignLeftIcon = <path d="M2 3h8M2 6h5M2 9h7" />;
 
-export default createSvgIcon(AlignLeftIcon, "align-left");
+export default create_svg_icon(AlignLeftIcon, "align-left");

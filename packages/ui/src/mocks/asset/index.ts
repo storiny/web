@@ -1,7 +1,7 @@
 import { AssetRating } from "@storiny/shared";
 import { Asset } from "@storiny/types";
 
-export const testAsset: Asset = {
+export const TEST_ASSET: Asset = {
   created_at: "2022-05-18T01:07:02.000Z",
   id: "0",
   alt: "Test",
@@ -14,7 +14,7 @@ export const testAsset: Asset = {
   user_id: "0"
 };
 
-export const mockAssets: Asset[] = [
+export const MOCK_ASSETS: Asset[] = [
   {
     created_at: "2022-05-18T01:07:02.000Z",
     id: "1662665575556338688",

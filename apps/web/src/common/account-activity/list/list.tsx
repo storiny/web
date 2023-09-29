@@ -16,7 +16,7 @@ const VirtualizedAccountActivityList = React.memo(
   ({
     accountActivities,
     has_more,
-    loadMore,
+    load_more,
     accountActivityProps = {},
     className,
     ...rest
@@ -41,7 +41,7 @@ const VirtualizedAccountActivityList = React.memo(
           ...(has_more && { Footer: VirtualFooter })
         }}
         data={accountActivities}
-        endReached={has_more ? loadMore : (): void => undefined}
+        endReached={has_more ? load_more : (): void => undefined}
       />
     </VirtualizedAccountActivityListContext.Provider>
   )

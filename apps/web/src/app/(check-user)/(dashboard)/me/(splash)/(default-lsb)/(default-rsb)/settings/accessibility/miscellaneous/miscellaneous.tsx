@@ -1,9 +1,9 @@
 import { clsx } from "clsx";
 import React from "react";
 
-import Spacer from "~/components/Spacer";
-import Switch from "~/components/Switch";
-import Typography from "~/components/Typography";
+import Spacer from "../../../../../../../../../../../../../packages/ui/src/components/spacer";
+import Switch from "../../../../../../../../../../../../../packages/ui/src/components/switch";
+import Typography from "../../../../../../../../../../../../../packages/ui/src/components/typography";
 import { toggle_haptic_feedback } from "~/redux/features";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 

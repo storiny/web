@@ -1,6 +1,6 @@
 import {
   $insertDataTransferForRichText,
-  copyToClipboard
+  copy_to_clipboard
 } from "@lexical/clipboard";
 import {
   $moveCharacter,
@@ -124,7 +124,7 @@ const handleOnCut = async (
   event: CommandPayloadType<typeof CUT_COMMAND>,
   editor: LexicalEditor
 ): Promise<void> => {
-  await copyToClipboard(
+  await copy_to_clipboard(
     editor,
     objectKlassEquals(event, ClipboardEvent) ? (event as ClipboardEvent) : null
   );
@@ -758,7 +758,7 @@ export const registerRichText = (editor: LexicalEditor): (() => void) =>
     editor.registerCommand(
       COPY_COMMAND,
       (event) => {
-        copyToClipboard(
+        copy_to_clipboard(
           editor,
           objectKlassEquals(event, ClipboardEvent)
             ? (event as ClipboardEvent)

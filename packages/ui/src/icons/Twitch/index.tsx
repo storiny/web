@@ -2,7 +2,7 @@
 
 import React from "react";
 
-import { createSvgIcon } from "~/utils/createSvgIcon";
+import { create_svg_icon } from "src/utils/create-svg-icon";
 
 const TwitchIcon = (
   <>
@@ -11,4 +11,4 @@ const TwitchIcon = (
   </>
 );
 
-export default createSvgIcon(TwitchIcon, "twitch", { noStroke: true });
+export default create_svg_icon(TwitchIcon, "twitch", { no_stroke: true });

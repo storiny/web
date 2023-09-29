@@ -1,11 +1,11 @@
 import { COMMENT_PROPS, REPLY_PROPS } from "@storiny/shared";
 import React from "react";
+import MenuItem from "src/components/menu-item";
+import { ModalFooterButton, use_modal } from "src/components/modal";
+import { use_toast } from "src/components/toast";
+import { use_media_query } from "src/hooks/use-media-query";
 
-import MenuItem from "~/components/MenuItem";
-import { ModalFooterButton, useModal } from "~/components/Modal";
-import { useToast } from "~/components/Toast";
-import ResponseTextarea from "~/entities/ResponseTextarea";
-import { useMediaQuery } from "~/hooks/useMediaQuery";
+import ResponseTextarea from "src/entities/response-textarea";
 import CommentIcon from "~/icons/Comment";
 import EditIcon from "~/icons/Edit";
 import ReplyIcon from "~/icons/Reply";
@@ -16,37 +16,38 @@ import {
   use_edit_reply_mutation
 } from "~/redux/features";
 import { use_app_dispatch } from "~/redux/hooks";
-import { breakpoints } from "~/theme/breakpoints";
+import { BREAKPOINTS } from "~/theme/breakpoints";
 import { capitalize } from "~/utils/capitalize";
 
 import { ResponseEditorProps } from "./response-editor.props";
 
 const ResponseEditor = (props: ResponseEditorProps): React.ReactElement => {
-  const { responseType, responseTextareaProps, responseId } = props;
-  const textareaRef = React.useRef<HTMLTextAreaElement>(null);
-  const toast = useToast();
+  const { response_type, response_textarea_props, response_id } = props;
+  const textarea_ref = React.useRef<HTMLTextAreaElement>(null);
+  const toast = use_toast();
   const dispatch = use_app_dispatch();
-  const isSmallerThanMobile = useMediaQuery(breakpoints.down("mobile"));
-  const [editComment, { isLoading: isCommentLoading }] =
+  const is_smaller_than_mobile = use_media_query(BREAKPOINTS.down("mobile"));
+  const [edit_comment, { isLoading: is_comment_loading }] =
     use_edit_comment_mutation();
-  const [editReply, { isLoading: isReplyLoading }] = use_edit_reply_mutation();
-  const isLoading = isCommentLoading || isReplyLoading;
+  const [edit_reply, { isLoading: is_reply_loading }] =
+    use_edit_reply_mutation();
+  const is_loading = is_comment_loading || is_reply_loading;
 
   /**
    * Handles response editing
    */
-  const handleEdit = (): void => {
-    if (textareaRef.current?.value) {
-      (responseType === "comment" ? editComment : editReply)({
-        id: responseId,
-        content: textareaRef.current.value
+  const handle_edit = (): void => {
+    if (textarea_ref.current?.value) {
+      (response_type === "comment" ? edit_comment : edit_reply)({
+        id: response_id,
+        content: textarea_ref.current.value
       })
         .unwrap()
         .then(() => {
-          closeModal();
-          toast(`${capitalize(responseType)} edited`);
+          close_modal();
+          toast(`${capitalize(response_type)} edited`);
           dispatch(
-            (responseType === "comment"
+            (response_type === "comment"
               ? get_comments_api
               : get_replies_api
             ).util.resetApiState()
@@ -54,7 +55,7 @@ const ResponseEditor = (props: ResponseEditorProps): React.ReactElement => {
         })
         .catch((e) =>
           toast(
-            e?.data?.error || `Could not edit your ${responseType}`,
+            e?.data?.error || `Could not edit your ${response_type}`,
             "error"
           )
         );
@@ -63,51 +64,51 @@ const ResponseEditor = (props: ResponseEditorProps): React.ReactElement => {
     }
   };
 
-  const [element, , closeModal] = useModal(
-    ({ openModal }) => (
+  const [element, , close_modal] = use_modal(
+    ({ open_modal }) => (
       <MenuItem
-        checkAuth
+        check_auth
         decorator={<EditIcon />}
         onSelect={(event): void => {
           event.preventDefault();
-          openModal();
+          open_modal();
         }}
       >
-        Edit {responseType}
+        Edit {response_type}
       </MenuItem>
     ),
     <ResponseTextarea
       placeholder={"What do you think?"}
-      {...responseTextareaProps}
-      disabled={isLoading}
-      hidePostButton
+      {...response_textarea_props}
+      disabled={is_loading}
+      hide_post_button
       maxLength={
-        (responseType === "comment" ? COMMENT_PROPS : REPLY_PROPS).content
+        (response_type === "comment" ? COMMENT_PROPS : REPLY_PROPS).content
           .maxLength
       }
       minLength={
-        (responseType === "comment" ? COMMENT_PROPS : REPLY_PROPS).content
+        (response_type === "comment" ? COMMENT_PROPS : REPLY_PROPS).content
           .minLength
       }
-      ref={textareaRef}
+      ref={textarea_ref}
     />,
     {
-      fullscreen: isSmallerThanMobile,
+      fullscreen: is_smaller_than_mobile,
       footer: (
         <>
           <ModalFooterButton
-            compact={isSmallerThanMobile}
-            disabled={isLoading}
+            compact={is_smaller_than_mobile}
+            disabled={is_loading}
             variant={"ghost"}
           >
             Cancel
           </ModalFooterButton>
           <ModalFooterButton
-            compact={isSmallerThanMobile}
-            loading={isLoading}
+            compact={is_smaller_than_mobile}
+            loading={is_loading}
             onClick={(event): void => {
               event.preventDefault(); // Prevent closing of modal
-              handleEdit();
+              handle_edit();
             }}
           >
             Confirm
@@ -115,16 +116,16 @@ const ResponseEditor = (props: ResponseEditorProps): React.ReactElement => {
         </>
       ),
       slot_props: {
-        footer: { compact: isSmallerThanMobile },
+        footer: { compact: is_smaller_than_mobile },
         content: {
           style: {
-            width: isSmallerThanMobile ? "100%" : "422px"
+            width: is_smaller_than_mobile ? "100%" : "422px"
           }
         },
         header: {
           decorator:
-            responseType === "comment" ? <CommentIcon /> : <ReplyIcon />,
-          children: `Editing ${responseType}`
+            response_type === "comment" ? <CommentIcon /> : <ReplyIcon />,
+          children: `Editing ${response_type}`
         }
       }
     }

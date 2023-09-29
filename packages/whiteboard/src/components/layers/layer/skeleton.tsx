@@ -1,8 +1,8 @@
 import clsx from "clsx";
 import React from "react";
 
-import Grow from "~/components/Grow";
-import Skeleton from "~/components/Skeleton";
+import Grow from "../../../../../ui/src/components/grow";
+import Skeleton from "../../../../../ui/src/components/skeleton";
 
 import styles from "./layer.module.scss";
 

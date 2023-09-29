@@ -8,7 +8,7 @@ import dynamic from "next/dynamic";
 import React from "react";
 
 import { getSessionToken } from "~/common/utils/getSessionToken";
-import CriticalStyles from "~/theme/Critical";
+import CriticalStyles from "~/theme/critical";
 
 import CriticalFonts from "./fonts/critical";
 import ObserverErrorHandler from "./observer";
@@ -25,7 +25,7 @@ const RootLayout = ({
   children: React.ReactNode;
 }): React.ReactElement => {
   const sessionToken = getSessionToken();
-  const loggedIn = Boolean(sessionToken);
+  const logged_in = Boolean(sessionToken);
 
   return (
     <html
@@ -60,7 +60,7 @@ const RootLayout = ({
         <LazyFonts />
       </head>
       <body dir={"ltr"}>
-        <StateProvider loggedIn={loggedIn}>{children}</StateProvider>
+        <StateProvider logged_in={logged_in}>{children}</StateProvider>
       </body>
       <ObserverErrorHandler />
     </html>

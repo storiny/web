@@ -2,7 +2,7 @@
 
 import React from "react";
 
-import { createSvgIcon } from "~/utils/createSvgIcon";
+import { create_svg_icon } from "src/utils/create-svg-icon";
 
 const MapPinIcon = (
   <>
@@ -11,4 +11,4 @@ const MapPinIcon = (
   </>
 );
 
-export default createSvgIcon(MapPinIcon, "map-icon");
+export default create_svg_icon(MapPinIcon, "map-icon");

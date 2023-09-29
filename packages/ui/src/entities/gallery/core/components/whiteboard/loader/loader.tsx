@@ -1,22 +1,25 @@
-import { useNProgress } from "@tanem/react-nprogress";
+import { useNProgress as use_n_progress } from "@tanem/react-nprogress";
 import clsx from "clsx";
 import React from "react";
-
-import ProgressBar from "~/components/ProgressBar";
-import Spacer from "~/components/Spacer";
-import Typography from "~/components/Typography";
+import ProgressBar from "src/components/progress-bar";
+import Spacer from "src/components/spacer";
+import Typography from "src/components/typography";
 
 import styles from "./loader.module.scss";
 
 const WhiteboardLoader = (): React.ReactElement => {
-  const [loading, setLoading] = React.useState<boolean>(true);
-  const { progress, isFinished, animationDuration } = useNProgress({
+  const [loading, set_loading] = React.useState<boolean>(true);
+  const {
+    progress,
+    isFinished: is_finished,
+    animationDuration: animation_duration
+  } = use_n_progress({
     isAnimating: loading
   });
 
   React.useEffect(() => {
-    setLoading(true);
-    return () => setLoading(false);
+    set_loading(true);
+    return () => set_loading(false);
   }, []);
 
   return (
@@ -32,11 +35,11 @@ const WhiteboardLoader = (): React.ReactElement => {
           indicator: {
             className: "force-animation",
             style: {
-              transition: `transform ${animationDuration}ms ease-out`
+              transition: `transform ${animation_duration}ms ease-out`
             }
           }
         }}
-        value={isFinished && !loading ? 100 : progress * 100}
+        value={is_finished && !loading ? 100 : progress * 100}
       />
     </div>
   );

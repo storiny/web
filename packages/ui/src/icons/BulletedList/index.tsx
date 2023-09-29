@@ -2,10 +2,10 @@
 
 import React from "react";
 
-import { createSvgIcon } from "~/utils/createSvgIcon";
+import { create_svg_icon } from "src/utils/create-svg-icon";
 
 const BulletedListIcon = (
   <path d="M4.5 3H10M4.5 6H10M4.5 9H10M2.5 3v0m0 3v0m0 3v0" />
 );
 
-export default createSvgIcon(BulletedListIcon, "bulleted-list");
+export default create_svg_icon(BulletedListIcon, "bulleted-list");

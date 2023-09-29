@@ -1,9 +1,7 @@
-import { LinkLevel } from "../Link";
-import { LinkScale } from "../Link";
-import { TypographyLevel } from "../Typography";
-import { TypographyScale } from "../Typography";
+import { LinkLevel, LinkScale } from "../link";
+import { TypographyLevel, TypographyScale } from "../typography";
 
-export const scaleToClassNameMap: Partial<
+export const TYPOGRAPHY_SCALE_TO_CLASSNAME_MAP: Partial<
   Record<LinkScale | TypographyScale, string>
 > = {
   body1 /*   */: "t-body-1",
@@ -19,7 +17,7 @@ export const scaleToClassNameMap: Partial<
   xs /*      */: "t-head-xs"
 } as const;
 
-export const levelToClassNameMap: Partial<
+export const TYPOGRAPHY_LEVEL_TO_CLASSNAME_MAP: Partial<
   Record<LinkLevel | TypographyLevel, string>
 > = {
   body1 /*   */: "t-body-1",
@@ -37,26 +35,27 @@ export const levelToClassNameMap: Partial<
   quote /*   */: "t-quote"
 } as const;
 
-export const defaultLevelToNativeElementMap: Record<TypographyLevel, string> = {
-  h1 /*           */: "h1",
-  h2 /*           */: "h2",
-  h3 /*           */: "h3",
-  h4 /*           */: "h4",
-  h5 /*           */: "h5",
-  h6 /*           */: "h6",
-  display1 /*     */: "h1",
-  display2 /*     */: "h2",
-  body1 /*        */: "p",
-  body2 /*        */: "p",
-  body3 /*        */: "span",
-  "inline-code" /**/: "code",
-  legible /*      */: "p",
-  mention /*      */: "p",
-  tag /*          */: "p",
-  quote /*        */: "blockquote"
-} as const;
+export const TYPOGRAPHY_LEVEL_TO_ELEMENT_MAP: Record<TypographyLevel, string> =
+  {
+    h1 /*           */: "h1",
+    h2 /*           */: "h2",
+    h3 /*           */: "h3",
+    h4 /*           */: "h4",
+    h5 /*           */: "h5",
+    h6 /*           */: "h6",
+    display1 /*     */: "h1",
+    display2 /*     */: "h2",
+    body1 /*        */: "p",
+    body2 /*        */: "p",
+    body3 /*        */: "span",
+    "inline-code" /**/: "code",
+    legible /*      */: "p",
+    mention /*      */: "p",
+    tag /*          */: "p",
+    quote /*        */: "blockquote"
+  } as const;
 
-export const prefixMap: Partial<Record<TypographyLevel, string>> = {
+export const TYPOGRAPHY_PREFIX_MAP: Partial<Record<TypographyLevel, string>> = {
   mention /**/: "@",
   tag /*    */: "#"
-};
+} as const;

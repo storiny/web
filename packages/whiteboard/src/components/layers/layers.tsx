@@ -14,7 +14,12 @@ import React from "react";
 import { Virtuoso } from "react-virtuoso";
 import useResizeObserver from "use-resize-observer";
 
-import { Root, Scrollbar, Thumb, Viewport } from "~/components/ScrollArea";
+import {
+  Root,
+  Scrollbar,
+  Thumb,
+  Viewport
+} from "../../../../ui/src/components/scroll-area";
 
 import { isLayersDraggingAtom } from "../../atoms";
 import { useCanvas } from "../../hooks";
@@ -109,7 +114,7 @@ const Layers = (): React.ReactElement | null => {
   const canvas = useCanvas();
   const [layers, setLayers] = React.useState<BaseFabricObject[]>([]);
   const { ref, height = 1 } = useResizeObserver();
-  const setDragging = useSetAtom(isLayersDraggingAtom);
+  const setDragging = use_set_atom(isLayersDraggingAtom);
 
   React.useEffect(() => {
     const { current } = canvas;

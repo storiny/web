@@ -7,12 +7,12 @@ import React from "react";
 
 import { dynamicLoader } from "~/common/dynamic";
 import { StoryListSkeleton, VirtualizedStoryList } from "~/common/story";
-import Divider from "~/components/Divider";
-import IconButton from "~/components/IconButton";
-import Input from "~/components/Input";
-import ErrorState from "~/entities/ErrorState";
-import PageTitle from "~/entities/PageTitle";
-import { useDebounce } from "~/hooks/useDebounce";
+import Divider from "../../../../../../../packages/ui/src/components/divider";
+import IconButton from "../../../../../../../packages/ui/src/components/icon-button";
+import Input from "../../../../../../../packages/ui/src/components/input";
+import ErrorState from "../../../../../../../packages/ui/src/entities/error-state";
+import PageTitle from "../../../../../../../packages/ui/src/entities/page-title";
+import { use_debounce } from "../../../../../../../packages/ui/src/hooks/use-debounce";
 import SearchIcon from "~/icons/Search";
 import SettingsIcon from "~/icons/Settings";
 import { get_query_error_type, use_get_history_query } from "~/redux/features";
@@ -60,7 +60,7 @@ const PageHeader = ({
     <IconButton
       aria-label={"Modify history settings"}
       as={NextLink}
-      checkAuth
+      check_auth
       className={clsx("focus-invert", styles.x, styles["icon-button"])}
       href={"/me/privacy"}
       size={"lg"}
@@ -74,23 +74,23 @@ const PageHeader = ({
 
 const Client = (): React.ReactElement => {
   const [query, setQuery] = React.useState<string>("");
-  const [page, setPage] = React.useState<number>(1);
-  const debouncedQuery = useDebounce(query);
+  const [page, set_page] = React.useState<number>(1);
+  const debounced_query = use_debounce(query);
   const { data, isLoading, isFetching, isError, error, refetch } =
     use_get_history_query({
       page,
-      query: debouncedQuery
+      query: debounced_query
     });
   const { items = [], has_more } = data || {};
-  const isTyping = query !== debouncedQuery;
+  const is_typing = query !== debounced_query;
 
-  const loadMore = React.useCallback(
-    () => setPage((prevState) => prevState + 1),
+  const load_more = React.useCallback(
+    () => set_page((prev_state) => prev_state + 1),
     []
   );
 
   const handleQueryChange = React.useCallback((newQuery: string) => {
-    setPage(1);
+    set_page(1);
     setQuery(newQuery);
   }, []);
 
@@ -104,7 +104,7 @@ const Client = (): React.ReactElement => {
       />
       {isError ? (
         <ErrorState
-          autoSize
+          auto_size
           component_props={{
             button: { loading: isFetching }
           }}
@@ -113,12 +113,12 @@ const Client = (): React.ReactElement => {
         />
       ) : !isFetching && !items.length ? (
         <EmptyState query={query} />
-      ) : isLoading || isTyping || (isFetching && page === 1) ? (
+      ) : isLoading || is_typing || (isFetching && page === 1) ? (
         <StoryListSkeleton />
       ) : (
         <VirtualizedStoryList
           has_more={Boolean(has_more)}
-          loadMore={loadMore}
+          load_more={load_more}
           stories={items}
         />
       )}

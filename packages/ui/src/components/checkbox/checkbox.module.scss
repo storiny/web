@@ -1,0 +1,91 @@
+.label {
+  --fg: var(--fg-major);
+
+  padding-left: 8px;
+  color: var(--fg);
+}
+
+.checkbox {
+  height: var(--size);
+  width: var(--size);
+  border-radius: var(--radius-md);
+  background-color: var(--bg);
+  border: 1px solid var(--border, var(--divider));
+
+  &:not([data-disabled]) {
+    cursor: pointer;
+
+    &:hover {
+      --bg: var(--hover-bg);
+    }
+
+    &[data-state="checked"] {
+      --bg: var(--checked-bg);
+
+      &:hover {
+        --bg: var(--checked-hover-bg);
+      }
+    }
+
+    & + .label {
+      cursor: pointer;
+    }
+  }
+
+  &[data-disabled] {
+    --border: var(--divider);
+
+    cursor: not-allowed;
+
+    &[data-state="checked"] {
+      --bg: var(--checked-disabled-bg);
+    }
+
+    & + .label {
+      --fg: var(--fg-muted);
+
+      cursor: not-allowed;
+    }
+  }
+}
+
+.indicator {
+  --fg: var(--inverted-0);
+  --icon-stroke-width: 1.5px;
+}
+
+/* Sizes */
+.lg {
+  --size: 18px;
+  --icon-size: 12px;
+}
+
+.md {
+  --size: 16px;
+  --icon-size: 10px;
+}
+
+/* Colors */
+.inverted {
+  /* Unchecked */
+  --bg: var(--inverted-50);
+  --border: var(--inverted-200);
+  --hover-bg: var(--inverted-100);
+
+  /* Checked */
+  --checked-bg: var(--inverted-400);
+  --checked-hover-bg: var(--inverted-300);
+  --checked-disabled-bg: var(--inverted-100);
+}
+
+.ruby {
+  /* Unchecked */
+  --bg: var(--ruby-200);
+  --border: var(--ruby-500);
+  --hover-bg: var(--ruby-300);
+
+  /* Checked */
+  --checked-bg: var(--ruby-500);
+  --checked-hover-bg: var(--ruby-400);
+  --checked-disabled-bg: var(--ruby-200);
+}

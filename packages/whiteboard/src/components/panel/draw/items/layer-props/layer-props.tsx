@@ -1,8 +1,8 @@
 import { BaseFabricObject } from "fabric";
 import React from "react";
 
-import IconButton from "~/components/IconButton";
-import Input from "~/components/Input";
+import IconButton from "../../../../../../../ui/src/components/icon-button";
+import Input from "../../../../../../../ui/src/components/input";
 import EyeIcon from "~/icons/Eye";
 import EyeClosedIcon from "~/icons/EyeClosed";
 import RoughnessIcon from "~/icons/Roughness";
@@ -52,7 +52,7 @@ const OpacityControl = ({
     <Input
       aria-label={"Layer opacity"}
       defaultValue={Math.round(activeObject.opacity * 100)}
-      endDecorator={
+      end_decorator={
         <IconButton
           aria-label={`${!activeObject.visible ? "Show" : "Hide"} layer`}
           onClick={toggleLayerVisibility}

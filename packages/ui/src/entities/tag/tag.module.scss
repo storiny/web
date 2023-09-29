@@ -1,6 +1,5 @@
-@use "../../theme/breakpoints" as breakpoints;
+@use "breakpoints";
 
-/* Base styles */
 .tag {
   padding-block: 8px;
   gap: 12px;
@@ -14,12 +13,10 @@
   }
 }
 
-/* Main */
 .main {
   gap: 24px;
 }
 
-/* Meta */
 .meta {
   --icon-size: 14px;
 
@@ -31,7 +28,6 @@
   }
 }
 
-/* Avatar */
 .avatar {
   --size: 30px;
 
@@ -40,23 +36,19 @@
   }
 }
 
-/* Tag name */
 .tag-name {
   font-size: 18px;
   font-weight: var(--font-weight-bold);
 }
 
-/* Stats */
 .stats {
   gap: 8px;
 }
 
-/* Stat */
 .stat {
   gap: 6px;
 }
 
-/* Stat icon */
 .stat-icon {
   --icon-size: 14px;
   --icon-stroke: var(--fg-minor);

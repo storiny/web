@@ -2,8 +2,8 @@ import { clsx } from "clsx";
 import { useAtomValue } from "jotai";
 import React from "react";
 
-import Option from "~/components/Option";
-import Select from "~/components/Select";
+import Option from "../../../../../../ui/src/components/option";
+import Select from "../../../../../../ui/src/components/select";
 
 import { docStatusAtom } from "../../../../atoms";
 import {
@@ -29,7 +29,7 @@ const Item = ({
 );
 
 const ToolbarAlignmentItem = (): React.ReactElement => {
-  const docStatus = useAtomValue(docStatusAtom);
+  const docStatus = use_atom_value(docStatusAtom);
   const [alignment, setAlignment, disabled] = useAlignment();
   const documentLoading = ["connecting", "reconnecting"].includes(docStatus);
 
@@ -51,7 +51,7 @@ const ToolbarAlignmentItem = (): React.ReactElement => {
         }
       }}
       value={alignment}
-      valueChildren={
+      value_children={
         <span className={"flex-center"}>
           {alignmentToIconMap[alignment || Alignment.LEFT]}
         </span>

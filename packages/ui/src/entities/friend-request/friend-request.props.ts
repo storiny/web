@@ -6,5 +6,5 @@ export interface FriendRequestProps
   /**
    * The friend request object
    */
-  friendRequest: FriendRequest;
+  friend_request: FriendRequest;
 }

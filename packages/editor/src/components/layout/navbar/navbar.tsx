@@ -12,16 +12,16 @@ import { useRouter } from "next/navigation";
 import React from "react";
 
 import Logo from "../../../../../ui/src/brand/logo";
-import Button from "~/components/Button";
-import { useConfirmation } from "~/components/Confirmation";
-import IconButton from "~/components/IconButton";
-import Link from "~/components/Link";
-import Menubar from "~/components/Menubar";
-import MenubarMenu from "~/components/MenubarMenu";
-import Spacer from "~/components/Spacer";
-import { useToast } from "~/components/Toast";
-import Tooltip from "~/components/Tooltip";
-import { useMediaQuery } from "~/hooks/useMediaQuery";
+import Button from "../../../../../ui/src/components/button";
+import { use_confirmation } from "../../../../../ui/src/components/confirmation";
+import IconButton from "../../../../../ui/src/components/icon-button";
+import Link from "../../../../../ui/src/components/link";
+import Menubar from "../../../../../ui/src/components/menubar";
+import MenubarMenu from "../../../../../ui/src/components/menubar-menu";
+import Spacer from "../../../../../ui/src/components/spacer";
+import { use_toast } from "../../../../../ui/src/components/toast";
+import Tooltip from "../../../../../ui/src/components/tooltip";
+import { use_media_query } from "../../../../../ui/src/hooks/use-media-query";
 import ChevronIcon from "~/icons/Chevron";
 import QuestionMarkIcon from "~/icons/QuestionMark";
 import VersionHistoryIcon from "~/icons/VersionHistory";
@@ -29,8 +29,8 @@ import {
   use_publish_story_mutation,
   use_recover_story_mutation
 } from "~/redux/features";
-import { breakpoints } from "~/theme/breakpoints";
-import { abbreviateNumber } from "~/utils/abbreviateNumber";
+import { BREAKPOINTS } from "~/theme/breakpoints";
+import { abbreviate_number } from "../../../../../ui/src/utils/abbreviate-number";
 
 import { docStatusAtom, storyMetadataAtom } from "../../../atoms";
 import { $isTKNode } from "../../../nodes/tk";
@@ -94,12 +94,12 @@ const Publish = ({
   disabled?: boolean;
   status: Exclude<StoryStatus, "deleted">;
 }): React.ReactElement => {
-  const toast = useToast();
+  const toast = use_toast();
   const router = useRouter();
-  const story = useAtomValue(storyMetadataAtom);
+  const story = use_atom_value(storyMetadataAtom);
   const [editor] = useLexicalComposerContext();
   const [tkCount, setTkCount] = React.useState<number>(0);
-  const [docStatus, setDocStatus] = useAtom(docStatusAtom);
+  const [docStatus, setDocStatus] = use_atom(docStatusAtom);
   const [publishStory] = use_publish_story_mutation();
 
   /**
@@ -116,10 +116,10 @@ const Publish = ({
       });
   }, [publishStory, setDocStatus, status, story.id, toast]);
 
-  const [element] = useConfirmation(
-    ({ openConfirmation }) => (
+  const [element] = use_confirmation(
+    ({ open_confirmation }) => (
       <Button
-        checkAuth
+        check_auth
         disabled={disabled || docStatus === "publishing"}
         onClick={(): void => {
           new Promise<number>((resolve) => {
@@ -133,7 +133,7 @@ const Publish = ({
               setTkCount(tkCount);
 
               if (tkCount > 0) {
-                openConfirmation();
+                open_confirmation();
               } else {
                 handlePublish();
               }
@@ -145,14 +145,14 @@ const Publish = ({
       </Button>
     ),
     {
-      onCancel: handlePublish,
+      on_cancel: handlePublish,
       title: "Are you sure you want to publish?",
-      cancelLabel: "Publish anyway",
-      confirmLabel: "Edit",
+      cancel_label: "Publish anyway",
+      confirm_label: "Edit",
       description: (
         <>
           You still have{" "}
-          <span className={"t-medium"}>{abbreviateNumber(tkCount)}</span>{" "}
+          <span className={"t-medium"}>{abbreviate_number(tkCount)}</span>{" "}
           <span className={"t-medium"} style={{ color: "var(--plum-300)" }}>
             TK
           </span>{" "}
@@ -171,8 +171,8 @@ const Publish = ({
 // Recover
 
 const Recover = (): React.ReactElement => {
-  const toast = useToast();
-  const story = useAtomValue(storyMetadataAtom);
+  const toast = use_toast();
+  const story = use_atom_value(storyMetadataAtom);
   const [loading, setLoading] = React.useState<boolean>(false);
   const [recoverStory] = use_recover_story_mutation();
 
@@ -194,7 +194,7 @@ const Recover = (): React.ReactElement => {
 
   return (
     <Button
-      checkAuth
+      check_auth
       loading={loading}
       onClick={handleRecover}
       variant={"hollow"}
@@ -209,16 +209,16 @@ const EditorNavbar = ({
 }: {
   status: StoryStatus;
 }): React.ReactElement => {
-  const isSmallerThanTablet = useMediaQuery(breakpoints.down("tablet"));
-  const isSmallerThanMobile = useMediaQuery(breakpoints.down("mobile"));
-  const docStatus = useAtomValue(docStatusAtom);
+  const is_smaller_than_tablet = use_media_query(BREAKPOINTS.down("tablet"));
+  const is_smaller_than_mobile = use_media_query(BREAKPOINTS.down("mobile"));
+  const docStatus = use_atom_value(docStatusAtom);
   const documentLoading = ["connecting", "reconnecting"].includes(docStatus);
 
   return (
     <header className={clsx(styles.x, styles["editor-navbar"])} role={"banner"}>
       <div className={clsx("flex-center", styles.x, styles["full-height"])}>
         <EditorMenubar disabled={status === "deleted" || documentLoading} />
-        {!isSmallerThanTablet && status !== "deleted" ? (
+        {!is_smaller_than_tablet && status !== "deleted" ? (
           <React.Fragment>
             <Tooltip content={"Version history"}>
               <IconButton
@@ -248,7 +248,7 @@ const EditorNavbar = ({
           </React.Fragment>
         ) : null}
       </div>
-      {!isSmallerThanMobile && status !== "deleted" ? (
+      {!is_smaller_than_mobile && status !== "deleted" ? (
         <React.Fragment>
           <Spacer className={"f-grow"} size={2} />
           <EditorPresence />

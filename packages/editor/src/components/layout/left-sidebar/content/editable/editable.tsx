@@ -2,7 +2,7 @@ import { clsx } from "clsx";
 import { useAtomValue } from "jotai";
 import React from "react";
 
-import Divider from "~/components/Divider";
+import Divider from "../../../../../../../ui/src/components/divider";
 
 import { docStatusAtom } from "../../../../../atoms";
 import { StoryStatus } from "../../../../editor";
@@ -16,7 +16,7 @@ const SuspendedEditorLeftSidebarEditableContent = ({
 }: {
   status: StoryStatus;
 }): React.ReactElement => {
-  const docStatus = useAtomValue(docStatusAtom);
+  const docStatus = use_atom_value(docStatusAtom);
   const documentLoading =
     status !== "deleted" && ["connecting", "reconnecting"].includes(docStatus);
 

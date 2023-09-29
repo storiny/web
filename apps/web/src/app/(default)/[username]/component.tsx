@@ -4,9 +4,9 @@ import { Graph } from "schema-dts";
 
 import { Flag } from "~/common/flags";
 import { GetProfileResponse } from "~/common/grpc";
-import LeftSidebar from "~/layout/LeftSidebar";
-import SplashScreen from "~/layout/SplashScreen";
-import { getCdnUrl } from "~/utils/getCdnUrl";
+import LeftSidebar from "../../../../../../packages/ui/src/layout/left-sidebar";
+import SplashScreen from "../../../../../../packages/ui/src/layout/splash-screen";
+import { get_cdn_url } from "../../../../../../packages/ui/src/utils/get-cdn-url";
 import { truncate } from "~/utils/truncate";
 
 import Client from "./client";
@@ -25,7 +25,7 @@ const generateJsonLd = (profile: Props["profile"]): Graph => ({
       image: {
         "@type": "ImageObject",
         height: 128 as unknown as string,
-        url: getCdnUrl("web-assets/brand/logos/plain/logo", ImageSize.W_128),
+        url: get_cdn_url("web-assets/brand/logos/plain/logo", ImageSize.W_128),
         width: 128 as unknown as string
       },
       name: "Storiny",
@@ -40,7 +40,7 @@ const generateJsonLd = (profile: Props["profile"]): Graph => ({
         ? {
             "@type": "ImageObject",
             height: 64 as unknown as string,
-            url: getCdnUrl(profile.avatar_id, ImageSize.W_64),
+            url: get_cdn_url(profile.avatar_id, ImageSize.W_64),
             width: 64 as unknown as string
           }
         : undefined,
@@ -51,7 +51,7 @@ const generateJsonLd = (profile: Props["profile"]): Graph => ({
         image: profile.avatar_id
           ? {
               "@type": "ImageObject",
-              url: getCdnUrl(profile.avatar_id, ImageSize.W_256),
+              url: get_cdn_url(profile.avatar_id, ImageSize.W_256),
               width: 256 as unknown as string,
               height: 256 as unknown as string
             }

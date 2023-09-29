@@ -4,29 +4,33 @@ import { userProps } from "@storiny/shared";
 import { clsx } from "clsx";
 import React from "react";
 
-import Button from "~/components/Button";
-import Form, { SubmitHandler, useForm, zodResolver } from "~/components/Form";
-import FormCheckbox from "~/components/FormCheckbox";
-import FormInput from "~/components/FormInput";
-import FormNewPasswordInput from "~/components/FormNewPasswordInput";
-import Grow from "~/components/Grow";
-import Spacer from "~/components/Spacer";
-import { useToast } from "~/components/Toast";
+import Button from "../../../../../../../../packages/ui/src/components/button";
+import Form, {
+  SubmitHandler,
+  use_form,
+  zod_resolver
+} from "../../../../../../../../packages/ui/src/components/form";
+import FormCheckbox from "../../../../../../../../packages/ui/src/components/form-checkbox";
+import FormInput from "../../../../../../../../packages/ui/src/components/form-input";
+import FormNewPasswordInput from "../../../../../../../../packages/ui/src/components/form-new-password-input";
+import Grow from "../../../../../../../../packages/ui/src/components/grow";
+import Spacer from "../../../../../../../../packages/ui/src/components/spacer";
+import { use_toast } from "../../../../../../../../packages/ui/src/components/toast";
 import { use_reset_password_mutation } from "~/redux/features";
 
 import { useAuthState } from "../../../actions";
 import { ResetSchema, resetSchema } from "./schema";
 
 interface Props {
-  onSubmit?: SubmitHandler<ResetSchema>;
+  on_submit?: SubmitHandler<ResetSchema>;
   token: string;
 }
 
-const ResetForm = ({ onSubmit, token }: Props): React.ReactElement => {
-  const toast = useToast();
+const ResetForm = ({ on_submit, token }: Props): React.ReactElement => {
+  const toast = use_toast();
   const { actions } = useAuthState();
-  const form = useForm<ResetSchema>({
-    resolver: zodResolver(resetSchema),
+  const form = use_form<ResetSchema>({
+    resolver: zod_resolver(resetSchema),
     defaultValues: {
       email: "",
       password: "",
@@ -36,8 +40,8 @@ const ResetForm = ({ onSubmit, token }: Props): React.ReactElement => {
   const [mutateResetPassword, { isLoading }] = use_reset_password_mutation();
 
   const handleSubmit: SubmitHandler<ResetSchema> = (values) => {
-    if (onSubmit) {
-      onSubmit(values);
+    if (on_submit) {
+      on_submit(values);
     } else {
       mutateResetPassword({ ...values, token })
         .unwrap()
@@ -51,8 +55,8 @@ const ResetForm = ({ onSubmit, token }: Props): React.ReactElement => {
   return (
     <Form<ResetSchema>
       className={clsx("flex-col", "full-h")}
-      onSubmit={handleSubmit}
-      providerProps={form}
+      on_submit={handleSubmit}
+      provider_props={form}
     >
       <FormInput
         autoComplete={"email"}

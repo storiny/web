@@ -12,7 +12,7 @@ export interface VirtualizedNotificationListProps
   /**
    * A callback function to fetch more notifications.
    */
-  loadMore: () => void;
+  load_more: () => void;
   /**
    * Props passed down to individual notification entities.
    */

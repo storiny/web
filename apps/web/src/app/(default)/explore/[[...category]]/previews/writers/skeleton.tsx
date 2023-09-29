@@ -1,9 +1,9 @@
 import { clsx } from "clsx";
 import React from "react";
 
-import Skeleton from "~/components/Skeleton";
-import Spacer from "~/components/Spacer";
-import Typography from "~/components/Typography";
+import Skeleton from "../../../../../../../../../packages/ui/src/components/skeleton";
+import Spacer from "../../../../../../../../../packages/ui/src/components/spacer";
+import Typography from "../../../../../../../../../packages/ui/src/components/typography";
 
 import styles from "./writers.module.scss";
 

@@ -1,7 +1,7 @@
-import { SubmitHandler } from "~/components/Form";
+import { SubmitHandler } from "../../../../../../../../../../../../../../packages/ui/src/components/form";
 
 import { AddPasswordSchema } from "./add-password.schema";
 
 export interface AddPasswordProps {
-  onSubmit?: SubmitHandler<AddPasswordSchema>;
+  on_submit?: SubmitHandler<AddPasswordSchema>;
 }

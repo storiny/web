@@ -3,15 +3,18 @@ import { clsx } from "clsx";
 import NextLink from "next/link";
 import React from "react";
 
-import AspectRatio from "~/components/AspectRatio";
-import IconButton from "~/components/IconButton";
-import Image from "~/components/Image";
-import Link from "~/components/Link";
-import Typography from "~/components/Typography";
+import AspectRatio from "../../../../../../../../../../../../../packages/ui/src/components/aspect-ratio";
+import IconButton from "../../../../../../../../../../../../../packages/ui/src/components/icon-button";
+import Image from "../../../../../../../../../../../../../packages/ui/src/components/image";
+import Link from "../../../../../../../../../../../../../packages/ui/src/components/link";
+import Typography from "../../../../../../../../../../../../../packages/ui/src/components/typography";
 import EditIcon from "~/icons/Edit";
 import ImageIcon from "~/icons/Image";
-import { abbreviateNumber } from "~/utils/abbreviateNumber";
-import { DateFormat, formatDate } from "~/utils/formatDate";
+import { abbreviate_number } from "../../../../../../../../../../../../../packages/ui/src/utils/abbreviate-number";
+import {
+  DateFormat,
+  format_date
+} from "../../../../../../../../../../../../../packages/ui/src/utils/format-date";
 
 import styles from "./draft.module.scss";
 import { DraftProps } from "./draft.props";
@@ -38,7 +41,7 @@ const Draft = (props: DraftProps): React.ReactElement => {
           <Image
             alt={""}
             hex={latest_draft.splash_hex}
-            imgId={latest_draft.splash_id}
+            img_key={latest_draft.splash_id}
             size={ImageSize.W_320}
           />
         )}
@@ -52,7 +55,7 @@ const Draft = (props: DraftProps): React.ReactElement => {
       <div className={clsx("flex-col", styles.x, styles.meta)}>
         <Link
           className={"t-medium"}
-          fixedColor
+          fixed_color
           href={href}
           level={"body2"}
           title={latest_draft.title}
@@ -61,9 +64,9 @@ const Draft = (props: DraftProps): React.ReactElement => {
         </Link>
         <footer className={"flex"}>
           <Typography className={clsx("t-minor", "t-medium")} level={"body3"}>
-            {abbreviateNumber(latest_draft.word_count)} words{" "}
+            {abbreviate_number(latest_draft.word_count)} words{" "}
             <span className={"t-muted"}>&bull;</span> Edited{" "}
-            {formatDate(
+            {format_date(
               latest_draft.edited_at || latest_draft.created_at,
               DateFormat.RELATIVE
             )}

@@ -1,6 +1,6 @@
 import React from "react";
 
-import MenubarItem from "~/components/MenubarItem";
+import MenubarItem from "../../../../../../../../ui/src/components/menubar-item";
 import CodeBlockIcon from "~/icons/CodeBlock";
 
 const CodeBlockMenubarItem = ({

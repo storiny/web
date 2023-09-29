@@ -6,17 +6,17 @@ import React from "react";
 
 import { CommentListSkeleton, VirtualizedCommentList } from "~/common/comment";
 import { dynamicLoader } from "~/common/dynamic";
-import Divider from "~/components/Divider";
-import Input from "~/components/Input";
-import Option from "~/components/Option";
-import Select from "~/components/Select";
-import Spacer from "~/components/Spacer";
-import Tab from "~/components/Tab";
-import Tabs from "~/components/Tabs";
-import TabsList from "~/components/TabsList";
-import Typography from "~/components/Typography";
-import ErrorState from "~/entities/ErrorState";
-import { useDebounce } from "~/hooks/useDebounce";
+import Divider from "../../../../../../../../../../../../../packages/ui/src/components/divider";
+import Input from "../../../../../../../../../../../../../packages/ui/src/components/input";
+import Option from "../../../../../../../../../../../../../packages/ui/src/components/option";
+import Select from "../../../../../../../../../../../../../packages/ui/src/components/select";
+import Spacer from "../../../../../../../../../../../../../packages/ui/src/components/spacer";
+import Tab from "../../../../../../../../../../../../../packages/ui/src/components/tab";
+import Tabs from "../../../../../../../../../../../../../packages/ui/src/components/tabs";
+import TabsList from "../../../../../../../../../../../../../packages/ui/src/components/tabs-list";
+import Typography from "../../../../../../../../../../../../../packages/ui/src/components/typography";
+import ErrorState from "../../../../../../../../../../../../../packages/ui/src/entities/error-state";
+import { use_debounce } from "../../../../../../../../../../../../../packages/ui/src/hooks/use-debounce";
 import SearchIcon from "~/icons/Search";
 import {
   get_query_error_type,
@@ -24,7 +24,7 @@ import {
   use_get_story_comments_query
 } from "~/redux/features";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
-import { abbreviateNumber } from "~/utils/abbreviateNumber";
+import { abbreviate_number } from "../../../../../../../../../../../../../packages/ui/src/utils/abbreviate-number";
 
 import DashboardTitle from "../../../../dashboard-title";
 import { StoryResponsesProps } from "./responses.props";
@@ -125,13 +125,13 @@ const StatusHeader = ({
         ) : tab === "all" ? (
           <React.Fragment>
             Your story has a total of{" "}
-            <span className={"t-bold"}>{abbreviateNumber(count_param)}</span>{" "}
+            <span className={"t-bold"}>{abbreviate_number(count_param)}</span>{" "}
             {count_param === 1 ? "comment" : "comments"}.
           </React.Fragment>
         ) : (
           <React.Fragment>
             You have hidden{" "}
-            <span className={"t-bold"}>{abbreviateNumber(count_param)}</span>{" "}
+            <span className={"t-bold"}>{abbreviate_number(count_param)}</span>{" "}
             {count_param === 1 ? "comment" : "comments"} on this story.
           </React.Fragment>
         )}
@@ -214,26 +214,26 @@ const ContentStoryResponsesClient = (
   const [sort, setSort] = React.useState<StoryResponsesSortValue>("recent");
   const [query, setQuery] = React.useState<string>("");
   const [value, setValue] = React.useState<StoryResponsesTabValue>("all");
-  const [page, setPage] = React.useState<number>(1);
-  const debouncedQuery = useDebounce(query);
+  const [page, set_page] = React.useState<number>(1);
+  const debounced_query = use_debounce(query);
   const { data, isLoading, isFetching, isError, error, refetch } =
     use_get_story_comments_query({
       storyId,
       page,
       sort,
       type: value,
-      query: debouncedQuery
+      query: debounced_query
     });
   const { items = [], has_more } = data || {};
-  const isTyping = query !== debouncedQuery;
+  const is_typing = query !== debounced_query;
 
-  const loadMore = React.useCallback(
-    () => setPage((prevState) => prevState + 1),
+  const load_more = React.useCallback(
+    () => set_page((prev_state) => prev_state + 1),
     []
   );
 
   const handleChange = React.useCallback((newValue: StoryResponsesTabValue) => {
-    setPage(1);
+    set_page(1);
     setSort("recent");
     setQuery("");
     setValue(newValue);
@@ -241,27 +241,27 @@ const ContentStoryResponsesClient = (
 
   const handleSortChange = React.useCallback(
     (newSort: StoryResponsesSortValue) => {
-      setPage(1);
+      set_page(1);
       setSort(newSort);
     },
     []
   );
 
   const handleQueryChange = React.useCallback((newQuery: string) => {
-    setPage(1);
+    set_page(1);
     setQuery(newQuery);
   }, []);
 
   React.useEffect(() => {
-    setPage(1);
+    set_page(1);
   }, [value]);
 
   return (
     <React.Fragment>
       <main>
         <DashboardTitle
-          backButtonHref={"/me/content/stories"}
-          hideBackButton={false}
+          back_button_href={"/me/content/stories"}
+          hide_back_button={false}
         >
           Story responses
         </DashboardTitle>
@@ -275,11 +275,11 @@ const ContentStoryResponsesClient = (
           sort={sort}
           tab={value}
         />
-        {isLoading || isTyping || (isFetching && page === 1) ? (
+        {isLoading || is_typing || (isFetching && page === 1) ? (
           <CommentListSkeleton />
         ) : isError ? (
           <ErrorState
-            autoSize
+            auto_size
             component_props={{
               button: { loading: isFetching }
             }}
@@ -291,12 +291,12 @@ const ContentStoryResponsesClient = (
         ) : (
           <VirtualizedCommentList
             commentProps={{
-              isStatic: true,
-              hideHiddenOverlay: true
+              is_static: true,
+              hide_hidden_overlay: true
             }}
             comments={items}
             has_more={Boolean(has_more)}
-            loadMore={loadMore}
+            load_more={load_more}
           />
         )}
         <Spacer orientation={"vertical"} size={10} />

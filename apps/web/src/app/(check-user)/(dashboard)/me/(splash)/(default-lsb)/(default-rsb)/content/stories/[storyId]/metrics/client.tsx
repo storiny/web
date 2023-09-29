@@ -2,8 +2,8 @@
 
 import React from "react";
 
-import Spacer from "~/components/Spacer";
-import CustomState from "~/entities/CustomState";
+import Spacer from "../../../../../../../../../../../../../../packages/ui/src/components/spacer";
+import CustomState from "../../../../../../../../../../../../../../packages/ui/src/entities/custom-state";
 
 import DashboardTitle from "../../../../../dashboard-title";
 import DashboardWrapper from "../../../../../dashboard-wrapper";
@@ -13,8 +13,8 @@ import DashboardWrapper from "../../../../../dashboard-wrapper";
 const ContentStoryMetricsClient = (): React.ReactElement => (
   <React.Fragment>
     <DashboardTitle
-      backButtonHref={"/me/content/stories"}
-      hideBackButton={false}
+      back_button_href={"/me/content/stories"}
+      hide_back_button={false}
     >
       Story responses
     </DashboardTitle>

@@ -1,10 +1,10 @@
 import clsx from "clsx";
 import React from "react";
 
-import IconButton from "~/components/IconButton";
-import Spacer from "~/components/Spacer";
-import Tooltip from "~/components/Tooltip";
-import Typography from "~/components/Typography";
+import IconButton from "../../../../ui/src/components/icon-button";
+import Spacer from "../../../../ui/src/components/spacer";
+import Tooltip from "../../../../ui/src/components/tooltip";
+import Typography from "../../../../ui/src/components/typography";
 import RedoIcon from "~/icons/Redo";
 import RotationIcon from "~/icons/Rotation";
 import UndoIcon from "~/icons/Undo";

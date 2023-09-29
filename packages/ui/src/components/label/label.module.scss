@@ -1,0 +1,16 @@
+.asterisk {
+  color: var(--fg-minor);
+}
+
+.label {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-sm);
+  color: var(--fg-major);
+  gap: 4px;
+
+  &[data-disabled="true"],
+  &[data-disabled="true"] .asterisk {
+    color: var(--fg-muted);
+  }
+}

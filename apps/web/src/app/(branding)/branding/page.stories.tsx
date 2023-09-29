@@ -27,7 +27,7 @@ export const Default: Story = {
         <BrandingLayout>
           <Story />
         </BrandingLayout>,
-        { ignorePrimitiveProviders: true }
+        { ignore_primitive_providers: true }
       )
   ]
 };

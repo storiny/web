@@ -3,7 +3,7 @@
 import React from "react";
 import { Provider as ReduxProvider } from "react-redux";
 
-import { TooltipProvider } from "~/components/Tooltip";
+import { TooltipProvider } from "src/components/tooltip";
 import { AppStore } from "~/redux/store";
 
 import Initializer from "../initializer";

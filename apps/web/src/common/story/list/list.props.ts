@@ -12,7 +12,7 @@ export interface VirtualizedStoryListProps extends VirtuosoProps<Story, any> {
   /**
    * A callback function to fetch more stories.
    */
-  loadMore: () => void;
+  load_more: () => void;
   /**
    * Props passed down to individual story skeleton entities.
    */

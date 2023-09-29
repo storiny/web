@@ -1,10 +1,10 @@
 import { clsx } from "clsx";
 import React from "react";
 
-import Radio from "~/components/Radio";
-import RadioGroup from "~/components/RadioGroup";
-import Spacer from "~/components/Spacer";
-import Typography from "~/components/Typography";
+import Radio from "../../../../../../../../../../../../../packages/ui/src/components/radio";
+import RadioGroup from "../../../../../../../../../../../../../packages/ui/src/components/radio-group";
+import Spacer from "../../../../../../../../../../../../../packages/ui/src/components/spacer";
+import Typography from "../../../../../../../../../../../../../packages/ui/src/components/typography";
 import { set_reduced_motion } from "~/redux/features";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 

@@ -11,19 +11,19 @@ import {
 import { clsx } from "clsx";
 import React from "react";
 
-import AspectRatio from "~/components/AspectRatio";
-import { useFormContext } from "~/components/Form";
+import AspectRatio from "../../../../../../../ui/src/components/aspect-ratio";
+import { use_form_context } from "../../../../../../../ui/src/components/form";
 import FormMultiSelect from "~/components/form-multi-select";
-import FormInput from "~/components/FormInput";
-import FormSelect from "~/components/FormSelect";
-import FormTextarea from "~/components/FormTextarea";
-import IconButton from "~/components/IconButton";
-import Image from "~/components/Image";
-import Link from "~/components/Link";
-import { MultiSelectProps } from "~/components/MultiSelect";
-import Option from "~/components/Option";
-import Spacer from "~/components/Spacer";
-import Typography from "~/components/Typography";
+import FormInput from "../../../../../../../ui/src/components/form-input";
+import FormSelect from "../../../../../../../ui/src/components/form-select";
+import FormTextarea from "../../../../../../../ui/src/components/form-textarea";
+import IconButton from "../../../../../../../ui/src/components/icon-button";
+import Image from "../../../../../../../ui/src/components/image";
+import Link from "../../../../../../../ui/src/components/link";
+import { MultiSelectProps } from "../../../../../../../ui/src/components/multi-select";
+import Option from "../../../../../../../ui/src/components/option";
+import Spacer from "../../../../../../../ui/src/components/spacer";
+import Typography from "../../../../../../../ui/src/components/typography";
 import Gallery from "~/entities/gallery";
 import EditIcon from "~/icons/Edit";
 import PhotoPlusIcon from "~/icons/PhotoPlus";
@@ -50,7 +50,7 @@ const debounce = <T extends (...args: any) => any>(fn: T, delay = 250): T => {
 // Splash
 
 const Splash = (): React.ReactElement => {
-  const form = useFormContext();
+  const form = use_form_context();
   const splashId = form.watch("splash-id");
   const splashHex = form.watch("splash-hex");
 
@@ -80,7 +80,7 @@ const Splash = (): React.ReactElement => {
               <Image
                 alt={""}
                 hex={splashHex}
-                imgId={splashId}
+                img_key={splashId}
                 size={ImageSize.W_320}
               />
               <div
@@ -92,7 +92,7 @@ const Splash = (): React.ReactElement => {
                 )}
               >
                 <Gallery
-                  onConfirm={(asset): void => {
+                  on_confirm={(asset): void => {
                     form.setValue("splash-id", asset.key, {
                       shouldDirty: true
                     });
@@ -103,7 +103,7 @@ const Splash = (): React.ReactElement => {
                 >
                   <IconButton
                     aria-label={"Change splash"}
-                    autoSize
+                    auto_size
                     title={"Change splash"}
                   >
                     <EditIcon />
@@ -112,7 +112,7 @@ const Splash = (): React.ReactElement => {
                 <Spacer orientation={"vertical"} />
                 <IconButton
                   aria-label={"Remove splash"}
-                  autoSize
+                  auto_size
                   onClick={(): void => {
                     form.setValue("splash-id", null, { shouldDirty: true });
                     form.setValue("splash-hex", null, { shouldDirty: true });
@@ -125,7 +125,7 @@ const Splash = (): React.ReactElement => {
             </React.Fragment>
           ) : (
             <Gallery
-              onConfirm={(asset): void => {
+              on_confirm={(asset): void => {
                 form.setValue("splash-id", asset.key, {
                   shouldDirty: true
                 });
@@ -178,9 +178,9 @@ const Tags = (): React.ReactElement => {
 
   return (
     <FormMultiSelect
-      autoSize
+      auto_size
       color={isError ? "ruby" : "inverted"}
-      helperText={
+      helper_text={
         <>
           Using tags can make it easier to focus your story on particular topics
           and boost its chances of being seen in search results and
@@ -204,8 +204,8 @@ const GeneralTab = (): React.ReactElement => (
     <Splash />
     <Spacer orientation={"vertical"} size={3} />
     <FormInput
-      autoSize
-      helperText={
+      auto_size
+      helper_text={
         <>
           A title helps readers get a quick grasp of your story&apos;s content
           before they start reading. To create a good title, make it short,
@@ -222,7 +222,7 @@ const GeneralTab = (): React.ReactElement => (
     />
     <Spacer orientation={"vertical"} size={4} />
     <FormTextarea
-      helperText={
+      helper_text={
         <>
           Adding a brief description to your story is optional but can greatly
           enhance reader engagement. It offers a concise summary for readers to
@@ -238,8 +238,8 @@ const GeneralTab = (): React.ReactElement => (
     <Tags />
     <Spacer orientation={"vertical"} size={4} />
     <FormSelect
-      autoSize
-      helperText={"Select a category that best describes this story."}
+      auto_size
+      helper_text={"Select a category that best describes this story."}
       label={"Category"}
       name={"category"}
       required

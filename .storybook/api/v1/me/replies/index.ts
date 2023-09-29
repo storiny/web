@@ -1,4 +1,4 @@
-import { mockReplies, mockUsers } from "@storiny/ui/src/mocks";
+import { MOCK_REPLIES, MOCK_USERS } from "@storiny/ui/src/mocks";
 import { nanoid } from "nanoid";
 
 const { worker, rest } = window.msw;
@@ -10,10 +10,10 @@ worker.use(
       res(
         ctx.delay(1200),
         ctx.json(
-          mockReplies.slice(0, 10).map((reply) => ({
+          MOCK_REPLIES.slice(0, 10).map((reply) => ({
             ...reply,
             id: nanoid(),
-            user_id: mockUsers[4].id,
+            user_id: MOCK_USERS[4].id,
           }))
         )
       )

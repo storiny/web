@@ -1,12 +1,12 @@
-import { downloadAsFile } from "@storiny/shared/src/utils/downloadAsFile";
+import { downloadAsFile } from "../../../../../shared/src/utils/download-as-file";
 import clsx from "clsx";
 import { StaticCanvas } from "fabric";
 import React from "react";
 
-import AspectRatio from "~/components/AspectRatio";
-import Input from "~/components/Input";
-import Spacer from "~/components/Spacer";
-import Spinner from "~/components/Spinner";
+import AspectRatio from "../../../../../ui/src/components/aspect-ratio";
+import Input from "../../../../../ui/src/components/input";
+import Spacer from "../../../../../ui/src/components/spacer";
+import Spinner from "../../../../../ui/src/components/spinner";
 import PaddingIcon from "~/icons/Padding";
 import { clamp } from "~/utils/clamp";
 

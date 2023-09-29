@@ -16,7 +16,7 @@ const VirtualizedReplyList = React.memo(
   ({
     replies,
     has_more,
-    loadMore,
+    load_more,
     replyProps = {},
     skeletonProps = {},
     className,
@@ -38,7 +38,7 @@ const VirtualizedReplyList = React.memo(
           ...(has_more && { Footer: VirtualFooter })
         }}
         data={replies}
-        endReached={has_more ? loadMore : (): void => undefined}
+        endReached={has_more ? load_more : (): void => undefined}
       />
     </VirtualizedReplyListContext.Provider>
   )

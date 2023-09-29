@@ -1,7 +1,7 @@
-import { SubmitHandler } from "~/components/Form";
+import { SubmitHandler } from "../../../../../../../../../../../../packages/ui/src/components/form";
 
 import { AccountGeneralSchema } from "./general-form.schema";
 
 export interface GeneralFormProps {
-  onSubmit?: SubmitHandler<AccountGeneralSchema>;
+  on_submit?: SubmitHandler<AccountGeneralSchema>;
 }

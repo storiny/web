@@ -4,25 +4,29 @@ import { DEFAULT_WPM, userProps } from "@storiny/shared";
 import { clsx } from "clsx";
 import React from "react";
 
-import Button from "~/components/Button";
-import Form, { SubmitHandler, useForm, zodResolver } from "~/components/Form";
-import FormInput from "~/components/FormInput";
-import Grow from "~/components/Grow";
-import Spacer from "~/components/Spacer";
+import Button from "../../../../../../../../packages/ui/src/components/button";
+import Form, {
+  SubmitHandler,
+  use_form,
+  zod_resolver
+} from "../../../../../../../../packages/ui/src/components/form";
+import FormInput from "../../../../../../../../packages/ui/src/components/form-input";
+import Grow from "../../../../../../../../packages/ui/src/components/grow";
+import Spacer from "../../../../../../../../packages/ui/src/components/spacer";
 
 import { useAuthState } from "../../../actions";
 import { useSignup } from "../../../useSignup";
 import { SignupWPMSchema, signupWPMSchema } from "./schema";
 
 interface Props {
-  onSubmit?: SubmitHandler<SignupWPMSchema>;
+  on_submit?: SubmitHandler<SignupWPMSchema>;
 }
 
-const SignupWPMForm = ({ onSubmit }: Props): React.ReactElement => {
+const SignupWPMForm = ({ on_submit }: Props): React.ReactElement => {
   const { state, actions } = useAuthState();
   const { isLoading, handleSignup } = useSignup();
-  const form = useForm<SignupWPMSchema>({
-    resolver: zodResolver(signupWPMSchema),
+  const form = use_form<SignupWPMSchema>({
+    resolver: zod_resolver(signupWPMSchema),
     defaultValues: {
       wpm: state.signup.wpm || DEFAULT_WPM
     }
@@ -31,8 +35,8 @@ const SignupWPMForm = ({ onSubmit }: Props): React.ReactElement => {
   const handleSubmit: SubmitHandler<SignupWPMSchema> = (values) => {
     actions.setSignupState(values);
 
-    if (onSubmit) {
-      onSubmit(values);
+    if (on_submit) {
+      on_submit(values);
     } else {
       handleSignup();
     }
@@ -41,8 +45,8 @@ const SignupWPMForm = ({ onSubmit }: Props): React.ReactElement => {
   return (
     <Form<SignupWPMSchema>
       className={clsx("flex-col", "full-h")}
-      onSubmit={handleSubmit}
-      providerProps={form}
+      on_submit={handleSubmit}
+      provider_props={form}
     >
       <FormInput
         data-testid={"wpm-input"}

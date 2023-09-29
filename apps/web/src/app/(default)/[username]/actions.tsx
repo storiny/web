@@ -2,13 +2,13 @@ import NextLink from "next/link";
 import React from "react";
 
 import { GetProfileResponse } from "~/common/grpc";
-import { useConfirmation } from "~/components/Confirmation";
-import IconButton from "~/components/IconButton";
-import Menu from "~/components/Menu";
-import MenuItem from "~/components/MenuItem";
-import Separator from "~/components/Separator";
-import { useClipboard } from "~/hooks/useClipboard";
-import { useWebShare } from "~/hooks/useWebShare";
+import { use_confirmation } from "../../../../../../packages/ui/src/components/confirmation";
+import IconButton from "../../../../../../packages/ui/src/components/icon-button";
+import Menu from "../../../../../../packages/ui/src/components/menu";
+import MenuItem from "../../../../../../packages/ui/src/components/menu-item";
+import Separator from "../../../../../../packages/ui/src/components/separator";
+import { use_clipboard } from "../../../../../../packages/ui/src/hooks/use-clipboard";
+import { use_web_share } from "../../../../../../packages/ui/src/hooks/use-web-share";
 import BellFilledIcon from "~/icons/BellFilled";
 import BellPlusIcon from "~/icons/BellPlus";
 import CopyIcon from "~/icons/Copy";
@@ -33,10 +33,10 @@ interface Props {
 }
 
 const Actions = ({ profile, isInsideSidebar }: Props): React.ReactElement => {
-  const share = useWebShare();
-  const copy = useClipboard();
+  const share = use_web_share();
+  const copy = use_clipboard();
   const dispatch = use_app_dispatch();
-  const loggedIn = use_app_selector(select_is_logged_in);
+  const logged_in = use_app_selector(select_is_logged_in);
   const isFollowing = use_app_selector(
     (state) => state.entities.following[profile.id]
   );
@@ -55,14 +55,14 @@ const Actions = ({ profile, isInsideSidebar }: Props): React.ReactElement => {
   );
   const isSelf = Boolean(profile.is_self);
   const isBlockedByUser = Boolean(profile.is_blocked_by_user);
-  const [element] = useConfirmation(
-    ({ openConfirmation }) => (
+  const [element] = use_confirmation(
+    ({ open_confirmation }) => (
       <MenuItem
-        checkAuth
+        check_auth
         decorator={<UserBlockIcon />}
         onSelect={(event): void => {
           event.preventDefault(); // Do not auto-close the menu
-          openConfirmation();
+          open_confirmation();
         }}
       >
         {isBlocking ? "Unblock" : "Block"} this user
@@ -70,7 +70,7 @@ const Actions = ({ profile, isInsideSidebar }: Props): React.ReactElement => {
     ),
     {
       color: isBlocking ? "inverted" : "ruby",
-      onConfirm: () => dispatch(boolean_action("blocks", profile.id)),
+      on_confirm: () => dispatch(boolean_action("blocks", profile.id)),
       title: `${isBlocking ? "Unblock" : "Block"} @${profile.username}?`,
       description: isBlocking
         ? `The public content you publish will be available to them as well as the ability to follow you.`
@@ -105,11 +105,11 @@ const Actions = ({ profile, isInsideSidebar }: Props): React.ReactElement => {
         </IconButton>
       }
     >
-      {!isSelf && !isBlockedByUser && !isBlocking && loggedIn ? (
+      {!isSelf && !isBlockedByUser && !isBlocking && logged_in ? (
         <>
           {isFriendRequestSent ? (
             <MenuItem
-              checkAuth
+              check_auth
               decorator={<XIcon />}
               onClick={(): void => {
                 dispatch(boolean_action("sent_requests", profile.id));
@@ -119,7 +119,7 @@ const Actions = ({ profile, isInsideSidebar }: Props): React.ReactElement => {
             </MenuItem>
           ) : isFriend ? (
             <MenuItem
-              checkAuth
+              check_auth
               decorator={<HeartPlusIcon />}
               onClick={(): void => {
                 dispatch(boolean_action("friends", profile.id, false));
@@ -129,7 +129,7 @@ const Actions = ({ profile, isInsideSidebar }: Props): React.ReactElement => {
             </MenuItem>
           ) : (
             <MenuItem
-              checkAuth
+              check_auth
               decorator={<HeartPlusIcon />}
               onClick={(): void => {
                 dispatch(boolean_action("sent_requests", profile.id));
@@ -140,7 +140,7 @@ const Actions = ({ profile, isInsideSidebar }: Props): React.ReactElement => {
           )}
           {isFollowing && (
             <MenuItem
-              checkAuth
+              check_auth
               decorator={isSubscribed ? <BellFilledIcon /> : <BellPlusIcon />}
               onClick={(): void => {
                 dispatch(boolean_action("subscriptions", profile.id));
@@ -172,10 +172,10 @@ const Actions = ({ profile, isInsideSidebar }: Props): React.ReactElement => {
         Copy link to profile
       </MenuItem>
       {!isSelf && <Separator />}
-      {!isSelf && !isBlockedByUser && loggedIn ? (
+      {!isSelf && !isBlockedByUser && logged_in ? (
         <>
           <MenuItem
-            checkAuth
+            check_auth
             decorator={<MuteIcon />}
             onClick={(): void => {
               dispatch(boolean_action("mutes", profile.id));

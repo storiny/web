@@ -1,7 +1,7 @@
-import { SubmitHandler } from "~/components/Form";
+import { SubmitHandler } from "../../../../../../../../../../../../../../../packages/ui/src/components/form";
 
 import { DeleteAccountSchema } from "./delete-account.schema";
 
 export interface DeleteAccountProps {
-  onSubmit?: SubmitHandler<DeleteAccountSchema>;
+  on_submit?: SubmitHandler<DeleteAccountSchema>;
 }

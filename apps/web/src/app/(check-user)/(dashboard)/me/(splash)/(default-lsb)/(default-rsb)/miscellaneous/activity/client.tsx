@@ -7,9 +7,9 @@ import {
   AccountActivityListSkeleton,
   VirtualizedAccountActivityList
 } from "~/common/account-activity";
-import Spacer from "~/components/Spacer";
-import Typography from "~/components/Typography";
-import ErrorState from "~/entities/ErrorState";
+import Spacer from "../../../../../../../../../../../../packages/ui/src/components/spacer";
+import Typography from "../../../../../../../../../../../../packages/ui/src/components/typography";
+import ErrorState from "../../../../../../../../../../../../packages/ui/src/entities/error-state";
 import {
   get_query_error_type,
   use_get_account_activity_query
@@ -37,15 +37,15 @@ const StatusHeader = (): React.ReactElement => (
 );
 
 const MiscellaneousActivityClient = (): React.ReactElement => {
-  const [page, setPage] = React.useState<number>(1);
+  const [page, set_page] = React.useState<number>(1);
   const { data, isLoading, isFetching, isError, error, refetch } =
     use_get_account_activity_query({
       page
     });
   const { items = [], has_more } = data || {};
 
-  const loadMore = React.useCallback(
-    () => setPage((prevState) => prevState + 1),
+  const load_more = React.useCallback(
+    () => set_page((prev_state) => prev_state + 1),
     []
   );
 
@@ -57,7 +57,7 @@ const MiscellaneousActivityClient = (): React.ReactElement => {
         <AccountActivityListSkeleton />
       ) : isError ? (
         <ErrorState
-          autoSize
+          auto_size
           component_props={{
             button: { loading: isFetching }
           }}
@@ -68,7 +68,7 @@ const MiscellaneousActivityClient = (): React.ReactElement => {
         <VirtualizedAccountActivityList
           accountActivities={items}
           has_more={Boolean(has_more)}
-          loadMore={loadMore}
+          load_more={load_more}
         />
       )}
       <Spacer orientation={"vertical"} size={10} />

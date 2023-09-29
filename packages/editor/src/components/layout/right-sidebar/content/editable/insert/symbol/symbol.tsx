@@ -13,7 +13,7 @@ const SymbolItem = ({
 }): React.ReactElement => {
   const [insertSymbol] = useInsertTextEntity();
   return (
-    <SymbolPicker onSymbolSelect={insertSymbol}>
+    <SymbolPicker on_symbol_select={insertSymbol}>
       <InsertItem
         data-testid={"insert-symbol"}
         decorator={<OmegaIcon />}

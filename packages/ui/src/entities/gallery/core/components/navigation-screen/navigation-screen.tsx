@@ -1,38 +1,38 @@
 import clsx from "clsx";
-import { useSetAtom } from "jotai";
+import { useSetAtom as use_set_atom } from "jotai";
 import React from "react";
 
-import NavigationItem from "~/components/NavigationItem";
-import Separator from "~/components/Separator";
+import NavigationItem from "src/components/navigation-item";
+import Separator from "src/components/separator";
 import AlbumIcon from "~/icons/Album";
 import PexelsIcon from "~/icons/Pexels";
 import UploadIcon from "~/icons/Upload";
 
-import { navSegmentAtom } from "../../atoms";
+import { nav_segment_atom } from "../../atoms";
 import styles from "./navigation-screen.module.scss";
 
 const NavigationScreen = (): React.ReactElement => {
-  const setNavSegment = useSetAtom(navSegmentAtom);
+  const set_nav_segment = use_set_atom(nav_segment_atom);
   return (
     <div className={clsx("flex-col", styles["navigation-screen"])}>
       <div className={clsx("flex-col", styles["item-container"])}>
         <NavigationItem
           decorator={<PexelsIcon />}
-          onClick={(): void => setNavSegment("pexels")}
+          onClick={(): void => set_nav_segment("pexels")}
         >
           Pexels
         </NavigationItem>
-        <Separator invertMargin />
+        <Separator invert_margin />
         <NavigationItem
           decorator={<AlbumIcon />}
-          onClick={(): void => setNavSegment("library")}
+          onClick={(): void => set_nav_segment("library")}
         >
           Library
         </NavigationItem>
-        <Separator invertMargin />
+        <Separator invert_margin />
         <NavigationItem
           decorator={<UploadIcon />}
-          onClick={(): void => setNavSegment("upload")}
+          onClick={(): void => set_nav_segment("upload")}
         >
           Upload
         </NavigationItem>

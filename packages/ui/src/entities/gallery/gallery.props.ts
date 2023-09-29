@@ -9,12 +9,12 @@ export interface GalleryProps {
   /**
    * Cancel callback
    */
-  onCancel?: () => void;
+  on_cancel?: () => void;
   /**
    * Confirm callback
    * @param asset Confirmed asset
    */
-  onConfirm?: (asset: {
+  on_confirm?: (asset: {
     alt: string;
     credits?: { author: string; url: string };
     height: number;

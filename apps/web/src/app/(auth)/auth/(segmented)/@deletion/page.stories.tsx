@@ -27,7 +27,7 @@ export const Default: Story = {
         <AuthLayout>
           <Story />
         </AuthLayout>,
-        { ignorePrimitiveProviders: true }
+        { ignore_primitive_providers: true }
       )
   ]
 };

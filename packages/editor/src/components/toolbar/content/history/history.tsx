@@ -2,8 +2,8 @@ import { clsx } from "clsx";
 import { useAtomValue } from "jotai";
 import React from "react";
 
-import IconButton from "~/components/IconButton";
-import Tooltip from "~/components/Tooltip";
+import IconButton from "../../../../../../ui/src/components/icon-button";
+import Tooltip from "../../../../../../ui/src/components/tooltip";
 import RedoIcon from "~/icons/Redo";
 import UndoIcon from "~/icons/Undo";
 
@@ -13,7 +13,7 @@ import toolbarStyles from "../../toolbar.module.scss";
 
 const ToolbarHistoryItem = (): React.ReactElement => {
   const { undo, canUndo, canRedo, redo } = useHistory();
-  const docStatus = useAtomValue(docStatusAtom);
+  const docStatus = use_atom_value(docStatusAtom);
   const documentLoading = ["connecting", "reconnecting"].includes(docStatus);
 
   return (

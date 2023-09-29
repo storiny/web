@@ -6,7 +6,7 @@ import {
   TextNode
 } from "lexical";
 
-import typographyStyles from "~/components/Typography/Typography.module.scss";
+import typography_styles from "~/components/typography/typography.module.scss";
 
 const TYPE = "color";
 const VERSION = 1;
@@ -54,8 +54,8 @@ export class ColorNode extends TextNode {
     if (codeNode) {
       codeNode.style.setProperty("--color", this.getTextContent());
       codeNode.classList.add(
-        typographyStyles["inline-color"],
-        typographyStyles.legible
+        typography_styles["inline-color"],
+        typography_styles.legible
       );
     }
 

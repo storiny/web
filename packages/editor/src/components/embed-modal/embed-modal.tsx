@@ -2,15 +2,23 @@ import { clsx } from "clsx";
 import { compressToEncodedURIComponent } from "lz-string";
 import React from "react";
 
-import Form, { SubmitHandler, useForm, zodResolver } from "~/components/Form";
-import FormInput from "~/components/FormInput";
-import Link from "~/components/Link";
-import { Description, ModalFooterButton, useModal } from "~/components/Modal";
-import Spacer from "~/components/Spacer";
-import Typography from "~/components/Typography";
-import { useMediaQuery } from "~/hooks/useMediaQuery";
+import Form, {
+  SubmitHandler,
+  use_form,
+  zod_resolver
+} from "../../../../ui/src/components/form";
+import FormInput from "../../../../ui/src/components/form-input";
+import Link from "../../../../ui/src/components/link";
+import {
+  Description,
+  ModalFooterButton,
+  use_modal
+} from "../../../../ui/src/components/modal";
+import Spacer from "../../../../ui/src/components/spacer";
+import Typography from "../../../../ui/src/components/typography";
+import { use_media_query } from "../../../../ui/src/hooks/use-media-query";
 import EmbedIcon from "~/icons/Embed";
-import { breakpoints } from "~/theme/breakpoints";
+import { BREAKPOINTS } from "~/theme/breakpoints";
 
 import { useInsertEmbed } from "../../hooks/use-insert-embed";
 import { EmbedModalProps } from "./embed-modal.props";
@@ -32,9 +40,9 @@ const EmbedModalContent = (): React.ReactElement => (
     <Spacer orientation={"vertical"} size={4} />
     <FormInput
       autoComplete={"url"}
-      autoSize
-      formSlotProps={{
-        formItem: {
+      auto_size
+      form_slot_props={{
+        form_item: {
           className: "f-grow"
         }
       }}
@@ -51,11 +59,11 @@ const EmbedModal = ({
   trigger,
   modal
 }: EmbedModalProps): React.ReactElement => {
-  const isSmallerThanMobile = useMediaQuery(breakpoints.down("mobile"));
+  const is_smaller_than_mobile = use_media_query(BREAKPOINTS.down("mobile"));
   const [open, setOpen] = React.useState<boolean>(false);
   const [insertEmbed] = useInsertEmbed();
-  const form = useForm<EmbedSchema>({
-    resolver: zodResolver(embedSchema),
+  const form = use_form<EmbedSchema>({
+    resolver: zod_resolver(embedSchema),
     defaultValues: {
       url: ""
     }
@@ -66,12 +74,12 @@ const EmbedModal = ({
     setOpen(false);
   };
 
-  const [element] = useModal(
+  const [element] = use_modal(
     trigger,
     <Form<EmbedSchema>
       className={clsx("flex-col")}
-      onSubmit={handleSubmit}
-      providerProps={form}
+      on_submit={handleSubmit}
+      provider_props={form}
     >
       <EmbedModalContent />
     </Form>,
@@ -82,14 +90,14 @@ const EmbedModal = ({
         form.reset();
         setOpen(newOpen);
       },
-      fullscreen: isSmallerThanMobile,
+      fullscreen: is_smaller_than_mobile,
       footer: (
         <>
-          <ModalFooterButton compact={isSmallerThanMobile} variant={"ghost"}>
+          <ModalFooterButton compact={is_smaller_than_mobile} variant={"ghost"}>
             Cancel
           </ModalFooterButton>
           <ModalFooterButton
-            compact={isSmallerThanMobile}
+            compact={is_smaller_than_mobile}
             onClick={(event): void => {
               event.preventDefault(); // Prevent closing of modal
               form.handleSubmit(handleSubmit)(); // Submit manually
@@ -101,11 +109,11 @@ const EmbedModal = ({
       ),
       slot_props: {
         footer: {
-          compact: isSmallerThanMobile
+          compact: is_smaller_than_mobile
         },
         content: {
           style: {
-            width: isSmallerThanMobile ? "100%" : "420px"
+            width: is_smaller_than_mobile ? "100%" : "420px"
           }
         },
         header: {

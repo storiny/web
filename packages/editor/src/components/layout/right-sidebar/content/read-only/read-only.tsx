@@ -8,7 +8,9 @@ import StoryStats from "./stats";
 import StoryWriter from "./writer";
 
 const SuspendedEditorRightSidebarReadOnlyContent = (): React.ReactElement => {
-  const isAuxiliaryContentVisible = useAtomValue(isAuxiliaryContentVisibleAtom);
+  const isAuxiliaryContentVisible = use_atom_value(
+    isAuxiliaryContentVisibleAtom
+  );
   return (
     <React.Fragment>
       {isAuxiliaryContentVisible ? (

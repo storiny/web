@@ -2,11 +2,11 @@
 
 import React from "react";
 
-import { SubmitHandler } from "~/components/Form";
-import Link from "~/components/Link";
-import Spacer from "~/components/Spacer";
-import Stepper from "~/components/Stepper";
-import Typography from "~/components/Typography";
+import { SubmitHandler } from "../../../../../../../../packages/ui/src/components/form";
+import Link from "../../../../../../../../packages/ui/src/components/link";
+import Spacer from "../../../../../../../../packages/ui/src/components/spacer";
+import Stepper from "../../../../../../../../packages/ui/src/components/stepper";
+import Typography from "../../../../../../../../packages/ui/src/components/typography";
 
 import { useAuthState } from "../../../actions";
 import SignupUsernameForm from "./form";
@@ -15,7 +15,7 @@ import { SignupUsernameSchema } from "./schema";
 const Page = (): React.ReactElement => {
   const { actions, state } = useAuthState();
 
-  const onSubmit: SubmitHandler<SignupUsernameSchema> = React.useCallback(
+  const on_submit: SubmitHandler<SignupUsernameSchema> = React.useCallback(
     ({ username }) => {
       actions.setSignupState({ username });
       actions.switchSegment(
@@ -37,7 +37,7 @@ const Page = (): React.ReactElement => {
         later.
       </Typography>
       <Spacer orientation={"vertical"} size={5} />
-      <SignupUsernameForm onSubmit={onSubmit} />
+      <SignupUsernameForm on_submit={on_submit} />
       <Spacer orientation={"vertical"} size={5} />
       <div className={"flex-center"}>
         <Link
@@ -51,7 +51,7 @@ const Page = (): React.ReactElement => {
         </Link>
       </div>
       <Spacer orientation={"vertical"} size={2} />
-      <Stepper activeSteps={2} totalSteps={3} />
+      <Stepper active_steps={2} total_steps={3} />
     </>
   );
 };

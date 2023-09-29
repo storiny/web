@@ -1,6 +1,6 @@
 import { LogoProps } from "src/brand/logo";
 
-import { TypographyProps } from "~/components/Typography";
+import { TypographyProps } from "src/components/typography";
 import { PolymorphicProps } from "~/types/index";
 
 export type WordmarkSize = "sm" | "md" | "lg";

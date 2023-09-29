@@ -1,16 +1,13 @@
-/* Popover */
 .popover {
   width: 320px;
 }
 
-/* Header */
 .header {
   padding-left: 16px;
   border-bottom: 1px solid var(--divider);
   background-color: var(--bg-elevation-md);
 }
 
-/* Header icon */
 .icon {
   --icon-size: 18px;
 
@@ -23,12 +20,10 @@
   font-size: var(--font-size-md);
 }
 
-/* Close */
 .close {
   padding: 5px;
 }
 
-/* Footer */
 .footer {
   padding: 12px;
   border-top: 1px solid var(--divider);

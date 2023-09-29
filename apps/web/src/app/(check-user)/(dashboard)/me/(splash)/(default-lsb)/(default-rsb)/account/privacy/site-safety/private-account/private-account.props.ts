@@ -1,8 +1,8 @@
 import { GetPrivacySettingsResponse } from "~/common/grpc";
-import { SubmitHandler } from "~/components/Form";
+import { SubmitHandler } from "../../../../../../../../../../../../../../packages/ui/src/components/form";
 
 import { PrivateAccountSchema } from "./private-account.schema";
 
 export type PrivateAccountProps = {
-  onSubmit?: SubmitHandler<PrivateAccountSchema>;
+  on_submit?: SubmitHandler<PrivateAccountSchema>;
 } & Pick<GetPrivacySettingsResponse, "is_private_account">;

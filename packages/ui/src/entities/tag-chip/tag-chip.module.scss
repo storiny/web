@@ -1,0 +1,25 @@
+.stat {
+  --fg: var(--fg-minor);
+  --icon-size: 16px;
+  --icon-stroke: var(--fg);
+  --border-color: var(--inverted-200);
+
+  gap: 4px;
+  color: var(--fg);
+
+  &[data-first-child="true"] {
+    border-left: 1px solid var(--border-color);
+    padding-left: 10px;
+  }
+}
+
+.tag-chip {
+  max-width: 100%;
+
+  &[data-disabled="true"] {
+    & .stat {
+      --fg: var(--disabled-fg);
+      --border-color: var(--inverted-100);
+    }
+  }
+}

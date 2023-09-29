@@ -3,16 +3,24 @@ import { clsx } from "clsx";
 import { useRouter } from "next/navigation";
 import React from "react";
 
-import Button from "~/components/Button";
-import Form, { SubmitHandler, useForm, zodResolver } from "~/components/Form";
-import FormInput from "~/components/FormInput";
-import FormPasswordInput from "~/components/FormPasswordInput";
-import { Description, ModalFooterButton, useModal } from "~/components/Modal";
-import Spacer from "~/components/Spacer";
-import { useToast } from "~/components/Toast";
-import Typography from "~/components/Typography";
-import TitleBlock from "~/entities/TitleBlock";
-import { useMediaQuery } from "~/hooks/useMediaQuery";
+import Button from "../../../../../../../../../../../../../packages/ui/src/components/button";
+import Form, {
+  SubmitHandler,
+  use_form,
+  zod_resolver
+} from "../../../../../../../../../../../../../packages/ui/src/components/form";
+import FormInput from "../../../../../../../../../../../../../packages/ui/src/components/form-input";
+import FormPasswordInput from "../../../../../../../../../../../../../packages/ui/src/components/form-password-input";
+import {
+  Description,
+  ModalFooterButton,
+  use_modal
+} from "../../../../../../../../../../../../../packages/ui/src/components/modal";
+import Spacer from "../../../../../../../../../../../../../packages/ui/src/components/spacer";
+import { use_toast } from "../../../../../../../../../../../../../packages/ui/src/components/toast";
+import Typography from "../../../../../../../../../../../../../packages/ui/src/components/typography";
+import TitleBlock from "../../../../../../../../../../../../../packages/ui/src/entities/title-block";
+import { use_media_query } from "../../../../../../../../../../../../../packages/ui/src/hooks/use-media-query";
 import MailIcon from "~/icons/Mail";
 import PasswordIcon from "~/icons/Password";
 import {
@@ -21,7 +29,7 @@ import {
   use_email_settings_mutation
 } from "~/redux/features";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
-import { breakpoints } from "~/theme/breakpoints";
+import { BREAKPOINTS } from "~/theme/breakpoints";
 
 import DashboardGroup from "../../../../dashboard-group";
 import { EmailGroupProps } from "./email-group.props";
@@ -45,10 +53,10 @@ const EmailSettingsModal = ({
       <React.Fragment>
         <FormInput
           autoComplete={"email"}
-          autoSize
+          auto_size
           data-testid={"new-email-input"}
-          formSlotProps={{
-            formItem: {
+          form_slot_props={{
+            form_item: {
               className: "f-grow"
             }
           }}
@@ -61,11 +69,11 @@ const EmailSettingsModal = ({
         />
         <Spacer orientation={"vertical"} size={3} />
         <FormPasswordInput
-          autoSize
+          auto_size
           data-testid={"current-password-input"}
           decorator={<PasswordIcon />}
-          formSlotProps={{
-            formItem: {
+          form_slot_props={{
+            form_item: {
               className: "f-grow"
             }
           }}
@@ -82,16 +90,16 @@ const EmailSettingsModal = ({
 
 // Export for testing
 export const EmailSettings = ({
-  onSubmit,
+  on_submit,
   has_password
 }: EmailGroupProps): React.ReactElement => {
   const router = useRouter();
   const dispatch = use_app_dispatch();
-  const toast = useToast();
-  const isSmallerThanMobile = useMediaQuery(breakpoints.down("mobile"));
+  const toast = use_toast();
+  const is_smaller_than_mobile = use_media_query(BREAKPOINTS.down("mobile"));
   const [updated, setUpdated] = React.useState<boolean>(false);
-  const form = useForm<EmailSettingsSchema>({
-    resolver: zodResolver(emailSettingsSchema),
+  const form = use_form<EmailSettingsSchema>({
+    resolver: zod_resolver(emailSettingsSchema),
     defaultValues: {
       "new-email": "",
       "current-password": ""
@@ -100,8 +108,8 @@ export const EmailSettings = ({
   const [mutateEmailSettings, { isLoading }] = use_email_settings_mutation();
 
   const handleSubmit: SubmitHandler<EmailSettingsSchema> = (values) => {
-    if (onSubmit) {
-      onSubmit(values);
+    if (on_submit) {
+      on_submit(values);
     } else {
       mutateEmailSettings(values)
         .unwrap()
@@ -120,14 +128,14 @@ export const EmailSettings = ({
     }
   };
 
-  const [element] = useModal(
-    ({ openModal }) => (
+  const [element] = use_modal(
+    ({ open_modal }) => (
       <Button
-        autoSize
-        checkAuth
+        auto_size
+        check_auth
         className={"fit-w"}
         disabled={!has_password}
-        onClick={openModal}
+        onClick={open_modal}
         variant={"hollow"}
       >
         Change e-mail
@@ -136,23 +144,26 @@ export const EmailSettings = ({
     <Form<EmailSettingsSchema>
       className={clsx("flex-col")}
       disabled={isLoading}
-      onSubmit={handleSubmit}
-      providerProps={form}
+      on_submit={handleSubmit}
+      provider_props={form}
     >
       <EmailSettingsModal updated={updated} />
     </Form>,
     {
       onOpenChange: updated ? (): void => undefined : undefined,
-      fullscreen: isSmallerThanMobile,
+      fullscreen: is_smaller_than_mobile,
       footer: (
         <>
           {!updated && (
-            <ModalFooterButton compact={isSmallerThanMobile} variant={"ghost"}>
+            <ModalFooterButton
+              compact={is_smaller_than_mobile}
+              variant={"ghost"}
+            >
               Cancel
             </ModalFooterButton>
           )}
           <ModalFooterButton
-            compact={isSmallerThanMobile}
+            compact={is_smaller_than_mobile}
             disabled={!updated && !form.formState.isDirty}
             loading={isLoading}
             onClick={(event): void => {
@@ -171,14 +182,14 @@ export const EmailSettings = ({
       ),
       slot_props: {
         footer: {
-          compact: isSmallerThanMobile
+          compact: is_smaller_than_mobile
         },
         content: {
           style: {
-            width: isSmallerThanMobile ? "100%" : "350px"
+            width: is_smaller_than_mobile ? "100%" : "350px"
           }
         },
-        closeButton: {
+        close_button: {
           style: {
             display: updated ? "none" : "flex"
           }

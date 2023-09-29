@@ -1,8 +1,8 @@
 import React from "react";
 
-import LeftSidebar from "~/layout/LeftSidebar";
-import RightSidebar from "~/layout/RightSidebar";
-import SplashScreen from "~/layout/SplashScreen";
+import LeftSidebar from "../../../../../../packages/ui/src/layout/left-sidebar";
+import RightSidebar from "../../../../../../packages/ui/src/layout/right-sidebar";
+import SplashScreen from "../../../../../../packages/ui/src/layout/splash-screen";
 
 const DefaultRightSidebarLayout = ({
   children

@@ -2,13 +2,13 @@ import { Reply } from "@storiny/types";
 import NextLink from "next/link";
 import React from "react";
 
-import { useConfirmation } from "~/components/Confirmation";
-import IconButton from "~/components/IconButton";
-import Menu from "~/components/Menu";
-import MenuItem from "~/components/MenuItem";
-import Separator from "~/components/Separator";
-import { useToast } from "~/components/Toast";
-import { useClipboard } from "~/hooks/useClipboard";
+import { use_confirmation } from "src/components/confirmation";
+import IconButton from "src/components/icon-button";
+import Menu from "src/components/menu";
+import MenuItem from "src/components/menu-item";
+import Separator from "src/components/separator";
+import { use_toast } from "src/components/toast";
+import { use_clipboard } from "src/hooks/use-clipboard";
 import CopyIcon from "~/icons/Copy";
 import DotsIcon from "~/icons/Dots";
 import EyeIcon from "~/icons/Eye";
@@ -27,30 +27,30 @@ import ResponseEditor from "../../common/response-editor";
 
 const ReplyActions = ({
   reply,
-  hidden: hiddenProp,
-  setHidden: setHiddenProp
+  hidden: hidden_prop,
+  set_hidden: set_hidden_prop
 }: {
   hidden: boolean;
   reply: Reply;
-  setHidden: React.Dispatch<React.SetStateAction<boolean>>;
+  set_hidden: React.Dispatch<React.SetStateAction<boolean>>;
 }): React.ReactElement => {
-  const copy = useClipboard();
-  const toast = useToast();
+  const copy = use_clipboard();
+  const toast = use_toast();
   const dispatch = use_app_dispatch();
   const user = use_app_selector(select_user);
-  const isSelf = user?.id === reply.user_id;
-  const isStoryAuthor = user?.id === reply.comment?.story?.user_id;
-  const [hidden, setHidden] = React.useState(hiddenProp);
-  const [deleteReply, { isLoading: isDeleteLoading }] =
+  const is_self = user?.id === reply.user_id;
+  const is_story_author = user?.id === reply.comment?.story?.user_id;
+  const [hidden, set_hidden] = React.useState(hidden_prop);
+  const [delete_reply, { isLoading: is_delete_loading }] =
     use_delete_reply_mutation();
-  const [mutateReplyVisibility, { isLoading: isVisibilityLoading }] =
+  const [mutate_reply_visibility, { isLoading: is_visibility_loading }] =
     use_reply_visibility_mutation();
 
   /**
    * Deletes a reply
    */
-  const handleReplyDelete = (): void => {
-    deleteReply({ id: reply.id, commentId: reply.comment_id })
+  const handle_reply_delete = (): void => {
+    delete_reply({ id: reply.id, comment_id: reply.comment_id })
       .unwrap()
       .then(() => {
         toast("Reply deleted", "success");
@@ -61,15 +61,15 @@ const ReplyActions = ({
       );
   };
 
-  const [deleteElement] = useConfirmation(
-    ({ openConfirmation }) => (
+  const [delete_element] = use_confirmation(
+    ({ open_confirmation }) => (
       <MenuItem
-        checkAuth
+        check_auth
         decorator={<TrashIcon />}
-        disabled={isDeleteLoading}
+        disabled={is_delete_loading}
         onSelect={(event): void => {
           event.preventDefault(); // Do not auto-close the menu
-          openConfirmation();
+          open_confirmation();
         }}
       >
         Delete reply
@@ -77,7 +77,7 @@ const ReplyActions = ({
     ),
     {
       color: "ruby",
-      onConfirm: handleReplyDelete,
+      on_confirm: handle_reply_delete,
       title: "Delete this reply?",
       decorator: <TrashIcon />,
       description:
@@ -88,12 +88,12 @@ const ReplyActions = ({
   /**
    * Mutates a reply's visibility
    */
-  const handleReplyVisibility = (): void => {
-    mutateReplyVisibility({ id: reply.id, hidden: !hidden })
+  const handle_reply_visibility = (): void => {
+    mutate_reply_visibility({ id: reply.id, hidden: !hidden })
       .unwrap()
       .then(() => {
-        setHidden(!hidden);
-        setHiddenProp(!hidden);
+        set_hidden(!hidden);
+        set_hidden_prop(!hidden);
         toast(`Reply ${hidden ? "unhidden" : "hidden"}`, "success");
         dispatch(get_replies_api.util.resetApiState());
       })
@@ -105,22 +105,22 @@ const ReplyActions = ({
       );
   };
 
-  const [visibilityElement] = useConfirmation(
-    ({ openConfirmation }) => (
+  const [visibility_element] = use_confirmation(
+    ({ open_confirmation }) => (
       <MenuItem
-        checkAuth
+        check_auth
         decorator={hidden ? <EyeIcon /> : <EyeOffIcon />}
-        disabled={isVisibilityLoading}
+        disabled={is_visibility_loading}
         onSelect={(event): void => {
           event.preventDefault(); // Do not auto-close the menu
-          openConfirmation();
+          open_confirmation();
         }}
       >
         {hidden ? "Unhide" : "Hide"} reply
       </MenuItem>
     ),
     {
-      onConfirm: handleReplyVisibility,
+      on_confirm: handle_reply_visibility,
       title: `${hidden ? "Unhide" : "Hide"} this reply?`,
       decorator: <TrashIcon />,
       description: hidden
@@ -156,20 +156,20 @@ const ReplyActions = ({
         Copy link to reply
       </MenuItem>
       <Separator />
-      {isSelf ? (
+      {is_self ? (
         <React.Fragment>
           <ResponseEditor
-            responseId={reply.id}
-            responseTextareaProps={{
+            response_id={reply.id}
+            response_textarea_props={{
               defaultValue: reply.content
             }}
-            responseType={"reply"}
+            response_type={"reply"}
           />
-          {deleteElement}
+          {delete_element}
         </React.Fragment>
       ) : (
         <React.Fragment>
-          {isStoryAuthor && visibilityElement}
+          {is_story_author && visibility_element}
           <MenuItem
             as={NextLink}
             decorator={<ReportIcon />}

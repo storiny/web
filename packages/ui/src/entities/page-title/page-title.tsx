@@ -1,0 +1,56 @@
+import clsx from "clsx";
+import NextLink from "next/link";
+import { useRouter as use_router } from "next/navigation";
+import React from "react";
+
+import IconButton from "src/components/icon-button";
+import ChevronIcon from "~/icons/Chevron";
+
+import styles from "./page-title.module.scss";
+import { PageTitleProps } from "./page-title.props";
+
+const PageTitle = (props: PageTitleProps): React.ReactElement => {
+  const {
+    dashboard,
+    back_button_href,
+    hide_back_button,
+    className,
+    component_props,
+    children,
+    ...rest
+  } = props;
+  const router = use_router();
+  return (
+    <header
+      {...rest}
+      className={clsx(
+        "full-bleed",
+        "page-header",
+        "flex",
+        "t-bold",
+        styles["page-title"],
+        dashboard && "dashboard-header",
+        className
+      )}
+    >
+      {!hide_back_button && (
+        <IconButton
+          aria-label={"Navigate to the previous page"}
+          {...(back_button_href
+            ? { as: NextLink, href: back_button_href }
+            : // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+              { onClick: (): void => router.back() })}
+          {...component_props?.back_button}
+          size={"sm"}
+          title={"Back"}
+          variant={"ghost"}
+        >
+          <ChevronIcon rotation={-90} />
+        </IconButton>
+      )}
+      {children}
+    </header>
+  );
+};
+
+export default PageTitle;

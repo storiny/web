@@ -1,11 +1,11 @@
-import { mockUsers } from "@storiny/ui/src/mocks";
+import { MOCK_USERS } from "@storiny/ui/src/mocks";
 
 const { worker, rest } = window.msw;
 
 worker.use(
   rest.get(
     `${process.env.NEXT_PUBLIC_API_URL}/v1/tag/:tagName/writers`,
-    (req, res, ctx) => res(ctx.delay(1200), ctx.json(mockUsers.slice(0, 5)))
+    (req, res, ctx) => res(ctx.delay(1200), ctx.json(MOCK_USERS.slice(0, 5)))
   )
 );
 

@@ -1,3 +1,3 @@
-import { atomWithReset } from "jotai/utils";
+import { atomWithReset as atom_with_reset } from "jotai/utils";
 
-export const pendingImageAtom = atomWithReset<string | null>(null);
+export const pending_image_atom = atom_with_reset<string | null>(null);

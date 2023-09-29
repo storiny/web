@@ -2,17 +2,17 @@
 
 import React from "react";
 
-import Button from "~/components/Button";
-import Spacer from "~/components/Spacer";
-import Typography from "~/components/Typography";
-import SplashScreen from "~/layout/SplashScreen";
+import Button from "../../../../packages/ui/src/components/button";
+import Spacer from "../../../../packages/ui/src/components/spacer";
+import Typography from "../../../../packages/ui/src/components/typography";
+import SplashScreen from "../../../../packages/ui/src/layout/splash-screen";
 
 const RootErrorBoundary = ({
   reset
 }: {
   reset: () => void;
 }): React.ReactElement => (
-  <SplashScreen forceMount>
+  <SplashScreen force_mount>
     <Typography className={"t-legible-fg"} level={"body2"}>
       Something went wrong—let&apos;s give it another try.
     </Typography>

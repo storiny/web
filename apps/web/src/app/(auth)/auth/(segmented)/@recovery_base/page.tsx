@@ -2,9 +2,9 @@
 
 import React from "react";
 
-import Link from "~/components/Link";
-import Spacer from "~/components/Spacer";
-import Typography from "~/components/Typography";
+import Link from "../../../../../../../../packages/ui/src/components/link";
+import Spacer from "../../../../../../../../packages/ui/src/components/spacer";
+import Typography from "../../../../../../../../packages/ui/src/components/typography";
 
 import { useAuthState } from "../../../actions";
 import RecoveryForm from "./form";

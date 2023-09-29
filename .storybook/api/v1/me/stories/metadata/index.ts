@@ -1,11 +1,11 @@
-import { mockStories } from "@storiny/ui/src/mocks";
+import { MOCK_STORIES } from "@storiny/ui/src/mocks";
 
 const { worker, rest } = window.msw;
 
 worker.use(
   rest.patch(
     `${process.env.NEXT_PUBLIC_API_URL}/v1/me/stories/:storyId/metadata`,
-    (req, res, ctx) => res(ctx.delay(750), ctx.json(mockStories[5]))
+    (req, res, ctx) => res(ctx.delay(750), ctx.json(MOCK_STORIES[5]))
   )
 );
 

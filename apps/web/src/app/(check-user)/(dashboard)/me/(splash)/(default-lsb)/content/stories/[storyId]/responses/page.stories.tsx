@@ -1,6 +1,6 @@
 // noinspection JSUnusedGlobalSymbols
 
-import { mockStories } from "@storiny/ui/src/mocks";
+import { MOCK_STORIES } from "@storiny/ui/src/mocks";
 import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
 
@@ -17,7 +17,7 @@ const meta: Meta<typeof ContentStoryResponsesPage> = {
   args: {
     total_count: 5,
     hidden_count: 5,
-    storyId: mockStories[0].id
+    storyId: MOCK_STORIES[0].id
   },
   parameters: {
     layout: "fullscreen"
@@ -39,7 +39,7 @@ export const Default: Story = {
             </DefaultDashboardLeftSidebarLayout>
           </DashboardSplashLayout>
         </DashboardLayout>,
-        { ignorePrimitiveProviders: false, loggedIn: true }
+        { ignore_primitive_providers: false, logged_in: true }
       )
   ]
 };

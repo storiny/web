@@ -1,0 +1,42 @@
+.icon-button {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  background-color: transparent;
+  border-radius: var(--radius);
+  height: var(--size);
+  width: var(--size);
+  min-height: var(--size);
+  min-width: var(--size);
+
+  &.disabled,
+  &.loading {
+    pointer-events: none;
+  }
+}
+
+/* Sizes */
+.lg {
+  --radius: var(--radius-xl);
+  --size: 36px;
+  --icon-size: 22px;
+}
+
+.md {
+  --radius: var(--radius-lg);
+  --size: 30px;
+  --icon-size: 18px;
+}
+
+.sm {
+  --radius: var(--radius-md);
+  --size: 26px;
+  --icon-size: 14px;
+}
+
+.xs {
+  --radius: var(--radius-sm);
+  --size: 21px;
+  --icon-size: 12px;
+}

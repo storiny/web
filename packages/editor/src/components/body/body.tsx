@@ -6,7 +6,7 @@ import { useAtomValue } from "jotai";
 import dynamic from "next/dynamic";
 import React from "react";
 
-import NoSsr from "~/components/NoSsr";
+import NoSsr from "../../../../ui/src/components/no-ssr";
 import { capitalize } from "~/utils/capitalize";
 
 import { docStatusAtom } from "../../atoms";
@@ -66,7 +66,7 @@ const EditorBody = (props: EditorProps): React.ReactElement => {
   useSidebarsShortcut();
   const [editor] = useLexicalComposerContext();
   const isEditable = editor.isEditable();
-  const docStatus = useAtomValue(docStatusAtom);
+  const docStatus = use_atom_value(docStatusAtom);
 
   return (
     <article

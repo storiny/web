@@ -16,7 +16,7 @@ const VirtualizedCommentList = React.memo(
   ({
     comments,
     has_more,
-    loadMore,
+    load_more,
     commentProps = {},
     skeletonProps = {},
     className,
@@ -40,7 +40,7 @@ const VirtualizedCommentList = React.memo(
           ...(has_more && { Footer: VirtualFooter })
         }}
         data={comments}
-        endReached={has_more ? loadMore : (): void => undefined}
+        endReached={has_more ? load_more : (): void => undefined}
       />
     </VirtualizedCommentListContext.Provider>
   )

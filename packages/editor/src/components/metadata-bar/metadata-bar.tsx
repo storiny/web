@@ -2,22 +2,22 @@ import { clsx } from "clsx";
 import { useAtom } from "jotai";
 import React from "react";
 
-import IconButton from "~/components/IconButton";
-import Spacer from "~/components/Spacer";
-import Typography from "~/components/Typography";
-import { useMediaQuery } from "~/hooks/useMediaQuery";
+import IconButton from "../../../../ui/src/components/icon-button";
+import Spacer from "../../../../ui/src/components/spacer";
+import Typography from "../../../../ui/src/components/typography";
+import { use_media_query } from "../../../../ui/src/hooks/use-media-query";
 import EditIcon from "~/icons/Edit";
-import { breakpoints } from "~/theme/breakpoints";
+import { BREAKPOINTS } from "~/theme/breakpoints";
 
 import { storyMetadataAtom } from "../../atoms";
 import StoryMetadataModal from "../metadata-modal";
 import styles from "./metadata-bar.module.scss";
 
 const StoryMetadataBar = (): React.ReactElement | null => {
-  const [story, setStory] = useAtom(storyMetadataAtom);
-  const shouldRender = useMediaQuery(breakpoints.down("desktop"));
+  const [story, setStory] = use_atom(storyMetadataAtom);
+  const should_render = use_media_query(BREAKPOINTS.down("desktop"));
 
-  if (!shouldRender) {
+  if (!should_render) {
     return null;
   }
 

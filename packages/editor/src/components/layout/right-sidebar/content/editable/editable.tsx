@@ -3,7 +3,7 @@
 import { useAtomValue } from "jotai";
 import React from "react";
 
-import Divider from "~/components/Divider";
+import Divider from "../../../../../../../ui/src/components/divider";
 
 import { docStatusAtom } from "../../../../../atoms";
 import Alignment from "./alignment";
@@ -15,7 +15,7 @@ import PaddedDivider from "./padded-divider";
 import TextStyle from "./text-style";
 
 const SuspendedEditorRightSidebarEditableContent = (): React.ReactElement => {
-  const docStatus = useAtomValue(docStatusAtom);
+  const docStatus = use_atom_value(docStatusAtom);
   const documentLoading = ["connecting", "reconnecting"].includes(docStatus);
   const publishing = docStatus === "publishing";
   const disabled = documentLoading || publishing;

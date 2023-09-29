@@ -3,8 +3,8 @@ import { clsx } from "clsx";
 import { $getNodeByKey } from "lexical";
 import React from "react";
 
-import ToggleGroup from "~/components/ToggleGroup";
-import ToggleGroupItem from "~/components/ToggleGroupItem";
+import ToggleGroup from "../../../../../../../ui/src/components/toggle-group";
+import ToggleGroupItem from "../../../../../../../ui/src/components/toggle-group-item";
 import FigureFillIcon from "~/icons/figure-fill";
 import FigureFitIcon from "~/icons/figure-fit";
 import FigureOverflowIcon from "~/icons/figure-overflow";
@@ -50,33 +50,33 @@ const ImageLayoutToggleGroup = (
         disabled={fitDisabled}
         slot_props={{
           tooltip: {
-            rightSlot: fitDisabled
+            right_slot: fitDisabled
               ? "(Not available for multiple images)"
               : undefined
           }
         }}
-        tooltipContent={"Fit"}
+        tooltip_content={"Fit"}
         value={"fit" as ImageNodeLayout}
       >
         <FigureFitIcon />
       </ToggleGroupItem>
       <ToggleGroupItem
         className={clsx("focus-invert", styles.x, styles.button)}
-        tooltipContent={"Fill"}
+        tooltip_content={"Fill"}
         value={"fill" as ImageNodeLayout}
       >
         <FigureFillIcon />
       </ToggleGroupItem>
       <ToggleGroupItem
         className={clsx("focus-invert", styles.x, styles.button)}
-        tooltipContent={"Overflow"}
+        tooltip_content={"Overflow"}
         value={"overflow" as ImageNodeLayout}
       >
         <FigureOverflowIcon />
       </ToggleGroupItem>
       <ToggleGroupItem
         className={clsx("focus-invert", styles.x, styles.button)}
-        tooltipContent={"Screen width"}
+        tooltip_content={"Screen width"}
         value={"screen-width" as ImageNodeLayout}
       >
         <FigureScreenWidthIcon />

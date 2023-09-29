@@ -2,7 +2,7 @@
 
 import React from "react";
 
-import { createSvgIcon } from "~/utils/createSvgIcon";
+import { create_svg_icon } from "src/utils/create-svg-icon";
 
 const RedditIcon = (
   <>
@@ -14,4 +14,4 @@ const RedditIcon = (
   </>
 );
 
-export default createSvgIcon(RedditIcon, "reddit", { noStroke: true });
+export default create_svg_icon(RedditIcon, "reddit", { no_stroke: true });

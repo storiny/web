@@ -1,0 +1,37 @@
+"use client";
+
+import clsx from "clsx";
+import React from "react";
+
+import Logo from "src/brand/logo";
+
+import styles from "./splash-screen.module.scss";
+import { SplashScreenProps } from "./splash-screen.props";
+
+const SplashScreen = (props: SplashScreenProps): React.ReactElement | null => {
+  const { className, force_mount, children, ...rest } = props;
+  const [visible, set_visible] = React.useState<boolean>(true);
+
+  React.useEffect(() => {
+    set_visible(false);
+  }, []);
+
+  if (!visible && !force_mount) {
+    return null;
+  }
+
+  return (
+    <div
+      {...rest}
+      aria-label={"Loading…"}
+      className={clsx("flex-col", styles["splash-screen"], className)}
+    >
+      <Logo size={64} />
+      {children && (
+        <div className={clsx("flex-col", styles.children)}>{children}</div>
+      )}
+    </div>
+  );
+};
+
+export default SplashScreen;

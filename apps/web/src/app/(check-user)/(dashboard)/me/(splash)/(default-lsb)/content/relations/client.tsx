@@ -6,18 +6,18 @@ import React from "react";
 
 import { dynamicLoader } from "~/common/dynamic";
 import { UserListSkeleton, VirtualizedUserList } from "~/common/user";
-import Divider from "~/components/Divider";
-import Input from "~/components/Input";
-import Option from "~/components/Option";
-import Select from "~/components/Select";
-import Spacer from "~/components/Spacer";
-import Tab from "~/components/Tab";
-import Tabs from "~/components/Tabs";
-import TabsList from "~/components/TabsList";
-import Typography from "~/components/Typography";
-import ErrorState from "~/entities/ErrorState";
-import { useDebounce } from "~/hooks/useDebounce";
-import { useMediaQuery } from "~/hooks/useMediaQuery";
+import Divider from "../../../../../../../../../../../packages/ui/src/components/divider";
+import Input from "../../../../../../../../../../../packages/ui/src/components/input";
+import Option from "../../../../../../../../../../../packages/ui/src/components/option";
+import Select from "../../../../../../../../../../../packages/ui/src/components/select";
+import Spacer from "../../../../../../../../../../../packages/ui/src/components/spacer";
+import Tab from "../../../../../../../../../../../packages/ui/src/components/tab";
+import Tabs from "../../../../../../../../../../../packages/ui/src/components/tabs";
+import TabsList from "../../../../../../../../../../../packages/ui/src/components/tabs-list";
+import Typography from "../../../../../../../../../../../packages/ui/src/components/typography";
+import ErrorState from "../../../../../../../../../../../packages/ui/src/entities/error-state";
+import { use_debounce } from "../../../../../../../../../../../packages/ui/src/hooks/use-debounce";
+import { use_media_query } from "../../../../../../../../../../../packages/ui/src/hooks/use-media-query";
 import SearchIcon from "~/icons/Search";
 import {
   get_query_error_type,
@@ -28,8 +28,8 @@ import {
   use_get_relations_query
 } from "~/redux/features";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
-import { breakpoints } from "~/theme/breakpoints";
-import { abbreviateNumber } from "~/utils/abbreviateNumber";
+import { BREAKPOINTS } from "~/theme/breakpoints";
+import { abbreviate_number } from "../../../../../../../../../../../packages/ui/src/utils/abbreviate-number";
 
 import DashboardTitle from "../../dashboard-title";
 import { RelationsProps } from "./relations.props";
@@ -93,7 +93,7 @@ const StatusHeader = ({
   RelationsProps,
   "pending_friend_request_count"
 >): React.ReactElement => {
-  const isSmallerThanDesktop = useMediaQuery(breakpoints.down("desktop"));
+  const is_smaller_than_desktop = use_media_query(BREAKPOINTS.down("desktop"));
   const dispatch = use_app_dispatch();
   const user = use_app_selector(select_user)!;
   const count_param =
@@ -133,13 +133,13 @@ const StatusHeader = ({
         ) : tab === "following" ? (
           <>
             You are following{" "}
-            <span className={"t-bold"}>{abbreviateNumber(count_param)}</span>{" "}
+            <span className={"t-bold"}>{abbreviate_number(count_param)}</span>{" "}
             people.
           </>
         ) : (
           <>
             You have{" "}
-            <span className={"t-bold"}>{abbreviateNumber(count_param)}</span>{" "}
+            <span className={"t-bold"}>{abbreviate_number(count_param)}</span>{" "}
             {count_param === 1
               ? tab === "followers"
                 ? "follower"
@@ -151,7 +151,7 @@ const StatusHeader = ({
           </>
         )}
       </Typography>
-      {isSmallerThanDesktop && tab === "friends" ? <FriendRequests /> : null}
+      {is_smaller_than_desktop && tab === "friends" ? <FriendRequests /> : null}
     </div>
   );
 };
@@ -225,37 +225,37 @@ const ContentRelationsClient = (props: RelationsProps): React.ReactElement => {
   const [sort, setSort] = React.useState<RelationsSortValue>("popular");
   const [query, setQuery] = React.useState<string>("");
   const [value, setValue] = React.useState<RelationsTabValue>("followers");
-  const [page, setPage] = React.useState<number>(1);
-  const debouncedQuery = useDebounce(query);
+  const [page, set_page] = React.useState<number>(1);
+  const debounced_query = use_debounce(query);
   const { data, isLoading, isFetching, isError, error, refetch } =
     use_get_relations_query({
       page,
       sort,
-      query: debouncedQuery,
+      query: debounced_query,
       relationType: value
     });
   const { items = [], has_more } = data || {};
-  const isTyping = query !== debouncedQuery;
+  const is_typing = query !== debounced_query;
 
-  const loadMore = React.useCallback(
-    () => setPage((prevState) => prevState + 1),
+  const load_more = React.useCallback(
+    () => set_page((prev_state) => prev_state + 1),
     []
   );
 
   const handleChange = React.useCallback((newValue: RelationsTabValue) => {
-    setPage(1);
+    set_page(1);
     setSort("popular");
     setQuery("");
     setValue(newValue);
   }, []);
 
   const handleSortChange = React.useCallback((newSort: RelationsSortValue) => {
-    setPage(1);
+    set_page(1);
     setSort(newSort);
   }, []);
 
   const handleQueryChange = React.useCallback((newQuery: string) => {
-    setPage(1);
+    set_page(1);
     setQuery(newQuery);
   }, []);
 
@@ -277,11 +277,11 @@ const ContentRelationsClient = (props: RelationsProps): React.ReactElement => {
           sort={sort}
           tab={value}
         />
-        {isLoading || isTyping || (isFetching && page === 1) ? (
+        {isLoading || is_typing || (isFetching && page === 1) ? (
           <UserListSkeleton />
         ) : isError ? (
           <ErrorState
-            autoSize
+            auto_size
             component_props={{
               button: { loading: isFetching }
             }}
@@ -293,7 +293,7 @@ const ContentRelationsClient = (props: RelationsProps): React.ReactElement => {
         ) : (
           <VirtualizedUserList
             has_more={Boolean(has_more)}
-            loadMore={loadMore}
+            load_more={load_more}
             users={items}
           />
         )}

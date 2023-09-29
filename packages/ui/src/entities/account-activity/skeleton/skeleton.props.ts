@@ -6,5 +6,5 @@ export interface AccountActivitySkeletonProps
    * If `true`, does not render the vertical connecting pipe
    * @default false
    */
-  hidePipe?: boolean;
+  hide_pipe?: boolean;
 }

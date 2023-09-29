@@ -1,41 +1,46 @@
 import { Asset } from "@storiny/types";
 import { dynamicLoader } from "@storiny/web/src/common/dynamic";
 import clsx from "clsx";
-import { Provider, useAtom, useAtomValue, useSetAtom } from "jotai";
+import {
+  Provider,
+  useAtom as use_atom,
+  useAtomValue as use_atom_value,
+  useSetAtom as use_set_atom
+} from "jotai";
 import dynamic from "next/dynamic";
 import React from "react";
+import IconButton from "src/components/icon-button";
+import Modal from "src/components/modal";
+import ModalFooterButton from "src/components/modal/footer-button";
+import ModalSidebarItem from "src/components/modal/sidebar-item";
+import ModalSidebarList from "src/components/modal/sidebar-list";
+import Spacer from "src/components/spacer";
+import TabPanel from "src/components/tab-panel";
+import { use_media_query } from "src/hooks/use-media-query";
 
-import IconButton from "~/components/IconButton";
-import Modal from "~/components/Modal";
-import ModalFooterButton from "~/components/Modal/FooterButton";
-import ModalSidebarItem from "~/components/Modal/SidebarItem";
-import ModalSidebarList from "~/components/Modal/SidebarList";
-import Spacer from "~/components/Spacer";
-import TabPanel from "~/components/TabPanel";
-import { useResetGalleryAtoms } from "~/entities/gallery/core/hooks/use-reset-gallery-atoms";
-import { useMediaQuery } from "~/hooks/useMediaQuery";
 import AlbumIcon from "~/icons/Album";
 import ChevronIcon from "~/icons/Chevron";
 import PenIcon from "~/icons/Pen";
 import PexelsIcon from "~/icons/Pexels";
 import PhotoSearchIcon from "~/icons/PhotoSearch";
 import UploadIcon from "~/icons/Upload";
-import { breakpoints } from "~/theme/breakpoints";
+import { BREAKPOINTS } from "~/theme/breakpoints";
 
 import {
   GallerySidebarTabsValue,
-  navSegmentAtom,
-  pendingImageAtom,
-  queryAtom,
-  selectedAtom,
-  sidebarTabAtom,
-  uploadingAtom
+  nav_segment_atom,
+  pending_image_atom,
+  query_atom,
+  selected_atom,
+  sidebar_tab_atom,
+  uploading_atom
 } from "./core/atoms";
 import NavigationScreen from "./core/components/navigation-screen";
 import ImagePreview from "./core/components/preview";
 import SearchInput from "./core/components/search-input";
 import Whiteboard from "./core/components/whiteboard";
 import WhiteboardUploader from "./core/components/whiteboard/uploader";
+import { use_reset_gallery_atoms } from "./core/hooks/use-reset-gallery-atoms";
 import { FileWithPreview } from "./core/types";
 import styles from "./gallery.module.scss";
 import { GalleryProps } from "./gallery.props";
@@ -43,7 +48,6 @@ import { GalleryProps } from "./gallery.props";
 const GalleryMasonry = dynamic(() => import("./core/components/masonry"), {
   loading: dynamicLoader()
 });
-
 const UploadsTab = dynamic(() => import("./core/components/uploads"), {
   loading: dynamicLoader()
 });
@@ -51,21 +55,21 @@ const UploadsTab = dynamic(() => import("./core/components/uploads"), {
 // Footer
 
 const GalleryFooter = (
-  props: Pick<GalleryProps, "onConfirm" | "onCancel">
+  props: Pick<GalleryProps, "on_confirm" | "on_cancel">
 ): React.ReactElement => {
-  const { onConfirm, onCancel } = props;
-  const selected = useAtomValue(selectedAtom);
-  const uploading = useAtomValue(uploadingAtom);
-  const [pendingImage, setPendingImage] = useAtom(pendingImageAtom);
-  const isSmallerThanTablet = useMediaQuery(breakpoints.down("tablet"));
+  const { on_confirm, on_cancel } = props;
+  const selected = use_atom_value(selected_atom);
+  const uploading = use_atom_value(uploading_atom);
+  const [pending_image, set_pending_image] = use_atom(pending_image_atom);
+  const is_smaller_than_tablet = use_media_query(BREAKPOINTS.down("tablet"));
 
   return (
     <>
       <ModalFooterButton
-        compact={isSmallerThanTablet}
+        compact={is_smaller_than_tablet}
         onClick={(): void => {
-          if (onCancel) {
-            onCancel();
+          if (on_cancel) {
+            on_cancel();
           }
         }}
         variant={"ghost"}
@@ -73,14 +77,14 @@ const GalleryFooter = (
         Cancel
       </ModalFooterButton>
       <ModalFooterButton
-        compact={isSmallerThanTablet}
-        disabled={!selected || Boolean(pendingImage) || uploading}
+        compact={is_smaller_than_tablet}
+        disabled={!selected || Boolean(pending_image) || uploading}
         onClick={(event): void => {
           if (selected?.source === "pexels") {
             event.preventDefault(); // Prevent closing of modal
-            setPendingImage(selected?.key || null);
-          } else if (onConfirm && selected) {
-            onConfirm({
+            set_pending_image(selected?.key || null);
+          } else if (on_confirm && selected) {
+            on_confirm({
               width: selected.width,
               height: selected.height,
               rating: selected.rating,
@@ -98,40 +102,40 @@ const GalleryFooter = (
 };
 
 const GalleryImpl = (props: GalleryProps): React.ReactElement => {
-  const { children, onConfirm, onCancel } = props;
-  const resetAtoms = useResetGalleryAtoms();
-  const [open, setOpen] = React.useState<boolean>(false);
-  const [uploaderProps, setUploaderProps] = React.useState<{
+  const { children, on_confirm, on_cancel } = props;
+  const reset_atoms = use_reset_gallery_atoms();
+  const [open, set_open] = React.useState<boolean>(false);
+  const [uploader_props, set_uploader_props] = React.useState<{
     alt: string;
     file: FileWithPreview;
   } | null>(null);
-  const uploadImageUrl = React.useRef<string | null>(null);
-  const isSmallerThanTablet = useMediaQuery(breakpoints.down("tablet"));
-  const [navSegment, setNavSegment] = useAtom(navSegmentAtom);
-  const [whiteboardUploading, setWhiteboardUploading] =
+  const upload_image_url = React.useRef<string | null>(null);
+  const is_smaller_than_tablet = use_media_query(BREAKPOINTS.down("tablet"));
+  const [nav_segment, set_nav_segment] = use_atom(nav_segment_atom);
+  const [whiteboard_uploading, set_whiteboard_uploading] =
     React.useState<boolean>(false);
-  const [value, setValue] = useAtom(sidebarTabAtom);
-  const selected = useAtomValue(selectedAtom);
-  const setQuery = useSetAtom(queryAtom);
-  const uploading = useAtomValue(uploadingAtom);
-  const fullscreen = value === "whiteboard" && !whiteboardUploading;
+  const [value, set_value] = use_atom(sidebar_tab_atom);
+  const selected = use_atom_value(selected_atom);
+  const set_query = use_set_atom(query_atom);
+  const uploading = use_atom_value(uploading_atom);
+  const fullscreen = value === "whiteboard" && !whiteboard_uploading;
 
   /**
    * Resets the gallery state
    */
   const reset = React.useCallback(() => {
-    resetAtoms();
-    setUploaderProps(null);
-    setWhiteboardUploading(false);
-  }, [resetAtoms]);
+    reset_atoms();
+    set_uploader_props(null);
+    set_whiteboard_uploading(false);
+  }, [reset_atoms]);
 
   /**
    * Handles Pexels image upload
    * @param asset Asset
    */
-  const handlePexelsUpload = React.useCallback(
+  const handle_pexels_upload = React.useCallback(
     (asset: Asset): void => {
-      onConfirm?.({
+      on_confirm?.({
         hex: asset.hex,
         key: asset.key,
         rating: asset.rating,
@@ -140,19 +144,19 @@ const GalleryImpl = (props: GalleryProps): React.ReactElement => {
         alt: asset.alt,
         credits: selected?.credits
       });
-      setOpen(false);
+      set_open(false);
       reset();
     },
-    [onConfirm, reset, selected?.credits]
+    [on_confirm, reset, selected?.credits]
   );
 
   return (
     <Modal
-      footer={<GalleryFooter {...{ onConfirm, onCancel }} />}
-      fullscreen={isSmallerThanTablet || fullscreen}
+      footer={<GalleryFooter {...{ on_confirm, on_cancel }} />}
+      fullscreen={is_smaller_than_tablet || fullscreen}
       mode={"tabbed"}
       onOpenChange={(open): void => {
-        setOpen(open);
+        set_open(open);
         if (!open) {
           reset();
         }
@@ -199,38 +203,41 @@ const GalleryImpl = (props: GalleryProps): React.ReactElement => {
       slot_props={{
         tabs: {
           value,
+          // eslint-disable-next-line prefer-snakecase/prefer-snakecase
           onValueChange: (newValue): void => {
-            setValue(newValue as GallerySidebarTabsValue);
-            setQuery("");
+            set_value(newValue as GallerySidebarTabsValue);
+            set_query("");
           }
         },
         sidebar: {
           style: {
-            display: fullscreen || isSmallerThanTablet ? "none" : "flex"
+            display: fullscreen || is_smaller_than_tablet ? "none" : "flex"
           }
         },
         content: {
           style: {
+            // eslint-disable-next-line prefer-snakecase/prefer-snakecase
             minHeight: "45vh",
             width: "40vw",
-            minWidth: fullscreen || isSmallerThanTablet ? "100%" : "640px"
+            // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+            minWidth: fullscreen || is_smaller_than_tablet ? "100%" : "640px"
           }
         },
         body: {
           className: clsx("flex-col", styles.body)
         },
-        closeButton: {
+        close_button: {
           style: { display: fullscreen ? "none" : "flex" }
         },
         header: {
           decorator:
-            !isSmallerThanTablet || navSegment === "home" ? (
+            !is_smaller_than_tablet || nav_segment === "home" ? (
               <PhotoSearchIcon />
             ) : (
               <IconButton
                 aria-label={"Go to main screen"}
                 disabled={uploading}
-                onClick={(): void => setNavSegment("home")}
+                onClick={(): void => set_nav_segment("home")}
                 variant={"ghost"}
               >
                 <ChevronIcon rotation={-90} />
@@ -240,7 +247,7 @@ const GalleryImpl = (props: GalleryProps): React.ReactElement => {
           style: { display: fullscreen ? "none" : "flex" }
         },
         footer: {
-          compact: isSmallerThanTablet,
+          compact: is_smaller_than_tablet,
           style: {
             display: fullscreen ? "none" : "flex"
           }
@@ -248,7 +255,7 @@ const GalleryImpl = (props: GalleryProps): React.ReactElement => {
       }}
       trigger={children}
     >
-      {isSmallerThanTablet ? (
+      {is_smaller_than_tablet ? (
         {
           home: <NavigationScreen />,
           pexels: (
@@ -259,20 +266,21 @@ const GalleryImpl = (props: GalleryProps): React.ReactElement => {
                 slot_props={{
                   container: {
                     style: {
+                      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
                       borderRadius: 0
                     }
                   }
                 }}
               />
               <GalleryMasonry
-                onPexelsUploadFinish={handlePexelsUpload}
+                on_pexels_upload_finish={handle_pexels_upload}
                 tab={"pexels"}
               />
             </React.Fragment>
           ),
           library: <GalleryMasonry tab={"library"} />,
-          upload: <UploadsTab disableWhiteboardPrompt />
-        }[navSegment]
+          upload: <UploadsTab disable_whiteboard_prompt />
+        }[nav_segment]
       ) : (
         <React.Fragment>
           <TabPanel
@@ -281,7 +289,7 @@ const GalleryImpl = (props: GalleryProps): React.ReactElement => {
             value={"pexels"}
           >
             <GalleryMasonry
-              onPexelsUploadFinish={handlePexelsUpload}
+              on_pexels_upload_finish={handle_pexels_upload}
               tab={"pexels"}
             />
           </TabPanel>
@@ -290,33 +298,33 @@ const GalleryImpl = (props: GalleryProps): React.ReactElement => {
             tabIndex={-1}
             value={"whiteboard"}
           >
-            {whiteboardUploading && uploaderProps ? (
+            {whiteboard_uploading && uploader_props ? (
               <WhiteboardUploader
-                alt={uploaderProps.alt}
-                file={uploaderProps.file}
-                onReset={(): void => {
-                  setUploaderProps(null);
-                  setWhiteboardUploading(false);
+                alt={uploader_props.alt}
+                file={uploader_props.file}
+                on_reset={(): void => {
+                  set_uploader_props(null);
+                  set_whiteboard_uploading(false);
                 }}
               />
             ) : (
               <Whiteboard
-                initialImageUrl={uploadImageUrl.current}
-                onCancel={(): void => {
-                  setUploaderProps(null);
-                  setWhiteboardUploading(false);
-                  setValue("pexels");
+                initialImageUrl={upload_image_url.current}
+                onMount={(): void => {
+                  upload_image_url.current = null;
                 }}
-                onConfirm={(file, alt): void => {
+                on_cancel={(): void => {
+                  set_uploader_props(null);
+                  set_whiteboard_uploading(false);
+                  set_value("pexels");
+                }}
+                on_confirm={(file, alt): void => {
                   Object.assign(file, { preview: URL.createObjectURL(file) });
-                  setUploaderProps({ file, alt } as {
+                  set_uploader_props({ file, alt } as {
                     alt: string;
                     file: FileWithPreview;
                   });
-                  setWhiteboardUploading(true);
-                }}
-                onMount={(): void => {
-                  uploadImageUrl.current = null;
+                  set_whiteboard_uploading(true);
                 }}
               />
             )}
@@ -334,9 +342,9 @@ const GalleryImpl = (props: GalleryProps): React.ReactElement => {
             value={"upload"}
           >
             <UploadsTab
-              onOpenInWhiteboard={(blobUrl): void => {
-                uploadImageUrl.current = blobUrl;
-                setValue("whiteboard");
+              on_open_in_whiteboard={(blob_url): void => {
+                upload_image_url.current = blob_url;
+                set_value("whiteboard");
               }}
             />
           </TabPanel>

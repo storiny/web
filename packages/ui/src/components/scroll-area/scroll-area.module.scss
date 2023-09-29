@@ -1,0 +1,84 @@
+.scroll-area {
+  overflow: hidden;
+}
+
+.viewport {
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+}
+
+.thumb {
+  --bg: var(--inverted-200);
+
+  flex: 1;
+  background-color: var(--bg);
+  border-radius: var(--size);
+  cursor: grab;
+  position: relative;
+  transition: background 160ms ease-out;
+
+  &:active {
+    cursor: grabbing;
+  }
+
+  // Increase target size for touch devices
+  &::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    height: 100%;
+    min-width: 44px;
+    min-height: 44px;
+  }
+}
+
+.scrollbar {
+  --bg: var(--bg-elevation-sm);
+
+  display: flex;
+  user-select: none;
+  touch-action: none;
+  padding: var(--padding);
+  background-color: var(--bg);
+  transition: background 160ms ease-out;
+
+  &:not(:empty):hover {
+    --bg: var(--bg-elevation-md);
+
+    & .thumb {
+      --bg: var(--inverted-300);
+    }
+  }
+
+  &[data-orientation="vertical"] {
+    width: var(--size);
+    box-shadow: inset 1px 0 0 var(--shadow-color);
+  }
+
+  &[data-orientation="horizontal"] {
+    flex-direction: column;
+    height: var(--size);
+    box-shadow: inset 0 1px 0 var(--shadow-color);
+  }
+}
+
+.corner {
+  background-color: var(--divider);
+}
+
+/* Sizes */
+.lg {
+  --size: 16px;
+  --padding: 4px;
+  --shadow-color: var(--divider);
+}
+
+.md {
+  --size: 10px;
+  --padding: 2px;
+  --shadow-color: transparent;
+}

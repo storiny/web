@@ -1,7 +1,7 @@
-import { SubmitHandler } from "~/components/Form";
+import { SubmitHandler } from "../../../../../../../../../../../../../../../packages/ui/src/components/form";
 
 import { DisableAccountSchema } from "./disable-account.schema";
 
 export interface DisableAccountProps {
-  onSubmit?: SubmitHandler<DisableAccountSchema>;
+  on_submit?: SubmitHandler<DisableAccountSchema>;
 }

@@ -1,0 +1,7 @@
+.toggle-group {
+  display: inline-flex;
+
+  &[data-orientation="vertical"] {
+    flex-direction: column;
+  }
+}

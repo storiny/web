@@ -1,37 +1,37 @@
 // noinspection JSUnusedGlobalSymbols
 
-import { zodResolver } from "@hookform/resolvers/zod";
 import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
 import { z } from "zod";
 
-import Form, { useForm } from "~/components/Form";
+import Form, { use_form } from "~/components/form";
 
+import { zod_resolver } from "../form";
 import FormMultiSelect from "./form-multi-select";
 
-const sampleSchema = z.object({
+const sample_schema = z.object({
   sample: z.array(z.string())
 });
 
-type SampleSchema = z.infer<typeof sampleSchema>;
+type SampleSchema = z.infer<typeof sample_schema>;
 
 const Component = ({
   children
 }: {
   children: React.ReactNode;
 }): React.ReactElement => {
-  const form = useForm<SampleSchema>({
-    resolver: zodResolver(sampleSchema),
+  const form = use_form<SampleSchema>({
+    resolver: zod_resolver(sample_schema),
     defaultValues: {
       sample: ["option-1"]
     }
   });
 
-  return <Form providerProps={form}>{children}</Form>;
+  return <Form provider_props={form}>{children}</Form>;
 };
 
 const meta: Meta<typeof FormMultiSelect> = {
-  title: "Components/form-multi-select",
+  title: "components/form-multi-select",
   component: FormMultiSelect,
   decorators: [
     (Story): React.ReactElement => (
@@ -43,7 +43,7 @@ const meta: Meta<typeof FormMultiSelect> = {
   tags: ["autodocs"],
   args: {
     label: "Multi select label",
-    helperText: "Form multi-select helper text",
+    helper_text: "Form multi-select helper text",
     options: [
       { value: "option-1", label: "Option 1" },
       { value: "option-2", label: "Option 2" },
@@ -52,6 +52,7 @@ const meta: Meta<typeof FormMultiSelect> = {
     size: "md",
     color: "inverted",
     name: "sample",
+    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     style: { maxWidth: "300px" }
   }
 };

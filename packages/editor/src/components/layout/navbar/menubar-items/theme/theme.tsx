@@ -1,8 +1,8 @@
 import React from "react";
 
-import MenubarRadioGroup from "~/components/MenubarRadioGroup";
-import MenubarRadioItem from "~/components/MenubarRadioItem";
-import MenubarSub from "~/components/MenubarSub";
+import MenubarRadioGroup from "../../../../../../../ui/src/components/menubar-radio-group";
+import MenubarRadioItem from "../../../../../../../ui/src/components/menubar-radio-item";
+import MenubarSub from "../../../../../../../ui/src/components/menubar-sub";
 import AdjustIcon from "~/icons/Adjust";
 import MoonIcon from "~/icons/Moon";
 import SunIcon from "~/icons/Sun";

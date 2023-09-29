@@ -1,15 +1,15 @@
 import NextLink from "next/link";
 import React from "react";
+import Button from "src/components/button";
+import { use_confirmation } from "src/components/confirmation";
+import IconButton from "src/components/icon-button";
+import Menu from "src/components/menu";
+import MenuItem from "src/components/menu-item";
+import Separator from "src/components/separator";
+import { use_clipboard } from "src/hooks/use-clipboard";
+import { use_media_query } from "src/hooks/use-media-query";
+import { use_web_share } from "src/hooks/use-web-share";
 
-import Button from "~/components/Button";
-import { useConfirmation } from "~/components/Confirmation";
-import IconButton from "~/components/IconButton";
-import Menu from "~/components/Menu";
-import MenuItem from "~/components/MenuItem";
-import Separator from "~/components/Separator";
-import { useClipboard } from "~/hooks/useClipboard";
-import { useMediaQuery } from "~/hooks/useMediaQuery";
-import { useWebShare } from "~/hooks/useWebShare";
 import CopyIcon from "~/icons/Copy";
 import DotsIcon from "~/icons/Dots";
 import MuteIcon from "~/icons/Mute";
@@ -17,49 +17,46 @@ import ReportIcon from "~/icons/Report";
 import ShareIcon from "~/icons/Share";
 import UserBlockIcon from "~/icons/UserBlock";
 import UserXIcon from "~/icons/UserX";
+import { boolean_action } from "~/redux/features";
 import { select_is_logged_in } from "~/redux/features/auth/selectors";
-import {
-  boolean_action,
-  setMute,
-  sync_with_user
-} from "~/redux/features/entities/slice";
+import { sync_with_user } from "~/redux/features/entities/slice";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
-import { breakpoints } from "~/theme/breakpoints";
+import { BREAKPOINTS } from "~/theme/breakpoints";
 
 import { UserActionsProps } from "./actions.props";
 
 const UserActions = (props: UserActionsProps): React.ReactElement | null => {
-  const { user, actionType } = props;
-  const share = useWebShare();
-  const copy = useClipboard();
+  const { user, action_type } = props;
+  const share = use_web_share();
+  const copy = use_clipboard();
   const dispatch = use_app_dispatch();
-  const isMobile = useMediaQuery(breakpoints.down("mobile"));
-  const loggedIn = use_app_selector(select_is_logged_in);
-  const isBlocking = use_app_selector(
+  const is_mobile = use_media_query(BREAKPOINTS.down("mobile"));
+  const logged_in = use_app_selector(select_is_logged_in);
+  const is_blocking = use_app_selector(
     (state) => state.entities.blocks[user.id]
   );
-  const isMuted = use_app_selector((state) => state.entities.mutes[user.id]);
-  const isFollower = use_app_selector(
+  const is_muted = use_app_selector((state) => state.entities.mutes[user.id]);
+  const is_follower = use_app_selector(
     (state) => state.entities.followers[user.id]
   );
-  const [element] = useConfirmation(
-    ({ openConfirmation }) => (
+  const [element] = use_confirmation(
+    ({ open_confirmation }) => (
       <MenuItem
-        checkAuth
+        check_auth
         decorator={<UserBlockIcon />}
         onSelect={(event): void => {
           event.preventDefault(); // Do not auto-close the menu
-          openConfirmation();
+          open_confirmation();
         }}
       >
-        {isBlocking ? "Unblock" : "Block"} this user
+        {is_blocking ? "Unblock" : "Block"} this user
       </MenuItem>
     ),
     {
-      color: isBlocking ? "inverted" : "ruby",
-      onConfirm: () => dispatch(boolean_action("blocks", user.id)),
-      title: `${isBlocking ? "Unblock" : "Block"} @${user.username}?`,
-      description: isBlocking
+      color: is_blocking ? "inverted" : "ruby",
+      on_confirm: () => dispatch(boolean_action("blocks", user.id)),
+      title: `${is_blocking ? "Unblock" : "Block"} @${user.username}?`,
+      description: is_blocking
         ? `The public content you publish will be available to them as well as the ability to follow you.`
         : `Your feed will not include their content, and they will not be able to follow you or interact with your profile.`
     }
@@ -69,16 +66,16 @@ const UserActions = (props: UserActionsProps): React.ReactElement | null => {
     dispatch(sync_with_user(user));
   }, [dispatch, user]);
 
-  if (isMobile && actionType === "default") {
+  if (is_mobile && action_type === "default") {
     return null;
   }
 
-  return actionType === "default" ? (
+  return action_type === "default" ? (
     <Menu
       trigger={
         <IconButton
           aria-label={"More options"}
-          autoSize
+          auto_size
           title={"More options"}
           variant={"ghost"}
         >
@@ -105,11 +102,11 @@ const UserActions = (props: UserActionsProps): React.ReactElement | null => {
       >
         Copy link to profile
       </MenuItem>
-      {isFollower && (
+      {is_follower && (
         <>
           <Separator />
           <MenuItem
-            checkAuth
+            check_auth
             decorator={<UserXIcon />}
             onClick={(): void => {
               dispatch(boolean_action("followers", user.id, false));
@@ -120,16 +117,16 @@ const UserActions = (props: UserActionsProps): React.ReactElement | null => {
         </>
       )}
       <Separator />
-      {loggedIn && (
+      {logged_in && (
         <>
           <MenuItem
-            checkAuth
+            check_auth
             decorator={<MuteIcon />}
             onClick={(): void => {
               dispatch(boolean_action("mutes", user.id));
             }}
           >
-            {isMuted ? "Unmute" : "Mute"} this user
+            {is_muted ? "Unmute" : "Mute"} this user
           </MenuItem>
           {element}
         </>
@@ -146,22 +143,22 @@ const UserActions = (props: UserActionsProps): React.ReactElement | null => {
     </Menu>
   ) : (
     <Button
-      autoSize
-      checkAuth
+      auto_size
+      check_auth
       onClick={(): void => {
         dispatch(
-          boolean_action(actionType === "block" ? "blocks" : "mutes", user.id)
+          boolean_action(action_type === "block" ? "blocks" : "mutes", user.id)
         );
       }}
       variant={
-        (actionType === "block" ? isBlocking : isMuted) ? "rigid" : "hollow"
+        (action_type === "block" ? is_blocking : is_muted) ? "rigid" : "hollow"
       }
     >
-      {actionType === "block"
-        ? isBlocking
+      {action_type === "block"
+        ? is_blocking
           ? "Unblock"
           : "Block"
-        : isMuted
+        : is_muted
         ? "Unmute"
         : "Mute"}
     </Button>

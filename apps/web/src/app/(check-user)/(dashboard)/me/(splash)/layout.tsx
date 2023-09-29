@@ -2,12 +2,12 @@ import { clsx } from "clsx";
 import React from "react";
 
 import { useLoginRedirect } from "~/common/utils";
-import Button from "~/components/Button";
-import Spacer from "~/components/Spacer";
-import Typography from "~/components/Typography";
+import Button from "../../../../../../../../packages/ui/src/components/button";
+import Spacer from "../../../../../../../../packages/ui/src/components/spacer";
+import Typography from "../../../../../../../../packages/ui/src/components/typography";
 import RetryIcon from "~/icons/Retry";
-import SplashScreen from "~/layout/SplashScreen";
-import { fetchUser, select_auth_status, select_user } from "~/redux/features";
+import SplashScreen from "../../../../../../../../packages/ui/src/layout/splash-screen";
+import { fetch_user, select_auth_status, select_user } from "~/redux/features";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 
 // Handles client-side user authentication logic
@@ -29,7 +29,7 @@ const DashboardSplashLayout = ({
 
   if (visible || loading || ["idle", "error"].includes(authStatus)) {
     return (
-      <SplashScreen forceMount>
+      <SplashScreen force_mount>
         {authStatus === "error" ? (
           <React.Fragment>
             <Typography
@@ -42,11 +42,11 @@ const DashboardSplashLayout = ({
             </Typography>
             <Spacer orientation={"vertical"} size={2} />
             <Button
-              checkAuth
+              check_auth
               decorator={<RetryIcon />}
               loading={loading}
               onClick={(): void => {
-                dispatch(fetchUser());
+                dispatch(fetch_user());
               }}
               size={"sm"}
             >

@@ -14,8 +14,8 @@ export const useAlignment = (): [
   boolean
 ] => {
   const [editor] = useLexicalComposerContext();
-  const value = useAtomValue(alignmentAtom);
-  const isCaptionSelection = useAtomValue(isCaptionSelectionAtom);
+  const value = use_atom_value(alignmentAtom);
+  const isCaptionSelection = use_atom_value(isCaptionSelectionAtom);
 
   /**
    * Updates the node alignment

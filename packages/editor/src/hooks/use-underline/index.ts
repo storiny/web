@@ -9,7 +9,7 @@ import { underlineAtom } from "../../atoms";
  * Hooks for using underline text style
  */
 export const useUnderline = (): [boolean, () => void] => {
-  const underline = useAtomValue(underlineAtom);
+  const underline = use_atom_value(underlineAtom);
   const [editor] = useLexicalComposerContext();
 
   const toggleUnderline = React.useCallback(() => {

@@ -1,0 +1,28 @@
+.form-switch {
+  gap: 16px;
+}
+
+.control {
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+
+  &:not([data-disabled="true"]) {
+    cursor: pointer;
+  }
+}
+
+.label {
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-md);
+}
+
+.secondary-text-wrapper {
+  gap: 4px;
+}
+
+.secondary-text {
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-sm);
+}

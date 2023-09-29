@@ -5,7 +5,7 @@ export interface GalleryMasonryProps {
    * Callback called when a Pexels image has finished uploading
    * @param asset New asset
    */
-  onPexelsUploadFinish?: (asset: Asset) => void;
+  on_pexels_upload_finish?: (asset: Asset) => void;
   /**
    * Gallery tab value
    */

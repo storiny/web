@@ -7,7 +7,7 @@ import { AuthStatus } from "~/redux/features/auth/slice";
 import { initial_state } from "~/redux/state";
 import { AppState, setup_store } from "~/redux/store";
 
-import { mockUsers } from "../../mocks";
+import { MOCK_USERS } from "../../mocks";
 
 /**
  * Logged in state
@@ -19,7 +19,7 @@ export const logged_in_state = (
   auth: {
     logged_in: true,
     status,
-    user: mockUsers[4]
+    user: MOCK_USERS[4]
   }
 });
 

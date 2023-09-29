@@ -13,7 +13,7 @@ describe("<SignupUsernameForm />", () => {
     const user = userEvent.setup();
     render_test_with_provider(
       <AuthState>
-        <SignupUsernameForm onSubmit={mockSubmit} skipValidation />
+        <SignupUsernameForm on_submit={mockSubmit} skipValidation />
       </AuthState>
     );
 
@@ -21,7 +21,7 @@ describe("<SignupUsernameForm />", () => {
       await user.click(screen.getByRole("button", { name: /continue/i }));
     });
 
-    await waitFor(() => {
+    await wait_for(() => {
       expect(screen.getByRole("alert")).toBeInTheDocument();
       expect(mockSubmit).not.toBeCalled();
     });
@@ -32,7 +32,7 @@ describe("<SignupUsernameForm />", () => {
     const user = userEvent.setup();
     render_test_with_provider(
       <AuthState>
-        <SignupUsernameForm onSubmit={mockSubmit} skipValidation />
+        <SignupUsernameForm on_submit={mockSubmit} skipValidation />
       </AuthState>
     );
 
@@ -41,7 +41,7 @@ describe("<SignupUsernameForm />", () => {
       await user.click(screen.getByRole("button", { name: /continue/i }));
     });
 
-    await waitFor(() => {
+    await wait_for(() => {
       expect(mockSubmit).toHaveBeenCalledWith({
         username: "test_username"
       });

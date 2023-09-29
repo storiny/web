@@ -1,10 +1,10 @@
 import { GetNotificationSettingsResponse } from "~/common/grpc";
-import { SubmitHandler } from "~/components/Form";
+import { SubmitHandler } from "../../../../../../../../../../../../../packages/ui/src/components/form";
 
 import { SiteNotificationsSchema } from "./site-notifications.schema";
 
 export type SiteNotificationsProps = {
-  onSubmit?: SubmitHandler<SiteNotificationsSchema>;
+  on_submit?: SubmitHandler<SiteNotificationsSchema>;
 } & Omit<
   GetNotificationSettingsResponse,
   | "mail_newsletters"

@@ -1,6 +1,6 @@
 /* eslint-disable no-dupe-class-members */
 
-import { dev_console } from "@storiny/shared/src/utils/devLog";
+import { dev_console } from "../../../../shared/src/utils/dev-log";
 import { publish, subscribe, unsubscribe } from "lib0/broadcastchannel";
 import * as decoding from "lib0/decoding";
 import * as encoding from "lib0/encoding";

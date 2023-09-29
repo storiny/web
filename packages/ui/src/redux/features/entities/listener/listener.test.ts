@@ -1,7 +1,7 @@
 import { boolean_action, number_action } from "~/redux/features";
 import { setup_store } from "~/redux/store";
 
-const testId = "0";
+const test_id = "0";
 
 describe("entitiesListener", () => {
   describe("block", () => {
@@ -9,31 +9,31 @@ describe("entitiesListener", () => {
       const store = setup_store(undefined, true);
 
       // Follow user
-      store.dispatch(boolean_action("following", testId, true));
+      store.dispatch(boolean_action("following", test_id, true));
       // Subscribe
-      store.dispatch(boolean_action("subscriptions", testId, true));
+      store.dispatch(boolean_action("subscriptions", test_id, true));
       // Add user to the follower list
-      store.dispatch(boolean_action("followers", testId, true));
+      store.dispatch(boolean_action("followers", test_id, true));
       // Add user to the friend list
-      store.dispatch(boolean_action("friends", testId, true));
+      store.dispatch(boolean_action("friends", test_id, true));
       // Send request
-      store.dispatch(boolean_action("sentRequests", testId, true));
+      store.dispatch(boolean_action("sent_requests", test_id, true));
 
-      expect(store.getState().entities.following[testId]).toBeTruthy();
-      expect(store.getState().entities.followers[testId]).toBeTruthy();
-      expect(store.getState().entities.friends[testId]).toBeTruthy();
-      expect(store.getState().entities.subscriptions[testId]).toBeTruthy();
-      expect(store.getState().entities.sentRequests[testId]).toBeTruthy();
+      expect(store.getState().entities.following[test_id]).toBeTruthy();
+      expect(store.getState().entities.followers[test_id]).toBeTruthy();
+      expect(store.getState().entities.friends[test_id]).toBeTruthy();
+      expect(store.getState().entities.subscriptions[test_id]).toBeTruthy();
+      expect(store.getState().entities.sent_requests[test_id]).toBeTruthy();
 
       // Block the user
-      store.dispatch(boolean_action("blocks", testId, true));
+      store.dispatch(boolean_action("blocks", test_id, true));
 
-      expect(store.getState().entities.following[testId]).toBeFalsy();
-      expect(store.getState().entities.followers[testId]).toBeFalsy();
-      expect(store.getState().entities.friends[testId]).toBeFalsy();
-      expect(store.getState().entities.subscriptions[testId]).toBeFalsy();
-      expect(store.getState().entities.sentRequests[testId]).toBeFalsy();
-      expect(store.getState().entities.selfBlockCount).toEqual(1);
+      expect(store.getState().entities.following[test_id]).toBeFalsy();
+      expect(store.getState().entities.followers[test_id]).toBeFalsy();
+      expect(store.getState().entities.friends[test_id]).toBeFalsy();
+      expect(store.getState().entities.subscriptions[test_id]).toBeFalsy();
+      expect(store.getState().entities.sent_requests[test_id]).toBeFalsy();
+      expect(store.getState().entities.self_block_count).toEqual(1);
     });
   });
 
@@ -42,28 +42,28 @@ describe("entitiesListener", () => {
       const store = setup_store(undefined, true);
 
       // Follow user
-      store.dispatch(boolean_action("following", testId, true));
+      store.dispatch(boolean_action("following", test_id, true));
 
-      expect(store.getState().entities.following[testId]).toBeTruthy();
-      expect(store.getState().entities.subscriptions[testId]).toBeTruthy();
+      expect(store.getState().entities.following[test_id]).toBeTruthy();
+      expect(store.getState().entities.subscriptions[test_id]).toBeTruthy();
 
       // Unfollow user
-      store.dispatch(boolean_action("following", testId, true));
+      store.dispatch(boolean_action("following", test_id, true));
 
-      expect(store.getState().entities.following[testId]).toBeFalsy();
-      expect(store.getState().entities.subscriptions[testId]).toBeFalsy();
+      expect(store.getState().entities.following[test_id]).toBeFalsy();
+      expect(store.getState().entities.subscriptions[test_id]).toBeFalsy();
     });
 
     it("syncs count on toggling following", () => {
       const store = setup_store(undefined, true);
 
       // Follow user
-      store.dispatch(boolean_action("following", testId));
-      expect(store.getState().entities.followerCounts[testId]).toEqual(1);
+      store.dispatch(boolean_action("following", test_id));
+      expect(store.getState().entities.follower_counts[test_id]).toEqual(1);
 
       // Unfollow user
-      store.dispatch(boolean_action("following", testId));
-      expect(store.getState().entities.followerCounts[testId]).toEqual(0);
+      store.dispatch(boolean_action("following", test_id));
+      expect(store.getState().entities.follower_counts[test_id]).toEqual(0);
     });
   });
 
@@ -71,12 +71,12 @@ describe("entitiesListener", () => {
     it("syncs count on toggling friends", () => {
       const store = setup_store(undefined, true);
 
-      store.dispatch(boolean_action("friends", testId, true));
-      store.dispatch(number_action("friendCounts", testId, 5));
+      store.dispatch(boolean_action("friends", test_id, true));
+      store.dispatch(number_action("friend_counts", test_id, 5));
 
       // Remove friend
-      store.dispatch(boolean_action("friends", testId));
-      expect(store.getState().entities.friendCounts[testId]).toEqual(4);
+      store.dispatch(boolean_action("friends", test_id));
+      expect(store.getState().entities.friend_counts[test_id]).toEqual(4);
     });
   });
 
@@ -85,12 +85,12 @@ describe("entitiesListener", () => {
       const store = setup_store(undefined, true);
 
       // Like story
-      store.dispatch(boolean_action("likedStories", testId));
-      expect(store.getState().entities.storyLikeCounts[testId]).toEqual(1);
+      store.dispatch(boolean_action("liked_stories", test_id));
+      expect(store.getState().entities.story_like_counts[test_id]).toEqual(1);
 
       // Unlike story
-      store.dispatch(boolean_action("likedStories", testId));
-      expect(store.getState().entities.storyLikeCounts[testId]).toEqual(0);
+      store.dispatch(boolean_action("liked_stories", test_id));
+      expect(store.getState().entities.story_like_counts[test_id]).toEqual(0);
     });
   });
 
@@ -99,12 +99,12 @@ describe("entitiesListener", () => {
       const store = setup_store(undefined, true);
 
       // Like comment
-      store.dispatch(boolean_action("likedComments", testId));
-      expect(store.getState().entities.commentLikeCounts[testId]).toEqual(1);
+      store.dispatch(boolean_action("liked_comments", test_id));
+      expect(store.getState().entities.comment_like_counts[test_id]).toEqual(1);
 
       // Unlike comment
-      store.dispatch(boolean_action("likedComments", testId));
-      expect(store.getState().entities.commentLikeCounts[testId]).toEqual(0);
+      store.dispatch(boolean_action("liked_comments", test_id));
+      expect(store.getState().entities.comment_like_counts[test_id]).toEqual(0);
     });
   });
 
@@ -113,12 +113,12 @@ describe("entitiesListener", () => {
       const store = setup_store(undefined, true);
 
       // Like reply
-      store.dispatch(boolean_action("likedReplies", testId));
-      expect(store.getState().entities.replyLikeCounts[testId]).toEqual(1);
+      store.dispatch(boolean_action("liked_replies", test_id));
+      expect(store.getState().entities.reply_like_counts[test_id]).toEqual(1);
 
       // Unlike reply
-      store.dispatch(boolean_action("likedReplies", testId));
-      expect(store.getState().entities.replyLikeCounts[testId]).toEqual(0);
+      store.dispatch(boolean_action("liked_replies", test_id));
+      expect(store.getState().entities.reply_like_counts[test_id]).toEqual(0);
     });
   });
 
@@ -127,12 +127,12 @@ describe("entitiesListener", () => {
       const store = setup_store(undefined, true);
 
       // Follow tag
-      store.dispatch(boolean_action("followedTags", testId));
-      expect(store.getState().entities.tagFollowerCounts[testId]).toEqual(1);
+      store.dispatch(boolean_action("followed_tags", test_id));
+      expect(store.getState().entities.tag_follower_counts[test_id]).toEqual(1);
 
       // Unfollow tag
-      store.dispatch(boolean_action("followedTags", testId));
-      expect(store.getState().entities.tagFollowerCounts[testId]).toEqual(0);
+      store.dispatch(boolean_action("followed_tags", test_id));
+      expect(store.getState().entities.tag_follower_counts[test_id]).toEqual(0);
     });
   });
 });

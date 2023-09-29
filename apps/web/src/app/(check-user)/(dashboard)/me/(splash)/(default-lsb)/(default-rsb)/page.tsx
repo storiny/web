@@ -3,8 +3,8 @@
 import { redirect } from "next/navigation";
 import React from "react";
 
-import { useMediaQuery } from "~/hooks/useMediaQuery";
-import { breakpoints } from "~/theme/breakpoints";
+import { use_media_query } from "../../../../../../../../../../packages/ui/src/hooks/use-media-query";
+import { BREAKPOINTS } from "~/theme/breakpoints";
 
 import DashboardNavigationScreen from "./navigation-screen";
 
@@ -13,7 +13,7 @@ const Page = ({
 }: {
   disableRedirect?: boolean;
 }): React.ReactElement => {
-  const shouldRedirect = useMediaQuery(breakpoints.up("desktop"));
+  const shouldRedirect = use_media_query(BREAKPOINTS.up("desktop"));
 
   // Redirect if sidebars are visible
   if (shouldRedirect && !disableRedirect) {

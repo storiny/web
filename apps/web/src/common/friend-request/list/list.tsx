@@ -16,7 +16,7 @@ const VirtualizedFriendRequestList = React.memo(
   ({
     friendRequests,
     has_more,
-    loadMore,
+    load_more,
     friendRequestProps,
     className,
     ...rest
@@ -40,7 +40,7 @@ const VirtualizedFriendRequestList = React.memo(
           ...(has_more && { Footer: VirtualFooter })
         }}
         data={friendRequests}
-        endReached={has_more ? loadMore : (): void => undefined}
+        endReached={has_more ? load_more : (): void => undefined}
       />
     </VirtualizedFriendRequestListContext.Provider>
   )

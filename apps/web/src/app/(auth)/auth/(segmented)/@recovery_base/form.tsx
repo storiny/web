@@ -4,26 +4,30 @@ import { userProps } from "@storiny/shared";
 import { clsx } from "clsx";
 import React from "react";
 
-import Button from "~/components/Button";
-import Form, { SubmitHandler, useForm, zodResolver } from "~/components/Form";
-import FormInput from "~/components/FormInput";
-import Grow from "~/components/Grow";
-import Spacer from "~/components/Spacer";
-import { useToast } from "~/components/Toast";
+import Button from "../../../../../../../../packages/ui/src/components/button";
+import Form, {
+  SubmitHandler,
+  use_form,
+  zod_resolver
+} from "../../../../../../../../packages/ui/src/components/form";
+import FormInput from "../../../../../../../../packages/ui/src/components/form-input";
+import Grow from "../../../../../../../../packages/ui/src/components/grow";
+import Spacer from "../../../../../../../../packages/ui/src/components/spacer";
+import { use_toast } from "../../../../../../../../packages/ui/src/components/toast";
 import { use_recovery_mutation } from "~/redux/features";
 
 import { useAuthState } from "../../../actions";
 import { RecoverySchema, recoverySchema } from "./schema";
 
 interface Props {
-  onSubmit?: SubmitHandler<RecoverySchema>;
+  on_submit?: SubmitHandler<RecoverySchema>;
 }
 
-const RecoveryForm = ({ onSubmit }: Props): React.ReactElement => {
-  const toast = useToast();
+const RecoveryForm = ({ on_submit }: Props): React.ReactElement => {
+  const toast = use_toast();
   const { state, actions } = useAuthState();
-  const form = useForm<RecoverySchema>({
-    resolver: zodResolver(recoverySchema),
+  const form = use_form<RecoverySchema>({
+    resolver: zod_resolver(recoverySchema),
     defaultValues: {
       email: state.recovery.email
     }
@@ -31,8 +35,8 @@ const RecoveryForm = ({ onSubmit }: Props): React.ReactElement => {
   const [mutateRecover, { isLoading }] = use_recovery_mutation();
 
   const handleSubmit: SubmitHandler<RecoverySchema> = (values) => {
-    if (onSubmit) {
-      onSubmit(values);
+    if (on_submit) {
+      on_submit(values);
     } else {
       actions.setRecoveryState(values);
       mutateRecover(values)
@@ -47,8 +51,8 @@ const RecoveryForm = ({ onSubmit }: Props): React.ReactElement => {
   return (
     <Form<RecoverySchema>
       className={clsx("flex-col", "full-h")}
-      onSubmit={handleSubmit}
-      providerProps={form}
+      on_submit={handleSubmit}
+      provider_props={form}
     >
       <FormInput
         autoComplete={"email"}

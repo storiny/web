@@ -1,20 +1,20 @@
 "use client";
 
-import { useAtomValue } from "jotai";
+import { useAtomValue as use_atom_value } from "jotai";
 import React from "react";
 
 import HandClickIcon from "~/icons/HandClick";
 
-import { hoveredSymbolAtom } from "../../atoms";
+import { hovered_symbol_atom } from "../../atoms";
 
 const HoveredSymbol = (): React.ReactElement => {
-  const hoveredSymbol = useAtomValue(hoveredSymbolAtom);
+  const hovered_symbol = use_atom_value(hovered_symbol_atom);
 
-  if (!hoveredSymbol) {
+  if (!hovered_symbol) {
     return <HandClickIcon />;
   }
 
-  return <span>{hoveredSymbol}</span>;
+  return <span>{hovered_symbol}</span>;
 };
 
 export default HoveredSymbol;

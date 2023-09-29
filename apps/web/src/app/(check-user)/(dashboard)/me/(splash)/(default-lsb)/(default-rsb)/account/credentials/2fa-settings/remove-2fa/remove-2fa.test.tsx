@@ -13,9 +13,9 @@ describe("<Remove2FA />", () => {
     const mockSubmit = jest.fn();
     const user = userEvent.setup();
     render_test_with_provider(
-      <Remove2FA onSubmit={mockSubmit} setEnabled={noop} />,
+      <Remove2FA on_submit={mockSubmit} setEnabled={noop} />,
       {
-        loggedIn: true
+        logged_in: true
       }
     );
 
@@ -30,7 +30,7 @@ describe("<Remove2FA />", () => {
       await user.click(screen.getByRole("button", { name: /confirm/i }));
     });
 
-    await waitFor(() => {
+    await wait_for(() => {
       expect(screen.queryAllByRole("alert").length).not.toEqual(0);
       expect(mockSubmit).not.toBeCalled();
     });
@@ -40,9 +40,9 @@ describe("<Remove2FA />", () => {
     const mockSubmit = jest.fn();
     const user = userEvent.setup();
     render_test_with_provider(
-      <Remove2FA onSubmit={mockSubmit} setEnabled={noop} />,
+      <Remove2FA on_submit={mockSubmit} setEnabled={noop} />,
       {
-        loggedIn: true
+        logged_in: true
       }
     );
 
@@ -57,7 +57,7 @@ describe("<Remove2FA />", () => {
       await user.click(screen.getByRole("button", { name: /confirm/i }));
     });
 
-    await waitFor(() => {
+    await wait_for(() => {
       expect(mockSubmit).toHaveBeenCalledWith({
         code: "000000"
       });

@@ -1,6 +1,6 @@
 import React from "react";
 
-import CustomState from "~/entities/CustomState";
+import CustomState from "../../../../../../../../../../../packages/ui/src/entities/custom-state";
 import StoryIcon from "~/icons/Story";
 import TrashIcon from "~/icons/Trash";
 
@@ -16,7 +16,7 @@ const StoriesEmptyState = ({
   query
 }: StoriesEmptyStateProps): React.ReactElement => (
   <CustomState
-    autoSize
+    auto_size
     description={
       query
         ? "Your search criteria did not match anything, make sure you've spelled it correctly or try again by being more specific."

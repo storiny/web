@@ -2,8 +2,8 @@
 
 import React from "react";
 
-import { createSvgIcon } from "~/utils/createSvgIcon";
+import { create_svg_icon } from "src/utils/create-svg-icon";
 
 const LetterYIcon = <path d="M3.5 2 6 6.5m0 0L8.5 2M6 6.5V10" />;
 
-export default createSvgIcon(LetterYIcon, "letter-y");
+export default create_svg_icon(LetterYIcon, "letter-y");

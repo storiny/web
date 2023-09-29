@@ -3,38 +3,38 @@
 import clsx from "clsx";
 import NextLink from "next/link";
 import React from "react";
+import Avatar from "src/components/avatar";
+import Button from "src/components/button";
+import { use_toast } from "src/components/toast";
+import Typography from "src/components/typography";
+import { DateFormat, format_date } from "src/utils/format-date";
 
-import Avatar from "~/components/Avatar";
-import Button from "~/components/Button";
-import { useToast } from "~/components/Toast";
-import Typography from "~/components/Typography";
 import {
   get_friend_requests_api,
   use_accept_friend_request_mutation,
   use_reject_friend_request_mutation
 } from "~/redux/features";
 import { use_app_dispatch } from "~/redux/hooks";
-import { DateFormat, formatDate } from "~/utils/formatDate";
 
 import styles from "./friend-request.module.scss";
 import { FriendRequestProps } from "./friend-request.props";
 
 const FriendRequest = (props: FriendRequestProps): React.ReactElement => {
-  const { className, friendRequest, ...rest } = props;
-  const { user } = friendRequest;
-  const toast = useToast();
+  const { className, friend_request, ...rest } = props;
+  const { user } = friend_request;
+  const toast = use_toast();
   const dispatch = use_app_dispatch();
-  const userUrl = `/${user.username}`;
-  const [acceptRequest, { isLoading: isAcceptLoading }] =
+  const user_url = `/${user.username}`;
+  const [accept_request, { isLoading: is_accept_loading }] =
     use_accept_friend_request_mutation();
-  const [rejectRequest, { isLoading: isRejectLoading }] =
+  const [reject_request, { isLoading: is_reject_loading }] =
     use_reject_friend_request_mutation();
 
   /**
    * Accepts the friend request
    */
-  const handleAccept = (): void => {
-    acceptRequest({ id: friendRequest.id })
+  const handle_accept = (): void => {
+    accept_request({ id: friend_request.id })
       .unwrap()
       .then(() => {
         toast("Request accepted", "success");
@@ -48,8 +48,8 @@ const FriendRequest = (props: FriendRequestProps): React.ReactElement => {
   /**
    * Rejects the friend request
    */
-  const handleReject = (): void => {
-    rejectRequest({ id: friendRequest.id })
+  const handle_reject = (): void => {
+    reject_request({ id: friend_request.id })
       .unwrap()
       .then(() => {
         toast("Request rejected", "success");
@@ -65,10 +65,10 @@ const FriendRequest = (props: FriendRequestProps): React.ReactElement => {
       {...rest}
       className={clsx("flex-center", styles["friend-request"], className)}
     >
-      <NextLink className={clsx("flex-center", styles.meta)} href={userUrl}>
+      <NextLink className={clsx("flex-center", styles.meta)} href={user_url}>
         <Avatar
           alt={""}
-          avatarId={user.avatar_id}
+          avatar_id={user.avatar_id}
           hex={user.avatar_hex}
           label={user.name}
           size={"md"}
@@ -79,8 +79,8 @@ const FriendRequest = (props: FriendRequestProps): React.ReactElement => {
           </Typography>
           <Typography className={"t-minor"} ellipsis level={"body3"}>
             @{user.username} &bull;{" "}
-            {formatDate(
-              friendRequest.created_at,
+            {format_date(
+              friend_request.created_at,
               DateFormat.RELATIVE_CAPITALIZED
             )}
           </Typography>
@@ -88,20 +88,20 @@ const FriendRequest = (props: FriendRequestProps): React.ReactElement => {
       </NextLink>
       <div className={clsx("flex-center", styles.actions)}>
         <Button
-          autoSize
-          checkAuth
-          disabled={isRejectLoading}
-          loading={isAcceptLoading}
-          onClick={handleAccept}
+          auto_size
+          check_auth
+          disabled={is_reject_loading}
+          loading={is_accept_loading}
+          onClick={handle_accept}
         >
           Accept
         </Button>
         <Button
-          autoSize
-          checkAuth
-          disabled={isAcceptLoading}
-          loading={isRejectLoading}
-          onClick={handleReject}
+          auto_size
+          check_auth
+          disabled={is_accept_loading}
+          loading={is_reject_loading}
+          onClick={handle_reject}
           variant={"hollow"}
         >
           Reject

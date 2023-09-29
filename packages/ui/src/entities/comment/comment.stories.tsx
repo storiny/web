@@ -3,14 +3,14 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
 
-import { mockComments } from "../../mocks";
+import { MOCK_COMMENTS } from "../../mocks";
 import Comment from "./comment";
 import CommentSkeleton from "./skeleton";
 
 const meta: Meta<typeof Comment> = {
-  title: "entities/Comment",
+  title: "entities/comment",
   component: Comment,
-  args: { comment: { ...mockComments[8], hidden: false } },
+  args: { comment: { ...MOCK_COMMENTS[8], hidden: false } },
   tags: ["autodocs"]
 };
 
@@ -20,15 +20,15 @@ type Story = StoryObj<typeof Comment>;
 export const Default: Story = {};
 
 export const Hidden: Story = {
-  args: { comment: { ...mockComments[8], hidden: true } }
+  args: { comment: { ...MOCK_COMMENTS[8], hidden: true } }
 };
 
 export const Extended: Story = {
-  args: { isExtended: true }
+  args: { is_extended: true }
 };
 
 export const Static: Story = {
-  args: { isStatic: true }
+  args: { is_static: true }
 };
 
 export const Skeleton: Story = {
@@ -38,6 +38,6 @@ export const Skeleton: Story = {
 export const ExtendedSkeleton: Story = {
   render: () => <CommentSkeleton />,
   args: {
-    isExtended: true
+    is_extended: true
   }
 };

@@ -7,8 +7,8 @@ import { setup_store } from "~/redux/store";
 
 // Standalone provider as functions from client components
 // cannot be called on server components.
-const StateProvider = ({ children, loggedIn }): React.ReactElement => (
-  <AppStateProvider store={setup_store(undefined, false, loggedIn)}>
+const StateProvider = ({ children, logged_in }): React.ReactElement => (
+  <AppStateProvider store={setup_store(undefined, false, logged_in)}>
     {children}
   </AppStateProvider>
 );

@@ -1,6 +1,6 @@
 import React from "react";
 
-import MenubarSub from "~/components/MenubarSub";
+import MenubarSub from "../../../../../../../ui/src/components/menubar-sub";
 
 import CodeBlockMenubarItem from "./code-block";
 import EmbedMenubarItem from "./embed";

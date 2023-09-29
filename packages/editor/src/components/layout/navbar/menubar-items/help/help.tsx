@@ -1,9 +1,9 @@
 import NextLink from "next/link";
 import React from "react";
 
-import MenubarItem from "~/components/MenubarItem";
-import MenubarSub from "~/components/MenubarSub";
-import Separator from "~/components/Separator";
+import MenubarItem from "../../../../../../../ui/src/components/menubar-item";
+import MenubarSub from "../../../../../../../ui/src/components/menubar-sub";
+import Separator from "../../../../../../../ui/src/components/separator";
 
 const HelpItem = (): React.ReactElement => (
   <MenubarSub trigger={"Help"}>

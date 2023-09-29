@@ -7,15 +7,18 @@ import dynamic from "next/dynamic";
 import React from "react";
 
 import { dynamicLoader } from "~/common/dynamic";
-import Link from "~/components/Link";
-import Typography from "~/components/Typography";
-import ErrorState from "~/entities/ErrorState";
-import Persona from "~/entities/Persona";
+import Link from "../../../../../../../../ui/src/components/link";
+import Typography from "../../../../../../../../ui/src/components/typography";
+import ErrorState from "../../../../../../../../ui/src/entities/error-state";
+import Persona from "../../../../../../../../ui/src/entities/persona";
 import {
   get_query_error_type,
   use_get_story_recommendations_query
 } from "~/redux/features";
-import { DateFormat, formatDate } from "~/utils/formatDate";
+import {
+  DateFormat,
+  format_date
+} from "../../../../../../../../ui/src/utils/format-date";
 
 import { storyMetadataAtom } from "../../../../../../atoms";
 import styles from "./recommended-stories.module.scss";
@@ -32,22 +35,22 @@ const RecommendedStory = ({ story }: { story: Story }): React.ReactElement => {
   return (
     <article className={clsx("flex-col", styles["recommended-story"])}>
       <Typography as={"h2"} level={"h6"}>
-        <Link fixedColor href={`/${user?.username}/${slug}`}>
+        <Link fixed_color href={`/${user?.username}/${slug}`}>
           {title}
         </Link>
       </Typography>
       <Persona
         avatar={{
           alt: `${user?.name}'s avatar`,
-          avatarId: user?.avatar_id,
+          avatar_id: user?.avatar_id,
           label: user?.name,
           hex: user?.avatar_hex
         }}
-        primaryText={
+        primary_text={
           <span className={clsx("flex-center", styles["primary-text"])}>
             <Link
               className={clsx("t-medium")}
-              fixedColor
+              fixed_color
               href={`/${user?.username}`}
               level={"body2"}
             >
@@ -66,9 +69,12 @@ const RecommendedStory = ({ story }: { story: Story }): React.ReactElement => {
               className={clsx("t-minor", "t-medium")}
               dateTime={story.published_at!}
               level={"body2"}
-              title={formatDate(story.published_at!)}
+              title={format_date(story.published_at!)}
             >
-              {formatDate(story.published_at!, DateFormat.RELATIVE_CAPITALIZED)}
+              {format_date(
+                story.published_at!,
+                DateFormat.RELATIVE_CAPITALIZED
+              )}
             </Typography>
           </span>
         }
@@ -79,7 +85,7 @@ const RecommendedStory = ({ story }: { story: Story }): React.ReactElement => {
 };
 
 const RecommendedStories = (): React.ReactElement => {
-  const story = useAtomValue(storyMetadataAtom);
+  const story = use_atom_value(storyMetadataAtom);
   const { data, isLoading, isFetching, isError, error, refetch } =
     use_get_story_recommendations_query({ storyId: story.id, page: 1 });
   const { items = [] } = data || {};

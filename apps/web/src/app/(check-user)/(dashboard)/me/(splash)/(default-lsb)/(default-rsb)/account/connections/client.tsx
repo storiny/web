@@ -3,10 +3,13 @@
 import { clsx } from "clsx";
 import React from "react";
 
-import Link from "~/components/Link";
-import Spacer from "~/components/Spacer";
-import Typography from "~/components/Typography";
-import { DateFormat, formatDate } from "~/utils/formatDate";
+import Link from "../../../../../../../../../../../../packages/ui/src/components/link";
+import Spacer from "../../../../../../../../../../../../packages/ui/src/components/spacer";
+import Typography from "../../../../../../../../../../../../packages/ui/src/components/typography";
+import {
+  DateFormat,
+  format_date
+} from "../../../../../../../../../../../../packages/ui/src/utils/format-date";
 
 import {
   providerDisplayNameMap,
@@ -49,7 +52,7 @@ const ConnectionItem = ({
             <Link
               className={"t-medium"}
               ellipsis
-              fixedColor
+              fixed_color
               href={connection.url}
               target={"_blank"}
               title={connection.display_name}
@@ -66,11 +69,11 @@ const ConnectionItem = ({
               className={"t-minor"}
               ellipsis
               level={"body2"}
-              title={formatDate(connection.created_at, DateFormat.STANDARD)}
+              title={format_date(connection.created_at, DateFormat.STANDARD)}
             >
               {providerDisplayNameMap[connection.provider]}{" "}
               <span className={"t-muted"}>&bull;</span> Connected{" "}
-              {formatDate(connection.created_at, DateFormat.RELATIVE)}
+              {format_date(connection.created_at, DateFormat.RELATIVE)}
             </Typography>
           ) : (
             <Typography className={"t-minor"} level={"body2"}>

@@ -1,0 +1,16 @@
+.header {
+  width: 100%;
+  min-height: 40px;
+  background-color: var(--bg-elevation-md);
+  border-bottom: 1px solid var(--divider);
+}
+
+.decorator {
+  padding: 6px;
+}
+
+.title {
+  margin: 0;
+  flex-grow: 1;
+  font-weight: var(--font-weight-bold);
+}

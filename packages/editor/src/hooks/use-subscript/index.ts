@@ -9,7 +9,7 @@ import { subscriptAtom } from "../../atoms";
  * Hooks for using subscript text style
  */
 export const useSubscript = (): [boolean, () => void] => {
-  const subscript = useAtomValue(subscriptAtom);
+  const subscript = use_atom_value(subscriptAtom);
   const [editor] = useLexicalComposerContext();
 
   const toggleSubscript = React.useCallback(() => {

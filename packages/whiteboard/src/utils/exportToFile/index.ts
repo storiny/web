@@ -1,4 +1,4 @@
-import { downloadAsFile } from "@storiny/shared/src/utils/downloadAsFile";
+import { downloadAsFile } from "../../../../shared/src/utils/download-as-file";
 import { Canvas } from "fabric";
 import { compressToUint8Array } from "lz-string";
 import { deflate } from "pako";

@@ -3,8 +3,8 @@
 import { clsx } from "clsx";
 import React from "react";
 
-import Spacer from "~/components/Spacer";
-import Spinner from "~/components/Spinner";
+import Spacer from "../../../../../../packages/ui/src/components/spacer";
+import Spinner from "../../../../../../packages/ui/src/components/spinner";
 
 const VirtualFooter = React.memo(() => (
   <div className={clsx("full-w", "flex-col", "flex-center")}>

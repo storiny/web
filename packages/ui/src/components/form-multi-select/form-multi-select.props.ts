@@ -5,24 +5,24 @@ import {
   FormItemProps,
   FormLabelProps,
   FormMessageProps
-} from "~/components/Form";
-import { MultiSelectProps } from "~/components/MultiSelect";
+} from "~/components/form";
+import { MultiSelectProps } from "src/components/multi-select";
 
 export interface FormMultiSelectProps extends Omit<MultiSelectProps, "ref"> {
   /**
    * The props passed to the individual form elements.
    */
-  formSlotProps?: {
+  form_slot_props?: {
     control?: React.ComponentPropsWithoutRef<"button">;
-    formItem?: FormItemProps;
-    helperText?: FormHelperTextProps;
+    form_item?: FormItemProps;
+    helper_text?: FormHelperTextProps;
     label?: FormLabelProps;
     message?: FormMessageProps;
   };
   /**
    * The helper text content placed below the control.
    */
-  helperText?: React.ReactNode;
+  helper_text?: React.ReactNode;
   /**
    * The label for the form component.
    */

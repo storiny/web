@@ -1,11 +1,11 @@
 "use client";
 
-import { useNProgress } from "@tanem/react-nprogress";
+import { useNProgress as use_n_progress } from "@tanem/react-nprogress";
 import { clsx } from "clsx";
 import React from "react";
 
-import ProgressBar from "~/components/ProgressBar";
-import Typography from "~/components/Typography";
+import ProgressBar from "../../../../ui/src/components/progress-bar";
+import Typography from "../../../../ui/src/components/typography";
 
 import styles from "./loader.module.scss";
 

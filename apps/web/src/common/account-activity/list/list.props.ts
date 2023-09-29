@@ -20,5 +20,5 @@ export interface VirtualizedAccountActivityListProps
   /**
    * A callback function to fetch more account activities.
    */
-  loadMore: () => void;
+  load_more: () => void;
 }

@@ -13,7 +13,7 @@ describe("<ResetForm />", () => {
     const user = userEvent.setup();
     render_test_with_provider(
       <AuthState>
-        <ResetForm onSubmit={mockSubmit} token={""} />
+        <ResetForm on_submit={mockSubmit} token={""} />
       </AuthState>
     );
 
@@ -21,7 +21,7 @@ describe("<ResetForm />", () => {
       await user.click(screen.getByRole("button", { name: /continue/i }));
     });
 
-    await waitFor(() => {
+    await wait_for(() => {
       expect(screen.getAllByRole("alert")).toHaveLength(2);
       expect(mockSubmit).not.toBeCalled();
     });
@@ -32,7 +32,10 @@ describe("<ResetForm />", () => {
     const user = userEvent.setup();
     render_test_with_provider(
       <AuthState>
-        <ResetForm onSubmit={(values): void => mockSubmit(values)} token={""} />
+        <ResetForm
+          on_submit={(values): void => mockSubmit(values)}
+          token={""}
+        />
       </AuthState>
     );
 
@@ -43,7 +46,7 @@ describe("<ResetForm />", () => {
       await user.click(screen.getByRole("button", { name: /continue/i }));
     });
 
-    await waitFor(() => {
+    await wait_for(() => {
       expect(mockSubmit).toHaveBeenCalledWith({
         email: "someone@example.com",
         password: "test-password",

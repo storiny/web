@@ -3,10 +3,10 @@ import { clsx } from "clsx";
 import Image from "next/image";
 import React from "react";
 
-import Button from "~/components/Button";
-import Divider from "~/components/Divider";
-import Spacer from "~/components/Spacer";
-import Typography from "~/components/Typography";
+import Button from "../../../../../../../packages/ui/src/components/button";
+import Divider from "../../../../../../../packages/ui/src/components/divider";
+import Spacer from "../../../../../../../packages/ui/src/components/spacer";
+import Typography from "../../../../../../../packages/ui/src/components/typography";
 import MailIcon from "~/icons/Mail";
 import TwitterIcon from "~/icons/Twitter";
 

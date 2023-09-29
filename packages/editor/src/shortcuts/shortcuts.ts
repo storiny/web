@@ -24,7 +24,7 @@ const hotkeysOptions: Options = {
 // Sidebars (export this function as this will be present irrespective of whether the editor is in read-only mode)
 
 export const useSidebarsShortcut = (): void => {
-  const setCollapsed = useSetAtom(sidebarsCollapsedAtom);
+  const setCollapsed = use_set_atom(sidebarsCollapsedAtom);
   useHotkeys(
     getShortcutSlug(EDITOR_SHORTCUTS.sidebars),
     () => setCollapsed((prev) => !prev),

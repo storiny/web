@@ -1,4 +1,4 @@
-import { mockComments, mockUsers } from "@storiny/ui/src/mocks";
+import { MOCK_COMMENTS, MOCK_USERS } from "@storiny/ui/src/mocks";
 import { nanoid } from "nanoid";
 
 const { worker, rest } = window.msw;
@@ -10,10 +10,10 @@ worker.use(
       res(
         ctx.delay(1200),
         ctx.json(
-          mockComments.slice(0, 10).map((comment) => ({
+          MOCK_COMMENTS.slice(0, 10).map((comment) => ({
             ...comment,
             id: nanoid(),
-            user_id: mockUsers[4].id,
+            user_id: MOCK_USERS[4].id,
           }))
         )
       )
@@ -29,14 +29,14 @@ worker.use(
 
 worker.use(
   rest.patch(
-    `${process.env.NEXT_PUBLIC_API_URL}/v1/me/comments/:commentId/edit`,
+    `${process.env.NEXT_PUBLIC_API_URL}/v1/me/comments/:comment_id/edit`,
     (req, res, ctx) => res(ctx.delay(750), ctx.status(204))
   )
 );
 
 worker.use(
   rest.delete(
-    `${process.env.NEXT_PUBLIC_API_URL}/v1/me/comments/:commentId`,
+    `${process.env.NEXT_PUBLIC_API_URL}/v1/me/comments/:comment_id`,
     (req, res, ctx) => res(ctx.delay(750), ctx.status(204))
   )
 );

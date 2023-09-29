@@ -1,4 +1,4 @@
-import { mockStories, mockTags, mockUsers } from "@storiny/ui/src/mocks";
+import { MOCK_STORIES, MOCK_TAGS, MOCK_USERS } from "@storiny/ui/src/mocks";
 import { GetRightSidebarContentResponse } from "@storiny/ui/src/redux";
 
 const { worker, rest } = window.msw;
@@ -10,9 +10,9 @@ worker.use(
       res(
         ctx.delay(2000),
         ctx.json({
-          stories: mockStories.slice(0, 3),
-          users: mockUsers.slice(0, 5),
-          tags: mockTags.slice(0, 8),
+          stories: MOCK_STORIES.slice(0, 3),
+          users: MOCK_USERS.slice(0, 5),
+          tags: MOCK_TAGS.slice(0, 8),
         } as GetRightSidebarContentResponse)
       )
   )

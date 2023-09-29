@@ -2,23 +2,23 @@ import { StoryCategory } from "@storiny/shared";
 import { clsx } from "clsx";
 import React from "react";
 
-import Divider from "~/components/Divider";
-import Grow from "~/components/Grow";
-import Link from "~/components/Link";
-import Skeleton from "~/components/Skeleton";
-import Typography from "~/components/Typography";
-import TagChip from "~/entities/TagChip";
-import { useMediaQuery } from "~/hooks/useMediaQuery";
+import Divider from "../../../../../../../../../packages/ui/src/components/divider";
+import Grow from "../../../../../../../../../packages/ui/src/components/grow";
+import Link from "../../../../../../../../../packages/ui/src/components/link";
+import Skeleton from "../../../../../../../../../packages/ui/src/components/skeleton";
+import Typography from "../../../../../../../../../packages/ui/src/components/typography";
+import TagChip from "../../../../../../../../../packages/ui/src/entities/tag-chip";
+import { use_media_query } from "../../../../../../../../../packages/ui/src/hooks/use-media-query";
 import ChevronIcon from "~/icons/Chevron";
 import { use_get_explore_tag_query } from "~/redux/features";
-import { breakpoints } from "~/theme/breakpoints";
+import { BREAKPOINTS } from "~/theme/breakpoints";
 
 import TagSkeleton from "./skeleton";
 import styles from "./tags.module.scss";
 
 interface Props {
   category: StoryCategory | "all";
-  debouncedQuery: string;
+  debounced_query: string;
   loading: boolean;
   normalizedCategory: string;
 }
@@ -26,14 +26,14 @@ interface Props {
 const TagsPreview = ({
   category,
   loading: loadingProp,
-  debouncedQuery,
+  debounced_query,
   normalizedCategory
 }: Props): React.ReactElement | null => {
-  const isMobile = useMediaQuery(breakpoints.down("mobile"));
+  const is_mobile = use_media_query(BREAKPOINTS.down("mobile"));
   const { data, isLoading, isFetching, isError } = use_get_explore_tag_query({
     page: 1,
     category,
-    query: debouncedQuery
+    query: debounced_query
   });
   const { items = [] } = data || {};
   const loading = isLoading || loadingProp;
@@ -67,12 +67,12 @@ const TagsPreview = ({
                 .map((tag) => (
                   <TagChip
                     className={clsx(styles.x, styles.tag)}
-                    followerCount={tag.follower_count}
+                    follower_count={tag.follower_count}
                     key={tag.id}
-                    size={isMobile ? "lg" : "md"}
-                    storyCount={tag.story_count}
+                    size={is_mobile ? "lg" : "md"}
+                    story_count={tag.story_count}
                     value={tag.name}
-                    withDecorator
+                    with_decorator
                   />
                 ))}
         </div>

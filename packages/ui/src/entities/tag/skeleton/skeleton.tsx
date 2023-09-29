@@ -1,42 +1,46 @@
 import clsx from "clsx";
 import React from "react";
 
-import Grow from "~/components/Grow";
-import Skeleton from "~/components/Skeleton";
-import { useMediaQuery } from "~/hooks/useMediaQuery";
-import { breakpoints } from "~/theme/breakpoints";
+import Grow from "src/components/grow";
+import Skeleton from "src/components/skeleton";
+import { use_media_query } from "src/hooks/use-media-query";
+import { BREAKPOINTS } from "~/theme/breakpoints";
 
-import tagStyles from "../tag.module.scss";
+import tag_styles from "../tag.module.scss";
 import { TagSkeletonProps } from "./skeleton.props";
 
 const TagSkeleton = (props: TagSkeletonProps): React.ReactElement => {
   const { virtual } = props;
-  const isMobile = useMediaQuery(breakpoints.down("mobile"));
+  const is_mobile = use_media_query(BREAKPOINTS.down("mobile"));
 
   return (
     <div
       aria-busy={"true"}
-      className={clsx("flex-col", tagStyles.tag, virtual && tagStyles.virtual)}
+      className={clsx(
+        "flex-col",
+        tag_styles.tag,
+        virtual && tag_styles.virtual
+      )}
       style={{ cursor: "progress" }}
     >
-      <div className={clsx("flex-center", tagStyles.main)}>
-        <div className={clsx("flex-center", tagStyles.meta)}>
+      <div className={clsx("flex-center", tag_styles.main)}>
+        <div className={clsx("flex-center", tag_styles.meta)}>
           <Skeleton
-            className={tagStyles.avatar}
-            height={isMobile ? 36 : 30}
+            className={tag_styles.avatar}
+            height={is_mobile ? 36 : 30}
             shape={"circular"}
-            width={isMobile ? 36 : 30}
+            width={is_mobile ? 36 : 30}
           />
           <Skeleton height={18} width={142} />
         </div>
         <Grow />
-        <Skeleton height={isMobile ? 36 : 30} width={isMobile ? 92 : 80} />
+        <Skeleton height={is_mobile ? 36 : 30} width={is_mobile ? 92 : 80} />
       </div>
-      <div className={clsx("flex-center", tagStyles.stats)}>
+      <div className={clsx("flex-center", tag_styles.stats)}>
         <Skeleton height={14} width={64} />
         <Skeleton height={14} width={64} />
         <Grow />
-        <Skeleton height={14} width={isMobile ? 48 : 108} />
+        <Skeleton height={14} width={is_mobile ? 48 : 108} />
       </div>
     </div>
   );

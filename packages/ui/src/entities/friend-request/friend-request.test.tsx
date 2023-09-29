@@ -1,15 +1,15 @@
 import { axe } from "@storiny/test-utils";
 import { FriendRequest as TFriendRequest } from "@storiny/types";
-import { waitFor } from "@testing-library/react";
+import { waitFor as wait_for } from "@testing-library/react";
 import React from "react";
 
 import { render_test_with_provider } from "src/redux/test-utils";
 
-import { testUser } from "../../mocks";
+import { TEST_USER } from "../../mocks";
 import FriendRequest from "./friend-request";
 
-const testFriendRequest: TFriendRequest = {
-  user: testUser,
+const TEST_FRIEND_REQUEST: TFriendRequest = {
+  user: TEST_USER,
   created_at: "2022-05-18T01:07:02.000Z",
   id: "0"
 };
@@ -17,16 +17,16 @@ const testFriendRequest: TFriendRequest = {
 describe("<FriendRequest />", () => {
   it("renders", () => {
     render_test_with_provider(
-      <FriendRequest friendRequest={testFriendRequest} />
+      <FriendRequest friend_request={TEST_FRIEND_REQUEST} />
     );
   });
 
   it("does not have any accessibility violations", async () => {
     const { container } = render_test_with_provider(
-      <FriendRequest friendRequest={testFriendRequest} />
+      <FriendRequest friend_request={TEST_FRIEND_REQUEST} />
     );
 
-    await waitFor(async () =>
+    await wait_for(async () =>
       expect(await axe(container)).toHaveNoViolations()
     );
   });

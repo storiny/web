@@ -10,8 +10,8 @@ describe("<UpdatePassword />", () => {
   it("renders validation messages", async () => {
     const mockSubmit = jest.fn();
     const user = userEvent.setup();
-    render_test_with_provider(<UpdatePassword onSubmit={mockSubmit} />, {
-      loggedIn: true
+    render_test_with_provider(<UpdatePassword on_submit={mockSubmit} />, {
+      logged_in: true
     });
 
     await act(async () => {
@@ -25,7 +25,7 @@ describe("<UpdatePassword />", () => {
       await user.click(screen.getByRole("button", { name: /confirm/i }));
     });
 
-    await waitFor(() => {
+    await wait_for(() => {
       expect(screen.queryAllByRole("alert").length).not.toEqual(0);
       expect(mockSubmit).not.toBeCalled();
     });
@@ -34,8 +34,8 @@ describe("<UpdatePassword />", () => {
   it("submits correct form data", async () => {
     const mockSubmit = jest.fn();
     const user = userEvent.setup();
-    render_test_with_provider(<UpdatePassword onSubmit={mockSubmit} />, {
-      loggedIn: true
+    render_test_with_provider(<UpdatePassword on_submit={mockSubmit} />, {
+      logged_in: true
     });
 
     await act(async () => {
@@ -56,7 +56,7 @@ describe("<UpdatePassword />", () => {
       await user.click(screen.getByRole("button", { name: /confirm/i }));
     });
 
-    await waitFor(() => {
+    await wait_for(() => {
       expect(mockSubmit).toHaveBeenCalledWith({
         "current-password": "current-test-password",
         "new-password": "new-test-password"

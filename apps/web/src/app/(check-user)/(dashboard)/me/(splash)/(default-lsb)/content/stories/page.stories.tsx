@@ -37,7 +37,7 @@ export const Default: Story = {
             </DefaultDashboardLeftSidebarLayout>
           </DashboardSplashLayout>
         </DashboardLayout>,
-        { ignorePrimitiveProviders: false, loggedIn: true }
+        { ignore_primitive_providers: false, logged_in: true }
       )
   ]
 };

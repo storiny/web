@@ -2,20 +2,28 @@ import { userProps } from "@storiny/shared";
 import { clsx } from "clsx";
 import React from "react";
 
-import Button from "~/components/Button";
-import Form, { SubmitHandler, useForm, zodResolver } from "~/components/Form";
-import FormInput from "~/components/FormInput";
-import FormPasswordInput from "~/components/FormPasswordInput";
-import { Description, ModalFooterButton, useModal } from "~/components/Modal";
-import Spacer from "~/components/Spacer";
-import { useToast } from "~/components/Toast";
-import Typography from "~/components/Typography";
-import { useMediaQuery } from "~/hooks/useMediaQuery";
+import Button from "../../../../../../../../../../../../packages/ui/src/components/button";
+import Form, {
+  SubmitHandler,
+  use_form,
+  zod_resolver
+} from "../../../../../../../../../../../../packages/ui/src/components/form";
+import FormInput from "../../../../../../../../../../../../packages/ui/src/components/form-input";
+import FormPasswordInput from "../../../../../../../../../../../../packages/ui/src/components/form-password-input";
+import {
+  Description,
+  ModalFooterButton,
+  use_modal
+} from "../../../../../../../../../../../../packages/ui/src/components/modal";
+import Spacer from "../../../../../../../../../../../../packages/ui/src/components/spacer";
+import { use_toast } from "../../../../../../../../../../../../packages/ui/src/components/toast";
+import Typography from "../../../../../../../../../../../../packages/ui/src/components/typography";
+import { use_media_query } from "../../../../../../../../../../../../packages/ui/src/hooks/use-media-query";
 import AtIcon from "~/icons/At";
 import PasswordIcon from "~/icons/Password";
 import { mutate_user, use_username_settings_mutation } from "~/redux/features";
 import { use_app_dispatch } from "~/redux/hooks";
-import { breakpoints } from "~/theme/breakpoints";
+import { BREAKPOINTS } from "~/theme/breakpoints";
 
 import { UsernameSettingsProps } from "./username-settings.props";
 import {
@@ -33,11 +41,11 @@ const UsernameSettingsModal = (): React.ReactElement => (
     <Spacer orientation={"vertical"} size={5} />
     <FormInput
       autoComplete={"username"}
-      autoSize
+      auto_size
       data-testid={"new-username-input"}
       decorator={<AtIcon />}
-      formSlotProps={{
-        formItem: {
+      form_slot_props={{
+        form_item: {
           className: "f-grow"
         }
       }}
@@ -50,11 +58,11 @@ const UsernameSettingsModal = (): React.ReactElement => (
     />
     <Spacer orientation={"vertical"} size={3} />
     <FormPasswordInput
-      autoSize
+      auto_size
       data-testid={"current-password-input"}
       decorator={<PasswordIcon />}
-      formSlotProps={{
-        formItem: {
+      form_slot_props={{
+        form_item: {
           className: "f-grow"
         }
       }}
@@ -67,13 +75,13 @@ const UsernameSettingsModal = (): React.ReactElement => (
 );
 
 const UsernameSettings = ({
-  onSubmit
+  on_submit
 }: UsernameSettingsProps): React.ReactElement => {
   const dispatch = use_app_dispatch();
-  const toast = useToast();
-  const isSmallerThanMobile = useMediaQuery(breakpoints.down("mobile"));
-  const form = useForm<UsernameSettingsSchema>({
-    resolver: zodResolver(usernameSettingsSchema),
+  const toast = use_toast();
+  const is_smaller_than_mobile = use_media_query(BREAKPOINTS.down("mobile"));
+  const form = use_form<UsernameSettingsSchema>({
+    resolver: zod_resolver(usernameSettingsSchema),
     defaultValues: {
       "new-username": "",
       "current-password": ""
@@ -83,8 +91,8 @@ const UsernameSettings = ({
     use_username_settings_mutation();
 
   const handleSubmit: SubmitHandler<UsernameSettingsSchema> = (values) => {
-    if (onSubmit) {
-      onSubmit(values);
+    if (on_submit) {
+      on_submit(values);
     } else {
       mutateUsernameSettings(values)
         .unwrap()
@@ -95,7 +103,7 @@ const UsernameSettings = ({
             })
           );
           form.reset(); // Reset with empty values
-          closeModal();
+          close_modal();
           toast("Username updated successfully", "success");
         })
         .catch((e) => {
@@ -104,12 +112,12 @@ const UsernameSettings = ({
     }
   };
 
-  const [element, , closeModal] = useModal(
-    ({ openModal }) => (
+  const [element, , close_modal] = use_modal(
+    ({ open_modal }) => (
       <Button
-        checkAuth
+        check_auth
         className={"fit-w"}
-        onClick={openModal}
+        onClick={open_modal}
         variant={"hollow"}
       >
         Change username
@@ -118,20 +126,20 @@ const UsernameSettings = ({
     <Form<UsernameSettingsSchema>
       className={clsx("flex-col")}
       disabled={isLoading}
-      onSubmit={handleSubmit}
-      providerProps={form}
+      on_submit={handleSubmit}
+      provider_props={form}
     >
       <UsernameSettingsModal />
     </Form>,
     {
-      fullscreen: isSmallerThanMobile,
+      fullscreen: is_smaller_than_mobile,
       footer: (
         <>
-          <ModalFooterButton compact={isSmallerThanMobile} variant={"ghost"}>
+          <ModalFooterButton compact={is_smaller_than_mobile} variant={"ghost"}>
             Cancel
           </ModalFooterButton>
           <ModalFooterButton
-            compact={isSmallerThanMobile}
+            compact={is_smaller_than_mobile}
             disabled={!form.formState.isDirty}
             loading={isLoading}
             onClick={(event): void => {
@@ -145,11 +153,11 @@ const UsernameSettings = ({
       ),
       slot_props: {
         footer: {
-          compact: isSmallerThanMobile
+          compact: is_smaller_than_mobile
         },
         content: {
           style: {
-            width: isSmallerThanMobile ? "100%" : "350px"
+            width: is_smaller_than_mobile ? "100%" : "350px"
           }
         },
         header: {

@@ -21,7 +21,7 @@ export interface VirtualizedCommentListProps
   /**
    * A callback function to fetch more comments.
    */
-  loadMore: () => void;
+  load_more: () => void;
   /**
    * Props passed down to individual comment skeleton entities.
    */

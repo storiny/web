@@ -1,12 +1,12 @@
 import React from "react";
 
-import CustomState from "~/entities/CustomState";
+import CustomState from "../../../../../ui/src/entities/custom-state";
 import CommentOffIcon from "~/icons/comment-off";
 
 const EditorAuxiliaryContentCommentListDisabledState =
   (): React.ReactElement => (
     <CustomState
-      autoSize
+      auto_size
       description={"The writer has disabled comments on this story."}
       icon={<CommentOffIcon />}
       style={{ marginBlock: "24px" }}

@@ -2,9 +2,9 @@ import clsx from "clsx";
 import { useAtomValue } from "jotai";
 import React from "react";
 
-import Grow from "~/components/Grow";
-import IconButton from "~/components/IconButton";
-import Input from "~/components/Input";
+import Grow from "../../../../../ui/src/components/grow";
+import IconButton from "../../../../../ui/src/components/icon-button";
+import Input from "../../../../../ui/src/components/input";
 import ArrowIcon from "~/icons/Arrow";
 import CircleIcon from "~/icons/Circle";
 import DiamondIcon from "~/icons/Diamond";
@@ -65,7 +65,7 @@ const Layer = React.forwardRef<HTMLLIElement, LayerProps>((props, ref) => {
   const { layerCount } = React.useContext(LayersContext);
   const [isEditing, setIsEditing] = React.useState<boolean>(false);
   const [name, setName] = React.useState<string>(layer.get("name"));
-  const isDragging = useAtomValue(isLayersDraggingAtom);
+  const isDragging = use_atom_value(isLayersDraggingAtom);
   useEventRender(
     "object:modified",
     (options) => options.target.get("id") === layer.get("id")

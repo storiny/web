@@ -3,10 +3,10 @@ import dynamic from "next/dynamic";
 import React from "react";
 
 import { dynamicLoader } from "~/common/dynamic";
-import Grow from "~/components/Grow";
-import { useMediaQuery } from "~/hooks/useMediaQuery";
-import RightSidebar from "~/layout/RightSidebar";
-import { breakpoints } from "~/theme/breakpoints";
+import Grow from "../../../../../../../../../../../../packages/ui/src/components/grow";
+import { use_media_query } from "../../../../../../../../../../../../packages/ui/src/hooks/use-media-query";
+import RightSidebar from "../../../../../../../../../../../../packages/ui/src/layout/right-sidebar";
+import { BREAKPOINTS } from "~/theme/breakpoints";
 
 import styles from "./right-sidebar.module.scss";
 import { StoriesRightSidebarProps } from "./right-sidebar.props";
@@ -33,9 +33,9 @@ const ContentStoriesRightSidebar = (
   props: StoriesRightSidebarProps
 ): React.ReactElement | null => {
   const { tab } = props;
-  const shouldRender = useMediaQuery(breakpoints.up("desktop"));
+  const should_render = use_media_query(BREAKPOINTS.up("desktop"));
 
-  if (!shouldRender) {
+  if (!should_render) {
     return null;
   }
 

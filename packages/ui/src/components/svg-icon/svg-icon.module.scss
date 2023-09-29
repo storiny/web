@@ -1,0 +1,20 @@
+.svg-icon {
+  display: inline-block;
+  min-width: var(--icon-size-x, var(--icon-size, 1em));
+  min-height: var(--icon-size-y, var(--icon-size, 1em));
+  width: var(--icon-size-x, var(--icon-size));
+  height: var(--icon-size-y, var(--icon-size));
+  transform: rotate(var(--rotation, 0deg));
+
+  &:not(.no-stroke) {
+    fill: none;
+    stroke: var(--icon-stroke, var(--fg, var(--fg-major)));
+    stroke-width: var(--icon-stroke-width, 0.75px);
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  &.no-stroke {
+    fill: var(--icon-stroke, var(--fg, var(--fg-major)));
+  }
+}

@@ -2,8 +2,8 @@
 
 import React from "react";
 
-import { createSvgIcon } from "~/utils/createSvgIcon";
+import { create_svg_icon } from "src/utils/create-svg-icon";
 
 const PlayIcon = <path d="M3.5 2v8L10 6 3.5 2Z" />;
 
-export default createSvgIcon(PlayIcon, "play");
+export default create_svg_icon(PlayIcon, "play");

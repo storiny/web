@@ -2,7 +2,7 @@
 
 import React from "react";
 
-import { createSvgIcon } from "~/utils/createSvgIcon";
+import { create_svg_icon } from "src/utils/create-svg-icon";
 
 const BellFilledIcon = (
   <>
@@ -11,4 +11,6 @@ const BellFilledIcon = (
   </>
 );
 
-export default createSvgIcon(BellFilledIcon, "bell-filled", { noStroke: true });
+export default create_svg_icon(BellFilledIcon, "bell-filled", {
+  no_stroke: true
+});

@@ -3,8 +3,11 @@
 import { clsx } from "clsx";
 import React from "react";
 
-import Typography from "~/components/Typography";
-import { DateFormat, formatDate } from "~/utils/formatDate";
+import Typography from "../../../../../../../packages/ui/src/components/typography";
+import {
+  DateFormat,
+  format_date
+} from "../../../../../../../packages/ui/src/utils/format-date";
 
 import MarkdownProvider from "../../../../mdx-provider";
 import styles from "./pattern.module.scss";
@@ -23,7 +26,7 @@ const MDXPattern = ({ meta, children }: Props): React.ReactElement => (
       <Typography level={"h1"}>{meta.title}</Typography>
       <Typography className={clsx("t-medium", "t-minor")}>
         Last updated:{" "}
-        {formatDate(new Date(meta.lastUpdated), DateFormat.STANDARD)}
+        {format_date(new Date(meta.lastUpdated), DateFormat.STANDARD)}
       </Typography>
     </div>
     <div className={clsx("flex-col", styles.x, styles.content)}>{children}</div>

@@ -9,7 +9,7 @@ import { superscriptAtom } from "../../atoms";
  * Hooks for using superscript text style
  */
 export const useSuperscript = (): [boolean, () => void] => {
-  const superscript = useAtomValue(superscriptAtom);
+  const superscript = use_atom_value(superscriptAtom);
   const [editor] = useLexicalComposerContext();
 
   const toggleSuperscript = React.useCallback(() => {

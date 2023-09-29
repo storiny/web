@@ -13,7 +13,7 @@ describe("<LoginForm />", () => {
     const user = userEvent.setup();
     render_test_with_provider(
       <AuthState>
-        <LoginForm onSubmit={mockSubmit} />
+        <LoginForm on_submit={mockSubmit} />
       </AuthState>
     );
 
@@ -21,7 +21,7 @@ describe("<LoginForm />", () => {
       await user.click(screen.getByRole("button", { name: /log in/i }));
     });
 
-    await waitFor(() => {
+    await wait_for(() => {
       expect(screen.getAllByRole("alert")).toHaveLength(2);
       expect(mockSubmit).not.toBeCalled();
     });
@@ -32,7 +32,7 @@ describe("<LoginForm />", () => {
     const user = userEvent.setup();
     render_test_with_provider(
       <AuthState>
-        <LoginForm onSubmit={mockSubmit} />
+        <LoginForm on_submit={mockSubmit} />
       </AuthState>
     );
 
@@ -43,7 +43,7 @@ describe("<LoginForm />", () => {
       await user.click(screen.getByRole("button", { name: /log in/i }));
     });
 
-    await waitFor(() => {
+    await wait_for(() => {
       expect(mockSubmit).toHaveBeenCalledWith({
         email: "someone@example.com",
         password: "test-password",

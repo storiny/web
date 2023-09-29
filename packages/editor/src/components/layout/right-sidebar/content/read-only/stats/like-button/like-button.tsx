@@ -2,11 +2,11 @@ import { clsx } from "clsx";
 import { useAtomValue } from "jotai";
 import React from "react";
 
-import Button from "~/components/Button";
+import Button from "../../../../../../../../../ui/src/components/button";
 import HeartIcon from "~/icons/Heart";
 import { boolean_action, setLikedStory } from "~/redux/features";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
-import { abbreviateNumber } from "~/utils/abbreviateNumber";
+import { abbreviate_number } from "../../../../../../../../../ui/src/utils/abbreviate-number";
 
 import { storyMetadataAtom } from "../../../../../../../atoms";
 import styles from "./like-button.module.scss";
@@ -82,14 +82,14 @@ const Heart = ({
         } as React.CSSProperties
       }
     >
-      <HeartIcon className={styles.icon} noStroke={active} />
+      <HeartIcon className={styles.icon} no_stroke={active} />
     </span>
   );
 };
 
 const LikeButton = (): React.ReactElement => {
   const dispatch = use_app_dispatch();
-  const story = useAtomValue(storyMetadataAtom);
+  const story = use_atom_value(storyMetadataAtom);
   const shouldAnimateRef = React.useRef<boolean>(false);
   const likeCount =
     use_app_selector((state) => state.entities.storyLikeCounts[story.id]) || 0;
@@ -104,8 +104,8 @@ const LikeButton = (): React.ReactElement => {
       } story (${likeCount.toLocaleString()} ${
         likeCount === 1 ? "like" : "likes"
       })`}
-      autoSize
-      checkAuth
+      auto_size
+      check_auth
       decorator={
         <Heart active={isLiked} shouldAnimate={shouldAnimateRef.current} />
       }
@@ -120,7 +120,7 @@ const LikeButton = (): React.ReactElement => {
       })`}
       variant={"hollow"}
     >
-      {abbreviateNumber(likeCount)}
+      {abbreviate_number(likeCount)}
     </Button>
   );
 };

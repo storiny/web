@@ -1,16 +1,16 @@
-import { ResponseTextareaProps } from "~/entities/ResponseTextarea";
+import { ResponseTextareaProps } from "src/entities/response-textarea";
 
 export interface ResponseEditorProps {
   /**
    * ID of the response entity
    */
-  responseId: string;
+  response_id: string;
   /**
    * Props passed to the response textarea
    */
-  responseTextareaProps?: ResponseTextareaProps;
+  response_textarea_props?: ResponseTextareaProps;
   /**
    * Response type
    */
-  responseType: "comment" | "reply";
+  response_type: "comment" | "reply";
 }

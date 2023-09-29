@@ -2,11 +2,11 @@ import clsx from "clsx";
 import dynamic from "next/dynamic";
 import React from "react";
 
-import Button from "~/components/Button";
-import IconButton from "~/components/IconButton";
-import Popover from "~/components/Popover";
-import Spinner from "~/components/Spinner";
-import Typography from "~/components/Typography";
+import Button from "../../../../../../ui/src/components/button";
+import IconButton from "../../../../../../ui/src/components/icon-button";
+import Popover from "../../../../../../ui/src/components/popover";
+import Spinner from "../../../../../../ui/src/components/spinner";
+import Typography from "../../../../../../ui/src/components/typography";
 import MusicIcon from "~/icons/Music";
 
 import navbarStyles from "../navbar.module.scss";

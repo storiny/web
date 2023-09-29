@@ -3,14 +3,14 @@ import { STORY_PROPS } from "@storiny/shared/src/constants/story";
 import { clsx } from "clsx";
 import React from "react";
 
-import AspectRatio from "~/components/AspectRatio";
-import { useFormContext } from "~/components/Form";
-import FormInput from "~/components/FormInput";
-import FormTextarea from "~/components/FormTextarea";
-import IconButton from "~/components/IconButton";
-import Image from "~/components/Image";
-import Spacer from "~/components/Spacer";
-import Typography from "~/components/Typography";
+import AspectRatio from "../../../../../../../ui/src/components/aspect-ratio";
+import { use_form_context } from "../../../../../../../ui/src/components/form";
+import FormInput from "../../../../../../../ui/src/components/form-input";
+import FormTextarea from "../../../../../../../ui/src/components/form-textarea";
+import IconButton from "../../../../../../../ui/src/components/icon-button";
+import Image from "../../../../../../../ui/src/components/image";
+import Spacer from "../../../../../../../ui/src/components/spacer";
+import Typography from "../../../../../../../ui/src/components/typography";
 import Gallery from "~/entities/gallery";
 import EditIcon from "~/icons/Edit";
 import PhotoEditIcon from "~/icons/PhotoEdit";
@@ -21,7 +21,7 @@ import imageStyles from "../common/image.module.scss";
 // Preview image
 
 const PreviewImage = (): React.ReactElement => {
-  const form = useFormContext();
+  const form = use_form_context();
   const previewImage = form.watch("preview-image");
 
   return (
@@ -43,7 +43,7 @@ const PreviewImage = (): React.ReactElement => {
         >
           {previewImage ? (
             <React.Fragment>
-              <Image alt={""} imgId={previewImage} size={ImageSize.W_320} />
+              <Image alt={""} img_key={previewImage} size={ImageSize.W_320} />
               <div
                 className={clsx(
                   "force-light-mode",
@@ -53,7 +53,7 @@ const PreviewImage = (): React.ReactElement => {
                 )}
               >
                 <Gallery
-                  onConfirm={(asset): void => {
+                  on_confirm={(asset): void => {
                     form.setValue("preview-image", asset.key, {
                       shouldDirty: true
                     });
@@ -61,7 +61,7 @@ const PreviewImage = (): React.ReactElement => {
                 >
                   <IconButton
                     aria-label={"Change preview image"}
-                    autoSize
+                    auto_size
                     title={"Change preview image"}
                   >
                     <EditIcon />
@@ -70,7 +70,7 @@ const PreviewImage = (): React.ReactElement => {
                 <Spacer orientation={"vertical"} />
                 <IconButton
                   aria-label={"Reset preview image"}
-                  autoSize
+                  auto_size
                   onClick={(): void => {
                     form.setValue("preview-image", null, { shouldDirty: true });
                   }}
@@ -82,7 +82,7 @@ const PreviewImage = (): React.ReactElement => {
             </React.Fragment>
           ) : (
             <Gallery
-              onConfirm={(asset): void => {
+              on_confirm={(asset): void => {
                 form.setValue("preview-image", asset.key, {
                   shouldDirty: true
                 });
@@ -115,8 +115,8 @@ const SeoTab = (): React.ReactElement => (
     <PreviewImage />
     <Spacer orientation={"vertical"} size={3} />
     <FormInput
-      autoSize
-      helperText={
+      auto_size
+      helper_text={
         <>
           The SEO title informs search engine crawlers about your story&apos;s
           topic and improves the likelihood of appearing in relevant search
@@ -131,7 +131,7 @@ const SeoTab = (): React.ReactElement => (
     />
     <Spacer orientation={"vertical"} size={4} />
     <FormTextarea
-      helperText={
+      helper_text={
         <>
           Summarize your story while outlining keywords that form the raw
           structure of it. This will improve its visibility on search results.
@@ -145,8 +145,8 @@ const SeoTab = (): React.ReactElement => (
     <Spacer orientation={"vertical"} size={4} />
     <FormInput
       autoComplete={"url"}
-      autoSize
-      helperText={
+      auto_size
+      helper_text={
         <>
           If you are republishing this story, please provide the link to the
           original source. This will allow search engine crawlers to index the

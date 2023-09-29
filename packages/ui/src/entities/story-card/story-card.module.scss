@@ -1,0 +1,39 @@
+.story-card {
+  position: relative;
+  border: 1px solid var(--divider);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.splash {
+  display: block;
+}
+
+/* Splash placeholder */
+.placeholder {
+  --icon-size: 24px;
+  --icon-stroke: var(--fg-muted);
+}
+
+.overlay-button {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+}
+
+.meta {
+  border-top: 1px solid var(--divider);
+  padding: 12px;
+  gap: 8px;
+}
+
+.footer {
+  padding-top: 8px;
+  gap: 16px;
+}
+
+.stat {
+  --icon-size: 16px;
+
+  gap: 6px;
+}

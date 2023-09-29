@@ -4,8 +4,8 @@ import { useAtomValue } from "jotai";
 import NextLink from "next/link";
 import React from "react";
 
-import MenubarItem from "~/components/MenubarItem";
-import Separator from "~/components/Separator";
+import MenubarItem from "../../../../../../ui/src/components/menubar-item";
+import Separator from "../../../../../../ui/src/components/separator";
 
 import { docStatusAtom } from "../../../../atoms";
 import AlignItem from "./align";
@@ -17,11 +17,11 @@ import TextItem from "./text";
 import ThemeItem from "./theme";
 
 const EditorMenubarItems = ({
-  disabled: disabledProp
+  disabled: disabled_prop
 }: {
   disabled?: boolean;
 }): React.ReactElement => {
-  const docStatus = useAtomValue(docStatusAtom);
+  const docStatus = use_atom_value(docStatusAtom);
   const disabled = ["connecting", "reconnecting", "publishing"].includes(
     docStatus
   );
@@ -35,7 +35,7 @@ const EditorMenubarItems = ({
         Home
       </MenubarItem>
       <Separator />
-      {!disabledProp && (
+      {!disabled_prop && (
         <React.Fragment>
           <FileItem />
           <EditItem disabled={disabled} />

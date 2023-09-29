@@ -2,8 +2,8 @@ import { clsx } from "clsx";
 import { useAtomValue } from "jotai";
 import React from "react";
 
-import IconButton from "~/components/IconButton";
-import Menu from "~/components/Menu";
+import IconButton from "../../../../../../ui/src/components/icon-button";
+import Menu from "../../../../../../ui/src/components/menu";
 import PlusIcon from "~/icons/Plus";
 
 import { docStatusAtom } from "../../../../atoms";
@@ -16,7 +16,7 @@ import ImageMenuItem from "./image";
 import SymbolMenuItem from "./symbol";
 
 const ToolbarInsertItem = (): React.ReactElement => {
-  const docStatus = useAtomValue(docStatusAtom);
+  const docStatus = use_atom_value(docStatusAtom);
   const documentLoading = ["connecting", "reconnecting"].includes(docStatus);
 
   return (

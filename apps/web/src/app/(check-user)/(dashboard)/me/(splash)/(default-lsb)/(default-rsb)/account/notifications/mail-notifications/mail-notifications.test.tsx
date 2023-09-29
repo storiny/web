@@ -16,10 +16,10 @@ describe("<MailNotifications />", () => {
         mail_features_and_updates
         mail_login_activity
         mail_newsletters
-        onSubmit={mockSubmit}
+        on_submit={mockSubmit}
       />,
       {
-        loggedIn: true
+        logged_in: true
       }
     );
 
@@ -27,7 +27,7 @@ describe("<MailNotifications />", () => {
       await user.click(screen.getByLabelText(/new features & updates/i));
     });
 
-    await waitFor(() => {
+    await wait_for(() => {
       expect(mockSubmit).toHaveBeenCalledWith({
         "features-and-updates": false,
         "login-activity": true,

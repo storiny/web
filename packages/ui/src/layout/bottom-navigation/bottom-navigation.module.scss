@@ -1,0 +1,35 @@
+.x {
+  &.bottom-navigation {
+    background-color: var(--bg-elevation-sm);
+    border-top: 1px solid var(--divider);
+    box-shadow: var(--shadow-md);
+    z-index: calc(var(--z-index-header) - 1);
+    padding-inline: 12px;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100vw;
+
+    @media print {
+      display: none !important;
+    }
+  }
+
+  &.tabs-list {
+    justify-content: space-between;
+
+    & .tab {
+      border-bottom: none;
+      border-top: var(--border);
+    }
+  }
+
+  &.cta {
+    --size: 46px;
+    --radius: 50%;
+
+    box-shadow: 0 0 0 3px var(--divider); // Avoid outline to respect focus styles
+    margin-top: -16px;
+    margin-inline: 4px;
+  }
+}

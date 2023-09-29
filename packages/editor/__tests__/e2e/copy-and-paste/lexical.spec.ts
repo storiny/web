@@ -9,7 +9,7 @@ import {
 import {
   assertHTML,
   assertSelection,
-  copyToClipboard,
+  copy_to_clipboard,
   focusEditor,
   html,
   initialize,
@@ -82,7 +82,7 @@ test.describe("lexical copy and paste", () => {
     }
 
     // Copy all the text
-    const clipboard = await copyToClipboard(page);
+    const clipboard = await copy_to_clipboard(page);
 
     await assertHTML(
       page,
@@ -172,7 +172,7 @@ test.describe("lexical copy and paste", () => {
     }
 
     // Copy all the text
-    let clipboard = await copyToClipboard(page);
+    let clipboard = await copy_to_clipboard(page);
     await page.keyboard.press("Delete");
     // Paste the content
     await pasteFromClipboard(page, clipboard);
@@ -216,7 +216,7 @@ test.describe("lexical copy and paste", () => {
     });
 
     // Copy selected text
-    clipboard = await copyToClipboard(page);
+    clipboard = await copy_to_clipboard(page);
     await page.keyboard.press("Delete");
     // Paste the content
     await pasteFromClipboard(page, clipboard);
@@ -290,7 +290,7 @@ test.describe("lexical copy and paste", () => {
     await page.keyboard.type("World");
 
     await selectAll(page);
-    const clipboard = await copyToClipboard(page);
+    const clipboard = await copy_to_clipboard(page);
     await page.keyboard.press("ArrowRight");
     await pasteFromClipboard(page, clipboard);
 

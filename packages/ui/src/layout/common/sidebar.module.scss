@@ -1,0 +1,26 @@
+.sidebar {
+  height: 100%;
+  position: relative;
+  z-index: calc(var(--z-index-header) - 2);
+
+  &::before {
+    content: "";
+    position: absolute;
+    height: 100%;
+    width: 50vw;
+    top: 0;
+    z-index: -1;
+    speak: none;
+    background-color: var(--bg-elevation-xs);
+  }
+}
+
+.wrapper {
+  --offset: calc(var(--header-height) + var(--banner-height, 0px));
+
+  height: fit-content;
+  min-height: calc(100vh - var(--offset));
+  gap: 16px;
+  align-items: stretch;
+  padding-block: 24px;
+}

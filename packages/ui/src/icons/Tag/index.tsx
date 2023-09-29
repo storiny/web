@@ -2,7 +2,7 @@
 
 import React from "react";
 
-import { createSvgIcon } from "~/utils/createSvgIcon";
+import { create_svg_icon } from "src/utils/create-svg-icon";
 
 const TagIcon = (
   <>
@@ -11,4 +11,4 @@ const TagIcon = (
   </>
 );
 
-export default createSvgIcon(TagIcon, "tag");
+export default create_svg_icon(TagIcon, "tag");

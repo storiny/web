@@ -1,7 +1,7 @@
-import { SubmitHandler } from "~/components/Form";
+import { SubmitHandler } from "../../../../../../../../../../../../../../packages/ui/src/components/form";
 
 import { ExportDataSchema } from "./export-data-group.schema";
 
 export interface ExportDataGroupProps {
-  onSubmit?: SubmitHandler<ExportDataSchema>;
+  on_submit?: SubmitHandler<ExportDataSchema>;
 }

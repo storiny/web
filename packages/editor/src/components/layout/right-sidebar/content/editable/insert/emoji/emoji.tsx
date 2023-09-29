@@ -1,6 +1,6 @@
 import React from "react";
 
-import EmojiPicker from "~/entities/EmojiPicker";
+import EmojiPicker from "../../../../../../../../../ui/src/entities/emoji-picker";
 import MoodSmileIcon from "~/icons/MoodSmile";
 
 import { useInsertTextEntity } from "../../../../../../../hooks/use-insert-text-entity";
@@ -13,7 +13,7 @@ const EmojiItem = ({
 }): React.ReactElement => {
   const [insertEmoji] = useInsertTextEntity();
   return (
-    <EmojiPicker onEmojiSelect={insertEmoji}>
+    <EmojiPicker on_emoji_select={insertEmoji}>
       <InsertItem
         data-testid={"insert-emoji"}
         decorator={<MoodSmileIcon />}

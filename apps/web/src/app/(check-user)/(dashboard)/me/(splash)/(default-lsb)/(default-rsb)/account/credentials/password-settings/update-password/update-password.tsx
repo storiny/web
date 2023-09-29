@@ -2,18 +2,26 @@ import { clsx } from "clsx";
 import { useRouter } from "next/navigation";
 import React from "react";
 
-import Button from "~/components/Button";
-import Form, { SubmitHandler, useForm, zodResolver } from "~/components/Form";
-import FormNewPasswordInput from "~/components/FormNewPasswordInput";
-import FormPasswordInput from "~/components/FormPasswordInput";
-import { Description, ModalFooterButton, useModal } from "~/components/Modal";
-import Spacer from "~/components/Spacer";
-import { useToast } from "~/components/Toast";
-import Typography from "~/components/Typography";
-import { useMediaQuery } from "~/hooks/useMediaQuery";
+import Button from "../../../../../../../../../../../../../../packages/ui/src/components/button";
+import Form, {
+  SubmitHandler,
+  use_form,
+  zod_resolver
+} from "../../../../../../../../../../../../../../packages/ui/src/components/form";
+import FormNewPasswordInput from "../../../../../../../../../../../../../../packages/ui/src/components/form-new-password-input";
+import FormPasswordInput from "../../../../../../../../../../../../../../packages/ui/src/components/form-password-input";
+import {
+  Description,
+  ModalFooterButton,
+  use_modal
+} from "../../../../../../../../../../../../../../packages/ui/src/components/modal";
+import Spacer from "../../../../../../../../../../../../../../packages/ui/src/components/spacer";
+import { use_toast } from "../../../../../../../../../../../../../../packages/ui/src/components/toast";
+import Typography from "../../../../../../../../../../../../../../packages/ui/src/components/typography";
+import { use_media_query } from "../../../../../../../../../../../../../../packages/ui/src/hooks/use-media-query";
 import PasswordIcon from "~/icons/Password";
 import { use_update_password_mutation } from "~/redux/features";
-import { breakpoints } from "~/theme/breakpoints";
+import { BREAKPOINTS } from "~/theme/breakpoints";
 
 import { UpdatePasswordProps } from "./update-password.props";
 import {
@@ -39,10 +47,10 @@ const UpdatePasswordModal = ({
       <React.Fragment>
         <FormPasswordInput
           autoFocus
-          autoSize
+          auto_size
           data-testid={"current-password-input"}
-          formSlotProps={{
-            formItem: {
+          form_slot_props={{
+            form_item: {
               className: "f-grow"
             }
           }}
@@ -53,10 +61,10 @@ const UpdatePasswordModal = ({
         />
         <Spacer orientation={"vertical"} size={3} />
         <FormNewPasswordInput
-          autoSize
+          auto_size
           data-testid={"new-password-input"}
-          formSlotProps={{
-            formItem: {
+          form_slot_props={{
+            form_item: {
               className: "f-grow"
             }
           }}
@@ -72,14 +80,14 @@ const UpdatePasswordModal = ({
 );
 
 const UpdatePassword = ({
-  onSubmit
+  on_submit
 }: UpdatePasswordProps): React.ReactElement => {
   const router = useRouter();
-  const toast = useToast();
-  const isSmallerThanMobile = useMediaQuery(breakpoints.down("mobile"));
+  const toast = use_toast();
+  const is_smaller_than_mobile = use_media_query(BREAKPOINTS.down("mobile"));
   const [updated, setUpdated] = React.useState<boolean>(false);
-  const form = useForm<UpdatePasswordSchema>({
-    resolver: zodResolver(updatePasswordSchema),
+  const form = use_form<UpdatePasswordSchema>({
+    resolver: zod_resolver(updatePasswordSchema),
     defaultValues: {
       "current-password": "",
       "new-password": ""
@@ -88,8 +96,8 @@ const UpdatePassword = ({
   const [updatePassword, { isLoading }] = use_update_password_mutation();
 
   const handleSubmit: SubmitHandler<UpdatePasswordSchema> = (values) => {
-    if (onSubmit) {
-      onSubmit(values);
+    if (on_submit) {
+      on_submit(values);
     } else {
       updatePassword(values)
         .unwrap()
@@ -101,13 +109,13 @@ const UpdatePassword = ({
     }
   };
 
-  const [element] = useModal(
-    ({ openModal }) => (
+  const [element] = use_modal(
+    ({ open_modal }) => (
       <Button
-        autoSize
-        checkAuth
+        auto_size
+        check_auth
         className={"fit-w"}
-        onClick={openModal}
+        onClick={open_modal}
         variant={"hollow"}
       >
         Update password
@@ -116,23 +124,26 @@ const UpdatePassword = ({
     <Form<UpdatePasswordSchema>
       className={clsx("flex-col")}
       disabled={isLoading}
-      onSubmit={handleSubmit}
-      providerProps={form}
+      on_submit={handleSubmit}
+      provider_props={form}
     >
       <UpdatePasswordModal updated={updated} />
     </Form>,
     {
       onOpenChange: updated ? (): void => undefined : undefined,
-      fullscreen: isSmallerThanMobile,
+      fullscreen: is_smaller_than_mobile,
       footer: (
         <>
           {!updated && (
-            <ModalFooterButton compact={isSmallerThanMobile} variant={"ghost"}>
+            <ModalFooterButton
+              compact={is_smaller_than_mobile}
+              variant={"ghost"}
+            >
               Cancel
             </ModalFooterButton>
           )}
           <ModalFooterButton
-            compact={isSmallerThanMobile}
+            compact={is_smaller_than_mobile}
             disabled={!updated && !form.formState.isDirty}
             loading={isLoading}
             onClick={(event): void => {
@@ -151,14 +162,14 @@ const UpdatePassword = ({
       ),
       slot_props: {
         footer: {
-          compact: isSmallerThanMobile
+          compact: is_smaller_than_mobile
         },
         content: {
           style: {
-            width: isSmallerThanMobile ? "100%" : "350px"
+            width: is_smaller_than_mobile ? "100%" : "350px"
           }
         },
-        closeButton: {
+        close_button: {
           style: {
             display: updated ? "none" : "flex"
           }

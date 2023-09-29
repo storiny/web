@@ -3,14 +3,14 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
 
-import { mockStories } from "../../mocks";
+import { MOCK_STORIES } from "../../mocks";
 import StorySkeleton from "./skeleton";
 import Story from "./story";
 
 const meta: Meta<typeof Story> = {
-  title: "entities/Story",
+  title: "entities/story",
   component: Story,
-  args: { story: mockStories[8] },
+  args: { story: MOCK_STORIES[8] },
   tags: ["autodocs"]
 };
 
@@ -20,15 +20,15 @@ type TStory = StoryObj<typeof Story>;
 export const Default: TStory = {};
 
 export const Extended: TStory = {
-  args: { isExtended: true }
+  args: { is_extended: true }
 };
 
 export const Draft: TStory = {
-  args: { isDraft: true }
+  args: { is_draft: true }
 };
 
 export const Deleted: TStory = {
-  args: { isDeleted: true }
+  args: { is_deleted: true }
 };
 
 export const Skeleton: TStory = {
@@ -36,5 +36,5 @@ export const Skeleton: TStory = {
 };
 
 export const SmallSkeleton: TStory = {
-  render: () => <StorySkeleton isSmall />
+  render: () => <StorySkeleton is_small />
 };

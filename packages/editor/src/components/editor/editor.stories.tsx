@@ -1,6 +1,6 @@
 // noinspection JSUnusedGlobalSymbols
 
-import { mockStories } from "@storiny/ui/src/mocks";
+import { MOCK_STORIES } from "@storiny/ui/src/mocks";
 import type { Meta, StoryObj } from "@storybook/react";
 import { clsx } from "clsx";
 import { decompressSync } from "fflate";
@@ -19,7 +19,7 @@ const meta: Meta<typeof Editor> = {
   args: {
     docId: "demo",
     role: "editor",
-    story: mockStories[5]
+    story: MOCK_STORIES[5]
   },
   tags: ["autodocs"]
 };
@@ -36,7 +36,7 @@ export const Default: Story = {
         >
           <Story />
         </div>,
-        { ignorePrimitiveProviders: false, loggedIn: true }
+        { ignore_primitive_providers: false, logged_in: true }
       )
   ]
 };

@@ -4,9 +4,7 @@ import clsx from "clsx";
 import { Interweave, InterweaveProps, Node } from "interweave";
 import React from "react";
 
-import Link from "~/components/Link";
-
-interface Props extends InterweaveProps {}
+import Link from "src/components/link";
 
 /**
  * Node transformer
@@ -28,7 +26,10 @@ const transform = (node: HTMLElement, children: Node[]): React.ReactNode => {
   }
 };
 
-const ResponseParser = ({ content, ...rest }: Props): React.ReactElement => (
+const ResponseParser = ({
+  content,
+  ...rest
+}: InterweaveProps): React.ReactElement => (
   <Interweave
     {...rest}
     allowList={["a", "b", "em", "p"]}

@@ -2,9 +2,9 @@
 
 import React from "react";
 
-import Divider from "~/components/Divider";
-import Spacer from "~/components/Spacer";
-import Typography from "~/components/Typography";
+import Divider from "../../../../../../../../../../../../packages/ui/src/components/divider";
+import Spacer from "../../../../../../../../../../../../packages/ui/src/components/spacer";
+import Typography from "../../../../../../../../../../../../packages/ui/src/components/typography";
 
 import DashboardGroup from "../../../dashboard-group";
 import DashboardTitle from "../../../dashboard-title";

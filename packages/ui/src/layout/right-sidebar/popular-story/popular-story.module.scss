@@ -1,0 +1,14 @@
+.popular-story {
+  gap: 4px;
+  align-items: flex-start;
+}
+
+.primary-text {
+  gap: 8px;
+}
+
+.trending-text {
+  --icon-stroke: var(--fg-minor);
+
+  gap: 6px;
+}

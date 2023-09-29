@@ -2,7 +2,7 @@ import dynamic from "next/dynamic";
 import React from "react";
 
 import { dynamicLoader } from "~/common/dynamic";
-import RightSidebar from "~/layout/RightSidebar";
+import RightSidebar from "../../../../../../../packages/ui/src/layout/right-sidebar";
 
 const SuspendedExploreRightSidebarContent = dynamic(() => import("./content"), {
   loading: dynamicLoader()

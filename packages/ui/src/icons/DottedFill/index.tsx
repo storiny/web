@@ -2,7 +2,7 @@
 
 import React from "react";
 
-import { createSvgIcon } from "~/utils/createSvgIcon";
+import { create_svg_icon } from "src/utils/create-svg-icon";
 
 const DottedFillIcon = (
   <path
@@ -12,4 +12,4 @@ const DottedFillIcon = (
   />
 );
 
-export default createSvgIcon(DottedFillIcon, "dotted-fill");
+export default create_svg_icon(DottedFillIcon, "dotted-fill");

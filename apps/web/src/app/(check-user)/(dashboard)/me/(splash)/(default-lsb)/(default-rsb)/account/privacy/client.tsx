@@ -3,7 +3,7 @@
 import React from "react";
 
 import { GetPrivacySettingsResponse } from "~/common/grpc";
-import Spacer from "~/components/Spacer";
+import Spacer from "../../../../../../../../../../../../packages/ui/src/components/spacer";
 
 import DashboardTitle from "../../../dashboard-title";
 import DashboardWrapper from "../../../dashboard-wrapper";

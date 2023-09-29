@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 
 import { getStory } from "~/common/grpc";
 import { getSessionToken } from "~/common/utils/getSessionToken";
-import { getCdnUrl } from "~/utils/getCdnUrl";
+import { get_cdn_url } from "../../../../../../packages/ui/src/utils/get-cdn-url";
 
 export const generateMetadata = async ({
   params
@@ -33,7 +33,7 @@ export const generateMetadata = async ({
         images: storyResponse.preview_image
           ? [
               {
-                url: getCdnUrl(storyResponse.preview_image, ImageSize.W_1440),
+                url: get_cdn_url(storyResponse.preview_image, ImageSize.W_1440),
                 width: 1200,
                 height: 630
               }
@@ -42,7 +42,7 @@ export const generateMetadata = async ({
           ? [
               // TODO: Replace with dynamic opengraph images
               {
-                url: getCdnUrl(storyResponse.splash_id, ImageSize.W_1440),
+                url: get_cdn_url(storyResponse.splash_id, ImageSize.W_1440),
                 width: 1200,
                 height: 630
               }
@@ -54,9 +54,9 @@ export const generateMetadata = async ({
         title: storyResponse.title,
         description: storyResponse.description,
         images: storyResponse.preview_image
-          ? [getCdnUrl(storyResponse.preview_image, ImageSize.W_1440)]
+          ? [get_cdn_url(storyResponse.preview_image, ImageSize.W_1440)]
           : storyResponse.splash_id
-          ? [getCdnUrl(storyResponse.splash_id, ImageSize.W_1440)]
+          ? [get_cdn_url(storyResponse.splash_id, ImageSize.W_1440)]
           : []
       },
       alternates: {

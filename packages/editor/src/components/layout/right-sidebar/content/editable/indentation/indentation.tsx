@@ -1,8 +1,8 @@
 import { getShortcutLabel } from "@storiny/shared/src/utils/get-shortcut-label";
 import React from "react";
 
-import IconButton from "~/components/IconButton";
-import Tooltip from "~/components/Tooltip";
+import IconButton from "../../../../../../../../ui/src/components/icon-button";
+import Tooltip from "../../../../../../../../ui/src/components/tooltip";
 import IndentIcon from "~/icons/Indent";
 import OutdentIcon from "~/icons/Outdent";
 
@@ -19,7 +19,7 @@ const Indentation = ({
     <div className={"flex-center"}>
       <Tooltip
         content={"Indent"}
-        rightSlot={getShortcutLabel(EDITOR_SHORTCUTS.indent)}
+        right_slot={getShortcutLabel(EDITOR_SHORTCUTS.indent)}
       >
         <IconButton
           data-testid={"indent"}
@@ -32,7 +32,7 @@ const Indentation = ({
       </Tooltip>
       <Tooltip
         content={"Outdent"}
-        rightSlot={getShortcutLabel(EDITOR_SHORTCUTS.outdent)}
+        right_slot={getShortcutLabel(EDITOR_SHORTCUTS.outdent)}
       >
         <IconButton
           data-testid={"outdent"}

@@ -1,6 +1,6 @@
 import React from "react";
 
-import MenubarItem from "~/components/MenubarItem";
+import MenubarItem from "../../../../../../../../ui/src/components/menubar-item";
 import SymbolPicker from "~/entities/symbol-picker";
 import OmegaIcon from "~/icons/Omega";
 
@@ -13,7 +13,10 @@ const SymbolMenubarItem = ({
 }): React.ReactElement => {
   const [insertSymbol] = useInsertTextEntity();
   return (
-    <SymbolPicker onSymbolSelect={insertSymbol} popoverProps={{ modal: true }}>
+    <SymbolPicker
+      on_symbol_select={insertSymbol}
+      popover_props={{ modal: true }}
+    >
       <MenubarItem
         decorator={<OmegaIcon />}
         disabled={disabled}

@@ -6,7 +6,7 @@ import React from "react";
 import { ItemProps } from "react-virtuoso";
 
 import styles from "~/common/virtual/virtual.module.scss";
-import Divider from "~/components/Divider";
+import Divider from "../../../../../../packages/ui/src/components/divider";
 import Story from "~/entities/story";
 
 import { VirtualizedStoryListContext } from "../list/list-context";

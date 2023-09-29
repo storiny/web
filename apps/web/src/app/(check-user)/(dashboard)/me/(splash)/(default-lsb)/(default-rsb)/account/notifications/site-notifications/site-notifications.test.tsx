@@ -16,13 +16,13 @@ describe("<SiteNotifications />", () => {
         features_and_updates
         friend_requests
         new_followers
-        onSubmit={mockSubmit}
+        on_submit={mockSubmit}
         replies
         stories
         tags
       />,
       {
-        loggedIn: true
+        logged_in: true
       }
     );
 
@@ -30,7 +30,7 @@ describe("<SiteNotifications />", () => {
       await user.click(screen.getByLabelText(/features & updates/i));
     });
 
-    await waitFor(() => {
+    await wait_for(() => {
       expect(mockSubmit).toHaveBeenCalledWith({
         "friend-requests": true,
         "features-and-updates": false,

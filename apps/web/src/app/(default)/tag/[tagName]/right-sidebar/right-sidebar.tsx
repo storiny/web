@@ -3,7 +3,7 @@ import React from "react";
 
 import { dynamicLoader } from "~/common/dynamic";
 import { GetTagResponse } from "~/common/grpc";
-import RightSidebar from "~/layout/RightSidebar";
+import RightSidebar from "../../../../../../../../packages/ui/src/layout/right-sidebar";
 
 const SuspendedTagRightSidebarContent = dynamic(() => import("./content"), {
   loading: dynamicLoader()

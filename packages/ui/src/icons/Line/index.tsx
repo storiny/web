@@ -2,8 +2,8 @@
 
 import React from "react";
 
-import { createSvgIcon } from "~/utils/createSvgIcon";
+import { create_svg_icon } from "src/utils/create-svg-icon";
 
 const LineIcon = <path d="M6 10.5v-9" />;
 
-export default createSvgIcon(LineIcon, "line");
+export default create_svg_icon(LineIcon, "line");

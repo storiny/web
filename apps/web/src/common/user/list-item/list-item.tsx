@@ -5,7 +5,7 @@ import { clsx } from "clsx";
 import React from "react";
 import { ItemProps } from "react-virtuoso";
 
-import Divider from "~/components/Divider";
+import Divider from "../../../../../../packages/ui/src/components/divider";
 import User from "~/entities/user";
 
 import styles from "../../virtual/virtual.module.scss";

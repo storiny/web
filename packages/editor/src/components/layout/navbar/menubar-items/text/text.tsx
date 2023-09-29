@@ -1,11 +1,11 @@
 import { getShortcutLabel } from "@storiny/shared/src/utils/get-shortcut-label";
 import React from "react";
 
-import MenubarCheckboxItem from "~/components/MenubarCheckboxItem";
-import MenubarRadioGroup from "~/components/MenubarRadioGroup";
-import MenubarRadioItem from "~/components/MenubarRadioItem";
-import MenubarSub from "~/components/MenubarSub";
-import Separator from "~/components/Separator";
+import MenubarCheckboxItem from "../../../../../../../ui/src/components/menubar-checkbox-item";
+import MenubarRadioGroup from "../../../../../../../ui/src/components/menubar-radio-group";
+import MenubarRadioItem from "../../../../../../../ui/src/components/menubar-radio-item";
+import MenubarSub from "../../../../../../../ui/src/components/menubar-sub";
+import Separator from "../../../../../../../ui/src/components/separator";
 import BoldIcon from "~/icons/Bold";
 import BulletedListIcon from "~/icons/BulletedList";
 import CodeIcon from "~/icons/Code";
@@ -53,7 +53,7 @@ const TextNodeItem = ({
         decorator={<ParagraphIcon />}
         disabled={disabled}
         onClick={formatParagraph}
-        rightSlot={getShortcutLabel(EDITOR_SHORTCUTS.paragraph)}
+        right_slot={getShortcutLabel(EDITOR_SHORTCUTS.paragraph)}
         value={TextStyle.PARAGRAPH}
       >
         Paragraph
@@ -62,7 +62,7 @@ const TextNodeItem = ({
         decorator={<HeadingIcon />}
         disabled={disabled}
         onClick={(): void => formatHeading("h2")}
-        rightSlot={getShortcutLabel(EDITOR_SHORTCUTS.heading)}
+        right_slot={getShortcutLabel(EDITOR_SHORTCUTS.heading)}
         value={TextStyle.HEADING}
       >
         Heading
@@ -71,7 +71,7 @@ const TextNodeItem = ({
         decorator={<SubheadingIcon />}
         disabled={disabled}
         onClick={(): void => formatHeading("h3")}
-        rightSlot={getShortcutLabel(EDITOR_SHORTCUTS.subheading)}
+        right_slot={getShortcutLabel(EDITOR_SHORTCUTS.subheading)}
         value={TextStyle.SUBHEADING}
       >
         Subheading
@@ -80,7 +80,7 @@ const TextNodeItem = ({
         decorator={<QuoteIcon />}
         disabled={disabled}
         onClick={formatQuote}
-        rightSlot={getShortcutLabel(EDITOR_SHORTCUTS.quote)}
+        right_slot={getShortcutLabel(EDITOR_SHORTCUTS.quote)}
         value={TextStyle.QUOTE}
       >
         Quote
@@ -90,7 +90,7 @@ const TextNodeItem = ({
         decorator={<BulletedListIcon />}
         disabled={disabled}
         onClick={formatBulletedList}
-        rightSlot={getShortcutLabel(EDITOR_SHORTCUTS.bulletedList)}
+        right_slot={getShortcutLabel(EDITOR_SHORTCUTS.bulletedList)}
         value={TextStyle.BULLETED_LIST}
       >
         Bulleted list
@@ -99,7 +99,7 @@ const TextNodeItem = ({
         decorator={<NumberedListIcon />}
         disabled={disabled}
         onClick={formatNumberedList}
-        rightSlot={getShortcutLabel(EDITOR_SHORTCUTS.numberedList)}
+        right_slot={getShortcutLabel(EDITOR_SHORTCUTS.numberedList)}
         value={TextStyle.NUMBERED_LIST}
       >
         Numbered list
@@ -129,7 +129,7 @@ const TextStyleItem = ({
         decorator={<BoldIcon />}
         disabled={disabled}
         onCheckedChange={toggleBold}
-        rightSlot={getShortcutLabel(EDITOR_SHORTCUTS.bold)}
+        right_slot={getShortcutLabel(EDITOR_SHORTCUTS.bold)}
       >
         Bold
       </MenubarCheckboxItem>
@@ -138,7 +138,7 @@ const TextStyleItem = ({
         decorator={<ItalicIcon />}
         disabled={disabled}
         onCheckedChange={toggleItalic}
-        rightSlot={getShortcutLabel(EDITOR_SHORTCUTS.italic)}
+        right_slot={getShortcutLabel(EDITOR_SHORTCUTS.italic)}
       >
         Italic
       </MenubarCheckboxItem>
@@ -147,7 +147,7 @@ const TextStyleItem = ({
         decorator={<UnderlineIcon />}
         disabled={disabled}
         onCheckedChange={toggleUnderline}
-        rightSlot={getShortcutLabel(EDITOR_SHORTCUTS.underline)}
+        right_slot={getShortcutLabel(EDITOR_SHORTCUTS.underline)}
       >
         Underline
       </MenubarCheckboxItem>
@@ -156,7 +156,7 @@ const TextStyleItem = ({
         decorator={<StrikethroughIcon />}
         disabled={disabled}
         onCheckedChange={toggleStrikethrough}
-        rightSlot={getShortcutLabel(EDITOR_SHORTCUTS.strikethrough)}
+        right_slot={getShortcutLabel(EDITOR_SHORTCUTS.strikethrough)}
       >
         Strikethrough
       </MenubarCheckboxItem>
@@ -165,7 +165,7 @@ const TextStyleItem = ({
         decorator={<CodeIcon />}
         disabled={disabled}
         onCheckedChange={toggleCode}
-        rightSlot={getShortcutLabel(EDITOR_SHORTCUTS.code)}
+        right_slot={getShortcutLabel(EDITOR_SHORTCUTS.code)}
       >
         Code
       </MenubarCheckboxItem>
@@ -174,7 +174,7 @@ const TextStyleItem = ({
         decorator={<LinkIcon />}
         disabled={disabled}
         onCheckedChange={(): void => insertLink()}
-        rightSlot={getShortcutLabel(EDITOR_SHORTCUTS.link)}
+        right_slot={getShortcutLabel(EDITOR_SHORTCUTS.link)}
       >
         Link
       </MenubarCheckboxItem>
@@ -184,7 +184,7 @@ const TextStyleItem = ({
         decorator={<SubscriptIcon />}
         disabled={disabled}
         onCheckedChange={toggleSubscript}
-        rightSlot={getShortcutLabel(EDITOR_SHORTCUTS.subscript)}
+        right_slot={getShortcutLabel(EDITOR_SHORTCUTS.subscript)}
       >
         Subscript
       </MenubarCheckboxItem>
@@ -193,7 +193,7 @@ const TextStyleItem = ({
         decorator={<SuperscriptIcon />}
         disabled={disabled}
         onCheckedChange={toggleSuperscript}
-        rightSlot={getShortcutLabel(EDITOR_SHORTCUTS.superscript)}
+        right_slot={getShortcutLabel(EDITOR_SHORTCUTS.superscript)}
       >
         Superscript
       </MenubarCheckboxItem>

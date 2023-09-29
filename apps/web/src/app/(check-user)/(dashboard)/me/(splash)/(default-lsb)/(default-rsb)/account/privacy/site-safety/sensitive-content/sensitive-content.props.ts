@@ -1,8 +1,8 @@
 import { GetPrivacySettingsResponse } from "~/common/grpc";
-import { SubmitHandler } from "~/components/Form";
+import { SubmitHandler } from "../../../../../../../../../../../../../../packages/ui/src/components/form";
 
 import { SensitiveContentSchema } from "./sensitive-content.schema";
 
 export type SensitiveContentProps = {
-  onSubmit?: SubmitHandler<SensitiveContentSchema>;
+  on_submit?: SubmitHandler<SensitiveContentSchema>;
 } & Pick<GetPrivacySettingsResponse, "allow_sensitive_media">;

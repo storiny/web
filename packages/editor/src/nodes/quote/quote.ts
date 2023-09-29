@@ -15,7 +15,7 @@ import {
   SerializedElementNode
 } from "lexical";
 
-import { levelToClassNameMap } from "~/components/common/typography";
+import { TYPOGRAPHY_LEVEL_TO_CLASSNAME_MAP } from "~/components/common/typography";
 
 import styles from "./quote.module.scss";
 
@@ -86,7 +86,7 @@ export class QuoteNode extends ElementNode {
     const element = document.createElement("blockquote");
     addClassNamesToElement(
       element,
-      ...[levelToClassNameMap["quote"], styles.quote]
+      ...[TYPOGRAPHY_LEVEL_TO_CLASSNAME_MAP["quote"], styles.quote]
     );
 
     return element;

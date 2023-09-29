@@ -2,12 +2,12 @@ import clsx from "clsx";
 import { BaseFabricObject, Canvas, Shadow as ObjectShadow } from "fabric";
 import React from "react";
 
-import Input from "~/components/Input";
+import Input from "../../../../../../../ui/src/components/input";
 import ColorPicker, {
-  hexToRgb,
-  strToColor,
+  hex_to_rgb,
+  str_to_color,
   TColor
-} from "~/entities/ColorPicker";
+} from "../../../../../../../ui/src/entities/color-picker";
 import BlurIcon from "~/icons/Blur";
 import LetterXIcon from "~/icons/LetterX";
 import LetterYIcon from "~/icons/LetterY";
@@ -16,7 +16,7 @@ import { MAX_OPACITY, MIN_OPACITY } from "../../../../../constants";
 import { useActiveObject, useCanvas } from "../../../../../hooks";
 import { modifyObject } from "../../../../../utils";
 import DrawItem, { DrawItemRow } from "../../item";
-import commonStyles from "../common.module.scss";
+import common_styles from "../common.module.scss";
 
 const DEFAULT_SHADOW_COLOR = "rgba(0,0,0,0)";
 
@@ -30,7 +30,7 @@ const ShadowColorControl = ({
   canvas: Canvas;
 }): React.ReactElement => {
   const [color, setColor] = React.useState<TColor>(
-    strToColor(
+    str_to_color(
       (activeObject?.shadow?.color as string) ||
         canvas.freeDrawingBrush?.shadow?.color ||
         DEFAULT_SHADOW_COLOR
@@ -68,7 +68,7 @@ const ShadowColorControl = ({
 
   React.useEffect(() => {
     setColor(
-      strToColor(
+      str_to_color(
         (activeObject?.shadow?.color as string) ||
           canvas.freeDrawingBrush?.shadow?.color ||
           DEFAULT_SHADOW_COLOR
@@ -90,7 +90,7 @@ const ShadowColorControl = ({
               className={clsx(
                 "focusable",
                 "focus-invert",
-                commonStyles.indicator
+                common_styles.indicator
               )}
               style={
                 {
@@ -104,7 +104,7 @@ const ShadowColorControl = ({
         monospaced
         onChange={(event): void => {
           setValue(event.target.value);
-          const newColor = strToColor(event.target.value);
+          const newColor = str_to_color(event.target.value);
 
           if (newColor) {
             changeColor(newColor);
@@ -127,7 +127,7 @@ const ShadowColorControl = ({
         monospaced
         onChange={(event): void => {
           const a = Number.parseInt(event.target.value) || 0;
-          const { r, g, b } = hexToRgb(color.hex);
+          const { r, g, b } = hex_to_rgb(color.hex);
 
           changeColor({
             ...color,

@@ -1,6 +1,6 @@
 import React from "react";
 
-import Input from "~/components/Input";
+import Input from "../../../../../../../ui/src/components/input";
 import AxisXIcon from "~/icons/AxisX";
 import AxisYIcon from "~/icons/AxisY";
 

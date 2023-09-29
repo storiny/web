@@ -3,18 +3,21 @@ import NextLink from "next/link";
 import React from "react";
 
 import { GetTagResponse } from "~/common/grpc";
-import Button from "~/components/Button";
-import Grow from "~/components/Grow";
-import Separator from "~/components/Separator";
-import Typography from "~/components/Typography";
-import ErrorState from "~/entities/ErrorState";
+import Button from "../../../../../../../../packages/ui/src/components/button";
+import Grow from "../../../../../../../../packages/ui/src/components/grow";
+import Separator from "../../../../../../../../packages/ui/src/components/separator";
+import Typography from "../../../../../../../../packages/ui/src/components/typography";
+import ErrorState from "../../../../../../../../packages/ui/src/entities/error-state";
 import CheckIcon from "~/icons/Check";
 import PencilPlusIcon from "~/icons/PencilPlus";
 import PlusIcon from "~/icons/Plus";
 import TagIcon from "~/icons/Tag";
 import UsersIcon from "~/icons/Users";
-import { TitleWithIcon, UserWithActionSkeleton } from "~/layout/RightSidebar";
-import UserWithAction from "~/layout/RightSidebar/UserWithAction";
+import {
+  TitleWithIcon,
+  UserWithActionSkeleton
+} from "../../../../../../../../packages/ui/src/layout/right-sidebar";
+import UserWithAction from "../../../../../../../../packages/ui/src/layout/right-sidebar/user-with-action";
 import {
   boolean_action,
   get_query_error_type,
@@ -22,7 +25,7 @@ import {
   use_get_tag_writers_query
 } from "~/redux/features";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
-import { abbreviateNumber } from "~/utils/abbreviateNumber";
+import { abbreviate_number } from "../../../../../../../../packages/ui/src/utils/abbreviate-number";
 
 import TagActions from "../actions";
 import styles from "./right-sidebar.module.scss";
@@ -48,7 +51,7 @@ const Actions = ({ tag }: Props): React.ReactElement => {
   return (
     <div className={clsx("flex", styles.x, styles.actions)}>
       <Button
-        checkAuth
+        check_auth
         decorator={isFollowing ? <CheckIcon /> : <PlusIcon />}
         onClick={(): void => {
           dispatch(boolean_action("followed_tags", tag.id));
@@ -59,7 +62,7 @@ const Actions = ({ tag }: Props): React.ReactElement => {
       </Button>
       <Button
         as={NextLink}
-        checkAuth
+        check_auth
         decorator={<PencilPlusIcon />}
         href={`/new?tag=${tag.name}`}
         variant={"hollow"}
@@ -112,13 +115,13 @@ const SuspendedTagRightSidebarContent = ({
       <div className={clsx("flex", styles.x, styles.stats)}>
         <Typography className={clsx("t-medium", "t-minor")} level={"body2"}>
           <span className={clsx("t-bold", "t-major")}>
-            {abbreviateNumber(tag.story_count)}
+            {abbreviate_number(tag.story_count)}
           </span>{" "}
           {tag.story_count === 1 ? "story" : "stories"}
         </Typography>
         <Typography className={clsx("t-medium", "t-minor")} level={"body2"}>
           <span className={clsx("t-bold", "t-major")}>
-            {abbreviateNumber(tag.follower_count)}
+            {abbreviate_number(tag.follower_count)}
           </span>{" "}
           {tag.follower_count === 1 ? "follower" : "followers"}
         </Typography>

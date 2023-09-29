@@ -1,0 +1,22 @@
+.reset {
+  margin: initial;
+  border: none;
+  list-style: none;
+}
+
+.divider {
+  position: relative;
+  flex-shrink: 0;
+  align-self: stretch;
+  background-color: var(--divider);
+
+  &[data-orientation="horizontal"] {
+    inline-size: initial;
+    block-size: 1px;
+  }
+
+  &[data-orientation="vertical"] {
+    inline-size: 1px;
+    block-size: initial;
+  }
+}

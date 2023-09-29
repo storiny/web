@@ -2,12 +2,12 @@ import NextLink from "next/link";
 import React from "react";
 
 import { GetTagResponse } from "~/common/grpc";
-import IconButton from "~/components/IconButton";
-import Menu from "~/components/Menu";
-import MenuItem from "~/components/MenuItem";
-import Separator from "~/components/Separator";
-import { useClipboard } from "~/hooks/useClipboard";
-import { useWebShare } from "~/hooks/useWebShare";
+import IconButton from "../../../../../../../packages/ui/src/components/icon-button";
+import Menu from "../../../../../../../packages/ui/src/components/menu";
+import MenuItem from "../../../../../../../packages/ui/src/components/menu-item";
+import Separator from "../../../../../../../packages/ui/src/components/separator";
+import { use_clipboard } from "../../../../../../../packages/ui/src/hooks/use-clipboard";
+import { use_web_share } from "../../../../../../../packages/ui/src/hooks/use-web-share";
 import CopyIcon from "~/icons/Copy";
 import DotsIcon from "~/icons/Dots";
 import ReportIcon from "~/icons/Report";
@@ -18,8 +18,8 @@ interface Props {
 }
 
 const Actions = ({ tag }: Props): React.ReactElement => {
-  const share = useWebShare();
-  const copy = useClipboard();
+  const share = use_web_share();
+  const copy = use_clipboard();
 
   return (
     <Menu

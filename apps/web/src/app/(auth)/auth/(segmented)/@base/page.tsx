@@ -3,12 +3,12 @@
 import { clsx } from "clsx";
 import React from "react";
 
-import Button from "~/components/Button";
-import Divider from "~/components/Divider";
-import Grow from "~/components/Grow";
-import Link from "~/components/Link";
-import Spacer from "~/components/Spacer";
-import Typography from "~/components/Typography";
+import Button from "../../../../../../../../packages/ui/src/components/button";
+import Divider from "../../../../../../../../packages/ui/src/components/divider";
+import Grow from "../../../../../../../../packages/ui/src/components/grow";
+import Link from "../../../../../../../../packages/ui/src/components/link";
+import Spacer from "../../../../../../../../packages/ui/src/components/spacer";
+import Typography from "../../../../../../../../packages/ui/src/components/typography";
 
 import { useAuthState } from "../../../actions";
 import styles from "./styles.module.scss";

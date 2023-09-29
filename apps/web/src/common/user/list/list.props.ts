@@ -11,7 +11,7 @@ export interface VirtualizedUserListProps extends VirtuosoProps<User, any> {
   /**
    * A callback function to fetch more users.
    */
-  loadMore: () => void;
+  load_more: () => void;
   /**
    * Props passed down to individual user entities.
    */

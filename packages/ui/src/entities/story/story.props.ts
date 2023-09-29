@@ -5,24 +5,24 @@ export interface StoryProps extends React.ComponentPropsWithoutRef<"article"> {
   /**
    * Enables SSR.
    */
-  enableSsr?: boolean;
+  enable_ssr?: boolean;
   /**
    * If `true`, renders with deleted story properties
    */
-  isDeleted?: boolean;
+  is_deleted?: boolean;
   /**
    * If `true`, renders with draft properties
    */
-  isDraft?: boolean;
+  is_draft?: boolean;
   /**
    * If `true`, renders with extended properties
    */
-  isExtended?: boolean;
+  is_extended?: boolean;
   /**
    * If `true`, renders an unlike button.
    * @default false
    */
-  showUnlikeButton?: boolean;
+  show_unlike_button?: boolean;
   /**
    * The story object.
    */

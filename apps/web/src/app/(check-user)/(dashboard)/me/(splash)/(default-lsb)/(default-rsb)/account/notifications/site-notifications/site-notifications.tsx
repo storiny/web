@@ -1,11 +1,15 @@
 import { clsx } from "clsx";
 import React from "react";
 
-import Form, { SubmitHandler, useForm, zodResolver } from "~/components/Form";
-import FormCheckbox from "~/components/FormCheckbox";
-import Spacer from "~/components/Spacer";
-import { useToast } from "~/components/Toast";
-import TitleBlock from "~/entities/TitleBlock";
+import Form, {
+  SubmitHandler,
+  use_form,
+  zod_resolver
+} from "../../../../../../../../../../../../../packages/ui/src/components/form";
+import FormCheckbox from "../../../../../../../../../../../../../packages/ui/src/components/form-checkbox";
+import Spacer from "../../../../../../../../../../../../../packages/ui/src/components/spacer";
+import { use_toast } from "../../../../../../../../../../../../../packages/ui/src/components/toast";
+import TitleBlock from "../../../../../../../../../../../../../packages/ui/src/entities/title-block";
 import { use_site_notification_settings_mutation } from "~/redux/features";
 
 import DashboardGroup from "../../../../dashboard-group";
@@ -17,7 +21,7 @@ import {
 } from "./site-notifications.schema";
 
 const SiteNotifications = ({
-  onSubmit,
+  on_submit,
   features_and_updates,
   friend_requests,
   tags,
@@ -26,10 +30,10 @@ const SiteNotifications = ({
   stories,
   comments
 }: SiteNotificationsProps): React.ReactElement => {
-  const toast = useToast();
+  const toast = use_toast();
   const prevValuesRef = React.useRef<SiteNotificationsSchema>();
-  const form = useForm<SiteNotificationsSchema>({
-    resolver: zodResolver(siteNotificationsSchema),
+  const form = use_form<SiteNotificationsSchema>({
+    resolver: zod_resolver(siteNotificationsSchema),
     defaultValues: {
       "friend-requests": friend_requests,
       "features-and-updates": features_and_updates,
@@ -44,8 +48,8 @@ const SiteNotifications = ({
     use_site_notification_settings_mutation();
 
   const handleSubmit: SubmitHandler<SiteNotificationsSchema> = (values) => {
-    if (onSubmit) {
-      onSubmit(values);
+    if (on_submit) {
+      on_submit(values);
     } else {
       mutateSiteNotificationSettings(values)
         .unwrap()
@@ -77,11 +81,11 @@ const SiteNotifications = ({
       <Form<SiteNotificationsSchema>
         className={clsx("flex-col", styles.form)}
         disabled={isLoading}
-        onSubmit={handleSubmit}
-        providerProps={form}
+        on_submit={handleSubmit}
+        provider_props={form}
       >
         <FormCheckbox
-          helperText={
+          helper_text={
             "Receive notifications for new product features, tips, and updates from Storiny."
           }
           label={"Features & updates"}
@@ -90,7 +94,7 @@ const SiteNotifications = ({
           size={"lg"}
         />
         <FormCheckbox
-          helperText={
+          helper_text={
             "Receive a notification when your friends or the writers you follow, and have subscribed to, publish a new story."
           }
           label={"Stories"}
@@ -99,7 +103,7 @@ const SiteNotifications = ({
           size={"lg"}
         />
         <FormCheckbox
-          helperText={
+          helper_text={
             "Receive a notification when a new story gets published in one of the tags that you follow."
           }
           label={"Tags"}
@@ -108,7 +112,7 @@ const SiteNotifications = ({
           size={"lg"}
         />
         <FormCheckbox
-          helperText={
+          helper_text={
             "Receive a notification when someone leaves a comment on your stories."
           }
           label={"Comments"}
@@ -117,7 +121,7 @@ const SiteNotifications = ({
           size={"lg"}
         />
         <FormCheckbox
-          helperText={
+          helper_text={
             "Receive a notification when someone replies to your comment."
           }
           label={"Replies"}
@@ -126,7 +130,7 @@ const SiteNotifications = ({
           size={"lg"}
         />
         <FormCheckbox
-          helperText={
+          helper_text={
             "Receive a notification when someone starts following you."
           }
           label={"New followers"}
@@ -135,7 +139,7 @@ const SiteNotifications = ({
           size={"lg"}
         />
         <FormCheckbox
-          helperText={
+          helper_text={
             "Receive a notification when someone sends you a friend request or when your friend request is accepted."
           }
           label={"Friend requests"}

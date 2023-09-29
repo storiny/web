@@ -12,7 +12,7 @@ export interface VirtualizedReplyListProps extends VirtuosoProps<Reply, any> {
   /**
    * A callback function to fetch more replies.
    */
-  loadMore: () => void;
+  load_more: () => void;
   /**
    * Array of replies to render.
    */

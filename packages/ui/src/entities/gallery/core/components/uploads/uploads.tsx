@@ -1,19 +1,19 @@
 import { ImageSize } from "@storiny/shared";
 import clsx from "clsx";
-import { useSetAtom } from "jotai";
+import { useSetAtom as use_set_atom } from "jotai";
 import React from "react";
-import { ErrorCode, useDropzone } from "react-dropzone";
+import { ErrorCode, useDropzone as use_dropzone } from "react-dropzone";
+import Button from "src/components/button";
+import Input from "src/components/input";
+import Spacer from "src/components/spacer";
+import { use_toast } from "src/components/toast";
+import Typography from "src/components/typography";
+import CameraIllustration from "src/illustrations/camera";
+import { get_cdn_url } from "src/utils/get-cdn-url";
 
-import Button from "~/components/Button";
-import Input from "~/components/Input";
-import Spacer from "~/components/Spacer";
-import { useToast } from "~/components/Toast";
-import Typography from "~/components/Typography";
-import CameraIllustration from "~/illustrations/Camera";
 import { use_upload_asset_mutation } from "~/redux/features";
-import { getCdnUrl } from "~/utils/getCdnUrl";
 
-import { selectedAtom, uploadingAtom } from "../../atoms";
+import { selected_atom, uploading_atom } from "../../atoms";
 import { FileWithPreview } from "../../types";
 import UploadProgress from "../upload-progress";
 import styles from "./uploads.module.scss";
@@ -23,14 +23,19 @@ import { UploadsProps } from "./uploads.props";
 const TEN_MB_IN_BYTES = 1_04_85_760;
 
 const UploadsTab = (props: UploadsProps): React.ReactElement => {
-  const { onOpenInWhiteboard, disableWhiteboardPrompt } = props;
-  const toast = useToast();
-  const setSelected = useSetAtom(selectedAtom);
-  const setUploading = useSetAtom(uploadingAtom);
-  const [file, setFile] = React.useState<FileWithPreview | null>(null);
-  const [alt, setAlt] = React.useState<string>("");
-  const [uploadImage, result] = use_upload_asset_mutation();
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+  const { on_open_in_whiteboard, disable_whiteboard_prompt } = props;
+  const toast = use_toast();
+  const set_selected = use_set_atom(selected_atom);
+  const set_uploading = use_set_atom(uploading_atom);
+  const [file, set_file] = React.useState<FileWithPreview | null>(null);
+  const [alt, set_alt] = React.useState<string>("");
+  const [upload_image, result] = use_upload_asset_mutation();
+  const {
+    getRootProps: get_root_props,
+    getInputProps: get_input_props,
+    isDragActive: is_drag_active
+  } = use_dropzone({
+    /* eslint-disable prefer-snakecase/prefer-snakecase */
     maxFiles: 1,
     maxSize: TEN_MB_IN_BYTES,
     multiple: false,
@@ -44,39 +49,41 @@ const UploadsTab = (props: UploadsProps): React.ReactElement => {
       "image/avif": []
     },
     onError: () => toast("Unable to import the image file", "error"),
-    onDrop: (acceptedFiles, fileRejections) => {
-      if (fileRejections.length) {
-        let errorMessage = "";
+    /* eslint-enable prefer-snakecase/prefer-snakecase */
+    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+    onDrop: (accepted_files, file_rejections) => {
+      if (file_rejections.length) {
+        let error_message = "";
 
-        for (const rejection of fileRejections) {
+        for (const rejection of file_rejections) {
           for (const error of rejection.errors) {
             switch (error.code) {
               case ErrorCode.FileInvalidType:
-                errorMessage = "Unsupported image file";
+                error_message = "Unsupported image file";
                 break;
               case ErrorCode.FileTooLarge:
-                errorMessage = "Image file is too large";
+                error_message = "Image file is too large";
                 break;
               case ErrorCode.TooManyFiles:
-                errorMessage =
+                error_message =
                   "Only a single image file can be uploaded at a time";
                 break;
               default:
-                errorMessage = "Unable to import the image file";
+                error_message = "Unable to import the image file";
             }
           }
         }
 
-        toast(errorMessage, "error");
+        toast(error_message, "error");
       } else {
-        const acceptedFile = acceptedFiles[0] as File;
+        const accepted_file = accepted_files[0] as File;
 
-        if (acceptedFile) {
-          Object.assign(acceptedFile, {
-            preview: URL.createObjectURL(acceptedFile)
+        if (accepted_file) {
+          Object.assign(accepted_file, {
+            preview: URL.createObjectURL(accepted_file)
           });
 
-          setFile(acceptedFile as FileWithPreview);
+          set_file(accepted_file as FileWithPreview);
         } else {
           toast("No file selected", "error");
         }
@@ -87,15 +94,15 @@ const UploadsTab = (props: UploadsProps): React.ReactElement => {
   /**
    * Handles the uploading of the image
    */
-  const handleUpload = React.useCallback(() => {
+  const handle_upload = React.useCallback(() => {
     if (file) {
-      setUploading(true);
-      uploadImage({ file, alt })
+      set_uploading(true);
+      upload_image({ file, alt })
         .unwrap()
         .then((uploaded) => {
-          setAlt("");
-          setSelected({
-            src: getCdnUrl(uploaded.key, ImageSize.W_320),
+          set_alt("");
+          set_selected({
+            src: get_cdn_url(uploaded.key, ImageSize.W_320),
             key: uploaded.key,
             hex: uploaded.hex,
             alt: uploaded.alt,
@@ -106,18 +113,18 @@ const UploadsTab = (props: UploadsProps): React.ReactElement => {
           });
         })
         .catch(() => undefined)
-        .finally(() => setUploading(false));
+        .finally(() => set_uploading(false));
     }
-  }, [alt, file, setSelected, setUploading, uploadImage]);
+  }, [alt, file, set_selected, set_uploading, upload_image]);
 
   /**
    * Resets the component
    */
   const reset = React.useCallback(() => {
-    setFile(null);
-    setSelected(null);
+    set_file(null);
+    set_selected(null);
     result.reset();
-  }, [result, setSelected]);
+  }, [result, set_selected]);
 
   return (
     <div
@@ -144,7 +151,7 @@ const UploadsTab = (props: UploadsProps): React.ReactElement => {
           </Typography>
           <Spacer orientation={"vertical"} size={2.25} />
           <div className={"flex-center"}>
-            <Button onClick={handleUpload}>Try again</Button>
+            <Button onClick={handle_upload}>Try again</Button>
           </div>
         </React.Fragment>
       ) : result.isSuccess && file ? (
@@ -176,16 +183,16 @@ const UploadsTab = (props: UploadsProps): React.ReactElement => {
           <Spacer className={"f-grow"} orientation={"vertical"} size={3} />
           <Input
             aria-label={"Alt text for the image"}
-            onChange={(event): void => setAlt(event.target.value)}
+            onChange={(event): void => set_alt(event.target.value)}
             placeholder={"Add an alt text"}
             value={alt}
           />
           <Spacer orientation={"vertical"} size={1.5} />
           <div className={"flex-center"}>
-            {!disableWhiteboardPrompt && (
+            {!disable_whiteboard_prompt && (
               <React.Fragment>
                 <Button
-                  onClick={(): void => onOpenInWhiteboard?.(file.preview)}
+                  onClick={(): void => on_open_in_whiteboard?.(file.preview)}
                   variant={"hollow"}
                 >
                   Open in whiteboard
@@ -193,27 +200,27 @@ const UploadsTab = (props: UploadsProps): React.ReactElement => {
                 <Spacer />
               </React.Fragment>
             )}
-            <Button onClick={handleUpload}>Upload</Button>
+            <Button onClick={handle_upload}>Upload</Button>
           </div>
         </React.Fragment>
       ) : (
         // Main drop area
         <div
-          {...getRootProps({
+          {...get_root_props({
             className: clsx(
               "focusable",
               "focus-invert",
               "flex-col",
               "flex-center",
               styles.dropzone,
-              isDragActive && styles.focused
+              is_drag_active && styles.focused
             )
           })}
         >
-          <input {...getInputProps()} />
+          <input {...get_input_props()} />
           <CameraIllustration className={styles.illustration} />
           <Typography level={"body2"}>
-            {isDragActive ? "Drop it!" : "Drop file here or click to upload"}
+            {is_drag_active ? "Drop it!" : "Drop file here or click to upload"}
           </Typography>
         </div>
       )}

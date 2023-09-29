@@ -1,0 +1,73 @@
+@use "breakpoints";
+
+.content {
+  position: fixed;
+  overflow: hidden;
+  padding: 12px;
+  gap: 18px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  flex-direction: column;
+  width: 286px;
+  max-width: calc(100% - 64px);
+  max-height: calc(100% - 64px);
+  z-index: var(--z-index-modal);
+  background-color: var(--bg-elevation-sm);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--divider);
+  animation: content-appear 150ms var(--easing-short);
+
+  &:focus {
+    outline: none;
+  }
+
+  @include breakpoints.media("<=mobile") {
+    min-width: 248px;
+    width: fit-content;
+  }
+}
+
+.container {
+  padding: 16px;
+  gap: 12px;
+  flex-direction: column;
+}
+
+.decorator {
+  --icon-size: 32px;
+
+  padding: 4px;
+}
+
+.title {
+  font-weight: var(--font-weight-bold);
+}
+
+.footer {
+  width: 100%;
+  gap: 10px;
+
+  @include breakpoints.media("<=mobile") {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+.action {
+  display: flex;
+  flex-grow: 1;
+}
+
+@keyframes content-appear {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -51%) scale(1.12);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}

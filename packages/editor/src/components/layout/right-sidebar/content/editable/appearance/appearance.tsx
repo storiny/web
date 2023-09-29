@@ -3,11 +3,11 @@ import { clsx } from "clsx";
 import { useSetAtom } from "jotai";
 import React from "react";
 
-import IconButton from "~/components/IconButton";
-import Select from "~/components/Select";
-import Spacer from "~/components/Spacer";
-import Tooltip from "~/components/Tooltip";
-import Typography from "~/components/Typography";
+import IconButton from "../../../../../../../../ui/src/components/icon-button";
+import Select from "../../../../../../../../ui/src/components/select";
+import Spacer from "../../../../../../../../ui/src/components/spacer";
+import Tooltip from "../../../../../../../../ui/src/components/tooltip";
+import Typography from "../../../../../../../../ui/src/components/typography";
 import CaretDefaultIcon from "~/icons/CaretDefault";
 import SidebarCollapseIcon from "~/icons/SidebarCollapse";
 
@@ -19,7 +19,7 @@ const Appearance = ({
 }: {
   disabled?: boolean;
 }): React.ReactElement => {
-  const setSidebarsCollapsed = useSetAtom(sidebarsCollapsedAtom);
+  const setSidebarsCollapsed = use_set_atom(sidebarsCollapsedAtom);
   return (
     <div className={"flex-col"}>
       <Typography className={clsx("t-minor", "t-medium")} level={"body2"}>
@@ -42,7 +42,7 @@ const Appearance = ({
                   placeholder: "Caret style"
                 }
               }}
-              valueChildren={
+              value_children={
                 <span className={"flex-center"}>
                   <CaretDefaultIcon />
                   <Spacer />
@@ -55,7 +55,7 @@ const Appearance = ({
         <Spacer />
         <Tooltip
           content={"Collapse sidebars"}
-          rightSlot={getShortcutLabel(EDITOR_SHORTCUTS.sidebars)}
+          right_slot={getShortcutLabel(EDITOR_SHORTCUTS.sidebars)}
         >
           <IconButton
             disabled={disabled}

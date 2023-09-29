@@ -6,12 +6,12 @@ import dynamic from "next/dynamic";
 import React from "react";
 
 import { dynamicLoader } from "~/common/dynamic";
-import Input from "~/components/Input";
-import Tab from "~/components/Tab";
-import TabPanel from "~/components/TabPanel";
-import Tabs from "~/components/Tabs";
-import TabsList from "~/components/TabsList";
-import { useDebounce } from "~/hooks/useDebounce";
+import Input from "../../../../../../../packages/ui/src/components/input";
+import Tab from "../../../../../../../packages/ui/src/components/tab";
+import TabPanel from "../../../../../../../packages/ui/src/components/tab-panel";
+import Tabs from "../../../../../../../packages/ui/src/components/tabs";
+import TabsList from "../../../../../../../packages/ui/src/components/tabs-list";
+import { use_debounce } from "../../../../../../../packages/ui/src/hooks/use-debounce";
 import SearchIcon from "~/icons/Search";
 
 import Dropdown from "./dropdown";
@@ -104,9 +104,9 @@ const PageInputHeader = ({
 const Client = ({ category }: Props): React.ReactElement => {
   const [value, setValue] = React.useState<ExploreTabValue>("all");
   const [query, setQuery] = React.useState<string>("");
-  const debouncedQuery = useDebounce(query);
+  const debounced_query = use_debounce(query);
   const normalizedCategory = normalizeCategory(category);
-  const isTyping = query !== debouncedQuery;
+  const is_typing = query !== debounced_query;
 
   const handleChange = (newValue: ExploreTabValue): void => {
     setQuery("");
@@ -138,20 +138,20 @@ const Client = ({ category }: Props): React.ReactElement => {
       >
         <WritersPreview
           category={category}
-          debouncedQuery={debouncedQuery}
-          loading={isTyping}
+          debounced_query={debounced_query}
+          loading={is_typing}
           normalizedCategory={normalizedCategory}
         />
         <TagsPreview
           category={category}
-          debouncedQuery={debouncedQuery}
-          loading={isTyping}
+          debounced_query={debounced_query}
+          loading={is_typing}
           normalizedCategory={normalizedCategory}
         />
         <StoryList
           category={category}
-          debouncedQuery={debouncedQuery}
-          loading={isTyping}
+          debounced_query={debounced_query}
+          loading={is_typing}
         />
       </TabPanel>
       <TabPanel
@@ -161,8 +161,8 @@ const Client = ({ category }: Props): React.ReactElement => {
       >
         <StoryList
           category={category}
-          debouncedQuery={debouncedQuery}
-          loading={isTyping}
+          debounced_query={debounced_query}
+          loading={is_typing}
         />
       </TabPanel>
       <TabPanel
@@ -172,8 +172,8 @@ const Client = ({ category }: Props): React.ReactElement => {
       >
         <WriterList
           category={category}
-          debouncedQuery={debouncedQuery}
-          loading={isTyping}
+          debounced_query={debounced_query}
+          loading={is_typing}
         />
       </TabPanel>
       <TabPanel
@@ -183,8 +183,8 @@ const Client = ({ category }: Props): React.ReactElement => {
       >
         <TagList
           category={category}
-          debouncedQuery={debouncedQuery}
-          loading={isTyping}
+          debounced_query={debounced_query}
+          loading={is_typing}
         />
       </TabPanel>
     </Tabs>

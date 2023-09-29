@@ -4,7 +4,7 @@ import { clsx } from "clsx";
 import React from "react";
 
 import { VirtualizedStoryListContext } from "~/common/story/list/list-context";
-import Divider from "~/components/Divider";
+import Divider from "../../../../../../packages/ui/src/components/divider";
 import { StorySkeleton } from "~/entities/story";
 
 import styles from "../../virtual/virtual.module.scss";

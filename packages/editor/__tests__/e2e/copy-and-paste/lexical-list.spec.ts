@@ -10,7 +10,7 @@ import {
 import {
   assertHTML,
   assertSelection,
-  copyToClipboard,
+  copy_to_clipboard,
   focusEditor,
   html,
   initialize,
@@ -80,7 +80,7 @@ test.describe("lexical list copy and paste", () => {
     });
 
     // Copy the partial list item and paragraph
-    const clipboard = await copyToClipboard(page);
+    const clipboard = await copy_to_clipboard(page);
     // Select all and remove content
     await selectAll(page);
     await page.keyboard.press("Backspace");
@@ -181,7 +181,7 @@ test.describe("lexical list copy and paste", () => {
     });
 
     // Copy the partial list item and paragraph
-    const clipboard = await copyToClipboard(page);
+    const clipboard = await copy_to_clipboard(page);
     // Select all and remove content
     await page.keyboard.press("ArrowUp");
     await page.keyboard.press("ArrowUp");
@@ -311,7 +311,7 @@ test.describe("lexical list copy and paste", () => {
       focusPath: [0, 3, 0, 0]
     });
 
-    const clipboard = await copyToClipboard(page);
+    const clipboard = await copy_to_clipboard(page);
     await page.keyboard.press("Backspace");
 
     await assertHTML(
@@ -424,7 +424,7 @@ test.describe("lexical list copy and paste", () => {
       focusPath: [0, 3, 0, 0]
     });
 
-    const clipboard = await copyToClipboard(page);
+    const clipboard = await copy_to_clipboard(page);
     await page.keyboard.press("ArrowRight");
 
     await assertHTML(
@@ -501,7 +501,7 @@ test.describe("lexical list copy and paste", () => {
     await page.keyboard.type("world");
 
     await selectAll(page);
-    const clipboard = await copyToClipboard(page);
+    const clipboard = await copy_to_clipboard(page);
     await page.keyboard.press("Backspace");
 
     await page.keyboard.type("- one");
@@ -598,7 +598,7 @@ test.describe("lexical list copy and paste", () => {
     await page.keyboard.type("world");
 
     await selectAll(page);
-    const clipboard = await copyToClipboard(page);
+    const clipboard = await copy_to_clipboard(page);
     await page.keyboard.press("Backspace");
 
     await page.keyboard.type("- one");

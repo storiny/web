@@ -1,7 +1,7 @@
 import React from "react";
 
-import Input from "~/components/Input";
-import Toggle from "~/components/Toggle";
+import Input from "../../../../../../../ui/src/components/input";
+import Toggle from "../../../../../../../ui/src/components/toggle";
 import ConstrainedIcon from "~/icons/Constrained";
 import LetterHIcon from "~/icons/LetterH";
 import LetterWIcon from "~/icons/LetterW";
@@ -52,7 +52,7 @@ const Dimensions = (): React.ReactElement | null => {
    */
   const changeHeight = React.useCallback(
     (newHeight: number) => {
-      setDimensions((prevState) => ({ ...prevState, height: newHeight }));
+      setDimensions((prev_state) => ({ ...prev_state, height: newHeight }));
 
       if (activeObject) {
         const clampedHeight = clamp(1, newHeight, Infinity);
@@ -93,7 +93,7 @@ const Dimensions = (): React.ReactElement | null => {
    */
   const changeWidth = React.useCallback(
     (newWidth: number) => {
-      setDimensions((prevState) => ({ ...prevState, width: newWidth }));
+      setDimensions((prev_state) => ({ ...prev_state, width: newWidth }));
 
       if (activeObject) {
         const clampedWidth = clamp(1, newWidth, Infinity);
@@ -197,7 +197,7 @@ const Dimensions = (): React.ReactElement | null => {
           pressed={constrained}
           size={"sm"}
           style={{ "--size": "24px" } as React.CSSProperties}
-          tooltipContent={`${
+          tooltip_content={`${
             constrained ? "Unconstrain" : "Constrain"
           } dimensions`}
         >

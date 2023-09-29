@@ -10,19 +10,19 @@ export interface CommentProps
   /**
    * Enables SSR.
    */
-  enableSsr?: boolean;
+  enable_ssr?: boolean;
   /**
    * If `true`, does not render an overlay for hidden comments
    */
-  hideHiddenOverlay?: boolean;
+  hide_hidden_overlay?: boolean;
   /**
    * If `true`, renders with extended properties
    */
-  isExtended?: boolean;
+  is_extended?: boolean;
   /**
    * If `true`, renders with static properties
    */
-  isStatic?: boolean;
+  is_static?: boolean;
   /**
    * Whether the comment is rendered inside a virtualized list.
    */

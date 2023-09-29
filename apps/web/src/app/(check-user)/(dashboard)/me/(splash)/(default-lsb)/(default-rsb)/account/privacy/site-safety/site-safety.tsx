@@ -1,10 +1,10 @@
 import React from "react";
 
-import Divider from "~/components/Divider";
-import Link from "~/components/Link";
-import Spacer from "~/components/Spacer";
-import Typography from "~/components/Typography";
-import TitleBlock from "~/entities/TitleBlock";
+import Divider from "../../../../../../../../../../../../../packages/ui/src/components/divider";
+import Link from "../../../../../../../../../../../../../packages/ui/src/components/link";
+import Spacer from "../../../../../../../../../../../../../packages/ui/src/components/spacer";
+import Typography from "../../../../../../../../../../../../../packages/ui/src/components/typography";
+import TitleBlock from "../../../../../../../../../../../../../packages/ui/src/entities/title-block";
 
 import DashboardGroup from "../../../../dashboard-group";
 import AccountHistory from "./account-history";

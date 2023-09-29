@@ -2,7 +2,7 @@
 
 import React from "react";
 
-import { createSvgIcon } from "~/utils/createSvgIcon";
+import { create_svg_icon } from "src/utils/create-svg-icon";
 
 const LockIcon = (
   <>
@@ -11,4 +11,4 @@ const LockIcon = (
   </>
 );
 
-export default createSvgIcon(LockIcon, "lock");
+export default create_svg_icon(LockIcon, "lock");

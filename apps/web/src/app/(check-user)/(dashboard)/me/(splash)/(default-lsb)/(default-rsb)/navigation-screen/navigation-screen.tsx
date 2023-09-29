@@ -2,12 +2,12 @@ import clsx from "clsx";
 import NextLink from "next/link";
 import React from "react";
 
-import Input from "~/components/Input";
-import NavigationItem from "~/components/NavigationItem";
-import Separator from "~/components/Separator";
-import Spacer from "~/components/Spacer";
-import Typography from "~/components/Typography";
-import PageTitle from "~/entities/PageTitle";
+import Input from "../../../../../../../../../../../packages/ui/src/components/input";
+import NavigationItem from "../../../../../../../../../../../packages/ui/src/components/navigation-item";
+import Separator from "../../../../../../../../../../../packages/ui/src/components/separator";
+import Spacer from "../../../../../../../../../../../packages/ui/src/components/spacer";
+import Typography from "../../../../../../../../../../../packages/ui/src/components/typography";
+import PageTitle from "../../../../../../../../../../../packages/ui/src/entities/page-title";
 import SearchIcon from "~/icons/Search";
 
 import {
@@ -34,7 +34,7 @@ const GroupComponent = ({ group }: { group: Group }): React.ReactElement => (
           >
             {item.title}
           </NavigationItem>
-          <Separator className={"hide-last"} invertMargin />
+          <Separator className={"hide-last"} invert_margin />
         </React.Fragment>
       ))}
     </div>
@@ -47,7 +47,7 @@ const DashboardNavigationScreen = (): React.ReactElement => {
 
   return (
     <React.Fragment>
-      <PageTitle dashboard hideBackButton>
+      <PageTitle dashboard hide_back_button>
         Settings
       </PageTitle>
       {/* Page header */}

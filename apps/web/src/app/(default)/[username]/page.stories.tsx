@@ -2,7 +2,7 @@
 
 import { GetProfileResponse } from "@storiny/proto/gen/ts/profile_def/v1/def";
 import { Provider, UserFlag } from "@storiny/shared";
-import { mockUsers } from "@storiny/ui/src/mocks";
+import { MOCK_USERS } from "@storiny/ui/src/mocks";
 import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
 
@@ -11,7 +11,7 @@ import { render_with_state } from "~/redux/mock";
 import DefaultLayout from "../layout";
 import Profile from "./component";
 
-const user = mockUsers[9];
+const user = MOCK_USERS[9];
 const mockResponse = {
   ...user,
   is_following: false,
@@ -56,7 +56,7 @@ export const Default: Story = {
         <DefaultLayout>
           <Story />
         </DefaultLayout>,
-        { ignorePrimitiveProviders: true }
+        { ignore_primitive_providers: true }
       )
   ]
 };
@@ -71,7 +71,7 @@ export const LoggedIn: Story = {
         <DefaultLayout>
           <Story />
         </DefaultLayout>,
-        { ignorePrimitiveProviders: true, loggedIn: true }
+        { ignore_primitive_providers: true, logged_in: true }
       )
   ]
 };
@@ -86,7 +86,7 @@ export const SelfPrivate: Story = {
         <DefaultLayout>
           <Story />
         </DefaultLayout>,
-        { ignorePrimitiveProviders: true, loggedIn: true }
+        { ignore_primitive_providers: true, logged_in: true }
       )
   ]
 };
@@ -101,7 +101,7 @@ export const Private: Story = {
         <DefaultLayout>
           <Story />
         </DefaultLayout>,
-        { ignorePrimitiveProviders: true }
+        { ignore_primitive_providers: true }
       )
   ]
 };
@@ -116,7 +116,7 @@ export const Blocking: Story = {
         <DefaultLayout>
           <Story />
         </DefaultLayout>,
-        { ignorePrimitiveProviders: true, loggedIn: true }
+        { ignore_primitive_providers: true, logged_in: true }
       )
   ]
 };
@@ -131,7 +131,7 @@ export const BlockedByUser: Story = {
         <DefaultLayout>
           <Story />
         </DefaultLayout>,
-        { ignorePrimitiveProviders: true, loggedIn: true }
+        { ignore_primitive_providers: true, logged_in: true }
       )
   ]
 };
@@ -146,7 +146,7 @@ export const Suspended: Story = {
         <DefaultLayout>
           <Story />
         </DefaultLayout>,
-        { ignorePrimitiveProviders: true }
+        { ignore_primitive_providers: true }
       )
   ]
 };

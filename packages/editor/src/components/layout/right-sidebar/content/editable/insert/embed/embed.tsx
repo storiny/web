@@ -11,13 +11,13 @@ const EmbedItem = ({
   disabled?: boolean;
 }): React.ReactElement => (
   <EmbedModal
-    trigger={({ openModal }): React.ReactElement => (
+    trigger={({ open_modal }): React.ReactElement => (
       <InsertItem
         data-testid={"insert-embed"}
         decorator={<EmbedIcon />}
         disabled={disabled}
         label={"Embed"}
-        onClick={openModal}
+        onClick={open_modal}
       />
     )}
   />

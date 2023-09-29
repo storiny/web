@@ -1,10 +1,10 @@
 import NextLink from "next/link";
 import React from "react";
 
-import Button from "~/components/Button";
-import Link from "~/components/Link";
-import Spacer from "~/components/Spacer";
-import CustomState from "~/entities/CustomState";
+import Button from "../../../../../../../../../../../../../packages/ui/src/components/button";
+import Link from "../../../../../../../../../../../../../packages/ui/src/components/link";
+import Spacer from "../../../../../../../../../../../../../packages/ui/src/components/spacer";
+import CustomState from "../../../../../../../../../../../../../packages/ui/src/entities/custom-state";
 import LockExclamationIcon from "~/icons/LockExclamation";
 import UnlinkIcon from "~/icons/Unlink";
 
@@ -19,15 +19,15 @@ const ConnectionFailureClient = ({
 }: ConnectionFailureProps): React.ReactElement => (
   <React.Fragment>
     <DashboardTitle
-      backButtonHref={"/me/settings/connections"}
-      hideBackButton={false}
+      back_button_href={"/me/settings/connections"}
+      hide_back_button={false}
     >
       Connection failure
     </DashboardTitle>
     <DashboardWrapper>
       <DashboardGroup>
         <CustomState
-          autoSize
+          auto_size
           description={
             type === "state-mismatch" ? (
               <React.Fragment>
@@ -61,8 +61,8 @@ const ConnectionFailureClient = ({
         <div className={"flex-center"}>
           <Button
             as={NextLink}
-            autoSize
-            checkAuth
+            auto_size
+            check_auth
             className={"fit-w"}
             href={"/me/settings/connections"}
           >

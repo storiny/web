@@ -1,6 +1,6 @@
 import React from "react";
 
-import Input from "~/components/Input";
+import Input from "../../../../../../../ui/src/components/input";
 import LetterXIcon from "~/icons/LetterX";
 import LetterYIcon from "~/icons/LetterY";
 
@@ -38,7 +38,7 @@ const Position = (): React.ReactElement | null => {
   const changeX = React.useCallback(
     (newX: number) => {
       if (activeObject) {
-        setPos((prevState) => ({ ...prevState, x: newX }));
+        setPos((prev_state) => ({ ...prev_state, x: newX }));
         modifyObject(activeObject, {
           left: newX
         });
@@ -54,7 +54,7 @@ const Position = (): React.ReactElement | null => {
   const changeY = React.useCallback(
     (newY: number) => {
       if (activeObject) {
-        setPos((prevState) => ({ ...prevState, y: newY }));
+        setPos((prev_state) => ({ ...prev_state, y: newY }));
         modifyObject(activeObject, {
           top: newY
         });

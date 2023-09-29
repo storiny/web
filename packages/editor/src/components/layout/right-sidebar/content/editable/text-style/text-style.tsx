@@ -2,12 +2,12 @@ import { getShortcutLabel } from "@storiny/shared/src/utils/get-shortcut-label";
 import { clsx } from "clsx";
 import React from "react";
 
-import Option from "~/components/Option";
-import Select from "~/components/Select";
-import Spacer from "~/components/Spacer";
-import ToggleGroup from "~/components/ToggleGroup";
-import ToggleGroupItem from "~/components/ToggleGroupItem";
-import Typography from "~/components/Typography";
+import Option from "../../../../../../../../ui/src/components/option";
+import Select from "../../../../../../../../ui/src/components/select";
+import Spacer from "../../../../../../../../ui/src/components/spacer";
+import ToggleGroup from "../../../../../../../../ui/src/components/toggle-group";
+import ToggleGroupItem from "../../../../../../../../ui/src/components/toggle-group-item";
+import Typography from "../../../../../../../../ui/src/components/typography";
 import BoldIcon from "~/icons/Bold";
 import CodeIcon from "~/icons/Code";
 import ItalicIcon from "~/icons/Italic";
@@ -45,7 +45,7 @@ const TextStyleOption = ({
 }): React.ReactElement => (
   <Option
     decorator={textStyleToIconMap[value]}
-    rightSlot={shortcut}
+    right_slot={shortcut}
     value={value}
   >
     {textStyleToLabelMap[value]}
@@ -90,10 +90,10 @@ const TextStyleToggleGroup = ({
         onClick={toggleBold}
         slot_props={{
           tooltip: {
-            rightSlot: getShortcutLabel(EDITOR_SHORTCUTS.bold)
+            right_slot: getShortcutLabel(EDITOR_SHORTCUTS.bold)
           }
         }}
-        tooltipContent={"Bold"}
+        tooltip_content={"Bold"}
         value={"bold"}
       >
         <BoldIcon />
@@ -103,10 +103,10 @@ const TextStyleToggleGroup = ({
         onClick={toggleItalic}
         slot_props={{
           tooltip: {
-            rightSlot: getShortcutLabel(EDITOR_SHORTCUTS.italic)
+            right_slot: getShortcutLabel(EDITOR_SHORTCUTS.italic)
           }
         }}
-        tooltipContent={"Italic"}
+        tooltip_content={"Italic"}
         value={"italic"}
       >
         <ItalicIcon />
@@ -116,10 +116,10 @@ const TextStyleToggleGroup = ({
         onClick={toggleUnderline}
         slot_props={{
           tooltip: {
-            rightSlot: getShortcutLabel(EDITOR_SHORTCUTS.underline)
+            right_slot: getShortcutLabel(EDITOR_SHORTCUTS.underline)
           }
         }}
-        tooltipContent={"Underline"}
+        tooltip_content={"Underline"}
         value={"underline"}
       >
         <UnderlineIcon />
@@ -129,10 +129,10 @@ const TextStyleToggleGroup = ({
         onClick={toggleStrikethrough}
         slot_props={{
           tooltip: {
-            rightSlot: getShortcutLabel(EDITOR_SHORTCUTS.strikethrough)
+            right_slot: getShortcutLabel(EDITOR_SHORTCUTS.strikethrough)
           }
         }}
-        tooltipContent={"Strikethrough"}
+        tooltip_content={"Strikethrough"}
         value={"strikethrough"}
       >
         <StrikethroughIcon />
@@ -143,10 +143,10 @@ const TextStyleToggleGroup = ({
         onClick={toggleCode}
         slot_props={{
           tooltip: {
-            rightSlot: getShortcutLabel(EDITOR_SHORTCUTS.code)
+            right_slot: getShortcutLabel(EDITOR_SHORTCUTS.code)
           }
         }}
-        tooltipContent={"Code"}
+        tooltip_content={"Code"}
         value={"code"}
       >
         <CodeIcon />
@@ -156,10 +156,10 @@ const TextStyleToggleGroup = ({
         onClick={(): void => insertLink()}
         slot_props={{
           tooltip: {
-            rightSlot: getShortcutLabel(EDITOR_SHORTCUTS.link)
+            right_slot: getShortcutLabel(EDITOR_SHORTCUTS.link)
           }
         }}
-        tooltipContent={"Link"}
+        tooltip_content={"Link"}
         value={"link"}
       >
         <LinkIcon />
@@ -170,10 +170,10 @@ const TextStyleToggleGroup = ({
         onClick={toggleSubscript}
         slot_props={{
           tooltip: {
-            rightSlot: getShortcutLabel(EDITOR_SHORTCUTS.subscript)
+            right_slot: getShortcutLabel(EDITOR_SHORTCUTS.subscript)
           }
         }}
-        tooltipContent={"Subscript"}
+        tooltip_content={"Subscript"}
         value={"subscript"}
       >
         <SubscriptIcon />
@@ -183,10 +183,10 @@ const TextStyleToggleGroup = ({
         onClick={toggleSuperscript}
         slot_props={{
           tooltip: {
-            rightSlot: getShortcutLabel(EDITOR_SHORTCUTS.superscript)
+            right_slot: getShortcutLabel(EDITOR_SHORTCUTS.superscript)
           }
         }}
-        tooltipContent={"Superscript"}
+        tooltip_content={"Superscript"}
         value={"superscript"}
       >
         <SuperscriptIcon />
@@ -249,7 +249,7 @@ const TextStyleSelect = ({
         }
       }}
       value={textStyle}
-      valueChildren={
+      value_children={
         <span className={"flex-center"}>
           {textStyleToIconMap[textStyle]}
           <Spacer />

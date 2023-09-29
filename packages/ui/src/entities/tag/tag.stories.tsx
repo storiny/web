@@ -3,14 +3,14 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
 
-import { testTag } from "../../mocks";
+import { TEST_TAG } from "../../mocks";
 import TagSkeleton from "./skeleton";
 import Tag from "./tag";
 
 const meta: Meta<typeof Tag> = {
-  title: "entities/Tag",
+  title: "entities/tag",
   component: Tag,
-  args: { tag: testTag },
+  args: { tag: TEST_TAG },
   tags: ["autodocs"]
 };
 

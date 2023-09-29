@@ -3,16 +3,16 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
 
-import { mockUsers } from "../../mocks";
+import { MOCK_USERS } from "../../mocks";
 import FriendRequest from "./friend-request";
 import FriendRequestSkeleton from "./skeleton";
 
 const meta: Meta<typeof FriendRequest> = {
-  title: "entities/FriendRequest",
+  title: "entities/friend-request",
   component: FriendRequest,
   args: {
-    friendRequest: {
-      user: mockUsers[6],
+    friend_request: {
+      user: MOCK_USERS[6],
       id: "0",
       created_at: new Date().toJSON()
     }

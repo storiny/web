@@ -2,7 +2,7 @@
 
 import React from "react";
 
-import Toast, { ToastProvider } from "~/components/Toast";
+import Toast, { ToastProvider } from "src/components/toast";
 import { select_toast_state } from "~/redux/features/toast/selectors";
 import { set_toast_open } from "~/redux/features/toast/slice";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";

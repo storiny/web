@@ -5,5 +5,5 @@ export interface PexelsUploaderProps {
    * Callback called when the Pexels image has finished uploading
    * @param asset New asset
    */
-  onUploadFinish: (asset: Asset) => void;
+  on_upload_finish: (asset: Asset) => void;
 }

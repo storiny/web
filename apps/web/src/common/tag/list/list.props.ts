@@ -11,7 +11,7 @@ export interface VirtualizedTagListProps extends VirtuosoProps<Tag, any> {
   /**
    * A callback function to fetch more tags.
    */
-  loadMore: () => void;
+  load_more: () => void;
   /**
    * Props passed down to individual tag entities.
    */

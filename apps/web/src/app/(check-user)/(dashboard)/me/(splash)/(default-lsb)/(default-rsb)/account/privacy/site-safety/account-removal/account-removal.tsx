@@ -1,8 +1,8 @@
 import { clsx } from "clsx";
 import React from "react";
 
-import Spacer from "~/components/Spacer";
-import TitleBlock from "~/entities/TitleBlock";
+import Spacer from "../../../../../../../../../../../../../../packages/ui/src/components/spacer";
+import TitleBlock from "../../../../../../../../../../../../../../packages/ui/src/entities/title-block";
 
 import DashboardGroup from "../../../../../dashboard-group";
 import styles from "./account-removal.module.scss";

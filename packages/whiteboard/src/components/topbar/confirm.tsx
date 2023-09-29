@@ -2,9 +2,9 @@ import ModalFooterButton from "@storiny/ui/src/components/Modal/FooterButton";
 import clsx from "clsx";
 import React from "react";
 
-import IconButton from "~/components/IconButton";
-import { useModal } from "~/components/Modal";
-import { useToast } from "~/components/Toast";
+import IconButton from "../../../../ui/src/components/icon-button";
+import { use_modal } from "../../../../ui/src/components/modal";
+import { use_toast } from "../../../../ui/src/components/toast";
 import CheckIcon from "~/icons/Check";
 import ImageIcon from "~/icons/Image";
 
@@ -13,20 +13,20 @@ import ExportImageModal, { ExportHandleRef } from "./export-image-modal";
 import styles from "./topbar.module.scss";
 
 const Confirm = (): React.ReactElement => {
-  const { onConfirm } = useWhiteboard();
+  const { on_confirm } = useWhiteboard();
   const canvas = useCanvas();
-  const toast = useToast();
+  const toast = use_toast();
   const [loading, setLoading] = React.useState<boolean>(false);
   const exportRef = React.useRef<ExportHandleRef>(null);
-  const [element] = useModal(
-    ({ openModal }) => (
+  const [element] = use_modal(
+    ({ open_modal }) => (
       <IconButton
         aria-label={"Confirm"}
         className={clsx("focus-invert", styles.x, styles["icon-button"])}
         onClick={(event): void => {
           if (canvas.current) {
             if (canvas.current.getObjects().length) {
-              openModal();
+              open_modal();
             } else {
               event.preventDefault();
               toast("Cannot continue with an empty canvas", "error");
@@ -43,8 +43,8 @@ const Confirm = (): React.ReactElement => {
         setLoading(false);
 
         if (status === "success") {
-          if (onConfirm && data) {
-            onConfirm(data.file, data.alt);
+          if (on_confirm && data) {
+            on_confirm(data.file, data.alt);
           }
         } else {
           toast("Unable to export the sketch", "error");

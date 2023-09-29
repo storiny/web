@@ -2,40 +2,41 @@ import { Story } from "@storiny/types";
 import clsx from "clsx";
 import React from "react";
 
-import Button from "~/components/Button";
-import { useToast } from "~/components/Toast";
-import { useMediaQuery } from "~/hooks/useMediaQuery";
+import Button from "src/components/button";
+import { use_toast } from "src/components/toast";
+import { use_media_query } from "src/hooks/use-media-query";
 import RestoreIcon from "~/icons/Restore";
 import { get_drafts_api, use_recover_draft_mutation } from "~/redux/features";
 import { use_app_dispatch } from "~/redux/hooks";
-import { breakpoints } from "~/theme/breakpoints";
+import { BREAKPOINTS } from "~/theme/breakpoints";
 
 const RestoreAction = ({
   story,
-  isDraft
+  is_draft
 }: {
-  isDraft?: boolean;
+  is_draft?: boolean;
   story: Story;
 }): React.ReactElement => {
-  const toast = useToast();
+  const toast = use_toast();
   const dispatch = use_app_dispatch();
-  const isMobile = useMediaQuery(breakpoints.down("mobile"));
-  const [recoverDraft, { isLoading }] = use_recover_draft_mutation();
+  const is_mobile = use_media_query(BREAKPOINTS.down("mobile"));
+  const [recover_draft, { isLoading: is_loading }] =
+    use_recover_draft_mutation();
 
   /**
    * Deletes a draft
    */
-  const handleDelete = (): void => {
-    recoverDraft({ id: story.id })
+  const handle_delete = (): void => {
+    recover_draft({ id: story.id })
       .unwrap()
       .then(() => {
-        toast(`${isDraft ? "Draft" : "Story"} recovered`, "success");
+        toast(`${is_draft ? "Draft" : "Story"} recovered`, "success");
         dispatch(get_drafts_api.util.resetApiState());
       })
       .catch((e) =>
         toast(
           e?.data?.error ||
-            `Could not recover your ${isDraft ? "draft" : "story"}`,
+            `Could not recover your ${is_draft ? "draft" : "story"}`,
           "error"
         )
       );
@@ -43,12 +44,12 @@ const RestoreAction = ({
 
   return (
     <Button
-      autoSize
-      className={clsx(isMobile && "force-light-mode")}
+      auto_size
+      className={clsx(is_mobile && "force-light-mode")}
       decorator={<RestoreIcon />}
-      loading={isLoading}
-      onClick={handleDelete}
-      variant={isMobile ? "rigid" : "hollow"}
+      loading={is_loading}
+      onClick={handle_delete}
+      variant={is_mobile ? "rigid" : "hollow"}
     >
       Restore
     </Button>

@@ -1,5 +1,5 @@
 import { GetCredentialSettingsResponse } from "~/common/grpc";
-import { SubmitHandler } from "~/components/Form";
+import { SubmitHandler } from "../../../../../../../../../../../../../packages/ui/src/components/form";
 
 import { EmailSettingsSchema } from "./email-group.schema";
 
@@ -7,5 +7,5 @@ export type EmailGroupProps = Pick<
   GetCredentialSettingsResponse,
   "has_password"
 > & {
-  onSubmit?: SubmitHandler<EmailSettingsSchema>;
+  on_submit?: SubmitHandler<EmailSettingsSchema>;
 };

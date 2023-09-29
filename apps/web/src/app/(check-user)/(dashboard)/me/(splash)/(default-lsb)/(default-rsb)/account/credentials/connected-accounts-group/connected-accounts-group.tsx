@@ -1,11 +1,11 @@
 import { clsx } from "clsx";
 import React from "react";
 
-import Button from "~/components/Button";
-import Grow from "~/components/Grow";
-import Spacer from "~/components/Spacer";
-import Typography from "~/components/Typography";
-import TitleBlock from "~/entities/TitleBlock";
+import Button from "../../../../../../../../../../../../../packages/ui/src/components/button";
+import Grow from "../../../../../../../../../../../../../packages/ui/src/components/grow";
+import Spacer from "../../../../../../../../../../../../../packages/ui/src/components/spacer";
+import Typography from "../../../../../../../../../../../../../packages/ui/src/components/typography";
+import TitleBlock from "../../../../../../../../../../../../../packages/ui/src/entities/title-block";
 import CheckIcon from "~/icons/Check";
 
 import DashboardGroup from "../../../../dashboard-group";
@@ -108,8 +108,8 @@ const AppleAccount = ({
           />
         ) : (
           <Button
-            autoSize
-            checkAuth
+            auto_size
+            check_auth
             disabled={Boolean(login_apple_id) && !has_password}
             variant={"hollow"}
           >
@@ -147,8 +147,8 @@ const GoogleAccount = ({
           />
         ) : (
           <Button
-            autoSize
-            checkAuth
+            auto_size
+            check_auth
             disabled={Boolean(login_google_id) && !has_password}
             variant={"hollow"}
           >

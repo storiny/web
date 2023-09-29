@@ -1,23 +1,23 @@
 "use client";
 
 import clsx from "clsx";
-import { useAtomValue } from "jotai";
+import { useAtomValue as use_atom_value } from "jotai";
 import React from "react";
 import {
   GroupedVirtuoso,
   GroupedVirtuosoHandle,
   GroupedVirtuosoProps
 } from "react-virtuoso";
+import { Root, Scrollbar, Thumb, Viewport } from "src/components/scroll-area";
+import Spacer from "src/components/spacer";
+import Typography from "src/components/typography";
 
-import { Root, Scrollbar, Thumb, Viewport } from "~/components/ScrollArea";
-import Spacer from "~/components/Spacer";
-import Typography from "~/components/Typography";
 import { TSymbol } from "~/entities/symbol-picker";
-import { symbolQueryAtom } from "~/entities/symbol-picker/core/atoms";
+import { symbol_query_atom } from "~/entities/symbol-picker/core/atoms";
 
 import { LIST_HEIGHT, SYMBOLS_PER_ROW } from "../../constants";
 import { default as data } from "../../data.json";
-import { useSymbolSearch } from "../../hooks";
+import { use_symbol_search } from "../../hooks";
 import { PlaceholderSymbol, Symbol } from "../symbol";
 import styles from "./list.module.scss";
 
@@ -31,7 +31,10 @@ const GROUP_COUNTS = GROUPS.map((group) =>
  * @param index Row index
  * @param list Symbol list
  */
-const getVisibleSymbols = (index: number, list: TSymbol[]): Array<TSymbol> => {
+const get_visible_symbols = (
+  index: number,
+  list: TSymbol[]
+): Array<TSymbol> => {
   const symbols = list.slice(
     index * SYMBOLS_PER_ROW,
     index * SYMBOLS_PER_ROW + SYMBOLS_PER_ROW
@@ -48,17 +51,17 @@ const getVisibleSymbols = (index: number, list: TSymbol[]): Array<TSymbol> => {
 /**
  * Returns symbols to render in a row
  * @param index Symbol index
- * @param groupIndex Category index
+ * @param group_index Category index
  */
-const getSymbolRow = (index: number, groupIndex: number): Array<TSymbol> => {
-  const currentIndex = GROUP_COUNTS.slice(0, groupIndex || 1).reduce(
+const get_symbol_row = (index: number, group_index: number): Array<TSymbol> => {
+  const curr_index = GROUP_COUNTS.slice(0, group_index || 1).reduce(
     (a, b) => a + b,
     0
   );
-  const relativeGroupIndex = groupIndex === 0 ? index : index - currentIndex;
-  const groupSymbols = GROUPS[groupIndex].items;
+  const relative_group_index = group_index === 0 ? index : index - curr_index;
+  const group_symbols = GROUPS[group_index].items;
 
-  return getVisibleSymbols(relativeGroupIndex, groupSymbols);
+  return get_visible_symbols(relative_group_index, group_symbols);
 };
 
 // Scroller
@@ -66,7 +69,7 @@ const getSymbolRow = (index: number, groupIndex: number): Array<TSymbol> => {
 const Scroller = React.memo(
   React.forwardRef<HTMLDivElement, React.ComponentPropsWithRef<"div">>(
     ({ children, className, ...rest }, ref) => {
-      const query = useAtomValue(symbolQueryAtom);
+      const query = use_atom_value(symbol_query_atom);
       return (
         <>
           <Viewport
@@ -106,7 +109,7 @@ const TopItemList = React.memo(
   ({ children }: { children?: React.ReactNode }) => (
     <React.Fragment>{children}</React.Fragment>
   ),
-  (prevProps, nextProps) => prevProps.children === nextProps.children
+  (prev_props, next_props) => prev_props.children === next_props.children
 );
 
 TopItemList.displayName = "TopItemList";
@@ -146,17 +149,17 @@ GroupHeader.displayName = "GroupHeader";
 
 const SymbolRow = React.memo<
   {
-    groupIndex: number;
+    group_index: number;
     index: number;
     symbols?: TSymbol[];
   } & React.ComponentPropsWithoutRef<"div">
->(({ index, groupIndex, symbols: symbolsProp, className, ...rest }) => {
+>(({ index, group_index, symbols: symbols_prop, className, ...rest }) => {
   let symbols;
 
-  if (symbolsProp) {
-    symbols = getVisibleSymbols(index, symbolsProp);
+  if (symbols_prop) {
+    symbols = get_visible_symbols(index, symbols_prop);
   } else {
-    symbols = getSymbolRow(index, groupIndex);
+    symbols = get_symbol_row(index, group_index);
   }
 
   return (
@@ -194,13 +197,13 @@ const SymbolList = React.forwardRef<
   GroupedVirtuosoProps<any, any>
 >((props, ref) => {
   const { className, ...rest } = props;
-  const query = useAtomValue(symbolQueryAtom);
-  const searchResults = useSymbolSearch();
-  const hasSearchResults = Boolean(searchResults.length);
+  const query = use_atom_value(symbol_query_atom);
+  const search_results = use_symbol_search();
+  const has_search_results = Boolean(search_results.length);
 
   return (
     <Root className={clsx("flex-center", styles.list)} type={"auto"}>
-      {Boolean(query) && !hasSearchResults ? (
+      {Boolean(query) && !has_search_results ? (
         <div
           className={clsx("flex-col", styles.empty)}
           style={{ height: LIST_HEIGHT }}
@@ -222,23 +225,23 @@ const SymbolList = React.forwardRef<
             ScrollSeekPlaceholder
           }}
           groupContent={(index): React.ReactElement =>
-            hasSearchResults ? (
+            has_search_results ? (
               <Spacer key={index} orientation={"vertical"} size={1.5} />
             ) : (
               <GroupHeader index={index} key={index} />
             )
           }
           groupCounts={
-            hasSearchResults
-              ? [Math.ceil(searchResults.length / SYMBOLS_PER_ROW)]
+            has_search_results
+              ? [Math.ceil(search_results.length / SYMBOLS_PER_ROW)]
               : GROUP_COUNTS
           }
-          itemContent={(index, groupIndex): React.ReactElement => (
+          itemContent={(index, group_index): React.ReactElement => (
             <SymbolRow
-              groupIndex={groupIndex}
+              group_index={group_index}
               index={index}
-              key={`${index}:${groupIndex}`}
-              symbols={hasSearchResults ? searchResults : undefined}
+              key={`${index}:${group_index}`}
+              symbols={has_search_results ? search_results : undefined}
             />
           )}
           ref={ref}

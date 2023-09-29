@@ -1,0 +1,216 @@
+.value-container {
+  gap: 4px;
+}
+
+.value {
+  --bg: var(--value-bg);
+  --fg: var(--value-fg);
+
+  gap: 2px;
+  align-items: center;
+  padding: 0 var(--value-padding);
+  border-radius: var(--radius-md);
+  background-color: var(--bg);
+}
+
+.value-label {
+  padding: var(--value-label-padding);
+  color: var(--fg);
+}
+
+.remove-container {
+  --bg: transparent;
+
+  padding: 2px;
+  cursor: pointer;
+  height: fit-content;
+  background-color: var(--bg);
+  border-radius: var(--radius-xs);
+
+  &:hover {
+    --bg: var(--remove-hover-bg);
+    --fg: var(--remove-hover-fg);
+  }
+
+  &:active {
+    --bg: var(--remove-active-bg);
+    --fg: var(--remove-active-fg);
+  }
+}
+
+.container {
+  --border-width: 1px;
+  --bg: var(--bg-body);
+
+  border-radius: var(--radius);
+  border: var(--border-width) solid var(--border);
+  background-color: var(--bg);
+  color: var(--fg);
+  min-height: var(--size);
+  padding: calc(2px - var(--border-width));
+
+  &:hover {
+    background-color: var(--bg-elevation-xs);
+  }
+
+  &.focused {
+    --border-width: 2px;
+  }
+
+  &.disabled {
+    --fg: var(--fg-muted);
+    --border: var(--disabled-border);
+
+    background-color: var(--bg-elevation-md);
+    user-select: none;
+
+    & .value {
+      --bg: var(--value-disabled-bg);
+      --fg: var(--value-disabled-fg);
+    }
+  }
+}
+
+.control {
+  min-height: calc(var(--size) - 2px) !important;
+  cursor: text !important;
+  padding: 4px;
+}
+
+.placeholder {
+  color: var(--fg-muted);
+  user-select: none;
+  font-size: var(--font-size);
+  line-height: var(--line-height);
+  margin-left: 4px;
+}
+
+.input {
+  flex: 1;
+  align-self: stretch;
+  font-size: var(--font-size);
+  line-height: var(--line-height);
+  color: inherit;
+  text-overflow: ellipsis;
+  margin-left: 4px;
+}
+
+.menu {
+  border: 1px solid var(--divider);
+  box-shadow: var(--shadow-md);
+  border-radius: var(--radius-md);
+  background-color: var(--bg-elevation-sm);
+  padding: 9px 0;
+
+  /* Bottom placement */
+  top: calc(100% + var(--menu-margin-top)) !important;
+
+  /* Top placement */
+  &.is-top {
+    top: unset !important;
+    bottom: calc(100% + var(--menu-margin-top)) !important;
+  }
+}
+
+.option {
+  display: flex;
+  align-items: center;
+  position: relative;
+  user-select: none;
+  padding: 5px 12px;
+  color: var(--fg);
+  font-size: var(--font-size-sm) !important;
+  line-height: var(--line-height-sm) !important;
+  outline: none;
+  cursor: pointer !important;
+  min-width: 96px;
+
+  &:not(.disabled).focused {
+    --fg: var(--inverted-0);
+
+    background-color: var(--inverted-400);
+  }
+
+  &.disabled {
+    --fg: var(--fg-muted);
+
+    cursor: not-allowed !important;
+  }
+}
+
+/* Sizes */
+.lg {
+  --radius: var(--radius-lg);
+  --size: 38px;
+  --font-size: 14.6px;
+  --line-height: 19.8px;
+
+  /* Remove icon */
+  --icon-size: 14px;
+
+  /* Value */
+  --value-padding: 4px;
+  --value-label-padding: 4px;
+
+  /* Menu */
+  --menu-margin-top: 6px;
+}
+
+.md {
+  --radius: var(--radius-md);
+  --size: 32px;
+  --font-size: var(--font-size-sm);
+  --line-height: var(--line-height-sm);
+
+  /* Remove icon */
+  --icon-size: 12px;
+
+  /* Value */
+  --value-padding: 3px;
+  --value-label-padding: 2px;
+
+  /* Menu */
+  --menu-margin-top: 4px;
+}
+
+/* Colors */
+.inverted {
+  --border: var(--divider);
+
+  /* Value */
+  --value-bg: var(--inverted-400);
+  --value-fg: var(--inverted-0);
+  --value-disabled-bg: var(--inverted-100);
+  --value-disabled-fg: var(--fg-muted);
+
+  /* Remove button */
+  --remove-hover-bg: var(--inverted-100);
+  --remove-hover-fg: var(--inverted-negative);
+  --remove-active-bg: var(--inverted-200);
+  --remove-active-fg: var(--inverted-negative);
+
+  &.focused {
+    --border: var(--inverted-400);
+  }
+}
+
+.ruby {
+  --border: var(--ruby-500);
+  --disabled-border: var(--ruby-400);
+
+  /* Value */
+  --value-bg: var(--ruby-500);
+  --value-fg: var(--snow);
+  --value-disabled-bg: var(--ruby-300);
+  --value-disabled-fg: var(--ruby-100);
+
+  /* Remove button */
+  --remove-hover-bg: var(--ruby-400);
+  --remove-hover-fg: var(--snow);
+  --remove-active-bg: var(--ruby-200);
+  --remove-active-fg: var(--snow);
+
+  &.focused {
+    --border: var(--ruby-500);
+  }
+}

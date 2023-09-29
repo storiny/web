@@ -2,13 +2,17 @@ import { clsx } from "clsx";
 import { useRouter } from "next/navigation";
 import React from "react";
 
-import { useConfirmation } from "~/components/Confirmation";
-import Form, { SubmitHandler, useForm, zodResolver } from "~/components/Form";
-import FormSwitch from "~/components/FormSwitch";
-import Link from "~/components/Link";
-import Spacer from "~/components/Spacer";
-import { useToast } from "~/components/Toast";
-import Typography from "~/components/Typography";
+import { use_confirmation } from "../../../../../../../../../../../../../../packages/ui/src/components/confirmation";
+import Form, {
+  SubmitHandler,
+  use_form,
+  zod_resolver
+} from "../../../../../../../../../../../../../../packages/ui/src/components/form";
+import FormSwitch from "../../../../../../../../../../../../../../packages/ui/src/components/form-switch";
+import Link from "../../../../../../../../../../../../../../packages/ui/src/components/link";
+import Spacer from "../../../../../../../../../../../../../../packages/ui/src/components/spacer";
+import { use_toast } from "../../../../../../../../../../../../../../packages/ui/src/components/toast";
+import Typography from "../../../../../../../../../../../../../../packages/ui/src/components/typography";
 import LockIcon from "~/icons/Lock";
 import LockOpenIcon from "~/icons/LockOpen";
 import { use_private_account_mutation } from "~/redux/features";
@@ -21,13 +25,13 @@ import {
 } from "./private-account.schema";
 
 const PrivateAccount = ({
-  onSubmit,
+  on_submit,
   is_private_account
 }: PrivateAccountProps): React.ReactElement => {
-  const toast = useToast();
+  const toast = use_toast();
   const router = useRouter();
-  const form = useForm<PrivateAccountSchema>({
-    resolver: zodResolver(privateAccountSchema),
+  const form = use_form<PrivateAccountSchema>({
+    resolver: zod_resolver(privateAccountSchema),
     defaultValues: {
       "private-account": is_private_account
     }
@@ -36,8 +40,8 @@ const PrivateAccount = ({
   const [mutatePrivateAccount, { isLoading }] = use_private_account_mutation();
 
   const handleSubmit: SubmitHandler<PrivateAccountSchema> = (values) => {
-    if (onSubmit) {
-      onSubmit(values);
+    if (on_submit) {
+      on_submit(values);
     } else {
       open();
     }
@@ -58,11 +62,11 @@ const PrivateAccount = ({
       });
   };
 
-  const [element, open] = useConfirmation(
+  const [element, open] = use_confirmation(
     () => (
       <div onClick={(event): void => event.preventDefault()} tabIndex={-1}>
         <FormSwitch
-          helperText={
+          helper_text={
             <React.Fragment>
               When your account is set to public, your profile is viewable by
               everyone, and anyone can read your stories, even without logging
@@ -92,9 +96,9 @@ const PrivateAccount = ({
       </div>
     ),
     {
-      onCancel: (): void =>
+      on_cancel: (): void =>
         form.reset({ "private-account": is_private_account }),
-      onConfirm: handleConfirm,
+      on_confirm: handleConfirm,
       decorator: value ? <LockIcon /> : <LockOpenIcon />,
       title: `Switch to ${value ? "private" : "public"} account?`,
       description: value
@@ -112,8 +116,8 @@ const PrivateAccount = ({
       <Form<PrivateAccountSchema>
         className={clsx("flex-col", styles.x, styles.form)}
         disabled={isLoading}
-        onSubmit={handleSubmit}
-        providerProps={form}
+        on_submit={handleSubmit}
+        provider_props={form}
       >
         {element}
       </Form>

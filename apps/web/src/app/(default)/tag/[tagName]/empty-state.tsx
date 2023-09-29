@@ -1,6 +1,6 @@
 import React from "react";
 
-import CustomState from "~/entities/CustomState";
+import CustomState from "../../../../../../../packages/ui/src/entities/custom-state";
 
 interface TagEmptyStateProps {
   query: string;
@@ -8,7 +8,7 @@ interface TagEmptyStateProps {
 
 const TagEmptyState = ({ query }: TagEmptyStateProps): React.ReactElement => (
   <CustomState
-    autoSize
+    auto_size
     description={
       "Your search criteria did not match anything, make sure you've spelled it correctly or try again by being more specific."
     }

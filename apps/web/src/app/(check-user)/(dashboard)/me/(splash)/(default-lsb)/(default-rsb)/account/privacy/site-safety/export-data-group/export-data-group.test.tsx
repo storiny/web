@@ -10,8 +10,8 @@ describe("<ExportData />", () => {
   it("renders validation messages", async () => {
     const mockSubmit = jest.fn();
     const user = userEvent.setup();
-    render_test_with_provider(<ExportData onSubmit={mockSubmit} />, {
-      loggedIn: true
+    render_test_with_provider(<ExportData on_submit={mockSubmit} />, {
+      logged_in: true
     });
 
     await act(async () => {
@@ -25,7 +25,7 @@ describe("<ExportData />", () => {
       await user.click(screen.getByRole("button", { name: /confirm/i }));
     });
 
-    await waitFor(() => {
+    await wait_for(() => {
       expect(screen.queryAllByRole("alert").length).not.toEqual(0);
       expect(mockSubmit).not.toBeCalled();
     });
@@ -34,8 +34,8 @@ describe("<ExportData />", () => {
   it("submits correct form data", async () => {
     const mockSubmit = jest.fn();
     const user = userEvent.setup();
-    render_test_with_provider(<ExportData onSubmit={mockSubmit} />, {
-      loggedIn: true
+    render_test_with_provider(<ExportData on_submit={mockSubmit} />, {
+      logged_in: true
     });
 
     await act(async () => {
@@ -52,7 +52,7 @@ describe("<ExportData />", () => {
       await user.click(screen.getByRole("button", { name: /confirm/i }));
     });
 
-    await waitFor(() => {
+    await wait_for(() => {
       expect(mockSubmit).toHaveBeenCalledWith({
         "current-password": "test-password"
       });
