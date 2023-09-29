@@ -11,8 +11,8 @@ import Grow from "src/components/grow";
 import IconButton from "src/components/icon-button";
 import Link, { LinkProps } from "src/components/link";
 import Typography from "src/components/typography";
-import PencilPlusIcon from "~/icons/PencilPlus";
-import TwitterIcon from "~/icons/Twitter";
+import PencilPlusIcon from "src/icons/pencil-plus";
+import TwitterIcon from "src/icons/twitter";
 
 import styles from "./footer.module.scss";
 import { FooterProps } from "./footer.props";

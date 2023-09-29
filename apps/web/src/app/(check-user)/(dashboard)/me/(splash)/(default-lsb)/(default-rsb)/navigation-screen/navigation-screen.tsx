@@ -8,7 +8,7 @@ import Separator from "../../../../../../../../../../../packages/ui/src/componen
 import Spacer from "../../../../../../../../../../../packages/ui/src/components/spacer";
 import Typography from "../../../../../../../../../../../packages/ui/src/components/typography";
 import PageTitle from "../../../../../../../../../../../packages/ui/src/entities/page-title";
-import SearchIcon from "~/icons/Search";
+import SearchIcon from "../../../../../../../../../../../packages/ui/src/icons/search";
 
 import {
   dashboardGroups,

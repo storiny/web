@@ -1,6 +1,6 @@
 "use client";
 
-import { userProps } from "@storiny/shared";
+import { USER_PROPS } from "@storiny/shared";
 import { clsx } from "clsx";
 import React from "react";
 
@@ -49,8 +49,8 @@ const SignupBaseForm = ({ on_submit }: Props): React.ReactElement => {
         autoComplete={"name"}
         data-testid={"name-input"}
         label={"Full name"}
-        maxLength={userProps.name.maxLength}
-        minLength={userProps.name.minLength}
+        maxLength={USER_PROPS.name.max_length}
+        minLength={USER_PROPS.name.min_length}
         name={"name"}
         required
         size={"lg"}
@@ -60,8 +60,8 @@ const SignupBaseForm = ({ on_submit }: Props): React.ReactElement => {
         autoComplete={"email"}
         data-testid={"email-input"}
         label={"E-mail address"}
-        maxLength={userProps.email.maxLength}
-        minLength={userProps.email.minLength}
+        maxLength={USER_PROPS.email.max_length}
+        minLength={USER_PROPS.email.min_length}
         name={"email"}
         required
         size={"lg"}

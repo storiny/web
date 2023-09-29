@@ -13,10 +13,10 @@ import Popover, { Close } from "src/components/popover";
 import Spacer from "src/components/spacer";
 import Typography from "src/components/typography";
 
-import CloudOffIcon from "~/icons/CloudOff";
-import HandClickIcon from "~/icons/HandClick";
-import SearchIcon from "~/icons/Search";
-import XIcon from "~/icons/X";
+import CloudOffIcon from "src/icons/cloud-off";
+import HandClickIcon from "src/icons/hand-click";
+import SearchIcon from "src/icons/search";
+import XIcon from "src/icons/x";
 
 import { emoji_query_atom } from "./core/atoms";
 import SkinTone from "./core/components/skin-tone";

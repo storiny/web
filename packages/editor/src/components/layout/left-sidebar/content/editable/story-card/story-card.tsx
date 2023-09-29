@@ -1,6 +1,6 @@
 import { ImageSize } from "@storiny/shared";
 import { clsx } from "clsx";
-import { useAtom, useAtomValue } from "jotai";
+import { useAtom as use_atom, useAtomValue as use_atom_value } from "jotai";
 import React from "react";
 
 import AspectRatio from "../../../../../../../../ui/src/components/aspect-ratio";
@@ -8,20 +8,20 @@ import Button from "../../../../../../../../ui/src/components/button";
 import IconButton from "../../../../../../../../ui/src/components/icon-button";
 import Image from "../../../../../../../../ui/src/components/image";
 import Typography from "../../../../../../../../ui/src/components/typography";
-import EditIcon from "~/icons/Edit";
-import ImageIcon from "~/icons/Image";
-import PhotoEditIcon from "~/icons/PhotoEdit";
+import EditIcon from "../../../../../../../../ui/src/icons/edit";
+import ImageIcon from "../../../../../../../../ui/src/icons/image";
+import PhotoEditIcon from "../../../../../../../../ui/src/icons/photo-edit";
 
-import { docStatusAtom, storyMetadataAtom } from "../../../../../../atoms";
+import { doc_status_atom, story_metadata_atom } from "../../../../../../atoms";
 import StoryMetadataModal from "../../../../../metadata-modal";
 import styles from "./story-card.module.scss";
 import { EditorStoryCardProps } from "./story-card.props";
 
 const EditorStoryCard = (props: EditorStoryCardProps): React.ReactElement => {
   const { className, status, ...rest } = props;
-  const [story, setStory] = use_atom(storyMetadataAtom);
-  const docStatus = use_atom_value(docStatusAtom);
-  const publishing = docStatus === "publishing";
+  const [story, set_story] = use_atom(story_metadata_atom);
+  const doc_status = use_atom_value(doc_status_atom);
+  const publishing = doc_status === "publishing";
 
   return (
     <article {...rest} className={clsx(styles["story-card"], className)}>
@@ -39,7 +39,7 @@ const EditorStoryCard = (props: EditorStoryCardProps): React.ReactElement => {
           />
         )}
         {status !== "deleted" && (
-          <StoryMetadataModal setStory={setStory} story={story}>
+          <StoryMetadataModal set_story={set_story} story={story}>
             <IconButton
               aria-label={"Set banner"}
               className={clsx("force-light-mode", styles["overlay-button"])}
@@ -57,7 +57,7 @@ const EditorStoryCard = (props: EditorStoryCardProps): React.ReactElement => {
         </Typography>
         {status !== "deleted" && (
           <footer>
-            <StoryMetadataModal setStory={setStory} story={story}>
+            <StoryMetadataModal set_story={set_story} story={story}>
               <Button
                 className={"full-w"}
                 decorator={<EditIcon />}

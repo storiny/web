@@ -8,9 +8,9 @@ import Textarea from "src/components/textarea";
 import EmojiPicker from "src/entities/emoji-picker";
 import { insert_text_at_position } from "~/entities/response-textarea/core/utils";
 import { use_textarea_autosize } from "src/hooks/use-textarea-autosize";
-import AtIcon from "~/icons/At";
-import MoodSmileIcon from "~/icons/MoodSmile";
-import SendIcon from "~/icons/Send";
+import AtIcon from "src/icons/at";
+import MoodSmileIcon from "src/icons/mood-smile";
+import SendIcon from "src/icons/send";
 
 import styles from "./response-textarea.module.scss";
 import { ResponseTextareaProps } from "./response-textarea.props";

@@ -19,19 +19,19 @@ const EmptyState = dynamic(() => import("../../empty-state"), {
 interface Props {
   query: string;
   sort: ProfileEntitySortValue;
-  userId: string;
+  user_id: string;
   username: string;
 }
 
 const StoriesTab = (props: Props): React.ReactElement => {
-  const { query, sort, userId, username } = props;
+  const { query, sort, user_id, username } = props;
   const [page, set_page] = React.useState<number>(1);
   const debounced_query = use_debounce(query);
-  const { data, isLoading, isFetching, isError, error, refetch } =
+  const { data, isLoading, is_fetching, isError, error, refetch } =
     use_get_user_stories_query({
       page,
       sort,
-      userId,
+      user_id,
       query: debounced_query
     });
   const { items = [], has_more } = data || {};
@@ -48,14 +48,14 @@ const StoriesTab = (props: Props): React.ReactElement => {
         <ErrorState
           auto_size
           component_props={{
-            button: { loading: isFetching }
+            button: { loading: is_fetching }
           }}
           retry={refetch}
           type={get_query_error_type(error)}
         />
-      ) : !isFetching && !items.length ? (
+      ) : !is_fetching && !items.length ? (
         <EmptyState entityType={"stories"} query={query} username={username} />
-      ) : isLoading || is_typing || (isFetching && page === 1) ? (
+      ) : isLoading || is_typing || (is_fetching && page === 1) ? (
         <StoryListSkeleton />
       ) : (
         <VirtualizedStoryList

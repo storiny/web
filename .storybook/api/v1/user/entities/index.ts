@@ -11,21 +11,21 @@ const handler: Parameters<typeof rest.get>[1] = (req, res, ctx) =>
 
 worker.use(
   rest.get(
-    `${process.env.NEXT_PUBLIC_API_URL}/v1/user/:userId/followers`,
+    `${process.env.NEXT_PUBLIC_API_URL}/v1/user/:user_id/followers`,
     handler
   )
 );
 
 worker.use(
   rest.get(
-    `${process.env.NEXT_PUBLIC_API_URL}/v1/user/:userId/following`,
+    `${process.env.NEXT_PUBLIC_API_URL}/v1/user/:user_id/following`,
     handler
   )
 );
 
 worker.use(
   rest.get(
-    `${process.env.NEXT_PUBLIC_API_URL}/v1/user/:userId/friends`,
+    `${process.env.NEXT_PUBLIC_API_URL}/v1/user/:user_id/friends`,
     handler
   )
 );

@@ -7,7 +7,7 @@ import {
   StoryLicense
 } from "@storiny/shared";
 import { clsx } from "clsx";
-import { useAtomValue } from "jotai";
+import { useAtomValue as use_atom_value } from "jotai";
 import React from "react";
 
 import Divider from "../../../../ui/src/components/divider";
@@ -16,21 +16,19 @@ import Spacer from "../../../../ui/src/components/spacer";
 import Typography from "../../../../ui/src/components/typography";
 import TagChip from "../../../../ui/src/entities/tag-chip";
 import { use_media_query } from "../../../../ui/src/hooks/use-media-query";
-import CommentIcon from "~/icons/Comment";
-import EditIcon from "~/icons/Edit";
-import { use_app_selector } from "~/redux/hooks";
+import EditIcon from "../../../../ui/src/icons/edit";
 import { BREAKPOINTS } from "~/theme/breakpoints";
 import { abbreviate_number } from "../../../../ui/src/utils/abbreviate-number";
 import { DateFormat, format_date } from "../../../../ui/src/utils/format-date";
 
-import { storyMetadataAtom } from "../../atoms";
+import { story_metadata_atom } from "../../atoms";
 import LikeButton from "../layout/right-sidebar/content/read-only/stats/like-button";
 import styles from "./story-footer.module.scss";
 
 // License
 
 const License = (): React.ReactElement | null => {
-  const story = use_atom_value(storyMetadataAtom);
+  const story = use_atom_value(story_metadata_atom);
 
   if (story.license === StoryLicense.RESERVED) {
     return null;
@@ -52,19 +50,19 @@ const License = (): React.ReactElement | null => {
 // Actions
 
 const Actions = (): React.ReactElement => {
-  const story = use_atom_value(storyMetadataAtom);
-  const readCount = story.stats.read_count + 1; // Also include the current reading session
+  const story = use_atom_value(story_metadata_atom);
+  const read_count = story.stats.read_count + 1; // Also include the current reading session
 
   return (
     <div className={"flex-center"}>
       <Typography
         className={"t-medium"}
         level={"body2"}
-        title={`${readCount.toLocaleString()} ${
-          readCount === 1 ? "read" : "reads"
+        title={`${read_count.toLocaleString()} ${
+          read_count === 1 ? "read" : "reads"
         }`}
       >
-        {abbreviate_number(readCount)} {readCount === 1 ? "read" : "reads"}
+        {abbreviate_number(read_count)} {read_count === 1 ? "read" : "reads"}
       </Typography>
       <Grow />
       <LikeButton />
@@ -75,7 +73,7 @@ const Actions = (): React.ReactElement => {
 const StoryFooter = (): React.ReactElement => {
   const is_mobile = use_media_query(BREAKPOINTS.down("mobile"));
   const is_smaller_than_desktop = use_media_query(BREAKPOINTS.down("desktop"));
-  const story = use_atom_value(storyMetadataAtom);
+  const story = use_atom_value(story_metadata_atom);
 
   return (
     <footer className={"flex-col"}>

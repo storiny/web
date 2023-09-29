@@ -6,7 +6,7 @@ import Spacer from "../../../../../../../packages/ui/src/components/spacer";
 import Typography from "../../../../../../../packages/ui/src/components/typography";
 import CustomState from "../../../../../../../packages/ui/src/entities/custom-state";
 import Persona from "../../../../../../../packages/ui/src/entities/persona";
-import ForbidIcon from "~/icons/Forbid";
+import ForbidIcon from "../../../../../../../packages/ui/src/icons/forbid";
 import BottomNavigation from "../../../../../../../packages/ui/src/layout/bottom-navigation";
 import LeftSidebar from "../../../../../../../packages/ui/src/layout/left-sidebar";
 import Navbar from "../../../../../../../packages/ui/src/layout/navbar";

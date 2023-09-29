@@ -1,8 +1,8 @@
 import React from "react";
 
 import CustomState from "../../../../../../../../../../../../packages/ui/src/entities/custom-state";
-import CommentIcon from "~/icons/Comment";
-import ReplyIcon from "~/icons/Reply";
+import CommentIcon from "../../../../../../../../../../../../packages/ui/src/icons/comment";
+import ReplyIcon from "../../../../../../../../../../../../packages/ui/src/icons/reply";
 
 import { ResponsesTabValue } from "./client";
 

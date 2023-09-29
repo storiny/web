@@ -1,17 +1,14 @@
 .x {
-  /* Base styles */
   &.topbar {
     background-color: var(--bg-elevation-sm);
     border-bottom: 1px solid var(--divider);
     grid-area: topbar;
   }
 
-  /* Icon button */
   &.icon-button {
     border-radius: 0;
   }
 
-  /* Status bar */
   &.status-bar {
     --icon-stroke: var(--fg-minor);
     --icon-size: 10px;

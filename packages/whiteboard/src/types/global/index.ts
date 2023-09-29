@@ -4,13 +4,13 @@ import {
   DrawPlugin,
   HistoryPlugin,
   PanPlugin
-} from "../../hooks/useFabric/plugins";
+} from "../../hooks/use-fabric/plugins";
 
 declare module "fabric" {
-  // @ts-ignore
+  // @ts-expect-error fabric canvas
   export interface Canvas extends CanvasPrimitive {
-    drawManager: DrawPlugin;
-    historyManager: HistoryPlugin;
-    panManager: PanPlugin;
+    draw_manager: DrawPlugin;
+    history_manager: HistoryPlugin;
+    pan_manager: PanPlugin;
   }
 }

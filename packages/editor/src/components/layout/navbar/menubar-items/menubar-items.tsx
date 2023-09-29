@@ -1,13 +1,13 @@
 "use client";
 
-import { useAtomValue } from "jotai";
+import { useAtomValue as use_atom_value } from "jotai";
 import NextLink from "next/link";
 import React from "react";
 
 import MenubarItem from "../../../../../../ui/src/components/menubar-item";
 import Separator from "../../../../../../ui/src/components/separator";
 
-import { docStatusAtom } from "../../../../atoms";
+import { doc_status_atom } from "../../../../atoms";
 import AlignItem from "./align";
 import EditItem from "./edit";
 import FileItem from "./file";
@@ -21,9 +21,9 @@ const EditorMenubarItems = ({
 }: {
   disabled?: boolean;
 }): React.ReactElement => {
-  const docStatus = use_atom_value(docStatusAtom);
+  const doc_status = use_atom_value(doc_status_atom);
   const disabled = ["connecting", "reconnecting", "publishing"].includes(
-    docStatus
+    doc_status
   );
 
   return (

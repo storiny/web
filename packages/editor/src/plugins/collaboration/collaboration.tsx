@@ -1,6 +1,6 @@
 "use client";
 
-import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
+import { useLexicalComposerContext as use_lexical_composer_context } from "@lexical/react/LexicalComposerContext";
 import React from "react";
 import { Doc } from "yjs";
 
@@ -9,47 +9,45 @@ import { use_app_selector } from "~/redux/hooks";
 
 import { ExcludedProperties } from "../../collaboration/bindings";
 import { Provider } from "../../collaboration/provider";
-import { useYjsCollaboration } from "../../hooks/use-yjs-collaboration";
-import { useYjsFocusTracking } from "../../hooks/use-yjs-focus-tracking";
-import { useYjsHistory } from "../../hooks/use-yjs-history";
-import { createWebsocketProvider } from "../../utils/create-ws-provider";
-import { getUserColor } from "../../utils/get-user-color";
-import { useCollaborationContext } from "./context";
+import { use_yjs_collaboration } from "../../hooks/use-yjs-collaboration";
+import { use_yjs_focus_tracking } from "../../hooks/use-yjs-focus-tracking";
+import { use_yjs_history } from "../../hooks/use-yjs-history";
+import { create_ws_provider } from "../../utils/create-ws-provider";
+import { get_user_color } from "../../utils/get-user-color";
+import { use_collaboration_context } from "./context";
 
 interface Props {
-  // `awarenessData` parameter allows arbitrary data to be added to the awareness
-  awarenessData?: object;
-  excludedProperties?: ExcludedProperties;
+  // `awareness_data` parameter allows arbitrary data to be added to the awareness
+  awareness_data?: object;
+  excluded_properties?: ExcludedProperties;
   id: string;
-  isMainEditor?: boolean;
-  providerFactory?: (id: string, yjsDocMap: Map<string, Doc>) => Provider;
+  provider_factory?: (id: string, yjs_doc_map: Map<string, Doc>) => Provider;
   role: "editor" | "viewer";
-  shouldBootstrap: boolean;
+  should_bootstrap: boolean;
 }
 
 const CollaborationPlugin = ({
   id,
-  providerFactory = createWebsocketProvider,
-  shouldBootstrap,
-  excludedProperties,
-  isMainEditor,
+  provider_factory = create_ws_provider,
+  should_bootstrap,
+  excluded_properties,
   role,
-  awarenessData
+  awareness_data
 }: Props): React.ReactElement => {
   const user = use_app_selector(select_user)!;
-  const localState = React.useMemo(
+  const local_state = React.useMemo(
     () =>
       ({
         name: user.name,
-        userId: user.id,
+        user_id: user.id,
         role,
-        color: getUserColor(user.username),
+        color: get_user_color(user.username),
         avatar_id: user.avatar_id,
-        avatarHex: user.avatar_hex,
-        awarenessData
+        avatar_hex: user.avatar_hex,
+        awareness_data
       }) as const,
     [
-      awarenessData,
+      awareness_data,
       role,
       user.avatar_hex,
       user.avatar_id,
@@ -58,40 +56,39 @@ const CollaborationPlugin = ({
       user.username
     ]
   );
-  const [editor] = useLexicalComposerContext();
-  const collabContext = useCollaborationContext(localState);
-  const { yjsDocMap } = collabContext;
+  const [editor] = use_lexical_composer_context();
+  const collab_context = use_collaboration_context(local_state);
+  const { yjs_doc_map } = collab_context;
   const provider = React.useMemo(
-    () => providerFactory(id, yjsDocMap),
-    [id, providerFactory, yjsDocMap]
+    () => provider_factory(id, yjs_doc_map),
+    [id, provider_factory, yjs_doc_map]
   );
-  const [cursors, binding] = useYjsCollaboration({
+  const [cursors, binding] = use_yjs_collaboration({
     provider,
-    docMap: yjsDocMap,
-    shouldBootstrap:
+    doc_map: yjs_doc_map,
+    should_bootstrap:
       // Skip bootstraping the right iframe during tests
       window.parent != null && (window.parent.frames as any).right === window
         ? false
-        : shouldBootstrap,
-    excludedProperties,
-    isMainEditor,
-    localState
+        : should_bootstrap,
+    excluded_properties,
+    local_state
   });
-  useYjsHistory(editor, binding);
-  useYjsFocusTracking(editor, provider, localState);
+  use_yjs_history(editor, binding);
+  use_yjs_focus_tracking(editor, provider, local_state);
 
   React.useEffect(() => {
-    collabContext.isCollabActive = true;
+    collab_context.is_collab_active = true;
 
     return () => {
       // Reset the flag only when unmounting the top level editor collaboration plugin.
       if (editor._parentEditor == null) {
-        collabContext.isCollabActive = false;
+        collab_context.is_collab_active = false;
       }
     };
-  }, [collabContext, editor]);
+  }, [collab_context, editor]);
 
-  collabContext.clientID = binding.clientID;
+  collab_context.clientID = binding.clientID;
 
   return cursors;
 };

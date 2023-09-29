@@ -9,16 +9,16 @@ import MenuItem from "../../../../../../packages/ui/src/components/menu-item";
 import Separator from "../../../../../../packages/ui/src/components/separator";
 import { use_clipboard } from "../../../../../../packages/ui/src/hooks/use-clipboard";
 import { use_web_share } from "../../../../../../packages/ui/src/hooks/use-web-share";
-import BellFilledIcon from "~/icons/BellFilled";
-import BellPlusIcon from "~/icons/BellPlus";
-import CopyIcon from "~/icons/Copy";
-import DotsIcon from "~/icons/Dots";
-import HeartPlusIcon from "~/icons/HeartPlus";
-import MuteIcon from "~/icons/Mute";
-import ReportIcon from "~/icons/Report";
-import ShareIcon from "~/icons/Share";
-import UserBlockIcon from "~/icons/UserBlock";
-import XIcon from "~/icons/X";
+import BellFilledIcon from "../../../../../../packages/ui/src/icons/bell-filled";
+import BellPlusIcon from "../../../../../../packages/ui/src/icons/bell-plus";
+import CopyIcon from "../../../../../../packages/ui/src/icons/copy";
+import DotsIcon from "../../../../../../packages/ui/src/icons/dots";
+import HeartPlusIcon from "../../../../../../packages/ui/src/icons/heart-plus";
+import MuteIcon from "../../../../../../packages/ui/src/icons/mute";
+import ReportIcon from "../../../../../../packages/ui/src/icons/report";
+import ShareIcon from "../../../../../../packages/ui/src/icons/share";
+import UserBlockIcon from "../../../../../../packages/ui/src/icons/user-block";
+import XIcon from "../../../../../../packages/ui/src/icons/x";
 import {
   boolean_action,
   select_is_logged_in,

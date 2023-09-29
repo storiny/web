@@ -5,7 +5,7 @@ export interface WhiteboardCoreProps {
    * Initial image URL to load on the mount. Used when the user clicks on
    * the `Open in whiteboard` button on the upload tab
    */
-  initialImageUrl?: string | null;
+  initial_image_url?: string | null;
   /**
    * Cancel callback
    */
@@ -19,7 +19,7 @@ export interface WhiteboardCoreProps {
   /**
    * Mount callback
    */
-  onMount?: () => void;
+  on_mount?: () => void;
 }
 
 export type WhiteboardProps = React.ComponentPropsWithoutRef<"div"> &

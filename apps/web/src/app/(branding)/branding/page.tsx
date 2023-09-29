@@ -7,7 +7,7 @@ import Divider from "../../../../../../packages/ui/src/components/divider";
 import Link from "../../../../../../packages/ui/src/components/link";
 import Spacer from "../../../../../../packages/ui/src/components/spacer";
 import Typography from "../../../../../../packages/ui/src/components/typography";
-import FileDownloadIcon from "~/icons/FileDownload";
+import FileDownloadIcon from "../../../../../../packages/ui/src/icons/file-download";
 
 import BrandInUseSection from "./sections/brand-in-use";
 import ColorsSection from "./sections/colors";

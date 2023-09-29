@@ -2,7 +2,7 @@ import React from "react";
 
 import Link from "../../../../../../../../../../../packages/ui/src/components/link";
 import CustomState from "../../../../../../../../../../../packages/ui/src/entities/custom-state";
-import BanIcon from "~/icons/Ban";
+import BanIcon from "../../../../../../../../../../../packages/ui/src/icons/ban";
 
 interface BlocksEmptyStateProps {
   query: string;

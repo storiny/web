@@ -38,22 +38,23 @@ export class ColorNode extends TextNode {
 
   /**
    * Imports node from JSON data
-   * @param serializedNode Serialized node
+   * @param serialized_node Serialized node
    */
-  static importJSON(serializedNode: SerializedTextNode): ColorNode {
-    return $createColorNode(serializedNode.text);
+  static importJSON(serialized_node: SerializedTextNode): ColorNode {
+    return $create_color_node(serialized_node.text);
   }
+
   /**
    * Creates DOM
    * @param config Editor config
    */
   override createDOM(config: EditorConfig): HTMLElement {
     const dom = super.createDOM(config);
-    const codeNode = dom.children[0] as HTMLElement;
+    const code_node = dom.children[0] as HTMLElement; // Color node is basically a code node with a color value
 
-    if (codeNode) {
-      codeNode.style.setProperty("--color", this.getTextContent());
-      codeNode.classList.add(
+    if (code_node) {
+      code_node.style.setProperty("--color", this.getTextContent());
+      code_node.classList.add(
         typography_styles["inline-color"],
         typography_styles.legible
       );
@@ -95,7 +96,7 @@ export class ColorNode extends TextNode {
  * Predicate function for determining color nodes
  * @param node Node
  */
-export const $isColorNode = (
+export const $is_color_node = (
   node: LexicalNode | null | undefined
 ): node is ColorNode => node instanceof ColorNode;
 
@@ -103,5 +104,5 @@ export const $isColorNode = (
  * Creates a new color node
  * @param color Color
  */
-export const $createColorNode = (color: string): ColorNode =>
+export const $create_color_node = (color: string): ColorNode =>
   new ColorNode(color).setMode("token").setFormat("code");

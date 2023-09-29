@@ -6,9 +6,9 @@ import Link from "src/components/link";
 import Spacer from "src/components/spacer";
 import Typography from "src/components/typography";
 import { use_media_query } from "src/hooks/use-media-query";
-import CloudOffIcon from "~/icons/CloudOff";
-import RetryIcon from "~/icons/Retry";
-import ServerErrorIcon from "~/icons/ServerError";
+import CloudOffIcon from "src/icons/cloud-off";
+import RetryIcon from "src/icons/retry";
+import ServerErrorIcon from "src/icons/server-error";
 import { BREAKPOINTS } from "~/theme/breakpoints";
 
 import styles from "./error-state.module.scss";

@@ -3,13 +3,13 @@ import React from "react";
 
 import { use_confirmation } from "../../../../ui/src/components/confirmation";
 import IconButton from "../../../../ui/src/components/icon-button";
-import XIcon from "~/icons/X";
+import XIcon from "../../../../ui/src/icons/x";
 
-import { useWhiteboard } from "../../hooks";
+import { use_whiteboard } from "../../hooks";
 import styles from "./topbar.module.scss";
 
 const Cancel = (): React.ReactElement => {
-  const { on_cancel } = useWhiteboard();
+  const { on_cancel } = use_whiteboard();
   const [element] = use_confirmation(
     ({ open_confirmation }) => (
       <IconButton
@@ -24,9 +24,7 @@ const Cancel = (): React.ReactElement => {
     {
       color: "ruby",
       on_confirm: () => {
-        if (on_cancel) {
-          on_cancel();
-        }
+        on_cancel?.();
       },
       slot_props: {
         content: {

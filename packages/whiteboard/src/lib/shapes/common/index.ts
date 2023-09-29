@@ -1,6 +1,7 @@
 import { BaseFabricObject, TProps } from "fabric";
 
 export const COMMON_OBJECT_PROPS: TProps<BaseFabricObject> = {
+  /* eslint-disable prefer-snakecase/prefer-snakecase */
   borderColor: "#1371ec",
   borderOpacityWhenMoving: 0.25,
   cornerColor: "#fff",
@@ -13,6 +14,7 @@ export const COMMON_OBJECT_PROPS: TProps<BaseFabricObject> = {
    * messing up the cached bitmap image drawn on the offscreen canvas
    */
   objectCaching: false
+  /* eslint-enable prefer-snakecase/prefer-snakecase */
 };
 
 const BASE_PROPS = [

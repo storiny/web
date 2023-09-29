@@ -1,14 +1,14 @@
 import {
   Canvas,
   Control,
-  controlsUtils,
+  controlsUtils as control_utils,
   Object as FabricObject,
   Point,
   Transform
 } from "fabric";
 
 import { CURSORS } from "../../../constants";
-import { isLinearObject, recoverObject } from "../../../utils";
+import { is_linear_object, recover_object } from "../../../utils";
 import { CLONE_PROPS } from "../common";
 
 const DISABLED_CONTROLS = ["ml", "mt", "mr", "mb"];
@@ -28,7 +28,7 @@ const MOVE_CONTROL_SIZE = 16;
  * @param direction Control position
  * @param transform Transform
  */
-const cloneObject = (
+const clone_object = (
   direction: "left" | "right",
   transform: Transform
 ): void => {
@@ -37,9 +37,9 @@ const cloneObject = (
 
   if (canvas) {
     target.clone(CLONE_PROPS).then((cloned) => {
-      recoverObject(cloned, target);
+      recover_object(cloned, target);
 
-      if (isLinearObject(cloned)) {
+      if (is_linear_object(cloned)) {
         cloned.set({
           x1: target.get("x1") + (direction === "left" ? -24 : 24),
           x2: target.get("x2") + (direction === "left" ? -24 : 24)
@@ -62,6 +62,15 @@ const cloneObject = (
  */
 class ObjectControls {
   /**
+   * Ctor
+   * @param object Base object
+   */
+  constructor(object: FabricObject) {
+    this.object = object;
+    this.canvas = object.canvas;
+  }
+
+  /**
    * Base object
    * @private
    */
@@ -73,26 +82,16 @@ class ObjectControls {
   private canvas: Canvas | undefined;
 
   /**
-   * Ctor
-   * @param object Base object
-   */
-  constructor(object: FabricObject) {
-    this.object = object;
-    this.canvas = object.canvas;
-  }
-
-  /**
    * Register draw controls
    * @private
    */
-  private registerDrawControls(): void {
+  private register_draw_controls(): void {
     this.object.drawControls = (ctx): void => {
-      // Assign canvas during drawing, as it is undefined
-      // initially
+      // Assign canvas during drawing, as it is `undefined` initially
       if (!this.canvas) {
         this.canvas = this.object.canvas;
         // Bind the rotation events
-        this.registerRotateControls();
+        this.register_rotate_controls();
       }
 
       if (this.object.get("isDrawing")) {
@@ -101,8 +100,8 @@ class ObjectControls {
 
       ctx.save();
 
-      const retinaScaling = this.object.getCanvasRetinaScaling();
-      ctx.setTransform(retinaScaling, 0, 0, retinaScaling, 0, 0);
+      const retina_scaling = this.object.getCanvasRetinaScaling();
+      ctx.setTransform(retina_scaling, 0, 0, retina_scaling, 0, 0);
       ctx.strokeStyle = this.object.cornerColor;
       ctx.fillStyle = this.object.cornerColor;
 
@@ -116,13 +115,13 @@ class ObjectControls {
       this.object.forEachControl((control, key) => {
         if (
           DISABLED_CONTROLS.includes(key) ||
-          (isLinearObject(this.object) &&
+          (is_linear_object(this.object) &&
             !ALLOWED_LINEAR_CONTROLS.includes(key))
         ) {
           control.visible = false;
         }
 
-        control.cursorStyleHandler = (eventData, control): string => {
+        control.cursorStyleHandler = (event_data, control): string => {
           switch (control.actionName) {
             case "linear-move":
               return CURSORS.move;
@@ -131,8 +130,8 @@ class ObjectControls {
             case "rotate":
               return control.cursorStyle;
             default: {
-              const cursor = controlsUtils.scaleCursorStyleHandler(
-                eventData,
+              const cursor = control_utils.scaleCursorStyleHandler(
+                event_data,
                 control,
                 this.object
               );
@@ -146,28 +145,28 @@ class ObjectControls {
           const p = this.object.oCoords[key];
 
           if (control.actionName === "linear-move") {
-            const boundingRect = this.object.getBoundingRect();
-            const flippedX1 = this.object.get("x1") > this.object.left;
-            const flippedY1 = this.object.get("y1") > this.object.top;
-            const flippedX2 = this.object.get("x2") > this.object.left;
-            const flippedY2 = this.object.get("y2") > this.object.top;
+            const bounding_rect = this.object.getBoundingRect();
+            const flipped_x1 = this.object.get("x1") > this.object.left;
+            const flipped_y1 = this.object.get("y1") > this.object.top;
+            const flipped_x2 = this.object.get("x2") > this.object.left;
+            const flipped_y2 = this.object.get("y2") > this.object.top;
 
             const x =
               key === "linear_1"
-                ? flippedX1
-                  ? boundingRect.left + boundingRect.width
-                  : boundingRect.left
-                : flippedX2
-                ? boundingRect.left + boundingRect.width
-                : boundingRect.left;
+                ? flipped_x1
+                  ? bounding_rect.left + bounding_rect.width
+                  : bounding_rect.left
+                : flipped_x2
+                ? bounding_rect.left + bounding_rect.width
+                : bounding_rect.left;
             const y =
               key === "linear_1"
-                ? flippedY1
-                  ? boundingRect.top + boundingRect.height
-                  : boundingRect.top
-                : flippedY2
-                ? boundingRect.top + boundingRect.height
-                : boundingRect.top;
+                ? flipped_y1
+                  ? bounding_rect.top + bounding_rect.height
+                  : bounding_rect.top
+                : flipped_y2
+                ? bounding_rect.top + bounding_rect.height
+                : bounding_rect.top;
 
             control.positionHandler = (): Point =>
               new Point(x, y - MOVE_CONTROL_SIZE / 2);
@@ -181,13 +180,13 @@ class ObjectControls {
             ctx.fill();
             ctx.stroke();
           } else if (control.actionName === "clone") {
-            const boundingRect = this.object.getBoundingRect();
-            const margin = 24; // px
+            const bounding_rect = this.object.getBoundingRect();
+            const margin = 24; // (px)
             const x =
               key === "cl"
-                ? boundingRect.left - margin // Clone left
-                : boundingRect.left + boundingRect.width + margin; // Clone right
-            const y = boundingRect.top + boundingRect.height / 2;
+                ? bounding_rect.left - margin // Clone left
+                : bounding_rect.left + bounding_rect.width + margin; // Clone right
+            const y = bounding_rect.top + bounding_rect.height / 2;
 
             control.positionHandler = (): Point =>
               new Point(x, y - CLONE_CONTROL_SIZE / 2);
@@ -224,19 +223,23 @@ class ObjectControls {
    * Registers controls for cloning objects
    * @private
    */
-  private registerCloneControls(): void {
+  private register_clone_controls(): void {
     this.object.controls.cl = new Control({
+      /* eslint-disable prefer-snakecase/prefer-snakecase */
       actionName: "clone",
       sizeX: CLONE_CONTROL_SIZE,
       sizeY: CLONE_CONTROL_SIZE,
-      mouseUpHandler: (_, transform): void => cloneObject("left", transform)
+      mouseUpHandler: (_, transform): void => clone_object("left", transform)
+      /* eslint-enable prefer-snakecase/prefer-snakecase */
     });
 
     this.object.controls.cr = new Control({
+      /* eslint-disable prefer-snakecase/prefer-snakecase */
       actionName: "clone",
       sizeX: CLONE_CONTROL_SIZE,
       sizeY: CLONE_CONTROL_SIZE,
-      mouseUpHandler: (_, transform): void => cloneObject("right", transform)
+      mouseUpHandler: (_, transform): void => clone_object("right", transform)
+      /* eslint-enable prefer-snakecase/prefer-snakecase */
     });
   }
 
@@ -244,18 +247,20 @@ class ObjectControls {
    * Registers controls for linear objects
    * @private
    */
-  private registerLinearControls(): void {
+  private register_linear_controls(): void {
     this.object.controls.linear_1 = new Control({
+      /* eslint-disable prefer-snakecase/prefer-snakecase */
       actionName: "linear-move",
       sizeX: MOVE_CONTROL_SIZE,
       sizeY: MOVE_CONTROL_SIZE,
       actionHandler: (
+        /* eslint-enable prefer-snakecase/prefer-snakecase */
         _: Event,
-        transformData: Transform,
+        transform_data: Transform,
         x: number,
         y: number
       ): boolean => {
-        const object = transformData.target;
+        const object = transform_data.target;
 
         if (object) {
           object.set({
@@ -274,16 +279,18 @@ class ObjectControls {
     });
 
     this.object.controls.linear_2 = new Control({
+      /* eslint-disable prefer-snakecase/prefer-snakecase */
       actionName: "linear-move",
       sizeX: MOVE_CONTROL_SIZE,
       sizeY: MOVE_CONTROL_SIZE,
       actionHandler: (
+        /* eslint-enable prefer-snakecase/prefer-snakecase */
         _: Event,
-        transformData: Transform,
+        transform_data: Transform,
         x: number,
         y: number
       ): boolean => {
-        const object = transformData.target;
+        const object = transform_data.target;
 
         if (object) {
           object.set({
@@ -306,53 +313,61 @@ class ObjectControls {
    * Registers controls for rotating objects
    * @private
    */
-  private registerRotateControls(): void {
+  private register_rotate_controls(): void {
     // Upper left
     this.object.controls.r_ul = new Control({
+      /* eslint-disable prefer-snakecase/prefer-snakecase */
       x: -0.5,
       y: -0.5,
       offsetY: -10,
       offsetX: -10,
       angle: 20,
       actionName: "rotate",
-      actionHandler: controlsUtils.rotationWithSnapping,
+      actionHandler: control_utils.rotationWithSnapping,
       render: () => ""
+      /* eslint-enable prefer-snakecase/prefer-snakecase */
     });
 
     // Upper right
     this.object.controls.r_ur = new Control({
+      /* eslint-disable prefer-snakecase/prefer-snakecase */
       x: 0.5,
       y: -0.5,
       offsetY: -10,
       offsetX: 10,
       angle: 20,
       actionName: "rotate",
-      actionHandler: controlsUtils.rotationWithSnapping,
+      actionHandler: control_utils.rotationWithSnapping,
       render: () => ""
+      /* eslint-enable prefer-snakecase/prefer-snakecase */
     });
 
     // Lower right
     this.object.controls.r_lr = new Control({
+      /* eslint-disable prefer-snakecase/prefer-snakecase */
       x: 0.5,
       y: 0.5,
       offsetY: 10,
       offsetX: 10,
       angle: 20,
       actionName: "rotate",
-      actionHandler: controlsUtils.rotationWithSnapping,
+      actionHandler: control_utils.rotationWithSnapping,
       render: () => ""
+      /* eslint-enable prefer-snakecase/prefer-snakecase */
     });
 
     // Lower left
     this.object.controls.r_ll = new Control({
+      /* eslint-disable prefer-snakecase/prefer-snakecase */
       x: -0.5,
       y: 0.5,
       offsetY: 10,
       offsetX: -10,
       angle: 20,
       actionName: "rotate",
-      actionHandler: controlsUtils.rotationWithSnapping,
+      actionHandler: control_utils.rotationWithSnapping,
       render: () => ""
+      /* eslint-enable prefer-snakecase/prefer-snakecase */
     });
 
     if (this.canvas) {
@@ -361,8 +376,8 @@ class ObjectControls {
           return;
         }
 
-        const activeObject = this.canvas.getActiveObject();
-        const angle = activeObject?.angle?.toFixed(2);
+        const active_object = this.canvas.getActiveObject();
+        const angle = active_object?.angle?.toFixed(2);
 
         if (angle !== undefined) {
           this.object.controls.r_ul.cursorStyle = CURSORS.rotate(Number(angle));
@@ -415,13 +430,13 @@ class ObjectControls {
    * Binds events
    * @private
    */
-  private bindEvents(): void {
+  private bind_events(): void {
     delete this.object.controls.mtr; // Remove default rotation control
-    this.registerDrawControls();
-    this.registerCloneControls();
+    this.register_draw_controls();
+    this.register_clone_controls();
 
-    if (isLinearObject(this.object)) {
-      this.registerLinearControls();
+    if (is_linear_object(this.object)) {
+      this.register_linear_controls();
     }
   }
 
@@ -429,7 +444,7 @@ class ObjectControls {
    * Initialize plugin
    */
   public init(): void {
-    this.bindEvents();
+    this.bind_events();
   }
 }
 
@@ -437,6 +452,6 @@ class ObjectControls {
  * Clone plugin
  * @param object Base object
  */
-export const registerControls = (object: FabricObject): void => {
+export const register_controls = (object: FabricObject): void => {
   new ObjectControls(object).init();
 };

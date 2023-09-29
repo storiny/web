@@ -367,7 +367,7 @@ describe("collaboration", () => {
     /**
      * TODO: We can probably handle these conflicts better by keeping a fallback map when
      *   we remove text without any adjacent text nodes. This would require major changes
-     *   in `CollabElementNode.splice` and `CollabElementNode.applyChildrenYjsDelta` to handle
+     *   in `CollabElementNode.splice` and `CollabElementNode.apply_children_yjs_delta` to handle
      *   the existence of these fallback maps. For now though, if a user clears all the text
      *   nodes from an element and another user inserts some text into the same element at the
      *   same time, the deletion operation will take precedence on conflicts.
@@ -387,25 +387,25 @@ describe("collaboration", () => {
     const client1 = connector.createClient("1");
     const client2 = connector.createClient("2");
 
-    const awarenessData1 = {
+    const awareness_data1 = {
       foo: "foo",
       uuid: Math.floor(Math.random() * 10000)
     };
-    const awarenessData2 = {
+    const awareness_data2 = {
       bar: "bar",
       uuid: Math.floor(Math.random() * 10000)
     };
 
-    client1.start(container, awarenessData1);
-    client2.start(container, awarenessData2);
+    client1.start(container, awareness_data1);
+    client2.start(container, awareness_data2);
 
     await expectCorrectInitialContent(client1, client2);
 
-    expect(client1.awareness.getLocalState()?.awarenessData).toEqual(
-      awarenessData1
+    expect(client1.awareness.getLocalState()?.awareness_data).toEqual(
+      awareness_data1
     );
-    expect(client2.awareness.getLocalState()?.awarenessData).toEqual(
-      awarenessData2
+    expect(client2.awareness.getLocalState()?.awareness_data).toEqual(
+      awareness_data2
     );
 
     client1.stop();

@@ -1,10 +1,8 @@
-/* Story metadata */
 .metadata {
   gap: 12px;
 }
 
 .x {
-  /* Stat */
   &.stat {
     --icon-size: 14px;
     --icon-stroke: var(--fg-minor);

@@ -8,9 +8,9 @@ import IconButton from "../../../../../../../../../../../../packages/ui/src/comp
 import Image from "../../../../../../../../../../../../packages/ui/src/components/image";
 import { use_toast } from "../../../../../../../../../../../../packages/ui/src/components/toast";
 import Gallery from "~/entities/gallery";
-import PencilIcon from "~/icons/Pencil";
-import PhotoPlusIcon from "~/icons/PhotoPlus";
-import TrashIcon from "~/icons/Trash";
+import PencilIcon from "../../../../../../../../../../../../packages/ui/src/icons/pencil";
+import PhotoPlusIcon from "../../../../../../../../../../../../packages/ui/src/icons/photo-plus";
+import TrashIcon from "../../../../../../../../../../../../packages/ui/src/icons/trash";
 import {
   mutate_user,
   select_user,

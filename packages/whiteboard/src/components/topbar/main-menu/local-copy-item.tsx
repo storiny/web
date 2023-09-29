@@ -2,23 +2,23 @@ import React from "react";
 
 import MenuItem from "../../../../../ui/src/components/menu-item";
 import { use_toast } from "../../../../../ui/src/components/toast";
-import DownloadIcon from "~/icons/Download";
+import DownloadIcon from "../../../../../ui/src/icons/download";
 
-import { useCanvas } from "../../../hooks";
-import { exportToFile } from "../../../utils";
+import { use_canvas } from "../../../hooks";
+import { export_to_file } from "../../../utils";
 
 const LocalCopyItem = (): React.ReactElement => {
-  const canvas = useCanvas();
+  const canvas = use_canvas();
   const toast = use_toast();
 
   /**
    * Saves a local copy of the canvas
    */
-  const saveLocalCopy = (): void => {
+  const save_local_copy = (): void => {
     if (canvas.current) {
       if (canvas.current.getObjects().length) {
         try {
-          exportToFile(canvas.current);
+          export_to_file(canvas.current);
         } catch {
           toast("Unable to export the sketch file", "error");
         }
@@ -29,7 +29,7 @@ const LocalCopyItem = (): React.ReactElement => {
   };
 
   return (
-    <MenuItem decorator={<DownloadIcon />} onSelect={saveLocalCopy}>
+    <MenuItem decorator={<DownloadIcon />} onSelect={save_local_copy}>
       Save local copy...
     </MenuItem>
   );

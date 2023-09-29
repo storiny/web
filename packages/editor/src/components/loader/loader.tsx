@@ -12,20 +12,24 @@ import styles from "./loader.module.scss";
 const EditorLoader = ({
   label = "Loading document…",
   overlay,
-  hideProgress
+  hide_progress
 }: {
-  hideProgress?: boolean;
+  hide_progress?: boolean;
   label?: React.ReactNode;
   overlay?: boolean;
 }): React.ReactElement => {
-  const [loading, setLoading] = React.useState<boolean>(true);
-  const { progress, isFinished, animationDuration } = useNProgress({
+  const [loading, set_loading] = React.useState<boolean>(true);
+  const {
+    progress,
+    isFinished: is_finished,
+    animationDuration: animation_duration
+  } = use_n_progress({
     isAnimating: loading
   });
 
   React.useEffect(() => {
-    setLoading(true);
-    return () => setLoading(false);
+    set_loading(true);
+    return () => set_loading(false);
   }, []);
 
   return (
@@ -43,7 +47,7 @@ const EditorLoader = ({
       <Typography className={"t-minor"} level={"body2"}>
         {label}
       </Typography>
-      {!hideProgress && (
+      {!hide_progress && (
         <ProgressBar
           className={clsx(styles.x, styles.progress)}
           max={100}
@@ -51,11 +55,11 @@ const EditorLoader = ({
             indicator: {
               className: "force-animation",
               style: {
-                transition: `transform ${animationDuration}ms ease-out`
+                transition: `transform ${animation_duration}ms ease-out`
               }
             }
           }}
-          value={isFinished && !loading ? 100 : progress * 100}
+          value={is_finished && !loading ? 100 : progress * 100}
         />
       )}
     </div>

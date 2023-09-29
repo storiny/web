@@ -1,6 +1,6 @@
-import { isHTMLElement } from "@lexical/utils";
+import { is_html_element as is_html_element } from "@lexical/utils";
 import {
-  $applyNodeReplacement,
+  $applyNodeReplacement as $apply_node_replacement,
   DOMExportOutput,
   ElementNode,
   LexicalEditor,
@@ -35,7 +35,7 @@ export class FigureNode extends ElementNode {
    * Imports a serialized node
    */
   static override importJSON(): FigureNode {
-    return $createFigureNode();
+    return $create_figure_node();
   }
 
   /**
@@ -62,7 +62,7 @@ export class FigureNode extends ElementNode {
   override exportDOM(editor: LexicalEditor): DOMExportOutput {
     const { element } = super.exportDOM(editor);
 
-    if (element && isHTMLElement(element)) {
+    if (element && is_html_element(element)) {
       if (this.isEmpty()) {
         element.append(document.createElement("br"));
       }
@@ -109,13 +109,13 @@ export class FigureNode extends ElementNode {
 /**
  * Creates a new figure node
  */
-export const $createFigureNode = (): FigureNode =>
-  $applyNodeReplacement(new FigureNode());
+export const $create_figure_node = (): FigureNode =>
+  $apply_node_replacement(new FigureNode());
 
 /**
  * Predicate function for determining figure nodes
  * @param node Node
  */
-export const $isFigureNode = (
+export const $is_figure_node = (
   node: LexicalNode | null | undefined
 ): node is FigureNode => node instanceof FigureNode;

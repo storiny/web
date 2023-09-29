@@ -9,7 +9,7 @@ import { EditorErrorBoundaryProps } from "./error-boundary.props";
 
 const EditorErrorBoundary = ({
   children,
-  onError
+  on_error
 }: EditorErrorBoundaryProps): React.ReactElement => (
   <ReactErrorBoundary
     fallback={
@@ -19,7 +19,7 @@ const EditorErrorBoundary = ({
         </Typography>
       </div>
     }
-    onError={onError}
+    onError={on_error}
   >
     {children}
   </ReactErrorBoundary>

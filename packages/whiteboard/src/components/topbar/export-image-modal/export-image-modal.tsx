@@ -1,4 +1,4 @@
-import { downloadAsFile } from "../../../../../shared/src/utils/download-as-file";
+import { download_as_file } from "@storiny/shared/src/utils/download-as-file";
 import clsx from "clsx";
 import { StaticCanvas } from "fabric";
 import React from "react";
@@ -7,17 +7,17 @@ import AspectRatio from "../../../../../ui/src/components/aspect-ratio";
 import Input from "../../../../../ui/src/components/input";
 import Spacer from "../../../../../ui/src/components/spacer";
 import Spinner from "../../../../../ui/src/components/spinner";
-import PaddingIcon from "~/icons/Padding";
+import PaddingIcon from "../../../../../ui/src/icons/padding";
 import { clamp } from "~/utils/clamp";
 
-import { EXPORT_WIDTH, recoveryKeys } from "../../../constants";
-import { useCanvas } from "../../../hooks";
+import { EXPORT_WIDTH, RECOVERY_KEYS } from "../../../constants";
+import { use_canvas } from "../../../hooks";
 import {
-  containsOnlyImageObjects,
-  dataURLToFile,
-  recoverObject,
-  resizeImageFile,
-  zoomToObjects
+  contains_only_image_objects,
+  data_url_to_file,
+  recover_object,
+  resize_image_file,
+  zoom_to_objects
 } from "../../../utils";
 import styles from "./export-image-modal.module.scss";
 import { ExportImageModalProps } from "./export-image-modal.props";
@@ -37,80 +37,79 @@ const ExportImageModal = React.forwardRef<
   ExportImageModalProps
 >((props, ref) => {
   const {
-    isConfirming,
-    onExportStart = (): void => undefined,
-    onExportEnd = (): void => undefined
+    is_confirming,
+    on_export_start = (): void => undefined,
+    on_export_end = (): void => undefined
   } = props;
-  const canvas = useCanvas();
-  const exportCanvasRef = React.useRef<HTMLCanvasElement | null>(null);
-  const [name, setName] = React.useState<string>("My sketch");
-  const [alt, setAlt] = React.useState<string>("");
-  const [padding, setPadding] = React.useState<number>(0);
-  const [exportCanvas, setExportCanvas] = React.useState<StaticCanvas | null>(
-    null
-  );
+  const canvas = use_canvas();
+  const export_canvas_ref = React.useRef<HTMLCanvasElement | null>(null);
+  const [name, set_name] = React.useState<string>("My sketch");
+  const [alt, set_alt] = React.useState<string>("");
+  const [padding, set_padding] = React.useState<number>(0);
+  const [export_canvas, set_export_canvas] =
+    React.useState<StaticCanvas | null>(null);
 
   /**
    * Exports the convas to image
    */
-  const exportToImage = React.useCallback(() => {
+  const export_to_image = React.useCallback(() => {
     try {
-      if (exportCanvas) {
-        onExportStart();
-        zoomToObjects(exportCanvas, padding, true);
+      if (export_canvas) {
+        on_export_start();
+        zoom_to_objects(export_canvas, padding, true);
 
-        const data = exportCanvas.toDataURL({
+        const data = export_canvas.toDataURL({
           format: "png",
           multiplier: 1
         });
 
-        resizeImageFile(dataURLToFile(data), {
-          maxWidthOrHeight: EXPORT_WIDTH
+        resize_image_file(data_url_to_file(data), {
+          max_width_or_height: EXPORT_WIDTH
         }).then((blob) => {
-          onExportEnd("success", { file: blob, alt });
+          on_export_end("success", { file: blob, alt });
 
-          if (!isConfirming) {
-            downloadAsFile(blob, name);
+          if (!is_confirming) {
+            download_as_file(blob, name);
           }
         });
       }
     } catch {
-      onExportEnd("fail");
+      on_export_end("fail");
     }
   }, [
     alt,
-    exportCanvas,
-    isConfirming,
+    export_canvas,
+    is_confirming,
     name,
-    onExportEnd,
-    onExportStart,
+    on_export_end,
+    on_export_start,
     padding
   ]);
 
   React.useImperativeHandle(
     ref,
     () => ({
-      export: exportToImage
+      export: export_to_image
     }),
-    [exportToImage]
+    [export_to_image]
   );
 
   React.useEffect(() => {
-    let currentExportCanvas: StaticCanvas | null = null;
+    let current_export_canvas: StaticCanvas | null = null;
 
     /**
      * Clones the main canvas to an export canvas
      */
-    const getExportCanvas = (): Promise<StaticCanvas> => {
-      const data = canvas.current.toObject(recoveryKeys);
+    const get_export_canvas = (): Promise<StaticCanvas> => {
+      const data = canvas.current.toObject(RECOVERY_KEYS);
 
       delete data.width;
       delete data.height;
 
-      return new StaticCanvas(exportCanvasRef.current!).loadFromJSON(
+      return new StaticCanvas(export_canvas_ref.current!).loadFromJSON(
         data,
         (prop, object) => {
-          recoverObject(object, prop);
+          recover_object(object, prop);
           object.set({
             id: prop.id,
             name: prop.name,
@@ -121,31 +120,31 @@ const ExportImageModal = React.forwardRef<
       );
     };
 
-    getExportCanvas().then((newCanvas) => {
-      zoomToObjects(newCanvas);
-      newCanvas.renderAll();
+    get_export_canvas().then((next_canvas) => {
+      zoom_to_objects(next_canvas);
+      next_canvas.renderAll();
 
-      currentExportCanvas = newCanvas;
-      setExportCanvas(newCanvas);
+      current_export_canvas = next_canvas;
+      set_export_canvas(next_canvas);
 
-      if (!containsOnlyImageObjects(newCanvas)) {
-        setPadding(16);
+      if (!contains_only_image_objects(next_canvas)) {
+        set_padding(16);
       }
     });
 
     return (): void => {
-      if (currentExportCanvas) {
-        currentExportCanvas.dispose().then(() => undefined);
+      if (current_export_canvas) {
+        current_export_canvas.dispose().then(() => undefined);
       }
     };
-  }, [canvas, setExportCanvas, setPadding]);
+  }, [canvas, set_export_canvas, set_padding]);
 
   React.useEffect(() => {
-    if (exportCanvas) {
-      zoomToObjects(exportCanvas, padding * PADDING_FACTOR);
-      exportCanvas.renderAll();
+    if (export_canvas) {
+      zoom_to_objects(export_canvas, padding * PADDING_FACTOR);
+      export_canvas.renderAll();
     }
-  }, [padding, exportCanvas]);
+  }, [padding, export_canvas]);
 
   if (!canvas.current) {
     return null;
@@ -159,23 +158,23 @@ const ExportImageModal = React.forwardRef<
           className={clsx("invert", styles["canvas-background"])}
         />
         <AspectRatio
-          ratio={(exportCanvas?.width || 1) / (exportCanvas?.height || 1)}
-          style={{ display: exportCanvas ? "block" : "none" }}
+          ratio={(export_canvas?.width || 1) / (export_canvas?.height || 1)}
+          style={{ display: export_canvas ? "block" : "none" }}
           tabIndex={-1}
         >
           <canvas
             className={styles.canvas}
-            ref={exportCanvasRef}
+            ref={export_canvas_ref}
             style={{ width: "100%", height: "100%" }}
           />
         </AspectRatio>
-        {!exportCanvas && <Spinner />}
+        {!export_canvas && <Spinner />}
       </div>
       <div className={"flex"}>
-        {isConfirming ? (
+        {is_confirming ? (
           <Input
             aria-label={"Alt text"}
-            onChange={(event): void => setAlt(event.target.value)}
+            onChange={(event): void => set_alt(event.target.value)}
             placeholder={"Alt text"}
             size={"sm"}
             slot_props={{
@@ -189,7 +188,7 @@ const ExportImageModal = React.forwardRef<
         ) : (
           <Input
             aria-label={"Image name"}
-            onChange={(event): void => setName(event.target.value)}
+            onChange={(event): void => set_name(event.target.value)}
             placeholder={"Name"}
             size={"sm"}
             slot_props={{
@@ -210,7 +209,7 @@ const ExportImageModal = React.forwardRef<
           monospaced
           onChange={(event): void => {
             const value = Number.parseInt(event.target.value, 10) ?? 0;
-            setPadding(clamp(MIN_PADDING, value, MAX_PADDING));
+            set_padding(clamp(MIN_PADDING, value, MAX_PADDING));
           }}
           placeholder={"Padding"}
           size={"sm"}

@@ -1,36 +1,46 @@
 import clsx from "clsx";
 import React from "react";
-import { useGlobalAudioPlayer } from "react-use-audio-player";
-import { useFilePicker } from "use-file-picker";
+import { useGlobalAudioPlayer as use_audio_player } from "react-use-audio-player";
+import { useFilePicker as use_file_picker } from "use-file-picker";
 
 import IconButton from "../../../../../../../ui/src/components/icon-button";
 import Select from "../../../../../../../ui/src/components/select";
 import { use_toast } from "../../../../../../../ui/src/components/toast";
 import Toggle from "../../../../../../../ui/src/components/toggle";
 import Tooltip from "../../../../../../../ui/src/components/tooltip";
-import LoopIcon from "~/icons/Loop";
-import PauseIcon from "~/icons/Pause";
-import PlayIcon from "~/icons/Play";
+import LoopIcon from "../../../../../../../ui/src/icons/loop";
+import PauseIcon from "../../../../../../../ui/src/icons/pause";
+import PlayIcon from "../../../../../../../ui/src/icons/play";
 
 import styles from "./content.module.scss";
 import ToneArm from "./tone-arm";
 
 const MusicItemContent = (): React.ReactElement => {
   const toast = use_toast();
-  const { src, load, loop, fade, playing, togglePlayPause, looping } =
-    useGlobalAudioPlayer();
-
-  const [openFileSelector] = useFilePicker({
+  const {
+    src,
+    load,
+    loop,
+    fade,
+    playing,
+    togglePlayPause: toggle_play_pause,
+    looping
+  } = use_audio_player();
+  const [open_file_selector] = use_file_picker({
+    /* eslint-disable prefer-snakecase/prefer-snakecase */
     readAs: "ArrayBuffer",
     accept: ["audio/*", "video/*"],
     multiple: false,
     limitFilesConfig: { max: 1, min: 1 },
+    /* eslint-enable prefer-snakecase/prefer-snakecase */
+    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     onFilesRejected: () => {
       toast("Unable to import the audio file", "error");
     },
-    onFilesSuccessfulySelected: ({ plainFiles }) => {
-      if (plainFiles[0]) {
-        const file = plainFiles[0];
+    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+    onFilesSuccessfulySelected: ({ plainFiles: plain_files }) => {
+      if (plain_files[0]) {
+        const file = plain_files[0];
         const type = file.type.split("/")[1];
         const url = URL.createObjectURL(file);
 
@@ -38,6 +48,7 @@ const MusicItemContent = (): React.ReactElement => {
           load(url, {
             autoplay: true,
             html5: true,
+            // eslint-disable-next-line prefer-snakecase/prefer-snakecase
             initialVolume: 0,
             format: type,
             onplay: () => {
@@ -68,7 +79,7 @@ const MusicItemContent = (): React.ReactElement => {
               styles.record,
               playing && styles.playing
             )}
-            onClick={openFileSelector}
+            onClick={open_file_selector}
             role={"button"}
             title={src ? "Change track" : "Pick a track"}
           />
@@ -78,7 +89,7 @@ const MusicItemContent = (): React.ReactElement => {
           <Toggle
             aria-label={`${looping ? "Unloop" : "Loop"} track`}
             disabled={!src}
-            onPressedChange={(newPressed): void => loop(newPressed)}
+            onPressedChange={(next_pressed): void => loop(next_pressed)}
             pressed={looping}
             title={`${looping ? "Unloop" : "Loop"} track`}
           >
@@ -90,9 +101,9 @@ const MusicItemContent = (): React.ReactElement => {
             }
             onClick={(): void => {
               if (!src) {
-                openFileSelector();
+                open_file_selector();
               } else {
-                togglePlayPause();
+                toggle_play_pause();
               }
             }}
             title={src ? `${playing ? "Pause" : "Play"} track` : "Pick a track"}

@@ -1,12 +1,10 @@
 $transparent-grid: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAJUlEQVQYV2MUFRX9z4AGXr9+zYguxjgUFKI7GsTH5m4M3w1ChQDPfxpBb1jN9wAAAABJRU5ErkJggg");
 
-/* Container */
 .container {
   gap: 24px;
   max-height: 100%;
 }
 
-/* Canvas container */
 .canvas-container {
   position: relative;
   border: 1px solid var(--divider);
@@ -17,7 +15,6 @@ $transparent-grid: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCA
   min-height: 280px;
 }
 
-/* Canvas background */
 .canvas-background {
   position: absolute;
   inset: 0;
@@ -27,7 +24,6 @@ $transparent-grid: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCA
   background-repeat: repeat;
 }
 
-/* Canvas */
 .canvas {
   width: 100% !important;
   height: 100% !important;

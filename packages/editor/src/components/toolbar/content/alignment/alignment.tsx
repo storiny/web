@@ -1,18 +1,18 @@
 import { clsx } from "clsx";
-import { useAtomValue } from "jotai";
+import { useAtomValue as use_atom_value } from "jotai";
 import React from "react";
 
 import Option from "../../../../../../ui/src/components/option";
 import Select from "../../../../../../ui/src/components/select";
 
-import { docStatusAtom } from "../../../../atoms";
+import { doc_status_atom } from "../../../../atoms";
 import {
   Alignment,
   Alignment as AlignmentEnum,
-  alignmentToIconMap
+  ALIGNMENT_ICON_MAP
 } from "../../../../constants";
-import { useAlignment } from "../../../../hooks/use-alignment";
-import toolbarStyles from "../../toolbar.module.scss";
+import { use_alignment } from "../../../../hooks/use-alignment";
+import toolbar_styles from "../../toolbar.module.scss";
 
 // Item
 
@@ -23,25 +23,29 @@ const Item = ({
   alignment: AlignmentEnum;
   label: React.ReactNode;
 }): React.ReactElement => (
-  <Option decorator={alignmentToIconMap[alignment]} value={alignment}>
+  <Option decorator={ALIGNMENT_ICON_MAP[alignment]} value={alignment}>
     {label}
   </Option>
 );
 
 const ToolbarAlignmentItem = (): React.ReactElement => {
-  const docStatus = use_atom_value(docStatusAtom);
-  const [alignment, setAlignment, disabled] = useAlignment();
-  const documentLoading = ["connecting", "reconnecting"].includes(docStatus);
+  const doc_status = use_atom_value(doc_status_atom);
+  const [alignment, set_alignment, disabled] = use_alignment();
+  const document_loading = ["connecting", "reconnecting"].includes(doc_status);
 
   return (
     <Select
-      disabled={documentLoading || disabled}
-      onValueChange={setAlignment}
+      disabled={document_loading || disabled}
+      onValueChange={set_alignment}
       size={"lg"}
       slot_props={{
         trigger: {
           "aria-label": "Alignment",
-          className: clsx("focus-invert", toolbarStyles.x, toolbarStyles.select)
+          className: clsx(
+            "focus-invert",
+            toolbar_styles.x,
+            toolbar_styles.select
+          )
         },
         value: {
           placeholder: "Alignment"
@@ -53,7 +57,7 @@ const ToolbarAlignmentItem = (): React.ReactElement => {
       value={alignment}
       value_children={
         <span className={"flex-center"}>
-          {alignmentToIconMap[alignment || Alignment.LEFT]}
+          {ALIGNMENT_ICON_MAP[alignment || Alignment.LEFT]}
         </span>
       }
     >

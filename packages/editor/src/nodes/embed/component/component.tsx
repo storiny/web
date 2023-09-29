@@ -1,12 +1,12 @@
-import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { useLexicalNodeSelection } from "@lexical/react/useLexicalNodeSelection";
-import { mergeRegister } from "@lexical/utils";
+import { useLexicalComposerContext as use_lexical_composer_context } from "@lexical/react/LexicalComposerContext";
+import { useLexicalNodeSelection as use_lexical_node_selection } from "@lexical/react/useLexicalNodeSelection";
+import { mergeRegister as merge_register } from "@lexical/utils";
 import { clsx } from "clsx";
-import { useSetAtom } from "jotai";
+import { useSetAtom as use_set_atom } from "jotai";
 import {
-  $getNodeByKey,
-  $getSelection,
-  $isNodeSelection,
+  $getNodeByKey as $get_node_by_key,
+  $getSelection as $get_selection,
+  $isNodeSelection as $is_node_selection,
   CLICK_COMMAND,
   COMMAND_PRIORITY_LOW,
   GridSelection,
@@ -16,19 +16,19 @@ import {
 } from "lexical";
 import dynamic from "next/dynamic";
 import React from "react";
-import { useHotkeys } from "react-hotkeys-hook";
-import { useIntersectionObserver } from "react-intersection-observer-hook";
-import useResizeObserver from "use-resize-observer";
+import { useHotkeys as use_hot_keys } from "react-hotkeys-hook";
+import { useIntersectionObserver as use_intersection_observer } from "react-intersection-observer-hook";
+import use_resize_observer from "use-resize-observer";
+
+import { select_theme } from "~/redux/features";
+import { use_app_selector } from "~/redux/hooks";
 
 import Popover from "../../../../../ui/src/components/popover";
 import Spinner from "../../../../../ui/src/components/spinner";
 import Typography from "../../../../../ui/src/components/typography";
-import { select_theme } from "~/redux/features";
-import { use_app_selector } from "~/redux/hooks";
-
-import { overflowingFiguresAtom } from "../../../atoms";
-import figureStyles from "../../common/figure.module.scss";
-import { $isEmbedNode, EmbedNodeLayout } from "../embed";
+import { overflowing_figures_atom } from "../../../atoms";
+import figure_styles from "../../common/figure.module.scss";
+import { $is_embed_node, EmbedNodeLayout } from "../embed";
 import styles from "./embed.module.scss";
 import WebpageEmbed from "./webpage";
 import { WebpageMetadata } from "./webpage/webpage.props";
@@ -48,7 +48,7 @@ const DATA_REGEX =
 /**
  * Returns the system color scheme
  */
-const parseSystemTheme = (): "dark" | "light" => {
+const parse_system_theme = (): "dark" | "light" => {
   if (
     window &&
     window.matchMedia &&
@@ -61,47 +61,48 @@ const parseSystemTheme = (): "dark" | "light" => {
 };
 
 const EmbedComponent = ({
-  nodeKey,
+  node_key,
   layout,
   url
 }: {
   layout: EmbedNodeLayout;
-  nodeKey: NodeKey;
+  node_key: NodeKey;
   url: string;
 }): React.ReactElement | null => {
   const theme = use_app_selector(select_theme);
-  const [editor] = useLexicalComposerContext();
-  const setOverflowingFigures = use_set_atom(overflowingFiguresAtom);
-  const [loading, setLoading] = React.useState<boolean>(true);
-  const [error, setError] = React.useState<boolean>(false);
-  const [metadata, setMetadata] = React.useState<null | WebpageMetadata>(null);
-  const containerRef = React.useRef<HTMLDivElement | null>(null);
-  const contentRef = React.useRef<HTMLDivElement | null>(null);
-  const supportsBinaryThemeRef = React.useRef<boolean>(false);
-  const prevDataRef = React.useRef<{ theme: string; url: string }>({
+  const [editor] = use_lexical_composer_context();
+  const set_overflowing_figures = use_set_atom(overflowing_figures_atom);
+  const [loading, set_loading] = React.useState<boolean>(true);
+  const [error, set_error] = React.useState<boolean>(false);
+  const [metadata, set_metadata] = React.useState<null | WebpageMetadata>(null);
+  const container_ref = React.useRef<HTMLDivElement | null>(null);
+  const content_ref = React.useRef<HTMLDivElement | null>(null);
+  const supports_binary_theme_ref = React.useRef<boolean>(false);
+  const prev_data_ref = React.useRef<{ theme: string; url: string }>({
     url: "",
     theme: ""
   });
-  const [selected, setSelected, clearSelection] =
-    useLexicalNodeSelection(nodeKey);
-  const [selection, setSelection] = React.useState<
+  const [selected, set_selected, clear_selection] =
+    use_lexical_node_selection(node_key);
+  const [selection, set_selection] = React.useState<
     RangeSelection | NodeSelection | GridSelection | null
   >(null);
-  const { height: containerHeight, ref: resizeObserverRef } =
-    useResizeObserver();
-  const [intersectionObserverRef, { entry }] = useIntersectionObserver({
+  const { height: container_height, ref: resize_observer_ref } =
+    use_resize_observer();
+  const [intersection_observer_ref, { entry }] = use_intersection_observer({
     rootMargin: "-52px 0px 0px 0px"
   });
-  useHotkeys(
+
+  use_hot_keys(
     "backspace,delete",
     (event) => {
-      if (selected && $isNodeSelection(selection)) {
+      if (selected && $is_node_selection(selection)) {
         event.preventDefault();
-        setSelected(false);
+        set_selected(false);
 
         editor.update(() => {
-          const node = $getNodeByKey(nodeKey);
-          if ($isEmbedNode(node)) {
+          const node = $get_node_by_key(node_key);
+          if ($is_embed_node(node)) {
             node.remove();
           }
         });
@@ -109,24 +110,25 @@ const EmbedComponent = ({
     },
     { enableOnContentEditable: true }
   );
+
   const editable = editor.isEditable();
   const visible = Boolean(entry && entry.isIntersecting);
 
   /**
    * Generates the embed
    */
-  const generateEmbed = React.useCallback(() => {
-    const parsedTheme = theme === "system" ? parseSystemTheme() : theme;
-    const embedUrl = `${process.env.NEXT_PUBLIC_DISCOVERY_URL}/embed/${url}?theme=${parsedTheme}`;
+  const generate_embed = React.useCallback(() => {
+    const parsed_theme = theme === "system" ? parse_system_theme() : theme;
+    const embed_url = `${process.env.NEXT_PUBLIC_DISCOVERY_URL}/embed/${url}?theme=${parsed_theme}`;
 
-    fetch(embedUrl)
+    fetch(embed_url)
       .then(async (response) => {
         if (!response.ok) {
-          setError(true);
+          set_error(true);
           return;
         }
 
-        if (!contentRef.current) {
+        if (!content_ref.current) {
           return;
         }
 
@@ -135,13 +137,13 @@ const EmbedComponent = ({
 
           // Webpage metadata
           if (data.embed_type === "metadata") {
-            setMetadata(data);
+            set_metadata(data);
+            supports_binary_theme_ref.current = false;
 
-            supportsBinaryThemeRef.current = false;
             editor.update(() => {
-              const node = $getNodeByKey(nodeKey);
-              if ($isEmbedNode(node)) {
-                node.setLayout("fill"); // Reset layout
+              const node = $get_node_by_key(node_key);
+              if ($is_embed_node(node)) {
+                node.set_layout("fill"); // Reset layout
               }
             });
           } else {
@@ -151,17 +153,16 @@ const EmbedComponent = ({
                 const script = document.createElement("script");
                 script.src = source;
                 script.async = true;
-
                 document.body.appendChild(script);
               }
             }
 
             if (data.html) {
-              contentRef.current.innerHTML = data.html;
+              content_ref.current.innerHTML = data.html;
             }
 
             if (typeof data.supports_binary_theme !== "undefined") {
-              supportsBinaryThemeRef.current = Boolean(
+              supports_binary_theme_ref.current = Boolean(
                 data.supports_binary_theme
               );
             }
@@ -170,36 +171,36 @@ const EmbedComponent = ({
           // Embeds with iframe
           try {
             const html = await response.clone().text();
-            const dataMatch = html.match(DATA_REGEX);
+            const data_match = html.match(DATA_REGEX);
 
-            if (dataMatch?.length) {
+            if (data_match?.length) {
               try {
-                const embedData = JSON.parse(dataMatch[2]);
+                const embed_data = JSON.parse(data_match[2]);
                 const style =
-                  embedData.height && embedData.width
+                  embed_data.height && embed_data.width
                     ? `--padding-desktop:${(
-                        (embedData.height / embedData.width) *
+                        (embed_data.height / embed_data.width) *
                         100
                       ).toFixed(2)}%`
-                    : embedData.styles || "";
+                    : embed_data.styles || "";
 
-                contentRef.current.setAttribute("style", style);
+                content_ref.current.setAttribute("style", style);
 
-                if (typeof embedData.supports_binary_theme !== "undefined") {
-                  supportsBinaryThemeRef.current = Boolean(
-                    embedData.supports_binary_theme
+                if (typeof embed_data.supports_binary_theme !== "undefined") {
+                  supports_binary_theme_ref.current = Boolean(
+                    embed_data.supports_binary_theme
                   );
                 }
               } catch {
-                setError(true);
+                set_error(true);
               }
             }
 
-            contentRef.current.innerHTML = `
+            content_ref.current.innerHTML = `
               <iframe
                 loading="lazy"
                 style="${Object.entries({
-                  "color-scheme": parsedTheme,
+                  "color-scheme": parsed_theme,
                   border: "none",
                   outline: "none",
                   position: "absolute",
@@ -211,51 +212,52 @@ const EmbedComponent = ({
                 })
                   .map(([key, value]) => `${key}:${value}`)
                   .join(";")}" 
-                src="${embedUrl}"></iframe>`;
+                src="${embed_url}"></iframe>`;
           } catch {
-            setError(true);
+            set_error(true);
           }
         }
       })
-      .catch(() => setError(true))
-      .finally(() => setLoading(false));
-  }, [editor, nodeKey, theme, url]);
+      .catch(() => set_error(true))
+      .finally(() => set_loading(false));
+  }, [editor, node_key, theme, url]);
 
   React.useEffect(() => {
     if (
-      url !== prevDataRef.current.url ||
-      (theme !== prevDataRef.current.theme && supportsBinaryThemeRef.current)
+      url !== prev_data_ref.current.url ||
+      (theme !== prev_data_ref.current.theme &&
+        supports_binary_theme_ref.current)
     ) {
-      setLoading(true);
-      generateEmbed();
-      prevDataRef.current = {
+      set_loading(true);
+      generate_embed();
+      prev_data_ref.current = {
         url,
         theme
       };
     }
-  }, [generateEmbed, url, theme]);
+  }, [generate_embed, url, theme]);
 
   React.useEffect(() => {
-    let isMounted = true;
+    let is_mounted = true;
 
-    const unregister = mergeRegister(
-      editor.registerUpdateListener(({ editorState }) => {
-        if (isMounted) {
-          setSelection(editorState.read($getSelection));
+    const unregister = merge_register(
+      editor.registerUpdateListener(({ editorState: editor_state }) => {
+        if (is_mounted) {
+          set_selection(editor_state.read($get_selection));
         }
       }),
       editor.registerCommand<MouseEvent>(
         CLICK_COMMAND,
         (event) => {
           if (
-            event.target === containerRef.current ||
-            containerRef.current?.contains(event.target as HTMLElement)
+            event.target === container_ref.current ||
+            container_ref.current?.contains(event.target as HTMLElement)
           ) {
             if (event.shiftKey) {
-              setSelected(!selected);
+              set_selected(!selected);
             } else {
-              clearSelection();
-              setSelected(true);
+              clear_selection();
+              set_selected(true);
             }
 
             return true;
@@ -268,34 +270,34 @@ const EmbedComponent = ({
     );
 
     return () => {
-      isMounted = false;
+      is_mounted = false;
       unregister();
     };
-  }, [clearSelection, editor, nodeKey, selected, setSelected]);
+  }, [clear_selection, editor, node_key, selected, set_selected]);
 
   React.useEffect(() => {
-    setOverflowingFigures((prev) => {
+    set_overflowing_figures((prev) => {
       if (visible && layout === "overflow") {
-        prev.add(nodeKey);
+        prev.add(node_key);
       } else {
-        prev.delete(nodeKey);
+        prev.delete(node_key);
       }
 
       return new Set(prev);
     });
 
     return () => {
-      setOverflowingFigures((prev) => {
-        prev.delete(nodeKey);
+      set_overflowing_figures((prev) => {
+        prev.delete(node_key);
         return new Set(prev);
       });
     };
-  }, [layout, nodeKey, setOverflowingFigures, visible]);
+  }, [layout, node_key, set_overflowing_figures, visible]);
 
-  React.useImperativeHandle(resizeObserverRef, () => containerRef.current!);
+  React.useImperativeHandle(resize_observer_ref, () => container_ref.current!);
 
   return (
-    <div className={styles.embed} ref={intersectionObserverRef}>
+    <div className={styles.embed} ref={intersection_observer_ref}>
       <div
         className={clsx(
           styles.container,
@@ -307,12 +309,12 @@ const EmbedComponent = ({
         )}
         data-layout={layout}
         data-testid={"embed-node"}
-        ref={containerRef}
+        ref={container_ref}
       >
         {layout === "overflow" && (
           <span
             aria-hidden
-            className={figureStyles["left-banner"]}
+            className={figure_styles["left-banner"]}
             data-layout={layout}
             data-visible={String(visible)}
           />
@@ -332,15 +334,17 @@ const EmbedComponent = ({
               styles.x,
               styles.popover
             )}
-            onOpenChange={(newOpen): void => {
-              if (!newOpen) {
-                setSelected(false);
+            onOpenChange={(next_open: boolean): void => {
+              if (!next_open) {
+                set_selected(false);
               }
             }}
-            open={editable && selected && $isNodeSelection(selection)}
+            open={editable && selected && $is_node_selection(selection)}
             slot_props={{
               content: {
+                // eslint-disable-next-line prefer-snakecase/prefer-snakecase
                 collisionPadding: { top: 64 }, // Prevent header collision
+                // eslint-disable-next-line prefer-snakecase/prefer-snakecase
                 sideOffset: 12,
                 side: "top"
               }
@@ -364,19 +368,19 @@ const EmbedComponent = ({
                   className={clsx("flex-center", styles.content)}
                   data-layout={layout}
                   data-loading={String(loading)}
-                  ref={contentRef}
+                  ref={content_ref}
                   role={"button"}
                 />
               )
             }
           >
-            <EmbedNodeControls layout={layout} nodeKey={nodeKey} />
+            <EmbedNodeControls layout={layout} node_key={node_key} />
           </Popover>
         )}
         {layout === "overflow" && (
           <span
             aria-hidden
-            className={figureStyles["right-banner"]}
+            className={figure_styles["right-banner"]}
             data-layout={layout}
             data-visible={String(visible)}
           />
@@ -386,7 +390,7 @@ const EmbedComponent = ({
       <div
         aria-hidden
         style={{
-          height: containerHeight
+          height: container_height
         }}
       />
     </div>

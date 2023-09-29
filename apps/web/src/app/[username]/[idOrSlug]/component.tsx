@@ -172,9 +172,9 @@ const Component = (props: Props): React.ReactElement => {
     <div className={clsx("grid", "grid-container", "dashboard", "no-sidenav")}>
       <JsonLD {...props} />
       <Editor
-        docId={story.id}
-        initialDoc={decompressSync(Uint8Array.from(doc))}
-        readOnly
+        doc_id={story.id}
+        initial_doc={decompressSync(Uint8Array.from(doc))}
+        read_only
         role={"viewer"}
         story={story}
       />

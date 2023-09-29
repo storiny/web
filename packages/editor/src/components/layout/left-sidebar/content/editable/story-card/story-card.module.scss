@@ -1,4 +1,3 @@
-/* Base styles */
 .story-card {
   position: relative;
   border: 1px solid var(--divider);
@@ -6,7 +5,6 @@
   overflow: hidden;
 }
 
-/* Splash */
 .splash {
   display: block;
 }
@@ -17,14 +15,12 @@
   --icon-stroke: var(--fg-muted);
 }
 
-/* Overlay icon button */
 .overlay-button {
   position: absolute;
   top: 12px;
   right: 12px;
 }
 
-/* Meta */
 .meta {
   border-top: 1px solid var(--divider);
   padding: 12px;

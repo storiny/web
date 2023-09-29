@@ -1,21 +1,21 @@
 import React from "react";
 
 import MenubarItem from "../../../../../../../../ui/src/components/menubar-item";
-import HorizontalRuleIcon from "~/icons/HorizontalRule";
+import HorizontalRuleIcon from "../../../../../../../../ui/src/icons/horizontal-rule";
 
-import { useInsertHorizontalRule } from "../../../../../../hooks/use-insert-horizontal-rule";
+import { use_insert_horizontal_rule } from "../../../../../../hooks/use-insert-horizontal-rule";
 
 const HorizontalRuleMenubarItem = ({
   disabled
 }: {
   disabled?: boolean;
 }): React.ReactElement => {
-  const [insertHorizontalRule] = useInsertHorizontalRule();
+  const [insert_horizontal_rule] = use_insert_horizontal_rule();
   return (
     <MenubarItem
       decorator={<HorizontalRuleIcon />}
       disabled={disabled}
-      onSelect={insertHorizontalRule}
+      onSelect={insert_horizontal_rule}
     >
       Horizontal rule
     </MenubarItem>

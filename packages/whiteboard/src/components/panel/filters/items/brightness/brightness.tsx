@@ -5,18 +5,21 @@ import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger
-} from "../../../../../../../ui/src/components/accordion";
+} from "~/components/accordion";
 import Slider from "../../../../../../../ui/src/components/slider";
 
-import { useActiveObject, useImageFilter } from "../../../../../hooks";
-import { isImageObject } from "../../../../../utils";
+import { use_active_object, use_image_filter } from "../../../../../hooks";
+import { is_image_object } from "../../../../../utils";
 import { Filter } from "../constants";
 
 const BrightnessTool = (): React.ReactElement | null => {
-  const activeImage = useActiveObject();
-  const { value, setValue } = useImageFilter(filters.Brightness, "brightness");
+  const active_image = use_active_object();
+  const { value, set_value } = use_image_filter(
+    filters.Brightness,
+    "brightness"
+  );
 
-  if (!activeImage || !isImageObject(activeImage)) {
+  if (!active_image || !is_image_object(active_image)) {
     return null;
   }
 
@@ -27,8 +30,8 @@ const BrightnessTool = (): React.ReactElement | null => {
         <Slider
           max={100}
           min={-100}
-          onValueChange={([newValue]): void => {
-            setValue(newValue / 100);
+          onValueChange={([next_value]: number[]): void => {
+            set_value(next_value / 100);
           }}
           step={1}
           value={[value * 100]}

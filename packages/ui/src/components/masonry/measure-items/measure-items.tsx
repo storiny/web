@@ -13,7 +13,7 @@ const MeasureItems = <T,>({
 }: MeasureItemsProps<T>): React.ReactElement => {
   const measuring_positions = get_positions(items);
   const refs = React.useMemo(() => new Map(), []);
-  // Need a separate variable for use in useLayoutEffect's dependency array
+  // Need a separate variable for use in use_layout_effect's dependency array
   const refs_size = refs.size;
 
   React.useLayoutEffect(() => {

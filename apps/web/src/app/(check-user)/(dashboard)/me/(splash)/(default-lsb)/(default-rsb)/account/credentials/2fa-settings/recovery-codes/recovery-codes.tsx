@@ -1,4 +1,4 @@
-import { downloadAsFile } from "../../../../../../../../../../../../../../packages/shared/src/utils/download-as-file";
+import { download_as_file } from "../../../../../../../../../../../../../../packages/shared/src/utils/download-as-file";
 import { clsx } from "clsx";
 import React from "react";
 
@@ -15,9 +15,9 @@ import { use_toast } from "../../../../../../../../../../../../../../packages/ui
 import Typography from "../../../../../../../../../../../../../../packages/ui/src/components/typography";
 import { use_clipboard } from "../../../../../../../../../../../../../../packages/ui/src/hooks/use-clipboard";
 import { use_media_query } from "../../../../../../../../../../../../../../packages/ui/src/hooks/use-media-query";
-import CopyIcon from "~/icons/Copy";
-import DownloadIcon from "~/icons/Download";
-import ScriptIcon from "~/icons/Script";
+import CopyIcon from "../../../../../../../../../../../../../../packages/ui/src/icons/copy";
+import DownloadIcon from "../../../../../../../../../../../../../../packages/ui/src/icons/download";
+import ScriptIcon from "../../../../../../../../../../../../../../packages/ui/src/icons/script";
 import {
   RecoveryCodesResponse,
   select_user,
@@ -144,7 +144,7 @@ const RecoveryCodesModal = (): React.ReactElement => {
                 check_auth
                 decorator={<DownloadIcon />}
                 onClick={(): void => {
-                  downloadAsFile(
+                  download_as_file(
                     formatRecoveryCodes(codes, user.email),
                     "storiny_recovery_codes.txt"
                   );

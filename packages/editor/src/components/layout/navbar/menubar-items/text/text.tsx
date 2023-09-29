@@ -1,4 +1,4 @@
-import { getShortcutLabel } from "@storiny/shared/src/utils/get-shortcut-label";
+import { get_shortcut_label } from "@storiny/shared/src/utils/get-shortcut-label";
 import React from "react";
 
 import MenubarCheckboxItem from "../../../../../../../ui/src/components/menubar-checkbox-item";
@@ -6,32 +6,32 @@ import MenubarRadioGroup from "../../../../../../../ui/src/components/menubar-ra
 import MenubarRadioItem from "../../../../../../../ui/src/components/menubar-radio-item";
 import MenubarSub from "../../../../../../../ui/src/components/menubar-sub";
 import Separator from "../../../../../../../ui/src/components/separator";
-import BoldIcon from "~/icons/Bold";
-import BulletedListIcon from "~/icons/BulletedList";
-import CodeIcon from "~/icons/Code";
-import HeadingIcon from "~/icons/Heading";
-import ItalicIcon from "~/icons/Italic";
-import LinkIcon from "~/icons/Link";
-import NumberedListIcon from "~/icons/NumberedList";
-import ParagraphIcon from "~/icons/Paragraph";
-import QuoteIcon from "~/icons/Quote";
-import StrikethroughIcon from "~/icons/Strikethrough";
-import SubheadingIcon from "~/icons/Subheading";
-import SubscriptIcon from "~/icons/Subscript";
-import SuperscriptIcon from "~/icons/Superscript";
-import UnderlineIcon from "~/icons/Underline";
+import BoldIcon from "../../../../../../../ui/src/icons/bold";
+import BulletedListIcon from "../../../../../../../ui/src/icons/bulleted-list";
+import CodeIcon from "../../../../../../../ui/src/icons/code";
+import HeadingIcon from "../../../../../../../ui/src/icons/heading";
+import ItalicIcon from "../../../../../../../ui/src/icons/italic";
+import LinkIcon from "../../../../../../../ui/src/icons/link";
+import NumberedListIcon from "../../../../../../../ui/src/icons/numbered-list";
+import ParagraphIcon from "../../../../../../../ui/src/icons/paragraph";
+import QuoteIcon from "../../../../../../../ui/src/icons/quote";
+import StrikethroughIcon from "../../../../../../../ui/src/icons/strikethrough";
+import SubheadingIcon from "../../../../../../../ui/src/icons/subheading";
+import SubscriptIcon from "../../../../../../../ui/src/icons/subscript";
+import SuperscriptIcon from "../../../../../../../ui/src/icons/superscript";
+import UnderlineIcon from "../../../../../../../ui/src/icons/underline";
 
 import { TextStyle } from "../../../../../constants";
 import { EDITOR_SHORTCUTS } from "../../../../../constants/shortcuts";
-import { useBold } from "../../../../../hooks/use-bold";
-import { useCode } from "../../../../../hooks/use-code";
-import { useItalic } from "../../../../../hooks/use-italic";
-import { useLink } from "../../../../../hooks/use-link";
-import { useStrikethrough } from "../../../../../hooks/use-strikethrough";
-import { useSubscript } from "../../../../../hooks/use-subscript";
-import { useSuperscript } from "../../../../../hooks/use-superscript";
-import { useTextStyle } from "../../../../../hooks/use-text-style";
-import { useUnderline } from "../../../../../hooks/use-underline";
+import { use_bold } from "../../../../../hooks/use-bold";
+import { use_code } from "../../../../../hooks/use-code";
+import { use_italic } from "../../../../../hooks/use-italic";
+import { use_link } from "../../../../../hooks/use-link";
+import { use_strikethrough } from "../../../../../hooks/use-strikethrough";
+import { use_subscript } from "../../../../../hooks/use-subscript";
+import { use_superscript } from "../../../../../hooks/use-superscript";
+import { use_text_style } from "../../../../../hooks/use-text-style";
+import { use_underline } from "../../../../../hooks/use-underline";
 
 const TextNodeItem = ({
   disabled
@@ -39,21 +39,20 @@ const TextNodeItem = ({
   disabled?: boolean;
 }): React.ReactElement => {
   const {
-    formatBulletedList,
-    formatNumberedList,
-    formatParagraph,
-    formatQuote,
-    formatHeading,
-    textStyle
-  } = useTextStyle();
-
+    format_bulleted_list,
+    format_numbered_list,
+    format_paragraph,
+    format_quote,
+    format_heading,
+    text_style
+  } = use_text_style();
   return (
-    <MenubarRadioGroup value={textStyle}>
+    <MenubarRadioGroup value={text_style}>
       <MenubarRadioItem
         decorator={<ParagraphIcon />}
         disabled={disabled}
-        onClick={formatParagraph}
-        right_slot={getShortcutLabel(EDITOR_SHORTCUTS.paragraph)}
+        onClick={format_paragraph}
+        right_slot={get_shortcut_label(EDITOR_SHORTCUTS.paragraph)}
         value={TextStyle.PARAGRAPH}
       >
         Paragraph
@@ -61,8 +60,8 @@ const TextNodeItem = ({
       <MenubarRadioItem
         decorator={<HeadingIcon />}
         disabled={disabled}
-        onClick={(): void => formatHeading("h2")}
-        right_slot={getShortcutLabel(EDITOR_SHORTCUTS.heading)}
+        onClick={(): void => format_heading("h2")}
+        right_slot={get_shortcut_label(EDITOR_SHORTCUTS.heading)}
         value={TextStyle.HEADING}
       >
         Heading
@@ -70,8 +69,8 @@ const TextNodeItem = ({
       <MenubarRadioItem
         decorator={<SubheadingIcon />}
         disabled={disabled}
-        onClick={(): void => formatHeading("h3")}
-        right_slot={getShortcutLabel(EDITOR_SHORTCUTS.subheading)}
+        onClick={(): void => format_heading("h3")}
+        right_slot={get_shortcut_label(EDITOR_SHORTCUTS.subheading)}
         value={TextStyle.SUBHEADING}
       >
         Subheading
@@ -79,8 +78,8 @@ const TextNodeItem = ({
       <MenubarRadioItem
         decorator={<QuoteIcon />}
         disabled={disabled}
-        onClick={formatQuote}
-        right_slot={getShortcutLabel(EDITOR_SHORTCUTS.quote)}
+        onClick={format_quote}
+        right_slot={get_shortcut_label(EDITOR_SHORTCUTS.quote)}
         value={TextStyle.QUOTE}
       >
         Quote
@@ -89,8 +88,8 @@ const TextNodeItem = ({
       <MenubarRadioItem
         decorator={<BulletedListIcon />}
         disabled={disabled}
-        onClick={formatBulletedList}
-        right_slot={getShortcutLabel(EDITOR_SHORTCUTS.bulletedList)}
+        onClick={format_bulleted_list}
+        right_slot={get_shortcut_label(EDITOR_SHORTCUTS.bulleted_list)}
         value={TextStyle.BULLETED_LIST}
       >
         Bulleted list
@@ -98,8 +97,8 @@ const TextNodeItem = ({
       <MenubarRadioItem
         decorator={<NumberedListIcon />}
         disabled={disabled}
-        onClick={formatNumberedList}
-        right_slot={getShortcutLabel(EDITOR_SHORTCUTS.numberedList)}
+        onClick={format_numbered_list}
+        right_slot={get_shortcut_label(EDITOR_SHORTCUTS.numbered_list)}
         value={TextStyle.NUMBERED_LIST}
       >
         Numbered list
@@ -113,14 +112,14 @@ const TextStyleItem = ({
 }: {
   disabled?: boolean;
 }): React.ReactElement => {
-  const [bold, toggleBold] = useBold();
-  const [italic, toggleItalic] = useItalic();
-  const [underline, toggleUnderline] = useUnderline();
-  const [strikethrough, toggleStrikethrough] = useStrikethrough();
-  const [subscript, toggleSubscript] = useSubscript();
-  const [superscript, toggleSuperscript] = useSuperscript();
-  const [code, toggleCode] = useCode();
-  const [link, insertLink] = useLink();
+  const [bold, toggle_bold] = use_bold();
+  const [italic, toggle_italic] = use_italic();
+  const [underline, toggle_underline] = use_underline();
+  const [strikethrough, toggle_strikethrough] = use_strikethrough();
+  const [subscript, toggle_subscript] = use_subscript();
+  const [superscript, toggle_superscript] = use_superscript();
+  const [code, toggle_code] = use_code();
+  const [link, insert_link] = use_link();
 
   return (
     <React.Fragment>
@@ -128,8 +127,8 @@ const TextStyleItem = ({
         checked={bold}
         decorator={<BoldIcon />}
         disabled={disabled}
-        onCheckedChange={toggleBold}
-        right_slot={getShortcutLabel(EDITOR_SHORTCUTS.bold)}
+        onCheckedChange={toggle_bold}
+        right_slot={get_shortcut_label(EDITOR_SHORTCUTS.bold)}
       >
         Bold
       </MenubarCheckboxItem>
@@ -137,8 +136,8 @@ const TextStyleItem = ({
         checked={italic}
         decorator={<ItalicIcon />}
         disabled={disabled}
-        onCheckedChange={toggleItalic}
-        right_slot={getShortcutLabel(EDITOR_SHORTCUTS.italic)}
+        onCheckedChange={toggle_italic}
+        right_slot={get_shortcut_label(EDITOR_SHORTCUTS.italic)}
       >
         Italic
       </MenubarCheckboxItem>
@@ -146,8 +145,8 @@ const TextStyleItem = ({
         checked={underline}
         decorator={<UnderlineIcon />}
         disabled={disabled}
-        onCheckedChange={toggleUnderline}
-        right_slot={getShortcutLabel(EDITOR_SHORTCUTS.underline)}
+        onCheckedChange={toggle_underline}
+        right_slot={get_shortcut_label(EDITOR_SHORTCUTS.underline)}
       >
         Underline
       </MenubarCheckboxItem>
@@ -155,8 +154,8 @@ const TextStyleItem = ({
         checked={strikethrough}
         decorator={<StrikethroughIcon />}
         disabled={disabled}
-        onCheckedChange={toggleStrikethrough}
-        right_slot={getShortcutLabel(EDITOR_SHORTCUTS.strikethrough)}
+        onCheckedChange={toggle_strikethrough}
+        right_slot={get_shortcut_label(EDITOR_SHORTCUTS.strikethrough)}
       >
         Strikethrough
       </MenubarCheckboxItem>
@@ -164,8 +163,8 @@ const TextStyleItem = ({
         checked={code}
         decorator={<CodeIcon />}
         disabled={disabled}
-        onCheckedChange={toggleCode}
-        right_slot={getShortcutLabel(EDITOR_SHORTCUTS.code)}
+        onCheckedChange={toggle_code}
+        right_slot={get_shortcut_label(EDITOR_SHORTCUTS.code)}
       >
         Code
       </MenubarCheckboxItem>
@@ -173,8 +172,8 @@ const TextStyleItem = ({
         checked={link}
         decorator={<LinkIcon />}
         disabled={disabled}
-        onCheckedChange={(): void => insertLink()}
-        right_slot={getShortcutLabel(EDITOR_SHORTCUTS.link)}
+        onCheckedChange={(): void => insert_link()}
+        right_slot={get_shortcut_label(EDITOR_SHORTCUTS.link)}
       >
         Link
       </MenubarCheckboxItem>
@@ -183,8 +182,8 @@ const TextStyleItem = ({
         checked={subscript}
         decorator={<SubscriptIcon />}
         disabled={disabled}
-        onCheckedChange={toggleSubscript}
-        right_slot={getShortcutLabel(EDITOR_SHORTCUTS.subscript)}
+        onCheckedChange={toggle_subscript}
+        right_slot={get_shortcut_label(EDITOR_SHORTCUTS.subscript)}
       >
         Subscript
       </MenubarCheckboxItem>
@@ -192,8 +191,8 @@ const TextStyleItem = ({
         checked={superscript}
         decorator={<SuperscriptIcon />}
         disabled={disabled}
-        onCheckedChange={toggleSuperscript}
-        right_slot={getShortcutLabel(EDITOR_SHORTCUTS.superscript)}
+        onCheckedChange={toggle_superscript}
+        right_slot={get_shortcut_label(EDITOR_SHORTCUTS.superscript)}
       >
         Superscript
       </MenubarCheckboxItem>

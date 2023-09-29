@@ -1,4 +1,4 @@
-import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
+import { useLexicalComposerContext as use_lexical_composer_context } from "@lexical/react/LexicalComposerContext";
 import React from "react";
 
 import {
@@ -9,15 +9,15 @@ import {
 /**
  * Hooks for inserting image nodes
  */
-export const useInsertImage = (): [(payload: InsertImagePayload) => void] => {
-  const [editor] = useLexicalComposerContext();
+export const use_insert_image = (): [(payload: InsertImagePayload) => void] => {
+  const [editor] = use_lexical_composer_context();
 
-  const insertImage = React.useCallback(
+  const insert_image = React.useCallback(
     (payload: InsertImagePayload) => {
       editor.dispatchCommand(INSERT_IMAGE_COMMAND, payload);
     },
     [editor]
   );
 
-  return [insertImage];
+  return [insert_image];
 };

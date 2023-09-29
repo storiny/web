@@ -2,13 +2,16 @@
 
 import { LexicalEditor } from "lexical";
 import React from "react";
-import { createPortal, flushSync } from "react-dom";
+import {
+  createPortal as create_portal,
+  flushSync as flush_sync
+} from "react-dom";
 
-import { useLayoutEffect } from "../use-layout-effect";
+import { use_layout_effect } from "../use-layout-effect";
 
 interface ErrorBoundaryProps {
   children: React.ReactElement;
-  onError: (error: Error) => void;
+  on_error: (error: Error) => void;
 }
 
 export type ErrorBoundaryType =
@@ -20,51 +23,55 @@ export type ErrorBoundaryType =
  * @param editor Editor
  * @param ErrorBoundary Error boundary
  */
-export const useDecorators = (
+export const use_decorators = (
   editor: LexicalEditor,
   ErrorBoundary: ErrorBoundaryType
 ): Array<React.ReactElement> => {
-  const [decorators, setDecorators] = React.useState<
+  const [decorators, set_decorators] = React.useState<
     Record<string, React.ReactElement>
   >(() => editor.getDecorators<React.ReactElement>());
 
   // Subscribe to changes
-  useLayoutEffect(
+  use_layout_effect(
     () =>
-      editor.registerDecoratorListener<React.ReactElement>((nextDecorators) => {
-        flushSync(() => {
-          setDecorators(nextDecorators);
-        });
-      }),
+      editor.registerDecoratorListener<React.ReactElement>(
+        (next_decorators) => {
+          flush_sync(() => {
+            set_decorators(next_decorators);
+          });
+        }
+      ),
     [editor]
   );
 
   React.useEffect(() => {
-    // If the content editable mounts before the subscription is added, then
-    // nothing will be rendered on initial pass. We can get around that by
-    // ensuring that we set the value.
-    setDecorators(editor.getDecorators());
+    // If the content editable mounts before the subscription is added, then nothing will be rendered on initial pass. We can get around that by ensuring that we set the value.
+    set_decorators(editor.getDecorators());
   }, [editor]);
 
   // Return decorators defined as React Portals
   return React.useMemo(() => {
-    const decoratedPortals = [];
-    const decoratorKeys = Object.keys(decorators);
+    const decorated_portals = [];
+    const decorator_keys = Object.keys(decorators);
 
-    for (let i = 0; i < decoratorKeys.length; i++) {
-      const nodeKey = decoratorKeys[i];
-      const reactDecorator = (
-        <ErrorBoundary onError={(e): void => editor._onError(e)}>
-          <React.Suspense fallback={null}>{decorators[nodeKey]}</React.Suspense>
+    for (let i = 0; i < decorator_keys.length; i++) {
+      const node_key = decorator_keys[i];
+      const react_decorator = (
+        <ErrorBoundary on_error={editor._onError}>
+          <React.Suspense fallback={null}>
+            {decorators[node_key]}
+          </React.Suspense>
         </ErrorBoundary>
       );
-      const element = editor.getElementByKey(nodeKey);
+      const element = editor.getElementByKey(node_key);
 
       if (element !== null) {
-        decoratedPortals.push(createPortal(reactDecorator, element, nodeKey));
+        decorated_portals.push(
+          create_portal(react_decorator, element, node_key)
+        );
       }
     }
 
-    return decoratedPortals;
+    return decorated_portals;
   }, [ErrorBoundary, decorators, editor]);
 };

@@ -12,7 +12,7 @@ import Grow from "../../../../../../../../../packages/ui/src/components/grow";
 import Link from "../../../../../../../../../packages/ui/src/components/link";
 import Skeleton from "../../../../../../../../../packages/ui/src/components/skeleton";
 import Typography from "../../../../../../../../../packages/ui/src/components/typography";
-import ChevronIcon from "~/icons/Chevron";
+import ChevronIcon from "../../../../../../../../../packages/ui/src/icons/chevron";
 import { use_get_explore_writers_query } from "~/redux/features";
 import { abbreviate_number } from "../../../../../../../../../packages/ui/src/utils/abbreviate-number";
 
@@ -60,7 +60,7 @@ const WritersPreview = ({
   loading: loadingProp,
   debounced_query
 }: Props): React.ReactElement | null => {
-  const { data, isLoading, isFetching, isError } =
+  const { data, isLoading, is_fetching, isError } =
     use_get_explore_writers_query({
       page: 1,
       category,
@@ -69,7 +69,7 @@ const WritersPreview = ({
   const { items = [] } = data || {};
   const loading = isLoading || loadingProp;
 
-  if (isError || (!items.length && !isFetching)) {
+  if (isError || (!items.length && !is_fetching)) {
     return null;
   }
 

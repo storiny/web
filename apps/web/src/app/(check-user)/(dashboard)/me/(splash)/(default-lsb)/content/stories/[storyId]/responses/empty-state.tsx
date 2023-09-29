@@ -1,8 +1,8 @@
 import React from "react";
 
 import CustomState from "../../../../../../../../../../../../../packages/ui/src/entities/custom-state";
-import CommentIcon from "~/icons/Comment";
-import EyeOffIcon from "~/icons/EyeOff";
+import CommentIcon from "../../../../../../../../../../../../../packages/ui/src/icons/comment";
+import EyeOffIcon from "../../../../../../../../../../../../../packages/ui/src/icons/eye-off";
 
 import { StoryResponsesTabValue } from "./client";
 

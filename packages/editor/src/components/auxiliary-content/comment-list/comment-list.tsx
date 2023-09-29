@@ -1,5 +1,5 @@
 import { clsx } from "clsx";
-import { useAtomValue } from "jotai/index";
+import { useAtomValue as use_atom_value } from "jotai";
 import React from "react";
 
 import { CommentListSkeleton, VirtualizedCommentList } from "~/common/comment";
@@ -10,7 +10,7 @@ import {
   use_get_story_comments_query
 } from "~/redux/features";
 
-import { storyMetadataAtom } from "../../../atoms";
+import { story_metadata_atom } from "../../../atoms";
 import styles from "../auxiliary-content.module.scss";
 import PostComment from "../post-comment";
 import { EditorAuxiliaryContentCommentListProps } from "./comment-list.props";
@@ -19,16 +19,22 @@ import EditorAuxiliaryContentEmptyState from "./empty-state";
 const EditorAuxiliaryContentCommentList = (
   props: EditorAuxiliaryContentCommentListProps
 ): React.ReactElement => {
-  const { sort, setSort } = props;
-  const story = use_atom_value(storyMetadataAtom);
+  const { sort, set_sort } = props;
+  const story = use_atom_value(story_metadata_atom);
   const [page, set_page] = React.useState<number>(1);
-  const { data, isLoading, isFetching, isError, error, refetch } =
-    use_get_story_comments_query({
-      storyId: story.id,
-      page,
-      sort,
-      type: "all"
-    });
+  const {
+    data,
+    isLoading: is_loading,
+    isFetching: is_fetching,
+    isError: is_error,
+    error,
+    refetch
+  } = use_get_story_comments_query({
+    story_id: story.id,
+    page,
+    sort,
+    type: "all"
+  });
   const { items = [], has_more } = data || {};
   const load_more = React.useCallback(
     () => set_page((prev_state) => prev_state + 1),
@@ -39,21 +45,21 @@ const EditorAuxiliaryContentCommentList = (
     <React.Fragment>
       <PostComment
         // Show the newly added comment
-        onPost={(): void => setSort("recent")}
+        onPost={(): void => set_sort("recent")}
       />
       <Divider className={clsx(styles.x, styles["full-width-divider"])} />
-      {isLoading || (isFetching && page === 1) ? (
+      {is_loading || (is_fetching && page === 1) ? (
         <CommentListSkeleton />
-      ) : isError ? (
+      ) : is_error ? (
         <ErrorState
           auto_size
           component_props={{
-            button: { loading: isFetching }
+            button: { loading: is_fetching }
           }}
           retry={refetch}
           type={get_query_error_type(error)}
         />
-      ) : !isFetching && !items.length ? (
+      ) : !is_fetching && !items.length ? (
         <EditorAuxiliaryContentEmptyState />
       ) : (
         <VirtualizedCommentList

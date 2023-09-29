@@ -9,7 +9,7 @@ const LIGHTNESS_BOUND: Bound = [0, 100];
  * Generates a hash from the string
  * @param str String
  */
-const hashCode = (str: string): number => {
+const hash_code = (str: string): number => {
   const len = str.length;
   let hash = 0;
 
@@ -26,7 +26,7 @@ const hashCode = (str: string): number => {
  * @param num Number
  * @param range Range
  */
-const boundHashCode = (num: number, range: number | number[]): number =>
+const bound_hash_code = (num: number, range: number | number[]): number =>
   typeof range === "number"
     ? range
     : (num % Math.abs(range[1] - range[0])) + range[0];
@@ -36,7 +36,7 @@ const boundHashCode = (num: number, range: number | number[]): number =>
  * @param range Range
  * @param bound Bound
  */
-const sanitizeRange = (
+const sanitize_range = (
   range: number | number[],
   bound: Bound
 ): number | Bound => {
@@ -62,17 +62,16 @@ const sanitizeRange = (
  * @param saturation Saturation bounds
  * @param lightness Lightness bounds
  */
-export const getUserColor = (
+export const get_user_color = (
   value: string,
   {
     saturation = [50, 55],
     lightness = [50, 60]
   }: { lightness?: [number, number]; saturation?: [number, number] } = {}
 ): string => {
-  const hash = Math.abs(hashCode(String(value)));
-  const h = boundHashCode(hash, [0, 360]);
-  const s = boundHashCode(hash, sanitizeRange(saturation, SATURATION_BOUND));
-  const l = boundHashCode(hash, sanitizeRange(lightness, LIGHTNESS_BOUND));
-
+  const hash = Math.abs(hash_code(String(value)));
+  const h = bound_hash_code(hash, [0, 360]);
+  const s = bound_hash_code(hash, sanitize_range(saturation, SATURATION_BOUND));
+  const l = bound_hash_code(hash, sanitize_range(lightness, LIGHTNESS_BOUND));
   return `hsl(${h},${s}%,${l}%)`;
 };

@@ -1,15 +1,15 @@
 "use client";
 
 import { ExcludedProperties } from "../../collaboration/bindings";
-import { useYjsReadOnly } from "../../hooks/use-yjs-read-only";
+import { use_yjs_read_only } from "../../hooks/use-yjs-read-only";
 
 interface Props {
-  excludedProperties?: ExcludedProperties;
-  initialDoc: Uint8Array;
+  excluded_properties?: ExcludedProperties;
+  initial_doc: Uint8Array;
 }
 
 const ReadOnlyPlugin = (props: Props): null => {
-  useYjsReadOnly(props);
+  use_yjs_read_only(props);
   return null;
 };
 

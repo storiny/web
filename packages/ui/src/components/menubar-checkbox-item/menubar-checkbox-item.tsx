@@ -4,7 +4,7 @@ import { CheckboxItem, ItemIndicator } from "@radix-ui/react-menubar";
 import clsx from "clsx";
 import React from "react";
 
-import CheckIcon from "~/icons/Check";
+import CheckIcon from "src/icons/check";
 import { forward_ref } from "src/utils/forward-ref";
 
 import menu_item_styles from "../common/menu-item.module.scss";

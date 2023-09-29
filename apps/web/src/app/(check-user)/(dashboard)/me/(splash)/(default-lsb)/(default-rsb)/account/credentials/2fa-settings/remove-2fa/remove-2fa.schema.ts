@@ -17,5 +17,5 @@ export const remove2faSchema = z.object({
       RECOVERY_CODE_MAX_LENGTH,
       ZOD_MESSAGES.max("code", RECOVERY_CODE_MAX_LENGTH)
     )
-    .nonempty(ZOD_MESSAGES.nonEmpty("code"))
+    .nonempty(ZOD_MESSAGES.non_empty("code"))
 });

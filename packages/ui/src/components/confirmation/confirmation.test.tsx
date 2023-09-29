@@ -1,4 +1,4 @@
-import { axe, userEvent } from "@storiny/test-utils";
+import { axe, user_event } from "@storiny/test-utils";
 import { waitFor as wait_for } from "@testing-library/react";
 import React from "react";
 import { render_test_with_provider } from "src/redux/test-utils";
@@ -118,7 +118,7 @@ describe("<Confirmation />", () => {
   });
 
   it("handles action callbacks", async () => {
-    const user = userEvent.setup();
+    const user = user_event.setup();
     const on_confirm = jest.fn();
     const on_cancel = jest.fn();
 

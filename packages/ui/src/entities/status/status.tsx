@@ -5,7 +5,7 @@ import React from "react";
 import Typography from "src/components/typography";
 import { forward_ref } from "src/utils/forward-ref";
 
-import MoodSmile from "~/icons/MoodSmile";
+import MoodSmile from "src/icons/mood-smile";
 
 import styles from "./status.module.scss";
 import { StatusProps } from "./status.props";

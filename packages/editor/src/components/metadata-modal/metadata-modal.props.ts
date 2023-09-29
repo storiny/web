@@ -3,6 +3,6 @@ import React from "react";
 
 export interface StoryMetadataModalProps {
   children?: React.ReactNode;
-  setStory: (nextStory: Story) => void;
+  set_story: (next_story: Story) => void;
   story: Story;
 }

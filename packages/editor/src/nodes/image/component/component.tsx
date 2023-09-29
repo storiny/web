@@ -1,13 +1,13 @@
-import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { useLexicalNodeSelection } from "@lexical/react/useLexicalNodeSelection";
-import { mergeRegister } from "@lexical/utils";
+import { useLexicalComposerContext as use_lexical_composer_context } from "@lexical/react/LexicalComposerContext";
+import { useLexicalNodeSelection as use_lexical_node_selection } from "@lexical/react/useLexicalNodeSelection";
+import { mergeRegister as merge_register } from "@lexical/utils";
 import { ImageSize } from "@storiny/shared";
 import { clsx } from "clsx";
-import { useSetAtom } from "jotai";
+import { useSetAtom as use_set_atom } from "jotai";
 import {
-  $getNodeByKey,
-  $getSelection,
-  $isNodeSelection,
+  $getNodeByKey as $get_node_by_key,
+  $getSelection as $get_selection,
+  $isNodeSelection as $is_node_selection,
   CLICK_COMMAND,
   COMMAND_PRIORITY_LOW,
   DRAGSTART_COMMAND,
@@ -18,22 +18,22 @@ import {
 } from "lexical";
 import dynamic from "next/dynamic";
 import React from "react";
-import { useHotkeys } from "react-hotkeys-hook";
-import { useIntersectionObserver } from "react-intersection-observer-hook";
-import useResizeObserver from "use-resize-observer";
+import { useHotkeys as use_hot_keys } from "react-hotkeys-hook";
+import { useIntersectionObserver as use_intersection_observer } from "react-intersection-observer-hook";
+import use_resize_observer from "use-resize-observer";
 
 import AspectRatio from "../../../../../ui/src/components/aspect-ratio";
 import IconButton from "../../../../../ui/src/components/icon-button";
 import Image from "../../../../../ui/src/components/image";
 import Popover from "../../../../../ui/src/components/popover";
 import Spinner from "../../../../../ui/src/components/spinner";
-import TrashIcon from "~/icons/Trash";
+import TrashIcon from "../../../../../ui/src/icons/trash";
 import { BREAKPOINTS } from "~/theme/breakpoints";
 import { get_cdn_url } from "../../../../../ui/src/utils/get-cdn-url";
 
-import { overflowingFiguresAtom } from "../../../atoms";
-import figureStyles from "../../common/figure.module.scss";
-import { $isImageNode, ImageItem, ImageNodeLayout } from "../image";
+import { overflowing_figures_atom } from "../../../atoms";
+import figure_styles from "../../common/figure.module.scss";
+import { $is_image_node, ImageItem, ImageNodeLayout } from "../image";
 import styles from "./image.module.scss";
 import ImageResizer from "./resizer";
 
@@ -48,22 +48,22 @@ const ImageNodeControls = dynamic(() => import("./node-controls"), {
 /**
  * Computes the responsive image `sizes` attribute based on the layout
  * @param layout Image layout
- * @param itemCount Number of images present in the node
- * @param itemIndex Index of the current image
+ * @param item_count Number of images present in the node
+ * @param item_index Index of the current image
  */
-const getImageSizes = (
+const get_image_sizes = (
   layout: ImageNodeLayout,
-  itemCount: number,
-  itemIndex: number
+  item_count: number,
+  item_index: number
 ): string | undefined =>
   layout === "fit"
     ? undefined // Let the browser decide the size for `fit` images
     : (layout === "screen-width"
         ? [
-            itemCount === 2
+            item_count === 2
               ? "50%" // Half of the screen
-              : itemCount === 3
-              ? itemIndex === 0
+              : item_count === 3
+              ? item_index === 0
                 ? "66.6%" // 2/3 of the screen
                 : "33.3%" // 1/3 of the screen
               : "100vw" // Full screen width
@@ -71,10 +71,10 @@ const getImageSizes = (
         : layout === "overflow"
         ? [
             `${BREAKPOINTS.up("desktop")} ${
-              itemCount === 2
+              item_count === 2
                 ? "650px" // Half of the layout width
-                : itemCount === 3
-                ? itemIndex === 0
+                : item_count === 3
+                ? item_index === 0
                   ? "860px" // 2/3 of 1300px
                   : "432px" // 1/3 of 1300px
                 : "1300px" // Width of both the sidebars and the main content
@@ -89,38 +89,40 @@ const getImageSizes = (
 
 const ImageComponent = ({
   images,
-  nodeKey,
+  node_key,
   resizable,
   layout
 }: {
   images: ImageItem[];
   layout: ImageNodeLayout;
-  nodeKey: NodeKey;
+  node_key: NodeKey;
   resizable: boolean;
 }): React.ReactElement | null => {
-  const itemsContainerRef = React.useRef<HTMLDivElement | null>(null);
-  const [editor] = useLexicalComposerContext();
-  const [selected, setSelected, clearSelection] =
-    useLexicalNodeSelection(nodeKey);
-  const [resizing, setResizing] = React.useState<boolean>(false);
-  const [selection, setSelection] = React.useState<
+  const items_container_ref = React.useRef<HTMLDivElement | null>(null);
+  const [editor] = use_lexical_composer_context();
+  const [selected, set_selected, clear_selection] =
+    use_lexical_node_selection(node_key);
+  const [resizing, set_resizing] = React.useState<boolean>(false);
+  const [selection, set_selection] = React.useState<
     RangeSelection | NodeSelection | GridSelection | null
   >(null);
-  const setOverflowingFigures = use_set_atom(overflowingFiguresAtom);
-  const { height: containerHeight, ref: containerRef } = useResizeObserver();
-  const [ref, { entry }] = useIntersectionObserver({
+  const set_overflowing_figures = use_set_atom(overflowing_figures_atom);
+  const { height: container_height, ref: container_ref } =
+    use_resize_observer();
+  const [ref, { entry }] = use_intersection_observer({
     rootMargin: "-52px 0px 0px 0px"
   });
-  useHotkeys(
+
+  use_hot_keys(
     "backspace,delete",
     (event) => {
-      if (selected && $isNodeSelection(selection)) {
+      if (selected && $is_node_selection(selection)) {
         event.preventDefault();
-        setSelected(false);
+        set_selected(false);
 
         editor.update(() => {
-          const node = $getNodeByKey(nodeKey);
-          if ($isImageNode(node)) {
+          const node = $get_node_by_key(node_key);
+          if ($is_image_node(node)) {
             node.remove();
           }
         });
@@ -128,60 +130,61 @@ const ImageComponent = ({
     },
     { enableOnContentEditable: true }
   );
+
   const editable = editor.isEditable();
   const focused = selected || resizing;
   const visible = Boolean(entry && entry.isIntersecting);
 
   /**
    * Resize end handler
-   * @param nextScale Scale after resizing
+   * @param next_scale Scale after resizing
    */
-  const onResizeEnd = React.useCallback(
-    (nextScale: number) => {
+  const on_resize_end = React.useCallback(
+    (next_scale: number) => {
       // Delay hiding the resize bars for a click case
       setTimeout(() => {
-        setResizing(false);
+        set_resizing(false);
       }, 200);
 
       editor.update(() => {
-        const node = $getNodeByKey(nodeKey);
-        if ($isImageNode(node)) {
-          node.setScaleFactor(nextScale);
+        const node = $get_node_by_key(node_key);
+        if ($is_image_node(node)) {
+          node.set_scale_factor(next_scale);
         }
       });
     },
-    [editor, nodeKey]
+    [editor, node_key]
   );
 
   /**
    * Resize start handler
    */
-  const onResizeStart = React.useCallback(() => {
-    setResizing(true);
+  const on_resize_start = React.useCallback(() => {
+    set_resizing(true);
   }, []);
 
   /**
    * Removes the image item present at the specified index
    */
-  const removeItemAtIndex = React.useCallback(
+  const remove_item_at_index = React.useCallback(
     (index: number) => {
       editor.update(() => {
-        const node = $getNodeByKey(nodeKey);
-        if ($isImageNode(node)) {
-          node.removeImageItem(index);
+        const node = $get_node_by_key(node_key);
+        if ($is_image_node(node)) {
+          node.remove_image_item(index);
         }
       });
     },
-    [editor, nodeKey]
+    [editor, node_key]
   );
 
   React.useEffect(() => {
-    let isMounted = true;
+    let is_mounted = true;
 
-    const unregister = mergeRegister(
-      editor.registerUpdateListener(({ editorState }) => {
-        if (isMounted) {
-          setSelection(editorState.read($getSelection));
+    const unregister = merge_register(
+      editor.registerUpdateListener(({ editorState: editor_state }) => {
+        if (is_mounted) {
+          set_selection(editor_state.read($get_selection));
         }
       }),
       editor.registerCommand<MouseEvent>(
@@ -192,13 +195,13 @@ const ImageComponent = ({
           }
 
           if (
-            itemsContainerRef.current?.contains(event.target as HTMLElement)
+            items_container_ref.current?.contains(event.target as HTMLElement)
           ) {
             if (event.shiftKey) {
-              setSelected(!selected);
+              set_selected(!selected);
             } else {
-              clearSelection();
-              setSelected(true);
+              clear_selection();
+              set_selected(true);
             }
 
             return true;
@@ -212,7 +215,7 @@ const ImageComponent = ({
         DRAGSTART_COMMAND,
         (event) => {
           if (
-            itemsContainerRef.current?.contains(event.target as HTMLElement)
+            items_container_ref.current?.contains(event.target as HTMLElement)
           ) {
             event.preventDefault(); // Prevent dragging
             return true;
@@ -225,29 +228,29 @@ const ImageComponent = ({
     );
 
     return () => {
-      isMounted = false;
+      is_mounted = false;
       unregister();
     };
-  }, [clearSelection, editor, resizing, selected, setSelected]);
+  }, [clear_selection, editor, resizing, selected, set_selected]);
 
   React.useEffect(() => {
-    setOverflowingFigures((prev) => {
+    set_overflowing_figures((prev) => {
       if (visible && ["overflow", "screen-width"].includes(layout)) {
-        prev.add(nodeKey);
+        prev.add(node_key);
       } else {
-        prev.delete(nodeKey);
+        prev.delete(node_key);
       }
 
       return new Set(prev);
     });
 
     return () => {
-      setOverflowingFigures((prev) => {
-        prev.delete(nodeKey);
+      set_overflowing_figures((prev) => {
+        prev.delete(node_key);
         return new Set(prev);
       });
     };
-  }, [layout, nodeKey, setOverflowingFigures, visible]);
+  }, [layout, node_key, set_overflowing_figures, visible]);
 
   return (
     <div className={styles.image} ref={ref}>
@@ -260,27 +263,31 @@ const ImageComponent = ({
           layout !== "fit" && ["grid", "dashboard", "no-sidenav"]
         )}
         data-layout={layout}
-        ref={containerRef}
+        ref={container_ref}
       >
         {["overflow", "screen-width"].includes(layout) && (
           <span
             aria-hidden
-            className={figureStyles["left-banner"]}
+            className={figure_styles["left-banner"]}
             data-layout={layout}
             data-visible={String(visible)}
           />
         )}
         <Popover
           className={clsx("flex-center", "flex-col", styles.x, styles.popover)}
-          onOpenChange={(newOpen): void => {
-            if (!newOpen && !resizing) {
-              setSelected(false);
+          onOpenChange={(next_open: boolean): void => {
+            if (!next_open && !resizing) {
+              set_selected(false);
             }
           }}
-          open={editable && focused && !resizing && $isNodeSelection(selection)}
+          open={
+            editable && focused && !resizing && $is_node_selection(selection)
+          }
           slot_props={{
             content: {
+              // eslint-disable-next-line prefer-snakecase/prefer-snakecase
               collisionPadding: { top: 64 }, // Prevent header collision
+              // eslint-disable-next-line prefer-snakecase/prefer-snakecase
               sideOffset: 12,
               side: "top"
             }
@@ -292,12 +299,12 @@ const ImageComponent = ({
               data-item-count={String(images.length)}
               data-layout={layout}
               data-testid={"image-node"}
-              ref={itemsContainerRef}
+              ref={items_container_ref}
               role={"button"}
               style={{
                 width:
                   layout === "fit" && images.length === 1
-                    ? `${images[0].width * images[0].scaleFactor}px`
+                    ? `${images[0].width * images[0].scale_factor}px`
                     : undefined
               }}
             >
@@ -315,7 +322,8 @@ const ImageComponent = ({
                     rating={editable ? undefined : image.rating}
                     slot_props={{
                       image: {
-                        sizes: getImageSizes(layout, images.length, index),
+                        sizes: get_image_sizes(layout, images.length, index),
+                        // eslint-disable-next-line prefer-snakecase/prefer-snakecase
                         srcSet: [
                           `${get_cdn_url(image.key, ImageSize.W_2048)} 2048w`,
                           `${get_cdn_url(image.key, ImageSize.W_1920)} 1920w`,
@@ -336,7 +344,7 @@ const ImageComponent = ({
                         styles.x,
                         styles["remove-button"]
                       )}
-                      onClick={(): void => removeItemAtIndex(index)}
+                      onClick={(): void => remove_item_at_index(index)}
                       size={"sm"}
                       title={"Remove image"}
                     >
@@ -351,13 +359,13 @@ const ImageComponent = ({
           <ImageNodeControls
             images={images}
             layout={layout}
-            nodeKey={nodeKey}
+            node_key={node_key}
           />
         </Popover>
         {["overflow", "screen-width"].includes(layout) && (
           <span
             aria-hidden
-            className={figureStyles["right-banner"]}
+            className={figure_styles["right-banner"]}
             data-layout={layout}
             data-visible={String(visible)}
           />
@@ -365,13 +373,13 @@ const ImageComponent = ({
         {images.length === 1 &&
         resizable &&
         focused &&
-        $isNodeSelection(selection) ? (
+        $is_node_selection(selection) ? (
           <ImageResizer
             editor={editor}
-            itemsContainerRef={itemsContainerRef}
-            onResizeEnd={onResizeEnd}
-            onResizeStart={onResizeStart}
-            scaleFactor={images[0].scaleFactor}
+            items_container_ref={items_container_ref}
+            on_resize_end={on_resize_end}
+            on_resize_start={on_resize_start}
+            scale_factor={images[0].scale_factor}
             width={images[0].width}
           />
         ) : null}
@@ -381,7 +389,7 @@ const ImageComponent = ({
         <div
           aria-hidden
           style={{
-            height: containerHeight
+            height: container_height
           }}
         />
       )}

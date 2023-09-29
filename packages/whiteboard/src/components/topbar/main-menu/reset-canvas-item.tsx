@@ -2,17 +2,17 @@ import React from "react";
 
 import { use_confirmation } from "../../../../../ui/src/components/confirmation";
 import MenuItem from "../../../../../ui/src/components/menu-item";
-import TrashIcon from "~/icons/Trash";
+import TrashIcon from "../../../../../ui/src/icons/trash";
 
-import { useCanvas } from "../../../hooks";
+import { use_canvas } from "../../../hooks";
 
 const ResetCanvasItem = (): React.ReactElement => {
-  const canvas = useCanvas();
+  const canvas = use_canvas();
 
   /**
    * Resets the canvas
    */
-  const resetCanvas = (): void => {
+  const reset_canvas = (): void => {
     if (canvas.current) {
       canvas.current.clear();
     }
@@ -22,7 +22,7 @@ const ResetCanvasItem = (): React.ReactElement => {
     ({ open_confirmation }) => (
       <MenuItem
         decorator={<TrashIcon />}
-        onSelect={(event): void => {
+        onSelect={(event: Event): void => {
           event.preventDefault(); // Do not auto-close the menu
           open_confirmation();
         }}
@@ -44,7 +44,7 @@ const ResetCanvasItem = (): React.ReactElement => {
           }
         }
       },
-      on_confirm: resetCanvas,
+      on_confirm: reset_canvas,
       title: "Reset canvas?",
       description:
         "This will remove all the layers and clear the entire canvas. Are you sure?"

@@ -4,7 +4,7 @@ import { useRouter as use_router } from "next/navigation";
 import React from "react";
 
 import IconButton from "src/components/icon-button";
-import ChevronIcon from "~/icons/Chevron";
+import ChevronIcon from "src/icons/chevron";
 
 import styles from "./page-title.module.scss";
 import { PageTitleProps } from "./page-title.props";

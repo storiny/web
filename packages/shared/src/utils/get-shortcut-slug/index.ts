@@ -6,7 +6,7 @@ import { IS_APPLE } from "../../browsers";
  * Returns the shortcut key's slug
  * @param shortcut Shortcut
  */
-export const getShortcutSlug = (shortcut: Shortcut): string => {
+export const get_shortcut_slug = (shortcut: Shortcut): string => {
   const slug: string[] = [];
 
   if (shortcut.ctrl) {

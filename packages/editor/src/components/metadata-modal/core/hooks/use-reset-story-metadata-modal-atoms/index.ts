@@ -1,4 +1,4 @@
-import { useResetAtom } from "jotai/utils";
+import { useResetAtom as use_reset_atom } from "jotai/utils";
 import React from "react";
 
 import { nav_segment_atom, sidebar_tab_atom } from "../../atoms";
@@ -6,12 +6,12 @@ import { nav_segment_atom, sidebar_tab_atom } from "../../atoms";
 /**
  * Hook for resetting modal atom values
  */
-export const useResetStoryMetadataModalAtoms = (): (() => void) => {
-  const resetNavSegment = useResetAtom(nav_segment_atom);
-  const resetSidebarTab = useResetAtom(sidebar_tab_atom);
+export const use_reset_story_metadata_modal_atoms = (): (() => void) => {
+  const reset_nav_segment = use_reset_atom(nav_segment_atom);
+  const reset_sidebar_tab = use_reset_atom(sidebar_tab_atom);
 
   return React.useCallback(() => {
-    resetNavSegment();
-    resetSidebarTab();
-  }, [resetNavSegment, resetSidebarTab]);
+    reset_nav_segment();
+    reset_sidebar_tab();
+  }, [reset_nav_segment, reset_sidebar_tab]);
 };

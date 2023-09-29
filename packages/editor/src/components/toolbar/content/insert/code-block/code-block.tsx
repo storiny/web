@@ -1,7 +1,7 @@
 import React from "react";
 
 import MenuItem from "../../../../../../../ui/src/components/menu-item";
-import CodeBlockIcon from "~/icons/CodeBlock";
+import CodeBlockIcon from "../../../../../../../ui/src/icons/code-block";
 
 const CodeBlockMenuItem = (): React.ReactElement => (
   <MenuItem decorator={<CodeBlockIcon />} disabled>

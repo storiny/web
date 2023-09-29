@@ -13,17 +13,17 @@ import MenuItem from "src/components/menu-item";
 import Tab from "src/components/tab";
 import Tabs from "src/components/tabs";
 import TabsList from "src/components/tabs-list";
-import BellIcon from "~/icons/Bell";
-import BookmarksIcon from "~/icons/Bookmarks";
-import CompassIcon from "~/icons/Compass";
-import DotsIcon from "~/icons/Dots";
-import HistoryIcon from "~/icons/History";
-import HomeIcon from "~/icons/Home";
-import LoginIcon from "~/icons/Login";
-import PencilPlusIcon from "~/icons/PencilPlus";
-import SettingsIcon from "~/icons/Settings";
-import StoryHeartIcon from "~/icons/StoryHeart";
-import UserIcon from "~/icons/User";
+import BellIcon from "src/icons/bell";
+import BookmarksIcon from "src/icons/bookmarks";
+import CompassIcon from "src/icons/compass";
+import DotsIcon from "src/icons/dots";
+import HistoryIcon from "src/icons/history";
+import HomeIcon from "src/icons/home";
+import LoginIcon from "src/icons/login";
+import PencilPlusIcon from "src/icons/pencil-plus";
+import SettingsIcon from "src/icons/settings";
+import StoryHeartIcon from "src/icons/story-heart";
+import UserIcon from "src/icons/user";
 import { select_unread_notification_count } from "~/redux/features";
 import {
   select_is_logged_in,

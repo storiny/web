@@ -1,3 +1,3 @@
 import { atom } from "jotai";
 
-export const isCaptionSelectionAtom = atom<boolean>(false);
+export const is_caption_selection_atom = atom<boolean>(false);

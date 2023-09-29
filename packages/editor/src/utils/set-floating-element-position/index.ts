@@ -5,45 +5,46 @@ const TOP_OFFSET = 70; // Offset till the popover gets flipped vertically (in px
 
 /**
  * Sets the position of floating popover element relative to the text selection
- * @param floatingElement Floating popover element
- * @param rootElement Editor root element
+ * @param floating_element Floating popover element
+ * @param root_element Editor root element
  */
-export const setFloatingElementPosition = (
-  floatingElement: HTMLElement,
-  rootElement: HTMLElement | null
+export const set_floating_element_position = (
+  floating_element: HTMLElement,
+  root_element: HTMLElement | null
 ): void => {
-  const selectionRange = window.getSelection()?.getRangeAt(0);
-  const selectionRect = selectionRange?.getBoundingClientRect();
-  const floatingElementRect = floatingElement.getBoundingClientRect();
-  const bodyRect = document.body.getBoundingClientRect();
-  const rootRect = rootElement?.getBoundingClientRect();
-  let flipped: boolean = false;
+  const selection_range = window.getSelection()?.getRangeAt(0);
+  const selection_rect = selection_range?.getBoundingClientRect();
+  const floating_element_rect = floating_element.getBoundingClientRect();
+  const body_rect = document.body.getBoundingClientRect();
+  const root_rect = root_element?.getBoundingClientRect();
+  let flipped = false;
 
-  if (!selectionRect || !rootRect) {
-    floatingElement.style.visibility = "hidden";
+  if (!selection_rect || !root_rect) {
+    floating_element.style.visibility = "hidden";
     return;
   }
 
-  let top = selectionRect.top - floatingElementRect.height - VERTICAL_GAP;
+  let top = selection_rect.top - floating_element_rect.height - VERTICAL_GAP;
   let left =
-    selectionRect.left +
-    selectionRect.width / 2 -
-    floatingElementRect.width / 2;
+    selection_rect.left +
+    selection_rect.width / 2 -
+    floating_element_rect.width / 2;
 
   if (top < TOP_OFFSET) {
     flipped = true;
-    top += floatingElementRect.height + selectionRect.height + VERTICAL_GAP * 2;
+    top +=
+      floating_element_rect.height + selection_rect.height + VERTICAL_GAP * 2;
   }
 
-  if (left + floatingElementRect.width > rootRect.right) {
-    left = rootRect.right - floatingElementRect.width - 8;
-  } else if (left < floatingElementRect.width / 2) {
-    left = rootRect.left + 8;
+  if (left + floating_element_rect.width > root_rect.right) {
+    left = root_rect.right - floating_element_rect.width - 8;
+  } else if (left < floating_element_rect.width / 2) {
+    left = root_rect.left + 8;
   }
 
-  top -= bodyRect.top;
+  top -= body_rect.top;
 
-  floatingElement.classList.toggle(styles.flipped, flipped);
-  floatingElement.style.visibility = "visible";
-  floatingElement.style.transform = `translate3d(${left}px, ${top}px, 0)`;
+  floating_element.classList.toggle(styles.flipped, flipped);
+  floating_element.style.visibility = "visible";
+  floating_element.style.transform = `translate3d(${left}px, ${top}px, 0)`;
 };

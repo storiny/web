@@ -1,15 +1,15 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
+import { useSearchParams as use_search_params } from "next/navigation";
 import React from "react";
 
 const Page = (): React.ReactElement => {
-  const collabId = useSearchParams().get("collab_id") || "";
+  const collab_id = use_search_params().get("collab_id") || "";
   return (
     <React.Fragment>
       <iframe
         name={"left"}
-        src={`/?collab_id=${collabId}`}
+        src={`/?collab_id=${collab_id}`}
         style={{
           position: "fixed",
           border: 0,
@@ -21,7 +21,7 @@ const Page = (): React.ReactElement => {
       />
       <iframe
         name={"right"}
-        src={`/?collab_id=${collabId}`}
+        src={`/?collab_id=${collab_id}`}
         style={{
           position: "fixed",
           border: 0,

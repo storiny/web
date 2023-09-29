@@ -21,19 +21,19 @@ interface Props {
   entityType: GetUserEntityType;
   query: string;
   sort: ProfileEntitySortValue;
-  userId: string;
+  user_id: string;
   username: string;
 }
 
 const EntitiesTab = (props: Props): React.ReactElement => {
-  const { query, sort, userId, username, entityType } = props;
+  const { query, sort, user_id, username, entityType } = props;
   const [page, set_page] = React.useState<number>(1);
   const debounced_query = use_debounce(query);
-  const { data, isLoading, isFetching, isError, error, refetch } =
+  const { data, isLoading, is_fetching, isError, error, refetch } =
     use_get_user_entities_query({
       page,
       sort,
-      userId,
+      user_id,
       entityType,
       query: debounced_query
     });
@@ -51,14 +51,14 @@ const EntitiesTab = (props: Props): React.ReactElement => {
         <ErrorState
           auto_size
           component_props={{
-            button: { loading: isFetching }
+            button: { loading: is_fetching }
           }}
           retry={refetch}
           type={get_query_error_type(error)}
         />
-      ) : !isFetching && !items.length ? (
+      ) : !is_fetching && !items.length ? (
         <EmptyState entityType={entityType} query={query} username={username} />
-      ) : isLoading || is_typing || (isFetching && page === 1) ? (
+      ) : isLoading || is_typing || (is_fetching && page === 1) ? (
         <UserListSkeleton />
       ) : (
         <VirtualizedUserList

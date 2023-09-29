@@ -1,8 +1,11 @@
 import { clsx } from "clsx";
-import { useAtomValue, useSetAtom } from "jotai";
+import {
+  useAtomValue as use_atom_value,
+  useSetAtom as use_set_atom
+} from "jotai";
 import dynamic from "next/dynamic";
 import React from "react";
-import { useIntersectionObserver } from "react-intersection-observer-hook";
+import { useIntersectionObserver as use_intersection_observer } from "react-intersection-observer-hook";
 
 import { dynamicLoader } from "~/common/dynamic";
 import Divider from "../../../../ui/src/components/divider";
@@ -18,7 +21,10 @@ import { use_app_selector } from "~/redux/hooks";
 import { BREAKPOINTS } from "~/theme/breakpoints";
 import { abbreviate_number } from "../../../../ui/src/utils/abbreviate-number";
 
-import { isAuxiliaryContentVisibleAtom, storyMetadataAtom } from "../../atoms";
+import {
+  is_auxiliary_content_visible_atom,
+  story_metadata_atom
+} from "../../atoms";
 import styles from "./auxiliary-content.module.scss";
 
 const EditorAuxiliaryContentCommentList = dynamic(
@@ -27,14 +33,12 @@ const EditorAuxiliaryContentCommentList = dynamic(
     loading: dynamicLoader()
   }
 );
-
 const EditorAuxiliaryContentCommentListDisabledState = dynamic(
   () => import("./comment-list/disabled-state"),
   {
     loading: dynamicLoader()
   }
 );
-
 const EditorAuxiliaryContentSuggestionList = dynamic(
   () => import("./suggestion-list"),
   {
@@ -49,14 +53,14 @@ export type EditorAuxiliaryContentTabValue = "suggested" | "comments";
 
 const HeaderTabs = ({
   value,
-  onChange
+  on_change
 }: {
-  onChange: (newValue: EditorAuxiliaryContentTabValue) => void;
+  on_change: (next_value: EditorAuxiliaryContentTabValue) => void;
   value: EditorAuxiliaryContentTabValue;
 }): React.ReactElement => (
   <Tabs
-    onValueChange={(newValue): void =>
-      onChange(newValue as EditorAuxiliaryContentTabValue)
+    onValueChange={(newValue: EditorAuxiliaryContentTabValue): void =>
+      on_change(newValue)
     }
     value={value}
   >
@@ -74,26 +78,27 @@ const HeaderTabs = ({
 // Content
 
 const Content = (): React.ReactElement => {
-  const story = use_atom_value(storyMetadataAtom);
+  const story = use_atom_value(story_metadata_atom);
   const is_smaller_than_desktop = use_media_query(BREAKPOINTS.down("desktop"));
-  const commentCount =
-    use_app_selector((state) => state.entities.storyCommentCounts[story.id]) ||
-    0;
-  const [value, setValue] = React.useState<EditorAuxiliaryContentTabValue>(
+  const comment_count =
+    use_app_selector(
+      (state) => state.entities.story_comment_counts[story.id]
+    ) || 0;
+  const [value, set_value] = React.useState<EditorAuxiliaryContentTabValue>(
     is_smaller_than_desktop ? "suggested" : "comments"
   );
-  const [sort, setSort] = React.useState<StoryCommentsSortValue>("likes-dsc");
+  const [sort, set_sort] = React.useState<StoryCommentsSortValue>("likes-dsc");
 
-  const handleSortChange = React.useCallback(
-    (nextSort: StoryCommentsSortValue) => {
-      setSort(nextSort);
+  const handle_sort_change = React.useCallback(
+    (next_sort: StoryCommentsSortValue) => {
+      set_sort(next_sort);
     },
     []
   );
 
   React.useEffect(() => {
     if (!is_smaller_than_desktop) {
-      setValue("comments");
+      set_value("comments");
     }
   }, [is_smaller_than_desktop]);
 
@@ -101,7 +106,7 @@ const Content = (): React.ReactElement => {
     <React.Fragment>
       <header className={clsx("flex-col", styles.header)}>
         {is_smaller_than_desktop && (
-          <HeaderTabs onChange={setValue} value={value} />
+          <HeaderTabs on_change={set_value} value={value} />
         )}
         {value === "comments" && (
           <div className={clsx("full-h", "flex-center")}>
@@ -114,14 +119,14 @@ const Content = (): React.ReactElement => {
               )}
               level={"body2"}
             >
-              {story.disable_comments ? "No" : abbreviate_number(commentCount)}{" "}
-              {commentCount === 1 ? "comment" : "comments"}
+              {story.disable_comments ? "No" : abbreviate_number(comment_count)}{" "}
+              {comment_count === 1 ? "comment" : "comments"}
             </Typography>
             <Divider orientation={"vertical"} />
             <Select
               disabled={story.disable_comments}
-              onValueChange={(nextValue): void =>
-                handleSortChange(nextValue as StoryCommentsSortValue)
+              onValueChange={(next_value: StoryCommentsSortValue): void =>
+                handle_sort_change(next_value)
               }
               slot_props={{
                 trigger: {
@@ -162,7 +167,7 @@ const Content = (): React.ReactElement => {
         <EditorAuxiliaryContentCommentListDisabledState />
       ) : (
         <EditorAuxiliaryContentCommentList
-          setSort={handleSortChange}
+          set_sort={handle_sort_change}
           sort={sort}
         />
       )}
@@ -171,16 +176,16 @@ const Content = (): React.ReactElement => {
 };
 
 const EditorAuxiliaryContent = (): React.ReactElement => {
-  const setIsAuxiliaryContentVisible = use_set_atom(
-    isAuxiliaryContentVisibleAtom
+  const set_is_auxiliary_content_visible = use_set_atom(
+    is_auxiliary_content_visible_atom
   );
-  const [ref, { entry }] = useIntersectionObserver({
+  const [ref, { entry }] = use_intersection_observer({
     rootMargin: "-52px 0px 0px 0px"
   });
 
   React.useEffect(() => {
-    setIsAuxiliaryContentVisible(Boolean(entry && entry.isIntersecting));
-  }, [entry, setIsAuxiliaryContentVisible]);
+    set_is_auxiliary_content_visible(Boolean(entry && entry.isIntersecting));
+  }, [entry, set_is_auxiliary_content_visible]);
 
   return (
     <React.Fragment>

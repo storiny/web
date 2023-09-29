@@ -2,7 +2,7 @@ import React from "react";
 
 import Link from "../../../../../../../../../../../packages/ui/src/components/link";
 import CustomState from "../../../../../../../../../../../packages/ui/src/entities/custom-state";
-import MuteIcon from "~/icons/Mute";
+import MuteIcon from "../../../../../../../../../../../packages/ui/src/icons/mute";
 
 interface MutesEmptyStateProps {
   query: string;

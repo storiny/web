@@ -8,10 +8,10 @@ import MenuItem from "../../../../../../../packages/ui/src/components/menu-item"
 import Separator from "../../../../../../../packages/ui/src/components/separator";
 import { use_clipboard } from "../../../../../../../packages/ui/src/hooks/use-clipboard";
 import { use_web_share } from "../../../../../../../packages/ui/src/hooks/use-web-share";
-import CopyIcon from "~/icons/Copy";
-import DotsIcon from "~/icons/Dots";
-import ReportIcon from "~/icons/Report";
-import ShareIcon from "~/icons/Share";
+import CopyIcon from "../../../../../../../packages/ui/src/icons/copy";
+import DotsIcon from "../../../../../../../packages/ui/src/icons/dots";
+import ReportIcon from "../../../../../../../packages/ui/src/icons/report";
+import ShareIcon from "../../../../../../../packages/ui/src/icons/share";
 
 interface Props {
   tag: GetTagResponse;

@@ -1,6 +1,6 @@
 "use client";
 
-import { userProps } from "@storiny/shared";
+import { USER_PROPS } from "@storiny/shared";
 import { clsx } from "clsx";
 import React from "react";
 
@@ -58,8 +58,8 @@ const RecoveryForm = ({ on_submit }: Props): React.ReactElement => {
         autoComplete={"email"}
         data-testid={"email-input"}
         label={"E-mail address"}
-        maxLength={userProps.email.maxLength}
-        minLength={userProps.email.minLength}
+        maxLength={USER_PROPS.email.max_length}
+        minLength={USER_PROPS.email.min_length}
         name={"email"}
         placeholder={"Your e-mail address"}
         required

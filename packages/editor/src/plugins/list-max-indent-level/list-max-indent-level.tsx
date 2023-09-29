@@ -1,10 +1,14 @@
-import { $getListDepth, $isListItemNode, $isListNode } from "@lexical/list";
-import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
+import {
+  $getListDepth as $get_list_depth,
+  $isListItemNode as $is_list_item_node,
+  $isListNode as $is_list_node
+} from "@lexical/list";
+import { useLexicalComposerContext as use_lexical_composer_context } from "@lexical/react/LexicalComposerContext";
 import type { RangeSelection } from "lexical";
 import {
-  $getSelection,
-  $isElementNode,
-  $isRangeSelection,
+  $getSelection as $get_selection,
+  $isElementNode as $is_element_node,
+  $isRangeSelection as $is_range_selection,
   COMMAND_PRIORITY_CRITICAL,
   ElementNode,
   INDENT_CONTENT_COMMAND
@@ -17,12 +21,12 @@ const MAX_DEPTH = 3;
  * Returns the element nodes present in the selection
  * @param selection Selection
  */
-const getElementNodesInSelection = (
+const get_element_nodes_in_selection = (
   selection: RangeSelection
 ): Set<ElementNode> => {
-  const nodesInSelection = selection.getNodes();
+  const nodes_in_selection = selection.getNodes();
 
-  if (nodesInSelection.length === 0) {
+  if (nodes_in_selection.length === 0) {
     return new Set([
       selection.anchor.getNode().getParentOrThrow(),
       selection.focus.getNode().getParentOrThrow()
@@ -30,52 +34,54 @@ const getElementNodesInSelection = (
   }
 
   return new Set(
-    nodesInSelection.map((n) => ($isElementNode(n) ? n : n.getParentOrThrow()))
+    nodes_in_selection.map((n) =>
+      $is_element_node(n) ? n : n.getParentOrThrow()
+    )
   );
 };
 
 /**
  * Predicate function for determining whether indentation is permitted
  */
-const isIndentPermitted = (): boolean => {
-  const selection = $getSelection();
+const is_indent_permitted = (): boolean => {
+  const selection = $get_selection();
 
-  if (!$isRangeSelection(selection)) {
+  if (!$is_range_selection(selection)) {
     return false;
   }
 
-  const elementNodesInSelection: Set<ElementNode> =
-    getElementNodesInSelection(selection);
+  const element_nodes_in_selection: Set<ElementNode> =
+    get_element_nodes_in_selection(selection);
 
-  let totalDepth = 0;
+  let total_depth = 0;
 
-  for (const elementNode of elementNodesInSelection) {
-    if ($isListNode(elementNode)) {
-      totalDepth = Math.max($getListDepth(elementNode) + 1, totalDepth);
-    } else if ($isListItemNode(elementNode)) {
-      const parent = elementNode.getParent();
+  for (const element_node of element_nodes_in_selection) {
+    if ($is_list_node(element_node)) {
+      total_depth = Math.max($get_list_depth(element_node) + 1, total_depth);
+    } else if ($is_list_item_node(element_node)) {
+      const parent = element_node.getParent();
 
-      if (!$isListNode(parent)) {
+      if (!$is_list_node(parent)) {
         throw new Error(
           "ListMaxIndentLevelPlugin: A `ListItemNode` must have a `ListNode` for a parent."
         );
       }
 
-      totalDepth = Math.max($getListDepth(parent) + 1, totalDepth);
+      total_depth = Math.max($get_list_depth(parent) + 1, total_depth);
     }
   }
 
-  return totalDepth <= MAX_DEPTH;
+  return total_depth <= MAX_DEPTH;
 };
 
 const ListMaxIndentLevelPlugin = (): null => {
-  const [editor] = useLexicalComposerContext();
+  const [editor] = use_lexical_composer_context();
 
   React.useEffect(
     () =>
       editor.registerCommand(
         INDENT_CONTENT_COMMAND,
-        () => !isIndentPermitted(),
+        () => !is_indent_permitted(),
         COMMAND_PRIORITY_CRITICAL
       ),
     [editor]

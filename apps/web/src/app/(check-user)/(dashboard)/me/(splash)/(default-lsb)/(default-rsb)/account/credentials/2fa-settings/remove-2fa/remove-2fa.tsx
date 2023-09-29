@@ -17,7 +17,7 @@ import Spacer from "../../../../../../../../../../../../../../packages/ui/src/co
 import { use_toast } from "../../../../../../../../../../../../../../packages/ui/src/components/toast";
 import Typography from "../../../../../../../../../../../../../../packages/ui/src/components/typography";
 import { use_media_query } from "../../../../../../../../../../../../../../packages/ui/src/hooks/use-media-query";
-import TwoFAIcon from "~/icons/TwoFA";
+import TwoFAIcon from "../../../../../../../../../../../../../../packages/ui/src/icons/two-fa";
 import { use_remove_mfa_mutation } from "~/redux/features";
 import { BREAKPOINTS } from "~/theme/breakpoints";
 

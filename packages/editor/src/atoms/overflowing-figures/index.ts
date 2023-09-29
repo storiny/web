@@ -1,3 +1,3 @@
 import { atom } from "jotai";
 
-export const overflowingFiguresAtom = atom<Set<string>>(new Set([]));
+export const overflowing_figures_atom = atom<Set<string>>(new Set([]));

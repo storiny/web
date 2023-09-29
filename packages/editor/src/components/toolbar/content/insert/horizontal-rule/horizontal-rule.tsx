@@ -1,16 +1,16 @@
 import React from "react";
 
 import MenuItem from "../../../../../../../ui/src/components/menu-item";
-import HorizontalRuleIcon from "~/icons/HorizontalRule";
+import HorizontalRuleIcon from "../../../../../../../ui/src/icons/horizontal-rule";
 
-import { useInsertHorizontalRule } from "../../../../../hooks/use-insert-horizontal-rule";
+import { use_insert_horizontal_rule } from "../../../../../hooks/use-insert-horizontal-rule";
 
 const HorizontalRuleMenuItem = (): React.ReactElement => {
-  const [insertHorizontalRule] = useInsertHorizontalRule();
+  const [insert_horizontal_rule] = use_insert_horizontal_rule();
   return (
     <MenuItem
       decorator={<HorizontalRuleIcon />}
-      onSelect={insertHorizontalRule}
+      onSelect={insert_horizontal_rule}
     >
       Horizontal rule
     </MenuItem>

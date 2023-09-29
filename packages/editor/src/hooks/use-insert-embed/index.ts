@@ -1,4 +1,4 @@
-import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
+import { useLexicalComposerContext as use_lexical_composer_context } from "@lexical/react/LexicalComposerContext";
 import React from "react";
 
 import {
@@ -9,15 +9,15 @@ import {
 /**
  * Hooks for inserting embed nodes
  */
-export const useInsertEmbed = (): [(payload: InsertEmbedPayload) => void] => {
-  const [editor] = useLexicalComposerContext();
+export const use_insert_embed = (): [(payload: InsertEmbedPayload) => void] => {
+  const [editor] = use_lexical_composer_context();
 
-  const insertEmbed = React.useCallback(
+  const insert_embed = React.useCallback(
     (payload: InsertEmbedPayload) => {
       editor.dispatchCommand(INSERT_EMBED_COMMAND, payload);
     },
     [editor]
   );
 
-  return [insertEmbed];
+  return [insert_embed];
 };

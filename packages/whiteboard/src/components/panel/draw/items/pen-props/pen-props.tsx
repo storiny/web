@@ -10,16 +10,15 @@ import ColorPicker, {
   str_to_color,
   TColor
 } from "../../../../../../../ui/src/entities/color-picker";
-import RulerMeasureIcon from "~/icons/RulerMeasure";
-
+import RulerMeasureIcon from "../../../../../../../ui/src/icons/ruler-measure";
 import {
   CURSORS,
   MAX_OPACITY,
   MIN_OPACITY,
   PenStyle
 } from "../../../../../constants";
-import { useActiveObject, useCanvas } from "../../../../../hooks";
-import { modifyObject } from "../../../../../utils";
+import { use_active_object, use_canvas } from "../../../../../hooks";
+import { modify_object } from "../../../../../utils";
 import DrawItem, { DrawItemRow } from "../../item";
 import common_styles from "../common.module.scss";
 
@@ -28,64 +27,61 @@ const DEFAULT_PEN_FILL = "rgba(0,0,0,1)";
 // Pen fill color
 
 const PenFillControl = ({
-  activeObject,
+  active_object,
   canvas
 }: {
-  activeObject?: BaseFabricObject;
+  active_object?: BaseFabricObject;
   canvas: Canvas;
 }): React.ReactElement => {
-  const [fill, setFill] = React.useState<TColor>(
+  const [fill, set_fill] = React.useState<TColor>(
     str_to_color(
-      (activeObject?.fill as string) ||
+      (active_object?.fill as string) ||
         canvas.freeDrawingBrush?.color ||
         DEFAULT_PEN_FILL
     )!
   );
-  const [value, setValue] = React.useState(`#${fill.hex}`);
+  const [value, set_value] = React.useState(`#${fill.hex}`);
 
   /**
    * Mutates the fill color of the object
    */
-  const changeFill = React.useCallback(
-    (newFill: TColor) => {
-      setFill(newFill);
+  const change_fill = React.useCallback(
+    (next_fill: TColor) => {
+      set_fill(next_fill);
 
-      if (activeObject) {
-        modifyObject(activeObject, {
-          fill: newFill.str
+      if (active_object) {
+        modify_object(active_object, {
+          fill: next_fill.str
         });
       } else if (canvas.freeDrawingBrush) {
-        canvas.freeDrawingBrush.color = newFill.str;
+        canvas.freeDrawingBrush.color = next_fill.str;
         // Update cursor
-        canvas.freeDrawingCursor = CURSORS.pen(newFill.str);
+        canvas.freeDrawingCursor = CURSORS.pen(next_fill.str);
       }
     },
-    [activeObject, canvas]
+    [active_object, canvas]
   );
 
   React.useEffect(() => {
-    setValue(`#${fill.hex}`);
+    set_value(`#${fill.hex}`);
   }, [fill]);
 
   React.useEffect(() => {
-    setFill(
+    set_fill(
       str_to_color(
-        (activeObject?.fill as string) ||
+        (active_object?.fill as string) ||
           canvas.freeDrawingBrush?.color ||
           DEFAULT_PEN_FILL
       )!
     );
-  }, [activeObject?.fill, canvas.freeDrawingBrush?.color]);
+  }, [active_object?.fill, canvas.freeDrawingBrush?.color]);
 
   return (
     <DrawItemRow>
       <Input
         aria-label={"Pen fill"}
         decorator={
-          <ColorPicker
-            defaultValue={fill}
-            onChange={(value): void => changeFill(value)}
-          >
+          <ColorPicker default_value={fill} on_change={change_fill}>
             <button
               aria-label={"Pick a color"}
               className={clsx(
@@ -104,11 +100,10 @@ const PenFillControl = ({
         }
         monospaced
         onChange={(event): void => {
-          setValue(event.target.value);
-          const newColor = str_to_color(event.target.value);
-
-          if (newColor) {
-            changeFill(newColor);
+          set_value(event.target.value);
+          const next_color = str_to_color(event.target.value);
+          if (next_color) {
+            change_fill(next_color);
           }
         }}
         placeholder={"Fill"}
@@ -130,7 +125,7 @@ const PenFillControl = ({
           const a = Number.parseInt(event.target.value) || 0;
           const { r, g, b } = hex_to_rgb(fill.hex);
 
-          changeFill({
+          change_fill({
             ...fill,
             str: `rgba(${r},${g},${b},${a / 100})`,
             a
@@ -156,26 +151,26 @@ const PenFillControl = ({
 // Pen width
 
 const PenWidthControl = ({
-  activeObject,
+  active_object,
   canvas
 }: {
-  activeObject?: BaseFabricObject;
+  active_object?: BaseFabricObject;
   canvas: Canvas;
 }): React.ReactElement => {
   /**
    * Mutates the width of the object
    */
-  const changeWidth = React.useCallback(
-    (width: number) => {
-      if (activeObject) {
-        modifyObject(activeObject, {
-          penWidth: width
+  const change_width = React.useCallback(
+    (next_width: number) => {
+      if (active_object) {
+        modify_object(active_object, {
+          penWidth: next_width
         });
       } else if (canvas.freeDrawingBrush) {
-        canvas.freeDrawingBrush.width = width;
+        canvas.freeDrawingBrush.width = next_width;
       }
     },
-    [activeObject, canvas.freeDrawingBrush]
+    [active_object, canvas.freeDrawingBrush]
   );
 
   return (
@@ -183,12 +178,12 @@ const PenWidthControl = ({
       aria-label={"Pen width"}
       decorator={<RulerMeasureIcon />}
       defaultValue={
-        activeObject?.get("penWidth") ?? canvas.freeDrawingBrush?.width ?? 1
+        active_object?.get("penWidth") ?? canvas.freeDrawingBrush?.width ?? 1
       }
       min={1}
       monospaced
       onChange={(event): void => {
-        changeWidth(Number.parseInt(event.target.value, 10) ?? 1);
+        change_width(Number.parseInt(event.target.value, 10) ?? 1);
       }}
       placeholder={"Pen width"}
       size={"sm"}
@@ -201,14 +196,14 @@ const PenWidthControl = ({
 // Pen style
 
 const PenStyleControl = ({
-  activeObject,
+  active_object,
   canvas
 }: {
-  activeObject?: BaseFabricObject;
+  active_object?: BaseFabricObject;
   canvas: Canvas;
 }): React.ReactElement => {
-  const [penStyle, setPenStyle] = React.useState<PenStyle>(
-    activeObject?.get("penStyle") ||
+  const [pen_style, set_pen_style] = React.useState<PenStyle>(
+    active_object?.get("penStyle") ||
       (canvas.freeDrawingBrush as any)?.penStyle ||
       PenStyle.PRESSURE
   );
@@ -216,32 +211,32 @@ const PenStyleControl = ({
   /**
    * Mutates the pen style of the object
    */
-  const changePenStyle = React.useCallback(
-    (newPenStyle: PenStyle) => {
-      setPenStyle(newPenStyle);
+  const change_pen_style = React.useCallback(
+    (next_pen_style: PenStyle) => {
+      set_pen_style(next_pen_style);
 
-      if (activeObject) {
-        modifyObject(activeObject, {
-          penStyle: newPenStyle
+      if (active_object) {
+        modify_object(active_object, {
+          penStyle: next_pen_style
         });
       } else if (canvas.freeDrawingBrush) {
-        (canvas.freeDrawingBrush as any).penStyle = newPenStyle;
+        (canvas.freeDrawingBrush as any).penStyle = next_pen_style;
       }
     },
-    [activeObject, canvas.freeDrawingBrush]
+    [active_object, canvas.freeDrawingBrush]
   );
 
   React.useEffect(() => {
-    setPenStyle(
-      activeObject?.get("penStyle") ||
+    set_pen_style(
+      active_object?.get("penStyle") ||
         (canvas.freeDrawingBrush as any)?.penStyle ||
         PenStyle.PRESSURE
     );
-  }, [activeObject, canvas.freeDrawingBrush]);
+  }, [active_object, canvas.freeDrawingBrush]);
 
   return (
     <Select
-      onValueChange={(newValue: PenStyle): void => changePenStyle(newValue)}
+      onValueChange={(newValue: PenStyle): void => change_pen_style(newValue)}
       size={"sm"}
       slot_props={{
         content: {
@@ -253,7 +248,7 @@ const PenStyleControl = ({
           className: clsx("full-w")
         }
       }}
-      value={penStyle}
+      value={pen_style}
     >
       <Option value={PenStyle.PRESSURE}>Pressure</Option>
       <Option value={PenStyle.NORMAL}>Normal</Option>
@@ -262,28 +257,28 @@ const PenStyleControl = ({
 };
 
 const PenProps = (): React.ReactElement | null => {
-  const canvas = useCanvas();
-  const activeObject = useActiveObject();
+  const canvas = use_canvas();
+  const active_object = use_active_object();
 
   if (!canvas.current) {
     return null;
   }
 
   return (
-    <DrawItem key={activeObject?.get("id")} label={"Pen"}>
+    <DrawItem key={active_object?.get("id")} label={"Pen"}>
       <DrawItemRow>
         <PenStyleControl
-          activeObject={activeObject || undefined}
+          active_object={active_object || undefined}
           canvas={canvas.current}
         />
       </DrawItemRow>
       <PenFillControl
-        activeObject={activeObject || undefined}
+        active_object={active_object || undefined}
         canvas={canvas.current}
       />
       <DrawItemRow>
         <PenWidthControl
-          activeObject={activeObject || undefined}
+          active_object={active_object || undefined}
           canvas={canvas.current}
         />
       </DrawItemRow>

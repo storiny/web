@@ -4,7 +4,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
 
 import MenuCheckboxItem from "src/components/menu-checkbox-item";
-import RectangleIcon from "~/icons/Rectangle";
+import RectangleIcon from "src/icons/rectangle";
 
 import Button from "../button";
 import Menu from "./";

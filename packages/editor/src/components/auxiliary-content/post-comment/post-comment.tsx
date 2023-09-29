@@ -1,11 +1,11 @@
 import { COMMENT_PROPS } from "@storiny/shared";
 import { clsx } from "clsx";
-import { useAtomValue } from "jotai";
+import { useAtomValue as use_atom_value } from "jotai";
 import React from "react";
 
 import Avatar from "../../../../../ui/src/components/avatar";
 import Button from "../../../../../ui/src/components/button";
-import { use_toast } from "../../../../../ui/src/components/toast";
+import { use_toast } from "~/components/toast";
 import ResponseTextarea from "../../../../../ui/src/entities/response-textarea";
 import {
   get_story_comments_api,
@@ -15,35 +15,35 @@ import {
 } from "~/redux/features";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 
-import { storyMetadataAtom } from "../../../atoms";
+import { story_metadata_atom } from "../../../atoms";
 import styles from "./post-comment.module.scss";
 
 const PostComment = ({
-  onPost
+  on_post
 }: {
-  onPost: () => void;
+  on_post: () => void;
 }): React.ReactElement => {
   const toast = use_toast();
   const dispatch = use_app_dispatch();
-  const story = use_atom_value(storyMetadataAtom);
+  const story = use_atom_value(story_metadata_atom);
   const user = use_app_selector(select_user);
   const logged_in = use_app_selector(select_is_logged_in);
-  const textareaRef = React.useRef<HTMLTextAreaElement | null>(null);
-  const [addComment, { isLoading }] = use_add_comment_mutation();
+  const textarea_ref = React.useRef<HTMLTextAreaElement | null>(null);
+  const [add_comment, { isLoading: is_loading }] = use_add_comment_mutation();
 
-  const handlePost = (): void => {
-    if (textareaRef.current?.value) {
-      addComment({
+  const handle_post = (): void => {
+    if (textarea_ref.current?.value) {
+      add_comment({
         story_id: story.id,
-        content: textareaRef.current.value
+        content: textarea_ref.current.value
       })
         .unwrap()
         .then(() => {
-          if (textareaRef.current) {
-            textareaRef.current.value = "";
+          if (textarea_ref.current) {
+            textarea_ref.current.value = "";
           }
 
-          onPost();
+          on_post();
           toast("Comment added", "success");
           dispatch(get_story_comments_api.util.resetApiState());
         })
@@ -76,14 +76,14 @@ const PostComment = ({
             label={user?.name}
           />
           <ResponseTextarea
-            maxLength={COMMENT_PROPS.content.maxLength}
-            minLength={COMMENT_PROPS.content.minLength}
+            maxLength={COMMENT_PROPS.content.max_length}
+            minLength={COMMENT_PROPS.content.min_length}
             placeholder={"Leave a comment"}
             post_button_props={{
-              loading: isLoading,
-              onClick: handlePost
+              loading: is_loading,
+              onClick: handle_post
             }}
-            ref={textareaRef}
+            ref={textarea_ref}
             slot_props={{
               container: {
                 className: clsx("f-grow", styles.x, styles["response-textarea"])

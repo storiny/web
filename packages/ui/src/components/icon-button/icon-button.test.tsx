@@ -1,4 +1,4 @@
-import { axe, userEvent } from "@storiny/test-utils";
+import { axe, user_event } from "@storiny/test-utils";
 import { waitFor as wait_for } from "@testing-library/react";
 import React from "react";
 
@@ -124,7 +124,7 @@ describe("<IconButton />", () => {
     });
 
     it("mimics a button click on pressing the space key", async () => {
-      const user = userEvent.setup();
+      const user = user_event.setup();
       const on_click = jest.fn();
       const { getByRole } = render_test_with_provider(
         <IconButton as={"aside"} onClick={on_click}>
@@ -139,7 +139,7 @@ describe("<IconButton />", () => {
     });
 
     it("does not fire the click event on pressing the space key when disabled", async () => {
-      const user = userEvent.setup();
+      const user = user_event.setup();
       const on_click = jest.fn();
       const { getByRole } = render_test_with_provider(
         <IconButton as={"aside"} disabled onClick={on_click}>
@@ -165,7 +165,7 @@ describe("<IconButton />", () => {
   });
 
   it("does not fire the click event when `check_auth` is set to `true` and the user is logged out", async () => {
-    const user = userEvent.setup();
+    const user = user_event.setup();
     const on_click = jest.fn();
     const { getByRole } = render_test_with_provider(
       <IconButton check_auth onClick={on_click}>

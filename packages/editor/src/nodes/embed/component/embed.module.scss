@@ -1,6 +1,5 @@
 @use "breakpoints";
 
-/* Base styles */
 .embed {
   display: block;
   position: relative;
@@ -9,7 +8,6 @@
   width: 100%;
 }
 
-/* Content */
 .content {
   position: relative;
   outline: none !important; // Disable focus outline
@@ -37,7 +35,6 @@
     outline-offset: -1px;
   }
 
-  /* Loading */
   &[data-loading="true"],
   &.error {
     min-height: 350px;
@@ -69,7 +66,6 @@
   }
 }
 
-/* Embed container */
 .container {
   position: absolute;
   top: 0;
@@ -82,12 +78,10 @@
     z-index: calc(var(--z-index-header) - 1);
   }
 
-  /* Embed content */
   & .content {
     cursor: default;
   }
 
-  /* Editable */
   &.editable:not(.metadata) {
     &:not(.selected) {
       & .content {
@@ -108,12 +102,10 @@
 }
 
 .x {
-  /* Button */
   &.button {
     border-radius: 0;
   }
 
-  /* Popover */
   &.popover {
     border: none;
     box-shadow: var(--ridge-xs);

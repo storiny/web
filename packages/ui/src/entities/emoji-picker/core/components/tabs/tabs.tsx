@@ -7,14 +7,14 @@ import Tab from "src/components/tab";
 import Tabs from "src/components/tabs";
 import TabsList from "src/components/tabs-list";
 
-import BasketballIcon from "~/icons/Basketball";
-import BulbIcon from "~/icons/Bulb";
-import CupIcon from "~/icons/Cup";
-import MapIcon from "~/icons/Map";
-import MoodSmileIcon from "~/icons/MoodSmile";
-import PawIcon from "~/icons/Paw";
-import ReportIcon from "~/icons/Report";
-import SymbolsIcon from "~/icons/Symbols";
+import BasketballIcon from "src/icons/basketball";
+import BulbIcon from "src/icons/bulb";
+import CupIcon from "src/icons/cup";
+import MapIcon from "src/icons/map";
+import MoodSmileIcon from "src/icons/mood-smile";
+import PawIcon from "src/icons/paw";
+import ReportIcon from "src/icons/report";
+import SymbolsIcon from "src/icons/symbols";
 
 import { emoji_category_atom, emoji_query_atom } from "../../atoms";
 import { EmojiCategory } from "../../constants";

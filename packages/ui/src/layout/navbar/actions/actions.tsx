@@ -15,21 +15,21 @@ import Separator from "src/components/separator";
 import Skeleton from "src/components/skeleton";
 import Persona from "src/entities/persona";
 import Status from "src/entities/status";
-import AdjustIcon from "~/icons/Adjust";
-import BookmarksIcon from "~/icons/Bookmarks";
-import ChevronIcon from "~/icons/Chevron";
-import CloudOffIcon from "~/icons/CloudOff";
-import DotsIcon from "~/icons/Dots";
-import ExplicitIcon from "~/icons/Explicit";
-import HistoryIcon from "~/icons/History";
-import LogoutIcon from "~/icons/Logout";
-import MoonIcon from "~/icons/Moon";
-import QuestionMarkIcon from "~/icons/QuestionMark";
-import SettingsIcon from "~/icons/Settings";
-import StoryIcon from "~/icons/Story";
-import StoryHeartIcon from "~/icons/StoryHeart";
-import SunIcon from "~/icons/Sun";
-import UserIcon from "~/icons/User";
+import AdjustIcon from "src/icons/adjust";
+import BookmarksIcon from "src/icons/bookmarks";
+import ChevronIcon from "src/icons/chevron";
+import CloudOffIcon from "src/icons/cloud-off";
+import DotsIcon from "src/icons/dots";
+import ExplicitIcon from "src/icons/explicit";
+import HistoryIcon from "src/icons/history";
+import LogoutIcon from "src/icons/logout";
+import MoonIcon from "src/icons/moon";
+import QuestionMarkIcon from "src/icons/question-mark";
+import SettingsIcon from "src/icons/settings";
+import StoryIcon from "src/icons/story";
+import StoryHeartIcon from "src/icons/story-heart";
+import SunIcon from "src/icons/sun";
+import UserIcon from "src/icons/user";
 import {
   select_auth_status,
   select_is_logged_in,

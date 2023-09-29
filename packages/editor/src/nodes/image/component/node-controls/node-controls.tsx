@@ -1,6 +1,6 @@
-import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
+import { useLexicalComposerContext as use_lexical_composer_context } from "@lexical/react/LexicalComposerContext";
 import { clsx } from "clsx";
-import { $getNodeByKey } from "lexical";
+import { $getNodeByKey as $get_node_by_key } from "lexical";
 import React from "react";
 
 import Divider from "../../../../../../ui/src/components/divider";
@@ -9,7 +9,7 @@ import Gallery from "~/entities/gallery";
 import MasonryAddIcon from "~/icons/masonry-add";
 import RotateIcon from "~/icons/rotate";
 
-import { $isImageNode, ImageItem, MAX_IMAGE_ITEMS } from "../../image";
+import { $is_image_node, ImageItem, MAX_IMAGE_ITEMS } from "../../image";
 import styles from "../image.module.scss";
 import ImageAltEditor from "./alt-editor";
 import ImageLayoutToggleGroup from "./layout-toggle-group";
@@ -18,55 +18,55 @@ import { ImageNodeControlsProps } from "./node-controls.props";
 const ImageNodeControls = (
   props: ImageNodeControlsProps
 ): React.ReactElement => {
-  const { nodeKey, images, layout } = props;
-  const [editor] = useLexicalComposerContext();
+  const { node_key, images, layout } = props;
+  const [editor] = use_lexical_composer_context();
 
   /**
    * Adds a new image item
    */
-  const addImageItem = React.useCallback(
-    (newItem: ImageItem) => {
+  const add_image_item = React.useCallback(
+    (next_item: ImageItem) => {
       editor.update(() => {
-        const node = $getNodeByKey(nodeKey);
-        if ($isImageNode(node)) {
-          node.addImageItem(newItem);
+        const node = $get_node_by_key(node_key);
+        if ($is_image_node(node)) {
+          node.add_image_item(next_item);
         }
       });
     },
-    [editor, nodeKey]
+    [editor, node_key]
   );
 
   /**
    * Changes the positions of image items
    */
-  const changeItemPositions = React.useCallback(() => {
+  const change_item_positions = React.useCallback(() => {
     editor.update(() => {
-      const node = $getNodeByKey(nodeKey);
-      if ($isImageNode(node)) {
-        node.changeItemPositions();
+      const node = $get_node_by_key(node_key);
+      if ($is_image_node(node)) {
+        node.change_item_positions();
       }
     });
-  }, [editor, nodeKey]);
+  }, [editor, node_key]);
 
   return (
     <React.Fragment>
       <ImageLayoutToggleGroup
-        fitDisabled={images.length > 1}
+        fit_disabled={images.length > 1}
         layout={layout}
-        nodeKey={nodeKey}
+        node_key={node_key}
       />
       <Divider />
       <div className={"flex-center"}>
         <Gallery
-          on_confirm={(newItem): void => {
-            addImageItem({
-              alt: newItem.alt,
-              height: newItem.height,
-              width: newItem.width,
-              rating: newItem.rating,
-              scaleFactor: 1,
-              hex: newItem.hex,
-              key: newItem.key
+          on_confirm={(next_item): void => {
+            add_image_item({
+              alt: next_item.alt,
+              height: next_item.height,
+              width: next_item.width,
+              rating: next_item.rating,
+              scale_factor: 1,
+              hex: next_item.hex,
+              key: next_item.key
             });
           }}
         >
@@ -85,7 +85,7 @@ const ImageNodeControls = (
           aria-label={"Change image positions"}
           className={clsx("focus-invert", styles.x, styles.button)}
           disabled={images.length === 1}
-          onClick={changeItemPositions}
+          onClick={change_item_positions}
           title={"Change image positions"}
           variant={"ghost"}
         >
@@ -95,7 +95,7 @@ const ImageNodeControls = (
         <ImageAltEditor
           disabled={images.length !== 1}
           image={images[0]}
-          nodeKey={nodeKey}
+          node_key={node_key}
         />
       </div>
     </React.Fragment>

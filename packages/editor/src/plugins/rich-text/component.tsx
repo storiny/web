@@ -1,24 +1,24 @@
-import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import useLexicalEditable from "@lexical/react/useLexicalEditable";
+import { useLexicalComposerContext as use_lexical_composer_context } from "@lexical/react/LexicalComposerContext";
+import use_lexical_editable from "@lexical/react/useLexicalEditable";
 import React from "react";
 
-import { useCanShowPlaceholder } from "../../hooks/use-can-show-placeholder";
-import { ErrorBoundaryType, useDecorators } from "../../hooks/use-decorators";
-import { useRichText } from "../../hooks/use-rich-text";
+import { use_can_show_placeholder } from "../../hooks/use-can-show-placeholder";
+import { ErrorBoundaryType, use_decorators } from "../../hooks/use-decorators";
+import { use_rich_text } from "../../hooks/use-rich-text";
 
 const Placeholder = ({
   content
 }: {
   content:
-    | ((isEditable: boolean) => null | React.ReactElement)
+    | ((is_editable: boolean) => null | React.ReactElement)
     | null
     | React.ReactElement;
 }): null | React.ReactElement => {
-  const [editor] = useLexicalComposerContext();
-  const showPlaceholder = useCanShowPlaceholder(editor);
-  const editable = useLexicalEditable();
+  const [editor] = use_lexical_composer_context();
+  const show_placeholder = use_can_show_placeholder(editor);
+  const editable = use_lexical_editable();
 
-  if (!showPlaceholder) {
+  if (!show_placeholder) {
     return null;
   }
 
@@ -37,13 +37,13 @@ const RichTextPlugin = ({
   ErrorBoundary: ErrorBoundaryType;
   contentEditable: React.ReactElement;
   placeholder:
-    | ((isEditable: boolean) => null | React.ReactElement)
+    | ((is_editable: boolean) => null | React.ReactElement)
     | null
     | React.ReactElement;
 }): React.ReactElement => {
-  const [editor] = useLexicalComposerContext();
-  const decorators = useDecorators(editor, ErrorBoundary);
-  useRichText(editor);
+  const [editor] = use_lexical_composer_context();
+  const decorators = use_decorators(editor, ErrorBoundary);
+  use_rich_text(editor);
 
   return (
     <React.Fragment>

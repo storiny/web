@@ -39,7 +39,7 @@ export class TKNode extends TextNode {
    * Imports node from JSON data
    */
   static importJSON(): TKNode {
-    return $createTKNode();
+    return $create_tk_node();
   }
   /**
    * Creates DOM
@@ -83,14 +83,14 @@ export class TKNode extends TextNode {
 }
 
 /**
+ * Creates a new TK node
+ */
+export const $create_tk_node = (): TKNode => new TKNode().setMode("token");
+
+/**
  * Predicate function for determining TK nodes
  * @param node Node
  */
-export const $isTKNode = (
+export const $is_tk_node = (
   node: LexicalNode | null | undefined
 ): node is TKNode => node instanceof TKNode;
-
-/**
- * Creates a new TK node
- */
-export const $createTKNode = (): TKNode => new TKNode().setMode("token");

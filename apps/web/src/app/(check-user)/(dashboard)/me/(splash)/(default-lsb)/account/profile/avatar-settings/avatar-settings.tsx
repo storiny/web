@@ -8,8 +8,8 @@ import Spacer from "../../../../../../../../../../../../packages/ui/src/componen
 import { use_toast } from "../../../../../../../../../../../../packages/ui/src/components/toast";
 import Typography from "../../../../../../../../../../../../packages/ui/src/components/typography";
 import Gallery from "~/entities/gallery";
-import PencilIcon from "~/icons/Pencil";
-import TrashIcon from "~/icons/Trash";
+import PencilIcon from "../../../../../../../../../../../../packages/ui/src/icons/pencil";
+import TrashIcon from "../../../../../../../../../../../../packages/ui/src/icons/trash";
 import {
   mutate_user,
   select_user,

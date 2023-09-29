@@ -7,10 +7,10 @@ import Skeleton from "src/components/skeleton";
 import Typography, { TypographyProps } from "src/components/typography";
 import ErrorState from "src/entities/error-state";
 import TagChip from "src/entities/tag-chip";
-import ChevronIcon from "~/icons/Chevron";
-import StoriesIcon from "~/icons/Stories";
-import TagsIcon from "~/icons/Tags";
-import UsersIcon from "~/icons/Users";
+import ChevronIcon from "src/icons/chevron";
+import StoriesIcon from "src/icons/stories";
+import TagsIcon from "src/icons/tags";
+import UsersIcon from "src/icons/users";
 import { RightSidebarDefaultContentProps } from "./default-content.props";
 import PopularStory, {
   PopularStorySkeleton

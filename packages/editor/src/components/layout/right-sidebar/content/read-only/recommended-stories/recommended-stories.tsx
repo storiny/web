@@ -2,7 +2,7 @@
 
 import { Story } from "@storiny/types";
 import clsx from "clsx";
-import { useAtomValue } from "jotai";
+import { useAtomValue as use_atom_value } from "jotai";
 import dynamic from "next/dynamic";
 import React from "react";
 
@@ -20,7 +20,7 @@ import {
   format_date
 } from "../../../../../../../../ui/src/utils/format-date";
 
-import { storyMetadataAtom } from "../../../../../../atoms";
+import { story_metadata_atom } from "../../../../../../atoms";
 import styles from "./recommended-stories.module.scss";
 import RecommendedStorySkeleton from "./skeleton";
 
@@ -85,16 +85,22 @@ const RecommendedStory = ({ story }: { story: Story }): React.ReactElement => {
 };
 
 const RecommendedStories = (): React.ReactElement => {
-  const story = use_atom_value(storyMetadataAtom);
-  const { data, isLoading, isFetching, isError, error, refetch } =
-    use_get_story_recommendations_query({ storyId: story.id, page: 1 });
+  const story = use_atom_value(story_metadata_atom);
+  const {
+    data,
+    isLoading: is_loading,
+    is_fetching,
+    isError: is_error,
+    error,
+    refetch
+  } = use_get_story_recommendations_query({ story_id: story.id, page: 1 });
   const { items = [] } = data || {};
 
-  return isError ? (
+  return is_error ? (
     <ErrorState
       component_props={{
         button: {
-          loading: isFetching
+          loading: is_fetching
         }
       }}
       retry={refetch}
@@ -111,11 +117,11 @@ const RecommendedStories = (): React.ReactElement => {
         Continue reading
       </Typography>
       <div className={clsx("flex-col", styles["recommended-stories"])}>
-        {isLoading ? (
+        {is_loading ? (
           [...Array(5)].map((_, index) => (
             <RecommendedStorySkeleton key={index} />
           ))
-        ) : !isFetching && items.length === 0 ? (
+        ) : !is_fetching && items.length === 0 ? (
           <RecommendedStoriesEmptyState />
         ) : (
           items

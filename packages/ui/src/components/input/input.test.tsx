@@ -1,4 +1,4 @@
-import { axe, userEvent as user_event } from "@storiny/test-utils";
+import { axe, user_event as user_event } from "@storiny/test-utils";
 import { waitFor as wait_for } from "@testing-library/react";
 import React from "react";
 

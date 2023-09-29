@@ -1,6 +1,6 @@
 "use client";
 
-import { assetProps, AssetRating, ImageSize } from "@storiny/shared";
+import { ASSET_PROPS, AssetRating, ImageSize } from "@storiny/shared";
 import clsx from "clsx";
 import { useAtom as use_atom } from "jotai";
 import React from "react";
@@ -20,12 +20,12 @@ import Tooltip from "src/components/tooltip";
 import Typography from "src/components/typography";
 import { get_cdn_url } from "src/utils/get-cdn-url";
 
-import CheckIcon from "~/icons/Check";
-import DotsIcon from "~/icons/Dots";
-import EditIcon from "~/icons/Edit";
-import ExplicitIcon from "~/icons/Explicit";
-import StarIcon from "~/icons/Star";
-import TrashIcon from "~/icons/Trash";
+import CheckIcon from "src/icons/check";
+import DotsIcon from "src/icons/dots";
+import EditIcon from "src/icons/edit";
+import ExplicitIcon from "src/icons/explicit";
+import StarIcon from "src/icons/star";
+import TrashIcon from "src/icons/trash";
 import {
   use_asset_alt_mutation,
   use_asset_rating_mutation,
@@ -314,8 +314,8 @@ const LibraryMasonryItem = React.memo(
                 <CheckIcon />
               </IconButton>
             }
-            maxLength={assetProps.alt.maxLength}
-            minLength={assetProps.alt.minLength}
+            maxLength={ASSET_PROPS.alt.max_length}
+            minLength={ASSET_PROPS.alt.min_length}
             onChange={(event): void => set_alt_text(event.target.value)}
             onKeyUp={(event): void => {
               // Save on enter

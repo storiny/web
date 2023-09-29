@@ -1,28 +1,28 @@
 "use client";
 
-import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
+import { useLexicalComposerContext as use_lexical_composer_context } from "@lexical/react/LexicalComposerContext";
 import React from "react";
-import { applyUpdateV2, Doc, YEvent } from "yjs";
+import { applyUpdateV2 as apply_update_v2, Doc, YEvent } from "yjs";
 
 import {
-  createBinding,
+  create_binding,
   ExcludedProperties
 } from "../../collaboration/bindings";
-import { syncYjsChangesToLexical } from "../../utils/sync-yjs-changes-to-lexical";
+import { sync_yjs_changes_to_lexical } from "../../utils/sync-yjs-changes-to-lexical";
 
 /**
  * Hook for rendering a read-only instance of the editor
- * @param initialDoc Initial Yjs document
- * @param excludedProperties Excluded properties
+ * @param initial_doc Initial Yjs document
+ * @param excluded_properties Excluded properties
  */
-export const useYjsReadOnly = ({
-  initialDoc,
-  excludedProperties
+export const use_yjs_read_only = ({
+  initial_doc,
+  excluded_properties
 }: {
-  excludedProperties?: ExcludedProperties;
-  initialDoc: Uint8Array;
+  excluded_properties?: ExcludedProperties;
+  initial_doc: Uint8Array;
 }): void => {
-  const [editor] = useLexicalComposerContext();
+  const [editor] = use_lexical_composer_context();
   const { map, doc } = React.useMemo(() => {
     const map = new Map<string, Doc>();
     const doc = new Doc();
@@ -30,20 +30,24 @@ export const useYjsReadOnly = ({
     return { map, doc };
   }, []);
   const binding = React.useMemo(
-    () => createBinding(editor, doc, map, excludedProperties),
-    [doc, editor, excludedProperties, map]
+    () => create_binding(editor, doc, map, excluded_properties),
+    [doc, editor, excluded_properties, map]
   );
 
   // TODO: Follow https://github.com/facebook/lexical/issues/4999
   {
-    const { root } = createBinding(editor, doc, map, excludedProperties);
+    const { root } = create_binding(editor, doc, map, excluded_properties);
     const listener = (events: YEvent<any>[]): void => {
-      syncYjsChangesToLexical({ binding, events, isFromUndoManger: false });
+      sync_yjs_changes_to_lexical({
+        binding,
+        events,
+        is_from_undo_manager: false
+      });
     };
 
-    root.getSharedType().observeDeep(listener);
-    applyUpdateV2(doc, initialDoc);
-    root.getSharedType().unobserveDeep(listener);
+    root.get_shared_type().observeDeep(listener);
+    apply_update_v2(doc, initial_doc);
+    root.get_shared_type().unobserveDeep(listener);
     doc.destroy();
   }
 };

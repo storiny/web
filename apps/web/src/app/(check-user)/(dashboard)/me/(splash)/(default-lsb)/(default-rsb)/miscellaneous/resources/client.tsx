@@ -7,7 +7,7 @@ import React from "react";
 import NavigationItem from "../../../../../../../../../../../../packages/ui/src/components/navigation-item";
 import Separator from "../../../../../../../../../../../../packages/ui/src/components/separator";
 import Spacer from "../../../../../../../../../../../../packages/ui/src/components/spacer";
-import ExternalLinkIcon from "~/icons/ExternalLink";
+import ExternalLinkIcon from "../../../../../../../../../../../../packages/ui/src/icons/external-link";
 
 import DashboardTitle from "../../../dashboard-title";
 import DashboardWrapper from "../../../dashboard-wrapper";

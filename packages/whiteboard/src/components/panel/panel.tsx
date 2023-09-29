@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { useAtomValue } from "jotai";
+import { useAtomValue as use_atom_value } from "jotai";
 import React from "react";
 import {
   Panel as PanelPrimitive,
@@ -8,10 +8,10 @@ import {
 } from "react-resizable-panels";
 
 import ScrollArea from "../../../../ui/src/components/scroll-area";
-import { use_scrollbar_visibility } from "../../../../ui/src/hooks/use-scrollbar-visibility";
+import { use_scrollbar_visibility } from "~/hooks/use-scrollbar-visibility";
 
-import { isPenModeAtom } from "../../atoms";
-import { useActiveObject, useCanvas } from "../../hooks";
+import { is_pen_mode_atom } from "../../atoms";
+import { use_active_object, use_canvas } from "../../hooks";
 import Layers from "../layers";
 import CanvasTools from "./canvas";
 import DrawTools from "./draw";
@@ -20,12 +20,10 @@ import styles from "./panel.module.scss";
 // Tools
 
 const ToolsPanel = (): React.ReactElement => {
-  const canvas = useCanvas();
-  const activeObject = useActiveObject();
-  const isPenMode = use_atom_value(isPenModeAtom);
+  const canvas = use_canvas();
+  const active_object = use_active_object();
+  const is_pen_mode = use_atom_value(is_pen_mode_atom);
   const { ref, visible } = use_scrollbar_visibility<HTMLDivElement>();
-  // const tool = use_atom_value(toolAtom);
-  // const isImageObjectActive = activeObject && isImageObject(activeObject);
 
   return (
     <ScrollArea
@@ -34,6 +32,7 @@ const ToolsPanel = (): React.ReactElement => {
         viewport: {
           ref,
           style: {
+            // eslint-disable-next-line prefer-snakecase/prefer-snakecase
             paddingRight: visible ? "10px" : 0
           }
         },
@@ -50,13 +49,13 @@ const ToolsPanel = (): React.ReactElement => {
         }
       >
         {/* TODO: Implement */}
-        {/*{tool === Tool.FILTERS && isImageObjectActive ? (*/}
-        {/*  <FiltersTools key={activeObject?.get("id")} />*/}
+        {/*{tool === Tool.FILTERS && is_image_objectActive ? (*/}
+        {/*  <FiltersTools key={active_object?.get("id")} />*/}
         {/*) : (*/}
         {/*  <DrawTools />*/}
         {/*)}*/}
-        {activeObject ||
-        isPenMode ||
+        {active_object ||
+        is_pen_mode ||
         canvas.current?.isDrawingMode ||
         canvas.current?.getActiveObjects().length ? (
           <DrawTools />

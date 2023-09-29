@@ -9,20 +9,15 @@ import {
 } from "@hello-pangea/dnd";
 import clsx from "clsx";
 import { BaseFabricObject } from "fabric";
-import { useSetAtom } from "jotai";
+import { useSetAtom as use_set_atom } from "jotai";
 import React from "react";
 import { Virtuoso } from "react-virtuoso";
-import useResizeObserver from "use-resize-observer";
+import use_resize_observer from "use-resize-observer";
 
-import {
-  Root,
-  Scrollbar,
-  Thumb,
-  Viewport
-} from "../../../../ui/src/components/scroll-area";
+import { Root, Scrollbar, Thumb, Viewport } from "~/components/scroll-area";
 
-import { isLayersDraggingAtom } from "../../atoms";
-import { useCanvas } from "../../hooks";
+import { is_layers_dragging_atom } from "../../atoms";
+import { use_canvas } from "../../hooks";
 import Layer, { LayerSkeleton } from "./layer";
 import styles from "./layers.module.scss";
 import { LayersContext } from "./layers-context";
@@ -33,16 +28,16 @@ const LAYER_HEIGHT = 28;
 
 const VirtualizedLayer = React.memo<
   {
-    isDragging: boolean;
+    is_dragging: boolean;
     layer: BaseFabricObject;
     provided: DraggableProvided;
   } & React.ComponentPropsWithoutRef<"li">
->(({ layer, provided, isDragging, ...rest }) => (
+>(({ layer, provided, is_dragging, ...rest }) => (
   <Layer
     {...rest}
     {...provided.draggableProps}
-    data-dragging={String(isDragging)}
-    draggerProps={{
+    data-dragging={String(is_dragging)}
+    dragger_props={{
       ...provided.dragHandleProps
     }}
     layer={layer}
@@ -58,9 +53,9 @@ VirtualizedLayer.displayName = "VirtualizedLayer";
 const Scroller = React.memo(
   React.forwardRef<HTMLDivElement, React.ComponentPropsWithRef<"div">>(
     ({ children, ...rest }, ref) => {
-      const { layerCount, panelHeight } = React.useContext(LayersContext);
-      const scrollHeight = layerCount * LAYER_HEIGHT;
-      const visible = scrollHeight > panelHeight;
+      const { layer_count, panel_height } = React.useContext(LayersContext);
+      const scroll_height = layer_count * LAYER_HEIGHT;
+      const visible = scroll_height > panel_height;
 
       return (
         <>
@@ -78,7 +73,7 @@ const Scroller = React.memo(
           </Viewport>
           <Scrollbar
             className={clsx(styles.x, styles.scrollbar)}
-            key={layerCount}
+            key={layer_count}
             orientation="vertical"
           >
             <Thumb />
@@ -110,11 +105,11 @@ const LayerPlaceholder = React.memo<React.ComponentPropsWithoutRef<"span">>(
 LayerPlaceholder.displayName = "LayerPlaceholder";
 
 const Layers = (): React.ReactElement | null => {
-  const droppableId = React.useId();
-  const canvas = useCanvas();
-  const [layers, setLayers] = React.useState<BaseFabricObject[]>([]);
-  const { ref, height = 1 } = useResizeObserver();
-  const setDragging = use_set_atom(isLayersDraggingAtom);
+  const droppable_id = React.useId();
+  const canvas = use_canvas();
+  const [layers, set_layers] = React.useState<BaseFabricObject[]>([]);
+  const { ref, height = 1 } = use_resize_observer();
+  const set_dragging = use_set_atom(is_layers_dragging_atom);
 
   React.useEffect(() => {
     const { current } = canvas;
@@ -122,10 +117,10 @@ const Layers = (): React.ReactElement | null => {
     /**
      * Updates the layers
      */
-    const updateLayers = (): void => {
+    const update_layers = (): void => {
       if (current) {
-        const newLayers = current.getObjects();
-        setLayers(newLayers.reverse());
+        const next_layers = current.getObjects();
+        set_layers(next_layers.reverse());
       }
     };
 
@@ -134,51 +129,51 @@ const Layers = (): React.ReactElement | null => {
      * modified
      * @param options Options
      */
-    const updateLayersIfModified = (options: {
+    const update_layers_if_modified = (options: {
       target: BaseFabricObject;
     }): void => {
-      const nextLayer = options.target;
-      const prevLayer = layers.find(
-        (layer) => layer.get("id") === nextLayer.get("id")
+      const next_layer = options.target;
+      const prev_layer = layers.find(
+        (layer) => layer.get("id") === next_layer.get("id")
       );
 
-      if (prevLayer) {
+      if (prev_layer) {
         if (
-          prevLayer.get("locked") !== nextLayer.get("locked") ||
-          prevLayer.get("visible") !== nextLayer.get("visible")
+          prev_layer.get("locked") !== next_layer.get("locked") ||
+          prev_layer.get("visible") !== next_layer.get("visible")
         ) {
-          updateLayers();
+          update_layers();
         }
       }
     };
 
     if (current) {
-      current.on("object:added", updateLayers);
-      current.on("object:removed", updateLayers);
-      current.on("object:modified", updateLayersIfModified);
-      current.on("selection:created", updateLayers);
-      current.on("selection:updated", updateLayers);
-      current.on("selection:cleared", updateLayers);
+      current.on("object:added", update_layers);
+      current.on("object:removed", update_layers);
+      current.on("object:modified", update_layers_if_modified);
+      current.on("selection:created", update_layers);
+      current.on("selection:updated", update_layers);
+      current.on("selection:cleared", update_layers);
     }
 
-    updateLayers();
+    update_layers();
 
     return () => {
       if (current) {
-        current.off("object:added", updateLayers);
-        current.off("object:removed", updateLayers);
-        current.off("object:modified", updateLayersIfModified);
-        current.off("selection:created", updateLayers);
-        current.off("selection:updated", updateLayers);
-        current.off("selection:cleared", updateLayers);
+        current.off("object:added", update_layers);
+        current.off("object:removed", update_layers);
+        current.off("object:modified", update_layers_if_modified);
+        current.off("selection:created", update_layers);
+        current.off("selection:updated", update_layers);
+        current.off("selection:cleared", update_layers);
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [canvas]);
 
-  const onDragEnd = React.useCallback(
+  const on_drag_end = React.useCallback(
     (result: DropResult) => {
-      setDragging(false);
+      set_dragging(false);
 
       if (
         !result.destination ||
@@ -187,29 +182,29 @@ const Layers = (): React.ReactElement | null => {
         return;
       }
 
-      const startIndex = result.source.index;
-      const endIndex = result.destination.index;
+      const start_index = result.source.index;
+      const end_index = result.destination.index;
 
       if (canvas.current) {
         const objects = canvas.current.getObjects();
-        const sourceObject =
-          canvas.current.getObjects()[objects.length - 1 - startIndex];
+        const source_object =
+          canvas.current.getObjects()[objects.length - 1 - start_index];
 
-        if (sourceObject) {
+        if (source_object) {
           canvas.current.moveObjectTo(
-            sourceObject,
-            objects.length - 1 - endIndex
+            source_object,
+            objects.length - 1 - end_index
           );
 
-          setLayers((prevLayers) => {
-            const [removed] = prevLayers.splice(startIndex, 1);
-            prevLayers.splice(endIndex, 0, removed);
-            return prevLayers;
+          set_layers((prev_layers) => {
+            const [removed] = prev_layers.splice(start_index, 1);
+            prev_layers.splice(end_index, 0, removed);
+            return prev_layers;
           });
         }
       }
     },
-    [canvas, setDragging]
+    [canvas, set_dragging]
   );
 
   if (!layers.length) {
@@ -218,18 +213,18 @@ const Layers = (): React.ReactElement | null => {
 
   return (
     <LayersContext.Provider
-      value={{ layerCount: layers.length, panelHeight: height }}
+      value={{ layer_count: layers.length, panel_height: height }}
     >
       <DragDropContext
-        onDragEnd={onDragEnd}
-        onDragStart={(): void => setDragging(true)}
+        onDragEnd={on_drag_end}
+        onDragStart={(): void => set_dragging(true)}
       >
         <Droppable
-          droppableId={droppableId}
+          droppableId={droppable_id}
           mode="virtual"
           renderClone={(provided, snapshot, rubric): React.ReactElement => (
             <VirtualizedLayer
-              isDragging={snapshot.isDragging}
+              is_dragging={snapshot.isDragging}
               layer={layers[rubric.source.index]}
               provided={provided}
             />
@@ -260,7 +255,7 @@ const Layers = (): React.ReactElement | null => {
                     >
                       {(provided): React.ReactElement => (
                         <VirtualizedLayer
-                          isDragging={false}
+                          is_dragging={false}
                           layer={item}
                           provided={provided}
                         />

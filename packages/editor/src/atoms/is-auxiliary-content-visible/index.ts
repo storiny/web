@@ -1,3 +1,3 @@
 import { atom } from "jotai";
 
-export const isAuxiliaryContentVisibleAtom = atom<boolean>(false);
+export const is_auxiliary_content_visible_atom = atom<boolean>(false);

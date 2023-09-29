@@ -18,7 +18,7 @@ import TabsList from "../../../../../../../../../../../../packages/ui/src/compon
 import Typography from "../../../../../../../../../../../../packages/ui/src/components/typography";
 import ErrorState from "../../../../../../../../../../../../packages/ui/src/entities/error-state";
 import { use_debounce } from "../../../../../../../../../../../../packages/ui/src/hooks/use-debounce";
-import SearchIcon from "~/icons/Search";
+import SearchIcon from "../../../../../../../../../../../../packages/ui/src/icons/search";
 import {
   get_query_error_type,
   self_action,
@@ -215,7 +215,7 @@ const CommentList = (props: {
   const { page, sort, query, handleQueryChange, handleSortChange, load_more } =
     props;
   const debounced_query = use_debounce(query);
-  const { data, isLoading, isFetching, isError, error, refetch } =
+  const { data, isLoading, is_fetching, isError, error, refetch } =
     use_get_comments_query({
       page,
       sort,
@@ -234,18 +234,18 @@ const CommentList = (props: {
         sort={sort}
         tab={"comments"}
       />
-      {isLoading || is_typing || (isFetching && page === 1) ? (
+      {isLoading || is_typing || (is_fetching && page === 1) ? (
         <CommentListSkeleton is_extended />
       ) : isError ? (
         <ErrorState
           auto_size
           component_props={{
-            button: { loading: isFetching }
+            button: { loading: is_fetching }
           }}
           retry={refetch}
           type={get_query_error_type(error)}
         />
-      ) : !isFetching && !items.length ? (
+      ) : !is_fetching && !items.length ? (
         <EmptyState query={query} value={"comments"} />
       ) : (
         <VirtualizedCommentList
@@ -277,7 +277,7 @@ const ReplyList = (props: {
   const { page, sort, query, handleSortChange, handleQueryChange, load_more } =
     props;
   const debounced_query = use_debounce(query);
-  const { data, isLoading, isFetching, isError, error, refetch } =
+  const { data, isLoading, is_fetching, isError, error, refetch } =
     use_get_replies_query({
       page,
       sort,
@@ -296,18 +296,18 @@ const ReplyList = (props: {
         sort={sort}
         tab={"replies"}
       />
-      {isLoading || is_typing || (isFetching && page === 1) ? (
+      {isLoading || is_typing || (is_fetching && page === 1) ? (
         <ReplyListSkeleton />
       ) : isError ? (
         <ErrorState
           auto_size
           component_props={{
-            button: { loading: isFetching }
+            button: { loading: is_fetching }
           }}
           retry={refetch}
           type={get_query_error_type(error)}
         />
-      ) : !isFetching && !items.length ? (
+      ) : !is_fetching && !items.length ? (
         <EmptyState query={query} value={"replies"} />
       ) : (
         <VirtualizedReplyList
@@ -327,7 +327,7 @@ const ReplyList = (props: {
 };
 
 const ContentResponsesClient = (props: ResponsesProps): React.ReactElement => {
-  const [sort, setSort] = React.useState<ResponsesSortValue>("recent");
+  const [sort, set_sort] = React.useState<ResponsesSortValue>("recent");
   const [query, setQuery] = React.useState<string>("");
   const [value, setValue] = React.useState<ResponsesTabValue>("comments");
   const [page, set_page] = React.useState<number>(1);
@@ -339,14 +339,14 @@ const ContentResponsesClient = (props: ResponsesProps): React.ReactElement => {
 
   const handleChange = React.useCallback((newValue: ResponsesTabValue) => {
     set_page(1);
-    setSort("recent");
+    set_sort("recent");
     setQuery("");
     setValue(newValue);
   }, []);
 
   const handleSortChange = React.useCallback((newSort: ResponsesSortValue) => {
     set_page(1);
-    setSort(newSort);
+    set_sort(newSort);
   }, []);
 
   const handleQueryChange = React.useCallback((newQuery: string) => {

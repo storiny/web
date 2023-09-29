@@ -1,7 +1,10 @@
-import { addClassNamesToElement, isHTMLElement } from "@lexical/utils";
 import {
-  $applyNodeReplacement,
-  $createParagraphNode,
+  addClassNamesToElement as add_class_names_to_element,
+  is_html_element as is_html_element
+} from "@lexical/utils";
+import {
+  $applyNodeReplacement as $apply_node_replacement,
+  $createParagraphNode as $create_paragraph_node,
   DOMConversionMap,
   DOMConversionOutput,
   DOMExportOutput,
@@ -66,27 +69,27 @@ export class HeadingNode extends ElementNode {
   static importDOM(): DOMConversionMap | null {
     return {
       h1: () => ({
-        conversion: convertHeadingElement,
+        conversion: convert_heading_element,
         priority: 0
       }),
       h2: () => ({
-        conversion: convertHeadingElement,
+        conversion: convert_heading_element,
         priority: 0
       }),
       h3: () => ({
-        conversion: convertHeadingElement,
+        conversion: convert_heading_element,
         priority: 0
       }),
       h4: () => ({
-        conversion: convertHeadingElement,
+        conversion: convert_heading_element,
         priority: 0
       }),
       h5: () => ({
-        conversion: convertHeadingElement,
+        conversion: convert_heading_element,
         priority: 0
       }),
       h6: () => ({
-        conversion: convertHeadingElement,
+        conversion: convert_heading_element,
         priority: 0
       }),
       p: (
@@ -97,9 +100,9 @@ export class HeadingNode extends ElementNode {
       } => {
         // `domNode` is a <p> since we matched it by nodeName
         const paragraph = node as HTMLParagraphElement;
-        const firstChild = paragraph.firstChild;
+        const first_child = paragraph.firstChild;
 
-        if (firstChild !== null && isGoogleDocsTitle(firstChild)) {
+        if (first_child !== null && is_google_docs_title(first_child)) {
           return {
             conversion: () => ({ node: null }),
             priority: 3
@@ -114,10 +117,10 @@ export class HeadingNode extends ElementNode {
         conversion: (element: HTMLElement) => DOMConversionOutput | null;
         priority: 3;
       } => {
-        if (isGoogleDocsTitle(node)) {
+        if (is_google_docs_title(node)) {
           return {
             conversion: () => ({
-              node: $createHeadingNode("h2")
+              node: $create_heading_node("h2")
             }),
             priority: 3
           };
@@ -130,14 +133,14 @@ export class HeadingNode extends ElementNode {
 
   /**
    * Imports a serialized node
-   * @param serializedNode Serialized node
+   * @param serialized_node Serialized node
    */
   static override importJSON(
-    serializedNode: SerializedHeadingNode
+    serialized_node: SerializedHeadingNode
   ): HeadingNode {
-    const node = $createHeadingNode(serializedNode.tag);
-    node.setFormat(serializedNode.format);
-    node.setIndent(serializedNode.indent);
+    const node = $create_heading_node(serialized_node.tag);
+    node.setFormat(serialized_node.format);
+    node.setIndent(serialized_node.indent);
     return node;
   }
 
@@ -150,7 +153,7 @@ export class HeadingNode extends ElementNode {
   /**
    * Returns the tag type
    */
-  public getTag(): HeadingTagType {
+  public get_tag(): HeadingTagType {
     return this.__tag;
   }
 
@@ -163,7 +166,10 @@ export class HeadingNode extends ElementNode {
     const className = TYPOGRAPHY_LEVEL_TO_CLASSNAME_MAP[tag];
 
     if (className) {
-      addClassNamesToElement(element, ...["t-major", className, styles[tag]]);
+      add_class_names_to_element(
+        element,
+        ...["t-major", className, styles[tag]]
+      );
     }
 
     return element;
@@ -183,7 +189,7 @@ export class HeadingNode extends ElementNode {
   override exportDOM(editor: LexicalEditor): DOMExportOutput {
     const { element } = super.exportDOM(editor);
 
-    if (element && isHTMLElement(element)) {
+    if (element && is_html_element(element)) {
       if (this.isEmpty()) {
         element.append(document.createElement("br"));
       }
@@ -211,37 +217,37 @@ export class HeadingNode extends ElementNode {
   /**
    * Inserts node after the new element
    * @param selection Selection
-   * @param restoreSelection Whether to restore the selection
+   * @param restore_selection Whether to restore the selection
    */
   override insertNewAfter(
     selection?: RangeSelection,
-    restoreSelection = true
+    restore_selection = true
   ): ParagraphNode | HeadingNode {
-    const anchorOffet = selection ? selection.anchor.offset : 0;
-    const newElement =
-      anchorOffet > 0 && anchorOffet < this.getTextContentSize()
-        ? $createHeadingNode(this.getTag())
-        : $createParagraphNode();
+    const anchor_offset = selection ? selection.anchor.offset : 0;
+    const next_element =
+      anchor_offset > 0 && anchor_offset < this.getTextContentSize()
+        ? $create_heading_node(this.getTag())
+        : $create_paragraph_node();
 
-    this.insertAfter(newElement, restoreSelection);
-    return newElement;
+    this.insertAfter(next_element, restore_selection);
+    return next_element;
   }
 
   /**
    * Whether to collapse at the start
    */
   override collapseAtStart(): true {
-    const newElement = !this.isEmpty()
-      ? $createHeadingNode(this.getTag())
-      : $createParagraphNode();
+    const next_element = !this.isEmpty()
+      ? $create_heading_node(this.getTag())
+      : $create_paragraph_node();
     const children = this.getChildren();
-    children.forEach((child) => newElement.append(child));
-    this.replace(newElement);
+    children.forEach((child) => next_element.append(child));
+    this.replace(next_element);
     return true;
   }
 
   /**
-   * Extracts the node with child
+   * Whether the node can be extracted with child
    */
   override extractWithChild(): boolean {
     return true;
@@ -250,11 +256,11 @@ export class HeadingNode extends ElementNode {
 
 /**
  * Predicate function for determining title text pasted from Google Docs
- * @param domNode Node
+ * @param dom_node Node
  */
-const isGoogleDocsTitle = (domNode: Node): boolean => {
-  if (domNode.nodeName.toLowerCase() === "span") {
-    return (domNode as HTMLSpanElement).style.fontSize === "26pt";
+const is_google_docs_title = (dom_node: Node): boolean => {
+  if (dom_node.nodeName.toLowerCase() === "span") {
+    return (dom_node as HTMLSpanElement).style.fontSize === "26pt";
   }
 
   return false;
@@ -264,16 +270,16 @@ const isGoogleDocsTitle = (domNode: Node): boolean => {
  * Converts a heading element to its equivalent heading node
  * @param element Element
  */
-const convertHeadingElement = (element: HTMLElement): DOMConversionOutput => {
+const convert_heading_element = (element: HTMLElement): DOMConversionOutput => {
   const nodeName = element.nodeName.toLowerCase();
   let node: HeadingNode | null = null;
 
   if (["h1", "h2"].includes(nodeName)) {
     // Convert H1 to H2 (heading)
-    node = $createHeadingNode("h2");
+    node = $create_heading_node("h2");
   } else if (["h3", "h4", "h5", "h6"].includes(nodeName)) {
     // Convert the rest of the headings to H3 (subheadings)
-    node = $createHeadingNode("h3");
+    node = $create_heading_node("h3");
   }
 
   if (node !== null) {
@@ -287,15 +293,16 @@ const convertHeadingElement = (element: HTMLElement): DOMConversionOutput => {
 
 /**
  * Creates a new heading node
- * @param headingTag Heading level tag
+ * @param heading_tag Heading level tag
  */
-export const $createHeadingNode = (headingTag: HeadingTagType): HeadingNode =>
-  $applyNodeReplacement(new HeadingNode(headingTag));
+export const $create_heading_node = (
+  heading_tag: HeadingTagType
+): HeadingNode => $apply_node_replacement(new HeadingNode(heading_tag));
 
 /**
  * Predicate function for determining heading nodes
  * @param node Node
  */
-export const $isHeadingNode = (
+export const $is_heading_node = (
   node: LexicalNode | null | undefined
 ): node is HeadingNode => node instanceof HeadingNode;

@@ -1,4 +1,4 @@
-import { atomWithReset } from "jotai/utils";
+import { atomWithReset as atom_with_reset } from "jotai/utils";
 
 import { StoryMetadataModalSidebarTabsValue } from "../sidebar-tab";
 

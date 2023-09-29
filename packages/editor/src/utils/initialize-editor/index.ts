@@ -1,7 +1,7 @@
 import {
-  $createParagraphNode,
-  $getRoot,
-  $getSelection,
+  $createParagraphNode as $create_paragraph_node,
+  $getRoot as $get_root,
+  $getSelection as $get_selection,
   LexicalEditor
 } from "lexical";
 
@@ -9,19 +9,20 @@ import {
  * Initializes the editor
  * @param editor Editor
  */
-export const initializeEditor = (editor: LexicalEditor): void => {
+export const initialize_editor = (editor: LexicalEditor): void => {
   editor.update(
     () => {
-      const root = $getRoot();
+      const root = $get_root();
 
       if (root.isEmpty()) {
-        const paragraph = $createParagraphNode();
+        const paragraph = $create_paragraph_node();
         root.append(paragraph);
-        const { activeElement } = document;
+        const { activeElement: active_element } = document;
 
         if (
-          $getSelection() !== null ||
-          (activeElement !== null && activeElement === editor.getRootElement())
+          $get_selection() !== null ||
+          (active_element !== null &&
+            active_element === editor.getRootElement())
         ) {
           paragraph.select();
         }

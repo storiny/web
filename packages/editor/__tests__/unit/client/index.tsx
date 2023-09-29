@@ -1,4 +1,4 @@
-import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
+import { useLexicalComposerContext as use_lexical_composer_context } from "@lexical/react/LexicalComposerContext";
 import { act } from "@testing-library/react";
 import { EditorState, LexicalEditor } from "lexical";
 import React from "react";
@@ -11,7 +11,7 @@ import EditorComposer from "../../../src/components/composer";
 import EditorContentEditable from "../../../src/components/content-editable";
 import EditorErrorBoundary from "../../../src/components/error-boundary";
 import CollaborationPlugin from "../../../src/plugins/collaboration";
-import { useCollaborationContext } from "../../../src/plugins/collaboration/context";
+import { use_collaboration_context } from "../../../src/plugins/collaboration/context";
 import RichTextPlugin from "../../../src/plugins/rich-text";
 
 type Connection = {
@@ -22,30 +22,30 @@ const Editor = ({
   doc,
   provider,
   setEditor,
-  awarenessData
+  awareness_data
 }: {
-  awarenessData: object;
+  awareness_data: object;
   doc: Y.Doc;
   provider: Client;
   setEditor: (editor: LexicalEditor) => void;
 }): React.ReactElement => {
-  const context = useCollaborationContext({});
-  const [editor] = useLexicalComposerContext();
-  const { yjsDocMap } = context;
+  const context = use_collaboration_context({});
+  const [editor] = use_lexical_composer_context();
+  const { yjs_doc_map } = context;
 
-  context.isCollabActive = true;
-  yjsDocMap.set("main", doc);
+  context.is_collab_active = true;
+  yjs_doc_map.set("main", doc);
 
   setEditor(editor);
 
   return (
     <>
       <CollaborationPlugin
-        awarenessData={awarenessData}
+        awareness_data={awareness_data}
         id="test"
-        providerFactory={(): Provider => provider as unknown as Provider}
+        provider_factory={(): Provider => provider as unknown as Provider}
         role={"editor"}
-        shouldBootstrap={true}
+        should_bootstrap={true}
       />
       <RichTextPlugin
         ErrorBoundary={EditorErrorBoundary}
@@ -187,20 +187,20 @@ export class Client {
   /**
    * Renders the editor
    * @param rootContainer Root container element
-   * @param awarenessData Awareness data for the client
+   * @param awareness_data Awareness data for the client
    */
   public start(
     rootContainer: HTMLDivElement | null,
-    awarenessData: object = {}
+    awareness_data: object = {}
   ): void {
     const container = document.createElement("div");
     this.container = container;
     rootContainer?.appendChild(container);
 
     render_test_with_provider(
-      <EditorComposer ignoreNodes ignoreTheme>
+      <EditorComposer ignore_nodes ignore_theme>
         <Editor
-          awarenessData={awarenessData}
+          awareness_data={awareness_data}
           doc={this.doc}
           provider={this}
           setEditor={(editor): LexicalEditor => (this.editor = editor)}

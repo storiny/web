@@ -1,6 +1,6 @@
-import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
+import { useLexicalComposerContext as use_lexical_composer_context } from "@lexical/react/LexicalComposerContext";
 import { clsx } from "clsx";
-import { $getNodeByKey } from "lexical";
+import { $getNodeByKey as $get_node_by_key } from "lexical";
 import React from "react";
 
 import ToggleGroup from "../../../../../../ui/src/components/toggle-group";
@@ -8,37 +8,37 @@ import ToggleGroupItem from "../../../../../../ui/src/components/toggle-group-it
 import FigureFillIcon from "~/icons/figure-fill";
 import FigureOverflowIcon from "~/icons/figure-overflow";
 
-import { $isEmbedNode, EmbedNodeLayout } from "../../embed";
+import { $is_embed_node, EmbedNodeLayout } from "../../embed";
 import styles from "../embed.module.scss";
 import { EmbedNodeControlsProps } from "./node-controls.props";
 
 const EmbedNodeControls = (
   props: EmbedNodeControlsProps
 ): React.ReactElement => {
-  const { nodeKey, layout } = props;
-  const [editor] = useLexicalComposerContext();
+  const { node_key, layout } = props;
+  const [editor] = use_lexical_composer_context();
 
   /**
    * Updates the node layout
    */
-  const setLayout = React.useCallback(
-    (nextLayout: EmbedNodeLayout) => {
+  const set_layout = React.useCallback(
+    (next_layout: EmbedNodeLayout) => {
       editor.update(() => {
-        const node = $getNodeByKey(nodeKey);
+        const node = $get_node_by_key(node_key);
         if (
-          $isEmbedNode(node) &&
-          (["fill", "overflow"] as EmbedNodeLayout[]).includes(nextLayout)
+          $is_embed_node(node) &&
+          (["fill", "overflow"] as EmbedNodeLayout[]).includes(next_layout)
         ) {
-          node.setLayout(nextLayout);
+          node.set_layout(next_layout);
         }
       });
     },
-    [editor, nodeKey]
+    [editor, node_key]
   );
 
   return (
     <ToggleGroup
-      onValueChange={(value: EmbedNodeLayout): void => setLayout(value)}
+      onValueChange={(value: EmbedNodeLayout): void => set_layout(value)}
       value={layout}
     >
       <ToggleGroupItem

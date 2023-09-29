@@ -1,64 +1,64 @@
 import { BaseFabricObject } from "fabric";
 import React from "react";
 
-import IconButton from "../../../../../../../ui/src/components/icon-button";
-import Input from "../../../../../../../ui/src/components/input";
-import EyeIcon from "~/icons/Eye";
-import EyeClosedIcon from "~/icons/EyeClosed";
-import RoughnessIcon from "~/icons/Roughness";
 import { clamp } from "~/utils/clamp";
 
+import IconButton from "../../../../../../../ui/src/components/icon-button";
+import Input from "../../../../../../../ui/src/components/input";
+import EyeIcon from "../../../../../../../ui/src/icons/eye";
+import EyeClosedIcon from "../../../../../../../ui/src/icons/eye-closed";
+import RoughnessIcon from "../../../../../../../ui/src/icons/roughness";
 import { MAX_OPACITY, MIN_OPACITY } from "../../../../../constants";
-import { useActiveObject, useEventRender } from "../../../../../hooks";
-import { modifyObject } from "../../../../../utils";
+import { use_active_object, use_event_render } from "../../../../../hooks";
+import { modify_object } from "../../../../../utils";
 import DrawItem, { DrawItemRow } from "../../item";
 
 // Opacity
 
 const OpacityControl = ({
-  activeObject
+  active_object
 }: {
-  activeObject: BaseFabricObject;
+  active_object: BaseFabricObject;
 }): React.ReactElement => {
-  useEventRender(
+  use_event_render(
     "object:modified",
-    (options) => options.target.get("id") === activeObject.get("id")
+    (options) => options.target.get("id") === active_object.get("id")
   );
 
   /**
    * Mutates the opacity of the object
    */
-  const changeOpacity = React.useCallback(
-    (opacity: number) => {
-      if (activeObject) {
-        modifyObject(activeObject, {
-          opacity: opacity / 100
+  const change_opacity = React.useCallback(
+    (next_opacity: number) => {
+      if (active_object) {
+        modify_object(active_object, {
+          opacity: next_opacity / 100
         });
       }
     },
-    [activeObject]
+    [active_object]
   );
 
   /**
    * Toggles the layer's visibility
    */
-  const toggleLayerVisibility = (): void => {
-    modifyObject(activeObject, {
-      visible: !activeObject.visible
+  const toggle_layer_visibility = (): void => {
+    modify_object(active_object, {
+      visible: !active_object.visible
     });
   };
 
   return (
     <Input
       aria-label={"Layer opacity"}
-      defaultValue={Math.round(activeObject.opacity * 100)}
+      defaultValue={Math.round(active_object.opacity * 100)}
       end_decorator={
         <IconButton
-          aria-label={`${!activeObject.visible ? "Show" : "Hide"} layer`}
-          onClick={toggleLayerVisibility}
-          title={`${!activeObject.visible ? "Show" : "Hide"} layer`}
+          aria-label={`${!active_object.visible ? "Show" : "Hide"} layer`}
+          onClick={toggle_layer_visibility}
+          title={`${!active_object.visible ? "Show" : "Hide"} layer`}
         >
-          {!activeObject.visible ? <EyeClosedIcon /> : <EyeIcon />}
+          {!active_object.visible ? <EyeClosedIcon /> : <EyeIcon />}
         </IconButton>
       }
       max={MAX_OPACITY}
@@ -66,7 +66,7 @@ const OpacityControl = ({
       monospaced
       onChange={(event): void => {
         const value = Number.parseInt(event.target.value, 10) ?? 100;
-        changeOpacity(clamp(MIN_OPACITY, value, MAX_OPACITY));
+        change_opacity(clamp(MIN_OPACITY, value, MAX_OPACITY));
       }}
       placeholder={"Opacity"}
       size={"sm"}
@@ -79,34 +79,34 @@ const OpacityControl = ({
 // Roughness
 
 const RoughnessControl = ({
-  activeObject
+  active_object
 }: {
-  activeObject: BaseFabricObject;
+  active_object: BaseFabricObject;
 }): React.ReactElement => {
   /**
    * Mutates the roughness of the object
    */
-  const changeRoughness = React.useCallback(
-    (roughness: number) => {
-      if (activeObject) {
-        modifyObject(activeObject, {
-          roughness
+  const change_roughness = React.useCallback(
+    (next_roughness: number) => {
+      if (active_object) {
+        modify_object(active_object, {
+          roughness: next_roughness
         });
       }
     },
-    [activeObject]
+    [active_object]
   );
 
   return (
     <Input
       aria-label={"Layer roughness"}
       decorator={<RoughnessIcon />}
-      defaultValue={activeObject.get("roughness")}
+      defaultValue={active_object.get("roughness")}
       max={5}
       min={0}
       monospaced
       onChange={(event): void =>
-        changeRoughness(Number.parseFloat(event.target.value) ?? 1)
+        change_roughness(Number.parseFloat(event.target.value) ?? 1)
       }
       placeholder={"Roughness"}
       size={"sm"}
@@ -118,24 +118,24 @@ const RoughnessControl = ({
 };
 
 const LayerProps = ({
-  disableRoughness
+  disable_roughness
 }: {
-  disableRoughness?: boolean;
+  disable_roughness?: boolean;
 }): React.ReactElement | null => {
-  const activeObject = useActiveObject();
+  const active_object = use_active_object();
 
-  if (!activeObject) {
+  if (!active_object) {
     return null;
   }
 
   return (
-    <DrawItem key={activeObject.get("id")} label={"Layer"}>
+    <DrawItem key={active_object.get("id")} label={"Layer"}>
       <DrawItemRow>
-        <OpacityControl activeObject={activeObject} />
+        <OpacityControl active_object={active_object} />
       </DrawItemRow>
-      {!disableRoughness && (
+      {!disable_roughness && (
         <DrawItemRow>
-          <RoughnessControl activeObject={activeObject} />
+          <RoughnessControl active_object={active_object} />
         </DrawItemRow>
       )}
     </DrawItem>

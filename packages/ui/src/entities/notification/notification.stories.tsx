@@ -1,12 +1,12 @@
 // noinspection JSUnusedGlobalSymbols
 
-import { NotificationType } from "@storiny/types";
 import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
 
 import { MOCK_NOTIFICATIONS } from "../../mocks";
 import Notification from "./notification";
 import NotificationSkeleton from "./skeleton";
+import { NotificationType } from "@storiny/shared";
 
 const meta: Meta<typeof Notification> = {
   title: "entities/notification",

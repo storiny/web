@@ -1,6 +1,6 @@
 "use client";
 
-import { DEFAULT_WPM, userProps } from "@storiny/shared";
+import { DEFAULT_WPM, USER_PROPS } from "@storiny/shared";
 import { clsx } from "clsx";
 import React from "react";
 
@@ -27,9 +27,9 @@ const Page = (): React.ReactElement => {
   const onDone = (): void => {
     const minutes = (new Date().getTime() - (mountTime || 0)) / 60_000;
     const wpm = clamp(
-      userProps.wpm.min,
+      USER_PROPS.wpm.min,
       Math.floor(WORD_COUNT / minutes) || DEFAULT_WPM,
-      userProps.wpm.max
+      USER_PROPS.wpm.max
     );
 
     actions.setSignupState({ wpm });

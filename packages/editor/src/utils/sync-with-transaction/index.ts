@@ -5,6 +5,9 @@ import { Binding } from "../../collaboration/bindings";
  * @param binding Biding
  * @param fn Transaction function
  */
-export const syncWithTransaction = (binding: Binding, fn: () => void): void => {
+export const sync_with_transaction = (
+  binding: Binding,
+  fn: () => void
+): void => {
   binding.doc.transact(fn, binding);
 };

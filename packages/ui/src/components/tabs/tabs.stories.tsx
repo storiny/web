@@ -4,7 +4,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import clsx from "clsx";
 import React from "react";
 
-import RectangleIcon from "~/icons/Rectangle";
+import RectangleIcon from "src/icons/rectangle";
 
 import Tab from "../tab";
 import TabPanel, { TabPanelProps } from "../tab-panel";

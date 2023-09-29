@@ -1,3 +1,3 @@
-export * from "./isLayersDragging";
-export * from "./isPenMode";
+export * from "./is-layers-dragging";
+export * from "./is-pen-mode";
 export * from "./tool";

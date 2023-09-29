@@ -7,7 +7,7 @@ import React from "react";
 
 import { use_form_field } from "src/components/form";
 import { use_media_query } from "src/hooks/use-media-query";
-import CheckIcon from "~/icons/Check";
+import CheckIcon from "src/icons/check";
 import { BREAKPOINTS } from "~/theme/breakpoints";
 
 import styles from "./checkbox.module.scss";

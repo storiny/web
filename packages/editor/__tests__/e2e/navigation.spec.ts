@@ -11,7 +11,7 @@ import {
   moveToParagraphEnd,
   moveToPrevWord,
   selectCharacters,
-  toggleBold
+  toggle_bold
 } from "../keyboard-shortcuts";
 import { assertSelection, focusEditor, initialize } from "../utils";
 
@@ -434,14 +434,14 @@ test.describe("keyboard navigation", () => {
     // Select `de` and make it bold
     await moveToPrevWord(page);
     await selectCharacters(page, "right", 2);
-    await toggleBold(page);
+    await toggle_bold(page);
 
     // Select `ab` and make it bold
     await moveToPrevWord(page);
     await moveToPrevWord(page);
     await moveToPrevWord(page);
     await selectCharacters(page, "right", 2);
-    await toggleBold(page);
+    await toggle_bold(page);
     await moveToLineEnd(page);
 
     await assertSelection(page, {

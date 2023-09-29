@@ -1,6 +1,5 @@
 @use "breakpoints";
 
-/* Base styles */
 .image {
   display: block;
   position: relative;
@@ -88,7 +87,6 @@
 
 /* Image container */
 .container {
-  /* Layout other than fit */
   &:not([data-layout="fit"]) {
     position: absolute;
     top: 0;
@@ -102,12 +100,10 @@
     }
   }
 
-  /* Image items container */
   & .items-container {
     cursor: default;
   }
 
-  /* Editable */
   &.editable {
     &:not(.focused) {
       & .items-container {
@@ -126,7 +122,6 @@
 
     /* Fit layout */
     &[data-layout="fit"] {
-      /* Hover and focused state */
       &:hover,
       &.focused {
         outline: 1.5px solid var(--inverted-400);
@@ -139,24 +134,20 @@
 }
 
 .x {
-  /* Image item */
   &.item {
     width: 100%;
   }
 
-  /* Button */
   &.button {
     border-radius: 0;
   }
 
-  /* Image item remove button */
   &.remove-button {
     position: absolute;
     top: 8px;
     right: 8px;
   }
 
-  /* Popover */
   &.popover {
     border: none;
     box-shadow: var(--ridge-xs);

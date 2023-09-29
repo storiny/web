@@ -49,12 +49,12 @@ const SettingsTab = (): React.ReactElement => (
       <FormCheckbox
         inverted
         label={"Show table of contents for this story"}
-        name={"disable-toc"}
+        name={"disable_toc"}
       />
       <FormCheckbox
         inverted
         label={"Allow everyone to comment on this story"}
-        name={"disable-comments"}
+        name={"disable_comments"}
       />
       <FormCheckbox
         form_slot_props={{
@@ -65,6 +65,7 @@ const SettingsTab = (): React.ReactElement => (
           },
           helper_text: {
             style: {
+              // eslint-disable-next-line prefer-snakecase/prefer-snakecase
               paddingLeft: "24px"
             }
           }
@@ -79,7 +80,7 @@ const SettingsTab = (): React.ReactElement => (
         }
         inverted
         label={"Allow everyone to read the past versions of this story"}
-        name={"disable-public-revision-history"}
+        name={"disable_public_revision_history"}
       />
     </div>
   </React.Fragment>

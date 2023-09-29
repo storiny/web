@@ -7,15 +7,15 @@ import IconButton from "../../../../../../ui/src/components/icon-button";
 import Popover from "../../../../../../ui/src/components/popover";
 import Spinner from "../../../../../../ui/src/components/spinner";
 import Typography from "../../../../../../ui/src/components/typography";
-import MusicIcon from "~/icons/Music";
+import MusicIcon from "../../../../../../ui/src/icons/music";
 
-import navbarStyles from "../navbar.module.scss";
+import navbar_styles from "../navbar.module.scss";
 import styles from "./music-item.module.scss";
 
 const MusicItemContent = dynamic(() => import("./content"), {
   ssr: false,
-  loading: ({ isLoading, error, retry }) =>
-    error && !isLoading ? (
+  loading: ({ isLoading: is_loading, error, retry }) =>
+    error && !is_loading ? (
       <React.Fragment>
         <Typography className={"t-minor"} level={"body2"}>
           Unable to load the player
@@ -49,7 +49,7 @@ const MusicItem = ({
       // TODO: Add tooltip once `data-state` clash resolves
       <IconButton
         aria-label={"Music"}
-        className={clsx("focus-invert", navbarStyles.x, navbarStyles.button)}
+        className={clsx("focus-invert", navbar_styles.x, navbar_styles.button)}
         disabled={disabled}
         size={"lg"}
         title={"Music"}

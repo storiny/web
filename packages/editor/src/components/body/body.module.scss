@@ -1,7 +1,6 @@
 @use "breakpoints";
 
 .x {
-  /* Base styles */
   &.body {
     position: relative;
     width: 680px;
@@ -10,7 +9,6 @@
     max-width: 100%;
     margin-inline: auto;
 
-    /* Read-only */
     &.read-only {
       padding: 32px 28px;
 
@@ -23,7 +21,6 @@
       }
     }
 
-    /* Horizontal rule node */
     & hr {
       display: block;
       position: relative;

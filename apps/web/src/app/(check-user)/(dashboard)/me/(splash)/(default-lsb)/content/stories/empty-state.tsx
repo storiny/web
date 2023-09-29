@@ -1,8 +1,8 @@
 import React from "react";
 
 import CustomState from "../../../../../../../../../../../packages/ui/src/entities/custom-state";
-import StoryIcon from "~/icons/Story";
-import TrashIcon from "~/icons/Trash";
+import StoryIcon from "../../../../../../../../../../../packages/ui/src/icons/story";
+import TrashIcon from "../../../../../../../../../../../packages/ui/src/icons/trash";
 
 import { StoriesTabValue } from "./client";
 

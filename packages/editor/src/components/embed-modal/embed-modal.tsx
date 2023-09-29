@@ -1,5 +1,5 @@
 import { clsx } from "clsx";
-import { compressToEncodedURIComponent } from "lz-string";
+import { compressToEncodedURIComponent as compress_to_encoded_uri_component } from "lz-string";
 import React from "react";
 
 import Form, {
@@ -17,12 +17,12 @@ import {
 import Spacer from "../../../../ui/src/components/spacer";
 import Typography from "../../../../ui/src/components/typography";
 import { use_media_query } from "../../../../ui/src/hooks/use-media-query";
-import EmbedIcon from "~/icons/Embed";
+import EmbedIcon from "../../../../ui/src/icons/embed";
 import { BREAKPOINTS } from "~/theme/breakpoints";
 
-import { useInsertEmbed } from "../../hooks/use-insert-embed";
+import { use_insert_embed } from "../../hooks/use-insert-embed";
 import { EmbedModalProps } from "./embed-modal.props";
-import { EmbedSchema, embedSchema } from "./schema";
+import { EmbedSchema, EMBED_SCHEMA } from "./schema";
 
 const EmbedModalContent = (): React.ReactElement => (
   <React.Fragment>
@@ -60,25 +60,25 @@ const EmbedModal = ({
   modal
 }: EmbedModalProps): React.ReactElement => {
   const is_smaller_than_mobile = use_media_query(BREAKPOINTS.down("mobile"));
-  const [open, setOpen] = React.useState<boolean>(false);
-  const [insertEmbed] = useInsertEmbed();
+  const [open, set_open] = React.useState<boolean>(false);
+  const [insert_embed] = use_insert_embed();
   const form = use_form<EmbedSchema>({
-    resolver: zod_resolver(embedSchema),
+    resolver: zod_resolver(EMBED_SCHEMA),
     defaultValues: {
       url: ""
     }
   });
 
-  const handleSubmit: SubmitHandler<EmbedSchema> = ({ url }) => {
-    insertEmbed({ url: compressToEncodedURIComponent(url) });
-    setOpen(false);
+  const handle_submit: SubmitHandler<EmbedSchema> = ({ url }) => {
+    insert_embed({ url: compress_to_encoded_uri_component(url) });
+    set_open(false);
   };
 
   const [element] = use_modal(
     trigger,
     <Form<EmbedSchema>
       className={clsx("flex-col")}
-      on_submit={handleSubmit}
+      on_submit={handle_submit}
       provider_props={form}
     >
       <EmbedModalContent />
@@ -86,9 +86,10 @@ const EmbedModal = ({
     {
       modal,
       open,
-      onOpenChange: (newOpen: boolean) => {
+      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+      onOpenChange: (next_open: boolean) => {
         form.reset();
-        setOpen(newOpen);
+        set_open(next_open);
       },
       fullscreen: is_smaller_than_mobile,
       footer: (

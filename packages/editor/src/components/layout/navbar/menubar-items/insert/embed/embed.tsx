@@ -1,7 +1,7 @@
 import React from "react";
 
 import MenubarItem from "../../../../../../../../ui/src/components/menubar-item";
-import EmbedIcon from "~/icons/Embed";
+import EmbedIcon from "../../../../../../../../ui/src/icons/embed";
 
 import EmbedModal from "../../../../../embed-modal";
 

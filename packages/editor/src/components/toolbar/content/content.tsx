@@ -10,11 +10,11 @@ import IconButton from "../../../../../ui/src/components/icon-button";
 import ScrollArea from "../../../../../ui/src/components/scroll-area";
 import Tooltip from "../../../../../ui/src/components/tooltip";
 import { use_media_query } from "../../../../../ui/src/hooks/use-media-query";
-import SidebarExpandIcon from "~/icons/SidebarExpand";
+import SidebarExpandIcon from "../../../../../ui/src/icons/sidebar-expand";
 import { BREAKPOINTS } from "~/theme/breakpoints";
 
-import { sidebarsCollapsedAtom } from "../../../atoms";
-import toolbarStyles from "../toolbar.module.scss";
+import { sidebars_collapsed_atom } from "../../../atoms";
+import toolbar_styles from "../toolbar.module.scss";
 import ToolbarAlignmentItem from "./alignment";
 import styles from "./content.module.scss";
 import ToolbarHistoryItem from "./history";
@@ -24,7 +24,7 @@ import ToolbarTextStyleItem from "./text-style";
 const SuspendedEditorToolbarContent = (): React.ReactElement => {
   const is_smaller_than_mobile = use_media_query(BREAKPOINTS.down("mobile"));
   const is_smaller_than_desktop = use_media_query(BREAKPOINTS.down("desktop"));
-  const setSidebarsCollapsed = use_set_atom(sidebarsCollapsedAtom);
+  const setSidebarsCollapsed = use_set_atom(sidebars_collapsed_atom);
 
   return (
     <ScrollArea
@@ -47,8 +47,8 @@ const SuspendedEditorToolbarContent = (): React.ReactElement => {
             <IconButton
               className={clsx(
                 "focus-invert",
-                toolbarStyles.x,
-                toolbarStyles.button
+                toolbar_styles.x,
+                toolbar_styles.button
               )}
               onClick={(): void => setSidebarsCollapsed(false)}
               size={"lg"}

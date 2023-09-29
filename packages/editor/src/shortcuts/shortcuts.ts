@@ -1,132 +1,132 @@
 "use client";
 
-import { getShortcutSlug } from "@storiny/shared/src/utils/get-shortcut-slug";
-import { useSetAtom } from "jotai";
-import { Options, useHotkeys } from "react-hotkeys-hook";
+import { get_shortcut_slug } from "@storiny/shared/src/utils/get-shortcut-slug";
+import { useSetAtom as use_set_atom } from "jotai";
+import { Options, useHotkeys as use_hot_keys } from "react-hotkeys-hook";
 
-import { sidebarsCollapsedAtom } from "../atoms";
+import { sidebars_collapsed_atom } from "../atoms";
 import { Alignment } from "../constants";
 import { EDITOR_SHORTCUTS } from "../constants/shortcuts";
-import { useAlignment } from "../hooks/use-alignment";
-import { useCode } from "../hooks/use-code";
-import { useIndentation } from "../hooks/use-indentation";
-import { useLink } from "../hooks/use-link";
-import { useStrikethrough } from "../hooks/use-strikethrough";
-import { useSubscript } from "../hooks/use-subscript";
-import { useSuperscript } from "../hooks/use-superscript";
-import { useTextStyle } from "../hooks/use-text-style";
+import { use_alignment } from "../hooks/use-alignment";
+import { use_code } from "../hooks/use-code";
+import { use_indentation } from "../hooks/use-indentation";
+import { use_link } from "../hooks/use-link";
+import { use_strikethrough } from "../hooks/use-strikethrough";
+import { use_subscript } from "../hooks/use-subscript";
+import { use_superscript } from "../hooks/use-superscript";
+import { use_text_style } from "../hooks/use-text-style";
 
-const hotkeysOptions: Options = {
+const HOTKEYS_OPTIONS: Options = {
   preventDefault: true,
   enableOnContentEditable: true
 };
 
 // Sidebars (export this function as this will be present irrespective of whether the editor is in read-only mode)
 
-export const useSidebarsShortcut = (): void => {
-  const setCollapsed = use_set_atom(sidebarsCollapsedAtom);
-  useHotkeys(
-    getShortcutSlug(EDITOR_SHORTCUTS.sidebars),
-    () => setCollapsed((prev) => !prev),
-    hotkeysOptions
+export const use_sidebars_shortcut = (): void => {
+  const set_collapsed = use_set_atom(sidebars_collapsed_atom);
+  use_hot_keys(
+    get_shortcut_slug(EDITOR_SHORTCUTS.sidebars),
+    () => set_collapsed((prev) => !prev),
+    HOTKEYS_OPTIONS
   );
 };
 
 // Alignment
 
-const useAlignmentShortcut = (): void => {
-  const [, setAlignment] = useAlignment();
+const use_alignment_shortcut = (): void => {
+  const [, set_alignment] = use_alignment();
 
-  useHotkeys(
+  use_hot_keys(
     [
-      EDITOR_SHORTCUTS.leftAlign,
-      EDITOR_SHORTCUTS.centerAlign,
-      EDITOR_SHORTCUTS.rightAlign,
-      EDITOR_SHORTCUTS.justifyAlign
+      EDITOR_SHORTCUTS.left_align,
+      EDITOR_SHORTCUTS.center_align,
+      EDITOR_SHORTCUTS.right_align,
+      EDITOR_SHORTCUTS.justify_align
     ]
-      .map(getShortcutSlug)
+      .map(get_shortcut_slug)
       .join(","),
-    (_, hotkeysEvent) => {
-      if (hotkeysEvent.keys) {
-        switch (hotkeysEvent.keys[0]) {
-          case EDITOR_SHORTCUTS.leftAlign.key:
-            setAlignment(Alignment.LEFT);
+    (_, hotkeys_event) => {
+      if (hotkeys_event.keys) {
+        switch (hotkeys_event.keys[0]) {
+          case EDITOR_SHORTCUTS.left_align.key:
+            set_alignment(Alignment.LEFT);
             break;
-          case EDITOR_SHORTCUTS.centerAlign.key:
-            setAlignment(Alignment.CENTER);
+          case EDITOR_SHORTCUTS.center_align.key:
+            set_alignment(Alignment.CENTER);
             break;
-          case EDITOR_SHORTCUTS.rightAlign.key:
-            setAlignment(Alignment.RIGHT);
+          case EDITOR_SHORTCUTS.right_align.key:
+            set_alignment(Alignment.RIGHT);
             break;
-          case EDITOR_SHORTCUTS.justifyAlign.key:
-            setAlignment(Alignment.JUSTIFY);
+          case EDITOR_SHORTCUTS.justify_align.key:
+            set_alignment(Alignment.JUSTIFY);
             break;
         }
       }
     },
-    hotkeysOptions
+    HOTKEYS_OPTIONS
   );
 };
 
 // Text node
 
-const useTextNodeShortcut = (): void => {
+const use_text_node_shortcut = (): void => {
   const {
-    formatParagraph,
-    formatHeading,
-    formatBulletedList,
-    formatNumberedList,
-    formatQuote
-  } = useTextStyle();
+    format_paragraph,
+    format_heading,
+    format_bulleted_list,
+    format_numbered_list,
+    format_quote
+  } = use_text_style();
 
-  useHotkeys(
+  use_hot_keys(
     [
       EDITOR_SHORTCUTS.paragraph,
       EDITOR_SHORTCUTS.heading,
       EDITOR_SHORTCUTS.subheading,
-      EDITOR_SHORTCUTS.numberedList,
-      EDITOR_SHORTCUTS.bulletedList,
+      EDITOR_SHORTCUTS.numbered_list,
+      EDITOR_SHORTCUTS.bulleted_list,
       EDITOR_SHORTCUTS.quote
     ]
-      .map(getShortcutSlug)
+      .map(get_shortcut_slug)
       .join(","),
-    (_, hotkeysEvent) => {
-      if (hotkeysEvent.keys) {
-        switch (hotkeysEvent.keys[0]) {
+    (_, hotkeys_event) => {
+      if (hotkeys_event.keys) {
+        switch (hotkeys_event.keys[0]) {
           case EDITOR_SHORTCUTS.paragraph.key:
-            formatParagraph();
+            format_paragraph();
             break;
           case EDITOR_SHORTCUTS.heading.key:
           case EDITOR_SHORTCUTS.subheading.key:
-            formatHeading(hotkeysEvent.shift ? "h3" : "h2");
+            format_heading(hotkeys_event.shift ? "h3" : "h2");
             break;
-          case EDITOR_SHORTCUTS.bulletedList.key:
-            formatBulletedList();
+          case EDITOR_SHORTCUTS.bulleted_list.key:
+            format_bulleted_list();
             break;
-          case EDITOR_SHORTCUTS.numberedList.key:
-            formatNumberedList();
+          case EDITOR_SHORTCUTS.numbered_list.key:
+            format_numbered_list();
             break;
           case EDITOR_SHORTCUTS.quote.key:
-            formatQuote();
+            format_quote();
             break;
         }
       }
     },
-    hotkeysOptions
+    HOTKEYS_OPTIONS
   );
 };
 
 // Text style
 
-const useTextStyleShortcut = (): void => {
+const use_text_style_shortcut = (): void => {
   // Lexical handles bold, italic, and underline styles internally
-  const [, toggleStrikethrough] = useStrikethrough();
-  const [, toggleCode] = useCode();
-  const [, insertLink] = useLink();
-  const [, toggleSubscript] = useSubscript();
-  const [, toggleSuperscript] = useSuperscript();
+  const [, toggle_strikethrough] = use_strikethrough();
+  const [, toggle_code] = use_code();
+  const [, insert_link] = use_link();
+  const [, toggle_subscript] = use_subscript();
+  const [, toggle_superscript] = use_superscript();
 
-  useHotkeys(
+  use_hot_keys(
     [
       EDITOR_SHORTCUTS.strikethrough,
       EDITOR_SHORTCUTS.code,
@@ -134,44 +134,44 @@ const useTextStyleShortcut = (): void => {
       EDITOR_SHORTCUTS.subscript,
       EDITOR_SHORTCUTS.superscript
     ]
-      .map(getShortcutSlug)
+      .map(get_shortcut_slug)
       .join(","),
-    (_, hotkeysEvent) => {
-      if (hotkeysEvent.keys) {
-        switch (hotkeysEvent.keys[0]) {
+    (_, hotkeys_event) => {
+      if (hotkeys_event.keys) {
+        switch (hotkeys_event.keys[0]) {
           case EDITOR_SHORTCUTS.strikethrough.key:
-            toggleStrikethrough();
+            toggle_strikethrough();
             break;
           case EDITOR_SHORTCUTS.code.key:
-            toggleCode();
+            toggle_code();
             break;
           case EDITOR_SHORTCUTS.link.key:
-            insertLink();
+            insert_link();
             break;
           case EDITOR_SHORTCUTS.subscript.key:
-            toggleSubscript();
+            toggle_subscript();
             break;
           case EDITOR_SHORTCUTS.superscript.key:
-            toggleSuperscript();
+            toggle_superscript();
             break;
         }
       }
     },
-    hotkeysOptions
+    HOTKEYS_OPTIONS
   );
 };
 
 // Text indentation
 
-const useIndentationShortcut = (): void => {
-  const { indent, outdent } = useIndentation();
-  useHotkeys(
+const use_indentation_shortcut = (): void => {
+  const { indent, outdent } = use_indentation();
+  use_hot_keys(
     [EDITOR_SHORTCUTS.indent, EDITOR_SHORTCUTS.outdent]
-      .map(getShortcutSlug)
+      .map(get_shortcut_slug)
       .join(","),
-    (_, hotkeysEvent) => {
-      if (hotkeysEvent.keys) {
-        switch (hotkeysEvent.keys[0]) {
+    (_, hotkeys_event) => {
+      if (hotkeys_event.keys) {
+        switch (hotkeys_event.keys[0]) {
           case EDITOR_SHORTCUTS.indent.key:
             indent();
             break;
@@ -181,15 +181,15 @@ const useIndentationShortcut = (): void => {
         }
       }
     },
-    hotkeysOptions
+    HOTKEYS_OPTIONS
   );
 };
 
 const EditorShortcuts = (): null => {
-  useAlignmentShortcut();
-  useTextNodeShortcut();
-  useTextStyleShortcut();
-  useIndentationShortcut();
+  use_alignment_shortcut();
+  use_text_node_shortcut();
+  use_text_style_shortcut();
+  use_indentation_shortcut();
 
   return null;
 };

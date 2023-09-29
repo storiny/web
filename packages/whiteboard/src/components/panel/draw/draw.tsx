@@ -1,14 +1,13 @@
 "use client";
 
-import { useAtomValue } from "jotai";
+import { useAtomValue as use_atom_value } from "jotai";
 import React from "react";
 
 import Divider from "../../../../../ui/src/components/divider";
 import Spacer from "../../../../../ui/src/components/spacer";
-
-import { isPenModeAtom } from "../../../atoms";
+import { is_pen_mode_atom } from "../../../atoms";
 import { LayerType } from "../../../constants";
-import { useActiveObject, useCanvas } from "../../../hooks";
+import { use_active_object, use_canvas } from "../../../hooks";
 import Alignment from "./items/alignment";
 import Dimensions from "./items/dimensions";
 import Fill from "./items/fill";
@@ -40,13 +39,13 @@ const PenTools = ({
         <Position />
         <Dimensions />
         <Skew />
-        <ObjectProps disableCornerRadius />
+        <ObjectProps disable_corner_radius />
         <SpacerWithDivider />
       </React.Fragment>
     )}
     <PenProps />
     <SpacerWithDivider />
-    <Shadow isPen />
+    <Shadow is_pen />
     <Spacer orientation={"vertical"} size={2} />
     <Divider />
   </React.Fragment>
@@ -56,7 +55,9 @@ const PenTools = ({
  * Returns tools for active object
  * @param type Active object type
  */
-const getActiveObjectTools = (type: LayerType): React.ReactElement | null => {
+const get_active_object_tools = (
+  type: LayerType
+): React.ReactElement | null => {
   switch (type) {
     case LayerType.RECTANGLE:
     case LayerType.DIAMOND:
@@ -106,11 +107,11 @@ const getActiveObjectTools = (type: LayerType): React.ReactElement | null => {
           <Position />
           <Dimensions />
           <Skew />
-          <ObjectProps disableCornerRadius />
+          <ObjectProps disable_corner_radius />
           <SpacerWithDivider />
-          <LayerProps disableRoughness />
+          <LayerProps disable_roughness />
           <SpacerWithDivider />
-          <Stroke disableStrokeStyle />
+          <Stroke disable_stroke_style />
           <SpacerWithDivider />
           <Shadow />
           <Spacer orientation={"vertical"} size={2} />
@@ -123,17 +124,17 @@ const getActiveObjectTools = (type: LayerType): React.ReactElement | null => {
 };
 
 const DrawTools = (): React.ReactElement | null => {
-  const canvas = useCanvas();
-  const activeObject = useActiveObject();
-  const isPenMode = use_atom_value(isPenModeAtom);
+  const canvas = use_canvas();
+  const active_object = use_active_object();
+  const is_pen_mode = use_atom_value(is_pen_mode_atom);
 
   return (
     <React.Fragment>
       <Alignment />
-      {canvas.current?.isDrawingMode || isPenMode ? (
+      {canvas.current?.isDrawingMode || is_pen_mode ? (
         <PenTools isDrawing={true} />
-      ) : activeObject ? (
-        getActiveObjectTools(activeObject.get("_type"))
+      ) : active_object ? (
+        get_active_object_tools(active_object.get("_type"))
       ) : null}
       <Spacer orientation={"vertical"} size={2} />
     </React.Fragment>

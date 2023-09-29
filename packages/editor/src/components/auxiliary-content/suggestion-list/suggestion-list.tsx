@@ -1,6 +1,6 @@
 "use client";
 
-import { useAtomValue } from "jotai";
+import { useAtomValue as use_atom_value } from "jotai";
 import dynamic from "next/dynamic";
 import React from "react";
 
@@ -12,20 +12,26 @@ import {
   use_get_story_recommendations_query
 } from "~/redux/features";
 
-import { storyMetadataAtom } from "../../../atoms";
+import { story_metadata_atom } from "../../../atoms";
 
 const EmptyState = dynamic(() => import("./empty-state"), {
   loading: dynamicLoader()
 });
 
 const EditorAuxiliaryContentSuggestionList = (): React.ReactElement => {
-  const story = use_atom_value(storyMetadataAtom);
+  const story = use_atom_value(story_metadata_atom);
   const [page, set_page] = React.useState<number>(1);
-  const { data, isLoading, isFetching, isError, error, refetch } =
-    use_get_story_recommendations_query({
-      page,
-      storyId: story.id
-    });
+  const {
+    data,
+    isLoading: is_loading,
+    is_fetching,
+    isError: is_error,
+    error,
+    refetch
+  } = use_get_story_recommendations_query({
+    page,
+    story_id: story.id
+  });
   const { items = [], has_more } = data || {};
   const load_more = React.useCallback(
     () => set_page((prev_state) => prev_state + 1),
@@ -34,18 +40,18 @@ const EditorAuxiliaryContentSuggestionList = (): React.ReactElement => {
 
   return (
     <React.Fragment>
-      {isError ? (
+      {is_error ? (
         <ErrorState
           auto_size
           component_props={{
-            button: { loading: isFetching }
+            button: { loading: is_fetching }
           }}
           retry={refetch}
           type={get_query_error_type(error)}
         />
-      ) : !isFetching && !items.length ? (
+      ) : !is_fetching && !items.length ? (
         <EmptyState />
-      ) : isLoading || (isFetching && page === 1) ? (
+      ) : is_loading || (is_fetching && page === 1) ? (
         <StoryListSkeleton />
       ) : (
         <VirtualizedStoryList

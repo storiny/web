@@ -1,9 +1,9 @@
-import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { mergeRegister } from "@lexical/utils";
+import { useLexicalComposerContext as use_lexical_composer_context } from "@lexical/react/LexicalComposerContext";
+import { mergeRegister as merge_register } from "@lexical/utils";
 import {
-  $createTextNode,
-  $getNodeByKey,
-  $isParagraphNode,
+  $createTextNode as $create_text_node,
+  $getNodeByKey as $get_node_by_key,
+  $isParagraphNode as $is_paragraph_node,
   LexicalEditor,
   NodeKey,
   ParagraphNode,
@@ -11,7 +11,7 @@ import {
 } from "lexical";
 import React from "react";
 
-import { $createTKNode, $isTKNode, TKNode } from "../../nodes/tk";
+import { $create_tk_node, $is_tk_node, TKNode } from "../../nodes/tk";
 import styles from "./tk.module.scss";
 
 type ParagraphNodeKey = NodeKey;
@@ -20,30 +20,30 @@ type TKNodeKey = NodeKey;
 const TK_TOKEN_REGEX = /(?:\s|^)TK(?:[^a-zA-Z0-9]|$)/g; // Allow punctuations at the end
 
 // Keeps the record of all the TK nodes insde the individual paragraph nodes
-const paragraphTkMap = new Map<ParagraphNodeKey, Set<TKNodeKey>>();
+const PARAGRAPH_TK_MAP = new Map<ParagraphNodeKey, Set<TKNodeKey>>();
 
 /**
  * Adds a TK node to the paragraph-TK map
  * @param editor Editor
- * @param paragraphKey Parent paragraph key
- * @param tkNodeKey TK node key
+ * @param paragraph_key Parent paragraph key
+ * @param tk_node_key TK node key
  */
-const $addTkNodeToMap = (
+const $add_tk_node_to_map = (
   editor: LexicalEditor,
-  paragraphKey: ParagraphNodeKey,
-  tkNodeKey: TKNodeKey
+  paragraph_key: ParagraphNodeKey,
+  tk_node_key: TKNodeKey
 ): void => {
-  const paragraphMap = paragraphTkMap.get(paragraphKey);
+  const paragraph_map = PARAGRAPH_TK_MAP.get(paragraph_key);
 
-  if (paragraphMap) {
-    paragraphMap.add(tkNodeKey);
+  if (paragraph_map) {
+    paragraph_map.add(tk_node_key);
   } else {
-    paragraphTkMap.set(paragraphKey, new Set([tkNodeKey]));
+    PARAGRAPH_TK_MAP.set(paragraph_key, new Set([tk_node_key]));
   }
 
   editor.getEditorState().read(() => {
-    if ($isParagraphNode($getNodeByKey(paragraphKey))) {
-      const element = editor.getElementByKey(paragraphKey);
+    if ($is_paragraph_node($get_node_by_key(paragraph_key))) {
+      const element = editor.getElementByKey(paragraph_key);
 
       if (element && !element.classList.contains(styles.tk)) {
         element.setAttribute("data-tk-parent", "true");
@@ -56,28 +56,28 @@ const $addTkNodeToMap = (
 /**
  * Removes a TK node from the paragraph-TK map
  * @param editor Editor
- * @param tkNode TK node
- * @param paragraphKey Paragraph key that overrides parent key
+ * @param tk_node TK node
+ * @param paragraph_key Paragraph key that overrides parent key
  */
-const $removeTkNodeFromMap = (
+const $remove_tk_node_from_map = (
   editor: LexicalEditor,
-  tkNode: TKNode,
-  paragraphKey?: NodeKey
+  tk_node: TKNode,
+  paragraph_key?: NodeKey
 ): void => {
-  const parentNode = tkNode.getParent();
+  const parent_node = tk_node.getParent();
 
-  if (parentNode) {
-    const parentNodeKey = paragraphKey ?? parentNode.getKey();
-    const paragraphMap = paragraphTkMap.get(parentNodeKey);
+  if (parent_node) {
+    const parent_node_key = paragraph_key ?? parent_node.getKey();
+    const paragraph_map = PARAGRAPH_TK_MAP.get(parent_node_key);
 
-    if (paragraphMap) {
-      paragraphMap.delete(tkNode.getKey());
+    if (paragraph_map) {
+      paragraph_map.delete(tk_node.getKey());
 
-      if (!paragraphMap.size) {
-        paragraphTkMap.delete(parentNodeKey);
+      if (!paragraph_map.size) {
+        PARAGRAPH_TK_MAP.delete(parent_node_key);
 
-        if ($isParagraphNode(parentNode)) {
-          const element = editor.getElementByKey(parentNodeKey);
+        if ($is_paragraph_node(parent_node)) {
+          const element = editor.getElementByKey(parent_node_key);
 
           if (element) {
             element.removeAttribute("data-tk-parent");
@@ -93,57 +93,57 @@ const $removeTkNodeFromMap = (
  * Text to TK node transformer
  * @param node Text node
  */
-const tkTransform = (node: TextNode): void => {
-  if ($isParagraphNode(node.getParent())) {
-    const textContent = node.getTextContent();
+const tk_transform = (node: TextNode): void => {
+  if ($is_paragraph_node(node.getParent())) {
+    const text_content = node.getTextContent();
 
-    if (TK_TOKEN_REGEX.test(textContent)) {
-      const index = textContent.indexOf("TK");
-      let targetNode: TKNode;
+    if (TK_TOKEN_REGEX.test(text_content)) {
+      const index = text_content.indexOf("TK");
+      let target_node: TKNode;
 
       if (index === 0) {
-        [targetNode] = node.splitText(index + 2);
+        [target_node] = node.splitText(index + 2);
       } else {
-        [, targetNode] = node.splitText(index, index + 3);
+        [, target_node] = node.splitText(index, index + 3);
       }
 
-      if (targetNode) {
+      if (target_node) {
         // Handle punctuation at the end
-        if (targetNode.getTextContent().trim().length === 3) {
-          [targetNode] = targetNode.splitText(2);
+        if (target_node.getTextContent().trim().length === 3) {
+          [target_node] = target_node.splitText(2);
         }
 
-        targetNode.replace($createTKNode());
+        target_node.replace($create_tk_node());
       }
     }
   }
 };
 
 const TKPlugin = (): null => {
-  const [editor] = useLexicalComposerContext();
+  const [editor] = use_lexical_composer_context();
 
   React.useEffect(
     () =>
-      mergeRegister(
-        editor.registerNodeTransform<TextNode>(TextNode, tkTransform),
+      merge_register(
+        editor.registerNodeTransform<TextNode>(TextNode, tk_transform),
         // Handle TK node mutations
         editor.registerMutationListener(
           TKNode,
-          (nodes, { prevEditorState }) => {
-            for (const [nodeKey, mutation] of nodes) {
+          (nodes, { prevEditorState: prev_editor_state }) => {
+            for (const [node_key, mutation] of nodes) {
               if (mutation === "created") {
                 editor.getEditorState().read(() => {
-                  const tkNode = $getNodeByKey<TKNode>(nodeKey);
+                  const tk_node = $get_node_by_key<TKNode>(node_key);
 
-                  if (tkNode) {
-                    const paragraphNode = tkNode.getParent();
+                  if (tk_node) {
+                    const paragraph_node = tk_node.getParent();
 
-                    if (paragraphNode) {
-                      if ($isParagraphNode(paragraphNode)) {
-                        $addTkNodeToMap(
+                    if (paragraph_node) {
+                      if ($is_paragraph_node(paragraphNode)) {
+                        $add_tk_node_to_map(
                           editor,
-                          paragraphNode.getKey(),
-                          tkNode.getKey()
+                          paragraph_node.getKey(),
+                          tk_node.getKey()
                         );
                       }
                     }
@@ -151,40 +151,44 @@ const TKPlugin = (): null => {
                 });
               } else if (mutation === "updated") {
                 editor.getEditorState().read(() => {
-                  const tkNode = $getNodeByKey<TKNode>(nodeKey);
+                  const tk_node = $get_node_by_key<TKNode>(node_key);
 
-                  if (tkNode) {
-                    const tkNodeKey = tkNode.getKey();
-                    const paragraphNode = tkNode.getParent();
+                  if (tk_node) {
+                    const tk_node_key = tk_node.getKey();
+                    const paragraph_node = tk_node.getParent();
 
-                    if ($isParagraphNode(paragraphNode)) {
-                      const paragraphKey = paragraphNode.getKey();
+                    if ($is_paragraph_node(paragraph_node)) {
+                      const paragraph_key = paragraph_node.getKey();
 
-                      // TK nodes can move under a different parent paragraph node, so when
-                      // they get updated, clean all the previous paragraph node sets that
-                      // include this TK node.
+                      // TK nodes can move under a different parent paragraph node,
+                      // so when they get updated, clean all the previous paragraph
+                      // node sets that include this TK node.
                       for (const [
-                        paragraphNodeKey,
-                        paragraphNodeSet
-                      ] of paragraphTkMap.entries()) {
+                        paragraph_node_key,
+                        paragraph_mode_set
+                      ] of PARAGRAPH_TK_MAP.entries()) {
                         if (
-                          paragraphNodeKey !== paragraphKey &&
-                          paragraphNodeSet.has(tkNodeKey)
+                          paragraph_node_key !== paragraph_key &&
+                          paragraph_mode_set.has(tk_node_key)
                         ) {
-                          $removeTkNodeFromMap(
+                          $remove_tk_node_from_map(
                             editor,
-                            tkNode,
-                            paragraphNodeKey
+                            tk_node,
+                            paragraph_node_key
                           );
                         }
                       }
 
-                      $addTkNodeToMap(editor, paragraphKey, tkNode.getKey());
+                      $add_tk_node_to_map(
+                        editor,
+                        paragraph_key,
+                        tk_node.getKey()
+                      );
                     } else {
-                      $removeTkNodeFromMap(editor, tkNode);
+                      $remove_tk_node_from_map(editor, tk_node);
                       editor.update(
                         () => {
-                          tkNode.replace($createTextNode("TK"));
+                          tk_node.replace($create_text_node("TK"));
                         },
                         { tag: "history-merge" }
                       );
@@ -192,13 +196,13 @@ const TKPlugin = (): null => {
                   }
                 });
               } else if (mutation === "destroyed") {
-                prevEditorState.read(() => {
-                  const tkNode = $getNodeByKey<TKNode>(
-                    nodeKey,
-                    prevEditorState
+                prev_editor_state.read(() => {
+                  const tk_node = $get_node_by_key<TKNode>(
+                    node_key,
+                    prev_editor_state
                   );
-                  if (tkNode) {
-                    $removeTkNodeFromMap(editor, tkNode);
+                  if (tk_node) {
+                    $remove_tk_node_from_map(editor, tk_node);
                   }
                 });
               }
@@ -209,19 +213,19 @@ const TKPlugin = (): null => {
         // something else (for example, a heading node)
         editor.registerMutationListener(
           ParagraphNode,
-          (nodes, { dirtyLeaves }) => {
+          (nodes, { dirtyLeaves: dirty_leaves }) => {
             for (const [, mutation] of nodes) {
               if (mutation === "destroyed") {
                 editor.update(
                   () => {
-                    for (const key of dirtyLeaves) {
-                      const node = $getNodeByKey(key);
+                    for (const key of dirty_leaves) {
+                      const node = $get_node_by_key(key);
 
                       if (
-                        $isTKNode(node) &&
-                        !$isParagraphNode(node.getParent())
+                        $is_tk_node(node) &&
+                        !$is_paragraph_node(node.getParent())
                       ) {
-                        node.replace($createTextNode("TK"));
+                        node.replace($create_text_node("TK"));
                       }
                     }
                   },

@@ -1,6 +1,6 @@
 import {
-  $getNodeByKey,
-  $isLineBreakNode,
+  $getNodeByKey as $get_node_by_key,
+  $isLineBreakNode as $is_line_break_node,
   LineBreakNode,
   NodeKey
 } from "lexical";
@@ -27,71 +27,71 @@ export class CollabLineBreakNode {
   /**
    * YMap
    */
-  _map: YMap<unknown>;
+  public _map: YMap<unknown>;
   /**
    * Node key
    */
-  _key: NodeKey;
+  public _key: NodeKey;
   /**
    * Parent node
    */
-  _parent: CollabElementNode;
+  public _parent: CollabElementNode;
   /**
    * Type of the node
    */
-  _type: typeof TYPE;
+  private readonly _type: typeof TYPE;
 
   /**
    * Returns the node
    */
-  getNode(): null | LineBreakNode {
-    const node = $getNodeByKey(this._key);
-    return $isLineBreakNode(node) ? node : null;
+  public get_node(): null | LineBreakNode {
+    const node = $get_node_by_key(this._key);
+    return $is_line_break_node(node) ? node : null;
   }
 
   /**
    * Returns the node key
    */
-  getKey(): NodeKey {
+  public get_key(): NodeKey {
     return this._key;
   }
 
   /**
    * Returns the shared map
    */
-  getSharedType(): YMap<unknown> {
+  public get_shared_type(): YMap<unknown> {
     return this._map;
   }
 
   /**
    * Returns the node type
    */
-  getType(): string {
+  public get_type(): string {
     return this._type;
   }
 
   /**
    * Returns the node size
    */
-  getSize(): number {
+  public get_size(): number {
     return 1;
   }
 
   /**
    * Returns the node offset
    */
-  getOffset(): number {
-    const collabElementNode = this._parent;
-    return collabElementNode.getChildOffset(this);
+  public get_offset(): number {
+    const collab_element_node = this._parent;
+    return collab_element_node.get_child_offset(this);
   }
 
   /**
    * Destroys the node
    * @param binding Binding
    */
-  destroy(binding: Binding): void {
-    const collabNodeMap = binding.collabNodeMap;
-    collabNodeMap.delete(this._key);
+  public destroy(binding: Binding): void {
+    const collab_node_map = binding.collab_node_map;
+    collab_node_map.delete(this._key);
   }
 }
 
@@ -100,12 +100,11 @@ export class CollabLineBreakNode {
  * @param map YMap
  * @param parent Parent node
  */
-export const $createCollabLineBreakNode = (
+export const $create_collab_line_break_node = (
   map: YMap<unknown>,
   parent: CollabElementNode
 ): CollabLineBreakNode => {
-  const collabNode = new CollabLineBreakNode(map, parent);
-  // @ts-expect-error: internal field
-  map._collabNode = collabNode;
-  return collabNode;
+  const collab_node = new CollabLineBreakNode(map, parent);
+  map._collab_node = collab_node;
+  return collab_node;
 };

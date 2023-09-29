@@ -14,29 +14,37 @@ import {
   UNORDERED_LIST
 } from "@lexical/markdown";
 import {
-  $createHorizontalRuleNode,
-  $isHorizontalRuleNode,
+  $createHorizontalRuleNode as $create_horizontal_rule_node,
+  $isHorizontalRuleNode as $is_horizontal_rule_node,
   HorizontalRuleNode
 } from "@lexical/react/LexicalHorizontalRuleNode";
-import { $createLineBreakNode, ElementNode, LexicalNode } from "lexical";
+import {
+  $createLineBreakNode as $create_line_break_node,
+  ElementNode,
+  LexicalNode
+} from "lexical";
 
 import {
-  $createHeadingNode,
-  $isHeadingNode,
+  $create_heading_node,
+  $is_heading_node,
   HeadingNode
 } from "../../nodes/heading";
-import { $createQuoteNode, $isQuoteNode, QuoteNode } from "../../nodes/quote";
+import {
+  $create_quote_node,
+  $is_quote_node,
+  QuoteNode
+} from "../../nodes/quote";
 
 /**
  * Creates block node
- * @param createNode Callback
+ * @param create_node Callback
  */
-const createBlockNode =
+const create_block_node =
   (
-    createNode: (match: Array<string>) => ElementNode
+    create_node: (match: Array<string>) => ElementNode
   ): ElementTransformer["replace"] =>
   (parentNode, children, match) => {
-    const node = createNode(match);
+    const node = create_node(match);
     node.append(...children);
     parentNode.replace(node);
     node.select(0, 0);
@@ -44,30 +52,31 @@ const createBlockNode =
 
 const HEADING: ElementTransformer = {
   dependencies: [HeadingNode],
-  export: (node, exportChildren) => {
-    if (!$isHeadingNode(node)) {
+  export: (node, export_children) => {
+    if (!$is_heading_node(node)) {
       return null;
     }
 
     const level = Number(node.getTag().slice(1));
-    return "#".repeat(level) + " " + exportChildren(node);
+    return "#".repeat(level) + " " + export_children(node);
   },
+  // eslint-disable-next-line prefer-snakecase/prefer-snakecase
   regExp: /^(#{1,6})\s/,
-  replace: createBlockNode((match) => {
+  replace: create_block_node((match) => {
     const tag = "h" + match[1].length;
-    return $createHeadingNode(["h1", "h2"].includes(tag) ? "h2" : "h3");
+    return $create_heading_node(["h1", "h2"].includes(tag) ? "h2" : "h3");
   }),
   type: "element"
 };
 
 const QUOTE: ElementTransformer = {
   dependencies: [QuoteNode],
-  export: (node, exportChildren) => {
-    if (!$isQuoteNode(node)) {
+  export: (node, export_children) => {
+    if (!$is_quote_node(node)) {
       return null;
     }
 
-    const lines = exportChildren(node).split("\n");
+    const lines = export_children(node).split("\n");
     const output = [];
 
     for (const line of lines) {
@@ -76,23 +85,24 @@ const QUOTE: ElementTransformer = {
 
     return output.join("\n");
   },
+  // eslint-disable-next-line prefer-snakecase/prefer-snakecase
   regExp: /^>\s/,
-  replace: (parentNode, children, _match, isImport) => {
-    if (isImport) {
-      const previousNode = parentNode.getPreviousSibling();
+  replace: (parentNode, children, _match, is_import) => {
+    if (is_import) {
+      const prev_node = parentNode.getPreviousSibling();
 
-      if ($isQuoteNode(previousNode)) {
-        previousNode.splice(previousNode.getChildrenSize(), 0, [
-          $createLineBreakNode(),
+      if ($is_quote_node(prev_node)) {
+        prev_node.splice(prev_node.getChildrenSize(), 0, [
+          $create_line_break_node(),
           ...children
         ]);
-        previousNode.select(0, 0);
+        prev_node.select(0, 0);
         parentNode.remove();
         return;
       }
     }
 
-    const node = $createQuoteNode();
+    const node = $create_quote_node();
     node.append(...children);
     parentNode.replace(node);
     node.select(0, 0);
@@ -102,13 +112,15 @@ const QUOTE: ElementTransformer = {
 
 const HR: ElementTransformer = {
   dependencies: [HorizontalRuleNode],
-  export: (node: LexicalNode) => ($isHorizontalRuleNode(node) ? "***" : null),
+  export: (node: LexicalNode) =>
+    $is_horizontal_rule_node(node) ? "***" : null,
+  // eslint-disable-next-line prefer-snakecase/prefer-snakecase
   regExp: /^(---|\*\*\*|___)\s?$/,
-  replace: (parentNode, _1, _2, isImport) => {
-    const line = $createHorizontalRuleNode();
+  replace: (parentNode, _1, _2, is_import) => {
+    const line = $create_horizontal_rule_node();
 
-    // TODO: Get rid of isImport flag
-    if (isImport || parentNode.getNextSibling() != null) {
+    // TODO: Get rid of is_import flag
+    if (is_import || parentNode.getNextSibling() != null) {
       parentNode.replace(line);
     } else {
       parentNode.insertBefore(line);

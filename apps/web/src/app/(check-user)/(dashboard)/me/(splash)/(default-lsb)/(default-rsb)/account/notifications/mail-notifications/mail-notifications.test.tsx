@@ -1,4 +1,4 @@
-import { userEvent } from "@storiny/test-utils";
+import { user_event } from "@storiny/test-utils";
 import { act, screen, waitFor } from "@testing-library/react";
 import React from "react";
 
@@ -9,7 +9,7 @@ import MailNotifications from "./mail-notifications";
 describe("<MailNotifications />", () => {
   it("submits correct form data", async () => {
     const mockSubmit = jest.fn();
-    const user = userEvent.setup();
+    const user = user_event.setup();
     render_test_with_provider(
       <MailNotifications
         mail_digest

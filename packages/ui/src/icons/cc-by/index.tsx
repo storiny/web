@@ -2,7 +2,7 @@
 
 import React from "react";
 
-import { create_svg_icon } from "src/utils/create-svg-icon";
+import { create_svg_icon } from "~/utils/create-svg-icon";
 
 const CcByIcon = (
   <>

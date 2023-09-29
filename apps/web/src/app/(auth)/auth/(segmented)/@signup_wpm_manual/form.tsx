@@ -1,6 +1,6 @@
 "use client";
 
-import { DEFAULT_WPM, userProps } from "@storiny/shared";
+import { DEFAULT_WPM, USER_PROPS } from "@storiny/shared";
 import { clsx } from "clsx";
 import React from "react";
 
@@ -51,8 +51,8 @@ const SignupWPMForm = ({ on_submit }: Props): React.ReactElement => {
       <FormInput
         data-testid={"wpm-input"}
         label={"Reading speed"}
-        max={userProps.wpm.max}
-        min={userProps.wpm.min}
+        max={USER_PROPS.wpm.max}
+        min={USER_PROPS.wpm.min}
         name={"wpm"}
         placeholder={"Your reading speed in words per minute"}
         required

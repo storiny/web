@@ -9,12 +9,12 @@ import Separator from "src/components/separator";
 import { use_toast } from "src/components/toast";
 import { use_clipboard } from "src/hooks/use-clipboard";
 
-import CopyIcon from "~/icons/Copy";
-import DotsIcon from "~/icons/Dots";
-import EyeIcon from "~/icons/Eye";
-import EyeOffIcon from "~/icons/EyeOff";
-import ReportIcon from "~/icons/Report";
-import TrashIcon from "~/icons/Trash";
+import CopyIcon from "src/icons/copy";
+import DotsIcon from "src/icons/dots";
+import EyeIcon from "src/icons/eye";
+import EyeOffIcon from "src/icons/eye-off";
+import ReportIcon from "src/icons/report";
+import TrashIcon from "src/icons/trash";
 import {
   get_comments_api,
   select_user,

@@ -23,7 +23,7 @@ import Spinner from "../../../../../../../../../../../../../../packages/ui/src/c
 import { use_toast } from "../../../../../../../../../../../../../../packages/ui/src/components/toast";
 import Typography from "../../../../../../../../../../../../../../packages/ui/src/components/typography";
 import { use_media_query } from "../../../../../../../../../../../../../../packages/ui/src/hooks/use-media-query";
-import QRCodeIcon from "~/icons/QRCode";
+import QRCodeIcon from "../../../../../../../../../../../../../../packages/ui/src/icons/qr-code";
 import {
   use_request_mfa_mutation,
   use_verify_mfa_mutation

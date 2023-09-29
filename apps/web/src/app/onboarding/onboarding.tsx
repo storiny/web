@@ -21,8 +21,8 @@ import Stepper from "../../../../../packages/ui/src/components/stepper";
 import Typography from "../../../../../packages/ui/src/components/typography";
 import ErrorState from "../../../../../packages/ui/src/entities/error-state";
 import { use_media_query } from "../../../../../packages/ui/src/hooks/use-media-query";
-import CheckIcon from "~/icons/Check";
-import PlusIcon from "~/icons/Plus";
+import CheckIcon from "../../../../../packages/ui/src/icons/check";
+import PlusIcon from "../../../../../packages/ui/src/icons/plus";
 import {
   boolean_action,
   get_query_error_type,
@@ -139,7 +139,7 @@ const TagsSegment = ({
 }: {
   categoriesHash: string;
 }): React.ReactElement => {
-  const { data, isLoading, isFetching, isError, error, refetch } =
+  const { data, isLoading, is_fetching, isError, error, refetch } =
     use_get_onboarding_tags_query(categoriesHash);
 
   return (
@@ -172,7 +172,7 @@ const TagsSegment = ({
           <ErrorState
             auto_size
             component_props={{
-              button: { loading: isFetching }
+              button: { loading: is_fetching }
             }}
             retry={refetch}
             type={get_query_error_type(error)}

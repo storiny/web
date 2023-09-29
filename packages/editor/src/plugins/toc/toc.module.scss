@@ -1,11 +1,9 @@
 .x {
-  /* Base styles */
   &.toc {
     list-style: none;
     padding: 12px 32px 12px 0;
   }
 
-  /* Item */
   &.item {
     padding: 4px 16px;
     cursor: pointer;
@@ -15,7 +13,6 @@
       margin-top: 8px;
     }
 
-    /* Subheading item */
     &.sub {
       --border: var(--divider);
 
@@ -26,7 +23,6 @@
       }
     }
 
-    /* Selected item */
     &.selected {
       --border: var(--inverted-400) !important;
 

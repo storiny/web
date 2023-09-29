@@ -6,46 +6,46 @@ import { UserState } from "../../collaboration/provider";
 interface CollaborationContextType
   extends Omit<
     UserState,
-    "awarenessData" | "focusPos" | "anchorPos" | "focusing"
+    "awareness_data" | "focusPos" | "anchorPos" | "focusing"
   > {
-  clientID: number;
-  isCollabActive: boolean;
-  yjsDocMap: Map<string, Doc>;
+  client_id: number;
+  is_collab_active: boolean;
+  yjs_doc_map: Map<string, Doc>;
 }
 
 export const CollaborationContext =
   React.createContext<CollaborationContextType>({
-    clientID: 0,
-    isCollabActive: false,
-    yjsDocMap: new Map(),
-    avatarHex: null,
+    client_id: 0,
+    is_collab_active: false,
+    yjs_doc_map: new Map(),
+    avatar_hex: null,
     avatar_id: null,
     color: "",
     name: "",
     role: "viewer",
-    userId: ""
+    user_id: ""
   });
 
 /**
  * Hook for using collaboration context
  */
-export const useCollaborationContext = ({
+export const use_collaboration_context = ({
   name,
   color,
   avatar_id,
-  avatarHex,
+  avatar_hex,
   role,
-  userId
+  user_id
 }: Partial<
   Pick<
     CollaborationContextType,
-    "userId" | "name" | "color" | "avatar_id" | "avatarHex" | "role"
+    "user_id" | "name" | "color" | "avatar_id" | "avatar_hex" | "role"
   >
 >): CollaborationContextType => {
   const context = React.useContext(CollaborationContext);
 
-  if (userId !== undefined) {
-    context.userId = userId;
+  if (user_id !== undefined) {
+    context.user_id = user_id;
   }
 
   if (role !== undefined) {
@@ -64,8 +64,8 @@ export const useCollaborationContext = ({
     context.avatar_id = avatar_id;
   }
 
-  if (avatarHex !== undefined) {
-    context.avatarHex = avatarHex;
+  if (avatar_hex !== undefined) {
+    context.avatar_hex = avatar_hex;
   }
 
   return context;

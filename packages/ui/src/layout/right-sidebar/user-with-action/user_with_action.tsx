@@ -6,8 +6,8 @@ import React from "react";
 
 import IconButton from "src/components/icon-button";
 import Persona from "src/entities/persona";
-import UserCheckIcon from "~/icons/UserCheck";
-import UserPlusIcon from "~/icons/UserPlus";
+import UserCheckIcon from "src/icons/user-check";
+import UserPlusIcon from "src/icons/user-plus";
 import { sync_with_user } from "~/redux/features/entities/slice";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 

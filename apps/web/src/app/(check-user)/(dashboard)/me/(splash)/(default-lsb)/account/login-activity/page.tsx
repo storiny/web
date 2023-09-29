@@ -18,9 +18,9 @@ const Page = async (): Promise<React.ReactElement | undefined> => {
       redirect("/login"); // Early return
     }
 
-    const userId = await getUser();
+    const user_id = await getUser();
 
-    if (!userId) {
+    if (!user_id) {
       redirect("/login");
     }
 

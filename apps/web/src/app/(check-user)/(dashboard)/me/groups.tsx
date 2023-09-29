@@ -1,25 +1,25 @@
 import Fuse from "fuse.js";
 import React from "react";
 
-import AccessibilityIcon from "~/icons/Accessibility";
-import BanIcon from "~/icons/Ban";
-import BellIcon from "~/icons/Bell";
-import BooksIcon from "~/icons/Books";
-import BrushIcon from "~/icons/Brush";
-import CommentIcon from "~/icons/Comment";
-import ConnectionsIcon from "~/icons/Connections";
-import KeyIcon from "~/icons/Key";
-import LoginIcon from "~/icons/Login";
-import MuteIcon from "~/icons/Mute";
-import PencilIcon from "~/icons/Pencil";
-import ScriptIcon from "~/icons/Script";
-import ShieldIcon from "~/icons/Shield";
-import StoriesMetricsIcon from "~/icons/StoriesMetrics";
-import StoryIcon from "~/icons/Story";
-import TagsIcon from "~/icons/Tags";
-import UserIcon from "~/icons/User";
-import UserMetricsIcon from "~/icons/UserMetrics";
-import UsersIcon from "~/icons/Users";
+import AccessibilityIcon from "../../../../../../../packages/ui/src/icons/accessibility";
+import BanIcon from "../../../../../../../packages/ui/src/icons/ban";
+import BellIcon from "../../../../../../../packages/ui/src/icons/bell";
+import BooksIcon from "../../../../../../../packages/ui/src/icons/books";
+import BrushIcon from "../../../../../../../packages/ui/src/icons/brush";
+import CommentIcon from "../../../../../../../packages/ui/src/icons/comment";
+import ConnectionsIcon from "../../../../../../../packages/ui/src/icons/connections";
+import KeyIcon from "../../../../../../../packages/ui/src/icons/key";
+import LoginIcon from "../../../../../../../packages/ui/src/icons/login";
+import MuteIcon from "../../../../../../../packages/ui/src/icons/mute";
+import PencilIcon from "../../../../../../../packages/ui/src/icons/pencil";
+import ScriptIcon from "../../../../../../../packages/ui/src/icons/script";
+import ShieldIcon from "../../../../../../../packages/ui/src/icons/shield";
+import StoriesMetricsIcon from "../../../../../../../packages/ui/src/icons/stories-metrics";
+import StoryIcon from "../../../../../../../packages/ui/src/icons/story";
+import TagsIcon from "../../../../../../../packages/ui/src/icons/tags";
+import UserIcon from "../../../../../../../packages/ui/src/icons/user";
+import UserMetricsIcon from "../../../../../../../packages/ui/src/icons/user-metrics";
+import UsersIcon from "../../../../../../../packages/ui/src/icons/users";
 
 import { DashboardSegment } from "./types";
 

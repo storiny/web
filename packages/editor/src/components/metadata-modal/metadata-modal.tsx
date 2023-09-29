@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { Provider, useAtom } from "jotai";
+import { Provider, useAtom as use_atom } from "jotai";
 import React from "react";
 
 import Form, {
@@ -16,12 +16,12 @@ import ScrollArea from "../../../../ui/src/components/scroll-area";
 import TabPanel from "../../../../ui/src/components/tab-panel";
 import { use_toast } from "../../../../ui/src/components/toast";
 import { use_media_query } from "../../../../ui/src/hooks/use-media-query";
-import ChevronIcon from "~/icons/Chevron";
+import ChevronIcon from "../../../../ui/src/icons/chevron";
 import FileIcon from "~/icons/file";
 import LicenseIcon from "~/icons/license";
 import SeoIcon from "~/icons/seo";
-import SettingsIcon from "~/icons/Settings";
-import StoryIcon from "~/icons/Story";
+import SettingsIcon from "../../../../ui/src/icons/settings";
+import StoryIcon from "../../../../ui/src/icons/story";
 import { use_story_metadata_mutation } from "~/redux/features";
 import { BREAKPOINTS } from "~/theme/breakpoints";
 
@@ -35,61 +35,62 @@ import LicenseTab from "./core/components/license";
 import NavigationScreen from "./core/components/navigation-screen/navigation-screen";
 import SeoTab from "./core/components/seo";
 import SettingsTab from "./core/components/settings";
-import { useResetStoryMetadataModalAtoms } from "./core/hooks/use-reset-story-metadata-modal-atoms";
+import { use_reset_story_metadata_modal_atoms } from "./core/hooks/use-reset-story-metadata-modal-atoms";
 import styles from "./metadata-modal.module.scss";
 import { StoryMetadataModalProps } from "./metadata-modal.props";
-import { StoryMetadataSchema, storyMetadataSchema } from "./schema";
+import { StoryMetadataSchema, STORY_METADATA_SCHEMA } from "./schema";
 
 const StoryMetadataModalImpl = (
   props: StoryMetadataModalProps
 ): React.ReactElement => {
-  const { children, story, setStory } = props;
+  const { children, story, set_story } = props;
   const toast = use_toast();
-  const resetAtoms = useResetStoryMetadataModalAtoms();
-  const [open, setOpen] = React.useState<boolean>(false);
+  const reset_atoms = use_reset_story_metadata_modal_atoms();
+  const [open, set_open] = React.useState<boolean>(false);
   const is_smaller_than_tablet = use_media_query(BREAKPOINTS.down("tablet"));
-  const [navSegment, setNavSegment] = use_atom(nav_segment_atom);
-  const [value, setValue] = use_atom(sidebar_tab_atom);
+  const [nav_segment, set_nav_segment] = use_atom(nav_segment_atom);
+  const [value, set_value] = use_atom(sidebar_tab_atom);
   const form = use_form<StoryMetadataSchema>({
     defaultValues: {
-      "age-restriction": story.age_restriction,
-      "canonical-url": story.canonical_url,
+      age_restriction: story.age_restriction,
+      canonical_url: story.canonical_url,
       category: story.category,
       description: story.description,
-      "disable-comments": story.disable_comments,
-      "disable-public-revision-history": story.disable_public_revision_history,
-      "disable-toc": story.disable_toc,
+      disable_comments: story.disable_comments,
+      disable_public_revision_history: story.disable_public_revision_history,
+      disable_toc: story.disable_toc,
       license: story.license,
-      "preview-image": story.preview_image,
-      "seo-description": story.seo_description,
-      "seo-title": story.seo_title,
-      "splash-hex": story.splash_hex,
-      "splash-id": story.splash_id,
+      preview_image: story.preview_image,
+      seo_description: story.seo_description,
+      seo_title: story.seo_title,
+      splash_hex: story.splash_hex,
+      splash_id: story.splash_id,
       tags: story.tags.map(({ name }) => name),
       title: story.title,
       visibility: story.visibility
     },
-    resolver: zod_resolver(storyMetadataSchema)
+    resolver: zod_resolver(STORY_METADATA_SCHEMA)
   });
-  const [mutateStoryMetadata, { isLoading }] = use_story_metadata_mutation();
+  const [mutate_story_metadata, { isLoading: is_loading }] =
+    use_story_metadata_mutation();
 
   /**
    * Resets the modal state
    */
   const reset = React.useCallback(
     (values?: StoryMetadataSchema) => {
-      resetAtoms();
+      reset_atoms();
       form.reset(values);
     },
-    [form, resetAtoms]
+    [form, reset_atoms]
   );
 
-  const handleSubmit: SubmitHandler<StoryMetadataSchema> = (values) => {
-    mutateStoryMetadata({ ...values, id: story.id })
+  const handle_submit: SubmitHandler<StoryMetadataSchema> = (values) => {
+    mutate_story_metadata({ ...values, id: story.id })
       .unwrap()
       .then((res) => {
-        setOpen(false);
-        setStory(res);
+        set_open(false);
+        set_story(res);
         reset(values);
         toast("Story metadata updated", "success");
       })
@@ -108,10 +109,10 @@ const StoryMetadataModalImpl = (
           <ModalFooterButton
             compact={is_smaller_than_tablet}
             disabled={!form.formState.isDirty}
-            loading={isLoading}
+            loading={is_loading}
             onClick={(event): void => {
               event.preventDefault(); // Prevent closing of modal
-              form.handleSubmit(handleSubmit)(); // Submit manually
+              form.handle_submit(handle_submit)(); // Submit manually
             }}
           >
             Confirm
@@ -121,7 +122,7 @@ const StoryMetadataModalImpl = (
       fullscreen={is_smaller_than_tablet}
       mode={"tabbed"}
       onOpenChange={(open): void => {
-        setOpen(open);
+        set_open(open);
         if (!open) {
           reset();
         }
@@ -148,8 +149,11 @@ const StoryMetadataModalImpl = (
       slot_props={{
         tabs: {
           value,
-          onValueChange: (newValue): void => {
-            setValue(newValue as StoryMetadataModalSidebarTabsValue);
+          // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+          onValueChange: (
+            next_value: StoryMetadataModalSidebarTabsValue
+          ): void => {
+            set_value(next_value);
           }
         },
         sidebar: {
@@ -167,12 +171,12 @@ const StoryMetadataModalImpl = (
         },
         header: {
           decorator:
-            !is_smaller_than_tablet || navSegment === "home" ? (
+            !is_smaller_than_tablet || nav_segment === "home" ? (
               <StoryIcon />
             ) : (
               <IconButton
                 aria-label={"Go to main screen"}
-                onClick={(): void => setNavSegment("home")}
+                onClick={(): void => set_nav_segment("home")}
                 variant={"ghost"}
               >
                 <ChevronIcon rotation={-90} />
@@ -193,7 +197,7 @@ const StoryMetadataModalImpl = (
         }}
       >
         <Form<StoryMetadataSchema>
-          on_submit={handleSubmit}
+          on_submit={handle_submit}
           provider_props={form}
         >
           {is_smaller_than_tablet ? (
@@ -203,7 +207,7 @@ const StoryMetadataModalImpl = (
               seo: <SeoTab />,
               license: <LicenseTab />,
               settings: <SettingsTab />
-            }[navSegment]
+            }[nav_segment]
           ) : (
             <React.Fragment>
               <TabPanel

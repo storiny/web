@@ -9,23 +9,23 @@ import Input from "../../../../../ui/src/components/input";
 import Menu from "../../../../../ui/src/components/menu";
 import MenuItem from "../../../../../ui/src/components/menu-item";
 import Separator from "../../../../../ui/src/components/separator";
-import ChevronIcon from "~/icons/Chevron";
-import MinusIcon from "~/icons/Minus";
-import PlusIcon from "~/icons/Plus";
+import ChevronIcon from "../../../../../ui/src/icons/chevron";
+import MinusIcon from "../../../../../ui/src/icons/minus";
+import PlusIcon from "../../../../../ui/src/icons/plus";
 import { clamp } from "~/utils/clamp";
 
 import { MAX_ZOOM_LEVEL, MIN_ZOOM_LEVEL } from "../../../constants";
-import { useCanvas, useEventRender } from "../../../hooks";
+import { use_canvas, use_event_render } from "../../../hooks";
 import styles from "./overlay.module.scss";
 
 // Zoom control
 
 const ZoomControl = (): React.ReactElement => {
-  const canvas = useCanvas();
-  const [zoom, setZoom] = React.useState<number>(100);
-  useEventRender("mouse:wheel", () => {
+  const canvas = use_canvas();
+  const [zoom, set_zoom] = React.useState<number>(100);
+  use_event_render("mouse:wheel", () => {
     if (canvas.current) {
-      setZoom(Math.round(canvas.current.getZoom() * 100));
+      set_zoom(Math.round(canvas.current.getZoom() * 100));
     }
 
     return false;
@@ -35,8 +35,8 @@ const ZoomControl = (): React.ReactElement => {
    * Zooms to the center of the canvas with the provided value
    * @param value Zoom value
    */
-  const setCanvasZoom = (value: number): void => {
-    setZoom(Math.round(value * 100));
+  const set_canvas_zoom = (value: number): void => {
+    set_zoom(Math.round(value * 100));
 
     if (canvas.current) {
       canvas.current.zoomToPoint(
@@ -50,21 +50,21 @@ const ZoomControl = (): React.ReactElement => {
    * Decrements zoom level
    * @param value Decrement value
    */
-  const decrementZoom = (value: number = 10): void => {
-    setCanvasZoom((canvas.current.getZoom() * 100 - value) / 100);
+  const decrement_zoom = (value = 10): void => {
+    set_canvas_zoom((canvas.current.getZoom() * 100 - value) / 100);
   };
 
   /**
    * Increments zoom level
    * @param value Increment level
    */
-  const incrementZoom = (value: number = 10): void => {
-    setCanvasZoom((canvas.current.getZoom() * 100 + value) / 100);
+  const increment_zoom = (value = 10): void => {
+    set_canvas_zoom((canvas.current.getZoom() * 100 + value) / 100);
   };
 
   React.useEffect(() => {
     if (canvas.current) {
-      setZoom(Math.round(canvas.current.getZoom() * 100));
+      set_zoom(Math.round(canvas.current.getZoom() * 100));
     }
   }, [canvas]);
 
@@ -74,7 +74,7 @@ const ZoomControl = (): React.ReactElement => {
         aria-label={"Decrement zoom level"}
         className={clsx("focus-invert", styles.x, styles["zoom-icon-button"])}
         disabled={zoom <= MIN_ZOOM_LEVEL}
-        onClick={(): void => decrementZoom()}
+        onClick={(): void => decrement_zoom()}
         title={"Decrement zoom level"}
         variant={"ghost"}
       >
@@ -117,7 +117,7 @@ const ZoomControl = (): React.ReactElement => {
             max={MAX_ZOOM_LEVEL}
             min={MIN_ZOOM_LEVEL}
             onChange={(event): void => {
-              setCanvasZoom(Number.parseInt(event.target.value, 10) / 100);
+              set_canvas_zoom(Number.parseInt(event.target.value, 10) / 100);
             }}
             placeholder={"Zoom level"}
             size={"sm"}
@@ -128,8 +128,8 @@ const ZoomControl = (): React.ReactElement => {
         <Separator />
         <MenuItem
           disabled={zoom >= MAX_ZOOM_LEVEL}
-          onClick={(): void => incrementZoom()}
-          onSelect={(event): void => event.preventDefault()}
+          onClick={(): void => increment_zoom()}
+          onSelect={(event: Event): void => event.preventDefault()}
         >
           Zoom in
           <Grow />
@@ -137,20 +137,22 @@ const ZoomControl = (): React.ReactElement => {
         </MenuItem>
         <MenuItem
           disabled={zoom <= MIN_ZOOM_LEVEL}
-          onClick={(): void => decrementZoom()}
-          onSelect={(event): void => event.preventDefault()}
+          onClick={(): void => decrement_zoom()}
+          onSelect={(event: Event): void => event.preventDefault()}
         >
           Zoom out
           <Grow />
           <span>-</span>
         </MenuItem>
-        <MenuItem onClick={(): void => setCanvasZoom(1)}>Zoom to 100%</MenuItem>
+        <MenuItem onClick={(): void => set_canvas_zoom(1)}>
+          Zoom to 100%
+        </MenuItem>
       </Menu>
       <IconButton
         aria-label={"Increment zoom level"}
         className={clsx("focus-invert", styles.x, styles["zoom-icon-button"])}
         disabled={zoom >= MAX_ZOOM_LEVEL}
-        onClick={(): void => incrementZoom()}
+        onClick={(): void => increment_zoom()}
         title={"Increment zoom level"}
         variant={"ghost"}
       >

@@ -3,8 +3,8 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
 
-import CheckIcon from "~/icons/Check";
-import RectangleIcon from "~/icons/Rectangle";
+import CheckIcon from "src/icons/check";
+import RectangleIcon from "src/icons/rectangle";
 
 import IconButton from "../icon-button";
 import Option from "../option";

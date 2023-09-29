@@ -17,8 +17,8 @@ import Spacer from "../../../../../../../../../../../../../../packages/ui/src/co
 import { use_toast } from "../../../../../../../../../../../../../../packages/ui/src/components/toast";
 import Typography from "../../../../../../../../../../../../../../packages/ui/src/components/typography";
 import { use_media_query } from "../../../../../../../../../../../../../../packages/ui/src/hooks/use-media-query";
-import PasswordIcon from "~/icons/Password";
-import UnlinkIcon from "~/icons/Unlink";
+import PasswordIcon from "../../../../../../../../../../../../../../packages/ui/src/icons/password";
+import UnlinkIcon from "../../../../../../../../../../../../../../packages/ui/src/icons/unlink";
 import { use_remove_account_mutation } from "~/redux/features";
 import { BREAKPOINTS } from "~/theme/breakpoints";
 

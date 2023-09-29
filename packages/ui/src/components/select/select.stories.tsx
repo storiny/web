@@ -3,7 +3,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
 
-import RectangleIcon from "~/icons/Rectangle";
+import RectangleIcon from "src/icons/rectangle";
 
 import Option from "../option";
 import Separator from "../separator";

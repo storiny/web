@@ -11,23 +11,23 @@ const WEBSOCKET_ENDPOINT = "ws://localhost:1234";
 /**
  * Creates a collaboration websocket provider
  * @param id Document ID
- * @param yjsDocMap Doc map
+ * @param yjs_doc_map Doc map
  */
-export const createWebsocketProvider = (
+export const create_ws_provider = (
   id: string,
-  yjsDocMap: Map<string, Doc>
+  yjs_doc_map: Map<string, Doc>
 ): Provider => {
-  const roomName = `multiplayer/${id}`;
-  let doc = yjsDocMap.get("main");
+  const room_name = `realms/${id}`;
+  let doc = yjs_doc_map.get("main");
 
   if (doc === undefined) {
     doc = new Doc();
-    yjsDocMap.set("main", doc);
+    yjs_doc_map.set("main", doc);
   } else {
     doc.load();
   }
 
-  return new WebsocketProvider(WEBSOCKET_ENDPOINT, roomName, doc, {
+  return new WebsocketProvider(WEBSOCKET_ENDPOINT, room_name, doc, {
     connect: false
   }) as unknown as Provider;
 };

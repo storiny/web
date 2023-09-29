@@ -24,8 +24,8 @@ import Select from "../../../../../../../../../../../../../packages/ui/src/compo
 import ErrorState from "../../../../../../../../../../../../../packages/ui/src/entities/error-state";
 import { use_debounce } from "../../../../../../../../../../../../../packages/ui/src/hooks/use-debounce";
 import { use_media_query } from "../../../../../../../../../../../../../packages/ui/src/hooks/use-media-query";
-import SearchIcon from "~/icons/Search";
-import UserHeartIcon from "~/icons/UserHeart";
+import SearchIcon from "../../../../../../../../../../../../../packages/ui/src/icons/search";
+import UserHeartIcon from "../../../../../../../../../../../../../packages/ui/src/icons/user-heart";
 import {
   get_query_error_type,
   use_get_friend_requests_query
@@ -67,12 +67,12 @@ Scroller.displayName = "Scroller";
 // Modal
 
 const FriendRequestsModal = (): React.ReactElement => {
-  const [sort, setSort] = React.useState<FriendRequestsSortValue>("popular");
+  const [sort, set_sort] = React.useState<FriendRequestsSortValue>("popular");
   const [query, setQuery] = React.useState<string>("");
   const [page, set_page] = React.useState<number>(1);
   const setRenderKey = use_set_atom(renderKeyAtom);
   const debounced_query = use_debounce(query);
-  const { data, isLoading, isFetching, isError, error, refetch } =
+  const { data, isLoading, is_fetching, isError, error, refetch } =
     use_get_friend_requests_query({
       page,
       sort,
@@ -89,7 +89,7 @@ const FriendRequestsModal = (): React.ReactElement => {
   const handleSortChange = React.useCallback(
     (newSort: FriendRequestsSortValue) => {
       set_page(1);
-      setSort(newSort);
+      set_sort(newSort);
     },
     []
   );
@@ -148,18 +148,18 @@ const FriendRequestsModal = (): React.ReactElement => {
           <Option value={"old"}>Old</Option>
         </Select>
       </div>
-      {isLoading || is_typing || (isFetching && page === 1) ? (
+      {isLoading || is_typing || (is_fetching && page === 1) ? (
         <SuspenseLoader />
       ) : isError ? (
         <ErrorState
           auto_size
           component_props={{
-            button: { loading: isFetching }
+            button: { loading: is_fetching }
           }}
           retry={refetch}
           type={get_query_error_type(error)}
         />
-      ) : !isFetching && !items.length ? (
+      ) : !is_fetching && !items.length ? (
         <EmptyState query={query} />
       ) : (
         <Root className={clsx(styles.x, styles["scroll-area"])} type={"auto"}>

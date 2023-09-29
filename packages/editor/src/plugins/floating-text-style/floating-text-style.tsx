@@ -1,46 +1,45 @@
 "use client";
 
-import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { mergeRegister } from "@lexical/utils";
-import { getShortcutLabel } from "@storiny/shared/src/utils/get-shortcut-label";
+import { useLexicalComposerContext as use_lexical_composer_context } from "@lexical/react/LexicalComposerContext";
+import { mergeRegister as merge_register } from "@lexical/utils";
+import { get_shortcut_label } from "@storiny/shared/src/utils/get-shortcut-label";
 import { clsx } from "clsx";
-import { useAtomValue } from "jotai";
+import { useAtomValue as use_atom_value } from "jotai";
 import {
-  $getSelection,
-  $isRangeSelection,
-  $isTextNode,
+  $getSelection as $get_selection,
+  $isRangeSelection as $is_range_selection,
+  $isTextNode as $is_text_node,
   COMMAND_PRIORITY_LOW,
   SELECTION_CHANGE_COMMAND
 } from "lexical";
 import React from "react";
-import { createPortal } from "react-dom";
+import { createPortal as create_portal } from "react-dom";
 
 import ToggleGroup from "../../../../ui/src/components/toggle-group";
 import ToggleGroupItem from "../../../../ui/src/components/toggle-group-item";
-import BoldIcon from "~/icons/Bold";
-import ItalicIcon from "~/icons/Italic";
-import LinkIcon from "~/icons/Link";
-import UnderlineIcon from "~/icons/Underline";
-
-import { linkAtom } from "../../atoms";
+import BoldIcon from "../../../../ui/src/icons/bold";
+import ItalicIcon from "../../../../ui/src/icons/italic";
+import LinkIcon from "../../../../ui/src/icons/link";
+import UnderlineIcon from "../../../../ui/src/icons/underline";
+import { link_atom } from "../../atoms";
 import { EDITOR_SHORTCUTS } from "../../constants/shortcuts";
-import { useBold } from "../../hooks/use-bold";
-import { useItalic } from "../../hooks/use-italic";
-import { useLink } from "../../hooks/use-link";
-import { useUnderline } from "../../hooks/use-underline";
-import { getSelectedNode } from "../../utils/get-selected-node";
-import { setFloatingElementPosition } from "../../utils/set-floating-element-position";
-import floatingElementStyles from "../common/floating-element.module.scss";
+import { use_bold } from "../../hooks/use-bold";
+import { use_italic } from "../../hooks/use-italic";
+import { use_link } from "../../hooks/use-link";
+import { use_underline } from "../../hooks/use-underline";
+import { get_selected_node } from "../../utils/get-selected-node";
+import { set_floating_element_position } from "../../utils/set-floating-element-position";
+import floating_element_styles from "../common/floating-element.module.scss";
 import FloatingElementArrow from "../common/floating-element-arrow";
 import styles from "./floating-text-style.module.scss";
 
 const FloatingTextStylePopover = (): React.ReactElement => {
-  const popoverRef = React.useRef<HTMLDivElement | null>(null);
-  const [editor] = useLexicalComposerContext();
-  const [bold, toggleBold] = useBold();
-  const [italic, toggleItalic] = useItalic();
-  const [underline, toggleUnderline] = useUnderline();
-  const [link, insertLink] = useLink();
+  const popover_ref = React.useRef<HTMLDivElement | null>(null);
+  const [editor] = use_lexical_composer_context();
+  const [bold, toggle_bold] = use_bold();
+  const [italic, toggle_italic] = use_italic();
+  const [underline, toggle_underline] = use_underline();
+  const [link, insert_link] = use_link();
 
   const value = React.useMemo(
     () =>
@@ -57,16 +56,16 @@ const FloatingTextStylePopover = (): React.ReactElement => {
    * Mouse move listener
    * @param event Mouse event
    */
-  const mouseMoveListener = (event: MouseEvent): void => {
-    if (popoverRef?.current && (event.buttons === 1 || event.buttons === 3)) {
-      if (popoverRef.current.style.pointerEvents !== "none") {
+  const mouse_move_listener = (event: MouseEvent): void => {
+    if (popover_ref?.current && (event.buttons === 1 || event.buttons === 3)) {
+      if (popover_ref.current.style.pointerEvents !== "none") {
         const x = event.clientX;
         const y = event.clientY;
-        const elementUnderMouse = document.elementFromPoint(x, y);
+        const element_under_mouse = document.elementFromPoint(x, y);
 
-        if (!popoverRef.current.contains(elementUnderMouse)) {
+        if (!popover_ref.current.contains(element_under_mouse)) {
           // Mouse is not over the target element -> not a normal click, but probably a drag
-          popoverRef.current.style.pointerEvents = "none";
+          popover_ref.current.style.pointerEvents = "none";
         }
       }
     }
@@ -75,55 +74,55 @@ const FloatingTextStylePopover = (): React.ReactElement => {
   /**
    * Mouse up listener
    */
-  const mouseUpListener = (): void => {
+  const mouse_up_listener = (): void => {
     if (
-      popoverRef?.current &&
-      popoverRef.current.style.pointerEvents !== "auto"
+      popover_ref?.current &&
+      popover_ref.current.style.pointerEvents !== "auto"
     ) {
-      popoverRef.current.style.pointerEvents = "auto";
+      popover_ref.current.style.pointerEvents = "auto";
     }
   };
 
   /**
    * Updates the popover position
    */
-  const updatePopover = React.useCallback(() => {
-    const selection = $getSelection();
-    const popoverElement = popoverRef.current;
-    const nativeSelection = window.getSelection();
+  const update_popover = React.useCallback(() => {
+    const selection = $get_selection();
+    const popover_element = popover_ref.current;
+    const native_selection = window.getSelection();
 
-    if (popoverElement === null) {
+    if (popover_element === null) {
       return;
     }
 
-    const rootElement = editor.getRootElement();
+    const root_element = editor.getRootElement();
 
     if (
       selection !== null &&
-      nativeSelection !== null &&
-      !nativeSelection.isCollapsed &&
-      rootElement !== null &&
-      rootElement.contains(nativeSelection.anchorNode)
+      native_selection !== null &&
+      !native_selection.isCollapsed &&
+      root_element !== null &&
+      root_element.contains(native_selection.anchorNode)
     ) {
-      setFloatingElementPosition(popoverElement, rootElement);
+      set_floating_element_position(popover_element, root_element);
     }
   }, [editor]);
 
   React.useEffect(() => {
-    if (popoverRef?.current) {
-      document.addEventListener("mousemove", mouseMoveListener);
-      document.addEventListener("mouseup", mouseUpListener);
+    if (popover_ref?.current) {
+      document.addEventListener("mousemove", mouse_move_listener);
+      document.addEventListener("mouseup", mouse_up_listener);
 
       return () => {
-        document.removeEventListener("mousemove", mouseMoveListener);
-        document.removeEventListener("mouseup", mouseUpListener);
+        document.removeEventListener("mousemove", mouse_move_listener);
+        document.removeEventListener("mouseup", mouse_up_listener);
       };
     }
-  }, [popoverRef]);
+  }, [popover_ref]);
 
   React.useEffect(() => {
     const update = (): void => {
-      editor.getEditorState().read(updatePopover);
+      editor.getEditorState().read(update_popover);
     };
 
     window.addEventListener("resize", update);
@@ -133,44 +132,44 @@ const FloatingTextStylePopover = (): React.ReactElement => {
       window.removeEventListener("resize", update);
       document.body.removeEventListener("scroll", update);
     };
-  }, [editor, updatePopover]);
+  }, [editor, update_popover]);
 
   React.useEffect(() => {
-    editor.getEditorState().read(updatePopover);
+    editor.getEditorState().read(update_popover);
 
-    return mergeRegister(
-      editor.registerUpdateListener(({ editorState }) => {
-        editorState.read(updatePopover);
+    return merge_register(
+      editor.registerUpdateListener(({ editorState: editor_state }) => {
+        editor_state.read(update_popover);
       }),
       editor.registerCommand(
         SELECTION_CHANGE_COMMAND,
         () => {
-          updatePopover();
+          update_popover();
           return false;
         },
         COMMAND_PRIORITY_LOW
       )
     );
-  }, [editor, updatePopover]);
+  }, [editor, update_popover]);
 
   return (
     <ToggleGroup
       className={clsx(
         "flex-center",
-        floatingElementStyles.x,
-        floatingElementStyles["floating-element"]
+        floating_element_styles.x,
+        floating_element_styles["floating-element"]
       )}
-      ref={popoverRef}
+      ref={popover_ref}
       type={"multiple"}
       value={value}
     >
       <ToggleGroupItem
         className={clsx(styles.x, styles.toggle)}
         data-testid={"floating-bold-toggle"}
-        onClick={toggleBold}
+        onClick={toggle_bold}
         slot_props={{
           tooltip: {
-            right_slot: getShortcutLabel(EDITOR_SHORTCUTS.bold)
+            right_slot: get_shortcut_label(EDITOR_SHORTCUTS.bold)
           }
         }}
         tooltip_content={"Bold"}
@@ -181,10 +180,10 @@ const FloatingTextStylePopover = (): React.ReactElement => {
       <ToggleGroupItem
         className={clsx(styles.x, styles.toggle)}
         data-testid={"floating-italic-toggle"}
-        onClick={toggleItalic}
+        onClick={toggle_italic}
         slot_props={{
           tooltip: {
-            right_slot: getShortcutLabel(EDITOR_SHORTCUTS.italic)
+            right_slot: get_shortcut_label(EDITOR_SHORTCUTS.italic)
           }
         }}
         tooltip_content={"Italic"}
@@ -195,10 +194,10 @@ const FloatingTextStylePopover = (): React.ReactElement => {
       <ToggleGroupItem
         className={clsx(styles.x, styles.toggle)}
         data-testid={"floating-underline-toggle"}
-        onClick={toggleUnderline}
+        onClick={toggle_underline}
         slot_props={{
           tooltip: {
-            right_slot: getShortcutLabel(EDITOR_SHORTCUTS.underline)
+            right_slot: get_shortcut_label(EDITOR_SHORTCUTS.underline)
           }
         }}
         tooltip_content={"Underline"}
@@ -209,10 +208,10 @@ const FloatingTextStylePopover = (): React.ReactElement => {
       <ToggleGroupItem
         className={clsx(styles.x, styles.toggle)}
         data-testid={"floating-link-toggle"}
-        onClick={(): void => insertLink()}
+        onClick={(): void => insert_link()}
         slot_props={{
           tooltip: {
-            right_slot: getShortcutLabel(EDITOR_SHORTCUTS.link)
+            right_slot: get_shortcut_label(EDITOR_SHORTCUTS.link)
           }
         }}
         tooltip_content={"Link"}
@@ -226,79 +225,79 @@ const FloatingTextStylePopover = (): React.ReactElement => {
 };
 
 const FloatingTextStylePlugin = (): React.ReactElement | null => {
-  const [editor] = useLexicalComposerContext();
-  const [isText, setIsText] = React.useState(false);
-  const link = use_atom_value(linkAtom);
+  const [editor] = use_lexical_composer_context();
+  const [is_text, set_is_text] = React.useState(false);
+  const link = use_atom_value(link_atom);
 
   /**
    * Updates the popover props
    */
-  const updatePopover = React.useCallback(() => {
+  const update_popover = React.useCallback(() => {
     editor.getEditorState().read(() => {
       // Should not pop up the floating toolbar when using IME input
       if (editor.isComposing()) {
         return;
       }
 
-      const selection = $getSelection();
-      const nativeSelection = window.getSelection();
-      const rootElement = editor.getRootElement();
+      const selection = $get_selection();
+      const native_selection = window.getSelection();
+      const root_element = editor.getRootElement();
 
       if (
-        nativeSelection !== null &&
-        (!$isRangeSelection(selection) ||
-          rootElement === null ||
-          !rootElement.contains(nativeSelection.anchorNode))
+        native_selection !== null &&
+        (!$is_range_selection(selection) ||
+          root_element === null ||
+          !root_element.contains(native_selection.anchorNode))
       ) {
-        setIsText(false);
+        set_is_text(false);
         return;
       }
 
-      if (!$isRangeSelection(selection)) {
+      if (!$is_range_selection(selection)) {
         return;
       }
 
-      const node = getSelectedNode(selection);
+      const node = get_selected_node(selection);
 
       if (selection.getTextContent() !== "") {
-        setIsText($isTextNode(node));
+        set_is_text($is_text_node(node));
       } else {
-        setIsText(false);
+        set_is_text(false);
       }
 
-      const rawTextContent = selection.getTextContent().replace(/\n/g, "");
+      const raw_text_content = selection.getTextContent().replace(/\n/g, "");
 
-      if (!selection.isCollapsed() && rawTextContent === "") {
-        setIsText(false);
+      if (!selection.isCollapsed() && raw_text_content === "") {
+        set_is_text(false);
       }
     });
   }, [editor]);
 
   React.useEffect(() => {
-    document.addEventListener("selectionchange", updatePopover);
+    document.addEventListener("selectionchange", update_popover);
     return () => {
-      document.removeEventListener("selectionchange", updatePopover);
+      document.removeEventListener("selectionchange", update_popover);
     };
-  }, [updatePopover]);
+  }, [update_popover]);
 
   React.useEffect(
     () =>
-      mergeRegister(
-        editor.registerUpdateListener(updatePopover),
+      merge_register(
+        editor.registerUpdateListener(update_popover),
         editor.registerRootListener(() => {
           if (editor.getRootElement() === null) {
-            setIsText(false);
+            set_is_text(false);
           }
         })
       ),
-    [editor, updatePopover]
+    [editor, update_popover]
   );
 
-  if (!isText || link) {
+  if (!is_text || link) {
     return null;
   }
 
-  return createPortal(<FloatingTextStylePopover />, document.body);
+  return create_portal(<FloatingTextStylePopover />, document.body);
 };
 
 export default FloatingTextStylePlugin;

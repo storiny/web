@@ -1,18 +1,18 @@
 "use client";
 
-import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
+import { useLexicalComposerContext as use_lexical_composer_context } from "@lexical/react/LexicalComposerContext";
 import { clsx } from "clsx";
-import { useAtomValue } from "jotai";
+import { useAtomValue as use_atom_value } from "jotai";
 import dynamic from "next/dynamic";
 import React from "react";
 
-import NoSsr from "../../../../ui/src/components/no-ssr";
 import { capitalize } from "~/utils/capitalize";
 
-import { docStatusAtom } from "../../atoms";
+import NoSsr from "../../../../ui/src/components/no-ssr";
+import { doc_status_atom } from "../../atoms";
 import ReadOnlyPlugin from "../../plugins/read-only";
 import RichTextPlugin from "../../plugins/rich-text";
-import { useSidebarsShortcut } from "../../shortcuts/shortcuts";
+import { use_sidebars_shortcut } from "../../shortcuts/shortcuts";
 import EditorContentEditable from "../content-editable";
 import { EditorProps } from "../editor";
 import EditorErrorBoundary from "../error-boundary";
@@ -59,40 +59,39 @@ const HorizontalRulePlugin = dynamic(() =>
   )
 );
 const RegisterTools = dynamic(() => import("../register-tools"));
-// const FontSettings = dynamic(() => import("../font-settings"));
 
 const EditorBody = (props: EditorProps): React.ReactElement => {
-  const { role, docId, initialDoc, readOnly } = props;
-  useSidebarsShortcut();
-  const [editor] = useLexicalComposerContext();
-  const isEditable = editor.isEditable();
-  const docStatus = use_atom_value(docStatusAtom);
+  const { role, doc_id, initial_doc, read_only } = props;
+  use_sidebars_shortcut();
+  const [editor] = use_lexical_composer_context();
+  const is_editable = editor.isEditable();
+  const doc_status = use_atom_value(doc_status_atom);
 
   return (
     <article
-      className={clsx(styles.x, styles.body, readOnly && styles["read-only"])}
+      className={clsx(styles.x, styles.body, read_only && styles["read-only"])}
       data-testid={"editor-container"}
-      {...(!readOnly && !["connected", "syncing"].includes(docStatus)
-        ? { style: { pointerEvents: "none", userSelect: "none" } }
+      {...(!read_only && !["connected", "syncing"].includes(doc_status)
+        ? // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+          { style: { pointerEvents: "none", userSelect: "none" } }
         : {})}
     >
-      {readOnly && <StoryHeader />}
+      {read_only && <StoryHeader />}
       <RichTextPlugin
         ErrorBoundary={EditorErrorBoundary}
-        contentEditable={<EditorContentEditable editable={!readOnly} />}
+        contentEditable={<EditorContentEditable editable={!read_only} />}
         placeholder={<EditorPlaceholder />}
       />
-      {readOnly ? (
-        <ReadOnlyPlugin initialDoc={initialDoc!} />
+      {read_only ? (
+        <ReadOnlyPlugin initial_doc={initial_doc!} />
       ) : (
         <React.Fragment>
           <RegisterTools />
           <NoSsr>
             <CollaborationPlugin
-              id={docId}
-              isMainEditor
+              id={doc_id}
               role={role}
-              shouldBootstrap={true}
+              should_bootstrap={true}
             />
           </NoSsr>
           <LinkPlugin />
@@ -107,7 +106,7 @@ const EditorBody = (props: EditorProps): React.ReactElement => {
           <ListMaxIndentLevelPlugin />
           <MaxLengthPlugin />
           <MarkdownPlugin />
-          {docStatus !== "publishing" && (
+          {doc_status !== "publishing" && (
             <React.Fragment>
               <TabFocusPlugin />
               <AutoFocusPlugin />
@@ -117,33 +116,33 @@ const EditorBody = (props: EditorProps): React.ReactElement => {
           )}
         </React.Fragment>
       )}
-      {!isEditable || readOnly ? <ClickableLinkPlugin /> : null}
-      {!readOnly && !["connected", "syncing"].includes(docStatus) && (
+      {!is_editable || read_only ? <ClickableLinkPlugin /> : null}
+      {!read_only && !["connected", "syncing"].includes(doc_status) && (
         <EditorLoader
-          hideProgress={[
+          hide_progress={[
             "disconnected",
             "reconnecting",
             "overloaded",
             "forbidden"
-          ].includes(docStatus)}
+          ].includes(doc_status)}
           label={
-            docStatus === "publishing"
+            doc_status === "publishing"
               ? "Publishing…"
-              : docStatus === "disconnected"
+              : doc_status === "disconnected"
               ? "Connection lost"
-              : docStatus === "overloaded"
+              : doc_status === "overloaded"
               ? "This story has reached the maximum number of editors."
-              : docStatus === "forbidden"
+              : doc_status === "forbidden"
               ? "You do not have the access to edit this story."
-              : `${capitalize(docStatus)}…`
+              : `${capitalize(doc_status)}…`
           }
           overlay
         />
       )}
-      {readOnly && (
+      {read_only && (
         <React.Fragment>
           <StoryFooter />
-          {/*<FontSettings />*/}
+          {/* TODO: <FontSettings /> */}
         </React.Fragment>
       )}
     </article>

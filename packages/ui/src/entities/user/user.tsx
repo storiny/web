@@ -10,10 +10,10 @@ import Typography from "src/components/typography";
 import { use_media_query } from "src/hooks/use-media-query";
 import { abbreviate_number } from "src/utils/abbreviate-number";
 
-import StoryIcon from "~/icons/Story";
-import UserCheckIcon from "~/icons/UserCheck";
-import UserPlusIcon from "~/icons/UserPlus";
-import UsersIcon from "~/icons/Users";
+import StoryIcon from "src/icons/story";
+import UserCheckIcon from "src/icons/user-check";
+import UserPlusIcon from "src/icons/user-plus";
+import UsersIcon from "src/icons/users";
 import { boolean_action } from "~/redux/features";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 import { BREAKPOINTS } from "~/theme/breakpoints";

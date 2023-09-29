@@ -1,6 +1,6 @@
-import { getShortcutLabel } from "@storiny/shared/src/utils/get-shortcut-label";
+import { get_shortcut_label } from "@storiny/shared/src/utils/get-shortcut-label";
 import { clsx } from "clsx";
-import { useSetAtom } from "jotai";
+import { useSetAtom as use_set_atom } from "jotai";
 import React from "react";
 
 import IconButton from "../../../../../../../../ui/src/components/icon-button";
@@ -8,10 +8,10 @@ import Select from "../../../../../../../../ui/src/components/select";
 import Spacer from "../../../../../../../../ui/src/components/spacer";
 import Tooltip from "../../../../../../../../ui/src/components/tooltip";
 import Typography from "../../../../../../../../ui/src/components/typography";
-import CaretDefaultIcon from "~/icons/CaretDefault";
-import SidebarCollapseIcon from "~/icons/SidebarCollapse";
+import CaretDefaultIcon from "../../../../../../../../ui/src/icons/caret-default";
+import SidebarCollapseIcon from "../../../../../../../../ui/src/icons/sidebar-collapse";
 
-import { sidebarsCollapsedAtom } from "../../../../../../atoms";
+import { sidebars_collapsed_atom } from "../../../../../../atoms";
 import { EDITOR_SHORTCUTS } from "../../../../../../constants/shortcuts";
 
 const Appearance = ({
@@ -19,7 +19,7 @@ const Appearance = ({
 }: {
   disabled?: boolean;
 }): React.ReactElement => {
-  const setSidebarsCollapsed = use_set_atom(sidebarsCollapsedAtom);
+  const set_sidebars_collapsed = use_set_atom(sidebars_collapsed_atom);
   return (
     <div className={"flex-col"}>
       <Typography className={clsx("t-minor", "t-medium")} level={"body2"}>
@@ -55,11 +55,11 @@ const Appearance = ({
         <Spacer />
         <Tooltip
           content={"Collapse sidebars"}
-          right_slot={getShortcutLabel(EDITOR_SHORTCUTS.sidebars)}
+          right_slot={get_shortcut_label(EDITOR_SHORTCUTS.sidebars)}
         >
           <IconButton
             disabled={disabled}
-            onClick={(): void => setSidebarsCollapsed(true)}
+            onClick={(): void => set_sidebars_collapsed(true)}
             variant={"ghost"}
           >
             <SidebarCollapseIcon />

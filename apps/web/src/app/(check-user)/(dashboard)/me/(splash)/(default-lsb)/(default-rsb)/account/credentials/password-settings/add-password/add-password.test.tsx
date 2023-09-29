@@ -1,4 +1,4 @@
-import { userEvent } from "@storiny/test-utils";
+import { user_event } from "@storiny/test-utils";
 import { act, screen, waitFor } from "@testing-library/react";
 import React from "react";
 
@@ -9,7 +9,7 @@ import AddPassword from "./add-password";
 describe("<AddPassword />", () => {
   it("renders validation messages", async () => {
     const mockSubmit = jest.fn();
-    const user = userEvent.setup();
+    const user = user_event.setup();
     render_test_with_provider(<AddPassword on_submit={mockSubmit} />, {
       logged_in: true
     });
@@ -42,7 +42,7 @@ describe("<AddPassword />", () => {
 
   it("submits correct form data", async () => {
     const mockSubmit = jest.fn();
-    const user = userEvent.setup();
+    const user = user_event.setup();
     render_test_with_provider(<AddPassword on_submit={mockSubmit} />, {
       logged_in: true
     });

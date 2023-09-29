@@ -5,11 +5,11 @@ import IconButton from "../../../../ui/src/components/icon-button";
 import Spacer from "../../../../ui/src/components/spacer";
 import Tooltip from "../../../../ui/src/components/tooltip";
 import Typography from "../../../../ui/src/components/typography";
-import RedoIcon from "~/icons/Redo";
-import RotationIcon from "~/icons/Rotation";
-import UndoIcon from "~/icons/Undo";
+import RedoIcon from "../../../../ui/src/icons/redo";
+import RotationIcon from "../../../../ui/src/icons/rotation";
+import UndoIcon from "../../../../ui/src/icons/undo";
 
-import { useActiveObject, useCanvas, useEventRender } from "../../hooks";
+import { use_active_object, use_canvas, use_event_render } from "../../hooks";
 import Cancel from "./cancel";
 import Confirm from "./confirm";
 import MainMenu from "./main-menu";
@@ -18,28 +18,28 @@ import styles from "./topbar.module.scss";
 // Rotation
 
 const Rotation = (): React.ReactElement => {
-  const activeObject = useActiveObject();
-  useEventRender(
+  const active_object = use_active_object();
+  use_event_render(
     "object:rotating",
-    (options) => options.target.get("id") === activeObject?.get("id")
+    (options) => options.target.get("id") === active_object?.get("id")
   );
 
   return (
     <div
       className={"flex-center"}
       onClick={(): void => {
-        if (activeObject) {
-          activeObject.rotate(0);
+        if (active_object) {
+          active_object.rotate(0);
 
-          if (activeObject.canvas) {
-            activeObject.canvas?.requestRenderAll();
-            activeObject.canvas?.fire?.("object:rotating", {
-              target: activeObject
+          if (active_object.canvas) {
+            active_object.canvas?.requestRenderAll();
+            active_object.canvas?.fire?.("object:rotating", {
+              target: active_object
             } as any);
           }
         }
       }}
-      {...(activeObject
+      {...(active_object
         ? {
             title: "Reset rotation",
             role: "button",
@@ -48,12 +48,12 @@ const Rotation = (): React.ReactElement => {
           }
         : {})}
     >
-      <RotationIcon rotation={activeObject?.angle || 0} />
+      <RotationIcon rotation={active_object?.angle || 0} />
       <Spacer size={0.5} />
       <span>
         (
-        {typeof activeObject?.angle === "number"
-          ? Math.round(activeObject.angle)
+        {typeof active_object?.angle === "number"
+          ? Math.round(active_object.angle)
           : "-"}
         &deg;)
       </span>
@@ -82,14 +82,14 @@ const StatusBar = (): React.ReactElement => (
 // History
 
 const History = (): React.ReactElement => {
-  const canvas = useCanvas();
+  const canvas = use_canvas();
 
   /**
    * Undo
    */
   const undo = (): void => {
     if (canvas.current) {
-      canvas.current.historyManager.undo();
+      canvas.current.history_manager.undo();
     }
   };
 
@@ -98,7 +98,7 @@ const History = (): React.ReactElement => {
    */
   const redo = (): void => {
     if (canvas.current) {
-      canvas.current.historyManager.redo();
+      canvas.current.history_manager.redo();
     }
   };
 

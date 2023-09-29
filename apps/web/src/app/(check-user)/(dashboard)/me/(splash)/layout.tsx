@@ -5,7 +5,7 @@ import { useLoginRedirect } from "~/common/utils";
 import Button from "../../../../../../../../packages/ui/src/components/button";
 import Spacer from "../../../../../../../../packages/ui/src/components/spacer";
 import Typography from "../../../../../../../../packages/ui/src/components/typography";
-import RetryIcon from "~/icons/Retry";
+import RetryIcon from "../../../../../../../../packages/ui/src/icons/retry";
 import SplashScreen from "../../../../../../../../packages/ui/src/layout/splash-screen";
 import { fetch_user, select_auth_status, select_user } from "~/redux/features";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";

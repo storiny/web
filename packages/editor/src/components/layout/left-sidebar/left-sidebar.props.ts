@@ -1,6 +1,6 @@
 import { StoryStatus } from "../../editor";
 
 export interface EditorLeftSidebarProps {
-  readOnly?: boolean;
+  read_only?: boolean;
   status: StoryStatus;
 }

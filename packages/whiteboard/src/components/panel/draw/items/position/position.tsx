@@ -1,88 +1,88 @@
 import React from "react";
 
 import Input from "../../../../../../../ui/src/components/input";
-import LetterXIcon from "~/icons/LetterX";
-import LetterYIcon from "~/icons/LetterY";
-
-import { useActiveObject, useEventRender } from "../../../../../hooks";
-import { modifyObject } from "../../../../../utils";
+import LetterXIcon from "../../../../../../../ui/src/icons/letter-x";
+import LetterYIcon from "../../../../../../../ui/src/icons/letter-y";
+import { use_active_object, use_event_render } from "../../../../../hooks";
+import { modify_object } from "../../../../../utils";
 import DrawItem, { DrawItemRow } from "../../item";
 
 const Position = (): React.ReactElement | null => {
-  const activeObject = useActiveObject();
-  const [pos, setPos] = React.useState<{ x: number; y: number }>({
+  const active_object = use_active_object();
+  const [pos, set_pos] = React.useState<{ x: number; y: number }>({
     x: 0,
     y: 0
   });
-  useEventRender("object:moving", (options) => {
+
+  use_event_render("object:moving", (options) => {
     const object = options.target;
-    return object.get("id") === activeObject?.get("id");
+    return object.get("id") === active_object?.get("id");
   });
-  useEventRender("draw:scaling" as any, (options) => {
+  use_event_render("draw:scaling" as any, (options) => {
     const object = options.target;
-    return object.get("id") === activeObject?.get("id");
+    return object.get("id") === active_object?.get("id");
   });
-  useEventRender("draw:end" as any, (options) => {
+  use_event_render("draw:end" as any, (options) => {
     const object = options.target;
-    return object.get("id") === activeObject?.get("id");
+    return object.get("id") === active_object?.get("id");
   });
-  useEventRender("linear:moving" as any, (options) => {
+  use_event_render("linear:moving" as any, (options) => {
     const object = options.target;
-    return object.get("id") === activeObject?.get("id");
+    return object.get("id") === active_object?.get("id");
   });
 
   /**
    * Mutates X coordinate of the object
-   * @param newX New X coordinate
+   * @param next_x New X coordinate
    */
-  const changeX = React.useCallback(
-    (newX: number) => {
-      if (activeObject) {
-        setPos((prev_state) => ({ ...prev_state, x: newX }));
-        modifyObject(activeObject, {
-          left: newX
+  const change_x = React.useCallback(
+    (next_x: number) => {
+      if (active_object) {
+        set_pos((prev_state) => ({ ...prev_state, x: next_x }));
+        modify_object(active_object, {
+          left: next_x
         });
       }
     },
-    [activeObject]
+    [active_object]
   );
 
   /**
    * Mutates Y coordinate of the object
-   * @param newY New Y coordinate
+   * @param next_y New Y coordinate
    */
-  const changeY = React.useCallback(
-    (newY: number) => {
-      if (activeObject) {
-        setPos((prev_state) => ({ ...prev_state, y: newY }));
-        modifyObject(activeObject, {
-          top: newY
+  const change_y = React.useCallback(
+    (next_y: number) => {
+      if (active_object) {
+        set_pos((prev_state) => ({ ...prev_state, y: next_y }));
+        modify_object(active_object, {
+          top: next_y
         });
       }
     },
-    [activeObject]
+    [active_object]
   );
 
   React.useEffect(() => {
-    setPos({
-      x: activeObject?.left || 0,
-      y: activeObject?.top || 0
+    set_pos({
+      x: active_object?.left || 0,
+      y: active_object?.top || 0
     });
-  }, [activeObject?.left, activeObject?.top]);
+  }, [active_object?.left, active_object?.top]);
 
-  if (!activeObject) {
+  if (!active_object) {
     return null;
   }
 
   return (
-    <DrawItem key={activeObject.get("id")}>
+    <DrawItem key={active_object.get("id")}>
       <DrawItemRow>
         <Input
           aria-label={"Position X"}
           decorator={<LetterXIcon />}
           monospaced
           onChange={(event): void =>
-            changeX(Number.parseInt(event.target.value, 10) || 1)
+            change_x(Number.parseInt(event.target.value, 10) || 1)
           }
           placeholder={"Position X"}
           size={"sm"}
@@ -95,7 +95,7 @@ const Position = (): React.ReactElement | null => {
           decorator={<LetterYIcon />}
           monospaced
           onChange={(event): void =>
-            changeY(Number.parseInt(event.target.value, 10) || 1)
+            change_y(Number.parseInt(event.target.value, 10) || 1)
           }
           placeholder={"Position Y"}
           size={"sm"}

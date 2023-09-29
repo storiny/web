@@ -1,64 +1,51 @@
-import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
+import { useLexicalComposerContext as use_lexical_composer_context } from "@lexical/react/LexicalComposerContext";
 import { clsx } from "clsx";
 import React from "react";
 
-import { useLayoutEffect } from "../../hooks/use-layout-effect";
+import { use_layout_effect } from "../../hooks/use-layout-effect";
 import styles from "./content-editable.module.scss";
 import { EditorContentEditableProps } from "./content-editable.props";
 
 const EditorContentEditable = ({
-  ariaActiveDescendant,
-  ariaAutoComplete,
-  ariaControls,
-  ariaDescribedBy,
-  ariaExpanded,
-  ariaLabel,
-  ariaLabelledBy,
-  ariaMultiline,
-  ariaOwns,
-  ariaRequired,
   role = "textbox",
-  spellCheck = true,
+  spellCheck: spell_check = true,
   className,
   editable,
   ...rest
 }: EditorContentEditableProps): React.ReactElement => {
-  const [editor] = useLexicalComposerContext();
-  const [isEditable, setEditable] = React.useState<boolean>(false);
+  const [editor] = use_lexical_composer_context();
+  const [is_editable, set_editable] = React.useState<boolean>(false);
   const ref = React.useCallback(
-    (rootElement: null | HTMLElement) => {
-      editor.setRootElement(rootElement);
+    (root_element: null | HTMLElement) => {
+      editor.setRootElement(root_element);
     },
     [editor]
   );
 
-  useLayoutEffect(() => {
-    setEditable(editor.isEditable());
-    return editor.registerEditableListener((currentIsEditable) => {
-      setEditable(currentIsEditable);
+  use_layout_effect(() => {
+    set_editable(editor.is_editable());
+    return editor.registerEditableListener((current_is_editable) => {
+      set_editable(current_is_editable);
     });
   }, [editor]);
 
   return (
     <main
       {...rest}
-      aria-activedescendant={!isEditable ? undefined : ariaActiveDescendant}
-      aria-autocomplete={!isEditable ? "none" : ariaAutoComplete}
-      aria-controls={!isEditable ? undefined : ariaControls}
-      aria-describedby={ariaDescribedBy}
+      aria-activedescendant={
+        !is_editable ? undefined : rest["aria-activedescendant"]
+      }
+      aria-autocomplete={!is_editable ? "none" : rest["aria-autocomplete"]}
+      aria-controls={!is_editable ? undefined : rest["aria-controls"]}
       aria-expanded={
-        !isEditable
+        !is_editable
           ? undefined
           : role === "combobox"
-          ? !!ariaExpanded
+          ? !!rest["aria-expanded"]
           : undefined
       }
-      aria-label={ariaLabel}
-      aria-labelledby={ariaLabelledBy}
-      aria-multiline={ariaMultiline}
-      aria-owns={!isEditable ? undefined : ariaOwns}
-      aria-readonly={!isEditable ? true : undefined}
-      aria-required={ariaRequired}
+      aria-owns={!is_editable ? undefined : rest["aria-owns"]}
+      aria-readonly={!is_editable ? true : undefined}
       className={clsx(
         "t-legible",
         "t-legible-fg",
@@ -66,9 +53,9 @@ const EditorContentEditable = ({
         editable && styles.editable,
         className
       )}
-      contentEditable={isEditable}
+      contentEditable={is_editable}
       ref={ref}
-      spellCheck={spellCheck}
+      spellCheck={spell_check}
     />
   );
 };

@@ -1,20 +1,20 @@
 import { clsx } from "clsx";
-import { useAtomValue } from "jotai";
+import { useAtomValue as use_atom_value } from "jotai";
 import React from "react";
 
 import IconButton from "../../../../../../ui/src/components/icon-button";
 import Tooltip from "../../../../../../ui/src/components/tooltip";
-import RedoIcon from "~/icons/Redo";
-import UndoIcon from "~/icons/Undo";
+import RedoIcon from "../../../../../../ui/src/icons/redo";
+import UndoIcon from "../../../../../../ui/src/icons/undo";
 
-import { docStatusAtom } from "../../../../atoms";
-import { useHistory } from "../../../../hooks/use-history";
-import toolbarStyles from "../../toolbar.module.scss";
+import { doc_status_atom } from "../../../../atoms";
+import { use_history } from "../../../../hooks/use-history";
+import toolbar_styles from "../../toolbar.module.scss";
 
 const ToolbarHistoryItem = (): React.ReactElement => {
-  const { undo, canUndo, canRedo, redo } = useHistory();
-  const docStatus = use_atom_value(docStatusAtom);
-  const documentLoading = ["connecting", "reconnecting"].includes(docStatus);
+  const { undo, can_undo, can_redo, redo } = use_history();
+  const doc_status = use_atom_value(doc_status_atom);
+  const document_loading = ["connecting", "reconnecting"].includes(doc_status);
 
   return (
     <div className={"flex-center"}>
@@ -22,10 +22,10 @@ const ToolbarHistoryItem = (): React.ReactElement => {
         <IconButton
           className={clsx(
             "focus-invert",
-            toolbarStyles.x,
-            toolbarStyles.button
+            toolbar_styles.x,
+            toolbar_styles.button
           )}
-          disabled={documentLoading || !canUndo}
+          disabled={document_loading || !can_undo}
           onClick={undo}
           size={"lg"}
           variant={"ghost"}
@@ -37,10 +37,10 @@ const ToolbarHistoryItem = (): React.ReactElement => {
         <IconButton
           className={clsx(
             "focus-invert",
-            toolbarStyles.x,
-            toolbarStyles.button
+            toolbar_styles.x,
+            toolbar_styles.button
           )}
-          disabled={documentLoading || !canRedo}
+          disabled={document_loading || !can_redo}
           onClick={redo}
           size={"lg"}
           variant={"ghost"}

@@ -19,7 +19,7 @@ import Spacer from "../../../../../../../../../../../../../../packages/ui/src/co
 import { use_toast } from "../../../../../../../../../../../../../../packages/ui/src/components/toast";
 import Typography from "../../../../../../../../../../../../../../packages/ui/src/components/typography";
 import { use_media_query } from "../../../../../../../../../../../../../../packages/ui/src/hooks/use-media-query";
-import PasswordIcon from "~/icons/Password";
+import PasswordIcon from "../../../../../../../../../../../../../../packages/ui/src/icons/password";
 import { use_update_password_mutation } from "~/redux/features";
 import { BREAKPOINTS } from "~/theme/breakpoints";
 

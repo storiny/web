@@ -17,7 +17,7 @@ import Divider from "../../../../../../../../../../../../packages/ui/src/compone
 import Spacer from "../../../../../../../../../../../../packages/ui/src/components/spacer";
 import { use_toast } from "../../../../../../../../../../../../packages/ui/src/components/toast";
 import Typography from "../../../../../../../../../../../../packages/ui/src/components/typography";
-import LogoutIcon from "~/icons/Logout";
+import LogoutIcon from "../../../../../../../../../../../../packages/ui/src/icons/logout";
 import { use_session_logout_mutation } from "~/redux/features";
 import {
   DateFormat,

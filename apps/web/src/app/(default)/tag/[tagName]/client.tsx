@@ -14,7 +14,7 @@ import Select from "../../../../../../../packages/ui/src/components/select";
 import ErrorState from "../../../../../../../packages/ui/src/entities/error-state";
 import { use_debounce } from "../../../../../../../packages/ui/src/hooks/use-debounce";
 import { use_media_query } from "../../../../../../../packages/ui/src/hooks/use-media-query";
-import SearchIcon from "~/icons/Search";
+import SearchIcon from "../../../../../../../packages/ui/src/icons/search";
 import {
   get_query_error_type,
   use_get_tag_stories_query
@@ -100,11 +100,11 @@ const PageHeader = ({
 
 const Page = ({ tag }: Props): React.ReactElement => {
   const is_smaller_than_tablet = use_media_query(BREAKPOINTS.down("tablet"));
-  const [sort, setSort] = React.useState<TagTabValue>("popular");
+  const [sort, set_sort] = React.useState<TagTabValue>("popular");
   const [query, setQuery] = React.useState<string>("");
   const [page, set_page] = React.useState<number>(1);
   const debounced_query = use_debounce(query);
-  const { data, isLoading, isFetching, isError, error, refetch } =
+  const { data, isLoading, is_fetching, isError, error, refetch } =
     use_get_tag_stories_query({
       page,
       sort,
@@ -126,7 +126,7 @@ const Page = ({ tag }: Props): React.ReactElement => {
 
   const handleChange = React.useCallback((newValue: TagTabValue) => {
     set_page(1);
-    setSort(newValue);
+    set_sort(newValue);
   }, []);
 
   return (
@@ -144,14 +144,14 @@ const Page = ({ tag }: Props): React.ReactElement => {
         <ErrorState
           auto_size
           component_props={{
-            button: { loading: isFetching }
+            button: { loading: is_fetching }
           }}
           retry={refetch}
           type={get_query_error_type(error)}
         />
-      ) : !isFetching && !items.length ? (
+      ) : !is_fetching && !items.length ? (
         <EmptyState query={query} />
-      ) : isLoading || is_typing || (isFetching && page === 1) ? (
+      ) : isLoading || is_typing || (is_fetching && page === 1) ? (
         <StoryListSkeleton />
       ) : (
         <VirtualizedStoryList

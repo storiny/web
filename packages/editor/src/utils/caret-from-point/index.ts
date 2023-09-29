@@ -3,7 +3,7 @@
  * @param x Point X
  * @param y Point Y
  */
-export const caretFromPoint = (
+export const caret_from_point = (
   x: number,
   y: number
 ): null | {

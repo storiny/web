@@ -1,47 +1,45 @@
-import { $canShowPlaceholderCurry } from "@lexical/text";
-import { mergeRegister } from "@lexical/utils";
+import { $canShowPlaceholderCurry as $can_show_placeholder_curry } from "@lexical/text";
+import { mergeRegister as merge_register } from "@lexical/utils";
 import { LexicalEditor } from "lexical";
 import React from "react";
 
-import { useLayoutEffect } from "../use-layout-effect";
+import { use_layout_effect } from "../use-layout-effect";
 
 /**
  * Predicate function for determining whether the placeholder can
  * be rendered from the current editor state
  * @param editor Editor
  */
-const canShowPlaceholderFromCurrentEditorState = (
+const can_show_placeholder_from_current_editor_state = (
   editor: LexicalEditor
 ): boolean =>
-  editor.getEditorState().read($canShowPlaceholderCurry(editor.isComposing()));
+  editor
+    .getEditorState()
+    .read($can_show_placeholder_curry(editor.isComposing()));
 
 /**
  * Hook for determining placeholder visibility
  * @param editor Editor
  */
-export const useCanShowPlaceholder = (editor: LexicalEditor): boolean => {
-  const [canShowPlaceholder, setCanShowPlaceholder] = React.useState(() =>
-    canShowPlaceholderFromCurrentEditorState(editor)
+export const use_can_show_placeholder = (editor: LexicalEditor): boolean => {
+  const [can_show_placeholder, set_can_show_placeholder] = React.useState(() =>
+    can_show_placeholder_from_current_editor_state(editor)
   );
 
-  useLayoutEffect(() => {
-    const resetCanShowPlaceholder = (): void => {
-      const currentCanShowPlaceholder =
-        canShowPlaceholderFromCurrentEditorState(editor);
-      setCanShowPlaceholder(currentCanShowPlaceholder);
+  use_layout_effect(() => {
+    const reset_can_show_placeholder = (): void => {
+      set_can_show_placeholder(
+        can_show_placeholder_from_current_editor_state(editor)
+      );
     };
 
-    resetCanShowPlaceholder();
+    reset_can_show_placeholder();
 
-    return mergeRegister(
-      editor.registerUpdateListener(() => {
-        resetCanShowPlaceholder();
-      }),
-      editor.registerEditableListener(() => {
-        resetCanShowPlaceholder();
-      })
+    return merge_register(
+      editor.registerUpdateListener(reset_can_show_placeholder),
+      editor.registerEditableListener(reset_can_show_placeholder)
     );
   }, [editor]);
 
-  return canShowPlaceholder;
+  return can_show_placeholder;
 };

@@ -4,7 +4,7 @@ import React from "react";
 import IconButton from "../../../../../ui/src/components/icon-button";
 import Menu from "../../../../../ui/src/components/menu";
 import Separator from "../../../../../ui/src/components/separator";
-import MenuIcon from "~/icons/Menu";
+import MenuIcon from "../../../../../ui/src/icons/menu";
 
 import styles from "../topbar.module.scss";
 import ExportImageItem from "./export-image-item";

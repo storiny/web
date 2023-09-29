@@ -28,8 +28,8 @@ export const add_mute_listener = (start_listening: AppStartListening): void => {
       if (payload[0] === "mutes") {
         await debounce_effect(listener_api);
 
-        const [, userId, hasMuted] = payload;
-        await fetch_api(`me/muted-users/${userId}`, listener_api, {
+        const [, user_id, hasMuted] = payload;
+        await fetch_api(`me/muted-users/${user_id}`, listener_api, {
           method: hasMuted ? "POST" : "DELETE"
         }).catch(() => undefined);
       }

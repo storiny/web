@@ -1,14 +1,14 @@
 import {
-  $isRangeSelection,
-  $isTextNode,
+  $isRangeSelection as $is_range_selection,
+  $isTextNode as $is_text_node,
   GridSelection,
   NodeSelection,
   Point,
   RangeSelection
 } from "lexical";
 import {
-  compareRelativePositions,
-  createRelativePositionFromTypeIndex,
+  compareRelativePositions as compare_relative_positions,
+  createRelativePositionFromTypeIndex as create_relative_position_from_type_index,
   RelativePosition
 } from "yjs";
 
@@ -22,69 +22,69 @@ import { Provider } from "../../collaboration/provider";
  * @param point Point
  * @param binding Binding
  */
-const createRelativePosition = (
+const create_relative_position = (
   point: Point,
   binding: Binding
 ): null | RelativePosition => {
-  const collabNodeMap = binding.collabNodeMap;
-  const collabNode = collabNodeMap.get(point.key);
+  const collab_node_map = binding.collab_node_map;
+  const collab_node = collab_node_map.get(point.key);
 
-  if (collabNode === undefined) {
+  if (collab_node === undefined) {
     return null;
   }
 
   let offset = point.offset;
-  let sharedType = collabNode.getSharedType();
+  let shared_type = collab_node.get_shared_type();
 
-  if (collabNode instanceof CollabTextNode) {
-    sharedType = collabNode._parent._xmlText;
-    const currentOffset = collabNode.getOffset();
+  if (collab_node instanceof CollabTextNode) {
+    shared_type = collab_node._parent._xml_text;
+    const current_offset = collab_node.get_offset();
 
-    if (currentOffset === -1) {
+    if (current_offset === -1) {
       return null;
     }
 
-    offset = currentOffset + 1 + offset;
+    offset = current_offset + 1 + offset;
   } else if (
-    collabNode instanceof CollabElementNode &&
+    collab_node instanceof CollabElementNode &&
     point.type === "element"
   ) {
     const parent = point.getNode();
-    let accumulatedOffset = 0;
+    let accumulated_offset = 0;
     let i = 0;
     let node = parent.getFirstChild();
 
     while (node !== null && i++ < offset) {
-      if ($isTextNode(node)) {
-        accumulatedOffset += node.getTextContentSize() + 1;
+      if ($is_text_node(node)) {
+        accumulated_offset += node.getTextContentSize() + 1;
       } else {
-        accumulatedOffset++;
+        accumulated_offset++;
       }
 
       node = node.getNextSibling();
     }
 
-    offset = accumulatedOffset;
+    offset = accumulated_offset;
   }
 
-  return createRelativePositionFromTypeIndex(sharedType, offset);
+  return create_relative_position_from_type_index(shared_type, offset);
 };
 
 /**
  * Predicate function for determining whether the position needs to be
  * updated
- * @param currentPos Current position
+ * @param current_pos Current position
  * @param pos Position
  */
-const shouldUpdatePosition = (
-  currentPos: RelativePosition | null | undefined,
+const should_update_position = (
+  current_pos: RelativePosition | null | undefined,
   pos: RelativePosition | null | undefined
 ): boolean => {
-  if (currentPos == null) {
+  if (current_pos == null) {
     if (pos != null) {
       return true;
     }
-  } else if (pos == null || !compareRelativePositions(currentPos, pos)) {
+  } else if (pos == null || !compare_relative_positions(current_pos, pos)) {
     return true;
   }
 
@@ -95,54 +95,54 @@ const shouldUpdatePosition = (
  * Syncs lexical selection to yjs
  * @param binding Binding
  * @param provider Provider
- * @param prevSelection Previous selection
- * @param nextSelection Next selection
+ * @param prev_selection Previous selection
+ * @param next_selection Next selection
  */
-export const syncLexicalSelectionToYjs = (
+export const sync_lexical_selection_to_yjs = (
   binding: Binding,
   provider: Provider,
-  prevSelection: null | RangeSelection | NodeSelection | GridSelection,
-  nextSelection: null | RangeSelection | NodeSelection | GridSelection
+  prev_selection: null | RangeSelection | NodeSelection | GridSelection,
+  next_selection: null | RangeSelection | NodeSelection | GridSelection
 ): void => {
   const awareness = provider.awareness;
-  const localState = awareness.getLocalState();
+  const local_state = awareness.getLocalState();
 
-  if (localState === null) {
+  if (local_state === null) {
     return;
   }
 
   const {
-    anchorPos: currentAnchorPos,
-    focusPos: currentFocusPos,
+    anchor_pos: current_anchor_pos,
+    focus_pos: current_focus_pos,
     focusing,
-    awarenessData,
+    awareness_data,
     ...rest
-  } = localState;
-  let anchorPos = null;
-  let focusPos = null;
+  } = local_state;
+  let anchor_pos = null;
+  let focus_pos = null;
 
   if (
-    nextSelection === null ||
-    (currentAnchorPos !== null && !nextSelection.is(prevSelection))
+    next_selection === null ||
+    (current_anchor_pos !== null && !next_selection.is(prev_selection))
   ) {
-    if (prevSelection === null) {
+    if (prev_selection === null) {
       return;
     }
   }
 
-  if ($isRangeSelection(nextSelection)) {
-    anchorPos = createRelativePosition(nextSelection.anchor, binding);
-    focusPos = createRelativePosition(nextSelection.focus, binding);
+  if ($is_range_selection(next_selection)) {
+    anchor_pos = create_relative_position(next_selection.anchor, binding);
+    focus_pos = create_relative_position(next_selection.focus, binding);
   }
 
   if (
-    shouldUpdatePosition(currentAnchorPos, anchorPos) ||
-    shouldUpdatePosition(currentFocusPos, focusPos)
+    should_update_position(current_anchor_pos, anchor_pos) ||
+    should_update_position(current_focus_pos, focus_pos)
   ) {
     awareness.setLocalState({
-      anchorPos,
-      awarenessData,
-      focusPos,
+      anchor_pos,
+      awareness_data,
+      focus_pos,
       focusing,
       ...rest
     });

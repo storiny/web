@@ -1,11 +1,11 @@
 "use client";
 
-import { useAtomValue } from "jotai";
+import { useAtomValue as use_atom_value } from "jotai";
 import React from "react";
 
 import Divider from "../../../../../../../ui/src/components/divider";
 
-import { docStatusAtom } from "../../../../../atoms";
+import { doc_status_atom } from "../../../../../atoms";
 import Alignment from "./alignment";
 import Appearance from "./appearance";
 import History from "./history";
@@ -15,10 +15,10 @@ import PaddedDivider from "./padded-divider";
 import TextStyle from "./text-style";
 
 const SuspendedEditorRightSidebarEditableContent = (): React.ReactElement => {
-  const docStatus = use_atom_value(docStatusAtom);
-  const documentLoading = ["connecting", "reconnecting"].includes(docStatus);
-  const publishing = docStatus === "publishing";
-  const disabled = documentLoading || publishing;
+  const doc_status = use_atom_value(doc_status_atom);
+  const document_loading = ["connecting", "reconnecting"].includes(doc_status);
+  const publishing = doc_status === "publishing";
+  const disabled = document_loading || publishing;
 
   return (
     <React.Fragment>

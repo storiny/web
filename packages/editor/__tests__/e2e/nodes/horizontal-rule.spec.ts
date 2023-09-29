@@ -14,7 +14,7 @@ import {
   focusEditor,
   html,
   initialize,
-  insertHorizontalRule,
+  insert_horizontal_rule,
   pasteFromClipboard,
   waitForSelector
 } from "../../utils";
@@ -29,7 +29,7 @@ test.describe("horizontal rule", () => {
     page,
     browserName
   }) => {
-    await insertHorizontalRule(page);
+    await insert_horizontal_rule(page);
     await waitForSelector(page, "hr");
 
     await assertHTML(
@@ -165,7 +165,7 @@ test.describe("horizontal rule", () => {
       `
     );
 
-    await insertHorizontalRule(page);
+    await insert_horizontal_rule(page);
     await waitForSelector(page, "hr");
 
     await assertHTML(
@@ -217,7 +217,7 @@ test.describe("horizontal rule", () => {
       focusPath: [0, 0, 0]
     });
 
-    await insertHorizontalRule(page);
+    await insert_horizontal_rule(page);
     await waitForSelector(page, "hr");
 
     await assertHTML(
@@ -242,7 +242,7 @@ test.describe("horizontal rule", () => {
   });
 
   test("can copy and paste a horizontal rule", async ({ page }) => {
-    await insertHorizontalRule(page);
+    await insert_horizontal_rule(page);
     await waitForSelector(page, "hr");
 
     await assertHTML(

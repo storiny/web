@@ -24,7 +24,7 @@ const StoryList = ({
   loading: boolean;
 }): React.ReactElement => {
   const [page, set_page] = React.useState<number>(1);
-  const { data, isLoading, isFetching, isError, error, refetch } =
+  const { data, isLoading, is_fetching, isError, error, refetch } =
     use_get_explore_stories_query({
       page,
       category,
@@ -40,18 +40,18 @@ const StoryList = ({
 
   return (
     <>
-      {loading || (isFetching && page === 1) ? (
+      {loading || (is_fetching && page === 1) ? (
         <StoryListSkeleton />
       ) : isError ? (
         <ErrorState
           auto_size
           component_props={{
-            button: { loading: isFetching }
+            button: { loading: is_fetching }
           }}
           retry={refetch}
           type={get_query_error_type(error)}
         />
-      ) : !isFetching && !items.length ? (
+      ) : !is_fetching && !items.length ? (
         <EmptyState query={debounced_query} />
       ) : (
         <VirtualizedStoryList

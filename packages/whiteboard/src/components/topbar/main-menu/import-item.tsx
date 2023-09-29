@@ -1,31 +1,35 @@
 import React from "react";
-import { useFilePicker } from "use-file-picker";
+import { useFilePicker as use_file_picker } from "use-file-picker";
 
 import { use_confirmation } from "../../../../../ui/src/components/confirmation";
 import MenuItem from "../../../../../ui/src/components/menu-item";
 import { use_toast } from "../../../../../ui/src/components/toast";
-import FolderOpenIcon from "~/icons/FolderOpen";
+import FolderOpenIcon from "../../../../../ui/src/icons/folder-open";
 
 import { FILE_EXTENSIONS } from "../../../constants";
-import { useCanvas } from "../../../hooks";
-import { importFromFile } from "../../../utils";
+import { use_canvas } from "../../../hooks";
+import { import_from_file } from "../../../utils";
 
 const ImportItem = (): React.ReactElement => {
-  const canvas = useCanvas();
+  const canvas = use_canvas();
   const toast = use_toast();
-  const [openFileSelector] = useFilePicker({
+  const [open_file_selector] = use_file_picker({
+    /* eslint-disable prefer-snakecase/prefer-snakecase */
     readAs: "ArrayBuffer",
     accept: FILE_EXTENSIONS.map((ext) => `.${ext}`),
     multiple: false,
     limitFilesConfig: { max: 1, min: 1 },
+    /* eslint-enable prefer-snakecase/prefer-snakecase */
+    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     onFilesRejected: () => {
       toast("Unable to import the sketch file", "error");
     },
-    onFilesSuccessfulySelected: ({ filesContent }) => {
-      if (filesContent[0]) {
+    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+    onFilesSuccessfulySelected: ({ filesContent: files_content }) => {
+      if (files_content[0]) {
         try {
-          const file = filesContent[0];
-          importFromFile(canvas.current, new Uint8Array(file.content as any));
+          const file = files_content[0];
+          import_from_file(canvas.current, new Uint8Array(file.content as any));
         } catch {
           toast("Unable to import the sketch file", "error");
         }
@@ -39,17 +43,17 @@ const ImportItem = (): React.ReactElement => {
    * File import handler
    * @param event Event
    */
-  const importFile = (event: React.MouseEvent<HTMLDivElement>): void => {
+  const import_file = (event: React.MouseEvent<HTMLDivElement>): void => {
     event.preventDefault(); // Do not auto-close the menu
 
     if (canvas.current?.getObjects()?.length) {
-      confirmImport();
+      confirm_import();
     } else {
-      openFileSelector();
+      open_file_selector();
     }
   };
 
-  const [element, confirmImport] = use_confirmation(
+  const [element, confirm_import] = use_confirmation(
     () => (
       <MenuItem
         decorator={<FolderOpenIcon />}
@@ -57,15 +61,15 @@ const ImportItem = (): React.ReactElement => {
          * Add an on-click listener to prevent the modal from opening
          * when the menu item is clicked
          */
-        onClick={importFile}
-        onSelect={importFile as any}
+        onClick={import_file}
+        onSelect={import_file as any}
       >
         Open…
       </MenuItem>
     ),
     {
       color: "ruby",
-      on_confirm: openFileSelector,
+      on_confirm: open_file_selector,
       slot_props: {
         content: {
           style: {

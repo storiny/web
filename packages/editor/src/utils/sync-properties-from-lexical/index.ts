@@ -2,71 +2,71 @@ import { LexicalNode } from "lexical";
 import { Doc, Map as YMap, XmlElement, XmlText } from "yjs";
 
 import { Binding } from "../../collaboration/bindings";
-import { isExcludedProperty } from "../is-excluded-property";
+import { is_excluded_property } from "../is-excluded-property";
 
 /**
  * Syncs properties from the editor
  * @param binding Binding
- * @param sharedType Shared type
- * @param prevLexicalNode Previous node
- * @param nextLexicalNode Next node
+ * @param shared_type Shared type
+ * @param prev_lexical_node Previous node
+ * @param next_lexical_node Next node
  */
-export const syncPropertiesFromLexical = (
+export const sync_properties_from_lexical = (
   binding: Binding,
-  sharedType: XmlText | YMap<unknown> | XmlElement,
-  prevLexicalNode: null | LexicalNode,
-  nextLexicalNode: LexicalNode
+  shared_type: XmlText | YMap<unknown> | XmlElement,
+  prev_lexical_node: null | LexicalNode,
+  next_lexical_node: LexicalNode
 ): void => {
-  const type = nextLexicalNode.__type;
-  const nodeProperties = binding.nodeProperties;
-  let properties = nodeProperties.get(type);
+  const type = next_lexical_node.__type;
+  const node_properties = binding.node_properties;
+  let properties = node_properties.get(type);
 
   if (properties === undefined) {
-    properties = Object.keys(nextLexicalNode).filter(
-      (property) => !isExcludedProperty(property, nextLexicalNode, binding)
+    properties = Object.keys(next_lexical_node).filter(
+      (property) => !is_excluded_property(property, next_lexical_node, binding)
     );
-    nodeProperties.set(type, properties);
+    node_properties.set(type, properties);
   }
 
   const EditorClass = binding.editor.constructor;
 
   for (let i = 0; i < properties.length; i++) {
     const property = properties[i];
-    const prevValue =
-      prevLexicalNode === null ? undefined : prevLexicalNode[property];
-    let nextValue = nextLexicalNode[property];
+    const prev_value =
+      prev_lexical_node === null ? undefined : prev_lexical_node[property];
+    let next_value = next_lexical_node[property];
 
-    if (prevValue !== nextValue) {
-      if (nextValue instanceof EditorClass) {
-        const yjsDocMap = binding.docMap;
-        let prevDoc: Doc | undefined;
+    if (prev_value !== next_value) {
+      if (next_value instanceof EditorClass) {
+        const yjs_doc_map = binding.doc_map;
+        let prev_doc: Doc | undefined;
 
-        if (prevValue instanceof EditorClass) {
+        if (prev_value instanceof EditorClass) {
           // @ts-expect-error Lexical node
-          const prevKey = prevValue._key;
-          prevDoc = yjsDocMap.get(prevKey);
-          yjsDocMap.delete(prevKey);
+          const prev_key = prev_value._key;
+          prev_doc = yjs_doc_map.get(prev_key);
+          yjs_doc_map.delete(prev_key);
         }
 
         // If we already have a document, use it
-        const doc = prevDoc || new Doc();
+        const doc = prev_doc || new Doc();
         const key = doc.guid;
 
         // @ts-expect-error Lexical node
-        nextValue._key = key;
-        yjsDocMap.set(key, doc);
-        nextValue = doc;
+        next_value._key = key;
+        yjs_doc_map.set(key, doc);
+        next_value = doc;
 
         // Mark the node dirty as we've assigned a new key to it
         binding.editor.update(() => {
-          nextLexicalNode.markDirty();
+          next_lexical_node.markDirty();
         });
       }
 
-      if (sharedType instanceof YMap) {
-        sharedType.set(property, nextValue);
+      if (shared_type instanceof YMap) {
+        shared_type.set(property, next_value);
       } else {
-        sharedType.setAttribute(property, nextValue);
+        shared_type.setAttribute(property, next_value);
       }
     }
   }

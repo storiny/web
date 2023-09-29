@@ -1,5 +1,4 @@
 .x {
-  /* Base styles */
   &.floating-element {
     width: 214px;
     max-width: calc(100vw - 32px);
@@ -9,12 +8,10 @@
     }
   }
 
-  /* Link */
   &.link {
     padding-inline: 8px;
   }
 
-  /* Button */
   &.button {
     border-radius: 0;
   }

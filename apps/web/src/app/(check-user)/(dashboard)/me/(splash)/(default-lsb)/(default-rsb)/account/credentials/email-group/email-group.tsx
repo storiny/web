@@ -1,4 +1,4 @@
-import { userProps } from "@storiny/shared";
+import { USER_PROPS } from "@storiny/shared";
 import { clsx } from "clsx";
 import { useRouter } from "next/navigation";
 import React from "react";
@@ -21,8 +21,8 @@ import { use_toast } from "../../../../../../../../../../../../../packages/ui/sr
 import Typography from "../../../../../../../../../../../../../packages/ui/src/components/typography";
 import TitleBlock from "../../../../../../../../../../../../../packages/ui/src/entities/title-block";
 import { use_media_query } from "../../../../../../../../../../../../../packages/ui/src/hooks/use-media-query";
-import MailIcon from "~/icons/Mail";
-import PasswordIcon from "~/icons/Password";
+import MailIcon from "../../../../../../../../../../../../../packages/ui/src/icons/mail";
+import PasswordIcon from "../../../../../../../../../../../../../packages/ui/src/icons/password";
 import {
   mutate_user,
   select_user,
@@ -61,8 +61,8 @@ const EmailSettingsModal = ({
             }
           }}
           label={"New e-mail"}
-          maxLength={userProps.email.maxLength}
-          minLength={userProps.email.minLength}
+          maxLength={USER_PROPS.email.max_length}
+          minLength={USER_PROPS.email.min_length}
           name={"new-email"}
           placeholder={"Your new e-mail"}
           required

@@ -4,9 +4,9 @@ import React from "react";
 
 import NavigationItem from "src/components/navigation-item";
 import Separator from "src/components/separator";
-import AlbumIcon from "~/icons/Album";
-import PexelsIcon from "~/icons/Pexels";
-import UploadIcon from "~/icons/Upload";
+import AlbumIcon from "src/icons/album";
+import PexelsIcon from "src/icons/pexels";
+import UploadIcon from "src/icons/upload";
 
 import { nav_segment_atom } from "../../atoms";
 import styles from "./navigation-screen.module.scss";

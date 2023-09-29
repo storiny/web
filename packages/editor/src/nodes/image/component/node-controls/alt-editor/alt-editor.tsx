@@ -1,7 +1,7 @@
-import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { assetProps, ImageSize } from "@storiny/shared";
+import { useLexicalComposerContext as use_lexical_composer_context } from "@lexical/react/LexicalComposerContext";
+import { ASSET_PROPS, ImageSize } from "@storiny/shared";
 import { clsx } from "clsx";
-import { $getNodeByKey } from "lexical";
+import { $getNodeByKey as $get_node_by_key } from "lexical";
 import React from "react";
 
 import AspectRatio from "../../../../../../../ui/src/components/aspect-ratio";
@@ -18,16 +18,16 @@ import CaptionIcon from "~/icons/caption";
 import { BREAKPOINTS } from "~/theme/breakpoints";
 import { get_cdn_url } from "../../../../../../../ui/src/utils/get-cdn-url";
 
-import { $isImageNode } from "../../../image";
+import { $is_image_node } from "../../../image";
 import styles from "./alt-editor.module.scss";
 import { ImageAltEditorProps } from "./alt-editor.props";
 
 const ImageAltEditorModal = (
   props: ImageAltEditorProps & {
-    inputRef: React.RefObject<HTMLInputElement>;
+    input_ref: React.RefObject<HTMLInputElement>;
   }
 ): React.ReactElement => {
-  const { image, inputRef } = props;
+  const { image, input_ref } = props;
   return (
     <div className={clsx("flex-col", "flex-center")}>
       <AspectRatio
@@ -44,6 +44,7 @@ const ImageAltEditorModal = (
                 `${BREAKPOINTS.up("mobile")} 320px`,
                 "calc(100vw - 24px)"
               ].join(","),
+              // eslint-disable-next-line prefer-snakecase/prefer-snakecase
               srcSet: [
                 `${get_cdn_url(image.key, ImageSize.W_860)} 860w`,
                 `${get_cdn_url(image.key, ImageSize.W_640)} 640w`,
@@ -58,10 +59,10 @@ const ImageAltEditorModal = (
         autoFocus
         auto_size
         defaultValue={image.alt}
-        maxLength={assetProps.alt.maxLength}
-        minLength={assetProps.alt.minLength}
+        maxLength={ASSET_PROPS.alt.max_length}
+        minLength={ASSET_PROPS.alt.min_length}
         placeholder={"Alt text"}
-        ref={inputRef}
+        ref={input_ref}
         slot_props={{ container: { className: "full-w" } }}
       />
     </div>
@@ -69,24 +70,24 @@ const ImageAltEditorModal = (
 };
 
 const ImageAltEditor = (props: ImageAltEditorProps): React.ReactElement => {
-  const { disabled, nodeKey } = props;
-  const inputRef = React.useRef<HTMLInputElement | null>(null);
-  const [editor] = useLexicalComposerContext();
+  const { disabled, node_key } = props;
+  const input_ref = React.useRef<HTMLInputElement | null>(null);
+  const [editor] = use_lexical_composer_context();
   const is_smaller_than_mobile = use_media_query(BREAKPOINTS.down("mobile"));
 
   /**
    * Updates the alt text
    */
-  const setAlt = React.useCallback(() => {
+  const set_alt = React.useCallback(() => {
     editor.update(() => {
-      const node = $getNodeByKey(nodeKey);
-      const nextAlt = inputRef.current?.value || "";
+      const node = $get_node_by_key(node_key);
+      const next_alt = input_ref.current?.value || "";
 
-      if ($isImageNode(node)) {
-        node.setAltText(0, nextAlt);
+      if ($is_image_node(node)) {
+        node.set_alt_text(0, next_alt);
       }
     });
-  }, [editor, nodeKey]);
+  }, [editor, node_key]);
 
   const [element] = use_modal(
     ({ open_modal }) => (
@@ -99,7 +100,7 @@ const ImageAltEditor = (props: ImageAltEditorProps): React.ReactElement => {
         Alt
       </Button>
     ),
-    <ImageAltEditorModal {...props} inputRef={inputRef} />,
+    <ImageAltEditorModal {...props} input_ref={input_ref} />,
     {
       fullscreen: is_smaller_than_mobile,
       footer: (
@@ -107,7 +108,7 @@ const ImageAltEditor = (props: ImageAltEditorProps): React.ReactElement => {
           <ModalFooterButton compact={is_smaller_than_mobile} variant={"ghost"}>
             Cancel
           </ModalFooterButton>
-          <ModalFooterButton compact={is_smaller_than_mobile} onClick={setAlt}>
+          <ModalFooterButton compact={is_smaller_than_mobile} onClick={set_alt}>
             Confirm
           </ModalFooterButton>
         </>

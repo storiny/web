@@ -1,4 +1,4 @@
-import { getShortcutLabel } from "@storiny/shared/src/utils/get-shortcut-label";
+import { get_shortcut_label } from "@storiny/shared/src/utils/get-shortcut-label";
 import React from "react";
 
 import ToggleGroup from "../../../../../../../../ui/src/components/toggle-group";
@@ -8,10 +8,10 @@ import ToggleGroupItem, {
 
 import {
   Alignment as AlignmentEnum,
-  alignmentToIconMap
+  ALIGNMENT_ICON_MAP
 } from "../../../../../../constants";
 import { EDITOR_SHORTCUTS } from "../../../../../../constants/shortcuts";
-import { useAlignment } from "../../../../../../hooks/use-alignment";
+import { use_alignment } from "../../../../../../hooks/use-alignment";
 
 // Item
 
@@ -34,7 +34,7 @@ const Item = ({
     tooltip_content={label}
     value={alignment}
   >
-    {alignmentToIconMap[alignment]}
+    {ALIGNMENT_ICON_MAP[alignment]}
   </ToggleGroupItem>
 );
 
@@ -43,36 +43,36 @@ const Alignment = ({
 }: {
   disabled?: boolean;
 }): React.ReactElement => {
-  const [alignment, setAlignment, alignmentDisabled] = useAlignment();
+  const [alignment, set_alignment, alignment_disabled] = use_alignment();
   return (
-    <ToggleGroup onValueChange={setAlignment} value={alignment}>
+    <ToggleGroup onValueChange={set_alignment} value={alignment}>
       <Item
         alignment={AlignmentEnum.LEFT}
         data-testid={"align-left"}
-        disabled={disabled || alignmentDisabled}
+        disabled={disabled || alignment_disabled}
         label={"Left align"}
-        shortcut={getShortcutLabel(EDITOR_SHORTCUTS.leftAlign)}
+        shortcut={get_shortcut_label(EDITOR_SHORTCUTS.left_align)}
       />
       <Item
         alignment={AlignmentEnum.CENTER}
         data-testid={"align-center"}
-        disabled={disabled || alignmentDisabled}
+        disabled={disabled || alignment_disabled}
         label={"Center align"}
-        shortcut={getShortcutLabel(EDITOR_SHORTCUTS.centerAlign)}
+        shortcut={get_shortcut_label(EDITOR_SHORTCUTS.center_align)}
       />
       <Item
         alignment={AlignmentEnum.RIGHT}
         data-testid={"align-right"}
-        disabled={disabled || alignmentDisabled}
+        disabled={disabled || alignment_disabled}
         label={"Right align"}
-        shortcut={getShortcutLabel(EDITOR_SHORTCUTS.rightAlign)}
+        shortcut={get_shortcut_label(EDITOR_SHORTCUTS.right_align)}
       />
       <Item
         alignment={AlignmentEnum.JUSTIFY}
         data-testid={"align-justify"}
-        disabled={disabled || alignmentDisabled}
+        disabled={disabled || alignment_disabled}
         label={"Justify align"}
-        shortcut={getShortcutLabel(EDITOR_SHORTCUTS.justifyAlign)}
+        shortcut={get_shortcut_label(EDITOR_SHORTCUTS.justify_align)}
       />
     </ToggleGroup>
   );

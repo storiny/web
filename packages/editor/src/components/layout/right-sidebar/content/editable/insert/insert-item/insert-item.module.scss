@@ -1,5 +1,4 @@
 .x {
-  /* Base styles */
   &.item {
     --icon-size: 16px;
 
@@ -12,12 +11,10 @@
     border-radius: 0;
   }
 
-  /* Item icon */
   &.icon {
     padding: 4px;
   }
 
-  /* Label */
   &.label {
     color: inherit;
   }

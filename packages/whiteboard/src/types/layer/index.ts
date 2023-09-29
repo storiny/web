@@ -147,6 +147,8 @@ export type ImageLayer = LayerPrimitive<LayerType.IMAGE> & {
   src?: string;
 };
 
+// These properties are too generic to exclude from snake_case linting
+/* eslint-disable prefer-snakecase/prefer-snakecase */
 export type TextLayer = Omit<
   LayerPrimitive<LayerType.TEXT>,
   "seed" | "strokeStyle" | "roughness" | "isDrawing"
@@ -177,3 +179,4 @@ export type TextLayer = Omit<
    */
   verticalAlign?: VerticalAlign;
 };
+/* eslint-enable prefer-snakecase/prefer-snakecase */

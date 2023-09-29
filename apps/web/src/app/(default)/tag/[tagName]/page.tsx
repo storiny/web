@@ -14,10 +14,10 @@ const Page = async ({
   params: { tagName: string };
 }): Promise<React.ReactElement | undefined> => {
   try {
-    const userId = await getUser();
+    const user_id = await getUser();
     const tag = await getTag({
       name: tagName,
-      current_user_id: userId || undefined
+      current_user_id: user_id || undefined
     });
 
     return <Component tag={tag} />;

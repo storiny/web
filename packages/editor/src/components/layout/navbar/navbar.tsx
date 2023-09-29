@@ -1,14 +1,14 @@
 "use client";
 
-import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
+import { useLexicalComposerContext as use_lexical_composer_context } from "@lexical/react/LexicalComposerContext";
 import SuspenseLoader from "@storiny/web/src/common/suspense-loader";
 import clsx from "clsx";
-import { useAtom, useAtomValue } from "jotai";
-import { $getRoot } from "lexical";
+import { useAtom as use_atom, useAtomValue as use_atom_value } from "jotai";
+import { $getRoot as $get_root } from "lexical";
 import { RedirectType } from "next/dist/client/components/redirect";
 import dynamic from "next/dynamic";
 import NextLink from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter as use_router } from "next/navigation";
 import React from "react";
 
 import Logo from "../../../../../ui/src/brand/logo";
@@ -22,9 +22,9 @@ import Spacer from "../../../../../ui/src/components/spacer";
 import { use_toast } from "../../../../../ui/src/components/toast";
 import Tooltip from "../../../../../ui/src/components/tooltip";
 import { use_media_query } from "../../../../../ui/src/hooks/use-media-query";
-import ChevronIcon from "~/icons/Chevron";
-import QuestionMarkIcon from "~/icons/QuestionMark";
-import VersionHistoryIcon from "~/icons/VersionHistory";
+import ChevronIcon from "../../../../../ui/src/icons/chevron";
+import QuestionMarkIcon from "../../../../../ui/src/icons/question-mark";
+import VersionHistoryIcon from "../../../../../ui/src/icons/version-history";
 import {
   use_publish_story_mutation,
   use_recover_story_mutation
@@ -32,9 +32,9 @@ import {
 import { BREAKPOINTS } from "~/theme/breakpoints";
 import { abbreviate_number } from "../../../../../ui/src/utils/abbreviate-number";
 
-import { docStatusAtom, storyMetadataAtom } from "../../../atoms";
-import { $isTKNode } from "../../../nodes/tk";
-import { $getChildrenRecursively } from "../../../utils/get-children-recursively";
+import { doc_status_atom, story_metadata_atom } from "../../../atoms";
+import { $is_tk_node } from "../../../nodes/tk";
+import { $get_children_recursively } from "../../../utils/get-children-recursively";
 import { StoryStatus } from "../../editor";
 import DocStatus from "./doc-status";
 import MusicItem from "./music-item";
@@ -42,8 +42,8 @@ import styles from "./navbar.module.scss";
 
 const EditorPresence = dynamic(() => import("./presence"));
 const EditorMenubarItems = dynamic(() => import("./menubar-items"), {
-  loading: ({ isLoading, error, retry }) =>
-    error && !isLoading ? (
+  loading: ({ isLoading: is_loading, error, retry }) =>
+    error && !is_loading ? (
       <div className={"flex-center"} style={{ paddingBlock: "32px" }}>
         <Button color={"ruby"} onClick={retry} variant={"hollow"}>
           Retry
@@ -65,6 +65,7 @@ const EditorMenubar = ({
     <MenubarMenu
       slot_props={{
         content: {
+          // eslint-disable-next-line prefer-snakecase/prefer-snakecase
           style: { minWidth: "176px" }
         }
       }}
@@ -95,47 +96,48 @@ const Publish = ({
   status: Exclude<StoryStatus, "deleted">;
 }): React.ReactElement => {
   const toast = use_toast();
-  const router = useRouter();
-  const story = use_atom_value(storyMetadataAtom);
-  const [editor] = useLexicalComposerContext();
-  const [tkCount, setTkCount] = React.useState<number>(0);
-  const [docStatus, setDocStatus] = use_atom(docStatusAtom);
-  const [publishStory] = use_publish_story_mutation();
+  const router = use_router();
+  const story = use_atom_value(story_metadata_atom);
+  const [editor] = use_lexical_composer_context();
+  const [tk_count, set_tk_count] = React.useState<number>(0);
+  const [doc_status, set_doc_status] = use_atom(doc_status_atom);
+  const [publish_story] = use_publish_story_mutation();
 
   /**
    * Publishes the story
    */
-  const handlePublish = React.useCallback(() => {
-    setDocStatus("publishing");
-    publishStory({ id: story.id, status })
+  const handle_publish = React.useCallback(() => {
+    set_doc_status("publishing");
+    publish_story({ id: story.id, status })
       .unwrap()
       .then(() => router.refresh())
       .catch((e) => {
-        setDocStatus("connected");
+        set_doc_status("connected");
         toast(e?.data?.error || "Could not publish your story", "error");
       });
-  }, [publishStory, setDocStatus, status, story.id, toast]);
+  }, [publish_story, router, set_doc_status, status, story.id, toast]);
 
   const [element] = use_confirmation(
     ({ open_confirmation }) => (
       <Button
         check_auth
-        disabled={disabled || docStatus === "publishing"}
+        disabled={disabled || doc_status === "publishing"}
         onClick={(): void => {
           new Promise<number>((resolve) => {
             editor.getEditorState().read(() => {
               resolve(
-                $getChildrenRecursively($getRoot()).filter($isTKNode).length
+                $get_children_recursively($get_root()).filter($is_tk_node)
+                  .length
               );
             });
           })
-            .then((tkCount) => {
-              setTkCount(tkCount);
+            .then((tk_count) => {
+              set_tk_count(tk_count);
 
-              if (tkCount > 0) {
+              if (tk_count > 0) {
                 open_confirmation();
               } else {
-                handlePublish();
+                handle_publish();
               }
             })
             .catch(() => toast("Could not process your story", "error"));
@@ -145,18 +147,18 @@ const Publish = ({
       </Button>
     ),
     {
-      on_cancel: handlePublish,
+      on_cancel: handle_publish,
       title: "Are you sure you want to publish?",
       cancel_label: "Publish anyway",
       confirm_label: "Edit",
       description: (
         <>
           You still have{" "}
-          <span className={"t-medium"}>{abbreviate_number(tkCount)}</span>{" "}
+          <span className={"t-medium"}>{abbreviate_number(tk_count)}</span>{" "}
           <span className={"t-medium"} style={{ color: "var(--plum-300)" }}>
             TK
           </span>{" "}
-          {tkCount === 1 ? "placeholder" : "placeholders"} in your story.{" "}
+          {tk_count === 1 ? "placeholder" : "placeholders"} in your story.{" "}
           <Link href={"/guides/tk"} target={"_blank"} underline={"always"}>
             Learn more
           </Link>
@@ -172,31 +174,31 @@ const Publish = ({
 
 const Recover = (): React.ReactElement => {
   const toast = use_toast();
-  const story = use_atom_value(storyMetadataAtom);
-  const [loading, setLoading] = React.useState<boolean>(false);
-  const [recoverStory] = use_recover_story_mutation();
+  const story = use_atom_value(story_metadata_atom);
+  const [loading, set_loading] = React.useState<boolean>(false);
+  const [recover_story] = use_recover_story_mutation();
 
   /**
    * Publishes the story
    */
-  const handleRecover = React.useCallback(() => {
-    setLoading(true);
-    recoverStory({ id: story.id })
+  const handle_recover = React.useCallback(() => {
+    set_loading(true);
+    recover_story({ id: story.id })
       .unwrap()
       .then(() => {
         redirect(`/doc/${story.id}`, RedirectType.replace);
       })
       .catch((e) => {
-        setLoading(false);
+        set_loading(false);
         toast(e?.data?.error || "Could not recover your story", "error");
       });
-  }, [recoverStory, story.id, toast]);
+  }, [recover_story, story.id, toast]);
 
   return (
     <Button
       check_auth
       loading={loading}
-      onClick={handleRecover}
+      onClick={handle_recover}
       variant={"hollow"}
     >
       Recover
@@ -211,19 +213,19 @@ const EditorNavbar = ({
 }): React.ReactElement => {
   const is_smaller_than_tablet = use_media_query(BREAKPOINTS.down("tablet"));
   const is_smaller_than_mobile = use_media_query(BREAKPOINTS.down("mobile"));
-  const docStatus = use_atom_value(docStatusAtom);
-  const documentLoading = ["connecting", "reconnecting"].includes(docStatus);
+  const doc_status = use_atom_value(doc_status_atom);
+  const document_loading = ["connecting", "reconnecting"].includes(doc_status);
 
   return (
     <header className={clsx(styles.x, styles["editor-navbar"])} role={"banner"}>
       <div className={clsx("flex-center", styles.x, styles["full-height"])}>
-        <EditorMenubar disabled={status === "deleted" || documentLoading} />
+        <EditorMenubar disabled={status === "deleted" || document_loading} />
         {!is_smaller_than_tablet && status !== "deleted" ? (
           <React.Fragment>
             <Tooltip content={"Version history"}>
               <IconButton
                 className={clsx("focus-invert", styles.x, styles.button)}
-                // TODO: disabled={documentLoading}
+                // TODO: disabled={document_loading}
                 disabled
                 size={"lg"}
                 variant={"ghost"}
@@ -231,12 +233,12 @@ const EditorNavbar = ({
                 <VersionHistoryIcon />
               </IconButton>
             </Tooltip>
-            <MusicItem disabled={documentLoading} />
+            <MusicItem disabled={document_loading} />
             <Tooltip content={"Help"}>
               <IconButton
                 as={NextLink}
                 className={clsx("focus-invert", styles.x, styles.button)}
-                disabled={documentLoading}
+                disabled={document_loading}
                 href={"/help"}
                 size={"lg"}
                 target={"_blank"}
@@ -262,7 +264,7 @@ const EditorNavbar = ({
           <React.Fragment>
             <Button
               disabled
-              // TODO: Fix on stable disabled={documentLoading}
+              // TODO: Fix on stable disabled={document_loading}
               variant={"hollow"}
             >
               Share
@@ -273,7 +275,7 @@ const EditorNavbar = ({
         {status === "deleted" ? (
           <Recover />
         ) : (
-          <Publish disabled={documentLoading} status={status} />
+          <Publish disabled={document_loading} status={status} />
         )}
       </div>
     </header>

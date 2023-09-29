@@ -5,3 +5,4 @@ export * from "./image-size";
 export * from "./rpc";
 export * from "./story-category";
 export * from "./user-flag";
+export * from "./notification-type";

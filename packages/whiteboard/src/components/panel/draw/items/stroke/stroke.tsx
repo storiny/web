@@ -12,21 +12,21 @@ import ColorPicker, {
   str_to_color,
   TColor
 } from "../../../../../../../ui/src/entities/color-picker";
-import ArrowheadArrowIcon from "~/icons/ArrowheadArrow";
-import ArrowheadArrowLongIcon from "~/icons/ArrowheadArrowLong";
-import ArrowheadBarIcon from "~/icons/ArrowheadBar";
-import ArrowheadBarLongIcon from "~/icons/ArrowheadBarLong";
-import ArrowheadDotIcon from "~/icons/ArrowheadDot";
-import ArrowheadDotLongIcon from "~/icons/ArrowheadDotLong";
-import ArrowheadNoneIcon from "~/icons/ArrowheadNone";
-import ArrowheadNoneLongIcon from "~/icons/ArrowheadNoneLong";
-import ArrowheadTriangleIcon from "~/icons/ArrowheadTriangle";
-import ArrowheadTriangleLongIcon from "~/icons/ArrowheadTriangleLong";
-import LineDashedIcon from "~/icons/LineDashed";
-import LineDottedIcon from "~/icons/LineDotted";
-import LineSolidIcon from "~/icons/LineSolid";
-import RulerMeasureIcon from "~/icons/RulerMeasure";
-import SwapIcon from "~/icons/Swap";
+import ArrowheadArrowIcon from "../../../../../../../ui/src/icons/arrowhead-arrow";
+import ArrowheadArrowLongIcon from "../../../../../../../ui/src/icons/arrowhead-arrow-long";
+import ArrowheadBarIcon from "../../../../../../../ui/src/icons/arrowhead-bar";
+import ArrowheadBarLongIcon from "../../../../../../../ui/src/icons/arrowhead-bar-long";
+import ArrowheadDotIcon from "../../../../../../../ui/src/icons/arrowhead-dot";
+import ArrowheadDotLongIcon from "../../../../../../../ui/src/icons/arrowhead-dot-long";
+import ArrowheadNoneIcon from "../../../../../../../ui/src/icons/arrowhead-none";
+import ArrowheadNoneLongIcon from "../../../../../../../ui/src/icons/arrowhead-none-long";
+import ArrowheadTriangleIcon from "../../../../../../../ui/src/icons/arrowhead-triangle";
+import ArrowheadTriangleLongIcon from "../../../../../../../ui/src/icons/arrowhead-triangle-long";
+import LineDashedIcon from "../../../../../../../ui/src/icons/line-dashed";
+import LineDottedIcon from "../../../../../../../ui/src/icons/line-dotted";
+import LineSolidIcon from "../../../../../../../ui/src/icons/line-solid";
+import RulerMeasureIcon from "../../../../../../../ui/src/icons/ruler-measure";
+import SwapIcon from "../../../../../../../ui/src/icons/swap";
 
 import {
   Arrowhead,
@@ -34,8 +34,8 @@ import {
   MIN_OPACITY,
   StrokeStyle
 } from "../../../../../constants";
-import { useActiveObject } from "../../../../../hooks";
-import { isArrowObject, modifyObject } from "../../../../../utils";
+import { use_active_object } from "../../../../../hooks";
+import { is_arrow_object, modify_object } from "../../../../../utils";
 import DrawItem, { DrawItemRow } from "../../item";
 import common_styles from "../common.module.scss";
 import styles from "./stroke.module.scss";
@@ -47,7 +47,7 @@ const DEFAULT_LAYER_STROKE = "rgba(0,0,0,0)";
  * @param arrowhead Arrowhead
  * @param position Arrowhead position
  */
-const getArrowheadIcon = (
+const get_arrowhead_icon = (
   arrowhead: Arrowhead,
   position: "start" | "end"
 ): React.ReactNode => {
@@ -66,50 +66,47 @@ const getArrowheadIcon = (
 // Stroke color
 
 const StrokeControl = ({
-  activeObject
+  active_object
 }: {
-  activeObject: BaseFabricObject;
+  active_object: BaseFabricObject;
 }): React.ReactElement => {
-  const [stroke, setStroke] = React.useState<TColor>(
-    str_to_color((activeObject.stroke as string) || DEFAULT_LAYER_STROKE)!
+  const [stroke, set_stroke] = React.useState<TColor>(
+    str_to_color((active_object.stroke as string) || DEFAULT_LAYER_STROKE)!
   );
-  const [value, setValue] = React.useState(`#${stroke.hex}`);
+  const [value, set_value] = React.useState(`#${stroke.hex}`);
 
   /**
    * Mutates the stroke color of the object
    */
-  const changeStroke = React.useCallback(
-    (newStroke: TColor) => {
-      setStroke(newStroke);
+  const change_stroke = React.useCallback(
+    (next_stroke: TColor) => {
+      set_stroke(next_stroke);
 
-      if (activeObject) {
-        modifyObject(activeObject, {
-          stroke: newStroke.str
+      if (active_object) {
+        modify_object(active_object, {
+          stroke: next_stroke.str
         });
       }
     },
-    [activeObject]
+    [active_object]
   );
 
   React.useEffect(() => {
-    setValue(`#${stroke.hex}`);
+    set_value(`#${stroke.hex}`);
   }, [stroke]);
 
   React.useEffect(() => {
-    setStroke(
-      str_to_color((activeObject?.stroke as string) || DEFAULT_LAYER_STROKE)!
+    set_stroke(
+      str_to_color((active_object?.stroke as string) || DEFAULT_LAYER_STROKE)!
     );
-  }, [activeObject?.stroke]);
+  }, [active_object?.stroke]);
 
   return (
     <DrawItemRow>
       <Input
         aria-label={"Layer stroke"}
         decorator={
-          <ColorPicker
-            defaultValue={stroke}
-            onChange={(value): void => changeStroke(value)}
-          >
+          <ColorPicker default_value={stroke} on_change={change_stroke}>
             <button
               aria-label={"Pick a color"}
               className={clsx(
@@ -128,11 +125,10 @@ const StrokeControl = ({
         }
         monospaced
         onChange={(event): void => {
-          setValue(event.target.value);
-          const newColor = str_to_color(event.target.value);
-
-          if (newColor) {
-            changeStroke(newColor);
+          set_value(event.target.value);
+          const next_color = str_to_color(event.target.value);
+          if (next_color) {
+            change_stroke(next_color);
           }
         }}
         placeholder={"Stroke"}
@@ -154,7 +150,7 @@ const StrokeControl = ({
           const a = Number.parseInt(event.target.value) || 0;
           const { r, g, b } = hex_to_rgb(stroke.hex);
 
-          changeStroke({
+          change_stroke({
             ...stroke,
             str: `rgba(${r},${g},${b},${a / 100})`,
             a
@@ -180,42 +176,42 @@ const StrokeControl = ({
 // Stroke width
 
 const StrokeWidthControl = ({
-  activeObject,
-  disableStrokeStyle
+  active_object,
+  disable_stroke_style
 }: {
-  activeObject: BaseFabricObject;
-  disableStrokeStyle: boolean;
+  active_object: BaseFabricObject;
+  disable_stroke_style: boolean;
 }): React.ReactElement => {
   /**
    * Mutates the stroke width of the object
    */
-  const changeStrokeWidth = React.useCallback(
-    (strokeWidth: number) => {
-      if (activeObject) {
-        modifyObject(activeObject, {
-          strokeWidth
+  const change_stroke_width = React.useCallback(
+    (next_stroke_width: number) => {
+      if (active_object) {
+        modify_object(active_object, {
+          strokeWidth: next_stroke_width
         });
       }
     },
-    [activeObject]
+    [active_object]
   );
 
   return (
     <Input
       aria-label={"Layer stroke width"}
       decorator={<RulerMeasureIcon />}
-      defaultValue={activeObject.strokeWidth ?? 0}
+      defaultValue={active_object.strokeWidth ?? 0}
       min={0}
       monospaced
       onChange={(event): void => {
-        changeStrokeWidth(Number.parseInt(event.target.value, 10) ?? 0);
+        change_stroke_width(Number.parseInt(event.target.value, 10) ?? 0);
       }}
       placeholder={"Stroke width"}
       size={"sm"}
       slot_props={{
         container: {
           style: {
-            flex: disableStrokeStyle ? "1" : "0.4"
+            flex: disable_stroke_style ? "1" : "0.4"
           }
         }
       }}
@@ -228,38 +224,38 @@ const StrokeWidthControl = ({
 // Stroke style
 
 const StrokeStyleControl = ({
-  activeObject
+  active_object
 }: {
-  activeObject: BaseFabricObject;
+  active_object: BaseFabricObject;
 }): React.ReactElement => {
-  const [strokeStyle, setStrokeStyle] = React.useState<StrokeStyle>(
-    activeObject.get("strokeStyle") || StrokeStyle.SOLID
+  const [stroke_style, set_stroke_style] = React.useState<StrokeStyle>(
+    active_object.get("strokeStyle") || StrokeStyle.SOLID
   );
 
   /**
    * Mutates the stroke style of the object
    */
-  const changeStrokeStyle = React.useCallback(
-    (newStrokeStyle: StrokeStyle) => {
-      setStrokeStyle(newStrokeStyle);
+  const change_stroke_style = React.useCallback(
+    (next_stroke_style: StrokeStyle) => {
+      set_stroke_style(next_stroke_style);
 
-      if (activeObject) {
-        modifyObject(activeObject, {
-          strokeStyle: newStrokeStyle
+      if (active_object) {
+        modify_object(active_object, {
+          strokeStyle: next_stroke_style
         });
       }
     },
-    [activeObject]
+    [active_object]
   );
 
   React.useEffect(() => {
-    setStrokeStyle(activeObject.get("strokeStyle") || StrokeStyle.SOLID);
-  }, [activeObject]);
+    set_stroke_style(active_object.get("strokeStyle") || StrokeStyle.SOLID);
+  }, [active_object]);
 
   return (
     <Select
       onValueChange={(newValue: StrokeStyle): void =>
-        changeStrokeStyle(newValue)
+        change_stroke_style(newValue)
       }
       size={"sm"}
       slot_props={{
@@ -273,7 +269,7 @@ const StrokeStyleControl = ({
           style: { flex: "0.6" }
         }
       }}
-      value={strokeStyle}
+      value={stroke_style}
     >
       <Option decorator={<LineSolidIcon />} value={StrokeStyle.SOLID}>
         Solid
@@ -291,59 +287,62 @@ const StrokeStyleControl = ({
 // Arrowhead style
 
 const ArrowheadControl = ({
-  activeObject
+  active_object
 }: {
-  activeObject: BaseFabricObject;
+  active_object: BaseFabricObject;
 }): React.ReactElement => {
-  const [startArrowhead, setStartArrowhead] = React.useState<Arrowhead>(
-    activeObject.get("startArrowhead") || Arrowhead.NONE
+  const [start_arrowhead, set_start_arrowhead] = React.useState<Arrowhead>(
+    active_object.get("startArrowhead") || Arrowhead.NONE
   );
-  const [endArrowhead, setEndArrowhead] = React.useState<Arrowhead>(
-    activeObject.get("endArrowhead") || Arrowhead.ARROW
+  const [end_arrowhead, set_end_arrowhead] = React.useState<Arrowhead>(
+    active_object.get("endArrowhead") || Arrowhead.ARROW
   );
 
   /**
    * Mutates the arrowhead of the object
    */
-  const changeArrowhead = React.useCallback(
-    (arrowhead: Arrowhead, position: "start" | "end") => {
-      (position === "start" ? setStartArrowhead : setEndArrowhead)(arrowhead);
+  const change_arrowhead = React.useCallback(
+    (next_arrowhead: Arrowhead, position: "start" | "end") => {
+      (position === "start" ? set_start_arrowhead : set_end_arrowhead)(
+        next_arrowhead
+      );
 
-      if (activeObject) {
-        modifyObject(activeObject, {
-          [position === "start" ? "startArrowhead" : "endArrowhead"]: arrowhead
+      if (active_object) {
+        modify_object(active_object, {
+          [position === "start" ? "startArrowhead" : "endArrowhead"]:
+            next_arrowhead
         });
       }
     },
-    [activeObject]
+    [active_object]
   );
 
   /**
    * Swaps the start and end arrowheads
    */
-  const swapArrowheads = React.useCallback(() => {
-    const currentStartArrowhead = startArrowhead;
-    setStartArrowhead(endArrowhead);
-    setEndArrowhead(currentStartArrowhead);
+  const swap_arrowheads = React.useCallback(() => {
+    const current_start_arrowhead = start_arrowhead;
+    set_start_arrowhead(end_arrowhead);
+    set_end_arrowhead(current_start_arrowhead);
 
-    if (activeObject) {
-      modifyObject(activeObject, {
-        startArrowhead: endArrowhead,
-        endArrowhead: currentStartArrowhead
+    if (active_object) {
+      modify_object(active_object, {
+        startArrowhead: end_arrowhead,
+        endArrowhead: current_start_arrowhead
       });
     }
-  }, [activeObject, endArrowhead, startArrowhead]);
+  }, [active_object, end_arrowhead, start_arrowhead]);
 
   React.useEffect(() => {
-    setStartArrowhead(activeObject.get("startArrowhead") || Arrowhead.NONE);
-    setEndArrowhead(activeObject.get("endArrowhead") || Arrowhead.ARROW);
-  }, [activeObject]);
+    set_start_arrowhead(active_object.get("startArrowhead") || Arrowhead.NONE);
+    set_end_arrowhead(active_object.get("endArrowhead") || Arrowhead.ARROW);
+  }, [active_object]);
 
   return (
     <DrawItemRow>
       <Select
         onValueChange={(newValue: Arrowhead): void =>
-          changeArrowhead(newValue, "start")
+          change_arrowhead(newValue, "start")
         }
         size={"sm"}
         slot_props={{
@@ -356,10 +355,10 @@ const ArrowheadControl = ({
             className: clsx("full-w")
           }
         }}
-        value={startArrowhead}
+        value={start_arrowhead}
         value_children={
           <span className={clsx("flex-center", styles["arrowhead-value"])}>
-            {getArrowheadIcon(startArrowhead, "start")}
+            {get_arrowhead_icon(start_arrowhead, "start")}
           </span>
         }
       >
@@ -384,7 +383,7 @@ const ArrowheadControl = ({
       </Select>
       <Tooltip content={"Swap arrowheads"}>
         <IconButton
-          onClick={swapArrowheads}
+          onClick={swap_arrowheads}
           size={"sm"}
           style={{ "--size": "24px" } as React.CSSProperties}
           variant={"ghost"}
@@ -394,7 +393,7 @@ const ArrowheadControl = ({
       </Tooltip>
       <Select
         onValueChange={(newValue: Arrowhead): void =>
-          changeArrowhead(newValue, "end")
+          change_arrowhead(newValue, "end")
         }
         size={"sm"}
         slot_props={{
@@ -407,10 +406,10 @@ const ArrowheadControl = ({
             className: clsx("full-w")
           }
         }}
-        value={endArrowhead}
+        value={end_arrowhead}
         value_children={
           <span className={clsx("flex-center", styles["arrowhead-value"])}>
-            {getArrowheadIcon(endArrowhead, "end")}
+            {get_arrowhead_icon(end_arrowhead, "end")}
           </span>
         }
       >
@@ -438,30 +437,30 @@ const ArrowheadControl = ({
 };
 
 const Stroke = ({
-  disableStrokeStyle
+  disable_stroke_style
 }: {
-  disableStrokeStyle?: boolean;
+  disable_stroke_style?: boolean;
 }): React.ReactElement | null => {
-  const activeObject = useActiveObject();
+  const active_object = use_active_object();
 
-  if (!activeObject) {
+  if (!active_object) {
     return null;
   }
 
   return (
-    <DrawItem key={activeObject.get("id")} label={"Stroke"}>
-      <StrokeControl activeObject={activeObject} />
+    <DrawItem key={active_object.get("id")} label={"Stroke"}>
+      <StrokeControl active_object={active_object} />
       <DrawItemRow>
-        {!disableStrokeStyle && (
-          <StrokeStyleControl activeObject={activeObject} />
+        {!disable_stroke_style && (
+          <StrokeStyleControl active_object={active_object} />
         )}
         <StrokeWidthControl
-          activeObject={activeObject}
-          disableStrokeStyle={Boolean(disableStrokeStyle)}
+          active_object={active_object}
+          disable_stroke_style={Boolean(disable_stroke_style)}
         />
       </DrawItemRow>
-      {isArrowObject(activeObject) && (
-        <ArrowheadControl activeObject={activeObject} />
+      {is_arrow_object(active_object) && (
+        <ArrowheadControl active_object={active_object} />
       )}
     </DrawItem>
   );

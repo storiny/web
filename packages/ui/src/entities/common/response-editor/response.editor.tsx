@@ -6,9 +6,9 @@ import { use_toast } from "src/components/toast";
 import { use_media_query } from "src/hooks/use-media-query";
 
 import ResponseTextarea from "src/entities/response-textarea";
-import CommentIcon from "~/icons/Comment";
-import EditIcon from "~/icons/Edit";
-import ReplyIcon from "~/icons/Reply";
+import CommentIcon from "src/icons/comment";
+import EditIcon from "src/icons/edit";
+import ReplyIcon from "src/icons/reply";
 import {
   get_comments_api,
   get_replies_api,
@@ -84,11 +84,11 @@ const ResponseEditor = (props: ResponseEditorProps): React.ReactElement => {
       hide_post_button
       maxLength={
         (response_type === "comment" ? COMMENT_PROPS : REPLY_PROPS).content
-          .maxLength
+          .max_length
       }
       minLength={
         (response_type === "comment" ? COMMENT_PROPS : REPLY_PROPS).content
-          .minLength
+          .min_length
       }
       ref={textarea_ref}
     />,

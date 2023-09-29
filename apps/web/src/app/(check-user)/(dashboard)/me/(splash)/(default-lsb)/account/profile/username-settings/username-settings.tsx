@@ -1,4 +1,4 @@
-import { userProps } from "@storiny/shared";
+import { USER_PROPS } from "@storiny/shared";
 import { clsx } from "clsx";
 import React from "react";
 
@@ -19,8 +19,8 @@ import Spacer from "../../../../../../../../../../../../packages/ui/src/componen
 import { use_toast } from "../../../../../../../../../../../../packages/ui/src/components/toast";
 import Typography from "../../../../../../../../../../../../packages/ui/src/components/typography";
 import { use_media_query } from "../../../../../../../../../../../../packages/ui/src/hooks/use-media-query";
-import AtIcon from "~/icons/At";
-import PasswordIcon from "~/icons/Password";
+import AtIcon from "../../../../../../../../../../../../packages/ui/src/icons/at";
+import PasswordIcon from "../../../../../../../../../../../../packages/ui/src/icons/password";
 import { mutate_user, use_username_settings_mutation } from "~/redux/features";
 import { use_app_dispatch } from "~/redux/hooks";
 import { BREAKPOINTS } from "~/theme/breakpoints";
@@ -50,8 +50,8 @@ const UsernameSettingsModal = (): React.ReactElement => (
         }
       }}
       label={"New username"}
-      maxLength={userProps.username.maxLength}
-      minLength={userProps.username.minLength}
+      maxLength={USER_PROPS.username.max_length}
+      minLength={USER_PROPS.username.min_length}
       name={"new-username"}
       placeholder={"Choose a new username"}
       required

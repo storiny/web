@@ -10,16 +10,18 @@ const EditorAuxiliaryContent = dynamic(() => import("../auxiliary-content"));
 
 const Editor = (props: EditorProps): React.ReactElement => (
   <EditorLayout
-    readOnly={props.readOnly}
+    read_only={props.read_only}
     status={props.status}
     story={props.story}
   >
     <EditorBody
       {...props}
-      readOnly={props.readOnly || props.status === "deleted"}
+      read_only={props.read_only || props.status === "deleted"}
     />
-    {!props.readOnly && props.status !== "deleted" ? <EditorShortcuts /> : null}
-    {props.readOnly && <EditorAuxiliaryContent />}
+    {!props.read_only && props.status !== "deleted" ? (
+      <EditorShortcuts />
+    ) : null}
+    {props.read_only && <EditorAuxiliaryContent />}
   </EditorLayout>
 );
 
