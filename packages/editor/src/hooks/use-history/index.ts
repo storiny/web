@@ -14,8 +14,8 @@ export const useHistory = (): {
   redo: () => void;
   undo: () => void;
 } => {
-  const canUndo = useAtomValue(canUndoAtom);
-  const canRedo = useAtomValue(canRedoAtom);
+  const canUndo = use_atom_value(canUndoAtom);
+  const canRedo = use_atom_value(canRedoAtom);
   const [editor] = useLexicalComposerContext();
 
   const undo = React.useCallback(() => {

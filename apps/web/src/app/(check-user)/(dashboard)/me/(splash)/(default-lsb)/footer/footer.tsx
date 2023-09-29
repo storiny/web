@@ -1,13 +1,13 @@
 import React from "react";
 
-import { useMediaQuery } from "~/hooks/useMediaQuery";
-import Footer from "~/layout/Footer";
-import { breakpoints } from "~/theme/breakpoints";
+import { use_media_query } from "../../../../../../../../../../packages/ui/src/hooks/use-media-query";
+import Footer from "../../../../../../../../../../packages/ui/src/layout/footer";
+import { BREAKPOINTS } from "~/theme/breakpoints";
 
 const DashboardFooter = (): React.ReactElement | null => {
-  const shouldRender = useMediaQuery(breakpoints.down("desktop"));
+  const should_render = use_media_query(BREAKPOINTS.down("desktop"));
 
-  if (!shouldRender) {
+  if (!should_render) {
     return null;
   }
 

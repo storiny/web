@@ -1,7 +1,7 @@
 import { clsx } from "clsx";
 import React from "react";
 
-import ScrollArea from "~/components/ScrollArea";
+import ScrollArea from "../../../../../../packages/ui/src/components/scroll-area";
 
 import styles from "./Pre.module.scss";
 
@@ -12,7 +12,7 @@ const Pre = ({
   <ScrollArea
     as={"pre"}
     className={className}
-    enableHorizontal
+    enable_horizontal
     slot_props={{
       viewport: { className: clsx(styles.x, styles.viewport) }
     }}

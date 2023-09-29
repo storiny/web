@@ -5,17 +5,17 @@ import React from "react";
 
 import { Flag, UserFlag } from "~/common/flags";
 import { GetProfileResponse } from "~/common/grpc";
-import Avatar from "~/components/Avatar";
-import Badge from "~/components/Badge";
-import Button from "~/components/Button";
-import Divider from "~/components/Divider";
-import Grow from "~/components/Grow";
-import Link from "~/components/Link";
-import Spacer from "~/components/Spacer";
-import Tooltip from "~/components/Tooltip";
-import Typography from "~/components/Typography";
-import Status from "~/entities/Status";
-import { useMediaQuery } from "~/hooks/useMediaQuery";
+import Avatar from "../../../../../../../packages/ui/src/components/avatar";
+import Badge from "../../../../../../../packages/ui/src/components/badge";
+import Button from "../../../../../../../packages/ui/src/components/button";
+import Divider from "../../../../../../../packages/ui/src/components/divider";
+import Grow from "../../../../../../../packages/ui/src/components/grow";
+import Link from "../../../../../../../packages/ui/src/components/link";
+import Spacer from "../../../../../../../packages/ui/src/components/spacer";
+import Tooltip from "../../../../../../../packages/ui/src/components/tooltip";
+import Typography from "../../../../../../../packages/ui/src/components/typography";
+import Status from "../../../../../../../packages/ui/src/entities/status";
+import { use_media_query } from "../../../../../../../packages/ui/src/hooks/use-media-query";
 import CalendarIcon from "~/icons/Calendar";
 import EditIcon from "~/icons/Edit";
 import ForbidIcon from "~/icons/Forbid";
@@ -27,16 +27,24 @@ import UserPlusIcon from "~/icons/UserPlus";
 import UserXIcon from "~/icons/UserX";
 import { boolean_action } from "~/redux/features";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
-import { breakpoints } from "~/theme/breakpoints";
-import { abbreviateNumber } from "~/utils/abbreviateNumber";
-import { DateFormat, formatDate } from "~/utils/formatDate";
+import { BREAKPOINTS } from "~/theme/breakpoints";
+import { abbreviate_number } from "../../../../../../../packages/ui/src/utils/abbreviate-number";
+import {
+  DateFormat,
+  format_date
+} from "../../../../../../../packages/ui/src/utils/format-date";
 
 import ProfileActions from "../actions";
 import Connections from "../connections";
 import styles from "./content.module.scss";
 
-const EarlyUserBadge = dynamic(() => import("~/entities/badges/EarlyUser"));
-const StaffBadge = dynamic(() => import("~/entities/badges/Staff"));
+const EarlyUserBadge = dynamic(
+  () =>
+    import("../../../../../../../packages/ui/src/entities/badges/early-user")
+);
+const StaffBadge = dynamic(
+  () => import("../../../../../../../packages/ui/src/entities/badges/staff")
+);
 
 interface Props {
   isInsideSidebar?: boolean;
@@ -73,7 +81,7 @@ const Actions = ({
     >
       {!profile.is_blocked_by_user && (
         <Button
-          checkAuth
+          check_auth
           color={isBlocking ? "ruby" : "inverted"}
           decorator={
             isSelf ? (
@@ -126,7 +134,9 @@ const Stat = ({
       value === 1 ? singularLabel : pluralLabel
     }`}
   >
-    <span className={clsx("t-major", "t-bold")}>{abbreviateNumber(value)}</span>{" "}
+    <span className={clsx("t-major", "t-bold")}>
+      {abbreviate_number(value)}
+    </span>{" "}
     <span className={clsx("t-minor", "t-medium")}>
       {value === 1 ? singularLabel : pluralLabel}
     </span>
@@ -207,11 +217,12 @@ const ProfileContent = ({
   isSuspended,
   isPrivate
 }: Props): React.ReactElement => {
-  const willAvatarOverflow = useMediaQuery(
-    `${breakpoints.up("tablet")} and ${breakpoints.down("desktop")}`
+  const willAvatarOverflow = use_media_query(
+    `${BREAKPOINTS.up("tablet")} and ${BREAKPOINTS.down("desktop")}`
   );
-  const followerCount =
-    use_app_selector((state) => state.entities.followerCounts[profile.id]) || 0;
+  const follower_count =
+    use_app_selector((state) => state.entities.follower_counts[profile.id]) ||
+    0;
   const followingCount =
     use_app_selector((state) => state.entities.followingCounts[profile.id]) ||
     0;
@@ -230,7 +241,7 @@ const ProfileContent = ({
         )}
       >
         <Badge
-          badgeContent={
+          badge_content={
             <Tooltip content={"Your account is private"} delayDuration={0}>
               <LockIcon />
             </Tooltip>
@@ -264,7 +275,7 @@ const ProfileContent = ({
           ) : (
             <Avatar
               alt={""}
-              avatarId={profile.avatar_id}
+              avatar_id={profile.avatar_id}
               borderless={Boolean(profile.banner_id) && !isInsideSidebar}
               className={clsx(
                 styles.x,
@@ -311,7 +322,7 @@ const ProfileContent = ({
                 <Stat
                   pluralLabel={"followers"}
                   singularLabel={"follower"}
-                  value={followerCount}
+                  value={follower_count}
                 />
                 {!isPrivate && (
                   <>
@@ -339,7 +350,7 @@ const ProfileContent = ({
                 <Status
                   className={clsx(styles.x, !isInsideSidebar && styles.status)}
                   emoji={profile.status.emoji}
-                  expiresAt={profile.status.expires_at}
+                  expires_at={profile.status.expires_at}
                   text={profile.status.text}
                 />
               ) : null}
@@ -384,9 +395,9 @@ const ProfileContent = ({
                   className={"t-minor"}
                   dateTime={profile.created_at}
                   level={"body2"}
-                  title={formatDate(profile.created_at)}
+                  title={format_date(profile.created_at)}
                 >
-                  Joined {formatDate(profile.created_at, DateFormat.RELATIVE)}
+                  Joined {format_date(profile.created_at, DateFormat.RELATIVE)}
                 </Typography>
               </li>
             </ul>

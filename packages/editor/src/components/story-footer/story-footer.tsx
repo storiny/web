@@ -10,18 +10,18 @@ import { clsx } from "clsx";
 import { useAtomValue } from "jotai";
 import React from "react";
 
-import Divider from "~/components/Divider";
-import Grow from "~/components/Grow";
-import Spacer from "~/components/Spacer";
-import Typography from "~/components/Typography";
-import TagChip from "~/entities/TagChip";
-import { useMediaQuery } from "~/hooks/useMediaQuery";
+import Divider from "../../../../ui/src/components/divider";
+import Grow from "../../../../ui/src/components/grow";
+import Spacer from "../../../../ui/src/components/spacer";
+import Typography from "../../../../ui/src/components/typography";
+import TagChip from "../../../../ui/src/entities/tag-chip";
+import { use_media_query } from "../../../../ui/src/hooks/use-media-query";
 import CommentIcon from "~/icons/Comment";
 import EditIcon from "~/icons/Edit";
 import { use_app_selector } from "~/redux/hooks";
-import { breakpoints } from "~/theme/breakpoints";
-import { abbreviateNumber } from "~/utils/abbreviateNumber";
-import { DateFormat, formatDate } from "~/utils/formatDate";
+import { BREAKPOINTS } from "~/theme/breakpoints";
+import { abbreviate_number } from "../../../../ui/src/utils/abbreviate-number";
+import { DateFormat, format_date } from "../../../../ui/src/utils/format-date";
 
 import { storyMetadataAtom } from "../../atoms";
 import LikeButton from "../layout/right-sidebar/content/read-only/stats/like-button";
@@ -30,7 +30,7 @@ import styles from "./story-footer.module.scss";
 // License
 
 const License = (): React.ReactElement | null => {
-  const story = useAtomValue(storyMetadataAtom);
+  const story = use_atom_value(storyMetadataAtom);
 
   if (story.license === StoryLicense.RESERVED) {
     return null;
@@ -52,7 +52,7 @@ const License = (): React.ReactElement | null => {
 // Actions
 
 const Actions = (): React.ReactElement => {
-  const story = useAtomValue(storyMetadataAtom);
+  const story = use_atom_value(storyMetadataAtom);
   const readCount = story.stats.read_count + 1; // Also include the current reading session
 
   return (
@@ -64,7 +64,7 @@ const Actions = (): React.ReactElement => {
           readCount === 1 ? "read" : "reads"
         }`}
       >
-        {abbreviateNumber(readCount)} {readCount === 1 ? "read" : "reads"}
+        {abbreviate_number(readCount)} {readCount === 1 ? "read" : "reads"}
       </Typography>
       <Grow />
       <LikeButton />
@@ -73,16 +73,16 @@ const Actions = (): React.ReactElement => {
 };
 
 const StoryFooter = (): React.ReactElement => {
-  const isMobile = useMediaQuery(breakpoints.down("mobile"));
-  const isSmallerThanDesktop = useMediaQuery(breakpoints.down("desktop"));
-  const story = useAtomValue(storyMetadataAtom);
+  const is_mobile = use_media_query(BREAKPOINTS.down("mobile"));
+  const is_smaller_than_desktop = use_media_query(BREAKPOINTS.down("desktop"));
+  const story = use_atom_value(storyMetadataAtom);
 
   return (
     <footer className={"flex-col"}>
       <Spacer orientation={"vertical"} size={15} />
       <Divider />
       <Spacer orientation={"vertical"} size={3} />
-      {isSmallerThanDesktop && (
+      {is_smaller_than_desktop && (
         <React.Fragment>
           <Actions />
           <Spacer orientation={"vertical"} size={3} />
@@ -107,10 +107,10 @@ const StoryFooter = (): React.ReactElement => {
               className={clsx("flex-center", "t-minor", styles.x, styles.stat)}
               dateTime={story.edited_at}
               level={"body2"}
-              title={formatDate(story.edited_at, DateFormat.LONG)}
+              title={format_date(story.edited_at, DateFormat.LONG)}
             >
               <EditIcon />
-              Edited on {formatDate(story.edited_at)}
+              Edited on {format_date(story.edited_at)}
             </Typography>
           )}
         </div>
@@ -124,7 +124,7 @@ const StoryFooter = (): React.ReactElement => {
             {story.tags.map((tag) => (
               <TagChip
                 key={tag.id}
-                size={isMobile ? "lg" : "md"}
+                size={is_mobile ? "lg" : "md"}
                 value={tag.name}
               />
             ))}

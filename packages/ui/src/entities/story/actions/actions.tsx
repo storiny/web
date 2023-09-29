@@ -2,17 +2,17 @@ import { Story } from "@storiny/types";
 import { clsx } from "clsx";
 import NextLink from "next/link";
 import React from "react";
+import { use_confirmation } from "src/components/confirmation";
+import IconButton from "src/components/icon-button";
+import Link from "src/components/link";
+import Menu from "src/components/menu";
+import MenuItem from "src/components/menu-item";
+import Separator from "src/components/separator";
+import { use_toast } from "src/components/toast";
+import { use_clipboard } from "src/hooks/use-clipboard";
+import { use_media_query } from "src/hooks/use-media-query";
+import { use_web_share } from "src/hooks/use-web-share";
 
-import { useConfirmation } from "~/components/Confirmation";
-import IconButton from "~/components/IconButton";
-import Link from "~/components/Link";
-import Menu from "~/components/Menu";
-import MenuItem from "~/components/MenuItem";
-import Separator from "~/components/Separator";
-import { useToast } from "~/components/Toast";
-import { useClipboard } from "~/hooks/useClipboard";
-import { useMediaQuery } from "~/hooks/useMediaQuery";
-import { useWebShare } from "~/hooks/useWebShare";
 import CommentIcon from "~/icons/Comment";
 import CopyIcon from "~/icons/Copy";
 import DotsIcon from "~/icons/Dots";
@@ -34,50 +34,50 @@ import {
 } from "~/redux/features";
 import { select_is_logged_in } from "~/redux/features/auth/selectors";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
-import { breakpoints } from "~/theme/breakpoints";
+import { BREAKPOINTS } from "~/theme/breakpoints";
 
 const StoryActions = ({
   story,
-  isDraft,
-  isExtended
+  is_draft,
+  is_extended
 }: {
-  isDraft?: boolean;
-  isExtended?: boolean;
+  is_draft?: boolean;
+  is_extended?: boolean;
   story: Story;
 }): React.ReactElement => {
-  const share = useWebShare();
-  const copy = useClipboard();
-  const toast = useToast();
+  const share = use_web_share();
+  const copy = use_clipboard();
+  const toast = use_toast();
   const dispatch = use_app_dispatch();
-  const isMobile = useMediaQuery(breakpoints.down("mobile"));
-  const loggedIn = use_app_selector(select_is_logged_in);
-  const isBlocking = use_app_selector(
+  const is_mobile = use_media_query(BREAKPOINTS.down("mobile"));
+  const logged_in = use_app_selector(select_is_logged_in);
+  const is_blocking = use_app_selector(
     (state) => state.entities.blocks[story.user!.id]
   );
-  const isMuted = use_app_selector(
+  const is_muted = use_app_selector(
     (state) => state.entities.mutes[story.user!.id]
   );
-  const [deleteDraft] = use_delete_draft_mutation();
-  const [deleteStory] = use_delete_story_mutation();
-  const [unpublishStory] = use_unpublish_story_mutation();
-  const [blockElement] = useConfirmation(
-    ({ openConfirmation }) => (
+  const [delete_draft] = use_delete_draft_mutation();
+  const [delete_story] = use_delete_story_mutation();
+  const [unpublish_story] = use_unpublish_story_mutation();
+  const [block_element] = use_confirmation(
+    ({ open_confirmation }) => (
       <MenuItem
-        checkAuth
+        check_auth
         decorator={<UserBlockIcon />}
         onSelect={(event): void => {
           event.preventDefault(); // Do not auto-close the menu
-          openConfirmation();
+          open_confirmation();
         }}
       >
-        {isBlocking ? "Unblock" : "Block"} this writer
+        {is_blocking ? "Unblock" : "Block"} this writer
       </MenuItem>
     ),
     {
-      color: isBlocking ? "inverted" : "ruby",
-      onConfirm: () => dispatch(boolean_action("blocks", story.user!.id)),
-      title: `${isBlocking ? "Unblock" : "Block"} @${story.user!.username}?`,
-      description: isBlocking
+      color: is_blocking ? "inverted" : "ruby",
+      on_confirm: () => dispatch(boolean_action("blocks", story.user!.id)),
+      title: `${is_blocking ? "Unblock" : "Block"} @${story.user!.username}?`,
+      description: is_blocking
         ? `The public content you publish will be available to them as well as the ability to follow you.`
         : `Your feed will not include their content, and they will not be able to follow you or interact with your profile.`
     }
@@ -86,8 +86,8 @@ const StoryActions = ({
   /**
    * Deletes a draft
    */
-  const handleDraftDelete = (): void => {
-    deleteDraft({ id: story.id })
+  const handle_draft_delete = (): void => {
+    delete_draft({ id: story.id })
       .unwrap()
       .then(() => {
         toast("Draft deleted", "success");
@@ -98,14 +98,14 @@ const StoryActions = ({
       );
   };
 
-  const [deleteDraftElement] = useConfirmation(
-    ({ openConfirmation }) => (
+  const [delete_draft_element] = use_confirmation(
+    ({ open_confirmation }) => (
       <MenuItem
-        checkAuth
+        check_auth
         decorator={<TrashIcon />}
         onSelect={(event): void => {
           event.preventDefault(); // Do not auto-close the menu
-          openConfirmation();
+          open_confirmation();
         }}
       >
         Delete this draft
@@ -113,7 +113,7 @@ const StoryActions = ({
     ),
     {
       color: "ruby",
-      onConfirm: handleDraftDelete,
+      on_confirm: handle_draft_delete,
       title: "Delete this draft?",
       decorator: <TrashIcon />,
       description:
@@ -124,8 +124,8 @@ const StoryActions = ({
   /**
    * Deletes a draft
    */
-  const handleStoryDelete = (): void => {
-    deleteStory({ id: story.id })
+  const handle_story_delete = (): void => {
+    delete_story({ id: story.id })
       .unwrap()
       .then(() => {
         toast("Story deleted", "success");
@@ -136,14 +136,14 @@ const StoryActions = ({
       );
   };
 
-  const [deleteStoryElement] = useConfirmation(
-    ({ openConfirmation }) => (
+  const [delete_story_element] = use_confirmation(
+    ({ open_confirmation }) => (
       <MenuItem
-        checkAuth
+        check_auth
         decorator={<TrashIcon />}
         onSelect={(event): void => {
           event.preventDefault(); // Do not auto-close the menu
-          openConfirmation();
+          open_confirmation();
         }}
       >
         Delete this story
@@ -151,7 +151,7 @@ const StoryActions = ({
     ),
     {
       color: "ruby",
-      onConfirm: handleStoryDelete,
+      on_confirm: handle_story_delete,
       title: "Delete this story?",
       decorator: <TrashIcon />,
       description:
@@ -162,8 +162,8 @@ const StoryActions = ({
   /**
    * Deletes a draft
    */
-  const handleStoryUnpublish = (): void => {
-    unpublishStory({ id: story.id })
+  const handle_story_unpublish = (): void => {
+    unpublish_story({ id: story.id })
       .unwrap()
       .then(() => {
         toast("Story unpublished", "success");
@@ -175,14 +175,14 @@ const StoryActions = ({
       );
   };
 
-  const [unpublishStoryElement] = useConfirmation(
-    ({ openConfirmation }) => (
+  const [unpublish_story_element] = use_confirmation(
+    ({ open_confirmation }) => (
       <MenuItem
-        checkAuth
+        check_auth
         decorator={<EyeOffIcon />}
         onSelect={(event): void => {
           event.preventDefault(); // Do not auto-close the menu
-          openConfirmation();
+          open_confirmation();
         }}
       >
         Unpublish this story
@@ -190,7 +190,7 @@ const StoryActions = ({
     ),
     {
       color: "ruby",
-      onConfirm: handleStoryUnpublish,
+      on_confirm: handle_story_unpublish,
       title: "Unpublish this story?",
       decorator: <EyeOffIcon />,
       description: (
@@ -211,17 +211,17 @@ const StoryActions = ({
       trigger={
         <IconButton
           aria-label={"More options"}
-          autoSize
-          className={clsx(isMobile && "force-light-mode")}
+          auto_size
+          className={clsx(is_mobile && "force-light-mode")}
           title={"More options"}
-          variant={isMobile ? "rigid" : "ghost"}
+          variant={is_mobile ? "rigid" : "ghost"}
         >
           <DotsIcon />
         </IconButton>
       }
     >
-      {isDraft ? (
-        deleteDraftElement
+      {is_draft ? (
+        delete_draft_element
       ) : (
         <React.Fragment>
           <MenuItem
@@ -250,11 +250,11 @@ const StoryActions = ({
             Copy link to story
           </MenuItem>
           <Separator />
-          {isExtended ? (
+          {is_extended ? (
             <React.Fragment>
               <MenuItem
                 as={NextLink}
-                checkAuth
+                check_auth
                 decorator={<EditIcon />}
                 href={`/doc/${story.id}`}
               >
@@ -262,7 +262,7 @@ const StoryActions = ({
               </MenuItem>
               <MenuItem
                 as={NextLink}
-                checkAuth
+                check_auth
                 decorator={<CommentIcon />}
                 href={`/me/content/stories/${story.id}/responses`}
               >
@@ -270,15 +270,15 @@ const StoryActions = ({
               </MenuItem>
               <MenuItem
                 as={NextLink}
-                checkAuth
+                check_auth
                 decorator={<StoriesMetricsIcon />}
                 href={`/me/content/stories/${story.id}/metrics`}
               >
                 View metrics
               </MenuItem>
               <Separator />
-              {unpublishStoryElement}
-              {deleteStoryElement}
+              {unpublish_story_element}
+              {delete_story_element}
             </React.Fragment>
           ) : (
             <React.Fragment>
@@ -291,19 +291,19 @@ const StoryActions = ({
               >
                 Report this story
               </MenuItem>
-              {loggedIn && (
+              {logged_in && (
                 <>
                   <Separator />
                   <MenuItem
-                    checkAuth
+                    check_auth
                     decorator={<MuteIcon />}
                     onClick={(): void => {
                       dispatch(boolean_action("mutes", story.user!.id));
                     }}
                   >
-                    {isMuted ? "Unmute" : "Mute"} this writer
+                    {is_muted ? "Unmute" : "Mute"} this writer
                   </MenuItem>
-                  {blockElement}
+                  {block_element}
                 </>
               )}
             </React.Fragment>

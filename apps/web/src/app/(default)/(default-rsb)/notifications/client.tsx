@@ -10,17 +10,17 @@ import {
   NotificationListSkeleton,
   VirtualizedNotificationList
 } from "~/common/notification";
-import Button from "~/components/Button";
-import Divider from "~/components/Divider";
-import Grow from "~/components/Grow";
-import IconButton from "~/components/IconButton";
-import Skeleton from "~/components/Skeleton";
-import Tab from "~/components/Tab";
-import Tabs from "~/components/Tabs";
-import TabsList from "~/components/TabsList";
-import Typography from "~/components/Typography";
-import ErrorState from "~/entities/ErrorState";
-import { useMediaQuery } from "~/hooks/useMediaQuery";
+import Button from "../../../../../../../packages/ui/src/components/button";
+import Divider from "../../../../../../../packages/ui/src/components/divider";
+import Grow from "../../../../../../../packages/ui/src/components/grow";
+import IconButton from "../../../../../../../packages/ui/src/components/icon-button";
+import Skeleton from "../../../../../../../packages/ui/src/components/skeleton";
+import Tab from "../../../../../../../packages/ui/src/components/tab";
+import Tabs from "../../../../../../../packages/ui/src/components/tabs";
+import TabsList from "../../../../../../../packages/ui/src/components/tabs-list";
+import Typography from "../../../../../../../packages/ui/src/components/typography";
+import ErrorState from "../../../../../../../packages/ui/src/entities/error-state";
+import { use_media_query } from "../../../../../../../packages/ui/src/hooks/use-media-query";
 import ChecksIcon from "~/icons/Checks";
 import SettingsIcon from "~/icons/Settings";
 import {
@@ -31,8 +31,8 @@ import {
   use_get_notifications_query
 } from "~/redux/features";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
-import { breakpoints } from "~/theme/breakpoints";
-import { abbreviateNumber } from "~/utils/abbreviateNumber";
+import { BREAKPOINTS } from "~/theme/breakpoints";
+import { abbreviate_number } from "../../../../../../../packages/ui/src/utils/abbreviate-number";
 
 import styles from "./styles.module.scss";
 
@@ -83,7 +83,7 @@ const StatusHeader = ({
   tab: NotificationsTabValue;
 }): React.ReactElement => {
   const dispatch = use_app_dispatch();
-  const isMobile = useMediaQuery(breakpoints.down("mobile"));
+  const is_mobile = use_media_query(BREAKPOINTS.down("mobile"));
   const unreadCount = use_app_selector(select_unread_notification_count);
   const status = use_app_selector(select_notifications_status);
 
@@ -104,17 +104,17 @@ const StatusHeader = ({
         ) : (
           <>
             You have{" "}
-            <span className={"t-bold"}>{abbreviateNumber(unreadCount)}</span>{" "}
+            <span className={"t-bold"}>{abbreviate_number(unreadCount)}</span>{" "}
             unread {unreadCount === 1 ? "notification" : "notifications"}
           </>
         )}
       </Typography>
       <Grow />
       <div className={clsx("flex-center", styles.x, styles["header-actions"])}>
-        {isMobile ? (
+        {is_mobile ? (
           <IconButton
             aria-label={"Mark all as read"}
-            checkAuth
+            check_auth
             disabled={unreadCount === 0}
             onClick={(): void => {
               dispatch(mark_all_as_read());
@@ -127,8 +127,8 @@ const StatusHeader = ({
           </IconButton>
         ) : (
           <Button
-            autoSize
-            checkAuth
+            auto_size
+            check_auth
             decorator={<ChecksIcon />}
             disabled={unreadCount === 0}
             onClick={(): void => {
@@ -142,8 +142,8 @@ const StatusHeader = ({
         <IconButton
           aria-label={"Notification settings"}
           as={NextLink}
-          autoSize
-          checkAuth
+          auto_size
+          check_auth
           href={"/me/account/notifications"}
           title={"Notification settings"}
           variant={"ghost"}
@@ -157,7 +157,7 @@ const StatusHeader = ({
 
 const Client = (): React.ReactElement => {
   const [value, setValue] = React.useState<NotificationsTabValue>("unread");
-  const [page, setPage] = React.useState<number>(1);
+  const [page, set_page] = React.useState<number>(1);
   const { data, isLoading, isFetching, isError, error, refetch } =
     use_get_notifications_query({
       page,
@@ -165,13 +165,13 @@ const Client = (): React.ReactElement => {
     });
   const { items = [], has_more } = data || {};
 
-  const loadMore = React.useCallback(
-    () => setPage((prevState) => prevState + 1),
+  const load_more = React.useCallback(
+    () => set_page((prev_state) => prev_state + 1),
     []
   );
 
   const handleChange = React.useCallback((newValue: NotificationsTabValue) => {
-    setPage(1);
+    set_page(1);
     setValue(newValue);
   }, []);
 
@@ -181,7 +181,7 @@ const Client = (): React.ReactElement => {
       {value !== "all" && <StatusHeader tab={value} />}
       {isError ? (
         <ErrorState
-          autoSize
+          auto_size
           component_props={{
             button: { loading: isFetching }
           }}
@@ -195,7 +195,7 @@ const Client = (): React.ReactElement => {
       ) : (
         <VirtualizedNotificationList
           has_more={Boolean(has_more)}
-          loadMore={loadMore}
+          load_more={load_more}
           notifications={items}
         />
       )}

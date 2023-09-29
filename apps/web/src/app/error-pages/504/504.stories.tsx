@@ -22,6 +22,6 @@ type Story = StoryObj<typeof Error504Page>;
 export const Default: Story = {
   decorators: [
     (Story): React.ReactElement =>
-      render_with_state(<Story />, { ignorePrimitiveProviders: true })
+      render_with_state(<Story />, { ignore_primitive_providers: true })
   ]
 };

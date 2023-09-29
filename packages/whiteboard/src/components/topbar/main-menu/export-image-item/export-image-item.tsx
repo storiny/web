@@ -1,9 +1,9 @@
 import React from "react";
 
-import MenuItem from "~/components/MenuItem";
-import { useModal } from "~/components/Modal";
-import ModalFooterButton from "~/components/Modal/FooterButton";
-import { useToast } from "~/components/Toast";
+import MenuItem from "../../../../../../ui/src/components/menu-item";
+import { use_modal } from "../../../../../../ui/src/components/modal";
+import ModalFooterButton from "../../../../../../ui/src/components/modal/footer-button";
+import { use_toast } from "../../../../../../ui/src/components/toast";
 import ImageIcon from "~/icons/Image";
 
 import { useCanvas } from "../../../../hooks";
@@ -11,17 +11,17 @@ import ExportImageModal, { ExportHandleRef } from "../../export-image-modal";
 
 const ExportImageItem = (): React.ReactElement => {
   const canvas = useCanvas();
-  const toast = useToast();
+  const toast = use_toast();
   const [loading, setLoading] = React.useState<boolean>(false);
   const exportRef = React.useRef<ExportHandleRef>(null);
-  const [element] = useModal(
-    ({ openModal }) => (
+  const [element] = use_modal(
+    ({ open_modal }) => (
       <MenuItem
         decorator={<ImageIcon />}
         onClick={(event): void => {
           if (canvas.current) {
             if (canvas.current.getObjects().length) {
-              openModal();
+              open_modal();
             } else {
               event.preventDefault();
               toast("Cannot export an empty canvas", "error");

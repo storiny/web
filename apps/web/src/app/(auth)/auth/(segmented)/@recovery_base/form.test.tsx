@@ -13,7 +13,7 @@ describe("<RecoveryForm />", () => {
     const user = userEvent.setup();
     render_test_with_provider(
       <AuthState>
-        <RecoveryForm onSubmit={mockSubmit} />
+        <RecoveryForm on_submit={mockSubmit} />
       </AuthState>
     );
 
@@ -21,7 +21,7 @@ describe("<RecoveryForm />", () => {
       await user.click(screen.getByRole("button", { name: /continue/i }));
     });
 
-    await waitFor(() => {
+    await wait_for(() => {
       expect(screen.getByRole("alert")).toBeInTheDocument();
       expect(mockSubmit).not.toBeCalled();
     });
@@ -32,7 +32,7 @@ describe("<RecoveryForm />", () => {
     const user = userEvent.setup();
     render_test_with_provider(
       <AuthState>
-        <RecoveryForm onSubmit={mockSubmit} />
+        <RecoveryForm on_submit={mockSubmit} />
       </AuthState>
     );
 
@@ -41,7 +41,7 @@ describe("<RecoveryForm />", () => {
       await user.click(screen.getByRole("button", { name: /continue/i }));
     });
 
-    await waitFor(() => {
+    await wait_for(() => {
       expect(mockSubmit).toHaveBeenCalledWith({
         email: "someone@example.com"
       });

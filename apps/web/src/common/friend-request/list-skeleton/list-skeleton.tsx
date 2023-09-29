@@ -4,7 +4,7 @@ import { clsx } from "clsx";
 import React from "react";
 
 import styles from "~/common/virtual/virtual.module.scss";
-import Divider from "~/components/Divider";
+import Divider from "../../../../../../packages/ui/src/components/divider";
 import { FriendRequestSkeleton } from "~/entities/friend-request";
 
 const FriendRequestListSkeleton = React.memo(() => (

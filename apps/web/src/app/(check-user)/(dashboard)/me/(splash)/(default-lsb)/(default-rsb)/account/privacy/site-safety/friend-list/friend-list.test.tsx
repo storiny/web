@@ -14,10 +14,10 @@ describe("<FriendList />", () => {
     render_test_with_provider(
       <FriendList
         friend_list_visibility={RelationVisibility.EVERYONE}
-        onSubmit={mockSubmit}
+        on_submit={mockSubmit}
       />,
       {
-        loggedIn: true
+        logged_in: true
       }
     );
 
@@ -25,7 +25,7 @@ describe("<FriendList />", () => {
       await user.click(screen.getByLabelText(/no one/i));
     });
 
-    await waitFor(() => {
+    await wait_for(() => {
       expect(mockSubmit).toHaveBeenCalledWith({
         "friend-list": `${RelationVisibility.NONE}`
       });

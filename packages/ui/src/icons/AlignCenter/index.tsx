@@ -2,8 +2,8 @@
 
 import React from "react";
 
-import { createSvgIcon } from "~/utils/createSvgIcon";
+import { create_svg_icon } from "src/utils/create-svg-icon";
 
 const AlignCenterIcon = <path d="M2 3h8M4 6h4M3 9h6" />;
 
-export default createSvgIcon(AlignCenterIcon, "align-center");
+export default create_svg_icon(AlignCenterIcon, "align-center");

@@ -7,8 +7,8 @@ import {
   PanelResizeHandle
 } from "react-resizable-panels";
 
-import ScrollArea from "~/components/ScrollArea";
-import { useScrollbarVisibility } from "~/hooks/useScrollbarVisibility";
+import ScrollArea from "../../../../ui/src/components/scroll-area";
+import { use_scrollbar_visibility } from "../../../../ui/src/hooks/use-scrollbar-visibility";
 
 import { isPenModeAtom } from "../../atoms";
 import { useActiveObject, useCanvas } from "../../hooks";
@@ -22,9 +22,9 @@ import styles from "./panel.module.scss";
 const ToolsPanel = (): React.ReactElement => {
   const canvas = useCanvas();
   const activeObject = useActiveObject();
-  const isPenMode = useAtomValue(isPenModeAtom);
-  const { ref, visible } = useScrollbarVisibility<HTMLDivElement>();
-  // const tool = useAtomValue(toolAtom);
+  const isPenMode = use_atom_value(isPenModeAtom);
+  const { ref, visible } = use_scrollbar_visibility<HTMLDivElement>();
+  // const tool = use_atom_value(toolAtom);
   // const isImageObjectActive = activeObject && isImageObject(activeObject);
 
   return (

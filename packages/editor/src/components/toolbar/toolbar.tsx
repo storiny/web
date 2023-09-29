@@ -6,10 +6,10 @@ import { useAtomValue } from "jotai";
 import dynamic from "next/dynamic";
 import React from "react";
 
-import Button from "~/components/Button";
-import Spinner from "~/components/Spinner";
-import { useMediaQuery } from "~/hooks/useMediaQuery";
-import { breakpoints } from "~/theme/breakpoints";
+import Button from "../../../../ui/src/components/button";
+import Spinner from "../../../../ui/src/components/spinner";
+import { use_media_query } from "../../../../ui/src/hooks/use-media-query";
+import { BREAKPOINTS } from "~/theme/breakpoints";
 
 import { docStatusAtom, sidebarsCollapsedAtom } from "../../atoms";
 import { springConfig } from "../../constants";
@@ -30,15 +30,18 @@ const SuspendedEditorToolbarContent = dynamic(() => import("./content"), {
 });
 
 const EditorToolbar = (): React.ReactElement | null => {
-  const isSmallerThanDesktop = useMediaQuery(breakpoints.down("desktop"));
-  const sidebarsCollapsed = useAtomValue(sidebarsCollapsedAtom);
-  const docStatus = useAtomValue(docStatusAtom);
-  const transitions = useTransition(sidebarsCollapsed || isSmallerThanDesktop, {
-    from: { opacity: 1, transform: "translate3d(0,100%,0)" },
-    enter: { opacity: 1, transform: "translate3d(0,0%,0)" },
-    leave: { opacity: 1, transform: "translate3d(0,100%,0)" },
-    config: springConfig
-  });
+  const is_smaller_than_desktop = use_media_query(BREAKPOINTS.down("desktop"));
+  const sidebarsCollapsed = use_atom_value(sidebarsCollapsedAtom);
+  const docStatus = use_atom_value(docStatusAtom);
+  const transitions = useTransition(
+    sidebarsCollapsed || is_smaller_than_desktop,
+    {
+      from: { opacity: 1, transform: "translate3d(0,100%,0)" },
+      enter: { opacity: 1, transform: "translate3d(0,0%,0)" },
+      leave: { opacity: 1, transform: "translate3d(0,100%,0)" },
+      config: springConfig
+    }
+  );
 
   if (["disconnected", "publishing"].includes(docStatus)) {
     return null;

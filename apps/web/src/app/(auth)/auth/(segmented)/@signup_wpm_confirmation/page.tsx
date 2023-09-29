@@ -3,12 +3,12 @@
 import { clsx } from "clsx";
 import React from "react";
 
-import Button from "~/components/Button";
-import Grow from "~/components/Grow";
-import Link from "~/components/Link";
-import Spacer from "~/components/Spacer";
-import Stepper from "~/components/Stepper";
-import Typography from "~/components/Typography";
+import Button from "../../../../../../../../packages/ui/src/components/button";
+import Grow from "../../../../../../../../packages/ui/src/components/grow";
+import Link from "../../../../../../../../packages/ui/src/components/link";
+import Spacer from "../../../../../../../../packages/ui/src/components/spacer";
+import Stepper from "../../../../../../../../packages/ui/src/components/stepper";
+import Typography from "../../../../../../../../packages/ui/src/components/typography";
 
 import { useAuthState } from "../../../actions";
 
@@ -57,7 +57,7 @@ const Page = (): React.ReactElement => {
         </Link>
       </div>
       <Spacer orientation={"vertical"} size={2} />
-      <Stepper activeSteps={3} totalSteps={3} />
+      <Stepper active_steps={3} total_steps={3} />
     </>
   );
 };

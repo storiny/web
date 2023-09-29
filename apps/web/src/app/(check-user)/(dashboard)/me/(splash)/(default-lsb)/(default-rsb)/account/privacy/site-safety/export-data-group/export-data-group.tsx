@@ -1,19 +1,27 @@
 import { clsx } from "clsx";
 import React from "react";
 
-import Button from "~/components/Button";
-import Form, { SubmitHandler, useForm, zodResolver } from "~/components/Form";
-import FormPasswordInput from "~/components/FormPasswordInput";
-import { Description, ModalFooterButton, useModal } from "~/components/Modal";
-import Spacer from "~/components/Spacer";
-import { useToast } from "~/components/Toast";
-import Typography from "~/components/Typography";
-import TitleBlock from "~/entities/TitleBlock";
-import { useMediaQuery } from "~/hooks/useMediaQuery";
+import Button from "../../../../../../../../../../../../../../packages/ui/src/components/button";
+import Form, {
+  SubmitHandler,
+  use_form,
+  zod_resolver
+} from "../../../../../../../../../../../../../../packages/ui/src/components/form";
+import FormPasswordInput from "../../../../../../../../../../../../../../packages/ui/src/components/form-password-input";
+import {
+  Description,
+  ModalFooterButton,
+  use_modal
+} from "../../../../../../../../../../../../../../packages/ui/src/components/modal";
+import Spacer from "../../../../../../../../../../../../../../packages/ui/src/components/spacer";
+import { use_toast } from "../../../../../../../../../../../../../../packages/ui/src/components/toast";
+import Typography from "../../../../../../../../../../../../../../packages/ui/src/components/typography";
+import TitleBlock from "../../../../../../../../../../../../../../packages/ui/src/entities/title-block";
+import { use_media_query } from "../../../../../../../../../../../../../../packages/ui/src/hooks/use-media-query";
 import ExportIcon from "~/icons/Export";
 import PasswordIcon from "~/icons/Password";
 import { use_export_data_mutation } from "~/redux/features";
-import { breakpoints } from "~/theme/breakpoints";
+import { BREAKPOINTS } from "~/theme/breakpoints";
 
 import DashboardGroup from "../../../../../dashboard-group";
 import { ExportDataGroupProps } from "./export-data-group.props";
@@ -30,11 +38,11 @@ const ExportDataModal = (): React.ReactElement => (
     </Description>
     <Spacer orientation={"vertical"} size={5} />
     <FormPasswordInput
-      autoSize
+      auto_size
       data-testid={"current-password-input"}
       decorator={<PasswordIcon />}
-      formSlotProps={{
-        formItem: {
+      form_slot_props={{
+        form_item: {
           className: "f-grow"
         }
       }}
@@ -49,12 +57,12 @@ const ExportDataModal = (): React.ReactElement => (
 
 // Export for testing
 export const ExportData = ({
-  onSubmit
+  on_submit
 }: ExportDataGroupProps): React.ReactElement => {
-  const toast = useToast();
-  const isSmallerThanMobile = useMediaQuery(breakpoints.down("mobile"));
-  const form = useForm<ExportDataSchema>({
-    resolver: zodResolver(exportDataSchema),
+  const toast = use_toast();
+  const is_smaller_than_mobile = use_media_query(BREAKPOINTS.down("mobile"));
+  const form = use_form<ExportDataSchema>({
+    resolver: zod_resolver(exportDataSchema),
     defaultValues: {
       "current-password": ""
     }
@@ -62,8 +70,8 @@ export const ExportData = ({
   const [exportData, { isLoading }] = use_export_data_mutation();
 
   const handleSubmit: SubmitHandler<ExportDataSchema> = (values) => {
-    if (onSubmit) {
-      onSubmit(values);
+    if (on_submit) {
+      on_submit(values);
     } else {
       exportData(values)
         .unwrap()
@@ -80,13 +88,13 @@ export const ExportData = ({
     }
   };
 
-  const [element, , close] = useModal(
-    ({ openModal }) => (
+  const [element, , close] = use_modal(
+    ({ open_modal }) => (
       <Button
-        autoSize
-        checkAuth
+        auto_size
+        check_auth
         className={"fit-w"}
-        onClick={openModal}
+        onClick={open_modal}
         variant={"hollow"}
       >
         Request data
@@ -95,20 +103,20 @@ export const ExportData = ({
     <Form<ExportDataSchema>
       className={clsx("flex-col")}
       disabled={isLoading}
-      onSubmit={handleSubmit}
-      providerProps={form}
+      on_submit={handleSubmit}
+      provider_props={form}
     >
       <ExportDataModal />
     </Form>,
     {
-      fullscreen: isSmallerThanMobile,
+      fullscreen: is_smaller_than_mobile,
       footer: (
         <>
-          <ModalFooterButton compact={isSmallerThanMobile} variant={"ghost"}>
+          <ModalFooterButton compact={is_smaller_than_mobile} variant={"ghost"}>
             Cancel
           </ModalFooterButton>
           <ModalFooterButton
-            compact={isSmallerThanMobile}
+            compact={is_smaller_than_mobile}
             disabled={!form.formState.isDirty}
             loading={isLoading}
             onClick={(event): void => {
@@ -122,11 +130,11 @@ export const ExportData = ({
       ),
       slot_props: {
         footer: {
-          compact: isSmallerThanMobile
+          compact: is_smaller_than_mobile
         },
         content: {
           style: {
-            width: isSmallerThanMobile ? "100%" : "350px"
+            width: is_smaller_than_mobile ? "100%" : "350px"
           }
         },
         header: {

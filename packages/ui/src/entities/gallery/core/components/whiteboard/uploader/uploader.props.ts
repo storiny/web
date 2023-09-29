@@ -12,5 +12,5 @@ export interface WhiteboardUploaderProps {
   /**
    * Reset callback
    */
-  onReset?: () => void;
+  on_reset?: () => void;
 }

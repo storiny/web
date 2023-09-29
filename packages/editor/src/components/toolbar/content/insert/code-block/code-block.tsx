@@ -1,6 +1,6 @@
 import React from "react";
 
-import MenuItem from "~/components/MenuItem";
+import MenuItem from "../../../../../../../ui/src/components/menu-item";
 import CodeBlockIcon from "~/icons/CodeBlock";
 
 const CodeBlockMenuItem = (): React.ReactElement => (

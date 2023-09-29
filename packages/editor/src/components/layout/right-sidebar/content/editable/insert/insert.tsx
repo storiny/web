@@ -1,9 +1,9 @@
 import { clsx } from "clsx";
 import React from "react";
 
-import ScrollArea from "~/components/ScrollArea";
-import Spacer from "~/components/Spacer";
-import Typography from "~/components/Typography";
+import ScrollArea from "../../../../../../../../ui/src/components/scroll-area";
+import Spacer from "../../../../../../../../ui/src/components/spacer";
+import Typography from "../../../../../../../../ui/src/components/typography";
 
 import CodeBlockItem from "./code-block";
 import EmbedItem from "./embed";

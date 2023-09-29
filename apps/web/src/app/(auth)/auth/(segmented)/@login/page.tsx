@@ -3,9 +3,9 @@
 import { redirect } from "next/navigation";
 import React from "react";
 
-import Link from "~/components/Link";
-import Spacer from "~/components/Spacer";
-import Typography from "~/components/Typography";
+import Link from "../../../../../../../../packages/ui/src/components/link";
+import Spacer from "../../../../../../../../packages/ui/src/components/spacer";
+import Typography from "../../../../../../../../packages/ui/src/components/typography";
 import { select_is_logged_in } from "~/redux/features";
 import { use_app_selector } from "~/redux/hooks";
 
@@ -14,13 +14,13 @@ import LoginForm from "./form";
 
 const Page = (): React.ReactElement => {
   const { actions } = useAuthState();
-  const loggedIn = use_app_selector(select_is_logged_in);
+  const logged_in = use_app_selector(select_is_logged_in);
 
   React.useEffect(() => {
-    if (loggedIn) {
+    if (logged_in) {
       redirect("/");
     }
-  }, [loggedIn]);
+  }, [logged_in]);
 
   return (
     <>

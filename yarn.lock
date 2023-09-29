@@ -5937,7 +5937,7 @@ __metadata:
     eslint-plugin-jest: ^27.2.1
     eslint-plugin-jest-dom: ^4.0.3
     eslint-plugin-prefer-arrow-functions: ^3.1.4
-    eslint-plugin-prefer-snakecase: ^1.7.0
+    eslint-plugin-prefer-snakecase: 1.8.3
     eslint-plugin-react: 7.28.0
     eslint-plugin-simple-import-sort: ^10.0.0
     eslint-plugin-sort-class-members: ^1.18.0
@@ -12464,12 +12464,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-prefer-snakecase@npm:^1.7.0":
-  version: 1.7.0
-  resolution: "eslint-plugin-prefer-snakecase@npm:1.7.0"
+"eslint-plugin-prefer-snakecase@npm:1.8.3":
+  version: 1.8.3
+  resolution: "eslint-plugin-prefer-snakecase@npm:1.8.3"
   peerDependencies:
     eslint: ">=5.16.0"
-  checksum: a0137fe872a30af6100823511678f5a427acdb6b3c3c6b9b47ac58590cef18ba866362993f6fc1d46c773fa6f23c05564dfd24e777ff7d2852f6518ad6be1b58
+  checksum: 69a161197cb699c1f7c308c11bc9a00aeef9fb5526cf006864531b74df62db4acd9f10cb9bf07f89b0633be0eaae90669bcb6213bd52c6ee140b4a0819e3113d
   languageName: node
   linkType: hard
 

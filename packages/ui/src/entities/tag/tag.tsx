@@ -4,24 +4,20 @@ import clsx from "clsx";
 import NextLink from "next/link";
 import React from "react";
 
-import Avatar from "~/components/Avatar";
-import Button from "~/components/Button";
-import Grow from "~/components/Grow";
-import Typography from "~/components/Typography";
-import { useMediaQuery } from "~/hooks/useMediaQuery";
+import Avatar from "src/components/avatar";
+import Button from "src/components/button";
+import Grow from "src/components/grow";
+import Typography from "src/components/typography";
+import { use_media_query } from "src/hooks/use-media-query";
 import CalendarIcon from "~/icons/Calendar";
 import StoryIcon from "~/icons/Story";
 import TagIcon from "~/icons/Tag";
 import UsersIcon from "~/icons/Users";
-import {
-  boolean_action,
-  setFollowedTag,
-  sync_with_tag
-} from "~/redux/features";
+import { boolean_action, sync_with_tag } from "~/redux/features";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
-import { breakpoints } from "~/theme/breakpoints";
-import { abbreviateNumber } from "~/utils/abbreviateNumber";
-import { DateFormat, formatDate } from "~/utils/formatDate";
+import { BREAKPOINTS } from "~/theme/breakpoints";
+import { abbreviate_number } from "src/utils/abbreviate-number";
+import { DateFormat, format_date } from "src/utils/format-date";
 
 import styles from "./tag.module.scss";
 import { TagProps } from "./tag.props";
@@ -29,13 +25,14 @@ import { TagProps } from "./tag.props";
 const Tag = (props: TagProps): React.ReactElement => {
   const { className, tag, virtual, ...rest } = props;
   const dispatch = use_app_dispatch();
-  const isMobile = useMediaQuery(breakpoints.down("mobile"));
-  const isFollowing = use_app_selector(
-    (state) => state.entities.followedTags[tag.id]
+  const is_mobile = use_media_query(BREAKPOINTS.down("mobile"));
+  const is_following = use_app_selector(
+    (state) => state.entities.followed_tags[tag.id]
   );
-  const followerCount =
-    use_app_selector((state) => state.entities.tagFollowerCounts[tag.id]) || 0;
-  const tagUrl = `/tag/${tag.name}`;
+  const follower_count =
+    use_app_selector((state) => state.entities.tag_follower_counts[tag.id]) ||
+    0;
+  const tag_url = `/tag/${tag.name}`;
 
   React.useEffect(() => {
     dispatch(sync_with_tag(tag));
@@ -52,7 +49,7 @@ const Tag = (props: TagProps): React.ReactElement => {
       )}
     >
       <div className={clsx("flex-center", styles.main)}>
-        <NextLink className={clsx("flex-center", styles.meta)} href={tagUrl}>
+        <NextLink className={clsx("flex-center", styles.meta)} href={tag_url}>
           <Avatar className={styles.avatar} size={"lg"}>
             <TagIcon />
           </Avatar>
@@ -62,14 +59,14 @@ const Tag = (props: TagProps): React.ReactElement => {
         </NextLink>
         <Grow />
         <Button
-          autoSize
-          checkAuth
+          auto_size
+          check_auth
           onClick={(): void => {
             dispatch(boolean_action("followed_tags", tag.id));
           }}
-          variant={isFollowing ? "hollow" : "rigid"}
+          variant={is_following ? "hollow" : "rigid"}
         >
-          {isFollowing ? "Following" : "Follow"}
+          {is_following ? "Following" : "Follow"}
         </Button>
       </div>
       <div className={clsx("flex-center", styles.stats)}>
@@ -82,8 +79,8 @@ const Tag = (props: TagProps): React.ReactElement => {
             <StoryIcon />
           </span>
           <span>
-            {abbreviateNumber(tag.story_count)}
-            {!isMobile && (
+            {abbreviate_number(tag.story_count)}
+            {!is_mobile && (
               <>
                 {" "}
                 <span className={"t-minor"}>stories</span>
@@ -94,14 +91,14 @@ const Tag = (props: TagProps): React.ReactElement => {
         <Typography
           className={clsx("flex-center", styles.stat)}
           level={"body2"}
-          title={`${followerCount.toLocaleString()} followers`}
+          title={`${follower_count.toLocaleString()} followers`}
         >
           <span className={clsx("flex-center", styles["stat-icon"])}>
             <UsersIcon />
           </span>
           <span>
-            {abbreviateNumber(followerCount)}
-            {!isMobile && (
+            {abbreviate_number(follower_count)}
+            {!is_mobile && (
               <>
                 {" "}
                 <span className={"t-minor"}>followers</span>
@@ -115,17 +112,17 @@ const Tag = (props: TagProps): React.ReactElement => {
           className={clsx("flex-center", "t-minor", styles.stat)}
           dateTime={tag.created_at}
           level={"body2"}
-          title={formatDate(tag.created_at)}
+          title={format_date(tag.created_at)}
         >
-          {isMobile ? (
+          {is_mobile ? (
             <>
               <span className={clsx("flex-center", styles["stat-icon"])}>
                 <CalendarIcon />
               </span>
-              <span>{formatDate(tag.created_at, DateFormat.RELATIVE)}</span>
+              <span>{format_date(tag.created_at, DateFormat.RELATIVE)}</span>
             </>
           ) : (
-            `Created ${formatDate(tag.created_at, DateFormat.RELATIVE)}`
+            `Created ${format_date(tag.created_at, DateFormat.RELATIVE)}`
           )}
         </Typography>
       </div>

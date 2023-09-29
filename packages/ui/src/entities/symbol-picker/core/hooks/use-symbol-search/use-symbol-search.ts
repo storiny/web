@@ -1,11 +1,12 @@
 import Fuse from "fuse.js";
-import { useAtomValue } from "jotai";
+import { useAtomValue as use_atom_value } from "jotai";
 
 import { TSymbol } from "~/entities/symbol-picker";
 
-import { symbolQueryAtom } from "../../atoms";
+import { symbol_query_atom } from "../../atoms";
 import { default as data } from "../../data.json";
 
+/* eslint-disable prefer-snakecase/prefer-snakecase */
 const SymbolFuse = new Fuse<TSymbol>(
   data.symbols.map(({ items }) => items).flat(),
   {
@@ -19,12 +20,13 @@ const SymbolFuse = new Fuse<TSymbol>(
     keys: ["name"]
   }
 );
+/* eslint-enable prefer-snakecase/prefer-snakecase */
 
 /**
  * Returns symbols matching the query input
  */
-export const useSymbolSearch = (): TSymbol[] => {
-  const query = useAtomValue(symbolQueryAtom);
+export const use_symbol_search = (): TSymbol[] => {
+  const query = use_atom_value(symbol_query_atom);
 
   if (!query) {
     return [];

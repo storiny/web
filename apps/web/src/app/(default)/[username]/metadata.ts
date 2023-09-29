@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 
 import { getProfile } from "~/common/grpc";
 import { getUser } from "~/common/utils/getUser";
-import { getCdnUrl } from "~/utils/getCdnUrl";
+import { get_cdn_url } from "../../../../../../packages/ui/src/utils/get-cdn-url";
 
 export const generateMetadata = async ({
   params
@@ -36,7 +36,7 @@ export const generateMetadata = async ({
             ? []
             : [
                 {
-                  url: getCdnUrl(profile.avatar_id, ImageSize.W_256),
+                  url: get_cdn_url(profile.avatar_id, ImageSize.W_256),
                   width: 256,
                   height: 256
                 }
@@ -49,7 +49,7 @@ export const generateMetadata = async ({
         images:
           profile.is_private || !profile.avatar_id
             ? []
-            : [getCdnUrl(profile.avatar_id, ImageSize.W_256)]
+            : [get_cdn_url(profile.avatar_id, ImageSize.W_256)]
       }
     };
   } catch {

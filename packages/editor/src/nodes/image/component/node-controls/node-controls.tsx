@@ -3,8 +3,8 @@ import { clsx } from "clsx";
 import { $getNodeByKey } from "lexical";
 import React from "react";
 
-import Divider from "~/components/Divider";
-import IconButton from "~/components/IconButton";
+import Divider from "../../../../../../ui/src/components/divider";
+import IconButton from "../../../../../../ui/src/components/icon-button";
 import Gallery from "~/entities/gallery";
 import MasonryAddIcon from "~/icons/masonry-add";
 import RotateIcon from "~/icons/rotate";
@@ -58,7 +58,7 @@ const ImageNodeControls = (
       <Divider />
       <div className={"flex-center"}>
         <Gallery
-          onConfirm={(newItem): void => {
+          on_confirm={(newItem): void => {
             addImageItem({
               alt: newItem.alt,
               height: newItem.height,

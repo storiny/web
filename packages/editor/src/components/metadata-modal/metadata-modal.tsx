@@ -2,16 +2,20 @@ import clsx from "clsx";
 import { Provider, useAtom } from "jotai";
 import React from "react";
 
-import Form, { SubmitHandler, useForm, zodResolver } from "~/components/Form";
-import IconButton from "~/components/IconButton";
-import Modal from "~/components/Modal";
-import ModalFooterButton from "~/components/Modal/FooterButton";
-import ModalSidebarItem from "~/components/Modal/SidebarItem";
-import ModalSidebarList from "~/components/Modal/SidebarList";
-import ScrollArea from "~/components/ScrollArea";
-import TabPanel from "~/components/TabPanel";
-import { useToast } from "~/components/Toast";
-import { useMediaQuery } from "~/hooks/useMediaQuery";
+import Form, {
+  SubmitHandler,
+  use_form,
+  zod_resolver
+} from "../../../../ui/src/components/form";
+import IconButton from "../../../../ui/src/components/icon-button";
+import Modal from "../../../../ui/src/components/modal";
+import ModalFooterButton from "../../../../ui/src/components/modal/footer-button";
+import ModalSidebarItem from "../../../../ui/src/components/modal/sidebar-item";
+import ModalSidebarList from "../../../../ui/src/components/modal/sidebar-list";
+import ScrollArea from "../../../../ui/src/components/scroll-area";
+import TabPanel from "../../../../ui/src/components/tab-panel";
+import { use_toast } from "../../../../ui/src/components/toast";
+import { use_media_query } from "../../../../ui/src/hooks/use-media-query";
 import ChevronIcon from "~/icons/Chevron";
 import FileIcon from "~/icons/file";
 import LicenseIcon from "~/icons/license";
@@ -19,11 +23,11 @@ import SeoIcon from "~/icons/seo";
 import SettingsIcon from "~/icons/Settings";
 import StoryIcon from "~/icons/Story";
 import { use_story_metadata_mutation } from "~/redux/features";
-import { breakpoints } from "~/theme/breakpoints";
+import { BREAKPOINTS } from "~/theme/breakpoints";
 
 import {
-  navSegmentAtom,
-  sidebarTabAtom,
+  nav_segment_atom,
+  sidebar_tab_atom,
   StoryMetadataModalSidebarTabsValue
 } from "./core/atoms";
 import GeneralTab from "./core/components/general";
@@ -40,13 +44,13 @@ const StoryMetadataModalImpl = (
   props: StoryMetadataModalProps
 ): React.ReactElement => {
   const { children, story, setStory } = props;
-  const toast = useToast();
+  const toast = use_toast();
   const resetAtoms = useResetStoryMetadataModalAtoms();
   const [open, setOpen] = React.useState<boolean>(false);
-  const isSmallerThanTablet = useMediaQuery(breakpoints.down("tablet"));
-  const [navSegment, setNavSegment] = useAtom(navSegmentAtom);
-  const [value, setValue] = useAtom(sidebarTabAtom);
-  const form = useForm<StoryMetadataSchema>({
+  const is_smaller_than_tablet = use_media_query(BREAKPOINTS.down("tablet"));
+  const [navSegment, setNavSegment] = use_atom(nav_segment_atom);
+  const [value, setValue] = use_atom(sidebar_tab_atom);
+  const form = use_form<StoryMetadataSchema>({
     defaultValues: {
       "age-restriction": story.age_restriction,
       "canonical-url": story.canonical_url,
@@ -65,7 +69,7 @@ const StoryMetadataModalImpl = (
       title: story.title,
       visibility: story.visibility
     },
-    resolver: zodResolver(storyMetadataSchema)
+    resolver: zod_resolver(storyMetadataSchema)
   });
   const [mutateStoryMetadata, { isLoading }] = use_story_metadata_mutation();
 
@@ -98,11 +102,11 @@ const StoryMetadataModalImpl = (
     <Modal
       footer={
         <>
-          <ModalFooterButton compact={isSmallerThanTablet} variant={"ghost"}>
+          <ModalFooterButton compact={is_smaller_than_tablet} variant={"ghost"}>
             Cancel
           </ModalFooterButton>
           <ModalFooterButton
-            compact={isSmallerThanTablet}
+            compact={is_smaller_than_tablet}
             disabled={!form.formState.isDirty}
             loading={isLoading}
             onClick={(event): void => {
@@ -114,7 +118,7 @@ const StoryMetadataModalImpl = (
           </ModalFooterButton>
         </>
       }
-      fullscreen={isSmallerThanTablet}
+      fullscreen={is_smaller_than_tablet}
       mode={"tabbed"}
       onOpenChange={(open): void => {
         setOpen(open);
@@ -150,12 +154,12 @@ const StoryMetadataModalImpl = (
         },
         sidebar: {
           style: {
-            display: isSmallerThanTablet ? "none" : "flex"
+            display: is_smaller_than_tablet ? "none" : "flex"
           }
         },
         content: {
           style: {
-            width: isSmallerThanTablet ? "100%" : "600px"
+            width: is_smaller_than_tablet ? "100%" : "600px"
           }
         },
         body: {
@@ -163,7 +167,7 @@ const StoryMetadataModalImpl = (
         },
         header: {
           decorator:
-            !isSmallerThanTablet || navSegment === "home" ? (
+            !is_smaller_than_tablet || navSegment === "home" ? (
               <StoryIcon />
             ) : (
               <IconButton
@@ -177,7 +181,7 @@ const StoryMetadataModalImpl = (
           children: "Story metadata"
         },
         footer: {
-          compact: isSmallerThanTablet
+          compact: is_smaller_than_tablet
         }
       }}
       trigger={children}
@@ -188,8 +192,11 @@ const StoryMetadataModalImpl = (
           viewport: { className: clsx(styles.x, styles.viewport) }
         }}
       >
-        <Form<StoryMetadataSchema> onSubmit={handleSubmit} providerProps={form}>
-          {isSmallerThanTablet ? (
+        <Form<StoryMetadataSchema>
+          on_submit={handleSubmit}
+          provider_props={form}
+        >
+          {is_smaller_than_tablet ? (
             {
               home: <NavigationScreen />,
               general: <GeneralTab />,

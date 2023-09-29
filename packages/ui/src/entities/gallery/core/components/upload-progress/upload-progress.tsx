@@ -1,12 +1,13 @@
-import { useNProgress } from "@tanem/react-nprogress";
+import { useNProgress as use_n_progress } from "@tanem/react-nprogress";
 import React from "react";
 
-import ProgressBar from "~/components/ProgressBar";
+import ProgressBar from "src/components/progress-bar";
 
 import styles from "./upload-progress.module.scss";
 
 const UploadProgress = (): React.ReactElement => {
-  const { progress, animationDuration } = useNProgress({
+  const { progress, animationDuration: animation_duration } = use_n_progress({
+    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     isAnimating: true
   });
 
@@ -18,7 +19,7 @@ const UploadProgress = (): React.ReactElement => {
         indicator: {
           className: "force-animation",
           style: {
-            transition: `transform ${animationDuration}ms ease-out`
+            transition: `transform ${animation_duration}ms ease-out`
           }
         }
       }}

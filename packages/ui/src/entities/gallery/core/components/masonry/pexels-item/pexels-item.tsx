@@ -2,28 +2,28 @@
 
 import { AssetRating } from "@storiny/shared";
 import clsx from "clsx";
-import { useAtom } from "jotai";
+import { useAtom as use_atom } from "jotai";
 import React from "react";
 
-import AspectRatio from "~/components/AspectRatio";
-import Image from "~/components/Image";
-import Link from "~/components/Link";
+import AspectRatio from "src/components/aspect-ratio";
+import Image from "src/components/image";
+import Link from "src/components/link";
 
-import { selectedAtom } from "../../../atoms";
-import commonStyles from "../common.module.scss";
+import { selected_atom } from "../../../atoms";
+import common_styles from "../common.module.scss";
 import styles from "./pexels-item.module.scss";
 import { PexelsItemProps } from "./pexels-item.props";
 
 const PexelsMasonryItem = React.memo(
   ({ data }: PexelsItemProps): React.ReactElement => {
-    const [selected, setSelected] = useAtom(selectedAtom);
-    const isSelected = selected?.key === String(data.id);
+    const [selected, set_selected] = use_atom(selected_atom);
+    const is_selected = selected?.key === String(data.id);
 
     /**
      * Handles selection
      */
-    const handleSelect = (): void => {
-      setSelected({
+    const handle_select = (): void => {
+      set_selected({
         src: data.src.medium,
         key: String(data.id),
         rating: AssetRating.NOT_RATED,
@@ -44,21 +44,21 @@ const PexelsMasonryItem = React.memo(
         className={clsx(
           "focusable",
           "flex-center",
-          commonStyles["image-wrapper"]
+          common_styles["image-wrapper"]
         )}
-        data-selected={String(isSelected)}
-        onClick={handleSelect}
+        data-selected={String(is_selected)}
+        onClick={handle_select}
         onKeyUp={(event): void => {
           if (event.key === "Enter") {
             event.preventDefault();
-            handleSelect();
+            handle_select();
           }
         }}
         role={"button"}
         tabIndex={0}
       >
         <AspectRatio
-          className={commonStyles.image}
+          className={common_styles.image}
           ratio={data.width / data.height}
         >
           <Image
@@ -72,7 +72,9 @@ const PexelsMasonryItem = React.memo(
             src={data.src.medium}
           />
         </AspectRatio>
-        <div className={clsx("flex-col", commonStyles.overlay, styles.overlay)}>
+        <div
+          className={clsx("flex-col", common_styles.overlay, styles.overlay)}
+        >
           <Link
             className={styles.link}
             ellipsis

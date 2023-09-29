@@ -2,7 +2,7 @@
 
 import React from "react";
 
-import { createSvgIcon } from "~/utils/createSvgIcon";
+import { create_svg_icon } from "src/utils/create-svg-icon";
 
 const CcByIcon = (
   <>
@@ -11,4 +11,4 @@ const CcByIcon = (
   </>
 );
 
-export default createSvgIcon(CcByIcon, "cc-by");
+export default create_svg_icon(CcByIcon, "cc-by");

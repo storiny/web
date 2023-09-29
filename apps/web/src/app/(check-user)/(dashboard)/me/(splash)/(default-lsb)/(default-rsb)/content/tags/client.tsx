@@ -6,14 +6,14 @@ import React from "react";
 
 import { dynamicLoader } from "~/common/dynamic";
 import { TagListSkeleton, VirtualizedTagList } from "~/common/tag";
-import Divider from "~/components/Divider";
-import Input from "~/components/Input";
-import Option from "~/components/Option";
-import Select from "~/components/Select";
-import Spacer from "~/components/Spacer";
-import Typography from "~/components/Typography";
-import ErrorState from "~/entities/ErrorState";
-import { useDebounce } from "~/hooks/useDebounce";
+import Divider from "../../../../../../../../../../../../packages/ui/src/components/divider";
+import Input from "../../../../../../../../../../../../packages/ui/src/components/input";
+import Option from "../../../../../../../../../../../../packages/ui/src/components/option";
+import Select from "../../../../../../../../../../../../packages/ui/src/components/select";
+import Spacer from "../../../../../../../../../../../../packages/ui/src/components/spacer";
+import Typography from "../../../../../../../../../../../../packages/ui/src/components/typography";
+import ErrorState from "../../../../../../../../../../../../packages/ui/src/entities/error-state";
+import { use_debounce } from "../../../../../../../../../../../../packages/ui/src/hooks/use-debounce";
 import SearchIcon from "~/icons/Search";
 import {
   get_query_error_type,
@@ -21,7 +21,7 @@ import {
   use_get_followed_tags_query
 } from "~/redux/features";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
-import { abbreviateNumber } from "~/utils/abbreviateNumber";
+import { abbreviate_number } from "../../../../../../../../../../../../packages/ui/src/utils/abbreviate-number";
 
 import DashboardTitle from "../../../dashboard-title";
 import styles from "./styles.module.scss";
@@ -65,7 +65,7 @@ const StatusHeader = ({
           <>
             You are following{" "}
             <span className={"t-bold"}>
-              {abbreviateNumber(followedTagCount)}
+              {abbreviate_number(followedTagCount)}
             </span>{" "}
             {followedTagCount === 1 ? "tag" : "tags"}.
           </>
@@ -139,29 +139,29 @@ const ControlBar = ({
 const ContentTagsClient = (props: TagsProps): React.ReactElement => {
   const [sort, setSort] = React.useState<TagsSortValue>("recent");
   const [query, setQuery] = React.useState<string>("");
-  const [page, setPage] = React.useState<number>(1);
-  const debouncedQuery = useDebounce(query);
+  const [page, set_page] = React.useState<number>(1);
+  const debounced_query = use_debounce(query);
   const { data, isLoading, isFetching, isError, error, refetch } =
     use_get_followed_tags_query({
       page,
       sort,
-      query: debouncedQuery
+      query: debounced_query
     });
   const { items = [], has_more } = data || {};
-  const isTyping = query !== debouncedQuery;
+  const is_typing = query !== debounced_query;
 
-  const loadMore = React.useCallback(
-    () => setPage((prevState) => prevState + 1),
+  const load_more = React.useCallback(
+    () => set_page((prev_state) => prev_state + 1),
     []
   );
 
   const handleSortChange = React.useCallback((newSort: TagsSortValue) => {
-    setPage(1);
+    set_page(1);
     setSort(newSort);
   }, []);
 
   const handleQueryChange = React.useCallback((newQuery: string) => {
-    setPage(1);
+    set_page(1);
     setQuery(newQuery);
   }, []);
 
@@ -176,11 +176,11 @@ const ContentTagsClient = (props: TagsProps): React.ReactElement => {
         query={query}
         sort={sort}
       />
-      {isLoading || isTyping || (isFetching && page === 1) ? (
+      {isLoading || is_typing || (isFetching && page === 1) ? (
         <TagListSkeleton />
       ) : isError ? (
         <ErrorState
-          autoSize
+          auto_size
           component_props={{
             button: { loading: isFetching }
           }}
@@ -188,11 +188,11 @@ const ContentTagsClient = (props: TagsProps): React.ReactElement => {
           type={get_query_error_type(error)}
         />
       ) : !isFetching && !items.length ? (
-        <EmptyState query={debouncedQuery} />
+        <EmptyState query={debounced_query} />
       ) : (
         <VirtualizedTagList
           has_more={Boolean(has_more)}
-          loadMore={loadMore}
+          load_more={load_more}
           tags={items}
         />
       )}

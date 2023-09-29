@@ -1,4 +1,4 @@
-import { mockUsers } from "@storiny/ui/src/mocks";
+import { MOCK_USERS } from "@storiny/ui/src/mocks";
 import { nanoid } from "nanoid";
 
 const { worker, rest } = window.msw;
@@ -10,9 +10,11 @@ worker.use(
       res(
         ctx.delay(1200),
         ctx.json(
-          mockUsers
-            .slice(0, 10)
-            .map((user) => ({ ...user, id: nanoid(), is_follower: true }))
+          MOCK_USERS.slice(0, 10).map((user) => ({
+            ...user,
+            id: nanoid(),
+            is_follower: true,
+          }))
         )
       )
   )
@@ -25,9 +27,11 @@ worker.use(
       res(
         ctx.delay(1200),
         ctx.json(
-          mockUsers
-            .slice(0, 10)
-            .map((user) => ({ ...user, id: nanoid(), is_following: true }))
+          MOCK_USERS.slice(0, 10).map((user) => ({
+            ...user,
+            id: nanoid(),
+            is_following: true,
+          }))
         )
       )
   )
@@ -40,9 +44,11 @@ worker.use(
       res(
         ctx.delay(1200),
         ctx.json(
-          mockUsers
-            .slice(0, 10)
-            .map((user) => ({ ...user, id: nanoid(), is_friend: true }))
+          MOCK_USERS.slice(0, 10).map((user) => ({
+            ...user,
+            id: nanoid(),
+            is_friend: true,
+          }))
         )
       )
   )

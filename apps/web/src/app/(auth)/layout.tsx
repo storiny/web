@@ -2,7 +2,7 @@ import { clsx } from "clsx";
 import Image from "next/image";
 import React from "react";
 
-import Navbar from "~/layout/Navbar";
+import Navbar from "../../../../../packages/ui/src/layout/navbar";
 
 import styles from "./layout.module.scss";
 import AuthState from "./state";

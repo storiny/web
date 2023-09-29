@@ -2,8 +2,8 @@
 
 import React from "react";
 
-import { createSvgIcon } from "~/utils/createSvgIcon";
+import { create_svg_icon } from "src/utils/create-svg-icon";
 
 const ChevronIcon = <path d="m3 7.5 3-3 3 3" />;
 
-export default createSvgIcon(ChevronIcon, "chevron");
+export default create_svg_icon(ChevronIcon, "chevron");

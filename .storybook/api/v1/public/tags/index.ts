@@ -1,4 +1,4 @@
-import { mockTags } from "@storiny/ui/src/mocks";
+import { MOCK_TAGS } from "@storiny/ui/src/mocks";
 
 const { worker, rest } = window.msw;
 
@@ -7,9 +7,10 @@ worker.use(
     res(
       ctx.delay(1200),
       ctx.json(
-        mockTags
-          .slice(0, 5)
-          .map((tag) => ({ value: tag.name, label: tag.name }))
+        MOCK_TAGS.slice(0, 5).map((tag) => ({
+          value: tag.name,
+          label: tag.name,
+        }))
       )
     )
   )

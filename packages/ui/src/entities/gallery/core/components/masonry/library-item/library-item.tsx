@@ -2,23 +2,24 @@
 
 import { assetProps, AssetRating, ImageSize } from "@storiny/shared";
 import clsx from "clsx";
-import { useAtom } from "jotai";
+import { useAtom as use_atom } from "jotai";
 import React from "react";
+import AspectRatio from "src/components/aspect-ratio";
+import { use_confirmation } from "src/components/confirmation";
+import IconButton from "src/components/icon-button";
+import Image from "src/components/image";
+import Input from "src/components/input";
+import Menu from "src/components/menu";
+import MenuItem from "src/components/menu-item";
+import { Description, use_modal } from "src/components/modal";
+import ModalFooterButton from "src/components/modal/footer-button";
+import Radio from "src/components/radio";
+import RadioGroup from "src/components/radio-group";
+import Spacer from "src/components/spacer";
+import Tooltip from "src/components/tooltip";
+import Typography from "src/components/typography";
+import { get_cdn_url } from "src/utils/get-cdn-url";
 
-import AspectRatio from "~/components/AspectRatio";
-import { useConfirmation } from "~/components/Confirmation";
-import IconButton from "~/components/IconButton";
-import Image from "~/components/Image";
-import Input from "~/components/Input";
-import Menu from "~/components/Menu";
-import MenuItem from "~/components/MenuItem";
-import { Description, useModal } from "~/components/Modal";
-import ModalFooterButton from "~/components/Modal/FooterButton";
-import Radio from "~/components/Radio";
-import RadioGroup from "~/components/RadioGroup";
-import Spacer from "~/components/Spacer";
-import Tooltip from "~/components/Tooltip";
-import Typography from "~/components/Typography";
 import CheckIcon from "~/icons/Check";
 import DotsIcon from "~/icons/Dots";
 import EditIcon from "~/icons/Edit";
@@ -27,18 +28,17 @@ import StarIcon from "~/icons/Star";
 import TrashIcon from "~/icons/Trash";
 import {
   use_asset_alt_mutation,
-  use_delete_asset_mutation,
   use_asset_rating_mutation,
+  use_delete_asset_mutation,
   use_favourite_asset_mutation
 } from "~/redux/features";
-import { getCdnUrl } from "~/utils/getCdnUrl";
 
-import { selectedAtom } from "../../../atoms";
-import commonStyles from "../common.module.scss";
+import { selected_atom } from "../../../atoms";
+import common_styles from "../common.module.scss";
 import styles from "./library-item.module.scss";
 import { LibraryItemProps } from "./library-item.props";
 
-const ratingToDisplayNameMap: Record<AssetRating, string> = {
+const RATING_DISPLAY_NAME_MAP: Record<AssetRating, string> = {
   [AssetRating.SENSITIVE /*        */]: "Rated as sensitive",
   [AssetRating.SUGGESTIVE_NUDITY /**/]: "Rated as containing suggestive nudity",
   [AssetRating.VIOLENCE /*         */]: "Rated as violent",
@@ -49,10 +49,10 @@ const ratingToDisplayNameMap: Record<AssetRating, string> = {
 
 const RatingModal = ({
   rating,
-  setRating
+  set_rating
 }: {
   rating: AssetRating;
-  setRating: (newValue: AssetRating) => void;
+  set_rating: (next_value: AssetRating) => void;
 }): React.ReactElement => (
   <React.Fragment>
     <Description asChild>
@@ -64,7 +64,9 @@ const RatingModal = ({
     <Spacer orientation={"vertical"} size={3} />
     <RadioGroup
       defaultValue={String(rating)}
-      onValueChange={(newValue): void => setRating(Number.parseInt(newValue))}
+      onValueChange={(next_value): void =>
+        set_rating(Number.parseInt(next_value))
+      }
     >
       <Radio label={"Not rated"} value={String(AssetRating.NOT_RATED)} />
       <Radio
@@ -79,35 +81,35 @@ const RatingModal = ({
 
 const LibraryMasonryItem = React.memo(
   ({ data }: LibraryItemProps): React.ReactElement => {
-    const [selected, setSelected] = useAtom(selectedAtom);
-    const [editingMode, setEditingMode] = React.useState<boolean>(false);
-    const [isFavourite, setIsFavourite] = React.useState<boolean>(
+    const [selected, set_selected] = use_atom(selected_atom);
+    const [editing_mode, set_editing_mode] = React.useState<boolean>(false);
+    const [is_favourite, set_is_favourite] = React.useState<boolean>(
       data.favourite
     );
-    const [altText, setAltText] = React.useState<string>(data.alt);
-    const [rating, setRating] = React.useState<AssetRating>(data.rating);
-    const [deleted, setDeleted] = React.useState<boolean>(false);
-    const [mutateFavouriteAsset] = use_favourite_asset_mutation();
-    const [mutateAssetAlt] = use_asset_alt_mutation();
-    const [mutateAssetRating] = use_asset_rating_mutation();
-    const [deleteAsset] = use_delete_asset_mutation();
-    const isSelected = selected?.key === data.key;
+    const [alt_text, set_alt_text] = React.useState<string>(data.alt);
+    const [rating, set_rating] = React.useState<AssetRating>(data.rating);
+    const [deleted, set_deleted] = React.useState<boolean>(false);
+    const [mutate_favourite_asset] = use_favourite_asset_mutation();
+    const [mutate_asset_alt] = use_asset_alt_mutation();
+    const [mutate_asset_rating] = use_asset_rating_mutation();
+    const [delete_asset] = use_delete_asset_mutation();
+    const is_selected = selected?.key === data.key;
 
     /**
      * Handles rating change
      */
-    const onRatingChange = React.useCallback(
-      (newRating: AssetRating) => setRating(newRating),
+    const on_rating_change = React.useCallback(
+      (next_rating: AssetRating) => set_rating(next_rating),
       []
     );
 
     /**
      * Handles selection
      */
-    const handleSelect = (): void => {
+    const handle_select = (): void => {
       if (!deleted) {
-        setSelected({
-          src: getCdnUrl(data.key, ImageSize.W_320),
+        set_selected({
+          src: get_cdn_url(data.key, ImageSize.W_320),
           alt: data.alt,
           key: data.key,
           hex: data.hex,
@@ -122,57 +124,57 @@ const LibraryMasonryItem = React.memo(
     /**
      * Handles rating
      */
-    const handleRating = React.useCallback(() => {
-      mutateAssetRating({ rating, id: data.id });
-    }, [data.id, mutateAssetRating, rating]);
+    const handle_rating = React.useCallback(() => {
+      mutate_asset_rating({ rating, id: data.id });
+    }, [data.id, mutate_asset_rating, rating]);
 
     /**
      * Handles item deletion
      */
-    const handleDelete = React.useCallback(() => {
-      deleteAsset({ id: data.id });
-      setDeleted(true);
+    const handle_delete = React.useCallback(() => {
+      delete_asset({ id: data.id });
+      set_deleted(true);
 
       // Reset selection
-      if (isSelected) {
-        setSelected(null);
+      if (is_selected) {
+        set_selected(null);
       }
-    }, [data.id, deleteAsset, isSelected, setSelected]);
+    }, [data.id, delete_asset, is_selected, set_selected]);
 
     /**
      * Marks the item as favourite
      */
-    const handleFavourite = (): void => {
-      mutateFavouriteAsset({ id: data.id, value: !isFavourite });
-      setIsFavourite((prevState) => !prevState);
+    const handle_favourite = (): void => {
+      mutate_favourite_asset({ id: data.id, value: !is_favourite });
+      set_is_favourite((prev_state) => !prev_state);
     };
 
     /**
      * Handles the alt text
      */
-    const handleAlt = (): void => {
-      mutateAssetAlt({ id: data.id, alt: altText });
-      setEditingMode(false);
+    const handle_alt = (): void => {
+      mutate_asset_alt({ id: data.id, alt: alt_text });
+      set_editing_mode(false);
     };
 
     // Rating modal
-    const [ratingElement] = useModal(
-      ({ openModal }) => (
+    const [rating_element] = use_modal(
+      ({ open_modal }) => (
         <MenuItem
-          checkAuth
+          check_auth
           decorator={<ExplicitIcon />}
-          onClick={openModal}
+          onClick={open_modal}
           onSelect={(event): void => event.preventDefault()}
         >
           Edit rating
         </MenuItem>
       ),
-      <RatingModal rating={rating} setRating={onRatingChange} />,
+      <RatingModal rating={rating} set_rating={on_rating_change} />,
       {
         footer: (
           <>
             <ModalFooterButton variant={"ghost"}>Cancel</ModalFooterButton>
-            <ModalFooterButton onClick={handleRating}>
+            <ModalFooterButton onClick={handle_rating}>
               Confirm
             </ModalFooterButton>
           </>
@@ -198,14 +200,14 @@ const LibraryMasonryItem = React.memo(
     );
 
     // Delete image modal
-    const [deleteElement] = useConfirmation(
-      ({ openConfirmation }) => (
+    const [delete_element] = use_confirmation(
+      ({ open_confirmation }) => (
         <MenuItem
-          checkAuth
+          check_auth
           decorator={<TrashIcon />}
           onSelect={(event): void => {
             event.preventDefault(); // Do not auto-close the menu
-            openConfirmation();
+            open_confirmation();
           }}
         >
           Delete image
@@ -214,7 +216,7 @@ const LibraryMasonryItem = React.memo(
       {
         color: "ruby",
         decorator: <TrashIcon />,
-        onConfirm: handleDelete,
+        on_confirm: handle_delete,
         title: "Delete image?",
         description: `The image will be permanently deleted and cannot be recovered. If this image is used in a story or profile, it will be replaced by a placeholder.`,
         slot_props: {
@@ -238,14 +240,14 @@ const LibraryMasonryItem = React.memo(
           className={clsx(
             "focusable",
             "flex-center",
-            commonStyles["image-wrapper"]
+            common_styles["image-wrapper"]
           )}
-          data-selected={String(isSelected)}
-          onClick={handleSelect}
+          data-selected={String(is_selected)}
+          onClick={handle_select}
           onKeyUp={(event): void => {
             if (event.key === "Enter") {
               event.preventDefault();
-              handleSelect();
+              handle_select();
             }
           }}
           role={"button"}
@@ -260,12 +262,12 @@ const LibraryMasonryItem = React.memo(
             </div>
           )}
           <AspectRatio
-            className={commonStyles.image}
+            className={common_styles.image}
             ratio={data.width / data.height}
           >
             <Image
               alt={data.alt || ""}
-              imgId={data.key}
+              img_key={data.key}
               size={ImageSize.W_640}
               slot_props={{
                 fallback: {
@@ -275,7 +277,7 @@ const LibraryMasonryItem = React.memo(
             />
           </AspectRatio>
         </div>
-        <Tooltip content={ratingToDisplayNameMap[rating]}>
+        <Tooltip content={RATING_DISPLAY_NAME_MAP[rating]}>
           <span
             className={clsx(
               "flex-center",
@@ -287,24 +289,26 @@ const LibraryMasonryItem = React.memo(
           </span>
         </Tooltip>
         <Tooltip
-          content={isFavourite ? "Remove from favourites" : "Add to favourites"}
+          content={
+            is_favourite ? "Remove from favourites" : "Add to favourites"
+          }
         >
           <IconButton
             className={styles["favourite-button"]}
-            onClick={handleFavourite}
+            onClick={handle_favourite}
             size={"xs"}
             variant={"ghost"}
           >
-            <StarIcon noStroke={isFavourite} />
+            <StarIcon no_stroke={is_favourite} />
           </IconButton>
         </Tooltip>
-        {editingMode ? (
+        {editing_mode ? (
           <Input
             autoFocus
-            endDecorator={
+            end_decorator={
               <IconButton
                 aria-label={"Save alt text"}
-                onClick={handleAlt}
+                onClick={handle_alt}
                 title={"Save alt text"}
               >
                 <CheckIcon />
@@ -312,32 +316,32 @@ const LibraryMasonryItem = React.memo(
             }
             maxLength={assetProps.alt.maxLength}
             minLength={assetProps.alt.minLength}
-            onChange={(event): void => setAltText(event.target.value)}
+            onChange={(event): void => set_alt_text(event.target.value)}
             onKeyUp={(event): void => {
               // Save on enter
               if (event.key === "Enter") {
                 event.preventDefault();
-                handleAlt();
+                handle_alt();
               }
             }}
             placeholder={"Alt text for the image"}
             size={"sm"}
-            value={altText}
+            value={alt_text}
           />
         ) : (
           <div className={clsx("flex-center", styles.footer)}>
             <Typography
               className={clsx(
-                altText.trim() ? "t-major" : "t-minor",
+                alt_text.trim() ? "t-major" : "t-minor",
                 styles["alt-text"],
-                altText.trim() && styles.empty
+                alt_text.trim() && styles.empty
               )}
               ellipsis
               level={"body3"}
-              onClick={(): void => setEditingMode(true)}
-              title={altText || "Add an alt text"}
+              onClick={(): void => set_editing_mode(true)}
+              title={alt_text || "Add an alt text"}
             >
-              {altText.trim() ? altText : "Add an alt text"}
+              {alt_text.trim() ? alt_text : "Add an alt text"}
             </Typography>
             <Menu
               // Force close menu when deleted
@@ -361,14 +365,14 @@ const LibraryMasonryItem = React.memo(
               }
             >
               <MenuItem
-                checkAuth
+                check_auth
                 decorator={<EditIcon />}
-                onClick={(): void => setEditingMode(true)}
+                onClick={(): void => set_editing_mode(true)}
               >
                 Edit alt text
               </MenuItem>
-              {ratingElement}
-              {deleteElement}
+              {rating_element}
+              {delete_element}
             </Menu>
           </div>
         )}

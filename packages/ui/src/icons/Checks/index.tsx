@@ -2,10 +2,10 @@
 
 import React from "react";
 
-import { createSvgIcon } from "~/utils/createSvgIcon";
+import { create_svg_icon } from "src/utils/create-svg-icon";
 
 const ChecksIcon = (
   <path d="M3.5 6.63 6 9.13l5-5M1 6.63l2.5 2.5M6 6.63l2.5-2.5" />
 );
 
-export default createSvgIcon(ChecksIcon, "checks");
+export default create_svg_icon(ChecksIcon, "checks");

@@ -1,6 +1,5 @@
-@use "../../theme/breakpoints" as breakpoints;
+@use "breakpoints";
 
-/* Base styles */
 .user {
   padding-block: 8px;
 
@@ -17,38 +16,31 @@
   }
 }
 
-/* Main */
 .main {
   gap: 24px;
 }
 
-/* Meta */
 .meta {
   gap: 10px;
 }
 
-/* Actions */
 .actions {
   gap: 8px;
 }
 
-/* Stats */
 .stats {
   gap: 8px;
 }
 
-/* Stat */
 .stat {
   gap: 6px;
 }
 
-/* Stat icon */
 .stat-icon {
   --icon-size: 14px;
   --icon-stroke: var(--fg-minor);
 }
 
-/* Bio */
 .bio {
   gap: 8px; // Gap for skeleton
 

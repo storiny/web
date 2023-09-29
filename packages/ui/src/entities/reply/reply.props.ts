@@ -5,11 +5,11 @@ export interface ReplyProps extends React.ComponentPropsWithoutRef<"article"> {
   /**
    * Enables SSR.
    */
-  enableSsr?: boolean;
+  enable_ssr?: boolean;
   /**
    * If `true`, renders with static properties
    */
-  isStatic?: boolean;
+  is_static?: boolean;
   /**
    * Whether the reply is nested under a comment.
    */

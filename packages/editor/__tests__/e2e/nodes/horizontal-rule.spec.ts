@@ -10,7 +10,7 @@ import {
 import {
   assertHTML,
   assertSelection,
-  copyToClipboard,
+  copy_to_clipboard,
   focusEditor,
   html,
   initialize,
@@ -263,7 +263,7 @@ test.describe("horizontal rule", () => {
 
     // Select all the text, copy it and delete it
     await selectAll(page);
-    const clipboard = await copyToClipboard(page);
+    const clipboard = await copy_to_clipboard(page);
     await page.keyboard.press("Backspace");
 
     // Paste it again

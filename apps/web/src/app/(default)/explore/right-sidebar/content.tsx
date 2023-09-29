@@ -10,11 +10,13 @@ import NextLink from "next/link";
 import { useSelectedLayoutSegment } from "next/navigation";
 import React from "react";
 
-import Separator from "~/components/Separator";
-import Tab, { TabProps } from "~/components/Tab";
-import Tabs from "~/components/Tabs";
-import TabsList from "~/components/TabsList";
-import { DefaultRightSidebarContent } from "~/layout/RightSidebar";
+import Separator from "../../../../../../../packages/ui/src/components/separator";
+import Tab, {
+  TabProps
+} from "../../../../../../../packages/ui/src/components/tab";
+import Tabs from "../../../../../../../packages/ui/src/components/tabs";
+import TabsList from "../../../../../../../packages/ui/src/components/tabs-list";
+import { DefaultRightSidebarContent } from "../../../../../../../packages/ui/src/layout/right-sidebar";
 
 import { CATEGORIES } from "../categories";
 import styles from "./right-sidebar.module.scss";
@@ -67,7 +69,7 @@ const SuspendedExploreRightSidebarContent = (): React.ReactElement => {
         </TabsList>
       </Tabs>
       <Separator />
-      <DefaultRightSidebarContent hidePopularStories />
+      <DefaultRightSidebarContent hide_popular_stories />
     </>
   );
 };

@@ -10,7 +10,7 @@ import { Tool } from "../../constants";
  * @param key Shortcut key
  */
 const useToolKey = (tool: Tool, key: string): void => {
-  const setTool = useSetAtom(toolAtom);
+  const setTool = use_set_atom(toolAtom);
   useHotkeys(key, () => setTool(tool));
 };
 

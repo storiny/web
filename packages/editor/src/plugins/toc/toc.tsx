@@ -4,7 +4,7 @@ import { clsx } from "clsx";
 import { $getNodeByKey, $getRoot, NodeKey, TextNode } from "lexical";
 import React from "react";
 
-import Typography from "~/components/Typography";
+import Typography from "../../../../ui/src/components/typography";
 
 import {
   $isHeadingNode,

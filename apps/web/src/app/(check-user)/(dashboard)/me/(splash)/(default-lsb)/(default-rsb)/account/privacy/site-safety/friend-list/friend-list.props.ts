@@ -1,8 +1,8 @@
 import { GetPrivacySettingsResponse } from "~/common/grpc";
-import { SubmitHandler } from "~/components/Form";
+import { SubmitHandler } from "../../../../../../../../../../../../../../packages/ui/src/components/form";
 
 import { FriendListSchema } from "./friend-list.schema";
 
 export type FriendListProps = {
-  onSubmit?: SubmitHandler<FriendListSchema>;
+  on_submit?: SubmitHandler<FriendListSchema>;
 } & Pick<GetPrivacySettingsResponse, "friend_list_visibility">;

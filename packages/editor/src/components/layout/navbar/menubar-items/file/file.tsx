@@ -4,9 +4,9 @@ import { getShortcutLabel } from "@storiny/shared/src/utils/get-shortcut-label";
 import React from "react";
 
 // import { applyUpdateV2, Doc, encodeStateAsUpdateV2 } from "yjs";
-import MenubarItem from "~/components/MenubarItem";
-import MenubarSub from "~/components/MenubarSub";
-import Separator from "~/components/Separator";
+import MenubarItem from "../../../../../../../ui/src/components/menubar-item";
+import MenubarSub from "../../../../../../../ui/src/components/menubar-sub";
+import Separator from "../../../../../../../ui/src/components/separator";
 
 import { EDITOR_SHORTCUTS } from "../../../../../constants/shortcuts";
 // import { useCollaborationContext } from "../../../../../plugins/collaboration/context";
@@ -45,7 +45,7 @@ const FileItem = (): React.ReactElement => {
       }}
       trigger={"File"}
     >
-      <MenubarItem rightSlot={getShortcutLabel(EDITOR_SHORTCUTS.importFile)}>
+      <MenubarItem right_slot={getShortcutLabel(EDITOR_SHORTCUTS.importFile)}>
         Open…
       </MenubarItem>
       <MenubarItem>Save local copy…</MenubarItem>

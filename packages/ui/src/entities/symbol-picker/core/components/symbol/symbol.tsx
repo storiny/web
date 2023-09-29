@@ -1,12 +1,12 @@
 "use client";
 
 import clsx from "clsx";
-import { useSetAtom } from "jotai";
+import { useSetAtom as use_set_atom } from "jotai";
 import React from "react";
 
 import { SymbolPickerContext } from "~/entities/symbol-picker";
 
-import { hoveredSymbolAtom } from "../../atoms";
+import { hovered_symbol_atom } from "../../atoms";
 import styles from "./symbol.module.scss";
 import { SymbolProps } from "./symbol.props";
 
@@ -29,8 +29,8 @@ FakeSymbol.displayName = "FakeSymbol";
 
 const Symbol = (props: SymbolProps): React.ReactElement => {
   const { symbol, className, ...rest } = props;
-  const { onSymbolSelect } = React.useContext(SymbolPickerContext) || {};
-  const setHovered = useSetAtom(hoveredSymbolAtom);
+  const { on_symbol_select } = React.useContext(SymbolPickerContext) || {};
+  const set_hovered = use_set_atom(hovered_symbol_atom);
 
   if (!symbol) {
     return <FakeSymbol />;
@@ -41,9 +41,9 @@ const Symbol = (props: SymbolProps): React.ReactElement => {
       {...rest}
       aria-label={symbol.name}
       className={clsx("focusable", styles.symbol, className)}
-      onClick={(): void => onSymbolSelect?.(symbol.value)}
-      onMouseEnter={(): void => setHovered(symbol.value)}
-      onMouseLeave={(): void => setHovered(null)}
+      onClick={(): void => on_symbol_select?.(symbol.value)}
+      onMouseEnter={(): void => set_hovered(symbol.value)}
+      onMouseLeave={(): void => set_hovered(null)}
       title={symbol.name}
     >
       {symbol.value}

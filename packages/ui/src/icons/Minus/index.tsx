@@ -2,8 +2,8 @@
 
 import React from "react";
 
-import { createSvgIcon } from "~/utils/createSvgIcon";
+import { create_svg_icon } from "src/utils/create-svg-icon";
 
 const MinusIcon = <path d="M2.5 6h7" />;
 
-export default createSvgIcon(MinusIcon, "minus");
+export default create_svg_icon(MinusIcon, "minus");

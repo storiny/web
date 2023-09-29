@@ -14,7 +14,7 @@ const LayoutWithState = ({
     <div className={clsx("grid", "grid-container", "dashboard", "no-sidenav")}>
       {children}
     </div>,
-    { ignorePrimitiveProviders: false, loggedIn: true }
+    { ignore_primitive_providers: false, logged_in: true }
   );
 
 export default LayoutWithState;

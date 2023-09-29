@@ -7,34 +7,37 @@ import React from "react";
 
 import { dynamicLoader } from "~/common/dynamic";
 import { GetProfileResponse } from "~/common/grpc";
-import Button from "~/components/Button";
-import Divider from "~/components/Divider";
-import Image from "~/components/Image";
-import Input from "~/components/Input";
-import Link from "~/components/Link";
-import Option from "~/components/Option";
-import Select from "~/components/Select";
-import Tab from "~/components/Tab";
-import TabPanel from "~/components/TabPanel";
-import Tabs from "~/components/Tabs";
-import TabsList from "~/components/TabsList";
-import { useMediaQuery } from "~/hooks/useMediaQuery";
+import Button from "../../../../../../packages/ui/src/components/button";
+import Divider from "../../../../../../packages/ui/src/components/divider";
+import Image from "../../../../../../packages/ui/src/components/image";
+import Input from "../../../../../../packages/ui/src/components/input";
+import Link from "../../../../../../packages/ui/src/components/link";
+import Option from "../../../../../../packages/ui/src/components/option";
+import Select from "../../../../../../packages/ui/src/components/select";
+import Tab from "../../../../../../packages/ui/src/components/tab";
+import TabPanel from "../../../../../../packages/ui/src/components/tab-panel";
+import Tabs from "../../../../../../packages/ui/src/components/tabs";
+import TabsList from "../../../../../../packages/ui/src/components/tabs-list";
+import { use_media_query } from "../../../../../../packages/ui/src/hooks/use-media-query";
 import BanIcon from "~/icons/Ban";
 import ForbidIcon from "~/icons/Forbid";
 import LockIcon from "~/icons/Lock";
 import SearchIcon from "~/icons/Search";
 import { use_app_selector } from "~/redux/hooks";
-import { breakpoints } from "~/theme/breakpoints";
-import { getCdnUrl } from "~/utils/getCdnUrl";
+import { BREAKPOINTS } from "~/theme/breakpoints";
+import { get_cdn_url } from "../../../../../../packages/ui/src/utils/get-cdn-url";
 
 import ProfileContent from "./content";
 import styles from "./styles.module.scss";
 import EntitiesTab from "./tabs/entities";
 import StoriesTab from "./tabs/stories";
 
-const CustomState = dynamic(() => import("~/entities/CustomState"), {
-  loading: dynamicLoader()
-});
+const CustomState = dynamic(
+  () => import("../../../../../../packages/ui/src/entities/custom-state"),
+  {
+    loading: dynamicLoader()
+  }
+);
 
 export type ProfileTabValue = "stories" | "followers" | "following" | "friends";
 export type ProfileEntitySortValue = "popular" | "recent" | "old";
@@ -155,7 +158,7 @@ const Page = ({
   isSuspended,
   isPrivate
 }: Props): React.ReactElement => {
-  const isSmallerThanTablet = useMediaQuery(breakpoints.down("tablet"));
+  const is_smaller_than_tablet = use_media_query(BREAKPOINTS.down("tablet"));
   const firstRender = React.useRef<boolean>(true);
   const [tab, setTab] = React.useState<ProfileTabValue>("stories");
   const [sort, setSort] = React.useState<ProfileEntitySortValue>(
@@ -202,22 +205,22 @@ const Page = ({
               alt={""}
               className={clsx(styles.x, styles.banner)}
               hex={profile.banner_hex}
-              imgId={profile.banner_id}
+              img_key={profile.banner_id}
               slot_props={{
                 image: {
                   sizes: [
-                    `${breakpoints.up("tablet")} calc(100vw - 360px)`,
-                    `${breakpoints.up("mobile")} calc(100vw - 72px)`,
+                    `${BREAKPOINTS.up("tablet")} calc(100vw - 360px)`,
+                    `${BREAKPOINTS.up("mobile")} calc(100vw - 72px)`,
                     "100vw"
                   ].join(","),
                   srcSet: [
-                    `${getCdnUrl(profile.banner_id, ImageSize.W_2048)} 2048w`,
-                    `${getCdnUrl(profile.banner_id, ImageSize.W_1920)} 1920w`,
-                    `${getCdnUrl(profile.banner_id, ImageSize.W_1440)} 1440w`,
-                    `${getCdnUrl(profile.banner_id, ImageSize.W_1024)} 1024w`,
-                    `${getCdnUrl(profile.banner_id, ImageSize.W_860)} 860w`,
-                    `${getCdnUrl(profile.banner_id, ImageSize.W_640)} 640w`,
-                    `${getCdnUrl(profile.banner_id, ImageSize.W_320)} 320w`
+                    `${get_cdn_url(profile.banner_id, ImageSize.W_2048)} 2048w`,
+                    `${get_cdn_url(profile.banner_id, ImageSize.W_1920)} 1920w`,
+                    `${get_cdn_url(profile.banner_id, ImageSize.W_1440)} 1440w`,
+                    `${get_cdn_url(profile.banner_id, ImageSize.W_1024)} 1024w`,
+                    `${get_cdn_url(profile.banner_id, ImageSize.W_860)} 860w`,
+                    `${get_cdn_url(profile.banner_id, ImageSize.W_640)} 640w`,
+                    `${get_cdn_url(profile.banner_id, ImageSize.W_320)} 320w`
                   ].join(",")
                 }
               }}
@@ -234,7 +237,7 @@ const Page = ({
           />
         </>
       ) : null}
-      {isSmallerThanTablet && (
+      {is_smaller_than_tablet && (
         <ProfileContent
           isPrivate={isPrivate}
           isSuspended={isSuspended}
@@ -247,7 +250,7 @@ const Page = ({
       (isBlocking && contentHidden) ? (
         <div className={clsx("flex-col", "full-w")}>
           <CustomState
-            autoSize
+            auto_size
             description={
               isSuspended ? (
                 <>

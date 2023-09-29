@@ -6,5 +6,5 @@ export type StoryMetadataModalSidebarTabsValue =
   | "license"
   | "settings";
 
-export const sidebarTabAtom =
-  atomWithReset<StoryMetadataModalSidebarTabsValue>("general");
+export const sidebar_tab_atom =
+  atom_with_reset<StoryMetadataModalSidebarTabsValue>("general");

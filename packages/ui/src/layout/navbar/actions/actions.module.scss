@@ -1,0 +1,30 @@
+.actions {
+  gap: 8px;
+}
+
+.menu {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+  padding: 4px 12px;
+  min-width: 180px;
+}
+
+.menu-item {
+  border-radius: var(--radius-md);
+}
+
+.trigger {
+  --icon-size: 14px;
+  --icon-stroke: var(--fg-minor);
+
+  border-radius: 32px; // Same as avatar radius=
+  padding-inline-end: 6px;
+  gap: 6px;
+  cursor: pointer;
+}
+
+.error-avatar {
+  --icon-size: 16px;
+}

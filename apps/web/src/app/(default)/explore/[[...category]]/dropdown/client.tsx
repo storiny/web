@@ -9,11 +9,13 @@ import { clsx } from "clsx";
 import { useRouter, useSelectedLayoutSegment } from "next/navigation";
 import React from "react";
 
-import Divider from "~/components/Divider";
-import Option, { OptionProps } from "~/components/Option";
-import Select from "~/components/Select";
-import { useMediaQuery } from "~/hooks/useMediaQuery";
-import { breakpoints } from "~/theme/breakpoints";
+import Divider from "../../../../../../../../packages/ui/src/components/divider";
+import Option, {
+  OptionProps
+} from "../../../../../../../../packages/ui/src/components/option";
+import Select from "../../../../../../../../packages/ui/src/components/select";
+import { use_media_query } from "../../../../../../../../packages/ui/src/hooks/use-media-query";
+import { BREAKPOINTS } from "~/theme/breakpoints";
 
 import styles from "./dropdown.module.scss";
 
@@ -32,7 +34,7 @@ const AnchorOption = ({
 );
 
 const DropdownClient = (): React.ReactElement => {
-  const isMobile = useMediaQuery(breakpoints.down("mobile"));
+  const is_mobile = use_media_query(BREAKPOINTS.down("mobile"));
   const router = useRouter();
   const segment = useSelectedLayoutSegment();
 
@@ -55,8 +57,8 @@ const DropdownClient = (): React.ReactElement => {
           }
         }}
         value={segment || "all"}
-        valueChildren={
-          isMobile ? CATEGORY_ICON_MAP[segment || "all"] : undefined
+        value_children={
+          is_mobile ? CATEGORY_ICON_MAP[segment || "all"] : undefined
         }
       >
         {(

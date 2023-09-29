@@ -4,19 +4,19 @@ import { userProps } from "@storiny/shared";
 import { clsx } from "clsx";
 import React from "react";
 
-import Button from "~/components/Button";
+import Button from "../../../../../../../../../../../../packages/ui/src/components/button";
 import Form, {
   SubmitHandler,
-  useForm,
-  useFormContext,
-  zodResolver
-} from "~/components/Form";
-import FormInput from "~/components/FormInput";
-import FormTextarea from "~/components/FormTextarea";
-import Grow from "~/components/Grow";
-import Link from "~/components/Link";
-import Spacer from "~/components/Spacer";
-import { useToast } from "~/components/Toast";
+  use_form,
+  use_form_context,
+  zod_resolver
+} from "../../../../../../../../../../../../packages/ui/src/components/form";
+import FormInput from "../../../../../../../../../../../../packages/ui/src/components/form-input";
+import FormTextarea from "../../../../../../../../../../../../packages/ui/src/components/form-textarea";
+import Grow from "../../../../../../../../../../../../packages/ui/src/components/grow";
+import Link from "../../../../../../../../../../../../packages/ui/src/components/link";
+import Spacer from "../../../../../../../../../../../../packages/ui/src/components/spacer";
+import { use_toast } from "../../../../../../../../../../../../packages/ui/src/components/toast";
 import {
   mutate_user,
   select_user,
@@ -38,13 +38,13 @@ const SaveButton = ({
 }: {
   isLoading: boolean;
 }): React.ReactElement => {
-  const { formState } = useFormContext();
+  const { formState } = use_form_context();
   return (
     <div className={clsx("flex")}>
       <Grow />
       <Button
-        autoSize
-        checkAuth
+        auto_size
+        check_auth
         disabled={!formState.isDirty}
         loading={isLoading}
         type={"submit"}
@@ -56,13 +56,13 @@ const SaveButton = ({
 };
 
 const AccountGeneralForm = ({
-  onSubmit
+  on_submit
 }: GeneralFormProps): React.ReactElement => {
   const dispatch = use_app_dispatch();
-  const toast = useToast();
+  const toast = use_toast();
   const user = use_app_selector(select_user)!;
-  const form = useForm<AccountGeneralSchema>({
-    resolver: zodResolver(accountGeneralSchema),
+  const form = use_form<AccountGeneralSchema>({
+    resolver: zod_resolver(accountGeneralSchema),
     defaultValues: {
       name: user.name,
       bio: user.bio,
@@ -73,8 +73,8 @@ const AccountGeneralForm = ({
     use_profile_settings_mutation();
 
   const handleSubmit: SubmitHandler<AccountGeneralSchema> = (values) => {
-    if (onSubmit) {
-      onSubmit(values);
+    if (on_submit) {
+      on_submit(values);
     } else {
       mutateProfileSettings(values)
         .unwrap()
@@ -96,20 +96,20 @@ const AccountGeneralForm = ({
     <Form<AccountGeneralSchema>
       className={clsx("flex-col")}
       disabled={isLoading}
-      onSubmit={handleSubmit}
-      providerProps={form}
+      on_submit={handleSubmit}
+      provider_props={form}
     >
       <div className={clsx("flex-center", styles.x, styles["input-row"])}>
         <FormInput
           autoComplete={"name"}
-          autoSize
+          auto_size
           data-testid={"name-input"}
-          formSlotProps={{
-            formItem: {
+          form_slot_props={{
+            form_item: {
               className: "f-grow"
             }
           }}
-          helperText={
+          helper_text={
             "Provide a name that you are commonly known by, such as your full name or nickname, to help others find you easily."
           }
           label={"Name"}
@@ -121,14 +121,14 @@ const AccountGeneralForm = ({
         />
         <FormInput
           autoComplete={"country-name"}
-          autoSize
+          auto_size
           data-testid={"location-input"}
-          formSlotProps={{
-            formItem: {
+          form_slot_props={{
+            form_item: {
               className: "f-grow"
             }
           }}
-          helperText={
+          helper_text={
             "Your location helps us improve your home feed and is also displayed on your public profile."
           }
           label={"Location"}
@@ -140,7 +140,7 @@ const AccountGeneralForm = ({
       <Spacer orientation={"vertical"} size={3} />
       <FormTextarea
         data-testid={"bio-textarea"}
-        helperText={
+        helper_text={
           <React.Fragment>
             You can format your bio using selected markdown features such as **
             <b>bold</b>** and *<em>italics</em>*, and you can also mention

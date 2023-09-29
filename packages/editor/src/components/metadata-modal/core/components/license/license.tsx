@@ -1,11 +1,11 @@
 import { StoryLicense } from "@storiny/shared";
 import React from "react";
 
-import { useFormContext } from "~/components/Form";
-import FormSelect from "~/components/FormSelect";
-import Option from "~/components/Option";
-import Spacer from "~/components/Spacer";
-import Typography from "~/components/Typography";
+import { use_form_context } from "../../../../../../../ui/src/components/form";
+import FormSelect from "../../../../../../../ui/src/components/form-select";
+import Option from "../../../../../../../ui/src/components/option";
+import Spacer from "../../../../../../../ui/src/components/spacer";
+import Typography from "../../../../../../../ui/src/components/typography";
 
 const LICENSE_DESCRIPTION_MAP: Record<StoryLicense, React.ReactNode> = {
   [StoryLicense.UNRECOGNIZED /**/]: null,
@@ -70,7 +70,7 @@ const LICENSE_DESCRIPTION_MAP: Record<StoryLicense, React.ReactNode> = {
 };
 
 const LicenseTab = (): React.ReactElement => {
-  const form = useFormContext();
+  const form = use_form_context();
   const license = form.watch("license") as StoryLicense;
 
   return (
@@ -81,9 +81,9 @@ const LicenseTab = (): React.ReactElement => {
       </Typography>
       <Spacer orientation={"vertical"} size={3} />
       <FormSelect
-        autoSize
-        helperText={LICENSE_DESCRIPTION_MAP[license]}
-        isNumericValue
+        auto_size
+        helper_text={LICENSE_DESCRIPTION_MAP[license]}
+        is_numeric_value
         label={"Select a license"}
         name={"license"}
         required
@@ -102,29 +102,29 @@ const LicenseTab = (): React.ReactElement => {
         }}
       >
         <Option value={String(StoryLicense.RESERVED)}>Reserved</Option>
-        <Option rightSlot={"CC0"} value={String(StoryLicense.CC_ZERO)}>
+        <Option right_slot={"CC0"} value={String(StoryLicense.CC_ZERO)}>
           Public domain
         </Option>
-        <Option rightSlot={"CC BY"} value={String(StoryLicense.CC_BY)}>
+        <Option right_slot={"CC BY"} value={String(StoryLicense.CC_BY)}>
           Attribution
         </Option>
-        <Option rightSlot={"CC BY-SA"} value={String(StoryLicense.CC_BY_SA)}>
+        <Option right_slot={"CC BY-SA"} value={String(StoryLicense.CC_BY_SA)}>
           Attribution, share alike
         </Option>
-        <Option rightSlot={"CC BY_ND"} value={String(StoryLicense.CC_BY_ND)}>
+        <Option right_slot={"CC BY_ND"} value={String(StoryLicense.CC_BY_ND)}>
           Attribution, no derivatives
         </Option>
-        <Option rightSlot={"CC BY-NC"} value={String(StoryLicense.CC_BY_NC)}>
+        <Option right_slot={"CC BY-NC"} value={String(StoryLicense.CC_BY_NC)}>
           Attribution, non-commercial
         </Option>
         <Option
-          rightSlot={"CC BY-NC-SA"}
+          right_slot={"CC BY-NC-SA"}
           value={String(StoryLicense.CC_BY_NC_SA)}
         >
           Attribution, non-commercial, share alike
         </Option>
         <Option
-          rightSlot={"CC BY-NC-ND"}
+          right_slot={"CC BY-NC-ND"}
           value={String(StoryLicense.CC_BY_NC_ND)}
         >
           Attribution, non-commercial, no derivatives

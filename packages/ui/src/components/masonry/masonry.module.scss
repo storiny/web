@@ -1,0 +1,13 @@
+.masonry {
+  position: relative;
+  height: 100%;
+  margin: 0 auto;
+}
+
+.item {
+  position: absolute;
+}
+
+.mounted {
+  transition: transform 150ms;
+}

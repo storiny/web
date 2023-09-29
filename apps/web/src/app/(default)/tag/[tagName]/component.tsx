@@ -3,9 +3,9 @@ import React from "react";
 import { Graph } from "schema-dts";
 
 import { GetTagResponse } from "~/common/grpc";
-import LeftSidebar from "~/layout/LeftSidebar";
-import SplashScreen from "~/layout/SplashScreen";
-import { getCdnUrl } from "~/utils/getCdnUrl";
+import LeftSidebar from "../../../../../../../packages/ui/src/layout/left-sidebar";
+import SplashScreen from "../../../../../../../packages/ui/src/layout/splash-screen";
+import { get_cdn_url } from "../../../../../../../packages/ui/src/utils/get-cdn-url";
 
 import Client from "./client";
 import TagRightSidebar from "./right-sidebar";
@@ -23,7 +23,7 @@ const generateJsonLd = (tag: Props["tag"]): Graph => ({
       image: {
         "@type": "ImageObject",
         height: 128 as unknown as string,
-        url: getCdnUrl("web-assets/brand/logos/plain/logo", ImageSize.W_128),
+        url: get_cdn_url("web-assets/brand/logos/plain/logo", ImageSize.W_128),
         width: 128 as unknown as string
       },
       name: "Storiny",

@@ -2,10 +2,10 @@
 
 import React from "react";
 
-import Link from "~/components/Link";
-import Spacer from "~/components/Spacer";
-import Stepper from "~/components/Stepper";
-import Typography from "~/components/Typography";
+import Link from "../../../../../../../../packages/ui/src/components/link";
+import Spacer from "../../../../../../../../packages/ui/src/components/spacer";
+import Stepper from "../../../../../../../../packages/ui/src/components/stepper";
+import Typography from "../../../../../../../../packages/ui/src/components/typography";
 
 import { useAuthState } from "../../../actions";
 import SignupWPMForm from "./form";
@@ -42,7 +42,7 @@ const Page = (): React.ReactElement => {
         </Link>
       </div>
       <Spacer orientation={"vertical"} size={2} />
-      <Stepper activeSteps={2} totalSteps={3} />
+      <Stepper active_steps={2} total_steps={3} />
     </>
   );
 };

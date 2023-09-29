@@ -4,8 +4,6 @@ import clsx from "clsx";
 import { Interweave, InterweaveProps, Node } from "interweave";
 import React from "react";
 
-interface Props extends InterweaveProps {}
-
 /**
  * Node transformer
  * @param node HTML element
@@ -23,7 +21,7 @@ const transform = (node: HTMLElement, children: Node[]): React.ReactNode => {
 const AccountActivityParser = ({
   content,
   ...rest
-}: Props): React.ReactElement => (
+}: InterweaveProps): React.ReactElement => (
   <Interweave
     {...rest}
     allowList={["m"]}

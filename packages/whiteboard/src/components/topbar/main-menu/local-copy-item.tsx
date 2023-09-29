@@ -1,7 +1,7 @@
 import React from "react";
 
-import MenuItem from "~/components/MenuItem";
-import { useToast } from "~/components/Toast";
+import MenuItem from "../../../../../ui/src/components/menu-item";
+import { use_toast } from "../../../../../ui/src/components/toast";
 import DownloadIcon from "~/icons/Download";
 
 import { useCanvas } from "../../../hooks";
@@ -9,7 +9,7 @@ import { exportToFile } from "../../../utils";
 
 const LocalCopyItem = (): React.ReactElement => {
   const canvas = useCanvas();
-  const toast = useToast();
+  const toast = use_toast();
 
   /**
    * Saves a local copy of the canvas

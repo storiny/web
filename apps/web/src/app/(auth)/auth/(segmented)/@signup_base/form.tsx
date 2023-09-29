@@ -4,24 +4,28 @@ import { userProps } from "@storiny/shared";
 import { clsx } from "clsx";
 import React from "react";
 
-import Button from "~/components/Button";
-import Form, { SubmitHandler, useForm, zodResolver } from "~/components/Form";
-import FormInput from "~/components/FormInput";
-import FormNewPasswordInput from "~/components/FormNewPasswordInput";
-import Grow from "~/components/Grow";
-import Spacer from "~/components/Spacer";
+import Button from "../../../../../../../../packages/ui/src/components/button";
+import Form, {
+  SubmitHandler,
+  use_form,
+  zod_resolver
+} from "../../../../../../../../packages/ui/src/components/form";
+import FormInput from "../../../../../../../../packages/ui/src/components/form-input";
+import FormNewPasswordInput from "../../../../../../../../packages/ui/src/components/form-new-password-input";
+import Grow from "../../../../../../../../packages/ui/src/components/grow";
+import Spacer from "../../../../../../../../packages/ui/src/components/spacer";
 
 import { useAuthState } from "../../../actions";
 import { SignupBaseSchema, signupBaseSchema } from "./schema";
 
 interface Props {
-  onSubmit?: SubmitHandler<SignupBaseSchema>;
+  on_submit?: SubmitHandler<SignupBaseSchema>;
 }
 
-const SignupBaseForm = ({ onSubmit }: Props): React.ReactElement => {
+const SignupBaseForm = ({ on_submit }: Props): React.ReactElement => {
   const { state } = useAuthState();
-  const form = useForm<SignupBaseSchema>({
-    resolver: zodResolver(signupBaseSchema),
+  const form = use_form<SignupBaseSchema>({
+    resolver: zod_resolver(signupBaseSchema),
     defaultValues: {
       name: state.signup.name,
       email: state.signup.email,
@@ -30,16 +34,16 @@ const SignupBaseForm = ({ onSubmit }: Props): React.ReactElement => {
   });
 
   const handleSubmit: SubmitHandler<SignupBaseSchema> = (values) => {
-    if (onSubmit) {
-      onSubmit(values);
+    if (on_submit) {
+      on_submit(values);
     }
   };
 
   return (
     <Form<SignupBaseSchema>
       className={clsx("flex-col", "full-h")}
-      onSubmit={handleSubmit}
-      providerProps={form}
+      on_submit={handleSubmit}
+      provider_props={form}
     >
       <FormInput
         autoComplete={"name"}

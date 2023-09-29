@@ -7,7 +7,7 @@ import dynamic from "next/dynamic";
 import React from "react";
 
 import { dynamicLoader } from "~/common/dynamic";
-import LeftSidebarDefaultContent from "~/layout/LeftSidebar/DefaultContent";
+import LeftSidebarDefaultContent from "../../../../../../ui/src/layout/left-sidebar/default-content";
 
 import {
   docStatusAtom,
@@ -15,7 +15,7 @@ import {
   sidebarsCollapsedAtom
 } from "../../../../atoms";
 import { springConfig } from "../../../../constants";
-import commonStyles from "../../common/sidebar.module.scss";
+import common_styles from "../../common/sidebar.module.scss";
 import styles from "../left-sidebar.module.scss";
 import { EditorLeftSidebarProps } from "../left-sidebar.props";
 
@@ -31,9 +31,9 @@ const SuspendedEditorLeftSidebarContent = (
 ): React.ReactElement | null => {
   const { readOnly, status } = props;
   const mountedRef = React.useRef<boolean>(false);
-  const docStatus = useAtomValue(docStatusAtom);
-  const isCollapsed = useAtomValue(sidebarsCollapsedAtom);
-  const overflowingFigures = useAtomValue(overflowingFiguresAtom);
+  const docStatus = use_atom_value(docStatusAtom);
+  const isCollapsed = use_atom_value(sidebarsCollapsedAtom);
+  const overflowingFigures = use_atom_value(overflowingFiguresAtom);
   const transitions = useTransition(!isCollapsed, {
     from: { opacity: 0, transform: "translate3d(-10%,0,0) scale(0.97)" },
     enter: { opacity: 1, transform: "translate3d(0%,0,0) scale(1)" },
@@ -70,8 +70,8 @@ const SuspendedEditorLeftSidebarContent = (
           "flex-col",
           styles.x,
           styles.content,
-          commonStyles.x,
-          commonStyles.content,
+          common_styles.x,
+          common_styles.content,
           readOnly && styles["read-only"]
         )}
         data-hidden={String(Boolean(overflowingFigures.size))}

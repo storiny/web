@@ -1,10 +1,10 @@
 import { StatusVisibility } from "@storiny/shared";
 import { User } from "@storiny/types";
 
-const getAvatarId = (identifier: string): string => `${identifier}.jpg`;
-const getBannerId = (identifier: string): string => `${identifier}.jpg`;
+const get_avatar_id = (identifier: string): string => `${identifier}.jpg`;
+const get_banner_id = (identifier: string): string => `${identifier}.jpg`;
 
-export const testUser: User = {
+export const TEST_USER: User = {
   bio: "",
   is_private: false,
   public_flags: 0,
@@ -25,12 +25,12 @@ export const testUser: User = {
   id: "0"
 };
 
-export const mockUsers: User[] = [
+export const MOCK_USERS: User[] = [
   {
     avatar_hex: "a97a58",
-    avatar_id: getAvatarId("alfred"),
+    avatar_id: get_avatar_id("alfred"),
     banner_hex: "7d797a",
-    banner_id: getBannerId("8tnk-3aeojpg"),
+    banner_id: get_banner_id("8tnk-3aeojpg"),
     created_at: "2022-05-18T01:07:02.000Z",
     wpm: 300,
     name: "Alfred Welch",
@@ -49,9 +49,9 @@ export const mockUsers: User[] = [
   },
   {
     avatar_hex: "dbceac",
-    avatar_id: getAvatarId("wayne"),
+    avatar_id: get_avatar_id("wayne"),
     banner_hex: "363f3d",
-    banner_id: getBannerId("8tOVv8W81ssjpg"),
+    banner_id: get_banner_id("8tOVv8W81ssjpg"),
     created_at: "2021-04-18T01:07:02.000Z",
     wpm: 203,
     name: "Wayne Jordan",
@@ -70,9 +70,9 @@ export const mockUsers: User[] = [
   },
   {
     avatar_hex: "b8987c",
-    avatar_id: getAvatarId("frank"),
+    avatar_id: get_avatar_id("frank"),
     banner_hex: "3c2f2e",
-    banner_id: getBannerId("DLz8QHA7pFUjpg"),
+    banner_id: get_banner_id("DLz8QHA7pFUjpg"),
     created_at: "2021-02-18T01:07:02.000Z",
     wpm: 225,
     name: "Frank Peck",
@@ -97,9 +97,9 @@ export const mockUsers: User[] = [
   },
   {
     avatar_hex: "d2a4a7",
-    avatar_id: getAvatarId("stacy"),
+    avatar_id: get_avatar_id("stacy"),
     banner_hex: "283843",
-    banner_id: getBannerId("Gj7gaDpXto8jpg"),
+    banner_id: get_banner_id("Gj7gaDpXto8jpg"),
     created_at: "2022-03-24T01:07:02.000Z",
     wpm: 225,
     name: "Stacy Hall",
@@ -118,9 +118,9 @@ export const mockUsers: User[] = [
   },
   {
     avatar_hex: "615753",
-    avatar_id: getAvatarId("brennan"),
+    avatar_id: get_avatar_id("brennan"),
     banner_hex: "3f5b7f",
-    banner_id: getBannerId("NFs6dRTBgaM"),
+    banner_id: get_banner_id("NFs6dRTBgaM"),
     created_at: "2021-08-08T01:07:02.000Z",
     wpm: 199,
     name: "Brennan Austin",
@@ -139,9 +139,9 @@ export const mockUsers: User[] = [
   },
   {
     avatar_hex: "b7a39b",
-    avatar_id: getAvatarId("jacob"),
+    avatar_id: get_avatar_id("jacob"),
     banner_hex: "151934",
-    banner_id: getBannerId("W8KTS-mhFUEjpg"),
+    banner_id: get_banner_id("W8KTS-mhFUEjpg"),
     bio: "Freelance Writer | Travel Enthusiast | Coffee Lover | Always seeking new adventures",
     created_at: "2023-02-03T01:07:02.000Z",
     email: "jacob.webb@example.com",
@@ -166,9 +166,9 @@ export const mockUsers: User[] = [
   },
   {
     avatar_hex: "d0beb7",
-    avatar_id: getAvatarId("kaylee"),
+    avatar_id: get_avatar_id("kaylee"),
     banner_hex: "d0c8c0",
-    banner_id: getBannerId("x8qjq1zCZ9Qjpg"),
+    banner_id: get_banner_id("x8qjq1zCZ9Qjpg"),
     created_at: "2022-11-23T01:07:02.000Z",
     wpm: 201,
     name: "Kaylee Ford",
@@ -187,9 +187,9 @@ export const mockUsers: User[] = [
   },
   {
     avatar_hex: "2d2948",
-    avatar_id: getAvatarId("carla"),
+    avatar_id: get_avatar_id("carla"),
     banner_hex: "cec5b6",
-    banner_id: getBannerId("HvQ_Bb_cohs"),
+    banner_id: get_banner_id("HvQ_Bb_cohs"),
     created_at: "2021-09-04T01:07:02.000Z",
     wpm: 312,
     name: "Carla Bowman",
@@ -208,9 +208,9 @@ export const mockUsers: User[] = [
   },
   {
     avatar_hex: "4a4444",
-    avatar_id: getAvatarId("terri"),
+    avatar_id: get_avatar_id("terri"),
     banner_hex: "3d4453",
-    banner_id: getBannerId("M1aegHe2j6g"),
+    banner_id: get_banner_id("M1aegHe2j6g"),
     created_at: "2022-07-13T01:07:02.000Z",
     wpm: 188,
     name: "Terri Fields",
@@ -229,9 +229,9 @@ export const mockUsers: User[] = [
   },
   {
     avatar_hex: "a89293",
-    avatar_id: getAvatarId("fred"),
+    avatar_id: get_avatar_id("fred"),
     banner_hex: "2b3c46",
-    banner_id: getBannerId("sDT-o52Sk_k"),
+    banner_id: get_banner_id("sDT-o52Sk_k"),
     created_at: "2022-01-24T01:07:02.000Z",
     wpm: 225,
     name: "Fred Kelly",

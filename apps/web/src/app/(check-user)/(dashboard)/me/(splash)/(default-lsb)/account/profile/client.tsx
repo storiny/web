@@ -3,13 +3,13 @@
 import { clsx } from "clsx";
 import React from "react";
 
-import Divider from "~/components/Divider";
-import Link from "~/components/Link";
-import Spacer from "~/components/Spacer";
-import Typography from "~/components/Typography";
-import TitleBlock from "~/entities/TitleBlock";
-import { useMediaQuery } from "~/hooks/useMediaQuery";
-import { breakpoints } from "~/theme/breakpoints";
+import Divider from "../../../../../../../../../../../packages/ui/src/components/divider";
+import Link from "../../../../../../../../../../../packages/ui/src/components/link";
+import Spacer from "../../../../../../../../../../../packages/ui/src/components/spacer";
+import Typography from "../../../../../../../../../../../packages/ui/src/components/typography";
+import TitleBlock from "../../../../../../../../../../../packages/ui/src/entities/title-block";
+import { use_media_query } from "../../../../../../../../../../../packages/ui/src/hooks/use-media-query";
+import { BREAKPOINTS } from "~/theme/breakpoints";
 
 import DashboardGroup from "../../dashboard-group";
 import DashboardTitle from "../../dashboard-title";
@@ -22,14 +22,14 @@ import styles from "./styles.module.scss";
 import UsernameSettings from "./username-settings";
 
 const ProfileSettingsClient = (): React.ReactElement => {
-  const isSmallerThanDesktop = useMediaQuery(breakpoints.down("desktop"));
+  const is_smaller_than_desktop = use_media_query(BREAKPOINTS.down("desktop"));
   return (
     <React.Fragment>
       <main>
         <DashboardTitle>Public profile</DashboardTitle>
         <BannerSettings />
         <DashboardWrapper>
-          {isSmallerThanDesktop && (
+          {is_smaller_than_desktop && (
             <DashboardGroup>
               <Typography as={"h2"} level={"h4"}>
                 Avatar

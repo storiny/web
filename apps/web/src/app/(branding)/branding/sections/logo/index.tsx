@@ -5,13 +5,13 @@ import React from "react";
 
 import Logo from "../../../../../../../../packages/ui/src/brand/logo";
 import Wordmark from "../../../../../../../../packages/ui/src/brand/wordmark";
-import Divider from "~/components/Divider";
-import Link from "~/components/Link";
-import Spacer from "~/components/Spacer";
-import Typography from "~/components/Typography";
+import Divider from "../../../../../../../../packages/ui/src/components/divider";
+import Link from "../../../../../../../../packages/ui/src/components/link";
+import Spacer from "../../../../../../../../packages/ui/src/components/spacer";
+import Typography from "../../../../../../../../packages/ui/src/components/typography";
 
 import pageStyles from "../../styles.module.scss";
-import commonStyles from "../common.module.scss";
+import common_styles from "../common.module.scss";
 import styles from "./logo.module.scss";
 
 const LogoSpacingAndSize = (): React.ReactElement => (
@@ -215,9 +215,9 @@ const IconColor = (): React.ReactElement => (
         "t-center",
         pageStyles.x,
         pageStyles.figure,
-        commonStyles.x,
-        commonStyles["figure-with-caption"],
-        commonStyles["image-with-border"]
+        common_styles.x,
+        common_styles["figure-with-caption"],
+        common_styles["image-with-border"]
       )}
     >
       <img
@@ -276,8 +276,8 @@ const FigureWithCaption = ({
       "t-center",
       pageStyles.x,
       pageStyles.figure,
-      commonStyles.x,
-      commonStyles["figure-with-caption"]
+      common_styles.x,
+      common_styles["figure-with-caption"]
     )}
   >
     <img
@@ -398,8 +398,8 @@ const LogoSection = (): React.ReactElement => (
             "flex-col",
             pageStyles.x,
             pageStyles.figure,
-            commonStyles.x,
-            commonStyles["image-with-border"]
+            common_styles.x,
+            common_styles["image-with-border"]
           )}
         >
           <img

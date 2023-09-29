@@ -1,10 +1,12 @@
 import clsx from "clsx";
 import React from "react";
 
-import Divider from "~/components/Divider";
-import IconButton, { IconButtonProps } from "~/components/IconButton";
-import Spacer from "~/components/Spacer";
-import Tooltip from "~/components/Tooltip";
+import Divider from "../../../../../../../ui/src/components/divider";
+import IconButton, {
+  IconButtonProps
+} from "../../../../../../../ui/src/components/icon-button";
+import Spacer from "../../../../../../../ui/src/components/spacer";
+import Tooltip from "../../../../../../../ui/src/components/tooltip";
 import LayoutAlignBottomIcon from "~/icons/LayoutAlignBottom";
 import LayoutAlignCenterIcon from "~/icons/LayoutAlignCenter";
 import LayoutAlignLeftIcon from "~/icons/LayoutAlignLeft";
@@ -21,12 +23,12 @@ type TAlignment = "left" | "center" | "right" | "top" | "middle" | "bottom";
 
 const AlignButton = ({
   children,
-  tooltipContent,
+  tooltip_content,
   ...rest
 }: IconButtonProps & {
-  tooltipContent: React.ReactNode;
+  tooltip_content: React.ReactNode;
 }): React.ReactElement => (
-  <Tooltip content={tooltipContent}>
+  <Tooltip content={tooltip_content}>
     <IconButton {...rest} className={"f-grow"} size={"sm"} variant={"ghost"}>
       {children}
     </IconButton>
@@ -128,42 +130,42 @@ const Alignment = (): React.ReactElement | null => {
           <AlignButton
             aria-label={"Align left"}
             onClick={(): void => changeAlignment("left")}
-            tooltipContent={"Align left"}
+            tooltip_content={"Align left"}
           >
             <LayoutAlignLeftIcon />
           </AlignButton>
           <AlignButton
             aria-label={"Align center"}
             onClick={(): void => changeAlignment("center")}
-            tooltipContent={"Align center"}
+            tooltip_content={"Align center"}
           >
             <LayoutAlignCenterIcon />
           </AlignButton>
           <AlignButton
             aria-label={"Align right"}
             onClick={(): void => changeAlignment("right")}
-            tooltipContent={"Align right"}
+            tooltip_content={"Align right"}
           >
             <LayoutAlignRightIcon />
           </AlignButton>
           <AlignButton
             aria-label={"Align top"}
             onClick={(): void => changeAlignment("top")}
-            tooltipContent={"Align top"}
+            tooltip_content={"Align top"}
           >
             <LayoutAlignTopIcon />
           </AlignButton>
           <AlignButton
             aria-label={"Align middle"}
             onClick={(): void => changeAlignment("middle")}
-            tooltipContent={"Align middle"}
+            tooltip_content={"Align middle"}
           >
             <LayoutAlignMiddleIcon />
           </AlignButton>
           <AlignButton
             aria-label={"Align bottom"}
             onClick={(): void => changeAlignment("bottom")}
-            tooltipContent={"Align bottom"}
+            tooltip_content={"Align bottom"}
           >
             <LayoutAlignBottomIcon />
           </AlignButton>

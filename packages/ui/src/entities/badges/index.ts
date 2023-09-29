@@ -1,2 +1,2 @@
-export { default as EarlyUserBadge } from "./EarlyUser";
-export { default as StaffBadge } from "./Staff";
+export { default as EarlyUserBadge } from "./early-user";
+export { default as StaffBadge } from "./staff";

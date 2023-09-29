@@ -4,7 +4,7 @@ import { Page } from "@playwright/test";
  * Fires clipboard copy event on the editor
  * @param page Page
  */
-export const copyToClipboard = async (
+export const copy_to_clipboard = async (
   page: Page
 ): Promise<Record<string, string>> =>
   await page.frame("left")!.evaluate(() => {

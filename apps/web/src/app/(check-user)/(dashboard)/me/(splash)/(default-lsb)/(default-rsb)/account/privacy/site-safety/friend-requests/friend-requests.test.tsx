@@ -14,10 +14,10 @@ describe("<FriendRequests />", () => {
     render_test_with_provider(
       <FriendRequests
         incoming_friend_requests={IncomingFriendRequest.EVERYONE}
-        onSubmit={mockSubmit}
+        on_submit={mockSubmit}
       />,
       {
-        loggedIn: true
+        logged_in: true
       }
     );
 
@@ -25,7 +25,7 @@ describe("<FriendRequests />", () => {
       await user.click(screen.getByLabelText(/no one/i));
     });
 
-    await waitFor(() => {
+    await wait_for(() => {
       expect(mockSubmit).toHaveBeenCalledWith({
         "friend-requests": `${IncomingFriendRequest.NONE}`
       });

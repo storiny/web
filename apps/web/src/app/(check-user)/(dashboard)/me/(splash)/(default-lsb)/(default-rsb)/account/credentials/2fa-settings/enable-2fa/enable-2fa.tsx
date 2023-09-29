@@ -1,26 +1,34 @@
-import { isTestEnv } from "@storiny/shared/src/utils/isTestEnv";
+import { is_test_env } from "../../../../../../../../../../../../../../packages/shared/src/utils/is-test-env";
 import { clsx } from "clsx";
 import React from "react";
 
-import AspectRatio from "~/components/AspectRatio";
-import Button from "~/components/Button";
-import Divider from "~/components/Divider";
-import Form, { SubmitHandler, useForm, zodResolver } from "~/components/Form";
-import FormInput from "~/components/FormInput";
-import Image from "~/components/Image";
-import Link from "~/components/Link";
-import { Description, ModalFooterButton, useModal } from "~/components/Modal";
-import Spacer from "~/components/Spacer";
-import Spinner from "~/components/Spinner";
-import { useToast } from "~/components/Toast";
-import Typography from "~/components/Typography";
-import { useMediaQuery } from "~/hooks/useMediaQuery";
+import AspectRatio from "../../../../../../../../../../../../../../packages/ui/src/components/aspect-ratio";
+import Button from "../../../../../../../../../../../../../../packages/ui/src/components/button";
+import Divider from "../../../../../../../../../../../../../../packages/ui/src/components/divider";
+import Form, {
+  SubmitHandler,
+  use_form,
+  zod_resolver
+} from "../../../../../../../../../../../../../../packages/ui/src/components/form";
+import FormInput from "../../../../../../../../../../../../../../packages/ui/src/components/form-input";
+import Image from "../../../../../../../../../../../../../../packages/ui/src/components/image";
+import Link from "../../../../../../../../../../../../../../packages/ui/src/components/link";
+import {
+  Description,
+  ModalFooterButton,
+  use_modal
+} from "../../../../../../../../../../../../../../packages/ui/src/components/modal";
+import Spacer from "../../../../../../../../../../../../../../packages/ui/src/components/spacer";
+import Spinner from "../../../../../../../../../../../../../../packages/ui/src/components/spinner";
+import { use_toast } from "../../../../../../../../../../../../../../packages/ui/src/components/toast";
+import Typography from "../../../../../../../../../../../../../../packages/ui/src/components/typography";
+import { use_media_query } from "../../../../../../../../../../../../../../packages/ui/src/hooks/use-media-query";
 import QRCodeIcon from "~/icons/QRCode";
 import {
   use_request_mfa_mutation,
   use_verify_mfa_mutation
 } from "~/redux/features";
-import { breakpoints } from "~/theme/breakpoints";
+import { BREAKPOINTS } from "~/theme/breakpoints";
 
 import styles from "./enable-2fa.module.scss";
 import { Enable2FAProps } from "./enable-2fa.props";
@@ -30,7 +38,7 @@ import {
   MFA_CODE_LENGTH
 } from "./enable-2fa.schema";
 
-const testingEnv = isTestEnv();
+const testingEnv = is_test_env();
 
 const Enable2FAModal = (): React.ReactElement => {
   const [qr, setQr] = React.useState<string>("");
@@ -116,10 +124,10 @@ const Enable2FAModal = (): React.ReactElement => {
             <FormInput
               autoComplete={"one-time-code"}
               autoFocus
-              autoSize
+              auto_size
               data-testid={"code-input"}
-              formSlotProps={{
-                formItem: {
+              form_slot_props={{
+                form_item: {
                   className: "f-grow"
                 }
               }}
@@ -138,14 +146,14 @@ const Enable2FAModal = (): React.ReactElement => {
 };
 
 const Enable2FA = ({
-  onSubmit,
+  on_submit,
   has_password,
   setEnabled
 }: Enable2FAProps): React.ReactElement => {
-  const toast = useToast();
-  const isSmallerThanMobile = useMediaQuery(breakpoints.down("mobile"));
-  const form = useForm<Enable2FASchema>({
-    resolver: zodResolver(enable2faSchema),
+  const toast = use_toast();
+  const is_smaller_than_mobile = use_media_query(BREAKPOINTS.down("mobile"));
+  const form = use_form<Enable2FASchema>({
+    resolver: zod_resolver(enable2faSchema),
     defaultValues: {
       code: ""
     }
@@ -153,8 +161,8 @@ const Enable2FA = ({
   const [verifyMfa, { isLoading }] = use_verify_mfa_mutation();
 
   const handleSubmit: SubmitHandler<Enable2FASchema> = (values) => {
-    if (onSubmit) {
-      onSubmit(values);
+    if (on_submit) {
+      on_submit(values);
     } else {
       verifyMfa(values)
         .unwrap()
@@ -172,14 +180,14 @@ const Enable2FA = ({
     }
   };
 
-  const [element] = useModal(
-    ({ openModal }) => (
+  const [element] = use_modal(
+    ({ open_modal }) => (
       <Button
-        autoSize
-        checkAuth
+        auto_size
+        check_auth
         className={"fit-w"}
         disabled={!has_password}
-        onClick={openModal}
+        onClick={open_modal}
       >
         Enable 2FA
       </Button>
@@ -187,20 +195,20 @@ const Enable2FA = ({
     <Form<Enable2FASchema>
       className={clsx("flex-col")}
       disabled={isLoading}
-      onSubmit={handleSubmit}
-      providerProps={form}
+      on_submit={handleSubmit}
+      provider_props={form}
     >
       <Enable2FAModal />
     </Form>,
     {
-      fullscreen: isSmallerThanMobile,
+      fullscreen: is_smaller_than_mobile,
       footer: (
         <>
-          <ModalFooterButton compact={isSmallerThanMobile} variant={"ghost"}>
+          <ModalFooterButton compact={is_smaller_than_mobile} variant={"ghost"}>
             Cancel
           </ModalFooterButton>
           <ModalFooterButton
-            compact={isSmallerThanMobile}
+            compact={is_smaller_than_mobile}
             disabled={!form.formState.isDirty}
             loading={isLoading}
             onClick={(event): void => {
@@ -214,11 +222,11 @@ const Enable2FA = ({
       ),
       slot_props: {
         footer: {
-          compact: isSmallerThanMobile
+          compact: is_smaller_than_mobile
         },
         content: {
           style: {
-            width: isSmallerThanMobile ? "100%" : "542px"
+            width: is_smaller_than_mobile ? "100%" : "542px"
           }
         },
         header: {

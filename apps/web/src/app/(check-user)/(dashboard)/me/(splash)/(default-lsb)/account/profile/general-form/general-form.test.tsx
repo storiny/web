@@ -10,8 +10,8 @@ describe("<AccountGeneralForm />", () => {
   it("renders validation messages", async () => {
     const mockSubmit = jest.fn();
     const user = userEvent.setup();
-    render_test_with_provider(<AccountGeneralForm onSubmit={mockSubmit} />, {
-      loggedIn: true
+    render_test_with_provider(<AccountGeneralForm on_submit={mockSubmit} />, {
+      logged_in: true
     });
 
     await act(async () => {
@@ -19,7 +19,7 @@ describe("<AccountGeneralForm />", () => {
       await user.click(screen.getByRole("button", { name: /save profile/i }));
     });
 
-    await waitFor(() => {
+    await wait_for(() => {
       expect(screen.getByRole("alert")).toBeInTheDocument();
       expect(mockSubmit).not.toBeCalled();
     });
@@ -28,8 +28,8 @@ describe("<AccountGeneralForm />", () => {
   it("submits correct form data", async () => {
     const mockSubmit = jest.fn();
     const user = userEvent.setup();
-    render_test_with_provider(<AccountGeneralForm onSubmit={mockSubmit} />, {
-      loggedIn: true
+    render_test_with_provider(<AccountGeneralForm on_submit={mockSubmit} />, {
+      logged_in: true
     });
 
     await act(async () => {
@@ -44,7 +44,7 @@ describe("<AccountGeneralForm />", () => {
       await user.click(screen.getByRole("button", { name: /save profile/i }));
     });
 
-    await waitFor(() => {
+    await wait_for(() => {
       expect(mockSubmit).toHaveBeenCalledWith({
         name: "Test name",
         location: "Test location",

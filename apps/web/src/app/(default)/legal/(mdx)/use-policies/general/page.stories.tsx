@@ -30,7 +30,7 @@ export const Default: Story = {
             <Story />
           </LegalLayout>
         </DefaultLayout>,
-        { ignorePrimitiveProviders: true }
+        { ignore_primitive_providers: true }
       )
   ]
 };

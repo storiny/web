@@ -1,11 +1,15 @@
 import { clsx } from "clsx";
 import React from "react";
 
-import Form, { SubmitHandler, useForm, zodResolver } from "~/components/Form";
-import FormCheckbox from "~/components/FormCheckbox";
-import Spacer from "~/components/Spacer";
-import { useToast } from "~/components/Toast";
-import TitleBlock from "~/entities/TitleBlock";
+import Form, {
+  SubmitHandler,
+  use_form,
+  zod_resolver
+} from "../../../../../../../../../../../../../packages/ui/src/components/form";
+import FormCheckbox from "../../../../../../../../../../../../../packages/ui/src/components/form-checkbox";
+import Spacer from "../../../../../../../../../../../../../packages/ui/src/components/spacer";
+import { use_toast } from "../../../../../../../../../../../../../packages/ui/src/components/toast";
+import TitleBlock from "../../../../../../../../../../../../../packages/ui/src/entities/title-block";
 import { use_mail_notification_settings_mutation } from "~/redux/features";
 
 import DashboardGroup from "../../../../dashboard-group";
@@ -17,16 +21,16 @@ import {
 } from "./mail-notifications.schema";
 
 const MailNotifications = ({
-  onSubmit,
+  on_submit,
   mail_features_and_updates,
   mail_login_activity,
   mail_newsletters,
   mail_digest
 }: MailNotificationsProps): React.ReactElement => {
-  const toast = useToast();
+  const toast = use_toast();
   const prevValuesRef = React.useRef<MailNotificationsSchema>();
-  const form = useForm<MailNotificationsSchema>({
-    resolver: zodResolver(mailNotificationsSchema),
+  const form = use_form<MailNotificationsSchema>({
+    resolver: zod_resolver(mailNotificationsSchema),
     defaultValues: {
       "features-and-updates": mail_features_and_updates,
       "login-activity": mail_login_activity,
@@ -38,8 +42,8 @@ const MailNotifications = ({
     use_mail_notification_settings_mutation();
 
   const handleSubmit: SubmitHandler<MailNotificationsSchema> = (values) => {
-    if (onSubmit) {
-      onSubmit(values);
+    if (on_submit) {
+      on_submit(values);
     } else {
       mutateMailNotificationSettings(values)
         .unwrap()
@@ -72,11 +76,11 @@ const MailNotifications = ({
       <Form<MailNotificationsSchema>
         className={clsx("flex-col", styles.form)}
         disabled={isLoading}
-        onSubmit={handleSubmit}
-        providerProps={form}
+        on_submit={handleSubmit}
+        provider_props={form}
       >
         <FormCheckbox
-          helperText={
+          helper_text={
             "Receive an e-mail for every successful login attempt made to your account."
           }
           label={"Login activity"}
@@ -85,7 +89,7 @@ const MailNotifications = ({
           size={"lg"}
         />
         <FormCheckbox
-          helperText={
+          helper_text={
             "Receive an e-mail for new features and updates from Storiny."
           }
           label={"New features & updates"}
@@ -94,7 +98,7 @@ const MailNotifications = ({
           size={"lg"}
         />
         <FormCheckbox
-          helperText={
+          helper_text={
             "Receive newsletters from the writers to whom you have subscribed."
           }
           label={"Newsletters"}
@@ -103,7 +107,7 @@ const MailNotifications = ({
           size={"lg"}
         />
         <FormCheckbox
-          helperText={
+          helper_text={
             "Receive an email for suggested stories based on your reading history or those handpicked by the staff."
           }
           label={"Suggested stories"}

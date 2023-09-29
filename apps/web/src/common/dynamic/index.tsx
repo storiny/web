@@ -2,7 +2,7 @@ import { DynamicOptionsLoadingProps } from "next/dynamic";
 import React from "react";
 
 import SuspenseLoader from "~/common/suspense-loader";
-import ErrorState from "~/entities/ErrorState";
+import ErrorState from "../../../../../packages/ui/src/entities/error-state";
 
 /**
  * Dynamic component loader with error fallback
@@ -17,7 +17,7 @@ export const dynamicLoader =
   // eslint-disable-next-line react/display-name
   (props: DynamicOptionsLoadingProps): React.ReactElement | null =>
     props.error && !props.isLoading ? (
-      <ErrorState autoSize retry={props.retry} />
+      <ErrorState auto_size retry={props.retry} />
     ) : customLoader ? (
       customLoader(props)
     ) : (

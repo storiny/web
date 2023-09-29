@@ -1,0 +1,66 @@
+.link {
+  color: var(--fg, var(--fg-major));
+  background-color: var(--bg, transparent);
+  text-decoration-color: var(--decoration-fg);
+  text-underline-offset: 3px; // Underline offset
+  border-radius: var(--radius-sm); // Focus outline radius
+  cursor: pointer;
+
+  &.inherit {
+    font-size: inherit;
+    font-family: inherit;
+    font-weight: inherit;
+    line-height: inherit;
+  }
+
+  &.disabled {
+    --fg: var(--fg-muted);
+
+    pointer-events: none;
+  }
+}
+
+/* Colors */
+.color-body {
+  --fg: var(--fg-minor);
+  --decoration-fg: var(--fg-muted);
+
+  padding: 0;
+
+  &.fixed-color,
+  &:hover {
+    --fg: var(--fg-major);
+  }
+}
+
+.color-beryl {
+  --fg: var(--link);
+  --decoration-fg: var(--fg);
+
+  border-radius: var(--radius-md);
+  padding: 0 4px;
+
+  &.fixed-color,
+  &:hover {
+    --bg: var(--beryl-100);
+    --fg: var(--beryl-300);
+  }
+}
+
+.underline {
+  &-always {
+    text-decoration-line: underline;
+  }
+
+  &-hover {
+    text-decoration-line: none;
+
+    &:hover {
+      text-decoration-line: underline;
+    }
+  }
+
+  &-never {
+    text-decoration-line: none;
+  }
+}

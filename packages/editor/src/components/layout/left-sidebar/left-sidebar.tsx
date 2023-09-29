@@ -2,7 +2,7 @@ import { dynamicLoader } from "@storiny/web/src/common/dynamic";
 import dynamic from "next/dynamic";
 import React from "react";
 
-import LeftSidebar from "~/layout/LeftSidebar";
+import LeftSidebar from "../../../../../ui/src/layout/left-sidebar";
 
 import { EditorLeftSidebarProps } from "./left-sidebar.props";
 

@@ -1,4 +1,4 @@
-import { mockNotifications } from "@storiny/ui/src/mocks";
+import { MOCK_NOTIFICATIONS } from "@storiny/ui/src/mocks";
 import { nanoid } from "nanoid";
 
 const { worker, rest } = window.msw;
@@ -10,9 +10,10 @@ worker.use(
       res(
         ctx.delay(1200),
         ctx.json(
-          mockNotifications
-            .slice(0, 10)
-            .map((notification) => ({ ...notification, id: nanoid() }))
+          MOCK_NOTIFICATIONS.slice(0, 10).map((notification) => ({
+            ...notification,
+            id: nanoid(),
+          }))
         )
       )
   )

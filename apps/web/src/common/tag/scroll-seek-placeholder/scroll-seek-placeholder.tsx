@@ -3,7 +3,7 @@
 import { clsx } from "clsx";
 import React from "react";
 
-import Divider from "~/components/Divider";
+import Divider from "../../../../../../packages/ui/src/components/divider";
 import { TagSkeleton } from "~/entities/tag";
 
 import styles from "../../virtual/virtual.module.scss";

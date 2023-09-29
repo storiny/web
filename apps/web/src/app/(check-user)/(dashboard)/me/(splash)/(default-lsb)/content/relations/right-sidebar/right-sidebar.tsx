@@ -5,12 +5,12 @@ import dynamic from "next/dynamic";
 import React from "react";
 
 import { dynamicLoader } from "~/common/dynamic";
-import Grow from "~/components/Grow";
-import { useMediaQuery } from "~/hooks/useMediaQuery";
-import RightSidebar from "~/layout/RightSidebar";
+import Grow from "../../../../../../../../../../../../packages/ui/src/components/grow";
+import { use_media_query } from "../../../../../../../../../../../../packages/ui/src/hooks/use-media-query";
+import RightSidebar from "../../../../../../../../../../../../packages/ui/src/layout/right-sidebar";
 import { self_action } from "~/redux/features";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
-import { breakpoints } from "~/theme/breakpoints";
+import { BREAKPOINTS } from "~/theme/breakpoints";
 
 import styles from "./right-sidebar.module.scss";
 import { RelationsRightSidebarProps } from "./right-sidebar.props";
@@ -42,7 +42,7 @@ const ContentRelationsRightSidebar = (
     use_app_selector(
       (state) => state.entities.self_pending_friend_request_count
     ) || 0;
-  const shouldRender = useMediaQuery(breakpoints.up("desktop"));
+  const should_render = use_media_query(BREAKPOINTS.up("desktop"));
 
   React.useEffect(() => {
     dispatch(
@@ -53,7 +53,7 @@ const ContentRelationsRightSidebar = (
     );
   }, [dispatch, pending_friend_request_count]);
 
-  if (!shouldRender) {
+  if (!should_render) {
     return null;
   }
 

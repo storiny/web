@@ -9,7 +9,7 @@ import { italicAtom } from "../../atoms";
  * Hooks for using italic text style
  */
 export const useItalic = (): [boolean, () => void] => {
-  const italic = useAtomValue(italicAtom);
+  const italic = use_atom_value(italicAtom);
   const [editor] = useLexicalComposerContext();
 
   const toggleItalic = React.useCallback(() => {

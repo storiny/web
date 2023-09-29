@@ -16,7 +16,7 @@ import {
   assertHTML,
   assertSelection,
   click,
-  copyToClipboard,
+  copy_to_clipboard,
   focusEditor,
   html,
   initialize,
@@ -140,7 +140,7 @@ test.describe("html link copy and paste", () => {
     await moveLeft(page, 2);
     await page.keyboard.up("Shift");
 
-    const clipboard = await copyToClipboard(page);
+    const clipboard = await copy_to_clipboard(page);
     await moveToEditorEnd(page);
     await pasteFromClipboard(page, clipboard);
 

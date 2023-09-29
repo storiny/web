@@ -2,10 +2,12 @@ import { clsx } from "clsx";
 import { useAtom, useAtomValue } from "jotai";
 import React from "react";
 
-import Link from "~/components/Link";
-import ScrollArea, { ScrollAreaProps } from "~/components/ScrollArea";
-import Spacer from "~/components/Spacer";
-import Typography from "~/components/Typography";
+import Link from "../../../../../../../../ui/src/components/link";
+import ScrollArea, {
+  ScrollAreaProps
+} from "../../../../../../../../ui/src/components/scroll-area";
+import Spacer from "../../../../../../../../ui/src/components/spacer";
+import Typography from "../../../../../../../../ui/src/components/typography";
 import { use_story_metadata_mutation } from "~/redux/features";
 
 import { docStatusAtom, storyMetadataAtom } from "../../../../../../atoms";
@@ -19,9 +21,9 @@ const EditorToc = ({
   disabled?: boolean;
   readOnly?: boolean;
 }): React.ReactElement => {
-  const [story, setStory] = useAtom(storyMetadataAtom);
+  const [story, setStory] = use_atom(storyMetadataAtom);
   const [loading, setLoading] = React.useState<boolean>(false);
-  const docStatus = useAtomValue(docStatusAtom);
+  const docStatus = use_atom_value(docStatusAtom);
   const publishing = docStatus === "publishing";
   const [mutateStoryMetadata] = use_story_metadata_mutation();
   const onChange = React.useCallback(

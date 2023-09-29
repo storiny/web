@@ -1,0 +1,71 @@
+// noinspection JSUnusedGlobalSymbols
+
+import type { Meta, StoryObj } from "@storybook/react";
+
+import Checkbox from "./checkbox";
+
+const meta: Meta<typeof Checkbox> = {
+  title: "components/checkbox",
+  component: Checkbox,
+  tags: ["autodocs"],
+  args: {
+    label: "Checkbox label",
+    "aria-label": "Sample checkbox",
+    color: "inverted",
+    size: "md"
+  },
+  argTypes: {
+    disabled: {
+      name: "disabled",
+      type: { name: "boolean", required: false },
+      defaultValue: false,
+      description: "The disabled state.",
+      table: {
+        type: { summary: "boolean" },
+        defaultValue: { summary: "false" }
+      },
+      control: {
+        type: "boolean"
+      }
+    },
+    checked: {
+      description: "The checked state.",
+      control: { type: "select" },
+      options: ["Uncontrolled", "Checked", "Unchecked"],
+      mapping: {
+        Uncontrolled: undefined,
+        Checked: true,
+        Unchecked: false
+      }
+    }
+  }
+};
+
+export default meta;
+type Story = StoryObj<typeof Checkbox>;
+
+export const Default: Story = {};
+
+export const ColorInverted: Story = {
+  args: {
+    color: "inverted"
+  }
+};
+
+export const ColorRuby: Story = {
+  args: {
+    color: "ruby"
+  }
+};
+
+export const SizeLG: Story = {
+  args: {
+    size: "lg"
+  }
+};
+
+export const SizeMD: Story = {
+  args: {
+    size: "md"
+  }
+};

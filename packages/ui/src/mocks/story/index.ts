@@ -6,12 +6,12 @@ import {
 } from "@storiny/shared";
 import { Story } from "@storiny/types";
 
-import { mockTags } from "../tag";
-import { mockUsers, testUser } from "../user";
+import { MOCK_TAGS } from "../tag";
+import { MOCK_USERS, TEST_USER } from "../user";
 
-const getSplashId = (identifier: string): string => `${identifier}.jpg`;
+const get_splash_id = (identifier: string): string => `${identifier}.jpg`;
 
-export const testStory: Story = {
+export const TEST_STORY: Story = {
   age_restriction: StoryAgeRestriction.NOT_RATED,
   canonical_url: null,
   category: StoryCategory.OTHERS,
@@ -26,6 +26,7 @@ export const testStory: Story = {
   doc_key: "",
   license: StoryLicense.RESERVED,
   preview_image: null,
+  first_published_at: "2022-05-18T01:07:02.000Z",
   published_at: "2022-05-18T01:07:02.000Z",
   seo_description: null,
   seo_title: null,
@@ -37,15 +38,15 @@ export const testStory: Story = {
     like_count: 1,
     read_count: 1
   },
-  tags: [mockTags[0]],
+  tags: [MOCK_TAGS[0]],
   title: "Test story",
-  user: testUser,
-  user_id: testUser.id,
+  user: TEST_USER,
+  user_id: TEST_USER.id,
   visibility: StoryVisibility.PUBLIC,
   word_count: 750
 };
 
-export const mockStories: Story[] = [
+export const MOCK_STORIES: Story[] = [
   {
     age_restriction: StoryAgeRestriction.NOT_RATED,
     canonical_url: null,
@@ -62,21 +63,22 @@ export const mockStories: Story[] = [
     doc_key: "",
     license: StoryLicense.RESERVED,
     preview_image: null,
+    first_published_at: "2022-05-18T01:07:02.000Z",
     published_at: "2022-05-18T01:07:02.000Z",
     seo_description: null,
     seo_title: null,
     slug: "finding-serenity-in-chaos-embracing-mindfulness-in-a-hectic-world",
     splash_hex: "1c2025",
-    splash_id: getSplashId("mGs7oMPLB-c"),
+    splash_id: get_splash_id("mGs7oMPLB-c"),
     stats: {
       like_count: 923,
       read_count: 20234,
       comment_count: 239
     },
-    tags: [mockTags[0], mockTags[5]],
+    tags: [MOCK_TAGS[0], MOCK_TAGS[5]],
     title: "Finding Serenity in Chaos: Embracing Mindfulness in a Hectic World",
-    user: mockUsers[0],
-    user_id: mockUsers[0].id,
+    user: MOCK_USERS[0],
+    user_id: MOCK_USERS[0].id,
     visibility: StoryVisibility.PUBLIC,
     word_count: 2004
   },
@@ -96,22 +98,23 @@ export const mockStories: Story[] = [
     doc_key: "",
     license: StoryLicense.RESERVED,
     preview_image: null,
+    first_published_at: "2022-05-18T01:07:02.000Z",
     published_at: "2021-04-18T01:07:02.000Z",
     seo_description: null,
     seo_title: null,
     slug: "exploring-the-great-outdoors-a-journey-into-natures-healing-powers",
     splash_hex: "4e3d2d",
-    splash_id: getSplashId("z6SXax6vhm0"),
+    splash_id: get_splash_id("z6SXax6vhm0"),
     stats: {
       like_count: 249,
       read_count: 39842,
       comment_count: 29
     },
-    tags: [mockTags[8]],
+    tags: [MOCK_TAGS[8]],
     title:
       "Exploring the Great Outdoors: A Journey into Nature's Healing Powers",
-    user: mockUsers[1],
-    user_id: mockUsers[1].id,
+    user: MOCK_USERS[1],
+    user_id: MOCK_USERS[1].id,
     visibility: StoryVisibility.PUBLIC,
     word_count: 2400
   },
@@ -131,21 +134,22 @@ export const mockStories: Story[] = [
     doc_key: "",
     license: StoryLicense.RESERVED,
     preview_image: null,
+    first_published_at: "2022-05-18T01:07:02.000Z",
     published_at: "2021-02-18T01:07:02.000Z",
     seo_description: null,
     seo_title: null,
     slug: "from-clutter-to-zen-decluttering-your-space-for-inner-peace",
     splash_hex: "312f29",
-    splash_id: getSplashId("P-yzuyWFEIk"),
+    splash_id: get_splash_id("P-yzuyWFEIk"),
     stats: {
       like_count: 349,
       read_count: 48291,
       comment_count: 190
     },
-    tags: [mockTags[1], mockTags[4], mockTags[7]],
+    tags: [MOCK_TAGS[1], MOCK_TAGS[4], MOCK_TAGS[7]],
     title: "From Clutter to Zen: Decluttering Your Space for Inner Peace",
-    user: mockUsers[2],
-    user_id: mockUsers[2].id,
+    user: MOCK_USERS[2],
+    user_id: MOCK_USERS[2].id,
     visibility: StoryVisibility.PUBLIC,
     word_count: 991
   },
@@ -164,12 +168,13 @@ export const mockStories: Story[] = [
     doc_key: "",
     license: StoryLicense.RESERVED,
     preview_image: null,
+    first_published_at: "2022-05-18T01:07:02.000Z",
     published_at: "2022-03-24T01:07:02.000Z",
     seo_description: null,
     seo_title: null,
     slug: "garden-delights-diy-tips-for-a-thriving-vegetable-patch",
     splash_hex: "a39756",
-    splash_id: getSplashId("Z26qv5wkyZw"),
+    splash_id: get_splash_id("Z26qv5wkyZw"),
     stats: {
       like_count: 954,
       read_count: 99214,
@@ -177,8 +182,8 @@ export const mockStories: Story[] = [
     },
     tags: [],
     title: "Garden Delights: DIY Tips for a Thriving Vegetable Patch",
-    user: mockUsers[3],
-    user_id: mockUsers[3].id,
+    user: MOCK_USERS[3],
+    user_id: MOCK_USERS[3].id,
     visibility: StoryVisibility.PUBLIC,
     word_count: 3002
   },
@@ -198,6 +203,7 @@ export const mockStories: Story[] = [
     doc_key: "",
     license: StoryLicense.RESERVED,
     preview_image: null,
+    first_published_at: "2022-05-18T01:07:02.000Z",
     published_at: "2022-01-24T01:07:02.000Z",
     seo_description: null,
     seo_title: null,
@@ -209,10 +215,10 @@ export const mockStories: Story[] = [
       read_count: 13492,
       comment_count: 0
     },
-    tags: [mockTags[9]],
+    tags: [MOCK_TAGS[9]],
     title: "Office Shenanigans: Pranks, Memes, and Workplace Woes",
-    user: mockUsers[4],
-    user_id: mockUsers[4].id,
+    user: MOCK_USERS[4],
+    user_id: MOCK_USERS[4].id,
     visibility: StoryVisibility.PUBLIC,
     word_count: 293
   },
@@ -232,21 +238,28 @@ export const mockStories: Story[] = [
     doc_key: "",
     license: StoryLicense.CC_BY_NC_ND,
     preview_image: null,
+    first_published_at: "2022-05-18T01:07:02.000Z",
     published_at: "2023-02-03T01:07:02.000Z",
     seo_description: null,
     seo_title: null,
     slug: "pets-gone-wild-the-funniest-antics-of-our-furry-friends",
     splash_hex: "f6c4ed",
-    splash_id: getSplashId("lq-w5bRrNcc"),
+    splash_id: get_splash_id("lq-w5bRrNcc"),
     stats: {
       like_count: 49592,
       read_count: 3952915,
       comment_count: 3
     },
-    tags: [mockTags[2], mockTags[1], mockTags[3], mockTags[7], mockTags[4]],
+    tags: [
+      MOCK_TAGS[2],
+      MOCK_TAGS[1],
+      MOCK_TAGS[3],
+      MOCK_TAGS[7],
+      MOCK_TAGS[4]
+    ],
     title: "Pets Gone Wild: The Funniest Antics of Our Furry Friends",
-    user: mockUsers[5],
-    user_id: mockUsers[5].id,
+    user: MOCK_USERS[5],
+    user_id: MOCK_USERS[5].id,
     visibility: StoryVisibility.PUBLIC,
     word_count: 4511
   },
@@ -266,21 +279,22 @@ export const mockStories: Story[] = [
     doc_key: "",
     license: StoryLicense.RESERVED,
     preview_image: null,
+    first_published_at: "2022-05-18T01:07:02.000Z",
     published_at: "2022-11-23T01:07:02.000Z",
     seo_description: null,
     seo_title: null,
     slug: "wanderlust-chronicles-tales-from-around-the-globe",
     splash_hex: "8a8a92",
-    splash_id: getSplashId("jNpvVRvFcrI"),
+    splash_id: get_splash_id("jNpvVRvFcrI"),
     stats: {
       like_count: 395,
       read_count: 94532,
       comment_count: 13
     },
-    tags: [mockTags[2], mockTags[6], mockTags[1]],
+    tags: [MOCK_TAGS[2], MOCK_TAGS[6], MOCK_TAGS[1]],
     title: "Wanderlust Chronicles: Tales from Around the Globe",
-    user: mockUsers[6],
-    user_id: mockUsers[6].id,
+    user: MOCK_USERS[6],
+    user_id: MOCK_USERS[6].id,
     visibility: StoryVisibility.PUBLIC,
     word_count: 1239
   },
@@ -300,12 +314,13 @@ export const mockStories: Story[] = [
     doc_key: "",
     license: StoryLicense.RESERVED,
     preview_image: null,
+    first_published_at: "2022-05-18T01:07:02.000Z",
     published_at: "2021-09-04T01:07:02.000Z",
     seo_description: null,
     seo_title: null,
     slug: "beyond-the-stars-exploring-the-mysteries-of-deep-space",
     splash_hex: "455f75",
-    splash_id: getSplashId("d2YMQ-hZ3og"),
+    splash_id: get_splash_id("d2YMQ-hZ3og"),
     stats: {
       like_count: 210,
       read_count: 902349,
@@ -313,8 +328,8 @@ export const mockStories: Story[] = [
     },
     tags: [],
     title: "Beyond the Stars: Exploring the Mysteries of Deep Space",
-    user: mockUsers[7],
-    user_id: mockUsers[7].id,
+    user: MOCK_USERS[7],
+    user_id: MOCK_USERS[7].id,
     visibility: StoryVisibility.PUBLIC,
     word_count: 1342
   },
@@ -334,22 +349,23 @@ export const mockStories: Story[] = [
     doc_key: "",
     license: StoryLicense.RESERVED,
     preview_image: null,
+    first_published_at: "2022-05-18T01:07:02.000Z",
     published_at: "2022-07-13T01:07:02.000Z",
     seo_description: null,
     seo_title: null,
     slug: "the-search-for-extraterrestrial-life-are-we-alone-in-the-universe",
     splash_hex: "71b343",
-    splash_id: getSplashId("HWQXIYbs8PM"),
+    splash_id: get_splash_id("HWQXIYbs8PM"),
     stats: {
       like_count: 109,
       read_count: 93592,
       comment_count: 1023
     },
-    tags: [mockTags[7]],
+    tags: [MOCK_TAGS[7]],
     title:
       "The Search for Extraterrestrial Life: Are We Alone in the Universe?",
-    user: mockUsers[8],
-    user_id: mockUsers[8].id,
+    user: MOCK_USERS[8],
+    user_id: MOCK_USERS[8].id,
     visibility: StoryVisibility.PUBLIC,
     word_count: 3540
   },
@@ -369,21 +385,22 @@ export const mockStories: Story[] = [
     doc_key: "",
     license: StoryLicense.RESERVED,
     preview_image: null,
+    first_published_at: "2022-05-18T01:07:02.000Z",
     published_at: "2021-08-08T01:07:02.000Z",
     seo_description: null,
     seo_title: null,
     slug: "unusual-travel-tales-strange-adventures-and-bizarre-encounters",
     splash_hex: "191d24",
-    splash_id: getSplashId("uKJ56vo9k3U"),
+    splash_id: get_splash_id("uKJ56vo9k3U"),
     stats: {
       like_count: 3495,
       read_count: 924915,
       comment_count: 910
     },
-    tags: [mockTags[1], mockTags[8]],
+    tags: [MOCK_TAGS[1], MOCK_TAGS[8]],
     title: "Unusual Travel Tales: Strange Adventures and Bizarre Encounters",
-    user: mockUsers[9],
-    user_id: mockUsers[9].id,
+    user: MOCK_USERS[9],
+    user_id: MOCK_USERS[9].id,
     visibility: StoryVisibility.PUBLIC,
     word_count: 992
   }

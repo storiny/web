@@ -2,12 +2,16 @@ import { IncomingFriendRequest } from "@storiny/shared";
 import { clsx } from "clsx";
 import React from "react";
 
-import Form, { SubmitHandler, useForm, zodResolver } from "~/components/Form";
-import FormRadio from "~/components/FormRadio";
-import FormRadioGroup from "~/components/FormRadioGroup";
-import Spacer from "~/components/Spacer";
-import { useToast } from "~/components/Toast";
-import Typography from "~/components/Typography";
+import Form, {
+  SubmitHandler,
+  use_form,
+  zod_resolver
+} from "../../../../../../../../../../../../../../packages/ui/src/components/form";
+import FormRadio from "../../../../../../../../../../../../../../packages/ui/src/components/form-radio";
+import FormRadioGroup from "../../../../../../../../../../../../../../packages/ui/src/components/form-radio-group";
+import Spacer from "../../../../../../../../../../../../../../packages/ui/src/components/spacer";
+import { use_toast } from "../../../../../../../../../../../../../../packages/ui/src/components/toast";
+import Typography from "../../../../../../../../../../../../../../packages/ui/src/components/typography";
 import { use_incoming_friend_requests_mutation } from "~/redux/features";
 
 import styles from "../site-safety.module.scss";
@@ -18,13 +22,13 @@ import {
 } from "./friend-requests.schema";
 
 const FriendRequests = ({
-  onSubmit,
+  on_submit,
   incoming_friend_requests
 }: FriendRequestsProps): React.ReactElement => {
-  const toast = useToast();
+  const toast = use_toast();
   const prevValuesRef = React.useRef<FriendRequestsSchema>();
-  const form = useForm<FriendRequestsSchema>({
-    resolver: zodResolver(friendRequestsSchema),
+  const form = use_form<FriendRequestsSchema>({
+    resolver: zod_resolver(friendRequestsSchema),
     defaultValues: {
       "friend-requests": `${incoming_friend_requests}` as `${1 | 2 | 3 | 4}`
     }
@@ -33,8 +37,8 @@ const FriendRequests = ({
     use_incoming_friend_requests_mutation();
 
   const handleSubmit: SubmitHandler<FriendRequestsSchema> = (values) => {
-    if (onSubmit) {
-      onSubmit(values);
+    if (on_submit) {
+      on_submit(values);
     } else {
       mutateIncomingFriendRequests(values)
         .unwrap()
@@ -62,11 +66,11 @@ const FriendRequests = ({
       <Form<FriendRequestsSchema>
         className={clsx("flex-col", styles.x, styles.form)}
         disabled={isLoading}
-        onSubmit={handleSubmit}
-        providerProps={form}
+        on_submit={handleSubmit}
+        provider_props={form}
       >
         <FormRadioGroup
-          autoSize
+          auto_size
           className={clsx(styles.x, styles["radio-group"])}
           name={"friend-requests"}
           onValueChange={(): void => {

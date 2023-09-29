@@ -1,0 +1,108 @@
+@use "breakpoints";
+
+.viewport {
+  --viewport-padding: 24px;
+
+  position: fixed;
+  bottom: var(--global-bottom-gutter, 0);
+  right: 0;
+  display: flex;
+  padding: var(--viewport-padding);
+  margin: 0;
+  list-style: none;
+  z-index: var(--z-index-toast);
+  outline: none;
+
+  @include breakpoints.media("<=mobile") {
+    width: 100%;
+  }
+}
+
+.notification {
+  background-color: var(--bg-elevation-sm);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--ridge-md), var(--shadow-md);
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+
+  @include breakpoints.media("<=mobile") {
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+  }
+}
+
+.decorator {
+  --icon-size: 22px;
+  --fg: var(--fg-minor);
+
+  padding: 4px;
+  display: inline-flex;
+}
+
+.description {
+  padding: 8px 12px;
+  margin-right: 4px;
+  gap: var(--spacing);
+  flex-grow: 1;
+  max-width: 250px;
+  overflow-wrap: anywhere;
+  color: var(--fg-major);
+  font-size: var(--font-size-xs);
+  line-height: var(--line-height-xs);
+
+  @include breakpoints.media("<=mobile") {
+    margin: 12px 8px;
+    max-width: 100%;
+  }
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+  @include breakpoints.media("<=mobile") {
+    flex-direction: row;
+    width: 100%;
+    height: 32px;
+  }
+}
+
+.button {
+  flex-grow: 1;
+  height: 100%;
+  min-height: 31.5px;
+  padding: 0 12px;
+  cursor: pointer;
+  color: var(--fg-major);
+  font-family: var(--font-secondary);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-xs);
+
+  &:hover {
+    background-color: var(--bg-elevation-lg);
+  }
+
+  &:first-of-type {
+    border-top-right-radius: var(--radius-lg);
+  }
+
+  &:last-of-type {
+    border-bottom-right-radius: var(--radius-lg);
+  }
+
+  @include breakpoints.media("<=mobile") {
+    min-height: initial;
+
+    &:first-of-type {
+      border-bottom-left-radius: var(--radius-lg);
+    }
+
+    &:last-of-type {
+      border-bottom-right-radius: var(--radius-lg);
+    }
+  }
+}

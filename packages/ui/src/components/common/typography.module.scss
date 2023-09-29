@@ -1,0 +1,9 @@
+.ellipsis {
+  display: table;
+  table-layout: fixed;
+  width: 100%;
+}
+
+.ellipsis-child {
+  display: table-cell;
+}

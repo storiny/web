@@ -2,7 +2,7 @@ import "./favourite";
 import "./alt";
 import "./rating";
 
-import { mockAssets } from "@storiny/ui/src/mocks";
+import { MOCK_ASSETS } from "@storiny/ui/src/mocks";
 import { nanoid } from "nanoid";
 
 const { worker, rest } = window.msw;
@@ -11,7 +11,7 @@ worker.use(
   rest.post(
     `${process.env.NEXT_PUBLIC_API_URL}/v1/me/assets`,
     (req, res, ctx) =>
-      res(ctx.delay(3400), ctx.status(201), ctx.json(mockAssets[0]))
+      res(ctx.delay(3400), ctx.status(201), ctx.json(MOCK_ASSETS[0]))
   )
 );
 
@@ -20,7 +20,7 @@ worker.use(
     res(
       ctx.delay(1200),
       ctx.json(
-        mockAssets.slice(0, 15).map((asset) => ({ ...asset, id: nanoid() }))
+        MOCK_ASSETS.slice(0, 15).map((asset) => ({ ...asset, id: nanoid() }))
       )
     )
   )

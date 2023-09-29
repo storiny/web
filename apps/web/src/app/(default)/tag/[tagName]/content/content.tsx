@@ -3,17 +3,17 @@ import NextLink from "next/link";
 import React from "react";
 
 import { GetTagResponse } from "~/common/grpc";
-import Button from "~/components/Button";
-import Grow from "~/components/Grow";
-import Spacer from "~/components/Spacer";
-import Typography from "~/components/Typography";
+import Button from "../../../../../../../../packages/ui/src/components/button";
+import Grow from "../../../../../../../../packages/ui/src/components/grow";
+import Spacer from "../../../../../../../../packages/ui/src/components/spacer";
+import Typography from "../../../../../../../../packages/ui/src/components/typography";
 import CheckIcon from "~/icons/Check";
 import PencilPlusIcon from "~/icons/PencilPlus";
 import PlusIcon from "~/icons/Plus";
 import TagIcon from "~/icons/Tag";
 import { boolean_action, setFollowedTag } from "~/redux/features";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
-import { abbreviateNumber } from "~/utils/abbreviateNumber";
+import { abbreviate_number } from "../../../../../../../../packages/ui/src/utils/abbreviate-number";
 
 import TagActions from "../actions";
 import styles from "./content.module.scss";
@@ -39,7 +39,7 @@ const Actions = ({ tag }: Props): React.ReactElement => {
   return (
     <div className={clsx("flex", styles.x, styles.actions)}>
       <Button
-        checkAuth
+        check_auth
         decorator={isFollowing ? <CheckIcon /> : <PlusIcon />}
         onClick={(): void => {
           dispatch(boolean_action("followed_tags", tag.id));
@@ -51,7 +51,7 @@ const Actions = ({ tag }: Props): React.ReactElement => {
       </Button>
       <Button
         as={NextLink}
-        checkAuth
+        check_auth
         decorator={<PencilPlusIcon />}
         href={`/new?tag=${tag.name}`}
         size={"lg"}
@@ -74,13 +74,13 @@ const SuspendedTagContent = ({ tag }: Props): React.ReactElement => (
     <div className={clsx("flex", styles.x, styles.stats)}>
       <Typography className={clsx("t-medium", "t-minor")} level={"body2"}>
         <span className={clsx("t-bold", "t-major")}>
-          {abbreviateNumber(tag.story_count)}
+          {abbreviate_number(tag.story_count)}
         </span>{" "}
         {tag.story_count === 1 ? "story" : "stories"}
       </Typography>
       <Typography className={clsx("t-medium", "t-minor")} level={"body2"}>
         <span className={clsx("t-bold", "t-major")}>
-          {abbreviateNumber(tag.follower_count)}
+          {abbreviate_number(tag.follower_count)}
         </span>{" "}
         {tag.follower_count === 1 ? "follower" : "followers"}
       </Typography>

@@ -1,7 +1,7 @@
 import React from "react";
 
-import LeftSidebar from "~/layout/LeftSidebar";
-import SplashScreen from "~/layout/SplashScreen";
+import LeftSidebar from "../../../../../../packages/ui/src/layout/left-sidebar";
+import SplashScreen from "../../../../../../packages/ui/src/layout/splash-screen";
 
 import RightSidebar from "./right-sidebar";
 

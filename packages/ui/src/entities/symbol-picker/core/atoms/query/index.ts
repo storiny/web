@@ -1,3 +1,3 @@
 import { atom } from "jotai";
 
-export const symbolQueryAtom = atom<string>("");
+export const symbol_query_atom = atom<string>("");

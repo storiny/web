@@ -1,6 +1,6 @@
 import React from "react";
 
-import Tooltip from "~/components/Tooltip";
+import Tooltip from "../../../../../../../../../ui/src/components/tooltip";
 import CodeBlockIcon from "~/icons/CodeBlock";
 
 import InsertItem from "../insert-item";

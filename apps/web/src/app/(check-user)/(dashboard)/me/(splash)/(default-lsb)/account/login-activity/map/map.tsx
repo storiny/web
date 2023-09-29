@@ -4,9 +4,9 @@ import { clsx } from "clsx";
 import { Map as MapImpl, Marker } from "maplibre-gl";
 import React from "react";
 
-import AspectRatio from "~/components/AspectRatio";
-import Link from "~/components/Link";
-import Typography from "~/components/Typography";
+import AspectRatio from "../../../../../../../../../../../../packages/ui/src/components/aspect-ratio";
+import Link from "../../../../../../../../../../../../packages/ui/src/components/link";
+import Typography from "../../../../../../../../../../../../packages/ui/src/components/typography";
 
 import styles from "./map.module.scss";
 import { MapProps } from "./map.props";
@@ -59,7 +59,7 @@ const Map = (props: MapProps): React.ReactElement => {
         >
           ©{" "}
           <Link
-            fixedColor
+            fixed_color
             href={"https://www.openstreetmap.org/copyright"}
             target={"_blank"}
           >
@@ -68,7 +68,7 @@ const Map = (props: MapProps): React.ReactElement => {
           <br />
           Map by{" "}
           <Link
-            fixedColor
+            fixed_color
             href={"http://www.openstreetmap.fr/mentions-legales/"}
             target={"_blank"}
           >

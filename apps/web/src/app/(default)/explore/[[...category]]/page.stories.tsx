@@ -31,7 +31,7 @@ export const Default: Story = {
             <Story />
           </ExploreLayout>
         </DefaultLayout>,
-        { ignorePrimitiveProviders: true }
+        { ignore_primitive_providers: true }
       )
   ]
 };

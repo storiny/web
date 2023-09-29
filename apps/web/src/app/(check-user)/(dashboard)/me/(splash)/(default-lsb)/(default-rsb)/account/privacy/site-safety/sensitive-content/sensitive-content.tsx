@@ -1,11 +1,15 @@
 import { clsx } from "clsx";
 import React from "react";
 
-import Form, { SubmitHandler, useForm, zodResolver } from "~/components/Form";
-import FormSwitch from "~/components/FormSwitch";
-import Spacer from "~/components/Spacer";
-import { useToast } from "~/components/Toast";
-import Typography from "~/components/Typography";
+import Form, {
+  SubmitHandler,
+  use_form,
+  zod_resolver
+} from "../../../../../../../../../../../../../../packages/ui/src/components/form";
+import FormSwitch from "../../../../../../../../../../../../../../packages/ui/src/components/form-switch";
+import Spacer from "../../../../../../../../../../../../../../packages/ui/src/components/spacer";
+import { use_toast } from "../../../../../../../../../../../../../../packages/ui/src/components/toast";
+import Typography from "../../../../../../../../../../../../../../packages/ui/src/components/typography";
 import { use_sensitive_content_mutation } from "~/redux/features";
 
 import styles from "../site-safety.module.scss";
@@ -16,13 +20,13 @@ import {
 } from "./sensitive-content.schema";
 
 const SensitiveContent = ({
-  onSubmit,
+  on_submit,
   allow_sensitive_media
 }: SensitiveContentProps): React.ReactElement => {
-  const toast = useToast();
+  const toast = use_toast();
   const prevValuesRef = React.useRef<SensitiveContentSchema>();
-  const form = useForm<SensitiveContentSchema>({
-    resolver: zodResolver(sensitiveContentSchema),
+  const form = use_form<SensitiveContentSchema>({
+    resolver: zod_resolver(sensitiveContentSchema),
     defaultValues: {
       "sensitive-content": allow_sensitive_media
     }
@@ -31,8 +35,8 @@ const SensitiveContent = ({
     use_sensitive_content_mutation();
 
   const handleSubmit: SubmitHandler<SensitiveContentSchema> = (values) => {
-    if (onSubmit) {
-      onSubmit(values);
+    if (on_submit) {
+      on_submit(values);
     } else {
       mutateSensitiveContent(values)
         .unwrap()
@@ -56,11 +60,11 @@ const SensitiveContent = ({
       <Form<SensitiveContentSchema>
         className={clsx("flex-col", styles.x, styles.form)}
         disabled={isLoading}
-        onSubmit={handleSubmit}
-        providerProps={form}
+        on_submit={handleSubmit}
+        provider_props={form}
       >
         <FormSwitch
-          helperText={
+          helper_text={
             <React.Fragment>
               Allow images and other media containing suggestive nudity,
               violence, or sensitive content to be displayed in stories without

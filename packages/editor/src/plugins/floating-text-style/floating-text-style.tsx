@@ -15,8 +15,8 @@ import {
 import React from "react";
 import { createPortal } from "react-dom";
 
-import ToggleGroup from "~/components/ToggleGroup";
-import ToggleGroupItem from "~/components/ToggleGroupItem";
+import ToggleGroup from "../../../../ui/src/components/toggle-group";
+import ToggleGroupItem from "../../../../ui/src/components/toggle-group-item";
 import BoldIcon from "~/icons/Bold";
 import ItalicIcon from "~/icons/Italic";
 import LinkIcon from "~/icons/Link";
@@ -170,10 +170,10 @@ const FloatingTextStylePopover = (): React.ReactElement => {
         onClick={toggleBold}
         slot_props={{
           tooltip: {
-            rightSlot: getShortcutLabel(EDITOR_SHORTCUTS.bold)
+            right_slot: getShortcutLabel(EDITOR_SHORTCUTS.bold)
           }
         }}
-        tooltipContent={"Bold"}
+        tooltip_content={"Bold"}
         value={"bold"}
       >
         <BoldIcon />
@@ -184,10 +184,10 @@ const FloatingTextStylePopover = (): React.ReactElement => {
         onClick={toggleItalic}
         slot_props={{
           tooltip: {
-            rightSlot: getShortcutLabel(EDITOR_SHORTCUTS.italic)
+            right_slot: getShortcutLabel(EDITOR_SHORTCUTS.italic)
           }
         }}
-        tooltipContent={"Italic"}
+        tooltip_content={"Italic"}
         value={"italic"}
       >
         <ItalicIcon />
@@ -198,10 +198,10 @@ const FloatingTextStylePopover = (): React.ReactElement => {
         onClick={toggleUnderline}
         slot_props={{
           tooltip: {
-            rightSlot: getShortcutLabel(EDITOR_SHORTCUTS.underline)
+            right_slot: getShortcutLabel(EDITOR_SHORTCUTS.underline)
           }
         }}
-        tooltipContent={"Underline"}
+        tooltip_content={"Underline"}
         value={"underline"}
       >
         <UnderlineIcon />
@@ -212,10 +212,10 @@ const FloatingTextStylePopover = (): React.ReactElement => {
         onClick={(): void => insertLink()}
         slot_props={{
           tooltip: {
-            rightSlot: getShortcutLabel(EDITOR_SHORTCUTS.link)
+            right_slot: getShortcutLabel(EDITOR_SHORTCUTS.link)
           }
         }}
-        tooltipContent={"Link"}
+        tooltip_content={"Link"}
         value={"link"}
       >
         <LinkIcon />
@@ -228,7 +228,7 @@ const FloatingTextStylePopover = (): React.ReactElement => {
 const FloatingTextStylePlugin = (): React.ReactElement | null => {
   const [editor] = useLexicalComposerContext();
   const [isText, setIsText] = React.useState(false);
-  const link = useAtomValue(linkAtom);
+  const link = use_atom_value(linkAtom);
 
   /**
    * Updates the popover props

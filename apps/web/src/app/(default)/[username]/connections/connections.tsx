@@ -2,7 +2,7 @@ import { clsx } from "clsx";
 import React from "react";
 
 import { GetProfileResponse } from "~/common/grpc";
-import IconButton from "~/components/IconButton";
+import IconButton from "../../../../../../../packages/ui/src/components/icon-button";
 
 import styles from "./connections.module.scss";
 

@@ -1,6 +1,6 @@
 import React from "react";
 
-import MenubarItem from "~/components/MenubarItem";
+import MenubarItem from "../../../../../../../../ui/src/components/menubar-item";
 import Gallery from "~/entities/gallery";
 import ImageIcon from "~/icons/Image";
 
@@ -14,7 +14,7 @@ const ImageMenubarItem = ({
   const [insertImage] = useInsertImage();
   return (
     <Gallery
-      onConfirm={(image): void =>
+      on_confirm={(image): void =>
         insertImage({
           images: [
             {

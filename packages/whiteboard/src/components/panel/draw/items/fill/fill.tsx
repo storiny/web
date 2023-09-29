@@ -2,14 +2,14 @@ import { clsx } from "clsx";
 import { BaseFabricObject } from "fabric";
 import React from "react";
 
-import Input from "~/components/Input";
-import Option from "~/components/Option";
-import Select from "~/components/Select";
+import Input from "../../../../../../../ui/src/components/input";
+import Option from "../../../../../../../ui/src/components/option";
+import Select from "../../../../../../../ui/src/components/select";
 import ColorPicker, {
-  hexToRgb,
-  strToColor,
+  hex_to_rgb,
+  str_to_color,
   TColor
-} from "~/entities/ColorPicker";
+} from "../../../../../../../ui/src/entities/color-picker";
 import CrossHatchFillIcon from "~/icons/CrossHatchFill";
 import DashedFillIcon from "~/icons/DashedFill";
 import DottedFillIcon from "~/icons/DottedFill";
@@ -29,7 +29,7 @@ import {
 import { useActiveObject } from "../../../../../hooks";
 import { modifyObject } from "../../../../../utils";
 import DrawItem, { DrawItemRow } from "../../item";
-import commonStyles from "../common.module.scss";
+import common_styles from "../common.module.scss";
 
 // Fill
 
@@ -39,7 +39,7 @@ const FillControl = ({
   activeObject: BaseFabricObject;
 }): React.ReactElement => {
   const [fill, setFill] = React.useState<TColor>(
-    strToColor((activeObject?.fill as string) || DEFAULT_LAYER_COLOR)!
+    str_to_color((activeObject?.fill as string) || DEFAULT_LAYER_COLOR)!
   );
   const [value, setValue] = React.useState(`#${fill.hex}`);
 
@@ -64,7 +64,9 @@ const FillControl = ({
   }, [fill]);
 
   React.useEffect(() => {
-    setFill(strToColor((activeObject?.fill as string) || DEFAULT_LAYER_COLOR)!);
+    setFill(
+      str_to_color((activeObject?.fill as string) || DEFAULT_LAYER_COLOR)!
+    );
   }, [activeObject?.fill]);
 
   return (
@@ -81,7 +83,7 @@ const FillControl = ({
               className={clsx(
                 "focusable",
                 "focus-invert",
-                commonStyles.indicator
+                common_styles.indicator
               )}
               style={
                 {
@@ -95,7 +97,7 @@ const FillControl = ({
         monospaced
         onChange={(event): void => {
           setValue(event.target.value);
-          const newColor = strToColor(event.target.value);
+          const newColor = str_to_color(event.target.value);
 
           if (newColor) {
             changeFill(newColor);
@@ -120,7 +122,7 @@ const FillControl = ({
         monospaced
         onChange={(event): void => {
           const a = Number.parseInt(event.target.value) || 0;
-          const { r, g, b } = hexToRgb(fill.hex);
+          const { r, g, b } = hex_to_rgb(fill.hex);
 
           changeFill({
             ...fill,

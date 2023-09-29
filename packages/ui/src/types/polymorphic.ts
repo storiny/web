@@ -21,18 +21,19 @@ export type OmitCommonProps<
   Target,
   "transition" | "as" | "color" | "translate" | OmitAdditionalProps
 > & {
+  // eslint-disable-next-line prefer-snakecase/prefer-snakecase
   htmlTranslate?: "yes" | "no" | undefined;
 };
 
 export type RightJoinProps<
-  SourceProps extends object = {},
-  OverrideProps extends object = {}
+  SourceProps extends object = object,
+  OverrideProps extends object = object
 > = OmitCommonProps<SourceProps, keyof OverrideProps> & OverrideProps;
 
 export type MergeWithAs<
   ComponentProps extends object,
   AsProps extends object,
-  AdditionalProps extends object = {},
+  AdditionalProps extends object = object,
   AsComponent extends As = As
 > = (
   | RightJoinProps<ComponentProps, AdditionalProps>
@@ -41,7 +42,11 @@ export type MergeWithAs<
   as?: AsComponent;
 };
 
-export type ComponentWithAs<Component extends As, Props extends object = {}> = {
+/* eslint-disable prefer-snakecase/prefer-snakecase */
+export type ComponentWithAs<
+  Component extends As,
+  Props extends object = object
+> = {
   <AsComponent extends As = Component>(
     props: MergeWithAs<
       React.ComponentProps<Component>,
@@ -56,9 +61,12 @@ export type ComponentWithAs<Component extends As, Props extends object = {}> = {
   id?: string;
   propTypes?: React.WeakValidationMap<any>;
 };
+/* eslint-enable prefer-snakecase/prefer-snakecase */
 
-export interface PolymorphicComponent<T extends As, P extends object = {}>
-  extends ComponentWithAs<T, P> {}
+export type PolymorphicComponent<
+  T extends As,
+  P extends object = object
+> = ComponentWithAs<T, P>;
 
 export type PolymorphicProps<T extends As> = Omit<PropsOf<T>, "ref"> & {
   /*

@@ -5,16 +5,16 @@
 import { clsx } from "clsx";
 import React from "react";
 
-import Divider from "~/components/Divider";
-import Link from "~/components/Link";
-import NoSsr from "~/components/NoSsr";
-import Spacer from "~/components/Spacer";
-import Typography from "~/components/Typography";
-import { useMediaQuery } from "~/hooks/useMediaQuery";
-import { breakpoints } from "~/theme/breakpoints";
+import Divider from "../../../../../../../../packages/ui/src/components/divider";
+import Link from "../../../../../../../../packages/ui/src/components/link";
+import NoSsr from "../../../../../../../../packages/ui/src/components/no-ssr";
+import Spacer from "../../../../../../../../packages/ui/src/components/spacer";
+import Typography from "../../../../../../../../packages/ui/src/components/typography";
+import { use_media_query } from "../../../../../../../../packages/ui/src/hooks/use-media-query";
+import { BREAKPOINTS } from "~/theme/breakpoints";
 
 import pageStyles from "../../styles.module.scss";
-import commonStyles from "../common.module.scss";
+import common_styles from "../common.module.scss";
 
 const PrimaryTypeface = (): React.ReactElement => (
   <div className={clsx("flex-col", pageStyles.x, pageStyles["sub-section"])}>
@@ -30,8 +30,8 @@ const PrimaryTypeface = (): React.ReactElement => (
         pageStyles.x,
         pageStyles.figure,
         pageStyles["with-background"],
-        commonStyles.x,
-        commonStyles["figure-with-caption"]
+        common_styles.x,
+        common_styles["figure-with-caption"]
       )}
     >
       <img
@@ -77,8 +77,8 @@ const PrimaryTypeface = (): React.ReactElement => (
       className={clsx(
         "flex-col",
         "t-center",
-        commonStyles.x,
-        commonStyles["figure-with-caption"]
+        common_styles.x,
+        common_styles["figure-with-caption"]
       )}
     >
       <div
@@ -112,8 +112,8 @@ const PrimaryTypeface = (): React.ReactElement => (
       className={clsx(
         "flex-col",
         "t-center",
-        commonStyles.x,
-        commonStyles["figure-with-caption"]
+        common_styles.x,
+        common_styles["figure-with-caption"]
       )}
     >
       <div
@@ -151,8 +151,8 @@ const PrimaryTypeface = (): React.ReactElement => (
       className={clsx(
         "flex-col",
         "t-center",
-        commonStyles.x,
-        commonStyles["figure-with-caption"]
+        common_styles.x,
+        common_styles["figure-with-caption"]
       )}
     >
       <figure
@@ -190,9 +190,9 @@ const PrimaryTypeface = (): React.ReactElement => (
         "t-center",
         pageStyles.x,
         pageStyles.figure,
-        commonStyles.x,
-        commonStyles["figure-with-caption"],
-        commonStyles["image-with-border"]
+        common_styles.x,
+        common_styles["figure-with-caption"],
+        common_styles["image-with-border"]
       )}
     >
       <img
@@ -210,9 +210,9 @@ const PrimaryTypeface = (): React.ReactElement => (
         "t-center",
         pageStyles.x,
         pageStyles.figure,
-        commonStyles.x,
-        commonStyles["figure-with-caption"],
-        commonStyles["image-with-border"]
+        common_styles.x,
+        common_styles["figure-with-caption"],
+        common_styles["image-with-border"]
       )}
     >
       <img
@@ -275,8 +275,8 @@ const SecondaryTypeface = (): React.ReactElement => (
         pageStyles.x,
         pageStyles.figure,
         pageStyles["with-background"],
-        commonStyles.x,
-        commonStyles["figure-with-caption"]
+        common_styles.x,
+        common_styles["figure-with-caption"]
       )}
     >
       <img
@@ -339,7 +339,7 @@ const FallbackTypeface = (): React.ReactElement => (
 );
 
 const TypographySection = (): React.ReactElement => {
-  const isTablet = useMediaQuery(breakpoints.down("tablet"));
+  const isTablet = use_media_query(BREAKPOINTS.down("tablet"));
 
   return (
     <section className={clsx(pageStyles.x, pageStyles.section)}>

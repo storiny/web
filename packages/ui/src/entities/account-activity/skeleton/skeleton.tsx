@@ -1,16 +1,16 @@
 import clsx from "clsx";
 import React from "react";
 
-import Skeleton from "~/components/Skeleton";
-import Spacer from "~/components/Spacer";
-import { AccountActivitySkeletonProps } from "~/entities/account-activity/skeleton/skeleton.props";
+import Skeleton from "src/components/skeleton";
+import Spacer from "src/components/spacer";
+import { AccountActivitySkeletonProps } from "./skeleton.props";
 
 import styles from "../account-activity.module.scss";
 
 const AccountActivitySkeleton = (
   props: AccountActivitySkeletonProps
 ): React.ReactElement => {
-  const { hidePipe, className, ...rest } = props;
+  const { hide_pipe, className, ...rest } = props;
   return (
     <div
       {...rest}
@@ -18,7 +18,7 @@ const AccountActivitySkeleton = (
       className={clsx(
         "flex",
         styles["account-activity"],
-        hidePipe && styles["hide-pipe"],
+        hide_pipe && styles["hide-pipe"],
         className
       )}
       style={{ cursor: "progress" }}

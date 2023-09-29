@@ -1,25 +1,33 @@
-import { isTestEnv } from "@storiny/shared/src/utils/isTestEnv";
+import { is_test_env } from "../../../../../../../../../../../../../../packages/shared/src/utils/is-test-env";
 import { clsx } from "clsx";
 import { Provider, useAtom } from "jotai";
 import { useRouter } from "next/navigation";
 import React from "react";
 
-import Button from "~/components/Button";
-import Form, { SubmitHandler, useForm, zodResolver } from "~/components/Form";
-import FormInput from "~/components/FormInput";
-import FormNewPasswordInput from "~/components/FormNewPasswordInput";
-import Link from "~/components/Link";
-import { Description, ModalFooterButton, useModal } from "~/components/Modal";
-import Spacer from "~/components/Spacer";
-import { useToast } from "~/components/Toast";
-import Typography from "~/components/Typography";
-import { useMediaQuery } from "~/hooks/useMediaQuery";
+import Button from "../../../../../../../../../../../../../../packages/ui/src/components/button";
+import Form, {
+  SubmitHandler,
+  use_form,
+  zod_resolver
+} from "../../../../../../../../../../../../../../packages/ui/src/components/form";
+import FormInput from "../../../../../../../../../../../../../../packages/ui/src/components/form-input";
+import FormNewPasswordInput from "../../../../../../../../../../../../../../packages/ui/src/components/form-new-password-input";
+import Link from "../../../../../../../../../../../../../../packages/ui/src/components/link";
+import {
+  Description,
+  ModalFooterButton,
+  use_modal
+} from "../../../../../../../../../../../../../../packages/ui/src/components/modal";
+import Spacer from "../../../../../../../../../../../../../../packages/ui/src/components/spacer";
+import { use_toast } from "../../../../../../../../../../../../../../packages/ui/src/components/toast";
+import Typography from "../../../../../../../../../../../../../../packages/ui/src/components/typography";
+import { use_media_query } from "../../../../../../../../../../../../../../packages/ui/src/hooks/use-media-query";
 import PasswordIcon from "~/icons/Password";
 import {
   use_add_password_mutation,
   use_add_password_request_verification_mutation
 } from "~/redux/features";
-import { breakpoints } from "~/theme/breakpoints";
+import { BREAKPOINTS } from "~/theme/breakpoints";
 
 import { AddPasswordProps } from "./add-password.props";
 import {
@@ -42,7 +50,7 @@ const screenToMessageMap: Record<AddPasswordScreen, string> = {
 };
 
 const AddPasswordModal = (): React.ReactElement => {
-  const [screen, setScreen] = useAtom(addPasswordScreenAtom);
+  const [screen, setScreen] = use_atom(addPasswordScreenAtom);
   return (
     <React.Fragment>
       <Description asChild>
@@ -58,10 +66,10 @@ const AddPasswordModal = (): React.ReactElement => {
         <React.Fragment>
           <FormInput
             autoFocus
-            autoSize
+            auto_size
             data-testid={"verification-code-input"}
-            formSlotProps={{
-              formItem: {
+            form_slot_props={{
+              form_item: {
                 className: "f-grow"
               }
             }}
@@ -77,10 +85,10 @@ const AddPasswordModal = (): React.ReactElement => {
         <React.Fragment>
           <FormNewPasswordInput
             autoFocus
-            autoSize
+            auto_size
             data-testid={"new-password-input"}
-            formSlotProps={{
-              formItem: {
+            form_slot_props={{
+              form_item: {
                 className: "f-grow"
               }
             }}
@@ -106,13 +114,13 @@ const AddPasswordModal = (): React.ReactElement => {
   );
 };
 
-const Component = ({ onSubmit }: AddPasswordProps): React.ReactElement => {
+const Component = ({ on_submit }: AddPasswordProps): React.ReactElement => {
   const router = useRouter();
-  const toast = useToast();
-  const [screen, setScreen] = useAtom(addPasswordScreenAtom);
-  const isSmallerThanMobile = useMediaQuery(breakpoints.down("mobile"));
-  const form = useForm<AddPasswordSchema>({
-    resolver: zodResolver(addPasswordSchema),
+  const toast = use_toast();
+  const [screen, setScreen] = use_atom(addPasswordScreenAtom);
+  const is_smaller_than_mobile = use_media_query(BREAKPOINTS.down("mobile"));
+  const form = use_form<AddPasswordSchema>({
+    resolver: zod_resolver(addPasswordSchema),
     defaultValues: {
       "verification-code": "",
       "new-password": ""
@@ -129,7 +137,7 @@ const Component = ({ onSubmit }: AddPasswordProps): React.ReactElement => {
    * Requests verification code to be dispatched to the user's email
    */
   const requestVerification = (): void => {
-    if (isTestEnv()) {
+    if (is_test_env()) {
       setScreen("verification-code");
     } else {
       addPasswordRequestVerification()
@@ -145,8 +153,8 @@ const Component = ({ onSubmit }: AddPasswordProps): React.ReactElement => {
   };
 
   const handleSubmit: SubmitHandler<AddPasswordSchema> = (values) => {
-    if (onSubmit) {
-      onSubmit(values);
+    if (on_submit) {
+      on_submit(values);
     } else {
       addPassword(values)
         .unwrap()
@@ -166,13 +174,13 @@ const Component = ({ onSubmit }: AddPasswordProps): React.ReactElement => {
     }
   }, [form.formState.errors, setScreen]);
 
-  const [element] = useModal(
-    ({ openModal }) => (
+  const [element] = use_modal(
+    ({ open_modal }) => (
       <Button
-        autoSize
-        checkAuth
+        auto_size
+        check_auth
         className={"fit-w"}
-        onClick={openModal}
+        onClick={open_modal}
         variant={"hollow"}
       >
         Add a password
@@ -181,23 +189,26 @@ const Component = ({ onSubmit }: AddPasswordProps): React.ReactElement => {
     <Form<AddPasswordSchema>
       className={clsx("flex-col")}
       disabled={addPasswordLoading}
-      onSubmit={handleSubmit}
-      providerProps={form}
+      on_submit={handleSubmit}
+      provider_props={form}
     >
       <AddPasswordModal />
     </Form>,
     {
       onOpenChange: screen === "finish" ? (): void => undefined : undefined,
-      fullscreen: isSmallerThanMobile,
+      fullscreen: is_smaller_than_mobile,
       footer: (
         <>
           {screen !== "finish" && (
-            <ModalFooterButton compact={isSmallerThanMobile} variant={"ghost"}>
+            <ModalFooterButton
+              compact={is_smaller_than_mobile}
+              variant={"ghost"}
+            >
               Cancel
             </ModalFooterButton>
           )}
           <ModalFooterButton
-            compact={isSmallerThanMobile}
+            compact={is_smaller_than_mobile}
             disabled={screen === "password" && !form.formState.isDirty}
             loading={requestVerificationLoading || addPasswordLoading}
             onClick={(event): void => {
@@ -220,14 +231,14 @@ const Component = ({ onSubmit }: AddPasswordProps): React.ReactElement => {
       ),
       slot_props: {
         footer: {
-          compact: isSmallerThanMobile
+          compact: is_smaller_than_mobile
         },
         content: {
           style: {
-            width: isSmallerThanMobile ? "100%" : "350px"
+            width: is_smaller_than_mobile ? "100%" : "350px"
           }
         },
-        closeButton: {
+        close_button: {
           style: {
             display: screen === "finish" ? "none" : "flex"
           }

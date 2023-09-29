@@ -2,16 +2,16 @@ import { clsx } from "clsx";
 import { useAtomValue } from "jotai";
 import React from "react";
 
-import Divider from "~/components/Divider";
-import IconButton from "~/components/IconButton";
-import Menu from "~/components/Menu";
-import MenuCheckboxItem from "~/components/MenuCheckboxItem";
-import Option from "~/components/Option";
-import Select from "~/components/Select";
-import Spacer from "~/components/Spacer";
-import ToggleGroup from "~/components/ToggleGroup";
-import ToggleGroupItem from "~/components/ToggleGroupItem";
-import { useMediaQuery } from "~/hooks/useMediaQuery";
+import Divider from "../../../../../../ui/src/components/divider";
+import IconButton from "../../../../../../ui/src/components/icon-button";
+import Menu from "../../../../../../ui/src/components/menu";
+import MenuCheckboxItem from "../../../../../../ui/src/components/menu-checkbox-item";
+import Option from "../../../../../../ui/src/components/option";
+import Select from "../../../../../../ui/src/components/select";
+import Spacer from "../../../../../../ui/src/components/spacer";
+import ToggleGroup from "../../../../../../ui/src/components/toggle-group";
+import ToggleGroupItem from "../../../../../../ui/src/components/toggle-group-item";
+import { use_media_query } from "../../../../../../ui/src/hooks/use-media-query";
 import BoldIcon from "~/icons/Bold";
 import CodeIcon from "~/icons/Code";
 import DotsIcon from "~/icons/Dots";
@@ -21,7 +21,7 @@ import StrikethroughIcon from "~/icons/Strikethrough";
 import SubscriptIcon from "~/icons/Subscript";
 import SuperscriptIcon from "~/icons/Superscript";
 import UnderlineIcon from "~/icons/Underline";
-import { breakpoints } from "~/theme/breakpoints";
+import { BREAKPOINTS } from "~/theme/breakpoints";
 
 import { docStatusAtom } from "../../../../atoms";
 import {
@@ -56,7 +56,7 @@ const TextStyleOption = ({
 // Text style group
 
 const TextStyleGroup = (): React.ReactElement => {
-  const docStatus = useAtomValue(docStatusAtom);
+  const docStatus = use_atom_value(docStatusAtom);
   const [bold, toggleBold] = useBold();
   const [italic, toggleItalic] = useItalic();
   const [underline, toggleUnderline] = useUnderline();
@@ -93,7 +93,7 @@ const TextStyleGroup = (): React.ReactElement => {
           )}
           onClick={toggleBold}
           size={"lg"}
-          tooltipContent={"Bold"}
+          tooltip_content={"Bold"}
           value={"bold"}
         >
           <BoldIcon />
@@ -106,7 +106,7 @@ const TextStyleGroup = (): React.ReactElement => {
           )}
           onClick={toggleItalic}
           size={"lg"}
-          tooltipContent={"Italic"}
+          tooltip_content={"Italic"}
           value={"italic"}
         >
           <ItalicIcon />
@@ -119,7 +119,7 @@ const TextStyleGroup = (): React.ReactElement => {
           )}
           onClick={toggleUnderline}
           size={"lg"}
-          tooltipContent={"Underline"}
+          tooltip_content={"Underline"}
           value={"underline"}
         >
           <UnderlineIcon />
@@ -132,7 +132,7 @@ const TextStyleGroup = (): React.ReactElement => {
           )}
           onClick={(): void => insertLink()}
           size={"lg"}
-          tooltipContent={"Link"}
+          tooltip_content={"Link"}
           value={"link"}
         >
           <LinkIcon />
@@ -197,8 +197,8 @@ const TextStyleGroup = (): React.ReactElement => {
 // Text style select
 
 const TextStyleSelect = (): React.ReactElement => {
-  const isSmallerThanMobile = useMediaQuery(breakpoints.down("mobile"));
-  const docStatus = useAtomValue(docStatusAtom);
+  const is_smaller_than_mobile = use_media_query(BREAKPOINTS.down("mobile"));
+  const docStatus = use_atom_value(docStatusAtom);
   const {
     formatNumberedList,
     formatBulletedList,
@@ -260,10 +260,10 @@ const TextStyleSelect = (): React.ReactElement => {
         }
       }}
       value={textStyle}
-      valueChildren={
+      value_children={
         <span className={"flex-center"}>
           {textStyleToIconMap[textStyle]}
-          {!isSmallerThanMobile && (
+          {!is_smaller_than_mobile && (
             <React.Fragment>
               <Spacer />
               {textStyleToLabelMap[textStyle]}

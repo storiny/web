@@ -1,17 +1,25 @@
 import { clsx } from "clsx";
 import React from "react";
 
-import Button from "~/components/Button";
-import Form, { SubmitHandler, useForm, zodResolver } from "~/components/Form";
-import FormInput from "~/components/FormInput";
-import { Description, ModalFooterButton, useModal } from "~/components/Modal";
-import Spacer from "~/components/Spacer";
-import { useToast } from "~/components/Toast";
-import Typography from "~/components/Typography";
-import { useMediaQuery } from "~/hooks/useMediaQuery";
+import Button from "../../../../../../../../../../../../../../packages/ui/src/components/button";
+import Form, {
+  SubmitHandler,
+  use_form,
+  zod_resolver
+} from "../../../../../../../../../../../../../../packages/ui/src/components/form";
+import FormInput from "../../../../../../../../../../../../../../packages/ui/src/components/form-input";
+import {
+  Description,
+  ModalFooterButton,
+  use_modal
+} from "../../../../../../../../../../../../../../packages/ui/src/components/modal";
+import Spacer from "../../../../../../../../../../../../../../packages/ui/src/components/spacer";
+import { use_toast } from "../../../../../../../../../../../../../../packages/ui/src/components/toast";
+import Typography from "../../../../../../../../../../../../../../packages/ui/src/components/typography";
+import { use_media_query } from "../../../../../../../../../../../../../../packages/ui/src/hooks/use-media-query";
 import TwoFAIcon from "~/icons/TwoFA";
 import { use_remove_mfa_mutation } from "~/redux/features";
-import { breakpoints } from "~/theme/breakpoints";
+import { BREAKPOINTS } from "~/theme/breakpoints";
 
 import { Remove2FAProps } from "./remove-2fa.props";
 import {
@@ -34,10 +42,10 @@ const Remove2FAModal = (): React.ReactElement => (
     <FormInput
       autoComplete={"one-time-code"}
       autoFocus
-      autoSize
+      auto_size
       data-testid={"code-input"}
-      formSlotProps={{
-        formItem: {
+      form_slot_props={{
+        form_item: {
           className: "f-grow"
         }
       }}
@@ -53,13 +61,13 @@ const Remove2FAModal = (): React.ReactElement => (
 );
 
 const Remove2FA = ({
-  onSubmit,
+  on_submit,
   setEnabled
 }: Remove2FAProps): React.ReactElement => {
-  const toast = useToast();
-  const isSmallerThanMobile = useMediaQuery(breakpoints.down("mobile"));
-  const form = useForm<Remove2FASchema>({
-    resolver: zodResolver(remove2faSchema),
+  const toast = use_toast();
+  const is_smaller_than_mobile = use_media_query(BREAKPOINTS.down("mobile"));
+  const form = use_form<Remove2FASchema>({
+    resolver: zod_resolver(remove2faSchema),
     defaultValues: {
       code: ""
     }
@@ -67,8 +75,8 @@ const Remove2FA = ({
   const [removeMfa, { isLoading }] = use_remove_mfa_mutation();
 
   const handleSubmit: SubmitHandler<Remove2FASchema> = (values) => {
-    if (onSubmit) {
-      onSubmit(values);
+    if (on_submit) {
+      on_submit(values);
     } else {
       removeMfa(values)
         .unwrap()
@@ -85,14 +93,14 @@ const Remove2FA = ({
     }
   };
 
-  const [element] = useModal(
-    ({ openModal }) => (
+  const [element] = use_modal(
+    ({ open_modal }) => (
       <Button
-        autoSize
-        checkAuth
+        auto_size
+        check_auth
         className={"fit-w"}
         color={"ruby"}
-        onClick={openModal}
+        onClick={open_modal}
         variant={"hollow"}
       >
         Remove 2FA
@@ -101,21 +109,21 @@ const Remove2FA = ({
     <Form<Remove2FASchema>
       className={clsx("flex-col")}
       disabled={isLoading}
-      onSubmit={handleSubmit}
-      providerProps={form}
+      on_submit={handleSubmit}
+      provider_props={form}
     >
       <Remove2FAModal />
     </Form>,
     {
-      fullscreen: isSmallerThanMobile,
+      fullscreen: is_smaller_than_mobile,
       footer: (
         <>
-          <ModalFooterButton compact={isSmallerThanMobile} variant={"ghost"}>
+          <ModalFooterButton compact={is_smaller_than_mobile} variant={"ghost"}>
             Cancel
           </ModalFooterButton>
           <ModalFooterButton
             color={"ruby"}
-            compact={isSmallerThanMobile}
+            compact={is_smaller_than_mobile}
             disabled={!form.formState.isDirty}
             loading={isLoading}
             onClick={(event): void => {
@@ -129,11 +137,11 @@ const Remove2FA = ({
       ),
       slot_props: {
         footer: {
-          compact: isSmallerThanMobile
+          compact: is_smaller_than_mobile
         },
         content: {
           style: {
-            width: isSmallerThanMobile ? "100%" : "350px"
+            width: is_smaller_than_mobile ? "100%" : "350px"
           }
         },
         header: {

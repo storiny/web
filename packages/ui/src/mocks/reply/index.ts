@@ -1,28 +1,28 @@
 import { Reply } from "@storiny/types";
 
-import { mockComments, testComment } from "../comment";
-import { mockUsers, testUser } from "../user";
+import { MOCK_COMMENTS, TEST_COMMENT } from "../comment";
+import { MOCK_USERS, TEST_USER } from "../user";
 
-export const testReply: Reply = {
+export const TEST_REPLY: Reply = {
   rendered_content: "<p>Reply content</p>",
   content: "Reply content",
   created_at: "2022-05-18T01:07:02.000Z",
   id: "0",
   like_count: 1,
-  user_id: testUser.id,
-  comment_id: testComment.id,
-  user: testUser,
-  comment: testComment,
+  user_id: TEST_USER.id,
+  comment_id: TEST_COMMENT.id,
+  user: TEST_USER,
+  comment: TEST_COMMENT,
   edited_at: null,
   hidden: false
 };
 
-export const mockReplies: Reply[] = [
+export const MOCK_REPLIES: Reply[] = [
   {
-    user: mockUsers[0],
-    user_id: mockUsers[0].id,
-    comment_id: mockComments[0].id,
-    comment: mockComments[0],
+    user: MOCK_USERS[0],
+    user_id: MOCK_USERS[0].id,
+    comment_id: MOCK_COMMENTS[0].id,
+    comment: MOCK_COMMENTS[0],
     like_count: 1230,
     content: "Reply content",
     rendered_content: "<p>Reply content</p>",
@@ -32,10 +32,10 @@ export const mockReplies: Reply[] = [
     hidden: false
   },
   {
-    user: mockUsers[1],
-    user_id: mockUsers[1].id,
-    comment_id: mockComments[1].id,
-    comment: mockComments[1],
+    user: MOCK_USERS[1],
+    user_id: MOCK_USERS[1].id,
+    comment_id: MOCK_COMMENTS[1].id,
+    comment: MOCK_COMMENTS[1],
     like_count: 9923,
     content: "Reply content",
     rendered_content: "<p>Reply content</p>",
@@ -45,10 +45,10 @@ export const mockReplies: Reply[] = [
     hidden: false
   },
   {
-    user: mockUsers[2],
-    user_id: mockUsers[2].id,
-    comment_id: mockComments[2].id,
-    comment: mockComments[2],
+    user: MOCK_USERS[2],
+    user_id: MOCK_USERS[2].id,
+    comment_id: MOCK_COMMENTS[2].id,
+    comment: MOCK_COMMENTS[2],
     like_count: 0,
     content: "Reply content",
     rendered_content: "<p>Reply content</p>",
@@ -58,10 +58,10 @@ export const mockReplies: Reply[] = [
     hidden: true
   },
   {
-    user: mockUsers[3],
-    user_id: mockUsers[3].id,
-    comment_id: mockComments[3].id,
-    comment: mockComments[3],
+    user: MOCK_USERS[3],
+    user_id: MOCK_USERS[3].id,
+    comment_id: MOCK_COMMENTS[3].id,
+    comment: MOCK_COMMENTS[3],
     like_count: 239,
     content: "Reply content",
     rendered_content: "<p>Reply content</p>",
@@ -71,10 +71,10 @@ export const mockReplies: Reply[] = [
     hidden: false
   },
   {
-    user: mockUsers[4],
-    user_id: mockUsers[4].id,
-    comment_id: mockComments[4].id,
-    comment: mockComments[4],
+    user: MOCK_USERS[4],
+    user_id: MOCK_USERS[4].id,
+    comment_id: MOCK_COMMENTS[4].id,
+    comment: MOCK_COMMENTS[4],
     like_count: 923,
     content: "Reply content",
     rendered_content: "<p>Reply content</p>",
@@ -84,10 +84,10 @@ export const mockReplies: Reply[] = [
     hidden: false
   },
   {
-    user: mockUsers[5],
-    user_id: mockUsers[5].id,
-    comment_id: mockComments[5].id,
-    comment: mockComments[5],
+    user: MOCK_USERS[5],
+    user_id: MOCK_USERS[5].id,
+    comment_id: MOCK_COMMENTS[5].id,
+    comment: MOCK_COMMENTS[5],
     like_count: 923,
     content: "Reply content",
     rendered_content: "<p>Reply content</p>",
@@ -97,10 +97,10 @@ export const mockReplies: Reply[] = [
     hidden: false
   },
   {
-    user: mockUsers[6],
-    user_id: mockUsers[6].id,
-    comment_id: mockComments[6].id,
-    comment: mockComments[6],
+    user: MOCK_USERS[6],
+    user_id: MOCK_USERS[6].id,
+    comment_id: MOCK_COMMENTS[6].id,
+    comment: MOCK_COMMENTS[6],
     like_count: 0,
     content: "Reply content",
     rendered_content: "<p>Reply content</p>",
@@ -110,10 +110,10 @@ export const mockReplies: Reply[] = [
     hidden: false
   },
   {
-    user: mockUsers[7],
-    user_id: mockUsers[7].id,
-    comment_id: mockComments[7].id,
-    comment: mockComments[7],
+    user: MOCK_USERS[7],
+    user_id: MOCK_USERS[7].id,
+    comment_id: MOCK_COMMENTS[7].id,
+    comment: MOCK_COMMENTS[7],
     like_count: 243,
     content: "Reply content",
     rendered_content: "<p>Reply content</p>",
@@ -123,10 +123,10 @@ export const mockReplies: Reply[] = [
     hidden: false
   },
   {
-    user: mockUsers[8],
-    user_id: mockUsers[8].id,
-    comment_id: mockComments[8].id,
-    comment: mockComments[8],
+    user: MOCK_USERS[8],
+    user_id: MOCK_USERS[8].id,
+    comment_id: MOCK_COMMENTS[8].id,
+    comment: MOCK_COMMENTS[8],
     like_count: 1123,
     content: "Reply content",
     rendered_content: "<p>Reply content</p>",
@@ -136,10 +136,10 @@ export const mockReplies: Reply[] = [
     hidden: false
   },
   {
-    user: mockUsers[9],
-    user_id: mockUsers[9].id,
-    comment_id: mockComments[9].id,
-    comment: mockComments[9],
+    user: MOCK_USERS[9],
+    user_id: MOCK_USERS[9].id,
+    comment_id: MOCK_COMMENTS[9].id,
+    comment: MOCK_COMMENTS[9],
     like_count: 24,
     content: "Reply content",
     rendered_content: "<p>Reply content</p>",

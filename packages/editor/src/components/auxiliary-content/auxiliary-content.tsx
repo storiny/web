@@ -5,18 +5,18 @@ import React from "react";
 import { useIntersectionObserver } from "react-intersection-observer-hook";
 
 import { dynamicLoader } from "~/common/dynamic";
-import Divider from "~/components/Divider";
-import Option from "~/components/Option";
-import Select from "~/components/Select";
-import Spacer from "~/components/Spacer";
-import Tab from "~/components/Tab";
-import Tabs from "~/components/Tabs";
-import TabsList from "~/components/TabsList";
-import Typography from "~/components/Typography";
-import { useMediaQuery } from "~/hooks/useMediaQuery";
+import Divider from "../../../../ui/src/components/divider";
+import Option from "../../../../ui/src/components/option";
+import Select from "../../../../ui/src/components/select";
+import Spacer from "../../../../ui/src/components/spacer";
+import Tab from "../../../../ui/src/components/tab";
+import Tabs from "../../../../ui/src/components/tabs";
+import TabsList from "../../../../ui/src/components/tabs-list";
+import Typography from "../../../../ui/src/components/typography";
+import { use_media_query } from "../../../../ui/src/hooks/use-media-query";
 import { use_app_selector } from "~/redux/hooks";
-import { breakpoints } from "~/theme/breakpoints";
-import { abbreviateNumber } from "~/utils/abbreviateNumber";
+import { BREAKPOINTS } from "~/theme/breakpoints";
+import { abbreviate_number } from "../../../../ui/src/utils/abbreviate-number";
 
 import { isAuxiliaryContentVisibleAtom, storyMetadataAtom } from "../../atoms";
 import styles from "./auxiliary-content.module.scss";
@@ -74,13 +74,13 @@ const HeaderTabs = ({
 // Content
 
 const Content = (): React.ReactElement => {
-  const story = useAtomValue(storyMetadataAtom);
-  const isSmallerThanDesktop = useMediaQuery(breakpoints.down("desktop"));
+  const story = use_atom_value(storyMetadataAtom);
+  const is_smaller_than_desktop = use_media_query(BREAKPOINTS.down("desktop"));
   const commentCount =
     use_app_selector((state) => state.entities.storyCommentCounts[story.id]) ||
     0;
   const [value, setValue] = React.useState<EditorAuxiliaryContentTabValue>(
-    isSmallerThanDesktop ? "suggested" : "comments"
+    is_smaller_than_desktop ? "suggested" : "comments"
   );
   const [sort, setSort] = React.useState<StoryCommentsSortValue>("likes-dsc");
 
@@ -92,15 +92,15 @@ const Content = (): React.ReactElement => {
   );
 
   React.useEffect(() => {
-    if (!isSmallerThanDesktop) {
+    if (!is_smaller_than_desktop) {
       setValue("comments");
     }
-  }, [isSmallerThanDesktop]);
+  }, [is_smaller_than_desktop]);
 
   return (
     <React.Fragment>
       <header className={clsx("flex-col", styles.header)}>
-        {isSmallerThanDesktop && (
+        {is_smaller_than_desktop && (
           <HeaderTabs onChange={setValue} value={value} />
         )}
         {value === "comments" && (
@@ -114,7 +114,7 @@ const Content = (): React.ReactElement => {
               )}
               level={"body2"}
             >
-              {story.disable_comments ? "No" : abbreviateNumber(commentCount)}{" "}
+              {story.disable_comments ? "No" : abbreviate_number(commentCount)}{" "}
               {commentCount === 1 ? "comment" : "comments"}
             </Typography>
             <Divider orientation={"vertical"} />
@@ -171,7 +171,7 @@ const Content = (): React.ReactElement => {
 };
 
 const EditorAuxiliaryContent = (): React.ReactElement => {
-  const setIsAuxiliaryContentVisible = useSetAtom(
+  const setIsAuxiliaryContentVisible = use_set_atom(
     isAuxiliaryContentVisibleAtom
   );
   const [ref, { entry }] = useIntersectionObserver({

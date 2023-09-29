@@ -3,8 +3,8 @@
 import { useAtomValue } from "jotai";
 import React from "react";
 
-import Divider from "~/components/Divider";
-import Spacer from "~/components/Spacer";
+import Divider from "../../../../../ui/src/components/divider";
+import Spacer from "../../../../../ui/src/components/spacer";
 
 import { isPenModeAtom } from "../../../atoms";
 import { LayerType } from "../../../constants";
@@ -125,7 +125,7 @@ const getActiveObjectTools = (type: LayerType): React.ReactElement | null => {
 const DrawTools = (): React.ReactElement | null => {
   const canvas = useCanvas();
   const activeObject = useActiveObject();
-  const isPenMode = useAtomValue(isPenModeAtom);
+  const isPenMode = use_atom_value(isPenModeAtom);
 
   return (
     <React.Fragment>

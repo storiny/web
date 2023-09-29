@@ -1,6 +1,6 @@
 import React from "react";
 
-import CustomState from "~/entities/CustomState";
+import CustomState from "../../../../../../packages/ui/src/entities/custom-state";
 
 import { IndexTabValue } from "./page";
 
@@ -12,7 +12,7 @@ const IndexEmptyState = ({
   value
 }: IndexEmptyStateProps): React.ReactElement => (
   <CustomState
-    autoSize
+    auto_size
     description={
       value === "suggested"
         ? "We were unable to find enough relevant stories to populate your feed. Perhaps you could follow some writers or tags?"

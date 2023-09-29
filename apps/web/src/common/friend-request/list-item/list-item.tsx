@@ -4,7 +4,7 @@ import { FriendRequest as TFriendRequest } from "@storiny/types";
 import React from "react";
 import { ItemProps } from "react-virtuoso";
 
-import Divider from "~/components/Divider";
+import Divider from "../../../../../../packages/ui/src/components/divider";
 import FriendRequest from "~/entities/friend-request";
 
 import { VirtualizedFriendRequestListContext } from "../list/list-context";
@@ -18,7 +18,7 @@ const VirtualizedFriendRequestItem = React.memo(
 
     return (
       <div {...rest} className={"flex-col"} key={item.id}>
-        <FriendRequest {...friendRequestProps} friendRequest={item} />
+        <FriendRequest {...friendRequestProps} friend_request={item} />
         <Divider style={{ marginInline: "var(--grid-compensation)" }} />
       </div>
     );

@@ -3,8 +3,8 @@ import { clsx } from "clsx";
 import { $getNodeByKey } from "lexical";
 import React from "react";
 
-import ToggleGroup from "~/components/ToggleGroup";
-import ToggleGroupItem from "~/components/ToggleGroupItem";
+import ToggleGroup from "../../../../../../ui/src/components/toggle-group";
+import ToggleGroupItem from "../../../../../../ui/src/components/toggle-group-item";
 import FigureFillIcon from "~/icons/figure-fill";
 import FigureOverflowIcon from "~/icons/figure-overflow";
 
@@ -43,14 +43,14 @@ const EmbedNodeControls = (
     >
       <ToggleGroupItem
         className={clsx("focus-invert", styles.x, styles.button)}
-        tooltipContent={"Fill"}
+        tooltip_content={"Fill"}
         value={"fill" as EmbedNodeLayout}
       >
         <FigureFillIcon />
       </ToggleGroupItem>
       <ToggleGroupItem
         className={clsx("focus-invert", styles.x, styles.button)}
-        tooltipContent={"Overflow"}
+        tooltip_content={"Overflow"}
         value={"overflow" as EmbedNodeLayout}
       >
         <FigureOverflowIcon />

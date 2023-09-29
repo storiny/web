@@ -11,9 +11,9 @@ describe("<PrivateAccount />", () => {
     const mockSubmit = jest.fn();
     const user = userEvent.setup();
     render_test_with_provider(
-      <PrivateAccount is_private_account onSubmit={mockSubmit} />,
+      <PrivateAccount is_private_account on_submit={mockSubmit} />,
       {
-        loggedIn: true
+        logged_in: true
       }
     );
 
@@ -21,7 +21,7 @@ describe("<PrivateAccount />", () => {
       await user.click(screen.getByRole("switch"));
     });
 
-    await waitFor(() => {
+    await wait_for(() => {
       expect(mockSubmit).toHaveBeenCalledWith({
         "private-account": false
       });

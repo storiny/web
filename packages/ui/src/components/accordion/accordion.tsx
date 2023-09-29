@@ -13,9 +13,9 @@ import clsx from "clsx";
 import React from "react";
 
 import ChevronIcon from "~/icons/Chevron";
-import { forwardRef } from "~/utils/forwardRef";
+import { forward_ref } from "src/utils/forward-ref";
 
-import button_styles from "../common/ButtonReset.module.scss";
+import button_styles from "../common/button-reset.module.scss";
 import styles from "./accordion.module.scss";
 import {
   AccordionContentProps,
@@ -25,7 +25,7 @@ import {
   AccordionTriggerProps
 } from "./accordion.props";
 
-const Accordion = forwardRef<AccordionProps, "div">((props, ref) => {
+const Accordion = forward_ref<AccordionProps, "div">((props, ref) => {
   const { as: Component = "div", children, type, ...rest_props } = props;
   const single_props = rest_props as Omit<
     AccordionSingleProps,
@@ -59,7 +59,7 @@ Accordion.displayName = "Accordion";
 
 // Item
 
-const AccordionItem = forwardRef<AccordionItemProps, "div">(
+const AccordionItem = forward_ref<AccordionItemProps, "div">(
   ({ as: Component = "div", children, className, ...rest }, ref) => (
     <AccordionItemPrimitive
       {...rest}
@@ -77,7 +77,7 @@ AccordionItem.displayName = "AccordionItem";
 
 // Header
 
-const AccordionHeader = forwardRef<AccordionHeaderProps, "h3">(
+const AccordionHeader = forward_ref<AccordionHeaderProps, "h3">(
   ({ as: Component = "h3", className, children, ...rest }, ref) => (
     <AccordionHeaderPrimitive
       {...rest}
@@ -94,7 +94,7 @@ AccordionHeader.displayName = "AccordionHeader";
 
 // Trigger
 
-const AccordionTrigger = forwardRef<AccordionTriggerProps, "div">(
+const AccordionTrigger = forward_ref<AccordionTriggerProps, "div">(
   (
     { as: Component = "button", className, children, slot_props, ...rest },
     ref
@@ -131,7 +131,7 @@ AccordionTrigger.displayName = "AccordionTrigger";
 
 // Content
 
-const AccordionContent = forwardRef<AccordionContentProps, "div">(
+const AccordionContent = forward_ref<AccordionContentProps, "div">(
   (
     { as: Component = "div", className, children, slot_props, ...rest },
     ref

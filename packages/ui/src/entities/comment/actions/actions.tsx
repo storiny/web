@@ -1,14 +1,14 @@
 import { Comment } from "@storiny/types";
 import NextLink from "next/link";
 import React from "react";
+import { use_confirmation } from "src/components/confirmation";
+import IconButton from "src/components/icon-button";
+import Menu from "src/components/menu";
+import MenuItem from "src/components/menu-item";
+import Separator from "src/components/separator";
+import { use_toast } from "src/components/toast";
+import { use_clipboard } from "src/hooks/use-clipboard";
 
-import { useConfirmation } from "~/components/Confirmation";
-import IconButton from "~/components/IconButton";
-import Menu from "~/components/Menu";
-import MenuItem from "~/components/MenuItem";
-import Separator from "~/components/Separator";
-import { useToast } from "~/components/Toast";
-import { useClipboard } from "~/hooks/useClipboard";
 import CopyIcon from "~/icons/Copy";
 import DotsIcon from "~/icons/Dots";
 import EyeIcon from "~/icons/Eye";
@@ -18,8 +18,8 @@ import TrashIcon from "~/icons/Trash";
 import {
   get_comments_api,
   select_user,
-  use_delete_comment_mutation,
-  use_comment_visibility_mutation
+  use_comment_visibility_mutation,
+  use_delete_comment_mutation
 } from "~/redux/features";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 
@@ -27,30 +27,30 @@ import ResponseEditor from "../../common/response-editor";
 
 const CommentActions = ({
   comment,
-  hidden: hiddenProp,
-  setHidden: setHiddenProp
+  hidden: hidden_prop,
+  set_hidden: set_hidden_prop
 }: {
   comment: Comment;
   hidden: boolean;
-  setHidden: React.Dispatch<React.SetStateAction<boolean>>;
+  set_hidden: React.Dispatch<React.SetStateAction<boolean>>;
 }): React.ReactElement => {
-  const copy = useClipboard();
-  const toast = useToast();
+  const copy = use_clipboard();
+  const toast = use_toast();
   const dispatch = use_app_dispatch();
   const user = use_app_selector(select_user);
-  const isSelf = user?.id === comment.user_id;
-  const isStoryAuthor = user?.id === comment.story?.user_id;
-  const [hidden, setHidden] = React.useState(hiddenProp);
-  const [deleteComment, { isLoading: isDeleteLoading }] =
+  const is_self = user?.id === comment.user_id;
+  const is_story_author = user?.id === comment.story?.user_id;
+  const [hidden, set_hidden] = React.useState(hidden_prop);
+  const [delete_comment, { isLoading: is_delete_loading }] =
     use_delete_comment_mutation();
-  const [mutateCommentVisibility, { isLoading: isVisibilityLoading }] =
+  const [mutate_comment_visibility, { isLoading: is_visibility_loading }] =
     use_comment_visibility_mutation();
 
   /**
    * Deletes a comment
    */
-  const handleCommentDelete = (): void => {
-    deleteComment({ id: comment.id, story_id: comment.story_id })
+  const handle_comment_delete = (): void => {
+    delete_comment({ id: comment.id, story_id: comment.story_id })
       .unwrap()
       .then(() => {
         toast("Comment deleted", "success");
@@ -61,15 +61,15 @@ const CommentActions = ({
       );
   };
 
-  const [deleteElement] = useConfirmation(
-    ({ openConfirmation }) => (
+  const [delete_element] = use_confirmation(
+    ({ open_confirmation }) => (
       <MenuItem
-        checkAuth
+        check_auth
         decorator={<TrashIcon />}
-        disabled={isDeleteLoading}
+        disabled={is_delete_loading}
         onSelect={(event): void => {
           event.preventDefault(); // Do not auto-close the menu
-          openConfirmation();
+          open_confirmation();
         }}
       >
         Delete comment
@@ -77,7 +77,7 @@ const CommentActions = ({
     ),
     {
       color: "ruby",
-      onConfirm: handleCommentDelete,
+      on_confirm: handle_comment_delete,
       title: "Delete this comment?",
       decorator: <TrashIcon />,
       description:
@@ -88,16 +88,16 @@ const CommentActions = ({
   /**
    * Mutates a comment's visibility
    */
-  const handleCommentVisibility = (): void => {
-    mutateCommentVisibility({
+  const handle_comment_visibility = (): void => {
+    mutate_comment_visibility({
       id: comment.id,
       hidden: !hidden,
-      storyId: comment.story_id
+      story_id: comment.story_id
     })
       .unwrap()
       .then(() => {
-        setHidden(!hidden);
-        setHiddenProp(!hidden);
+        set_hidden(!hidden);
+        set_hidden_prop(!hidden);
         toast(`Comment ${hidden ? "unhidden" : "hidden"}`, "success");
         dispatch(get_comments_api.util.resetApiState());
       })
@@ -109,22 +109,22 @@ const CommentActions = ({
       );
   };
 
-  const [visibilityElement] = useConfirmation(
-    ({ openConfirmation }) => (
+  const [visibility_element] = use_confirmation(
+    ({ open_confirmation }) => (
       <MenuItem
-        checkAuth
+        check_auth
         decorator={hidden ? <EyeIcon /> : <EyeOffIcon />}
-        disabled={isVisibilityLoading}
+        disabled={is_visibility_loading}
         onSelect={(event): void => {
           event.preventDefault(); // Do not auto-close the menu
-          openConfirmation();
+          open_confirmation();
         }}
       >
         {hidden ? "Unhide" : "Hide"} comment
       </MenuItem>
     ),
     {
-      onConfirm: handleCommentVisibility,
+      on_confirm: handle_comment_visibility,
       title: `${hidden ? "Unhide" : "Hide"} this comment?`,
       decorator: <TrashIcon />,
       description: hidden
@@ -158,20 +158,20 @@ const CommentActions = ({
         Copy link to comment
       </MenuItem>
       <Separator />
-      {isSelf ? (
+      {is_self ? (
         <React.Fragment>
           <ResponseEditor
-            responseId={comment.id}
-            responseTextareaProps={{
+            response_id={comment.id}
+            response_textarea_props={{
               defaultValue: comment.content
             }}
-            responseType={"comment"}
+            response_type={"comment"}
           />
-          {deleteElement}
+          {delete_element}
         </React.Fragment>
       ) : (
         <React.Fragment>
-          {isStoryAuthor && visibilityElement}
+          {is_story_author && visibility_element}
           <MenuItem
             as={NextLink}
             decorator={<ReportIcon />}

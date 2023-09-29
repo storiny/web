@@ -1,0 +1,96 @@
+@use "breakpoints";
+
+.footer {
+  padding-block: 8px;
+  grid-area: ft;
+  z-index: 0;
+  position: relative;
+
+  &::before {
+    content: "";
+    position: absolute;
+    width: 200vw;
+    height: 100%;
+    top: 0;
+    z-index: -1;
+    left: -50vw;
+    speak: none;
+    background-color: var(--bg-elevation-xs);
+    border-top: 1px solid var(--divider);
+  }
+
+  @media print {
+    display: none;
+  }
+}
+
+.container {
+  align-items: stretch;
+  gap: 4px;
+}
+
+.content,
+.copyright {
+  display: flex;
+  justify-content: space-between;
+  padding-block: 16px;
+  gap: 16px;
+}
+
+.content {
+  @include breakpoints.media(">mobile", "<=820px") {
+    flex-wrap: wrap;
+
+    & .grow {
+      min-width: 100%; // Force nav links to break
+    }
+  }
+
+  @include breakpoints.media("<=mobile") {
+    flex-direction: column;
+
+    & .branding {
+      flex-flow: row wrap;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    & .tagline {
+      order: 1;
+      min-width: 100%; // Show button next to the wordmark
+    }
+  }
+}
+
+.copyright {
+  align-items: center;
+}
+
+.wordmark {
+  border-radius: var(--radius-md); // Focus outline radius
+}
+
+.tagline {
+  margin-block: 6px 18px;
+}
+
+.list-container {
+  gap: 12px;
+
+  &:not(:last-child) {
+    margin-right: 64px;
+  }
+
+  @include breakpoints.media("<=mobile") {
+    margin-bottom: 16px;
+  }
+}
+
+.list {
+  list-style: none;
+  gap: 6px;
+}
+
+.list-heading {
+  font-weight: bold;
+}

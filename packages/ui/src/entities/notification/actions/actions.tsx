@@ -2,8 +2,8 @@ import { Notification } from "@storiny/types";
 import clsx from "clsx";
 import React from "react";
 
-import IconButton from "~/components/IconButton";
-import { useMediaQuery } from "~/hooks/useMediaQuery";
+import IconButton from "src/components/icon-button";
+import { use_media_query } from "src/hooks/use-media-query";
 import BellOffIcon from "~/icons/BellOff";
 import CheckIcon from "~/icons/Check";
 import {
@@ -12,7 +12,7 @@ import {
   use_unsubscribe_notification_mutation
 } from "~/redux/features";
 import { use_app_dispatch } from "~/redux/hooks";
-import { breakpoints } from "~/theme/breakpoints";
+import { BREAKPOINTS } from "~/theme/breakpoints";
 
 import styles from "../notification.module.scss";
 
@@ -22,19 +22,21 @@ const Actions = ({
   notification: Notification;
 }): React.ReactElement | null => {
   const dispatch = use_app_dispatch();
-  const isMobile = useMediaQuery(breakpoints.down("mobile"));
-  const [unsubscribe, { isLoading, isError, isSuccess }] =
-    use_unsubscribe_notification_mutation();
+  const is_mobile = use_media_query(BREAKPOINTS.down("mobile"));
+  const [
+    unsubscribe,
+    { isLoading: is_loading, isError: is_error, isSuccess: is_success }
+  ] = use_unsubscribe_notification_mutation();
 
   React.useEffect(() => {
     dispatch(sync_with_notification(notification));
   }, [dispatch, notification]);
 
-  const unsubscribeImpl = (): void => {
+  const unsubscribe_impl = (): void => {
     unsubscribe({ id: notification.id, type: notification.type });
   };
 
-  if (isMobile) {
+  if (is_mobile) {
     return null;
   }
 
@@ -42,7 +44,7 @@ const Actions = ({
     <div className={clsx("flex", styles.actions)}>
       <IconButton
         aria-label={"Mark notification as read"}
-        checkAuth
+        check_auth
         onClick={(): void => {
           dispatch(set_read_notification([notification.id, true]));
         }}
@@ -51,15 +53,15 @@ const Actions = ({
       >
         <CheckIcon />
       </IconButton>
-      {!isSuccess && (
+      {!is_success && (
         <IconButton
           aria-label={
             "Unsubscribe from this type of notification in the future"
           }
-          checkAuth
-          color={!isLoading && isError ? "ruby" : "inverted"}
-          loading={isLoading}
-          onClick={unsubscribeImpl}
+          check_auth
+          color={!is_loading && is_error ? "ruby" : "inverted"}
+          loading={is_loading}
+          onClick={unsubscribe_impl}
           title={"Unsubscribe from this type of notification in the future"}
           variant={"ghost"}
         >

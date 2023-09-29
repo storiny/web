@@ -1,9 +1,9 @@
 import NextLink from "next/link";
 import React from "react";
 
-import Button from "~/components/Button";
-import { useConfirmation } from "~/components/Confirmation";
-import { useToast } from "~/components/Toast";
+import Button from "../../../../../../../../../../../../../packages/ui/src/components/button";
+import { use_confirmation } from "../../../../../../../../../../../../../packages/ui/src/components/confirmation";
+import { use_toast } from "../../../../../../../../../../../../../packages/ui/src/components/toast";
 import { use_remove_connection_mutation } from "~/redux/features";
 
 import {
@@ -18,7 +18,7 @@ const ConnectionButton = ({
   provider,
   onRemove
 }: ConnectionButtonProps): React.ReactElement => {
-  const toast = useToast();
+  const toast = use_toast();
   const [connected, setConnected] = React.useState<boolean>(
     Boolean(connection)
   );
@@ -44,14 +44,14 @@ const ConnectionButton = ({
     }
   };
 
-  const [element] = useConfirmation(
-    ({ openConfirmation }) => (
+  const [element] = use_confirmation(
+    ({ open_confirmation }) => (
       <Button
-        autoSize
-        checkAuth
+        auto_size
+        check_auth
         color={"ruby"}
         disabled={isLoading}
-        onClick={openConfirmation}
+        onClick={open_confirmation}
         variant={"hollow"}
       >
         Disconnect
@@ -59,7 +59,7 @@ const ConnectionButton = ({
     ),
     connection
       ? {
-          onConfirm: handleConfirm,
+          on_confirm: handleConfirm,
           decorator: React.createElement(providerIconMap[connection.provider]),
           title: `Disconnect ${displayName}?`,
           description: `Your ${displayName} details will be deleted, and your ${displayName} account will not be displayed on your profile until you link it again.`
@@ -72,8 +72,8 @@ const ConnectionButton = ({
   ) : (
     <Button
       as={NextLink}
-      autoSize
-      checkAuth
+      auto_size
+      check_auth
       href={`/api/oauth/${providerKeyMap[provider]}`}
     >
       Connect

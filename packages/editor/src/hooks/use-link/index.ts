@@ -10,7 +10,7 @@ import { sanitizeUrl } from "../../utils/sanitize-url";
  * Hooks for using hyperlinks
  */
 export const useLink = (): [boolean, (value?: string) => void] => {
-  const link = useAtomValue(linkAtom);
+  const link = use_atom_value(linkAtom);
   const [editor] = useLexicalComposerContext();
 
   const insertLink = React.useCallback(

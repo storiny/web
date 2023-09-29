@@ -1,4 +1,3 @@
-/* Item */
 .item {
   overflow: hidden;
 
@@ -11,7 +10,6 @@
   }
 }
 
-/* Icon */
 .icon {
   --icon-size: 12px;
   --icon-stroke: var(--fg-minor);
@@ -20,7 +18,6 @@
   transition: transform 250ms var(--easing-short);
 }
 
-/* Trigger */
 .trigger {
   padding: 6px 8px;
   height: 28px;
@@ -54,7 +51,6 @@
   }
 }
 
-/* Content */
 .content {
   overflow: hidden;
 
@@ -67,13 +63,11 @@
   }
 }
 
-/* Content wrapper */
 .content-wrapper {
   padding: 16px 14px;
   gap: 12px;
 }
 
-/* Animations */
 @keyframes slide-down {
   from {
     height: 0;

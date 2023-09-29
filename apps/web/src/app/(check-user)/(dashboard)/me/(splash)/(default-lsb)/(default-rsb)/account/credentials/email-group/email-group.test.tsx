@@ -11,9 +11,9 @@ describe("<EmailSettings />", () => {
     const mockSubmit = jest.fn();
     const user = userEvent.setup();
     render_test_with_provider(
-      <EmailSettings has_password onSubmit={mockSubmit} />,
+      <EmailSettings has_password on_submit={mockSubmit} />,
       {
-        loggedIn: true
+        logged_in: true
       }
     );
 
@@ -28,7 +28,7 @@ describe("<EmailSettings />", () => {
       await user.click(screen.getByRole("button", { name: /confirm/i }));
     });
 
-    await waitFor(() => {
+    await wait_for(() => {
       expect(screen.queryAllByRole("alert").length).not.toEqual(0);
       expect(mockSubmit).not.toBeCalled();
     });
@@ -38,9 +38,9 @@ describe("<EmailSettings />", () => {
     const mockSubmit = jest.fn();
     const user = userEvent.setup();
     render_test_with_provider(
-      <EmailSettings has_password onSubmit={mockSubmit} />,
+      <EmailSettings has_password on_submit={mockSubmit} />,
       {
-        loggedIn: true
+        logged_in: true
       }
     );
 
@@ -62,7 +62,7 @@ describe("<EmailSettings />", () => {
       await user.click(screen.getByRole("button", { name: /confirm/i }));
     });
 
-    await waitFor(() => {
+    await wait_for(() => {
       expect(mockSubmit).toHaveBeenCalledWith({
         "new-email": "test@example.com",
         "current-password": "test-password"

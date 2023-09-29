@@ -1,10 +1,10 @@
 import React from "react";
 
-import CustomState from "~/entities/CustomState";
+import CustomState from "../../../../../ui/src/entities/custom-state";
 
 const EditorAuxiliaryContentCommentListEmptyState = (): React.ReactElement => (
   <CustomState
-    autoSize
+    auto_size
     description={"Be the first one to comment on this story."}
     style={{ marginBlock: "24px" }}
     title={"No comments yet"}

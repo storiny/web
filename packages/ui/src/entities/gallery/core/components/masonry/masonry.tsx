@@ -2,18 +2,18 @@
 
 import { dynamicLoader } from "@storiny/web/src/common/dynamic";
 import clsx from "clsx";
-import { useAtomValue } from "jotai";
+import { useAtomValue as use_atom_value } from "jotai";
 import dynamic from "next/dynamic";
 import React from "react";
-import { useInView } from "react-intersection-observer";
+import { useInView as use_in_view } from "react-intersection-observer";
+import Masonry from "src/components/masonry";
+import ScrollArea from "src/components/scroll-area";
+import Spacer from "src/components/spacer";
+import Spinner from "src/components/spinner";
+import ErrorState from "src/entities/error-state";
+import { use_debounce } from "src/hooks/use-debounce";
+import { use_media_query } from "src/hooks/use-media-query";
 
-import Masonry from "~/components/Masonry";
-import ScrollArea from "~/components/ScrollArea";
-import Spacer from "~/components/Spacer";
-import Spinner from "~/components/Spinner";
-import ErrorState from "~/entities/ErrorState";
-import { useDebounce } from "~/hooks/useDebounce";
-import { useMediaQuery } from "~/hooks/useMediaQuery";
 import {
   get_query_error_type,
   GetGalleryPhotosResponse,
@@ -21,9 +21,9 @@ import {
   use_get_assets_query,
   use_get_gallery_photos_query
 } from "~/redux/features";
-import { breakpoints } from "~/theme/breakpoints";
+import { BREAKPOINTS } from "~/theme/breakpoints";
 
-import { pendingImageAtom, queryAtom } from "../../atoms";
+import { pending_image_atom, query_atom } from "../../atoms";
 import LibraryMasonryItem from "./library-item";
 import styles from "./masonry.module.scss";
 import { GalleryMasonryProps } from "./masonry.props";
@@ -32,7 +32,6 @@ import PexelsMasonryItem from "./pexels-item";
 const EmptyState = dynamic(() => import("./empty-state"), {
   loading: dynamicLoader()
 });
-
 const PexelsUploader = dynamic(() => import("../pexels-uploader"), {
   loading: dynamicLoader()
 });
@@ -40,34 +39,40 @@ const PexelsUploader = dynamic(() => import("../pexels-uploader"), {
 // Pexels
 
 const Pexels = ({
-  containerRef,
-  minCols
+  container_ref,
+  min_cols
 }: {
-  containerRef: React.RefObject<HTMLDivElement>;
-  minCols: number;
+  container_ref: React.RefObject<HTMLDivElement>;
+  min_cols: number;
 }): React.ReactElement => {
-  const [page, setPage] = React.useState<number>(1);
-  const query = useAtomValue(queryAtom);
-  const debouncedQuery = useDebounce(query);
-  const { data, isFetching, isLoading, isError, error, refetch } =
-    use_get_gallery_photos_query({
-      page,
-      query: debouncedQuery
-    });
+  const [page, set_page] = React.useState<number>(1);
+  const query = use_atom_value(query_atom);
+  const debounced_query = use_debounce(query);
+  const {
+    data,
+    isFetching: is_fetching,
+    isLoading: is_loading,
+    isError: is_error,
+    error,
+    refetch
+  } = use_get_gallery_photos_query({
+    page,
+    query: debounced_query
+  });
   const { items = [], has_more } = data || {};
-  const isTyping = debouncedQuery !== query;
+  const is_typing = debounced_query !== query;
 
-  const incrementPage = React.useCallback(() => {
-    setPage((prevState) => prevState + 1);
+  const increment_page = React.useCallback(() => {
+    set_page((prev_state) => prev_state + 1);
   }, []);
 
   React.useEffect(() => {
-    setPage(1);
+    set_page(1);
   }, [query]);
 
   return (
     <React.Fragment>
-      {isLoading || isTyping || (isFetching && page === 1) ? (
+      {is_loading || is_typing || (is_fetching && page === 1) ? (
         <div
           aria-busy={"true"}
           className={clsx("full-w", "full-h", "flex-center")}
@@ -75,35 +80,35 @@ const Pexels = ({
         >
           <Spinner />
         </div>
-      ) : isError ? (
+      ) : is_error ? (
         <ErrorState
-          autoSize
+          auto_size
           component_props={{
-            button: { loading: isFetching }
+            button: { loading: is_fetching }
           }}
           retry={refetch}
           type={get_query_error_type(error)}
         />
-      ) : !isFetching && !items.length ? (
+      ) : !is_fetching && !items.length ? (
         <EmptyState tab={"pexels"} />
       ) : (
         <React.Fragment>
           <Masonry<GetGalleryPhotosResponse[number]>
-            getItemKey={(data): string => String(data.id)}
-            gutterWidth={12}
+            get_item_key={(data): string => String(data.id)}
+            gutter_width={12}
             items={items}
-            minCols={minCols}
-            overscanFactor={2.8}
-            renderItem={(args): React.ReactElement => (
+            min_cols={min_cols}
+            overscan_factor={2.8}
+            render_item={(args): React.ReactElement => (
               <PexelsMasonryItem {...args} />
             )}
-            scrollContainer={(): HTMLElement => containerRef.current!}
+            scroll_container={(): HTMLElement => container_ref.current!}
           />
           <GalleryMasonryFooter
-            containerRef={containerRef}
+            container_ref={container_ref}
             has_more={Boolean(has_more)}
-            incrementPage={incrementPage}
-            isFetching={isFetching}
+            increment_page={increment_page}
+            is_fetching={is_fetching}
           />
         </React.Fragment>
       )}
@@ -114,26 +119,32 @@ const Pexels = ({
 // User library
 
 const Library = ({
-  containerRef,
-  minCols
+  container_ref,
+  min_cols
 }: {
-  containerRef: React.RefObject<HTMLDivElement>;
-  minCols: number;
+  container_ref: React.RefObject<HTMLDivElement>;
+  min_cols: number;
 }): React.ReactElement => {
-  const [page, setPage] = React.useState<number>(1);
-  const { data, isFetching, isLoading, isError, error, refetch } =
-    use_get_assets_query({
-      page
-    });
+  const [page, set_page] = React.useState<number>(1);
+  const {
+    data,
+    isFetching: is_fetching,
+    isLoading: is_loading,
+    isError: is_error,
+    error,
+    refetch
+  } = use_get_assets_query({
+    page
+  });
   const { items = [], has_more } = data || {};
 
-  const incrementPage = React.useCallback(() => {
-    setPage((prevState) => prevState + 1);
+  const increment_page = React.useCallback(() => {
+    set_page((prev_state) => prev_state + 1);
   }, []);
 
   return (
     <React.Fragment>
-      {isLoading || (isFetching && page === 1) ? (
+      {is_loading || (is_fetching && page === 1) ? (
         <div
           aria-busy={"true"}
           className={clsx("full-w", "full-h", "flex-center")}
@@ -141,35 +152,35 @@ const Library = ({
         >
           <Spinner />
         </div>
-      ) : isError ? (
+      ) : is_error ? (
         <ErrorState
-          autoSize
+          auto_size
           component_props={{
-            button: { loading: isFetching }
+            button: { loading: is_fetching }
           }}
           retry={refetch}
           type={get_query_error_type(error)}
         />
-      ) : !isFetching && !items.length ? (
+      ) : !is_fetching && !items.length ? (
         <EmptyState tab={"library"} />
       ) : (
         <Masonry<GetUserAssetsResponse[number]>
-          getItemKey={(data): string => String(data.id)}
-          gutterWidth={12}
+          get_item_key={(data): string => String(data.id)}
+          gutter_width={12}
           items={items}
-          minCols={minCols}
-          overscanFactor={2.8}
-          renderItem={(args): React.ReactElement => (
+          min_cols={min_cols}
+          overscan_factor={2.8}
+          render_item={(args): React.ReactElement => (
             <LibraryMasonryItem {...args} />
           )}
-          scrollContainer={(): HTMLElement => containerRef.current!}
+          scroll_container={(): HTMLElement => container_ref.current!}
         />
       )}
       <GalleryMasonryFooter
-        containerRef={containerRef}
+        container_ref={container_ref}
         has_more={Boolean(has_more)}
-        incrementPage={incrementPage}
-        isFetching={isFetching}
+        increment_page={increment_page}
+        is_fetching={is_fetching}
       />
     </React.Fragment>
   );
@@ -178,22 +189,23 @@ const Library = ({
 // Footer
 
 const GalleryMasonryFooter = React.memo<{
-  containerRef: React.RefObject<HTMLElement>;
+  container_ref: React.RefObject<HTMLElement>;
   has_more: boolean;
-  incrementPage: () => void;
-  isFetching: boolean;
-}>(({ containerRef, has_more, isFetching, incrementPage }) => {
-  const { ref, inView } = useInView({
+  increment_page: () => void;
+  is_fetching: boolean;
+}>(({ container_ref, has_more, is_fetching, increment_page }) => {
+  const { ref, inView: in_view } = use_in_view({
     threshold: 0.1,
-    root: containerRef.current,
+    root: container_ref.current,
+    // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     rootMargin: "0px 0px 500px 0px"
   });
 
   React.useEffect(() => {
-    if (inView && has_more && !isFetching) {
-      incrementPage();
+    if (in_view && has_more && !is_fetching) {
+      increment_page();
     }
-  }, [has_more, inView, incrementPage, isFetching]);
+  }, [has_more, in_view, increment_page, is_fetching]);
 
   return (
     <div className={clsx("flex-col", "flex-center")} ref={ref}>
@@ -211,14 +223,14 @@ const GalleryMasonryFooter = React.memo<{
 GalleryMasonryFooter.displayName = "GalleryMasonryFooter";
 
 const GalleryMasonry = (props: GalleryMasonryProps): React.ReactElement => {
-  const { tab, onPexelsUploadFinish = (): void => undefined } = props;
-  const pendingImage = useAtomValue(pendingImageAtom);
-  const isSmallerThanTablet = useMediaQuery(breakpoints.down("tablet"));
-  const containerRef = React.useRef<HTMLDivElement>(null);
-  const minCols = isSmallerThanTablet ? 2 : 3;
+  const { tab, on_pexels_upload_finish = (): void => undefined } = props;
+  const pending_image = use_atom_value(pending_image_atom);
+  const is_smaller_than_tablet = use_media_query(BREAKPOINTS.down("tablet"));
+  const container_ref = React.useRef<HTMLDivElement>(null);
+  const min_cols = is_smaller_than_tablet ? 2 : 3;
 
-  if (tab === "pexels" && pendingImage !== null) {
-    return <PexelsUploader onUploadFinish={onPexelsUploadFinish} />;
+  if (tab === "pexels" && pending_image !== null) {
+    return <PexelsUploader on_upload_finish={on_pexels_upload_finish} />;
   }
 
   return (
@@ -227,16 +239,16 @@ const GalleryMasonry = (props: GalleryMasonryProps): React.ReactElement => {
       slot_props={{
         viewport: {
           tabIndex: -1,
-          ref: containerRef,
+          ref: container_ref,
           className: styles.viewport
         }
       }}
       type={"auto"}
     >
       {tab === "pexels" ? (
-        <Pexels containerRef={containerRef} minCols={minCols} />
+        <Pexels container_ref={container_ref} min_cols={min_cols} />
       ) : (
-        <Library containerRef={containerRef} minCols={minCols} />
+        <Library container_ref={container_ref} min_cols={min_cols} />
       )}
     </ScrollArea>
   );

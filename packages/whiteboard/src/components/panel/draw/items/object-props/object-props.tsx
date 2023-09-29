@@ -1,7 +1,7 @@
 import { BaseFabricObject, Rect } from "fabric";
 import React from "react";
 
-import Input from "~/components/Input";
+import Input from "../../../../../../../ui/src/components/input";
 import AngleIcon from "~/icons/Angle";
 import CornerRadiusIcon from "~/icons/CornerRadius";
 import { clamp } from "~/utils/clamp";

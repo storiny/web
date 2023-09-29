@@ -1,11 +1,13 @@
-import { waitForElement } from "@storiny/shared/src/utils/waitForElement";
+import { waitForElement } from "../../../../../../shared/src/utils/wait-for-element";
 import clsx from "clsx";
 import React from "react";
 import { createPortal } from "react-dom";
 
-import Divider from "~/components/Divider";
-import IconButton from "~/components/IconButton";
-import Tooltip, { TooltipProvider } from "~/components/Tooltip";
+import Divider from "../../../../../../ui/src/components/divider";
+import IconButton from "../../../../../../ui/src/components/icon-button";
+import Tooltip, {
+  TooltipProvider
+} from "../../../../../../ui/src/components/tooltip";
 import CopyIcon from "~/icons/Copy";
 import FlipHorizontalIcon from "~/icons/FlipHorizontal";
 import FlipVerticalIcon from "~/icons/FlipVertical";

@@ -2,7 +2,7 @@
 
 import React from "react";
 
-import Divider from "~/components/Divider";
+import Divider from "../../../../../../packages/ui/src/components/divider";
 import { FriendRequestSkeleton } from "~/entities/friend-request";
 
 const VirtualizedFriendRequestScrollSeekPlaceholder = React.memo(() => (

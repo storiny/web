@@ -7,10 +7,10 @@ import dynamic from "next/dynamic";
 import React from "react";
 
 import { dynamicLoader } from "~/common/dynamic";
-import Grow from "~/components/Grow";
-import Separator from "~/components/Separator";
-import Typography from "~/components/Typography";
-import RightSidebarFooter from "~/layout/RightSidebar/Footer";
+import Grow from "../../../../../../ui/src/components/grow";
+import Separator from "../../../../../../ui/src/components/separator";
+import Typography from "../../../../../../ui/src/components/typography";
+import RightSidebarFooter from "../../../../../../ui/src/layout/right-sidebar/footer";
 
 import {
   docStatusAtom,
@@ -18,7 +18,7 @@ import {
   sidebarsCollapsedAtom
 } from "../../../../atoms";
 import { springConfig } from "../../../../constants";
-import commonStyles from "../../common/sidebar.module.scss";
+import common_styles from "../../common/sidebar.module.scss";
 import styles from "../right-sidebar.module.scss";
 import { EditorRightSidebarProps } from "../right-sidebar.props";
 
@@ -37,9 +37,9 @@ const SuspendedEditorRightSidebarContent = (
 ): React.ReactElement | null => {
   const { readOnly, status } = props;
   const mountedRef = React.useRef<boolean>(false);
-  const isCollapsed = useAtomValue(sidebarsCollapsedAtom);
-  const docStatus = useAtomValue(docStatusAtom);
-  const overflowingFigures = useAtomValue(overflowingFiguresAtom);
+  const isCollapsed = use_atom_value(sidebarsCollapsedAtom);
+  const docStatus = use_atom_value(docStatusAtom);
+  const overflowingFigures = use_atom_value(overflowingFiguresAtom);
   const transitions = useTransition(!isCollapsed, {
     from: { opacity: 0, transform: "translate3d(10%,0,0) scale(0.97)" },
     enter: { opacity: 1, transform: "translate3d(0%,0,0) scale(1)" },
@@ -76,8 +76,8 @@ const SuspendedEditorRightSidebarContent = (
           "flex-col",
           styles.x,
           styles.content,
-          commonStyles.x,
-          commonStyles.content
+          common_styles.x,
+          common_styles.content
         )}
         data-hidden={String(Boolean(overflowingFigures.size))}
         style={{

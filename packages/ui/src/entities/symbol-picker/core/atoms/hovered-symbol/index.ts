@@ -1,3 +1,3 @@
 import { atom } from "jotai";
 
-export const hoveredSymbolAtom = atom<string | null>(null);
+export const hovered_symbol_atom = atom<string | null>(null);

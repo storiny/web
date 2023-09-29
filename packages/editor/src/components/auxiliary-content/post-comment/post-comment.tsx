@@ -3,10 +3,10 @@ import { clsx } from "clsx";
 import { useAtomValue } from "jotai";
 import React from "react";
 
-import Avatar from "~/components/Avatar";
-import Button from "~/components/Button";
-import { useToast } from "~/components/Toast";
-import ResponseTextarea from "~/entities/ResponseTextarea";
+import Avatar from "../../../../../ui/src/components/avatar";
+import Button from "../../../../../ui/src/components/button";
+import { use_toast } from "../../../../../ui/src/components/toast";
+import ResponseTextarea from "../../../../../ui/src/entities/response-textarea";
 import {
   get_story_comments_api,
   select_is_logged_in,
@@ -23,11 +23,11 @@ const PostComment = ({
 }: {
   onPost: () => void;
 }): React.ReactElement => {
-  const toast = useToast();
+  const toast = use_toast();
   const dispatch = use_app_dispatch();
-  const story = useAtomValue(storyMetadataAtom);
+  const story = use_atom_value(storyMetadataAtom);
   const user = use_app_selector(select_user);
-  const loggedIn = use_app_selector(select_is_logged_in);
+  const logged_in = use_app_selector(select_is_logged_in);
   const textareaRef = React.useRef<HTMLTextAreaElement | null>(null);
   const [addComment, { isLoading }] = use_add_comment_mutation();
 
@@ -60,18 +60,18 @@ const PostComment = ({
       className={clsx(
         "flex",
         styles["response-area"],
-        !loggedIn && styles["logged-out"]
+        !logged_in && styles["logged-out"]
       )}
     >
-      {!loggedIn ? (
-        <Button checkAuth variant={"hollow"}>
+      {!logged_in ? (
+        <Button check_auth variant={"hollow"}>
           Log in to leave a comment
         </Button>
       ) : (
         <React.Fragment>
           <Avatar
             alt={""}
-            avatarId={user?.avatar_id}
+            avatar_id={user?.avatar_id}
             hex={user?.avatar_hex}
             label={user?.name}
           />
@@ -79,7 +79,7 @@ const PostComment = ({
             maxLength={COMMENT_PROPS.content.maxLength}
             minLength={COMMENT_PROPS.content.minLength}
             placeholder={"Leave a comment"}
-            postButtonProps={{
+            post_button_props={{
               loading: isLoading,
               onClick: handlePost
             }}

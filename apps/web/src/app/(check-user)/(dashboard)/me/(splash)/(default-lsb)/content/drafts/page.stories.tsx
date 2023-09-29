@@ -1,6 +1,6 @@
 // noinspection JSUnusedGlobalSymbols
 
-import { mockStories } from "@storiny/ui/src/mocks";
+import { MOCK_STORIES } from "@storiny/ui/src/mocks";
 import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
 
@@ -18,11 +18,11 @@ const meta: Meta<typeof ContentDraftsPage> = {
     deleted_draft_count: 5,
     pending_draft_count: 5,
     latest_draft: {
-      ...mockStories[0],
-      edited_at: mockStories[0].edited_at || undefined,
-      published_at: mockStories[0].published_at || undefined,
-      splash_hex: mockStories[0].splash_hex || undefined,
-      splash_id: mockStories[0].splash_id || undefined
+      ...MOCK_STORIES[0],
+      edited_at: MOCK_STORIES[0].edited_at || undefined,
+      published_at: MOCK_STORIES[0].published_at || undefined,
+      splash_hex: MOCK_STORIES[0].splash_hex || undefined,
+      splash_id: MOCK_STORIES[0].splash_id || undefined
     }
   },
   parameters: {
@@ -45,7 +45,7 @@ export const Default: Story = {
             </DefaultDashboardLeftSidebarLayout>
           </DashboardSplashLayout>
         </DashboardLayout>,
-        { ignorePrimitiveProviders: false, loggedIn: true }
+        { ignore_primitive_providers: false, logged_in: true }
       )
   ]
 };

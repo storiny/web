@@ -13,7 +13,7 @@ const VirtualizedTagList = React.memo(
   ({
     tags,
     has_more,
-    loadMore,
+    load_more,
     tagProps,
     className,
     ...rest
@@ -34,7 +34,7 @@ const VirtualizedTagList = React.memo(
           ...(has_more && { Footer: VirtualFooter })
         }}
         data={tags}
-        endReached={has_more ? loadMore : (): void => undefined}
+        endReached={has_more ? load_more : (): void => undefined}
       />
     </VirtualizedTagListContext.Provider>
   )

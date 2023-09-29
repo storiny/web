@@ -1,6 +1,6 @@
 import { DEFAULT_WPM } from "@storiny/shared";
 
-import { useToast } from "~/components/Toast";
+import { use_toast } from "../../../../../packages/ui/src/components/toast";
 import { use_signup_mutation } from "~/redux/features";
 
 import { useAuthState } from "./actions";
@@ -14,7 +14,7 @@ export const useSignup = (): {
 } => {
   const { state, actions } = useAuthState();
   const [mutateSignup, { isLoading }] = use_signup_mutation();
-  const toast = useToast();
+  const toast = use_toast();
 
   const handleSignup = (): void => {
     mutateSignup({

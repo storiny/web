@@ -1,12 +1,12 @@
 import { clsx } from "clsx";
 import React from "react";
 
-import Avatar from "~/components/Avatar";
-import Button from "~/components/Button";
-import { useConfirmation } from "~/components/Confirmation";
-import Spacer from "~/components/Spacer";
-import { useToast } from "~/components/Toast";
-import Typography from "~/components/Typography";
+import Avatar from "../../../../../../../../../../../../packages/ui/src/components/avatar";
+import Button from "../../../../../../../../../../../../packages/ui/src/components/button";
+import { use_confirmation } from "../../../../../../../../../../../../packages/ui/src/components/confirmation";
+import Spacer from "../../../../../../../../../../../../packages/ui/src/components/spacer";
+import { use_toast } from "../../../../../../../../../../../../packages/ui/src/components/toast";
+import Typography from "../../../../../../../../../../../../packages/ui/src/components/typography";
 import Gallery from "~/entities/gallery";
 import PencilIcon from "~/icons/Pencil";
 import TrashIcon from "~/icons/Trash";
@@ -22,17 +22,19 @@ import styles from "./avatar-settings.module.scss";
 const AvatarSettings = (): React.ReactElement | null => {
   const dispatch = use_app_dispatch();
   const user = use_app_selector(select_user)!;
-  const toast = useToast();
-  const [avatarId, setAvatarId] = React.useState<string | null>(user.avatar_id);
+  const toast = use_toast();
+  const [avatar_id, setAvatarId] = React.useState<string | null>(
+    user.avatar_id
+  );
   const [mutateAvatarSettings, { isLoading }] = use_avatar_settings_mutation();
-  const [element] = useConfirmation(
-    ({ openConfirmation }) => (
+  const [element] = use_confirmation(
+    ({ open_confirmation }) => (
       <Button
-        autoSize
-        checkAuth
+        auto_size
+        check_auth
         decorator={<TrashIcon />}
-        disabled={!avatarId || isLoading}
-        onClick={openConfirmation}
+        disabled={!avatar_id || isLoading}
+        onClick={open_confirmation}
         variant={"hollow"}
       >
         Remove
@@ -41,7 +43,7 @@ const AvatarSettings = (): React.ReactElement | null => {
     {
       color: "ruby",
       decorator: <TrashIcon />,
-      onConfirm: (): void => {
+      on_confirm: (): void => {
         setAvatarId(null);
         dispatchAvatarSettings();
       },
@@ -55,7 +57,7 @@ const AvatarSettings = (): React.ReactElement | null => {
    * Dispatches the current avatar settings
    */
   const dispatchAvatarSettings = React.useCallback(() => {
-    mutateAvatarSettings({ avatar_id: avatarId })
+    mutateAvatarSettings({ avatar_id: avatar_id })
       .unwrap()
       .then((res) => {
         dispatch(
@@ -72,28 +74,28 @@ const AvatarSettings = (): React.ReactElement | null => {
       .catch((e) =>
         toast(e?.data?.error || "Could not update your avatar", "error")
       );
-  }, [avatarId, mutateAvatarSettings, dispatch, toast]);
+  }, [avatar_id, mutateAvatarSettings, dispatch, toast]);
 
   return (
     <div className={clsx("flex-col", styles.x, styles["avatar-settings"])}>
       <div className={clsx("flex-center", styles.x, styles.header)}>
         <Avatar
           alt={""}
-          avatarId={user.avatar_id}
+          avatar_id={user.avatar_id}
           hex={user.avatar_hex}
           label={user.name}
           size={"xl2"}
         />
         <div className={"flex-col"}>
           <Gallery
-            onConfirm={(asset): void => {
+            on_confirm={(asset): void => {
               setAvatarId(asset.key);
               dispatchAvatarSettings();
             }}
           >
             <Button
-              autoSize
-              checkAuth
+              auto_size
+              check_auth
               decorator={<PencilIcon />}
               disabled={isLoading}
               variant={"hollow"}

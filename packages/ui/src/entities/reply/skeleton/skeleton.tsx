@@ -1,19 +1,19 @@
 import clsx from "clsx";
 import React from "react";
 
-import Grow from "~/components/Grow";
-import NoSsr from "~/components/NoSsr";
-import Skeleton from "~/components/Skeleton";
-import Spacer from "~/components/Spacer";
+import Grow from "src/components/grow";
+import NoSsr from "src/components/no-ssr";
+import Skeleton from "src/components/skeleton";
+import Spacer from "src/components/spacer";
 import { ReplySkeletonProps } from "~/entities/reply/skeleton/skeleton.props";
-import { useMediaQuery } from "~/hooks/useMediaQuery";
-import { breakpoints } from "~/theme/breakpoints";
+import { use_media_query } from "src/hooks/use-media-query";
+import { BREAKPOINTS } from "~/theme/breakpoints";
 
-import replyStyles from "../reply.module.scss";
+import reply_styles from "../reply.module.scss";
 
 const ReplySkeleton = (props: ReplySkeletonProps): React.ReactElement => {
-  const { virtual, isStatic, nested } = props;
-  const isMobile = useMediaQuery(breakpoints.down("mobile"));
+  const { virtual, is_static, nested } = props;
+  const is_mobile = use_media_query(BREAKPOINTS.down("mobile"));
 
   return (
     <NoSsr>
@@ -21,10 +21,10 @@ const ReplySkeleton = (props: ReplySkeletonProps): React.ReactElement => {
         aria-busy={"true"}
         className={clsx(
           "flex-col",
-          replyStyles.reply,
-          virtual && replyStyles.virtual,
-          isStatic && replyStyles.static,
-          nested && replyStyles.nested
+          reply_styles.reply,
+          virtual && reply_styles.virtual,
+          is_static && reply_styles.static,
+          nested && reply_styles.nested
         )}
       >
         <div className={clsx("flex")} style={{ alignItems: "center" }}>
@@ -33,7 +33,7 @@ const ReplySkeleton = (props: ReplySkeletonProps): React.ReactElement => {
           <Skeleton height={18} width={114} />
         </div>
         <div
-          className={clsx("flex-col", replyStyles.content)}
+          className={clsx("flex-col", reply_styles.content)}
           style={{ gap: "6px" }}
         >
           <Skeleton height={10} width={236} />
@@ -42,7 +42,7 @@ const ReplySkeleton = (props: ReplySkeletonProps): React.ReactElement => {
         </div>
         <div className={clsx("flex-center")}>
           <Grow />
-          <Skeleton height={isMobile ? 18 : 14} width={isMobile ? 52 : 48} />
+          <Skeleton height={is_mobile ? 18 : 14} width={is_mobile ? 52 : 48} />
         </div>
       </div>
     </NoSsr>

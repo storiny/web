@@ -29,7 +29,7 @@ export const useTextStyle = (): {
   formatQuote: () => void;
   textStyle: TextStyle;
 } => {
-  const textStyle = useAtomValue(textStyleAtom);
+  const textStyle = use_atom_value(textStyleAtom);
   const [editor] = useLexicalComposerContext();
 
   /**

@@ -1,7 +1,7 @@
 import { clsx } from "clsx";
 import React from "react";
 
-import SplashScreen from "~/layout/SplashScreen";
+import SplashScreen from "../../../../../../packages/ui/src/layout/splash-screen";
 
 import Dropdown from "./dropdown";
 import LegalFooter from "./footer";

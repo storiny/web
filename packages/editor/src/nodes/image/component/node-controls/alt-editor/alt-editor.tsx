@@ -4,16 +4,19 @@ import { clsx } from "clsx";
 import { $getNodeByKey } from "lexical";
 import React from "react";
 
-import AspectRatio from "~/components/AspectRatio";
-import Button from "~/components/Button";
-import Image from "~/components/Image";
-import Input from "~/components/Input";
-import { ModalFooterButton, useModal } from "~/components/Modal";
-import Spacer from "~/components/Spacer";
-import { useMediaQuery } from "~/hooks/useMediaQuery";
+import AspectRatio from "../../../../../../../ui/src/components/aspect-ratio";
+import Button from "../../../../../../../ui/src/components/button";
+import Image from "../../../../../../../ui/src/components/image";
+import Input from "../../../../../../../ui/src/components/input";
+import {
+  ModalFooterButton,
+  use_modal
+} from "../../../../../../../ui/src/components/modal";
+import Spacer from "../../../../../../../ui/src/components/spacer";
+import { use_media_query } from "../../../../../../../ui/src/hooks/use-media-query";
 import CaptionIcon from "~/icons/caption";
-import { breakpoints } from "~/theme/breakpoints";
-import { getCdnUrl } from "~/utils/getCdnUrl";
+import { BREAKPOINTS } from "~/theme/breakpoints";
+import { get_cdn_url } from "../../../../../../../ui/src/utils/get-cdn-url";
 
 import { $isImageNode } from "../../../image";
 import styles from "./alt-editor.module.scss";
@@ -34,17 +37,17 @@ const ImageAltEditorModal = (
         <Image
           alt={image.alt}
           hex={image.hex}
-          imgId={image.key}
+          img_key={image.key}
           slot_props={{
             image: {
               sizes: [
-                `${breakpoints.up("mobile")} 320px`,
+                `${BREAKPOINTS.up("mobile")} 320px`,
                 "calc(100vw - 24px)"
               ].join(","),
               srcSet: [
-                `${getCdnUrl(image.key, ImageSize.W_860)} 860w`,
-                `${getCdnUrl(image.key, ImageSize.W_640)} 640w`,
-                `${getCdnUrl(image.key, ImageSize.W_320)} 320w`
+                `${get_cdn_url(image.key, ImageSize.W_860)} 860w`,
+                `${get_cdn_url(image.key, ImageSize.W_640)} 640w`,
+                `${get_cdn_url(image.key, ImageSize.W_320)} 320w`
               ].join(",")
             }
           }}
@@ -53,7 +56,7 @@ const ImageAltEditorModal = (
       <Spacer orientation={"vertical"} size={2.5} />
       <Input
         autoFocus
-        autoSize
+        auto_size
         defaultValue={image.alt}
         maxLength={assetProps.alt.maxLength}
         minLength={assetProps.alt.minLength}
@@ -69,7 +72,7 @@ const ImageAltEditor = (props: ImageAltEditorProps): React.ReactElement => {
   const { disabled, nodeKey } = props;
   const inputRef = React.useRef<HTMLInputElement | null>(null);
   const [editor] = useLexicalComposerContext();
-  const isSmallerThanMobile = useMediaQuery(breakpoints.down("mobile"));
+  const is_smaller_than_mobile = use_media_query(BREAKPOINTS.down("mobile"));
 
   /**
    * Updates the alt text
@@ -85,12 +88,12 @@ const ImageAltEditor = (props: ImageAltEditorProps): React.ReactElement => {
     });
   }, [editor, nodeKey]);
 
-  const [element] = useModal(
-    ({ openModal }) => (
+  const [element] = use_modal(
+    ({ open_modal }) => (
       <Button
         className={clsx("focus-invert", "f-grow", styles.x, styles.button)}
         disabled={disabled}
-        onClick={openModal}
+        onClick={open_modal}
         variant={"ghost"}
       >
         Alt
@@ -98,24 +101,24 @@ const ImageAltEditor = (props: ImageAltEditorProps): React.ReactElement => {
     ),
     <ImageAltEditorModal {...props} inputRef={inputRef} />,
     {
-      fullscreen: isSmallerThanMobile,
+      fullscreen: is_smaller_than_mobile,
       footer: (
         <>
-          <ModalFooterButton compact={isSmallerThanMobile} variant={"ghost"}>
+          <ModalFooterButton compact={is_smaller_than_mobile} variant={"ghost"}>
             Cancel
           </ModalFooterButton>
-          <ModalFooterButton compact={isSmallerThanMobile} onClick={setAlt}>
+          <ModalFooterButton compact={is_smaller_than_mobile} onClick={setAlt}>
             Confirm
           </ModalFooterButton>
         </>
       ),
       slot_props: {
         footer: {
-          compact: isSmallerThanMobile
+          compact: is_smaller_than_mobile
         },
         content: {
           style: {
-            width: isSmallerThanMobile ? "100%" : "350px"
+            width: is_smaller_than_mobile ? "100%" : "350px"
           }
         },
         header: {

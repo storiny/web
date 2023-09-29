@@ -5,8 +5,13 @@ import { useSelectedLayoutSegments } from "next/navigation";
 import { useRouter } from "next/navigation";
 import React from "react";
 
-import Option, { OptionProps } from "~/components/Option";
-import Select, { SelectGroup, SelectLabel } from "~/components/Select";
+import Option, {
+  OptionProps
+} from "../../../../../../../packages/ui/src/components/option";
+import Select, {
+  SelectGroup,
+  SelectLabel
+} from "../../../../../../../packages/ui/src/components/select";
 
 import { LegalSegment } from "../types";
 import styles from "./dropdown.module.scss";

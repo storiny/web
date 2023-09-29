@@ -1,8 +1,8 @@
 import { getShortcutLabel } from "@storiny/shared/src/utils/get-shortcut-label";
 import React from "react";
 
-import MenubarItem from "~/components/MenubarItem";
-import MenubarSub from "~/components/MenubarSub";
+import MenubarItem from "../../../../../../../ui/src/components/menubar-item";
+import MenubarSub from "../../../../../../../ui/src/components/menubar-sub";
 import RedoIcon from "~/icons/Redo";
 import UndoIcon from "~/icons/Undo";
 
@@ -17,7 +17,7 @@ const EditItem = ({ disabled }: { disabled?: boolean }): React.ReactElement => {
         decorator={<UndoIcon />}
         disabled={disabled || !canUndo}
         onClick={undo}
-        rightSlot={getShortcutLabel(EDITOR_SHORTCUTS.undo)}
+        right_slot={getShortcutLabel(EDITOR_SHORTCUTS.undo)}
       >
         Undo
       </MenubarItem>
@@ -25,7 +25,7 @@ const EditItem = ({ disabled }: { disabled?: boolean }): React.ReactElement => {
         decorator={<RedoIcon />}
         disabled={disabled || !canRedo}
         onClick={redo}
-        rightSlot={getShortcutLabel(EDITOR_SHORTCUTS.redo)}
+        right_slot={getShortcutLabel(EDITOR_SHORTCUTS.redo)}
       >
         Redo
       </MenubarItem>

@@ -1,0 +1,52 @@
+.toast-animation {
+  &[data-state="open"] {
+    animation: slide-in 150ms var(--easing-short);
+  }
+
+  &[data-state="closed"] {
+    animation: hide 100ms ease-in;
+  }
+
+  &[data-swipe="move"] {
+    transform: translateX(var(--radix-toast-swipe-move-x));
+  }
+
+  &[data-swipe="cancel"] {
+    transform: translateX(0);
+    transition: transform 200ms ease-out;
+  }
+
+  &[data-swipe="end"] {
+    animation: swipe-out 100ms ease-out;
+  }
+}
+
+@keyframes hide {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes slide-in {
+  from {
+    transform: translateY(var(--viewport-padding));
+  }
+
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes swipe-out {
+  from {
+    transform: translateX(var(--radix-toast-swipe-end-x));
+  }
+
+  to {
+    transform: translateX(calc(100vw + var(--viewport-padding)));
+  }
+}

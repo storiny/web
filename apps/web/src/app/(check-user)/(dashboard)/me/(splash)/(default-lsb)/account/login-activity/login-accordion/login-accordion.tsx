@@ -11,15 +11,18 @@ import {
   AccordionItem,
   AccordionTrigger
 } from "../../../../../../../../../../../../packages/ui/src/components/accordion";
-import AspectRatio from "~/components/AspectRatio";
-import Button from "~/components/Button";
-import Divider from "~/components/Divider";
-import Spacer from "~/components/Spacer";
-import { useToast } from "~/components/Toast";
-import Typography from "~/components/Typography";
+import AspectRatio from "../../../../../../../../../../../../packages/ui/src/components/aspect-ratio";
+import Button from "../../../../../../../../../../../../packages/ui/src/components/button";
+import Divider from "../../../../../../../../../../../../packages/ui/src/components/divider";
+import Spacer from "../../../../../../../../../../../../packages/ui/src/components/spacer";
+import { use_toast } from "../../../../../../../../../../../../packages/ui/src/components/toast";
+import Typography from "../../../../../../../../../../../../packages/ui/src/components/typography";
 import LogoutIcon from "~/icons/Logout";
 import { use_session_logout_mutation } from "~/redux/features";
-import { DateFormat, formatDate } from "~/utils/formatDate";
+import {
+  DateFormat,
+  format_date
+} from "../../../../../../../../../../../../packages/ui/src/utils/format-date";
 
 import { deviceTypeToIconMap } from "../icon-map";
 import styles from "./login-accordion.module.scss";
@@ -38,7 +41,7 @@ const Map = dynamic(() => import("../map"), {
 
 const LogoutButton = (props: LoginAccordionProps): React.ReactElement => {
   const { login, onLogout } = props;
-  const toast = useToast();
+  const toast = use_toast();
   const [sessionLogout, { isLoading }] = use_session_logout_mutation();
 
   /**
@@ -56,7 +59,7 @@ const LogoutButton = (props: LoginAccordionProps): React.ReactElement => {
 
   return (
     <Button
-      checkAuth
+      check_auth
       className={clsx("focus-invert", "f-grow", styles.x, styles.button)}
       decorator={<LogoutIcon />}
       loading={isLoading}
@@ -120,7 +123,7 @@ const LoginAccordion = (props: LoginAccordionProps): React.ReactElement => {
                   <React.Fragment>
                     {login.location?.display_name || "Unknown location"}{" "}
                     <span className={"t-muted"}>&bull;</span>{" "}
-                    {formatDate(login.created_at, DateFormat.STANDARD)}
+                    {format_date(login.created_at, DateFormat.STANDARD)}
                   </React.Fragment>
                 )}
               </Typography>

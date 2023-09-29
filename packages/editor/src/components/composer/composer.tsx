@@ -2,7 +2,7 @@ import {
   InitialConfigType,
   LexicalComposer
 } from "@lexical/react/LexicalComposer";
-import { dev_console } from "@storiny/shared/src/utils/devLog";
+import { dev_console } from "../../../../shared/src/utils/dev-log";
 import React from "react";
 
 import { EditorNamespace } from "../../constants";

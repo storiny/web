@@ -6,15 +6,17 @@ import NextLink from "next/link";
 import { useSelectedLayoutSegments } from "next/navigation";
 import React from "react";
 
-import Input from "~/components/Input";
-import ScrollArea from "~/components/ScrollArea";
-import Separator from "~/components/Separator";
-import Spacer from "~/components/Spacer";
-import Tab, { TabProps } from "~/components/Tab";
-import Tabs from "~/components/Tabs";
-import TabsList from "~/components/TabsList";
-import Typography from "~/components/Typography";
-import Persona from "~/entities/Persona";
+import Input from "../../../../../../../../../../packages/ui/src/components/input";
+import ScrollArea from "../../../../../../../../../../packages/ui/src/components/scroll-area";
+import Separator from "../../../../../../../../../../packages/ui/src/components/separator";
+import Spacer from "../../../../../../../../../../packages/ui/src/components/spacer";
+import Tab, {
+  TabProps
+} from "../../../../../../../../../../packages/ui/src/components/tab";
+import Tabs from "../../../../../../../../../../packages/ui/src/components/tabs";
+import TabsList from "../../../../../../../../../../packages/ui/src/components/tabs-list";
+import Typography from "../../../../../../../../../../packages/ui/src/components/typography";
+import Persona from "../../../../../../../../../../packages/ui/src/entities/persona";
 import SearchIcon from "~/icons/Search";
 import { select_user } from "~/redux/features";
 import { use_app_selector } from "~/redux/hooks";
@@ -106,21 +108,21 @@ const SuspendedDashboardLeftSidebarContent = (): React.ReactElement => {
         <Persona
           avatar={{
             alt: `${user.name}'s avatar`,
-            avatarId: user.avatar_id,
+            avatar_id: user.avatar_id,
             label: user.name,
             hex: user.avatar_hex
           }}
           className={clsx(styles.x, styles.persona)}
           component_props={{
-            primaryText: {
+            primary_text: {
               className: "ellipsis"
             },
-            secondaryText: {
+            secondary_text: {
               className: "ellipsis"
             }
           }}
-          primaryText={user.name}
-          secondaryText={`@${user.username}`}
+          primary_text={user.name}
+          secondary_text={`@${user.username}`}
           size={"lg"}
         />
         <Input

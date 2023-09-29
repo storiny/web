@@ -1,16 +1,20 @@
-import { downloadAsFile } from "@storiny/shared/src/utils/downloadAsFile";
+import { downloadAsFile } from "../../../../../../../../../../../../../../packages/shared/src/utils/download-as-file";
 import { clsx } from "clsx";
 import React from "react";
 
-import Button from "~/components/Button";
-import Link from "~/components/Link";
-import { Description, ModalFooterButton, useModal } from "~/components/Modal";
-import Spacer from "~/components/Spacer";
-import Spinner from "~/components/Spinner";
-import { useToast } from "~/components/Toast";
-import Typography from "~/components/Typography";
-import { useClipboard } from "~/hooks/useClipboard";
-import { useMediaQuery } from "~/hooks/useMediaQuery";
+import Button from "../../../../../../../../../../../../../../packages/ui/src/components/button";
+import Link from "../../../../../../../../../../../../../../packages/ui/src/components/link";
+import {
+  Description,
+  ModalFooterButton,
+  use_modal
+} from "../../../../../../../../../../../../../../packages/ui/src/components/modal";
+import Spacer from "../../../../../../../../../../../../../../packages/ui/src/components/spacer";
+import Spinner from "../../../../../../../../../../../../../../packages/ui/src/components/spinner";
+import { use_toast } from "../../../../../../../../../../../../../../packages/ui/src/components/toast";
+import Typography from "../../../../../../../../../../../../../../packages/ui/src/components/typography";
+import { use_clipboard } from "../../../../../../../../../../../../../../packages/ui/src/hooks/use-clipboard";
+import { use_media_query } from "../../../../../../../../../../../../../../packages/ui/src/hooks/use-media-query";
 import CopyIcon from "~/icons/Copy";
 import DownloadIcon from "~/icons/Download";
 import ScriptIcon from "~/icons/Script";
@@ -21,7 +25,7 @@ import {
   use_recovery_codes_mutation
 } from "~/redux/features";
 import { use_app_selector } from "~/redux/hooks";
-import { breakpoints } from "~/theme/breakpoints";
+import { BREAKPOINTS } from "~/theme/breakpoints";
 
 import styles from "./recovery-codes.module.scss";
 
@@ -43,8 +47,8 @@ const formatRecoveryCodes = (
 
 const RecoveryCodesModal = (): React.ReactElement => {
   const user = use_app_selector(select_user)!;
-  const copy = useClipboard();
-  const toast = useToast();
+  const copy = use_clipboard();
+  const toast = use_toast();
   const [codes, setCodes] = React.useState<RecoveryCodesResponse>([]);
   const [error, setError] = React.useState<string>(
     "Could not get recovery codes."
@@ -137,7 +141,7 @@ const RecoveryCodesModal = (): React.ReactElement => {
             </div>
             <div className={clsx("full-w", "flex-col", styles.actions)}>
               <Button
-                checkAuth
+                check_auth
                 decorator={<DownloadIcon />}
                 onClick={(): void => {
                   downloadAsFile(
@@ -151,7 +155,7 @@ const RecoveryCodesModal = (): React.ReactElement => {
                 Download
               </Button>
               <Button
-                checkAuth
+                check_auth
                 decorator={<CopyIcon />}
                 onClick={copyCodesToClipboard}
                 size={"sm"}
@@ -184,14 +188,14 @@ const RecoveryCodesModal = (): React.ReactElement => {
 };
 
 const RecoveryCodes = (): React.ReactElement => {
-  const isSmallerThanMobile = useMediaQuery(breakpoints.down("mobile"));
-  const [element] = useModal(
-    ({ openModal }) => (
+  const is_smaller_than_mobile = use_media_query(BREAKPOINTS.down("mobile"));
+  const [element] = use_modal(
+    ({ open_modal }) => (
       <Button
-        autoSize
-        checkAuth
+        auto_size
+        check_auth
         className={"fit-w"}
-        onClick={openModal}
+        onClick={open_modal}
         variant={"hollow"}
       >
         View recovery codes
@@ -199,21 +203,21 @@ const RecoveryCodes = (): React.ReactElement => {
     ),
     <RecoveryCodesModal />,
     {
-      fullscreen: isSmallerThanMobile,
+      fullscreen: is_smaller_than_mobile,
       footer: (
         <>
-          <ModalFooterButton compact={isSmallerThanMobile}>
+          <ModalFooterButton compact={is_smaller_than_mobile}>
             Done
           </ModalFooterButton>
         </>
       ),
       slot_props: {
         footer: {
-          compact: isSmallerThanMobile
+          compact: is_smaller_than_mobile
         },
         content: {
           style: {
-            width: isSmallerThanMobile ? "100%" : "542px"
+            width: is_smaller_than_mobile ? "100%" : "542px"
           }
         },
         header: {

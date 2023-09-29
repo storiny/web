@@ -1,15 +1,15 @@
 import { ImageSize } from "@storiny/shared";
 import clsx from "clsx";
-import { useSetAtom } from "jotai";
+import { useSetAtom as use_set_atom } from "jotai";
 import React from "react";
 
-import Button from "~/components/Button";
-import Spacer from "~/components/Spacer";
-import { useToast } from "~/components/Toast";
-import Typography from "~/components/Typography";
-import { selectedAtom } from "~/entities/gallery/core/atoms";
+import Button from "src/components/button";
+import Spacer from "src/components/spacer";
+import { use_toast } from "src/components/toast";
+import Typography from "src/components/typography";
+import { selected_atom } from "~/entities/gallery/core/atoms";
 import { use_upload_asset_mutation } from "~/redux/features";
-import { getCdnUrl } from "~/utils/getCdnUrl";
+import { get_cdn_url } from "src/utils/get-cdn-url";
 
 import UploadProgress from "../../upload-progress";
 import styles from "./uploader.module.scss";
@@ -18,20 +18,20 @@ import { WhiteboardUploaderProps } from "./uploader.props";
 const WhiteboardUploader = (
   props: WhiteboardUploaderProps
 ): React.ReactElement => {
-  const { file, alt, onReset } = props;
-  const setSelected = useSetAtom(selectedAtom);
-  const toast = useToast();
-  const [uploadImage, result] = use_upload_asset_mutation();
+  const { file, alt, on_reset } = props;
+  const set_selected = use_set_atom(selected_atom);
+  const toast = use_toast();
+  const [upload_image, result] = use_upload_asset_mutation();
 
   /**
    * Handles the uploading of the image
    */
-  const handleUpload = React.useCallback(() => {
-    uploadImage({ file, alt })
+  const handle_upload = React.useCallback(() => {
+    upload_image({ file, alt })
       .unwrap()
       .then((res) => {
-        setSelected({
-          src: getCdnUrl(res.key, ImageSize.W_320),
+        set_selected({
+          src: get_cdn_url(res.key, ImageSize.W_320),
           key: res.key,
           hex: res.hex,
           alt: res.alt,
@@ -46,20 +46,20 @@ const WhiteboardUploader = (
           toast(e.data.error, "error");
         }
       });
-  }, [alt, file, setSelected, toast, uploadImage]);
+  }, [alt, file, set_selected, toast, upload_image]);
 
   /**
    * Resets the component
    */
   const reset = React.useCallback(() => {
-    setSelected(null);
-    if (onReset) {
-      onReset();
+    set_selected(null);
+    if (on_reset) {
+      on_reset();
     }
-  }, [onReset, setSelected]);
+  }, [on_reset, set_selected]);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  React.useEffect(() => handleUpload(), []);
+  React.useEffect(() => handle_upload(), []);
 
   return (
     <div
@@ -83,7 +83,7 @@ const WhiteboardUploader = (
           </Typography>
           <Spacer orientation={"vertical"} size={2.25} />
           <div className={"flex-center"}>
-            <Button onClick={handleUpload}>Try again</Button>
+            <Button onClick={handle_upload}>Try again</Button>
           </div>
         </React.Fragment>
       ) : (

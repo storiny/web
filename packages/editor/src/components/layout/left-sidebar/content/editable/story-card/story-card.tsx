@@ -3,11 +3,11 @@ import { clsx } from "clsx";
 import { useAtom, useAtomValue } from "jotai";
 import React from "react";
 
-import AspectRatio from "~/components/AspectRatio";
-import Button from "~/components/Button";
-import IconButton from "~/components/IconButton";
-import Image from "~/components/Image";
-import Typography from "~/components/Typography";
+import AspectRatio from "../../../../../../../../ui/src/components/aspect-ratio";
+import Button from "../../../../../../../../ui/src/components/button";
+import IconButton from "../../../../../../../../ui/src/components/icon-button";
+import Image from "../../../../../../../../ui/src/components/image";
+import Typography from "../../../../../../../../ui/src/components/typography";
 import EditIcon from "~/icons/Edit";
 import ImageIcon from "~/icons/Image";
 import PhotoEditIcon from "~/icons/PhotoEdit";
@@ -19,8 +19,8 @@ import { EditorStoryCardProps } from "./story-card.props";
 
 const EditorStoryCard = (props: EditorStoryCardProps): React.ReactElement => {
   const { className, status, ...rest } = props;
-  const [story, setStory] = useAtom(storyMetadataAtom);
-  const docStatus = useAtomValue(docStatusAtom);
+  const [story, setStory] = use_atom(storyMetadataAtom);
+  const docStatus = use_atom_value(docStatusAtom);
   const publishing = docStatus === "publishing";
 
   return (
@@ -34,7 +34,7 @@ const EditorStoryCard = (props: EditorStoryCardProps): React.ReactElement => {
           <Image
             alt={""}
             hex={story.splash_hex}
-            imgId={story.splash_id}
+            img_key={story.splash_id}
             size={ImageSize.W_320}
           />
         )}

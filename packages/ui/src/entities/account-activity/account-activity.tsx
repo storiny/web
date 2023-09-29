@@ -4,8 +4,8 @@ import { AccountActivityType } from "@storiny/shared";
 import clsx from "clsx";
 import React from "react";
 
-import Avatar from "~/components/Avatar";
-import Typography from "~/components/Typography";
+import Avatar from "src/components/avatar";
+import Typography from "src/components/typography";
 import ExportIcon from "~/icons/Export";
 import ForbidIcon from "~/icons/Forbid";
 import KeyIcon from "~/icons/Key";
@@ -14,7 +14,7 @@ import MoodSmileIcon from "~/icons/MoodSmile";
 import PasswordIcon from "~/icons/Password";
 import PencilIcon from "~/icons/Pencil";
 import TwoFAIcon from "~/icons/TwoFA";
-import { DateFormat, formatDate } from "~/utils/formatDate";
+import { DateFormat, format_date } from "src/utils/format-date";
 
 import styles from "./account-activity.module.scss";
 import { AccountActivityProps } from "./account-activity.props";
@@ -45,37 +45,37 @@ const ACTIVITY_TYPE_ICON_MAP: Record<AccountActivityType, React.ReactNode> = {
 };
 
 const AccountActivity = (props: AccountActivityProps): React.ReactElement => {
-  const { hidePipe, className, accountActivity, ...rest } = props;
+  const { hide_pipe, className, account_activity, ...rest } = props;
   return (
     <div
       {...rest}
       className={clsx(
         "flex",
         styles["account-activity"],
-        hidePipe && styles["hide-pipe"],
+        hide_pipe && styles["hide-pipe"],
         className
       )}
     >
       <Avatar className={styles.avatar} size={"lg"}>
-        {ACTIVITY_TYPE_ICON_MAP[accountActivity.type]}
+        {ACTIVITY_TYPE_ICON_MAP[account_activity.type]}
       </Avatar>
       <div className={"flex-col"}>
         <Typography ellipsis>
           <span className={"t-bold"}>
-            {ACTIVITY_TYPE_TITLE_MAP[accountActivity.type]}
+            {ACTIVITY_TYPE_TITLE_MAP[account_activity.type]}
           </span>{" "}
           <Typography level={"body2"}>
             <span className={"t-muted"}>&bull;</span>{" "}
             <span className={"t-minor"}>
-              {formatDate(
-                accountActivity.created_at,
+              {format_date(
+                account_activity.created_at,
                 DateFormat.RELATIVE_CAPITALIZED
               )}
             </span>
           </Typography>
         </Typography>
         <Typography as={"div"} className={"t-minor"} level={"body2"}>
-          <AccountActivityParser content={accountActivity.description} />
+          <AccountActivityParser content={account_activity.description} />
         </Typography>
       </div>
     </div>

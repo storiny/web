@@ -1,4 +1,4 @@
-import { atomWithReset } from "jotai/utils";
+import { atomWithReset as atom_with_reset } from "jotai/utils";
 
 export type GallerySidebarTabsValue =
   | "pexels"
@@ -6,4 +6,5 @@ export type GallerySidebarTabsValue =
   | "library"
   | "upload";
 
-export const sidebarTabAtom = atomWithReset<GallerySidebarTabsValue>("pexels");
+export const sidebar_tab_atom =
+  atom_with_reset<GallerySidebarTabsValue>("pexels");

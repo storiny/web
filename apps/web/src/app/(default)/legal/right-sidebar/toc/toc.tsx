@@ -4,8 +4,8 @@ import { clsx } from "clsx";
 import NextLink from "next/link";
 import React from "react";
 
-import ScrollArea from "~/components/ScrollArea";
-import Typography from "~/components/Typography";
+import ScrollArea from "../../../../../../../../packages/ui/src/components/scroll-area";
+import Typography from "../../../../../../../../packages/ui/src/components/typography";
 
 import styles from "./toc.module.scss";
 

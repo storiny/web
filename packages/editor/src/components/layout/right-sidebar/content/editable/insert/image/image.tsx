@@ -14,7 +14,7 @@ const ImageItem = ({
   const [insertImage] = useInsertImage();
   return (
     <Gallery
-      onConfirm={(image): void =>
+      on_confirm={(image): void =>
         insertImage({
           images: [
             {

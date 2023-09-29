@@ -3,7 +3,7 @@ import { ImageSize } from "@storiny/shared";
 import { clsx } from "clsx";
 import { $isLineBreakNode, NodeKey, NodeMap } from "lexical";
 
-import { getCdnUrl } from "~/utils/getCdnUrl";
+import { get_cdn_url } from "../../../../ui/src/utils/get-cdn-url";
 
 import { Binding } from "../../collaboration/bindings";
 import { Provider } from "../../collaboration/provider";
@@ -28,7 +28,7 @@ export interface CursorSelection {
 
 export interface Cursor {
   avatarHex: string | null;
-  avatarId: string | null;
+  avatar_id: string | null;
   color: string;
   name: string;
   selection: null | CursorSelection;
@@ -39,7 +39,7 @@ export interface Cursor {
  * @param props Cursor props
  */
 const createCursor = (
-  props: Pick<Cursor, "color" | "name" | "avatarHex" | "avatarId">
+  props: Pick<Cursor, "color" | "name" | "avatarHex" | "avatar_id">
 ): Cursor => ({
   ...props,
   selection: null
@@ -103,10 +103,10 @@ const createCursorSelection = (
   const wrapper = document.createElement("span");
   wrapper.className = clsx("flex-center", styles.wrapper);
 
-  if (cursor.avatarId) {
+  if (cursor.avatar_id) {
     const avatar = document.createElement("img");
     avatar.alt = "";
-    avatar.src = getCdnUrl(cursor.avatarId, ImageSize.W_32);
+    avatar.src = get_cdn_url(cursor.avatar_id, ImageSize.W_32);
     avatar.className = styles.avatar;
     avatar.style.setProperty(
       "--hex",
@@ -316,7 +316,7 @@ export const syncCursorPositions = (
         focusPos,
         name,
         color,
-        avatarId,
+        avatar_id,
         avatarHex,
         focusing
       } = awareness;
@@ -324,7 +324,7 @@ export const syncCursorPositions = (
       let cursor = cursors.get(clientID);
 
       if (cursor === undefined) {
-        cursor = createCursor({ name, color, avatarId, avatarHex });
+        cursor = createCursor({ name, color, avatar_id, avatarHex });
         cursors.set(clientID, cursor);
       }
 

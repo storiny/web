@@ -1,0 +1,28 @@
+.popover {
+  width: 320px;
+}
+
+.header {
+  padding-left: 16px;
+  border-bottom: 1px solid var(--divider);
+  background-color: var(--bg-elevation-md);
+}
+
+.icon {
+  --icon-size: 18px;
+
+  padding: 6px;
+  margin-left: -8px;
+  margin-right: 6px;
+}
+
+.close {
+  padding: 5px;
+}
+
+.footer {
+  padding: 12px;
+  gap: 10px;
+  border-top: 1px solid var(--divider);
+  background-color: var(--bg-elevation-sm);
+}

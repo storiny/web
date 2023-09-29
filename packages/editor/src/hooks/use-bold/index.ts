@@ -9,7 +9,7 @@ import { boldAtom } from "../../atoms";
  * Hooks for using bold text style
  */
 export const useBold = (): [boolean, () => void] => {
-  const bold = useAtomValue(boldAtom);
+  const bold = use_atom_value(boldAtom);
   const [editor] = useLexicalComposerContext();
 
   const toggleBold = React.useCallback(() => {

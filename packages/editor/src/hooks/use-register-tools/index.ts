@@ -56,21 +56,21 @@ const listTypeToTextStyleMap: Record<Exclude<ListType, "check">, TextStyle> = {
  */
 export const useRegisterTools = (): void => {
   const [editor] = useLexicalComposerContext();
-  const setTextStyle = useSetAtom(textStyleAtom);
-  const setAlignment = useSetAtom(alignmentAtom);
-  const setLink = useSetAtom(linkAtom);
-  const setBold = useSetAtom(boldAtom);
-  const setItalic = useSetAtom(italicAtom);
-  const setUnderline = useSetAtom(underlineAtom);
-  const setStrikethrough = useSetAtom(strikethroughAtom);
-  const setSubscript = useSetAtom(subscriptAtom);
-  const setSuperscript = useSetAtom(superscriptAtom);
-  const setCode = useSetAtom(codeAtom);
-  const setCanIndent = useSetAtom(canIndentAtom);
-  const setCanOutdent = useSetAtom(canOutdentAtom);
-  const setCanUndo = useSetAtom(canUndoAtom);
-  const setCanRedo = useSetAtom(canRedoAtom);
-  const setIsCaptionSelection = useSetAtom(isCaptionSelectionAtom);
+  const setTextStyle = use_set_atom(textStyleAtom);
+  const setAlignment = use_set_atom(alignmentAtom);
+  const setLink = use_set_atom(linkAtom);
+  const setBold = use_set_atom(boldAtom);
+  const setItalic = use_set_atom(italicAtom);
+  const setUnderline = use_set_atom(underlineAtom);
+  const setStrikethrough = use_set_atom(strikethroughAtom);
+  const setSubscript = use_set_atom(subscriptAtom);
+  const setSuperscript = use_set_atom(superscriptAtom);
+  const setCode = use_set_atom(codeAtom);
+  const setCanIndent = use_set_atom(canIndentAtom);
+  const setCanOutdent = use_set_atom(canOutdentAtom);
+  const setCanUndo = use_set_atom(canUndoAtom);
+  const setCanRedo = use_set_atom(canRedoAtom);
+  const setIsCaptionSelection = use_set_atom(isCaptionSelectionAtom);
 
   /**
    * Updates tools

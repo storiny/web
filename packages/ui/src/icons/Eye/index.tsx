@@ -2,7 +2,7 @@
 
 import React from "react";
 
-import { createSvgIcon } from "~/utils/createSvgIcon";
+import { create_svg_icon } from "src/utils/create-svg-icon";
 
 const EyeIcon = (
   <>
@@ -11,4 +11,4 @@ const EyeIcon = (
   </>
 );
 
-export default createSvgIcon(EyeIcon, "eye");
+export default create_svg_icon(EyeIcon, "eye");

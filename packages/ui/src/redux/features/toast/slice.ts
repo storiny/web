@@ -2,9 +2,9 @@
 
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { VIBRATION_PATTERNS } from "@storiny/shared";
-import { dev_console } from "@storiny/shared/src/utils/devLog";
+import { dev_console } from "../../../../../shared/src/utils/dev-log";
 
-import { ToastSeverity } from "~/components/Toast";
+import { ToastSeverity } from "src/components/toast";
 import { AppStartListening } from "src/redux/listener-middleware";
 
 export interface ToastState {

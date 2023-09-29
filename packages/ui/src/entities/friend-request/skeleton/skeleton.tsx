@@ -1,8 +1,8 @@
 import clsx from "clsx";
 import React from "react";
 
-import Skeleton from "~/components/Skeleton";
-import Spacer from "~/components/Spacer";
+import Skeleton from "src/components/skeleton";
+import Spacer from "src/components/spacer";
 
 import styles from "../friend-request.module.scss";
 

@@ -6,7 +6,7 @@ export interface UserProps extends React.ComponentPropsWithoutRef<"div"> {
    * The type of action to render
    * @default 'default'
    */
-  actionType?: "default" | "block" | "mute";
+  action_type?: "default" | "block" | "mute";
   /**
    * The user object.
    */

@@ -1,0 +1,11 @@
+.actions {
+  padding: 8px;
+
+  &:not(.disabled) {
+    cursor: text;
+  }
+}
+
+.textarea {
+  min-height: 50px;
+}

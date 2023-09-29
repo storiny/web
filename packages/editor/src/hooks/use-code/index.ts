@@ -9,7 +9,7 @@ import { codeAtom } from "../../atoms";
  * Hooks for using code text style
  */
 export const useCode = (): [boolean, () => void] => {
-  const code = useAtomValue(codeAtom);
+  const code = use_atom_value(codeAtom);
   const [editor] = useLexicalComposerContext();
 
   const toggleCode = React.useCallback(() => {

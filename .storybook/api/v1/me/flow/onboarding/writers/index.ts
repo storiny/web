@@ -1,10 +1,10 @@
-import { mockUsers } from "@storiny/ui/src/mocks";
+import { MOCK_USERS } from "@storiny/ui/src/mocks";
 import { nanoid } from "nanoid";
 
 const { worker, rest } = window.msw;
 
 const getRandomUser = () =>
-  mockUsers[Math.floor(Math.random() * mockUsers.length)];
+  MOCK_USERS[Math.floor(Math.random() * MOCK_USERS.length)];
 
 worker.use(
   rest.get(

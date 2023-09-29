@@ -1,20 +1,18 @@
-import { zodResolver } from "@hookform/resolvers/zod";
-import { axe } from "@storiny/test-utils";
-import { waitFor } from "@testing-library/react";
 import React from "react";
 import { z } from "zod";
 
-import Form, { useForm } from "~/components/Form";
-import { render_test_with_provider } from "src/redux/test-utils";
+import Form, { use_form } from "~/components/form";
+import { render_test_with_provider } from "~/redux/test-utils";
 
+import { zod_resolver } from "../form";
 import FormMultiSelect from "./form-multi-select";
 import { FormMultiSelectProps } from "./form-multi-select.props";
 
-const testSchema = z.object({
+const test_schema = z.object({
   "multi-select": z.array(z.string())
 });
 
-type TestSchema = z.infer<typeof testSchema>;
+type TestSchema = z.infer<typeof test_schema>;
 
 const Component = ({
   children,
@@ -23,15 +21,15 @@ const Component = ({
   children: React.ReactNode;
   disabled?: boolean;
 }): React.ReactElement => {
-  const form = useForm<TestSchema>({
-    resolver: zodResolver(testSchema),
+  const form = use_form<TestSchema>({
+    resolver: zod_resolver(test_schema),
     defaultValues: {
       "multi-select": ["option-1"]
     }
   });
 
   return (
-    <Form disabled={disabled} providerProps={form}>
+    <Form disabled={disabled} provider_props={form}>
       {children}
     </Form>
   );
@@ -60,12 +58,12 @@ describe("<FormMultiSelect />", () => {
     const { getByTestId } = render_test_with_provider(
       <Component disabled>
         <FormMultiSelect
-          formSlotProps={
+          form_slot_props={
             {
-              formItem: {
+              form_item: {
                 "data-testid": "form-item"
               }
-            } as FormMultiSelectProps["formSlotProps"]
+            } as FormMultiSelectProps["form_slot_props"]
           }
           label={"Test label"}
           menuIsOpen
@@ -85,14 +83,14 @@ describe("<FormMultiSelect />", () => {
     const { getByTestId } = render_test_with_provider(
       <Component>
         <FormMultiSelect
-          formSlotProps={
+          form_slot_props={
             {
-              formItem: { "data-testid": "form-item" },
+              form_item: { "data-testid": "form-item" },
               label: { "data-testid": "label" },
-              helperText: { "data-testid": "helper-text" }
-            } as FormMultiSelectProps["formSlotProps"]
+              helper_text: { "data-testid": "helper-text" }
+            } as FormMultiSelectProps["form_slot_props"]
           }
-          helperText={"Test helper text"}
+          helper_text={"Test helper text"}
           label={"Test label"}
           menuIsOpen
           name={"multi-select"}

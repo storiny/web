@@ -2,9 +2,9 @@ import dynamic from "next/dynamic";
 import React from "react";
 
 import { dynamicLoader } from "~/common/dynamic";
-import { useMediaQuery } from "~/hooks/useMediaQuery";
-import RightSidebar from "~/layout/RightSidebar";
-import { breakpoints } from "~/theme/breakpoints";
+import { use_media_query } from "../../../../../../../../../../../packages/ui/src/hooks/use-media-query";
+import RightSidebar from "../../../../../../../../../../../packages/ui/src/layout/right-sidebar";
+import { BREAKPOINTS } from "~/theme/breakpoints";
 
 const SuspendedDashboardRightSidebarContent = dynamic(
   () => import("./content"),
@@ -14,9 +14,9 @@ const SuspendedDashboardRightSidebarContent = dynamic(
 );
 
 const DefaultDashboardRightSidebar = (): React.ReactElement | null => {
-  const shouldRender = useMediaQuery(breakpoints.up("desktop"));
+  const should_render = use_media_query(BREAKPOINTS.up("desktop"));
 
-  if (!shouldRender) {
+  if (!should_render) {
     return null;
   }
 

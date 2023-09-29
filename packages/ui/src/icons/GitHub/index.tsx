@@ -2,7 +2,7 @@
 
 import React from "react";
 
-import { createSvgIcon } from "~/utils/createSvgIcon";
+import { create_svg_icon } from "src/utils/create-svg-icon";
 
 const GitHubIcon = (
   <>
@@ -11,4 +11,4 @@ const GitHubIcon = (
   </>
 );
 
-export default createSvgIcon(GitHubIcon, "github", { noStroke: true });
+export default create_svg_icon(GitHubIcon, "github", { no_stroke: true });

@@ -1,0 +1,30 @@
+.title-with-icon {
+  --icon-size: 14px;
+  --icon-stroke: var(--fg-minor);
+
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 8px;
+}
+
+.popular-stories {
+  gap: 20px;
+}
+
+.show-more-wrapper {
+  display: flex;
+  padding-top: 4px;
+  justify-content: flex-end;
+}
+
+.show-more {
+  --icon-size: 12px;
+
+  width: fit-content;
+  gap: 2px;
+}
+
+.tags-container {
+  gap: 10px;
+}

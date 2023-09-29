@@ -6,23 +6,31 @@ import React from "react";
 import { dynamicLoader } from "~/common/dynamic";
 import { VirtualizedFriendRequestList } from "~/common/friend-request";
 import SuspenseLoader from "~/common/suspense-loader";
-import Button from "~/components/Button";
-import Divider from "~/components/Divider";
-import Input from "~/components/Input";
-import { ModalFooterButton, useModal } from "~/components/Modal";
-import Option from "~/components/Option";
-import { Root, Scrollbar, Thumb, Viewport } from "~/components/ScrollArea";
-import Select from "~/components/Select";
-import ErrorState from "~/entities/ErrorState";
-import { useDebounce } from "~/hooks/useDebounce";
-import { useMediaQuery } from "~/hooks/useMediaQuery";
+import Button from "../../../../../../../../../../../../../packages/ui/src/components/button";
+import Divider from "../../../../../../../../../../../../../packages/ui/src/components/divider";
+import Input from "../../../../../../../../../../../../../packages/ui/src/components/input";
+import {
+  ModalFooterButton,
+  use_modal
+} from "../../../../../../../../../../../../../packages/ui/src/components/modal";
+import Option from "../../../../../../../../../../../../../packages/ui/src/components/option";
+import {
+  Root,
+  Scrollbar,
+  Thumb,
+  Viewport
+} from "../../../../../../../../../../../../../packages/ui/src/components/scroll-area";
+import Select from "../../../../../../../../../../../../../packages/ui/src/components/select";
+import ErrorState from "../../../../../../../../../../../../../packages/ui/src/entities/error-state";
+import { use_debounce } from "../../../../../../../../../../../../../packages/ui/src/hooks/use-debounce";
+import { use_media_query } from "../../../../../../../../../../../../../packages/ui/src/hooks/use-media-query";
 import SearchIcon from "~/icons/Search";
 import UserHeartIcon from "~/icons/UserHeart";
 import {
   get_query_error_type,
   use_get_friend_requests_query
 } from "~/redux/features";
-import { breakpoints } from "~/theme/breakpoints";
+import { BREAKPOINTS } from "~/theme/breakpoints";
 
 import styles from "./friend-requests.module.scss";
 
@@ -39,7 +47,7 @@ const renderKeyAtom = atom<string>(""); // Key to re-render the scrollbar
 const Scroller = React.memo(
   React.forwardRef<HTMLDivElement, React.ComponentPropsWithRef<"div">>(
     ({ children, ...rest }, ref) => {
-      const renderKey = useAtomValue(renderKeyAtom);
+      const renderKey = use_atom_value(renderKeyAtom);
       return (
         <>
           <Viewport {...rest} ref={ref} tabIndex={-1}>
@@ -61,33 +69,33 @@ Scroller.displayName = "Scroller";
 const FriendRequestsModal = (): React.ReactElement => {
   const [sort, setSort] = React.useState<FriendRequestsSortValue>("popular");
   const [query, setQuery] = React.useState<string>("");
-  const [page, setPage] = React.useState<number>(1);
-  const setRenderKey = useSetAtom(renderKeyAtom);
-  const debouncedQuery = useDebounce(query);
+  const [page, set_page] = React.useState<number>(1);
+  const setRenderKey = use_set_atom(renderKeyAtom);
+  const debounced_query = use_debounce(query);
   const { data, isLoading, isFetching, isError, error, refetch } =
     use_get_friend_requests_query({
       page,
       sort,
-      query: debouncedQuery
+      query: debounced_query
     });
   const { items = [], has_more } = data || {};
-  const isTyping = query !== debouncedQuery;
+  const is_typing = query !== debounced_query;
 
-  const loadMore = React.useCallback(
-    () => setPage((prevState) => prevState + 1),
+  const load_more = React.useCallback(
+    () => set_page((prev_state) => prev_state + 1),
     []
   );
 
   const handleSortChange = React.useCallback(
     (newSort: FriendRequestsSortValue) => {
-      setPage(1);
+      set_page(1);
       setSort(newSort);
     },
     []
   );
 
   React.useEffect(() => {
-    setPage(1);
+    set_page(1);
   }, [query]);
 
   React.useEffect(() => {
@@ -140,11 +148,11 @@ const FriendRequestsModal = (): React.ReactElement => {
           <Option value={"old"}>Old</Option>
         </Select>
       </div>
-      {isLoading || isTyping || (isFetching && page === 1) ? (
+      {isLoading || is_typing || (isFetching && page === 1) ? (
         <SuspenseLoader />
       ) : isError ? (
         <ErrorState
-          autoSize
+          auto_size
           component_props={{
             button: { loading: isFetching }
           }}
@@ -159,7 +167,7 @@ const FriendRequestsModal = (): React.ReactElement => {
             components={{ Scroller }}
             friendRequests={items}
             has_more={Boolean(has_more)}
-            loadMore={loadMore}
+            load_more={load_more}
             useWindowScroll={false}
           />
         </Root>
@@ -169,33 +177,33 @@ const FriendRequestsModal = (): React.ReactElement => {
 };
 
 const FriendRequests = (): React.ReactElement => {
-  const isSmallerThanMobile = useMediaQuery(breakpoints.down("mobile"));
-  const isSmallerThanDesktop = useMediaQuery(breakpoints.down("desktop"));
-  const [element] = useModal(
-    ({ openModal }) => (
+  const is_smaller_than_mobile = use_media_query(BREAKPOINTS.down("mobile"));
+  const is_smaller_than_desktop = use_media_query(BREAKPOINTS.down("desktop"));
+  const [element] = use_modal(
+    ({ open_modal }) => (
       <Button
-        autoSize
-        checkAuth
+        auto_size
+        check_auth
         className={"fit-w"}
-        onClick={openModal}
-        variant={isSmallerThanDesktop ? "hollow" : "rigid"}
+        onClick={open_modal}
+        variant={is_smaller_than_desktop ? "hollow" : "rigid"}
       >
         View requests
       </Button>
     ),
     <FriendRequestsModal />,
     {
-      fullscreen: isSmallerThanMobile,
+      fullscreen: is_smaller_than_mobile,
       footer: (
         <>
-          <ModalFooterButton compact={isSmallerThanMobile}>
+          <ModalFooterButton compact={is_smaller_than_mobile}>
             Done
           </ModalFooterButton>
         </>
       ),
       slot_props: {
         footer: {
-          compact: isSmallerThanMobile
+          compact: is_smaller_than_mobile
         },
         body: {
           style: {
@@ -204,7 +212,7 @@ const FriendRequests = (): React.ReactElement => {
         },
         content: {
           style: {
-            width: isSmallerThanMobile ? "100%" : "480px"
+            width: is_smaller_than_mobile ? "100%" : "480px"
           }
         },
         header: {

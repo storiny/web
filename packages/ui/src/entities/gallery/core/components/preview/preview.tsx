@@ -1,15 +1,15 @@
 import clsx from "clsx";
-import { useAtomValue } from "jotai";
+import { useAtomValue as use_atom_value } from "jotai";
 import React from "react";
 
-import Image from "~/components/Image";
+import Image from "src/components/image";
 import PhotoIcon from "~/icons/Photo";
 
-import { selectedAtom } from "../../atoms";
+import { selected_atom } from "../../atoms";
 import styles from "./preview.module.scss";
 
 const ImagePreview = (): React.ReactElement => {
-  const selected = useAtomValue(selectedAtom);
+  const selected = use_atom_value(selected_atom);
   return (
     <div className={clsx("flex-center", styles.preview)}>
       {selected ? (

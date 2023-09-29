@@ -11,9 +11,9 @@ describe("<SensitiveContent />", () => {
     const mockSubmit = jest.fn();
     const user = userEvent.setup();
     render_test_with_provider(
-      <SensitiveContent allow_sensitive_media onSubmit={mockSubmit} />,
+      <SensitiveContent allow_sensitive_media on_submit={mockSubmit} />,
       {
-        loggedIn: true
+        logged_in: true
       }
     );
 
@@ -21,7 +21,7 @@ describe("<SensitiveContent />", () => {
       await user.click(screen.getByRole("switch"));
     });
 
-    await waitFor(() => {
+    await wait_for(() => {
       expect(mockSubmit).toHaveBeenCalledWith({
         "sensitive-content": false
       });

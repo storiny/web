@@ -11,7 +11,7 @@ export { axe } from "jest-axe";
 expect.extend(toHaveNoViolations);
 
 // Wait for popper's position
-export const waitForPosition = (): Promise<void> => act(async () => {});
+export const wait_for_position = (): Promise<void> => act(async () => {});
 
 // Mock fetch
 global.fetch = jest.fn();

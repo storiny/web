@@ -1,9 +1,9 @@
-import { SubmitHandler } from "~/components/Form";
+import { SubmitHandler } from "../../../../../../../../../../../../../../packages/ui/src/components/form";
 
 import { RemoveAccountSchema } from "./remove-account.schema";
 
 export interface RemoveAccountProps {
   onRemove: () => void;
-  onSubmit?: SubmitHandler<RemoveAccountSchema>;
+  on_submit?: SubmitHandler<RemoveAccountSchema>;
   vendor: "Apple" | "Google";
 }

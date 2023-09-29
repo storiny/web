@@ -12,8 +12,8 @@ import { decompressSync } from "fflate";
 import React from "react";
 import { Graph } from "schema-dts";
 
-import SplashScreen from "~/layout/SplashScreen";
-import { getCdnUrl } from "~/utils/getCdnUrl";
+import SplashScreen from "../../../../../../packages/ui/src/layout/splash-screen";
+import { get_cdn_url } from "../../../../../../packages/ui/src/utils/get-cdn-url";
 
 interface Props {
   doc: Array<number>;
@@ -54,7 +54,7 @@ const generateJsonLd = (story: Props["story"]): Graph => ({
       image: {
         "@type": "ImageObject",
         height: 128 as unknown as string,
-        url: getCdnUrl("web-assets/brand/logos/plain/logo", ImageSize.W_128),
+        url: get_cdn_url("web-assets/brand/logos/plain/logo", ImageSize.W_128),
         width: 128 as unknown as string
       },
       name: "Storiny",
@@ -80,7 +80,7 @@ const generateJsonLd = (story: Props["story"]): Graph => ({
         ? {
             "@type": "ImageObject",
             height: 630 as unknown as string,
-            url: getCdnUrl(story.splash_id, ImageSize.W_64),
+            url: get_cdn_url(story.splash_id, ImageSize.W_64),
             width: 1200 as unknown as string
           }
         : undefined,
@@ -94,7 +94,7 @@ const generateJsonLd = (story: Props["story"]): Graph => ({
           ? {
               "@type": "ImageObject",
               height: 64 as unknown as string,
-              url: getCdnUrl(story.user.avatar_id, ImageSize.W_64),
+              url: get_cdn_url(story.user.avatar_id, ImageSize.W_64),
               width: 64 as unknown as string
             }
           : undefined,
@@ -124,7 +124,10 @@ const generateJsonLd = (story: Props["story"]): Graph => ({
         logo: {
           "@type": "ImageObject",
           height: 128 as unknown as string,
-          url: getCdnUrl("web-assets/brand/logos/plain/logo", ImageSize.W_128),
+          url: get_cdn_url(
+            "web-assets/brand/logos/plain/logo",
+            ImageSize.W_128
+          ),
           width: 128 as unknown as string
         },
         name: "Storiny",

@@ -2,12 +2,12 @@ import { clsx } from "clsx";
 import { useAtomValue } from "jotai";
 import React from "react";
 
-import Avatar from "~/components/Avatar";
-import AvatarGroup from "~/components/AvatarGroup";
-import Divider from "~/components/Divider";
-import Tooltip from "~/components/Tooltip";
-import { useMediaQuery } from "~/hooks/useMediaQuery";
-import { breakpoints } from "~/theme/breakpoints";
+import Avatar from "../../../../../../ui/src/components/avatar";
+import AvatarGroup from "../../../../../../ui/src/components/avatar-group";
+import Divider from "../../../../../../ui/src/components/divider";
+import Tooltip from "../../../../../../ui/src/components/tooltip";
+import { use_media_query } from "../../../../../../ui/src/hooks/use-media-query";
+import { BREAKPOINTS } from "~/theme/breakpoints";
 import { capitalize } from "~/utils/capitalize";
 
 import { awarenessAtom } from "../../../../atoms";
@@ -23,10 +23,10 @@ const Participant = ({
 }: {
   presence: UserState;
 }): React.ReactElement => (
-  <Tooltip content={presence.name} rightSlot={capitalize(presence.role)}>
+  <Tooltip content={presence.name} right_slot={capitalize(presence.role)}>
     <Avatar
       alt={""}
-      avatarId={presence.avatarId}
+      avatar_id={presence.avatar_id}
       className={clsx(
         styles.x,
         styles.participant,
@@ -41,8 +41,8 @@ const Participant = ({
 );
 
 const EditorPresence = (): React.ReactElement => {
-  const isSmallerThanTablet = useMediaQuery(breakpoints.down("tablet"));
-  const awareness = useAtomValue(awarenessAtom);
+  const is_smaller_than_tablet = use_media_query(BREAKPOINTS.down("tablet"));
+  const awareness = use_atom_value(awarenessAtom);
   const [editors, setEditors] = React.useState<UserStateWithClientId[]>([]);
   const [viewers, setViewers] = React.useState<UserStateWithClientId[]>([]);
 
@@ -77,7 +77,7 @@ const EditorPresence = (): React.ReactElement => {
       {editors.map((editor) => (
         <Participant key={String(editor.clientID)} presence={editor} />
       ))}
-      {!isSmallerThanTablet && viewers.length ? (
+      {!is_smaller_than_tablet && viewers.length ? (
         <React.Fragment>
           <Divider orientation={"vertical"} />
           <AvatarGroup>

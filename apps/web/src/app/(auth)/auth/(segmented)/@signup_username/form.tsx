@@ -4,25 +4,25 @@ import { userProps } from "@storiny/shared";
 import { clsx } from "clsx";
 import React from "react";
 
-import Button from "~/components/Button";
+import Button from "../../../../../../../../packages/ui/src/components/button";
 import Form, {
   SubmitHandler,
-  useForm,
-  useFormContext,
-  zodResolver
-} from "~/components/Form";
-import FormInput from "~/components/FormInput";
-import Grow from "~/components/Grow";
-import Spacer from "~/components/Spacer";
-import Spinner from "~/components/Spinner";
-import { useDebounce } from "~/hooks/useDebounce";
+  use_form,
+  use_form_context,
+  zod_resolver
+} from "../../../../../../../../packages/ui/src/components/form";
+import FormInput from "../../../../../../../../packages/ui/src/components/form-input";
+import Grow from "../../../../../../../../packages/ui/src/components/grow";
+import Spacer from "../../../../../../../../packages/ui/src/components/spacer";
+import Spinner from "../../../../../../../../packages/ui/src/components/spinner";
+import { use_debounce } from "../../../../../../../../packages/ui/src/hooks/use-debounce";
 import { use_username_validation_mutation } from "~/redux/features";
 
 import { useAuthState } from "../../../actions";
 import { SignupUsernameSchema, signupUsernameSchema } from "./schema";
 
 interface Props {
-  onSubmit?: SubmitHandler<SignupUsernameSchema>;
+  on_submit?: SubmitHandler<SignupUsernameSchema>;
   // Skip username validation for tests
   skipValidation?: boolean;
 }
@@ -34,12 +34,12 @@ const UsernameField = ({
 }): React.ReactElement => {
   const mounted = React.useRef<boolean>(false);
   const { state } = useAuthState();
-  const { watch, getFieldState } = useFormContext();
+  const { watch, getFieldState } = use_form_context();
   const { invalid } = getFieldState("username");
   const [validateUsername, { isLoading, isError, isSuccess }] =
     use_username_validation_mutation();
   const username = watch("username", state.signup.username);
-  const debouncedUsername = useDebounce(username);
+  const debouncedUsername = use_debounce(username);
   const loading =
     username.length >= userProps.username.minLength &&
     (isLoading || username !== debouncedUsername);
@@ -84,8 +84,8 @@ const UsernameField = ({
           : "inverted"
       }
       data-testid={"username-input"}
-      formSlotProps={{
-        helperText: {
+      form_slot_props={{
+        helper_text: {
           style: {
             color: loading
               ? "var(--fg-minor)"
@@ -95,7 +95,7 @@ const UsernameField = ({
           } as React.CSSProperties
         }
       }}
-      helperText={
+      helper_text={
         invalid ||
         username.length < userProps.username.minLength ? undefined : (
           <span className={"flex"} style={{ alignItems: "center" }}>
@@ -124,12 +124,12 @@ const UsernameField = ({
 };
 
 const SignupUsernameForm = ({
-  onSubmit,
+  on_submit,
   skipValidation
 }: Props): React.ReactElement => {
   const { state } = useAuthState();
-  const form = useForm<SignupUsernameSchema>({
-    resolver: zodResolver(signupUsernameSchema),
+  const form = use_form<SignupUsernameSchema>({
+    resolver: zod_resolver(signupUsernameSchema),
     defaultValues: {
       username: state.signup.username
     }
@@ -142,16 +142,16 @@ const SignupUsernameForm = ({
   );
 
   const handleSubmit: SubmitHandler<SignupUsernameSchema> = (values) => {
-    if (onSubmit) {
-      onSubmit(values);
+    if (on_submit) {
+      on_submit(values);
     }
   };
 
   return (
     <Form<SignupUsernameSchema>
       className={clsx("flex-col", "full-h")}
-      onSubmit={handleSubmit}
-      providerProps={form}
+      on_submit={handleSubmit}
+      provider_props={form}
     >
       <UsernameField setValid={setValidImpl} />
       <Spacer orientation={"vertical"} size={5} />

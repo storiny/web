@@ -1,6 +1,6 @@
 import React from "react";
 
-import MenuItem from "~/components/MenuItem";
+import MenuItem from "../../../../../../../ui/src/components/menu-item";
 import Gallery from "~/entities/gallery";
 import ImageIcon from "~/icons/Image";
 
@@ -10,7 +10,7 @@ const ImageMenuItem = (): React.ReactElement => {
   const [insertImage] = useInsertImage();
   return (
     <Gallery
-      onConfirm={(image): void =>
+      on_confirm={(image): void =>
         insertImage({
           images: [
             {

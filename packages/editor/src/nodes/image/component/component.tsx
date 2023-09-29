@@ -22,14 +22,14 @@ import { useHotkeys } from "react-hotkeys-hook";
 import { useIntersectionObserver } from "react-intersection-observer-hook";
 import useResizeObserver from "use-resize-observer";
 
-import AspectRatio from "~/components/AspectRatio";
-import IconButton from "~/components/IconButton";
-import Image from "~/components/Image";
-import Popover from "~/components/Popover";
-import Spinner from "~/components/Spinner";
+import AspectRatio from "../../../../../ui/src/components/aspect-ratio";
+import IconButton from "../../../../../ui/src/components/icon-button";
+import Image from "../../../../../ui/src/components/image";
+import Popover from "../../../../../ui/src/components/popover";
+import Spinner from "../../../../../ui/src/components/spinner";
 import TrashIcon from "~/icons/Trash";
-import { breakpoints } from "~/theme/breakpoints";
-import { getCdnUrl } from "~/utils/getCdnUrl";
+import { BREAKPOINTS } from "~/theme/breakpoints";
+import { get_cdn_url } from "../../../../../ui/src/utils/get-cdn-url";
 
 import { overflowingFiguresAtom } from "../../../atoms";
 import figureStyles from "../../common/figure.module.scss";
@@ -70,7 +70,7 @@ const getImageSizes = (
           ]
         : layout === "overflow"
         ? [
-            `${breakpoints.up("desktop")} ${
+            `${BREAKPOINTS.up("desktop")} ${
               itemCount === 2
                 ? "650px" // Half of the layout width
                 : itemCount === 3
@@ -82,7 +82,7 @@ const getImageSizes = (
             "100vw"
           ]
         : [
-            `${breakpoints.up("desktop")} 680px`, // Fill the main content
+            `${BREAKPOINTS.up("desktop")} 680px`, // Fill the main content
             "100vw" // Stretch over the entire screen
           ]
       ).join(",");
@@ -106,7 +106,7 @@ const ImageComponent = ({
   const [selection, setSelection] = React.useState<
     RangeSelection | NodeSelection | GridSelection | null
   >(null);
-  const setOverflowingFigures = useSetAtom(overflowingFiguresAtom);
+  const setOverflowingFigures = use_set_atom(overflowingFiguresAtom);
   const { height: containerHeight, ref: containerRef } = useResizeObserver();
   const [ref, { entry }] = useIntersectionObserver({
     rootMargin: "-52px 0px 0px 0px"
@@ -311,19 +311,19 @@ const ImageComponent = ({
                   <Image
                     alt={image.alt}
                     hex={image.hex}
-                    imgId={image.key}
+                    img_key={image.key}
                     rating={editable ? undefined : image.rating}
                     slot_props={{
                       image: {
                         sizes: getImageSizes(layout, images.length, index),
                         srcSet: [
-                          `${getCdnUrl(image.key, ImageSize.W_2048)} 2048w`,
-                          `${getCdnUrl(image.key, ImageSize.W_1920)} 1920w`,
-                          `${getCdnUrl(image.key, ImageSize.W_1440)} 1440w`,
-                          `${getCdnUrl(image.key, ImageSize.W_1024)} 1024w`,
-                          `${getCdnUrl(image.key, ImageSize.W_860)} 860w`,
-                          `${getCdnUrl(image.key, ImageSize.W_640)} 640w`,
-                          `${getCdnUrl(image.key, ImageSize.W_320)} 320w`
+                          `${get_cdn_url(image.key, ImageSize.W_2048)} 2048w`,
+                          `${get_cdn_url(image.key, ImageSize.W_1920)} 1920w`,
+                          `${get_cdn_url(image.key, ImageSize.W_1440)} 1440w`,
+                          `${get_cdn_url(image.key, ImageSize.W_1024)} 1024w`,
+                          `${get_cdn_url(image.key, ImageSize.W_860)} 860w`,
+                          `${get_cdn_url(image.key, ImageSize.W_640)} 640w`,
+                          `${get_cdn_url(image.key, ImageSize.W_320)} 320w`
                         ].join(",")
                       }
                     }}

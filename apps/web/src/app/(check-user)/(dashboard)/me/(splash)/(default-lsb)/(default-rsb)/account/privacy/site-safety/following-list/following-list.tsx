@@ -2,12 +2,16 @@ import { RelationVisibility } from "@storiny/shared";
 import { clsx } from "clsx";
 import React from "react";
 
-import Form, { SubmitHandler, useForm, zodResolver } from "~/components/Form";
-import FormRadio from "~/components/FormRadio";
-import FormRadioGroup from "~/components/FormRadioGroup";
-import Spacer from "~/components/Spacer";
-import { useToast } from "~/components/Toast";
-import Typography from "~/components/Typography";
+import Form, {
+  SubmitHandler,
+  use_form,
+  zod_resolver
+} from "../../../../../../../../../../../../../../packages/ui/src/components/form";
+import FormRadio from "../../../../../../../../../../../../../../packages/ui/src/components/form-radio";
+import FormRadioGroup from "../../../../../../../../../../../../../../packages/ui/src/components/form-radio-group";
+import Spacer from "../../../../../../../../../../../../../../packages/ui/src/components/spacer";
+import { use_toast } from "../../../../../../../../../../../../../../packages/ui/src/components/toast";
+import Typography from "../../../../../../../../../../../../../../packages/ui/src/components/typography";
 import {
   select_is_private_account,
   use_following_list_mutation
@@ -22,14 +26,14 @@ import {
 } from "./following-list.schema";
 
 const FollowingList = ({
-  onSubmit,
+  on_submit,
   following_list_visibility
 }: FollowingListProps): React.ReactElement => {
-  const toast = useToast();
+  const toast = use_toast();
   const isPrivate = use_app_selector(select_is_private_account);
   const prevValuesRef = React.useRef<FollowingListSchema>();
-  const form = useForm<FollowingListSchema>({
-    resolver: zodResolver(followingListSchema),
+  const form = use_form<FollowingListSchema>({
+    resolver: zod_resolver(followingListSchema),
     defaultValues: {
       "following-list": `${following_list_visibility}` as `${1 | 2 | 3}`
     }
@@ -37,8 +41,8 @@ const FollowingList = ({
   const [mutateFollowingList, { isLoading }] = use_following_list_mutation();
 
   const handleSubmit: SubmitHandler<FollowingListSchema> = (values) => {
-    if (onSubmit) {
-      onSubmit(values);
+    if (on_submit) {
+      on_submit(values);
     } else {
       mutateFollowingList(values)
         .unwrap()
@@ -66,11 +70,11 @@ const FollowingList = ({
       <Form<FollowingListSchema>
         className={clsx("flex-col", styles.x, styles.form)}
         disabled={isLoading}
-        onSubmit={handleSubmit}
-        providerProps={form}
+        on_submit={handleSubmit}
+        provider_props={form}
       >
         <FormRadioGroup
-          autoSize
+          auto_size
           className={clsx(styles.x, styles["radio-group"])}
           name={"following-list"}
           onValueChange={(): void => {

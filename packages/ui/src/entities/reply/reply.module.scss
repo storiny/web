@@ -1,6 +1,5 @@
-@use "../../theme/breakpoints" as breakpoints;
+@use "breakpoints";
 
-/* Base styles */
 .reply {
   padding-block: 12px;
   gap: 12px;
@@ -26,7 +25,6 @@
   }
 }
 
-/* Header */
 .header {
   justify-content: space-between;
   gap: 24px;
@@ -42,13 +40,11 @@
   }
 }
 
-/* Content */
 .content {
   font-size: 15px;
   line-height: 20px;
 }
 
-/* Stat */
 .stat {
   --icon-size: 14px;
   --icon-stroke: var(--fg-minor);
@@ -56,7 +52,6 @@
   gap: 6px;
 }
 
-/* Hidden */
 .hidden {
   border: 1px solid var(--divider);
   border-radius: var(--radius-md);
@@ -64,7 +59,6 @@
   padding: 8px 12px;
 }
 
-/* Content and hidden wrapper */
 .content,
 .hidden {
   &:not(.static) {

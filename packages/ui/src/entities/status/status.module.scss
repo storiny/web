@@ -1,0 +1,44 @@
+.text {
+  color: var(--fg-major);
+}
+
+.status {
+  background-color: var(--bg-elevation-sm);
+  border: 1px solid var(--divider);
+  border-radius: var(--radius-md);
+  justify-content: flex-start;
+  padding: 5px 8px;
+  gap: 8px;
+
+  &.editable {
+    cursor: pointer;
+
+    &:hover {
+      background-color: var(--bg-elevation-md);
+    }
+  }
+
+  &:not(.has-text) {
+    & .text {
+      color: var(--fg-minor);
+      font-weight: var(--font-weight-medium);
+    }
+  }
+}
+
+.emoji {
+  --icon-size: 14px;
+  --icon-stroke: var(--fg-minor);
+
+  &.has-emoji {
+    width: 14px;
+    height: 14px;
+    background: var(--emoji) center / 100% no-repeat;
+  }
+}
+
+.expiration-time {
+  color: var(--fg-muted);
+  font-weight: var(--font-weight-medium);
+  margin-left: 12px;
+}

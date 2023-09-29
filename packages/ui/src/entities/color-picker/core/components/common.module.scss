@@ -1,0 +1,36 @@
+$transparent-grid: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAJUlEQVQYV2N89erVfwY0ICYmxoguxjgUFKI7GsTH5m4M3w1ChQC1/Ca8i2n1WgAAAABJRU5ErkJggg");
+
+.thumb {
+  --color: #fff;
+
+  z-index: 1;
+  position: absolute;
+  cursor: grab;
+  width: 16px;
+  height: 16px;
+  border-radius: 100%;
+  transform: translate(-50%, -50%);
+  border: 0.5px solid rgba(5 5 5 / 25%);
+  box-shadow: 0 0 3px 0 rgba(0 0 0 / 50%);
+
+  &::after {
+    content: "";
+    position: absolute;
+    width: 15px;
+    height: 15px;
+    border-radius: 15px;
+    border: 2px solid var(--snow);
+    background: var(--color);
+    box-shadow: var(--ridge-md);
+  }
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+}
+
+/* Checkered transparent grid */
+.transparent-grid {
+  background-image: $transparent-grid;
+}

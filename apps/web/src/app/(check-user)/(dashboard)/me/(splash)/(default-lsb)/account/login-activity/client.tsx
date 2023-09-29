@@ -4,19 +4,19 @@ import { clsx } from "clsx";
 import React from "react";
 
 import Accordion from "../../../../../../../../../../../packages/ui/src/components/accordion";
-import Button from "~/components/Button";
-import { useConfirmation } from "~/components/Confirmation";
-import Divider from "~/components/Divider";
-import Spacer from "~/components/Spacer";
-import { useToast } from "~/components/Toast";
-import Typography from "~/components/Typography";
-import CustomState from "~/entities/CustomState";
-import TitleBlock from "~/entities/TitleBlock";
-import { useMediaQuery } from "~/hooks/useMediaQuery";
+import Button from "../../../../../../../../../../../packages/ui/src/components/button";
+import { use_confirmation } from "../../../../../../../../../../../packages/ui/src/components/confirmation";
+import Divider from "../../../../../../../../../../../packages/ui/src/components/divider";
+import Spacer from "../../../../../../../../../../../packages/ui/src/components/spacer";
+import { use_toast } from "../../../../../../../../../../../packages/ui/src/components/toast";
+import Typography from "../../../../../../../../../../../packages/ui/src/components/typography";
+import CustomState from "../../../../../../../../../../../packages/ui/src/entities/custom-state";
+import TitleBlock from "../../../../../../../../../../../packages/ui/src/entities/title-block";
+import { use_media_query } from "../../../../../../../../../../../packages/ui/src/hooks/use-media-query";
 import DevicesIcon from "~/icons/Devices";
 import LogoutIcon from "~/icons/Logout";
 import { use_destroy_settings_mutation } from "~/redux/features";
-import { breakpoints } from "~/theme/breakpoints";
+import { BREAKPOINTS } from "~/theme/breakpoints";
 
 import DashboardGroup from "../../dashboard-group";
 import DashboardTitle from "../../dashboard-title";
@@ -62,7 +62,7 @@ const DestroySessions = ({
   disabled: boolean;
   onDestroy: () => void;
 }): React.ReactElement => {
-  const toast = useToast();
+  const toast = use_toast();
   const [destroySessions, { isLoading }] = use_destroy_settings_mutation();
 
   /**
@@ -80,23 +80,23 @@ const DestroySessions = ({
       );
   };
 
-  const [element] = useConfirmation(
-    ({ openConfirmation }) => (
+  const [element] = use_confirmation(
+    ({ open_confirmation }) => (
       <Button
-        autoSize
-        checkAuth
+        auto_size
+        check_auth
         className={"fit-w"}
         color={"ruby"}
         disabled={disabled}
         loading={isLoading}
-        onClick={openConfirmation}
+        onClick={open_confirmation}
         variant={"hollow"}
       >
         Log out of all other devices
       </Button>
     ),
     {
-      onConfirm: destroySessionsImpl,
+      on_confirm: destroySessionsImpl,
       title: "Log out of all devices?",
       decorator: <LogoutIcon />,
       color: "ruby",
@@ -122,7 +122,7 @@ const DestroySessions = ({
 
 const LoginActivityClient = (props: LoginActivityProps): React.ReactElement => {
   const { logins: loginsProp, recent: recentProp } = props;
-  const isSmallerThanDesktop = useMediaQuery(breakpoints.down("desktop"));
+  const is_smaller_than_desktop = use_media_query(BREAKPOINTS.down("desktop"));
   const [recent, setRecent] = React.useState<typeof recentProp>(recentProp);
   const [logins, setLogins] = React.useState<typeof loginsProp>(loginsProp);
 
@@ -130,7 +130,7 @@ const LoginActivityClient = (props: LoginActivityProps): React.ReactElement => {
    * Removes a login item
    */
   const removeLogin = React.useCallback((id: string) => {
-    setLogins((prevState) => prevState.filter((item) => item.id !== id));
+    setLogins((prev_state) => prev_state.filter((item) => item.id !== id));
   }, []);
 
   return (
@@ -138,7 +138,7 @@ const LoginActivityClient = (props: LoginActivityProps): React.ReactElement => {
       <main>
         <DashboardTitle>Login activity</DashboardTitle>
         <DashboardWrapper>
-          {isSmallerThanDesktop && <RecentLoginGroup login={recent} />}
+          {is_smaller_than_desktop && <RecentLoginGroup login={recent} />}
           <DashboardGroup>
             <TitleBlock title={"Devices"}>
               These are the devices on which you are currently logged in. If you
@@ -150,7 +150,7 @@ const LoginActivityClient = (props: LoginActivityProps): React.ReactElement => {
               className={clsx("flex-col", styles.x, styles.logins)}
               type={"multiple"}
             >
-              {logins.length === 1 && !isSmallerThanDesktop ? (
+              {logins.length === 1 && !is_smaller_than_desktop ? (
                 <CustomState
                   description={
                     "When you log in to your account from other devices, they will show up here."
@@ -159,7 +159,7 @@ const LoginActivityClient = (props: LoginActivityProps): React.ReactElement => {
                   title={"You're only logged in here"}
                 />
               ) : (
-                (recent || isSmallerThanDesktop
+                (recent || is_smaller_than_desktop
                   ? logins
                   : logins.filter((item) => !item.is_active)
                 ).map((login) => (
@@ -184,8 +184,8 @@ const LoginActivityClient = (props: LoginActivityProps): React.ReactElement => {
               disabled={!recent && logins.length === 1}
               onDestroy={(): void => {
                 setRecent(undefined);
-                setLogins((prevState) =>
-                  prevState.filter((item) => item.is_active)
+                setLogins((prev_state) =>
+                  prev_state.filter((item) => item.is_active)
                 );
               }}
             />

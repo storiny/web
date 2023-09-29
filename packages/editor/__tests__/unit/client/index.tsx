@@ -206,7 +206,7 @@ export class Client {
           setEditor={(editor): LexicalEditor => (this.editor = editor)}
         />
       </EditorComposer>,
-      { loggedIn: true, ignorePrimitiveProviders: true, container }
+      { logged_in: true, ignore_primitive_providers: true, container }
     );
   }
 

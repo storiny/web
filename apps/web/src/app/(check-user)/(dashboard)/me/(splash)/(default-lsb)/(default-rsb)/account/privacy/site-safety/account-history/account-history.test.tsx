@@ -11,9 +11,9 @@ describe("<AccountHistory />", () => {
     const mockSubmit = jest.fn();
     const user = userEvent.setup();
     render_test_with_provider(
-      <AccountHistory onSubmit={mockSubmit} record_read_history />,
+      <AccountHistory on_submit={mockSubmit} record_read_history />,
       {
-        loggedIn: true
+        logged_in: true
       }
     );
 
@@ -21,7 +21,7 @@ describe("<AccountHistory />", () => {
       await user.click(screen.getByRole("switch"));
     });
 
-    await waitFor(() => {
+    await wait_for(() => {
       expect(mockSubmit).toHaveBeenCalledWith({
         "read-history": false
       });

@@ -7,17 +7,17 @@ import React from "react";
 import { CommentListSkeleton, VirtualizedCommentList } from "~/common/comment";
 import { dynamicLoader } from "~/common/dynamic";
 import { ReplyListSkeleton, VirtualizedReplyList } from "~/common/reply";
-import Divider from "~/components/Divider";
-import Input from "~/components/Input";
-import Option from "~/components/Option";
-import Select from "~/components/Select";
-import Spacer from "~/components/Spacer";
-import Tab from "~/components/Tab";
-import Tabs from "~/components/Tabs";
-import TabsList from "~/components/TabsList";
-import Typography from "~/components/Typography";
-import ErrorState from "~/entities/ErrorState";
-import { useDebounce } from "~/hooks/useDebounce";
+import Divider from "../../../../../../../../../../../../packages/ui/src/components/divider";
+import Input from "../../../../../../../../../../../../packages/ui/src/components/input";
+import Option from "../../../../../../../../../../../../packages/ui/src/components/option";
+import Select from "../../../../../../../../../../../../packages/ui/src/components/select";
+import Spacer from "../../../../../../../../../../../../packages/ui/src/components/spacer";
+import Tab from "../../../../../../../../../../../../packages/ui/src/components/tab";
+import Tabs from "../../../../../../../../../../../../packages/ui/src/components/tabs";
+import TabsList from "../../../../../../../../../../../../packages/ui/src/components/tabs-list";
+import Typography from "../../../../../../../../../../../../packages/ui/src/components/typography";
+import ErrorState from "../../../../../../../../../../../../packages/ui/src/entities/error-state";
+import { use_debounce } from "../../../../../../../../../../../../packages/ui/src/hooks/use-debounce";
 import SearchIcon from "~/icons/Search";
 import {
   get_query_error_type,
@@ -26,7 +26,7 @@ import {
   use_get_replies_query
 } from "~/redux/features";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
-import { abbreviateNumber } from "~/utils/abbreviateNumber";
+import { abbreviate_number } from "../../../../../../../../../../../../packages/ui/src/utils/abbreviate-number";
 
 import DashboardTitle from "../../../dashboard-title";
 import { ResponsesProps } from "./responses.props";
@@ -120,7 +120,7 @@ const StatusHeader = ({
         ) : (
           <>
             You have posted{" "}
-            <span className={"t-bold"}>{abbreviateNumber(count_param)}</span>{" "}
+            <span className={"t-bold"}>{abbreviate_number(count_param)}</span>{" "}
             {count_param === 1
               ? tab === "comments"
                 ? "comment"
@@ -207,22 +207,22 @@ const ControlBar = ({
 const CommentList = (props: {
   handleQueryChange: (newValue: string) => void;
   handleSortChange: (newValue: ResponsesSortValue) => void;
-  loadMore: () => void;
+  load_more: () => void;
   page: number;
   query: string;
   sort: ResponsesSortValue;
 }): React.ReactElement => {
-  const { page, sort, query, handleQueryChange, handleSortChange, loadMore } =
+  const { page, sort, query, handleQueryChange, handleSortChange, load_more } =
     props;
-  const debouncedQuery = useDebounce(query);
+  const debounced_query = use_debounce(query);
   const { data, isLoading, isFetching, isError, error, refetch } =
     use_get_comments_query({
       page,
       sort,
-      query: debouncedQuery
+      query: debounced_query
     });
   const { items = [], has_more } = data || {};
-  const isTyping = query !== debouncedQuery;
+  const is_typing = query !== debounced_query;
 
   return (
     <React.Fragment>
@@ -234,11 +234,11 @@ const CommentList = (props: {
         sort={sort}
         tab={"comments"}
       />
-      {isLoading || isTyping || (isFetching && page === 1) ? (
-        <CommentListSkeleton isExtended />
+      {isLoading || is_typing || (isFetching && page === 1) ? (
+        <CommentListSkeleton is_extended />
       ) : isError ? (
         <ErrorState
-          autoSize
+          auto_size
           component_props={{
             button: { loading: isFetching }
           }}
@@ -250,13 +250,13 @@ const CommentList = (props: {
       ) : (
         <VirtualizedCommentList
           commentProps={{
-            isExtended: true
+            is_extended: true
           }}
           comments={items}
           has_more={Boolean(has_more)}
-          loadMore={loadMore}
+          load_more={load_more}
           skeletonProps={{
-            isExtended: true
+            is_extended: true
           }}
         />
       )}
@@ -269,22 +269,22 @@ const CommentList = (props: {
 const ReplyList = (props: {
   handleQueryChange: (newValue: string) => void;
   handleSortChange: (newValue: ResponsesSortValue) => void;
-  loadMore: () => void;
+  load_more: () => void;
   page: number;
   query: string;
   sort: ResponsesSortValue;
 }): React.ReactElement => {
-  const { page, sort, query, handleSortChange, handleQueryChange, loadMore } =
+  const { page, sort, query, handleSortChange, handleQueryChange, load_more } =
     props;
-  const debouncedQuery = useDebounce(query);
+  const debounced_query = use_debounce(query);
   const { data, isLoading, isFetching, isError, error, refetch } =
     use_get_replies_query({
       page,
       sort,
-      query: debouncedQuery
+      query: debounced_query
     } as { page: number; query: string; sort: "recent" | "old" | `likes-${"dsc" | "asc"}` });
   const { items = [], has_more } = data || {};
-  const isTyping = query !== debouncedQuery;
+  const is_typing = query !== debounced_query;
 
   return (
     <React.Fragment>
@@ -296,11 +296,11 @@ const ReplyList = (props: {
         sort={sort}
         tab={"replies"}
       />
-      {isLoading || isTyping || (isFetching && page === 1) ? (
+      {isLoading || is_typing || (isFetching && page === 1) ? (
         <ReplyListSkeleton />
       ) : isError ? (
         <ErrorState
-          autoSize
+          auto_size
           component_props={{
             button: { loading: isFetching }
           }}
@@ -312,13 +312,13 @@ const ReplyList = (props: {
       ) : (
         <VirtualizedReplyList
           has_more={Boolean(has_more)}
-          loadMore={loadMore}
+          load_more={load_more}
           replies={items}
           replyProps={{
-            isStatic: true
+            is_static: true
           }}
           skeletonProps={{
-            isStatic: true
+            is_static: true
           }}
         />
       )}
@@ -330,27 +330,27 @@ const ContentResponsesClient = (props: ResponsesProps): React.ReactElement => {
   const [sort, setSort] = React.useState<ResponsesSortValue>("recent");
   const [query, setQuery] = React.useState<string>("");
   const [value, setValue] = React.useState<ResponsesTabValue>("comments");
-  const [page, setPage] = React.useState<number>(1);
+  const [page, set_page] = React.useState<number>(1);
 
-  const loadMore = React.useCallback(
-    () => setPage((prevState) => prevState + 1),
+  const load_more = React.useCallback(
+    () => set_page((prev_state) => prev_state + 1),
     []
   );
 
   const handleChange = React.useCallback((newValue: ResponsesTabValue) => {
-    setPage(1);
+    set_page(1);
     setSort("recent");
     setQuery("");
     setValue(newValue);
   }, []);
 
   const handleSortChange = React.useCallback((newSort: ResponsesSortValue) => {
-    setPage(1);
+    set_page(1);
     setSort(newSort);
   }, []);
 
   const handleQueryChange = React.useCallback((newQuery: string) => {
-    setPage(1);
+    set_page(1);
     setQuery(newQuery);
   }, []);
 
@@ -363,7 +363,7 @@ const ContentResponsesClient = (props: ResponsesProps): React.ReactElement => {
         <CommentList
           handleQueryChange={handleQueryChange}
           handleSortChange={handleSortChange}
-          loadMore={loadMore}
+          load_more={load_more}
           page={page}
           query={query}
           sort={sort}
@@ -372,7 +372,7 @@ const ContentResponsesClient = (props: ResponsesProps): React.ReactElement => {
         <ReplyList
           handleQueryChange={handleQueryChange}
           handleSortChange={handleSortChange}
-          loadMore={loadMore}
+          load_more={load_more}
           page={page}
           query={query}
           sort={sort}

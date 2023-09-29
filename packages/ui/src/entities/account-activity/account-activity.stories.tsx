@@ -4,9 +4,9 @@ import { AccountActivityType } from "@storiny/shared";
 import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
 
-import { DateFormat, formatDate } from "~/utils/formatDate";
+import { DateFormat, format_date } from "src/utils/format-date";
 
-import { mockUsers } from "../../mocks";
+import { MOCK_USERS } from "../../mocks";
 import AccountActivity from "./account-activity";
 import AccountActivitySkeleton from "./skeleton";
 
@@ -14,15 +14,15 @@ const meta: Meta<typeof AccountActivity> = {
   title: "entities/account-activity",
   component: AccountActivity,
   args: {
-    hidePipe: true,
-    accountActivity: {
+    hide_pipe: true,
+    account_activity: {
       type: AccountActivityType.ACCOUNT_CREATION,
-      description: `You created this account on <m>${formatDate(
-        mockUsers[4].created_at,
+      description: `You created this account on <m>${format_date(
+        MOCK_USERS[4].created_at,
         DateFormat.STANDARD
       )}</m>.`,
       id: "0",
-      created_at: mockUsers[4].created_at
+      created_at: MOCK_USERS[4].created_at
     }
   },
   tags: ["autodocs"]
@@ -34,5 +34,5 @@ type Story = StoryObj<typeof AccountActivity>;
 export const Default: Story = {};
 
 export const Skeleton: Story = {
-  render: () => <AccountActivitySkeleton hidePipe />
+  render: () => <AccountActivitySkeleton hide_pipe />
 };

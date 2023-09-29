@@ -16,7 +16,7 @@ const VirtualizedStoryList = React.memo(
   ({
     stories,
     has_more,
-    loadMore,
+    load_more,
     storyProps = {},
     skeletonProps = {},
     className,
@@ -38,7 +38,7 @@ const VirtualizedStoryList = React.memo(
           ...(has_more && { Footer: VirtualFooter })
         }}
         data={stories}
-        endReached={has_more ? loadMore : (): void => undefined}
+        endReached={has_more ? load_more : (): void => undefined}
       />
     </VirtualizedStoryListContext.Provider>
   )

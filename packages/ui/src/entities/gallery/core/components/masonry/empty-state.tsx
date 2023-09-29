@@ -1,9 +1,9 @@
-import { useAtomValue } from "jotai";
+import { useAtomValue as use_atom_value } from "jotai";
 import React from "react";
 
-import CustomState from "~/entities/CustomState";
+import CustomState from "src/entities/custom-state";
 
-import { queryAtom } from "../../atoms";
+import { query_atom } from "../../atoms";
 
 interface GalleryEmptyStateProps {
   tab: "pexels" | "library";
@@ -12,7 +12,7 @@ interface GalleryEmptyStateProps {
 const GalleryEmptyState = ({
   tab
 }: GalleryEmptyStateProps): React.ReactElement => {
-  const query = useAtomValue(queryAtom);
+  const query = use_atom_value(query_atom);
   return (
     <CustomState
       description={

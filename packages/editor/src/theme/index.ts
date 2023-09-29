@@ -1,8 +1,8 @@
 import { clsx } from "clsx";
 import type { EditorThemeClasses } from "lexical";
 
-import linkStyles from "~/components/Link/Link.module.scss";
-import typographyStyles from "~/components/Typography/Typography.module.scss";
+import linkStyles from "~/components/link/link.module.scss";
+import typography_styles from "~/components/typography/typography.module.scss";
 
 import styles from "./theme.module.scss";
 
@@ -31,7 +31,7 @@ export const editorTheme: EditorThemeClasses = {
   paragraph: styles.paragraph,
   text: {
     bold: "t-bold",
-    code: clsx("t-mono", typographyStyles["inline-code"]),
+    code: clsx("t-mono", typography_styles["inline-code"]),
     italic: styles["t-italic"],
     strikethrough: styles["t-strikethrough"],
     subscript: styles["t-subscript"],

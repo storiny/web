@@ -6,10 +6,10 @@ export interface AccountActivityProps
   /**
    * The account activity object
    */
-  accountActivity: AccountActivity;
+  account_activity: AccountActivity;
   /**
    * If `true`, does not render the vertical connecting pipe
    * @default false
    */
-  hidePipe?: boolean;
+  hide_pipe?: boolean;
 }

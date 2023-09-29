@@ -16,7 +16,7 @@ import {
   Spread
 } from "lexical";
 
-import { levelToClassNameMap } from "~/components/common/typography";
+import { TYPOGRAPHY_LEVEL_TO_CLASSNAME_MAP } from "~/components/common/typography";
 
 import styles from "./heading.module.scss";
 
@@ -160,7 +160,7 @@ export class HeadingNode extends ElementNode {
   override createDOM(): HTMLElement {
     const tag = this.__tag;
     const element = document.createElement(tag);
-    const className = levelToClassNameMap[tag];
+    const className = TYPOGRAPHY_LEVEL_TO_CLASSNAME_MAP[tag];
 
     if (className) {
       addClassNamesToElement(element, ...["t-major", className, styles[tag]]);

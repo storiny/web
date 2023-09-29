@@ -1,26 +1,26 @@
 import { clsx } from "clsx";
 import React from "react";
 
-import FormCheckbox from "~/components/FormCheckbox";
-import FormRadio from "~/components/FormRadio";
-import FormRadioGroup from "~/components/FormRadioGroup";
-import Spacer from "~/components/Spacer";
-import Typography from "~/components/Typography";
+import FormCheckbox from "../../../../../../../ui/src/components/form-checkbox";
+import FormRadio from "../../../../../../../ui/src/components/form-radio";
+import FormRadioGroup from "../../../../../../../ui/src/components/form-radio-group";
+import Spacer from "../../../../../../../ui/src/components/spacer";
+import Typography from "../../../../../../../ui/src/components/typography";
 
 import styles from "./settings.module.scss";
 
 const SettingsTab = (): React.ReactElement => (
   <React.Fragment>
     <FormRadioGroup
-      autoSize
-      formSlotProps={{
-        formItem: {
+      auto_size
+      form_slot_props={{
+        form_item: {
           style: {
             gap: "16px"
           }
         }
       }}
-      isNumericValue
+      is_numeric_value
       label={"Visibility"}
       name={"visibility"}
     >
@@ -57,19 +57,19 @@ const SettingsTab = (): React.ReactElement => (
         name={"disable-comments"}
       />
       <FormCheckbox
-        formSlotProps={{
-          formItem: {
+        form_slot_props={{
+          form_item: {
             style: {
               gap: "4px"
             }
           },
-          helperText: {
+          helper_text: {
             style: {
               paddingLeft: "24px"
             }
           }
         }}
-        helperText={
+        helper_text={
           <>
             When you edit a story you have already published, a new version is
             created. You can decide if you want people to see the old versions

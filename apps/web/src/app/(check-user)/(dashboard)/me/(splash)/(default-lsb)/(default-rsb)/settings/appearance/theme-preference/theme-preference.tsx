@@ -1,19 +1,19 @@
 import { clsx } from "clsx";
 import React from "react";
 
-import AspectRatio from "~/components/AspectRatio";
-import Divider from "~/components/Divider";
-import Radio from "~/components/Radio";
-import RadioGroup from "~/components/RadioGroup";
-import Spacer from "~/components/Spacer";
-import TitleBlock from "~/entities/TitleBlock";
-import { useMediaQuery } from "~/hooks/useMediaQuery";
+import AspectRatio from "../../../../../../../../../../../../../packages/ui/src/components/aspect-ratio";
+import Divider from "../../../../../../../../../../../../../packages/ui/src/components/divider";
+import Radio from "../../../../../../../../../../../../../packages/ui/src/components/radio";
+import RadioGroup from "../../../../../../../../../../../../../packages/ui/src/components/radio-group";
+import Spacer from "../../../../../../../../../../../../../packages/ui/src/components/spacer";
+import TitleBlock from "../../../../../../../../../../../../../packages/ui/src/entities/title-block";
+import { use_media_query } from "../../../../../../../../../../../../../packages/ui/src/hooks/use-media-query";
 import { select_theme, set_theme } from "~/redux/features";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
-import { breakpoints } from "~/theme/breakpoints";
+import { BREAKPOINTS } from "~/theme/breakpoints";
 
 import DashboardGroup from "../../../../dashboard-group";
-import commonStyles from "../styles.module.scss";
+import common_styles from "../styles.module.scss";
 import styles from "./theme-preference.module.scss";
 
 // Symbol
@@ -99,8 +99,8 @@ const ThemePreview = ({
   <svg
     {...rest}
     className={clsx(
-      commonStyles.x,
-      commonStyles.preview,
+      common_styles.x,
+      common_styles.preview,
       styles.x,
       styles.preview,
       theme
@@ -135,9 +135,9 @@ const ThemeItem = ({
   <div
     className={clsx(
       "flex-col",
-      commonStyles.x,
-      commonStyles.item,
-      isActive && commonStyles.selected
+      common_styles.x,
+      common_styles.item,
+      isActive && common_styles.selected
     )}
   >
     <AspectRatio className={"full-w"} ratio={ratio}>
@@ -145,11 +145,11 @@ const ThemeItem = ({
     </AspectRatio>
     <Divider />
     <Radio
-      className={clsx(commonStyles.x, commonStyles.radio)}
+      className={clsx(common_styles.x, common_styles.radio)}
       label={label}
       slot_props={{
         container: {
-          className: clsx(commonStyles.x, commonStyles["radio-container"])
+          className: clsx(common_styles.x, common_styles["radio-container"])
         }
       }}
       value={value}
@@ -158,10 +158,10 @@ const ThemeItem = ({
 );
 
 const ThemePreference = (): React.ReactElement => {
-  const isSmallerThanMobile = useMediaQuery(breakpoints.down("mobile"));
+  const is_smaller_than_mobile = use_media_query(BREAKPOINTS.down("mobile"));
   const dispatch = use_app_dispatch();
   const theme = use_app_selector(select_theme);
-  const ratio = isSmallerThanMobile ? 2.21 : 1.62;
+  const ratio = is_smaller_than_mobile ? 2.21 : 1.62;
 
   return (
     <DashboardGroup>
@@ -171,11 +171,11 @@ const ThemePreference = (): React.ReactElement => {
       </TitleBlock>
       <Spacer orientation={"vertical"} size={4} />
       <RadioGroup
-        className={clsx(commonStyles.x, commonStyles["radio-group"])}
+        className={clsx(common_styles.x, common_styles["radio-group"])}
         onValueChange={(newValue): void => {
           dispatch(set_theme(newValue as "light" | "dark" | "system"));
         }}
-        orientation={isSmallerThanMobile ? "vertical" : "horizontal"}
+        orientation={is_smaller_than_mobile ? "vertical" : "horizontal"}
         value={theme}
       >
         <ThemeItem

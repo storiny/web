@@ -2,7 +2,7 @@ import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext
 import { TextNode } from "lexical";
 import React from "react";
 
-import { isHexColor } from "~/utils/isHexColor";
+import { is_hex_color } from "../../../../ui/src/utils/is-hex-color";
 
 import { $createColorNode } from "../../nodes/color";
 
@@ -14,7 +14,7 @@ const colorTransform = (node: TextNode): void => {
   if (node.hasFormat("code")) {
     const textContent = node.getTextContent();
 
-    if (isHexColor(textContent)) {
+    if (is_hex_color(textContent)) {
       node.replace($createColorNode(textContent));
     }
   }

@@ -11,8 +11,14 @@ import styles from "./whiteboard.module.scss";
 import { WhiteboardProps } from "./whiteboard.props";
 
 const Main = React.forwardRef<HTMLDivElement, WhiteboardProps>((props, ref) => {
-  const { className, onMount, onConfirm, onCancel, initialImageUrl, ...rest } =
-    props;
+  const {
+    className,
+    onMount,
+    on_confirm,
+    on_cancel,
+    initialImageUrl,
+    ...rest
+  } = props;
 
   React.useEffect(() => {
     if (onMount) {
@@ -27,7 +33,7 @@ const Main = React.forwardRef<HTMLDivElement, WhiteboardProps>((props, ref) => {
       ref={ref}
     >
       <Provider>
-        <WhiteboardProvider value={{ onConfirm, onCancel, initialImageUrl }}>
+        <WhiteboardProvider value={{ on_confirm, on_cancel, initialImageUrl }}>
           <FabricProvider>
             <Topbar />
             <Tools />

@@ -2,7 +2,7 @@
 
 import React from "react";
 
-import { createSvgIcon } from "~/utils/createSvgIcon";
+import { create_svg_icon } from "src/utils/create-svg-icon";
 
 const CompassIcon = (
   <>
@@ -11,4 +11,4 @@ const CompassIcon = (
   </>
 );
 
-export default createSvgIcon(CompassIcon, "compass");
+export default create_svg_icon(CompassIcon, "compass");

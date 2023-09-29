@@ -1,9 +1,9 @@
 import { clsx } from "clsx";
 import React from "react";
 
-import Spacer from "~/components/Spacer";
-import Typography from "~/components/Typography";
-import { abbreviateNumber } from "~/utils/abbreviateNumber";
+import Spacer from "../../../../../../../../../../../../packages/ui/src/components/spacer";
+import Typography from "../../../../../../../../../../../../packages/ui/src/components/typography";
+import { abbreviate_number } from "../../../../../../../../../../../../packages/ui/src/utils/abbreviate-number";
 
 import FriendRequests from "./friend-requests";
 import { RelationsRightSidebarProps } from "./right-sidebar.props";
@@ -21,7 +21,7 @@ const ContentRelationsRightSidebarContent = (
         <Typography level={"body2"}>
           You have{" "}
           <span className={"t-bold"}>
-            {abbreviateNumber(pending_friend_request_count)}
+            {abbreviate_number(pending_friend_request_count)}
           </span>{" "}
           pending friend{" "}
           {pending_friend_request_count === 1 ? "request" : "requests"}.

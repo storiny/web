@@ -2,10 +2,10 @@
 
 import React from "react";
 
-import { createSvgIcon } from "~/utils/createSvgIcon";
+import { create_svg_icon } from "src/utils/create-svg-icon";
 
 const ArrowheadNoneLongIcon = <path d="M2.5 6h17" />;
 
-export default createSvgIcon(ArrowheadNoneLongIcon, "arrowhead-none-long", {
+export default create_svg_icon(ArrowheadNoneLongIcon, "arrowhead-none-long", {
   viewBox: "0 0 22 12"
 });

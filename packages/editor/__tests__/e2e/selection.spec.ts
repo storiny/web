@@ -1,5 +1,5 @@
 import { expect, Page, test } from "@playwright/test";
-import { testAsset } from "@storiny/ui/src/mocks";
+import { TEST_ASSET } from "@storiny/ui/src/mocks";
 
 import { EDITOR_CLASSNAMES, IS_MAC } from "../constants";
 import {
@@ -26,7 +26,7 @@ import {
 const ROUTE = "*/**/v1/me/assets?page=1";
 
 const assetsRouteHandler: Parameters<Page["route"]>[1] = async (route) => {
-  await route.fulfill({ json: [testAsset] });
+  await route.fulfill({ json: [TEST_ASSET] });
 };
 
 test.describe("selection", () => {

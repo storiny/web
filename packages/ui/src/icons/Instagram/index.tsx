@@ -2,7 +2,7 @@
 
 import React from "react";
 
-import { createSvgIcon } from "~/utils/createSvgIcon";
+import { create_svg_icon } from "src/utils/create-svg-icon";
 
 const InstagramIcon = (
   <>
@@ -11,4 +11,4 @@ const InstagramIcon = (
   </>
 );
 
-export default createSvgIcon(InstagramIcon, "instagram", { noStroke: true });
+export default create_svg_icon(InstagramIcon, "instagram", { no_stroke: true });

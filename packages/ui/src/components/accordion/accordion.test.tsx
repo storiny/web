@@ -1,5 +1,5 @@
 import { axe } from "@storiny/test-utils";
-import { waitFor } from "@testing-library/react";
+import { waitFor as wait_for } from "@testing-library/react";
 import React from "react";
 import { render_test_with_provider } from "src/redux/test-utils";
 
@@ -50,7 +50,7 @@ describe("<Accordion />", () => {
       </Accordion>
     );
 
-    await waitFor(async () =>
+    await wait_for(async () =>
       expect(await axe(container)).toHaveNoViolations()
     );
   });
@@ -65,7 +65,7 @@ describe("<Accordion />", () => {
       </Accordion>
     );
 
-    await waitFor(async () =>
+    await wait_for(async () =>
       expect(await axe(container)).toHaveNoViolations()
     );
   });

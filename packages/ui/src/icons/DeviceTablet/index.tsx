@@ -2,7 +2,7 @@
 
 import React from "react";
 
-import { createSvgIcon } from "~/utils/createSvgIcon";
+import { create_svg_icon } from "src/utils/create-svg-icon";
 
 const DeviceTabletIcon = (
   <>
@@ -11,4 +11,4 @@ const DeviceTabletIcon = (
   </>
 );
 
-export default createSvgIcon(DeviceTabletIcon, "device-tablet");
+export default create_svg_icon(DeviceTabletIcon, "device-tablet");

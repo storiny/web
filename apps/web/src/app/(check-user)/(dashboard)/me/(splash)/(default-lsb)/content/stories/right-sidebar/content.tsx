@@ -1,7 +1,7 @@
 import { clsx } from "clsx";
 import React from "react";
 
-import Typography from "~/components/Typography";
+import Typography from "../../../../../../../../../../../../packages/ui/src/components/typography";
 
 const ContentStoriesRightSidebarContent = (): React.ReactElement => (
   <React.Fragment>

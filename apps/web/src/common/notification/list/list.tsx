@@ -16,7 +16,7 @@ const VirtualizedNotificationList = React.memo(
   ({
     notifications,
     has_more,
-    loadMore,
+    load_more,
     notificationProps,
     className,
     ...rest
@@ -39,7 +39,7 @@ const VirtualizedNotificationList = React.memo(
           ...(has_more && { Footer: VirtualFooter })
         }}
         data={notifications}
-        endReached={has_more ? loadMore : (): void => undefined}
+        endReached={has_more ? load_more : (): void => undefined}
       />
     </VirtualizedNotificationListContext.Provider>
   )

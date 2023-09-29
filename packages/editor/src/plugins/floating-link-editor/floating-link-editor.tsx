@@ -19,10 +19,10 @@ import {
 import React from "react";
 import { createPortal } from "react-dom";
 
-import Divider from "~/components/Divider";
-import IconButton from "~/components/IconButton";
-import Input from "~/components/Input";
-import Link from "~/components/Link";
+import Divider from "../../../../ui/src/components/divider";
+import IconButton from "../../../../ui/src/components/icon-button";
+import Input from "../../../../ui/src/components/input";
+import Link from "../../../../ui/src/components/link";
 import EditIcon from "~/icons/Edit";
 import LinkIcon from "~/icons/Link";
 
@@ -249,7 +249,7 @@ const FloatingLinkEditorPopover = (): React.ReactElement => {
 };
 
 const FloatingLinkEditorPlugin = (): React.ReactElement | null => {
-  const link = useAtomValue(linkAtom);
+  const link = use_atom_value(linkAtom);
 
   if (!link) {
     return null;

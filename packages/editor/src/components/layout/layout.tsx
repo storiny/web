@@ -4,7 +4,7 @@ import { Provider } from "jotai";
 import dynamic from "next/dynamic";
 import React from "react";
 
-import Navbar from "~/layout/Navbar";
+import Navbar from "../../../../ui/src/layout/navbar";
 
 import EditorComposer from "../composer";
 import { EditorProps } from "../editor";

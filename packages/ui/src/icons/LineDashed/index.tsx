@@ -2,8 +2,8 @@
 
 import React from "react";
 
-import { createSvgIcon } from "~/utils/createSvgIcon";
+import { create_svg_icon } from "src/utils/create-svg-icon";
 
 const LineDashedIcon = <path d="M2.5 6h1m5 0h1m-4 0h1" />;
 
-export default createSvgIcon(LineDashedIcon, "line-dashed");
+export default create_svg_icon(LineDashedIcon, "line-dashed");

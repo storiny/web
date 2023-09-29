@@ -1,9 +1,9 @@
 import React from "react";
 import { useFilePicker } from "use-file-picker";
 
-import { useConfirmation } from "~/components/Confirmation";
-import MenuItem from "~/components/MenuItem";
-import { useToast } from "~/components/Toast";
+import { use_confirmation } from "../../../../../ui/src/components/confirmation";
+import MenuItem from "../../../../../ui/src/components/menu-item";
+import { use_toast } from "../../../../../ui/src/components/toast";
 import FolderOpenIcon from "~/icons/FolderOpen";
 
 import { FILE_EXTENSIONS } from "../../../constants";
@@ -12,7 +12,7 @@ import { importFromFile } from "../../../utils";
 
 const ImportItem = (): React.ReactElement => {
   const canvas = useCanvas();
-  const toast = useToast();
+  const toast = use_toast();
   const [openFileSelector] = useFilePicker({
     readAs: "ArrayBuffer",
     accept: FILE_EXTENSIONS.map((ext) => `.${ext}`),
@@ -49,7 +49,7 @@ const ImportItem = (): React.ReactElement => {
     }
   };
 
-  const [element, confirmImport] = useConfirmation(
+  const [element, confirmImport] = use_confirmation(
     () => (
       <MenuItem
         decorator={<FolderOpenIcon />}
@@ -65,7 +65,7 @@ const ImportItem = (): React.ReactElement => {
     ),
     {
       color: "ruby",
-      onConfirm: openFileSelector,
+      on_confirm: openFileSelector,
       slot_props: {
         content: {
           style: {

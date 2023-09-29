@@ -1,10 +1,10 @@
 import { REPLY_PROPS } from "@storiny/shared";
 import { clsx } from "clsx";
 import React from "react";
+import Avatar from "src/components/avatar";
+import { use_toast } from "src/components/toast";
 
-import Avatar from "~/components/Avatar";
-import { useToast } from "~/components/Toast";
-import ResponseTextarea from "~/entities/ResponseTextarea";
+import ResponseTextarea from "src/entities/response-textarea";
 import {
   select_is_logged_in,
   select_user,
@@ -15,28 +15,28 @@ import { use_app_selector } from "~/redux/hooks";
 import styles from "./post-reply.module.scss";
 
 const PostReply = ({
-  commentId,
+  comment_id,
   placeholder
 }: {
-  commentId: string;
+  comment_id: string;
   placeholder: string;
 }): React.ReactElement | null => {
-  const toast = useToast();
+  const toast = use_toast();
   const user = use_app_selector(select_user);
-  const loggedIn = use_app_selector(select_is_logged_in);
-  const textareaRef = React.useRef<HTMLTextAreaElement | null>(null);
-  const [addReply, { isLoading }] = use_add_reply_mutation();
+  const logged_in = use_app_selector(select_is_logged_in);
+  const textarea_ref = React.useRef<HTMLTextAreaElement | null>(null);
+  const [add_reply, { isLoading: is_loading }] = use_add_reply_mutation();
 
-  const handlePost = (): void => {
-    if (textareaRef.current?.value) {
-      addReply({
-        commentId,
-        content: textareaRef.current.value
+  const handle_post = (): void => {
+    if (textarea_ref.current?.value) {
+      add_reply({
+        comment_id,
+        content: textarea_ref.current.value
       })
         .unwrap()
         .then(() => {
-          if (textareaRef.current) {
-            textareaRef.current.value = "";
+          if (textarea_ref.current) {
+            textarea_ref.current.value = "";
           }
 
           toast("Reply added", "success");
@@ -49,7 +49,7 @@ const PostReply = ({
     }
   };
 
-  if (!loggedIn) {
+  if (!logged_in) {
     return null;
   }
 
@@ -58,12 +58,12 @@ const PostReply = ({
       className={clsx(
         "flex",
         styles["response-area"],
-        !loggedIn && styles["logged-out"]
+        !logged_in && styles["logged-out"]
       )}
     >
       <Avatar
         alt={""}
-        avatarId={user?.avatar_id}
+        avatar_id={user?.avatar_id}
         hex={user?.avatar_hex}
         label={user?.name}
       />
@@ -71,11 +71,11 @@ const PostReply = ({
         maxLength={REPLY_PROPS.content.maxLength}
         minLength={REPLY_PROPS.content.minLength}
         placeholder={placeholder}
-        postButtonProps={{
-          loading: isLoading,
-          onClick: handlePost
+        post_button_props={{
+          loading: is_loading,
+          onClick: handle_post
         }}
-        ref={textareaRef}
+        ref={textarea_ref}
         size={"sm"}
         slot_props={{
           container: {

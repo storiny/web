@@ -3,33 +3,33 @@
 import clsx from "clsx";
 import NextLink from "next/link";
 import React from "react";
+import Avatar from "src/components/avatar";
+import Button from "src/components/button";
+import Grow from "src/components/grow";
+import Typography from "src/components/typography";
+import { use_media_query } from "src/hooks/use-media-query";
+import { abbreviate_number } from "src/utils/abbreviate-number";
 
-import Avatar from "~/components/Avatar";
-import Button from "~/components/Button";
-import Grow from "~/components/Grow";
-import Typography from "~/components/Typography";
-import { useMediaQuery } from "~/hooks/useMediaQuery";
 import StoryIcon from "~/icons/Story";
 import UserCheckIcon from "~/icons/UserCheck";
 import UserPlusIcon from "~/icons/UserPlus";
 import UsersIcon from "~/icons/Users";
-import { boolean_action, setFollowing } from "~/redux/features";
+import { boolean_action } from "~/redux/features";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
-import { breakpoints } from "~/theme/breakpoints";
-import { abbreviateNumber } from "~/utils/abbreviateNumber";
+import { BREAKPOINTS } from "~/theme/breakpoints";
 
 import UserActions from "./actions";
 import styles from "./user.module.scss";
 import { UserProps } from "./user.props";
 
 const User = (props: UserProps): React.ReactElement => {
-  const { actionType = "default", className, user, virtual, ...rest } = props;
+  const { action_type = "default", className, user, virtual, ...rest } = props;
   const dispatch = use_app_dispatch();
-  const isMobile = useMediaQuery(breakpoints.down("mobile"));
-  const isFollowing = use_app_selector(
+  const is_mobile = use_media_query(BREAKPOINTS.down("mobile"));
+  const is_following = use_app_selector(
     (state) => state.entities.following[user.id]
   );
-  const userUrl = `/${user.username}`;
+  const user_url = `/${user.username}`;
 
   // User-specific props are synced in `Actions`
 
@@ -44,22 +44,22 @@ const User = (props: UserProps): React.ReactElement => {
       )}
     >
       <div className={clsx("flex", styles.main)}>
-        <NextLink className={clsx("flex", styles.meta)} href={userUrl}>
+        <NextLink className={clsx("flex", styles.meta)} href={user_url}>
           <Avatar
             alt={""}
-            avatarId={user.avatar_id}
+            avatar_id={user.avatar_id}
             hex={user.avatar_hex}
             label={user.name}
             size={"lg"}
           />
           <div className={"flex-col"}>
             <Typography ellipsis>
-              <span className={isMobile ? "t-medium" : "t-bold"}>
+              <span className={is_mobile ? "t-medium" : "t-bold"}>
                 {user.name}
               </span>
-              {!isMobile && <> @{user.username}</>}
+              {!is_mobile && <> @{user.username}</>}
             </Typography>
-            {isMobile ? (
+            {is_mobile ? (
               <Typography className={"t-minor"}>@{user.username}</Typography>
             ) : (
               <div className={clsx("flex", styles.stats)}>
@@ -73,7 +73,7 @@ const User = (props: UserProps): React.ReactElement => {
                       <StoryIcon />
                     </span>
                     <span>
-                      {abbreviateNumber(user.story_count)}{" "}
+                      {abbreviate_number(user.story_count)}{" "}
                       <span className={"t-minor"}>stories</span>
                     </span>
                   </Typography>
@@ -87,7 +87,7 @@ const User = (props: UserProps): React.ReactElement => {
                     <UsersIcon />
                   </span>
                   <span>
-                    {abbreviateNumber(user.follower_count)}{" "}
+                    {abbreviate_number(user.follower_count)}{" "}
                     <span className={"t-minor"}>followers</span>
                   </span>
                 </Typography>
@@ -97,27 +97,27 @@ const User = (props: UserProps): React.ReactElement => {
         </NextLink>
         <Grow />
         <div className={clsx("flex", styles.actions)}>
-          {actionType === "default" && (
+          {action_type === "default" && (
             <Button
-              autoSize
-              checkAuth
-              decorator={isFollowing ? <UserCheckIcon /> : <UserPlusIcon />}
+              auto_size
+              check_auth
+              decorator={is_following ? <UserCheckIcon /> : <UserPlusIcon />}
               onClick={(): void => {
                 dispatch(boolean_action("following", user.id));
               }}
-              variant={isFollowing ? "hollow" : "rigid"}
+              variant={is_following ? "hollow" : "rigid"}
             >
-              {isFollowing ? "Following" : "Follow"}
+              {is_following ? "Following" : "Follow"}
             </Button>
           )}
-          <UserActions actionType={actionType} user={user} />
+          <UserActions action_type={action_type} user={user} />
         </div>
       </div>
       {Boolean(user.bio) && (
         <Typography
           as={NextLink}
           className={clsx("t-minor", styles.bio)}
-          href={userUrl}
+          href={user_url}
           level={"body2"}
         >
           {user.bio}

@@ -2,7 +2,7 @@
 
 import React from "react";
 
-import { createSvgIcon } from "~/utils/createSvgIcon";
+import { create_svg_icon } from "src/utils/create-svg-icon";
 
 const DeviceComputerIcon = (
   <path
@@ -12,4 +12,4 @@ const DeviceComputerIcon = (
   />
 );
 
-export default createSvgIcon(DeviceComputerIcon, "device-computer");
+export default create_svg_icon(DeviceComputerIcon, "device-computer");

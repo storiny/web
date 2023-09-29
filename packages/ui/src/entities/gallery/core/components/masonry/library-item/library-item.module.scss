@@ -1,4 +1,3 @@
-/* Base styles */
 .item {
   position: relative;
   gap: 6px;
@@ -6,13 +5,11 @@
   overflow: hidden;
 }
 
-/* Deleted */
 .deleted {
   pointer-events: none; // Disable events
   filter: grayscale(1);
 }
 
-/* Deleted overlay */
 .deleted-overlay {
   --icon-size: 24px;
   --icon-stroke: var(--snow);
@@ -24,7 +21,6 @@
   background-color: rgba(0 0 0 / 50%);
 }
 
-/* Explicit icon button */
 .explicit-button {
   --icon-size: 12px;
 
@@ -35,12 +31,10 @@
   width: 21px;
 }
 
-/* Favourite icon button */
 .favourite-button {
   right: 6px;
 }
 
-/* Overlay buttons */
 .explicit-button,
 .favourite-button {
   --bg: rgba(0 0 0 / 50%);
@@ -55,19 +49,16 @@
     background-color: var(--bg) !important;
   }
 
-  /* Hidden */
   &.hidden {
     display: none;
   }
 }
 
-/* Item footer */
 .footer {
   gap: 4px;
   justify-content: space-between;
 }
 
-/* Alt text */
 .alt-text {
   cursor: pointer;
 

@@ -13,7 +13,7 @@ describe("<SignupWPMForm />", () => {
     const user = userEvent.setup();
     render_test_with_provider(
       <AuthState>
-        <SignupWPMForm onSubmit={mockSubmit} />
+        <SignupWPMForm on_submit={mockSubmit} />
       </AuthState>
     );
 
@@ -21,7 +21,7 @@ describe("<SignupWPMForm />", () => {
       await user.click(screen.getByRole("button", { name: /continue/i }));
     });
 
-    await waitFor(() => {
+    await wait_for(() => {
       expect(mockSubmit).toHaveBeenCalledWith({
         wpm: 250
       });

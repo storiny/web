@@ -1,8 +1,8 @@
 import { clsx } from "clsx";
 import React from "react";
 
-import Navbar from "~/layout/Navbar";
-import Sidenav from "~/layout/Sidenav";
+import Navbar from "../../../../../../packages/ui/src/layout/navbar";
+import Sidenav from "../../../../../../packages/ui/src/layout/sidenav";
 
 const DashboardLayout = ({
   children
@@ -11,7 +11,7 @@ const DashboardLayout = ({
 }): React.ReactElement => (
   <div className={clsx("grid", "grid-container", "dashboard")}>
     <Navbar />
-    <Sidenav isDashboard />
+    <Sidenav is_dashboard />
     {children}
   </div>
 );

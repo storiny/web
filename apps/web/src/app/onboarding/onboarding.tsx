@@ -9,16 +9,18 @@ import React from "react";
 
 import Logo from "../../../../../packages/ui/src/brand/logo";
 import SuspenseLoader from "~/common/suspense-loader";
-import Chip from "~/components/Chip";
-import Divider from "~/components/Divider";
-import Grow from "~/components/Grow";
-import Modal, { ModalFooterButton } from "~/components/Modal";
-import ScrollArea from "~/components/ScrollArea";
-import Spacer from "~/components/Spacer";
-import Stepper from "~/components/Stepper";
-import Typography from "~/components/Typography";
-import ErrorState from "~/entities/ErrorState";
-import { useMediaQuery } from "~/hooks/useMediaQuery";
+import Chip from "../../../../../packages/ui/src/components/chip";
+import Divider from "../../../../../packages/ui/src/components/divider";
+import Grow from "../../../../../packages/ui/src/components/grow";
+import Modal, {
+  ModalFooterButton
+} from "../../../../../packages/ui/src/components/modal";
+import ScrollArea from "../../../../../packages/ui/src/components/scroll-area";
+import Spacer from "../../../../../packages/ui/src/components/spacer";
+import Stepper from "../../../../../packages/ui/src/components/stepper";
+import Typography from "../../../../../packages/ui/src/components/typography";
+import ErrorState from "../../../../../packages/ui/src/entities/error-state";
+import { use_media_query } from "../../../../../packages/ui/src/hooks/use-media-query";
 import CheckIcon from "~/icons/Check";
 import PlusIcon from "~/icons/Plus";
 import {
@@ -28,7 +30,7 @@ import {
   use_get_onboarding_tags_query
 } from "~/redux/features";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
-import { breakpoints } from "~/theme/breakpoints";
+import { BREAKPOINTS } from "~/theme/breakpoints";
 
 import styles from "./onboarding.module.scss";
 
@@ -79,14 +81,14 @@ const CategoriesSegment = ({
             decorator={CATEGORY_ICON_MAP[category]}
             key={category}
             onClick={(): void =>
-              setSelectedCategories((prevState) => {
-                if (prevState.has(category)) {
-                  prevState.delete(category);
+              setSelectedCategories((prev_state) => {
+                if (prev_state.has(category)) {
+                  prev_state.delete(category);
                 } else {
-                  prevState.add(category);
+                  prev_state.add(category);
                 }
 
-                return new Set(prevState);
+                return new Set(prev_state);
               })
             }
             size={"lg"}
@@ -168,7 +170,7 @@ const TagsSegment = ({
           <SuspenseLoader />
         ) : isError ? (
           <ErrorState
-            autoSize
+            auto_size
             component_props={{
               button: { loading: isFetching }
             }}
@@ -218,7 +220,7 @@ const TagsSegment = ({
 };
 
 const Onboarding = (): React.ReactElement => {
-  const isSmallerThanMobile = useMediaQuery(breakpoints.down("mobile"));
+  const is_smaller_than_mobile = use_media_query(BREAKPOINTS.down("mobile"));
   const [open, setOpen] = React.useState<boolean>(true);
   const [segment, setSegment] = React.useState<
     "categories" | "tags" | "writers"
@@ -240,7 +242,7 @@ const Onboarding = (): React.ReactElement => {
     <Modal
       footer={
         <React.Fragment>
-          {!isSmallerThanMobile && segment === "categories" ? (
+          {!is_smaller_than_mobile && segment === "categories" ? (
             <React.Fragment>
               <Typography className={"t-minor"} level={"body2"}>
                 {selectedCategories.size <= 3
@@ -251,12 +253,15 @@ const Onboarding = (): React.ReactElement => {
             </React.Fragment>
           ) : null}
           {segment !== "writers" && (
-            <ModalFooterButton compact={isSmallerThanMobile} variant={"ghost"}>
+            <ModalFooterButton
+              compact={is_smaller_than_mobile}
+              variant={"ghost"}
+            >
               Skip
             </ModalFooterButton>
           )}
           <ModalFooterButton
-            compact={isSmallerThanMobile}
+            compact={is_smaller_than_mobile}
             disabled={selectedCategories.size < 3}
             onClick={(event): void => {
               if (segment === "categories") {
@@ -272,7 +277,7 @@ const Onboarding = (): React.ReactElement => {
           </ModalFooterButton>
         </React.Fragment>
       }
-      fullscreen={isSmallerThanMobile}
+      fullscreen={is_smaller_than_mobile}
       onOpenChange={setOpen}
       open={open}
       slot_props={{
@@ -281,14 +286,14 @@ const Onboarding = (): React.ReactElement => {
           children: "Welcome to Storiny"
         },
         footer: {
-          compact: isSmallerThanMobile
+          compact: is_smaller_than_mobile
         },
         body: {
           className: "flex-col"
         },
         content: {
           style: {
-            width: isSmallerThanMobile ? "100%" : "600px"
+            width: is_smaller_than_mobile ? "100%" : "600px"
           }
         }
       }}
@@ -305,8 +310,8 @@ const Onboarding = (): React.ReactElement => {
         }[segment]
       }
       <Stepper
-        activeSteps={segment === "categories" ? 1 : segment === "tags" ? 2 : 3}
-        totalSteps={3}
+        active_steps={segment === "categories" ? 1 : segment === "tags" ? 2 : 3}
+        total_steps={3}
       />
     </Modal>
   );

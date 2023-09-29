@@ -1,6 +1,5 @@
 $symbol-size: 26px;
 
-/* Symbol and fake symbol */
 .symbol,
 .fake-symbol {
   all: unset;
@@ -9,7 +8,6 @@ $symbol-size: 26px;
   height: calc($symbol-size + 10px);
 }
 
-/* Symbol */
 .symbol {
   --fg: var(--fg-minor);
 
@@ -28,7 +26,6 @@ $symbol-size: 26px;
   }
 }
 
-/* Placeholder */
 .placeholder {
   display: block;
   position: relative;

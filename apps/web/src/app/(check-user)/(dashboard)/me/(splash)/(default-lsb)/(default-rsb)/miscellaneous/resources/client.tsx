@@ -4,9 +4,9 @@ import clsx from "clsx";
 import NextLink from "next/link";
 import React from "react";
 
-import NavigationItem from "~/components/NavigationItem";
-import Separator from "~/components/Separator";
-import Spacer from "~/components/Spacer";
+import NavigationItem from "../../../../../../../../../../../../packages/ui/src/components/navigation-item";
+import Separator from "../../../../../../../../../../../../packages/ui/src/components/separator";
+import Spacer from "../../../../../../../../../../../../packages/ui/src/components/spacer";
 import ExternalLinkIcon from "~/icons/ExternalLink";
 
 import DashboardTitle from "../../../dashboard-title";
@@ -27,13 +27,13 @@ const MiscellaneousResourcesClient = (): React.ReactElement => (
           <React.Fragment key={href}>
             <NavigationItem
               as={NextLink}
-              endDecorator={<ExternalLinkIcon />}
+              end_decorator={<ExternalLinkIcon />}
               href={href}
               target={"_blank"}
             >
               {title}
             </NavigationItem>
-            <Separator className={"hide-last"} invertMargin />
+            <Separator className={"hide-last"} invert_margin />
           </React.Fragment>
         ))}
       </div>
@@ -51,13 +51,13 @@ const MiscellaneousResourcesClient = (): React.ReactElement => (
           <React.Fragment key={href}>
             <NavigationItem
               as={NextLink}
-              endDecorator={<ExternalLinkIcon />}
+              end_decorator={<ExternalLinkIcon />}
               href={href}
               target={"_blank"}
             >
               {title}
             </NavigationItem>
-            <Separator className={"hide-last"} invertMargin />
+            <Separator className={"hide-last"} invert_margin />
           </React.Fragment>
         ))}
       </div>

@@ -1,6 +1,6 @@
 import { Tag } from "@storiny/types";
 
-export const testTag: Tag = {
+export const TEST_TAG: Tag = {
   follower_count: 1,
   story_count: 1,
   created_at: "2022-05-18T01:07:02.000Z",
@@ -8,7 +8,7 @@ export const testTag: Tag = {
   id: "0"
 };
 
-export const mockTags: Tag[] = [
+export const MOCK_TAGS: Tag[] = [
   {
     follower_count: 2024,
     story_count: 12,

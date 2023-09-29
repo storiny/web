@@ -1,8 +1,8 @@
-import { mockUsers } from "@storiny/ui/src/mocks";
+import { MOCK_USERS } from "@storiny/ui/src/mocks";
 import { nanoid } from "nanoid";
 
 const { worker, rest } = window.msw;
-const mockFriendRequests = mockUsers.map((user) => ({
+const mockFriendRequests = MOCK_USERS.map((user) => ({
   user,
   id: nanoid(),
   created_at: new Date().toJSON(),
@@ -15,8 +15,8 @@ worker.use(
       res(
         ctx.delay(750),
         ctx.json(
-          mockFriendRequests.slice(0, 10).map((friendRequest) => ({
-            ...friendRequest,
+          mockFriendRequests.slice(0, 10).map((friend_request) => ({
+            ...friend_request,
             id: nanoid(),
             created_at: new Date().toJSON(),
           }))

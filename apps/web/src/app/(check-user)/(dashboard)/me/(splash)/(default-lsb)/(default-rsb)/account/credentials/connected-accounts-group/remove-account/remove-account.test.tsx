@@ -13,9 +13,9 @@ describe("<RemoveAccount />", () => {
     const mockSubmit = jest.fn();
     const user = userEvent.setup();
     render_test_with_provider(
-      <RemoveAccount onRemove={noop} onSubmit={mockSubmit} vendor={"Apple"} />,
+      <RemoveAccount onRemove={noop} on_submit={mockSubmit} vendor={"Apple"} />,
       {
-        loggedIn: true
+        logged_in: true
       }
     );
 
@@ -30,7 +30,7 @@ describe("<RemoveAccount />", () => {
       await user.click(screen.getByRole("button", { name: /confirm/i }));
     });
 
-    await waitFor(() => {
+    await wait_for(() => {
       expect(screen.queryAllByRole("alert").length).not.toEqual(0);
       expect(mockSubmit).not.toBeCalled();
     });
@@ -40,9 +40,9 @@ describe("<RemoveAccount />", () => {
     const mockSubmit = jest.fn();
     const user = userEvent.setup();
     render_test_with_provider(
-      <RemoveAccount onRemove={noop} onSubmit={mockSubmit} vendor={"Apple"} />,
+      <RemoveAccount onRemove={noop} on_submit={mockSubmit} vendor={"Apple"} />,
       {
-        loggedIn: true
+        logged_in: true
       }
     );
 
@@ -60,7 +60,7 @@ describe("<RemoveAccount />", () => {
       await user.click(screen.getByRole("button", { name: /confirm/i }));
     });
 
-    await waitFor(() => {
+    await wait_for(() => {
       expect(mockSubmit).toHaveBeenCalledWith({
         "current-password": "test-password"
       });

@@ -2,7 +2,7 @@
 
 import React from "react";
 
-import { createSvgIcon } from "~/utils/createSvgIcon";
+import { create_svg_icon } from "src/utils/create-svg-icon";
 
 const FigmaIcon = (
   <path
@@ -11,4 +11,4 @@ const FigmaIcon = (
   />
 );
 
-export default createSvgIcon(FigmaIcon, "figma", { noStroke: true });
+export default create_svg_icon(FigmaIcon, "figma", { no_stroke: true });

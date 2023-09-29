@@ -4,13 +4,13 @@ import React from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 import { useFilePicker } from "use-file-picker";
 
-import ScrollArea from "~/components/ScrollArea";
-import Separator from "~/components/Separator";
-import Tab from "~/components/Tab";
-import Tabs from "~/components/Tabs";
-import TabsList from "~/components/TabsList";
-import { useToast } from "~/components/Toast";
-import Tooltip, { TooltipProps } from "~/components/Tooltip";
+import ScrollArea from "../../../../ui/src/components/scroll-area";
+import Separator from "../../../../ui/src/components/separator";
+import Tab from "../../../../ui/src/components/tab";
+import Tabs from "../../../../ui/src/components/tabs";
+import TabsList from "../../../../ui/src/components/tabs-list";
+import { use_toast } from "../../../../ui/src/components/toast";
+import Tooltip, { TooltipProps } from "../../../../ui/src/components/tooltip";
 import ArrowIcon from "~/icons/Arrow";
 import CircleIcon from "~/icons/Circle";
 import DiamondIcon from "~/icons/Diamond";
@@ -48,7 +48,7 @@ const PositionedTooltip = ({
 }: TooltipProps & { shortcutKey?: string }): React.ReactElement => (
   <Tooltip
     {...rest}
-    rightSlot={shortcutKey}
+    right_slot={shortcutKey}
     slot_props={{
       ...slot_props,
       content: { ...slot_props?.content, side: "right" }
@@ -135,7 +135,7 @@ const ShapeTools = (): React.ReactElement => (
 
 const ImageTool = (): React.ReactElement => {
   const canvas = useCanvas();
-  const toast = useToast();
+  const toast = use_toast();
   const [openFileSelector] = useFilePicker({
     readAs: "DataURL",
     accept: "image/*",
@@ -183,8 +183,8 @@ const ImageTool = (): React.ReactElement => {
 const Tools = (): React.ReactElement => {
   const canvas = useCanvas();
   // const activeObject = useActiveObject();
-  const [tool, setTool] = useAtom(toolAtom);
-  const setPenMode = useSetAtom(isPenModeAtom);
+  const [tool, setTool] = use_atom(toolAtom);
+  const setPenMode = use_set_atom(isPenModeAtom);
   // const isImageObjectActive = activeObject && isImageObject(activeObject);
   useShortcuts();
 

@@ -1,6 +1,6 @@
 import React from "react";
 
-import Footer from "~/layout/Footer";
+import Footer from "../../../../../../packages/ui/src/layout/footer";
 
 const WithFooterLayout = ({
   children

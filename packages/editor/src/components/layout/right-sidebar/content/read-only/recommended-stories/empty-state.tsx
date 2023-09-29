@@ -1,6 +1,6 @@
 import React from "react";
 
-import CustomState from "~/entities/CustomState";
+import CustomState from "../../../../../../../../ui/src/entities/custom-state";
 
 const RecommendedStoriesEmptyState = (): React.ReactElement => (
   <CustomState

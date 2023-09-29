@@ -2,13 +2,13 @@ import { clsx } from "clsx";
 import NextLink from "next/link";
 import React from "react";
 
-import AspectRatio from "~/components/AspectRatio";
-import IconButton from "~/components/IconButton";
-import Image from "~/components/Image";
-import Link from "~/components/Link";
-import Spacer from "~/components/Spacer";
-import Typography from "~/components/Typography";
-import Persona from "~/entities/Persona";
+import AspectRatio from "../../../../../../ui/src/components/aspect-ratio";
+import IconButton from "../../../../../../ui/src/components/icon-button";
+import Image from "../../../../../../ui/src/components/image";
+import Link from "../../../../../../ui/src/components/link";
+import Spacer from "../../../../../../ui/src/components/spacer";
+import Typography from "../../../../../../ui/src/components/typography";
+import Persona from "../../../../../../ui/src/entities/persona";
 import ExternalLinkIcon from "~/icons/ExternalLink";
 import LinkIcon from "~/icons/Link";
 
@@ -39,8 +39,8 @@ const WebpageEmbed = ({
                 src: metadata.favicon || undefined,
                 label: metadata.title || "Unknown site"
               }}
-              primaryText={metadata.title || "Unknown site"}
-              secondaryText={new URL(metadata.url).host || ""}
+              primary_text={metadata.title || "Unknown site"}
+              secondary_text={new URL(metadata.url).host || ""}
               style={{ alignItems: "flex-start" }}
             />
             <Spacer className={"f-grow"} />
@@ -95,7 +95,7 @@ const WebpageEmbed = ({
           </div>
           <div className={clsx("flex-col", styles.x, styles.body)}>
             <Link
-              fixedColor
+              fixed_color
               href={metadata.url}
               level={"h6"}
               rel={"noreferrer"}

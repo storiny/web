@@ -2,7 +2,7 @@ export interface StorySkeletonProps {
   /**
    * If `true`, renders a compact skeleton
    */
-  isSmall?: boolean;
+  is_small?: boolean;
   /**
    * Whether the skeleton is rendered inside a virtualized list.
    */

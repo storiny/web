@@ -1,6 +1,6 @@
 import React from "react";
 
-import MenubarItem from "~/components/MenubarItem";
+import MenubarItem from "../../../../../../../../ui/src/components/menubar-item";
 import EmbedIcon from "~/icons/Embed";
 
 import EmbedModal from "../../../../../embed-modal";
@@ -12,11 +12,11 @@ const EmbedMenubarItem = ({
 }): React.ReactElement => (
   <EmbedModal
     modal
-    trigger={({ openModal }): React.ReactElement => (
+    trigger={({ open_modal }): React.ReactElement => (
       <MenubarItem
         decorator={<EmbedIcon />}
         disabled={disabled}
-        onClick={openModal}
+        onClick={open_modal}
         onSelect={(event): void => event.preventDefault()}
       >
         Embed

@@ -1,0 +1,28 @@
+.viewport {
+  --viewport-padding: 8px;
+
+  flex-wrap: wrap;
+  gap: 6px;
+  width: 54px;
+  height: 76px;
+}
+
+.option {
+  display: block;
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--divider);
+  background-color: var(--tone);
+
+  &[data-highlighted] {
+    outline: 2px solid var(--focus);
+    outline-offset: -1px;
+  }
+
+  &[data-state="checked"] {
+    outline: 2.5px solid var(--inverted-400);
+    outline-offset: -1px;
+  }
+}

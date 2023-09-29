@@ -2,7 +2,7 @@ import clsx from "clsx";
 import { useAtomValue } from "jotai";
 import React from "react";
 
-import Tooltip from "~/components/Tooltip";
+import Tooltip from "../../../../../../ui/src/components/tooltip";
 import CloudIcon from "~/icons/cloud";
 import CloudOffIcon from "~/icons/CloudOff";
 import CloudSyncingIcon from "~/icons/CloudSyncing";
@@ -36,7 +36,7 @@ const DOC_STATUS_TO_ICON_MAP: Record<
 };
 
 const DocStatus = (): React.ReactElement | null => {
-  const docStatus = useAtomValue(docStatusAtom);
+  const docStatus = use_atom_value(docStatusAtom);
 
   if (docStatus === "connected" || docStatus === "overloaded") {
     return null;

@@ -13,7 +13,7 @@ const VirtualizedUserList = React.memo(
   ({
     users,
     has_more,
-    loadMore,
+    load_more,
     userProps,
     className,
     ...rest
@@ -34,7 +34,7 @@ const VirtualizedUserList = React.memo(
           ...(has_more && { Footer: VirtualFooter })
         }}
         data={users}
-        endReached={has_more ? loadMore : (): void => undefined}
+        endReached={has_more ? load_more : (): void => undefined}
       />
     </VirtualizedUserListContext.Provider>
   )

@@ -1,10 +1,10 @@
 import { getShortcutLabel } from "@storiny/shared/src/utils/get-shortcut-label";
 import React from "react";
 
-import ToggleGroup from "~/components/ToggleGroup";
+import ToggleGroup from "../../../../../../../../ui/src/components/toggle-group";
 import ToggleGroupItem, {
   ToggleGroupItemProps
-} from "~/components/ToggleGroupItem";
+} from "../../../../../../../../ui/src/components/toggle-group-item";
 
 import {
   Alignment as AlignmentEnum,
@@ -30,8 +30,8 @@ const Item = ({
   <ToggleGroupItem
     {...rest}
     disabled={disabled}
-    slot_props={{ tooltip: { rightSlot: shortcut } }}
-    tooltipContent={label}
+    slot_props={{ tooltip: { right_slot: shortcut } }}
+    tooltip_content={label}
     value={alignment}
   >
     {alignmentToIconMap[alignment]}

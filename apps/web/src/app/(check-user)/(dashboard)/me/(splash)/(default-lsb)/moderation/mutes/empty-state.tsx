@@ -1,7 +1,7 @@
 import React from "react";
 
-import Link from "~/components/Link";
-import CustomState from "~/entities/CustomState";
+import Link from "../../../../../../../../../../../packages/ui/src/components/link";
+import CustomState from "../../../../../../../../../../../packages/ui/src/entities/custom-state";
 import MuteIcon from "~/icons/Mute";
 
 interface MutesEmptyStateProps {
@@ -12,7 +12,7 @@ const MutesEmptyState = ({
   query
 }: MutesEmptyStateProps): React.ReactElement => (
   <CustomState
-    autoSize
+    auto_size
     description={
       query ? (
         "Your search criteria did not match anything, make sure you've spelled it correctly or try again by being more specific."

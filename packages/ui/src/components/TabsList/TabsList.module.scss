@@ -1,9 +1,0 @@
-/* Base styles */
-.tabs-list {
-  flex-shrink: 0;
-  display: flex;
-
-  &[data-orientation="vertical"] {
-    flex-direction: column;
-  }
-}

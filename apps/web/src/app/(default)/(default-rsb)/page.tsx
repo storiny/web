@@ -6,10 +6,10 @@ import React from "react";
 
 import { dynamicLoader } from "~/common/dynamic";
 import { StoryListSkeleton, VirtualizedStoryList } from "~/common/story";
-import Tab from "~/components/Tab";
-import Tabs from "~/components/Tabs";
-import TabsList from "~/components/TabsList";
-import ErrorState from "~/entities/ErrorState";
+import Tab from "../../../../../../packages/ui/src/components/tab";
+import Tabs from "../../../../../../packages/ui/src/components/tabs";
+import TabsList from "../../../../../../packages/ui/src/components/tabs-list";
+import ErrorState from "../../../../../../packages/ui/src/entities/error-state";
 import {
   get_query_error_type,
   use_get_home_feed_query
@@ -50,7 +50,7 @@ const PageHeader = ({
 
 const Page = (): React.ReactElement => {
   const [value, setValue] = React.useState<IndexTabValue>("suggested");
-  const [page, setPage] = React.useState<number>(1);
+  const [page, set_page] = React.useState<number>(1);
   const { data, isLoading, isFetching, isError, error, refetch } =
     use_get_home_feed_query({
       page,
@@ -58,13 +58,13 @@ const Page = (): React.ReactElement => {
     });
   const { items = [], has_more } = data || {};
 
-  const loadMore = React.useCallback(
-    () => setPage((prevState) => prevState + 1),
+  const load_more = React.useCallback(
+    () => set_page((prev_state) => prev_state + 1),
     []
   );
 
   const handleChange = React.useCallback((newValue: IndexTabValue) => {
-    setPage(1);
+    set_page(1);
     setValue(newValue);
   }, []);
 
@@ -75,7 +75,7 @@ const Page = (): React.ReactElement => {
         <StoryListSkeleton />
       ) : isError ? (
         <ErrorState
-          autoSize
+          auto_size
           component_props={{
             button: { loading: isFetching }
           }}
@@ -87,7 +87,7 @@ const Page = (): React.ReactElement => {
       ) : (
         <VirtualizedStoryList
           has_more={Boolean(has_more)}
-          loadMore={loadMore}
+          load_more={load_more}
           stories={items}
         />
       )}

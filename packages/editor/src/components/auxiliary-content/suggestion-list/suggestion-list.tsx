@@ -6,7 +6,7 @@ import React from "react";
 
 import { dynamicLoader } from "~/common/dynamic";
 import { StoryListSkeleton, VirtualizedStoryList } from "~/common/story";
-import ErrorState from "~/entities/ErrorState";
+import ErrorState from "../../../../../ui/src/entities/error-state";
 import {
   get_query_error_type,
   use_get_story_recommendations_query
@@ -19,16 +19,16 @@ const EmptyState = dynamic(() => import("./empty-state"), {
 });
 
 const EditorAuxiliaryContentSuggestionList = (): React.ReactElement => {
-  const story = useAtomValue(storyMetadataAtom);
-  const [page, setPage] = React.useState<number>(1);
+  const story = use_atom_value(storyMetadataAtom);
+  const [page, set_page] = React.useState<number>(1);
   const { data, isLoading, isFetching, isError, error, refetch } =
     use_get_story_recommendations_query({
       page,
       storyId: story.id
     });
   const { items = [], has_more } = data || {};
-  const loadMore = React.useCallback(
-    () => setPage((prevState) => prevState + 1),
+  const load_more = React.useCallback(
+    () => set_page((prev_state) => prev_state + 1),
     []
   );
 
@@ -36,7 +36,7 @@ const EditorAuxiliaryContentSuggestionList = (): React.ReactElement => {
     <React.Fragment>
       {isError ? (
         <ErrorState
-          autoSize
+          auto_size
           component_props={{
             button: { loading: isFetching }
           }}
@@ -50,7 +50,7 @@ const EditorAuxiliaryContentSuggestionList = (): React.ReactElement => {
       ) : (
         <VirtualizedStoryList
           has_more={Boolean(has_more)}
-          loadMore={loadMore}
+          load_more={load_more}
           stories={items}
         />
       )}

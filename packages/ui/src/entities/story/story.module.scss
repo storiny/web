@@ -1,6 +1,5 @@
-@use "../../theme/breakpoints" as breakpoints;
+@use "breakpoints";
 
-/* Base styles */
 .story {
   padding-block: 12px;
   gap: 8px;
@@ -18,7 +17,6 @@
   }
 }
 
-/* Main */
 .main {
   justify-content: space-between;
   gap: 16px;
@@ -46,12 +44,10 @@
   }
 }
 
-/* Meta */
 .meta {
   gap: 8px;
 }
 
-/* Title */
 .title {
   font-size: 22px;
   line-height: 24px;
@@ -63,12 +59,10 @@
   }
 }
 
-/* Persona */
 .persona {
   width: fit-content;
 }
 
-/* Deleted label */
 .deleted-label {
   --icon-size: 16px;
   --icon-stroke: var(--fg-minor);
@@ -76,7 +70,6 @@
   align-items: center;
 }
 
-/* Splash */
 .splash {
   --size: 270px;
 
@@ -103,7 +96,6 @@
   }
 }
 
-/* Mobile actions */
 .mobile-actions {
   position: absolute;
   gap: 6px;
@@ -111,7 +103,6 @@
   right: 12px;
 }
 
-/* Footer */
 .footer {
   padding-top: 8px;
   gap: 12px;
@@ -122,7 +113,6 @@
   }
 }
 
-/* Stat */
 .stat {
   --icon-size: 16px;
   --icon-stroke: var(--fg-minor);
@@ -130,7 +120,6 @@
   gap: 6px;
 }
 
-/* Tags container */
 .tags-container {
   gap: 6px;
 }

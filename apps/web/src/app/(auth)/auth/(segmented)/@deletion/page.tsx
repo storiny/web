@@ -1,10 +1,10 @@
 import NextLink from "next/link";
 import React from "react";
 
-import Button from "~/components/Button";
-import Grow from "~/components/Grow";
-import Spacer from "~/components/Spacer";
-import Typography from "~/components/Typography";
+import Button from "../../../../../../../../packages/ui/src/components/button";
+import Grow from "../../../../../../../../packages/ui/src/components/grow";
+import Spacer from "../../../../../../../../packages/ui/src/components/spacer";
+import Typography from "../../../../../../../../packages/ui/src/components/typography";
 
 const Page = (): React.ReactElement => (
   <>

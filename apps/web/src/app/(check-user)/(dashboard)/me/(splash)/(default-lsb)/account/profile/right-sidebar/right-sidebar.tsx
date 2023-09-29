@@ -1,18 +1,18 @@
 import { clsx } from "clsx";
 import React from "react";
 
-import Grow from "~/components/Grow";
-import { useMediaQuery } from "~/hooks/useMediaQuery";
-import RightSidebar from "~/layout/RightSidebar";
-import { breakpoints } from "~/theme/breakpoints";
+import Grow from "../../../../../../../../../../../../packages/ui/src/components/grow";
+import { use_media_query } from "../../../../../../../../../../../../packages/ui/src/hooks/use-media-query";
+import RightSidebar from "../../../../../../../../../../../../packages/ui/src/layout/right-sidebar";
+import { BREAKPOINTS } from "~/theme/breakpoints";
 
 import AvatarSettings from "../avatar-settings";
 import styles from "./right-sidebar.module.scss";
 
 const AccountProfileRightSidebar = (): React.ReactElement | null => {
-  const shouldRender = useMediaQuery(breakpoints.up("desktop"));
+  const should_render = use_media_query(BREAKPOINTS.up("desktop"));
 
-  if (!shouldRender) {
+  if (!should_render) {
     return null;
   }
 

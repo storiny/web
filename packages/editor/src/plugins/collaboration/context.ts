@@ -19,7 +19,7 @@ export const CollaborationContext =
     isCollabActive: false,
     yjsDocMap: new Map(),
     avatarHex: null,
-    avatarId: null,
+    avatar_id: null,
     color: "",
     name: "",
     role: "viewer",
@@ -32,14 +32,14 @@ export const CollaborationContext =
 export const useCollaborationContext = ({
   name,
   color,
-  avatarId,
+  avatar_id,
   avatarHex,
   role,
   userId
 }: Partial<
   Pick<
     CollaborationContextType,
-    "userId" | "name" | "color" | "avatarId" | "avatarHex" | "role"
+    "userId" | "name" | "color" | "avatar_id" | "avatarHex" | "role"
   >
 >): CollaborationContextType => {
   const context = React.useContext(CollaborationContext);
@@ -60,8 +60,8 @@ export const useCollaborationContext = ({
     context.color = color;
   }
 
-  if (avatarId !== undefined) {
-    context.avatarId = avatarId;
+  if (avatar_id !== undefined) {
+    context.avatar_id = avatar_id;
   }
 
   if (avatarHex !== undefined) {

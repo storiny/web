@@ -1,29 +1,29 @@
 import { clsx } from "clsx";
 import React from "react";
 
-import Link from "~/components/Link";
-import Spacer from "~/components/Spacer";
-import Typography from "~/components/Typography";
-import CustomState from "~/entities/CustomState";
-import Persona from "~/entities/Persona";
+import Link from "../../../../../../../packages/ui/src/components/link";
+import Spacer from "../../../../../../../packages/ui/src/components/spacer";
+import Typography from "../../../../../../../packages/ui/src/components/typography";
+import CustomState from "../../../../../../../packages/ui/src/entities/custom-state";
+import Persona from "../../../../../../../packages/ui/src/entities/persona";
 import ForbidIcon from "~/icons/Forbid";
-import BottomNavigation from "~/layout/BottomNavigation";
-import LeftSidebar from "~/layout/LeftSidebar";
-import Navbar from "~/layout/Navbar";
-import RightSidebar from "~/layout/RightSidebar";
-import Sidenav from "~/layout/Sidenav";
-import SplashScreen from "~/layout/SplashScreen";
+import BottomNavigation from "../../../../../../../packages/ui/src/layout/bottom-navigation";
+import LeftSidebar from "../../../../../../../packages/ui/src/layout/left-sidebar";
+import Navbar from "../../../../../../../packages/ui/src/layout/navbar";
+import RightSidebar from "../../../../../../../packages/ui/src/layout/right-sidebar";
+import Sidenav from "../../../../../../../packages/ui/src/layout/sidenav";
+import SplashScreen from "../../../../../../../packages/ui/src/layout/splash-screen";
 import { sync_with_user } from "~/redux/features";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
-import { abbreviateNumber } from "~/utils/abbreviateNumber";
+import { abbreviate_number } from "../../../../../../../packages/ui/src/utils/abbreviate-number";
 
 import { RestrictedStoryProps } from "./restricted.props";
 
 const RestrictedStory = (props: RestrictedStoryProps): React.ReactElement => {
   const { user, type } = props;
   const dispatch = use_app_dispatch();
-  const followerCount =
-    use_app_selector((state) => state.entities.followerCounts[user.id]) || 0;
+  const follower_count =
+    use_app_selector((state) => state.entities.follower_counts[user.id]) || 0;
 
   React.useEffect(() => {
     dispatch(sync_with_user(user));
@@ -36,7 +36,7 @@ const RestrictedStory = (props: RestrictedStoryProps): React.ReactElement => {
       <LeftSidebar />
       <main>
         <CustomState
-          autoSize
+          auto_size
           description={
             type === "user-blocked" ? (
               <>
@@ -63,25 +63,25 @@ const RestrictedStory = (props: RestrictedStoryProps): React.ReactElement => {
           <Persona
             avatar={{
               alt: `${user.name}'s avatar`,
-              avatarId: user.avatar_id,
+              avatar_id: user.avatar_id,
               label: user.name,
               hex: user.avatar_hex
             }}
             className={"fit-w"}
             component_props={{
-              secondaryText: {
+              secondary_text: {
                 ellipsis: true
               }
             }}
-            primaryText={
-              <Link ellipsis fixedColor href={`/${user.username}`}>
+            primary_text={
+              <Link ellipsis fixed_color href={`/${user.username}`}>
                 {user.name}
               </Link>
             }
-            secondaryText={
+            secondary_text={
               <>
-                @{user.username} &bull; {abbreviateNumber(followerCount)}{" "}
-                {followerCount === 1 ? "follower" : "followers"}
+                @{user.username} &bull; {abbreviate_number(follower_count)}{" "}
+                {follower_count === 1 ? "follower" : "followers"}
               </>
             }
             size={"lg"}

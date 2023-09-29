@@ -1,10 +1,10 @@
 "use client";
 
 import React from "react";
-import { useFormContext } from "react-hook-form";
 
-import MultiSelect from "~/components/MultiSelect";
+import MultiSelect from "src/components/multi-select";
 
+import { use_form_context } from "../form";
 import {
   FormContext,
   FormControl,
@@ -13,7 +13,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage
-} from "../Form";
+} from "../form";
 import { FormMultiSelectProps } from "./form-multi-select.props";
 
 const FormMultiSelect = React.forwardRef<
@@ -22,17 +22,17 @@ const FormMultiSelect = React.forwardRef<
 >((props, ref) => {
   const {
     name,
-    disabled: disabledProp,
+    disabled: disabled_prop,
     required,
     label,
-    helperText,
-    formSlotProps,
+    helper_text,
+    form_slot_props,
     children,
     ...rest
   } = props;
-  const form = useFormContext();
-  const formContext = React.useContext(FormContext);
-  const disabled = Boolean(formContext.disabled || disabledProp);
+  const form = use_form_context();
+  const form_context = React.useContext(FormContext);
+  const disabled = Boolean(form_context.disabled || disabled_prop);
 
   return (
     <FormField
@@ -43,13 +43,13 @@ const FormMultiSelect = React.forwardRef<
         fieldState: { invalid, error }
       }): React.ReactElement => (
         <FormItem
-          {...formSlotProps?.formItem}
+          {...form_slot_props?.form_item}
           disabled={disabled}
           ref={ref}
           required={required}
         >
-          <FormLabel {...formSlotProps?.label}>{label}</FormLabel>
-          <FormControl {...formSlotProps?.control}>
+          <FormLabel {...form_slot_props?.label}>{label}</FormLabel>
+          <FormControl {...form_slot_props?.control}>
             <MultiSelect
               {...rest}
               color={invalid || error ? "ruby" : rest?.color}
@@ -61,12 +61,12 @@ const FormMultiSelect = React.forwardRef<
               {children}
             </MultiSelect>
           </FormControl>
-          {helperText && (
-            <FormHelperText {...formSlotProps?.helperText}>
-              {helperText}
+          {helper_text && (
+            <FormHelperText {...form_slot_props?.helper_text}>
+              {helper_text}
             </FormHelperText>
           )}
-          <FormMessage {...formSlotProps?.message} />
+          <FormMessage {...form_slot_props?.message} />
         </FormItem>
       )}
     />

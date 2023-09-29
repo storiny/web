@@ -1,21 +1,21 @@
 import clsx from "clsx";
 import React from "react";
 
-import { useConfirmation } from "~/components/Confirmation";
-import IconButton from "~/components/IconButton";
+import { use_confirmation } from "../../../../ui/src/components/confirmation";
+import IconButton from "../../../../ui/src/components/icon-button";
 import XIcon from "~/icons/X";
 
 import { useWhiteboard } from "../../hooks";
 import styles from "./topbar.module.scss";
 
 const Cancel = (): React.ReactElement => {
-  const { onCancel } = useWhiteboard();
-  const [element] = useConfirmation(
-    ({ openConfirmation }) => (
+  const { on_cancel } = useWhiteboard();
+  const [element] = use_confirmation(
+    ({ open_confirmation }) => (
       <IconButton
         aria-label={"Cancel editing"}
         className={clsx("focus-invert", styles.x, styles["icon-button"])}
-        onClick={openConfirmation}
+        onClick={open_confirmation}
         variant={"ghost"}
       >
         <XIcon />
@@ -23,9 +23,9 @@ const Cancel = (): React.ReactElement => {
     ),
     {
       color: "ruby",
-      onConfirm: () => {
-        if (onCancel) {
-          onCancel();
+      on_confirm: () => {
+        if (on_cancel) {
+          on_cancel();
         }
       },
       slot_props: {

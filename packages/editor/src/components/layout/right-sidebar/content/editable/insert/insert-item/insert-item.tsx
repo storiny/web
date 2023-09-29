@@ -1,8 +1,10 @@
 import { clsx } from "clsx";
 import React from "react";
 
-import Button, { ButtonProps } from "~/components/Button";
-import Typography from "~/components/Typography";
+import Button, {
+  ButtonProps
+} from "../../../../../../../../../ui/src/components/button";
+import Typography from "../../../../../../../../../ui/src/components/typography";
 
 import styles from "./insert-item.module.scss";
 

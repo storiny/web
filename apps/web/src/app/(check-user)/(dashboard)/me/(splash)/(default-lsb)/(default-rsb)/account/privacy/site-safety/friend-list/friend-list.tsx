@@ -2,12 +2,16 @@ import { RelationVisibility } from "@storiny/shared";
 import { clsx } from "clsx";
 import React from "react";
 
-import Form, { SubmitHandler, useForm, zodResolver } from "~/components/Form";
-import FormRadio from "~/components/FormRadio";
-import FormRadioGroup from "~/components/FormRadioGroup";
-import Spacer from "~/components/Spacer";
-import { useToast } from "~/components/Toast";
-import Typography from "~/components/Typography";
+import Form, {
+  SubmitHandler,
+  use_form,
+  zod_resolver
+} from "../../../../../../../../../../../../../../packages/ui/src/components/form";
+import FormRadio from "../../../../../../../../../../../../../../packages/ui/src/components/form-radio";
+import FormRadioGroup from "../../../../../../../../../../../../../../packages/ui/src/components/form-radio-group";
+import Spacer from "../../../../../../../../../../../../../../packages/ui/src/components/spacer";
+import { use_toast } from "../../../../../../../../../../../../../../packages/ui/src/components/toast";
+import Typography from "../../../../../../../../../../../../../../packages/ui/src/components/typography";
 import {
   select_is_private_account,
   use_friend_list_mutation
@@ -19,14 +23,14 @@ import { FriendListProps } from "./friend-list.props";
 import { FriendListSchema, friendListSchema } from "./friend-list.schema";
 
 const FriendList = ({
-  onSubmit,
+  on_submit,
   friend_list_visibility
 }: FriendListProps): React.ReactElement => {
-  const toast = useToast();
+  const toast = use_toast();
   const isPrivate = use_app_selector(select_is_private_account);
   const prevValuesRef = React.useRef<FriendListSchema>();
-  const form = useForm<FriendListSchema>({
-    resolver: zodResolver(friendListSchema),
+  const form = use_form<FriendListSchema>({
+    resolver: zod_resolver(friendListSchema),
     defaultValues: {
       "friend-list": `${friend_list_visibility}` as `${1 | 2 | 3}`
     }
@@ -34,8 +38,8 @@ const FriendList = ({
   const [mutateFriendList, { isLoading }] = use_friend_list_mutation();
 
   const handleSubmit: SubmitHandler<FriendListSchema> = (values) => {
-    if (onSubmit) {
-      onSubmit(values);
+    if (on_submit) {
+      on_submit(values);
     } else {
       mutateFriendList(values)
         .unwrap()
@@ -63,11 +67,11 @@ const FriendList = ({
       <Form<FriendListSchema>
         className={clsx("flex-col", styles.x, styles.form)}
         disabled={isLoading}
-        onSubmit={handleSubmit}
-        providerProps={form}
+        on_submit={handleSubmit}
+        provider_props={form}
       >
         <FormRadioGroup
-          autoSize
+          auto_size
           className={clsx(styles.x, styles["radio-group"])}
           name={"friend-list"}
           onValueChange={(): void => {

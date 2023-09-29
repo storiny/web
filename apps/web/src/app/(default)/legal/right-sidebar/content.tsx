@@ -4,7 +4,7 @@ import { clsx } from "clsx";
 import { usePathname } from "next/navigation";
 import React from "react";
 
-import Typography from "~/components/Typography";
+import Typography from "../../../../../../../packages/ui/src/components/typography";
 
 import styles from "./right-sidebar.module.scss";
 import Toc from "./toc";

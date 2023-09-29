@@ -7,18 +7,18 @@ import React from "react";
 
 import { dynamicLoader } from "~/common/dynamic";
 import { StoryListSkeleton, VirtualizedStoryList } from "~/common/story";
-import Button from "~/components/Button";
-import Divider from "~/components/Divider";
-import Input from "~/components/Input";
-import Option from "~/components/Option";
-import Select from "~/components/Select";
-import Spacer from "~/components/Spacer";
-import Tab from "~/components/Tab";
-import Tabs from "~/components/Tabs";
-import TabsList from "~/components/TabsList";
-import Typography from "~/components/Typography";
-import ErrorState from "~/entities/ErrorState";
-import { useDebounce } from "~/hooks/useDebounce";
+import Button from "../../../../../../../../../../../packages/ui/src/components/button";
+import Divider from "../../../../../../../../../../../packages/ui/src/components/divider";
+import Input from "../../../../../../../../../../../packages/ui/src/components/input";
+import Option from "../../../../../../../../../../../packages/ui/src/components/option";
+import Select from "../../../../../../../../../../../packages/ui/src/components/select";
+import Spacer from "../../../../../../../../../../../packages/ui/src/components/spacer";
+import Tab from "../../../../../../../../../../../packages/ui/src/components/tab";
+import Tabs from "../../../../../../../../../../../packages/ui/src/components/tabs";
+import TabsList from "../../../../../../../../../../../packages/ui/src/components/tabs-list";
+import Typography from "../../../../../../../../../../../packages/ui/src/components/typography";
+import ErrorState from "../../../../../../../../../../../packages/ui/src/entities/error-state";
+import { use_debounce } from "../../../../../../../../../../../packages/ui/src/hooks/use-debounce";
 import PlusIcon from "~/icons/Plus";
 import SearchIcon from "~/icons/Search";
 import {
@@ -27,7 +27,7 @@ import {
   use_get_stories_query
 } from "~/redux/features";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
-import { abbreviateNumber } from "~/utils/abbreviateNumber";
+import { abbreviate_number } from "../../../../../../../../../../../packages/ui/src/utils/abbreviate-number";
 
 import DashboardTitle from "../../dashboard-title";
 import ContentStoriesRightSidebar from "./right-sidebar";
@@ -169,7 +169,7 @@ const StatusHeader = ({
         ) : (
           <>
             You have{" "}
-            <span className={"t-bold"}>{abbreviateNumber(count_param)}</span>{" "}
+            <span className={"t-bold"}>{abbreviate_number(count_param)}</span>{" "}
             {tab === "published" ? "published" : "deleted"}{" "}
             {count_param === 1 ? "story" : "stories"}
           </>
@@ -179,7 +179,7 @@ const StatusHeader = ({
       {tab === "published" ? (
         <Button
           as={NextLink}
-          checkAuth
+          check_auth
           className={clsx(styles.x, styles["header-button"])}
           decorator={<PlusIcon />}
           href={"/new"}
@@ -255,42 +255,42 @@ const ContentStoriesClient = (props: StoriesProps): React.ReactElement => {
   const [sort, setSort] = React.useState<StoriesSortValue>("recent");
   const [query, setQuery] = React.useState<string>("");
   const [value, setValue] = React.useState<StoriesTabValue>("published");
-  const [page, setPage] = React.useState<number>(1);
-  const debouncedQuery = useDebounce(query);
+  const [page, set_page] = React.useState<number>(1);
+  const debounced_query = use_debounce(query);
   const { data, isLoading, isFetching, isError, error, refetch } =
     use_get_stories_query({
       page,
       sort,
-      query: debouncedQuery,
+      query: debounced_query,
       type: value
     });
   const { items = [], has_more } = data || {};
-  const isTyping = query !== debouncedQuery;
+  const is_typing = query !== debounced_query;
 
-  const loadMore = React.useCallback(
-    () => setPage((prevState) => prevState + 1),
+  const load_more = React.useCallback(
+    () => set_page((prev_state) => prev_state + 1),
     []
   );
 
   const handleChange = React.useCallback((newValue: StoriesTabValue) => {
-    setPage(1);
+    set_page(1);
     setSort("recent");
     setQuery("");
     setValue(newValue);
   }, []);
 
   const handleSortChange = React.useCallback((newSort: StoriesSortValue) => {
-    setPage(1);
+    set_page(1);
     setSort(newSort);
   }, []);
 
   const handleQueryChange = React.useCallback((newQuery: string) => {
-    setPage(1);
+    set_page(1);
     setQuery(newQuery);
   }, []);
 
   React.useEffect(() => {
-    setPage(1);
+    set_page(1);
   }, [value]);
 
   return (
@@ -315,11 +315,11 @@ const ContentStoriesClient = (props: StoriesProps): React.ReactElement => {
             tab={value}
           />
         )}
-        {isLoading || isTyping || (isFetching && page === 1) ? (
-          <StoryListSkeleton isSmall />
+        {isLoading || is_typing || (isFetching && page === 1) ? (
+          <StoryListSkeleton is_small />
         ) : isError ? (
           <ErrorState
-            autoSize
+            auto_size
             component_props={{
               button: { loading: isFetching }
             }}
@@ -331,14 +331,14 @@ const ContentStoriesClient = (props: StoriesProps): React.ReactElement => {
         ) : (
           <VirtualizedStoryList
             has_more={Boolean(has_more)}
-            loadMore={loadMore}
+            load_more={load_more}
             skeletonProps={{
-              isSmall: true
+              is_small: true
             }}
             stories={items}
             storyProps={{
-              isExtended: true,
-              isDeleted: value === "deleted"
+              is_extended: true,
+              is_deleted: value === "deleted"
             }}
           />
         )}

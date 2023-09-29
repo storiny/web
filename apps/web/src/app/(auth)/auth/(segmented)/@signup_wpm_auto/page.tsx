@@ -4,11 +4,11 @@ import { DEFAULT_WPM, userProps } from "@storiny/shared";
 import { clsx } from "clsx";
 import React from "react";
 
-import Button from "~/components/Button";
-import Grow from "~/components/Grow";
-import ScrollArea from "~/components/ScrollArea";
-import Spacer from "~/components/Spacer";
-import Typography from "~/components/Typography";
+import Button from "../../../../../../../../packages/ui/src/components/button";
+import Grow from "../../../../../../../../packages/ui/src/components/grow";
+import ScrollArea from "../../../../../../../../packages/ui/src/components/scroll-area";
+import Spacer from "../../../../../../../../packages/ui/src/components/spacer";
+import Typography from "../../../../../../../../packages/ui/src/components/typography";
 import { clamp } from "~/utils/clamp";
 
 import { useAuthState } from "../../../actions";

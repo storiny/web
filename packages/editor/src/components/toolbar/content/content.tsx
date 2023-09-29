@@ -4,14 +4,14 @@ import { clsx } from "clsx";
 import { useSetAtom } from "jotai";
 import React from "react";
 
-import Divider from "~/components/Divider";
-import Grow from "~/components/Grow";
-import IconButton from "~/components/IconButton";
-import ScrollArea from "~/components/ScrollArea";
-import Tooltip from "~/components/Tooltip";
-import { useMediaQuery } from "~/hooks/useMediaQuery";
+import Divider from "../../../../../ui/src/components/divider";
+import Grow from "../../../../../ui/src/components/grow";
+import IconButton from "../../../../../ui/src/components/icon-button";
+import ScrollArea from "../../../../../ui/src/components/scroll-area";
+import Tooltip from "../../../../../ui/src/components/tooltip";
+import { use_media_query } from "../../../../../ui/src/hooks/use-media-query";
 import SidebarExpandIcon from "~/icons/SidebarExpand";
-import { breakpoints } from "~/theme/breakpoints";
+import { BREAKPOINTS } from "~/theme/breakpoints";
 
 import { sidebarsCollapsedAtom } from "../../../atoms";
 import toolbarStyles from "../toolbar.module.scss";
@@ -22,14 +22,14 @@ import ToolbarInsertItem from "./insert";
 import ToolbarTextStyleItem from "./text-style";
 
 const SuspendedEditorToolbarContent = (): React.ReactElement => {
-  const isSmallerThanMobile = useMediaQuery(breakpoints.down("mobile"));
-  const isSmallerThanDesktop = useMediaQuery(breakpoints.down("desktop"));
-  const setSidebarsCollapsed = useSetAtom(sidebarsCollapsedAtom);
+  const is_smaller_than_mobile = use_media_query(BREAKPOINTS.down("mobile"));
+  const is_smaller_than_desktop = use_media_query(BREAKPOINTS.down("desktop"));
+  const setSidebarsCollapsed = use_set_atom(sidebarsCollapsedAtom);
 
   return (
     <ScrollArea
       className={"f-grow"}
-      enableHorizontal
+      enable_horizontal
       slot_props={{
         scrollbar: {
           style: { background: "none", "--size": "8px" } as React.CSSProperties
@@ -40,7 +40,7 @@ const SuspendedEditorToolbarContent = (): React.ReactElement => {
       }}
     >
       <div className={clsx("flex-center", styles.x, styles.content)}>
-        {isSmallerThanDesktop ? (
+        {is_smaller_than_desktop ? (
           <ToolbarHistoryItem />
         ) : (
           <Tooltip content={"Expand sidebars"}>
@@ -60,7 +60,7 @@ const SuspendedEditorToolbarContent = (): React.ReactElement => {
         )}
         <Divider orientation={"vertical"} />
         <ToolbarTextStyleItem />
-        {isSmallerThanMobile && <Grow />}
+        {is_smaller_than_mobile && <Grow />}
         <Divider orientation={"vertical"} />
         <ToolbarInsertItem />
         <Divider orientation={"vertical"} />

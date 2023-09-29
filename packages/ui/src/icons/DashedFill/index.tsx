@@ -2,7 +2,7 @@
 
 import React from "react";
 
-import { createSvgIcon } from "~/utils/createSvgIcon";
+import { create_svg_icon } from "src/utils/create-svg-icon";
 
 const DashedFillIcon = (
   <path
@@ -12,4 +12,4 @@ const DashedFillIcon = (
   />
 );
 
-export default createSvgIcon(DashedFillIcon, "dashed-fill");
+export default create_svg_icon(DashedFillIcon, "dashed-fill");

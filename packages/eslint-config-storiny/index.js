@@ -26,6 +26,8 @@ module.exports = {
       rules: {
         "@typescript-eslint/no-unused-vars": "error",
         "@typescript-eslint/explicit-function-return-type": "error",
+        "@typescript-eslint/no-explicit-any": "off",
+        "@typescript-eslint/no-non-null-assertion": "off",
       },
     },
   ],
@@ -54,9 +56,9 @@ module.exports = {
       "always",
       {
         allowPascalCase: true,
-        allowDestructuringAssignment: true,
+        allowDestructuringPattern: true,
         whitelist: [
-          "serializeQueryArgs",
+          "serializeQueryArgs", // Redux
           "endpointName",
           "queryArgs",
           "transformResponse",
@@ -70,8 +72,25 @@ module.exports = {
           "initialState",
           "actionCreator",
           "extraReducers",
-          "getByTestId",
+          "argTypes",
+          "delayMs", // Radix avatar fallback
+          "defaultValue", // Storybook
+          "defaultValues", // react-hook-form
+          "fieldState",
+          "baseElement", // RTL
           "queryByTestId",
+          "queryAllByTestId",
+          "queryByRole",
+          "getByLabelText",
+          "getByTestId",
+          "getAllByTestId",
+          "getByRole",
+          "componentDidMount", // React
+          "componentDidUpdate",
+          "componentWillUnmount",
+          "defaultProps",
+          "getDerivedStateFromProps",
+          "zIndex",
         ],
       },
     ],

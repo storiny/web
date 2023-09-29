@@ -1,3 +1,3 @@
-import { atomWithReset } from "jotai/utils";
+import { atomWithReset as atom_with_reset } from "jotai/utils";
 
-export const queryAtom = atomWithReset<string>("");
+export const query_atom = atom_with_reset<string>("");

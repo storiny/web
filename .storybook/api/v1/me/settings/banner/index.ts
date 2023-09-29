@@ -1,4 +1,4 @@
-import { mockUsers } from "@storiny/ui/src/mocks";
+import { MOCK_USERS } from "@storiny/ui/src/mocks";
 const { worker, rest } = window.msw;
 
 worker.use(
@@ -9,8 +9,8 @@ worker.use(
         ctx.delay(750),
         ctx.status(200),
         ctx.json({
-          avatar_id: mockUsers[6].banner_id,
-          avatar_hex: mockUsers[6].banner_hex,
+          avatar_id: MOCK_USERS[6].banner_id,
+          avatar_hex: MOCK_USERS[6].banner_hex,
         })
       )
   )

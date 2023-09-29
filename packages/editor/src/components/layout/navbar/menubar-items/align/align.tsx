@@ -1,11 +1,11 @@
 import { getShortcutLabel } from "@storiny/shared/src/utils/get-shortcut-label";
 import React from "react";
 
-import MenubarItem from "~/components/MenubarItem";
-import MenubarRadioGroup from "~/components/MenubarRadioGroup";
-import MenubarRadioItem from "~/components/MenubarRadioItem";
-import MenubarSub from "~/components/MenubarSub";
-import Separator from "~/components/Separator";
+import MenubarItem from "../../../../../../../ui/src/components/menubar-item";
+import MenubarRadioGroup from "../../../../../../../ui/src/components/menubar-radio-group";
+import MenubarRadioItem from "../../../../../../../ui/src/components/menubar-radio-item";
+import MenubarSub from "../../../../../../../ui/src/components/menubar-sub";
+import Separator from "../../../../../../../ui/src/components/separator";
 import AlignCenterIcon from "~/icons/AlignCenter";
 import AlignJustifyIcon from "~/icons/AlignJustify";
 import AlignLeftIcon from "~/icons/AlignLeft";
@@ -19,7 +19,7 @@ import { useAlignment } from "../../../../../hooks/use-alignment";
 import { useIndentation } from "../../../../../hooks/use-indentation";
 
 const AlignItem = ({
-  disabled: disabledProp
+  disabled: disabled_prop
 }: {
   disabled?: boolean;
 }): React.ReactElement => {
@@ -31,36 +31,36 @@ const AlignItem = ({
       <MenubarRadioGroup value={alignment}>
         <MenubarRadioItem
           decorator={<AlignLeftIcon />}
-          disabled={disabledProp || disabled}
+          disabled={disabled_prop || disabled}
           onClick={(): void => setAlignment(Alignment.LEFT)}
-          rightSlot={getShortcutLabel(EDITOR_SHORTCUTS.leftAlign)}
+          right_slot={getShortcutLabel(EDITOR_SHORTCUTS.leftAlign)}
           value={Alignment.LEFT}
         >
           Align left
         </MenubarRadioItem>
         <MenubarRadioItem
           decorator={<AlignCenterIcon />}
-          disabled={disabledProp || disabled}
+          disabled={disabled_prop || disabled}
           onClick={(): void => setAlignment(Alignment.CENTER)}
-          rightSlot={getShortcutLabel(EDITOR_SHORTCUTS.centerAlign)}
+          right_slot={getShortcutLabel(EDITOR_SHORTCUTS.centerAlign)}
           value={Alignment.CENTER}
         >
           Align center
         </MenubarRadioItem>
         <MenubarRadioItem
           decorator={<AlignRightIcon />}
-          disabled={disabledProp || disabled}
+          disabled={disabled_prop || disabled}
           onClick={(): void => setAlignment(Alignment.RIGHT)}
-          rightSlot={getShortcutLabel(EDITOR_SHORTCUTS.rightAlign)}
+          right_slot={getShortcutLabel(EDITOR_SHORTCUTS.rightAlign)}
           value={Alignment.RIGHT}
         >
           Align right
         </MenubarRadioItem>
         <MenubarRadioItem
           decorator={<AlignJustifyIcon />}
-          disabled={disabledProp || disabled}
+          disabled={disabled_prop || disabled}
           onClick={(): void => setAlignment(Alignment.JUSTIFY)}
-          rightSlot={getShortcutLabel(EDITOR_SHORTCUTS.justifyAlign)}
+          right_slot={getShortcutLabel(EDITOR_SHORTCUTS.justifyAlign)}
           value={Alignment.JUSTIFY}
         >
           Align justify
@@ -68,17 +68,17 @@ const AlignItem = ({
         <Separator />
         <MenubarItem
           decorator={<IndentIcon />}
-          disabled={disabledProp || !canIndent}
+          disabled={disabled_prop || !canIndent}
           onClick={indent}
-          rightSlot={getShortcutLabel(EDITOR_SHORTCUTS.indent)}
+          right_slot={getShortcutLabel(EDITOR_SHORTCUTS.indent)}
         >
           Indent
         </MenubarItem>
         <MenubarItem
           decorator={<OutdentIcon />}
-          disabled={disabledProp || !canOutdent}
+          disabled={disabled_prop || !canOutdent}
           onClick={outdent}
-          rightSlot={getShortcutLabel(EDITOR_SHORTCUTS.outdent)}
+          right_slot={getShortcutLabel(EDITOR_SHORTCUTS.outdent)}
         >
           Outdent
         </MenubarItem>

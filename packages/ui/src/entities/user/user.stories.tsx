@@ -3,14 +3,14 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
 
-import { mockUsers } from "../../mocks";
+import { MOCK_USERS } from "../../mocks";
 import UserSkeleton from "./skeleton";
 import User from "./user";
 
 const meta: Meta<typeof User> = {
   title: "entities/user",
   component: User,
-  args: { user: mockUsers[6] },
+  args: { user: MOCK_USERS[6] },
   tags: ["autodocs"]
 };
 
@@ -22,14 +22,14 @@ export const Default: Story = {};
 export const BlockAction: Story = {
   args: {
     ...Default.args,
-    actionType: "block"
+    action_type: "block"
   }
 };
 
 export const MuteAction: Story = {
   args: {
     ...Default.args,
-    actionType: "mute"
+    action_type: "mute"
   }
 };
 

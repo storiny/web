@@ -9,7 +9,7 @@ import { strikethroughAtom } from "../../atoms";
  * Hooks for using strikethrough text style
  */
 export const useStrikethrough = (): [boolean, () => void] => {
-  const strikethrough = useAtomValue(strikethroughAtom);
+  const strikethrough = use_atom_value(strikethroughAtom);
   const [editor] = useLexicalComposerContext();
 
   const toggleStrikethrough = React.useCallback(() => {

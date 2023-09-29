@@ -15,8 +15,8 @@ export const useIndentation = (): {
   outdent: () => void;
 } => {
   const [editor] = useLexicalComposerContext();
-  const canIndent = useAtomValue(canIndentAtom);
-  const canOutdent = useAtomValue(canOutdentAtom);
+  const canIndent = use_atom_value(canIndentAtom);
+  const canOutdent = use_atom_value(canOutdentAtom);
 
   const indent = React.useCallback(() => {
     editor.dispatchCommand(INDENT_CONTENT_COMMAND, undefined);

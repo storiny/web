@@ -2,20 +2,20 @@ import { User } from "@storiny/types";
 import { useAtomValue } from "jotai";
 import React from "react";
 
-import Button from "~/components/Button";
-import IconButton from "~/components/IconButton";
-import Link from "~/components/Link";
-import Spacer from "~/components/Spacer";
-import Tooltip from "~/components/Tooltip";
-import Typography from "~/components/Typography";
-import Persona from "~/entities/Persona";
-import Status from "~/entities/Status";
+import Button from "../../../../../../../../ui/src/components/button";
+import IconButton from "../../../../../../../../ui/src/components/icon-button";
+import Link from "../../../../../../../../ui/src/components/link";
+import Spacer from "../../../../../../../../ui/src/components/spacer";
+import Tooltip from "../../../../../../../../ui/src/components/tooltip";
+import Typography from "../../../../../../../../ui/src/components/typography";
+import Persona from "../../../../../../../../ui/src/entities/persona";
+import Status from "../../../../../../../../ui/src/entities/status";
 import MailPlusIcon from "~/icons/mail-plus";
 import UserCheckIcon from "~/icons/UserCheck";
 import UserPlusIcon from "~/icons/UserPlus";
 import { boolean_action, setFollowing } from "~/redux/features";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
-import { abbreviateNumber } from "~/utils/abbreviateNumber";
+import { abbreviate_number } from "../../../../../../../../ui/src/utils/abbreviate-number";
 
 import { storyMetadataAtom } from "../../../../../../atoms";
 
@@ -28,7 +28,7 @@ const StoryActions = ({ user }: { user: User }): React.ReactElement => {
   return (
     <div className={"flex"}>
       <Button
-        checkAuth
+        check_auth
         className={"fit-w"}
         decorator={isFollowing ? <UserCheckIcon /> : <UserPlusIcon />}
         onClick={(): void => {
@@ -56,35 +56,35 @@ const StoryActions = ({ user }: { user: User }): React.ReactElement => {
 };
 
 const StoryWriter = (): React.ReactElement => {
-  const story = useAtomValue(storyMetadataAtom);
+  const story = use_atom_value(storyMetadataAtom);
   const user = story.user!;
-  const followerCount =
-    use_app_selector((state) => state.entities.followerCounts[user.id]) || 0;
+  const follower_count =
+    use_app_selector((state) => state.entities.follower_counts[user.id]) || 0;
 
   return (
     <div className={"flex-col"}>
       <Persona
         avatar={{
           alt: `${user?.name}'s avatar`,
-          avatarId: user?.avatar_id,
+          avatar_id: user?.avatar_id,
           label: user?.name,
           hex: user?.avatar_hex
         }}
         className={"fit-w"}
         component_props={{
-          secondaryText: {
+          secondary_text: {
             ellipsis: true
           }
         }}
-        primaryText={
-          <Link ellipsis fixedColor href={`/${user.username}`}>
+        primary_text={
+          <Link ellipsis fixed_color href={`/${user.username}`}>
             {user.name}
           </Link>
         }
-        secondaryText={
+        secondary_text={
           <>
-            @{user.username} &bull; {abbreviateNumber(followerCount)}{" "}
-            {followerCount === 1 ? "follower" : "followers"}
+            @{user.username} &bull; {abbreviate_number(follower_count)}{" "}
+            {follower_count === 1 ? "follower" : "followers"}
           </>
         }
         size={"lg"}
@@ -94,7 +94,7 @@ const StoryWriter = (): React.ReactElement => {
           <Spacer orientation={"vertical"} size={2} />
           <Status
             emoji={user.status.emoji ?? undefined}
-            expiresAt={user.status.expires_at ?? undefined}
+            expires_at={user.status.expires_at ?? undefined}
             text={user.status.text ?? undefined}
           />
         </React.Fragment>

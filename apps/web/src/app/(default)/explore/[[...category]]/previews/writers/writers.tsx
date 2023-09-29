@@ -6,22 +6,22 @@ import { clsx } from "clsx";
 import NextLink from "next/link";
 import React from "react";
 
-import Avatar from "~/components/Avatar";
-import Divider from "~/components/Divider";
-import Grow from "~/components/Grow";
-import Link from "~/components/Link";
-import Skeleton from "~/components/Skeleton";
-import Typography from "~/components/Typography";
+import Avatar from "../../../../../../../../../packages/ui/src/components/avatar";
+import Divider from "../../../../../../../../../packages/ui/src/components/divider";
+import Grow from "../../../../../../../../../packages/ui/src/components/grow";
+import Link from "../../../../../../../../../packages/ui/src/components/link";
+import Skeleton from "../../../../../../../../../packages/ui/src/components/skeleton";
+import Typography from "../../../../../../../../../packages/ui/src/components/typography";
 import ChevronIcon from "~/icons/Chevron";
 import { use_get_explore_writers_query } from "~/redux/features";
-import { abbreviateNumber } from "~/utils/abbreviateNumber";
+import { abbreviate_number } from "../../../../../../../../../packages/ui/src/utils/abbreviate-number";
 
 import WriterSkeleton from "./skeleton";
 import styles from "./writers.module.scss";
 
 interface Props {
   category: StoryCategory | "all";
-  debouncedQuery: string;
+  debounced_query: string;
   loading: boolean;
   normalizedCategory: string;
 }
@@ -35,7 +35,7 @@ const Writer = ({ writer }: { writer: User }): React.ReactElement => (
   >
     <Avatar
       alt={""}
-      avatarId={writer.avatar_id}
+      avatar_id={writer.avatar_id}
       hex={writer.avatar_hex}
       label={writer.name}
       size={"lg"}
@@ -47,7 +47,7 @@ const Writer = ({ writer }: { writer: User }): React.ReactElement => (
         ellipsis
         level={"body2"}
       >
-        {abbreviateNumber(writer.follower_count)}{" "}
+        {abbreviate_number(writer.follower_count)}{" "}
         {writer.follower_count === 1 ? "follower" : "followers"}
       </Typography>
     </Typography>
@@ -58,13 +58,13 @@ const WritersPreview = ({
   category,
   normalizedCategory,
   loading: loadingProp,
-  debouncedQuery
+  debounced_query
 }: Props): React.ReactElement | null => {
   const { data, isLoading, isFetching, isError } =
     use_get_explore_writers_query({
       page: 1,
       category,
-      query: debouncedQuery
+      query: debounced_query
     });
   const { items = [] } = data || {};
   const loading = isLoading || loadingProp;

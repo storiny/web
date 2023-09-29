@@ -2,20 +2,20 @@ import { clsx } from "clsx";
 import { useAtomValue } from "jotai";
 import React from "react";
 
-import Button from "~/components/Button";
-import Divider from "~/components/Divider";
-import Separator from "~/components/Separator";
-import Typography from "~/components/Typography";
+import Button from "../../../../../../../../ui/src/components/button";
+import Divider from "../../../../../../../../ui/src/components/divider";
+import Separator from "../../../../../../../../ui/src/components/separator";
+import Typography from "../../../../../../../../ui/src/components/typography";
 import CommentIcon from "~/icons/Comment";
 import { use_app_selector } from "~/redux/hooks";
-import { abbreviateNumber } from "~/utils/abbreviateNumber";
+import { abbreviate_number } from "../../../../../../../../ui/src/utils/abbreviate-number";
 
 import { storyMetadataAtom } from "../../../../../../atoms";
 import LikeButton from "./like-button";
 import styles from "./stats.module.scss";
 
 const StoryStats = (): React.ReactElement => {
-  const story = useAtomValue(storyMetadataAtom);
+  const story = use_atom_value(storyMetadataAtom);
   const readCount = story.stats.read_count + 1; // Also include the current reading session
   const commentCount =
     use_app_selector((state) => state.entities.storyCommentCounts[story.id]) ||
@@ -34,7 +34,7 @@ const StoryStats = (): React.ReactElement => {
             readCount === 1 ? "read" : "reads"
           }`}
         >
-          {abbreviateNumber(readCount)} {readCount === 1 ? "read" : "reads"}
+          {abbreviate_number(readCount)} {readCount === 1 ? "read" : "reads"}
         </Typography>
         <div
           className={clsx("f-grow", "flex-center", styles["divider-wrapper"])}
@@ -58,7 +58,7 @@ const StoryStats = (): React.ReactElement => {
           })`}
           variant={"hollow"}
         >
-          {abbreviateNumber(commentCount)}
+          {abbreviate_number(commentCount)}
         </Button>
       </div>
       <div className={styles["padded-separator"]}>

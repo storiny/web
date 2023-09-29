@@ -1,7 +1,9 @@
 import React from "react";
 
-import ErrorState from "~/entities/ErrorState";
-import StoryCard, { StoryCardSkeleton } from "~/entities/StoryCard";
+import ErrorState from "../../../../../../../../../../../../../../packages/ui/src/entities/error-state";
+import StoryCard, {
+  StoryCardSkeleton
+} from "../../../../../../../../../../../../../../packages/ui/src/entities/story-card";
 import {
   get_query_error_type,
   use_get_story_preview_query
@@ -18,7 +20,7 @@ const ContentStoryResponsesRightSidebarContent = (
 
   return isError ? (
     <ErrorState
-      autoSize
+      auto_size
       component_props={{
         button: { loading: isFetching }
       }}

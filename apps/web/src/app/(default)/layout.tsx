@@ -1,9 +1,9 @@
 import { clsx } from "clsx";
 import React from "react";
 
-import BottomNavigation from "~/layout/BottomNavigation";
-import Navbar from "~/layout/Navbar";
-import Sidenav from "~/layout/Sidenav";
+import BottomNavigation from "../../../../../packages/ui/src/layout/bottom-navigation";
+import Navbar from "../../../../../packages/ui/src/layout/navbar";
+import Sidenav from "../../../../../packages/ui/src/layout/sidenav";
 
 const DefaultLayout = ({
   children

@@ -1,8 +1,8 @@
 import { clsx } from "clsx";
 import React from "react";
 
-import BottomNavigation from "~/layout/BottomNavigation";
-import Navbar from "~/layout/Navbar";
+import BottomNavigation from "../../../../../packages/ui/src/layout/bottom-navigation";
+import Navbar from "../../../../../packages/ui/src/layout/navbar";
 
 const MinimalLayout = ({
   children

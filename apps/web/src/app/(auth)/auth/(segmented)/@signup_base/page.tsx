@@ -3,11 +3,11 @@
 import { redirect } from "next/navigation";
 import React from "react";
 
-import { SubmitHandler } from "~/components/Form";
-import Link from "~/components/Link";
-import Spacer from "~/components/Spacer";
-import Stepper from "~/components/Stepper";
-import Typography from "~/components/Typography";
+import { SubmitHandler } from "../../../../../../../../packages/ui/src/components/form";
+import Link from "../../../../../../../../packages/ui/src/components/link";
+import Spacer from "../../../../../../../../packages/ui/src/components/spacer";
+import Stepper from "../../../../../../../../packages/ui/src/components/stepper";
+import Typography from "../../../../../../../../packages/ui/src/components/typography";
 import { select_is_logged_in } from "~/redux/features";
 import { use_app_selector } from "~/redux/hooks";
 
@@ -17,15 +17,15 @@ import { SignupBaseSchema } from "./schema";
 
 const Page = (): React.ReactElement => {
   const { actions } = useAuthState();
-  const loggedIn = use_app_selector(select_is_logged_in);
+  const logged_in = use_app_selector(select_is_logged_in);
 
   React.useEffect(() => {
-    if (loggedIn) {
+    if (logged_in) {
       redirect("/");
     }
-  }, [loggedIn]);
+  }, [logged_in]);
 
-  const onSubmit: SubmitHandler<SignupBaseSchema> = React.useCallback(
+  const on_submit: SubmitHandler<SignupBaseSchema> = React.useCallback(
     ({ name, password, email }) => {
       actions.setSignupState({ name, password, email });
       actions.switchSegment("signup_username");
@@ -51,7 +51,7 @@ const Page = (): React.ReactElement => {
         </Link>
       </Typography>
       <Spacer orientation={"vertical"} size={5} />
-      <SignupBaseForm onSubmit={onSubmit} />
+      <SignupBaseForm on_submit={on_submit} />
       <Spacer orientation={"vertical"} size={5} />
       <div className={"flex-center"}>
         <Link
@@ -65,7 +65,7 @@ const Page = (): React.ReactElement => {
         </Link>
       </div>
       <Spacer orientation={"vertical"} size={2} />
-      <Stepper activeSteps={1} totalSteps={3} />
+      <Stepper active_steps={1} total_steps={3} />
     </>
   );
 };

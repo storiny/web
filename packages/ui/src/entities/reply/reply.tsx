@@ -3,28 +3,25 @@
 import clsx from "clsx";
 import NextLink from "next/link";
 import React from "react";
+import Button from "src/components/button";
+import Grow from "src/components/grow";
+import IconButton from "src/components/icon-button";
+import Link from "src/components/link";
+import NoSsr from "src/components/no-ssr";
+import Spacer from "src/components/spacer";
+import Typography from "src/components/typography";
+import Persona from "src/entities/persona";
+import { use_media_query } from "src/hooks/use-media-query";
+import { abbreviate_number } from "src/utils/abbreviate-number";
+import { DateFormat, format_date } from "src/utils/format-date";
 
-import Button from "~/components/Button";
-import Grow from "~/components/Grow";
-import IconButton from "~/components/IconButton";
-import Link from "~/components/Link";
-import NoSsr from "~/components/NoSsr";
-import Spacer from "~/components/Spacer";
-import Typography from "~/components/Typography";
-import Persona from "~/entities/Persona";
-import { useMediaQuery } from "~/hooks/useMediaQuery";
 import ExternalLinkIcon from "~/icons/ExternalLink";
 import HeartIcon from "~/icons/Heart";
 import ReplyIcon from "~/icons/Reply";
 import { boolean_action, select_user } from "~/redux/features";
-import {
-  setLikedReply,
-  sync_with_reply
-} from "~/redux/features/entities/slice";
+import { sync_with_reply } from "~/redux/features/entities/slice";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
-import { breakpoints } from "~/theme/breakpoints";
-import { abbreviateNumber } from "~/utils/abbreviateNumber";
-import { DateFormat, formatDate } from "~/utils/formatDate";
+import { BREAKPOINTS } from "~/theme/breakpoints";
 
 import ResponseParser from "../common/response-parser";
 import Actions from "./actions";
@@ -32,30 +29,31 @@ import styles from "./reply.module.scss";
 import { ReplyProps } from "./reply.props";
 
 const Reply = (props: ReplyProps): React.ReactElement => {
-  const { isStatic, className, reply, enableSsr, virtual, nested, ...rest } =
+  const { is_static, className, reply, enable_ssr, virtual, nested, ...rest } =
     props;
   const dispatch = use_app_dispatch();
-  const isMobile = useMediaQuery(breakpoints.down("mobile"));
+  const is_mobile = use_media_query(BREAKPOINTS.down("mobile"));
   const user = use_app_selector(select_user);
-  const isUserBlocked = use_app_selector(
+  const is_user_blocked = use_app_selector(
     (state) => state.entities.blocks[reply.user_id]
   );
-  const isLiked = use_app_selector(
-    (state) => state.entities.likedReplies[reply.id]
+  const is_liked = use_app_selector(
+    (state) => state.entities.liked_replies[reply.id]
   );
-  const likeCount =
-    use_app_selector((state) => state.entities.replyLikeCounts[reply.id]) || 0;
-  const isSelf = user?.id === reply.user_id;
-  const [hidden, setHidden] = React.useState(Boolean(reply.hidden));
-  const [collapsed, setCollapsed] = React.useState(isUserBlocked);
-  const replyUrl = `/${reply.comment?.story?.user?.username || "story"}/${
+  const like_count =
+    use_app_selector((state) => state.entities.reply_like_counts[reply.id]) ||
+    0;
+  const is_self = user?.id === reply.user_id;
+  const [hidden, set_hidden] = React.useState(Boolean(reply.hidden));
+  const [collapsed, set_collapsed] = React.useState(is_user_blocked);
+  const reply_url = `/${reply.comment?.story?.user?.username || "story"}/${
     reply.comment?.story?.slug || reply.comment?.story_id
   }/comments/${reply.comment?.id}?reply=${reply.id}`;
 
   /**
    * Mutates the reply's visibility
    */
-  const setHiddenImpl = React.useCallback(setHidden, [setHidden]);
+  const set_hidden_impl = React.useCallback(set_hidden, [set_hidden]);
 
   React.useEffect(() => {
     dispatch(sync_with_reply(reply));
@@ -63,11 +61,11 @@ const Reply = (props: ReplyProps): React.ReactElement => {
 
   // Collapse on block
   React.useEffect(() => {
-    setCollapsed(isUserBlocked);
-  }, [isUserBlocked]);
+    set_collapsed(is_user_blocked);
+  }, [is_user_blocked]);
 
   return (
-    <NoSsr disabled={enableSsr}>
+    <NoSsr disabled={enable_ssr}>
       {collapsed ? (
         <div
           className={clsx(
@@ -76,14 +74,14 @@ const Reply = (props: ReplyProps): React.ReactElement => {
             styles.reply,
             styles.collapsed,
             virtual && styles.virtual,
-            isStatic && isSelf && styles.static,
+            is_static && is_self && styles.static,
             nested && styles.nested
           )}
         >
           {/* `span` act as block-spacers using the `gap` property */}
           <span aria-hidden />
           <Typography level={"body2"}>You have blocked this user.</Typography>
-          <Button onClick={(): void => setCollapsed(false)} variant={"hollow"}>
+          <Button onClick={(): void => set_collapsed(false)} variant={"hollow"}>
             View
           </Button>
           <span aria-hidden />
@@ -95,7 +93,7 @@ const Reply = (props: ReplyProps): React.ReactElement => {
             "flex-col",
             styles.reply,
             virtual && styles.virtual,
-            isStatic && isSelf && styles.static,
+            is_static && is_self && styles.static,
             nested && styles.nested,
             className
           )}
@@ -103,7 +101,7 @@ const Reply = (props: ReplyProps): React.ReactElement => {
           <div className={clsx("flex", styles.header)}>
             <Persona
               avatar={
-                isStatic && isSelf
+                is_static && is_self
                   ? {
                       children: <ReplyIcon />,
                       className: styles.avatar,
@@ -115,13 +113,13 @@ const Reply = (props: ReplyProps): React.ReactElement => {
                     }
                   : {
                       alt: `${reply.user?.name}'s avatar`,
-                      avatarId: reply.user?.avatar_id,
+                      avatar_id: reply.user?.avatar_id,
                       label: reply.user?.name,
                       hex: reply.user?.avatar_hex
                     }
               }
-              primaryText={
-                isStatic && isSelf ? (
+              primary_text={
+                is_static && is_self ? (
                   <Link
                     ellipsis
                     href={`/${reply.comment?.user?.username || "story"}/${
@@ -134,7 +132,7 @@ const Reply = (props: ReplyProps): React.ReactElement => {
                 ) : (
                   <Link
                     ellipsis
-                    fixedColor
+                    fixed_color
                     href={`/${reply.user?.username || ""}`}
                     title={`View @${reply.user?.username}'s profile`}
                   >
@@ -142,13 +140,13 @@ const Reply = (props: ReplyProps): React.ReactElement => {
                   </Link>
                 )
               }
-              secondaryText={
+              secondary_text={
                 <Typography
                   className={clsx("t-medium", "t-minor")}
                   ellipsis
                   level={"body3"}
                 >
-                  {isStatic && isSelf ? (
+                  {is_static && is_self ? (
                     <Link href={`/${reply.comment?.user?.username}`}>
                       @{reply.comment?.user?.username}
                     </Link>
@@ -158,7 +156,7 @@ const Reply = (props: ReplyProps): React.ReactElement => {
                     </Link>
                   )}{" "}
                   &bull;{" "}
-                  {formatDate(
+                  {format_date(
                     reply.created_at,
                     DateFormat.RELATIVE_CAPITALIZED
                   )}
@@ -166,23 +164,27 @@ const Reply = (props: ReplyProps): React.ReactElement => {
                 </Typography>
               }
             />
-            <Actions hidden={hidden} reply={reply} setHidden={setHiddenImpl} />
+            <Actions
+              hidden={hidden}
+              reply={reply}
+              set_hidden={set_hidden_impl}
+            />
           </div>
           {hidden ? (
             <Typography
               className={clsx(
                 "t-minor",
                 styles.hidden,
-                isStatic && styles.static
+                is_static && styles.static
               )}
               level={"body2"}
             >
               This reply has been hidden at the request of the story author.{" "}
               <Link
                 className={"t-medium"}
-                fixedColor
+                fixed_color
                 href={"#"}
-                onClick={(): void => setHidden(false)}
+                onClick={(): void => set_hidden(false)}
                 underline={"always"}
               >
                 View reply
@@ -190,11 +192,11 @@ const Reply = (props: ReplyProps): React.ReactElement => {
             </Typography>
           ) : (
             <React.Fragment>
-              <div className={clsx(styles.content, isStatic && styles.static)}>
+              <div className={clsx(styles.content, is_static && styles.static)}>
                 <ResponseParser content={reply.rendered_content} />
               </div>
               <footer className={clsx("flex-center")}>
-                {isStatic ? (
+                {is_static ? (
                   <React.Fragment>
                     <span className={clsx("flex-center", styles.stat)}>
                       <HeartIcon />{" "}
@@ -202,15 +204,15 @@ const Reply = (props: ReplyProps): React.ReactElement => {
                         className={clsx("t-medium", "t-minor")}
                         level={"body3"}
                       >
-                        {abbreviateNumber(likeCount)}{" "}
-                        {likeCount === 1 ? "like" : "likes"}
+                        {abbreviate_number(like_count)}{" "}
+                        {like_count === 1 ? "like" : "likes"}
                       </Typography>
                     </span>
                     <Spacer className={"f-grow"} size={1.5} />
                     <IconButton
                       aria-label={"View reply"}
                       as={NextLink}
-                      href={replyUrl}
+                      href={reply_url}
                       size={"sm"}
                       title={"View reply"}
                       variant={"ghost"}
@@ -223,18 +225,18 @@ const Reply = (props: ReplyProps): React.ReactElement => {
                     <Grow />
                     <Button
                       aria-label={`${
-                        isLiked ? "Unlike" : "Like"
-                      } reply (${abbreviateNumber(likeCount)} likes)`}
-                      checkAuth
-                      decorator={<HeartIcon noStroke={isLiked} />}
+                        is_liked ? "Unlike" : "Like"
+                      } reply (${abbreviate_number(like_count)} likes)`}
+                      check_auth
+                      decorator={<HeartIcon no_stroke={is_liked} />}
                       onClick={(): void => {
                         dispatch(boolean_action("liked_replies", reply.id));
                       }}
-                      size={isMobile ? "md" : "sm"}
-                      title={`${isLiked ? "Unlike" : "Like"} reply`}
+                      size={is_mobile ? "md" : "sm"}
+                      title={`${is_liked ? "Unlike" : "Like"} reply`}
                       variant={"ghost"}
                     >
-                      {abbreviateNumber(likeCount)}
+                      {abbreviate_number(like_count)}
                     </Button>
                   </React.Fragment>
                 )}

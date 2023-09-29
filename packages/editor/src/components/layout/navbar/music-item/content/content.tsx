@@ -3,11 +3,11 @@ import React from "react";
 import { useGlobalAudioPlayer } from "react-use-audio-player";
 import { useFilePicker } from "use-file-picker";
 
-import IconButton from "~/components/IconButton";
-import Select from "~/components/Select";
-import { useToast } from "~/components/Toast";
-import Toggle from "~/components/Toggle";
-import Tooltip from "~/components/Tooltip";
+import IconButton from "../../../../../../../ui/src/components/icon-button";
+import Select from "../../../../../../../ui/src/components/select";
+import { use_toast } from "../../../../../../../ui/src/components/toast";
+import Toggle from "../../../../../../../ui/src/components/toggle";
+import Tooltip from "../../../../../../../ui/src/components/tooltip";
 import LoopIcon from "~/icons/Loop";
 import PauseIcon from "~/icons/Pause";
 import PlayIcon from "~/icons/Play";
@@ -16,7 +16,7 @@ import styles from "./content.module.scss";
 import ToneArm from "./tone-arm";
 
 const MusicItemContent = (): React.ReactElement => {
-  const toast = useToast();
+  const toast = use_toast();
   const { src, load, loop, fade, playing, togglePlayPause, looping } =
     useGlobalAudioPlayer();
 

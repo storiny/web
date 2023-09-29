@@ -2,7 +2,7 @@
 
 import React from "react";
 
-import { createSvgIcon } from "~/utils/createSvgIcon";
+import { create_svg_icon } from "src/utils/create-svg-icon";
 
 const SettingsIcon = (
   <>
@@ -11,4 +11,4 @@ const SettingsIcon = (
   </>
 );
 
-export default createSvgIcon(SettingsIcon, "settings");
+export default create_svg_icon(SettingsIcon, "settings");

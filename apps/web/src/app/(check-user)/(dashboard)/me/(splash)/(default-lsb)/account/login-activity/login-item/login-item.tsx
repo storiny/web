@@ -4,14 +4,17 @@ import dynamic from "next/dynamic";
 import React from "react";
 
 import { dynamicLoader } from "~/common/dynamic";
-import AspectRatio from "~/components/AspectRatio";
-import Button from "~/components/Button";
-import Divider from "~/components/Divider";
-import Spacer from "~/components/Spacer";
-import { useToast } from "~/components/Toast";
-import Typography from "~/components/Typography";
+import AspectRatio from "../../../../../../../../../../../../packages/ui/src/components/aspect-ratio";
+import Button from "../../../../../../../../../../../../packages/ui/src/components/button";
+import Divider from "../../../../../../../../../../../../packages/ui/src/components/divider";
+import Spacer from "../../../../../../../../../../../../packages/ui/src/components/spacer";
+import { use_toast } from "../../../../../../../../../../../../packages/ui/src/components/toast";
+import Typography from "../../../../../../../../../../../../packages/ui/src/components/typography";
 import { use_session_logout_mutation } from "~/redux/features";
-import { DateFormat, formatDate } from "~/utils/formatDate";
+import {
+  DateFormat,
+  format_date
+} from "../../../../../../../../../../../../packages/ui/src/utils/format-date";
 
 import { deviceTypeToIconMap } from "../icon-map";
 import styles from "./login-item.module.scss";
@@ -25,7 +28,7 @@ const LogoutButton = (
   props: LoginItemProps & { onLogout: () => void }
 ): React.ReactElement => {
   const { login, onLogout } = props;
-  const toast = useToast();
+  const toast = use_toast();
   const [sessionLogout, { isLoading }] = use_session_logout_mutation();
 
   /**
@@ -42,7 +45,7 @@ const LogoutButton = (
 
   return (
     <Button
-      checkAuth
+      check_auth
       className={clsx("focus-invert", "f-grow", styles.x, styles.button)}
       disabled={isLoading}
       onClick={sessionLogoutImpl}
@@ -83,7 +86,7 @@ const LoginItem = (props: LoginItemProps): React.ReactElement => {
               <React.Fragment>
                 {login.location?.display_name || "Unknown location"}{" "}
                 <span className={"t-muted"}>&bull;</span>{" "}
-                {formatDate(login.created_at, DateFormat.STANDARD)}
+                {format_date(login.created_at, DateFormat.STANDARD)}
               </React.Fragment>
             )}
           </Typography>
@@ -121,7 +124,7 @@ const LoginItem = (props: LoginItemProps): React.ReactElement => {
           {status === null && (
             <div className={"flex-center"}>
               <Button
-                checkAuth
+                check_auth
                 className={clsx(
                   "focus-invert",
                   "f-grow",

@@ -5,26 +5,26 @@ import clsx from "clsx";
 import dynamic from "next/dynamic";
 import NextLink from "next/link";
 import React from "react";
+import AspectRatio from "src/components/aspect-ratio";
+import Button from "src/components/button";
+import IconButton from "src/components/icon-button";
+import Image from "src/components/image";
+import Link from "src/components/link";
+import NoSsr from "src/components/no-ssr";
+import Spacer from "src/components/spacer";
+import Typography from "src/components/typography";
+import { use_media_query } from "src/hooks/use-media-query";
+import { abbreviate_number } from "src/utils/abbreviate-number";
+import { DateFormat, format_date } from "src/utils/format-date";
 
-import AspectRatio from "~/components/AspectRatio";
-import Button from "~/components/Button";
-import IconButton from "~/components/IconButton";
-import Image from "~/components/Image";
-import Link from "~/components/Link";
-import NoSsr from "~/components/NoSsr";
-import Spacer from "~/components/Spacer";
-import Typography from "~/components/Typography";
-import Persona from "~/entities/Persona";
-import { useMediaQuery } from "~/hooks/useMediaQuery";
+import Persona from "src/entities/persona";
 import ExternalLinkIcon from "~/icons/ExternalLink";
 import HeartIcon from "~/icons/Heart";
 import ReplyIcon from "~/icons/Reply";
 import { boolean_action, select_is_logged_in } from "~/redux/features";
 import { sync_with_comment } from "~/redux/features/entities/slice";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
-import { breakpoints } from "~/theme/breakpoints";
-import { abbreviateNumber } from "~/utils/abbreviateNumber";
-import { DateFormat, formatDate } from "~/utils/formatDate";
+import { BREAKPOINTS } from "~/theme/breakpoints";
 
 import ResponseParser from "../common/response-parser";
 import Actions from "./actions";
@@ -46,7 +46,7 @@ const StoryPersona = (props: {
           <Image
             alt={""}
             hex={story.splash_hex}
-            imgId={story.splash_id}
+            img_key={story.splash_id}
             size={ImageSize.W_64}
           />
         </AspectRatio>
@@ -55,7 +55,7 @@ const StoryPersona = (props: {
         <Link
           className={"t-medium"}
           ellipsis
-          fixedColor
+          fixed_color
           href={`/${story.user?.username || "story"}/${story.slug}`}
           level={"body2"}
         >
@@ -66,7 +66,7 @@ const StoryPersona = (props: {
           ellipsis
           level={"body3"}
         >
-          {formatDate(created_at, DateFormat.RELATIVE_CAPITALIZED)}
+          {format_date(created_at, DateFormat.RELATIVE_CAPITALIZED)}
           {edited_at && ` (edited)`}
         </Typography>
       </div>
@@ -76,42 +76,43 @@ const StoryPersona = (props: {
 
 const Comment = (props: CommentProps): React.ReactElement => {
   const {
-    hideHiddenOverlay,
-    isStatic,
-    isExtended,
+    hide_hidden_overlay,
+    is_static,
+    is_extended,
     className,
     comment,
-    enableSsr,
+    enable_ssr,
     virtual,
     ...rest
   } = props;
   const dispatch = use_app_dispatch();
-  const isMobile = useMediaQuery(breakpoints.down("mobile"));
-  const loggedIn = use_app_selector(select_is_logged_in);
-  const isUserBlocked = use_app_selector(
+  const is_mobile = use_media_query(BREAKPOINTS.down("mobile"));
+  const logged_in = use_app_selector(select_is_logged_in);
+  const is_user_blocked = use_app_selector(
     (state) => state.entities.blocks[comment.user_id]
   );
-  const isLiked = use_app_selector(
-    (state) => state.entities.likedComments[comment.id]
+  const is_liked = use_app_selector(
+    (state) => state.entities.liked_comments[comment.id]
   );
-  const likeCount =
-    use_app_selector((state) => state.entities.commentLikeCounts[comment.id]) ||
-    0;
-  const replyCount =
+  const like_count =
     use_app_selector(
-      (state) => state.entities.commentReplyCounts[comment.id]
+      (state) => state.entities.comment_like_counts[comment.id]
     ) || 0;
-  const [hidden, setHidden] = React.useState(Boolean(comment.hidden));
-  const [collapsed, setCollapsed] = React.useState(isUserBlocked);
-  const [showReplyList, setShowReplyList] = React.useState<boolean>(false);
-  const commentUrl = `/${comment.story?.user?.username || "story"}/${
+  const reply_count =
+    use_app_selector(
+      (state) => state.entities.comment_reply_counts[comment.id]
+    ) || 0;
+  const [hidden, set_hidden] = React.useState(Boolean(comment.hidden));
+  const [collapsed, set_collapsed] = React.useState(is_user_blocked);
+  const [show_reply_list, set_show_reply_list] = React.useState<boolean>(false);
+  const comment_url = `/${comment.story?.user?.username || "story"}/${
     comment.story?.slug || comment.story_id
   }/comments/${comment.id}`;
 
   /**
    * Mutates the comment's visibility
    */
-  const setHiddenImpl = React.useCallback(setHidden, [setHidden]);
+  const set_hidden_impl = React.useCallback(set_hidden, [set_hidden]);
 
   React.useEffect(() => {
     dispatch(sync_with_comment(comment));
@@ -119,11 +120,11 @@ const Comment = (props: CommentProps): React.ReactElement => {
 
   // Collapse on block
   React.useEffect(() => {
-    setCollapsed(isUserBlocked);
-  }, [isUserBlocked]);
+    set_collapsed(is_user_blocked);
+  }, [is_user_blocked]);
 
   return (
-    <NoSsr disabled={enableSsr}>
+    <NoSsr disabled={enable_ssr}>
       {collapsed ? (
         <div
           className={clsx(
@@ -136,7 +137,7 @@ const Comment = (props: CommentProps): React.ReactElement => {
           {/* `span` act as block-spacers using the `gap` property */}
           <span aria-hidden />
           <Typography level={"body2"}>You have blocked this user.</Typography>
-          <Button onClick={(): void => setCollapsed(false)} variant={"hollow"}>
+          <Button onClick={(): void => set_collapsed(false)} variant={"hollow"}>
             View
           </Button>
           <span aria-hidden />
@@ -152,7 +153,7 @@ const Comment = (props: CommentProps): React.ReactElement => {
           )}
         >
           <div className={clsx("flex", styles.header)}>
-            {isExtended ? (
+            {is_extended ? (
               <StoryPersona
                 created_at={comment.created_at}
                 edited_at={comment.edited_at}
@@ -162,20 +163,20 @@ const Comment = (props: CommentProps): React.ReactElement => {
               <Persona
                 avatar={{
                   alt: `${comment.user?.name}'s avatar`,
-                  avatarId: comment.user?.avatar_id,
+                  avatar_id: comment.user?.avatar_id,
                   label: comment.user?.name,
                   hex: comment.user?.avatar_hex
                 }}
-                primaryText={
+                primary_text={
                   <Link
                     ellipsis
-                    fixedColor
+                    fixed_color
                     href={`/${comment.user?.username || ""}`}
                   >
                     {comment.user?.name}
                   </Link>
                 }
-                secondaryText={
+                secondary_text={
                   <Typography
                     className={clsx("t-medium", "t-minor")}
                     ellipsis
@@ -185,7 +186,7 @@ const Comment = (props: CommentProps): React.ReactElement => {
                       @{comment.user?.username}
                     </Link>{" "}
                     &bull;{" "}
-                    {formatDate(
+                    {format_date(
                       comment.created_at,
                       DateFormat.RELATIVE_CAPITALIZED
                     )}
@@ -197,10 +198,10 @@ const Comment = (props: CommentProps): React.ReactElement => {
             <Actions
               comment={comment}
               hidden={hidden}
-              setHidden={setHiddenImpl}
+              set_hidden={set_hidden_impl}
             />
           </div>
-          {hidden && !hideHiddenOverlay ? (
+          {hidden && !hide_hidden_overlay ? (
             <Typography
               className={clsx("t-minor", styles.hidden)}
               level={"body2"}
@@ -208,9 +209,9 @@ const Comment = (props: CommentProps): React.ReactElement => {
               This comment has been hidden at the request of the story author.{" "}
               <Link
                 className={"t-medium"}
-                fixedColor
+                fixed_color
                 href={"#"}
-                onClick={(): void => setHidden(false)}
+                onClick={(): void => set_hidden(false)}
                 underline={"always"}
               >
                 View comment
@@ -222,7 +223,7 @@ const Comment = (props: CommentProps): React.ReactElement => {
                 <ResponseParser content={comment.rendered_content} />
               </div>
               <footer className={clsx("flex-center")}>
-                {isStatic || isExtended ? (
+                {is_static || is_extended ? (
                   <React.Fragment>
                     <span className={clsx("flex-center", styles.stat)}>
                       <HeartIcon />{" "}
@@ -230,8 +231,8 @@ const Comment = (props: CommentProps): React.ReactElement => {
                         className={clsx("t-medium", "t-minor")}
                         level={"body3"}
                       >
-                        {abbreviateNumber(likeCount)}{" "}
-                        {likeCount === 1 ? "like" : "likes"}
+                        {abbreviate_number(like_count)}{" "}
+                        {like_count === 1 ? "like" : "likes"}
                       </Typography>
                     </span>
                     <Spacer size={1.5} />
@@ -241,15 +242,15 @@ const Comment = (props: CommentProps): React.ReactElement => {
                         className={clsx("t-medium", "t-minor")}
                         level={"body3"}
                       >
-                        {abbreviateNumber(replyCount)}{" "}
-                        {replyCount === 1 ? "reply" : "replies"}
+                        {abbreviate_number(reply_count)}{" "}
+                        {reply_count === 1 ? "reply" : "replies"}
                       </Typography>
                     </span>
                     <Spacer className={"f-grow"} size={1.5} />
                     <IconButton
                       aria-label={"View comment"}
                       as={NextLink}
-                      href={commentUrl}
+                      href={comment_url}
                       size={"sm"}
                       title={"View comment"}
                       variant={"ghost"}
@@ -261,38 +262,38 @@ const Comment = (props: CommentProps): React.ReactElement => {
                   <React.Fragment>
                     <Button
                       aria-label={`${
-                        isLiked ? "Unlike" : "Like"
-                      } comment (${abbreviateNumber(likeCount)} likes)`}
-                      checkAuth
-                      decorator={<HeartIcon noStroke={isLiked} />}
+                        is_liked ? "Unlike" : "Like"
+                      } comment (${abbreviate_number(like_count)} likes)`}
+                      check_auth
+                      decorator={<HeartIcon no_stroke={is_liked} />}
                       onClick={(): void => {
                         dispatch(boolean_action("liked_comments", comment.id));
                       }}
-                      size={isMobile ? "md" : "sm"}
-                      title={`${isLiked ? "Unlike" : "Like"} comment`}
+                      size={is_mobile ? "md" : "sm"}
+                      title={`${is_liked ? "Unlike" : "Like"} comment`}
                       variant={"ghost"}
                     >
-                      {abbreviateNumber(likeCount)}
+                      {abbreviate_number(like_count)}
                     </Button>
                     <Button
-                      aria-label={`${abbreviateNumber(replyCount)} replies`}
-                      checkAuth={!loggedIn && replyCount === 0}
+                      aria-label={`${abbreviate_number(reply_count)} replies`}
+                      check_auth={!logged_in && reply_count === 0}
                       decorator={<ReplyIcon />}
                       onClick={(): void =>
-                        setShowReplyList((prevState) => !prevState)
+                        set_show_reply_list((prev_state) => !prev_state)
                       }
-                      size={isMobile ? "md" : "sm"}
+                      size={is_mobile ? "md" : "sm"}
                       variant={"ghost"}
                     >
-                      {abbreviateNumber(replyCount)}
+                      {abbreviate_number(reply_count)}
                     </Button>
                     <Spacer className={"f-grow"} size={1.5} />
                     <Button
-                      checkAuth={!loggedIn && replyCount === 0}
+                      check_auth={!logged_in && reply_count === 0}
                       onClick={(): void =>
-                        setShowReplyList((prevState) => !prevState)
+                        set_show_reply_list((prev_state) => !prev_state)
                       }
-                      size={isMobile ? "md" : "sm"}
+                      size={is_mobile ? "md" : "sm"}
                       variant={"ghost"}
                     >
                       Reply
@@ -300,9 +301,9 @@ const Comment = (props: CommentProps): React.ReactElement => {
                   </React.Fragment>
                 )}
               </footer>
-              {!isStatic && !isExtended && showReplyList ? (
+              {!is_static && !is_extended && show_reply_list ? (
                 <AuxiliaryContent
-                  commentId={comment.id}
+                  comment_id={comment.id}
                   placeholder={`Replying to @${comment.user?.username || ""}`}
                 />
               ) : null}

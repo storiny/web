@@ -1,29 +1,29 @@
 import { Comment } from "@storiny/types";
 
-import { mockStories, testStory } from "../story";
-import { mockUsers, testUser } from "../user";
+import { MOCK_STORIES, TEST_STORY } from "../story";
+import { MOCK_USERS, TEST_USER } from "../user";
 
-export const testComment: Comment = {
+export const TEST_COMMENT: Comment = {
   rendered_content: "<p>Comment content</p>",
   content: "Comment content",
   created_at: "2022-05-18T01:07:02.000Z",
   id: "0",
   reply_count: 1,
   like_count: 1,
-  user_id: testUser.id,
-  story_id: testStory.id,
-  story: testStory,
-  user: testUser,
+  user_id: TEST_USER.id,
+  story_id: TEST_STORY.id,
+  story: TEST_STORY,
+  user: TEST_USER,
   edited_at: null,
   hidden: false
 };
 
-export const mockComments: Comment[] = [
+export const MOCK_COMMENTS: Comment[] = [
   {
-    user: mockUsers[0],
-    user_id: mockUsers[0].id,
-    story_id: mockStories[0].id,
-    story: mockStories[0],
+    user: MOCK_USERS[0],
+    user_id: MOCK_USERS[0].id,
+    story_id: MOCK_STORIES[0].id,
+    story: MOCK_STORIES[0],
     like_count: 1230,
     reply_count: 32,
     content: "Comment content",
@@ -34,10 +34,10 @@ export const mockComments: Comment[] = [
     hidden: false
   },
   {
-    user: mockUsers[1],
-    user_id: mockUsers[1].id,
-    story_id: mockStories[1].id,
-    story: mockStories[1],
+    user: MOCK_USERS[1],
+    user_id: MOCK_USERS[1].id,
+    story_id: MOCK_STORIES[1].id,
+    story: MOCK_STORIES[1],
     like_count: 9923,
     reply_count: 91,
     content: "Comment content",
@@ -48,10 +48,10 @@ export const mockComments: Comment[] = [
     hidden: false
   },
   {
-    user: mockUsers[2],
-    user_id: mockUsers[2].id,
-    story_id: mockStories[2].id,
-    story: mockStories[2],
+    user: MOCK_USERS[2],
+    user_id: MOCK_USERS[2].id,
+    story_id: MOCK_STORIES[2].id,
+    story: MOCK_STORIES[2],
     like_count: 0,
     reply_count: 1,
     content: "Comment content",
@@ -62,10 +62,10 @@ export const mockComments: Comment[] = [
     hidden: true
   },
   {
-    user: mockUsers[3],
-    user_id: mockUsers[3].id,
-    story_id: mockStories[3].id,
-    story: mockStories[3],
+    user: MOCK_USERS[3],
+    user_id: MOCK_USERS[3].id,
+    story_id: MOCK_STORIES[3].id,
+    story: MOCK_STORIES[3],
     like_count: 239,
     reply_count: 9,
     content: "Comment content",
@@ -76,10 +76,10 @@ export const mockComments: Comment[] = [
     hidden: false
   },
   {
-    user: mockUsers[4],
-    user_id: mockUsers[4].id,
-    story_id: mockStories[4].id,
-    story: mockStories[4],
+    user: MOCK_USERS[4],
+    user_id: MOCK_USERS[4].id,
+    story_id: MOCK_STORIES[4].id,
+    story: MOCK_STORIES[4],
     like_count: 923,
     reply_count: 13,
     content: "Comment content",
@@ -90,10 +90,10 @@ export const mockComments: Comment[] = [
     hidden: false
   },
   {
-    user: mockUsers[5],
-    user_id: mockUsers[5].id,
-    story_id: mockStories[5].id,
-    story: mockStories[5],
+    user: MOCK_USERS[5],
+    user_id: MOCK_USERS[5].id,
+    story_id: MOCK_STORIES[5].id,
+    story: MOCK_STORIES[5],
     like_count: 923,
     reply_count: 0,
     content: "Comment content",
@@ -104,10 +104,10 @@ export const mockComments: Comment[] = [
     hidden: false
   },
   {
-    user: mockUsers[6],
-    user_id: mockUsers[6].id,
-    story_id: mockStories[6].id,
-    story: mockStories[6],
+    user: MOCK_USERS[6],
+    user_id: MOCK_USERS[6].id,
+    story_id: MOCK_STORIES[6].id,
+    story: MOCK_STORIES[6],
     like_count: 0,
     reply_count: 0,
     content: "Comment content",
@@ -118,10 +118,10 @@ export const mockComments: Comment[] = [
     hidden: false
   },
   {
-    user: mockUsers[7],
-    user_id: mockUsers[7].id,
-    story_id: mockStories[7].id,
-    story: mockStories[7],
+    user: MOCK_USERS[7],
+    user_id: MOCK_USERS[7].id,
+    story_id: MOCK_STORIES[7].id,
+    story: MOCK_STORIES[7],
     like_count: 243,
     reply_count: 22,
     content: "Comment content",
@@ -132,10 +132,10 @@ export const mockComments: Comment[] = [
     hidden: false
   },
   {
-    user: mockUsers[8],
-    user_id: mockUsers[8].id,
-    story_id: mockStories[8].id,
-    story: mockStories[8],
+    user: MOCK_USERS[8],
+    user_id: MOCK_USERS[8].id,
+    story_id: MOCK_STORIES[8].id,
+    story: MOCK_STORIES[8],
     like_count: 1123,
     reply_count: 334,
     content: "Comment content",
@@ -146,10 +146,10 @@ export const mockComments: Comment[] = [
     hidden: false
   },
   {
-    user: mockUsers[9],
-    user_id: mockUsers[9].id,
-    story_id: mockStories[9].id,
-    story: mockStories[9],
+    user: MOCK_USERS[9],
+    user_id: MOCK_USERS[9].id,
+    story_id: MOCK_STORIES[9].id,
+    story: MOCK_STORIES[9],
     like_count: 24,
     reply_count: 3,
     content: "Comment content",
