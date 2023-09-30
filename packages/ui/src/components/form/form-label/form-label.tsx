@@ -3,7 +3,7 @@
 import { Root } from "@radix-ui/react-label";
 import React from "react";
 
-import Label from "src/components/label";
+import Label from "~/components/label";
 
 import { use_form_field } from "../use-form-field";
 import { FormLabelProps } from "./form-label.props";

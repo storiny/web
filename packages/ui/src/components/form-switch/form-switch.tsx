@@ -2,10 +2,10 @@
 
 import clsx from "clsx";
 import React from "react";
+
+import Switch from "~/components/switch";
+
 import { use_form_context } from "../form";
-
-import Switch from "src/components/switch";
-
 import {
   FormContext,
   FormControl,

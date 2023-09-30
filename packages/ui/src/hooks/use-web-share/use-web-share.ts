@@ -2,7 +2,7 @@
 
 import { dev_console } from "@storiny/shared/src/utils/dev-log";
 
-import { web_share } from "src/utils/web-share";
+import { web_share } from "~/utils/web-share";
 
 /**
  * Hook to share data using the web share API

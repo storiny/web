@@ -1,13 +1,14 @@
 import { axe } from "@storiny/test-utils";
 import { waitFor as wait_for } from "@testing-library/react";
 import React from "react";
-import Form, { use_form } from "src/components/form";
-import { render_test_with_provider } from "src/redux/test-utils";
 import { z } from "zod";
 
+import Form, { use_form } from "~/components/form";
+import { render_test_with_provider } from "~/redux/test-utils";
+
 import { zod_resolver } from "../form";
-import { FormCheckboxProps } from "./form-checkbox.props";
 import FormCheckbox from "./form-checkbox";
+import { FormCheckboxProps } from "./form-checkbox.props";
 
 const test_schema = z.object({
   checkbox: z.boolean()

@@ -4,7 +4,7 @@ import { Separator as SeparatorPrimitive } from "@radix-ui/react-dropdown-menu";
 import clsx from "clsx";
 import React from "react";
 
-import { forward_ref } from "src/utils/forward-ref";
+import { forward_ref } from "~/utils/forward-ref";
 
 import styles from "./separator.module.scss";
 import { SeparatorProps } from "./separator.props";

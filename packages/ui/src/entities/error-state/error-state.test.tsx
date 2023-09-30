@@ -2,7 +2,7 @@ import { axe } from "@storiny/test-utils";
 import { waitFor as wait_for } from "@testing-library/react";
 import React from "react";
 
-import { render_test_with_provider } from "src/redux/test-utils";
+import { render_test_with_provider } from "~/redux/test-utils";
 
 import ErrorState from "./error-state";
 import styles from "./error-state.module.scss";
@@ -30,7 +30,7 @@ describe("<ErrorState />", () => {
     );
     const error_state = getByTestId("error-state");
 
-    expect(error_stae).toHaveClass(styles.md);
+    expect(error_state).toHaveClass(styles.md);
     expect(error_state).toHaveAttribute("data-error-type", "network");
   });
 

@@ -1,8 +1,8 @@
 import React from "react";
 
-import { render_test_with_provider } from "src/redux/test-utils";
+import { render_test_with_provider } from "~/redux/test-utils";
 
-import Sidenav from "./static";
+import Sidenav from "./static-content";
 
 describe("<Sidenav />", () => {
   it("renders", () => {

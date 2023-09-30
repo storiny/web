@@ -5,8 +5,8 @@ import {
   FormItemProps,
   FormLabelProps,
   FormMessageProps
-} from "src/components/form";
-import { SelectProps } from "src/components/select";
+} from "~/components/form";
+import { SelectProps } from "~/components/select";
 
 export interface FormSelectProps extends SelectProps {
   /**

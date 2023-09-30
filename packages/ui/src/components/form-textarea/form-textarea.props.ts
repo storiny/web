@@ -5,8 +5,8 @@ import {
   FormItemProps,
   FormLabelProps,
   FormMessageProps
-} from "src/components/form";
-import { TextareaProps } from "src/components/textarea";
+} from "~/components/form";
+import { TextareaProps } from "~/components/textarea";
 
 export interface FormTextareaProps extends TextareaProps {
   /**

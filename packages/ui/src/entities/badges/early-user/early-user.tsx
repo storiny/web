@@ -4,7 +4,7 @@ import { Root } from "@radix-ui/react-accessible-icon";
 import clsx from "clsx";
 import React from "react";
 
-import Tooltip from "src/components/tooltip";
+import Tooltip from "~/components/tooltip";
 
 import styles from "../badges.module.scss";
 

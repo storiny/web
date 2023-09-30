@@ -1,4 +1,4 @@
-import { ChipProps } from "src/components/chip";
+import { ChipProps } from "~/components/chip";
 
 // Avoid `tag` prop like other entities to control the rendering of stats
 export interface TagChipProps

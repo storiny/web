@@ -5,7 +5,7 @@ import React from "react";
 
 import { render_with_state } from "~/redux/mock";
 
-import Sidenav from "./static";
+import Sidenav from "./static-content";
 
 const meta: Meta<typeof Sidenav> = {
   title: "layout/sidenav",

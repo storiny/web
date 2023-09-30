@@ -4,12 +4,12 @@ import { Close, Description, Root } from "@radix-ui/react-toast";
 import clsx from "clsx";
 import React from "react";
 
-import AlertSquareIcon from "src/icons/alert-square";
-import CheckSquareIcon from "src/icons/check-square";
-import InfoIcon from "src/icons/info";
-import XIcon from "src/icons/x";
-import XSquareIcon from "src/icons/x-square";
-import { forward_ref } from "src/utils/forward-ref";
+import AlertSquareIcon from "~/icons/alert-square";
+import CheckSquareIcon from "~/icons/check-square";
+import InfoIcon from "~/icons/info";
+import XIcon from "~/icons/x";
+import XSquareIcon from "~/icons/x-square";
+import { forward_ref } from "~/utils/forward-ref";
 
 import common_styles from "../common/toast.module.scss";
 import styles from "./toast.module.scss";

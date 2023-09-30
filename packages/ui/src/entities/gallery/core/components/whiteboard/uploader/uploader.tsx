@@ -3,13 +3,13 @@ import clsx from "clsx";
 import { useSetAtom as use_set_atom } from "jotai";
 import React from "react";
 
-import Button from "src/components/button";
-import Spacer from "src/components/spacer";
-import { use_toast } from "src/components/toast";
-import Typography from "src/components/typography";
+import Button from "~/components/button";
+import Spacer from "~/components/spacer";
+import { use_toast } from "~/components/toast";
+import Typography from "~/components/typography";
 import { selected_atom } from "~/entities/gallery/core/atoms";
 import { use_upload_asset_mutation } from "~/redux/features";
-import { get_cdn_url } from "src/utils/get-cdn-url";
+import { get_cdn_url } from "~/utils/get-cdn-url";
 
 import UploadProgress from "../../upload-progress";
 import styles from "./uploader.module.scss";

@@ -3,8 +3,8 @@
 import clsx from "clsx";
 import React from "react";
 
-import XIcon from "src/icons/x";
-import { forward_ref } from "src/utils/forward-ref";
+import XIcon from "~/icons/x";
+import { forward_ref } from "~/utils/forward-ref";
 
 import styles from "./chip.module.scss";
 import { ChipProps } from "./chip.props";
@@ -22,7 +22,6 @@ const Chip = forward_ref<ChipProps, "span" | "button">((props, ref) => {
     slot_props,
     ...rest
   } = props;
-
   return (
     <Component
       {...(type === "clickable" && {

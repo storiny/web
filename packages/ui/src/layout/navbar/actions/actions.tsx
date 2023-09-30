@@ -3,33 +3,32 @@ import clsx from "clsx";
 import NextLink from "next/link";
 import React from "react";
 
-import Avatar from "src/components/avatar";
-import Button from "src/components/button";
-import IconButton from "src/components/icon-button";
-import Menu, { MenuProps } from "src/components/menu";
+import Avatar from "~/components/avatar";
+import Button from "~/components/button";
+import IconButton from "~/components/icon-button";
+import Menu, { MenuProps } from "~/components/menu";
 import MenuItem, {
   MenuItemProps,
   MenuItemUnstyled
-} from "src/components/menu-item";
-import Separator from "src/components/separator";
-import Skeleton from "src/components/skeleton";
-import Persona from "src/entities/persona";
-import Status from "src/entities/status";
-import AdjustIcon from "src/icons/adjust";
-import BookmarksIcon from "src/icons/bookmarks";
-import ChevronIcon from "src/icons/chevron";
-import CloudOffIcon from "src/icons/cloud-off";
-import DotsIcon from "src/icons/dots";
-import ExplicitIcon from "src/icons/explicit";
-import HistoryIcon from "src/icons/history";
-import LogoutIcon from "src/icons/logout";
-import MoonIcon from "src/icons/moon";
-import QuestionMarkIcon from "src/icons/question-mark";
-import SettingsIcon from "src/icons/settings";
-import StoryIcon from "src/icons/story";
-import StoryHeartIcon from "src/icons/story-heart";
-import SunIcon from "src/icons/sun";
-import UserIcon from "src/icons/user";
+} from "~/components/menu-item";
+import Separator from "~/components/separator";
+import Skeleton from "~/components/skeleton";
+import Persona from "~/entities/persona";
+import Status from "~/entities/status";
+import AdjustIcon from "~/icons/adjust";
+import BookmarksIcon from "~/icons/bookmarks";
+import ChevronIcon from "~/icons/chevron";
+import CloudOffIcon from "~/icons/cloud-off";
+import DotsIcon from "~/icons/dots";
+import HistoryIcon from "~/icons/history";
+import LogoutIcon from "~/icons/logout";
+import MoonIcon from "~/icons/moon";
+import QuestionMarkIcon from "~/icons/question-mark";
+import SettingsIcon from "~/icons/settings";
+import StoryIcon from "~/icons/story";
+import StoryHeartIcon from "~/icons/story-heart";
+import SunIcon from "~/icons/sun";
+import UserIcon from "~/icons/user";
 import {
   select_auth_status,
   select_is_logged_in,

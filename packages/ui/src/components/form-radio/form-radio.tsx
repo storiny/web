@@ -2,7 +2,7 @@
 
 import React from "react";
 
-import Radio from "src/components/radio";
+import Radio from "~/components/radio";
 
 import { FormControl, FormItem } from "../form";
 import { FormRadioProps } from "./form-radio.props";

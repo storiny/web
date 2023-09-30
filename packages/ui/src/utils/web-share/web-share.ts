@@ -1,6 +1,6 @@
 "use client";
 
-import { copy_to_clipboard } from "src/utils/copy-to-clipboard";
+import { copy_to_clipboard } from "~/utils/copy-to-clipboard";
 
 /**
  * Triggers the web share APi

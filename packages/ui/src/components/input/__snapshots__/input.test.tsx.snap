@@ -4,6 +4,7 @@ exports[`<Input /> matches snapshot 1`] = `
 <div
   class="flex-center container inverted md"
   data-focused="false"
+  data-input-container="true"
 >
   <input
     class="unset input"
@@ -17,6 +18,7 @@ exports[`<Input /> spinner renders spinner and matches snapshot 1`] = `
 <div
   class="flex-center container inverted md"
   data-focused="false"
+  data-input-container="true"
 >
   <input
     class="unset input"

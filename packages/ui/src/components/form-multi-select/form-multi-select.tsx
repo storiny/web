@@ -2,7 +2,7 @@
 
 import React from "react";
 
-import MultiSelect from "src/components/multi-select";
+import MultiSelect from "~/components/multi-select";
 
 import { use_form_context } from "../form";
 import {

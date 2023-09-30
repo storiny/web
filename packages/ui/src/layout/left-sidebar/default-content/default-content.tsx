@@ -2,29 +2,29 @@
 
 import clsx from "clsx";
 import NextLink from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname as use_pathname } from "next/navigation";
 import React from "react";
 
-import Badge from "src/components/badge";
-import Button from "src/components/button";
-import Grow from "src/components/grow";
-import Menu from "src/components/menu";
-import MenuItem from "src/components/menu-item";
-import Separator from "src/components/separator";
-import Tab, { TabProps } from "src/components/tab";
-import Tabs from "src/components/tabs";
-import TabsList from "src/components/tabs-list";
-import Typography from "src/components/typography";
-import BellIcon from "src/icons/bell";
-import BookmarksIcon from "src/icons/bookmarks";
-import CompassIcon from "src/icons/compass";
-import DotsIcon from "src/icons/dots";
-import HistoryIcon from "src/icons/history";
-import HomeIcon from "src/icons/home";
-import PencilPlusIcon from "src/icons/pencil-plus";
-import SettingsIcon from "src/icons/settings";
-import StoryHeartIcon from "src/icons/story-heart";
-import UserIcon from "src/icons/user";
+import Badge from "~/components/badge";
+import Button from "~/components/button";
+import Grow from "~/components/grow";
+import Menu from "~/components/menu";
+import MenuItem from "~/components/menu-item";
+import Separator from "~/components/separator";
+import Tab, { TabProps } from "~/components/tab";
+import Tabs from "~/components/tabs";
+import TabsList from "~/components/tabs-list";
+import Typography from "~/components/typography";
+import BellIcon from "~/icons/bell";
+import BookmarksIcon from "~/icons/bookmarks";
+import CompassIcon from "~/icons/compass";
+import DotsIcon from "~/icons/dots";
+import HistoryIcon from "~/icons/history";
+import HomeIcon from "~/icons/home";
+import PencilPlusIcon from "~/icons/pencil-plus";
+import SettingsIcon from "~/icons/settings";
+import StoryHeartIcon from "~/icons/story-heart";
+import UserIcon from "~/icons/user";
 import {
   select_is_logged_in,
   select_unread_notification_count
@@ -47,7 +47,7 @@ const AnchorTab = (props: TabProps & { href: string }): React.ReactElement => (
 );
 
 const LeftSidebarDefaultContent = (): React.ReactElement => {
-  const pathname = usePathname();
+  const pathname = use_pathname();
   const logged_in = use_app_selector(select_is_logged_in);
   const unread_notification_count = use_app_selector(
     select_unread_notification_count

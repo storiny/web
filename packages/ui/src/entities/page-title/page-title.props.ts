@@ -1,6 +1,6 @@
 import React from "react";
 
-import { IconButtonProps } from "src/components/icon-button";
+import { IconButtonProps } from "~/components/icon-button";
 
 export interface PageTitleProps
   extends React.ComponentPropsWithoutRef<"header"> {

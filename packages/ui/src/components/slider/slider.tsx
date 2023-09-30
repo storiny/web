@@ -4,7 +4,7 @@ import { Range, Root, Thumb, Track } from "@radix-ui/react-slider";
 import clsx from "clsx";
 import React from "react";
 
-import { forward_ref } from "src/utils/forward-ref";
+import { forward_ref } from "~/utils/forward-ref";
 
 import styles from "./slider.module.scss";
 import { SliderProps } from "./slider.props";

@@ -3,7 +3,7 @@
 import { useAtomValue as use_atom_value } from "jotai";
 import React from "react";
 
-import HandClickIcon from "src/icons/hand-click";
+import HandClickIcon from "~/icons/hand-click";
 
 import { hovered_symbol_atom } from "../../atoms";
 

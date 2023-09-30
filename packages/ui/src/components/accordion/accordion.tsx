@@ -12,8 +12,8 @@ import {
 import clsx from "clsx";
 import React from "react";
 
-import ChevronIcon from "src/icons/chevron";
-import { forward_ref } from "src/utils/forward-ref";
+import ChevronIcon from "~/icons/chevron";
+import { forward_ref } from "~/utils/forward-ref";
 
 import button_styles from "../common/button-reset.module.scss";
 import styles from "./accordion.module.scss";

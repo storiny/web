@@ -1,9 +1,9 @@
 import clsx from "clsx";
 import React from "react";
 
-import Avatar from "src/components/avatar";
-import AvatarGroup from "src/components/avatar-group";
-import Typography, { TypographyLevel } from "src/components/typography";
+import Avatar from "~/components/avatar";
+import AvatarGroup from "~/components/avatar-group";
+import Typography, { TypographyLevel } from "~/components/typography";
 
 import styles from "./persona.module.scss";
 import { PersonaProps, PersonaSize } from "./persona.props";

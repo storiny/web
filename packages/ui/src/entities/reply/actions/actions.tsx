@@ -2,19 +2,19 @@ import { Reply } from "@storiny/types";
 import NextLink from "next/link";
 import React from "react";
 
-import { use_confirmation } from "src/components/confirmation";
-import IconButton from "src/components/icon-button";
-import Menu from "src/components/menu";
-import MenuItem from "src/components/menu-item";
-import Separator from "src/components/separator";
-import { use_toast } from "src/components/toast";
-import { use_clipboard } from "src/hooks/use-clipboard";
-import CopyIcon from "src/icons/copy";
-import DotsIcon from "src/icons/dots";
-import EyeIcon from "src/icons/eye";
-import EyeOffIcon from "src/icons/eye-off";
-import ReportIcon from "src/icons/report";
-import TrashIcon from "src/icons/trash";
+import { use_confirmation } from "~/components/confirmation";
+import IconButton from "~/components/icon-button";
+import Menu from "~/components/menu";
+import MenuItem from "~/components/menu-item";
+import Separator from "~/components/separator";
+import { use_toast } from "~/components/toast";
+import { use_clipboard } from "~/hooks/use-clipboard";
+import CopyIcon from "~/icons/copy";
+import DotsIcon from "~/icons/dots";
+import EyeIcon from "~/icons/eye";
+import EyeOffIcon from "~/icons/eye-off";
+import ReportIcon from "~/icons/report";
+import TrashIcon from "~/icons/trash";
 import {
   get_replies_api,
   select_user,

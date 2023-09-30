@@ -1,10 +1,10 @@
 import clsx from "clsx";
 import React from "react";
 
-import Grow from "src/components/grow";
-import Skeleton from "src/components/skeleton";
+import Grow from "~/components/grow";
+import Skeleton from "~/components/skeleton";
 import { UserSkeletonProps } from "~/entities/user/skeleton/skeleton.props";
-import { use_media_query } from "src/hooks/use-media-query";
+import { use_media_query } from "~/hooks/use-media-query";
 import { BREAKPOINTS } from "~/theme/breakpoints";
 
 import styles from "../user.module.scss";

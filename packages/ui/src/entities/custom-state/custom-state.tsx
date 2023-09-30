@@ -1,8 +1,8 @@
 import clsx from "clsx";
 import React from "react";
 
-import Typography from "src/components/typography";
-import { use_media_query } from "src/hooks/use-media-query";
+import Typography from "~/components/typography";
+import { use_media_query } from "~/hooks/use-media-query";
 import { BREAKPOINTS } from "~/theme/breakpoints";
 
 import styles from "./custom-state.module.scss";

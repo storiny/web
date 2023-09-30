@@ -1,10 +1,10 @@
 import React from "react";
 
-import { render_test_with_provider } from "src/redux/test-utils";
+import { render_test_with_provider } from "~/redux/test-utils";
 
+import Select from "../select";
 import Option from "./option";
 import { OptionProps } from "./option.props";
-import Select from "../select";
 
 describe("<Option />", () => {
   it("matches snapshot", () => {

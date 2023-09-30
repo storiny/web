@@ -7,7 +7,7 @@ import React from "react";
 
 import { select_is_logged_in } from "~/redux/features";
 import { use_app_selector } from "~/redux/hooks";
-import { forward_ref } from "src/utils/forward-ref";
+import { forward_ref } from "~/utils/forward-ref";
 
 import menu_item_styles from "../common/menu-item.module.scss";
 import right_slot_styles from "../common/right-slot.module.scss";

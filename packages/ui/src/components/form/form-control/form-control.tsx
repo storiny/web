@@ -2,7 +2,8 @@
 
 import { Slot } from "@radix-ui/react-slot";
 import React from "react";
-import { FormControlProps } from "src/components/form";
+
+import { FormControlProps } from "~/components/form";
 
 import { use_form_field } from "../use-form-field";
 

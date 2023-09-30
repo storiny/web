@@ -3,8 +3,8 @@
 import clsx from "clsx";
 import React from "react";
 
-import Grow from "src/components/grow";
-import Skeleton from "src/components/skeleton";
+import Grow from "~/components/grow";
+import Skeleton from "~/components/skeleton";
 
 import styles from "./skeleton.module.scss";
 

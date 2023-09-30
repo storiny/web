@@ -3,7 +3,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
 
-import Typography from "src/components/typography";
+import Typography from "~/components/typography";
 
 import Textarea from "./textarea";
 

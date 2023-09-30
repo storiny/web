@@ -1,6 +1,6 @@
 import { RadioGroupProps as RadioGroupPrimitiveProps } from "@radix-ui/react-radio-group";
 
-import { RadioProps } from "src/components/radio";
+import { RadioProps } from "~/components/radio";
 import { PolymorphicProps } from "~/types/index";
 
 type RadioGroupPrimitive = RadioGroupPrimitiveProps & PolymorphicProps<"div">;

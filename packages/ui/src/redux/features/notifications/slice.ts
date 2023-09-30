@@ -1,8 +1,8 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { API_VERSION } from "@storiny/shared";
 import { Notification } from "@storiny/types";
-import { AppStartListening } from "src/redux/listener-middleware";
 
+import { AppStartListening } from "~/redux/listener-middleware";
 import { AppState } from "~/redux/store";
 import { clamp } from "~/utils/clamp";
 

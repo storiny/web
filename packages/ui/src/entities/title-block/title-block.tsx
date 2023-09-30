@@ -1,8 +1,8 @@
 import clsx from "clsx";
 import React from "react";
 
-import Spacer from "src/components/spacer";
-import Typography from "src/components/typography";
+import Spacer from "~/components/spacer";
+import Typography from "~/components/typography";
 
 import { TitleBlockProps } from "./title-block.props";
 

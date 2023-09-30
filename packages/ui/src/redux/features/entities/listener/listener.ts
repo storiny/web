@@ -1,5 +1,3 @@
-import { AppStartListening } from "src/redux/listener-middleware";
-
 import { add_followed_tag_listener } from "~/redux/features/entities/listener/followed-tag";
 import { add_follower_listener } from "~/redux/features/entities/listener/follower";
 import { add_following_listener } from "~/redux/features/entities/listener/following";
@@ -8,6 +6,7 @@ import { add_liked_comment_listener } from "~/redux/features/entities/listener/l
 import { add_liked_reply_listener } from "~/redux/features/entities/listener/liked-reply";
 import { add_liked_story_listener } from "~/redux/features/entities/listener/liked-story";
 import { add_mute_listener } from "~/redux/features/entities/listener/mute";
+import { AppStartListening } from "~/redux/listener-middleware";
 
 import { add_block_listener } from "./block";
 

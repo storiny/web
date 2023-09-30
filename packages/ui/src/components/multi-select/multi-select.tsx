@@ -9,8 +9,8 @@ import {
 } from "react-select";
 import CreatableSelect from "react-select/async-creatable";
 
-import { use_media_query } from "src/hooks/use-media-query";
-import XIcon from "src/icons/x";
+import { use_media_query } from "~/hooks/use-media-query";
+import XIcon from "~/icons/x";
 import { BREAKPOINTS } from "~/theme/breakpoints";
 
 import Spinner from "../spinner";

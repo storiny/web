@@ -4,12 +4,12 @@ import clsx from "clsx";
 import NextLink from "next/link";
 import React from "react";
 
-import { forward_ref } from "src/utils/forward-ref";
-import { is_hex_color } from "src/utils/is-hex-color";
+import { forward_ref } from "~/utils/forward-ref";
+import { is_hex_color } from "~/utils/is-hex-color";
 
 import {
-  TYPOGRAPHY_LEVEL_TO_ELEMENT_MAP,
   TYPOGRAPHY_LEVEL_TO_CLASSNAME_MAP,
+  TYPOGRAPHY_LEVEL_TO_ELEMENT_MAP,
   TYPOGRAPHY_PREFIX_MAP,
   TYPOGRAPHY_SCALE_TO_CLASSNAME_MAP
 } from "../common/typography";

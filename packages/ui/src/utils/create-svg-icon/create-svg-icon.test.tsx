@@ -1,7 +1,7 @@
 import React from "react";
 
-import { SvgIconProps } from "src/components/svg-icon";
-import { render_test_with_provider } from "src/redux/test-utils";
+import { SvgIconProps } from "~/components/svg-icon";
+import { render_test_with_provider } from "~/redux/test-utils";
 
 import { create_svg_icon } from "./create-svg-icon";
 

@@ -7,8 +7,8 @@ import {
   RenderHookResult
 } from "@testing-library/react";
 import React from "react";
-import AppStateProvider from "src/redux/components/root-provider";
 
+import AppStateProvider from "~/redux/components/root-provider";
 import { logged_in_state } from "~/redux/mock";
 import { initial_state } from "~/redux/state";
 import { AppStore, setup_store } from "~/redux/store";

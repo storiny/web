@@ -1,4 +1,3 @@
-import { zod_resolver } from "../form";
 import { axe } from "@storiny/test-utils";
 import { waitFor as wait_for } from "@testing-library/react";
 import React from "react";
@@ -7,6 +6,7 @@ import { z } from "zod";
 import Form, { use_form } from "~/components/form";
 import { render_test_with_provider } from "~/redux/test-utils";
 
+import { zod_resolver } from "../form";
 import FormTextarea from "./form-textarea";
 import { FormTextareaProps } from "./form-textarea.props";
 

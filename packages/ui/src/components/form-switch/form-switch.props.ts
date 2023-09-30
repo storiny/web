@@ -5,8 +5,8 @@ import {
   FormItemProps,
   FormLabelProps,
   FormMessageProps
-} from "src/components/form";
-import { SwitchProps } from "src/components/switch";
+} from "~/components/form";
+import { SwitchProps } from "~/components/switch";
 
 export interface FormSwitchProps extends SwitchProps {
   /**

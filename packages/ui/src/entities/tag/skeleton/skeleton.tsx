@@ -1,9 +1,9 @@
 import clsx from "clsx";
 import React from "react";
 
-import Grow from "src/components/grow";
-import Skeleton from "src/components/skeleton";
-import { use_media_query } from "src/hooks/use-media-query";
+import Grow from "~/components/grow";
+import Skeleton from "~/components/skeleton";
+import { use_media_query } from "~/hooks/use-media-query";
 import { BREAKPOINTS } from "~/theme/breakpoints";
 
 import tag_styles from "../tag.module.scss";

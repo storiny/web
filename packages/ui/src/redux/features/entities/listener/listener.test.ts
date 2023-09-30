@@ -3,7 +3,7 @@ import { setup_store } from "~/redux/store";
 
 const test_id = "0";
 
-describe("entitiesListener", () => {
+describe("entities_listener", () => {
   describe("block", () => {
     it("unfollows, unsubscribes, removes friend request, and removes user from followers and friends list when they are blocked", async () => {
       const store = setup_store(undefined, true);
@@ -48,7 +48,7 @@ describe("entitiesListener", () => {
       expect(store.getState().entities.subscriptions[test_id]).toBeTruthy();
 
       // Unfollow user
-      store.dispatch(boolean_action("following", test_id, true));
+      store.dispatch(boolean_action("following", test_id, false));
 
       expect(store.getState().entities.following[test_id]).toBeFalsy();
       expect(store.getState().entities.subscriptions[test_id]).toBeFalsy();

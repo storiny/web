@@ -16,7 +16,8 @@ const Form = <TFieldValues extends FieldValues = FieldValues>(
         {...rest}
         noValidate
         {...(on_submit && {
-          on_submit: provider_props.handleSubmit(on_submit)
+          // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+          onSubmit: provider_props.handleSubmit(on_submit)
         })}
       >
         <FormContext.Provider value={{ disabled: Boolean(disabled) }}>

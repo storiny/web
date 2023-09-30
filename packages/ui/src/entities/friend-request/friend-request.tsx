@@ -3,18 +3,18 @@
 import clsx from "clsx";
 import NextLink from "next/link";
 import React from "react";
-import Avatar from "src/components/avatar";
-import Button from "src/components/button";
-import { use_toast } from "src/components/toast";
-import Typography from "src/components/typography";
-import { DateFormat, format_date } from "src/utils/format-date";
 
+import Avatar from "~/components/avatar";
+import Button from "~/components/button";
+import { use_toast } from "~/components/toast";
+import Typography from "~/components/typography";
 import {
   get_friend_requests_api,
   use_accept_friend_request_mutation,
   use_reject_friend_request_mutation
 } from "~/redux/features";
 import { use_app_dispatch } from "~/redux/hooks";
+import { DateFormat, format_date } from "~/utils/format-date";
 
 import styles from "./friend-request.module.scss";
 import { FriendRequestProps } from "./friend-request.props";

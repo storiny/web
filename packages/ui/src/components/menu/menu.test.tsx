@@ -2,11 +2,11 @@ import { axe } from "@storiny/test-utils";
 import { waitFor as wait_for } from "@testing-library/react";
 import React from "react";
 
-import { render_test_with_provider } from "src/redux/test-utils";
+import { render_test_with_provider } from "~/redux/test-utils";
 
 import styles from "../common/menu.module.scss";
-import Menu from "./";
 import MenuItem from "../menu-item";
+import Menu from "./";
 import { MenuProps, MenuSize } from "./menu.props";
 
 describe("<Menu />", () => {

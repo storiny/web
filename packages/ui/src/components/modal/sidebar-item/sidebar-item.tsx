@@ -4,7 +4,7 @@ import { Trigger } from "@radix-ui/react-tabs";
 import clsx from "clsx";
 import React from "react";
 
-import { ModalSidebarItemProps } from "src/components/modal";
+import { ModalSidebarItemProps } from "~/components/modal";
 
 import styles from "./sidebar-item.module.scss";
 

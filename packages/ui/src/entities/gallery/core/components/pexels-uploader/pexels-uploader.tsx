@@ -1,10 +1,10 @@
 import clsx from "clsx";
 import { useAtom as use_atom, useSetAtom as use_set_atom } from "jotai";
 import React from "react";
-import Button from "src/components/button";
-import Spacer from "src/components/spacer";
-import Typography from "src/components/typography";
 
+import Button from "~/components/button";
+import Spacer from "~/components/spacer";
+import Typography from "~/components/typography";
 import {
   pending_image_atom,
   uploading_atom

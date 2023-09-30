@@ -1,10 +1,10 @@
 "use client";
 
 import React from "react";
+
+import Select from "~/components/select";
+
 import { use_form_context } from "../form";
-
-import Select from "src/components/select";
-
 import {
   FormContext,
   FormControl,

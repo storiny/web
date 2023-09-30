@@ -5,9 +5,9 @@ import clsx from "clsx";
 import dynamic from "next/dynamic";
 import React from "react";
 
-import NoSsr from "src/components/no-ssr";
-import { use_media_query } from "src/hooks/use-media-query";
-import { use_sticky } from "src/hooks/use-sticky";
+import NoSsr from "~/components/no-ssr";
+import { use_media_query } from "~/hooks/use-media-query";
+import { use_sticky } from "~/hooks/use-sticky";
 import { BREAKPOINTS } from "~/theme/breakpoints";
 
 import sidebar_styles from "../common/sidebar.module.scss";

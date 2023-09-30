@@ -4,7 +4,7 @@ import React from "react";
 import {
   render_hook_with_provider,
   render_test_with_provider
-} from "src/redux/test-utils";
+} from "~/redux/test-utils";
 
 import { use_toast } from "./use-toast";
 

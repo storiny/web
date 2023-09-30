@@ -29,7 +29,6 @@ const Link = React.forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => {
     href,
     ...rest
   } = props;
-
   return (
     <NextLink
       {...rest}

@@ -2,10 +2,10 @@
 
 import clsx from "clsx";
 import React from "react";
-import Typography from "src/components/typography";
-import { forward_ref } from "src/utils/forward-ref";
 
-import MoodSmile from "src/icons/mood-smile";
+import Typography from "~/components/typography";
+import MoodSmile from "~/icons/mood-smile";
+import { forward_ref } from "~/utils/forward-ref";
 
 import styles from "./status.module.scss";
 import { StatusProps } from "./status.props";

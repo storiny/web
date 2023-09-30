@@ -1,9 +1,10 @@
 import { useNProgress as use_n_progress } from "@tanem/react-nprogress";
 import clsx from "clsx";
 import React from "react";
-import ProgressBar from "src/components/progress-bar";
-import Spacer from "src/components/spacer";
-import Typography from "src/components/typography";
+
+import ProgressBar from "~/components/progress-bar";
+import Spacer from "~/components/spacer";
+import Typography from "~/components/typography";
 
 import styles from "./loader.module.scss";
 

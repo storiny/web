@@ -1,7 +1,7 @@
 import React from "react";
 import { GroupedVirtuosoHandle } from "react-virtuoso";
 
-import { TabsProps } from "src/components/tabs";
+import { TabsProps } from "~/components/tabs";
 
 export interface EmojiPickerTabsProps extends TabsProps {
   /**

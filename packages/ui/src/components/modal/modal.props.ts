@@ -7,7 +7,7 @@ import {
 } from "@radix-ui/react-dialog";
 import React from "react";
 
-import { ModalFooterProps } from "src/components/modal/footer";
+import { ModalFooterProps } from "~/components/modal/footer";
 import { PolymorphicProps } from "~/types/index";
 
 import { IconButtonProps } from "../icon-button";

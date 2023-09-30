@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
 
-import RectangleIcon from "src/icons/rectangle";
+import RectangleIcon from "~/icons/rectangle";
 
 import NavigationItem from "./navigation-item";
 

@@ -8,7 +8,7 @@ import {
 } from "@radix-ui/react-accordion";
 import React from "react";
 
-import { SvgIconProps } from "src/components/svg-icon";
+import { SvgIconProps } from "~/components/svg-icon";
 import { PolymorphicProps } from "~/types/index";
 
 export type AccordionProps = (AccordionSingleProps | AccordionMultipleProps) &

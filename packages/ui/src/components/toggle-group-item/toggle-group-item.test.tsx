@@ -1,7 +1,7 @@
 import { wait_for_position } from "@storiny/test-utils";
 import React from "react";
 
-import { render_test_with_provider } from "src/redux/test-utils";
+import { render_test_with_provider } from "~/redux/test-utils";
 
 import toggle_styles from "../common/toggle.module.scss";
 import ToggleGroup from "../toggle-group";

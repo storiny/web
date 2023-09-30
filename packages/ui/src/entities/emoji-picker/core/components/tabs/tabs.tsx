@@ -3,18 +3,18 @@
 import clsx from "clsx";
 import { useAtom as use_atom, useAtomValue as use_atom_value } from "jotai";
 import React from "react";
-import Tab from "src/components/tab";
-import Tabs from "src/components/tabs";
-import TabsList from "src/components/tabs-list";
 
-import BasketballIcon from "src/icons/basketball";
-import BulbIcon from "src/icons/bulb";
-import CupIcon from "src/icons/cup";
-import MapIcon from "src/icons/map";
-import MoodSmileIcon from "src/icons/mood-smile";
-import PawIcon from "src/icons/paw";
-import ReportIcon from "src/icons/report";
-import SymbolsIcon from "src/icons/symbols";
+import Tab from "~/components/tab";
+import Tabs from "~/components/tabs";
+import TabsList from "~/components/tabs-list";
+import BasketballIcon from "~/icons/basketball";
+import BulbIcon from "~/icons/bulb";
+import CupIcon from "~/icons/cup";
+import MapIcon from "~/icons/map";
+import MoodSmileIcon from "~/icons/mood-smile";
+import PawIcon from "~/icons/paw";
+import ReportIcon from "~/icons/report";
+import SymbolsIcon from "~/icons/symbols";
 
 import { emoji_category_atom, emoji_query_atom } from "../../atoms";
 import { EmojiCategory } from "../../constants";

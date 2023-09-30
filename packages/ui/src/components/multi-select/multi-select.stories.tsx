@@ -1,6 +1,7 @@
 // noinspection JSUnusedGlobalSymbols
 
 import type { Meta, StoryObj } from "@storybook/react";
+
 import MultiSelect from "./multi-select";
 
 const meta: Meta<typeof MultiSelect> = {

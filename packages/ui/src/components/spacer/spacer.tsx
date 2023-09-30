@@ -3,7 +3,7 @@
 import clsx from "clsx";
 import React from "react";
 
-import { forward_ref } from "src/utils/forward-ref";
+import { forward_ref } from "~/utils/forward-ref";
 
 import styles from "./spacer.module.scss";
 import { SpacerProps } from "./spacer.props";

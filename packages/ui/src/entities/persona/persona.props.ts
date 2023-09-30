@@ -1,8 +1,8 @@
 import React from "react";
 
-import { AvatarProps } from "src/components/avatar";
-import { AvatarGroupProps } from "src/components/avatar-group";
-import { TypographyProps } from "src/components/typography";
+import { AvatarProps } from "~/components/avatar";
+import { AvatarGroupProps } from "~/components/avatar-group";
+import { TypographyProps } from "~/components/typography";
 
 export type PersonaSize = "xs" | "sm" | "md" | "lg";
 

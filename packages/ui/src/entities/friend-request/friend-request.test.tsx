@@ -3,7 +3,7 @@ import { FriendRequest as TFriendRequest } from "@storiny/types";
 import { waitFor as wait_for } from "@testing-library/react";
 import React from "react";
 
-import { render_test_with_provider } from "src/redux/test-utils";
+import { render_test_with_provider } from "~/redux/test-utils";
 
 import { TEST_USER } from "../../mocks";
 import FriendRequest from "./friend-request";

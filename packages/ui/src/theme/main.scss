@@ -56,14 +56,14 @@ $dark-theme-selector: 'html[data-theme="dark"]';
   @include grid.main;
 }
 
-main,
+main[data-root="true"],
 .base {
   display: flex;
   flex-direction: column;
   padding-block: 12px;
 }
 
-main {
+main[data-root="true"] {
   grid-area: main;
 }
 
@@ -73,7 +73,7 @@ main {
   min-height: 100%;
 
   &.dashboard {
-    main {
+    & main[data-root="true"] {
       padding-block: 0; // Disable padding
 
       & .page-header {

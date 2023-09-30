@@ -3,17 +3,17 @@ import { clsx } from "clsx";
 import NextLink from "next/link";
 import React from "react";
 
-import AspectRatio from "src/components/aspect-ratio";
-import IconButton from "src/components/icon-button";
-import Image from "src/components/image";
-import Link from "src/components/link";
-import Typography from "src/components/typography";
-import CommentIcon from "src/icons/comment";
-import ExternalLinkIcon from "src/icons/external-link";
-import HeartIcon from "src/icons/heart";
-import ImageIcon from "src/icons/image";
-import ReadsIcon from "src/icons/reads";
-import { abbreviate_number } from "src/utils/abbreviate-number";
+import AspectRatio from "~/components/aspect-ratio";
+import IconButton from "~/components/icon-button";
+import Image from "~/components/image";
+import Link from "~/components/link";
+import Typography from "~/components/typography";
+import CommentIcon from "~/icons/comment";
+import ExternalLinkIcon from "~/icons/external-link";
+import HeartIcon from "~/icons/heart";
+import ImageIcon from "~/icons/image";
+import ReadsIcon from "~/icons/reads";
+import { abbreviate_number } from "~/utils/abbreviate-number";
 
 import styles from "./story-card.module.scss";
 import { StoryCardProps } from "./story-card.props";

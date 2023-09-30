@@ -10,11 +10,11 @@ import clsx from "clsx";
 import React from "react";
 
 import Button from "~/components/button";
-import Spacer from "src/components/spacer";
-import Typography from "src/components/typography";
-import WarningIcon from "src/icons/warning";
-import { forward_ref } from "src/utils/forward-ref";
-import { get_cdn_url } from "src/utils/get-cdn-url";
+import Spacer from "~/components/spacer";
+import Typography from "~/components/typography";
+import WarningIcon from "~/icons/warning";
+import { forward_ref } from "~/utils/forward-ref";
+import { get_cdn_url } from "~/utils/get-cdn-url";
 
 import styles from "./image.module.scss";
 import { ImageProps } from "./image.props";

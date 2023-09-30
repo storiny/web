@@ -4,7 +4,7 @@ import clsx from "clsx";
 import React from "react";
 
 import { AvatarGroupContext } from "~/components/avatar-group/avatar-group-context";
-import { forward_ref } from "src/utils/forward-ref";
+import { forward_ref } from "~/utils/forward-ref";
 
 import Avatar from "../avatar";
 import common_styles from "../common/avatar-size.module.scss";

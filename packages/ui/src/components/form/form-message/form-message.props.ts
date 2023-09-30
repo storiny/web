@@ -1,3 +1,3 @@
-import { TypographyProps } from "src/components/typography";
+import { TypographyProps } from "~/components/typography";
 
 export type FormMessageProps = TypographyProps;

@@ -1,5 +1,5 @@
-import { IconButtonProps } from "src/components/icon-button";
-import { TextareaProps } from "src/components/textarea";
+import { IconButtonProps } from "~/components/icon-button";
+import { TextareaProps } from "~/components/textarea";
 
 export interface ResponseTextareaProps extends TextareaProps {
   /**

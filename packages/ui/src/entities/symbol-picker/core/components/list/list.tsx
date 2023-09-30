@@ -8,10 +8,10 @@ import {
   GroupedVirtuosoHandle,
   GroupedVirtuosoProps
 } from "react-virtuoso";
-import { Root, Scrollbar, Thumb, Viewport } from "src/components/scroll-area";
-import Spacer from "src/components/spacer";
-import Typography from "src/components/typography";
 
+import { Root, Scrollbar, Thumb, Viewport } from "~/components/scroll-area";
+import Spacer from "~/components/spacer";
+import Typography from "~/components/typography";
 import { TSymbol } from "~/entities/symbol-picker";
 import { symbol_query_atom } from "~/entities/symbol-picker/core/atoms";
 

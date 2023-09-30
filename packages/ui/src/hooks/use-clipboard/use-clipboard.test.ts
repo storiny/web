@@ -1,11 +1,11 @@
 import { act } from "@testing-library/react";
 
-import { render_hook_with_provider } from "src/redux/test-utils";
+import { render_hook_with_provider } from "~/redux/test-utils";
 
 import { use_clipboard } from "./use-clipboard";
 
 describe("use_clipboard", () => {
-  const initialClipboard = { ...global.navigator.clipboard };
+  const initial_clipboard = { ...global.navigator.clipboard };
 
   beforeEach(() => {
     // Mock the navigator
@@ -25,7 +25,7 @@ describe("use_clipboard", () => {
     // Restore clipboard
     Object.defineProperty(global, "navigator", {
       value: {
-        clipboard: initialClipboard
+        clipboard: initial_clipboard
       },
       configurable: true
     });

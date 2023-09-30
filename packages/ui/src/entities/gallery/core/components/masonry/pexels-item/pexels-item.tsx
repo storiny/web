@@ -5,9 +5,9 @@ import clsx from "clsx";
 import { useAtom as use_atom } from "jotai";
 import React from "react";
 
-import AspectRatio from "src/components/aspect-ratio";
-import Image from "src/components/image";
-import Link from "src/components/link";
+import AspectRatio from "~/components/aspect-ratio";
+import Image from "~/components/image";
+import Link from "~/components/link";
 
 import { selected_atom } from "../../../atoms";
 import common_styles from "../common.module.scss";

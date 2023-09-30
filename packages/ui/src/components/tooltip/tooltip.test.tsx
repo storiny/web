@@ -3,7 +3,7 @@ import { axe, wait_for_position } from "@storiny/test-utils";
 import { waitFor as wait_for } from "@testing-library/react";
 import React from "react";
 
-import { render_test_with_provider } from "src/redux/test-utils";
+import { render_test_with_provider } from "~/redux/test-utils";
 
 import Tooltip from "./tooltip";
 import { TooltipProps } from "./tooltip.props";

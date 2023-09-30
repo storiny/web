@@ -1,7 +1,7 @@
 "use client";
 
-import { use_toast } from "src/components/toast";
-import { copy_to_clipboard } from "src/utils/copy-to-clipboard";
+import { use_toast } from "~/components/toast";
+import { copy_to_clipboard } from "~/utils/copy-to-clipboard";
 
 /**
  * Hook to write text to the clipboard

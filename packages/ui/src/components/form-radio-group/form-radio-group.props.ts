@@ -5,8 +5,8 @@ import {
   FormItemProps,
   FormLabelProps,
   FormMessageProps
-} from "src/components/form";
-import { RadioGroupProps } from "src/components/radio-group";
+} from "~/components/form";
+import { RadioGroupProps } from "~/components/radio-group";
 
 export interface FormRadioGroupProps extends RadioGroupProps {
   /**

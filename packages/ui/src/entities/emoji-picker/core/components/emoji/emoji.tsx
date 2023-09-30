@@ -6,8 +6,8 @@ import {
   useSetAtom as use_set_atom
 } from "jotai";
 import React from "react";
-import { EmojiPickerContext } from "src/entities/emoji-picker";
 
+import { EmojiPickerContext } from "~/entities/emoji-picker";
 import { capitalize } from "~/utils/capitalize";
 
 import { hovered_emoji_atom, skin_tone_atom } from "../../atoms";

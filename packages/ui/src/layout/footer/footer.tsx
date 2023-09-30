@@ -4,15 +4,15 @@ import clsx from "clsx";
 import NextLink from "next/link";
 import React from "react";
 
-import Wordmark from "src/brand/wordmark";
-import Button from "src/components/button";
-import Divider from "src/components/divider";
-import Grow from "src/components/grow";
-import IconButton from "src/components/icon-button";
-import Link, { LinkProps } from "src/components/link";
-import Typography from "src/components/typography";
-import PencilPlusIcon from "src/icons/pencil-plus";
-import TwitterIcon from "src/icons/twitter";
+import Wordmark from "~/brand/wordmark";
+import Button from "~/components/button";
+import Divider from "~/components/divider";
+import Grow from "~/components/grow";
+import IconButton from "~/components/icon-button";
+import Link, { LinkProps } from "~/components/link";
+import Typography from "~/components/typography";
+import PencilPlusIcon from "~/icons/pencil-plus";
+import TwitterIcon from "~/icons/twitter";
 
 import styles from "./footer.module.scss";
 import { FooterProps } from "./footer.props";

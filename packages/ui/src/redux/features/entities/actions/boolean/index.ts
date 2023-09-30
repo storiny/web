@@ -31,12 +31,13 @@ export const boolean_action =
       dispatch(set_entity_record_value([key, id, value_or_callback]));
     } else {
       const prev_value = get_state().entities[key][id] as boolean | undefined;
-      // Set to `true` when absent from the map
-      const curr_value = typeof prev_value === "undefined" ? true : prev_value;
 
       if (typeof value_or_callback === "undefined") {
-        dispatch(set_entity_record_value([key, id, !curr_value])); // Toggle value
+        dispatch(set_entity_record_value([key, id, !prev_value])); // Toggle value
       } else {
+        // Set to `true` when absent from the map
+        const curr_value =
+          typeof prev_value === "undefined" ? true : prev_value;
         dispatch(
           set_entity_record_value([key, id, value_or_callback(curr_value)])
         );

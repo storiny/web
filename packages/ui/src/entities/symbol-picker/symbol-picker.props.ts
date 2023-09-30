@@ -1,6 +1,6 @@
 import React from "react";
 
-import { PopoverProps } from "src/components/popover";
+import { PopoverProps } from "~/components/popover";
 
 export interface SymbolPickerProps {
   /**

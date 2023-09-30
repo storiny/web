@@ -4,7 +4,7 @@ import { Indicator, Root } from "@radix-ui/react-progress";
 import clsx from "clsx";
 import React from "react";
 
-import { forward_ref } from "src/utils/forward-ref";
+import { forward_ref } from "~/utils/forward-ref";
 
 import styles from "./spinner.module.scss";
 import { SpinnerProps } from "./spinner.props";

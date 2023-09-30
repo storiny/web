@@ -1,3 +1,3 @@
-import { FormInputProps } from "src/components/form-input";
+import { FormInputProps } from "~/components/form-input";
 
 export type FormPasswordInputProps = FormInputProps;
