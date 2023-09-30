@@ -10,7 +10,7 @@ import LegalLayout from "../../../layout";
 import DisturbingUXPolicy from "./client";
 
 const meta: Meta<typeof DisturbingUXPolicy> = {
-  title: "pages/Legal/use-policies/disturbing-ux",
+  title: "pages/legal/use-policies/disturbing-ux",
   component: DisturbingUXPolicy,
   parameters: {
     layout: "fullscreen"

@@ -4,7 +4,7 @@ import { useAtomValue as use_atom_value } from "jotai";
 import dynamic from "next/dynamic";
 import React from "react";
 
-import { dynamicLoader } from "~/common/dynamic";
+import { dynamic_loader } from "~/common/dynamic";
 import { StoryListSkeleton, VirtualizedStoryList } from "~/common/story";
 import ErrorState from "../../../../../ui/src/entities/error-state";
 import {
@@ -15,7 +15,7 @@ import {
 import { story_metadata_atom } from "../../../atoms";
 
 const EmptyState = dynamic(() => import("./empty-state"), {
-  loading: dynamicLoader()
+  loading: dynamic_loader()
 });
 
 const EditorAuxiliaryContentSuggestionList = (): React.ReactElement => {

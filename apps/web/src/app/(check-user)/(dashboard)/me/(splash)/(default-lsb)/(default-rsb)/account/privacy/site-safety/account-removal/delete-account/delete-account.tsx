@@ -1,5 +1,5 @@
 import { clsx } from "clsx";
-import { useRouter } from "next/navigation";
+import { useRouter as use_router } from "next/navigation";
 import React from "react";
 
 import Button from "../../../../../../../../../../../../../../../packages/ui/src/components/button";
@@ -26,7 +26,7 @@ import { BREAKPOINTS } from "~/theme/breakpoints";
 import { DeleteAccountProps } from "./delete-account.props";
 import {
   DeleteAccountSchema,
-  deleteAccountSchema
+  DELETE_ACCOUNT_SCHEMA
 } from "./delete-account.schema";
 
 const DeleteAccountModal = ({
@@ -55,7 +55,7 @@ const DeleteAccountModal = ({
             }
           }}
           label={"Password"}
-          name={"current-password"}
+          name={"current_password"}
           placeholder={"Your password"}
           required
         />
@@ -68,27 +68,28 @@ const DeleteAccountModal = ({
 const DeleteAccount = ({
   on_submit
 }: DeleteAccountProps): React.ReactElement => {
-  const router = useRouter();
+  const router = use_router();
   const toast = use_toast();
   const is_smaller_than_mobile = use_media_query(BREAKPOINTS.down("mobile"));
-  const [deleted, setDeleted] = React.useState<boolean>(false);
+  const [deleted, set_deleted] = React.useState<boolean>(false);
   const form = use_form<DeleteAccountSchema>({
-    resolver: zod_resolver(deleteAccountSchema),
+    resolver: zod_resolver(DELETE_ACCOUNT_SCHEMA),
     defaultValues: {
-      "current-password": ""
+      current_password: ""
     }
   });
-  const [deleteAccount, { isLoading }] = use_delete_account_mutation();
+  const [delete_account, { isLoading: is_loading }] =
+    use_delete_account_mutation();
 
-  const handleSubmit: SubmitHandler<DeleteAccountSchema> = (values) => {
+  const handle_submit: SubmitHandler<DeleteAccountSchema> = (values) => {
     if (on_submit) {
       on_submit(values);
     } else {
-      deleteAccount(values)
+      delete_account(values)
         .unwrap()
-        .then(() => setDeleted(true))
+        .then(() => set_deleted(true))
         .catch((e) => {
-          setDeleted(false);
+          set_deleted(false);
           toast(e?.data?.error || "Could not delete your account", "error");
         });
     }
@@ -109,13 +110,14 @@ const DeleteAccount = ({
     ),
     <Form<DeleteAccountSchema>
       className={clsx("flex-col")}
-      disabled={isLoading}
-      on_submit={handleSubmit}
+      disabled={is_loading}
+      on_submit={handle_submit}
       provider_props={form}
     >
       <DeleteAccountModal deleted={deleted} />
     </Form>,
     {
+      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
       onOpenChange: deleted ? (): void => undefined : undefined,
       fullscreen: is_smaller_than_mobile,
       footer: (
@@ -132,14 +134,14 @@ const DeleteAccount = ({
             color={deleted ? "inverted" : "ruby"}
             compact={is_smaller_than_mobile}
             disabled={!deleted && !form.formState.isDirty}
-            loading={isLoading}
+            loading={is_loading}
             onClick={(event): void => {
               event.preventDefault(); // Prevent closing of modal
 
               if (deleted) {
                 router.push(`/logout/?to=${encodeURIComponent("/")}`);
               } else {
-                form.handleSubmit(handleSubmit)(); // Submit manually
+                form.handleSubmit(handle_submit)(); // Submit manually
               }
             }}
           >

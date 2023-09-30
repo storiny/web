@@ -1,17 +1,27 @@
-.x {
-  /* Base styles */
-  &.left-sidebar {
-    max-height: calc(100vh - calc(76px + var(--banner-height, 0px)));
-    height: 100%;
-  }
+.left-sidebar {
+  max-height: calc(100vh - calc(76px + var(--banner-height, 0px)));
+  height: 100%;
+}
 
-  /* Scroller */
+.content {
+  width: 100%;
+  gap: 16px;
+  padding-right: 24px;
+  align-items: stretch;
+  min-height: fit-content;
+}
+
+.footer {
+  position: sticky;
+  top: 100%;
+}
+
+.x {
   &.scroller {
     max-height: 100%;
     height: 100%;
   }
 
-  /* Scroll area viewport */
   &.viewport {
     gap: 16px;
     padding-top: 16px;
@@ -20,43 +30,23 @@
     justify-content: stretch;
   }
 
-  /* Content */
-  &.content {
-    width: 100%;
-    gap: 16px;
-    padding-right: 24px;
-    align-items: stretch;
-    min-height: fit-content;
-  }
-
-  /* Persona */
   &.persona {
     justify-content: flex-start;
   }
 
-  /* Tabs list */
   &.tabs-list {
     gap: 18px;
   }
 
-  /* Tabs group */
   &.tabs-group {
     gap: 8px;
   }
 
-  /* Tabs group container */
   &.tabs-group-container {
     margin-left: 8px;
   }
 
-  /* Tab */
   &.tab {
     justify-content: flex-start;
-  }
-
-  /* Footer */
-  &.footer {
-    position: sticky;
-    top: 100%;
   }
 }

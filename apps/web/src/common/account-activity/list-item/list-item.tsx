@@ -13,17 +13,17 @@ import { VirtualizedAccountActivityListContext } from "../list/list-context";
 const VirtualizedAccountActivityItem = React.memo(
   ({ item, ...rest }: ItemProps<TAccountActivity>) => {
     // Props from context
-    const { accountActivityProps, itemCount } = React.useContext(
+    const { account_activity_props, item_count } = React.useContext(
       VirtualizedAccountActivityListContext
     );
 
     return (
       <AccountActivity
         {...rest}
-        {...accountActivityProps}
+        {...account_activity_props}
         accountActivity={item}
-        className={clsx(styles["list-item"], accountActivityProps?.className)}
-        data-last-item={rest["data-item-index"] === itemCount - 1}
+        className={clsx(styles["list-item"], account_activity_props?.className)}
+        data-last-item={rest["data-item-index"] === item_count - 1}
         key={item.id}
       />
     );

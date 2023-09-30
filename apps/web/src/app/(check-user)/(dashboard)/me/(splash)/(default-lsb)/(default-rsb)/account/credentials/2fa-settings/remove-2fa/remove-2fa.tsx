@@ -7,7 +7,7 @@ import Form, {
   use_form,
   zod_resolver
 } from "../../../../../../../../../../../../../../packages/ui/src/components/form";
-import FormInput from "../../../../../../../../../../../../../../packages/ui/src/components/form-input";
+import FormInput from "~/components/form-input";
 import {
   Description,
   ModalFooterButton,
@@ -26,7 +26,7 @@ import {
   RECOVERY_CODE_MAX_LENGTH,
   RECOVERY_CODE_MIN_LENGTH,
   Remove2FASchema,
-  remove2faSchema
+  REMOVE_2FA_SCHEMA
 } from "./remove-2fa.schema";
 
 const Remove2FAModal = (): React.ReactElement => (
@@ -62,26 +62,26 @@ const Remove2FAModal = (): React.ReactElement => (
 
 const Remove2FA = ({
   on_submit,
-  setEnabled
+  set_enabled
 }: Remove2FAProps): React.ReactElement => {
   const toast = use_toast();
   const is_smaller_than_mobile = use_media_query(BREAKPOINTS.down("mobile"));
   const form = use_form<Remove2FASchema>({
-    resolver: zod_resolver(remove2faSchema),
+    resolver: zod_resolver(REMOVE_2FA_SCHEMA),
     defaultValues: {
       code: ""
     }
   });
-  const [removeMfa, { isLoading }] = use_remove_mfa_mutation();
+  const [remove_mfa, { isLoading: is_loading }] = use_remove_mfa_mutation();
 
-  const handleSubmit: SubmitHandler<Remove2FASchema> = (values) => {
+  const handle_submit: SubmitHandler<Remove2FASchema> = (values) => {
     if (on_submit) {
       on_submit(values);
     } else {
-      removeMfa(values)
+      remove_mfa(values)
         .unwrap()
         .then(() => {
-          setEnabled(false);
+          set_enabled(false);
           toast("Successfully disabled two-factor authentication", "success");
         })
         .catch((e) => {
@@ -108,8 +108,8 @@ const Remove2FA = ({
     ),
     <Form<Remove2FASchema>
       className={clsx("flex-col")}
-      disabled={isLoading}
-      on_submit={handleSubmit}
+      disabled={is_loading}
+      on_submit={handle_submit}
       provider_props={form}
     >
       <Remove2FAModal />
@@ -125,10 +125,10 @@ const Remove2FA = ({
             color={"ruby"}
             compact={is_smaller_than_mobile}
             disabled={!form.formState.isDirty}
-            loading={isLoading}
+            loading={is_loading}
             onClick={(event): void => {
               event.preventDefault(); // Prevent closing of modal
-              form.handleSubmit(handleSubmit)(); // Submit manually
+              form.handleSubmit(handle_submit)(); // Submit manually
             }}
           >
             Confirm

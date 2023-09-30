@@ -11,12 +11,12 @@ import Typography from "../../../../../../../../packages/ui/src/components/typog
 import { select_is_logged_in } from "~/redux/features";
 import { use_app_selector } from "~/redux/hooks";
 
-import { useAuthState } from "../../../actions";
+import { use_auth_state } from "../../../actions";
 import SignupBaseForm from "./form";
 import { SignupBaseSchema } from "./schema";
 
 const Page = (): React.ReactElement => {
-  const { actions } = useAuthState();
+  const { actions } = use_auth_state();
   const logged_in = use_app_selector(select_is_logged_in);
 
   React.useEffect(() => {
@@ -27,8 +27,8 @@ const Page = (): React.ReactElement => {
 
   const on_submit: SubmitHandler<SignupBaseSchema> = React.useCallback(
     ({ name, password, email }) => {
-      actions.setSignupState({ name, password, email });
-      actions.switchSegment("signup_username");
+      actions.set_signup_state({ name, password, email });
+      actions.switch_segment("signup_username");
     },
     [actions]
   );
@@ -44,7 +44,7 @@ const Page = (): React.ReactElement => {
         <Link
           className={"t-medium"}
           href={"/auth"}
-          onClick={(): void => actions.switchSegment("login")}
+          onClick={(): void => actions.switch_segment("login")}
           underline={"always"}
         >
           Log in
@@ -58,7 +58,7 @@ const Page = (): React.ReactElement => {
           className={"t-medium"}
           href={"/auth"}
           level={"body2"}
-          onClick={(): void => actions.switchSegment("base")}
+          onClick={(): void => actions.switch_segment("base")}
           underline={"always"}
         >
           Show other options to sign up

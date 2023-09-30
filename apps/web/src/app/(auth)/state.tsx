@@ -1,6 +1,9 @@
 "use client";
 
-import { createStore, StateMachineProvider } from "little-state-machine";
+import {
+  createStore as create_store,
+  StateMachineProvider
+} from "little-state-machine";
 import React from "react";
 
 type SignupSegment =
@@ -23,12 +26,12 @@ export type AuthSegment =
   | "suspended"
   | "deletion";
 
-createStore(
+create_store(
   {
     auth: {
       segment: "base"
     },
-    resetPassword: { token: null },
+    reset_password: { token: null },
     recovery: {
       email: ""
     },

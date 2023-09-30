@@ -5,7 +5,7 @@ import dynamic from "next/dynamic";
 import NextLink from "next/link";
 import React from "react";
 
-import { dynamicLoader } from "~/common/dynamic";
+import { dynamic_loader } from "~/common/dynamic";
 import {
   NotificationListSkeleton,
   VirtualizedNotificationList
@@ -37,7 +37,7 @@ import { abbreviate_number } from "../../../../../../../packages/ui/src/utils/ab
 import styles from "./styles.module.scss";
 
 const EmptyState = dynamic(() => import("./empty-state"), {
-  loading: dynamicLoader()
+  loading: dynamic_loader()
 });
 
 export type NotificationsTabValue = "unread" | "following" | "friends" | "all";
@@ -46,15 +46,15 @@ export type NotificationsTabValue = "unread" | "following" | "friends" | "all";
 
 const PageHeader = ({
   value,
-  onChange
+  on_change
 }: {
-  onChange: (newValue: NotificationsTabValue) => void;
+  on_change: (next_value: NotificationsTabValue) => void;
   value: NotificationsTabValue;
 }): React.ReactElement => (
   <Tabs
     className={clsx("full-bleed", "page-header", styles.x, styles.tabs)}
-    onValueChange={(newValue): void =>
-      onChange(newValue as NotificationsTabValue)
+    onValueChange={(next_value: NotificationsTabValue): void =>
+      on_change(next_value)
     }
     value={value}
   >
@@ -84,28 +84,21 @@ const StatusHeader = ({
 }): React.ReactElement => {
   const dispatch = use_app_dispatch();
   const is_mobile = use_media_query(BREAKPOINTS.down("mobile"));
-  const unreadCount = use_app_selector(select_unread_notification_count);
+  const unread_count = use_app_selector(select_unread_notification_count);
   const status = use_app_selector(select_notifications_status);
 
   return (
-    <div
-      className={clsx(
-        "full-bleed",
-        "flex-center",
-        styles.x,
-        styles["status-header"]
-      )}
-    >
+    <div className={clsx("full-bleed", "flex-center", styles["status-header"])}>
       <Typography level={"body2"}>
         {status === "loading" ? (
           <Skeleton height={14} width={64} />
-        ) : unreadCount === 0 && tab !== "all" ? (
+        ) : unread_count === 0 && tab !== "all" ? (
           "You do not have any unread notifications"
         ) : (
           <>
             You have{" "}
-            <span className={"t-bold"}>{abbreviate_number(unreadCount)}</span>{" "}
-            unread {unreadCount === 1 ? "notification" : "notifications"}
+            <span className={"t-bold"}>{abbreviate_number(unread_count)}</span>{" "}
+            unread {unread_count === 1 ? "notification" : "notifications"}
           </>
         )}
       </Typography>
@@ -115,7 +108,7 @@ const StatusHeader = ({
           <IconButton
             aria-label={"Mark all as read"}
             check_auth
-            disabled={unreadCount === 0}
+            disabled={unread_count === 0}
             onClick={(): void => {
               dispatch(mark_all_as_read());
             }}
@@ -130,7 +123,7 @@ const StatusHeader = ({
             auto_size
             check_auth
             decorator={<ChecksIcon />}
-            disabled={unreadCount === 0}
+            disabled={unread_count === 0}
             onClick={(): void => {
               dispatch(mark_all_as_read());
             }}
@@ -156,13 +149,19 @@ const StatusHeader = ({
 };
 
 const Client = (): React.ReactElement => {
-  const [value, setValue] = React.useState<NotificationsTabValue>("unread");
+  const [value, set_value] = React.useState<NotificationsTabValue>("unread");
   const [page, set_page] = React.useState<number>(1);
-  const { data, isLoading, is_fetching, isError, error, refetch } =
-    use_get_notifications_query({
-      page,
-      type: value
-    });
+  const {
+    data,
+    isLoading: is_loading,
+    isFetching: is_fetching,
+    isError: is_error,
+    error,
+    refetch
+  } = use_get_notifications_query({
+    page,
+    type: value
+  });
   const { items = [], has_more } = data || {};
 
   const load_more = React.useCallback(
@@ -170,16 +169,19 @@ const Client = (): React.ReactElement => {
     []
   );
 
-  const handleChange = React.useCallback((newValue: NotificationsTabValue) => {
-    set_page(1);
-    setValue(newValue);
-  }, []);
+  const handle_change = React.useCallback(
+    (next_value: NotificationsTabValue) => {
+      set_page(1);
+      set_value(next_value);
+    },
+    []
+  );
 
   return (
     <>
-      <PageHeader onChange={handleChange} value={value} />
+      <PageHeader on_change={handle_change} value={value} />
       {value !== "all" && <StatusHeader tab={value} />}
-      {isError ? (
+      {is_error ? (
         <ErrorState
           auto_size
           component_props={{
@@ -190,7 +192,7 @@ const Client = (): React.ReactElement => {
         />
       ) : !is_fetching && !items.length ? (
         <EmptyState tab={value} />
-      ) : isLoading || (is_fetching && page === 1) ? (
+      ) : is_loading || (is_fetching && page === 1) ? (
         <NotificationListSkeleton />
       ) : (
         <VirtualizedNotificationList

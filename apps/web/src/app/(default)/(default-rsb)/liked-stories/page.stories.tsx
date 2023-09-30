@@ -10,7 +10,7 @@ import DefaultRightSidebarLayout from "../layout";
 import LikedStories from "./page";
 
 const meta: Meta<typeof LikedStories> = {
-  title: "pages/LikedStories",
+  title: "pages/liked-stories",
   component: LikedStories,
   parameters: {
     layout: "fullscreen"

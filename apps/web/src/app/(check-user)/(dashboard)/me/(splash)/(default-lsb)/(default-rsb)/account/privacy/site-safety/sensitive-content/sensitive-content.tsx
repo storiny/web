@@ -16,7 +16,7 @@ import styles from "../site-safety.module.scss";
 import { SensitiveContentProps } from "./sensitive-content.props";
 import {
   SensitiveContentSchema,
-  sensitiveContentSchema
+  SENSITIVE_CONTENT_SCHEMA
 } from "./sensitive-content.schema";
 
 const SensitiveContent = ({
@@ -24,25 +24,25 @@ const SensitiveContent = ({
   allow_sensitive_media
 }: SensitiveContentProps): React.ReactElement => {
   const toast = use_toast();
-  const prevValuesRef = React.useRef<SensitiveContentSchema>();
+  const prev_values_ref = React.useRef<SensitiveContentSchema>();
   const form = use_form<SensitiveContentSchema>({
-    resolver: zod_resolver(sensitiveContentSchema),
+    resolver: zod_resolver(SENSITIVE_CONTENT_SCHEMA),
     defaultValues: {
-      "sensitive-content": allow_sensitive_media
+      sensitive_content: allow_sensitive_media
     }
   });
-  const [mutateSensitiveContent, { isLoading }] =
+  const [mutate_sensitive_content, { isLoading: is_loading }] =
     use_sensitive_content_mutation();
 
-  const handleSubmit: SubmitHandler<SensitiveContentSchema> = (values) => {
+  const handle_submit: SubmitHandler<SensitiveContentSchema> = (values) => {
     if (on_submit) {
       on_submit(values);
     } else {
-      mutateSensitiveContent(values)
+      mutate_sensitive_content(values)
         .unwrap()
-        .then(() => (prevValuesRef.current = values))
+        .then(() => (prev_values_ref.current = values))
         .catch((e) => {
-          form.reset(prevValuesRef.current);
+          form.reset(prev_values_ref.current);
           toast(
             e?.data?.error || "Could not change your sensitive media settings",
             "error"
@@ -59,8 +59,8 @@ const SensitiveContent = ({
       <Spacer orientation={"vertical"} size={0.5} />
       <Form<SensitiveContentSchema>
         className={clsx("flex-col", styles.x, styles.form)}
-        disabled={isLoading}
-        on_submit={handleSubmit}
+        disabled={is_loading}
+        on_submit={handle_submit}
         provider_props={form}
       >
         <FormSwitch
@@ -72,9 +72,9 @@ const SensitiveContent = ({
             </React.Fragment>
           }
           label={"Display potentially sensitive media"}
-          name={"sensitive-content"}
+          name={"sensitive_content"}
           onCheckedChange={(): void => {
-            form.handleSubmit(handleSubmit)();
+            form.handleSubmit(handle_submit)();
           }}
         />
       </Form>

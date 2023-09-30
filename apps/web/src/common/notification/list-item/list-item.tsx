@@ -14,17 +14,16 @@ import { VirtualizedNotificationListContext } from "../list/list-context";
 const VirtualizedNotificationItem = React.memo(
   ({ item, ...rest }: ItemProps<TNotification>) => {
     // Props from context
-    const notificationProps = React.useContext(
+    const notification_props = React.useContext(
       VirtualizedNotificationListContext
     );
-
     return (
       <div
         {...rest}
         className={clsx("flex-col", styles["list-item"])}
         key={item.id}
       >
-        <Notification {...notificationProps} notification={item} virtual />
+        <Notification {...notification_props} notification={item} virtual />
         <Divider style={{ marginInline: "var(--grid-compensation)" }} />
       </div>
     );

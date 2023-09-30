@@ -1,13 +1,13 @@
 "use client";
 
+import { StoryCategory } from "@storiny/shared";
 import {
   CATEGORY_ICON_MAP,
-  CATEGORY_LABEL_MAP,
-  StoryCategory
-} from "@storiny/shared";
+  CATEGORY_LABEL_MAP
+} from "@storiny/shared/src/constants/category-icon-map";
 import { clsx } from "clsx";
 import NextLink from "next/link";
-import { useSelectedLayoutSegment } from "next/navigation";
+import { useSelectedLayoutSegment as use_selected_layout_segment } from "next/navigation";
 import React from "react";
 
 import Separator from "../../../../../../../packages/ui/src/components/separator";
@@ -41,7 +41,7 @@ const AnchorTab = ({
 );
 
 const SuspendedExploreRightSidebarContent = (): React.ReactElement => {
-  const segment = useSelectedLayoutSegment();
+  const segment = use_selected_layout_segment();
   return (
     <>
       <Tabs

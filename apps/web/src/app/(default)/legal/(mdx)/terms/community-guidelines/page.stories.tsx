@@ -10,7 +10,7 @@ import LegalLayout from "../../../layout";
 import CommunityGuidelines from "./client";
 
 const meta: Meta<typeof CommunityGuidelines> = {
-  title: "pages/Legal/terms/community-guidelines",
+  title: "pages/legal/terms/community-guidelines",
   component: CommunityGuidelines,
   parameters: {
     layout: "fullscreen"

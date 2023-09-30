@@ -34,30 +34,31 @@ import styles from "./enable-2fa.module.scss";
 import { Enable2FAProps } from "./enable-2fa.props";
 import {
   Enable2FASchema,
-  enable2faSchema,
+  ENABLE_2FA_SCHEMA,
   MFA_CODE_LENGTH
 } from "./enable-2fa.schema";
 
-const testingEnv = is_test_env();
+const TESTING_ENV = is_test_env();
 
 const Enable2FAModal = (): React.ReactElement => {
-  const [qr, setQr] = React.useState<string>("");
-  const [code, setCode] = React.useState<string>("");
-  const [error, setError] = React.useState<string>(
+  const [qr, set_qr] = React.useState<string>("");
+  const [code, set_code] = React.useState<string>("");
+  const [error, set_error] = React.useState<string>(
     "Could not generate authentication credentials."
   );
-  const [requestMfa, { isLoading, isError }] = use_request_mfa_mutation();
+  const [request_mfa, { isLoading: is_loading, isError: is_error }] =
+    use_request_mfa_mutation();
 
   React.useEffect(() => {
-    requestMfa()
+    request_mfa()
       .unwrap()
       .then((res) => {
-        setQr(res.qr);
-        setCode(res.code);
+        set_qr(res.qr);
+        set_code(res.code);
       })
       .catch((e) => {
         if (e?.data?.error) {
-          setError(e.data.error);
+          set_error(e.data.error);
         }
       });
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -65,14 +66,14 @@ const Enable2FAModal = (): React.ReactElement => {
 
   return (
     <div className={clsx("flex", styles.content)}>
-      {isLoading && !testingEnv ? (
+      {is_loading && !TESTING_ENV ? (
         <div
           className={clsx("flex-center", "full-w")}
           style={{ paddingBlock: "32px" }}
         >
           <Spinner />
         </div>
-      ) : isError && !testingEnv ? (
+      ) : is_error && !TESTING_ENV ? (
         <div
           className={clsx("flex-center", "full-w")}
           style={{ minHeight: "96px" }}
@@ -148,30 +149,30 @@ const Enable2FAModal = (): React.ReactElement => {
 const Enable2FA = ({
   on_submit,
   has_password,
-  setEnabled
+  set_enabled
 }: Enable2FAProps): React.ReactElement => {
   const toast = use_toast();
   const is_smaller_than_mobile = use_media_query(BREAKPOINTS.down("mobile"));
   const form = use_form<Enable2FASchema>({
-    resolver: zod_resolver(enable2faSchema),
+    resolver: zod_resolver(ENABLE_2FA_SCHEMA),
     defaultValues: {
       code: ""
     }
   });
-  const [verifyMfa, { isLoading }] = use_verify_mfa_mutation();
+  const [verify_mfa, { isLoading: is_loading }] = use_verify_mfa_mutation();
 
-  const handleSubmit: SubmitHandler<Enable2FASchema> = (values) => {
+  const handle_submit: SubmitHandler<Enable2FASchema> = (values) => {
     if (on_submit) {
       on_submit(values);
     } else {
-      verifyMfa(values)
+      verify_mfa(values)
         .unwrap()
         .then(() => {
-          setEnabled(true);
+          set_enabled(true);
           toast("Successfully enabled two-factor authentication", "success");
         })
         .catch((e) => {
-          setEnabled(false);
+          set_enabled(false);
           toast(
             e?.data?.error || "Could not verify your authentication code",
             "error"
@@ -194,8 +195,8 @@ const Enable2FA = ({
     ),
     <Form<Enable2FASchema>
       className={clsx("flex-col")}
-      disabled={isLoading}
-      on_submit={handleSubmit}
+      disabled={is_loading}
+      on_submit={handle_submit}
       provider_props={form}
     >
       <Enable2FAModal />
@@ -210,10 +211,10 @@ const Enable2FA = ({
           <ModalFooterButton
             compact={is_smaller_than_mobile}
             disabled={!form.formState.isDirty}
-            loading={isLoading}
+            loading={is_loading}
             onClick={(event): void => {
               event.preventDefault(); // Prevent closing of modal
-              form.handleSubmit(handleSubmit)(); // Submit manually
+              form.handleSubmit(handle_submit)(); // Submit manually
             }}
           >
             Confirm

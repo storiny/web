@@ -2,7 +2,7 @@
 
 import { USER_PROPS } from "@storiny/shared";
 import { clsx } from "clsx";
-import { useRouter } from "next/navigation";
+import { useRouter as use_router } from "next/navigation";
 import React from "react";
 
 import Button from "../../../../../../../../packages/ui/src/components/button";
@@ -20,38 +20,38 @@ import Spacer from "../../../../../../../../packages/ui/src/components/spacer";
 import { use_toast } from "../../../../../../../../packages/ui/src/components/toast";
 import { use_login_mutation } from "~/redux/features";
 
-import { useAuthState } from "../../../actions";
-import { LoginSchema, loginSchema } from "./schema";
+import { use_auth_state } from "../../../actions";
+import { LoginSchema, LOGIN_SCHEMA } from "./schema";
 
 interface Props {
   on_submit?: SubmitHandler<LoginSchema>;
 }
 
 const LoginForm = ({ on_submit }: Props): React.ReactElement => {
-  const router = useRouter();
-  const { actions } = useAuthState();
+  const router = use_router();
+  const { actions } = use_auth_state();
   const toast = use_toast();
   const form = use_form<LoginSchema>({
-    resolver: zod_resolver(loginSchema),
+    resolver: zod_resolver(LOGIN_SCHEMA),
     defaultValues: {
       email: "",
       password: "",
-      "remember-me": false
+      remember_me: false
     }
   });
-  const [mutateLogin, { isLoading }] = use_login_mutation();
+  const [mutate_login, { isLoading: is_loading }] = use_login_mutation();
 
-  const handleSubmit: SubmitHandler<LoginSchema> = (values) => {
+  const handle_submit: SubmitHandler<LoginSchema> = (values) => {
     if (on_submit) {
       on_submit(values);
     } else {
-      mutateLogin(values)
+      mutate_login(values)
         .unwrap()
         .then((res) => {
           if (res.result === "success") {
             router.replace("/"); // Home page
           } else {
-            actions.switchSegment(
+            actions.switch_segment(
               res.result === "suspended"
                 ? "suspended"
                 : res.result === "held_for_deletion"
@@ -67,8 +67,8 @@ const LoginForm = ({ on_submit }: Props): React.ReactElement => {
   return (
     <Form<LoginSchema>
       className={clsx("flex-col", "full-h")}
-      disabled={isLoading}
-      on_submit={handleSubmit}
+      disabled={is_loading}
+      on_submit={handle_submit}
       provider_props={form}
     >
       <FormInput
@@ -96,7 +96,7 @@ const LoginForm = ({ on_submit }: Props): React.ReactElement => {
               className={"t-medium"}
               href={"/auth"}
               level={"body3"}
-              onClick={(): void => actions.switchSegment("recovery_base")}
+              onClick={(): void => actions.switch_segment("recovery_base")}
               underline={"always"}
             >
               Forgot password?
@@ -112,14 +112,14 @@ const LoginForm = ({ on_submit }: Props): React.ReactElement => {
       <FormCheckbox
         data-testid={"remember-me-checkbox"}
         label={"Remember me"}
-        name={"remember-me"}
+        name={"remember_me"}
       />
       <Spacer orientation={"vertical"} size={5} />
       <Grow />
       <div className={clsx("flex-col", "flex-center")}>
         <Button
           className={"full-w"}
-          loading={isLoading}
+          loading={is_loading}
           size={"lg"}
           type={"submit"}
         >

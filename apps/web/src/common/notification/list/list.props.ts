@@ -16,7 +16,7 @@ export interface VirtualizedNotificationListProps
   /**
    * Props passed down to individual notification entities.
    */
-  notificationProps?: Partial<NotificationProps>;
+  notification_props?: Partial<NotificationProps>;
   /**
    * Array of notifications to render.
    */

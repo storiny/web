@@ -1,5 +1,5 @@
 import { clsx } from "clsx";
-import { useRouter } from "next/navigation";
+import { useRouter as use_router } from "next/navigation";
 import React from "react";
 
 import Button from "../../../../../../../../../../../../../../packages/ui/src/components/button";
@@ -26,7 +26,7 @@ import { BREAKPOINTS } from "~/theme/breakpoints";
 import { UpdatePasswordProps } from "./update-password.props";
 import {
   UpdatePasswordSchema,
-  updatePasswordSchema
+  UPDATE_PASSWORD_SCHEMA
 } from "./update-password.schema";
 
 const UpdatePasswordModal = ({
@@ -55,7 +55,7 @@ const UpdatePasswordModal = ({
             }
           }}
           label={"Current password"}
-          name={"current-password"}
+          name={"current_password"}
           placeholder={"Your current password"}
           required
         />
@@ -69,7 +69,7 @@ const UpdatePasswordModal = ({
             }
           }}
           label={"New password"}
-          name={"new-password"}
+          name={"new_password"}
           placeholder={"6+ characters"}
           required
         />
@@ -82,28 +82,29 @@ const UpdatePasswordModal = ({
 const UpdatePassword = ({
   on_submit
 }: UpdatePasswordProps): React.ReactElement => {
-  const router = useRouter();
+  const router = use_router();
   const toast = use_toast();
   const is_smaller_than_mobile = use_media_query(BREAKPOINTS.down("mobile"));
-  const [updated, setUpdated] = React.useState<boolean>(false);
+  const [updated, set_updated] = React.useState<boolean>(false);
   const form = use_form<UpdatePasswordSchema>({
-    resolver: zod_resolver(updatePasswordSchema),
+    resolver: zod_resolver(UPDATE_PASSWORD_SCHEMA),
     defaultValues: {
-      "current-password": "",
-      "new-password": ""
+      current_password: "",
+      new_password: ""
     }
   });
-  const [updatePassword, { isLoading }] = use_update_password_mutation();
+  const [update_password, { isLoading: is_loading }] =
+    use_update_password_mutation();
 
-  const handleSubmit: SubmitHandler<UpdatePasswordSchema> = (values) => {
+  const handle_submit: SubmitHandler<UpdatePasswordSchema> = (values) => {
     if (on_submit) {
       on_submit(values);
     } else {
-      updatePassword(values)
+      update_password(values)
         .unwrap()
-        .then(() => setUpdated(true))
+        .then(() => set_updated(true))
         .catch((e) => {
-          setUpdated(false);
+          set_updated(false);
           toast(e?.data?.error || "Could not update your password", "error");
         });
     }
@@ -123,13 +124,14 @@ const UpdatePassword = ({
     ),
     <Form<UpdatePasswordSchema>
       className={clsx("flex-col")}
-      disabled={isLoading}
-      on_submit={handleSubmit}
+      disabled={is_loading}
+      on_submit={handle_submit}
       provider_props={form}
     >
       <UpdatePasswordModal updated={updated} />
     </Form>,
     {
+      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
       onOpenChange: updated ? (): void => undefined : undefined,
       fullscreen: is_smaller_than_mobile,
       footer: (
@@ -145,14 +147,14 @@ const UpdatePassword = ({
           <ModalFooterButton
             compact={is_smaller_than_mobile}
             disabled={!updated && !form.formState.isDirty}
-            loading={isLoading}
+            loading={is_loading}
             onClick={(event): void => {
               event.preventDefault(); // Prevent closing of modal
 
               if (updated) {
                 router.push("/logout");
               } else {
-                form.handleSubmit(handleSubmit)(); // Submit manually
+                form.handleSubmit(handle_submit)(); // Submit manually
               }
             }}
           >

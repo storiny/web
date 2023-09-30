@@ -23,17 +23,18 @@ const AvatarSettings = (): React.ReactElement | null => {
   const dispatch = use_app_dispatch();
   const user = use_app_selector(select_user)!;
   const toast = use_toast();
-  const [avatar_id, setAvatarId] = React.useState<string | null>(
+  const [avatar_id, set_avatar_id] = React.useState<string | null>(
     user.avatar_id
   );
-  const [mutateAvatarSettings, { isLoading }] = use_avatar_settings_mutation();
+  const [mutate_avatar_settings, { isLoading: is_loading }] =
+    use_avatar_settings_mutation();
   const [element] = use_confirmation(
     ({ open_confirmation }) => (
       <Button
         auto_size
         check_auth
         decorator={<TrashIcon />}
-        disabled={!avatar_id || isLoading}
+        disabled={!avatar_id || is_loading}
         onClick={open_confirmation}
         variant={"hollow"}
       >
@@ -44,8 +45,8 @@ const AvatarSettings = (): React.ReactElement | null => {
       color: "ruby",
       decorator: <TrashIcon />,
       on_confirm: (): void => {
-        setAvatarId(null);
-        dispatchAvatarSettings();
+        set_avatar_id(null);
+        dispatch_avatar_settings();
       },
       title: "Remove avatar?",
       description:
@@ -56,14 +57,14 @@ const AvatarSettings = (): React.ReactElement | null => {
   /**
    * Dispatches the current avatar settings
    */
-  const dispatchAvatarSettings = React.useCallback(() => {
-    mutateAvatarSettings({ avatar_id: avatar_id })
+  const dispatch_avatar_settings = React.useCallback(() => {
+    mutate_avatar_settings({ avatar_id: avatar_id })
       .unwrap()
       .then((res) => {
         dispatch(
           mutate_user({ avatar_id: res.avatar_id, avatar_hex: res.avatar_hex })
         );
-        setAvatarId(res.avatar_id);
+        set_avatar_id(res.avatar_id);
         toast(
           `Avatar ${
             res.avatar_id === null ? "remove" : "updated"
@@ -74,11 +75,11 @@ const AvatarSettings = (): React.ReactElement | null => {
       .catch((e) =>
         toast(e?.data?.error || "Could not update your avatar", "error")
       );
-  }, [avatar_id, mutateAvatarSettings, dispatch, toast]);
+  }, [avatar_id, mutate_avatar_settings, dispatch, toast]);
 
   return (
-    <div className={clsx("flex-col", styles.x, styles["avatar-settings"])}>
-      <div className={clsx("flex-center", styles.x, styles.header)}>
+    <div className={clsx("flex-col", styles["avatar-settings"])}>
+      <div className={clsx("flex-center", styles.header)}>
         <Avatar
           alt={""}
           avatar_id={user.avatar_id}
@@ -89,15 +90,15 @@ const AvatarSettings = (): React.ReactElement | null => {
         <div className={"flex-col"}>
           <Gallery
             on_confirm={(asset): void => {
-              setAvatarId(asset.key);
-              dispatchAvatarSettings();
+              set_avatar_id(asset.key);
+              dispatch_avatar_settings();
             }}
           >
             <Button
               auto_size
               check_auth
               decorator={<PencilIcon />}
-              disabled={isLoading}
+              disabled={is_loading}
               variant={"hollow"}
             >
               Edit

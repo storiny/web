@@ -10,7 +10,7 @@ import LegalLayout from "../../../layout";
 import DoxxingPolicy from "./client";
 
 const meta: Meta<typeof DoxxingPolicy> = {
-  title: "pages/Legal/use-policies/doxxing",
+  title: "pages/legal/use-policies/doxxing",
   component: DoxxingPolicy,
   parameters: {
     layout: "fullscreen"

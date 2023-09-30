@@ -21,65 +21,71 @@ interface IntersectionObserverCallback {
 
 /**
  * Returns nested H2 and H3 elements from the array of heading elements
- * @param headingElements Heading elements
+ * @param heading_elements Heading elements
  */
-const getNestedHeadings = (headingElements: HTMLElement[]): NestedHeading[] => {
-  const nestedHeadings: NestedHeading[] = [];
+const get_nested_headings = (
+  heading_elements: HTMLElement[]
+): NestedHeading[] => {
+  const nested_headings: NestedHeading[] = [];
 
-  headingElements.forEach((heading) => {
+  heading_elements.forEach((heading) => {
     const { innerText: title, id } = heading;
 
     if (heading.nodeName === "H2") {
-      nestedHeadings.push({ id, title, items: [] });
-    } else if (heading.nodeName === "H3" && nestedHeadings.length > 0) {
-      nestedHeadings[nestedHeadings.length - 1].items.push({
+      nested_headings.push({ id, title, items: [] });
+    } else if (heading.nodeName === "H3" && nested_headings.length > 0) {
+      nested_headings[nested_headings.length - 1].items.push({
         id,
         title
       });
     }
   });
 
-  return nestedHeadings;
+  return nested_headings;
 };
 
 /**
  * Observes nested heading elements on the page, and selects the active
  * heading on the page
- * @param setActiveId Callback function invoked when the active heading changes
+ * @param set_active_id Callback function invoked when the active heading changes
  */
-const useHeadingsObserver = (setActiveId: (id: string) => void): void => {
-  const headingElementsRef = React.useRef<IntersectionObserverEntry | {}>({});
+const use_headings_observer = (set_active_id: (id: string) => void): void => {
+  const heading_elements_ref = React.useRef<IntersectionObserverEntry | object>(
+    {}
+  );
 
   React.useEffect(() => {
     const callback: IntersectionObserverCallback = (headings) => {
-      headingElementsRef.current = headings.reduce((map, headingElement) => {
-        map[headingElement.target.id] = headingElement;
+      heading_elements_ref.current = headings.reduce((map, heading_element) => {
+        map[heading_element.target.id] = heading_element;
         return map;
-      }, headingElementsRef.current);
+      }, heading_elements_ref.current);
 
       // Get all headings that are currently visible on the page
-      const visibleHeadings: IntersectionObserverEntry[] = [];
-      Object.keys(headingElementsRef.current).forEach((key) => {
-        const headingElement = headingElementsRef.current[key];
-        if (headingElement.isIntersecting) {
-          visibleHeadings.push(headingElement);
+      const visible_headings: IntersectionObserverEntry[] = [];
+      Object.keys(heading_elements_ref.current).forEach((key) => {
+        const heading_element = heading_elements_ref.current[key];
+        if (heading_element.isIntersecting) {
+          visible_headings.push(heading_element);
         }
       });
 
-      const getIndexFromId = (id: string): number =>
-        headingElements.findIndex((heading) => heading.id === id);
+      const get_index_from_id = (id: string): number =>
+        heading_elements.findIndex((heading) => heading.id === id);
 
       // Handle single visible heading
-      if (visibleHeadings.length === 1) {
-        setActiveId(visibleHeadings[0].target.id);
+      if (visible_headings.length === 1) {
+        set_active_id(visible_headings[0].target.id);
         // If there is more than one visible heading,
         // choose the one that is closest to the top of the page
-      } else if (visibleHeadings.length > 1) {
-        const sortedVisibleHeadings = visibleHeadings.sort((a, b) =>
-          getIndexFromId(a.target.id) > getIndexFromId(b.target.id) ? -1 : 0
+      } else if (visible_headings.length > 1) {
+        const sorted_visible_headings = visible_headings.sort((a, b) =>
+          get_index_from_id(a.target.id) > get_index_from_id(b.target.id)
+            ? -1
+            : 0
         );
 
-        setActiveId(sortedVisibleHeadings[0].target.id);
+        set_active_id(sorted_visible_headings[0].target.id);
       }
     };
 
@@ -87,45 +93,45 @@ const useHeadingsObserver = (setActiveId: (id: string) => void): void => {
       rootMargin: "-52px 0px 0px 0px"
     });
 
-    const headingElements = Array.from(
+    const heading_elements = Array.from(
       document.querySelectorAll("main h2, main h3")
     );
 
-    headingElements.forEach((element) => observer.observe(element));
+    heading_elements.forEach((element) => observer.observe(element));
 
     return () => {
-      headingElementsRef.current = {};
+      heading_elements_ref.current = {};
       observer.disconnect();
     };
-  }, [setActiveId]);
+  }, [set_active_id]);
 };
 
 const LegalToc = (): React.ReactElement => {
-  const [nestedHeadings, setNestedHeadings] = React.useState<NestedHeading[]>(
-    []
-  );
-  const [activeId, setActiveId] = React.useState<string>(
+  const [nested_headings, set_nested_headings] = React.useState<
+    NestedHeading[]
+  >([]);
+  const [active_id, set_active_id] = React.useState<string>(
     typeof window !== "undefined" ? window.location.hash.substring(1) : ""
   );
-  useHeadingsObserver(setActiveId);
+  use_headings_observer(set_active_id);
 
   /**
    * Scrolls smoothly to a heading element
    * @param id ID of the heading element
    */
-  const scrollToHeading = (id: string): void => {
+  const scroll_to_heading = (id: string): void => {
     document.getElementById(id)?.scrollIntoView?.({ behavior: "smooth" });
   };
 
   React.useEffect(() => {
-    setNestedHeadings(
-      getNestedHeadings(
+    set_nested_headings(
+      get_nested_headings(
         Array.from(document.querySelectorAll("main h2, main h3"))
       )
     );
   }, []);
 
-  if (!nestedHeadings.length) {
+  if (!nested_headings.length) {
     return (
       <Typography
         className={"t-muted"}
@@ -148,14 +154,13 @@ const LegalToc = (): React.ReactElement => {
       }}
       type={"auto"}
     >
-      <ul className={clsx("flex-col", styles.x, styles.ul)}>
-        {nestedHeadings.map((heading) => (
+      <ul className={clsx("flex-col", styles.ul)}>
+        {nested_headings.map((heading) => (
           <li
             className={clsx(
               "flex-col",
-              styles.x,
               styles.li,
-              activeId === heading.id && styles.selected
+              active_id === heading.id && styles.selected
             )}
             key={heading.id}
           >
@@ -163,7 +168,7 @@ const LegalToc = (): React.ReactElement => {
               href={`#${heading.id}`}
               onClick={(event): void => {
                 event.preventDefault();
-                scrollToHeading(heading.id);
+                scroll_to_heading(heading.id);
               }}
               scroll={false}
               shallow
@@ -171,21 +176,13 @@ const LegalToc = (): React.ReactElement => {
               {heading.title}
             </NextLink>
             {heading.items.length > 0 && (
-              <ul
-                className={clsx(
-                  "flex-col",
-                  styles.x,
-                  styles.ul,
-                  styles["nested-ul"]
-                )}
-              >
+              <ul className={clsx("flex-col", styles.ul, styles["nested-ul"])}>
                 {heading.items.map((child) => (
                   <li
                     className={clsx(
                       "flex-col",
-                      styles.x,
                       styles.li,
-                      activeId === child.id && styles.selected
+                      active_id === child.id && styles.selected
                     )}
                     key={child.id}
                   >
@@ -193,7 +190,7 @@ const LegalToc = (): React.ReactElement => {
                       href={`#${child.id}`}
                       onClick={(event): void => {
                         event.preventDefault();
-                        scrollToHeading(heading.id);
+                        scroll_to_heading(heading.id);
                       }}
                       scroll={false}
                       shallow

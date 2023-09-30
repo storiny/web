@@ -16,7 +16,8 @@ interface Props {
   profile: GetProfileResponse;
 }
 
-const generateJsonLd = (profile: Props["profile"]): Graph => ({
+const generate_json_ld = (profile: Props["profile"]): Graph => ({
+  /* eslint-disable prefer-snakecase/prefer-snakecase */
   "@context": "https://schema.org",
   "@graph": [
     {
@@ -62,13 +63,14 @@ const generateJsonLd = (profile: Props["profile"]): Graph => ({
       url: `${process.env.NEXT_PUBLIC_WEB_URL}/${profile.username}`
     }
   ]
+  /* eslint-enable prefer-snakecase/prefer-snakecase */
 });
 
 const JsonLD = ({ profile }: Props): React.ReactElement => {
-  const jsonLd = generateJsonLd(profile);
+  const json_ld = generate_json_ld(profile);
   return (
     <script
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(json_ld) }}
       type="application/ld+json"
     />
   );
@@ -79,15 +81,15 @@ const Component = ({ profile }: Props): React.ReactElement => {
     () => new Flag(profile.public_flags),
     [profile.public_flags]
   );
-  const isSuspended = flags.hasAnyOf([
+  const is_suspended = flags.has_any_of([
     UserFlag.PERMANENTLY_SUSPENDED,
     UserFlag.TEMPORARILY_SUSPENDED
   ]);
-  const isPrivate =
+  const is_private =
     Boolean(profile.is_private) && !profile.is_friend && !profile.is_self;
 
   // Remove sensitive details
-  if (isPrivate) {
+  if (is_private) {
     delete profile.avatar_id;
     delete profile.avatar_hex;
     delete profile.banner_id;
@@ -103,16 +105,16 @@ const Component = ({ profile }: Props): React.ReactElement => {
     <>
       <LeftSidebar />
       <main>
-        {isPrivate || isSuspended ? null : <JsonLD profile={profile} />}
+        {is_private || is_suspended ? null : <JsonLD profile={profile} />}
         <Client
-          isPrivate={isPrivate}
-          isSuspended={isSuspended}
+          is_private={is_private}
+          is_suspended={is_suspended}
           profile={profile}
         />
       </main>
       <ProfileRightSidebar
-        isPrivate={isPrivate}
-        isSuspended={isSuspended}
+        is_private={is_private}
+        is_suspended={is_suspended}
         profile={profile}
       />
       <SplashScreen />

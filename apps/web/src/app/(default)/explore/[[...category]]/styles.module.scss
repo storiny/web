@@ -1,27 +1,15 @@
+.page-title {
+  box-shadow: none;
+}
+
 .x {
-  /* Tabs */
   &.tabs {
     gap: 12px;
   }
 
-  /* Tabs list */
   &.tabs-list {
     display: flex;
     justify-content: space-around;
     padding-inline: 20px;
-  }
-
-  /* Page title */
-  &.page-title {
-    box-shadow: none;
-  }
-
-  /* Input */
-  &.input {
-    border-radius: 0;
-
-    &:not([data-focused="true"]) {
-      border: none;
-    }
   }
 }

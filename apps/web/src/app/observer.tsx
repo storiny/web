@@ -6,7 +6,7 @@ const ObserverErrorHandler = (): null => {
   React.useEffect(() => {
     // Virtuoso's resize observer can throw this error,
     // which is caught by DnD and aborts dragging
-    const errorHandler = (event: ErrorEvent): void => {
+    const error_handler = (event: ErrorEvent): void => {
       if (
         [
           "ResizeObserver loop completed with undelivered notifications.",
@@ -17,8 +17,8 @@ const ObserverErrorHandler = (): null => {
       }
     };
 
-    window.addEventListener("error", errorHandler);
-    return () => window.removeEventListener("error", errorHandler);
+    window.addEventListener("error", error_handler);
+    return () => window.removeEventListener("error", error_handler);
   }, []);
 
   return null;

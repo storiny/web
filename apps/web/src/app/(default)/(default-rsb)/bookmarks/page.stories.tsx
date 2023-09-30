@@ -10,7 +10,7 @@ import DefaultRightSidebarLayout from "../layout";
 import Bookmarks from "./page";
 
 const meta: Meta<typeof Bookmarks> = {
-  title: "pages/Bookmarks",
+  title: "pages/bookmarks",
   component: Bookmarks,
   parameters: {
     layout: "fullscreen"

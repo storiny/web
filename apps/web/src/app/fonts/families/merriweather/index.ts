@@ -1,6 +1,6 @@
-import localFont from "next/font/local";
+import local_font from "next/font/local";
 
-export const merriweatherFont = localFont({
+export const FONT_MERRIWEATHER = local_font({
   src: [
     {
       path: "../../../../../../../packages/ui/src/static/fonts/merriweather/merriweather-regular.woff2",

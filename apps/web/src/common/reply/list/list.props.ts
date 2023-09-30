@@ -20,9 +20,9 @@ export interface VirtualizedReplyListProps extends VirtuosoProps<Reply, any> {
   /**
    * Props passed down to individual reply entities.
    */
-  replyProps?: Partial<ReplyProps>;
+  reply_props?: Partial<ReplyProps>;
   /**
    * Props passed down to individual reply skeleton entities.
    */
-  skeletonProps?: Partial<ReplySkeletonProps>;
+  skeleton_props?: Partial<ReplySkeletonProps>;
 }

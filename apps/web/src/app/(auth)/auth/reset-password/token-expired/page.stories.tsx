@@ -6,10 +6,10 @@ import React from "react";
 import { render_with_state } from "~/redux/mock";
 
 import AuthLayout from "../../../layout";
-import ResetTokenExpiredPage from "./index";
+import ResetTokenExpiredPage from "./token-expired";
 
 const meta: Meta<typeof ResetTokenExpiredPage> = {
-  title: "pages/Auth/reset-token-expired",
+  title: "pages/auth/reset-token-expired",
   component: ResetTokenExpiredPage,
   parameters: {
     layout: "fullscreen"

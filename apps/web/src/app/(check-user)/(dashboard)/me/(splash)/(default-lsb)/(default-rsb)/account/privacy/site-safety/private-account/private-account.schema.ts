@@ -1,7 +1,7 @@
 import { z } from "zod";
 
-export type PrivateAccountSchema = z.infer<typeof privateAccountSchema>;
+export type PrivateAccountSchema = z.infer<typeof PRIVATE_ACCOUNT_SCHEMA>;
 
-export const privateAccountSchema = z.object({
-  "private-account": z.boolean()
+export const PRIVATE_ACCOUNT_SCHEMA = z.object({
+  private_account: z.boolean()
 });

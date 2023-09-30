@@ -34,8 +34,8 @@ const MotionPreference = (): React.ReactElement => {
       <Spacer orientation={"vertical"} size={3} />
       <RadioGroup
         className={clsx(styles.x, styles["radio-group"])}
-        onValueChange={(newValue): void => {
-          dispatch(set_reduced_motion(newValue as typeof reduced_motion));
+        onValueChange={(next_value: typeof reduced_motion): void => {
+          dispatch(set_reduced_motion(next_value));
         }}
         value={reduced_motion}
       >

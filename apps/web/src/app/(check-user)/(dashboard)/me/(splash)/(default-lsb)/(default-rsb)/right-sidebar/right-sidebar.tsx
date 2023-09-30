@@ -1,7 +1,7 @@
 import dynamic from "next/dynamic";
 import React from "react";
 
-import { dynamicLoader } from "~/common/dynamic";
+import { dynamic_loader } from "~/common/dynamic";
 import { use_media_query } from "../../../../../../../../../../../packages/ui/src/hooks/use-media-query";
 import RightSidebar from "../../../../../../../../../../../packages/ui/src/layout/right-sidebar";
 import { BREAKPOINTS } from "~/theme/breakpoints";
@@ -9,7 +9,7 @@ import { BREAKPOINTS } from "~/theme/breakpoints";
 const SuspendedDashboardRightSidebarContent = dynamic(
   () => import("./content"),
   {
-    loading: dynamicLoader()
+    loading: dynamic_loader()
   }
 );
 

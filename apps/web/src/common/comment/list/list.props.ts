@@ -9,7 +9,7 @@ export interface VirtualizedCommentListProps
   /**
    * Props passed down to individual comment entities.
    */
-  commentProps?: Partial<CommentProps>;
+  comment_props?: Partial<CommentProps>;
   /**
    * Array of comments to render.
    */
@@ -25,5 +25,5 @@ export interface VirtualizedCommentListProps
   /**
    * Props passed down to individual comment skeleton entities.
    */
-  skeletonProps?: Partial<CommentSkeletonProps>;
+  skeleton_props?: Partial<CommentSkeletonProps>;
 }

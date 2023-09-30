@@ -10,7 +10,7 @@ import { Alignment } from "../../constants";
  */
 export const use_alignment = (): [
   Alignment | undefined,
-  (newValue: string) => void,
+  (next_value: string) => void,
   boolean
 ] => {
   const [editor] = use_lexical_composer_context();

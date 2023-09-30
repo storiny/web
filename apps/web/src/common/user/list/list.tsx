@@ -14,11 +14,11 @@ const VirtualizedUserList = React.memo(
     users,
     has_more,
     load_more,
-    userProps,
+    user_props,
     className,
     ...rest
   }: VirtualizedUserListProps) => (
-    <VirtualizedUserListContext.Provider value={userProps || {}}>
+    <VirtualizedUserListContext.Provider value={user_props || {}}>
       <Virtuoso
         increaseViewportBy={750}
         scrollSeekConfiguration={{

@@ -1,15 +1,24 @@
 @use "breakpoints";
 
-.x {
-  /* Container */
-  &.container {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-  }
+.container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
 
-  /* Three digit error code */
+.content {
+  gap: 8px;
+}
+
+.digit {
+  &:not(:first-child) {
+    text-shadow: -3px 0 0 var(--bg-body);
+    margin-left: -18px;
+  }
+}
+
+.x {
   &.error-code {
     font-size: 128px;
     font-weight: 900; // Black
@@ -21,25 +30,10 @@
     }
   }
 
-  /* Individual digit */
-  &.digit {
-    &:not(:first-child) {
-      text-shadow: -3px 0 0 var(--bg-body);
-      margin-left: -18px;
-    }
-  }
-
-  /* Content */
-  &.content {
-    gap: 8px;
-  }
-
-  /* Description */
   &.description {
     max-width: 640px;
   }
 
-  /* Input */
   &.input {
     width: 320px;
     max-width: 100%;

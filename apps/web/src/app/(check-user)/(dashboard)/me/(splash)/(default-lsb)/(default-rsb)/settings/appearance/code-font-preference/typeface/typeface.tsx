@@ -13,11 +13,11 @@ import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 import { BREAKPOINTS } from "~/theme/breakpoints";
 
 import common_styles from "../../styles.module.scss";
-import typefaceStyles from "../../typeface.module.scss";
+import typeface_styles from "../../typeface.module.scss";
 
 const PlexMonoPreview = (): React.ReactElement => (
   <svg
-    className={clsx(typefaceStyles.x, typefaceStyles.svg)}
+    className={typeface_styles.svg}
     fill="none"
     viewBox="0 0 55 45"
     xmlns="http://www.w3.org/2000/svg"
@@ -31,7 +31,7 @@ const PlexMonoPreview = (): React.ReactElement => (
 
 const SourceCodeProPreview = (): React.ReactElement => (
   <svg
-    className={clsx(typefaceStyles.x, typefaceStyles.svg)}
+    className={typeface_styles.svg}
     fill="none"
     viewBox="0 0 56 43"
     xmlns="http://www.w3.org/2000/svg"
@@ -45,7 +45,7 @@ const SourceCodeProPreview = (): React.ReactElement => (
 
 const SystemPreview = (): React.ReactElement => (
   <svg
-    className={clsx(typefaceStyles.x, typefaceStyles.svg)}
+    className={typeface_styles.svg}
     fill="none"
     viewBox="0 0 52 42"
     xmlns="http://www.w3.org/2000/svg"
@@ -58,36 +58,27 @@ const SystemPreview = (): React.ReactElement => (
 );
 
 const TypefaceItem = ({
-  isActive,
+  is_active,
   label,
   value,
   decorator
 }: {
   decorator: React.ReactNode;
-  isActive: boolean;
+  is_active: boolean;
   label: React.ReactNode;
   value: string;
 }): React.ReactElement => (
   <div
     className={clsx(
       "flex-col",
-      common_styles.x,
       common_styles.item,
-      isActive && common_styles.selected,
-      typefaceStyles.x,
-      typefaceStyles.item,
-      isActive && typefaceStyles.selected
+      is_active && common_styles.selected,
+      typeface_styles.item,
+      is_active && typeface_styles.selected
     )}
   >
     <AspectRatio className={"full-w"} ratio={2.3}>
-      <div
-        className={clsx(
-          "flex-center",
-          "full-w",
-          typefaceStyles.x,
-          typefaceStyles.decorator
-        )}
-      >
+      <div className={clsx("flex-center", "full-w", typeface_styles.decorator)}>
         {decorator}
       </div>
     </AspectRatio>
@@ -126,30 +117,30 @@ const CodeFontTypefacePreference = (): React.ReactElement => {
           common_styles.x,
           common_styles["radio-group"],
           common_styles.wrap,
-          typefaceStyles.x,
-          typefaceStyles["radio-group"]
+          typeface_styles.x,
+          typeface_styles["radio-group"]
         )}
-        onValueChange={(newValue): void => {
-          dispatch(set_code_font(newValue as typeof typeface));
+        onValueChange={(next_value: typeof typeface): void => {
+          dispatch(set_code_font(next_value));
         }}
         orientation={is_smaller_than_mobile ? "vertical" : "horizontal"}
         value={typeface}
       >
         <TypefaceItem
           decorator={<SystemPreview />}
-          isActive={typeface === "system"}
+          is_active={typeface === "system"}
           label={"System"}
           value={"system"}
         />
         <TypefaceItem
           decorator={<PlexMonoPreview />}
-          isActive={typeface === "plex-mono"}
+          is_active={typeface === "plex-mono"}
           label={"IBM Plex Mono"}
           value={"plex-mono"}
         />
         <TypefaceItem
           decorator={<SourceCodeProPreview />}
-          isActive={typeface === "source-code-pro"}
+          is_active={typeface === "source-code-pro"}
           label={"Source Code Pro"}
           value={"source-code-pro"}
         />

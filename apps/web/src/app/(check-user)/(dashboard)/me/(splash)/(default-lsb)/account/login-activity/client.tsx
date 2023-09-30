@@ -15,7 +15,7 @@ import TitleBlock from "../../../../../../../../../../../packages/ui/src/entitie
 import { use_media_query } from "../../../../../../../../../../../packages/ui/src/hooks/use-media-query";
 import DevicesIcon from "../../../../../../../../../../../packages/ui/src/icons/devices";
 import LogoutIcon from "../../../../../../../../../../../packages/ui/src/icons/logout";
-import { use_destroy_settings_mutation } from "~/redux/features";
+import { use_destroy_sessions_mutation } from "~/redux/features";
 import { BREAKPOINTS } from "~/theme/breakpoints";
 
 import DashboardGroup from "../../dashboard-group";
@@ -56,22 +56,23 @@ const RecentLoginGroup = ({
 // Destroy sessions
 
 const DestroySessions = ({
-  onDestroy,
+  on_destroy,
   disabled
 }: {
   disabled: boolean;
-  onDestroy: () => void;
+  on_destroy: () => void;
 }): React.ReactElement => {
   const toast = use_toast();
-  const [destroySessions, { isLoading }] = use_destroy_settings_mutation();
+  const [destroy_sessions, { isLoading: is_loading }] =
+    use_destroy_sessions_mutation();
 
   /**
    * Destroys all sessions except the current one
    */
-  const destroySessionsImpl = (): void => {
-    destroySessions()
+  const destroy_sessions_impl = (): void => {
+    destroy_sessions()
       .unwrap()
-      .then(onDestroy)
+      .then(on_destroy)
       .catch((e) =>
         toast(
           e?.data?.error || "Could not log you out of other devices",
@@ -88,7 +89,7 @@ const DestroySessions = ({
         className={"fit-w"}
         color={"ruby"}
         disabled={disabled}
-        loading={isLoading}
+        loading={is_loading}
         onClick={open_confirmation}
         variant={"hollow"}
       >
@@ -96,7 +97,7 @@ const DestroySessions = ({
       </Button>
     ),
     {
-      on_confirm: destroySessionsImpl,
+      on_confirm: destroy_sessions_impl,
       title: "Log out of all devices?",
       decorator: <LogoutIcon />,
       color: "ruby",
@@ -121,16 +122,16 @@ const DestroySessions = ({
 };
 
 const LoginActivityClient = (props: LoginActivityProps): React.ReactElement => {
-  const { logins: loginsProp, recent: recentProp } = props;
+  const { logins: logins_prop, recent: recent_prop } = props;
   const is_smaller_than_desktop = use_media_query(BREAKPOINTS.down("desktop"));
-  const [recent, setRecent] = React.useState<typeof recentProp>(recentProp);
-  const [logins, setLogins] = React.useState<typeof loginsProp>(loginsProp);
+  const [recent, set_recent] = React.useState<typeof recent_prop>(recent_prop);
+  const [logins, set_logins] = React.useState<typeof logins_prop>(logins_prop);
 
   /**
    * Removes a login item
    */
-  const removeLogin = React.useCallback((id: string) => {
-    setLogins((prev_state) => prev_state.filter((item) => item.id !== id));
+  const remove_login = React.useCallback((id: string) => {
+    set_logins((prev_state) => prev_state.filter((item) => item.id !== id));
   }, []);
 
   return (
@@ -166,7 +167,7 @@ const LoginActivityClient = (props: LoginActivityProps): React.ReactElement => {
                   <LoginAccordion
                     key={login.id}
                     login={login}
-                    onLogout={(): void => removeLogin(login.id)}
+                    on_logout={(): void => remove_login(login.id)}
                   />
                 ))
               )}
@@ -182,9 +183,9 @@ const LoginActivityClient = (props: LoginActivityProps): React.ReactElement => {
             <Spacer orientation={"vertical"} size={4} />
             <DestroySessions
               disabled={!recent && logins.length === 1}
-              onDestroy={(): void => {
-                setRecent(undefined);
-                setLogins((prev_state) =>
+              on_destroy={(): void => {
+                set_recent(undefined);
+                set_logins((prev_state) =>
                   prev_state.filter((item) => item.is_active)
                 );
               }}

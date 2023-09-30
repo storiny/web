@@ -14,11 +14,11 @@ const VirtualizedTagList = React.memo(
     tags,
     has_more,
     load_more,
-    tagProps,
+    tag_props,
     className,
     ...rest
   }: VirtualizedTagListProps) => (
-    <VirtualizedTagListContext.Provider value={tagProps || {}}>
+    <VirtualizedTagListContext.Provider value={tag_props || {}}>
       <Virtuoso
         increaseViewportBy={750}
         scrollSeekConfiguration={{

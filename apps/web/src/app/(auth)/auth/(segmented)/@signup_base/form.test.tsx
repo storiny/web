@@ -1,5 +1,5 @@
 import { user_event } from "@storiny/test-utils";
-import { act, screen, waitFor } from "@testing-library/react";
+import { act, screen, waitFor as wait_for } from "@testing-library/react";
 import React from "react";
 
 import { render_test_with_provider } from "../../../../../../../../packages/ui/src/redux/test-utils";
@@ -9,11 +9,11 @@ import SignupBaseForm from "./form";
 
 describe("<SignupBaseForm />", () => {
   it("renders validation messages", async () => {
-    const mockSubmit = jest.fn();
+    const mock_submit = jest.fn();
     const user = user_event.setup();
     render_test_with_provider(
       <AuthState>
-        <SignupBaseForm on_submit={mockSubmit} />
+        <SignupBaseForm on_submit={mock_submit} />
       </AuthState>
     );
 
@@ -23,16 +23,16 @@ describe("<SignupBaseForm />", () => {
 
     await wait_for(() => {
       expect(screen.getAllByRole("alert")).toHaveLength(3);
-      expect(mockSubmit).not.toBeCalled();
+      expect(mock_submit).not.toBeCalled();
     });
   });
 
   it("submits correct form data", async () => {
-    const mockSubmit = jest.fn();
+    const mock_submit = jest.fn();
     const user = user_event.setup();
     render_test_with_provider(
       <AuthState>
-        <SignupBaseForm on_submit={(values): void => mockSubmit(values)} />
+        <SignupBaseForm on_submit={(values): void => mock_submit(values)} />
       </AuthState>
     );
 
@@ -44,7 +44,7 @@ describe("<SignupBaseForm />", () => {
     });
 
     await wait_for(() => {
-      expect(mockSubmit).toHaveBeenCalledWith({
+      expect(mock_submit).toHaveBeenCalledWith({
         email: "someone@example.com",
         password: "test-password",
         name: "test name"

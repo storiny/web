@@ -17,13 +17,13 @@ const VirtualizedCommentList = React.memo(
     comments,
     has_more,
     load_more,
-    commentProps = {},
-    skeletonProps = {},
+    comment_props = {},
+    skeleton_props = {},
     className,
     ...rest
   }: VirtualizedCommentListProps) => (
     <VirtualizedCommentListContext.Provider
-      value={{ commentProps, skeletonProps }}
+      value={{ comment_props, skeleton_props }}
     >
       <Virtuoso
         increaseViewportBy={750}

@@ -13,7 +13,7 @@ import DefaultDashboardRightSidebarLayout from "../../layout";
 import AccountConnectionsPage from "./client";
 
 const meta: Meta<typeof AccountConnectionsPage> = {
-  title: "dashboard/Account/connections",
+  title: "dashboard/account/connections",
   component: AccountConnectionsPage,
   args: {
     connections: [

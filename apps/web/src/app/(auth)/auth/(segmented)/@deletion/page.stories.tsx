@@ -9,7 +9,7 @@ import AuthLayout from "../../../layout";
 import AuthDeletionPage from "./page";
 
 const meta: Meta<typeof AuthDeletionPage> = {
-  title: "pages/Auth/@deletion",
+  title: "pages/auth/@deletion",
   component: AuthDeletionPage,
   parameters: {
     layout: "fullscreen"

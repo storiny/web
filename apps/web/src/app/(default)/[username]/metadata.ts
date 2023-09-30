@@ -1,8 +1,8 @@
 import { ImageSize } from "@storiny/shared";
 import type { Metadata } from "next";
 
-import { getProfile } from "~/common/grpc";
-import { getUser } from "~/common/utils/getUser";
+import { get_profile } from "~/common/grpc";
+import { get_user } from "src/common/utils/get-user";
 import { get_cdn_url } from "../../../../../../packages/ui/src/utils/get-cdn-url";
 
 export const generateMetadata = async ({
@@ -13,8 +13,8 @@ export const generateMetadata = async ({
   const { username } = params;
 
   try {
-    const user_id = await getUser();
-    const profile = await getProfile({
+    const user_id = await get_user();
+    const profile = await get_profile({
       username,
       current_user_id: user_id || undefined
     });
@@ -22,6 +22,7 @@ export const generateMetadata = async ({
       profile.bio ? ` ${profile.bio}` : ""
     }`;
 
+    /* eslint-disable prefer-snakecase/prefer-snakecase */
     return {
       title: `${profile.name} (@${username})`,
       description,
@@ -52,6 +53,7 @@ export const generateMetadata = async ({
             : [get_cdn_url(profile.avatar_id, ImageSize.W_256)]
       }
     };
+    /* eslint-enable prefer-snakecase/prefer-snakecase */
   } catch {
     return {
       title: `@${username}`

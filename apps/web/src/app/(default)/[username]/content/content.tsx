@@ -47,9 +47,9 @@ const StaffBadge = dynamic(
 );
 
 interface Props {
-  isInsideSidebar?: boolean;
-  isPrivate: boolean;
-  isSuspended: boolean;
+  is_inside_sidebar?: boolean;
+  is_private: boolean;
+  is_suspended: boolean;
   profile: GetProfileResponse;
 }
 
@@ -57,16 +57,16 @@ interface Props {
 
 const Actions = ({
   profile,
-  isInsideSidebar
-}: Pick<Props, "isInsideSidebar" | "profile">): React.ReactElement => {
+  is_inside_sidebar
+}: Pick<Props, "is_inside_sidebar" | "profile">): React.ReactElement => {
   const dispatch = use_app_dispatch();
-  const isFollowing = use_app_selector(
+  const is_following = use_app_selector(
     (state) => state.entities.following[profile.id]
   );
-  const isBlocking = use_app_selector(
+  const is_blocking = use_app_selector(
     (state) => state.entities.blocks[profile.id]
   );
-  const isSelf = Boolean(profile.is_self);
+  const is_self = Boolean(profile.is_self);
 
   // Received state with synced with the browser state in `ProfileActions`.
 
@@ -74,21 +74,20 @@ const Actions = ({
     <div
       className={clsx(
         "flex",
-        styles.x,
         styles.actions,
-        isInsideSidebar && styles["inside-sidebar"]
+        is_inside_sidebar && styles["inside-sidebar"]
       )}
     >
       {!profile.is_blocked_by_user && (
         <Button
           check_auth
-          color={isBlocking ? "ruby" : "inverted"}
+          color={is_blocking ? "ruby" : "inverted"}
           decorator={
-            isSelf ? (
+            is_self ? (
               <EditIcon />
-            ) : isBlocking ? (
+            ) : is_blocking ? (
               <UserXIcon />
-            ) : isFollowing ? (
+            ) : is_following ? (
               <UserCheckIcon />
             ) : (
               <UserPlusIcon />
@@ -96,23 +95,23 @@ const Actions = ({
           }
           onClick={(): void => {
             dispatch(
-              boolean_action(isBlocking ? "blocks" : "following", profile.id)
+              boolean_action(is_blocking ? "blocks" : "following", profile.id)
             );
           }}
-          size={isInsideSidebar ? "md" : "lg"}
-          variant={isSelf || isFollowing ? "hollow" : "rigid"}
-          {...(isSelf && { as: NextLink, href: "/me" })}
+          size={is_inside_sidebar ? "md" : "lg"}
+          variant={is_self || is_following ? "hollow" : "rigid"}
+          {...(is_self && { as: NextLink, href: "/me" })}
         >
-          {isSelf
+          {is_self
             ? "Edit"
-            : isBlocking
+            : is_blocking
             ? "Unblock"
-            : isFollowing
+            : is_following
             ? "Following"
             : "Follow"}
         </Button>
       )}
-      <ProfileActions isInsideSidebar={isInsideSidebar} profile={profile} />
+      <ProfileActions is_inside_sidebar={is_inside_sidebar} profile={profile} />
     </div>
   );
 };
@@ -121,24 +120,24 @@ const Actions = ({
 
 const Stat = ({
   value,
-  singularLabel,
-  pluralLabel
+  singular_label,
+  plural_label
 }: {
-  pluralLabel: string;
-  singularLabel: string;
+  plural_label: string;
+  singular_label: string;
   value: number;
 }): React.ReactElement => (
   <Typography
     level={"body2"}
     title={`${value.toLocaleString()} ${
-      value === 1 ? singularLabel : pluralLabel
+      value === 1 ? singular_label : plural_label
     }`}
   >
     <span className={clsx("t-major", "t-bold")}>
       {abbreviate_number(value)}
     </span>{" "}
     <span className={clsx("t-minor", "t-medium")}>
-      {value === 1 ? singularLabel : pluralLabel}
+      {value === 1 ? singular_label : plural_label}
     </span>
   </Typography>
 );
@@ -146,18 +145,18 @@ const Stat = ({
 // Badges block
 
 const Badges = ({
-  publicFlags
+  public_flags
 }: {
-  publicFlags: Props["profile"]["public_flags"];
+  public_flags: Props["profile"]["public_flags"];
 }): React.ReactElement | null => {
-  const flags = new Flag(publicFlags);
+  const flags = new Flag(public_flags);
 
   if (flags.none()) {
     return null;
   }
 
   return (
-    <div className={clsx("flex-col", styles.x, styles["container"])}>
+    <div className={clsx("flex-col", styles["container"])}>
       <Title>
         Badges
         <Tooltip
@@ -175,18 +174,14 @@ const Badges = ({
           <InfoIcon className={clsx(styles.x, styles["badge-hint"])} />
         </Tooltip>
       </Title>
-      <div className={clsx("flex", styles.x, styles["badges-container"])}>
-        {flags.hasAnyOf(UserFlag.STAFF) && (
-          <span
-            className={clsx("flex-center", styles.x, styles["badge-wrapper"])}
-          >
+      <div className={clsx("flex", styles["badges-container"])}>
+        {flags.has_any_of(UserFlag.STAFF) && (
+          <span className={clsx("flex-center", styles["badge-wrapper"])}>
             <StaffBadge />
           </span>
         )}
-        {flags.hasAnyOf(UserFlag.EARLY_USER) && (
-          <span
-            className={clsx("flex-center", styles.x, styles["badge-wrapper"])}
-          >
+        {flags.has_any_of(UserFlag.EARLY_USER) && (
+          <span className={clsx("flex-center", styles["badge-wrapper"])}>
             <EarlyUserBadge />
           </span>
         )}
@@ -213,21 +208,21 @@ const Title = ({
 
 const ProfileContent = ({
   profile,
-  isInsideSidebar,
-  isSuspended,
-  isPrivate
+  is_inside_sidebar,
+  is_suspended,
+  is_private
 }: Props): React.ReactElement => {
-  const willAvatarOverflow = use_media_query(
+  const will_avatar_overflow = use_media_query(
     `${BREAKPOINTS.up("tablet")} and ${BREAKPOINTS.down("desktop")}`
   );
   const follower_count =
     use_app_selector((state) => state.entities.follower_counts[profile.id]) ||
     0;
-  const followingCount =
-    use_app_selector((state) => state.entities.followingCounts[profile.id]) ||
+  const following_count =
+    use_app_selector((state) => state.entities.following_counts[profile.id]) ||
     0;
-  const friendCount =
-    use_app_selector((state) => state.entities.friendCounts[profile.id]) || 0;
+  const friend_count =
+    use_app_selector((state) => state.entities.friend_counts[profile.id]) || 0;
 
   return (
     <>
@@ -235,9 +230,8 @@ const ProfileContent = ({
       <div
         className={clsx(
           "flex-center",
-          styles.x,
           styles.header,
-          isInsideSidebar && styles["inside-sidebar"]
+          is_inside_sidebar && styles["inside-sidebar"]
         )}
       >
         <Badge
@@ -247,19 +241,19 @@ const ProfileContent = ({
             </Tooltip>
           }
           className={clsx(styles.x, styles.badge)}
-          elevation={isInsideSidebar ? "xs" : "body"}
-          inset={isInsideSidebar ? "15%" : "24%"}
+          elevation={is_inside_sidebar ? "xs" : "body"}
+          inset={is_inside_sidebar ? "15%" : "24%"}
           visible={profile.is_self && profile.is_private}
         >
-          {isPrivate || isSuspended ? (
+          {is_private || is_suspended ? (
             <Avatar
               alt={""}
               className={clsx(
                 styles.x,
                 styles.avatar,
-                isInsideSidebar && styles["inside-sidebar"]
+                is_inside_sidebar && styles["inside-sidebar"]
               )}
-              size={willAvatarOverflow ? "xl" : "xl2"}
+              size={will_avatar_overflow ? "xl" : "xl2"}
               slot_props={{
                 fallback: {
                   style: {
@@ -270,33 +264,33 @@ const ProfileContent = ({
                 }
               }}
             >
-              {isPrivate ? <LockIcon /> : <ForbidIcon />}
+              {is_private ? <LockIcon /> : <ForbidIcon />}
             </Avatar>
           ) : (
             <Avatar
               alt={""}
               avatar_id={profile.avatar_id}
-              borderless={Boolean(profile.banner_id) && !isInsideSidebar}
+              borderless={Boolean(profile.banner_id) && !is_inside_sidebar}
               className={clsx(
                 styles.x,
                 styles.avatar,
                 Boolean(profile.banner_id) && styles["has-banner"],
-                isInsideSidebar && styles["inside-sidebar"]
+                is_inside_sidebar && styles["inside-sidebar"]
               )}
               hex={profile.avatar_hex}
               label={profile.name}
-              size={willAvatarOverflow ? "xl" : "xl2"}
+              size={will_avatar_overflow ? "xl" : "xl2"}
             />
           )}
         </Badge>
         <Grow />
-        {!isSuspended && (
-          <Actions isInsideSidebar={isInsideSidebar} profile={profile} />
+        {!is_suspended && (
+          <Actions is_inside_sidebar={is_inside_sidebar} profile={profile} />
         )}
       </div>
-      <div className={clsx("flex-col", styles.x, styles.properties)}>
+      <div className={clsx("flex-col", styles.properties)}>
         {/* Details (Name, username, statistics, and status) */}
-        <div className={clsx("flex-col", styles.x, styles.details)}>
+        <div className={clsx("flex-col", styles.details)}>
           <div className={"flex-col"}>
             <Typography as={"h1"} ellipsis level={"h3"}>
               {profile.name}
@@ -309,46 +303,49 @@ const ProfileContent = ({
               @{profile.username}
             </Typography>
           </div>
-          {!isSuspended && !profile.is_blocked_by_user ? (
+          {!is_suspended && !profile.is_blocked_by_user ? (
             <>
-              <div className={clsx("flex", styles.x, styles.stats)}>
-                {!isPrivate && (
+              <div className={clsx("flex", styles.stats)}>
+                {!is_private && (
                   <Stat
-                    pluralLabel={"stories"}
-                    singularLabel={"story"}
+                    plural_label={"stories"}
+                    singular_label={"story"}
                     value={profile.story_count}
                   />
                 )}
                 <Stat
-                  pluralLabel={"followers"}
-                  singularLabel={"follower"}
+                  plural_label={"followers"}
+                  singular_label={"follower"}
                   value={follower_count}
                 />
-                {!isPrivate && (
+                {!is_private && (
                   <>
                     {/* Following and friend count are returned as `null` when they are private */}
                     {typeof profile.following_count === "number" &&
-                    followingCount > 0 ? (
+                    following_count > 0 ? (
                       <Stat
-                        pluralLabel={"following"}
-                        singularLabel={"following"}
-                        value={followingCount}
+                        plural_label={"following"}
+                        singular_label={"following"}
+                        value={following_count}
                       />
                     ) : null}
                     {typeof profile.friend_count === "number" &&
-                    friendCount > 0 ? (
+                    friend_count > 0 ? (
                       <Stat
-                        pluralLabel={"friends"}
-                        singularLabel={"friend"}
-                        value={friendCount}
+                        plural_label={"friends"}
+                        singular_label={"friend"}
+                        value={friend_count}
                       />
                     ) : null}
                   </>
                 )}
               </div>
-              {!isPrivate && profile.status ? (
+              {!is_private && profile.status ? (
                 <Status
-                  className={clsx(styles.x, !isInsideSidebar && styles.status)}
+                  className={clsx(
+                    styles.x,
+                    !is_inside_sidebar && styles.status
+                  )}
                   emoji={profile.status.emoji}
                   expires_at={profile.status.expires_at}
                   text={profile.status.text}
@@ -357,15 +354,15 @@ const ProfileContent = ({
             </>
           ) : null}
         </div>
-        {isPrivate ||
-        isSuspended ||
+        {is_private ||
+        is_suspended ||
         Boolean(profile.is_blocked_by_user) ? null : (
           <>
             {/* Badges */}
-            <Badges publicFlags={profile.public_flags} />
+            <Badges public_flags={profile.public_flags} />
             {/* Bio */}
             {Boolean(profile.bio) && (
-              <div className={clsx("flex-col", styles.x, styles["container"])}>
+              <div className={clsx("flex-col", styles.container)}>
                 <Title>About</Title>
                 <Typography className={"t-minor"} level={"body2"}>
                   {profile.bio}
@@ -373,9 +370,9 @@ const ProfileContent = ({
               </div>
             )}
             {/* List (Location and joining date) */}
-            <ul className={clsx("flex-col", styles.x, styles.list)}>
+            <ul className={clsx("flex-col", styles.list)}>
               {Boolean(profile.location) && (
-                <li className={clsx("flex", styles.x, styles["list-item"])}>
+                <li className={clsx("flex", styles["list-item"])}>
                   <MapPinIcon />
                   <Typography
                     as={"span"}
@@ -388,7 +385,7 @@ const ProfileContent = ({
                   </Typography>
                 </li>
               )}
-              <li className={clsx("flex", styles.x, styles["list-item"])}>
+              <li className={clsx("flex", styles["list-item"])}>
                 <CalendarIcon />
                 <Typography
                   as={"time"}
@@ -404,16 +401,12 @@ const ProfileContent = ({
             {/* Connections */}
             {Boolean(profile.connections.length) && (
               <div
-                className={clsx(
-                  "flex-col",
-                  styles.x,
-                  styles["connections-container"]
-                )}
+                className={clsx("flex-col", styles["connections-container"])}
               >
                 <Title>Connections</Title>
                 <Connections
                   connections={profile.connections}
-                  isInsideSidebar={isInsideSidebar}
+                  is_inside_sidebar={is_inside_sidebar}
                   name={profile.name}
                 />
               </div>
@@ -421,9 +414,9 @@ const ProfileContent = ({
           </>
         )}
       </div>
-      {!isInsideSidebar && <Spacer orientation={"vertical"} size={3} />}
-      {(isPrivate || isSuspended || Boolean(profile.is_blocked_by_user)) &&
-      !isInsideSidebar ? (
+      {!is_inside_sidebar && <Spacer orientation={"vertical"} size={3} />}
+      {(is_private || is_suspended || Boolean(profile.is_blocked_by_user)) &&
+      !is_inside_sidebar ? (
         <Divider
           style={{ width: "auto", marginInline: "var(--grid-compensation)" }}
         />

@@ -10,7 +10,7 @@ declare module "little-state-machine" {
     recovery: {
       email: string;
     };
-    resetPassword: { token: null | string };
+    reset_password: { token: null | string };
     signup: {
       email: string;
       name: string;

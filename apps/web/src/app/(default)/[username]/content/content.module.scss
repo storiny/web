@@ -1,3 +1,60 @@
+.header,
+.actions,
+.badges-container {
+  gap: 8px;
+}
+
+.header:not(.inside-sidebar) {
+  margin-top: 18px;
+}
+
+.badges-container {
+  --badge-size: 24px;
+}
+
+.badge-wrapper {
+  padding: 4px;
+}
+
+.properties {
+  gap: 24px;
+}
+
+.details {
+  gap: 18px;
+}
+
+.stats {
+  flex-wrap: wrap;
+  gap: 4px 16px;
+}
+
+/* Actions (<=tablet) */
+.actions:not(.inside-sidebar) {
+  gap: 10px;
+}
+
+.container {
+  gap: 6px;
+}
+
+.list {
+  --icon-size: 14px;
+  --icon-stroke: var(--fg-minor);
+
+  gap: 4px;
+  list-style: none;
+}
+
+.list-item {
+  gap: 6px;
+  align-items: center;
+}
+
+.connections-container {
+  gap: 12px;
+}
+
 .x {
   /* Avatar */
   &.avatar {
@@ -35,42 +92,9 @@
     cursor: help;
   }
 
-  /* Header, actions, and connections container */
-  &.header,
-  &.actions,
-  &.badges-container {
-    gap: 8px;
-  }
-
-  /* Actions (<=tablet) */
-  &.actions:not(.inside-sidebar) {
-    gap: 10px;
-  }
-
-  /* Header */
-  &.header:not(.inside-sidebar) {
-    margin-top: 18px;
-  }
-
   /* Status (<=tablet) */
   &.status {
     max-width: 300px;
-  }
-
-  /* User properties */
-  &.properties {
-    gap: 24px;
-  }
-
-  /* Details */
-  &.details {
-    gap: 18px;
-  }
-
-  /* Statistics */
-  &.stats {
-    flex-wrap: wrap;
-    gap: 4px 16px;
   }
 
   /* Block title */
@@ -79,46 +103,11 @@
     gap: 4px;
   }
 
-  /* Container */
-  &.container {
-    gap: 6px;
-  }
-
   /* Badge hint icon */
   &.badge-hint {
     --icon-size: 14px;
     --icon-stroke: var(--fg-minor);
 
     cursor: help;
-  }
-
-  /* Badges container */
-  &.badges-container {
-    --badge-size: 24px;
-  }
-
-  /* Badge wrapper */
-  &.badge-wrapper {
-    padding: 4px;
-  }
-
-  /* Location and join date list */
-  &.list {
-    --icon-size: 14px;
-    --icon-stroke: var(--fg-minor);
-
-    gap: 4px;
-    list-style: none;
-  }
-
-  /* List item */
-  &.list-item {
-    gap: 6px;
-    align-items: center;
-  }
-
-  /* Connections container */
-  &.connections-container {
-    gap: 12px;
   }
 }

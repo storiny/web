@@ -1,7 +1,7 @@
 import dynamic from "next/dynamic";
 import React from "react";
 
-import { dynamicLoader } from "~/common/dynamic";
+import { dynamic_loader } from "~/common/dynamic";
 import { UserListSkeleton, VirtualizedUserList } from "~/common/user";
 import ErrorState from "../../../../../../../../packages/ui/src/entities/error-state";
 import { use_debounce } from "../../../../../../../../packages/ui/src/hooks/use-debounce";
@@ -14,11 +14,11 @@ import {
 import { ProfileEntitySortValue } from "../../client";
 
 const EmptyState = dynamic(() => import("../../empty-state"), {
-  loading: dynamicLoader()
+  loading: dynamic_loader()
 });
 
 interface Props {
-  entityType: GetUserEntityType;
+  entity_type: GetUserEntityType;
   query: string;
   sort: ProfileEntitySortValue;
   user_id: string;
@@ -26,17 +26,23 @@ interface Props {
 }
 
 const EntitiesTab = (props: Props): React.ReactElement => {
-  const { query, sort, user_id, username, entityType } = props;
+  const { query, sort, user_id, username, entity_type } = props;
   const [page, set_page] = React.useState<number>(1);
   const debounced_query = use_debounce(query);
-  const { data, isLoading, is_fetching, isError, error, refetch } =
-    use_get_user_entities_query({
-      page,
-      sort,
-      user_id,
-      entityType,
-      query: debounced_query
-    });
+  const {
+    data,
+    isLoading: is_loading,
+    isFetching: is_fetching,
+    isError: is_error,
+    error,
+    refetch
+  } = use_get_user_entities_query({
+    page,
+    sort,
+    user_id,
+    entity_type,
+    query: debounced_query
+  });
   const { items = [], has_more } = data || {};
   const is_typing = query !== debounced_query;
 
@@ -47,7 +53,7 @@ const EntitiesTab = (props: Props): React.ReactElement => {
 
   return (
     <>
-      {isError ? (
+      {is_error ? (
         <ErrorState
           auto_size
           component_props={{
@@ -57,8 +63,12 @@ const EntitiesTab = (props: Props): React.ReactElement => {
           type={get_query_error_type(error)}
         />
       ) : !is_fetching && !items.length ? (
-        <EmptyState entityType={entityType} query={query} username={username} />
-      ) : isLoading || is_typing || (is_fetching && page === 1) ? (
+        <EmptyState
+          entity_type={entity_type}
+          query={query}
+          username={username}
+        />
+      ) : is_loading || is_typing || (is_fetching && page === 1) ? (
         <UserListSkeleton />
       ) : (
         <VirtualizedUserList

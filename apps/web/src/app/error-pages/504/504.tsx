@@ -19,7 +19,7 @@ const Error504Page = (): React.ReactElement => (
         for any updates.
       </>
     }
-    errorCode={`${ERROR_CODE}`}
+    error_code={`${ERROR_CODE}`}
     title={"Gateway timeout"}
   />
 );

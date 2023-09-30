@@ -7,7 +7,7 @@ import dynamic from "next/dynamic";
 import React from "react";
 import { useIntersectionObserver as use_intersection_observer } from "react-intersection-observer-hook";
 
-import { dynamicLoader } from "~/common/dynamic";
+import { dynamic_loader } from "~/common/dynamic";
 import Divider from "../../../../ui/src/components/divider";
 import Option from "../../../../ui/src/components/option";
 import Select from "../../../../ui/src/components/select";
@@ -30,19 +30,19 @@ import styles from "./auxiliary-content.module.scss";
 const EditorAuxiliaryContentCommentList = dynamic(
   () => import("./comment-list"),
   {
-    loading: dynamicLoader()
+    loading: dynamic_loader()
   }
 );
 const EditorAuxiliaryContentCommentListDisabledState = dynamic(
   () => import("./comment-list/disabled-state"),
   {
-    loading: dynamicLoader()
+    loading: dynamic_loader()
   }
 );
 const EditorAuxiliaryContentSuggestionList = dynamic(
   () => import("./suggestion-list"),
   {
-    loading: dynamicLoader()
+    loading: dynamic_loader()
   }
 );
 
@@ -59,8 +59,8 @@ const HeaderTabs = ({
   value: EditorAuxiliaryContentTabValue;
 }): React.ReactElement => (
   <Tabs
-    onValueChange={(newValue: EditorAuxiliaryContentTabValue): void =>
-      on_change(newValue)
+    onValueChange={(next_value: EditorAuxiliaryContentTabValue): void =>
+      on_change(next_value)
     }
     value={value}
   >

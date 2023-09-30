@@ -1,4 +1,5 @@
 import { UserFlag } from "@storiny/shared";
+import { is_num } from "@storiny/shared/src/utils/is-num";
 
 type Mask = UserFlag | UserFlag[];
 
@@ -8,14 +9,12 @@ export { UserFlag as UserFlag };
  * Utility class for performing bitwise operations.
  */
 export class Flag {
-  private _flags: number;
-
   /**
    * Ctor
    * @param flags Input flags
    */
-  constructor(flags: number = 0) {
-    if (Number.isNaN(flags)) {
+  constructor(flags = 0) {
+    if (!is_num(flags)) {
       throw new TypeError("Invalid user flags");
     }
 
@@ -23,11 +22,17 @@ export class Flag {
   }
 
   /**
+   * Flags
+   * @private
+   */
+  private _flags: number;
+
+  /**
    * Adds a new flag to the existing flags
    * @param flag The new flag to add
    */
-  public addFlag(flag: UserFlag): void {
-    this.validateFlag(flag);
+  public add_flag(flag: UserFlag): void {
+    this.validate_flag(flag);
 
     if (this._flags & flag) {
       return;
@@ -40,8 +45,8 @@ export class Flag {
    * Removes a flag from the existing flags
    * @param flag The flag to remove
    */
-  public removeFlag(flag: UserFlag): void {
-    this.validateFlag(flag);
+  public remove_flag(flag: UserFlag): void {
+    this.validate_flag(flag);
 
     if (!(this._flags & flag)) {
       return;
@@ -55,8 +60,8 @@ export class Flag {
    * flags exist among the flags
    * @param mask The flag to check
    */
-  public hasAnyOf(mask: Mask): boolean {
-    return this.testFlag(mask, false, false);
+  public has_any_of(mask: Mask): boolean {
+    return this.test_flag(mask, false, false);
   }
 
   /**
@@ -64,8 +69,8 @@ export class Flag {
    * among the existing flags
    * @param mask The flags to check
    */
-  public hasAllOf(mask: Mask): boolean {
-    return this.testFlag(mask, true, false);
+  public has_all_of(mask: Mask): boolean {
+    return this.test_flag(mask, true, false);
   }
 
   /**
@@ -73,8 +78,8 @@ export class Flag {
    * flags does not exist among the flags
    * @param mask The flag to check
    */
-  public notAnyOf(mask: Mask): boolean {
-    return this.testFlag(mask, false, true);
+  public not_any_of(mask: Mask): boolean {
+    return this.test_flag(mask, false, true);
   }
 
   /**
@@ -82,8 +87,8 @@ export class Flag {
    * not exist among the existing flags
    * @param mask The flags to check
    */
-  public notAllOf(mask: Mask): boolean {
-    return this.testFlag(mask, true, true);
+  public not_all_of(mask: Mask): boolean {
+    return this.test_flag(mask, true, true);
   }
 
   /**
@@ -96,7 +101,7 @@ export class Flag {
   /**
    * Returns all the flags
    */
-  public getFlags(): number {
+  public get_flags(): number {
     return this._flags;
   }
 
@@ -108,24 +113,24 @@ export class Flag {
    * @param inverse Whether or not to check if the user has the properties
    * @private
    */
-  private testFlag(
+  private test_flag(
     mask: Mask | number,
     all: boolean,
     inverse: boolean
   ): boolean {
-    const flagMask =
+    const flag_mask =
       typeof mask === "number"
         ? mask
         : Array.isArray(mask)
-        ? this.getMask(mask)
+        ? this.get_mask(mask)
         : mask;
 
     let result: boolean;
 
     if (all) {
-      result = (this._flags & flagMask) === flagMask;
+      result = (this._flags & flag_mask) === flag_mask;
     } else {
-      result = !!(this._flags & flagMask);
+      result = !!(this._flags & flag_mask);
     }
 
     if (inverse) {
@@ -140,7 +145,7 @@ export class Flag {
    * @param flag The flag to check
    * @private
    */
-  private validateFlag(flag: UserFlag): void {
+  private validate_flag(flag: UserFlag): void {
     if (!(flag in UserFlag)) {
       throw new Error(`"${flag}" is not a valid flag`);
     }
@@ -151,12 +156,12 @@ export class Flag {
    * @param flags List of flags
    * @private
    */
-  private getMask(flags: UserFlag[]): number {
+  private get_mask(flags: UserFlag[]): number {
     let mask = 0;
 
     for (const flag in flags) {
       if (Object.prototype.hasOwnProperty.call(flags, flag)) {
-        this.validateFlag(flags[flag]);
+        this.validate_flag(flags[flag]);
         mask += flags[flag];
       }
     }

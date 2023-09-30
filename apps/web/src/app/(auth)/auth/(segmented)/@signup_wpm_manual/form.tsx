@@ -14,38 +14,38 @@ import FormInput from "../../../../../../../../packages/ui/src/components/form-i
 import Grow from "../../../../../../../../packages/ui/src/components/grow";
 import Spacer from "../../../../../../../../packages/ui/src/components/spacer";
 
-import { useAuthState } from "../../../actions";
-import { useSignup } from "../../../useSignup";
-import { SignupWPMSchema, signupWPMSchema } from "./schema";
+import { use_auth_state } from "../../../actions";
+import { use_signup } from "../../../use-signup";
+import { SignupWPMSchema, SIGNUP_WPM_SCHEMA } from "./schema";
 
 interface Props {
   on_submit?: SubmitHandler<SignupWPMSchema>;
 }
 
 const SignupWPMForm = ({ on_submit }: Props): React.ReactElement => {
-  const { state, actions } = useAuthState();
-  const { isLoading, handleSignup } = useSignup();
+  const { state, actions } = use_auth_state();
+  const { is_loading, handle_signup } = use_signup();
   const form = use_form<SignupWPMSchema>({
-    resolver: zod_resolver(signupWPMSchema),
+    resolver: zod_resolver(SIGNUP_WPM_SCHEMA),
     defaultValues: {
       wpm: state.signup.wpm || DEFAULT_WPM
     }
   });
 
-  const handleSubmit: SubmitHandler<SignupWPMSchema> = (values) => {
-    actions.setSignupState(values);
+  const handle_submit: SubmitHandler<SignupWPMSchema> = (values) => {
+    actions.set_signup_state(values);
 
     if (on_submit) {
       on_submit(values);
     } else {
-      handleSignup();
+      handle_signup();
     }
   };
 
   return (
     <Form<SignupWPMSchema>
       className={clsx("flex-col", "full-h")}
-      on_submit={handleSubmit}
+      on_submit={handle_submit}
       provider_props={form}
     >
       <FormInput
@@ -64,7 +64,7 @@ const SignupWPMForm = ({ on_submit }: Props): React.ReactElement => {
       <div className={clsx("flex-col", "flex-center")}>
         <Button
           className={"full-w"}
-          loading={isLoading}
+          loading={is_loading}
           size={"lg"}
           type={"submit"}
         >

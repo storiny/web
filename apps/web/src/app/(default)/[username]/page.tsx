@@ -1,12 +1,12 @@
 import "server-only";
 
 import { USER_PROPS } from "@storiny/shared";
-import { notFound } from "next/navigation";
+import { notFound as not_found } from "next/navigation";
 import React from "react";
 
-import { getProfile } from "~/common/grpc";
-import { handleException } from "~/common/grpc/utils";
-import { getUser } from "~/common/utils/getUser";
+import { get_profile } from "~/common/grpc";
+import { handle_exception } from "~/common/grpc/utils";
+import { get_user } from "src/common/utils/get-user";
 
 import Component from "./component";
 
@@ -20,18 +20,18 @@ const Page = async ({
       username.length < USER_PROPS.username.min_length ||
       username.length > USER_PROPS.username.max_length
     ) {
-      notFound();
+      not_found();
     }
 
-    const user_id = await getUser();
-    const profile = await getProfile({
+    const user_id = await get_user();
+    const profile = await get_profile({
       username,
       current_user_id: user_id || undefined
     });
 
     return <Component profile={profile} />;
   } catch (e) {
-    handleException(e);
+    handle_exception(e);
   }
 };
 

@@ -6,7 +6,7 @@ import { useAtomValue as use_atom_value } from "jotai";
 import dynamic from "next/dynamic";
 import React from "react";
 
-import { dynamicLoader } from "~/common/dynamic";
+import { dynamic_loader } from "~/common/dynamic";
 import Link from "../../../../../../../../ui/src/components/link";
 import Typography from "../../../../../../../../ui/src/components/typography";
 import ErrorState from "../../../../../../../../ui/src/entities/error-state";
@@ -25,7 +25,7 @@ import styles from "./recommended-stories.module.scss";
 import RecommendedStorySkeleton from "./skeleton";
 
 const RecommendedStoriesEmptyState = dynamic(() => import("./empty-state"), {
-  loading: dynamicLoader()
+  loading: dynamic_loader()
 });
 
 // Recommended story item

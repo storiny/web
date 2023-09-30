@@ -12,7 +12,7 @@ import DefaultDashboardRightSidebarLayout from "../../layout";
 import MiscellaneousResourcesPage from "./client";
 
 const meta: Meta<typeof MiscellaneousResourcesPage> = {
-  title: "dashboard/Miscellaneous/resources",
+  title: "dashboard/miscellaneous/resources",
   component: MiscellaneousResourcesPage,
   parameters: {
     layout: "fullscreen"

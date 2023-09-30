@@ -4,7 +4,7 @@ import { clsx } from "clsx";
 import dynamic from "next/dynamic";
 import React from "react";
 
-import { dynamicLoader } from "~/common/dynamic";
+import { dynamic_loader } from "~/common/dynamic";
 import Grow from "../../../../../../../../../../../../packages/ui/src/components/grow";
 import { use_media_query } from "../../../../../../../../../../../../packages/ui/src/hooks/use-media-query";
 import RightSidebar from "../../../../../../../../../../../../packages/ui/src/layout/right-sidebar";
@@ -15,30 +15,28 @@ import { BREAKPOINTS } from "~/theme/breakpoints";
 import styles from "./right-sidebar.module.scss";
 import { RelationsRightSidebarProps } from "./right-sidebar.props";
 
-// Default content
-
 const SuspendedDashboardRightSidebarContent = dynamic(
   () => import("../../../(default-rsb)/right-sidebar/content"),
   {
-    loading: dynamicLoader()
+    loading: dynamic_loader()
   }
 );
-
-// Relations content
-
 const SuspendedContentRelationsRightSidebarContent = dynamic(
   () => import("./content"),
   {
-    loading: dynamicLoader()
+    loading: dynamic_loader()
   }
 );
 
 const ContentRelationsRightSidebar = (
   props: RelationsRightSidebarProps
 ): React.ReactElement | null => {
-  const { tab, pending_friend_request_count } = props;
+  const {
+    tab,
+    pending_friend_request_count: pending_friend_request_count_prop
+  } = props;
   const dispatch = use_app_dispatch();
-  const pendingRequestCount =
+  const pending_friend_request_count =
     use_app_selector(
       (state) => state.entities.self_pending_friend_request_count
     ) || 0;
@@ -48,10 +46,10 @@ const ContentRelationsRightSidebar = (
     dispatch(
       self_action(
         "self_pending_friend_request_count",
-        pending_friend_request_count
+        pending_friend_request_count_prop
       )
     );
-  }, [dispatch, pending_friend_request_count]);
+  }, [dispatch, pending_friend_request_count_prop]);
 
   if (!should_render) {
     return null;
@@ -59,10 +57,10 @@ const ContentRelationsRightSidebar = (
 
   return (
     <RightSidebar className={clsx(styles.x, styles["right-sidebar"])}>
-      {tab === "friends" && pendingRequestCount ? (
+      {tab === "friends" && pending_friend_request_count ? (
         <React.Fragment>
           <SuspendedContentRelationsRightSidebarContent
-            pending_friend_request_count={pendingRequestCount}
+            pending_friend_request_count={pending_friend_request_count}
           />
           {/* Push the footer to the bottom of the viewport */}
           <Grow />

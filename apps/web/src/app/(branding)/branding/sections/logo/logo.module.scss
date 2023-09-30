@@ -1,32 +1,27 @@
-.x {
-  /* Logo color figure */
-  &.logo-color {
-    align-items: center;
-    justify-content: center;
+.logo-color {
+  align-items: center;
+  justify-content: center;
 
-    & > figure {
-      &:first-of-type {
-        border-bottom-right-radius: 0;
-        border-bottom-left-radius: 0;
-      }
+  & > figure {
+    &:first-of-type {
+      border-bottom-right-radius: 0;
+      border-bottom-left-radius: 0;
+    }
 
-      &:last-of-type {
-        border-top-right-radius: 0;
-        border-top-left-radius: 0;
-        border-top: 0;
-      }
+    &:last-of-type {
+      border-top-right-radius: 0;
+      border-top-left-radius: 0;
+      border-top: 0;
     }
   }
+}
 
-  /* Misuse container */
-  &.misuse-container {
-    padding: 16px;
-    gap: 32px;
-  }
+.misuse-container {
+  padding: 16px;
+  gap: 32px;
+}
 
-  /* Color combination */
-  &.color-combination {
-    width: initial;
-    flex-grow: 1;
-  }
+.color-combination {
+  width: initial;
+  flex-grow: 1;
 }

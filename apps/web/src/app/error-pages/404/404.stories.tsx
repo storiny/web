@@ -8,7 +8,7 @@ import { render_with_state } from "~/redux/mock";
 import Error404Page from "./404";
 
 const meta: Meta<typeof Error404Page> = {
-  title: "pages/Error/404",
+  title: "pages/error/404",
   component: Error404Page,
   parameters: {
     layout: "fullscreen"

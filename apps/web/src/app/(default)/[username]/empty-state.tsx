@@ -3,7 +3,7 @@ import React from "react";
 import CustomState from "../../../../../../packages/ui/src/entities/custom-state";
 
 interface ProfileEmptyStateProps {
-  entityType: "stories" | "followers" | "following" | "friends";
+  entity_type: "stories" | "followers" | "following" | "friends";
   query: string;
   username: string;
 }
@@ -11,8 +11,8 @@ interface ProfileEmptyStateProps {
 /**
  * Empty state title
  */
-const entityTypeToTitleMap: Record<
-  ProfileEmptyStateProps["entityType"],
+const ENTITY_TYPE_TITLE_MAP: Record<
+  ProfileEmptyStateProps["entity_type"],
   string
 > = {
   following: "No following users",
@@ -25,9 +25,9 @@ const entityTypeToTitleMap: Record<
  * Empty state description
  * @param username
  */
-const entityTypeToDescriptionMap = (
+const get_entity_description_map = (
   username: string
-): Record<ProfileEmptyStateProps["entityType"], React.ReactNode> => ({
+): Record<ProfileEmptyStateProps["entity_type"], React.ReactNode> => ({
   following: (
     <>
       Users followed by <span className={"t-medium"}>@{username}</span> will
@@ -57,21 +57,21 @@ const entityTypeToDescriptionMap = (
 const ProfileEmptyState = ({
   query,
   username,
-  entityType
+  entity_type
 }: ProfileEmptyStateProps): React.ReactElement => (
   <CustomState
     auto_size
     description={
       query
         ? "Your search criteria did not match anything, make sure you've spelled it correctly or try again by being more specific."
-        : entityTypeToDescriptionMap(username)[entityType]
+        : get_entity_description_map(username)[entity_type]
     }
     title={
       query
         ? `Could not find any ${
-            entityType === "stories" ? "story" : "user"
+            entity_type === "stories" ? "story" : "user"
           } for "${query}"`
-        : entityTypeToTitleMap[entityType]
+        : ENTITY_TYPE_TITLE_MAP[entity_type]
     }
   />
 );

@@ -2,7 +2,7 @@ import { StoryCategory } from "@storiny/shared";
 import dynamic from "next/dynamic";
 import React from "react";
 
-import { dynamicLoader } from "~/common/dynamic";
+import { dynamic_loader } from "~/common/dynamic";
 import { StoryListSkeleton, VirtualizedStoryList } from "~/common/story";
 import ErrorState from "../../../../../../../../../packages/ui/src/entities/error-state";
 import {
@@ -11,27 +11,33 @@ import {
 } from "~/redux/features";
 
 const EmptyState = dynamic(() => import("./empty-state"), {
-  loading: dynamicLoader()
+  loading: dynamic_loader()
 });
 
 const StoryList = ({
   category,
   debounced_query,
-  loading: loadingProp
+  loading: loading_prop
 }: {
   category: StoryCategory | "all";
   debounced_query: string;
   loading: boolean;
 }): React.ReactElement => {
   const [page, set_page] = React.useState<number>(1);
-  const { data, isLoading, is_fetching, isError, error, refetch } =
-    use_get_explore_stories_query({
-      page,
-      category,
-      query: debounced_query
-    });
+  const {
+    data,
+    isLoading: is_loading,
+    isFetching: is_fetching,
+    isError: is_error,
+    error,
+    refetch
+  } = use_get_explore_stories_query({
+    page,
+    category,
+    query: debounced_query
+  });
   const { items = [], has_more } = data || {};
-  const loading = isLoading || loadingProp;
+  const loading = is_loading || loading_prop;
 
   const load_more = React.useCallback(
     () => set_page((prev_state) => prev_state + 1),
@@ -42,7 +48,7 @@ const StoryList = ({
     <>
       {loading || (is_fetching && page === 1) ? (
         <StoryListSkeleton />
-      ) : isError ? (
+      ) : is_error ? (
         <ErrorState
           auto_size
           component_props={{

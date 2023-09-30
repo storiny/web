@@ -211,10 +211,10 @@ const TextStyleSelect = ({
 
   /**
    * Handles select value change
-   * @param newValue New value
+   * @param next_value New value
    */
-  const handleValueChange = (newValue: TextStyleEnum): void => {
-    switch (newValue) {
+  const handleValueChange = (next_value: TextStyleEnum): void => {
+    switch (next_value) {
       case TextStyleEnum.BULLETED_LIST:
         format_bulleted_list();
         break;

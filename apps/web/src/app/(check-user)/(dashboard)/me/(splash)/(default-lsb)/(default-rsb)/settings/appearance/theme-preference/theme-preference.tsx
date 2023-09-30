@@ -99,9 +99,7 @@ const ThemePreview = ({
   <svg
     {...rest}
     className={clsx(
-      common_styles.x,
       common_styles.preview,
-      styles.x,
       styles.preview,
       theme
         ? theme === "dark"
@@ -121,12 +119,12 @@ const ThemePreview = ({
 
 const ThemeItem = ({
   preview,
-  isActive,
+  is_active,
   ratio,
   label,
   value
 }: {
-  isActive: boolean;
+  is_active: boolean;
   label: React.ReactNode;
   preview: React.ReactNode;
   ratio: number;
@@ -135,9 +133,8 @@ const ThemeItem = ({
   <div
     className={clsx(
       "flex-col",
-      common_styles.x,
       common_styles.item,
-      isActive && common_styles.selected
+      is_active && common_styles.selected
     )}
   >
     <AspectRatio className={"full-w"} ratio={ratio}>
@@ -172,14 +169,14 @@ const ThemePreference = (): React.ReactElement => {
       <Spacer orientation={"vertical"} size={4} />
       <RadioGroup
         className={clsx(common_styles.x, common_styles["radio-group"])}
-        onValueChange={(newValue): void => {
-          dispatch(set_theme(newValue as "light" | "dark" | "system"));
+        onValueChange={(next_value: "light" | "dark" | "system"): void => {
+          dispatch(set_theme(next_value));
         }}
         orientation={is_smaller_than_mobile ? "vertical" : "horizontal"}
         value={theme}
       >
         <ThemeItem
-          isActive={theme === "system"}
+          is_active={theme === "system"}
           label={"Sync with system"}
           preview={
             <React.Fragment>
@@ -191,14 +188,14 @@ const ThemePreference = (): React.ReactElement => {
           value={"system"}
         />
         <ThemeItem
-          isActive={theme === "light"}
+          is_active={theme === "light"}
           label={"Light theme"}
           preview={<ThemePreview theme={"light"} />}
           ratio={ratio}
           value={"light"}
         />
         <ThemeItem
-          isActive={theme === "dark"}
+          is_active={theme === "dark"}
           label={"Dark theme"}
           preview={<ThemePreview theme={"dark"} />}
           ratio={ratio}

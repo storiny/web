@@ -9,7 +9,7 @@ import BrandingLayout from "../layout";
 import Branding from "./page";
 
 const meta: Meta<typeof Branding> = {
-  title: "pages/Branding",
+  title: "pages/branding",
   component: Branding,
   parameters: {
     layout: "fullscreen"

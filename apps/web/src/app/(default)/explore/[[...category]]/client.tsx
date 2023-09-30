@@ -5,7 +5,7 @@ import { clsx } from "clsx";
 import dynamic from "next/dynamic";
 import React from "react";
 
-import { dynamicLoader } from "~/common/dynamic";
+import { dynamic_loader } from "~/common/dynamic";
 import Input from "../../../../../../../packages/ui/src/components/input";
 import Tab from "../../../../../../../packages/ui/src/components/tab";
 import TabPanel from "../../../../../../../packages/ui/src/components/tab-panel";
@@ -21,11 +21,10 @@ import WritersPreview from "./previews/writers";
 import styles from "./styles.module.scss";
 
 const WriterList = dynamic(() => import("./entities/writer-list"), {
-  loading: dynamicLoader()
+  loading: dynamic_loader()
 });
-
 const TagList = dynamic(() => import("./entities/tag-list"), {
-  loading: dynamicLoader()
+  loading: dynamic_loader()
 });
 
 interface Props {
@@ -38,7 +37,7 @@ export type ExploreTabValue = "all" | "stories" | "writers" | "tags";
  * Normalizes story category
  * @param category Story category
  */
-const normalizeCategory = (category: Props["category"]): string =>
+const normalize_category = (category: Props["category"]): string =>
   category === "all"
     ? "all categories"
     : category === "diy"
@@ -62,14 +61,14 @@ const PageTabsHeader = (): React.ReactElement => (
 
 const PageInputHeader = ({
   query,
-  onQueryChange,
+  on_query_change,
   category,
-  tabValue
+  tab_value
 }: {
   category: Props["category"];
-  onQueryChange: (newQuery: string) => void;
+  on_query_change: (next_query: string) => void;
   query: string;
-  tabValue: ExploreTabValue;
+  tab_value: ExploreTabValue;
 }): React.ReactElement => (
   <div
     className={clsx(
@@ -77,23 +76,17 @@ const PageInputHeader = ({
       "full-bleed",
       "page-header",
       "with-page-title",
-      styles.x,
       styles["page-title"]
     )}
   >
     <Input
       autoFocus
       decorator={<SearchIcon />}
-      onChange={(event): void => onQueryChange(event.target.value)}
+      onChange={(event): void => on_query_change(event.target.value)}
       placeholder={`Search ${
-        tabValue === "all" ? "" : `for ${tabValue} `
-      }in ${normalizeCategory(category)}`}
+        tab_value === "all" ? "" : `for ${tab_value} `
+      }in ${normalize_category(category)}`}
       size={"lg"}
-      slot_props={{
-        container: {
-          className: clsx("f-grow", styles.x, styles.input)
-        }
-      }}
       type={"search"}
       value={query}
     />
@@ -102,34 +95,34 @@ const PageInputHeader = ({
 );
 
 const Client = ({ category }: Props): React.ReactElement => {
-  const [value, setValue] = React.useState<ExploreTabValue>("all");
-  const [query, setQuery] = React.useState<string>("");
+  const [value, set_value] = React.useState<ExploreTabValue>("all");
+  const [query, set_query] = React.useState<string>("");
   const debounced_query = use_debounce(query);
-  const normalizedCategory = normalizeCategory(category);
+  const normalized_category = normalize_category(category);
   const is_typing = query !== debounced_query;
 
-  const handleChange = (newValue: ExploreTabValue): void => {
-    setQuery("");
-    setValue(newValue);
+  const handle_change = (next_value: ExploreTabValue): void => {
+    set_query("");
+    set_value(next_value);
   };
 
-  const handleQueryChange = React.useCallback(
-    (newQuery: string) => setQuery(newQuery),
+  const handle_query_change = React.useCallback(
+    (next_query: string) => set_query(next_query),
     []
   );
 
   return (
     <Tabs
       className={clsx("flex-col", styles.x, styles.tabs)}
-      onValueChange={handleChange}
+      onValueChange={handle_change}
       value={value}
     >
       <PageTabsHeader />
       <PageInputHeader
         category={category}
-        onQueryChange={handleQueryChange}
+        on_query_change={handle_query_change}
         query={query}
-        tabValue={value}
+        tab_value={value}
       />
       <TabPanel
         className={clsx("full-w", "flex-col")}
@@ -140,13 +133,13 @@ const Client = ({ category }: Props): React.ReactElement => {
           category={category}
           debounced_query={debounced_query}
           loading={is_typing}
-          normalizedCategory={normalizedCategory}
+          normalized_category={normalized_category}
         />
         <TagsPreview
           category={category}
           debounced_query={debounced_query}
           loading={is_typing}
-          normalizedCategory={normalizedCategory}
+          normalized_category={normalized_category}
         />
         <StoryList
           category={category}

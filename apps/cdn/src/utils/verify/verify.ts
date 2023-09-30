@@ -3,12 +3,12 @@ import crypto from "crypto";
 /**
  * Verifies the incoming remote image URL
  * @param digest The URL digest segment
- * @param decodedUrl The decoded hex image URL
+ * @param decoded_url The decoded hex image URL
  * @param key Secret used for testing
  */
 export const verify = (
   digest: string,
-  decodedUrl: string,
+  decoded_url: string,
   // Allow passing key as a parameter for tests
   key?: string
 ): boolean => {
@@ -17,7 +17,7 @@ export const verify = (
       "sha1",
       key || (process.env.PROXY_KEY as string)
     );
-    hmac.update(decodedUrl, "utf8");
+    hmac.update(decoded_url, "utf8");
 
     if (hmac.digest("hex") === digest) {
       return true;

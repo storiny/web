@@ -7,6 +7,6 @@ import { CommentSkeletonProps } from "~/entities/comment/skeleton";
 
 // Context for individual comment entities.
 export const VirtualizedCommentListContext = React.createContext<{
-  commentProps: Partial<CommentProps>;
-  skeletonProps: Partial<CommentSkeletonProps>;
-}>({ commentProps: {}, skeletonProps: {} });
+  comment_props: Partial<CommentProps>;
+  skeleton_props: Partial<CommentSkeletonProps>;
+}>({ comment_props: {}, skeleton_props: {} });

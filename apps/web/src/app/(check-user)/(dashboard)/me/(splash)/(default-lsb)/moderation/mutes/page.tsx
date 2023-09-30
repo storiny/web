@@ -3,27 +3,27 @@ import "server-only";
 import { redirect } from "next/navigation";
 import React from "react";
 
-import { getUserMuteCount } from "~/common/grpc";
-import { handleException } from "~/common/grpc/utils";
-import { getUser } from "~/common/utils/getUser";
+import { get_user_mute_count } from "~/common/grpc";
+import { handle_exception } from "~/common/grpc/utils";
+import { get_user } from "src/common/utils/get-user";
 
 import ModerationMutesClient from "./client";
 
 const Page = async (): Promise<React.ReactElement | undefined> => {
   try {
-    const user_id = await getUser();
+    const user_id = await get_user();
 
     if (!user_id) {
       redirect("/login");
     }
 
-    const muteCountResponse = await getUserMuteCount({
+    const mute_count_response = await get_user_mute_count({
       id: user_id
     });
 
-    return <ModerationMutesClient {...muteCountResponse} />;
+    return <ModerationMutesClient {...mute_count_response} />;
   } catch (e) {
-    handleException(e);
+    handle_exception(e);
   }
 };
 

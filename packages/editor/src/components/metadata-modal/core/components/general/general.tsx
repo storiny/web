@@ -1,9 +1,9 @@
+import { ImageSize, StoryCategory } from "@storiny/shared";
+
 import {
   CATEGORY_ICON_MAP,
-  CATEGORY_LABEL_MAP,
-  ImageSize,
-  StoryCategory
-} from "@storiny/shared";
+  CATEGORY_LABEL_MAP
+} from "@storiny/shared/src/constants/category-icon-map";
 import {
   MAX_STORY_TAGS,
   STORY_PROPS

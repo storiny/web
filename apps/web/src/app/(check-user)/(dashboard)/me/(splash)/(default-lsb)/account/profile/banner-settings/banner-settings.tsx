@@ -26,14 +26,17 @@ const BannerSettings = (): React.ReactElement => {
   const dispatch = use_app_dispatch();
   const user = use_app_selector(select_user)!;
   const toast = use_toast();
-  const [bannerId, setBannerId] = React.useState<string | null>(user.banner_id);
-  const [mutateBannerSettings, { isLoading }] = use_banner_settings_mutation();
+  const [banner_id, set_banner_id] = React.useState<string | null>(
+    user.banner_id
+  );
+  const [mutate_banner_settings, { isLoading: is_loading }] =
+    use_banner_settings_mutation();
   const [element] = use_confirmation(
     ({ open_confirmation }) => (
       <IconButton
         aria-label={"Remove banner"}
         auto_size
-        disabled={!bannerId || isLoading}
+        disabled={!banner_id || is_loading}
         onClick={open_confirmation}
         title={"Remove banner"}
       >
@@ -44,8 +47,8 @@ const BannerSettings = (): React.ReactElement => {
       color: "ruby",
       decorator: <TrashIcon />,
       on_confirm: (): void => {
-        setBannerId(null);
-        dispatchBannerSettings();
+        set_banner_id(null);
+        dispatch_banner_settings();
       },
       title: "Remove banner?",
       description:
@@ -56,14 +59,14 @@ const BannerSettings = (): React.ReactElement => {
   /**
    * Dispatches the current banner settings
    */
-  const dispatchBannerSettings = React.useCallback(() => {
-    mutateBannerSettings({ banner_id: bannerId })
+  const dispatch_banner_settings = React.useCallback(() => {
+    mutate_banner_settings({ banner_id: banner_id })
       .unwrap()
       .then((res) => {
         dispatch(
           mutate_user({ banner_id: res.banner_id, banner_hex: res.banner_hex })
         );
-        setBannerId(res.banner_id);
+        set_banner_id(res.banner_id);
         toast(
           `Banner ${
             res.banner_id === null ? "remove" : "updated"
@@ -74,14 +77,14 @@ const BannerSettings = (): React.ReactElement => {
       .catch((e) =>
         toast(e?.data?.error || "Could not update your banner", "error")
       );
-  }, [bannerId, mutateBannerSettings, dispatch, toast]);
+  }, [banner_id, mutate_banner_settings, dispatch, toast]);
 
   return (
     <AspectRatio
       className={clsx(styles.x, styles["aspect-ratio"])}
       ratio={4.45}
     >
-      {bannerId ? (
+      {banner_id ? (
         <Image
           alt={""}
           className={clsx(styles.x, styles.banner)}
@@ -94,6 +97,7 @@ const BannerSettings = (): React.ReactElement => {
                 `${BREAKPOINTS.up("mobile")} calc(100vw - 72px)`,
                 "100vw"
               ].join(","),
+              // eslint-disable-next-line prefer-snakecase/prefer-snakecase
               srcSet: [
                 `${get_cdn_url(user.banner_id, ImageSize.W_1440)} 1440w`,
                 `${get_cdn_url(user.banner_id, ImageSize.W_1024)} 1024w`,
@@ -110,24 +114,23 @@ const BannerSettings = (): React.ReactElement => {
             "flex-center",
             "full-h",
             "full-w",
-            styles.x,
             styles.placeholder
           )}
         >
           <PhotoPlusIcon />
         </div>
       )}
-      <div className={clsx("flex-center", styles.x, styles["banner-actions"])}>
+      <div className={clsx("flex-center", styles["banner-actions"])}>
         <Gallery
           on_confirm={(asset): void => {
-            setBannerId(asset.key);
-            dispatchBannerSettings();
+            set_banner_id(asset.key);
+            dispatch_banner_settings();
           }}
         >
           <IconButton
             aria-label={"Edit banner"}
             auto_size
-            disabled={isLoading}
+            disabled={is_loading}
             title={"Edit banner"}
           >
             <PencilIcon />

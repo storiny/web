@@ -10,10 +10,10 @@ import styles from "../../virtual/virtual.module.scss";
 import { VirtualizedCommentListContext } from "../list/list-context";
 
 const VirtualizedCommentScrollSeekPlaceholder = React.memo(() => {
-  const { skeletonProps } = React.useContext(VirtualizedCommentListContext);
+  const { skeleton_props } = React.useContext(VirtualizedCommentListContext);
   return (
     <div className={clsx("flex-col", styles["list-item"])}>
-      <CommentSkeleton {...skeletonProps} virtual />
+      <CommentSkeleton {...skeleton_props} virtual />
       <Divider style={{ marginInline: "var(--grid-compensation)" }} />
     </div>
   );

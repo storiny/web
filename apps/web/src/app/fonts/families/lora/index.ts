@@ -1,6 +1,6 @@
-import localFont from "next/font/local";
+import local_font from "next/font/local";
 
-export const loraFont = localFont({
+export const FONT_LORA = local_font({
   src: [
     {
       path: "../../../../../../../packages/ui/src/static/fonts/lora/lora-regular.woff2",

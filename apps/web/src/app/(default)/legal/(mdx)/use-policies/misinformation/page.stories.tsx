@@ -10,7 +10,7 @@ import LegalLayout from "../../../layout";
 import MisinformationPolicy from "./client";
 
 const meta: Meta<typeof MisinformationPolicy> = {
-  title: "pages/Legal/use-policies/misinformation",
+  title: "pages/legal/use-policies/misinformation",
   component: MisinformationPolicy,
   parameters: {
     layout: "fullscreen"

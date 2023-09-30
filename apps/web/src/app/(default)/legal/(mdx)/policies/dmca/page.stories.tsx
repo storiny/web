@@ -10,7 +10,7 @@ import LegalLayout from "../../../layout";
 import DMCAPolicy from "./client";
 
 const meta: Meta<typeof DMCAPolicy> = {
-  title: "pages/Legal/policies/dmca",
+  title: "pages/legal/policies/dmca",
   component: DMCAPolicy,
   parameters: {
     layout: "fullscreen"

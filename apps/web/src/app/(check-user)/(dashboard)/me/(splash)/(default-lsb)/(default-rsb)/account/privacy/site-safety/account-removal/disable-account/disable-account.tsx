@@ -1,5 +1,5 @@
 import { clsx } from "clsx";
-import { useRouter } from "next/navigation";
+import { useRouter as use_router } from "next/navigation";
 import React from "react";
 
 import Button from "../../../../../../../../../../../../../../../packages/ui/src/components/button";
@@ -26,7 +26,7 @@ import { BREAKPOINTS } from "~/theme/breakpoints";
 import { DisableAccountProps } from "./disable-account.props";
 import {
   DisableAccountSchema,
-  disableAccountSchema
+  DISABLE_ACCOUNT_SCHEMA
 } from "./disable-account.schema";
 
 const DisableAccountModal = ({
@@ -55,7 +55,7 @@ const DisableAccountModal = ({
             }
           }}
           label={"Password"}
-          name={"current-password"}
+          name={"current_password"}
           placeholder={"Your password"}
           required
         />
@@ -68,27 +68,28 @@ const DisableAccountModal = ({
 const DisableAccount = ({
   on_submit
 }: DisableAccountProps): React.ReactElement => {
-  const router = useRouter();
+  const router = use_router();
   const toast = use_toast();
   const is_smaller_than_mobile = use_media_query(BREAKPOINTS.down("mobile"));
-  const [disabled, setDisabled] = React.useState<boolean>(false);
+  const [disabled, set_disabled] = React.useState<boolean>(false);
   const form = use_form<DisableAccountSchema>({
-    resolver: zod_resolver(disableAccountSchema),
+    resolver: zod_resolver(DISABLE_ACCOUNT_SCHEMA),
     defaultValues: {
-      "current-password": ""
+      current_password: ""
     }
   });
-  const [disableAccount, { isLoading }] = use_disable_account_mutation();
+  const [disable_account, { isLoading: is_loading }] =
+    use_disable_account_mutation();
 
-  const handleSubmit: SubmitHandler<DisableAccountSchema> = (values) => {
+  const handle_submit: SubmitHandler<DisableAccountSchema> = (values) => {
     if (on_submit) {
       on_submit(values);
     } else {
-      disableAccount(values)
+      disable_account(values)
         .unwrap()
-        .then(() => setDisabled(true))
+        .then(() => set_disabled(true))
         .catch((e) => {
-          setDisabled(false);
+          set_disabled(false);
           toast(e?.data?.error || "Could not disable your account", "error");
         });
     }
@@ -109,13 +110,14 @@ const DisableAccount = ({
     ),
     <Form<DisableAccountSchema>
       className={clsx("flex-col")}
-      disabled={isLoading}
-      on_submit={handleSubmit}
+      disabled={is_loading}
+      on_submit={handle_submit}
       provider_props={form}
     >
       <DisableAccountModal disabled={disabled} />
     </Form>,
     {
+      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
       onOpenChange: disabled ? (): void => undefined : undefined,
       fullscreen: is_smaller_than_mobile,
       footer: (
@@ -132,14 +134,14 @@ const DisableAccount = ({
             color={disabled ? "inverted" : "ruby"}
             compact={is_smaller_than_mobile}
             disabled={!disabled && !form.formState.isDirty}
-            loading={isLoading}
+            loading={is_loading}
             onClick={(event): void => {
               event.preventDefault(); // Prevent closing of modal
 
               if (disabled) {
                 router.push(`/logout/?to=${encodeURIComponent("/")}`);
               } else {
-                form.handleSubmit(handleSubmit)(); // Submit manually
+                form.handleSubmit(handle_submit)(); // Submit manually
               }
             }}
           >

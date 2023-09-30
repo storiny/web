@@ -94,7 +94,7 @@ const AppleAccount = ({
   ConnectedAccountsGroupProps,
   "has_password" | "login_apple_id"
 >): React.ReactElement => {
-  const [connected, setConnected] = React.useState<boolean>(
+  const [connected, set_connected] = React.useState<boolean>(
     Boolean(login_apple_id)
   );
 
@@ -103,7 +103,7 @@ const AppleAccount = ({
       action={
         connected ? (
           <RemoveAccount
-            onRemove={(): void => setConnected(false)}
+            on_remove={(): void => set_connected(false)}
             vendor={"Apple"}
           />
         ) : (
@@ -133,7 +133,7 @@ const GoogleAccount = ({
   ConnectedAccountsGroupProps,
   "has_password" | "login_google_id"
 >): React.ReactElement => {
-  const [connected, setConnected] = React.useState<boolean>(
+  const [connected, set_connected] = React.useState<boolean>(
     Boolean(login_google_id)
   );
 
@@ -142,7 +142,7 @@ const GoogleAccount = ({
       action={
         connected ? (
           <RemoveAccount
-            onRemove={(): void => setConnected(false)}
+            on_remove={(): void => set_connected(false)}
             vendor={"Google"}
           />
         ) : (

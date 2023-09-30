@@ -20,7 +20,7 @@ import { VisuallyHidden } from "./visually-hidden";
 const Page = (): React.ReactElement => (
   <>
     <div
-      className={clsx("grid", "minimal", styles.x, styles.splash)}
+      className={clsx("grid", "minimal", styles.splash)}
       role={"presentation"}
     >
       <Image
@@ -40,17 +40,17 @@ const Page = (): React.ReactElement => (
         src={"web-assets/branding/splash"}
         style={{ objectFit: "cover" }}
       />
-      <div className={clsx(styles.x, styles.container)}>
+      <div className={styles.container}>
         <Typography className={"t-minor"} level={"body2"}>
           Version: 14 April, 2023
         </Typography>
       </div>
     </div>
-    <article className={clsx("flex-col", styles.x, styles.article)}>
+    <article className={clsx("flex-col", styles.article)}>
       <VisuallyHidden asChild>
         <h1>Media kit</h1>
       </VisuallyHidden>
-      <section className={clsx(styles.x, styles.section)}>
+      <section className={styles.section}>
         <Typography
           as={"h2"}
           className={clsx("fit-h", styles.x, styles["section-title"])}
@@ -58,7 +58,7 @@ const Page = (): React.ReactElement => (
         >
           The Storiny Brand
         </Typography>
-        <div className={clsx("flex-col", styles.x, styles["section-content"])}>
+        <div className={clsx("flex-col", styles["section-content"])}>
           <Typography level={"legible"}>
             The Storiny brand is made up of some pretty recognizable assets –
             you&apos;ve probably seen them around. To ensure the appropriate use
@@ -75,7 +75,7 @@ const Page = (): React.ReactElement => (
             company&apos;s history, mission statement, and operational
             practices.
           </Typography>
-          <div className={clsx("flex-center", styles.x, styles.action)}>
+          <div className={clsx("flex-center", styles.action)}>
             <Button
               as={"a"}
               decorator={<FileDownloadIcon />}

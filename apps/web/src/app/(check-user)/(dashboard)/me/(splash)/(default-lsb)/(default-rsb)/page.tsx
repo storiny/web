@@ -9,14 +9,14 @@ import { BREAKPOINTS } from "~/theme/breakpoints";
 import DashboardNavigationScreen from "./navigation-screen";
 
 const Page = ({
-  disableRedirect
+  disable_redirect
 }: {
-  disableRedirect?: boolean;
+  disable_redirect?: boolean;
 }): React.ReactElement => {
-  const shouldRedirect = use_media_query(BREAKPOINTS.up("desktop"));
+  const should_redirect = use_media_query(BREAKPOINTS.up("desktop"));
 
   // Redirect if sidebars are visible
-  if (shouldRedirect && !disableRedirect) {
+  if (should_redirect && !disable_redirect) {
     redirect("/me/account/profile");
   }
 

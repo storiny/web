@@ -26,7 +26,6 @@ const StatusHeader = (): React.ReactElement => (
       "full-bleed",
       "dashboard-header",
       "flex",
-      styles.x,
       styles["status-header"]
     )}
   >
@@ -38,10 +37,16 @@ const StatusHeader = (): React.ReactElement => (
 
 const MiscellaneousActivityClient = (): React.ReactElement => {
   const [page, set_page] = React.useState<number>(1);
-  const { data, isLoading, is_fetching, isError, error, refetch } =
-    use_get_account_activity_query({
-      page
-    });
+  const {
+    data,
+    isLoading: is_loading,
+    isFetching: is_fetching,
+    isError: is_error,
+    error,
+    refetch
+  } = use_get_account_activity_query({
+    page
+  });
   const { items = [], has_more } = data || {};
 
   const load_more = React.useCallback(
@@ -53,9 +58,9 @@ const MiscellaneousActivityClient = (): React.ReactElement => {
     <React.Fragment>
       <DashboardTitle>Account activity</DashboardTitle>
       <StatusHeader />
-      {isLoading || (is_fetching && page === 1) ? (
+      {is_loading || (is_fetching && page === 1) ? (
         <AccountActivityListSkeleton />
-      ) : isError ? (
+      ) : is_error ? (
         <ErrorState
           auto_size
           component_props={{
@@ -66,7 +71,7 @@ const MiscellaneousActivityClient = (): React.ReactElement => {
         />
       ) : (
         <VirtualizedAccountActivityList
-          accountActivities={items}
+          account_activities={items}
           has_more={Boolean(has_more)}
           load_more={load_more}
         />

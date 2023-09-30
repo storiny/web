@@ -2,7 +2,7 @@ export interface MapProps {
   /**
    * If `true`, hides the copyright information
    */
-  hideCopyright?: boolean;
+  hide_copyright?: boolean;
   /**
    * Location latitude
    */

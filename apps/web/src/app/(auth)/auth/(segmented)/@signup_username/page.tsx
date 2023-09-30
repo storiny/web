@@ -8,17 +8,17 @@ import Spacer from "../../../../../../../../packages/ui/src/components/spacer";
 import Stepper from "../../../../../../../../packages/ui/src/components/stepper";
 import Typography from "../../../../../../../../packages/ui/src/components/typography";
 
-import { useAuthState } from "../../../actions";
+import { use_auth_state } from "../../../actions";
 import SignupUsernameForm from "./form";
 import { SignupUsernameSchema } from "./schema";
 
 const Page = (): React.ReactElement => {
-  const { actions, state } = useAuthState();
+  const { actions, state } = use_auth_state();
 
   const on_submit: SubmitHandler<SignupUsernameSchema> = React.useCallback(
     ({ username }) => {
-      actions.setSignupState({ username });
-      actions.switchSegment(
+      actions.set_signup_state({ username });
+      actions.switch_segment(
         state.signup.wpm === null ? "signup_wpm_base" : "email_confirmation"
       );
     },
@@ -44,7 +44,7 @@ const Page = (): React.ReactElement => {
           className={"t-medium"}
           href={"/auth"}
           level={"body2"}
-          onClick={(): void => actions.switchSegment("signup_base")}
+          onClick={(): void => actions.switch_segment("signup_base")}
           underline={"always"}
         >
           Return to the previous screen

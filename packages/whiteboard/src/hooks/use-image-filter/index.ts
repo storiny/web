@@ -33,15 +33,15 @@ export const use_image_filter = <T extends AnyClass>(
    * Mutates the value of the filter using the specified filter key
    */
   const set_value_impl = React.useCallback(
-    (newValue: number) => {
-      set_value(newValue);
+    (next_value: number) => {
+      set_value(next_value);
 
       if (active_image && is_image_object(active_image)) {
         const active_filter = get_active_filter();
         if (active_filter) {
-          (active_filter as any)[filter_key] = newValue;
+          (active_filter as any)[filter_key] = next_value;
         } else {
-          const next_filter = new Filter({ [filter_key]: newValue });
+          const next_filter = new Filter({ [filter_key]: next_value });
           active_image.filters.push(next_filter);
         }
 

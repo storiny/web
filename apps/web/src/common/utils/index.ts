@@ -1,1 +1,1 @@
-export * from "./useLoginRedirect";
+export * from "./use-login-redirect";

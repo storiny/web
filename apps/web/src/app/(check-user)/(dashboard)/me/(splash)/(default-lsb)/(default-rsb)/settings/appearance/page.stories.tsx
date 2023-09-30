@@ -12,7 +12,7 @@ import DefaultDashboardRightSidebarLayout from "../../layout";
 import SettingsAppearancePage from "./client";
 
 const meta: Meta<typeof SettingsAppearancePage> = {
-  title: "dashboard/Settings/appearance",
+  title: "dashboard/settings/appearance",
   component: SettingsAppearancePage,
   parameters: {
     layout: "fullscreen"

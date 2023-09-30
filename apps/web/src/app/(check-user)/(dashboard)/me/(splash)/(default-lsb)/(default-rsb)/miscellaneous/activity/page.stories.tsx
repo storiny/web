@@ -12,7 +12,7 @@ import DefaultDashboardRightSidebarLayout from "../../layout";
 import MiscellaneousActivityPage from "./client";
 
 const meta: Meta<typeof MiscellaneousActivityPage> = {
-  title: "dashboard/Miscellaneous/activity",
+  title: "dashboard/miscellaneous/activity",
   component: MiscellaneousActivityPage,
   parameters: {
     layout: "fullscreen"

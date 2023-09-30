@@ -1,14 +1,15 @@
 import { clsx } from "clsx";
 import React from "react";
 
-import { useLoginRedirect } from "~/common/utils";
+import { use_login_redirect } from "~/common/utils";
+import { fetch_user, select_auth_status, select_user } from "~/redux/features";
+import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
+
 import Button from "../../../../../../../../packages/ui/src/components/button";
 import Spacer from "../../../../../../../../packages/ui/src/components/spacer";
 import Typography from "../../../../../../../../packages/ui/src/components/typography";
 import RetryIcon from "../../../../../../../../packages/ui/src/icons/retry";
 import SplashScreen from "../../../../../../../../packages/ui/src/layout/splash-screen";
-import { fetch_user, select_auth_status, select_user } from "~/redux/features";
-import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 
 // Handles client-side user authentication logic
 const DashboardSplashLayout = ({
@@ -16,21 +17,21 @@ const DashboardSplashLayout = ({
 }: {
   children: React.ReactNode;
 }): React.ReactElement | null => {
-  const redirect = useLoginRedirect();
-  const [visible, setVisible] = React.useState<boolean>(true);
+  const redirect = use_login_redirect();
+  const [visible, set_visible] = React.useState<boolean>(true);
   const dispatch = use_app_dispatch();
-  const authStatus = use_app_selector(select_auth_status);
+  const auth_status = use_app_selector(select_auth_status);
   const user = use_app_selector(select_user);
-  const loading = authStatus === "loading";
+  const loading = auth_status === "loading";
 
   React.useEffect(() => {
-    setVisible(false);
+    set_visible(false);
   }, []);
 
-  if (visible || loading || ["idle", "error"].includes(authStatus)) {
+  if (visible || loading || ["idle", "error"].includes(auth_status)) {
     return (
       <SplashScreen force_mount>
-        {authStatus === "error" ? (
+        {auth_status === "error" ? (
           <React.Fragment>
             <Typography
               className={clsx("t-minor", "t-center")}

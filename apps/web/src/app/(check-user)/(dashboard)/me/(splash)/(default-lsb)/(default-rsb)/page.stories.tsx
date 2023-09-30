@@ -15,7 +15,7 @@ const meta: Meta<typeof NavigationPage> = {
   title: "dashboard/NavigationPage",
   component: NavigationPage,
   args: {
-    disableRedirect: true
+    disable_redirect: true
   },
   parameters: {
     layout: "fullscreen"

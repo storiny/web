@@ -94,6 +94,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>((props, ref) => {
           slot_props?.container?.className
         )}
         data-focused={String(focused)}
+        data-input-container={"true"}
         ref={ref}
       >
         {decorator && (

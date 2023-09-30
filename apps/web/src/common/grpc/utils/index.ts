@@ -1,1 +1,1 @@
-export * from "./handleException";
+export * from "./handle-exception";

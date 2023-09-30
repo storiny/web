@@ -1,6 +1,6 @@
-import localFont from "next/font/local";
+import local_font from "next/font/local";
 
-export const plexMonoFont = localFont({
+export const FONT_PLEX_MONO = local_font({
   src: [
     {
       path: "../../../../../../../packages/ui/src/static/fonts/plex-mono/plex-mono.woff2",
@@ -16,7 +16,7 @@ export const plexMonoFont = localFont({
   preload: false
 });
 
-export const plexMonoLigaturesFont = localFont({
+export const FONT_PLEX_MONO_LIGATURES = local_font({
   src: [
     {
       path: "../../../../../../../packages/ui/src/static/fonts/plex-mono/plex-mono-ligatures.woff2",

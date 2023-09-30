@@ -1,7 +1,7 @@
 import "server-only";
 
 import { StoryCategory } from "@storiny/shared";
-import { notFound } from "next/navigation";
+import { notFound as not_found } from "next/navigation";
 import React from "react";
 
 import { CATEGORIES } from "../categories";
@@ -15,7 +15,7 @@ const Page = ({
   const category = (params.category || [""])[0] as StoryCategory | "";
 
   if (!CATEGORIES.find((item) => item === category) && category !== "") {
-    notFound();
+    not_found();
   }
 
   return <Client category={category || "all"} />;

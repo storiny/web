@@ -11,29 +11,29 @@ import Spacer from "../../../../../../../../packages/ui/src/components/spacer";
 import Typography from "../../../../../../../../packages/ui/src/components/typography";
 import { clamp } from "~/utils/clamp";
 
-import { useAuthState } from "../../../actions";
-import { useSignup } from "../../../useSignup";
+import { use_auth_state } from "../../../actions";
+import { use_signup } from "../../../use-signup";
 import styles from "./styles.module.scss";
 
 const WORD_COUNT = 262;
 
 const Page = (): React.ReactElement => {
-  const { actions } = useAuthState();
-  const { handleSignup, isLoading } = useSignup();
-  const [mountTime, setMountTime] = React.useState<number | null>(null);
+  const { actions } = use_auth_state();
+  const { handle_signup, is_loading } = use_signup();
+  const [mount_time, set_mount_time] = React.useState<number | null>(null);
 
-  React.useEffect(() => setMountTime(new Date().getTime()), []);
+  React.useEffect(() => set_mount_time(new Date().getTime()), []);
 
-  const onDone = (): void => {
-    const minutes = (new Date().getTime() - (mountTime || 0)) / 60_000;
+  const on_done = (): void => {
+    const minutes = (new Date().getTime() - (mount_time || 0)) / 60_000;
     const wpm = clamp(
       USER_PROPS.wpm.min,
       Math.floor(WORD_COUNT / minutes) || DEFAULT_WPM,
       USER_PROPS.wpm.max
     );
 
-    actions.setSignupState({ wpm });
-    handleSignup();
+    actions.set_signup_state({ wpm });
+    handle_signup();
   };
 
   return (
@@ -95,9 +95,9 @@ const Page = (): React.ReactElement => {
       <div className={"flex-center"}>
         <Button
           className={"full-w"}
-          disabled={mountTime === null}
-          loading={isLoading}
-          onClick={onDone}
+          disabled={mount_time === null}
+          loading={is_loading}
+          onClick={on_done}
           size={"lg"}
         >
           Done

@@ -1,11 +1,9 @@
-.x {
-  /* Base styles */
-  &.connections {
-    flex-wrap: wrap;
-    gap: 3px 2px;
-  }
+.connections {
+  flex-wrap: wrap;
+  gap: 3px 2px;
+}
 
-  /* Connection icon button */
+.x {
   &.connection {
     &:not(:hover, :active) {
       --icon-stroke: var(--fg-minor);

@@ -11,14 +11,14 @@ import Spacer from "../../../../../../../../packages/ui/src/components/spacer";
 import Stepper from "../../../../../../../../packages/ui/src/components/stepper";
 import Typography from "../../../../../../../../packages/ui/src/components/typography";
 
-import { useAuthState } from "../../../actions";
+import { use_auth_state } from "../../../actions";
 
 const Page = (): React.ReactElement => {
-  const { actions } = useAuthState();
+  const { actions } = use_auth_state();
 
-  const onSkip = (): void => {
-    actions.setSignupState({ wpm: DEFAULT_WPM });
-    actions.switchSegment("email_confirmation");
+  const on_skip = (): void => {
+    actions.set_signup_state({ wpm: DEFAULT_WPM });
+    actions.switch_segment("email_confirmation");
   };
 
   return (
@@ -35,12 +35,14 @@ const Page = (): React.ReactElement => {
       </Typography>
       <Spacer orientation={"vertical"} size={5} />
       <div className={clsx("flex-col")}>
-        <Button onClick={onSkip} size={"lg"} variant={"hollow"}>
+        <Button onClick={on_skip} size={"lg"} variant={"hollow"}>
           Skip
         </Button>
         <Spacer orientation={"vertical"} size={1.75} />
         <Button
-          onClick={(): void => actions.switchSegment("signup_wpm_confirmation")}
+          onClick={(): void =>
+            actions.switch_segment("signup_wpm_confirmation")
+          }
           size={"lg"}
         >
           Take the Test
@@ -53,7 +55,7 @@ const Page = (): React.ReactElement => {
           className={"t-medium"}
           href={"/auth"}
           level={"body2"}
-          onClick={(): void => actions.switchSegment("signup_username")}
+          onClick={(): void => actions.switch_segment("signup_username")}
           underline={"always"}
         >
           Return to the previous screen

@@ -1,6 +1,9 @@
 "use client";
 
-import { GlobalState, useStateMachine } from "little-state-machine";
+import {
+  GlobalState,
+  useStateMachine as use_state_machine
+} from "little-state-machine";
 
 import { AuthSegment } from "./state";
 
@@ -10,16 +13,16 @@ type AnyCallback<Payload = any> = (
 ) => GlobalState;
 
 type StateActions = {
-  setRecoveryState: <T extends keyof GlobalState["recovery"]>(
+  set_recovery_state: <T extends keyof GlobalState["recovery"]>(
     state: GlobalState,
     payload: Record<T, GlobalState["recovery"][T]>
   ) => GlobalState;
-  setResetPasswordToken: AnyCallback<string>;
-  setSignupState: <T extends keyof GlobalState["signup"]>(
+  set_reset_password_token: AnyCallback<string>;
+  set_signup_state: <T extends keyof GlobalState["signup"]>(
     state: GlobalState,
     payload: Record<T, GlobalState["signup"][T]>
   ) => GlobalState;
-  switchSegment: AnyCallback<AuthSegment>;
+  switch_segment: AnyCallback<AuthSegment>;
 };
 
 /**
@@ -27,7 +30,7 @@ type StateActions = {
  * @param state Global state
  * @param payload Segment payload
  */
-export const switchSegment: StateActions["switchSegment"] = (
+export const switch_segment: StateActions["switch_segment"] = (
   state,
   payload
 ) => ({
@@ -43,7 +46,7 @@ export const switchSegment: StateActions["switchSegment"] = (
  * @param state Global state
  * @param payload Key-value pair of signup data to update
  */
-export const setSignupState: StateActions["setSignupState"] = (
+export const set_signup_state: StateActions["set_signup_state"] = (
   state,
   payload
 ) => ({
@@ -59,7 +62,7 @@ export const setSignupState: StateActions["setSignupState"] = (
  * @param state Global state
  * @param payload Key-value pair of recovery data to update
  */
-export const setRecoveryState: StateActions["setRecoveryState"] = (
+export const set_recovery_state: StateActions["set_recovery_state"] = (
   state,
   payload
 ) => ({
@@ -75,24 +78,22 @@ export const setRecoveryState: StateActions["setRecoveryState"] = (
  * @param state Global state
  * @param payload Token
  */
-export const setResetPasswordToken: StateActions["setResetPasswordToken"] = (
-  state,
-  payload
-) => ({
-  ...state,
-  resetPassword: {
-    ...state.resetPassword,
-    token: payload
-  }
-});
+export const set_reset_password_token: StateActions["set_reset_password_token"] =
+  (state, payload) => ({
+    ...state,
+    reset_password: {
+      ...state.reset_password,
+      token: payload
+    }
+  });
 
 /**
  * Extended version of `useStateMachine` with actions
  */
-export const useAuthState = (): ReturnType<typeof useStateMachine> =>
-  useStateMachine<AnyCallback, StateActions>({
-    switchSegment,
-    setSignupState,
-    setRecoveryState,
-    setResetPasswordToken
+export const use_auth_state = (): ReturnType<typeof use_state_machine> =>
+  use_state_machine<AnyCallback, StateActions>({
+    switch_segment,
+    set_signup_state,
+    set_recovery_state,
+    set_reset_password_token
   });

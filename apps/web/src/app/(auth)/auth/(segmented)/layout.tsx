@@ -3,7 +3,7 @@
 import { useSearchParams } from "next/navigation";
 import React from "react";
 
-import { useAuthState } from "../../actions";
+import { use_auth_state } from "../../actions";
 import { AuthSegment } from "../../state";
 
 /**
@@ -13,12 +13,12 @@ const SegmentedLayout = (
   props: Record<AuthSegment, React.ReactNode>
 ): React.ReactNode => {
   const params = useSearchParams();
-  const { state, actions } = useAuthState();
+  const { state, actions } = use_auth_state();
   const segment = params.get("segment") || "";
   const token = params.get("token") || "";
 
   if (segment === "reset-password" && token) {
-    actions.setResetPasswordToken(token);
+    actions.set_reset_password_token(token);
     return props.reset_base;
   }
 

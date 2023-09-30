@@ -8,6 +8,7 @@ const description =
  * @see https://nextjs.org/docs/app/building-your-application/optimizing/metadata
  */
 export const metadata: Metadata = {
+  /* eslint-disable prefer-snakecase/prefer-snakecase */
   metadataBase: new URL(process.env.NEXT_PUBLIC_WEB_URL!),
   title: {
     template: "%s — Storiny",
@@ -48,7 +49,7 @@ export const metadata: Metadata = {
   },
   appLinks: {
     web: {
-      url: process.env.NEXT_PUBLIC_CDN_URL,
+      url: process.env.NEXT_PUBLIC_CDN_URL!,
       should_fallback: true
     }
   },
@@ -133,4 +134,5 @@ export const metadata: Metadata = {
       }
     ]
   }
+  /* eslint-enable prefer-snakecase/prefer-snakecase */
 };

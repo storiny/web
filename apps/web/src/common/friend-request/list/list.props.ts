@@ -8,11 +8,11 @@ export interface VirtualizedFriendRequestListProps
   /**
    * Props passed down to individual friend request entities.
    */
-  friendRequestProps?: Partial<FriendRequestProps>;
+  friend_request_props?: Partial<FriendRequestProps>;
   /**
    * Array of friend requests to render.
    */
-  friendRequests: FriendRequest[];
+  friend_requests: FriendRequest[];
   /**
    * Flag indicating whether there are more friend requests to render.
    */

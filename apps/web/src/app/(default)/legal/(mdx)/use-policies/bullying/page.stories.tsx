@@ -10,7 +10,7 @@ import LegalLayout from "../../../layout";
 import BullyingPolicy from "./client";
 
 const meta: Meta<typeof BullyingPolicy> = {
-  title: "pages/Legal/use-policies/bullying",
+  title: "pages/legal/use-policies/bullying",
   component: BullyingPolicy,
   parameters: {
     layout: "fullscreen"

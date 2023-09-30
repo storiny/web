@@ -35,9 +35,7 @@ const ProfileSettingsClient = (): React.ReactElement => {
                 Avatar
               </Typography>
               <Spacer orientation={"vertical"} size={1.5} />
-              <div
-                className={clsx(styles.x, styles["avatar-settings-wrapper"])}
-              >
+              <div className={styles["avatar-settings-wrapper"]}>
                 <AvatarSettings />
               </div>
             </DashboardGroup>

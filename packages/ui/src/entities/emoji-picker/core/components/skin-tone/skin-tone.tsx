@@ -25,10 +25,10 @@ const SkinTone = (): React.ReactElement => {
   const [value, set_value] = use_atom(skin_tone_atom);
   return (
     <Select
-      onValueChange={(newValue): void =>
+      onValueChange={(next_value): void =>
         set_value((prev) => ({
           ...prev,
-          active: newValue as SkinToneEnum
+          active: next_value as SkinToneEnum
         }))
       }
       slot_props={{

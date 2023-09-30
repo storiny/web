@@ -1,11 +1,11 @@
 import { NATIVE_REGEX, REMOTE_REGEX } from "../constants/regex";
 import { RequestType } from "../types";
-import { decodeHex } from "../utils/decodeHex";
-import { getWidth } from "../utils/getWidth";
+import { decode_hex } from "../utils/decode-hex";
+import { get_width } from "../utils/get-width";
 import { verify } from "../utils/verify";
 
-export const baseBucket = "s3://base";
-export const uploadsBucket = "s3://uploads";
+export const BASE_BUCKET = "s3://base";
+export const UPLOADS_BUCKET = "s3://uploads";
 
 type Request = NginxHTTPRequest;
 
@@ -13,7 +13,7 @@ type Request = NginxHTTPRequest;
  * Prepares to dispatch a text response
  * @param r The HTTP request object
  */
-const prepareTextResponse = (r: Request): string =>
+const prepare_text_response = (r: Request): string =>
   (r.headersOut["Content-Type"] = "text/plain; charset=utf-8");
 
 /**
@@ -21,17 +21,17 @@ const prepareTextResponse = (r: Request): string =>
  * @param r The HTTP request object
  * @param path The path passed to the upstream server
  */
-const passToProxy = (r: Request, path: string): void => {
+const pass_to_proxy = (r: Request, path: string): void => {
   r.variables.proxy_rewrite = path;
   r.internalRedirect("@proxy_pass");
 };
 
 /**
  * Builds optimization fragments from width
- * @param parsedWidth Width in pixels
+ * @param parsed_width Width in pixels
  */
-const getResizeOption = (parsedWidth: string): string => {
-  const width = getWidth(parsedWidth);
+const get_resize_option = (parsed_width: string): string => {
+  const width = get_width(parsed_width);
   return Boolean(width) && width !== "auto"
     ? `/resize:fit:${width}:0:0:0/extend_ar:false:ce:0:0/`
     : "";
@@ -50,52 +50,52 @@ export const handler = (r: Request): void | undefined => {
       const matches = REMOTE_REGEX.exec(uri);
 
       if (matches !== null) {
-        const [, parsedWidth, digest, hex] = matches;
-        const decodedUrl = decodeHex(hex);
-        const resizeOption = getResizeOption(parsedWidth);
+        const [, parsed_width, digest, hex] = matches;
+        const decoded_url = decode_hex(hex);
+        const resize_option = get_resize_option(parsed_width);
 
-        if (decodedUrl && verify(digest, decodedUrl)) {
-          return passToProxy(
+        if (decoded_url && verify(digest, decoded_url)) {
+          return pass_to_proxy(
             r,
-            `internal${resizeOption || "/"}plain/${decodedUrl}`
+            `internal${resize_option || "/"}plain/${decoded_url}`
           );
         }
 
-        prepareTextResponse(r);
+        prepare_text_response(r);
         r.return(400, "Invalid signature");
         return;
       }
     }
 
     // Native S3 bucket
-    const [, type, parsedWidth, key] = NATIVE_REGEX.exec(uri) || [];
+    const [, type, parsed_width, key] = NATIVE_REGEX.exec(uri) || [];
 
     if (!key) {
-      prepareTextResponse(r);
+      prepare_text_response(r);
       r.return(400, "Invalid or missing media key");
       return;
     }
 
-    const reqType = type as RequestType;
-    const resizeOption = getResizeOption(parsedWidth);
+    const req_type = type as RequestType;
+    const resize_option = get_resize_option(parsed_width);
 
-    if (["uploads", "dl"].includes(reqType)) {
+    if (["uploads", "dl"].includes(req_type)) {
       // Uploads bucket
-      return passToProxy(
+      return pass_to_proxy(
         r,
         `internal${
-          type === "dl" ? "/return_attachment:true/" : resizeOption || "/"
-        }plain/${uploadsBucket}/${key}`
+          type === "dl" ? "/return_attachment:true/" : resize_option || "/"
+        }plain/${UPLOADS_BUCKET}/${key}`
       );
     }
 
     // Use base bucket
-    return passToProxy(
+    return pass_to_proxy(
       r,
-      `internal${resizeOption || "/"}plain/${baseBucket}/${key}`
+      `internal${resize_option || "/"}plain/${BASE_BUCKET}/${key}`
     );
   } catch {
-    prepareTextResponse(r);
+    prepare_text_response(r);
     r.return(500, "Internal server error");
   }
 };

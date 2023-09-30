@@ -1,12 +1,10 @@
 @use "breakpoints";
 
-/* Connections list */
 .list {
   gap: 24px;
   list-style: none;
 }
 
-/* Connections list item */
 .item {
   padding: 8px 16px;
   max-width: 100%;
@@ -22,17 +20,14 @@
   }
 }
 
-/* Details */
 .details {
   gap: 16px;
 }
 
-/* Icon */
 .icon {
   --icon-size: 36px;
 }
 
-/* Actions */
 .actions {
   gap: 8px;
 }

@@ -4,7 +4,7 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import React from "react";
 
-import { getUser } from "~/common/utils/getUser";
+import { get_user } from "src/common/utils/get-user";
 
 /**
  * Redirects to the login page if the user is logged out.
@@ -15,7 +15,7 @@ const CheckUserLayout = async ({
   children: React.ReactNode;
 }): Promise<React.ReactElement> => {
   const nextUrl = headers().get("next-url") || "/";
-  const user_id = await getUser();
+  const user_id = await get_user();
 
   if (!user_id) {
     const to = nextUrl === "/" ? "" : `?to=${encodeURIComponent(nextUrl)}`;

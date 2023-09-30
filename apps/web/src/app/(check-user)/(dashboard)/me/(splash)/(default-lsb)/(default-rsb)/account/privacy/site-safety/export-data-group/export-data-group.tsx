@@ -25,7 +25,10 @@ import { BREAKPOINTS } from "~/theme/breakpoints";
 
 import DashboardGroup from "../../../../../dashboard-group";
 import { ExportDataGroupProps } from "./export-data-group.props";
-import { ExportDataSchema, exportDataSchema } from "./export-data-group.schema";
+import {
+  ExportDataSchema,
+  EXPORT_DATA_SCHEMA
+} from "./export-data-group.schema";
 
 const ExportDataModal = (): React.ReactElement => (
   <React.Fragment>
@@ -47,7 +50,7 @@ const ExportDataModal = (): React.ReactElement => (
         }
       }}
       label={"Password"}
-      name={"current-password"}
+      name={"current_password"}
       placeholder={"Your password"}
       required
     />
@@ -62,18 +65,18 @@ export const ExportData = ({
   const toast = use_toast();
   const is_smaller_than_mobile = use_media_query(BREAKPOINTS.down("mobile"));
   const form = use_form<ExportDataSchema>({
-    resolver: zod_resolver(exportDataSchema),
+    resolver: zod_resolver(EXPORT_DATA_SCHEMA),
     defaultValues: {
-      "current-password": ""
+      current_password: ""
     }
   });
-  const [exportData, { isLoading }] = use_export_data_mutation();
+  const [export_data, { isLoading: is_loading }] = use_export_data_mutation();
 
-  const handleSubmit: SubmitHandler<ExportDataSchema> = (values) => {
+  const handle_submit: SubmitHandler<ExportDataSchema> = (values) => {
     if (on_submit) {
       on_submit(values);
     } else {
-      exportData(values)
+      export_data(values)
         .unwrap()
         .then(() => {
           close();
@@ -102,8 +105,8 @@ export const ExportData = ({
     ),
     <Form<ExportDataSchema>
       className={clsx("flex-col")}
-      disabled={isLoading}
-      on_submit={handleSubmit}
+      disabled={is_loading}
+      on_submit={handle_submit}
       provider_props={form}
     >
       <ExportDataModal />
@@ -118,10 +121,10 @@ export const ExportData = ({
           <ModalFooterButton
             compact={is_smaller_than_mobile}
             disabled={!form.formState.isDirty}
-            loading={isLoading}
+            loading={is_loading}
             onClick={(event): void => {
               event.preventDefault(); // Prevent closing of modal
-              form.handleSubmit(handleSubmit)(); // Submit manually
+              form.handleSubmit(handle_submit)(); // Submit manually
             }}
           >
             Confirm

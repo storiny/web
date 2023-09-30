@@ -10,7 +10,7 @@ import LegalLayout from "../../../layout";
 import TOS from "./client";
 
 const meta: Meta<typeof TOS> = {
-  title: "pages/Legal/terms/tos",
+  title: "pages/legal/terms/tos",
   component: TOS,
   parameters: {
     layout: "fullscreen"

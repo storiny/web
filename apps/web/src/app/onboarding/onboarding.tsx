@@ -1,10 +1,11 @@
+import { StoryCategory } from "@storiny/shared";
+
 import {
   CATEGORY_ICON_MAP,
-  CATEGORY_LABEL_MAP,
-  StoryCategory
-} from "@storiny/shared";
+  CATEGORY_LABEL_MAP
+} from "@storiny/shared/src/constants/category-icon-map";
 import { clsx } from "clsx";
-import { compressToEncodedURIComponent } from "lz-string";
+import { compressToEncodedURIComponent as compress_to_encoded_uri_component } from "lz-string";
 import React from "react";
 
 import Logo from "../../../../../packages/ui/src/brand/logo";
@@ -62,11 +63,11 @@ const Segment = ({
 // Categories segment
 
 const CategoriesSegment = ({
-  selectedCategories,
-  setSelectedCategories
+  selected_categories,
+  set_selected_categories
 }: {
-  selectedCategories: Set<StoryCategory>;
-  setSelectedCategories: React.Dispatch<
+  selected_categories: Set<StoryCategory>;
+  set_selected_categories: React.Dispatch<
     React.SetStateAction<Set<StoryCategory>>
   >;
 }): React.ReactElement => (
@@ -81,7 +82,7 @@ const CategoriesSegment = ({
             decorator={CATEGORY_ICON_MAP[category]}
             key={category}
             onClick={(): void =>
-              setSelectedCategories((prev_state) => {
+              set_selected_categories((prev_state) => {
                 if (prev_state.has(category)) {
                   prev_state.delete(category);
                 } else {
@@ -93,7 +94,7 @@ const CategoriesSegment = ({
             }
             size={"lg"}
             type={"clickable"}
-            variant={selectedCategories.has(category) ? "rigid" : "soft"}
+            variant={selected_categories.has(category) ? "rigid" : "soft"}
           >
             {CATEGORY_LABEL_MAP[category]}
           </Chip>
@@ -106,28 +107,28 @@ const CategoriesSegment = ({
 // Tag component
 
 const Tag = ({
-  tagName,
-  tagId
+  tag_name,
+  tag_id
 }: {
-  tagId: string;
-  tagName: string;
+  tag_id: string;
+  tag_name: string;
 }): React.ReactElement => {
   const dispatch = use_app_dispatch();
-  const isFollowing = use_app_selector(
-    (state) => state.entities.followedTags[tagId]
+  const is_following = use_app_selector(
+    (state) => state.entities.followed_tags[tag_id]
   );
 
   return (
     <Chip
       className={clsx("flex-center", styles.tag)}
       onClick={(): void => {
-        dispatch(boolean_action("followed_tags", tagId));
+        dispatch(boolean_action("followed_tags", tag_id));
       }}
       type={"clickable"}
-      variant={isFollowing ? "rigid" : "soft"}
+      variant={is_following ? "rigid" : "soft"}
     >
-      {tagName}
-      {isFollowing ? <CheckIcon /> : <PlusIcon />}
+      {tag_name}
+      {is_following ? <CheckIcon /> : <PlusIcon />}
     </Chip>
   );
 };
@@ -135,12 +136,18 @@ const Tag = ({
 // Tags segment
 
 const TagsSegment = ({
-  categoriesHash
+  categories_hash
 }: {
-  categoriesHash: string;
+  categories_hash: string;
 }): React.ReactElement => {
-  const { data, isLoading, is_fetching, isError, error, refetch } =
-    use_get_onboarding_tags_query(categoriesHash);
+  const {
+    data,
+    isLoading: is_loading,
+    isFetching: is_fetching,
+    isError: is_error,
+    error,
+    refetch
+  } = use_get_onboarding_tags_query(categories_hash);
 
   return (
     <Segment
@@ -166,9 +173,9 @@ const TagsSegment = ({
           }
         }}
       >
-        {isLoading ? (
+        {is_loading ? (
           <SuspenseLoader />
-        ) : isError ? (
+        ) : is_error ? (
           <ErrorState
             auto_size
             component_props={{
@@ -204,7 +211,7 @@ const TagsSegment = ({
                       )}
                     >
                       {tags.map((tag) => (
-                        <Tag key={tag.id} tagId={tag.id} tagName={tag.name} />
+                        <Tag key={tag.id} tag_id={tag.id} tag_name={tag.name} />
                       ))}
                     </div>
                   </div>
@@ -221,22 +228,25 @@ const TagsSegment = ({
 
 const Onboarding = (): React.ReactElement => {
   const is_smaller_than_mobile = use_media_query(BREAKPOINTS.down("mobile"));
-  const [open, setOpen] = React.useState<boolean>(true);
-  const [segment, setSegment] = React.useState<
+  const [open, set_open] = React.useState<boolean>(true);
+  const [segment, set_segment] = React.useState<
     "categories" | "tags" | "writers"
   >("tags"); // TODO: change
-  const [selectedCategories, setSelectedCategories] = React.useState<
+  const [selected_categories, set_selected_categories] = React.useState<
     Set<StoryCategory>
   >(new Set([]));
-  const categoriesHash = React.useMemo(
+  const categories_hash = React.useMemo(
     () =>
-      compressToEncodedURIComponent(Array.from(selectedCategories).join("|")),
-    [selectedCategories]
+      compress_to_encoded_uri_component(
+        Array.from(selected_categories).join("|")
+      ),
+    [selected_categories]
   );
 
-  const setSelectedCategoriesImpl = React.useCallback(setSelectedCategories, [
-    setSelectedCategories
-  ]);
+  const set_selected_categories_impl = React.useCallback(
+    set_selected_categories,
+    [set_selected_categories]
+  );
 
   return (
     <Modal
@@ -245,9 +255,9 @@ const Onboarding = (): React.ReactElement => {
           {!is_smaller_than_mobile && segment === "categories" ? (
             <React.Fragment>
               <Typography className={"t-minor"} level={"body2"}>
-                {selectedCategories.size <= 3
-                  ? `${selectedCategories.size} of 3 selected`
-                  : `${selectedCategories.size} selected`}
+                {selected_categories.size <= 3
+                  ? `${selected_categories.size} of 3 selected`
+                  : `${selected_categories.size} selected`}
               </Typography>
               <Grow />
             </React.Fragment>
@@ -262,14 +272,14 @@ const Onboarding = (): React.ReactElement => {
           )}
           <ModalFooterButton
             compact={is_smaller_than_mobile}
-            disabled={selectedCategories.size < 3}
+            disabled={selected_categories.size < 3}
             onClick={(event): void => {
               if (segment === "categories") {
                 event.preventDefault();
-                setSegment("tags");
+                set_segment("tags");
               } else if (segment === "tags") {
                 event.preventDefault();
-                setSegment("writers");
+                set_segment("writers");
               }
             }}
           >
@@ -278,7 +288,7 @@ const Onboarding = (): React.ReactElement => {
         </React.Fragment>
       }
       fullscreen={is_smaller_than_mobile}
-      onOpenChange={setOpen}
+      onOpenChange={set_open}
       open={open}
       slot_props={{
         header: {
@@ -302,11 +312,11 @@ const Onboarding = (): React.ReactElement => {
         {
           categories: (
             <CategoriesSegment
-              selectedCategories={selectedCategories}
-              setSelectedCategories={setSelectedCategoriesImpl}
+              selected_categories={selected_categories}
+              set_selected_categories={set_selected_categories_impl}
             />
           ),
-          tags: <TagsSegment categoriesHash={categoriesHash} />
+          tags: <TagsSegment categories_hash={categories_hash} />
         }[segment]
       }
       <Stepper

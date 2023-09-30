@@ -3,17 +3,17 @@
 import { redirect } from "next/navigation";
 import React from "react";
 
-import Link from "../../../../../../../../packages/ui/src/components/link";
-import Spacer from "../../../../../../../../packages/ui/src/components/spacer";
-import Typography from "../../../../../../../../packages/ui/src/components/typography";
 import { select_is_logged_in } from "~/redux/features";
 import { use_app_selector } from "~/redux/hooks";
 
-import { useAuthState } from "../../../actions";
+import Link from "../../../../../../../../packages/ui/src/components/link";
+import Spacer from "../../../../../../../../packages/ui/src/components/spacer";
+import Typography from "../../../../../../../../packages/ui/src/components/typography";
+import { use_auth_state } from "../../../actions";
 import LoginForm from "./form";
 
 const Page = (): React.ReactElement => {
-  const { actions } = useAuthState();
+  const { actions } = use_auth_state();
   const logged_in = use_app_selector(select_is_logged_in);
 
   React.useEffect(() => {
@@ -34,7 +34,7 @@ const Page = (): React.ReactElement => {
           className={"t-medium"}
           href={"/auth"}
           level={"body2"}
-          onClick={(): void => actions.switchSegment("signup_base")}
+          onClick={(): void => actions.switch_segment("signup_base")}
           underline={"always"}
         >
           Sign up
@@ -48,7 +48,7 @@ const Page = (): React.ReactElement => {
           className={"t-medium"}
           href={"/auth"}
           level={"body2"}
-          onClick={(): void => actions.switchSegment("base")}
+          onClick={(): void => actions.switch_segment("base")}
           underline={"always"}
         >
           Show other options to log in

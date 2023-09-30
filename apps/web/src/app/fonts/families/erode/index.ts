@@ -1,6 +1,6 @@
-import localFont from "next/font/local";
+import local_font from "next/font/local";
 
-export const erodeFont = localFont({
+export const FONT_ERODE = local_font({
   src: [
     {
       path: "../../../../../../../packages/ui/src/static/fonts/erode/erode-regular.woff2",

@@ -1,4 +1,5 @@
 // @ts-check
+/* eslint-disable prefer-snakecase/prefer-snakecase */
 
 import { babel } from "@rollup/plugin-babel";
 import commonjs from "@rollup/plugin-commonjs";
@@ -19,24 +20,24 @@ const options = {
     babel({
       babelHelpers: "bundled",
       envName: "njs",
-      extensions: [".ts", ".mjs", ".js"],
+      extensions: [".ts", ".mjs", ".js"]
     }),
     // Resolve node modules.
     nodeResolve({
-      extensions: [".mjs", ".js", ".json", ".ts"],
+      extensions: [".mjs", ".js", ".json", ".ts"]
     }),
     // Convert CommonJS modules to ES6 modules.
     commonjs(),
     // Cleanup output
     uglify({
       mangle: false,
-      sourcemap: false,
-    }),
+      sourcemap: false
+    })
   ],
   output: {
     file: "nginx/njs-files/index.js",
-    format: "es",
-  },
+    format: "es"
+  }
 };
 
 export default options;

@@ -17,7 +17,7 @@ import styles from "../styles.module.scss";
 import { SiteNotificationsProps } from "./site-notifications.props";
 import {
   SiteNotificationsSchema,
-  siteNotificationsSchema
+  SITE_NOTIFICATIONS_SCHEMA
 } from "./site-notifications.schema";
 
 const SiteNotifications = ({
@@ -31,31 +31,31 @@ const SiteNotifications = ({
   comments
 }: SiteNotificationsProps): React.ReactElement => {
   const toast = use_toast();
-  const prevValuesRef = React.useRef<SiteNotificationsSchema>();
+  const prev_values_ref = React.useRef<SiteNotificationsSchema>();
   const form = use_form<SiteNotificationsSchema>({
-    resolver: zod_resolver(siteNotificationsSchema),
+    resolver: zod_resolver(SITE_NOTIFICATIONS_SCHEMA),
     defaultValues: {
-      "friend-requests": friend_requests,
-      "features-and-updates": features_and_updates,
-      "new-followers": new_followers,
+      friend_requests: friend_requests,
+      features_and_updates: features_and_updates,
+      new_followers: new_followers,
       replies,
       comments,
       tags,
       stories
     }
   });
-  const [mutateSiteNotificationSettings, { isLoading }] =
+  const [mutate_site_notification_settings, { isLoading: is_loading }] =
     use_site_notification_settings_mutation();
 
-  const handleSubmit: SubmitHandler<SiteNotificationsSchema> = (values) => {
+  const handle_submit: SubmitHandler<SiteNotificationsSchema> = (values) => {
     if (on_submit) {
       on_submit(values);
     } else {
-      mutateSiteNotificationSettings(values)
+      mutate_site_notification_settings(values)
         .unwrap()
-        .then(() => (prevValuesRef.current = values))
+        .then(() => (prev_values_ref.current = values))
         .catch((e) => {
-          form.reset(prevValuesRef.current);
+          form.reset(prev_values_ref.current);
           toast(
             e?.data?.error ||
               "Could not update your site notification settings",
@@ -68,8 +68,8 @@ const SiteNotifications = ({
   /**
    * Manually submits the form on checkbox mutations
    */
-  const submitForm = (): void => {
-    form.handleSubmit(handleSubmit)();
+  const submit_form = (): void => {
+    form.handleSubmit(handle_submit)();
   };
 
   return (
@@ -80,8 +80,8 @@ const SiteNotifications = ({
       <Spacer orientation={"vertical"} size={3.5} />
       <Form<SiteNotificationsSchema>
         className={clsx("flex-col", styles.form)}
-        disabled={isLoading}
-        on_submit={handleSubmit}
+        disabled={is_loading}
+        on_submit={handle_submit}
         provider_props={form}
       >
         <FormCheckbox
@@ -89,8 +89,8 @@ const SiteNotifications = ({
             "Receive notifications for new product features, tips, and updates from Storiny."
           }
           label={"Features & updates"}
-          name={"features-and-updates"}
-          onCheckedChange={submitForm}
+          name={"features_and_updates"}
+          onCheckedChange={submit_form}
           size={"lg"}
         />
         <FormCheckbox
@@ -99,7 +99,7 @@ const SiteNotifications = ({
           }
           label={"Stories"}
           name={"stories"}
-          onCheckedChange={submitForm}
+          onCheckedChange={submit_form}
           size={"lg"}
         />
         <FormCheckbox
@@ -108,7 +108,7 @@ const SiteNotifications = ({
           }
           label={"Tags"}
           name={"tags"}
-          onCheckedChange={submitForm}
+          onCheckedChange={submit_form}
           size={"lg"}
         />
         <FormCheckbox
@@ -117,7 +117,7 @@ const SiteNotifications = ({
           }
           label={"Comments"}
           name={"comments"}
-          onCheckedChange={submitForm}
+          onCheckedChange={submit_form}
           size={"lg"}
         />
         <FormCheckbox
@@ -126,7 +126,7 @@ const SiteNotifications = ({
           }
           label={"Replies"}
           name={"replies"}
-          onCheckedChange={submitForm}
+          onCheckedChange={submit_form}
           size={"lg"}
         />
         <FormCheckbox
@@ -134,8 +134,8 @@ const SiteNotifications = ({
             "Receive a notification when someone starts following you."
           }
           label={"New followers"}
-          name={"new-followers"}
-          onCheckedChange={submitForm}
+          name={"new_followers"}
+          onCheckedChange={submit_form}
           size={"lg"}
         />
         <FormCheckbox
@@ -143,8 +143,8 @@ const SiteNotifications = ({
             "Receive a notification when someone sends you a friend request or when your friend request is accepted."
           }
           label={"Friend requests"}
-          name={"friend-requests"}
-          onCheckedChange={submitForm}
+          name={"friend_requests"}
+          onCheckedChange={submit_form}
           size={"lg"}
         />
       </Form>

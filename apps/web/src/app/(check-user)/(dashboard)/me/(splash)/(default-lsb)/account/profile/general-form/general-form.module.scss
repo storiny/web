@@ -1,12 +1,9 @@
 @use "breakpoints";
 
-.x {
-  /* Input row */
-  &.input-row {
-    gap: 24px;
+.input-row {
+  gap: 24px;
 
-    @include breakpoints.media("<=tablet") {
-      flex-wrap: wrap;
-    }
+  @include breakpoints.media("<=tablet") {
+    flex-wrap: wrap;
   }
 }

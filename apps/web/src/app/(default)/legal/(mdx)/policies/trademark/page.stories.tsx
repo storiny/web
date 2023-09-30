@@ -10,7 +10,7 @@ import LegalLayout from "../../../layout";
 import TrademarkPolicy from "./client";
 
 const meta: Meta<typeof TrademarkPolicy> = {
-  title: "pages/Legal/policies/trademark",
+  title: "pages/legal/policies/trademark",
   component: TrademarkPolicy,
   parameters: {
     layout: "fullscreen"

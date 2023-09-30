@@ -4,7 +4,7 @@ import dynamic from "next/dynamic";
 import NextLink from "next/link";
 import React from "react";
 
-import { dynamicLoader } from "~/common/dynamic";
+import { dynamic_loader } from "~/common/dynamic";
 import SuspenseLoader from "~/common/suspense-loader";
 import {
   AccordionContent,
@@ -24,12 +24,12 @@ import {
   format_date
 } from "../../../../../../../../../../../../packages/ui/src/utils/format-date";
 
-import { deviceTypeToIconMap } from "../icon-map";
+import { DEVICE_TYPE_ICON_MAP } from "../icon-map";
 import styles from "./login-accordion.module.scss";
 import { LoginAccordionProps } from "./login-accordion.props";
 
 const Map = dynamic(() => import("../map"), {
-  loading: dynamicLoader(() => (
+  loading: dynamic_loader(() => (
     <AspectRatio
       className={clsx("full-w", styles.x, styles.loader)}
       ratio={2.85}
@@ -40,18 +40,19 @@ const Map = dynamic(() => import("../map"), {
 });
 
 const LogoutButton = (props: LoginAccordionProps): React.ReactElement => {
-  const { login, onLogout } = props;
+  const { login, on_logout } = props;
   const toast = use_toast();
-  const [sessionLogout, { isLoading }] = use_session_logout_mutation();
+  const [session_logout, { isLoading: is_loading }] =
+    use_session_logout_mutation();
 
   /**
    * Destroys a session
    */
-  const sessionLogoutImpl = (): void => {
-    sessionLogout({ id: login.id })
+  const session_logout_impl = (): void => {
+    session_logout({ id: login.id })
       .unwrap()
       .then(() => {
-        onLogout();
+        on_logout();
         toast("Session successfully revoked", "success");
       })
       .catch((e) => toast(e?.data?.error || "Could not log you out", "error"));
@@ -62,11 +63,11 @@ const LogoutButton = (props: LoginAccordionProps): React.ReactElement => {
       check_auth
       className={clsx("focus-invert", "f-grow", styles.x, styles.button)}
       decorator={<LogoutIcon />}
-      loading={isLoading}
+      loading={is_loading}
       variant={"ghost"}
       {...(login.is_active
         ? { as: NextLink, href: "/logout" }
-        : { onClick: sessionLogoutImpl })}
+        : { onClick: session_logout_impl })}
     >
       Log out
     </Button>
@@ -92,10 +93,10 @@ const LoginAccordion = (props: LoginAccordionProps): React.ReactElement => {
             }
           }}
         >
-          <span className={clsx("flex-center", styles.x, styles.wrapper)}>
-            {deviceTypeToIconMap[login.device?.type ?? DeviceType.UNKNOWN]}
+          <span className={clsx("flex-center", styles.wrapper)}>
+            {DEVICE_TYPE_ICON_MAP[login.device?.type ?? DeviceType.UNKNOWN]}
             <Spacer size={2} />
-            <span className={clsx("flex-col", styles.x, styles.details)}>
+            <span className={clsx("flex-col", styles.details)}>
               <Typography as={"span"} className={"t-medium"} ellipsis>
                 {login.device?.display_name || "Unknown device"}
               </Typography>
@@ -107,13 +108,7 @@ const LoginAccordion = (props: LoginAccordionProps): React.ReactElement => {
               >
                 {login.is_active ? (
                   <React.Fragment>
-                    <span
-                      className={clsx(
-                        "t-medium",
-                        styles.x,
-                        styles["active-label"]
-                      )}
-                    >
+                    <span className={clsx("t-medium", styles["active-label"])}>
                       Current device
                     </span>{" "}
                     <span className={"t-muted"}>&bull;</span>{" "}
@@ -137,7 +132,7 @@ const LoginAccordion = (props: LoginAccordionProps): React.ReactElement => {
           }}
         >
           <Spacer orientation={"vertical"} size={2} />
-          <div className={clsx("flex-col", styles.x, styles.content)}>
+          <div className={clsx("flex-col", styles.content)}>
             {typeof login.location?.lat !== "undefined" &&
             typeof login.location?.lng !== "undefined" ? (
               <Map

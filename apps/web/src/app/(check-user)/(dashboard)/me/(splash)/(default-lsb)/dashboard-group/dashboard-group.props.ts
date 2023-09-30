@@ -1,4 +1,3 @@
 import React from "react";
 
-export interface DashboardGroupProps
-  extends React.ComponentPropsWithoutRef<"div"> {}
+export type DashboardGroupProps = React.ComponentPropsWithoutRef<"div">;

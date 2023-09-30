@@ -12,13 +12,12 @@ import { VirtualizedFriendRequestListContext } from "../list/list-context";
 const VirtualizedFriendRequestItem = React.memo(
   ({ item, ...rest }: ItemProps<TFriendRequest>) => {
     // Props from context
-    const friendRequestProps = React.useContext(
+    const friend_request_props = React.useContext(
       VirtualizedFriendRequestListContext
     );
-
     return (
       <div {...rest} className={"flex-col"} key={item.id}>
-        <FriendRequest {...friendRequestProps} friend_request={item} />
+        <FriendRequest {...friend_request_props} friend_request={item} />
         <Divider style={{ marginInline: "var(--grid-compensation)" }} />
       </div>
     );

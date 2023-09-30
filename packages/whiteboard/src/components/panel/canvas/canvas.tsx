@@ -138,8 +138,8 @@ const FillControl = ({ canvas }: { canvas: Canvas }): React.ReactElement => {
       <DrawItemRow>
         <ToggleGroup
           className={"f-grow"}
-          onValueChange={(newValue: string): void => {
-            const next_color = SWATCH[newValue as keyof typeof SWATCH];
+          onValueChange={(next_value: string): void => {
+            const next_color = SWATCH[next_value as keyof typeof SWATCH];
             if (next_color) {
               change_fill(str_to_color(next_color || DEFAULT_CANVAS_FILL)!);
             }

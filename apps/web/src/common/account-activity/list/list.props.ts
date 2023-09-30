@@ -8,11 +8,11 @@ export interface VirtualizedAccountActivityListProps
   /**
    * Array of account activities requests to render.
    */
-  accountActivities: AccountActivity[];
+  account_activities: AccountActivity[];
   /**
    * Props passed down to individual account activities entities.
    */
-  accountActivityProps?: Partial<AccountActivityProps>;
+  account_activity_props?: Partial<AccountActivityProps>;
   /**
    * Flag indicating whether there are more account activities to render.
    */

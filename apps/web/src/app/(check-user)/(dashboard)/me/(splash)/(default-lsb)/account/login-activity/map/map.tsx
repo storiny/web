@@ -12,8 +12,8 @@ import styles from "./map.module.scss";
 import { MapProps } from "./map.props";
 
 const Map = (props: MapProps): React.ReactElement => {
-  const { ratio, lat, lng, hideCopyright } = props;
-  const mapRef = React.useRef<HTMLDivElement>(null);
+  const { ratio, lat, lng, hide_copyright } = props;
+  const map_ref = React.useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
     new Marker({
@@ -23,14 +23,16 @@ const Map = (props: MapProps): React.ReactElement => {
       .setLngLat({ lat, lng })
       .addTo(
         new MapImpl({
+          // eslint-disable-next-line prefer-snakecase/prefer-snakecase
           attributionControl: false,
-          container: mapRef.current!,
+          container: map_ref.current!,
           style: {
             version: 8,
             sources: {
               osm: {
                 type: "raster",
                 tiles: ["https://a.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png"],
+                // eslint-disable-next-line prefer-snakecase/prefer-snakecase
                 tileSize: 256
               }
             },
@@ -51,8 +53,8 @@ const Map = (props: MapProps): React.ReactElement => {
 
   return (
     <AspectRatio className={"full-w"} ratio={ratio}>
-      <div className={clsx(styles.x, styles.map)} ref={mapRef} />
-      {!hideCopyright && (
+      <div className={styles.map} ref={map_ref} />
+      {!hide_copyright && (
         <Typography
           as={"div"}
           className={clsx("t-medium", styles.x, styles.copyright)}

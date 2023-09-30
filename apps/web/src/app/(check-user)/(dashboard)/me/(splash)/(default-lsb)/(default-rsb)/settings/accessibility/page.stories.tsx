@@ -12,7 +12,7 @@ import DefaultDashboardRightSidebarLayout from "../../layout";
 import SettingsAccessibilityPage from "./client";
 
 const meta: Meta<typeof SettingsAccessibilityPage> = {
-  title: "dashboard/Settings/accessibility",
+  title: "dashboard/settings/accessibility",
   component: SettingsAccessibilityPage,
   parameters: {
     layout: "fullscreen"

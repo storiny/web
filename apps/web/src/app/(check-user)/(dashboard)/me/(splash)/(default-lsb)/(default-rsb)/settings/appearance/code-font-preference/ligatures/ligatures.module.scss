@@ -1,18 +1,17 @@
+.item {
+  --ligature-preview-fill: var(--fg-minor);
+
+  flex-grow: 1;
+
+  &.selected {
+    --ligature-preview-fill: var(--fg-major);
+  }
+}
+
 .x {
   /* Radio group */
   &.radio-group {
     flex-wrap: wrap;
-  }
-
-  /* Item */
-  &.item {
-    --ligature-preview-fill: var(--fg-minor);
-
-    flex-grow: 1;
-
-    &.selected {
-      --ligature-preview-fill: var(--fg-major);
-    }
   }
 
   /* Decorator */

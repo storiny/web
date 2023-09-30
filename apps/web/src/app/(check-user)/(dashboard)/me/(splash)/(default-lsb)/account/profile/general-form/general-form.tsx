@@ -28,25 +28,25 @@ import styles from "./general-form.module.scss";
 import { GeneralFormProps } from "./general-form.props";
 import {
   AccountGeneralSchema,
-  accountGeneralSchema
+  ACCOUNT_GENERAL_SCHEMA
 } from "./general-form.schema";
 
 // Save button
 
 const SaveButton = ({
-  isLoading
+  is_loading
 }: {
-  isLoading: boolean;
+  is_loading: boolean;
 }): React.ReactElement => {
-  const { formState } = use_form_context();
+  const { formState: form_state } = use_form_context();
   return (
     <div className={clsx("flex")}>
       <Grow />
       <Button
         auto_size
         check_auth
-        disabled={!formState.isDirty}
-        loading={isLoading}
+        disabled={!form_state.isDirty}
+        loading={is_loading}
         type={"submit"}
       >
         Save Profile
@@ -62,21 +62,21 @@ const AccountGeneralForm = ({
   const toast = use_toast();
   const user = use_app_selector(select_user)!;
   const form = use_form<AccountGeneralSchema>({
-    resolver: zod_resolver(accountGeneralSchema),
+    resolver: zod_resolver(ACCOUNT_GENERAL_SCHEMA),
     defaultValues: {
       name: user.name,
       bio: user.bio,
       location: user.location
     }
   });
-  const [mutateProfileSettings, { isLoading }] =
+  const [mutate_profile_settings, { isLoading: is_loading }] =
     use_profile_settings_mutation();
 
-  const handleSubmit: SubmitHandler<AccountGeneralSchema> = (values) => {
+  const handle_submit: SubmitHandler<AccountGeneralSchema> = (values) => {
     if (on_submit) {
       on_submit(values);
     } else {
-      mutateProfileSettings(values)
+      mutate_profile_settings(values)
         .unwrap()
         .then(() => {
           dispatch(mutate_user(values));
@@ -95,11 +95,11 @@ const AccountGeneralForm = ({
   return (
     <Form<AccountGeneralSchema>
       className={clsx("flex-col")}
-      disabled={isLoading}
-      on_submit={handleSubmit}
+      disabled={is_loading}
+      on_submit={handle_submit}
       provider_props={form}
     >
-      <div className={clsx("flex-center", styles.x, styles["input-row"])}>
+      <div className={clsx("flex-center", styles["input-row"])}>
         <FormInput
           autoComplete={"name"}
           auto_size
@@ -157,7 +157,7 @@ const AccountGeneralForm = ({
         placeholder={"Your bio"}
       />
       <Spacer orientation={"vertical"} size={3} />
-      <SaveButton isLoading={isLoading} />
+      <SaveButton is_loading={is_loading} />
     </Form>
   );
 };

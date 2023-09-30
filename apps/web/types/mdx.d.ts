@@ -1,6 +1,6 @@
 declare module "*.mdx" {
   export const meta: {
-    lastUpdated: string;
+    last_updated: string;
     title: string;
   };
 }

@@ -10,7 +10,7 @@ import LegalLayout from "../../../layout";
 import ImpersonationPolicy from "./client";
 
 const meta: Meta<typeof ImpersonationPolicy> = {
-  title: "pages/Legal/use-policies/impersonation",
+  title: "pages/legal/use-policies/impersonation",
   component: ImpersonationPolicy,
   parameters: {
     layout: "fullscreen"

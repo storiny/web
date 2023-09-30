@@ -9,7 +9,7 @@ import AuthLayout from "../../../layout";
 import AuthSignupWPMManualPage from "./page";
 
 const meta: Meta<typeof AuthSignupWPMManualPage> = {
-  title: "pages/Auth/@signup_wpm_manual",
+  title: "pages/auth/@signup_wpm_manual",
   component: AuthSignupWPMManualPage,
   parameters: {
     layout: "fullscreen"

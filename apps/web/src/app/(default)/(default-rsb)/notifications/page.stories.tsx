@@ -10,7 +10,7 @@ import DefaultRightSidebarLayout from "../layout";
 import Notifications from "./page";
 
 const meta: Meta<typeof Notifications> = {
-  title: "pages/Notifications",
+  title: "pages/notifications",
   component: Notifications,
   parameters: {
     layout: "fullscreen"

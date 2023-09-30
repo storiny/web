@@ -9,7 +9,7 @@
 // TODO: Implement once `useNotification` gets fixed
 //
 // Const EditorFontSettingsNotification = (): null => {
-//   Const router = useRouter();
+//   Const router = use_router();
 //   Const notify = useNotification();
 //   Const dispatch = use_app_dispatch();
 //   Const showNotification = use_app_selector(

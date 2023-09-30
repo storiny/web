@@ -9,7 +9,7 @@ import AuthLayout from "../../../layout";
 import AuthSignupBasePage from "./page";
 
 const meta: Meta<typeof AuthSignupBasePage> = {
-  title: "pages/Auth/@signup_base",
+  title: "pages/auth/@signup_base",
   component: AuthSignupBasePage,
   parameters: {
     layout: "fullscreen"

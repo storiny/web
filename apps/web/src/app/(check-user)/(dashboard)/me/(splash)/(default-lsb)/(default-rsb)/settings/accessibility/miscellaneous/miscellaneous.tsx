@@ -26,7 +26,7 @@ const MiscellaneousPreferences = (): React.ReactElement => {
         Haptic feedback
       </Typography>
       <Spacer orientation={"vertical"} />
-      <div className={clsx("flex-col", styles.x, styles["switch-container"])}>
+      <div className={clsx("flex-col", styles["switch-container"])}>
         <div className={"flex-center"}>
           <Typography
             as={"label"}

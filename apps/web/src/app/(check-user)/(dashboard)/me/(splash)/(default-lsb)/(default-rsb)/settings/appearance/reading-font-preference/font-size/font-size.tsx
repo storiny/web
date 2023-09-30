@@ -16,29 +16,28 @@ import common_styles from "../../styles.module.scss";
 import styles from "./font-size.module.scss";
 
 const TEXT =
-  " I took a bite of the durian fruit and was immediately hit with a pungent aroma that filled my nostrils.";
+  "I took a bite of the durian fruit and was immediately hit with a pungent aroma that filled my nostrils.";
 
 const FontSizeItem = ({
-  isActive,
+  is_active,
   label,
   value,
   className
 }: {
   className: string;
-  isActive: boolean;
+  is_active: boolean;
   label: React.ReactNode;
   value: string;
 }): React.ReactElement => (
   <div
     className={clsx(
       "flex-col",
-      common_styles.x,
       common_styles.item,
-      isActive && common_styles.selected
+      is_active && common_styles.selected
     )}
   >
     <AspectRatio className={"full-w"} ratio={2.3}>
-      <div className={clsx("full-w", className, styles.x, styles.preview)}>
+      <div className={clsx("full-w", className, styles.preview)}>
         <Typography level={"legible"}>{TEXT}</Typography>
       </div>
     </AspectRatio>
@@ -59,7 +58,7 @@ const FontSizeItem = ({
 const ReadingFontSizePreference = (): React.ReactElement => {
   const is_smaller_than_mobile = use_media_query(BREAKPOINTS.down("mobile"));
   const dispatch = use_app_dispatch();
-  const fontSize = use_app_selector(
+  const font_size = use_app_selector(
     (state) => state.preferences.reading_font_size
   );
 
@@ -75,27 +74,27 @@ const ReadingFontSizePreference = (): React.ReactElement => {
       <Spacer orientation={"vertical"} size={3} />
       <RadioGroup
         className={clsx(common_styles.x, common_styles["radio-group"])}
-        onValueChange={(newValue): void => {
-          dispatch(set_reading_font_size(newValue as typeof fontSize));
+        onValueChange={(next_value: typeof font_size): void => {
+          dispatch(set_reading_font_size(next_value));
         }}
         orientation={is_smaller_than_mobile ? "vertical" : "horizontal"}
-        value={fontSize}
+        value={font_size}
       >
         <FontSizeItem
           className={"t-legible-slim"}
-          isActive={fontSize === "slim"}
+          is_active={font_size === "slim"}
           label={"Slim"}
           value={"slim"}
         />
         <FontSizeItem
           className={"t-legible-regular"}
-          isActive={fontSize === "regular"}
+          is_active={font_size === "regular"}
           label={"Regular (Default)"}
           value={"regular"}
         />
         <FontSizeItem
           className={"t-legible-oversized"}
-          isActive={fontSize === "oversized"}
+          is_active={font_size === "oversized"}
           label={"Oversized"}
           value={"oversized"}
         />

@@ -1,12 +1,14 @@
 "use client";
 
+import { StoryCategory } from "@storiny/shared";
 import {
   CATEGORY_ICON_MAP,
-  CATEGORY_LABEL_MAP,
-  StoryCategory
-} from "@storiny/shared";
-import { clsx } from "clsx";
-import { useRouter, useSelectedLayoutSegment } from "next/navigation";
+  CATEGORY_LABEL_MAP
+} from "@storiny/shared/src/constants/category-icon-map";
+import {
+  useRouter as use_router,
+  useSelectedLayoutSegment as use_selected_layout_segment
+} from "next/navigation";
 import React from "react";
 
 import Divider from "../../../../../../../../packages/ui/src/components/divider";
@@ -16,8 +18,6 @@ import Option, {
 import Select from "../../../../../../../../packages/ui/src/components/select";
 import { use_media_query } from "../../../../../../../../packages/ui/src/hooks/use-media-query";
 import { BREAKPOINTS } from "~/theme/breakpoints";
-
-import styles from "./dropdown.module.scss";
 
 // Anchor option
 
@@ -35,8 +35,8 @@ const AnchorOption = ({
 
 const DropdownClient = (): React.ReactElement => {
   const is_mobile = use_media_query(BREAKPOINTS.down("mobile"));
-  const router = useRouter();
-  const segment = useSelectedLayoutSegment();
+  const router = use_router();
+  const segment = use_selected_layout_segment();
 
   return (
     <>
@@ -48,12 +48,7 @@ const DropdownClient = (): React.ReactElement => {
         size={"lg"}
         slot_props={{
           trigger: {
-            className: clsx(
-              "focus-invert",
-              "ellipsis",
-              styles.x,
-              styles.trigger
-            )
+            "aria-label": "Category"
           }
         }}
         value={segment || "all"}

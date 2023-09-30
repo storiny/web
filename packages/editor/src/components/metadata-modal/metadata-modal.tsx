@@ -112,7 +112,7 @@ const StoryMetadataModalImpl = (
             loading={is_loading}
             onClick={(event): void => {
               event.preventDefault(); // Prevent closing of modal
-              form.handle_submit(handle_submit)(); // Submit manually
+              form.handleSubmit(handle_submit)(); // Submit manually
             }}
           >
             Confirm

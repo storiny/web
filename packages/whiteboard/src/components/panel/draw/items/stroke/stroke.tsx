@@ -254,8 +254,8 @@ const StrokeStyleControl = ({
 
   return (
     <Select
-      onValueChange={(newValue: StrokeStyle): void =>
-        change_stroke_style(newValue)
+      onValueChange={(next_value: StrokeStyle): void =>
+        change_stroke_style(next_value)
       }
       size={"sm"}
       slot_props={{
@@ -341,8 +341,8 @@ const ArrowheadControl = ({
   return (
     <DrawItemRow>
       <Select
-        onValueChange={(newValue: Arrowhead): void =>
-          change_arrowhead(newValue, "start")
+        onValueChange={(next_value: Arrowhead): void =>
+          change_arrowhead(next_value, "start")
         }
         size={"sm"}
         slot_props={{
@@ -392,8 +392,8 @@ const ArrowheadControl = ({
         </IconButton>
       </Tooltip>
       <Select
-        onValueChange={(newValue: Arrowhead): void =>
-          change_arrowhead(newValue, "end")
+        onValueChange={(next_value: Arrowhead): void =>
+          change_arrowhead(next_value, "end")
         }
         size={"sm"}
         slot_props={{

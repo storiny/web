@@ -236,7 +236,9 @@ const PenStyleControl = ({
 
   return (
     <Select
-      onValueChange={(newValue: PenStyle): void => change_pen_style(newValue)}
+      onValueChange={(next_value: PenStyle): void =>
+        change_pen_style(next_value)
+      }
       size={"sm"}
       slot_props={{
         content: {

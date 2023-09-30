@@ -1,22 +1,23 @@
-.x {
-  /* Actions */
-  &.actions {
-    gap: 14px;
-  }
+.actions {
+  gap: 14px;
+}
 
-  /* Apple button */
+.footer {
+  text-align: center;
+  gap: 12px;
+}
+
+.x {
   &.apple-button {
     --rigid-fg: #fff;
     --rigid-bg: #000;
   }
 
-  /* Google button */
   &.google-button {
     --rigid-fg: #000;
     --rigid-bg: #fff;
   }
 
-  /* Social buttons */
   &.apple-button,
   &.google-button {
     border: 1px solid var(--divider);
@@ -27,11 +28,5 @@
       background-color: var(--rigid-bg);
       opacity: 0.75;
     }
-  }
-
-  /* Footer */
-  &.footer {
-    text-align: center;
-    gap: 12px;
   }
 }

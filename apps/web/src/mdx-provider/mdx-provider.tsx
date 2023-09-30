@@ -8,8 +8,8 @@ import {
   Anchor,
   Blockquote,
   Code,
-  Heading,
-  List,
+  HEADING,
+  LIST,
   Paragraph,
   Pre,
   Table
@@ -18,24 +18,24 @@ import {
 /**
  * Custom markdown components
  */
-const components: MDXComponents = {
-  h1: Heading.H1,
-  h2: Heading.H2,
-  h3: Heading.H3,
-  h4: Heading.H4,
+const COMPONENTS: MDXComponents = {
+  h1: HEADING.H1,
+  h2: HEADING.H2,
+  h3: HEADING.H3,
+  h4: HEADING.H4,
   p: Paragraph,
   a: Anchor,
   code: Code,
-  ul: List.UL,
-  ol: List.OL,
-  li: List.LI,
+  ul: LIST.UL,
+  ol: LIST.OL,
+  li: LIST.LI,
   pre: Pre,
   blockquote: Blockquote,
   table: Table
 };
 
 const MarkdownProvider = ({ children }): React.ReactElement => (
-  <MDXProvider components={components}>{children}</MDXProvider>
+  <MDXProvider components={COMPONENTS}>{children}</MDXProvider>
 );
 
 export default MarkdownProvider;

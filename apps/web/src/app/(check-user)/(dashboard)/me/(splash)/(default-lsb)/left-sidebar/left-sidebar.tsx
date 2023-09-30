@@ -1,13 +1,13 @@
 import dynamic from "next/dynamic";
 import React from "react";
 
-import { dynamicLoader } from "~/common/dynamic";
+import { dynamic_loader } from "~/common/dynamic";
 import LeftSidebar from "../../../../../../../../../../packages/ui/src/layout/left-sidebar";
 
 const SuspendedDashboardLeftSidebarContent = dynamic(
   () => import("./content"),
   {
-    loading: dynamicLoader()
+    loading: dynamic_loader()
   }
 );
 
@@ -16,7 +16,9 @@ const DefaultDashboardLeftSidebar = (): React.ReactElement => (
     component_props={{
       wrapper: {
         style: {
+          // eslint-disable-next-line prefer-snakecase/prefer-snakecase
           paddingInline: 0,
+          // eslint-disable-next-line prefer-snakecase/prefer-snakecase
           paddingBottom: 0
         }
       }

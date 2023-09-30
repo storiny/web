@@ -6,5 +6,5 @@ import { Remove2FASchema } from "./remove-2fa.schema";
 
 export interface Remove2FAProps {
   on_submit?: SubmitHandler<Remove2FASchema>;
-  setEnabled: React.Dispatch<React.SetStateAction<boolean>>;
+  set_enabled: React.Dispatch<React.SetStateAction<boolean>>;
 }

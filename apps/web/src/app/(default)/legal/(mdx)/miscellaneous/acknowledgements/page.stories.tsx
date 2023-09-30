@@ -10,7 +10,7 @@ import LegalLayout from "../../../layout";
 import Acknowledgements from "./client";
 
 const meta: Meta<typeof Acknowledgements> = {
-  title: "pages/Legal/miscellaneous/acknowledgements",
+  title: "pages/legal/miscellaneous/acknowledgements",
   component: Acknowledgements,
   parameters: {
     layout: "fullscreen"

@@ -1,4 +1,3 @@
-import { clsx } from "clsx";
 import React from "react";
 
 import SplashScreen from "../../../../../../packages/ui/src/layout/splash-screen";
@@ -18,7 +17,7 @@ const LegalLayout = ({
     <LeftSidebar />
     <main>
       <Dropdown />
-      <article className={clsx(styles.x, styles.article)}>{children}</article>
+      <article className={styles.article}>{children}</article>
       <LegalFooter />
     </main>
     <RightSidebar />

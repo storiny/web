@@ -21,18 +21,18 @@ import ThemePreference from "./theme-preference";
 
 const Alert = (): React.ReactElement | null => {
   const dispatch = use_app_dispatch();
-  const isVisible = use_app_selector(select_alert_visibility("appearance"));
+  const is_visible = use_app_selector(select_alert_visibility("appearance"));
 
-  const handleDismiss = React.useCallback(() => {
+  const handle_dismiss = React.useCallback(() => {
     dispatch(set_alert_visibility(["appearance", false]));
   }, [dispatch]);
 
-  if (!isVisible) {
+  if (!is_visible) {
     return null;
   }
 
   return (
-    <SettingsAlert onDismiss={handleDismiss}>
+    <SettingsAlert on_dismiss={handle_dismiss}>
       The settings on this page only affect the accounts in this browser.
     </SettingsAlert>
   );

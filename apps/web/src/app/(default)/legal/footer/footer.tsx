@@ -9,7 +9,7 @@ import MessagesIcon from "../../../../../../../packages/ui/src/icons/messages";
 import styles from "./footer.module.scss";
 
 const LegalFooter = (): React.ReactElement => (
-  <footer className={clsx("flex-center", styles.x, styles.footer)}>
+  <footer className={clsx("flex-center", styles.footer)}>
     <Typography className={"t-minor"} level={"body2"}>
       Legal &copy; {new Date().getFullYear()} Storiny
     </Typography>

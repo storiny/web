@@ -1,9 +1,13 @@
 import { clsx } from "clsx";
-import { atom, useAtomValue, useSetAtom } from "jotai";
+import {
+  atom,
+  useAtomValue as use_atom_value,
+  useSetAtom as use_set_atom
+} from "jotai";
 import dynamic from "next/dynamic";
 import React from "react";
 
-import { dynamicLoader } from "~/common/dynamic";
+import { dynamic_loader } from "~/common/dynamic";
 import { VirtualizedFriendRequestList } from "~/common/friend-request";
 import SuspenseLoader from "~/common/suspense-loader";
 import Button from "../../../../../../../../../../../../../packages/ui/src/components/button";
@@ -35,25 +39,25 @@ import { BREAKPOINTS } from "~/theme/breakpoints";
 import styles from "./friend-requests.module.scss";
 
 const EmptyState = dynamic(() => import("./empty-state"), {
-  loading: dynamicLoader()
+  loading: dynamic_loader()
 });
 
 export type FriendRequestsSortValue = "popular" | "recent" | "old";
 
-const renderKeyAtom = atom<string>(""); // Key to re-render the scrollbar
+const render_key_atom = atom<string>(""); // Key to re-render the scrollbar
 
 // Scroller
 
 const Scroller = React.memo(
   React.forwardRef<HTMLDivElement, React.ComponentPropsWithRef<"div">>(
     ({ children, ...rest }, ref) => {
-      const renderKey = use_atom_value(renderKeyAtom);
+      const render_key = use_atom_value(render_key_atom);
       return (
         <>
           <Viewport {...rest} ref={ref} tabIndex={-1}>
             {children}
           </Viewport>
-          <Scrollbar key={renderKey} orientation="vertical">
+          <Scrollbar key={render_key} orientation="vertical">
             <Thumb />
           </Scrollbar>
         </>
@@ -68,16 +72,22 @@ Scroller.displayName = "Scroller";
 
 const FriendRequestsModal = (): React.ReactElement => {
   const [sort, set_sort] = React.useState<FriendRequestsSortValue>("popular");
-  const [query, setQuery] = React.useState<string>("");
+  const [query, set_query] = React.useState<string>("");
   const [page, set_page] = React.useState<number>(1);
-  const setRenderKey = use_set_atom(renderKeyAtom);
+  const set_render_key = use_set_atom(render_key_atom);
   const debounced_query = use_debounce(query);
-  const { data, isLoading, is_fetching, isError, error, refetch } =
-    use_get_friend_requests_query({
-      page,
-      sort,
-      query: debounced_query
-    });
+  const {
+    data,
+    isLoading: is_loading,
+    isFetching: is_fetching,
+    isError: is_error,
+    error,
+    refetch
+  } = use_get_friend_requests_query({
+    page,
+    sort,
+    query: debounced_query
+  });
   const { items = [], has_more } = data || {};
   const is_typing = query !== debounced_query;
 
@@ -86,10 +96,10 @@ const FriendRequestsModal = (): React.ReactElement => {
     []
   );
 
-  const handleSortChange = React.useCallback(
-    (newSort: FriendRequestsSortValue) => {
+  const handle_sort_change = React.useCallback(
+    (next_sort: FriendRequestsSortValue) => {
       set_page(1);
-      set_sort(newSort);
+      set_sort(next_sort);
     },
     []
   );
@@ -99,17 +109,17 @@ const FriendRequestsModal = (): React.ReactElement => {
   }, [query]);
 
   React.useEffect(() => {
-    setRenderKey(`${page}:${query}`);
-  }, [page, query, setRenderKey]);
+    set_render_key(`${page}:${query}`);
+  }, [page, query, set_render_key]);
 
   return (
-    <div className={clsx("flex-col", styles.x, styles.content)}>
-      <div className={clsx("flex-center", styles.x, styles["control-bar"])}>
+    <div className={clsx("flex-col", styles.content)}>
+      <div className={clsx("flex-center", styles["control-bar"])}>
         <Input
           autoFocus
           decorator={<SearchIcon />}
           disabled={!items.length}
-          onChange={(event): void => setQuery(event.target.value)}
+          onChange={(event): void => set_query(event.target.value)}
           placeholder={"Search"}
           slot_props={{
             container: {
@@ -122,7 +132,7 @@ const FriendRequestsModal = (): React.ReactElement => {
         <Divider orientation={"vertical"} />
         <Select
           disabled={!items.length}
-          onValueChange={handleSortChange}
+          onValueChange={handle_sort_change}
           slot_props={{
             trigger: {
               "aria-label": "Sort items",
@@ -148,9 +158,9 @@ const FriendRequestsModal = (): React.ReactElement => {
           <Option value={"old"}>Old</Option>
         </Select>
       </div>
-      {isLoading || is_typing || (is_fetching && page === 1) ? (
+      {is_loading || is_typing || (is_fetching && page === 1) ? (
         <SuspenseLoader />
-      ) : isError ? (
+      ) : is_error ? (
         <ErrorState
           auto_size
           component_props={{
@@ -165,7 +175,7 @@ const FriendRequestsModal = (): React.ReactElement => {
         <Root className={clsx(styles.x, styles["scroll-area"])} type={"auto"}>
           <VirtualizedFriendRequestList
             components={{ Scroller }}
-            friendRequests={items}
+            friend_requests={items}
             has_more={Boolean(has_more)}
             load_more={load_more}
             useWindowScroll={false}

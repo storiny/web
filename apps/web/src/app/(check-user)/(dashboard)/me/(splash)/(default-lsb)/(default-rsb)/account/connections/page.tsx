@@ -3,27 +3,27 @@ import "server-only";
 import { redirect } from "next/navigation";
 import React from "react";
 
-import { getConnectionSettings } from "~/common/grpc";
-import { handleException } from "~/common/grpc/utils";
-import { getUser } from "~/common/utils/getUser";
+import { get_connection_settings } from "~/common/grpc";
+import { handle_exception } from "~/common/grpc/utils";
+import { get_user } from "src/common/utils/get-user";
 
 import ConnectionSettingsClient from "./client";
 
 const Page = async (): Promise<React.ReactElement | undefined> => {
   try {
-    const user_id = await getUser();
+    const user_id = await get_user();
 
     if (!user_id) {
       redirect("/login");
     }
 
-    const connectionSettingsResponse = await getConnectionSettings({
+    const connection_settings_response = await get_connection_settings({
       id: user_id
     });
 
-    return <ConnectionSettingsClient {...connectionSettingsResponse} />;
+    return <ConnectionSettingsClient {...connection_settings_response} />;
   } catch (e) {
-    handleException(e);
+    handle_exception(e);
   }
 };
 

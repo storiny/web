@@ -24,7 +24,7 @@ const Draft = (props: DraftProps): React.ReactElement => {
   const href = `/doc/${latest_draft.id}`;
 
   return (
-    <article className={clsx(styles.x, styles.draft)}>
+    <article className={styles.draft}>
       <AspectRatio
         aria-label={"Edit this draft"}
         as={NextLink}
@@ -34,7 +34,7 @@ const Draft = (props: DraftProps): React.ReactElement => {
         title={"Edit this draft"}
       >
         {!latest_draft.splash_id ? (
-          <div className={clsx("flex-center", styles.x, styles.placeholder)}>
+          <div className={clsx("flex-center", styles.placeholder)}>
             <ImageIcon />
           </div>
         ) : (
@@ -52,7 +52,7 @@ const Draft = (props: DraftProps): React.ReactElement => {
           <EditIcon />
         </IconButton>
       </AspectRatio>
-      <div className={clsx("flex-col", styles.x, styles.meta)}>
+      <div className={clsx("flex-col", styles.meta)}>
         <Link
           className={"t-medium"}
           fixed_color

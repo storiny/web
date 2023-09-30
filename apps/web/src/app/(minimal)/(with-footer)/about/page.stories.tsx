@@ -10,7 +10,7 @@ import WithFooterLayout from "../layout";
 import About from "./page";
 
 const meta: Meta<typeof About> = {
-  title: "pages/About",
+  title: "pages/about",
   component: About,
   parameters: {
     layout: "fullscreen"

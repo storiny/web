@@ -63,6 +63,7 @@ const Select = forward_ref<SelectProps, "div">((props, ref) => {
             Boolean(input_size) && styles.context,
             slot_props?.trigger?.className
           )}
+          data-select-trigger={"true"}
           disabled={disabled}
         >
           <Value {...slot_props?.value} data-value>

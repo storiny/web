@@ -10,7 +10,7 @@ import LegalLayout from "../../../layout";
 import UsernamePolicy from "./client";
 
 const meta: Meta<typeof UsernamePolicy> = {
-  title: "pages/Legal/policies/username",
+  title: "pages/legal/policies/username",
   component: UsernamePolicy,
   parameters: {
     layout: "fullscreen"

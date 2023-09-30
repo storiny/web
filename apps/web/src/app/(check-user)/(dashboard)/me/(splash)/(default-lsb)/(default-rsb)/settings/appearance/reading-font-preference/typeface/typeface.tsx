@@ -13,11 +13,11 @@ import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 import { BREAKPOINTS } from "~/theme/breakpoints";
 
 import common_styles from "../../styles.module.scss";
-import typefaceStyles from "../../typeface.module.scss";
+import typeface_styles from "../../typeface.module.scss";
 
 const SatoshiPreview = (): React.ReactElement => (
   <svg
-    className={clsx(typefaceStyles.x, typefaceStyles.svg)}
+    className={typeface_styles.svg}
     fill="none"
     viewBox="0 0 56 46"
     xmlns="http://www.w3.org/2000/svg"
@@ -31,7 +31,7 @@ const SatoshiPreview = (): React.ReactElement => (
 
 const SystemPreview = (): React.ReactElement => (
   <svg
-    className={clsx(typefaceStyles.x, typefaceStyles.svg)}
+    className={typeface_styles.svg}
     fill="none"
     viewBox="0 0 54 44"
     xmlns="http://www.w3.org/2000/svg"
@@ -45,7 +45,7 @@ const SystemPreview = (): React.ReactElement => (
 
 const NunitoPreview = (): React.ReactElement => (
   <svg
-    className={clsx(typefaceStyles.x, typefaceStyles.svg)}
+    className={typeface_styles.svg}
     fill="none"
     viewBox="0 0 58 44"
     xmlns="http://www.w3.org/2000/svg"
@@ -59,7 +59,7 @@ const NunitoPreview = (): React.ReactElement => (
 
 const SynonymPreview = (): React.ReactElement => (
   <svg
-    className={clsx(typefaceStyles.x, typefaceStyles.svg)}
+    className={typeface_styles.svg}
     fill="none"
     viewBox="0 0 58 46"
     xmlns="http://www.w3.org/2000/svg"
@@ -73,7 +73,7 @@ const SynonymPreview = (): React.ReactElement => (
 
 const LoraPreview = (): React.ReactElement => (
   <svg
-    className={clsx(typefaceStyles.x, typefaceStyles.svg)}
+    className={typeface_styles.svg}
     fill="none"
     viewBox="0 0 58 48"
     xmlns="http://www.w3.org/2000/svg"
@@ -87,7 +87,7 @@ const LoraPreview = (): React.ReactElement => (
 
 const ErodePreview = (): React.ReactElement => (
   <svg
-    className={clsx(typefaceStyles.x, typefaceStyles.svg)}
+    className={typeface_styles.svg}
     fill="none"
     viewBox="0 0 50 40"
     xmlns="http://www.w3.org/2000/svg"
@@ -101,7 +101,7 @@ const ErodePreview = (): React.ReactElement => (
 
 const ReciaPreview = (): React.ReactElement => (
   <svg
-    className={clsx(typefaceStyles.x, typefaceStyles.svg)}
+    className={typeface_styles.svg}
     fill="none"
     viewBox="0 0 60 48"
     xmlns="http://www.w3.org/2000/svg"
@@ -115,7 +115,7 @@ const ReciaPreview = (): React.ReactElement => (
 
 const MerriweatherPreview = (): React.ReactElement => (
   <svg
-    className={clsx(typefaceStyles.x, typefaceStyles.svg)}
+    className={typeface_styles.svg}
     fill="none"
     viewBox="0 0 64 50"
     xmlns="http://www.w3.org/2000/svg"
@@ -128,36 +128,27 @@ const MerriweatherPreview = (): React.ReactElement => (
 );
 
 const TypefaceItem = ({
-  isActive,
+  is_active,
   label,
   value,
   decorator
 }: {
   decorator: React.ReactNode;
-  isActive: boolean;
+  is_active: boolean;
   label: React.ReactNode;
   value: string;
 }): React.ReactElement => (
   <div
     className={clsx(
       "flex-col",
-      common_styles.x,
       common_styles.item,
-      isActive && common_styles.selected,
-      typefaceStyles.x,
-      typefaceStyles.item,
-      isActive && typefaceStyles.selected
+      is_active && common_styles.selected,
+      typeface_styles.item,
+      is_active && typeface_styles.selected
     )}
   >
     <AspectRatio className={"full-w"} ratio={2.3}>
-      <div
-        className={clsx(
-          "flex-center",
-          "full-w",
-          typefaceStyles.x,
-          typefaceStyles.decorator
-        )}
-      >
+      <div className={clsx("flex-center", "full-w", typeface_styles.decorator)}>
         {decorator}
       </div>
     </AspectRatio>
@@ -195,60 +186,60 @@ const ReadingFontTypefacePreference = (): React.ReactElement => {
           common_styles.x,
           common_styles["radio-group"],
           common_styles.wrap,
-          typefaceStyles.x,
-          typefaceStyles["radio-group"]
+          typeface_styles.x,
+          typeface_styles["radio-group"]
         )}
-        onValueChange={(newValue): void => {
-          dispatch(set_reading_font(newValue as typeof typeface));
+        onValueChange={(next_value): void => {
+          dispatch(set_reading_font(next_value as typeof typeface));
         }}
         orientation={is_smaller_than_mobile ? "vertical" : "horizontal"}
         value={typeface}
       >
         <TypefaceItem
           decorator={<SatoshiPreview />}
-          isActive={typeface === "satoshi"}
+          is_active={typeface === "satoshi"}
           label={"Satoshi"}
           value={"satoshi"}
         />
         <TypefaceItem
           decorator={<SystemPreview />}
-          isActive={typeface === "system"}
+          is_active={typeface === "system"}
           label={"System"}
           value={"system"}
         />
         <TypefaceItem
           decorator={<NunitoPreview />}
-          isActive={typeface === "nunito"}
+          is_active={typeface === "nunito"}
           label={"Nunito"}
           value={"nunito"}
         />
         <TypefaceItem
           decorator={<SynonymPreview />}
-          isActive={typeface === "synonym"}
+          is_active={typeface === "synonym"}
           label={"Synonym"}
           value={"synonym"}
         />
         <TypefaceItem
           decorator={<LoraPreview />}
-          isActive={typeface === "lora"}
+          is_active={typeface === "lora"}
           label={"Lora"}
           value={"lora"}
         />
         <TypefaceItem
           decorator={<ErodePreview />}
-          isActive={typeface === "erode"}
+          is_active={typeface === "erode"}
           label={"Erode"}
           value={"erode"}
         />
         <TypefaceItem
           decorator={<ReciaPreview />}
-          isActive={typeface === "recia"}
+          is_active={typeface === "recia"}
           label={"Recia"}
           value={"recia"}
         />
         <TypefaceItem
           decorator={<MerriweatherPreview />}
-          isActive={typeface === "merriweather"}
+          is_active={typeface === "merriweather"}
           label={"Merriweather"}
           value={"merriweather"}
         />

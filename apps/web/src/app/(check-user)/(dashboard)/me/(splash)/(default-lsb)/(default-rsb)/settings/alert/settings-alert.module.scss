@@ -1,6 +1,5 @@
 @use "breakpoints";
 
-/* Base styles */
 .alert {
   width: auto;
   display: flex;
@@ -19,7 +18,6 @@
   }
 }
 
-/* Decorator */
 .decorator {
   --icon-size: 16px;
   --icon-stroke: var(--inverted-0);
@@ -27,7 +25,6 @@
   margin-right: 18px;
 }
 
-/* Description */
 .description {
   margin-right: 24px;
   flex-grow: 1;
@@ -38,7 +35,6 @@
   line-height: calc(var(--line-height-sm) - 1px);
 }
 
-/* Close action */
 .close {
   --icon-size: 16px;
   --icon-stroke: var(--inverted-0);
