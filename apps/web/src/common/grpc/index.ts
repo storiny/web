@@ -65,11 +65,13 @@ import {
 import { cache } from "react";
 
 declare global {
+  /* eslint-disable no-var */
   // noinspection ES6ConvertVarToLetConst
-  var grpcClient: InstanceType<typeof ApiServiceClient>;
+  var grpc_client: InstanceType<typeof ApiServiceClient>;
+  /* eslint-enable no-var */
 }
 
-global.grpcClient = new ApiServiceClient(
+global.grpc_client = new ApiServiceClient(
   process.env.RPC_ENDPOINT as string,
   credentials.createInsecure()
 );
@@ -82,7 +84,7 @@ const promisify =
   <Req, Res>(callback: (...args: any) => any) =>
   (payload: Req): Promise<Res> =>
     new Promise((resolve, reject) => {
-      callback.bind(global.grpcClient)(
+      callback.bind(global.grpc_client)(
         payload,
         (err: ServiceError | null, response: Res) => {
           if (err) {
@@ -115,106 +117,108 @@ export {
   VerifyEmailResponse
 };
 
-export const getUserId = cache(
-  promisify<GetUserIdRequest, GetUserIdResponse>(global.grpcClient.getUserId)
+export const get_user_id = cache(
+  promisify<GetUserIdRequest, GetUserIdResponse>(global.grpc_client.getUserId)
 );
 
-export const getCredentialSettings = cache(
+export const get_credential_settings = cache(
   promisify<GetCredentialSettingsRequest, GetCredentialSettingsResponse>(
-    global.grpcClient.getCredentialSettings
+    global.grpc_client.getCredentialSettings
   )
 );
 
-export const getPrivacySettings = cache(
+export const get_privacy_settings = cache(
   promisify<GetPrivacySettingsRequest, GetPrivacySettingsResponse>(
-    global.grpcClient.getPrivacySettings
+    global.grpc_client.getPrivacySettings
   )
 );
 
-export const getNotificationSettings = cache(
+export const get_notification_settings = cache(
   promisify<GetNotificationSettingsRequest, GetNotificationSettingsResponse>(
-    global.grpcClient.getNotificationSettings
+    global.grpc_client.getNotificationSettings
   )
 );
 
-export const getConnectionSettings = cache(
+export const get_connection_settings = cache(
   promisify<GetConnectionSettingsRequest, GetConnectionSettingsResponse>(
-    global.grpcClient.getConnectionSettings
+    global.grpc_client.getConnectionSettings
   )
 );
 
-export const getLoginActivity = cache(
+export const get_login_activity = cache(
   promisify<GetLoginActivityRequest, GetLoginActivityResponse>(
-    global.grpcClient.getLoginActivity
+    global.grpc_client.getLoginActivity
   )
 );
 
-export const getDraftsInfo = cache(
+export const get_drafts_info = cache(
   promisify<GetDraftsInfoRequest, GetDraftsInfoResponse>(
-    global.grpcClient.getDraftsInfo
+    global.grpc_client.getDraftsInfo
   )
 );
 
-export const getStoriesInfo = cache(
+export const get_stories_info = cache(
   promisify<GetStoriesInfoRequest, GetStoriesInfoResponse>(
-    global.grpcClient.getStoriesInfo
+    global.grpc_client.getStoriesInfo
   )
 );
 
-export const getResponsesInfo = cache(
+export const get_responses_info = cache(
   promisify<GetResponsesInfoRequest, GetResponsesInfoResponse>(
-    global.grpcClient.getResponsesInfo
+    global.grpc_client.getResponsesInfo
   )
 );
 
-export const getStoryResponsesInfo = cache(
+export const get_story_responses_info = cache(
   promisify<GetStoryResponsesInfoRequest, GetStoryResponsesInfoResponse>(
-    global.grpcClient.getStoryResponsesInfo
+    global.grpc_client.getStoryResponsesInfo
   )
 );
 
-export const getFollowedTagCount = cache(
+export const get_followed_tag_count = cache(
   promisify<GetFollowedTagCountRequest, GetFollowedTagCountResponse>(
-    global.grpcClient.getFollowedTagCount
+    global.grpc_client.getFollowedTagCount
   )
 );
 
-export const getUserRelationsInfo = cache(
+export const get_user_relations_info = cache(
   promisify<GetUserRelationsInfoRequest, GetUserRelationsInfoResponse>(
-    global.grpcClient.getUserRelationsInfo
+    global.grpc_client.getUserRelationsInfo
   )
 );
 
-export const getUserBlockCount = cache(
+export const get_user_block_count = cache(
   promisify<GetUserBlockCountRequest, GetUserBlockCountResponse>(
-    global.grpcClient.getUserBlockCount
+    global.grpc_client.getUserBlockCount
   )
 );
 
-export const getUserMuteCount = cache(
+export const get_user_mute_count = cache(
   promisify<GetUserMuteCountRequest, GetUserMuteCountResponse>(
-    global.grpcClient.getUserMuteCount
+    global.grpc_client.getUserMuteCount
   )
 );
 
-export const getTag = cache(
-  promisify<GetTagRequest, GetTagResponse>(global.grpcClient.getTag)
+export const get_tag = cache(
+  promisify<GetTagRequest, GetTagResponse>(global.grpc_client.getTag)
 );
 
-export const getProfile = cache(
-  promisify<GetProfileRequest, GetProfileResponse>(global.grpcClient.getProfile)
+export const get_profile = cache(
+  promisify<GetProfileRequest, GetProfileResponse>(
+    global.grpc_client.getProfile
+  )
 );
 
-export const getToken = cache(
-  promisify<GetTokenRequest, GetTokenResponse>(global.grpcClient.getToken)
+export const get_token = cache(
+  promisify<GetTokenRequest, GetTokenResponse>(global.grpc_client.getToken)
 );
 
-export const verifyEmail = cache(
+export const verify_email = cache(
   promisify<VerifyEmailRequest, VerifyEmailResponse>(
-    global.grpcClient.verifyEmail
+    global.grpc_client.verifyEmail
   )
 );
 
-export const getStory = cache(
-  promisify<GetStoryRequest, GetStoryResponse>(global.grpcClient.getStory)
+export const get_story = cache(
+  promisify<GetStoryRequest, GetStoryResponse>(global.grpc_client.getStory)
 );

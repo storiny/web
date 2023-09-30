@@ -10,7 +10,7 @@ import DefaultRightSidebarLayout from "../layout";
 import History from "./page";
 
 const meta: Meta<typeof History> = {
-  title: "pages/History",
+  title: "pages/history",
   component: History,
   parameters: {
     layout: "fullscreen"

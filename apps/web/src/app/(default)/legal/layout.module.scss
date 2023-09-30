@@ -1,13 +1,10 @@
 @use "breakpoints";
 
-.x {
-  /* Article */
-  &.article {
-    padding: 20px;
-    flex-grow: 1; // Push footer to bottom
+.article {
+  padding: 20px;
+  flex-grow: 1; // Push footer to bottom
 
-    @include breakpoints.media("<=mobile") {
-      padding: 18px 0;
-    }
+  @include breakpoints.media("<=mobile") {
+    padding: 18px 0;
   }
 }

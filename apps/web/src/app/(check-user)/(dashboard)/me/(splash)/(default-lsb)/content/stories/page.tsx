@@ -3,27 +3,27 @@ import "server-only";
 import { redirect } from "next/navigation";
 import React from "react";
 
-import { getStoriesInfo } from "~/common/grpc";
-import { handleException } from "~/common/grpc/utils";
-import { getUser } from "~/common/utils/getUser";
+import { get_stories_info } from "~/common/grpc";
+import { handle_exception } from "~/common/grpc/utils";
+import { get_user } from "src/common/utils/get-user";
 
 import ContentStoriesClient from "./client";
 
 const Page = async (): Promise<React.ReactElement | undefined> => {
   try {
-    const user_id = await getUser();
+    const user_id = await get_user();
 
     if (!user_id) {
       redirect("/login");
     }
 
-    const storiesInfoResponse = await getStoriesInfo({
+    const stories_info_response = await get_stories_info({
       id: user_id
     });
 
-    return <ContentStoriesClient {...storiesInfoResponse} />;
+    return <ContentStoriesClient {...stories_info_response} />;
   } catch (e) {
-    handleException(e);
+    handle_exception(e);
   }
 };
 

@@ -20,32 +20,33 @@ import { use_app_selector } from "~/redux/hooks";
 
 import styles from "../site-safety.module.scss";
 import { FriendListProps } from "./friend-list.props";
-import { FriendListSchema, friendListSchema } from "./friend-list.schema";
+import { FriendListSchema, FRIEND_LIST_SCHEMA } from "./friend-list.schema";
 
 const FriendList = ({
   on_submit,
   friend_list_visibility
 }: FriendListProps): React.ReactElement => {
   const toast = use_toast();
-  const isPrivate = use_app_selector(select_is_private_account);
-  const prevValuesRef = React.useRef<FriendListSchema>();
+  const is_private = use_app_selector(select_is_private_account);
+  const prev_values_ref = React.useRef<FriendListSchema>();
   const form = use_form<FriendListSchema>({
-    resolver: zod_resolver(friendListSchema),
+    resolver: zod_resolver(FRIEND_LIST_SCHEMA),
     defaultValues: {
-      "friend-list": `${friend_list_visibility}` as `${1 | 2 | 3}`
+      friend_list: `${friend_list_visibility}` as `${1 | 2 | 3}`
     }
   });
-  const [mutateFriendList, { isLoading }] = use_friend_list_mutation();
+  const [mutate_friend_list, { isLoading: is_loading }] =
+    use_friend_list_mutation();
 
-  const handleSubmit: SubmitHandler<FriendListSchema> = (values) => {
+  const handle_submit: SubmitHandler<FriendListSchema> = (values) => {
     if (on_submit) {
       on_submit(values);
     } else {
-      mutateFriendList(values)
+      mutate_friend_list(values)
         .unwrap()
-        .then(() => (prevValuesRef.current = values))
+        .then(() => (prev_values_ref.current = values))
         .catch((e) => {
-          form.reset(prevValuesRef.current);
+          form.reset(prev_values_ref.current);
           toast(
             e?.data?.error || "Could not change your friend list settings",
             "error"
@@ -66,21 +67,21 @@ const FriendList = ({
       <Spacer orientation={"vertical"} />
       <Form<FriendListSchema>
         className={clsx("flex-col", styles.x, styles.form)}
-        disabled={isLoading}
-        on_submit={handleSubmit}
+        disabled={is_loading}
+        on_submit={handle_submit}
         provider_props={form}
       >
         <FormRadioGroup
           auto_size
           className={clsx(styles.x, styles["radio-group"])}
-          name={"friend-list"}
+          name={"friend_list"}
           onValueChange={(): void => {
-            form.handleSubmit(handleSubmit)();
+            form.handleSubmit(handle_submit)();
           }}
         >
           <FormRadio
             aria-label={"Everyone"}
-            disabled={isPrivate}
+            disabled={is_private}
             label={"Everyone"}
             value={`${RelationVisibility.EVERYONE}`}
           />

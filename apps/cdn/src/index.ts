@@ -4,5 +4,5 @@ import { handler } from "./handler";
 
 // eslint-disable-next-line import/no-anonymous-default-export
 export default {
-  handler,
+  handler
 };

@@ -15,21 +15,21 @@ import styles from "./pattern.module.scss";
 interface Props {
   children: React.ReactNode;
   meta: {
-    lastUpdated: string;
+    last_updated: string;
     title: string;
   };
 }
 
 const MDXPattern = ({ meta, children }: Props): React.ReactElement => (
   <MarkdownProvider>
-    <div className={clsx("flex-col", styles.x, styles.header)}>
+    <div className={clsx("flex-col", styles.header)}>
       <Typography level={"h1"}>{meta.title}</Typography>
       <Typography className={clsx("t-medium", "t-minor")}>
         Last updated:{" "}
-        {format_date(new Date(meta.lastUpdated), DateFormat.STANDARD)}
+        {format_date(new Date(meta.last_updated), DateFormat.STANDARD)}
       </Typography>
     </div>
-    <div className={clsx("flex-col", styles.x, styles.content)}>{children}</div>
+    <div className={clsx("flex-col", styles.content)}>{children}</div>
   </MarkdownProvider>
 );
 

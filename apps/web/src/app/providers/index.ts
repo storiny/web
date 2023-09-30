@@ -5,7 +5,7 @@ import React from "react";
 
 const NullComponent = (): null => null;
 
-export const providerIconMap: Record<TProvider, React.ComponentType> = {
+export const PROVIDER_ICON_MAP: Record<TProvider, React.ComponentType> = {
   [Provider.TWITTER /*     */]: dynamic(
     () => import("../../../../../packages/ui/src/icons/twitter")
   ),
@@ -49,7 +49,7 @@ export const providerIconMap: Record<TProvider, React.ComponentType> = {
   [Provider.UNRECOGNIZED /**/]: NullComponent
 };
 
-export const providerKeyMap: Record<Provider, string> = {
+export const PROVIDER_KEY_MAP: Record<Provider, string> = {
   [Provider.GITHUB /*      */]: "github",
   [Provider.DISCORD /*     */]: "discord",
   [Provider.FIGMA /*       */]: "figma",
@@ -67,7 +67,7 @@ export const providerKeyMap: Record<Provider, string> = {
   [Provider.UNRECOGNIZED /**/]: ""
 };
 
-export const providerDisplayNameMap: Record<TProvider, string> = {
+export const PROVIDER_DISPLAY_NAME_MAP: Record<TProvider, string> = {
   [Provider.TWITTER /*     */]: "Twitter",
   [Provider.DISCORD /*     */]: "Discord",
   [Provider.DRIBBBLE /*    */]: "Dribbble",

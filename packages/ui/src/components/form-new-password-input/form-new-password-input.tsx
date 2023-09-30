@@ -137,11 +137,11 @@ const FormNewPasswordInput = React.forwardRef<
    */
   const handle_input = React.useCallback(
     async (event: React.ChangeEvent<HTMLInputElement>) => {
-      const newValue = event.target.value;
+      const next_value = event.target.value;
       onInput?.(event);
-      set_value(newValue);
+      set_value(next_value);
 
-      await compute_password_strength(newValue);
+      await compute_password_strength(next_value);
     },
     // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     [compute_password_strength, onInput]

@@ -5,7 +5,7 @@ const { worker, rest } = window.msw;
 
 worker.use(
   rest.get(
-    `${process.env.NEXT_PUBLIC_API_URL}/v1/tag/:tagName/stories`,
+    `${process.env.NEXT_PUBLIC_API_URL}/v1/tag/:tag_name/stories`,
     (req, res, ctx) =>
       res(
         ctx.delay(1200),

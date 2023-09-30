@@ -91,6 +91,26 @@ main {
     border-bottom: 1px solid var(--divider);
   }
 
+  /* Reset corner radius and styles on select trigger */
+  & [data-select-trigger="true"] {
+    border-radius: 0 !important;
+    border: none !important;
+    align-self: stretch;
+    outline-offset: calc(
+      -1 * var(--focus-thickness)
+    ) !important; // Invert focus
+  }
+
+  /* Reset corner radius and styles on input */
+  & [data-input-container="true"] {
+    border-radius: 0 !important;
+    flex-grow: 1;
+
+    &:not([data-focused="true"]) {
+      border: none;
+    }
+  }
+
   @include breakpoints.media("<=desktop", ">tablet") {
     margin-left: 47%;
     transform: translateX(-50%);

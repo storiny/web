@@ -1,5 +1,5 @@
 import { clsx } from "clsx";
-import { useRouter } from "next/navigation";
+import { useRouter as use_router } from "next/navigation";
 import React from "react";
 
 import { use_confirmation } from "../../../../../../../../../../../../../../packages/ui/src/components/confirmation";
@@ -21,7 +21,7 @@ import styles from "../site-safety.module.scss";
 import { PrivateAccountProps } from "./private-account.props";
 import {
   PrivateAccountSchema,
-  privateAccountSchema
+  PRIVATE_ACCOUNT_SCHEMA
 } from "./private-account.schema";
 
 const PrivateAccount = ({
@@ -29,17 +29,18 @@ const PrivateAccount = ({
   is_private_account
 }: PrivateAccountProps): React.ReactElement => {
   const toast = use_toast();
-  const router = useRouter();
+  const router = use_router();
   const form = use_form<PrivateAccountSchema>({
-    resolver: zod_resolver(privateAccountSchema),
+    resolver: zod_resolver(PRIVATE_ACCOUNT_SCHEMA),
     defaultValues: {
-      "private-account": is_private_account
+      private_account: is_private_account
     }
   });
-  const value = form.watch("private-account");
-  const [mutatePrivateAccount, { isLoading }] = use_private_account_mutation();
+  const value = form.watch("private_account");
+  const [mutate_private_account, { isLoading: is_loading }] =
+    use_private_account_mutation();
 
-  const handleSubmit: SubmitHandler<PrivateAccountSchema> = (values) => {
+  const handle_submit: SubmitHandler<PrivateAccountSchema> = (values) => {
     if (on_submit) {
       on_submit(values);
     } else {
@@ -50,9 +51,9 @@ const PrivateAccount = ({
   /**
    * Handles confirmation
    */
-  const handleConfirm = (): void => {
-    mutatePrivateAccount({
-      "private-account": value
+  const handle_confirm = (): void => {
+    mutate_private_account({
+      private_account: value
     })
       .unwrap()
       .then(() => router.refresh())
@@ -88,17 +89,17 @@ const PrivateAccount = ({
             </React.Fragment>
           }
           label={"Private account"}
-          name={"private-account"}
+          name={"private_account"}
           onCheckedChange={(): void => {
-            form.handleSubmit(handleSubmit)();
+            form.handleSubmit(handle_submit)();
           }}
         />
       </div>
     ),
     {
       on_cancel: (): void =>
-        form.reset({ "private-account": is_private_account }),
-      on_confirm: handleConfirm,
+        form.reset({ private_account: is_private_account }),
+      on_confirm: handle_confirm,
       decorator: value ? <LockIcon /> : <LockOpenIcon />,
       title: `Switch to ${value ? "private" : "public"} account?`,
       description: value
@@ -115,8 +116,8 @@ const PrivateAccount = ({
       <Spacer orientation={"vertical"} size={0.5} />
       <Form<PrivateAccountSchema>
         className={clsx("flex-col", styles.x, styles.form)}
-        disabled={isLoading}
-        on_submit={handleSubmit}
+        disabled={is_loading}
+        on_submit={handle_submit}
         provider_props={form}
       >
         {element}

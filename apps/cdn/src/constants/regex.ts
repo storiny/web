@@ -1,13 +1,13 @@
-import { ImageSize } from "@storiny/shared";
+import { ImageSize } from "@storiny/shared/src/enums/image-size";
 
-const validSizes = Object.values(ImageSize)
+const VALID_SIZES = Object.values(ImageSize)
   .filter((value) => typeof value === "number")
   .join("|");
 
 export const NATIVE_REGEX = new RegExp(
-  `\\/(?:(uploads|dl)\\/)?(?:(w@(?:auto|${validSizes}))\\/)?((?!uploads|dl)[\\/a-zA-Z0-9._-]+)$`
+  `\\/(?:(uploads|dl)\\/)?(?:(w@(?:auto|${VALID_SIZES}))\\/)?((?!uploads|dl)[\\/a-zA-Z0-9._-]+)$`
 );
 
 export const REMOTE_REGEX = new RegExp(
-  `\\/remote\\/(?:(w@(?:auto|${validSizes}))\\/)?([a-zA-Z0-9_-]+)\\/([a-zA-Z0-9._-]+)$`
+  `\\/remote\\/(?:(w@(?:auto|${VALID_SIZES}))\\/)?([a-zA-Z0-9_-]+)\\/([a-zA-Z0-9._-]+)$`
 );

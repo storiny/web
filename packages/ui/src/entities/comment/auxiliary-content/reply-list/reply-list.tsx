@@ -51,10 +51,10 @@ const CommentReplyList = (props: {
           has_more={Boolean(has_more)}
           load_more={load_more}
           replies={items}
-          replyProps={{ nested: true }}
+          reply_props={{ nested: true }}
           // Handle the reply list nicely
           scrollSeekConfiguration={undefined}
-          skeletonProps={{ nested: true }}
+          skeleton_props={{ nested: true }}
         />
       )}
     </React.Fragment>

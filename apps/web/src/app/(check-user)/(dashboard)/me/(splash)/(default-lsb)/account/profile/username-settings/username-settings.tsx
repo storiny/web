@@ -28,7 +28,7 @@ import { BREAKPOINTS } from "~/theme/breakpoints";
 import { UsernameSettingsProps } from "./username-settings.props";
 import {
   UsernameSettingsSchema,
-  usernameSettingsSchema
+  USERNAME_SETTINGS_SCHEMA
 } from "./username-settings.schema";
 
 const UsernameSettingsModal = (): React.ReactElement => (
@@ -52,7 +52,7 @@ const UsernameSettingsModal = (): React.ReactElement => (
       label={"New username"}
       maxLength={USER_PROPS.username.max_length}
       minLength={USER_PROPS.username.min_length}
-      name={"new-username"}
+      name={"new_username"}
       placeholder={"Choose a new username"}
       required
     />
@@ -67,7 +67,7 @@ const UsernameSettingsModal = (): React.ReactElement => (
         }
       }}
       label={"Current password"}
-      name={"current-password"}
+      name={"current_password"}
       placeholder={"Your current password"}
       required
     />
@@ -81,25 +81,25 @@ const UsernameSettings = ({
   const toast = use_toast();
   const is_smaller_than_mobile = use_media_query(BREAKPOINTS.down("mobile"));
   const form = use_form<UsernameSettingsSchema>({
-    resolver: zod_resolver(usernameSettingsSchema),
+    resolver: zod_resolver(USERNAME_SETTINGS_SCHEMA),
     defaultValues: {
-      "new-username": "",
-      "current-password": ""
+      new_username: "",
+      current_password: ""
     }
   });
-  const [mutateUsernameSettings, { isLoading }] =
+  const [mutate_username_settings, { isLoading: is_loading }] =
     use_username_settings_mutation();
 
-  const handleSubmit: SubmitHandler<UsernameSettingsSchema> = (values) => {
+  const handle_submit: SubmitHandler<UsernameSettingsSchema> = (values) => {
     if (on_submit) {
       on_submit(values);
     } else {
-      mutateUsernameSettings(values)
+      mutate_username_settings(values)
         .unwrap()
         .then(() => {
           dispatch(
             mutate_user({
-              username: values["new-username"]
+              username: values["new_username"]
             })
           );
           form.reset(); // Reset with empty values
@@ -125,8 +125,8 @@ const UsernameSettings = ({
     ),
     <Form<UsernameSettingsSchema>
       className={clsx("flex-col")}
-      disabled={isLoading}
-      on_submit={handleSubmit}
+      disabled={is_loading}
+      on_submit={handle_submit}
       provider_props={form}
     >
       <UsernameSettingsModal />
@@ -141,10 +141,10 @@ const UsernameSettings = ({
           <ModalFooterButton
             compact={is_smaller_than_mobile}
             disabled={!form.formState.isDirty}
-            loading={isLoading}
+            loading={is_loading}
             onClick={(event): void => {
               event.preventDefault(); // Prevent closing of modal
-              form.handleSubmit(handleSubmit)(); // Submit manually
+              form.handleSubmit(handle_submit)(); // Submit manually
             }}
           >
             Confirm

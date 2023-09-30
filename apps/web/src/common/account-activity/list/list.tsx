@@ -14,15 +14,15 @@ import { VirtualizedAccountActivityListContext } from "./list-context";
 
 const VirtualizedAccountActivityList = React.memo(
   ({
-    accountActivities,
+    account_activities,
     has_more,
     load_more,
-    accountActivityProps = {},
+    account_activity_props = {},
     className,
     ...rest
   }: VirtualizedAccountActivityListProps) => (
     <VirtualizedAccountActivityListContext.Provider
-      value={{ accountActivityProps, itemCount: accountActivities.length }}
+      value={{ account_activity_props, item_count: account_activities.length }}
     >
       <Virtuoso
         increaseViewportBy={750}
@@ -40,7 +40,7 @@ const VirtualizedAccountActivityList = React.memo(
             VirtualizedAccountActivityScrollSeekPlaceholder,
           ...(has_more && { Footer: VirtualFooter })
         }}
-        data={accountActivities}
+        data={account_activities}
         endReached={has_more ? load_more : (): void => undefined}
       />
     </VirtualizedAccountActivityListContext.Provider>

@@ -17,12 +17,14 @@ const VirtualizedReplyList = React.memo(
     replies,
     has_more,
     load_more,
-    replyProps = {},
-    skeletonProps = {},
+    reply_props = {},
+    skeleton_props = {},
     className,
     ...rest
   }: VirtualizedReplyListProps) => (
-    <VirtualizedReplyListContext.Provider value={{ replyProps, skeletonProps }}>
+    <VirtualizedReplyListContext.Provider
+      value={{ reply_props, skeleton_props }}
+    >
       <Virtuoso
         increaseViewportBy={750}
         scrollSeekConfiguration={{

@@ -1,9 +1,9 @@
 "use client";
 
 import clsx from "clsx";
-import getConfig from "next/config";
+import get_config from "next/config";
 import NextLink from "next/link";
-import { useSelectedLayoutSegments } from "next/navigation";
+import { useSelectedLayoutSegments as use_selected_layout_segments } from "next/navigation";
 import React from "react";
 
 import Input from "../../../../../../../../../../packages/ui/src/components/input";
@@ -21,21 +21,25 @@ import SearchIcon from "../../../../../../../../../../packages/ui/src/icons/sear
 import { select_user } from "~/redux/features";
 import { use_app_selector } from "~/redux/hooks";
 
-import { dashboardGroups, Group, searchDashboardGroups } from "../../../groups";
+import {
+  DASHBOARD_GROUPS,
+  Group,
+  search_dashboard_groups
+} from "../../../groups";
 import { DashboardSegment } from "../../../types";
 import styles from "./left-sidebar.module.scss";
 
-const { publicRuntimeConfig } = getConfig();
+const { publicRuntimeConfig } = get_config();
 
-const appStatus = process.env.NEXT_PUBLIC_APP_STATUS; // Stable / beta
-const appVersion = publicRuntimeConfig?.version;
-const appBuildHash = publicRuntimeConfig?.buildHash;
+const APP_STATUS = process.env.NEXT_PUBLIC_APP_STATUS; // Stable / beta
+const APP_VERSION = publicRuntimeConfig?.version;
+const APP_BUILD_HASH = publicRuntimeConfig?.buildHash;
 
 /**
  * Returns formatted the app version
  */
-const getVersion = (): string => {
-  const parts = (appVersion || "").split(".");
+const get_version = (): string => {
+  const parts = (APP_VERSION || "").split(".");
   parts.pop(); // Remove patch version
   return parts.join(".");
 };
@@ -83,28 +87,28 @@ const GroupComponent = ({ group }: { group: Group }): React.ReactElement => (
 );
 
 const SuspendedDashboardLeftSidebarContent = (): React.ReactElement => {
-  const [query, setQuery] = React.useState<string>("");
-  const [results, setResults] = React.useState<Group[]>([]);
+  const [query, set_query] = React.useState<string>("");
+  const [results, set_results] = React.useState<Group[]>([]);
   // TODO: Update segments
-  const segments = useSelectedLayoutSegments();
+  const segments = use_selected_layout_segments();
   const user = use_app_selector(select_user)!;
   segments.shift(); // Remove (mdx) layout
-  const currentSegment = segments.join("/");
+  const current_segment = segments.join("/");
 
   React.useEffect(() => {
     // Scroll selected segment tab into view on mount
-    const currentSegmentElement = document.getElementById(currentSegment);
-    if (currentSegmentElement) {
-      currentSegmentElement.scrollIntoView({
+    const current_segment_element = document.getElementById(current_segment);
+    if (current_segment_element) {
+      current_segment_element.scrollIntoView({
         block: "center",
         behavior: "smooth"
       });
     }
-  }, [currentSegment]);
+  }, [current_segment]);
 
   return (
-    <div className={clsx("flex-col", styles.x, styles["left-sidebar"])}>
-      <div className={clsx("flex-col", styles.x, styles.content)}>
+    <div className={clsx("flex-col", styles["left-sidebar"])}>
+      <div className={clsx("flex-col", styles.content)}>
         <Persona
           avatar={{
             alt: `${user.name}'s avatar`,
@@ -129,8 +133,8 @@ const SuspendedDashboardLeftSidebarContent = (): React.ReactElement => {
           decorator={<SearchIcon />}
           onChange={(event): void => {
             const value = event.target.value;
-            setQuery(value);
-            searchDashboardGroups(value).then(setResults);
+            set_query(value);
+            search_dashboard_groups(value).then(set_results);
           }}
           placeholder={"Search settings"}
           type={"search"}
@@ -146,6 +150,7 @@ const SuspendedDashboardLeftSidebarContent = (): React.ReactElement => {
             className: clsx("flex", styles.x, styles.viewport)
           },
           scrollbar: {
+            // eslint-disable-next-line prefer-snakecase/prefer-snakecase
             style: { zIndex: 1, backgroundColor: "transparent" }
           }
         }}
@@ -155,7 +160,7 @@ const SuspendedDashboardLeftSidebarContent = (): React.ReactElement => {
           className={clsx("full-w", "fit-h")}
           orientation={"vertical"}
           role={undefined}
-          value={currentSegment}
+          value={current_segment}
         >
           <TabsList
             aria-orientation={undefined}
@@ -190,22 +195,20 @@ const SuspendedDashboardLeftSidebarContent = (): React.ReactElement => {
                 </Typography>
               )
             ) : (
-              dashboardGroups.map((group) => (
+              DASHBOARD_GROUPS.map((group) => (
                 <GroupComponent group={group} key={group.title} />
               ))
             )}
           </TabsList>
         </Tabs>
         <Spacer orientation={"vertical"} size={2} />
-        <div
-          className={clsx("flex-col", styles.x, styles.content, styles.footer)}
-        >
+        <div className={clsx("flex-col", styles.content, styles.footer)}>
           <Separator />
           <div className={"flex-col"}>
             <Typography className={"t-muted"} ellipsis level={"body3"}>
-              {process.env.NODE_ENV === "development" ? "Dev" : appStatus}{" "}
-              {getVersion()}
-              {appBuildHash ? ` (${appBuildHash})` : ""}
+              {process.env.NODE_ENV === "development" ? "Dev" : APP_STATUS}{" "}
+              {get_version()}
+              {APP_BUILD_HASH ? ` (${APP_BUILD_HASH})` : ""}
             </Typography>
           </div>
         </div>

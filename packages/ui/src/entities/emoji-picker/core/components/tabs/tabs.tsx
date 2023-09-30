@@ -44,7 +44,9 @@ const EmojiPickerTabs = (props: EmojiPickerTabsProps): React.ReactElement => {
   return (
     <Tabs
       {...rest}
-      onValueChange={(newValue): void => set_value(newValue as EmojiCategory)}
+      onValueChange={(next_value): void =>
+        set_value(next_value as EmojiCategory)
+      }
       orientation={"vertical"}
       value={value}
     >

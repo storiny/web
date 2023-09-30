@@ -2,7 +2,7 @@
 
 import clsx from "clsx";
 import NextLink from "next/link";
-import { useSelectedLayoutSegments } from "next/navigation";
+import { useSelectedLayoutSegments as use_selected_layout_segments } from "next/navigation";
 import React from "react";
 
 import ScrollArea from "../../../../../../../packages/ui/src/components/scroll-area";
@@ -38,9 +38,9 @@ const AnchorTab = ({
 // Terms group
 
 const TermsGroup = (): React.ReactElement => (
-  <div className={clsx("flex-col", styles.x, styles["tabs-group"])}>
+  <div className={clsx("flex-col", styles["tabs-group"])}>
     <Typography className={"t-bold"}>Storiny Terms</Typography>
-    <div className={clsx("flex-col", styles.x, styles["tabs-group-container"])}>
+    <div className={clsx("flex-col", styles["tabs-group-container"])}>
       <AnchorTab value={"terms/tos"}>Terms of Service</AnchorTab>
       <AnchorTab value={"terms/community-guidelines"}>
         Community Guidelines
@@ -52,9 +52,9 @@ const TermsGroup = (): React.ReactElement => (
 // Policies group
 
 const PoliciesGroup = (): React.ReactElement => (
-  <div className={clsx("flex-col", styles.x, styles["tabs-group"])}>
+  <div className={clsx("flex-col", styles["tabs-group"])}>
     <Typography className={"t-bold"}>Storiny Policies</Typography>
-    <div className={clsx("flex-col", styles.x, styles["tabs-group-container"])}>
+    <div className={clsx("flex-col", styles["tabs-group-container"])}>
       <AnchorTab value={"policies/privacy"}>Privacy Policy</AnchorTab>
       <AnchorTab value={"policies/username"}>Username Policy</AnchorTab>
       <AnchorTab value={"policies/logo"}>Logo Policy</AnchorTab>
@@ -73,9 +73,9 @@ const PoliciesGroup = (): React.ReactElement => (
 // Acceptable use policies group
 
 const AcceptableUsePoliciesGroup = (): React.ReactElement => (
-  <div className={clsx("flex-col", styles.x, styles["tabs-group"])}>
+  <div className={clsx("flex-col", styles["tabs-group"])}>
     <Typography className={"t-bold"}>Acceptable Use Policies</Typography>
-    <div className={clsx("flex-col", styles.x, styles["tabs-group-container"])}>
+    <div className={clsx("flex-col", styles["tabs-group-container"])}>
       <AnchorTab value={"use-policies/general"}>General</AnchorTab>
       <AnchorTab value={"use-policies/bullying"}>
         Bullying and Harassment
@@ -109,9 +109,9 @@ const AcceptableUsePoliciesGroup = (): React.ReactElement => (
 // Miscellaneous group
 
 const MiscellaneousGroup = (): React.ReactElement => (
-  <div className={clsx("flex-col", styles.x, styles["tabs-group"])}>
+  <div className={clsx("flex-col", styles["tabs-group"])}>
     <Typography className={"t-bold"}>Miscellaneous</Typography>
-    <div className={clsx("flex-col", styles.x, styles["tabs-group-container"])}>
+    <div className={clsx("flex-col", styles["tabs-group-container"])}>
       <AnchorTab value={"miscellaneous/acknowledgements"}>
         Acknowledgements
       </AnchorTab>
@@ -120,20 +120,20 @@ const MiscellaneousGroup = (): React.ReactElement => (
 );
 
 const SuspendedLegalLeftSidebarContent = (): React.ReactElement => {
-  const segments = useSelectedLayoutSegments();
+  const segments = use_selected_layout_segments();
   segments.shift(); // Remove (mdx) layout
-  const currentSegment = segments.join("/");
+  const current_segment = segments.join("/");
 
   React.useEffect(() => {
     // Scroll selected segment tab into view on mount
-    const currentSegmentElement = document.getElementById(currentSegment);
-    if (currentSegmentElement) {
-      currentSegmentElement.scrollIntoView({
+    const current_segment_element = document.getElementById(current_segment);
+    if (current_segment_element) {
+      current_segment_element.scrollIntoView({
         block: "center",
         behavior: "smooth"
       });
     }
-  }, [currentSegment]);
+  }, [current_segment]);
 
   return (
     <Tabs
@@ -147,10 +147,11 @@ const SuspendedLegalLeftSidebarContent = (): React.ReactElement => {
           className: clsx(styles.x, styles.viewport)
         },
         scrollbar: {
+          // eslint-disable-next-line prefer-snakecase/prefer-snakecase
           style: { zIndex: 1, backgroundColor: "transparent" }
         }
       }}
-      value={currentSegment}
+      value={current_segment}
     >
       <TabsList
         aria-orientation={undefined}

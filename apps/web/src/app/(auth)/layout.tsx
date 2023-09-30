@@ -29,8 +29,8 @@ const AuthLayout = ({
         style={{ objectFit: "cover", opacity: 0.45 }}
       />
     </div>
-    <main className={clsx(styles.x, styles.main)}>
-      <div className={clsx("flex-col", styles.x, styles.container)}>
+    <main className={styles.main}>
+      <div className={clsx("flex-col", styles.container)}>
         <AuthState>{children}</AuthState>
       </div>
     </main>

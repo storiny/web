@@ -11,9 +11,9 @@ import { render_with_state } from "~/redux/mock";
 import DefaultLayout from "../layout";
 import Profile from "./component";
 
-const user = MOCK_USERS[9];
-const mockResponse = {
-  ...user,
+const USER = MOCK_USERS[9];
+const MOCK_RESPONSE = {
+  ...USER,
   is_following: false,
   is_subscribed: false,
   is_blocking: false,
@@ -35,7 +35,7 @@ const mockResponse = {
 } as GetProfileResponse;
 
 const meta: Meta<typeof Profile> = {
-  title: "pages/Profile",
+  title: "pages/profile",
   component: Profile,
   parameters: {
     layout: "fullscreen"
@@ -48,7 +48,7 @@ type Story = StoryObj<typeof Profile>;
 
 export const Default: Story = {
   args: {
-    profile: mockResponse
+    profile: MOCK_RESPONSE
   },
   decorators: [
     (Story): React.ReactElement =>
@@ -63,7 +63,7 @@ export const Default: Story = {
 
 export const LoggedIn: Story = {
   args: {
-    profile: mockResponse
+    profile: MOCK_RESPONSE
   },
   decorators: [
     (Story): React.ReactElement =>
@@ -78,7 +78,7 @@ export const LoggedIn: Story = {
 
 export const SelfPrivate: Story = {
   args: {
-    profile: { ...mockResponse, is_private: true, is_self: true }
+    profile: { ...MOCK_RESPONSE, is_private: true, is_self: true }
   },
   decorators: [
     (Story): React.ReactElement =>
@@ -93,7 +93,7 @@ export const SelfPrivate: Story = {
 
 export const Private: Story = {
   args: {
-    profile: { ...mockResponse, is_private: true }
+    profile: { ...MOCK_RESPONSE, is_private: true }
   },
   decorators: [
     (Story): React.ReactElement =>
@@ -108,7 +108,7 @@ export const Private: Story = {
 
 export const Blocking: Story = {
   args: {
-    profile: { ...mockResponse, is_blocking: true }
+    profile: { ...MOCK_RESPONSE, is_blocking: true }
   },
   decorators: [
     (Story): React.ReactElement =>
@@ -123,7 +123,7 @@ export const Blocking: Story = {
 
 export const BlockedByUser: Story = {
   args: {
-    profile: { ...mockResponse, is_blocked_by_user: true }
+    profile: { ...MOCK_RESPONSE, is_blocked_by_user: true }
   },
   decorators: [
     (Story): React.ReactElement =>
@@ -138,7 +138,7 @@ export const BlockedByUser: Story = {
 
 export const Suspended: Story = {
   args: {
-    profile: { ...mockResponse, public_flags: UserFlag.TEMPORARILY_SUSPENDED }
+    profile: { ...MOCK_RESPONSE, public_flags: UserFlag.TEMPORARILY_SUSPENDED }
   },
   decorators: [
     (Story): React.ReactElement =>

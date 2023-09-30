@@ -1,5 +1,5 @@
 import { user_event } from "@storiny/test-utils";
-import { act, screen, waitFor } from "@testing-library/react";
+import { act, screen, waitFor as wait_for } from "@testing-library/react";
 import React from "react";
 
 import { render_test_with_provider } from "../../../../../../../../../../../../../../packages/ui/src/redux/test-utils";
@@ -8,10 +8,10 @@ import PrivateAccount from "./private-account";
 
 describe("<PrivateAccount />", () => {
   it("submits correct form data", async () => {
-    const mockSubmit = jest.fn();
+    const mock_submit = jest.fn();
     const user = user_event.setup();
     render_test_with_provider(
-      <PrivateAccount is_private_account on_submit={mockSubmit} />,
+      <PrivateAccount is_private_account on_submit={mock_submit} />,
       {
         logged_in: true
       }
@@ -22,8 +22,8 @@ describe("<PrivateAccount />", () => {
     });
 
     await wait_for(() => {
-      expect(mockSubmit).toHaveBeenCalledWith({
-        "private-account": false
+      expect(mock_submit).toHaveBeenCalledWith({
+        private_account: false
       });
     });
   });

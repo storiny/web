@@ -1,12 +1,10 @@
 @use "breakpoints";
 
-.x {
-  /* Base styles */
-  &.map {
-    filter: grayscale(85%);
-  }
+.map {
+  filter: grayscale(85%);
+}
 
-  /* Marker */
+.x {
   &.marker {
     position: absolute;
     left: 0;
@@ -21,7 +19,6 @@
     filter: drop-shadow(0 8px 32px rgba(54 62 74 / 8%));
   }
 
-  /* Copyright */
   &.copyright {
     position: absolute;
     font-size: 10.3px;

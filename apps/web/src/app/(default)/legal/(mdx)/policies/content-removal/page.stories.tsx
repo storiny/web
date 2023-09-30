@@ -10,7 +10,7 @@ import LegalLayout from "../../../layout";
 import ContentRemovalPolicy from "./client";
 
 const meta: Meta<typeof ContentRemovalPolicy> = {
-  title: "pages/Legal/policies/content-removal",
+  title: "pages/legal/policies/content-removal",
   component: ContentRemovalPolicy,
   parameters: {
     layout: "fullscreen"

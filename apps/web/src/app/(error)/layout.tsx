@@ -13,15 +13,15 @@ import styles from "./layout.module.scss";
 
 const ErrorLayout = ({
   children,
-  errorCode,
+  error_code,
   title,
   description,
-  enableSearch
+  enable_search
 }: {
   children?: React.ReactNode;
   description?: React.ReactNode;
-  enableSearch?: boolean;
-  errorCode: string;
+  enable_search?: boolean;
+  error_code: string;
   title: React.ReactNode;
 }): React.ReactElement => (
   <MinimalLayout>
@@ -40,22 +40,18 @@ const ErrorLayout = ({
         style={{ objectFit: "cover", opacity: 0.45 }}
       />
     </div>
-    <div
-      className={clsx("flex-col", "flex-center", styles.x, styles.container)}
-    >
+    <div className={clsx("flex-col", "flex-center", styles.container)}>
       <Typography
         className={clsx(styles.x, styles["error-code"])}
         level={"display1"}
       >
-        {errorCode.split("").map((digit, index) => (
-          <span className={clsx(styles.x, styles.digit)} key={index}>
+        {error_code.split("").map((digit, index) => (
+          <span className={styles.digit} key={index}>
             {digit}
           </span>
         ))}
       </Typography>
-      <div
-        className={clsx("flex-col", "flex-center", styles.x, styles.content)}
-      >
+      <div className={clsx("flex-col", "flex-center", styles.content)}>
         <Typography className={"t-center"} level={"h2"}>
           {title}
         </Typography>
@@ -64,7 +60,7 @@ const ErrorLayout = ({
         >
           {description}
         </Typography>
-        {enableSearch && (
+        {enable_search && (
           <>
             <Spacer orientation={"vertical"} size={2} />
             <Input

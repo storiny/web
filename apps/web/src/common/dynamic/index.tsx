@@ -6,11 +6,11 @@ import ErrorState from "../../../../../packages/ui/src/entities/error-state";
 
 /**
  * Dynamic component loader with error fallback
- * @param customLoader Custom loading component
+ * @param custom_loader Custom loading component
  */
-export const dynamicLoader =
+export const dynamic_loader =
   (
-    customLoader?: (
+    custom_loader?: (
       props: DynamicOptionsLoadingProps
     ) => React.ReactElement | null
   ) =>
@@ -18,8 +18,8 @@ export const dynamicLoader =
   (props: DynamicOptionsLoadingProps): React.ReactElement | null =>
     props.error && !props.isLoading ? (
       <ErrorState auto_size retry={props.retry} />
-    ) : customLoader ? (
-      customLoader(props)
+    ) : custom_loader ? (
+      custom_loader(props)
     ) : (
       <SuspenseLoader />
     );

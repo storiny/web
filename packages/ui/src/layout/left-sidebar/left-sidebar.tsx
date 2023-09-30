@@ -1,6 +1,6 @@
 "use client";
 
-import { dynamicLoader } from "@storiny/web/src/common/dynamic";
+import { dynamic_loader } from "@storiny/web/src/common/dynamic";
 import clsx from "clsx";
 import dynamic from "next/dynamic";
 import React from "react";
@@ -15,7 +15,7 @@ import styles from "./left-sidebar.module.scss";
 import { LeftSidebarProps } from "./left-sidebar.props";
 
 const LeftSidebarDefaultContent = dynamic(() => import("./default-content"), {
-  loading: dynamicLoader()
+  loading: dynamic_loader()
 });
 
 const LeftSidebar = (props: LeftSidebarProps): React.ReactElement | null => {

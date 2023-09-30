@@ -5,7 +5,7 @@ import { clsx } from "clsx";
 import dynamic from "next/dynamic";
 import React from "react";
 
-import { dynamicLoader } from "~/common/dynamic";
+import { dynamic_loader } from "~/common/dynamic";
 import { GetProfileResponse } from "~/common/grpc";
 import Button from "../../../../../../packages/ui/src/components/button";
 import Divider from "../../../../../../packages/ui/src/components/divider";
@@ -35,7 +35,7 @@ import StoriesTab from "./tabs/stories";
 const CustomState = dynamic(
   () => import("../../../../../../packages/ui/src/entities/custom-state"),
   {
-    loading: dynamicLoader()
+    loading: dynamic_loader()
   }
 );
 
@@ -43,29 +43,28 @@ export type ProfileTabValue = "stories" | "followers" | "following" | "friends";
 export type ProfileEntitySortValue = "popular" | "recent" | "old";
 
 interface Props {
-  isPrivate: boolean;
-  isSuspended: boolean;
+  is_private: boolean;
+  is_suspended: boolean;
   profile: GetProfileResponse;
 }
 
 // Page header tabs
 
 const TabsHeader = ({
-  hasBanner,
-  hideFollowing,
-  hideFriends
+  has_banner,
+  hide_following,
+  hide_friends
 }: {
-  hasBanner: boolean;
-  hideFollowing: boolean;
-  hideFriends: boolean;
+  has_banner: boolean;
+  hide_following: boolean;
+  hide_friends: boolean;
 }): React.ReactElement => (
   <div
     className={clsx(
       "full-bleed",
       "page-header",
-      styles.x,
       styles.tabs,
-      hasBanner && styles["has-banner"]
+      has_banner && styles["has-banner"]
     )}
   >
     <TabsList className={clsx("full-w", styles.x, styles["tabs-list"])}>
@@ -75,12 +74,12 @@ const TabsHeader = ({
       <Tab aria-controls={undefined} value={"followers"}>
         Followers
       </Tab>
-      {!hideFollowing && (
+      {!hide_following && (
         <Tab aria-controls={undefined} value={"following"}>
           Following
         </Tab>
       )}
-      {!hideFriends && (
+      {!hide_friends && (
         <Tab aria-controls={undefined} value={"friends"}>
           Friends
         </Tab>
@@ -94,14 +93,14 @@ const TabsHeader = ({
 const PageHeader = ({
   query,
   sort,
-  onSortChange,
-  onQueryChange,
+  on_sort_change,
+  on_query_change,
   disabled,
   placeholder
 }: {
   disabled?: boolean;
-  onQueryChange: (newQuery: string) => void;
-  onSortChange: (newSort: ProfileEntitySortValue) => void;
+  on_query_change: (next_query: string) => void;
+  on_sort_change: (next_sort: ProfileEntitySortValue) => void;
   placeholder: string;
   query: string;
   sort: ProfileEntitySortValue;
@@ -112,7 +111,6 @@ const PageHeader = ({
       "full-bleed",
       "page-header",
       "with-page-title",
-      styles.x,
       styles["page-header"]
     )}
     style={{ marginTop: 0 }}
@@ -120,25 +118,19 @@ const PageHeader = ({
     <Input
       decorator={<SearchIcon />}
       disabled={disabled}
-      onChange={(event): void => onQueryChange(event.target.value)}
+      onChange={(event): void => on_query_change(event.target.value)}
       placeholder={placeholder}
       size={"lg"}
-      slot_props={{
-        container: {
-          className: clsx("f-grow", styles.x, styles.input)
-        }
-      }}
       type={"search"}
       value={query}
     />
     <Divider orientation={"vertical"} />
     <Select
       disabled={disabled}
-      onValueChange={onSortChange}
+      onValueChange={on_sort_change}
       slot_props={{
         trigger: {
-          "aria-label": "Sort items",
-          className: clsx("focus-invert", styles.x, styles["select-trigger"])
+          "aria-label": "Sort items"
         },
         value: {
           placeholder: "Sort"
@@ -155,52 +147,52 @@ const PageHeader = ({
 
 const Page = ({
   profile,
-  isSuspended,
-  isPrivate
+  is_suspended,
+  is_private
 }: Props): React.ReactElement => {
   const is_smaller_than_tablet = use_media_query(BREAKPOINTS.down("tablet"));
-  const firstRender = React.useRef<boolean>(true);
-  const [tab, setTab] = React.useState<ProfileTabValue>("stories");
+  const first_render_ref = React.useRef<boolean>(true);
+  const [tab, set_tab] = React.useState<ProfileTabValue>("stories");
   const [sort, set_sort] = React.useState<ProfileEntitySortValue>(
     tab === "stories" ? "recent" : "popular"
   );
-  const [query, setQuery] = React.useState<string>("");
+  const [query, set_query] = React.useState<string>("");
   // Hide the content initially when the target user is being blocked
-  const [contentHidden, setContentHidden] = React.useState<boolean>(
+  const [content_hidden, set_content_hidden] = React.useState<boolean>(
     Boolean(profile.is_blocking)
   );
-  const hasBanner = Boolean(profile.banner_id);
-  const isBlocking = use_app_selector(
+  const has_banner = Boolean(profile.banner_id);
+  const is_blocking = use_app_selector(
     (state) => state.entities.blocks[profile.id]
   );
 
-  const handleQueryChange = React.useCallback(
-    (newQuery: string) => setQuery(newQuery),
+  const handle_query_change = React.useCallback(
+    (next_query: string) => set_query(next_query),
     []
   );
 
-  const handleSortChange = React.useCallback(
-    (newSort: ProfileEntitySortValue) => set_sort(newSort),
+  const handle_sort_change = React.useCallback(
+    (next_sort: ProfileEntitySortValue) => set_sort(next_sort),
     []
   );
 
   React.useEffect(() => {
-    // isBlocking is false on first render due to `use_app_selector`
-    if (!isBlocking && !firstRender.current) {
-      setContentHidden(false);
+    // `is_blocking` is false on first render due to `use_app_selector`
+    if (!is_blocking && !first_render_ref.current) {
+      set_content_hidden(false);
     } else {
-      firstRender.current = false;
+      first_render_ref.current = false;
     }
-  }, [isBlocking]);
+  }, [is_blocking]);
 
   return (
     <>
-      {!isPrivate &&
-      !isSuspended &&
+      {!is_private &&
+      !is_suspended &&
       !profile.is_blocked_by_user &&
-      hasBanner ? (
+      has_banner ? (
         <>
-          <div className={clsx("grid", styles.x, styles["banner-wrapper"])}>
+          <div className={clsx("grid", styles["banner-wrapper"])}>
             <Image
               alt={""}
               className={clsx(styles.x, styles.banner)}
@@ -213,6 +205,7 @@ const Page = ({
                     `${BREAKPOINTS.up("mobile")} calc(100vw - 72px)`,
                     "100vw"
                   ].join(","),
+                  // eslint-disable-next-line prefer-snakecase/prefer-snakecase
                   srcSet: [
                     `${get_cdn_url(profile.banner_id, ImageSize.W_2048)} 2048w`,
                     `${get_cdn_url(profile.banner_id, ImageSize.W_1920)} 1920w`,
@@ -226,33 +219,27 @@ const Page = ({
               }}
             />
             {/* Adds an elevation to the right sidebar */}
-            <div
-              aria-hidden
-              className={clsx(styles.x, styles["right-sidebar-shadow"])}
-            />
+            <div aria-hidden className={styles["right-sidebar-shadow"]} />
           </div>
-          <div
-            aria-hidden
-            className={clsx(styles.x, styles["banner-spacer"])}
-          />
+          <div aria-hidden className={styles["banner-spacer"]} />
         </>
       ) : null}
       {is_smaller_than_tablet && (
         <ProfileContent
-          isPrivate={isPrivate}
-          isSuspended={isSuspended}
+          is_private={is_private}
+          is_suspended={is_suspended}
           profile={profile}
         />
       )}
-      {isPrivate ||
-      isSuspended ||
+      {is_private ||
+      is_suspended ||
       Boolean(profile.is_blocked_by_user) ||
-      (isBlocking && contentHidden) ? (
+      (is_blocking && content_hidden) ? (
         <div className={clsx("flex-col", "full-w")}>
           <CustomState
             auto_size
             description={
-              isSuspended ? (
+              is_suspended ? (
                 <>
                   This account has been suspended for violating Storiny’s{" "}
                   <Link href={"/guidelines"} underline={"always"}>
@@ -273,7 +260,7 @@ const Page = ({
                     Learn more
                   </Link>
                 </>
-              ) : isBlocking ? (
+              ) : is_blocking ? (
                 <>
                   Would you like to view content from{" "}
                   <span className={"t-medium"}>@{profile.username}</span>?
@@ -288,52 +275,52 @@ const Page = ({
               )
             }
             icon={
-              isSuspended ? (
+              is_suspended ? (
                 <ForbidIcon />
-              ) : Boolean(profile.is_blocked_by_user) || isBlocking ? (
+              ) : Boolean(profile.is_blocked_by_user) || is_blocking ? (
                 <BanIcon />
               ) : (
                 <LockIcon />
               )
             }
             title={
-              isSuspended
+              is_suspended
                 ? "Account suspended"
                 : profile.is_blocked_by_user
                 ? "This user has blocked you"
-                : isBlocking
+                : is_blocking
                 ? "You have blocked this user"
                 : "This account is private"
             }
           />
-          {contentHidden && (
+          {content_hidden && (
             <div className={clsx("full-w", "flex-center")}>
-              <Button onClick={(): void => setContentHidden(false)}>
+              <Button onClick={(): void => set_content_hidden(false)}>
                 View content
               </Button>
             </div>
           )}
         </div>
-      ) : contentHidden ? null : (
+      ) : content_hidden ? null : (
         <Tabs
-          onValueChange={(newValue): void => {
-            setQuery(""); // Reset search input
-            setTab(newValue as ProfileTabValue);
+          onValueChange={(next_value): void => {
+            set_query(""); // Reset search input
+            set_tab(next_value as ProfileTabValue);
           }}
           value={tab}
         >
           <TabsHeader
-            hasBanner={hasBanner}
-            hideFollowing={
+            has_banner={has_banner}
+            hide_following={
               typeof profile.following_count !== "number" && !profile.is_self
             }
-            hideFriends={
+            hide_friends={
               typeof profile.friend_count !== "number" && !profile.is_self
             }
           />
           <PageHeader
-            onQueryChange={handleQueryChange}
-            onSortChange={handleSortChange}
+            on_query_change={handle_query_change}
+            on_sort_change={handle_sort_change}
             placeholder={`Search ${profile.name}'s ${tab}`}
             query={query}
             sort={sort}
@@ -348,7 +335,7 @@ const Page = ({
           </TabPanel>
           <TabPanel value={"followers"}>
             <EntitiesTab
-              entityType={"followers"}
+              entity_type={"followers"}
               query={query}
               sort={sort}
               user_id={profile.id}
@@ -359,7 +346,7 @@ const Page = ({
           !profile.is_self ? null : (
             <TabPanel value={"following"}>
               <EntitiesTab
-                entityType={"following"}
+                entity_type={"following"}
                 query={query}
                 sort={sort}
                 user_id={profile.id}
@@ -371,7 +358,7 @@ const Page = ({
           !profile.is_self ? null : (
             <TabPanel value={"friends"}>
               <EntitiesTab
-                entityType={"friends"}
+                entity_type={"friends"}
                 query={query}
                 sort={sort}
                 user_id={profile.id}

@@ -9,7 +9,7 @@ import AuthLayout from "../../../layout";
 import ResetBasePage from "./page";
 
 const meta: Meta<typeof ResetBasePage> = {
-  title: "pages/Auth/@reset_base",
+  title: "pages/auth/@reset_base",
   component: ResetBasePage,
   parameters: {
     layout: "fullscreen"

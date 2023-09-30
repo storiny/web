@@ -1,24 +1,61 @@
 @use "breakpoints";
 
-.x {
-  /* Banner wrapper */
-  &.banner-wrapper {
-    --banner-height: 198px;
+/* Tabs (div) */
+.tabs {
+  padding-inline: 20px;
 
-    position: absolute;
-    left: 0;
-    top: var(--header-height);
-    z-index: 0;
-    overflow: hidden;
-    height: var(--banner-height);
-    min-height: initial;
-
-    @include breakpoints.media("<=mobile") {
-      --banner-height: 128px;
-    }
+  &.has-banner {
+    margin-top: 0;
+    border-top: 1px solid var(--divider);
   }
 
-  /* Banner */
+  @include breakpoints.media("<=mobile") {
+    padding-inline: 16px;
+  }
+}
+
+.page-header {
+  box-shadow: none;
+}
+
+.right-sidebar-shadow {
+  grid-column: -5 / -1;
+  height: 58px;
+  margin-top: -58px;
+  z-index: 1;
+  border-top-left-radius: var(--radius-xl);
+  box-shadow: 0 0 16px hsl(0deg 0% 0% / 25%);
+
+  @include breakpoints.media("<=tablet") {
+    display: none;
+  }
+}
+
+.banner-wrapper {
+  --banner-height: 198px;
+
+  position: absolute;
+  left: 0;
+  top: var(--header-height);
+  z-index: 0;
+  overflow: hidden;
+  height: var(--banner-height);
+  min-height: initial;
+
+  @include breakpoints.media("<=mobile") {
+    --banner-height: 128px;
+  }
+}
+
+.banner-spacer {
+  height: calc(197px - 12px);
+
+  @include breakpoints.media("<=mobile") {
+    height: calc(127px - 12px);
+  }
+}
+
+.x {
   &.banner {
     grid-column: 5 / -1;
     margin-inline: var(--grid-compensation);
@@ -50,67 +87,6 @@
     }
   }
 
-  /* Banner spacer */
-  &.banner-spacer {
-    height: calc(197px - 12px);
-
-    @include breakpoints.media("<=mobile") {
-      height: calc(127px - 12px);
-    }
-  }
-
-  /* Right sidebar shadow */
-  &.right-sidebar-shadow {
-    grid-column: -5 / -1;
-    height: 58px;
-    margin-top: -58px;
-    z-index: 1;
-    border-top-left-radius: var(--radius-xl);
-    box-shadow: 0 0 16px hsl(0deg 0% 0% / 25%);
-
-    @include breakpoints.media("<=tablet") {
-      display: none;
-    }
-  }
-
-  /* Page header */
-  &.page-header {
-    box-shadow: none;
-  }
-
-  /* Input field and select trigger */
-  &.input,
-  &.select-trigger {
-    border-radius: 0;
-  }
-
-  /* Input */
-  &.input {
-    &:not([data-focused="true"]) {
-      border: none;
-    }
-  }
-
-  /* Select trigger */
-  &.select-trigger {
-    border: none;
-  }
-
-  /* Tabs */
-  &.tabs {
-    padding-inline: 20px;
-
-    &.has-banner {
-      margin-top: 0;
-      border-top: 1px solid var(--divider);
-    }
-
-    @include breakpoints.media("<=mobile") {
-      padding-inline: 16px;
-    }
-  }
-
-  /* Tabs list */
   &.tabs-list {
     display: flex;
     justify-content: space-around;

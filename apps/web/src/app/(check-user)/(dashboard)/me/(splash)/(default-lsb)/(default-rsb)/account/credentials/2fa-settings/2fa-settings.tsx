@@ -15,12 +15,12 @@ const CredentialsTwoFactorAuthSettings = ({
   has_password,
   mfa_enabled
 }: TwoFactorAuthSettingsProps): React.ReactElement => {
-  const [enabled, setEnabled] = React.useState<boolean>(mfa_enabled);
+  const [enabled, set_enabled] = React.useState<boolean>(mfa_enabled);
 
   /**
    * Memoized state dispatcher
    */
-  const setEnabledImpl = React.useCallback(setEnabled, [setEnabled]);
+  const set_enabled_impl = React.useCallback(set_enabled, [set_enabled]);
 
   return (
     <React.Fragment>
@@ -41,11 +41,14 @@ const CredentialsTwoFactorAuthSettings = ({
       {enabled ? (
         <div className={clsx("flex", styles.actions)}>
           <RecoveryCodes />
-          <Remove2FA setEnabled={setEnabledImpl} />
+          <Remove2FA set_enabled={set_enabled_impl} />
         </div>
       ) : (
         <React.Fragment>
-          <Enable2FA has_password={has_password} setEnabled={setEnabledImpl} />
+          <Enable2FA
+            has_password={has_password}
+            set_enabled={set_enabled_impl}
+          />
           {!has_password && (
             <React.Fragment>
               <Spacer orientation={"vertical"} size={1.5} />

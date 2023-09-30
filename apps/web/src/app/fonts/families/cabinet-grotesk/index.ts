@@ -1,6 +1,6 @@
-import localFont from "next/font/local";
+import local_font from "next/font/local";
 
-export const cabinetGroteskFont = localFont({
+export const FONT_CABINET_GROTESK = local_font({
   src: "../../../../../../../packages/ui/src/static/fonts/cabinet-grotesk.woff2",
   preload: true
 });

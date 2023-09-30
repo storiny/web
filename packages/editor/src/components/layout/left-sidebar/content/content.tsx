@@ -6,7 +6,7 @@ import { useAtomValue as use_atom_value } from "jotai";
 import dynamic from "next/dynamic";
 import React from "react";
 
-import { dynamicLoader } from "~/common/dynamic";
+import { dynamic_loader } from "~/common/dynamic";
 import LeftSidebarDefaultContent from "../../../../../../ui/src/layout/left-sidebar/default-content";
 
 import {
@@ -22,7 +22,7 @@ import { EditorLeftSidebarProps } from "../left-sidebar.props";
 const SuspendedEditorLeftSidebarEditableContent = dynamic(
   () => import("./editable"),
   {
-    loading: dynamicLoader()
+    loading: dynamic_loader()
   }
 );
 

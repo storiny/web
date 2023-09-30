@@ -15,7 +15,7 @@ export interface VirtualizedTagListProps extends VirtuosoProps<Tag, any> {
   /**
    * Props passed down to individual tag entities.
    */
-  tagProps?: Partial<TagProps>;
+  tag_props?: Partial<TagProps>;
   /**
    * Array of tags to render.
    */

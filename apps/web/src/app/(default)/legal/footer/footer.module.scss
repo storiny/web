@@ -1,18 +1,16 @@
 @use "breakpoints";
 
-.x {
-  /* Base styles */
-  &.footer {
-    border-top: 1px solid var(--divider);
-    padding: 24px 20px;
+.footer {
+  border-top: 1px solid var(--divider);
+  padding: 24px 20px;
 
-    @include breakpoints.media("<=mobile") {
-      padding-inline: 0;
-      padding-bottom: 74px; // Compensate BottomNavigation height
-    }
+  @include breakpoints.media("<=mobile") {
+    padding-inline: 0;
+    padding-bottom: 74px; // Compensate BottomNavigation height
   }
+}
 
-  /* Contact support link */
+.x {
   &.support-link {
     --icon-size: 16px;
 

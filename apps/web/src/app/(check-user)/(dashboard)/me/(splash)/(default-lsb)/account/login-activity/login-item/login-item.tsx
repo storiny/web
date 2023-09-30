@@ -3,7 +3,7 @@ import { clsx } from "clsx";
 import dynamic from "next/dynamic";
 import React from "react";
 
-import { dynamicLoader } from "~/common/dynamic";
+import { dynamic_loader } from "~/common/dynamic";
 import AspectRatio from "../../../../../../../../../../../../packages/ui/src/components/aspect-ratio";
 import Button from "../../../../../../../../../../../../packages/ui/src/components/button";
 import Divider from "../../../../../../../../../../../../packages/ui/src/components/divider";
@@ -16,28 +16,29 @@ import {
   format_date
 } from "../../../../../../../../../../../../packages/ui/src/utils/format-date";
 
-import { deviceTypeToIconMap } from "../icon-map";
+import { DEVICE_TYPE_ICON_MAP } from "../icon-map";
 import styles from "./login-item.module.scss";
 import { LoginItemProps } from "./login-item.props";
 
 const Map = dynamic(() => import("../map"), {
-  loading: dynamicLoader()
+  loading: dynamic_loader()
 });
 
 const LogoutButton = (
-  props: LoginItemProps & { onLogout: () => void }
+  props: LoginItemProps & { on_logout: () => void }
 ): React.ReactElement => {
-  const { login, onLogout } = props;
+  const { login, on_logout } = props;
   const toast = use_toast();
-  const [sessionLogout, { isLoading }] = use_session_logout_mutation();
+  const [session_logout, { isLoading: is_loading }] =
+    use_session_logout_mutation();
 
   /**
    * Destroys a session
    */
-  const sessionLogoutImpl = (): void => {
-    sessionLogout({ id: login.id })
+  const session_logout_impl = (): void => {
+    session_logout({ id: login.id })
       .unwrap()
-      .then(onLogout)
+      .then(on_logout)
       .catch((e) =>
         toast(e?.data?.error || "Could not revoke your session", "error")
       );
@@ -47,8 +48,8 @@ const LogoutButton = (
     <Button
       check_auth
       className={clsx("focus-invert", "f-grow", styles.x, styles.button)}
-      disabled={isLoading}
-      onClick={sessionLogoutImpl}
+      disabled={is_loading}
+      onClick={session_logout_impl}
       variant={"ghost"}
     >
       This wasn&apos;t me
@@ -58,25 +59,23 @@ const LogoutButton = (
 
 const LoginItem = (props: LoginItemProps): React.ReactElement => {
   const { login, ratio } = props;
-  const [status, setStatus] = React.useState<"acknowledged" | "revoked" | null>(
-    null
-  );
+  const [status, set_status] = React.useState<
+    "acknowledged" | "revoked" | null
+  >(null);
 
   return (
-    <div className={clsx("flex-col", styles.x, styles["login-item"])}>
-      <div className={clsx("flex-center", styles.x, styles.device)}>
-        {deviceTypeToIconMap[login.device?.type ?? DeviceType.UNKNOWN]}
+    <div className={clsx("flex-col", styles["login-item"])}>
+      <div className={clsx("flex-center", styles.device)}>
+        {DEVICE_TYPE_ICON_MAP[login.device?.type ?? DeviceType.UNKNOWN]}
         <Spacer />
-        <div className={clsx("flex-col", styles.x, styles.details)}>
+        <div className={clsx("flex-col", styles.details)}>
           <Typography className={"t-medium"} ellipsis level={"body2"}>
             {login.device?.display_name || "Unknown device"}
           </Typography>
           <Typography className={"t-minor"} ellipsis level={"body3"}>
             {login.is_active ? (
               <React.Fragment>
-                <span
-                  className={clsx("t-medium", styles.x, styles["active-label"])}
-                >
+                <span className={clsx("t-medium", styles["active-label"])}>
                   Active
                 </span>{" "}
                 <span className={"t-muted"}>&bull;</span>{" "}
@@ -99,7 +98,7 @@ const LoginItem = (props: LoginItemProps): React.ReactElement => {
         {typeof login.location?.lat !== "undefined" &&
         typeof login.location?.lng !== "undefined" ? (
           <Map
-            hideCopyright
+            hide_copyright
             lat={login.location.lat}
             lng={login.location.lng}
             ratio={ratio || 1.44}
@@ -114,9 +113,7 @@ const LoginItem = (props: LoginItemProps): React.ReactElement => {
       </AspectRatio>
       {status !== "acknowledged" && !login.is_active ? (
         <div className={clsx("flex-col")}>
-          <div
-            className={clsx("flex-center", styles.x, styles["footer-label"])}
-          >
+          <div className={clsx("flex-center", styles["footer-label"])}>
             <Typography className={"t-minor"} level={"body3"}>
               {status === "revoked" ? "Session revoked" : "Was this you?"}
             </Typography>
@@ -131,14 +128,14 @@ const LoginItem = (props: LoginItemProps): React.ReactElement => {
                   styles.x,
                   styles.button
                 )}
-                onClick={(): void => setStatus("acknowledged")}
+                onClick={(): void => set_status("acknowledged")}
                 variant={"ghost"}
               >
                 This was me
               </Button>
               <Divider orientation={"vertical"} />
               <LogoutButton
-                onLogout={(): void => setStatus("revoked")}
+                on_logout={(): void => set_status("revoked")}
                 {...props}
               />
             </div>

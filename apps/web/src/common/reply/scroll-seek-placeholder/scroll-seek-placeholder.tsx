@@ -10,11 +10,11 @@ import styles from "../../virtual/virtual.module.scss";
 import { VirtualizedReplyListContext } from "../list/list-context";
 
 const VirtualizedReplyScrollSeekPlaceholder = React.memo(() => {
-  const { skeletonProps } = React.useContext(VirtualizedReplyListContext);
+  const { skeleton_props } = React.useContext(VirtualizedReplyListContext);
   return (
     <div className={clsx("flex-col", styles["list-item"])}>
-      <ReplySkeleton {...skeletonProps} virtual />
-      {!skeletonProps.nested && (
+      <ReplySkeleton {...skeleton_props} virtual />
+      {!skeleton_props.nested && (
         <Divider style={{ marginInline: "var(--grid-compensation)" }} />
       )}
     </div>

@@ -48,25 +48,23 @@ const EnabledPreview = (): React.ReactElement => (
 );
 
 const TypefaceItem = ({
-  isActive,
+  is_active,
   label,
   value,
   decorator
 }: {
   decorator: React.ReactNode;
-  isActive: boolean;
+  is_active: boolean;
   label: React.ReactNode;
   value: string;
 }): React.ReactElement => (
   <div
     className={clsx(
       "flex-col",
-      common_styles.x,
       common_styles.item,
-      isActive && common_styles.selected,
-      styles.x,
+      is_active && common_styles.selected,
       styles.item,
-      isActive && styles.selected
+      is_active && styles.selected
     )}
   >
     <AspectRatio className={"full-w"} ratio={2.3}>
@@ -114,21 +112,21 @@ const LigaturesPreference = (): React.ReactElement => {
       <RadioGroup
         className={clsx(common_styles.x, common_styles["radio-group"])}
         disabled={typeface === "system"}
-        onValueChange={(newValue): void => {
-          dispatch(toggle_code_ligatures(newValue !== "disabled"));
+        onValueChange={(next_value): void => {
+          dispatch(toggle_code_ligatures(next_value !== "disabled"));
         }}
         orientation={is_smaller_than_mobile ? "vertical" : "horizontal"}
         value={ligatures ? "enabled" : "disabled"}
       >
         <TypefaceItem
           decorator={<DisabledPreview />}
-          isActive={!ligatures}
+          is_active={!ligatures}
           label={"Disabled (Default)"}
           value={"disabled"}
         />
         <TypefaceItem
           decorator={<EnabledPreview />}
-          isActive={ligatures}
+          is_active={ligatures}
           label={"Enabled"}
           value={"enabled"}
         />

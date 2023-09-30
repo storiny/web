@@ -18,8 +18,8 @@ import Spacer from "../../../../../../../../packages/ui/src/components/spacer";
 import { use_toast } from "../../../../../../../../packages/ui/src/components/toast";
 import { use_reset_password_mutation } from "~/redux/features";
 
-import { useAuthState } from "../../../actions";
-import { ResetSchema, resetSchema } from "./schema";
+import { use_auth_state } from "../../../actions";
+import { ResetSchema, RESET_SCHEMA } from "./schema";
 
 interface Props {
   on_submit?: SubmitHandler<ResetSchema>;
@@ -28,24 +28,25 @@ interface Props {
 
 const ResetForm = ({ on_submit, token }: Props): React.ReactElement => {
   const toast = use_toast();
-  const { actions } = useAuthState();
+  const { actions } = use_auth_state();
   const form = use_form<ResetSchema>({
-    resolver: zod_resolver(resetSchema),
+    resolver: zod_resolver(RESET_SCHEMA),
     defaultValues: {
       email: "",
       password: "",
-      "logout-of-all-devices": false
+      logout_of_all_devices: false
     }
   });
-  const [mutateResetPassword, { isLoading }] = use_reset_password_mutation();
+  const [mutate_reset_password, { isLoading: is_loading }] =
+    use_reset_password_mutation();
 
-  const handleSubmit: SubmitHandler<ResetSchema> = (values) => {
+  const handle_submit: SubmitHandler<ResetSchema> = (values) => {
     if (on_submit) {
       on_submit(values);
     } else {
-      mutateResetPassword({ ...values, token })
+      mutate_reset_password({ ...values, token })
         .unwrap()
-        .then(() => actions.switchSegment("reset_success"))
+        .then(() => actions.switch_segment("reset_success"))
         .catch((e) =>
           toast(e?.data?.error || "Could not reset your password", "error")
         );
@@ -55,7 +56,7 @@ const ResetForm = ({ on_submit, token }: Props): React.ReactElement => {
   return (
     <Form<ResetSchema>
       className={clsx("flex-col", "full-h")}
-      on_submit={handleSubmit}
+      on_submit={handle_submit}
       provider_props={form}
     >
       <FormInput
@@ -83,14 +84,14 @@ const ResetForm = ({ on_submit, token }: Props): React.ReactElement => {
       <FormCheckbox
         data-testid={"logout-checkbox"}
         label={"Log out of all devices"}
-        name={"logout-of-all-devices"}
+        name={"logout_of_all_devices"}
       />
       <Spacer orientation={"vertical"} size={5} />
       <Grow />
       <div className={clsx("flex-col", "flex-center")}>
         <Button
           className={"full-w"}
-          loading={isLoading}
+          loading={is_loading}
           size={"lg"}
           type={"submit"}
         >

@@ -10,7 +10,7 @@ import ExploreLayout from "../layout";
 import Explore from "./client";
 
 const meta: Meta<typeof Explore> = {
-  title: "pages/Explore",
+  title: "pages/explore",
   component: Explore,
   args: { category: "all" },
   parameters: {

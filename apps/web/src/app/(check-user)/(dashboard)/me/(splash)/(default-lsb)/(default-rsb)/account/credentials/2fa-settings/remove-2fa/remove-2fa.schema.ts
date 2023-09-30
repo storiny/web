@@ -1,12 +1,12 @@
 import { ZOD_MESSAGES } from "@storiny/shared/src/constants/messages";
 import { z } from "zod";
 
-export type Remove2FASchema = z.infer<typeof remove2faSchema>;
+export type Remove2FASchema = z.infer<typeof REMOVE_2FA_SCHEMA>;
 
 export const RECOVERY_CODE_MIN_LENGTH = 6;
 export const RECOVERY_CODE_MAX_LENGTH = 8;
 
-export const remove2faSchema = z.object({
+export const REMOVE_2FA_SCHEMA = z.object({
   code: z
     .string()
     .min(

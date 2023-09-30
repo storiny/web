@@ -11,20 +11,20 @@ import PageTitle from "../../../../../../../../../../../packages/ui/src/entities
 import SearchIcon from "../../../../../../../../../../../packages/ui/src/icons/search";
 
 import {
-  dashboardGroups,
+  DASHBOARD_GROUPS,
   Group,
-  searchDashboardGroups
+  search_dashboard_groups
 } from "../../../../groups";
 import styles from "./navigation-screen.module.scss";
 
 // Group component
 
 const GroupComponent = ({ group }: { group: Group }): React.ReactElement => (
-  <div className={clsx("flex-col", styles.x, styles["navigation-group"])}>
+  <div className={clsx("flex-col", styles["navigation-group"])}>
     <Typography className={clsx("t-medium", "t-minor")} level={"body2"}>
       {group.title}
     </Typography>
-    <div className={clsx("flex-col", styles.x, styles["item-container"])}>
+    <div className={clsx("flex-col", styles["item-container"])}>
       {group.items.map((item) => (
         <React.Fragment key={item.value}>
           <NavigationItem
@@ -42,8 +42,8 @@ const GroupComponent = ({ group }: { group: Group }): React.ReactElement => (
 );
 
 const DashboardNavigationScreen = (): React.ReactElement => {
-  const [query, setQuery] = React.useState<string>("");
-  const [results, setResults] = React.useState<Group[]>([]);
+  const [query, set_query] = React.useState<string>("");
+  const [results, set_results] = React.useState<Group[]>([]);
 
   return (
     <React.Fragment>
@@ -64,21 +64,16 @@ const DashboardNavigationScreen = (): React.ReactElement => {
           decorator={<SearchIcon />}
           onChange={(event): void => {
             const value = event.target.value;
-            setQuery(value);
-            searchDashboardGroups(value).then(setResults);
+            set_query(value);
+            search_dashboard_groups(value).then(set_results);
           }}
           placeholder={"Search settings"}
           size={"lg"}
-          slot_props={{
-            container: {
-              className: clsx("f-grow", styles.x, styles.input)
-            }
-          }}
           type={"search"}
           value={query}
         />
       </div>
-      <div className={clsx("flex-col", styles.x, styles["navigation-screen"])}>
+      <div className={clsx("flex-col", styles["navigation-screen"])}>
         {query ? (
           results.length ? (
             results.map((group) => (
@@ -98,7 +93,7 @@ const DashboardNavigationScreen = (): React.ReactElement => {
             </Typography>
           )
         ) : (
-          dashboardGroups.map((group) => (
+          DASHBOARD_GROUPS.map((group) => (
             <GroupComponent group={group} key={group.title} />
           ))
         )}

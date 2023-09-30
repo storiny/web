@@ -9,10 +9,10 @@ import Link from "../../../../../../../../packages/ui/src/components/link";
 import Spacer from "../../../../../../../../packages/ui/src/components/spacer";
 import Typography from "../../../../../../../../packages/ui/src/components/typography";
 
-import { useAuthState } from "../../../actions";
+import { use_auth_state } from "../../../actions";
 
 const Page = (): React.ReactElement => {
-  const { actions } = useAuthState();
+  const { actions } = use_auth_state();
   return (
     <>
       <Typography as={"h1"} level={"h3"}>
@@ -36,7 +36,7 @@ const Page = (): React.ReactElement => {
         <Spacer orientation={"vertical"} size={3} />
         <Button
           className={"full-w"}
-          onClick={(): void => actions.switchSegment("login")}
+          onClick={(): void => actions.switch_segment("login")}
           size={"lg"}
         >
           Log in

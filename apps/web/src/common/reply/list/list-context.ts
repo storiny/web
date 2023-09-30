@@ -7,6 +7,6 @@ import { ReplySkeletonProps } from "~/entities/reply/skeleton";
 
 // Context for individual reply entities.
 export const VirtualizedReplyListContext = React.createContext<{
-  replyProps: Partial<ReplyProps>;
-  skeletonProps: Partial<ReplySkeletonProps>;
-}>({ replyProps: {}, skeletonProps: {} });
+  reply_props: Partial<ReplyProps>;
+  skeleton_props: Partial<ReplySkeletonProps>;
+}>({ reply_props: {}, skeleton_props: {} });

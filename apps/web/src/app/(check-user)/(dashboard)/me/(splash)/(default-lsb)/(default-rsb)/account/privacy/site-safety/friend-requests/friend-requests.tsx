@@ -18,7 +18,7 @@ import styles from "../site-safety.module.scss";
 import { FriendRequestsProps } from "./friend-requests.props";
 import {
   FriendRequestsSchema,
-  friendRequestsSchema
+  FRIEND_REQUESTS_SCHEMA
 } from "./friend-requests.schema";
 
 const FriendRequests = ({
@@ -26,25 +26,25 @@ const FriendRequests = ({
   incoming_friend_requests
 }: FriendRequestsProps): React.ReactElement => {
   const toast = use_toast();
-  const prevValuesRef = React.useRef<FriendRequestsSchema>();
+  const prev_values_ref = React.useRef<FriendRequestsSchema>();
   const form = use_form<FriendRequestsSchema>({
-    resolver: zod_resolver(friendRequestsSchema),
+    resolver: zod_resolver(FRIEND_REQUESTS_SCHEMA),
     defaultValues: {
-      "friend-requests": `${incoming_friend_requests}` as `${1 | 2 | 3 | 4}`
+      friend_requests: `${incoming_friend_requests}` as `${1 | 2 | 3 | 4}`
     }
   });
-  const [mutateIncomingFriendRequests, { isLoading }] =
+  const [mutate_incoming_friend_requests, { isLoading: is_loading }] =
     use_incoming_friend_requests_mutation();
 
-  const handleSubmit: SubmitHandler<FriendRequestsSchema> = (values) => {
+  const handle_submit: SubmitHandler<FriendRequestsSchema> = (values) => {
     if (on_submit) {
       on_submit(values);
     } else {
-      mutateIncomingFriendRequests(values)
+      mutate_incoming_friend_requests(values)
         .unwrap()
-        .then(() => (prevValuesRef.current = values))
+        .then(() => (prev_values_ref.current = values))
         .catch((e) => {
-          form.reset(prevValuesRef.current);
+          form.reset(prev_values_ref.current);
           toast(
             e?.data?.error || "Could not change your friend request settings",
             "error"
@@ -65,16 +65,16 @@ const FriendRequests = ({
       <Spacer orientation={"vertical"} />
       <Form<FriendRequestsSchema>
         className={clsx("flex-col", styles.x, styles.form)}
-        disabled={isLoading}
-        on_submit={handleSubmit}
+        disabled={is_loading}
+        on_submit={handle_submit}
         provider_props={form}
       >
         <FormRadioGroup
           auto_size
           className={clsx(styles.x, styles["radio-group"])}
-          name={"friend-requests"}
+          name={"friend_requests"}
           onValueChange={(): void => {
-            form.handleSubmit(handleSubmit)();
+            form.handleSubmit(handle_submit)();
           }}
         >
           <FormRadio

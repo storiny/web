@@ -1,7 +1,7 @@
 import { MetadataRoute } from "next";
 
 /**
- * robots.txt
+ * Robots.txt
  * @see https://nextjs.org/docs/app/api-reference/file-conventions/metadata/robots
  */
 const robots = (): MetadataRoute.Robots => ({

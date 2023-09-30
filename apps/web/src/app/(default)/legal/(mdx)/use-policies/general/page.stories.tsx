@@ -10,7 +10,7 @@ import LegalLayout from "../../../layout";
 import GeneralUsePolicy from "./client";
 
 const meta: Meta<typeof GeneralUsePolicy> = {
-  title: "pages/Legal/use-policies/general",
+  title: "pages/legal/use-policies/general",
   component: GeneralUsePolicy,
   parameters: {
     layout: "fullscreen"

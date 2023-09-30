@@ -14,15 +14,14 @@ import { VirtualizedCommentListContext } from "../list/list-context";
 const VirtualizedCommentItem = React.memo(
   ({ item, ...rest }: ItemProps<TComment>) => {
     // Props from context
-    const { commentProps } = React.useContext(VirtualizedCommentListContext);
-
+    const { comment_props } = React.useContext(VirtualizedCommentListContext);
     return (
       <div
         {...rest}
         className={clsx("flex-col", styles["list-item"])}
         key={item.id}
       >
-        <Comment {...commentProps} comment={item} virtual />
+        <Comment {...comment_props} comment={item} virtual />
         <Divider style={{ marginInline: "var(--grid-compensation)" }} />
       </div>
     );

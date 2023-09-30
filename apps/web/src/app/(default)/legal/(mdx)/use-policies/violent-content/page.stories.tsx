@@ -10,7 +10,7 @@ import LegalLayout from "../../../layout";
 import ViolentContentPolicy from "./client";
 
 const meta: Meta<typeof ViolentContentPolicy> = {
-  title: "pages/Legal/use-policies/violent-content",
+  title: "pages/legal/use-policies/violent-content",
   component: ViolentContentPolicy,
   parameters: {
     layout: "fullscreen"

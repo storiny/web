@@ -1,6 +1,6 @@
-import localFont from "next/font/local";
+import local_font from "next/font/local";
 
-export const nunitoFont = localFont({
+export const FONT_NUNITO = local_font({
   src: [
     {
       path: "../../../../../../../packages/ui/src/static/fonts/nunito/nunito-regular.woff2",

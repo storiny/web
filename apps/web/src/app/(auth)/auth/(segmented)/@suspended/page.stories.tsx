@@ -9,7 +9,7 @@ import AuthLayout from "../../../layout";
 import AuthSuspendedPage from "./page";
 
 const meta: Meta<typeof AuthSuspendedPage> = {
-  title: "pages/Auth/@suspended",
+  title: "pages/auth/@suspended",
   component: AuthSuspendedPage,
   parameters: {
     layout: "fullscreen"

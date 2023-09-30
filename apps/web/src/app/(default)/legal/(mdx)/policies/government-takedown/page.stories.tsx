@@ -10,7 +10,7 @@ import LegalLayout from "../../../layout";
 import GovernmentTakedownPolicy from "./client";
 
 const meta: Meta<typeof GovernmentTakedownPolicy> = {
-  title: "pages/Legal/policies/government-takedown",
+  title: "pages/legal/policies/government-takedown",
   component: GovernmentTakedownPolicy,
   parameters: {
     layout: "fullscreen"

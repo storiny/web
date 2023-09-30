@@ -3,25 +3,27 @@ import "server-only";
 import { redirect } from "next/navigation";
 import React from "react";
 
-import { getPrivacySettings } from "~/common/grpc";
-import { handleException } from "~/common/grpc/utils";
-import { getUser } from "~/common/utils/getUser";
+import { get_privacy_settings } from "~/common/grpc";
+import { handle_exception } from "~/common/grpc/utils";
+import { get_user } from "src/common/utils/get-user";
 
 import PrivacySettingsClient from "./client";
 
 const Page = async (): Promise<React.ReactElement | undefined> => {
   try {
-    const user_id = await getUser();
+    const user_id = await get_user();
 
     if (!user_id) {
       redirect("/login");
     }
 
-    const privacySettingsResponse = await getPrivacySettings({ id: user_id });
+    const privacy_settings_response = await get_privacy_settings({
+      id: user_id
+    });
 
-    return <PrivacySettingsClient {...privacySettingsResponse} />;
+    return <PrivacySettingsClient {...privacy_settings_response} />;
   } catch (e) {
-    handleException(e);
+    handle_exception(e);
   }
 };
 

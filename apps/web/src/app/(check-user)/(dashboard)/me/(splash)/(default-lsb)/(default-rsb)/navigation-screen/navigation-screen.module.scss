@@ -1,30 +1,16 @@
-.x {
-  /* Base styles */
-  &.navigation-screen {
-    gap: 24px;
-    padding-block: 6px;
-    margin-top: 12px;
-  }
+.navigation-screen {
+  gap: 24px;
+  padding-block: 6px;
+  margin-top: 12px;
+}
 
-  /* Navigation group */
-  &.navigation-group {
-    gap: 12px;
-  }
+.navigation-group {
+  gap: 12px;
+}
 
-  /* Item container */
-  &.item-container {
-    background-color: var(--bg-elevation-xs);
-    border: 1px solid var(--divider);
-    border-radius: var(--radius-md);
-    overflow: hidden;
-  }
-
-  /* Input */
-  &.input {
-    border-radius: 0;
-
-    &:not([data-focused="true"]) {
-      border: none;
-    }
-  }
+.item-container {
+  background-color: var(--bg-elevation-xs);
+  border: 1px solid var(--divider);
+  border-radius: var(--radius-md);
+  overflow: hidden;
 }

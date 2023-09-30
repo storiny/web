@@ -10,7 +10,7 @@ import { SettingsAlertProps } from "./settings-alert.props";
 const SettingsAlert = (
   props: SettingsAlertProps
 ): React.ReactElement | null => {
-  const { onDismiss, children, className, ...rest } = props;
+  const { on_dismiss, children, className, ...rest } = props;
   return (
     <div {...rest} className={clsx(styles.alert, className)} role={"alert"}>
       <span className={clsx("flex-center", styles.decorator)}>
@@ -21,8 +21,8 @@ const SettingsAlert = (
         aria-label={"Dismiss"}
         className={clsx("flex-center", styles.close)}
         onClick={(): void => {
-          if (onDismiss) {
-            onDismiss();
+          if (on_dismiss) {
+            on_dismiss();
           }
         }}
         title={"Dismiss"}

@@ -1,104 +1,106 @@
 import { ImageSize } from "@storiny/shared";
 
-import { baseBucket, handler, uploadsBucket } from "./handler";
+import { BASE_BUCKET, handler, UPLOADS_BUCKET } from "./handler";
 
-const imageSizes = Object.values(ImageSize).filter(
+const IMAGE_SIZES = Object.values(ImageSize).filter(
   (value) => typeof value === "number"
 );
 
 const r: Partial<Omit<NginxHTTPRequest, "uri">> & { uri: string } = {
   uri: "",
   return: jest.fn(),
+  // eslint-disable-next-line prefer-snakecase/prefer-snakecase
   internalRedirect: jest.fn(),
   variables: {},
-  headersOut: {},
+  // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+  headersOut: {}
 };
 
 describe("handler", () => {
-  let reqObj = r;
+  let req_obj = r;
 
   beforeEach(() => {
-    reqObj = r;
+    req_obj = r;
   });
 
   it("uses base bucket for single segment", () => {
-    reqObj.uri = "/object_key";
-    handler(reqObj as NginxHTTPRequest);
+    req_obj.uri = "/object_key";
+    handler(req_obj as NginxHTTPRequest);
 
-    expect(reqObj.variables?.proxy_rewrite).toEqual(
-      `internal/plain/${baseBucket}/object_key`
+    expect(req_obj.variables?.proxy_rewrite).toEqual(
+      `internal/plain/${BASE_BUCKET}/object_key`
     );
-    expect(reqObj.internalRedirect).toHaveBeenCalledWith("@proxy_pass");
+    expect(req_obj.internalRedirect).toHaveBeenCalledWith("@proxy_pass");
   });
 
   it("uses uploads bucket", () => {
-    reqObj.uri = "/uploads/object_key";
-    handler(reqObj as NginxHTTPRequest);
+    req_obj.uri = "/uploads/object_key";
+    handler(req_obj as NginxHTTPRequest);
 
-    expect(reqObj.variables?.proxy_rewrite).toEqual(
-      `internal/plain/${uploadsBucket}/object_key`
+    expect(req_obj.variables?.proxy_rewrite).toEqual(
+      `internal/plain/${UPLOADS_BUCKET}/object_key`
     );
-    expect(reqObj.internalRedirect).toHaveBeenCalledWith("@proxy_pass");
+    expect(req_obj.internalRedirect).toHaveBeenCalledWith("@proxy_pass");
   });
 
   it("uses download option", () => {
-    reqObj.uri = "/dl/object_key";
-    handler(reqObj as NginxHTTPRequest);
+    req_obj.uri = "/dl/object_key";
+    handler(req_obj as NginxHTTPRequest);
 
-    expect(reqObj.variables?.proxy_rewrite).toEqual(
-      `internal/return_attachment:true/plain/${uploadsBucket}/object_key`
+    expect(req_obj.variables?.proxy_rewrite).toEqual(
+      `internal/return_attachment:true/plain/${UPLOADS_BUCKET}/object_key`
     );
-    expect(reqObj.internalRedirect).toHaveBeenCalledWith("@proxy_pass");
+    expect(req_obj.internalRedirect).toHaveBeenCalledWith("@proxy_pass");
   });
 
   it("ignores size for download option", () => {
-    reqObj.uri = "/dl/w@24/object_key";
-    handler(reqObj as NginxHTTPRequest);
+    req_obj.uri = "/dl/w@24/object_key";
+    handler(req_obj as NginxHTTPRequest);
 
-    expect(reqObj.variables?.proxy_rewrite).toEqual(
-      `internal/return_attachment:true/plain/${uploadsBucket}/object_key`
+    expect(req_obj.variables?.proxy_rewrite).toEqual(
+      `internal/return_attachment:true/plain/${UPLOADS_BUCKET}/object_key`
     );
-    expect(reqObj.internalRedirect).toHaveBeenCalledWith("@proxy_pass");
+    expect(req_obj.internalRedirect).toHaveBeenCalledWith("@proxy_pass");
   });
 
   it("ignores size for `auto` width", () => {
-    reqObj.uri = "/w@auto/object_key";
-    handler(reqObj as NginxHTTPRequest);
+    req_obj.uri = "/w@auto/object_key";
+    handler(req_obj as NginxHTTPRequest);
 
-    expect(reqObj.variables?.proxy_rewrite).toEqual(
-      `internal/plain/${baseBucket}/object_key`
+    expect(req_obj.variables?.proxy_rewrite).toEqual(
+      `internal/plain/${BASE_BUCKET}/object_key`
     );
-    expect(reqObj.internalRedirect).toHaveBeenCalledWith("@proxy_pass");
+    expect(req_obj.internalRedirect).toHaveBeenCalledWith("@proxy_pass");
   });
 
-  imageSizes.forEach((size) => {
+  IMAGE_SIZES.forEach((size) => {
     it(`uses \`base\` bucket with \`w@${size}\` size segment`, () => {
-      reqObj.uri = `/w@${size}/object_key`;
-      handler(reqObj as NginxHTTPRequest);
+      req_obj.uri = `/w@${size}/object_key`;
+      handler(req_obj as NginxHTTPRequest);
 
-      expect(reqObj.variables?.proxy_rewrite).toEqual(
-        `internal/resize:fit:${size}:0:0:0/extend_ar:false:ce:0:0/plain/${baseBucket}/object_key`
+      expect(req_obj.variables?.proxy_rewrite).toEqual(
+        `internal/resize:fit:${size}:0:0:0/extend_ar:false:ce:0:0/plain/${BASE_BUCKET}/object_key`
       );
-      expect(reqObj.internalRedirect).toHaveBeenCalledWith("@proxy_pass");
+      expect(req_obj.internalRedirect).toHaveBeenCalledWith("@proxy_pass");
     });
   });
 
-  imageSizes.forEach((size) => {
+  IMAGE_SIZES.forEach((size) => {
     it(`uses \`uploads\` bucket with \`w@${size}\` size segment`, () => {
-      reqObj.uri = `/uploads/w@${size}/object_key`;
-      handler(reqObj as NginxHTTPRequest);
+      req_obj.uri = `/uploads/w@${size}/object_key`;
+      handler(req_obj as NginxHTTPRequest);
 
-      expect(reqObj.variables?.proxy_rewrite).toEqual(
-        `internal/resize:fit:${size}:0:0:0/extend_ar:false:ce:0:0/plain/${uploadsBucket}/object_key`
+      expect(req_obj.variables?.proxy_rewrite).toEqual(
+        `internal/resize:fit:${size}:0:0:0/extend_ar:false:ce:0:0/plain/${UPLOADS_BUCKET}/object_key`
       );
-      expect(reqObj.internalRedirect).toHaveBeenCalledWith("@proxy_pass");
+      expect(req_obj.internalRedirect).toHaveBeenCalledWith("@proxy_pass");
     });
   });
 
   it("uses remote image", () => {
-    reqObj.uri = "/remote/digest/hex";
-    handler(reqObj as NginxHTTPRequest);
+    req_obj.uri = "/remote/digest/hex";
+    handler(req_obj as NginxHTTPRequest);
 
-    expect(reqObj.return).toHaveBeenCalledWith(400, "Invalid signature");
+    expect(req_obj.return).toHaveBeenCalledWith(400, "Invalid signature");
   });
 });

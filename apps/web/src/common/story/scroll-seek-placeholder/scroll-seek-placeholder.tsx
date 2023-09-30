@@ -10,10 +10,10 @@ import { StorySkeleton } from "~/entities/story";
 import styles from "../../virtual/virtual.module.scss";
 
 const VirtualizedStoryScrollSeekPlaceholder = React.memo(() => {
-  const { skeletonProps } = React.useContext(VirtualizedStoryListContext);
+  const { skeleton_props } = React.useContext(VirtualizedStoryListContext);
   return (
     <div className={clsx("flex-col", styles["list-item"])}>
-      <StorySkeleton {...skeletonProps} virtual />
+      <StorySkeleton {...skeleton_props} virtual />
       <Divider style={{ marginInline: "var(--grid-compensation)" }} />
     </div>
   );

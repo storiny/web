@@ -13,35 +13,36 @@ import Typography from "../../../../../../../../../../../../../../packages/ui/sr
 import { use_read_history_mutation } from "~/redux/features";
 
 import styles from "../site-safety.module.scss";
-import { AccountHistoryProps } from "./account-history.props";
+import { AccountHistory_props } from "./account-history.props";
 import {
   AccountHistorySchema,
-  accountHistorySchema
+  ACCOUNT_HISTORY_SCHEMA
 } from "./account-history.schema";
 
 const AccountHistory = ({
   on_submit,
   record_read_history
-}: AccountHistoryProps): React.ReactElement => {
+}: AccountHistory_props): React.ReactElement => {
   const toast = use_toast();
-  const prevValuesRef = React.useRef<AccountHistorySchema>();
+  const prev_values_ref = React.useRef<AccountHistorySchema>();
   const form = use_form<AccountHistorySchema>({
-    resolver: zod_resolver(accountHistorySchema),
+    resolver: zod_resolver(ACCOUNT_HISTORY_SCHEMA),
     defaultValues: {
-      "read-history": !record_read_history
+      read_history: !record_read_history
     }
   });
-  const [mutateReadHistory, { isLoading }] = use_read_history_mutation();
+  const [mutate_read_history, { isLoading: is_loading }] =
+    use_read_history_mutation();
 
-  const handleSubmit: SubmitHandler<AccountHistorySchema> = (values) => {
+  const handle_submit: SubmitHandler<AccountHistorySchema> = (values) => {
     if (on_submit) {
-      on_submit({ "read-history": !values["read-history"] });
+      on_submit({ read_history: !values["read_history"] });
     } else {
-      mutateReadHistory({ "read-history": !values["read-history"] })
+      mutate_read_history({ read_history: !values["read_history"] })
         .unwrap()
-        .then(() => (prevValuesRef.current = values))
+        .then(() => (prev_values_ref.current = values))
         .catch((e) => {
-          form.reset(prevValuesRef.current);
+          form.reset(prev_values_ref.current);
           toast(
             e?.data?.error || "Could not change your history settings",
             "error"
@@ -58,8 +59,8 @@ const AccountHistory = ({
       <Spacer orientation={"vertical"} size={0.5} />
       <Form<AccountHistorySchema>
         className={clsx("flex-col", styles.x, styles.form)}
-        disabled={isLoading}
-        on_submit={handleSubmit}
+        disabled={is_loading}
+        on_submit={handle_submit}
         provider_props={form}
       >
         <FormSwitch
@@ -72,9 +73,9 @@ const AccountHistory = ({
             </React.Fragment>
           }
           label={"Disable read history"}
-          name={"read-history"}
+          name={"read_history"}
           onCheckedChange={(): void => {
-            form.handleSubmit(handleSubmit)();
+            form.handleSubmit(handle_submit)();
           }}
         />
       </Form>

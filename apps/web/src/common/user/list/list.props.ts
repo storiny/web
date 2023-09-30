@@ -15,7 +15,7 @@ export interface VirtualizedUserListProps extends VirtuosoProps<User, any> {
   /**
    * Props passed down to individual user entities.
    */
-  userProps?: Partial<UserProps>;
+  user_props?: Partial<UserProps>;
   /**
    * Array of users to render.
    */

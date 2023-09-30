@@ -9,31 +9,31 @@ import ProfileContent from "../content";
 import styles from "./right-sidebar.module.scss";
 
 interface Props {
-  isPrivate: boolean;
-  isSuspended: boolean;
+  is_private: boolean;
+  is_suspended: boolean;
   profile: GetProfileResponse;
 }
 
 const ProfileRightSidebar = ({
   profile,
-  isPrivate,
-  isSuspended
+  is_private,
+  is_suspended
 }: Props): React.ReactElement => (
   <RightSidebar
     className={clsx(
       styles.x,
       styles["right-sidebar"],
       Boolean(profile.banner_id) &&
-        !isPrivate &&
-        !isSuspended &&
+        !is_private &&
+        !is_suspended &&
         !profile.is_blocked_by_user &&
         styles["has-banner"]
     )}
   >
     <ProfileContent
-      isInsideSidebar
-      isPrivate={isPrivate}
-      isSuspended={isSuspended}
+      is_inside_sidebar
+      is_private={is_private}
+      is_suspended={is_suspended}
       profile={profile}
     />
     {/* Push the footer to the bottom of the viewport */}

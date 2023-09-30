@@ -5897,8 +5897,8 @@ __metadata:
     "@storiny/tsconfig": "*"
     "@storiny/types": "*"
     "@storiny/ui": "*"
-    "@types/react": ^18.2.18
-    "@types/react-dom": ^18.2.7
+    "@types/react": 18.2.0
+    "@types/react-dom": ^18.2.8
     clsx: ^1.2.1
     dotenv: ^16.3.1
     eslint: ^8.42.0
@@ -6132,8 +6132,8 @@ __metadata:
     "@types/css-mediaquery": ^0.1.1
     "@types/jest": ^29.5.1
     "@types/node": ^20.3.2
-    "@types/react": ^18.2.18
-    "@types/react-dom": ^18.2.7
+    "@types/react": 18.2.0
+    "@types/react-dom": ^18.2.8
     "@types/react-redux": ^7.1.25
     "@types/redux-state-sync": ^3.1.5
     "@types/zxcvbn": ^4.4.1
@@ -6189,8 +6189,8 @@ __metadata:
     "@storiny/ui": "*"
     "@types/mdx": ^2.0.5
     "@types/node": ^17.0.12
-    "@types/react": ^18.2.18
-    "@types/react-dom": ^18.2.7
+    "@types/react": 18.2.0
+    "@types/react-dom": ^18.2.8
     client-only: ^0.0.1
     dotenv-cli: ^7.2.1
     fuse.js: ^6.6.2
@@ -6233,8 +6233,8 @@ __metadata:
     "@types/image-blob-reduce": ^4.1.1
     "@types/pako": ^2.0.0
     "@types/pica": ^9.0.1
-    "@types/react": ^18.2.18
-    "@types/react-dom": ^18.2.7
+    "@types/react": 18.2.0
+    "@types/react-dom": ^18.2.8
     clsx: ^1.2.1
     eslint: ^8.42.0
     fabric: beta
@@ -8437,12 +8437,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react-dom@npm:^18.0.0, @types/react-dom@npm:^18.2.7":
+"@types/react-dom@npm:^18.0.0":
   version: 18.2.7
   resolution: "@types/react-dom@npm:18.2.7"
   dependencies:
     "@types/react": "*"
   checksum: e02ea908289a7ad26053308248d2b87f6aeafd73d0e2de2a3d435947bcea0422599016ffd1c3e38ff36c42f5e1c87c7417f05b0a157e48649e4a02f21727d54f
+  languageName: node
+  linkType: hard
+
+"@types/react-dom@npm:^18.2.8":
+  version: 18.2.8
+  resolution: "@types/react-dom@npm:18.2.8"
+  dependencies:
+    "@types/react": "*"
+  checksum: d36264631028d021b73cd9e015f10b95c4959ae1ce8f7a7419f318d1f05b1d063e6afffcd2a349a6bccd64ccc9ee9d2d976e1f0437643f0e7db621fa035bca65
   languageName: node
   linkType: hard
 
@@ -8467,7 +8476,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react@npm:*, @types/react@npm:>=16, @types/react@npm:^18.2.18":
+"@types/react@npm:*, @types/react@npm:>=16":
   version: 18.2.18
   resolution: "@types/react@npm:18.2.18"
   dependencies:
@@ -8475,6 +8484,17 @@ __metadata:
     "@types/scheduler": "*"
     csstype: ^3.0.2
   checksum: 2e0d75de2b618e76780019e52478b1bec2b015a9187aea30f84518c0c3ddc639055bdfea50864aece937bad0cb0544d0100b80d30f5461e72fbc1c3c0be8b140
+  languageName: node
+  linkType: hard
+
+"@types/react@npm:18.2.0":
+  version: 18.2.0
+  resolution: "@types/react@npm:18.2.0"
+  dependencies:
+    "@types/prop-types": "*"
+    "@types/scheduler": "*"
+    csstype: ^3.0.2
+  checksum: db3d92b423150222a666329f7aa3023e3e942044700557b8a7d161530847e621aec9f56c9e7f71761b06dd164c8a7b17ad52355863efe80963dffa5537e8e5fd
   languageName: node
   linkType: hard
 

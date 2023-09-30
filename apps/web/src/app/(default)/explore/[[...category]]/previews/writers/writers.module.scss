@@ -1,33 +1,29 @@
+.writers {
+  gap: 18px;
+  padding-block: 18px;
+
+  &.loading {
+    cursor: progress;
+  }
+}
+
+.writers-list {
+  justify-content: space-between;
+  gap: 24px;
+  overflow-x: auto;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
 .x {
-  /* Base styles */
-  &.writers {
-    gap: 18px;
-    padding-block: 18px;
-
-    &.loading {
-      cursor: progress;
-    }
-  }
-
-  /* Writers list */
-  &.writers-list {
-    justify-content: space-between;
-    gap: 24px;
-    overflow-x: auto;
-    scrollbar-width: none;
-
-    &::-webkit-scrollbar {
-      display: none;
-    }
-  }
-
-  /* Show more link */
   &.show-more {
     gap: 2px;
     margin-left: auto;
   }
 
-  /* Writer */
   &.writer {
     gap: 10px;
     text-align: center;

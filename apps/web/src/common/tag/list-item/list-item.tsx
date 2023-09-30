@@ -13,15 +13,14 @@ import styles from "../../virtual/virtual.module.scss";
 
 const VirtualizedTagItem = React.memo(({ item, ...rest }: ItemProps<TTag>) => {
   // Props from context
-  const tagProps = React.useContext(VirtualizedTagListContext);
-
+  const tag_props = React.useContext(VirtualizedTagListContext);
   return (
     <div
       {...rest}
       className={clsx("flex-col", styles["list-item"])}
       key={item.id}
     >
-      <Tag {...tagProps} tag={item} virtual />
+      <Tag {...tag_props} tag={item} virtual />
       <Divider style={{ marginInline: "var(--grid-compensation)" }} />
     </div>
   );

@@ -101,7 +101,7 @@ const EmbedModal = ({
             compact={is_smaller_than_mobile}
             onClick={(event): void => {
               event.preventDefault(); // Prevent closing of modal
-              form.handleSubmit(handleSubmit)(); // Submit manually
+              form.handleSubmit(handle_submit)(); // Submit manually
             }}
           >
             Confirm

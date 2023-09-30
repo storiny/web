@@ -14,15 +14,14 @@ import { VirtualizedUserListContext } from "../list/list-context";
 const VirtualizedUserItem = React.memo(
   ({ item, ...rest }: ItemProps<TUser>) => {
     // Props from context
-    const userProps = React.useContext(VirtualizedUserListContext);
-
+    const user_props = React.useContext(VirtualizedUserListContext);
     return (
       <div
         {...rest}
         className={clsx("flex-col", styles["list-item"])}
         key={item.id}
       >
-        <User {...userProps} user={item} virtual />
+        <User {...user_props} user={item} virtual />
         <Divider style={{ marginInline: "var(--grid-compensation)" }} />
       </div>
     );

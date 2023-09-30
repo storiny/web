@@ -1,19 +1,15 @@
-.x {
-  /* Header */
-  &.header {
-    gap: 8px;
-  }
+.header {
+  gap: 8px;
+}
 
-  /* Content */
-  &.content {
-    padding-block: 32px;
-    gap: 24px;
+.content {
+  padding-block: 32px;
+  gap: 24px;
 
-    & > h2,
-    h3 {
-      scroll-margin-top: 74px;
-      margin-top: 12px;
-      margin-bottom: -12px;
-    }
+  & > h2,
+  h3 {
+    scroll-margin-top: 74px;
+    margin-top: 12px;
+    margin-bottom: -12px;
   }
 }

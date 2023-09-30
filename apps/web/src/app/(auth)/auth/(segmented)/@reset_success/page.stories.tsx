@@ -9,7 +9,7 @@ import AuthLayout from "../../../layout";
 import ResetSuccessPage from "./page";
 
 const meta: Meta<typeof ResetSuccessPage> = {
-  title: "pages/Auth/@reset_success",
+  title: "pages/auth/@reset_success",
   component: ResetSuccessPage,
   parameters: {
     layout: "fullscreen"

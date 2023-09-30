@@ -6,10 +6,10 @@ import React from "react";
 import { render_with_state } from "~/redux/mock";
 
 import AuthLayout from "../../../layout";
-import VerifyEmailSuccessPage from "./index";
+import VerifyEmailSuccessPage from "./success";
 
 const meta: Meta<typeof VerifyEmailSuccessPage> = {
-  title: "pages/Auth/verify-email-success",
+  title: "pages/auth/verify-email-success",
   component: VerifyEmailSuccessPage,
   parameters: {
     layout: "fullscreen"

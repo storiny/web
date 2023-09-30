@@ -25,7 +25,7 @@ import { BREAKPOINTS } from "~/theme/breakpoints";
 import { RemoveAccountProps } from "./remove-account.props";
 import {
   RemoveAccountSchema,
-  removeAccountSchema
+  REMOVE_ACCOUNT_SCHEMA
 } from "./remove-account.schema";
 
 const RemoveAccountModal = (): React.ReactElement => (
@@ -48,7 +48,7 @@ const RemoveAccountModal = (): React.ReactElement => (
         }
       }}
       label={"Password"}
-      name={"current-password"}
+      name={"current_password"}
       placeholder={"Your password"}
       required
     />
@@ -59,24 +59,25 @@ const RemoveAccountModal = (): React.ReactElement => (
 const RemoveAccount = ({
   on_submit,
   vendor,
-  onRemove
+  on_remove
 }: RemoveAccountProps): React.ReactElement => {
   const toast = use_toast();
   const is_smaller_than_mobile = use_media_query(BREAKPOINTS.down("mobile"));
-  const [updated, setUpdated] = React.useState<boolean>(false);
+  const [updated, set_updated] = React.useState<boolean>(false);
   const form = use_form<RemoveAccountSchema>({
-    resolver: zod_resolver(removeAccountSchema),
+    resolver: zod_resolver(REMOVE_ACCOUNT_SCHEMA),
     defaultValues: {
-      "current-password": ""
+      current_password: ""
     }
   });
-  const [removeAccount, { isLoading }] = use_remove_account_mutation();
+  const [remove_account, { isLoading: is_loading }] =
+    use_remove_account_mutation();
 
-  const handleSubmit: SubmitHandler<RemoveAccountSchema> = (values) => {
+  const handle_submit: SubmitHandler<RemoveAccountSchema> = (values) => {
     if (on_submit) {
       on_submit(values);
     } else {
-      removeAccount({
+      remove_account({
         ...values,
         vendor: vendor.toLowerCase() as "google" | "apple"
       })
@@ -84,10 +85,10 @@ const RemoveAccount = ({
         .then(() => {
           close_modal();
           toast(`Removed your ${vendor} account`, "success");
-          onRemove();
+          on_remove();
         })
         .catch((e) => {
-          setUpdated(false);
+          set_updated(false);
           toast(
             e?.data?.error || `Could not remove your ${vendor} account`,
             "error"
@@ -110,8 +111,8 @@ const RemoveAccount = ({
     ),
     <Form<RemoveAccountSchema>
       className={clsx("flex-col")}
-      disabled={isLoading}
-      on_submit={handleSubmit}
+      disabled={is_loading}
+      on_submit={handle_submit}
       provider_props={form}
     >
       <RemoveAccountModal />
@@ -126,10 +127,10 @@ const RemoveAccount = ({
           <ModalFooterButton
             compact={is_smaller_than_mobile}
             disabled={!form.formState.isDirty}
-            loading={isLoading}
+            loading={is_loading}
             onClick={(event): void => {
               event.preventDefault(); // Prevent closing of modal
-              form.handleSubmit(handleSubmit)(); // Submit manually
+              form.handleSubmit(handle_submit)(); // Submit manually
             }}
           >
             Confirm

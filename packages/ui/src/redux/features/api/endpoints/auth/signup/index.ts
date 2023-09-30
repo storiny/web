@@ -12,7 +12,7 @@ export interface SignupPayload {
   wpm: number;
 }
 
-export const { useSignupMutation: use_signup_mutation } =
+export const { use_signupMutation: use_signup_mutation } =
   api_slice.injectEndpoints({
     endpoints: (builder) => ({
       signup: builder.mutation<void, SignupPayload>({

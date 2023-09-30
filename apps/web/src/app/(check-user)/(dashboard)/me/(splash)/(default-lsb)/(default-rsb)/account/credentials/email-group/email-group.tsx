@@ -1,6 +1,6 @@
 import { USER_PROPS } from "@storiny/shared";
 import { clsx } from "clsx";
-import { useRouter } from "next/navigation";
+import { useRouter as use_router } from "next/navigation";
 import React from "react";
 
 import Button from "../../../../../../../../../../../../../packages/ui/src/components/button";
@@ -33,7 +33,10 @@ import { BREAKPOINTS } from "~/theme/breakpoints";
 
 import DashboardGroup from "../../../../dashboard-group";
 import { EmailGroupProps } from "./email-group.props";
-import { EmailSettingsSchema, emailSettingsSchema } from "./email-group.schema";
+import {
+  EmailSettingsSchema,
+  EMAIL_SETTINGS_SCHEMA
+} from "./email-group.schema";
 
 const EmailSettingsModal = ({
   updated
@@ -63,7 +66,7 @@ const EmailSettingsModal = ({
           label={"New e-mail"}
           maxLength={USER_PROPS.email.max_length}
           minLength={USER_PROPS.email.min_length}
-          name={"new-email"}
+          name={"new_email"}
           placeholder={"Your new e-mail"}
           required
         />
@@ -78,7 +81,7 @@ const EmailSettingsModal = ({
             }
           }}
           label={"Current password"}
-          name={"current-password"}
+          name={"current_password"}
           placeholder={"Your current password"}
           required
         />
@@ -93,36 +96,37 @@ export const EmailSettings = ({
   on_submit,
   has_password
 }: EmailGroupProps): React.ReactElement => {
-  const router = useRouter();
+  const router = use_router();
   const dispatch = use_app_dispatch();
   const toast = use_toast();
   const is_smaller_than_mobile = use_media_query(BREAKPOINTS.down("mobile"));
-  const [updated, setUpdated] = React.useState<boolean>(false);
+  const [updated, set_updated] = React.useState<boolean>(false);
   const form = use_form<EmailSettingsSchema>({
-    resolver: zod_resolver(emailSettingsSchema),
+    resolver: zod_resolver(EMAIL_SETTINGS_SCHEMA),
     defaultValues: {
-      "new-email": "",
-      "current-password": ""
+      new_email: "",
+      current_password: ""
     }
   });
-  const [mutateEmailSettings, { isLoading }] = use_email_settings_mutation();
+  const [mutate_email_settings, { isLoading: is_loading }] =
+    use_email_settings_mutation();
 
-  const handleSubmit: SubmitHandler<EmailSettingsSchema> = (values) => {
+  const handle_submit: SubmitHandler<EmailSettingsSchema> = (values) => {
     if (on_submit) {
       on_submit(values);
     } else {
-      mutateEmailSettings(values)
+      mutate_email_settings(values)
         .unwrap()
         .then(() => {
-          setUpdated(true);
+          set_updated(true);
           dispatch(
             mutate_user({
-              email: values["new-email"]
+              email: values["new_email"]
             })
           );
         })
         .catch((e) => {
-          setUpdated(false);
+          set_updated(false);
           toast(e?.data?.error || "Could not update your e-mail", "error");
         });
     }
@@ -143,13 +147,14 @@ export const EmailSettings = ({
     ),
     <Form<EmailSettingsSchema>
       className={clsx("flex-col")}
-      disabled={isLoading}
-      on_submit={handleSubmit}
+      disabled={is_loading}
+      on_submit={handle_submit}
       provider_props={form}
     >
       <EmailSettingsModal updated={updated} />
     </Form>,
     {
+      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
       onOpenChange: updated ? (): void => undefined : undefined,
       fullscreen: is_smaller_than_mobile,
       footer: (
@@ -165,14 +170,14 @@ export const EmailSettings = ({
           <ModalFooterButton
             compact={is_smaller_than_mobile}
             disabled={!updated && !form.formState.isDirty}
-            loading={isLoading}
+            loading={is_loading}
             onClick={(event): void => {
               event.preventDefault(); // Prevent closing of modal
 
               if (updated) {
                 router.push("/logout");
               } else {
-                form.handleSubmit(handleSubmit)(); // Submit manually
+                form.handleSubmit(handle_submit)(); // Submit manually
               }
             }}
           >

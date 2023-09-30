@@ -1,13 +1,13 @@
 import { z } from "zod";
 
-export type SiteNotificationsSchema = z.infer<typeof siteNotificationsSchema>;
+export type SiteNotificationsSchema = z.infer<typeof SITE_NOTIFICATIONS_SCHEMA>;
 
-export const siteNotificationsSchema = z.object({
-  "features-and-updates": z.boolean(),
+export const SITE_NOTIFICATIONS_SCHEMA = z.object({
+  features_and_updates: z.boolean(),
   stories: z.boolean(),
   tags: z.boolean(),
   comments: z.boolean(),
   replies: z.boolean(),
-  "new-followers": z.boolean(),
-  "friend-requests": z.boolean()
+  new_followers: z.boolean(),
+  friend_requests: z.boolean()
 });

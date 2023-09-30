@@ -15,17 +15,17 @@ import FormNewPasswordInput from "../../../../../../../../packages/ui/src/compon
 import Grow from "../../../../../../../../packages/ui/src/components/grow";
 import Spacer from "../../../../../../../../packages/ui/src/components/spacer";
 
-import { useAuthState } from "../../../actions";
-import { SignupBaseSchema, signupBaseSchema } from "./schema";
+import { use_auth_state } from "../../../actions";
+import { SignupBaseSchema, SIGNUP_BASE_SCHEMA } from "./schema";
 
 interface Props {
   on_submit?: SubmitHandler<SignupBaseSchema>;
 }
 
 const SignupBaseForm = ({ on_submit }: Props): React.ReactElement => {
-  const { state } = useAuthState();
+  const { state } = use_auth_state();
   const form = use_form<SignupBaseSchema>({
-    resolver: zod_resolver(signupBaseSchema),
+    resolver: zod_resolver(SIGNUP_BASE_SCHEMA),
     defaultValues: {
       name: state.signup.name,
       email: state.signup.email,
@@ -33,7 +33,7 @@ const SignupBaseForm = ({ on_submit }: Props): React.ReactElement => {
     }
   });
 
-  const handleSubmit: SubmitHandler<SignupBaseSchema> = (values) => {
+  const handle_submit: SubmitHandler<SignupBaseSchema> = (values) => {
     if (on_submit) {
       on_submit(values);
     }
@@ -42,7 +42,7 @@ const SignupBaseForm = ({ on_submit }: Props): React.ReactElement => {
   return (
     <Form<SignupBaseSchema>
       className={clsx("flex-col", "full-h")}
-      on_submit={handleSubmit}
+      on_submit={handle_submit}
       provider_props={form}
     >
       <FormInput

@@ -6,7 +6,7 @@ import {
   FormLabelProps,
   FormMessageProps
 } from "~/components/form";
-import { InputProps } from "src/components/input";
+import { InputProps } from "~/components/input";
 
 export interface FormInputProps extends InputProps {
   /**

@@ -1,25 +1,20 @@
-.x {
-  /* Section */
-  &.section {
-    gap: 24px;
-    align-items: center;
+.section {
+  gap: 24px;
+  align-items: center;
 
-    & img {
-      width: 100%;
-      max-width: 100%;
-    }
+  & img {
+    width: 100%;
+    max-width: 100%;
   }
+}
 
-  /* Section content */
-  &.section-content {
-    grid-column: 2 / -2;
-    gap: 48px;
-  }
+.section-content {
+  grid-column: 2 / -2;
+  gap: 48px;
+}
 
-  /* Figure */
-  &.figure {
-    overflow: hidden;
-    border: 1px solid var(--divider);
-    border-radius: var(--radius-xs);
-  }
+.figure {
+  overflow: hidden;
+  border: 1px solid var(--divider);
+  border-radius: var(--radius-xs);
 }

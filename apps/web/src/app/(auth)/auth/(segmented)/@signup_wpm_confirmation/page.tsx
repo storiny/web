@@ -10,10 +10,10 @@ import Spacer from "../../../../../../../../packages/ui/src/components/spacer";
 import Stepper from "../../../../../../../../packages/ui/src/components/stepper";
 import Typography from "../../../../../../../../packages/ui/src/components/typography";
 
-import { useAuthState } from "../../../actions";
+import { use_auth_state } from "../../../actions";
 
 const Page = (): React.ReactElement => {
-  const { actions } = useAuthState();
+  const { actions } = use_auth_state();
   return (
     <>
       <Typography as={"h1"} level={"h3"}>
@@ -29,7 +29,7 @@ const Page = (): React.ReactElement => {
       <Spacer orientation={"vertical"} size={5} />
       <div className={clsx("flex-col")}>
         <Button
-          onClick={(): void => actions.switchSegment("signup_wpm_manual")}
+          onClick={(): void => actions.switch_segment("signup_wpm_manual")}
           size={"lg"}
           variant={"hollow"}
         >
@@ -37,7 +37,7 @@ const Page = (): React.ReactElement => {
         </Button>
         <Spacer orientation={"vertical"} size={1.75} />
         <Button
-          onClick={(): void => actions.switchSegment("signup_wpm_auto")}
+          onClick={(): void => actions.switch_segment("signup_wpm_auto")}
           size={"lg"}
         >
           Start
@@ -50,7 +50,7 @@ const Page = (): React.ReactElement => {
           className={"t-medium"}
           href={"/auth"}
           level={"body2"}
-          onClick={(): void => actions.switchSegment("signup_wpm_base")}
+          onClick={(): void => actions.switch_segment("signup_wpm_base")}
           underline={"always"}
         >
           Return to the previous screen

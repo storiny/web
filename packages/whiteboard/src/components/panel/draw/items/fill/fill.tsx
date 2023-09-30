@@ -202,8 +202,8 @@ const FillStyleControl = ({
     <>
       <DrawItemRow>
         <Select
-          onValueChange={(newValue: FillStyle): void =>
-            change_fill_style(newValue)
+          onValueChange={(next_value: FillStyle): void =>
+            change_fill_style(next_value)
           }
           size={"sm"}
           slot_props={{

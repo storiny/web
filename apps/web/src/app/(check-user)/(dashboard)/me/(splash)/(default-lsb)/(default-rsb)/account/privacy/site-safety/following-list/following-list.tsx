@@ -22,7 +22,7 @@ import styles from "../site-safety.module.scss";
 import { FollowingListProps } from "./following-list.props";
 import {
   FollowingListSchema,
-  followingListSchema
+  FOLLOWING_LIST_SCHEMA
 } from "./following-list.schema";
 
 const FollowingList = ({
@@ -30,25 +30,26 @@ const FollowingList = ({
   following_list_visibility
 }: FollowingListProps): React.ReactElement => {
   const toast = use_toast();
-  const isPrivate = use_app_selector(select_is_private_account);
-  const prevValuesRef = React.useRef<FollowingListSchema>();
+  const is_private = use_app_selector(select_is_private_account);
+  const prev_values_ref = React.useRef<FollowingListSchema>();
   const form = use_form<FollowingListSchema>({
-    resolver: zod_resolver(followingListSchema),
+    resolver: zod_resolver(FOLLOWING_LIST_SCHEMA),
     defaultValues: {
-      "following-list": `${following_list_visibility}` as `${1 | 2 | 3}`
+      following_list: `${following_list_visibility}` as `${1 | 2 | 3}`
     }
   });
-  const [mutateFollowingList, { isLoading }] = use_following_list_mutation();
+  const [mutate_following_list, { isLoading: is_loading }] =
+    use_following_list_mutation();
 
-  const handleSubmit: SubmitHandler<FollowingListSchema> = (values) => {
+  const handle_submit: SubmitHandler<FollowingListSchema> = (values) => {
     if (on_submit) {
       on_submit(values);
     } else {
-      mutateFollowingList(values)
+      mutate_following_list(values)
         .unwrap()
-        .then(() => (prevValuesRef.current = values))
+        .then(() => (prev_values_ref.current = values))
         .catch((e) => {
-          form.reset(prevValuesRef.current);
+          form.reset(prev_values_ref.current);
           toast(
             e?.data?.error || "Could not change your following list settings",
             "error"
@@ -69,21 +70,21 @@ const FollowingList = ({
       <Spacer orientation={"vertical"} />
       <Form<FollowingListSchema>
         className={clsx("flex-col", styles.x, styles.form)}
-        disabled={isLoading}
-        on_submit={handleSubmit}
+        disabled={is_loading}
+        on_submit={handle_submit}
         provider_props={form}
       >
         <FormRadioGroup
           auto_size
           className={clsx(styles.x, styles["radio-group"])}
-          name={"following-list"}
+          name={"following_list"}
           onValueChange={(): void => {
-            form.handleSubmit(handleSubmit)();
+            form.handleSubmit(handle_submit)();
           }}
         >
           <FormRadio
             aria-label={"Everyone"}
-            disabled={isPrivate}
+            disabled={is_private}
             label={"Everyone"}
             value={`${RelationVisibility.EVERYONE}`}
           />

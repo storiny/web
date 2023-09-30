@@ -10,7 +10,7 @@ import Link from "../../../../../../../../packages/ui/src/components/link";
 import Spacer from "../../../../../../../../packages/ui/src/components/spacer";
 import Typography from "../../../../../../../../packages/ui/src/components/typography";
 
-import { useAuthState } from "../../../actions";
+import { use_auth_state } from "../../../actions";
 import styles from "./styles.module.scss";
 
 const AppleIcon = (): React.ReactElement => (
@@ -64,7 +64,7 @@ const GoogleIcon = (): React.ReactElement => (
 );
 
 const Page = (): React.ReactElement => {
-  const { actions } = useAuthState();
+  const { actions } = use_auth_state();
   return (
     <>
       <Typography as={"h1"} level={"h3"}>
@@ -75,15 +75,15 @@ const Page = (): React.ReactElement => {
         How would you like to proceed?
       </Typography>
       <Spacer orientation={"vertical"} size={5} />
-      <div className={clsx("flex-col", styles.x, styles.actions)}>
+      <div className={clsx("flex-col", styles.actions)}>
         <Button
-          onClick={(): void => actions.switchSegment("signup_base")}
+          onClick={(): void => actions.switch_segment("signup_base")}
           size={"lg"}
         >
           Sign up with E-mail
         </Button>
         <Button
-          onClick={(): void => actions.switchSegment("login")}
+          onClick={(): void => actions.switch_segment("login")}
           size={"lg"}
           variant={"hollow"}
         >
@@ -110,19 +110,13 @@ const Page = (): React.ReactElement => {
       <Spacer orientation={"vertical"} size={3} />
       <Grow />
       <footer
-        className={clsx(
-          "flex-col",
-          "flex-center",
-          "t-minor",
-          styles.x,
-          styles.footer
-        )}
+        className={clsx("flex-col", "flex-center", "t-minor", styles.footer)}
       >
         <Link
           className={"t-medium"}
           href={"/auth"}
           level={"body2"}
-          onClick={(): void => actions.switchSegment("recovery_base")}
+          onClick={(): void => actions.switch_segment("recovery_base")}
           underline={"always"}
         >
           Recover your account

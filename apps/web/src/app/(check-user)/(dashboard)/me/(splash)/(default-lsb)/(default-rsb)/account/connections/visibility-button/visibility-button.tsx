@@ -10,19 +10,19 @@ const VisibilityButton = ({
   connection
 }: VisibilityButtonProps): React.ReactElement => {
   const toast = use_toast();
-  const [hidden, setHidden] = React.useState<boolean>(
+  const [hidden, set_hidden] = React.useState<boolean>(
     Boolean(connection.hidden)
   );
-  const [mutateConnectionVisibility, { isLoading }] =
+  const [mutate_connection_visibility, { isLoading: is_loading }] =
     use_connection_visibility_mutation();
 
   /**
    * Handles visibility mutations
    */
-  const handleVisibility = (): void => {
-    mutateConnectionVisibility({ id: connection.id, visible: hidden })
+  const handle_visibility = (): void => {
+    mutate_connection_visibility({ id: connection.id, visible: hidden })
       .unwrap()
-      .then(() => setHidden((prev_state) => !prev_state))
+      .then(() => set_hidden((prev_state) => !prev_state))
       .catch((e) =>
         toast(e?.data?.error || "Could not change your connection settings")
       );
@@ -32,8 +32,8 @@ const VisibilityButton = ({
     <Button
       auto_size
       check_auth
-      disabled={isLoading}
-      onClick={handleVisibility}
+      disabled={is_loading}
+      onClick={handle_visibility}
       variant={hidden ? "rigid" : "hollow"}
     >
       {hidden ? "Unhide" : "Hide"}

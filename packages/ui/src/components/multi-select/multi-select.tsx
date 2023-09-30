@@ -160,10 +160,10 @@ const MultiSelect = React.forwardRef<
             ? "You've reached the maximum limit"
             : "No options available")
       }
-      onChange={(newValue): void => {
-        if (newValue) {
-          set_value(newValue);
-          rest?.onChange?.(newValue.map(({ value }) => value));
+      onChange={(next_value): void => {
+        if (next_value) {
+          set_value(next_value);
+          rest?.onChange?.(next_value.map(({ value }) => value));
         }
       }}
       placeholder={placeholder}

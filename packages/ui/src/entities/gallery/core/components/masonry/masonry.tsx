@@ -1,6 +1,6 @@
 "use client";
 
-import { dynamicLoader } from "@storiny/web/src/common/dynamic";
+import { dynamic_loader } from "@storiny/web/src/common/dynamic";
 import clsx from "clsx";
 import { useAtomValue as use_atom_value } from "jotai";
 import dynamic from "next/dynamic";
@@ -30,10 +30,10 @@ import { GalleryMasonryProps } from "./masonry.props";
 import PexelsMasonryItem from "./pexels-item";
 
 const EmptyState = dynamic(() => import("./empty-state"), {
-  loading: dynamicLoader()
+  loading: dynamic_loader()
 });
 const PexelsUploader = dynamic(() => import("../pexels-uploader"), {
-  loading: dynamicLoader()
+  loading: dynamic_loader()
 });
 
 // Pexels

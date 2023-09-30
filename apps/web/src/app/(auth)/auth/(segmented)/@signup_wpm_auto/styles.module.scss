@@ -1,12 +1,10 @@
 .x {
-  /* Scroll area */
   &.scroll-area {
     border: 1px solid var(--divider);
     border-radius: var(--radius-md);
     max-height: 45vh;
   }
 
-  /* Viewport */
   &.viewport {
     padding: 12px 18px 12px 12px;
   }

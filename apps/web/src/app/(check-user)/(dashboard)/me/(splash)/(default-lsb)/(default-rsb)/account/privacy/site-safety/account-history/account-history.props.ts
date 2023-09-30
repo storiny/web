@@ -3,6 +3,6 @@ import { SubmitHandler } from "../../../../../../../../../../../../../../package
 
 import { AccountHistorySchema } from "./account-history.schema";
 
-export type AccountHistoryProps = {
+export type AccountHistory_props = {
   on_submit?: SubmitHandler<AccountHistorySchema>;
 } & Pick<GetPrivacySettingsResponse, "record_read_history">;

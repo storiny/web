@@ -1,6 +1,6 @@
-import localFont from "next/font/local";
+import local_font from "next/font/local";
 
-export const synonymFont = localFont({
+export const FONT_SYNONYM = local_font({
   src: [
     {
       path: "../../../../../../../packages/ui/src/static/fonts/synonym/synonym-regular.woff2",

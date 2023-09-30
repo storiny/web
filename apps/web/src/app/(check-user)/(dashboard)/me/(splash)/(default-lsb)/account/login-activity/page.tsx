@@ -3,34 +3,34 @@ import "server-only";
 import { redirect } from "next/navigation";
 import React from "react";
 
-import { getLoginActivity } from "~/common/grpc";
-import { handleException } from "~/common/grpc/utils";
-import { getSessionToken } from "~/common/utils/getSessionToken";
-import { getUser } from "~/common/utils/getUser";
+import { get_login_activity } from "~/common/grpc";
+import { handle_exception } from "~/common/grpc/utils";
+import { get_session_token } from "src/common/utils/get-session-token";
+import { get_user } from "src/common/utils/get-user";
 
 import LoginActivityClient from "./client";
 
 const Page = async (): Promise<React.ReactElement | undefined> => {
   try {
-    const sessionToken = getSessionToken();
+    const session_token = get_session_token();
 
-    if (!sessionToken) {
+    if (!session_token) {
       redirect("/login"); // Early return
     }
 
-    const user_id = await getUser();
+    const user_id = await get_user();
 
     if (!user_id) {
       redirect("/login");
     }
 
-    const loginActivityResponse = await getLoginActivity({
-      token: sessionToken
+    const login_activity_response = await get_login_activity({
+      token: session_token
     });
 
-    return <LoginActivityClient {...loginActivityResponse} />;
+    return <LoginActivityClient {...login_activity_response} />;
   } catch (e) {
-    handleException(e);
+    handle_exception(e);
   }
 };
 

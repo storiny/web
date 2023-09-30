@@ -12,10 +12,10 @@ import DefaultDashboardRightSidebarLayout from "../../../layout";
 import AccountConnectionFailurePage from "./client";
 
 const meta: Meta<typeof AccountConnectionFailurePage> = {
-  title: "dashboard/Account/connections/failure",
+  title: "dashboard/account/connections/failure",
   component: AccountConnectionFailurePage,
   args: {
-    displayName: "Twitter",
+    display_name: "Twitter",
     type: "state-mismatch"
   },
   parameters: {

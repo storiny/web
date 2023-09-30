@@ -10,7 +10,7 @@ import Typography from "../../../../../../../../../packages/ui/src/components/ty
 import TagChip from "../../../../../../../../../packages/ui/src/entities/tag-chip";
 import { use_media_query } from "../../../../../../../../../packages/ui/src/hooks/use-media-query";
 import ChevronIcon from "../../../../../../../../../packages/ui/src/icons/chevron";
-import { use_get_explore_tag_query } from "~/redux/features";
+import { use_get_explore_tags_query } from "~/redux/features";
 import { BREAKPOINTS } from "~/theme/breakpoints";
 
 import TagSkeleton from "./skeleton";
@@ -20,25 +20,30 @@ interface Props {
   category: StoryCategory | "all";
   debounced_query: string;
   loading: boolean;
-  normalizedCategory: string;
+  normalized_category: string;
 }
 
 const TagsPreview = ({
   category,
-  loading: loadingProp,
+  loading: loading_prop,
   debounced_query,
-  normalizedCategory
+  normalized_category
 }: Props): React.ReactElement | null => {
   const is_mobile = use_media_query(BREAKPOINTS.down("mobile"));
-  const { data, isLoading, is_fetching, isError } = use_get_explore_tag_query({
+  const {
+    data,
+    isLoading: is_loading,
+    isFetching: is_fetching,
+    isError: is_error
+  } = use_get_explore_tags_query({
     page: 1,
     category,
     query: debounced_query
   });
   const { items = [] } = data || {};
-  const loading = isLoading || loadingProp;
+  const loading = is_loading || loading_prop;
 
-  if (isError || (!items.length && !is_fetching)) {
+  if (is_error || (!items.length && !is_fetching)) {
     return null;
   }
 
@@ -46,18 +51,13 @@ const TagsPreview = ({
     <>
       <div
         aria-busy={loading}
-        className={clsx(
-          "flex-col",
-          styles.x,
-          styles.tags,
-          loading && styles.loading
-        )}
+        className={clsx("flex-col", styles.tags, loading && styles.loading)}
       >
         <Typography className={"t-medium"} level={"body2"}>
-          Popular tags in {normalizedCategory}
+          Popular tags in {normalized_category}
         </Typography>
         <div
-          className={clsx("flex", styles.x, styles["tags-list"])}
+          className={clsx("flex", styles["tags-list"])}
           key={String(loading)}
         >
           {loading

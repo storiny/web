@@ -5,7 +5,7 @@ import dynamic from "next/dynamic";
 import NextLink from "next/link";
 import React from "react";
 
-import { dynamicLoader } from "~/common/dynamic";
+import { dynamic_loader } from "~/common/dynamic";
 import { StoryListSkeleton, VirtualizedStoryList } from "~/common/story";
 import Divider from "../../../../../../../packages/ui/src/components/divider";
 import IconButton from "../../../../../../../packages/ui/src/components/icon-button";
@@ -20,18 +20,18 @@ import { get_query_error_type, use_get_history_query } from "~/redux/features";
 import styles from "./styles.module.scss";
 
 const EmptyState = dynamic(() => import("./empty-state"), {
-  loading: dynamicLoader()
+  loading: dynamic_loader()
 });
 
 // Page header
 
 const PageHeader = ({
   query,
-  onQueryChange,
+  on_query_change,
   disabled
 }: {
   disabled?: boolean;
-  onQueryChange: (newQuery: string) => void;
+  on_query_change: (next_query: string) => void;
   query: string;
 }): React.ReactElement => (
   <div
@@ -45,14 +45,9 @@ const PageHeader = ({
     <Input
       decorator={<SearchIcon />}
       disabled={disabled}
-      onChange={(event): void => onQueryChange(event.target.value)}
+      onChange={(event): void => on_query_change(event.target.value)}
       placeholder={"Search your history"}
       size={"lg"}
-      slot_props={{
-        container: {
-          className: clsx("f-grow", styles.x, styles.input)
-        }
-      }}
       type={"search"}
       value={query}
     />
@@ -73,14 +68,20 @@ const PageHeader = ({
 );
 
 const Client = (): React.ReactElement => {
-  const [query, setQuery] = React.useState<string>("");
+  const [query, set_query] = React.useState<string>("");
   const [page, set_page] = React.useState<number>(1);
   const debounced_query = use_debounce(query);
-  const { data, isLoading, is_fetching, isError, error, refetch } =
-    use_get_history_query({
-      page,
-      query: debounced_query
-    });
+  const {
+    data,
+    isLoading: is_loading,
+    isFetching: is_fetching,
+    isError: is_error,
+    error,
+    refetch
+  } = use_get_history_query({
+    page,
+    query: debounced_query
+  });
   const { items = [], has_more } = data || {};
   const is_typing = query !== debounced_query;
 
@@ -89,9 +90,9 @@ const Client = (): React.ReactElement => {
     []
   );
 
-  const handleQueryChange = React.useCallback((newQuery: string) => {
+  const handle_query_change = React.useCallback((next_query: string) => {
     set_page(1);
-    setQuery(newQuery);
+    set_query(next_query);
   }, []);
 
   return (
@@ -99,10 +100,10 @@ const Client = (): React.ReactElement => {
       <PageTitle>History</PageTitle>
       <PageHeader
         disabled={!items.length}
-        onQueryChange={handleQueryChange}
+        on_query_change={handle_query_change}
         query={query}
       />
-      {isError ? (
+      {is_error ? (
         <ErrorState
           auto_size
           component_props={{
@@ -113,7 +114,7 @@ const Client = (): React.ReactElement => {
         />
       ) : !is_fetching && !items.length ? (
         <EmptyState query={query} />
-      ) : isLoading || is_typing || (is_fetching && page === 1) ? (
+      ) : is_loading || is_typing || (is_fetching && page === 1) ? (
         <StoryListSkeleton />
       ) : (
         <VirtualizedStoryList

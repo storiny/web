@@ -14,7 +14,7 @@ import styles from "./styles.module.scss";
 
 const Page = (): React.ReactElement => (
   <React.Fragment>
-    <div className={clsx(styles.x, styles.splash)}>
+    <div className={styles.splash}>
       <Image
         alt={""}
         className={"invert"}
@@ -27,7 +27,7 @@ const Page = (): React.ReactElement => (
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         alt={""}
-        className={clsx(styles.x, styles["splash-image"])}
+        className={styles["splash-image"]}
         sizes={"100vw"}
         src={`${process.env.NEXT_PUBLIC_CDN_URL}/web-assets/presentational/about-splash`}
         srcSet={[
@@ -37,7 +37,7 @@ const Page = (): React.ReactElement => (
           `${process.env.NEXT_PUBLIC_CDN_URL}/w@${ImageSize.W_1440}/web-assets/presentational/about-splash 1440w`
         ].join(",")}
       />
-      <div className={clsx("flex-col", "t-center", styles.x, styles.container)}>
+      <div className={clsx("flex-col", "t-center", styles.container)}>
         <Typography level={"display1"}>Your voice matters.</Typography>
         <div className={"flex-col"}>
           <Typography as={"p"} className={"t-minor"} level={"h4"}>
@@ -50,8 +50,8 @@ const Page = (): React.ReactElement => (
         </div>
       </div>
     </div>
-    <article className={clsx("flex-col", styles.x, styles.article)}>
-      <section className={clsx(styles.x, styles.section)}>
+    <article className={clsx("flex-col", styles.article)}>
+      <section className={styles.section}>
         <Typography
           as={"h2"}
           className={clsx("fit-h", styles.x, styles["section-title"])}
@@ -59,7 +59,7 @@ const Page = (): React.ReactElement => (
         >
           About Storiny
         </Typography>
-        <div className={clsx("flex-col", styles.x, styles["section-content"])}>
+        <div className={clsx("flex-col", styles["section-content"])}>
           <Typography level={"legible"}>
             Storiny is where you and your ideas belong! (Yes, we made up that
             line. We like to be creative here.) At our core, we believe that
@@ -83,7 +83,7 @@ const Page = (): React.ReactElement => (
         </div>
       </section>
       <Divider />
-      <section className={clsx(styles.x, styles.section)}>
+      <section className={styles.section}>
         <Typography
           as={"h2"}
           className={clsx("fit-h", styles.x, styles["section-title"])}
@@ -91,7 +91,7 @@ const Page = (): React.ReactElement => (
         >
           Give wings to your ideas
         </Typography>
-        <div className={clsx("flex-col", styles.x, styles["section-content"])}>
+        <div className={clsx("flex-col", styles["section-content"])}>
           <Typography level={"legible"}>
             The principle that knowledge should be accessible to everyone,
             without any barriers or restrictions holding them back, is one that
@@ -112,7 +112,7 @@ const Page = (): React.ReactElement => (
         </div>
       </section>
       <Divider />
-      <section className={clsx(styles.x, styles.section)}>
+      <section className={styles.section}>
         <Typography
           as={"h2"}
           className={clsx("fit-h", styles.x, styles["section-title"])}
@@ -120,7 +120,7 @@ const Page = (): React.ReactElement => (
         >
           How it started
         </Typography>
-        <div className={clsx("flex-col", styles.x, styles["section-content"])}>
+        <div className={clsx("flex-col", styles["section-content"])}>
           <Typography level={"legible"}>
             In a world where knowledge is the ultimate power move, why should
             anyone be left behind? That&apos;s the question we posed to
@@ -144,7 +144,7 @@ const Page = (): React.ReactElement => (
         </div>
       </section>
       <Divider />
-      <section className={clsx(styles.x, styles.section)}>
+      <section className={styles.section}>
         <Typography
           as={"h2"}
           className={clsx("fit-h", styles.x, styles["section-title"])}
@@ -152,7 +152,7 @@ const Page = (): React.ReactElement => (
         >
           Our vision
         </Typography>
-        <div className={clsx("flex-col", styles.x, styles["section-content"])}>
+        <div className={clsx("flex-col", styles["section-content"])}>
           <Typography level={"legible"}>
             We want to establish an all-inclusive platform, enabling individuals
             from diverse backgrounds to share their innovative ideas, that have
@@ -169,7 +169,7 @@ const Page = (): React.ReactElement => (
         </div>
       </section>
       <Divider />
-      <section className={clsx(styles.x, styles.section)}>
+      <section className={styles.section}>
         <Typography
           as={"h2"}
           className={clsx("fit-h", styles.x, styles["section-title"])}
@@ -177,12 +177,12 @@ const Page = (): React.ReactElement => (
         >
           Get in touch
         </Typography>
-        <div className={clsx("flex-col", styles.x, styles["section-content"])}>
+        <div className={clsx("flex-col", styles["section-content"])}>
           <Typography level={"legible"}>
             Please do not hesitate to reach out to us using any of the suitable
             means of contact listed below.
           </Typography>
-          <div className={clsx("flex-center", styles.x, styles.actions)}>
+          <div className={clsx("flex-center", styles.actions)}>
             <Button
               as={"a"}
               decorator={<TwitterIcon />}

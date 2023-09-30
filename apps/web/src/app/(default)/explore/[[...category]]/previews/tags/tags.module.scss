@@ -1,32 +1,27 @@
+.tags {
+  gap: 18px;
+  padding-block: 18px;
+
+  &.loading {
+    cursor: progress;
+  }
+}
+
+.tags-list {
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
 .x {
-  /* Base styles */
-  &.tags {
-    gap: 18px;
-    padding-block: 18px;
-
-    &.loading {
-      cursor: progress;
-    }
-  }
-
-  /* Writers list */
-  &.tags-list {
-    flex-wrap: wrap;
-    gap: 12px;
-  }
-
-  /* Tag */
   &.tag {
     flex-grow: 1;
   }
 
-  /* Show more link */
   &.show-more {
     gap: 2px;
     margin-left: auto;
   }
 
-  /* Skeleton */
   &.skeleton {
     border-radius: var(--radius-lg);
     flex-grow: 1;

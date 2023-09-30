@@ -6,4 +6,4 @@ export type AddPasswordScreen =
   | "password"
   | "finish";
 
-export const addPasswordScreenAtom = atom<AddPasswordScreen>("confirmation");
+export const add_password_screen_atom = atom<AddPasswordScreen>("confirmation");

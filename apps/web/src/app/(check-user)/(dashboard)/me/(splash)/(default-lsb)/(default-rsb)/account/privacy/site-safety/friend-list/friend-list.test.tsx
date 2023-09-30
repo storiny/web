@@ -1,6 +1,6 @@
 import { RelationVisibility } from "@storiny/shared";
 import { user_event } from "@storiny/test-utils";
-import { act, screen, waitFor } from "@testing-library/react";
+import { act, screen, waitFor as wait_for } from "@testing-library/react";
 import React from "react";
 
 import { render_test_with_provider } from "../../../../../../../../../../../../../../packages/ui/src/redux/test-utils";
@@ -9,12 +9,12 @@ import FriendList from "./friend-list";
 
 describe("<FriendList />", () => {
   it("submits correct form data", async () => {
-    const mockSubmit = jest.fn();
+    const mock_submit = jest.fn();
     const user = user_event.setup();
     render_test_with_provider(
       <FriendList
         friend_list_visibility={RelationVisibility.EVERYONE}
-        on_submit={mockSubmit}
+        on_submit={mock_submit}
       />,
       {
         logged_in: true
@@ -26,8 +26,8 @@ describe("<FriendList />", () => {
     });
 
     await wait_for(() => {
-      expect(mockSubmit).toHaveBeenCalledWith({
-        "friend-list": `${RelationVisibility.NONE}`
+      expect(mock_submit).toHaveBeenCalledWith({
+        friend_list: `${RelationVisibility.NONE}`
       });
     });
   });

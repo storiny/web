@@ -1,7 +1,7 @@
 import { is_test_env } from "../../../../../../../../../../../../../../packages/shared/src/utils/is-test-env";
 import { clsx } from "clsx";
-import { Provider, useAtom } from "jotai";
-import { useRouter } from "next/navigation";
+import { Provider, useAtom as use_atom } from "jotai";
+import { useRouter as use_router } from "next/navigation";
 import React from "react";
 
 import Button from "../../../../../../../../../../../../../../packages/ui/src/components/button";
@@ -32,13 +32,13 @@ import { BREAKPOINTS } from "~/theme/breakpoints";
 import { AddPasswordProps } from "./add-password.props";
 import {
   AddPasswordSchema,
-  addPasswordSchema,
+  ADD_PASSWORD_SCHEMA,
   VERIFICATION_CODE_MAX_LENGTH,
   VERIFICATION_CODE_MIN_LENGTH
 } from "./add-password.schema";
-import { AddPasswordScreen, addPasswordScreenAtom } from "./atom";
+import { AddPasswordScreen, add_password_screen_atom } from "./atom";
 
-const screenToMessageMap: Record<AddPasswordScreen, string> = {
+const SCREEN_MESSAGE_MAP: Record<AddPasswordScreen, string> = {
   confirmation:
     "We'll need to verify that it's you before you can add a password to your account by sending a confirmation e-mail to the e-mail address associated with your account.",
   "verification-code":
@@ -50,12 +50,12 @@ const screenToMessageMap: Record<AddPasswordScreen, string> = {
 };
 
 const AddPasswordModal = (): React.ReactElement => {
-  const [screen, setScreen] = use_atom(addPasswordScreenAtom);
+  const [screen, set_screen] = use_atom(add_password_screen_atom);
   return (
     <React.Fragment>
       <Description asChild>
         <Typography className={"t-minor"} level={"body2"}>
-          {screenToMessageMap[screen]}
+          {SCREEN_MESSAGE_MAP[screen]}
         </Typography>
       </Description>
       <Spacer
@@ -76,7 +76,7 @@ const AddPasswordModal = (): React.ReactElement => {
             label={"Verification code"}
             maxLength={VERIFICATION_CODE_MAX_LENGTH}
             minLength={VERIFICATION_CODE_MIN_LENGTH}
-            name={"verification-code"}
+            name={"verification_code"}
             required
           />
           <Spacer orientation={"vertical"} size={2} />
@@ -93,7 +93,7 @@ const AddPasswordModal = (): React.ReactElement => {
               }
             }}
             label={"Password"}
-            name={"new-password"}
+            name={"new_password"}
             placeholder={"6+ characters"}
             required
           />
@@ -102,7 +102,7 @@ const AddPasswordModal = (): React.ReactElement => {
             className={"t-center"}
             href={"#"}
             level={"body2"}
-            onClick={(): void => setScreen("verification-code")}
+            onClick={(): void => set_screen("verification-code")}
             underline={"always"}
           >
             Change verification code
@@ -115,34 +115,34 @@ const AddPasswordModal = (): React.ReactElement => {
 };
 
 const Component = ({ on_submit }: AddPasswordProps): React.ReactElement => {
-  const router = useRouter();
+  const router = use_router();
   const toast = use_toast();
-  const [screen, setScreen] = use_atom(addPasswordScreenAtom);
+  const [screen, set_screen] = use_atom(add_password_screen_atom);
   const is_smaller_than_mobile = use_media_query(BREAKPOINTS.down("mobile"));
   const form = use_form<AddPasswordSchema>({
-    resolver: zod_resolver(addPasswordSchema),
+    resolver: zod_resolver(ADD_PASSWORD_SCHEMA),
     defaultValues: {
-      "verification-code": "",
-      "new-password": ""
+      verification_code: "",
+      new_password: ""
     }
   });
-  const [addPassword, { isLoading: addPasswordLoading }] =
+  const [add_password, { isLoading: add_password_loading }] =
     use_add_password_mutation();
   const [
-    addPasswordRequestVerification,
-    { isLoading: requestVerificationLoading }
+    add_password_request_verification,
+    { isLoading: request_verification_loading }
   ] = use_add_password_request_verification_mutation();
 
   /**
    * Requests verification code to be dispatched to the user's email
    */
-  const requestVerification = (): void => {
+  const request_verification = (): void => {
     if (is_test_env()) {
-      setScreen("verification-code");
+      set_screen("verification-code");
     } else {
-      addPasswordRequestVerification()
+      add_password_request_verification()
         .unwrap()
-        .then(() => setScreen("verification-code"))
+        .then(() => set_screen("verification-code"))
         .catch((e) =>
           toast(
             e?.data?.error || "Could not send the verification code",
@@ -152,13 +152,13 @@ const Component = ({ on_submit }: AddPasswordProps): React.ReactElement => {
     }
   };
 
-  const handleSubmit: SubmitHandler<AddPasswordSchema> = (values) => {
+  const handle_submit: SubmitHandler<AddPasswordSchema> = (values) => {
     if (on_submit) {
       on_submit(values);
     } else {
-      addPassword(values)
+      add_password(values)
         .unwrap()
-        .then(() => setScreen("finish"))
+        .then(() => set_screen("finish"))
         .catch((e) =>
           toast(e?.data?.error || "Could not add your password", "error")
         );
@@ -168,11 +168,11 @@ const Component = ({ on_submit }: AddPasswordProps): React.ReactElement => {
   React.useEffect(() => {
     if (form.formState.errors) {
       // Set screen to `verification` to show errors
-      if (form.formState.errors["verification-code"]) {
-        setScreen("verification-code");
+      if (form.formState.errors["verification_code"]) {
+        set_screen("verification-code");
       }
     }
-  }, [form.formState.errors, setScreen]);
+  }, [form.formState.errors, set_screen]);
 
   const [element] = use_modal(
     ({ open_modal }) => (
@@ -188,13 +188,14 @@ const Component = ({ on_submit }: AddPasswordProps): React.ReactElement => {
     ),
     <Form<AddPasswordSchema>
       className={clsx("flex-col")}
-      disabled={addPasswordLoading}
-      on_submit={handleSubmit}
+      disabled={add_password_loading}
+      on_submit={handle_submit}
       provider_props={form}
     >
       <AddPasswordModal />
     </Form>,
     {
+      // eslint-disable-next-line prefer-snakecase/prefer-snakecase
       onOpenChange: screen === "finish" ? (): void => undefined : undefined,
       fullscreen: is_smaller_than_mobile,
       footer: (
@@ -210,18 +211,18 @@ const Component = ({ on_submit }: AddPasswordProps): React.ReactElement => {
           <ModalFooterButton
             compact={is_smaller_than_mobile}
             disabled={screen === "password" && !form.formState.isDirty}
-            loading={requestVerificationLoading || addPasswordLoading}
+            loading={request_verification_loading || add_password_loading}
             onClick={(event): void => {
               event.preventDefault(); // Prevent closing of modal
 
               if (screen === "confirmation") {
-                requestVerification();
+                request_verification();
               } else if (screen === "verification-code") {
-                setScreen("password");
+                set_screen("password");
               } else if (screen === "finish") {
                 router.push("/logout");
               } else {
-                form.handleSubmit(handleSubmit)(); // Submit manually
+                form.handleSubmit(handle_submit)(); // Submit manually
               }
             }}
           >

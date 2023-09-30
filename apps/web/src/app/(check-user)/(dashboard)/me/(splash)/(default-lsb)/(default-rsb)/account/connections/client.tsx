@@ -12,9 +12,9 @@ import {
 } from "../../../../../../../../../../../../packages/ui/src/utils/format-date";
 
 import {
-  providerDisplayNameMap,
-  providerIconMap,
-  providerKeyMap
+  PROVIDER_DISPLAY_NAME_MAP,
+  PROVIDER_ICON_MAP,
+  PROVIDER_KEY_MAP
 } from "../../../../../../../../providers";
 import DashboardGroup from "../../../dashboard-group";
 import DashboardTitle from "../../../dashboard-title";
@@ -25,14 +25,14 @@ import styles from "./styles.module.scss";
 import VisibilityButton from "./visibility-button";
 
 const ConnectionItem = ({
-  connection: connectionProp,
+  connection: connection_prop,
   provider
 }: {
   connection?: ConnectionsProps["connections"][number];
   provider: string;
 }): React.ReactElement => {
-  const [connection, setConnection] =
-    React.useState<typeof connectionProp>(connectionProp);
+  const [connection, set_connection] =
+    React.useState<typeof connection_prop>(connection_prop);
   return (
     <li
       className={clsx(
@@ -44,7 +44,7 @@ const ConnectionItem = ({
       <div className={clsx("flex-center", styles.details)}>
         <span className={styles.icon}>
           {React.createElement(
-            providerIconMap[connection?.provider || provider]
+            PROVIDER_ICON_MAP[connection?.provider || provider]
           )}
         </span>
         <div className={"flex-col"}>
@@ -61,7 +61,7 @@ const ConnectionItem = ({
             </Link>
           ) : (
             <Typography className={"t-medium"}>
-              {providerDisplayNameMap[provider]}
+              {PROVIDER_DISPLAY_NAME_MAP[provider]}
             </Typography>
           )}
           {connection ? (
@@ -71,7 +71,7 @@ const ConnectionItem = ({
               level={"body2"}
               title={format_date(connection.created_at, DateFormat.STANDARD)}
             >
-              {providerDisplayNameMap[connection.provider]}{" "}
+              {PROVIDER_DISPLAY_NAME_MAP[connection.provider]}{" "}
               <span className={"t-muted"}>&bull;</span> Connected{" "}
               {format_date(connection.created_at, DateFormat.RELATIVE)}
             </Typography>
@@ -86,7 +86,7 @@ const ConnectionItem = ({
         {connection && <VisibilityButton connection={connection} />}
         <ConnectionButton
           connection={connection}
-          onRemove={(): void => setConnection(undefined)}
+          on_remove={(): void => set_connection(undefined)}
           provider={provider}
         />
       </div>
@@ -121,8 +121,8 @@ const ConnectionSettingsClient = ({
         </Typography>
         <Spacer orientation={"vertical"} size={5} />
         <ul className={clsx("flex-col", styles.list)}>
-          {Object.keys(providerKeyMap)
-            .filter((item) => Boolean(providerKeyMap[item])) // Filter out unspecified and unrecognized items
+          {Object.keys(PROVIDER_KEY_MAP)
+            .filter((item) => Boolean(PROVIDER_KEY_MAP[item])) // Filter out unspecified and unrecognized items
             .map((provider) => (
               <ConnectionItem
                 connection={connections.find(

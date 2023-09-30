@@ -1,6 +1,6 @@
 "use client";
 
-import { dynamicLoader } from "@storiny/web/src/common/dynamic";
+import { dynamic_loader } from "@storiny/web/src/common/dynamic";
 import clsx from "clsx";
 import dynamic from "next/dynamic";
 import React from "react";
@@ -18,7 +18,7 @@ import styles from "./right-sidebar.module.scss";
 import { RightSidebarProps } from "./right-sidebar.props";
 
 const RightSidebarDefaultContent = dynamic(() => import("./default-content"), {
-  loading: dynamicLoader()
+  loading: dynamic_loader()
 });
 
 const RightSidebar = (props: RightSidebarProps): React.ReactElement | null => {

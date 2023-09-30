@@ -1,11 +1,12 @@
+import { StoryCategory, StoryLicense } from "@storiny/shared";
 import {
   CATEGORY_ICON_MAP,
-  CATEGORY_LABEL_MAP,
+  CATEGORY_LABEL_MAP
+} from "@storiny/shared/src/constants/category-icon-map";
+import {
   LICENSE_ICON_MAP,
-  LICENSE_LABEL_MAP,
-  StoryCategory,
-  StoryLicense
-} from "@storiny/shared";
+  LICENSE_LABEL_MAP
+} from "@storiny/shared/src/constants/license-icon-map";
 import { clsx } from "clsx";
 import { useAtomValue as use_atom_value } from "jotai";
 import React from "react";

@@ -2,7 +2,7 @@ import { clsx } from "clsx";
 import dynamic from "next/dynamic";
 import React from "react";
 
-import { dynamicLoader } from "~/common/dynamic";
+import { dynamic_loader } from "~/common/dynamic";
 import Grow from "../../../../../../../../../../../../packages/ui/src/components/grow";
 import { use_media_query } from "../../../../../../../../../../../../packages/ui/src/hooks/use-media-query";
 import RightSidebar from "../../../../../../../../../../../../packages/ui/src/layout/right-sidebar";
@@ -11,21 +11,16 @@ import { BREAKPOINTS } from "~/theme/breakpoints";
 import styles from "./right-sidebar.module.scss";
 import { StoriesRightSidebarProps } from "./right-sidebar.props";
 
-// Default content
-
 const SuspendedDashboardRightSidebarContent = dynamic(
   () => import("../../../(default-rsb)/right-sidebar/content"),
   {
-    loading: dynamicLoader()
+    loading: dynamic_loader()
   }
 );
-
-// Stories content
-
 const SuspendedContentStoriesRightSidebarContent = dynamic(
   () => import("./content"),
   {
-    loading: dynamicLoader()
+    loading: dynamic_loader()
   }
 );
 

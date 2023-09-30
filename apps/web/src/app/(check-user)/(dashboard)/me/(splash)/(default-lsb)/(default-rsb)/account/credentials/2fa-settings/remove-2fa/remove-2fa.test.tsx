@@ -1,5 +1,5 @@
 import { user_event } from "@storiny/test-utils";
-import { act, screen, waitFor } from "@testing-library/react";
+import { act, screen, waitFor as wait_for } from "@testing-library/react";
 import React from "react";
 
 import { render_test_with_provider } from "../../../../../../../../../../../../../../packages/ui/src/redux/test-utils";
@@ -10,10 +10,10 @@ const noop = (): void => undefined;
 
 describe("<Remove2FA />", () => {
   it("renders validation messages", async () => {
-    const mockSubmit = jest.fn();
+    const mock_submit = jest.fn();
     const user = user_event.setup();
     render_test_with_provider(
-      <Remove2FA on_submit={mockSubmit} setEnabled={noop} />,
+      <Remove2FA on_submit={mock_submit} set_enabled={noop} />,
       {
         logged_in: true
       }
@@ -32,15 +32,15 @@ describe("<Remove2FA />", () => {
 
     await wait_for(() => {
       expect(screen.queryAllByRole("alert").length).not.toEqual(0);
-      expect(mockSubmit).not.toBeCalled();
+      expect(mock_submit).not.toBeCalled();
     });
   });
 
   it("submits correct form data", async () => {
-    const mockSubmit = jest.fn();
+    const mock_submit = jest.fn();
     const user = user_event.setup();
     render_test_with_provider(
-      <Remove2FA on_submit={mockSubmit} setEnabled={noop} />,
+      <Remove2FA on_submit={mock_submit} set_enabled={noop} />,
       {
         logged_in: true
       }
@@ -58,7 +58,7 @@ describe("<Remove2FA />", () => {
     });
 
     await wait_for(() => {
-      expect(mockSubmit).toHaveBeenCalledWith({
+      expect(mock_submit).toHaveBeenCalledWith({
         code: "000000"
       });
       expect(screen.queryByRole("alert")).not.toBeInTheDocument();

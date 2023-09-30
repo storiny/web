@@ -10,10 +10,10 @@ import Link from "../../../../../../../../packages/ui/src/components/link";
 import Spacer from "../../../../../../../../packages/ui/src/components/spacer";
 import Typography from "../../../../../../../../packages/ui/src/components/typography";
 
-import { useAuthState } from "../../../actions";
+import { use_auth_state } from "../../../actions";
 
 const Page = (): React.ReactElement => {
-  const { actions, state } = useAuthState();
+  const { actions, state } = use_auth_state();
   return (
     <>
       <Typography as={"h1"} level={"h3"}>
@@ -44,7 +44,7 @@ const Page = (): React.ReactElement => {
               className={"t-medium"}
               href={"/auth"}
               level={"body2"}
-              onClick={(): void => actions.switchSegment("signup_base")}
+              onClick={(): void => actions.switch_segment("signup_base")}
               underline={"always"}
             >
               Edit your e-mail address

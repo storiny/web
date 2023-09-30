@@ -6,16 +6,16 @@ import "~/theme/main.scss";
 
 import dynamic from "next/dynamic";
 import React from "react";
+import { get_session_token } from "src/common/utils/get-session-token";
 
-import { getSessionToken } from "~/common/utils/getSessionToken";
 import CriticalStyles from "~/theme/critical";
 
 import CriticalFonts from "./fonts/critical";
 import ObserverErrorHandler from "./observer";
 import { PreloadResources } from "./preload-resources";
 import StateProvider from "./state-provider";
-// @ts-ignore
-import themeSync from "./theme-sync.txt";
+// @ts-expect-error text file import
+import theme_sync from "./theme-sync.txt";
 
 const LazyFonts = dynamic(() => import("./fonts/lazy"));
 
@@ -24,8 +24,8 @@ const RootLayout = ({
 }: {
   children: React.ReactNode;
 }): React.ReactElement => {
-  const sessionToken = getSessionToken();
-  const logged_in = Boolean(sessionToken);
+  const session_token = get_session_token();
+  const logged_in = Boolean(session_token);
 
   return (
     <html
@@ -37,7 +37,7 @@ const RootLayout = ({
         {/* Apply theme from localStorage as soon as possible */}
         <script
           dangerouslySetInnerHTML={{
-            __html: themeSync
+            __html: theme_sync
           }}
         />
         <link href="/favicon.ico" rel="icon" sizes="any" />

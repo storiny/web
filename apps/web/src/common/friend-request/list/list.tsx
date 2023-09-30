@@ -14,15 +14,15 @@ import { VirtualizedFriendRequestListContext } from "./list-context";
 
 const VirtualizedFriendRequestList = React.memo(
   ({
-    friendRequests,
+    friend_requests,
     has_more,
     load_more,
-    friendRequestProps,
+    friend_request_props,
     className,
     ...rest
   }: VirtualizedFriendRequestListProps) => (
     <VirtualizedFriendRequestListContext.Provider
-      value={friendRequestProps || {}}
+      value={friend_request_props || {}}
     >
       <Virtuoso
         increaseViewportBy={750}
@@ -39,7 +39,7 @@ const VirtualizedFriendRequestList = React.memo(
           ScrollSeekPlaceholder: VirtualizedFriendRequestScrollSeekPlaceholder,
           ...(has_more && { Footer: VirtualFooter })
         }}
-        data={friendRequests}
+        data={friend_requests}
         endReached={has_more ? load_more : (): void => undefined}
       />
     </VirtualizedFriendRequestListContext.Provider>

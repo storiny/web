@@ -4,6 +4,9 @@ import { USER_PROPS } from "@storiny/shared";
 import { clsx } from "clsx";
 import React from "react";
 
+import { use_debounce } from "~/hooks/use-debounce";
+import { use_username_validation_mutation } from "~/redux/features";
+
 import Button from "../../../../../../../../packages/ui/src/components/button";
 import Form, {
   SubmitHandler,
@@ -15,34 +18,31 @@ import FormInput from "../../../../../../../../packages/ui/src/components/form-i
 import Grow from "../../../../../../../../packages/ui/src/components/grow";
 import Spacer from "../../../../../../../../packages/ui/src/components/spacer";
 import Spinner from "../../../../../../../../packages/ui/src/components/spinner";
-import { use_debounce } from "../../../../../../../../packages/ui/src/hooks/use-debounce";
-import { use_username_validation_mutation } from "~/redux/features";
-
-import { useAuthState } from "../../../actions";
-import { SignupUsernameSchema, signupUsernameSchema } from "./schema";
+import { use_auth_state } from "../../../actions";
+import { SIGNUP_USERNAME_SCHEMA, SignupUsernameSchema } from "./schema";
 
 interface Props {
   on_submit?: SubmitHandler<SignupUsernameSchema>;
   // Skip username validation for tests
-  skipValidation?: boolean;
+  skip_validation?: boolean;
 }
 
 const UsernameField = ({
-  setValid
+  set_valid
 }: {
-  setValid: (newValue: boolean) => void;
+  set_valid: (next_value: boolean) => void;
 }): React.ReactElement => {
   const mounted = React.useRef<boolean>(false);
-  const { state } = useAuthState();
-  const { watch, getFieldState } = use_form_context();
-  const { invalid } = getFieldState("username");
-  const [validateUsername, { isLoading, isError, isSuccess }] =
+  const { state } = use_auth_state();
+  const { watch, get_field_state } = use_form_context();
+  const { invalid } = get_field_state("username");
+  const [validate_username, { is_loading, is_error, is_success }] =
     use_username_validation_mutation();
   const username = watch("username", state.signup.username);
-  const debouncedUsername = use_debounce(username);
+  const debounced_username = use_debounce(username);
   const loading =
     username.length >= USER_PROPS.username.min_length &&
-    (isLoading || username !== debouncedUsername);
+    (is_loading || username !== debounced_username);
 
   React.useEffect(() => {
     if (
@@ -51,20 +51,20 @@ const UsernameField = ({
       // Skip fetching when switching between segments
       mounted.current
     ) {
-      validateUsername({ username: debouncedUsername });
+      validateUsername({ username: debounced_username });
     }
-  }, [validateUsername, debouncedUsername, invalid]);
+  }, [validate_username, debounced_username, invalid]);
 
   React.useEffect(
     () =>
-      setValid(
+      set_valid(
         username.length < USER_PROPS.username.min_length
           ? true
           : loading
           ? false
-          : !!isSuccess
+          : !!is_success
       ),
-    [isSuccess, loading, setValid, username.length]
+    [is_success, loading, set_valid, username.length]
   );
 
   React.useEffect(() => {
@@ -80,7 +80,7 @@ const UsernameField = ({
       color={
         invalid ||
         (username.length >= USER_PROPS.username.min_length &&
-          isError &&
+          is_error &&
           !loading)
           ? "ruby"
           : "inverted"
@@ -91,7 +91,7 @@ const UsernameField = ({
           style: {
             color: loading
               ? "var(--fg-minor)"
-              : isSuccess
+              : is_success
               ? "var(--melon-100)"
               : "var(--ruby-500)"
           } as React.CSSProperties
@@ -107,7 +107,7 @@ const UsernameField = ({
                 <Spacer size={0.75} />
                 <span>Checking availability...</span>
               </>
-            ) : isSuccess ? (
+            ) : is_success ? (
               "This username is available"
             ) : (
               "This username is not available"
@@ -127,23 +127,23 @@ const UsernameField = ({
 
 const SignupUsernameForm = ({
   on_submit,
-  skipValidation
+  skip_validation
 }: Props): React.ReactElement => {
-  const { state } = useAuthState();
+  const { state } = use_auth_state();
   const form = use_form<SignupUsernameSchema>({
-    resolver: zod_resolver(signupUsernameSchema),
+    resolver: zod_resolver(SIGNUP_USERNAME_SCHEMA),
     defaultValues: {
       username: state.signup.username
     }
   });
-  const [valid, setValid] = React.useState<boolean>(false);
+  const [valid, set_valid] = React.useState<boolean>(false);
 
-  const setValidImpl = React.useCallback(
-    (newValue: boolean) => setValid(newValue),
+  const set_valid_impl = React.useCallback(
+    (next_value: boolean) => set_valid(next_value),
     []
   );
 
-  const handleSubmit: SubmitHandler<SignupUsernameSchema> = (values) => {
+  const handle_submit: SubmitHandler<SignupUsernameSchema> = (values) => {
     if (on_submit) {
       on_submit(values);
     }
@@ -152,10 +152,10 @@ const SignupUsernameForm = ({
   return (
     <Form<SignupUsernameSchema>
       className={clsx("flex-col", "full-h")}
-      on_submit={handleSubmit}
+      on_submit={handle_submit}
       provider_props={form}
     >
-      <UsernameField setValid={setValidImpl} />
+      <UsernameField set_valid={set_valid_impl} />
       <Spacer orientation={"vertical"} size={5} />
       <Grow />
       <div className={clsx("flex-col", "flex-center")}>
@@ -163,7 +163,7 @@ const SignupUsernameForm = ({
           className={"full-w"}
           size={"lg"}
           type={"submit"}
-          {...(!skipValidation && { disabled: !valid })}
+          {...(!skip_validation && { disabled: !valid })}
         >
           Continue
         </Button>

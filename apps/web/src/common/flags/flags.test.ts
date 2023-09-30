@@ -1,10 +1,10 @@
 import { Flag, UserFlag } from "./flags";
 
-const userFlagKeys = Object.keys(UserFlag).filter((key) =>
+const USER_FLAG_KEYS = Object.keys(UserFlag).filter((key) =>
   Number.isNaN(parseInt(key))
 );
 
-const userFlagValues = Object.values(UserFlag).filter(
+const USER_FLAG_VALUES = Object.values(UserFlag).filter(
   (value) => typeof value === "number"
 );
 
@@ -16,100 +16,102 @@ describe("flags", () => {
 
   it("constructs with a `0` flag by default", () => {
     const flags = new Flag();
-    expect(flags.getFlags()).toEqual(0);
+    expect(flags.get_flags()).toEqual(0);
   });
 
-  userFlagValues.forEach((flag, index) => {
-    it(`works with \`${userFlagKeys[index]}\` flag`, () => {
+  USER_FLAG_VALUES.forEach((flag, index) => {
+    it(`works with \`${USER_FLAG_KEYS[index]}\` flag`, () => {
       const flags = new Flag();
-      flags.addFlag(flag as UserFlag);
-      expect(flags.getFlags()).toEqual(flag);
+      flags.add_flag(flag as UserFlag);
+      expect(flags.get_flags()).toEqual(flag);
     });
   });
 
   it("adds a new flag", () => {
     const flags = new Flag();
-    flags.addFlag(UserFlag.STAFF);
-    expect(flags.getFlags()).toEqual(1);
+    flags.add_flag(UserFlag.STAFF);
+    expect(flags.get_flags()).toEqual(1);
   });
 
   it("removes an existing flag", () => {
     const flags = new Flag();
-    flags.addFlag(UserFlag.STAFF);
-    expect(flags.getFlags()).toEqual(1);
-    flags.removeFlag(UserFlag.STAFF);
-    expect(flags.getFlags()).toEqual(0);
+    flags.add_flag(UserFlag.STAFF);
+    expect(flags.get_flags()).toEqual(1);
+    flags.remove_flag(UserFlag.STAFF);
+    expect(flags.get_flags()).toEqual(0);
   });
 
   it("does not throw on a non existent flag", () => {
     const flags = new Flag();
-    flags.addFlag(UserFlag.STAFF);
-    expect(flags.getFlags()).toEqual(1);
-    flags.removeFlag(UserFlag.VERIFIED);
-    expect(flags.getFlags()).toEqual(1);
+    flags.add_flag(UserFlag.STAFF);
+    expect(flags.get_flags()).toEqual(1);
+    flags.remove_flag(UserFlag.VERIFIED);
+    expect(flags.get_flags()).toEqual(1);
   });
 
   it("adds multiple flags", () => {
     const flags = new Flag();
-    flags.addFlag(UserFlag.STAFF);
-    flags.addFlag(UserFlag.VERIFIED);
-    expect(flags.getFlags()).toEqual(UserFlag.STAFF + UserFlag.VERIFIED);
+    flags.add_flag(UserFlag.STAFF);
+    flags.add_flag(UserFlag.VERIFIED);
+    expect(flags.get_flags()).toEqual(UserFlag.STAFF + UserFlag.VERIFIED);
   });
 
   it("removes a single flag from multiple flags", () => {
     const flags = new Flag();
-    flags.addFlag(UserFlag.STAFF);
-    flags.addFlag(UserFlag.VERIFIED);
-    expect(flags.getFlags()).toEqual(UserFlag.STAFF + UserFlag.VERIFIED);
-    flags.removeFlag(UserFlag.VERIFIED);
-    expect(flags.getFlags()).toEqual(UserFlag.STAFF);
+    flags.add_flag(UserFlag.STAFF);
+    flags.add_flag(UserFlag.VERIFIED);
+    expect(flags.get_flags()).toEqual(UserFlag.STAFF + UserFlag.VERIFIED);
+    flags.remove_flag(UserFlag.VERIFIED);
+    expect(flags.get_flags()).toEqual(UserFlag.STAFF);
   });
 
   it("returns `true` for a single existent flag", () => {
     const flags = new Flag();
-    flags.addFlag(UserFlag.STAFF);
-    expect(flags.hasAnyOf(UserFlag.STAFF)).toBeTruthy();
-    expect(flags.hasAnyOf(UserFlag.VERIFIED)).toBeFalsy();
+    flags.add_flag(UserFlag.STAFF);
+    expect(flags.has_any_of(UserFlag.STAFF)).toBeTruthy();
+    expect(flags.has_any_of(UserFlag.VERIFIED)).toBeFalsy();
   });
 
   it("returns `true` for any of the existent flag", () => {
     const flags = new Flag();
-    flags.addFlag(UserFlag.STAFF);
-    expect(flags.hasAnyOf([UserFlag.STAFF, UserFlag.EARLY_USER])).toBeTruthy();
+    flags.add_flag(UserFlag.STAFF);
+    expect(
+      flags.has_any_of([UserFlag.STAFF, UserFlag.EARLY_USER])
+    ).toBeTruthy();
   });
 
   it("returns `true` for a list of existent flags", () => {
     const flags = new Flag();
-    flags.addFlag(UserFlag.STAFF);
-    flags.addFlag(UserFlag.VERIFIED);
-    expect(flags.hasAllOf([UserFlag.STAFF, UserFlag.VERIFIED])).toBeTruthy();
+    flags.add_flag(UserFlag.STAFF);
+    flags.add_flag(UserFlag.VERIFIED);
+    expect(flags.has_all_of([UserFlag.STAFF, UserFlag.VERIFIED])).toBeTruthy();
     expect(
-      flags.hasAllOf([UserFlag.STAFF, UserFlag.VERIFIED, UserFlag.EARLY_USER])
+      flags.has_all_of([UserFlag.STAFF, UserFlag.VERIFIED, UserFlag.EARLY_USER])
     ).toBeFalsy();
   });
 
   it("returns `true` for a single non-existent flag", () => {
     const flags = new Flag();
-    flags.addFlag(UserFlag.STAFF);
-    expect(flags.notAnyOf(UserFlag.VERIFIED)).toBeTruthy();
-    expect(flags.notAnyOf(UserFlag.STAFF)).toBeFalsy();
+    flags.add_flag(UserFlag.STAFF);
+    expect(flags.not_any_of(UserFlag.VERIFIED)).toBeTruthy();
+    expect(flags.not_any_of(UserFlag.STAFF)).toBeFalsy();
   });
 
   it("returns `true` for any of the non-existent flag", () => {
     const flags = new Flag();
-    flags.addFlag(UserFlag.STAFF);
+    flags.add_flag(UserFlag.STAFF);
     expect(
-      flags.notAnyOf([UserFlag.VERIFIED, UserFlag.EARLY_USER])
+      flags.not_any_of([UserFlag.VERIFIED, UserFlag.EARLY_USER])
     ).toBeTruthy();
   });
 
   it("returns `true` for a list of non-existent flags", () => {
     const flags = new Flag();
-    flags.addFlag(UserFlag.STAFF);
-    flags.addFlag(UserFlag.VERIFIED);
-    expect(flags.notAllOf([UserFlag.STAFF, UserFlag.VERIFIED])).toBeFalsy();
+    flags.add_flag(UserFlag.STAFF);
+    flags.add_flag(UserFlag.VERIFIED);
+    expect(flags.not_all_of([UserFlag.STAFF, UserFlag.VERIFIED])).toBeFalsy();
     expect(
-      flags.notAllOf([UserFlag.STAFF, UserFlag.VERIFIED, UserFlag.EARLY_USER])
+      flags.not_all_of([UserFlag.STAFF, UserFlag.VERIFIED, UserFlag.EARLY_USER])
     ).toBeTruthy();
   });
 });

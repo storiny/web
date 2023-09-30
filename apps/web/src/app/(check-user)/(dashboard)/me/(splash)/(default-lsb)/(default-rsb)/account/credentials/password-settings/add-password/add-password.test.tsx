@@ -1,5 +1,5 @@
 import { user_event } from "@storiny/test-utils";
-import { act, screen, waitFor } from "@testing-library/react";
+import { act, screen, waitFor as wait_for } from "@testing-library/react";
 import React from "react";
 
 import { render_test_with_provider } from "../../../../../../../../../../../../../../packages/ui/src/redux/test-utils";
@@ -8,9 +8,9 @@ import AddPassword from "./add-password";
 
 describe("<AddPassword />", () => {
   it("renders validation messages", async () => {
-    const mockSubmit = jest.fn();
+    const mock_submit = jest.fn();
     const user = user_event.setup();
-    render_test_with_provider(<AddPassword on_submit={mockSubmit} />, {
+    render_test_with_provider(<AddPassword on_submit={mock_submit} />, {
       logged_in: true
     });
 
@@ -36,14 +36,14 @@ describe("<AddPassword />", () => {
 
     await wait_for(() => {
       expect(screen.queryAllByRole("alert").length).not.toEqual(0);
-      expect(mockSubmit).not.toBeCalled();
+      expect(mock_submit).not.toBeCalled();
     });
   });
 
   it("submits correct form data", async () => {
-    const mockSubmit = jest.fn();
+    const mock_submit = jest.fn();
     const user = user_event.setup();
-    render_test_with_provider(<AddPassword on_submit={mockSubmit} />, {
+    render_test_with_provider(<AddPassword on_submit={mock_submit} />, {
       logged_in: true
     });
 
@@ -74,9 +74,9 @@ describe("<AddPassword />", () => {
     });
 
     await wait_for(() => {
-      expect(mockSubmit).toHaveBeenCalledWith({
-        "verification-code": "test-code",
-        "new-password": "test-password"
+      expect(mock_submit).toHaveBeenCalledWith({
+        verification_code: "test-code",
+        new_password: "test-password"
       });
       expect(screen.queryByRole("alert")).not.toBeInTheDocument();
     });

@@ -15,7 +15,7 @@ import { ConnectionFailureProps } from "./failure.props";
 
 const ConnectionFailureClient = ({
   type,
-  displayName
+  display_name
 }: ConnectionFailureProps): React.ReactElement => (
   <React.Fragment>
     <DashboardTitle
@@ -31,7 +31,7 @@ const ConnectionFailureClient = ({
           description={
             type === "state-mismatch" ? (
               <React.Fragment>
-                We were unable to securely link your {displayName} account to
+                We were unable to securely link your {display_name} account to
                 your Storiny account due to the state parameter being unable to
                 maintain its identity during the round trip. You can try
                 authorizing it again, or contact{" "}
@@ -42,9 +42,9 @@ const ConnectionFailureClient = ({
               </React.Fragment>
             ) : (
               <React.Fragment>
-                We were unable to connect your {displayName} account to your
+                We were unable to connect your {display_name} account to your
                 Storiny account due to an unexpected error. Please check if your
-                {displayName} account is active and publicly accessible, then
+                {display_name} account is active and publicly accessible, then
                 try again. If the issue persists, please{" "}
                 <Link href={"/support"} underline={"always"}>
                   contact support

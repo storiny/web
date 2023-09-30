@@ -10,7 +10,7 @@ import LegalLayout from "../../../layout";
 import HateSpeechPolicy from "./client";
 
 const meta: Meta<typeof HateSpeechPolicy> = {
-  title: "pages/Legal/use-policies/hate-speech",
+  title: "pages/legal/use-policies/hate-speech",
   component: HateSpeechPolicy,
   parameters: {
     layout: "fullscreen"

@@ -8,32 +8,37 @@ import styles from "./connections.module.scss";
 
 interface Props {
   connections: GetProfileResponse["connections"];
-  isInsideSidebar?: boolean;
+  is_inside_sidebar?: boolean;
   name: string;
 }
 
-import { providerDisplayNameMap, providerIconMap } from "../../../providers";
+import {
+  PROVIDER_DISPLAY_NAME_MAP,
+  PROVIDER_ICON_MAP
+} from "../../../providers";
 
 const Connections = ({
   connections,
   name,
-  isInsideSidebar
+  is_inside_sidebar
 }: Props): React.ReactElement => (
-  <div className={clsx("flex", styles.x, styles.connections)}>
+  <div className={clsx("flex", styles.connections)}>
     {connections.map((connection) => (
       <IconButton
-        aria-label={`${name} on ${providerDisplayNameMap[connection.provider]}`}
+        aria-label={`${name} on ${
+          PROVIDER_DISPLAY_NAME_MAP[connection.provider]
+        }`}
         as={"a"}
         className={clsx(styles.x, styles.connection)}
         href={connection.url}
         key={connection.provider}
         rel={"noreferrer"}
-        size={isInsideSidebar ? "md" : "lg"}
+        size={is_inside_sidebar ? "md" : "lg"}
         target={"_blank"}
-        title={`${name} on ${providerDisplayNameMap[connection.provider]}`}
+        title={`${name} on ${PROVIDER_DISPLAY_NAME_MAP[connection.provider]}`}
         variant={"ghost"}
       >
-        {React.createElement(providerIconMap[connection.provider])}
+        {React.createElement(PROVIDER_ICON_MAP[connection.provider])}
       </IconButton>
     ))}
   </div>

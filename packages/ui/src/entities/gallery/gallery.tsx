@@ -1,5 +1,5 @@
 import { Asset } from "@storiny/types";
-import { dynamicLoader } from "@storiny/web/src/common/dynamic";
+import { dynamic_loader } from "@storiny/web/src/common/dynamic";
 import clsx from "clsx";
 import {
   Provider,
@@ -46,10 +46,10 @@ import styles from "./gallery.module.scss";
 import { GalleryProps } from "./gallery.props";
 
 const GalleryMasonry = dynamic(() => import("./core/components/masonry"), {
-  loading: dynamicLoader()
+  loading: dynamic_loader()
 });
 const UploadsTab = dynamic(() => import("./core/components/uploads"), {
-  loading: dynamicLoader()
+  loading: dynamic_loader()
 });
 
 // Footer
@@ -204,8 +204,8 @@ const GalleryImpl = (props: GalleryProps): React.ReactElement => {
         tabs: {
           value,
           // eslint-disable-next-line prefer-snakecase/prefer-snakecase
-          onValueChange: (newValue): void => {
-            set_value(newValue as GallerySidebarTabsValue);
+          onValueChange: (next_value): void => {
+            set_value(next_value as GallerySidebarTabsValue);
             set_query("");
           }
         },

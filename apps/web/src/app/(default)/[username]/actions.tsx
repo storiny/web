@@ -22,57 +22,60 @@ import XIcon from "../../../../../../packages/ui/src/icons/x";
 import {
   boolean_action,
   select_is_logged_in,
-  setSentRequest,
   sync_with_user
 } from "~/redux/features";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
+import { is_num } from "@storiny/shared/src/utils/is-num";
 
 interface Props {
-  isInsideSidebar?: boolean;
+  is_inside_sidebar?: boolean;
   profile: GetProfileResponse;
 }
 
-const Actions = ({ profile, isInsideSidebar }: Props): React.ReactElement => {
+const Actions = ({ profile, is_inside_sidebar }: Props): React.ReactElement => {
   const share = use_web_share();
   const copy = use_clipboard();
   const dispatch = use_app_dispatch();
   const logged_in = use_app_selector(select_is_logged_in);
-  const isFollowing = use_app_selector(
+  const is_following = use_app_selector(
     (state) => state.entities.following[profile.id]
   );
-  const isBlocking = use_app_selector(
+  const is_blocking = use_app_selector(
     (state) => state.entities.blocks[profile.id]
   );
-  const isMuted = use_app_selector((state) => state.entities.mutes[profile.id]);
-  const isSubscribed = use_app_selector(
+  const is_muted = use_app_selector(
+    (state) => state.entities.mutes[profile.id]
+  );
+  const is_subscribed = use_app_selector(
     (state) => state.entities.subscriptions[profile.id]
   );
-  const isFriend = use_app_selector(
+  const is_friend = use_app_selector(
     (state) => state.entities.friends[profile.id]
   );
-  const isFriendRequestSent = use_app_selector(
-    (state) => state.entities.sentRequests[profile.id]
+  const is_friend_request_sent = use_app_selector(
+    (state) => state.entities.sent_requests[profile.id]
   );
-  const isSelf = Boolean(profile.is_self);
-  const isBlockedByUser = Boolean(profile.is_blocked_by_user);
+  const is_self = Boolean(profile.is_self);
+  const is_blocked_by_user = Boolean(profile.is_blocked_by_user);
+
   const [element] = use_confirmation(
     ({ open_confirmation }) => (
       <MenuItem
         check_auth
         decorator={<UserBlockIcon />}
-        onSelect={(event): void => {
+        onSelect={(event: Event): void => {
           event.preventDefault(); // Do not auto-close the menu
           open_confirmation();
         }}
       >
-        {isBlocking ? "Unblock" : "Block"} this user
+        {is_blocking ? "Unblock" : "Block"} this user
       </MenuItem>
     ),
     {
-      color: isBlocking ? "inverted" : "ruby",
+      color: is_blocking ? "inverted" : "ruby",
       on_confirm: () => dispatch(boolean_action("blocks", profile.id)),
-      title: `${isBlocking ? "Unblock" : "Block"} @${profile.username}?`,
-      description: isBlocking
+      title: `${is_blocking ? "Unblock" : "Block"} @${profile.username}?`,
+      description: is_blocking
         ? `The public content you publish will be available to them as well as the ability to follow you.`
         : `Your feed will not include their content, and they will not be able to follow you or interact with your profile.`
     }
@@ -82,12 +85,10 @@ const Actions = ({ profile, isInsideSidebar }: Props): React.ReactElement => {
     dispatch(
       sync_with_user({
         ...profile,
-        following_count:
-          typeof profile.following_count === "number"
-            ? profile.following_count
-            : null,
-        friend_count:
-          typeof profile.friend_count === "number" ? profile.friend_count : null
+        following_count: is_num(profile.following_count)
+          ? profile.following_count
+          : null,
+        friend_count: is_num(profile.friend_count) ? profile.friend_count : null
       })
     );
   }, [dispatch, profile]);
@@ -97,7 +98,7 @@ const Actions = ({ profile, isInsideSidebar }: Props): React.ReactElement => {
       trigger={
         <IconButton
           aria-label={"Profile options"}
-          size={isInsideSidebar ? "md" : "lg"}
+          size={is_inside_sidebar ? "md" : "lg"}
           title={"Profile options"}
           variant={"ghost"}
         >
@@ -105,9 +106,9 @@ const Actions = ({ profile, isInsideSidebar }: Props): React.ReactElement => {
         </IconButton>
       }
     >
-      {!isSelf && !isBlockedByUser && !isBlocking && logged_in ? (
+      {!is_self && !is_blocked_by_user && !is_blocking && logged_in ? (
         <>
-          {isFriendRequestSent ? (
+          {is_friend_request_sent ? (
             <MenuItem
               check_auth
               decorator={<XIcon />}
@@ -117,7 +118,7 @@ const Actions = ({ profile, isInsideSidebar }: Props): React.ReactElement => {
             >
               Cancel request
             </MenuItem>
-          ) : isFriend ? (
+          ) : is_friend ? (
             <MenuItem
               check_auth
               decorator={<HeartPlusIcon />}
@@ -138,15 +139,15 @@ const Actions = ({ profile, isInsideSidebar }: Props): React.ReactElement => {
               Send friend request
             </MenuItem>
           )}
-          {isFollowing && (
+          {is_following && (
             <MenuItem
               check_auth
-              decorator={isSubscribed ? <BellFilledIcon /> : <BellPlusIcon />}
+              decorator={is_subscribed ? <BellFilledIcon /> : <BellPlusIcon />}
               onClick={(): void => {
                 dispatch(boolean_action("subscriptions", profile.id));
               }}
             >
-              {isSubscribed ? "Unsubscribe" : "Subscribe"}
+              {is_subscribed ? "Unsubscribe" : "Subscribe"}
             </MenuItem>
           )}
           <Separator />
@@ -171,8 +172,8 @@ const Actions = ({ profile, isInsideSidebar }: Props): React.ReactElement => {
       >
         Copy link to profile
       </MenuItem>
-      {!isSelf && <Separator />}
-      {!isSelf && !isBlockedByUser && logged_in ? (
+      {!is_self && <Separator />}
+      {!is_self && !is_blocked_by_user && logged_in ? (
         <>
           <MenuItem
             check_auth
@@ -181,12 +182,12 @@ const Actions = ({ profile, isInsideSidebar }: Props): React.ReactElement => {
               dispatch(boolean_action("mutes", profile.id));
             }}
           >
-            {isMuted ? "Unmute" : "Mute"} this user
+            {is_muted ? "Unmute" : "Mute"} this user
           </MenuItem>
           {element}
         </>
       ) : null}
-      {!isSelf && (
+      {!is_self && (
         <MenuItem
           as={NextLink}
           decorator={<ReportIcon />}

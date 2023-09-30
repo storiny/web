@@ -17,12 +17,12 @@ const VirtualizedNotificationList = React.memo(
     notifications,
     has_more,
     load_more,
-    notificationProps,
+    notification_props,
     className,
     ...rest
   }: VirtualizedNotificationListProps) => (
     <VirtualizedNotificationListContext.Provider
-      value={notificationProps || {}}
+      value={notification_props || {}}
     >
       <Virtuoso
         increaseViewportBy={750}

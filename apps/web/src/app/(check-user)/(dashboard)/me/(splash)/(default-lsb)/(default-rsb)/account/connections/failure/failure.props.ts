@@ -1,4 +1,4 @@
 export interface ConnectionFailureProps {
-  displayName: string;
+  display_name: string;
   type: "state-mismatch" | "link";
 }

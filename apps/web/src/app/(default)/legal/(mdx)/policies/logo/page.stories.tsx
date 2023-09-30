@@ -10,7 +10,7 @@ import LegalLayout from "../../../layout";
 import LogoPolicy from "./client";
 
 const meta: Meta<typeof LogoPolicy> = {
-  title: "pages/Legal/policies/logo",
+  title: "pages/legal/policies/logo",
   component: LogoPolicy,
   parameters: {
     layout: "fullscreen"

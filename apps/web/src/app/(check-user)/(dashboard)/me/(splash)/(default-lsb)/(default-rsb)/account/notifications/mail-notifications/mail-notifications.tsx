@@ -17,7 +17,7 @@ import styles from "../styles.module.scss";
 import { MailNotificationsProps } from "./mail-notifications.props";
 import {
   MailNotificationsSchema,
-  mailNotificationsSchema
+  MAIL_NOTIFICATIONS_SCHEMA
 } from "./mail-notifications.schema";
 
 const MailNotifications = ({
@@ -28,28 +28,28 @@ const MailNotifications = ({
   mail_digest
 }: MailNotificationsProps): React.ReactElement => {
   const toast = use_toast();
-  const prevValuesRef = React.useRef<MailNotificationsSchema>();
+  const prev_values_ref = React.useRef<MailNotificationsSchema>();
   const form = use_form<MailNotificationsSchema>({
-    resolver: zod_resolver(mailNotificationsSchema),
+    resolver: zod_resolver(MAIL_NOTIFICATIONS_SCHEMA),
     defaultValues: {
-      "features-and-updates": mail_features_and_updates,
-      "login-activity": mail_login_activity,
+      features_and_updates: mail_features_and_updates,
+      login_activity: mail_login_activity,
       digest: mail_digest,
       newsletters: mail_newsletters
     }
   });
-  const [mutateMailNotificationSettings, { isLoading }] =
+  const [mutate_mail_notification_settings, { isLoading: is_loading }] =
     use_mail_notification_settings_mutation();
 
-  const handleSubmit: SubmitHandler<MailNotificationsSchema> = (values) => {
+  const handle_submit: SubmitHandler<MailNotificationsSchema> = (values) => {
     if (on_submit) {
       on_submit(values);
     } else {
-      mutateMailNotificationSettings(values)
+      mutate_mail_notification_settings(values)
         .unwrap()
-        .then(() => (prevValuesRef.current = values))
+        .then(() => (prev_values_ref.current = values))
         .catch((e) => {
-          form.reset(prevValuesRef.current);
+          form.reset(prev_values_ref.current);
           toast(
             e?.data?.error ||
               "Could not update your e-mail notification settings",
@@ -62,8 +62,8 @@ const MailNotifications = ({
   /**
    * Manually submits the form on checkbox mutations
    */
-  const submitForm = (): void => {
-    form.handleSubmit(handleSubmit)();
+  const submit_form = (): void => {
+    form.handleSubmit(handle_submit)();
   };
 
   return (
@@ -75,8 +75,8 @@ const MailNotifications = ({
       <Spacer orientation={"vertical"} size={3.5} />
       <Form<MailNotificationsSchema>
         className={clsx("flex-col", styles.form)}
-        disabled={isLoading}
-        on_submit={handleSubmit}
+        disabled={is_loading}
+        on_submit={handle_submit}
         provider_props={form}
       >
         <FormCheckbox
@@ -84,8 +84,8 @@ const MailNotifications = ({
             "Receive an e-mail for every successful login attempt made to your account."
           }
           label={"Login activity"}
-          name={"login-activity"}
-          onCheckedChange={submitForm}
+          name={"login_activity"}
+          onCheckedChange={submit_form}
           size={"lg"}
         />
         <FormCheckbox
@@ -93,8 +93,8 @@ const MailNotifications = ({
             "Receive an e-mail for new features and updates from Storiny."
           }
           label={"New features & updates"}
-          name={"features-and-updates"}
-          onCheckedChange={submitForm}
+          name={"features_and_updates"}
+          onCheckedChange={submit_form}
           size={"lg"}
         />
         <FormCheckbox
@@ -103,7 +103,7 @@ const MailNotifications = ({
           }
           label={"Newsletters"}
           name={"newsletters"}
-          onCheckedChange={submitForm}
+          onCheckedChange={submit_form}
           size={"lg"}
         />
         <FormCheckbox
@@ -112,7 +112,7 @@ const MailNotifications = ({
           }
           label={"Suggested stories"}
           name={"digest"}
-          onCheckedChange={submitForm}
+          onCheckedChange={submit_form}
           size={"lg"}
         />
       </Form>

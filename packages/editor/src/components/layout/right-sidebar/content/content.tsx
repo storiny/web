@@ -6,7 +6,7 @@ import { useAtomValue as use_atom_value } from "jotai";
 import dynamic from "next/dynamic";
 import React from "react";
 
-import { dynamicLoader } from "~/common/dynamic";
+import { dynamic_loader } from "~/common/dynamic";
 import Grow from "../../../../../../ui/src/components/grow";
 import Separator from "../../../../../../ui/src/components/separator";
 import Typography from "../../../../../../ui/src/components/typography";
@@ -24,11 +24,11 @@ import { EditorRightSidebarProps } from "../right-sidebar.props";
 
 const SuspendedEditorRightSidebarEditableContent = dynamic(
   () => import("./editable"),
-  { loading: dynamicLoader() }
+  { loading: dynamic_loader() }
 );
 const SuspendedEditorRightSidebarReadOnlyContent = dynamic(
   () => import("./read-only"),
-  { loading: dynamicLoader() }
+  { loading: dynamic_loader() }
 );
 
 const SuspendedEditorRightSidebarContent = (

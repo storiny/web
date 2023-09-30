@@ -138,6 +138,8 @@ module.exports = {
           "extractWithChild",
           "insertNewAfter",
           "isUnmergeable",
+          "publicRuntimeConfig", // Next.js
+          "generateMetadata",
         ],
       },
     ],

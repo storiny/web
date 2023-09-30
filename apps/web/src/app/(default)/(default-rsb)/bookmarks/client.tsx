@@ -4,7 +4,7 @@ import { clsx } from "clsx";
 import dynamic from "next/dynamic";
 import React from "react";
 
-import { dynamicLoader } from "~/common/dynamic";
+import { dynamic_loader } from "~/common/dynamic";
 import { StoryListSkeleton, VirtualizedStoryList } from "~/common/story";
 import Divider from "../../../../../../../packages/ui/src/components/divider";
 import Input from "../../../../../../../packages/ui/src/components/input";
@@ -18,10 +18,8 @@ import {
   use_get_bookmarks_query
 } from "~/redux/features";
 
-import styles from "./styles.module.scss";
-
 const EmptyState = dynamic(() => import("./empty-state"), {
-  loading: dynamicLoader()
+  loading: dynamic_loader()
 });
 
 export type BookmarksSortValue = "recent" | "old";
@@ -31,13 +29,13 @@ export type BookmarksSortValue = "recent" | "old";
 const PageHeader = ({
   query,
   sort,
-  onSortChange,
-  onQueryChange,
+  on_sort_change,
+  on_query_change,
   disabled
 }: {
   disabled?: boolean;
-  onQueryChange: (newQuery: string) => void;
-  onSortChange: (newSort: BookmarksSortValue) => void;
+  on_query_change: (next_query: string) => void;
+  on_sort_change: (next_sort: BookmarksSortValue) => void;
   query: string;
   sort: BookmarksSortValue;
 }): React.ReactElement => (
@@ -45,25 +43,19 @@ const PageHeader = ({
     <Input
       decorator={<SearchIcon />}
       disabled={disabled}
-      onChange={(event): void => onQueryChange(event.target.value)}
+      onChange={(event): void => on_query_change(event.target.value)}
       placeholder={"Search for bookmarked stories"}
       size={"lg"}
-      slot_props={{
-        container: {
-          className: clsx("f-grow", styles.x, styles.input)
-        }
-      }}
       type={"search"}
       value={query}
     />
     <Divider orientation={"vertical"} />
     <Select
       disabled={disabled}
-      onValueChange={onSortChange}
+      onValueChange={on_sort_change}
       slot_props={{
         trigger: {
-          "aria-label": "Sort items",
-          className: clsx("focus-invert", styles.x, styles["select-trigger"])
+          "aria-label": "Sort items"
         },
         value: {
           placeholder: "Sort"
@@ -79,15 +71,21 @@ const PageHeader = ({
 
 const Client = (): React.ReactElement => {
   const [sort, set_sort] = React.useState<BookmarksSortValue>("recent");
-  const [query, setQuery] = React.useState<string>("");
+  const [query, set_query] = React.useState<string>("");
   const [page, set_page] = React.useState<number>(1);
   const debounced_query = use_debounce(query);
-  const { data, isLoading, is_fetching, isError, error, refetch } =
-    use_get_bookmarks_query({
-      page,
-      sort,
-      query: debounced_query
-    });
+  const {
+    data,
+    isLoading: is_loading,
+    isFetching: is_fetching,
+    isError: is_error,
+    error,
+    refetch
+  } = use_get_bookmarks_query({
+    page,
+    sort,
+    query: debounced_query
+  });
   const { items = [], has_more } = data || {};
   const is_typing = query !== debounced_query;
 
@@ -96,26 +94,29 @@ const Client = (): React.ReactElement => {
     []
   );
 
-  const handleSortChange = React.useCallback((newSort: BookmarksSortValue) => {
-    set_page(1);
-    set_sort(newSort);
-  }, []);
+  const handle_sort_change = React.useCallback(
+    (next_sort: BookmarksSortValue) => {
+      set_page(1);
+      set_sort(next_sort);
+    },
+    []
+  );
 
-  const handleQueryChange = React.useCallback((newQuery: string) => {
+  const handle_query_change = React.useCallback((next_query: string) => {
     set_page(1);
-    setQuery(newQuery);
+    set_query(next_query);
   }, []);
 
   return (
     <>
       <PageHeader
         disabled={!items.length}
-        onQueryChange={handleQueryChange}
-        onSortChange={handleSortChange}
+        on_query_change={handle_query_change}
+        on_sort_change={handle_sort_change}
         query={query}
         sort={sort}
       />
-      {isError ? (
+      {is_error ? (
         <ErrorState
           auto_size
           component_props={{
@@ -126,7 +127,7 @@ const Client = (): React.ReactElement => {
         />
       ) : !is_fetching && !items.length ? (
         <EmptyState query={query} />
-      ) : isLoading || is_typing || (is_fetching && page === 1) ? (
+      ) : is_loading || is_typing || (is_fetching && page === 1) ? (
         <StoryListSkeleton />
       ) : (
         <VirtualizedStoryList

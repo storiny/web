@@ -1,38 +1,33 @@
+.login-item {
+  border: 1px solid var(--divider);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.device {
+  --icon-size: 36px;
+  --icon-stroke: var(--fg-minor);
+
+  padding: 12px 8px;
+}
+
+.details {
+  text-align: left;
+}
+
+.active-label {
+  color: var(--melon-200);
+}
+
+.footer-label {
+  padding: 6px 8px;
+}
+
 .x {
-  /* Base styles */
-  &.login-item {
-    border: 1px solid var(--divider);
-    border-radius: var(--radius-md);
-    overflow: hidden;
-  }
-
-  /* Device */
-  &.device {
-    --icon-size: 36px;
-    --icon-stroke: var(--fg-minor);
-
-    padding: 12px 8px;
-  }
-
   /* Content */
   &.map {
     background-color: var(--bg-elevation-xs);
     border-block: 1px solid var(--divider);
-  }
-
-  /* Details */
-  &.details {
-    text-align: left;
-  }
-
-  /* Active label */
-  &.active-label {
-    color: var(--melon-200);
-  }
-
-  /* Footer label */
-  &.footer-label {
-    padding: 6px 8px;
   }
 
   /* Logout button */

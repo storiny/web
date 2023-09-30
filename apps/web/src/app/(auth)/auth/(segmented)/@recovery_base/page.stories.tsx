@@ -9,7 +9,7 @@ import AuthLayout from "../../../layout";
 import RecoveryBasePage from "./page";
 
 const meta: Meta<typeof RecoveryBasePage> = {
-  title: "pages/Auth/@recovery_base",
+  title: "pages/auth/@recovery_base",
   component: RecoveryBasePage,
   parameters: {
     layout: "fullscreen"

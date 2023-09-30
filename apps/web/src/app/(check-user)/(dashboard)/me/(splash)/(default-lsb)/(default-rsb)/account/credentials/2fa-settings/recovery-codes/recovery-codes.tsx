@@ -34,7 +34,7 @@ import styles from "./recovery-codes.module.scss";
  * @param codes Recovery codes
  * @param email Email
  */
-const formatRecoveryCodes = (
+const format_recovery_codes = (
   codes: RecoveryCodesResponse,
   email?: string
 ): string =>
@@ -49,32 +49,32 @@ const RecoveryCodesModal = (): React.ReactElement => {
   const user = use_app_selector(select_user)!;
   const copy = use_clipboard();
   const toast = use_toast();
-  const [codes, setCodes] = React.useState<RecoveryCodesResponse>([]);
-  const [error, setError] = React.useState<string>(
+  const [codes, set_codes] = React.useState<RecoveryCodesResponse>([]);
+  const [error, set_error] = React.useState<string>(
     "Could not get recovery codes."
   );
-  const [mutateRecoveryCodes, { isLoading, isError }] =
+  const [mutate_recovery_codes, { isLoading: is_loading, isError: is_error }] =
     use_recovery_codes_mutation();
-  const [generateCodes, { isLoading: isRegenerating }] =
+  const [generate_codes, { isLoading: is_regenerating }] =
     use_generate_codes_mutation();
 
   /**
    * Copies codes to clipboard
    */
-  const copyCodesToClipboard = (): void => {
-    copy(formatRecoveryCodes(codes, user.email));
+  const copy_codes_to_clipboard = (): void => {
+    copy(format_recovery_codes(codes, user.email));
     toast("Recovery codes copied to clipboard", "success");
   };
 
   /**
    * Regenerates recovery codes
    */
-  const generateNewCodes = (): void => {
-    generateCodes()
+  const generate_new_codes = (): void => {
+    generate_codes()
       .unwrap()
-      .then((newCodes) => {
+      .then((next_codes) => {
         toast("Regenerated recovery codes", "success");
-        setCodes(newCodes);
+        set_codes(next_codes);
       })
       .catch((e) =>
         toast(e?.data?.error || "Could not regenerate recovery codes", "error")
@@ -82,12 +82,12 @@ const RecoveryCodesModal = (): React.ReactElement => {
   };
 
   React.useEffect(() => {
-    mutateRecoveryCodes()
+    mutate_recovery_codes()
       .unwrap()
-      .then(setCodes)
+      .then(set_codes)
       .catch((e) => {
         if (e?.data?.error) {
-          setError(e.data.error);
+          set_error(e.data.error);
         }
       });
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -95,14 +95,14 @@ const RecoveryCodesModal = (): React.ReactElement => {
 
   return (
     <React.Fragment>
-      {isLoading || isRegenerating ? (
+      {is_loading || is_regenerating ? (
         <div
           className={clsx("flex-center", "full-w")}
           style={{ paddingBlock: "32px" }}
         >
           <Spinner />
         </div>
-      ) : isError ? (
+      ) : is_error ? (
         <div
           className={clsx("flex-center", "full-w")}
           style={{ minHeight: "96px" }}
@@ -145,7 +145,7 @@ const RecoveryCodesModal = (): React.ReactElement => {
                 decorator={<DownloadIcon />}
                 onClick={(): void => {
                   download_as_file(
-                    formatRecoveryCodes(codes, user.email),
+                    format_recovery_codes(codes, user.email),
                     "storiny_recovery_codes.txt"
                   );
                 }}
@@ -157,7 +157,7 @@ const RecoveryCodesModal = (): React.ReactElement => {
               <Button
                 check_auth
                 decorator={<CopyIcon />}
-                onClick={copyCodesToClipboard}
+                onClick={copy_codes_to_clipboard}
                 size={"sm"}
                 variant={"hollow"}
               >
@@ -168,7 +168,7 @@ const RecoveryCodesModal = (): React.ReactElement => {
                 className={"t-center"}
                 href={"#"}
                 level={"body3"}
-                onClick={generateNewCodes}
+                onClick={generate_new_codes}
                 underline={"always"}
               >
                 Generate new recovery codes

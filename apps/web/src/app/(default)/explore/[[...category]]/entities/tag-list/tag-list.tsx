@@ -2,33 +2,42 @@ import { StoryCategory } from "@storiny/shared";
 import dynamic from "next/dynamic";
 import React from "react";
 
-import { dynamicLoader } from "~/common/dynamic";
+import { dynamic_loader } from "~/common/dynamic";
 import { TagListSkeleton, VirtualizedTagList } from "~/common/tag";
 import ErrorState from "../../../../../../../../../packages/ui/src/entities/error-state";
-import { get_query_error_type, useGetExploreTagsQuery } from "~/redux/features";
+import {
+  get_query_error_type,
+  use_get_explore_tags_query
+} from "~/redux/features";
 
 const EmptyState = dynamic(() => import("./empty-state"), {
-  loading: dynamicLoader()
+  loading: dynamic_loader()
 });
 
 const TagList = ({
   category,
   debounced_query,
-  loading: loadingProp
+  loading: loading_prop
 }: {
   category: StoryCategory | "all";
   debounced_query: string;
   loading: boolean;
 }): React.ReactElement => {
   const [page, set_page] = React.useState<number>(1);
-  const { data, isLoading, is_fetching, isError, error, refetch } =
-    useGetExploreTagsQuery({
-      page,
-      category,
-      query: debounced_query
-    });
+  const {
+    data,
+    isLoading: is_loading,
+    isFetching: is_fetching,
+    isError: is_error,
+    error,
+    refetch
+  } = use_get_explore_tags_query({
+    page,
+    category,
+    query: debounced_query
+  });
   const { items = [], has_more } = data || {};
-  const loading = isLoading || loadingProp;
+  const loading = is_loading || loading_prop;
 
   const load_more = React.useCallback(
     () => set_page((prev_state) => prev_state + 1),
@@ -39,7 +48,7 @@ const TagList = ({
     <>
       {loading || (is_fetching && page === 1) ? (
         <TagListSkeleton />
-      ) : isError ? (
+      ) : is_error ? (
         <ErrorState
           auto_size
           component_props={{

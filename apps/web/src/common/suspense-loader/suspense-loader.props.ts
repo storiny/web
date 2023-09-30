@@ -1,4 +1,3 @@
 import React from "react";
 
-export interface SuspenseLoaderProps
-  extends React.ComponentPropsWithoutRef<"div"> {}
+export type SuspenseLoaderProps = React.ComponentPropsWithoutRef<"div">;

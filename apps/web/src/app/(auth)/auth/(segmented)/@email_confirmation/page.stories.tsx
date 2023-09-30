@@ -9,7 +9,7 @@ import AuthLayout from "../../../layout";
 import AuthEmailConfirmationPage from "./page";
 
 const meta: Meta<typeof AuthEmailConfirmationPage> = {
-  title: "pages/Auth/@email_confirmation",
+  title: "pages/auth/@email_confirmation",
   component: AuthEmailConfirmationPage,
   parameters: {
     layout: "fullscreen"

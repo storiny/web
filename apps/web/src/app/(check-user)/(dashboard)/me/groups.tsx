@@ -20,7 +20,6 @@ import TagsIcon from "../../../../../../../packages/ui/src/icons/tags";
 import UserIcon from "../../../../../../../packages/ui/src/icons/user";
 import UserMetricsIcon from "../../../../../../../packages/ui/src/icons/user-metrics";
 import UsersIcon from "../../../../../../../packages/ui/src/icons/users";
-
 import { DashboardSegment } from "./types";
 
 export interface Group {
@@ -34,7 +33,7 @@ export interface Group {
 
 // Account group
 
-const accountGroup: Group = {
+const ACCOUNT_GROUP: Group = {
   title: "Your account",
   items: [
     {
@@ -72,7 +71,7 @@ const accountGroup: Group = {
 
 // Site settings group
 
-const siteSettingsGroup: Group = {
+const SITE_SETTINGS_GROUP: Group = {
   title: "Site settings",
   items: [
     {
@@ -90,7 +89,7 @@ const siteSettingsGroup: Group = {
 
 // Content group
 
-const contentGroup: Group = {
+const CONTENT_GROUP: Group = {
   title: "Your content",
   items: [
     {
@@ -123,7 +122,7 @@ const contentGroup: Group = {
 
 // Stats group
 
-const statsGroup: Group = {
+const STATS_GROUP: Group = {
   title: "Your stats",
   items: [
     {
@@ -141,7 +140,7 @@ const statsGroup: Group = {
 
 // Moderation group
 
-const moderationGroup: Group = {
+const MODERATION_GROUP: Group = {
   title: "Moderation",
   items: [
     {
@@ -159,7 +158,7 @@ const moderationGroup: Group = {
 
 // Miscellaneous group
 
-const miscellaneousGroup: Group = {
+const MISCELLANEOUS_GROUP: Group = {
   title: "Miscellaneous",
   items: [
     {
@@ -175,21 +174,22 @@ const miscellaneousGroup: Group = {
   ]
 };
 
-export const dashboardGroups: Group[] = [
-  accountGroup,
-  siteSettingsGroup,
-  contentGroup,
-  statsGroup,
-  moderationGroup,
-  miscellaneousGroup
+export const DASHBOARD_GROUPS: Group[] = [
+  ACCOUNT_GROUP,
+  SITE_SETTINGS_GROUP,
+  CONTENT_GROUP,
+  STATS_GROUP,
+  MODERATION_GROUP,
+  MISCELLANEOUS_GROUP
 ];
 
 /**
  * Returns dashboard groups fuse
  */
-const getDashboardGroupsFuse = async (): Promise<Fuse<Group>> => {
+const get_dashboard_groups_fuse = async (): Promise<Fuse<Group>> => {
   const Fuse = (await import("fuse.js")).default;
-  return new Fuse<Group>(dashboardGroups, {
+  return new Fuse<Group>(DASHBOARD_GROUPS, {
+    /* eslint-disable prefer-snakecase/prefer-snakecase */
     isCaseSensitive: false,
     includeScore: false,
     shouldSort: true,
@@ -199,6 +199,7 @@ const getDashboardGroupsFuse = async (): Promise<Fuse<Group>> => {
     location: 0,
     threshold: 0.3,
     keys: ["items.title"]
+    /* eslint-enable prefer-snakecase/prefer-snakecase */
   });
 };
 
@@ -206,11 +207,11 @@ const getDashboardGroupsFuse = async (): Promise<Fuse<Group>> => {
  * Returns the groups with items matching the provided text
  * @param query Query
  */
-export const searchDashboardGroups = async (
+export const search_dashboard_groups = async (
   query: string
 ): Promise<Group[]> => {
-  const dashboardFuse = await getDashboardGroupsFuse();
-  const results = dashboardFuse.search(query);
+  const dashboard_fuse = await get_dashboard_groups_fuse();
+  const results = dashboard_fuse.search(query);
 
   return results.map(
     (result) =>

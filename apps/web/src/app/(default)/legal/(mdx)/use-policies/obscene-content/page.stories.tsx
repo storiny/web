@@ -10,7 +10,7 @@ import LegalLayout from "../../../layout";
 import ObsceneContentPolicy from "./client";
 
 const meta: Meta<typeof ObsceneContentPolicy> = {
-  title: "pages/Legal/use-policies/obscene-content",
+  title: "pages/legal/use-policies/obscene-content",
   component: ObsceneContentPolicy,
   parameters: {
     layout: "fullscreen"

@@ -5,7 +5,7 @@ import dynamic from "next/dynamic";
 import NextLink from "next/link";
 import React from "react";
 
-import { dynamicLoader } from "~/common/dynamic";
+import { dynamic_loader } from "~/common/dynamic";
 import { StoryListSkeleton, VirtualizedStoryList } from "~/common/story";
 import Button from "../../../../../../../../../../../packages/ui/src/components/button";
 import Divider from "../../../../../../../../../../../packages/ui/src/components/divider";
@@ -35,7 +35,7 @@ import { StoriesProps } from "./stories.props";
 import styles from "./styles.module.scss";
 
 const EmptyState = dynamic(() => import("./empty-state"), {
-  loading: dynamicLoader()
+  loading: dynamic_loader()
 });
 
 type SortOrder = "dsc" | "asc";
@@ -51,9 +51,9 @@ export type StoriesSortValue =
 
 const PageHeader = ({
   value,
-  onChange
+  on_change
 }: {
-  onChange: (newValue: StoriesTabValue) => void;
+  on_change: (next_value: StoriesTabValue) => void;
   value: StoriesTabValue;
 }): React.ReactElement => (
   <Tabs
@@ -65,7 +65,7 @@ const PageHeader = ({
       styles.x,
       styles.tabs
     )}
-    onValueChange={(newValue): void => onChange(newValue as StoriesTabValue)}
+    onValueChange={(next_value: StoriesTabValue): void => on_change(next_value)}
     value={value}
   >
     <TabsList className={clsx("full-w", styles.x, styles["tabs-list"])}>
@@ -84,21 +84,20 @@ const PageHeader = ({
 const SortControl = ({
   tab,
   sort,
-  onSortChange,
+  on_sort_change,
   disabled
 }: {
   disabled?: boolean;
-  onSortChange: (newSort: StoriesSortValue) => void;
+  on_sort_change: (next_sort: StoriesSortValue) => void;
   sort: StoriesSortValue;
   tab: StoriesTabValue;
 }): React.ReactElement => (
   <Select
     disabled={disabled}
-    onValueChange={onSortChange}
+    onValueChange={on_sort_change}
     slot_props={{
       trigger: {
-        "aria-label": "Sort items",
-        className: clsx("focus-invert", styles.x, styles["select-trigger"])
+        "aria-label": "Sort items"
       },
       value: {
         placeholder: "Sort"
@@ -123,31 +122,31 @@ const SortControl = ({
 
 const StatusHeader = ({
   tab,
-  published_story_count,
-  deleted_story_count,
+  published_story_count: published_story_count_prop,
+  deleted_story_count: deleted_story_count_prop,
   disabled,
-  onSortChange,
+  on_sort_change,
   sort
 }: {
   disabled?: boolean;
-  onSortChange: (newSort: StoriesSortValue) => void;
+  on_sort_change: (next_sort: StoriesSortValue) => void;
   sort: StoriesSortValue;
   tab: StoriesTabValue;
 } & StoriesProps): React.ReactElement => {
   const dispatch = use_app_dispatch();
-  const publishedStoryCount =
+  const published_story_count =
     use_app_selector((state) => state.entities.self_published_story_count) || 0;
-  const deletedStoryCount =
+  const deleted_story_count =
     use_app_selector((state) => state.entities.self_deleted_story_count) || 0;
   const count_param =
-    tab === "published" ? publishedStoryCount : deletedStoryCount;
+    tab === "published" ? published_story_count : deleted_story_count;
 
   React.useEffect(() => {
     [
-      self_action("self_published_story_count", published_story_count),
-      self_action("self_deleted_story_count", deleted_story_count)
+      self_action("self_published_story_count", published_story_count_prop),
+      self_action("self_deleted_story_count", deleted_story_count_prop)
     ].forEach(dispatch);
-  }, [deleted_story_count, dispatch, published_story_count]);
+  }, [deleted_story_count_prop, dispatch, published_story_count_prop]);
 
   return (
     <div
@@ -155,7 +154,6 @@ const StatusHeader = ({
         "full-bleed",
         "dashboard-header",
         "flex-center",
-        styles.x,
         styles["status-header"]
       )}
     >
@@ -191,7 +189,7 @@ const StatusHeader = ({
           <Divider orientation={"vertical"} />
           <SortControl
             disabled={disabled}
-            onSortChange={onSortChange}
+            on_sort_change={on_sort_change}
             sort={sort}
             tab={tab}
           />
@@ -207,13 +205,13 @@ const ControlBar = ({
   tab,
   query,
   sort,
-  onSortChange,
-  onQueryChange,
+  on_sort_change,
+  on_query_change,
   disabled
 }: {
   disabled?: boolean;
-  onQueryChange: (newQuery: string) => void;
-  onSortChange: (newSort: StoriesSortValue) => void;
+  on_query_change: (next_query: string) => void;
+  on_sort_change: (next_sort: StoriesSortValue) => void;
   query: string;
   sort: StoriesSortValue;
   tab: StoriesTabValue;
@@ -223,28 +221,22 @@ const ControlBar = ({
       "flex-center",
       "full-bleed",
       "dashboard-header",
-      styles.x,
       styles["control-bar"]
     )}
   >
     <Input
       decorator={<SearchIcon />}
       disabled={disabled}
-      onChange={(event): void => onQueryChange(event.target.value)}
+      onChange={(event): void => on_query_change(event.target.value)}
       placeholder={"Search your published stories"}
       size={"lg"}
-      slot_props={{
-        container: {
-          className: clsx("f-grow", styles.x, styles.input)
-        }
-      }}
       type={"search"}
       value={query}
     />
     <Divider orientation={"vertical"} />
     <SortControl
       disabled={disabled}
-      onSortChange={onSortChange}
+      on_sort_change={on_sort_change}
       sort={sort}
       tab={tab}
     />
@@ -253,17 +245,23 @@ const ControlBar = ({
 
 const ContentStoriesClient = (props: StoriesProps): React.ReactElement => {
   const [sort, set_sort] = React.useState<StoriesSortValue>("recent");
-  const [query, setQuery] = React.useState<string>("");
-  const [value, setValue] = React.useState<StoriesTabValue>("published");
+  const [query, set_query] = React.useState<string>("");
+  const [value, set_value] = React.useState<StoriesTabValue>("published");
   const [page, set_page] = React.useState<number>(1);
   const debounced_query = use_debounce(query);
-  const { data, isLoading, is_fetching, isError, error, refetch } =
-    use_get_stories_query({
-      page,
-      sort,
-      query: debounced_query,
-      type: value
-    });
+  const {
+    data,
+    isLoading: is_loading,
+    isFetching: is_fetching,
+    isError: is_error,
+    error,
+    refetch
+  } = use_get_stories_query({
+    page,
+    sort,
+    query: debounced_query,
+    type: value
+  });
   const { items = [], has_more } = data || {};
   const is_typing = query !== debounced_query;
 
@@ -272,52 +270,51 @@ const ContentStoriesClient = (props: StoriesProps): React.ReactElement => {
     []
   );
 
-  const handleChange = React.useCallback((newValue: StoriesTabValue) => {
+  const handle_change = React.useCallback((next_value: StoriesTabValue) => {
     set_page(1);
     set_sort("recent");
-    setQuery("");
-    setValue(newValue);
+    set_query("");
+    set_value(next_value);
   }, []);
 
-  const handleSortChange = React.useCallback((newSort: StoriesSortValue) => {
-    set_page(1);
-    set_sort(newSort);
-  }, []);
+  const handle_sort_change = React.useCallback(
+    (next_sort: StoriesSortValue) => {
+      set_page(1);
+      set_sort(next_sort);
+    },
+    []
+  );
 
-  const handleQueryChange = React.useCallback((newQuery: string) => {
+  const handle_query_change = React.useCallback((next_query: string) => {
     set_page(1);
-    setQuery(newQuery);
+    set_query(next_query);
   }, []);
-
-  React.useEffect(() => {
-    set_page(1);
-  }, [value]);
 
   return (
     <React.Fragment>
       <main>
         <DashboardTitle>Stories</DashboardTitle>
-        <PageHeader onChange={handleChange} value={value} />
+        <PageHeader on_change={handle_change} value={value} />
         <StatusHeader
           {...props}
           disabled={!items.length}
-          onSortChange={handleSortChange}
+          on_sort_change={handle_sort_change}
           sort={sort}
           tab={value}
         />
         {value === "published" && (
           <ControlBar
             disabled={!items.length}
-            onQueryChange={handleQueryChange}
-            onSortChange={handleSortChange}
+            on_query_change={handle_query_change}
+            on_sort_change={handle_sort_change}
             query={query}
             sort={sort}
             tab={value}
           />
         )}
-        {isLoading || is_typing || (is_fetching && page === 1) ? (
+        {is_loading || is_typing || (is_fetching && page === 1) ? (
           <StoryListSkeleton is_small />
-        ) : isError ? (
+        ) : is_error ? (
           <ErrorState
             auto_size
             component_props={{
@@ -332,11 +329,11 @@ const ContentStoriesClient = (props: StoriesProps): React.ReactElement => {
           <VirtualizedStoryList
             has_more={Boolean(has_more)}
             load_more={load_more}
-            skeletonProps={{
+            skeleton_props={{
               is_small: true
             }}
             stories={items}
-            storyProps={{
+            story_props={{
               is_extended: true,
               is_deleted: value === "deleted"
             }}

@@ -3,7 +3,7 @@ import { SubmitHandler } from "../../../../../../../../../../../../../../package
 import { RemoveAccountSchema } from "./remove-account.schema";
 
 export interface RemoveAccountProps {
-  onRemove: () => void;
+  on_remove: () => void;
   on_submit?: SubmitHandler<RemoveAccountSchema>;
   vendor: "Apple" | "Google";
 }

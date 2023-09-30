@@ -20,18 +20,18 @@ import MotionPreference from "./motion";
 
 const Alert = (): React.ReactElement | null => {
   const dispatch = use_app_dispatch();
-  const isVisible = use_app_selector(select_alert_visibility("accessibility"));
+  const is_visible = use_app_selector(select_alert_visibility("accessibility"));
 
-  const handleDismiss = React.useCallback(() => {
+  const handle_dismiss = React.useCallback(() => {
     dispatch(set_alert_visibility(["accessibility", false]));
   }, [dispatch]);
 
-  if (!isVisible) {
+  if (!is_visible) {
     return null;
   }
 
   return (
-    <SettingsAlert onDismiss={handleDismiss}>
+    <SettingsAlert on_dismiss={handle_dismiss}>
       The settings on this page only affect the accounts in this browser.
     </SettingsAlert>
   );

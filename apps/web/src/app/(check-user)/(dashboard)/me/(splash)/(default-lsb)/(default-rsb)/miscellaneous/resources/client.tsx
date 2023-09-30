@@ -16,8 +16,8 @@ import styles from "./styles.module.scss";
 const MiscellaneousResourcesClient = (): React.ReactElement => (
   <React.Fragment>
     <DashboardTitle>Additional resources</DashboardTitle>
-    <DashboardWrapper className={clsx(styles.x, styles.wrapper)}>
-      <div className={clsx("flex-col", styles.x, styles.container)}>
+    <DashboardWrapper className={styles.wrapper}>
+      <div className={clsx("flex-col", styles.container)}>
         {[
           ["About", "/about"],
           ["Media kit", "/branding"],
@@ -37,7 +37,7 @@ const MiscellaneousResourcesClient = (): React.ReactElement => (
           </React.Fragment>
         ))}
       </div>
-      <div className={clsx("flex-col", styles.x, styles.container)}>
+      <div className={clsx("flex-col", styles.container)}>
         {[
           ["Privacy Policy", "/legal/policies/privacy"],
           ["Terms of Use", "/legal/terms/tos"],

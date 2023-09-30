@@ -10,7 +10,7 @@ import LegalLayout from "../../../layout";
 import AppealAndReinstatementPolicy from "./client";
 
 const meta: Meta<typeof AppealAndReinstatementPolicy> = {
-  title: "pages/Legal/use-policies/appeal-and-reinstatement",
+  title: "pages/legal/use-policies/appeal-and-reinstatement",
   component: AppealAndReinstatementPolicy,
   parameters: {
     layout: "fullscreen"

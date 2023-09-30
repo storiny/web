@@ -4,7 +4,7 @@ import { clsx } from "clsx";
 import dynamic from "next/dynamic";
 import React from "react";
 
-import { dynamicLoader } from "~/common/dynamic";
+import { dynamic_loader } from "~/common/dynamic";
 import { StoryListSkeleton, VirtualizedStoryList } from "~/common/story";
 import Tab from "../../../../../../packages/ui/src/components/tab";
 import Tabs from "../../../../../../packages/ui/src/components/tabs";
@@ -18,7 +18,7 @@ import {
 import styles from "./styles.module.scss";
 
 const EmptyState = dynamic(() => import("./empty-state"), {
-  loading: dynamicLoader()
+  loading: dynamic_loader()
 });
 
 export type IndexTabValue = "suggested" | "friends-and-following";
@@ -27,14 +27,14 @@ export type IndexTabValue = "suggested" | "friends-and-following";
 
 const PageHeader = ({
   value,
-  onChange
+  on_change
 }: {
-  onChange: (newValue: IndexTabValue) => void;
+  on_change: (next_value: IndexTabValue) => void;
   value: IndexTabValue;
 }): React.ReactElement => (
   <Tabs
     className={clsx("full-bleed", "page-header", styles.x, styles.tabs)}
-    onValueChange={(newValue): void => onChange(newValue as IndexTabValue)}
+    onValueChange={(next_value: IndexTabValue): void => on_change(next_value)}
     value={value}
   >
     <TabsList className={clsx("full-w", styles.x, styles["tabs-list"])}>
@@ -49,13 +49,19 @@ const PageHeader = ({
 );
 
 const Page = (): React.ReactElement => {
-  const [value, setValue] = React.useState<IndexTabValue>("suggested");
+  const [value, set_value] = React.useState<IndexTabValue>("suggested");
   const [page, set_page] = React.useState<number>(1);
-  const { data, isLoading, is_fetching, isError, error, refetch } =
-    use_get_home_feed_query({
-      page,
-      type: value
-    });
+  const {
+    data,
+    isLoading: is_loading,
+    isFetching: is_fetching,
+    isError: is_error,
+    error,
+    refetch
+  } = use_get_home_feed_query({
+    page,
+    type: value
+  });
   const { items = [], has_more } = data || {};
 
   const load_more = React.useCallback(
@@ -63,17 +69,17 @@ const Page = (): React.ReactElement => {
     []
   );
 
-  const handleChange = React.useCallback((newValue: IndexTabValue) => {
+  const handle_change = React.useCallback((next_value: IndexTabValue) => {
     set_page(1);
-    setValue(newValue);
+    set_value(next_value);
   }, []);
 
   return (
     <>
-      <PageHeader onChange={handleChange} value={value} />
-      {isLoading || (is_fetching && page === 1) ? (
+      <PageHeader on_change={handle_change} value={value} />
+      {is_loading || (is_fetching && page === 1) ? (
         <StoryListSkeleton />
-      ) : isError ? (
+      ) : is_error ? (
         <ErrorState
           auto_size
           component_props={{

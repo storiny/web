@@ -10,7 +10,7 @@ import LegalLayout from "../../../layout";
 import PrivacyPolicy from "./client";
 
 const meta: Meta<typeof PrivacyPolicy> = {
-  title: "pages/Legal/policies/privacy",
+  title: "pages/legal/policies/privacy",
   component: PrivacyPolicy,
   parameters: {
     layout: "fullscreen"

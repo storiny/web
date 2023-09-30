@@ -14,7 +14,6 @@ const SuspenseLoader = (props: SuspenseLoaderProps): React.ReactElement => {
       className={clsx(
         "flex-center",
         "full-w",
-        styles.x,
         styles["suspense-loader"],
         className
       )}

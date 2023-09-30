@@ -23,7 +23,7 @@ interface Props {
   category: StoryCategory | "all";
   debounced_query: string;
   loading: boolean;
-  normalizedCategory: string;
+  normalized_category: string;
 }
 
 // Writer
@@ -56,20 +56,24 @@ const Writer = ({ writer }: { writer: User }): React.ReactElement => (
 
 const WritersPreview = ({
   category,
-  normalizedCategory,
-  loading: loadingProp,
+  normalized_category,
+  loading: loading_prop,
   debounced_query
 }: Props): React.ReactElement | null => {
-  const { data, isLoading, is_fetching, isError } =
-    use_get_explore_writers_query({
-      page: 1,
-      category,
-      query: debounced_query
-    });
+  const {
+    data,
+    isLoading: is_loading,
+    isFetching: is_fetching,
+    isError: is_error
+  } = use_get_explore_writers_query({
+    page: 1,
+    category,
+    query: debounced_query
+  });
   const { items = [] } = data || {};
-  const loading = isLoading || loadingProp;
+  const loading = is_loading || loading_prop;
 
-  if (isError || (!items.length && !is_fetching)) {
+  if (is_error || (!items.length && !is_fetching)) {
     return null;
   }
 
@@ -77,18 +81,13 @@ const WritersPreview = ({
     <>
       <div
         aria-busy={loading}
-        className={clsx(
-          "flex-col",
-          styles.x,
-          styles.writers,
-          loading && styles.loading
-        )}
+        className={clsx("flex-col", styles.writers, loading && styles.loading)}
       >
         <Typography className={"t-medium"} level={"body2"}>
-          Popular writers in {normalizedCategory}
+          Popular writers in {normalized_category}
         </Typography>
         <div
-          className={clsx("flex-center", styles.x, styles["writers-list"])}
+          className={clsx("flex-center", styles["writers-list"])}
           key={String(loading)}
         >
           {loading

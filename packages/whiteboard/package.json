@@ -15,8 +15,8 @@
     "@types/image-blob-reduce": "^4.1.1",
     "@types/pako": "^2.0.0",
     "@types/pica": "^9.0.1",
-    "@types/react": "^18.2.18",
-    "@types/react-dom": "^18.2.7",
+    "@types/react": "18.2.0",
+    "@types/react-dom": "^18.2.8",
     "eslint": "^8.42.0",
     "prettier": "^2.5.1",
     "typescript": "^5.1.5"

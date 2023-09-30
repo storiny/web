@@ -1,18 +1,18 @@
 import React from "react";
 
-import { cabinetGroteskFont } from "./families/cabinet-grotesk";
-import { satoshiFont } from "./families/satoshi";
-import { getFontFamiliesCss } from "./getFontFamiliesCss";
+import { FONT_CABINET_GROTESK } from "./families/cabinet-grotesk";
+import { FONT_SATOSHI } from "./families/satoshi";
+import { get_font_families_css } from "./get-font-families-css";
 
-const fontFamilies: Record<string, string> = {
-  satoshi: satoshiFont.style.fontFamily,
-  "cabinet-grotesk": cabinetGroteskFont.style.fontFamily
+const FONT_FAMILIES: Record<string, string> = {
+  satoshi: FONT_SATOSHI.style.fontFamily,
+  "cabinet-grotesk": FONT_CABINET_GROTESK.style.fontFamily
 };
 
 const CriticalFonts = (): React.ReactElement => (
   <style
     dangerouslySetInnerHTML={{
-      __html: `:root{${getFontFamiliesCss(fontFamilies)}}`
+      __html: `:root{${get_font_families_css(FONT_FAMILIES)}}`
     }}
   />
 );

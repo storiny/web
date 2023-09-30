@@ -16,7 +16,7 @@ export interface VirtualizedStoryListProps extends VirtuosoProps<Story, any> {
   /**
    * Props passed down to individual story skeleton entities.
    */
-  skeletonProps?: Partial<StorySkeletonProps>;
+  skeleton_props?: Partial<StorySkeletonProps>;
   /**
    * Array of stories to render.
    */
@@ -24,5 +24,5 @@ export interface VirtualizedStoryListProps extends VirtuosoProps<Story, any> {
   /**
    * Props passed down to individual story entities.
    */
-  storyProps?: Partial<StoryProps>;
+  story_props?: Partial<StoryProps>;
 }

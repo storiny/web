@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
+/* eslint-disable prefer-snakecase/prefer-snakecase */
 
 "use strict";
 
@@ -15,8 +16,8 @@ module.exports = (api) => ({
     [
       "@babel/preset-typescript",
       {
-        allowDeclareFields: true,
-      },
-    ],
-  ],
+        allowDeclareFields: true
+      }
+    ]
+  ]
 });

@@ -10,7 +10,7 @@ import QuestionMarkIcon from "../../../../../../../../../../../packages/ui/src/i
 
 const NullComponent = (): null => null;
 
-export const deviceTypeToIconMap: Record<DeviceType, React.ReactNode> = {
+export const DEVICE_TYPE_ICON_MAP: Record<DeviceType, React.ReactNode> = {
   [DeviceType.COMPUTER /*    */]: <DeviceComputerIcon />,
   [DeviceType.MOBILE /*      */]: <DeviceMobileIcon />,
   [DeviceType.TABLET /*      */]: <DeviceTabletIcon />,

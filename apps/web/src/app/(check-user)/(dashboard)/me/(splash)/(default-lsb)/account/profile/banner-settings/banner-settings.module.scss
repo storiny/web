@@ -1,7 +1,19 @@
 @use "breakpoints";
 
+.banner-actions {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  gap: 6px;
+}
+
+.placeholder {
+  --icon-size: 24px;
+
+  background-color: var(--bg-elevation-md);
+}
+
 .x {
-  /* Banner aspect ratio */
   &.aspect-ratio {
     position: relative;
     width: auto;
@@ -14,23 +26,7 @@
     }
   }
 
-  /* Banner image */
   &.banner {
     width: auto;
-  }
-
-  /* Banner actions */
-  &.banner-actions {
-    position: absolute;
-    top: 8px;
-    right: 8px;
-    gap: 6px;
-  }
-
-  /* Placeholder */
-  &.placeholder {
-    --icon-size: 24px;
-
-    background-color: var(--bg-elevation-md);
   }
 }

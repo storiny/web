@@ -103,20 +103,24 @@ export const use_color_state = (props: UseColorStateProps): ColorState => {
 
   /**
    * Custom function for handling value updates
-   * @param newValue New value
+   * @param next_value New value
    */
-  const set_value: typeof set_color_state = (newValue) => {
+  const set_value: typeof set_color_state = (next_value) => {
     if (typeof on_change === "function") {
       if (typeof value !== "undefined") {
-        on_change(typeof newValue === "function" ? newValue(color) : newValue);
+        on_change(
+          typeof next_value === "function" ? next_value(color) : next_value
+        );
         // If value is provided then it's controlled, so stop excuting and don't update the internal state
         return;
       }
 
-      on_change(typeof newValue === "function" ? newValue(color) : newValue);
+      on_change(
+        typeof next_value === "function" ? next_value(color) : next_value
+      );
     }
 
-    set_color_state(newValue);
+    set_color_state(next_value);
   };
 
   // Set HSV

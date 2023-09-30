@@ -1,7 +1,7 @@
 import { z } from "zod";
 
-export type AccountHistorySchema = z.infer<typeof accountHistorySchema>;
+export type AccountHistorySchema = z.infer<typeof ACCOUNT_HISTORY_SCHEMA>;
 
-export const accountHistorySchema = z.object({
-  "read-history": z.boolean()
+export const ACCOUNT_HISTORY_SCHEMA = z.object({
+  read_history: z.boolean()
 });

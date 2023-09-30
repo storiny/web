@@ -10,7 +10,7 @@ interface RelationsEmptyStateProps {
   value: RelationsTabValue;
 }
 
-const messageMap: Record<RelationsTabValue, string> = {
+const MESSAGE_MAP: Record<RelationsTabValue, string> = {
   followers: "When people start following you, they will show up here.",
   following: "When you start following people, they will show up here.",
   friends: "When you add friends, they will show up here."
@@ -25,7 +25,7 @@ const RelationsEmptyState = ({
     description={
       query
         ? "Your search criteria did not match anything, make sure you've spelled it correctly or try again by being more specific."
-        : messageMap[value]
+        : MESSAGE_MAP[value]
     }
     icon={query ? undefined : <UsersIcon />}
     title={
