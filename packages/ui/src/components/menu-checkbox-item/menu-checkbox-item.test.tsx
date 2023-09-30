@@ -1,9 +1,10 @@
 import React from "react";
-import { render_test_with_provider } from "src/redux/test-utils";
+
+import { render_test_with_provider } from "~/redux/test-utils";
 
 import Menu from "../menu";
-import { MenuCheckboxItemProps } from "./menu-checkbox-item.props";
 import MenuCheckboxItem from "./menu-checkbox-item";
+import { MenuCheckboxItemProps } from "./menu-checkbox-item.props";
 
 describe("<MenuCheckboxItem />", () => {
   it("renders and matches snapshot", () => {

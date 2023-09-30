@@ -1,11 +1,11 @@
 import React from "react";
 
+import { use_active_cursor } from "~/hooks/use-active-cursor";
 import { clamp } from "~/utils/clamp";
 
 import { Key } from "../../keys";
 import { prevent_scroll } from "../prevent-scroll";
 import { UseSliderProps } from "./use-slider.props";
-import { use_active_cursor } from "~/hooks/use-active-cursor";
 
 /**
  * Computes the X axis position

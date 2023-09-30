@@ -4,7 +4,7 @@ import { Item } from "@radix-ui/react-menubar";
 import clsx from "clsx";
 import React from "react";
 
-import { forward_ref } from "src/utils/forward-ref";
+import { forward_ref } from "~/utils/forward-ref";
 
 import menu_item_styles from "../common/menu-item.module.scss";
 import right_slot_styles from "../common/right-slot.module.scss";

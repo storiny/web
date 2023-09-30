@@ -1,14 +1,14 @@
 import { COMMENT_PROPS, REPLY_PROPS } from "@storiny/shared";
 import React from "react";
-import MenuItem from "src/components/menu-item";
-import { ModalFooterButton, use_modal } from "src/components/modal";
-import { use_toast } from "src/components/toast";
-import { use_media_query } from "src/hooks/use-media-query";
 
-import ResponseTextarea from "src/entities/response-textarea";
-import CommentIcon from "src/icons/comment";
-import EditIcon from "src/icons/edit";
-import ReplyIcon from "src/icons/reply";
+import MenuItem from "~/components/menu-item";
+import { ModalFooterButton, use_modal } from "~/components/modal";
+import { use_toast } from "~/components/toast";
+import ResponseTextarea from "~/entities/response-textarea";
+import { use_media_query } from "~/hooks/use-media-query";
+import CommentIcon from "~/icons/comment";
+import EditIcon from "~/icons/edit";
+import ReplyIcon from "~/icons/reply";
 import {
   get_comments_api,
   get_replies_api,

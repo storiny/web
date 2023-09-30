@@ -1,9 +1,9 @@
 import clsx from "clsx";
 import React from "react";
 
-import Skeleton from "src/components/skeleton";
-import Spacer from "src/components/spacer";
-import { use_media_query } from "src/hooks/use-media-query";
+import Skeleton from "~/components/skeleton";
+import Spacer from "~/components/spacer";
+import { use_media_query } from "~/hooks/use-media-query";
 import { BREAKPOINTS } from "~/theme/breakpoints";
 
 import styles from "../notification.module.scss";

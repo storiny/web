@@ -2,11 +2,11 @@ import clsx from "clsx";
 import { useSetAtom as use_set_atom } from "jotai";
 import React from "react";
 
-import NavigationItem from "src/components/navigation-item";
-import Separator from "src/components/separator";
-import AlbumIcon from "src/icons/album";
-import PexelsIcon from "src/icons/pexels";
-import UploadIcon from "src/icons/upload";
+import NavigationItem from "~/components/navigation-item";
+import Separator from "~/components/separator";
+import AlbumIcon from "~/icons/album";
+import PexelsIcon from "~/icons/pexels";
+import UploadIcon from "~/icons/upload";
 
 import { nav_segment_atom } from "../../atoms";
 import styles from "./navigation-screen.module.scss";

@@ -3,11 +3,11 @@
 import clsx from "clsx";
 import React from "react";
 
-import { use_media_query } from "src/hooks/use-media-query";
-import MinusIcon from "src/icons/minus";
-import PlusIcon from "src/icons/plus";
+import { use_media_query } from "~/hooks/use-media-query";
+import MinusIcon from "~/icons/minus";
+import PlusIcon from "~/icons/plus";
 import { BREAKPOINTS } from "~/theme/breakpoints";
-import { forward_ref } from "src/utils/forward-ref";
+import { forward_ref } from "~/utils/forward-ref";
 
 import styles from "./input.module.scss";
 import { InputProps } from "./input.props";

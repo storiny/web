@@ -4,7 +4,7 @@ import {
 } from "@storiny/web/src/common/reply";
 import React from "react";
 
-import ErrorState from "src/entities/error-state";
+import ErrorState from "~/entities/error-state";
 import {
   get_query_error_type,
   use_get_comment_replies_query

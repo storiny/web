@@ -2,12 +2,12 @@
 
 import { dev_console } from "@storiny/shared/src/utils/dev-log";
 import React from "react";
-import IconButton from "src/components/icon-button";
-import Tooltip from "src/components/tooltip";
-import { css_color } from "src/entities/color-picker/core/color/css-color";
 import use_eye_dropper from "use-eye-dropper";
 
-import PickerIcon from "src/icons/picker";
+import IconButton from "~/components/icon-button";
+import Tooltip from "~/components/tooltip";
+import { css_color } from "~/entities/color-picker/core/color/css-color";
+import PickerIcon from "~/icons/picker";
 
 import { EyeDropperProps } from "./eye-dropper.props";
 

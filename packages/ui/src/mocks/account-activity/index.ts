@@ -1,7 +1,7 @@
 import { AccountActivityType } from "@storiny/shared";
 import { AccountActivity } from "@storiny/types";
 
-import { DateFormat, format_date } from "src/utils/format-date";
+import { DateFormat, format_date } from "~/utils/format-date";
 
 export const TEST_ACCOUNT_ACTIVITY: AccountActivity = {
   type: AccountActivityType.ACCOUNT_CREATION,

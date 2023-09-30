@@ -5,16 +5,16 @@ import clsx from "clsx";
 import { Provider } from "jotai";
 import dynamic from "next/dynamic";
 import React from "react";
-import Button from "src/components/button";
-import Grow from "src/components/grow";
-import IconButton from "src/components/icon-button";
-import Popover, { Close } from "src/components/popover";
-import Spacer from "src/components/spacer";
-import Typography from "src/components/typography";
 
+import Button from "~/components/button";
+import Grow from "~/components/grow";
+import IconButton from "~/components/icon-button";
+import Popover, { Close } from "~/components/popover";
+import Spacer from "~/components/spacer";
+import Typography from "~/components/typography";
 import { preview_color_atom } from "~/entities/color-picker/core/atoms";
-import CloudOffIcon from "src/icons/cloud-off";
-import XIcon from "src/icons/x";
+import CloudOffIcon from "~/icons/cloud-off";
+import XIcon from "~/icons/x";
 
 import styles from "./color-picker.module.scss";
 import { ColorPickerProps } from "./color-picker.props";

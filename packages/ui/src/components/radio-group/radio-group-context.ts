@@ -2,7 +2,7 @@
 
 import React from "react";
 
-import { RadioProps } from "src/components/radio";
+import { RadioProps } from "~/components/radio";
 
 // Context for radio items
 export const RadioGroupContext = React.createContext<{

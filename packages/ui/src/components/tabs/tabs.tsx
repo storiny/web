@@ -4,7 +4,7 @@ import { Root } from "@radix-ui/react-tabs";
 import clsx from "clsx";
 import React from "react";
 
-import { forward_ref } from "src/utils/forward-ref";
+import { forward_ref } from "~/utils/forward-ref";
 
 import styles from "./tabs.module.scss";
 import { TabsProps } from "./tabs.props";

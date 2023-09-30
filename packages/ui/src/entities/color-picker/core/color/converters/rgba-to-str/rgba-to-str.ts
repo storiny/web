@@ -1,7 +1,7 @@
 import { RGBA } from "../../../types";
 import { ALPHA_MAX } from "../../constants";
-import { rgba_to_rgb_str } from "../rgba-to-rgb-str";
 import { rgb_to_hex } from "../rgb-to-hex";
+import { rgba_to_rgb_str } from "../rgba-to-rgb-str";
 
 /**
  * Converts RGBA to color string

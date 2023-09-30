@@ -1,10 +1,10 @@
 import { REPLY_PROPS } from "@storiny/shared";
 import { clsx } from "clsx";
 import React from "react";
-import Avatar from "src/components/avatar";
-import { use_toast } from "src/components/toast";
 
-import ResponseTextarea from "src/entities/response-textarea";
+import Avatar from "~/components/avatar";
+import { use_toast } from "~/components/toast";
+import ResponseTextarea from "~/entities/response-textarea";
 import {
   select_is_logged_in,
   select_user,

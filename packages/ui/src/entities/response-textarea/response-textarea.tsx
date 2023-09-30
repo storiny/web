@@ -1,16 +1,16 @@
 import clsx from "clsx";
 import React from "react";
 
-import Grow from "src/components/grow";
-import IconButton from "src/components/icon-button";
-import Spacer from "src/components/spacer";
-import Textarea from "src/components/textarea";
-import EmojiPicker from "src/entities/emoji-picker";
+import Grow from "~/components/grow";
+import IconButton from "~/components/icon-button";
+import Spacer from "~/components/spacer";
+import Textarea from "~/components/textarea";
+import EmojiPicker from "~/entities/emoji-picker";
 import { insert_text_at_position } from "~/entities/response-textarea/core/utils";
-import { use_textarea_autosize } from "src/hooks/use-textarea-autosize";
-import AtIcon from "src/icons/at";
-import MoodSmileIcon from "src/icons/mood-smile";
-import SendIcon from "src/icons/send";
+import { use_textarea_autosize } from "~/hooks/use-textarea-autosize";
+import AtIcon from "~/icons/at";
+import MoodSmileIcon from "~/icons/mood-smile";
+import SendIcon from "~/icons/send";
 
 import styles from "./response-textarea.module.scss";
 import { ResponseTextareaProps } from "./response-textarea.props";

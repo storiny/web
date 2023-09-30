@@ -4,7 +4,7 @@ import { Action, Close, Description, Root } from "@radix-ui/react-toast";
 import clsx from "clsx";
 import React from "react";
 
-import { forward_ref } from "src/utils/forward-ref";
+import { forward_ref } from "~/utils/forward-ref";
 
 import common_styles from "../common/toast.module.scss";
 import Divider from "../divider";

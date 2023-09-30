@@ -3,13 +3,13 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
 
-import MenuCheckboxItem from "src/components/menu-checkbox-item";
-import RectangleIcon from "src/icons/rectangle";
+import MenuCheckboxItem from "~/components/menu-checkbox-item";
+import RectangleIcon from "~/icons/rectangle";
 
 import Button from "../button";
-import Menu from "./";
 import MenuItem from "../menu-item";
 import Separator from "../separator";
+import Menu from "./";
 import { MenuProps } from "./menu.props";
 
 const meta: Meta<typeof Menu> = {

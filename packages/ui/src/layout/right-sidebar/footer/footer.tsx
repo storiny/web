@@ -1,8 +1,8 @@
 import clsx from "clsx";
 import React from "react";
 
-import Link from "src/components/link";
-import Typography from "src/components/typography";
+import Link from "~/components/link";
+import Typography from "~/components/typography";
 
 import styles from "./footer.module.scss";
 

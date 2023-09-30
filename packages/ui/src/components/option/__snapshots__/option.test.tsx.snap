@@ -21,6 +21,7 @@ exports[`<Option /> matches snapshot 1`] = `
       aria-expanded="true"
       class="focusable flex-center trigger md inverted"
       data-placeholder=""
+      data-select-trigger="true"
       data-state="open"
       dir="ltr"
       role="combobox"

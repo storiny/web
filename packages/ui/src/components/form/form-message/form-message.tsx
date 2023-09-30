@@ -3,7 +3,7 @@
 import clsx from "clsx";
 import React from "react";
 
-import Typography from "src/components/typography";
+import Typography from "~/components/typography";
 
 import { use_form_field } from "../use-form-field";
 import styles from "./form-message.module.scss";

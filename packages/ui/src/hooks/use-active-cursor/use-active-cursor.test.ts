@@ -1,4 +1,4 @@
-import { render_hook_with_provider } from "src/redux/test-utils";
+import { render_hook_with_provider } from "~/redux/test-utils";
 
 import { use_active_cursor } from "./use-active-cursor";
 

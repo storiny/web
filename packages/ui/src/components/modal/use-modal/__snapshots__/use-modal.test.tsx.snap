@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`useModal renders modal, matches snapshot, and passes props to the root component 1`] = `
+exports[`use_modal renders modal, matches snapshot, and passes props to the root component 1`] = `
 <body
   style="pointer-events: none;"
 >

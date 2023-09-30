@@ -5,9 +5,9 @@ import { Item } from "@radix-ui/react-radio-group";
 import clsx from "clsx";
 import React from "react";
 
-import { use_form_field } from "src/components/form";
-import { RadioGroupContext } from "src/components/radio-group";
-import { use_media_query } from "src/hooks/use-media-query";
+import { use_form_field } from "~/components/form";
+import { RadioGroupContext } from "~/components/radio-group";
+import { use_media_query } from "~/hooks/use-media-query";
 import { BREAKPOINTS } from "~/theme/breakpoints";
 
 import styles from "./radio.module.scss";

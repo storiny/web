@@ -1,7 +1,7 @@
 import { useAtomValue as use_atom_value } from "jotai";
 import React from "react";
 
-import CustomState from "src/entities/custom-state";
+import CustomState from "~/entities/custom-state";
 
 import { query_atom } from "../../atoms";
 

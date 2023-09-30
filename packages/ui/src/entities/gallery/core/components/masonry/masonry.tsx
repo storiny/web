@@ -6,14 +6,14 @@ import { useAtomValue as use_atom_value } from "jotai";
 import dynamic from "next/dynamic";
 import React from "react";
 import { useInView as use_in_view } from "react-intersection-observer";
-import Masonry from "src/components/masonry";
-import ScrollArea from "src/components/scroll-area";
-import Spacer from "src/components/spacer";
-import Spinner from "src/components/spinner";
-import ErrorState from "src/entities/error-state";
-import { use_debounce } from "src/hooks/use-debounce";
-import { use_media_query } from "src/hooks/use-media-query";
 
+import Masonry from "~/components/masonry";
+import ScrollArea from "~/components/scroll-area";
+import Spacer from "~/components/spacer";
+import Spinner from "~/components/spinner";
+import ErrorState from "~/entities/error-state";
+import { use_debounce } from "~/hooks/use-debounce";
+import { use_media_query } from "~/hooks/use-media-query";
 import {
   get_query_error_type,
   GetGalleryPhotosResponse,

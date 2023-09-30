@@ -2,10 +2,10 @@
 
 import clsx from "clsx";
 import React from "react";
-import Logo from "src/brand/logo";
 
-import Typography from "src/components/typography";
-import { forward_ref } from "src/utils/forward-ref";
+import Logo from "~/brand/logo";
+import Typography from "~/components/typography";
+import { forward_ref } from "~/utils/forward-ref";
 
 import styles from "./wordmark.module.scss";
 import { WordmarkProps, WordmarkSize } from "./wordmark.props";

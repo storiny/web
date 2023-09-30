@@ -3,7 +3,7 @@
 import { Close } from "@radix-ui/react-dialog";
 import React from "react";
 
-import { ModalFooterButtonProps } from "src/components/modal";
+import { ModalFooterButtonProps } from "~/components/modal";
 
 import Button from "../../button";
 

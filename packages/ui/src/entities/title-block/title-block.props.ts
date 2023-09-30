@@ -1,6 +1,6 @@
 import React from "react";
 
-import { TypographyProps } from "src/components/typography";
+import { TypographyProps } from "~/components/typography";
 
 export interface TitleBlockProps
   extends Omit<React.ComponentPropsWithoutRef<"div">, "title"> {

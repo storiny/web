@@ -4,17 +4,17 @@ import { AccountActivityType } from "@storiny/shared";
 import clsx from "clsx";
 import React from "react";
 
-import Avatar from "src/components/avatar";
-import Typography from "src/components/typography";
-import ExportIcon from "src/icons/export";
-import ForbidIcon from "src/icons/forbid";
-import KeyIcon from "src/icons/key";
-import MailIcon from "src/icons/mail";
-import MoodSmileIcon from "src/icons/mood-smile";
-import PasswordIcon from "src/icons/password";
-import PencilIcon from "src/icons/pencil";
-import TwoFAIcon from "src/icons/two-fa";
-import { DateFormat, format_date } from "src/utils/format-date";
+import Avatar from "~/components/avatar";
+import Typography from "~/components/typography";
+import ExportIcon from "~/icons/export";
+import ForbidIcon from "~/icons/forbid";
+import KeyIcon from "~/icons/key";
+import MailIcon from "~/icons/mail";
+import MoodSmileIcon from "~/icons/mood-smile";
+import PasswordIcon from "~/icons/password";
+import PencilIcon from "~/icons/pencil";
+import TwoFAIcon from "~/icons/two-fa";
+import { DateFormat, format_date } from "~/utils/format-date";
 
 import styles from "./account-activity.module.scss";
 import { AccountActivityProps } from "./account-activity.props";

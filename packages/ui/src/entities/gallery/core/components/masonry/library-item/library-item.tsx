@@ -4,34 +4,34 @@ import { ASSET_PROPS, AssetRating, ImageSize } from "@storiny/shared";
 import clsx from "clsx";
 import { useAtom as use_atom } from "jotai";
 import React from "react";
-import AspectRatio from "src/components/aspect-ratio";
-import { use_confirmation } from "src/components/confirmation";
-import IconButton from "src/components/icon-button";
-import Image from "src/components/image";
-import Input from "src/components/input";
-import Menu from "src/components/menu";
-import MenuItem from "src/components/menu-item";
-import { Description, use_modal } from "src/components/modal";
-import ModalFooterButton from "src/components/modal/footer-button";
-import Radio from "src/components/radio";
-import RadioGroup from "src/components/radio-group";
-import Spacer from "src/components/spacer";
-import Tooltip from "src/components/tooltip";
-import Typography from "src/components/typography";
-import { get_cdn_url } from "src/utils/get-cdn-url";
 
-import CheckIcon from "src/icons/check";
-import DotsIcon from "src/icons/dots";
-import EditIcon from "src/icons/edit";
-import ExplicitIcon from "src/icons/explicit";
-import StarIcon from "src/icons/star";
-import TrashIcon from "src/icons/trash";
+import AspectRatio from "~/components/aspect-ratio";
+import { use_confirmation } from "~/components/confirmation";
+import IconButton from "~/components/icon-button";
+import Image from "~/components/image";
+import Input from "~/components/input";
+import Menu from "~/components/menu";
+import MenuItem from "~/components/menu-item";
+import { Description, use_modal } from "~/components/modal";
+import ModalFooterButton from "~/components/modal/footer-button";
+import Radio from "~/components/radio";
+import RadioGroup from "~/components/radio-group";
+import Spacer from "~/components/spacer";
+import Tooltip from "~/components/tooltip";
+import Typography from "~/components/typography";
+import CheckIcon from "~/icons/check";
+import DotsIcon from "~/icons/dots";
+import EditIcon from "~/icons/edit";
+import ExplicitIcon from "~/icons/explicit";
+import StarIcon from "~/icons/star";
+import TrashIcon from "~/icons/trash";
 import {
   use_asset_alt_mutation,
   use_asset_rating_mutation,
   use_delete_asset_mutation,
   use_favourite_asset_mutation
 } from "~/redux/features";
+import { get_cdn_url } from "~/utils/get-cdn-url";
 
 import { selected_atom } from "../../../atoms";
 import common_styles from "../common.module.scss";

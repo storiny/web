@@ -1,35 +1,35 @@
 "use client";
 
+import { NotificationType } from "@storiny/shared";
 import clsx from "clsx";
 import dynamic from "next/dynamic";
 import React from "react";
 
-import Avatar from "src/components/avatar";
-import Badge from "src/components/badge";
-import Grow from "src/components/grow";
-import Typography from "src/components/typography";
+import Avatar from "~/components/avatar";
+import Badge from "~/components/badge";
+import Grow from "~/components/grow";
+import Typography from "~/components/typography";
 import NotificationParser from "~/entities/notification/parser";
-import { use_media_query } from "src/hooks/use-media-query";
-import AtIcon from "src/icons/at";
-import CommentIcon from "src/icons/comment";
-import HeartIcon from "src/icons/heart";
-import LoginIcon from "src/icons/login";
-import ReplyIcon from "src/icons/reply";
-import ShieldIcon from "src/icons/shield";
-import StoryIcon from "src/icons/story";
-import TagIcon from "src/icons/tag";
-import UserCheckIcon from "src/icons/user-check";
-import UserHeartIcon from "src/icons/user-heart";
-import UserPlusIcon from "src/icons/user-plus";
-import VerifiedIcon from "src/icons/verified";
+import { use_media_query } from "~/hooks/use-media-query";
+import AtIcon from "~/icons/at";
+import CommentIcon from "~/icons/comment";
+import HeartIcon from "~/icons/heart";
+import LoginIcon from "~/icons/login";
+import ReplyIcon from "~/icons/reply";
+import ShieldIcon from "~/icons/shield";
+import StoryIcon from "~/icons/story";
+import TagIcon from "~/icons/tag";
+import UserCheckIcon from "~/icons/user-check";
+import UserHeartIcon from "~/icons/user-heart";
+import UserPlusIcon from "~/icons/user-plus";
+import VerifiedIcon from "~/icons/verified";
 import { select_read_notification } from "~/redux/features";
 import { use_app_selector } from "~/redux/hooks";
 import { BREAKPOINTS } from "~/theme/breakpoints";
-import { DateFormat, format_date } from "src/utils/format-date";
+import { DateFormat, format_date } from "~/utils/format-date";
 
 import styles from "./notification.module.scss";
 import { NotificationProps } from "./notification.props";
-import { NotificationType } from "@storiny/shared";
 
 const Actions = dynamic(() => import("./actions"));
 

@@ -1,14 +1,14 @@
 "use client";
 
 import {
-  combineReducers,
-  configureStore,
+  combineReducers as combine_reducers,
+  configureStore as configure_store,
   PreloadedState
 } from "@reduxjs/toolkit";
 import {
-  createStateSyncMiddleware,
-  initStateWithPrevTab,
-  withReduxStateSync
+  createStateSyncMiddleware as create_state_sync_middleware,
+  initStateWithPrevTab as init_state_with_prev_tab,
+  withReduxStateSync as with_redux_state_sync
 } from "redux-state-sync";
 
 import { initial_state } from "~/redux/state";
@@ -21,7 +21,7 @@ import preferences_slice from "../features/preferences/slice";
 import toast_slice from "../features/toast/slice";
 import { listener_middleware } from "../listener-middleware";
 
-export const root_reducer = combineReducers({
+export const root_reducer = combine_reducers({
   preferences: preferences_slice,
   entities: entities_slice,
   auth: auth_slice,
@@ -42,10 +42,10 @@ export const setup_store = (
   do_not_sync?: boolean,
   logged_in?: boolean
 ) =>
-  configureStore({
+  configure_store({
     reducer: do_not_sync
       ? root_reducer
-      : withReduxStateSync(
+      : with_redux_state_sync(
           root_reducer,
           (prev_state: AppState, next_state: AppState): AppState => ({
             ...next_state,
@@ -73,7 +73,7 @@ export const setup_store = (
         ...(do_not_sync
           ? []
           : [
-              createStateSyncMiddleware({
+              create_state_sync_middleware({
                 channel: "__state_sync_channel__",
                 blacklist: ["preferences/sync_to_browser"],
                 predicate: (action) => !/api\//.test(action.type),
@@ -98,7 +98,7 @@ export const setup_store = (
 export const store = setup_store();
 
 if (process.env.NODE_ENV !== "test" && typeof window !== "undefined") {
-  initStateWithPrevTab(store);
+  init_state_with_prev_tab(store);
 }
 
 export type AppState = ReturnType<typeof root_reducer>;

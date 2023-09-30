@@ -11,10 +11,10 @@ import {
   GroupedVirtuosoHandle,
   GroupedVirtuosoProps
 } from "react-virtuoso";
-import { Root, Scrollbar, Thumb, Viewport } from "src/components/scroll-area";
-import Spacer from "src/components/spacer";
-import Typography from "src/components/typography";
 
+import { Root, Scrollbar, Thumb, Viewport } from "~/components/scroll-area";
+import Spacer from "~/components/spacer";
+import Typography from "~/components/typography";
 import { capitalize } from "~/utils/capitalize";
 
 import { emoji_category_atom, emoji_query_atom } from "../../atoms";
@@ -278,7 +278,7 @@ const EmojiList = React.forwardRef<
               : handle_category_change(
                   Math.min(
                     ...items
-                      .map((item) => (item as any).group_index)
+                      .map((item) => (item as any).groupIndex)
                       .filter((item) => typeof item === "number")
                   )
                 )

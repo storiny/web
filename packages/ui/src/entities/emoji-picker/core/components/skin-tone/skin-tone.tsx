@@ -4,8 +4,8 @@ import { Item as Option } from "@radix-ui/react-select";
 import clsx from "clsx";
 import { useAtom as use_atom } from "jotai";
 import React from "react";
-import Select from "src/components/select";
 
+import Select from "~/components/select";
 import { capitalize } from "~/utils/capitalize";
 
 import { skin_tone_atom } from "../../atoms";

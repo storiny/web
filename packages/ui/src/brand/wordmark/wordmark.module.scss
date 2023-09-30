@@ -1,10 +1,8 @@
-/* Base styles */
 .wordmark {
   user-select: none;
   gap: 8px;
 }
 
-/* Label */
 .label {
   display: flex;
   gap: 4px;
@@ -12,7 +10,6 @@
   line-height: 100%;
 }
 
-/* Beta label */
 .beta {
   font-size: 12px;
   line-height: 100%;

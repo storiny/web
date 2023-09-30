@@ -2,22 +2,22 @@ import clsx from "clsx";
 import NextLink from "next/link";
 import React from "react";
 
-import AspectRatio from "src/components/aspect-ratio";
-import Avatar from "src/components/avatar";
-import Image from "src/components/image";
-import Link from "src/components/link";
-import Skeleton from "src/components/skeleton";
-import Typography from "src/components/typography";
-import ErrorState from "src/entities/error-state";
-import Status from "src/entities/status";
-import PhotoPlusIcon from "src/icons/photo-plus";
+import AspectRatio from "~/components/aspect-ratio";
+import Avatar from "~/components/avatar";
+import Image from "~/components/image";
+import Link from "~/components/link";
+import Skeleton from "~/components/skeleton";
+import Typography from "~/components/typography";
+import ErrorState from "~/entities/error-state";
+import Status from "~/entities/status";
+import PhotoPlusIcon from "~/icons/photo-plus";
 import { fetch_user } from "~/redux/features";
 import {
   select_auth_status,
   select_user
 } from "~/redux/features/auth/selectors";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
-import { abbreviate_number } from "src/utils/abbreviate-number";
+import { abbreviate_number } from "~/utils/abbreviate-number";
 
 import styles from "./persona.module.scss";
 

@@ -3,20 +3,20 @@
 import clsx from "clsx";
 import NextLink from "next/link";
 import React from "react";
-import Avatar from "src/components/avatar";
-import Button from "src/components/button";
-import Grow from "src/components/grow";
-import Typography from "src/components/typography";
-import { use_media_query } from "src/hooks/use-media-query";
-import { abbreviate_number } from "src/utils/abbreviate-number";
 
-import StoryIcon from "src/icons/story";
-import UserCheckIcon from "src/icons/user-check";
-import UserPlusIcon from "src/icons/user-plus";
-import UsersIcon from "src/icons/users";
+import Avatar from "~/components/avatar";
+import Button from "~/components/button";
+import Grow from "~/components/grow";
+import Typography from "~/components/typography";
+import { use_media_query } from "~/hooks/use-media-query";
+import StoryIcon from "~/icons/story";
+import UserCheckIcon from "~/icons/user-check";
+import UserPlusIcon from "~/icons/user-plus";
+import UsersIcon from "~/icons/users";
 import { boolean_action } from "~/redux/features";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 import { BREAKPOINTS } from "~/theme/breakpoints";
+import { abbreviate_number } from "~/utils/abbreviate-number";
 
 import UserActions from "./actions";
 import styles from "./user.module.scss";

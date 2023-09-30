@@ -1,6 +1,6 @@
 import React from "react";
 
-import { render_test_with_provider } from "src/redux/test-utils";
+import { render_test_with_provider } from "~/redux/test-utils";
 
 import Tab from "../tab";
 import tab_styles from "../tab/tab.module.scss";

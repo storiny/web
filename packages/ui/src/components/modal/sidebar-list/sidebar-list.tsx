@@ -3,7 +3,7 @@
 import clsx from "clsx";
 import React from "react";
 
-import { ModalSidebarListProps } from "src/components/modal";
+import { ModalSidebarListProps } from "~/components/modal";
 
 import TabsList from "../../tabs-list";
 import styles from "./sidebar-list.module.scss";

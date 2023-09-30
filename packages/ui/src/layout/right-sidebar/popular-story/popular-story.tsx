@@ -3,10 +3,10 @@
 import clsx from "clsx";
 import React from "react";
 
-import Link from "src/components/link";
-import Typography from "src/components/typography";
-import Persona from "src/entities/persona";
-import TrendingUpIcon from "src/icons/trending-up";
+import Link from "~/components/link";
+import Typography from "~/components/typography";
+import Persona from "~/entities/persona";
+import TrendingUpIcon from "~/icons/trending-up";
 
 import styles from "./popular-story.module.scss";
 import { PopularStoryProps } from "./popular-story.props";

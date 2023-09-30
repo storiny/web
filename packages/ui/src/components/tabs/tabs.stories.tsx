@@ -4,11 +4,11 @@ import type { Meta, StoryObj } from "@storybook/react";
 import clsx from "clsx";
 import React from "react";
 
-import RectangleIcon from "src/icons/rectangle";
+import TabsList from "~/components/tabs-list/tabs-list";
+import RectangleIcon from "~/icons/rectangle";
 
 import Tab from "../tab";
 import TabPanel, { TabPanelProps } from "../tab-panel";
-import TabsList from "~/components/tabs-list/tabs-list";
 import Tabs from "./tabs";
 
 const CustomTabPanel = ({

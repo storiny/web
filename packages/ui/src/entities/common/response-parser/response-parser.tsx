@@ -4,7 +4,7 @@ import clsx from "clsx";
 import { Interweave, InterweaveProps, Node } from "interweave";
 import React from "react";
 
-import Link from "src/components/link";
+import Link from "~/components/link";
 
 /**
  * Node transformer

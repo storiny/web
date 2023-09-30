@@ -4,7 +4,7 @@ import { Item } from "@radix-ui/react-toggle-group";
 import clsx from "clsx";
 import React from "react";
 
-import { forward_ref } from "src/utils/forward-ref";
+import { forward_ref } from "~/utils/forward-ref";
 
 import button_styles from "../common/button-reset.module.scss";
 import toggle_styles from "../common/toggle.module.scss";

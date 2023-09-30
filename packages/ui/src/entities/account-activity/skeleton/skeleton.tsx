@@ -1,11 +1,11 @@
 import clsx from "clsx";
 import React from "react";
 
-import Skeleton from "src/components/skeleton";
-import Spacer from "src/components/spacer";
-import { AccountActivitySkeletonProps } from "./skeleton.props";
+import Skeleton from "~/components/skeleton";
+import Spacer from "~/components/spacer";
 
 import styles from "../account-activity.module.scss";
+import { AccountActivitySkeletonProps } from "./skeleton.props";
 
 const AccountActivitySkeleton = (
   props: AccountActivitySkeletonProps

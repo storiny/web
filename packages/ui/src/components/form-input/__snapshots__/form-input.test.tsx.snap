@@ -18,6 +18,7 @@ exports[`<FormInput /> matches snapshot 1`] = `
     <div
       class="flex-center container inverted md"
       data-focused="false"
+      data-input-container="true"
     >
       <input
         aria-describedby=":r0:-helper-text"

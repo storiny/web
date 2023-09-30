@@ -3,15 +3,15 @@ import clsx from "clsx";
 import { useSetAtom as use_set_atom } from "jotai";
 import React from "react";
 import { ErrorCode, useDropzone as use_dropzone } from "react-dropzone";
-import Button from "src/components/button";
-import Input from "src/components/input";
-import Spacer from "src/components/spacer";
-import { use_toast } from "src/components/toast";
-import Typography from "src/components/typography";
-import CameraIllustration from "src/illustrations/camera";
-import { get_cdn_url } from "src/utils/get-cdn-url";
 
+import Button from "~/components/button";
+import Input from "~/components/input";
+import Spacer from "~/components/spacer";
+import { use_toast } from "~/components/toast";
+import Typography from "~/components/typography";
+import CameraIllustration from "~/illustrations/camera";
 import { use_upload_asset_mutation } from "~/redux/features";
+import { get_cdn_url } from "~/utils/get-cdn-url";
 
 import { selected_atom, uploading_atom } from "../../atoms";
 import { FileWithPreview } from "../../types";

@@ -10,7 +10,7 @@ import {
 import clsx from "clsx";
 import React from "react";
 
-import { forward_ref } from "src/utils/forward-ref";
+import { forward_ref } from "~/utils/forward-ref";
 
 import menu_styles from "../common/menu.module.scss";
 import { MenuProps } from "./menu.props";

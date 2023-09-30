@@ -1,8 +1,8 @@
 "use client";
 
 import React from "react";
-import AppStateProvider from "src/redux/components/root-provider";
 
+import AppStateProvider from "~/redux/components/root-provider";
 import { AuthStatus } from "~/redux/features/auth/slice";
 import { initial_state } from "~/redux/state";
 import { AppState, setup_store } from "~/redux/store";

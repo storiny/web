@@ -4,4 +4,4 @@ import { PolymorphicProps } from "~/types/index";
 
 type DividerPrimitive = SeparatorProps & PolymorphicProps<"div">;
 
-export interface DividerProps extends DividerPrimitive {}
+export type DividerProps = DividerPrimitive

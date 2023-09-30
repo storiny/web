@@ -4,7 +4,7 @@ import { Arrow, Content, Menu, Portal, Trigger } from "@radix-ui/react-menubar";
 import clsx from "clsx";
 import React from "react";
 
-import { forward_ref } from "src/utils/forward-ref";
+import { forward_ref } from "~/utils/forward-ref";
 
 import menu_styles from "../common/menu.module.scss";
 import { MenubarMenuProps } from "./menubar-menu.props";

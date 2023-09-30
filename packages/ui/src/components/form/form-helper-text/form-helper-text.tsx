@@ -2,9 +2,9 @@
 
 import clsx from "clsx";
 import React from "react";
-import { FormHelperTextProps } from "src/components/form";
 
-import Typography from "src/components/typography";
+import { FormHelperTextProps } from "~/components/form";
+import Typography from "~/components/typography";
 
 import { use_form_field } from "../use-form-field";
 

@@ -1,4 +1,4 @@
-import { ResponseTextareaProps } from "src/entities/response-textarea";
+import { ResponseTextareaProps } from "~/entities/response-textarea";
 
 export interface ResponseEditorProps {
   /**

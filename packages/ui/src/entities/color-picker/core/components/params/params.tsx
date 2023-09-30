@@ -1,9 +1,10 @@
 "use client";
 
 import React from "react";
-import Input from "src/components/input";
-import Option from "src/components/option";
-import Select from "src/components/select";
+
+import Input from "~/components/input";
+import Option from "~/components/option";
+import Select from "~/components/select";
 
 import { ALPHA_MAX } from "../../color/constants";
 import { css_color } from "../../color/css-color";

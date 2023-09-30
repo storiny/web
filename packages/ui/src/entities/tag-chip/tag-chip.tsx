@@ -1,18 +1,18 @@
+import { is_num } from "@storiny/shared/src/utils/is-num";
 import clsx from "clsx";
 import NextLink from "next/link";
 import React from "react";
 
-import Chip from "src/components/chip";
-import Grow from "src/components/grow";
-import Typography from "src/components/typography";
-import HashIcon from "src/icons/hash";
-import StoriesIcon from "src/icons/stories";
-import UsersIcon from "src/icons/users";
-import { abbreviate_number } from "src/utils/abbreviate-number";
+import Chip from "~/components/chip";
+import Grow from "~/components/grow";
+import Typography from "~/components/typography";
+import HashIcon from "~/icons/hash";
+import StoriesIcon from "~/icons/stories";
+import UsersIcon from "~/icons/users";
+import { abbreviate_number } from "~/utils/abbreviate-number";
 
 import styles from "./tag-chip.module.scss";
 import { TagChipProps } from "./tag-chip.props";
-import { is_num } from "@storiny/shared/src/utils/is-num";
 
 const TagChip = (props: TagChipProps): React.ReactElement => {
   const {

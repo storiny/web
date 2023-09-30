@@ -1,4 +1,4 @@
-export class MeasurementStore<T extends {} | unknown[], V> {
+export class MeasurementStore<T extends object | unknown[], V> {
   map: WeakMap<T, V> = new WeakMap();
 
   /**

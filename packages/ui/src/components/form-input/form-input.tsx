@@ -2,7 +2,7 @@
 
 import React from "react";
 
-import Input from "src/components/input";
+import Input from "~/components/input";
 
 import { use_form_context } from "../form";
 import {

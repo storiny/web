@@ -1,3 +1,3 @@
-import { LabelProps } from "src/components/label";
+import { LabelProps } from "~/components/label";
 
 export type FormLabelProps = LabelProps;

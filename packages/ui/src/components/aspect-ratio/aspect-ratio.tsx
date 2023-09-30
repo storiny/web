@@ -3,7 +3,7 @@
 import clsx from "clsx";
 import React from "react";
 
-import { forward_ref } from "src/utils/forward-ref";
+import { forward_ref } from "~/utils/forward-ref";
 
 import styles from "./aspect-ratio.module.scss";
 import { AspectRatioProps } from "./aspect-ratio.props";
@@ -19,7 +19,6 @@ const AspectRatio = forward_ref<AspectRatioProps, "div">((props, ref) => {
     style,
     ...rest
   } = props;
-
   return (
     <Component
       {...rest}

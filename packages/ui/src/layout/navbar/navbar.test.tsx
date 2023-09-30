@@ -3,7 +3,7 @@ import { waitFor as wait_for } from "@testing-library/react";
 import { screen } from "@testing-library/react";
 import React from "react";
 
-import { render_test_with_provider } from "src/redux/test-utils";
+import { render_test_with_provider } from "~/redux/test-utils";
 
 import Navbar from "./navbar";
 

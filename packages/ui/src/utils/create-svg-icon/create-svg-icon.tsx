@@ -2,7 +2,7 @@
 
 import React from "react";
 
-import SvgIcon, { SvgIconProps } from "src/components/svg-icon";
+import SvgIcon, { SvgIconProps } from "~/components/svg-icon";
 
 /**
  * HOC for creating `SvgIcon` component from path data

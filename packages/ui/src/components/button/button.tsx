@@ -6,12 +6,12 @@ import { is_test_env } from "@storiny/shared/src/utils/is-test-env";
 import clsx from "clsx";
 import React from "react";
 
-import { use_media_query } from "src/hooks/use-media-query";
+import { use_media_query } from "~/hooks/use-media-query";
 import { select_haptic_feedback } from "~/redux/features";
 import { select_is_logged_in } from "~/redux/features/auth/selectors";
 import { use_app_selector } from "~/redux/hooks";
 import { BREAKPOINTS } from "~/theme/breakpoints";
-import { forward_ref } from "src/utils/forward-ref";
+import { forward_ref } from "~/utils/forward-ref";
 
 import button_styles from "../common/button-reset.module.scss";
 import Spinner from "../spinner";

@@ -3,9 +3,9 @@
 import clsx from "clsx";
 import React from "react";
 
-import Grow from "src/components/grow";
-import ChevronIcon from "src/icons/chevron";
-import { forward_ref } from "src/utils/forward-ref";
+import Grow from "~/components/grow";
+import ChevronIcon from "~/icons/chevron";
+import { forward_ref } from "~/utils/forward-ref";
 
 import common_styles from "../common/button-reset.module.scss";
 import styles from "./navigation-item.module.scss";

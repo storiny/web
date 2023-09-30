@@ -6,8 +6,8 @@ import clsx from "clsx";
 import React from "react";
 
 import { AvatarGroupContext } from "~/components/avatar-group/avatar-group-context";
-import { forward_ref } from "src/utils/forward-ref";
-import { get_cdn_url } from "src/utils/get-cdn-url";
+import { forward_ref } from "~/utils/forward-ref";
+import { get_cdn_url } from "~/utils/get-cdn-url";
 
 import common_styles from "../common/avatar-size.module.scss";
 import styles from "./avatar.module.scss";

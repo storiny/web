@@ -1,9 +1,10 @@
 import { act } from "@testing-library/react";
 import React from "react";
+
 import {
   render_hook_with_provider,
   render_test_with_provider
-} from "src/redux/test-utils";
+} from "~/redux/test-utils";
 
 import { ConfirmationProps } from "../confirmation.props";
 import { use_confirmation } from "./use-confirmation";

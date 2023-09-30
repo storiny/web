@@ -22,6 +22,7 @@ exports[`<FormSelect /> matches snapshot 1`] = `
       aria-expanded="true"
       aria-invalid="false"
       class="focusable flex-center trigger md inverted"
+      data-select-trigger="true"
       data-state="open"
       dir="ltr"
       id=":r0:-item"

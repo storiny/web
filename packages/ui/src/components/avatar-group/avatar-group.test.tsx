@@ -2,14 +2,15 @@ import { axe } from "@storiny/test-utils";
 import { waitFor as wait_for } from "@testing-library/react";
 import { screen } from "@testing-library/react";
 import React from "react";
-import { render_test_with_provider } from "src/redux/test-utils";
+
+import { render_test_with_provider } from "~/redux/test-utils";
 
 import Avatar from "../avatar";
 import common_styles from "../common/avatar-size.module.scss";
+import AvatarGroup from "./avatar-group";
 import styles from "./avatar-group.module.scss";
 import { AvatarGroupSize } from "./avatar-group.props";
 import { AvatarGroupProps } from "./avatar-group.props";
-import AvatarGroup from "./avatar-group";
 
 describe("<AvatarGroup />", () => {
   it("matches snapshot", async () => {

@@ -9,21 +9,21 @@ import {
 } from "jotai";
 import dynamic from "next/dynamic";
 import React from "react";
-import IconButton from "src/components/icon-button";
-import Modal from "src/components/modal";
-import ModalFooterButton from "src/components/modal/footer-button";
-import ModalSidebarItem from "src/components/modal/sidebar-item";
-import ModalSidebarList from "src/components/modal/sidebar-list";
-import Spacer from "src/components/spacer";
-import TabPanel from "src/components/tab-panel";
-import { use_media_query } from "src/hooks/use-media-query";
 
-import AlbumIcon from "src/icons/album";
-import ChevronIcon from "src/icons/chevron";
-import PenIcon from "src/icons/pen";
-import PexelsIcon from "src/icons/pexels";
-import PhotoSearchIcon from "src/icons/photo-search";
-import UploadIcon from "src/icons/upload";
+import IconButton from "~/components/icon-button";
+import Modal from "~/components/modal";
+import ModalFooterButton from "~/components/modal/footer-button";
+import ModalSidebarItem from "~/components/modal/sidebar-item";
+import ModalSidebarList from "~/components/modal/sidebar-list";
+import Spacer from "~/components/spacer";
+import TabPanel from "~/components/tab-panel";
+import { use_media_query } from "~/hooks/use-media-query";
+import AlbumIcon from "~/icons/album";
+import ChevronIcon from "~/icons/chevron";
+import PenIcon from "~/icons/pen";
+import PexelsIcon from "~/icons/pexels";
+import PhotoSearchIcon from "~/icons/photo-search";
+import UploadIcon from "~/icons/upload";
 import { BREAKPOINTS } from "~/theme/breakpoints";
 
 import {
@@ -310,9 +310,6 @@ const GalleryImpl = (props: GalleryProps): React.ReactElement => {
             ) : (
               <Whiteboard
                 initial_image_url={upload_image_url.current}
-                on_mount={(): void => {
-                  upload_image_url.current = null;
-                }}
                 on_cancel={(): void => {
                   set_uploader_props(null);
                   set_whiteboard_uploading(false);
@@ -325,6 +322,9 @@ const GalleryImpl = (props: GalleryProps): React.ReactElement => {
                     file: FileWithPreview;
                   });
                   set_whiteboard_uploading(true);
+                }}
+                on_mount={(): void => {
+                  upload_image_url.current = null;
                 }}
               />
             )}

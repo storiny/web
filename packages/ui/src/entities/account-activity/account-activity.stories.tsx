@@ -4,7 +4,7 @@ import { AccountActivityType } from "@storiny/shared";
 import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
 
-import { DateFormat, format_date } from "src/utils/format-date";
+import { DateFormat, format_date } from "~/utils/format-date";
 
 import { MOCK_USERS } from "../../mocks";
 import AccountActivity from "./account-activity";

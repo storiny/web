@@ -14,7 +14,7 @@ import {
 import clsx from "clsx";
 import React from "react";
 
-import { forward_ref } from "src/utils/forward-ref";
+import { forward_ref } from "~/utils/forward-ref";
 
 import Button from "../button";
 import overlay_styles from "../common/overlay.module.scss";
@@ -38,7 +38,6 @@ const Confirmation = forward_ref<ConfirmationProps, "div">((props, ref) => {
     className,
     ...rest
   } = props;
-
   return (
     <Root {...rest}>
       <Trigger asChild {...slot_props?.trigger}>

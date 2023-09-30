@@ -4,8 +4,8 @@ import { Arrow, Content, Portal, Root, Trigger } from "@radix-ui/react-tooltip";
 import clsx from "clsx";
 import React from "react";
 
-import Spacer from "src/components/spacer";
-import { forward_ref } from "src/utils/forward-ref";
+import Spacer from "~/components/spacer";
+import { forward_ref } from "~/utils/forward-ref";
 
 import styles from "./tooltip.module.scss";
 import { TooltipProps } from "./tooltip.props";

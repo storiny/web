@@ -4,7 +4,7 @@ import { ToastViewportProps, Viewport } from "@radix-ui/react-toast";
 import clsx from "clsx";
 import React from "react";
 
-import styles from "./Banner.module.scss";
+import styles from "./banner.module.scss";
 
 export type BannerViewportProps = ToastViewportProps &
   React.ComponentPropsWithoutRef<"div">;

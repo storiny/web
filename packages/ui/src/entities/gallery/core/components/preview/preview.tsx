@@ -2,8 +2,8 @@ import clsx from "clsx";
 import { useAtomValue as use_atom_value } from "jotai";
 import React from "react";
 
-import Image from "src/components/image";
-import PhotoIcon from "src/icons/photo";
+import Image from "~/components/image";
+import PhotoIcon from "~/icons/photo";
 
 import { selected_atom } from "../../atoms";
 import styles from "./preview.module.scss";
@@ -18,8 +18,7 @@ const ImagePreview = (): React.ReactElement => {
           className={styles.image}
           hex={selected.hex}
           slot_props={{
-            fallback: { style: { display: "none" } },
-            image: styles["native-image"]
+            fallback: { style: { display: "none" } }
           }}
           src={selected.src}
         />

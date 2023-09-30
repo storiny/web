@@ -4,16 +4,16 @@ import clsx from "clsx";
 import NextLink from "next/link";
 import React from "react";
 
-import IconButton from "src/components/icon-button";
-import Persona from "src/entities/persona";
-import UserCheckIcon from "src/icons/user-check";
-import UserPlusIcon from "src/icons/user-plus";
+import IconButton from "~/components/icon-button";
+import Persona from "~/entities/persona";
+import UserCheckIcon from "~/icons/user-check";
+import UserPlusIcon from "~/icons/user-plus";
+import { boolean_action } from "~/redux/features";
 import { sync_with_user } from "~/redux/features/entities/slice";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 
 import styles from "./user-with-action.module.scss";
 import { UserWithActionProps } from "./user-with-action.props";
-import { boolean_action } from "~/redux/features";
 
 const UserWithAction = (props: UserWithActionProps): React.ReactElement => {
   const { user } = props;

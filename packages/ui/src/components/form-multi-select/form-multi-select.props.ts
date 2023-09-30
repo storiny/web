@@ -6,7 +6,7 @@ import {
   FormLabelProps,
   FormMessageProps
 } from "~/components/form";
-import { MultiSelectProps } from "src/components/multi-select";
+import { MultiSelectProps } from "~/components/multi-select";
 
 export interface FormMultiSelectProps extends Omit<MultiSelectProps, "ref"> {
   /**

@@ -5,7 +5,7 @@ import { setupServer as setup_server } from "msw/node";
 import React from "react";
 
 import { GetRightSidebarContentResponse } from "~/redux/features";
-import { render_test_with_provider } from "src/redux/test-utils";
+import { render_test_with_provider } from "~/redux/test-utils";
 
 import { TEST_STORY, TEST_TAG, TEST_USER } from "../../mocks";
 import RightSidebar from "./right-sidebar";

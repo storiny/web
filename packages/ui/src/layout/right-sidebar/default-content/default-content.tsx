@@ -1,29 +1,29 @@
 import clsx from "clsx";
 import React from "react";
 
-import Link from "src/components/link";
-import Separator from "src/components/separator";
-import Skeleton from "src/components/skeleton";
-import Typography, { TypographyProps } from "src/components/typography";
-import ErrorState from "src/entities/error-state";
-import TagChip from "src/entities/tag-chip";
-import ChevronIcon from "src/icons/chevron";
-import StoriesIcon from "src/icons/stories";
-import TagsIcon from "src/icons/tags";
-import UsersIcon from "src/icons/users";
-import { RightSidebarDefaultContentProps } from "./default-content.props";
+import Link from "~/components/link";
+import Separator from "~/components/separator";
+import Skeleton from "~/components/skeleton";
+import Typography, { TypographyProps } from "~/components/typography";
+import ErrorState from "~/entities/error-state";
+import TagChip from "~/entities/tag-chip";
+import ChevronIcon from "~/icons/chevron";
+import StoriesIcon from "~/icons/stories";
+import TagsIcon from "~/icons/tags";
+import UsersIcon from "~/icons/users";
 import PopularStory, {
   PopularStorySkeleton
-} from "src/layout/right-sidebar/popular-story";
+} from "~/layout/right-sidebar/popular-story";
 import UserWithAction, {
   UserWithActionSkeleton
-} from "src/layout/right-sidebar/user-with-action";
+} from "~/layout/right-sidebar/user-with-action";
 import {
   get_query_error_type,
   use_get_right_sidebar_content_query
 } from "~/redux/features";
 
 import styles from "./default-content.module.scss";
+import { RightSidebarDefaultContentProps } from "./default-content.props";
 
 export const TitleWithIcon = ({
   icon,

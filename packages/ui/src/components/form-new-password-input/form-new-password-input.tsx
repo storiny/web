@@ -4,17 +4,17 @@ import { USER_PROPS } from "@storiny/shared";
 import { is_test_env } from "@storiny/shared/src/utils/is-test-env";
 import clsx from "clsx";
 import React from "react";
-import { use_form_context } from "../form";
 import { ZXCVBNScore } from "zxcvbn";
 
-import FormInput from "src/components/form-input";
-import IconButton from "src/components/icon-button";
-import Spinner from "src/components/spinner";
-import EyeIcon from "src/icons/eye";
-import EyeClosedIcon from "src/icons/eye-closed";
-import LockIcon from "src/icons/lock";
-import { scale_number } from "src/utils/scale-number";
+import FormInput from "~/components/form-input";
+import IconButton from "~/components/icon-button";
+import Spinner from "~/components/spinner";
+import EyeIcon from "~/icons/eye";
+import EyeClosedIcon from "~/icons/eye-closed";
+import LockIcon from "~/icons/lock";
+import { scale_number } from "~/utils/scale-number";
 
+import { use_form_context } from "../form";
 import styles from "./form-new-password-input.module.scss";
 import { FormNewPasswordInputProps } from "./form-new-password-input.props";
 

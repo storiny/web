@@ -3,7 +3,7 @@
 import { RadioGroup } from "@radix-ui/react-menubar";
 import React from "react";
 
-import { forward_ref } from "src/utils/forward-ref";
+import { forward_ref } from "~/utils/forward-ref";
 
 import { MenubarRadioGroupProps } from "./menubar-radio-group.props";
 

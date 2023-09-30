@@ -2,10 +2,10 @@ import { Notification } from "@storiny/types";
 import clsx from "clsx";
 import React from "react";
 
-import IconButton from "src/components/icon-button";
-import { use_media_query } from "src/hooks/use-media-query";
-import BellOffIcon from "src/icons/bell-off";
-import CheckIcon from "src/icons/check";
+import IconButton from "~/components/icon-button";
+import { use_media_query } from "~/hooks/use-media-query";
+import BellOffIcon from "~/icons/bell-off";
+import CheckIcon from "~/icons/check";
 import {
   set_read_notification,
   sync_with_notification,

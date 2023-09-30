@@ -4,8 +4,8 @@ import { CheckboxItem, ItemIndicator } from "@radix-ui/react-dropdown-menu";
 import clsx from "clsx";
 import React from "react";
 
-import CheckIcon from "src/icons/check";
-import { forward_ref } from "src/utils/forward-ref";
+import CheckIcon from "~/icons/check";
+import { forward_ref } from "~/utils/forward-ref";
 
 import menu_item_styles from "../common/menu-item.module.scss";
 import right_slot_styles from "../common/right-slot.module.scss";

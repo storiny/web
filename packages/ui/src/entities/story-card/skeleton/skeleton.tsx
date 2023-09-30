@@ -1,12 +1,12 @@
 import { clsx } from "clsx";
 import React from "react";
 
-import AspectRatio from "src/components/aspect-ratio";
-import Skeleton from "src/components/skeleton";
-import Spacer from "src/components/spacer";
-import { StoryCardSkeletonProps } from "./skeleton.props";
+import AspectRatio from "~/components/aspect-ratio";
+import Skeleton from "~/components/skeleton";
+import Spacer from "~/components/spacer";
 
 import card_styles from "../story-card.module.scss";
+import { StoryCardSkeletonProps } from "./skeleton.props";
 
 const StoryCardSkeleton = (
   props: StoryCardSkeletonProps

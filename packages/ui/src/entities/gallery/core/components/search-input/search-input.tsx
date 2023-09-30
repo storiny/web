@@ -1,8 +1,8 @@
 import { useAtom as use_atom, useAtomValue as use_atom_value } from "jotai";
 import React from "react";
 
-import Input, { InputProps } from "src/components/input";
-import SearchIcon from "src/icons/search";
+import Input, { InputProps } from "~/components/input";
+import SearchIcon from "~/icons/search";
 
 import { query_atom, uploading_atom } from "../../atoms";
 

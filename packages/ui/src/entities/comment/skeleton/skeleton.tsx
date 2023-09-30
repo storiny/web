@@ -1,11 +1,11 @@
 import clsx from "clsx";
 import React from "react";
 
-import AspectRatio from "src/components/aspect-ratio";
-import Grow from "src/components/grow";
-import NoSsr from "src/components/no-ssr";
-import Skeleton from "src/components/skeleton";
-import { use_media_query } from "src/hooks/use-media-query";
+import AspectRatio from "~/components/aspect-ratio";
+import Grow from "~/components/grow";
+import NoSsr from "~/components/no-ssr";
+import Skeleton from "~/components/skeleton";
+import { use_media_query } from "~/hooks/use-media-query";
 import { BREAKPOINTS } from "~/theme/breakpoints";
 
 import comment_styles from "../comment.module.scss";

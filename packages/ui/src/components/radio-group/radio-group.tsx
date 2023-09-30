@@ -4,7 +4,7 @@ import { Root } from "@radix-ui/react-radio-group";
 import clsx from "clsx";
 import React from "react";
 
-import { forward_ref } from "src/utils/forward-ref";
+import { forward_ref } from "~/utils/forward-ref";
 
 import styles from "./radio-group.module.scss";
 import { RadioGroupProps } from "./radio-group.props";

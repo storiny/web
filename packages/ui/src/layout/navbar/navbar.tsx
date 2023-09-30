@@ -6,7 +6,7 @@ import React from "react";
 
 import Wordmark from "~/brand/wordmark";
 import Input from "~/components/input";
-import SearchIcon from "src/icons/search";
+import SearchIcon from "~/icons/search";
 import { select_is_logged_in } from "~/redux/features/auth/selectors";
 import { use_app_selector } from "~/redux/hooks";
 

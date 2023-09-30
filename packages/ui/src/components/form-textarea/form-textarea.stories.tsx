@@ -1,12 +1,12 @@
 // noinspection JSUnusedGlobalSymbols
 
-import { zod_resolver } from "../form";
 import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
 import { z } from "zod";
 
-import Form, { use_form } from "src/components/form";
+import Form, { use_form } from "~/components/form";
 
+import { zod_resolver } from "../form";
 import FormTextarea from "./form-textarea";
 
 const sample_schema = z.object({

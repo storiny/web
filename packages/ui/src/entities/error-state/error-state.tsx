@@ -1,14 +1,14 @@
 import clsx from "clsx";
 import React from "react";
 
-import Button from "src/components/button";
-import Link from "src/components/link";
-import Spacer from "src/components/spacer";
-import Typography from "src/components/typography";
-import { use_media_query } from "src/hooks/use-media-query";
-import CloudOffIcon from "src/icons/cloud-off";
-import RetryIcon from "src/icons/retry";
-import ServerErrorIcon from "src/icons/server-error";
+import Button from "~/components/button";
+import Link from "~/components/link";
+import Spacer from "~/components/spacer";
+import Typography from "~/components/typography";
+import { use_media_query } from "~/hooks/use-media-query";
+import CloudOffIcon from "~/icons/cloud-off";
+import RetryIcon from "~/icons/retry";
+import ServerErrorIcon from "~/icons/server-error";
 import { BREAKPOINTS } from "~/theme/breakpoints";
 
 import styles from "./error-state.module.scss";
