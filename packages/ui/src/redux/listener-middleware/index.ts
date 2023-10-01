@@ -1,5 +1,5 @@
 import {
-  createListenerMiddleware,
+  createListenerMiddleware as create_listener_middleware,
   TypedStartListening
 } from "@reduxjs/toolkit";
 
@@ -14,7 +14,7 @@ import { AppDispatch, AppState } from "../store";
 
 export type AppStartListening = TypedStartListening<AppState, AppDispatch>;
 
-export const listener_middleware = createListenerMiddleware();
+export const listener_middleware = create_listener_middleware();
 
 [
   add_preferences_listeners,

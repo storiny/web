@@ -2,8 +2,8 @@ import { clsx } from "clsx";
 import React from "react";
 
 import { GetProfileResponse } from "~/common/grpc";
-import Grow from "../../../../../../../packages/ui/src/components/grow";
-import RightSidebar from "../../../../../../../packages/ui/src/layout/right-sidebar";
+import Grow from "~/components/grow";
+import RightSidebar from "~/layout/right-sidebar";
 
 import ProfileContent from "../content";
 import styles from "./right-sidebar.module.scss";

@@ -3,17 +3,17 @@ import NextLink from "next/link";
 import React from "react";
 
 import { GetTagResponse } from "~/common/grpc";
-import Button from "../../../../../../../../packages/ui/src/components/button";
-import Grow from "../../../../../../../../packages/ui/src/components/grow";
-import Spacer from "../../../../../../../../packages/ui/src/components/spacer";
-import Typography from "../../../../../../../../packages/ui/src/components/typography";
-import CheckIcon from "../../../../../../../../packages/ui/src/icons/check";
-import PencilPlusIcon from "../../../../../../../../packages/ui/src/icons/pencil-plus";
-import PlusIcon from "../../../../../../../../packages/ui/src/icons/plus";
-import TagIcon from "../../../../../../../../packages/ui/src/icons/tag";
+import Button from "~/components/button";
+import Grow from "~/components/grow";
+import Spacer from "~/components/spacer";
+import Typography from "~/components/typography";
+import CheckIcon from "~/icons/check";
+import PencilPlusIcon from "~/icons/pencil-plus";
+import PlusIcon from "~/icons/plus";
+import TagIcon from "~/icons/tag";
 import { boolean_action } from "~/redux/features";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
-import { abbreviate_number } from "../../../../../../../../packages/ui/src/utils/abbreviate-number";
+import { abbreviate_number } from "~/utils/abbreviate-number";
 
 import TagActions from "../actions";
 import styles from "./content.module.scss";

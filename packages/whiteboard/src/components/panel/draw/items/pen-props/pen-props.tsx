@@ -2,15 +2,16 @@ import { clsx } from "clsx";
 import { BaseFabricObject, Canvas } from "fabric";
 import React from "react";
 
-import Input from "../../../../../../../ui/src/components/input";
-import Option from "../../../../../../../ui/src/components/option";
-import Select from "../../../../../../../ui/src/components/select";
+import Input from "~/components/input";
+import Option from "~/components/option";
+import Select from "~/components/select";
 import ColorPicker, {
   hex_to_rgb,
   str_to_color,
   TColor
-} from "../../../../../../../ui/src/entities/color-picker";
-import RulerMeasureIcon from "../../../../../../../ui/src/icons/ruler-measure";
+} from "~/entities/color-picker";
+import RulerMeasureIcon from "~/icons/ruler-measure";
+
 import {
   CURSORS,
   MAX_OPACITY,
@@ -236,8 +237,8 @@ const PenStyleControl = ({
 
   return (
     <Select
-      onValueChange={(next_value: PenStyle): void =>
-        change_pen_style(next_value)
+      onValueChange={(next_value): void =>
+        change_pen_style(next_value as PenStyle)
       }
       size={"sm"}
       slot_props={{

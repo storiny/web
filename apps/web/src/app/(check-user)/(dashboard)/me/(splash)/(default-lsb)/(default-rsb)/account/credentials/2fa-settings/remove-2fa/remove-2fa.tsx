@@ -1,23 +1,15 @@
 import { clsx } from "clsx";
 import React from "react";
 
-import Button from "../../../../../../../../../../../../../../packages/ui/src/components/button";
-import Form, {
-  SubmitHandler,
-  use_form,
-  zod_resolver
-} from "../../../../../../../../../../../../../../packages/ui/src/components/form";
+import Button from "~/components/button";
+import Form, { SubmitHandler, use_form, zod_resolver } from "~/components/form";
 import FormInput from "~/components/form-input";
-import {
-  Description,
-  ModalFooterButton,
-  use_modal
-} from "../../../../../../../../../../../../../../packages/ui/src/components/modal";
-import Spacer from "../../../../../../../../../../../../../../packages/ui/src/components/spacer";
-import { use_toast } from "../../../../../../../../../../../../../../packages/ui/src/components/toast";
-import Typography from "../../../../../../../../../../../../../../packages/ui/src/components/typography";
-import { use_media_query } from "../../../../../../../../../../../../../../packages/ui/src/hooks/use-media-query";
-import TwoFAIcon from "../../../../../../../../../../../../../../packages/ui/src/icons/two-fa";
+import { Description, ModalFooterButton, use_modal } from "~/components/modal";
+import Spacer from "~/components/spacer";
+import { use_toast } from "~/components/toast";
+import Typography from "~/components/typography";
+import { use_media_query } from "~/hooks/use-media-query";
+import TwoFAIcon from "~/icons/two-fa";
 import { use_remove_mfa_mutation } from "~/redux/features";
 import { BREAKPOINTS } from "~/theme/breakpoints";
 

@@ -7,7 +7,7 @@ import React from "react";
 import { get_story } from "~/common/grpc";
 import { handle_exception } from "~/common/grpc/utils";
 import { get_doc_by_key } from "~/common/utils/get-doc-by-key";
-import { get_session_token } from "src/common/utils/get-session-token";
+import { get_session_token } from "~/common/utils/get-session-token";
 
 import Component from "./component";
 import RestrictedStory from "./restricted";

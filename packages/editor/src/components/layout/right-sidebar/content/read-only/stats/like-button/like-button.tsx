@@ -2,11 +2,11 @@ import { clsx } from "clsx";
 import { useAtomValue as use_atom_value } from "jotai";
 import React from "react";
 
-import Button from "../../../../../../../../../ui/src/components/button";
-import HeartIcon from "../../../../../../../../../ui/src/icons/heart";
+import Button from "~/components/button";
+import HeartIcon from "~/icons/heart";
 import { boolean_action } from "~/redux/features";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
-import { abbreviate_number } from "../../../../../../../../../ui/src/utils/abbreviate-number";
+import { abbreviate_number } from "~/utils/abbreviate-number";
 
 import { story_metadata_atom } from "../../../../../../../atoms";
 import styles from "./like-button.module.scss";

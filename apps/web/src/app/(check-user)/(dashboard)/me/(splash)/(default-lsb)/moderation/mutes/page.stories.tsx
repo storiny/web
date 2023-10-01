@@ -11,7 +11,7 @@ import DefaultDashboardLeftSidebarLayout from "../../layout";
 import ModerationMutesPage from "./client";
 
 const meta: Meta<typeof ModerationMutesPage> = {
-  title: "dashboard/Moderation/mutes",
+  title: "dashboard/moderation/mutes",
   component: ModerationMutesPage,
   args: {
     mute_count: 5

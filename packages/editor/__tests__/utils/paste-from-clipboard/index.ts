@@ -6,7 +6,7 @@ import { evaluate } from "../evaluate";
  * Predicate function for determining whether the browser supports the `beforeinput` event
  * @param page Page
  */
-export const supportsBeforeInput = (page: Page): Promise<boolean> =>
+export const supports_before_input = (page: Page): Promise<boolean> =>
   evaluate(page, () => {
     if ("InputEvent" in window) {
       return "getTargetRanges" in new window.InputEvent("input");
@@ -18,28 +18,28 @@ export const supportsBeforeInput = (page: Page): Promise<boolean> =>
 /**
  * Fires clipboard paste event on the editor
  * @param page Page
- * @param clipboardData Clipboard data
+ * @param clipboard_data Clipboard data
  */
-export const pasteFromClipboard = async (
+export const paste_from_clipboard = async (
   page: Page,
-  clipboardData: Record<string, string>
+  clipboard_data: Record<string, string>
 ): Promise<void> => {
-  const canUseBeforeInput = supportsBeforeInput(page);
+  const can_use_before_input = supports_before_input(page);
 
   await page.frame("left")!.evaluate(
     async ({
-      clipboardData: _clipboardData,
-      canUseBeforeInput: _canUseBeforeInput
+      clipboard_data: _clipboard_data,
+      can_use_before_input: _can_use_before_input
     }) => {
       const files: File[] = [];
 
-      for (const [clipboardKey, clipboardValue] of Object.entries(
-        _clipboardData
+      for (const [clipboard_key, clipboard_value] of Object.entries(
+        _clipboard_data
       )) {
-        if (clipboardKey.startsWith("playwright/base64")) {
-          delete _clipboardData[clipboardKey];
+        if (clipboard_key.startsWith("playwright/base64")) {
+          delete _clipboard_data[clipboard_key];
 
-          const [base64, type] = clipboardValue;
+          const [base64, type] = clipboard_value;
           const res = await fetch(base64);
           const blob = await res.blob();
 
@@ -47,56 +47,59 @@ export const pasteFromClipboard = async (
         }
       }
 
-      let eventClipboardData: {
+      let event_clipboard_data: {
         files: File[];
+        // eslint-disable-next-line prefer-snakecase/prefer-snakecase
         getData: (type: string) => string;
         types: string[];
       };
 
       if (files.length > 0) {
-        eventClipboardData = {
+        event_clipboard_data = {
           files,
-          getData: (type) => _clipboardData[type],
-          types: [...Object.keys(_clipboardData), "Files"]
+          // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+          getData: (type) => _clipboard_data[type],
+          types: [...Object.keys(_clipboard_data), "Files"]
         };
       } else {
-        eventClipboardData = {
+        event_clipboard_data = {
           files,
-          getData: (type) => _clipboardData[type],
-          types: Object.keys(_clipboardData)
+          // eslint-disable-next-line prefer-snakecase/prefer-snakecase
+          getData: (type) => _clipboard_data[type],
+          types: Object.keys(_clipboard_data)
         };
       }
 
       const editor = document.querySelector('div[contenteditable="true"]');
-      const pasteEvent = new ClipboardEvent("paste", {
+      const paste_event = new ClipboardEvent("paste", {
         bubbles: true,
         cancelable: true
       });
 
-      Object.defineProperty(pasteEvent, "clipboardData", {
-        value: eventClipboardData
+      Object.defineProperty(paste_event, "clipboardData", {
+        value: event_clipboard_data
       });
 
-      editor?.dispatchEvent(pasteEvent);
+      editor?.dispatchEvent(paste_event);
 
-      if (!pasteEvent.defaultPrevented) {
-        if (await _canUseBeforeInput) {
-          const inputEvent = new InputEvent("beforeinput", {
+      if (!paste_event.defaultPrevented) {
+        if (await _can_use_before_input) {
+          const input_event = new InputEvent("beforeinput", {
             bubbles: true,
             cancelable: true
           });
 
-          Object.defineProperty(inputEvent, "inputType", {
+          Object.defineProperty(input_event, "inputType", {
             value: "insertFromPaste"
           });
-          Object.defineProperty(inputEvent, "dataTransfer", {
-            value: eventClipboardData
+          Object.defineProperty(input_event, "dataTransfer", {
+            value: event_clipboard_data
           });
 
-          editor?.dispatchEvent(inputEvent);
+          editor?.dispatchEvent(input_event);
         }
       }
     },
-    { canUseBeforeInput, clipboardData }
+    { can_use_before_input, clipboard_data }
   );
 };

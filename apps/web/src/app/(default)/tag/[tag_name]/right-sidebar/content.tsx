@@ -3,28 +3,25 @@ import NextLink from "next/link";
 import React from "react";
 
 import { GetTagResponse } from "~/common/grpc";
-import Button from "../../../../../../../../packages/ui/src/components/button";
-import Grow from "../../../../../../../../packages/ui/src/components/grow";
-import Separator from "../../../../../../../../packages/ui/src/components/separator";
-import Typography from "../../../../../../../../packages/ui/src/components/typography";
-import ErrorState from "../../../../../../../../packages/ui/src/entities/error-state";
-import CheckIcon from "../../../../../../../../packages/ui/src/icons/check";
-import PencilPlusIcon from "../../../../../../../../packages/ui/src/icons/pencil-plus";
-import PlusIcon from "../../../../../../../../packages/ui/src/icons/plus";
-import TagIcon from "../../../../../../../../packages/ui/src/icons/tag";
-import UsersIcon from "../../../../../../../../packages/ui/src/icons/users";
-import {
-  TitleWithIcon,
-  UserWithActionSkeleton
-} from "../../../../../../../../packages/ui/src/layout/right-sidebar";
-import UserWithAction from "../../../../../../../../packages/ui/src/layout/right-sidebar/user-with-action";
+import Button from "~/components/button";
+import Grow from "~/components/grow";
+import Separator from "~/components/separator";
+import Typography from "~/components/typography";
+import ErrorState from "~/entities/error-state";
+import CheckIcon from "~/icons/check";
+import PencilPlusIcon from "~/icons/pencil-plus";
+import PlusIcon from "~/icons/plus";
+import TagIcon from "~/icons/tag";
+import UsersIcon from "~/icons/users";
+import { TitleWithIcon, UserWithActionSkeleton } from "~/layout/right-sidebar";
+import UserWithAction from "~/layout/right-sidebar/user-with-action";
 import {
   boolean_action,
   get_query_error_type,
   use_get_tag_writers_query
 } from "~/redux/features";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
-import { abbreviate_number } from "../../../../../../../../packages/ui/src/utils/abbreviate-number";
+import { abbreviate_number } from "~/utils/abbreviate-number";
 
 import TagActions from "../actions";
 import styles from "./right-sidebar.module.scss";

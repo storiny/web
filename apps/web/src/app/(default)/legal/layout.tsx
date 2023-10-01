@@ -1,6 +1,6 @@
 import React from "react";
 
-import SplashScreen from "../../../../../../packages/ui/src/layout/splash-screen";
+import SplashScreen from "~/layout/splash-screen";
 
 import Dropdown from "./dropdown";
 import LegalFooter from "./footer";
@@ -15,7 +15,7 @@ const LegalLayout = ({
 }): React.ReactElement => (
   <>
     <LeftSidebar />
-    <main>
+    <main data-root={"true"}>
       <Dropdown />
       <article className={styles.article}>{children}</article>
       <LegalFooter />

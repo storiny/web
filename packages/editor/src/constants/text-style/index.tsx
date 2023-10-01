@@ -1,11 +1,11 @@
 import React from "react";
 
-import BulletedListIcon from "../../../../ui/src/icons/bulleted-list";
-import HeadingIcon from "../../../../ui/src/icons/heading";
-import NumberedListIcon from "../../../../ui/src/icons/numbered-list";
-import ParagraphIcon from "../../../../ui/src/icons/paragraph";
-import QuoteIcon from "../../../../ui/src/icons/quote";
-import SubheadingIcon from "../../../../ui/src/icons/subheading";
+import BulletedListIcon from "~/icons/bulleted-list";
+import HeadingIcon from "~/icons/heading";
+import NumberedListIcon from "~/icons/numbered-list";
+import ParagraphIcon from "~/icons/paragraph";
+import QuoteIcon from "~/icons/quote";
+import SubheadingIcon from "~/icons/subheading";
 
 export enum TextStyle {
   BULLETED_LIST /**/ = "bulleted-list",

@@ -11,7 +11,7 @@ import { render_with_state } from "~/redux/mock";
 import Editor from "./editor";
 
 const meta: Meta<typeof Editor> = {
-  title: "packages/Editor",
+  title: "packages/editor",
   component: Editor,
   parameters: {
     layout: "fullscreen"

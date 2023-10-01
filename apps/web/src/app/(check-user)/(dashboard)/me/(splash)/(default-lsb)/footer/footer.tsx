@@ -1,7 +1,7 @@
 import React from "react";
 
-import { use_media_query } from "../../../../../../../../../../packages/ui/src/hooks/use-media-query";
-import Footer from "../../../../../../../../../../packages/ui/src/layout/footer";
+import { use_media_query } from "~/hooks/use-media-query";
+import Footer from "~/layout/footer";
 import { BREAKPOINTS } from "~/theme/breakpoints";
 
 const DashboardFooter = (): React.ReactElement | null => {

@@ -1,7 +1,7 @@
 import React from "react";
 
-import CustomState from "../../../../../../../packages/ui/src/entities/custom-state";
-import BookmarksIcon from "../../../../../../../packages/ui/src/icons/bookmarks";
+import CustomState from "~/entities/custom-state";
+import BookmarksIcon from "~/icons/bookmarks";
 
 interface BookmarksEmptyStateProps {
   query: string;

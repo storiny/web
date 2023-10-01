@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-import { evaluate, focusEditor, initialize } from "../utils";
+import { evaluate, focus_editor, initialize } from "../utils";
 
 test.describe("focus", () => {
   test.beforeEach(({ page }) => initialize(page));
@@ -10,14 +10,14 @@ test.describe("focus", () => {
     // the system preferences.
     test.skip(browserName === "webkit");
 
-    await focusEditor(page);
+    await focus_editor(page);
     await page.keyboard.press("Tab");
 
-    const isEditorFocused = await evaluate(page, () => {
+    const is_editor_focused = await evaluate(page, () => {
       const editor = document.querySelector('div[contenteditable="true"]');
       return editor === document.activeElement;
     });
 
-    expect(isEditorFocused).toBe(false);
+    expect(is_editor_focused).toBe(false);
   });
 });

@@ -1,9 +1,9 @@
 import { BaseFabricObject, Rect } from "fabric";
 import React from "react";
 
-import Input from "../../../../../../../ui/src/components/input";
-import AngleIcon from "../../../../../../../ui/src/icons/angle";
-import CornerRadiusIcon from "../../../../../../../ui/src/icons/corner-radius";
+import Input from "~/components/input";
+import AngleIcon from "~/icons/angle";
+import CornerRadiusIcon from "~/icons/corner-radius";
 import { clamp } from "~/utils/clamp";
 
 import { MAX_ANGLE, MIN_ANGLE } from "../../../../../constants";

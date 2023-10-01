@@ -1,6 +1,6 @@
 import React from "react";
 
-import CustomState from "../../../../../../../packages/ui/src/entities/custom-state";
+import CustomState from "~/entities/custom-state";
 
 interface TagEmptyStateProps {
   query: string;

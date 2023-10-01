@@ -1,7 +1,7 @@
 import { test } from "@playwright/test";
 
 import { E2E_BROWSER, EDITOR_CLASSNAMES, IS_MAC } from "../constants";
-import { assertHTML, focusEditor, html, initialize } from "../utils";
+import { assert_html, focus_editor, html, initialize } from "../utils";
 
 const SUPPORTS_TRANSPOSE = IS_MAC && E2E_BROWSER !== "firefox";
 
@@ -13,7 +13,7 @@ test.describe("keyboard shortcuts", () => {
   }) => {
     test.skip(!SUPPORTS_TRANSPOSE);
 
-    await focusEditor(page);
+    await focus_editor(page);
 
     await page.keyboard.type("abc");
     await page.keyboard.press("ArrowLeft");
@@ -23,7 +23,7 @@ test.describe("keyboard shortcuts", () => {
     await page.keyboard.press("T");
     await page.keyboard.up("Control");
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">

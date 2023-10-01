@@ -105,7 +105,7 @@ const handle_on_paste = (
           ? null
           : event.clipboardData;
 
-      if (clipboardData != null && $is_range_selection(selection)) {
+      if (clipboard_data != null && $is_range_selection(selection)) {
         $insert_data_transfer_for_rich_text(clipboard_data, selection, editor);
       }
     },
@@ -153,7 +153,7 @@ export const event_files = (
   let data_transfer: null | DataTransfer = null;
 
   if (event instanceof DragEvent) {
-    data_transfer = event.data_transfer;
+    data_transfer = event.dataTransfer;
   } else if (event instanceof ClipboardEvent) {
     data_transfer = event.clipboardData;
   }
@@ -295,7 +295,7 @@ export const register_rich_text = (editor: LexicalEditor): (() => void) =>
 
         if (typeof event_or_text === "string") {
           if ($is_range_selection(selection)) {
-            selection.insertText(eventOrText);
+            selection.insertText(event_or_text);
           }
         } else {
           if (!$is_range_selection(selection)) {
@@ -311,7 +311,7 @@ export const register_rich_text = (editor: LexicalEditor): (() => void) =>
               editor
             );
           } else if ($is_range_selection(selection)) {
-            const data = eventOrText.data;
+            const data = event_or_text.data;
 
             if (data) {
               selection.insertText(data);

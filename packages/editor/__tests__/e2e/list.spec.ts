@@ -3,54 +3,54 @@ import { Page, test } from "@playwright/test";
 import { EDITOR_SHORTCUTS } from "../../src/constants/shortcuts";
 import { EDITOR_CLASSNAMES } from "../constants";
 import {
-  clickIndentButton,
-  clickOutdentButton,
-  moveLeft,
-  moveToParagraphEnd,
-  selectAll,
-  selectCharacters,
-  toggleBulletedList,
-  toggleLink,
-  toggleNumberedList
+  click_indent_button,
+  click_outdent_button,
+  move_left,
+  move_to_paragraph_end,
+  select_all,
+  select_characters,
+  toggle_bulleted_list,
+  toggle_link,
+  toggle_numbered_list
 } from "../keyboard-shortcuts";
 import {
-  assertHTML,
-  assertSelection,
-  clearEditor,
-  focusEditor,
+  assert_html,
+  assert_selection,
+  clear_editor,
+  focus_editor,
   html,
   initialize,
-  keyDownCtrlOrMeta,
-  keyUpCtrlOrMeta
+  key_down_ctrl_or_meta,
+  key_up_ctrl_or_meta
 } from "../utils";
 
 /**
  * Converts the curernt node selection to paragraph
  * @param page Page
  */
-const convertToParagraph = async (page: Page): Promise<void> => {
-  await keyDownCtrlOrMeta(page);
+const convert_to_paragraph = async (page: Page): Promise<void> => {
+  await key_down_ctrl_or_meta(page);
   await page.keyboard.down("Alt");
   await page.keyboard.press(EDITOR_SHORTCUTS.paragraph.key);
   await page.keyboard.up("Alt");
-  await keyUpCtrlOrMeta(page);
+  await key_up_ctrl_or_meta(page);
 };
 
 test.describe("list", () => {
   test.beforeEach(async ({ page }) => {
     await initialize(page);
-    await focusEditor(page);
+    await focus_editor(page);
   });
 
   test("can toggle an empty list on/off", async ({ page }) => {
-    await assertHTML(
+    await assert_html(
       page,
       html`<p class="${EDITOR_CLASSNAMES.paragraph}"><br /></p>`
     );
 
-    await toggleBulletedList(page);
+    await toggle_bulleted_list(page);
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <ul class="${EDITOR_CLASSNAMES.ul}">
@@ -59,18 +59,18 @@ test.describe("list", () => {
       `
     );
 
-    await toggleBulletedList(page);
+    await toggle_bulleted_list(page);
 
-    await assertHTML(
+    await assert_html(
       page,
       html`<p class="${EDITOR_CLASSNAMES.paragraph}"><br /></p>`
     );
   });
 
   test("can create a list and indent/outdent it", async ({ page }) => {
-    await toggleBulletedList(page);
+    await toggle_bulleted_list(page);
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <ul class="${EDITOR_CLASSNAMES.ul}">
@@ -80,15 +80,15 @@ test.describe("list", () => {
     );
 
     // Should allow indenting an empty list item
-    await clickIndentButton(page, 2);
+    await click_indent_button(page, 2);
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <ul class="${EDITOR_CLASSNAMES.ul}">
-          <li class="${EDITOR_CLASSNAMES.nestedLi}" value="1">
+          <li class="${EDITOR_CLASSNAMES.nested_li}" value="1">
             <ul class="${EDITOR_CLASSNAMES.ul}">
-              <li class="${EDITOR_CLASSNAMES.nestedLi}" value="1">
+              <li class="${EDITOR_CLASSNAMES.nested_li}" value="1">
                 <ul class="${EDITOR_CLASSNAMES.ul}">
                   <li class="${EDITOR_CLASSNAMES.li}" value="1">
                     <br />
@@ -105,7 +105,7 @@ test.describe("list", () => {
     await page.keyboard.press("Backspace");
     await page.keyboard.press("Backspace");
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <ul class="${EDITOR_CLASSNAMES.ul}">
@@ -124,7 +124,7 @@ test.describe("list", () => {
     await page.keyboard.press("Enter");
     await page.keyboard.type("side");
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <ul class="${EDITOR_CLASSNAMES.ul}">
@@ -151,23 +151,23 @@ test.describe("list", () => {
   test("should outdent if previously indented when the backspace key is pressed", async ({
     page
   }) => {
-    await toggleBulletedList(page);
+    await toggle_bulleted_list(page);
 
     await page.keyboard.type("hello");
     await page.keyboard.press("Enter");
 
-    await clickIndentButton(page, 2);
+    await click_indent_button(page, 2);
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <ul class="${EDITOR_CLASSNAMES.ul}">
           <li value="1" class="${EDITOR_CLASSNAMES.li}" dir="ltr">
             <span data-lexical-text="true">hello</span>
           </li>
-          <li value="2" class="${EDITOR_CLASSNAMES.nestedLi}">
+          <li value="2" class="${EDITOR_CLASSNAMES.nested_li}">
             <ul class="${EDITOR_CLASSNAMES.ul}">
-              <li value="1" class="${EDITOR_CLASSNAMES.nestedLi}">
+              <li value="1" class="${EDITOR_CLASSNAMES.nested_li}">
                 <ul class="${EDITOR_CLASSNAMES.ul}">
                   <li value="1" class="${EDITOR_CLASSNAMES.li}">
                     <br />
@@ -182,14 +182,14 @@ test.describe("list", () => {
 
     await page.keyboard.press("Backspace");
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <ul class="${EDITOR_CLASSNAMES.ul}">
           <li value="1" class="${EDITOR_CLASSNAMES.li}" dir="ltr">
             <span data-lexical-text="true">hello</span>
           </li>
-          <li value="2" class="${EDITOR_CLASSNAMES.nestedLi}">
+          <li value="2" class="${EDITOR_CLASSNAMES.nested_li}">
             <ul class="${EDITOR_CLASSNAMES.ul}">
               <li value="1" class="${EDITOR_CLASSNAMES.li}"><br /></li>
             </ul>
@@ -202,9 +202,9 @@ test.describe("list", () => {
   test("can indent/outdent mutliple list nodes in a list with multiple levels of indentation", async ({
     page
   }) => {
-    await toggleBulletedList(page);
+    await toggle_bulleted_list(page);
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <ul class="${EDITOR_CLASSNAMES.ul}">
@@ -217,16 +217,16 @@ test.describe("list", () => {
     await page.keyboard.press("Enter");
     await page.keyboard.type("from");
 
-    await clickIndentButton(page);
+    await click_indent_button(page);
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <ul class="${EDITOR_CLASSNAMES.ul}">
           <li value="1" class="${EDITOR_CLASSNAMES.li}" dir="ltr">
             <span data-lexical-text="true">hello</span>
           </li>
-          <li value="2" class="${EDITOR_CLASSNAMES.nestedLi}">
+          <li value="2" class="${EDITOR_CLASSNAMES.nested_li}">
             <ul class="${EDITOR_CLASSNAMES.ul}">
               <li value="1" class="${EDITOR_CLASSNAMES.li}" dir="ltr">
                 <span data-lexical-text="true">from</span>
@@ -237,19 +237,19 @@ test.describe("list", () => {
       `
     );
 
-    await selectAll(page);
-    await clickIndentButton(page);
+    await select_all(page);
+    await click_indent_button(page);
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <ul class="${EDITOR_CLASSNAMES.ul}">
-          <li value="1" class="${EDITOR_CLASSNAMES.nestedLi}">
+          <li value="1" class="${EDITOR_CLASSNAMES.nested_li}">
             <ul class="${EDITOR_CLASSNAMES.ul}">
               <li value="1" class="${EDITOR_CLASSNAMES.li}" dir="ltr">
                 <span data-lexical-text="true">hello</span>
               </li>
-              <li value="2" class="${EDITOR_CLASSNAMES.nestedLi}">
+              <li value="2" class="${EDITOR_CLASSNAMES.nested_li}">
                 <ul class="${EDITOR_CLASSNAMES.ul}">
                   <li value="1" class="${EDITOR_CLASSNAMES.li}" dir="ltr">
                     <span data-lexical-text="true">from</span>
@@ -262,16 +262,16 @@ test.describe("list", () => {
       `
     );
 
-    await clickOutdentButton(page);
+    await click_outdent_button(page);
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <ul class="${EDITOR_CLASSNAMES.ul}">
           <li value="1" class="${EDITOR_CLASSNAMES.li}" dir="ltr">
             <span data-lexical-text="true">hello</span>
           </li>
-          <li value="2" class="${EDITOR_CLASSNAMES.nestedLi}">
+          <li value="2" class="${EDITOR_CLASSNAMES.nested_li}">
             <ul class="${EDITOR_CLASSNAMES.ul}">
               <li value="1" class="${EDITOR_CLASSNAMES.li}" dir="ltr">
                 <span data-lexical-text="true">from</span>
@@ -290,16 +290,16 @@ test.describe("list", () => {
     await page.keyboard.press("Enter");
     await page.keyboard.type("side");
 
-    await clickOutdentButton(page);
+    await click_outdent_button(page);
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <ul class="${EDITOR_CLASSNAMES.ul}">
           <li value="1" class="${EDITOR_CLASSNAMES.li}" dir="ltr">
             <span data-lexical-text="true">hello</span>
           </li>
-          <li value="2" class="${EDITOR_CLASSNAMES.nestedLi}">
+          <li value="2" class="${EDITOR_CLASSNAMES.nested_li}">
             <ul class="${EDITOR_CLASSNAMES.ul}">
               <li value="1" class="${EDITOR_CLASSNAMES.li}" dir="ltr">
                 <span data-lexical-text="true">from</span>
@@ -319,19 +319,19 @@ test.describe("list", () => {
       `
     );
 
-    await selectAll(page);
-    await clickIndentButton(page);
+    await select_all(page);
+    await click_indent_button(page);
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <ul class="${EDITOR_CLASSNAMES.ul}">
-          <li value="1" class="${EDITOR_CLASSNAMES.nestedLi}">
+          <li value="1" class="${EDITOR_CLASSNAMES.nested_li}">
             <ul class="${EDITOR_CLASSNAMES.ul}">
               <li value="1" class="${EDITOR_CLASSNAMES.li}" dir="ltr">
                 <span data-lexical-text="true">hello</span>
               </li>
-              <li value="2" class="${EDITOR_CLASSNAMES.nestedLi}">
+              <li value="2" class="${EDITOR_CLASSNAMES.nested_li}">
                 <ul class="${EDITOR_CLASSNAMES.ul}">
                   <li value="1" class="${EDITOR_CLASSNAMES.li}" dir="ltr">
                     <span data-lexical-text="true">from</span>
@@ -353,16 +353,16 @@ test.describe("list", () => {
       `
     );
 
-    await clickOutdentButton(page);
+    await click_outdent_button(page);
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <ul class="${EDITOR_CLASSNAMES.ul}">
           <li value="1" class="${EDITOR_CLASSNAMES.li}" dir="ltr">
             <span data-lexical-text="true">hello</span>
           </li>
-          <li value="2" class="${EDITOR_CLASSNAMES.nestedLi}">
+          <li value="2" class="${EDITOR_CLASSNAMES.nested_li}">
             <ul class="${EDITOR_CLASSNAMES.ul}">
               <li value="1" class="${EDITOR_CLASSNAMES.li}" dir="ltr">
                 <span data-lexical-text="true">from</span>
@@ -386,26 +386,26 @@ test.describe("list", () => {
   test("can indent a list with a list item in between nested lists", async ({
     page
   }) => {
-    await toggleBulletedList(page);
+    await toggle_bulleted_list(page);
     await page.keyboard.type("foo");
-    await clickIndentButton(page);
+    await click_indent_button(page);
     await page.keyboard.press("Enter");
     await page.keyboard.type("bar");
-    await clickOutdentButton(page);
+    await click_outdent_button(page);
     await page.keyboard.press("Enter");
     await page.keyboard.type("baz");
-    await clickIndentButton(page);
+    await click_indent_button(page);
 
-    await selectAll(page);
-    await clickIndentButton(page);
+    await select_all(page);
+    await click_indent_button(page);
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <ul class="${EDITOR_CLASSNAMES.ul}">
-          <li class="${EDITOR_CLASSNAMES.nestedLi}" value="1">
+          <li class="${EDITOR_CLASSNAMES.nested_li}" value="1">
             <ul class="${EDITOR_CLASSNAMES.ul}">
-              <li class="${EDITOR_CLASSNAMES.nestedLi}" value="1">
+              <li class="${EDITOR_CLASSNAMES.nested_li}" value="1">
                 <ul class="${EDITOR_CLASSNAMES.ul}">
                   <li class="${EDITOR_CLASSNAMES.li}" value="1" dir="ltr">
                     <span data-lexical-text="true">foo</span>
@@ -415,7 +415,7 @@ test.describe("list", () => {
               <li class="${EDITOR_CLASSNAMES.li}" value="1" dir="ltr">
                 <span data-lexical-text="true">bar</span>
               </li>
-              <li class="${EDITOR_CLASSNAMES.nestedLi}" value="2">
+              <li class="${EDITOR_CLASSNAMES.nested_li}" value="2">
                 <ul class="${EDITOR_CLASSNAMES.ul}">
                   <li class="${EDITOR_CLASSNAMES.li}" value="1" dir="ltr">
                     <span data-lexical-text="true">baz</span>
@@ -432,15 +432,15 @@ test.describe("list", () => {
   test("can create a list and toggle it back to its original state", async ({
     page
   }) => {
-    await assertHTML(
+    await assert_html(
       page,
       html`<p class="${EDITOR_CLASSNAMES.paragraph}"><br /></p>`
     );
 
     await page.keyboard.type("hello");
-    await toggleBulletedList(page);
+    await toggle_bulleted_list(page);
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <ul class="${EDITOR_CLASSNAMES.ul}">
@@ -451,9 +451,9 @@ test.describe("list", () => {
       `
     );
 
-    await toggleBulletedList(page);
+    await toggle_bulleted_list(page);
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
@@ -471,7 +471,7 @@ test.describe("list", () => {
     await page.keyboard.press("Enter");
     await page.keyboard.type("side");
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
@@ -492,10 +492,10 @@ test.describe("list", () => {
       `
     );
 
-    await selectAll(page);
-    await toggleBulletedList(page);
+    await select_all(page);
+    await toggle_bulleted_list(page);
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <ul class="${EDITOR_CLASSNAMES.ul}">
@@ -518,9 +518,9 @@ test.describe("list", () => {
       `
     );
 
-    await toggleBulletedList(page);
+    await toggle_bulleted_list(page);
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
@@ -542,16 +542,16 @@ test.describe("list", () => {
     );
 
     // Check for an indented list
-    await toggleBulletedList(page);
-    await clickIndentButton(page, 2);
+    await toggle_bulleted_list(page);
+    await click_indent_button(page, 2);
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <ul class="${EDITOR_CLASSNAMES.ul}">
-          <li class="${EDITOR_CLASSNAMES.nestedLi}" value="1">
+          <li class="${EDITOR_CLASSNAMES.nested_li}" value="1">
             <ul class="${EDITOR_CLASSNAMES.ul}">
-              <li class="${EDITOR_CLASSNAMES.nestedLi}" value="1">
+              <li class="${EDITOR_CLASSNAMES.nested_li}" value="1">
                 <ul class="${EDITOR_CLASSNAMES.ul}">
                   <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="1">
                     <span data-lexical-text="true">hello</span>
@@ -576,9 +576,9 @@ test.describe("list", () => {
       `
     );
 
-    await toggleBulletedList(page);
+    await toggle_bulleted_list(page);
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
@@ -603,14 +603,14 @@ test.describe("list", () => {
   test("can create a list containing inline blocks and toggle it back to its original state", async ({
     page
   }) => {
-    await assertHTML(
+    await assert_html(
       page,
       html`<p class="${EDITOR_CLASSNAMES.paragraph}"><br /></p>`
     );
 
     await page.keyboard.type("One two three");
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
@@ -619,11 +619,11 @@ test.describe("list", () => {
       `
     );
 
-    await moveLeft(page, 6);
-    await selectCharacters(page, "left", 3);
-    await toggleLink(page);
+    await move_left(page, 6);
+    await select_characters(page, "left", 3);
+    await toggle_link(page);
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
@@ -642,10 +642,10 @@ test.describe("list", () => {
     );
 
     // Move to the end of the paragraph to close the floating link popover
-    await moveToParagraphEnd(page);
-    await toggleBulletedList(page);
+    await move_to_paragraph_end(page);
+    await toggle_bulleted_list(page);
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <ul class="${EDITOR_CLASSNAMES.ul}">
@@ -665,9 +665,9 @@ test.describe("list", () => {
       `
     );
 
-    await toggleBulletedList(page);
+    await toggle_bulleted_list(page);
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
@@ -689,14 +689,14 @@ test.describe("list", () => {
   test("can create mutliple bullet lists and toggle off the list", async ({
     page
   }) => {
-    await assertHTML(
+    await assert_html(
       page,
       html` <p class="${EDITOR_CLASSNAMES.paragraph}"><br /></p> `
     );
 
     await page.keyboard.type("hello");
 
-    await toggleBulletedList(page);
+    await toggle_bulleted_list(page);
 
     await page.keyboard.press("Enter");
     await page.keyboard.type("from");
@@ -712,12 +712,12 @@ test.describe("list", () => {
 
     await page.keyboard.type("other");
 
-    await toggleBulletedList(page);
+    await toggle_bulleted_list(page);
 
     await page.keyboard.press("Enter");
     await page.keyboard.type("side");
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <ul class="${EDITOR_CLASSNAMES.ul}">
@@ -744,10 +744,10 @@ test.describe("list", () => {
       `
     );
 
-    await selectAll(page);
-    await toggleBulletedList(page);
+    await select_all(page);
+    await toggle_bulleted_list(page);
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
@@ -770,9 +770,9 @@ test.describe("list", () => {
       `
     );
 
-    await toggleBulletedList(page);
+    await toggle_bulleted_list(page);
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <ul class="${EDITOR_CLASSNAMES.ul}">
@@ -801,9 +801,9 @@ test.describe("list", () => {
   test("can create an unordered list and convert it to an ordered list", async ({
     page
   }) => {
-    await toggleBulletedList(page);
+    await toggle_bulleted_list(page);
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <ul class="${EDITOR_CLASSNAMES.ul}">
@@ -812,9 +812,9 @@ test.describe("list", () => {
       `
     );
 
-    await toggleNumberedList(page);
+    await toggle_numbered_list(page);
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <ol class="${EDITOR_CLASSNAMES.ol1}">
@@ -823,9 +823,9 @@ test.describe("list", () => {
       `
     );
 
-    await toggleBulletedList(page);
+    await toggle_bulleted_list(page);
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <ul class="${EDITOR_CLASSNAMES.ul}">
@@ -838,11 +838,11 @@ test.describe("list", () => {
   test("can create an unordered list with a single text item and convert it to an ordered list", async ({
     page
   }) => {
-    await toggleBulletedList(page);
+    await toggle_bulleted_list(page);
     await page.keyboard.type("hello");
-    await toggleNumberedList(page);
+    await toggle_numbered_list(page);
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <ol class="${EDITOR_CLASSNAMES.ol1}">
@@ -853,9 +853,9 @@ test.describe("list", () => {
       `
     );
 
-    await toggleBulletedList(page);
+    await toggle_bulleted_list(page);
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <ul class="${EDITOR_CLASSNAMES.ul}">
@@ -870,7 +870,7 @@ test.describe("list", () => {
   test("can create a multi-line unordered list and convert it to an ordered list", async ({
     page
   }) => {
-    await toggleBulletedList(page);
+    await toggle_bulleted_list(page);
 
     await page.keyboard.type("hello");
     await page.keyboard.press("Enter");
@@ -882,7 +882,7 @@ test.describe("list", () => {
     await page.keyboard.press("Enter");
     await page.keyboard.type("side");
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <ul class="${EDITOR_CLASSNAMES.ul}">
@@ -905,9 +905,9 @@ test.describe("list", () => {
       `
     );
 
-    await toggleNumberedList(page);
+    await toggle_numbered_list(page);
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <ol class="${EDITOR_CLASSNAMES.ol1}">
@@ -930,9 +930,9 @@ test.describe("list", () => {
       `
     );
 
-    await toggleBulletedList(page);
+    await toggle_bulleted_list(page);
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <ul class="${EDITOR_CLASSNAMES.ul}">
@@ -959,7 +959,7 @@ test.describe("list", () => {
   test("can create a multi-line unordered list and convert it to an ordered list when no nodes are in the selection", async ({
     page
   }) => {
-    await toggleBulletedList(page);
+    await toggle_bulleted_list(page);
 
     await page.keyboard.type("hello");
     await page.keyboard.press("Enter");
@@ -970,7 +970,7 @@ test.describe("list", () => {
     await page.keyboard.type("other");
     await page.keyboard.press("Enter");
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <ul class="${EDITOR_CLASSNAMES.ul}">
@@ -991,9 +991,9 @@ test.describe("list", () => {
       `
     );
 
-    await toggleNumberedList(page);
+    await toggle_numbered_list(page);
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <ol class="${EDITOR_CLASSNAMES.ol1}">
@@ -1014,9 +1014,9 @@ test.describe("list", () => {
       `
     );
 
-    await toggleBulletedList(page);
+    await toggle_bulleted_list(page);
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <ul class="${EDITOR_CLASSNAMES.ul}">
@@ -1041,42 +1041,42 @@ test.describe("list", () => {
   test("can create an indented multi-line unordered list and convert it to an ordered list", async ({
     page
   }) => {
-    await toggleBulletedList(page);
+    await toggle_bulleted_list(page);
 
     await page.keyboard.type("hello");
     await page.keyboard.press("Enter");
     await page.keyboard.type("from");
 
-    await clickIndentButton(page);
+    await click_indent_button(page);
 
     await page.keyboard.press("Enter");
     await page.keyboard.type("the");
 
-    await clickIndentButton(page);
+    await click_indent_button(page);
 
     await page.keyboard.press("Enter");
     await page.keyboard.type("other");
 
-    await clickOutdentButton(page);
+    await click_outdent_button(page);
 
     await page.keyboard.press("Enter");
     await page.keyboard.type("side");
 
-    await clickOutdentButton(page);
+    await click_outdent_button(page);
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <ul class="${EDITOR_CLASSNAMES.ul}">
           <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="1">
             <span data-lexical-text="true">hello</span>
           </li>
-          <li class="${EDITOR_CLASSNAMES.nestedLi}" value="2">
+          <li class="${EDITOR_CLASSNAMES.nested_li}" value="2">
             <ul class="${EDITOR_CLASSNAMES.ul}">
               <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="1">
                 <span data-lexical-text="true">from</span>
               </li>
-              <li class="${EDITOR_CLASSNAMES.nestedLi}" value="2">
+              <li class="${EDITOR_CLASSNAMES.nested_li}" value="2">
                 <ul class="${EDITOR_CLASSNAMES.ul}">
                   <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="1">
                     <span data-lexical-text="true">the</span>
@@ -1095,22 +1095,22 @@ test.describe("list", () => {
       `
     );
 
-    await selectAll(page);
-    await toggleNumberedList(page);
+    await select_all(page);
+    await toggle_numbered_list(page);
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <ol class="${EDITOR_CLASSNAMES.ol1}">
           <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="1">
             <span data-lexical-text="true">hello</span>
           </li>
-          <li class="${EDITOR_CLASSNAMES.nestedLi}" value="2">
+          <li class="${EDITOR_CLASSNAMES.nested_li}" value="2">
             <ol class="${EDITOR_CLASSNAMES.ol2}">
               <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="1">
                 <span data-lexical-text="true">from</span>
               </li>
-              <li class="${EDITOR_CLASSNAMES.nestedLi}" value="2">
+              <li class="${EDITOR_CLASSNAMES.nested_li}" value="2">
                 <ol class="${EDITOR_CLASSNAMES.ol3}">
                   <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="1">
                     <span data-lexical-text="true">the</span>
@@ -1129,21 +1129,21 @@ test.describe("list", () => {
       `
     );
 
-    await toggleBulletedList(page);
+    await toggle_bulleted_list(page);
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <ul class="${EDITOR_CLASSNAMES.ul}">
           <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="1">
             <span data-lexical-text="true">hello</span>
           </li>
-          <li class="${EDITOR_CLASSNAMES.nestedLi}" value="2">
+          <li class="${EDITOR_CLASSNAMES.nested_li}" value="2">
             <ul class="${EDITOR_CLASSNAMES.ul}">
               <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="1">
                 <span data-lexical-text="true">from</span>
               </li>
-              <li class="${EDITOR_CLASSNAMES.nestedLi}" value="2">
+              <li class="${EDITOR_CLASSNAMES.nested_li}" value="2">
                 <ul class="${EDITOR_CLASSNAMES.ul}">
                   <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="1">
                     <span data-lexical-text="true">the</span>
@@ -1166,42 +1166,42 @@ test.describe("list", () => {
   test("can create an indented multi-line unordered list and convert individual lists in the nested structure to numbered lists", async ({
     page
   }) => {
-    await toggleBulletedList(page);
+    await toggle_bulleted_list(page);
 
     await page.keyboard.type("hello");
     await page.keyboard.press("Enter");
     await page.keyboard.type("from");
 
-    await clickIndentButton(page);
+    await click_indent_button(page);
 
     await page.keyboard.press("Enter");
     await page.keyboard.type("the");
 
-    await clickIndentButton(page);
+    await click_indent_button(page);
 
     await page.keyboard.press("Enter");
     await page.keyboard.type("other");
 
-    await clickOutdentButton(page);
+    await click_outdent_button(page);
 
     await page.keyboard.press("Enter");
     await page.keyboard.type("side");
 
-    await clickOutdentButton(page);
+    await click_outdent_button(page);
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <ul class="${EDITOR_CLASSNAMES.ul}">
           <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="1">
             <span data-lexical-text="true">hello</span>
           </li>
-          <li class="${EDITOR_CLASSNAMES.nestedLi}" value="2">
+          <li class="${EDITOR_CLASSNAMES.nested_li}" value="2">
             <ul class="${EDITOR_CLASSNAMES.ul}">
               <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="1">
                 <span data-lexical-text="true">from</span>
               </li>
-              <li class="${EDITOR_CLASSNAMES.nestedLi}" value="2">
+              <li class="${EDITOR_CLASSNAMES.nested_li}" value="2">
                 <ul class="${EDITOR_CLASSNAMES.ul}">
                   <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="1">
                     <span data-lexical-text="true">the</span>
@@ -1220,21 +1220,21 @@ test.describe("list", () => {
       `
     );
 
-    await toggleNumberedList(page);
+    await toggle_numbered_list(page);
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <ol class="${EDITOR_CLASSNAMES.ol1}">
           <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="1">
             <span data-lexical-text="true">hello</span>
           </li>
-          <li class="${EDITOR_CLASSNAMES.nestedLi}" value="2">
+          <li class="${EDITOR_CLASSNAMES.nested_li}" value="2">
             <ul class="${EDITOR_CLASSNAMES.ul}">
               <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="1">
                 <span data-lexical-text="true">from</span>
               </li>
-              <li class="${EDITOR_CLASSNAMES.nestedLi}" value="2">
+              <li class="${EDITOR_CLASSNAMES.nested_li}" value="2">
                 <ul class="${EDITOR_CLASSNAMES.ul}">
                   <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="1">
                     <span data-lexical-text="true">the</span>
@@ -1253,21 +1253,21 @@ test.describe("list", () => {
       `
     );
 
-    await toggleBulletedList(page);
+    await toggle_bulleted_list(page);
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <ul class="${EDITOR_CLASSNAMES.ul}">
           <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="1">
             <span data-lexical-text="true">hello</span>
           </li>
-          <li class="${EDITOR_CLASSNAMES.nestedLi}" value="2">
+          <li class="${EDITOR_CLASSNAMES.nested_li}" value="2">
             <ul class="${EDITOR_CLASSNAMES.ul}">
               <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="1">
                 <span data-lexical-text="true">from</span>
               </li>
-              <li class="${EDITOR_CLASSNAMES.nestedLi}" value="2">
+              <li class="${EDITOR_CLASSNAMES.nested_li}" value="2">
                 <ul class="${EDITOR_CLASSNAMES.ul}">
                   <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="1">
                     <span data-lexical-text="true">the</span>
@@ -1288,21 +1288,21 @@ test.describe("list", () => {
 
     // Move to the next item up in the list
     await page.keyboard.press("ArrowUp");
-    await toggleNumberedList(page);
+    await toggle_numbered_list(page);
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <ul class="${EDITOR_CLASSNAMES.ul}">
           <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="1">
             <span data-lexical-text="true">hello</span>
           </li>
-          <li class="${EDITOR_CLASSNAMES.nestedLi}" value="2">
+          <li class="${EDITOR_CLASSNAMES.nested_li}" value="2">
             <ol class="${EDITOR_CLASSNAMES.ol2}">
               <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="1">
                 <span data-lexical-text="true">from</span>
               </li>
-              <li class="${EDITOR_CLASSNAMES.nestedLi}" value="2">
+              <li class="${EDITOR_CLASSNAMES.nested_li}" value="2">
                 <ul class="${EDITOR_CLASSNAMES.ul}">
                   <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="1">
                     <span data-lexical-text="true">the</span>
@@ -1321,21 +1321,21 @@ test.describe("list", () => {
       `
     );
 
-    await toggleBulletedList(page);
+    await toggle_bulleted_list(page);
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <ul class="${EDITOR_CLASSNAMES.ul}">
           <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="1">
             <span data-lexical-text="true">hello</span>
           </li>
-          <li class="${EDITOR_CLASSNAMES.nestedLi}" value="2">
+          <li class="${EDITOR_CLASSNAMES.nested_li}" value="2">
             <ul class="${EDITOR_CLASSNAMES.ul}">
               <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="1">
                 <span data-lexical-text="true">from</span>
               </li>
-              <li class="${EDITOR_CLASSNAMES.nestedLi}" value="2">
+              <li class="${EDITOR_CLASSNAMES.nested_li}" value="2">
                 <ul class="${EDITOR_CLASSNAMES.ul}">
                   <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="1">
                     <span data-lexical-text="true">the</span>
@@ -1356,21 +1356,21 @@ test.describe("list", () => {
 
     // Move to the next item up in the list
     await page.keyboard.press("ArrowUp");
-    await toggleNumberedList(page);
+    await toggle_numbered_list(page);
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <ul class="${EDITOR_CLASSNAMES.ul}">
           <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="1">
             <span data-lexical-text="true">hello</span>
           </li>
-          <li class="${EDITOR_CLASSNAMES.nestedLi}" value="2">
+          <li class="${EDITOR_CLASSNAMES.nested_li}" value="2">
             <ul class="${EDITOR_CLASSNAMES.ul}">
               <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="1">
                 <span data-lexical-text="true">from</span>
               </li>
-              <li class="${EDITOR_CLASSNAMES.nestedLi}" value="2">
+              <li class="${EDITOR_CLASSNAMES.nested_li}" value="2">
                 <ol class="${EDITOR_CLASSNAMES.ol3}">
                   <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="1">
                     <span data-lexical-text="true">the</span>
@@ -1389,21 +1389,21 @@ test.describe("list", () => {
       `
     );
 
-    await toggleBulletedList(page);
+    await toggle_bulleted_list(page);
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <ul class="${EDITOR_CLASSNAMES.ul}">
           <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="1">
             <span data-lexical-text="true">hello</span>
           </li>
-          <li class="${EDITOR_CLASSNAMES.nestedLi}" value="2">
+          <li class="${EDITOR_CLASSNAMES.nested_li}" value="2">
             <ul class="${EDITOR_CLASSNAMES.ul}">
               <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="1">
                 <span data-lexical-text="true">from</span>
               </li>
-              <li class="${EDITOR_CLASSNAMES.nestedLi}" value="2">
+              <li class="${EDITOR_CLASSNAMES.nested_li}" value="2">
                 <ul class="${EDITOR_CLASSNAMES.ul}">
                   <li class="${EDITOR_CLASSNAMES.li}" dir="ltr" value="1">
                     <span data-lexical-text="true">the</span>
@@ -1426,7 +1426,7 @@ test.describe("list", () => {
   test("can merge selected nodes into existing list siblings of the same type when formatting to a list", async ({
     page
   }) => {
-    // hello
+    // Hello
     // - from
     // the
     // - other
@@ -1435,7 +1435,7 @@ test.describe("list", () => {
     await page.keyboard.press("Enter");
     await page.keyboard.type("from");
 
-    await toggleBulletedList(page);
+    await toggle_bulleted_list(page);
 
     await page.keyboard.press("Enter");
     await page.keyboard.press("Enter");
@@ -1443,13 +1443,13 @@ test.describe("list", () => {
     await page.keyboard.press("Enter");
     await page.keyboard.type("other");
 
-    await toggleBulletedList(page);
+    await toggle_bulleted_list(page);
 
     await page.keyboard.press("Enter");
     await page.keyboard.press("Enter");
     await page.keyboard.type("side");
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
@@ -1474,10 +1474,10 @@ test.describe("list", () => {
       `
     );
 
-    await selectAll(page);
-    await toggleBulletedList(page);
+    await select_all(page);
+    await toggle_bulleted_list(page);
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <ul class="${EDITOR_CLASSNAMES.ul}">
@@ -1507,19 +1507,19 @@ test.describe("list", () => {
     // - hello
     // - from
     // the
-    await toggleBulletedList(page);
+    await toggle_bulleted_list(page);
     await page.keyboard.type("hello");
     await page.keyboard.press("Enter");
     await page.keyboard.type("from");
     await page.keyboard.press("Enter");
     await page.keyboard.press("Enter");
     await page.keyboard.type("the");
-    await toggleNumberedList(page);
+    await toggle_numbered_list(page);
 
     // - hello
     // - from
     // 1. the
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <ul class="${EDITOR_CLASSNAMES.ul}">
@@ -1538,25 +1538,25 @@ test.describe("list", () => {
       `
     );
 
-    await clearEditor(page);
+    await clear_editor(page);
 
-    // hello
+    // Hello
     // 1. from
     // 2. the
     await page.keyboard.type("hello");
     await page.keyboard.press("Enter");
-    await toggleNumberedList(page);
+    await toggle_numbered_list(page);
     await page.keyboard.type("from");
     await page.keyboard.press("Enter");
     await page.keyboard.type("the");
     await page.keyboard.press("ArrowUp");
     await page.keyboard.press("ArrowUp");
-    await toggleNumberedList(page);
+    await toggle_numbered_list(page);
 
     // 1. hello
     // 2. from
     // 3. the
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <ol class="${EDITOR_CLASSNAMES.ol1}">
@@ -1578,7 +1578,7 @@ test.describe("list", () => {
     // Trigger markdown using 321 digits followed by a period and a trigger of space
     await page.keyboard.type("321. ");
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <ol start="321" class="${EDITOR_CLASSNAMES.ol1}">
@@ -1591,10 +1591,10 @@ test.describe("list", () => {
   test("should not process paragraph markdown inside list", async ({
     page
   }) => {
-    await toggleBulletedList(page);
+    await toggle_bulleted_list(page);
     await page.keyboard.type("# ");
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <ul class="${EDITOR_CLASSNAMES.ul}">
@@ -1609,21 +1609,21 @@ test.describe("list", () => {
   test("un-indents empty list items when the user presses enter", async ({
     page
   }) => {
-    await toggleBulletedList(page);
+    await toggle_bulleted_list(page);
     await page.keyboard.type("a");
     await page.keyboard.press("Enter");
-    await clickIndentButton(page);
-    await clickIndentButton(page);
+    await click_indent_button(page);
+    await click_indent_button(page);
     await page.keyboard.press("Enter");
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <ul class="${EDITOR_CLASSNAMES.ul}">
           <li value="1" class="${EDITOR_CLASSNAMES.li}" dir="ltr">
             <span data-lexical-text="true">a</span>
           </li>
-          <li value="2" class="${EDITOR_CLASSNAMES.nestedLi}">
+          <li value="2" class="${EDITOR_CLASSNAMES.nested_li}">
             <ul class="${EDITOR_CLASSNAMES.ul}">
               <li value="1" class="${EDITOR_CLASSNAMES.li}"><br /></li>
             </ul>
@@ -1634,7 +1634,7 @@ test.describe("list", () => {
 
     await page.keyboard.press("Enter");
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <ul class="${EDITOR_CLASSNAMES.ul}">
@@ -1648,7 +1648,7 @@ test.describe("list", () => {
 
     await page.keyboard.press("Enter");
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <ul class="${EDITOR_CLASSNAMES.ul}">
@@ -1664,10 +1664,10 @@ test.describe("list", () => {
   test("can convert a list with a single item to a paragraph when the text style is changed", async ({
     page
   }) => {
-    await toggleBulletedList(page);
+    await toggle_bulleted_list(page);
     await page.keyboard.type("a");
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <ul class="${EDITOR_CLASSNAMES.ul}">
@@ -1678,9 +1678,9 @@ test.describe("list", () => {
       `
     );
 
-    await convertToParagraph(page);
+    await convert_to_paragraph(page);
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
@@ -1693,12 +1693,12 @@ test.describe("list", () => {
   test("can convert the last item in a list with multiple items to a paragraph when the text style is changed", async ({
     page
   }) => {
-    await toggleBulletedList(page);
+    await toggle_bulleted_list(page);
     await page.keyboard.type("a");
     await page.keyboard.press("Enter");
     await page.keyboard.type("b");
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <ul class="${EDITOR_CLASSNAMES.ul}">
@@ -1712,9 +1712,9 @@ test.describe("list", () => {
       `
     );
 
-    await convertToParagraph(page);
+    await convert_to_paragraph(page);
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <ul class="${EDITOR_CLASSNAMES.ul}">
@@ -1732,7 +1732,7 @@ test.describe("list", () => {
   test("can convert the middle item in a list with multiple items to a paragraph when the text style is changed", async ({
     page
   }) => {
-    await toggleBulletedList(page);
+    await toggle_bulleted_list(page);
     await page.keyboard.type("a");
     await page.keyboard.press("Enter");
     await page.keyboard.type("b");
@@ -1740,7 +1740,7 @@ test.describe("list", () => {
     await page.keyboard.type("c");
     await page.keyboard.press("ArrowUp");
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <ul class="${EDITOR_CLASSNAMES.ul}">
@@ -1757,9 +1757,9 @@ test.describe("list", () => {
       `
     );
 
-    await convertToParagraph(page);
+    await convert_to_paragraph(page);
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <ul class="${EDITOR_CLASSNAMES.ul}">
@@ -1786,10 +1786,10 @@ test.describe("list", () => {
     await page.keyboard.press("Enter");
     await page.keyboard.type("> the other side");
 
-    await selectAll(page);
-    await toggleBulletedList(page);
+    await select_all(page);
+    await toggle_bulleted_list(page);
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <ul class="${EDITOR_CLASSNAMES.ul}">
@@ -1810,11 +1810,11 @@ test.describe("list", () => {
     await page.keyboard.type("hello world");
     await page.keyboard.press("Enter");
 
-    await toggleBulletedList(page);
-    await clickIndentButton(page);
-    await toggleBulletedList(page);
+    await toggle_bulleted_list(page);
+    await click_indent_button(page);
+    await toggle_bulleted_list(page);
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
@@ -1824,11 +1824,11 @@ test.describe("list", () => {
       `
     );
 
-    await assertSelection(page, {
-      anchorOffset: 0,
-      anchorPath: [1],
-      focusOffset: 0,
-      focusPath: [1]
+    await assert_selection(page, {
+      anchor_offset: 0,
+      anchor_path: [1],
+      focus_offset: 0,
+      focus_path: [1]
     });
   });
 });

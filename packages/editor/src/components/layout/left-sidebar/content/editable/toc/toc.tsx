@@ -2,12 +2,10 @@ import { clsx } from "clsx";
 import { useAtom as use_atom, useAtomValue as use_atom_value } from "jotai";
 import React from "react";
 
-import Link from "../../../../../../../../ui/src/components/link";
-import ScrollArea, {
-  ScrollAreaProps
-} from "../../../../../../../../ui/src/components/scroll-area";
-import Spacer from "../../../../../../../../ui/src/components/spacer";
-import Typography from "../../../../../../../../ui/src/components/typography";
+import Link from "~/components/link";
+import ScrollArea, { ScrollAreaProps } from "~/components/scroll-area";
+import Spacer from "~/components/spacer";
+import Typography from "~/components/typography";
 import { use_story_metadata_mutation } from "~/redux/features";
 
 import { doc_status_atom, story_metadata_atom } from "../../../../../../atoms";

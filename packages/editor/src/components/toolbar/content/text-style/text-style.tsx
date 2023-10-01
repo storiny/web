@@ -1,33 +1,33 @@
 import { clsx } from "clsx";
-import { useAtomValue } from "jotai";
+import { useAtomValue as use_atom_value } from "jotai";
 import React from "react";
 
-import Divider from "../../../../../../ui/src/components/divider";
-import IconButton from "../../../../../../ui/src/components/icon-button";
-import Menu from "../../../../../../ui/src/components/menu";
-import MenuCheckboxItem from "../../../../../../ui/src/components/menu-checkbox-item";
-import Option from "../../../../../../ui/src/components/option";
-import Select from "../../../../../../ui/src/components/select";
-import Spacer from "../../../../../../ui/src/components/spacer";
-import ToggleGroup from "../../../../../../ui/src/components/toggle-group";
-import ToggleGroupItem from "../../../../../../ui/src/components/toggle-group-item";
-import { use_media_query } from "../../../../../../ui/src/hooks/use-media-query";
-import BoldIcon from "../../../../../../ui/src/icons/bold";
-import CodeIcon from "../../../../../../ui/src/icons/code";
-import DotsIcon from "../../../../../../ui/src/icons/dots";
-import ItalicIcon from "../../../../../../ui/src/icons/italic";
-import LinkIcon from "../../../../../../ui/src/icons/link";
-import StrikethroughIcon from "../../../../../../ui/src/icons/strikethrough";
-import SubscriptIcon from "../../../../../../ui/src/icons/subscript";
-import SuperscriptIcon from "../../../../../../ui/src/icons/superscript";
-import UnderlineIcon from "../../../../../../ui/src/icons/underline";
+import Divider from "~/components/divider";
+import IconButton from "~/components/icon-button";
+import Menu from "~/components/menu";
+import MenuCheckboxItem from "~/components/menu-checkbox-item";
+import Option from "~/components/option";
+import Select from "~/components/select";
+import Spacer from "~/components/spacer";
+import ToggleGroup from "~/components/toggle-group";
+import ToggleGroupItem from "~/components/toggle-group-item";
+import { use_media_query } from "~/hooks/use-media-query";
+import BoldIcon from "~/icons/bold";
+import CodeIcon from "~/icons/code";
+import DotsIcon from "~/icons/dots";
+import ItalicIcon from "~/icons/italic";
+import LinkIcon from "~/icons/link";
+import StrikethroughIcon from "~/icons/strikethrough";
+import SubscriptIcon from "~/icons/subscript";
+import SuperscriptIcon from "~/icons/superscript";
+import UnderlineIcon from "~/icons/underline";
 import { BREAKPOINTS } from "~/theme/breakpoints";
 
 import { doc_status_atom } from "../../../../atoms";
 import {
-  TextStyle as TextStyleEnum,
   TEXT_STYLE_ICON_MAP,
-  TEXT_STYLE_LABEL_MAP
+  TEXT_STYLE_LABEL_MAP,
+  TextStyle as TextStyleEnum
 } from "../../../../constants";
 import { use_bold } from "../../../../hooks/use-bold";
 import { use_code } from "../../../../hooks/use-code";
@@ -213,7 +213,7 @@ const TextStyleSelect = (): React.ReactElement => {
    * Handles select value change
    * @param next_value New value
    */
-  const handleValueChange = (next_value: TextStyleEnum): void => {
+  const handle_value_change = (next_value: TextStyleEnum): void => {
     switch (next_value) {
       case TextStyleEnum.BULLETED_LIST:
         format_bulleted_list();
@@ -239,7 +239,7 @@ const TextStyleSelect = (): React.ReactElement => {
   return (
     <Select
       disabled={document_loading}
-      onValueChange={handleValueChange}
+      onValueChange={handle_value_change}
       size={"lg"}
       slot_props={{
         trigger: {

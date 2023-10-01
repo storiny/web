@@ -1,31 +1,31 @@
+import { is_num } from "@storiny/shared/src/utils/is-num";
 import NextLink from "next/link";
 import React from "react";
 
 import { GetProfileResponse } from "~/common/grpc";
-import { use_confirmation } from "../../../../../../packages/ui/src/components/confirmation";
-import IconButton from "../../../../../../packages/ui/src/components/icon-button";
-import Menu from "../../../../../../packages/ui/src/components/menu";
-import MenuItem from "../../../../../../packages/ui/src/components/menu-item";
-import Separator from "../../../../../../packages/ui/src/components/separator";
-import { use_clipboard } from "../../../../../../packages/ui/src/hooks/use-clipboard";
-import { use_web_share } from "../../../../../../packages/ui/src/hooks/use-web-share";
-import BellFilledIcon from "../../../../../../packages/ui/src/icons/bell-filled";
-import BellPlusIcon from "../../../../../../packages/ui/src/icons/bell-plus";
-import CopyIcon from "../../../../../../packages/ui/src/icons/copy";
-import DotsIcon from "../../../../../../packages/ui/src/icons/dots";
-import HeartPlusIcon from "../../../../../../packages/ui/src/icons/heart-plus";
-import MuteIcon from "../../../../../../packages/ui/src/icons/mute";
-import ReportIcon from "../../../../../../packages/ui/src/icons/report";
-import ShareIcon from "../../../../../../packages/ui/src/icons/share";
-import UserBlockIcon from "../../../../../../packages/ui/src/icons/user-block";
-import XIcon from "../../../../../../packages/ui/src/icons/x";
+import { use_confirmation } from "~/components/confirmation";
+import IconButton from "~/components/icon-button";
+import Menu from "~/components/menu";
+import MenuItem from "~/components/menu-item";
+import Separator from "~/components/separator";
+import { use_clipboard } from "~/hooks/use-clipboard";
+import { use_web_share } from "~/hooks/use-web-share";
+import BellFilledIcon from "~/icons/bell-filled";
+import BellPlusIcon from "~/icons/bell-plus";
+import CopyIcon from "~/icons/copy";
+import DotsIcon from "~/icons/dots";
+import HeartPlusIcon from "~/icons/heart-plus";
+import MuteIcon from "~/icons/mute";
+import ReportIcon from "~/icons/report";
+import ShareIcon from "~/icons/share";
+import UserBlockIcon from "~/icons/user-block";
+import XIcon from "~/icons/x";
 import {
   boolean_action,
   select_is_logged_in,
   sync_with_user
 } from "~/redux/features";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
-import { is_num } from "@storiny/shared/src/utils/is-num";
 
 interface Props {
   is_inside_sidebar?: boolean;
@@ -63,7 +63,7 @@ const Actions = ({ profile, is_inside_sidebar }: Props): React.ReactElement => {
       <MenuItem
         check_auth
         decorator={<UserBlockIcon />}
-        onSelect={(event: Event): void => {
+        onSelect={(event): void => {
           event.preventDefault(); // Do not auto-close the menu
           open_confirmation();
         }}

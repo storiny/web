@@ -5,8 +5,8 @@ import React from "react";
 
 import { get_login_activity } from "~/common/grpc";
 import { handle_exception } from "~/common/grpc/utils";
-import { get_session_token } from "src/common/utils/get-session-token";
-import { get_user } from "src/common/utils/get-user";
+import { get_session_token } from "~/common/utils/get-session-token";
+import { get_user } from "~/common/utils/get-user";
 
 import LoginActivityClient from "./client";
 

@@ -6,7 +6,7 @@ import { Frame, Page } from "@playwright/test";
  * @param selector Element selector
  * @param options Options
  */
-export const waitForSelector = async (
+export const wait_for_selector = async (
   page: Page,
   selector: string,
   options: Parameters<Frame["waitForSelector"]>[1] = {}

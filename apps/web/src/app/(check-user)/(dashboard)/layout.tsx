@@ -1,8 +1,8 @@
 import { clsx } from "clsx";
 import React from "react";
 
-import Navbar from "../../../../../../packages/ui/src/layout/navbar";
-import Sidenav from "../../../../../../packages/ui/src/layout/sidenav";
+import Navbar from "~/layout/navbar";
+import Sidenav from "~/layout/sidenav";
 
 const DashboardLayout = ({
   children

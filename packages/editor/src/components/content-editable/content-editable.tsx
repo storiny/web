@@ -23,7 +23,7 @@ const EditorContentEditable = ({
   );
 
   use_layout_effect(() => {
-    set_editable(editor.is_editable());
+    set_editable(editor.isEditable());
     return editor.registerEditableListener((current_is_editable) => {
       set_editable(current_is_editable);
     });

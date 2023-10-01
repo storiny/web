@@ -3,18 +3,18 @@ import { STORY_PROPS } from "@storiny/shared/src/constants/story";
 import { clsx } from "clsx";
 import React from "react";
 
-import AspectRatio from "../../../../../../../ui/src/components/aspect-ratio";
-import { use_form_context } from "../../../../../../../ui/src/components/form";
-import FormInput from "../../../../../../../ui/src/components/form-input";
-import FormTextarea from "../../../../../../../ui/src/components/form-textarea";
-import IconButton from "../../../../../../../ui/src/components/icon-button";
-import Image from "../../../../../../../ui/src/components/image";
-import Spacer from "../../../../../../../ui/src/components/spacer";
-import Typography from "../../../../../../../ui/src/components/typography";
+import AspectRatio from "~/components/aspect-ratio";
+import { use_form_context } from "~/components/form";
+import FormInput from "~/components/form-input";
+import FormTextarea from "~/components/form-textarea";
+import IconButton from "~/components/icon-button";
+import Image from "~/components/image";
+import Spacer from "~/components/spacer";
+import Typography from "~/components/typography";
 import Gallery from "~/entities/gallery";
-import EditIcon from "../../../../../../../ui/src/icons/edit";
-import PhotoEditIcon from "../../../../../../../ui/src/icons/photo-edit";
-import TrashIcon from "../../../../../../../ui/src/icons/trash";
+import EditIcon from "~/icons/edit";
+import PhotoEditIcon from "~/icons/photo-edit";
+import TrashIcon from "~/icons/trash";
 
 import image_styles from "../common/image.module.scss";
 
@@ -124,7 +124,7 @@ const SeoTab = (): React.ReactElement => (
         </>
       }
       label={"SEO title"}
-      maxLength={STORY_PROPS.seoTitle.max_length}
+      maxLength={STORY_PROPS.seo_title.max_length}
       name={"seo_title"}
       placeholder={"40–60 characters"}
     />
@@ -137,7 +137,7 @@ const SeoTab = (): React.ReactElement => (
         </>
       }
       label={"SEO description"}
-      maxLength={STORY_PROPS.seoDescription.max_length}
+      maxLength={STORY_PROPS.seo_description.max_length}
       name={"seo_description"}
       placeholder={"80–120 characters"}
     />
@@ -153,7 +153,7 @@ const SeoTab = (): React.ReactElement => (
         </>
       }
       label={"Canonical URL"}
-      maxLength={STORY_PROPS.canonicalUrl.max_length}
+      maxLength={STORY_PROPS.canonical_url.max_length}
       name={"canonical_url"}
       placeholder={"Link to the original source"}
     />

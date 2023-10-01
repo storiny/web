@@ -1,13 +1,13 @@
 import clsx from "clsx";
 import React from "react";
 
-import IconButton from "../../../../ui/src/components/icon-button";
-import Spacer from "../../../../ui/src/components/spacer";
-import Tooltip from "../../../../ui/src/components/tooltip";
-import Typography from "../../../../ui/src/components/typography";
-import RedoIcon from "../../../../ui/src/icons/redo";
-import RotationIcon from "../../../../ui/src/icons/rotation";
-import UndoIcon from "../../../../ui/src/icons/undo";
+import IconButton from "~/components/icon-button";
+import Spacer from "~/components/spacer";
+import Tooltip from "~/components/tooltip";
+import Typography from "~/components/typography";
+import RedoIcon from "~/icons/redo";
+import RotationIcon from "~/icons/rotation";
+import UndoIcon from "~/icons/undo";
 
 import { use_active_object, use_canvas, use_event_render } from "../../hooks";
 import Cancel from "./cancel";

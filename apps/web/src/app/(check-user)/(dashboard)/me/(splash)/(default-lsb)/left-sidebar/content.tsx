@@ -6,18 +6,16 @@ import NextLink from "next/link";
 import { useSelectedLayoutSegments as use_selected_layout_segments } from "next/navigation";
 import React from "react";
 
-import Input from "../../../../../../../../../../packages/ui/src/components/input";
-import ScrollArea from "../../../../../../../../../../packages/ui/src/components/scroll-area";
-import Separator from "../../../../../../../../../../packages/ui/src/components/separator";
-import Spacer from "../../../../../../../../../../packages/ui/src/components/spacer";
-import Tab, {
-  TabProps
-} from "../../../../../../../../../../packages/ui/src/components/tab";
-import Tabs from "../../../../../../../../../../packages/ui/src/components/tabs";
-import TabsList from "../../../../../../../../../../packages/ui/src/components/tabs-list";
-import Typography from "../../../../../../../../../../packages/ui/src/components/typography";
-import Persona from "../../../../../../../../../../packages/ui/src/entities/persona";
-import SearchIcon from "../../../../../../../../../../packages/ui/src/icons/search";
+import Input from "~/components/input";
+import ScrollArea from "~/components/scroll-area";
+import Separator from "~/components/separator";
+import Spacer from "~/components/spacer";
+import Tab, { TabProps } from "~/components/tab";
+import Tabs from "~/components/tabs";
+import TabsList from "~/components/tabs-list";
+import Typography from "~/components/typography";
+import Persona from "~/entities/persona";
+import SearchIcon from "~/icons/search";
 import { select_user } from "~/redux/features";
 import { use_app_selector } from "~/redux/hooks";
 

@@ -1,16 +1,16 @@
 import { Page } from "@playwright/test";
 
-import { pressKeyTimes } from "../press-key-times";
+import { press_key_times } from "../press-key-times";
 
 /**
- * Presses backspace `numCharacters` times in the current selection with `delayMs` of delay between each keystroke
+ * Presses backspace `num_characters` times in the current selection with `delay_ms` of delay between each keystroke
  * @param page Page
- * @param numCharacters Number of times to press backspace
- * @param delayMs Delay between each keyboard event
+ * @param num_characters Number of times to press backspace
+ * @param delay_ms Delay between each keyboard event
  */
-export const pressBackspace = async (
+export const press_backspace = async (
   page: Page,
-  numCharacters?: number,
-  delayMs?: number
+  num_characters?: number,
+  delay_ms?: number
 ): Promise<void> =>
-  await pressKeyTimes(page, "Backspace", numCharacters, delayMs);
+  await press_key_times(page, "Backspace", num_characters, delay_ms);

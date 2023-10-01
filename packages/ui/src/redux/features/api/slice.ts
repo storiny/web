@@ -1,9 +1,13 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import {
+  createApi as create_api,
+  fetchBaseQuery as fetch_base_query
+} from "@reduxjs/toolkit/query/react";
 import { API_VERSION } from "@storiny/shared";
 
-export const api_slice = createApi({
+export const api_slice = create_api({
+  /* eslint-disable prefer-snakecase/prefer-snakecase */
   reducerPath: "api",
-  baseQuery: fetchBaseQuery({
+  baseQuery: fetch_base_query({
     baseUrl: `${process.env.NEXT_PUBLIC_API_URL}/v${API_VERSION}`
   }),
   tagTypes: [
@@ -15,4 +19,5 @@ export const api_slice = createApi({
     "FriendRequest"
   ],
   endpoints: () => ({})
+  /* eslint-enable prefer-snakecase/prefer-snakecase */
 });

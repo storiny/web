@@ -1,8 +1,8 @@
 import React from "react";
 
-import Input from "../../../../../../../ui/src/components/input";
-import AxisXIcon from "../../../../../../../ui/src/icons/axis-x";
-import AxisYIcon from "../../../../../../../ui/src/icons/axis-y";
+import Input from "~/components/input";
+import AxisXIcon from "~/icons/axis-x";
+import AxisYIcon from "~/icons/axis-y";
 
 import { use_active_object } from "../../../../../hooks";
 import { modify_object } from "../../../../../utils";

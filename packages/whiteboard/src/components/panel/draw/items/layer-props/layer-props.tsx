@@ -1,13 +1,13 @@
 import { BaseFabricObject } from "fabric";
 import React from "react";
 
+import IconButton from "~/components/icon-button";
+import Input from "~/components/input";
+import EyeIcon from "~/icons/eye";
+import EyeClosedIcon from "~/icons/eye-closed";
+import RoughnessIcon from "~/icons/roughness";
 import { clamp } from "~/utils/clamp";
 
-import IconButton from "../../../../../../../ui/src/components/icon-button";
-import Input from "../../../../../../../ui/src/components/input";
-import EyeIcon from "../../../../../../../ui/src/icons/eye";
-import EyeClosedIcon from "../../../../../../../ui/src/icons/eye-closed";
-import RoughnessIcon from "../../../../../../../ui/src/icons/roughness";
 import { MAX_OPACITY, MIN_OPACITY } from "../../../../../constants";
 import { use_active_object, use_event_render } from "../../../../../hooks";
 import { modify_object } from "../../../../../utils";

@@ -12,7 +12,7 @@ import DefaultDashboardRightSidebarLayout from "../../layout";
 import StoriesMetricsPage from "./client";
 
 const meta: Meta<typeof StoriesMetricsPage> = {
-  title: "dashboard/Content/stats/stories",
+  title: "dashboard/content/stats/stories",
   component: StoriesMetricsPage,
   parameters: {
     layout: "fullscreen"

@@ -7,18 +7,15 @@ import dynamic from "next/dynamic";
 import React from "react";
 
 import { dynamic_loader } from "~/common/dynamic";
-import Link from "../../../../../../../../ui/src/components/link";
-import Typography from "../../../../../../../../ui/src/components/typography";
-import ErrorState from "../../../../../../../../ui/src/entities/error-state";
-import Persona from "../../../../../../../../ui/src/entities/persona";
+import Link from "~/components/link";
+import Typography from "~/components/typography";
+import ErrorState from "~/entities/error-state";
+import Persona from "~/entities/persona";
 import {
   get_query_error_type,
   use_get_story_recommendations_query
 } from "~/redux/features";
-import {
-  DateFormat,
-  format_date
-} from "../../../../../../../../ui/src/utils/format-date";
+import { DateFormat, format_date } from "~/utils/format-date";
 
 import { story_metadata_atom } from "../../../../../../atoms";
 import styles from "./recommended-stories.module.scss";
@@ -89,7 +86,7 @@ const RecommendedStories = (): React.ReactElement => {
   const {
     data,
     isLoading: is_loading,
-    is_fetching,
+    isFetching: is_fetching,
     isError: is_error,
     error,
     refetch

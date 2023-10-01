@@ -7,7 +7,7 @@ import dynamic from "next/dynamic";
 import React from "react";
 
 import { dynamic_loader } from "~/common/dynamic";
-import LeftSidebarDefaultContent from "../../../../../../ui/src/layout/left-sidebar/default-content";
+import LeftSidebarDefaultContent from "~/layout/left-sidebar/default-content";
 
 import {
   doc_status_atom,

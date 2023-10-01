@@ -2,7 +2,7 @@ import { Queries, queries } from "@testing-library/dom";
 import { RenderOptions, RenderResult } from "@testing-library/react";
 import * as testing_library from "@testing-library/react";
 import {
-  renderHook,
+  renderHook as render_hook,
   RenderHookOptions,
   RenderHookResult
 } from "@testing-library/react";
@@ -100,5 +100,5 @@ export const render_hook_with_provider = <
   renderer_options?: ExtendedRenderOptions
 ): RenderHookResult<Result, Props> => {
   const { wrapper } = render_test_with_provider(<span />, renderer_options);
-  return renderHook(render, { ...options, wrapper });
+  return render_hook(render, { ...options, wrapper });
 };

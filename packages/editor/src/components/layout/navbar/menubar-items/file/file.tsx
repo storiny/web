@@ -6,9 +6,9 @@ import { get_shortcut_label } from "@storiny/shared/src/utils/get-shortcut-label
 import React from "react";
 
 // import { applyUpdateV2, Doc, encodeStateAsUpdateV2 } from "yjs";
-import MenubarItem from "../../../../../../../ui/src/components/menubar-item";
-import MenubarSub from "../../../../../../../ui/src/components/menubar-sub";
-import Separator from "../../../../../../../ui/src/components/separator";
+import MenubarItem from "~/components/menubar-item";
+import MenubarSub from "~/components/menubar-sub";
+import Separator from "~/components/separator";
 
 import { EDITOR_SHORTCUTS } from "../../../../../constants/shortcuts";
 // import { use_collaboration_context } from "../../../../../plugins/collaboration/context";

@@ -2,7 +2,7 @@ import { test } from "@playwright/test";
 
 import { EDITOR_CLASSNAMES } from "../constants";
 import { toggle_bold, toggle_underline } from "../keyboard-shortcuts";
-import { assertHTML, focusEditor, html, initialize } from "../utils";
+import { assert_html, focus_editor, html, initialize } from "../utils";
 
 const HEADING_HTML = html`
   <h2 class="${EDITOR_CLASSNAMES.heading}">
@@ -24,7 +24,7 @@ const HR_HTML = html`
 test.describe("markdown", () => {
   test.beforeEach(async ({ page }) => {
     await initialize(page);
-    await focusEditor(page);
+    await focus_editor(page);
   });
 
   [
@@ -95,7 +95,7 @@ test.describe("markdown", () => {
     {
       html: html`
         <ol class="${EDITOR_CLASSNAMES.ol1}">
-          <li class="${EDITOR_CLASSNAMES.nestedLi}" value="1">
+          <li class="${EDITOR_CLASSNAMES.nested_li}" value="1">
             <ol class="${EDITOR_CLASSNAMES.ol2}">
               <li class="${EDITOR_CLASSNAMES.li}" value="1"><br /></li>
             </ol>
@@ -115,7 +115,7 @@ test.describe("markdown", () => {
     {
       html: html`
         <ul class="${EDITOR_CLASSNAMES.ul}">
-          <li class="${EDITOR_CLASSNAMES.nestedLi}" value="1">
+          <li class="${EDITOR_CLASSNAMES.nested_li}" value="1">
             <ul class="${EDITOR_CLASSNAMES.ul}">
               <li class="${EDITOR_CLASSNAMES.li}" value="1"><br /></li>
             </ul>
@@ -135,7 +135,7 @@ test.describe("markdown", () => {
     {
       html: html`
         <ul class="${EDITOR_CLASSNAMES.ul}">
-          <li class="${EDITOR_CLASSNAMES.nestedLi}" value="1">
+          <li class="${EDITOR_CLASSNAMES.nested_li}" value="1">
             <ul class="${EDITOR_CLASSNAMES.ul}">
               <li class="${EDITOR_CLASSNAMES.li}" value="1"><br /></li>
             </ul>
@@ -147,7 +147,7 @@ test.describe("markdown", () => {
     {
       html: html`
         <ul class="${EDITOR_CLASSNAMES.ul}">
-          <li class="${EDITOR_CLASSNAMES.nestedLi}" value="1">
+          <li class="${EDITOR_CLASSNAMES.nested_li}" value="1">
             <ul class="${EDITOR_CLASSNAMES.ul}">
               <li class="${EDITOR_CLASSNAMES.li}" value="1"><br /></li>
             </ul>
@@ -159,9 +159,9 @@ test.describe("markdown", () => {
     {
       html: html`
         <ul class="${EDITOR_CLASSNAMES.ul}">
-          <li class="${EDITOR_CLASSNAMES.nestedLi}" value="1">
+          <li class="${EDITOR_CLASSNAMES.nested_li}" value="1">
             <ul class="${EDITOR_CLASSNAMES.ul}">
-              <li class="${EDITOR_CLASSNAMES.nestedLi}" value="1">
+              <li class="${EDITOR_CLASSNAMES.nested_li}" value="1">
                 <ul class="${EDITOR_CLASSNAMES.ul}">
                   <li class="${EDITOR_CLASSNAMES.li}" value="1">
                     <br />
@@ -178,7 +178,7 @@ test.describe("markdown", () => {
       html: html`
         <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <strong
-            class="${EDITOR_CLASSNAMES.tBold} ${EDITOR_CLASSNAMES.tItalic} ${EDITOR_CLASSNAMES.tStrikethrough}"
+            class="${EDITOR_CLASSNAMES.t_bold} ${EDITOR_CLASSNAMES.t_italic} ${EDITOR_CLASSNAMES.t_strikethrough}"
             data-lexical-text="true"
           >
             test
@@ -192,7 +192,7 @@ test.describe("markdown", () => {
       html: html`
         <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <em
-            class="${EDITOR_CLASSNAMES.tItalic} ${EDITOR_CLASSNAMES.tStrikethrough}"
+            class="${EDITOR_CLASSNAMES.t_italic} ${EDITOR_CLASSNAMES.t_strikethrough}"
             data-lexical-text="true"
           >
             test
@@ -206,7 +206,7 @@ test.describe("markdown", () => {
       html: html`
         <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <strong
-            class="${EDITOR_CLASSNAMES.tBold} ${EDITOR_CLASSNAMES.tStrikethrough}"
+            class="${EDITOR_CLASSNAMES.t_bold} ${EDITOR_CLASSNAMES.t_strikethrough}"
             data-lexical-text="true"
           >
             test
@@ -220,7 +220,7 @@ test.describe("markdown", () => {
       html: html`
         <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <strong
-            class="${EDITOR_CLASSNAMES.tBold} ${EDITOR_CLASSNAMES.tItalic}"
+            class="${EDITOR_CLASSNAMES.t_bold} ${EDITOR_CLASSNAMES.t_italic}"
             data-lexical-text="true"
           >
             test
@@ -234,7 +234,7 @@ test.describe("markdown", () => {
       html: html`
         <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">hello</span>
-          <em class="${EDITOR_CLASSNAMES.tItalic}" data-lexical-text="true">
+          <em class="${EDITOR_CLASSNAMES.t_italic}" data-lexical-text="true">
             world
           </em>
           <span data-lexical-text="true">!</span>
@@ -246,7 +246,7 @@ test.describe("markdown", () => {
       html: html`
         <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">hello</span>
-          <strong class="${EDITOR_CLASSNAMES.tBold}" data-lexical-text="true">
+          <strong class="${EDITOR_CLASSNAMES.t_bold}" data-lexical-text="true">
             world
           </strong>
           <span data-lexical-text="true">!</span>
@@ -259,7 +259,7 @@ test.describe("markdown", () => {
         <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">hello</span>
           <strong
-            class="${EDITOR_CLASSNAMES.tBold} ${EDITOR_CLASSNAMES.tItalic}"
+            class="${EDITOR_CLASSNAMES.t_bold} ${EDITOR_CLASSNAMES.t_italic}"
             data-lexical-text="true"
           >
             world
@@ -274,7 +274,7 @@ test.describe("markdown", () => {
         <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <span data-lexical-text="true">hello</span>
           <strong
-            class="${EDITOR_CLASSNAMES.tBold} ${EDITOR_CLASSNAMES.tItalic}"
+            class="${EDITOR_CLASSNAMES.t_bold} ${EDITOR_CLASSNAMES.t_italic}"
             data-lexical-text="true"
           >
             world
@@ -304,7 +304,7 @@ test.describe("markdown", () => {
       html: html`
         <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <em
-            class="${EDITOR_CLASSNAMES.tItalic} ${EDITOR_CLASSNAMES.tStrikethrough}"
+            class="${EDITOR_CLASSNAMES.t_italic} ${EDITOR_CLASSNAMES.t_strikethrough}"
             data-lexical-text="true"
           >
             hello world
@@ -317,7 +317,7 @@ test.describe("markdown", () => {
   ].forEach(({ html, text }) => {
     test(`can import markdown text: ${text}`, async ({ page }) => {
       await page.keyboard.type(text);
-      await assertHTML(page, html);
+      await assert_html(page, html);
     });
   });
 
@@ -334,35 +334,35 @@ test.describe("markdown", () => {
 
     await page.keyboard.type(" wo~~r*ld");
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
           <strong
-            class="${EDITOR_CLASSNAMES.tBold} ${EDITOR_CLASSNAMES.tUnderline}"
+            class="${EDITOR_CLASSNAMES.t_bold} ${EDITOR_CLASSNAMES.t_underline}"
             data-lexical-text="true"
           >
             h
           </strong>
           <strong
-            class="${EDITOR_CLASSNAMES.tBold} ${EDITOR_CLASSNAMES.tItalic} ${EDITOR_CLASSNAMES.tUnderline}"
+            class="${EDITOR_CLASSNAMES.t_bold} ${EDITOR_CLASSNAMES.t_italic} ${EDITOR_CLASSNAMES.t_underline}"
             data-lexical-text="true"
           >
             e
           </strong>
           <strong
-            class="${EDITOR_CLASSNAMES.tUnderlineStrikethrough} ${EDITOR_CLASSNAMES.tBold} ${EDITOR_CLASSNAMES.tItalic}"
+            class="${EDITOR_CLASSNAMES.t_underline_strikethrough} ${EDITOR_CLASSNAMES.t_bold} ${EDITOR_CLASSNAMES.t_italic}"
             data-lexical-text="true"
           >
             llo
           </strong>
           <em
-            class="${EDITOR_CLASSNAMES.tItalic} ${EDITOR_CLASSNAMES.tStrikethrough}"
+            class="${EDITOR_CLASSNAMES.t_italic} ${EDITOR_CLASSNAMES.t_strikethrough}"
             data-lexical-text="true"
           >
             wo
           </em>
-          <em class="${EDITOR_CLASSNAMES.tItalic}" data-lexical-text="true">
+          <em class="${EDITOR_CLASSNAMES.t_italic}" data-lexical-text="true">
             r
           </em>
           <span data-lexical-text="true">ld</span>

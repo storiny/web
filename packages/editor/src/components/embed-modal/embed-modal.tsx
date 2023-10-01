@@ -2,27 +2,19 @@ import { clsx } from "clsx";
 import { compressToEncodedURIComponent as compress_to_encoded_uri_component } from "lz-string";
 import React from "react";
 
-import Form, {
-  SubmitHandler,
-  use_form,
-  zod_resolver
-} from "../../../../ui/src/components/form";
-import FormInput from "../../../../ui/src/components/form-input";
-import Link from "../../../../ui/src/components/link";
-import {
-  Description,
-  ModalFooterButton,
-  use_modal
-} from "../../../../ui/src/components/modal";
-import Spacer from "../../../../ui/src/components/spacer";
-import Typography from "../../../../ui/src/components/typography";
-import { use_media_query } from "../../../../ui/src/hooks/use-media-query";
-import EmbedIcon from "../../../../ui/src/icons/embed";
+import Form, { SubmitHandler, use_form, zod_resolver } from "~/components/form";
+import FormInput from "~/components/form-input";
+import Link from "~/components/link";
+import { Description, ModalFooterButton, use_modal } from "~/components/modal";
+import Spacer from "~/components/spacer";
+import Typography from "~/components/typography";
+import { use_media_query } from "~/hooks/use-media-query";
+import EmbedIcon from "~/icons/embed";
 import { BREAKPOINTS } from "~/theme/breakpoints";
 
 import { use_insert_embed } from "../../hooks/use-insert-embed";
 import { EmbedModalProps } from "./embed-modal.props";
-import { EmbedSchema, EMBED_SCHEMA } from "./schema";
+import { EMBED_SCHEMA, EmbedSchema } from "./schema";
 
 const EmbedModalContent = (): React.ReactElement => (
   <React.Fragment>

@@ -1,12 +1,12 @@
 import { test } from "@playwright/test";
 
 import { EDITOR_CLASSNAMES } from "../../constants";
-import { pressBackspace } from "../../keyboard-shortcuts";
+import { press_backspace } from "../../keyboard-shortcuts";
 import {
-  assertHTML,
-  assertSelection,
+  assert_html,
+  assert_selection,
   click,
-  focusEditor,
+  focus_editor,
   html,
   initialize
 } from "../../utils";
@@ -14,14 +14,14 @@ import {
 test.describe("color", () => {
   test.beforeEach(async ({ page }) => {
     await initialize(page);
-    await focusEditor(page);
+    await focus_editor(page);
   });
 
   test("can create a color node", async ({ page }) => {
     await click(page, `[data-testid="code-toggle"]`);
     await page.keyboard.type("#000");
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <p class="${EDITOR_CLASSNAMES.paragraph}">
@@ -34,11 +34,11 @@ test.describe("color", () => {
       `
     );
 
-    await assertSelection(page, {
-      anchorOffset: 4,
-      anchorPath: [0, 0, 0, 0],
-      focusOffset: 4,
-      focusPath: [0, 0, 0, 0]
+    await assert_selection(page, {
+      anchor_offset: 4,
+      anchor_path: [0, 0, 0, 0],
+      focus_offset: 4,
+      focus_path: [0, 0, 0, 0]
     });
   });
 
@@ -46,7 +46,7 @@ test.describe("color", () => {
     await click(page, `[data-testid="code-toggle"]`);
     await page.keyboard.type("#000");
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <p class="${EDITOR_CLASSNAMES.paragraph}">
@@ -59,9 +59,9 @@ test.describe("color", () => {
       `
     );
 
-    await pressBackspace(page);
+    await press_backspace(page);
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <p class="${EDITOR_CLASSNAMES.paragraph}">
@@ -70,11 +70,11 @@ test.describe("color", () => {
       `
     );
 
-    await assertSelection(page, {
-      anchorOffset: 0,
-      anchorPath: [0],
-      focusOffset: 0,
-      focusPath: [0]
+    await assert_selection(page, {
+      anchor_offset: 0,
+      anchor_path: [0],
+      focus_offset: 0,
+      focus_path: [0]
     });
   });
 });

@@ -4,7 +4,7 @@ import { EditorState, LexicalEditor } from "lexical";
 import React from "react";
 import * as Y from "yjs";
 
-import { render_test_with_provider } from "../../../../ui/src/redux/test-utils";
+import { render_test_with_provider } from "~/redux/test-utils";
 
 import { Provider, UserState } from "../../../src/collaboration/provider";
 import EditorComposer from "../../../src/components/composer";
@@ -21,13 +21,13 @@ type Connection = {
 const Editor = ({
   doc,
   provider,
-  setEditor,
+  set_editor,
   awareness_data
 }: {
   awareness_data: object;
   doc: Y.Doc;
   provider: Client;
-  setEditor: (editor: LexicalEditor) => void;
+  set_editor: (editor: LexicalEditor) => void;
 }): React.ReactElement => {
   const context = use_collaboration_context({});
   const [editor] = use_lexical_composer_context();
@@ -36,7 +36,7 @@ const Editor = ({
   context.is_collab_active = true;
   yjs_doc_map.set("main", doc);
 
-  setEditor(editor);
+  set_editor(editor);
 
   return (
     <>
@@ -49,7 +49,7 @@ const Editor = ({
       />
       <RichTextPlugin
         ErrorBoundary={EditorErrorBoundary}
-        contentEditable={<EditorContentEditable />}
+        content_editable={<EditorContentEditable />}
         placeholder={<></>}
       />
     </>
@@ -73,22 +73,23 @@ export class Client {
     this.connection = connection;
     this.connected = false;
     this.doc = new Y.Doc();
-    this.awarenessState = null;
+    this.awareness_state = null;
 
     this.listeners = new Map();
     this.updates = [];
     this.editor = null;
 
-    this.onUpdate = this.onUpdate.bind(this);
-    this.doc.on("update", this.onUpdate);
+    this.on_update = this.on_update.bind(this);
+    this.doc.on("update", this.on_update);
 
     this.awareness = {
+      /* eslint-disable prefer-snakecase/prefer-snakecase */
       getLocalState(this: Client): UserState | null {
-        return this.awarenessState;
+        return this.awareness_state;
       },
       getStates(this: Client): Map<number, UserState> {
         const states: Map<number, UserState> = new Map();
-        states.set(0, this.awarenessState as UserState);
+        states.set(0, this.awareness_state as UserState);
         return states;
       },
       off(): void {
@@ -98,8 +99,9 @@ export class Client {
         // TODO
       },
       setLocalState(this: Client, state: UserState): void {
-        this.awarenessState = state;
+        this.awareness_state = state;
       }
+      /* eslint-enable prefer-snakecase/prefer-snakecase */
     };
   }
 
@@ -107,11 +109,13 @@ export class Client {
    * Awareness object
    */
   public awareness: {
+    /* eslint-disable prefer-snakecase/prefer-snakecase */
     getLocalState: () => UserState | null;
     getStates: () => Map<number, UserState>;
     off(): void;
     on(): void;
     setLocalState: (state: UserState) => void;
+    /* eslint-enable prefer-snakecase/prefer-snakecase */
   };
   /**
    * ID of the client
@@ -147,7 +151,7 @@ export class Client {
    * Client awareness state
    * @private
    */
-  private awarenessState: UserState | null;
+  private awareness_state: UserState | null;
   /**
    * Client listeners
    * @private
@@ -172,7 +176,7 @@ export class Client {
         this.updates = [];
       }
 
-      this.broadcastUpdate(update);
+      this.broadcast_update(update);
       this.dispatch("sync", true);
     }
   }
@@ -186,16 +190,16 @@ export class Client {
 
   /**
    * Renders the editor
-   * @param rootContainer Root container element
+   * @param root_container Root container element
    * @param awareness_data Awareness data for the client
    */
   public start(
-    rootContainer: HTMLDivElement | null,
+    root_container: HTMLDivElement | null,
     awareness_data: object = {}
   ): void {
     const container = document.createElement("div");
     this.container = container;
-    rootContainer?.appendChild(container);
+    root_container?.appendChild(container);
 
     render_test_with_provider(
       <EditorComposer ignore_nodes ignore_theme>
@@ -203,7 +207,7 @@ export class Client {
           awareness_data={awareness_data}
           doc={this.doc}
           provider={this}
-          setEditor={(editor): LexicalEditor => (this.editor = editor)}
+          set_editor={(editor): LexicalEditor => (this.editor = editor)}
         />
       </EditorComposer>,
       { logged_in: true, ignore_primitive_providers: true, container }
@@ -224,14 +228,14 @@ export class Client {
    * @param callback Callback
    */
   public on(type: string, callback: () => void): void {
-    let listenerSet = this.listeners.get(type);
+    let listener_set = this.listeners.get(type);
 
-    if (listenerSet === undefined) {
-      listenerSet = new Set();
-      this.listeners.set(type, listenerSet);
+    if (listener_set === undefined) {
+      listener_set = new Set();
+      this.listeners.set(type, listener_set);
     }
 
-    listenerSet.add(callback);
+    listener_set.add(callback);
   }
 
   /**
@@ -240,45 +244,44 @@ export class Client {
    * @param callback Callback
    */
   public off(type: string, callback: () => void): void {
-    const listenerSet = this.listeners.get(type);
-
-    if (listenerSet !== undefined) {
-      listenerSet.delete(callback);
+    const listener_set = this.listeners.get(type);
+    if (listener_set !== undefined) {
+      listener_set.delete(callback);
     }
   }
 
   /**
    * Returns the HTML content of the editor
    */
-  public getHTML(): string {
+  public get_html(): string {
     return (this.container?.firstChild as HTMLElement)?.innerHTML || "";
   }
 
   /**
    * Returns the JSON data of the document
    */
-  public getDocJSON(): { [p: string]: any } {
+  public get_doc_json(): { [p: string]: any } {
     return this.doc.toJSON();
   }
 
   /**
    * Returns the editor state
    */
-  public getEditorState(): EditorState | undefined {
+  public get_editor_state(): EditorState | undefined {
     return this.editor?.getEditorState();
   }
 
   /**
    * Returns the editor instance
    */
-  public getEditor(): LexicalEditor | null {
+  public get_editor(): LexicalEditor | null {
     return this.editor;
   }
 
   /**
    * Returns the container element
    */
-  public getContainer(): HTMLDivElement | null {
+  public get_container(): HTMLDivElement | null {
     return this.container;
   }
 
@@ -304,9 +307,9 @@ export class Client {
    * @param origin Origin of the upadte
    * @private
    */
-  private onUpdate(update: Uint8Array, origin: Connection): void {
+  private on_update(update: Uint8Array, origin: Connection): void {
     if (origin !== this.connection && this.connected) {
-      this.broadcastUpdate(update);
+      this.broadcast_update(update);
     }
   }
 
@@ -315,7 +318,7 @@ export class Client {
    * @param update Update data
    * @private
    */
-  private broadcastUpdate(update: Uint8Array): void {
+  private broadcast_update(update: Uint8Array): void {
     this.connection.clients.forEach((client) => {
       if (client !== this) {
         if (client.connected) {
@@ -334,10 +337,9 @@ export class Client {
    * @private
    */
   private dispatch(type: string, data: unknown): void {
-    const listenerSet = this.listeners.get(type);
-
-    if (listenerSet !== undefined) {
-      listenerSet.forEach((callback) => callback(data));
+    const listener_set = this.listeners.get(type);
+    if (listener_set !== undefined) {
+      listener_set.forEach((callback) => callback(data));
     }
   }
 }
@@ -359,7 +361,7 @@ class TestConnection {
    * Creates a new client
    * @param id Client ID
    */
-  public createClient(id: string): Client {
+  public create_client(id: string): Client {
     const client = new Client(id, this);
     this.clients.set(id, client);
     return client;
@@ -369,13 +371,14 @@ class TestConnection {
 /**
  * Creates a new test connection
  */
-export const createTestConnection = (): TestConnection => new TestConnection();
+export const create_test_connection = (): TestConnection =>
+  new TestConnection();
 
 /**
  * Waits for React to finish applying updates
  * @param callback Callback
  */
-export const waitForReact = async (callback: () => void): Promise<void> => {
+export const wait_for_react = async (callback: () => void): Promise<void> => {
   await act(async () => {
     callback();
     await Promise.resolve().then();
@@ -388,7 +391,7 @@ export const waitForReact = async (callback: () => void): Promise<void> => {
  * @param container Editor container element
  * @param count Number of clients to create
  */
-export const createAndStartClients = (
+export const create_and_start_clients = (
   connector: TestConnection,
   container: HTMLDivElement | null,
   count: number
@@ -397,7 +400,7 @@ export const createAndStartClients = (
 
   for (let i = 0; i < count; ++i) {
     const id = `${i}`;
-    const client = connector.createClient(id);
+    const client = connector.create_client(id);
     client.start(container);
     result.push(client);
   }
@@ -409,7 +412,7 @@ export const createAndStartClients = (
  * Disconnects the provided clients
  * @param clients Clients to disconnect
  */
-export const disconnectClients = (clients: Array<Client>): void => {
+export const disconnect_clients = (clients: Array<Client>): void => {
   for (let i = 0; i < clients.length; ++i) {
     clients[i].disconnect();
   }
@@ -419,7 +422,7 @@ export const disconnectClients = (clients: Array<Client>): void => {
  * Connects the provided clients
  * @param clients Clients to connect
  */
-export const connectClients = (clients: Array<Client>): void => {
+export const connect_clients = (clients: Array<Client>): void => {
   for (let i = 0; i < clients.length; ++i) {
     clients[i].connect();
   }
@@ -429,7 +432,7 @@ export const connectClients = (clients: Array<Client>): void => {
  * Stops the provided clients
  * @param clients Clients to stop
  */
-export const stopClients = (clients: Array<Client>): void => {
+export const stop_clients = (clients: Array<Client>): void => {
   for (let i = 0; i < clients.length; ++i) {
     clients[i].stop();
   }
@@ -439,9 +442,9 @@ export const stopClients = (clients: Array<Client>): void => {
  * Asserts whether the provided clients share identical documents
  * @param clients Clients
  */
-export const testClientsForEquality = (clients: Array<Client>): void => {
+export const test_clients_for_equality = (clients: Array<Client>): void => {
   for (let i = 1; i < clients.length; ++i) {
-    expect(clients[0].getHTML()).toEqual(clients[i].getHTML());
-    expect(clients[0].getDocJSON()).toEqual(clients[i].getDocJSON());
+    expect(clients[0].get_html()).toEqual(clients[i].get_html());
+    expect(clients[0].get_doc_json()).toEqual(clients[i].get_doc_json());
   }
 };

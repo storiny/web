@@ -1,13 +1,13 @@
 import { Page } from "@playwright/test";
 
-import { keyDownCtrlOrAlt, keyUpCtrlOrAlt } from "../../utils";
+import { key_down_ctrl_or_alt, key_up_ctrl_or_alt } from "../../utils";
 
 /**
  * Moves to the previous word in the current selection
  * @param page Page
  */
-export const moveToPrevWord = async (page: Page): Promise<void> => {
-  await keyDownCtrlOrAlt(page);
+export const move_to_prev_word = async (page: Page): Promise<void> => {
+  await key_down_ctrl_or_alt(page);
   await page.keyboard.press("ArrowLeft");
-  await keyUpCtrlOrAlt(page);
+  await key_up_ctrl_or_alt(page);
 };

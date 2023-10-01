@@ -4,7 +4,7 @@ import { clsx } from "clsx";
 import React from "react";
 
 import styles from "~/common/virtual/virtual.module.scss";
-import Divider from "../../../../../../packages/ui/src/components/divider";
+import Divider from "~/components/divider";
 import { ReplySkeleton } from "~/entities/reply";
 
 const ReplyListSkeleton = React.memo(({ nested }: { nested?: boolean }) => (

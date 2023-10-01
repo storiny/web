@@ -2,31 +2,31 @@ import { clsx } from "clsx";
 import { BaseFabricObject } from "fabric";
 import React from "react";
 
-import IconButton from "../../../../../../../ui/src/components/icon-button";
-import Input from "../../../../../../../ui/src/components/input";
-import Option from "../../../../../../../ui/src/components/option";
-import Select from "../../../../../../../ui/src/components/select";
-import Tooltip from "../../../../../../../ui/src/components/tooltip";
+import IconButton from "~/components/icon-button";
+import Input from "~/components/input";
+import Option from "~/components/option";
+import Select from "~/components/select";
+import Tooltip from "~/components/tooltip";
 import ColorPicker, {
   hex_to_rgb,
   str_to_color,
   TColor
-} from "../../../../../../../ui/src/entities/color-picker";
-import ArrowheadArrowIcon from "../../../../../../../ui/src/icons/arrowhead-arrow";
-import ArrowheadArrowLongIcon from "../../../../../../../ui/src/icons/arrowhead-arrow-long";
-import ArrowheadBarIcon from "../../../../../../../ui/src/icons/arrowhead-bar";
-import ArrowheadBarLongIcon from "../../../../../../../ui/src/icons/arrowhead-bar-long";
-import ArrowheadDotIcon from "../../../../../../../ui/src/icons/arrowhead-dot";
-import ArrowheadDotLongIcon from "../../../../../../../ui/src/icons/arrowhead-dot-long";
-import ArrowheadNoneIcon from "../../../../../../../ui/src/icons/arrowhead-none";
-import ArrowheadNoneLongIcon from "../../../../../../../ui/src/icons/arrowhead-none-long";
-import ArrowheadTriangleIcon from "../../../../../../../ui/src/icons/arrowhead-triangle";
-import ArrowheadTriangleLongIcon from "../../../../../../../ui/src/icons/arrowhead-triangle-long";
-import LineDashedIcon from "../../../../../../../ui/src/icons/line-dashed";
-import LineDottedIcon from "../../../../../../../ui/src/icons/line-dotted";
-import LineSolidIcon from "../../../../../../../ui/src/icons/line-solid";
-import RulerMeasureIcon from "../../../../../../../ui/src/icons/ruler-measure";
-import SwapIcon from "../../../../../../../ui/src/icons/swap";
+} from "~/entities/color-picker";
+import ArrowheadArrowIcon from "~/icons/arrowhead-arrow";
+import ArrowheadArrowLongIcon from "~/icons/arrowhead-arrow-long";
+import ArrowheadBarIcon from "~/icons/arrowhead-bar";
+import ArrowheadBarLongIcon from "~/icons/arrowhead-bar-long";
+import ArrowheadDotIcon from "~/icons/arrowhead-dot";
+import ArrowheadDotLongIcon from "~/icons/arrowhead-dot-long";
+import ArrowheadNoneIcon from "~/icons/arrowhead-none";
+import ArrowheadNoneLongIcon from "~/icons/arrowhead-none-long";
+import ArrowheadTriangleIcon from "~/icons/arrowhead-triangle";
+import ArrowheadTriangleLongIcon from "~/icons/arrowhead-triangle-long";
+import LineDashedIcon from "~/icons/line-dashed";
+import LineDottedIcon from "~/icons/line-dotted";
+import LineSolidIcon from "~/icons/line-solid";
+import RulerMeasureIcon from "~/icons/ruler-measure";
+import SwapIcon from "~/icons/swap";
 
 import {
   Arrowhead,
@@ -254,8 +254,8 @@ const StrokeStyleControl = ({
 
   return (
     <Select
-      onValueChange={(next_value: StrokeStyle): void =>
-        change_stroke_style(next_value)
+      onValueChange={(next_value): void =>
+        change_stroke_style(next_value as StrokeStyle)
       }
       size={"sm"}
       slot_props={{
@@ -341,8 +341,8 @@ const ArrowheadControl = ({
   return (
     <DrawItemRow>
       <Select
-        onValueChange={(next_value: Arrowhead): void =>
-          change_arrowhead(next_value, "start")
+        onValueChange={(next_value): void =>
+          change_arrowhead(next_value as Arrowhead, "start")
         }
         size={"sm"}
         slot_props={{
@@ -392,8 +392,8 @@ const ArrowheadControl = ({
         </IconButton>
       </Tooltip>
       <Select
-        onValueChange={(next_value: Arrowhead): void =>
-          change_arrowhead(next_value, "end")
+        onValueChange={(next_value): void =>
+          change_arrowhead(next_value as Arrowhead, "end")
         }
         size={"sm"}
         slot_props={{

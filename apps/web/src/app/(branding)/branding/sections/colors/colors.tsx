@@ -1,8 +1,8 @@
 import { clsx } from "clsx";
 import React from "react";
 
-import Spacer from "../../../../../../../../packages/ui/src/components/spacer";
-import Typography from "../../../../../../../../packages/ui/src/components/typography";
+import Spacer from "~/components/spacer";
+import Typography from "~/components/typography";
 
 import page_styles from "../../styles.module.scss";
 import styles from "./colors.module.scss";

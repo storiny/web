@@ -1,12 +1,18 @@
 import { test } from "@playwright/test";
 
 import { EDITOR_CLASSNAMES } from "../constants";
-import { assertHTML, evaluate, focusEditor, html, initialize } from "../utils";
+import {
+  assert_html,
+  evaluate,
+  focus_editor,
+  html,
+  initialize
+} from "../utils";
 
 test.describe("events", () => {
   test.beforeEach(async ({ page }) => {
     await initialize(page);
-    await focusEditor(page);
+    await focus_editor(page);
   });
 
   test("autocapitalization (MacOS specific)", async ({ page }) => {
@@ -21,56 +27,59 @@ test.describe("events", () => {
         return;
       }
 
-      const textNode = span.firstChild;
-      const singleRangeFn =
-        (
-          startContainer: Node,
-          startOffset: number,
-          endContainer: Node,
-          endOffset: number
-        ) =>
-        (): [StaticRange] =>
-          [
+      const text_node = span.firstChild;
+      const single_range_fn =
+        /* eslint-disable prefer-snakecase/prefer-snakecase */
+
+
+          (
+            startContainer: Node,
+            startOffset: number,
+            endContainer: Node,
+            endOffset: number
+          ) =>
+          (): [StaticRange] => [
             new StaticRange({
               endContainer,
               endOffset,
               startContainer,
               startOffset
             })
+            /* eslint-enable prefer-snakecase/prefer-snakecase */
           ];
 
-      if (!textNode) {
+      if (!text_node) {
         return;
       }
 
-      const character = "S"; // S for space because the space itself gets trimmed in the assertHTML
-      const replacementCharacter = "I";
+      const character = "S"; // S for space because the space itself gets trimmed in the assert_html
+      const replacement_character = "I";
       const dataTransfer = new DataTransfer();
 
-      dataTransfer.setData("text/plain", replacementCharacter);
-      dataTransfer.setData("text/html", replacementCharacter);
+      dataTransfer.setData("text/plain", replacement_character);
+      dataTransfer.setData("text/html", replacement_character);
 
-      const characterBeforeInputEvent = new InputEvent("beforeinput", {
+      const character_before_input_event = new InputEvent("beforeinput", {
         bubbles: true,
         cancelable: true,
         data: character,
         inputType: "insertText"
       });
 
-      characterBeforeInputEvent.getTargetRanges = singleRangeFn(
-        textNode,
+      character_before_input_event.getTargetRanges = single_range_fn(
+        text_node,
         1,
-        textNode,
+        text_node,
         1
       );
 
-      const replacementBeforeInputEvent = new InputEvent(
+      const replacement_before_input_event = new InputEvent(
         "beforeinput",
         Object.assign(
           {
             bubbles: true,
             cancelable: true,
-            data: replacementCharacter,
+            data: replacement_character,
             dataTransfer,
             inputType: "insertReplacementText"
           },
@@ -80,27 +89,27 @@ test.describe("events", () => {
         )
       );
 
-      replacementBeforeInputEvent.getTargetRanges = singleRangeFn(
-        textNode,
+      replacement_before_input_event.getTargetRanges = single_range_fn(
+        text_node,
         0,
-        textNode,
+        text_node,
         1
       );
 
-      const characterInputEvent = new InputEvent("input", {
+      const character_input_event = new InputEvent("input", {
         bubbles: true,
         cancelable: true,
         data: character,
         inputType: "insertText"
       });
 
-      editable.dispatchEvent(characterBeforeInputEvent);
-      textNode.textContent += character;
-      editable.dispatchEvent(replacementBeforeInputEvent);
-      editable.dispatchEvent(characterInputEvent);
+      editable.dispatchEvent(character_before_input_event);
+      text_node.textContent += character;
+      editable.dispatchEvent(replacement_before_input_event);
+      editable.dispatchEvent(character_input_event);
     });
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">

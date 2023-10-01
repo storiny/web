@@ -1,16 +1,16 @@
 import { Page } from "@playwright/test";
 
-import { pressKeyTimes } from "../press-key-times";
+import { press_key_times } from "../press-key-times";
 
 /**
- * Moves `numCharacters` to the left in the current selection with `delayMs` of delay between each keystroke
+ * Moves `num_characters` to the left in the current selection with `delay_ms` of delay between each keystroke
  * @param page Page
- * @param numCharacters Number of characters to move
- * @param delayMs Delay between each keyboard event
+ * @param num_characters Number of characters to move
+ * @param delay_ms Delay between each keyboard event
  */
-export const moveLeft = async (
+export const move_left = async (
   page: Page,
-  numCharacters?: number,
-  delayMs?: number
+  num_characters?: number,
+  delay_ms?: number
 ): Promise<void> =>
-  await pressKeyTimes(page, "ArrowLeft", numCharacters, delayMs);
+  await press_key_times(page, "ArrowLeft", num_characters, delay_ms);

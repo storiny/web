@@ -1,17 +1,17 @@
 import { Page } from "@playwright/test";
 
 import { E2E_BROWSER, IS_MAC } from "../../constants";
-import { keyDownCtrlOrMeta, keyUpCtrlOrMeta, sleep } from "../../utils";
+import { key_down_ctrl_or_meta, key_up_ctrl_or_meta, sleep } from "../../utils";
 
 /**
  * Moves to the end of the editor root
  * @param page Page
  */
-export const moveToEditorEnd = async (page: Page): Promise<void> => {
+export const move_to_editor_end = async (page: Page): Promise<void> => {
   if (IS_MAC) {
-    await keyDownCtrlOrMeta(page);
+    await key_down_ctrl_or_meta(page);
     await page.keyboard.press("ArrowDown");
-    await keyUpCtrlOrMeta(page);
+    await key_up_ctrl_or_meta(page);
   } else {
     await page.keyboard.press("PageDown");
 

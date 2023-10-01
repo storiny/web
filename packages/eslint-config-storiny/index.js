@@ -28,6 +28,7 @@ module.exports = {
         "@typescript-eslint/explicit-function-return-type": "error",
         "@typescript-eslint/no-explicit-any": "off",
         "@typescript-eslint/no-non-null-assertion": "off",
+        "@typescript-eslint/no-non-null-asserted-optional-chain": "off",
       },
     },
   ],
@@ -73,6 +74,7 @@ module.exports = {
           "actionCreator",
           "extraReducers",
           "argTypes",
+          "reducerPath",
           "delayMs", // Radix avatar fallback
           "defaultValue", // Storybook
           "defaultValues", // React hook form
@@ -92,6 +94,7 @@ module.exports = {
           "defaultProps",
           "getDerivedStateFromProps",
           "zIndex",
+          "viewBox",
           "scaleX", // Fabric
           "scaleY",
           "originX",
@@ -140,11 +143,13 @@ module.exports = {
           "isUnmergeable",
           "publicRuntimeConfig", // Next.js
           "generateMetadata",
+          "browserName", // Playwright
         ],
       },
     ],
     "react/jsx-sort-props": "warn",
     "react/prop-types": "off",
+    "react-hooks/rules-of-hooks": "off", // TODO: Enable once https://github.com/facebook/react/pull/27430 gets merged
     "simple-import-sort/exports": "error",
     "simple-import-sort/imports": "error",
     "turbo/no-undeclared-env-vars": "off",

@@ -2,22 +2,18 @@ import { download_as_file } from "../../../../../../../../../../../../../../pack
 import { clsx } from "clsx";
 import React from "react";
 
-import Button from "../../../../../../../../../../../../../../packages/ui/src/components/button";
-import Link from "../../../../../../../../../../../../../../packages/ui/src/components/link";
-import {
-  Description,
-  ModalFooterButton,
-  use_modal
-} from "../../../../../../../../../../../../../../packages/ui/src/components/modal";
-import Spacer from "../../../../../../../../../../../../../../packages/ui/src/components/spacer";
-import Spinner from "../../../../../../../../../../../../../../packages/ui/src/components/spinner";
-import { use_toast } from "../../../../../../../../../../../../../../packages/ui/src/components/toast";
-import Typography from "../../../../../../../../../../../../../../packages/ui/src/components/typography";
-import { use_clipboard } from "../../../../../../../../../../../../../../packages/ui/src/hooks/use-clipboard";
-import { use_media_query } from "../../../../../../../../../../../../../../packages/ui/src/hooks/use-media-query";
-import CopyIcon from "../../../../../../../../../../../../../../packages/ui/src/icons/copy";
-import DownloadIcon from "../../../../../../../../../../../../../../packages/ui/src/icons/download";
-import ScriptIcon from "../../../../../../../../../../../../../../packages/ui/src/icons/script";
+import Button from "~/components/button";
+import Link from "~/components/link";
+import { Description, ModalFooterButton, use_modal } from "~/components/modal";
+import Spacer from "~/components/spacer";
+import Spinner from "~/components/spinner";
+import { use_toast } from "~/components/toast";
+import Typography from "~/components/typography";
+import { use_clipboard } from "~/hooks/use-clipboard";
+import { use_media_query } from "~/hooks/use-media-query";
+import CopyIcon from "~/icons/copy";
+import DownloadIcon from "~/icons/download";
+import ScriptIcon from "~/icons/script";
 import {
   RecoveryCodesResponse,
   select_user,

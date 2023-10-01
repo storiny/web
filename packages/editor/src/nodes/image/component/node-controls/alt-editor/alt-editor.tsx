@@ -4,19 +4,16 @@ import { clsx } from "clsx";
 import { $getNodeByKey as $get_node_by_key } from "lexical";
 import React from "react";
 
-import AspectRatio from "../../../../../../../ui/src/components/aspect-ratio";
-import Button from "../../../../../../../ui/src/components/button";
-import Image from "../../../../../../../ui/src/components/image";
-import Input from "../../../../../../../ui/src/components/input";
-import {
-  ModalFooterButton,
-  use_modal
-} from "../../../../../../../ui/src/components/modal";
-import Spacer from "../../../../../../../ui/src/components/spacer";
-import { use_media_query } from "../../../../../../../ui/src/hooks/use-media-query";
+import AspectRatio from "~/components/aspect-ratio";
+import Button from "~/components/button";
+import Image from "~/components/image";
+import Input from "~/components/input";
+import { ModalFooterButton, use_modal } from "~/components/modal";
+import Spacer from "~/components/spacer";
+import { use_media_query } from "~/hooks/use-media-query";
 import CaptionIcon from "~/icons/caption";
 import { BREAKPOINTS } from "~/theme/breakpoints";
-import { get_cdn_url } from "../../../../../../../ui/src/utils/get-cdn-url";
+import { get_cdn_url } from "~/utils/get-cdn-url";
 
 import { $is_image_node } from "../../../image";
 import styles from "./alt-editor.module.scss";

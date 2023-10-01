@@ -1,10 +1,10 @@
 import {
-  $createParagraphNode,
-  $createRangeSelection,
-  $createTextNode,
-  $getRoot,
-  $isTextNode,
-  $setSelection,
+  $createParagraphNode as $create_paragraph_node,
+  $createRangeSelection as $create_range_selection,
+  $createTextNode as $create_text_node,
+  $getRoot as $get_root,
+  $isTextNode as $is_text_node,
+  $setSelection as $set_selection,
   LexicalNode,
   NodeSelection,
   ParagraphNode,
@@ -14,25 +14,25 @@ import {
 
 import {
   Client,
-  connectClients,
-  createAndStartClients,
-  createTestConnection,
-  disconnectClients,
-  stopClients,
-  testClientsForEquality,
-  waitForReact
+  connect_clients,
+  create_and_start_clients,
+  create_test_connection,
+  disconnect_clients,
+  stop_clients,
+  test_clients_for_equality,
+  wait_for_react
 } from "./client";
 
 /**
  * Creates and inserts a paragraph node with the provided children
  * @param children Paragraph node children
  */
-const $insertParagraph = (...children: Array<string | LexicalNode>): void => {
-  const root = $getRoot();
-  const paragraph = $createParagraphNode();
+const $insert_paragraph = (...children: Array<string | LexicalNode>): void => {
+  const root = $get_root();
+  const paragraph = $create_paragraph_node();
 
   const nodes = children.map((child) =>
-    typeof child === "string" ? $createTextNode(child) : child
+    typeof child === "string" ? $create_text_node(child) : child
   );
 
   paragraph.append(...nodes);
@@ -41,76 +41,76 @@ const $insertParagraph = (...children: Array<string | LexicalNode>): void => {
 
 /**
  * Creates a selection using the provided path data
- * @param anchorPath Anchor path
- * @param anchorOffset Anchor offset
- * @param focusPath Focus path
- * @param focusOffset Focus offset
+ * @param anchor_path Anchor path
+ * @param anchor_offset Anchor offset
+ * @param focus_path Focus path
+ * @param focus_offset Focus offset
  */
-const $createSelectionByPath = ({
-  anchorPath,
-  anchorOffset,
-  focusPath,
-  focusOffset
+const $create_selection_by_path = ({
+  anchor_path,
+  anchor_offset,
+  focus_path,
+  focus_offset
 }: {
-  anchorOffset: number;
-  anchorPath: Array<number>;
-  focusOffset: number;
-  focusPath: Array<number>;
+  anchor_offset: number;
+  anchor_path: Array<number>;
+  focus_offset: number;
+  focus_path: Array<number>;
 }): NodeSelection | RangeSelection => {
-  const selection = $createRangeSelection();
-  const root = $getRoot();
+  const selection = $create_range_selection();
+  const root = $get_root();
 
-  const anchorNode = anchorPath.reduce(
+  const anchor_node = anchor_path.reduce(
     (node, index) => node.getChildAtIndex(index)!,
     root
   );
-  const focusNode = focusPath.reduce(
+  const focus_node = focus_path.reduce(
     (node, index) => node.getChildAtIndex(index)!,
     root
   );
 
   selection.anchor.set(
-    anchorNode.getKey(),
-    anchorOffset,
-    $isTextNode(anchorNode) ? "text" : "element"
+    anchor_node.getKey(),
+    anchor_offset,
+    $is_text_node(anchor_node) ? "text" : "element"
   );
   selection.focus.set(
-    focusNode.getKey(),
-    focusOffset,
-    $isTextNode(focusNode) ? "text" : "element"
+    focus_node.getKey(),
+    focus_offset,
+    $is_text_node(focus_node) ? "text" : "element"
   );
 
-  $setSelection(selection);
+  $set_selection(selection);
 
   return selection;
 };
 
 /**
  * Replaces a selection based on the provided path by the provided text
- * @param anchorPath Anchor path
- * @param anchorOffset Anchor offset
- * @param focusPath Focus path
- * @param focusOffset Focus offset
+ * @param anchor_path Anchor path
+ * @param anchor_offset Anchor offset
+ * @param focus_path Focus path
+ * @param focus_offset Focus offset
  * @param text Target text
  */
-const $replaceTextByPath = ({
-  anchorPath,
-  anchorOffset,
-  focusPath,
-  focusOffset,
+const $replace_text_by_path = ({
+  anchor_path,
+  anchor_offset,
+  focus_path,
+  focus_offset,
   text = ""
 }: {
-  anchorOffset: number;
-  anchorPath: Array<number>;
-  focusOffset: number;
-  focusPath: Array<number>;
+  anchor_offset: number;
+  anchor_path: Array<number>;
+  focus_offset: number;
+  focus_path: Array<number>;
   text: string | null | undefined;
 }): void => {
-  $createSelectionByPath({
-    anchorOffset,
-    anchorPath,
-    focusOffset,
-    focusPath
+  $create_selection_by_path({
+    anchor_offset,
+    anchor_path,
+    focus_offset,
+    focus_path
   }).insertText(text || "");
 };
 
@@ -134,38 +134,38 @@ describe("collaboration", () => {
    * @param client1 First client
    * @param client2 Second client
    */
-  const expectCorrectInitialContent = async (
+  const expect_correct_initial_content = async (
     client1: Client,
     client2: Client
   ): Promise<void> => {
     // Should be empty, as the client has not yet updated
-    expect(client1.getHTML()).toEqual("");
-    expect(client1.getHTML()).toEqual(client2.getHTML());
+    expect(client1.get_html()).toEqual("");
+    expect(client1.get_html()).toEqual(client2.get_html());
 
     // Wait for the clients to render the initial content
     await Promise.resolve().then();
 
-    expect(client1.getHTML()).toEqual("<p><br></p>");
-    expect(client1.getHTML()).toEqual(client2.getHTML());
-    expect(client1.getDocJSON()).toEqual(client2.getDocJSON());
+    expect(client1.get_html()).toEqual("<p><br></p>");
+    expect(client1.get_html()).toEqual(client2.get_html());
+    expect(client1.get_doc_json()).toEqual(client2.get_doc_json());
   };
 
   /**
    * Initializes and returns two clients
    */
-  const initClients = async (): Promise<{
+  const init_clients = async (): Promise<{
     cleanup: () => void;
     client1: Client;
     client2: Client;
   }> => {
-    const connector = createTestConnection();
-    const client1 = connector.createClient("1");
-    const client2 = connector.createClient("2");
+    const connector = create_test_connection();
+    const client1 = connector.create_client("1");
+    const client2 = connector.create_client("2");
 
     client1.start(container);
     client2.start(container);
 
-    await expectCorrectInitialContent(client1, client2);
+    await expect_correct_initial_content(client1, client2);
 
     const cleanup = (): void => {
       client1.stop();
@@ -176,191 +176,191 @@ describe("collaboration", () => {
   };
 
   it("collaborates basic text insertion between two clients", async () => {
-    const { client1, client2, cleanup } = await initClients();
+    const { client1, client2, cleanup } = await init_clients();
 
     // Insert a text node on the first client
-    await waitForReact(() => {
+    await wait_for_react(() => {
       client1.update(() => {
-        const root = $getRoot();
+        const root = $get_root();
         const paragraph = root.getFirstChild<ParagraphNode>();
-        const text = $createTextNode("Hello world");
+        const text = $create_text_node("Hello world");
         paragraph?.append(text);
       });
     });
 
-    expect(client1.getHTML()).toEqual(
+    expect(client1.get_html()).toEqual(
       '<p dir="ltr"><span data-lexical-text="true">Hello world</span></p>'
     );
-    expect(client1.getHTML()).toEqual(client2.getHTML());
-    expect(client1.getDocJSON()).toEqual(client2.getDocJSON());
+    expect(client1.get_html()).toEqual(client2.get_html());
+    expect(client1.get_doc_json()).toEqual(client2.get_doc_json());
 
     // Insert a text node on the second client
-    await waitForReact(() => {
+    await wait_for_react(() => {
       client2.update(() => {
-        const root = $getRoot();
+        const root = $get_root();
         const paragraph = root.getFirstChild<ParagraphNode>();
         const text = paragraph?.getFirstChild<TextNode>();
         text?.spliceText(6, 5, "storiny");
       });
     });
 
-    expect(client2.getHTML()).toEqual(
+    expect(client2.get_html()).toEqual(
       '<p dir="ltr"><span data-lexical-text="true">Hello storiny</span></p>'
     );
-    expect(client1.getHTML()).toEqual(client2.getHTML());
-    expect(client1.getDocJSON()).toEqual({
+    expect(client1.get_html()).toEqual(client2.get_html());
+    expect(client1.get_doc_json()).toEqual({
       root: "[object Object]Hello storiny"
     });
-    expect(client1.getDocJSON()).toEqual(client2.getDocJSON());
+    expect(client1.get_doc_json()).toEqual(client2.get_doc_json());
 
     cleanup();
   });
 
   it("handles basic text insertion conflicts between two clients", async () => {
-    const { client1, client2, cleanup } = await initClients();
+    const { client1, client2, cleanup } = await init_clients();
 
     client1.disconnect();
 
     // Insert a text node on the first client
-    await waitForReact(() => {
+    await wait_for_react(() => {
       client1.update(() => {
-        const root = $getRoot();
+        const root = $get_root();
         const paragraph = root.getFirstChild<ParagraphNode>();
-        const text = $createTextNode("Hello world");
+        const text = $create_text_node("Hello world");
         paragraph?.append(text);
       });
     });
 
-    expect(client1.getHTML()).toEqual(
+    expect(client1.get_html()).toEqual(
       '<p dir="ltr"><span data-lexical-text="true">Hello world</span></p>'
     );
-    expect(client2.getHTML()).toEqual("<p><br></p>");
+    expect(client2.get_html()).toEqual("<p><br></p>");
 
     // Insert a text node on the second client
-    await waitForReact(() => {
+    await wait_for_react(() => {
       client2.update(() => {
-        const root = $getRoot();
+        const root = $get_root();
         const paragraph = root.getFirstChild<ParagraphNode>();
-        const text = $createTextNode("Hello world");
+        const text = $create_text_node("Hello world");
         paragraph?.append(text);
       });
     });
 
-    expect(client2.getHTML()).toEqual(
+    expect(client2.get_html()).toEqual(
       '<p dir="ltr"><span data-lexical-text="true">Hello world</span></p>'
     );
-    expect(client1.getHTML()).toEqual(client2.getHTML());
+    expect(client1.get_html()).toEqual(client2.get_html());
 
-    await waitForReact(() => {
+    await wait_for_react(() => {
       client1.connect();
     });
 
     // Text content should be repeated, but there should only be a single node
-    expect(client1.getHTML()).toEqual(
+    expect(client1.get_html()).toEqual(
       '<p dir="ltr"><span data-lexical-text="true">Hello worldHello world</span></p>'
     );
-    expect(client1.getHTML()).toEqual(client2.getHTML());
-    expect(client1.getDocJSON()).toEqual({
+    expect(client1.get_html()).toEqual(client2.get_html());
+    expect(client1.get_doc_json()).toEqual({
       root: "[object Object]Hello worldHello world"
     });
-    expect(client1.getDocJSON()).toEqual(client2.getDocJSON());
+    expect(client1.get_doc_json()).toEqual(client2.get_doc_json());
 
     client2.disconnect();
 
-    await waitForReact(() => {
+    await wait_for_react(() => {
       client1.update(() => {
-        const root = $getRoot();
+        const root = $get_root();
         const paragraph = root.getFirstChild<ParagraphNode>();
         const text = paragraph?.getFirstChild<TextNode>();
         text?.spliceText(11, 11, "");
       });
     });
 
-    expect(client1.getHTML()).toEqual(
+    expect(client1.get_html()).toEqual(
       '<p dir="ltr"><span data-lexical-text="true">Hello world</span></p>'
     );
-    expect(client2.getHTML()).toEqual(
+    expect(client2.get_html()).toEqual(
       '<p dir="ltr"><span data-lexical-text="true">Hello worldHello world</span></p>'
     );
 
-    await waitForReact(() => {
+    await wait_for_react(() => {
       client2.update(() => {
-        const root = $getRoot();
+        const root = $get_root();
         const paragraph = root.getFirstChild<ParagraphNode>();
         const text = paragraph?.getFirstChild<TextNode>();
         text?.spliceText(11, 11, "!");
       });
     });
 
-    await waitForReact(() => {
+    await wait_for_react(() => {
       client2.connect();
     });
 
-    expect(client1.getHTML()).toEqual(
+    expect(client1.get_html()).toEqual(
       '<p dir="ltr"><span data-lexical-text="true">Hello world!</span></p>'
     );
-    expect(client1.getHTML()).toEqual(client2.getHTML());
-    expect(client1.getDocJSON()).toEqual({
+    expect(client1.get_html()).toEqual(client2.get_html());
+    expect(client1.get_doc_json()).toEqual({
       root: "[object Object]Hello world!"
     });
-    expect(client1.getDocJSON()).toEqual(client2.getDocJSON());
+    expect(client1.get_doc_json()).toEqual(client2.get_doc_json());
 
     cleanup();
   });
 
   it("handles basic text deletion conflicts between two clients", async () => {
-    const { client1, client2, cleanup } = await initClients();
+    const { client1, client2, cleanup } = await init_clients();
 
     // Insert a text node on the first client
-    await waitForReact(() => {
+    await wait_for_react(() => {
       client1.update(() => {
-        const root = $getRoot();
+        const root = $get_root();
         const paragraph = root.getFirstChild<ParagraphNode>();
-        const text = $createTextNode("Hello world");
+        const text = $create_text_node("Hello world");
         paragraph?.append(text);
       });
     });
 
-    expect(client1.getHTML()).toEqual(
+    expect(client1.get_html()).toEqual(
       '<p dir="ltr"><span data-lexical-text="true">Hello world</span></p>'
     );
-    expect(client1.getHTML()).toEqual(client2.getHTML());
-    expect(client1.getDocJSON()).toEqual({
+    expect(client1.get_html()).toEqual(client2.get_html());
+    expect(client1.get_doc_json()).toEqual({
       root: "[object Object]Hello world"
     });
-    expect(client1.getDocJSON()).toEqual(client2.getDocJSON());
+    expect(client1.get_doc_json()).toEqual(client2.get_doc_json());
 
     client1.disconnect();
 
     // Delete the text on the first client
-    await waitForReact(() => {
+    await wait_for_react(() => {
       client1.update(() => {
-        const root = $getRoot();
+        const root = $get_root();
         const paragraph = root.getFirstChild<ParagraphNode>();
         paragraph?.getFirstChild()?.remove();
       });
     });
 
-    expect(client1.getHTML()).toEqual("<p><br></p>");
-    expect(client2.getHTML()).toEqual(
+    expect(client1.get_html()).toEqual("<p><br></p>");
+    expect(client2.get_html()).toEqual(
       '<p dir="ltr"><span data-lexical-text="true">Hello world</span></p>'
     );
 
     // Insert a text node on the second client
-    await waitForReact(() => {
+    await wait_for_react(() => {
       client2.update(() => {
-        const root = $getRoot();
+        const root = $get_root();
         const paragraph = root.getFirstChild<ParagraphNode>();
         paragraph?.getFirstChild<TextNode>()?.spliceText(11, 0, "Hello world");
       });
     });
 
-    expect(client1.getHTML()).toEqual("<p><br></p>");
-    expect(client2.getHTML()).toEqual(
+    expect(client1.get_html()).toEqual("<p><br></p>");
+    expect(client2.get_html()).toEqual(
       '<p dir="ltr"><span data-lexical-text="true">Hello worldHello world</span></p>'
     );
 
-    await waitForReact(() => {
+    await wait_for_react(() => {
       client1.connect();
     });
 
@@ -372,20 +372,20 @@ describe("collaboration", () => {
      *   nodes from an element and another user inserts some text into the same element at the
      *   same time, the deletion operation will take precedence on conflicts.
      */
-    expect(client1.getHTML()).toEqual("<p><br></p>");
-    expect(client1.getHTML()).toEqual(client2.getHTML());
-    expect(client1.getDocJSON()).toEqual({
+    expect(client1.get_html()).toEqual("<p><br></p>");
+    expect(client1.get_html()).toEqual(client2.get_html());
+    expect(client1.get_doc_json()).toEqual({
       root: ""
     });
-    expect(client1.getDocJSON()).toEqual(client2.getDocJSON());
+    expect(client1.get_doc_json()).toEqual(client2.get_doc_json());
 
     cleanup();
   });
 
   it("allows the passing of arbitrary awareness data", async () => {
-    const connector = createTestConnection();
-    const client1 = connector.createClient("1");
-    const client2 = connector.createClient("2");
+    const connector = create_test_connection();
+    const client1 = connector.create_client("1");
+    const client2 = connector.create_client("2");
 
     const awareness_data1 = {
       foo: "foo",
@@ -399,7 +399,7 @@ describe("collaboration", () => {
     client1.start(container, awareness_data1);
     client2.start(container, awareness_data2);
 
-    await expectCorrectInitialContent(client1, client2);
+    await expect_correct_initial_content(client1, client2);
 
     expect(client1.awareness.getLocalState()?.awareness_data).toEqual(
       awareness_data1
@@ -418,24 +418,24 @@ describe("collaboration", () => {
         clients: [
           (): void => {
             // First client deletes text from first and second paragraphs
-            $replaceTextByPath({
-              anchorOffset: 5,
-              anchorPath: [0, 0],
-              focusOffset: 6,
-              focusPath: [1, 0],
+            $replace_text_by_path({
+              anchor_offset: 5,
+              anchor_path: [0, 0],
+              focus_offset: 6,
+              focus_path: [1, 0],
               text: ""
             });
           },
           (): void => {
             // Second client deletes the first paragraph
-            $getRoot().getFirstChild()?.remove();
+            $get_root().getFirstChild()?.remove();
           }
         ],
-        expectedHTML: null,
+        expected_html: null,
         init: (): void => {
-          $insertParagraph("Hello world 1");
-          $insertParagraph("Hello world 2");
-          $insertParagraph("Hello world 3");
+          $insert_paragraph("Hello world 1");
+          $insert_paragraph("Hello world 2");
+          $insert_paragraph("Hello world 3");
         },
         name: "handles removing text at within the first of multiple paragraphs colliding with removing first paragraph"
       },
@@ -443,99 +443,99 @@ describe("collaboration", () => {
         clients: [
           (): void => {
             // First client deletes first two paragraphs
-            const paragraphs = $getRoot().getChildren();
+            const paragraphs = $get_root().getChildren();
             paragraphs[0].remove();
             paragraphs[1].remove();
           },
           (): void => {
             // Second client deletes the first paragraph
-            $getRoot().getFirstChild()?.remove();
+            $get_root().getFirstChild()?.remove();
           }
         ],
-        expectedHTML: null,
+        expected_html: null,
         init: (): void => {
-          $insertParagraph("Hello world 1");
-          $insertParagraph("Hello world 2");
-          $insertParagraph("Hello world 3");
+          $insert_paragraph("Hello world 1");
+          $insert_paragraph("Hello world 2");
+          $insert_paragraph("Hello world 3");
         },
         name: "handles removing first two paragraphs colliding with removing first paragraph"
       },
       {
         clients: [
           (): void => {
-            $replaceTextByPath({
-              anchorOffset: 0,
-              anchorPath: [0, 0],
-              focusOffset: 7,
-              focusPath: [1, 0],
+            $replace_text_by_path({
+              anchor_offset: 0,
+              anchor_path: [0, 0],
+              focus_offset: 7,
+              focus_path: [1, 0],
               text: "Hello client 1"
             });
           },
           (): void => {
-            $replaceTextByPath({
-              anchorOffset: 5,
-              anchorPath: [1, 0],
-              focusOffset: 5,
-              focusPath: [2, 0],
+            $replace_text_by_path({
+              anchor_offset: 5,
+              anchor_path: [1, 0],
+              focus_offset: 5,
+              focus_path: [2, 0],
               text: "Hello client 2"
             });
           }
         ],
-        expectedHTML: null,
+        expected_html: null,
         init: (): void => {
-          $insertParagraph("Hello world 1");
-          $insertParagraph("Hello world 2");
-          $insertParagraph("Hello world 3");
+          $insert_paragraph("Hello world 1");
+          $insert_paragraph("Hello world 2");
+          $insert_paragraph("Hello world 3");
         },
         name: "handles first and second paragraphs colliding with second and third paragraphs (being edited with overlapping edit)"
       }
     ] as Array<{
       clients: Array<() => void>;
-      expectedHTML: string | null | undefined;
+      expected_html: string | null | undefined;
       init: () => void;
       name: string;
     }>
-  ).forEach((testCase) => {
-    it(testCase.name, async () => {
-      const connection = createTestConnection();
-      const clients = createAndStartClients(
+  ).forEach((test_case) => {
+    it(test_case.name, async () => {
+      const connection = create_test_connection();
+      const clients = create_and_start_clients(
         connection,
         container,
-        testCase.clients.length
+        test_case.clients.length
       );
 
       // Set the initial content (into first editor only, the rest will be synced)
       const client1 = clients[0];
 
-      await waitForReact(() => {
+      await wait_for_react(() => {
         client1.update(() => {
-          $getRoot().clear();
-          testCase.init();
+          $get_root().clear();
+          test_case.init();
         });
       });
 
-      testClientsForEquality(clients);
+      test_clients_for_equality(clients);
 
       // Disconnect clients and apply client-specific actions, reconnect them back, and
       // verify that they are synced and have the same content
-      disconnectClients(clients);
+      disconnect_clients(clients);
 
       for (let i = 0; i < clients.length; i++) {
-        await waitForReact(() => {
-          clients[i].update(testCase.clients[i]);
+        await wait_for_react(() => {
+          clients[i].update(test_case.clients[i]);
         });
       }
 
-      await waitForReact(() => {
-        connectClients(clients);
+      await wait_for_react(() => {
+        connect_clients(clients);
       });
 
-      if (testCase.expectedHTML) {
-        expect(client1.getHTML()).toEqual(testCase.expectedHTML);
+      if (test_case.expected_html) {
+        expect(client1.get_html()).toEqual(test_case.expected_html);
       }
 
-      testClientsForEquality(clients);
-      stopClients(clients);
+      test_clients_for_equality(clients);
+      stop_clients(clients);
     });
   });
 });

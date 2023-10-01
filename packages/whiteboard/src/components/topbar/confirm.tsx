@@ -1,11 +1,11 @@
-import { ModalFooterButton, use_modal } from "~/components/modal";
 import clsx from "clsx";
 import React from "react";
 
-import IconButton from "../../../../ui/src/components/icon-button";
-import { use_toast } from "../../../../ui/src/components/toast";
-import CheckIcon from "../../../../ui/src/icons/check";
-import ImageIcon from "../../../../ui/src/icons/image";
+import IconButton from "~/components/icon-button";
+import { ModalFooterButton, use_modal } from "~/components/modal";
+import { use_toast } from "~/components/toast";
+import CheckIcon from "~/icons/check";
+import ImageIcon from "~/icons/image";
 
 import { use_canvas, use_whiteboard } from "../../hooks";
 import ExportImageModal, { ExportHandleRef } from "./export-image-modal";
@@ -22,7 +22,7 @@ const Confirm = (): React.ReactElement => {
       <IconButton
         aria-label={"Confirm"}
         className={clsx("focus-invert", styles.x, styles["icon-button"])}
-        onClick={(event: Event): void => {
+        onClick={(event): void => {
           if (canvas.current) {
             if (canvas.current.getObjects().length) {
               open_modal();

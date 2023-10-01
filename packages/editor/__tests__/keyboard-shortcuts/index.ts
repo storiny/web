@@ -7,7 +7,6 @@ export * from "./move-left";
 export * from "./move-right";
 export * from "./move-to-editor-beginning";
 export * from "./move-to-editor-end";
-export * from "./move-to-end";
 export * from "./move-to-line-beginning";
 export * from "./move-to-line-end";
 export * from "./move-to-next-word";

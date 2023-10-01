@@ -1,10 +1,10 @@
 import { clsx } from "clsx";
 import React from "react";
 
-import Grow from "../../../../../../../packages/ui/src/components/grow";
-import Link from "../../../../../../../packages/ui/src/components/link";
-import Typography from "../../../../../../../packages/ui/src/components/typography";
-import MessagesIcon from "../../../../../../../packages/ui/src/icons/messages";
+import Grow from "~/components/grow";
+import Link from "~/components/link";
+import Typography from "~/components/typography";
+import MessagesIcon from "~/icons/messages";
 
 import styles from "./footer.module.scss";
 

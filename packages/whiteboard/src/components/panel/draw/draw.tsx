@@ -3,8 +3,9 @@
 import { useAtomValue as use_atom_value } from "jotai";
 import React from "react";
 
-import Divider from "../../../../../ui/src/components/divider";
-import Spacer from "../../../../../ui/src/components/spacer";
+import Divider from "~/components/divider";
+import Spacer from "~/components/spacer";
+
 import { is_pen_mode_atom } from "../../../atoms";
 import { LayerType } from "../../../constants";
 import { use_active_object, use_canvas } from "../../../hooks";

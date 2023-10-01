@@ -1,7 +1,7 @@
 import React from "react";
 
 import SymbolPicker from "~/entities/symbol-picker";
-import OmegaIcon from "../../../../../../../../../ui/src/icons/omega";
+import OmegaIcon from "~/icons/omega";
 
 import { use_insert_text_entity } from "../../../../../../../hooks/use-insert-text-entity";
 import InsertItem from "../insert-item";

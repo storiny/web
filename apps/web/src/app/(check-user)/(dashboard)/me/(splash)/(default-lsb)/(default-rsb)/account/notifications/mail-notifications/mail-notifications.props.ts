@@ -1,5 +1,5 @@
 import { GetNotificationSettingsResponse } from "~/common/grpc";
-import { SubmitHandler } from "../../../../../../../../../../../../../packages/ui/src/components/form";
+import { SubmitHandler } from "~/components/form";
 
 import { MailNotificationsSchema } from "./mail-notifications.schema";
 

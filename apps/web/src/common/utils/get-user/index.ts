@@ -5,7 +5,7 @@ import { cookies } from "next/headers";
 
 import { get_user_id } from "~/common/grpc";
 import { handle_exception } from "~/common/grpc/utils";
-import { SESSION_COOKIE_ID } from "src/common/utils/get-session-token";
+import { SESSION_COOKIE_ID } from "~/common/utils/get-session-token";
 
 /**
  * Checks whether the user maintains a valid session by sending a

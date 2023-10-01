@@ -3,62 +3,62 @@ import { TEST_ASSET } from "@storiny/ui/src/mocks";
 
 import { EDITOR_CLASSNAMES, IS_MAC } from "../constants";
 import {
-  deleteBackward,
-  deleteForward,
-  moveLeft,
-  moveToPrevWord,
-  selectAll
+  delete_backward,
+  delete_forward,
+  move_left,
+  move_to_prev_word,
+  select_all
 } from "../keyboard-shortcuts";
 import {
-  assertHTML,
-  assertSelection,
+  assert_html,
+  assert_selection,
   evaluate,
-  focusEditor,
+  focus_editor,
   html,
   initialize,
   insert_image,
-  keyDownCtrlOrMeta,
-  keyUpCtrlOrMeta,
-  pasteFromClipboard,
+  key_down_ctrl_or_meta,
+  key_up_ctrl_or_meta,
+  paste_from_clipboard,
   sleep
 } from "../utils";
 
 const ROUTE = "*/**/v1/me/assets?page=1";
 
-const assetsRouteHandler: Parameters<Page["route"]>[1] = async (route) => {
+const assets_route_handler: Parameters<Page["route"]>[1] = async (route) => {
   await route.fulfill({ json: [TEST_ASSET] });
 };
 
 test.describe("selection", () => {
   test.beforeEach(async ({ page }) => {
     await initialize(page);
-    await focusEditor(page);
-    await page.route(ROUTE, assetsRouteHandler);
+    await focus_editor(page);
+    await page.route(ROUTE, assets_route_handler);
   });
 
   test.afterEach(async ({ page }) => {
-    await page.unroute(ROUTE, assetsRouteHandler);
+    await page.unroute(ROUTE, assets_route_handler);
   });
 
   test("does not focus the editor on load", async ({ page }) => {
-    const editorHasFocus = async (): Promise<boolean> =>
+    const editor_has_focus = async (): Promise<boolean> =>
       await evaluate(page, () => {
-        const editorElement = document.querySelector(
+        const editor_element = document.querySelector(
           'div[contenteditable="true"]'
         );
-        return document.activeElement === editorElement;
+        return document.activeElement === editor_element;
       });
 
     await evaluate(page, () => {
-      const editorElement = document.querySelector(
+      const editor_element = document.querySelector(
         'div[contenteditable="true"]'
       ) as HTMLElement;
-      return editorElement?.blur();
+      return editor_element?.blur();
     });
 
-    expect(await editorHasFocus()).toEqual(false);
+    expect(await editor_has_focus()).toEqual(false);
     await sleep(500);
-    expect(await editorHasFocus()).toEqual(false);
+    expect(await editor_has_focus()).toEqual(false);
   });
 
   test("can delete text by line using Cmd+Delete (Mac)", async ({ page }) => {
@@ -71,10 +71,10 @@ test.describe("selection", () => {
     await page.keyboard.press("Enter");
     await page.keyboard.type("Three");
 
-    const deleteLine = async (): Promise<void> => {
-      await keyDownCtrlOrMeta(page);
+    const delete_line = async (): Promise<void> => {
+      await key_down_ctrl_or_meta(page);
       await page.keyboard.press("Backspace");
-      await keyUpCtrlOrMeta(page);
+      await key_up_ctrl_or_meta(page);
     };
 
     const lines = [
@@ -96,15 +96,15 @@ test.describe("selection", () => {
       `
     ];
 
-    await deleteLine();
-    await assertHTML(page, lines.slice(0, 3).join(""));
-    await deleteLine();
-    await assertHTML(page, lines.slice(0, 2).join(""));
-    await deleteLine();
-    await assertHTML(page, lines.slice(0, 1).join(""));
-    await deleteLine();
+    await delete_line();
+    await assert_html(page, lines.slice(0, 3).join(""));
+    await delete_line();
+    await assert_html(page, lines.slice(0, 2).join(""));
+    await delete_line();
+    await assert_html(page, lines.slice(0, 1).join(""));
+    await delete_line();
 
-    await assertHTML(
+    await assert_html(
       page,
       html` <p class="${EDITOR_CLASSNAMES.paragraph}"><br /></p> `
     );
@@ -114,29 +114,29 @@ test.describe("selection", () => {
     page
   }) => {
     await page.keyboard.type("Hello world");
-    await moveToPrevWord(page);
-    await pasteFromClipboard(page, {
+    await move_to_prev_word(page);
+    await paste_from_clipboard(page, {
       "text/html": `<a href="https://example.com">link</a>`
     });
     await sleep(3000);
 
-    await assertSelection(page, {
-      anchorOffset: 4,
-      anchorPath: [0, 1, 0, 0],
-      focusOffset: 4,
-      focusPath: [0, 1, 0, 0]
+    await assert_selection(page, {
+      anchor_offset: 4,
+      anchor_path: [0, 1, 0, 0],
+      focus_offset: 4,
+      focus_path: [0, 1, 0, 0]
     });
   });
 
   test("can select everything with node selection", async ({ page }) => {
     await page.keyboard.type("# Text before");
     await insert_image(page);
-    await focusEditor(page);
+    await focus_editor(page);
     await page.keyboard.type("Text after");
-    await selectAll(page);
-    await deleteBackward(page);
+    await select_all(page);
+    await delete_backward(page);
 
-    await assertHTML(
+    await assert_html(
       page,
       html`<p class="${EDITOR_CLASSNAMES.paragraph}"><br /></p>`
     );
@@ -147,7 +147,7 @@ test.describe("selection", () => {
     await page.keyboard.press("Enter");
     await page.keyboard.type("b");
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <h2 class="${EDITOR_CLASSNAMES.heading}" dir="ltr">
@@ -159,10 +159,10 @@ test.describe("selection", () => {
       `
     );
 
-    await moveLeft(page, 2);
-    await deleteBackward(page);
+    await move_left(page, 2);
+    await delete_backward(page);
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <h2 class="${EDITOR_CLASSNAMES.heading}">
@@ -174,9 +174,9 @@ test.describe("selection", () => {
       `
     );
 
-    await deleteBackward(page);
+    await delete_backward(page);
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <p class="${EDITOR_CLASSNAMES.paragraph}">
@@ -188,9 +188,9 @@ test.describe("selection", () => {
       `
     );
 
-    await deleteBackward(page);
+    await delete_backward(page);
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
@@ -206,9 +206,9 @@ test.describe("selection", () => {
     await page.keyboard.press("ArrowUp");
 
     await sleep(500);
-    await deleteForward(page);
+    await delete_forward(page);
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <h2 class="${EDITOR_CLASSNAMES.heading}" dir="ltr">

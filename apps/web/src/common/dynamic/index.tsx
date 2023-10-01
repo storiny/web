@@ -2,7 +2,7 @@ import { DynamicOptionsLoadingProps } from "next/dynamic";
 import React from "react";
 
 import SuspenseLoader from "~/common/suspense-loader";
-import ErrorState from "../../../../../packages/ui/src/entities/error-state";
+import ErrorState from "~/entities/error-state";
 
 /**
  * Dynamic component loader with error fallback

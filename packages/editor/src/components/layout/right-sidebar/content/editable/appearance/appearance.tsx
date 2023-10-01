@@ -3,13 +3,13 @@ import { clsx } from "clsx";
 import { useSetAtom as use_set_atom } from "jotai";
 import React from "react";
 
-import IconButton from "../../../../../../../../ui/src/components/icon-button";
-import Select from "../../../../../../../../ui/src/components/select";
-import Spacer from "../../../../../../../../ui/src/components/spacer";
-import Tooltip from "../../../../../../../../ui/src/components/tooltip";
-import Typography from "../../../../../../../../ui/src/components/typography";
-import CaretDefaultIcon from "../../../../../../../../ui/src/icons/caret-default";
-import SidebarCollapseIcon from "../../../../../../../../ui/src/icons/sidebar-collapse";
+import IconButton from "~/components/icon-button";
+import Select from "~/components/select";
+import Spacer from "~/components/spacer";
+import Tooltip from "~/components/tooltip";
+import Typography from "~/components/typography";
+import CaretDefaultIcon from "~/icons/caret-default";
+import SidebarCollapseIcon from "~/icons/sidebar-collapse";
 
 import { sidebars_collapsed_atom } from "../../../../../../atoms";
 import { EDITOR_SHORTCUTS } from "../../../../../../constants/shortcuts";

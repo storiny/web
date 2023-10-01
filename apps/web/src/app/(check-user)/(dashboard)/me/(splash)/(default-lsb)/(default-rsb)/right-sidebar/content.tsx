@@ -3,8 +3,8 @@
 import { clsx } from "clsx";
 import React from "react";
 
-import Link from "../../../../../../../../../../../packages/ui/src/components/link";
-import Typography from "../../../../../../../../../../../packages/ui/src/components/typography";
+import Link from "~/components/link";
+import Typography from "~/components/typography";
 
 import { RECOMMENDED_SUPPORT_RESOURCES } from "./resources";
 import styles from "./right-sidebar.module.scss";

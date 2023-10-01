@@ -2,7 +2,7 @@ import { clsx } from "clsx";
 import Image from "next/image";
 import React from "react";
 
-import Navbar from "../../../../../packages/ui/src/layout/navbar";
+import Navbar from "~/layout/navbar";
 
 import styles from "./layout.module.scss";
 import AuthState from "./state";
@@ -29,7 +29,7 @@ const AuthLayout = ({
         style={{ objectFit: "cover", opacity: 0.45 }}
       />
     </div>
-    <main className={styles.main}>
+    <main className={styles.main} data-root={"true"}>
       <div className={clsx("flex-col", styles.container)}>
         <AuthState>{children}</AuthState>
       </div>

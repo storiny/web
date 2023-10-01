@@ -1,11 +1,11 @@
 import React from "react";
 
-import MenubarRadioGroup from "../../../../../../../ui/src/components/menubar-radio-group";
-import MenubarRadioItem from "../../../../../../../ui/src/components/menubar-radio-item";
-import MenubarSub from "../../../../../../../ui/src/components/menubar-sub";
-import AdjustIcon from "../../../../../../../ui/src/icons/adjust";
-import MoonIcon from "../../../../../../../ui/src/icons/moon";
-import SunIcon from "../../../../../../../ui/src/icons/sun";
+import MenubarRadioGroup from "~/components/menubar-radio-group";
+import MenubarRadioItem from "~/components/menubar-radio-item";
+import MenubarSub from "~/components/menubar-sub";
+import AdjustIcon from "~/icons/adjust";
+import MoonIcon from "~/icons/moon";
+import SunIcon from "~/icons/sun";
 import { select_theme, set_theme } from "~/redux/features";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 
@@ -15,8 +15,8 @@ const ThemeItem = (): React.ReactElement => {
   return (
     <MenubarSub trigger={"Theme"}>
       <MenubarRadioGroup
-        onValueChange={(next_value: typeof theme): void => {
-          dispatch(set_theme(next_value));
+        onValueChange={(next_value): void => {
+          dispatch(set_theme(next_value as typeof theme));
         }}
         value={theme}
       >

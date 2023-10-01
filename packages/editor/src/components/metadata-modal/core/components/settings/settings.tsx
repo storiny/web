@@ -1,11 +1,11 @@
 import { clsx } from "clsx";
 import React from "react";
 
-import FormCheckbox from "../../../../../../../ui/src/components/form-checkbox";
-import FormRadio from "../../../../../../../ui/src/components/form-radio";
-import FormRadioGroup from "../../../../../../../ui/src/components/form-radio-group";
-import Spacer from "../../../../../../../ui/src/components/spacer";
-import Typography from "../../../../../../../ui/src/components/typography";
+import FormCheckbox from "~/components/form-checkbox";
+import FormRadio from "~/components/form-radio";
+import FormRadioGroup from "~/components/form-radio-group";
+import Spacer from "~/components/spacer";
+import Typography from "~/components/typography";
 
 import styles from "./settings.module.scss";
 

@@ -13,7 +13,7 @@ import DefaultDashboardRightSidebarLayout from "../../layout";
 import AccountPrivacyPage from "./client";
 
 const meta: Meta<typeof AccountPrivacyPage> = {
-  title: "dashboard/Account/privacy",
+  title: "dashboard/account/privacy",
   component: AccountPrivacyPage,
   args: {
     is_private_account: false,

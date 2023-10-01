@@ -1,7 +1,7 @@
 import { Notification } from "@storiny/types";
 import { VirtuosoProps } from "react-virtuoso";
 
-import { NotificationProps } from "../../../../../../packages/ui/src/entities/notification";
+import { NotificationProps } from "~/entities/notification";
 
 export interface VirtualizedNotificationListProps
   extends VirtuosoProps<Notification, any> {

@@ -2,13 +2,13 @@ import { Page, test } from "@playwright/test";
 import { TEST_ASSET } from "@storiny/ui/src/mocks";
 
 import { EDITOR_CLASSNAMES } from "../../constants";
-import { pressBackspace } from "../../keyboard-shortcuts";
+import { press_backspace } from "../../keyboard-shortcuts";
 import {
-  assertHTML,
-  assertSelection,
-  clearEditor,
+  assert_html,
+  assert_selection,
+  clear_editor,
   click,
-  focusEditor,
+  focus_editor,
   html,
   initialize,
   insert_image
@@ -16,19 +16,19 @@ import {
 
 const ROUTE = "*/**/v1/me/assets?page=1";
 
-const assetsRouteHandler: Parameters<Page["route"]>[1] = async (route) => {
+const assets_route_handler: Parameters<Page["route"]>[1] = async (route) => {
   await route.fulfill({ json: [TEST_ASSET] });
 };
 
 test.describe("image", () => {
   test.beforeEach(async ({ page }) => {
     await initialize(page);
-    await focusEditor(page);
-    await page.route(ROUTE, assetsRouteHandler);
+    await focus_editor(page);
+    await page.route(ROUTE, assets_route_handler);
   });
 
   test.afterEach(async ({ page }) => {
-    await page.unroute(ROUTE, assetsRouteHandler);
+    await page.unroute(ROUTE, assets_route_handler);
   });
 
   test("can add image nodes and delete them correctly", async ({
@@ -37,7 +37,7 @@ test.describe("image", () => {
   }) => {
     await insert_image(page);
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <p><br /></p>
@@ -94,40 +94,40 @@ test.describe("image", () => {
         <p><br /></p>
       `,
       undefined,
-      { ignoreClasses: true, ignoreInlineStyles: true }
+      { ignore_classes: true, ignore_inline_styles: true }
     );
 
-    await assertSelection(page, {
-      anchorOffset: 0,
-      anchorPath: [3],
-      focusOffset: 0,
-      focusPath: [3]
+    await assert_selection(page, {
+      anchor_offset: 0,
+      anchor_path: [3],
+      focus_offset: 0,
+      focus_path: [3]
     });
 
     // Remove image node using backspace
 
-    await focusEditor(page);
-    await pressBackspace(page, browserName === "firefox" ? 4 : 3);
+    await focus_editor(page);
+    await press_backspace(page, browserName === "firefox" ? 4 : 3);
 
-    await assertHTML(
+    await assert_html(
       page,
       html` <p class="${EDITOR_CLASSNAMES.paragraph}"><br /></p> `
     );
 
-    await assertSelection(page, {
-      anchorOffset: 0,
-      anchorPath: [],
-      focusOffset: 0,
-      focusPath: []
+    await assert_selection(page, {
+      anchor_offset: 0,
+      anchor_path: [],
+      focus_offset: 0,
+      focus_path: []
     });
 
     // Remove image node by selecting the image
     for (const key of ["Backspace", "Delete"]) {
-      await focusEditor(page);
-      await clearEditor(page);
+      await focus_editor(page);
+      await clear_editor(page);
       await insert_image(page);
 
-      await assertHTML(
+      await assert_html(
         page,
         html`
           <p><br /></p>
@@ -184,13 +184,13 @@ test.describe("image", () => {
           <p><br /></p>
         `,
         undefined,
-        { ignoreClasses: true, ignoreInlineStyles: true }
+        { ignore_classes: true, ignore_inline_styles: true }
       );
 
       await click(page, `[data-testid="image-node"]`);
       await page.keyboard.press(key);
 
-      await assertHTML(
+      await assert_html(
         page,
         html`
           <p class="${EDITOR_CLASSNAMES.paragraph}"><br /></p>

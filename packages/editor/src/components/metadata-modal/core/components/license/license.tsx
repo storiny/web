@@ -1,11 +1,11 @@
 import { StoryLicense } from "@storiny/shared";
 import React from "react";
 
-import { use_form_context } from "../../../../../../../ui/src/components/form";
-import FormSelect from "../../../../../../../ui/src/components/form-select";
-import Option from "../../../../../../../ui/src/components/option";
-import Spacer from "../../../../../../../ui/src/components/spacer";
-import Typography from "../../../../../../../ui/src/components/typography";
+import { use_form_context } from "~/components/form";
+import FormSelect from "~/components/form-select";
+import Option from "~/components/option";
+import Spacer from "~/components/spacer";
+import Typography from "~/components/typography";
 
 const LICENSE_DESCRIPTION_MAP: Record<StoryLicense, React.ReactNode> = {
   [StoryLicense.UNRECOGNIZED /**/]: null,

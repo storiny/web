@@ -1,4 +1,4 @@
-import { is_html_element as is_html_element } from "@lexical/utils";
+import { isHTMLElement as is_html_element } from "@lexical/utils";
 import {
   $applyNodeReplacement as $apply_node_replacement,
   $createParagraphNode as $create_paragraph_node,

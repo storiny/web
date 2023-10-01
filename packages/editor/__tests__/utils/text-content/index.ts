@@ -6,7 +6,7 @@ import { Frame, Page } from "@playwright/test";
  * @param selector Element selector
  * @param options Options
  */
-export const textContent = async (
+export const text_content = async (
   page: Page,
   selector: string,
   options?: Parameters<Frame["textContent"]>[1]

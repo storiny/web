@@ -1,15 +1,11 @@
 import { clsx } from "clsx";
 import React from "react";
 
-import Form, {
-  SubmitHandler,
-  use_form,
-  zod_resolver
-} from "../../../../../../../../../../../../../packages/ui/src/components/form";
-import FormCheckbox from "../../../../../../../../../../../../../packages/ui/src/components/form-checkbox";
-import Spacer from "../../../../../../../../../../../../../packages/ui/src/components/spacer";
-import { use_toast } from "../../../../../../../../../../../../../packages/ui/src/components/toast";
-import TitleBlock from "../../../../../../../../../../../../../packages/ui/src/entities/title-block";
+import Form, { SubmitHandler, use_form, zod_resolver } from "~/components/form";
+import FormCheckbox from "~/components/form-checkbox";
+import Spacer from "~/components/spacer";
+import { use_toast } from "~/components/toast";
+import TitleBlock from "~/entities/title-block";
 import { use_mail_notification_settings_mutation } from "~/redux/features";
 
 import DashboardGroup from "../../../../dashboard-group";

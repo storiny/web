@@ -6,7 +6,7 @@ import { evaluate } from "../evaluate";
  * Predicate function for determining Mac
  * @param page Page
  */
-export const isMac = async (page: Page): Promise<boolean> =>
+export const is_mac = async (page: Page): Promise<boolean> =>
   evaluate(
     page,
     () =>

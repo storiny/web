@@ -3,8 +3,8 @@ import { clsx } from "clsx";
 import { $getNodeByKey as $get_node_by_key } from "lexical";
 import React from "react";
 
-import Divider from "../../../../../../ui/src/components/divider";
-import IconButton from "../../../../../../ui/src/components/icon-button";
+import Divider from "~/components/divider";
+import IconButton from "~/components/icon-button";
 import Gallery from "~/entities/gallery";
 import MasonryAddIcon from "~/icons/masonry-add";
 import RotateIcon from "~/icons/rotate";

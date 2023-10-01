@@ -2,23 +2,23 @@ import { clsx } from "clsx";
 import { BaseFabricObject } from "fabric";
 import React from "react";
 
-import Input from "../../../../../../../ui/src/components/input";
-import Option from "../../../../../../../ui/src/components/option";
-import Select from "../../../../../../../ui/src/components/select";
+import Input from "~/components/input";
+import Option from "~/components/option";
+import Select from "~/components/select";
 import ColorPicker, {
   hex_to_rgb,
   str_to_color,
   TColor
-} from "../../../../../../../ui/src/entities/color-picker";
-import CrossHatchFillIcon from "../../../../../../../ui/src/icons/cross-hatch-fill";
-import DashedFillIcon from "../../../../../../../ui/src/icons/dashed-fill";
-import DottedFillIcon from "../../../../../../../ui/src/icons/dotted-fill";
-import HachureFillIcon from "../../../../../../../ui/src/icons/hachure-fill";
-import HachureGapIcon from "../../../../../../../ui/src/icons/hachure-gap";
-import RulerMeasureIcon from "../../../../../../../ui/src/icons/ruler-measure";
-import SolidFillIcon from "../../../../../../../ui/src/icons/solid-fill";
-import ZigzagFillIcon from "../../../../../../../ui/src/icons/zigzag-fill";
-import ZigzagLineFillIcon from "../../../../../../../ui/src/icons/zigzag-line-fill";
+} from "~/entities/color-picker";
+import CrossHatchFillIcon from "~/icons/cross-hatch-fill";
+import DashedFillIcon from "~/icons/dashed-fill";
+import DottedFillIcon from "~/icons/dotted-fill";
+import HachureFillIcon from "~/icons/hachure-fill";
+import HachureGapIcon from "~/icons/hachure-gap";
+import RulerMeasureIcon from "~/icons/ruler-measure";
+import SolidFillIcon from "~/icons/solid-fill";
+import ZigzagFillIcon from "~/icons/zigzag-fill";
+import ZigzagLineFillIcon from "~/icons/zigzag-line-fill";
 
 import {
   DEFAULT_LAYER_COLOR,
@@ -202,8 +202,8 @@ const FillStyleControl = ({
     <>
       <DrawItemRow>
         <Select
-          onValueChange={(next_value: FillStyle): void =>
-            change_fill_style(next_value)
+          onValueChange={(next_value): void =>
+            change_fill_style(next_value as FillStyle)
           }
           size={"sm"}
           slot_props={{

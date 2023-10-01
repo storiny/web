@@ -1,28 +1,28 @@
 import { Page, test } from "@playwright/test";
-import { compressToEncodedURIComponent } from "lz-string";
+import { compressToEncodedURIComponent as compress_to_encoded_uri_component } from "lz-string";
 
 import { EDITOR_CLASSNAMES } from "../../constants";
-import { pressBackspace } from "../../keyboard-shortcuts";
+import { press_backspace } from "../../keyboard-shortcuts";
 import {
-  assertHTML,
-  assertSelection,
-  clearEditor,
+  assert_html,
+  assert_selection,
+  clear_editor,
   click,
-  focusEditor,
+  focus_editor,
   html,
   initialize,
-  insertEmbed,
-  waitForSelector
+  insert_embed,
+  wait_for_selector
 } from "../../utils";
 
-const EMBED_SLUG = compressToEncodedURIComponent("https://example.com");
+const EMBED_SLUG = compress_to_encoded_uri_component("https://example.com");
 const ROUTE = `*/**/embed/${EMBED_SLUG}?theme={light,dark}`;
 
 /**
  * Returns embed response without iframe
  * @param route Route
  */
-const sourcedEmbedHandler: Parameters<Page["route"]>[1] = async (route) => {
+const sourced_embed_handler: Parameters<Page["route"]>[1] = async (route) => {
   await route.fulfill({
     json: {
       html: "<blockquote>Test embed</blockquote>",
@@ -40,7 +40,7 @@ const sourcedEmbedHandler: Parameters<Page["route"]>[1] = async (route) => {
  * Returns embed response with iframe
  * @param route
  */
-const iframeEmbedHandler: Parameters<Page["route"]>[1] = async (route) => {
+const iframe_embed_handler: Parameters<Page["route"]>[1] = async (route) => {
   await route.fulfill({
     body: html`
       <!doctype html>
@@ -72,7 +72,9 @@ const iframeEmbedHandler: Parameters<Page["route"]>[1] = async (route) => {
  * Returns a webpage metadata response
  * @param route Route
  */
-const webpageMetadataHandler: Parameters<Page["route"]>[1] = async (route) => {
+const webpage_metadata_handler: Parameters<Page["route"]>[1] = async (
+  route
+) => {
   await route.fulfill({
     json: {
       embed_type: "metadata",
@@ -95,7 +97,7 @@ const webpageMetadataHandler: Parameters<Page["route"]>[1] = async (route) => {
 test.describe("embed", () => {
   test.beforeEach(async ({ page }) => {
     await initialize(page);
-    await focusEditor(page);
+    await focus_editor(page);
   });
 
   test.afterEach(async ({ page }) => {
@@ -106,10 +108,10 @@ test.describe("embed", () => {
     page,
     browserName
   }) => {
-    await page.route(ROUTE, sourcedEmbedHandler);
-    await insertEmbed(page);
+    await page.route(ROUTE, sourced_embed_handler);
+    await insert_embed(page);
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <p><br /></p>
@@ -143,42 +145,42 @@ test.describe("embed", () => {
       `,
       undefined,
       {
-        ignoreClasses: true,
-        ignoreInlineStyles: true
+        ignore_classes: true,
+        ignore_inline_styles: true
       }
     );
 
-    await assertSelection(page, {
-      anchorOffset: 0,
-      anchorPath: [3],
-      focusOffset: 0,
-      focusPath: [3]
+    await assert_selection(page, {
+      anchor_offset: 0,
+      anchor_path: [3],
+      focus_offset: 0,
+      focus_path: [3]
     });
 
     // Remove embed node using backspace
 
-    await focusEditor(page);
-    await pressBackspace(page, browserName === "firefox" ? 4 : 3);
+    await focus_editor(page);
+    await press_backspace(page, browserName === "firefox" ? 4 : 3);
 
-    await assertHTML(
+    await assert_html(
       page,
       html`<p class="${EDITOR_CLASSNAMES.paragraph}"><br /></p>`
     );
 
-    await assertSelection(page, {
-      anchorOffset: 0,
-      anchorPath: [],
-      focusOffset: 0,
-      focusPath: []
+    await assert_selection(page, {
+      anchor_offset: 0,
+      anchor_path: [],
+      focus_offset: 0,
+      focus_path: []
     });
 
     // Remove embed node by selecting the node
     for (const key of ["Backspace", "Delete"]) {
-      await focusEditor(page);
-      await clearEditor(page);
-      await insertEmbed(page);
+      await focus_editor(page);
+      await clear_editor(page);
+      await insert_embed(page);
 
-      await assertHTML(
+      await assert_html(
         page,
         html`
           <p><br /></p>
@@ -211,13 +213,13 @@ test.describe("embed", () => {
           <p><br /></p>
         `,
         undefined,
-        { ignoreClasses: true, ignoreInlineStyles: true }
+        { ignore_classes: true, ignore_inline_styles: true }
       );
 
       await click(page, `[data-testid="embed-node"]`);
       await page.keyboard.press(key);
 
-      await assertHTML(
+      await assert_html(
         page,
         html`
           <p class="${EDITOR_CLASSNAMES.paragraph}"><br /></p>
@@ -229,22 +231,22 @@ test.describe("embed", () => {
   });
 
   test("can render a `sourced_oembed` type", async ({ page }) => {
-    await page.route(ROUTE, sourcedEmbedHandler);
-    await insertEmbed(page);
+    await page.route(ROUTE, sourced_embed_handler);
+    await insert_embed(page);
 
     // Scripts should get appended to the document
-    await waitForSelector(
+    await wait_for_selector(
       page,
       `script[src="http://localhost:0000/script_a.js"]`,
       { state: "attached" }
     );
-    await waitForSelector(
+    await wait_for_selector(
       page,
       `script[src="http://localhost:0000/script_b.js"]`,
       { state: "attached" }
     );
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <p><br /></p>
@@ -278,24 +280,24 @@ test.describe("embed", () => {
       `,
       undefined,
       {
-        ignoreClasses: true,
-        ignoreInlineStyles: true
+        ignore_classes: true,
+        ignore_inline_styles: true
       }
     );
 
-    await assertSelection(page, {
-      anchorOffset: 0,
-      anchorPath: [3],
-      focusOffset: 0,
-      focusPath: [3]
+    await assert_selection(page, {
+      anchor_offset: 0,
+      anchor_path: [3],
+      focus_offset: 0,
+      focus_path: [3]
     });
   });
 
   test("can render an embed with iframe", async ({ page }) => {
-    await page.route(ROUTE, iframeEmbedHandler);
-    await insertEmbed(page);
+    await page.route(ROUTE, iframe_embed_handler);
+    await insert_embed(page);
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <p><br /></p>
@@ -329,25 +331,25 @@ test.describe("embed", () => {
       `,
       undefined,
       {
-        ignoreClasses: true,
-        ignoreInlineStyles: true,
-        customIgnorePattern: /\ssrc="([^"]*)"/g // Remove the `src` attribute from the iframe as it can change depending on the theme
+        ignore_classes: true,
+        ignore_inline_styles: true,
+        custom_ignore_pattern: /\ssrc="([^"]*)"/g // Remove the `src` attribute from the iframe as it can change depending on the theme
       }
     );
 
-    await assertSelection(page, {
-      anchorOffset: 0,
-      anchorPath: [3],
-      focusOffset: 0,
-      focusPath: [3]
+    await assert_selection(page, {
+      anchor_offset: 0,
+      anchor_path: [3],
+      focus_offset: 0,
+      focus_path: [3]
     });
   });
 
   test("can render a webpage metadata", async ({ page }) => {
-    await page.route(ROUTE, webpageMetadataHandler);
-    await insertEmbed(page);
+    await page.route(ROUTE, webpage_metadata_handler);
+    await insert_embed(page);
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <p><br /></p>
@@ -412,16 +414,16 @@ test.describe("embed", () => {
       `,
       undefined,
       {
-        ignoreClasses: true,
-        ignoreInlineStyles: true
+        ignore_classes: true,
+        ignore_inline_styles: true
       }
     );
 
-    await assertSelection(page, {
-      anchorOffset: 0,
-      anchorPath: [3],
-      focusOffset: 0,
-      focusPath: [3]
+    await assert_selection(page, {
+      anchor_offset: 0,
+      anchor_path: [3],
+      focus_offset: 0,
+      focus_path: [3]
     });
   });
 });

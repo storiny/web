@@ -1,11 +1,11 @@
 import { test } from "@playwright/test";
 
 import { EDITOR_CLASSNAMES } from "../../constants";
-import { moveRight, moveToEditorBeginning } from "../../keyboard-shortcuts";
+import { move_right, move_to_editor_beginning } from "../../keyboard-shortcuts";
 import {
-  assertHTML,
-  assertSelection,
-  focusEditor,
+  assert_html,
+  assert_selection,
+  focus_editor,
   html,
   initialize
 } from "../../utils";
@@ -13,7 +13,7 @@ import {
 test.describe("heading", () => {
   test.beforeEach(async ({ page }) => {
     await initialize(page);
-    await focusEditor(page);
+    await focus_editor(page);
   });
 
   test("can convert headings higher than or equal to `h2` into `h2` (heading)", async ({
@@ -23,7 +23,7 @@ test.describe("heading", () => {
     await page.keyboard.press("Enter");
     await page.keyboard.type("## heading 2");
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <h2 class="${EDITOR_CLASSNAMES.heading}" dir="ltr">
@@ -35,11 +35,11 @@ test.describe("heading", () => {
       `
     );
 
-    await assertSelection(page, {
-      anchorOffset: 9,
-      anchorPath: [1, 0, 0],
-      focusOffset: 9,
-      focusPath: [1, 0, 0]
+    await assert_selection(page, {
+      anchor_offset: 9,
+      anchor_path: [1, 0, 0],
+      focus_offset: 9,
+      focus_path: [1, 0, 0]
     });
   });
 
@@ -54,7 +54,7 @@ test.describe("heading", () => {
     await page.keyboard.press("Enter");
     await page.keyboard.type("###### heading 6");
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <h3 class="${EDITOR_CLASSNAMES.subheading}" dir="ltr">
@@ -72,11 +72,11 @@ test.describe("heading", () => {
       `
     );
 
-    await assertSelection(page, {
-      anchorOffset: 9,
-      anchorPath: [3, 0, 0],
-      focusOffset: 9,
-      focusPath: [3, 0, 0]
+    await assert_selection(page, {
+      anchor_offset: 9,
+      anchor_path: [3, 0, 0],
+      focus_offset: 9,
+      focus_path: [3, 0, 0]
     });
   });
 
@@ -85,7 +85,7 @@ test.describe("heading", () => {
   }) => {
     await page.keyboard.type("# hello world");
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <h2 class="${EDITOR_CLASSNAMES.heading}" dir="ltr">
@@ -94,10 +94,10 @@ test.describe("heading", () => {
       `
     );
 
-    await moveToEditorBeginning(page);
+    await move_to_editor_beginning(page);
     await page.keyboard.press("Backspace");
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <h2 class="${EDITOR_CLASSNAMES.heading}" dir="ltr">
@@ -112,7 +112,7 @@ test.describe("heading", () => {
   }) => {
     await page.keyboard.type("# hello world");
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <h2 class="${EDITOR_CLASSNAMES.heading}" dir="ltr">
@@ -121,11 +121,11 @@ test.describe("heading", () => {
       `
     );
 
-    await moveToEditorBeginning(page);
-    await moveRight(page, 6);
+    await move_to_editor_beginning(page);
+    await move_right(page, 6);
     await page.keyboard.press("Enter");
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <h2 class="${EDITOR_CLASSNAMES.heading}" dir="ltr">
@@ -143,7 +143,7 @@ test.describe("heading", () => {
   }) => {
     await page.keyboard.type("# hello world");
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <h2 class="${EDITOR_CLASSNAMES.heading}" dir="ltr">
@@ -154,7 +154,7 @@ test.describe("heading", () => {
 
     await page.keyboard.press("Enter");
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <h2 class="${EDITOR_CLASSNAMES.heading}" dir="ltr">

@@ -11,16 +11,16 @@ import { clsx } from "clsx";
 import { useAtomValue as use_atom_value } from "jotai";
 import React from "react";
 
-import Divider from "../../../../ui/src/components/divider";
-import Grow from "../../../../ui/src/components/grow";
-import Spacer from "../../../../ui/src/components/spacer";
-import Typography from "../../../../ui/src/components/typography";
-import TagChip from "../../../../ui/src/entities/tag-chip";
-import { use_media_query } from "../../../../ui/src/hooks/use-media-query";
-import EditIcon from "../../../../ui/src/icons/edit";
+import Divider from "~/components/divider";
+import Grow from "~/components/grow";
+import Spacer from "~/components/spacer";
+import Typography from "~/components/typography";
+import TagChip from "~/entities/tag-chip";
+import { use_media_query } from "~/hooks/use-media-query";
+import EditIcon from "~/icons/edit";
 import { BREAKPOINTS } from "~/theme/breakpoints";
-import { abbreviate_number } from "../../../../ui/src/utils/abbreviate-number";
-import { DateFormat, format_date } from "../../../../ui/src/utils/format-date";
+import { abbreviate_number } from "~/utils/abbreviate-number";
+import { DateFormat, format_date } from "~/utils/format-date";
 
 import { story_metadata_atom } from "../../atoms";
 import LikeButton from "../layout/right-sidebar/content/read-only/stats/like-button";

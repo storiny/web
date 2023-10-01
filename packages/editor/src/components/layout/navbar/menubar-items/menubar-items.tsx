@@ -4,8 +4,8 @@ import { useAtomValue as use_atom_value } from "jotai";
 import NextLink from "next/link";
 import React from "react";
 
-import MenubarItem from "../../../../../../ui/src/components/menubar-item";
-import Separator from "../../../../../../ui/src/components/separator";
+import MenubarItem from "~/components/menubar-item";
+import Separator from "~/components/separator";
 
 import { doc_status_atom } from "../../../../atoms";
 import AlignItem from "./align";

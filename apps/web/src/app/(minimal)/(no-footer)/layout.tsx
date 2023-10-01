@@ -4,6 +4,6 @@ const NoFooterLayout = ({
   children
 }: {
   children: React.ReactNode;
-}): React.ReactElement => <main>{children}</main>;
+}): React.ReactElement => <main data-root={"true"}>{children}</main>;
 
 export default NoFooterLayout;

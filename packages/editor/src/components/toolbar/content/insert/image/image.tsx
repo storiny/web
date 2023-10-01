@@ -1,8 +1,8 @@
 import React from "react";
 
-import MenuItem from "../../../../../../../ui/src/components/menu-item";
+import MenuItem from "~/components/menu-item";
 import Gallery from "~/entities/gallery";
-import ImageIcon from "../../../../../../../ui/src/icons/image";
+import ImageIcon from "~/icons/image";
 
 import { use_insert_image } from "../../../../../hooks/use-insert-image";
 
@@ -19,7 +19,8 @@ const ImageMenuItem = (): React.ReactElement => {
               hex: image.hex,
               rating: image.rating,
               width: image.width,
-              height: image.height
+              height: image.height,
+              scale_factor: 1
             }
           ],
           credits: image.credits

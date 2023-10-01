@@ -5,11 +5,11 @@ import { use_login_redirect } from "~/common/utils";
 import { fetch_user, select_auth_status, select_user } from "~/redux/features";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 
-import Button from "../../../../../../../../packages/ui/src/components/button";
-import Spacer from "../../../../../../../../packages/ui/src/components/spacer";
-import Typography from "../../../../../../../../packages/ui/src/components/typography";
-import RetryIcon from "../../../../../../../../packages/ui/src/icons/retry";
-import SplashScreen from "../../../../../../../../packages/ui/src/layout/splash-screen";
+import Button from "~/components/button";
+import Spacer from "~/components/spacer";
+import Typography from "~/components/typography";
+import RetryIcon from "~/icons/retry";
+import SplashScreen from "~/layout/splash-screen";
 
 // Handles client-side user authentication logic
 const DashboardSplashLayout = ({

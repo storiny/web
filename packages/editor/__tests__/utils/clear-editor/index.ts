@@ -1,13 +1,13 @@
 import { Page } from "@playwright/test";
 
-import { selectAll } from "../../keyboard-shortcuts";
+import { select_all } from "../../keyboard-shortcuts";
 
 /**
  * Clears the editor
  * @param page Page
  */
-export const clearEditor = async (page: Page): Promise<void> => {
-  await selectAll(page);
+export const clear_editor = async (page: Page): Promise<void> => {
+  await select_all(page);
   await page.keyboard.press("Backspace"); // Deletes all nodes
   await page.keyboard.press("Backspace"); // Resets text node style
 };

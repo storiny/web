@@ -10,19 +10,18 @@ import {
   NotificationListSkeleton,
   VirtualizedNotificationList
 } from "~/common/notification";
-import Button from "../../../../../../../packages/ui/src/components/button";
-import Divider from "../../../../../../../packages/ui/src/components/divider";
-import Grow from "../../../../../../../packages/ui/src/components/grow";
-import IconButton from "../../../../../../../packages/ui/src/components/icon-button";
-import Skeleton from "../../../../../../../packages/ui/src/components/skeleton";
-import Tab from "../../../../../../../packages/ui/src/components/tab";
-import Tabs from "../../../../../../../packages/ui/src/components/tabs";
-import TabsList from "../../../../../../../packages/ui/src/components/tabs-list";
-import Typography from "../../../../../../../packages/ui/src/components/typography";
-import ErrorState from "../../../../../../../packages/ui/src/entities/error-state";
-import { use_media_query } from "../../../../../../../packages/ui/src/hooks/use-media-query";
-import ChecksIcon from "../../../../../../../packages/ui/src/icons/checks";
-import SettingsIcon from "../../../../../../../packages/ui/src/icons/settings";
+import Button from "~/components/button";
+import Grow from "~/components/grow";
+import IconButton from "~/components/icon-button";
+import Skeleton from "~/components/skeleton";
+import Tab from "~/components/tab";
+import Tabs from "~/components/tabs";
+import TabsList from "~/components/tabs-list";
+import Typography from "~/components/typography";
+import ErrorState from "~/entities/error-state";
+import { use_media_query } from "~/hooks/use-media-query";
+import ChecksIcon from "~/icons/checks";
+import SettingsIcon from "~/icons/settings";
 import {
   get_query_error_type,
   mark_all_as_read,
@@ -32,7 +31,7 @@ import {
 } from "~/redux/features";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 import { BREAKPOINTS } from "~/theme/breakpoints";
-import { abbreviate_number } from "../../../../../../../packages/ui/src/utils/abbreviate-number";
+import { abbreviate_number } from "~/utils/abbreviate-number";
 
 import styles from "./styles.module.scss";
 
@@ -53,8 +52,8 @@ const PageHeader = ({
 }): React.ReactElement => (
   <Tabs
     className={clsx("full-bleed", "page-header", styles.x, styles.tabs)}
-    onValueChange={(next_value: NotificationsTabValue): void =>
-      on_change(next_value)
+    onValueChange={(next_value): void =>
+      on_change(next_value as NotificationsTabValue)
     }
     value={value}
   >

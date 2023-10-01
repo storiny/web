@@ -1,15 +1,11 @@
 import { clsx } from "clsx";
 import React from "react";
 
-import Form, {
-  SubmitHandler,
-  use_form,
-  zod_resolver
-} from "../../../../../../../../../../../../../../packages/ui/src/components/form";
-import FormSwitch from "../../../../../../../../../../../../../../packages/ui/src/components/form-switch";
-import Spacer from "../../../../../../../../../../../../../../packages/ui/src/components/spacer";
-import { use_toast } from "../../../../../../../../../../../../../../packages/ui/src/components/toast";
-import Typography from "../../../../../../../../../../../../../../packages/ui/src/components/typography";
+import Form, { SubmitHandler, use_form, zod_resolver } from "~/components/form";
+import FormSwitch from "~/components/form-switch";
+import Spacer from "~/components/spacer";
+import { use_toast } from "~/components/toast";
+import Typography from "~/components/typography";
 import { use_sensitive_content_mutation } from "~/redux/features";
 
 import styles from "../site-safety.module.scss";

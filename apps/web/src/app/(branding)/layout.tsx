@@ -1,9 +1,9 @@
 import { clsx } from "clsx";
 import React from "react";
 
-import BottomNavigation from "../../../../../packages/ui/src/layout/bottom-navigation";
-import Footer from "../../../../../packages/ui/src/layout/footer";
-import Navbar from "../../../../../packages/ui/src/layout/navbar";
+import BottomNavigation from "~/layout/bottom-navigation";
+import Footer from "~/layout/footer";
+import Navbar from "~/layout/navbar";
 
 const BrandingLayout = ({
   children
@@ -12,7 +12,7 @@ const BrandingLayout = ({
 }): React.ReactElement => (
   <div className={clsx("grid", "grid-container", "minimal")}>
     <Navbar variant={"minimal"}>Media Kit</Navbar>
-    <main>{children}</main>
+    <main data-root={"true"}>{children}</main>
     <Footer />
     <BottomNavigation />
   </div>

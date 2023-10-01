@@ -4,20 +4,16 @@ import { USER_PROPS } from "@storiny/shared";
 import { clsx } from "clsx";
 import React from "react";
 
-import Button from "../../../../../../../../packages/ui/src/components/button";
-import Form, {
-  SubmitHandler,
-  use_form,
-  zod_resolver
-} from "../../../../../../../../packages/ui/src/components/form";
-import FormInput from "../../../../../../../../packages/ui/src/components/form-input";
-import Grow from "../../../../../../../../packages/ui/src/components/grow";
-import Spacer from "../../../../../../../../packages/ui/src/components/spacer";
-import { use_toast } from "../../../../../../../../packages/ui/src/components/toast";
+import Button from "~/components/button";
+import Form, { SubmitHandler, use_form, zod_resolver } from "~/components/form";
+import FormInput from "~/components/form-input";
+import Grow from "~/components/grow";
+import Spacer from "~/components/spacer";
+import { use_toast } from "~/components/toast";
 import { use_recovery_mutation } from "~/redux/features";
 
 import { use_auth_state } from "../../../actions";
-import { RecoverySchema, RECOVERY_SCHEMA } from "./schema";
+import { RECOVERY_SCHEMA, RecoverySchema } from "./schema";
 
 interface Props {
   on_submit?: SubmitHandler<RecoverySchema>;

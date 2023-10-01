@@ -1,6 +1,6 @@
 import React from "react";
 
-import Link from "../../../../../../packages/ui/src/components/link";
+import Link from "~/components/link";
 
 import ErrorLayout from "../../(error)/layout";
 

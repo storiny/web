@@ -1,9 +1,9 @@
 import { clsx } from "clsx";
 import React from "react";
 
-import Spacer from "../../../../../../../../../../../../packages/ui/src/components/spacer";
-import Typography from "../../../../../../../../../../../../packages/ui/src/components/typography";
-import { abbreviate_number } from "../../../../../../../../../../../../packages/ui/src/utils/abbreviate-number";
+import Spacer from "~/components/spacer";
+import Typography from "~/components/typography";
+import { abbreviate_number } from "~/utils/abbreviate-number";
 
 import FriendRequests from "./friend-requests";
 import { RelationsRightSidebarProps } from "./right-sidebar.props";

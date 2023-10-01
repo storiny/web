@@ -12,7 +12,7 @@ import DefaultDashboardLeftSidebarLayout from "../../layout";
 import ContentDraftsPage from "./client";
 
 const meta: Meta<typeof ContentDraftsPage> = {
-  title: "dashboard/Content/drafts",
+  title: "dashboard/content/drafts",
   component: ContentDraftsPage,
   args: {
     deleted_draft_count: 5,

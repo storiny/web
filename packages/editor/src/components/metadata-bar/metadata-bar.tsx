@@ -2,11 +2,11 @@ import { clsx } from "clsx";
 import { useAtom as use_atom } from "jotai";
 import React from "react";
 
-import IconButton from "../../../../ui/src/components/icon-button";
-import Spacer from "../../../../ui/src/components/spacer";
-import Typography from "../../../../ui/src/components/typography";
-import { use_media_query } from "../../../../ui/src/hooks/use-media-query";
-import EditIcon from "../../../../ui/src/icons/edit";
+import IconButton from "~/components/icon-button";
+import Spacer from "~/components/spacer";
+import Typography from "~/components/typography";
+import { use_media_query } from "~/hooks/use-media-query";
+import EditIcon from "~/icons/edit";
 import { BREAKPOINTS } from "~/theme/breakpoints";
 
 import { story_metadata_atom } from "../../atoms";

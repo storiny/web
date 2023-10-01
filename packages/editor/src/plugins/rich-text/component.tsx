@@ -30,12 +30,12 @@ const Placeholder = ({
 };
 
 const RichTextPlugin = ({
-  contentEditable,
+  content_editable,
   placeholder,
   ErrorBoundary
 }: {
   ErrorBoundary: ErrorBoundaryType;
-  contentEditable: React.ReactElement;
+  content_editable: React.ReactElement;
   placeholder:
     | ((is_editable: boolean) => null | React.ReactElement)
     | null
@@ -47,7 +47,7 @@ const RichTextPlugin = ({
 
   return (
     <React.Fragment>
-      {contentEditable}
+      {content_editable}
       <Placeholder content={placeholder} />
       {decorators}
     </React.Fragment>

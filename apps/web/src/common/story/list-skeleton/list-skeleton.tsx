@@ -3,7 +3,7 @@
 import { clsx } from "clsx";
 import React from "react";
 
-import Divider from "../../../../../../packages/ui/src/components/divider";
+import Divider from "~/components/divider";
 import { StorySkeleton } from "~/entities/story";
 import { StorySkeletonProps } from "~/entities/story/skeleton";
 

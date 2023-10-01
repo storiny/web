@@ -2,16 +2,16 @@ import clsx from "clsx";
 import { Point } from "fabric";
 import React from "react";
 
-import Button from "../../../../../ui/src/components/button";
-import Grow from "../../../../../ui/src/components/grow";
-import IconButton from "../../../../../ui/src/components/icon-button";
-import Input from "../../../../../ui/src/components/input";
-import Menu from "../../../../../ui/src/components/menu";
-import MenuItem from "../../../../../ui/src/components/menu-item";
-import Separator from "../../../../../ui/src/components/separator";
-import ChevronIcon from "../../../../../ui/src/icons/chevron";
-import MinusIcon from "../../../../../ui/src/icons/minus";
-import PlusIcon from "../../../../../ui/src/icons/plus";
+import Button from "~/components/button";
+import Grow from "~/components/grow";
+import IconButton from "~/components/icon-button";
+import Input from "~/components/input";
+import Menu from "~/components/menu";
+import MenuItem from "~/components/menu-item";
+import Separator from "~/components/separator";
+import ChevronIcon from "~/icons/chevron";
+import MinusIcon from "~/icons/minus";
+import PlusIcon from "~/icons/plus";
 import { clamp } from "~/utils/clamp";
 
 import { MAX_ZOOM_LEVEL, MIN_ZOOM_LEVEL } from "../../../constants";
@@ -129,7 +129,7 @@ const ZoomControl = (): React.ReactElement => {
         <MenuItem
           disabled={zoom >= MAX_ZOOM_LEVEL}
           onClick={(): void => increment_zoom()}
-          onSelect={(event: Event): void => event.preventDefault()}
+          onSelect={(event): void => event.preventDefault()}
         >
           Zoom in
           <Grow />
@@ -138,7 +138,7 @@ const ZoomControl = (): React.ReactElement => {
         <MenuItem
           disabled={zoom <= MIN_ZOOM_LEVEL}
           onClick={(): void => decrement_zoom()}
-          onSelect={(event: Event): void => event.preventDefault()}
+          onSelect={(event): void => event.preventDefault()}
         >
           Zoom out
           <Grow />

@@ -6,7 +6,7 @@ import { IS_MAC } from "../../constants";
  * Deletes text in forward direction
  * @param page Page
  */
-export const deleteForward = async (page: Page): Promise<void> => {
+export const delete_forward = async (page: Page): Promise<void> => {
   if (IS_MAC) {
     await page.keyboard.down("Control");
     await page.keyboard.press("d");

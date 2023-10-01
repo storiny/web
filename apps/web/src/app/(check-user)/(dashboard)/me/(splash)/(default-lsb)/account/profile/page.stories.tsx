@@ -11,7 +11,7 @@ import DefaultDashboardLeftSidebarLayout from "../../layout";
 import AccountProfilePage from "./client";
 
 const meta: Meta<typeof AccountProfilePage> = {
-  title: "dashboard/Account/profile",
+  title: "dashboard/account/profile",
   component: AccountProfilePage,
   parameters: {
     layout: "fullscreen"

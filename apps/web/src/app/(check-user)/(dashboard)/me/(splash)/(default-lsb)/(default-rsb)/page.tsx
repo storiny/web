@@ -3,7 +3,7 @@
 import { redirect } from "next/navigation";
 import React from "react";
 
-import { use_media_query } from "../../../../../../../../../../packages/ui/src/hooks/use-media-query";
+import { use_media_query } from "~/hooks/use-media-query";
 import { BREAKPOINTS } from "~/theme/breakpoints";
 
 import DashboardNavigationScreen from "./navigation-screen";

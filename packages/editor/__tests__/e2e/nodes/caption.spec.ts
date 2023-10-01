@@ -1,29 +1,29 @@
 import { Page, test } from "@playwright/test";
-import { compressToEncodedURIComponent } from "lz-string";
+import { compressToEncodedURIComponent as compress_to_encoded_uri_component } from "lz-string";
 
 import {
-  moveLeft,
-  moveToParagraphBeginning,
-  pressBackspace
+  move_left,
+  move_to_paragraph_beginning,
+  press_backspace
 } from "../../keyboard-shortcuts";
 import {
-  assertHTML,
-  assertSelection,
-  focusEditor,
+  assert_html,
+  assert_selection,
+  focus_editor,
   html,
   initialize,
-  insertEmbed,
+  insert_embed,
   sleep
 } from "../../utils";
 
-const EMBED_SLUG = compressToEncodedURIComponent("https://example.com");
+const EMBED_SLUG = compress_to_encoded_uri_component("https://example.com");
 const ROUTE = `*/**/embed/${EMBED_SLUG}?theme={light,dark}`;
 
 /**
  * Returns embed response without iframe
  * @param route Route
  */
-const sourcedEmbedHandler: Parameters<Page["route"]>[1] = async (route) => {
+const sourced_embed_handler: Parameters<Page["route"]>[1] = async (route) => {
   await route.fulfill({
     json: {
       html: "<span></span>",
@@ -37,19 +37,17 @@ const sourcedEmbedHandler: Parameters<Page["route"]>[1] = async (route) => {
 test.describe("caption", () => {
   test.beforeEach(async ({ page }) => {
     await initialize(page);
-
-    await page.route(ROUTE, sourcedEmbedHandler);
-
-    await insertEmbed(page);
-    await focusEditor(page);
+    await page.route(ROUTE, sourced_embed_handler);
+    await insert_embed(page);
+    await focus_editor(page);
   });
 
   test.afterEach(async ({ page }) => {
-    await page.unroute(ROUTE, sourcedEmbedHandler);
+    await page.unroute(ROUTE, sourced_embed_handler);
   });
 
   test("can add caption node along with the figure node", async ({ page }) => {
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <p><br /></p>
@@ -83,24 +81,24 @@ test.describe("caption", () => {
       `,
       undefined,
       {
-        ignoreClasses: true,
-        ignoreInlineStyles: true
+        ignore_classes: true,
+        ignore_inline_styles: true
       }
     );
 
-    await assertSelection(page, {
-      anchorOffset: 0,
-      anchorPath: [3],
-      focusOffset: 0,
-      focusPath: [3]
+    await assert_selection(page, {
+      anchor_offset: 0,
+      anchor_path: [3],
+      focus_offset: 0,
+      focus_path: [3]
     });
   });
 
   test("can type inside the caption node", async ({ page }) => {
-    await pressBackspace(page, 2);
+    await press_backspace(page, 2);
     await page.keyboard.type("text inside caption");
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <p><br /></p>
@@ -134,31 +132,31 @@ test.describe("caption", () => {
       `,
       undefined,
       {
-        ignoreClasses: true,
-        ignoreInlineStyles: true
+        ignore_classes: true,
+        ignore_inline_styles: true
       }
     );
 
-    await assertSelection(page, {
-      anchorOffset: 19,
-      anchorPath: [1, 1, 0, 0],
-      focusOffset: 19,
-      focusPath: [1, 1, 0, 0]
+    await assert_selection(page, {
+      anchor_offset: 19,
+      anchor_path: [1, 1, 0, 0],
+      focus_offset: 19,
+      focus_path: [1, 1, 0, 0]
     });
   });
 
   test("can split into a paragraph node and move out of the figure element when enter is pressed in-between the caption", async ({
     page
   }) => {
-    await pressBackspace(page, 2);
+    await press_backspace(page, 2);
     await page.keyboard.type("text inside caption");
-    await moveLeft(page, 8);
+    await move_left(page, 8);
 
     await page.keyboard.press("Enter");
     await page.keyboard.press("Enter");
     await sleep(500);
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <p><br /></p>
@@ -194,25 +192,25 @@ test.describe("caption", () => {
       `,
       undefined,
       {
-        ignoreClasses: true,
-        ignoreInlineStyles: true
+        ignore_classes: true,
+        ignore_inline_styles: true
       }
     );
 
-    await assertSelection(page, {
-      anchorOffset: 0,
-      anchorPath: [3, 0, 0],
-      focusOffset: 0,
-      focusPath: [3, 0, 0]
+    await assert_selection(page, {
+      anchor_offset: 0,
+      anchor_path: [3, 0, 0],
+      focus_offset: 0,
+      focus_path: [3, 0, 0]
     });
   });
 
   test("can merge with other text nodes", async ({ page }) => {
-    await pressBackspace(page, 2);
+    await press_backspace(page, 2);
     await page.keyboard.type("text inside caption");
     await page.keyboard.press("Enter");
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <p><br /></p>
@@ -247,14 +245,14 @@ test.describe("caption", () => {
       `,
       undefined,
       {
-        ignoreClasses: true,
-        ignoreInlineStyles: true
+        ignore_classes: true,
+        ignore_inline_styles: true
       }
     );
 
     await page.keyboard.type("hello world");
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <p><br /></p>
@@ -291,17 +289,17 @@ test.describe("caption", () => {
       `,
       undefined,
       {
-        ignoreClasses: true,
-        ignoreInlineStyles: true
+        ignore_classes: true,
+        ignore_inline_styles: true
       }
     );
 
-    await moveToParagraphBeginning(page);
+    await move_to_paragraph_beginning(page);
     await page.keyboard.type(" ");
-    await moveLeft(page, 1);
-    await pressBackspace(page);
+    await move_left(page, 1);
+    await press_backspace(page);
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <p><br /></p>
@@ -337,8 +335,8 @@ test.describe("caption", () => {
       `,
       undefined,
       {
-        ignoreClasses: true,
-        ignoreInlineStyles: true
+        ignore_classes: true,
+        ignore_inline_styles: true
       }
     );
   });
@@ -346,10 +344,10 @@ test.describe("caption", () => {
   test("can delete the entire figure node when backspace is pressed at the start of the caption node", async ({
     page
   }) => {
-    await pressBackspace(page, 2);
+    await press_backspace(page, 2);
     await page.keyboard.type("caption");
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <p><br /></p>
@@ -383,18 +381,18 @@ test.describe("caption", () => {
       `,
       undefined,
       {
-        ignoreClasses: true,
-        ignoreInlineStyles: true
+        ignore_classes: true,
+        ignore_inline_styles: true
       }
     );
 
     // Move to the start of the caption node
-    await moveLeft(page, 7);
-    await pressBackspace(page);
+    await move_left(page, 7);
+    await press_backspace(page);
     await sleep(500);
 
-    await assertHTML(page, html`<p><br /></p>`, undefined, {
-      ignoreClasses: true
+    await assert_html(page, html`<p><br /></p>`, undefined, {
+      ignore_classes: true
     });
   });
 });

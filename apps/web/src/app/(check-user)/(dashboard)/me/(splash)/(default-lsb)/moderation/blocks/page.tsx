@@ -5,7 +5,7 @@ import React from "react";
 
 import { get_user_block_count } from "~/common/grpc";
 import { handle_exception } from "~/common/grpc/utils";
-import { get_user } from "src/common/utils/get-user";
+import { get_user } from "~/common/utils/get-user";
 
 import ModerationBlocksClient from "./client";
 

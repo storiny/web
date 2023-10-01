@@ -2,25 +2,26 @@ import { test } from "@playwright/test";
 
 import { EDITOR_CLASSNAMES } from "../constants";
 import {
-  assertHTML,
-  assertSelection,
-  focusEditor,
+  assert_html,
+  assert_selection,
+  focus_editor,
   html,
   initialize
 } from "../utils";
 
+// eslint-disable-next-line prefer-snakecase/prefer-snakecase
 test.use({ launchOptions: { slowMo: 50 } });
 
 test.describe("composition", () => {
   test.beforeEach(async ({ page }) => {
     await initialize(page);
-    await focusEditor(page);
+    await focus_editor(page);
   });
 
   test("handles Hiragana characters", async ({ page }) => {
     await page.keyboard.type("も");
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
@@ -29,30 +30,30 @@ test.describe("composition", () => {
       `
     );
 
-    await assertSelection(page, {
-      anchorOffset: 1,
-      anchorPath: [0, 0, 0],
-      focusOffset: 1,
-      focusPath: [0, 0, 0]
+    await assert_selection(page, {
+      anchor_offset: 1,
+      anchor_path: [0, 0, 0],
+      focus_offset: 1,
+      focus_path: [0, 0, 0]
     });
 
     await page.keyboard.press("Backspace");
 
-    await assertHTML(
+    await assert_html(
       page,
       html` <p class="${EDITOR_CLASSNAMES.paragraph}"><br /></p> `
     );
 
-    await assertSelection(page, {
-      anchorOffset: 0,
-      anchorPath: [0],
-      focusOffset: 0,
-      focusPath: [0]
+    await assert_selection(page, {
+      anchor_offset: 0,
+      anchor_path: [0],
+      focus_offset: 0,
+      focus_path: [0]
     });
 
     await page.keyboard.type("もじ");
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
@@ -61,11 +62,11 @@ test.describe("composition", () => {
       `
     );
 
-    await assertSelection(page, {
-      anchorOffset: 2,
-      anchorPath: [0, 0, 0],
-      focusOffset: 2,
-      focusPath: [0, 0, 0]
+    await assert_selection(page, {
+      anchor_offset: 2,
+      anchor_path: [0, 0, 0],
+      focus_offset: 2,
+      focus_path: [0, 0, 0]
     });
   });
 
@@ -77,7 +78,7 @@ test.describe("composition", () => {
 
     await page.keyboard.type("هَ");
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <p class="${EDITOR_CLASSNAMES.paragraph}" dir="rtl">
@@ -86,16 +87,16 @@ test.describe("composition", () => {
       `
     );
 
-    await assertSelection(page, {
-      anchorOffset: 2,
-      anchorPath: [0, 0, 0],
-      focusOffset: 2,
-      focusPath: [0, 0, 0]
+    await assert_selection(page, {
+      anchor_offset: 2,
+      anchor_path: [0, 0, 0],
+      focus_offset: 2,
+      focus_path: [0, 0, 0]
     });
 
     await page.keyboard.press("Backspace");
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <p class="${EDITOR_CLASSNAMES.paragraph}" dir="rtl">
@@ -104,23 +105,23 @@ test.describe("composition", () => {
       `
     );
 
-    await assertSelection(page, {
-      anchorOffset: 1,
-      anchorPath: [0, 0, 0],
-      focusOffset: 1,
-      focusPath: [0, 0, 0]
+    await assert_selection(page, {
+      anchor_offset: 1,
+      anchor_path: [0, 0, 0],
+      focus_offset: 1,
+      focus_path: [0, 0, 0]
     });
 
     await page.keyboard.press("Backspace");
 
-    await assertHTML(
+    await assert_html(
       page,
       html` <p class="${EDITOR_CLASSNAMES.paragraph}"><br /></p> `
     );
 
     await page.keyboard.type("هَ");
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <p class="${EDITOR_CLASSNAMES.paragraph}" dir="rtl">
@@ -129,25 +130,25 @@ test.describe("composition", () => {
       `
     );
 
-    await assertSelection(page, {
-      anchorOffset: 2,
-      anchorPath: [0, 0, 0],
-      focusOffset: 2,
-      focusPath: [0, 0, 0]
+    await assert_selection(page, {
+      anchor_offset: 2,
+      anchor_path: [0, 0, 0],
+      focus_offset: 2,
+      focus_path: [0, 0, 0]
     });
 
     await page.keyboard.press("ArrowRight");
 
-    await assertSelection(page, {
-      anchorOffset: 2,
-      anchorPath: [0, 0, 0],
-      focusOffset: 2,
-      focusPath: [0, 0, 0]
+    await assert_selection(page, {
+      anchor_offset: 2,
+      anchor_path: [0, 0, 0],
+      focus_offset: 2,
+      focus_path: [0, 0, 0]
     });
 
     await page.keyboard.press("Delete");
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <p class="${EDITOR_CLASSNAMES.paragraph}" dir="rtl">
@@ -156,11 +157,11 @@ test.describe("composition", () => {
       `
     );
 
-    await assertSelection(page, {
-      anchorOffset: 2,
-      anchorPath: [0, 0, 0],
-      focusOffset: 2,
-      focusPath: [0, 0, 0]
+    await assert_selection(page, {
+      anchor_offset: 2,
+      anchor_path: [0, 0, 0],
+      focus_offset: 2,
+      focus_path: [0, 0, 0]
     });
   });
 });

@@ -22,14 +22,14 @@ import { useHotkeys as use_hot_keys } from "react-hotkeys-hook";
 import { useIntersectionObserver as use_intersection_observer } from "react-intersection-observer-hook";
 import use_resize_observer from "use-resize-observer";
 
-import AspectRatio from "../../../../../ui/src/components/aspect-ratio";
-import IconButton from "../../../../../ui/src/components/icon-button";
-import Image from "../../../../../ui/src/components/image";
-import Popover from "../../../../../ui/src/components/popover";
-import Spinner from "../../../../../ui/src/components/spinner";
-import TrashIcon from "../../../../../ui/src/icons/trash";
+import AspectRatio from "~/components/aspect-ratio";
+import IconButton from "~/components/icon-button";
+import Image from "~/components/image";
+import Popover from "~/components/popover";
+import Spinner from "~/components/spinner";
+import TrashIcon from "~/icons/trash";
 import { BREAKPOINTS } from "~/theme/breakpoints";
-import { get_cdn_url } from "../../../../../ui/src/utils/get-cdn-url";
+import { get_cdn_url } from "~/utils/get-cdn-url";
 
 import { overflowing_figures_atom } from "../../../atoms";
 import figure_styles from "../../common/figure.module.scss";

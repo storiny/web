@@ -4,20 +4,20 @@ import { USER_PROPS } from "@storiny/shared";
 import { clsx } from "clsx";
 import React from "react";
 
-import { use_debounce } from "~/hooks/use-debounce";
-import { use_username_validation_mutation } from "~/redux/features";
-
-import Button from "../../../../../../../../packages/ui/src/components/button";
+import Button from "~/components/button";
 import Form, {
   SubmitHandler,
   use_form,
   use_form_context,
   zod_resolver
-} from "../../../../../../../../packages/ui/src/components/form";
-import FormInput from "../../../../../../../../packages/ui/src/components/form-input";
-import Grow from "../../../../../../../../packages/ui/src/components/grow";
-import Spacer from "../../../../../../../../packages/ui/src/components/spacer";
-import Spinner from "../../../../../../../../packages/ui/src/components/spinner";
+} from "~/components/form";
+import FormInput from "~/components/form-input";
+import Grow from "~/components/grow";
+import Spacer from "~/components/spacer";
+import Spinner from "~/components/spinner";
+import { use_debounce } from "~/hooks/use-debounce";
+import { use_username_validation_mutation } from "~/redux/features";
+
 import { use_auth_state } from "../../../actions";
 import { SIGNUP_USERNAME_SCHEMA, SignupUsernameSchema } from "./schema";
 
@@ -34,10 +34,12 @@ const UsernameField = ({
 }): React.ReactElement => {
   const mounted = React.useRef<boolean>(false);
   const { state } = use_auth_state();
-  const { watch, get_field_state } = use_form_context();
+  const { watch, getFieldState: get_field_state } = use_form_context();
   const { invalid } = get_field_state("username");
-  const [validate_username, { is_loading, is_error, is_success }] =
-    use_username_validation_mutation();
+  const [
+    validate_username,
+    { isLoading: is_loading, isError: is_error, isSuccess: is_success }
+  ] = use_username_validation_mutation();
   const username = watch("username", state.signup.username);
   const debounced_username = use_debounce(username);
   const loading =
@@ -47,11 +49,11 @@ const UsernameField = ({
   React.useEffect(() => {
     if (
       !invalid &&
-      debouncedUsername.length >= USER_PROPS.username.min_length &&
+      debounced_username.length >= USER_PROPS.username.min_length &&
       // Skip fetching when switching between segments
       mounted.current
     ) {
-      validateUsername({ username: debounced_username });
+      validate_username({ username: debounced_username });
     }
   }, [validate_username, debounced_username, invalid]);
 

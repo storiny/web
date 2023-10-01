@@ -2,32 +2,32 @@ import { test } from "@playwright/test";
 
 import { EDITOR_CLASSNAMES } from "../constants";
 import {
-  moveLeft,
-  moveToLineBeginning,
-  selectAll,
-  selectCharacters
+  move_left,
+  move_to_line_beginning,
+  select_all,
+  select_characters
 } from "../keyboard-shortcuts";
 import {
-  assertHTML,
-  assertSelection,
-  focusEditor,
+  assert_html,
+  assert_selection,
+  focus_editor,
   html,
   initialize,
-  keyDownCtrlOrAlt,
-  keyUpCtrlOrAlt
+  key_down_ctrl_or_alt,
+  key_up_ctrl_or_alt
 } from "../utils";
 
 test.describe("text entry", () => {
   test.beforeEach(async ({ page }) => {
     await initialize(page);
-    await focusEditor(page);
+    await focus_editor(page);
   });
 
   test("can type `hello world` in the editor", async ({ page }) => {
-    const targetText = "hello world";
-    await page.keyboard.type(targetText);
+    const target_text = "hello world";
+    await page.keyboard.type(target_text);
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
@@ -36,11 +36,11 @@ test.describe("text entry", () => {
       `
     );
 
-    await assertSelection(page, {
-      anchorOffset: targetText.length,
-      anchorPath: [0, 0, 0],
-      focusOffset: targetText.length,
-      focusPath: [0, 0, 0]
+    await assert_selection(page, {
+      anchor_offset: target_text.length,
+      anchor_path: [0, 0, 0],
+      focus_offset: target_text.length,
+      focus_path: [0, 0, 0]
     });
   });
 
@@ -51,7 +51,7 @@ test.describe("text entry", () => {
       ?.locator("[data-lexical-editor]")
       .fill("front updated");
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
@@ -60,11 +60,11 @@ test.describe("text entry", () => {
       `
     );
 
-    await assertSelection(page, {
-      anchorOffset: 13,
-      anchorPath: [0, 0, 0],
-      focusOffset: 13,
-      focusPath: [0, 0, 0]
+    await assert_selection(page, {
+      anchor_offset: 13,
+      anchor_path: [0, 0, 0],
+      focus_offset: 13,
+      focus_path: [0, 0, 0]
     });
   });
 
@@ -73,9 +73,9 @@ test.describe("text entry", () => {
   }) => {
     await page.keyboard.type("# hello");
 
-    await moveToLineBeginning(page);
+    await move_to_line_beginning(page);
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <h2 class="${EDITOR_CLASSNAMES.heading}" dir="ltr">
@@ -84,16 +84,16 @@ test.describe("text entry", () => {
       `
     );
 
-    await assertSelection(page, {
-      anchorOffset: 0,
-      anchorPath: [0, 0, 0],
-      focusOffset: 0,
-      focusPath: [0, 0, 0]
+    await assert_selection(page, {
+      anchor_offset: 0,
+      anchor_path: [0, 0, 0],
+      focus_offset: 0,
+      focus_path: [0, 0, 0]
     });
 
     await page.keyboard.press("Enter");
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <p class="${EDITOR_CLASSNAMES.paragraph}"><br /></p>
@@ -103,26 +103,26 @@ test.describe("text entry", () => {
       `
     );
 
-    await assertSelection(page, {
-      anchorOffset: 0,
-      anchorPath: [1, 0, 0],
-      focusOffset: 0,
-      focusPath: [1, 0, 0]
+    await assert_selection(page, {
+      anchor_offset: 0,
+      anchor_path: [1, 0, 0],
+      focus_offset: 0,
+      focus_path: [1, 0, 0]
     });
   });
 
   test("can type `hello world` in the editor and replace it with `foo`", async ({
     page
   }) => {
-    const targetText = "hello world";
-    await page.keyboard.type(targetText);
+    const target_text = "hello world";
+    await page.keyboard.type(target_text);
 
     // Select all the text
-    await selectAll(page);
+    await select_all(page);
 
     await page.keyboard.type("foo");
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
@@ -131,26 +131,26 @@ test.describe("text entry", () => {
       `
     );
 
-    await assertSelection(page, {
-      anchorOffset: 3,
-      anchorPath: [0, 0, 0],
-      focusOffset: 3,
-      focusPath: [0, 0, 0]
+    await assert_selection(page, {
+      anchor_offset: 3,
+      anchor_path: [0, 0, 0],
+      focus_offset: 3,
+      focus_path: [0, 0, 0]
     });
   });
 
   test("can type `hello world` in the editor and replace it with an empty space", async ({
     page
   }) => {
-    const targetText = "hello world";
-    await page.keyboard.type(targetText);
+    const target_text = "hello world";
+    await page.keyboard.type(target_text);
 
     // Select all the text
-    await selectAll(page);
+    await select_all(page);
 
     await page.keyboard.type(" ");
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <p class="${EDITOR_CLASSNAMES.paragraph}">
@@ -159,11 +159,11 @@ test.describe("text entry", () => {
       `
     );
 
-    await assertSelection(page, {
-      anchorOffset: 1,
-      anchorPath: [0, 0, 0],
-      focusOffset: 1,
-      focusPath: [0, 0, 0]
+    await assert_selection(page, {
+      anchor_offset: 1,
+      anchor_path: [0, 0, 0],
+      focus_offset: 1,
+      focus_path: [0, 0, 0]
     });
   });
 
@@ -172,19 +172,19 @@ test.describe("text entry", () => {
     await page.keyboard.press("Enter");
     await page.keyboard.type("This is another block.");
     await page.keyboard.down("Shift");
-    await moveLeft(page, 6);
+    await move_left(page, 6);
 
-    await assertSelection(page, {
-      anchorOffset: 22,
-      anchorPath: [1, 0, 0],
-      focusOffset: 16,
-      focusPath: [1, 0, 0]
+    await assert_selection(page, {
+      anchor_offset: 22,
+      anchor_path: [1, 0, 0],
+      focus_offset: 16,
+      focus_path: [1, 0, 0]
     });
 
     await page.keyboard.up("Shift");
     await page.keyboard.type("paragraph.");
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
@@ -196,24 +196,24 @@ test.describe("text entry", () => {
       `
     );
 
-    await assertSelection(page, {
-      anchorOffset: 26,
-      anchorPath: [1, 0, 0],
-      focusOffset: 26,
-      focusPath: [1, 0, 0]
+    await assert_selection(page, {
+      anchor_offset: 26,
+      anchor_path: [1, 0, 0],
+      focus_offset: 26,
+      focus_path: [1, 0, 0]
     });
   });
 
   test("can delete characters after they are typed", async ({ page }) => {
     const text = "Delete some of these characters.";
-    const backspacedText = "Delete some of these characte";
+    const backspaced_text = "Delete some of these characte";
 
     await page.keyboard.type(text);
     await page.keyboard.press("Backspace");
     await page.keyboard.press("Backspace");
     await page.keyboard.press("Backspace");
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
@@ -222,11 +222,11 @@ test.describe("text entry", () => {
       `
     );
 
-    await assertSelection(page, {
-      anchorOffset: backspacedText.length,
-      anchorPath: [0, 0, 0],
-      focusOffset: backspacedText.length,
-      focusPath: [0, 0, 0]
+    await assert_selection(page, {
+      anchor_offset: backspaced_text.length,
+      anchor_path: [0, 0, 0],
+      focus_offset: backspaced_text.length,
+      focus_path: [0, 0, 0]
     });
   });
 
@@ -235,7 +235,7 @@ test.describe("text entry", () => {
   }) => {
     await page.keyboard.type("Hello world.");
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
@@ -244,27 +244,27 @@ test.describe("text entry", () => {
       `
     );
 
-    await moveLeft(page, 7);
+    await move_left(page, 7);
 
-    await assertSelection(page, {
-      anchorOffset: 5,
-      anchorPath: [0, 0, 0],
-      focusOffset: 5,
-      focusPath: [0, 0, 0]
+    await assert_selection(page, {
+      anchor_offset: 5,
+      anchor_path: [0, 0, 0],
+      focus_offset: 5,
+      focus_path: [0, 0, 0]
     });
 
-    await selectCharacters(page, "right", 1);
+    await select_characters(page, "right", 1);
 
-    await assertSelection(page, {
-      anchorOffset: 5,
-      anchorPath: [0, 0, 0],
-      focusOffset: 6,
-      focusPath: [0, 0, 0]
+    await assert_selection(page, {
+      anchor_offset: 5,
+      anchor_path: [0, 0, 0],
+      focus_offset: 6,
+      focus_path: [0, 0, 0]
     });
 
     await page.keyboard.type(" my ");
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
@@ -273,39 +273,39 @@ test.describe("text entry", () => {
       `
     );
 
-    await assertSelection(page, {
-      anchorOffset: 9,
-      anchorPath: [0, 0, 0],
-      focusOffset: 9,
-      focusPath: [0, 0, 0]
+    await assert_selection(page, {
+      anchor_offset: 9,
+      anchor_path: [0, 0, 0],
+      focus_offset: 9,
+      focus_path: [0, 0, 0]
     });
   });
 
   test("can select and delete a single word", async ({ page, browserName }) => {
     const text = "Delete some of these characters.";
-    const backspacedText = "Delete some of these ";
+    const backspaced_text = "Delete some of these ";
 
     await page.keyboard.type(text);
-    await keyDownCtrlOrAlt(page);
+    await key_down_ctrl_or_alt(page);
     await page.keyboard.down("Shift");
 
     // Chrome stops words on punctuation, so we need to trigger
     // the left arrow key one more time.
-    await moveLeft(page, browserName === "chromium" ? 2 : 1);
+    await move_left(page, browserName === "chromium" ? 2 : 1);
     await page.keyboard.up("Shift");
-    await keyUpCtrlOrAlt(page);
+    await key_up_ctrl_or_alt(page);
 
     // Ensure the selection is now covering the whole word and period.
-    await assertSelection(page, {
-      anchorOffset: text.length,
-      anchorPath: [0, 0, 0],
-      focusOffset: backspacedText.length,
-      focusPath: [0, 0, 0]
+    await assert_selection(page, {
+      anchor_offset: text.length,
+      anchor_path: [0, 0, 0],
+      focus_offset: backspaced_text.length,
+      focus_path: [0, 0, 0]
     });
 
     await page.keyboard.press("Backspace");
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
@@ -314,11 +314,11 @@ test.describe("text entry", () => {
       `
     );
 
-    await assertSelection(page, {
-      anchorOffset: backspacedText.length,
-      anchorPath: [0, 0, 0],
-      focusOffset: backspacedText.length,
-      focusPath: [0, 0, 0]
+    await assert_selection(page, {
+      anchor_offset: backspaced_text.length,
+      anchor_path: [0, 0, 0],
+      focus_offset: backspaced_text.length,
+      focus_path: [0, 0, 0]
     });
   });
 
@@ -329,7 +329,7 @@ test.describe("text entry", () => {
     // Add paragraph
     await page.keyboard.press("Enter");
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <p class="${EDITOR_CLASSNAMES.paragraph}">
@@ -339,27 +339,27 @@ test.describe("text entry", () => {
       `
     );
 
-    await assertSelection(page, {
-      anchorOffset: 0,
-      anchorPath: [1],
-      focusOffset: 0,
-      focusPath: [1]
+    await assert_selection(page, {
+      anchor_offset: 0,
+      anchor_path: [1],
+      focus_offset: 0,
+      focus_path: [1]
     });
 
     // Move to the previous paragraph and press backspace
     await page.keyboard.press("ArrowUp");
     await page.keyboard.press("Backspace");
 
-    await assertHTML(
+    await assert_html(
       page,
       html` <p class="${EDITOR_CLASSNAMES.paragraph}"><br /></p> `
     );
 
-    await assertSelection(page, {
-      anchorOffset: 0,
-      anchorPath: [0],
-      focusOffset: 0,
-      focusPath: [0]
+    await assert_selection(page, {
+      anchor_offset: 0,
+      anchor_path: [0],
+      focus_offset: 0,
+      focus_path: [0]
     });
   });
 
@@ -373,7 +373,7 @@ test.describe("text entry", () => {
     await page.keyboard.press("Enter");
     await page.keyboard.up("Shift");
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <p class="${EDITOR_CLASSNAMES.paragraph}">
@@ -385,11 +385,11 @@ test.describe("text entry", () => {
       `
     );
 
-    await assertSelection(page, {
-      anchorOffset: 3,
-      anchorPath: [0],
-      focusOffset: 3,
-      focusPath: [0]
+    await assert_selection(page, {
+      anchor_offset: 3,
+      anchor_path: [0],
+      focus_offset: 3,
+      focus_path: [0]
     });
 
     // Move to the top
@@ -397,17 +397,17 @@ test.describe("text entry", () => {
     await page.keyboard.press("ArrowUp");
     await page.keyboard.press("ArrowUp");
 
-    await assertSelection(page, {
-      anchorOffset: 0,
-      anchorPath: [0],
-      focusOffset: 0,
-      focusPath: [0]
+    await assert_selection(page, {
+      anchor_offset: 0,
+      anchor_path: [0],
+      focus_offset: 0,
+      focus_path: [0]
     });
 
     // Add a paragraph
     await page.keyboard.press("Enter");
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <p class="${EDITOR_CLASSNAMES.paragraph}"><br /></p>
@@ -420,18 +420,18 @@ test.describe("text entry", () => {
       `
     );
 
-    await assertSelection(page, {
-      anchorOffset: 0,
-      anchorPath: [1],
-      focusOffset: 0,
-      focusPath: [1]
+    await assert_selection(page, {
+      anchor_offset: 0,
+      anchor_path: [1],
+      focus_offset: 0,
+      focus_path: [1]
     });
 
     // Handling RTL (bidi) text
     await page.keyboard.press("ArrowUp");
     await page.keyboard.type("هَ");
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <p class="${EDITOR_CLASSNAMES.paragraph}" dir="rtl">
@@ -446,11 +446,11 @@ test.describe("text entry", () => {
       `
     );
 
-    await assertSelection(page, {
-      anchorOffset: 2,
-      anchorPath: [0, 0, 0],
-      focusOffset: 2,
-      focusPath: [0, 0, 0]
+    await assert_selection(page, {
+      anchor_offset: 2,
+      anchor_path: [0, 0, 0],
+      focus_offset: 2,
+      focus_path: [0, 0, 0]
     });
   });
 
@@ -458,7 +458,7 @@ test.describe("text entry", () => {
     // Add a paragraph
     await page.keyboard.press("Enter");
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <p class="${EDITOR_CLASSNAMES.paragraph}"><br /></p>
@@ -468,53 +468,53 @@ test.describe("text entry", () => {
 
     await page.pause();
 
-    await assertSelection(page, {
-      anchorOffset: 0,
-      anchorPath: [1],
-      focusOffset: 0,
-      focusPath: [1]
+    await assert_selection(page, {
+      anchor_offset: 0,
+      anchor_path: [1],
+      focus_offset: 0,
+      focus_path: [1]
     });
 
     await page.keyboard.press("ArrowLeft");
 
-    await assertSelection(page, {
-      anchorOffset: 0,
-      anchorPath: [0],
-      focusOffset: 0,
-      focusPath: [0]
+    await assert_selection(page, {
+      anchor_offset: 0,
+      anchor_path: [0],
+      focus_offset: 0,
+      focus_path: [0]
     });
 
     await page.keyboard.press("ArrowRight");
 
-    await assertSelection(page, {
-      anchorOffset: 0,
-      anchorPath: [1],
-      focusOffset: 0,
-      focusPath: [1]
+    await assert_selection(page, {
+      anchor_offset: 0,
+      anchor_path: [1],
+      focus_offset: 0,
+      focus_path: [1]
     });
 
     await page.keyboard.press("ArrowLeft");
 
-    await assertSelection(page, {
-      anchorOffset: 0,
-      anchorPath: [0],
-      focusOffset: 0,
-      focusPath: [0]
+    await assert_selection(page, {
+      anchor_offset: 0,
+      anchor_path: [0],
+      focus_offset: 0,
+      focus_path: [0]
     });
 
     // Remove the paragraph
     await page.keyboard.press("Delete");
 
-    await assertHTML(
+    await assert_html(
       page,
       html` <p class="${EDITOR_CLASSNAMES.paragraph}"><br /></p> `
     );
 
-    await assertSelection(page, {
-      anchorOffset: 0,
-      anchorPath: [0],
-      focusOffset: 0,
-      focusPath: [0]
+    await assert_selection(page, {
+      anchor_offset: 0,
+      anchor_path: [0],
+      focus_offset: 0,
+      focus_path: [0]
     });
 
     // Add line break
@@ -522,7 +522,7 @@ test.describe("text entry", () => {
     await page.keyboard.press("Enter");
     await page.keyboard.up("Shift");
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <p class="${EDITOR_CLASSNAMES.paragraph}">
@@ -532,16 +532,16 @@ test.describe("text entry", () => {
       `
     );
 
-    await assertSelection(page, {
-      anchorOffset: 1,
-      anchorPath: [0],
-      focusOffset: 1,
-      focusPath: [0]
+    await assert_selection(page, {
+      anchor_offset: 1,
+      anchor_path: [0],
+      focus_offset: 1,
+      focus_path: [0]
     });
 
     await page.keyboard.press("ArrowLeft");
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <p class="${EDITOR_CLASSNAMES.paragraph}">
@@ -551,26 +551,26 @@ test.describe("text entry", () => {
       `
     );
 
-    await assertSelection(page, {
-      anchorOffset: 0,
-      anchorPath: [0],
-      focusOffset: 0,
-      focusPath: [0]
+    await assert_selection(page, {
+      anchor_offset: 0,
+      anchor_path: [0],
+      focus_offset: 0,
+      focus_path: [0]
     });
 
     // Remove line break
     await page.keyboard.press("Delete");
 
-    await assertHTML(
+    await assert_html(
       page,
       html` <p class="${EDITOR_CLASSNAMES.paragraph}"><br /></p> `
     );
 
-    await assertSelection(page, {
-      anchorOffset: 0,
-      anchorPath: [0],
-      focusOffset: 0,
-      focusPath: [0]
+    await assert_selection(page, {
+      anchor_offset: 0,
+      anchor_path: [0],
+      focus_offset: 0,
+      focus_path: [0]
     });
   });
 });

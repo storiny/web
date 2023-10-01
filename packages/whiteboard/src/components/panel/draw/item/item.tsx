@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import React from "react";
 
-import Typography from "../../../../../../ui/src/components/typography";
+import Typography from "~/components/typography";
 
 import styles from "./item.module.scss";
 import { DrawItemProps } from "./item.props";

@@ -1,7 +1,7 @@
 import React from "react";
 
 import Gallery from "~/entities/gallery";
-import ImageIcon from "../../../../../../../../../ui/src/icons/image";
+import ImageIcon from "~/icons/image";
 
 import { use_insert_image } from "../../../../../../../hooks/use-insert-image";
 import InsertItem from "../insert-item";
@@ -23,7 +23,8 @@ const ImageItem = ({
               hex: image.hex,
               rating: image.rating,
               width: image.width,
-              height: image.height
+              height: image.height,
+              scale_factor: 1
             }
           ],
           credits: image.credits

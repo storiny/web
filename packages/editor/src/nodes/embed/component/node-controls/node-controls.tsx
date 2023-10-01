@@ -3,8 +3,8 @@ import { clsx } from "clsx";
 import { $getNodeByKey as $get_node_by_key } from "lexical";
 import React from "react";
 
-import ToggleGroup from "../../../../../../ui/src/components/toggle-group";
-import ToggleGroupItem from "../../../../../../ui/src/components/toggle-group-item";
+import ToggleGroup from "~/components/toggle-group";
+import ToggleGroupItem from "~/components/toggle-group-item";
 import FigureFillIcon from "~/icons/figure-fill";
 import FigureOverflowIcon from "~/icons/figure-overflow";
 

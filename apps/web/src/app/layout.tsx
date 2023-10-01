@@ -6,7 +6,7 @@ import "~/theme/main.scss";
 
 import dynamic from "next/dynamic";
 import React from "react";
-import { get_session_token } from "src/common/utils/get-session-token";
+import { get_session_token } from "~/common/utils/get-session-token";
 
 import CriticalStyles from "~/theme/critical";
 

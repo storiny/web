@@ -2,19 +2,15 @@ import { clsx } from "clsx";
 import { useRouter as use_router } from "next/navigation";
 import React from "react";
 
-import { use_confirmation } from "../../../../../../../../../../../../../../packages/ui/src/components/confirmation";
-import Form, {
-  SubmitHandler,
-  use_form,
-  zod_resolver
-} from "../../../../../../../../../../../../../../packages/ui/src/components/form";
-import FormSwitch from "../../../../../../../../../../../../../../packages/ui/src/components/form-switch";
-import Link from "../../../../../../../../../../../../../../packages/ui/src/components/link";
-import Spacer from "../../../../../../../../../../../../../../packages/ui/src/components/spacer";
-import { use_toast } from "../../../../../../../../../../../../../../packages/ui/src/components/toast";
-import Typography from "../../../../../../../../../../../../../../packages/ui/src/components/typography";
-import LockIcon from "../../../../../../../../../../../../../../packages/ui/src/icons/lock";
-import LockOpenIcon from "../../../../../../../../../../../../../../packages/ui/src/icons/lock-open";
+import { use_confirmation } from "~/components/confirmation";
+import Form, { SubmitHandler, use_form, zod_resolver } from "~/components/form";
+import FormSwitch from "~/components/form-switch";
+import Link from "~/components/link";
+import Spacer from "~/components/spacer";
+import { use_toast } from "~/components/toast";
+import Typography from "~/components/typography";
+import LockIcon from "~/icons/lock";
+import LockOpenIcon from "~/icons/lock-open";
 import { use_private_account_mutation } from "~/redux/features";
 
 import styles from "../site-safety.module.scss";

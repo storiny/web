@@ -1,6 +1,6 @@
 import React from "react";
 
-import Typography from "../../../../../../packages/ui/src/components/typography";
+import Typography from "~/components/typography";
 
 import { TypographyPropsWithoutColor } from "../../types";
 

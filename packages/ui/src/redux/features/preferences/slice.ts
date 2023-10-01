@@ -1,5 +1,12 @@
-import { createSlice, isAnyOf, PayloadAction } from "@reduxjs/toolkit";
-import { compressToUTF16, decompressFromUTF16 } from "lz-string";
+import {
+  createSlice as create_slice,
+  isAnyOf as is_any_of,
+  PayloadAction
+} from "@reduxjs/toolkit";
+import {
+  compressToUTF16 as compress_to_utf16,
+  decompressFromUTF16 as decompress_from_utf16
+} from "lz-string";
 import { z } from "zod";
 
 import { dev_console } from "../../../../../shared/src/utils/dev-log";
@@ -70,7 +77,7 @@ export type Theme = PreferencesState["theme"];
 export const preferences_initial_state: PreferencesState =
   get_defaults(preferences_schema);
 
-export const preferences_slice = createSlice({
+export const preferences_slice = create_slice({
   name: "preferences",
   initialState: preferences_initial_state,
   reducers: {
@@ -258,7 +265,7 @@ export const add_preferences_listeners = (
           listener_api.dispatch(
             hydrate_state(
               preferences_schema.parse(
-                JSON.parse(decompressFromUTF16(client_value))
+                JSON.parse(decompress_from_utf16(client_value))
               )
             )
           );
@@ -286,7 +293,7 @@ export const add_preferences_listeners = (
    * Sync the `data-theme` attribute on the body element with the state
    */
   start_listening({
-    matcher: isAnyOf(set_theme, hydrate_state),
+    matcher: is_any_of(set_theme, hydrate_state),
     effect: (_, listener_api) => {
       const { theme } = listener_api.getState().preferences;
       let next_theme = theme;
@@ -311,7 +318,7 @@ export const add_preferences_listeners = (
    * Sync reduced motion settings
    */
   start_listening({
-    matcher: isAnyOf(set_reduced_motion, hydrate_state),
+    matcher: is_any_of(set_reduced_motion, hydrate_state),
     effect: (_, listener_api) => {
       const { reduced_motion } = listener_api.getState().preferences;
       let next_reduced_motion = reduced_motion;
@@ -358,7 +365,7 @@ export const add_preferences_listeners = (
    * Sync the code font
    */
   start_listening({
-    matcher: isAnyOf(set_code_font, toggle_code_ligatures),
+    matcher: is_any_of(set_code_font, toggle_code_ligatures),
     effect: (_, listener_api) => {
       const state = listener_api.getState();
       sync_code_font(
@@ -372,7 +379,7 @@ export const add_preferences_listeners = (
    * Persist the preferences state in the browser
    */
   start_listening({
-    matcher: isAnyOf(
+    matcher: is_any_of(
       set_theme,
       set_alert_visibility,
       set_reduced_motion,
@@ -384,7 +391,7 @@ export const add_preferences_listeners = (
     ),
     effect: (_, listener_api) => {
       try {
-        const serialized_state = compressToUTF16(
+        const serialized_state = compress_to_utf16(
           JSON.stringify(listener_api.getState().preferences)
         );
         localStorage.setItem(LOCAL_STORAGE_KEY, serialized_state);

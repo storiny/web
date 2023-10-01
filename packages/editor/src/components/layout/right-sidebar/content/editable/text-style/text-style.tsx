@@ -2,25 +2,25 @@ import { get_shortcut_label } from "@storiny/shared/src/utils/get-shortcut-label
 import { clsx } from "clsx";
 import React from "react";
 
-import Option from "../../../../../../../../ui/src/components/option";
-import Select from "../../../../../../../../ui/src/components/select";
-import Spacer from "../../../../../../../../ui/src/components/spacer";
-import ToggleGroup from "../../../../../../../../ui/src/components/toggle-group";
-import ToggleGroupItem from "../../../../../../../../ui/src/components/toggle-group-item";
-import Typography from "../../../../../../../../ui/src/components/typography";
-import BoldIcon from "../../../../../../../../ui/src/icons/bold";
-import CodeIcon from "../../../../../../../../ui/src/icons/code";
-import ItalicIcon from "../../../../../../../../ui/src/icons/italic";
-import LinkIcon from "../../../../../../../../ui/src/icons/link";
-import StrikethroughIcon from "../../../../../../../../ui/src/icons/strikethrough";
-import SubscriptIcon from "../../../../../../../../ui/src/icons/subscript";
-import SuperscriptIcon from "../../../../../../../../ui/src/icons/superscript";
-import UnderlineIcon from "../../../../../../../../ui/src/icons/underline";
+import Option from "~/components/option";
+import Select from "~/components/select";
+import Spacer from "~/components/spacer";
+import ToggleGroup from "~/components/toggle-group";
+import ToggleGroupItem from "~/components/toggle-group-item";
+import Typography from "~/components/typography";
+import BoldIcon from "~/icons/bold";
+import CodeIcon from "~/icons/code";
+import ItalicIcon from "~/icons/italic";
+import LinkIcon from "~/icons/link";
+import StrikethroughIcon from "~/icons/strikethrough";
+import SubscriptIcon from "~/icons/subscript";
+import SuperscriptIcon from "~/icons/superscript";
+import UnderlineIcon from "~/icons/underline";
 
 import {
-  TextStyle as TextStyleEnum,
   TEXT_STYLE_ICON_MAP,
-  TEXT_STYLE_LABEL_MAP
+  TEXT_STYLE_LABEL_MAP,
+  TextStyle as TextStyleEnum
 } from "../../../../../../constants";
 import { EDITOR_SHORTCUTS } from "../../../../../../constants/shortcuts";
 import { use_bold } from "../../../../../../hooks/use-bold";
@@ -213,7 +213,7 @@ const TextStyleSelect = ({
    * Handles select value change
    * @param next_value New value
    */
-  const handleValueChange = (next_value: TextStyleEnum): void => {
+  const handle_value_change = (next_value: TextStyleEnum): void => {
     switch (next_value) {
       case TextStyleEnum.BULLETED_LIST:
         format_bulleted_list();
@@ -239,7 +239,7 @@ const TextStyleSelect = ({
   return (
     <Select
       disabled={disabled}
-      onValueChange={handleValueChange}
+      onValueChange={handle_value_change}
       slot_props={{
         trigger: {
           "aria-label": "Text style"

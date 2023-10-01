@@ -7,14 +7,14 @@ import React from "react";
 
 import { dynamic_loader } from "~/common/dynamic";
 import { StoryListSkeleton, VirtualizedStoryList } from "~/common/story";
-import Divider from "../../../../../../../packages/ui/src/components/divider";
-import IconButton from "../../../../../../../packages/ui/src/components/icon-button";
-import Input from "../../../../../../../packages/ui/src/components/input";
-import ErrorState from "../../../../../../../packages/ui/src/entities/error-state";
-import PageTitle from "../../../../../../../packages/ui/src/entities/page-title";
-import { use_debounce } from "../../../../../../../packages/ui/src/hooks/use-debounce";
-import SearchIcon from "../../../../../../../packages/ui/src/icons/search";
-import SettingsIcon from "../../../../../../../packages/ui/src/icons/settings";
+import Divider from "~/components/divider";
+import IconButton from "~/components/icon-button";
+import Input from "~/components/input";
+import ErrorState from "~/entities/error-state";
+import PageTitle from "~/entities/page-title";
+import { use_debounce } from "~/hooks/use-debounce";
+import SearchIcon from "~/icons/search";
+import SettingsIcon from "~/icons/settings";
 import { get_query_error_type, use_get_history_query } from "~/redux/features";
 
 import styles from "./styles.module.scss";

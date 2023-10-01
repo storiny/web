@@ -1,10 +1,10 @@
 import React from "react";
 
-import MenuItem from "../../../../../../ui/src/components/menu-item";
-import { use_modal } from "../../../../../../ui/src/components/modal";
-import ModalFooterButton from "../../../../../../ui/src/components/modal/footer-button";
-import { use_toast } from "../../../../../../ui/src/components/toast";
-import ImageIcon from "../../../../../../ui/src/icons/image";
+import MenuItem from "~/components/menu-item";
+import { use_modal } from "~/components/modal";
+import ModalFooterButton from "~/components/modal/footer-button";
+import { use_toast } from "~/components/toast";
+import ImageIcon from "~/icons/image";
 
 import { use_canvas } from "../../../../hooks";
 import ExportImageModal, { ExportHandleRef } from "../../export-image-modal";
@@ -18,7 +18,7 @@ const ExportImageItem = (): React.ReactElement => {
     ({ open_modal }) => (
       <MenuItem
         decorator={<ImageIcon />}
-        onClick={(event: Event): void => {
+        onClick={(event): void => {
           if (canvas.current) {
             if (canvas.current.getObjects().length) {
               open_modal();
@@ -28,7 +28,7 @@ const ExportImageItem = (): React.ReactElement => {
             }
           }
         }}
-        onSelect={(event: Event): void => event.preventDefault()}
+        onSelect={(event): void => event.preventDefault()}
       >
         Export image…
       </MenuItem>

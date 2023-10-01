@@ -5,34 +5,31 @@ import React from "react";
 
 import { Flag, UserFlag } from "~/common/flags";
 import { GetProfileResponse } from "~/common/grpc";
-import Avatar from "../../../../../../../packages/ui/src/components/avatar";
-import Badge from "../../../../../../../packages/ui/src/components/badge";
-import Button from "../../../../../../../packages/ui/src/components/button";
-import Divider from "../../../../../../../packages/ui/src/components/divider";
-import Grow from "../../../../../../../packages/ui/src/components/grow";
-import Link from "../../../../../../../packages/ui/src/components/link";
-import Spacer from "../../../../../../../packages/ui/src/components/spacer";
-import Tooltip from "../../../../../../../packages/ui/src/components/tooltip";
-import Typography from "../../../../../../../packages/ui/src/components/typography";
-import Status from "../../../../../../../packages/ui/src/entities/status";
-import { use_media_query } from "../../../../../../../packages/ui/src/hooks/use-media-query";
-import CalendarIcon from "../../../../../../../packages/ui/src/icons/calendar";
-import EditIcon from "../../../../../../../packages/ui/src/icons/edit";
-import ForbidIcon from "../../../../../../../packages/ui/src/icons/forbid";
-import InfoIcon from "../../../../../../../packages/ui/src/icons/info";
-import LockIcon from "../../../../../../../packages/ui/src/icons/lock";
-import MapPinIcon from "../../../../../../../packages/ui/src/icons/map-pin";
-import UserCheckIcon from "../../../../../../../packages/ui/src/icons/user-check";
-import UserPlusIcon from "../../../../../../../packages/ui/src/icons/user-plus";
-import UserXIcon from "../../../../../../../packages/ui/src/icons/user-x";
+import Avatar from "~/components/avatar";
+import Badge from "~/components/badge";
+import Button from "~/components/button";
+import Divider from "~/components/divider";
+import Grow from "~/components/grow";
+import Link from "~/components/link";
+import Spacer from "~/components/spacer";
+import Tooltip from "~/components/tooltip";
+import Typography from "~/components/typography";
+import Status from "~/entities/status";
+import { use_media_query } from "~/hooks/use-media-query";
+import CalendarIcon from "~/icons/calendar";
+import EditIcon from "~/icons/edit";
+import ForbidIcon from "~/icons/forbid";
+import InfoIcon from "~/icons/info";
+import LockIcon from "~/icons/lock";
+import MapPinIcon from "~/icons/map-pin";
+import UserCheckIcon from "~/icons/user-check";
+import UserPlusIcon from "~/icons/user-plus";
+import UserXIcon from "~/icons/user-x";
 import { boolean_action } from "~/redux/features";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 import { BREAKPOINTS } from "~/theme/breakpoints";
-import { abbreviate_number } from "../../../../../../../packages/ui/src/utils/abbreviate-number";
-import {
-  DateFormat,
-  format_date
-} from "../../../../../../../packages/ui/src/utils/format-date";
+import { abbreviate_number } from "~/utils/abbreviate-number";
+import { DateFormat, format_date } from "~/utils/format-date";
 
 import ProfileActions from "../actions";
 import Connections from "../connections";

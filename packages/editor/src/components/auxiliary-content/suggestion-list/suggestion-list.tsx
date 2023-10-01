@@ -6,7 +6,7 @@ import React from "react";
 
 import { dynamic_loader } from "~/common/dynamic";
 import { StoryListSkeleton, VirtualizedStoryList } from "~/common/story";
-import ErrorState from "../../../../../ui/src/entities/error-state";
+import ErrorState from "~/entities/error-state";
 import {
   get_query_error_type,
   use_get_story_recommendations_query
@@ -24,7 +24,7 @@ const EditorAuxiliaryContentSuggestionList = (): React.ReactElement => {
   const {
     data,
     isLoading: is_loading,
-    is_fetching,
+    isFetching: is_fetching,
     isError: is_error,
     error,
     refetch

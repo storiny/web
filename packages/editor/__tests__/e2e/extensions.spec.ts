@@ -2,10 +2,10 @@ import { test } from "@playwright/test";
 
 import { EDITOR_CLASSNAMES } from "../constants";
 import {
-  assertHTML,
-  assertSelection,
+  assert_html,
+  assert_selection,
   evaluate,
-  focusEditor,
+  focus_editor,
   html,
   initialize
 } from "../utils";
@@ -14,12 +14,12 @@ test.describe("extensions", () => {
   test.beforeEach(({ page }) => initialize(page));
 
   test(`document.execCommand("insertText")`, async ({ page }) => {
-    await focusEditor(page);
+    await focus_editor(page);
     await evaluate(page, () => {
       document.execCommand("insertText", false, "hello");
     });
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
@@ -28,11 +28,11 @@ test.describe("extensions", () => {
       `
     );
 
-    await assertSelection(page, {
-      anchorOffset: 5,
-      anchorPath: [0, 0, 0],
-      focusOffset: 5,
-      focusPath: [0, 0, 0]
+    await assert_selection(page, {
+      anchor_offset: 5,
+      anchor_path: [0, 0, 0],
+      focus_offset: 5,
+      focus_path: [0, 0, 0]
     });
   });
 
@@ -43,7 +43,7 @@ test.describe("extensions", () => {
       return;
     }
 
-    await focusEditor(page);
+    await focus_editor(page);
 
     await evaluate(page, () => {
       const paste = (): ((target: Element, text: string) => void) => {
@@ -63,14 +63,14 @@ test.describe("extensions", () => {
       };
 
       const editor = document.querySelector('div[contenteditable="true"]');
-      const dispatchPaste = paste();
+      const dispatch_paste = paste();
 
       if (editor) {
-        dispatchPaste(editor, "hello");
+        dispatch_paste(editor, "hello");
       }
     });
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
@@ -79,11 +79,11 @@ test.describe("extensions", () => {
       `
     );
 
-    await assertSelection(page, {
-      anchorOffset: 5,
-      anchorPath: [0, 0, 0],
-      focusOffset: 5,
-      focusPath: [0, 0, 0]
+    await assert_selection(page, {
+      anchor_offset: 5,
+      anchor_path: [0, 0, 0],
+      focus_offset: 5,
+      focus_path: [0, 0, 0]
     });
 
     await evaluate(page, () => {
@@ -104,14 +104,14 @@ test.describe("extensions", () => {
       };
 
       const editor = document.querySelector('div[contenteditable="true"]');
-      const dispatchPaste = paste();
+      const dispatch_paste = paste();
 
       if (editor) {
-        dispatchPaste(editor, " world");
+        dispatch_paste(editor, " world");
       }
     });
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
@@ -120,11 +120,11 @@ test.describe("extensions", () => {
       `
     );
 
-    await assertSelection(page, {
-      anchorOffset: 11,
-      anchorPath: [0, 0, 0],
-      focusOffset: 11,
-      focusPath: [0, 0, 0]
+    await assert_selection(page, {
+      anchor_offset: 11,
+      anchor_path: [0, 0, 0],
+      focus_offset: 11,
+      focus_path: [0, 0, 0]
     });
   });
 
@@ -134,7 +134,7 @@ test.describe("extensions", () => {
   }) => {
     test.skip(browserName === "firefox");
 
-    await focusEditor(page);
+    await focus_editor(page);
     await evaluate(page, () => {
       const paste = (): ((target: Element, text: string) => void) => {
         const dataTransfer = new DataTransfer();
@@ -153,10 +153,10 @@ test.describe("extensions", () => {
       };
 
       const editor = document.querySelector('div[contenteditable="true"]');
-      const dispatchPaste = paste();
+      const dispatch_paste = paste();
 
       if (editor) {
-        dispatchPaste(editor, "hello");
+        dispatch_paste(editor, "hello");
       }
 
       document.execCommand("InsertText", false, " world");
@@ -165,7 +165,7 @@ test.describe("extensions", () => {
     // Pasting this way doesn't work in FF due to content
     // privacy reasons. So we only look for the execCommand output.
     if (browserName === "firefox") {
-      await assertHTML(
+      await assert_html(
         page,
         html`
           <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
@@ -174,14 +174,14 @@ test.describe("extensions", () => {
         `
       );
 
-      await assertSelection(page, {
-        anchorOffset: 5,
-        anchorPath: [0, 0, 0],
-        focusOffset: 5,
-        focusPath: [0, 0, 0]
+      await assert_selection(page, {
+        anchor_offset: 5,
+        anchor_path: [0, 0, 0],
+        focus_offset: 5,
+        focus_path: [0, 0, 0]
       });
     } else {
-      await assertHTML(
+      await assert_html(
         page,
         html`
           <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
@@ -190,11 +190,11 @@ test.describe("extensions", () => {
         `
       );
 
-      await assertSelection(page, {
-        anchorOffset: 11,
-        anchorPath: [0, 0, 0],
-        focusOffset: 11,
-        focusPath: [0, 0, 0]
+      await assert_selection(page, {
+        anchor_offset: 11,
+        anchor_path: [0, 0, 0],
+        focus_offset: 11,
+        focus_path: [0, 0, 0]
       });
     }
   });
@@ -202,7 +202,7 @@ test.describe("extensions", () => {
   test(`document.execCommand("insertText") with selection`, async ({
     page
   }) => {
-    await focusEditor(page);
+    await focus_editor(page);
 
     await page.keyboard.type("hello world");
     await page.keyboard.press("Enter");
@@ -213,14 +213,14 @@ test.describe("extensions", () => {
     await evaluate(page, async () => {
       const editor = document.querySelector('div[contenteditable="true"]');
       const selection = window.getSelection();
-      const secondParagraphTextNode =
+      const second_paragraph_text_node =
         editor?.firstChild?.nextSibling?.firstChild?.firstChild;
 
-      if (secondParagraphTextNode) {
+      if (second_paragraph_text_node) {
         selection?.setBaseAndExtent(
-          secondParagraphTextNode,
+          second_paragraph_text_node,
           0,
-          secondParagraphTextNode,
+          second_paragraph_text_node,
           3
         );
       }
@@ -233,7 +233,7 @@ test.describe("extensions", () => {
       });
     });
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
@@ -245,11 +245,11 @@ test.describe("extensions", () => {
       `
     );
 
-    await assertSelection(page, {
-      anchorOffset: 3,
-      anchorPath: [1, 0, 0],
-      focusOffset: 3,
-      focusPath: [1, 0, 0]
+    await assert_selection(page, {
+      anchor_offset: 3,
+      anchor_path: [1, 0, 0],
+      focus_offset: 3,
+      focus_path: [1, 0, 0]
     });
   });
 });

@@ -10,13 +10,11 @@ import NextLink from "next/link";
 import { useSelectedLayoutSegment as use_selected_layout_segment } from "next/navigation";
 import React from "react";
 
-import Separator from "../../../../../../../packages/ui/src/components/separator";
-import Tab, {
-  TabProps
-} from "../../../../../../../packages/ui/src/components/tab";
-import Tabs from "../../../../../../../packages/ui/src/components/tabs";
-import TabsList from "../../../../../../../packages/ui/src/components/tabs-list";
-import { DefaultRightSidebarContent } from "../../../../../../../packages/ui/src/layout/right-sidebar";
+import Separator from "~/components/separator";
+import Tab, { TabProps } from "~/components/tab";
+import Tabs from "~/components/tabs";
+import TabsList from "~/components/tabs-list";
+import { DefaultRightSidebarContent } from "~/layout/right-sidebar";
 
 import { CATEGORIES } from "../categories";
 import styles from "./right-sidebar.module.scss";

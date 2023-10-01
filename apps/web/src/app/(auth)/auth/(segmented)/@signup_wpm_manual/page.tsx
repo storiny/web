@@ -2,10 +2,10 @@
 
 import React from "react";
 
-import Link from "../../../../../../../../packages/ui/src/components/link";
-import Spacer from "../../../../../../../../packages/ui/src/components/spacer";
-import Stepper from "../../../../../../../../packages/ui/src/components/stepper";
-import Typography from "../../../../../../../../packages/ui/src/components/typography";
+import Link from "~/components/link";
+import Spacer from "~/components/spacer";
+import Stepper from "~/components/stepper";
+import Typography from "~/components/typography";
 
 import { use_auth_state } from "../../../actions";
 import SignupWPMForm from "./form";

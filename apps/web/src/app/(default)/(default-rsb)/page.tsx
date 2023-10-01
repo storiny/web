@@ -6,10 +6,10 @@ import React from "react";
 
 import { dynamic_loader } from "~/common/dynamic";
 import { StoryListSkeleton, VirtualizedStoryList } from "~/common/story";
-import Tab from "../../../../../../packages/ui/src/components/tab";
-import Tabs from "../../../../../../packages/ui/src/components/tabs";
-import TabsList from "../../../../../../packages/ui/src/components/tabs-list";
-import ErrorState from "../../../../../../packages/ui/src/entities/error-state";
+import Tab from "~/components/tab";
+import Tabs from "~/components/tabs";
+import TabsList from "~/components/tabs-list";
+import ErrorState from "~/entities/error-state";
 import {
   get_query_error_type,
   use_get_home_feed_query
@@ -34,7 +34,7 @@ const PageHeader = ({
 }): React.ReactElement => (
   <Tabs
     className={clsx("full-bleed", "page-header", styles.x, styles.tabs)}
-    onValueChange={(next_value: IndexTabValue): void => on_change(next_value)}
+    onValueChange={(next_value): void => on_change(next_value as IndexTabValue)}
     value={value}
   >
     <TabsList className={clsx("full-w", styles.x, styles["tabs-list"])}>

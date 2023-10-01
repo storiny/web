@@ -4,7 +4,7 @@ import React from "react";
 
 import { dynamic_loader } from "~/common/dynamic";
 import { TagListSkeleton, VirtualizedTagList } from "~/common/tag";
-import ErrorState from "../../../../../../../../../packages/ui/src/entities/error-state";
+import ErrorState from "~/entities/error-state";
 import {
   get_query_error_type,
   use_get_explore_tags_query

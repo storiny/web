@@ -1,6 +1,6 @@
 import React from "react";
 
-import CustomState from "../../../../../ui/src/entities/custom-state";
+import CustomState from "~/entities/custom-state";
 import CommentOffIcon from "~/icons/comment-off";
 
 const EditorAuxiliaryContentCommentListDisabledState =

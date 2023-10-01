@@ -1,13 +1,13 @@
 import React from "react";
 
+import Input from "~/components/input";
+import Toggle from "~/components/toggle";
+import ConstrainedIcon from "~/icons/constrained";
+import LetterHIcon from "~/icons/letter-h";
+import LetterWIcon from "~/icons/letter-w";
+import UnconstrainedIcon from "~/icons/unconstrained";
 import { clamp } from "~/utils/clamp";
 
-import Input from "../../../../../../../ui/src/components/input";
-import Toggle from "../../../../../../../ui/src/components/toggle";
-import ConstrainedIcon from "../../../../../../../ui/src/icons/constrained";
-import LetterHIcon from "../../../../../../../ui/src/icons/letter-h";
-import LetterWIcon from "../../../../../../../ui/src/icons/letter-w";
-import UnconstrainedIcon from "../../../../../../../ui/src/icons/unconstrained";
 import { MAX_LAYER_SIZE, MIN_LAYER_SIZE } from "../../../../../constants";
 import {
   use_active_object,

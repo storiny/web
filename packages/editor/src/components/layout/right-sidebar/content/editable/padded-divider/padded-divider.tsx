@@ -1,7 +1,7 @@
 import { clsx } from "clsx";
 import React from "react";
 
-import Divider from "../../../../../../../../ui/src/components/divider";
+import Divider from "~/components/divider";
 
 import styles from "./padded-divider.module.scss";
 

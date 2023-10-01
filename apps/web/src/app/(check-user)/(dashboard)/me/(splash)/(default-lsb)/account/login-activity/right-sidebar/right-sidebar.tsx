@@ -1,9 +1,9 @@
 import { clsx } from "clsx";
 import React from "react";
 
-import Grow from "../../../../../../../../../../../../packages/ui/src/components/grow";
-import { use_media_query } from "../../../../../../../../../../../../packages/ui/src/hooks/use-media-query";
-import RightSidebar from "../../../../../../../../../../../../packages/ui/src/layout/right-sidebar";
+import Grow from "~/components/grow";
+import { use_media_query } from "~/hooks/use-media-query";
+import RightSidebar from "~/layout/right-sidebar";
 import { BREAKPOINTS } from "~/theme/breakpoints";
 
 import styles from "./right-sidebar.module.scss";

@@ -1,8 +1,8 @@
 import React from "react";
 
-import MenubarItem from "../../../../../../../../ui/src/components/menubar-item";
+import MenubarItem from "~/components/menubar-item";
 import Gallery from "~/entities/gallery";
-import ImageIcon from "../../../../../../../../ui/src/icons/image";
+import ImageIcon from "~/icons/image";
 
 import { use_insert_image } from "../../../../../../hooks/use-insert-image";
 
@@ -23,7 +23,8 @@ const ImageMenubarItem = ({
               hex: image.hex,
               rating: image.rating,
               width: image.width,
-              height: image.height
+              height: image.height,
+              scale_factor: 1
             }
           ],
           credits: image.credits

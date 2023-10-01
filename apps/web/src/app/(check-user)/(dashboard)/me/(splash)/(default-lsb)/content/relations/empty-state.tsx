@@ -1,7 +1,7 @@
 import React from "react";
 
-import CustomState from "../../../../../../../../../../../packages/ui/src/entities/custom-state";
-import UsersIcon from "../../../../../../../../../../../packages/ui/src/icons/users";
+import CustomState from "~/entities/custom-state";
+import UsersIcon from "~/icons/users";
 
 import { RelationsTabValue } from "./client";
 

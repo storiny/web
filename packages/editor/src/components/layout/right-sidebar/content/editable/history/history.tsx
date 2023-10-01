@@ -1,10 +1,10 @@
 import { get_shortcut_label } from "@storiny/shared/src/utils/get-shortcut-label";
 import React from "react";
 
-import IconButton from "../../../../../../../../ui/src/components/icon-button";
-import Tooltip from "../../../../../../../../ui/src/components/tooltip";
-import RedoIcon from "../../../../../../../../ui/src/icons/redo";
-import UndoIcon from "../../../../../../../../ui/src/icons/undo";
+import IconButton from "~/components/icon-button";
+import Tooltip from "~/components/tooltip";
+import RedoIcon from "~/icons/redo";
+import UndoIcon from "~/icons/undo";
 
 import { EDITOR_SHORTCUTS } from "../../../../../../constants/shortcuts";
 import { use_history } from "../../../../../../hooks/use-history";

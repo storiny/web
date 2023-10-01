@@ -1,9 +1,9 @@
 import React from "react";
 
-import AlignCenterIcon from "../../../../ui/src/icons/align-center";
-import AlignJustifyIcon from "../../../../ui/src/icons/align-justify";
-import AlignLeftIcon from "../../../../ui/src/icons/align-left";
-import AlignRightIcon from "../../../../ui/src/icons/align-right";
+import AlignCenterIcon from "~/icons/align-center";
+import AlignJustifyIcon from "~/icons/align-justify";
+import AlignLeftIcon from "~/icons/align-left";
+import AlignRightIcon from "~/icons/align-right";
 
 export enum Alignment {
   CENTER /* */ = "center",

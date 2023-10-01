@@ -3,11 +3,11 @@
 import { redirect } from "next/navigation";
 import React from "react";
 
-import { SubmitHandler } from "../../../../../../../../packages/ui/src/components/form";
-import Link from "../../../../../../../../packages/ui/src/components/link";
-import Spacer from "../../../../../../../../packages/ui/src/components/spacer";
-import Stepper from "../../../../../../../../packages/ui/src/components/stepper";
-import Typography from "../../../../../../../../packages/ui/src/components/typography";
+import { SubmitHandler } from "~/components/form";
+import Link from "~/components/link";
+import Spacer from "~/components/spacer";
+import Stepper from "~/components/stepper";
+import Typography from "~/components/typography";
 import { select_is_logged_in } from "~/redux/features";
 import { use_app_selector } from "~/redux/hooks";
 

@@ -1,10 +1,10 @@
 import React from "react";
 import { useFilePicker as use_file_picker } from "use-file-picker";
 
-import { use_confirmation } from "../../../../../ui/src/components/confirmation";
-import MenuItem from "../../../../../ui/src/components/menu-item";
-import { use_toast } from "../../../../../ui/src/components/toast";
-import FolderOpenIcon from "../../../../../ui/src/icons/folder-open";
+import { use_confirmation } from "~/components/confirmation";
+import MenuItem from "~/components/menu-item";
+import { use_toast } from "~/components/toast";
+import FolderOpenIcon from "~/icons/folder-open";
 
 import { FILE_EXTENSIONS } from "../../../constants";
 import { use_canvas } from "../../../hooks";

@@ -2,10 +2,10 @@ import { clsx } from "clsx";
 import { useAtomValue as use_atom_value } from "jotai";
 import React from "react";
 
-import IconButton from "../../../../../../ui/src/components/icon-button";
-import Tooltip from "../../../../../../ui/src/components/tooltip";
-import RedoIcon from "../../../../../../ui/src/icons/redo";
-import UndoIcon from "../../../../../../ui/src/icons/undo";
+import IconButton from "~/components/icon-button";
+import Tooltip from "~/components/tooltip";
+import RedoIcon from "~/icons/redo";
+import UndoIcon from "~/icons/undo";
 
 import { doc_status_atom } from "../../../../atoms";
 import { use_history } from "../../../../hooks/use-history";

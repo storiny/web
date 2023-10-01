@@ -2,13 +2,13 @@ import { clsx } from "clsx";
 import { useAtomValue as use_atom_value } from "jotai";
 import React from "react";
 
-import Button from "../../../../../../../../ui/src/components/button";
-import Divider from "../../../../../../../../ui/src/components/divider";
-import Separator from "../../../../../../../../ui/src/components/separator";
-import Typography from "../../../../../../../../ui/src/components/typography";
-import CommentIcon from "../../../../../../../../ui/src/icons/comment";
+import Button from "~/components/button";
+import Divider from "~/components/divider";
+import Separator from "~/components/separator";
+import Typography from "~/components/typography";
+import CommentIcon from "~/icons/comment";
 import { use_app_selector } from "~/redux/hooks";
-import { abbreviate_number } from "../../../../../../../../ui/src/utils/abbreviate-number";
+import { abbreviate_number } from "~/utils/abbreviate-number";
 
 import { story_metadata_atom } from "../../../../../../atoms";
 import LikeButton from "./like-button";

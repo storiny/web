@@ -1,10 +1,10 @@
 import { get_shortcut_label } from "@storiny/shared/src/utils/get-shortcut-label";
 import React from "react";
 
-import IconButton from "../../../../../../../../ui/src/components/icon-button";
-import Tooltip from "../../../../../../../../ui/src/components/tooltip";
-import IndentIcon from "../../../../../../../../ui/src/icons/indent";
-import OutdentIcon from "../../../../../../../../ui/src/icons/outdent";
+import IconButton from "~/components/icon-button";
+import Tooltip from "~/components/tooltip";
+import IndentIcon from "~/icons/indent";
+import OutdentIcon from "~/icons/outdent";
 
 import { EDITOR_SHORTCUTS } from "../../../../../../constants/shortcuts";
 import { use_indentation } from "../../../../../../hooks/use-indentation";

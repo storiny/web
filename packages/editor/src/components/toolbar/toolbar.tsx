@@ -6,9 +6,9 @@ import { useAtomValue as use_atom_value } from "jotai";
 import dynamic from "next/dynamic";
 import React from "react";
 
-import Button from "../../../../ui/src/components/button";
-import Spinner from "../../../../ui/src/components/spinner";
-import { use_media_query } from "../../../../ui/src/hooks/use-media-query";
+import Button from "~/components/button";
+import Spinner from "~/components/spinner";
+import { use_media_query } from "~/hooks/use-media-query";
 import { BREAKPOINTS } from "~/theme/breakpoints";
 
 import { doc_status_atom, sidebars_collapsed_atom } from "../../atoms";

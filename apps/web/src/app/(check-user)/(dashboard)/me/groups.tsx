@@ -1,25 +1,26 @@
 import Fuse from "fuse.js";
 import React from "react";
 
-import AccessibilityIcon from "../../../../../../../packages/ui/src/icons/accessibility";
-import BanIcon from "../../../../../../../packages/ui/src/icons/ban";
-import BellIcon from "../../../../../../../packages/ui/src/icons/bell";
-import BooksIcon from "../../../../../../../packages/ui/src/icons/books";
-import BrushIcon from "../../../../../../../packages/ui/src/icons/brush";
-import CommentIcon from "../../../../../../../packages/ui/src/icons/comment";
-import ConnectionsIcon from "../../../../../../../packages/ui/src/icons/connections";
-import KeyIcon from "../../../../../../../packages/ui/src/icons/key";
-import LoginIcon from "../../../../../../../packages/ui/src/icons/login";
-import MuteIcon from "../../../../../../../packages/ui/src/icons/mute";
-import PencilIcon from "../../../../../../../packages/ui/src/icons/pencil";
-import ScriptIcon from "../../../../../../../packages/ui/src/icons/script";
-import ShieldIcon from "../../../../../../../packages/ui/src/icons/shield";
-import StoriesMetricsIcon from "../../../../../../../packages/ui/src/icons/stories-metrics";
-import StoryIcon from "../../../../../../../packages/ui/src/icons/story";
-import TagsIcon from "../../../../../../../packages/ui/src/icons/tags";
-import UserIcon from "../../../../../../../packages/ui/src/icons/user";
-import UserMetricsIcon from "../../../../../../../packages/ui/src/icons/user-metrics";
-import UsersIcon from "../../../../../../../packages/ui/src/icons/users";
+import AccessibilityIcon from "~/icons/accessibility";
+import BanIcon from "~/icons/ban";
+import BellIcon from "~/icons/bell";
+import BooksIcon from "~/icons/books";
+import BrushIcon from "~/icons/brush";
+import CommentIcon from "~/icons/comment";
+import ConnectionsIcon from "~/icons/connections";
+import KeyIcon from "~/icons/key";
+import LoginIcon from "~/icons/login";
+import MuteIcon from "~/icons/mute";
+import PencilIcon from "~/icons/pencil";
+import ScriptIcon from "~/icons/script";
+import ShieldIcon from "~/icons/shield";
+import StoriesMetricsIcon from "~/icons/stories-metrics";
+import StoryIcon from "~/icons/story";
+import TagsIcon from "~/icons/tags";
+import UserIcon from "~/icons/user";
+import UserMetricsIcon from "~/icons/user-metrics";
+import UsersIcon from "~/icons/users";
+
 import { DashboardSegment } from "./types";
 
 export interface Group {

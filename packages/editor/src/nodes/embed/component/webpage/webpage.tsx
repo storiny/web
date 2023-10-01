@@ -2,15 +2,15 @@ import { clsx } from "clsx";
 import NextLink from "next/link";
 import React from "react";
 
-import AspectRatio from "../../../../../../ui/src/components/aspect-ratio";
-import IconButton from "../../../../../../ui/src/components/icon-button";
-import Image from "../../../../../../ui/src/components/image";
-import Link from "../../../../../../ui/src/components/link";
-import Spacer from "../../../../../../ui/src/components/spacer";
-import Typography from "../../../../../../ui/src/components/typography";
-import Persona from "../../../../../../ui/src/entities/persona";
-import ExternalLinkIcon from "../../../../../../ui/src/icons/external-link";
-import LinkIcon from "../../../../../../ui/src/icons/link";
+import AspectRatio from "~/components/aspect-ratio";
+import IconButton from "~/components/icon-button";
+import Image from "~/components/image";
+import Link from "~/components/link";
+import Spacer from "~/components/spacer";
+import Typography from "~/components/typography";
+import Persona from "~/entities/persona";
+import ExternalLinkIcon from "~/icons/external-link";
+import LinkIcon from "~/icons/link";
 
 import styles from "./webpage.module.scss";
 import { WebpageEmbedProps } from "./webpage.props";

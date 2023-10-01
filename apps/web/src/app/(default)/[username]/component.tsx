@@ -4,9 +4,9 @@ import { Graph } from "schema-dts";
 
 import { Flag } from "~/common/flags";
 import { GetProfileResponse } from "~/common/grpc";
-import LeftSidebar from "../../../../../../packages/ui/src/layout/left-sidebar";
-import SplashScreen from "../../../../../../packages/ui/src/layout/splash-screen";
-import { get_cdn_url } from "../../../../../../packages/ui/src/utils/get-cdn-url";
+import LeftSidebar from "~/layout/left-sidebar";
+import SplashScreen from "~/layout/splash-screen";
+import { get_cdn_url } from "~/utils/get-cdn-url";
 import { truncate } from "~/utils/truncate";
 
 import Client from "./client";
@@ -104,7 +104,7 @@ const Component = ({ profile }: Props): React.ReactElement => {
   return (
     <>
       <LeftSidebar />
-      <main>
+      <main data-root={"true"}>
         {is_private || is_suspended ? null : <JsonLD profile={profile} />}
         <Client
           is_private={is_private}

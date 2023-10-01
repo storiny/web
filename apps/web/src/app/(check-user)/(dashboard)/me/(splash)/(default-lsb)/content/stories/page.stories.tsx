@@ -11,7 +11,7 @@ import DefaultDashboardLeftSidebarLayout from "../../layout";
 import ContentStoriesPage from "./client";
 
 const meta: Meta<typeof ContentStoriesPage> = {
-  title: "dashboard/Content/stories",
+  title: "dashboard/content/stories",
   component: ContentStoriesPage,
   args: {
     deleted_story_count: 5,

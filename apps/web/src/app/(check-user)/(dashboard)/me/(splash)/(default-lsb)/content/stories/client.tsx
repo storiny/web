@@ -7,27 +7,27 @@ import React from "react";
 
 import { dynamic_loader } from "~/common/dynamic";
 import { StoryListSkeleton, VirtualizedStoryList } from "~/common/story";
-import Button from "../../../../../../../../../../../packages/ui/src/components/button";
-import Divider from "../../../../../../../../../../../packages/ui/src/components/divider";
-import Input from "../../../../../../../../../../../packages/ui/src/components/input";
-import Option from "../../../../../../../../../../../packages/ui/src/components/option";
-import Select from "../../../../../../../../../../../packages/ui/src/components/select";
-import Spacer from "../../../../../../../../../../../packages/ui/src/components/spacer";
-import Tab from "../../../../../../../../../../../packages/ui/src/components/tab";
-import Tabs from "../../../../../../../../../../../packages/ui/src/components/tabs";
-import TabsList from "../../../../../../../../../../../packages/ui/src/components/tabs-list";
-import Typography from "../../../../../../../../../../../packages/ui/src/components/typography";
-import ErrorState from "../../../../../../../../../../../packages/ui/src/entities/error-state";
-import { use_debounce } from "../../../../../../../../../../../packages/ui/src/hooks/use-debounce";
-import PlusIcon from "../../../../../../../../../../../packages/ui/src/icons/plus";
-import SearchIcon from "../../../../../../../../../../../packages/ui/src/icons/search";
+import Button from "~/components/button";
+import Divider from "~/components/divider";
+import Input from "~/components/input";
+import Option from "~/components/option";
+import Select from "~/components/select";
+import Spacer from "~/components/spacer";
+import Tab from "~/components/tab";
+import Tabs from "~/components/tabs";
+import TabsList from "~/components/tabs-list";
+import Typography from "~/components/typography";
+import ErrorState from "~/entities/error-state";
+import { use_debounce } from "~/hooks/use-debounce";
+import PlusIcon from "~/icons/plus";
+import SearchIcon from "~/icons/search";
 import {
   get_query_error_type,
   self_action,
   use_get_stories_query
 } from "~/redux/features";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
-import { abbreviate_number } from "../../../../../../../../../../../packages/ui/src/utils/abbreviate-number";
+import { abbreviate_number } from "~/utils/abbreviate-number";
 
 import DashboardTitle from "../../dashboard-title";
 import ContentStoriesRightSidebar from "./right-sidebar";
@@ -65,7 +65,9 @@ const PageHeader = ({
       styles.x,
       styles.tabs
     )}
-    onValueChange={(next_value: StoriesTabValue): void => on_change(next_value)}
+    onValueChange={(next_value): void =>
+      on_change(next_value as StoriesTabValue)
+    }
     value={value}
   >
     <TabsList className={clsx("full-w", styles.x, styles["tabs-list"])}>
@@ -292,7 +294,7 @@ const ContentStoriesClient = (props: StoriesProps): React.ReactElement => {
 
   return (
     <React.Fragment>
-      <main>
+      <main data-root={"true"}>
         <DashboardTitle>Stories</DashboardTitle>
         <PageHeader on_change={handle_change} value={value} />
         <StatusHeader

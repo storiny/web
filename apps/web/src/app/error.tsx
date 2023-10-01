@@ -2,10 +2,10 @@
 
 import React from "react";
 
-import Button from "../../../../packages/ui/src/components/button";
-import Spacer from "../../../../packages/ui/src/components/spacer";
-import Typography from "../../../../packages/ui/src/components/typography";
-import SplashScreen from "../../../../packages/ui/src/layout/splash-screen";
+import Button from "~/components/button";
+import Spacer from "~/components/spacer";
+import Typography from "~/components/typography";
+import SplashScreen from "~/layout/splash-screen";
 
 const RootErrorBoundary = ({
   reset

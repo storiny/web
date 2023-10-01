@@ -3,7 +3,7 @@
 import clsx from "clsx";
 import React from "react";
 
-import Skeleton from "../../../../../../../../../ui/src/components/skeleton";
+import Skeleton from "~/components/skeleton";
 
 import styles from "./skeleton.module.scss";
 

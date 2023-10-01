@@ -5,8 +5,8 @@ import React from "react";
 
 import { get_story_responses_info } from "~/common/grpc";
 import { handle_exception } from "~/common/grpc/utils";
-import { get_user } from "src/common/utils/get-user";
-import { is_snowflake } from "src/common/utils/is-snowflake";
+import { get_user } from "~/common/utils/get-user";
+import { is_snowflake } from "~/common/utils/is-snowflake";
 
 import ContentStoryResponsesClient from "./client";
 

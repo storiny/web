@@ -3,12 +3,12 @@
 import { clsx } from "clsx";
 import React from "react";
 
-import Logo from "../../../../../../../../packages/ui/src/brand/logo";
-import Wordmark from "../../../../../../../../packages/ui/src/brand/wordmark";
-import Divider from "../../../../../../../../packages/ui/src/components/divider";
-import Link from "../../../../../../../../packages/ui/src/components/link";
-import Spacer from "../../../../../../../../packages/ui/src/components/spacer";
-import Typography from "../../../../../../../../packages/ui/src/components/typography";
+import Logo from "~/brand/logo";
+import Wordmark from "~/brand/wordmark";
+import Divider from "~/components/divider";
+import Link from "~/components/link";
+import Spacer from "~/components/spacer";
+import Typography from "~/components/typography";
 
 import page_styles from "../../styles.module.scss";
 import common_styles from "../common.module.scss";

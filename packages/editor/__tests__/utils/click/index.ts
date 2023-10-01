@@ -11,7 +11,7 @@ export const click = async (
   selector: string,
   options?: Parameters<Frame["click"]>[1]
 ): Promise<void> => {
-  const leftFrame = page.frame("left");
-  await leftFrame?.waitForSelector(selector, options);
-  await leftFrame?.click(selector, options);
+  const left_frame = page.frame("left");
+  await left_frame?.waitForSelector(selector, options);
+  await left_frame?.click(selector, options);
 };

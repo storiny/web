@@ -1,6 +1,6 @@
 "use client";
 
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice as create_slice, PayloadAction } from "@reduxjs/toolkit";
 import { VIBRATION_PATTERNS } from "@storiny/shared";
 
 import { ToastSeverity } from "~/components/toast";
@@ -20,7 +20,7 @@ export const toast_initial_state: ToastState = {
   message: /* */ ""
 };
 
-export const toast_slice = createSlice({
+export const toast_slice = create_slice({
   name: "toast",
   initialState: toast_initial_state,
   reducers: {

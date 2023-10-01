@@ -3,14 +3,14 @@ import { clsx } from "clsx";
 import { useAtom as use_atom, useAtomValue as use_atom_value } from "jotai";
 import React from "react";
 
-import AspectRatio from "../../../../../../../../ui/src/components/aspect-ratio";
-import Button from "../../../../../../../../ui/src/components/button";
-import IconButton from "../../../../../../../../ui/src/components/icon-button";
-import Image from "../../../../../../../../ui/src/components/image";
-import Typography from "../../../../../../../../ui/src/components/typography";
-import EditIcon from "../../../../../../../../ui/src/icons/edit";
-import ImageIcon from "../../../../../../../../ui/src/icons/image";
-import PhotoEditIcon from "../../../../../../../../ui/src/icons/photo-edit";
+import AspectRatio from "~/components/aspect-ratio";
+import Button from "~/components/button";
+import IconButton from "~/components/icon-button";
+import Image from "~/components/image";
+import Typography from "~/components/typography";
+import EditIcon from "~/icons/edit";
+import ImageIcon from "~/icons/image";
+import PhotoEditIcon from "~/icons/photo-edit";
 
 import { doc_status_atom, story_metadata_atom } from "../../../../../../atoms";
 import StoryMetadataModal from "../../../../../metadata-modal";

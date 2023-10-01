@@ -6,9 +6,9 @@ import { useAtomValue as use_atom_value } from "jotai";
 import dynamic from "next/dynamic";
 import React from "react";
 
+import NoSsr from "~/components/no-ssr";
 import { capitalize } from "~/utils/capitalize";
 
-import NoSsr from "../../../../ui/src/components/no-ssr";
 import { doc_status_atom } from "../../atoms";
 import ReadOnlyPlugin from "../../plugins/read-only";
 import RichTextPlugin from "../../plugins/rich-text";
@@ -79,7 +79,7 @@ const EditorBody = (props: EditorProps): React.ReactElement => {
       {read_only && <StoryHeader />}
       <RichTextPlugin
         ErrorBoundary={EditorErrorBoundary}
-        contentEditable={<EditorContentEditable editable={!read_only} />}
+        content_editable={<EditorContentEditable editable={!read_only} />}
         placeholder={<EditorPlaceholder />}
       />
       {read_only ? (

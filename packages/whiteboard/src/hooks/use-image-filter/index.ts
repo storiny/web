@@ -1,8 +1,8 @@
+import { is_num } from "@storiny/shared/src/utils/is-num";
 import React from "react";
 
 import { is_image_object } from "../../utils";
 import { use_active_object } from "../index";
-import { is_num } from "@storiny/shared/src/utils/is-num";
 
 type AnyClass = { new (...args: any[]): any; prototype: any };
 

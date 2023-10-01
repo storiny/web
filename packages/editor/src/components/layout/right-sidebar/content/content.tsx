@@ -7,10 +7,10 @@ import dynamic from "next/dynamic";
 import React from "react";
 
 import { dynamic_loader } from "~/common/dynamic";
-import Grow from "../../../../../../ui/src/components/grow";
-import Separator from "../../../../../../ui/src/components/separator";
-import Typography from "../../../../../../ui/src/components/typography";
-import RightSidebarFooter from "../../../../../../ui/src/layout/right-sidebar/footer";
+import Grow from "~/components/grow";
+import Separator from "~/components/separator";
+import Typography from "~/components/typography";
+import RightSidebarFooter from "~/layout/right-sidebar/footer";
 
 import {
   doc_status_atom,

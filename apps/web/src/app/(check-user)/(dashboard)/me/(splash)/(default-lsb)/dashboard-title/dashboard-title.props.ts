@@ -1,3 +1,3 @@
-import { PageTitleProps } from "../../../../../../../../../../packages/ui/src/entities/page-title";
+import { PageTitleProps } from "~/entities/page-title";
 
 export type DashboardTitleProps = PageTitleProps;

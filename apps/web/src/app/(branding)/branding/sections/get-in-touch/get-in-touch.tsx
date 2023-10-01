@@ -1,8 +1,8 @@
 import { clsx } from "clsx";
 import React from "react";
 
-import Link from "../../../../../../../../packages/ui/src/components/link";
-import Typography from "../../../../../../../../packages/ui/src/components/typography";
+import Link from "~/components/link";
+import Typography from "~/components/typography";
 
 import page_styles from "../../styles.module.scss";
 

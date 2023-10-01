@@ -6,13 +6,13 @@ import React from "react";
 
 import { dynamic_loader } from "~/common/dynamic";
 import { StoryListSkeleton, VirtualizedStoryList } from "~/common/story";
-import Divider from "../../../../../../../packages/ui/src/components/divider";
-import Input from "../../../../../../../packages/ui/src/components/input";
-import Option from "../../../../../../../packages/ui/src/components/option";
-import Select from "../../../../../../../packages/ui/src/components/select";
-import ErrorState from "../../../../../../../packages/ui/src/entities/error-state";
-import { use_debounce } from "../../../../../../../packages/ui/src/hooks/use-debounce";
-import SearchIcon from "../../../../../../../packages/ui/src/icons/search";
+import Divider from "~/components/divider";
+import Input from "~/components/input";
+import Option from "~/components/option";
+import Select from "~/components/select";
+import ErrorState from "~/entities/error-state";
+import { use_debounce } from "~/hooks/use-debounce";
+import SearchIcon from "~/icons/search";
 import {
   get_query_error_type,
   use_get_bookmarks_query

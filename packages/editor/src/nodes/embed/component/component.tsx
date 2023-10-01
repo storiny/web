@@ -20,12 +20,12 @@ import { useHotkeys as use_hot_keys } from "react-hotkeys-hook";
 import { useIntersectionObserver as use_intersection_observer } from "react-intersection-observer-hook";
 import use_resize_observer from "use-resize-observer";
 
+import Popover from "~/components/popover";
+import Spinner from "~/components/spinner";
+import Typography from "~/components/typography";
 import { select_theme } from "~/redux/features";
 import { use_app_selector } from "~/redux/hooks";
 
-import Popover from "../../../../../ui/src/components/popover";
-import Spinner from "../../../../../ui/src/components/spinner";
-import Typography from "../../../../../ui/src/components/typography";
 import { overflowing_figures_atom } from "../../../atoms";
 import figure_styles from "../../common/figure.module.scss";
 import { $is_embed_node, EmbedNodeLayout } from "../embed";

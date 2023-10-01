@@ -1,7 +1,7 @@
 import React from "react";
 
-import Spacer from "../../../../../../../../../../../../../packages/ui/src/components/spacer";
-import Typography from "../../../../../../../../../../../../../packages/ui/src/components/typography";
+import Spacer from "~/components/spacer";
+import Typography from "~/components/typography";
 
 import DashboardGroup from "../../../../dashboard-group";
 import ReadingFontSizePreference from "./font-size";

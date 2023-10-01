@@ -4,7 +4,7 @@ import { clsx } from "clsx";
 import React from "react";
 
 import styles from "~/common/virtual/virtual.module.scss";
-import Divider from "../../../../../../packages/ui/src/components/divider";
+import Divider from "~/components/divider";
 import { UserSkeleton } from "~/entities/user";
 
 const UserListSkeleton = React.memo(() => (

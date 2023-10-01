@@ -10,19 +10,16 @@ import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger
-} from "../../../../../../../../../../../../packages/ui/src/components/accordion";
-import AspectRatio from "../../../../../../../../../../../../packages/ui/src/components/aspect-ratio";
-import Button from "../../../../../../../../../../../../packages/ui/src/components/button";
-import Divider from "../../../../../../../../../../../../packages/ui/src/components/divider";
-import Spacer from "../../../../../../../../../../../../packages/ui/src/components/spacer";
-import { use_toast } from "../../../../../../../../../../../../packages/ui/src/components/toast";
-import Typography from "../../../../../../../../../../../../packages/ui/src/components/typography";
-import LogoutIcon from "../../../../../../../../../../../../packages/ui/src/icons/logout";
+} from "~/components/accordion";
+import AspectRatio from "~/components/aspect-ratio";
+import Button from "~/components/button";
+import Divider from "~/components/divider";
+import Spacer from "~/components/spacer";
+import { use_toast } from "~/components/toast";
+import Typography from "~/components/typography";
+import LogoutIcon from "~/icons/logout";
 import { use_session_logout_mutation } from "~/redux/features";
-import {
-  DateFormat,
-  format_date
-} from "../../../../../../../../../../../../packages/ui/src/utils/format-date";
+import { DateFormat, format_date } from "~/utils/format-date";
 
 import { DEVICE_TYPE_ICON_MAP } from "../icon-map";
 import styles from "./login-accordion.module.scss";

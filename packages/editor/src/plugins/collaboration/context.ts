@@ -6,7 +6,7 @@ import { UserState } from "../../collaboration/provider";
 interface CollaborationContextType
   extends Omit<
     UserState,
-    "awareness_data" | "focusPos" | "anchorPos" | "focusing"
+    "awareness_data" | "focus_pos" | "anchor_pos" | "focusing"
   > {
   client_id: number;
   is_collab_active: boolean;

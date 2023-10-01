@@ -1,5 +1,7 @@
 import { BaseFabricObject, Canvas } from "fabric";
+
 import { capitalize } from "~/utils/capitalize";
+
 import { LayerType } from "../../constants";
 
 /**

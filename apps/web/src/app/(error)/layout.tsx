@@ -2,11 +2,11 @@ import { clsx } from "clsx";
 import Image from "next/image";
 import React from "react";
 
-import Input from "../../../../../packages/ui/src/components/input";
-import Spacer from "../../../../../packages/ui/src/components/spacer";
-import Typography from "../../../../../packages/ui/src/components/typography";
-import SearchIcon from "../../../../../packages/ui/src/icons/search";
-import Footer from "../../../../../packages/ui/src/layout/footer";
+import Input from "~/components/input";
+import Spacer from "~/components/spacer";
+import Typography from "~/components/typography";
+import SearchIcon from "~/icons/search";
+import Footer from "~/layout/footer";
 
 import MinimalLayout from "../(minimal)/layout";
 import styles from "./layout.module.scss";

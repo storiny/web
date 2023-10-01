@@ -11,7 +11,7 @@ import DefaultDashboardLeftSidebarLayout from "../../layout";
 import ModerationBlocksPage from "./client";
 
 const meta: Meta<typeof ModerationBlocksPage> = {
-  title: "dashboard/Moderation/blocks",
+  title: "dashboard/moderation/blocks",
   component: ModerationBlocksPage,
   args: {
     block_count: 5

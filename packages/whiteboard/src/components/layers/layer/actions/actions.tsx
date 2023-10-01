@@ -3,15 +3,13 @@ import clsx from "clsx";
 import React from "react";
 import { createPortal as create_portal } from "react-dom";
 
-import Divider from "../../../../../../ui/src/components/divider";
-import IconButton from "../../../../../../ui/src/components/icon-button";
-import Tooltip, {
-  TooltipProvider
-} from "../../../../../../ui/src/components/tooltip";
-import CopyIcon from "../../../../../../ui/src/icons/copy";
-import FlipHorizontalIcon from "../../../../../../ui/src/icons/flip-horizontal";
-import FlipVerticalIcon from "../../../../../../ui/src/icons/flip-vertical";
-import TrashIcon from "../../../../../../ui/src/icons/trash";
+import Divider from "~/components/divider";
+import IconButton from "~/components/icon-button";
+import Tooltip, { TooltipProvider } from "~/components/tooltip";
+import CopyIcon from "~/icons/copy";
+import FlipHorizontalIcon from "~/icons/flip-horizontal";
+import FlipVerticalIcon from "~/icons/flip-vertical";
+import TrashIcon from "~/icons/trash";
 
 import { use_active_object } from "../../../../hooks";
 import { CLONE_PROPS } from "../../../../lib";
