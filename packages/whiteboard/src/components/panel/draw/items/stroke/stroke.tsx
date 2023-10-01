@@ -27,6 +27,7 @@ import LineDottedIcon from "~/icons/line-dotted";
 import LineSolidIcon from "~/icons/line-solid";
 import RulerMeasureIcon from "~/icons/ruler-measure";
 import SwapIcon from "~/icons/swap";
+import css from "~/theme/main.module.scss";
 
 import {
   Arrowhead,
@@ -110,8 +111,8 @@ const StrokeControl = ({
             <button
               aria-label={"Pick a color"}
               className={clsx(
-                "focusable",
-                "focus-invert",
+                css["focusable"],
+                css["focus-invert"],
                 common_styles.indicator
               )}
               style={
@@ -265,7 +266,7 @@ const StrokeStyleControl = ({
           }
         },
         trigger: {
-          className: clsx("full-w"),
+          className: css["full-w"],
           style: { flex: "0.6" }
         }
       }}
@@ -352,12 +353,12 @@ const ArrowheadControl = ({
             }
           },
           trigger: {
-            className: clsx("full-w")
+            className: css["full-w"]
           }
         }}
         value={start_arrowhead}
         value_children={
-          <span className={clsx("flex-center", styles["arrowhead-value"])}>
+          <span className={clsx(css["flex-center"], styles["arrowhead-value"])}>
             {get_arrowhead_icon(start_arrowhead, "start")}
           </span>
         }
@@ -403,12 +404,12 @@ const ArrowheadControl = ({
             }
           },
           trigger: {
-            className: clsx("full-w")
+            className: css["full-w"]
           }
         }}
         value={end_arrowhead}
         value_children={
-          <span className={clsx("flex-center", styles["arrowhead-value"])}>
+          <span className={clsx(css["flex-center"], styles["arrowhead-value"])}>
             {get_arrowhead_icon(end_arrowhead, "end")}
           </span>
         }

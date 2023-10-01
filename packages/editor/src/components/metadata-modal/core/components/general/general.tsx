@@ -28,6 +28,7 @@ import EditIcon from "~/icons/edit";
 import PhotoPlusIcon from "~/icons/photo-plus";
 import TrashIcon from "~/icons/trash";
 import { use_lazy_get_tags_query } from "~/redux/features";
+import css from "~/theme/main.module.scss";
 
 import image_styles from "../common/image.module.scss";
 
@@ -54,11 +55,11 @@ const Splash = (): React.ReactElement => {
   const splash_hex = form.watch("splash_hex");
 
   return (
-    <div className={clsx("flex-col", image_styles.x, image_styles.block)}>
-      <Typography className={"t-bold"} level={"body2"}>
+    <div className={clsx(css["flex-col"], image_styles.block)}>
+      <Typography className={css["t-bold"]} level={"body2"}>
         Splash image
       </Typography>
-      <Typography className={"t-minor"} level={"body3"}>
+      <Typography className={css["t-minor"]} level={"body3"}>
         Including a relevant splash image can attract more readers to your
         story. Please avoid using images with watermarks or low resolution.
         Additionally, ensure that the image adheres to our{" "}
@@ -67,9 +68,7 @@ const Splash = (): React.ReactElement => {
         </Link>
         .
       </Typography>
-      <div
-        className={clsx("flex-center", image_styles.x, image_styles.container)}
-      >
+      <div className={clsx(css["flex-center"], image_styles.container)}>
         <AspectRatio
           className={clsx(image_styles.x, image_styles.image)}
           ratio={1.77}
@@ -85,8 +84,7 @@ const Splash = (): React.ReactElement => {
               <div
                 className={clsx(
                   "force-light-mode",
-                  "flex-col",
-                  image_styles.x,
+                  css["flex-col"],
                   image_styles.actions
                 )}
               >
@@ -136,10 +134,9 @@ const Splash = (): React.ReactElement => {
               <div
                 aria-label={"Add a splash image"}
                 className={clsx(
-                  "flex-center",
-                  "full-h",
-                  "full-w",
-                  image_styles.x,
+                  css["flex-center"],
+                  css["full-h"],
+                  css["full-w"],
                   image_styles.placeholder
                 )}
                 role={"button"}

@@ -4,6 +4,7 @@ import clsx from "clsx";
 import React from "react";
 
 import { AvatarGroupContext } from "~/components/avatar-group/avatar-group-context";
+import css from "~/theme/main.module.scss";
 import { forward_ref } from "~/utils/forward-ref";
 
 import Avatar from "../avatar";
@@ -30,7 +31,7 @@ const AvatarGroup = forward_ref<AvatarGroupProps, "div">((props, ref) => {
       <Component
         {...rest}
         className={clsx(
-          "fit-w",
+          css["fit-w"],
           styles["avatar-group"],
           styles[size],
           common_styles[size],

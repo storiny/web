@@ -27,6 +27,7 @@ import {
   use_get_stories_query
 } from "~/redux/features";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
+import css from "~/theme/main.module.scss";
 import { abbreviate_number } from "~/utils/abbreviate-number";
 
 import DashboardTitle from "../../dashboard-title";
@@ -58,10 +59,10 @@ const PageHeader = ({
 }): React.ReactElement => (
   <Tabs
     className={clsx(
-      "full-bleed",
-      "page-header",
-      "dashboard-header",
-      "with-page-title",
+      css["full-bleed"],
+      css["page-header"],
+      css["dashboard-header"],
+      css["with-page-title"],
       styles.x,
       styles.tabs
     )}
@@ -70,7 +71,7 @@ const PageHeader = ({
     }
     value={value}
   >
-    <TabsList className={clsx("full-w", styles.x, styles["tabs-list"])}>
+    <TabsList className={clsx(css["full-w"], styles.x, styles["tabs-list"])}>
       <Tab aria-controls={undefined} value={"published"}>
         Published
       </Tab>
@@ -153,9 +154,9 @@ const StatusHeader = ({
   return (
     <div
       className={clsx(
-        "full-bleed",
-        "dashboard-header",
-        "flex-center",
+        css["full-bleed"],
+        css["dashboard-header"],
+        css["flex-center"],
         styles["status-header"]
       )}
     >
@@ -169,13 +170,15 @@ const StatusHeader = ({
         ) : (
           <>
             You have{" "}
-            <span className={"t-bold"}>{abbreviate_number(count_param)}</span>{" "}
+            <span className={css["t-bold"]}>
+              {abbreviate_number(count_param)}
+            </span>{" "}
             {tab === "published" ? "published" : "deleted"}{" "}
             {count_param === 1 ? "story" : "stories"}
           </>
         )}
       </Typography>
-      <Spacer className={"f-grow"} size={2} />
+      <Spacer className={css["f-grow"]} size={2} />
       {tab === "published" ? (
         <Button
           as={NextLink}
@@ -220,9 +223,9 @@ const ControlBar = ({
 }): React.ReactElement => (
   <div
     className={clsx(
-      "flex-center",
-      "full-bleed",
-      "dashboard-header",
+      css["flex-center"],
+      css["full-bleed"],
+      css["dashboard-header"],
       styles["control-bar"]
     )}
   >

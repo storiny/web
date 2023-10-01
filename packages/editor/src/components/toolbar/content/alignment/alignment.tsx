@@ -4,6 +4,7 @@ import React from "react";
 
 import Option from "~/components/option";
 import Select from "~/components/select";
+import css from "~/theme/main.module.scss";
 
 import { doc_status_atom } from "../../../../atoms";
 import {
@@ -42,7 +43,7 @@ const ToolbarAlignmentItem = (): React.ReactElement => {
         trigger: {
           "aria-label": "Alignment",
           className: clsx(
-            "focus-invert",
+            css["focus-invert"],
             toolbar_styles.x,
             toolbar_styles.select
           )
@@ -56,7 +57,7 @@ const ToolbarAlignmentItem = (): React.ReactElement => {
       }}
       value={alignment}
       value_children={
-        <span className={"flex-center"}>
+        <span className={css["flex-center"]}>
           {ALIGNMENT_ICON_MAP[alignment || Alignment.LEFT]}
         </span>
       }

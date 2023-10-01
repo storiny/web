@@ -9,6 +9,7 @@ import Typography from "~/components/typography";
 import HashIcon from "~/icons/hash";
 import StoriesIcon from "~/icons/stories";
 import UsersIcon from "~/icons/users";
+import css from "~/theme/main.module.scss";
 import { abbreviate_number } from "~/utils/abbreviate-number";
 
 import styles from "./tag-chip.module.scss";
@@ -32,8 +33,8 @@ const TagChip = (props: TagChipProps): React.ReactElement => {
       {...rest}
       as={NextLink}
       className={clsx(
-        "flex-center",
-        "t-regular",
+        css["flex-center"],
+        css["t-regular"],
         styles["tag-chip"],
         className
       )}
@@ -44,7 +45,7 @@ const TagChip = (props: TagChipProps): React.ReactElement => {
       type={"clickable"}
       variant={"soft"}
     >
-      <span className={"ellipsis"}>{value}</span>
+      <span className={css["ellipsis"]}>{value}</span>
       {has_story_count || has_follower_count ? <Grow /> : null}
       {has_story_count && (
         <Typography
@@ -53,9 +54,9 @@ const TagChip = (props: TagChipProps): React.ReactElement => {
           }`}
           as={"span"}
           className={clsx(
-            "flex-center",
-            "t-medium",
-            !disabled && "t-minor",
+            css["flex-center"],
+            css["t-medium"],
+            !disabled && css["t-minor"],
             styles.stat
           )}
           data-first-child={"true"}
@@ -72,9 +73,9 @@ const TagChip = (props: TagChipProps): React.ReactElement => {
           }`}
           as={"span"}
           className={clsx(
-            "flex-center",
-            "t-medium",
-            !disabled && "t-minor",
+            css["flex-center"],
+            css["t-medium"],
+            !disabled && css["t-minor"],
             styles.stat
           )}
           data-first-child={String(typeof story_count === "undefined")}

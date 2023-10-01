@@ -12,6 +12,7 @@ import Separator from "~/components/separator";
 import ChevronIcon from "~/icons/chevron";
 import MinusIcon from "~/icons/minus";
 import PlusIcon from "~/icons/plus";
+import css from "~/theme/main.module.scss";
 import { clamp } from "~/utils/clamp";
 
 import { MAX_ZOOM_LEVEL, MIN_ZOOM_LEVEL } from "../../../constants";
@@ -69,10 +70,14 @@ const ZoomControl = (): React.ReactElement => {
   }, [canvas]);
 
   return (
-    <div className={clsx("flex-center", styles.x, styles.zoom)}>
+    <div className={clsx(css["flex-center"], styles.zoom)}>
       <IconButton
         aria-label={"Decrement zoom level"}
-        className={clsx("focus-invert", styles.x, styles["zoom-icon-button"])}
+        className={clsx(
+          css["focus-invert"],
+          styles.x,
+          styles["zoom-icon-button"]
+        )}
         disabled={zoom <= MIN_ZOOM_LEVEL}
         onClick={(): void => decrement_zoom()}
         title={"Decrement zoom level"}
@@ -92,9 +97,9 @@ const ZoomControl = (): React.ReactElement => {
           <Button
             aria-label={"Change zoom level"}
             className={clsx(
-              "t-major",
-              "t-bold",
-              "focus-invert",
+              css["t-major"],
+              css["t-bold"],
+              css["focus-invert"],
               styles.x,
               styles["zoom-trigger"]
             )}
@@ -106,13 +111,7 @@ const ZoomControl = (): React.ReactElement => {
           </Button>
         }
       >
-        <div
-          className={clsx(
-            "flex-center",
-            styles.x,
-            styles["zoom-input-wrapper"]
-          )}
-        >
+        <div className={clsx(css["flex-center"], styles["zoom-input-wrapper"])}>
           <Input
             max={MAX_ZOOM_LEVEL}
             min={MIN_ZOOM_LEVEL}
@@ -150,7 +149,11 @@ const ZoomControl = (): React.ReactElement => {
       </Menu>
       <IconButton
         aria-label={"Increment zoom level"}
-        className={clsx("focus-invert", styles.x, styles["zoom-icon-button"])}
+        className={clsx(
+          css["focus-invert"],
+          styles.x,
+          styles["zoom-icon-button"]
+        )}
         disabled={zoom >= MAX_ZOOM_LEVEL}
         onClick={(): void => increment_zoom()}
         title={"Increment zoom level"}
@@ -164,7 +167,7 @@ const ZoomControl = (): React.ReactElement => {
 
 const Overlay = (): React.ReactElement => (
   <React.Fragment>
-    <div className={clsx("flex-center", styles.x, styles["primary-controls"])}>
+    <div className={clsx(css["flex-center"], styles["primary-controls"])}>
       <ZoomControl />
     </div>
   </React.Fragment>

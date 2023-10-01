@@ -8,6 +8,7 @@ import Divider from "~/components/divider";
 import Tooltip from "~/components/tooltip";
 import { use_media_query } from "~/hooks/use-media-query";
 import { BREAKPOINTS } from "~/theme/breakpoints";
+import css from "~/theme/main.module.scss";
 import { capitalize } from "~/utils/capitalize";
 
 import { awareness_atom } from "../../../../atoms";
@@ -73,7 +74,7 @@ const EditorPresence = (): React.ReactElement => {
   }, [awareness]);
 
   return (
-    <div className={clsx("flex-center", styles.x, styles.presence)}>
+    <div className={clsx(css["flex-center"], styles.presence)}>
       {editors.map((editor) => (
         <Participant key={String(editor.client_id)} presence={editor} />
       ))}

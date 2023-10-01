@@ -4,6 +4,7 @@ import React from "react";
 import Avatar from "~/components/avatar";
 import AvatarGroup from "~/components/avatar-group";
 import Typography, { TypographyLevel } from "~/components/typography";
+import css from "~/theme/main.module.scss";
 
 import styles from "./persona.module.scss";
 import { PersonaProps, PersonaSize } from "./persona.props";
@@ -75,7 +76,7 @@ const Persona = React.forwardRef<HTMLDivElement, PersonaProps>((props, ref) => {
           <Typography
             {...component_props?.secondary_text}
             className={clsx(
-              "t-minor",
+              css["t-minor"],
               styles["secondary-text"],
               component_props?.secondary_text?.className
             )}

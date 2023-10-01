@@ -6,6 +6,7 @@ import { ModalFooterButton, use_modal } from "~/components/modal";
 import { use_toast } from "~/components/toast";
 import CheckIcon from "~/icons/check";
 import ImageIcon from "~/icons/image";
+import css from "~/theme/main.module.scss";
 
 import { use_canvas, use_whiteboard } from "../../hooks";
 import ExportImageModal, { ExportHandleRef } from "./export-image-modal";
@@ -21,7 +22,7 @@ const Confirm = (): React.ReactElement => {
     ({ open_modal }) => (
       <IconButton
         aria-label={"Confirm"}
-        className={clsx("focus-invert", styles.x, styles["icon-button"])}
+        className={clsx(css["focus-invert"], styles.x, styles["icon-button"])}
         onClick={(event): void => {
           if (canvas.current) {
             if (canvas.current.getObjects().length) {

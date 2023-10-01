@@ -5,6 +5,7 @@ import React from "react";
 
 import { FormHelperTextProps } from "~/components/form";
 import Typography from "~/components/typography";
+import css from "~/theme/main.module.scss";
 
 import { use_form_field } from "../use-form-field";
 
@@ -18,7 +19,7 @@ const FormHelperText = React.forwardRef<
     <Typography
       level={"body3"}
       {...rest}
-      className={clsx(disabled ? "t-muted" : "t-minor", className)}
+      className={clsx(css[disabled ? "t-muted" : "t-minor"], className)}
       id={helper_text_id}
       ref={ref}
     />

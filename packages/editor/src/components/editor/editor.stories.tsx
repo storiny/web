@@ -7,6 +7,7 @@ import { decompressSync as decompress_sync } from "fflate";
 import React from "react";
 
 import { render_with_state } from "~/redux/mock";
+import css from "~/theme/main.module.scss";
 
 import Editor from "./editor";
 
@@ -32,7 +33,12 @@ export const Default: Story = {
     (Story): React.ReactElement =>
       render_with_state(
         <div
-          className={clsx("grid", "grid-container", "dashboard", "no-sidenav")}
+          className={clsx(
+            css["grid"],
+            css["grid-container"],
+            css["dashboard"],
+            css["no-sidenav"]
+          )}
         >
           <Story />
         </div>,

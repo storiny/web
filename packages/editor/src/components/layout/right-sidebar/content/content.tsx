@@ -11,6 +11,7 @@ import Grow from "~/components/grow";
 import Separator from "~/components/separator";
 import Typography from "~/components/typography";
 import RightSidebarFooter from "~/layout/right-sidebar/footer";
+import css from "~/theme/main.module.scss";
 
 import {
   doc_status_atom,
@@ -72,7 +73,7 @@ const SuspendedEditorRightSidebarContent = (
       <animated.div
         aria-busy={document_loading}
         className={clsx(
-          "flex-col",
+          css["flex-col"],
           styles.x,
           styles.content,
           common_styles.x,
@@ -92,7 +93,7 @@ const SuspendedEditorRightSidebarContent = (
             <RightSidebarFooter />
           </React.Fragment>
         ) : status === "deleted" ? (
-          <Typography className={"t-minor"} level={"body2"}>
+          <Typography className={css["t-minor"]} level={"body2"}>
             You are currently viewing a static version of this deleted story. If
             you do not restore it, the story will be permanently pruned within
             30 days from the date of deletion.

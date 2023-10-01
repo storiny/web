@@ -19,6 +19,7 @@ import Typography from "~/components/typography";
 import { use_media_query } from "~/hooks/use-media-query";
 import { use_app_selector } from "~/redux/hooks";
 import { BREAKPOINTS } from "~/theme/breakpoints";
+import css from "~/theme/main.module.scss";
 import { abbreviate_number } from "~/utils/abbreviate-number";
 
 import {
@@ -64,7 +65,7 @@ const HeaderTabs = ({
     }
     value={value}
   >
-    <TabsList className={clsx("full-w", styles.x, styles["tabs-list"])}>
+    <TabsList className={clsx(css["full-w"], styles.x, styles["tabs-list"])}>
       <Tab aria-controls={undefined} value={"suggested"}>
         Suggested
       </Tab>
@@ -104,16 +105,16 @@ const Content = (): React.ReactElement => {
 
   return (
     <React.Fragment>
-      <header className={clsx("flex-col", styles.header)}>
+      <header className={clsx(css["flex-col"], styles.header)}>
         {is_smaller_than_desktop && (
           <HeaderTabs on_change={set_value} value={value} />
         )}
         {value === "comments" && (
-          <div className={clsx("full-h", "flex-center")}>
+          <div className={clsx(css["full-h"], css["flex-center"])}>
             <Typography
               className={clsx(
-                "t-bold",
-                "f-grow",
+                css["t-bold"],
+                css["f-grow"],
                 styles.x,
                 styles["header-label"]
               )}
@@ -132,7 +133,7 @@ const Content = (): React.ReactElement => {
                 trigger: {
                   "aria-label": "Sort comments",
                   className: clsx(
-                    "focus-invert",
+                    css["focus-invert"],
                     styles.x,
                     styles["select-trigger"]
                   )
@@ -190,7 +191,7 @@ const EditorAuxiliaryContent = (): React.ReactElement => {
   return (
     <React.Fragment>
       <section
-        className={clsx("flex-col", styles["auxiliary-content"])}
+        className={clsx(css["flex-col"], styles["auxiliary-content"])}
         id={"auxiliary-content"}
         ref={ref}
       >

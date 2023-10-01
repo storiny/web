@@ -10,6 +10,7 @@ import {
 import React from "react";
 
 import Typography from "~/components/typography";
+import css from "~/theme/main.module.scss";
 
 import {
   $is_heading_node,
@@ -344,13 +345,13 @@ const TableOfContentsPlugin = (): React.ReactElement => {
   }, [editor]);
 
   return table_of_contents.length ? (
-    <ul className={clsx(styles.x, styles.toc)}>
+    <ul className={styles.toc}>
       {table_of_contents.map(([key, text, tag]) => (
         <Typography
           as={"li"}
           className={clsx(
-            "focusable",
-            text.trim() ? "t-minor" : "t-muted",
+            css["focusable"],
+            css[text.trim() ? "t-minor" : "t-muted"],
             styles.x,
             styles.item,
             tag === "h3" && styles.sub,
@@ -371,7 +372,7 @@ const TableOfContentsPlugin = (): React.ReactElement => {
     </ul>
   ) : (
     <Typography
-      className={clsx("t-muted", "t-center")}
+      className={clsx(css["t-muted"], css["t-center"])}
       level={"body2"}
       style={{ display: "table-cell", verticalAlign: "middle" }}
     >

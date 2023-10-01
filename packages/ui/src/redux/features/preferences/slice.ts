@@ -3,13 +3,15 @@ import {
   isAnyOf as is_any_of,
   PayloadAction
 } from "@reduxjs/toolkit";
+import { dev_console } from "@storiny/shared/src/utils/dev-log";
 import {
   compressToUTF16 as compress_to_utf16,
   decompressFromUTF16 as decompress_from_utf16
 } from "lz-string";
 import { z } from "zod";
 
-import { dev_console } from "../../../../../shared/src/utils/dev-log";
+import css from "~/theme/main.module.scss";
+
 import { AppStartListening } from "../../listener-middleware";
 
 export const LOCAL_STORAGE_KEY = "preferences";
@@ -221,11 +223,11 @@ const sync_reading_font_size = (
   font_size: PreferencesState["reading_font_size"]
 ): void => {
   document.body.classList.remove(
-    "t-legible-slim",
-    "t-legible-regular",
-    "t-legible-oversized"
+    css["t-legible-slim"],
+    css["t-legible-regular"],
+    css["t-legible-oversized"]
   );
-  document.body.classList.add(`t-legible-${font_size}`);
+  document.body.classList.add(css[`t-legible-${font_size}`]);
 };
 
 /**
@@ -237,7 +239,7 @@ const sync_code_font = (
   font: PreferencesState["code_font"],
   ligatures: boolean
 ): void => {
-  document.body.classList.toggle("ligatures", ligatures);
+  document.body.classList.toggle(css["ligatures"], ligatures);
 
   if (font !== "system") {
     document.body.style.setProperty(

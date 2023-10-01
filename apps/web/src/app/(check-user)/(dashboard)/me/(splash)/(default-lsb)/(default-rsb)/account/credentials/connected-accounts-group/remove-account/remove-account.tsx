@@ -1,4 +1,3 @@
-import { clsx } from "clsx";
 import React from "react";
 
 import Button from "~/components/button";
@@ -13,6 +12,7 @@ import PasswordIcon from "~/icons/password";
 import UnlinkIcon from "~/icons/unlink";
 import { use_remove_account_mutation } from "~/redux/features";
 import { BREAKPOINTS } from "~/theme/breakpoints";
+import css from "~/theme/main.module.scss";
 
 import { RemoveAccountProps } from "./remove-account.props";
 import {
@@ -23,7 +23,7 @@ import {
 const RemoveAccountModal = (): React.ReactElement => (
   <React.Fragment>
     <Description asChild>
-      <Typography className={"t-minor"} level={"body2"}>
+      <Typography className={css["t-minor"]} level={"body2"}>
         This will disconnect your Apple account from your Storiny account, and
         you will no longer be able to sign in to Storiny with your Apple account
         unless you connect it again.
@@ -36,7 +36,7 @@ const RemoveAccountModal = (): React.ReactElement => (
       decorator={<PasswordIcon />}
       form_slot_props={{
         form_item: {
-          className: "f-grow"
+          className: css["f-grow"]
         }
       }}
       label={"Password"}
@@ -102,7 +102,7 @@ const RemoveAccount = ({
       </Button>
     ),
     <Form<RemoveAccountSchema>
-      className={clsx("flex-col")}
+      className={css["flex-col"]}
       disabled={is_loading}
       on_submit={handle_submit}
       provider_props={form}

@@ -11,6 +11,7 @@ import Typography from "~/components/typography";
 import EditIcon from "~/icons/edit";
 import ImageIcon from "~/icons/image";
 import PhotoEditIcon from "~/icons/photo-edit";
+import css from "~/theme/main.module.scss";
 
 import { doc_status_atom, story_metadata_atom } from "../../../../../../atoms";
 import StoryMetadataModal from "../../../../../metadata-modal";
@@ -25,9 +26,9 @@ const EditorStoryCard = (props: EditorStoryCardProps): React.ReactElement => {
 
   return (
     <article {...rest} className={clsx(styles["story-card"], className)}>
-      <AspectRatio className={clsx("full-w", styles.splash)} ratio={1.76}>
+      <AspectRatio className={clsx(css["full-w"], styles.splash)} ratio={1.76}>
         {!story.splash_id ? (
-          <div className={clsx("flex-center", styles.placeholder)}>
+          <div className={clsx(css["flex-center"], styles.placeholder)}>
             <ImageIcon />
           </div>
         ) : (
@@ -51,15 +52,19 @@ const EditorStoryCard = (props: EditorStoryCardProps): React.ReactElement => {
           </StoryMetadataModal>
         )}
       </AspectRatio>
-      <div className={clsx("flex-col", styles.meta)}>
-        <Typography className={"t-medium"} level={"body2"} title={story.title}>
+      <div className={clsx(css["flex-col"], styles.meta)}>
+        <Typography
+          className={css["t-medium"]}
+          level={"body2"}
+          title={story.title}
+        >
           {story.title}
         </Typography>
         {status !== "deleted" && (
           <footer>
             <StoryMetadataModal set_story={set_story} story={story}>
               <Button
-                className={"full-w"}
+                className={css["full-w"]}
                 decorator={<EditIcon />}
                 disabled={publishing}
                 variant={"hollow"}

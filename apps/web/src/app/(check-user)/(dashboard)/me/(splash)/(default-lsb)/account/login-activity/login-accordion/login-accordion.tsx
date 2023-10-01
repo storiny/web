@@ -19,6 +19,7 @@ import { use_toast } from "~/components/toast";
 import Typography from "~/components/typography";
 import LogoutIcon from "~/icons/logout";
 import { use_session_logout_mutation } from "~/redux/features";
+import css from "~/theme/main.module.scss";
 import { DateFormat, format_date } from "~/utils/format-date";
 
 import { DEVICE_TYPE_ICON_MAP } from "../icon-map";
@@ -28,10 +29,10 @@ import { LoginAccordionProps } from "./login-accordion.props";
 const Map = dynamic(() => import("../map"), {
   loading: dynamic_loader(() => (
     <AspectRatio
-      className={clsx("full-w", styles.x, styles.loader)}
+      className={clsx(css["full-w"], styles.x, styles.loader)}
       ratio={2.85}
     >
-      <SuspenseLoader className={"full-h"} />
+      <SuspenseLoader className={css["full-h"]} />
     </AspectRatio>
   ))
 });
@@ -58,7 +59,12 @@ const LogoutButton = (props: LoginAccordionProps): React.ReactElement => {
   return (
     <Button
       check_auth
-      className={clsx("focus-invert", "f-grow", styles.x, styles.button)}
+      className={clsx(
+        css["focus-invert"],
+        css["f-grow"],
+        styles.x,
+        styles.button
+      )}
       decorator={<LogoutIcon />}
       loading={is_loading}
       variant={"ghost"}
@@ -90,38 +96,40 @@ const LoginAccordion = (props: LoginAccordionProps): React.ReactElement => {
             }
           }}
         >
-          <span className={clsx("flex-center", styles.wrapper)}>
+          <span className={clsx(css["flex-center"], styles.wrapper)}>
             {DEVICE_TYPE_ICON_MAP[login.device?.type ?? DeviceType.UNKNOWN]}
             <Spacer size={2} />
-            <span className={clsx("flex-col", styles.details)}>
-              <Typography as={"span"} className={"t-medium"} ellipsis>
+            <span className={clsx(css["flex-col"], styles.details)}>
+              <Typography as={"span"} className={css["t-medium"]} ellipsis>
                 {login.device?.display_name || "Unknown device"}
               </Typography>
               <Typography
                 as={"span"}
-                className={"t-minor"}
+                className={css["t-minor"]}
                 ellipsis
                 level={"body2"}
               >
                 {login.is_active ? (
                   <React.Fragment>
-                    <span className={clsx("t-medium", styles["active-label"])}>
+                    <span
+                      className={clsx(css["t-medium"], styles["active-label"])}
+                    >
                       Current device
                     </span>{" "}
-                    <span className={"t-muted"}>&bull;</span>{" "}
+                    <span className={css["t-muted"]}>&bull;</span>{" "}
                     {login.location?.display_name || "Unknown location"}
                   </React.Fragment>
                 ) : (
                   <React.Fragment>
                     {login.location?.display_name || "Unknown location"}{" "}
-                    <span className={"t-muted"}>&bull;</span>{" "}
+                    <span className={css["t-muted"]}>&bull;</span>{" "}
                     {format_date(login.created_at, DateFormat.STANDARD)}
                   </React.Fragment>
                 )}
               </Typography>
             </span>
           </span>
-          <Spacer className={"f-grow"} size={3} />
+          <Spacer className={css["f-grow"]} size={3} />
         </AccordionTrigger>
         <AccordionContent
           slot_props={{
@@ -129,7 +137,7 @@ const LoginAccordion = (props: LoginAccordionProps): React.ReactElement => {
           }}
         >
           <Spacer orientation={"vertical"} size={2} />
-          <div className={clsx("flex-col", styles.content)}>
+          <div className={clsx(css["flex-col"], styles.content)}>
             {typeof login.location?.lat !== "undefined" &&
             typeof login.location?.lng !== "undefined" ? (
               <Map
@@ -138,9 +146,9 @@ const LoginAccordion = (props: LoginAccordionProps): React.ReactElement => {
                 ratio={2.85}
               />
             ) : (
-              <AspectRatio className={"full-w"} ratio={2.85}>
-                <div className={"flex-center"}>
-                  <Typography className={"t-minor"} level={"body2"}>
+              <AspectRatio className={css["full-w"]} ratio={2.85}>
+                <div className={css["flex-center"]}>
+                  <Typography className={css["t-minor"]} level={"body2"}>
                     Unknown location
                   </Typography>
                 </div>
@@ -150,7 +158,7 @@ const LoginAccordion = (props: LoginAccordionProps): React.ReactElement => {
           </div>
         </AccordionContent>
       </AccordionItem>
-      {login.is_active && <Divider className={"hide-last"} />}
+      {login.is_active && <Divider className={css["hide-last"]} />}
     </React.Fragment>
   );
 };

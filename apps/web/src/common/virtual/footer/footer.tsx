@@ -5,9 +5,10 @@ import React from "react";
 
 import Spacer from "~/components/spacer";
 import Spinner from "~/components/spinner";
+import css from "~/theme/main.module.scss";
 
 const VirtualFooter = React.memo(() => (
-  <div className={clsx("full-w", "flex-col", "flex-center")}>
+  <div className={clsx(css["full-w"], css["flex-col"], css["flex-center"])}>
     <Spacer orientation={"vertical"} size={4} />
     <Spinner aria-label={"Loading more…"} />
     <Spacer orientation={"vertical"} size={6} />

@@ -28,6 +28,7 @@ import UserXIcon from "~/icons/user-x";
 import { boolean_action } from "~/redux/features";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 import { BREAKPOINTS } from "~/theme/breakpoints";
+import css from "~/theme/main.module.scss";
 import { abbreviate_number } from "~/utils/abbreviate-number";
 import { DateFormat, format_date } from "~/utils/format-date";
 
@@ -70,7 +71,7 @@ const Actions = ({
   return (
     <div
       className={clsx(
-        "flex",
+        css["flex"],
         styles.actions,
         is_inside_sidebar && styles["inside-sidebar"]
       )}
@@ -130,10 +131,10 @@ const Stat = ({
       value === 1 ? singular_label : plural_label
     }`}
   >
-    <span className={clsx("t-major", "t-bold")}>
+    <span className={clsx(css["t-major"], css["t-bold"])}>
       {abbreviate_number(value)}
     </span>{" "}
-    <span className={clsx("t-minor", "t-medium")}>
+    <span className={clsx(css["t-minor"], css["t-medium"])}>
       {value === 1 ? singular_label : plural_label}
     </span>
   </Typography>
@@ -153,7 +154,7 @@ const Badges = ({
   }
 
   return (
-    <div className={clsx("flex-col", styles["container"])}>
+    <div className={clsx(css["flex-col"], styles["container"])}>
       <Title>
         Badges
         <Tooltip
@@ -171,14 +172,14 @@ const Badges = ({
           <InfoIcon className={clsx(styles.x, styles["badge-hint"])} />
         </Tooltip>
       </Title>
-      <div className={clsx("flex", styles["badges-container"])}>
+      <div className={clsx(css["flex"], styles["badges-container"])}>
         {flags.has_any_of(UserFlag.STAFF) && (
-          <span className={clsx("flex-center", styles["badge-wrapper"])}>
+          <span className={clsx(css["flex-center"], styles["badge-wrapper"])}>
             <StaffBadge />
           </span>
         )}
         {flags.has_any_of(UserFlag.EARLY_USER) && (
-          <span className={clsx("flex-center", styles["badge-wrapper"])}>
+          <span className={clsx(css["flex-center"], styles["badge-wrapper"])}>
             <EarlyUserBadge />
           </span>
         )}
@@ -196,7 +197,13 @@ const Title = ({
 }): React.ReactElement => (
   <Typography
     as={"h2"}
-    className={clsx("flex", "t-bold", "t-minor", styles.x, styles.title)}
+    className={clsx(
+      css["flex"],
+      css["t-bold"],
+      css["t-minor"],
+      styles.x,
+      styles.title
+    )}
     level={"body3"}
   >
     {children}
@@ -226,7 +233,7 @@ const ProfileContent = ({
       {/* Header (Avatar and actions) */}
       <div
         className={clsx(
-          "flex-center",
+          css["flex-center"],
           styles.header,
           is_inside_sidebar && styles["inside-sidebar"]
         )}
@@ -285,15 +292,15 @@ const ProfileContent = ({
           <Actions is_inside_sidebar={is_inside_sidebar} profile={profile} />
         )}
       </div>
-      <div className={clsx("flex-col", styles.properties)}>
+      <div className={clsx(css["flex-col"], styles.properties)}>
         {/* Details (Name, username, statistics, and status) */}
-        <div className={clsx("flex-col", styles.details)}>
-          <div className={"flex-col"}>
+        <div className={clsx(css["flex-col"], styles.details)}>
+          <div className={css["flex-col"]}>
             <Typography as={"h1"} ellipsis level={"h3"}>
               {profile.name}
             </Typography>
             <Typography
-              className={clsx("t-medium", "t-minor")}
+              className={clsx(css["t-medium"], css["t-minor"])}
               ellipsis
               level={"body1"}
             >
@@ -302,7 +309,7 @@ const ProfileContent = ({
           </div>
           {!is_suspended && !profile.is_blocked_by_user ? (
             <>
-              <div className={clsx("flex", styles.stats)}>
+              <div className={clsx(css["flex"], styles.stats)}>
                 {!is_private && (
                   <Stat
                     plural_label={"stories"}
@@ -359,21 +366,21 @@ const ProfileContent = ({
             <Badges public_flags={profile.public_flags} />
             {/* Bio */}
             {Boolean(profile.bio) && (
-              <div className={clsx("flex-col", styles.container)}>
+              <div className={clsx(css["flex-col"], styles.container)}>
                 <Title>About</Title>
-                <Typography className={"t-minor"} level={"body2"}>
+                <Typography className={css["t-minor"]} level={"body2"}>
                   {profile.bio}
                 </Typography>
               </div>
             )}
             {/* List (Location and joining date) */}
-            <ul className={clsx("flex-col", styles.list)}>
+            <ul className={clsx(css["flex-col"], styles.list)}>
               {Boolean(profile.location) && (
-                <li className={clsx("flex", styles["list-item"])}>
+                <li className={clsx(css["flex"], styles["list-item"])}>
                   <MapPinIcon />
                   <Typography
                     as={"span"}
-                    className={"t-minor"}
+                    className={css["t-minor"]}
                     ellipsis
                     level={"body2"}
                     title={profile.location}
@@ -382,11 +389,11 @@ const ProfileContent = ({
                   </Typography>
                 </li>
               )}
-              <li className={clsx("flex", styles["list-item"])}>
+              <li className={clsx(css["flex"], styles["list-item"])}>
                 <CalendarIcon />
                 <Typography
                   as={"time"}
-                  className={"t-minor"}
+                  className={css["t-minor"]}
                   dateTime={profile.created_at}
                   level={"body2"}
                   title={format_date(profile.created_at)}
@@ -398,7 +405,10 @@ const ProfileContent = ({
             {/* Connections */}
             {Boolean(profile.connections.length) && (
               <div
-                className={clsx("flex-col", styles["connections-container"])}
+                className={clsx(
+                  css["flex-col"],
+                  styles["connections-container"]
+                )}
               >
                 <Title>Connections</Title>
                 <Connections

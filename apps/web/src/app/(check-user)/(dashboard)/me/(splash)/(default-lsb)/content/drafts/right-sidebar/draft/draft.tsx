@@ -10,6 +10,7 @@ import Link from "~/components/link";
 import Typography from "~/components/typography";
 import EditIcon from "~/icons/edit";
 import ImageIcon from "~/icons/image";
+import css from "~/theme/main.module.scss";
 import { abbreviate_number } from "~/utils/abbreviate-number";
 import { DateFormat, format_date } from "~/utils/format-date";
 
@@ -25,13 +26,13 @@ const Draft = (props: DraftProps): React.ReactElement => {
       <AspectRatio
         aria-label={"Edit this draft"}
         as={NextLink}
-        className={clsx("full-w", styles.x, styles.splash)}
+        className={clsx(css["full-w"], styles.x, styles.splash)}
         href={href}
         ratio={1.76}
         title={"Edit this draft"}
       >
         {!latest_draft.splash_id ? (
-          <div className={clsx("flex-center", styles.placeholder)}>
+          <div className={clsx(css["flex-center"], styles.placeholder)}>
             <ImageIcon />
           </div>
         ) : (
@@ -49,9 +50,9 @@ const Draft = (props: DraftProps): React.ReactElement => {
           <EditIcon />
         </IconButton>
       </AspectRatio>
-      <div className={clsx("flex-col", styles.meta)}>
+      <div className={clsx(css["flex-col"], styles.meta)}>
         <Link
-          className={"t-medium"}
+          className={css["t-medium"]}
           fixed_color
           href={href}
           level={"body2"}
@@ -59,10 +60,13 @@ const Draft = (props: DraftProps): React.ReactElement => {
         >
           {latest_draft.title}
         </Link>
-        <footer className={"flex"}>
-          <Typography className={clsx("t-minor", "t-medium")} level={"body3"}>
+        <footer className={css["flex"]}>
+          <Typography
+            className={clsx(css["t-minor"], css["t-medium"])}
+            level={"body3"}
+          >
             {abbreviate_number(latest_draft.word_count)} words{" "}
-            <span className={"t-muted"}>&bull;</span> Edited{" "}
+            <span className={css["t-muted"]}>&bull;</span> Edited{" "}
             {format_date(
               latest_draft.edited_at || latest_draft.created_at,
               DateFormat.RELATIVE

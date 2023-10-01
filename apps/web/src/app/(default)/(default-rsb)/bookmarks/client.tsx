@@ -17,6 +17,7 @@ import {
   get_query_error_type,
   use_get_bookmarks_query
 } from "~/redux/features";
+import css from "~/theme/main.module.scss";
 
 const EmptyState = dynamic(() => import("./empty-state"), {
   loading: dynamic_loader()
@@ -39,7 +40,9 @@ const PageHeader = ({
   query: string;
   sort: BookmarksSortValue;
 }): React.ReactElement => (
-  <div className={clsx("flex-center", "full-bleed", "page-header")}>
+  <div
+    className={clsx(css["flex-center"], css["full-bleed"], css["page-header"])}
+  >
     <Input
       decorator={<SearchIcon />}
       disabled={disabled}

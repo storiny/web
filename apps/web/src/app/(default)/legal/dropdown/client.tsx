@@ -7,6 +7,7 @@ import React from "react";
 
 import Option, { OptionProps } from "~/components/option";
 import Select, { SelectGroup, SelectLabel } from "~/components/select";
+import css from "~/theme/main.module.scss";
 
 import { LegalSegment } from "../types";
 import styles from "./dropdown.module.scss";
@@ -123,7 +124,12 @@ const DropdownClient = (): React.ReactElement => {
           }
         },
         trigger: {
-          className: clsx("full-bleed", "page-header", styles.x, styles.trigger)
+          className: clsx(
+            css["full-bleed"],
+            css["page-header"],
+            styles.x,
+            styles.trigger
+          )
         }
       }}
       value={current_segment}

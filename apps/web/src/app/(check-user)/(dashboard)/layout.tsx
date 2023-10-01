@@ -3,13 +3,14 @@ import React from "react";
 
 import Navbar from "~/layout/navbar";
 import Sidenav from "~/layout/sidenav";
+import css from "~/theme/main.module.scss";
 
 const DashboardLayout = ({
   children
 }: {
   children: React.ReactNode;
 }): React.ReactElement => (
-  <div className={clsx("grid", "grid-container", "dashboard")}>
+  <div className={clsx(css["grid"], css["grid-container"], css["dashboard"])}>
     <Navbar />
     <Sidenav is_dashboard />
     {children}

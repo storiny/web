@@ -15,6 +15,7 @@ import Gallery from "~/entities/gallery";
 import EditIcon from "~/icons/edit";
 import PhotoEditIcon from "~/icons/photo-edit";
 import TrashIcon from "~/icons/trash";
+import css from "~/theme/main.module.scss";
 
 import image_styles from "../common/image.module.scss";
 
@@ -24,18 +25,16 @@ const PreviewImage = (): React.ReactElement => {
   const form = use_form_context();
   const preview_image = form.watch("preview_image");
   return (
-    <div className={clsx("flex-col", image_styles.x, image_styles.block)}>
-      <Typography className={"t-bold"} level={"body2"}>
+    <div className={clsx(css["flex-col"], image_styles.block)}>
+      <Typography className={css["t-bold"]} level={"body2"}>
         Preview image
       </Typography>
-      <Typography className={"t-minor"} level={"body3"}>
+      <Typography className={css["t-minor"]} level={"body3"}>
         This image will serve as a preview for your story when it is embedded on
         other platforms. Please use an image with exact dimensions of 1200px
         width and 630px height, or leave it to the default image.
       </Typography>
-      <div
-        className={clsx("flex-center", image_styles.x, image_styles.container)}
-      >
+      <div className={clsx(css["flex-center"], image_styles.container)}>
         <AspectRatio
           className={clsx(image_styles.x, image_styles.image)}
           ratio={1.9}
@@ -46,8 +45,7 @@ const PreviewImage = (): React.ReactElement => {
               <div
                 className={clsx(
                   "force-light-mode",
-                  "flex-col",
-                  image_styles.x,
+                  css["flex-col"],
                   image_styles.actions
                 )}
               >
@@ -90,10 +88,9 @@ const PreviewImage = (): React.ReactElement => {
               <div
                 aria-label={"Add a custom preview image"}
                 className={clsx(
-                  "flex-center",
-                  "full-h",
-                  "full-w",
-                  image_styles.x,
+                  css["flex-center"],
+                  css["full-h"],
+                  css["full-w"],
                   image_styles.placeholder
                 )}
                 role={"button"}

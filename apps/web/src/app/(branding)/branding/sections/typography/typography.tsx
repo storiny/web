@@ -12,12 +12,13 @@ import Spacer from "~/components/spacer";
 import Typography from "~/components/typography";
 import { use_media_query } from "~/hooks/use-media-query";
 import { BREAKPOINTS } from "~/theme/breakpoints";
+import css from "~/theme/main.module.scss";
 
 import page_styles from "../../styles.module.scss";
 import common_styles from "../common.module.scss";
 
 const PrimaryTypeface = (): React.ReactElement => (
-  <div className={clsx("flex-col", page_styles["sub-section"])}>
+  <div className={clsx(css["flex-col"], page_styles["sub-section"])}>
     <Typography level={"h3"}>Primary Typeface</Typography>
     <Typography level={"legible"}>
       Our primary typeface is Cabinet Grotesk.
@@ -25,8 +26,8 @@ const PrimaryTypeface = (): React.ReactElement => (
     <Spacer orientation={"vertical"} size={5} />
     <figure
       className={clsx(
-        "flex-col",
-        "t-center",
+        css["flex-col"],
+        css["t-center"],
         page_styles.figure,
         page_styles["with-background"],
         common_styles["figure-with-caption"]
@@ -34,12 +35,12 @@ const PrimaryTypeface = (): React.ReactElement => (
     >
       <img
         alt={""}
-        className={"invert"}
+        data-invert-filter={""}
         loading={"lazy"}
         src={`${process.env.NEXT_PUBLIC_CDN_URL}/web-assets/branding/typography/primary-typeface.svg`}
       />
       <Spacer orientation={"vertical"} size={2} />
-      <Typography as={"figcaption"} className={"t-minor"} level={"body2"}>
+      <Typography as={"figcaption"} className={css["t-minor"]} level={"body2"}>
         Typeface: Cabinet Grotesk
       </Typography>
     </figure>
@@ -73,14 +74,14 @@ const PrimaryTypeface = (): React.ReactElement => (
     <Spacer orientation={"vertical"} size={5} />
     <div
       className={clsx(
-        "flex-col",
-        "t-center",
+        css["flex-col"],
+        css["t-center"],
         common_styles["figure-with-caption"]
       )}
     >
       <div
         className={clsx(
-          "flex-col",
+          css["flex-col"],
           page_styles.figure,
           page_styles["with-background"]
         )}
@@ -90,7 +91,7 @@ const PrimaryTypeface = (): React.ReactElement => (
           Cabinet Grotesk Black
         </Typography>
       </div>
-      <Typography className={"t-minor"} level={"body2"}>
+      <Typography className={css["t-minor"]} level={"body2"}>
         Large Headline — Font weight: Black, Line height: 112%
       </Typography>
     </div>
@@ -106,14 +107,14 @@ const PrimaryTypeface = (): React.ReactElement => (
     <Spacer orientation={"vertical"} size={5} />
     <div
       className={clsx(
-        "flex-col",
-        "t-center",
+        css["flex-col"],
+        css["t-center"],
         common_styles["figure-with-caption"]
       )}
     >
       <div
         className={clsx(
-          "flex-col",
+          css["flex-col"],
           page_styles.figure,
           page_styles["with-background"]
         )}
@@ -123,7 +124,7 @@ const PrimaryTypeface = (): React.ReactElement => (
           Cabinet Grotesk Extrabold
         </Typography>
       </div>
-      <Typography className={"t-minor"} level={"body2"}>
+      <Typography className={css["t-minor"]} level={"body2"}>
         Headline — Font weight: Extrabold, Line height: 112%
       </Typography>
     </div>
@@ -143,27 +144,27 @@ const PrimaryTypeface = (): React.ReactElement => (
     <Spacer orientation={"vertical"} size={5} />
     <div
       className={clsx(
-        "flex-col",
-        "t-center",
+        css["flex-col"],
+        css["t-center"],
         common_styles["figure-with-caption"]
       )}
     >
       <figure
         className={clsx(
-          "flex-col",
+          css["flex-col"],
           page_styles.figure,
           page_styles["with-background"]
         )}
       >
         <img
           alt={""}
-          className={"invert"}
+          data-invert-filter={""}
           loading={"lazy"}
           src={`${process.env.NEXT_PUBLIC_CDN_URL}/web-assets/branding/lockups/default.svg`}
           style={{ maxHeight: "96px" }}
         />
       </figure>
-      <Typography as={"figcaption"} className={"t-minor"} level={"body2"}>
+      <Typography as={"figcaption"} className={css["t-minor"]} level={"body2"}>
         Username with the Storiny icon.
       </Typography>
     </div>
@@ -178,8 +179,8 @@ const PrimaryTypeface = (): React.ReactElement => (
     <Spacer orientation={"vertical"} size={5} />
     <figure
       className={clsx(
-        "flex-col",
-        "t-center",
+        css["flex-col"],
+        css["t-center"],
         page_styles.figure,
         common_styles["figure-with-caption"],
         common_styles["image-with-border"]
@@ -189,15 +190,15 @@ const PrimaryTypeface = (): React.ReactElement => (
         alt={""}
         src={`${process.env.NEXT_PUBLIC_CDN_URL}/web-assets/branding/lockups/avatar-template`}
       />
-      <Typography as={"figcaption"} className={"t-minor"} level={"body2"}>
+      <Typography as={"figcaption"} className={css["t-minor"]} level={"body2"}>
         Username with an avatar masked by the Storiny icon.
       </Typography>
     </figure>
     <Spacer orientation={"vertical"} size={5} />
     <figure
       className={clsx(
-        "flex-col",
-        "t-center",
+        css["flex-col"],
+        css["t-center"],
         page_styles.figure,
         common_styles["figure-with-caption"],
         common_styles["image-with-border"]
@@ -207,7 +208,7 @@ const PrimaryTypeface = (): React.ReactElement => (
         alt={""}
         src={`${process.env.NEXT_PUBLIC_CDN_URL}/web-assets/branding/lockups/samples`}
       />
-      <Typography as={"figcaption"} className={"t-minor"} level={"body2"}>
+      <Typography as={"figcaption"} className={css["t-minor"]} level={"body2"}>
         Some examples demonstrating the usage of the username with avatar
         version, featuring real avatars. Image credits (from left to right):{" "}
         <Link
@@ -250,7 +251,7 @@ const PrimaryTypeface = (): React.ReactElement => (
 );
 
 const SecondaryTypeface = (): React.ReactElement => (
-  <div className={clsx("flex-col", page_styles["sub-section"])}>
+  <div className={clsx(css["flex-col"], page_styles["sub-section"])}>
     <Typography level={"h3"}>Secondary Typeface</Typography>
     <Typography level={"legible"}>
       Our primary secondary typeface is Satoshi.
@@ -258,8 +259,8 @@ const SecondaryTypeface = (): React.ReactElement => (
     <Spacer orientation={"vertical"} size={5} />
     <figure
       className={clsx(
-        "flex-col",
-        "t-center",
+        css["flex-col"],
+        css["t-center"],
         page_styles.figure,
         page_styles["with-background"],
         common_styles["figure-with-caption"]
@@ -267,12 +268,12 @@ const SecondaryTypeface = (): React.ReactElement => (
     >
       <img
         alt={""}
-        className={"invert"}
+        data-invert-filter={""}
         loading={"lazy"}
         src={`${process.env.NEXT_PUBLIC_CDN_URL}/web-assets/branding/typography/secondary-typeface.svg`}
       />
       <Spacer orientation={"vertical"} size={2} />
-      <Typography as={"figcaption"} className={"t-minor"} level={"body2"}>
+      <Typography as={"figcaption"} className={css["t-minor"]} level={"body2"}>
         Typeface: Satoshi
       </Typography>
     </figure>
@@ -308,7 +309,7 @@ const SecondaryTypeface = (): React.ReactElement => (
 );
 
 const FallbackTypeface = (): React.ReactElement => (
-  <div className={clsx("flex-col", page_styles["sub-section"])}>
+  <div className={clsx(css["flex-col"], page_styles["sub-section"])}>
     <Typography level={"h3"}>Fallback fonts</Typography>
     <Typography level={"legible"}>
       In rare instances when the designated font families are not feasible, the
@@ -340,7 +341,7 @@ const TypographySection = (): React.ReactElement => {
           <span aria-hidden>{is_tablet ? "Typography" : "Typo-graphy"}</span>
         </NoSsr>
       </Typography>
-      <div className={clsx("flex-col", page_styles["section-content"])}>
+      <div className={clsx(css["flex-col"], page_styles["section-content"])}>
         <Typography level={"legible"}>
           Our typographical selection consists of two unique fonts: Cabinet
           Grotesk, a display font, and Satoshi, a legible sans-serif font. Both

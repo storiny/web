@@ -11,6 +11,7 @@ import { use_media_query } from "~/hooks/use-media-query";
 import { set_reading_font_size } from "~/redux/features";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 import { BREAKPOINTS } from "~/theme/breakpoints";
+import css from "~/theme/main.module.scss";
 
 import common_styles from "../../styles.module.scss";
 import styles from "./font-size.module.scss";
@@ -31,13 +32,13 @@ const FontSizeItem = ({
 }): React.ReactElement => (
   <div
     className={clsx(
-      "flex-col",
+      css["flex-col"],
       common_styles.item,
       is_active && common_styles.selected
     )}
   >
-    <AspectRatio className={"full-w"} ratio={2.3}>
-      <div className={clsx("full-w", className, styles.preview)}>
+    <AspectRatio className={css["full-w"]} ratio={2.3}>
+      <div className={clsx(css["full-w"], className, styles.preview)}>
         <Typography level={"legible"}>{TEXT}</Typography>
       </div>
     </AspectRatio>
@@ -68,7 +69,7 @@ const ReadingFontSizePreference = (): React.ReactElement => {
         Font size
       </Typography>
       <Spacer orientation={"vertical"} />
-      <Typography className={"t-minor"} level={"body2"}>
+      <Typography className={css["t-minor"]} level={"body2"}>
         Choose a font size with which you are comfortable reading.
       </Typography>
       <Spacer orientation={"vertical"} size={3} />
@@ -81,19 +82,19 @@ const ReadingFontSizePreference = (): React.ReactElement => {
         value={font_size}
       >
         <FontSizeItem
-          className={"t-legible-slim"}
+          className={css["t-legible-slim"]}
           is_active={font_size === "slim"}
           label={"Slim"}
           value={"slim"}
         />
         <FontSizeItem
-          className={"t-legible-regular"}
+          className={css["t-legible-regular"]}
           is_active={font_size === "regular"}
           label={"Regular (Default)"}
           value={"regular"}
         />
         <FontSizeItem
-          className={"t-legible-oversized"}
+          className={css["t-legible-oversized"]}
           is_active={font_size === "oversized"}
           label={"Oversized"}
           value={"oversized"}

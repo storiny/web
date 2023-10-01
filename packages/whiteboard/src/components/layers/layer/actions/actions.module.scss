@@ -1,11 +1,11 @@
-.x {
-  &.actions {
-    background-color: var(--obsidian);
-    border-radius: var(--radius-md);
-    border: 1px solid var(--divider);
-    overflow: hidden;
-  }
+.actions {
+  background-color: var(--obsidian);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--divider);
+  overflow: hidden;
+}
 
+.x {
   &.button {
     border-radius: 0;
   }

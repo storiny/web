@@ -11,13 +11,14 @@ import { use_media_query } from "~/hooks/use-media-query";
 import { toggle_code_ligatures } from "~/redux/features";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 import { BREAKPOINTS } from "~/theme/breakpoints";
+import css from "~/theme/main.module.scss";
 
 import common_styles from "../../styles.module.scss";
 import styles from "./ligatures.module.scss";
 
 const DisabledPreview = (): React.ReactElement => (
   <svg
-    className={clsx(styles.x, styles.svg)}
+    className={styles.svg}
     fill="none"
     viewBox="0 0 127 42"
     xmlns="http://www.w3.org/2000/svg"
@@ -31,7 +32,7 @@ const DisabledPreview = (): React.ReactElement => (
 
 const EnabledPreview = (): React.ReactElement => (
   <svg
-    className={clsx(styles.x, styles.svg)}
+    className={styles.svg}
     fill="none"
     viewBox="0 0 126 43"
     xmlns="http://www.w3.org/2000/svg"
@@ -60,16 +61,16 @@ const TypefaceItem = ({
 }): React.ReactElement => (
   <div
     className={clsx(
-      "flex-col",
+      css["flex-col"],
       common_styles.item,
       is_active && common_styles.selected,
       styles.item,
       is_active && styles.selected
     )}
   >
-    <AspectRatio className={"full-w"} ratio={2.3}>
+    <AspectRatio className={css["full-w"]} ratio={2.3}>
       <div
-        className={clsx("flex-center", "full-w", styles.x, styles.decorator)}
+        className={clsx(css["flex-center"], css["full-w"], styles.decorator)}
       >
         {decorator}
       </div>
@@ -102,7 +103,7 @@ const LigaturesPreference = (): React.ReactElement => {
         Ligatures
       </Typography>
       <Spacer orientation={"vertical"} />
-      <Typography className={"t-minor"} level={"body2"}>
+      <Typography className={css["t-minor"]} level={"body2"}>
         Choose whether to enable ligatures for reading code blocks and code
         snippets. Ligatures join two or more graphemes (letters) to improve code
         appearance, but note that they are not available with the system font

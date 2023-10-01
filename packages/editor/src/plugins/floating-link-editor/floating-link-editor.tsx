@@ -28,6 +28,7 @@ import Input from "~/components/input";
 import Link from "~/components/link";
 import EditIcon from "~/icons/edit";
 import LinkIcon from "~/icons/link";
+import css from "~/theme/main.module.scss";
 
 import { link_atom } from "../../atoms";
 import { use_link } from "../../hooks/use-link";
@@ -196,10 +197,8 @@ const FloatingLinkEditorPopover = (): React.ReactElement => {
   return (
     <div
       className={clsx(
-        "flex-center",
-        floating_element_styles.x,
+        css["flex-center"],
         floating_element_styles["floating-element"],
-        styles.x,
         styles["floating-element"],
         edit_mode && styles["edit-mode"]
       )}
@@ -218,7 +217,7 @@ const FloatingLinkEditorPopover = (): React.ReactElement => {
           ref={input_ref}
           slot_props={{
             container: {
-              className: "f-grow"
+              className: css["f-grow"]
             }
           }}
           value={edited_link_url}
@@ -226,7 +225,12 @@ const FloatingLinkEditorPopover = (): React.ReactElement => {
       ) : (
         <React.Fragment>
           <Link
-            className={clsx("f-grow", "ellipsis", styles.x, styles.link)}
+            className={clsx(
+              css["f-grow"],
+              css["ellipsis"],
+              styles.x,
+              styles.link
+            )}
             href={sanitize_url(link_url)}
             level={"body2"}
             target={"_blank"}

@@ -9,6 +9,7 @@ import Grow from "~/components/grow";
 import Link from "~/components/link";
 import Spacer from "~/components/spacer";
 import Typography from "~/components/typography";
+import css from "~/theme/main.module.scss";
 
 import { use_auth_state } from "../../../actions";
 
@@ -20,7 +21,7 @@ const Page = (): React.ReactElement => {
         Token expired
       </Typography>
       <Spacer orientation={"vertical"} size={0.5} />
-      <Typography className={"t-minor"} level={"body2"}>
+      <Typography className={css["t-minor"]} level={"body2"}>
         This token has expired. Kindly{" "}
         <Link
           href={"/auth"}
@@ -33,8 +34,8 @@ const Page = (): React.ReactElement => {
       </Typography>
       <Spacer orientation={"vertical"} size={5} />
       <Grow />
-      <div className={clsx("flex-col", "flex-center")}>
-        <Button as={NextLink} className={"full-w"} href={"/"} size={"lg"}>
+      <div className={clsx(css["flex-col"], css["flex-center"])}>
+        <Button as={NextLink} className={css["full-w"]} href={"/"} size={"lg"}>
           Home
         </Button>
       </div>

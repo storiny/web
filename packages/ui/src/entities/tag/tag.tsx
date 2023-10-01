@@ -16,6 +16,7 @@ import UsersIcon from "~/icons/users";
 import { boolean_action, sync_with_tag } from "~/redux/features";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 import { BREAKPOINTS } from "~/theme/breakpoints";
+import css from "~/theme/main.module.scss";
 import { abbreviate_number } from "~/utils/abbreviate-number";
 import { DateFormat, format_date } from "~/utils/format-date";
 
@@ -42,14 +43,17 @@ const Tag = (props: TagProps): React.ReactElement => {
     <div
       {...rest}
       className={clsx(
-        "flex-col",
+        css["flex-col"],
         styles.tag,
         virtual && styles.virtual,
         className
       )}
     >
-      <div className={clsx("flex-center", styles.main)}>
-        <NextLink className={clsx("flex-center", styles.meta)} href={tag_url}>
+      <div className={clsx(css["flex-center"], styles.main)}>
+        <NextLink
+          className={clsx(css["flex-center"], styles.meta)}
+          href={tag_url}
+        >
           <Avatar className={styles.avatar} size={"lg"}>
             <TagIcon />
           </Avatar>
@@ -69,13 +73,13 @@ const Tag = (props: TagProps): React.ReactElement => {
           {is_following ? "Following" : "Follow"}
         </Button>
       </div>
-      <div className={clsx("flex-center", styles.stats)}>
+      <div className={clsx(css["flex-center"], styles.stats)}>
         <Typography
-          className={clsx("flex-center", styles.stat)}
+          className={clsx(css["flex-center"], styles.stat)}
           level={"body2"}
           title={`${tag.story_count.toLocaleString()} stories`}
         >
-          <span className={clsx("flex-center", styles["stat-icon"])}>
+          <span className={clsx(css["flex-center"], styles["stat-icon"])}>
             <StoryIcon />
           </span>
           <span>
@@ -83,17 +87,17 @@ const Tag = (props: TagProps): React.ReactElement => {
             {!is_mobile && (
               <>
                 {" "}
-                <span className={"t-minor"}>stories</span>
+                <span className={css["t-minor"]}>stories</span>
               </>
             )}
           </span>
         </Typography>
         <Typography
-          className={clsx("flex-center", styles.stat)}
+          className={clsx(css["flex-center"], styles.stat)}
           level={"body2"}
           title={`${follower_count.toLocaleString()} followers`}
         >
-          <span className={clsx("flex-center", styles["stat-icon"])}>
+          <span className={clsx(css["flex-center"], styles["stat-icon"])}>
             <UsersIcon />
           </span>
           <span>
@@ -101,7 +105,7 @@ const Tag = (props: TagProps): React.ReactElement => {
             {!is_mobile && (
               <>
                 {" "}
-                <span className={"t-minor"}>followers</span>
+                <span className={css["t-minor"]}>followers</span>
               </>
             )}
           </span>
@@ -109,14 +113,14 @@ const Tag = (props: TagProps): React.ReactElement => {
         <Grow />
         <Typography
           as={"time"}
-          className={clsx("flex-center", "t-minor", styles.stat)}
+          className={clsx(css["flex-center"], css["t-minor"], styles.stat)}
           dateTime={tag.created_at}
           level={"body2"}
           title={format_date(tag.created_at)}
         >
           {is_mobile ? (
             <>
-              <span className={clsx("flex-center", styles["stat-icon"])}>
+              <span className={clsx(css["flex-center"], styles["stat-icon"])}>
                 <CalendarIcon />
               </span>
               <span>{format_date(tag.created_at, DateFormat.RELATIVE)}</span>

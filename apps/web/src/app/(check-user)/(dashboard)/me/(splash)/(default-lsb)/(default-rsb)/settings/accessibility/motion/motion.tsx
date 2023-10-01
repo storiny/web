@@ -7,6 +7,7 @@ import Spacer from "~/components/spacer";
 import Typography from "~/components/typography";
 import { set_reduced_motion } from "~/redux/features";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
+import css from "~/theme/main.module.scss";
 
 import DashboardGroup from "../../../../dashboard-group";
 import styles from "./motion.module.scss";
@@ -27,7 +28,7 @@ const MotionPreference = (): React.ReactElement => {
         Reduced motion
       </Typography>
       <Spacer orientation={"vertical"} />
-      <Typography className={"t-minor"} level={"body2"}>
+      <Typography className={css["t-minor"]} level={"body2"}>
         Restrict the number and intensity of on-site animations, including live
         statistics, splash screens, and user-generated animated media.
       </Typography>

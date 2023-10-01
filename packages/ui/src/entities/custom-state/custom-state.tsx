@@ -4,6 +4,7 @@ import React from "react";
 import Typography from "~/components/typography";
 import { use_media_query } from "~/hooks/use-media-query";
 import { BREAKPOINTS } from "~/theme/breakpoints";
+import css from "~/theme/main.module.scss";
 
 import styles from "./custom-state.module.scss";
 import { CustomStateProps } from "./custom-state.props";
@@ -26,7 +27,7 @@ const CustomState = React.forwardRef<HTMLDivElement, CustomStateProps>(
       <div
         {...rest}
         className={clsx(
-          "flex-col",
+          css["flex-col"],
           styles["custom-state"],
           styles[size],
           className
@@ -34,14 +35,16 @@ const CustomState = React.forwardRef<HTMLDivElement, CustomStateProps>(
         ref={ref}
       >
         {icon && (
-          <span className={clsx("flex-center", styles.icon)}>{icon}</span>
+          <span className={clsx(css["flex-center"], styles.icon)}>{icon}</span>
         )}
-        <div className={clsx("flex-col", "t-center", styles.content)}>
-          <Typography className={clsx("t-bold", "t-major", styles.title)}>
+        <div className={clsx(css["flex-col"], css["t-center"], styles.content)}>
+          <Typography
+            className={clsx(css["t-bold"], css["t-major"], styles.title)}
+          >
             {title}
           </Typography>
           {description && (
-            <Typography className={"t-minor"} level={"body2"}>
+            <Typography className={css["t-minor"]} level={"body2"}>
               {description}
             </Typography>
           )}

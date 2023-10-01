@@ -30,6 +30,7 @@ import {
   select_unread_notification_count
 } from "~/redux/features";
 import { use_app_selector } from "~/redux/hooks";
+import css from "~/theme/main.module.scss";
 
 import LeftSidebarPersona from "../persona";
 import styles from "./default-content.module.scss";
@@ -40,7 +41,7 @@ const AnchorTab = (props: TabProps & { href: string }): React.ReactElement => (
     aria-controls={undefined}
     aria-selected={undefined}
     as={NextLink}
-    className={clsx("full-w", styles.tab)}
+    className={clsx(css["full-w"], styles.tab)}
     id={undefined}
     role={undefined}
   />
@@ -79,7 +80,7 @@ const LeftSidebarDefaultContent = (): React.ReactElement => {
         <TabsList
           aria-orientation={undefined}
           as={"nav"}
-          className={clsx("full-w", styles["tabs-list"])}
+          className={clsx(css["full-w"], styles["tabs-list"])}
           loop={false}
           role={undefined}
           size={"lg"}
@@ -124,7 +125,7 @@ const LeftSidebarDefaultContent = (): React.ReactElement => {
                   <Tab
                     aria-controls={undefined}
                     aria-selected={undefined}
-                    className={clsx("full-w", styles.tab)}
+                    className={clsx(css["full-w"], styles.tab)}
                     decorator={<DotsIcon />}
                     id={undefined}
                     role={undefined}
@@ -185,7 +186,7 @@ const LeftSidebarDefaultContent = (): React.ReactElement => {
         </Button>
       ) : (
         <>
-          <Typography className={"t-minor"} level={"body3"}>
+          <Typography className={css["t-minor"]} level={"body3"}>
             Join Storiny to catch up on the latest ideas from your favorite
             writers.
           </Typography>

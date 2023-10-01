@@ -11,6 +11,7 @@ import ColorPicker, {
 import BlurIcon from "~/icons/blur";
 import LetterXIcon from "~/icons/letter-x";
 import LetterYIcon from "~/icons/letter-y";
+import css from "~/theme/main.module.scss";
 
 import { MAX_OPACITY, MIN_OPACITY } from "../../../../../constants";
 import { use_active_object, use_canvas } from "../../../../../hooks";
@@ -85,8 +86,8 @@ const ShadowColorControl = ({
             <button
               aria-label={"Pick a color"}
               className={clsx(
-                "focusable",
-                "focus-invert",
+                css["focusable"],
+                css["focus-invert"],
                 common_styles.indicator
               )}
               style={

@@ -8,6 +8,7 @@ import React from "react";
 import AspectRatio from "~/components/aspect-ratio";
 import Image from "~/components/image";
 import Link from "~/components/link";
+import css from "~/theme/main.module.scss";
 
 import { selected_atom } from "../../../atoms";
 import common_styles from "../common.module.scss";
@@ -42,8 +43,8 @@ const PexelsMasonryItem = React.memo(
     return (
       <div
         className={clsx(
-          "focusable",
-          "flex-center",
+          css["focusable"],
+          css["flex-center"],
           common_styles["image-wrapper"]
         )}
         data-selected={String(is_selected)}
@@ -73,7 +74,11 @@ const PexelsMasonryItem = React.memo(
           />
         </AspectRatio>
         <div
-          className={clsx("flex-col", common_styles.overlay, styles.overlay)}
+          className={clsx(
+            css["flex-col"],
+            common_styles.overlay,
+            styles.overlay
+          )}
         >
           <Link
             className={styles.link}

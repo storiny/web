@@ -31,6 +31,7 @@ import {
 } from "~/redux/features";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 import { BREAKPOINTS } from "~/theme/breakpoints";
+import css from "~/theme/main.module.scss";
 import { abbreviate_number } from "~/utils/abbreviate-number";
 
 import styles from "./styles.module.scss";
@@ -51,13 +52,18 @@ const PageHeader = ({
   value: NotificationsTabValue;
 }): React.ReactElement => (
   <Tabs
-    className={clsx("full-bleed", "page-header", styles.x, styles.tabs)}
+    className={clsx(
+      css["full-bleed"],
+      css["page-header"],
+      styles.x,
+      styles.tabs
+    )}
     onValueChange={(next_value): void =>
       on_change(next_value as NotificationsTabValue)
     }
     value={value}
   >
-    <TabsList className={clsx("full-w", styles.x, styles["tabs-list"])}>
+    <TabsList className={clsx(css["full-w"], styles.x, styles["tabs-list"])}>
       <Tab aria-controls={undefined} value={"unread"}>
         Unread
       </Tab>
@@ -87,7 +93,13 @@ const StatusHeader = ({
   const status = use_app_selector(select_notifications_status);
 
   return (
-    <div className={clsx("full-bleed", "flex-center", styles["status-header"])}>
+    <div
+      className={clsx(
+        css["full-bleed"],
+        css["flex-center"],
+        styles["status-header"]
+      )}
+    >
       <Typography level={"body2"}>
         {status === "loading" ? (
           <Skeleton height={14} width={64} />
@@ -96,13 +108,15 @@ const StatusHeader = ({
         ) : (
           <>
             You have{" "}
-            <span className={"t-bold"}>{abbreviate_number(unread_count)}</span>{" "}
+            <span className={css["t-bold"]}>
+              {abbreviate_number(unread_count)}
+            </span>{" "}
             unread {unread_count === 1 ? "notification" : "notifications"}
           </>
         )}
       </Typography>
       <Grow />
-      <div className={clsx("flex-center", styles.x, styles["header-actions"])}>
+      <div className={clsx(css["flex-center"], styles["header-actions"])}>
         {is_mobile ? (
           <IconButton
             aria-label={"Mark all as read"}

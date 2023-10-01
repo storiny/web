@@ -25,6 +25,7 @@ import Spinner from "~/components/spinner";
 import Typography from "~/components/typography";
 import { select_theme } from "~/redux/features";
 import { use_app_selector } from "~/redux/hooks";
+import css from "~/theme/main.module.scss";
 
 import { overflowing_figures_atom } from "../../../atoms";
 import figure_styles from "../../common/figure.module.scss";
@@ -35,7 +36,7 @@ import { WebpageMetadata } from "./webpage/webpage.props";
 
 const EmbedNodeControls = dynamic(() => import("./node-controls"), {
   loading: () => (
-    <div className={"flex-center"} style={{ padding: "12px 24px" }}>
+    <div className={css["flex-center"]} style={{ padding: "12px 24px" }}>
       <Spinner />
     </div>
   )
@@ -305,7 +306,7 @@ const EmbedComponent = ({
           selected && styles.selected,
           Boolean(metadata) && styles.metadata,
           // Grid for overflowing the embed
-          ["grid", "dashboard", "no-sidenav"]
+          [css["grid"], css["dashboard"], css["no-sidenav"]]
         )}
         data-layout={layout}
         data-testid={"embed-node"}
@@ -321,7 +322,7 @@ const EmbedComponent = ({
         )}
         {metadata ? (
           <div
-            className={clsx("flex-center", styles.content)}
+            className={clsx(css["flex-center"], styles.content)}
             data-layout={layout}
           >
             <WebpageEmbed metadata={metadata} selected={selected} />
@@ -329,8 +330,8 @@ const EmbedComponent = ({
         ) : (
           <Popover
             className={clsx(
-              "flex-center",
-              "flex-col",
+              css["flex-center"],
+              css["flex-col"],
               styles.x,
               styles.popover
             )}
@@ -352,12 +353,16 @@ const EmbedComponent = ({
             trigger={
               error ? (
                 <div
-                  className={clsx("flex-center", styles.content, styles.error)}
+                  className={clsx(
+                    css["flex-center"],
+                    styles.content,
+                    styles.error
+                  )}
                   data-layout={layout}
                   role={"button"}
                 >
                   <Typography
-                    className={clsx("t-center", "t-minor")}
+                    className={clsx(css["t-center"], css["t-minor"])}
                     level={"body2"}
                   >
                     Embed unavailable
@@ -365,7 +370,7 @@ const EmbedComponent = ({
                 </div>
               ) : (
                 <div
-                  className={clsx("flex-center", styles.content)}
+                  className={clsx(css["flex-center"], styles.content)}
                   data-layout={layout}
                   data-loading={String(loading)}
                   ref={content_ref}

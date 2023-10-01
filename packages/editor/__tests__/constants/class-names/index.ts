@@ -1,19 +1,19 @@
 export const EDITOR_CLASSNAMES = {
   paragraph: "theme_paragraph__K77T4",
-  t_bold: "t-bold",
+  t_bold: "main_t-bold___xWS4",
   t_italic: "theme_t-italic__lPTjt",
   t_underline: "theme_t-underline__OhM4A",
   t_strikethrough: "theme_t-strikethrough__dAvXN",
   t_underline_strikethrough: "theme_t-underline-strikethrough__RBtoW",
   t_subscript: "theme_t-subscript__JG5Mi",
   t_superscript: "theme_t-superscript__LdyVm",
-  inline_code: "t-mono typography_inline-code__9cz89",
+  inline_code: "main_t-mono__loCfD typography_inline-code__9cz89",
   indent: "theme_indent___oXfv",
-  link: "focusable link_link__Wv_BN link_color-beryl__RJKy0 link_underline-hover__VomZG theme_link__cwNL8",
+  link: "main_focusable__zBD76 link_link__Wv_BN link_color-beryl__RJKy0 link_underline-hover__VomZG theme_link__cwNL8",
   color:
-    "t-mono typography_inline-code__9cz89 typography_inline-color__b7VCC typography_legible__1AYhI",
-  heading: "t-major t-head-xl heading_h2__rPPrq",
-  subheading: "t-major t-head-lg heading_h3__sk5fh",
+    "main_t-mono__loCfD typography_inline-code__9cz89 typography_inline-color__b7VCC typography_legible__1AYhI",
+  heading: "main_t-major__AcwVl main_t-head-xl__bgz3D heading_h2__rPPrq",
+  subheading: "main_t-major__AcwVl main_t-head-lg__0vW0H heading_h3__sk5fh",
   tk: "tk_tk__NzKXq",
   tk_paragraph: "tk_tk__JXxbU",
   ul: "theme_ul__AvXwi",
@@ -22,5 +22,5 @@ export const EDITOR_CLASSNAMES = {
   ol1: "theme_ol__GG2sm",
   ol2: "theme_ol-2__L9_Em",
   ol3: "theme_ol-3__6pEl7",
-  quote: "t-quote quote_quote__kAZGn"
+  quote: "main_t-quote__nPk69 quote_quote__kAZGn"
 } as const;

@@ -4,6 +4,8 @@ import { Title } from "@radix-ui/react-dialog";
 import clsx from "clsx";
 import React from "react";
 
+import css from "~/theme/main.module.scss";
+
 import Spacer from "../../spacer";
 import styles from "./header.module.scss";
 import { ModalHeaderProps } from "./header.props";
@@ -14,7 +16,7 @@ const ModalHeader = React.forwardRef<HTMLDivElement, ModalHeaderProps>(
     return (
       <div
         {...rest}
-        className={clsx("flex-center", styles.header, className)}
+        className={clsx(css["flex-center"], styles.header, className)}
         ref={ref}
       >
         <Spacer size={1.5} />
@@ -23,7 +25,7 @@ const ModalHeader = React.forwardRef<HTMLDivElement, ModalHeaderProps>(
             <span
               {...slot_props?.decorator}
               className={clsx(
-                "flex-center",
+                css["flex-center"],
                 styles.decorator,
                 slot_props?.decorator?.className
               )}
@@ -36,8 +38,8 @@ const ModalHeader = React.forwardRef<HTMLDivElement, ModalHeaderProps>(
         <Title
           {...slot_props?.title}
           className={clsx(
-            "t-body-2",
-            "t-major",
+            css["t-body-2"],
+            css["t-major"],
             styles.title,
             slot_props?.title?.className
           )}

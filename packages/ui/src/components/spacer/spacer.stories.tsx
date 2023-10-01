@@ -21,14 +21,14 @@ type Story = StoryObj<typeof Spacer>;
 export const Default: Story = {
   render: (args) => (
     <div
-      className={"flex-center"}
+      className={css["flex-center"]}
       style={{
         flexDirection: args.orientation === "vertical" ? "column" : "row"
       }}
     >
-      <p className={"t-body-2 t-minor"}>Primary text</p>
+      <p className={css["t-body-2 t-minor"]}>Primary text</p>
       <Spacer {...args} />
-      <p className={"t-body-2 t-minor"}>Secondary text</p>
+      <p className={css["t-body-2 t-minor"]}>Secondary text</p>
     </div>
   )
 };
@@ -49,10 +49,10 @@ export const Inline: Story = {
 
 export const OrientationVertical: Story = {
   render: (args) => (
-    <div className={"flex-center"} style={{ flexDirection: "column" }}>
-      <p className={"t-body-2 t-minor"}>Primary text</p>
+    <div className={css["flex-center"]} style={{ flexDirection: "column" }}>
+      <p className={css["t-body-2 t-minor"]}>Primary text</p>
       <Spacer {...args} />
-      <p className={"t-body-2 t-minor"}>Secondary text</p>
+      <p className={css["t-body-2 t-minor"]}>Secondary text</p>
     </div>
   ),
   args: {

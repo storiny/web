@@ -9,6 +9,7 @@ import Input from "~/components/input";
 import SearchIcon from "~/icons/search";
 import { select_is_logged_in } from "~/redux/features/auth/selectors";
 import { use_app_selector } from "~/redux/hooks";
+import css from "~/theme/main.module.scss";
 
 import Actions from "./actions";
 import styles from "./navbar.module.scss";
@@ -30,14 +31,14 @@ const Navbar = (props: NavbarProps): React.ReactElement => {
     >
       <nav
         className={clsx(
-          "f-grow",
+          css["f-grow"],
           styles.nav,
           variant === "minimal" && styles.minimal
         )}
       >
         <NextLink
           aria-label={"Homepage"}
-          className={clsx(styles.wordmark, "focusable")}
+          className={clsx(styles.wordmark, css["focusable"])}
           href={"/"}
           title={"Go to homepage"}
         >

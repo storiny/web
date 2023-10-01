@@ -20,6 +20,7 @@ import { boolean_action, select_user } from "~/redux/features";
 import { sync_with_reply } from "~/redux/features/entities/slice";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 import { BREAKPOINTS } from "~/theme/breakpoints";
+import css from "~/theme/main.module.scss";
 import { abbreviate_number } from "~/utils/abbreviate-number";
 import { DateFormat, format_date } from "~/utils/format-date";
 
@@ -69,8 +70,8 @@ const Reply = (props: ReplyProps): React.ReactElement => {
       {collapsed ? (
         <div
           className={clsx(
-            "flex-col",
-            "flex-center",
+            css["flex-col"],
+            css["flex-center"],
             styles.reply,
             styles.collapsed,
             virtual && styles.virtual,
@@ -90,7 +91,7 @@ const Reply = (props: ReplyProps): React.ReactElement => {
         <article
           {...rest}
           className={clsx(
-            "flex-col",
+            css["flex-col"],
             styles.reply,
             virtual && styles.virtual,
             is_static && is_self && styles.static,
@@ -98,7 +99,7 @@ const Reply = (props: ReplyProps): React.ReactElement => {
             className
           )}
         >
-          <div className={clsx("flex", styles.header)}>
+          <div className={clsx(css["flex"], styles.header)}>
             <Persona
               avatar={
                 is_static && is_self
@@ -142,7 +143,7 @@ const Reply = (props: ReplyProps): React.ReactElement => {
               }
               secondary_text={
                 <Typography
-                  className={clsx("t-medium", "t-minor")}
+                  className={clsx(css["t-medium"], css["t-minor"])}
                   ellipsis
                   level={"body3"}
                 >
@@ -173,7 +174,7 @@ const Reply = (props: ReplyProps): React.ReactElement => {
           {hidden ? (
             <Typography
               className={clsx(
-                "t-minor",
+                css["t-minor"],
                 styles.hidden,
                 is_static && styles.static
               )}
@@ -181,7 +182,7 @@ const Reply = (props: ReplyProps): React.ReactElement => {
             >
               This reply has been hidden at the request of the story author.{" "}
               <Link
-                className={"t-medium"}
+                className={css["t-medium"]}
                 fixed_color
                 href={"#"}
                 onClick={(): void => set_hidden(false)}
@@ -195,20 +196,20 @@ const Reply = (props: ReplyProps): React.ReactElement => {
               <div className={clsx(styles.content, is_static && styles.static)}>
                 <ResponseParser content={reply.rendered_content} />
               </div>
-              <footer className={clsx("flex-center")}>
+              <footer className={css["flex-center"]}>
                 {is_static ? (
                   <React.Fragment>
-                    <span className={clsx("flex-center", styles.stat)}>
+                    <span className={clsx(css["flex-center"], styles.stat)}>
                       <HeartIcon />{" "}
                       <Typography
-                        className={clsx("t-medium", "t-minor")}
+                        className={clsx(css["t-medium"], css["t-minor"])}
                         level={"body3"}
                       >
                         {abbreviate_number(like_count)}{" "}
                         {like_count === 1 ? "like" : "likes"}
                       </Typography>
                     </span>
-                    <Spacer className={"f-grow"} size={1.5} />
+                    <Spacer className={css["f-grow"]} size={1.5} />
                     <IconButton
                       aria-label={"View reply"}
                       as={NextLink}

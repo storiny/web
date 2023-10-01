@@ -27,6 +27,7 @@ import {
   use_get_friend_requests_query
 } from "~/redux/features";
 import { BREAKPOINTS } from "~/theme/breakpoints";
+import css from "~/theme/main.module.scss";
 
 import styles from "./friend-requests.module.scss";
 
@@ -105,8 +106,8 @@ const FriendRequestsModal = (): React.ReactElement => {
   }, [page, query, set_render_key]);
 
   return (
-    <div className={clsx("flex-col", styles.content)}>
-      <div className={clsx("flex-center", styles["control-bar"])}>
+    <div className={clsx(css["flex-col"], styles.content)}>
+      <div className={clsx(css["flex-center"], styles["control-bar"])}>
         <Input
           autoFocus
           decorator={<SearchIcon />}
@@ -115,7 +116,7 @@ const FriendRequestsModal = (): React.ReactElement => {
           placeholder={"Search"}
           slot_props={{
             container: {
-              className: clsx("f-grow", styles.x, styles.input)
+              className: clsx(css["f-grow"], styles.x, styles.input)
             }
           }}
           type={"search"}
@@ -129,7 +130,7 @@ const FriendRequestsModal = (): React.ReactElement => {
             trigger: {
               "aria-label": "Sort items",
               className: clsx(
-                "focus-invert",
+                css["focus-invert"],
                 styles.x,
                 styles["select-trigger"]
               )
@@ -186,7 +187,7 @@ const FriendRequests = (): React.ReactElement => {
       <Button
         auto_size
         check_auth
-        className={"fit-w"}
+        className={css["fit-w"]}
         onClick={open_modal}
         variant={is_smaller_than_desktop ? "hollow" : "rigid"}
       >

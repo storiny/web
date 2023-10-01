@@ -5,6 +5,7 @@ import clsx from "clsx";
 import React from "react";
 
 import XIcon from "~/icons/x";
+import css from "~/theme/main.module.scss";
 import { forward_ref } from "~/utils/forward-ref";
 
 import styles from "./banner.module.scss";
@@ -25,8 +26,8 @@ const Banner = forward_ref<BannerProps, "li">((props, ref) => {
       {...rest}
       asChild
       className={clsx(
-        "focusable",
-        "focus-invert",
+        css["focusable"],
+        css["focus-invert"],
         styles.banner,
         styles[color],
         className
@@ -41,12 +42,14 @@ const Banner = forward_ref<BannerProps, "li">((props, ref) => {
       ref={ref}
     >
       <Component>
-        <Description className={clsx("flex", "t-center", styles.description)}>
+        <Description
+          className={clsx(css["flex"], css["t-center"], styles.description)}
+        >
           {icon && (
             <span
               {...slot_props?.decorator}
               className={clsx(
-                "flex-center",
+                css["flex-center"],
                 styles.decorator,
                 slot_props?.decorator?.className
               )}
@@ -61,8 +64,8 @@ const Banner = forward_ref<BannerProps, "li">((props, ref) => {
           title={"Dismiss"}
           {...slot_props?.close}
           className={clsx(
-            "unset",
-            "focusable",
+            css["unset"],
+            css["focusable"],
             styles.close,
             slot_props?.close?.className
           )}

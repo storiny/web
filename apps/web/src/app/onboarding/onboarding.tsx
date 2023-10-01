@@ -29,6 +29,7 @@ import {
 } from "~/redux/features";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 import { BREAKPOINTS } from "~/theme/breakpoints";
+import css from "~/theme/main.module.scss";
 
 import styles from "./onboarding.module.scss";
 
@@ -44,16 +45,19 @@ const Segment = ({
   title: React.ReactNode;
 }): React.ReactElement => (
   <React.Fragment>
-    <Typography as={"p"} className={"t-center"} level={"h3"}>
+    <Typography as={"p"} className={css["t-center"]} level={"h3"}>
       {title}
     </Typography>
     <Spacer orientation={"vertical"} />
-    <Typography className={clsx("t-center", "t-minor")} level={"body2"}>
+    <Typography
+      className={clsx(css["t-center"], css["t-minor"])}
+      level={"body2"}
+    >
       {description}
     </Typography>
     <Spacer orientation={"vertical"} size={7} />
     {children}
-    <Spacer className={"f-grow"} orientation={"vertical"} size={7} />
+    <Spacer className={css["f-grow"]} orientation={"vertical"} size={7} />
   </React.Fragment>
 );
 
@@ -72,7 +76,7 @@ const CategoriesSegment = ({
     description={"Please select at least three categories that interest you."}
     title={"Personalize your experience"}
   >
-    <div className={clsx("flex-center", styles.categories)}>
+    <div className={clsx(css["flex-center"], styles.categories)}>
       {Object.values(StoryCategory).map((category) =>
         category === StoryCategory.OTHERS ? null : (
           <Chip
@@ -117,7 +121,7 @@ const Tag = ({
 
   return (
     <Chip
-      className={clsx("flex-center", styles.tag)}
+      className={clsx(css["flex-center"], styles.tag)}
       onClick={(): void => {
         dispatch(boolean_action("followed_tags", tag_id));
       }}
@@ -163,7 +167,7 @@ const TagsSegment = ({
           },
           viewport: {
             className: clsx(
-              "flex-center",
+              css["flex-center"],
               styles.x,
               styles["scroll-area-viewport"]
             )
@@ -182,20 +186,20 @@ const TagsSegment = ({
             type={get_query_error_type(error)}
           />
         ) : (
-          <div className={"flex-col"}>
+          <div className={css["flex-col"]}>
             {Object.entries(data || ({} as GetOnboardingTagsResponse)).map(
               ([category, tags]) => (
                 <React.Fragment key={category}>
                   <div
                     className={clsx(
-                      "flex-col",
+                      css["flex-col"],
                       styles["category-tags-container"]
                     )}
                   >
                     <div className={styles["category-tags-label"]}>
                       {CATEGORY_ICON_MAP[category]}
                       <Typography
-                        className={clsx("t-minor", "t-medium")}
+                        className={clsx(css["t-minor"], css["t-medium"])}
                         level={"body2"}
                       >
                         {CATEGORY_LABEL_MAP[category]}
@@ -203,7 +207,7 @@ const TagsSegment = ({
                     </div>
                     <div
                       className={clsx(
-                        "flex-center",
+                        css["flex-center"],
                         styles["category-tags-content"]
                       )}
                     >
@@ -212,7 +216,7 @@ const TagsSegment = ({
                       ))}
                     </div>
                   </div>
-                  <Divider className={"hide-last"} />
+                  <Divider className={css["hide-last"]} />
                 </React.Fragment>
               )
             )}
@@ -251,7 +255,7 @@ const Onboarding = (): React.ReactElement => {
         <React.Fragment>
           {!is_smaller_than_mobile && segment === "categories" ? (
             <React.Fragment>
-              <Typography className={"t-minor"} level={"body2"}>
+              <Typography className={css["t-minor"]} level={"body2"}>
                 {selected_categories.size <= 3
                   ? `${selected_categories.size} of 3 selected`
                   : `${selected_categories.size} selected`}
@@ -296,7 +300,7 @@ const Onboarding = (): React.ReactElement => {
           compact: is_smaller_than_mobile
         },
         body: {
-          className: "flex-col"
+          className: css["flex-col"]
         },
         content: {
           style: {

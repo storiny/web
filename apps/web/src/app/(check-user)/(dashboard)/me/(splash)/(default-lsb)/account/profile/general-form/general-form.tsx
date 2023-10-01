@@ -23,6 +23,7 @@ import {
   use_profile_settings_mutation
 } from "~/redux/features";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
+import css from "~/theme/main.module.scss";
 
 import styles from "./general-form.module.scss";
 import { GeneralFormProps } from "./general-form.props";
@@ -40,7 +41,7 @@ const SaveButton = ({
 }): React.ReactElement => {
   const { formState: form_state } = use_form_context();
   return (
-    <div className={clsx("flex")}>
+    <div className={css["flex"]}>
       <Grow />
       <Button
         auto_size
@@ -94,19 +95,19 @@ const AccountGeneralForm = ({
 
   return (
     <Form<AccountGeneralSchema>
-      className={clsx("flex-col")}
+      className={css["flex-col"]}
       disabled={is_loading}
       on_submit={handle_submit}
       provider_props={form}
     >
-      <div className={clsx("flex-center", styles["input-row"])}>
+      <div className={clsx(css["flex-center"], styles["input-row"])}>
         <FormInput
           autoComplete={"name"}
           auto_size
           data-testid={"name-input"}
           form_slot_props={{
             form_item: {
-              className: "f-grow"
+              className: css["f-grow"]
             }
           }}
           helper_text={
@@ -125,7 +126,7 @@ const AccountGeneralForm = ({
           data-testid={"location-input"}
           form_slot_props={{
             form_item: {
-              className: "f-grow"
+              className: css["f-grow"]
             }
           }}
           helper_text={
@@ -144,7 +145,7 @@ const AccountGeneralForm = ({
           <React.Fragment>
             You can format your bio using select markdown features such as **
             <b>bold</b>** and *<em>italics</em>*, and you can also mention{" "}
-            <span className={"t-medium"}>@someone</span>.{" "}
+            <span className={css["t-medium"]}>@someone</span>.{" "}
             <Link href={"/guides/formatting-bio"} underline={"always"}>
               Learn more about formatting your bio
             </Link>

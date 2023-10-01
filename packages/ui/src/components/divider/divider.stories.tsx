@@ -22,7 +22,7 @@ export const OrientationHorizontal: Story = {
 
 export const OrientationVertical: Story = {
   render: (args) => (
-    <div className={"flex-center"} style={{ height: "128px" }}>
+    <div className={css["flex-center"]} style={{ height: "128px" }}>
       <Divider {...args} />
     </div>
   ),

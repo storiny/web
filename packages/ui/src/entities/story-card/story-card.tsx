@@ -13,6 +13,7 @@ import ExternalLinkIcon from "~/icons/external-link";
 import HeartIcon from "~/icons/heart";
 import ImageIcon from "~/icons/image";
 import ReadsIcon from "~/icons/reads";
+import css from "~/theme/main.module.scss";
 import { abbreviate_number } from "~/utils/abbreviate-number";
 
 import styles from "./story-card.module.scss";
@@ -27,14 +28,14 @@ const StoryCard = (props: StoryCardProps): React.ReactElement => {
       <AspectRatio
         aria-label={"Read this story"}
         as={NextLink}
-        className={clsx("full-w", styles.splash)}
+        className={clsx(css["full-w"], styles.splash)}
         href={href}
         ratio={1.76}
         target={"_blank"}
         title={"Read this story"}
       >
         {!story.splash_id ? (
-          <div className={clsx("flex-center", styles.placeholder)}>
+          <div className={clsx(css["flex-center"], styles.placeholder)}>
             <ImageIcon />
           </div>
         ) : (
@@ -53,9 +54,9 @@ const StoryCard = (props: StoryCardProps): React.ReactElement => {
         </IconButton>
       </AspectRatio>
 
-      <div className={clsx("flex-col", styles.meta)}>
+      <div className={clsx(css["flex-col"], styles.meta)}>
         <Link
-          className={"t-medium"}
+          className={css["t-medium"]}
           fixed_color
           href={href}
           level={"body2"}
@@ -65,14 +66,19 @@ const StoryCard = (props: StoryCardProps): React.ReactElement => {
           {story.title}
         </Link>
         {story.description && (
-          <Typography className={"t-minor"} level={"body2"}>
+          <Typography className={css["t-minor"]} level={"body2"}>
             {story.description}
           </Typography>
         )}
-        <footer className={clsx("flex", styles.footer)}>
+        <footer className={clsx(css["flex"], styles.footer)}>
           <Typography
             as={"span"}
-            className={clsx("t-medium", "t-minor", "flex-center", styles.stat)}
+            className={clsx(
+              css["t-medium"],
+              css["t-minor"],
+              css["flex-center"],
+              styles.stat
+            )}
             level={"body2"}
             title={`${abbreviate_number(story.stats.read_count)} ${
               story.stats.read_count === 1 ? "read" : "reads"
@@ -83,7 +89,12 @@ const StoryCard = (props: StoryCardProps): React.ReactElement => {
           </Typography>
           <Typography
             as={"span"}
-            className={clsx("t-medium", "t-minor", "flex-center", styles.stat)}
+            className={clsx(
+              css["t-medium"],
+              css["t-minor"],
+              css["flex-center"],
+              styles.stat
+            )}
             level={"body2"}
             title={`${abbreviate_number(story.stats.like_count)} ${
               story.stats.like_count === 1 ? "like" : "likes"
@@ -94,7 +105,12 @@ const StoryCard = (props: StoryCardProps): React.ReactElement => {
           </Typography>
           <Typography
             as={"span"}
-            className={clsx("t-medium", "t-minor", "flex-center", styles.stat)}
+            className={clsx(
+              css["t-medium"],
+              css["t-minor"],
+              css["flex-center"],
+              styles.stat
+            )}
             level={"body2"}
             title={`${abbreviate_number(story.stats.comment_count)} ${
               story.stats.comment_count === 1 ? "comment" : "comments"

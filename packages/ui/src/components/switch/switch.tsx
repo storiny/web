@@ -4,6 +4,7 @@ import { Root, Thumb } from "@radix-ui/react-switch";
 import clsx from "clsx";
 import React from "react";
 
+import css from "~/theme/main.module.scss";
 import { forward_ref } from "~/utils/forward-ref";
 
 import styles from "./switch.module.scss";
@@ -51,8 +52,8 @@ const Switch = forward_ref<SwitchProps, "button">((props, ref) => {
       {...rest}
       asChild
       className={clsx(
-        "unset",
-        "focusable",
+        css["unset"],
+        css["focusable"],
         styles.switch,
         styles[color],
         styles[size],
@@ -64,7 +65,7 @@ const Switch = forward_ref<SwitchProps, "button">((props, ref) => {
         <Thumb
           {...slot_props?.thumb}
           className={clsx(
-            "flex-center",
+            css["flex-center"],
             styles.thumb,
             slot_props?.thumb?.className
           )}

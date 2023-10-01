@@ -15,6 +15,7 @@ import {
 import { Root, Scrollbar, Thumb, Viewport } from "~/components/scroll-area";
 import Spacer from "~/components/spacer";
 import Typography from "~/components/typography";
+import css from "~/theme/main.module.scss";
 import { capitalize } from "~/utils/capitalize";
 
 import { emoji_category_atom, emoji_query_atom } from "../../atoms";
@@ -153,7 +154,7 @@ Group.displayName = "Group";
 
 const GroupHeader = React.memo<{ index: number }>(({ index }) => (
   <Typography
-    className={clsx("t-medium", "t-minor", styles["group-title"])}
+    className={clsx(css["t-medium"], css["t-minor"], styles["group-title"])}
     level={"body2"}
   >
     {capitalize(GROUPS[index].id.replace(/-/g, " "))}
@@ -180,7 +181,10 @@ const EmojiRow = React.memo<
   }
 
   return (
-    <div {...rest} className={clsx("flex", styles["emoji-row"], className)}>
+    <div
+      {...rest}
+      className={clsx(css["flex"], styles["emoji-row"], className)}
+    >
       {emoji_ids.map(
         (emoji_id, index): React.ReactElement => (
           <Emoji emoji_id={emoji_id} key={emoji_id || index} />
@@ -196,7 +200,7 @@ EmojiRow.displayName = "EmojiRow";
 
 const ScrollSeekPlaceholder = React.memo(
   () => (
-    <div aria-hidden className={clsx("flex", styles["emoji-row"])}>
+    <div aria-hidden className={clsx(css["flex"], styles["emoji-row"])}>
       {[...Array(EMOJIS_PER_ROW)].map((_, index) => (
         <PlaceholderEmoji key={index} />
       ))}
@@ -230,13 +234,13 @@ const EmojiList = React.forwardRef<
   );
 
   return (
-    <Root className={clsx("flex-center", styles.list)} type={"auto"}>
+    <Root className={clsx(css["flex-center"], styles.list)} type={"auto"}>
       {Boolean(query) && !has_search_results ? (
         <div
-          className={clsx("flex-col", styles.empty)}
+          className={clsx(css["flex-col"], styles.empty)}
           style={{ height: LIST_HEIGHT }}
         >
-          <Typography className={"t-medium"} level={"body2"}>
+          <Typography className={css["t-medium"]} level={"body2"}>
             Could not find any emoji for &quot;
             <span style={{ wordBreak: "break-all" }}>{query}</span>&quot;
           </Typography>
@@ -244,7 +248,7 @@ const EmojiList = React.forwardRef<
       ) : (
         <GroupedVirtuoso
           {...rest}
-          className={clsx("f-grow", className)}
+          className={clsx(css["f-grow"], className)}
           components={{
             Group,
             Scroller,

@@ -3,6 +3,7 @@ import React from "react";
 
 import Spacer from "~/components/spacer";
 import TitleBlock from "~/entities/title-block";
+import css from "~/theme/main.module.scss";
 
 import DashboardGroup from "../../../../../dashboard-group";
 import styles from "./account-removal.module.scss";
@@ -29,7 +30,7 @@ const AccountRemovalGroup = (): React.ReactElement => (
       This way, you can use them with another account.
     </TitleBlock>
     <Spacer orientation={"vertical"} size={4.5} />
-    <div className={clsx("flex", styles.actions)}>
+    <div className={clsx(css["flex"], styles.actions)}>
       <DisableAccount />
       <DeleteAccount />
     </div>

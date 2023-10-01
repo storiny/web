@@ -8,6 +8,7 @@ import Button from "~/components/button";
 import Grow from "~/components/grow";
 import Spacer from "~/components/spacer";
 import Typography from "~/components/typography";
+import css from "~/theme/main.module.scss";
 
 const Page = (): React.ReactElement => (
   <>
@@ -15,13 +16,13 @@ const Page = (): React.ReactElement => (
       Invalid token
     </Typography>
     <Spacer orientation={"vertical"} size={0.5} />
-    <Typography className={"t-minor"} level={"body2"}>
+    <Typography className={css["t-minor"]} level={"body2"}>
       This token is invalid. Kindly check the link again.
     </Typography>
     <Spacer orientation={"vertical"} size={5} />
     <Grow />
-    <div className={clsx("flex-col", "flex-center")}>
-      <Button as={NextLink} className={"full-w"} href={"/"} size={"lg"}>
+    <div className={clsx(css["flex-col"], css["flex-center"])}>
+      <Button as={NextLink} className={css["full-w"]} href={"/"} size={"lg"}>
         Home
       </Button>
     </div>

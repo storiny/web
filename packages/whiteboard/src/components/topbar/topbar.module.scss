@@ -1,10 +1,10 @@
-.x {
-  &.topbar {
-    background-color: var(--bg-elevation-sm);
-    border-bottom: 1px solid var(--divider);
-    grid-area: topbar;
-  }
+.topbar {
+  background-color: var(--bg-elevation-sm);
+  border-bottom: 1px solid var(--divider);
+  grid-area: topbar;
+}
 
+.x {
   &.icon-button {
     border-radius: 0;
   }

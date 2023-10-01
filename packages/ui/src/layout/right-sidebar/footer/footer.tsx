@@ -3,6 +3,7 @@ import React from "react";
 
 import Link from "~/components/link";
 import Typography from "~/components/typography";
+import css from "~/theme/main.module.scss";
 
 import styles from "./footer.module.scss";
 
@@ -34,7 +35,7 @@ const RightSidebarFooter = (): React.ReactElement => (
     </Link>
     <Typography
       as={"span"}
-      className={clsx("t-muted", styles.copyright)}
+      className={clsx(css["t-muted"], styles.copyright)}
       level={"body3"}
     >
       &copy; {new Date().getFullYear()} Storiny

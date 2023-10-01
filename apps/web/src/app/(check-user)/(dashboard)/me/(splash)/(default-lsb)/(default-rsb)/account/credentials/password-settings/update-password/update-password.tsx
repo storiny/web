@@ -1,4 +1,3 @@
-import { clsx } from "clsx";
 import { useRouter as use_router } from "next/navigation";
 import React from "react";
 
@@ -14,6 +13,7 @@ import { use_media_query } from "~/hooks/use-media-query";
 import PasswordIcon from "~/icons/password";
 import { use_update_password_mutation } from "~/redux/features";
 import { BREAKPOINTS } from "~/theme/breakpoints";
+import css from "~/theme/main.module.scss";
 
 import { UpdatePasswordProps } from "./update-password.props";
 import {
@@ -28,7 +28,7 @@ const UpdatePasswordModal = ({
 }): React.ReactElement => (
   <React.Fragment>
     <Description asChild>
-      <Typography className={"t-minor"} level={"body2"}>
+      <Typography className={css["t-minor"]} level={"body2"}>
         {updated
           ? "Your password has been updated. You have been logged out and will need to log in again using your new password."
           : "Enter a new password that is at least 6 characters long, along with your current password."}
@@ -43,7 +43,7 @@ const UpdatePasswordModal = ({
           data-testid={"current-password-input"}
           form_slot_props={{
             form_item: {
-              className: "f-grow"
+              className: css["f-grow"]
             }
           }}
           label={"Current password"}
@@ -57,7 +57,7 @@ const UpdatePasswordModal = ({
           data-testid={"new-password-input"}
           form_slot_props={{
             form_item: {
-              className: "f-grow"
+              className: css["f-grow"]
             }
           }}
           label={"New password"}
@@ -107,7 +107,7 @@ const UpdatePassword = ({
       <Button
         auto_size
         check_auth
-        className={"fit-w"}
+        className={css["fit-w"]}
         onClick={open_modal}
         variant={"hollow"}
       >
@@ -115,7 +115,7 @@ const UpdatePassword = ({
       </Button>
     ),
     <Form<UpdatePasswordSchema>
-      className={clsx("flex-col")}
+      className={css["flex-col"]}
       disabled={is_loading}
       on_submit={handle_submit}
       provider_props={form}

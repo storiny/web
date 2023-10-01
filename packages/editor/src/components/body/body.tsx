@@ -69,7 +69,7 @@ const EditorBody = (props: EditorProps): React.ReactElement => {
 
   return (
     <article
-      className={clsx(styles.x, styles.body, read_only && styles["read-only"])}
+      className={clsx(styles.body, read_only && styles["read-only"])}
       data-testid={"editor-container"}
       {...(!read_only && !["connected", "syncing"].includes(doc_status)
         ? // eslint-disable-next-line prefer-snakecase/prefer-snakecase

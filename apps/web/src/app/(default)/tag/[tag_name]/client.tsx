@@ -20,6 +20,7 @@ import {
   use_get_tag_stories_query
 } from "~/redux/features";
 import { BREAKPOINTS } from "~/theme/breakpoints";
+import css from "~/theme/main.module.scss";
 
 import styles from "./styles.module.scss";
 
@@ -55,9 +56,9 @@ const PageHeader = ({
 }): React.ReactElement => (
   <div
     className={clsx(
-      "flex-center",
-      "full-bleed",
-      "page-header",
+      css["flex-center"],
+      css["full-bleed"],
+      css["page-header"],
       styles["page-header"]
     )}
   >

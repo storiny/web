@@ -15,6 +15,7 @@ import MoodSmileIcon from "~/icons/mood-smile";
 import PawIcon from "~/icons/paw";
 import ReportIcon from "~/icons/report";
 import SymbolsIcon from "~/icons/symbols";
+import css from "~/theme/main.module.scss";
 
 import { emoji_category_atom, emoji_query_atom } from "../../atoms";
 import { EmojiCategory } from "../../constants";
@@ -50,7 +51,7 @@ const EmojiPickerTabs = (props: EmojiPickerTabsProps): React.ReactElement => {
       orientation={"vertical"}
       value={value}
     >
-      <TabsList className={clsx("full-h", styles["tabs-list"])}>
+      <TabsList className={clsx(css["full-h"], styles["tabs-list"])}>
         <Tab
           aria-controls={undefined}
           className={styles.tab}

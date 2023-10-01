@@ -17,6 +17,7 @@ import {
   select_user
 } from "~/redux/features/auth/selectors";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
+import css from "~/theme/main.module.scss";
 import { abbreviate_number } from "~/utils/abbreviate-number";
 
 import styles from "./persona.module.scss";
@@ -59,7 +60,7 @@ const LeftSidebarPersona = (): React.ReactElement => {
           />
         ) : (
           <NextLink
-            className={clsx("flex-center", styles["banner-placeholder"])}
+            className={clsx(css["flex-center"], styles["banner-placeholder"])}
             href={"/me/account/profile"}
           >
             <PhotoPlusIcon />
@@ -84,15 +85,15 @@ const LeftSidebarPersona = (): React.ReactElement => {
           size={"xl"}
         />
       )}
-      <div className={clsx("flex-center", styles.meta)}>
+      <div className={clsx(css["flex-center"], styles.meta)}>
         {loading ? (
           <>
-            <span className={"flex-col"} style={{ gap: "8px" }}>
+            <span className={css["flex-col"]} style={{ gap: "8px" }}>
               <Skeleton height={16} width={72} />
               <Skeleton height={14} width={96} />
             </span>
             <span
-              className={"flex-col"}
+              className={css["flex-col"]}
               style={{ gap: "8px", alignItems: "center" }}
             >
               <Skeleton height={16} width={72} />
@@ -101,9 +102,9 @@ const LeftSidebarPersona = (): React.ReactElement => {
           </>
         ) : (
           <>
-            <div className={"flex-col"}>
+            <div className={css["flex-col"]}>
               <Link
-                className={clsx("t-bold")}
+                className={css["t-bold"]}
                 ellipsis
                 fixed_color
                 href={"/profile"}
@@ -112,7 +113,7 @@ const LeftSidebarPersona = (): React.ReactElement => {
                 {user?.name}
               </Link>
               <Link
-                className={clsx("t-minor", "t-medium")}
+                className={clsx(css["t-minor"], css["t-medium"])}
                 ellipsis
                 href={"/profile"}
                 level={"body2"}
@@ -120,9 +121,11 @@ const LeftSidebarPersona = (): React.ReactElement => {
                 @{user?.username}
               </Link>
             </div>
-            <Typography className={clsx("flex-col", styles["follower-count"])}>
+            <Typography
+              className={clsx(css["flex-col"], styles["follower-count"])}
+            >
               {abbreviate_number(user?.follower_count || 0)}
-              <Typography className={clsx("t-minor")} level={"body2"}>
+              <Typography className={css["t-minor"]} level={"body2"}>
                 followers
               </Typography>
             </Typography>

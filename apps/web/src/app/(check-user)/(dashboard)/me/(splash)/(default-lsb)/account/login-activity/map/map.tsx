@@ -7,6 +7,7 @@ import React from "react";
 import AspectRatio from "~/components/aspect-ratio";
 import Link from "~/components/link";
 import Typography from "~/components/typography";
+import css from "~/theme/main.module.scss";
 
 import styles from "./map.module.scss";
 import { MapProps } from "./map.props";
@@ -52,12 +53,12 @@ const Map = (props: MapProps): React.ReactElement => {
   }, [lat, lng]);
 
   return (
-    <AspectRatio className={"full-w"} ratio={ratio}>
+    <AspectRatio className={css["full-w"]} ratio={ratio}>
       <div className={styles.map} ref={map_ref} />
       {!hide_copyright && (
         <Typography
           as={"div"}
-          className={clsx("t-medium", styles.x, styles.copyright)}
+          className={clsx(css["t-medium"], styles.x, styles.copyright)}
         >
           ©{" "}
           <Link

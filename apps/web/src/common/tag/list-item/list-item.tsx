@@ -8,6 +8,7 @@ import { ItemProps } from "react-virtuoso";
 import { VirtualizedTagListContext } from "~/common/tag/list/list-context";
 import Divider from "~/components/divider";
 import Tag from "~/entities/tag";
+import css from "~/theme/main.module.scss";
 
 import styles from "../../virtual/virtual.module.scss";
 
@@ -17,7 +18,7 @@ const VirtualizedTagItem = React.memo(({ item, ...rest }: ItemProps<TTag>) => {
   return (
     <div
       {...rest}
-      className={clsx("flex-col", styles["list-item"])}
+      className={clsx(css["flex-col"], styles["list-item"])}
       key={item.id}
     >
       <Tag {...tag_props} tag={item} virtual />

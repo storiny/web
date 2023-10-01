@@ -1,4 +1,3 @@
-import { clsx } from "clsx";
 import React from "react";
 
 import Button from "~/components/button";
@@ -12,6 +11,7 @@ import { use_media_query } from "~/hooks/use-media-query";
 import TwoFAIcon from "~/icons/two-fa";
 import { use_remove_mfa_mutation } from "~/redux/features";
 import { BREAKPOINTS } from "~/theme/breakpoints";
+import css from "~/theme/main.module.scss";
 
 import { Remove2FAProps } from "./remove-2fa.props";
 import {
@@ -24,7 +24,7 @@ import {
 const Remove2FAModal = (): React.ReactElement => (
   <React.Fragment>
     <Description asChild>
-      <Typography className={"t-minor"} level={"body2"}>
+      <Typography className={css["t-minor"]} level={"body2"}>
         Without two-factor authentication, your account will only be protected
         by your password. To disable two-factor authentication, provide your
         6-digit authentication code or one of your 8-digit recovery codes.
@@ -38,7 +38,7 @@ const Remove2FAModal = (): React.ReactElement => (
       data-testid={"code-input"}
       form_slot_props={{
         form_item: {
-          className: "f-grow"
+          className: css["f-grow"]
         }
       }}
       label={"Code"}
@@ -90,7 +90,7 @@ const Remove2FA = ({
       <Button
         auto_size
         check_auth
-        className={"fit-w"}
+        className={css["fit-w"]}
         color={"ruby"}
         onClick={open_modal}
         variant={"hollow"}
@@ -99,7 +99,7 @@ const Remove2FA = ({
       </Button>
     ),
     <Form<Remove2FASchema>
-      className={clsx("flex-col")}
+      className={css["flex-col"]}
       disabled={is_loading}
       on_submit={handle_submit}
       provider_props={form}

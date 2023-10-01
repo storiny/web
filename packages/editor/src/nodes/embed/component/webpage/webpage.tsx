@@ -11,6 +11,7 @@ import Typography from "~/components/typography";
 import Persona from "~/entities/persona";
 import ExternalLinkIcon from "~/icons/external-link";
 import LinkIcon from "~/icons/link";
+import css from "~/theme/main.module.scss";
 
 import styles from "./webpage.module.scss";
 import { WebpageEmbedProps } from "./webpage.props";
@@ -23,8 +24,7 @@ const WebpageEmbed = ({
   return (
     <div
       className={clsx(
-        is_large_card ? "flex-col" : "flex-center",
-        styles.x,
+        css[is_large_card ? "flex-col" : "flex-center"],
         styles.webpage,
         selected && styles.selected,
         !is_large_card && styles.small
@@ -32,7 +32,7 @@ const WebpageEmbed = ({
     >
       {is_large_card ? (
         <React.Fragment>
-          <div className={clsx("flex", styles.x, styles.header)}>
+          <div className={clsx(css["flex"], styles.header)}>
             <Persona
               avatar={{
                 alt: "",
@@ -43,7 +43,7 @@ const WebpageEmbed = ({
               secondary_text={new URL(metadata.url).host || ""}
               style={{ alignItems: "flex-start" }}
             />
-            <Spacer className={"f-grow"} />
+            <Spacer className={css["f-grow"]} />
             <IconButton
               as={NextLink}
               href={metadata.url}
@@ -68,8 +68,8 @@ const WebpageEmbed = ({
             </AspectRatio>
           ) : null}
           {metadata.description && (
-            <div className={clsx("flex", styles.x, styles.footer)}>
-              <Typography className={"t-minor"} level={"body2"}>
+            <div className={clsx(css["flex"], styles.footer)}>
+              <Typography className={css["t-minor"]} level={"body2"}>
                 {metadata.description}
               </Typography>
             </div>
@@ -77,7 +77,7 @@ const WebpageEmbed = ({
         </React.Fragment>
       ) : (
         <React.Fragment>
-          <div className={clsx(styles.x, styles["small-image-wrapper"])}>
+          <div className={styles["small-image-wrapper"]}>
             <AspectRatio
               as={NextLink}
               className={clsx(styles.x, styles["small-image"])}
@@ -93,7 +93,7 @@ const WebpageEmbed = ({
               />
             </AspectRatio>
           </div>
-          <div className={clsx("flex-col", styles.x, styles.body)}>
+          <div className={clsx(css["flex-col"], styles.body)}>
             <Link
               fixed_color
               href={metadata.url}
@@ -105,14 +105,16 @@ const WebpageEmbed = ({
               {metadata.title || "Unknown site"}
             </Link>
             {metadata.description && (
-              <Typography className={"t-minor"} level={"body2"}>
+              <Typography className={css["t-minor"]} level={"body2"}>
                 {metadata.description}
               </Typography>
             )}
-            <Spacer className={"f-grow"} orientation={"vertical"} size={2.5} />
-            <div
-              className={clsx("flex-center", styles.x, styles["small-footer"])}
-            >
+            <Spacer
+              className={css["f-grow"]}
+              orientation={"vertical"}
+              size={2.5}
+            />
+            <div className={clsx(css["flex-center"], styles["small-footer"])}>
               <LinkIcon />
               <Link href={metadata.url} level={"body2"} title={metadata.url}>
                 {new URL(metadata.url).host || ""}

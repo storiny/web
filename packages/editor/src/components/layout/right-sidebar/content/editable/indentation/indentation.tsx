@@ -5,6 +5,7 @@ import IconButton from "~/components/icon-button";
 import Tooltip from "~/components/tooltip";
 import IndentIcon from "~/icons/indent";
 import OutdentIcon from "~/icons/outdent";
+import css from "~/theme/main.module.scss";
 
 import { EDITOR_SHORTCUTS } from "../../../../../../constants/shortcuts";
 import { use_indentation } from "../../../../../../hooks/use-indentation";
@@ -16,7 +17,7 @@ const Indentation = ({
 }): React.ReactElement => {
   const { indent, outdent, can_indent, can_outdent } = use_indentation();
   return (
-    <div className={"flex-center"}>
+    <div className={css["flex-center"]}>
       <Tooltip
         content={"Indent"}
         right_slot={get_shortcut_label(EDITOR_SHORTCUTS.indent)}

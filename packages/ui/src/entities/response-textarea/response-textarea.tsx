@@ -11,6 +11,7 @@ import { use_textarea_autosize } from "~/hooks/use-textarea-autosize";
 import AtIcon from "~/icons/at";
 import MoodSmileIcon from "~/icons/mood-smile";
 import SendIcon from "~/icons/send";
+import css from "~/theme/main.module.scss";
 
 import styles from "./response-textarea.module.scss";
 import { ResponseTextareaProps } from "./response-textarea.props";
@@ -59,8 +60,8 @@ const ResponseTextarea = React.forwardRef<
       end_decorator={
         <div
           className={clsx(
-            "full-w",
-            "flex-center",
+            css["full-w"],
+            css["flex-center"],
             styles.actions,
             disabled && styles.disabled
           )}
@@ -100,7 +101,7 @@ const ResponseTextarea = React.forwardRef<
           </IconButton>
           {!hide_post_button && (
             <React.Fragment>
-              <Spacer className={"f-grow"} />
+              <Spacer className={css["f-grow"]} />
               <IconButton
                 {...post_button_props}
                 aria-label={"Post response"}

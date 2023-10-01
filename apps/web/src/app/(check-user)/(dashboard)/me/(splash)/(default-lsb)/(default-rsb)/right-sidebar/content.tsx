@@ -5,16 +5,17 @@ import React from "react";
 
 import Link from "~/components/link";
 import Typography from "~/components/typography";
+import css from "~/theme/main.module.scss";
 
 import { RECOMMENDED_SUPPORT_RESOURCES } from "./resources";
 import styles from "./right-sidebar.module.scss";
 
 const SuspendedDashboardRightSidebarContent = (): React.ReactElement => (
-  <div className={clsx("flex-col", styles.content)}>
-    <Typography className={clsx("t-bold", "t-minor")} level={"body2"}>
+  <div className={clsx(css["flex-col"], styles.content)}>
+    <Typography className={clsx(css["t-bold"], css["t-minor"])} level={"body2"}>
       Recommended support resources
     </Typography>
-    <div className={clsx("flex-col", styles.resources)}>
+    <div className={clsx(css["flex-col"], styles.resources)}>
       {RECOMMENDED_SUPPORT_RESOURCES.map((resource) => (
         <Link
           href={resource.href}

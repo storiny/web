@@ -21,6 +21,7 @@ import {
   use_verify_mfa_mutation
 } from "~/redux/features";
 import { BREAKPOINTS } from "~/theme/breakpoints";
+import css from "~/theme/main.module.scss";
 
 import styles from "./enable-2fa.module.scss";
 import { Enable2FAProps } from "./enable-2fa.props";
@@ -57,39 +58,49 @@ const Enable2FAModal = (): React.ReactElement => {
   }, []);
 
   return (
-    <div className={clsx("flex", styles.content)}>
+    <div className={clsx(css["flex"], styles.content)}>
       {is_loading && !TESTING_ENV ? (
         <div
-          className={clsx("flex-center", "full-w")}
+          className={clsx(css["flex-center"], css["full-w"])}
           style={{ paddingBlock: "32px" }}
         >
           <Spinner />
         </div>
       ) : is_error && !TESTING_ENV ? (
         <div
-          className={clsx("flex-center", "full-w")}
+          className={clsx(css["flex-center"], css["full-w"])}
           style={{ minHeight: "96px" }}
         >
-          <Typography className={clsx("t-minor", "t-center")} level={"body2"}>
+          <Typography
+            className={clsx(css["t-minor"], css["t-center"])}
+            level={"body2"}
+          >
             {error}
           </Typography>
         </div>
       ) : (
         <React.Fragment>
           <div
-            className={clsx("flex-col", "flex-center", styles["qr-wrapper"])}
+            className={clsx(
+              css["flex-col"],
+              css["flex-center"],
+              styles["qr-wrapper"]
+            )}
           >
             <AspectRatio className={styles["aspect-ratio"]} ratio={1}>
               <Image alt={"QR code"} src={qr} />
             </AspectRatio>
-            <Typography className={clsx("t-mono", styles.code)} level={"body2"}>
+            <Typography
+              className={clsx(css["t-mono"], styles.code)}
+              level={"body2"}
+            >
               {code}
             </Typography>
           </div>
           <Divider orientation={"vertical"} />
-          <div className={"flex-col"}>
+          <div className={css["flex-col"]}>
             <Description asChild>
-              <Typography className={"t-minor"} level={"body2"}>
+              <Typography className={css["t-minor"]} level={"body2"}>
                 Download an authenticator app (such as{" "}
                 <Link
                   href={"https://authy.com/"}
@@ -121,7 +132,7 @@ const Enable2FAModal = (): React.ReactElement => {
               data-testid={"code-input"}
               form_slot_props={{
                 form_item: {
-                  className: "f-grow"
+                  className: css["f-grow"]
                 }
               }}
               label={"Code"}
@@ -178,7 +189,7 @@ const Enable2FA = ({
       <Button
         auto_size
         check_auth
-        className={"fit-w"}
+        className={css["fit-w"]}
         disabled={!has_password}
         onClick={open_modal}
       >
@@ -186,7 +197,7 @@ const Enable2FA = ({
       </Button>
     ),
     <Form<Enable2FASchema>
-      className={clsx("flex-col")}
+      className={css["flex-col"]}
       disabled={is_loading}
       on_submit={handle_submit}
       provider_props={form}

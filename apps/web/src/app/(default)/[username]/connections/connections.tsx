@@ -3,6 +3,7 @@ import React from "react";
 
 import { GetProfileResponse } from "~/common/grpc";
 import IconButton from "~/components/icon-button";
+import css from "~/theme/main.module.scss";
 
 import styles from "./connections.module.scss";
 
@@ -22,7 +23,7 @@ const Connections = ({
   name,
   is_inside_sidebar
 }: Props): React.ReactElement => (
-  <div className={clsx("flex", styles.connections)}>
+  <div className={clsx(css["flex"], styles.connections)}>
     {connections.map((connection) => (
       <IconButton
         aria-label={`${name} on ${

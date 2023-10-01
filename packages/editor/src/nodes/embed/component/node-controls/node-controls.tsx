@@ -7,6 +7,7 @@ import ToggleGroup from "~/components/toggle-group";
 import ToggleGroupItem from "~/components/toggle-group-item";
 import FigureFillIcon from "~/icons/figure-fill";
 import FigureOverflowIcon from "~/icons/figure-overflow";
+import css from "~/theme/main.module.scss";
 
 import { $is_embed_node, EmbedNodeLayout } from "../../embed";
 import styles from "../embed.module.scss";
@@ -42,14 +43,14 @@ const EmbedNodeControls = (
       value={layout}
     >
       <ToggleGroupItem
-        className={clsx("focus-invert", styles.x, styles.button)}
+        className={clsx(css["focus-invert"], styles.x, styles.button)}
         tooltip_content={"Fill"}
         value={"fill" as EmbedNodeLayout}
       >
         <FigureFillIcon />
       </ToggleGroupItem>
       <ToggleGroupItem
-        className={clsx("focus-invert", styles.x, styles.button)}
+        className={clsx(css["focus-invert"], styles.x, styles.button)}
         tooltip_content={"Overflow"}
         value={"overflow" as EmbedNodeLayout}
       >

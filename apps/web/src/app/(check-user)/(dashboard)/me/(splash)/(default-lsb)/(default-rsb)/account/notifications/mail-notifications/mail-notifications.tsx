@@ -7,6 +7,7 @@ import Spacer from "~/components/spacer";
 import { use_toast } from "~/components/toast";
 import TitleBlock from "~/entities/title-block";
 import { use_mail_notification_settings_mutation } from "~/redux/features";
+import css from "~/theme/main.module.scss";
 
 import DashboardGroup from "../../../../dashboard-group";
 import styles from "../styles.module.scss";
@@ -70,7 +71,7 @@ const MailNotifications = ({
       </TitleBlock>
       <Spacer orientation={"vertical"} size={3.5} />
       <Form<MailNotificationsSchema>
-        className={clsx("flex-col", styles.form)}
+        className={clsx(css["flex-col"], styles.form)}
         disabled={is_loading}
         on_submit={handle_submit}
         provider_props={form}

@@ -3,6 +3,8 @@
 import clsx from "clsx";
 import React from "react";
 
+import css from "~/theme/main.module.scss";
+
 import { use_alpha_slider } from "../../hooks";
 import common_styles from "../common.module.scss";
 import styles from "../slider.module.scss";
@@ -21,7 +23,7 @@ const AlphaSlider = React.memo(
         {...rest}
         {...slider_props}
         className={clsx(
-          "focusable",
+          css["focusable"],
           styles.container,
           common_styles["transparent-grid"],
           className

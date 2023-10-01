@@ -13,6 +13,7 @@ import {
 } from "~/redux/features";
 import { use_app_dispatch } from "~/redux/hooks";
 import { BREAKPOINTS } from "~/theme/breakpoints";
+import css from "~/theme/main.module.scss";
 
 import styles from "../notification.module.scss";
 
@@ -41,7 +42,7 @@ const Actions = ({
   }
 
   return (
-    <div className={clsx("flex", styles.actions)}>
+    <div className={clsx(css["flex"], styles.actions)}>
       <IconButton
         aria-label={"Mark notification as read"}
         check_auth

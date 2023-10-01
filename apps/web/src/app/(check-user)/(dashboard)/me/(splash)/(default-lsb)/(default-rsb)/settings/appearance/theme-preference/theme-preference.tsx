@@ -11,6 +11,7 @@ import { use_media_query } from "~/hooks/use-media-query";
 import { select_theme, set_theme } from "~/redux/features";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 import { BREAKPOINTS } from "~/theme/breakpoints";
+import css from "~/theme/main.module.scss";
 
 import DashboardGroup from "../../../../dashboard-group";
 import common_styles from "../styles.module.scss";
@@ -101,11 +102,7 @@ const ThemePreview = ({
     className={clsx(
       common_styles.preview,
       styles.preview,
-      theme
-        ? theme === "dark"
-          ? "force-dark-mode"
-          : "force-light-mode"
-        : null,
+      theme && css[theme === "dark" ? "force-dark-mode" : "force-light-mode"],
       className
     )}
     fill="none"
@@ -132,12 +129,12 @@ const ThemeItem = ({
 }): React.ReactElement => (
   <div
     className={clsx(
-      "flex-col",
+      css["flex-col"],
       common_styles.item,
       is_active && common_styles.selected
     )}
   >
-    <AspectRatio className={"full-w"} ratio={ratio}>
+    <AspectRatio className={css["full-w"]} ratio={ratio}>
       {preview}
     </AspectRatio>
     <Divider />

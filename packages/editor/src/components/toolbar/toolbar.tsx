@@ -10,6 +10,7 @@ import Button from "~/components/button";
 import Spinner from "~/components/spinner";
 import { use_media_query } from "~/hooks/use-media-query";
 import { BREAKPOINTS } from "~/theme/breakpoints";
+import css from "~/theme/main.module.scss";
 
 import { doc_status_atom, sidebars_collapsed_atom } from "../../atoms";
 import { SPRING_CONFIG } from "../../constants";
@@ -17,7 +18,7 @@ import styles from "./toolbar.module.scss";
 
 const SuspendedEditorToolbarContent = dynamic(() => import("./content"), {
   loading: ({ isLoading: is_loading, retry, error }) => (
-    <div className={"flex-center"} style={{ height: "40px" }}>
+    <div className={css["flex-center"]} style={{ height: "40px" }}>
       {error && !is_loading ? (
         <Button color={"ruby"} onClick={retry} size={"sm"} variant={"hollow"}>
           Retry
@@ -48,13 +49,13 @@ const EditorToolbar = (): React.ReactElement | null => {
   }
 
   return (
-    <div className={clsx(styles.x, styles.viewport)}>
+    <div className={styles.viewport}>
       {transitions((style, item) =>
         item ? (
           <animated.div
             aria-label={"Formatting options"}
             aria-orientation={"horizontal"}
-            className={clsx("flex-center", styles.x, styles.toolbar)}
+            className={clsx(css["flex-center"], styles.toolbar)}
             role={"toolbar"}
             style={style}
           >

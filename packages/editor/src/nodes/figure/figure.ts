@@ -8,6 +8,8 @@ import {
   SerializedElementNode
 } from "lexical";
 
+import css from "~/theme/main.module.scss";
+
 import styles from "./figure.module.scss";
 
 export type SerializedFigureNode = SerializedElementNode;
@@ -43,7 +45,7 @@ export class FigureNode extends ElementNode {
    */
   override createDOM(): HTMLElement {
     const element = document.createElement("figure");
-    element.classList.add("flex-center", "flex-col", styles.figure);
+    element.classList.add(css["flex-center"], css["flex-col"], styles.figure);
     element.setAttribute("data-testid", "figure-node");
     return element;
   }

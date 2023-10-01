@@ -2,6 +2,7 @@ import clsx from "clsx";
 import React from "react";
 
 import Typography from "~/components/typography";
+import css from "~/theme/main.module.scss";
 
 import styles from "./item.module.scss";
 import { DrawItemProps } from "./item.props";
@@ -15,15 +16,16 @@ const DrawItem = ({
   <div
     {...rest}
     className={clsx(
-      "flex-col",
-      styles.x,
+      css["flex-col"],
       styles.item,
       Boolean(label) && styles["has-label"],
       className
     )}
   >
     {label && (
-      <Typography className={clsx("t-bold", "t-minor", styles.x, styles.label)}>
+      <Typography
+        className={clsx(css["t-bold"], css["t-minor"], styles.x, styles.label)}
+      >
         {label}
       </Typography>
     )}

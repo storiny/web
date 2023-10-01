@@ -5,6 +5,7 @@ import IconButton from "~/components/icon-button";
 import Menu from "~/components/menu";
 import Separator from "~/components/separator";
 import MenuIcon from "~/icons/menu";
+import css from "~/theme/main.module.scss";
 
 import styles from "../topbar.module.scss";
 import ExportImageItem from "./export-image-item";
@@ -25,7 +26,7 @@ const MainMenu = (): React.ReactElement => (
     trigger={
       <IconButton
         aria-label={"Main menu"}
-        className={clsx("focus-invert", styles.x, styles["icon-button"])}
+        className={clsx(css["focus-invert"], styles.x, styles["icon-button"])}
         variant={"ghost"}
       >
         <MenuIcon />

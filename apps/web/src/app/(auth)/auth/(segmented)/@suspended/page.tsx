@@ -7,6 +7,7 @@ import Grow from "~/components/grow";
 import Link from "~/components/link";
 import Spacer from "~/components/spacer";
 import Typography from "~/components/typography";
+import css from "~/theme/main.module.scss";
 
 const Page = (): React.ReactElement => (
   <>
@@ -14,7 +15,7 @@ const Page = (): React.ReactElement => (
       Account suspended
     </Typography>
     <Spacer orientation={"vertical"} size={0.5} />
-    <Typography className={"t-minor"} level={"body2"}>
+    <Typography className={css["t-minor"]} level={"body2"}>
       We regret to inform you that your account has been permanently suspended
       for violating our community guidelines. However, if you believe there has
       been an error in our decision, you may{" "}
@@ -32,9 +33,9 @@ const Page = (): React.ReactElement => (
       .
     </Typography>
     <Grow />
-    <footer className={clsx("flex-col", "flex-center")}>
+    <footer className={clsx(css["flex-col"], css["flex-center"])}>
       <Link
-        className={"t-medium"}
+        className={css["t-medium"]}
         href={"/support"}
         level={"body2"}
         underline={"always"}
@@ -44,7 +45,7 @@ const Page = (): React.ReactElement => (
       <Spacer orientation={"vertical"} size={3} />
       <Button
         as={NextLink}
-        className={"full-w"}
+        className={css["full-w"]}
         href={"/"}
         size={"lg"}
         variant={"hollow"}

@@ -11,6 +11,7 @@ import { select_haptic_feedback } from "~/redux/features";
 import { select_is_logged_in } from "~/redux/features/auth/selectors";
 import { use_app_selector } from "~/redux/hooks";
 import { BREAKPOINTS } from "~/theme/breakpoints";
+import css from "~/theme/main.module.scss";
 import { forward_ref } from "~/utils/forward-ref";
 
 import button_styles from "../common/button-reset.module.scss";
@@ -83,12 +84,12 @@ const IconButton = forward_ref<IconButtonProps, "button">((props, ref) => {
       aria-disabled={String(disabled)}
       className={clsx(
         button_styles.reset,
-        "focusable",
-        `variant-${variant}`,
-        `color-${input_color || color}`,
+        css["focusable"],
+        css[`variant-${variant}`],
+        css[`color-${input_color || color}`],
         styles["icon-button"],
-        loading && [styles.loading, "loading"],
-        disabled && [styles.disabled, "disabled"],
+        loading && [styles.loading, css["loading"]],
+        disabled && [styles.disabled, css["disabled"]],
         styles[input_size || size],
         className
       )}

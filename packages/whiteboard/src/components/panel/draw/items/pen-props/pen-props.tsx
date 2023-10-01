@@ -11,6 +11,7 @@ import ColorPicker, {
   TColor
 } from "~/entities/color-picker";
 import RulerMeasureIcon from "~/icons/ruler-measure";
+import css from "~/theme/main.module.scss";
 
 import {
   CURSORS,
@@ -86,8 +87,8 @@ const PenFillControl = ({
             <button
               aria-label={"Pick a color"}
               className={clsx(
-                "focusable",
-                "focus-invert",
+                css["focusable"],
+                css["focus-invert"],
                 common_styles.indicator
               )}
               style={
@@ -248,7 +249,7 @@ const PenStyleControl = ({
           }
         },
         trigger: {
-          className: clsx("full-w")
+          className: css["full-w"]
         }
       }}
       value={pen_style}

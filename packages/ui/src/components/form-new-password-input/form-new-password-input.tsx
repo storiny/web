@@ -12,6 +12,7 @@ import Spinner from "~/components/spinner";
 import EyeIcon from "~/icons/eye";
 import EyeClosedIcon from "~/icons/eye-closed";
 import LockIcon from "~/icons/lock";
+import css from "~/theme/main.module.scss";
 import { scale_number } from "~/utils/scale-number";
 
 import { use_form_context } from "../form";
@@ -49,7 +50,7 @@ const StrengthIndicator = ({
   return (
     <span
       className={clsx(
-        "flex-center",
+        css["flex-center"],
         styles["strength-indicator"],
         styles[size]
       )}

@@ -7,6 +7,7 @@ import Spacer from "~/components/spacer";
 import CustomState from "~/entities/custom-state";
 import LockExclamationIcon from "~/icons/lock-exclamation";
 import UnlinkIcon from "~/icons/unlink";
+import css from "~/theme/main.module.scss";
 
 import DashboardGroup from "../../../../dashboard-group";
 import DashboardTitle from "../../../../dashboard-title";
@@ -58,12 +59,12 @@ const ConnectionFailureClient = ({
           }
           title={type === "state-mismatch" ? "State mismatch" : "Linking error"}
         />
-        <div className={"flex-center"}>
+        <div className={css["flex-center"]}>
           <Button
             as={NextLink}
             auto_size
             check_auth
-            className={"fit-w"}
+            className={css["fit-w"]}
             href={"/me/settings/connections"}
           >
             Go back to connections

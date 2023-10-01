@@ -12,6 +12,7 @@ import clsx from "clsx";
 import React from "react";
 
 import XIcon from "~/icons/x";
+import css from "~/theme/main.module.scss";
 import { forward_ref } from "~/utils/forward-ref";
 
 import overlay_styles from "../common/overlay.module.scss";
@@ -60,7 +61,7 @@ const Modal = forward_ref<ModalProps, "div">((props, ref) => {
           {...slot_props?.content}
           asChild
           className={clsx(
-            "flex-center",
+            css["flex-center"],
             styles.content,
             fullscreen && styles.fullscreen,
             className,
@@ -72,7 +73,7 @@ const Modal = forward_ref<ModalProps, "div">((props, ref) => {
             <Container
               {...slot_props?.container}
               className={clsx(
-                "flex-center",
+                css["flex-center"],
                 styles.container,
                 slot_props?.container?.className
               )}
@@ -90,7 +91,7 @@ const Modal = forward_ref<ModalProps, "div">((props, ref) => {
               <div
                 {...slot_props?.main}
                 className={clsx(
-                  "flex-center",
+                  css["flex-center"],
                   styles.main,
                   slot_props?.main?.className
                 )}

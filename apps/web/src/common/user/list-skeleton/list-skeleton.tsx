@@ -6,14 +6,15 @@ import React from "react";
 import styles from "~/common/virtual/virtual.module.scss";
 import Divider from "~/components/divider";
 import { UserSkeleton } from "~/entities/user";
+import css from "~/theme/main.module.scss";
 
 const UserListSkeleton = React.memo(() => (
-  <div className={clsx("flex-col", styles.list)}>
+  <div className={clsx(css["flex-col"], styles.list)}>
     {[...Array(10)].map((_, index) => (
       <React.Fragment key={index}>
         <UserSkeleton virtual />
         <Divider
-          className={"hide-last"}
+          className={css["hide-last"]}
           style={{ marginInline: "var(--grid-compensation)" }}
         />
       </React.Fragment>

@@ -31,6 +31,7 @@ import UserPlusIcon from "~/icons/user-plus";
 import { boolean_action, select_user } from "~/redux/features";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 import { BREAKPOINTS } from "~/theme/breakpoints";
+import css from "~/theme/main.module.scss";
 import { abbreviate_number } from "~/utils/abbreviate-number";
 import { DateFormat, format_date } from "~/utils/format-date";
 import { get_read_time } from "~/utils/get-read-time";
@@ -57,7 +58,7 @@ const StoryActions = (): React.ReactElement => {
   );
 
   return (
-    <div className={"flex-center"}>
+    <div className={css["flex-center"]}>
       <IconButton
         aria-label={`${is_bookmarked ? "Un-bookmark" : "Bbookmark"} story`}
         auto_size
@@ -162,7 +163,7 @@ const Subheader = (): React.ReactElement => {
   );
 
   return (
-    <div className={"flex-center"}>
+    <div className={css["flex-center"]}>
       <Persona
         avatar={{
           alt: `${user?.name}'s avatar`,
@@ -188,7 +189,7 @@ const Subheader = (): React.ReactElement => {
         }
         size={"lg"}
       />
-      <Spacer className={"f-grow"} size={2} />
+      <Spacer className={css["f-grow"]} size={2} />
       {is_mobile ? (
         <IconButton
           auto_size
@@ -234,10 +235,15 @@ const StoryHeader = (): React.ReactElement => {
         </React.Fragment>
       ) : null}
       <Spacer orientation={"vertical"} size={2} />
-      <div className={clsx("flex-center", styles.metadata)}>
+      <div className={clsx(css["flex-center"], styles.metadata)}>
         <Typography
           as={"time"}
-          className={clsx("flex-center", "t-minor", styles.x, styles.stat)}
+          className={clsx(
+            css["flex-center"],
+            css["t-minor"],
+            styles.x,
+            styles.stat
+          )}
           dateTime={story.published_at!}
           level={"body2"}
           title={format_date(story.published_at!, DateFormat.LONG)}
@@ -252,14 +258,19 @@ const StoryHeader = (): React.ReactElement => {
         </Typography>
         <Typography
           aria-label={`${get_read_time(story.word_count, user?.wpm)} min read`}
-          className={clsx("flex-center", "t-minor", styles.x, styles.stat)}
+          className={clsx(
+            css["flex-center"],
+            css["t-minor"],
+            styles.x,
+            styles.stat
+          )}
           level={"body2"}
           title={`${get_read_time(story.word_count, user?.wpm)} min read`}
         >
           <ClockIcon />
           {get_read_time(story.word_count, user?.wpm)} min
         </Typography>
-        <Spacer className={"f-grow"} />
+        <Spacer className={css["f-grow"]} />
         <StoryActions />
       </div>
       <Spacer orientation={"vertical"} size={5} />

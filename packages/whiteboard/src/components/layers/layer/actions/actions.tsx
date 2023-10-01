@@ -10,6 +10,7 @@ import CopyIcon from "~/icons/copy";
 import FlipHorizontalIcon from "~/icons/flip-horizontal";
 import FlipVerticalIcon from "~/icons/flip-vertical";
 import TrashIcon from "~/icons/trash";
+import css from "~/theme/main.module.scss";
 
 import { use_active_object } from "../../../../hooks";
 import { CLONE_PROPS } from "../../../../lib";
@@ -91,7 +92,7 @@ const Actions = (): React.ReactElement | null => {
   };
 
   return create_portal(
-    <div className={clsx(clsx("flex-center", styles.x, styles.actions))}>
+    <div className={clsx(clsx(css["flex-center"], styles.actions))}>
       <TooltipProvider disableHoverableContent>
         <Tooltip content={"Flip vertically"}>
           <IconButton

@@ -15,6 +15,7 @@ import {
   get_query_error_type,
   use_get_story_recommendations_query
 } from "~/redux/features";
+import css from "~/theme/main.module.scss";
 import { DateFormat, format_date } from "~/utils/format-date";
 
 import { story_metadata_atom } from "../../../../../../atoms";
@@ -30,7 +31,7 @@ const RecommendedStoriesEmptyState = dynamic(() => import("./empty-state"), {
 const RecommendedStory = ({ story }: { story: Story }): React.ReactElement => {
   const { title, slug, user } = story;
   return (
-    <article className={clsx("flex-col", styles["recommended-story"])}>
+    <article className={clsx(css["flex-col"], styles["recommended-story"])}>
       <Typography as={"h2"} level={"h6"}>
         <Link fixed_color href={`/${user?.username}/${slug}`}>
           {title}
@@ -44,9 +45,9 @@ const RecommendedStory = ({ story }: { story: Story }): React.ReactElement => {
           hex: user?.avatar_hex
         }}
         primary_text={
-          <span className={clsx("flex-center", styles["primary-text"])}>
+          <span className={clsx(css["flex-center"], styles["primary-text"])}>
             <Link
-              className={clsx("t-medium")}
+              className={css["t-medium"]}
               fixed_color
               href={`/${user?.username}`}
               level={"body2"}
@@ -56,14 +57,14 @@ const RecommendedStory = ({ story }: { story: Story }): React.ReactElement => {
             <Typography
               aria-hidden
               as={"span"}
-              className={"t-muted"}
+              className={css["t-muted"]}
               level={"body2"}
             >
               &bull;
             </Typography>
             <Typography
               as={"time"}
-              className={clsx("t-minor", "t-medium")}
+              className={clsx(css["t-minor"], css["t-medium"])}
               dateTime={story.published_at!}
               level={"body2"}
               title={format_date(story.published_at!)}
@@ -108,12 +109,12 @@ const RecommendedStories = (): React.ReactElement => {
     <>
       <Typography
         as={"span"}
-        className={clsx("t-minor", "t-bold")}
+        className={clsx(css["t-minor"], css["t-bold"])}
         level={"body2"}
       >
         Continue reading
       </Typography>
-      <div className={clsx("flex-col", styles["recommended-stories"])}>
+      <div className={clsx(css["flex-col"], styles["recommended-stories"])}>
         {is_loading ? (
           [...Array(5)].map((_, index) => (
             <RecommendedStorySkeleton key={index} />

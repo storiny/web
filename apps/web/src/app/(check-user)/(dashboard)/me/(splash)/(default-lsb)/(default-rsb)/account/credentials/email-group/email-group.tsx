@@ -1,5 +1,4 @@
 import { USER_PROPS } from "@storiny/shared";
-import { clsx } from "clsx";
 import { useRouter as use_router } from "next/navigation";
 import React from "react";
 
@@ -22,6 +21,7 @@ import {
 } from "~/redux/features";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 import { BREAKPOINTS } from "~/theme/breakpoints";
+import css from "~/theme/main.module.scss";
 
 import DashboardGroup from "../../../../dashboard-group";
 import { EmailGroupProps } from "./email-group.props";
@@ -37,7 +37,7 @@ const EmailSettingsModal = ({
 }): React.ReactElement => (
   <React.Fragment>
     <Description asChild>
-      <Typography className={"t-minor"} level={"body2"}>
+      <Typography className={css["t-minor"]} level={"body2"}>
         {updated
           ? "Your e-mail has been updated. You have been logged out and will need to log in again using your new e-mail."
           : "Enter your new e-mail address along with your current password."}
@@ -52,7 +52,7 @@ const EmailSettingsModal = ({
           data-testid={"new-email-input"}
           form_slot_props={{
             form_item: {
-              className: "f-grow"
+              className: css["f-grow"]
             }
           }}
           label={"New e-mail"}
@@ -69,7 +69,7 @@ const EmailSettingsModal = ({
           decorator={<PasswordIcon />}
           form_slot_props={{
             form_item: {
-              className: "f-grow"
+              className: css["f-grow"]
             }
           }}
           label={"Current password"}
@@ -129,7 +129,7 @@ export const EmailSettings = ({
       <Button
         auto_size
         check_auth
-        className={"fit-w"}
+        className={css["fit-w"]}
         disabled={!has_password}
         onClick={open_modal}
         variant={"hollow"}
@@ -138,7 +138,7 @@ export const EmailSettings = ({
       </Button>
     ),
     <Form<EmailSettingsSchema>
-      className={clsx("flex-col")}
+      className={css["flex-col"]}
       disabled={is_loading}
       on_submit={handle_submit}
       provider_props={form}
@@ -210,7 +210,7 @@ const CredentialsEmailGroup = (props: EmailGroupProps): React.ReactElement => {
     <DashboardGroup>
       <TitleBlock title={"E-mail"}>
         The email address associated with your account is{" "}
-        <span className={"t-medium"}>{user.email || "-"}</span>, and it is
+        <span className={css["t-medium"]}>{user.email || "-"}</span>, and it is
         always kept private.
       </TitleBlock>
       <Spacer orientation={"vertical"} size={4.5} />
@@ -218,7 +218,7 @@ const CredentialsEmailGroup = (props: EmailGroupProps): React.ReactElement => {
       {!has_password && (
         <React.Fragment>
           <Spacer orientation={"vertical"} size={1.5} />
-          <Typography className={"t-minor"} level={"body3"}>
+          <Typography className={css["t-minor"]} level={"body3"}>
             To modify e-mail, you need to add a password to your account.
           </Typography>
         </React.Fragment>

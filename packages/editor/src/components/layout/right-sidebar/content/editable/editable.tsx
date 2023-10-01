@@ -4,6 +4,7 @@ import { useAtomValue as use_atom_value } from "jotai";
 import React from "react";
 
 import Divider from "~/components/divider";
+import css from "~/theme/main.module.scss";
 
 import { doc_status_atom } from "../../../../../atoms";
 import Alignment from "./alignment";
@@ -22,7 +23,7 @@ const SuspendedEditorRightSidebarEditableContent = (): React.ReactElement => {
 
   return (
     <React.Fragment>
-      <div className={"flex-center"}>
+      <div className={css["flex-center"]}>
         <History disabled={disabled} />
         <PaddedDivider />
         <Alignment disabled={disabled} />

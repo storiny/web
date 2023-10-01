@@ -12,6 +12,7 @@ import CreatableSelect from "react-select/async-creatable";
 import { use_media_query } from "~/hooks/use-media-query";
 import XIcon from "~/icons/x";
 import { BREAKPOINTS } from "~/theme/breakpoints";
+import css from "~/theme/main.module.scss";
 
 import Spinner from "../spinner";
 import styles from "./multi-select.module.scss";
@@ -32,7 +33,7 @@ const MultiValueRemove = <
     // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     {...innerProps}
     className={clsx(
-      "flex-center",
+      css["flex-center"],
       styles["remove-container"],
       innerProps?.className
     )}
@@ -122,7 +123,8 @@ const MultiSelect = React.forwardRef<
         // eslint-disable-next-line prefer-snakecase/prefer-snakecase
         valueContainer: (): string => styles["value-container"],
         // eslint-disable-next-line prefer-snakecase/prefer-snakecase
-        multiValueLabel: (): string => clsx("t-body-2", styles["value-label"]),
+        multiValueLabel: (): string =>
+          clsx(css["t-body-2"], styles["value-label"]),
         option: (option_props): string =>
           clsx(
             option_props.isFocused && styles.focused,
@@ -132,9 +134,9 @@ const MultiSelect = React.forwardRef<
         menu: (): string =>
           clsx(styles.menu, menu_placement === "top" && styles["is-top"]),
         // eslint-disable-next-line prefer-snakecase/prefer-snakecase
-        noOptionsMessage: (): string => clsx("t-body-2", "t-minor"),
+        noOptionsMessage: (): string => clsx(css["t-body-2"], css["t-minor"]),
         // eslint-disable-next-line prefer-snakecase/prefer-snakecase
-        loadingMessage: (): string => clsx("t-body-2", "t-minor")
+        loadingMessage: (): string => clsx(css["t-body-2"], css["t-minor"])
       }}
       components={{
         MultiValueRemove,

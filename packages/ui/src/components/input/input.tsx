@@ -7,6 +7,7 @@ import { use_media_query } from "~/hooks/use-media-query";
 import MinusIcon from "~/icons/minus";
 import PlusIcon from "~/icons/plus";
 import { BREAKPOINTS } from "~/theme/breakpoints";
+import css from "~/theme/main.module.scss";
 import { forward_ref } from "~/utils/forward-ref";
 
 import styles from "./input.module.scss";
@@ -85,7 +86,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>((props, ref) => {
       <Container
         {...slot_props?.container}
         className={clsx(
-          "flex-center",
+          css["flex-center"],
           styles.container,
           styles[color],
           styles[size],
@@ -109,8 +110,8 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>((props, ref) => {
           {...rest}
           autoFocus={auto_focus}
           className={clsx(
-            "unset",
-            monospaced && "t-mono",
+            css["unset"],
+            monospaced && css["t-mono"],
             styles.input,
             className
           )}
@@ -124,7 +125,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>((props, ref) => {
           <span
             {...slot_props?.spinner_container}
             className={clsx(
-              "flex-center",
+              css["flex-center"],
               styles["spinner-container"],
               slot_props?.spinner_container?.className
             )}
@@ -135,9 +136,9 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>((props, ref) => {
               {...slot_props?.spinner_decrement_button}
               aria-label={"decrement-value"}
               className={clsx(
-                "unset",
-                "focusable",
-                "focus-invert",
+                css["unset"],
+                css["focusable"],
+                css["focus-invert"],
                 styles.spinner,
                 slot_props?.spinner_decrement_button?.className
               )}
@@ -162,9 +163,9 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>((props, ref) => {
               {...slot_props?.spinner_increment_button}
               aria-label={"Increment value"}
               className={clsx(
-                "unset",
-                "focusable",
-                "focus-invert",
+                css["unset"],
+                css["focusable"],
+                css["focus-invert"],
                 styles.spinner,
                 slot_props?.spinner_increment_button?.className
               )}
@@ -180,8 +181,8 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>((props, ref) => {
           <span
             {...slot_props?.end_decorator}
             className={clsx(
-              "fit-w",
-              "flex-center",
+              css["fit-w"],
+              css["flex-center"],
               disabled && styles.disabled,
               styles["end-decorator"],
               slot_props?.end_decorator?.className

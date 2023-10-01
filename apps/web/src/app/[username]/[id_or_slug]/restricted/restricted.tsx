@@ -15,6 +15,7 @@ import Sidenav from "~/layout/sidenav";
 import SplashScreen from "~/layout/splash-screen";
 import { sync_with_user } from "~/redux/features";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
+import css from "~/theme/main.module.scss";
 import { abbreviate_number } from "~/utils/abbreviate-number";
 
 import { RestrictedStoryProps } from "./restricted.props";
@@ -30,7 +31,7 @@ const RestrictedStory = (props: RestrictedStoryProps): React.ReactElement => {
   }, [dispatch, user]);
 
   return (
-    <div className={clsx("grid", "grid-container")}>
+    <div className={clsx(css["grid"], css["grid-container"])}>
       <Navbar />
       <Sidenav />
       <LeftSidebar />
@@ -41,11 +42,11 @@ const RestrictedStory = (props: RestrictedStoryProps): React.ReactElement => {
             type === "user-blocked" ? (
               <>
                 You cannot access this story as you have been blocked by{" "}
-                <span className={"t-medium"}>@{user.username}</span>.
+                <span className={css["t-medium"]}>@{user.username}</span>.
               </>
             ) : (
               <>
-                <span className={"t-medium"}>@{user.username}</span> has
+                <span className={css["t-medium"]}>@{user.username}</span> has
                 unpublished this story.
               </>
             )
@@ -59,7 +60,7 @@ const RestrictedStory = (props: RestrictedStoryProps): React.ReactElement => {
         />
       </main>
       <RightSidebar>
-        <div className={"flex-col"}>
+        <div className={css["flex-col"]}>
           <Persona
             avatar={{
               alt: `${user.name}'s avatar`,
@@ -67,7 +68,7 @@ const RestrictedStory = (props: RestrictedStoryProps): React.ReactElement => {
               label: user.name,
               hex: user.avatar_hex
             }}
-            className={"fit-w"}
+            className={css["fit-w"]}
             component_props={{
               secondary_text: {
                 ellipsis: true
@@ -89,7 +90,7 @@ const RestrictedStory = (props: RestrictedStoryProps): React.ReactElement => {
           {user.bio.trim() ? (
             <React.Fragment>
               <Spacer orientation={"vertical"} size={2} />
-              <Typography className={"t-minor"} level={"body2"}>
+              <Typography className={css["t-minor"]} level={"body2"}>
                 {user.bio}
               </Typography>
             </React.Fragment>

@@ -22,6 +22,7 @@ import PencilIcon from "~/icons/pencil";
 import RectangleIcon from "~/icons/rectangle";
 import SelectIcon from "~/icons/select";
 import TypographyIcon from "~/icons/typography";
+import css from "~/theme/main.module.scss";
 import { truncate } from "~/utils/truncate";
 
 import { is_pen_mode_atom, tool_atom } from "../../atoms";
@@ -272,7 +273,7 @@ const Tools = (): React.ReactElement => {
 
   return (
     <ScrollArea
-      className={clsx("fit-w", styles.x, styles.tools)}
+      className={clsx(css["fit-w"], styles.x, styles.tools)}
       slot_props={{
         thumb: {
           className: clsx(styles.x, styles.thumb)

@@ -5,6 +5,7 @@ import React from "react";
 
 import Typography from "~/components/typography";
 import MoodSmile from "~/icons/mood-smile";
+import css from "~/theme/main.module.scss";
 import { forward_ref } from "~/utils/forward-ref";
 
 import styles from "./status.module.scss";
@@ -27,9 +28,9 @@ const Status = forward_ref<StatusProps, "span">((props, ref) => {
     <Component
       {...rest}
       className={clsx(
-        "unset",
-        "flex-center",
-        "focusable",
+        css["unset"],
+        css["flex-center"],
+        css["focusable"],
         styles.status,
         editable && styles.editable,
         has_text && styles["has-text"],
@@ -40,7 +41,7 @@ const Status = forward_ref<StatusProps, "span">((props, ref) => {
       {has_emoji || editable ? (
         <span
           className={clsx(
-            "flex-center",
+            css["flex-center"],
             styles.emoji,
             has_emoji && styles["has-emoji"]
           )}

@@ -29,6 +29,7 @@ import {
 } from "~/redux/features";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 import { BREAKPOINTS } from "~/theme/breakpoints";
+import css from "~/theme/main.module.scss";
 import { abbreviate_number } from "~/utils/abbreviate-number";
 
 import DashboardTitle from "../../dashboard-title";
@@ -55,10 +56,10 @@ const PageHeader = ({
 }): React.ReactElement => (
   <Tabs
     className={clsx(
-      "full-bleed",
-      "page-header",
-      "dashboard-header",
-      "with-page-title",
+      css["full-bleed"],
+      css["page-header"],
+      css["dashboard-header"],
+      css["with-page-title"],
       styles.x,
       styles.tabs
     )}
@@ -67,7 +68,7 @@ const PageHeader = ({
     }
     value={value}
   >
-    <TabsList className={clsx("full-w", styles.x, styles["tabs-list"])}>
+    <TabsList className={clsx(css["full-w"], styles.x, styles["tabs-list"])}>
       <Tab aria-controls={undefined} value={"followers"}>
         Followers
       </Tab>
@@ -115,9 +116,9 @@ const StatusHeader = ({
   return (
     <div
       className={clsx(
-        "full-bleed",
-        "dashboard-header",
-        "flex-center",
+        css["full-bleed"],
+        css["dashboard-header"],
+        css["flex-center"],
         styles["status-header"]
       )}
     >
@@ -133,13 +134,17 @@ const StatusHeader = ({
         ) : tab === "following" ? (
           <>
             You are following{" "}
-            <span className={"t-bold"}>{abbreviate_number(count_param)}</span>{" "}
+            <span className={css["t-bold"]}>
+              {abbreviate_number(count_param)}
+            </span>{" "}
             people.
           </>
         ) : (
           <>
             You have{" "}
-            <span className={"t-bold"}>{abbreviate_number(count_param)}</span>{" "}
+            <span className={css["t-bold"]}>
+              {abbreviate_number(count_param)}
+            </span>{" "}
             {count_param === 1
               ? tab === "followers"
                 ? "follower"
@@ -175,9 +180,9 @@ const ControlBar = ({
 }): React.ReactElement => (
   <div
     className={clsx(
-      "flex-center",
-      "full-bleed",
-      "dashboard-header",
+      css["flex-center"],
+      css["full-bleed"],
+      css["dashboard-header"],
       styles["control-bar"]
     )}
   >

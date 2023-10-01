@@ -1,4 +1,5 @@
-import "../packages/ui/src/theme/main.scss";
+import "../packages/ui/src/theme/global.scss";
+import "../packages/ui/src/theme/main.module.scss";
 import "../packages/ui/src/theme/storybook.scss";
 import { Preview } from "@storybook/react";
 import AppStateProvider from "../packages/ui/src/redux/components/root-provider";

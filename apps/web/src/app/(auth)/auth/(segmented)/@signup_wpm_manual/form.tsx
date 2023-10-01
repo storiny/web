@@ -9,6 +9,7 @@ import Form, { SubmitHandler, use_form, zod_resolver } from "~/components/form";
 import FormInput from "~/components/form-input";
 import Grow from "~/components/grow";
 import Spacer from "~/components/spacer";
+import css from "~/theme/main.module.scss";
 
 import { use_auth_state } from "../../../actions";
 import { use_signup } from "../../../use-signup";
@@ -40,7 +41,7 @@ const SignupWPMForm = ({ on_submit }: Props): React.ReactElement => {
 
   return (
     <Form<SignupWPMSchema>
-      className={clsx("flex-col", "full-h")}
+      className={clsx(css["flex-col"], css["full-h"])}
       on_submit={handle_submit}
       provider_props={form}
     >
@@ -57,9 +58,9 @@ const SignupWPMForm = ({ on_submit }: Props): React.ReactElement => {
       />
       <Spacer orientation={"vertical"} size={5} />
       <Grow />
-      <div className={clsx("flex-col", "flex-center")}>
+      <div className={clsx(css["flex-col"], css["flex-center"])}>
         <Button
-          className={"full-w"}
+          className={css["full-w"]}
           loading={is_loading}
           size={"lg"}
           type={"submit"}

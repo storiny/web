@@ -7,6 +7,7 @@ import { ItemProps } from "react-virtuoso";
 
 import Divider from "~/components/divider";
 import User from "~/entities/user";
+import css from "~/theme/main.module.scss";
 
 import styles from "../../virtual/virtual.module.scss";
 import { VirtualizedUserListContext } from "../list/list-context";
@@ -18,7 +19,7 @@ const VirtualizedUserItem = React.memo(
     return (
       <div
         {...rest}
-        className={clsx("flex-col", styles["list-item"])}
+        className={clsx(css["flex-col"], styles["list-item"])}
         key={item.id}
       >
         <User {...user_props} user={item} virtual />

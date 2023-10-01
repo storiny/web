@@ -7,6 +7,7 @@ import ScrollArea, { ScrollAreaProps } from "~/components/scroll-area";
 import Spacer from "~/components/spacer";
 import Typography from "~/components/typography";
 import { use_story_metadata_mutation } from "~/redux/features";
+import css from "~/theme/main.module.scss";
 
 import { doc_status_atom, story_metadata_atom } from "../../../../../../atoms";
 import TableOfContentsPlugin from "../../../../../../plugins/toc";
@@ -40,12 +41,15 @@ const EditorToc = ({
   );
 
   return (
-    <div className={clsx("flex-col", read_only && "full-h")}>
-      <div className={clsx("flex-center")}>
-        <Typography className={clsx("t-minor", "t-medium")} level={"body2"}>
+    <div className={clsx(css["flex-col"], read_only && css["full-h"])}>
+      <div className={css["flex-center"]}>
+        <Typography
+          className={clsx(css["t-minor"], css["t-medium"])}
+          level={"body2"}
+        >
           Table of contents
         </Typography>
-        <Spacer className={"f-grow"} />
+        <Spacer className={css["f-grow"]} />
         {!disabled && !read_only ? (
           <Link
             aria-label={"Disable table of contents"}
@@ -68,12 +72,12 @@ const EditorToc = ({
       </div>
       <Spacer orientation={"vertical"} size={2} />
       <ScrollArea
-        className={clsx(read_only && "full-h")}
+        className={clsx(read_only && css["full-h"])}
         slot_props={
           {
             viewport: {
               className: clsx(
-                "flex-center",
+                css["flex-center"],
                 styles.x,
                 styles.viewport,
                 read_only && styles["read-only"]
@@ -92,7 +96,7 @@ const EditorToc = ({
       >
         {story.disable_toc ? (
           <Typography
-            className={clsx("t-muted", "t-center")}
+            className={clsx(css["t-muted"], css["t-center"])}
             level={"body2"}
             style={{ display: "table-cell", verticalAlign: "middle" }}
           >

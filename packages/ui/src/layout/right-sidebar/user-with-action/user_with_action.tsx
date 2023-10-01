@@ -11,6 +11,7 @@ import UserPlusIcon from "~/icons/user-plus";
 import { boolean_action } from "~/redux/features";
 import { sync_with_user } from "~/redux/features/entities/slice";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
+import css from "~/theme/main.module.scss";
 
 import styles from "./user-with-action.module.scss";
 import { UserWithActionProps } from "./user-with-action.props";
@@ -30,9 +31,9 @@ const UserWithAction = (props: UserWithActionProps): React.ReactElement => {
   }, [dispatch, user]);
 
   return (
-    <div className={clsx("flex-center", styles["user-with-action"])}>
+    <div className={clsx(css["flex-center"], styles["user-with-action"])}>
       <NextLink
-        className={clsx("focusable", styles.link)}
+        className={clsx(css["focusable"], styles.link)}
         href={`/${user.username}`}
       >
         <Persona

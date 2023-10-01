@@ -6,6 +6,7 @@ import IconButton from "~/components/icon-button";
 import Tooltip from "~/components/tooltip";
 import RedoIcon from "~/icons/redo";
 import UndoIcon from "~/icons/undo";
+import css from "~/theme/main.module.scss";
 
 import { doc_status_atom } from "../../../../atoms";
 import { use_history } from "../../../../hooks/use-history";
@@ -17,11 +18,11 @@ const ToolbarHistoryItem = (): React.ReactElement => {
   const document_loading = ["connecting", "reconnecting"].includes(doc_status);
 
   return (
-    <div className={"flex-center"}>
+    <div className={css["flex-center"]}>
       <Tooltip content={"Undo"}>
         <IconButton
           className={clsx(
-            "focus-invert",
+            css["focus-invert"],
             toolbar_styles.x,
             toolbar_styles.button
           )}
@@ -36,7 +37,7 @@ const ToolbarHistoryItem = (): React.ReactElement => {
       <Tooltip content={"Redo"}>
         <IconButton
           className={clsx(
-            "focus-invert",
+            css["focus-invert"],
             toolbar_styles.x,
             toolbar_styles.button
           )}

@@ -5,6 +5,7 @@ import React from "react";
 
 import Logo from "~/brand/logo";
 import Typography from "~/components/typography";
+import css from "~/theme/main.module.scss";
 import { forward_ref } from "~/utils/forward-ref";
 
 import styles from "./wordmark.module.scss";
@@ -29,8 +30,8 @@ const Wordmark = forward_ref<WordmarkProps, "span">((props, ref) => {
     <Component
       {...rest}
       className={clsx(
-        "fit-w",
-        "flex-center",
+        css["fit-w"],
+        css["flex-center"],
         styles.wordmark,
         styles[size],
         className

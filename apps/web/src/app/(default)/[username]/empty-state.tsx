@@ -1,6 +1,7 @@
 import React from "react";
 
 import CustomState from "~/entities/custom-state";
+import css from "~/theme/main.module.scss";
 
 interface ProfileEmptyStateProps {
   entity_type: "stories" | "followers" | "following" | "friends";
@@ -30,26 +31,27 @@ const get_entity_description_map = (
 ): Record<ProfileEmptyStateProps["entity_type"], React.ReactNode> => ({
   following: (
     <>
-      Users followed by <span className={"t-medium"}>@{username}</span> will
-      appear here.
+      Users followed by <span className={css["t-medium"]}>@{username}</span>{" "}
+      will appear here.
     </>
   ),
   followers: (
     <>
-      <span className={"t-medium"}>@{username}</span>&apos;s followers will
+      <span className={css["t-medium"]}>@{username}</span>&apos;s followers will
       appear here.
     </>
   ),
   friends: (
     <>
-      <span className={"t-medium"}>@{username}</span>&apos;s friends will appear
-      here.
+      <span className={css["t-medium"]}>@{username}</span>&apos;s friends will
+      appear here.
     </>
   ),
   stories: (
     <>
-      Public stories posted by <span className={"t-medium"}>@{username}</span>{" "}
-      will appear here as soon as they are published.
+      Public stories posted by{" "}
+      <span className={css["t-medium"]}>@{username}</span> will appear here as
+      soon as they are published.
     </>
   )
 });

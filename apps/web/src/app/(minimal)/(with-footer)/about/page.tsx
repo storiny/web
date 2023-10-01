@@ -9,6 +9,7 @@ import Spacer from "~/components/spacer";
 import Typography from "~/components/typography";
 import MailIcon from "~/icons/mail";
 import TwitterIcon from "~/icons/twitter";
+import css from "~/theme/main.module.scss";
 
 import styles from "./styles.module.scss";
 
@@ -17,7 +18,7 @@ const Page = (): React.ReactElement => (
     <div className={styles.splash}>
       <Image
         alt={""}
-        className={"invert"}
+        data-invert-filter={""}
         fill
         loading={"eager"}
         priority
@@ -37,29 +38,29 @@ const Page = (): React.ReactElement => (
           `${process.env.NEXT_PUBLIC_CDN_URL}/w@${ImageSize.W_1440}/web-assets/presentational/about-splash 1440w`
         ].join(",")}
       />
-      <div className={clsx("flex-col", "t-center", styles.container)}>
+      <div className={clsx(css["flex-col"], css["t-center"], styles.container)}>
         <Typography level={"display1"}>Your voice matters.</Typography>
-        <div className={"flex-col"}>
-          <Typography as={"p"} className={"t-minor"} level={"h4"}>
-            <span className={"t-major"}>Storiny</span> is the platform for
+        <div className={css["flex-col"]}>
+          <Typography as={"p"} className={css["t-minor"]} level={"h4"}>
+            <span className={css["t-major"]}>Storiny</span> is the platform for
           </Typography>
-          <Typography as={"p"} className={"t-muted"} level={"h2"}>
-            the <span className={"t-major"}>stor</span>y with
-            <span className={"t-major"}>in y</span>ou.
+          <Typography as={"p"} className={css["t-muted"]} level={"h2"}>
+            the <span className={css["t-major"]}>stor</span>y with
+            <span className={css["t-major"]}>in y</span>ou.
           </Typography>
         </div>
       </div>
     </div>
-    <article className={clsx("flex-col", styles.article)}>
+    <article className={clsx(css["flex-col"], styles.article)}>
       <section className={styles.section}>
         <Typography
           as={"h2"}
-          className={clsx("fit-h", styles.x, styles["section-title"])}
+          className={clsx(css["fit-h"], styles.x, styles["section-title"])}
           level={"display2"}
         >
           About Storiny
         </Typography>
-        <div className={clsx("flex-col", styles["section-content"])}>
+        <div className={clsx(css["flex-col"], styles["section-content"])}>
           <Typography level={"legible"}>
             Storiny is where you and your ideas belong! (Yes, we made up that
             line. We like to be creative here.) At our core, we believe that
@@ -86,12 +87,12 @@ const Page = (): React.ReactElement => (
       <section className={styles.section}>
         <Typography
           as={"h2"}
-          className={clsx("fit-h", styles.x, styles["section-title"])}
+          className={clsx(css["fit-h"], styles.x, styles["section-title"])}
           level={"display2"}
         >
           Give wings to your ideas
         </Typography>
-        <div className={clsx("flex-col", styles["section-content"])}>
+        <div className={clsx(css["flex-col"], styles["section-content"])}>
           <Typography level={"legible"}>
             The principle that knowledge should be accessible to everyone,
             without any barriers or restrictions holding them back, is one that
@@ -115,12 +116,12 @@ const Page = (): React.ReactElement => (
       <section className={styles.section}>
         <Typography
           as={"h2"}
-          className={clsx("fit-h", styles.x, styles["section-title"])}
+          className={clsx(css["fit-h"], styles.x, styles["section-title"])}
           level={"display2"}
         >
           How it started
         </Typography>
-        <div className={clsx("flex-col", styles["section-content"])}>
+        <div className={clsx(css["flex-col"], styles["section-content"])}>
           <Typography level={"legible"}>
             In a world where knowledge is the ultimate power move, why should
             anyone be left behind? That&apos;s the question we posed to
@@ -147,12 +148,12 @@ const Page = (): React.ReactElement => (
       <section className={styles.section}>
         <Typography
           as={"h2"}
-          className={clsx("fit-h", styles.x, styles["section-title"])}
+          className={clsx(css["fit-h"], styles.x, styles["section-title"])}
           level={"display2"}
         >
           Our vision
         </Typography>
-        <div className={clsx("flex-col", styles["section-content"])}>
+        <div className={clsx(css["flex-col"], styles["section-content"])}>
           <Typography level={"legible"}>
             We want to establish an all-inclusive platform, enabling individuals
             from diverse backgrounds to share their innovative ideas, that have
@@ -172,17 +173,17 @@ const Page = (): React.ReactElement => (
       <section className={styles.section}>
         <Typography
           as={"h2"}
-          className={clsx("fit-h", styles.x, styles["section-title"])}
+          className={clsx(css["fit-h"], styles.x, styles["section-title"])}
           level={"display2"}
         >
           Get in touch
         </Typography>
-        <div className={clsx("flex-col", styles["section-content"])}>
+        <div className={clsx(css["flex-col"], styles["section-content"])}>
           <Typography level={"legible"}>
             Please do not hesitate to reach out to us using any of the suitable
             means of contact listed below.
           </Typography>
-          <div className={clsx("flex-center", styles.actions)}>
+          <div className={clsx(css["flex-center"], styles.actions)}>
             <Button
               as={"a"}
               decorator={<TwitterIcon />}

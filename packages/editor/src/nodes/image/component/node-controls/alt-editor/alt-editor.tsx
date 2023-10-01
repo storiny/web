@@ -13,6 +13,7 @@ import Spacer from "~/components/spacer";
 import { use_media_query } from "~/hooks/use-media-query";
 import CaptionIcon from "~/icons/caption";
 import { BREAKPOINTS } from "~/theme/breakpoints";
+import css from "~/theme/main.module.scss";
 import { get_cdn_url } from "~/utils/get-cdn-url";
 
 import { $is_image_node } from "../../../image";
@@ -26,7 +27,7 @@ const ImageAltEditorModal = (
 ): React.ReactElement => {
   const { image, input_ref } = props;
   return (
-    <div className={clsx("flex-col", "flex-center")}>
+    <div className={clsx(css["flex-col"], css["flex-center"])}>
       <AspectRatio
         className={clsx(styles.x, styles.image)}
         ratio={image.width / image.height}
@@ -60,7 +61,7 @@ const ImageAltEditorModal = (
         minLength={ASSET_PROPS.alt.min_length}
         placeholder={"Alt text"}
         ref={input_ref}
-        slot_props={{ container: { className: "full-w" } }}
+        slot_props={{ container: { className: css["full-w"] } }}
       />
     </div>
   );
@@ -89,7 +90,12 @@ const ImageAltEditor = (props: ImageAltEditorProps): React.ReactElement => {
   const [element] = use_modal(
     ({ open_modal }) => (
       <Button
-        className={clsx("focus-invert", "f-grow", styles.x, styles.button)}
+        className={clsx(
+          css["focus-invert"],
+          css["f-grow"],
+          styles.x,
+          styles.button
+        )}
         disabled={disabled}
         onClick={open_modal}
         variant={"ghost"}

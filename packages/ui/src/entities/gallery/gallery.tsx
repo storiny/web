@@ -25,6 +25,7 @@ import PexelsIcon from "~/icons/pexels";
 import PhotoSearchIcon from "~/icons/photo-search";
 import UploadIcon from "~/icons/upload";
 import { BREAKPOINTS } from "~/theme/breakpoints";
+import css from "~/theme/main.module.scss";
 
 import {
   GallerySidebarTabsValue,
@@ -196,7 +197,7 @@ const GalleryImpl = (props: GalleryProps): React.ReactElement => {
               Upload
             </ModalSidebarItem>
           </ModalSidebarList>
-          <Spacer className={"f-grow"} orientation={"vertical"} size={4} />
+          <Spacer className={css["f-grow"]} orientation={"vertical"} size={4} />
           <ImagePreview />
         </>
       }
@@ -224,7 +225,7 @@ const GalleryImpl = (props: GalleryProps): React.ReactElement => {
           }
         },
         body: {
-          className: clsx("flex-col", styles.body)
+          className: clsx(css["flex-col"], styles.body)
         },
         close_button: {
           style: { display: fullscreen ? "none" : "flex" }
@@ -284,7 +285,7 @@ const GalleryImpl = (props: GalleryProps): React.ReactElement => {
       ) : (
         <React.Fragment>
           <TabPanel
-            className={clsx("flex-center", styles["tab-panel"])}
+            className={clsx(css["flex-center"], styles["tab-panel"])}
             tabIndex={-1}
             value={"pexels"}
           >
@@ -294,7 +295,7 @@ const GalleryImpl = (props: GalleryProps): React.ReactElement => {
             />
           </TabPanel>
           <TabPanel
-            className={clsx("flex-center", styles["tab-panel"])}
+            className={clsx(css["flex-center"], styles["tab-panel"])}
             tabIndex={-1}
             value={"whiteboard"}
           >
@@ -330,14 +331,14 @@ const GalleryImpl = (props: GalleryProps): React.ReactElement => {
             )}
           </TabPanel>
           <TabPanel
-            className={clsx("flex-center", styles["tab-panel"])}
+            className={clsx(css["flex-center"], styles["tab-panel"])}
             tabIndex={-1}
             value={"library"}
           >
             <GalleryMasonry tab={"library"} />
           </TabPanel>
           <TabPanel
-            className={clsx("flex-center", styles["tab-panel"])}
+            className={clsx(css["flex-center"], styles["tab-panel"])}
             tabIndex={-1}
             value={"upload"}
           >

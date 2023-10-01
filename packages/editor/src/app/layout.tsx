@@ -1,5 +1,6 @@
 import "normalize.css/normalize.css";
-import "~/theme/main.scss";
+import "~/theme/global.scss";
+import "~/theme/main.module.scss";
 import "~/theme/storybook.scss";
 
 import React from "react";

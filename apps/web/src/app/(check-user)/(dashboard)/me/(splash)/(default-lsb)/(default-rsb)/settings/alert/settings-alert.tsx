@@ -3,6 +3,7 @@ import React from "react";
 
 import InfoIcon from "~/icons/info";
 import XIcon from "~/icons/x";
+import css from "~/theme/main.module.scss";
 
 import styles from "./settings-alert.module.scss";
 import { SettingsAlertProps } from "./settings-alert.props";
@@ -13,13 +14,13 @@ const SettingsAlert = (
   const { on_dismiss, children, className, ...rest } = props;
   return (
     <div {...rest} className={clsx(styles.alert, className)} role={"alert"}>
-      <span className={clsx("flex-center", styles.decorator)}>
+      <span className={clsx(css["flex-center"], styles.decorator)}>
         <InfoIcon />
       </span>
       <span className={styles.description}>{children}</span>
       <span
         aria-label={"Dismiss"}
-        className={clsx("flex-center", styles.close)}
+        className={clsx(css["flex-center"], styles.close)}
         onClick={(): void => {
           if (on_dismiss) {
             on_dismiss();

@@ -4,6 +4,7 @@ import { Item } from "@radix-ui/react-toggle-group";
 import clsx from "clsx";
 import React from "react";
 
+import css from "~/theme/main.module.scss";
 import { forward_ref } from "~/utils/forward-ref";
 
 import button_styles from "../common/button-reset.module.scss";
@@ -41,7 +42,7 @@ const ToggleGroupItem = forward_ref<ToggleGroupItemProps, "button">(
         <span
           {...slot_props?.container}
           className={clsx(
-            "flex-center",
+            css["flex-center"],
             toggle_styles.container,
             slot_props?.container?.className
           )}
@@ -51,7 +52,7 @@ const ToggleGroupItem = forward_ref<ToggleGroupItemProps, "button">(
             asChild
             className={clsx(
               button_styles.reset,
-              "focusable",
+              css["focusable"],
               toggle_styles["toggle-button"],
               toggle_styles[size || toggle_group_size || "md"],
               className

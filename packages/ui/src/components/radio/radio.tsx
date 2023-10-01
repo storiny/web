@@ -9,6 +9,7 @@ import { use_form_field } from "~/components/form";
 import { RadioGroupContext } from "~/components/radio-group";
 import { use_media_query } from "~/hooks/use-media-query";
 import { BREAKPOINTS } from "~/theme/breakpoints";
+import css from "~/theme/main.module.scss";
 
 import styles from "./radio.module.scss";
 import { RadioProps } from "./radio.props";
@@ -43,7 +44,7 @@ const Radio = React.forwardRef<HTMLButtonElement, RadioProps>((props, ref) => {
     <div
       {...slot_props?.container}
       className={clsx(
-        "flex",
+        css["flex"],
         styles.container,
         slot_props?.container?.className
       )}
@@ -52,8 +53,8 @@ const Radio = React.forwardRef<HTMLButtonElement, RadioProps>((props, ref) => {
         {...rest}
         aria-labelledby={label_id}
         className={clsx(
-          "flex-center",
-          "focusable",
+          css["flex-center"],
+          css["focusable"],
           styles.radio,
           styles[color],
           styles[size],
@@ -66,7 +67,7 @@ const Radio = React.forwardRef<HTMLButtonElement, RadioProps>((props, ref) => {
       <div
         {...slot_props?.children_container}
         className={clsx(
-          "flex-col",
+          css["flex-col"],
           styles["children-container"],
           slot_props?.children_container?.className
         )}
@@ -75,8 +76,8 @@ const Radio = React.forwardRef<HTMLButtonElement, RadioProps>((props, ref) => {
           <Label
             {...slot_props?.label}
             className={clsx(
-              size === "lg" ? "t-body-1" : "t-body-2",
-              disabled ? "t-muted" : "t-major",
+              css[size === "lg" ? "t-body-1" : "t-body-2"],
+              css[disabled ? "t-muted" : "t-major"],
               styles.label,
               slot_props?.label?.className
             )}

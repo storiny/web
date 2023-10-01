@@ -22,6 +22,7 @@ import {
 } from "~/redux/features";
 import { use_app_selector } from "~/redux/hooks";
 import { BREAKPOINTS } from "~/theme/breakpoints";
+import css from "~/theme/main.module.scss";
 
 import styles from "./recovery-codes.module.scss";
 
@@ -93,24 +94,27 @@ const RecoveryCodesModal = (): React.ReactElement => {
     <React.Fragment>
       {is_loading || is_regenerating ? (
         <div
-          className={clsx("flex-center", "full-w")}
+          className={clsx(css["flex-center"], css["full-w"])}
           style={{ paddingBlock: "32px" }}
         >
           <Spinner />
         </div>
       ) : is_error ? (
         <div
-          className={clsx("flex-center", "full-w")}
+          className={clsx(css["flex-center"], css["full-w"])}
           style={{ minHeight: "96px" }}
         >
-          <Typography className={clsx("t-minor", "t-center")} level={"body2"}>
+          <Typography
+            className={clsx(css["t-minor"], css["t-center"])}
+            level={"body2"}
+          >
             {error}
           </Typography>
         </div>
       ) : (
         <React.Fragment>
           <Description asChild>
-            <Typography className={"t-minor"} level={"body2"}>
+            <Typography className={css["t-minor"]} level={"body2"}>
               Recovery codes can be used to access your account if you lose
               access to your device and cannot receive two-factor authentication
               codes. They are just as sensitive as your password, so be sure to
@@ -118,13 +122,13 @@ const RecoveryCodesModal = (): React.ReactElement => {
             </Typography>
           </Description>
           <Spacer orientation={"vertical"} size={3} />
-          <div className={clsx("flex", styles.content)}>
+          <div className={clsx(css["flex"], styles.content)}>
             <div className={styles.codes}>
               {codes.map((code) => (
                 <Typography
                   as={"span"}
                   className={clsx(
-                    "t-mono",
+                    css["t-mono"],
                     styles.code,
                     code.used && styles.used
                   )}
@@ -135,7 +139,9 @@ const RecoveryCodesModal = (): React.ReactElement => {
                 </Typography>
               ))}
             </div>
-            <div className={clsx("full-w", "flex-col", styles.actions)}>
+            <div
+              className={clsx(css["full-w"], css["flex-col"], styles.actions)}
+            >
               <Button
                 check_auth
                 decorator={<DownloadIcon />}
@@ -161,7 +167,7 @@ const RecoveryCodesModal = (): React.ReactElement => {
               </Button>
               <Spacer orientation={"vertical"} size={0.5} />
               <Link
-                className={"t-center"}
+                className={css["t-center"]}
                 href={"#"}
                 level={"body3"}
                 onClick={generate_new_codes}
@@ -172,7 +178,7 @@ const RecoveryCodesModal = (): React.ReactElement => {
             </div>
           </div>
           <Spacer orientation={"vertical"} size={3} />
-          <Typography className={"t-minor"} level={"body2"}>
+          <Typography className={css["t-minor"]} level={"body2"}>
             Each of these codes can only be used once, and the ones that have
             been used are crossed out. When you generate new recovery codes, be
             sure to save them because the older ones will no longer work.
@@ -190,7 +196,7 @@ const RecoveryCodes = (): React.ReactElement => {
       <Button
         auto_size
         check_auth
-        className={"fit-w"}
+        className={css["fit-w"]}
         onClick={open_modal}
         variant={"hollow"}
       >

@@ -4,6 +4,7 @@ import { Trigger } from "@radix-ui/react-tabs";
 import clsx from "clsx";
 import React from "react";
 
+import css from "~/theme/main.module.scss";
 import { forward_ref } from "~/utils/forward-ref";
 
 import { TabsListContext } from "../tabs-list";
@@ -29,8 +30,8 @@ const Tab = forward_ref<TabProps, "button">((props, ref) => {
       asChild
       className={clsx(
         styles.reset,
-        "flex-center",
-        "t-center",
+        css["flex-center"],
+        css["t-center"],
         styles.tab,
         styles[size || tabs_list_size || "md"],
         !has_children && styles["icon-only"],
@@ -43,7 +44,7 @@ const Tab = forward_ref<TabProps, "button">((props, ref) => {
           <span
             {...slot_props?.decorator}
             className={clsx(
-              "flex-center",
+              css["flex-center"],
               styles.decorator,
               slot_props?.decorator?.className
             )}

@@ -14,6 +14,7 @@ import {
   get_query_error_type,
   use_get_account_activity_query
 } from "~/redux/features";
+import css from "~/theme/main.module.scss";
 
 import DashboardTitle from "../../../dashboard-title";
 import styles from "./styles.module.scss";
@@ -23,9 +24,9 @@ import styles from "./styles.module.scss";
 const StatusHeader = (): React.ReactElement => (
   <div
     className={clsx(
-      "full-bleed",
-      "dashboard-header",
-      "flex",
+      css["full-bleed"],
+      css["dashboard-header"],
+      css["flex"],
       styles["status-header"]
     )}
   >

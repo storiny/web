@@ -12,6 +12,7 @@ import ColorPicker, {
   str_to_color,
   TColor
 } from "~/entities/color-picker";
+import css from "~/theme/main.module.scss";
 
 import {
   DEFAULT_CANVAS_FILL,
@@ -74,8 +75,8 @@ const FillControl = ({ canvas }: { canvas: Canvas }): React.ReactElement => {
               <button
                 aria-label={"Pick a color"}
                 className={clsx(
-                  "focusable",
-                  "focus-invert",
+                  css["focusable"],
+                  css["focus-invert"],
                   common_styles.indicator
                 )}
                 style={
@@ -138,7 +139,7 @@ const FillControl = ({ canvas }: { canvas: Canvas }): React.ReactElement => {
       </DrawItemRow>
       <DrawItemRow>
         <ToggleGroup
-          className={"f-grow"}
+          className={css["f-grow"]}
           onValueChange={(next_value: string): void => {
             const next_color = SWATCH[next_value as keyof typeof SWATCH];
             if (next_color) {
@@ -161,7 +162,7 @@ const FillControl = ({ canvas }: { canvas: Canvas }): React.ReactElement => {
             aria-label={"Dark fill"}
             className={clsx(styles.x, styles.swatch)}
             slot_props={{
-              container: { className: "f-grow" }
+              container: { className: css["f-grow"] }
             }}
             style={{ "--color": SWATCH.dark } as React.CSSProperties}
             tooltip_content={"Dark"}
@@ -171,7 +172,7 @@ const FillControl = ({ canvas }: { canvas: Canvas }): React.ReactElement => {
             aria-label={"Light fill"}
             className={clsx(styles.x, styles.swatch)}
             slot_props={{
-              container: { className: "f-grow" }
+              container: { className: css["f-grow"] }
             }}
             style={{ "--color": SWATCH.light } as React.CSSProperties}
             tooltip_content={"Light"}
@@ -181,7 +182,7 @@ const FillControl = ({ canvas }: { canvas: Canvas }): React.ReactElement => {
             aria-label={"Transparent fill"}
             className={clsx(styles.x, styles.swatch, styles.transparent)}
             slot_props={{
-              container: { className: "f-grow" }
+              container: { className: css["f-grow"] }
             }}
             style={{ "--color": SWATCH.transparent } as React.CSSProperties}
             tooltip_content={"Transparent"}

@@ -16,6 +16,7 @@ import UsersIcon from "~/icons/users";
 import { boolean_action } from "~/redux/features";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 import { BREAKPOINTS } from "~/theme/breakpoints";
+import css from "~/theme/main.module.scss";
 import { abbreviate_number } from "~/utils/abbreviate-number";
 
 import UserActions from "./actions";
@@ -37,14 +38,14 @@ const User = (props: UserProps): React.ReactElement => {
     <div
       {...rest}
       className={clsx(
-        "flex-col",
+        css["flex-col"],
         styles.user,
         virtual && styles.virtual,
         className
       )}
     >
-      <div className={clsx("flex", styles.main)}>
-        <NextLink className={clsx("flex", styles.meta)} href={user_url}>
+      <div className={clsx(css["flex"], styles.main)}>
+        <NextLink className={clsx(css["flex"], styles.meta)} href={user_url}>
           <Avatar
             alt={""}
             avatar_id={user.avatar_id}
@@ -52,7 +53,7 @@ const User = (props: UserProps): React.ReactElement => {
             label={user.name}
             size={"lg"}
           />
-          <div className={"flex-col"}>
+          <div className={css["flex-col"]}>
             <Typography ellipsis>
               <span className={is_mobile ? "t-medium" : "t-bold"}>
                 {user.name}
@@ -60,35 +61,41 @@ const User = (props: UserProps): React.ReactElement => {
               {!is_mobile && <> @{user.username}</>}
             </Typography>
             {is_mobile ? (
-              <Typography className={"t-minor"}>@{user.username}</Typography>
+              <Typography className={css["t-minor"]}>
+                @{user.username}
+              </Typography>
             ) : (
-              <div className={clsx("flex", styles.stats)}>
+              <div className={clsx(css["flex"], styles.stats)}>
                 {user.story_count > 0 && (
                   <Typography
-                    className={clsx("flex-center", styles.stat)}
+                    className={clsx(css["flex-center"], styles.stat)}
                     level={"body2"}
                     title={`${user.story_count.toLocaleString()} stories`}
                   >
-                    <span className={clsx("flex-center", styles["stat-icon"])}>
+                    <span
+                      className={clsx(css["flex-center"], styles["stat-icon"])}
+                    >
                       <StoryIcon />
                     </span>
                     <span>
                       {abbreviate_number(user.story_count)}{" "}
-                      <span className={"t-minor"}>stories</span>
+                      <span className={css["t-minor"]}>stories</span>
                     </span>
                   </Typography>
                 )}
                 <Typography
-                  className={clsx("flex-center", styles.stat)}
+                  className={clsx(css["flex-center"], styles.stat)}
                   level={"body2"}
                   title={`${user.follower_count.toLocaleString()} followers`}
                 >
-                  <span className={clsx("flex-center", styles["stat-icon"])}>
+                  <span
+                    className={clsx(css["flex-center"], styles["stat-icon"])}
+                  >
                     <UsersIcon />
                   </span>
                   <span>
                     {abbreviate_number(user.follower_count)}{" "}
-                    <span className={"t-minor"}>followers</span>
+                    <span className={css["t-minor"]}>followers</span>
                   </span>
                 </Typography>
               </div>
@@ -96,7 +103,7 @@ const User = (props: UserProps): React.ReactElement => {
           </div>
         </NextLink>
         <Grow />
-        <div className={clsx("flex", styles.actions)}>
+        <div className={clsx(css["flex"], styles.actions)}>
           {action_type === "default" && (
             <Button
               auto_size
@@ -116,7 +123,7 @@ const User = (props: UserProps): React.ReactElement => {
       {Boolean(user.bio) && (
         <Typography
           as={NextLink}
-          className={clsx("t-minor", styles.bio)}
+          className={clsx(css["t-minor"], styles.bio)}
           href={user_url}
           level={"body2"}
         >

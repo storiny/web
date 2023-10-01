@@ -5,6 +5,7 @@ import React from "react";
 import Link from "~/components/link";
 import Spacer from "~/components/spacer";
 import Typography from "~/components/typography";
+import css from "~/theme/main.module.scss";
 
 import { use_auth_state } from "../../../actions";
 import ResetForm from "./form";
@@ -19,15 +20,15 @@ const Page = (): React.ReactElement => {
         Reset your password
       </Typography>
       <Spacer orientation={"vertical"} size={0.5} />
-      <Typography className={"t-minor"} level={"body2"}>
+      <Typography className={css["t-minor"]} level={"body2"}>
         Create a memorable and strong password.
       </Typography>
       <Spacer orientation={"vertical"} size={5} />
       <ResetForm token={token} />
       <Spacer orientation={"vertical"} size={5} />
-      <div className={"flex-center"}>
+      <div className={css["flex-center"]}>
         <Link
-          className={"t-medium"}
+          className={css["t-medium"]}
           href={"/auth"}
           level={"body2"}
           onClick={(): void => actions.switch_segment("login")}

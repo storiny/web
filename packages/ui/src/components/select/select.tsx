@@ -17,6 +17,7 @@ import React from "react";
 import { use_media_query } from "~/hooks/use-media-query";
 import ChevronIcon from "~/icons/chevron";
 import { BREAKPOINTS } from "~/theme/breakpoints";
+import css from "~/theme/main.module.scss";
 import { forward_ref } from "~/utils/forward-ref";
 
 import { InputContext } from "../input";
@@ -54,8 +55,8 @@ const Select = forward_ref<SelectProps, "div">((props, ref) => {
         <Trigger
           {...slot_props?.trigger}
           className={clsx(
-            "focusable",
-            "flex-center",
+            css["focusable"],
+            css["flex-center"],
             styles.trigger,
             styles[input_size || size],
             styles[input_color || color],
@@ -92,7 +93,7 @@ const Select = forward_ref<SelectProps, "div">((props, ref) => {
             <ScrollUpButton
               {...slot_props?.scroll_up_button}
               className={clsx(
-                "flex-center",
+                css["flex-center"],
                 styles["scroll-button"],
                 slot_props?.scroll_up_button?.className
               )}
@@ -108,7 +109,7 @@ const Select = forward_ref<SelectProps, "div">((props, ref) => {
             <ScrollDownButton
               {...slot_props?.scroll_down_button}
               className={clsx(
-                "flex-center",
+                css["flex-center"],
                 styles["scroll-button"],
                 slot_props?.scroll_down_button?.className
               )}

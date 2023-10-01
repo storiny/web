@@ -19,6 +19,7 @@ import TagChip from "~/entities/tag-chip";
 import { use_media_query } from "~/hooks/use-media-query";
 import EditIcon from "~/icons/edit";
 import { BREAKPOINTS } from "~/theme/breakpoints";
+import css from "~/theme/main.module.scss";
 import { abbreviate_number } from "~/utils/abbreviate-number";
 import { DateFormat, format_date } from "~/utils/format-date";
 
@@ -36,9 +37,14 @@ const License = (): React.ReactElement | null => {
   }
 
   return (
-    <div className={clsx("flex", styles["footer-row"])}>
+    <div className={clsx(css["flex"], styles["footer-row"])}>
       <Typography
-        className={clsx("flex-center", "t-minor", styles.x, styles.stat)}
+        className={clsx(
+          css["flex-center"],
+          css["t-minor"],
+          styles.x,
+          styles.stat
+        )}
         level={"body2"}
       >
         {LICENSE_ICON_MAP[story.license]}
@@ -55,9 +61,9 @@ const Actions = (): React.ReactElement => {
   const read_count = story.stats.read_count + 1; // Also include the current reading session
 
   return (
-    <div className={"flex-center"}>
+    <div className={css["flex-center"]}>
       <Typography
-        className={"t-medium"}
+        className={css["t-medium"]}
         level={"body2"}
         title={`${read_count.toLocaleString()} ${
           read_count === 1 ? "read" : "reads"
@@ -77,7 +83,7 @@ const StoryFooter = (): React.ReactElement => {
   const story = use_atom_value(story_metadata_atom);
 
   return (
-    <footer className={"flex-col"}>
+    <footer className={css["flex-col"]}>
       <Spacer orientation={"vertical"} size={15} />
       <Divider />
       <Spacer orientation={"vertical"} size={3} />
@@ -90,10 +96,15 @@ const StoryFooter = (): React.ReactElement => {
         </React.Fragment>
       )}
       {story.category !== StoryCategory.OTHERS || story.edited_at !== null ? (
-        <div className={clsx("flex", styles["footer-row"])}>
+        <div className={clsx(css["flex"], styles["footer-row"])}>
           {story.category !== StoryCategory.OTHERS && (
             <Typography
-              className={clsx("flex-center", "t-minor", styles.x, styles.stat)}
+              className={clsx(
+                css["flex-center"],
+                css["t-minor"],
+                styles.x,
+                styles.stat
+              )}
               level={"body2"}
             >
               {CATEGORY_ICON_MAP[story.category]}
@@ -103,7 +114,12 @@ const StoryFooter = (): React.ReactElement => {
           {story.edited_at !== null && (
             <Typography
               as={"time"}
-              className={clsx("flex-center", "t-minor", styles.x, styles.stat)}
+              className={clsx(
+                css["flex-center"],
+                css["t-minor"],
+                styles.x,
+                styles.stat
+              )}
               dateTime={story.edited_at}
               level={"body2"}
               title={format_date(story.edited_at, DateFormat.LONG)}
@@ -119,7 +135,7 @@ const StoryFooter = (): React.ReactElement => {
       <Spacer orientation={"vertical"} size={2} />
       {story.tags.length ? (
         <React.Fragment>
-          <div className={clsx("flex", styles["tag-row"])}>
+          <div className={clsx(css["flex"], styles["tag-row"])}>
             {story.tags.map((tag) => (
               <TagChip
                 key={tag.id}

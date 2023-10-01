@@ -7,6 +7,7 @@ import { ItemProps } from "react-virtuoso";
 
 import Divider from "~/components/divider";
 import Comment from "~/entities/comment";
+import css from "~/theme/main.module.scss";
 
 import styles from "../../virtual/virtual.module.scss";
 import { VirtualizedCommentListContext } from "../list/list-context";
@@ -18,7 +19,7 @@ const VirtualizedCommentItem = React.memo(
     return (
       <div
         {...rest}
-        className={clsx("flex-col", styles["list-item"])}
+        className={clsx(css["flex-col"], styles["list-item"])}
         key={item.id}
       >
         <Comment {...comment_props} comment={item} virtual />

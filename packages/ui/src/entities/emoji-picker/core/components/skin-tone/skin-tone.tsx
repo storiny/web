@@ -6,6 +6,7 @@ import { useAtom as use_atom } from "jotai";
 import React from "react";
 
 import Select from "~/components/select";
+import css from "~/theme/main.module.scss";
 import { capitalize } from "~/utils/capitalize";
 
 import { skin_tone_atom } from "../../atoms";
@@ -41,7 +42,7 @@ const SkinTone = (): React.ReactElement => {
           }
         },
         viewport: {
-          className: clsx("flex", styles.viewport)
+          className: clsx(css["flex"], styles.viewport)
         },
         value: { placeholder: "Skin tone" },
         trigger: {

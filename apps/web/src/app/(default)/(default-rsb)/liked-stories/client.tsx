@@ -18,6 +18,7 @@ import {
   get_query_error_type,
   use_get_liked_stories_query
 } from "~/redux/features";
+import css from "~/theme/main.module.scss";
 
 const EmptyState = dynamic(() => import("./empty-state"), {
   loading: dynamic_loader()
@@ -42,10 +43,10 @@ const PageHeader = ({
 }): React.ReactElement => (
   <div
     className={clsx(
-      "flex-center",
-      "full-bleed",
-      "page-header",
-      "with-page-title"
+      css["flex-center"],
+      css["full-bleed"],
+      css["page-header"],
+      css["with-page-title"]
     )}
   >
     <Input

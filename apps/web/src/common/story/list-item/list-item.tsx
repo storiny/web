@@ -8,6 +8,7 @@ import { ItemProps } from "react-virtuoso";
 import styles from "~/common/virtual/virtual.module.scss";
 import Divider from "~/components/divider";
 import Story from "~/entities/story";
+import css from "~/theme/main.module.scss";
 
 import { VirtualizedStoryListContext } from "../list/list-context";
 
@@ -18,7 +19,7 @@ const VirtualizedStoryItem = React.memo(
     return (
       <div
         {...rest}
-        className={clsx("flex-col", styles["list-item"])}
+        className={clsx(css["flex-col"], styles["list-item"])}
         key={item.id}
       >
         <Story {...story_props} story={item} virtual />

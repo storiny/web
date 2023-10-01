@@ -6,6 +6,7 @@ import { ItemProps } from "react-virtuoso";
 
 import Divider from "~/components/divider";
 import FriendRequest from "~/entities/friend-request";
+import css from "~/theme/main.module.scss";
 
 import { VirtualizedFriendRequestListContext } from "../list/list-context";
 
@@ -16,7 +17,7 @@ const VirtualizedFriendRequestItem = React.memo(
       VirtualizedFriendRequestListContext
     );
     return (
-      <div {...rest} className={"flex-col"} key={item.id}>
+      <div {...rest} className={css["flex-col"]} key={item.id}>
         <FriendRequest {...friend_request_props} friend_request={item} />
         <Divider style={{ marginInline: "var(--grid-compensation)" }} />
       </div>

@@ -8,6 +8,7 @@ import Input from "~/components/input";
 import Spacer from "~/components/spacer";
 import Spinner from "~/components/spinner";
 import PaddingIcon from "~/icons/padding";
+import css from "~/theme/main.module.scss";
 import { clamp } from "~/utils/clamp";
 
 import { EXPORT_WIDTH, RECOVERY_KEYS } from "../../../constants";
@@ -151,11 +152,12 @@ const ExportImageModal = React.forwardRef<
   }
 
   return (
-    <div className={clsx("flex-col", styles.container)}>
-      <div className={clsx("flex-center", styles["canvas-container"])}>
+    <div className={clsx(css["flex-col"], styles.container)}>
+      <div className={clsx(css["flex-center"], styles["canvas-container"])}>
         <div
           aria-hidden
-          className={clsx("invert", styles["canvas-background"])}
+          className={styles["canvas-background"]}
+          data-invert-filter={""}
         />
         <AspectRatio
           ratio={(export_canvas?.width || 1) / (export_canvas?.height || 1)}
@@ -170,7 +172,7 @@ const ExportImageModal = React.forwardRef<
         </AspectRatio>
         {!export_canvas && <Spinner />}
       </div>
-      <div className={"flex"}>
+      <div className={css["flex"]}>
         {is_confirming ? (
           <Input
             aria-label={"Alt text"}
@@ -179,7 +181,7 @@ const ExportImageModal = React.forwardRef<
             size={"sm"}
             slot_props={{
               container: {
-                className: "f-grow"
+                className: css["f-grow"]
               }
             }}
             title={"Alt text"}
@@ -193,7 +195,7 @@ const ExportImageModal = React.forwardRef<
             size={"sm"}
             slot_props={{
               container: {
-                className: "f-grow"
+                className: css["f-grow"]
               }
             }}
             title={"Name"}

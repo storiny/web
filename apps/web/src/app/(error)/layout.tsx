@@ -7,6 +7,7 @@ import Spacer from "~/components/spacer";
 import Typography from "~/components/typography";
 import SearchIcon from "~/icons/search";
 import Footer from "~/layout/footer";
+import css from "~/theme/main.module.scss";
 
 import MinimalLayout from "../(minimal)/layout";
 import styles from "./layout.module.scss";
@@ -26,13 +27,13 @@ const ErrorLayout = ({
 }): React.ReactElement => (
   <MinimalLayout>
     <div
-      className={clsx("full-w", "full-h")}
+      className={clsx(css["full-w"], css["full-h"])}
       role={"presentation"}
       style={{ minHeight: "100vh", position: "fixed", pointerEvents: "none" }}
     >
       <Image
         alt={""}
-        className={"invert"}
+        data-invert-filter={""}
         fill
         loading={"eager"}
         priority
@@ -40,7 +41,9 @@ const ErrorLayout = ({
         style={{ objectFit: "cover", opacity: 0.45 }}
       />
     </div>
-    <div className={clsx("flex-col", "flex-center", styles.container)}>
+    <div
+      className={clsx(css["flex-col"], css["flex-center"], styles.container)}
+    >
       <Typography
         className={clsx(styles.x, styles["error-code"])}
         level={"display1"}
@@ -51,12 +54,19 @@ const ErrorLayout = ({
           </span>
         ))}
       </Typography>
-      <div className={clsx("flex-col", "flex-center", styles.content)}>
-        <Typography className={"t-center"} level={"h2"}>
+      <div
+        className={clsx(css["flex-col"], css["flex-center"], styles.content)}
+      >
+        <Typography className={css["t-center"]} level={"h2"}>
           {title}
         </Typography>
         <Typography
-          className={clsx("t-center", "t-minor", styles.x, styles.description)}
+          className={clsx(
+            css["t-center"],
+            css["t-minor"],
+            styles.x,
+            styles.description
+          )}
         >
           {description}
         </Typography>

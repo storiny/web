@@ -37,7 +37,7 @@ const PopoverComponent = (args?: PopoverProps): React.ReactElement => (
     trigger={<Button aria-label={"Show popover"}>Show popover</Button>}
   >
     <Typography
-      className={"t-minor"}
+      className={css["t-minor"]}
       level={"body2"}
       style={{ padding: "32px" }}
     >

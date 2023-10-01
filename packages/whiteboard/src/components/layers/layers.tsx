@@ -15,6 +15,7 @@ import { Virtuoso } from "react-virtuoso";
 import use_resize_observer from "use-resize-observer";
 
 import { Root, Scrollbar, Thumb, Viewport } from "~/components/scroll-area";
+import css from "~/theme/main.module.scss";
 
 import { is_layers_dragging_atom } from "../../atoms";
 import { use_canvas } from "../../hooks";
@@ -96,7 +97,7 @@ ScrollSeekPlaceholder.displayName = "ScrollSeekPlaceholder";
 
 const LayerPlaceholder = React.memo<React.ComponentPropsWithoutRef<"span">>(
   ({ children, ...rest }) => (
-    <span {...rest} className={clsx(styles.x, styles.placeholder)}>
+    <span {...rest} className={styles.placeholder}>
       {children}
     </span>
   )
@@ -233,13 +234,18 @@ const Layers = (): React.ReactElement | null => {
           {(provided): React.ReactElement => (
             <Root
               asChild
-              className={clsx("full-h", "flex-col", styles.x, styles.layers)}
+              className={clsx(
+                css["full-h"],
+                css["flex-col"],
+                styles.x,
+                styles.layers
+              )}
               ref={ref}
               type={"auto"}
             >
               <ul>
                 <Virtuoso<BaseFabricObject>
-                  className={clsx("full-w", "full-h")}
+                  className={clsx(css["full-w"], css["full-h"])}
                   components={{
                     Item: LayerPlaceholder,
                     Scroller,

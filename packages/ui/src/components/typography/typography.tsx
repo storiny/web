@@ -4,6 +4,7 @@ import clsx from "clsx";
 import NextLink from "next/link";
 import React from "react";
 
+import css from "~/theme/main.module.scss";
 import { forward_ref } from "~/utils/forward-ref";
 import { is_hex_color } from "~/utils/is-hex-color";
 
@@ -51,12 +52,14 @@ const Typography = forward_ref<TypographyProps, TypographyElement>(
         <Element
           {...rest}
           className={clsx(
-            level === "inline-code" && "t-mono",
+            level === "inline-code" && css["t-mono"],
             ellipsis && typography_styles.ellipsis,
             is_inline_color && styles["inline-color"],
-            level === "legible" || color === "legible"
-              ? "t-legible-fg"
-              : `t-${color}`,
+            css[
+              level === "legible" || color === "legible"
+                ? "t-legible-fg"
+                : `t-${color}`
+            ],
             scale
               ? TYPOGRAPHY_SCALE_TO_CLASSNAME_MAP[scale]
               : TYPOGRAPHY_LEVEL_TO_CLASSNAME_MAP[level],
@@ -78,7 +81,7 @@ const Typography = forward_ref<TypographyProps, TypographyElement>(
               {...slot_props?.link}
               className={clsx(
                 styles.link,
-                ellipsis && "ellipsis",
+                ellipsis && css["ellipsis"],
                 ellipsis && typography_styles["ellipsis-child"],
                 slot_props?.link?.className
               )}
@@ -91,7 +94,7 @@ const Typography = forward_ref<TypographyProps, TypographyElement>(
             <span
               {...slot_props?.ellipsis_cell}
               className={clsx(
-                "ellipsis",
+                css["ellipsis"],
                 typography_styles["ellipsis-child"],
                 slot_props?.ellipsis_cell?.className
               )}

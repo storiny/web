@@ -4,6 +4,7 @@ import React from "react";
 import { use_confirmation } from "~/components/confirmation";
 import IconButton from "~/components/icon-button";
 import XIcon from "~/icons/x";
+import css from "~/theme/main.module.scss";
 
 import { use_whiteboard } from "../../hooks";
 import styles from "./topbar.module.scss";
@@ -14,7 +15,7 @@ const Cancel = (): React.ReactElement => {
     ({ open_confirmation }) => (
       <IconButton
         aria-label={"Cancel editing"}
-        className={clsx("focus-invert", styles.x, styles["icon-button"])}
+        className={clsx(css["focus-invert"], styles.x, styles["icon-button"])}
         onClick={open_confirmation}
         variant={"ghost"}
       >

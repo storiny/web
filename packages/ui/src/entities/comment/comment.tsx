@@ -23,6 +23,7 @@ import { boolean_action, select_is_logged_in } from "~/redux/features";
 import { sync_with_comment } from "~/redux/features/entities/slice";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 import { BREAKPOINTS } from "~/theme/breakpoints";
+import css from "~/theme/main.module.scss";
 import { abbreviate_number } from "~/utils/abbreviate-number";
 import { DateFormat, format_date } from "~/utils/format-date";
 
@@ -40,7 +41,7 @@ const StoryPersona = (props: {
 }): React.ReactElement => {
   const { story, created_at, edited_at } = props;
   return (
-    <div className={clsx("flex", styles["story-persona"])}>
+    <div className={clsx(css["flex"], styles["story-persona"])}>
       {story.splash_id && (
         <AspectRatio className={styles["story-splash"]} ratio={1.77}>
           <Image
@@ -51,9 +52,9 @@ const StoryPersona = (props: {
           />
         </AspectRatio>
       )}
-      <div className={"flex-col"}>
+      <div className={css["flex-col"]}>
         <Link
-          className={"t-medium"}
+          className={css["t-medium"]}
           ellipsis
           fixed_color
           href={`/${story.user?.username || "story"}/${story.slug}`}
@@ -62,7 +63,7 @@ const StoryPersona = (props: {
           {story.title}
         </Link>
         <Typography
-          className={clsx("t-minor", "t-medium")}
+          className={clsx(css["t-minor"], css["t-medium"])}
           ellipsis
           level={"body3"}
         >
@@ -128,8 +129,8 @@ const Comment = (props: CommentProps): React.ReactElement => {
       {collapsed ? (
         <div
           className={clsx(
-            "flex-col",
-            "flex-center",
+            css["flex-col"],
+            css["flex-center"],
             styles.comment,
             virtual && styles.virtual
           )}
@@ -146,13 +147,13 @@ const Comment = (props: CommentProps): React.ReactElement => {
         <article
           {...rest}
           className={clsx(
-            "flex-col",
+            css["flex-col"],
             styles.comment,
             virtual && styles.virtual,
             className
           )}
         >
-          <div className={clsx("flex", styles.header)}>
+          <div className={clsx(css["flex"], styles.header)}>
             {is_extended ? (
               <StoryPersona
                 created_at={comment.created_at}
@@ -178,7 +179,7 @@ const Comment = (props: CommentProps): React.ReactElement => {
                 }
                 secondary_text={
                   <Typography
-                    className={clsx("t-medium", "t-minor")}
+                    className={clsx(css["t-medium"], css["t-minor"])}
                     ellipsis
                     level={"body3"}
                   >
@@ -203,12 +204,12 @@ const Comment = (props: CommentProps): React.ReactElement => {
           </div>
           {hidden && !hide_hidden_overlay ? (
             <Typography
-              className={clsx("t-minor", styles.hidden)}
+              className={clsx(css["t-minor"], styles.hidden)}
               level={"body2"}
             >
               This comment has been hidden at the request of the story author.{" "}
               <Link
-                className={"t-medium"}
+                className={css["t-medium"]}
                 fixed_color
                 href={"#"}
                 onClick={(): void => set_hidden(false)}
@@ -219,16 +220,16 @@ const Comment = (props: CommentProps): React.ReactElement => {
             </Typography>
           ) : (
             <React.Fragment>
-              <div className={clsx(styles.content)}>
+              <div className={styles.content}>
                 <ResponseParser content={comment.rendered_content} />
               </div>
-              <footer className={clsx("flex-center")}>
+              <footer className={css["flex-center"]}>
                 {is_static || is_extended ? (
                   <React.Fragment>
-                    <span className={clsx("flex-center", styles.stat)}>
+                    <span className={clsx(css["flex-center"], styles.stat)}>
                       <HeartIcon />{" "}
                       <Typography
-                        className={clsx("t-medium", "t-minor")}
+                        className={clsx(css["t-medium"], css["t-minor"])}
                         level={"body3"}
                       >
                         {abbreviate_number(like_count)}{" "}
@@ -236,17 +237,17 @@ const Comment = (props: CommentProps): React.ReactElement => {
                       </Typography>
                     </span>
                     <Spacer size={1.5} />
-                    <span className={clsx("flex-center", styles.stat)}>
+                    <span className={clsx(css["flex-center"], styles.stat)}>
                       <ReplyIcon />{" "}
                       <Typography
-                        className={clsx("t-medium", "t-minor")}
+                        className={clsx(css["t-medium"], css["t-minor"])}
                         level={"body3"}
                       >
                         {abbreviate_number(reply_count)}{" "}
                         {reply_count === 1 ? "reply" : "replies"}
                       </Typography>
                     </span>
-                    <Spacer className={"f-grow"} size={1.5} />
+                    <Spacer className={css["f-grow"]} size={1.5} />
                     <IconButton
                       aria-label={"View comment"}
                       as={NextLink}
@@ -287,7 +288,7 @@ const Comment = (props: CommentProps): React.ReactElement => {
                     >
                       {abbreviate_number(reply_count)}
                     </Button>
-                    <Spacer className={"f-grow"} size={1.5} />
+                    <Spacer className={css["f-grow"]} size={1.5} />
                     <Button
                       check_auth={!logged_in && reply_count === 0}
                       onClick={(): void =>

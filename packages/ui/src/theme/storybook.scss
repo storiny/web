@@ -1,5 +1,3 @@
-@use "grid" as grid;
-
 // Satoshi
 
 @font-face {
@@ -187,10 +185,4 @@ body {
 
 #storybook-root {
   padding-bottom: var(--global-bottom-gutter, 0);
-}
-
-.grid {
-  overflow-x: clip; // Clip overflow
-
-  @include grid.main;
 }

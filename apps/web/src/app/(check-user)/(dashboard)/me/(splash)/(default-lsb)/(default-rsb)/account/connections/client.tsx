@@ -6,6 +6,7 @@ import React from "react";
 import Link from "~/components/link";
 import Spacer from "~/components/spacer";
 import Typography from "~/components/typography";
+import css from "~/theme/main.module.scss";
 import { DateFormat, format_date } from "~/utils/format-date";
 
 import {
@@ -33,21 +34,21 @@ const ConnectionItem = ({
   return (
     <li
       className={clsx(
-        "flex",
+        css["flex"],
         Boolean(connection) && styles.connected,
         styles.item
       )}
     >
-      <div className={clsx("flex-center", styles.details)}>
+      <div className={clsx(css["flex-center"], styles.details)}>
         <span className={styles.icon}>
           {React.createElement(
             PROVIDER_ICON_MAP[connection?.provider || provider]
           )}
         </span>
-        <div className={"flex-col"}>
+        <div className={css["flex-col"]}>
           {connection ? (
             <Link
-              className={"t-medium"}
+              className={css["t-medium"]}
               ellipsis
               fixed_color
               href={connection.url}
@@ -57,29 +58,29 @@ const ConnectionItem = ({
               {connection.display_name}
             </Link>
           ) : (
-            <Typography className={"t-medium"}>
+            <Typography className={css["t-medium"]}>
               {PROVIDER_DISPLAY_NAME_MAP[provider]}
             </Typography>
           )}
           {connection ? (
             <Typography
-              className={"t-minor"}
+              className={css["t-minor"]}
               ellipsis
               level={"body2"}
               title={format_date(connection.created_at, DateFormat.STANDARD)}
             >
               {PROVIDER_DISPLAY_NAME_MAP[connection.provider]}{" "}
-              <span className={"t-muted"}>&bull;</span> Connected{" "}
+              <span className={css["t-muted"]}>&bull;</span> Connected{" "}
               {format_date(connection.created_at, DateFormat.RELATIVE)}
             </Typography>
           ) : (
-            <Typography className={"t-minor"} level={"body2"}>
+            <Typography className={css["t-minor"]} level={"body2"}>
               Not connected
             </Typography>
           )}
         </div>
       </div>
-      <div className={clsx("flex-center", styles.actions)}>
+      <div className={clsx(css["flex-center"], styles.actions)}>
         {connection && <VisibilityButton connection={connection} />}
         <ConnectionButton
           connection={connection}
@@ -98,7 +99,7 @@ const ConnectionSettingsClient = ({
     <DashboardTitle>Connections</DashboardTitle>
     <DashboardWrapper>
       <DashboardGroup>
-        <Typography className={"t-minor"} level={"body2"}>
+        <Typography className={css["t-minor"]} level={"body2"}>
           Link your social media accounts to display them on your public
           profile. We use this data for display purposes only and comply with
           our{" "}
@@ -117,7 +118,7 @@ const ConnectionSettingsClient = ({
           account on your profile, you can use the &quot;Hide&quot; button.
         </Typography>
         <Spacer orientation={"vertical"} size={5} />
-        <ul className={clsx("flex-col", styles.list)}>
+        <ul className={clsx(css["flex-col"], styles.list)}>
           {Object.keys(PROVIDER_KEY_MAP)
             .filter((item) => Boolean(PROVIDER_KEY_MAP[item])) // Filter out unspecified and unrecognized items
             .map((provider) => (

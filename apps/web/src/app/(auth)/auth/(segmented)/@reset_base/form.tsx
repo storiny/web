@@ -13,6 +13,7 @@ import Grow from "~/components/grow";
 import Spacer from "~/components/spacer";
 import { use_toast } from "~/components/toast";
 import { use_reset_password_mutation } from "~/redux/features";
+import css from "~/theme/main.module.scss";
 
 import { use_auth_state } from "../../../actions";
 import { RESET_SCHEMA, ResetSchema } from "./schema";
@@ -51,7 +52,7 @@ const ResetForm = ({ on_submit, token }: Props): React.ReactElement => {
 
   return (
     <Form<ResetSchema>
-      className={clsx("flex-col", "full-h")}
+      className={clsx(css["flex-col"], css["full-h"])}
       on_submit={handle_submit}
       provider_props={form}
     >
@@ -84,9 +85,9 @@ const ResetForm = ({ on_submit, token }: Props): React.ReactElement => {
       />
       <Spacer orientation={"vertical"} size={5} />
       <Grow />
-      <div className={clsx("flex-col", "flex-center")}>
+      <div className={clsx(css["flex-col"], css["flex-center"])}>
         <Button
-          className={"full-w"}
+          className={css["full-w"]}
           loading={is_loading}
           size={"lg"}
           type={"submit"}

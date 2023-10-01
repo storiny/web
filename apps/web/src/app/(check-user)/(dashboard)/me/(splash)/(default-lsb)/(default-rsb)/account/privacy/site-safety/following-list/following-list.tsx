@@ -13,6 +13,7 @@ import {
   use_following_list_mutation
 } from "~/redux/features";
 import { use_app_selector } from "~/redux/hooks";
+import css from "~/theme/main.module.scss";
 
 import styles from "../site-safety.module.scss";
 import { FollowingListProps } from "./following-list.props";
@@ -60,12 +61,12 @@ const FollowingList = ({
         Following list
       </Typography>
       <Spacer orientation={"vertical"} size={0.5} />
-      <Typography className={"t-minor"} level={"body2"}>
+      <Typography className={css["t-minor"]} level={"body2"}>
         Choose who can view the list of users you follow.
       </Typography>
       <Spacer orientation={"vertical"} />
       <Form<FollowingListSchema>
-        className={clsx("flex-col", styles.x, styles.form)}
+        className={clsx(css["flex-col"], styles.x, styles.form)}
         disabled={is_loading}
         on_submit={handle_submit}
         provider_props={form}

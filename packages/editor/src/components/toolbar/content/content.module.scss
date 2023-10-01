@@ -1,9 +1,9 @@
-.x {
-  &.content {
-    align-items: stretch;
-    flex-grow: 1;
-  }
+.content {
+  align-items: stretch;
+  flex-grow: 1;
+}
 
+.x {
   &.thumb {
     &::before {
       content: none; // Hide touch capture pseudo element

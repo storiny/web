@@ -6,6 +6,7 @@ import FormSelect from "~/components/form-select";
 import Option from "~/components/option";
 import Spacer from "~/components/spacer";
 import Typography from "~/components/typography";
+import css from "~/theme/main.module.scss";
 
 const LICENSE_DESCRIPTION_MAP: Record<StoryLicense, React.ReactNode> = {
   [StoryLicense.UNRECOGNIZED /**/]: null,
@@ -74,7 +75,7 @@ const LicenseTab = (): React.ReactElement => {
   const license = form.watch("license") as StoryLicense;
   return (
     <React.Fragment>
-      <Typography className={"t-minor"} level={"body2"}>
+      <Typography className={css["t-minor"]} level={"body2"}>
         Licensing your story enables you to manage and limit the usage of your
         content by others. Learn more about licensing your story.
       </Typography>

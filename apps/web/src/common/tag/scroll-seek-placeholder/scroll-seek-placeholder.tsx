@@ -5,11 +5,12 @@ import React from "react";
 
 import Divider from "~/components/divider";
 import { TagSkeleton } from "~/entities/tag";
+import css from "~/theme/main.module.scss";
 
 import styles from "../../virtual/virtual.module.scss";
 
 const VirtualizedTagScrollSeekPlaceholder = React.memo(() => (
-  <div className={clsx("flex-col", styles["list-item"])}>
+  <div className={clsx(css["flex-col"], styles["list-item"])}>
     <TagSkeleton virtual />
     <Divider style={{ marginInline: "var(--grid-compensation)" }} />
   </div>

@@ -1,7 +1,6 @@
 "use client";
 
 import { DEFAULT_WPM } from "@storiny/shared";
-import { clsx } from "clsx";
 import React from "react";
 
 import Button from "~/components/button";
@@ -10,6 +9,7 @@ import Link from "~/components/link";
 import Spacer from "~/components/spacer";
 import Stepper from "~/components/stepper";
 import Typography from "~/components/typography";
+import css from "~/theme/main.module.scss";
 
 import { use_auth_state } from "../../../actions";
 
@@ -27,14 +27,14 @@ const Page = (): React.ReactElement => {
         Just one more step...
       </Typography>
       <Spacer orientation={"vertical"} size={0.5} />
-      <Typography className={"t-minor"} level={"body2"}>
+      <Typography className={css["t-minor"]} level={"body2"}>
         As not all readers read at the same pace, the reading time for stories
         on Storiny depends on their reading speed. We can provide readers with
         more accurate and personalized reading times this way. You can always do
         this later.
       </Typography>
       <Spacer orientation={"vertical"} size={5} />
-      <div className={clsx("flex-col")}>
+      <div className={css["flex-col"]}>
         <Button onClick={on_skip} size={"lg"} variant={"hollow"}>
           Skip
         </Button>
@@ -50,9 +50,9 @@ const Page = (): React.ReactElement => {
       </div>
       <Spacer orientation={"vertical"} size={5} />
       <Grow />
-      <div className={"flex-center"}>
+      <div className={css["flex-center"]}>
         <Link
-          className={"t-medium"}
+          className={css["t-medium"]}
           href={"/auth"}
           level={"body2"}
           onClick={(): void => actions.switch_segment("signup_username")}

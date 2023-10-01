@@ -14,6 +14,7 @@ import {
   get_query_error_type,
   use_get_home_feed_query
 } from "~/redux/features";
+import css from "~/theme/main.module.scss";
 
 import styles from "./styles.module.scss";
 
@@ -33,11 +34,16 @@ const PageHeader = ({
   value: IndexTabValue;
 }): React.ReactElement => (
   <Tabs
-    className={clsx("full-bleed", "page-header", styles.x, styles.tabs)}
+    className={clsx(
+      css["full-bleed"],
+      css["page-header"],
+      styles.x,
+      styles.tabs
+    )}
     onValueChange={(next_value): void => on_change(next_value as IndexTabValue)}
     value={value}
   >
-    <TabsList className={clsx("full-w", styles.x, styles["tabs-list"])}>
+    <TabsList className={clsx(css["full-w"], styles.x, styles["tabs-list"])}>
       <Tab aria-controls={undefined} value={"suggested"}>
         Suggested
       </Tab>

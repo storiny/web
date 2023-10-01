@@ -19,6 +19,7 @@ import RulerMeasureIcon from "~/icons/ruler-measure";
 import SolidFillIcon from "~/icons/solid-fill";
 import ZigzagFillIcon from "~/icons/zigzag-fill";
 import ZigzagLineFillIcon from "~/icons/zigzag-line-fill";
+import css from "~/theme/main.module.scss";
 
 import {
   DEFAULT_LAYER_COLOR,
@@ -78,8 +79,8 @@ const FillControl = ({
             <button
               aria-label={"Pick a color"}
               className={clsx(
-                "focusable",
-                "focus-invert",
+                css["focusable"],
+                css["focus-invert"],
                 common_styles.indicator
               )}
               style={
@@ -213,7 +214,7 @@ const FillStyleControl = ({
               }
             },
             trigger: {
-              className: clsx("full-w"),
+              className: css["full-w"],
               style: { flex: "0.6" }
             }
           }}

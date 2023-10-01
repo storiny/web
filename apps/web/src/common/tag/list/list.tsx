@@ -4,6 +4,8 @@ import { clsx } from "clsx";
 import React from "react";
 import { Virtuoso } from "react-virtuoso";
 
+import css from "~/theme/main.module.scss";
+
 import VirtualFooter from "../../virtual/footer";
 import { VirtualizedTagItem, VirtualizedTagScrollSeekPlaceholder } from "..";
 import { VirtualizedTagListProps } from "./list.props";
@@ -27,7 +29,7 @@ const VirtualizedTagList = React.memo(
         }}
         useWindowScroll
         {...rest}
-        className={clsx("full-w", "full-h", className)}
+        className={clsx(css["full-w"], css["full-h"], className)}
         components={{
           Item: VirtualizedTagItem,
           ScrollSeekPlaceholder: VirtualizedTagScrollSeekPlaceholder,

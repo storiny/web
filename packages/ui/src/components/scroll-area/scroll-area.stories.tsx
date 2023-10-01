@@ -28,7 +28,7 @@ export const Default: Story = {
     },
     children: (
       <div
-        className={"t-body-2 t-minor"}
+        className={css["t-body-2 t-minor"]}
         style={{
           padding: "12px 14px"
         }}
@@ -51,7 +51,7 @@ export const HorizontalScroll: Story = {
     enable_horizontal: true,
     children: (
       <div
-        className={"t-body-2 t-minor"}
+        className={css["t-body-2 t-minor"]}
         style={{
           padding: "12px 14px"
         }}

@@ -11,6 +11,7 @@ import { use_toast } from "~/components/toast";
 import Typography from "~/components/typography";
 import CameraIllustration from "~/illustrations/camera";
 import { use_upload_asset_mutation } from "~/redux/features";
+import css from "~/theme/main.module.scss";
 import { get_cdn_url } from "~/utils/get-cdn-url";
 
 import { selected_atom, uploading_atom } from "../../atoms";
@@ -128,7 +129,7 @@ const UploadsTab = (props: UploadsProps): React.ReactElement => {
 
   return (
     <div
-      className={clsx("flex-col", "flex-center", styles.uploads)}
+      className={clsx(css["flex-col"], css["flex-center"], styles.uploads)}
       data-has-file={String(
         Boolean(result.isLoading || result.isSuccess || file)
       )}
@@ -136,8 +137,8 @@ const UploadsTab = (props: UploadsProps): React.ReactElement => {
     >
       {result.isLoading ? (
         // Loading area
-        <div className={clsx("flex-col", "flex-center")}>
-          <Typography className={"t-medium"} level={"body3"}>
+        <div className={clsx(css["flex-col"], css["flex-center"])}>
+          <Typography className={css["t-medium"]} level={"body3"}>
             Uploading image...
           </Typography>
           <Spacer orientation={"vertical"} size={1.5} />
@@ -146,11 +147,14 @@ const UploadsTab = (props: UploadsProps): React.ReactElement => {
       ) : result.isError ? (
         // Uplaod error area
         <React.Fragment>
-          <Typography className={clsx("t-minor", "t-center")} level={"body2"}>
+          <Typography
+            className={clsx(css["t-minor"], css["t-center"])}
+            level={"body2"}
+          >
             Failed to upload your image
           </Typography>
           <Spacer orientation={"vertical"} size={2.25} />
-          <div className={"flex-center"}>
+          <div className={css["flex-center"]}>
             <Button onClick={handle_upload}>Try again</Button>
           </div>
         </React.Fragment>
@@ -164,12 +168,19 @@ const UploadsTab = (props: UploadsProps): React.ReactElement => {
             onLoad={(): void => URL.revokeObjectURL(file.preview)}
             src={file.preview}
           />
-          <Spacer className={"f-grow"} orientation={"vertical"} size={2.25} />
-          <Typography className={clsx("t-minor", "t-center")} level={"body2"}>
+          <Spacer
+            className={css["f-grow"]}
+            orientation={"vertical"}
+            size={2.25}
+          />
+          <Typography
+            className={clsx(css["t-minor"], css["t-center"])}
+            level={"body2"}
+          >
             Image uploaded
           </Typography>
           <Spacer orientation={"vertical"} size={2.25} />
-          <div className={"flex-center"}>
+          <div className={css["flex-center"]}>
             <Button onClick={reset} variant={"hollow"}>
               Upload another
             </Button>
@@ -180,7 +191,7 @@ const UploadsTab = (props: UploadsProps): React.ReactElement => {
         <React.Fragment>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img alt={""} className={styles.preview} src={file.preview} />
-          <Spacer className={"f-grow"} orientation={"vertical"} size={3} />
+          <Spacer className={css["f-grow"]} orientation={"vertical"} size={3} />
           <Input
             aria-label={"Alt text for the image"}
             onChange={(event): void => set_alt(event.target.value)}
@@ -188,7 +199,7 @@ const UploadsTab = (props: UploadsProps): React.ReactElement => {
             value={alt}
           />
           <Spacer orientation={"vertical"} size={1.5} />
-          <div className={"flex-center"}>
+          <div className={css["flex-center"]}>
             {!disable_whiteboard_prompt && (
               <React.Fragment>
                 <Button
@@ -208,10 +219,10 @@ const UploadsTab = (props: UploadsProps): React.ReactElement => {
         <div
           {...get_root_props({
             className: clsx(
-              "focusable",
-              "focus-invert",
-              "flex-col",
-              "flex-center",
+              css["focusable"],
+              css["focus-invert"],
+              css["flex-col"],
+              css["flex-center"],
               styles.dropzone,
               is_drag_active && styles.focused
             )

@@ -1,20 +1,20 @@
-.x {
-  &.bottom-navigation {
-    background-color: var(--bg-elevation-sm);
-    border-top: 1px solid var(--divider);
-    box-shadow: var(--shadow-md);
-    z-index: calc(var(--z-index-header) - 1);
-    padding-inline: 12px;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100vw;
+.bottom-navigation {
+  background-color: var(--bg-elevation-sm);
+  border-top: 1px solid var(--divider);
+  box-shadow: var(--shadow-md);
+  z-index: calc(var(--z-index-header) - 1);
+  padding-inline: 12px;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100vw;
 
-    @media print {
-      display: none !important;
-    }
+  @media print {
+    display: none !important;
   }
+}
 
+.x {
   &.tabs-list {
     justify-content: space-between;
 

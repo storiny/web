@@ -11,6 +11,7 @@ import LayoutAlignLeftIcon from "~/icons/layout-align-left";
 import LayoutAlignMiddleIcon from "~/icons/layout-align-middle";
 import LayoutAlignRightIcon from "~/icons/layout-align-right";
 import LayoutAlignTopIcon from "~/icons/layout-align-top";
+import css from "~/theme/main.module.scss";
 
 import { use_canvas, use_event_render } from "../../../../../hooks";
 import { is_group, modify_object } from "../../../../../utils";
@@ -27,7 +28,12 @@ const AlignButton = ({
   tooltip_content: React.ReactNode;
 }): React.ReactElement => (
   <Tooltip content={tooltip_content}>
-    <IconButton {...rest} className={"f-grow"} size={"sm"} variant={"ghost"}>
+    <IconButton
+      {...rest}
+      className={css["f-grow"]}
+      size={"sm"}
+      variant={"ghost"}
+    >
       {children}
     </IconButton>
   </Tooltip>

@@ -3,6 +3,7 @@
 import clsx from "clsx";
 import React from "react";
 
+import css from "~/theme/main.module.scss";
 import { forward_ref } from "~/utils/forward-ref";
 
 import styles from "./stepper.module.scss";
@@ -40,7 +41,12 @@ const Stepper = forward_ref<StepperProps, "div">((props, ref) => {
       aria-valuetext={`${active_steps} of ${total_steps} ${
         total_steps === 1 ? "step" : "steps"
       } completed`}
-      className={clsx("flex-center", styles.stepper, styles[size], className)}
+      className={clsx(
+        css["flex-center"],
+        styles.stepper,
+        styles[size],
+        className
+      )}
       data-active={active_steps}
       data-total={total_steps}
       ref={ref}

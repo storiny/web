@@ -4,6 +4,7 @@ import React from "react";
 import Link from "~/components/link";
 import Spacer from "~/components/spacer";
 import Typography from "~/components/typography";
+import css from "~/theme/main.module.scss";
 
 import styles from "./2fa-settings.module.scss";
 import { TwoFactorAuthSettingsProps } from "./2fa-settings.props";
@@ -28,7 +29,7 @@ const CredentialsTwoFactorAuthSettings = ({
         Two-factor authentication
       </Typography>
       <Spacer orientation={"vertical"} />
-      <Typography className={"t-minor"} level={"body2"}>
+      <Typography className={css["t-minor"]} level={"body2"}>
         By requiring more than just a password to sign in, two-factor
         authentication (2FA for short) adds an extra layer of security to your
         account.{" "}
@@ -39,7 +40,7 @@ const CredentialsTwoFactorAuthSettings = ({
       </Typography>
       <Spacer orientation={"vertical"} size={3} />
       {enabled ? (
-        <div className={clsx("flex", styles.actions)}>
+        <div className={clsx(css["flex"], styles.actions)}>
           <RecoveryCodes />
           <Remove2FA set_enabled={set_enabled_impl} />
         </div>
@@ -52,7 +53,7 @@ const CredentialsTwoFactorAuthSettings = ({
           {!has_password && (
             <React.Fragment>
               <Spacer orientation={"vertical"} size={1.5} />
-              <Typography className={"t-minor"} level={"body3"}>
+              <Typography className={css["t-minor"]} level={"body3"}>
                 To enable two-factor authentication, you need to add a password
                 to your account.
               </Typography>

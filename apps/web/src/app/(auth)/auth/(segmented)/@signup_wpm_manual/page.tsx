@@ -6,6 +6,7 @@ import Link from "~/components/link";
 import Spacer from "~/components/spacer";
 import Stepper from "~/components/stepper";
 import Typography from "~/components/typography";
+import css from "~/theme/main.module.scss";
 
 import { use_auth_state } from "../../../actions";
 import SignupWPMForm from "./form";
@@ -18,7 +19,7 @@ const Page = (): React.ReactElement => {
         Set your reading speed
       </Typography>
       <Spacer orientation={"vertical"} size={0.5} />
-      <Typography className={"t-minor"} level={"body2"}>
+      <Typography className={css["t-minor"]} level={"body2"}>
         The speed at which you read is measured in words per minute. Unless you
         are a superhuman, it usually falls between 70 and 320 words per minute.
         Should you find your reading pace to be too fast or too slow, please{" "}
@@ -30,9 +31,9 @@ const Page = (): React.ReactElement => {
       <Spacer orientation={"vertical"} size={5} />
       <SignupWPMForm />
       <Spacer orientation={"vertical"} size={5} />
-      <div className={"flex-center"}>
+      <div className={css["flex-center"]}>
         <Link
-          className={"t-medium"}
+          className={css["t-medium"]}
           href={"/auth"}
           level={"body2"}
           onClick={(): void =>

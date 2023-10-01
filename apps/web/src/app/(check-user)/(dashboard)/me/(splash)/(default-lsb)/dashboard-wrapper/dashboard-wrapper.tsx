@@ -1,6 +1,8 @@
 import { clsx } from "clsx";
 import React from "react";
 
+import css from "~/theme/main.module.scss";
+
 import styles from "./dashboard-wrapper.module.scss";
 import { DashboardWrapperProps } from "./dashboard-wrapper.props";
 
@@ -9,7 +11,7 @@ const DashboardWrapper = (props: DashboardWrapperProps): React.ReactElement => {
   return (
     <div
       {...rest}
-      className={clsx("flex-col", styles["dashboard-wrapper"], className)}
+      className={clsx(css["flex-col"], styles["dashboard-wrapper"], className)}
     >
       {children}
     </div>

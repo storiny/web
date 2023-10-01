@@ -2,6 +2,8 @@ import clsx from "clsx";
 import React from "react";
 import use_resize_observer from "use-resize-observer";
 
+import css from "~/theme/main.module.scss";
+
 import { use_canvas, use_fabric } from "../../hooks";
 import Actions from "../layers/layer/actions";
 import styles from "./canvas.module.scss";
@@ -20,7 +22,8 @@ const Canvas = (): React.ReactElement => {
     <div className={styles["canvas-container"]} ref={ref}>
       <div
         aria-hidden
-        className={clsx("invert", styles["canvas-background"])}
+        className={styles["canvas-background"]}
+        data-invert-filter={""}
         tabIndex={-1}
       />
       <canvas className={styles.canvas} ref={fabric_ref} />

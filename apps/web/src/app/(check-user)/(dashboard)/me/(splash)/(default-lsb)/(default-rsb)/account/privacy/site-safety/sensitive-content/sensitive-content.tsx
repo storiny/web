@@ -7,6 +7,7 @@ import Spacer from "~/components/spacer";
 import { use_toast } from "~/components/toast";
 import Typography from "~/components/typography";
 import { use_sensitive_content_mutation } from "~/redux/features";
+import css from "~/theme/main.module.scss";
 
 import styles from "../site-safety.module.scss";
 import { SensitiveContentProps } from "./sensitive-content.props";
@@ -54,7 +55,7 @@ const SensitiveContent = ({
       </Typography>
       <Spacer orientation={"vertical"} size={0.5} />
       <Form<SensitiveContentSchema>
-        className={clsx("flex-col", styles.x, styles.form)}
+        className={clsx(css["flex-col"], styles.x, styles.form)}
         disabled={is_loading}
         on_submit={handle_submit}
         provider_props={form}

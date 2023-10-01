@@ -1,55 +1,62 @@
 @use "breakpoints";
 
+.webpage {
+  border-radius: var(--radius-md);
+  border: 1px solid var(--divider);
+  width: 100%;
+  max-width: 420px;
+  overflow: hidden;
+
+  &.small {
+    max-width: 520px;
+
+    @include breakpoints.media("<=520px") {
+      border-radius: 0;
+      border-inline: none;
+    }
+  }
+
+  &.selected {
+    outline: 1px solid var(--inverted-400);
+    outline-offset: -1px;
+  }
+
+  &:not(.small) {
+    @include breakpoints.media("<=420px") {
+      border-radius: 0;
+      border-inline: none;
+    }
+  }
+}
+
+.header {
+  padding: 12px;
+  gap: 12px;
+}
+
+.footer {
+  padding: 12px;
+}
+
+.body {
+  padding: 12px 16px;
+  align-items: flex-start;
+  gap: 2px;
+}
+
+.small-image-wrapper {
+  align-self: flex-start;
+  padding: 12px;
+}
+
+.small-footer {
+  --icon-size: 16px;
+  --icon-stroke: var(--fg-minor);
+
+  gap: 6px;
+}
+
 .x {
-  &.webpage {
-    border-radius: var(--radius-md);
-    border: 1px solid var(--divider);
-    width: 100%;
-    max-width: 420px;
-    overflow: hidden;
-
-    &.small {
-      max-width: 520px;
-
-      @include breakpoints.media("<=520px") {
-        border-radius: 0;
-        border-inline: none;
-      }
-    }
-
-    &.selected {
-      outline: 1px solid var(--inverted-400);
-      outline-offset: -1px;
-    }
-
-    &:not(.small) {
-      @include breakpoints.media("<=420px") {
-        border-radius: 0;
-        border-inline: none;
-      }
-    }
-  }
-
-  &.header {
-    padding: 12px;
-    gap: 12px;
-  }
-
-  &.footer {
-    padding: 12px;
-  }
-
-  &.body {
-    padding: 12px 16px;
-    align-items: flex-start;
-    gap: 2px;
-  }
-
-  &.small-image-wrapper {
-    align-self: flex-start;
-    padding: 12px;
-  }
-
   &.small-image {
     display: inline-block;
     width: 96px;
@@ -57,12 +64,5 @@
     min-width: 96px;
     min-height: 96px;
     border-radius: var(--radius-md);
-  }
-
-  &.small-footer {
-    --icon-size: 16px;
-    --icon-stroke: var(--fg-minor);
-
-    gap: 6px;
   }
 }

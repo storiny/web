@@ -1,0 +1,51 @@
+@use "baseline";
+@use "palette";
+@use "radius";
+@use "typography/main" as typography;
+@use "breakpoints";
+@use "shadow";
+@use "easing";
+@use "z-index";
+
+$dark-theme-selector: 'html[data-theme="dark"]';
+
+:root,
+.force-light-mode {
+  /* Misc */
+  --spacing: 8px;
+  --focus-thickness: 3.75px;
+
+  color-scheme: light;
+
+  @include palette.main;
+  @include radius.main;
+  @include typography.main;
+  @include shadow.main;
+  @include easing.main;
+  @include z-index.main;
+
+  & [data-invert-filter] {
+    filter: invert(1);
+  }
+}
+
+@media not print {
+  #{$dark-theme-selector},
+  .force-dark-mode {
+    color-scheme: dark;
+
+    @include palette.dark;
+    @include shadow.dark;
+
+    & [data-invert-filter] {
+      filter: none;
+    }
+  }
+}
+
+main[data-root="true"] {
+  display: flex;
+  flex-direction: column;
+  padding-block: 12px;
+  grid-area: main;
+}

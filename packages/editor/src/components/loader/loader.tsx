@@ -4,8 +4,9 @@ import { useNProgress as use_n_progress } from "@tanem/react-nprogress";
 import { clsx } from "clsx";
 import React from "react";
 
-import ProgressBar from "~/components/progress-bar";
+import ProgressBar, { ProgressBarProps } from "~/components/progress-bar";
 import Typography from "~/components/typography";
+import css from "~/theme/main.module.scss";
 
 import styles from "./loader.module.scss";
 
@@ -36,29 +37,30 @@ const EditorLoader = ({
     <div
       aria-label={"Loading…"}
       className={clsx(
-        "flex-col",
-        "flex-center",
-        styles.x,
+        css["flex-col"],
+        css["flex-center"],
         styles.loader,
         overlay && styles.overlay
       )}
       data-testid={"overlay"}
     >
-      <Typography className={"t-minor"} level={"body2"}>
+      <Typography className={css["t-minor"]} level={"body2"}>
         {label}
       </Typography>
       {!hide_progress && (
         <ProgressBar
           className={clsx(styles.x, styles.progress)}
           max={100}
-          slot_props={{
-            indicator: {
-              className: "force-animation",
-              style: {
-                transition: `transform ${animation_duration}ms ease-out`
+          slot_props={
+            {
+              indicator: {
+                "data-force-animation": "",
+                style: {
+                  transition: `transform ${animation_duration}ms ease-out`
+                }
               }
-            }
-          }}
+            } as ProgressBarProps["slot_props"]
+          }
           value={is_finished && !loading ? 100 : progress * 100}
         />
       )}

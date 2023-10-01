@@ -6,6 +6,7 @@ import React from "react";
 
 import TabsList from "~/components/tabs-list/tabs-list";
 import RectangleIcon from "~/icons/rectangle";
+import css from "~/theme/main.module.scss";
 
 import Tab from "../tab";
 import TabPanel, { TabPanelProps } from "../tab-panel";
@@ -19,7 +20,7 @@ const CustomTabPanel = ({
 }: TabPanelProps): React.ReactElement => (
   <TabPanel
     {...rest}
-    className={clsx("t-body-2", "t-minor", className)}
+    className={clsx(css["t-body-2"], css["t-minor"], className)}
     style={{
       padding: "calc(2.4 * var(--spacing))",
       border: "1px solid var(--divider)",

@@ -145,8 +145,8 @@ body {
   }
 
   // Reduced motion settings
-  &.reduced-motion:not(.force-animation) {
-    * {
+  &.reduced-motion {
+    *:not([data-force-animation]) {
       animation: none !important;
       transition-duration: 0s !important;
     }

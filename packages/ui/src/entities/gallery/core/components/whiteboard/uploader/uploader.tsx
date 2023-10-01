@@ -9,6 +9,7 @@ import { use_toast } from "~/components/toast";
 import Typography from "~/components/typography";
 import { selected_atom } from "~/entities/gallery/core/atoms";
 import { use_upload_asset_mutation } from "~/redux/features";
+import css from "~/theme/main.module.scss";
 import { get_cdn_url } from "~/utils/get-cdn-url";
 
 import UploadProgress from "../../upload-progress";
@@ -63,13 +64,13 @@ const WhiteboardUploader = (
 
   return (
     <div
-      className={clsx("flex-col", "flex-center", styles.uploader)}
+      className={clsx(css["flex-col"], css["flex-center"], styles.uploader)}
       tabIndex={-1}
     >
       {result.isLoading ? (
         // Loading area
-        <div className={clsx("flex-col", "flex-center")}>
-          <Typography className={"t-medium"} level={"body3"}>
+        <div className={clsx(css["flex-col"], css["flex-center"])}>
+          <Typography className={css["t-medium"]} level={"body3"}>
             Uploading sketch...
           </Typography>
           <Spacer orientation={"vertical"} size={1.5} />
@@ -78,18 +79,24 @@ const WhiteboardUploader = (
       ) : result.isError ? (
         // Upload error area
         <React.Fragment>
-          <Typography className={clsx("t-minor", "t-center")} level={"body2"}>
+          <Typography
+            className={clsx(css["t-minor"], css["t-center"])}
+            level={"body2"}
+          >
             Failed to upload your sketch
           </Typography>
           <Spacer orientation={"vertical"} size={2.25} />
-          <div className={"flex-center"}>
+          <div className={css["flex-center"]}>
             <Button onClick={handle_upload}>Try again</Button>
           </div>
         </React.Fragment>
       ) : (
         // Upload success area
         <React.Fragment>
-          <Typography className={clsx("t-minor", "t-center")} level={"body2"}>
+          <Typography
+            className={clsx(css["t-minor"], css["t-center"])}
+            level={"body2"}
+          >
             Sketch uploaded
           </Typography>
           <Spacer orientation={"vertical"} size={2.25} />
@@ -101,7 +108,7 @@ const WhiteboardUploader = (
             src={(file as any).preview}
           />
           <Spacer orientation={"vertical"} size={2.25} />
-          <div className={"flex-center"}>
+          <div className={css["flex-center"]}>
             <Button onClick={reset} variant={"hollow"}>
               Sketch another
             </Button>
