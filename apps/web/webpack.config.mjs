@@ -1,4 +1,4 @@
-import loaderUtils from "loader-utils";
+import loader_utils from "loader-utils";
 import * as path from "path";
 
 /**
@@ -6,16 +6,16 @@ import * as path from "path";
  * @see https://github.com/vercel/next.js/blob/992c46e63bef20d7ab7e40131667ed3debaf67de/packages/next/build/webpack/config/blocks/css/loaders/getCssModuleLocalIdent.ts
  * @param context Webpack context
  * @param _
- * @param exportName Classname name
+ * @param export_name Classname name
  * @returns {string}
  */
-const hashOnlyIdent = (context, _, exportName) =>
-  loaderUtils
+const hash_only_ident = (context, _, export_name) =>
+  loader_utils
     .getHashDigest(
       Buffer.from(
         `filePath:${path
           .relative(context.rootContext, context.resourcePath)
-          .replace(/\\+/g, "/")}#className:${exportName}`
+          .replace(/\\+/g, "/")}#className:${export_name}`
       ),
       "md4",
       "base64",
@@ -25,7 +25,7 @@ const hashOnlyIdent = (context, _, exportName) =>
     .replace(/^(-?\d|--)/, "_$1");
 
 /** @type {import('next').NextConfig['webpack']} */
-export const webpackConfig = (config, { dev }) => {
+export const webpack_config = (config, { dev }) => {
   /**
    * Loaders
    */
@@ -44,12 +44,12 @@ export const webpackConfig = (config, { dev }) => {
 
   if (!dev) {
     rules.forEach((rule) => {
-      rule.use.forEach((moduleLoader) => {
+      rule.use.forEach((module_loader) => {
         if (
-          moduleLoader.loader?.includes("css-loader") &&
-          !moduleLoader.loader?.includes("postcss-loader")
+          module_loader.loader?.includes("css-loader") &&
+          !module_loader.loader?.includes("postcss-loader")
         ) {
-          moduleLoader.options.modules.getLocalIdent = hashOnlyIdent;
+          module_loader.options.modules.getLocalIdent = hash_only_ident;
         }
       });
     });

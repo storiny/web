@@ -16,8 +16,8 @@ import { BREAKPOINTS } from "~/theme/breakpoints";
 
 import { RemoveAccountProps } from "./remove-account.props";
 import {
-  RemoveAccountSchema,
-  REMOVE_ACCOUNT_SCHEMA
+  REMOVE_ACCOUNT_SCHEMA,
+  RemoveAccountSchema
 } from "./remove-account.schema";
 
 const RemoveAccountModal = (): React.ReactElement => (

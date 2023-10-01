@@ -1,8 +1,8 @@
 import { ImageSize } from "@storiny/shared";
 import type { Metadata } from "next";
-import { get_user } from "~/common/utils/get-user";
 
 import { get_profile } from "~/common/grpc";
+import { get_user } from "~/common/utils/get-user";
 import { get_cdn_url } from "~/utils/get-cdn-url";
 
 export const generateMetadata = async ({

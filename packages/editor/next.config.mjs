@@ -1,7 +1,9 @@
-import * as path from "path";
-import { fileURLToPath } from "url";
+/* eslint-disable prefer-snakecase/prefer-snakecase */
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
+import * as path from "path";
+import { fileURLToPath as file_url_to_path } from "url";
+
+const __dirname = path.dirname(file_url_to_path(import.meta.url));
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {

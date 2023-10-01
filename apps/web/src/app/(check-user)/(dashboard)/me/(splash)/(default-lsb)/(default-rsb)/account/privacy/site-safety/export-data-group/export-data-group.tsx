@@ -18,8 +18,8 @@ import { BREAKPOINTS } from "~/theme/breakpoints";
 import DashboardGroup from "../../../../../dashboard-group";
 import { ExportDataGroupProps } from "./export-data-group.props";
 import {
-  ExportDataSchema,
-  EXPORT_DATA_SCHEMA
+  EXPORT_DATA_SCHEMA,
+  ExportDataSchema
 } from "./export-data-group.schema";
 
 const ExportDataModal = (): React.ReactElement => (

@@ -12,8 +12,8 @@ import DashboardGroup from "../../../../dashboard-group";
 import styles from "../styles.module.scss";
 import { MailNotificationsProps } from "./mail-notifications.props";
 import {
-  MailNotificationsSchema,
-  MAIL_NOTIFICATIONS_SCHEMA
+  MAIL_NOTIFICATIONS_SCHEMA,
+  MailNotificationsSchema
 } from "./mail-notifications.schema";
 
 const MailNotifications = ({

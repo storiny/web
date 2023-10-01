@@ -16,7 +16,7 @@ import { use_app_selector } from "~/redux/hooks";
 
 import styles from "../site-safety.module.scss";
 import { FriendListProps } from "./friend-list.props";
-import { FriendListSchema, FRIEND_LIST_SCHEMA } from "./friend-list.schema";
+import { FRIEND_LIST_SCHEMA, FriendListSchema } from "./friend-list.schema";
 
 const FriendList = ({
   on_submit,

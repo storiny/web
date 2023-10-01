@@ -44,14 +44,14 @@ test.describe("selection", () => {
     const editor_has_focus = async (): Promise<boolean> =>
       await evaluate(page, () => {
         const editor_element = document.querySelector(
-          'div[contenteditable="true"]'
+          'main[contenteditable="true"]'
         );
         return document.activeElement === editor_element;
       });
 
     await evaluate(page, () => {
       const editor_element = document.querySelector(
-        'div[contenteditable="true"]'
+        'main[contenteditable="true"]'
       ) as HTMLElement;
       return editor_element?.blur();
     });

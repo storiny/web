@@ -23,7 +23,7 @@ export const assert_selection = async (
   }
 
   const selection = await frame.evaluate(() => {
-    const root_element = document.querySelector('div[contenteditable="true"]');
+    const root_element = document.querySelector('main[contenteditable="true"]');
 
     const get_path_from_node = (node: Node | null): number[] => {
       if (node === root_element) {
@@ -52,7 +52,7 @@ export const assert_selection = async (
 
     const {
       anchorNode: anchor_node,
-      anchor_offset: anchor_offset,
+      anchorOffset: anchor_offset,
       focusNode: focus_node,
       focusOffset: focus_offset
     } = window.getSelection()!;

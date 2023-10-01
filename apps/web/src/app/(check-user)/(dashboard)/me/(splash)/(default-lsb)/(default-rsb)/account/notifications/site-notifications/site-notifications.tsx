@@ -12,8 +12,8 @@ import DashboardGroup from "../../../../dashboard-group";
 import styles from "../styles.module.scss";
 import { SiteNotificationsProps } from "./site-notifications.props";
 import {
-  SiteNotificationsSchema,
-  SITE_NOTIFICATIONS_SCHEMA
+  SITE_NOTIFICATIONS_SCHEMA,
+  SiteNotificationsSchema
 } from "./site-notifications.schema";
 
 const SiteNotifications = ({

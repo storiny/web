@@ -1,8 +1,8 @@
 import { DEFAULT_WPM } from "@storiny/shared";
 
+import { use_toast } from "~/components/toast";
 import { use_signup_mutation } from "~/redux/features";
 
-import { use_toast } from "~/components/toast";
 import { use_auth_state } from "./actions";
 
 /**

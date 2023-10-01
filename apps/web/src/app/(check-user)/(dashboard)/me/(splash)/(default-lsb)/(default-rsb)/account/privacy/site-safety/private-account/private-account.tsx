@@ -16,8 +16,8 @@ import { use_private_account_mutation } from "~/redux/features";
 import styles from "../site-safety.module.scss";
 import { PrivateAccountProps } from "./private-account.props";
 import {
-  PrivateAccountSchema,
-  PRIVATE_ACCOUNT_SCHEMA
+  PRIVATE_ACCOUNT_SCHEMA,
+  PrivateAccountSchema
 } from "./private-account.schema";
 
 const PrivateAccount = ({

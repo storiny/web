@@ -17,8 +17,8 @@ import { use_app_selector } from "~/redux/hooks";
 import styles from "../site-safety.module.scss";
 import { FollowingListProps } from "./following-list.props";
 import {
-  FollowingListSchema,
-  FOLLOWING_LIST_SCHEMA
+  FOLLOWING_LIST_SCHEMA,
+  FollowingListSchema
 } from "./following-list.schema";
 
 const FollowingList = ({

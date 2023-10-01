@@ -1,29 +1,31 @@
-import bundleAnalyzer from "@next/bundle-analyzer";
+/* eslint-disable prefer-snakecase/prefer-snakecase */
+
+import bundle_analyzer from "@next/bundle-analyzer";
 import mdx from "@next/mdx";
 import { polyfill } from "interweave-ssr";
-import { customAlphabet } from "nanoid";
+import { customAlphabet as custom_alphabet } from "nanoid";
 import * as path from "path";
-import { fileURLToPath } from "url";
+import { fileURLToPath as file_url_to_path } from "url";
 
 import { mdxConfig } from "./mdx.config.mjs";
 import * as pkg from "./package.json" assert { type: "json" };
-import { webpackConfig } from "./webpack.config.mjs";
+import { webpack_config } from "./webpack.config.mjs";
 
 polyfill();
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const nanoid = customAlphabet("1234567890abcdef", 6);
+const __dirname = path.dirname(file_url_to_path(import.meta.url));
+const nanoid = custom_alphabet("1234567890abcdef", 6);
 
-const withMDX = mdx({
+const with_mdx = mdx({
   options: mdxConfig
 });
 
-const withBundleAnalyzer = bundleAnalyzer({
+const with_bundle_analyzer = bundle_analyzer({
   enabled: process.env.ANALYZE === "true"
 });
 
 /** @type {import('next').NextConfig} */
-const nextConfig = {
+const next_config = {
   images: {
     loader: "custom",
     loaderFile: "./img.loader.js",
@@ -49,7 +51,7 @@ const nextConfig = {
   poweredByHeader: false,
   reactStrictMode: true,
   transpilePackages: ["@storiny/ui"],
-  webpack: webpackConfig
+  webpack: webpack_config
 };
 
-export default withBundleAnalyzer(withMDX(nextConfig));
+export default with_bundle_analyzer(with_mdx(next_config));
