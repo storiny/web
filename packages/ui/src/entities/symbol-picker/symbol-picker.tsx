@@ -17,6 +17,7 @@ import CloudOffIcon from "~/icons/cloud-off";
 import HandClickIcon from "~/icons/hand-click";
 import SearchIcon from "~/icons/search";
 import XIcon from "~/icons/x";
+import css from "~/theme/main.module.scss";
 
 import { symbol_query_atom } from "./core/atoms";
 import styles from "./symbol-picker.module.scss";
@@ -32,17 +33,17 @@ const HoveredSymbol = dynamic(
 const List = dynamic(() => import("./core/components/list"), {
   loading: ({ error, isLoading: is_loading, retry }) => (
     <div
-      className={clsx("full-w", "flex-center")}
+      className={clsx(css["full-w"], css["flex-center"])}
       style={{ minHeight: "292px" }}
     >
       {error && !is_loading ? (
         <div
-          className={clsx("flex-col", "flex-center")}
+          className={clsx(css["flex-col"], css["flex-center"])}
           style={{ "--icon-size": "36px" } as React.CSSProperties}
         >
           <CloudOffIcon />
           <Spacer orientation={"vertical"} />
-          <Typography className={"t-minor"} level={"body3"}>
+          <Typography className={css["t-minor"]} level={"body3"}>
             Network error
           </Typography>
           <Spacer orientation={"vertical"} size={2} />
@@ -69,7 +70,7 @@ const SearchInput = (): React.ReactElement => {
       onChange={(event): void => set_query(event.target.value)}
       placeholder={"Search"}
       slot_props={{
-        container: { className: "f-grow" }
+        container: { className: css["f-grow"] }
       }}
       type={"search"}
     />
@@ -103,15 +104,15 @@ const SymbolPicker = (props: SymbolPickerProps): React.ReactElement => {
       trigger={children}
     >
       <Provider>
-        <div className={clsx("flex-center", styles.header)}>
-          <span className={clsx("flex-center", styles.icon)}>
+        <div className={clsx(css["flex-center"], styles.header)}>
+          <span className={clsx(css["flex-center"], styles.icon)}>
             <HoveredSymbol />
           </span>
-          <Typography className={"t-bold"} level={"body2"}>
+          <Typography className={css["t-bold"]} level={"body2"}>
             Pick a symbol
           </Typography>
           <Grow />
-          <div className={clsx("flex-center", styles.close)}>
+          <div className={clsx(css["flex-center"], styles.close)}>
             <Close aria-label={"Close"} asChild title={"Close"}>
               <IconButton variant={"ghost"}>
                 <XIcon />
@@ -124,7 +125,7 @@ const SymbolPicker = (props: SymbolPickerProps): React.ReactElement => {
         >
           <List />
         </SymbolPickerContext.Provider>
-        <div className={clsx("flex-center", styles.footer)}>
+        <div className={clsx(css["flex-center"], styles.footer)}>
           <SearchInput />
         </div>
       </Provider>

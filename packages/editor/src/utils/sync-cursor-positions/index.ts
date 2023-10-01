@@ -12,6 +12,7 @@ import {
 import { XmlElement, XmlText } from "yjs";
 import { YMap } from "yjs/dist/src/internals";
 
+import css from "~/theme/main.module.scss";
 import { get_cdn_url } from "~/utils/get-cdn-url";
 
 import { Binding } from "../../collaboration/bindings";
@@ -107,7 +108,7 @@ const create_cursor_selection = (
   caret.className = styles.caret;
   caret.style.setProperty("--color", color);
   const wrapper = document.createElement("span");
-  wrapper.className = clsx("flex-center", styles.wrapper);
+  wrapper.className = clsx(css["flex-center"], styles.wrapper);
 
   if (cursor.avatar_id) {
     const avatar = document.createElement("img");
@@ -132,7 +133,7 @@ const create_cursor_selection = (
 
   const name = document.createElement("span");
   name.textContent = cursor.name;
-  name.className = clsx("ellipsis", "f-grow", styles.name);
+  name.className = clsx(css["ellipsis"], css["f-grow"], styles.name);
 
   wrapper.appendChild(name);
   caret.appendChild(wrapper);

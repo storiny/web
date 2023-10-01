@@ -2,9 +2,10 @@ import { useNProgress as use_n_progress } from "@tanem/react-nprogress";
 import clsx from "clsx";
 import React from "react";
 
-import ProgressBar from "~/components/progress-bar";
+import ProgressBar, { ProgressBarProps } from "~/components/progress-bar";
 import Spacer from "~/components/spacer";
 import Typography from "~/components/typography";
+import css from "~/theme/main.module.scss";
 
 import styles from "./loader.module.scss";
 
@@ -24,22 +25,24 @@ const WhiteboardLoader = (): React.ReactElement => {
   }, []);
 
   return (
-    <div className={clsx("flex-col", "flex-center")}>
-      <Typography className={"t-medium"} level={"body3"}>
+    <div className={clsx(css["flex-col"], css["flex-center"])}>
+      <Typography className={css["t-medium"]} level={"body3"}>
         Loading whiteboard…
       </Typography>
       <Spacer orientation={"vertical"} size={1.5} />
       <ProgressBar
         className={styles.progress}
         max={100}
-        slot_props={{
-          indicator: {
-            className: "force-animation",
-            style: {
-              transition: `transform ${animation_duration}ms ease-out`
+        slot_props={
+          {
+            indicator: {
+              "data-force-animation": "",
+              style: {
+                transition: `transform ${animation_duration}ms ease-out`
+              }
             }
-          }
-        }}
+          } as ProgressBarProps["slot_props"]
+        }
         value={is_finished && !loading ? 100 : progress * 100}
       />
     </div>

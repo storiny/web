@@ -21,6 +21,7 @@ import {
   use_get_blocked_users_query
 } from "~/redux/features";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
+import css from "~/theme/main.module.scss";
 import { abbreviate_number } from "~/utils/abbreviate-number";
 
 import DashboardTitle from "../../dashboard-title";
@@ -50,9 +51,9 @@ const StatusHeader = ({
   return (
     <div
       className={clsx(
-        "full-bleed",
-        "dashboard-header",
-        "flex-center",
+        css["full-bleed"],
+        css["dashboard-header"],
+        css["flex-center"],
         styles["status-header"]
       )}
     >
@@ -62,7 +63,9 @@ const StatusHeader = ({
         ) : (
           <>
             You have blocked{" "}
-            <span className={"t-bold"}>{abbreviate_number(block_count)}</span>{" "}
+            <span className={css["t-bold"]}>
+              {abbreviate_number(block_count)}
+            </span>{" "}
             {block_count === 1 ? "user" : "users"}.
           </>
         )}
@@ -88,9 +91,9 @@ const ControlBar = ({
 }): React.ReactElement => (
   <div
     className={clsx(
-      "flex-center",
-      "full-bleed",
-      "dashboard-header",
+      css["flex-center"],
+      css["full-bleed"],
+      css["dashboard-header"],
       styles["control-bar"]
     )}
   >

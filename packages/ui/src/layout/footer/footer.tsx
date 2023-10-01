@@ -13,6 +13,7 @@ import Link, { LinkProps } from "~/components/link";
 import Typography from "~/components/typography";
 import PencilPlusIcon from "~/icons/pencil-plus";
 import TwitterIcon from "~/icons/twitter";
+import css from "~/theme/main.module.scss";
 
 import styles from "./footer.module.scss";
 import { FooterProps } from "./footer.props";
@@ -24,7 +25,7 @@ const List = ({
 }: {
   children: React.ReactNode;
 }): React.ReactElement => (
-  <ul className={clsx("flex-col", styles.list)}>{children}</ul>
+  <ul className={clsx(css["flex-col"], styles.list)}>{children}</ul>
 );
 
 // List item
@@ -39,13 +40,13 @@ const Footer = (props: FooterProps): React.ReactElement => {
   const { className, ...rest } = props;
   return (
     <footer {...rest} className={clsx(styles.footer, className)}>
-      <div className={clsx("flex-col", styles.container)}>
+      <div className={clsx(css["flex-col"], styles.container)}>
         <div className={clsx(styles.content)}>
-          <div className={clsx("flex-col", styles.branding)}>
+          <div className={clsx(css["flex-col"], styles.branding)}>
             <Wordmark
               aria-label={"Go to homepage"}
               as={NextLink}
-              className={clsx(styles.wordmark, "focusable")}
+              className={clsx(styles.wordmark, css["focusable"])}
               href={"/"}
             />
             <Typography className={clsx(styles.tagline)} level={"body2"}>
@@ -62,12 +63,9 @@ const Footer = (props: FooterProps): React.ReactElement => {
               Write
             </Button>
           </div>
-          <Grow className={clsx(styles.grow)} />
-          <div className={clsx("flex-col", styles["list-container"])}>
-            <Typography
-              className={clsx(styles["list-heading"])}
-              level={"body2"}
-            >
+          <Grow className={styles.grow} />
+          <div className={clsx(css["flex-col"], styles["list-container"])}>
+            <Typography className={styles["list-heading"]} level={"body2"}>
               Directories
             </Typography>
             <List>
@@ -85,11 +83,8 @@ const Footer = (props: FooterProps): React.ReactElement => {
               </ListItem>
             </List>
           </div>
-          <div className={clsx("flex-col", styles["list-container"])}>
-            <Typography
-              className={clsx(styles["list-heading"])}
-              level={"body2"}
-            >
+          <div className={clsx(css["flex-col"], styles["list-container"])}>
+            <Typography className={styles["list-heading"]} level={"body2"}>
               Company
             </Typography>
             <List>
@@ -114,11 +109,8 @@ const Footer = (props: FooterProps): React.ReactElement => {
               </ListItem>
             </List>
           </div>
-          <div className={clsx("flex-col", styles["list-container"])}>
-            <Typography
-              className={clsx(styles["list-heading"])}
-              level={"body2"}
-            >
+          <div className={clsx(css["flex-col"], styles["list-container"])}>
+            <Typography className={styles["list-heading"]} level={"body2"}>
               Help
             </Typography>
             <List>
@@ -144,7 +136,7 @@ const Footer = (props: FooterProps): React.ReactElement => {
         </div>
         <Divider />
         <div className={clsx(styles.copyright)}>
-          <Typography className={"t-minor"} level={"body2"}>
+          <Typography className={css["t-minor"]} level={"body2"}>
             © {new Date().getFullYear()} Storiny. All rights reserved.
           </Typography>
           <IconButton

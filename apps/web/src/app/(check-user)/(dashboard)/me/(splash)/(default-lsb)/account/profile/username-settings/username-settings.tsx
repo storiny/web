@@ -1,5 +1,4 @@
 import { USER_PROPS } from "@storiny/shared";
-import { clsx } from "clsx";
 import React from "react";
 
 import Button from "~/components/button";
@@ -16,6 +15,7 @@ import PasswordIcon from "~/icons/password";
 import { mutate_user, use_username_settings_mutation } from "~/redux/features";
 import { use_app_dispatch } from "~/redux/hooks";
 import { BREAKPOINTS } from "~/theme/breakpoints";
+import css from "~/theme/main.module.scss";
 
 import { UsernameSettingsProps } from "./username-settings.props";
 import {
@@ -26,7 +26,7 @@ import {
 const UsernameSettingsModal = (): React.ReactElement => (
   <React.Fragment>
     <Description asChild>
-      <Typography className={"t-minor"} level={"body2"}>
+      <Typography className={css["t-minor"]} level={"body2"}>
         Enter your new username along with your existing password.
       </Typography>
     </Description>
@@ -38,7 +38,7 @@ const UsernameSettingsModal = (): React.ReactElement => (
       decorator={<AtIcon />}
       form_slot_props={{
         form_item: {
-          className: "f-grow"
+          className: css["f-grow"]
         }
       }}
       label={"New username"}
@@ -55,7 +55,7 @@ const UsernameSettingsModal = (): React.ReactElement => (
       decorator={<PasswordIcon />}
       form_slot_props={{
         form_item: {
-          className: "f-grow"
+          className: css["f-grow"]
         }
       }}
       label={"Current password"}
@@ -108,7 +108,7 @@ const UsernameSettings = ({
     ({ open_modal }) => (
       <Button
         check_auth
-        className={"fit-w"}
+        className={css["fit-w"]}
         onClick={open_modal}
         variant={"hollow"}
       >
@@ -116,7 +116,7 @@ const UsernameSettings = ({
       </Button>
     ),
     <Form<UsernameSettingsSchema>
-      className={clsx("flex-col")}
+      className={css["flex-col"]}
       disabled={is_loading}
       on_submit={handle_submit}
       provider_props={form}

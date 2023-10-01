@@ -9,6 +9,7 @@ import CheckSquareIcon from "~/icons/check-square";
 import InfoIcon from "~/icons/info";
 import XIcon from "~/icons/x";
 import XSquareIcon from "~/icons/x-square";
+import css from "~/theme/main.module.scss";
 import { forward_ref } from "~/utils/forward-ref";
 
 import common_styles from "../common/toast.module.scss";
@@ -39,14 +40,14 @@ const Toast = forward_ref<ToastProps, "li">((props, ref) => {
       className={clsx(
         styles.toast,
         common_styles["toast-animation"],
-        "focusable",
+        css["focusable"],
         className
       )}
       data-testid={"toast"}
       ref={ref}
     >
       <Component>
-        <Description className={clsx("ellipsis", styles.description)}>
+        <Description className={clsx(css["ellipsis"], styles.description)}>
           {severity !== "blank" && (
             <span
               {...slot_props?.decorator}
@@ -65,11 +66,15 @@ const Toast = forward_ref<ToastProps, "li">((props, ref) => {
           aria-label="Dismiss"
           title={"Dismiss"}
           {...slot_props?.close}
-          className={clsx("unset", styles.close, slot_props?.close?.className)}
+          className={clsx(
+            css["unset"],
+            styles.close,
+            slot_props?.close?.className
+          )}
         >
           <span
             aria-hidden
-            className={clsx("flex-center", styles["close-wrapper"])}
+            className={clsx(css["flex-center"], styles["close-wrapper"])}
           >
             <XIcon />
           </span>

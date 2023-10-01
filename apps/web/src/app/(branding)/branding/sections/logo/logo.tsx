@@ -9,6 +9,7 @@ import Divider from "~/components/divider";
 import Link from "~/components/link";
 import Spacer from "~/components/spacer";
 import Typography from "~/components/typography";
+import css from "~/theme/main.module.scss";
 
 import page_styles from "../../styles.module.scss";
 import common_styles from "../common.module.scss";
@@ -23,10 +24,10 @@ const LogoSpacingAndSize = (): React.ReactElement => (
       as clear space around the logo.
     </Typography>
     <Spacer orientation={"vertical"} size={5} />
-    <figure className={clsx("flex-center", page_styles.figure)}>
+    <figure className={clsx(css["flex-center"], page_styles.figure)}>
       <img
         alt={""}
-        className={"invert"}
+        data-invert-filter={""}
         loading={"lazy"}
         src={`${process.env.NEXT_PUBLIC_CDN_URL}/web-assets/branding/wordmark/spacing.svg`}
       />
@@ -38,10 +39,10 @@ const LogoSpacingAndSize = (): React.ReactElement => (
       down.
     </Typography>
     <Spacer orientation={"vertical"} size={5} />
-    <figure className={clsx("flex-center", page_styles.figure)}>
+    <figure className={clsx(css["flex-center"], page_styles.figure)}>
       <img
         alt={""}
-        className={"invert"}
+        data-invert-filter={""}
         loading={"lazy"}
         src={`${process.env.NEXT_PUBLIC_CDN_URL}/web-assets/branding/wordmark/minimum-size.svg`}
         style={{ maxHeight: "84px" }}
@@ -59,10 +60,10 @@ const LogoColor = (): React.ReactElement => (
       (The Storiny Obsidian color) as defined in our brand colors.
     </Typography>
     <Spacer orientation={"vertical"} size={5} />
-    <div className={clsx("flex-col", styles["logo-color"])}>
+    <div className={clsx(css["flex-col"], styles["logo-color"])}>
       <figure
         className={clsx(
-          "flex-center",
+          css["flex-center"],
           "force-light-mode",
           page_styles.figure,
           page_styles["with-background"]
@@ -72,7 +73,7 @@ const LogoColor = (): React.ReactElement => (
       </figure>
       <figure
         className={clsx(
-          "flex-center",
+          css["flex-center"],
           "force-dark-mode",
           page_styles.figure,
           page_styles["with-background"]
@@ -92,7 +93,7 @@ const LogoMisuse = (): React.ReactElement => (
       examples of such incorrect usage for your reference.
     </Typography>
     <Spacer orientation={"vertical"} size={5} />
-    <div className={clsx("flex-col", styles["misuse-container"])}>
+    <div className={clsx(css["flex-col"], styles["misuse-container"])}>
       <FigureWithCaption
         caption={
           "Do not change the orientation of the logo elements or alter the icon."
@@ -140,10 +141,10 @@ const IconSpacingAndSize = (): React.ReactElement => (
       150% of its width as empty space around it.
     </Typography>
     <Spacer orientation={"vertical"} size={5} />
-    <figure className={clsx("flex-center", page_styles.figure)}>
+    <figure className={clsx(css["flex-center"], page_styles.figure)}>
       <img
         alt={""}
-        className={"invert"}
+        data-invert-filter={""}
         loading={"lazy"}
         src={`${process.env.NEXT_PUBLIC_CDN_URL}/web-assets/branding/icon/spacing.svg`}
       />
@@ -155,10 +156,10 @@ const IconSpacingAndSize = (): React.ReactElement => (
       unrecognizable.
     </Typography>
     <Spacer orientation={"vertical"} size={5} />
-    <figure className={clsx("flex-center", page_styles.figure)}>
+    <figure className={clsx(css["flex-center"], page_styles.figure)}>
       <img
         alt={""}
-        className={"invert"}
+        data-invert-filter={""}
         loading={"lazy"}
         src={`${process.env.NEXT_PUBLIC_CDN_URL}/web-assets/branding/icon/minimum-size.svg`}
         style={{ maxHeight: "96px" }}
@@ -175,10 +176,10 @@ const IconColor = (): React.ReactElement => (
       for the Storiny logo.
     </Typography>
     <Spacer orientation={"vertical"} size={5} />
-    <div className={clsx("flex-col", styles["logo-color"])}>
+    <div className={clsx(css["flex-col"], styles["logo-color"])}>
       <figure
         className={clsx(
-          "flex-center",
+          css["flex-center"],
           "force-light-mode",
           page_styles.figure,
           page_styles["with-background"]
@@ -188,7 +189,7 @@ const IconColor = (): React.ReactElement => (
       </figure>
       <figure
         className={clsx(
-          "flex-center",
+          css["flex-center"],
           "force-dark-mode",
           page_styles.figure,
           page_styles["with-background"]
@@ -207,8 +208,8 @@ const IconColor = (): React.ReactElement => (
     <Spacer orientation={"vertical"} size={5} />
     <figure
       className={clsx(
-        "flex-col",
-        "t-center",
+        css["flex-col"],
+        css["t-center"],
         page_styles.figure,
         common_styles["figure-with-caption"],
         common_styles["image-with-border"]
@@ -218,7 +219,7 @@ const IconColor = (): React.ReactElement => (
         alt={""}
         src={`${process.env.NEXT_PUBLIC_CDN_URL}/web-assets/branding/icon/overlay`}
       />
-      <Typography as={"figcaption"} className={"t-minor"} level={"body2"}>
+      <Typography as={"figcaption"} className={css["t-minor"]} level={"body2"}>
         The Storiny icon being overlaid on top of an image. Image credit:{" "}
         <Link
           href={"https://unsplash.com/photos/IxnPudNyaz0?utm_source=storiny"}
@@ -240,7 +241,7 @@ const IconMisuse = (): React.ReactElement => (
       examples of such incorrect usage for your reference.
     </Typography>
     <Spacer orientation={"vertical"} size={5} />
-    <div className={clsx("flex-col", styles["misuse-container"])}>
+    <div className={clsx(css["flex-col"], styles["misuse-container"])}>
       <FigureWithCaption
         caption={
           "Do not rotate or distort the icon, and do not add colors or gradients that are not specified in the usage guidelines."
@@ -266,18 +267,18 @@ const FigureWithCaption = ({
 }): React.ReactElement => (
   <figure
     className={clsx(
-      "flex-col",
-      "t-center",
+      css["flex-col"],
+      css["t-center"],
       page_styles.figure,
       common_styles["figure-with-caption"]
     )}
   >
     <img
       alt={""}
-      className={"invert"}
+      data-invert-filter={""}
       src={`${process.env.NEXT_PUBLIC_CDN_URL}/${src}`}
     />
-    <Typography as={"figcaption"} className={"t-minor"} level={"body2"}>
+    <Typography as={"figcaption"} className={css["t-minor"]} level={"body2"}>
       {caption}
     </Typography>
   </figure>
@@ -292,14 +293,14 @@ const LogoSection = (): React.ReactElement => (
     >
       Logo
     </Typography>
-    <div className={clsx("flex-col", page_styles["section-content"])}>
+    <div className={clsx(css["flex-col"], page_styles["section-content"])}>
       <Typography level={"legible"}>
         We take great pride in our minimal and memorable logo design, and how it
         represents our brand. In order to preserve its visual integrity, we
         kindly request that you follow the guidelines outlined below when using
         it.
       </Typography>
-      <div className={clsx("flex-col", page_styles["sub-section"])}>
+      <div className={clsx(css["flex-col"], page_styles["sub-section"])}>
         <Typography level={"h3"}>The Storiny Logo</Typography>
         <Typography level={"legible"}>
           Our logo is comprised of a contemporary wordmark and icon, which
@@ -308,14 +309,14 @@ const LogoSection = (): React.ReactElement => (
         <Spacer orientation={"vertical"} size={5} />
         <figure
           className={clsx(
-            "flex-center",
+            css["flex-center"],
             page_styles.figure,
             page_styles["with-background"]
           )}
         >
           <img
             alt={""}
-            className={"invert"}
+            data-invert-filter={""}
             loading={"lazy"}
             src={`${process.env.NEXT_PUBLIC_CDN_URL}/web-assets/branding/wordmark/wordmark.svg`}
           />
@@ -334,7 +335,7 @@ const LogoSection = (): React.ReactElement => (
         <LogoMisuse />
       </div>
       <Divider />
-      <div className={clsx("flex-col", page_styles["sub-section"])}>
+      <div className={clsx(css["flex-col"], page_styles["sub-section"])}>
         <Typography level={"h3"}>The Storiny Icon</Typography>
         <Typography level={"legible"}>
           The use of the Storiny icon as a standalone element is permissible in
@@ -344,14 +345,14 @@ const LogoSection = (): React.ReactElement => (
         <Spacer orientation={"vertical"} size={5} />
         <figure
           className={clsx(
-            "flex-center",
+            css["flex-center"],
             page_styles.figure,
             page_styles["with-background"]
           )}
         >
           <img
             alt={""}
-            className={"invert"}
+            data-invert-filter={""}
             loading={"lazy"}
             src={`${process.env.NEXT_PUBLIC_CDN_URL}/web-assets/branding/icon/icon.svg`}
             style={{ maxHeight: "220px" }}
@@ -365,7 +366,7 @@ const LogoSection = (): React.ReactElement => (
         <IconMisuse />
       </div>
       <Divider />
-      <div className={clsx("flex-col", page_styles["sub-section"])}>
+      <div className={clsx(css["flex-col"], page_styles["sub-section"])}>
         <Typography level={"h3"}>Color combinations</Typography>
         <Typography level={"legible"}>
           The Storiny icon and the Storiny logo must always be displayed in
@@ -377,7 +378,7 @@ const LogoSection = (): React.ReactElement => (
         <Spacer orientation={"vertical"} size={5} />
         <figure
           className={clsx(
-            "flex-col",
+            css["flex-col"],
             page_styles.figure,
             common_styles["image-with-border"]
           )}

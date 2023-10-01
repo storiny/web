@@ -19,6 +19,7 @@ import { select_unread_notification_count } from "~/redux/features";
 import { select_is_logged_in } from "~/redux/features/auth/selectors";
 import { use_app_selector } from "~/redux/hooks";
 import { BREAKPOINTS } from "~/theme/breakpoints";
+import css from "~/theme/main.module.scss";
 
 import styles from "./bottom-navigation.module.scss";
 import { BottomNavigationProps } from "./bottom-navigation.props";
@@ -61,20 +62,17 @@ const BottomNavigation = (
   }
 
   return (
-    <div
-      {...rest}
-      className={clsx(styles.x, styles["bottom-navigation"], className)}
-    >
+    <div {...rest} className={clsx(styles["bottom-navigation"], className)}>
       <Tabs
         activationMode={"manual"}
-        className={"full-w"}
+        className={css["full-w"]}
         defaultValue={"home"}
         role={undefined}
       >
         <TabsList
           aria-orientation={undefined}
           as={"nav"}
-          className={clsx("full-w", styles.x, styles["tabs-list"])}
+          className={clsx(css["full-w"], styles.x, styles["tabs-list"])}
           loop={false}
           role={undefined}
           size={"lg"}

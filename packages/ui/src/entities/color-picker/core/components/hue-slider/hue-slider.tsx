@@ -3,6 +3,8 @@
 import clsx from "clsx";
 import React from "react";
 
+import css from "~/theme/main.module.scss";
+
 import { use_hue_slider } from "../../hooks";
 import common_styles from "../common.module.scss";
 import styles from "../slider.module.scss";
@@ -35,7 +37,7 @@ const HueSlider = React.memo((props: HueSliderProps) => {
     <div
       {...rest}
       {...slider_props}
-      className={clsx("focusable", styles.container, className)}
+      className={clsx(css["focusable"], styles.container, className)}
       ref={ref}
       style={{ ...style, ...HUE_STYLE }}
       tabIndex={0}

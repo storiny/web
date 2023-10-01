@@ -1,4 +1,3 @@
-import { clsx } from "clsx";
 import { useAtomValue as use_atom_value } from "jotai";
 import React from "react";
 
@@ -27,7 +26,7 @@ const SuspendedEditorLeftSidebarEditableContent = ({
   return (
     <React.Fragment>
       <EditorStoryCard status={status} />
-      <div className={clsx(styles.x, styles["padded-divider"])}>
+      <div className={styles["padded-divider"]}>
         <Divider />
       </div>
       <EditorToc disabled={status === "deleted"} />

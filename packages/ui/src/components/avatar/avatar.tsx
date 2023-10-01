@@ -6,6 +6,7 @@ import clsx from "clsx";
 import React from "react";
 
 import { AvatarGroupContext } from "~/components/avatar-group/avatar-group-context";
+import css from "~/theme/main.module.scss";
 import { forward_ref } from "~/utils/forward-ref";
 import { get_cdn_url } from "~/utils/get-cdn-url";
 
@@ -99,7 +100,7 @@ const Avatar = forward_ref<AvatarProps, "span">((props, ref) => {
           delayMs={children ? 0 : 500}
           {...slot_props?.fallback}
           className={clsx(
-            "flex-center",
+            css["flex-center"],
             styles.fallback,
             slot_props?.fallback?.className
           )}

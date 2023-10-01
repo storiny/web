@@ -15,6 +15,7 @@ import UserCheckIcon from "~/icons/user-check";
 import UserPlusIcon from "~/icons/user-plus";
 import { boolean_action } from "~/redux/features";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
+import css from "~/theme/main.module.scss";
 import { abbreviate_number } from "~/utils/abbreviate-number";
 
 import { story_metadata_atom } from "../../../../../../atoms";
@@ -26,10 +27,10 @@ const StoryActions = ({ user }: { user: User }): React.ReactElement => {
   );
 
   return (
-    <div className={"flex"}>
+    <div className={css["flex"]}>
       <Button
         check_auth
-        className={"fit-w"}
+        className={css["fit-w"]}
         decorator={is_following ? <UserCheckIcon /> : <UserPlusIcon />}
         onClick={(): void => {
           dispatch(boolean_action("following", user.id));
@@ -62,7 +63,7 @@ const StoryWriter = (): React.ReactElement => {
     use_app_selector((state) => state.entities.follower_counts[user.id]) || 0;
 
   return (
-    <div className={"flex-col"}>
+    <div className={css["flex-col"]}>
       <Persona
         avatar={{
           alt: `${user?.name}'s avatar`,
@@ -70,7 +71,7 @@ const StoryWriter = (): React.ReactElement => {
           label: user?.name,
           hex: user?.avatar_hex
         }}
-        className={"fit-w"}
+        className={css["fit-w"]}
         component_props={{
           secondary_text: {
             ellipsis: true
@@ -102,7 +103,7 @@ const StoryWriter = (): React.ReactElement => {
       {user.bio.trim() ? (
         <React.Fragment>
           <Spacer orientation={"vertical"} size={2} />
-          <Typography className={"t-minor"} level={"body2"}>
+          <Typography className={css["t-minor"]} level={"body2"}>
             {user.bio}
           </Typography>
         </React.Fragment>

@@ -11,6 +11,7 @@ import { use_media_query } from "~/hooks/use-media-query";
 import { set_code_font } from "~/redux/features";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 import { BREAKPOINTS } from "~/theme/breakpoints";
+import css from "~/theme/main.module.scss";
 
 import common_styles from "../../styles.module.scss";
 import typeface_styles from "../../typeface.module.scss";
@@ -70,15 +71,21 @@ const TypefaceItem = ({
 }): React.ReactElement => (
   <div
     className={clsx(
-      "flex-col",
+      css["flex-col"],
       common_styles.item,
       is_active && common_styles.selected,
       typeface_styles.item,
       is_active && typeface_styles.selected
     )}
   >
-    <AspectRatio className={"full-w"} ratio={2.3}>
-      <div className={clsx("flex-center", "full-w", typeface_styles.decorator)}>
+    <AspectRatio className={css["full-w"]} ratio={2.3}>
+      <div
+        className={clsx(
+          css["flex-center"],
+          css["full-w"],
+          typeface_styles.decorator
+        )}
+      >
         {decorator}
       </div>
     </AspectRatio>
@@ -107,7 +114,7 @@ const CodeFontTypefacePreference = (): React.ReactElement => {
         Typeface
       </Typography>
       <Spacer orientation={"vertical"} />
-      <Typography className={"t-minor"} level={"body2"}>
+      <Typography className={css["t-minor"]} level={"body2"}>
         Choose a monospaced typeface that you find comfortable for reading code
         blocks and code snippets.
       </Typography>

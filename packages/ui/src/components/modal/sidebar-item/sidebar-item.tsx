@@ -5,6 +5,7 @@ import clsx from "clsx";
 import React from "react";
 
 import { ModalSidebarItemProps } from "~/components/modal";
+import css from "~/theme/main.module.scss";
 
 import styles from "./sidebar-item.module.scss";
 
@@ -18,8 +19,8 @@ const ModalSidebarItem = React.forwardRef<
       {...rest}
       className={clsx(
         styles.reset,
-        "flex-center",
-        "focusable",
+        css["flex-center"],
+        css["focusable"],
         styles["sidebar-item"],
         className
       )}
@@ -29,7 +30,7 @@ const ModalSidebarItem = React.forwardRef<
         <span
           {...slot_props?.decorator}
           className={clsx(
-            "flex-center",
+            css["flex-center"],
             styles.decorator,
             slot_props?.decorator?.className
           )}

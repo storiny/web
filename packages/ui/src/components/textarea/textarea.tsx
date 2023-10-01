@@ -3,6 +3,7 @@
 import clsx from "clsx";
 import React from "react";
 
+import css from "~/theme/main.module.scss";
 import { forward_ref } from "~/utils/forward-ref";
 
 import styles from "./textarea.module.scss";
@@ -64,7 +65,7 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
       <Container
         {...slot_props?.container}
         className={clsx(
-          "flex-col",
+          css["flex-col"],
           styles.container,
           styles[color],
           styles[size],
@@ -77,7 +78,7 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
         <textarea
           {...rest}
           autoFocus={auto_focus}
-          className={clsx("unset", styles.textarea, className)}
+          className={clsx(css["unset"], styles.textarea, className)}
           disabled={disabled}
           onBlur={handle_blur}
           onFocus={handle_focus}

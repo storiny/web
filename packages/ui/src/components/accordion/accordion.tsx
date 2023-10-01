@@ -13,6 +13,7 @@ import clsx from "clsx";
 import React from "react";
 
 import ChevronIcon from "~/icons/chevron";
+import css from "~/theme/main.module.scss";
 import { forward_ref } from "~/utils/forward-ref";
 
 import button_styles from "../common/button-reset.module.scss";
@@ -82,7 +83,7 @@ const AccordionHeader = forward_ref<AccordionHeaderProps, "h3">(
     <AccordionHeaderPrimitive
       {...rest}
       asChild
-      className={clsx("flex", className)}
+      className={clsx(css["flex"], className)}
       ref={ref}
     >
       <Component>{children}</Component>
@@ -104,11 +105,11 @@ const AccordionTrigger = forward_ref<AccordionTriggerProps, "div">(
         {...rest}
         asChild
         className={clsx(
-          "focusable",
-          "focus-invert",
-          "flex",
-          "f-grow",
-          "t-medium",
+          css["focusable"],
+          css["focus-invert"],
+          css["flex"],
+          css["f-grow"],
+          css["t-medium"],
           button_styles.reset,
           styles.trigger,
           className

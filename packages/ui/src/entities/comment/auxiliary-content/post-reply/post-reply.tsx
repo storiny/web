@@ -11,6 +11,7 @@ import {
   use_add_reply_mutation
 } from "~/redux/features";
 import { use_app_selector } from "~/redux/hooks";
+import css from "~/theme/main.module.scss";
 
 import styles from "./post-reply.module.scss";
 
@@ -56,7 +57,7 @@ const PostReply = ({
   return (
     <div
       className={clsx(
-        "flex",
+        css["flex"],
         styles["response-area"],
         !logged_in && styles["logged-out"]
       )}
@@ -79,7 +80,11 @@ const PostReply = ({
         size={"sm"}
         slot_props={{
           container: {
-            className: clsx("f-grow", styles.x, styles["response-textarea"])
+            className: clsx(
+              css["f-grow"],
+              styles.x,
+              styles["response-textarea"]
+            )
           }
         }}
       />

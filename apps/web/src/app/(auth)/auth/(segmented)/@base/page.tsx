@@ -9,6 +9,7 @@ import Grow from "~/components/grow";
 import Link from "~/components/link";
 import Spacer from "~/components/spacer";
 import Typography from "~/components/typography";
+import css from "~/theme/main.module.scss";
 
 import { use_auth_state } from "../../../actions";
 import styles from "./styles.module.scss";
@@ -71,11 +72,11 @@ const Page = (): React.ReactElement => {
         Welcome to Storiny
       </Typography>
       <Spacer orientation={"vertical"} size={0.5} />
-      <Typography className={"t-minor"} level={"body2"}>
+      <Typography className={css["t-minor"]} level={"body2"}>
         How would you like to proceed?
       </Typography>
       <Spacer orientation={"vertical"} size={5} />
-      <div className={clsx("flex-col", styles.actions)}>
+      <div className={clsx(css["flex-col"], styles.actions)}>
         <Button
           onClick={(): void => actions.switch_segment("signup_base")}
           size={"lg"}
@@ -89,7 +90,7 @@ const Page = (): React.ReactElement => {
         >
           Login with E-mail
         </Button>
-        <div className={"flex-center"} style={{ paddingInline: "18px" }}>
+        <div className={css["flex-center"]} style={{ paddingInline: "18px" }}>
           <Divider style={{ width: "100%" }} />
         </div>
         <Button
@@ -110,10 +111,15 @@ const Page = (): React.ReactElement => {
       <Spacer orientation={"vertical"} size={3} />
       <Grow />
       <footer
-        className={clsx("flex-col", "flex-center", "t-minor", styles.footer)}
+        className={clsx(
+          css["flex-col"],
+          css["flex-center"],
+          css["t-minor"],
+          styles.footer
+        )}
       >
         <Link
-          className={"t-medium"}
+          className={css["t-medium"]}
           href={"/auth"}
           level={"body2"}
           onClick={(): void => actions.switch_segment("recovery_base")}

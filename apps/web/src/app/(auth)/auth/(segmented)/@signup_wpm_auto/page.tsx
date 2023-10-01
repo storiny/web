@@ -9,6 +9,7 @@ import Grow from "~/components/grow";
 import ScrollArea from "~/components/scroll-area";
 import Spacer from "~/components/spacer";
 import Typography from "~/components/typography";
+import css from "~/theme/main.module.scss";
 import { clamp } from "~/utils/clamp";
 
 import { use_auth_state } from "../../../actions";
@@ -42,7 +43,7 @@ const Page = (): React.ReactElement => {
         Reading speed test
       </Typography>
       <Spacer orientation={"vertical"} size={0.5} />
-      <Typography className={"t-minor"} level={"body2"}>
+      <Typography className={css["t-minor"]} level={"body2"}>
         Click on &quot;Done&quot; when you have finished reading the text
         presented in the box below.
       </Typography>
@@ -57,7 +58,7 @@ const Page = (): React.ReactElement => {
         }}
         type={"auto"}
       >
-        <Typography className={"t-legible-slim"} level={"legible"}>
+        <Typography className={css["t-legible-slim"]} level={"legible"}>
           It did not terrify Cantrell to know he was up so high and going so
           fast, going higher and faster than any human before him. He would be
           up even higher the next day, he remembered, going so high and so fast
@@ -92,9 +93,9 @@ const Page = (): React.ReactElement => {
       </ScrollArea>
       <Spacer orientation={"vertical"} size={5} />
       <Grow />
-      <div className={"flex-center"}>
+      <div className={css["flex-center"]}>
         <Button
-          className={"full-w"}
+          className={css["full-w"]}
           disabled={mount_time === null}
           loading={is_loading}
           onClick={on_done}

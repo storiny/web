@@ -21,6 +21,7 @@ import BoldIcon from "~/icons/bold";
 import ItalicIcon from "~/icons/italic";
 import LinkIcon from "~/icons/link";
 import UnderlineIcon from "~/icons/underline";
+import css from "~/theme/main.module.scss";
 
 import { link_atom } from "../../atoms";
 import { EDITOR_SHORTCUTS } from "../../constants/shortcuts";
@@ -156,7 +157,7 @@ const FloatingTextStylePopover = (): React.ReactElement => {
   return (
     <ToggleGroup
       className={clsx(
-        "flex-center",
+        css["flex-center"],
         floating_element_styles.x,
         floating_element_styles["floating-element"]
       )}

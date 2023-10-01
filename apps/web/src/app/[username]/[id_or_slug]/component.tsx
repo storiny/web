@@ -9,6 +9,7 @@ import React from "react";
 import { Graph } from "schema-dts";
 
 import SplashScreen from "~/layout/splash-screen";
+import css from "~/theme/main.module.scss";
 import { get_cdn_url } from "~/utils/get-cdn-url";
 
 interface Props {
@@ -167,7 +168,14 @@ const JsonLD = ({ story }: Props): React.ReactElement => {
 const Component = (props: Props): React.ReactElement => {
   const { story, doc } = props;
   return (
-    <div className={clsx("grid", "grid-container", "dashboard", "no-sidenav")}>
+    <div
+      className={clsx(
+        css["grid"],
+        css["grid-container"],
+        css["dashboard"],
+        css["no-sidenav"]
+      )}
+    >
       <JsonLD {...props} />
       <Editor
         doc_id={story.id}

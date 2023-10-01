@@ -6,6 +6,7 @@ import FormRadio from "~/components/form-radio";
 import FormRadioGroup from "~/components/form-radio-group";
 import Spacer from "~/components/spacer";
 import Typography from "~/components/typography";
+import css from "~/theme/main.module.scss";
 
 import styles from "./settings.module.scss";
 
@@ -25,7 +26,7 @@ const SettingsTab = (): React.ReactElement => (
       name={"visibility"}
     >
       <FormRadio aria-label={"Public"} label={"Public"} value={"1"}>
-        <Typography className={"t-minor"} level={"body3"}>
+        <Typography className={css["t-minor"]} level={"body3"}>
           Public stories are visible to everyone and can be featured in home
           feeds, recommended stories, and search results. However, if your
           account is private, your public stories will only be visible to your
@@ -34,18 +35,18 @@ const SettingsTab = (): React.ReactElement => (
       </FormRadio>
       <Spacer orientation={"vertical"} />
       <FormRadio aria-label={"Unlisted"} label={"Unlisted"} value={"0"}>
-        <Typography className={"t-minor"} level={"body3"}>
+        <Typography className={css["t-minor"]} level={"body3"}>
           Unlisted stories are not displayed in the home feed or search results,
           and can only be accessed via a direct link.
         </Typography>
       </FormRadio>
     </FormRadioGroup>
     <Spacer orientation={"vertical"} size={3} />
-    <Typography className={"t-bold"} level={"body2"}>
+    <Typography className={css["t-bold"]} level={"body2"}>
       Miscellaneous
     </Typography>
     <Spacer orientation={"vertical"} size={2} />
-    <div className={clsx("flex-col", styles["checkbox-container"])}>
+    <div className={clsx(css["flex-col"], styles["checkbox-container"])}>
       <FormCheckbox
         inverted
         label={"Show table of contents for this story"}

@@ -13,6 +13,7 @@ import Tabs from "~/components/tabs";
 import TabsList from "~/components/tabs-list";
 import { use_debounce } from "~/hooks/use-debounce";
 import SearchIcon from "~/icons/search";
+import css from "~/theme/main.module.scss";
 
 import Dropdown from "./dropdown";
 import StoryList from "./entities/story-list";
@@ -48,7 +49,12 @@ const normalize_category = (category: Props["category"]): string =>
 
 const PageTabsHeader = (): React.ReactElement => (
   <TabsList
-    className={clsx("full-bleed", "page-header", styles.x, styles["tabs-list"])}
+    className={clsx(
+      css["full-bleed"],
+      css["page-header"],
+      styles.x,
+      styles["tabs-list"]
+    )}
   >
     <Tab value={"all"}>All</Tab>
     <Tab value={"stories"}>Stories</Tab>
@@ -72,10 +78,10 @@ const PageInputHeader = ({
 }): React.ReactElement => (
   <div
     className={clsx(
-      "flex-center",
-      "full-bleed",
-      "page-header",
-      "with-page-title",
+      css["flex-center"],
+      css["full-bleed"],
+      css["page-header"],
+      css["with-page-title"],
       styles["page-title"]
     )}
   >
@@ -113,7 +119,7 @@ const Client = ({ category }: Props): React.ReactElement => {
 
   return (
     <Tabs
-      className={clsx("flex-col", styles.x, styles.tabs)}
+      className={clsx(css["flex-col"], styles.x, styles.tabs)}
       onValueChange={handle_change}
       value={value}
     >
@@ -125,7 +131,7 @@ const Client = ({ category }: Props): React.ReactElement => {
         tab_value={value}
       />
       <TabPanel
-        className={clsx("full-w", "flex-col")}
+        className={clsx(css["full-w"], css["flex-col"])}
         style={{ marginTop: "-12px" }}
         value={"all"}
       >
@@ -148,7 +154,7 @@ const Client = ({ category }: Props): React.ReactElement => {
         />
       </TabPanel>
       <TabPanel
-        className={clsx("full-w", "flex-col")}
+        className={clsx(css["full-w"], css["flex-col"])}
         style={{ marginTop: "-12px" }}
         value={"stories"}
       >
@@ -159,7 +165,7 @@ const Client = ({ category }: Props): React.ReactElement => {
         />
       </TabPanel>
       <TabPanel
-        className={clsx("full-w", "flex-col")}
+        className={clsx(css["full-w"], css["flex-col"])}
         style={{ marginTop: "-12px" }}
         value={"writers"}
       >
@@ -170,7 +176,7 @@ const Client = ({ category }: Props): React.ReactElement => {
         />
       </TabPanel>
       <TabPanel
-        className={clsx("full-w", "flex-col")}
+        className={clsx(css["full-w"], css["flex-col"])}
         style={{ marginTop: "-12px" }}
         value={"tags"}
       >

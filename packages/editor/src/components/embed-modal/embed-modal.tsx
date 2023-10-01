@@ -1,4 +1,3 @@
-import { clsx } from "clsx";
 import { compressToEncodedURIComponent as compress_to_encoded_uri_component } from "lz-string";
 import React from "react";
 
@@ -11,6 +10,7 @@ import Typography from "~/components/typography";
 import { use_media_query } from "~/hooks/use-media-query";
 import EmbedIcon from "~/icons/embed";
 import { BREAKPOINTS } from "~/theme/breakpoints";
+import css from "~/theme/main.module.scss";
 
 import { use_insert_embed } from "../../hooks/use-insert-embed";
 import { EmbedModalProps } from "./embed-modal.props";
@@ -19,7 +19,7 @@ import { EMBED_SCHEMA, EmbedSchema } from "./schema";
 const EmbedModalContent = (): React.ReactElement => (
   <React.Fragment>
     <Description asChild>
-      <Typography className={"t-minor"} level={"body2"}>
+      <Typography className={css["t-minor"]} level={"body2"}>
         You can embed content from sites like Twitter and YouTube. If embedding
         from a specific site is not supported, a website preview will be
         displayed instead.{" "}
@@ -35,7 +35,7 @@ const EmbedModalContent = (): React.ReactElement => (
       auto_size
       form_slot_props={{
         form_item: {
-          className: "f-grow"
+          className: css["f-grow"]
         }
       }}
       label={"Link to the content"}
@@ -69,7 +69,7 @@ const EmbedModal = ({
   const [element] = use_modal(
     trigger,
     <Form<EmbedSchema>
-      className={clsx("flex-col")}
+      className={css["flex-col"]}
       on_submit={handle_submit}
       provider_props={form}
     >

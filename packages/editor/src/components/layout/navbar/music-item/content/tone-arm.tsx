@@ -5,12 +5,8 @@ import styles from "./content.module.scss";
 
 const ToneArm = ({ playing }: { playing: boolean }): React.ReactElement => (
   <svg
-    className={clsx(
-      "force-animation",
-      styles.x,
-      styles["tone-arm"],
-      playing && styles.playing
-    )}
+    className={clsx(styles["tone-arm"], playing && styles.playing)}
+    data-force-animation={""}
     fill="none"
     height="87"
     role={"presentation"}
@@ -36,7 +32,7 @@ const ToneArm = ({ playing }: { playing: boolean }): React.ReactElement => (
       />
     </g>
     <foreignObject height="16" width="16" x="18" y="0">
-      <div className={clsx("force-animation", styles.x, styles.base)} />
+      <div className={styles.base} data-force-animation={""} />
     </foreignObject>
     <defs>
       <filter

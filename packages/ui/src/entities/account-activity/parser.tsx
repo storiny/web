@@ -4,6 +4,8 @@ import clsx from "clsx";
 import { Interweave, InterweaveProps, Node } from "interweave";
 import React from "react";
 
+import css from "~/theme/main.module.scss";
+
 /**
  * Node transformer
  * @param node HTML element
@@ -13,7 +15,9 @@ const transform = (node: HTMLElement, children: Node[]): React.ReactNode => {
   switch (node.tagName.toLowerCase()) {
     case "m":
       return (
-        <span className={clsx("t-medium", node.className)}>{children}</span>
+        <span className={clsx(css["t-medium"], node.className)}>
+          {children}
+        </span>
       );
   }
 };

@@ -6,6 +6,7 @@ import Skeleton from "~/components/skeleton";
 import { UserSkeletonProps } from "~/entities/user/skeleton/skeleton.props";
 import { use_media_query } from "~/hooks/use-media-query";
 import { BREAKPOINTS } from "~/theme/breakpoints";
+import css from "~/theme/main.module.scss";
 
 import styles from "../user.module.scss";
 
@@ -16,18 +17,18 @@ const UserSkeleton = (props: UserSkeletonProps): React.ReactElement => {
   return (
     <div
       aria-busy={"true"}
-      className={clsx("flex-col", styles.user, virtual && styles.virtual)}
+      className={clsx(css["flex-col"], styles.user, virtual && styles.virtual)}
       style={{ cursor: "progress" }}
     >
-      <div className={clsx("flex", styles.main)}>
-        <div className={clsx("flex", styles.meta)}>
+      <div className={clsx(css["flex"], styles.main)}>
+        <div className={clsx(css["flex"], styles.meta)}>
           <Skeleton height={48} shape={"circular"} width={48} />
-          <div className={"flex-col"} style={{ gap: "8px" }}>
+          <div className={css["flex-col"]} style={{ gap: "8px" }}>
             <Skeleton height={18} width={142} />
             {is_mobile ? (
               <Skeleton height={14} width={88} />
             ) : (
-              <div className={clsx("flex", styles.stats)}>
+              <div className={clsx(css["flex"], styles.stats)}>
                 <Skeleton height={14} width={48} />
                 <Skeleton height={14} width={48} />
               </div>
@@ -35,13 +36,13 @@ const UserSkeleton = (props: UserSkeletonProps): React.ReactElement => {
           </div>
         </div>
         <Grow />
-        <div className={clsx("flex", styles.actions)}>
+        <div className={clsx(css["flex"], styles.actions)}>
           <Skeleton height={is_mobile ? 36 : 30} width={84} />
           {!is_mobile && <Skeleton height={30} width={30} />}
         </div>
       </div>
       <div
-        className={clsx("flex-col", styles.bio)}
+        className={clsx(css["flex-col"], styles.bio)}
         style={{ paddingTop: "8px" }}
       >
         <Skeleton height={14} width={is_mobile ? 312 : 250} />

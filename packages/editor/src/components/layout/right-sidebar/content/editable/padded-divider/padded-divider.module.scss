@@ -1,8 +1,5 @@
-.x {
-  /* Base styles */
-  &.padded-divider {
-    align-self: stretch;
-    padding-block: 4px;
-    flex-grow: 1;
-  }
+.padded-divider {
+  align-self: stretch;
+  padding-block: 4px;
+  flex-grow: 1;
 }

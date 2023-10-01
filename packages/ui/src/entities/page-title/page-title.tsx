@@ -5,6 +5,7 @@ import React from "react";
 
 import IconButton from "~/components/icon-button";
 import ChevronIcon from "~/icons/chevron";
+import css from "~/theme/main.module.scss";
 
 import styles from "./page-title.module.scss";
 import { PageTitleProps } from "./page-title.props";
@@ -24,12 +25,12 @@ const PageTitle = (props: PageTitleProps): React.ReactElement => {
     <header
       {...rest}
       className={clsx(
-        "full-bleed",
-        "page-header",
-        "flex",
-        "t-bold",
+        css["full-bleed"],
+        css["page-header"],
+        css["flex"],
+        css["t-bold"],
         styles["page-title"],
-        dashboard && "dashboard-header",
+        dashboard && css["dashboard-header"],
         className
       )}
     >

@@ -1,7 +1,8 @@
 import { useNProgress as use_n_progress } from "@tanem/react-nprogress";
 import React from "react";
 
-import ProgressBar from "~/components/progress-bar";
+import ProgressBar, { ProgressBarProps } from "~/components/progress-bar";
+import css from "~/theme/main.module.scss";
 
 import styles from "./upload-progress.module.scss";
 
@@ -15,14 +16,16 @@ const UploadProgress = (): React.ReactElement => {
     <ProgressBar
       className={styles.progress}
       max={100}
-      slot_props={{
-        indicator: {
-          className: "force-animation",
-          style: {
-            transition: `transform ${animation_duration}ms ease-out`
+      slot_props={
+        {
+          indicator: {
+            "data-force-animation": "",
+            style: {
+              transition: `transform ${animation_duration}ms ease-out`
+            }
           }
-        }
-      }}
+        } as ProgressBarProps["slot_props"]
+      }
       value={progress * 100}
     />
   );

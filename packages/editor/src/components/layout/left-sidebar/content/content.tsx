@@ -8,6 +8,7 @@ import React from "react";
 
 import { dynamic_loader } from "~/common/dynamic";
 import LeftSidebarDefaultContent from "~/layout/left-sidebar/default-content";
+import css from "~/theme/main.module.scss";
 
 import {
   doc_status_atom,
@@ -67,7 +68,7 @@ const SuspendedEditorLeftSidebarContent = (
       <animated.div
         aria-busy={document_loading}
         className={clsx(
-          "flex-col",
+          css["flex-col"],
           styles.x,
           styles.content,
           common_styles.x,

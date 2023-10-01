@@ -4,6 +4,8 @@ import clsx from "clsx";
 import NextLink from "next/link";
 import React from "react";
 
+import css from "~/theme/main.module.scss";
+
 import {
   TYPOGRAPHY_LEVEL_TO_CLASSNAME_MAP,
   TYPOGRAPHY_SCALE_TO_CLASSNAME_MAP
@@ -33,7 +35,7 @@ const Link = React.forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => {
     <NextLink
       {...rest}
       className={clsx(
-        "focusable",
+        css["focusable"],
         styles.link,
         ellipsis && typography_styles.ellipsis,
         fixed_color && styles["fixed-color"],
@@ -59,7 +61,7 @@ const Link = React.forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => {
         <span
           {...slot_props?.ellipsis_cell}
           className={clsx(
-            "ellipsis",
+            css["ellipsis"],
             typography_styles["ellipsis-child"],
             slot_props?.ellipsis_cell?.className
           )}

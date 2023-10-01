@@ -14,6 +14,7 @@ import {
   use_reject_friend_request_mutation
 } from "~/redux/features";
 import { use_app_dispatch } from "~/redux/hooks";
+import css from "~/theme/main.module.scss";
 import { DateFormat, format_date } from "~/utils/format-date";
 
 import styles from "./friend-request.module.scss";
@@ -63,9 +64,12 @@ const FriendRequest = (props: FriendRequestProps): React.ReactElement => {
   return (
     <div
       {...rest}
-      className={clsx("flex-center", styles["friend-request"], className)}
+      className={clsx(css["flex-center"], styles["friend-request"], className)}
     >
-      <NextLink className={clsx("flex-center", styles.meta)} href={user_url}>
+      <NextLink
+        className={clsx(css["flex-center"], styles.meta)}
+        href={user_url}
+      >
         <Avatar
           alt={""}
           avatar_id={user.avatar_id}
@@ -73,11 +77,11 @@ const FriendRequest = (props: FriendRequestProps): React.ReactElement => {
           label={user.name}
           size={"md"}
         />
-        <div className={"flex-col"}>
-          <Typography className={"t-medium"} ellipsis level={"body2"}>
+        <div className={css["flex-col"]}>
+          <Typography className={css["t-medium"]} ellipsis level={"body2"}>
             {user.name}
           </Typography>
-          <Typography className={"t-minor"} ellipsis level={"body3"}>
+          <Typography className={css["t-minor"]} ellipsis level={"body3"}>
             @{user.username} &bull;{" "}
             {format_date(
               friend_request.created_at,
@@ -86,7 +90,7 @@ const FriendRequest = (props: FriendRequestProps): React.ReactElement => {
           </Typography>
         </div>
       </NextLink>
-      <div className={clsx("flex-center", styles.actions)}>
+      <div className={clsx(css["flex-center"], styles.actions)}>
         <Button
           auto_size
           check_auth

@@ -32,7 +32,7 @@ const meta: Meta<typeof MasonryImpl> = {
     },
     render_item: ({ data }) => (
       <span
-        className={"flex-center"}
+        className={css["flex-center"]}
         style={{
           display: "block",
           height: "256px",

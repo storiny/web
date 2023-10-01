@@ -21,6 +21,7 @@ import {
   get_query_error_type,
   use_get_right_sidebar_content_query
 } from "~/redux/features";
+import css from "~/theme/main.module.scss";
 
 import styles from "./default-content.module.scss";
 import { RightSidebarDefaultContentProps } from "./default-content.props";
@@ -36,7 +37,7 @@ export const TitleWithIcon = ({
     <Typography
       {...rest}
       as={"span"}
-      className={clsx("t-minor", "t-bold", className)}
+      className={clsx(css["t-minor"], css["t-bold"], className)}
       level={"body2"}
     >
       {children}
@@ -72,7 +73,7 @@ const RightSidebarDefaultContent = ({
       {!hide_popular_stories && (
         <>
           <TitleWithIcon icon={<StoriesIcon />}>Popular stories</TitleWithIcon>
-          <div className={clsx("flex-col", styles["popular-stories"])}>
+          <div className={clsx(css["flex-col"], styles["popular-stories"])}>
             {is_loading
               ? [...Array(3)].map((_, index) => (
                   <PopularStorySkeleton key={index} />
@@ -95,7 +96,11 @@ const RightSidebarDefaultContent = ({
       {data && (
         <div className={styles["show-more-wrapper"]}>
           <Link
-            className={clsx("flex-center", "t-bold", styles["show-more"])}
+            className={clsx(
+              css["flex-center"],
+              css["t-bold"],
+              styles["show-more"]
+            )}
             href={"/explore/users"}
             level={"body3"}
           >
@@ -106,7 +111,7 @@ const RightSidebarDefaultContent = ({
       )}
       <Separator />
       <TitleWithIcon icon={<TagsIcon />}>Popular tags</TitleWithIcon>
-      <div className={clsx("flex-col", styles["tags-container"])}>
+      <div className={clsx(css["flex-col"], styles["tags-container"])}>
         {is_loading
           ? [...Array(8)].map((_, index) => (
               <Skeleton height={28} key={index} />
@@ -125,7 +130,11 @@ const RightSidebarDefaultContent = ({
       {data && (
         <div className={styles["show-more-wrapper"]}>
           <Link
-            className={clsx("flex-center", "t-bold", styles["show-more"])}
+            className={clsx(
+              css["flex-center"],
+              css["t-bold"],
+              styles["show-more"]
+            )}
             href={"/explore/tags"}
             level={"body3"}
           >

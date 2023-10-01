@@ -30,6 +30,7 @@ import {
   use_recover_story_mutation
 } from "~/redux/features";
 import { BREAKPOINTS } from "~/theme/breakpoints";
+import css from "~/theme/main.module.scss";
 import { abbreviate_number } from "~/utils/abbreviate-number";
 
 import { doc_status_atom, story_metadata_atom } from "../../../atoms";
@@ -44,7 +45,7 @@ const EditorPresence = dynamic(() => import("./presence"));
 const EditorMenubarItems = dynamic(() => import("./menubar-items"), {
   loading: ({ isLoading: is_loading, error, retry }) =>
     error && !is_loading ? (
-      <div className={"flex-center"} style={{ paddingBlock: "32px" }}>
+      <div className={css["flex-center"]} style={{ paddingBlock: "32px" }}>
         <Button color={"ruby"} onClick={retry} variant={"hollow"}>
           Retry
         </Button>
@@ -61,7 +62,7 @@ const EditorMenubar = ({
 }: {
   disabled?: boolean;
 }): React.ReactElement => (
-  <Menubar className={"full-h"}>
+  <Menubar className={css["full-h"]}>
     <MenubarMenu
       slot_props={{
         content: {
@@ -71,11 +72,16 @@ const EditorMenubar = ({
       }}
       trigger={
         <Button
-          className={clsx("focus-invert", "flex-center", styles.x, styles.menu)}
+          className={clsx(
+            css["focus-invert"],
+            css["flex-center"],
+            styles.x,
+            styles.menu
+          )}
           variant={"ghost"}
         >
           <Logo size={26} />
-          <span className={clsx(styles.x, styles.chevron)}>
+          <span className={styles.chevron}>
             <ChevronIcon rotation={180} />
           </span>
         </Button>
@@ -156,8 +162,11 @@ const Publish = ({
       description: (
         <>
           You still have{" "}
-          <span className={"t-medium"}>{abbreviate_number(tk_count)}</span>{" "}
-          <span className={"t-medium"} style={{ color: "var(--plum-300)" }}>
+          <span className={css["t-medium"]}>{abbreviate_number(tk_count)}</span>{" "}
+          <span
+            className={css["t-medium"]}
+            style={{ color: "var(--plum-300)" }}
+          >
             TK
           </span>{" "}
           {tk_count === 1 ? "placeholder" : "placeholders"} in your story.{" "}
@@ -219,14 +228,14 @@ const EditorNavbar = ({
   const document_loading = ["connecting", "reconnecting"].includes(doc_status);
 
   return (
-    <header className={clsx(styles.x, styles["editor-navbar"])} role={"banner"}>
-      <div className={clsx("flex-center", styles.x, styles["full-height"])}>
+    <header className={styles["editor-navbar"]} role={"banner"}>
+      <div className={clsx(css["flex-center"], styles["full-height"])}>
         <EditorMenubar disabled={status === "deleted" || document_loading} />
         {!is_smaller_than_tablet && status !== "deleted" ? (
           <React.Fragment>
             <Tooltip content={"Version history"}>
               <IconButton
-                className={clsx("focus-invert", styles.x, styles.button)}
+                className={clsx(css["focus-invert"], styles.x, styles.button)}
                 // TODO: disabled={document_loading}
                 disabled
                 size={"lg"}
@@ -239,7 +248,7 @@ const EditorNavbar = ({
             <Tooltip content={"Help"}>
               <IconButton
                 as={NextLink}
-                className={clsx("focus-invert", styles.x, styles.button)}
+                className={clsx(css["focus-invert"], styles.x, styles.button)}
                 disabled={document_loading}
                 href={"/help"}
                 size={"lg"}
@@ -254,12 +263,12 @@ const EditorNavbar = ({
       </div>
       {!is_smaller_than_mobile && status !== "deleted" ? (
         <React.Fragment>
-          <Spacer className={"f-grow"} size={2} />
+          <Spacer className={css["f-grow"]} size={2} />
           <EditorPresence />
         </React.Fragment>
       ) : null}
-      <Spacer className={"f-grow"} size={2} />
-      <div className={clsx("flex-center")}>
+      <Spacer className={css["f-grow"]} size={2} />
+      <div className={css["flex-center"]}>
         {status !== "deleted" && <DocStatus />}
         <Spacer size={2} />
         {status !== "deleted" ? (

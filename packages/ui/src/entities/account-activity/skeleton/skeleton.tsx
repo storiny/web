@@ -3,6 +3,7 @@ import React from "react";
 
 import Skeleton from "~/components/skeleton";
 import Spacer from "~/components/spacer";
+import css from "~/theme/main.module.scss";
 
 import styles from "../account-activity.module.scss";
 import { AccountActivitySkeletonProps } from "./skeleton.props";
@@ -16,7 +17,7 @@ const AccountActivitySkeleton = (
       {...rest}
       aria-busy={"true"}
       className={clsx(
-        "flex",
+        css["flex"],
         styles["account-activity"],
         hide_pipe && styles["hide-pipe"],
         className
@@ -24,7 +25,7 @@ const AccountActivitySkeleton = (
       style={{ cursor: "progress" }}
     >
       <Skeleton height={48} shape={"circular"} width={48} />
-      <div className={"flex-col"}>
+      <div className={css["flex-col"]}>
         <Skeleton height={16} width={144} />
         <Spacer orientation={"vertical"} size={0.75} />
         <Skeleton height={14} width={96} />

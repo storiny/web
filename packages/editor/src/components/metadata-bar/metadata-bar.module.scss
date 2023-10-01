@@ -1,14 +1,12 @@
-.x {
-  &.metadata-bar {
-    position: fixed;
-    width: 100vw;
-    align-items: center;
-    margin-top: unset;
-    border-bottom: 1px solid var(--divider);
-    padding: 8px 16px;
-    gap: 8px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: var(--z-index-header);
-  }
+.metadata-bar {
+  position: fixed;
+  width: 100vw;
+  align-items: center;
+  margin-top: unset;
+  border-bottom: 1px solid var(--divider);
+  padding: 8px 16px;
+  gap: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: var(--z-index-header);
 }

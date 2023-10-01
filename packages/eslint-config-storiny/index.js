@@ -7,7 +7,6 @@ module.exports = {
     "eslint:recommended",
     "plugin:react/recommended",
     "plugin:jest-dom/recommended",
-    "plugin:prefer-snakecase/recommended",
   ],
   env: {
     "jest/globals": true,
@@ -38,6 +37,7 @@ module.exports = {
     "prefer-snakecase",
     "simple-import-sort",
     "sort-class-members",
+    "no-literal-classnames",
   ],
   rules: {
     "@next/next/no-html-link-for-pages": "off",
@@ -146,6 +146,11 @@ module.exports = {
           "browserName", // Playwright
         ],
       },
+    ],
+    "no-literal-classnames/no-literal-classnames": [
+      "error",
+      "always",
+      { whitelist: ["force-dark-mode", "force-light-mode"] },
     ],
     "react/jsx-sort-props": "warn",
     "react/prop-types": "off",

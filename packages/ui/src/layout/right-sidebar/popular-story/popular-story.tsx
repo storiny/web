@@ -7,6 +7,7 @@ import Link from "~/components/link";
 import Typography from "~/components/typography";
 import Persona from "~/entities/persona";
 import TrendingUpIcon from "~/icons/trending-up";
+import css from "~/theme/main.module.scss";
 
 import styles from "./popular-story.module.scss";
 import { PopularStoryProps } from "./popular-story.props";
@@ -20,7 +21,7 @@ const PopularStory = (props: PopularStoryProps): React.ReactElement | null => {
   }
 
   return (
-    <article className={clsx("flex-col", styles["popular-story"])}>
+    <article className={clsx(css["flex-col"], styles["popular-story"])}>
       <Typography as={"h2"} level={"h6"}>
         <Link fixed_color href={`/${user.username}/${slug}`}>
           {title}
@@ -34,9 +35,9 @@ const PopularStory = (props: PopularStoryProps): React.ReactElement | null => {
           hex: user.avatar_hex
         }}
         primary_text={
-          <span className={clsx("flex-center", styles["primary-text"])}>
+          <span className={clsx(css["flex-center"], styles["primary-text"])}>
             <Link
-              className={clsx("t-medium")}
+              className={css["t-medium"]}
               fixed_color
               href={`/${user.username}`}
               level={"body2"}
@@ -46,7 +47,7 @@ const PopularStory = (props: PopularStoryProps): React.ReactElement | null => {
             <Typography
               aria-hidden
               as={"span"}
-              className={"t-muted"}
+              className={css["t-muted"]}
               level={"body2"}
             >
               &bull;
@@ -54,9 +55,9 @@ const PopularStory = (props: PopularStoryProps): React.ReactElement | null => {
             <Typography
               as={"span"}
               className={clsx(
-                "t-minor",
-                "t-medium",
-                "flex-center",
+                css["t-minor"],
+                css["t-medium"],
+                css["flex-center"],
                 styles["trending-text"]
               )}
               level={"body2"}

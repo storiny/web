@@ -9,6 +9,7 @@ import Spacer from "~/components/spacer";
 import Typography from "~/components/typography";
 import PageTitle from "~/entities/page-title";
 import SearchIcon from "~/icons/search";
+import css from "~/theme/main.module.scss";
 
 import {
   DASHBOARD_GROUPS,
@@ -20,11 +21,14 @@ import styles from "./navigation-screen.module.scss";
 // Group component
 
 const GroupComponent = ({ group }: { group: Group }): React.ReactElement => (
-  <div className={clsx("flex-col", styles["navigation-group"])}>
-    <Typography className={clsx("t-medium", "t-minor")} level={"body2"}>
+  <div className={clsx(css["flex-col"], styles["navigation-group"])}>
+    <Typography
+      className={clsx(css["t-medium"], css["t-minor"])}
+      level={"body2"}
+    >
       {group.title}
     </Typography>
-    <div className={clsx("flex-col", styles["item-container"])}>
+    <div className={clsx(css["flex-col"], styles["item-container"])}>
       {group.items.map((item) => (
         <React.Fragment key={item.value}>
           <NavigationItem
@@ -34,7 +38,7 @@ const GroupComponent = ({ group }: { group: Group }): React.ReactElement => (
           >
             {item.title}
           </NavigationItem>
-          <Separator className={"hide-last"} invert_margin />
+          <Separator className={css["hide-last"]} invert_margin />
         </React.Fragment>
       ))}
     </div>
@@ -53,11 +57,11 @@ const DashboardNavigationScreen = (): React.ReactElement => {
       {/* Page header */}
       <div
         className={clsx(
-          "flex-center",
-          "full-bleed",
-          "page-header",
-          "dashboard-header",
-          "with-page-title"
+          css["flex-center"],
+          css["full-bleed"],
+          css["page-header"],
+          css["dashboard-header"],
+          css["with-page-title"]
         )}
       >
         <Input
@@ -73,7 +77,7 @@ const DashboardNavigationScreen = (): React.ReactElement => {
           value={query}
         />
       </div>
-      <div className={clsx("flex-col", styles["navigation-screen"])}>
+      <div className={clsx(css["flex-col"], styles["navigation-screen"])}>
         {query ? (
           results.length ? (
             results.map((group) => (
@@ -81,12 +85,15 @@ const DashboardNavigationScreen = (): React.ReactElement => {
             ))
           ) : (
             <Typography
-              className={clsx("t-center", "t-minor")}
+              className={clsx(css["t-center"], css["t-minor"])}
               level={"body2"}
               style={{ margin: "24px" }}
             >
               Could not find anything for &quot;
-              <span className={"t-medium"} style={{ wordBreak: "break-all" }}>
+              <span
+                className={css["t-medium"]}
+                style={{ wordBreak: "break-all" }}
+              >
                 {query}
               </span>
               &quot;
@@ -98,7 +105,7 @@ const DashboardNavigationScreen = (): React.ReactElement => {
           ))
         )}
       </div>
-      <Spacer className={"f-grow"} orientation={"vertical"} size={12} />
+      <Spacer className={css["f-grow"]} orientation={"vertical"} size={12} />
     </React.Fragment>
   );
 };

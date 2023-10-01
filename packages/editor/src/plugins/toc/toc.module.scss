@@ -1,9 +1,9 @@
-.x {
-  &.toc {
-    list-style: none;
-    padding: 12px 32px 12px 0;
-  }
+.toc {
+  list-style: none;
+  padding: 12px 32px 12px 0;
+}
 
+.x {
   &.item {
     padding: 4px 16px;
     cursor: pointer;

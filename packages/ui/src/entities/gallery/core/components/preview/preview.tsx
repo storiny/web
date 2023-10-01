@@ -4,6 +4,7 @@ import React from "react";
 
 import Image from "~/components/image";
 import PhotoIcon from "~/icons/photo";
+import css from "~/theme/main.module.scss";
 
 import { selected_atom } from "../../atoms";
 import styles from "./preview.module.scss";
@@ -11,7 +12,7 @@ import styles from "./preview.module.scss";
 const ImagePreview = (): React.ReactElement => {
   const selected = use_atom_value(selected_atom);
   return (
-    <div className={clsx("flex-center", styles.preview)}>
+    <div className={clsx(css["flex-center"], styles.preview)}>
       {selected ? (
         <Image
           alt={""}

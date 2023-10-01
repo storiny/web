@@ -11,6 +11,7 @@ import Separator from "~/components/separator";
 import { use_media_query } from "~/hooks/use-media-query";
 import { use_sticky } from "~/hooks/use-sticky";
 import { BREAKPOINTS } from "~/theme/breakpoints";
+import css from "~/theme/main.module.scss";
 
 import sidebar_styles from "../common/sidebar.module.scss";
 import RightSidebarFooter from "./footer";
@@ -44,7 +45,7 @@ const RightSidebar = (props: RightSidebarProps): React.ReactElement | null => {
       <aside
         {...rest}
         className={clsx(
-          "flex-col",
+          css["flex-col"],
           sidebar_styles.sidebar,
           styles["right-sidebar"],
           className
@@ -54,8 +55,8 @@ const RightSidebar = (props: RightSidebarProps): React.ReactElement | null => {
         <div
           {...component_props?.wrapper}
           className={clsx(
-            "flex-col",
-            "full-w",
+            css["flex-col"],
+            css["full-w"],
             styles.wrapper,
             sidebar_styles.wrapper,
             component_props?.wrapper?.className

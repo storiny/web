@@ -6,6 +6,8 @@ import {
 } from "lexical";
 import React from "react";
 
+import css from "~/theme/main.module.scss";
+
 import { $is_figure_node } from "../figure";
 import styles from "./block.module.scss";
 
@@ -40,7 +42,7 @@ export abstract class BlockNode extends DecoratorNode<React.ReactElement> {
    */
   override createDOM(): HTMLElement {
     const element = document.createElement("div");
-    element.classList.add("flex-center", styles.block);
+    element.classList.add(css["flex-center"], styles.block);
     element.setAttribute("data-testid", "block-node");
     return element;
   }

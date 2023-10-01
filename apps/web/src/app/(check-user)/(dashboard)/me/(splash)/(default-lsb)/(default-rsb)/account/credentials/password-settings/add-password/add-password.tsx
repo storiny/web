@@ -1,4 +1,4 @@
-import { clsx } from "clsx";
+import { is_test_env } from "@storiny/shared/src/utils/is-test-env";
 import { Provider, useAtom as use_atom } from "jotai";
 import { useRouter as use_router } from "next/navigation";
 import React from "react";
@@ -19,8 +19,8 @@ import {
   use_add_password_request_verification_mutation
 } from "~/redux/features";
 import { BREAKPOINTS } from "~/theme/breakpoints";
+import css from "~/theme/main.module.scss";
 
-import { is_test_env } from "../../../../../../../../../../../../../../packages/shared/src/utils/is-test-env";
 import { AddPasswordProps } from "./add-password.props";
 import {
   ADD_PASSWORD_SCHEMA,
@@ -46,7 +46,7 @@ const AddPasswordModal = (): React.ReactElement => {
   return (
     <React.Fragment>
       <Description asChild>
-        <Typography className={"t-minor"} level={"body2"}>
+        <Typography className={css["t-minor"]} level={"body2"}>
           {SCREEN_MESSAGE_MAP[screen]}
         </Typography>
       </Description>
@@ -62,7 +62,7 @@ const AddPasswordModal = (): React.ReactElement => {
             data-testid={"verification-code-input"}
             form_slot_props={{
               form_item: {
-                className: "f-grow"
+                className: css["f-grow"]
               }
             }}
             label={"Verification code"}
@@ -81,7 +81,7 @@ const AddPasswordModal = (): React.ReactElement => {
             data-testid={"new-password-input"}
             form_slot_props={{
               form_item: {
-                className: "f-grow"
+                className: css["f-grow"]
               }
             }}
             label={"Password"}
@@ -91,7 +91,7 @@ const AddPasswordModal = (): React.ReactElement => {
           />
           <Spacer orientation={"vertical"} size={3} />
           <Link
-            className={"t-center"}
+            className={css["t-center"]}
             href={"#"}
             level={"body2"}
             onClick={(): void => set_screen("verification-code")}
@@ -171,7 +171,7 @@ const Component = ({ on_submit }: AddPasswordProps): React.ReactElement => {
       <Button
         auto_size
         check_auth
-        className={"fit-w"}
+        className={css["fit-w"]}
         onClick={open_modal}
         variant={"hollow"}
       >
@@ -179,7 +179,7 @@ const Component = ({ on_submit }: AddPasswordProps): React.ReactElement => {
       </Button>
     ),
     <Form<AddPasswordSchema>
-      className={clsx("flex-col")}
+      className={css["flex-col"]}
       disabled={add_password_loading}
       on_submit={handle_submit}
       provider_props={form}

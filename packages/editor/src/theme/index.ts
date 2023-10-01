@@ -3,6 +3,7 @@ import type { EditorThemeClasses } from "lexical";
 
 import link_styles from "~/components/link/link.module.scss";
 import typography_styles from "~/components/typography/typography.module.scss";
+import css from "~/theme/main.module.scss";
 
 import styles from "./theme.module.scss";
 
@@ -15,7 +16,7 @@ export const EDITOR_THEME: EditorThemeClasses = {
   },
   indent: styles.indent,
   link: clsx(
-    "focusable",
+    css["focusable"],
     link_styles.link,
     link_styles["color-beryl"],
     link_styles["underline-hover"],
@@ -31,8 +32,8 @@ export const EDITOR_THEME: EditorThemeClasses = {
   },
   paragraph: styles.paragraph,
   text: {
-    bold: "t-bold",
-    code: clsx("t-mono", typography_styles["inline-code"]),
+    bold: css["t-bold"],
+    code: clsx(css["t-mono"], typography_styles["inline-code"]),
     italic: styles["t-italic"],
     strikethrough: styles["t-strikethrough"],
     subscript: styles["t-subscript"],

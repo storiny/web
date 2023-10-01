@@ -20,6 +20,7 @@ import {
 } from "lexical";
 
 import { TYPOGRAPHY_LEVEL_TO_CLASSNAME_MAP } from "~/components/common/typography";
+import css from "~/theme/main.module.scss";
 
 import styles from "./heading.module.scss";
 
@@ -168,7 +169,7 @@ export class HeadingNode extends ElementNode {
     if (class_name) {
       add_class_names_to_element(
         element,
-        ...["t-major", class_name, styles[tag]]
+        ...[css["t-major"], class_name, styles[tag]]
       );
     }
 

@@ -8,6 +8,7 @@ import Typography from "~/components/typography";
 import { use_media_query } from "~/hooks/use-media-query";
 import EditIcon from "~/icons/edit";
 import { BREAKPOINTS } from "~/theme/breakpoints";
+import css from "~/theme/main.module.scss";
 
 import { story_metadata_atom } from "../../atoms";
 import StoryMetadataModal from "../metadata-modal";
@@ -24,16 +25,15 @@ const StoryMetadataBar = (): React.ReactElement | null => {
   return (
     <div
       className={clsx(
-        "flex-center",
-        "page-header",
-        styles.x,
+        css["flex-center"],
+        css["page-header"],
         styles["metadata-bar"]
       )}
     >
       <Typography as={"p"} ellipsis level={"h6"}>
         {story.title}
       </Typography>
-      <Spacer className={"f-grow"} />
+      <Spacer className={css["f-grow"]} />
       <StoryMetadataModal set_story={set_story} story={story}>
         <IconButton
           aria-label={"Edit metadata"}

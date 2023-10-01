@@ -12,6 +12,7 @@ import { use_media_query } from "~/hooks/use-media-query";
 import ChevronIcon from "~/icons/chevron";
 import { use_get_explore_tags_query } from "~/redux/features";
 import { BREAKPOINTS } from "~/theme/breakpoints";
+import css from "~/theme/main.module.scss";
 
 import TagSkeleton from "./skeleton";
 import styles from "./tags.module.scss";
@@ -51,13 +52,17 @@ const TagsPreview = ({
     <>
       <div
         aria-busy={loading}
-        className={clsx("flex-col", styles.tags, loading && styles.loading)}
+        className={clsx(
+          css["flex-col"],
+          styles.tags,
+          loading && styles.loading
+        )}
       >
-        <Typography className={"t-medium"} level={"body2"}>
+        <Typography className={css["t-medium"]} level={"body2"}>
           Popular tags in {normalized_category}
         </Typography>
         <div
-          className={clsx("flex", styles["tags-list"])}
+          className={clsx(css["flex"], styles["tags-list"])}
           key={String(loading)}
         >
           {loading
@@ -77,16 +82,16 @@ const TagsPreview = ({
                 ))}
         </div>
         {loading ? (
-          <div className={"flex"}>
+          <div className={css["flex"]}>
             <Grow />
             <Skeleton height={12} width={48} />
           </div>
         ) : (
           <Link
             className={clsx(
-              "fit-w",
-              "t-bold",
-              "flex-center",
+              css["fit-w"],
+              css["t-bold"],
+              css["flex-center"],
               styles.x,
               styles["show-more"]
             )}

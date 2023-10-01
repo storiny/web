@@ -6,6 +6,7 @@ import Tooltip from "~/components/tooltip";
 import CloudIcon from "~/icons/cloud";
 import CloudOffIcon from "~/icons/cloud-off";
 import CloudSyncingIcon from "~/icons/cloud-syncing";
+import css from "~/theme/main.module.scss";
 
 import { doc_status_atom, DocStatus as TDocStatus } from "../../../../atoms";
 import styles from "./doc-status.module.scss";
@@ -40,7 +41,7 @@ const DocStatus = (): React.ReactElement | null => {
 
   return (
     <Tooltip content={DOC_STATUS_TOOLTIP_MAP[doc_status as LocalDocStatus]}>
-      <span className={clsx("flex-center", styles.x, styles.icon)}>
+      <span className={clsx(css["flex-center"], styles.icon)}>
         {DOC_STATUS_ICON_MAP[doc_status as LocalDocStatus]}
       </span>
     </Tooltip>

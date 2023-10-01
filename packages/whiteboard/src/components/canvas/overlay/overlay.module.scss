@@ -1,20 +1,25 @@
+.primary-controls {
+  position: absolute;
+  gap: 8px;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.zoom {
+  border: 1px solid var(--divider);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background-color: var(--inverted-0);
+  box-shadow: var(--ridge-sm);
+}
+
+.zoom-input-wrapper {
+  padding: 2px 8px;
+  width: 128px;
+}
+
 .x {
-  &.primary-controls {
-    position: absolute;
-    gap: 8px;
-    bottom: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-  }
-
-  &.zoom {
-    border: 1px solid var(--divider);
-    border-radius: var(--radius-md);
-    overflow: hidden;
-    background-color: var(--inverted-0);
-    box-shadow: var(--ridge-sm);
-  }
-
   &.zoom-icon-button {
     --icon-size: 12px;
 
@@ -33,11 +38,6 @@
     font-size: 11px;
     border-radius: 0;
     border-inline: 1px solid var(--divider);
-  }
-
-  &.zoom-input-wrapper {
-    padding: 2px 8px;
-    width: 128px;
   }
 
   &.viewport {

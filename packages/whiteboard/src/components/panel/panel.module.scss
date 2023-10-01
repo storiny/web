@@ -1,19 +1,23 @@
-.x {
-  &.panel {
-    border-left: 1px solid var(--divider);
-    background-color: var(--bg-elevation-sm);
-    grid-area: panel;
-  }
+.dots {
+  fill: var(--inverted-200);
+  width: 10px;
+}
 
+.panel {
+  border-left: 1px solid var(--divider);
+  background-color: var(--bg-elevation-sm);
+  grid-area: panel;
+}
+
+.tools-wrapper {
+  max-width: calc(199px - var(--scrollbar-width, 0px));
+}
+
+.x {
   &.scrollbar {
     border-left: 1px solid var(--divider);
     background-color: var(--bg-elevation-xs);
     overflow: hidden; // Hide the scrollbar pseudo layer that is used to increase the interactive area
-  }
-
-  &.dots {
-    fill: var(--inverted-200);
-    width: 10px;
   }
 
   &.resizer {
@@ -46,9 +50,5 @@
       height: 14px;
       transform: translateY(-50%);
     }
-  }
-
-  &.tools-wrapper {
-    max-width: calc(199px - var(--scrollbar-width, 0px));
   }
 }

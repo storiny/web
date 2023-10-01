@@ -12,7 +12,7 @@ export const LIST = {
     className,
     ...rest
   }: React.ComponentPropsWithoutRef<"ul">): React.ReactElement => (
-    <ul {...rest} className={clsx(styles.x, styles.list, className)}>
+    <ul {...rest} className={clsx(styles.list, className)}>
       {children}
     </ul>
   ),
@@ -21,7 +21,7 @@ export const LIST = {
     className,
     ...rest
   }: React.ComponentPropsWithoutRef<"ol">): React.ReactElement => (
-    <ol {...rest} className={clsx(styles.x, styles.list, className)}>
+    <ol {...rest} className={clsx(styles.list, className)}>
       {children}
     </ol>
   ),

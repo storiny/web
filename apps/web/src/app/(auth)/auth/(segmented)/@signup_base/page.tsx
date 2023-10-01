@@ -10,6 +10,7 @@ import Stepper from "~/components/stepper";
 import Typography from "~/components/typography";
 import { select_is_logged_in } from "~/redux/features";
 import { use_app_selector } from "~/redux/hooks";
+import css from "~/theme/main.module.scss";
 
 import { use_auth_state } from "../../../actions";
 import SignupBaseForm from "./form";
@@ -39,10 +40,10 @@ const Page = (): React.ReactElement => {
         Sign up to Storiny
       </Typography>
       <Spacer orientation={"vertical"} size={0.5} />
-      <Typography className={"t-minor"} level={"body2"}>
+      <Typography className={css["t-minor"]} level={"body2"}>
         Already have an account?{" "}
         <Link
-          className={"t-medium"}
+          className={css["t-medium"]}
           href={"/auth"}
           onClick={(): void => actions.switch_segment("login")}
           underline={"always"}
@@ -53,9 +54,9 @@ const Page = (): React.ReactElement => {
       <Spacer orientation={"vertical"} size={5} />
       <SignupBaseForm on_submit={on_submit} />
       <Spacer orientation={"vertical"} size={5} />
-      <div className={"flex-center"}>
+      <div className={css["flex-center"]}>
         <Link
-          className={"t-medium"}
+          className={css["t-medium"]}
           href={"/auth"}
           level={"body2"}
           onClick={(): void => actions.switch_segment("base")}

@@ -8,6 +8,7 @@ import { ItemProps } from "react-virtuoso";
 import styles from "~/common/virtual/virtual.module.scss";
 import Divider from "~/components/divider";
 import Reply from "~/entities/reply";
+import css from "~/theme/main.module.scss";
 
 import { VirtualizedReplyListContext } from "../list/list-context";
 
@@ -18,7 +19,7 @@ const VirtualizedReplyItem = React.memo(
     return (
       <div
         {...rest}
-        className={clsx("flex-col", styles["list-item"])}
+        className={clsx(css["flex-col"], styles["list-item"])}
         key={item.id}
       >
         <Reply {...reply_props} reply={item} virtual />

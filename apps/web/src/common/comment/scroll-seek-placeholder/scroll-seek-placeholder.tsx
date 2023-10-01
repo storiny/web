@@ -5,6 +5,7 @@ import React from "react";
 
 import Divider from "~/components/divider";
 import { CommentSkeleton } from "~/entities/comment";
+import css from "~/theme/main.module.scss";
 
 import styles from "../../virtual/virtual.module.scss";
 import { VirtualizedCommentListContext } from "../list/list-context";
@@ -12,7 +13,7 @@ import { VirtualizedCommentListContext } from "../list/list-context";
 const VirtualizedCommentScrollSeekPlaceholder = React.memo(() => {
   const { skeleton_props } = React.useContext(VirtualizedCommentListContext);
   return (
-    <div className={clsx("flex-col", styles["list-item"])}>
+    <div className={clsx(css["flex-col"], styles["list-item"])}>
       <CommentSkeleton {...skeleton_props} virtual />
       <Divider style={{ marginInline: "var(--grid-compensation)" }} />
     </div>

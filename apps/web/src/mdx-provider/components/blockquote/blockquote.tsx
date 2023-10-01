@@ -1,6 +1,8 @@
 import { clsx } from "clsx";
 import React from "react";
 
+import css from "~/theme/main.module.scss";
+
 import styles from "./blockquote.module.scss";
 
 const Blockquote = ({
@@ -10,7 +12,7 @@ const Blockquote = ({
 }: React.ComponentPropsWithoutRef<"blockquote">): React.ReactElement => (
   <blockquote
     {...rest}
-    className={clsx("t-legible-slim", styles.blockquote, className)}
+    className={clsx(css["t-legible-slim"], styles.blockquote, className)}
   >
     {children}
   </blockquote>

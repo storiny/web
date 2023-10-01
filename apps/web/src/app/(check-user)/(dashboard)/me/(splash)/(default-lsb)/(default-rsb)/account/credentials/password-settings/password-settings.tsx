@@ -2,6 +2,7 @@ import React from "react";
 
 import Spacer from "~/components/spacer";
 import Typography from "~/components/typography";
+import css from "~/theme/main.module.scss";
 
 import AddPassword from "./add-password";
 import { PasswordSettingsProps } from "./password-settings.props";
@@ -17,7 +18,7 @@ const CredentialsPasswordSettings = (
         Password
       </Typography>
       <Spacer orientation={"vertical"} />
-      <Typography className={"t-minor"} level={"body2"}>
+      <Typography className={css["t-minor"]} level={"body2"}>
         {has_password
           ? "Changing your password will log you out of all the devices that you have been logged into, except for this device, and you will need to log in to them again."
           : "You initially signed up through one of our social login providers. We highly recommend that you add a password to your account, as this will allow you to log in using both your e-mail and password, in addition to the social login."}

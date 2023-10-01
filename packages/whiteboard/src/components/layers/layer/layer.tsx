@@ -18,6 +18,7 @@ import PencilIcon from "~/icons/pencil";
 import RectangleIcon from "~/icons/rectangle";
 import TrashIcon from "~/icons/trash";
 import TypographyIcon from "~/icons/typography";
+import css from "~/theme/main.module.scss";
 import { capitalize } from "~/utils/capitalize";
 import { truncate } from "~/utils/truncate";
 
@@ -43,17 +44,13 @@ const LAYER_TYPE_ICON_MAP: Record<LayerType, React.ReactNode> = {
 // Lock filled ico
 
 const LockFilledIcon = (): React.ReactElement => (
-  <svg
-    aria-hidden={"true"}
-    className={clsx(styles.x, styles["lock-icon"])}
-    viewBox="0 0 12 12"
-  >
+  <svg aria-hidden={"true"} className={styles["lock-icon"]} viewBox="0 0 12 12">
     <path
-      className={clsx(styles.x, styles.fill)}
+      className={styles.fill}
       d="M2.8 5.8a1 1 0 0 0-.3.7v3a1 1 0 0 0 1 1h5a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1h-5a1 1 0 0 0-.7.3Z"
     />
     <path
-      className={clsx(styles.x, styles.stroke)}
+      className={styles.stroke}
       d="M3.5 5.5a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h5a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1m-5 0h5m-5 0H4m4.5 0H8m-4 0v-2a2 2 0 1 1 4 0v2m-4 0h4"
     />
   </svg>
@@ -130,10 +127,9 @@ const Layer = React.forwardRef<HTMLLIElement, LayerProps>((props, ref) => {
     <li
       {...rest}
       className={clsx(
-        "flex-center",
-        "focusable",
-        "focus-invert",
-        styles.x,
+        css["flex-center"],
+        css["focusable"],
+        css["focus-invert"],
         styles.layer,
         is_dragging && styles.dragging,
         layer.get("selected") && styles.selected,
@@ -171,14 +167,14 @@ const Layer = React.forwardRef<HTMLLIElement, LayerProps>((props, ref) => {
         </IconButton>
       ) : null}
       <span
-        className={clsx("flex-center", styles.x, styles.icon)}
+        className={clsx(css["flex-center"], styles.icon)}
         title={capitalize(layer.get("_type").replace(/-/g, " "))}
       >
         {LAYER_TYPE_ICON_MAP[layer.get("_type") as LayerType]}
         {layer.get("selected") && (
           <svg
             aria-hidden
-            className={clsx(styles.x, styles["selected-border"])}
+            className={styles["selected-border"]}
             viewBox={"0 0 24 24"}
           >
             <rect
@@ -223,10 +219,9 @@ const Layer = React.forwardRef<HTMLLIElement, LayerProps>((props, ref) => {
       ) : (
         <span
           className={clsx(
-            "t-major",
-            "t-medium",
-            "ellipsis",
-            styles.x,
+            css["t-major"],
+            css["t-medium"],
+            css["ellipsis"],
             styles.label,
             layer.get("selected") && styles.selected
           )}
@@ -237,10 +232,10 @@ const Layer = React.forwardRef<HTMLLIElement, LayerProps>((props, ref) => {
       )}
       <Grow />
       {!is_editing && (
-        <div className={"flex-center"} tabIndex={-1}>
+        <div className={css["flex-center"]} tabIndex={-1}>
           <IconButton
             aria-label={"Edit layer name"}
-            className={clsx("focus-invert", styles.x, styles["button"])}
+            className={clsx(css["focus-invert"], styles.x, styles["button"])}
             onClick={(event): void => {
               event.stopPropagation();
               set_is_editing(true);
@@ -254,7 +249,7 @@ const Layer = React.forwardRef<HTMLLIElement, LayerProps>((props, ref) => {
           <IconButton
             aria-label={`${layer.get("locked") ? "Unlock" : "Lock"} layer`}
             className={clsx(
-              "focus-invert",
+              css["focus-invert"],
               styles.x,
               styles["button"],
               layer.get("locked") && styles.pinned
@@ -272,7 +267,7 @@ const Layer = React.forwardRef<HTMLLIElement, LayerProps>((props, ref) => {
           <IconButton
             aria-label={`${!layer.visible ? "Show" : "Hide"} layer`}
             className={clsx(
-              "focus-invert",
+              css["focus-invert"],
               styles.x,
               styles["button"],
               !layer.visible && styles.pinned
@@ -289,7 +284,7 @@ const Layer = React.forwardRef<HTMLLIElement, LayerProps>((props, ref) => {
           </IconButton>
           <IconButton
             aria-label={"Remove layer"}
-            className={clsx("focus-invert", styles.x, styles["button"])}
+            className={clsx(css["focus-invert"], styles.x, styles["button"])}
             onClick={(event): void => {
               event.stopPropagation();
               remove_layer();

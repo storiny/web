@@ -1,3 +1,10 @@
+.placeholder {
+  &:empty {
+    min-height: 28px;
+    display: block;
+  }
+}
+
 .x {
   &.layers {
     list-style: none;
@@ -17,12 +24,5 @@
     border-left: 1px solid var(--divider);
     background-color: var(--bg-elevation-xs);
     overflow: hidden; // Hide the scrollbar pseudo layer that is used to increase the interactive area
-  }
-
-  &.placeholder {
-    &:empty {
-      min-height: 28px;
-      display: block;
-    }
   }
 }

@@ -22,6 +22,7 @@ import {
   use_get_gallery_photos_query
 } from "~/redux/features";
 import { BREAKPOINTS } from "~/theme/breakpoints";
+import css from "~/theme/main.module.scss";
 
 import { pending_image_atom, query_atom } from "../../atoms";
 import LibraryMasonryItem from "./library-item";
@@ -75,7 +76,7 @@ const Pexels = ({
       {is_loading || is_typing || (is_fetching && page === 1) ? (
         <div
           aria-busy={"true"}
-          className={clsx("full-w", "full-h", "flex-center")}
+          className={clsx(css["full-w"], css["full-h"], css["flex-center"])}
           style={{ padding: "32px" }}
         >
           <Spinner />
@@ -147,7 +148,7 @@ const Library = ({
       {is_loading || (is_fetching && page === 1) ? (
         <div
           aria-busy={"true"}
-          className={clsx("full-w", "full-h", "flex-center")}
+          className={clsx(css["full-w"], css["full-h"], css["flex-center"])}
           style={{ padding: "32px" }}
         >
           <Spinner />
@@ -207,7 +208,7 @@ const GalleryMasonryFooter = React.memo<{
   }, [has_more, in_view, increment_page, is_fetching]);
 
   return (
-    <div className={clsx("flex-col", "flex-center")} ref={ref}>
+    <div className={clsx(css["flex-col"], css["flex-center"])} ref={ref}>
       {has_more && (
         <>
           <Spacer orientation={"vertical"} size={5} />

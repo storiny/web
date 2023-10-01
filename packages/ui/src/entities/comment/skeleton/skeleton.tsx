@@ -7,6 +7,7 @@ import NoSsr from "~/components/no-ssr";
 import Skeleton from "~/components/skeleton";
 import { use_media_query } from "~/hooks/use-media-query";
 import { BREAKPOINTS } from "~/theme/breakpoints";
+import css from "~/theme/main.module.scss";
 
 import comment_styles from "../comment.module.scss";
 import { CommentSkeletonProps } from "./skeleton.props";
@@ -20,13 +21,13 @@ const CommentSkeleton = (props: CommentSkeletonProps): React.ReactElement => {
       <div
         aria-busy={"true"}
         className={clsx(
-          "flex-col",
+          css["flex-col"],
           comment_styles.comment,
           virtual && comment_styles.virtual
         )}
       >
         <div
-          className={clsx("flex", comment_styles["story-persona"])}
+          className={clsx(css["flex"], comment_styles["story-persona"])}
           style={{ alignItems: "center" }}
         >
           {is_extended ? (
@@ -42,12 +43,12 @@ const CommentSkeleton = (props: CommentSkeletonProps): React.ReactElement => {
           )}
           <Skeleton height={18} width={114} />
         </div>
-        <div className={"flex-col"} style={{ gap: "6px" }}>
+        <div className={css["flex-col"]} style={{ gap: "6px" }}>
           <Skeleton height={10} width={236} />
           <Skeleton height={10} width={140} />
           <Skeleton height={10} width={200} />
         </div>
-        <div className={clsx("flex-center")}>
+        <div className={css["flex-center"]}>
           <Skeleton
             height={is_mobile || is_extended ? 18 : 14}
             width={is_mobile || is_extended ? 52 : 48}

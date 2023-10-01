@@ -5,6 +5,7 @@ import clsx from "clsx";
 import React from "react";
 
 import { render_with_state } from "~/redux/mock";
+import css from "~/theme/main.module.scss";
 
 import Navbar from "./navbar";
 
@@ -13,7 +14,7 @@ const meta: Meta<typeof Navbar> = {
   component: Navbar,
   decorators: [
     (Story): React.ReactElement => (
-      <div className={clsx("grid", "grid-container")}>
+      <div className={clsx(css["grid"], css["grid-container"])}>
         <Story />
       </div>
     )

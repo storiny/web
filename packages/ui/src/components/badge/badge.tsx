@@ -3,6 +3,7 @@
 import clsx from "clsx";
 import React from "react";
 
+import css from "~/theme/main.module.scss";
 import { forward_ref } from "~/utils/forward-ref";
 
 import styles from "./badge.module.scss";
@@ -105,7 +106,7 @@ const Badge = forward_ref<BadgeProps, "span">((props, ref) => {
       <Component
         {...rest}
         className={clsx(
-          "flex-center",
+          css["flex-center"],
           styles.badge,
           styles[color],
           styles[size],

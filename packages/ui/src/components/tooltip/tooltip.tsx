@@ -5,6 +5,7 @@ import clsx from "clsx";
 import React from "react";
 
 import Spacer from "~/components/spacer";
+import css from "~/theme/main.module.scss";
 import { forward_ref } from "~/utils/forward-ref";
 
 import styles from "./tooltip.module.scss";
@@ -32,7 +33,7 @@ const Tooltip = forward_ref<TooltipProps, "div">((props, ref) => {
           sideOffset={5}
           {...slot_props?.content}
           asChild
-          className={clsx("flex-center", styles.content, className)}
+          className={clsx(css["flex-center"], styles.content, className)}
           ref={ref}
         >
           <Component>
@@ -43,8 +44,7 @@ const Tooltip = forward_ref<TooltipProps, "div">((props, ref) => {
                 <span
                   {...slot_props?.right_slot}
                   className={clsx(
-                    "t-muted",
-                    styles.x,
+                    css["t-muted"],
                     styles["right-slot"],
                     slot_props?.right_slot?.className
                   )}

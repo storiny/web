@@ -9,6 +9,7 @@ import RetryIcon from "~/icons/retry";
 import SplashScreen from "~/layout/splash-screen";
 import { fetch_user, select_auth_status, select_user } from "~/redux/features";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
+import css from "~/theme/main.module.scss";
 
 // Handles client-side user authentication logic
 const DashboardSplashLayout = ({
@@ -33,7 +34,7 @@ const DashboardSplashLayout = ({
         {auth_status === "error" ? (
           <React.Fragment>
             <Typography
-              className={clsx("t-minor", "t-center")}
+              className={clsx(css["t-minor"], css["t-center"])}
               level={"body3"}
               style={{ maxWidth: "320px" }}
             >

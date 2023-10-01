@@ -3,6 +3,7 @@ import React from "react";
 
 import Link from "~/components/link";
 import Typography from "~/components/typography";
+import css from "~/theme/main.module.scss";
 
 import page_styles from "../../styles.module.scss";
 
@@ -15,7 +16,7 @@ const GetInTouchSection = (): React.ReactElement => (
     >
       Get in touch
     </Typography>
-    <div className={clsx("flex-col", page_styles["section-content"])}>
+    <div className={clsx(css["flex-col"], page_styles["section-content"])}>
       <Typography level={"legible"}>
         For any inquiries related to the contents of these branding guidelines
         or if there is uncertainty in ensuring that your communication aligns

@@ -62,7 +62,7 @@ export const WithSidebar: Story = {
     ...WithFooter.args,
     sidebar: (
       <p
-        className={"t-body-2 t-minor"}
+        className={css["t-body-2 t-minor"]}
         style={{ padding: "8px", textAlign: "center" }}
       >
         Sidebar content
@@ -100,7 +100,7 @@ export const ModeTabbed: Story = {
       // eslint-disable-next-line prefer-snakecase/prefer-snakecase
       content: { style: { minHeight: "45vh", minWidth: "40vw" } },
       body: {
-        className: "t-body-2",
+        className: css["t-body-2"],
         style: { padding: "24px" }
       }
     },

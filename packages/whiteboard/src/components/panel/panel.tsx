@@ -9,6 +9,7 @@ import {
 
 import ScrollArea from "~/components/scroll-area";
 import { use_scrollbar_visibility } from "~/hooks/use-scrollbar-visibility";
+import css from "~/theme/main.module.scss";
 
 import { is_pen_mode_atom } from "../../atoms";
 import { use_active_object, use_canvas } from "../../hooks";
@@ -27,7 +28,7 @@ const ToolsPanel = (): React.ReactElement => {
 
   return (
     <ScrollArea
-      className={"full-h"}
+      className={css["full-h"]}
       slot_props={{
         viewport: {
           ref,
@@ -41,7 +42,7 @@ const ToolsPanel = (): React.ReactElement => {
       type={"auto"}
     >
       <div
-        className={clsx(styles.x, styles["tools-wrapper"])}
+        className={styles["tools-wrapper"]}
         style={
           {
             "--scrollbar-width": visible ? "10px" : "0px"
@@ -68,19 +69,20 @@ const ToolsPanel = (): React.ReactElement => {
 };
 
 const Panel = (): React.ReactElement => (
-  <div className={clsx(styles.x, styles.panel)}>
+  <div className={styles.panel}>
     <PanelGroup direction={"vertical"}>
       <PanelPrimitive>
         <ToolsPanel />
       </PanelPrimitive>
       <PanelResizeHandle
-        className={clsx("focusable", "flex-center", styles.x, styles.resizer)}
+        className={clsx(
+          css["focusable"],
+          css["flex-center"],
+          styles.x,
+          styles.resizer
+        )}
       >
-        <svg
-          aria-hidden
-          className={clsx(styles.x, styles.dots)}
-          viewBox="0 0 10 2"
-        >
+        <svg aria-hidden className={styles.dots} viewBox="0 0 10 2">
           <path d="M2 1a1 1 0 1 1-2 0 1 1 0 0 1 2 0ZM6 1a1 1 0 1 1-2 0 1 1 0 0 1 2 0ZM10 1a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z" />
         </svg>
       </PanelResizeHandle>

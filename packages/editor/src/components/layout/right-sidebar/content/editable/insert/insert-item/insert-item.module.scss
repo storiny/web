@@ -1,3 +1,7 @@
+.icon {
+  padding: 4px;
+}
+
 .x {
   &.item {
     --icon-size: 16px;
@@ -9,10 +13,6 @@
     align-items: center;
     height: fit-content;
     border-radius: 0;
-  }
-
-  &.icon {
-    padding: 4px;
   }
 
   &.label {

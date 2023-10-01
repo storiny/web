@@ -16,6 +16,7 @@ import {
   use_avatar_settings_mutation
 } from "~/redux/features";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
+import css from "~/theme/main.module.scss";
 
 import styles from "./avatar-settings.module.scss";
 
@@ -78,8 +79,8 @@ const AvatarSettings = (): React.ReactElement | null => {
   }, [avatar_id, mutate_avatar_settings, dispatch, toast]);
 
   return (
-    <div className={clsx("flex-col", styles["avatar-settings"])}>
-      <div className={clsx("flex-center", styles.header)}>
+    <div className={clsx(css["flex-col"], styles["avatar-settings"])}>
+      <div className={clsx(css["flex-center"], styles.header)}>
         <Avatar
           alt={""}
           avatar_id={user.avatar_id}
@@ -87,7 +88,7 @@ const AvatarSettings = (): React.ReactElement | null => {
           label={user.name}
           size={"xl2"}
         />
-        <div className={"flex-col"}>
+        <div className={css["flex-col"]}>
           <Gallery
             on_confirm={(asset): void => {
               set_avatar_id(asset.key);
@@ -108,7 +109,7 @@ const AvatarSettings = (): React.ReactElement | null => {
           {element}
         </div>
       </div>
-      <Typography className={"t-minor"} level={"body3"}>
+      <Typography className={css["t-minor"]} level={"body3"}>
         We recommend using a PNG, JPG, WEBP, or GIF with a minimum resolution of
         640 pixels in a square shape.
       </Typography>

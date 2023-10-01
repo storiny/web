@@ -3,6 +3,7 @@ import { waitFor as wait_for } from "@testing-library/react";
 import React from "react";
 
 import { render_test_with_provider } from "~/redux/test-utils";
+import css from "~/theme/main.module.scss";
 
 import Button from "./button";
 import styles from "./button.module.scss";
@@ -60,7 +61,7 @@ describe("<Button />", () => {
         <Button variant={variant}>Test</Button>
       );
 
-      expect(getByRole("button")).toHaveClass(`variant-${variant}`);
+      expect(getByRole("button")).toHaveClass(css[`variant-${variant}`]);
     });
   });
 

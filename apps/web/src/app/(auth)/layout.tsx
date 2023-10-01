@@ -3,6 +3,7 @@ import Image from "next/image";
 import React from "react";
 
 import Navbar from "~/layout/navbar";
+import css from "~/theme/main.module.scss";
 
 import styles from "./layout.module.scss";
 import AuthState from "./state";
@@ -12,16 +13,16 @@ const AuthLayout = ({
 }: {
   children: React.ReactNode;
 }): React.ReactElement => (
-  <div className={clsx("grid", "grid-container", "minimal")}>
+  <div className={clsx(css.grid, css["grid-container"], css.minimal)}>
     <Navbar variant={"minimal"} />
     <div
-      className={clsx("full-w", "full-h")}
+      className={clsx(css["full-w"], css["full-h"])}
       role={"presentation"}
       style={{ minHeight: "100vh", position: "fixed", pointerEvents: "none" }}
     >
       <Image
         alt={""}
-        className={"invert"}
+        data-invert-filter={""}
         fill
         loading={"eager"}
         priority
@@ -29,8 +30,9 @@ const AuthLayout = ({
         style={{ objectFit: "cover", opacity: 0.45 }}
       />
     </div>
-    <main className={styles.main} data-root={"true"}>
-      <div className={clsx("flex-col", styles.container)}>
+    {/* Need to make the <main /> styles more specific */}
+    <main className={clsx(styles.x, styles.main)} data-root={"true"}>
+      <div className={clsx(css["flex-col"], styles.container)}>
         <AuthState>{children}</AuthState>
       </div>
     </main>

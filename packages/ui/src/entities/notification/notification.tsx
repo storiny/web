@@ -26,6 +26,7 @@ import VerifiedIcon from "~/icons/verified";
 import { select_read_notification } from "~/redux/features";
 import { use_app_selector } from "~/redux/hooks";
 import { BREAKPOINTS } from "~/theme/breakpoints";
+import css from "~/theme/main.module.scss";
 import { DateFormat, format_date } from "~/utils/format-date";
 
 import styles from "./notification.module.scss";
@@ -82,7 +83,7 @@ const Notification = (props: NotificationProps): React.ReactElement => {
     <div
       {...rest}
       className={clsx(
-        "flex",
+        css["flex"],
         styles.notification,
         is_read && styles.read,
         virtual && styles.virtual,
@@ -134,11 +135,11 @@ const Notification = (props: NotificationProps): React.ReactElement => {
           />
         )}
       </Badge>
-      <div className={"flex-col"}>
+      <div className={css["flex-col"]}>
         <Typography as={"div"} className={styles.content}>
           <NotificationParser content={notification.rendered_content} />
         </Typography>
-        <Typography className={"t-minor"} level={"body2"}>
+        <Typography className={css["t-minor"]} level={"body2"}>
           {format_date(
             notification.created_at,
             DateFormat.RELATIVE_CAPITALIZED

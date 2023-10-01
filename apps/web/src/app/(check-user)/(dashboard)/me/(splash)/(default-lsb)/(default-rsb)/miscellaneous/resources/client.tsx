@@ -8,6 +8,7 @@ import NavigationItem from "~/components/navigation-item";
 import Separator from "~/components/separator";
 import Spacer from "~/components/spacer";
 import ExternalLinkIcon from "~/icons/external-link";
+import css from "~/theme/main.module.scss";
 
 import DashboardTitle from "../../../dashboard-title";
 import DashboardWrapper from "../../../dashboard-wrapper";
@@ -17,7 +18,7 @@ const MiscellaneousResourcesClient = (): React.ReactElement => (
   <React.Fragment>
     <DashboardTitle>Additional resources</DashboardTitle>
     <DashboardWrapper className={styles.wrapper}>
-      <div className={clsx("flex-col", styles.container)}>
+      <div className={clsx(css["flex-col"], styles.container)}>
         {[
           ["About", "/about"],
           ["Media kit", "/branding"],
@@ -33,11 +34,11 @@ const MiscellaneousResourcesClient = (): React.ReactElement => (
             >
               {title}
             </NavigationItem>
-            <Separator className={"hide-last"} invert_margin />
+            <Separator className={css["hide-last"]} invert_margin />
           </React.Fragment>
         ))}
       </div>
-      <div className={clsx("flex-col", styles.container)}>
+      <div className={clsx(css["flex-col"], styles.container)}>
         {[
           ["Privacy Policy", "/legal/policies/privacy"],
           ["Terms of Use", "/legal/terms/tos"],
@@ -57,7 +58,7 @@ const MiscellaneousResourcesClient = (): React.ReactElement => (
             >
               {title}
             </NavigationItem>
-            <Separator className={"hide-last"} invert_margin />
+            <Separator className={css["hide-last"]} invert_margin />
           </React.Fragment>
         ))}
       </div>

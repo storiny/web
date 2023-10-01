@@ -5,6 +5,7 @@ import clsx from "clsx";
 import React from "react";
 
 import PointIcon from "~/icons/point";
+import css from "~/theme/main.module.scss";
 import { forward_ref } from "~/utils/forward-ref";
 
 import menu_item_styles from "../common/menu-item.module.scss";
@@ -34,7 +35,7 @@ const MenubarRadioItem = forward_ref<MenubarRadioItemProps, "div">(
           <ItemIndicator
             {...slot_props?.indicator}
             className={clsx(
-              "flex-center",
+              css["flex-center"],
               styles.indicator,
               slot_props?.indicator?.className
             )}

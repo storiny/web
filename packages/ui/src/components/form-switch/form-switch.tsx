@@ -4,6 +4,7 @@ import clsx from "clsx";
 import React from "react";
 
 import Switch from "~/components/switch";
+import css from "~/theme/main.module.scss";
 
 import { use_form_context } from "../form";
 import {
@@ -50,7 +51,7 @@ const FormSwitch = React.forwardRef<HTMLFieldSetElement, FormSwitchProps>(
             required={required}
           >
             <div
-              className={clsx("flex", styles.control)}
+              className={clsx(css["flex"], styles.control)}
               data-disabled={String(Boolean(disabled))}
             >
               <FormLabel
@@ -76,12 +77,17 @@ const FormSwitch = React.forwardRef<HTMLFieldSetElement, FormSwitchProps>(
                 />
               </FormControl>
             </div>
-            <div className={clsx("flex-col", styles["secondary-text-wrapper"])}>
+            <div
+              className={clsx(
+                css["flex-col"],
+                styles["secondary-text-wrapper"]
+              )}
+            >
               {helper_text && (
                 <FormHelperText
                   {...form_slot_props?.helper_text}
                   className={clsx(
-                    "t-minor",
+                    css["t-minor"],
                     styles["secondary-text"],
                     form_slot_props?.helper_text?.className
                   )}

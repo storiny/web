@@ -10,6 +10,7 @@ import Tooltip from "~/components/tooltip";
 import Typography from "~/components/typography";
 import CaretDefaultIcon from "~/icons/caret-default";
 import SidebarCollapseIcon from "~/icons/sidebar-collapse";
+import css from "~/theme/main.module.scss";
 
 import { sidebars_collapsed_atom } from "../../../../../../atoms";
 import { EDITOR_SHORTCUTS } from "../../../../../../constants/shortcuts";
@@ -21,21 +22,24 @@ const Appearance = ({
 }): React.ReactElement => {
   const set_sidebars_collapsed = use_set_atom(sidebars_collapsed_atom);
   return (
-    <div className={"flex-col"}>
-      <Typography className={clsx("t-minor", "t-medium")} level={"body2"}>
+    <div className={css["flex-col"]}>
+      <Typography
+        className={clsx(css["t-minor"], css["t-medium"])}
+        level={"body2"}
+      >
         Appearance
       </Typography>
       <Spacer orientation={"vertical"} size={2} />
-      <div className={"flex-center"}>
+      <div className={css["flex-center"]}>
         {/* TODO: Implement */}
         <Tooltip content={"Available soon"}>
-          <div className={"f-grow"}>
+          <div className={css["f-grow"]}>
             <Select
               defaultValue={"default"}
               disabled
               slot_props={{
                 trigger: {
-                  className: "full-w",
+                  className: css["full-w"],
                   "aria-label": "Caret style"
                 },
                 value: {
@@ -43,7 +47,7 @@ const Appearance = ({
                 }
               }}
               value_children={
-                <span className={"flex-center"}>
+                <span className={css["flex-center"]}>
                   <CaretDefaultIcon />
                   <Spacer />
                   Default caret

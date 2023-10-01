@@ -21,6 +21,7 @@ import {
   use_get_tag_writers_query
 } from "~/redux/features";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
+import css from "~/theme/main.module.scss";
 import { abbreviate_number } from "~/utils/abbreviate-number";
 
 import TagActions from "../actions";
@@ -45,7 +46,7 @@ const Actions = ({ tag }: Props): React.ReactElement => {
   }, [dispatch, tag.is_following, tag.id]);
 
   return (
-    <div className={clsx("flex", styles.actions)}>
+    <div className={clsx(css["flex"], styles.actions)}>
       <Button
         check_auth
         decorator={is_following ? <CheckIcon /> : <PlusIcon />}
@@ -105,7 +106,7 @@ const SuspendedTagRightSidebarContent = ({
   tag
 }: Props): React.ReactElement => (
   <>
-    <div className={clsx("flex-center", styles.meta)}>
+    <div className={clsx(css["flex-center"], styles.meta)}>
       <TagIcon className={clsx(styles.x, styles["meta-icon"])} />
       <Typography as={"h1"} ellipsis level={"h3"}>
         {tag.name}
@@ -113,16 +114,22 @@ const SuspendedTagRightSidebarContent = ({
       <Grow />
       <TagActions tag={tag} />
     </div>
-    <div className={clsx("flex-col", styles.properties)}>
-      <div className={clsx("flex", styles.stats)}>
-        <Typography className={clsx("t-medium", "t-minor")} level={"body2"}>
-          <span className={clsx("t-bold", "t-major")}>
+    <div className={clsx(css["flex-col"], styles.properties)}>
+      <div className={clsx(css["flex"], styles.stats)}>
+        <Typography
+          className={clsx(css["t-medium"], css["t-minor"])}
+          level={"body2"}
+        >
+          <span className={clsx(css["t-bold"], css["t-major"])}>
             {abbreviate_number(tag.story_count)}
           </span>{" "}
           {tag.story_count === 1 ? "story" : "stories"}
         </Typography>
-        <Typography className={clsx("t-medium", "t-minor")} level={"body2"}>
-          <span className={clsx("t-bold", "t-major")}>
+        <Typography
+          className={clsx(css["t-medium"], css["t-minor"])}
+          level={"body2"}
+        >
+          <span className={clsx(css["t-bold"], css["t-major"])}>
             {abbreviate_number(tag.follower_count)}
           </span>{" "}
           {tag.follower_count === 1 ? "follower" : "followers"}

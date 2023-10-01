@@ -6,6 +6,7 @@ import React from "react";
 
 import ScrollArea from "~/components/scroll-area";
 import Typography from "~/components/typography";
+import css from "~/theme/main.module.scss";
 
 import styles from "./toc.module.scss";
 
@@ -134,7 +135,7 @@ const LegalToc = (): React.ReactElement => {
   if (!nested_headings.length) {
     return (
       <Typography
-        className={"t-muted"}
+        className={css["t-muted"]}
         level={"body2"}
         style={{ fontStyle: "italic" }}
       >
@@ -154,11 +155,11 @@ const LegalToc = (): React.ReactElement => {
       }}
       type={"auto"}
     >
-      <ul className={clsx("flex-col", styles.ul)}>
+      <ul className={clsx(css["flex-col"], styles.ul)}>
         {nested_headings.map((heading) => (
           <li
             className={clsx(
-              "flex-col",
+              css["flex-col"],
               styles.li,
               active_id === heading.id && styles.selected
             )}
@@ -176,11 +177,17 @@ const LegalToc = (): React.ReactElement => {
               {heading.title}
             </NextLink>
             {heading.items.length > 0 && (
-              <ul className={clsx("flex-col", styles.ul, styles["nested-ul"])}>
+              <ul
+                className={clsx(
+                  css["flex-col"],
+                  styles.ul,
+                  styles["nested-ul"]
+                )}
+              >
                 {heading.items.map((child) => (
                   <li
                     className={clsx(
-                      "flex-col",
+                      css["flex-col"],
                       styles.li,
                       active_id === child.id && styles.selected
                     )}

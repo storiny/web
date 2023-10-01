@@ -2,7 +2,8 @@
 
 import "server-only";
 import "normalize.css/normalize.css";
-import "~/theme/main.scss";
+import "~/theme/global.scss";
+import "~/theme/main.module.scss"; // Import the global css styles so that they have the lowest style priority
 
 import dynamic from "next/dynamic";
 import React from "react";

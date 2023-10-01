@@ -18,6 +18,7 @@ import Persona from "~/entities/persona";
 import SearchIcon from "~/icons/search";
 import { select_user } from "~/redux/features";
 import { use_app_selector } from "~/redux/hooks";
+import css from "~/theme/main.module.scss";
 
 import {
   DASHBOARD_GROUPS,
@@ -66,11 +67,14 @@ const AnchorTab = ({
 // Group component
 
 const GroupComponent = ({ group }: { group: Group }): React.ReactElement => (
-  <div className={clsx("flex-col", styles.x, styles["tabs-group"])}>
-    <Typography className={clsx("t-medium", "t-minor")} level={"body2"}>
+  <div className={clsx(css["flex-col"], styles["tabs-group"])}>
+    <Typography
+      className={clsx(css["t-medium"], css["t-minor"])}
+      level={"body2"}
+    >
       {group.title}
     </Typography>
-    <div className={clsx("flex-col", styles.x, styles["tabs-group-container"])}>
+    <div className={clsx(css["flex-col"], styles["tabs-group-container"])}>
       {group.items.map((item) => (
         <AnchorTab
           decorator={item.decorator}
@@ -105,8 +109,8 @@ const SuspendedDashboardLeftSidebarContent = (): React.ReactElement => {
   }, [current_segment]);
 
   return (
-    <div className={clsx("flex-col", styles["left-sidebar"])}>
-      <div className={clsx("flex-col", styles.content)}>
+    <div className={clsx(css["flex-col"], styles["left-sidebar"])}>
+      <div className={clsx(css["flex-col"], styles.content)}>
         <Persona
           avatar={{
             alt: `${user.name}'s avatar`,
@@ -117,10 +121,10 @@ const SuspendedDashboardLeftSidebarContent = (): React.ReactElement => {
           className={clsx(styles.x, styles.persona)}
           component_props={{
             primary_text: {
-              className: "ellipsis"
+              className: css["ellipsis"]
             },
             secondary_text: {
-              className: "ellipsis"
+              className: css["ellipsis"]
             }
           }}
           primary_text={user.name}
@@ -145,7 +149,7 @@ const SuspendedDashboardLeftSidebarContent = (): React.ReactElement => {
         slot_props={{
           viewport: {
             tabIndex: -1,
-            className: clsx("flex", styles.x, styles.viewport)
+            className: clsx(css["flex"], styles.x, styles.viewport)
           },
           scrollbar: {
             // eslint-disable-next-line prefer-snakecase/prefer-snakecase
@@ -155,7 +159,7 @@ const SuspendedDashboardLeftSidebarContent = (): React.ReactElement => {
       >
         <Tabs
           activationMode={"manual"}
-          className={clsx("full-w", "fit-h")}
+          className={clsx(css["full-w"], css["fit-h"])}
           orientation={"vertical"}
           role={undefined}
           value={current_segment}
@@ -163,7 +167,7 @@ const SuspendedDashboardLeftSidebarContent = (): React.ReactElement => {
           <TabsList
             aria-orientation={undefined}
             as={"nav"}
-            className={clsx("full-w", styles.x, styles["tabs-list"])}
+            className={clsx(css["full-w"], styles.x, styles["tabs-list"])}
             loop={false}
             role={undefined}
           >
@@ -175,8 +179,8 @@ const SuspendedDashboardLeftSidebarContent = (): React.ReactElement => {
               ) : (
                 <Typography
                   className={clsx(
-                    "t-center",
-                    "t-minor",
+                    css["t-center"],
+                    css["t-minor"],
                     styles.x,
                     styles.content
                   )}
@@ -184,7 +188,7 @@ const SuspendedDashboardLeftSidebarContent = (): React.ReactElement => {
                 >
                   Could not find anything for &quot;
                   <span
-                    className={"t-medium"}
+                    className={css["t-medium"]}
                     style={{ wordBreak: "break-all" }}
                   >
                     {query}
@@ -200,10 +204,10 @@ const SuspendedDashboardLeftSidebarContent = (): React.ReactElement => {
           </TabsList>
         </Tabs>
         <Spacer orientation={"vertical"} size={2} />
-        <div className={clsx("flex-col", styles.content, styles.footer)}>
+        <div className={clsx(css["flex-col"], styles.content, styles.footer)}>
           <Separator />
-          <div className={"flex-col"}>
-            <Typography className={"t-muted"} ellipsis level={"body3"}>
+          <div className={css["flex-col"]}>
+            <Typography className={css["t-muted"]} ellipsis level={"body3"}>
               {process.env.NODE_ENV === "development" ? "Dev" : APP_STATUS}{" "}
               {get_version()}
               {APP_BUILD_HASH ? ` (${APP_BUILD_HASH})` : ""}

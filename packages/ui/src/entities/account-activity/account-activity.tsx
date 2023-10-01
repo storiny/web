@@ -14,6 +14,7 @@ import MoodSmileIcon from "~/icons/mood-smile";
 import PasswordIcon from "~/icons/password";
 import PencilIcon from "~/icons/pencil";
 import TwoFAIcon from "~/icons/two-fa";
+import css from "~/theme/main.module.scss";
 import { DateFormat, format_date } from "~/utils/format-date";
 
 import styles from "./account-activity.module.scss";
@@ -50,7 +51,7 @@ const AccountActivity = (props: AccountActivityProps): React.ReactElement => {
     <div
       {...rest}
       className={clsx(
-        "flex",
+        css["flex"],
         styles["account-activity"],
         hide_pipe && styles["hide-pipe"],
         className
@@ -59,14 +60,14 @@ const AccountActivity = (props: AccountActivityProps): React.ReactElement => {
       <Avatar className={styles.avatar} size={"lg"}>
         {ACTIVITY_TYPE_ICON_MAP[account_activity.type]}
       </Avatar>
-      <div className={"flex-col"}>
+      <div className={css["flex-col"]}>
         <Typography ellipsis>
-          <span className={"t-bold"}>
+          <span className={css["t-bold"]}>
             {ACTIVITY_TYPE_TITLE_MAP[account_activity.type]}
           </span>{" "}
           <Typography level={"body2"}>
-            <span className={"t-muted"}>&bull;</span>{" "}
-            <span className={"t-minor"}>
+            <span className={css["t-muted"]}>&bull;</span>{" "}
+            <span className={css["t-minor"]}>
               {format_date(
                 account_activity.created_at,
                 DateFormat.RELATIVE_CAPITALIZED
@@ -74,7 +75,7 @@ const AccountActivity = (props: AccountActivityProps): React.ReactElement => {
             </span>
           </Typography>
         </Typography>
-        <Typography as={"div"} className={"t-minor"} level={"body2"}>
+        <Typography as={"div"} className={css["t-minor"]} level={"body2"}>
           <AccountActivityParser content={account_activity.description} />
         </Typography>
       </div>

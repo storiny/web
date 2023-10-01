@@ -10,6 +10,7 @@ import FormInput from "~/components/form-input";
 import FormNewPasswordInput from "~/components/form-new-password-input";
 import Grow from "~/components/grow";
 import Spacer from "~/components/spacer";
+import css from "~/theme/main.module.scss";
 
 import { use_auth_state } from "../../../actions";
 import { SIGNUP_BASE_SCHEMA, SignupBaseSchema } from "./schema";
@@ -37,7 +38,7 @@ const SignupBaseForm = ({ on_submit }: Props): React.ReactElement => {
 
   return (
     <Form<SignupBaseSchema>
-      className={clsx("flex-col", "full-h")}
+      className={clsx(css["flex-col"], css["full-h"])}
       on_submit={handle_submit}
       provider_props={form}
     >
@@ -74,8 +75,8 @@ const SignupBaseForm = ({ on_submit }: Props): React.ReactElement => {
       />
       <Spacer orientation={"vertical"} size={5} />
       <Grow />
-      <div className={clsx("flex-col", "flex-center")}>
-        <Button className={"full-w"} size={"lg"} type={"submit"}>
+      <div className={clsx(css["flex-col"], css["flex-center"])}>
+        <Button className={css["full-w"]} size={"lg"} type={"submit"}>
           Continue
         </Button>
       </div>

@@ -1,30 +1,28 @@
-.x {
-  &.floating-element {
-    position: absolute;
-    top: 0;
-    left: 0;
-    visibility: hidden;
-    z-index: calc(var(--z-index-header) - 1);
-    border-radius: var(--radius-md);
-    border: 1px solid var(--divider);
-    background-color: var(--bg-elevation-sm);
-    box-shadow: var(--ridge-xs), var(--shadow-lg);
-    will-change: transform;
+.arrow {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform-origin: center 0 0;
+  transform: translate(-50%, 50%);
+}
 
-    /* Flipped Y */
-    &.flipped {
-      & .arrow {
-        top: 0;
-        transform: translate(-50%, calc(50% + -4px)) rotate(180deg);
-      }
+.floating-element {
+  position: absolute;
+  top: 0;
+  left: 0;
+  visibility: hidden;
+  z-index: calc(var(--z-index-header) - 1);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--divider);
+  background-color: var(--bg-elevation-sm);
+  box-shadow: var(--ridge-xs), var(--shadow-lg);
+  will-change: transform;
+
+  /* Flipped Y */
+  &.flipped {
+    & .arrow {
+      top: 0;
+      transform: translate(-50%, calc(50% + -4px)) rotate(180deg);
     }
-  }
-
-  &.arrow {
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    transform-origin: center 0 0;
-    transform: translate(-50%, 50%);
   }
 }

@@ -4,6 +4,7 @@ import { Action, Close, Description, Root } from "@radix-ui/react-toast";
 import clsx from "clsx";
 import React from "react";
 
+import css from "~/theme/main.module.scss";
 import { forward_ref } from "~/utils/forward-ref";
 
 import common_styles from "../common/toast.module.scss";
@@ -29,19 +30,19 @@ const Notification = forward_ref<NotificationProps, "li">((props, ref) => {
       className={clsx(
         styles.notification,
         common_styles["toast-animation"],
-        "focusable",
+        css["focusable"],
         className
       )}
       data-testid={"notification"}
       ref={ref}
     >
       <Component>
-        <Description className={clsx("flex-center", styles.description)}>
+        <Description className={clsx(css["flex-center"], styles.description)}>
           {icon && (
             <span
               {...slot_props?.decorator}
               className={clsx(
-                "flex-center",
+                css["flex-center"],
                 styles.decorator,
                 slot_props?.decorator?.className
               )}
@@ -53,10 +54,10 @@ const Notification = forward_ref<NotificationProps, "li">((props, ref) => {
         </Description>
         <Divider
           aria-hidden
-          className={"not-mobile"}
+          className={css["not-mobile"]}
           orientation={"vertical"}
         />
-        <Divider aria-hidden className={"only-mobile"} />
+        <Divider aria-hidden className={css["only-mobile"]} />
         <div
           {...slot_props?.actions}
           className={clsx(styles.actions, slot_props?.actions?.className)}
@@ -68,10 +69,10 @@ const Notification = forward_ref<NotificationProps, "li">((props, ref) => {
             <button
               {...slot_props?.primary_button}
               className={clsx(
-                "unset",
-                "focusable",
-                "focus-invert",
-                "t-center",
+                css["unset"],
+                css["focusable"],
+                css["focus-invert"],
+                css["t-center"],
                 styles.button,
                 slot_props?.secondary_button?.className
               )}
@@ -79,19 +80,19 @@ const Notification = forward_ref<NotificationProps, "li">((props, ref) => {
               {primary_button_text}
             </button>
           </Action>
-          <Divider aria-hidden className={"not-mobile"} />
+          <Divider aria-hidden className={css["not-mobile"]} />
           <Divider
             aria-hidden
-            className={"only-mobile"}
+            className={css["only-mobile"]}
             orientation={"vertical"}
           />
           <Close
             {...slot_props?.secondary_button}
             aria-label={secondary_button_text}
             className={clsx(
-              "unset",
-              "focusable",
-              "t-center",
+              css["unset"],
+              css["focusable"],
+              css["t-center"],
               styles.button,
               slot_props?.secondary_button?.className
             )}

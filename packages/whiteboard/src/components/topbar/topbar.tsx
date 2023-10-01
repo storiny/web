@@ -8,6 +8,7 @@ import Typography from "~/components/typography";
 import RedoIcon from "~/icons/redo";
 import RotationIcon from "~/icons/rotation";
 import UndoIcon from "~/icons/undo";
+import css from "~/theme/main.module.scss";
 
 import { use_active_object, use_canvas, use_event_render } from "../../hooks";
 import Cancel from "./cancel";
@@ -26,7 +27,7 @@ const Rotation = (): React.ReactElement => {
 
   return (
     <div
-      className={"flex-center"}
+      className={css["flex-center"]}
       onClick={(): void => {
         if (active_object) {
           active_object.rotate(0);
@@ -67,10 +68,10 @@ const StatusBar = (): React.ReactElement => (
   <Typography
     as={"div"}
     className={clsx(
-      "flex-center",
-      "f-grow",
-      "t-mono",
-      "t-minor",
+      css["flex-center"],
+      css["f-grow"],
+      css["t-mono"],
+      css["t-minor"],
       styles.x,
       styles["status-bar"]
     )}
@@ -107,7 +108,7 @@ const History = (): React.ReactElement => {
       <Tooltip content={"Undo"}>
         <IconButton
           aria-label={"Undo changes"}
-          className={clsx("focus-invert", styles.x, styles["icon-button"])}
+          className={clsx(css["focus-invert"], styles.x, styles["icon-button"])}
           onClick={undo}
           variant={"ghost"}
         >
@@ -117,7 +118,7 @@ const History = (): React.ReactElement => {
       <Tooltip content={"Redo"}>
         <IconButton
           aria-label={"Redo changes"}
-          className={clsx("focus-invert", styles.x, styles["icon-button"])}
+          className={clsx(css["focus-invert"], styles.x, styles["icon-button"])}
           onClick={redo}
           variant={"ghost"}
         >
@@ -129,7 +130,7 @@ const History = (): React.ReactElement => {
 };
 
 const Topbar = (): React.ReactElement => (
-  <div className={clsx("flex-center", styles.x, styles.topbar)}>
+  <div className={clsx(css["flex-center"], styles.topbar)}>
     <MainMenu />
     <History />
     <Spacer size={2} />

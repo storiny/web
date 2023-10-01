@@ -17,6 +17,7 @@ import Spacer from "~/components/spacer";
 import Spinner from "~/components/spinner";
 import { use_debounce } from "~/hooks/use-debounce";
 import { use_username_validation_mutation } from "~/redux/features";
+import css from "~/theme/main.module.scss";
 
 import { use_auth_state } from "../../../actions";
 import { SIGNUP_USERNAME_SCHEMA, SignupUsernameSchema } from "./schema";
@@ -102,7 +103,7 @@ const UsernameField = ({
       helper_text={
         invalid ||
         username.length < USER_PROPS.username.min_length ? undefined : (
-          <span className={"flex"} style={{ alignItems: "center" }}>
+          <span className={css["flex"]} style={{ alignItems: "center" }}>
             {loading ? (
               <>
                 <Spinner size={"xs"} />
@@ -153,16 +154,16 @@ const SignupUsernameForm = ({
 
   return (
     <Form<SignupUsernameSchema>
-      className={clsx("flex-col", "full-h")}
+      className={clsx(css["flex-col"], css["full-h"])}
       on_submit={handle_submit}
       provider_props={form}
     >
       <UsernameField set_valid={set_valid_impl} />
       <Spacer orientation={"vertical"} size={5} />
       <Grow />
-      <div className={clsx("flex-col", "flex-center")}>
+      <div className={clsx(css["flex-col"], css["flex-center"])}>
         <Button
-          className={"full-w"}
+          className={css["full-w"]}
           size={"lg"}
           type={"submit"}
           {...(!skip_validation && { disabled: !valid })}

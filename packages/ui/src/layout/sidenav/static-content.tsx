@@ -30,6 +30,7 @@ import {
   select_user
 } from "~/redux/features/auth/selectors";
 import { use_app_selector } from "~/redux/hooks";
+import css from "~/theme/main.module.scss";
 
 import styles from "./sidenav.module.scss";
 import { SidenavProps } from "./sidenav.props";
@@ -45,13 +46,16 @@ const SidenavStatic = (
   );
 
   return (
-    <aside {...rest} className={clsx("flex-col", styles.sidenav, className)}>
+    <aside
+      {...rest}
+      className={clsx(css["flex-col"], styles.sidenav, className)}
+    >
       <NextLink
         aria-label={"Storiny"}
-        className={clsx("flex-center", styles.branding)}
+        className={clsx(css["flex-center"], styles.branding)}
         href={"/"}
       >
-        <Logo className={clsx(styles.logo)} size={28} />
+        <Logo className={styles.logo} size={28} />
       </NextLink>
       <Tabs
         activationMode={"manual"}
@@ -61,7 +65,7 @@ const SidenavStatic = (
       >
         <TabsList
           as={"nav"}
-          className={clsx("full-w", styles["tabs-list"])}
+          className={clsx(css["full-w"], styles["tabs-list"])}
           loop={false}
           role={undefined}
           size={"lg"}

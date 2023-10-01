@@ -20,6 +20,7 @@ import SettingsIcon from "~/icons/settings";
 import StoryIcon from "~/icons/story";
 import { use_story_metadata_mutation } from "~/redux/features";
 import { BREAKPOINTS } from "~/theme/breakpoints";
+import css from "~/theme/main.module.scss";
 
 import {
   nav_segment_atom,
@@ -205,28 +206,28 @@ const StoryMetadataModalImpl = (
           ) : (
             <React.Fragment>
               <TabPanel
-                className={clsx("flex-col", styles.x, styles["tab-panel"])}
+                className={clsx(css["flex-col"], styles.x, styles["tab-panel"])}
                 tabIndex={-1}
                 value={"general"}
               >
                 <GeneralTab />
               </TabPanel>
               <TabPanel
-                className={clsx("flex-col", styles.x, styles["tab-panel"])}
+                className={clsx(css["flex-col"], styles.x, styles["tab-panel"])}
                 tabIndex={-1}
                 value={"seo"}
               >
                 <SeoTab />
               </TabPanel>
               <TabPanel
-                className={clsx("flex-col", styles.x, styles["tab-panel"])}
+                className={clsx(css["flex-col"], styles.x, styles["tab-panel"])}
                 tabIndex={-1}
                 value={"license"}
               >
                 <LicenseTab />
               </TabPanel>
               <TabPanel
-                className={clsx("flex-col", styles.x, styles["tab-panel"])}
+                className={clsx(css["flex-col"], styles.x, styles["tab-panel"])}
                 tabIndex={-1}
                 value={"settings"}
               >

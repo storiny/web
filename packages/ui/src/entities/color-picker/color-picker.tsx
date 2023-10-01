@@ -15,6 +15,7 @@ import Typography from "~/components/typography";
 import { preview_color_atom } from "~/entities/color-picker/core/atoms";
 import CloudOffIcon from "~/icons/cloud-off";
 import XIcon from "~/icons/x";
+import css from "~/theme/main.module.scss";
 
 import styles from "./color-picker.module.scss";
 import { ColorPickerProps } from "./color-picker.props";
@@ -26,15 +27,15 @@ const ColorPickerCore = dynamic(
   () => import("./core/components/color-picker"),
   {
     loading: ({ error, isLoading: is_loading, retry }) => (
-      <div className={"flex-center"} style={{ minHeight: "300px" }}>
+      <div className={css["flex-center"]} style={{ minHeight: "300px" }}>
         {error && !is_loading ? (
           <div
-            className={clsx("flex-col", "flex-center")}
+            className={clsx(css["flex-col"], css["flex-center"])}
             style={{ "--icon-size": "36px" } as React.CSSProperties}
           >
             <CloudOffIcon />
             <Spacer orientation={"vertical"} />
-            <Typography className={"t-minor"} level={"body3"}>
+            <Typography className={css["t-minor"]} level={"body3"}>
               Network error
             </Typography>
             <Spacer orientation={"vertical"} size={2} />
@@ -70,13 +71,13 @@ const ColorPicker = (props: ColorPickerProps): React.ReactElement => {
             ]
           ]}
         >
-          <div className={clsx("flex-center", styles.header)}>
+          <div className={clsx(css["flex-center"], styles.header)}>
             <Preview />
-            <Typography className={"t-bold"} level={"body2"}>
+            <Typography className={css["t-bold"]} level={"body2"}>
               Pick a color
             </Typography>
             <Grow />
-            <div className={clsx("flex-center", styles.close)}>
+            <div className={clsx(css["flex-center"], styles.close)}>
               <Close aria-label={"Close"} asChild title={"Close"}>
                 <IconButton variant={"ghost"}>
                   <XIcon />

@@ -4,6 +4,8 @@ import clsx from "clsx";
 import { useSetAtom as use_set_atom } from "jotai";
 import React from "react";
 
+import css from "~/theme/main.module.scss";
+
 import { preview_color_atom } from "../../atoms";
 import { use_color_state } from "../../hooks";
 import AlphaSlider from "../alpha-slider";
@@ -26,18 +28,20 @@ const ColorPicker = React.forwardRef<HTMLDivElement, ColorPickerProps>(
     });
 
     return (
-      <div className={"flex-col"} ref={ref} role="group">
+      <div className={css["flex-col"]} ref={ref} role="group">
         <ColorBoard state={state} />
-        <div className={clsx("flex-col", styles.controls)}>
+        <div className={clsx(css["flex-col"], styles.controls)}>
           <div
             className={clsx(
-              "flex-center",
-              "f-grow",
+              css["flex-center"],
+              css["f-grow"],
               styles["controls-wrapper"]
             )}
           >
             <EyeDropper state={state} />
-            <div className={clsx("flex-col", "f-grow", styles.sliders)}>
+            <div
+              className={clsx(css["flex-col"], css["f-grow"], styles.sliders)}
+            >
               <HueSlider state={state} />
               <AlphaSlider state={state} />
             </div>

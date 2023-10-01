@@ -3,6 +3,7 @@ import React from "react";
 
 import { SuspenseLoaderProps } from "~/common/suspense-loader/suspense-loader.props";
 import Spinner from "~/components/spinner";
+import css from "~/theme/main.module.scss";
 
 import styles from "./suspense-loader.module.scss";
 
@@ -12,8 +13,8 @@ const SuspenseLoader = (props: SuspenseLoaderProps): React.ReactElement => {
     <div
       {...rest}
       className={clsx(
-        "flex-center",
-        "full-w",
+        css["flex-center"],
+        css["full-w"],
         styles["suspense-loader"],
         className
       )}

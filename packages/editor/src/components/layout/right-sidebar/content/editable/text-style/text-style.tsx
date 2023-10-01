@@ -16,6 +16,7 @@ import StrikethroughIcon from "~/icons/strikethrough";
 import SubscriptIcon from "~/icons/subscript";
 import SuperscriptIcon from "~/icons/superscript";
 import UnderlineIcon from "~/icons/underline";
+import css from "~/theme/main.module.scss";
 
 import {
   TEXT_STYLE_ICON_MAP,
@@ -250,7 +251,7 @@ const TextStyleSelect = ({
       }}
       value={text_style}
       value_children={
-        <span className={"flex-center"}>
+        <span className={css["flex-center"]}>
           {TEXT_STYLE_ICON_MAP[text_style]}
           <Spacer />
           {TEXT_STYLE_LABEL_MAP[text_style]}
@@ -290,8 +291,11 @@ const TextStyle = ({
 }: {
   disabled?: boolean;
 }): React.ReactElement => (
-  <div className={"flex-col"}>
-    <Typography className={clsx("t-minor", "t-medium")} level={"body2"}>
+  <div className={css["flex-col"]}>
+    <Typography
+      className={clsx(css["t-minor"], css["t-medium"])}
+      level={"body2"}
+    >
       Text style
     </Typography>
     <Spacer orientation={"vertical"} size={2} />

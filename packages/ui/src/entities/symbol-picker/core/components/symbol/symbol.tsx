@@ -5,6 +5,7 @@ import { useSetAtom as use_set_atom } from "jotai";
 import React from "react";
 
 import { SymbolPickerContext } from "~/entities/symbol-picker";
+import css from "~/theme/main.module.scss";
 
 import { hovered_symbol_atom } from "../../atoms";
 import styles from "./symbol.module.scss";
@@ -40,7 +41,7 @@ const Symbol = (props: SymbolProps): React.ReactElement => {
     <button
       {...rest}
       aria-label={symbol.name}
-      className={clsx("focusable", styles.symbol, className)}
+      className={clsx(css["focusable"], styles.symbol, className)}
       onClick={(): void => on_symbol_select?.(symbol.value)}
       onMouseEnter={(): void => set_hovered(symbol.value)}
       onMouseLeave={(): void => set_hovered(null)}

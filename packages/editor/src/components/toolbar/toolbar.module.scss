@@ -1,34 +1,34 @@
 @use "breakpoints";
 
+.toolbar {
+  background-color: var(--bg-elevation-sm);
+  border-top: 1px solid var(--divider);
+  border-inline: 1px solid var(--divider);
+  width: 100%;
+  height: 100%;
+}
+
+.viewport {
+  position: sticky;
+  bottom: 0;
+  left: 0;
+  z-index: var(--z-index-header);
+  overflow: hidden;
+  min-height: 40px; // Toolbar height (prevents jumping when the toolbar exits)
+  margin-top: auto;
+  margin-left: calc(var(--grid-compensation) - 1px);
+  width: calc(
+    100% + 2px + calc(-2 * var(--grid-compensation))
+  ); // Add 2px for inline border (visible on overflowing nodes)
+
+  @include breakpoints.media("<desktop") {
+    position: fixed;
+    margin-left: 0;
+    width: 100vw;
+  }
+}
+
 .x {
-  &.toolbar {
-    background-color: var(--bg-elevation-sm);
-    border-top: 1px solid var(--divider);
-    border-inline: 1px solid var(--divider);
-    width: 100%;
-    height: 100%;
-  }
-
-  &.viewport {
-    position: sticky;
-    bottom: 0;
-    left: 0;
-    z-index: var(--z-index-header);
-    overflow: hidden;
-    min-height: 40px; // Toolbar height (prevents jumping when the toolbar exits)
-    margin-top: auto;
-    margin-left: calc(var(--grid-compensation) - 1px);
-    width: calc(
-      100% + 2px + calc(-2 * var(--grid-compensation))
-    ); // Add 2px for inline border (visible on overflowing nodes)
-
-    @include breakpoints.media("<desktop") {
-      position: fixed;
-      margin-left: 0;
-      width: 100vw;
-    }
-  }
-
   &.button,
   &.select {
     --size: 40px;

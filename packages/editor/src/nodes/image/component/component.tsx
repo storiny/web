@@ -29,6 +29,7 @@ import Popover from "~/components/popover";
 import Spinner from "~/components/spinner";
 import TrashIcon from "~/icons/trash";
 import { BREAKPOINTS } from "~/theme/breakpoints";
+import css from "~/theme/main.module.scss";
 import { get_cdn_url } from "~/utils/get-cdn-url";
 
 import { overflowing_figures_atom } from "../../../atoms";
@@ -39,7 +40,7 @@ import ImageResizer from "./resizer";
 
 const ImageNodeControls = dynamic(() => import("./node-controls"), {
   loading: () => (
-    <div className={"flex-center"} style={{ padding: "24px 48px" }}>
+    <div className={css["flex-center"]} style={{ padding: "24px 48px" }}>
       <Spinner />
     </div>
   )
@@ -260,7 +261,7 @@ const ImageComponent = ({
           editable && styles.editable,
           focused && styles.focused,
           // Grid for overflowing the image
-          layout !== "fit" && ["grid", "dashboard", "no-sidenav"]
+          layout !== "fit" && [css["grid"], css["dashboard"], css["no-sidenav"]]
         )}
         data-layout={layout}
         ref={container_ref}
@@ -274,7 +275,12 @@ const ImageComponent = ({
           />
         )}
         <Popover
-          className={clsx("flex-center", "flex-col", styles.x, styles.popover)}
+          className={clsx(
+            css["flex-center"],
+            css["flex-col"],
+            styles.x,
+            styles.popover
+          )}
           onOpenChange={(next_open: boolean): void => {
             if (!next_open && !resizing) {
               set_selected(false);

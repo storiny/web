@@ -7,6 +7,7 @@ import Separator from "~/components/separator";
 import AlbumIcon from "~/icons/album";
 import PexelsIcon from "~/icons/pexels";
 import UploadIcon from "~/icons/upload";
+import css from "~/theme/main.module.scss";
 
 import { nav_segment_atom } from "../../atoms";
 import styles from "./navigation-screen.module.scss";
@@ -14,8 +15,8 @@ import styles from "./navigation-screen.module.scss";
 const NavigationScreen = (): React.ReactElement => {
   const set_nav_segment = use_set_atom(nav_segment_atom);
   return (
-    <div className={clsx("flex-col", styles["navigation-screen"])}>
-      <div className={clsx("flex-col", styles["item-container"])}>
+    <div className={clsx(css["flex-col"], styles["navigation-screen"])}>
+      <div className={clsx(css["flex-col"], styles["item-container"])}>
         <NavigationItem
           decorator={<PexelsIcon />}
           onClick={(): void => set_nav_segment("pexels")}

@@ -9,6 +9,7 @@ import { use_form_field } from "~/components/form";
 import { use_media_query } from "~/hooks/use-media-query";
 import CheckIcon from "~/icons/check";
 import { BREAKPOINTS } from "~/theme/breakpoints";
+import css from "~/theme/main.module.scss";
 
 import styles from "./checkbox.module.scss";
 import { CheckboxProps } from "./checkbox.props";
@@ -39,8 +40,8 @@ const Checkbox = React.forwardRef<HTMLButtonElement, CheckboxProps>(
       <div
         {...slot_props?.container}
         className={clsx(
-          "fit-w",
-          "flex-center",
+          css["fit-w"],
+          css["flex-center"],
           slot_props?.container?.className
         )}
       >
@@ -48,8 +49,8 @@ const Checkbox = React.forwardRef<HTMLButtonElement, CheckboxProps>(
           {...rest}
           aria-labelledby={label_id}
           className={clsx(
-            "flex-center",
-            "focusable",
+            css["flex-center"],
+            css["focusable"],
             styles.checkbox,
             styles[color],
             styles[size],
@@ -62,7 +63,7 @@ const Checkbox = React.forwardRef<HTMLButtonElement, CheckboxProps>(
           <Indicator
             {...slot_props?.indicator}
             className={clsx(
-              "flex-center",
+              css["flex-center"],
               styles.indicator,
               slot_props?.indicator?.className
             )}
@@ -74,8 +75,8 @@ const Checkbox = React.forwardRef<HTMLButtonElement, CheckboxProps>(
           <Label
             {...slot_props?.label}
             className={clsx(
-              size === "lg" ? "t-body-1" : "t-body-2",
-              disabled ? "t-muted" : "t-major",
+              css[size === "lg" ? "t-body-1" : "t-body-2"],
+              css[disabled ? "t-muted" : "t-major"],
               styles.label,
               slot_props?.label?.className
             )}

@@ -5,6 +5,7 @@ import React from "react";
 import IconButton from "~/components/icon-button";
 import Menu from "~/components/menu";
 import PlusIcon from "~/icons/plus";
+import css from "~/theme/main.module.scss";
 
 import { doc_status_atom } from "../../../../atoms";
 import toolbar_styles from "../../toolbar.module.scss";
@@ -31,7 +32,7 @@ const ToolbarInsertItem = (): React.ReactElement => {
         <IconButton
           aria-label={"Insert"}
           className={clsx(
-            "focus-invert",
+            css["focus-invert"],
             toolbar_styles.x,
             toolbar_styles.button
           )}

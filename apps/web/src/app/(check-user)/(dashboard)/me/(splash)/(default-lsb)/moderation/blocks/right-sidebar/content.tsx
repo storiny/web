@@ -3,13 +3,17 @@ import React from "react";
 
 import Link from "~/components/link";
 import Typography from "~/components/typography";
+import css from "~/theme/main.module.scss";
 
 const ModerationBlocksRightSidebarContent = (): React.ReactElement => (
   <React.Fragment>
-    <Typography className={clsx("t-medium", "t-minor")} level={"body2"}>
+    <Typography
+      className={clsx(css["t-medium"], css["t-minor"])}
+      level={"body2"}
+    >
       About blocked accounts
     </Typography>
-    <Typography className={"t-minor"} level={"body2"}>
+    <Typography className={css["t-minor"]} level={"body2"}>
       When you block a user, they are prevented from following you or reacting
       to your stories, and their content will not appear in your home feed or
       search results.

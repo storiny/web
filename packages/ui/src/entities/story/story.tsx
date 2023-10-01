@@ -33,6 +33,7 @@ import { select_user } from "~/redux/features/auth/selectors";
 import { sync_with_story } from "~/redux/features/entities/slice";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 import { BREAKPOINTS } from "~/theme/breakpoints";
+import css from "~/theme/main.module.scss";
 import { abbreviate_number } from "~/utils/abbreviate-number";
 import { DateFormat, format_date } from "~/utils/format-date";
 import { get_cdn_url } from "~/utils/get-cdn-url";
@@ -68,7 +69,12 @@ const Meta = (props: StoryProps): React.ReactElement | null => {
     ) : (
       <Typography
         as={"time"}
-        className={clsx("flex", "t-minor", "t-medium", styles["deleted-label"])}
+        className={clsx(
+          css["flex"],
+          css["t-minor"],
+          css["t-medium"],
+          styles["deleted-label"]
+        )}
         dateTime={story.deleted_at!}
         level={"body2"}
         title={format_date(story.deleted_at!)}
@@ -86,7 +92,7 @@ const Meta = (props: StoryProps): React.ReactElement | null => {
     ) : (
       <Typography
         as={"time"}
-        className={clsx("t-minor", "t-medium")}
+        className={clsx(css["t-minor"], css["t-medium"])}
         dateTime={story.published_at!}
         level={"body2"}
         title={format_date(story.published_at!)}
@@ -100,7 +106,7 @@ const Meta = (props: StoryProps): React.ReactElement | null => {
     ) : (
       <Typography
         as={"time"}
-        className={clsx("t-minor", "t-medium")}
+        className={clsx(css["t-minor"], css["t-medium"])}
         dateTime={story.edited_at || story.created_at}
         level={"body2"}
         title={format_date(story.edited_at || story.created_at)}
@@ -115,7 +121,7 @@ const Meta = (props: StoryProps): React.ReactElement | null => {
         avatar_id: story.user?.avatar_id,
         hex: story.user?.avatar_hex,
         alt: "",
-        className: "focusable",
+        className: css["focusable"],
         // @ts-expect-error polymorphic prop
         href: `/${story.user.username}`,
         title: `View ${story.user?.name}'s profile`,
@@ -123,9 +129,9 @@ const Meta = (props: StoryProps): React.ReactElement | null => {
       }}
       className={styles.persona}
       primary_text={
-        <span className={"flex"} style={{ gap: "4px" }}>
+        <span className={css["flex"]} style={{ gap: "4px" }}>
           <Link
-            className={"t-medium"}
+            className={css["t-medium"]}
             href={`/${story.user?.username}`}
             level={"body2"}
           >
@@ -134,14 +140,14 @@ const Meta = (props: StoryProps): React.ReactElement | null => {
           <Typography
             aria-hidden
             as={"span"}
-            className={"t-muted"}
+            className={css["t-muted"]}
             level={"body2"}
           >
             &bull;
           </Typography>
           <Typography
             as={"time"}
-            className={"t-minor"}
+            className={css["t-minor"]}
             dateTime={story.published_at || story.created_at}
             level={"body2"}
             title={format_date(story.published_at || story.created_at)}
@@ -214,7 +220,7 @@ const Splash = (props: StoryProps): React.ReactElement => {
         }}
       />
       {is_mobile && (
-        <span className={clsx("flex", styles["mobile-actions"])}>
+        <span className={clsx(css["flex"], styles["mobile-actions"])}>
           {!is_extended && (
             <React.Fragment>
               {show_interactive_buttons && show_unlike_button && is_liked ? (
@@ -287,11 +293,16 @@ const Footer = (props: StoryProps): React.ReactElement => {
   );
 
   return (
-    <footer className={clsx("flex", styles.footer)}>
+    <footer className={clsx(css["flex"], styles.footer)}>
       {show_word_count ? (
         <Typography
           as={"span"}
-          className={clsx("flex-center", "t-medium", "t-minor", styles.stat)}
+          className={clsx(
+            css["flex-center"],
+            css["t-medium"],
+            css["t-minor"],
+            styles.stat
+          )}
           level={"body2"}
           title={story.word_count.toLocaleString()}
         >
@@ -301,7 +312,7 @@ const Footer = (props: StoryProps): React.ReactElement => {
               <Typography
                 aria-hidden
                 as={"span"}
-                className={"t-muted"}
+                className={css["t-muted"]}
                 level={"body2"}
               >
                 &bull;
@@ -309,7 +320,7 @@ const Footer = (props: StoryProps): React.ReactElement => {
               {is_deleted ? (
                 <Typography
                   as={"time"}
-                  className={clsx("t-minor", "t-medium")}
+                  className={clsx(css["t-minor"], css["t-medium"])}
                   dateTime={story.deleted_at!}
                   level={"body2"}
                   title={format_date(story.deleted_at!)}
@@ -319,7 +330,7 @@ const Footer = (props: StoryProps): React.ReactElement => {
               ) : (
                 <Typography
                   as={"time"}
-                  className={clsx("t-minor", "t-medium")}
+                  className={clsx(css["t-minor"], css["t-medium"])}
                   dateTime={story.edited_at || story.created_at}
                   level={"body2"}
                   title={format_date(story.edited_at || story.created_at)}
@@ -345,9 +356,9 @@ const Footer = (props: StoryProps): React.ReactElement => {
                 )} min read`}
                 as={"span"}
                 className={clsx(
-                  "flex-center",
-                  "t-medium",
-                  "t-minor",
+                  css["flex-center"],
+                  css["t-medium"],
+                  css["t-minor"],
                   styles.stat
                 )}
                 level={"body2"}
@@ -359,7 +370,7 @@ const Footer = (props: StoryProps): React.ReactElement => {
               <Typography
                 aria-hidden
                 as={"span"}
-                className={"t-muted"}
+                className={css["t-muted"]}
                 level={"body2"}
               >
                 &bull;
@@ -369,7 +380,12 @@ const Footer = (props: StoryProps): React.ReactElement => {
           <Typography
             aria-label={`${story.stats.read_count} reads`}
             as={"span"}
-            className={clsx("flex-center", "t-medium", "t-minor", styles.stat)}
+            className={clsx(
+              css["flex-center"],
+              css["t-medium"],
+              css["t-minor"],
+              styles.stat
+            )}
             level={"body2"}
             title={`${abbreviate_number(story.stats.read_count)} reads`}
           >
@@ -383,7 +399,7 @@ const Footer = (props: StoryProps): React.ReactElement => {
                   <Typography
                     aria-hidden
                     as={"span"}
-                    className={"t-muted"}
+                    className={css["t-muted"]}
                     level={"body2"}
                   >
                     &bull;
@@ -392,9 +408,9 @@ const Footer = (props: StoryProps): React.ReactElement => {
                     aria-label={`${story.stats.like_count} likes`}
                     as={"span"}
                     className={clsx(
-                      "flex-center",
-                      "t-medium",
-                      "t-minor",
+                      css["flex-center"],
+                      css["t-medium"],
+                      css["t-minor"],
                       styles.stat
                     )}
                     level={"body2"}
@@ -410,7 +426,7 @@ const Footer = (props: StoryProps): React.ReactElement => {
                   <Typography
                     aria-hidden
                     as={"span"}
-                    className={"t-muted"}
+                    className={css["t-muted"]}
                     level={"body2"}
                   >
                     &bull;
@@ -419,9 +435,9 @@ const Footer = (props: StoryProps): React.ReactElement => {
                     aria-label={`${story.stats.comment_count} comments`}
                     as={"span"}
                     className={clsx(
-                      "flex-center",
-                      "t-medium",
-                      "t-minor",
+                      css["flex-center"],
+                      css["t-medium"],
+                      css["t-minor"],
                       styles.stat
                     )}
                     level={"body2"}
@@ -446,13 +462,13 @@ const Footer = (props: StoryProps): React.ReactElement => {
             <Typography
               aria-hidden
               as={"span"}
-              className={"t-muted"}
+              className={css["t-muted"]}
               level={"body2"}
             >
               &bull;
             </Typography>
           )}
-          <div className={clsx("flex", styles["tags-container"])}>
+          <div className={clsx(css["flex"], styles["tags-container"])}>
             {story.tags.slice(0, is_mobile ? 1 : 2).map((tag) => (
               <TagChip
                 key={tag.id}
@@ -471,7 +487,7 @@ const Footer = (props: StoryProps): React.ReactElement => {
       {!is_mobile && (
         <>
           <Grow />
-          <div className={clsx("flex", styles.actions)}>
+          <div className={clsx(css["flex"], styles.actions)}>
             {show_interactive_buttons && (
               <React.Fragment>
                 {show_unlike_button && is_liked ? (
@@ -563,8 +579,8 @@ const Story = (props: StoryProps): React.ReactElement => {
       {collapsed ? (
         <div
           className={clsx(
-            "flex-col",
-            "flex-center",
+            css["flex-col"],
+            css["flex-center"],
             styles.story,
             virtual && styles.virtual
           )}
@@ -583,18 +599,18 @@ const Story = (props: StoryProps): React.ReactElement => {
         <article
           {...rest}
           className={clsx(
-            "flex-col",
+            css["flex-col"],
             styles.story,
             virtual && styles.virtual,
             className
           )}
         >
-          <div className={clsx("flex", styles.main)}>
-            <div className={clsx("flex-col", styles.meta)}>
+          <div className={clsx(css["flex"], styles.main)}>
+            <div className={clsx(css["flex-col"], styles.meta)}>
               <Typography
                 as={NextLink}
                 className={clsx(
-                  "focusable",
+                  css["focusable"],
                   styles.title,
                   is_small && styles.small
                 )}
@@ -606,7 +622,7 @@ const Story = (props: StoryProps): React.ReactElement => {
               <Meta {...props} />
               <Typography
                 as={NextLink}
-                className={clsx("t-minor", styles.description)}
+                className={clsx(css["t-minor"], styles.description)}
                 href={story_url}
                 level={"body2"}
                 tabIndex={-1}

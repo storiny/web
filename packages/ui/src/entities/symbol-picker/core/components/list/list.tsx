@@ -14,6 +14,7 @@ import Spacer from "~/components/spacer";
 import Typography from "~/components/typography";
 import { TSymbol } from "~/entities/symbol-picker";
 import { symbol_query_atom } from "~/entities/symbol-picker/core/atoms";
+import css from "~/theme/main.module.scss";
 
 import { LIST_HEIGHT, SYMBOLS_PER_ROW } from "../../constants";
 import { default as data } from "../../data.json";
@@ -136,7 +137,7 @@ Group.displayName = "Group";
 
 const GroupHeader = React.memo<{ index: number }>(({ index }) => (
   <Typography
-    className={clsx("t-medium", "t-minor", styles["group-title"])}
+    className={clsx(css["t-medium"], css["t-minor"], styles["group-title"])}
     level={"body2"}
   >
     {GROUPS[index].title}
@@ -163,7 +164,10 @@ const SymbolRow = React.memo<
   }
 
   return (
-    <div {...rest} className={clsx("flex", styles["symbol-row"], className)}>
+    <div
+      {...rest}
+      className={clsx(css["flex"], styles["symbol-row"], className)}
+    >
       {symbols.map(
         (symbol, index): React.ReactElement => (
           <Symbol key={symbol?.name || index} symbol={symbol} />
@@ -179,7 +183,7 @@ SymbolRow.displayName = "SymbolRow";
 
 const ScrollSeekPlaceholder = React.memo(
   () => (
-    <div aria-hidden className={clsx("flex", styles["symbol-row"])}>
+    <div aria-hidden className={clsx(css["flex"], styles["symbol-row"])}>
       {[...Array(SYMBOLS_PER_ROW)].map((_, index) => (
         <PlaceholderSymbol key={index} />
       ))}
@@ -202,13 +206,13 @@ const SymbolList = React.forwardRef<
   const has_search_results = Boolean(search_results.length);
 
   return (
-    <Root className={clsx("flex-center", styles.list)} type={"auto"}>
+    <Root className={clsx(css["flex-center"], styles.list)} type={"auto"}>
       {Boolean(query) && !has_search_results ? (
         <div
-          className={clsx("flex-col", styles.empty)}
+          className={clsx(css["flex-col"], styles.empty)}
           style={{ height: LIST_HEIGHT }}
         >
-          <Typography className={"t-medium"} level={"body2"}>
+          <Typography className={css["t-medium"]} level={"body2"}>
             Could not find any symbol for &quot;
             <span style={{ wordBreak: "break-all" }}>{query}</span>&quot;
           </Typography>
@@ -216,7 +220,7 @@ const SymbolList = React.forwardRef<
       ) : (
         <GroupedVirtuoso
           {...rest}
-          className={clsx("f-grow", className)}
+          className={clsx(css["f-grow"], className)}
           components={{
             Group,
             Scroller,

@@ -3,6 +3,8 @@
 import clsx from "clsx";
 import React from "react";
 
+import css from "~/theme/main.module.scss";
+
 import styles from "./form-item.module.scss";
 import { FormItemProps } from "./form-item.props";
 import { FormItemContext } from "./form-item-context";
@@ -17,7 +19,7 @@ const FormItem = React.forwardRef<HTMLFieldSetElement, FormItemProps>(
       >
         <fieldset
           {...rest}
-          className={clsx("flex-col", styles["form-item"], className)}
+          className={clsx(css["flex-col"], styles["form-item"], className)}
           data-disabled={String(Boolean(disabled))}
           disabled={disabled}
           ref={ref}

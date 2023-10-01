@@ -4,6 +4,7 @@ import clsx from "clsx";
 import React from "react";
 
 import XIcon from "~/icons/x";
+import css from "~/theme/main.module.scss";
 import { forward_ref } from "~/utils/forward-ref";
 
 import styles from "./chip.module.scss";
@@ -31,8 +32,8 @@ const Chip = forward_ref<ChipProps, "span" | "button">((props, ref) => {
       {...rest}
       className={clsx(
         styles.reset,
-        size === "md" ? "t-body-3" : "t-body-2",
-        "focusable",
+        css[size === "md" ? "t-body-3" : "t-body-2"],
+        css["focusable"],
         styles.chip,
         styles[size],
         styles[type],

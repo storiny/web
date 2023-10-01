@@ -31,6 +31,7 @@ import {
   use_delete_asset_mutation,
   use_favourite_asset_mutation
 } from "~/redux/features";
+import css from "~/theme/main.module.scss";
 import { get_cdn_url } from "~/utils/get-cdn-url";
 
 import { selected_atom } from "../../../atoms";
@@ -56,7 +57,7 @@ const RatingModal = ({
 }): React.ReactElement => (
   <React.Fragment>
     <Description asChild>
-      <Typography className={"t-minor"} level={"body2"}>
+      <Typography className={css["t-minor"]} level={"body2"}>
         Assign a rating to this image to enable us to provide appropriate
         warning, helping people avoid the content they wish to abstain from.
       </Typography>
@@ -235,11 +236,17 @@ const LibraryMasonryItem = React.memo(
     );
 
     return (
-      <div className={clsx("flex-col", styles.item, deleted && styles.deleted)}>
+      <div
+        className={clsx(
+          css["flex-col"],
+          styles.item,
+          deleted && styles.deleted
+        )}
+      >
         <div
           className={clsx(
-            "focusable",
-            "flex-center",
+            css["focusable"],
+            css["flex-center"],
             common_styles["image-wrapper"]
           )}
           data-selected={String(is_selected)}
@@ -256,7 +263,7 @@ const LibraryMasonryItem = React.memo(
           {deleted && (
             <div
               aria-hidden
-              className={clsx("flex-center", styles["deleted-overlay"])}
+              className={clsx(css["flex-center"], styles["deleted-overlay"])}
             >
               <TrashIcon />
             </div>
@@ -280,7 +287,7 @@ const LibraryMasonryItem = React.memo(
         <Tooltip content={RATING_DISPLAY_NAME_MAP[rating]}>
           <span
             className={clsx(
-              "flex-center",
+              css["flex-center"],
               styles["explicit-button"],
               rating === AssetRating.NOT_RATED && styles.hidden
             )}
@@ -329,10 +336,10 @@ const LibraryMasonryItem = React.memo(
             value={alt_text}
           />
         ) : (
-          <div className={clsx("flex-center", styles.footer)}>
+          <div className={clsx(css["flex-center"], styles.footer)}>
             <Typography
               className={clsx(
-                alt_text.trim() ? "t-major" : "t-minor",
+                css[alt_text.trim() ? "t-major" : "t-minor"],
                 styles["alt-text"],
                 alt_text.trim() && styles.empty
               )}

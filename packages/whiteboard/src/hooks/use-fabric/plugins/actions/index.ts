@@ -1,6 +1,8 @@
 import { BaseFabricObject, Canvas } from "fabric";
 import React from "react";
 
+import css from "~/theme/main.module.scss";
+
 import { is_interactive_object } from "../../../../utils";
 
 const POPOVER_ID = "object-popover";
@@ -51,7 +53,7 @@ class ActionsPlugin {
   private initialize_popover(): void {
     this.popover.id = POPOVER_ID;
     this.popover.ariaHidden = "true";
-    this.popover.classList.add("force-dark-mode", "fit-w", "fit-h");
+    this.popover.classList.add("force-dark-mode", css["fit-w"], css["fit-h"]);
     this.popover.style.cssText = Object.entries({
       position: "absolute",
       left: 0,

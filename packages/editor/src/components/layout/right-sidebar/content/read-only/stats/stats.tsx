@@ -8,6 +8,7 @@ import Separator from "~/components/separator";
 import Typography from "~/components/typography";
 import CommentIcon from "~/icons/comment";
 import { use_app_selector } from "~/redux/hooks";
+import css from "~/theme/main.module.scss";
 import { abbreviate_number } from "~/utils/abbreviate-number";
 
 import { story_metadata_atom } from "../../../../../../atoms";
@@ -23,13 +24,13 @@ const StoryStats = (): React.ReactElement => {
     ) || 0;
 
   return (
-    <div className={clsx("flex-col", styles.stats)}>
+    <div className={clsx(css["flex-col"], styles.stats)}>
       <div className={styles["padded-separator"]}>
         <Separator />
       </div>
-      <div className={clsx("flex-center", styles.main)}>
+      <div className={clsx(css["flex-center"], styles.main)}>
         <Typography
-          className={"t-medium"}
+          className={css["t-medium"]}
           level={"body2"}
           title={`${read_count.toLocaleString()} ${
             read_count === 1 ? "read" : "reads"
@@ -38,7 +39,11 @@ const StoryStats = (): React.ReactElement => {
           {abbreviate_number(read_count)} {read_count === 1 ? "read" : "reads"}
         </Typography>
         <div
-          className={clsx("f-grow", "flex-center", styles["divider-wrapper"])}
+          className={clsx(
+            css["f-grow"],
+            css["flex-center"],
+            styles["divider-wrapper"]
+          )}
         >
           <Divider orientation={"vertical"} />
         </div>

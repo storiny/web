@@ -18,6 +18,7 @@ import {
 } from "~/redux/features";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 import { BREAKPOINTS } from "~/theme/breakpoints";
+import css from "~/theme/main.module.scss";
 import { get_cdn_url } from "~/utils/get-cdn-url";
 
 import styles from "./banner-settings.module.scss";
@@ -111,16 +112,16 @@ const BannerSettings = (): React.ReactElement => {
       ) : (
         <div
           className={clsx(
-            "flex-center",
-            "full-h",
-            "full-w",
+            css["flex-center"],
+            css["full-h"],
+            css["full-w"],
             styles.placeholder
           )}
         >
           <PhotoPlusIcon />
         </div>
       )}
-      <div className={clsx("flex-center", styles["banner-actions"])}>
+      <div className={clsx(css["flex-center"], styles["banner-actions"])}>
         <Gallery
           on_confirm={(asset): void => {
             set_banner_id(asset.key);

@@ -1,4 +1,3 @@
-import { clsx } from "clsx";
 import React from "react";
 
 import Button from "~/components/button";
@@ -14,6 +13,7 @@ import ExportIcon from "~/icons/export";
 import PasswordIcon from "~/icons/password";
 import { use_export_data_mutation } from "~/redux/features";
 import { BREAKPOINTS } from "~/theme/breakpoints";
+import css from "~/theme/main.module.scss";
 
 import DashboardGroup from "../../../../../dashboard-group";
 import { ExportDataGroupProps } from "./export-data-group.props";
@@ -25,7 +25,7 @@ import {
 const ExportDataModal = (): React.ReactElement => (
   <React.Fragment>
     <Description asChild>
-      <Typography className={"t-minor"} level={"body2"}>
+      <Typography className={css["t-minor"]} level={"body2"}>
         You need to confirm your password to begin the export process. Please be
         aware that the data processing may take up to 14 days, and you will be
         notified by email once it&apos;s ready for download.
@@ -38,7 +38,7 @@ const ExportDataModal = (): React.ReactElement => (
       decorator={<PasswordIcon />}
       form_slot_props={{
         form_item: {
-          className: "f-grow"
+          className: css["f-grow"]
         }
       }}
       label={"Password"}
@@ -88,7 +88,7 @@ export const ExportData = ({
       <Button
         auto_size
         check_auth
-        className={"fit-w"}
+        className={css["fit-w"]}
         onClick={open_modal}
         variant={"hollow"}
       >
@@ -96,7 +96,7 @@ export const ExportData = ({
       </Button>
     ),
     <Form<ExportDataSchema>
-      className={clsx("flex-col")}
+      className={css["flex-col"]}
       disabled={is_loading}
       on_submit={handle_submit}
       provider_props={form}

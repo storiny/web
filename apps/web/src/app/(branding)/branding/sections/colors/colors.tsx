@@ -3,6 +3,7 @@ import React from "react";
 
 import Spacer from "~/components/spacer";
 import Typography from "~/components/typography";
+import css from "~/theme/main.module.scss";
 
 import page_styles from "../../styles.module.scss";
 import styles from "./colors.module.scss";
@@ -16,16 +17,19 @@ const Stat = ({
 }): React.ReactElement => (
   <Typography
     className={clsx(
-      "flex-center",
-      "t-medium",
-      "t-minor",
+      css["flex-center"],
+      css["t-medium"],
+      css["t-minor"],
       styles.x,
       styles["stat-label"]
     )}
     level={"body2"}
   >
     {label}
-    <Typography className={clsx("t-medium", "t-major")} level={"body2"}>
+    <Typography
+      className={clsx(css["t-medium"], css["t-major"])}
+      level={"body2"}
+    >
       {value}
     </Typography>
   </Typography>
@@ -40,23 +44,25 @@ const ColorsSection = (): React.ReactElement => (
     >
       Colors
     </Typography>
-    <div className={clsx("flex-col", page_styles["section-content"])}>
+    <div className={clsx(css["flex-col"], page_styles["section-content"])}>
       <Typography level={"legible"}>
         The color palette of our brand consists of only two minimalistic colors,
         which conveys a strong and straightforward design language that embodies
         loyalty and power.
       </Typography>
-      <div className={clsx("flex-center", styles["swatch-container"])}>
+      <div className={clsx(css["flex-center"], styles["swatch-container"])}>
         <div
           className={clsx(
             "force-light-mode",
-            "flex-col",
-            "t-medium",
+            css["flex-col"],
+            css["t-medium"],
             styles.swatch
           )}
           style={{ backgroundColor: "var(--snow)" }}
         >
-          <span className={clsx("t-major", styles["color-name"])}>Snow</span>
+          <span className={clsx(css["t-major"], styles["color-name"])}>
+            Snow
+          </span>
           <Spacer orientation={"vertical"} size={5} />
           <Stat label={"Hex"} value={"#fafafa"} />
           <Stat label={"RGB"} value={"250, 250, 250"} />
@@ -66,13 +72,13 @@ const ColorsSection = (): React.ReactElement => (
         <div
           className={clsx(
             "force-dark-mode",
-            "flex-col",
-            "t-medium",
+            css["flex-col"],
+            css["t-medium"],
             styles.swatch
           )}
           style={{ backgroundColor: "var(--obsidian)" }}
         >
-          <span className={clsx("t-major", styles["color-name"])}>
+          <span className={clsx(css["t-major"], styles["color-name"])}>
             Obsidian
           </span>
           <Spacer orientation={"vertical"} size={5} />

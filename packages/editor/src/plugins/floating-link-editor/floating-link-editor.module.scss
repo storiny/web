@@ -1,13 +1,13 @@
-.x {
-  &.floating-element {
-    width: 214px;
-    max-width: calc(100vw - 32px);
+.floating-element {
+  width: 214px;
+  max-width: calc(100vw - 32px);
 
-    &.edit-mode {
-      border: none;
-    }
+  &.edit-mode {
+    border: none;
   }
+}
 
+.x {
   &.link {
     padding-inline: 8px;
   }

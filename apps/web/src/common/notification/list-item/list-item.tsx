@@ -7,6 +7,7 @@ import { ItemProps } from "react-virtuoso";
 
 import Divider from "~/components/divider";
 import Notification from "~/entities/notification";
+import css from "~/theme/main.module.scss";
 
 import styles from "../../virtual/virtual.module.scss";
 import { VirtualizedNotificationListContext } from "../list/list-context";
@@ -20,7 +21,7 @@ const VirtualizedNotificationItem = React.memo(
     return (
       <div
         {...rest}
-        className={clsx("flex-col", styles["list-item"])}
+        className={clsx(css["flex-col"], styles["list-item"])}
         key={item.id}
       >
         <Notification {...notification_props} notification={item} virtual />

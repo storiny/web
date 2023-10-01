@@ -8,6 +8,7 @@ import IconButton from "~/components/icon-button";
 import Gallery from "~/entities/gallery";
 import MasonryAddIcon from "~/icons/masonry-add";
 import RotateIcon from "~/icons/rotate";
+import css from "~/theme/main.module.scss";
 
 import { $is_image_node, ImageItem, MAX_IMAGE_ITEMS } from "../../image";
 import styles from "../image.module.scss";
@@ -56,7 +57,7 @@ const ImageNodeControls = (
         node_key={node_key}
       />
       <Divider />
-      <div className={"flex-center"}>
+      <div className={css["flex-center"]}>
         <Gallery
           on_confirm={(next_item): void => {
             add_image_item({
@@ -72,7 +73,7 @@ const ImageNodeControls = (
         >
           <IconButton
             aria-label={"Add more images"}
-            className={clsx("focus-invert", styles.x, styles.button)}
+            className={clsx(css["focus-invert"], styles.x, styles.button)}
             disabled={images.length >= MAX_IMAGE_ITEMS}
             title={"Add more images"}
             variant={"ghost"}
@@ -83,7 +84,7 @@ const ImageNodeControls = (
         <Divider orientation={"vertical"} />
         <IconButton
           aria-label={"Change image positions"}
-          className={clsx("focus-invert", styles.x, styles.button)}
+          className={clsx(css["focus-invert"], styles.x, styles.button)}
           disabled={images.length === 1}
           onClick={change_item_positions}
           title={"Change image positions"}

@@ -17,6 +17,7 @@ import DevicesIcon from "~/icons/devices";
 import LogoutIcon from "~/icons/logout";
 import { use_destroy_sessions_mutation } from "~/redux/features";
 import { BREAKPOINTS } from "~/theme/breakpoints";
+import css from "~/theme/main.module.scss";
 
 import DashboardGroup from "../../dashboard-group";
 import DashboardTitle from "../../dashboard-title";
@@ -86,7 +87,7 @@ const DestroySessions = ({
       <Button
         auto_size
         check_auth
-        className={"fit-w"}
+        className={css["fit-w"]}
         color={"ruby"}
         disabled={disabled}
         loading={is_loading}
@@ -112,7 +113,7 @@ const DestroySessions = ({
       {disabled && (
         <React.Fragment>
           <Spacer orientation={"vertical"} size={1.5} />
-          <Typography className={"t-minor"} level={"body3"}>
+          <Typography className={css["t-minor"]} level={"body3"}>
             You are not logged in to any other device.
           </Typography>
         </React.Fragment>
@@ -148,7 +149,7 @@ const LoginActivityClient = (props: LoginActivityProps): React.ReactElement => {
             </TitleBlock>
             <Spacer orientation={"vertical"} size={4.75} />
             <Accordion
-              className={clsx("flex-col", styles.x, styles.logins)}
+              className={clsx(css["flex-col"], styles.x, styles.logins)}
               type={"multiple"}
             >
               {logins.length === 1 && !is_smaller_than_desktop ? (
@@ -195,7 +196,10 @@ const LoginActivityClient = (props: LoginActivityProps): React.ReactElement => {
         <Spacer orientation={"vertical"} size={10} />
       </main>
       <AccountLoginActivityRightSidebar>
-        <Typography className={clsx("t-minor", "t-medium")} level={"body2"}>
+        <Typography
+          className={clsx(css["t-minor"], css["t-medium"])}
+          level={"body2"}
+        >
           {recent ? "Recent unrecognized login" : "Current device"}
         </Typography>
         <LoginItem login={recent || logins.find((login) => login.is_active)!} />

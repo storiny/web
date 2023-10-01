@@ -13,6 +13,7 @@ import {
   use_friend_list_mutation
 } from "~/redux/features";
 import { use_app_selector } from "~/redux/hooks";
+import css from "~/theme/main.module.scss";
 
 import styles from "../site-safety.module.scss";
 import { FriendListProps } from "./friend-list.props";
@@ -57,12 +58,12 @@ const FriendList = ({
         Friend list
       </Typography>
       <Spacer orientation={"vertical"} size={0.5} />
-      <Typography className={"t-minor"} level={"body2"}>
+      <Typography className={css["t-minor"]} level={"body2"}>
         Choose who can see your list of friends.
       </Typography>
       <Spacer orientation={"vertical"} />
       <Form<FriendListSchema>
-        className={clsx("flex-col", styles.x, styles.form)}
+        className={clsx(css["flex-col"], styles.x, styles.form)}
         disabled={is_loading}
         on_submit={handle_submit}
         provider_props={form}

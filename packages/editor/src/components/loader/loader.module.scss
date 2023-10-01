@@ -1,17 +1,17 @@
-.x {
-  &.loader {
-    width: 100%;
-    height: 100%;
-    gap: 12px;
-    background-color: var(--bg-body);
+.loader {
+  width: 100%;
+  height: 100%;
+  gap: 12px;
+  background-color: var(--bg-body);
 
-    &.overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-    }
+  &.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
   }
+}
 
+.x {
   &.progress {
     width: 176px;
   }

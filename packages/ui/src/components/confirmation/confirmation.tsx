@@ -14,6 +14,7 @@ import {
 import clsx from "clsx";
 import React from "react";
 
+import css from "~/theme/main.module.scss";
 import { forward_ref } from "~/utils/forward-ref";
 
 import Button from "../button";
@@ -51,14 +52,14 @@ const Confirmation = forward_ref<ConfirmationProps, "div">((props, ref) => {
         <Content
           {...slot_props?.content}
           asChild
-          className={clsx("flex-center", styles.content, className)}
+          className={clsx(css["flex-center"], styles.content, className)}
           ref={ref}
         >
           <Component>
             <div
               {...slot_props?.container}
               className={clsx(
-                "flex-center",
+                css["flex-center"],
                 styles.container,
                 slot_props?.container?.className
               )}
@@ -67,7 +68,7 @@ const Confirmation = forward_ref<ConfirmationProps, "div">((props, ref) => {
                 <span
                   {...slot_props?.decorator}
                   className={clsx(
-                    "flex-center",
+                    css["flex-center"],
                     styles.decorator,
                     slot_props?.decorator?.className
                   )}
@@ -78,9 +79,9 @@ const Confirmation = forward_ref<ConfirmationProps, "div">((props, ref) => {
               <Title
                 {...slot_props?.title}
                 className={clsx(
-                  "t-body-1",
-                  "t-major",
-                  "t-center",
+                  css["t-body-1"],
+                  css["t-major"],
+                  css["t-center"],
                   styles.title,
                   slot_props?.title?.className
                 )}
@@ -90,9 +91,9 @@ const Confirmation = forward_ref<ConfirmationProps, "div">((props, ref) => {
               <Description
                 {...slot_props?.description}
                 className={clsx(
-                  "t-body-2",
-                  "t-minor",
-                  "t-center",
+                  css["t-body-2"],
+                  css["t-minor"],
+                  css["t-center"],
                   slot_props?.description?.className
                 )}
               >
@@ -101,12 +102,15 @@ const Confirmation = forward_ref<ConfirmationProps, "div">((props, ref) => {
             </div>
             <Divider
               {...slot_props?.divider}
-              className={clsx("only-mobile", slot_props?.divider?.className)}
+              className={clsx(
+                css["only-mobile"],
+                slot_props?.divider?.className
+              )}
             />
             <div
               {...slot_props?.footer}
               className={clsx(
-                "flex-center",
+                css["flex-center"],
                 styles.footer,
                 slot_props?.footer?.className
               )}

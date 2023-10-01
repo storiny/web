@@ -9,6 +9,7 @@ import Spacer from "~/components/spacer";
 import { use_toast } from "~/components/toast";
 import Typography from "~/components/typography";
 import { use_incoming_friend_requests_mutation } from "~/redux/features";
+import css from "~/theme/main.module.scss";
 
 import styles from "../site-safety.module.scss";
 import { FriendRequestsProps } from "./friend-requests.props";
@@ -55,12 +56,12 @@ const FriendRequests = ({
         Friend requests
       </Typography>
       <Spacer orientation={"vertical"} size={0.5} />
-      <Typography className={"t-minor"} level={"body2"}>
+      <Typography className={css["t-minor"]} level={"body2"}>
         Choose who can send you a friend request.
       </Typography>
       <Spacer orientation={"vertical"} />
       <Form<FriendRequestsSchema>
-        className={clsx("flex-col", styles.x, styles.form)}
+        className={clsx(css["flex-col"], styles.x, styles.form)}
         disabled={is_loading}
         on_submit={handle_submit}
         provider_props={form}

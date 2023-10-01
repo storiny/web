@@ -3,6 +3,7 @@ import React from "react";
 
 import Button, { ButtonProps } from "~/components/button";
 import Typography from "~/components/typography";
+import css from "~/theme/main.module.scss";
 
 import styles from "./insert-item.module.scss";
 
@@ -18,11 +19,11 @@ const InsertItem = React.forwardRef<HTMLButtonElement, InsertItemProps>(
       <Button
         {...rest}
         as={"li"}
-        className={clsx("focus-invert", styles.x, styles.item, className)}
+        className={clsx(css["focus-invert"], styles.x, styles.item, className)}
         ref={ref}
         variant={"ghost"}
       >
-        <span className={clsx("flex-center", styles.x, styles.icon)}>
+        <span className={clsx(css["flex-center"], styles.icon)}>
           {decorator}
         </span>
         <Typography

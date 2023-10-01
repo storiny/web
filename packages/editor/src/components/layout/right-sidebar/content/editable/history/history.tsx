@@ -5,6 +5,7 @@ import IconButton from "~/components/icon-button";
 import Tooltip from "~/components/tooltip";
 import RedoIcon from "~/icons/redo";
 import UndoIcon from "~/icons/undo";
+import css from "~/theme/main.module.scss";
 
 import { EDITOR_SHORTCUTS } from "../../../../../../constants/shortcuts";
 import { use_history } from "../../../../../../hooks/use-history";
@@ -12,7 +13,7 @@ import { use_history } from "../../../../../../hooks/use-history";
 const History = ({ disabled }: { disabled?: boolean }): React.ReactElement => {
   const { can_redo, undo, can_undo, redo } = use_history();
   return (
-    <div className={"flex-center"}>
+    <div className={css["flex-center"]}>
       <Tooltip
         content={"Undo"}
         right_slot={get_shortcut_label(EDITOR_SHORTCUTS.undo)}

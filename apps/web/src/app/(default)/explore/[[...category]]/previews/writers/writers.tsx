@@ -14,6 +14,7 @@ import Skeleton from "~/components/skeleton";
 import Typography from "~/components/typography";
 import ChevronIcon from "~/icons/chevron";
 import { use_get_explore_writers_query } from "~/redux/features";
+import css from "~/theme/main.module.scss";
 import { abbreviate_number } from "~/utils/abbreviate-number";
 
 import WriterSkeleton from "./skeleton";
@@ -30,7 +31,12 @@ interface Props {
 
 const Writer = ({ writer }: { writer: User }): React.ReactElement => (
   <NextLink
-    className={clsx("flex-col", "flex-center", styles.x, styles.writer)}
+    className={clsx(
+      css["flex-col"],
+      css["flex-center"],
+      styles.x,
+      styles.writer
+    )}
     href={`/${writer.username}`}
   >
     <Avatar
@@ -40,10 +46,12 @@ const Writer = ({ writer }: { writer: User }): React.ReactElement => (
       label={writer.name}
       size={"lg"}
     />
-    <Typography className={clsx("t-bold", "flex-col", "flex-center")}>
-      <span className={"ellipsis"}>{writer.name}</span>
+    <Typography
+      className={clsx(css["t-bold"], css["flex-col"], css["flex-center"])}
+    >
+      <span className={css["ellipsis"]}>{writer.name}</span>
       <Typography
-        className={clsx("t-medium", "t-minor")}
+        className={clsx(css["t-medium"], css["t-minor"])}
         ellipsis
         level={"body2"}
       >
@@ -81,13 +89,17 @@ const WritersPreview = ({
     <>
       <div
         aria-busy={loading}
-        className={clsx("flex-col", styles.writers, loading && styles.loading)}
+        className={clsx(
+          css["flex-col"],
+          styles.writers,
+          loading && styles.loading
+        )}
       >
-        <Typography className={"t-medium"} level={"body2"}>
+        <Typography className={css["t-medium"]} level={"body2"}>
           Popular writers in {normalized_category}
         </Typography>
         <div
-          className={clsx("flex-center", styles["writers-list"])}
+          className={clsx(css["flex-center"], styles["writers-list"])}
           key={String(loading)}
         >
           {loading
@@ -95,16 +107,16 @@ const WritersPreview = ({
             : items.map((writer) => <Writer key={writer.id} writer={writer} />)}
         </div>
         {loading ? (
-          <div className={"flex"}>
+          <div className={css["flex"]}>
             <Grow />
             <Skeleton height={12} width={48} />
           </div>
         ) : (
           <Link
             className={clsx(
-              "fit-w",
-              "t-bold",
-              "flex-center",
+              css["fit-w"],
+              css["t-bold"],
+              css["flex-center"],
               styles.x,
               styles["show-more"]
             )}

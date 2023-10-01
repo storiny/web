@@ -1,19 +1,19 @@
-.x {
-  &.item {
-    gap: 8px;
-    padding-inline: 8px;
+.item {
+  gap: 8px;
+  padding-inline: 8px;
 
-    &:not(.has-label) {
-      padding-block: 4px;
-    }
+  &:not(.has-label) {
+    padding-block: 4px;
   }
+}
 
+.row {
+  gap: 8px;
+}
+
+.x {
   &.label {
     font-size: 11px;
     line-height: 14px;
-  }
-
-  &.row {
-    gap: 8px;
   }
 }

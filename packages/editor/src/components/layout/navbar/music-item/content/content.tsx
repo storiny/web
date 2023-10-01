@@ -11,6 +11,7 @@ import Tooltip from "~/components/tooltip";
 import LoopIcon from "~/icons/loop";
 import PauseIcon from "~/icons/pause";
 import PlayIcon from "~/icons/play";
+import css from "~/theme/main.module.scss";
 
 import styles from "./content.module.scss";
 import ToneArm from "./tone-arm";
@@ -68,24 +69,20 @@ const MusicItemContent = (): React.ReactElement => {
   return (
     <React.Fragment>
       <div
-        className={clsx("full-w", "flex-center", styles.x, styles.turntable)}
+        className={clsx(css["full-w"], css["flex-center"], styles.turntable)}
       >
-        <div className={clsx("flex", styles.x, styles.player)}>
+        <div className={clsx(css["flex"], styles.player)}>
           <span
             aria-label={src ? "Change track" : "Pick a track"}
-            className={clsx(
-              "force-animation",
-              styles.x,
-              styles.record,
-              playing && styles.playing
-            )}
+            className={clsx(styles.record, playing && styles.playing)}
+            data-force-animation={""}
             onClick={open_file_selector}
             role={"button"}
             title={src ? "Change track" : "Pick a track"}
           />
           <ToneArm playing={playing} />
         </div>
-        <div className={clsx("flex-col", styles.x, styles.actions)}>
+        <div className={clsx(css["flex-col"], styles.actions)}>
           <Toggle
             aria-label={`${looping ? "Unloop" : "Loop"} track`}
             disabled={!src}
@@ -114,7 +111,7 @@ const MusicItemContent = (): React.ReactElement => {
         </div>
       </div>
       <Tooltip content={"Available soon"}>
-        <div className={clsx("full-w", "flex-center")}>
+        <div className={clsx(css["full-w"], css["flex-center"])}>
           <Select
             disabled
             slot_props={{
@@ -125,7 +122,7 @@ const MusicItemContent = (): React.ReactElement => {
               },
               trigger: {
                 "aria-label": "Presets",
-                className: "f-grow"
+                className: css["f-grow"]
               },
               value: {
                 placeholder: "Presets"

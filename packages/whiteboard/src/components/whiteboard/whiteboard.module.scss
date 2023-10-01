@@ -1,12 +1,10 @@
-.x {
-  &.main {
-    background-color: var(--bg-elevation-xs);
-    display: grid;
-    grid-column-gap: 0;
-    grid-template: min-content repeat(2, 1fr) / min-content 1fr 200px;
-    grid-template-areas:
-      "topbar topbar topbar"
-      "tools canvas panel"
-      "tools canvas panel";
-  }
+.main {
+  background-color: var(--bg-elevation-xs);
+  display: grid;
+  grid-column-gap: 0;
+  grid-template: min-content repeat(2, 1fr) / min-content 1fr 200px;
+  grid-template-areas:
+    "topbar topbar topbar"
+    "tools canvas panel"
+    "tools canvas panel";
 }

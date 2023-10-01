@@ -8,6 +8,7 @@ import FileIcon from "~/icons/file";
 import LicenseIcon from "~/icons/license";
 import SeoIcon from "~/icons/seo";
 import SettingsIcon from "~/icons/settings";
+import css from "~/theme/main.module.scss";
 
 import { nav_segment_atom } from "../../atoms";
 import styles from "./navigation-screen.module.scss";
@@ -15,8 +16,8 @@ import styles from "./navigation-screen.module.scss";
 const NavigationScreen = (): React.ReactElement => {
   const set_nav_segment = use_set_atom(nav_segment_atom);
   return (
-    <div className={"flex-col"}>
-      <div className={clsx("flex-col", styles["item-container"])}>
+    <div className={css["flex-col"]}>
+      <div className={clsx(css["flex-col"], styles["item-container"])}>
         <NavigationItem
           decorator={<FileIcon />}
           onClick={(): void => set_nav_segment("general")}

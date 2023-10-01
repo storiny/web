@@ -8,6 +8,7 @@ import Spacer from "~/components/spacer";
 import Typography from "~/components/typography";
 import { select_is_logged_in } from "~/redux/features";
 import { use_app_selector } from "~/redux/hooks";
+import css from "~/theme/main.module.scss";
 
 import { use_auth_state } from "../../../actions";
 import LoginForm from "./form";
@@ -28,10 +29,10 @@ const Page = (): React.ReactElement => {
         Good to see you again
       </Typography>
       <Spacer orientation={"vertical"} size={0.5} />
-      <Typography className={"t-minor"} level={"body2"}>
+      <Typography className={css["t-minor"]} level={"body2"}>
         Need an account?{" "}
         <Link
-          className={"t-medium"}
+          className={css["t-medium"]}
           href={"/auth"}
           level={"body2"}
           onClick={(): void => actions.switch_segment("signup_base")}
@@ -43,9 +44,9 @@ const Page = (): React.ReactElement => {
       <Spacer orientation={"vertical"} size={5} />
       <LoginForm />
       <Spacer orientation={"vertical"} size={2} />
-      <div className={"flex-center"}>
+      <div className={css["flex-center"]}>
         <Link
-          className={"t-medium"}
+          className={css["t-medium"]}
           href={"/auth"}
           level={"body2"}
           onClick={(): void => actions.switch_segment("base")}

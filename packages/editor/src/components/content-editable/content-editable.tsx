@@ -2,6 +2,8 @@ import { useLexicalComposerContext as use_lexical_composer_context } from "@lexi
 import { clsx } from "clsx";
 import React from "react";
 
+import css from "~/theme/main.module.scss";
+
 import { use_layout_effect } from "../../hooks/use-layout-effect";
 import styles from "./content-editable.module.scss";
 import { EditorContentEditableProps } from "./content-editable.props";
@@ -47,8 +49,8 @@ const EditorContentEditable = ({
       aria-owns={!is_editable ? undefined : rest["aria-owns"]}
       aria-readonly={!is_editable ? true : undefined}
       className={clsx(
-        "t-legible",
-        "t-legible-fg",
+        css["t-legible"],
+        css["t-legible-fg"],
         styles["content-editable"],
         editable && styles.editable,
         className

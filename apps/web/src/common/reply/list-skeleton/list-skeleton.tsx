@@ -6,15 +6,16 @@ import React from "react";
 import styles from "~/common/virtual/virtual.module.scss";
 import Divider from "~/components/divider";
 import { ReplySkeleton } from "~/entities/reply";
+import css from "~/theme/main.module.scss";
 
 const ReplyListSkeleton = React.memo(({ nested }: { nested?: boolean }) => (
-  <div className={clsx("flex-col", styles.list)}>
+  <div className={clsx(css["flex-col"], styles.list)}>
     {[...Array(5)].map((_, index) => (
       <React.Fragment key={index}>
         <ReplySkeleton virtual />
         {!nested && (
           <Divider
-            className={"hide-last"}
+            className={css["hide-last"]}
             style={{ marginInline: "var(--grid-compensation)" }}
           />
         )}

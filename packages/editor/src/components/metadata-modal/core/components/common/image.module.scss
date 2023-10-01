@@ -1,31 +1,31 @@
+.block {
+  gap: 4px;
+}
+
+.container {
+  padding-block: 18px;
+}
+
+.actions {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+}
+
+/* Image placeholder */
+.placeholder {
+  --icon-size: 24px;
+
+  background-color: var(--bg-elevation-md);
+  cursor: pointer;
+}
+
 .x {
-  &.block {
-    gap: 4px;
-  }
-
-  &.container {
-    padding-block: 18px;
-  }
-
   &.image {
     position: relative;
     border-radius: var(--radius-md);
     border: 1px solid var(--divider);
     width: 292px;
     max-width: 100%;
-  }
-
-  &.actions {
-    position: absolute;
-    top: 12px;
-    right: 12px;
-  }
-
-  /* Image placeholder */
-  &.placeholder {
-    --icon-size: 24px;
-
-    background-color: var(--bg-elevation-md);
-    cursor: pointer;
   }
 }

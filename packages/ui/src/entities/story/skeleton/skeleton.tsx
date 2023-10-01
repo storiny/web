@@ -9,6 +9,7 @@ import Spacer from "~/components/spacer";
 import { StorySkeletonProps } from "~/entities/story/skeleton/skeleton.props";
 import { use_media_query } from "~/hooks/use-media-query";
 import { BREAKPOINTS } from "~/theme/breakpoints";
+import css from "~/theme/main.module.scss";
 
 import story_styles from "../story.module.scss";
 
@@ -21,16 +22,16 @@ const StorySkeleton = (props: StorySkeletonProps): React.ReactElement => {
       <div
         aria-busy={"true"}
         className={clsx(
-          "flex-col",
+          css["flex-col"],
           story_styles.story,
           virtual && story_styles.virtual
         )}
       >
-        <div className={clsx("flex", story_styles.main)}>
-          <div className={clsx("flex-col", story_styles.meta)}>
+        <div className={clsx(css["flex"], story_styles.main)}>
+          <div className={clsx(css["flex-col"], story_styles.meta)}>
             <Skeleton className={story_styles.title} height={24} width={256} />
             <div
-              className={clsx("flex-center", story_styles.persona)}
+              className={clsx(css["flex-center"], story_styles.persona)}
               style={{ paddingBlock: is_mobile ? "10px" : "6px" }}
             >
               <Skeleton height={24} shape={"circular"} width={24} />
@@ -56,7 +57,7 @@ const StorySkeleton = (props: StorySkeletonProps): React.ReactElement => {
             <Skeleton no_radius />
           </AspectRatio>
         </div>
-        <div className={clsx("flex", story_styles.footer)}>
+        <div className={clsx(css["flex"], story_styles.footer)}>
           {is_small && is_mobile ? (
             <Skeleton height={16} width={130} />
           ) : (

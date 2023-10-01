@@ -22,6 +22,7 @@ import SubscriptIcon from "~/icons/subscript";
 import SuperscriptIcon from "~/icons/superscript";
 import UnderlineIcon from "~/icons/underline";
 import { BREAKPOINTS } from "~/theme/breakpoints";
+import css from "~/theme/main.module.scss";
 
 import { doc_status_atom } from "../../../../atoms";
 import {
@@ -87,7 +88,7 @@ const TextStyleGroup = (): React.ReactElement => {
       <ToggleGroup disabled={document_loading} type={"multiple"} value={value}>
         <ToggleGroupItem
           className={clsx(
-            "focus-invert",
+            css["focus-invert"],
             toolbar_styles.x,
             toolbar_styles.button
           )}
@@ -100,7 +101,7 @@ const TextStyleGroup = (): React.ReactElement => {
         </ToggleGroupItem>
         <ToggleGroupItem
           className={clsx(
-            "focus-invert",
+            css["focus-invert"],
             toolbar_styles.x,
             toolbar_styles.button
           )}
@@ -113,7 +114,7 @@ const TextStyleGroup = (): React.ReactElement => {
         </ToggleGroupItem>
         <ToggleGroupItem
           className={clsx(
-            "focus-invert",
+            css["focus-invert"],
             toolbar_styles.x,
             toolbar_styles.button
           )}
@@ -126,7 +127,7 @@ const TextStyleGroup = (): React.ReactElement => {
         </ToggleGroupItem>
         <ToggleGroupItem
           className={clsx(
-            "focus-invert",
+            css["focus-invert"],
             toolbar_styles.x,
             toolbar_styles.button
           )}
@@ -148,7 +149,7 @@ const TextStyleGroup = (): React.ReactElement => {
           <IconButton
             aria-label={"More formatting options"}
             className={clsx(
-              "focus-invert",
+              css["focus-invert"],
               toolbar_styles.x,
               toolbar_styles.button
             )}
@@ -245,7 +246,7 @@ const TextStyleSelect = (): React.ReactElement => {
         trigger: {
           "aria-label": "Text style",
           className: clsx(
-            "focus-invert",
+            css["focus-invert"],
             toolbar_styles.x,
             toolbar_styles.select,
             styles.x,
@@ -261,7 +262,7 @@ const TextStyleSelect = (): React.ReactElement => {
       }}
       value={text_style}
       value_children={
-        <span className={"flex-center"}>
+        <span className={css["flex-center"]}>
           {TEXT_STYLE_ICON_MAP[text_style]}
           {!is_smaller_than_mobile && (
             <React.Fragment>

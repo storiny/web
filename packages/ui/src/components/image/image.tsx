@@ -13,6 +13,7 @@ import Button from "~/components/button";
 import Spacer from "~/components/spacer";
 import Typography from "~/components/typography";
 import WarningIcon from "~/icons/warning";
+import css from "~/theme/main.module.scss";
 import { forward_ref } from "~/utils/forward-ref";
 import { get_cdn_url } from "~/utils/get-cdn-url";
 
@@ -97,12 +98,12 @@ const Image = forward_ref<ImageProps, "div">((props, ref) => {
           delayMs={500}
           {...slot_props?.fallback}
           className={clsx(
-            "flex-center",
+            css["flex-center"],
             styles.fallback,
             slot_props?.fallback?.className
           )}
         >
-          <Typography className={"t-minor"} level={"body2"}>
+          <Typography className={css["t-minor"]} level={"body2"}>
             Image not available
           </Typography>
         </Fallback>
@@ -111,8 +112,8 @@ const Image = forward_ref<ImageProps, "div">((props, ref) => {
             {...slot_props?.overlay}
             className={clsx(
               "force-dark-mode",
-              "flex-col",
-              "flex-center",
+              css["flex-col"],
+              css["flex-center"],
               styles.overlay,
               slot_props?.overlay?.className
             )}
@@ -123,7 +124,7 @@ const Image = forward_ref<ImageProps, "div">((props, ref) => {
               Content warning
             </Typography>
             <Spacer orientation={"vertical"} size={0.5} />
-            <Typography className={"t-medium"} level={"body2"}>
+            <Typography className={css["t-medium"]} level={"body2"}>
               {ASSET_RATING_DESCRIPTION_MAP[rating!]}
             </Typography>
             <Spacer orientation={"vertical"} size={2} />

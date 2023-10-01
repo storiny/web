@@ -1,9 +1,7 @@
-.x {
-  &.icon {
-    --icon-size: 18px;
-    --icon-stroke: var(--fg-muted);
+.icon {
+  --icon-size: 18px;
+  --icon-stroke: var(--fg-muted);
 
-    padding: 6px;
-    cursor: help;
-  }
+  padding: 6px;
+  cursor: help;
 }

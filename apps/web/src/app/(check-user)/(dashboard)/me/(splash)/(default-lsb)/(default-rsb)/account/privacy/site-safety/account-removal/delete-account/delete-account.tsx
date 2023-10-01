@@ -1,4 +1,3 @@
-import { clsx } from "clsx";
 import { useRouter as use_router } from "next/navigation";
 import React from "react";
 
@@ -14,6 +13,7 @@ import PasswordIcon from "~/icons/password";
 import UserIcon from "~/icons/user";
 import { use_delete_account_mutation } from "~/redux/features";
 import { BREAKPOINTS } from "~/theme/breakpoints";
+import css from "~/theme/main.module.scss";
 
 import { DeleteAccountProps } from "./delete-account.props";
 import {
@@ -28,7 +28,7 @@ const DeleteAccountModal = ({
 }): React.ReactElement => (
   <React.Fragment>
     <Description asChild>
-      <Typography className={"t-minor"} level={"body2"}>
+      <Typography className={css["t-minor"]} level={"body2"}>
         {deleted
           ? "Your account has been deleted and you have been logged out."
           : "To delete your account, you need to confirm your password. If you change your mind, you can recover your account by logging back in within 30 days of the deletion request."}
@@ -43,7 +43,7 @@ const DeleteAccountModal = ({
           decorator={<PasswordIcon />}
           form_slot_props={{
             form_item: {
-              className: "f-grow"
+              className: css["f-grow"]
             }
           }}
           label={"Password"}
@@ -92,7 +92,7 @@ const DeleteAccount = ({
       <Button
         auto_size
         check_auth
-        className={"fit-w"}
+        className={css["fit-w"]}
         color={"ruby"}
         onClick={open_modal}
         variant={"hollow"}
@@ -101,7 +101,7 @@ const DeleteAccount = ({
       </Button>
     ),
     <Form<DeleteAccountSchema>
-      className={clsx("flex-col")}
+      className={css["flex-col"]}
       disabled={is_loading}
       on_submit={handle_submit}
       provider_props={form}

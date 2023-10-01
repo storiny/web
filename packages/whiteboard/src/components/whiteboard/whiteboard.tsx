@@ -2,6 +2,8 @@ import clsx from "clsx";
 import { Provider } from "jotai";
 import React from "react";
 
+import css from "~/theme/main.module.scss";
+
 import Canvas from "../canvas";
 import { FabricProvider, WhiteboardProvider } from "../context";
 import Panel from "../panel";
@@ -29,7 +31,7 @@ const Main = React.forwardRef<HTMLDivElement, WhiteboardProps>((props, ref) => {
   return (
     <div
       {...rest}
-      className={clsx("full-h", "full-w", styles.x, styles.main, className)}
+      className={clsx(css["full-h"], css["full-w"], styles.main, className)}
       ref={ref}
     >
       <Provider>

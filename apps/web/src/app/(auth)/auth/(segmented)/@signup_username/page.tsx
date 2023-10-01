@@ -7,6 +7,7 @@ import Link from "~/components/link";
 import Spacer from "~/components/spacer";
 import Stepper from "~/components/stepper";
 import Typography from "~/components/typography";
+import css from "~/theme/main.module.scss";
 
 import { use_auth_state } from "../../../actions";
 import SignupUsernameForm from "./form";
@@ -31,7 +32,7 @@ const Page = (): React.ReactElement => {
         Create a username
       </Typography>
       <Spacer orientation={"vertical"} size={0.5} />
-      <Typography className={"t-minor"} level={"body2"}>
+      <Typography className={css["t-minor"]} level={"body2"}>
         Your username identifies you uniquely across Storiny, and can only
         contain alphanumeric characters and underscores. You can change this
         later.
@@ -39,9 +40,9 @@ const Page = (): React.ReactElement => {
       <Spacer orientation={"vertical"} size={5} />
       <SignupUsernameForm on_submit={on_submit} />
       <Spacer orientation={"vertical"} size={5} />
-      <div className={"flex-center"}>
+      <div className={css["flex-center"]}>
         <Link
-          className={"t-medium"}
+          className={css["t-medium"]}
           href={"/auth"}
           level={"body2"}
           onClick={(): void => actions.switch_segment("signup_base")}

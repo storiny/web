@@ -14,6 +14,7 @@ import {
   use_add_comment_mutation
 } from "~/redux/features";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
+import css from "~/theme/main.module.scss";
 
 import { story_metadata_atom } from "../../../atoms";
 import styles from "./post-comment.module.scss";
@@ -58,7 +59,7 @@ const PostComment = ({
   return (
     <div
       className={clsx(
-        "flex",
+        css["flex"],
         styles["response-area"],
         !logged_in && styles["logged-out"]
       )}
@@ -86,7 +87,11 @@ const PostComment = ({
             ref={textarea_ref}
             slot_props={{
               container: {
-                className: clsx("f-grow", styles.x, styles["response-textarea"])
+                className: clsx(
+                  css["f-grow"],
+                  styles.x,
+                  styles["response-textarea"]
+                )
               }
             }}
           />

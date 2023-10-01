@@ -5,6 +5,7 @@ import React from "react";
 
 import Grow from "~/components/grow";
 import ChevronIcon from "~/icons/chevron";
+import css from "~/theme/main.module.scss";
 import { forward_ref } from "~/utils/forward-ref";
 
 import common_styles from "../common/button-reset.module.scss";
@@ -28,9 +29,9 @@ const NavigationItem = forward_ref<NavigationItemProps, "button">(
         {...rest}
         className={clsx(
           common_styles.reset,
-          "flex-center",
-          "focusable",
-          "f-grow",
+          css["flex-center"],
+          css["focusable"],
+          css["f-grow"],
           styles["navigation-item"],
           className
         )}
@@ -42,7 +43,7 @@ const NavigationItem = forward_ref<NavigationItemProps, "button">(
           <span
             {...slot_props?.decorator}
             className={clsx(
-              "flex-center",
+              css["flex-center"],
               styles.decorator,
               slot_props?.decorator?.className
             )}
@@ -55,7 +56,7 @@ const NavigationItem = forward_ref<NavigationItemProps, "button">(
         <span
           {...slot_props?.end_decorator}
           className={clsx(
-            "flex-center",
+            css["flex-center"],
             styles.chevron,
             slot_props?.end_decorator?.className
           )}

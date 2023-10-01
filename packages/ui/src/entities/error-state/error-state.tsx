@@ -10,6 +10,7 @@ import CloudOffIcon from "~/icons/cloud-off";
 import RetryIcon from "~/icons/retry";
 import ServerErrorIcon from "~/icons/server-error";
 import { BREAKPOINTS } from "~/theme/breakpoints";
+import css from "~/theme/main.module.scss";
 
 import styles from "./error-state.module.scss";
 import { ErrorStateProps } from "./error-state.props";
@@ -32,7 +33,7 @@ const ErrorState = React.forwardRef<HTMLDivElement, ErrorStateProps>(
       <div
         {...rest}
         className={clsx(
-          "flex-col",
+          css["flex-col"],
           styles["error-state"],
           styles[size],
           className
@@ -40,14 +41,17 @@ const ErrorState = React.forwardRef<HTMLDivElement, ErrorStateProps>(
         data-error-type={type}
         ref={ref}
       >
-        <span className={clsx("flex-center", styles.icon)}>
+        <span className={clsx(css["flex-center"], styles.icon)}>
           {type === "server" ? <ServerErrorIcon /> : <CloudOffIcon />}
         </span>
-        <div className={clsx("flex-col", "t-center", styles.content)}>
-          <Typography className={clsx("t-bold", "t-major")} level={"body2"}>
+        <div className={clsx(css["flex-col"], css["t-center"], styles.content)}>
+          <Typography
+            className={clsx(css["t-bold"], css["t-major"])}
+            level={"body2"}
+          >
             {type === "server" ? "Server" : "Network"} error
           </Typography>
-          <Typography className={"t-minor"} level={"body3"}>
+          <Typography className={css["t-minor"]} level={"body3"}>
             {type === "server" ? (
               <>
                 An invalid response was received from the server. Please check

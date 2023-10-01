@@ -5,6 +5,7 @@ import Button from "~/components/button";
 import Grow from "~/components/grow";
 import Spacer from "~/components/spacer";
 import Typography from "~/components/typography";
+import css from "~/theme/main.module.scss";
 
 const Page = (): React.ReactElement => (
   <>
@@ -12,7 +13,7 @@ const Page = (): React.ReactElement => (
       Account held for deletion
     </Typography>
     <Spacer orientation={"vertical"} size={0.5} />
-    <Typography className={"t-minor"} level={"body2"}>
+    <Typography className={css["t-minor"]} level={"body2"}>
       We have received a request for the deletion of this account.
       <br />
       <br />
@@ -22,8 +23,8 @@ const Page = (): React.ReactElement => (
       reconsider and cancel their deletion request.
     </Typography>
     <Grow />
-    <div className={"flex-center"}>
-      <Button as={NextLink} className={"full-w"} href={"/"} size={"lg"}>
+    <div className={css["flex-center"]}>
+      <Button as={NextLink} className={css["full-w"]} href={"/"} size={"lg"}>
         Recover account
       </Button>
     </div>

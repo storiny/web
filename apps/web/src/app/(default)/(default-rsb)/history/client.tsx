@@ -16,6 +16,7 @@ import { use_debounce } from "~/hooks/use-debounce";
 import SearchIcon from "~/icons/search";
 import SettingsIcon from "~/icons/settings";
 import { get_query_error_type, use_get_history_query } from "~/redux/features";
+import css from "~/theme/main.module.scss";
 
 import styles from "./styles.module.scss";
 
@@ -36,10 +37,10 @@ const PageHeader = ({
 }): React.ReactElement => (
   <div
     className={clsx(
-      "flex-center",
-      "full-bleed",
-      "page-header",
-      "with-page-title"
+      css["flex-center"],
+      css["full-bleed"],
+      css["page-header"],
+      css["with-page-title"]
     )}
   >
     <Input
@@ -56,7 +57,7 @@ const PageHeader = ({
       aria-label={"Modify history settings"}
       as={NextLink}
       check_auth
-      className={clsx("focus-invert", styles.x, styles["icon-button"])}
+      className={clsx(css["focus-invert"], styles.x, styles["icon-button"])}
       href={"/me/privacy"}
       size={"lg"}
       title={"History settings"}

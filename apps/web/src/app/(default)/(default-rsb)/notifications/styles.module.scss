@@ -3,6 +3,10 @@
   padding-inline: 20px;
 }
 
+.header-actions {
+  gap: 8px;
+}
+
 .x {
   &.tabs {
     padding-inline: 20px;
@@ -11,9 +15,5 @@
   &.tabs-list {
     display: flex;
     justify-content: space-around;
-  }
-
-  &.header-actions {
-    gap: 8px;
   }
 }

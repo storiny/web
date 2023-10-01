@@ -12,6 +12,7 @@ import Typography from "~/components/typography";
 import LockIcon from "~/icons/lock";
 import LockOpenIcon from "~/icons/lock-open";
 import { use_private_account_mutation } from "~/redux/features";
+import css from "~/theme/main.module.scss";
 
 import styles from "../site-safety.module.scss";
 import { PrivateAccountProps } from "./private-account.props";
@@ -111,7 +112,7 @@ const PrivateAccount = ({
       </Typography>
       <Spacer orientation={"vertical"} size={0.5} />
       <Form<PrivateAccountSchema>
-        className={clsx("flex-col", styles.x, styles.form)}
+        className={clsx(css["flex-col"], styles.x, styles.form)}
         disabled={is_loading}
         on_submit={handle_submit}
         provider_props={form}

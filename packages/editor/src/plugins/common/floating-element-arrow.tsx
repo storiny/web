@@ -1,10 +1,9 @@
-import { clsx } from "clsx";
 import React from "react";
 
 import styles from "./floating-element.module.scss";
 
 const FloatingElementArrow = (): React.ReactElement => (
-  <span className={clsx(styles.x, styles.arrow)}>
+  <span className={styles.arrow}>
     <svg
       fill="var(--divider)"
       height="5"

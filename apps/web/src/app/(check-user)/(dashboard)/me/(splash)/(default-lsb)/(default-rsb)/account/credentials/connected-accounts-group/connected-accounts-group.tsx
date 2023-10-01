@@ -7,6 +7,7 @@ import Spacer from "~/components/spacer";
 import Typography from "~/components/typography";
 import TitleBlock from "~/entities/title-block";
 import CheckIcon from "~/icons/check";
+import css from "~/theme/main.module.scss";
 
 import DashboardGroup from "../../../../dashboard-group";
 import styles from "./connected-accounts-group.module.scss";
@@ -66,15 +67,15 @@ const Account = ({
   icon: React.ReactNode;
   label: React.ReactNode;
 }): React.ReactElement => (
-  <div className={clsx("flex-center", styles.account)}>
-    <div className={clsx("flex-center", styles.details)}>
+  <div className={clsx(css["flex-center"], styles.account)}>
+    <div className={clsx(css["flex-center"], styles.details)}>
       {icon}
-      <div className={clsx("flex-col")}>
+      <div className={css["flex-col"]}>
         <Typography level={"body2"}>{label}</Typography>
         <Spacer orientation={"vertical"} size={0.25} />
-        <span className={clsx("flex-center", styles.status)}>
+        <span className={clsx(css["flex-center"], styles.status)}>
           {connected && <CheckIcon />}
-          <Typography as={"span"} className={"t-minor"} level={"body3"}>
+          <Typography as={"span"} className={css["t-minor"]} level={"body3"}>
             {connected ? "Connected" : "Not connected"}
           </Typography>
         </span>
@@ -176,7 +177,7 @@ const CredentialsConnectedAccountsGroup = (
         lose access to it.
       </TitleBlock>
       <Spacer orientation={"vertical"} size={4.5} />
-      <div className={clsx("flex-col")}>
+      <div className={css["flex-col"]}>
         <AppleAccount
           has_password={has_password}
           login_apple_id={login_apple_id}

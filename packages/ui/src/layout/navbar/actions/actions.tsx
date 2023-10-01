@@ -36,6 +36,7 @@ import {
 } from "~/redux/features/auth/selectors";
 import { set_theme } from "~/redux/features/preferences/slice";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
+import css from "~/theme/main.module.scss";
 import { capitalize } from "~/utils/capitalize";
 
 import styles from "./actions.module.scss";
@@ -95,7 +96,7 @@ const LoggedInMenu = ({
     <div className={clsx(styles.menu)}>
       <MenuItemUnstyled
         asChild
-        className={clsx("focusable", styles["menu-item"])}
+        className={clsx(css["focusable"], styles["menu-item"])}
       >
         <NextLink aria-label={"Go to your profile"} href={"/profile"}>
           <Persona
@@ -167,14 +168,18 @@ const Actions = (): React.ReactElement => {
   const user = use_app_selector(select_user);
 
   return (
-    <div className={clsx("flex-center", styles.actions)}>
+    <div className={clsx(css["flex-center"], styles.actions)}>
       {logged_in ? (
         ["loading", "error"].includes(auth_status) ? (
           <LoggedOutMenu
             trigger={
               <div
                 aria-busy
-                className={clsx("unset", "flex-center", styles.trigger)}
+                className={clsx(
+                  css["unset"],
+                  css["flex-center"],
+                  styles.trigger
+                )}
               >
                 {auth_status === "loading" ? (
                   <Skeleton height={32} shape={"circular"} width={32} />
@@ -193,9 +198,9 @@ const Actions = (): React.ReactElement => {
               <button
                 aria-label={"Site and account options"}
                 className={clsx(
-                  "unset",
-                  "focusable",
-                  "flex-center",
+                  css["unset"],
+                  css["focusable"],
+                  css["flex-center"],
                   styles.trigger
                 )}
                 type={"button"}

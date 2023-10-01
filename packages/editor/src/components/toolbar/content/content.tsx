@@ -12,6 +12,7 @@ import Tooltip from "~/components/tooltip";
 import { use_media_query } from "~/hooks/use-media-query";
 import SidebarExpandIcon from "~/icons/sidebar-expand";
 import { BREAKPOINTS } from "~/theme/breakpoints";
+import css from "~/theme/main.module.scss";
 
 import { sidebars_collapsed_atom } from "../../../atoms";
 import toolbar_styles from "../toolbar.module.scss";
@@ -28,7 +29,7 @@ const SuspendedEditorToolbarContent = (): React.ReactElement => {
 
   return (
     <ScrollArea
-      className={"f-grow"}
+      className={css["f-grow"]}
       enable_horizontal
       slot_props={{
         scrollbar: {
@@ -39,14 +40,14 @@ const SuspendedEditorToolbarContent = (): React.ReactElement => {
         }
       }}
     >
-      <div className={clsx("flex-center", styles.x, styles.content)}>
+      <div className={clsx(css["flex-center"], styles.content)}>
         {is_smaller_than_desktop ? (
           <ToolbarHistoryItem />
         ) : (
           <Tooltip content={"Expand sidebars"}>
             <IconButton
               className={clsx(
-                "focus-invert",
+                css["focus-invert"],
                 toolbar_styles.x,
                 toolbar_styles.button
               )}

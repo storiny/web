@@ -15,6 +15,7 @@ import Link from "~/components/link";
 import Spacer from "~/components/spacer";
 import { use_toast } from "~/components/toast";
 import { use_login_mutation } from "~/redux/features";
+import css from "~/theme/main.module.scss";
 
 import { use_auth_state } from "../../../actions";
 import { LOGIN_SCHEMA, LoginSchema } from "./schema";
@@ -62,7 +63,7 @@ const LoginForm = ({ on_submit }: Props): React.ReactElement => {
 
   return (
     <Form<LoginSchema>
-      className={clsx("flex-col", "full-h")}
+      className={clsx(css["flex-col"], css["full-h"])}
       disabled={is_loading}
       on_submit={handle_submit}
       provider_props={form}
@@ -83,13 +84,13 @@ const LoginForm = ({ on_submit }: Props): React.ReactElement => {
       <FormPasswordInput
         data-testid={"password-input"}
         form_slot_props={{
-          label: { className: clsx("flex", "full-w") }
+          label: { className: clsx(css["flex"], css["full-w"]) }
         }}
         label={
           <>
-            <span className={"f-grow"}>Password</span>
+            <span className={css["f-grow"]}>Password</span>
             <Link
-              className={"t-medium"}
+              className={css["t-medium"]}
               href={"/auth"}
               level={"body3"}
               onClick={(): void => actions.switch_segment("recovery_base")}
@@ -112,9 +113,9 @@ const LoginForm = ({ on_submit }: Props): React.ReactElement => {
       />
       <Spacer orientation={"vertical"} size={5} />
       <Grow />
-      <div className={clsx("flex-col", "flex-center")}>
+      <div className={clsx(css["flex-col"], css["flex-center"])}>
         <Button
-          className={"full-w"}
+          className={css["full-w"]}
           loading={is_loading}
           size={"lg"}
           type={"submit"}

@@ -9,6 +9,7 @@ import Grow from "~/components/grow";
 import Link from "~/components/link";
 import Spacer from "~/components/spacer";
 import Typography from "~/components/typography";
+import css from "~/theme/main.module.scss";
 
 import { use_auth_state } from "../../../actions";
 
@@ -20,9 +21,9 @@ const Page = (): React.ReactElement => {
         Check your inbox
       </Typography>
       <Spacer orientation={"vertical"} size={0.5} />
-      <Typography className={"t-minor"} level={"body2"}>
+      <Typography className={css["t-minor"]} level={"body2"}>
         If an account is associated with{" "}
-        <span className={"t-medium"} style={{ wordBreak: "break-all" }}>
+        <span className={css["t-medium"]} style={{ wordBreak: "break-all" }}>
           {state.recovery.email}
         </span>
         , you will receive an email containing instructions on how to reset your
@@ -37,9 +38,9 @@ const Page = (): React.ReactElement => {
       </Typography>
       <Spacer orientation={"vertical"} size={5} />
       <Grow />
-      <div className={clsx("flex-col", "flex-center")}>
+      <div className={clsx(css["flex-col"], css["flex-center"])}>
         <Link
-          className={"t-medium"}
+          className={css["t-medium"]}
           href={"/auth"}
           level={"body2"}
           onClick={(): void => actions.switch_segment("login")}
@@ -50,7 +51,7 @@ const Page = (): React.ReactElement => {
         <Spacer orientation={"vertical"} size={3} />
         <Button
           as={NextLink}
-          className={"full-w"}
+          className={css["full-w"]}
           href={"/"}
           size={"lg"}
           variant={"hollow"}

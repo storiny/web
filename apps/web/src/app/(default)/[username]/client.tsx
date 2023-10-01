@@ -25,6 +25,7 @@ import LockIcon from "~/icons/lock";
 import SearchIcon from "~/icons/search";
 import { use_app_selector } from "~/redux/hooks";
 import { BREAKPOINTS } from "~/theme/breakpoints";
+import css from "~/theme/main.module.scss";
 import { get_cdn_url } from "~/utils/get-cdn-url";
 
 import ProfileContent from "./content";
@@ -61,13 +62,13 @@ const TabsHeader = ({
 }): React.ReactElement => (
   <div
     className={clsx(
-      "full-bleed",
-      "page-header",
+      css["full-bleed"],
+      css["page-header"],
       styles.tabs,
       has_banner && styles["has-banner"]
     )}
   >
-    <TabsList className={clsx("full-w", styles.x, styles["tabs-list"])}>
+    <TabsList className={clsx(css["full-w"], styles.x, styles["tabs-list"])}>
       <Tab aria-controls={undefined} value={"stories"}>
         Stories
       </Tab>
@@ -107,10 +108,10 @@ const PageHeader = ({
 }): React.ReactElement => (
   <div
     className={clsx(
-      "flex-center",
-      "full-bleed",
-      "page-header",
-      "with-page-title",
+      css["flex-center"],
+      css["full-bleed"],
+      css["page-header"],
+      css["with-page-title"],
       styles["page-header"]
     )}
     style={{ marginTop: 0 }}
@@ -192,7 +193,7 @@ const Page = ({
       !profile.is_blocked_by_user &&
       has_banner ? (
         <>
-          <div className={clsx("grid", styles["banner-wrapper"])}>
+          <div className={clsx(css["grid"], styles["banner-wrapper"])}>
             <Image
               alt={""}
               className={clsx(styles.x, styles.banner)}
@@ -235,7 +236,7 @@ const Page = ({
       is_suspended ||
       Boolean(profile.is_blocked_by_user) ||
       (is_blocking && content_hidden) ? (
-        <div className={clsx("flex-col", "full-w")}>
+        <div className={clsx(css["flex-col"], css["full-w"])}>
           <CustomState
             auto_size
             description={
@@ -250,8 +251,8 @@ const Page = ({
               ) : profile.is_blocked_by_user ? (
                 <>
                   There is no way for you to follow{" "}
-                  <span className={"t-medium"}>@{profile.username}</span> or
-                  interact with their account.{" "}
+                  <span className={css["t-medium"]}>@{profile.username}</span>{" "}
+                  or interact with their account.{" "}
                   <Link
                     href={"/docs/block"}
                     target={"_blank"}
@@ -263,14 +264,14 @@ const Page = ({
               ) : is_blocking ? (
                 <>
                   Would you like to view content from{" "}
-                  <span className={"t-medium"}>@{profile.username}</span>?
+                  <span className={css["t-medium"]}>@{profile.username}</span>?
                   Viewing the content will not unblock this user.
                 </>
               ) : (
                 <>
                   To access the profile and content of{" "}
-                  <span className={"t-medium"}>@{profile.username}</span>, you
-                  need to be in their friends list.
+                  <span className={css["t-medium"]}>@{profile.username}</span>,
+                  you need to be in their friends list.
                 </>
               )
             }
@@ -294,7 +295,7 @@ const Page = ({
             }
           />
           {content_hidden && (
-            <div className={clsx("full-w", "flex-center")}>
+            <div className={clsx(css["full-w"], css["flex-center"])}>
               <Button onClick={(): void => set_content_hidden(false)}>
                 View content
               </Button>

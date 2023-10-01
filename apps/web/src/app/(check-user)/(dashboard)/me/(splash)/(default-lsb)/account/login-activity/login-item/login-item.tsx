@@ -11,6 +11,7 @@ import Spacer from "~/components/spacer";
 import { use_toast } from "~/components/toast";
 import Typography from "~/components/typography";
 import { use_session_logout_mutation } from "~/redux/features";
+import css from "~/theme/main.module.scss";
 import { DateFormat, format_date } from "~/utils/format-date";
 
 import { DEVICE_TYPE_ICON_MAP } from "../icon-map";
@@ -44,7 +45,12 @@ const LogoutButton = (
   return (
     <Button
       check_auth
-      className={clsx("focus-invert", "f-grow", styles.x, styles.button)}
+      className={clsx(
+        css["focus-invert"],
+        css["f-grow"],
+        styles.x,
+        styles.button
+      )}
       disabled={is_loading}
       onClick={session_logout_impl}
       variant={"ghost"}
@@ -61,27 +67,27 @@ const LoginItem = (props: LoginItemProps): React.ReactElement => {
   >(null);
 
   return (
-    <div className={clsx("flex-col", styles["login-item"])}>
-      <div className={clsx("flex-center", styles.device)}>
+    <div className={clsx(css["flex-col"], styles["login-item"])}>
+      <div className={clsx(css["flex-center"], styles.device)}>
         {DEVICE_TYPE_ICON_MAP[login.device?.type ?? DeviceType.UNKNOWN]}
         <Spacer />
-        <div className={clsx("flex-col", styles.details)}>
-          <Typography className={"t-medium"} ellipsis level={"body2"}>
+        <div className={clsx(css["flex-col"], styles.details)}>
+          <Typography className={css["t-medium"]} ellipsis level={"body2"}>
             {login.device?.display_name || "Unknown device"}
           </Typography>
-          <Typography className={"t-minor"} ellipsis level={"body3"}>
+          <Typography className={css["t-minor"]} ellipsis level={"body3"}>
             {login.is_active ? (
               <React.Fragment>
-                <span className={clsx("t-medium", styles["active-label"])}>
+                <span className={clsx(css["t-medium"], styles["active-label"])}>
                   Active
                 </span>{" "}
-                <span className={"t-muted"}>&bull;</span>{" "}
+                <span className={css["t-muted"]}>&bull;</span>{" "}
                 {login.location?.display_name || "Unknown location"}
               </React.Fragment>
             ) : (
               <React.Fragment>
                 {login.location?.display_name || "Unknown location"}{" "}
-                <span className={"t-muted"}>&bull;</span>{" "}
+                <span className={css["t-muted"]}>&bull;</span>{" "}
                 {format_date(login.created_at, DateFormat.STANDARD)}
               </React.Fragment>
             )}
@@ -89,7 +95,7 @@ const LoginItem = (props: LoginItemProps): React.ReactElement => {
         </div>
       </div>
       <AspectRatio
-        className={clsx("full-w", "flex-col", styles.x, styles.map)}
+        className={clsx(css["full-w"], css["flex-col"], styles.x, styles.map)}
         ratio={ratio || 1.44}
       >
         {typeof login.location?.lat !== "undefined" &&
@@ -101,27 +107,27 @@ const LoginItem = (props: LoginItemProps): React.ReactElement => {
             ratio={ratio || 1.44}
           />
         ) : (
-          <div className={"flex-center"}>
-            <Typography className={"t-minor"} level={"body2"}>
+          <div className={css["flex-center"]}>
+            <Typography className={css["t-minor"]} level={"body2"}>
               Unknown location
             </Typography>
           </div>
         )}
       </AspectRatio>
       {status !== "acknowledged" && !login.is_active ? (
-        <div className={clsx("flex-col")}>
-          <div className={clsx("flex-center", styles["footer-label"])}>
-            <Typography className={"t-minor"} level={"body3"}>
+        <div className={css["flex-col"]}>
+          <div className={clsx(css["flex-center"], styles["footer-label"])}>
+            <Typography className={css["t-minor"]} level={"body3"}>
               {status === "revoked" ? "Session revoked" : "Was this you?"}
             </Typography>
           </div>
           {status === null && (
-            <div className={"flex-center"}>
+            <div className={css["flex-center"]}>
               <Button
                 check_auth
                 className={clsx(
-                  "focus-invert",
-                  "f-grow",
+                  css["focus-invert"],
+                  css["f-grow"],
                   styles.x,
                   styles.button
                 )}
