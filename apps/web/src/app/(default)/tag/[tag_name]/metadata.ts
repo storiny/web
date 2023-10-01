@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import { get_user } from "~/common/utils/get-user";
 
 import { get_tag } from "~/common/grpc";
+import { get_user } from "~/common/utils/get-user";
 
 export const generateMetadata = async ({
   params

@@ -17,8 +17,8 @@ import { Remove2FAProps } from "./remove-2fa.props";
 import {
   RECOVERY_CODE_MAX_LENGTH,
   RECOVERY_CODE_MIN_LENGTH,
-  Remove2FASchema,
-  REMOVE_2FA_SCHEMA
+  REMOVE_2FA_SCHEMA,
+  Remove2FASchema
 } from "./remove-2fa.schema";
 
 const Remove2FAModal = (): React.ReactElement => (

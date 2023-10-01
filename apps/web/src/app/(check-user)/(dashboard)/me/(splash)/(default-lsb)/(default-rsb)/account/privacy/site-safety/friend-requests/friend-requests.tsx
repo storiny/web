@@ -13,8 +13,8 @@ import { use_incoming_friend_requests_mutation } from "~/redux/features";
 import styles from "../site-safety.module.scss";
 import { FriendRequestsProps } from "./friend-requests.props";
 import {
-  FriendRequestsSchema,
-  FRIEND_REQUESTS_SCHEMA
+  FRIEND_REQUESTS_SCHEMA,
+  FriendRequestsSchema
 } from "./friend-requests.schema";
 
 const FriendRequests = ({

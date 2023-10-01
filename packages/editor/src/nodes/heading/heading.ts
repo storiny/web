@@ -163,12 +163,12 @@ export class HeadingNode extends ElementNode {
   override createDOM(): HTMLElement {
     const tag = this.__tag;
     const element = document.createElement(tag);
-    const className = TYPOGRAPHY_LEVEL_TO_CLASSNAME_MAP[tag];
+    const class_name = TYPOGRAPHY_LEVEL_TO_CLASSNAME_MAP[tag];
 
-    if (className) {
+    if (class_name) {
       add_class_names_to_element(
         element,
-        ...["t-major", className, styles[tag]]
+        ...["t-major", class_name, styles[tag]]
       );
     }
 
@@ -208,7 +208,7 @@ export class HeadingNode extends ElementNode {
   override exportJSON(): SerializedHeadingNode {
     return {
       ...super.exportJSON(),
-      tag: this.getTag(),
+      tag: this.get_tag(),
       type: TYPE,
       version: VERSION
     };
@@ -226,7 +226,7 @@ export class HeadingNode extends ElementNode {
     const anchor_offset = selection ? selection.anchor.offset : 0;
     const next_element =
       anchor_offset > 0 && anchor_offset < this.getTextContentSize()
-        ? $create_heading_node(this.getTag())
+        ? $create_heading_node(this.get_tag())
         : $create_paragraph_node();
 
     this.insertAfter(next_element, restore_selection);
@@ -238,7 +238,7 @@ export class HeadingNode extends ElementNode {
    */
   override collapseAtStart(): true {
     const next_element = !this.isEmpty()
-      ? $create_heading_node(this.getTag())
+      ? $create_heading_node(this.get_tag())
       : $create_paragraph_node();
     const children = this.getChildren();
     children.forEach((child) => next_element.append(child));

@@ -1,7 +1,7 @@
+import { CATEGORY_LABEL_MAP } from "@storiny/shared/src/constants/category-icon-map";
 import { Metadata } from "next";
 
 import { CATEGORIES } from "../categories";
-import { CATEGORY_LABEL_MAP } from "@storiny/shared/src/constants/category-icon-map";
 
 export const generateMetadata = async ({
   params

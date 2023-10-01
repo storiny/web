@@ -138,7 +138,7 @@ export const use_register_tools = (): void => {
           set_text_style(LIST_TYPE_TEXT_STYLE_MAP[type]);
         } else {
           const type = $is_heading_node(element)
-            ? element.getTag()
+            ? element.get_tag()
             : element.getType();
 
           if (type in NODE_TEXT_STYLE_MAP) {

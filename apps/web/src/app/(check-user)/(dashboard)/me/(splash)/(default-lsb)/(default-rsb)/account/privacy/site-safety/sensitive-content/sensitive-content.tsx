@@ -11,8 +11,8 @@ import { use_sensitive_content_mutation } from "~/redux/features";
 import styles from "../site-safety.module.scss";
 import { SensitiveContentProps } from "./sensitive-content.props";
 import {
-  SensitiveContentSchema,
-  SENSITIVE_CONTENT_SCHEMA
+  SENSITIVE_CONTENT_SCHEMA,
+  SensitiveContentSchema
 } from "./sensitive-content.schema";
 
 const SensitiveContent = ({

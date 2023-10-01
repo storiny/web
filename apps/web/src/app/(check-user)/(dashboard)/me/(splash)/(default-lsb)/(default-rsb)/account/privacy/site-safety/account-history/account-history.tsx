@@ -11,8 +11,8 @@ import { use_read_history_mutation } from "~/redux/features";
 import styles from "../site-safety.module.scss";
 import { AccountHistory_props } from "./account-history.props";
 import {
-  AccountHistorySchema,
-  ACCOUNT_HISTORY_SCHEMA
+  ACCOUNT_HISTORY_SCHEMA,
+  AccountHistorySchema
 } from "./account-history.schema";
 
 const AccountHistory = ({

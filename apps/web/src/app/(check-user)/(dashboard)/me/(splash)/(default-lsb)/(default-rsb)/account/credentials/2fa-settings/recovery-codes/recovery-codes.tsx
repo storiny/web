@@ -1,4 +1,4 @@
-import { download_as_file } from "../../../../../../../../../../../../../../packages/shared/src/utils/download-as-file";
+import { download_as_file } from "@storiny/shared/src/utils/download-as-file";
 import { clsx } from "clsx";
 import React from "react";
 

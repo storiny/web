@@ -2,6 +2,7 @@ import "server-only";
 
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+
 import { SESSION_COOKIE_ID } from "~/common/utils/get-session-token";
 
 const LogoutPage = ({

@@ -2,14 +2,13 @@ import { clsx } from "clsx";
 import React from "react";
 
 import { use_login_redirect } from "~/common/utils";
-import { fetch_user, select_auth_status, select_user } from "~/redux/features";
-import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
-
 import Button from "~/components/button";
 import Spacer from "~/components/spacer";
 import Typography from "~/components/typography";
 import RetryIcon from "~/icons/retry";
 import SplashScreen from "~/layout/splash-screen";
+import { fetch_user, select_auth_status, select_user } from "~/redux/features";
+import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 
 // Handles client-side user authentication logic
 const DashboardSplashLayout = ({

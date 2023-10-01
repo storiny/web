@@ -43,10 +43,10 @@ const create_block_node =
   (
     create_node: (match: Array<string>) => ElementNode
   ): ElementTransformer["replace"] =>
-  (parentNode, children, match) => {
+  (parent_node, children, match) => {
     const node = create_node(match);
     node.append(...children);
-    parentNode.replace(node);
+    parent_node.replace(node);
     node.select(0, 0);
   };
 
@@ -57,7 +57,7 @@ const HEADING: ElementTransformer = {
       return null;
     }
 
-    const level = Number(node.getTag().slice(1));
+    const level = Number(node.get_tag().slice(1));
     return "#".repeat(level) + " " + export_children(node);
   },
   // eslint-disable-next-line prefer-snakecase/prefer-snakecase
@@ -87,9 +87,9 @@ const QUOTE: ElementTransformer = {
   },
   // eslint-disable-next-line prefer-snakecase/prefer-snakecase
   regExp: /^>\s/,
-  replace: (parentNode, children, _match, is_import) => {
+  replace: (parent_node, children, _match, is_import) => {
     if (is_import) {
-      const prev_node = parentNode.getPreviousSibling();
+      const prev_node = parent_node.getPreviousSibling();
 
       if ($is_quote_node(prev_node)) {
         prev_node.splice(prev_node.getChildrenSize(), 0, [
@@ -97,14 +97,14 @@ const QUOTE: ElementTransformer = {
           ...children
         ]);
         prev_node.select(0, 0);
-        parentNode.remove();
+        parent_node.remove();
         return;
       }
     }
 
     const node = $create_quote_node();
     node.append(...children);
-    parentNode.replace(node);
+    parent_node.replace(node);
     node.select(0, 0);
   },
   type: "element"
@@ -116,14 +116,14 @@ const HR: ElementTransformer = {
     $is_horizontal_rule_node(node) ? "***" : null,
   // eslint-disable-next-line prefer-snakecase/prefer-snakecase
   regExp: /^(---|\*\*\*|___)\s?$/,
-  replace: (parentNode, _1, _2, is_import) => {
+  replace: (parent_node, _1, _2, is_import) => {
     const line = $create_horizontal_rule_node();
 
     // TODO: Get rid of is_import flag
-    if (is_import || parentNode.getNextSibling() != null) {
-      parentNode.replace(line);
+    if (is_import || parent_node.getNextSibling() != null) {
+      parent_node.replace(line);
     } else {
-      parentNode.insertBefore(line);
+      parent_node.insertBefore(line);
     }
 
     line.selectNext();

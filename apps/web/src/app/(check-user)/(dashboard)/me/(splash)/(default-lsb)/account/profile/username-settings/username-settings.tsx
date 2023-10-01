@@ -19,8 +19,8 @@ import { BREAKPOINTS } from "~/theme/breakpoints";
 
 import { UsernameSettingsProps } from "./username-settings.props";
 import {
-  UsernameSettingsSchema,
-  USERNAME_SETTINGS_SCHEMA
+  USERNAME_SETTINGS_SCHEMA,
+  UsernameSettingsSchema
 } from "./username-settings.schema";
 
 const UsernameSettingsModal = (): React.ReactElement => (

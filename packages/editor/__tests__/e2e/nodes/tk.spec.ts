@@ -46,12 +46,14 @@ test.describe("tk", () => {
         <p
           class="${EDITOR_CLASSNAMES.paragraph} ${EDITOR_CLASSNAMES.tk_paragraph}"
           dir="ltr"
+          data-tk-parent="true"
         >
           <span data-lexical-text="true">This is a paragraph with</span>
           <span
             class="${EDITOR_CLASSNAMES.tk}"
             spellcheck="false"
             data-lexical-text="true"
+            data-tk-node="true"
             >TK</span
           >
         </p>
@@ -77,12 +79,14 @@ test.describe("tk", () => {
         <p
           class="${EDITOR_CLASSNAMES.paragraph} ${EDITOR_CLASSNAMES.tk_paragraph}"
           dir="ltr"
+          data-tk-parent="true"
         >
           <span data-lexical-text="true">This is a paragraph with</span>
           <span
             class="${EDITOR_CLASSNAMES.tk}"
             spellcheck="false"
             data-lexical-text="true"
+            data-tk-node="true"
             >TK</span
           >
         </p>
@@ -126,12 +130,14 @@ test.describe("tk", () => {
         <p
           class="${EDITOR_CLASSNAMES.paragraph} ${EDITOR_CLASSNAMES.tk_paragraph}"
           dir="ltr"
+          data-tk-parent="true"
         >
           <span data-lexical-text="true">This is a paragraph with many</span>
           <span
             class="${EDITOR_CLASSNAMES.tk}"
             spellcheck="false"
             data-lexical-text="true"
+            data-tk-node="true"
             >TK</span
           >
           <span data-lexical-text="true">nodes. They look like</span>
@@ -139,6 +145,7 @@ test.describe("tk", () => {
             class="${EDITOR_CLASSNAMES.tk}"
             spellcheck="false"
             data-lexical-text="true"
+            data-tk-node="true"
             >TK</span
           >
           <span data-lexical-text="true">, smell like</span>
@@ -146,6 +153,7 @@ test.describe("tk", () => {
             class="${EDITOR_CLASSNAMES.tk}"
             spellcheck="false"
             data-lexical-text="true"
+            data-tk-node="true"
             >TK</span
           >
           <span data-lexical-text="true">, and work like</span>
@@ -153,6 +161,7 @@ test.describe("tk", () => {
             class="${EDITOR_CLASSNAMES.tk}"
             spellcheck="false"
             data-lexical-text="true"
+            data-tk-node="true"
             >TK</span
           >
           <span data-lexical-text="true">.</span>
@@ -179,12 +188,14 @@ test.describe("tk", () => {
         <p
           class="${EDITOR_CLASSNAMES.paragraph} ${EDITOR_CLASSNAMES.tk_paragraph}"
           dir="ltr"
+          data-tk-parent="true"
         >
           <span data-lexical-text="true">This is a paragraph with a</span>
           <span
             class="${EDITOR_CLASSNAMES.tk}"
             spellcheck="false"
             data-lexical-text="true"
+            data-tk-node="true"
             >TK</span
           >
           <span data-lexical-text="true">and another</span>
@@ -192,6 +203,7 @@ test.describe("tk", () => {
             class="${EDITOR_CLASSNAMES.tk}"
             spellcheck="false"
             data-lexical-text="true"
+            data-tk-node="true"
             >TK</span
           >
           <span data-lexical-text="true">.</span>
@@ -214,12 +226,14 @@ test.describe("tk", () => {
         <p
           class="${EDITOR_CLASSNAMES.paragraph} ${EDITOR_CLASSNAMES.tk_paragraph}"
           dir="ltr"
+          data-tk-parent="true"
         >
           <span data-lexical-text="true">This is a paragraph with a</span>
           <span
             class="${EDITOR_CLASSNAMES.tk}"
             spellcheck="false"
             data-lexical-text="true"
+            data-tk-node="true"
             >TK</span
           >
         </p>
@@ -242,6 +256,7 @@ test.describe("tk", () => {
       html`
         <p
           class="${EDITOR_CLASSNAMES.paragraph} ${EDITOR_CLASSNAMES.tk_paragraph}"
+          data-tk-parent="true"
           dir="ltr"
         >
           <span data-lexical-text="true">This is a paragraph with a</span>
@@ -249,6 +264,7 @@ test.describe("tk", () => {
             class="${EDITOR_CLASSNAMES.tk}"
             spellcheck="false"
             data-lexical-text="true"
+            data-tk-node="true"
             >TK</span
           >
           <span data-lexical-text="true">and another</span>
@@ -256,6 +272,7 @@ test.describe("tk", () => {
             class="${EDITOR_CLASSNAMES.tk}"
             spellcheck="false"
             data-lexical-text="true"
+            data-tk-node="true"
             >TK</span
           >
           <span data-lexical-text="true">.</span>
@@ -300,12 +317,14 @@ test.describe("tk", () => {
         <p
           class="${EDITOR_CLASSNAMES.paragraph} ${EDITOR_CLASSNAMES.tk_paragraph}"
           dir="ltr"
+          data-tk-parent="true"
         >
           <span data-lexical-text="true">This is a paragraph with a</span>
           <span
             class="${EDITOR_CLASSNAMES.tk}"
             spellcheck="false"
             data-lexical-text="true"
+            data-tk-node="true"
             >TK</span
           >
           <span data-lexical-text="true">and another</span>
@@ -313,6 +332,7 @@ test.describe("tk", () => {
             class="${EDITOR_CLASSNAMES.tk}"
             spellcheck="false"
             data-lexical-text="true"
+            data-tk-node="true"
             >TK</span
           >
           <span data-lexical-text="true">.</span>
@@ -336,12 +356,14 @@ test.describe("tk", () => {
         <p
           class="${EDITOR_CLASSNAMES.paragraph} ${EDITOR_CLASSNAMES.tk_paragraph}"
           dir="ltr"
+          data-tk-parent="true"
         >
           <span data-lexical-text="true">This is a paragraph with a</span>
           <span
             class="${EDITOR_CLASSNAMES.tk}"
             spellcheck="false"
             data-lexical-text="true"
+            data-tk-node="true"
             >TK</span
           >
           <span data-lexical-text="true">and</span>
@@ -349,12 +371,14 @@ test.describe("tk", () => {
         <p
           class="${EDITOR_CLASSNAMES.paragraph} ${EDITOR_CLASSNAMES.tk_paragraph}"
           dir="ltr"
+          data-tk-parent="true"
         >
           <span data-lexical-text="true"> another</span>
           <span
             class="${EDITOR_CLASSNAMES.tk}"
             spellcheck="false"
             data-lexical-text="true"
+            data-tk-node="true"
             >TK</span
           >
           <span data-lexical-text="true">.</span>
@@ -384,12 +408,14 @@ test.describe("tk", () => {
         <p
           class="${EDITOR_CLASSNAMES.paragraph} ${EDITOR_CLASSNAMES.tk_paragraph}"
           dir="ltr"
+          data-tk-parent="true"
         >
           <span data-lexical-text="true">This is a paragraph with a</span>
           <span
             class="${EDITOR_CLASSNAMES.tk}"
             spellcheck="false"
             data-lexical-text="true"
+            data-tk-node="true"
             >TK</span
           >
           <span data-lexical-text="true">and</span>
@@ -397,12 +423,14 @@ test.describe("tk", () => {
         <p
           class="${EDITOR_CLASSNAMES.paragraph} ${EDITOR_CLASSNAMES.tk_paragraph}"
           dir="ltr"
+          data-tk-parent="true"
         >
           <span data-lexical-text="true"> another</span>
           <span
             class="${EDITOR_CLASSNAMES.tk}"
             spellcheck="false"
             data-lexical-text="true"
+            data-tk-node="true"
             >TK</span
           >
           <span data-lexical-text="true">.</span>
@@ -425,12 +453,14 @@ test.describe("tk", () => {
         <p
           class="${EDITOR_CLASSNAMES.paragraph} ${EDITOR_CLASSNAMES.tk_paragraph}"
           dir="ltr"
+          data-tk-parent="true"
         >
           <span data-lexical-text="true">This is a paragraph with a</span>
           <span
             class="${EDITOR_CLASSNAMES.tk}"
             spellcheck="false"
             data-lexical-text="true"
+            data-tk-node="true"
             >TK</span
           >
           <span data-lexical-text="true">and another</span>
@@ -438,6 +468,7 @@ test.describe("tk", () => {
             class="${EDITOR_CLASSNAMES.tk}"
             spellcheck="false"
             data-lexical-text="true"
+            data-tk-node="true"
             >TK</span
           >
           <span data-lexical-text="true">.</span>
@@ -470,12 +501,14 @@ test.describe("tk", () => {
         <p
           class="${EDITOR_CLASSNAMES.paragraph} ${EDITOR_CLASSNAMES.tk_paragraph}"
           dir="ltr"
+          data-tk-parent="true"
         >
           <span data-lexical-text="true">This is a paragraph with</span>
           <span
             class="${EDITOR_CLASSNAMES.tk}"
             spellcheck="false"
             data-lexical-text="true"
+            data-tk-node="true"
             >TK</span
           >
         </p>

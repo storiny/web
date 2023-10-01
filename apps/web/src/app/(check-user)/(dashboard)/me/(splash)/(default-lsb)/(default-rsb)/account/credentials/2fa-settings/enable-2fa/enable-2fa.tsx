@@ -1,4 +1,4 @@
-import { is_test_env } from "../../../../../../../../../../../../../../packages/shared/src/utils/is-test-env";
+import { is_test_env } from "@storiny/shared/src/utils/is-test-env";
 import { clsx } from "clsx";
 import React from "react";
 
@@ -25,8 +25,8 @@ import { BREAKPOINTS } from "~/theme/breakpoints";
 import styles from "./enable-2fa.module.scss";
 import { Enable2FAProps } from "./enable-2fa.props";
 import {
-  Enable2FASchema,
   ENABLE_2FA_SCHEMA,
+  Enable2FASchema,
   MFA_CODE_LENGTH
 } from "./enable-2fa.schema";
 
