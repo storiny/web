@@ -3,14 +3,14 @@ import React from "react";
 import { useGlobalAudioPlayer as use_audio_player } from "react-use-audio-player";
 import { useFilePicker as use_file_picker } from "use-file-picker";
 
-import IconButton from "../../../../../../../ui/src/components/icon-button";
-import Select from "../../../../../../../ui/src/components/select";
-import { use_toast } from "../../../../../../../ui/src/components/toast";
-import Toggle from "../../../../../../../ui/src/components/toggle";
-import Tooltip from "../../../../../../../ui/src/components/tooltip";
-import LoopIcon from "../../../../../../../ui/src/icons/loop";
-import PauseIcon from "../../../../../../../ui/src/icons/pause";
-import PlayIcon from "../../../../../../../ui/src/icons/play";
+import IconButton from "~/components/icon-button";
+import Select from "~/components/select";
+import { use_toast } from "~/components/toast";
+import Toggle from "~/components/toggle";
+import Tooltip from "~/components/tooltip";
+import LoopIcon from "~/icons/loop";
+import PauseIcon from "~/icons/pause";
+import PlayIcon from "~/icons/play";
 
 import styles from "./content.module.scss";
 import ToneArm from "./tone-arm";

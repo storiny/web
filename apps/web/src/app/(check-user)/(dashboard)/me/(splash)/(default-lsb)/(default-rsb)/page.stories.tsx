@@ -12,7 +12,7 @@ import DefaultDashboardRightSidebarLayout from "./layout";
 import NavigationPage from "./page";
 
 const meta: Meta<typeof NavigationPage> = {
-  title: "dashboard/NavigationPage",
+  title: "dashboard/navigation-page",
   component: NavigationPage,
   args: {
     disable_redirect: true

@@ -8,29 +8,29 @@ import { $getRoot as $get_root } from "lexical";
 import { RedirectType } from "next/dist/client/components/redirect";
 import dynamic from "next/dynamic";
 import NextLink from "next/link";
-import { useRouter as use_router } from "next/navigation";
+import { redirect, useRouter as use_router } from "next/navigation";
 import React from "react";
 
-import Logo from "../../../../../ui/src/brand/logo";
-import Button from "../../../../../ui/src/components/button";
-import { use_confirmation } from "../../../../../ui/src/components/confirmation";
-import IconButton from "../../../../../ui/src/components/icon-button";
-import Link from "../../../../../ui/src/components/link";
-import Menubar from "../../../../../ui/src/components/menubar";
-import MenubarMenu from "../../../../../ui/src/components/menubar-menu";
-import Spacer from "../../../../../ui/src/components/spacer";
-import { use_toast } from "../../../../../ui/src/components/toast";
-import Tooltip from "../../../../../ui/src/components/tooltip";
-import { use_media_query } from "../../../../../ui/src/hooks/use-media-query";
-import ChevronIcon from "../../../../../ui/src/icons/chevron";
-import QuestionMarkIcon from "../../../../../ui/src/icons/question-mark";
-import VersionHistoryIcon from "../../../../../ui/src/icons/version-history";
+import Logo from "~/brand/logo";
+import Button from "~/components/button";
+import { use_confirmation } from "~/components/confirmation";
+import IconButton from "~/components/icon-button";
+import Link from "~/components/link";
+import Menubar from "~/components/menubar";
+import MenubarMenu from "~/components/menubar-menu";
+import Spacer from "~/components/spacer";
+import { use_toast } from "~/components/toast";
+import Tooltip from "~/components/tooltip";
+import { use_media_query } from "~/hooks/use-media-query";
+import ChevronIcon from "~/icons/chevron";
+import QuestionMarkIcon from "~/icons/question-mark";
+import VersionHistoryIcon from "~/icons/version-history";
 import {
   use_publish_story_mutation,
   use_recover_story_mutation
 } from "~/redux/features";
 import { BREAKPOINTS } from "~/theme/breakpoints";
-import { abbreviate_number } from "../../../../../ui/src/utils/abbreviate-number";
+import { abbreviate_number } from "~/utils/abbreviate-number";
 
 import { doc_status_atom, story_metadata_atom } from "../../../atoms";
 import { $is_tk_node } from "../../../nodes/tk";
@@ -122,7 +122,9 @@ const Publish = ({
       <Button
         check_auth
         disabled={disabled || doc_status === "publishing"}
-        onClick={(): void => {
+        onClick={(event): void => {
+          event.preventDefault(); // Prevent opening the modal
+
           new Promise<number>((resolve) => {
             editor.getEditorState().read(() => {
               resolve(

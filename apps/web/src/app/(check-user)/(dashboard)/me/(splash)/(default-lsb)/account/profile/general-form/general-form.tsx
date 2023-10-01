@@ -4,19 +4,19 @@ import { USER_PROPS } from "@storiny/shared";
 import { clsx } from "clsx";
 import React from "react";
 
-import Button from "../../../../../../../../../../../../packages/ui/src/components/button";
+import Button from "~/components/button";
 import Form, {
   SubmitHandler,
   use_form,
   use_form_context,
   zod_resolver
-} from "../../../../../../../../../../../../packages/ui/src/components/form";
-import FormInput from "../../../../../../../../../../../../packages/ui/src/components/form-input";
-import FormTextarea from "../../../../../../../../../../../../packages/ui/src/components/form-textarea";
-import Grow from "../../../../../../../../../../../../packages/ui/src/components/grow";
-import Link from "../../../../../../../../../../../../packages/ui/src/components/link";
-import Spacer from "../../../../../../../../../../../../packages/ui/src/components/spacer";
-import { use_toast } from "../../../../../../../../../../../../packages/ui/src/components/toast";
+} from "~/components/form";
+import FormInput from "~/components/form-input";
+import FormTextarea from "~/components/form-textarea";
+import Grow from "~/components/grow";
+import Link from "~/components/link";
+import Spacer from "~/components/spacer";
+import { use_toast } from "~/components/toast";
 import {
   mutate_user,
   select_user,
@@ -27,8 +27,8 @@ import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 import styles from "./general-form.module.scss";
 import { GeneralFormProps } from "./general-form.props";
 import {
-  AccountGeneralSchema,
-  ACCOUNT_GENERAL_SCHEMA
+  ACCOUNT_GENERAL_SCHEMA,
+  AccountGeneralSchema
 } from "./general-form.schema";
 
 // Save button
@@ -142,8 +142,8 @@ const AccountGeneralForm = ({
         data-testid={"bio-textarea"}
         helper_text={
           <React.Fragment>
-            You can format your bio using selected markdown features such as **
-            <b>bold</b>** and *<em>italics</em>*, and you can also mention
+            You can format your bio using select markdown features such as **
+            <b>bold</b>** and *<em>italics</em>*, and you can also mention{" "}
             <span className={"t-medium"}>@someone</span>.{" "}
             <Link href={"/guides/formatting-bio"} underline={"always"}>
               Learn more about formatting your bio

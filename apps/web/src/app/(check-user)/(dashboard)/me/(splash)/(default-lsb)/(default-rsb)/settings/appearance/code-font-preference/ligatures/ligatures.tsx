@@ -1,13 +1,13 @@
 import { clsx } from "clsx";
 import React from "react";
 
-import AspectRatio from "../../../../../../../../../../../../../../packages/ui/src/components/aspect-ratio";
-import Divider from "../../../../../../../../../../../../../../packages/ui/src/components/divider";
-import Radio from "../../../../../../../../../../../../../../packages/ui/src/components/radio";
-import RadioGroup from "../../../../../../../../../../../../../../packages/ui/src/components/radio-group";
-import Spacer from "../../../../../../../../../../../../../../packages/ui/src/components/spacer";
-import Typography from "../../../../../../../../../../../../../../packages/ui/src/components/typography";
-import { use_media_query } from "../../../../../../../../../../../../../../packages/ui/src/hooks/use-media-query";
+import AspectRatio from "~/components/aspect-ratio";
+import Divider from "~/components/divider";
+import Radio from "~/components/radio";
+import RadioGroup from "~/components/radio-group";
+import Spacer from "~/components/spacer";
+import Typography from "~/components/typography";
+import { use_media_query } from "~/hooks/use-media-query";
 import { toggle_code_ligatures } from "~/redux/features";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 import { BREAKPOINTS } from "~/theme/breakpoints";

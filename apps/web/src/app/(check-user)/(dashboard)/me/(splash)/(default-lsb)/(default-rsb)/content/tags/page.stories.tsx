@@ -12,7 +12,7 @@ import DefaultDashboardRightSidebarLayout from "../../layout";
 import ContentResponsesPage from "./client";
 
 const meta: Meta<typeof ContentResponsesPage> = {
-  title: "dashboard/Content/tags",
+  title: "dashboard/content/tags",
   component: ContentResponsesPage,
   args: { followed_tag_count: 5 },
   parameters: {

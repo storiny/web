@@ -163,20 +163,20 @@ const LoggedOutMenu = ({
 
 const Actions = (): React.ReactElement => {
   const logged_in = use_app_selector(select_is_logged_in);
-  const authStatus = use_app_selector(select_auth_status);
+  const auth_status = use_app_selector(select_auth_status);
   const user = use_app_selector(select_user);
 
   return (
     <div className={clsx("flex-center", styles.actions)}>
       {logged_in ? (
-        ["loading", "error"].includes(authStatus) ? (
+        ["loading", "error"].includes(auth_status) ? (
           <LoggedOutMenu
             trigger={
               <div
                 aria-busy
                 className={clsx("unset", "flex-center", styles.trigger)}
               >
-                {authStatus === "loading" ? (
+                {auth_status === "loading" ? (
                   <Skeleton height={32} shape={"circular"} width={32} />
                 ) : (
                   <Avatar className={styles["error-avatar"]}>

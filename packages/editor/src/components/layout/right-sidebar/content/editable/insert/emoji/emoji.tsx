@@ -1,7 +1,7 @@
 import React from "react";
 
-import EmojiPicker from "../../../../../../../../../ui/src/entities/emoji-picker";
-import MoodSmileIcon from "../../../../../../../../../ui/src/icons/mood-smile";
+import EmojiPicker from "~/entities/emoji-picker";
+import MoodSmileIcon from "~/icons/mood-smile";
 
 import { use_insert_text_entity } from "../../../../../../../hooks/use-insert-text-entity";
 import InsertItem from "../insert-item";

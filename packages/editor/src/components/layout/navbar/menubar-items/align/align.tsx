@@ -1,17 +1,17 @@
 import { get_shortcut_label } from "@storiny/shared/src/utils/get-shortcut-label";
 import React from "react";
 
-import MenubarItem from "../../../../../../../ui/src/components/menubar-item";
-import MenubarRadioGroup from "../../../../../../../ui/src/components/menubar-radio-group";
-import MenubarRadioItem from "../../../../../../../ui/src/components/menubar-radio-item";
-import MenubarSub from "../../../../../../../ui/src/components/menubar-sub";
-import Separator from "../../../../../../../ui/src/components/separator";
-import AlignCenterIcon from "../../../../../../../ui/src/icons/align-center";
-import AlignJustifyIcon from "../../../../../../../ui/src/icons/align-justify";
-import AlignLeftIcon from "../../../../../../../ui/src/icons/align-left";
-import AlignRightIcon from "../../../../../../../ui/src/icons/align-right";
-import IndentIcon from "../../../../../../../ui/src/icons/indent";
-import OutdentIcon from "../../../../../../../ui/src/icons/outdent";
+import MenubarItem from "~/components/menubar-item";
+import MenubarRadioGroup from "~/components/menubar-radio-group";
+import MenubarRadioItem from "~/components/menubar-radio-item";
+import MenubarSub from "~/components/menubar-sub";
+import Separator from "~/components/separator";
+import AlignCenterIcon from "~/icons/align-center";
+import AlignJustifyIcon from "~/icons/align-justify";
+import AlignLeftIcon from "~/icons/align-left";
+import AlignRightIcon from "~/icons/align-right";
+import IndentIcon from "~/icons/indent";
+import OutdentIcon from "~/icons/outdent";
 
 import { Alignment } from "../../../../../constants";
 import { EDITOR_SHORTCUTS } from "../../../../../constants/shortcuts";

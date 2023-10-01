@@ -2,7 +2,7 @@ import dynamic from "next/dynamic";
 import React from "react";
 
 import { dynamic_loader } from "~/common/dynamic";
-import LeftSidebar from "../../../../../../../packages/ui/src/layout/left-sidebar";
+import LeftSidebar from "~/layout/left-sidebar";
 
 const SuspendedLegalLeftSidebarContent = dynamic(() => import("./content"), {
   loading: dynamic_loader()

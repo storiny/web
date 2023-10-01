@@ -1,10 +1,10 @@
 import { expect, Page } from "@playwright/test";
 
 type EditorSelection = {
-  anchorOffset: number | number[];
-  anchorPath: number[];
-  focusOffset: number | number[];
-  focusPath: number[];
+  anchor_offset: number | number[];
+  anchor_path: number[];
+  focus_offset: number | number[];
+  focus_path: number[];
 };
 
 /**
@@ -12,7 +12,7 @@ type EditorSelection = {
  * @param page Page
  * @param expected Expected selection
  */
-export const assertSelection = async (
+export const assert_selection = async (
   page: Page,
   expected: EditorSelection
 ): Promise<void> => {
@@ -23,10 +23,10 @@ export const assertSelection = async (
   }
 
   const selection = await frame.evaluate(() => {
-    const rootElement = document.querySelector('div[contenteditable="true"]');
+    const root_element = document.querySelector('div[contenteditable="true"]');
 
-    const getPathFromNode = (node: Node | null): number[] => {
-      if (node === rootElement) {
+    const get_path_from_node = (node: Node | null): number[] => {
+      if (node === root_element) {
         return [];
       }
 
@@ -35,7 +35,7 @@ export const assertSelection = async (
       while (node !== null) {
         const parent = node.parentNode;
 
-        if (parent === null || node === rootElement) {
+        if (parent === null || node === root_element) {
           break;
         }
 
@@ -50,35 +50,39 @@ export const assertSelection = async (
       return path.reverse();
     };
 
-    const { anchorNode, anchorOffset, focusNode, focusOffset } =
-      window.getSelection()!;
+    const {
+      anchorNode: anchor_node,
+      anchor_offset: anchor_offset,
+      focusNode: focus_node,
+      focusOffset: focus_offset
+    } = window.getSelection()!;
 
     return {
-      anchorOffset,
-      anchorPath: getPathFromNode(anchorNode),
-      focusOffset,
-      focusPath: getPathFromNode(focusNode)
+      anchor_offset,
+      anchor_path: get_path_from_node(anchor_node),
+      focus_offset,
+      focus_path: get_path_from_node(focus_node)
     };
   }, expected);
 
-  expect(selection.anchorPath).toEqual(expected.anchorPath);
-  expect(selection.focusPath).toEqual(expected.focusPath);
+  expect(selection.anchor_path).toEqual(expected.anchor_path);
+  expect(selection.focus_path).toEqual(expected.focus_path);
 
-  if (Array.isArray(expected.anchorOffset)) {
-    const [start, end] = expected.anchorOffset;
+  if (Array.isArray(expected.anchor_offset)) {
+    const [start, end] = expected.anchor_offset;
 
-    expect(selection.anchorOffset).toBeGreaterThanOrEqual(start);
-    expect(selection.anchorOffset).toBeLessThanOrEqual(end);
+    expect(selection.anchor_offset).toBeGreaterThanOrEqual(start);
+    expect(selection.anchor_offset).toBeLessThanOrEqual(end);
   } else {
-    expect(selection.anchorOffset).toEqual(expected.anchorOffset);
+    expect(selection.anchor_offset).toEqual(expected.anchor_offset);
   }
 
-  if (Array.isArray(expected.focusOffset)) {
-    const [start, end] = expected.focusOffset;
+  if (Array.isArray(expected.focus_offset)) {
+    const [start, end] = expected.focus_offset;
 
-    expect(selection.focusOffset).toBeGreaterThanOrEqual(start);
-    expect(selection.focusOffset).toBeLessThanOrEqual(end);
+    expect(selection.focus_offset).toBeGreaterThanOrEqual(start);
+    expect(selection.focus_offset).toBeLessThanOrEqual(end);
   } else {
-    expect(selection.focusOffset).toEqual(expected.focusOffset);
+    expect(selection.focus_offset).toEqual(expected.focus_offset);
   }
 };

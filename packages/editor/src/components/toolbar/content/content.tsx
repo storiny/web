@@ -1,16 +1,16 @@
 "use client";
 
 import { clsx } from "clsx";
-import { useSetAtom } from "jotai";
+import { useSetAtom as use_set_atom } from "jotai";
 import React from "react";
 
-import Divider from "../../../../../ui/src/components/divider";
-import Grow from "../../../../../ui/src/components/grow";
-import IconButton from "../../../../../ui/src/components/icon-button";
-import ScrollArea from "../../../../../ui/src/components/scroll-area";
-import Tooltip from "../../../../../ui/src/components/tooltip";
-import { use_media_query } from "../../../../../ui/src/hooks/use-media-query";
-import SidebarExpandIcon from "../../../../../ui/src/icons/sidebar-expand";
+import Divider from "~/components/divider";
+import Grow from "~/components/grow";
+import IconButton from "~/components/icon-button";
+import ScrollArea from "~/components/scroll-area";
+import Tooltip from "~/components/tooltip";
+import { use_media_query } from "~/hooks/use-media-query";
+import SidebarExpandIcon from "~/icons/sidebar-expand";
 import { BREAKPOINTS } from "~/theme/breakpoints";
 
 import { sidebars_collapsed_atom } from "../../../atoms";
@@ -24,7 +24,7 @@ import ToolbarTextStyleItem from "./text-style";
 const SuspendedEditorToolbarContent = (): React.ReactElement => {
   const is_smaller_than_mobile = use_media_query(BREAKPOINTS.down("mobile"));
   const is_smaller_than_desktop = use_media_query(BREAKPOINTS.down("desktop"));
-  const setSidebarsCollapsed = use_set_atom(sidebars_collapsed_atom);
+  const set_sidebars_collapsed = use_set_atom(sidebars_collapsed_atom);
 
   return (
     <ScrollArea
@@ -50,7 +50,7 @@ const SuspendedEditorToolbarContent = (): React.ReactElement => {
                 toolbar_styles.x,
                 toolbar_styles.button
               )}
-              onClick={(): void => setSidebarsCollapsed(false)}
+              onClick={(): void => set_sidebars_collapsed(false)}
               size={"lg"}
               variant={"ghost"}
             >

@@ -2,7 +2,7 @@ import { clsx } from "clsx";
 import React from "react";
 
 import { SuspenseLoaderProps } from "~/common/suspense-loader/suspense-loader.props";
-import Spinner from "../../../../../packages/ui/src/components/spinner";
+import Spinner from "~/components/spinner";
 
 import styles from "./suspense-loader.module.scss";
 

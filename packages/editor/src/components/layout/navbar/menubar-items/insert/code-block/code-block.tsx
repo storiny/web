@@ -1,7 +1,7 @@
 import React from "react";
 
-import MenubarItem from "../../../../../../../../ui/src/components/menubar-item";
-import CodeBlockIcon from "../../../../../../../../ui/src/icons/code-block";
+import MenubarItem from "~/components/menubar-item";
+import CodeBlockIcon from "~/icons/code-block";
 
 const CodeBlockMenubarItem = ({
   disabled

@@ -1,7 +1,7 @@
 import React from "react";
 
-import PageTitle from "../../../../../../../../../../packages/ui/src/entities/page-title";
-import { use_media_query } from "../../../../../../../../../../packages/ui/src/hooks/use-media-query";
+import PageTitle from "~/entities/page-title";
+import { use_media_query } from "~/hooks/use-media-query";
 import { BREAKPOINTS } from "~/theme/breakpoints";
 
 import { DashboardTitleProps } from "./dashboard-title.props";

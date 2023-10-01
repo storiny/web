@@ -2,26 +2,22 @@ import clsx from "clsx";
 import { Provider, useAtom as use_atom } from "jotai";
 import React from "react";
 
-import Form, {
-  SubmitHandler,
-  use_form,
-  zod_resolver
-} from "../../../../ui/src/components/form";
-import IconButton from "../../../../ui/src/components/icon-button";
-import Modal from "../../../../ui/src/components/modal";
-import ModalFooterButton from "../../../../ui/src/components/modal/footer-button";
-import ModalSidebarItem from "../../../../ui/src/components/modal/sidebar-item";
-import ModalSidebarList from "../../../../ui/src/components/modal/sidebar-list";
-import ScrollArea from "../../../../ui/src/components/scroll-area";
-import TabPanel from "../../../../ui/src/components/tab-panel";
-import { use_toast } from "../../../../ui/src/components/toast";
-import { use_media_query } from "../../../../ui/src/hooks/use-media-query";
-import ChevronIcon from "../../../../ui/src/icons/chevron";
+import Form, { SubmitHandler, use_form, zod_resolver } from "~/components/form";
+import IconButton from "~/components/icon-button";
+import Modal from "~/components/modal";
+import ModalFooterButton from "~/components/modal/footer-button";
+import ModalSidebarItem from "~/components/modal/sidebar-item";
+import ModalSidebarList from "~/components/modal/sidebar-list";
+import ScrollArea from "~/components/scroll-area";
+import TabPanel from "~/components/tab-panel";
+import { use_toast } from "~/components/toast";
+import { use_media_query } from "~/hooks/use-media-query";
+import ChevronIcon from "~/icons/chevron";
 import FileIcon from "~/icons/file";
 import LicenseIcon from "~/icons/license";
 import SeoIcon from "~/icons/seo";
-import SettingsIcon from "../../../../ui/src/icons/settings";
-import StoryIcon from "../../../../ui/src/icons/story";
+import SettingsIcon from "~/icons/settings";
+import StoryIcon from "~/icons/story";
 import { use_story_metadata_mutation } from "~/redux/features";
 import { BREAKPOINTS } from "~/theme/breakpoints";
 
@@ -38,7 +34,7 @@ import SettingsTab from "./core/components/settings";
 import { use_reset_story_metadata_modal_atoms } from "./core/hooks/use-reset-story-metadata-modal-atoms";
 import styles from "./metadata-modal.module.scss";
 import { StoryMetadataModalProps } from "./metadata-modal.props";
-import { StoryMetadataSchema, STORY_METADATA_SCHEMA } from "./schema";
+import { STORY_METADATA_SCHEMA, StoryMetadataSchema } from "./schema";
 
 const StoryMetadataModalImpl = (
   props: StoryMetadataModalProps
@@ -150,10 +146,8 @@ const StoryMetadataModalImpl = (
         tabs: {
           value,
           // eslint-disable-next-line prefer-snakecase/prefer-snakecase
-          onValueChange: (
-            next_value: StoryMetadataModalSidebarTabsValue
-          ): void => {
-            set_value(next_value);
+          onValueChange: (next_value): void => {
+            set_value(next_value as StoryMetadataModalSidebarTabsValue);
           }
         },
         sidebar: {

@@ -2,41 +2,41 @@ import { test } from "@playwright/test";
 
 import { EDITOR_CLASSNAMES } from "../../constants";
 import {
-  extendToNextWord,
-  moveLeft,
-  moveToEditorBeginning,
-  moveToEditorEnd,
-  moveToLineBeginning,
-  moveToNextWord,
-  pressBackspace,
-  selectAll,
-  toggleLink
+  extend_to_next_word,
+  move_left,
+  move_to_editor_beginning,
+  move_to_editor_end,
+  move_to_line_beginning,
+  move_to_next_word,
+  press_backspace,
+  select_all,
+  toggle_link
 } from "../../keyboard-shortcuts";
 import {
-  assertHTML,
-  assertSelection,
+  assert_html,
+  assert_selection,
   click,
   copy_to_clipboard,
-  focusEditor,
+  focus_editor,
   html,
   initialize,
-  pasteFromClipboard,
+  paste_from_clipboard,
   sleep
 } from "../../utils";
 
 test.describe("html link copy and paste", () => {
   test.beforeEach(async ({ page }) => {
     await initialize(page);
-    await focusEditor(page);
+    await focus_editor(page);
   });
 
   test("can copy and paste an anchor element", async ({ page }) => {
     const clipboard = {
       "text/html": '<a href="https://storiny.com">storiny</a>'
     };
-    await pasteFromClipboard(page, clipboard);
+    await paste_from_clipboard(page, clipboard);
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <p class="${EDITOR_CLASSNAMES.paragraph}">
@@ -51,17 +51,17 @@ test.describe("html link copy and paste", () => {
       `
     );
 
-    await assertSelection(page, {
-      anchorOffset: 7,
-      anchorPath: [0, 0, 0, 0],
-      focusOffset: 7,
-      focusPath: [0, 0, 0, 0]
+    await assert_selection(page, {
+      anchor_offset: 7,
+      anchor_path: [0, 0, 0, 0],
+      focus_offset: 7,
+      focus_path: [0, 0, 0, 0]
     });
 
-    await selectAll(page);
-    await toggleLink(page);
+    await select_all(page);
+    await toggle_link(page);
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <p class="${EDITOR_CLASSNAMES.paragraph}">
@@ -70,13 +70,13 @@ test.describe("html link copy and paste", () => {
       `
     );
 
-    await toggleLink(page);
+    await toggle_link(page);
     await click(page, `button[title="Edit link"]`);
-    await pressBackspace(page); // Remove `/` from the input
+    await press_backspace(page); // Remove `/` from the input
     await page.keyboard.type("https://storiny.com");
     await page.keyboard.press("Enter");
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <p class="${EDITOR_CLASSNAMES.paragraph}">
@@ -94,21 +94,21 @@ test.describe("html link copy and paste", () => {
   });
 
   test("can copy and paste in front of or after a link", async ({ page }) => {
-    await pasteFromClipboard(page, {
+    await paste_from_clipboard(page, {
       "text/html": `text <a href="https://storiny.com">link</a> text`
     });
-    await moveToEditorBeginning(page);
-    await pasteFromClipboard(page, {
+    await move_to_editor_beginning(page);
+    await paste_from_clipboard(page, {
       "text/html": "before"
     });
-    await moveToEditorEnd(page);
-    await pasteFromClipboard(page, {
+    await move_to_editor_end(page);
+    await paste_from_clipboard(page, {
       "text/html": "after"
     });
 
     await sleep(500);
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
@@ -132,19 +132,19 @@ test.describe("html link copy and paste", () => {
   }) => {
     test.skip(browserName === "firefox");
 
-    await pasteFromClipboard(page, {
+    await paste_from_clipboard(page, {
       "text/html": `text <a href="https://storiny.com">link</a> text`
     });
-    await moveLeft(page, 5);
+    await move_left(page, 5);
     await page.keyboard.down("Shift");
-    await moveLeft(page, 2);
+    await move_left(page, 2);
     await page.keyboard.up("Shift");
 
     const clipboard = await copy_to_clipboard(page);
-    await moveToEditorEnd(page);
-    await pasteFromClipboard(page, clipboard);
+    await move_to_editor_end(page);
+    await paste_from_clipboard(page, clipboard);
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
@@ -172,16 +172,16 @@ test.describe("html link copy and paste", () => {
   test("can paste a link into text", async ({ page }) => {
     await page.keyboard.type("hello world");
     await page.pause();
-    await moveToLineBeginning(page);
-    await moveToNextWord(page);
-    await extendToNextWord(page);
+    await move_to_line_beginning(page);
+    await move_to_next_word(page);
+    await extend_to_next_word(page);
 
     const clipboard = {
       text: `https://storiny.com`
     };
-    await pasteFromClipboard(page, clipboard);
+    await paste_from_clipboard(page, clipboard);
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">

@@ -1,6 +1,6 @@
 import {
   addClassNamesToElement as add_class_names_to_element,
-  is_html_element as is_html_element
+  isHTMLElement as is_html_element
 } from "@lexical/utils";
 import {
   $applyNodeReplacement as $apply_node_replacement,

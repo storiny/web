@@ -1,5 +1,6 @@
-import { User } from "../user";
 import { NotificationType } from "@storiny/shared";
+
+import { User } from "../user";
 
 export interface Notification {
   actor: User | null;

@@ -1,9 +1,9 @@
 import NextLink from "next/link";
 import React from "react";
 
-import Button from "../../../../../../../../../../../../../packages/ui/src/components/button";
-import { use_confirmation } from "../../../../../../../../../../../../../packages/ui/src/components/confirmation";
-import { use_toast } from "../../../../../../../../../../../../../packages/ui/src/components/toast";
+import Button from "~/components/button";
+import { use_confirmation } from "~/components/confirmation";
+import { use_toast } from "~/components/toast";
 import { use_remove_connection_mutation } from "~/redux/features";
 
 import {

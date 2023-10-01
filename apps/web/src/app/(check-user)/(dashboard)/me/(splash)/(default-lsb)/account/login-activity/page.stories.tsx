@@ -12,7 +12,7 @@ import DefaultDashboardLeftSidebarLayout from "../../layout";
 import AccountLoginActivityPage from "./client";
 
 const meta: Meta<typeof AccountLoginActivityPage> = {
-  title: "dashboard/Account/login-activity",
+  title: "dashboard/account/login-activity",
   component: AccountLoginActivityPage,
   args: {
     recent: {

@@ -1,7 +1,7 @@
 import { AccountActivity } from "@storiny/types";
 import { VirtuosoProps } from "react-virtuoso";
 
-import { AccountActivityProps } from "../../../../../../packages/ui/src/entities/account-activity";
+import { AccountActivityProps } from "~/entities/account-activity";
 
 export interface VirtualizedAccountActivityListProps
   extends VirtuosoProps<AccountActivity, any> {

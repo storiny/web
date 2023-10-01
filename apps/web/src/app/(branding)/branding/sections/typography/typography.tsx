@@ -5,12 +5,12 @@
 import { clsx } from "clsx";
 import React from "react";
 
-import Divider from "../../../../../../../../packages/ui/src/components/divider";
-import Link from "../../../../../../../../packages/ui/src/components/link";
-import NoSsr from "../../../../../../../../packages/ui/src/components/no-ssr";
-import Spacer from "../../../../../../../../packages/ui/src/components/spacer";
-import Typography from "../../../../../../../../packages/ui/src/components/typography";
-import { use_media_query } from "../../../../../../../../packages/ui/src/hooks/use-media-query";
+import Divider from "~/components/divider";
+import Link from "~/components/link";
+import NoSsr from "~/components/no-ssr";
+import Spacer from "~/components/spacer";
+import Typography from "~/components/typography";
+import { use_media_query } from "~/hooks/use-media-query";
 import { BREAKPOINTS } from "~/theme/breakpoints";
 
 import page_styles from "../../styles.module.scss";

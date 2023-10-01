@@ -1,4 +1,4 @@
-import { SubmitHandler } from "../../../../../../../../../../../../packages/ui/src/components/form";
+import { SubmitHandler } from "~/components/form";
 
 import { AccountGeneralSchema } from "./general-form.schema";
 

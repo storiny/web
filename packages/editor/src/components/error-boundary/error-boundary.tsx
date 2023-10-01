@@ -2,7 +2,7 @@ import { clsx } from "clsx";
 import React from "react";
 import { ErrorBoundary as ReactErrorBoundary } from "react-error-boundary";
 
-import Typography from "../../../../ui/src/components/typography";
+import Typography from "~/components/typography";
 
 import styles from "./error-boundary.module.scss";
 import { EditorErrorBoundaryProps } from "./error-boundary.props";

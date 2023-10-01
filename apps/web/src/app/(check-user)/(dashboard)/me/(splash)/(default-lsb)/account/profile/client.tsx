@@ -1,14 +1,13 @@
 "use client";
 
-import { clsx } from "clsx";
 import React from "react";
 
-import Divider from "../../../../../../../../../../../packages/ui/src/components/divider";
-import Link from "../../../../../../../../../../../packages/ui/src/components/link";
-import Spacer from "../../../../../../../../../../../packages/ui/src/components/spacer";
-import Typography from "../../../../../../../../../../../packages/ui/src/components/typography";
-import TitleBlock from "../../../../../../../../../../../packages/ui/src/entities/title-block";
-import { use_media_query } from "../../../../../../../../../../../packages/ui/src/hooks/use-media-query";
+import Divider from "~/components/divider";
+import Link from "~/components/link";
+import Spacer from "~/components/spacer";
+import Typography from "~/components/typography";
+import TitleBlock from "~/entities/title-block";
+import { use_media_query } from "~/hooks/use-media-query";
 import { BREAKPOINTS } from "~/theme/breakpoints";
 
 import DashboardGroup from "../../dashboard-group";
@@ -25,7 +24,7 @@ const ProfileSettingsClient = (): React.ReactElement => {
   const is_smaller_than_desktop = use_media_query(BREAKPOINTS.down("desktop"));
   return (
     <React.Fragment>
-      <main>
+      <main data-root={"true"}>
         <DashboardTitle>Public profile</DashboardTitle>
         <BannerSettings />
         <DashboardWrapper>
@@ -64,9 +63,11 @@ const ProfileSettingsClient = (): React.ReactElement => {
           <Divider />
           <DashboardGroup>
             <TitleBlock title={"Connections"}>
-              You can add a link to your external social media account on the
-              <Link href={"/me/account/connections"}>connections page</Link>,
-              and it will be displayed on your public profile.
+              You can add a link to your external social media account on the{" "}
+              <Link href={"/me/account/connections"} underline={"always"}>
+                connections page
+              </Link>
+              , and it will be displayed on your public profile.
             </TitleBlock>
           </DashboardGroup>
         </DashboardWrapper>

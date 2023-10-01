@@ -15,7 +15,7 @@ export interface UserState {
   user_id: string;
 }
 
-export type CollabLocalState = Omit<UserState, "anchorPos" | "focusPos"> & {
+export type CollabLocalState = Omit<UserState, "anchor_pos" | "focus_pos"> & {
   provider: Provider;
 };
 

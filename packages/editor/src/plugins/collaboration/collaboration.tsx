@@ -88,7 +88,7 @@ const CollaborationPlugin = ({
     };
   }, [collab_context, editor]);
 
-  collab_context.clientID = binding.clientID;
+  collab_context.client_id = binding.client_id;
 
   return cursors;
 };

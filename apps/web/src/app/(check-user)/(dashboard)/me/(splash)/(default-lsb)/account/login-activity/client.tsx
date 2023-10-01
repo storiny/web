@@ -3,18 +3,18 @@
 import { clsx } from "clsx";
 import React from "react";
 
-import Accordion from "../../../../../../../../../../../packages/ui/src/components/accordion";
-import Button from "../../../../../../../../../../../packages/ui/src/components/button";
-import { use_confirmation } from "../../../../../../../../../../../packages/ui/src/components/confirmation";
-import Divider from "../../../../../../../../../../../packages/ui/src/components/divider";
-import Spacer from "../../../../../../../../../../../packages/ui/src/components/spacer";
-import { use_toast } from "../../../../../../../../../../../packages/ui/src/components/toast";
-import Typography from "../../../../../../../../../../../packages/ui/src/components/typography";
-import CustomState from "../../../../../../../../../../../packages/ui/src/entities/custom-state";
-import TitleBlock from "../../../../../../../../../../../packages/ui/src/entities/title-block";
-import { use_media_query } from "../../../../../../../../../../../packages/ui/src/hooks/use-media-query";
-import DevicesIcon from "../../../../../../../../../../../packages/ui/src/icons/devices";
-import LogoutIcon from "../../../../../../../../../../../packages/ui/src/icons/logout";
+import Accordion from "~/components/accordion";
+import Button from "~/components/button";
+import { use_confirmation } from "~/components/confirmation";
+import Divider from "~/components/divider";
+import Spacer from "~/components/spacer";
+import { use_toast } from "~/components/toast";
+import Typography from "~/components/typography";
+import CustomState from "~/entities/custom-state";
+import TitleBlock from "~/entities/title-block";
+import { use_media_query } from "~/hooks/use-media-query";
+import DevicesIcon from "~/icons/devices";
+import LogoutIcon from "~/icons/logout";
 import { use_destroy_sessions_mutation } from "~/redux/features";
 import { BREAKPOINTS } from "~/theme/breakpoints";
 
@@ -136,7 +136,7 @@ const LoginActivityClient = (props: LoginActivityProps): React.ReactElement => {
 
   return (
     <React.Fragment>
-      <main>
+      <main data-root={"true"}>
         <DashboardTitle>Login activity</DashboardTitle>
         <DashboardWrapper>
           {is_smaller_than_desktop && <RecentLoginGroup login={recent} />}

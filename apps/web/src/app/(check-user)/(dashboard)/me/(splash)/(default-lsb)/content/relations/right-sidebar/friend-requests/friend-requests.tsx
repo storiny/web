@@ -10,26 +10,18 @@ import React from "react";
 import { dynamic_loader } from "~/common/dynamic";
 import { VirtualizedFriendRequestList } from "~/common/friend-request";
 import SuspenseLoader from "~/common/suspense-loader";
-import Button from "../../../../../../../../../../../../../packages/ui/src/components/button";
-import Divider from "../../../../../../../../../../../../../packages/ui/src/components/divider";
-import Input from "../../../../../../../../../../../../../packages/ui/src/components/input";
-import {
-  ModalFooterButton,
-  use_modal
-} from "../../../../../../../../../../../../../packages/ui/src/components/modal";
-import Option from "../../../../../../../../../../../../../packages/ui/src/components/option";
-import {
-  Root,
-  Scrollbar,
-  Thumb,
-  Viewport
-} from "../../../../../../../../../../../../../packages/ui/src/components/scroll-area";
-import Select from "../../../../../../../../../../../../../packages/ui/src/components/select";
-import ErrorState from "../../../../../../../../../../../../../packages/ui/src/entities/error-state";
-import { use_debounce } from "../../../../../../../../../../../../../packages/ui/src/hooks/use-debounce";
-import { use_media_query } from "../../../../../../../../../../../../../packages/ui/src/hooks/use-media-query";
-import SearchIcon from "../../../../../../../../../../../../../packages/ui/src/icons/search";
-import UserHeartIcon from "../../../../../../../../../../../../../packages/ui/src/icons/user-heart";
+import Button from "~/components/button";
+import Divider from "~/components/divider";
+import Input from "~/components/input";
+import { ModalFooterButton, use_modal } from "~/components/modal";
+import Option from "~/components/option";
+import { Root, Scrollbar, Thumb, Viewport } from "~/components/scroll-area";
+import Select from "~/components/select";
+import ErrorState from "~/entities/error-state";
+import { use_debounce } from "~/hooks/use-debounce";
+import { use_media_query } from "~/hooks/use-media-query";
+import SearchIcon from "~/icons/search";
+import UserHeartIcon from "~/icons/user-heart";
 import {
   get_query_error_type,
   use_get_friend_requests_query

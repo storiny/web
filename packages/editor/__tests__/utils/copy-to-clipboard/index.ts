@@ -8,18 +8,19 @@ export const copy_to_clipboard = async (
   page: Page
 ): Promise<Record<string, string>> =>
   await page.frame("left")!.evaluate(() => {
-    const clipboardData: Record<string, string> = {};
+    const clipboard_data: Record<string, string> = {};
     const editor = document.querySelector('div[contenteditable="true"]');
-    const copyEvent = new ClipboardEvent("copy");
+    const copy_event = new ClipboardEvent("copy");
 
-    Object.defineProperty(copyEvent, "clipboardData", {
+    Object.defineProperty(copy_event, "clipboardData", {
       value: {
+        // eslint-disable-next-line prefer-snakecase/prefer-snakecase
         setData: (type: string, value: string) => {
-          clipboardData[type] = value;
+          clipboard_data[type] = value;
         }
       }
     });
 
-    editor?.dispatchEvent(copyEvent);
-    return clipboardData;
+    editor?.dispatchEvent(copy_event);
+    return clipboard_data;
   });

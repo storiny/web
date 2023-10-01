@@ -2,27 +2,27 @@ import { test } from "@playwright/test";
 
 import { EDITOR_CLASSNAMES } from "../../constants";
 import {
-  moveLeft,
-  moveToLineBeginning,
-  pressBackspace,
-  selectAll
+  move_left,
+  move_to_line_beginning,
+  press_backspace,
+  select_all
 } from "../../keyboard-shortcuts";
 import {
-  assertHTML,
-  assertSelection,
+  assert_html,
+  assert_selection,
   copy_to_clipboard,
-  focusEditor,
+  focus_editor,
   html,
   initialize,
   insert_horizontal_rule,
-  pasteFromClipboard,
-  waitForSelector
+  paste_from_clipboard,
+  wait_for_selector
 } from "../../utils";
 
 test.describe("horizontal rule", () => {
   test.beforeEach(async ({ page }) => {
     await initialize(page);
-    await focusEditor(page);
+    await focus_editor(page);
   });
 
   test("can create a horizontal rule and move selection around it", async ({
@@ -30,9 +30,9 @@ test.describe("horizontal rule", () => {
     browserName
   }) => {
     await insert_horizontal_rule(page);
-    await waitForSelector(page, "hr");
+    await wait_for_selector(page, "hr");
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <p class="${EDITOR_CLASSNAMES.paragraph}"><br /></p>
@@ -41,40 +41,40 @@ test.describe("horizontal rule", () => {
       `
     );
 
-    await assertSelection(page, {
-      anchorOffset: 0,
-      anchorPath: [2],
-      focusOffset: 0,
-      focusPath: [2]
+    await assert_selection(page, {
+      anchor_offset: 0,
+      anchor_path: [2],
+      focus_offset: 0,
+      focus_path: [2]
     });
 
     await page.keyboard.press("ArrowUp");
 
-    await assertSelection(page, {
-      anchorOffset: 0,
-      anchorPath: [0],
-      focusOffset: 0,
-      focusPath: [0]
+    await assert_selection(page, {
+      anchor_offset: 0,
+      anchor_path: [0],
+      focus_offset: 0,
+      focus_path: [0]
     });
 
     await page.keyboard.press("ArrowRight");
     await page.keyboard.press("ArrowRight");
 
-    await assertSelection(page, {
-      anchorOffset: 0,
-      anchorPath: [2],
-      focusOffset: 0,
-      focusPath: [2]
+    await assert_selection(page, {
+      anchor_offset: 0,
+      anchor_path: [2],
+      focus_offset: 0,
+      focus_path: [2]
     });
 
     await page.keyboard.press("ArrowLeft");
     await page.keyboard.press("ArrowLeft");
 
-    await assertSelection(page, {
-      anchorOffset: 0,
-      anchorPath: [0],
-      focusOffset: 0,
-      focusPath: [0]
+    await assert_selection(page, {
+      anchor_offset: 0,
+      anchor_path: [0],
+      focus_offset: 0,
+      focus_path: [0]
     });
 
     await page.keyboard.type("Some text");
@@ -82,16 +82,16 @@ test.describe("horizontal rule", () => {
     await page.keyboard.press("ArrowRight");
     await page.keyboard.press("ArrowRight");
 
-    await assertSelection(page, {
-      anchorOffset: 0,
-      anchorPath: [2],
-      focusOffset: 0,
-      focusPath: [2]
+    await assert_selection(page, {
+      anchor_offset: 0,
+      anchor_path: [2],
+      focus_offset: 0,
+      focus_path: [2]
     });
 
     await page.keyboard.type("Some more text");
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
@@ -104,42 +104,42 @@ test.describe("horizontal rule", () => {
       `
     );
 
-    await moveToLineBeginning(page);
+    await move_to_line_beginning(page);
 
     await page.keyboard.press("ArrowLeft");
     await page.keyboard.press("ArrowLeft");
 
     if (browserName === "webkit") {
-      await assertSelection(page, {
-        anchorOffset: 9,
-        anchorPath: [0, 0, 0],
-        focusOffset: 9,
-        focusPath: [0, 0, 0]
+      await assert_selection(page, {
+        anchor_offset: 9,
+        anchor_path: [0, 0, 0],
+        focus_offset: 9,
+        focus_path: [0, 0, 0]
       });
     } else {
-      await assertSelection(page, {
-        anchorOffset: 1,
-        anchorPath: [0],
-        focusOffset: 1,
-        focusPath: [0]
+      await assert_selection(page, {
+        anchor_offset: 1,
+        anchor_path: [0],
+        focus_offset: 1,
+        focus_path: [0]
       });
     }
 
-    await pressBackspace(page, 10);
+    await press_backspace(page, 10);
 
     if (browserName === "webkit") {
-      await assertSelection(page, {
-        anchorOffset: 1,
-        anchorPath: [],
-        focusOffset: 1,
-        focusPath: []
+      await assert_selection(page, {
+        anchor_offset: 1,
+        anchor_path: [],
+        focus_offset: 1,
+        focus_path: []
       });
     } else {
-      await assertSelection(page, {
-        anchorOffset: 0,
-        anchorPath: [],
-        focusOffset: 0,
-        focusPath: []
+      await assert_selection(page, {
+        anchor_offset: 0,
+        anchor_path: [],
+        focus_offset: 0,
+        focus_path: []
       });
     }
   });
@@ -149,14 +149,14 @@ test.describe("horizontal rule", () => {
   }) => {
     await page.keyboard.type("Test");
 
-    await assertSelection(page, {
-      anchorOffset: 4,
-      anchorPath: [0, 0, 0],
-      focusOffset: 4,
-      focusPath: [0, 0, 0]
+    await assert_selection(page, {
+      anchor_offset: 4,
+      anchor_path: [0, 0, 0],
+      focus_offset: 4,
+      focus_path: [0, 0, 0]
     });
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
@@ -166,9 +166,9 @@ test.describe("horizontal rule", () => {
     );
 
     await insert_horizontal_rule(page);
-    await waitForSelector(page, "hr");
+    await wait_for_selector(page, "hr");
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
@@ -179,11 +179,11 @@ test.describe("horizontal rule", () => {
       `
     );
 
-    await assertSelection(page, {
-      anchorOffset: 0,
-      anchorPath: [2],
-      focusOffset: 0,
-      focusPath: [2]
+    await assert_selection(page, {
+      anchor_offset: 0,
+      anchor_path: [2],
+      focus_offset: 0,
+      focus_path: [2]
     });
   });
 
@@ -192,14 +192,14 @@ test.describe("horizontal rule", () => {
   }) => {
     await page.keyboard.type("Test");
 
-    await assertSelection(page, {
-      anchorOffset: 4,
-      anchorPath: [0, 0, 0],
-      focusOffset: 4,
-      focusPath: [0, 0, 0]
+    await assert_selection(page, {
+      anchor_offset: 4,
+      anchor_path: [0, 0, 0],
+      focus_offset: 4,
+      focus_path: [0, 0, 0]
     });
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
@@ -208,19 +208,19 @@ test.describe("horizontal rule", () => {
       `
     );
 
-    await moveLeft(page, 2);
+    await move_left(page, 2);
 
-    await assertSelection(page, {
-      anchorOffset: 2,
-      anchorPath: [0, 0, 0],
-      focusOffset: 2,
-      focusPath: [0, 0, 0]
+    await assert_selection(page, {
+      anchor_offset: 2,
+      anchor_path: [0, 0, 0],
+      focus_offset: 2,
+      focus_path: [0, 0, 0]
     });
 
     await insert_horizontal_rule(page);
-    await waitForSelector(page, "hr");
+    await wait_for_selector(page, "hr");
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <p class="${EDITOR_CLASSNAMES.paragraph}" dir="ltr">
@@ -233,19 +233,19 @@ test.describe("horizontal rule", () => {
       `
     );
 
-    await assertSelection(page, {
-      anchorOffset: 0,
-      anchorPath: [2, 0, 0],
-      focusOffset: 0,
-      focusPath: [2, 0, 0]
+    await assert_selection(page, {
+      anchor_offset: 0,
+      anchor_path: [2, 0, 0],
+      focus_offset: 0,
+      focus_path: [2, 0, 0]
     });
   });
 
   test("can copy and paste a horizontal rule", async ({ page }) => {
     await insert_horizontal_rule(page);
-    await waitForSelector(page, "hr");
+    await wait_for_selector(page, "hr");
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <p class="${EDITOR_CLASSNAMES.paragraph}"><br /></p>
@@ -254,22 +254,22 @@ test.describe("horizontal rule", () => {
       `
     );
 
-    await assertSelection(page, {
-      anchorOffset: 0,
-      anchorPath: [2],
-      focusOffset: 0,
-      focusPath: [2]
+    await assert_selection(page, {
+      anchor_offset: 0,
+      anchor_path: [2],
+      focus_offset: 0,
+      focus_path: [2]
     });
 
     // Select all the text, copy it and delete it
-    await selectAll(page);
+    await select_all(page);
     const clipboard = await copy_to_clipboard(page);
     await page.keyboard.press("Backspace");
 
     // Paste it again
-    await pasteFromClipboard(page, clipboard);
+    await paste_from_clipboard(page, clipboard);
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <p class="${EDITOR_CLASSNAMES.paragraph}"><br /></p>
@@ -278,19 +278,19 @@ test.describe("horizontal rule", () => {
       `
     );
 
-    await assertSelection(page, {
-      anchorOffset: 0,
-      anchorPath: [2],
-      focusOffset: 0,
-      focusPath: [2]
+    await assert_selection(page, {
+      anchor_offset: 0,
+      anchor_path: [2],
+      focus_offset: 0,
+      focus_path: [2]
     });
 
     await page.keyboard.press("ArrowUp");
     await page.keyboard.press("Backspace");
 
-    await pasteFromClipboard(page, clipboard);
+    await paste_from_clipboard(page, clipboard);
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <p class="${EDITOR_CLASSNAMES.paragraph}"><br /></p>
@@ -301,11 +301,11 @@ test.describe("horizontal rule", () => {
       `
     );
 
-    await assertSelection(page, {
-      anchorOffset: 0,
-      anchorPath: [2],
-      focusOffset: 0,
-      focusPath: [2]
+    await assert_selection(page, {
+      anchor_offset: 0,
+      anchor_path: [2],
+      focus_offset: 0,
+      focus_path: [2]
     });
   });
 });

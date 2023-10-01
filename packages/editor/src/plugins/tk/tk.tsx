@@ -139,7 +139,7 @@ const TKPlugin = (): null => {
                     const paragraph_node = tk_node.getParent();
 
                     if (paragraph_node) {
-                      if ($is_paragraph_node(paragraphNode)) {
+                      if ($is_paragraph_node(paragraph_node)) {
                         $add_tk_node_to_map(
                           editor,
                           paragraph_node.getKey(),

@@ -3,7 +3,7 @@
 import { useAtomValue as use_atom_value } from "jotai";
 import React from "react";
 
-import Divider from "../../../../../../../ui/src/components/divider";
+import Divider from "~/components/divider";
 
 import { doc_status_atom } from "../../../../../atoms";
 import Alignment from "./alignment";

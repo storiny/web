@@ -2,12 +2,12 @@ import { clsx } from "clsx";
 import Image from "next/image";
 import React from "react";
 
-import Button from "../../../../../../packages/ui/src/components/button";
-import Divider from "../../../../../../packages/ui/src/components/divider";
-import Link from "../../../../../../packages/ui/src/components/link";
-import Spacer from "../../../../../../packages/ui/src/components/spacer";
-import Typography from "../../../../../../packages/ui/src/components/typography";
-import FileDownloadIcon from "../../../../../../packages/ui/src/icons/file-download";
+import Button from "~/components/button";
+import Divider from "~/components/divider";
+import Link from "~/components/link";
+import Spacer from "~/components/spacer";
+import Typography from "~/components/typography";
+import FileDownloadIcon from "~/icons/file-download";
 
 import BrandInUseSection from "./sections/brand-in-use";
 import ColorsSection from "./sections/colors";

@@ -35,7 +35,7 @@
 
 // Dark mode filter
 @at-root html[data-theme="dark"] {
-  .x.map {
+  .map {
     filter: grayscale(85%) invert(100%) hue-rotate(220deg);
   }
 }

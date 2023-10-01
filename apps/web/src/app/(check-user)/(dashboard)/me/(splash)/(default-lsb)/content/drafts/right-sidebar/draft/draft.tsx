@@ -3,18 +3,15 @@ import { clsx } from "clsx";
 import NextLink from "next/link";
 import React from "react";
 
-import AspectRatio from "../../../../../../../../../../../../../packages/ui/src/components/aspect-ratio";
-import IconButton from "../../../../../../../../../../../../../packages/ui/src/components/icon-button";
-import Image from "../../../../../../../../../../../../../packages/ui/src/components/image";
-import Link from "../../../../../../../../../../../../../packages/ui/src/components/link";
-import Typography from "../../../../../../../../../../../../../packages/ui/src/components/typography";
-import EditIcon from "../../../../../../../../../../../../../packages/ui/src/icons/edit";
-import ImageIcon from "../../../../../../../../../../../../../packages/ui/src/icons/image";
-import { abbreviate_number } from "../../../../../../../../../../../../../packages/ui/src/utils/abbreviate-number";
-import {
-  DateFormat,
-  format_date
-} from "../../../../../../../../../../../../../packages/ui/src/utils/format-date";
+import AspectRatio from "~/components/aspect-ratio";
+import IconButton from "~/components/icon-button";
+import Image from "~/components/image";
+import Link from "~/components/link";
+import Typography from "~/components/typography";
+import EditIcon from "~/icons/edit";
+import ImageIcon from "~/icons/image";
+import { abbreviate_number } from "~/utils/abbreviate-number";
+import { DateFormat, format_date } from "~/utils/format-date";
 
 import styles from "./draft.module.scss";
 import { DraftProps } from "./draft.props";

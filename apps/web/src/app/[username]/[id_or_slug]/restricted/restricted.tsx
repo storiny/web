@@ -1,21 +1,21 @@
 import { clsx } from "clsx";
 import React from "react";
 
-import Link from "../../../../../../../packages/ui/src/components/link";
-import Spacer from "../../../../../../../packages/ui/src/components/spacer";
-import Typography from "../../../../../../../packages/ui/src/components/typography";
-import CustomState from "../../../../../../../packages/ui/src/entities/custom-state";
-import Persona from "../../../../../../../packages/ui/src/entities/persona";
-import ForbidIcon from "../../../../../../../packages/ui/src/icons/forbid";
-import BottomNavigation from "../../../../../../../packages/ui/src/layout/bottom-navigation";
-import LeftSidebar from "../../../../../../../packages/ui/src/layout/left-sidebar";
-import Navbar from "../../../../../../../packages/ui/src/layout/navbar";
-import RightSidebar from "../../../../../../../packages/ui/src/layout/right-sidebar";
-import Sidenav from "../../../../../../../packages/ui/src/layout/sidenav";
-import SplashScreen from "../../../../../../../packages/ui/src/layout/splash-screen";
+import Link from "~/components/link";
+import Spacer from "~/components/spacer";
+import Typography from "~/components/typography";
+import CustomState from "~/entities/custom-state";
+import Persona from "~/entities/persona";
+import ForbidIcon from "~/icons/forbid";
+import BottomNavigation from "~/layout/bottom-navigation";
+import LeftSidebar from "~/layout/left-sidebar";
+import Navbar from "~/layout/navbar";
+import RightSidebar from "~/layout/right-sidebar";
+import Sidenav from "~/layout/sidenav";
+import SplashScreen from "~/layout/splash-screen";
 import { sync_with_user } from "~/redux/features";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
-import { abbreviate_number } from "../../../../../../../packages/ui/src/utils/abbreviate-number";
+import { abbreviate_number } from "~/utils/abbreviate-number";
 
 import { RestrictedStoryProps } from "./restricted.props";
 
@@ -34,7 +34,7 @@ const RestrictedStory = (props: RestrictedStoryProps): React.ReactElement => {
       <Navbar />
       <Sidenav />
       <LeftSidebar />
-      <main>
+      <main data-root={"true"}>
         <CustomState
           auto_size
           description={

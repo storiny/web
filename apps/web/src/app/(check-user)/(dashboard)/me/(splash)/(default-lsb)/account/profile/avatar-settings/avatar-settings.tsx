@@ -1,15 +1,15 @@
 import { clsx } from "clsx";
 import React from "react";
 
-import Avatar from "../../../../../../../../../../../../packages/ui/src/components/avatar";
-import Button from "../../../../../../../../../../../../packages/ui/src/components/button";
-import { use_confirmation } from "../../../../../../../../../../../../packages/ui/src/components/confirmation";
-import Spacer from "../../../../../../../../../../../../packages/ui/src/components/spacer";
-import { use_toast } from "../../../../../../../../../../../../packages/ui/src/components/toast";
-import Typography from "../../../../../../../../../../../../packages/ui/src/components/typography";
+import Avatar from "~/components/avatar";
+import Button from "~/components/button";
+import { use_confirmation } from "~/components/confirmation";
+import Spacer from "~/components/spacer";
+import { use_toast } from "~/components/toast";
+import Typography from "~/components/typography";
 import Gallery from "~/entities/gallery";
-import PencilIcon from "../../../../../../../../../../../../packages/ui/src/icons/pencil";
-import TrashIcon from "../../../../../../../../../../../../packages/ui/src/icons/trash";
+import PencilIcon from "~/icons/pencil";
+import TrashIcon from "~/icons/trash";
 import {
   mutate_user,
   select_user,

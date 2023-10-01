@@ -2,14 +2,14 @@ import { StoryCategory } from "@storiny/shared";
 import { clsx } from "clsx";
 import React from "react";
 
-import Divider from "../../../../../../../../../packages/ui/src/components/divider";
-import Grow from "../../../../../../../../../packages/ui/src/components/grow";
-import Link from "../../../../../../../../../packages/ui/src/components/link";
-import Skeleton from "../../../../../../../../../packages/ui/src/components/skeleton";
-import Typography from "../../../../../../../../../packages/ui/src/components/typography";
-import TagChip from "../../../../../../../../../packages/ui/src/entities/tag-chip";
-import { use_media_query } from "../../../../../../../../../packages/ui/src/hooks/use-media-query";
-import ChevronIcon from "../../../../../../../../../packages/ui/src/icons/chevron";
+import Divider from "~/components/divider";
+import Grow from "~/components/grow";
+import Link from "~/components/link";
+import Skeleton from "~/components/skeleton";
+import Typography from "~/components/typography";
+import TagChip from "~/entities/tag-chip";
+import { use_media_query } from "~/hooks/use-media-query";
+import ChevronIcon from "~/icons/chevron";
 import { use_get_explore_tags_query } from "~/redux/features";
 import { BREAKPOINTS } from "~/theme/breakpoints";
 

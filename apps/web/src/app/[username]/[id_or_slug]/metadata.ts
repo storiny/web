@@ -1,9 +1,9 @@
 import { ImageSize } from "@storiny/shared";
 import type { Metadata } from "next";
+import { get_session_token } from "~/common/utils/get-session-token";
 
 import { get_story } from "~/common/grpc";
-import { get_session_token } from "src/common/utils/get-session-token";
-import { get_cdn_url } from "../../../../../../packages/ui/src/utils/get-cdn-url";
+import { get_cdn_url } from "~/utils/get-cdn-url";
 
 export const generateMetadata = async ({
   params

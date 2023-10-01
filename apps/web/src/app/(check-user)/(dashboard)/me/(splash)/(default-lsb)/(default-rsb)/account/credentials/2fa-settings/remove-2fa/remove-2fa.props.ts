@@ -1,6 +1,6 @@
 import React from "react";
 
-import { SubmitHandler } from "../../../../../../../../../../../../../../packages/ui/src/components/form";
+import { SubmitHandler } from "~/components/form";
 
 import { Remove2FASchema } from "./remove-2fa.schema";
 

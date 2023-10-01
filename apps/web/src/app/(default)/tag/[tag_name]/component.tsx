@@ -3,9 +3,9 @@ import React from "react";
 import { Graph } from "schema-dts";
 
 import { GetTagResponse } from "~/common/grpc";
-import LeftSidebar from "../../../../../../../packages/ui/src/layout/left-sidebar";
-import SplashScreen from "../../../../../../../packages/ui/src/layout/splash-screen";
-import { get_cdn_url } from "../../../../../../../packages/ui/src/utils/get-cdn-url";
+import LeftSidebar from "~/layout/left-sidebar";
+import SplashScreen from "~/layout/splash-screen";
+import { get_cdn_url } from "~/utils/get-cdn-url";
 
 import Client from "./client";
 import TagRightSidebar from "./right-sidebar";
@@ -51,7 +51,7 @@ const Component = ({ tag }: Props): React.ReactElement => {
   return (
     <>
       <LeftSidebar />
-      <main>
+      <main data-root={"true"}>
         <script
           dangerouslySetInnerHTML={{ __html: JSON.stringify(json_ld) }}
           type="application/ld+json"

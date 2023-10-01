@@ -8,18 +8,18 @@ import React from "react";
 import { useIntersectionObserver as use_intersection_observer } from "react-intersection-observer-hook";
 
 import { dynamic_loader } from "~/common/dynamic";
-import Divider from "../../../../ui/src/components/divider";
-import Option from "../../../../ui/src/components/option";
-import Select from "../../../../ui/src/components/select";
-import Spacer from "../../../../ui/src/components/spacer";
-import Tab from "../../../../ui/src/components/tab";
-import Tabs from "../../../../ui/src/components/tabs";
-import TabsList from "../../../../ui/src/components/tabs-list";
-import Typography from "../../../../ui/src/components/typography";
-import { use_media_query } from "../../../../ui/src/hooks/use-media-query";
+import Divider from "~/components/divider";
+import Option from "~/components/option";
+import Select from "~/components/select";
+import Spacer from "~/components/spacer";
+import Tab from "~/components/tab";
+import Tabs from "~/components/tabs";
+import TabsList from "~/components/tabs-list";
+import Typography from "~/components/typography";
+import { use_media_query } from "~/hooks/use-media-query";
 import { use_app_selector } from "~/redux/hooks";
 import { BREAKPOINTS } from "~/theme/breakpoints";
-import { abbreviate_number } from "../../../../ui/src/utils/abbreviate-number";
+import { abbreviate_number } from "~/utils/abbreviate-number";
 
 import {
   is_auxiliary_content_visible_atom,
@@ -59,8 +59,8 @@ const HeaderTabs = ({
   value: EditorAuxiliaryContentTabValue;
 }): React.ReactElement => (
   <Tabs
-    onValueChange={(next_value: EditorAuxiliaryContentTabValue): void =>
-      on_change(next_value)
+    onValueChange={(next_value): void =>
+      on_change(next_value as EditorAuxiliaryContentTabValue)
     }
     value={value}
   >
@@ -125,8 +125,8 @@ const Content = (): React.ReactElement => {
             <Divider orientation={"vertical"} />
             <Select
               disabled={story.disable_comments}
-              onValueChange={(next_value: StoryCommentsSortValue): void =>
-                handle_sort_change(next_value)
+              onValueChange={(next_value): void =>
+                handle_sort_change(next_value as StoryCommentsSortValue)
               }
               slot_props={{
                 trigger: {

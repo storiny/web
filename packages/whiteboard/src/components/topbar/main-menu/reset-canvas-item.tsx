@@ -1,8 +1,8 @@
 import React from "react";
 
-import { use_confirmation } from "../../../../../ui/src/components/confirmation";
-import MenuItem from "../../../../../ui/src/components/menu-item";
-import TrashIcon from "../../../../../ui/src/icons/trash";
+import { use_confirmation } from "~/components/confirmation";
+import MenuItem from "~/components/menu-item";
+import TrashIcon from "~/icons/trash";
 
 import { use_canvas } from "../../../hooks";
 
@@ -22,7 +22,7 @@ const ResetCanvasItem = (): React.ReactElement => {
     ({ open_confirmation }) => (
       <MenuItem
         decorator={<TrashIcon />}
-        onSelect={(event: Event): void => {
+        onSelect={(event): void => {
           event.preventDefault(); // Do not auto-close the menu
           open_confirmation();
         }}

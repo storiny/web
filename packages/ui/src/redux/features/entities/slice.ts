@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice as create_slice, PayloadAction } from "@reduxjs/toolkit";
 
 import {
   sync_with_comment_impl,
@@ -93,7 +93,7 @@ export const entities_initial_state: EntitiesState = {
   self_reply_count: /*                 */ 0
 };
 
-export const entities_slice = createSlice({
+export const entities_slice = create_slice({
   name: "entities",
   initialState: entities_initial_state,
   reducers: {

@@ -12,7 +12,7 @@ import DefaultDashboardRightSidebarLayout from "../../layout";
 import AccountCredentialsPage from "./client";
 
 const meta: Meta<typeof AccountCredentialsPage> = {
-  title: "dashboard/Account/credentials",
+  title: "dashboard/account/credentials",
   component: AccountCredentialsPage,
   args: {
     has_password: true,

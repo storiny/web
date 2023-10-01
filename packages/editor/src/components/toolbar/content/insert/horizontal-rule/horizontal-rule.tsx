@@ -1,7 +1,7 @@
 import React from "react";
 
-import MenuItem from "../../../../../../../ui/src/components/menu-item";
-import HorizontalRuleIcon from "../../../../../../../ui/src/icons/horizontal-rule";
+import MenuItem from "~/components/menu-item";
+import HorizontalRuleIcon from "~/icons/horizontal-rule";
 
 import { use_insert_horizontal_rule } from "../../../../../hooks/use-insert-horizontal-rule";
 

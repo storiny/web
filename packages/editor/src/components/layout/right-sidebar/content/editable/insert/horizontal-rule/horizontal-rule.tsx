@@ -1,6 +1,6 @@
 import React from "react";
 
-import HorizontalRuleIcon from "../../../../../../../../../ui/src/icons/horizontal-rule";
+import HorizontalRuleIcon from "~/icons/horizontal-rule";
 
 import { use_insert_horizontal_rule } from "../../../../../../../hooks/use-insert-horizontal-rule";
 import InsertItem from "../insert-item";

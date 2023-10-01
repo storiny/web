@@ -3,11 +3,11 @@ import clsx from "clsx";
 import { StaticCanvas } from "fabric";
 import React from "react";
 
-import AspectRatio from "../../../../../ui/src/components/aspect-ratio";
-import Input from "../../../../../ui/src/components/input";
-import Spacer from "../../../../../ui/src/components/spacer";
-import Spinner from "../../../../../ui/src/components/spinner";
-import PaddingIcon from "../../../../../ui/src/icons/padding";
+import AspectRatio from "~/components/aspect-ratio";
+import Input from "~/components/input";
+import Spacer from "~/components/spacer";
+import Spinner from "~/components/spinner";
+import PaddingIcon from "~/icons/padding";
 import { clamp } from "~/utils/clamp";
 
 import { EXPORT_WIDTH, RECOVERY_KEYS } from "../../../constants";

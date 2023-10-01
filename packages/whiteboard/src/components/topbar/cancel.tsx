@@ -1,9 +1,9 @@
 import clsx from "clsx";
 import React from "react";
 
-import { use_confirmation } from "../../../../ui/src/components/confirmation";
-import IconButton from "../../../../ui/src/components/icon-button";
-import XIcon from "../../../../ui/src/icons/x";
+import { use_confirmation } from "~/components/confirmation";
+import IconButton from "~/components/icon-button";
+import XIcon from "~/icons/x";
 
 import { use_whiteboard } from "../../hooks";
 import styles from "./topbar.module.scss";

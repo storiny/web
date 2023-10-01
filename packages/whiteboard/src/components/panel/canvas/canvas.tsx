@@ -2,16 +2,17 @@ import { clsx } from "clsx";
 import { Canvas } from "fabric";
 import React from "react";
 
-import Divider from "../../../../../ui/src/components/divider";
-import Input from "../../../../../ui/src/components/input";
-import Spacer from "../../../../../ui/src/components/spacer";
-import ToggleGroup from "../../../../../ui/src/components/toggle-group";
-import ToggleGroupItem from "../../../../../ui/src/components/toggle-group-item";
+import Divider from "~/components/divider";
+import Input from "~/components/input";
+import Spacer from "~/components/spacer";
+import ToggleGroup from "~/components/toggle-group";
+import ToggleGroupItem from "~/components/toggle-group-item";
 import ColorPicker, {
   hex_to_rgb,
   str_to_color,
   TColor
-} from "../../../../../ui/src/entities/color-picker";
+} from "~/entities/color-picker";
+
 import {
   DEFAULT_CANVAS_FILL,
   MAX_OPACITY,

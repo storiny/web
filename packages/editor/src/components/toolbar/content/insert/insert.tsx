@@ -2,9 +2,9 @@ import { clsx } from "clsx";
 import { useAtomValue as use_atom_value } from "jotai";
 import React from "react";
 
-import IconButton from "../../../../../../ui/src/components/icon-button";
-import Menu from "../../../../../../ui/src/components/menu";
-import PlusIcon from "../../../../../../ui/src/icons/plus";
+import IconButton from "~/components/icon-button";
+import Menu from "~/components/menu";
+import PlusIcon from "~/icons/plus";
 
 import { doc_status_atom } from "../../../../atoms";
 import toolbar_styles from "../../toolbar.module.scss";

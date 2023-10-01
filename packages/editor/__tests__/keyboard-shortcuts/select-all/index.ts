@@ -2,31 +2,37 @@ import { Page } from "@playwright/test";
 
 import { IS_LINUX } from "../../constants";
 import { E2E_BROWSER } from "../../constants";
-import { evaluate, keyDownCtrlOrMeta, keyUpCtrlOrMeta } from "../../utils";
+import {
+  evaluate,
+  key_down_ctrl_or_meta,
+  key_up_ctrl_or_meta
+} from "../../utils";
 
 /**
  * Selects all the text present in the editor root
  * @param page Page
  */
-export const selectAll = async (page: Page): Promise<void> => {
+export const select_all = async (page: Page): Promise<void> => {
   // TODO: Follow-up https://github.com/facebook/lexical/issues/4665
   if (E2E_BROWSER === "firefox" && IS_LINUX) {
     await evaluate(page, () => {
-      const rootElement = document.querySelector('div[contenteditable="true"]');
+      const root_element = document.querySelector(
+        'div[contenteditable="true"]'
+      );
 
-      if (rootElement) {
+      if (root_element) {
         const selection = window.getSelection();
         selection?.setBaseAndExtent(
-          rootElement,
+          root_element,
           0,
-          rootElement,
-          rootElement.childNodes.length
+          root_element,
+          root_element.childNodes.length
         );
       }
     });
   } else {
-    await keyDownCtrlOrMeta(page);
+    await key_down_ctrl_or_meta(page);
     await page.keyboard.press("a");
-    await keyUpCtrlOrMeta(page);
+    await key_up_ctrl_or_meta(page);
   }
 };

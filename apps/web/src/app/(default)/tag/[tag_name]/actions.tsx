@@ -2,16 +2,16 @@ import NextLink from "next/link";
 import React from "react";
 
 import { GetTagResponse } from "~/common/grpc";
-import IconButton from "../../../../../../../packages/ui/src/components/icon-button";
-import Menu from "../../../../../../../packages/ui/src/components/menu";
-import MenuItem from "../../../../../../../packages/ui/src/components/menu-item";
-import Separator from "../../../../../../../packages/ui/src/components/separator";
-import { use_clipboard } from "../../../../../../../packages/ui/src/hooks/use-clipboard";
-import { use_web_share } from "../../../../../../../packages/ui/src/hooks/use-web-share";
-import CopyIcon from "../../../../../../../packages/ui/src/icons/copy";
-import DotsIcon from "../../../../../../../packages/ui/src/icons/dots";
-import ReportIcon from "../../../../../../../packages/ui/src/icons/report";
-import ShareIcon from "../../../../../../../packages/ui/src/icons/share";
+import IconButton from "~/components/icon-button";
+import Menu from "~/components/menu";
+import MenuItem from "~/components/menu-item";
+import Separator from "~/components/separator";
+import { use_clipboard } from "~/hooks/use-clipboard";
+import { use_web_share } from "~/hooks/use-web-share";
+import CopyIcon from "~/icons/copy";
+import DotsIcon from "~/icons/dots";
+import ReportIcon from "~/icons/report";
+import ShareIcon from "~/icons/share";
 
 interface Props {
   tag: GetTagResponse;

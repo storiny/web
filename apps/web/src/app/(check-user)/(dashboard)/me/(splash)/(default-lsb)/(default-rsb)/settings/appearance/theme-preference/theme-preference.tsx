@@ -1,13 +1,13 @@
 import { clsx } from "clsx";
 import React from "react";
 
-import AspectRatio from "../../../../../../../../../../../../../packages/ui/src/components/aspect-ratio";
-import Divider from "../../../../../../../../../../../../../packages/ui/src/components/divider";
-import Radio from "../../../../../../../../../../../../../packages/ui/src/components/radio";
-import RadioGroup from "../../../../../../../../../../../../../packages/ui/src/components/radio-group";
-import Spacer from "../../../../../../../../../../../../../packages/ui/src/components/spacer";
-import TitleBlock from "../../../../../../../../../../../../../packages/ui/src/entities/title-block";
-import { use_media_query } from "../../../../../../../../../../../../../packages/ui/src/hooks/use-media-query";
+import AspectRatio from "~/components/aspect-ratio";
+import Divider from "~/components/divider";
+import Radio from "~/components/radio";
+import RadioGroup from "~/components/radio-group";
+import Spacer from "~/components/spacer";
+import TitleBlock from "~/entities/title-block";
+import { use_media_query } from "~/hooks/use-media-query";
 import { select_theme, set_theme } from "~/redux/features";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 import { BREAKPOINTS } from "~/theme/breakpoints";
@@ -169,8 +169,8 @@ const ThemePreference = (): React.ReactElement => {
       <Spacer orientation={"vertical"} size={4} />
       <RadioGroup
         className={clsx(common_styles.x, common_styles["radio-group"])}
-        onValueChange={(next_value: "light" | "dark" | "system"): void => {
-          dispatch(set_theme(next_value));
+        onValueChange={(next_value): void => {
+          dispatch(set_theme(next_value as "light" | "dark" | "system"));
         }}
         orientation={is_smaller_than_mobile ? "vertical" : "horizontal"}
         value={theme}

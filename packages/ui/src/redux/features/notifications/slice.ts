@@ -1,4 +1,8 @@
-import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import {
+  createAsyncThunk as create_async_thunk,
+  createSlice as create_slice,
+  PayloadAction
+} from "@reduxjs/toolkit";
 import { API_VERSION } from "@storiny/shared";
 import { Notification } from "@storiny/types";
 
@@ -23,7 +27,7 @@ type SyncableNotification = Pick<Notification, "id" | "read_at">;
 /**
  * Fetches unread notifications count from the server
  */
-export const fetch_unread_notifications_count = createAsyncThunk(
+export const fetch_unread_notifications_count = create_async_thunk(
   "notifications/fetch_unread_notifications_count",
   async () => {
     const res = await fetch(
@@ -70,7 +74,7 @@ const sync_with_notification_impl = (
   }
 };
 
-export const notifications_slice = createSlice({
+export const notifications_slice = create_slice({
   name: "notifications",
   initialState: notifications_initial_state,
   reducers: {

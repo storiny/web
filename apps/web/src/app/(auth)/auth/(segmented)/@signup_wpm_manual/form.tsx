@@ -4,19 +4,15 @@ import { DEFAULT_WPM, USER_PROPS } from "@storiny/shared";
 import { clsx } from "clsx";
 import React from "react";
 
-import Button from "../../../../../../../../packages/ui/src/components/button";
-import Form, {
-  SubmitHandler,
-  use_form,
-  zod_resolver
-} from "../../../../../../../../packages/ui/src/components/form";
-import FormInput from "../../../../../../../../packages/ui/src/components/form-input";
-import Grow from "../../../../../../../../packages/ui/src/components/grow";
-import Spacer from "../../../../../../../../packages/ui/src/components/spacer";
+import Button from "~/components/button";
+import Form, { SubmitHandler, use_form, zod_resolver } from "~/components/form";
+import FormInput from "~/components/form-input";
+import Grow from "~/components/grow";
+import Spacer from "~/components/spacer";
 
 import { use_auth_state } from "../../../actions";
 import { use_signup } from "../../../use-signup";
-import { SignupWPMSchema, SIGNUP_WPM_SCHEMA } from "./schema";
+import { SIGNUP_WPM_SCHEMA, SignupWPMSchema } from "./schema";
 
 interface Props {
   on_submit?: SubmitHandler<SignupWPMSchema>;

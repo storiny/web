@@ -1,8 +1,8 @@
 import { clsx } from "clsx";
 import React from "react";
 
-import AspectRatio from "../../../../../../../../../ui/src/components/aspect-ratio";
-import Skeleton from "../../../../../../../../../ui/src/components/skeleton";
+import AspectRatio from "~/components/aspect-ratio";
+import Skeleton from "~/components/skeleton";
 
 import card_styles from "../story-card.module.scss";
 

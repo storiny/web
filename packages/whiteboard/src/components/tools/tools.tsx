@@ -4,24 +4,24 @@ import React from "react";
 import { useHotkeys as use_hot_keys } from "react-hotkeys-hook";
 import { useFilePicker as use_file_picker } from "use-file-picker";
 
-import ScrollArea from "../../../../ui/src/components/scroll-area";
-import Separator from "../../../../ui/src/components/separator";
-import Tab from "../../../../ui/src/components/tab";
-import Tabs from "../../../../ui/src/components/tabs";
-import TabsList from "../../../../ui/src/components/tabs-list";
+import ScrollArea from "~/components/scroll-area";
+import Separator from "~/components/separator";
+import Tab from "~/components/tab";
+import Tabs from "~/components/tabs";
+import TabsList from "~/components/tabs-list";
 import { use_toast } from "~/components/toast";
-import Tooltip, { TooltipProps } from "../../../../ui/src/components/tooltip";
-import ArrowIcon from "../../../../ui/src/icons/arrow";
-import CircleIcon from "../../../../ui/src/icons/circle";
-import DiamondIcon from "../../../../ui/src/icons/diamond";
-import FiltersIcon from "../../../../ui/src/icons/filters";
-import HandIcon from "../../../../ui/src/icons/hand";
-import ImageIcon from "../../../../ui/src/icons/image";
-import LineIcon from "../../../../ui/src/icons/line";
-import PencilIcon from "../../../../ui/src/icons/pencil";
-import RectangleIcon from "../../../../ui/src/icons/rectangle";
-import SelectIcon from "../../../../ui/src/icons/select";
-import TypographyIcon from "../../../../ui/src/icons/typography";
+import Tooltip, { TooltipProps } from "~/components/tooltip";
+import ArrowIcon from "~/icons/arrow";
+import CircleIcon from "~/icons/circle";
+import DiamondIcon from "~/icons/diamond";
+import FiltersIcon from "~/icons/filters";
+import HandIcon from "~/icons/hand";
+import ImageIcon from "~/icons/image";
+import LineIcon from "~/icons/line";
+import PencilIcon from "~/icons/pencil";
+import RectangleIcon from "~/icons/rectangle";
+import SelectIcon from "~/icons/select";
+import TypographyIcon from "~/icons/typography";
 import { truncate } from "~/utils/truncate";
 
 import { is_pen_mode_atom, tool_atom } from "../../atoms";
@@ -285,10 +285,10 @@ const Tools = (): React.ReactElement => {
       type={"hover"}
     >
       <Tabs
-        onValueChange={(next_value: Tool): void => {
+        onValueChange={(next_value): void => {
           // Do not select image tool
           if (next_value !== Tool.IMAGE) {
-            set_tool(next_value);
+            set_tool(next_value as Tool);
           }
         }}
         orientation={"vertical"}

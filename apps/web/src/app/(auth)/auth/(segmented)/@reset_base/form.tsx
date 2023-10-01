@@ -4,22 +4,18 @@ import { USER_PROPS } from "@storiny/shared";
 import { clsx } from "clsx";
 import React from "react";
 
-import Button from "../../../../../../../../packages/ui/src/components/button";
-import Form, {
-  SubmitHandler,
-  use_form,
-  zod_resolver
-} from "../../../../../../../../packages/ui/src/components/form";
-import FormCheckbox from "../../../../../../../../packages/ui/src/components/form-checkbox";
-import FormInput from "../../../../../../../../packages/ui/src/components/form-input";
-import FormNewPasswordInput from "../../../../../../../../packages/ui/src/components/form-new-password-input";
-import Grow from "../../../../../../../../packages/ui/src/components/grow";
-import Spacer from "../../../../../../../../packages/ui/src/components/spacer";
-import { use_toast } from "../../../../../../../../packages/ui/src/components/toast";
+import Button from "~/components/button";
+import Form, { SubmitHandler, use_form, zod_resolver } from "~/components/form";
+import FormCheckbox from "~/components/form-checkbox";
+import FormInput from "~/components/form-input";
+import FormNewPasswordInput from "~/components/form-new-password-input";
+import Grow from "~/components/grow";
+import Spacer from "~/components/spacer";
+import { use_toast } from "~/components/toast";
 import { use_reset_password_mutation } from "~/redux/features";
 
 import { use_auth_state } from "../../../actions";
-import { ResetSchema, RESET_SCHEMA } from "./schema";
+import { RESET_SCHEMA, ResetSchema } from "./schema";
 
 interface Props {
   on_submit?: SubmitHandler<ResetSchema>;

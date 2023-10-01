@@ -1,42 +1,34 @@
-import { is_test_env } from "../../../../../../../../../../../../../../packages/shared/src/utils/is-test-env";
 import { clsx } from "clsx";
 import { Provider, useAtom as use_atom } from "jotai";
 import { useRouter as use_router } from "next/navigation";
 import React from "react";
 
-import Button from "../../../../../../../../../../../../../../packages/ui/src/components/button";
-import Form, {
-  SubmitHandler,
-  use_form,
-  zod_resolver
-} from "../../../../../../../../../../../../../../packages/ui/src/components/form";
-import FormInput from "../../../../../../../../../../../../../../packages/ui/src/components/form-input";
-import FormNewPasswordInput from "../../../../../../../../../../../../../../packages/ui/src/components/form-new-password-input";
-import Link from "../../../../../../../../../../../../../../packages/ui/src/components/link";
-import {
-  Description,
-  ModalFooterButton,
-  use_modal
-} from "../../../../../../../../../../../../../../packages/ui/src/components/modal";
-import Spacer from "../../../../../../../../../../../../../../packages/ui/src/components/spacer";
-import { use_toast } from "../../../../../../../../../../../../../../packages/ui/src/components/toast";
-import Typography from "../../../../../../../../../../../../../../packages/ui/src/components/typography";
-import { use_media_query } from "../../../../../../../../../../../../../../packages/ui/src/hooks/use-media-query";
-import PasswordIcon from "../../../../../../../../../../../../../../packages/ui/src/icons/password";
+import Button from "~/components/button";
+import Form, { SubmitHandler, use_form, zod_resolver } from "~/components/form";
+import FormInput from "~/components/form-input";
+import FormNewPasswordInput from "~/components/form-new-password-input";
+import Link from "~/components/link";
+import { Description, ModalFooterButton, use_modal } from "~/components/modal";
+import Spacer from "~/components/spacer";
+import { use_toast } from "~/components/toast";
+import Typography from "~/components/typography";
+import { use_media_query } from "~/hooks/use-media-query";
+import PasswordIcon from "~/icons/password";
 import {
   use_add_password_mutation,
   use_add_password_request_verification_mutation
 } from "~/redux/features";
 import { BREAKPOINTS } from "~/theme/breakpoints";
 
+import { is_test_env } from "../../../../../../../../../../../../../../packages/shared/src/utils/is-test-env";
 import { AddPasswordProps } from "./add-password.props";
 import {
-  AddPasswordSchema,
   ADD_PASSWORD_SCHEMA,
+  AddPasswordSchema,
   VERIFICATION_CODE_MAX_LENGTH,
   VERIFICATION_CODE_MIN_LENGTH
 } from "./add-password.schema";
-import { AddPasswordScreen, add_password_screen_atom } from "./atom";
+import { add_password_screen_atom, AddPasswordScreen } from "./atom";
 
 const SCREEN_MESSAGE_MAP: Record<AddPasswordScreen, string> = {
   confirmation:

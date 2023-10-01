@@ -1,6 +1,6 @@
 import { expect, Page, test } from "@playwright/test";
 
-import { evaluate, focusEditor, initialize } from "../utils";
+import { evaluate, focus_editor, initialize } from "../utils";
 
 test.describe("auto-scroll while typing", () => {
   test.beforeEach(({ page }) => initialize(page));
@@ -10,7 +10,7 @@ test.describe("auto-scroll while typing", () => {
    * @param page Page
    * @param selector Selector
    */
-  const addScroll = async (page: Page, selector: string): Promise<void> => {
+  const add_scroll = async (page: Page, selector: string): Promise<void> => {
     await evaluate(
       page,
       (selector) => {
@@ -30,7 +30,7 @@ test.describe("auto-scroll while typing", () => {
    * @param page Page
    * @param selector Selector
    */
-  const isCaretVisible = async (
+  const is_caret_visible = async (
     page: Page,
     selector: string
   ): Promise<boolean> =>
@@ -44,16 +44,16 @@ test.describe("auto-scroll while typing", () => {
         element.innerHTML = "|";
         range?.insertNode(element);
 
-        const selectionRect = element.getBoundingClientRect();
+        const selection_rect = element.getBoundingClientRect();
         element.parentNode?.removeChild(element);
 
-        const containerRect = document
+        const container_rect = document
           .querySelector(selector)
           ?.getBoundingClientRect() || { top: 0, bottom: 0 };
 
         return (
-          selectionRect.top >= containerRect.top &&
-          selectionRect.top < containerRect.bottom
+          selection_rect.top >= container_rect.top &&
+          selection_rect.top < container_rect.bottom
         );
       },
       selector
@@ -70,14 +70,14 @@ test.describe("auto-scroll while typing", () => {
     ]
   ].forEach(async ([name, selector]) => {
     test(name, async ({ page }) => {
-      await focusEditor(page);
-      await addScroll(page, selector);
+      await focus_editor(page);
+      await add_scroll(page, selector);
 
       for (let i = 0; i < 15; i++) {
         await page.keyboard.type("Hello");
         await page.keyboard.press("Enter");
 
-        expect(await isCaretVisible(page, selector)).toBe(true);
+        expect(await is_caret_visible(page, selector)).toBe(true);
       }
     });
   });

@@ -12,7 +12,7 @@ import DefaultDashboardLeftSidebarLayout from "../../../../layout";
 import ContentStoryResponsesPage from "./client";
 
 const meta: Meta<typeof ContentStoryResponsesPage> = {
-  title: "dashboard/Content/stories/responses",
+  title: "dashboard/content/stories/responses",
   component: ContentStoryResponsesPage,
   args: {
     total_count: 5,

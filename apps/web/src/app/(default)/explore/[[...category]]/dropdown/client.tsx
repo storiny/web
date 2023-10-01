@@ -11,12 +11,10 @@ import {
 } from "next/navigation";
 import React from "react";
 
-import Divider from "../../../../../../../../packages/ui/src/components/divider";
-import Option, {
-  OptionProps
-} from "../../../../../../../../packages/ui/src/components/option";
-import Select from "../../../../../../../../packages/ui/src/components/select";
-import { use_media_query } from "../../../../../../../../packages/ui/src/hooks/use-media-query";
+import Divider from "~/components/divider";
+import Option, { OptionProps } from "~/components/option";
+import Select from "~/components/select";
+import { use_media_query } from "~/hooks/use-media-query";
 import { BREAKPOINTS } from "~/theme/breakpoints";
 
 // Anchor option

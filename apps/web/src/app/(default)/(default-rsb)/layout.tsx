@@ -1,8 +1,8 @@
 import React from "react";
 
-import LeftSidebar from "../../../../../../packages/ui/src/layout/left-sidebar";
-import RightSidebar from "../../../../../../packages/ui/src/layout/right-sidebar";
-import SplashScreen from "../../../../../../packages/ui/src/layout/splash-screen";
+import LeftSidebar from "~/layout/left-sidebar";
+import RightSidebar from "~/layout/right-sidebar";
+import SplashScreen from "~/layout/splash-screen";
 
 const DefaultRightSidebarLayout = ({
   children
@@ -11,7 +11,7 @@ const DefaultRightSidebarLayout = ({
 }): React.ReactElement => (
   <>
     <LeftSidebar />
-    <main>{children}</main>
+    <main data-root={"true"}>{children}</main>
     <RightSidebar />
     <SplashScreen />
   </>

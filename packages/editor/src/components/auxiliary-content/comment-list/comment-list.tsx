@@ -3,8 +3,8 @@ import { useAtomValue as use_atom_value } from "jotai";
 import React from "react";
 
 import { CommentListSkeleton, VirtualizedCommentList } from "~/common/comment";
-import Divider from "../../../../../ui/src/components/divider";
-import ErrorState from "../../../../../ui/src/entities/error-state";
+import Divider from "~/components/divider";
+import ErrorState from "~/entities/error-state";
 import {
   get_query_error_type,
   use_get_story_comments_query
@@ -45,7 +45,7 @@ const EditorAuxiliaryContentCommentList = (
     <React.Fragment>
       <PostComment
         // Show the newly added comment
-        onPost={(): void => set_sort("recent")}
+        on_post={(): void => set_sort("recent")}
       />
       <Divider className={clsx(styles.x, styles["full-width-divider"])} />
       {is_loading || (is_fetching && page === 1) ? (

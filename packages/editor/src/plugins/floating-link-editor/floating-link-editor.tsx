@@ -22,12 +22,12 @@ import {
 import React from "react";
 import { createPortal as create_portal } from "react-dom";
 
-import Divider from "../../../../ui/src/components/divider";
-import IconButton from "../../../../ui/src/components/icon-button";
-import Input from "../../../../ui/src/components/input";
-import Link from "../../../../ui/src/components/link";
-import EditIcon from "../../../../ui/src/icons/edit";
-import LinkIcon from "../../../../ui/src/icons/link";
+import Divider from "~/components/divider";
+import IconButton from "~/components/icon-button";
+import Input from "~/components/input";
+import Link from "~/components/link";
+import EditIcon from "~/icons/edit";
+import LinkIcon from "~/icons/link";
 
 import { link_atom } from "../../atoms";
 import { use_link } from "../../hooks/use-link";

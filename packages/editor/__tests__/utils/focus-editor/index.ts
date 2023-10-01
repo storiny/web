@@ -6,22 +6,22 @@ import { sleep } from "../sleep";
  * Focuses the editor
  * @param page Page
  */
-export const focusEditor = async (page: Page): Promise<void> => {
+export const focus_editor = async (page: Page): Promise<void> => {
   const selector = 'div[contenteditable="true"]';
   await page.waitForSelector('iframe[name="left"]');
-  const leftFrame = page.frame("left");
+  const left_frame = page.frame("left");
 
-  if (!leftFrame) {
+  if (!left_frame) {
     return;
   }
 
-  if (leftFrame.locator('[data-testid="overlay"]')) {
-    await leftFrame.waitForSelector('[data-testid="overlay"]', {
+  if (left_frame.locator('[data-testid="overlay"]')) {
+    await left_frame.waitForSelector('[data-testid="overlay"]', {
       state: "detached"
     });
 
     await sleep(500);
   }
 
-  await leftFrame.focus(selector);
+  await left_frame.focus(selector);
 };

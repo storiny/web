@@ -8,7 +8,7 @@ import { sleep } from "../sleep";
  * @param fn Function
  * @param attempts Attempts
  */
-const retryAsync = async (
+const retry_async = async (
   fn: (...args: any) => any,
   attempts: number
 ): Promise<void> => {
@@ -38,20 +38,20 @@ const retryAsync = async (
 /**
  * Formats an HTML string using prettier
  * @param html HTML string
- * @param ignoreClasses Whether to ignore classes on the elements
- * @param ignoreInlineStyles Whether to ignore inline-styles on the elements
- * @param customIgnorePattern Custom attribute ignore pattern for the elements
+ * @param ignore_classes Whether to ignore classes on the elements
+ * @param ignore_inline_styles Whether to ignore inline-styles on the elements
+ * @param custom_ignore_pattern Custom attribute ignore pattern for the elements
  */
-const prettifyHTML = async (
+const prettify_html = async (
   html: string,
   {
-    ignoreClasses = false,
-    ignoreInlineStyles = false,
-    customIgnorePattern
+    ignore_classes = false,
+    ignore_inline_styles = false,
+    custom_ignore_pattern
   }: {
-    customIgnorePattern?: RegExp;
-    ignoreClasses?: boolean;
-    ignoreInlineStyles?: boolean;
+    custom_ignore_pattern?: RegExp;
+    ignore_classes?: boolean;
+    ignore_inline_styles?: boolean;
   } = {}
 ): Promise<string> => {
   // Remove `data-key` attribute from heading nodes
@@ -60,15 +60,15 @@ const prettifyHTML = async (
     // Replace dynamic ID (generated using React.useId) from radix
     .replace(/([a-zA-Z-_0-9]+)="radix-:(.+):"/g, "");
 
-  if (customIgnorePattern) {
-    output = output.replace(customIgnorePattern, "");
+  if (custom_ignore_pattern) {
+    output = output.replace(custom_ignore_pattern, "");
   }
 
-  if (ignoreClasses) {
+  if (ignore_classes) {
     output = output.replace(/\sclass="([^"]*)"/g, "");
   }
 
-  if (ignoreInlineStyles) {
+  if (ignore_inline_styles) {
     output = output.replace(/\sstyle="([^"]*)"/g, "");
   }
 
@@ -76,6 +76,7 @@ const prettifyHTML = async (
     await prettier.format(
       output,
       Object.assign(
+        /* eslint-disable prefer-snakecase/prefer-snakecase */
         {
           plugins: ["prettier-plugin-organize-attributes"],
           bracketSameLine: true,
@@ -83,6 +84,7 @@ const prettifyHTML = async (
           parser: "html"
         },
         { attributeGroups: ["$DEFAULT", "^data-"], attributeSort: "ASC" } as any
+        /* eslint-enable prefer-snakecase/prefer-snakecase */
       )
     )
   ).trim();
@@ -92,29 +94,29 @@ const prettifyHTML = async (
  * Asserts HTML on iframe
  * @param frame Iframe
  * @param selector Target element selector
- * @param expectedHtml Expected HTML string
- * @param ignoreClasses Whether to ignore classes on the elements
- * @param ignoreInlineStyles Whether to ignore inline-styles on the elements
- * @param customIgnorePattern Custom attribute ignore pattern for the elements
+ * @param expected_html Expected HTML string
+ * @param ignore_classes Whether to ignore classes on the elements
+ * @param ignore_inline_styles Whether to ignore inline-styles on the elements
+ * @param custom_ignore_pattern Custom attribute ignore pattern for the elements
  */
-const assertHTMLOnFrame = async (
+const assert_html_on_frame = async (
   frame: Frame | null,
   selector: string,
-  expectedHtml: string,
-  ignoreClasses: boolean,
-  ignoreInlineStyles: boolean,
-  customIgnorePattern?: RegExp
+  expected_html: string,
+  ignore_classes: boolean,
+  ignore_inline_styles: boolean,
+  custom_ignore_pattern?: RegExp
 ): Promise<void> => {
-  const actualHtml = await frame!.innerHTML(selector);
-  const actual = await prettifyHTML(actualHtml.replace(/\n/gm, ""), {
-    ignoreClasses,
-    ignoreInlineStyles,
-    customIgnorePattern
+  const actual_html = await frame!.innerHTML(selector);
+  const actual = await prettify_html(actual_html.replace(/\n/gm, ""), {
+    ignore_classes,
+    ignore_inline_styles,
+    custom_ignore_pattern
   });
-  const expected = await prettifyHTML(expectedHtml.replace(/\n/gm, ""), {
-    ignoreClasses,
-    ignoreInlineStyles,
-    customIgnorePattern
+  const expected = await prettify_html(expected_html.replace(/\n/gm, ""), {
+    ignore_classes,
+    ignore_inline_styles,
+    custom_ignore_pattern
   });
 
   expect(actual).toEqual(expected);
@@ -123,53 +125,53 @@ const assertHTMLOnFrame = async (
 /**
  * Asserts HTML against both the iframes
  * @param page Page
- * @param expectedHtml Expected HTML string
- * @param expectedHtmlFrameRight Optional expected HTML string for the right frame
+ * @param expected_html Expected HTML string
+ * @param expected_html_frame_right Optional expected HTML string for the right frame
  * @param selector Target element selector
- * @param ignoreClasses Whether to ignore classes on the elements
- * @param ignoreInlineStyles Whether to ignore inline-styles on the elements
- * @param customIgnorePattern Custom attribute ignore pattern for the elements
+ * @param ignore_classes Whether to ignore classes on the elements
+ * @param ignore_inline_styles Whether to ignore inline-styles on the elements
+ * @param custom_ignore_pattern Custom attribute ignore pattern for the elements
  */
-export const assertHTML = async (
+export const assert_html = async (
   page: Page,
-  expectedHtml: string,
-  expectedHtmlFrameRight = expectedHtml,
+  expected_html: string,
+  expected_html_frame_right = expected_html,
   {
-    ignoreClasses = false,
-    ignoreInlineStyles = false,
-    customIgnorePattern = undefined,
+    ignore_classes = false,
+    ignore_inline_styles = false,
+    custom_ignore_pattern = undefined,
     selector = `div[contenteditable="true"]`
   }: {
-    customIgnorePattern?: RegExp;
-    ignoreClasses?: boolean;
-    ignoreInlineStyles?: boolean;
+    custom_ignore_pattern?: RegExp;
+    ignore_classes?: boolean;
+    ignore_inline_styles?: boolean;
     selector?: string;
   } = {}
 ): Promise<void> => {
-  const withRetry = async (fn: (...args: any) => any): Promise<void> =>
-    await retryAsync(fn, 5);
+  const with_retry = async (fn: (...args: any) => any): Promise<void> =>
+    await retry_async(fn, 5);
 
   await Promise.all([
-    withRetry(
+    with_retry(
       async () =>
-        await assertHTMLOnFrame(
+        await assert_html_on_frame(
           page.frame("left"),
           selector,
-          expectedHtml,
-          ignoreClasses,
-          ignoreInlineStyles,
-          customIgnorePattern
+          expected_html,
+          ignore_classes,
+          ignore_inline_styles,
+          custom_ignore_pattern
         )
     ),
-    withRetry(
+    with_retry(
       async () =>
-        await assertHTMLOnFrame(
+        await assert_html_on_frame(
           page.frame("right"),
           selector,
-          expectedHtmlFrameRight,
-          ignoreClasses,
-          ignoreInlineStyles,
-          customIgnorePattern
+          expected_html_frame_right,
+          ignore_classes,
+          ignore_inline_styles,
+          custom_ignore_pattern
         )
     )
   ]);

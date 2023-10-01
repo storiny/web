@@ -2,13 +2,13 @@ import clsx from "clsx";
 import NextLink from "next/link";
 import React from "react";
 
-import Input from "../../../../../../../../../../../packages/ui/src/components/input";
-import NavigationItem from "../../../../../../../../../../../packages/ui/src/components/navigation-item";
-import Separator from "../../../../../../../../../../../packages/ui/src/components/separator";
-import Spacer from "../../../../../../../../../../../packages/ui/src/components/spacer";
-import Typography from "../../../../../../../../../../../packages/ui/src/components/typography";
-import PageTitle from "../../../../../../../../../../../packages/ui/src/entities/page-title";
-import SearchIcon from "../../../../../../../../../../../packages/ui/src/icons/search";
+import Input from "~/components/input";
+import NavigationItem from "~/components/navigation-item";
+import Separator from "~/components/separator";
+import Spacer from "~/components/spacer";
+import Typography from "~/components/typography";
+import PageTitle from "~/entities/page-title";
+import SearchIcon from "~/icons/search";
 
 import {
   DASHBOARD_GROUPS,

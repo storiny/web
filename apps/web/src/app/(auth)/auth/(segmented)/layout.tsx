@@ -1,6 +1,6 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
+import { useSearchParams as use_search_params } from "next/navigation";
 import React from "react";
 
 import { use_auth_state } from "../../actions";
@@ -12,7 +12,7 @@ import { AuthSegment } from "../../state";
 const SegmentedLayout = (
   props: Record<AuthSegment, React.ReactNode>
 ): React.ReactNode => {
-  const params = useSearchParams();
+  const params = use_search_params();
   const { state, actions } = use_auth_state();
   const segment = params.get("segment") || "";
   const token = params.get("token") || "";

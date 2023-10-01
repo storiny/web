@@ -6,19 +6,19 @@ import React from "react";
 
 import { dynamic_loader } from "~/common/dynamic";
 import { UserListSkeleton, VirtualizedUserList } from "~/common/user";
-import Divider from "../../../../../../../../../../../packages/ui/src/components/divider";
-import Input from "../../../../../../../../../../../packages/ui/src/components/input";
-import Option from "../../../../../../../../../../../packages/ui/src/components/option";
-import Select from "../../../../../../../../../../../packages/ui/src/components/select";
-import Spacer from "../../../../../../../../../../../packages/ui/src/components/spacer";
-import Tab from "../../../../../../../../../../../packages/ui/src/components/tab";
-import Tabs from "../../../../../../../../../../../packages/ui/src/components/tabs";
-import TabsList from "../../../../../../../../../../../packages/ui/src/components/tabs-list";
-import Typography from "../../../../../../../../../../../packages/ui/src/components/typography";
-import ErrorState from "../../../../../../../../../../../packages/ui/src/entities/error-state";
-import { use_debounce } from "../../../../../../../../../../../packages/ui/src/hooks/use-debounce";
-import { use_media_query } from "../../../../../../../../../../../packages/ui/src/hooks/use-media-query";
-import SearchIcon from "../../../../../../../../../../../packages/ui/src/icons/search";
+import Divider from "~/components/divider";
+import Input from "~/components/input";
+import Option from "~/components/option";
+import Select from "~/components/select";
+import Spacer from "~/components/spacer";
+import Tab from "~/components/tab";
+import Tabs from "~/components/tabs";
+import TabsList from "~/components/tabs-list";
+import Typography from "~/components/typography";
+import ErrorState from "~/entities/error-state";
+import { use_debounce } from "~/hooks/use-debounce";
+import { use_media_query } from "~/hooks/use-media-query";
+import SearchIcon from "~/icons/search";
 import {
   get_query_error_type,
   select_user,
@@ -29,7 +29,7 @@ import {
 } from "~/redux/features";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 import { BREAKPOINTS } from "~/theme/breakpoints";
-import { abbreviate_number } from "../../../../../../../../../../../packages/ui/src/utils/abbreviate-number";
+import { abbreviate_number } from "~/utils/abbreviate-number";
 
 import DashboardTitle from "../../dashboard-title";
 import { RelationsProps } from "./relations.props";
@@ -62,8 +62,8 @@ const PageHeader = ({
       styles.x,
       styles.tabs
     )}
-    onValueChange={(next_value: RelationsTabValue): void =>
-      on_change(next_value)
+    onValueChange={(next_value): void =>
+      on_change(next_value as RelationsTabValue)
     }
     value={value}
   >
@@ -263,7 +263,7 @@ const ContentRelationsClient = (props: RelationsProps): React.ReactElement => {
 
   return (
     <React.Fragment>
-      <main>
+      <main data-root={"true"}>
         <DashboardTitle>Relations</DashboardTitle>
         <PageHeader on_change={handle_change} value={value} />
         <StatusHeader {...props} tab={value} />

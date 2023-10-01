@@ -2,7 +2,7 @@ import { user_event } from "@storiny/test-utils";
 import { act, screen, waitFor as wait_for } from "@testing-library/react";
 import React from "react";
 
-import { render_test_with_provider } from "../../../../../../../../../../../../../../packages/ui/src/redux/test-utils";
+import { render_test_with_provider } from "~/redux/test-utils";
 
 import { ExportData } from "./export-data-group";
 

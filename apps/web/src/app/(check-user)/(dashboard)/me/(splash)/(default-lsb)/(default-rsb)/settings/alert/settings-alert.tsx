@@ -1,8 +1,8 @@
 import { clsx } from "clsx";
 import React from "react";
 
-import InfoIcon from "../../../../../../../../../../../../packages/ui/src/icons/info";
-import XIcon from "../../../../../../../../../../../../packages/ui/src/icons/x";
+import InfoIcon from "~/icons/info";
+import XIcon from "~/icons/x";
 
 import styles from "./settings-alert.module.scss";
 import { SettingsAlertProps } from "./settings-alert.props";

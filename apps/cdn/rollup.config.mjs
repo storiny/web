@@ -3,8 +3,8 @@
 
 import { babel } from "@rollup/plugin-babel";
 import commonjs from "@rollup/plugin-commonjs";
-import { uglify } from "rollup-plugin-uglify";
 import { nodeResolve } from "@rollup/plugin-node-resolve";
+import { uglify } from "rollup-plugin-uglify";
 
 // List of njs built-in modules.
 const njsExternals = ["crypto", "fs", "querystring", "xml", "zlib"];

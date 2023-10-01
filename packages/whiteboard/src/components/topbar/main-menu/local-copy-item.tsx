@@ -1,8 +1,8 @@
 import React from "react";
 
-import MenuItem from "../../../../../ui/src/components/menu-item";
-import { use_toast } from "../../../../../ui/src/components/toast";
-import DownloadIcon from "../../../../../ui/src/icons/download";
+import MenuItem from "~/components/menu-item";
+import { use_toast } from "~/components/toast";
+import DownloadIcon from "~/icons/download";
 
 import { use_canvas } from "../../../hooks";
 import { export_to_file } from "../../../utils";

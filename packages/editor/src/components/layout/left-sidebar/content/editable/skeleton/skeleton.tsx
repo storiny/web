@@ -1,9 +1,9 @@
 import { clsx } from "clsx";
 import React from "react";
 
-import Divider from "../../../../../../../../ui/src/components/divider";
-import Skeleton from "../../../../../../../../ui/src/components/skeleton";
-import Spacer from "../../../../../../../../ui/src/components/spacer";
+import Divider from "~/components/divider";
+import Skeleton from "~/components/skeleton";
+import Spacer from "~/components/spacer";
 
 import styles from "../../../left-sidebar.module.scss";
 import { EditorStoryCardSkeleton } from "../story-card";

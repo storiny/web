@@ -6,22 +6,22 @@ import React from "react";
 
 import { dynamic_loader } from "~/common/dynamic";
 import { UserListSkeleton, VirtualizedUserList } from "~/common/user";
-import Divider from "../../../../../../../../../../../packages/ui/src/components/divider";
-import Input from "../../../../../../../../../../../packages/ui/src/components/input";
-import Option from "../../../../../../../../../../../packages/ui/src/components/option";
-import Select from "../../../../../../../../../../../packages/ui/src/components/select";
-import Spacer from "../../../../../../../../../../../packages/ui/src/components/spacer";
-import Typography from "../../../../../../../../../../../packages/ui/src/components/typography";
-import ErrorState from "../../../../../../../../../../../packages/ui/src/entities/error-state";
-import { use_debounce } from "../../../../../../../../../../../packages/ui/src/hooks/use-debounce";
-import SearchIcon from "../../../../../../../../../../../packages/ui/src/icons/search";
+import Divider from "~/components/divider";
+import Input from "~/components/input";
+import Option from "~/components/option";
+import Select from "~/components/select";
+import Spacer from "~/components/spacer";
+import Typography from "~/components/typography";
+import ErrorState from "~/entities/error-state";
+import { use_debounce } from "~/hooks/use-debounce";
+import SearchIcon from "~/icons/search";
 import {
   get_query_error_type,
   self_action,
   use_get_blocked_users_query
 } from "~/redux/features";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
-import { abbreviate_number } from "../../../../../../../../../../../packages/ui/src/utils/abbreviate-number";
+import { abbreviate_number } from "~/utils/abbreviate-number";
 
 import DashboardTitle from "../../dashboard-title";
 import { BlocksProps } from "./blocks.props";
@@ -160,7 +160,7 @@ const ModerationBlocksClient = (props: BlocksProps): React.ReactElement => {
 
   return (
     <React.Fragment>
-      <main>
+      <main data-root={"true"}>
         <DashboardTitle>Blocked users</DashboardTitle>
         <StatusHeader {...props} />
         <ControlBar

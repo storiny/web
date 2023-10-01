@@ -1,9 +1,9 @@
 import { test } from "@playwright/test";
 
 import {
-  assertHTML,
-  clearEditor,
-  focusEditor,
+  assert_html,
+  clear_editor,
+  focus_editor,
   html,
   initialize
 } from "../utils";
@@ -13,11 +13,11 @@ const TOC_SELECTOR = `[data-testid="toc"]`;
 test.describe("table of contents", () => {
   test.beforeEach(async ({ page }) => {
     await initialize(page);
-    await focusEditor(page);
+    await focus_editor(page);
   });
 
   test("has an `Empty` label when the editor is empty", async ({ page }) => {
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <div>
@@ -25,7 +25,11 @@ test.describe("table of contents", () => {
         </div>
       `,
       undefined,
-      { selector: TOC_SELECTOR, ignoreClasses: true, ignoreInlineStyles: true }
+      {
+        selector: TOC_SELECTOR,
+        ignore_classes: true,
+        ignore_inline_styles: true
+      }
     );
   });
 
@@ -34,7 +38,7 @@ test.describe("table of contents", () => {
   }) => {
     await page.keyboard.type("# hello");
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <div>
@@ -46,12 +50,16 @@ test.describe("table of contents", () => {
         </div>
       `,
       undefined,
-      { selector: TOC_SELECTOR, ignoreClasses: true, ignoreInlineStyles: true }
+      {
+        selector: TOC_SELECTOR,
+        ignore_classes: true,
+        ignore_inline_styles: true
+      }
     );
 
-    await clearEditor(page);
+    await clear_editor(page);
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <div>
@@ -59,7 +67,11 @@ test.describe("table of contents", () => {
         </div>
       `,
       undefined,
-      { selector: TOC_SELECTOR, ignoreClasses: true, ignoreInlineStyles: true }
+      {
+        selector: TOC_SELECTOR,
+        ignore_classes: true,
+        ignore_inline_styles: true
+      }
     );
   });
 
@@ -78,7 +90,7 @@ test.describe("table of contents", () => {
     await page.keyboard.press("Enter");
     await page.keyboard.type("### heading");
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <div>
@@ -104,14 +116,14 @@ test.describe("table of contents", () => {
       undefined,
       {
         selector: TOC_SELECTOR,
-        ignoreClasses: true,
-        ignoreInlineStyles: true
+        ignore_classes: true,
+        ignore_inline_styles: true
       }
     );
 
-    await clearEditor(page);
+    await clear_editor(page);
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <div>
@@ -119,14 +131,18 @@ test.describe("table of contents", () => {
         </div>
       `,
       undefined,
-      { selector: TOC_SELECTOR, ignoreClasses: true, ignoreInlineStyles: true }
+      {
+        selector: TOC_SELECTOR,
+        ignore_classes: true,
+        ignore_inline_styles: true
+      }
     );
   });
 
   test("can handle direct subheadings", async ({ page }) => {
     await page.keyboard.type("### hello");
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <div>
@@ -140,8 +156,8 @@ test.describe("table of contents", () => {
       undefined,
       {
         selector: TOC_SELECTOR,
-        ignoreClasses: true,
-        ignoreInlineStyles: true
+        ignore_classes: true,
+        ignore_inline_styles: true
       }
     );
   });

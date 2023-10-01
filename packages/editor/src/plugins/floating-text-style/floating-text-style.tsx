@@ -15,12 +15,13 @@ import {
 import React from "react";
 import { createPortal as create_portal } from "react-dom";
 
-import ToggleGroup from "../../../../ui/src/components/toggle-group";
-import ToggleGroupItem from "../../../../ui/src/components/toggle-group-item";
-import BoldIcon from "../../../../ui/src/icons/bold";
-import ItalicIcon from "../../../../ui/src/icons/italic";
-import LinkIcon from "../../../../ui/src/icons/link";
-import UnderlineIcon from "../../../../ui/src/icons/underline";
+import ToggleGroup from "~/components/toggle-group";
+import ToggleGroupItem from "~/components/toggle-group-item";
+import BoldIcon from "~/icons/bold";
+import ItalicIcon from "~/icons/italic";
+import LinkIcon from "~/icons/link";
+import UnderlineIcon from "~/icons/underline";
+
 import { link_atom } from "../../atoms";
 import { EDITOR_SHORTCUTS } from "../../constants/shortcuts";
 import { use_bold } from "../../hooks/use-bold";

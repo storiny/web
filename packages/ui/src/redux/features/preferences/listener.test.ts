@@ -1,4 +1,4 @@
-import { compressToUTF16 } from "lz-string";
+import { compressToUTF16 as compress_to_utf16 } from "lz-string";
 
 import { setup_store } from "~/redux/store";
 
@@ -88,7 +88,7 @@ describe("preferences_listener", () => {
 
     expect(localStorage.setItem).toHaveBeenCalledWith(
       LOCAL_STORAGE_KEY,
-      compressToUTF16(
+      compress_to_utf16(
         JSON.stringify({ ...preferences_initial_state, theme: "dark" })
       )
     );

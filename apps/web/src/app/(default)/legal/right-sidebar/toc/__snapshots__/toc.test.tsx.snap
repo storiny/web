@@ -32,19 +32,19 @@ exports[`<LegalToc /> matches snapshot 1`] = `
         style="min-width: 100%; display: table;"
       >
         <ul
-          class="flex-col x ul"
+          class="flex-col ul"
         >
           <li
-            class="flex-col x li"
+            class="flex-col li"
           >
             <a
               href="#h2-1"
             />
             <ul
-              class="flex-col x ul nested-ul"
+              class="flex-col ul nested-ul"
             >
               <li
-                class="flex-col x li"
+                class="flex-col li"
               >
                 <a
                   href="#h3-1"

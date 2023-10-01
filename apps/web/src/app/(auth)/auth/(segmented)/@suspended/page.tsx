@@ -2,11 +2,11 @@ import { clsx } from "clsx";
 import NextLink from "next/link";
 import React from "react";
 
-import Button from "../../../../../../../../packages/ui/src/components/button";
-import Grow from "../../../../../../../../packages/ui/src/components/grow";
-import Link from "../../../../../../../../packages/ui/src/components/link";
-import Spacer from "../../../../../../../../packages/ui/src/components/spacer";
-import Typography from "../../../../../../../../packages/ui/src/components/typography";
+import Button from "~/components/button";
+import Grow from "~/components/grow";
+import Link from "~/components/link";
+import Spacer from "~/components/spacer";
+import Typography from "~/components/typography";
 
 const Page = (): React.ReactElement => (
   <>

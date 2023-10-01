@@ -1,10 +1,11 @@
+import { XmlElement, XmlText } from "yjs";
+import { YMap } from "yjs/dist/src/internals";
+
 import { CollabDecoratorNode } from "../../collaboration/nodes/decorator";
 import { CollabElementNode } from "../../collaboration/nodes/element";
 import { CollabLineBreakNode } from "../../collaboration/nodes/line-break";
 import { CollabTextNode } from "../../collaboration/nodes/text";
 import { get_position_from_element_and_offset } from "../get-position-from-element-and-offset";
-import { XmlElement, XmlText } from "yjs";
-import { YMap } from "yjs/dist/src/internals";
 
 /**
  * Returns the collab node with offset

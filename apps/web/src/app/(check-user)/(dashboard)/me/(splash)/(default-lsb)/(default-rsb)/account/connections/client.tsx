@@ -3,13 +3,10 @@
 import { clsx } from "clsx";
 import React from "react";
 
-import Link from "../../../../../../../../../../../../packages/ui/src/components/link";
-import Spacer from "../../../../../../../../../../../../packages/ui/src/components/spacer";
-import Typography from "../../../../../../../../../../../../packages/ui/src/components/typography";
-import {
-  DateFormat,
-  format_date
-} from "../../../../../../../../../../../../packages/ui/src/utils/format-date";
+import Link from "~/components/link";
+import Spacer from "~/components/spacer";
+import Typography from "~/components/typography";
+import { DateFormat, format_date } from "~/utils/format-date";
 
 import {
   PROVIDER_DISPLAY_NAME_MAP,

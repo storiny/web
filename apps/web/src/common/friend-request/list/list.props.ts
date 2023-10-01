@@ -1,7 +1,7 @@
 import { FriendRequest } from "@storiny/types";
 import { VirtuosoProps } from "react-virtuoso";
 
-import { FriendRequestProps } from "../../../../../../packages/ui/src/entities/friend-request";
+import { FriendRequestProps } from "~/entities/friend-request";
 
 export interface VirtualizedFriendRequestListProps
   extends VirtuosoProps<FriendRequest, any> {

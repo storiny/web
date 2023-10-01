@@ -5,13 +5,11 @@ import NextLink from "next/link";
 import { useSelectedLayoutSegments as use_selected_layout_segments } from "next/navigation";
 import React from "react";
 
-import ScrollArea from "../../../../../../../packages/ui/src/components/scroll-area";
-import Tab, {
-  TabProps
-} from "../../../../../../../packages/ui/src/components/tab";
-import Tabs from "../../../../../../../packages/ui/src/components/tabs";
-import TabsList from "../../../../../../../packages/ui/src/components/tabs-list";
-import Typography from "../../../../../../../packages/ui/src/components/typography";
+import ScrollArea from "~/components/scroll-area";
+import Tab, { TabProps } from "~/components/tab";
+import Tabs from "~/components/tabs";
+import TabsList from "~/components/tabs-list";
+import Typography from "~/components/typography";
 
 import { LegalSegment } from "../types";
 import styles from "./left-sidebar.module.scss";

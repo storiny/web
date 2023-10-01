@@ -1,8 +1,9 @@
 import React from "react";
 
-import Input from "../../../../../../../ui/src/components/input";
-import LetterXIcon from "../../../../../../../ui/src/icons/letter-x";
-import LetterYIcon from "../../../../../../../ui/src/icons/letter-y";
+import Input from "~/components/input";
+import LetterXIcon from "~/icons/letter-x";
+import LetterYIcon from "~/icons/letter-y";
+
 import { use_active_object, use_event_render } from "../../../../../hooks";
 import { modify_object } from "../../../../../utils";
 import DrawItem, { DrawItemRow } from "../../item";

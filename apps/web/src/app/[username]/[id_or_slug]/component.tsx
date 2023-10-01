@@ -8,8 +8,8 @@ import { decompressSync as decompress_sync } from "fflate";
 import React from "react";
 import { Graph } from "schema-dts";
 
-import SplashScreen from "../../../../../../packages/ui/src/layout/splash-screen";
-import { get_cdn_url } from "../../../../../../packages/ui/src/utils/get-cdn-url";
+import SplashScreen from "~/layout/splash-screen";
+import { get_cdn_url } from "~/utils/get-cdn-url";
 
 interface Props {
   doc: Array<number>;

@@ -2,22 +2,22 @@ import { test } from "@playwright/test";
 
 import { EDITOR_CLASSNAMES } from "../../constants";
 import {
-  clickIndentButton,
-  clickOutdentButton
+  click_indent_button,
+  click_outdent_button
 } from "../../keyboard-shortcuts";
 import {
-  assertHTML,
-  assertSelection,
-  focusEditor,
+  assert_html,
+  assert_selection,
+  focus_editor,
   html,
   initialize,
-  pasteFromClipboard
+  paste_from_clipboard
 } from "../../utils";
 
 test.describe("html list copy and paste", () => {
   test.beforeEach(async ({ page }) => {
     await initialize(page);
-    await focusEditor(page);
+    await focus_editor(page);
   });
 
   test("can copy and paste a list element", async ({ page }) => {
@@ -29,9 +29,9 @@ test.describe("html list copy and paste", () => {
         </ul>
       `
     };
-    await pasteFromClipboard(page, clipboard);
+    await paste_from_clipboard(page, clipboard);
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <ul class="${EDITOR_CLASSNAMES.ul}">
@@ -45,23 +45,23 @@ test.describe("html list copy and paste", () => {
       `
     );
 
-    await assertSelection(page, {
-      anchorOffset: 5,
-      anchorPath: [0, 1, 0, 0],
-      focusOffset: 5,
-      focusPath: [0, 1, 0, 0]
+    await assert_selection(page, {
+      anchor_offset: 5,
+      anchor_path: [0, 1, 0, 0],
+      focus_offset: 5,
+      focus_path: [0, 1, 0, 0]
     });
 
-    await clickIndentButton(page);
+    await click_indent_button(page);
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <ul class="${EDITOR_CLASSNAMES.ul}">
           <li value="1" class="${EDITOR_CLASSNAMES.li}" dir="ltr">
             <span data-lexical-text="true">hello</span>
           </li>
-          <li value="2" class="${EDITOR_CLASSNAMES.nestedLi}">
+          <li value="2" class="${EDITOR_CLASSNAMES.nested_li}">
             <ul class="${EDITOR_CLASSNAMES.ul}">
               <li value="1" class="${EDITOR_CLASSNAMES.li}" dir="ltr">
                 <span data-lexical-text="true">world</span>
@@ -72,9 +72,9 @@ test.describe("html list copy and paste", () => {
       `
     );
 
-    await clickOutdentButton(page);
+    await click_outdent_button(page);
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <ul class="${EDITOR_CLASSNAMES.ul}">
@@ -103,16 +103,16 @@ test.describe("html list copy and paste", () => {
         </ul>
       `
     };
-    await pasteFromClipboard(page, clipboard);
+    await paste_from_clipboard(page, clipboard);
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <ul class="${EDITOR_CLASSNAMES.ul}">
           <li value="1" class="${EDITOR_CLASSNAMES.li}" dir="ltr">
             <span data-lexical-text="true">hello</span>
           </li>
-          <li value="2" class="${EDITOR_CLASSNAMES.nestedLi}">
+          <li value="2" class="${EDITOR_CLASSNAMES.nested_li}">
             <ul class="${EDITOR_CLASSNAMES.ul}">
               <li value="1" class="${EDITOR_CLASSNAMES.li}" dir="ltr">
                 <span data-lexical-text="true">awesome</span>
@@ -140,13 +140,13 @@ test.describe("html list copy and paste", () => {
         </ul>
       `
     };
-    await pasteFromClipboard(page, clipboard);
+    await paste_from_clipboard(page, clipboard);
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <ul class="${EDITOR_CLASSNAMES.ul}">
-          <li value="1" class="${EDITOR_CLASSNAMES.nestedLi}">
+          <li value="1" class="${EDITOR_CLASSNAMES.nested_li}">
             <ul class="${EDITOR_CLASSNAMES.ul}">
               <li value="1" class="${EDITOR_CLASSNAMES.li}" dir="ltr">
                 <span data-lexical-text="true">hello</span>
@@ -160,20 +160,20 @@ test.describe("html list copy and paste", () => {
       `
     );
 
-    await assertSelection(page, {
-      anchorOffset: 5,
-      anchorPath: [0, 1, 0, 0],
-      focusOffset: 5,
-      focusPath: [0, 1, 0, 0]
+    await assert_selection(page, {
+      anchor_offset: 5,
+      anchor_path: [0, 1, 0, 0],
+      focus_offset: 5,
+      focus_path: [0, 1, 0, 0]
     });
 
-    await clickIndentButton(page);
+    await click_indent_button(page);
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <ul class="${EDITOR_CLASSNAMES.ul}">
-          <li value="1" class="${EDITOR_CLASSNAMES.nestedLi}">
+          <li value="1" class="${EDITOR_CLASSNAMES.nested_li}">
             <ul class="${EDITOR_CLASSNAMES.ul}">
               <li value="1" class="${EDITOR_CLASSNAMES.li}" dir="ltr">
                 <span data-lexical-text="true">hello</span>
@@ -188,16 +188,16 @@ test.describe("html list copy and paste", () => {
     );
 
     await page.keyboard.press("ArrowUp");
-    await clickOutdentButton(page);
+    await click_outdent_button(page);
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <ul class="${EDITOR_CLASSNAMES.ul}">
           <li value="1" class="${EDITOR_CLASSNAMES.li}" dir="ltr">
             <span data-lexical-text="true">hello</span>
           </li>
-          <li value="2" class="${EDITOR_CLASSNAMES.nestedLi}">
+          <li value="2" class="${EDITOR_CLASSNAMES.nested_li}">
             <ul class="${EDITOR_CLASSNAMES.ul}">
               <li value="1" class="${EDITOR_CLASSNAMES.li}" dir="ltr">
                 <span data-lexical-text="true">world</span>
@@ -224,16 +224,16 @@ test.describe("html list copy and paste", () => {
         </ul>
       `
     };
-    await pasteFromClipboard(page, clipboard);
+    await paste_from_clipboard(page, clipboard);
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <ul class="${EDITOR_CLASSNAMES.ul}">
           <li value="1" class="${EDITOR_CLASSNAMES.li}" dir="ltr">
             <span data-lexical-text="true">hello</span>
           </li>
-          <li value="2" class="${EDITOR_CLASSNAMES.nestedLi}">
+          <li value="2" class="${EDITOR_CLASSNAMES.nested_li}">
             <ul class="${EDITOR_CLASSNAMES.ul}">
               <li value="1" class="${EDITOR_CLASSNAMES.li}" dir="ltr">
                 <span data-lexical-text="true">world</span>
@@ -244,16 +244,16 @@ test.describe("html list copy and paste", () => {
       `
     );
 
-    await assertSelection(page, {
-      anchorOffset: 5,
-      anchorPath: [0, 1, 0, 0, 0, 0],
-      focusOffset: 5,
-      focusPath: [0, 1, 0, 0, 0, 0]
+    await assert_selection(page, {
+      anchor_offset: 5,
+      anchor_path: [0, 1, 0, 0, 0, 0],
+      focus_offset: 5,
+      focus_path: [0, 1, 0, 0, 0, 0]
     });
 
-    await clickOutdentButton(page);
+    await click_outdent_button(page);
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <ul class="${EDITOR_CLASSNAMES.ul}">
@@ -268,13 +268,13 @@ test.describe("html list copy and paste", () => {
     );
 
     await page.keyboard.press("ArrowUp");
-    await clickIndentButton(page);
+    await click_indent_button(page);
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <ul class="${EDITOR_CLASSNAMES.ul}">
-          <li value="1" class="${EDITOR_CLASSNAMES.nestedLi}">
+          <li value="1" class="${EDITOR_CLASSNAMES.nested_li}">
             <ul class="${EDITOR_CLASSNAMES.ul}">
               <li value="1" class="${EDITOR_CLASSNAMES.li}" dir="ltr">
                 <span data-lexical-text="true">hello</span>

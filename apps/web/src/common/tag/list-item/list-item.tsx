@@ -6,7 +6,7 @@ import React from "react";
 import { ItemProps } from "react-virtuoso";
 
 import { VirtualizedTagListContext } from "~/common/tag/list/list-context";
-import Divider from "../../../../../../packages/ui/src/components/divider";
+import Divider from "~/components/divider";
 import Tag from "~/entities/tag";
 
 import styles from "../../virtual/virtual.module.scss";

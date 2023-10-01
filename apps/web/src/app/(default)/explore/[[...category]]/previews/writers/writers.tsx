@@ -6,15 +6,15 @@ import { clsx } from "clsx";
 import NextLink from "next/link";
 import React from "react";
 
-import Avatar from "../../../../../../../../../packages/ui/src/components/avatar";
-import Divider from "../../../../../../../../../packages/ui/src/components/divider";
-import Grow from "../../../../../../../../../packages/ui/src/components/grow";
-import Link from "../../../../../../../../../packages/ui/src/components/link";
-import Skeleton from "../../../../../../../../../packages/ui/src/components/skeleton";
-import Typography from "../../../../../../../../../packages/ui/src/components/typography";
-import ChevronIcon from "../../../../../../../../../packages/ui/src/icons/chevron";
+import Avatar from "~/components/avatar";
+import Divider from "~/components/divider";
+import Grow from "~/components/grow";
+import Link from "~/components/link";
+import Skeleton from "~/components/skeleton";
+import Typography from "~/components/typography";
+import ChevronIcon from "~/icons/chevron";
 import { use_get_explore_writers_query } from "~/redux/features";
-import { abbreviate_number } from "../../../../../../../../../packages/ui/src/utils/abbreviate-number";
+import { abbreviate_number } from "~/utils/abbreviate-number";
 
 import WriterSkeleton from "./skeleton";
 import styles from "./writers.module.scss";

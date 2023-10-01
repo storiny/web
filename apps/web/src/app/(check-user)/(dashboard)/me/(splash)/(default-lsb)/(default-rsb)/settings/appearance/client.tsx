@@ -2,8 +2,8 @@
 
 import React from "react";
 
-import Divider from "../../../../../../../../../../../../packages/ui/src/components/divider";
-import Spacer from "../../../../../../../../../../../../packages/ui/src/components/spacer";
+import Divider from "~/components/divider";
+import Spacer from "~/components/spacer";
 import {
   select_alert_visibility,
   set_alert_visibility

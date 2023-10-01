@@ -2,26 +2,25 @@ import { test } from "@playwright/test";
 
 import { EDITOR_CLASSNAMES, IS_WINDOWS } from "../../constants";
 import {
-  moveLeft,
-  moveToLineBeginning,
-  moveToLineEnd,
-  selectAll
+  move_left,
+  move_to_line_beginning,
+  move_to_line_end,
+  select_all
 } from "../../keyboard-shortcuts";
 import {
-  assertHTML,
-  assertSelection,
+  assert_html,
+  assert_selection,
   copy_to_clipboard,
-  focusEditor,
+  focus_editor,
   html,
   initialize,
-  pasteFromClipboard,
-  sleep
+  paste_from_clipboard
 } from "../../utils";
 
 test.describe("lexical list copy and paste", () => {
   test.beforeEach(async ({ page }) => {
     await initialize(page);
-    await focusEditor(page);
+    await focus_editor(page);
   });
 
   test("can copy and paste partial list items into an empty editor", async ({
@@ -40,7 +39,7 @@ test.describe("lexical list copy and paste", () => {
     // Add a paragraph
     await page.keyboard.type("Some text.");
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <ul class="${EDITOR_CLASSNAMES.ul}">
@@ -60,49 +59,49 @@ test.describe("lexical list copy and paste", () => {
       `
     );
 
-    await assertSelection(page, {
-      anchorOffset: 10,
-      anchorPath: [1, 0, 0],
-      focusOffset: 10,
-      focusPath: [1, 0, 0]
+    await assert_selection(page, {
+      anchor_offset: 10,
+      anchor_path: [1, 0, 0],
+      focus_offset: 10,
+      focus_path: [1, 0, 0]
     });
 
     await page.keyboard.down("Shift");
-    await moveToLineBeginning(page);
-    await moveLeft(page, 3);
+    await move_to_line_beginning(page);
+    await move_left(page, 3);
     await page.keyboard.up("Shift");
 
-    await assertSelection(page, {
-      anchorOffset: 10,
-      anchorPath: [1, 0, 0],
-      focusOffset: 3,
-      focusPath: [0, 2, 0, 0]
+    await assert_selection(page, {
+      anchor_offset: 10,
+      anchor_path: [1, 0, 0],
+      focus_offset: 3,
+      focus_path: [0, 2, 0, 0]
     });
 
     // Copy the partial list item and paragraph
     const clipboard = await copy_to_clipboard(page);
     // Select all and remove content
-    await selectAll(page);
+    await select_all(page);
     await page.keyboard.press("Backspace");
     await page.keyboard.press("Backspace");
 
-    await assertHTML(
+    await assert_html(
       page,
       html`<p class="${EDITOR_CLASSNAMES.paragraph}"><br /></p>`
     );
 
-    await assertSelection(page, {
-      anchorOffset: 0,
-      anchorPath: [0],
-      focusOffset: 0,
-      focusPath: [0]
+    await assert_selection(page, {
+      anchor_offset: 0,
+      anchor_path: [0],
+      focus_offset: 0,
+      focus_path: [0]
     });
 
     // Paste
 
-    await pasteFromClipboard(page, clipboard);
+    await paste_from_clipboard(page, clipboard);
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <ul class="${EDITOR_CLASSNAMES.ul}">
@@ -116,11 +115,11 @@ test.describe("lexical list copy and paste", () => {
       `
     );
 
-    await assertSelection(page, {
-      anchorOffset: 10,
-      anchorPath: [1, 0, 0],
-      focusOffset: 10,
-      focusPath: [1, 0, 0]
+    await assert_selection(page, {
+      anchor_offset: 10,
+      anchor_path: [1, 0, 0],
+      focus_offset: 10,
+      focus_path: [1, 0, 0]
     });
   });
 
@@ -141,7 +140,7 @@ test.describe("lexical list copy and paste", () => {
     // Add a paragraph
     await page.keyboard.type("Some text.");
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <ul class="${EDITOR_CLASSNAMES.ul}">
@@ -161,23 +160,23 @@ test.describe("lexical list copy and paste", () => {
       `
     );
 
-    await assertSelection(page, {
-      anchorOffset: 10,
-      anchorPath: [1, 0, 0],
-      focusOffset: 10,
-      focusPath: [1, 0, 0]
+    await assert_selection(page, {
+      anchor_offset: 10,
+      anchor_path: [1, 0, 0],
+      focus_offset: 10,
+      focus_path: [1, 0, 0]
     });
 
     await page.keyboard.down("Shift");
-    await moveToLineBeginning(page);
-    await moveLeft(page, 3);
+    await move_to_line_beginning(page);
+    await move_left(page, 3);
     await page.keyboard.up("Shift");
 
-    await assertSelection(page, {
-      anchorOffset: 10,
-      anchorPath: [1, 0, 0],
-      focusOffset: 3,
-      focusPath: [0, 2, 0, 0]
+    await assert_selection(page, {
+      anchor_offset: 10,
+      anchor_path: [1, 0, 0],
+      focus_offset: 3,
+      focus_path: [0, 2, 0, 0]
     });
 
     // Copy the partial list item and paragraph
@@ -190,10 +189,10 @@ test.describe("lexical list copy and paste", () => {
       await page.keyboard.press("ArrowUp");
     }
 
-    await moveToLineEnd(page);
+    await move_to_line_end(page);
     await page.keyboard.press("Enter");
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <ul class="${EDITOR_CLASSNAMES.ul}">
@@ -216,16 +215,16 @@ test.describe("lexical list copy and paste", () => {
       `
     );
 
-    await assertSelection(page, {
-      anchorOffset: 0,
-      anchorPath: [0, 1],
-      focusOffset: 0,
-      focusPath: [0, 1]
+    await assert_selection(page, {
+      anchor_offset: 0,
+      anchor_path: [0, 1],
+      focus_offset: 0,
+      focus_path: [0, 1]
     });
 
-    await pasteFromClipboard(page, clipboard);
+    await paste_from_clipboard(page, clipboard);
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <ul class="${EDITOR_CLASSNAMES.ul}">
@@ -253,11 +252,11 @@ test.describe("lexical list copy and paste", () => {
       `
     );
 
-    await assertSelection(page, {
-      anchorOffset: 10,
-      anchorPath: [1, 0, 0],
-      focusOffset: 10,
-      focusPath: [1, 0, 0]
+    await assert_selection(page, {
+      anchor_offset: 10,
+      anchor_path: [1, 0, 0],
+      focus_offset: 10,
+      focus_path: [1, 0, 0]
     });
   });
 
@@ -275,13 +274,13 @@ test.describe("lexical list copy and paste", () => {
     await page.keyboard.press("ArrowUp");
     await page.keyboard.press("ArrowUp");
 
-    await moveToLineBeginning(page);
+    await move_to_line_beginning(page);
     await page.keyboard.down("Shift");
     await page.keyboard.press("ArrowDown");
-    await moveToLineEnd(page);
+    await move_to_line_end(page);
     await page.keyboard.up("Shift");
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <ul class="${EDITOR_CLASSNAMES.ul}">
@@ -304,17 +303,17 @@ test.describe("lexical list copy and paste", () => {
       `
     );
 
-    await assertSelection(page, {
-      anchorOffset: 0,
-      anchorPath: [0, 2, 0, 0],
-      focusOffset: 4,
-      focusPath: [0, 3, 0, 0]
+    await assert_selection(page, {
+      anchor_offset: 0,
+      anchor_path: [0, 2, 0, 0],
+      focus_offset: 4,
+      focus_path: [0, 3, 0, 0]
     });
 
     const clipboard = await copy_to_clipboard(page);
     await page.keyboard.press("Backspace");
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <ul class="${EDITOR_CLASSNAMES.ul}">
@@ -332,16 +331,16 @@ test.describe("lexical list copy and paste", () => {
       `
     );
 
-    await assertSelection(page, {
-      anchorOffset: 0,
-      anchorPath: [0, 2],
-      focusOffset: 0,
-      focusPath: [0, 2]
+    await assert_selection(page, {
+      anchor_offset: 0,
+      anchor_path: [0, 2],
+      focus_offset: 0,
+      focus_path: [0, 2]
     });
 
-    await pasteFromClipboard(page, clipboard);
+    await paste_from_clipboard(page, clipboard);
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <ul class="${EDITOR_CLASSNAMES.ul}">
@@ -364,11 +363,11 @@ test.describe("lexical list copy and paste", () => {
       `
     );
 
-    await assertSelection(page, {
-      anchorOffset: 4,
-      anchorPath: [0, 3, 0, 0],
-      focusOffset: 4,
-      focusPath: [0, 3, 0, 0]
+    await assert_selection(page, {
+      anchor_offset: 4,
+      anchor_path: [0, 3, 0, 0],
+      focus_offset: 4,
+      focus_path: [0, 3, 0, 0]
     });
   });
 
@@ -388,13 +387,13 @@ test.describe("lexical list copy and paste", () => {
     await page.keyboard.press("ArrowUp");
     await page.keyboard.press("ArrowUp");
 
-    await moveToLineBeginning(page);
+    await move_to_line_beginning(page);
     await page.keyboard.down("Shift");
     await page.keyboard.press("ArrowDown");
-    await moveToLineEnd(page);
+    await move_to_line_end(page);
     await page.keyboard.up("Shift");
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <ul class="${EDITOR_CLASSNAMES.ul}">
@@ -417,17 +416,17 @@ test.describe("lexical list copy and paste", () => {
       `
     );
 
-    await assertSelection(page, {
-      anchorOffset: 0,
-      anchorPath: [0, 2, 0, 0],
-      focusOffset: 4,
-      focusPath: [0, 3, 0, 0]
+    await assert_selection(page, {
+      anchor_offset: 0,
+      anchor_path: [0, 2, 0, 0],
+      focus_offset: 4,
+      focus_path: [0, 3, 0, 0]
     });
 
     const clipboard = await copy_to_clipboard(page);
     await page.keyboard.press("ArrowRight");
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <ul class="${EDITOR_CLASSNAMES.ul}">
@@ -450,16 +449,16 @@ test.describe("lexical list copy and paste", () => {
       `
     );
 
-    await assertSelection(page, {
-      anchorOffset: 4,
-      anchorPath: [0, 3, 0, 0],
-      focusOffset: 4,
-      focusPath: [0, 3, 0, 0]
+    await assert_selection(page, {
+      anchor_offset: 4,
+      anchor_path: [0, 3, 0, 0],
+      focus_offset: 4,
+      focus_path: [0, 3, 0, 0]
     });
 
-    await pasteFromClipboard(page, clipboard);
+    await paste_from_clipboard(page, clipboard);
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <ul class="${EDITOR_CLASSNAMES.ul}">
@@ -485,11 +484,11 @@ test.describe("lexical list copy and paste", () => {
       `
     );
 
-    await assertSelection(page, {
-      anchorOffset: 4,
-      anchorPath: [0, 4, 0, 0],
-      focusOffset: 4,
-      focusPath: [0, 4, 0, 0]
+    await assert_selection(page, {
+      anchor_offset: 4,
+      anchor_path: [0, 4, 0, 0],
+      focus_offset: 4,
+      focus_path: [0, 4, 0, 0]
     });
   });
 
@@ -500,7 +499,7 @@ test.describe("lexical list copy and paste", () => {
     await page.keyboard.press("Enter");
     await page.keyboard.type("world");
 
-    await selectAll(page);
+    await select_all(page);
     const clipboard = await copy_to_clipboard(page);
     await page.keyboard.press("Backspace");
 
@@ -517,12 +516,12 @@ test.describe("lexical list copy and paste", () => {
     await page.keyboard.press("ArrowUp");
     await page.keyboard.press("ArrowUp");
 
-    await moveToLineBeginning(page);
+    await move_to_line_beginning(page);
     await page.keyboard.press("ArrowDown");
-    await moveToLineEnd(page);
-    await moveLeft(page, 2);
+    await move_to_line_end(page);
+    await move_left(page, 2);
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <ul class="${EDITOR_CLASSNAMES.ul}">
@@ -545,16 +544,16 @@ test.describe("lexical list copy and paste", () => {
       `
     );
 
-    await assertSelection(page, {
-      anchorOffset: 2,
-      anchorPath: [0, 3, 0, 0],
-      focusOffset: 2,
-      focusPath: [0, 3, 0, 0]
+    await assert_selection(page, {
+      anchor_offset: 2,
+      anchor_path: [0, 3, 0, 0],
+      focus_offset: 2,
+      focus_path: [0, 3, 0, 0]
     });
 
-    await pasteFromClipboard(page, clipboard);
+    await paste_from_clipboard(page, clipboard);
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <ul class="${EDITOR_CLASSNAMES.ul}">
@@ -582,11 +581,11 @@ test.describe("lexical list copy and paste", () => {
       `
     );
 
-    await assertSelection(page, {
-      anchorOffset: 5,
-      anchorPath: [1, 0, 0],
-      focusOffset: 5,
-      focusPath: [1, 0, 0]
+    await assert_selection(page, {
+      anchor_offset: 5,
+      anchor_path: [1, 0, 0],
+      focus_offset: 5,
+      focus_path: [1, 0, 0]
     });
   });
 
@@ -597,7 +596,7 @@ test.describe("lexical list copy and paste", () => {
     await page.keyboard.press("Enter");
     await page.keyboard.type("world");
 
-    await selectAll(page);
+    await select_all(page);
     const clipboard = await copy_to_clipboard(page);
     await page.keyboard.press("Backspace");
 
@@ -612,9 +611,9 @@ test.describe("lexical list copy and paste", () => {
     await page.keyboard.type("five");
     await page.keyboard.press("Enter");
 
-    await pasteFromClipboard(page, clipboard);
+    await paste_from_clipboard(page, clipboard);
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <ul class="${EDITOR_CLASSNAMES.ul}">
@@ -643,16 +642,16 @@ test.describe("lexical list copy and paste", () => {
       `
     );
 
-    await assertSelection(page, {
-      anchorOffset: 5,
-      anchorPath: [1, 0, 0],
-      focusOffset: 5,
-      focusPath: [1, 0, 0]
+    await assert_selection(page, {
+      anchor_offset: 5,
+      anchor_path: [1, 0, 0],
+      focus_offset: 5,
+      focus_path: [1, 0, 0]
     });
 
-    await pasteFromClipboard(page, clipboard);
+    await paste_from_clipboard(page, clipboard);
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <ul class="${EDITOR_CLASSNAMES.ul}">
@@ -684,11 +683,11 @@ test.describe("lexical list copy and paste", () => {
       `
     );
 
-    await assertSelection(page, {
-      anchorOffset: 5,
-      anchorPath: [2, 0, 0],
-      focusOffset: 5,
-      focusPath: [2, 0, 0]
+    await assert_selection(page, {
+      anchor_offset: 5,
+      anchor_path: [2, 0, 0],
+      focus_offset: 5,
+      focus_path: [2, 0, 0]
     });
   });
 });

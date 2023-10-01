@@ -1,5 +1,5 @@
 import { GetCredentialSettingsResponse } from "~/common/grpc";
-import { SubmitHandler } from "../../../../../../../../../../../../../packages/ui/src/components/form";
+import { SubmitHandler } from "~/components/form";
 
 import { EmailSettingsSchema } from "./email-group.schema";
 

@@ -8,7 +8,7 @@ const DefaultDashboardRightSidebarLayout = ({
   children: React.ReactNode;
 }): React.ReactElement => (
   <>
-    <main>{children}</main>
+    <main data-root={"true"}>{children}</main>
     <DefaultDashboardRightSidebar />
   </>
 );

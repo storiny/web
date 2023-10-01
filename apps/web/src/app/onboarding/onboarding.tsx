@@ -1,5 +1,4 @@
 import { StoryCategory } from "@storiny/shared";
-
 import {
   CATEGORY_ICON_MAP,
   CATEGORY_LABEL_MAP
@@ -8,22 +7,20 @@ import { clsx } from "clsx";
 import { compressToEncodedURIComponent as compress_to_encoded_uri_component } from "lz-string";
 import React from "react";
 
-import Logo from "../../../../../packages/ui/src/brand/logo";
+import Logo from "~/brand/logo";
 import SuspenseLoader from "~/common/suspense-loader";
-import Chip from "../../../../../packages/ui/src/components/chip";
-import Divider from "../../../../../packages/ui/src/components/divider";
-import Grow from "../../../../../packages/ui/src/components/grow";
-import Modal, {
-  ModalFooterButton
-} from "../../../../../packages/ui/src/components/modal";
-import ScrollArea from "../../../../../packages/ui/src/components/scroll-area";
-import Spacer from "../../../../../packages/ui/src/components/spacer";
-import Stepper from "../../../../../packages/ui/src/components/stepper";
-import Typography from "../../../../../packages/ui/src/components/typography";
-import ErrorState from "../../../../../packages/ui/src/entities/error-state";
-import { use_media_query } from "../../../../../packages/ui/src/hooks/use-media-query";
-import CheckIcon from "../../../../../packages/ui/src/icons/check";
-import PlusIcon from "../../../../../packages/ui/src/icons/plus";
+import Chip from "~/components/chip";
+import Divider from "~/components/divider";
+import Grow from "~/components/grow";
+import Modal, { ModalFooterButton } from "~/components/modal";
+import ScrollArea from "~/components/scroll-area";
+import Spacer from "~/components/spacer";
+import Stepper from "~/components/stepper";
+import Typography from "~/components/typography";
+import ErrorState from "~/entities/error-state";
+import { use_media_query } from "~/hooks/use-media-query";
+import CheckIcon from "~/icons/check";
+import PlusIcon from "~/icons/plus";
 import {
   boolean_action,
   get_query_error_type,

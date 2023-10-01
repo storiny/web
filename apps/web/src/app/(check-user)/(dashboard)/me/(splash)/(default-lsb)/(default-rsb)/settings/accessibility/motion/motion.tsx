@@ -1,10 +1,10 @@
 import { clsx } from "clsx";
 import React from "react";
 
-import Radio from "../../../../../../../../../../../../../packages/ui/src/components/radio";
-import RadioGroup from "../../../../../../../../../../../../../packages/ui/src/components/radio-group";
-import Spacer from "../../../../../../../../../../../../../packages/ui/src/components/spacer";
-import Typography from "../../../../../../../../../../../../../packages/ui/src/components/typography";
+import Radio from "~/components/radio";
+import RadioGroup from "~/components/radio-group";
+import Spacer from "~/components/spacer";
+import Typography from "~/components/typography";
 import { set_reduced_motion } from "~/redux/features";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 
@@ -34,8 +34,8 @@ const MotionPreference = (): React.ReactElement => {
       <Spacer orientation={"vertical"} size={3} />
       <RadioGroup
         className={clsx(styles.x, styles["radio-group"])}
-        onValueChange={(next_value: typeof reduced_motion): void => {
-          dispatch(set_reduced_motion(next_value));
+        onValueChange={(next_value): void => {
+          dispatch(set_reduced_motion(next_value as typeof reduced_motion));
         }}
         value={reduced_motion}
       >

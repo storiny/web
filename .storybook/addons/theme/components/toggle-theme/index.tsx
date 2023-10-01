@@ -4,10 +4,10 @@ import Moon from "../icons/Moon";
 import Sun from "../icons/Sun";
 
 const ToggleTheme = () => {
-  const [isDark, setDark] = React.useState(false);
+  const [is_dark, set_dark] = React.useState(false);
 
   const updateMode = () => {
-    setDark(!isDark);
+    set_dark((prev_state) => !prev_state);
   };
 
   React.useEffect(() => {
@@ -17,20 +17,20 @@ const ToggleTheme = () => {
     const iframeDocument =
       iframe.contentDocument || iframe.contentWindow?.document;
 
-    iframeDocument.documentElement.setAttribute(
+    iframeDocument?.documentElement.setAttribute(
       "data-theme",
-      isDark ? "dark" : "light"
+      is_dark ? "dark" : "light"
     );
-  }, [isDark]);
+  }, [is_dark]);
 
   return (
     <IconButton
       key="theme-toggle"
       active={false}
-      title={isDark ? "Light theme" : "Dark theme"}
+      title={is_dark ? "Light theme" : "Dark theme"}
       onClick={updateMode}
     >
-      {isDark ? <Sun /> : <Moon />}
+      {is_dark ? <Sun /> : <Moon />}
     </IconButton>
   );
 };

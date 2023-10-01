@@ -1,7 +1,7 @@
 import { clsx } from "clsx";
 import React from "react";
 
-import Skeleton from "../../../../../../../../../packages/ui/src/components/skeleton";
+import Skeleton from "~/components/skeleton";
 
 import styles from "./tags.module.scss";
 

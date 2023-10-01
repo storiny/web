@@ -1,9 +1,9 @@
 import { clsx } from "clsx";
 import React from "react";
 
-import ScrollArea from "../../../../../../../../ui/src/components/scroll-area";
-import Spacer from "../../../../../../../../ui/src/components/spacer";
-import Typography from "../../../../../../../../ui/src/components/typography";
+import ScrollArea from "~/components/scroll-area";
+import Spacer from "~/components/spacer";
+import Typography from "~/components/typography";
 
 import CodeBlockItem from "./code-block";
 import EmbedItem from "./embed";
@@ -21,6 +21,7 @@ const Insert = ({ disabled }: { disabled?: boolean }): React.ReactElement => (
     <Spacer orientation={"vertical"} size={2} />
     <ScrollArea
       slot_props={{
+        // eslint-disable-next-line prefer-snakecase/prefer-snakecase
         viewport: { asChild: true }
       }}
     >

@@ -5,8 +5,8 @@ import AppStateProvider from "../packages/ui/src/redux/components/root-provider"
 // noinspection ES6PreferShortImport
 import { store } from "../packages/ui/src/redux/store";
 import * as React from "react";
-import { setupWorker, rest } from "msw";
-import { registerApiEndpoints } from "./api";
+import { setupWorker as setup_worker, rest } from "msw";
+import { register_api_endpoints } from "./api";
 
 const preview: Preview = {
   decorators: [
@@ -50,12 +50,12 @@ const preview: Preview = {
 // and story's runtime (browser). However, we cannot call `setupWorker`
 // in Node environment, so we need to check if we're in the browser.
 if (typeof global.process === "undefined") {
-  const worker = setupWorker();
+  const worker = setup_worker();
   worker.start().then(() => undefined);
   // Expose worker globally
   window.msw = { worker, rest };
   // Register global endpoints
-  registerApiEndpoints().then(() => undefined);
+  register_api_endpoints().then(() => undefined);
 }
 
 export default preview;

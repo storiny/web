@@ -6,7 +6,7 @@ import { IS_MAC } from "../../constants";
  * Deletes text in backward direction
  * @param page Page
  */
-export const deleteBackward = async (page: Page): Promise<void> => {
+export const delete_backward = async (page: Page): Promise<void> => {
   if (IS_MAC) {
     await page.keyboard.down("Control");
     await page.keyboard.press("h");

@@ -5,9 +5,9 @@ import dynamic from "next/dynamic";
 import React from "react";
 
 import { dynamic_loader } from "~/common/dynamic";
-import Grow from "../../../../../../../../../../../../packages/ui/src/components/grow";
-import { use_media_query } from "../../../../../../../../../../../../packages/ui/src/hooks/use-media-query";
-import RightSidebar from "../../../../../../../../../../../../packages/ui/src/layout/right-sidebar";
+import Grow from "~/components/grow";
+import { use_media_query } from "~/hooks/use-media-query";
+import RightSidebar from "~/layout/right-sidebar";
 import { self_action } from "~/redux/features";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 import { BREAKPOINTS } from "~/theme/breakpoints";

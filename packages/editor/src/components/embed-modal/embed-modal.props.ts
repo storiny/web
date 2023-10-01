@@ -1,4 +1,4 @@
-import { use_modal } from "../../../../ui/src/components/modal";
+import { use_modal } from "~/components/modal";
 
 export interface EmbedModalProps {
   modal?: boolean;

@@ -9,7 +9,7 @@ import {
 } from "lexical";
 import React from "react";
 
-import Typography from "../../../../ui/src/components/typography";
+import Typography from "~/components/typography";
 
 import {
   $is_heading_node,
@@ -35,7 +35,9 @@ const use_headings_observer = (
   set_active_heading: (node_key: NodeKey) => void
 ): void => {
   const [editor] = use_lexical_composer_context();
-  const heading_elements_ref = React.useRef<IntersectionObserverEntry | {}>({});
+  const heading_elements_ref = React.useRef<IntersectionObserverEntry | object>(
+    {}
+  );
 
   React.useEffect(() => {
     const callback: IntersectionObserverCallback = (headings) => {
@@ -239,7 +241,7 @@ const TableOfContentsPlugin = (): React.ReactElement => {
     editor.getEditorState().read(() => {
       const dom_element = editor.getElementByKey(key);
       if (dom_element) {
-        domElement.scrollIntoView({ behavior: "smooth" });
+        dom_element.scrollIntoView({ behavior: "smooth" });
       }
     });
   };
@@ -291,7 +293,7 @@ const TableOfContentsPlugin = (): React.ReactElement => {
                   current_table_of_contents
                 );
             } else if (mutation === "updated") {
-              const pext_heading = $getNodeByKey<HeadingNode>(node_key);
+              const pext_heading = $get_node_by_key<HeadingNode>(node_key);
 
               if (pext_heading !== null) {
                 let prev_heading = pext_heading.getPreviousSibling();

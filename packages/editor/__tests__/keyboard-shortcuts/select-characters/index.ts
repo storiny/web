@@ -1,21 +1,21 @@
 import { Page } from "@playwright/test";
 
-import { moveLeft } from "../move-left";
-import { moveRight } from "../move-right";
+import { move_left } from "../move-left";
+import { move_right } from "../move-right";
 
 /**
- * Selects `numCharacters` in the specified direction
+ * Selects `num_characters` in the specified direction
  * @param page Page
  * @param direction Selection direction
- * @param numCharacters Number of characters to select
+ * @param num_characters Number of characters to select
  */
-export const selectCharacters = async (
+export const select_characters = async (
   page: Page,
   direction: "left" | "right",
-  numCharacters = 1
+  num_characters = 1
 ): Promise<void> => {
-  const moveFunction = direction === "left" ? moveLeft : moveRight;
+  const move_function = direction === "left" ? move_left : move_right;
   await page.keyboard.down("Shift");
-  await moveFunction(page, numCharacters);
+  await move_function(page, num_characters);
   await page.keyboard.up("Shift");
 };

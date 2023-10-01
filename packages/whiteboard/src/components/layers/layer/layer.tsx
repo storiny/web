@@ -2,25 +2,25 @@ import clsx from "clsx";
 import { useAtomValue as use_atom_value } from "jotai";
 import React from "react";
 
+import Grow from "~/components/grow";
+import IconButton from "~/components/icon-button";
+import Input from "~/components/input";
+import ArrowIcon from "~/icons/arrow";
+import CircleIcon from "~/icons/circle";
+import DiamondIcon from "~/icons/diamond";
+import EyeIcon from "~/icons/eye";
+import EyeClosedIcon from "~/icons/eye-closed";
+import GripIcon from "~/icons/grip";
+import ImageIcon from "~/icons/image";
+import LineIcon from "~/icons/line";
+import LockOpenIcon from "~/icons/lock-open";
+import PencilIcon from "~/icons/pencil";
+import RectangleIcon from "~/icons/rectangle";
+import TrashIcon from "~/icons/trash";
+import TypographyIcon from "~/icons/typography";
 import { capitalize } from "~/utils/capitalize";
 import { truncate } from "~/utils/truncate";
 
-import Grow from "../../../../../ui/src/components/grow";
-import IconButton from "../../../../../ui/src/components/icon-button";
-import Input from "../../../../../ui/src/components/input";
-import ArrowIcon from "../../../../../ui/src/icons/arrow";
-import CircleIcon from "../../../../../ui/src/icons/circle";
-import DiamondIcon from "../../../../../ui/src/icons/diamond";
-import EyeIcon from "../../../../../ui/src/icons/eye";
-import EyeClosedIcon from "../../../../../ui/src/icons/eye-closed";
-import GripIcon from "../../../../../ui/src/icons/grip";
-import ImageIcon from "../../../../../ui/src/icons/image";
-import LineIcon from "../../../../../ui/src/icons/line";
-import LockOpenIcon from "../../../../../ui/src/icons/lock-open";
-import PencilIcon from "../../../../../ui/src/icons/pencil";
-import RectangleIcon from "../../../../../ui/src/icons/rectangle";
-import TrashIcon from "../../../../../ui/src/icons/trash";
-import TypographyIcon from "../../../../../ui/src/icons/typography";
 import { is_layers_dragging_atom } from "../../../atoms";
 import { LayerType } from "../../../constants";
 import { use_canvas, use_event_render } from "../../../hooks";
@@ -241,7 +241,7 @@ const Layer = React.forwardRef<HTMLLIElement, LayerProps>((props, ref) => {
           <IconButton
             aria-label={"Edit layer name"}
             className={clsx("focus-invert", styles.x, styles["button"])}
-            onClick={(event: Event): void => {
+            onClick={(event): void => {
               event.stopPropagation();
               set_is_editing(true);
             }}
@@ -259,7 +259,7 @@ const Layer = React.forwardRef<HTMLLIElement, LayerProps>((props, ref) => {
               styles["button"],
               layer.get("locked") && styles.pinned
             )}
-            onClick={(event: Event): void => {
+            onClick={(event): void => {
               event.stopPropagation();
               toggle_layer_lock();
             }}
@@ -277,7 +277,7 @@ const Layer = React.forwardRef<HTMLLIElement, LayerProps>((props, ref) => {
               styles["button"],
               !layer.visible && styles.pinned
             )}
-            onClick={(event: Event): void => {
+            onClick={(event): void => {
               event.stopPropagation();
               toggle_layer_visibility();
             }}
@@ -290,7 +290,7 @@ const Layer = React.forwardRef<HTMLLIElement, LayerProps>((props, ref) => {
           <IconButton
             aria-label={"Remove layer"}
             className={clsx("focus-invert", styles.x, styles["button"])}
-            onClick={(event: Event): void => {
+            onClick={(event): void => {
               event.stopPropagation();
               remove_layer();
             }}

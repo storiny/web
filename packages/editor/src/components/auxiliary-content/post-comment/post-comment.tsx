@@ -3,10 +3,10 @@ import { clsx } from "clsx";
 import { useAtomValue as use_atom_value } from "jotai";
 import React from "react";
 
-import Avatar from "../../../../../ui/src/components/avatar";
-import Button from "../../../../../ui/src/components/button";
+import Avatar from "~/components/avatar";
+import Button from "~/components/button";
 import { use_toast } from "~/components/toast";
-import ResponseTextarea from "../../../../../ui/src/entities/response-textarea";
+import ResponseTextarea from "~/entities/response-textarea";
 import {
   get_story_comments_api,
   select_is_logged_in,

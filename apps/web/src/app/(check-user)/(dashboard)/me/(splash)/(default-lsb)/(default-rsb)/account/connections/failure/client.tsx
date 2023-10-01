@@ -1,12 +1,12 @@
 import NextLink from "next/link";
 import React from "react";
 
-import Button from "../../../../../../../../../../../../../packages/ui/src/components/button";
-import Link from "../../../../../../../../../../../../../packages/ui/src/components/link";
-import Spacer from "../../../../../../../../../../../../../packages/ui/src/components/spacer";
-import CustomState from "../../../../../../../../../../../../../packages/ui/src/entities/custom-state";
-import LockExclamationIcon from "../../../../../../../../../../../../../packages/ui/src/icons/lock-exclamation";
-import UnlinkIcon from "../../../../../../../../../../../../../packages/ui/src/icons/unlink";
+import Button from "~/components/button";
+import Link from "~/components/link";
+import Spacer from "~/components/spacer";
+import CustomState from "~/entities/custom-state";
+import LockExclamationIcon from "~/icons/lock-exclamation";
+import UnlinkIcon from "~/icons/unlink";
 
 import DashboardGroup from "../../../../dashboard-group";
 import DashboardTitle from "../../../../dashboard-title";

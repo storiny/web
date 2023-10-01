@@ -2,11 +2,11 @@ import { clsx } from "clsx";
 import { useAtomValue as use_atom_value } from "jotai";
 import React from "react";
 
-import Avatar from "../../../../../../ui/src/components/avatar";
-import AvatarGroup from "../../../../../../ui/src/components/avatar-group";
-import Divider from "../../../../../../ui/src/components/divider";
-import Tooltip from "../../../../../../ui/src/components/tooltip";
-import { use_media_query } from "../../../../../../ui/src/hooks/use-media-query";
+import Avatar from "~/components/avatar";
+import AvatarGroup from "~/components/avatar-group";
+import Divider from "~/components/divider";
+import Tooltip from "~/components/tooltip";
+import { use_media_query } from "~/hooks/use-media-query";
 import { BREAKPOINTS } from "~/theme/breakpoints";
 import { capitalize } from "~/utils/capitalize";
 
@@ -50,7 +50,7 @@ const EditorPresence = (): React.ReactElement => {
     const update_presences = (): void => {
       if (awareness) {
         const presences = Array.from(awareness.getStates().entries())
-          .filter(([client_id]) => client_id !== awareness.client_id)
+          .filter(([client_id]) => client_id !== awareness.clientID)
           .map(([client_id, value]) => ({
             ...value,
             client_id
@@ -75,14 +75,14 @@ const EditorPresence = (): React.ReactElement => {
   return (
     <div className={clsx("flex-center", styles.x, styles.presence)}>
       {editors.map((editor) => (
-        <Participant key={String(editor.clientID)} presence={editor} />
+        <Participant key={String(editor.client_id)} presence={editor} />
       ))}
       {!is_smaller_than_tablet && viewers.length ? (
         <React.Fragment>
           <Divider orientation={"vertical"} />
           <AvatarGroup>
             {viewers.map((viewer) => (
-              <Participant key={String(viewer.clientID)} presence={viewer} />
+              <Participant key={String(viewer.client_id)} presence={viewer} />
             ))}
           </AvatarGroup>
         </React.Fragment>

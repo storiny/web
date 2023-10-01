@@ -1,12 +1,12 @@
 import { clsx } from "clsx";
 import React from "react";
 
-import Button from "../../../../../../../../../../../../../packages/ui/src/components/button";
-import Grow from "../../../../../../../../../../../../../packages/ui/src/components/grow";
-import Spacer from "../../../../../../../../../../../../../packages/ui/src/components/spacer";
-import Typography from "../../../../../../../../../../../../../packages/ui/src/components/typography";
-import TitleBlock from "../../../../../../../../../../../../../packages/ui/src/entities/title-block";
-import CheckIcon from "../../../../../../../../../../../../../packages/ui/src/icons/check";
+import Button from "~/components/button";
+import Grow from "~/components/grow";
+import Spacer from "~/components/spacer";
+import Typography from "~/components/typography";
+import TitleBlock from "~/entities/title-block";
+import CheckIcon from "~/icons/check";
 
 import DashboardGroup from "../../../../dashboard-group";
 import styles from "./connected-accounts-group.module.scss";

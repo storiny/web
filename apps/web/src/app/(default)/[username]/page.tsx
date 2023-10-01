@@ -6,7 +6,7 @@ import React from "react";
 
 import { get_profile } from "~/common/grpc";
 import { handle_exception } from "~/common/grpc/utils";
-import { get_user } from "src/common/utils/get-user";
+import { get_user } from "~/common/utils/get-user";
 
 import Component from "./component";
 

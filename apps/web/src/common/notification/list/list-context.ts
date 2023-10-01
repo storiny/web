@@ -2,7 +2,7 @@
 
 import React from "react";
 
-import { NotificationProps } from "../../../../../../packages/ui/src/entities/notification";
+import { NotificationProps } from "~/entities/notification";
 
 // Context for individual notification entities.
 export const VirtualizedNotificationListContext = React.createContext<

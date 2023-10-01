@@ -2,8 +2,8 @@ import { clsx } from "clsx";
 import { useAtomValue as use_atom_value } from "jotai";
 import React from "react";
 
-import Option from "../../../../../../ui/src/components/option";
-import Select from "../../../../../../ui/src/components/select";
+import Option from "~/components/option";
+import Select from "~/components/select";
 
 import { doc_status_atom } from "../../../../atoms";
 import {

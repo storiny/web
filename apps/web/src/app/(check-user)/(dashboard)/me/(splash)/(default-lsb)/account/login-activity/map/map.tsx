@@ -4,9 +4,9 @@ import { clsx } from "clsx";
 import { Map as MapImpl, Marker } from "maplibre-gl";
 import React from "react";
 
-import AspectRatio from "../../../../../../../../../../../../packages/ui/src/components/aspect-ratio";
-import Link from "../../../../../../../../../../../../packages/ui/src/components/link";
-import Typography from "../../../../../../../../../../../../packages/ui/src/components/typography";
+import AspectRatio from "~/components/aspect-ratio";
+import Link from "~/components/link";
+import Typography from "~/components/typography";
 
 import styles from "./map.module.scss";
 import { MapProps } from "./map.props";

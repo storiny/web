@@ -2,15 +2,15 @@ import { ImageSize } from "@storiny/shared";
 import { clsx } from "clsx";
 import React from "react";
 
-import AspectRatio from "../../../../../../../../../../../../packages/ui/src/components/aspect-ratio";
-import { use_confirmation } from "../../../../../../../../../../../../packages/ui/src/components/confirmation";
-import IconButton from "../../../../../../../../../../../../packages/ui/src/components/icon-button";
-import Image from "../../../../../../../../../../../../packages/ui/src/components/image";
-import { use_toast } from "../../../../../../../../../../../../packages/ui/src/components/toast";
+import AspectRatio from "~/components/aspect-ratio";
+import { use_confirmation } from "~/components/confirmation";
+import IconButton from "~/components/icon-button";
+import Image from "~/components/image";
+import { use_toast } from "~/components/toast";
 import Gallery from "~/entities/gallery";
-import PencilIcon from "../../../../../../../../../../../../packages/ui/src/icons/pencil";
-import PhotoPlusIcon from "../../../../../../../../../../../../packages/ui/src/icons/photo-plus";
-import TrashIcon from "../../../../../../../../../../../../packages/ui/src/icons/trash";
+import PencilIcon from "~/icons/pencil";
+import PhotoPlusIcon from "~/icons/photo-plus";
+import TrashIcon from "~/icons/trash";
 import {
   mutate_user,
   select_user,
@@ -18,7 +18,7 @@ import {
 } from "~/redux/features";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 import { BREAKPOINTS } from "~/theme/breakpoints";
-import { get_cdn_url } from "../../../../../../../../../../../../packages/ui/src/utils/get-cdn-url";
+import { get_cdn_url } from "~/utils/get-cdn-url";
 
 import styles from "./banner-settings.module.scss";
 

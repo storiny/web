@@ -11,7 +11,7 @@ import DefaultDashboardLeftSidebarLayout from "../../layout";
 import ContentRelationsPage from "./client";
 
 const meta: Meta<typeof ContentRelationsPage> = {
-  title: "dashboard/Content/relations",
+  title: "dashboard/content/relations",
   component: ContentRelationsPage,
   args: {
     follower_count: 5,

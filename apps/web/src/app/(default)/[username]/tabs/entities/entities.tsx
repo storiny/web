@@ -3,8 +3,8 @@ import React from "react";
 
 import { dynamic_loader } from "~/common/dynamic";
 import { UserListSkeleton, VirtualizedUserList } from "~/common/user";
-import ErrorState from "../../../../../../../../packages/ui/src/entities/error-state";
-import { use_debounce } from "../../../../../../../../packages/ui/src/hooks/use-debounce";
+import ErrorState from "~/entities/error-state";
+import { use_debounce } from "~/hooks/use-debounce";
 import {
   get_query_error_type,
   GetUserEntityType,

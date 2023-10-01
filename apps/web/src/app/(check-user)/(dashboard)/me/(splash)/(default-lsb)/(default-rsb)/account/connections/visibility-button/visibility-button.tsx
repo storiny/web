@@ -1,7 +1,7 @@
 import React from "react";
 
-import Button from "../../../../../../../../../../../../../packages/ui/src/components/button";
-import { use_toast } from "../../../../../../../../../../../../../packages/ui/src/components/toast";
+import Button from "~/components/button";
+import { use_toast } from "~/components/toast";
 import { use_connection_visibility_mutation } from "~/redux/features";
 
 import { VisibilityButtonProps } from "./visibility-button.props";

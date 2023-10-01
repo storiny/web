@@ -2,16 +2,12 @@ import { IncomingFriendRequest } from "@storiny/shared";
 import { clsx } from "clsx";
 import React from "react";
 
-import Form, {
-  SubmitHandler,
-  use_form,
-  zod_resolver
-} from "../../../../../../../../../../../../../../packages/ui/src/components/form";
-import FormRadio from "../../../../../../../../../../../../../../packages/ui/src/components/form-radio";
-import FormRadioGroup from "../../../../../../../../../../../../../../packages/ui/src/components/form-radio-group";
-import Spacer from "../../../../../../../../../../../../../../packages/ui/src/components/spacer";
-import { use_toast } from "../../../../../../../../../../../../../../packages/ui/src/components/toast";
-import Typography from "../../../../../../../../../../../../../../packages/ui/src/components/typography";
+import Form, { SubmitHandler, use_form, zod_resolver } from "~/components/form";
+import FormRadio from "~/components/form-radio";
+import FormRadioGroup from "~/components/form-radio-group";
+import Spacer from "~/components/spacer";
+import { use_toast } from "~/components/toast";
+import Typography from "~/components/typography";
 import { use_incoming_friend_requests_mutation } from "~/redux/features";
 
 import styles from "../site-safety.module.scss";

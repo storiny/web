@@ -1,18 +1,17 @@
 import clsx from "clsx";
 import React from "react";
 
-import Divider from "../../../../../../../ui/src/components/divider";
-import IconButton, {
-  IconButtonProps
-} from "../../../../../../../ui/src/components/icon-button";
-import Spacer from "../../../../../../../ui/src/components/spacer";
-import Tooltip from "../../../../../../../ui/src/components/tooltip";
-import LayoutAlignBottomIcon from "../../../../../../../ui/src/icons/layout-align-bottom";
-import LayoutAlignCenterIcon from "../../../../../../../ui/src/icons/layout-align-center";
-import LayoutAlignLeftIcon from "../../../../../../../ui/src/icons/layout-align-left";
-import LayoutAlignMiddleIcon from "../../../../../../../ui/src/icons/layout-align-middle";
-import LayoutAlignRightIcon from "../../../../../../../ui/src/icons/layout-align-right";
-import LayoutAlignTopIcon from "../../../../../../../ui/src/icons/layout-align-top";
+import Divider from "~/components/divider";
+import IconButton, { IconButtonProps } from "~/components/icon-button";
+import Spacer from "~/components/spacer";
+import Tooltip from "~/components/tooltip";
+import LayoutAlignBottomIcon from "~/icons/layout-align-bottom";
+import LayoutAlignCenterIcon from "~/icons/layout-align-center";
+import LayoutAlignLeftIcon from "~/icons/layout-align-left";
+import LayoutAlignMiddleIcon from "~/icons/layout-align-middle";
+import LayoutAlignRightIcon from "~/icons/layout-align-right";
+import LayoutAlignTopIcon from "~/icons/layout-align-top";
+
 import { use_canvas, use_event_render } from "../../../../../hooks";
 import { is_group, modify_object } from "../../../../../utils";
 import DrawItem, { DrawItemRow } from "../../item";

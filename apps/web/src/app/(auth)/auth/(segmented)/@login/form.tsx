@@ -5,23 +5,19 @@ import { clsx } from "clsx";
 import { useRouter as use_router } from "next/navigation";
 import React from "react";
 
-import Button from "../../../../../../../../packages/ui/src/components/button";
-import Form, {
-  SubmitHandler,
-  use_form,
-  zod_resolver
-} from "../../../../../../../../packages/ui/src/components/form";
-import FormCheckbox from "../../../../../../../../packages/ui/src/components/form-checkbox";
-import FormInput from "../../../../../../../../packages/ui/src/components/form-input";
-import FormPasswordInput from "../../../../../../../../packages/ui/src/components/form-password-input";
-import Grow from "../../../../../../../../packages/ui/src/components/grow";
-import Link from "../../../../../../../../packages/ui/src/components/link";
-import Spacer from "../../../../../../../../packages/ui/src/components/spacer";
-import { use_toast } from "../../../../../../../../packages/ui/src/components/toast";
+import Button from "~/components/button";
+import Form, { SubmitHandler, use_form, zod_resolver } from "~/components/form";
+import FormCheckbox from "~/components/form-checkbox";
+import FormInput from "~/components/form-input";
+import FormPasswordInput from "~/components/form-password-input";
+import Grow from "~/components/grow";
+import Link from "~/components/link";
+import Spacer from "~/components/spacer";
+import { use_toast } from "~/components/toast";
 import { use_login_mutation } from "~/redux/features";
 
 import { use_auth_state } from "../../../actions";
-import { LoginSchema, LOGIN_SCHEMA } from "./schema";
+import { LOGIN_SCHEMA, LoginSchema } from "./schema";
 
 interface Props {
   on_submit?: SubmitHandler<LoginSchema>;

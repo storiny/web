@@ -2,12 +2,12 @@ import clsx from "clsx";
 import { useSetAtom as use_set_atom } from "jotai";
 import React from "react";
 
-import NavigationItem from "../../../../../../../ui/src/components/navigation-item";
-import Separator from "../../../../../../../ui/src/components/separator";
+import NavigationItem from "~/components/navigation-item";
+import Separator from "~/components/separator";
 import FileIcon from "~/icons/file";
 import LicenseIcon from "~/icons/license";
 import SeoIcon from "~/icons/seo";
-import SettingsIcon from "../../../../../../../ui/src/icons/settings";
+import SettingsIcon from "~/icons/settings";
 
 import { nav_segment_atom } from "../../atoms";
 import styles from "./navigation-screen.module.scss";

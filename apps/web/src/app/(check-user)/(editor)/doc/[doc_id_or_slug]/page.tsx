@@ -9,7 +9,7 @@ import React from "react";
 import { get_story } from "~/common/grpc";
 import { handle_exception } from "~/common/grpc/utils";
 import { get_doc_by_key } from "~/common/utils/get-doc-by-key";
-import { get_user } from "src/common/utils/get-user";
+import { get_user } from "~/common/utils/get-user";
 
 const Page = async ({
   params: { doc_id_or_slug }

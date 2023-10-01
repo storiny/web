@@ -1,9 +1,7 @@
 import React from "react";
 
-import ErrorState from "../../../../../../../../../../../../../../packages/ui/src/entities/error-state";
-import StoryCard, {
-  StoryCardSkeleton
-} from "../../../../../../../../../../../../../../packages/ui/src/entities/story-card";
+import ErrorState from "~/entities/error-state";
+import StoryCard, { StoryCardSkeleton } from "~/entities/story-card";
 import {
   get_query_error_type,
   use_get_story_preview_query

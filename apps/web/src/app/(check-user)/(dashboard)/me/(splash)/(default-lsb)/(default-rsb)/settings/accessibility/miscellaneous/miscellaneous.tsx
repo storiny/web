@@ -1,9 +1,9 @@
 import { clsx } from "clsx";
 import React from "react";
 
-import Spacer from "../../../../../../../../../../../../../packages/ui/src/components/spacer";
-import Switch from "../../../../../../../../../../../../../packages/ui/src/components/switch";
-import Typography from "../../../../../../../../../../../../../packages/ui/src/components/typography";
+import Spacer from "~/components/spacer";
+import Switch from "~/components/switch";
+import Typography from "~/components/typography";
 import { toggle_haptic_feedback } from "~/redux/features";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 
@@ -39,8 +39,8 @@ const MiscellaneousPreferences = (): React.ReactElement => {
           <Switch
             checked={haptic_feedback}
             name={"haptic-feedback"}
-            onCheckedChange={(newChecked): void => {
-              dispatch(toggle_haptic_feedback(newChecked));
+            onCheckedChange={(next_checked): void => {
+              dispatch(toggle_haptic_feedback(next_checked));
             }}
           />
         </div>

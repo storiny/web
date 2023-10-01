@@ -4,7 +4,7 @@ import { BREAKPOINTS } from "@storiny/ui/src/theme/breakpoints";
 import dynamic from "next/dynamic";
 import React from "react";
 
-import { use_media_query } from "../../../../../../../../packages/ui/src/hooks/use-media-query";
+import { use_media_query } from "~/hooks/use-media-query";
 
 const DropdownClient = dynamic(() => import("./client"));
 

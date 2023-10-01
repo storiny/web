@@ -6,13 +6,13 @@ import dynamic from "next/dynamic";
 import React from "react";
 
 import { dynamic_loader } from "~/common/dynamic";
-import Input from "../../../../../../../packages/ui/src/components/input";
-import Tab from "../../../../../../../packages/ui/src/components/tab";
-import TabPanel from "../../../../../../../packages/ui/src/components/tab-panel";
-import Tabs from "../../../../../../../packages/ui/src/components/tabs";
-import TabsList from "../../../../../../../packages/ui/src/components/tabs-list";
-import { use_debounce } from "../../../../../../../packages/ui/src/hooks/use-debounce";
-import SearchIcon from "../../../../../../../packages/ui/src/icons/search";
+import Input from "~/components/input";
+import Tab from "~/components/tab";
+import TabPanel from "~/components/tab-panel";
+import Tabs from "~/components/tabs";
+import TabsList from "~/components/tabs-list";
+import { use_debounce } from "~/hooks/use-debounce";
+import SearchIcon from "~/icons/search";
 
 import Dropdown from "./dropdown";
 import StoryList from "./entities/story-list";

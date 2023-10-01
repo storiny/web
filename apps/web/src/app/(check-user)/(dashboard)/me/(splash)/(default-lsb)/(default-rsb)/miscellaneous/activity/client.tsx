@@ -7,9 +7,9 @@ import {
   AccountActivityListSkeleton,
   VirtualizedAccountActivityList
 } from "~/common/account-activity";
-import Spacer from "../../../../../../../../../../../../packages/ui/src/components/spacer";
-import Typography from "../../../../../../../../../../../../packages/ui/src/components/typography";
-import ErrorState from "../../../../../../../../../../../../packages/ui/src/entities/error-state";
+import Spacer from "~/components/spacer";
+import Typography from "~/components/typography";
+import ErrorState from "~/entities/error-state";
 import {
   get_query_error_type,
   use_get_account_activity_query

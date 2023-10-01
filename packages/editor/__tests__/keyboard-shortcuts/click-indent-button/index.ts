@@ -8,7 +8,7 @@ import { click } from "../../utils";
  * @param times Number of times to click
  * @param force Whether to force click
  */
-export const clickIndentButton = async (
+export const click_indent_button = async (
   page: Page,
   times = 1,
   force?: boolean

@@ -1,4 +1,8 @@
-import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import {
+  createAsyncThunk as create_async_thunk,
+  createSlice as create_slice,
+  PayloadAction
+} from "@reduxjs/toolkit";
 import { API_VERSION } from "@storiny/shared";
 import { User } from "@storiny/types";
 
@@ -24,7 +28,7 @@ export const auth_initial_state: AuthState = {
 /**
  * Fetch the user object from the server
  */
-export const fetch_user = createAsyncThunk<User>(
+export const fetch_user = create_async_thunk<User>(
   "auth/fetch_user",
   async () => {
     const res = await fetch(
@@ -33,10 +37,10 @@ export const fetch_user = createAsyncThunk<User>(
     return res.json();
   },
   {
-    condition: (_, { getState }) => {
+    condition: (_, { getState: get_state }) => {
       const {
         auth: { logged_in, status, user }
-      } = getState() as AppState;
+      } = get_state() as AppState;
 
       if (!logged_in || user !== null || status === "loading") {
         // Do not send a request if logged out, a user object is already populated,
@@ -62,7 +66,7 @@ const get_next_value = (
     ? prev_value - 1
     : supplied_value;
 
-export const auth_slice = createSlice({
+export const auth_slice = create_slice({
   name: "auth",
   initialState: auth_initial_state,
   reducers: {

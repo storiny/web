@@ -1,5 +1,4 @@
 import { ImageSize, StoryCategory } from "@storiny/shared";
-
 import {
   CATEGORY_ICON_MAP,
   CATEGORY_LABEL_MAP
@@ -11,23 +10,23 @@ import {
 import { clsx } from "clsx";
 import React from "react";
 
-import AspectRatio from "../../../../../../../ui/src/components/aspect-ratio";
-import { use_form_context } from "../../../../../../../ui/src/components/form";
+import AspectRatio from "~/components/aspect-ratio";
+import { use_form_context } from "~/components/form";
+import FormInput from "~/components/form-input";
 import FormMultiSelect from "~/components/form-multi-select";
-import FormInput from "../../../../../../../ui/src/components/form-input";
-import FormSelect from "../../../../../../../ui/src/components/form-select";
-import FormTextarea from "../../../../../../../ui/src/components/form-textarea";
-import IconButton from "../../../../../../../ui/src/components/icon-button";
-import Image from "../../../../../../../ui/src/components/image";
-import Link from "../../../../../../../ui/src/components/link";
-import { MultiSelectProps } from "../../../../../../../ui/src/components/multi-select";
-import Option from "../../../../../../../ui/src/components/option";
-import Spacer from "../../../../../../../ui/src/components/spacer";
-import Typography from "../../../../../../../ui/src/components/typography";
+import FormSelect from "~/components/form-select";
+import FormTextarea from "~/components/form-textarea";
+import IconButton from "~/components/icon-button";
+import Image from "~/components/image";
+import Link from "~/components/link";
+import { MultiSelectProps } from "~/components/multi-select";
+import Option from "~/components/option";
+import Spacer from "~/components/spacer";
+import Typography from "~/components/typography";
 import Gallery from "~/entities/gallery";
-import EditIcon from "../../../../../../../ui/src/icons/edit";
-import PhotoPlusIcon from "../../../../../../../ui/src/icons/photo-plus";
-import TrashIcon from "../../../../../../../ui/src/icons/trash";
+import EditIcon from "~/icons/edit";
+import PhotoPlusIcon from "~/icons/photo-plus";
+import TrashIcon from "~/icons/trash";
 import { use_lazy_get_tags_query } from "~/redux/features";
 
 import image_styles from "../common/image.module.scss";

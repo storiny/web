@@ -7,7 +7,7 @@ import {
   PanelResizeHandle
 } from "react-resizable-panels";
 
-import ScrollArea from "../../../../ui/src/components/scroll-area";
+import ScrollArea from "~/components/scroll-area";
 import { use_scrollbar_visibility } from "~/hooks/use-scrollbar-visibility";
 
 import { is_pen_mode_atom } from "../../atoms";

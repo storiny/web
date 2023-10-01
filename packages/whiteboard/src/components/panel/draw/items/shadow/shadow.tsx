@@ -2,15 +2,15 @@ import clsx from "clsx";
 import { BaseFabricObject, Canvas, Shadow as ObjectShadow } from "fabric";
 import React from "react";
 
-import Input from "../../../../../../../ui/src/components/input";
+import Input from "~/components/input";
 import ColorPicker, {
   hex_to_rgb,
   str_to_color,
   TColor
-} from "../../../../../../../ui/src/entities/color-picker";
-import BlurIcon from "../../../../../../../ui/src/icons/blur";
-import LetterXIcon from "../../../../../../../ui/src/icons/letter-x";
-import LetterYIcon from "../../../../../../../ui/src/icons/letter-y";
+} from "~/entities/color-picker";
+import BlurIcon from "~/icons/blur";
+import LetterXIcon from "~/icons/letter-x";
+import LetterYIcon from "~/icons/letter-y";
 
 import { MAX_OPACITY, MIN_OPACITY } from "../../../../../constants";
 import { use_active_object, use_canvas } from "../../../../../hooks";

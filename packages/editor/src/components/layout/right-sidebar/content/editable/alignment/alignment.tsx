@@ -1,10 +1,10 @@
 import { get_shortcut_label } from "@storiny/shared/src/utils/get-shortcut-label";
 import React from "react";
 
-import ToggleGroup from "../../../../../../../../ui/src/components/toggle-group";
+import ToggleGroup from "~/components/toggle-group";
 import ToggleGroupItem, {
   ToggleGroupItemProps
-} from "../../../../../../../../ui/src/components/toggle-group-item";
+} from "~/components/toggle-group-item";
 
 import {
   Alignment as AlignmentEnum,

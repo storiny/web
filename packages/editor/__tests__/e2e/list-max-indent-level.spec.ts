@@ -1,25 +1,25 @@
 import { test } from "@playwright/test";
 
 import {
-  clickIndentButton,
-  selectAll,
-  toggleBulletedList
+  click_indent_button,
+  select_all,
+  toggle_bulleted_list
 } from "../keyboard-shortcuts";
-import { assertHTML, focusEditor, html, initialize } from "../utils";
+import { assert_html, focus_editor, html, initialize } from "../utils";
 
 const MAX_INDENT_LEVEL = 2;
 
 test.describe("list indent level", () => {
   test.beforeEach(async ({ page }) => {
     await initialize(page);
-    await focusEditor(page);
+    await focus_editor(page);
   });
 
   test("can only indent until the max depth for an empty list", async ({
     page
   }) => {
-    await toggleBulletedList(page);
-    await clickIndentButton(page, MAX_INDENT_LEVEL);
+    await toggle_bulleted_list(page);
+    await click_indent_button(page, MAX_INDENT_LEVEL);
 
     const expected = html`
       <ul>
@@ -37,18 +37,18 @@ test.describe("list indent level", () => {
       </ul>
     `;
 
-    await assertHTML(page, expected, undefined, { ignoreClasses: true });
-    await clickIndentButton(page, MAX_INDENT_LEVEL, true);
+    await assert_html(page, expected, undefined, { ignore_classes: true });
+    await click_indent_button(page, MAX_INDENT_LEVEL, true);
     // Should stay the same
-    await assertHTML(page, expected, undefined, { ignoreClasses: true });
+    await assert_html(page, expected, undefined, { ignore_classes: true });
   });
 
   test("can only indent until the max depth for a list having content", async ({
     page
   }) => {
-    await toggleBulletedList(page);
+    await toggle_bulleted_list(page);
     await page.keyboard.type("hello");
-    await clickIndentButton(page, MAX_INDENT_LEVEL);
+    await click_indent_button(page, MAX_INDENT_LEVEL);
 
     const expected = html`
       <ul>
@@ -66,16 +66,16 @@ test.describe("list indent level", () => {
       </ul>
     `;
 
-    await assertHTML(page, expected, undefined, { ignoreClasses: true });
-    await clickIndentButton(page, MAX_INDENT_LEVEL, true);
+    await assert_html(page, expected, undefined, { ignore_classes: true });
+    await click_indent_button(page, MAX_INDENT_LEVEL, true);
     // Should stay the same
-    await assertHTML(page, expected, undefined, { ignoreClasses: true });
+    await assert_html(page, expected, undefined, { ignore_classes: true });
   });
 
   test("can only indent until the max depth for a list with nested list items", async ({
     page
   }) => {
-    await toggleBulletedList(page);
+    await toggle_bulleted_list(page);
 
     await page.keyboard.type("Hello");
     await page.keyboard.press("Enter");
@@ -83,14 +83,14 @@ test.describe("list indent level", () => {
     await page.keyboard.press("Enter");
     await page.keyboard.type("the");
 
-    await clickIndentButton(page);
+    await click_indent_button(page);
 
     await page.keyboard.press("Enter");
     await page.keyboard.type("other");
     await page.keyboard.press("Enter");
     await page.keyboard.type("side");
 
-    await clickIndentButton(page);
+    await click_indent_button(page);
 
     await page.keyboard.press("Enter");
 
@@ -123,12 +123,10 @@ test.describe("list indent level", () => {
       </ul>
     `;
 
-    await assertHTML(page, expected, undefined, { ignoreClasses: true });
-
-    await selectAll(page);
-    await clickIndentButton(page, MAX_INDENT_LEVEL, true);
-
+    await assert_html(page, expected, undefined, { ignore_classes: true });
+    await select_all(page);
+    await click_indent_button(page, MAX_INDENT_LEVEL, true);
     // Should stay the same
-    await assertHTML(page, expected, undefined, { ignoreClasses: true });
+    await assert_html(page, expected, undefined, { ignore_classes: true });
   });
 });

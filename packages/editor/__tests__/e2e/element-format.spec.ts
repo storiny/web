@@ -2,36 +2,36 @@ import { test } from "@playwright/test";
 
 import { EDITOR_CLASSNAMES } from "../constants";
 import {
-  moveLeft,
-  moveRight,
-  selectCharacters,
-  toggleLink
+  move_left,
+  move_right,
+  select_characters,
+  toggle_link
 } from "../keyboard-shortcuts";
-import { assertHTML, click, focusEditor, html, initialize } from "../utils";
+import { assert_html, click, focus_editor, html, initialize } from "../utils";
 
 test.describe("element format", () => {
   test.beforeEach(async ({ page }) => {
     await initialize(page);
-    await focusEditor(page);
+    await focus_editor(page);
   });
 
   test("can indent/align paragraph when caret is within a link", async ({
     page
   }) => {
     await page.keyboard.type("Hello https://storiny.com world");
-    await moveLeft(page, 6);
-    await selectCharacters(page, "left", 19);
-    await toggleLink(page);
+    await move_left(page, 6);
+    await select_characters(page, "left", 19);
+    await toggle_link(page);
 
     // Clear selection and move 5 characters
-    await moveLeft(page, 5);
-    await moveRight(page, 5);
+    await move_left(page, 5);
+    await move_right(page, 5);
 
     await click(page, `[data-testid="indent"]`);
     await click(page, `[data-testid="indent"]`);
     await click(page, `[data-testid="align-center"]`);
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <p
@@ -57,7 +57,7 @@ test.describe("element format", () => {
   test("can center align an empty paragraph", async ({ page }) => {
     await click(page, `[data-testid="align-center"]`);
 
-    await assertHTML(
+    await assert_html(
       page,
       html`
         <p class="${EDITOR_CLASSNAMES.paragraph}" style="text-align: center">

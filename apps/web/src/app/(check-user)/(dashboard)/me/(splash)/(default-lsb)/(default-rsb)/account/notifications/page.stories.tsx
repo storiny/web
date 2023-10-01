@@ -12,7 +12,7 @@ import DefaultDashboardRightSidebarLayout from "../../layout";
 import AccountNotificationsPage from "./client";
 
 const meta: Meta<typeof AccountNotificationsPage> = {
-  title: "dashboard/Account/notifications",
+  title: "dashboard/account/notifications",
   component: AccountNotificationsPage,
   args: {
     tags: true,

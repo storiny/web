@@ -1,7 +1,7 @@
 import NextLink from "next/link";
 import React from "react";
 
-import Button from "../../../../../../packages/ui/src/components/button";
+import Button from "~/components/button";
 
 import ErrorLayout from "../../(error)/layout";
 

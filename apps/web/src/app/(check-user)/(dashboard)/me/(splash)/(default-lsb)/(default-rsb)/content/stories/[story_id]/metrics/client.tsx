@@ -2,8 +2,8 @@
 
 import React from "react";
 
-import Spacer from "../../../../../../../../../../../../../../packages/ui/src/components/spacer";
-import CustomState from "../../../../../../../../../../../../../../packages/ui/src/entities/custom-state";
+import Spacer from "~/components/spacer";
+import CustomState from "~/entities/custom-state";
 
 import DashboardTitle from "../../../../../dashboard-title";
 import DashboardWrapper from "../../../../../dashboard-wrapper";

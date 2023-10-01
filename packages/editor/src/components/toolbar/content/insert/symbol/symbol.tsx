@@ -1,8 +1,8 @@
 import React from "react";
 
-import MenuItem from "../../../../../../../ui/src/components/menu-item";
+import MenuItem from "~/components/menu-item";
 import SymbolPicker from "~/entities/symbol-picker";
-import OmegaIcon from "../../../../../../../ui/src/icons/omega";
+import OmegaIcon from "~/icons/omega";
 
 import { use_insert_text_entity } from "../../../../../hooks/use-insert-text-entity";
 

@@ -4,7 +4,7 @@ import { Provider } from "jotai";
 import dynamic from "next/dynamic";
 import React from "react";
 
-import Navbar from "../../../../ui/src/layout/navbar";
+import Navbar from "~/layout/navbar";
 
 import EditorComposer from "../composer";
 import { EditorProps } from "../editor";
@@ -33,7 +33,7 @@ const EditorLayout = ({
         <React.Fragment>
           {read_only ? <Navbar /> : <EditorNavbar status={status} />}
           <EditorLeftSidebar read_only={read_only} status={status} />
-          <main>
+          <main data-root={"true"}>
             {status !== "deleted" && !read_only ? <StoryMetadataBar /> : null}
             {children}
             {status !== "deleted" && !read_only ? <EditorToolbar /> : null}
