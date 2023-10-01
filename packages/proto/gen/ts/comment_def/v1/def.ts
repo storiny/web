@@ -1,0 +1,336 @@
+/* eslint-disable */
+import _m0 from "protobufjs/minimal";
+import { User } from "../../user_def/v1/def";
+
+export const protobufPackage = "comment_def.v1";
+
+export interface GetCommentRequest {
+  id: string;
+}
+
+export interface GetCommentResponse {
+  id: string;
+  content: string;
+  rendered_content: string;
+  user_id: string;
+  story_id: string;
+  hidden: boolean;
+  edited_at?: string | undefined;
+  created_at: string;
+  like_count: number;
+  reply_count: number;
+  user:
+    | User
+    | undefined;
+  /** User specific props */
+  is_liked?: boolean | undefined;
+}
+
+function createBaseGetCommentRequest(): GetCommentRequest {
+  return { id: "" };
+}
+
+export const GetCommentRequest = {
+  encode(message: GetCommentRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.id !== "") {
+      writer.uint32(10).string(message.id);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): GetCommentRequest {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseGetCommentRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.id = reader.string();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): GetCommentRequest {
+    return { id: isSet(object.id) ? String(object.id) : "" };
+  },
+
+  toJSON(message: GetCommentRequest): unknown {
+    const obj: any = {};
+    if (message.id !== "") {
+      obj.id = message.id;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<GetCommentRequest>, I>>(base?: I): GetCommentRequest {
+    return GetCommentRequest.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<GetCommentRequest>, I>>(object: I): GetCommentRequest {
+    const message = createBaseGetCommentRequest();
+    message.id = object.id ?? "";
+    return message;
+  },
+};
+
+function createBaseGetCommentResponse(): GetCommentResponse {
+  return {
+    id: "",
+    content: "",
+    rendered_content: "",
+    user_id: "",
+    story_id: "",
+    hidden: false,
+    edited_at: undefined,
+    created_at: "",
+    like_count: 0,
+    reply_count: 0,
+    user: undefined,
+    is_liked: undefined,
+  };
+}
+
+export const GetCommentResponse = {
+  encode(message: GetCommentResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.id !== "") {
+      writer.uint32(10).string(message.id);
+    }
+    if (message.content !== "") {
+      writer.uint32(18).string(message.content);
+    }
+    if (message.rendered_content !== "") {
+      writer.uint32(26).string(message.rendered_content);
+    }
+    if (message.user_id !== "") {
+      writer.uint32(34).string(message.user_id);
+    }
+    if (message.story_id !== "") {
+      writer.uint32(42).string(message.story_id);
+    }
+    if (message.hidden === true) {
+      writer.uint32(48).bool(message.hidden);
+    }
+    if (message.edited_at !== undefined) {
+      writer.uint32(58).string(message.edited_at);
+    }
+    if (message.created_at !== "") {
+      writer.uint32(66).string(message.created_at);
+    }
+    if (message.like_count !== 0) {
+      writer.uint32(72).uint32(message.like_count);
+    }
+    if (message.reply_count !== 0) {
+      writer.uint32(80).uint32(message.reply_count);
+    }
+    if (message.user !== undefined) {
+      User.encode(message.user, writer.uint32(90).fork()).ldelim();
+    }
+    if (message.is_liked !== undefined) {
+      writer.uint32(96).bool(message.is_liked);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): GetCommentResponse {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseGetCommentResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.id = reader.string();
+          continue;
+        case 2:
+          if (tag !== 18) {
+            break;
+          }
+
+          message.content = reader.string();
+          continue;
+        case 3:
+          if (tag !== 26) {
+            break;
+          }
+
+          message.rendered_content = reader.string();
+          continue;
+        case 4:
+          if (tag !== 34) {
+            break;
+          }
+
+          message.user_id = reader.string();
+          continue;
+        case 5:
+          if (tag !== 42) {
+            break;
+          }
+
+          message.story_id = reader.string();
+          continue;
+        case 6:
+          if (tag !== 48) {
+            break;
+          }
+
+          message.hidden = reader.bool();
+          continue;
+        case 7:
+          if (tag !== 58) {
+            break;
+          }
+
+          message.edited_at = reader.string();
+          continue;
+        case 8:
+          if (tag !== 66) {
+            break;
+          }
+
+          message.created_at = reader.string();
+          continue;
+        case 9:
+          if (tag !== 72) {
+            break;
+          }
+
+          message.like_count = reader.uint32();
+          continue;
+        case 10:
+          if (tag !== 80) {
+            break;
+          }
+
+          message.reply_count = reader.uint32();
+          continue;
+        case 11:
+          if (tag !== 90) {
+            break;
+          }
+
+          message.user = User.decode(reader, reader.uint32());
+          continue;
+        case 12:
+          if (tag !== 96) {
+            break;
+          }
+
+          message.is_liked = reader.bool();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): GetCommentResponse {
+    return {
+      id: isSet(object.id) ? String(object.id) : "",
+      content: isSet(object.content) ? String(object.content) : "",
+      rendered_content: isSet(object.rendered_content) ? String(object.rendered_content) : "",
+      user_id: isSet(object.user_id) ? String(object.user_id) : "",
+      story_id: isSet(object.story_id) ? String(object.story_id) : "",
+      hidden: isSet(object.hidden) ? Boolean(object.hidden) : false,
+      edited_at: isSet(object.edited_at) ? String(object.edited_at) : undefined,
+      created_at: isSet(object.created_at) ? String(object.created_at) : "",
+      like_count: isSet(object.like_count) ? Number(object.like_count) : 0,
+      reply_count: isSet(object.reply_count) ? Number(object.reply_count) : 0,
+      user: isSet(object.user) ? User.fromJSON(object.user) : undefined,
+      is_liked: isSet(object.is_liked) ? Boolean(object.is_liked) : undefined,
+    };
+  },
+
+  toJSON(message: GetCommentResponse): unknown {
+    const obj: any = {};
+    if (message.id !== "") {
+      obj.id = message.id;
+    }
+    if (message.content !== "") {
+      obj.content = message.content;
+    }
+    if (message.rendered_content !== "") {
+      obj.rendered_content = message.rendered_content;
+    }
+    if (message.user_id !== "") {
+      obj.user_id = message.user_id;
+    }
+    if (message.story_id !== "") {
+      obj.story_id = message.story_id;
+    }
+    if (message.hidden === true) {
+      obj.hidden = message.hidden;
+    }
+    if (message.edited_at !== undefined) {
+      obj.edited_at = message.edited_at;
+    }
+    if (message.created_at !== "") {
+      obj.created_at = message.created_at;
+    }
+    if (message.like_count !== 0) {
+      obj.like_count = Math.round(message.like_count);
+    }
+    if (message.reply_count !== 0) {
+      obj.reply_count = Math.round(message.reply_count);
+    }
+    if (message.user !== undefined) {
+      obj.user = User.toJSON(message.user);
+    }
+    if (message.is_liked !== undefined) {
+      obj.is_liked = message.is_liked;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<GetCommentResponse>, I>>(base?: I): GetCommentResponse {
+    return GetCommentResponse.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<GetCommentResponse>, I>>(object: I): GetCommentResponse {
+    const message = createBaseGetCommentResponse();
+    message.id = object.id ?? "";
+    message.content = object.content ?? "";
+    message.rendered_content = object.rendered_content ?? "";
+    message.user_id = object.user_id ?? "";
+    message.story_id = object.story_id ?? "";
+    message.hidden = object.hidden ?? false;
+    message.edited_at = object.edited_at ?? undefined;
+    message.created_at = object.created_at ?? "";
+    message.like_count = object.like_count ?? 0;
+    message.reply_count = object.reply_count ?? 0;
+    message.user = (object.user !== undefined && object.user !== null) ? User.fromPartial(object.user) : undefined;
+    message.is_liked = object.is_liked ?? undefined;
+    return message;
+  },
+};
+
+type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
+
+export type DeepPartial<T> = T extends Builtin ? T
+  : T extends Array<infer U> ? Array<DeepPartial<U>> : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>>
+  : T extends {} ? { [K in keyof T]?: DeepPartial<T[K]> }
+  : Partial<T>;
+
+type KeysOfUnion<T> = T extends T ? keyof T : never;
+export type Exact<P, I extends P> = P extends Builtin ? P
+  : P & { [K in keyof P]: Exact<P[K], I[K]> } & { [K in Exclude<keyof I, KeysOfUnion<P>>]: never };
+
+function isSet(value: any): boolean {
+  return value !== null && value !== undefined;
+}

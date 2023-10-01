@@ -10,7 +10,7 @@ import DefaultRightSidebarLayout from "./layout";
 import Index from "./page";
 
 const meta: Meta<typeof Index> = {
-  title: "pages/Index",
+  title: "pages/index",
   component: Index,
   parameters: {
     layout: "fullscreen"

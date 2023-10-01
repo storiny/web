@@ -8,6 +8,10 @@ export interface UserProps extends React.ComponentPropsWithoutRef<"div"> {
    */
   action_type?: "default" | "block" | "mute";
   /**
+   * If `true`, skips rendering the action button.
+   */
+  hide_action?: boolean;
+  /**
    * The user object.
    */
   user: User;

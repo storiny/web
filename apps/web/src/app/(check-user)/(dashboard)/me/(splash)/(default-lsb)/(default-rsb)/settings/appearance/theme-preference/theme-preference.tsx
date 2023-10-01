@@ -102,7 +102,7 @@ const ThemePreview = ({
     className={clsx(
       common_styles.preview,
       styles.preview,
-      theme && css[theme === "dark" ? "force-dark-mode" : "force-light-mode"],
+      theme && (theme === "dark" ? "force-dark-mode" : "force-light-mode"),
       className
     )}
     fill="none"

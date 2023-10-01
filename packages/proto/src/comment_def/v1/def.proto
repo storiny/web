@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package comment_def.v1;
+
+import "user_def/v1/def.proto";
+
+message GetCommentRequest {
+  string id = 1;
+}
+
+message GetCommentResponse {
+  string id /*                */ = 1;
+  string content /*           */ = 2;
+  string rendered_content /*  */ = 3;
+  string user_id /*           */ = 4;
+  string story_id /*          */ = 5;
+  bool hidden /*              */ = 6;
+  optional string edited_at /**/ = 7;
+  string created_at /*        */ = 8;
+  uint32 like_count /*        */ = 9;
+  uint32 reply_count /*       */ = 10;
+  user_def.v1.User user /*    */ = 11;
+  // User specific props
+  optional bool is_liked /*   */ = 12;
+}

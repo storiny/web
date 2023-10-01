@@ -166,6 +166,9 @@ export class HeadingNode extends ElementNode {
     const element = document.createElement(tag);
     const class_name = TYPOGRAPHY_LEVEL_TO_CLASSNAME_MAP[tag];
 
+    // For `scrollIntoView` (table of contents)
+    element.style.scrollMargin = "calc(var(--header-height) + 18px)";
+
     if (class_name) {
       add_class_names_to_element(
         element,

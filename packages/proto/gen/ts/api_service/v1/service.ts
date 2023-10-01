@@ -8,6 +8,7 @@ import type {
   ServiceError,
   UntypedServiceImplementation,
 } from "@grpc/grpc-js";
+import { GetCommentRequest, GetCommentResponse } from "../../comment_def/v1/def";
 import { GetConnectionSettingsRequest, GetConnectionSettingsResponse } from "../../connection_settings_def/v1/def";
 import { GetCredentialSettingsRequest, GetCredentialSettingsResponse } from "../../credential_settings_def/v1/def";
 import { GetLoginActivityRequest, GetLoginActivityResponse } from "../../login_activity_def/v1/def";
@@ -262,6 +263,16 @@ export const ApiServiceService = {
     responseSerialize: (value: GetStoryResponse) => Buffer.from(GetStoryResponse.encode(value).finish()),
     responseDeserialize: (value: Buffer) => GetStoryResponse.decode(value),
   },
+  /** Returns the comment's data */
+  getComment: {
+    path: "/api_service.v1.ApiService/GetComment",
+    requestStream: false,
+    responseStream: false,
+    requestSerialize: (value: GetCommentRequest) => Buffer.from(GetCommentRequest.encode(value).finish()),
+    requestDeserialize: (value: Buffer) => GetCommentRequest.decode(value),
+    responseSerialize: (value: GetCommentResponse) => Buffer.from(GetCommentResponse.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => GetCommentResponse.decode(value),
+  },
 } as const;
 
 export interface ApiServiceServer extends UntypedServiceImplementation {
@@ -303,6 +314,8 @@ export interface ApiServiceServer extends UntypedServiceImplementation {
   getUserMuteCount: handleUnaryCall<GetUserMuteCountRequest, GetUserMuteCountResponse>;
   /** Returns the story's data */
   getStory: handleUnaryCall<GetStoryRequest, GetStoryResponse>;
+  /** Returns the comment's data */
+  getComment: handleUnaryCall<GetCommentRequest, GetCommentResponse>;
 }
 
 export interface ApiServiceClient extends Client {
@@ -609,6 +622,22 @@ export interface ApiServiceClient extends Client {
     metadata: Metadata,
     options: Partial<CallOptions>,
     callback: (error: ServiceError | null, response: GetStoryResponse) => void,
+  ): ClientUnaryCall;
+  /** Returns the comment's data */
+  getComment(
+    request: GetCommentRequest,
+    callback: (error: ServiceError | null, response: GetCommentResponse) => void,
+  ): ClientUnaryCall;
+  getComment(
+    request: GetCommentRequest,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: GetCommentResponse) => void,
+  ): ClientUnaryCall;
+  getComment(
+    request: GetCommentRequest,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: GetCommentResponse) => void,
   ): ClientUnaryCall;
 }
 

@@ -24,7 +24,14 @@ import styles from "./user.module.scss";
 import { UserProps } from "./user.props";
 
 const User = (props: UserProps): React.ReactElement => {
-  const { action_type = "default", className, user, virtual, ...rest } = props;
+  const {
+    action_type = "default",
+    hide_action,
+    className,
+    user,
+    virtual,
+    ...rest
+  } = props;
   const dispatch = use_app_dispatch();
   const is_mobile = use_media_query(BREAKPOINTS.down("mobile"));
   const is_following = use_app_selector(
@@ -55,7 +62,7 @@ const User = (props: UserProps): React.ReactElement => {
           />
           <div className={css["flex-col"]}>
             <Typography ellipsis>
-              <span className={is_mobile ? "t-medium" : "t-bold"}>
+              <span className={css[is_mobile ? "t-medium" : "t-bold"]}>
                 {user.name}
               </span>
               {!is_mobile && <> @{user.username}</>}
@@ -117,7 +124,9 @@ const User = (props: UserProps): React.ReactElement => {
               {is_following ? "Following" : "Follow"}
             </Button>
           )}
-          <UserActions action_type={action_type} user={user} />
+          {!hide_action && (
+            <UserActions action_type={action_type} user={user} />
+          )}
         </div>
       </div>
       {Boolean(user.bio) && (

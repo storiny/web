@@ -48,12 +48,12 @@ export type Story = {
   slug: string;
   splash_hex: string | null;
   splash_id: string | null;
-  stats: StoryStats;
   tags: Tag[];
   title: string;
   user_id: string;
   visibility: StoryVisibility;
   word_count: number;
-} & StorySeoProps &
+} & StoryStats &
+  StorySeoProps &
   StoryOptionalProps &
   UserSpecificStoryProps;

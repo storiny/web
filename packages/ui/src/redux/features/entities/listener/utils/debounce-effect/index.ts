@@ -2,7 +2,7 @@ import { ListenerEffectAPI } from "@reduxjs/toolkit";
 
 import { AppDispatch, AppState } from "~/redux/store";
 
-const DEBOUNCE_TIME = 650; // (ms)
+const DEBOUNCE_TIME = 360; // (ms)
 
 /**
  * Debounces the listener API effect
