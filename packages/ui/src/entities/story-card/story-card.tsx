@@ -80,12 +80,12 @@ const StoryCard = (props: StoryCardProps): React.ReactElement => {
               styles.stat
             )}
             level={"body2"}
-            title={`${abbreviate_number(story.stats.read_count)} ${
-              story.stats.read_count === 1 ? "read" : "reads"
+            title={`${abbreviate_number(story.read_count)} ${
+              story.read_count === 1 ? "read" : "reads"
             }`}
           >
             <ReadsIcon />
-            {abbreviate_number(story.stats.read_count)}
+            {abbreviate_number(story.read_count)}
           </Typography>
           <Typography
             as={"span"}
@@ -96,12 +96,12 @@ const StoryCard = (props: StoryCardProps): React.ReactElement => {
               styles.stat
             )}
             level={"body2"}
-            title={`${abbreviate_number(story.stats.like_count)} ${
-              story.stats.like_count === 1 ? "like" : "likes"
+            title={`${abbreviate_number(story.like_count)} ${
+              story.like_count === 1 ? "like" : "likes"
             }`}
           >
             <HeartIcon />
-            {abbreviate_number(story.stats.like_count)}
+            {abbreviate_number(story.like_count)}
           </Typography>
           <Typography
             as={"span"}
@@ -112,12 +112,12 @@ const StoryCard = (props: StoryCardProps): React.ReactElement => {
               styles.stat
             )}
             level={"body2"}
-            title={`${abbreviate_number(story.stats.comment_count)} ${
-              story.stats.comment_count === 1 ? "comment" : "comments"
+            title={`${abbreviate_number(story.comment_count)} ${
+              story.comment_count === 1 ? "comment" : "comments"
             }`}
           >
             <CommentIcon />
-            {abbreviate_number(story.stats.comment_count)}
+            {abbreviate_number(story.comment_count)}
           </Typography>
         </footer>
       </div>

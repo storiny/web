@@ -39,16 +39,7 @@ const Page = async ({
           initial_doc={decompress_sync(doc)}
           role={"editor"}
           status={"deleted"}
-          story={
-            {
-              ...story_response,
-              stats: {
-                read_count: story_response.read_count,
-                comment_count: story_response.comment_count,
-                like_count: story_response.like_count
-              }
-            } as Story
-          }
+          story={story_response as Story}
         />
       );
     }
@@ -62,16 +53,7 @@ const Page = async ({
             ? "published"
             : "draft"
         }
-        story={
-          {
-            ...story_response,
-            stats: {
-              read_count: story_response.read_count,
-              comment_count: story_response.comment_count,
-              like_count: story_response.like_count
-            }
-          } as Story
-        }
+        story={story_response as Story}
       />
     );
   } catch (e) {

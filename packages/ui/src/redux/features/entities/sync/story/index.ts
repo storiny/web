@@ -6,7 +6,12 @@ import { EntitiesState } from "~/redux/features";
 import { sync_with_user_impl } from "~/redux/features/entities/sync/user";
 
 export type SyncableStory = Pick<Story, "id"> &
-  Partial<Pick<Story, "is_liked" | "is_bookmarked" | "stats" | "user">>;
+  Partial<
+    Pick<
+      Story,
+      "is_liked" | "is_bookmarked" | "comment_count" | "like_count" | "user"
+    >
+  >;
 
 /**
  * Syncs an incoming story to the store
@@ -26,15 +31,13 @@ export const sync_with_story_impl = (
     state.liked_stories[story.id] = story.is_liked;
   }
 
-  if (story.stats) {
-    // Integral
-    if (is_num(story.stats.like_count)) {
-      state.story_like_counts[story.id] = story.stats.like_count;
-    }
+  // Integral
+  if (is_num(story.like_count)) {
+    state.story_like_counts[story.id] = story.like_count;
+  }
 
-    if (is_num(story.stats.comment_count)) {
-      state.story_comment_counts[story.id] = story.stats.comment_count;
-    }
+  if (is_num(story.comment_count)) {
+    state.story_comment_counts[story.id] = story.comment_count;
   }
 
   // Other

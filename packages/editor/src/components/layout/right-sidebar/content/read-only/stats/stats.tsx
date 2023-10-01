@@ -17,7 +17,7 @@ import styles from "./stats.module.scss";
 
 const StoryStats = (): React.ReactElement => {
   const story = use_atom_value(story_metadata_atom);
-  const read_count = story.stats.read_count + 1; // Also include the current reading session
+  const read_count = story.read_count + 1; // Also include the current reading session
   const comment_count =
     use_app_selector(
       (state) => state.entities.story_comment_counts[story.id]

@@ -3,7 +3,7 @@ import { nanoid } from "nanoid";
 
 const { worker, rest } = window.msw;
 
-const getRandomUser = () =>
+const get_random_user = () =>
   MOCK_USERS[Math.floor(Math.random() * MOCK_USERS.length)];
 
 worker.use(
@@ -14,7 +14,8 @@ worker.use(
         ctx.delay(750),
         ctx.json(
           Array(25)
-            .fill(getRandomUser())
+            .fill({})
+            .map(get_random_user)
             .map((user) => ({ ...user, id: nanoid() }))
         )
       )

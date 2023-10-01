@@ -2,6 +2,7 @@ syntax = "proto3";
 
 package api_service.v1;
 
+import "comment_def/v1/def.proto";
 import "connection_settings_def/v1/def.proto";
 import "credential_settings_def/v1/def.proto";
 import "login_activity_def/v1/def.proto";
@@ -92,4 +93,8 @@ service ApiService {
    * Returns the story's data
    */
   rpc GetStory(story_def.v1.GetStoryRequest) returns (story_def.v1.GetStoryResponse) {}
+  /**
+   * Returns the comment's data
+   */
+  rpc GetComment(comment_def.v1.GetCommentRequest) returns (comment_def.v1.GetCommentResponse) {}
 }

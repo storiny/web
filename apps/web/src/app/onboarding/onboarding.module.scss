@@ -1,3 +1,5 @@
+@use "breakpoints";
+
 .categories {
   gap: 12px;
   flex-wrap: wrap;
@@ -23,6 +25,11 @@
   gap: 12px;
 }
 
+.writers-list {
+  padding-block: 12px;
+  gap: 12px;
+}
+
 .x {
   &.scroll-area-viewport {
     background-color: var(--bg-elevation-xs);
@@ -30,6 +37,10 @@
     border-radius: var(--radius-md);
     min-height: 180px;
     max-height: 270px;
+
+    @include breakpoints.media("<=mobile") {
+      max-height: 100%;
+    }
   }
 
   &.scroll-area-scrollbar {
@@ -41,5 +52,9 @@
 
     gap: 6px;
     border: 1px solid var(--divider);
+  }
+
+  &.writer {
+    padding-inline: 20px;
   }
 }

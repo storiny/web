@@ -24,13 +24,11 @@
 }
 
 .x {
-  /* Content */
   &.map {
     background-color: var(--bg-elevation-xs);
     border-block: 1px solid var(--divider);
   }
 
-  /* Logout button */
   &.button {
     width: 100%;
     border-radius: 0;

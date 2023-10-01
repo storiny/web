@@ -378,7 +378,7 @@ const Footer = (props: StoryProps): React.ReactElement => {
             </React.Fragment>
           )}
           <Typography
-            aria-label={`${story.stats.read_count} reads`}
+            aria-label={`${story.read_count} reads`}
             as={"span"}
             className={clsx(
               css["flex-center"],
@@ -387,14 +387,14 @@ const Footer = (props: StoryProps): React.ReactElement => {
               styles.stat
             )}
             level={"body2"}
-            title={`${abbreviate_number(story.stats.read_count)} reads`}
+            title={`${abbreviate_number(story.read_count)} reads`}
           >
             <ReadsIcon />
-            {abbreviate_number(story.stats.read_count)}
+            {abbreviate_number(story.read_count)}
           </Typography>
           {is_extended && (
             <React.Fragment>
-              {story.stats.like_count && (
+              {story.like_count && (
                 <React.Fragment>
                   <Typography
                     aria-hidden
@@ -405,7 +405,7 @@ const Footer = (props: StoryProps): React.ReactElement => {
                     &bull;
                   </Typography>
                   <Typography
-                    aria-label={`${story.stats.like_count} likes`}
+                    aria-label={`${story.like_count} likes`}
                     as={"span"}
                     className={clsx(
                       css["flex-center"],
@@ -414,14 +414,14 @@ const Footer = (props: StoryProps): React.ReactElement => {
                       styles.stat
                     )}
                     level={"body2"}
-                    title={`${abbreviate_number(story.stats.like_count)} likes`}
+                    title={`${abbreviate_number(story.like_count)} likes`}
                   >
                     <HeartIcon />
-                    {abbreviate_number(story.stats.like_count)}
+                    {abbreviate_number(story.like_count)}
                   </Typography>
                 </React.Fragment>
               )}
-              {story.stats.comment_count && (
+              {story.comment_count && (
                 <React.Fragment>
                   <Typography
                     aria-hidden
@@ -432,7 +432,7 @@ const Footer = (props: StoryProps): React.ReactElement => {
                     &bull;
                   </Typography>
                   <Typography
-                    aria-label={`${story.stats.comment_count} comments`}
+                    aria-label={`${story.comment_count} comments`}
                     as={"span"}
                     className={clsx(
                       css["flex-center"],
@@ -441,12 +441,10 @@ const Footer = (props: StoryProps): React.ReactElement => {
                       styles.stat
                     )}
                     level={"body2"}
-                    title={`${abbreviate_number(
-                      story.stats.comment_count
-                    )} comments`}
+                    title={`${abbreviate_number(story.comment_count)} comments`}
                   >
                     <CommentIcon />
-                    {abbreviate_number(story.stats.comment_count)}
+                    {abbreviate_number(story.comment_count)}
                   </Typography>
                 </React.Fragment>
               )}

@@ -18,6 +18,7 @@ import Spacer from "~/components/spacer";
 import Stepper from "~/components/stepper";
 import Typography from "~/components/typography";
 import ErrorState from "~/entities/error-state";
+import User from "~/entities/user";
 import { use_media_query } from "~/hooks/use-media-query";
 import CheckIcon from "~/icons/check";
 import PlusIcon from "~/icons/plus";
@@ -25,7 +26,8 @@ import {
   boolean_action,
   get_query_error_type,
   GetOnboardingTagsResponse,
-  use_get_onboarding_tags_query
+  use_get_onboarding_tags_query,
+  use_get_onboarding_writers_query
 } from "~/redux/features";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 import { BREAKPOINTS } from "~/theme/breakpoints";
@@ -166,11 +168,7 @@ const TagsSegment = ({
             className: clsx(styles.x, styles["scroll-area-scrollbar"])
           },
           viewport: {
-            className: clsx(
-              css["flex-center"],
-              styles.x,
-              styles["scroll-area-viewport"]
-            )
+            className: clsx(styles.x, styles["scroll-area-viewport"])
           }
         }}
       >
@@ -227,12 +225,78 @@ const TagsSegment = ({
   );
 };
 
+// Writers segment
+
+const WritersSegment = ({
+  categories_hash
+}: {
+  categories_hash: string;
+}): React.ReactElement => {
+  const {
+    data = [],
+    isLoading: is_loading,
+    isFetching: is_fetching,
+    isError: is_error,
+    error,
+    refetch
+  } = use_get_onboarding_writers_query(categories_hash);
+
+  return (
+    <Segment
+      description={
+        <>
+          Finally, follow some popular writers to get their latest posts
+          directly into your home feed.
+        </>
+      }
+      title={"Follow some writers"}
+    >
+      <ScrollArea
+        slot_props={{
+          scrollbar: {
+            className: clsx(styles.x, styles["scroll-area-scrollbar"])
+          },
+          viewport: {
+            className: clsx(styles.x, styles["scroll-area-viewport"])
+          }
+        }}
+      >
+        {is_loading ? (
+          <SuspenseLoader />
+        ) : is_error ? (
+          <ErrorState
+            auto_size
+            component_props={{
+              button: { loading: is_fetching }
+            }}
+            retry={refetch}
+            type={get_query_error_type(error)}
+          />
+        ) : (
+          <div className={clsx(css["flex-col"], styles["writers-list"])}>
+            {data.map((user) => (
+              <React.Fragment key={user.id}>
+                <User
+                  className={clsx(styles.x, styles.writer)}
+                  hide_action
+                  user={user}
+                />
+                <Divider className={css["hide-last"]} />
+              </React.Fragment>
+            ))}
+          </div>
+        )}
+      </ScrollArea>
+    </Segment>
+  );
+};
+
 const Onboarding = (): React.ReactElement => {
   const is_smaller_than_mobile = use_media_query(BREAKPOINTS.down("mobile"));
   const [open, set_open] = React.useState<boolean>(true);
   const [segment, set_segment] = React.useState<
     "categories" | "tags" | "writers"
-  >("tags"); // TODO: change
+  >("categories");
   const [selected_categories, set_selected_categories] = React.useState<
     Set<StoryCategory>
   >(new Set([]));
@@ -273,7 +337,7 @@ const Onboarding = (): React.ReactElement => {
           )}
           <ModalFooterButton
             compact={is_smaller_than_mobile}
-            disabled={selected_categories.size < 3}
+            disabled={segment === "categories" && selected_categories.size < 3}
             onClick={(event): void => {
               if (segment === "categories") {
                 event.preventDefault();
@@ -317,7 +381,8 @@ const Onboarding = (): React.ReactElement => {
               set_selected_categories={set_selected_categories_impl}
             />
           ),
-          tags: <TagsSegment categories_hash={categories_hash} />
+          tags: <TagsSegment categories_hash={categories_hash} />,
+          writers: <WritersSegment categories_hash={categories_hash} />
         }[segment]
       }
       <Stepper

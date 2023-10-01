@@ -33,11 +33,9 @@ export const TEST_STORY: Story = {
   slug: "test-slug",
   splash_hex: "000000",
   splash_id: "/splash.ext",
-  stats: {
-    comment_count: 1,
-    like_count: 1,
-    read_count: 1
-  },
+  comment_count: 1,
+  like_count: 1,
+  read_count: 1,
   tags: [MOCK_TAGS[0]],
   title: "Test story",
   user: TEST_USER,
@@ -70,11 +68,9 @@ export const MOCK_STORIES: Story[] = [
     slug: "finding-serenity-in-chaos-embracing-mindfulness-in-a-hectic-world",
     splash_hex: "1c2025",
     splash_id: get_splash_id("mGs7oMPLB-c"),
-    stats: {
-      like_count: 923,
-      read_count: 20234,
-      comment_count: 239
-    },
+    like_count: 923,
+    read_count: 20234,
+    comment_count: 239,
     tags: [MOCK_TAGS[0], MOCK_TAGS[5]],
     title: "Finding Serenity in Chaos: Embracing Mindfulness in a Hectic World",
     user: MOCK_USERS[0],
@@ -105,11 +101,9 @@ export const MOCK_STORIES: Story[] = [
     slug: "exploring-the-great-outdoors-a-journey-into-natures-healing-powers",
     splash_hex: "4e3d2d",
     splash_id: get_splash_id("z6SXax6vhm0"),
-    stats: {
-      like_count: 249,
-      read_count: 39842,
-      comment_count: 29
-    },
+    like_count: 249,
+    read_count: 39842,
+    comment_count: 29,
     tags: [MOCK_TAGS[8]],
     title:
       "Exploring the Great Outdoors: A Journey into Nature's Healing Powers",
@@ -141,11 +135,9 @@ export const MOCK_STORIES: Story[] = [
     slug: "from-clutter-to-zen-decluttering-your-space-for-inner-peace",
     splash_hex: "312f29",
     splash_id: get_splash_id("P-yzuyWFEIk"),
-    stats: {
-      like_count: 349,
-      read_count: 48291,
-      comment_count: 190
-    },
+    like_count: 349,
+    read_count: 48291,
+    comment_count: 190,
     tags: [MOCK_TAGS[1], MOCK_TAGS[4], MOCK_TAGS[7]],
     title: "From Clutter to Zen: Decluttering Your Space for Inner Peace",
     user: MOCK_USERS[2],
@@ -175,11 +167,9 @@ export const MOCK_STORIES: Story[] = [
     slug: "garden-delights-diy-tips-for-a-thriving-vegetable-patch",
     splash_hex: "a39756",
     splash_id: get_splash_id("Z26qv5wkyZw"),
-    stats: {
-      like_count: 954,
-      read_count: 99214,
-      comment_count: 91
-    },
+    like_count: 954,
+    read_count: 99214,
+    comment_count: 91,
     tags: [],
     title: "Garden Delights: DIY Tips for a Thriving Vegetable Patch",
     user: MOCK_USERS[3],
@@ -210,11 +200,9 @@ export const MOCK_STORIES: Story[] = [
     slug: "office-shenanigans-pranks-memes-and-workplace-woes",
     splash_hex: "2b3c46",
     splash_id: null,
-    stats: {
-      like_count: 402,
-      read_count: 13492,
-      comment_count: 0
-    },
+    like_count: 402,
+    read_count: 13492,
+    comment_count: 0,
     tags: [MOCK_TAGS[9]],
     title: "Office Shenanigans: Pranks, Memes, and Workplace Woes",
     user: MOCK_USERS[4],
@@ -245,11 +233,9 @@ export const MOCK_STORIES: Story[] = [
     slug: "pets-gone-wild-the-funniest-antics-of-our-furry-friends",
     splash_hex: "f6c4ed",
     splash_id: get_splash_id("lq-w5bRrNcc"),
-    stats: {
-      like_count: 49592,
-      read_count: 3952915,
-      comment_count: 3
-    },
+    like_count: 49592,
+    read_count: 3952915,
+    comment_count: 3,
     tags: [
       MOCK_TAGS[2],
       MOCK_TAGS[1],
@@ -286,11 +272,9 @@ export const MOCK_STORIES: Story[] = [
     slug: "wanderlust-chronicles-tales-from-around-the-globe",
     splash_hex: "8a8a92",
     splash_id: get_splash_id("jNpvVRvFcrI"),
-    stats: {
-      like_count: 395,
-      read_count: 94532,
-      comment_count: 13
-    },
+    like_count: 395,
+    read_count: 94532,
+    comment_count: 13,
     tags: [MOCK_TAGS[2], MOCK_TAGS[6], MOCK_TAGS[1]],
     title: "Wanderlust Chronicles: Tales from Around the Globe",
     user: MOCK_USERS[6],
@@ -321,11 +305,9 @@ export const MOCK_STORIES: Story[] = [
     slug: "beyond-the-stars-exploring-the-mysteries-of-deep-space",
     splash_hex: "455f75",
     splash_id: get_splash_id("d2YMQ-hZ3og"),
-    stats: {
-      like_count: 210,
-      read_count: 902349,
-      comment_count: 934
-    },
+    like_count: 210,
+    read_count: 902349,
+    comment_count: 934,
     tags: [],
     title: "Beyond the Stars: Exploring the Mysteries of Deep Space",
     user: MOCK_USERS[7],
@@ -356,11 +338,9 @@ export const MOCK_STORIES: Story[] = [
     slug: "the-search-for-extraterrestrial-life-are-we-alone-in-the-universe",
     splash_hex: "71b343",
     splash_id: get_splash_id("HWQXIYbs8PM"),
-    stats: {
-      like_count: 109,
-      read_count: 93592,
-      comment_count: 1023
-    },
+    like_count: 109,
+    read_count: 93592,
+    comment_count: 1023,
     tags: [MOCK_TAGS[7]],
     title:
       "The Search for Extraterrestrial Life: Are We Alone in the Universe?",
@@ -392,11 +372,9 @@ export const MOCK_STORIES: Story[] = [
     slug: "unusual-travel-tales-strange-adventures-and-bizarre-encounters",
     splash_hex: "191d24",
     splash_id: get_splash_id("uKJ56vo9k3U"),
-    stats: {
-      like_count: 3495,
-      read_count: 924915,
-      comment_count: 910
-    },
+    like_count: 3495,
+    read_count: 924915,
+    comment_count: 910,
     tags: [MOCK_TAGS[1], MOCK_TAGS[8]],
     title: "Unusual Travel Tales: Strange Adventures and Bizarre Encounters",
     user: MOCK_USERS[9],

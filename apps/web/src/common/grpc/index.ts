@@ -3,6 +3,10 @@ import "server-only";
 import { credentials, ServiceError } from "@grpc/grpc-js";
 import { ApiServiceClient } from "@storiny/proto/gen/ts/api_service/v1/service";
 import {
+  GetCommentRequest,
+  GetCommentResponse
+} from "@storiny/proto/gen/ts/comment_def/v1/def";
+import {
   GetConnectionSettingsRequest,
   GetConnectionSettingsResponse
 } from "@storiny/proto/gen/ts/connection_settings_def/v1/def";
@@ -221,4 +225,10 @@ export const verify_email = cache(
 
 export const get_story = cache(
   promisify<GetStoryRequest, GetStoryResponse>(global.grpc_client.getStory)
+);
+
+export const get_comment = cache(
+  promisify<GetCommentRequest, GetCommentResponse>(
+    global.grpc_client.getComment
+  )
 );
