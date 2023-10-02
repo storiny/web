@@ -8,6 +8,7 @@ import Typography from "~/components/typography";
 import Persona from "~/entities/persona";
 import TrendingUpIcon from "~/icons/trending-up";
 import css from "~/theme/main.module.scss";
+import { abbreviate_number } from "~/utils/abbreviate-number";
 
 import styles from "./popular-story.module.scss";
 import { PopularStoryProps } from "./popular-story.props";
@@ -63,8 +64,7 @@ const PopularStory = (props: PopularStoryProps): React.ReactElement | null => {
               level={"body2"}
             >
               <TrendingUpIcon size={14} />
-              {/* TODO: Change this */}
-              1.2k
+              {abbreviate_number(story.read_count)}
             </Typography>
           </span>
         }

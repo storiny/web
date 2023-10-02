@@ -14,6 +14,12 @@
    */
   padding: 32px 48px 100vh;
 
+  h2,
+  h3 {
+    // For `scrollIntoView` (table of contents)
+    scroll-margin: calc(var(--header-height) + 18px);
+  }
+
   /* Read-only */
   &:not(.editable) {
     height: fit-content;

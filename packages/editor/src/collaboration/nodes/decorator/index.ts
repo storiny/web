@@ -28,8 +28,6 @@ export class CollabDecoratorNode {
     this._xml_elem = xml_element;
     this._parent = parent;
     this._type = type;
-    // TODO: These observers seem to do nothing?
-    this._unobservers = new Set();
   }
 
   /**
@@ -48,10 +46,6 @@ export class CollabDecoratorNode {
    * Node type
    */
   public _type: string;
-  /**
-   * Set of unobservers
-   */
-  _unobservers: Set<() => void>;
 
   /**
    * Returns the previous node
@@ -161,9 +155,6 @@ export class CollabDecoratorNode {
   public destroy(binding: Binding): void {
     const collab_node_map = binding.collab_node_map;
     collab_node_map.delete(this._key);
-
-    this._unobservers.forEach((unobserver) => unobserver());
-    this._unobservers.clear();
   }
 }
 

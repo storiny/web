@@ -6,45 +6,19 @@ import React from "react";
 const NullComponent = (): null => null;
 
 export const PROVIDER_ICON_MAP: Record<TProvider, React.ComponentType> = {
-  [Provider.TWITTER /*     */]: dynamic(
-    () => import("../../../../../packages/ui/src/icons/twitter")
-  ),
-  [Provider.DISCORD /*     */]: dynamic(
-    () => import("../../../../../packages/ui/src/icons/discord")
-  ),
-  [Provider.DRIBBBLE /*    */]: dynamic(
-    () => import("../../../../../packages/ui/src/icons/dribbble")
-  ),
-  [Provider.FIGMA /*       */]: dynamic(
-    () => import("../../../../../packages/ui/src/icons/figma")
-  ),
-  [Provider.GITHUB /*      */]: dynamic(
-    () => import("../../../../../packages/ui/src/icons/git-hub")
-  ),
-  [Provider.FACEBOOK /*    */]: dynamic(
-    () => import("../../../../../packages/ui/src/icons/facebook")
-  ),
-  [Provider.INSTAGRAM /*   */]: dynamic(
-    () => import("../../../../../packages/ui/src/icons/instagram")
-  ),
-  [Provider.LINKED_IN /*   */]: dynamic(
-    () => import("../../../../../packages/ui/src/icons/linked-in")
-  ),
-  [Provider.REDDIT /*      */]: dynamic(
-    () => import("../../../../../packages/ui/src/icons/reddit")
-  ),
-  [Provider.SNAPCHAT /*    */]: dynamic(
-    () => import("../../../../../packages/ui/src/icons/snapchat")
-  ),
-  [Provider.SPOTIFY /*     */]: dynamic(
-    () => import("../../../../../packages/ui/src/icons/spotify")
-  ),
-  [Provider.YOUTUBE /*     */]: dynamic(
-    () => import("../../../../../packages/ui/src/icons/you-tube")
-  ),
-  [Provider.TWITCH /*      */]: dynamic(
-    () => import("../../../../../packages/ui/src/icons/twitch")
-  ),
+  [Provider.TWITTER /*     */]: dynamic(() => import("~/icons/twitter")),
+  [Provider.DISCORD /*     */]: dynamic(() => import("~/icons/discord")),
+  [Provider.DRIBBBLE /*    */]: dynamic(() => import("~/icons/dribbble")),
+  [Provider.FIGMA /*       */]: dynamic(() => import("~/icons/figma")),
+  [Provider.GITHUB /*      */]: dynamic(() => import("~/icons/git-hub")),
+  [Provider.FACEBOOK /*    */]: dynamic(() => import("~/icons/facebook")),
+  [Provider.INSTAGRAM /*   */]: dynamic(() => import("~/icons/instagram")),
+  [Provider.LINKED_IN /*   */]: dynamic(() => import("~/icons/linked-in")),
+  [Provider.REDDIT /*      */]: dynamic(() => import("~/icons/reddit")),
+  [Provider.SNAPCHAT /*    */]: dynamic(() => import("~/icons/snapchat")),
+  [Provider.SPOTIFY /*     */]: dynamic(() => import("~/icons/spotify")),
+  [Provider.YOUTUBE /*     */]: dynamic(() => import("~/icons/you-tube")),
+  [Provider.TWITCH /*      */]: dynamic(() => import("~/icons/twitch")),
   [Provider.UNSPECIFIED /* */]: NullComponent,
   [Provider.UNRECOGNIZED /**/]: NullComponent
 };

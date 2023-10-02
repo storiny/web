@@ -4,7 +4,7 @@ import { USER_PROPS } from "@storiny/shared";
 import { is_test_env } from "@storiny/shared/src/utils/is-test-env";
 import clsx from "clsx";
 import React from "react";
-import { ZXCVBNScore } from "zxcvbn";
+import type { ZXCVBNScore } from "zxcvbn";
 
 import FormInput from "~/components/form-input";
 import IconButton from "~/components/icon-button";

@@ -4,24 +4,8 @@
 @use "variants";
 @use "utility";
 
-$dark-theme-selector: 'html[data-theme="dark"]';
-
 /* Variants */
 @include typography-variants.main;
-
-@at-root {
-  :root,
-  .force-light-mode {
-    @include variants.main;
-  }
-
-  @media not print {
-    #{$dark-theme-selector},
-    .force-dark-mode {
-      @include variants.dark;
-    }
-  }
-}
 
 // Takes up the entire width, excluding the sidebars and the sidenav.
 .page-header {

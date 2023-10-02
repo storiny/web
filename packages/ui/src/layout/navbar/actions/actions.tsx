@@ -112,7 +112,12 @@ const LoggedInMenu = ({
           />
         </NextLink>
       </MenuItemUnstyled>
-      <MenuItemUnstyled asChild>
+      <MenuItemUnstyled
+        asChild
+        onClick={(event): void => {
+          event.preventDefault(); // Do not close when the status modal is mounted
+        }}
+      >
         <Status className={clsx(styles["menu-item"])} editable />
       </MenuItemUnstyled>
     </div>

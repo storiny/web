@@ -8,6 +8,7 @@ import { get_story } from "~/common/grpc";
 import { handle_exception } from "~/common/grpc/utils";
 import { get_doc_by_key } from "~/common/utils/get-doc-by-key";
 import { get_session_token } from "~/common/utils/get-session-token";
+import { is_valid_username } from "~/common/utils/is-valid-username";
 
 import Component from "./component";
 import RestrictedStory from "./restricted";
@@ -18,6 +19,11 @@ const Page = async ({
   params: { id_or_slug: string; username: string };
 }): Promise<React.ReactElement | undefined> => {
   try {
+    // Links to the story can be in the form of `/story/story_id`
+    if (!is_valid_username(username) && username !== "story") {
+      not_found();
+    }
+
     const session_token = get_session_token();
     const story_response = await get_story({
       id_or_slug: id_or_slug,

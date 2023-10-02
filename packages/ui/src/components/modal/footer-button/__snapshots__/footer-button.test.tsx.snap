@@ -150,7 +150,7 @@ exports[`<ModalFooterButton /> renders \`compact\` version 1`] = `
         >
           <button
             aria-disabled="false"
-            class="reset focusable variant-rigid color-inverted button lg"
+            class="reset focusable variant-rigid color-inverted button lg focus-invert"
             style="border-radius: 0; flex: 1;"
             tabindex="0"
             type="button"

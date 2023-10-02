@@ -19,7 +19,8 @@ import styles from "./login-item.module.scss";
 import { LoginItemProps } from "./login-item.props";
 
 const Map = dynamic(() => import("../map"), {
-  loading: dynamic_loader()
+  loading: dynamic_loader(),
+  ssr: false
 });
 
 const LogoutButton = (

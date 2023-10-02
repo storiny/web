@@ -22,6 +22,7 @@ import "./following";
 import "./followers";
 import "./friends";
 import "./flow";
+import "./status";
 
 import { MOCK_USERS } from "@storiny/ui/src/mocks";
 

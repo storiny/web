@@ -84,8 +84,8 @@ const Button = forward_ref<ButtonProps, "button">((props, ref) => {
       className={clsx(
         button_styles.reset,
         css["focusable"],
-        css[`variant-${variant}`],
-        css[`color-${color}`],
+        `variant-${variant}`,
+        `color-${color}`,
         styles.button,
         loading && [styles.loading, css["loading"]],
         disabled && [styles.disabled, css["disabled"]],

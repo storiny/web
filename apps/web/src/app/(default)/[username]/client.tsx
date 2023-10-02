@@ -33,12 +33,9 @@ import styles from "./styles.module.scss";
 import EntitiesTab from "./tabs/entities";
 import StoriesTab from "./tabs/stories";
 
-const CustomState = dynamic(
-  () => import("../../../../../../packages/ui/src/entities/custom-state"),
-  {
-    loading: dynamic_loader()
-  }
-);
+const CustomState = dynamic(() => import("~/entities/custom-state"), {
+  loading: dynamic_loader()
+});
 
 export type ProfileTabValue = "stories" | "followers" | "following" | "friends";
 export type ProfileEntitySortValue = "popular" | "recent" | "old";

@@ -1,3 +1,5 @@
+"use client";
+
 import { Label, SelectLabelProps } from "@radix-ui/react-select";
 import clsx from "clsx";
 import React from "react";

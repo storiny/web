@@ -27,6 +27,7 @@ import styles from "./login-accordion.module.scss";
 import { LoginAccordionProps } from "./login-accordion.props";
 
 const Map = dynamic(() => import("../map"), {
+  ssr: false,
   loading: dynamic_loader(() => (
     <AspectRatio
       className={clsx(css["full-w"], styles.x, styles.loader)}

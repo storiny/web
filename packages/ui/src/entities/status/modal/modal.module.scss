@@ -1,0 +1,15 @@
+@use "breakpoints";
+
+.content {
+  gap: 24px;
+}
+
+.row {
+  gap: 12px;
+
+  @include breakpoints.media("<=mobile") {
+    gap: 16px;
+    flex-direction: column;
+    align-items: stretch;
+  }
+}

@@ -13,7 +13,10 @@ const EmojiMenubarItem = ({
 }): React.ReactElement => {
   const [insert_emoji] = use_insert_text_entity();
   return (
-    <EmojiPicker on_emoji_select={insert_emoji} popover_props={{ modal: true }}>
+    <EmojiPicker
+      on_emoji_select={({ native }): void => insert_emoji(native)}
+      popover_props={{ modal: true }}
+    >
       <MenubarItem
         decorator={<MoodSmileIcon />}
         disabled={disabled}

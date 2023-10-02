@@ -9,11 +9,21 @@ enum StatusVisibility {
   STATUS_VISIBILITY_FRIENDS /*    */ = 3;
 }
 
+enum StatusDuration {
+  STATUS_DURATION_UNSPECIFIED /**/ = 0;
+  STATUS_DURATION_NEVER /*      */ = 1;
+  STATUS_DURATION_MIN_30 /*     */ = 2;
+  STATUS_DURATION_MIN_60 /*     */ = 3;
+  STATUS_DURATION_HR_4 /*       */ = 4;
+  STATUS_DURATION_DAY_1 /*      */ = 5;
+}
+
 message Status {
   optional string emoji /*      */ = 1;
   optional string text /*       */ = 2;
   optional string expires_at /* */ = 3;
-  StatusVisibility visibility /**/ = 4;
+  StatusDuration duration /*    */ = 4;
+  StatusVisibility visibility /**/ = 5;
 }
 
 // User

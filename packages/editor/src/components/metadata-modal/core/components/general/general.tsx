@@ -30,6 +30,7 @@ import TrashIcon from "~/icons/trash";
 import { use_lazy_get_tags_query } from "~/redux/features";
 import css from "~/theme/main.module.scss";
 
+import { StoryMetadataSchema } from "../../../schema";
 import image_styles from "../common/image.module.scss";
 
 /**
@@ -50,7 +51,7 @@ const debounce = <T extends (...args: any) => any>(fn: T, delay = 250): T => {
 // Splash
 
 const Splash = (): React.ReactElement => {
-  const form = use_form_context();
+  const form = use_form_context<StoryMetadataSchema>();
   const splash_id = form.watch("splash_id");
   const splash_hex = form.watch("splash_hex");
 

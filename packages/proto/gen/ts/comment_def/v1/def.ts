@@ -6,6 +6,7 @@ export const protobufPackage = "comment_def.v1";
 
 export interface GetCommentRequest {
   id: string;
+  token?: string | undefined;
 }
 
 export interface GetCommentResponse {
@@ -14,6 +15,8 @@ export interface GetCommentResponse {
   rendered_content: string;
   user_id: string;
   story_id: string;
+  story_slug: string;
+  story_writer_username: string;
   hidden: boolean;
   edited_at?: string | undefined;
   created_at: string;
@@ -27,13 +30,16 @@ export interface GetCommentResponse {
 }
 
 function createBaseGetCommentRequest(): GetCommentRequest {
-  return { id: "" };
+  return { id: "", token: undefined };
 }
 
 export const GetCommentRequest = {
   encode(message: GetCommentRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.id !== "") {
       writer.uint32(10).string(message.id);
+    }
+    if (message.token !== undefined) {
+      writer.uint32(18).string(message.token);
     }
     return writer;
   },
@@ -52,6 +58,13 @@ export const GetCommentRequest = {
 
           message.id = reader.string();
           continue;
+        case 2:
+          if (tag !== 18) {
+            break;
+          }
+
+          message.token = reader.string();
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -62,13 +75,19 @@ export const GetCommentRequest = {
   },
 
   fromJSON(object: any): GetCommentRequest {
-    return { id: isSet(object.id) ? String(object.id) : "" };
+    return {
+      id: isSet(object.id) ? String(object.id) : "",
+      token: isSet(object.token) ? String(object.token) : undefined,
+    };
   },
 
   toJSON(message: GetCommentRequest): unknown {
     const obj: any = {};
     if (message.id !== "") {
       obj.id = message.id;
+    }
+    if (message.token !== undefined) {
+      obj.token = message.token;
     }
     return obj;
   },
@@ -79,6 +98,7 @@ export const GetCommentRequest = {
   fromPartial<I extends Exact<DeepPartial<GetCommentRequest>, I>>(object: I): GetCommentRequest {
     const message = createBaseGetCommentRequest();
     message.id = object.id ?? "";
+    message.token = object.token ?? undefined;
     return message;
   },
 };
@@ -90,6 +110,8 @@ function createBaseGetCommentResponse(): GetCommentResponse {
     rendered_content: "",
     user_id: "",
     story_id: "",
+    story_slug: "",
+    story_writer_username: "",
     hidden: false,
     edited_at: undefined,
     created_at: "",
@@ -117,26 +139,32 @@ export const GetCommentResponse = {
     if (message.story_id !== "") {
       writer.uint32(42).string(message.story_id);
     }
+    if (message.story_slug !== "") {
+      writer.uint32(50).string(message.story_slug);
+    }
+    if (message.story_writer_username !== "") {
+      writer.uint32(58).string(message.story_writer_username);
+    }
     if (message.hidden === true) {
-      writer.uint32(48).bool(message.hidden);
+      writer.uint32(64).bool(message.hidden);
     }
     if (message.edited_at !== undefined) {
-      writer.uint32(58).string(message.edited_at);
+      writer.uint32(74).string(message.edited_at);
     }
     if (message.created_at !== "") {
-      writer.uint32(66).string(message.created_at);
+      writer.uint32(82).string(message.created_at);
     }
     if (message.like_count !== 0) {
-      writer.uint32(72).uint32(message.like_count);
+      writer.uint32(88).uint32(message.like_count);
     }
     if (message.reply_count !== 0) {
-      writer.uint32(80).uint32(message.reply_count);
+      writer.uint32(96).uint32(message.reply_count);
     }
     if (message.user !== undefined) {
-      User.encode(message.user, writer.uint32(90).fork()).ldelim();
+      User.encode(message.user, writer.uint32(106).fork()).ldelim();
     }
     if (message.is_liked !== undefined) {
-      writer.uint32(96).bool(message.is_liked);
+      writer.uint32(112).bool(message.is_liked);
     }
     return writer;
   },
@@ -184,49 +212,63 @@ export const GetCommentResponse = {
           message.story_id = reader.string();
           continue;
         case 6:
-          if (tag !== 48) {
+          if (tag !== 50) {
             break;
           }
 
-          message.hidden = reader.bool();
+          message.story_slug = reader.string();
           continue;
         case 7:
           if (tag !== 58) {
             break;
           }
 
-          message.edited_at = reader.string();
+          message.story_writer_username = reader.string();
           continue;
         case 8:
-          if (tag !== 66) {
+          if (tag !== 64) {
+            break;
+          }
+
+          message.hidden = reader.bool();
+          continue;
+        case 9:
+          if (tag !== 74) {
+            break;
+          }
+
+          message.edited_at = reader.string();
+          continue;
+        case 10:
+          if (tag !== 82) {
             break;
           }
 
           message.created_at = reader.string();
           continue;
-        case 9:
-          if (tag !== 72) {
+        case 11:
+          if (tag !== 88) {
             break;
           }
 
           message.like_count = reader.uint32();
           continue;
-        case 10:
-          if (tag !== 80) {
+        case 12:
+          if (tag !== 96) {
             break;
           }
 
           message.reply_count = reader.uint32();
           continue;
-        case 11:
-          if (tag !== 90) {
+        case 13:
+          if (tag !== 106) {
             break;
           }
 
           message.user = User.decode(reader, reader.uint32());
           continue;
-        case 12:
-          if (tag !== 96) {
+        case 14:
+          if (tag !== 112) {
             break;
           }
 
@@ -248,6 +290,8 @@ export const GetCommentResponse = {
       rendered_content: isSet(object.rendered_content) ? String(object.rendered_content) : "",
       user_id: isSet(object.user_id) ? String(object.user_id) : "",
       story_id: isSet(object.story_id) ? String(object.story_id) : "",
+      story_slug: isSet(object.story_slug) ? String(object.story_slug) : "",
+      story_writer_username: isSet(object.story_writer_username) ? String(object.story_writer_username) : "",
       hidden: isSet(object.hidden) ? Boolean(object.hidden) : false,
       edited_at: isSet(object.edited_at) ? String(object.edited_at) : undefined,
       created_at: isSet(object.created_at) ? String(object.created_at) : "",
@@ -274,6 +318,12 @@ export const GetCommentResponse = {
     }
     if (message.story_id !== "") {
       obj.story_id = message.story_id;
+    }
+    if (message.story_slug !== "") {
+      obj.story_slug = message.story_slug;
+    }
+    if (message.story_writer_username !== "") {
+      obj.story_writer_username = message.story_writer_username;
     }
     if (message.hidden === true) {
       obj.hidden = message.hidden;
@@ -309,6 +359,8 @@ export const GetCommentResponse = {
     message.rendered_content = object.rendered_content ?? "";
     message.user_id = object.user_id ?? "";
     message.story_id = object.story_id ?? "";
+    message.story_slug = object.story_slug ?? "";
+    message.story_writer_username = object.story_writer_username ?? "";
     message.hidden = object.hidden ?? false;
     message.edited_at = object.edited_at ?? undefined;
     message.created_at = object.created_at ?? "";

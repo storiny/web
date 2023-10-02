@@ -17,12 +17,13 @@ import PhotoEditIcon from "~/icons/photo-edit";
 import TrashIcon from "~/icons/trash";
 import css from "~/theme/main.module.scss";
 
+import { StoryMetadataSchema } from "../../../schema";
 import image_styles from "../common/image.module.scss";
 
 // Preview image
 
 const PreviewImage = (): React.ReactElement => {
-  const form = use_form_context();
+  const form = use_form_context<StoryMetadataSchema>();
   const preview_image = form.watch("preview_image");
   return (
     <div className={clsx(css["flex-col"], image_styles.block)}>

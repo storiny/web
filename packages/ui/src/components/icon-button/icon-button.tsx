@@ -85,8 +85,8 @@ const IconButton = forward_ref<IconButtonProps, "button">((props, ref) => {
       className={clsx(
         button_styles.reset,
         css["focusable"],
-        css[`variant-${variant}`],
-        css[`color-${input_color || color}`],
+        `variant-${variant}`,
+        `color-${input_color || color}`,
         styles["icon-button"],
         loading && [styles.loading, css["loading"]],
         disabled && [styles.disabled, css["disabled"]],

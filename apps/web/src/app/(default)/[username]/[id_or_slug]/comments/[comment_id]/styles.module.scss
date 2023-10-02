@@ -1,0 +1,11 @@
+@use "breakpoints";
+
+.x {
+  &.comment {
+    padding-inline: 20px;
+
+    @include breakpoints.media("<=mobile") {
+      padding-inline: 16px;
+    }
+  }
+}

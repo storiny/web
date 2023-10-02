@@ -1,6 +1,7 @@
 "use client";
 
 import clsx from "clsx";
+import dynamic from "next/dynamic";
 import React from "react";
 
 import Typography from "~/components/typography";
@@ -11,7 +12,9 @@ import { forward_ref } from "~/utils/forward-ref";
 import styles from "./status.module.scss";
 import { StatusProps } from "./status.props";
 
-const Status = forward_ref<StatusProps, "span">((props, ref) => {
+const StatusModal = dynamic(() => import("./modal"));
+
+const Entity = forward_ref<StatusProps, "span">((props, ref) => {
   const {
     editable,
     as: Component = editable ? "button" : "span",
@@ -50,7 +53,7 @@ const Status = forward_ref<StatusProps, "span">((props, ref) => {
                 "aria-label": "Status emoji",
                 role: "img",
                 style: {
-                  "--emoji": `url("${emoji}")`
+                  "--emoji": `url("${process.env.NEXT_PUBLIC_CDN_URL}/web-assets/raw/emojis/${emoji}.svg")`
                 } as React.CSSProperties
               }
             : {
@@ -76,6 +79,30 @@ const Status = forward_ref<StatusProps, "span">((props, ref) => {
       )}
     </Component>
   );
+});
+
+const Status = forward_ref<StatusProps, "span">((props, ref) => {
+  const { editable, disable_modal, ...rest } = props;
+
+  if (editable && !disable_modal) {
+    return (
+      <StatusModal
+        trigger={({ open_modal }): React.ReactElement => (
+          <Entity
+            editable={editable}
+            {...rest}
+            onClick={(event): void => {
+              open_modal();
+              rest.onClick?.(event);
+            }}
+            ref={ref}
+          />
+        )}
+      />
+    );
+  }
+
+  return <Entity editable={editable} {...rest} ref={ref} />;
 });
 
 Status.displayName = "Status";

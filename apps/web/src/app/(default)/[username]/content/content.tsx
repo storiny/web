@@ -36,13 +36,8 @@ import ProfileActions from "../actions";
 import Connections from "../connections";
 import styles from "./content.module.scss";
 
-const EarlyUserBadge = dynamic(
-  () =>
-    import("../../../../../../../packages/ui/src/entities/badges/early-user")
-);
-const StaffBadge = dynamic(
-  () => import("../../../../../../../packages/ui/src/entities/badges/staff")
-);
+const EarlyUserBadge = dynamic(() => import("~/entities/badges/early-user"));
+const StaffBadge = dynamic(() => import("~/entities/badges/staff"));
 
 interface Props {
   is_inside_sidebar?: boolean;

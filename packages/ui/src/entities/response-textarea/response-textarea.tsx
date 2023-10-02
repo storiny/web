@@ -72,7 +72,10 @@ const ResponseTextarea = React.forwardRef<
           }}
         >
           {hide_post_button && <Grow />}
-          <EmojiPicker on_emoji_select={insert_emoji}>
+          <EmojiPicker
+            on_emoji_select={({ native }): void => insert_emoji(native)}
+            popover_props={{ modal: true }}
+          >
             <IconButton
               aria-label={"Insert an emoji"}
               auto_size

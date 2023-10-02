@@ -1,8 +1,9 @@
-import { StatusVisibility } from "@storiny/shared";
+import { StatusDuration, StatusVisibility } from "@storiny/shared";
 
 import { Connection } from "../connection";
 
-interface UserStatus {
+export interface UserStatus {
+  duration: StatusDuration;
   emoji: string | null;
   expires_at: string | null;
   text: string | null;
@@ -27,7 +28,6 @@ interface UserOptionalProps {
   mfa_enabled?: boolean; // Multifactor auth
   mfa_secret?: string | null; // MFA secret
   password?: string | null;
-  status?: UserStatus;
   username_modified_at?: string | null;
 }
 
@@ -54,6 +54,7 @@ export type User = {
   location: string;
   name: string;
   public_flags: number;
+  status: UserStatus | null;
   username: string;
   wpm: number; // Default `225`
 } & UserStatistics &

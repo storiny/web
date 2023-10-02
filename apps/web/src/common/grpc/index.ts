@@ -100,6 +100,7 @@ const promisify =
     });
 
 export {
+  GetCommentResponse,
   GetConnectionSettingsResponse,
   GetCredentialSettingsResponse,
   GetDraftsInfoResponse,

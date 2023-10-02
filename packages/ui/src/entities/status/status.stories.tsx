@@ -1,6 +1,9 @@
 // noinspection JSUnusedGlobalSymbols
 
 import type { Meta, StoryObj } from "@storybook/react";
+import React from "react";
+
+import { render_with_state } from "~/redux/mock";
 
 import Status from "./status";
 
@@ -21,7 +24,7 @@ export const Default: Story = {};
 
 export const WithEmoji: Story = {
   args: {
-    emoji: "/images/emoji.png"
+    emoji: "1f33f"
   }
 };
 
@@ -40,6 +43,10 @@ export const WithoutText: Story = {
 };
 
 export const Editable: Story = {
+  decorators: [
+    (Story): React.ReactElement =>
+      render_with_state(<Story />, { logged_in: true })
+  ],
   args: {
     editable: true,
     text: undefined

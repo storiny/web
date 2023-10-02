@@ -1,3 +1,5 @@
+"use client";
+
 import { Group, SelectGroupProps } from "@radix-ui/react-select";
 import clsx from "clsx";
 import React from "react";
