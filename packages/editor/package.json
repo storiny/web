@@ -5,11 +5,11 @@
   "sideEffects": false,
   "scripts": {
     "lint": "eslint \"**/*.ts*\"",
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
+    "dev": "dotenv -e ../../.env.local next dev",
+    "build": "dotenv -e ../../.env.local next build",
+    "start": "dotenv -e ../../.env.local next start",
     "multiplayer:server": "dotenv -v HOST=localhost -v PORT=1234 -- npx y-websocket-server",
-    "multiplayer:test": "dotenv-run -- concurrently --raw \"yarn multiplayer:server\" \"yarn start\""
+    "multiplayer:test": "concurrently --raw \"yarn multiplayer:server\" \"yarn start\""
   },
   "devDependencies": {
     "@playwright/test": "^1.37.1",

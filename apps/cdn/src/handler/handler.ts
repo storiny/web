@@ -76,6 +76,11 @@ export const handler = (r: Request): void | undefined => {
       return;
     }
 
+    // Serve raw assets as-is
+    if (/\/web-assets\/raw/.test(uri)) {
+      return pass_to_proxy(r, `internal/plain/${BASE_BUCKET}/${key}`);
+    }
+
     const req_type = type as RequestType;
     const resize_option = get_resize_option(parsed_width);
 

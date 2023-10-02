@@ -83,9 +83,9 @@ const EmojiPicker = (props: EmojiPickerProps): React.ReactElement => {
    * Close popover when selecting an emoji
    */
   const on_emoji_select_impl = React.useCallback(
-    (emoji: string) => {
+    (data: { native: string; unified: string }) => {
       set_open(false);
-      on_emoji_select?.(emoji);
+      on_emoji_select?.(data);
     },
     [on_emoji_select]
   );

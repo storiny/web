@@ -1,3 +1,5 @@
+"use client";
+
 import { clsx } from "clsx";
 import {
   useAtomValue as use_atom_value,

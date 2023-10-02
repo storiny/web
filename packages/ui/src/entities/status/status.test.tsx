@@ -13,7 +13,7 @@ describe("<Status />", () => {
   });
 
   it("does not have any accessibility violations", async () => {
-    const { container } = render_test_with_provider(<Status />);
+    const { container } = render_test_with_provider(<Status disable_modal />);
 
     await wait_for(async () =>
       expect(await axe(container)).toHaveNoViolations()
@@ -22,7 +22,7 @@ describe("<Status />", () => {
 
   it("renders as editable", () => {
     const { getByTestId } = render_test_with_provider(
-      <Status data-testid={"status"} editable />
+      <Status data-testid={"status"} disable_modal editable />
     );
 
     expect(getByTestId("status")).toHaveClass(styles.editable);
@@ -30,7 +30,7 @@ describe("<Status />", () => {
 
   it("renders with emoji", () => {
     const { getByRole } = render_test_with_provider(
-      <Status data-testid={"status"} emoji={"/emoji.png"} />
+      <Status data-testid={"status"} disable_modal emoji={"1f33f"} />
     );
 
     expect(getByRole("img")).toBeInTheDocument();

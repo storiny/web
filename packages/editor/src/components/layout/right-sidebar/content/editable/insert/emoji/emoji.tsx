@@ -13,7 +13,7 @@ const EmojiItem = ({
 }): React.ReactElement => {
   const [insert_emoji] = use_insert_text_entity();
   return (
-    <EmojiPicker on_emoji_select={insert_emoji}>
+    <EmojiPicker on_emoji_select={({ native }): void => insert_emoji(native)}>
       <InsertItem
         data-testid={"insert-emoji"}
         decorator={<MoodSmileIcon />}

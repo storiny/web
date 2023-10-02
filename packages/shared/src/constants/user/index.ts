@@ -31,6 +31,11 @@ export const USER_PROPS = {
   username: {
     max_length: 24,
     min_length: 3
+  },
+  status: {
+    text: {
+      max_length: 128
+    }
   }
 } as const;
 
@@ -105,5 +110,11 @@ export const USER_SCHEMA = {
     .max(
       USER_PROPS.wpm.max,
       ZOD_MESSAGES.max("reading speed", USER_PROPS.wpm.max, "number")
+    ),
+  status_text: z
+    .string()
+    .max(
+      USER_PROPS.status.text.max_length,
+      ZOD_MESSAGES.max("status text", USER_PROPS.status.text.max_length)
     )
 } as const;

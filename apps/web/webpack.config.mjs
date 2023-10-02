@@ -49,7 +49,8 @@ export const webpack_config = (config, { dev }) => {
           module_loader.loader?.includes("css-loader") &&
           !module_loader.loader?.includes("postcss-loader")
         ) {
-          module_loader.options.modules.getLocalIdent = hash_only_ident;
+          // TODO: This is not working on the current version of Next.js
+          // module_loader.options.modules.getLocalIdent = hash_only_ident;
         }
       });
     });

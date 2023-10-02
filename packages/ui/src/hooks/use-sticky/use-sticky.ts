@@ -33,7 +33,11 @@ type ResizeObserverCallback = (
 // Either the regular `sticky` prop or with the webkit vendor prefix
 let sticky_prop: null | string = null;
 
-if (typeof CSS !== "undefined" && CSS.supports) {
+if (
+  typeof window !== "undefined" &&
+  typeof CSS !== "undefined" &&
+  CSS.supports
+) {
   if (CSS.supports("position", "sticky")) {
     sticky_prop = "sticky";
   } else if (CSS.supports("position", "-webkit-sticky")) {
@@ -44,17 +48,19 @@ if (typeof CSS !== "undefined" && CSS.supports) {
 // Inspired by https://github.com/WICG/EventListenerOptions/blob/gh-pages/explainer.md#feature-detection
 let passive_arg: false | { passive: true } = false;
 
-try {
-  const options = Object.defineProperty({}, "passive", {
-    get: (): void => {
-      passive_arg = { passive: true };
-    }
-  });
+if (typeof window !== "undefined") {
+  try {
+    const options = Object.defineProperty({}, "passive", {
+      get: (): void => {
+        passive_arg = { passive: true };
+      }
+    });
 
-  window.addEventListener("testPassive", () => undefined, options);
-  window.removeEventListener("testPassive", () => undefined, options);
-} catch (e) {
-  dev_console.error(e);
+    window.addEventListener("testPassive", () => undefined, options);
+    window.removeEventListener("testPassive", () => undefined, options);
+  } catch (e) {
+    dev_console.error(e);
+  }
 }
 
 /**

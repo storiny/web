@@ -150,7 +150,14 @@ module.exports = {
     "no-literal-classnames/no-literal-classnames": [
       "error",
       "always",
-      { whitelist: ["force-dark-mode", "force-light-mode"] },
+      {
+        whitelist: [
+          "force-dark-mode",
+          "force-light-mode",
+          "color-", // Used by Button and IconButton
+          "variant-",
+        ],
+      },
     ],
     "react/jsx-sort-props": "warn",
     "react/prop-types": "off",

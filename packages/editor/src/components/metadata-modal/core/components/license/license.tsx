@@ -8,6 +8,8 @@ import Spacer from "~/components/spacer";
 import Typography from "~/components/typography";
 import css from "~/theme/main.module.scss";
 
+import { StoryMetadataSchema } from "../../../schema";
+
 const LICENSE_DESCRIPTION_MAP: Record<StoryLicense, React.ReactNode> = {
   [StoryLicense.UNRECOGNIZED /**/]: null,
   [StoryLicense.UNSPECIFIED /* */]: null,
@@ -71,8 +73,8 @@ const LICENSE_DESCRIPTION_MAP: Record<StoryLicense, React.ReactNode> = {
 };
 
 const LicenseTab = (): React.ReactElement => {
-  const form = use_form_context();
-  const license = form.watch("license") as StoryLicense;
+  const form = use_form_context<StoryMetadataSchema>();
+  const license = form.watch("license");
   return (
     <React.Fragment>
       <Typography className={css["t-minor"]} level={"body2"}>

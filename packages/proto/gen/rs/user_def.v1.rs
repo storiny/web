@@ -8,7 +8,9 @@ pub struct Status {
     pub text: ::core::option::Option<::prost::alloc::string::String>,
     #[prost(string, optional, tag="3")]
     pub expires_at: ::core::option::Option<::prost::alloc::string::String>,
-    #[prost(enumeration="StatusVisibility", tag="4")]
+    #[prost(enumeration="StatusDuration", tag="4")]
+    pub duration: i32,
+    #[prost(enumeration="StatusVisibility", tag="5")]
     pub visibility: i32,
 }
 // User
@@ -141,6 +143,44 @@ impl StatusVisibility {
             "STATUS_VISIBILITY_GLOBAL" => Some(Self::Global),
             "STATUS_VISIBILITY_FOLLOWERS" => Some(Self::Followers),
             "STATUS_VISIBILITY_FRIENDS" => Some(Self::Friends),
+            _ => None,
+        }
+    }
+}
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash, PartialOrd, Ord, ::prost::Enumeration)]
+#[repr(i32)]
+pub enum StatusDuration {
+    Unspecified = 0,
+    Never = 1,
+    Min30 = 2,
+    Min60 = 3,
+    Hr4 = 4,
+    Day1 = 5,
+}
+impl StatusDuration {
+    /// String value of the enum field names used in the ProtoBuf definition.
+    ///
+    /// The values are not transformed in any way and thus are considered stable
+    /// (if the ProtoBuf definition does not change) and safe for programmatic use.
+    pub fn as_str_name(&self) -> &'static str {
+        match self {
+            StatusDuration::Unspecified => "STATUS_DURATION_UNSPECIFIED",
+            StatusDuration::Never => "STATUS_DURATION_NEVER",
+            StatusDuration::Min30 => "STATUS_DURATION_MIN_30",
+            StatusDuration::Min60 => "STATUS_DURATION_MIN_60",
+            StatusDuration::Hr4 => "STATUS_DURATION_HR_4",
+            StatusDuration::Day1 => "STATUS_DURATION_DAY_1",
+        }
+    }
+    /// Creates an enum from field names used in the ProtoBuf definition.
+    pub fn from_str_name(value: &str) -> ::core::option::Option<Self> {
+        match value {
+            "STATUS_DURATION_UNSPECIFIED" => Some(Self::Unspecified),
+            "STATUS_DURATION_NEVER" => Some(Self::Never),
+            "STATUS_DURATION_MIN_30" => Some(Self::Min30),
+            "STATUS_DURATION_MIN_60" => Some(Self::Min60),
+            "STATUS_DURATION_HR_4" => Some(Self::Hr4),
+            "STATUS_DURATION_DAY_1" => Some(Self::Day1),
             _ => None,
         }
     }

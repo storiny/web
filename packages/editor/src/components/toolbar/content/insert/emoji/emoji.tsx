@@ -9,7 +9,10 @@ import { use_insert_text_entity } from "../../../../../hooks/use-insert-text-ent
 const EmojiMenuItem = (): React.ReactElement => {
   const [insert_emoji] = use_insert_text_entity();
   return (
-    <EmojiPicker on_emoji_select={insert_emoji} popover_props={{ modal: true }}>
+    <EmojiPicker
+      on_emoji_select={({ native }): void => insert_emoji(native)}
+      popover_props={{ modal: true }}
+    >
       <MenuItem
         decorator={<MoodSmileIcon />}
         onSelect={(event): void => event.preventDefault()}

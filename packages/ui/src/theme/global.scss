@@ -5,6 +5,7 @@
 @use "breakpoints";
 @use "shadow";
 @use "easing";
+@use "variants";
 @use "z-index";
 
 $dark-theme-selector: 'html[data-theme="dark"]';
@@ -23,6 +24,7 @@ $dark-theme-selector: 'html[data-theme="dark"]';
   @include shadow.main;
   @include easing.main;
   @include z-index.main;
+  @include variants.main;
 
   & [data-invert-filter] {
     filter: invert(1);
@@ -36,6 +38,7 @@ $dark-theme-selector: 'html[data-theme="dark"]';
 
     @include palette.dark;
     @include shadow.dark;
+    @include variants.dark;
 
     & [data-invert-filter] {
       filter: none;

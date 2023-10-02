@@ -91,11 +91,20 @@ const GroupComponent = ({ group }: { group: Group }): React.ReactElement => (
 const SuspendedDashboardLeftSidebarContent = (): React.ReactElement => {
   const [query, set_query] = React.useState<string>("");
   const [results, set_results] = React.useState<Group[]>([]);
-  // TODO: Update segments
   const segments = use_selected_layout_segments();
   const user = use_app_selector(select_user)!;
-  segments.shift(); // Remove (mdx) layout
-  const current_segment = segments.join("/");
+  // TODO: Check if the segments are computed correctly
+  const current_segment = React.useMemo(() => {
+    const next_segments = segments;
+    next_segments.shift();
+
+    // Remove (default-rsb) layout chunk
+    const index = next_segments.indexOf("(default-rsb)");
+    if (index > -1) {
+      next_segments.splice(index, 1);
+    }
+    return next_segments.join("/");
+  }, [segments]);
 
   React.useEffect(() => {
     // Scroll selected segment tab into view on mount

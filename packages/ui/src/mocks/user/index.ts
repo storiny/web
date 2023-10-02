@@ -1,4 +1,4 @@
-import { StatusVisibility } from "@storiny/shared";
+import { StatusDuration, StatusVisibility } from "@storiny/shared";
 import { User } from "@storiny/types";
 
 const get_avatar_id = (identifier: string): string => `${identifier}.jpg`;
@@ -87,12 +87,6 @@ export const MOCK_USERS: User[] = [
     bio: "",
     email: "frank.peck@example.com",
     location: "London",
-    status: {
-      visibility: StatusVisibility.GLOBAL,
-      text: "Gummy bears",
-      expires_at: null,
-      emoji: "/images/emoji.png"
-    },
     username_modified_at: null
   },
   {
@@ -135,6 +129,13 @@ export const MOCK_USERS: User[] = [
     bio: "",
     email: "brennan.austin@example.com",
     location: "",
+    status: {
+      visibility: StatusVisibility.GLOBAL,
+      duration: StatusDuration.NEVER,
+      text: "Gummy bears",
+      expires_at: null,
+      emoji: "1f33f"
+    },
     username_modified_at: null
   },
   {
@@ -155,9 +156,10 @@ export const MOCK_USERS: User[] = [
     public_flags: 0,
     status: {
       visibility: StatusVisibility.GLOBAL,
+      duration: StatusDuration.DAY_1,
       text: "Gummy bears",
       expires_at: null,
-      emoji: "/images/emoji.png"
+      emoji: "1f33f"
     },
     story_count: 0,
     username: "octobee",

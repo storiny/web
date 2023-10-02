@@ -33,6 +33,16 @@ describe("handler", () => {
     expect(req_obj.internalRedirect).toHaveBeenCalledWith("@proxy_pass");
   });
 
+  it("uses base bucket without resize options for raw assets", () => {
+    req_obj.uri = "/w@640/web-assets/raw/object_key"; // Should ignore width
+    handler(req_obj as NginxHTTPRequest);
+
+    expect(req_obj.variables?.proxy_rewrite).toEqual(
+      `internal/plain/${BASE_BUCKET}/web-assets/raw/object_key`
+    );
+    expect(req_obj.internalRedirect).toHaveBeenCalledWith("@proxy_pass");
+  });
+
   it("uses uploads bucket", () => {
     req_obj.uri = "/uploads/object_key";
     handler(req_obj as NginxHTTPRequest);

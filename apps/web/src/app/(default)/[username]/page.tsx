@@ -1,12 +1,12 @@
 import "server-only";
 
-import { USER_PROPS } from "@storiny/shared";
 import { notFound as not_found } from "next/navigation";
 import React from "react";
 
 import { get_profile } from "~/common/grpc";
 import { handle_exception } from "~/common/grpc/utils";
 import { get_user } from "~/common/utils/get-user";
+import { is_valid_username } from "~/common/utils/is-valid-username";
 
 import Component from "./component";
 
@@ -16,10 +16,7 @@ const Page = async ({
   params: { username: string };
 }): Promise<React.ReactElement | undefined> => {
   try {
-    if (
-      username.length < USER_PROPS.username.min_length ||
-      username.length > USER_PROPS.username.max_length
-    ) {
+    if (!is_valid_username(username)) {
       not_found();
     }
 

@@ -4,8 +4,10 @@
   "private": true,
   "scripts": {
     "dev": "yarn minify && dotenv -e ../../.env.local next dev",
-    "build": "yarn minify && dotenv -e ../../.env.production next build",
-    "build:analyze": "yarn minify && cross-env ANALYZE=true dotenv -e ../../.env.production next build",
+    "build": "yarn minify && dotenv -e ../../.env.local next build",
+    "build:analyze": "yarn minify && cross-env ANALYZE=true dotenv -e ../../.env.local next build",
+    "build:prod": "yarn minify && dotenv -e ../../.env.production next build",
+    "build:prod:analyze": "yarn minify && cross-env ANALYZE=true dotenv -e ../../.env.production next build",
     "minify": "uglifyjs \"src/app/theme-sync.js\" --compress --mangle --output \"src/app/theme-sync.txt\"",
     "start": "next start",
     "lint": "next lint",

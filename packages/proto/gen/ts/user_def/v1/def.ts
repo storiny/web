@@ -45,10 +45,70 @@ export function statusVisibilityToJSON(object: StatusVisibility): string {
   }
 }
 
+export const StatusDuration = {
+  UNSPECIFIED: 0,
+  NEVER: 1,
+  MIN_30: 2,
+  MIN_60: 3,
+  HR_4: 4,
+  DAY_1: 5,
+  UNRECOGNIZED: -1,
+} as const;
+
+export type StatusDuration = typeof StatusDuration[keyof typeof StatusDuration];
+
+export function statusDurationFromJSON(object: any): StatusDuration {
+  switch (object) {
+    case 0:
+    case "STATUS_DURATION_UNSPECIFIED":
+      return StatusDuration.UNSPECIFIED;
+    case 1:
+    case "STATUS_DURATION_NEVER":
+      return StatusDuration.NEVER;
+    case 2:
+    case "STATUS_DURATION_MIN_30":
+      return StatusDuration.MIN_30;
+    case 3:
+    case "STATUS_DURATION_MIN_60":
+      return StatusDuration.MIN_60;
+    case 4:
+    case "STATUS_DURATION_HR_4":
+      return StatusDuration.HR_4;
+    case 5:
+    case "STATUS_DURATION_DAY_1":
+      return StatusDuration.DAY_1;
+    case -1:
+    case "UNRECOGNIZED":
+    default:
+      return StatusDuration.UNRECOGNIZED;
+  }
+}
+
+export function statusDurationToJSON(object: StatusDuration): string {
+  switch (object) {
+    case StatusDuration.UNSPECIFIED:
+      return "STATUS_DURATION_UNSPECIFIED";
+    case StatusDuration.NEVER:
+      return "STATUS_DURATION_NEVER";
+    case StatusDuration.MIN_30:
+      return "STATUS_DURATION_MIN_30";
+    case StatusDuration.MIN_60:
+      return "STATUS_DURATION_MIN_60";
+    case StatusDuration.HR_4:
+      return "STATUS_DURATION_HR_4";
+    case StatusDuration.DAY_1:
+      return "STATUS_DURATION_DAY_1";
+    case StatusDuration.UNRECOGNIZED:
+    default:
+      return "UNRECOGNIZED";
+  }
+}
+
 export interface Status {
   emoji?: string | undefined;
   text?: string | undefined;
   expires_at?: string | undefined;
+  duration: StatusDuration;
   visibility: StatusVisibility;
 }
 
@@ -109,7 +169,7 @@ export interface GetUserMuteCountResponse {
 }
 
 function createBaseStatus(): Status {
-  return { emoji: undefined, text: undefined, expires_at: undefined, visibility: 0 };
+  return { emoji: undefined, text: undefined, expires_at: undefined, duration: 0, visibility: 0 };
 }
 
 export const Status = {
@@ -123,8 +183,11 @@ export const Status = {
     if (message.expires_at !== undefined) {
       writer.uint32(26).string(message.expires_at);
     }
+    if (message.duration !== 0) {
+      writer.uint32(32).int32(message.duration);
+    }
     if (message.visibility !== 0) {
-      writer.uint32(32).int32(message.visibility);
+      writer.uint32(40).int32(message.visibility);
     }
     return writer;
   },
@@ -162,6 +225,13 @@ export const Status = {
             break;
           }
 
+          message.duration = reader.int32() as any;
+          continue;
+        case 5:
+          if (tag !== 40) {
+            break;
+          }
+
           message.visibility = reader.int32() as any;
           continue;
       }
@@ -178,6 +248,7 @@ export const Status = {
       emoji: isSet(object.emoji) ? String(object.emoji) : undefined,
       text: isSet(object.text) ? String(object.text) : undefined,
       expires_at: isSet(object.expires_at) ? String(object.expires_at) : undefined,
+      duration: isSet(object.duration) ? statusDurationFromJSON(object.duration) : 0,
       visibility: isSet(object.visibility) ? statusVisibilityFromJSON(object.visibility) : 0,
     };
   },
@@ -193,6 +264,9 @@ export const Status = {
     if (message.expires_at !== undefined) {
       obj.expires_at = message.expires_at;
     }
+    if (message.duration !== 0) {
+      obj.duration = statusDurationToJSON(message.duration);
+    }
     if (message.visibility !== 0) {
       obj.visibility = statusVisibilityToJSON(message.visibility);
     }
@@ -207,6 +281,7 @@ export const Status = {
     message.emoji = object.emoji ?? undefined;
     message.text = object.text ?? undefined;
     message.expires_at = object.expires_at ?? undefined;
+    message.duration = object.duration ?? 0;
     message.visibility = object.visibility ?? 0;
     return message;
   },

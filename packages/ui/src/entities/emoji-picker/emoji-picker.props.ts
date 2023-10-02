@@ -10,7 +10,13 @@ export interface EmojiPickerProps {
   /**
    * Callback function called when selecting an emoji
    */
-  on_emoji_select?: (emoji: string) => void;
+  on_emoji_select?: ({
+    native,
+    unified
+  }: {
+    native: string;
+    unified: string;
+  }) => void;
   /**
    * Props passed to the Popover component
    */
