@@ -6,6 +6,7 @@ import IconButton from "~/components/icon-button";
 import Menu from "~/components/menu";
 import MenuItem from "~/components/menu-item";
 import Separator from "~/components/separator";
+import ReportModal from "~/entities/report-modal";
 import { use_clipboard } from "~/hooks/use-clipboard";
 import { use_web_share } from "~/hooks/use-web-share";
 import CopyIcon from "~/icons/copy";
@@ -50,18 +51,19 @@ const Actions = ({ tag }: Props): React.ReactElement => {
         Copy link to tag
       </MenuItem>
       <Separator />
-      <MenuItem
-        as={NextLink}
-        decorator={<ReportIcon />}
-        // TODO: Get rid of notion
-        href={
-          "https://storiny.notion.site/Report-an-issue-9193704afeb74ae09d2af3cf5eb844d6"
-        }
-        rel={"noreferrer"}
-        target={"_blank"}
-      >
-        Report this tag
-      </MenuItem>
+      <ReportModal
+        entity_id={tag.id}
+        entity_type={"tag"}
+        trigger={({ open_modal }): React.ReactElement => (
+          <MenuItem
+            decorator={<ReportIcon />}
+            onClick={open_modal}
+            onSelect={(event): void => event.preventDefault()}
+          >
+            Report this tag
+          </MenuItem>
+        )}
+      />
     </Menu>
   );
 };

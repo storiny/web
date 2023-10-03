@@ -9,11 +9,11 @@ import Form, { use_form } from "~/components/form";
 import { zod_resolver } from "../form";
 import FormTextarea from "./form-textarea";
 
-const sample_schema = z.object({
+const SAMPLE_SCHEMA = z.object({
   sample: z.string()
 });
 
-type SampleSchema = z.infer<typeof sample_schema>;
+type SampleSchema = z.infer<typeof SAMPLE_SCHEMA>;
 
 const Component = ({
   children
@@ -21,7 +21,7 @@ const Component = ({
   children: React.ReactNode;
 }): React.ReactElement => {
   const form = use_form<SampleSchema>({
-    resolver: zod_resolver(sample_schema),
+    resolver: zod_resolver(SAMPLE_SCHEMA),
     defaultValues: {
       sample: ""
     }

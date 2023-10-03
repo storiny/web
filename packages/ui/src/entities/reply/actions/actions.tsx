@@ -1,6 +1,7 @@
 import { Reply } from "@storiny/types";
 import NextLink from "next/link";
 import React from "react";
+import * as repl from "repl";
 
 import { use_confirmation } from "~/components/confirmation";
 import IconButton from "~/components/icon-button";
@@ -8,6 +9,7 @@ import Menu from "~/components/menu";
 import MenuItem from "~/components/menu-item";
 import Separator from "~/components/separator";
 import { use_toast } from "~/components/toast";
+import ReportModal from "~/entities/report-modal";
 import { use_clipboard } from "~/hooks/use-clipboard";
 import CopyIcon from "~/icons/copy";
 import DotsIcon from "~/icons/dots";
@@ -170,18 +172,19 @@ const ReplyActions = ({
       ) : (
         <React.Fragment>
           {is_story_author && visibility_element}
-          <MenuItem
-            as={NextLink}
-            decorator={<ReportIcon />}
-            // TODO: Get rid of notion
-            href={
-              "https://storiny.notion.site/Report-an-issue-9193704afeb74ae09d2af3cf5eb844d6"
-            }
-            rel={"noreferrer"}
-            target={"_blank"}
-          >
-            Report this reply
-          </MenuItem>
+          <ReportModal
+            entity_id={reply.id}
+            entity_type={"reply"}
+            trigger={({ open_modal }): React.ReactElement => (
+              <MenuItem
+                decorator={<ReportIcon />}
+                onClick={open_modal}
+                onSelect={(event): void => event.preventDefault()}
+              >
+                Report this reply
+              </MenuItem>
+            )}
+          />
         </React.Fragment>
       )}
     </Menu>

@@ -5,3 +5,4 @@ import "./replies";
 import "./stories";
 import "./preview";
 import "./tags";
+import "./reports";

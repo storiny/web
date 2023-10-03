@@ -82,11 +82,12 @@ const Entity = forward_ref<StatusProps, "span">((props, ref) => {
 });
 
 const Status = forward_ref<StatusProps, "span">((props, ref) => {
-  const { editable, disable_modal, ...rest } = props;
+  const { editable, modal_props, disable_modal, ...rest } = props;
 
   if (editable && !disable_modal) {
     return (
       <StatusModal
+        modal_props={modal_props}
         trigger={({ open_modal }): React.ReactElement => (
           <Entity
             editable={editable}

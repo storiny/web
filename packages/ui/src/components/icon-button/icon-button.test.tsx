@@ -66,7 +66,7 @@ describe("<IconButton />", () => {
         <IconButton variant={variant}>Test</IconButton>
       );
 
-      expect(getByRole("button")).toHaveClass(css[`variant-${variant}`]);
+      expect(getByRole("button")).toHaveClass(`variant-${variant}`);
     });
   });
 
