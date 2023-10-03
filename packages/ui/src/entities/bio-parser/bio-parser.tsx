@@ -1,0 +1,44 @@
+"use client";
+
+import clsx from "clsx";
+import { Interweave, InterweaveProps, Node } from "interweave";
+import React from "react";
+
+import Link from "~/components/link";
+
+/**
+ * Node transformer
+ * @param node HTML element
+ * @param children Element children
+ */
+const transform = (node: HTMLElement, children: Node[]): React.ReactNode => {
+  switch (node.tagName.toLowerCase()) {
+    case "a":
+      return (
+        <Link
+          className={clsx(node.className)}
+          href={node.getAttribute("href") || "/"}
+          underline={"always"}
+        >
+          {children}
+        </Link>
+      );
+    // Convert paragraph to span elements to avoid nesting issues
+    case "p":
+      return <span {...node.attributes}>{children}</span>;
+  }
+};
+
+const BioParser = ({
+  content,
+  ...rest
+}: InterweaveProps): React.ReactElement => (
+  <Interweave
+    {...rest}
+    allowList={["a", "b", "em", "p"]}
+    content={content}
+    transform={transform}
+  />
+);
+
+export default BioParser;

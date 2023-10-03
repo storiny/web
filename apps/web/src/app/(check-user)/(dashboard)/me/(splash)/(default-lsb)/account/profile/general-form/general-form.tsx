@@ -146,7 +146,13 @@ const AccountGeneralForm = ({
             You can format your bio using select markdown features such as **
             <b>bold</b>** and *<em>italics</em>*, and you can also mention{" "}
             <span className={css["t-medium"]}>@someone</span>.{" "}
-            <Link href={"/guides/formatting-bio"} underline={"always"}>
+            <Link
+              // TODO(future): Get rid of notion
+              href={
+                "https://storiny.notion.site/Formatting-your-bio-769c1a70c1fc443c93ed7dfa6761d399"
+              }
+              underline={"always"}
+            >
               Learn more about formatting your bio
             </Link>
             .

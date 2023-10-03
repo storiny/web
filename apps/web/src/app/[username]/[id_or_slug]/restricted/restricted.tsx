@@ -4,6 +4,7 @@ import React from "react";
 import Link from "~/components/link";
 import Spacer from "~/components/spacer";
 import Typography from "~/components/typography";
+import BioParser from "~/entities/bio-parser";
 import CustomState from "~/entities/custom-state";
 import Persona from "~/entities/persona";
 import ForbidIcon from "~/icons/forbid";
@@ -91,7 +92,7 @@ const RestrictedStory = (props: RestrictedStoryProps): React.ReactElement => {
             <React.Fragment>
               <Spacer orientation={"vertical"} size={2} />
               <Typography className={css["t-minor"]} level={"body2"}>
-                {user.bio}
+                <BioParser content={user.rendered_bio} />
               </Typography>
             </React.Fragment>
           ) : null}

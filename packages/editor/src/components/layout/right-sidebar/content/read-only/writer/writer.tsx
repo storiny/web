@@ -8,6 +8,7 @@ import Link from "~/components/link";
 import Spacer from "~/components/spacer";
 import Tooltip from "~/components/tooltip";
 import Typography from "~/components/typography";
+import BioParser from "~/entities/bio-parser";
 import Persona from "~/entities/persona";
 import Status from "~/entities/status";
 import MailPlusIcon from "~/icons/mail-plus";
@@ -104,7 +105,7 @@ const StoryWriter = (): React.ReactElement => {
         <React.Fragment>
           <Spacer orientation={"vertical"} size={2} />
           <Typography className={css["t-minor"]} level={"body2"}>
-            {user.bio}
+            <BioParser content={user.rendered_bio} />
           </Typography>
         </React.Fragment>
       ) : null}

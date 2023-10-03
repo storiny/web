@@ -18,6 +18,7 @@ export interface GetProfileResponse {
   username: string;
   status?: Status | undefined;
   bio?: string | undefined;
+  rendered_bio?: string | undefined;
   avatar_id?: string | undefined;
   avatar_hex?: string | undefined;
   banner_id?: string | undefined;
@@ -125,6 +126,7 @@ function createBaseGetProfileResponse(): GetProfileResponse {
     username: "",
     status: undefined,
     bio: undefined,
+    rendered_bio: undefined,
     avatar_id: undefined,
     avatar_hex: undefined,
     banner_id: undefined,
@@ -167,71 +169,74 @@ export const GetProfileResponse = {
     if (message.bio !== undefined) {
       writer.uint32(42).string(message.bio);
     }
+    if (message.rendered_bio !== undefined) {
+      writer.uint32(50).string(message.rendered_bio);
+    }
     if (message.avatar_id !== undefined) {
-      writer.uint32(50).string(message.avatar_id);
+      writer.uint32(58).string(message.avatar_id);
     }
     if (message.avatar_hex !== undefined) {
-      writer.uint32(58).string(message.avatar_hex);
+      writer.uint32(66).string(message.avatar_hex);
     }
     if (message.banner_id !== undefined) {
-      writer.uint32(66).string(message.banner_id);
+      writer.uint32(74).string(message.banner_id);
     }
     if (message.banner_hex !== undefined) {
-      writer.uint32(74).string(message.banner_hex);
+      writer.uint32(82).string(message.banner_hex);
     }
     if (message.location !== "") {
-      writer.uint32(82).string(message.location);
+      writer.uint32(90).string(message.location);
     }
     if (message.created_at !== "") {
-      writer.uint32(90).string(message.created_at);
+      writer.uint32(98).string(message.created_at);
     }
     if (message.public_flags !== 0) {
-      writer.uint32(96).uint64(message.public_flags);
+      writer.uint32(104).uint64(message.public_flags);
     }
     if (message.story_count !== 0) {
-      writer.uint32(104).uint32(message.story_count);
+      writer.uint32(112).uint32(message.story_count);
     }
     if (message.follower_count !== 0) {
-      writer.uint32(112).uint32(message.follower_count);
+      writer.uint32(120).uint32(message.follower_count);
     }
     if (message.following_count !== undefined) {
-      writer.uint32(120).uint32(message.following_count);
+      writer.uint32(128).uint32(message.following_count);
     }
     if (message.friend_count !== undefined) {
-      writer.uint32(128).uint32(message.friend_count);
+      writer.uint32(136).uint32(message.friend_count);
     }
     if (message.is_private === true) {
-      writer.uint32(136).bool(message.is_private);
+      writer.uint32(144).bool(message.is_private);
     }
     for (const v of message.connections) {
-      Connection.encode(v!, writer.uint32(146).fork()).ldelim();
+      Connection.encode(v!, writer.uint32(154).fork()).ldelim();
     }
     if (message.is_following !== undefined) {
-      writer.uint32(152).bool(message.is_following);
+      writer.uint32(160).bool(message.is_following);
     }
     if (message.is_follower !== undefined) {
-      writer.uint32(160).bool(message.is_follower);
+      writer.uint32(168).bool(message.is_follower);
     }
     if (message.is_friend !== undefined) {
-      writer.uint32(168).bool(message.is_friend);
+      writer.uint32(176).bool(message.is_friend);
     }
     if (message.is_subscribed !== undefined) {
-      writer.uint32(176).bool(message.is_subscribed);
+      writer.uint32(184).bool(message.is_subscribed);
     }
     if (message.is_friend_request_sent !== undefined) {
-      writer.uint32(184).bool(message.is_friend_request_sent);
+      writer.uint32(192).bool(message.is_friend_request_sent);
     }
     if (message.is_blocked_by_user !== undefined) {
-      writer.uint32(192).bool(message.is_blocked_by_user);
+      writer.uint32(200).bool(message.is_blocked_by_user);
     }
     if (message.is_blocking !== undefined) {
-      writer.uint32(200).bool(message.is_blocking);
+      writer.uint32(208).bool(message.is_blocking);
     }
     if (message.is_muted !== undefined) {
-      writer.uint32(208).bool(message.is_muted);
+      writer.uint32(216).bool(message.is_muted);
     }
     if (message.is_self !== undefined) {
-      writer.uint32(216).bool(message.is_self);
+      writer.uint32(224).bool(message.is_self);
     }
     return writer;
   },
@@ -283,150 +288,157 @@ export const GetProfileResponse = {
             break;
           }
 
-          message.avatar_id = reader.string();
+          message.rendered_bio = reader.string();
           continue;
         case 7:
           if (tag !== 58) {
             break;
           }
 
-          message.avatar_hex = reader.string();
+          message.avatar_id = reader.string();
           continue;
         case 8:
           if (tag !== 66) {
             break;
           }
 
-          message.banner_id = reader.string();
+          message.avatar_hex = reader.string();
           continue;
         case 9:
           if (tag !== 74) {
             break;
           }
 
-          message.banner_hex = reader.string();
+          message.banner_id = reader.string();
           continue;
         case 10:
           if (tag !== 82) {
             break;
           }
 
-          message.location = reader.string();
+          message.banner_hex = reader.string();
           continue;
         case 11:
           if (tag !== 90) {
             break;
           }
 
-          message.created_at = reader.string();
+          message.location = reader.string();
           continue;
         case 12:
-          if (tag !== 96) {
+          if (tag !== 98) {
             break;
           }
 
-          message.public_flags = longToNumber(reader.uint64() as Long);
+          message.created_at = reader.string();
           continue;
         case 13:
           if (tag !== 104) {
             break;
           }
 
-          message.story_count = reader.uint32();
+          message.public_flags = longToNumber(reader.uint64() as Long);
           continue;
         case 14:
           if (tag !== 112) {
             break;
           }
 
-          message.follower_count = reader.uint32();
+          message.story_count = reader.uint32();
           continue;
         case 15:
           if (tag !== 120) {
             break;
           }
 
-          message.following_count = reader.uint32();
+          message.follower_count = reader.uint32();
           continue;
         case 16:
           if (tag !== 128) {
             break;
           }
 
-          message.friend_count = reader.uint32();
+          message.following_count = reader.uint32();
           continue;
         case 17:
           if (tag !== 136) {
             break;
           }
 
-          message.is_private = reader.bool();
+          message.friend_count = reader.uint32();
           continue;
         case 18:
-          if (tag !== 146) {
+          if (tag !== 144) {
+            break;
+          }
+
+          message.is_private = reader.bool();
+          continue;
+        case 19:
+          if (tag !== 154) {
             break;
           }
 
           message.connections.push(Connection.decode(reader, reader.uint32()));
-          continue;
-        case 19:
-          if (tag !== 152) {
-            break;
-          }
-
-          message.is_following = reader.bool();
           continue;
         case 20:
           if (tag !== 160) {
             break;
           }
 
-          message.is_follower = reader.bool();
+          message.is_following = reader.bool();
           continue;
         case 21:
           if (tag !== 168) {
             break;
           }
 
-          message.is_friend = reader.bool();
+          message.is_follower = reader.bool();
           continue;
         case 22:
           if (tag !== 176) {
             break;
           }
 
-          message.is_subscribed = reader.bool();
+          message.is_friend = reader.bool();
           continue;
         case 23:
           if (tag !== 184) {
             break;
           }
 
-          message.is_friend_request_sent = reader.bool();
+          message.is_subscribed = reader.bool();
           continue;
         case 24:
           if (tag !== 192) {
             break;
           }
 
-          message.is_blocked_by_user = reader.bool();
+          message.is_friend_request_sent = reader.bool();
           continue;
         case 25:
           if (tag !== 200) {
             break;
           }
 
-          message.is_blocking = reader.bool();
+          message.is_blocked_by_user = reader.bool();
           continue;
         case 26:
           if (tag !== 208) {
             break;
           }
 
-          message.is_muted = reader.bool();
+          message.is_blocking = reader.bool();
           continue;
         case 27:
           if (tag !== 216) {
+            break;
+          }
+
+          message.is_muted = reader.bool();
+          continue;
+        case 28:
+          if (tag !== 224) {
             break;
           }
 
@@ -448,6 +460,7 @@ export const GetProfileResponse = {
       username: isSet(object.username) ? String(object.username) : "",
       status: isSet(object.status) ? Status.fromJSON(object.status) : undefined,
       bio: isSet(object.bio) ? String(object.bio) : undefined,
+      rendered_bio: isSet(object.rendered_bio) ? String(object.rendered_bio) : undefined,
       avatar_id: isSet(object.avatar_id) ? String(object.avatar_id) : undefined,
       avatar_hex: isSet(object.avatar_hex) ? String(object.avatar_hex) : undefined,
       banner_id: isSet(object.banner_id) ? String(object.banner_id) : undefined,
@@ -460,7 +473,9 @@ export const GetProfileResponse = {
       following_count: isSet(object.following_count) ? Number(object.following_count) : undefined,
       friend_count: isSet(object.friend_count) ? Number(object.friend_count) : undefined,
       is_private: isSet(object.is_private) ? Boolean(object.is_private) : false,
-      connections: Array.isArray(object?.connections) ? object.connections.map((e: any) => Connection.fromJSON(e)) : [],
+      connections: globalThis.Array.isArray(object?.connections)
+        ? object.connections.map((e: any) => Connection.fromJSON(e))
+        : [],
       is_following: isSet(object.is_following) ? Boolean(object.is_following) : undefined,
       is_follower: isSet(object.is_follower) ? Boolean(object.is_follower) : undefined,
       is_friend: isSet(object.is_friend) ? Boolean(object.is_friend) : undefined,
@@ -489,6 +504,9 @@ export const GetProfileResponse = {
     }
     if (message.bio !== undefined) {
       obj.bio = message.bio;
+    }
+    if (message.rendered_bio !== undefined) {
+      obj.rendered_bio = message.rendered_bio;
     }
     if (message.avatar_id !== undefined) {
       obj.avatar_id = message.avatar_id;
@@ -571,6 +589,7 @@ export const GetProfileResponse = {
       ? Status.fromPartial(object.status)
       : undefined;
     message.bio = object.bio ?? undefined;
+    message.rendered_bio = object.rendered_bio ?? undefined;
     message.avatar_id = object.avatar_id ?? undefined;
     message.avatar_hex = object.avatar_hex ?? undefined;
     message.banner_id = object.banner_id ?? undefined;
@@ -597,25 +616,6 @@ export const GetProfileResponse = {
   },
 };
 
-declare const self: any | undefined;
-declare const window: any | undefined;
-declare const global: any | undefined;
-const tsProtoGlobalThis: any = (() => {
-  if (typeof globalThis !== "undefined") {
-    return globalThis;
-  }
-  if (typeof self !== "undefined") {
-    return self;
-  }
-  if (typeof window !== "undefined") {
-    return window;
-  }
-  if (typeof global !== "undefined") {
-    return global;
-  }
-  throw "Unable to locate global object";
-})();
-
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
 
 export type DeepPartial<T> = T extends Builtin ? T
@@ -628,8 +628,8 @@ export type Exact<P, I extends P> = P extends Builtin ? P
   : P & { [K in keyof P]: Exact<P[K], I[K]> } & { [K in Exclude<keyof I, KeysOfUnion<P>>]: never };
 
 function longToNumber(long: Long): number {
-  if (long.gt(Number.MAX_SAFE_INTEGER)) {
-    throw new tsProtoGlobalThis.Error("Value is larger than Number.MAX_SAFE_INTEGER");
+  if (long.gt(globalThis.Number.MAX_SAFE_INTEGER)) {
+    throw new globalThis.Error("Value is larger than Number.MAX_SAFE_INTEGER");
   }
   return long.toNumber();
 }

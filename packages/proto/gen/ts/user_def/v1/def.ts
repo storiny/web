@@ -117,6 +117,7 @@ export interface User {
   name: string;
   username: string;
   bio: string;
+  rendered_bio: string;
   avatar_id?: string | undefined;
   avatar_hex?: string | undefined;
   public_flags: number;
@@ -293,6 +294,7 @@ function createBaseUser(): User {
     name: "",
     username: "",
     bio: "",
+    rendered_bio: "",
     avatar_id: undefined,
     avatar_hex: undefined,
     public_flags: 0,
@@ -322,41 +324,44 @@ export const User = {
     if (message.bio !== "") {
       writer.uint32(34).string(message.bio);
     }
+    if (message.rendered_bio !== "") {
+      writer.uint32(42).string(message.rendered_bio);
+    }
     if (message.avatar_id !== undefined) {
-      writer.uint32(42).string(message.avatar_id);
+      writer.uint32(50).string(message.avatar_id);
     }
     if (message.avatar_hex !== undefined) {
-      writer.uint32(50).string(message.avatar_hex);
+      writer.uint32(58).string(message.avatar_hex);
     }
     if (message.public_flags !== 0) {
-      writer.uint32(56).uint64(message.public_flags);
+      writer.uint32(64).uint64(message.public_flags);
     }
     if (message.is_private === true) {
-      writer.uint32(64).bool(message.is_private);
+      writer.uint32(72).bool(message.is_private);
     }
     if (message.location !== "") {
-      writer.uint32(74).string(message.location);
+      writer.uint32(82).string(message.location);
     }
     if (message.created_at !== "") {
-      writer.uint32(82).string(message.created_at);
+      writer.uint32(90).string(message.created_at);
     }
     if (message.follower_count !== 0) {
-      writer.uint32(88).uint32(message.follower_count);
+      writer.uint32(96).uint32(message.follower_count);
     }
     if (message.is_self !== undefined) {
-      writer.uint32(96).bool(message.is_self);
+      writer.uint32(104).bool(message.is_self);
     }
     if (message.is_following !== undefined) {
-      writer.uint32(104).bool(message.is_following);
+      writer.uint32(112).bool(message.is_following);
     }
     if (message.is_follower !== undefined) {
-      writer.uint32(112).bool(message.is_follower);
+      writer.uint32(120).bool(message.is_follower);
     }
     if (message.is_friend !== undefined) {
-      writer.uint32(120).bool(message.is_friend);
+      writer.uint32(128).bool(message.is_friend);
     }
     if (message.is_blocked_by_user !== undefined) {
-      writer.uint32(128).bool(message.is_blocked_by_user);
+      writer.uint32(136).bool(message.is_blocked_by_user);
     }
     return writer;
   },
@@ -401,80 +406,87 @@ export const User = {
             break;
           }
 
-          message.avatar_id = reader.string();
+          message.rendered_bio = reader.string();
           continue;
         case 6:
           if (tag !== 50) {
             break;
           }
 
-          message.avatar_hex = reader.string();
+          message.avatar_id = reader.string();
           continue;
         case 7:
-          if (tag !== 56) {
+          if (tag !== 58) {
             break;
           }
 
-          message.public_flags = longToNumber(reader.uint64() as Long);
+          message.avatar_hex = reader.string();
           continue;
         case 8:
           if (tag !== 64) {
             break;
           }
 
-          message.is_private = reader.bool();
+          message.public_flags = longToNumber(reader.uint64() as Long);
           continue;
         case 9:
-          if (tag !== 74) {
+          if (tag !== 72) {
             break;
           }
 
-          message.location = reader.string();
+          message.is_private = reader.bool();
           continue;
         case 10:
           if (tag !== 82) {
             break;
           }
 
-          message.created_at = reader.string();
+          message.location = reader.string();
           continue;
         case 11:
-          if (tag !== 88) {
+          if (tag !== 90) {
             break;
           }
 
-          message.follower_count = reader.uint32();
+          message.created_at = reader.string();
           continue;
         case 12:
           if (tag !== 96) {
             break;
           }
 
-          message.is_self = reader.bool();
+          message.follower_count = reader.uint32();
           continue;
         case 13:
           if (tag !== 104) {
             break;
           }
 
-          message.is_following = reader.bool();
+          message.is_self = reader.bool();
           continue;
         case 14:
           if (tag !== 112) {
             break;
           }
 
-          message.is_follower = reader.bool();
+          message.is_following = reader.bool();
           continue;
         case 15:
           if (tag !== 120) {
             break;
           }
 
-          message.is_friend = reader.bool();
+          message.is_follower = reader.bool();
           continue;
         case 16:
           if (tag !== 128) {
+            break;
+          }
+
+          message.is_friend = reader.bool();
+          continue;
+        case 17:
+          if (tag !== 136) {
             break;
           }
 
@@ -495,6 +507,7 @@ export const User = {
       name: isSet(object.name) ? String(object.name) : "",
       username: isSet(object.username) ? String(object.username) : "",
       bio: isSet(object.bio) ? String(object.bio) : "",
+      rendered_bio: isSet(object.rendered_bio) ? String(object.rendered_bio) : "",
       avatar_id: isSet(object.avatar_id) ? String(object.avatar_id) : undefined,
       avatar_hex: isSet(object.avatar_hex) ? String(object.avatar_hex) : undefined,
       public_flags: isSet(object.public_flags) ? Number(object.public_flags) : 0,
@@ -523,6 +536,9 @@ export const User = {
     }
     if (message.bio !== "") {
       obj.bio = message.bio;
+    }
+    if (message.rendered_bio !== "") {
+      obj.rendered_bio = message.rendered_bio;
     }
     if (message.avatar_id !== undefined) {
       obj.avatar_id = message.avatar_id;
@@ -572,6 +588,7 @@ export const User = {
     message.name = object.name ?? "";
     message.username = object.username ?? "";
     message.bio = object.bio ?? "";
+    message.rendered_bio = object.rendered_bio ?? "";
     message.avatar_id = object.avatar_id ?? undefined;
     message.avatar_hex = object.avatar_hex ?? undefined;
     message.public_flags = object.public_flags ?? 0;
@@ -1093,25 +1110,6 @@ export const GetUserMuteCountResponse = {
   },
 };
 
-declare const self: any | undefined;
-declare const window: any | undefined;
-declare const global: any | undefined;
-const tsProtoGlobalThis: any = (() => {
-  if (typeof globalThis !== "undefined") {
-    return globalThis;
-  }
-  if (typeof self !== "undefined") {
-    return self;
-  }
-  if (typeof window !== "undefined") {
-    return window;
-  }
-  if (typeof global !== "undefined") {
-    return global;
-  }
-  throw "Unable to locate global object";
-})();
-
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
 
 export type DeepPartial<T> = T extends Builtin ? T
@@ -1124,8 +1122,8 @@ export type Exact<P, I extends P> = P extends Builtin ? P
   : P & { [K in keyof P]: Exact<P[K], I[K]> } & { [K in Exclude<keyof I, KeysOfUnion<P>>]: never };
 
 function longToNumber(long: Long): number {
-  if (long.gt(Number.MAX_SAFE_INTEGER)) {
-    throw new tsProtoGlobalThis.Error("Value is larger than Number.MAX_SAFE_INTEGER");
+  if (long.gt(globalThis.Number.MAX_SAFE_INTEGER)) {
+    throw new globalThis.Error("Value is larger than Number.MAX_SAFE_INTEGER");
   }
   return long.toNumber();
 }

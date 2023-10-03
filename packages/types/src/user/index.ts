@@ -54,6 +54,7 @@ export type User = {
   location: string;
   name: string;
   public_flags: number;
+  rendered_bio: string;
   status: UserStatus | null;
   username: string;
   wpm: number; // Default `225`

@@ -170,7 +170,14 @@ const Publish = ({
             TK
           </span>{" "}
           {tk_count === 1 ? "placeholder" : "placeholders"} in your story.{" "}
-          <Link href={"/guides/tk"} target={"_blank"} underline={"always"}>
+          <Link
+            // TODO(future): Get rid of notion
+            href={
+              "https://storiny.notion.site/TK-placeholders-34a0e44b11e1413f83c54e72f2115879"
+            }
+            target={"_blank"}
+            underline={"always"}
+          >
             Learn more
           </Link>
         </>

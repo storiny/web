@@ -23,7 +23,13 @@ const EmbedModalContent = (): React.ReactElement => (
         You can embed content from sites like Twitter and YouTube. If embedding
         from a specific site is not supported, a website preview will be
         displayed instead.{" "}
-        <Link href={"/guides/embeds"} underline={"always"}>
+        <Link
+          // TODO(future): Get rid of notion
+          href={
+            "https://storiny.notion.site/Embedding-third-party-content-5915b27927a64ddabca6b3a70cb0d9a6"
+          }
+          underline={"always"}
+        >
           Learn more about embedding external content in your story
         </Link>
         .

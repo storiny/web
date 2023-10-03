@@ -14,6 +14,7 @@ const COMMENT_USER: NonNullable<GetCommentResponse["user"]> = {
   id: MOCK_USERS[5].id,
   username: MOCK_USERS[5].username,
   bio: MOCK_USERS[5].bio,
+  rendered_bio: MOCK_USERS[5].rendered_bio,
   name: MOCK_USERS[5].name,
   avatar_id: MOCK_USERS[5].avatar_id || undefined,
   avatar_hex: MOCK_USERS[5].avatar_hex || undefined,

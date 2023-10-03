@@ -138,7 +138,10 @@ const StoryActions = (): React.ReactElement => {
         <MenuItem
           as={NextLink}
           decorator={<ReportIcon />}
-          href={`/report?id=${story.id}&type=story`}
+          // TODO: Get rid of notion
+          href={
+            "https://storiny.notion.site/Report-an-issue-9193704afeb74ae09d2af3cf5eb844d6"
+          }
           rel={"noreferrer"}
           target={"_blank"}
         >
