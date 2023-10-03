@@ -95,6 +95,7 @@ const Component = ({ profile }: Props): React.ReactElement => {
     delete profile.banner_id;
     delete profile.banner_hex;
     delete profile.bio;
+    delete profile.rendered_bio;
     delete profile.status;
 
     profile.location = "";

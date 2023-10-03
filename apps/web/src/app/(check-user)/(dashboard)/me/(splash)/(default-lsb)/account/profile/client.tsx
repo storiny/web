@@ -52,7 +52,13 @@ const ProfileSettingsClient = (): React.ReactElement => {
               Your username is unique to you globally, and changing it will
               break any existing links to your profile. Therefore, we only allow
               changing it once a month.{" "}
-              <Link href={"/guides/changing-username"} underline={"always"}>
+              <Link
+                // TODO(future): Get rid of notion
+                href={
+                  "https://storiny.notion.site/Changing-your-username-42bd9f2e43114d3ebe5dd0c8a9adc838"
+                }
+                underline={"always"}
+              >
                 Learn more about changing your username
               </Link>
               .

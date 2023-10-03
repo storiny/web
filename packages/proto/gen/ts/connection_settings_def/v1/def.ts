@@ -106,7 +106,7 @@ export const GetConnectionSettingsResponse = {
 
   fromJSON(object: any): GetConnectionSettingsResponse {
     return {
-      connections: Array.isArray(object?.connections)
+      connections: globalThis.Array.isArray(object?.connections)
         ? object.connections.map((e: any) => ConnectionSetting.fromJSON(e))
         : [],
     };

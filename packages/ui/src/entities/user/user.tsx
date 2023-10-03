@@ -8,6 +8,7 @@ import Avatar from "~/components/avatar";
 import Button from "~/components/button";
 import Grow from "~/components/grow";
 import Typography from "~/components/typography";
+import BioParser from "~/entities/bio-parser";
 import { use_media_query } from "~/hooks/use-media-query";
 import StoryIcon from "~/icons/story";
 import UserCheckIcon from "~/icons/user-check";
@@ -129,14 +130,14 @@ const User = (props: UserProps): React.ReactElement => {
           )}
         </div>
       </div>
-      {Boolean(user.bio) && (
+      {Boolean(user.bio.trim()) && (
         <Typography
           as={NextLink}
           className={clsx(css["t-minor"], styles.bio)}
           href={user_url}
           level={"body2"}
         >
-          {user.bio}
+          <BioParser content={user.rendered_bio} />
         </Typography>
       )}
     </div>

@@ -488,7 +488,7 @@ export const GetLoginActivityResponse = {
   fromJSON(object: any): GetLoginActivityResponse {
     return {
       recent: isSet(object.recent) ? Login.fromJSON(object.recent) : undefined,
-      logins: Array.isArray(object?.logins) ? object.logins.map((e: any) => Login.fromJSON(e)) : [],
+      logins: globalThis.Array.isArray(object?.logins) ? object.logins.map((e: any) => Login.fromJSON(e)) : [],
     };
   },
 

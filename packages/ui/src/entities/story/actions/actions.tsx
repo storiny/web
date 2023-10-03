@@ -199,7 +199,13 @@ const StoryActions = ({
           This will move the story to your drafts, from where you can publish it
           again anytime with some limitations, such as your subscribers not
           being notified.{" "}
-          <Link href={"/guides/unpublishing"} underline={"always"}>
+          <Link
+            // TODO(future): Get rid of notion
+            href={
+              "https://storiny.notion.site/Unpublishing-a-story-ace3d8fbfee54ff694b1a2a5d89961a9"
+            }
+            underline={"always"}
+          >
             Learn more
           </Link>
         </React.Fragment>
@@ -286,7 +292,10 @@ const StoryActions = ({
               <MenuItem
                 as={NextLink}
                 decorator={<ReportIcon />}
-                href={`/report?id=${story.id}&type=story`}
+                // TODO: Get rid of notion
+                href={
+                  "https://storiny.notion.site/Report-an-issue-9193704afeb74ae09d2af3cf5eb844d6"
+                }
                 rel={"noreferrer"}
                 target={"_blank"}
               >

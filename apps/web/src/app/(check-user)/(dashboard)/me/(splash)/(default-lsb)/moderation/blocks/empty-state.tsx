@@ -20,7 +20,13 @@ const BlocksEmptyState = ({
         <React.Fragment>
           If you block someone, they will appear here. Blocking someone prevents
           them from following you or reading your stories.{" "}
-          <Link href={"/guides/blocked-accounts"} underline={"always"}>
+          <Link
+            // TODO(future): Get rid of notion
+            href={
+              "https://storiny.notion.site/Blocking-users-a7e7d4b651ae4a0c807fea4f5ae3a6bc"
+            }
+            underline={"always"}
+          >
             Learn more
           </Link>
         </React.Fragment>

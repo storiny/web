@@ -14,6 +14,7 @@ import Link from "~/components/link";
 import Spacer from "~/components/spacer";
 import Tooltip from "~/components/tooltip";
 import Typography from "~/components/typography";
+import BioParser from "~/entities/bio-parser";
 import Status from "~/entities/status";
 import { use_media_query } from "~/hooks/use-media-query";
 import CalendarIcon from "~/icons/calendar";
@@ -360,11 +361,11 @@ const ProfileContent = ({
             {/* Badges */}
             <Badges public_flags={profile.public_flags} />
             {/* Bio */}
-            {Boolean(profile.bio) && (
+            {Boolean(profile.bio?.trim()) && (
               <div className={clsx(css["flex-col"], styles.container)}>
                 <Title>About</Title>
                 <Typography className={css["t-minor"]} level={"body2"}>
-                  {profile.bio}
+                  <BioParser className={profile.rendered_bio} />
                 </Typography>
               </div>
             )}
