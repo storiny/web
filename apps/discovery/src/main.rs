@@ -73,7 +73,7 @@ async fn main() -> io::Result<()> {
 
     log::info!(
         "{}",
-        format!("Starting HTTP server at http://{host}:{port}")
+        format!("Starting discovery HTTP server at http://{host}:{port}")
     );
 
     let allowed_origin = env::var("ALLOWED_ORIGIN").expect("Allowed origin not set");

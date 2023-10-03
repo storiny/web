@@ -5,10 +5,12 @@
     <content url="file://$MODULE_DIR$">
       <sourceFolder url="file://$MODULE_DIR$/apps/discovery/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/packages/ui/src/theme" type="java-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/apps/backend/src" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/temp" />
       <excludeFolder url="file://$MODULE_DIR$/.tmp" />
       <excludeFolder url="file://$MODULE_DIR$/tmp" />
       <excludeFolder url="file://$MODULE_DIR$/apps/discovery/target" />
+      <excludeFolder url="file://$MODULE_DIR$/apps/backend/target" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

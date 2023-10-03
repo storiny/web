@@ -27,31 +27,13 @@ use std::{
 
 mod error;
 mod middleware;
-mod providers;
-mod request;
 mod routes;
-mod spec;
-mod utils;
 
-/// Iframe embed template
+/// Index page template
 #[derive(TemplateOnce)]
-#[template(path = "iframe.stpl")]
-pub struct IframeTemplate {
-    iframe_html: String,
-    wrapper_styles: String,
-    title: String,
-    embed_data: String,
-    theme: String,
-}
-
-/// Photo embed template
-#[derive(TemplateOnce)]
-#[template(path = "photo.stpl")]
-pub struct PhotoTemplate {
-    photo_html: String,
-    title: String,
-    embed_data: String,
-    theme: String,
+#[template(path = "index.stpl")]
+pub struct IndexTemplate {
+    text: String,
 }
 
 /// 404 response
@@ -73,7 +55,7 @@ async fn main() -> io::Result<()> {
 
     log::info!(
         "{}",
-        format!("Starting HTTP server at http://{host}:{port}")
+        format!("Starting back-end HTTP server at http://{host}:{port}")
     );
 
     let allowed_origin = env::var("ALLOWED_ORIGIN").expect("Allowed origin not set");

@@ -1,3 +1,4 @@
+use crate::IndexTemplate;
 use actix_web::{
     get,
     http::header::ContentType,
@@ -5,12 +6,17 @@ use actix_web::{
     HttpResponse,
     Responder,
 };
+use sailfish::TemplateOnce;
 
 #[get("/")]
 async fn get() -> impl Responder {
-    HttpResponse::Ok()
-        .content_type(ContentType::plaintext())
-        .body("Discovery — Media proxy service for Storiny")
+    HttpResponse::Ok().content_type(ContentType::html()).body(
+        IndexTemplate {
+            text: "API server".to_string(),
+        }
+        .render_once()
+        .unwrap(),
+    )
 }
 
 /// Registers index routes
