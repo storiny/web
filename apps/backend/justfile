@@ -1,0 +1,8 @@
+dev:
+    cargo watch -w src -x run
+
+fmt:
+    cargo +nightly fmt
+
+udeps:
+    cargo +nightly udeps --all-targets
