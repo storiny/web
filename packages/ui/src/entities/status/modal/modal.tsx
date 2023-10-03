@@ -13,7 +13,7 @@ import Form, {
 import FormInput from "~/components/form-input";
 import FormSelect from "~/components/form-select";
 import IconButton from "~/components/icon-button";
-import { ModalFooterButton, use_modal } from "~/components/modal";
+import { ModalFooterButton, ModalProps, use_modal } from "~/components/modal";
 import Option from "~/components/option";
 import { use_toast } from "~/components/toast";
 import EmojiPicker from "~/entities/emoji-picker";
@@ -142,8 +142,10 @@ const StatusModalContent = (): React.ReactElement => (
 );
 
 const StatusModal = ({
-  trigger
+  trigger,
+  modal_props
 }: {
+  modal_props?: ModalProps;
   trigger: Parameters<typeof use_modal>[0];
 }): React.ReactElement => {
   const toast = use_toast();
@@ -207,6 +209,7 @@ const StatusModal = ({
       <StatusModalContent />
     </Form>,
     {
+      ...modal_props,
       open,
       // eslint-disable-next-line prefer-snakecase/prefer-snakecase
       onOpenChange: (next_open) => {

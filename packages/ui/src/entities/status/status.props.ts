@@ -1,3 +1,4 @@
+import { ModalProps } from "~/components/modal";
 import { PolymorphicProps } from "~/types/index";
 
 export interface StatusProps extends PolymorphicProps<"span"> {
@@ -13,13 +14,17 @@ export interface StatusProps extends PolymorphicProps<"span"> {
   /**
    * The emoji place before the status text.
    */
-  emoji?: string;
+  emoji?: string | null;
   /**
    * The expiration timestamp of the status.
    */
-  expires_at?: string;
+  expires_at?: string | null;
+  /**
+   * Props passed to the `Modal` component.
+   */
+  modal_props?: ModalProps;
   /**
    * The status text.
    */
-  text?: string;
+  text?: string | null;
 }

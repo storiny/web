@@ -10,11 +10,11 @@ import FormRadio from "~/components/form-radio";
 import { zod_resolver } from "../form";
 import FormRadioGroup from "./form-radio-group";
 
-const sample_schema = z.object({
+const SAMPLE_SCHEMA = z.object({
   sample: z.enum(["1", "2", "3"])
 });
 
-type SampleSchema = z.infer<typeof sample_schema>;
+type SampleSchema = z.infer<typeof SAMPLE_SCHEMA>;
 
 const Component = ({
   children
@@ -22,7 +22,7 @@ const Component = ({
   children: React.ReactNode;
 }): React.ReactElement => {
   const form = use_form<SampleSchema>({
-    resolver: zod_resolver(sample_schema),
+    resolver: zod_resolver(SAMPLE_SCHEMA),
     defaultValues: {
       sample: "1"
     }

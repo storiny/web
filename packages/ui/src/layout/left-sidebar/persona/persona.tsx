@@ -132,7 +132,16 @@ const LeftSidebarPersona = (): React.ReactElement => {
           </>
         )}
       </div>
-      {loading ? <Skeleton height={30} /> : <Status editable />}
+      {loading ? (
+        <Skeleton height={30} />
+      ) : (
+        <Status
+          editable
+          emoji={user?.status?.emoji}
+          expires_at={user?.status?.expires_at}
+          text={user?.status?.text}
+        />
+      )}
     </>
   );
 };

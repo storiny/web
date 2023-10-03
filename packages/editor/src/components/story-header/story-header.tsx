@@ -12,6 +12,7 @@ import Separator from "~/components/separator";
 import Spacer from "~/components/spacer";
 import Typography from "~/components/typography";
 import Persona from "~/entities/persona";
+import ReportModal from "~/entities/report-modal";
 import { use_clipboard } from "~/hooks/use-clipboard";
 import { use_media_query } from "~/hooks/use-media-query";
 import { use_web_share } from "~/hooks/use-web-share";
@@ -135,18 +136,19 @@ const StoryActions = (): React.ReactElement => {
         >
           {is_muted ? "Unmute" : "Mute"} this writer
         </MenuItem>
-        <MenuItem
-          as={NextLink}
-          decorator={<ReportIcon />}
-          // TODO: Get rid of notion
-          href={
-            "https://storiny.notion.site/Report-an-issue-9193704afeb74ae09d2af3cf5eb844d6"
-          }
-          rel={"noreferrer"}
-          target={"_blank"}
-        >
-          Report
-        </MenuItem>
+        <ReportModal
+          entity_id={story.id}
+          entity_type={"story"}
+          trigger={({ open_modal }): React.ReactElement => (
+            <MenuItem
+              decorator={<ReportIcon />}
+              onClick={open_modal}
+              onSelect={(event): void => event.preventDefault()}
+            >
+              Report this story
+            </MenuItem>
+          )}
+        />
       </Menu>
     </div>
   );

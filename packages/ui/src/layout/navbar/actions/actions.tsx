@@ -114,11 +114,20 @@ const LoggedInMenu = ({
       </MenuItemUnstyled>
       <MenuItemUnstyled
         asChild
-        onClick={(event): void => {
+        onSelect={(event): void => {
           event.preventDefault(); // Do not close when the status modal is mounted
         }}
       >
-        <Status className={clsx(styles["menu-item"])} editable />
+        <Status
+          className={clsx(styles["menu-item"])}
+          editable
+          emoji={user?.status?.emoji}
+          expires_at={user?.status?.expires_at}
+          modal_props={{
+            modal: true
+          }}
+          text={user?.status?.text}
+        />
       </MenuItemUnstyled>
     </div>
     <Separator />
