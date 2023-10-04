@@ -40,6 +40,8 @@ apps/web/.env.local
 .env.development.local
 .env.test.local
 .env.production.local
+**/*.env
+**/*.env.local
 
 # turbo
 .turbo

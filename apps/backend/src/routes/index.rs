@@ -1,4 +1,5 @@
 use crate::IndexTemplate;
+use actix_request_identifier::RequestId;
 use actix_web::{
     get,
     http::header::ContentType,
@@ -9,10 +10,10 @@ use actix_web::{
 use sailfish::TemplateOnce;
 
 #[get("/")]
-async fn get() -> impl Responder {
+async fn get(id: RequestId) -> impl Responder {
     HttpResponse::Ok().content_type(ContentType::html()).body(
         IndexTemplate {
-            text: "API server".to_string(),
+            req_id: id.as_str().to_string(),
         }
         .render_once()
         .unwrap(),

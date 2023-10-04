@@ -4,6 +4,7 @@ use actix_extensible_rate_limit::{
     RateLimiter,
 };
 use actix_files as fs;
+use actix_request_identifier::RequestIdentifier;
 use actix_web::{
     http::{
         header,
@@ -27,13 +28,14 @@ use std::{
 
 mod error;
 mod middleware;
+mod models;
 mod routes;
 
 /// Index page template
 #[derive(TemplateOnce)]
 #[template(path = "index.stpl")]
 pub struct IndexTemplate {
-    text: String,
+    req_id: String,
 }
 
 /// 404 response
@@ -84,10 +86,15 @@ async fn main() -> io::Result<()> {
             .wrap(
                 Cors::default()
                     .allowed_origin(&allowed_origin)
-                    .allowed_methods(vec!["HEAD", "GET"])
-                    .allowed_headers(vec![header::CONTENT_TYPE, header::ACCEPT])
+                    .allowed_headers(vec![
+                        header::CONTENT_TYPE,
+                        header::AUTHORIZATION,
+                        header::ACCEPT,
+                    ])
+                    .supports_credentials()
                     .max_age(3600),
             )
+            .wrap(RequestIdentifier::with_uuid())
             .wrap(Logger::new(
                 "%a %t \"%r\" %s %b \"%{Referer}i\" \"%{User-Agent}i\" %T",
             ))

@@ -2,8 +2,5 @@
   "name": "@storiny/prettier-config",
   "version": "0.0.0",
   "main": "index.js",
-  "private": true,
-  "dependencies": {
-    "prettier": "^2.8.8"
-  }
+  "private": true
 }
