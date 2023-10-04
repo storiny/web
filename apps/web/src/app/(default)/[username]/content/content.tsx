@@ -371,7 +371,7 @@ const ProfileContent = ({
             )}
             {/* List (Location and joining date) */}
             <ul className={clsx(css["flex-col"], styles.list)}>
-              {Boolean(profile.location) && (
+              {Boolean(profile.location.trim()) && (
                 <li className={clsx(css["flex"], styles["list-item"])}>
                   <MapPinIcon />
                   <Typography

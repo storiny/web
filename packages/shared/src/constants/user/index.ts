@@ -17,7 +17,7 @@ export const USER_PROPS = {
   },
   wpm: { min: 70, max: 320 },
   email: {
-    max_length: 112,
+    max_length: 300,
     min_length: 3
   },
   name: {

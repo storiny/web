@@ -24,7 +24,7 @@ message GetProfileResponse {
   optional string banner_hex /*                       */ = 10;
   string location /*                                  */ = 11;
   string created_at /*                                */ = 12;
-  uint64 public_flags /*                              */ = 13;
+  uint32 public_flags /*                              */ = 13;
   uint32 story_count /*                               */ = 14;
   uint32 follower_count /*                            */ = 15;
   // Following and friend lists can be private

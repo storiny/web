@@ -6,3 +6,7 @@ fmt:
 
 udeps:
     cargo +nightly udeps --all-targets
+
+fmt_sql:
+    ./bin/format-sql.sh
+
