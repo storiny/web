@@ -1,9 +1,0 @@
-{
-  "name": "@storiny/backend",
-  "private": true,
-  "version": "0.0.0",
-  "packageManager": "yarn@3.6.0",
-  "devDependencies": {
-    "sql-formatter": "^13.0.0"
-  }
-}

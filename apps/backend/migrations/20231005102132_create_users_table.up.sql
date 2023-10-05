@@ -1,0 +1,45 @@
+CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA public;
+
+CREATE TABLE IF NOT EXISTS users (
+    id BIGINT PRIMARY KEY DEFAULT public.next_snowflake (),
+    name TEXT NOT NULL CONSTRAINT name_length CHECK (char_length(NAME) <= 32 AND char_length(NAME) >= 3),
+    username citext NOT NULL CONSTRAINT username_constraint CHECK (username ~* '^[\w_]{3,24}$'),
+    email citext NOT NULL UNIQUE CONSTRAINT email_length CHECK (char_length(email) <= 300 AND char_length(email) >= 3),
+    email_verified BOOL NOT NULL DEFAULT FALSE,
+    password text,
+    bio TEXT NOT NULL DEFAULT '' CONSTRAINT bio_length CHECK (char_length(bio) <= 256),
+    -- Rendered bio can expand as it gets converted from markdown to HTML string
+    rendered_bio rendered_markdown_text CONSTRAINT rendered_bio CHECK (char_length(rendered_bio) <= 512),
+    location TEXT NOT NULL DEFAULT '' CONSTRAINT location_length CHECK (char_length(location) <= 36),
+    wpm SMALLINT NOT NULL DEFAULT 225 CONSTRAINT wpm_size CHECK (wpm <= 320 AND wpm >= 70),
+    avatar_id asset_key,
+    banner_id asset_key,
+    avatar_hex hex_color,
+    banner_hex hex_color,
+    is_private BOOL NOT NULL DEFAULT FALSE,
+    public_flags unsigned_int32 NOT NULL DEFAULT 0,
+    -- Stats
+    follower_count unsigned_int32 NOT NULL DEFAULT 0,
+    following_count unsigned_int32 NOT NULL DEFAULT 0,
+    friend_count unsigned_int32 NOT NULL DEFAULT 0,
+    story_count unsigned_int32 NOT NULL DEFAULT 0,
+    -- Third-party login credentials
+    login_apple_id TEXT CONSTRAINT login_apple_id_length CHECK (char_length(login_apple_id) <= 256),
+    login_google_id TEXT CONSTRAINT login_google_id_length CHECK (char_length(login_google_id) <= 256),
+    -- Multi-factor auth
+    mfa_enabled BOOL NOT NULL DEFAULT FALSE,
+    mfa_secret TEXT,
+    -- Timestamps
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    username_modified_at TIMESTAMPTZ,
+    deleted_at TIMESTAMPTZ
+);
+
+CREATE UNIQUE INDEX unique_username_on_users ON users (username);
+
+CREATE INDEX follower_count_on_users ON users (follower_count);
+
+CREATE INDEX deleted_at_on_users ON users (deleted_at)
+WHERE
+    deleted_at IS NOT NULL;
+

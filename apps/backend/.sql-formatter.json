@@ -1,6 +1,0 @@
-{
-  "language": "postgresql",
-  "keywordCase": "preserve",
-  "indentStyle": "tabularLeft",
-  "linesBetweenQueries": 1
-}
