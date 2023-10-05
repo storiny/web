@@ -6,6 +6,7 @@
       <sourceFolder url="file://$MODULE_DIR$/apps/discovery/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/packages/ui/src/theme" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/apps/backend/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/apps/backend/tests" isTestSource="true" />
       <excludeFolder url="file://$MODULE_DIR$/temp" />
       <excludeFolder url="file://$MODULE_DIR$/.tmp" />
       <excludeFolder url="file://$MODULE_DIR$/tmp" />
