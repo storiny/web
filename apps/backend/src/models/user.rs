@@ -25,5 +25,6 @@ pub struct User {
     pub banner_hex: Option<String>,
     pub is_private: bool,
     pub wpm: u16,
-    pub created_at: DateTime<Utc>,
+    // #[serde(with = "time::serde::iso8601")]
+    // pub created_at: DateTime<Utc>,
 }
