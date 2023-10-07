@@ -19,24 +19,14 @@ use actix_web::{
 };
 use dotenv::dotenv;
 use redis::aio::ConnectionManager;
-use sailfish::TemplateOnce;
 use std::{
     env,
     io,
     time::Duration,
 };
+use storiny::*;
 
-mod error;
 mod middleware;
-mod models;
-mod routes;
-
-/// Index page template
-#[derive(TemplateOnce)]
-#[template(path = "index.stpl")]
-pub struct IndexTemplate {
-    req_id: String,
-}
 
 /// 404 response
 async fn not_found() -> impl Responder {

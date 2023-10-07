@@ -19,8 +19,8 @@ enum StoryVisibility {
 
 enum StoryLicense {
   STORY_LICENSE_UNSPECIFIED /**/ = 0;
-  STORY_LICENSE_CC_ZERO /*    */ = 1;
-  STORY_LICENSE_RESERVED /*   */ = 2;
+  STORY_LICENSE_RESERVED /*   */ = 1;
+  STORY_LICENSE_CC_ZERO /*    */ = 2;
   STORY_LICENSE_CC_BY /*      */ = 3;
   STORY_LICENSE_CC_BY_SA /*   */ = 4;
   STORY_LICENSE_CC_BY_ND /*   */ = 5;

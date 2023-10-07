@@ -1,4 +1,4 @@
-import { Provider } from "@storiny/proto/gen/ts/connection_def/v1/def";
+import { Provider } from "@storiny/proto/dist/connection_def/v1/def";
 
 import { User } from "../user";
 

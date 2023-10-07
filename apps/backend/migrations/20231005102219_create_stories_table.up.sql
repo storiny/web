@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS stories (
     category story_category NOT NULL DEFAULT 'others' ::story_category,
     visibility SMALLINT NOT NULL DEFAULT 2, -- Public by default
     age_restriction SMALLINT NOT NULL DEFAULT 1, -- Not rated by default
-    license SMALLINT NOT NULL DEFAULT 2, -- Reserved by default
+    license SMALLINT NOT NULL DEFAULT 1, -- Reserved by default
     user_id BIGINT REFERENCES users (id) ON DELETE CASCADE,
     -- SEO
     seo_title TEXT CONSTRAINT seo_title_length CHECK (char_length(seo_title) <= 54),
@@ -37,11 +37,13 @@ CREATE UNIQUE INDEX unique_slug_on_stories ON stories (slug);
 
 CREATE INDEX visibility_on_stories ON stories (visibility);
 
-CREATE INDEX category_on_stories ON stories (category);
-
 CREATE INDEX read_count_on_stories ON stories (read_count);
 
 CREATE INDEX like_count_on_stories ON stories (like_count);
+
+CREATE INDEX category_on_stories ON stories (category)
+WHERE
+    category != 'others'::story_category;
 
 CREATE INDEX published_at_on_stories ON stories (published_at)
 WHERE

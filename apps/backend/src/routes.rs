@@ -1,6 +1,9 @@
 use actix_web::web;
 
+#[path = "routes/health.rs"]
 mod health;
+
+#[path = "routes/index.rs"]
 mod index;
 
 /// Registers all the routes

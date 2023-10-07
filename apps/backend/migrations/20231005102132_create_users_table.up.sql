@@ -3,7 +3,7 @@ CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA public;
 CREATE TABLE IF NOT EXISTS users (
     id BIGINT PRIMARY KEY DEFAULT public.next_snowflake (),
     name TEXT NOT NULL CONSTRAINT name_length CHECK (char_length(NAME) <= 32 AND char_length(NAME) >= 3),
-    username citext NOT NULL CONSTRAINT username_constraint CHECK (username ~* '^[\w_]{3,24}$'),
+    username TEXT NOT NULL CONSTRAINT username_constraint CHECK (username ~ '^[a-z0-9_]{3,24}$'),
     email citext NOT NULL UNIQUE CONSTRAINT email_length CHECK (char_length(email) <= 300 AND char_length(email) >= 3),
     email_verified BOOL NOT NULL DEFAULT FALSE,
     password text,
