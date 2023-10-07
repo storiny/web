@@ -1,6 +1,6 @@
 // noinspection JSUnusedGlobalSymbols
 
-import { GetProfileResponse } from "@storiny/proto/gen/ts/profile_def/v1/def";
+import { GetProfileResponse } from "@storiny/proto/dist/profile_def/v1/def";
 import { Provider, UserFlag } from "@storiny/shared";
 import { MOCK_USERS } from "@storiny/ui/src/mocks";
 import type { Meta, StoryObj } from "@storybook/react";

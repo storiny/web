@@ -1,6 +1,6 @@
 // noinspection JSUnusedGlobalSymbols
 
-import { GetTagResponse } from "@storiny/proto/gen/ts/tag_def/v1/def";
+import { GetTagResponse } from "@storiny/proto/dist/tag_def/v1/def";
 import type { Meta, StoryObj } from "@storybook/react";
 import { nanoid } from "nanoid";
 import React from "react";

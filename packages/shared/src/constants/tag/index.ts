@@ -10,7 +10,7 @@ export const TAG_PROPS = {
 } as const;
 
 export const TAG_NAME_REGEX = new RegExp(
-  `^[\\w-]{${TAG_PROPS.name.min_length},${TAG_PROPS.name.max_length}}$`
+  `^[a-z0-9-]{${TAG_PROPS.name.min_length},${TAG_PROPS.name.max_length}}$`
 );
 
 export const TAG_SCHEMA = {

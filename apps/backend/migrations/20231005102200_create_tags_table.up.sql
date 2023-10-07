@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS tags (
     id BIGINT PRIMARY KEY DEFAULT public.next_snowflake (),
-    name TEXT NOT NULL CONSTRAINT name_length CHECK (char_length(NAME) <= 32 AND char_length(NAME) >= 1),
+    name TEXT NOT NULL CONSTRAINT name_length CHECK (NAME ~ '^[a-z0-9-]{1,32}$'),
     -- Stats
     follower_count unsigned_int32 NOT NULL DEFAULT 0,
     story_count unsigned_int32 NOT NULL DEFAULT 0,
