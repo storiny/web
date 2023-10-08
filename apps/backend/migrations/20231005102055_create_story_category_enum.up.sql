@@ -1,6 +1,6 @@
 DROP TYPE IF EXISTS "public"."story_category";
 
-CREATE TYPE "public"."story_category" AS ENUM (
+CREATE TYPE "public"."story_category" AS ENUM(
     'business-and-finance',
     'digital-graphics',
     'diy',

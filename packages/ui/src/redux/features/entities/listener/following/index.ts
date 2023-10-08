@@ -45,9 +45,9 @@ export const add_following_listener = (
     actionCreator: set_entity_record_value,
     effect: async ({ payload }, listener_api) => {
       if (payload[0] === "following") {
-        await debounce_effect(listener_api);
-
         const [, user_id, has_followed] = payload;
+        await debounce_effect(`following:${user_id}`, listener_api);
+
         await fetch_api(`me/following/${user_id}`, listener_api, {
           method: has_followed ? "POST" : "DELETE"
         }).catch(() => undefined);

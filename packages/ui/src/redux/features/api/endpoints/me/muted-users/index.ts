@@ -15,16 +15,10 @@ export const { useGetMutedUsersQuery: use_get_muted_users_query } =
         { has_more: boolean; items: User[] },
         {
           page: number;
-          query?: string;
-          sort: "recent" | "old";
         }
       >({
-        query: ({ page, sort, query }) =>
-          `/${SEGMENT}?page=${page}&sort=${sort}${
-            query ? `&query=${encodeURIComponent(query)}` : ""
-          }`,
-        serializeQueryArgs: ({ endpointName, queryArgs }) =>
-          `${endpointName}:${queryArgs.sort}:${queryArgs.query}`,
+        query: ({ page }) => `/${SEGMENT}?page=${page}`,
+        serializeQueryArgs: ({ endpointName }) => `${endpointName}`,
         transformResponse: (response: User[]) => ({
           items: response,
           has_more: response.length === ITEMS_PER_PAGE
@@ -34,9 +28,7 @@ export const { useGetMutedUsersQuery: use_get_muted_users_query } =
           current_cache.has_more = new_items.has_more;
         },
         forceRefetch: ({ currentArg, previousArg }) =>
-          currentArg?.page !== previousArg?.page ||
-          currentArg?.sort !== previousArg?.sort ||
-          currentArg?.query !== previousArg?.query
+          currentArg?.page !== previousArg?.page
       })
     })
   });

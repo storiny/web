@@ -75,7 +75,10 @@ export const setup_store = (
           : [
               create_state_sync_middleware({
                 channel: "__state_sync_channel__",
-                blacklist: ["preferences/sync_to_browser"],
+                blacklist: [
+                  "preferences/sync_to_browser",
+                  "entities/set_rate_limit"
+                ],
                 predicate: (action) => !/api\//.test(action.type),
                 // eslint-disable-next-line prefer-snakecase/prefer-snakecase
                 prepareState: (state: AppState) => ({

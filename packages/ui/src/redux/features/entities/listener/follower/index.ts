@@ -38,9 +38,9 @@ export const add_follower_listener = (
     actionCreator: set_entity_record_value,
     effect: async ({ payload }, listener_api) => {
       if (payload[0] === "followers") {
-        await debounce_effect(listener_api);
-
         const [, user_id, has_added_follower] = payload;
+        await debounce_effect(`followers:${user_id}`, listener_api);
+
         // User can only remove its followers
         if (!has_added_follower) {
           await fetch_api(`me/followers/${user_id}`, listener_api, {
