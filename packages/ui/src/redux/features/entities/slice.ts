@@ -56,7 +56,7 @@ interface EntitiesSelfState {
 
 export type EntitiesState = EntitiesPredicateState &
   EntitiesIntegralState &
-  EntitiesSelfState;
+  EntitiesSelfState & { rate_limits: Record<string, boolean> };
 
 export const entities_initial_state: EntitiesState = {
   blocks: /*                           */ {},
@@ -90,7 +90,8 @@ export const entities_initial_state: EntitiesState = {
   self_pending_draft_count: /*         */ 0,
   self_pending_friend_request_count: /**/ 0,
   self_published_story_count: /*       */ 0,
-  self_reply_count: /*                 */ 0
+  self_reply_count: /*                 */ 0,
+  rate_limits: /*                      */ {}
 };
 
 export const entities_slice = create_slice({
@@ -143,7 +144,19 @@ export const entities_slice = create_slice({
     sync_with_comment: (state, action: PayloadAction<SyncableComment>) =>
       sync_with_comment_impl(state, action.payload),
     sync_with_reply: (state, action: PayloadAction<SyncableReply>) =>
-      sync_with_reply_impl(state, action.payload)
+      sync_with_reply_impl(state, action.payload),
+    set_rate_limit: (
+      state,
+      action: PayloadAction<[key: string, timestamp: boolean]>
+    ) => {
+      const [key, value] = action.payload;
+      // Remove from cache if the value is `false`
+      if (!value) {
+        delete state.rate_limits[key];
+      } else {
+        state.rate_limits[key] = value;
+      }
+    }
   }
 });
 
@@ -154,7 +167,8 @@ export const {
   sync_with_reply,
   sync_with_story,
   sync_with_tag,
-  sync_with_user
+  sync_with_user,
+  set_rate_limit
 } = entities_slice.actions;
 
 export default entities_slice.reducer;

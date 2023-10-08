@@ -1,5 +1,5 @@
-CREATE TABLE IF NOT EXISTS stories (
-    id BIGINT PRIMARY KEY DEFAULT public.next_snowflake (),
+CREATE TABLE IF NOT EXISTS stories(
+    id BIGINT PRIMARY KEY DEFAULT public.next_snowflake(),
     title TEXT NOT NULL DEFAULT 'Untitled story' CONSTRAINT title_length CHECK (char_length(title) <= 96 AND char_length(title) >= 1),
     slug TEXT,
     description TEXT CONSTRAINT description_length CHECK (char_length(description) <= 256),
@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS stories (
     visibility SMALLINT NOT NULL DEFAULT 2, -- Public by default
     age_restriction SMALLINT NOT NULL DEFAULT 1, -- Not rated by default
     license SMALLINT NOT NULL DEFAULT 1, -- Reserved by default
-    user_id BIGINT REFERENCES users (id) ON DELETE CASCADE,
+    user_id BIGINT REFERENCES users(id) ON DELETE CASCADE,
     -- SEO
     seo_title TEXT CONSTRAINT seo_title_length CHECK (char_length(seo_title) <= 54),
     seo_description TEXT CONSTRAINT seo_description_length CHECK (char_length(seo_description) <= 160),
@@ -33,51 +33,70 @@ CREATE TABLE IF NOT EXISTS stories (
     deleted_at TIMESTAMPTZ
 );
 
-CREATE UNIQUE INDEX unique_slug_on_stories ON stories (slug);
+CREATE UNIQUE INDEX unique_slug_on_stories ON stories(slug);
 
-CREATE INDEX visibility_on_stories ON stories (visibility);
+CREATE INDEX visibility_on_stories ON stories(visibility);
 
-CREATE INDEX read_count_on_stories ON stories (read_count);
+CREATE INDEX read_count_on_stories ON stories(read_count);
 
-CREATE INDEX like_count_on_stories ON stories (like_count);
+CREATE INDEX like_count_on_stories ON stories(like_count);
 
-CREATE INDEX category_on_stories ON stories (category)
+CREATE INDEX category_on_stories ON stories(category)
 WHERE
     category != 'others'::story_category;
 
-CREATE INDEX published_at_on_stories ON stories (published_at)
+CREATE INDEX published_at_on_stories ON stories(published_at)
 WHERE
     published_at IS NOT NULL;
 
-CREATE INDEX deleted_at_on_stories ON stories (deleted_at)
+CREATE INDEX deleted_at_on_stories ON stories(deleted_at)
 WHERE
     deleted_at IS NOT NULL;
 
 -- Counter cache
-CREATE OR REPLACE FUNCTION story_count_counter_cache ()
+CREATE OR REPLACE FUNCTION story_count_counter_cache()
     RETURNS TRIGGER
     AS $$
 BEGIN
-    IF (TG_OP = 'UPDATE') THEN
-        IF (
-            -- Story published
-            (OLD.deleted_at IS NULL AND NEW.deleted_at IS NULL AND OLD.published_at IS NULL AND NEW.published_at IS NOT NULL)
+    IF(TG_OP = 'UPDATE') THEN
+        -- Story soft-deleted
+        IF(OLD.deleted_at IS NULL AND NEW.deleted_at IS NOT NULL) THEN
+            NEW.created_at = NULL;
+            NEW.edited_at = NULL;
+            NEW.published_at = NULL;
+            NEW.first_published_at = NULL;
+            NEW.read_count = 0;
+        END IF;
+        --
         -- Story recovered
-        OR (OLD.deleted_at IS NOT NULL AND NEW.deleted_at IS NULL AND OLD.published_at IS NOT NULL)) THEN
+        IF(OLD.deleted_at IS NOT NULL AND NEW.deleted_at IS NULL) THEN
+            NEW.created_at = now();
+        END IF;
+        --
+        -- Update `first_published_at`
+        IF(NEW.deleted_at IS NULL AND NEW.first_published_at IS NULL AND NEW.published_at IS NOT NULL) THEN
+            NEW.first_published_at = NEW.published_at;
+        END IF;
+        --
+        IF(
+            -- Story published
+(OLD.deleted_at IS NULL AND NEW.deleted_at IS NULL AND OLD.published_at IS NULL AND NEW.published_at IS NOT NULL) OR
+        -- Story recovered
+(OLD.deleted_at IS NOT NULL AND NEW.deleted_at IS NULL AND OLD.published_at IS NOT NULL)) THEN
             UPDATE
                 users
             SET
                 story_count = story_count + 1
             WHERE
                 id = NEW.user_id;
-        ELSIF (
+        ELSIF(
                 -- Story unpublished
-                (OLD.deleted_at IS NULL
+(OLD.deleted_at IS NULL
                     AND NEW.deleted_at IS NULL
                     AND OLD.published_at IS NOT NULL
                     AND NEW.published_at IS NULL)
                 -- Story soft deleted
-                OR (OLD.deleted_at IS NULL
+                OR(OLD.deleted_at IS NULL
                     AND NEW.deleted_at IS NOT NULL
                     AND OLD.published_at IS NOT NULL)) THEN
             UPDATE
@@ -89,9 +108,9 @@ BEGIN
                 AND story_count > 0;
         END IF;
         RETURN NEW;
-    ELSIF (TG_OP = 'DELETE') THEN
+    ELSIF(TG_OP = 'DELETE') THEN
         -- Force deleted
-        IF (OLD.deleted_at IS NULL AND OLD.published_at IS NOT NULL) THEN
+        IF(OLD.deleted_at IS NULL AND OLD.published_at IS NOT NULL) THEN
             UPDATE
                 users
             SET
@@ -110,5 +129,5 @@ LANGUAGE plpgsql;
 CREATE OR REPLACE TRIGGER refresh_story_count
     AFTER UPDATE OR DELETE ON "public"."stories"
     FOR EACH ROW
-    EXECUTE PROCEDURE story_count_counter_cache ();
+    EXECUTE PROCEDURE story_count_counter_cache();
 

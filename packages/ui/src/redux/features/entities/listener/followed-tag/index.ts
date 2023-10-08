@@ -40,9 +40,9 @@ export const add_followed_tag_listener = (
     actionCreator: set_entity_record_value,
     effect: async ({ payload }, listener_api) => {
       if (payload[0] === "followed_tags") {
-        await debounce_effect(listener_api);
-
         const [, tag_id, has_followed] = payload;
+        await debounce_effect(`followed_tags:${tag_id}`, listener_api);
+
         await fetch_api(`me/followed-tags/${tag_id}`, listener_api, {
           method: has_followed ? "POST" : "DELETE"
         }).catch(() => undefined);

@@ -1,4 +1,4 @@
-use crate::proto::story_def_v1::{
+use crate::story_def::v1::{
     StoryAgeRestriction,
     StoryLicense,
     StoryVisibility,
@@ -11,7 +11,7 @@ use sqlx::FromRow;
 use strum::Display;
 use time::OffsetDateTime;
 
-#[derive(Display, Debug)]
+#[derive(Display, Debug, Serialize, Deserialize, Copy, Clone)]
 pub enum StoryCategory {
     #[strum(serialize = "business-and-finance")]
     BusinessAndFinance,
@@ -33,7 +33,6 @@ pub enum StoryCategory {
     Music,
     #[strum(serialize = "news")]
     News,
-    #[default]
     #[strum(serialize = "others")]
     Others,
     #[strum(serialize = "programming")]

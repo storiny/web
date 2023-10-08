@@ -1,7 +1,7 @@
 CREATE EXTENSION IF NOT EXISTS citext WITH SCHEMA public;
 
-CREATE TABLE IF NOT EXISTS users (
-    id BIGINT PRIMARY KEY DEFAULT public.next_snowflake (),
+CREATE TABLE IF NOT EXISTS users(
+    id BIGINT PRIMARY KEY DEFAULT public.next_snowflake(),
     name TEXT NOT NULL CONSTRAINT name_length CHECK (char_length(NAME) <= 32 AND char_length(NAME) >= 3),
     username TEXT NOT NULL CONSTRAINT username_constraint CHECK (username ~ '^[a-z0-9_]{3,24}$'),
     email citext NOT NULL UNIQUE CONSTRAINT email_length CHECK (char_length(email) <= 300 AND char_length(email) >= 3),
@@ -32,14 +32,15 @@ CREATE TABLE IF NOT EXISTS users (
     -- Timestamps
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     username_modified_at TIMESTAMPTZ,
+    deactivated_at TIMESTAMPTZ,
     deleted_at TIMESTAMPTZ
 );
 
-CREATE UNIQUE INDEX unique_username_on_users ON users (username);
+CREATE UNIQUE INDEX unique_username_on_users ON users(username);
 
-CREATE INDEX follower_count_on_users ON users (follower_count);
+CREATE INDEX follower_count_on_users ON users(follower_count);
 
-CREATE INDEX deleted_at_on_users ON users (deleted_at)
+CREATE INDEX deleted_at_on_users ON users(deleted_at)
 WHERE
     deleted_at IS NOT NULL;
 

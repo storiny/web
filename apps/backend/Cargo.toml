@@ -18,6 +18,8 @@ env_logger = "0.10.0"
 hashbrown = { version = "0.14.0", features = ["serde"] }
 lazy_static = "1.4.0"
 log = "0.4.20"
+pbjson = "0.6.0"
+prost = "0.12.1"
 redis = { version = "0.23.3", features = ["tokio-comp", "aio", "connection-manager"] }
 regex = "1.9.5"
 sailfish = "0.8.0"

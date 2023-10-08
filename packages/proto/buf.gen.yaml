@@ -14,5 +14,13 @@ plugins:
       - lowerCaseServiceMethods=true
       - outputServices=grpc-js
       - enumsAsLiterals=true
+  - plugin: buf.build/community/neoeinstein-prost:v0.2.3
+    out: ../../apps/backend/src/proto
+    opt:
+#      - bytes=.
+      - compile_well_known_types
+      - extern_path=.google.protobuf=::pbjson_types
   - plugin: buf.build/community/neoeinstein-prost-serde:v0.2.3
     out: ../../apps/backend/src/proto
+    opt:
+      - no_include

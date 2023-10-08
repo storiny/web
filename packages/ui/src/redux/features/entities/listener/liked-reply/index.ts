@@ -32,9 +32,9 @@ export const add_liked_reply_listener = (
     actionCreator: set_entity_record_value,
     effect: async ({ payload }, listener_api) => {
       if (payload[0] === "liked_replies") {
-        await debounce_effect(listener_api);
-
         const [, reply_id, has_liked] = payload;
+        await debounce_effect(`liked_replies:${reply_id}`, listener_api);
+
         await fetch_api(`me/liked-replies/${reply_id}`, listener_api, {
           method: has_liked ? "POST" : "DELETE"
         }).catch(() => undefined);

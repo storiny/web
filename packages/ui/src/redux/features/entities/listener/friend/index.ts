@@ -18,8 +18,8 @@ export const add_friend_listener = (
     actionCreator: set_entity_record_value,
     effect: async ({ payload }, listener_api) => {
       if (payload[0] === "sent_requests") {
-        await debounce_effect(listener_api);
         const [, user_id, has_sent_friend_request] = payload;
+        await debounce_effect(`sent_requests:${user_id}`, listener_api);
 
         if (has_sent_friend_request) {
           await fetch_api(`me/friends/${user_id}`, listener_api, {
@@ -83,8 +83,8 @@ export const add_friend_listener = (
     actionCreator: set_entity_record_value,
     effect: async ({ payload }, listener_api) => {
       if (payload[0] === "friends") {
-        await debounce_effect(listener_api);
         const [, user_id, has_added_friend] = payload;
+        await debounce_effect(`friends:${user_id}`, listener_api);
 
         if (!has_added_friend) {
           await fetch_api(`me/friends/${user_id}`, listener_api, {

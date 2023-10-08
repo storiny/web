@@ -43,9 +43,9 @@ export const add_block_listener = (
     actionCreator: set_entity_record_value,
     effect: async ({ payload }, listener_api) => {
       if (payload[0] === "blocks") {
-        await debounce_effect(listener_api);
-
         const [, user_id, has_blocked] = payload;
+        await debounce_effect(`blocks:${user_id}`, listener_api);
+
         await fetch_api(`me/blocked-users/${user_id}`, listener_api, {
           method: has_blocked ? "POST" : "DELETE"
         }).catch(() => undefined);
