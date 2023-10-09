@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS bookmarks(
-    user_id BIGINT REFERENCES users(id) ON DELETE CASCADE,
-    story_id BIGINT REFERENCES stories(id) ON DELETE CASCADE,
+    user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    story_id BIGINT NOT NULL REFERENCES stories(id) ON DELETE CASCADE,
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     PRIMARY KEY (user_id, story_id)
 );

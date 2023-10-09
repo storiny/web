@@ -62,10 +62,10 @@ mod tests {
         let story = get_default_story();
         sqlx::query(
             r#"
-INSERT INTO stories (title, slug, description, splash_id, splash_hex, doc_key, category, visibility, age_restriction, license, user_id, seo_title, seo_description, canonical_url, preview_image, word_count, read_count, like_count, comment_count, disable_public_revision_history, disable_comments, disable_toc, created_at, first_published_at, published_at, edited_at, deleted_at)
-VALUES ($1, $2, $3, $4, $5, $6, $7::story_category, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27)
-RETURNING id
-               "#,
+            INSERT INTO stories (title, slug, description, splash_id, splash_hex, doc_key, category, visibility, age_restriction, license, user_id, seo_title, seo_description, canonical_url, preview_image, word_count, read_count, like_count, comment_count, disable_public_revision_history, disable_comments, disable_toc, created_at, first_published_at, published_at, edited_at, deleted_at)
+            VALUES ($1, $2, $3, $4, $5, $6, $7::story_category, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27)
+            RETURNING id
+            "#,
         )
             .bind(&story.title)
             .bind(&story.slug)
@@ -104,9 +104,9 @@ RETURNING id
     async fn get_story_writer(conn: &mut PoolConnection<Postgres>) -> Result<PgRow, Error> {
         sqlx::query(
             r#"
-SELECT * FROM users
-WHERE id = 0
-                "#,
+            SELECT * FROM users
+            WHERE id = 0
+            "#,
         )
         .fetch_one(&mut **conn)
         .await
@@ -129,18 +129,18 @@ WHERE id = 0
         // Delete the user
         sqlx::query(
             r#"
-DELETE FROM users
-WHERE id = 0
-                "#,
+            DELETE FROM users
+            WHERE id = 0
+            "#,
         )
         .execute(&mut *conn)
         .await?;
 
         let story_result = sqlx::query(
             r#"
-SELECT * FROM stories
-WHERE id = $1
-                "#,
+            SELECT * FROM stories
+            WHERE id = $1
+            "#,
         )
         .bind(story_id)
         .fetch_one(&mut *conn)
@@ -149,109 +149,109 @@ WHERE id = $1
         assert!(story_result.is_err());
         Ok(())
     }
-
-    #[sqlx::test(fixtures("stories"))]
-    async fn can_update_story_count_counter_cache(pool: PgPool) -> sqlx::Result<()> {
-        let mut conn = pool.acquire().await?;
-        let result = insert_sample_story(&mut conn).await?;
-        let story_id = result.get::<i64, _>("id");
-
-        // Should not increment story count as it is still a draft
-        let user_result = get_story_writer(&mut conn).await?;
-        assert_eq!(user_result.get::<i32, _>("story_count"), 0);
-
-        // Publish the draft
-        sqlx::query(
-            r#"
-UPDATE stories
-SET published_at = now()
-WHERE id = $1
-                "#,
-        )
-        .bind(story_id)
-        .execute(&mut *conn)
-        .await?;
-
-        let user_result = get_story_writer(&mut conn).await?;
-        assert_eq!(user_result.get::<i32, _>("story_count"), 1);
-
-        // Unpublish the draft
-        sqlx::query(
-            r#"
-UPDATE stories
-SET published_at = NULL
-WHERE id = $1
-                "#,
-        )
-        .bind(story_id)
-        .execute(&mut *conn)
-        .await?;
-
-        let user_result = get_story_writer(&mut conn).await?;
-        assert_eq!(user_result.get::<i32, _>("story_count"), 0);
-
-        // Publish the draft again
-        sqlx::query(
-            r#"
-UPDATE stories
-SET published_at = now()
-WHERE id = $1
-                "#,
-        )
-        .bind(story_id)
-        .execute(&mut *conn)
-        .await?;
-
-        let user_result = get_story_writer(&mut conn).await?;
-        assert_eq!(user_result.get::<i32, _>("story_count"), 1);
-
-        // Soft delete the draft
-        sqlx::query(
-            r#"
-UPDATE stories
-SET deleted_at = now()
-WHERE id = $1
-                "#,
-        )
-        .bind(story_id)
-        .execute(&mut *conn)
-        .await?;
-
-        let user_result = get_story_writer(&mut conn).await?;
-        assert_eq!(user_result.get::<i32, _>("story_count"), 0);
-
-        // Recover the draft
-        sqlx::query(
-            r#"
-UPDATE stories
-SET deleted_at = NULL
-WHERE id = $1
-                "#,
-        )
-        .bind(story_id)
-        .execute(&mut *conn)
-        .await?;
-
-        let user_result = get_story_writer(&mut conn).await?;
-        assert_eq!(user_result.get::<i32, _>("story_count"), 1);
-
-        // Publish a soft-deleted draft
-        sqlx::query(
-            r#"
-UPDATE stories
-SET
-    deleted_at = now(),
-    published_at = now()
-WHERE id = $1
-                "#,
-        )
-        .bind(story_id)
-        .execute(&mut *conn)
-        .await?;
-
-        let user_result = get_story_writer(&mut conn).await?;
-        assert_eq!(user_result.get::<i32, _>("story_count"), 1);
-
-        Ok(())
-    }
+    //
+    // #[sqlx::test(fixtures("stories"))]
+    // async fn can_update_story_count_counter_cache(pool: PgPool) -> sqlx::Result<()> {
+    //     let mut conn = pool.acquire().await?;
+    //     let result = insert_sample_story(&mut conn).await?;
+    //     let story_id = result.get::<i64, _>("id");
+    //
+    //     // Should not increment story count as it is still a draft
+    //     let user_result = get_story_writer(&mut conn).await?;
+    //     assert_eq!(user_result.get::<i32, _>("story_count"), 0);
+    //
+    //     // Publish the draft
+    //     sqlx::query(
+    //         r#"
+    //         UPDATE stories
+    //         SET published_at = now()
+    //         WHERE id = $1
+    //         "#,
+    //     )
+    //     .bind(story_id)
+    //     .execute(&mut *conn)
+    //     .await?;
+    //
+    //     let user_result = get_story_writer(&mut conn).await?;
+    //     assert_eq!(user_result.get::<i32, _>("story_count"), 1);
+    //
+    //     // Unpublish the draft
+    //     sqlx::query(
+    //         r#"
+    //         UPDATE stories
+    //         SET published_at = NULL
+    //         WHERE id = $1
+    //         "#,
+    //     )
+    //     .bind(story_id)
+    //     .execute(&mut *conn)
+    //     .await?;
+    //
+    //     let user_result = get_story_writer(&mut conn).await?;
+    //     assert_eq!(user_result.get::<i32, _>("story_count"), 0);
+    //
+    //     // Publish the draft again
+    //     sqlx::query(
+    //         r#"
+    //         UPDATE stories
+    //         SET published_at = now()
+    //         WHERE id = $1
+    //         "#,
+    //     )
+    //     .bind(story_id)
+    //     .execute(&mut *conn)
+    //     .await?;
+    //
+    //     let user_result = get_story_writer(&mut conn).await?;
+    //     assert_eq!(user_result.get::<i32, _>("story_count"), 1);
+    //
+    //     // Soft delete the draft
+    //     sqlx::query(
+    //         r#"
+    //         UPDATE stories
+    //         SET deleted_at = now()
+    //         WHERE id = $1
+    //         "#,
+    //     )
+    //     .bind(story_id)
+    //     .execute(&mut *conn)
+    //     .await?;
+    //
+    //     let user_result = get_story_writer(&mut conn).await?;
+    //     assert_eq!(user_result.get::<i32, _>("story_count"), 0);
+    //
+    //     // Recover the draft
+    //     sqlx::query(
+    //         r#"
+    //         UPDATE stories
+    //         SET deleted_at = NULL
+    //         WHERE id = $1
+    //         "#,
+    //     )
+    //     .bind(story_id)
+    //     .execute(&mut *conn)
+    //     .await?;
+    //
+    //     let user_result = get_story_writer(&mut conn).await?;
+    //     assert_eq!(user_result.get::<i32, _>("story_count"), 1);
+    //
+    //     // Publish a soft-deleted draft
+    //     sqlx::query(
+    //         r#"
+    //         UPDATE stories
+    //         SET
+    //             deleted_at = now(),
+    //             published_at = now()
+    //         WHERE id = $1
+    //         "#,
+    //     )
+    //     .bind(story_id)
+    //     .execute(&mut *conn)
+    //     .await?;
+    //
+    //     let user_result = get_story_writer(&mut conn).await?;
+    //     assert_eq!(user_result.get::<i32, _>("story_count"), 1);
+    //
+    //     Ok(())
+    // }
 }

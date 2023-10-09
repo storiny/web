@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS stories(
     visibility SMALLINT NOT NULL DEFAULT 2, -- Public by default
     age_restriction SMALLINT NOT NULL DEFAULT 1, -- Not rated by default
     license SMALLINT NOT NULL DEFAULT 1, -- Reserved by default
-    user_id BIGINT REFERENCES users(id) ON DELETE CASCADE,
+    user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     -- SEO
     seo_title TEXT CONSTRAINT seo_title_length CHECK (char_length(seo_title) <= 54),
     seo_description TEXT CONSTRAINT seo_description_length CHECK (char_length(seo_description) <= 160),
@@ -49,9 +49,7 @@ CREATE INDEX published_at_on_stories ON stories(published_at)
 WHERE
     published_at IS NOT NULL;
 
-CREATE INDEX deleted_at_on_stories ON stories(deleted_at)
-WHERE
-    deleted_at IS NOT NULL;
+CREATE INDEX deleted_at_on_stories ON stories(deleted_at);
 
 -- Counter cache
 CREATE OR REPLACE FUNCTION story_count_counter_cache()

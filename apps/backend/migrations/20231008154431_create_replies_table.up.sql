@@ -4,8 +4,8 @@ CREATE TABLE IF NOT EXISTS replies(
     -- Rendered content can expand as it gets converted from markdown to HTML string
     rendered_content rendered_markdown_text CONSTRAINT rendered_bio CHECK (char_length(rendered_content) <= 2048),
     hidden BOOL NOT NULL DEFAULT FALSE,
-    user_id BIGINT REFERENCES users(id) ON DELETE CASCADE,
-    comment_id BIGINT REFERENCES comments(id) ON DELETE CASCADE,
+    user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    comment_id BIGINT NOT NULL REFERENCES comments(id) ON DELETE CASCADE,
     -- Stats
     like_count unsigned_int32 NOT NULL DEFAULT 0,
     -- Timestamps

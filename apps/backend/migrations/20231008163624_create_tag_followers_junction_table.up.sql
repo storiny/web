@@ -1,7 +1,8 @@
 CREATE TABLE IF NOT EXISTS tag_followers(
-    user_id BIGINT REFERENCES users(id) ON DELETE CASCADE,
-    tag_id BIGINT REFERENCES tags(id) ON DELETE CASCADE,
+    user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    tag_id BIGINT NOT NULL REFERENCES tags(id) ON DELETE CASCADE,
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    deleted_at TIMESTAMPTZ,
     PRIMARY KEY (user_id, tag_id)
 );
 

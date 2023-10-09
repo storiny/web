@@ -40,7 +40,5 @@ CREATE UNIQUE INDEX unique_username_on_users ON users(username);
 
 CREATE INDEX follower_count_on_users ON users(follower_count);
 
-CREATE INDEX deleted_at_on_users ON users(deleted_at)
-WHERE
-    deleted_at IS NOT NULL;
+CREATE INDEX deleted_at_on_users ON users(deleted_at);
 
