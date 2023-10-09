@@ -21,9 +21,9 @@ mod tests {
         let tag = get_default_tag();
         let result = sqlx::query(
             r#"
-INSERT INTO tags (name, follower_count, story_count, created_at)
-VALUES            ($1, $2, $3, $4);
-               "#,
+            INSERT INTO tags (name, follower_count, story_count, created_at)
+            VALUES            ($1, $2, $3, $4);
+            "#,
         )
         .bind(&tag.name)
         .bind(&tag.follower_count)
@@ -45,9 +45,9 @@ VALUES            ($1, $2, $3, $4);
         for case in cases {
             let result = sqlx::query(
                 r#"
-INSERT INTO tags (name, follower_count, story_count, created_at)
-VALUES            ($1, $2, $3, $4);
-               "#,
+                INSERT INTO tags (name, follower_count, story_count, created_at)
+                VALUES            ($1, $2, $3, $4);
+                "#,
             )
             .bind(case.to_string())
             .bind(&tag.follower_count)
@@ -71,9 +71,9 @@ VALUES            ($1, $2, $3, $4);
         for case in cases {
             let result = sqlx::query(
                 r#"
-INSERT INTO tags (name, follower_count, story_count, created_at)
-VALUES            ($1, $2, $3, $4);
-               "#,
+                INSERT INTO tags (name, follower_count, story_count, created_at)
+                VALUES            ($1, $2, $3, $4);
+                "#,
             )
             .bind(case.to_string())
             .bind(tag.follower_count)

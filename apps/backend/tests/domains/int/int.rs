@@ -7,9 +7,9 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let result = sqlx::query(
             r#"
-INSERT INTO test_domains_uint
-VALUES ($1, $2)
-                "#,
+            INSERT INTO test_domains_uint
+            VALUES ($1, $2)
+            "#,
         )
         .bind(1234i32)
         .bind(1234i64)
@@ -25,9 +25,9 @@ VALUES ($1, $2)
         let mut conn = pool.acquire().await?;
         let signed_int32_result = sqlx::query(
             r#"
-INSERT INTO test_domains_uint
-VALUES ($1)
-                "#,
+            INSERT INTO test_domains_uint
+            VALUES ($1)
+            "#,
         )
         .bind(-1i32)
         .execute(&mut *conn)
@@ -40,9 +40,9 @@ VALUES ($1)
 
         let signed_int64_result = sqlx::query(
             r#"
-INSERT INTO test_domains_uint
-VALUES (DEFAULT, $1)
-                "#,
+            INSERT INTO test_domains_uint
+            VALUES (DEFAULT, $1)
+            "#,
         )
         .bind(-1i64)
         .execute(&mut *conn)

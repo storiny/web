@@ -7,9 +7,9 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let result = sqlx::query(
             r#"
-INSERT INTO test_domains_asset_key
-VALUES ($1)
-                "#,
+            INSERT INTO test_domains_asset_key
+            VALUES ($1)
+            "#,
         )
         .bind("some_key")
         .execute(&mut *conn)
@@ -24,9 +24,9 @@ VALUES ($1)
         let mut conn = pool.acquire().await?;
         let result = sqlx::query(
             r#"
-INSERT INTO test_domains_asset_key
-VALUES ($1)
-                "#,
+            INSERT INTO test_domains_asset_key
+            VALUES ($1)
+            "#,
         )
         .bind("x".repeat(130))
         .execute(&mut *conn)
