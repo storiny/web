@@ -53,7 +53,6 @@ pub struct Story {
     pub description: Option<String>,
     pub splash_id: Option<String>,
     pub splash_hex: Option<String>,
-    pub doc_key: String,
     pub category: StoryCategory,
     pub license: StoryLicense,
     pub visibility: StoryVisibility,
