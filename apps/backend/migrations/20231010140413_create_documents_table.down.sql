@@ -1,1 +1,2 @@
-drop table if exists  documents;
+DROP TABLE IF EXISTS documents;
+

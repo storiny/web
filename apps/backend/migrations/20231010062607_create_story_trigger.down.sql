@@ -9,3 +9,4 @@ DROP FUNCTION IF EXISTS story_after_update_trigger_proc;
 DROP TRIGGER IF EXISTS story_delete_trigger ON stories;
 
 DROP FUNCTION IF EXISTS story_delete_trigger_proc;
+
