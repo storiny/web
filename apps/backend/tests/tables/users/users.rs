@@ -95,6 +95,50 @@ RETURNING id
     }
 
     #[sqlx::test]
+    async fn can_initialize_notification_settings_on_user_insert(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let result = insert_sample_user(&mut conn).await?;
+        assert!(result.try_get::<i64, _>("id").is_ok());
+
+        // Should insert notification settings for the new user
+        let notification_settings_result = sqlx::query(
+            r#"
+            SELECT * FROM notification_settings
+            WHERE user_id = $1
+            "#,
+        )
+        .bind(result.get::<i64, _>("id"))
+        .fetch_all(&mut *conn)
+        .await?;
+
+        assert_eq!(notification_settings_result.len(), 1);
+
+        Ok(())
+    }
+
+    #[sqlx::test]
+    async fn can_insert_account_creation_activity_on_user_insert(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let result = insert_sample_user(&mut conn).await?;
+        assert!(result.try_get::<i64, _>("id").is_ok());
+
+        // Should insert account creation activity (type=1) for the new user
+        let notification_settings_result = sqlx::query(
+            r#"
+            SELECT * FROM account_activities
+            WHERE user_id = $1 AND type = 1
+            "#,
+        )
+        .bind(result.get::<i64, _>("id"))
+        .fetch_all(&mut *conn)
+        .await?;
+
+        assert_eq!(notification_settings_result.len(), 1);
+
+        Ok(())
+    }
+
+    #[sqlx::test]
     async fn can_handle_valid_usernames(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let user = get_default_user();
@@ -2145,6 +2189,1072 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
         Ok(())
     }
 
+    // Bookmarks
+
+    #[sqlx::test(fixtures("story"))]
+    async fn can_cascade_user_soft_delete_to_bookmarks(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let user_id = (insert_sample_user(&mut conn).await?).get::<i64, _>("id");
+
+        // Insert a bookmark
+        let insert_result = sqlx::query(
+            r#"
+            INSERT INTO bookmarks(user_id, story_id)
+            VALUES ($1, $2)
+            RETURNING deleted_at
+            "#,
+        )
+        .bind(user_id)
+        .bind(2i64)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            insert_result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_none(),
+        );
+
+        // Soft-delete the user
+        sqlx::query(
+            r#"
+            UPDATE users
+            SET deleted_at = now()
+            WHERE id = $1
+            "#,
+        )
+        .bind(user_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // Bookmark should be soft-deleted
+        let result = sqlx::query(
+            r#"
+            SELECT deleted_at FROM bookmarks
+            WHERE user_id = $1 AND story_id = $2
+            "#,
+        )
+        .bind(user_id)
+        .bind(2i64)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_some()
+        );
+
+        // Restore the user
+        sqlx::query(
+            r#"
+            UPDATE users
+            SET deleted_at = NULL
+            WHERE id = $1
+            "#,
+        )
+        .bind(user_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // Bookmark should be restored
+        let result = sqlx::query(
+            r#"
+            SELECT deleted_at FROM bookmarks
+            WHERE user_id = $1 AND story_id = $2
+            "#,
+        )
+        .bind(user_id)
+        .bind(2i64)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_none()
+        );
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("story"))]
+    async fn can_soft_delete_and_restore_bookmarks_on_user_deactivation(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let user_id = (insert_sample_user(&mut conn).await?).get::<i64, _>("id");
+
+        // Insert a bookmark
+        let insert_result = sqlx::query(
+            r#"
+            INSERT INTO bookmarks(user_id, story_id)
+            VALUES ($1, $2)
+            RETURNING deleted_at
+            "#,
+        )
+        .bind(user_id)
+        .bind(2i64)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            insert_result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_none(),
+        );
+
+        // Deactivate the user
+        sqlx::query(
+            r#"
+            UPDATE users
+            SET deactivated_at = now()
+            WHERE id = $1
+            "#,
+        )
+        .bind(user_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // Bookmark should be soft-deleted
+        let result = sqlx::query(
+            r#"
+            SELECT deleted_at FROM bookmarks
+            WHERE user_id = $1 AND story_id = $2
+            "#,
+        )
+        .bind(user_id)
+        .bind(2i64)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_some()
+        );
+
+        // Activate the user
+        sqlx::query(
+            r#"
+            UPDATE users
+            SET deactivated_at = NULL
+            WHERE id = $1
+            "#,
+        )
+        .bind(user_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // Bookmark should be restored
+        let result = sqlx::query(
+            r#"
+            SELECT deleted_at FROM bookmarks
+            WHERE user_id = $1 AND story_id = $2
+            "#,
+        )
+        .bind(user_id)
+        .bind(2i64)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_none()
+        );
+
+        Ok(())
+    }
+
+    // Histories
+
+    #[sqlx::test(fixtures("story"))]
+    async fn can_cascade_user_soft_delete_to_histories(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let user_id = (insert_sample_user(&mut conn).await?).get::<i64, _>("id");
+
+        // Insert a history
+        let insert_result = sqlx::query(
+            r#"
+            INSERT INTO histories(user_id, story_id)
+            VALUES ($1, $2)
+            RETURNING deleted_at
+            "#,
+        )
+        .bind(user_id)
+        .bind(2i64)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            insert_result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_none(),
+        );
+
+        // Soft-delete the user
+        sqlx::query(
+            r#"
+            UPDATE users
+            SET deleted_at = now()
+            WHERE id = $1
+            "#,
+        )
+        .bind(user_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // History should be soft-deleted
+        let result = sqlx::query(
+            r#"
+            SELECT deleted_at FROM histories
+            WHERE user_id = $1 AND story_id = $2
+            "#,
+        )
+        .bind(user_id)
+        .bind(2i64)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_some()
+        );
+
+        // Restore the user
+        sqlx::query(
+            r#"
+            UPDATE users
+            SET deleted_at = NULL
+            WHERE id = $1
+            "#,
+        )
+        .bind(user_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // History should be restored
+        let result = sqlx::query(
+            r#"
+            SELECT deleted_at FROM histories
+            WHERE user_id = $1 AND story_id = $2
+            "#,
+        )
+        .bind(user_id)
+        .bind(2i64)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_none()
+        );
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("story"))]
+    async fn can_soft_delete_and_restore_histories_on_user_deactivation(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let user_id = (insert_sample_user(&mut conn).await?).get::<i64, _>("id");
+
+        // Insert a history
+        let insert_result = sqlx::query(
+            r#"
+            INSERT INTO histories(user_id, story_id)
+            VALUES ($1, $2)
+            RETURNING deleted_at
+            "#,
+        )
+        .bind(user_id)
+        .bind(2i64)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            insert_result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_none(),
+        );
+
+        // Deactivate the user
+        sqlx::query(
+            r#"
+            UPDATE users
+            SET deactivated_at = now()
+            WHERE id = $1
+            "#,
+        )
+        .bind(user_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // History should be soft-deleted
+        let result = sqlx::query(
+            r#"
+            SELECT deleted_at FROM histories
+            WHERE user_id = $1 AND story_id = $2
+            "#,
+        )
+        .bind(user_id)
+        .bind(2i64)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_some()
+        );
+
+        // Activate the user
+        sqlx::query(
+            r#"
+            UPDATE users
+            SET deactivated_at = NULL
+            WHERE id = $1
+            "#,
+        )
+        .bind(user_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // History should be restored
+        let result = sqlx::query(
+            r#"
+            SELECT deleted_at FROM histories
+            WHERE user_id = $1 AND story_id = $2
+            "#,
+        )
+        .bind(user_id)
+        .bind(2i64)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_none()
+        );
+
+        Ok(())
+    }
+
+    // Blocks
+
+    #[sqlx::test(fixtures("user"))]
+    async fn can_cascade_user_soft_delete_to_blocked_relations(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let user_id = (insert_sample_user(&mut conn).await?).get::<i64, _>("id");
+
+        // Get blocked by a user
+        let insert_result = sqlx::query(
+            r#"
+            INSERT INTO blocks(blocker_id, blocked_id)
+            VALUES ($1, $2)
+            RETURNING deleted_at
+            "#,
+        )
+        .bind(1i64)
+        .bind(user_id)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            insert_result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_none(),
+        );
+
+        // Soft-delete the current user
+        sqlx::query(
+            r#"
+            UPDATE users
+            SET deleted_at = now()
+            WHERE id = $1
+            "#,
+        )
+        .bind(user_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // Blocked relation should be soft-deleted
+        let result = sqlx::query(
+            r#"
+            SELECT deleted_at FROM blocks
+            WHERE blocker_id = $1 AND blocked_id = $2
+            "#,
+        )
+        .bind(1i64)
+        .bind(user_id)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_some()
+        );
+
+        // Restore the current user
+        sqlx::query(
+            r#"
+            UPDATE users
+            SET deleted_at = NULL
+            WHERE id = $1
+            "#,
+        )
+        .bind(user_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // Blocked relation should be restored
+        let result = sqlx::query(
+            r#"
+            SELECT deleted_at FROM blocks
+            WHERE blocker_id = $1 AND blocked_id = $2
+            "#,
+        )
+        .bind(1i64)
+        .bind(user_id)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_none()
+        );
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("user"))]
+    async fn can_soft_delete_and_restore_blocked_relations_on_user_deactivation(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let user_id = (insert_sample_user(&mut conn).await?).get::<i64, _>("id");
+
+        // Get blocked by a user
+        let insert_result = sqlx::query(
+            r#"
+            INSERT INTO blocks(blocker_id, blocked_id)
+            VALUES ($1, $2)
+            RETURNING deleted_at
+            "#,
+        )
+        .bind(1i64)
+        .bind(user_id)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            insert_result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_none(),
+        );
+
+        // Deactivate the current user
+        sqlx::query(
+            r#"
+            UPDATE users
+            SET deactivated_at = now()
+            WHERE id = $1
+            "#,
+        )
+        .bind(user_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // Blocked relation should be soft-deleted
+        let result = sqlx::query(
+            r#"
+            SELECT deleted_at FROM blocks
+            WHERE blocker_id = $1 AND blocked_id = $2
+            "#,
+        )
+        .bind(1i64)
+        .bind(user_id)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_some()
+        );
+
+        // Activate the current user
+        sqlx::query(
+            r#"
+            UPDATE users
+            SET deactivated_at = NULL
+            WHERE id = $1
+            "#,
+        )
+        .bind(user_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // Blocked relation should be restored
+        let result = sqlx::query(
+            r#"
+            SELECT deleted_at FROM blocks
+            WHERE blocker_id = $1 AND blocked_id = $2
+            "#,
+        )
+        .bind(1i64)
+        .bind(user_id)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_none()
+        );
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("user"))]
+    async fn can_cascade_user_soft_delete_to_blocker_relations(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let user_id = (insert_sample_user(&mut conn).await?).get::<i64, _>("id");
+
+        // Block a user
+        let insert_result = sqlx::query(
+            r#"
+            INSERT INTO blocks(blocker_id, blocked_id)
+            VALUES ($1, $2)
+            RETURNING deleted_at
+            "#,
+        )
+        .bind(user_id)
+        .bind(1i64)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            insert_result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_none(),
+        );
+
+        // Soft-delete the current user
+        sqlx::query(
+            r#"
+            UPDATE users
+            SET deleted_at = now()
+            WHERE id = $1
+            "#,
+        )
+        .bind(user_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // Blocker relation should be soft-deleted
+        let result = sqlx::query(
+            r#"
+            SELECT deleted_at FROM blocks
+            WHERE blocker_id = $1 AND blocked_id = $2
+            "#,
+        )
+        .bind(user_id)
+        .bind(1i64)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_some()
+        );
+
+        // Restore the current user
+        sqlx::query(
+            r#"
+            UPDATE users
+            SET deleted_at = NULL
+            WHERE id = $1
+            "#,
+        )
+        .bind(user_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // Blocker relation should be restored
+        let result = sqlx::query(
+            r#"
+            SELECT deleted_at FROM blocks
+            WHERE blocker_id = $1 AND blocked_id = $2
+            "#,
+        )
+        .bind(user_id)
+        .bind(1i64)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_none()
+        );
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("user"))]
+    async fn can_soft_delete_and_restore_blocker_relations_on_user_deactivation(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let user_id = (insert_sample_user(&mut conn).await?).get::<i64, _>("id");
+
+        // Block a user
+        let insert_result = sqlx::query(
+            r#"
+            INSERT INTO blocks(blocker_id, blocked_id)
+            VALUES ($1, $2)
+            RETURNING deleted_at
+            "#,
+        )
+        .bind(user_id)
+        .bind(1i64)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            insert_result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_none(),
+        );
+
+        // Deactivate the current user
+        sqlx::query(
+            r#"
+            UPDATE users
+            SET deactivated_at = now()
+            WHERE id = $1
+            "#,
+        )
+        .bind(user_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // Blocker relation should be soft-deleted
+        let result = sqlx::query(
+            r#"
+            SELECT deleted_at FROM blocks
+            WHERE blocker_id = $1 AND blocked_id = $2
+            "#,
+        )
+        .bind(user_id)
+        .bind(1i64)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_some()
+        );
+
+        // Activate the current user
+        sqlx::query(
+            r#"
+            UPDATE users
+            SET deactivated_at = NULL
+            WHERE id = $1
+            "#,
+        )
+        .bind(user_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // Blocker relation should be restored
+        let result = sqlx::query(
+            r#"
+            SELECT deleted_at FROM blocks
+            WHERE blocker_id = $1 AND blocked_id = $2
+            "#,
+        )
+        .bind(user_id)
+        .bind(1i64)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_none()
+        );
+
+        Ok(())
+    }
+
+    // Mutes
+
+    #[sqlx::test(fixtures("user"))]
+    async fn can_cascade_user_soft_delete_to_muted_relations(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let user_id = (insert_sample_user(&mut conn).await?).get::<i64, _>("id");
+
+        // Get muted by a user
+        let insert_result = sqlx::query(
+            r#"
+            INSERT INTO mutes(muter_id, muted_id)
+            VALUES ($1, $2)
+            RETURNING deleted_at
+            "#,
+        )
+        .bind(1i64)
+        .bind(user_id)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            insert_result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_none(),
+        );
+
+        // Soft-delete the current user
+        sqlx::query(
+            r#"
+            UPDATE users
+            SET deleted_at = now()
+            WHERE id = $1
+            "#,
+        )
+        .bind(user_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // Muted relation should be soft-deleted
+        let result = sqlx::query(
+            r#"
+            SELECT deleted_at FROM mutes
+            WHERE muter_id = $1 AND muted_id = $2
+            "#,
+        )
+        .bind(1i64)
+        .bind(user_id)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_some()
+        );
+
+        // Restore the current user
+        sqlx::query(
+            r#"
+            UPDATE users
+            SET deleted_at = NULL
+            WHERE id = $1
+            "#,
+        )
+        .bind(user_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // Muted relation should be restored
+        let result = sqlx::query(
+            r#"
+            SELECT deleted_at FROM mutes
+            WHERE muter_id = $1 AND muted_id = $2
+            "#,
+        )
+        .bind(1i64)
+        .bind(user_id)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_none()
+        );
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("user"))]
+    async fn can_soft_delete_and_restore_muted_relations_on_user_deactivation(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let user_id = (insert_sample_user(&mut conn).await?).get::<i64, _>("id");
+
+        // Get muted by a user
+        let insert_result = sqlx::query(
+            r#"
+            INSERT INTO mutes(muter_id, muted_id)
+            VALUES ($1, $2)
+            RETURNING deleted_at
+            "#,
+        )
+        .bind(1i64)
+        .bind(user_id)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            insert_result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_none(),
+        );
+
+        // Deactivate the current user
+        sqlx::query(
+            r#"
+            UPDATE users
+            SET deactivated_at = now()
+            WHERE id = $1
+            "#,
+        )
+        .bind(user_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // Muted relation should be soft-deleted
+        let result = sqlx::query(
+            r#"
+            SELECT deleted_at FROM mutes
+            WHERE muter_id = $1 AND muted_id = $2
+            "#,
+        )
+        .bind(1i64)
+        .bind(user_id)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_some()
+        );
+
+        // Activate the current user
+        sqlx::query(
+            r#"
+            UPDATE users
+            SET deactivated_at = NULL
+            WHERE id = $1
+            "#,
+        )
+        .bind(user_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // Muted relation should be restored
+        let result = sqlx::query(
+            r#"
+            SELECT deleted_at FROM mutes
+            WHERE muter_id = $1 AND muted_id = $2
+            "#,
+        )
+        .bind(1i64)
+        .bind(user_id)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_none()
+        );
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("user"))]
+    async fn can_cascade_user_soft_delete_to_muter_relations(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let user_id = (insert_sample_user(&mut conn).await?).get::<i64, _>("id");
+
+        // Mute a user
+        let insert_result = sqlx::query(
+            r#"
+            INSERT INTO mutes(muter_id, muted_id)
+            VALUES ($1, $2)
+            RETURNING deleted_at
+            "#,
+        )
+        .bind(user_id)
+        .bind(1i64)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            insert_result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_none(),
+        );
+
+        // Soft-delete the current user
+        sqlx::query(
+            r#"
+            UPDATE users
+            SET deleted_at = now()
+            WHERE id = $1
+            "#,
+        )
+        .bind(user_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // Muter relation should be soft-deleted
+        let result = sqlx::query(
+            r#"
+            SELECT deleted_at FROM mutes
+            WHERE muter_id = $1 AND muted_id = $2
+            "#,
+        )
+        .bind(user_id)
+        .bind(1i64)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_some()
+        );
+
+        // Restore the current user
+        sqlx::query(
+            r#"
+            UPDATE users
+            SET deleted_at = NULL
+            WHERE id = $1
+            "#,
+        )
+        .bind(user_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // Muter relation should be restored
+        let result = sqlx::query(
+            r#"
+            SELECT deleted_at FROM mutes
+            WHERE muter_id = $1 AND muted_id = $2
+            "#,
+        )
+        .bind(user_id)
+        .bind(1i64)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_none()
+        );
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("user"))]
+    async fn can_soft_delete_and_restore_muter_relations_on_user_deactivation(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let user_id = (insert_sample_user(&mut conn).await?).get::<i64, _>("id");
+
+        // Mute a user
+        let insert_result = sqlx::query(
+            r#"
+            INSERT INTO mutes(muter_id, muted_id)
+            VALUES ($1, $2)
+            RETURNING deleted_at
+            "#,
+        )
+        .bind(user_id)
+        .bind(1i64)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            insert_result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_none(),
+        );
+
+        // Deactivate the current user
+        sqlx::query(
+            r#"
+            UPDATE users
+            SET deactivated_at = now()
+            WHERE id = $1
+            "#,
+        )
+        .bind(user_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // Muter relation should be soft-deleted
+        let result = sqlx::query(
+            r#"
+            SELECT deleted_at FROM mutes
+            WHERE muter_id = $1 AND muted_id = $2
+            "#,
+        )
+        .bind(user_id)
+        .bind(1i64)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_some()
+        );
+
+        // Activate the current user
+        sqlx::query(
+            r#"
+            UPDATE users
+            SET deactivated_at = NULL
+            WHERE id = $1
+            "#,
+        )
+        .bind(user_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // Muter relation should be restored
+        let result = sqlx::query(
+            r#"
+            SELECT deleted_at FROM mutes
+            WHERE muter_id = $1 AND muted_id = $2
+            "#,
+        )
+        .bind(user_id)
+        .bind(1i64)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_none()
+        );
+
+        Ok(())
+    }
+
+    // Notifications
+
     #[sqlx::test]
     async fn can_delete_transmitted_notifications_on_user_soft_delete(
         pool: PgPool,
@@ -2460,6 +3570,110 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
     }
 
     // Misc
+
+    #[sqlx::test]
+    async fn should_not_delete_assets_when_user_is_soft_deleted(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let user_id = (insert_sample_user(&mut conn).await?).get::<i64, _>("id");
+
+        // Insert an asset
+        let insert_result = sqlx::query(
+            r#"
+            INSERT INTO assets(key, hex, height, width, user_id)
+            VALUES ($1, $2, $3, $4, $5)
+            RETURNING id
+            "#,
+        )
+        .bind("sample_key".to_string())
+        .bind("000000".to_string())
+        .bind(0)
+        .bind(0)
+        .bind(user_id)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(insert_result.try_get::<i64, _>("id").is_ok());
+
+        // Soft-delete the user
+        sqlx::query(
+            r#"
+            UPDATE users
+            SET deleted_at = now()
+            WHERE id = $1
+            "#,
+        )
+        .bind(user_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // Asset should not be deleted
+        let result = sqlx::query(
+            r#"
+            SELECT user_id FROM assets
+            WHERE id = $1
+            "#,
+        )
+        .bind(insert_result.get::<i64, _>("id"))
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert_eq!(result.get::<Option<i64>, _>("user_id"), Some(user_id));
+
+        Ok(())
+    }
+
+    #[sqlx::test]
+    async fn should_not_delete_assets_when_user_is_deactivated(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let user_id = (insert_sample_user(&mut conn).await?).get::<i64, _>("id");
+
+        // Insert an asset
+        let insert_result = sqlx::query(
+            r#"
+            INSERT INTO assets(key, hex, height, width, user_id)
+            VALUES ($1, $2, $3, $4, $5)
+            RETURNING id
+            "#,
+        )
+        .bind("sample_key".to_string())
+        .bind("000000".to_string())
+        .bind(0)
+        .bind(0)
+        .bind(user_id)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(insert_result.try_get::<i64, _>("id").is_ok());
+
+        // Deactivate the user
+        sqlx::query(
+            r#"
+            UPDATE users
+            SET deactivated_at = now()
+            WHERE id = $1
+            "#,
+        )
+        .bind(user_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // Asset should not be deleted
+        let result = sqlx::query(
+            r#"
+            SELECT user_id FROM assets
+            WHERE id = $1
+            "#,
+        )
+        .bind(insert_result.get::<i64, _>("id"))
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert_eq!(result.get::<Option<i64>, _>("user_id"), Some(user_id));
+
+        Ok(())
+    }
+
+    //
 
     #[sqlx::test(fixtures("story"))]
     async fn should_not_restore_comments_from_deleted_stories_when_cascading_user(
@@ -5829,6 +7043,538 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
 
     //
 
+    #[sqlx::test(fixtures("story"))]
+    async fn should_not_restore_bookmarks_from_deleted_stories_when_cascading_user(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let user_id = (insert_sample_user(&mut conn).await?).get::<i64, _>("id");
+
+        // Insert a bookmark
+        let result = sqlx::query(
+            r#"
+            INSERT INTO bookmarks(user_id, story_id)
+            VALUES ($1, $2)
+            RETURNING deleted_at
+            "#,
+        )
+        .bind(user_id)
+        .bind(2i64)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        // Bookmark should not be deleted initially
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_none(),
+        );
+
+        // Soft-delete the user
+        sqlx::query(
+            r#"
+            UPDATE users
+            SET deleted_at = now()
+            WHERE id = $1
+            "#,
+        )
+        .bind(user_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // Soft-delete the story
+        sqlx::query(
+            r#"
+            UPDATE stories
+            SET deleted_at = now()
+            WHERE id = $1
+            "#,
+        )
+        .bind(2i64)
+        .execute(&mut *conn)
+        .await?;
+
+        // Bookmark should be soft-deleted
+        let result = sqlx::query(
+            r#"
+            SELECT deleted_at FROM bookmarks
+            WHERE user_id = $1 AND story_id = $2
+            "#,
+        )
+        .bind(user_id)
+        .bind(2i64)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_some()
+        );
+
+        // Restore the user
+        sqlx::query(
+            r#"
+            UPDATE users
+            SET deleted_at = NULL
+            WHERE id = $1
+            "#,
+        )
+        .bind(user_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // Bookmark should still be soft-deleted
+        let result = sqlx::query(
+            r#"
+            SELECT deleted_at FROM bookmarks
+            WHERE user_id = $1 AND story_id = $2
+            "#,
+        )
+        .bind(user_id)
+        .bind(2i64)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_some()
+        );
+
+        // TODO: Uncomment once story triggers are implemented
+        // // Restore the story
+        // sqlx::query(
+        //     r#"
+        //     UPDATE stories
+        //     SET deleted_at = NULL
+        //     WHERE id = $1
+        //     "#,
+        // )
+        // .bind(2i64)
+        // .execute(&mut *conn)
+        // .await?;
+        //
+        // // Bookmark should be restored
+        // let result = sqlx::query(
+        //     r#"
+        //     SELECT deleted_at FROM bookmarks
+        //     WHERE user_id = $1 AND story_id = $2
+        //     "#,
+        // )
+        // .bind(user_id).bind(2i64)
+        // .fetch_one(&mut *conn)
+        // .await?;
+        //
+        // assert!(
+        //     result
+        //         .get::<Option<OffsetDateTime>, _>("deleted_at")
+        //         .is_none()
+        // );
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("story"))]
+    async fn should_not_restore_bookmarks_from_deleted_stories_when_activating_user(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let user_id = (insert_sample_user(&mut conn).await?).get::<i64, _>("id");
+
+        // Insert a bookmark
+        let result = sqlx::query(
+            r#"
+            INSERT INTO bookmarks(user_id, story_id)
+            VALUES ($1, $2)
+            RETURNING deleted_at
+            "#,
+        )
+        .bind(user_id)
+        .bind(2i64)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        // Bookmark should not be deleted initially
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_none(),
+        );
+
+        // Deactivate the user
+        sqlx::query(
+            r#"
+            UPDATE users
+            SET deactivated_at = now()
+            WHERE id = $1
+            "#,
+        )
+        .bind(user_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // Soft-delete the story
+        sqlx::query(
+            r#"
+            UPDATE stories
+            SET deleted_at = now()
+            WHERE id = $1
+            "#,
+        )
+        .bind(2i64)
+        .execute(&mut *conn)
+        .await?;
+
+        // Bookmark should be soft-deleted
+        let result = sqlx::query(
+            r#"
+            SELECT deleted_at FROM bookmarks
+            WHERE user_id = $1 AND story_id = $2
+            "#,
+        )
+        .bind(user_id)
+        .bind(2i64)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_some()
+        );
+
+        // Activate the user
+        sqlx::query(
+            r#"
+            UPDATE users
+            SET deactivated_at = NULL
+            WHERE id = $1
+            "#,
+        )
+        .bind(user_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // Bookmark should still be soft-deleted
+        let result = sqlx::query(
+            r#"
+            SELECT deleted_at FROM bookmarks
+            WHERE user_id = $1 AND story_id = $2
+            "#,
+        )
+        .bind(user_id)
+        .bind(2i64)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_some()
+        );
+
+        // TODO: Uncomment once story triggers are implemented
+        // // Restore the story
+        // sqlx::query(
+        //     r#"
+        //     UPDATE stories
+        //     SET deleted_at = NULL
+        //     WHERE id = $1
+        //     "#,
+        // )
+        // .bind(2i64)
+        // .execute(&mut *conn)
+        // .await?;
+        //
+        // // Bookmark should be restored
+        // let result = sqlx::query(
+        //     r#"
+        //     SELECT deleted_at FROM bookmarks
+        //     WHERE user_id = $1 AND story_id = $2
+        //     "#,
+        // )
+        // .bind(user_id).bind(2i64)
+        // .fetch_one(&mut *conn)
+        // .await?;
+        //
+        // assert!(
+        //     result
+        //         .get::<Option<OffsetDateTime>, _>("deleted_at")
+        //         .is_none()
+        // );
+
+        Ok(())
+    }
+
+    //
+
+    #[sqlx::test(fixtures("story"))]
+    async fn should_not_restore_histories_from_deleted_stories_when_cascading_user(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let user_id = (insert_sample_user(&mut conn).await?).get::<i64, _>("id");
+
+        // Insert a history
+        let result = sqlx::query(
+            r#"
+            INSERT INTO histories(user_id, story_id)
+            VALUES ($1, $2)
+            RETURNING deleted_at
+            "#,
+        )
+        .bind(user_id)
+        .bind(2i64)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        // History should not be deleted initially
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_none(),
+        );
+
+        // Soft-delete the user
+        sqlx::query(
+            r#"
+            UPDATE users
+            SET deleted_at = now()
+            WHERE id = $1
+            "#,
+        )
+        .bind(user_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // Soft-delete the story
+        sqlx::query(
+            r#"
+            UPDATE stories
+            SET deleted_at = now()
+            WHERE id = $1
+            "#,
+        )
+        .bind(2i64)
+        .execute(&mut *conn)
+        .await?;
+
+        // History should be soft-deleted
+        let result = sqlx::query(
+            r#"
+            SELECT deleted_at FROM histories
+            WHERE user_id = $1 AND story_id = $2
+            "#,
+        )
+        .bind(user_id)
+        .bind(2i64)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_some()
+        );
+
+        // Restore the user
+        sqlx::query(
+            r#"
+            UPDATE users
+            SET deleted_at = NULL
+            WHERE id = $1
+            "#,
+        )
+        .bind(user_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // History should still be soft-deleted
+        let result = sqlx::query(
+            r#"
+            SELECT deleted_at FROM histories
+            WHERE user_id = $1 AND story_id = $2
+            "#,
+        )
+        .bind(user_id)
+        .bind(2i64)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_some()
+        );
+
+        // TODO: Uncomment once story triggers are implemented
+        // // Restore the story
+        // sqlx::query(
+        //     r#"
+        //     UPDATE stories
+        //     SET deleted_at = NULL
+        //     WHERE id = $1
+        //     "#,
+        // )
+        // .bind(2i64)
+        // .execute(&mut *conn)
+        // .await?;
+        //
+        // // History should be restored
+        // let result = sqlx::query(
+        //     r#"
+        //     SELECT deleted_at FROM histories
+        //     WHERE user_id = $1 AND story_id = $2
+        //     "#,
+        // )
+        // .bind(user_id).bind(2i64)
+        // .fetch_one(&mut *conn)
+        // .await?;
+        //
+        // assert!(
+        //     result
+        //         .get::<Option<OffsetDateTime>, _>("deleted_at")
+        //         .is_none()
+        // );
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("story"))]
+    async fn should_not_restore_histories_from_deleted_stories_when_activating_user(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let user_id = (insert_sample_user(&mut conn).await?).get::<i64, _>("id");
+
+        // Insert a history
+        let result = sqlx::query(
+            r#"
+            INSERT INTO histories(user_id, story_id)
+            VALUES ($1, $2)
+            RETURNING deleted_at
+            "#,
+        )
+        .bind(user_id)
+        .bind(2i64)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        // History should not be deleted initially
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_none(),
+        );
+
+        // Deactivate the user
+        sqlx::query(
+            r#"
+            UPDATE users
+            SET deactivated_at = now()
+            WHERE id = $1
+            "#,
+        )
+        .bind(user_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // Soft-delete the story
+        sqlx::query(
+            r#"
+            UPDATE stories
+            SET deleted_at = now()
+            WHERE id = $1
+            "#,
+        )
+        .bind(2i64)
+        .execute(&mut *conn)
+        .await?;
+
+        // History should be soft-deleted
+        let result = sqlx::query(
+            r#"
+            SELECT deleted_at FROM histories
+            WHERE user_id = $1 AND story_id = $2
+            "#,
+        )
+        .bind(user_id)
+        .bind(2i64)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_some()
+        );
+
+        // Activate the user
+        sqlx::query(
+            r#"
+            UPDATE users
+            SET deactivated_at = NULL
+            WHERE id = $1
+            "#,
+        )
+        .bind(user_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // History should still be soft-deleted
+        let result = sqlx::query(
+            r#"
+            SELECT deleted_at FROM histories
+            WHERE user_id = $1 AND story_id = $2
+            "#,
+        )
+        .bind(user_id)
+        .bind(2i64)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_some()
+        );
+
+        // TODO: Uncomment once story triggers are implemented
+        // // Restore the story
+        // sqlx::query(
+        //     r#"
+        //     UPDATE stories
+        //     SET deleted_at = NULL
+        //     WHERE id = $1
+        //     "#,
+        // )
+        // .bind(2i64)
+        // .execute(&mut *conn)
+        // .await?;
+        //
+        // // History should be restored
+        // let result = sqlx::query(
+        //     r#"
+        //     SELECT deleted_at FROM histories
+        //     WHERE user_id = $1 AND story_id = $2
+        //     "#,
+        // )
+        // .bind(user_id).bind(2i64)
+        // .fetch_one(&mut *conn)
+        // .await?;
+        //
+        // assert!(
+        //     result
+        //         .get::<Option<OffsetDateTime>, _>("deleted_at")
+        //         .is_none()
+        // );
+
+        Ok(())
+    }
+
+    //
+
     #[sqlx::test]
     async fn can_restore_self_comments_from_self_stories_when_cascading_user(
         pool: PgPool,
@@ -7418,6 +9164,104 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
         Ok(())
     }
 
+    #[sqlx::test(fixtures("story"))]
+    async fn can_delete_bookmark_on_user_hard_delete(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let user_id = (insert_sample_user(&mut conn).await?).get::<i64, _>("id");
+
+        // Insert a bookmark
+        let insert_result = sqlx::query(
+            r#"
+            INSERT INTO bookmarks(user_id, story_id)
+            VALUES ($1, $2)
+            "#,
+        )
+        .bind(user_id)
+        .bind(2i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(insert_result.rows_affected(), 1);
+
+        // Delete the current user
+        sqlx::query(
+            r#"
+            DELETE FROM users
+            WHERE id = $1
+            "#,
+        )
+        .bind(user_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // Bookmark should get deleted
+        let result = sqlx::query(
+            r#"
+            SELECT EXISTS(
+                SELECT 1 FROM bookmarks
+                WHERE user_id = $1 AND story_id = $2
+            )
+            "#,
+        )
+        .bind(user_id)
+        .bind(2i64)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert_eq!(result.get::<bool, _>("exists"), false);
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("story"))]
+    async fn can_delete_history_on_user_hard_delete(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let user_id = (insert_sample_user(&mut conn).await?).get::<i64, _>("id");
+
+        // Insert a history
+        let insert_result = sqlx::query(
+            r#"
+            INSERT INTO histories(user_id, story_id)
+            VALUES ($1, $2)
+            "#,
+        )
+        .bind(user_id)
+        .bind(2i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(insert_result.rows_affected(), 1);
+
+        // Delete the current user
+        sqlx::query(
+            r#"
+            DELETE FROM users
+            WHERE id = $1
+            "#,
+        )
+        .bind(user_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // History should get deleted
+        let result = sqlx::query(
+            r#"
+            SELECT EXISTS(
+                SELECT 1 FROM histories
+                WHERE user_id = $1 AND story_id = $2
+            )
+            "#,
+        )
+        .bind(user_id)
+        .bind(2i64)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert_eq!(result.get::<bool, _>("exists"), false);
+
+        Ok(())
+    }
+
     #[sqlx::test(fixtures("tag"))]
     async fn can_delete_followed_tag_relation_on_user_hard_delete(
         pool: PgPool,
@@ -7461,6 +9305,202 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
         )
         .bind(1i64)
         .bind(user_id)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert_eq!(result.get::<bool, _>("exists"), false);
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("user"))]
+    async fn can_delete_blocked_relation_on_user_hard_delete(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let user_id = (insert_sample_user(&mut conn).await?).get::<i64, _>("id");
+
+        // Get blocked by a user
+        let insert_result = sqlx::query(
+            r#"
+            INSERT INTO blocks(blocker_id, blocked_id)
+            VALUES ($1, $2)
+            "#,
+        )
+        .bind(1i64)
+        .bind(user_id)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(insert_result.rows_affected(), 1);
+
+        // Delete the current user
+        sqlx::query(
+            r#"
+            DELETE FROM users
+            WHERE id = $1
+            "#,
+        )
+        .bind(user_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // Blocked relation should get deleted
+        let result = sqlx::query(
+            r#"
+            SELECT EXISTS(
+                SELECT 1 FROM blocks
+                WHERE blocker_id = $1 AND blocked_id = $2
+            )
+            "#,
+        )
+        .bind(1i64)
+        .bind(user_id)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert_eq!(result.get::<bool, _>("exists"), false);
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("user"))]
+    async fn can_delete_blocker_relation_on_user_hard_delete(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let user_id = (insert_sample_user(&mut conn).await?).get::<i64, _>("id");
+
+        // Block a user
+        let insert_result = sqlx::query(
+            r#"
+            INSERT INTO blocks(blocker_id, blocked_id)
+            VALUES ($1, $2)
+            "#,
+        )
+        .bind(user_id)
+        .bind(1i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(insert_result.rows_affected(), 1);
+
+        // Delete the current user
+        sqlx::query(
+            r#"
+            DELETE FROM users
+            WHERE id = $1
+            "#,
+        )
+        .bind(user_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // Blocker relation should get deleted
+        let result = sqlx::query(
+            r#"
+            SELECT EXISTS(
+                SELECT 1 FROM blocks
+                WHERE blocker_id = $1 AND blocked_id = $2
+            )
+            "#,
+        )
+        .bind(user_id)
+        .bind(1i64)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert_eq!(result.get::<bool, _>("exists"), false);
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("user"))]
+    async fn can_delete_muted_relation_on_user_hard_delete(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let user_id = (insert_sample_user(&mut conn).await?).get::<i64, _>("id");
+
+        // Get muted by a user
+        let insert_result = sqlx::query(
+            r#"
+            INSERT INTO mutes(muter_id, muted_id)
+            VALUES ($1, $2)
+            "#,
+        )
+        .bind(1i64)
+        .bind(user_id)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(insert_result.rows_affected(), 1);
+
+        // Delete the current user
+        sqlx::query(
+            r#"
+            DELETE FROM users
+            WHERE id = $1
+            "#,
+        )
+        .bind(user_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // Muted relation should get deleted
+        let result = sqlx::query(
+            r#"
+            SELECT EXISTS(
+                SELECT 1 FROM mutes
+                WHERE muter_id = $1 AND muted_id = $2
+            )
+            "#,
+        )
+        .bind(1i64)
+        .bind(user_id)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert_eq!(result.get::<bool, _>("exists"), false);
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("user"))]
+    async fn can_delete_muter_relation_on_user_hard_delete(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let user_id = (insert_sample_user(&mut conn).await?).get::<i64, _>("id");
+
+        // Mute a user
+        let insert_result = sqlx::query(
+            r#"
+            INSERT INTO mutes(muter_id, muted_id)
+            VALUES ($1, $2)
+            "#,
+        )
+        .bind(user_id)
+        .bind(1i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(insert_result.rows_affected(), 1);
+
+        // Delete the current user
+        sqlx::query(
+            r#"
+            DELETE FROM users
+            WHERE id = $1
+            "#,
+        )
+        .bind(user_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // Muter relation should get deleted
+        let result = sqlx::query(
+            r#"
+            SELECT EXISTS(
+                SELECT 1 FROM mutes
+                WHERE muter_id = $1 AND muted_id = $2
+            )
+            "#,
+        )
+        .bind(user_id)
+        .bind(1i64)
         .fetch_one(&mut *conn)
         .await?;
 
@@ -7615,6 +9655,138 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
             "#,
         )
         .bind(1i64)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert_eq!(result.get::<bool, _>("exists"), false);
+
+        Ok(())
+    }
+
+    #[sqlx::test]
+    async fn can_delete_notification_settings_on_user_hard_delete(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let user_id = (insert_sample_user(&mut conn).await?).get::<i64, _>("id");
+
+        // Delete the current user
+        sqlx::query(
+            r#"
+            DELETE FROM users
+            WHERE id = $1
+            "#,
+        )
+        .bind(user_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // Notification settings should get deleted
+        let result = sqlx::query(
+            r#"
+            SELECT EXISTS(
+                SELECT 1 FROM notification_settings
+                WHERE user_id = $1
+            )
+            "#,
+        )
+        .bind(user_id)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert_eq!(result.get::<bool, _>("exists"), false);
+
+        Ok(())
+    }
+
+    #[sqlx::test]
+    async fn can_delete_connections_on_user_hard_delete(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let user_id = (insert_sample_user(&mut conn).await?).get::<i64, _>("id");
+
+        // Insert a connection
+        let insert_result = sqlx::query(
+            r#"
+            INSERT INTO connections(provider, provider_identifier, user_id)
+            VALUES (0, 'sample', $1)
+            RETURNING id
+            "#,
+        )
+        .bind(user_id)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(insert_result.try_get::<i64, _>("id").is_ok());
+
+        // Delete the current user
+        sqlx::query(
+            r#"
+            DELETE FROM users
+            WHERE id = $1
+            "#,
+        )
+        .bind(user_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // Connection should get deleted
+        let result = sqlx::query(
+            r#"
+            SELECT EXISTS(
+                SELECT 1 FROM connections
+                WHERE id = $1
+            )
+            "#,
+        )
+        .bind(insert_result.get::<i64, _>("id"))
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert_eq!(result.get::<bool, _>("exists"), false);
+
+        Ok(())
+    }
+
+    #[sqlx::test]
+    async fn can_delete_account_activities_on_user_hard_delete(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let user_id = (insert_sample_user(&mut conn).await?).get::<i64, _>("id");
+
+        // Insert an activity
+        let insert_result = sqlx::query(
+            r#"
+            INSERT INTO account_activities(type, user_id)
+            VALUES (0, $1)
+            RETURNING id 
+            "#,
+        )
+        .bind(user_id)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(insert_result.try_get::<i64, _>("id").is_ok());
+
+        // Delete the current user
+        sqlx::query(
+            r#"
+            DELETE FROM users
+            WHERE id = $1
+            "#,
+        )
+        .bind(user_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // Activity should get deleted
+        let result = sqlx::query(
+            r#"
+            SELECT EXISTS(
+                SELECT 1 FROM account_activities
+                WHERE id = $1
+            )
+            "#,
+        )
+        .bind(insert_result.get::<i64, _>("id"))
         .fetch_one(&mut *conn)
         .await?;
 

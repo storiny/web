@@ -1,3 +1,27 @@
+-- Insert
+--
+CREATE OR REPLACE FUNCTION user_insert_trigger_proc()
+    RETURNS TRIGGER
+    AS $$
+BEGIN
+    -- Insert a row into `notification_settings`
+    INSERT INTO notification_settings(user_id)
+        VALUES(NEW.id);
+    -- Insert account created activity
+    INSERT INTO account_activities(type, user_id)
+        VALUES(1, NEW.id);
+    -- 1 for account creation
+    --
+    RETURN NEW;
+END;
+$$
+LANGUAGE plpgsql;
+
+CREATE OR REPLACE TRIGGER user_insert_trigger
+    AFTER INSERT ON users
+    FOR EACH ROW
+    EXECUTE PROCEDURE user_insert_trigger_proc();
+
 -- Update
 --
 CREATE OR REPLACE FUNCTION user_update_trigger_proc()
@@ -88,6 +112,44 @@ BEGIN
         WHERE
             deleted_at IS NULL
             AND user_id = NEW.id;
+        --
+        -- Soft-delete bookmarks
+        UPDATE
+            bookmarks
+        SET
+            deleted_at = now()
+        WHERE
+            deleted_at IS NULL
+            AND user_id = NEW.id;
+        --
+        -- Soft-delete histories
+        UPDATE
+            histories
+        SET
+            deleted_at = now()
+        WHERE
+            deleted_at IS NULL
+            AND user_id = NEW.id;
+        --
+        -- Soft-delete blocks
+        UPDATE
+            blocks
+        SET
+            deleted_at = now()
+        WHERE
+            deleted_at IS NULL
+            AND(blocker_id = NEW.id
+                OR blocked_id = NEW.id);
+        --
+        -- Soft-delete mutes
+        UPDATE
+            mutes
+        SET
+            deleted_at = now()
+        WHERE
+            deleted_at IS NULL
+            AND(muter_id = NEW.id
+                OR muted_id = NEW.id);
         --
         -- Delete notifications
         DELETE FROM notifications
@@ -249,7 +311,7 @@ BEGIN
                     r.id = rl.reply_id
                     AND r.deleted_at IS NULL);
         --
-        -- Restore tag follows
+        -- Restore followed tags
         UPDATE
             tag_followers AS tf
         SET
@@ -264,6 +326,95 @@ BEGIN
                     tags AS t
                 WHERE
                     t.id = tf.tag_id);
+        --
+        -- Restore bookmarks
+        UPDATE
+            bookmarks AS b
+        SET
+            deleted_at = NULL
+        WHERE
+            deleted_at IS NOT NULL
+            AND b.user_id = NEW.id
+            AND EXISTS(
+                SELECT
+                    1
+                FROM
+                    stories AS s
+                WHERE
+                    s.id = b.story_id
+                    AND s.deleted_at IS NULL);
+        --
+        -- Restore histories
+        UPDATE
+            histories AS h
+        SET
+            deleted_at = NULL
+        WHERE
+            deleted_at IS NOT NULL
+            AND h.user_id = NEW.id
+            AND EXISTS(
+                SELECT
+                    1
+                FROM
+                    stories AS s
+                WHERE
+                    s.id = h.story_id
+                    AND s.deleted_at IS NULL);
+        --
+        -- Restore blocks
+        UPDATE
+            blocks AS b
+        SET
+            deleted_at = NULL
+        WHERE
+            deleted_at IS NOT NULL
+            AND((b.blocker_id = NEW.id
+                    AND EXISTS(
+                        SELECT
+                            1
+                        FROM
+                            users AS u
+                        WHERE
+                            u.id = b.blocked_id
+                            AND u.deleted_at IS NULL
+                            AND u.deactivated_at IS NULL))
+                    OR(b.blocked_id = NEW.id
+                        AND EXISTS(
+                            SELECT
+                                1
+                            FROM
+                                users AS u
+                            WHERE
+                                u.id = b.blocker_id
+                                AND u.deleted_at IS NULL
+                                AND u.deactivated_at IS NULL)));
+        -- Restore mutes
+        UPDATE
+            mutes AS m
+        SET
+            deleted_at = NULL
+        WHERE
+            deleted_at IS NOT NULL
+            AND((m.muter_id = NEW.id
+                    AND EXISTS(
+                        SELECT
+                            1
+                        FROM
+                            users AS u
+                        WHERE
+                            u.id = m.muted_id
+                            AND u.deleted_at IS NULL
+                            AND u.deactivated_at IS NULL))
+                    OR(m.muted_id = NEW.id
+                        AND EXISTS(
+                            SELECT
+                                1
+                            FROM
+                                users AS u
+                            WHERE
+                                u.id = m.muter_id
+                                AND u.deleted_at IS NULL
+                                AND u.deactivated_at IS NULL)));
     END IF;
     --
     RETURN NEW;

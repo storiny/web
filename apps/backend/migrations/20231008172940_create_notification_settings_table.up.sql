@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS notification_settings(
-    user_id BIGINT UNIQUE REFERENCES users(id) ON DELETE CASCADE, -- Allow only one row per user
+    user_id BIGINT UNIQUE NOT NULL REFERENCES users(id) ON DELETE CASCADE, -- Allow only one row per user
     -- Push notifications
     push_features_and_updates BOOL NOT NULL DEFAULT TRUE,
     push_stories BOOL NOT NULL DEFAULT TRUE,
