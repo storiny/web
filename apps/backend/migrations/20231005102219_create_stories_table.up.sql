@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS stories(
     word_count unsigned_int32 NOT NULL DEFAULT 0,
     read_count unsigned_int64 NOT NULL DEFAULT 0,
     like_count unsigned_int64 NOT NULL DEFAULT 0,
-    comment_count unsigned_int64 NOT NULL DEFAULT 0,
+    comment_count unsigned_int32 NOT NULL DEFAULT 0,
     -- Settings
     disable_public_revision_history BOOL NOT NULL DEFAULT FALSE,
     disable_comments BOOL NOT NULL DEFAULT FALSE,

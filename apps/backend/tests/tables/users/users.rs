@@ -245,12 +245,11 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
         // Insert a story
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO stories(title, user_id)
-            VALUES ($1, $2)
+            INSERT INTO stories(user_id)
+            VALUES ($1)
             RETURNING id, deleted_at
             "#,
         )
-        .bind("Sample story".to_string())
         .bind(user_id)
         .fetch_one(&mut *conn)
         .await?;
@@ -333,12 +332,11 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
         // Insert a story
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO stories(title, user_id)
-            VALUES ($1, $2)
+            INSERT INTO stories(user_id)
+            VALUES ($1)
             RETURNING id, deleted_at
             "#,
         )
-        .bind("Sample story".to_string())
         .bind(user_id)
         .fetch_one(&mut *conn)
         .await?;
@@ -4036,35 +4034,34 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
                 .is_some()
         );
 
-        // TODO: Uncomment once comment triggers are implemented
-        // // Restore the comment
-        // sqlx::query(
-        //     r#"
-        //     UPDATE comments
-        //     SET deleted_at = NULL
-        //     WHERE id = $1
-        //     "#,
-        // )
-        // .bind(3i64)
-        // .execute(&mut *conn)
-        // .await?;
-        //
-        // // Reply should be restored
-        // let result = sqlx::query(
-        //     r#"
-        //     SELECT deleted_at FROM replies
-        //     WHERE id = $1
-        //     "#,
-        // )
-        // .bind(reply_id)
-        // .fetch_one(&mut *conn)
-        // .await?;
-        //
-        // assert!(
-        //     result
-        //         .get::<Option<OffsetDateTime>, _>("deleted_at")
-        //         .is_none()
-        // );
+        // Restore the comment
+        sqlx::query(
+            r#"
+            UPDATE comments
+            SET deleted_at = NULL
+            WHERE id = $1
+            "#,
+        )
+        .bind(3i64)
+        .execute(&mut *conn)
+        .await?;
+
+        // Reply should be restored
+        let result = sqlx::query(
+            r#"
+            SELECT deleted_at FROM replies
+            WHERE id = $1
+            "#,
+        )
+        .bind(reply_id)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_none()
+        );
 
         Ok(())
     }
@@ -4168,35 +4165,34 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
                 .is_some()
         );
 
-        // TODO: Uncomment once comment triggers are implemented
-        // // Restore the comment
-        // sqlx::query(
-        //     r#"
-        //     UPDATE comments
-        //     SET deleted_at = NULL
-        //     WHERE id = $1
-        //     "#,
-        // )
-        // .bind(3i64)
-        // .execute(&mut *conn)
-        // .await?;
-        //
-        // // Reply should be restored
-        // let result = sqlx::query(
-        //     r#"
-        //     SELECT deleted_at FROM replies
-        //     WHERE id = $1
-        //     "#,
-        // )
-        // .bind(reply_id)
-        // .fetch_one(&mut *conn)
-        // .await?;
-        //
-        // assert!(
-        //     result
-        //         .get::<Option<OffsetDateTime>, _>("deleted_at")
-        //         .is_none()
-        // );
+        // Restore the comment
+        sqlx::query(
+            r#"
+            UPDATE comments
+            SET deleted_at = NULL
+            WHERE id = $1
+            "#,
+        )
+        .bind(3i64)
+        .execute(&mut *conn)
+        .await?;
+
+        // Reply should be restored
+        let result = sqlx::query(
+            r#"
+            SELECT deleted_at FROM replies
+            WHERE id = $1
+            "#,
+        )
+        .bind(reply_id)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_none()
+        );
 
         Ok(())
     }
@@ -6334,36 +6330,35 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
                 .is_some()
         );
 
-        // TODO: Uncomment once story_like trigger is written
-        // // Restore the story
-        // sqlx::query(
-        //     r#"
-        //     UPDATE stories
-        //     SET deleted_at = NULL
-        //     WHERE id = $1
-        //     "#,
-        // )
-        // .bind(2i64)
-        // .execute(&mut *conn)
-        // .await?;
-        //
-        // // Story like should be restored
-        // let result = sqlx::query(
-        //     r#"
-        //     SELECT deleted_at FROM story_likes
-        //     WHERE user_id = $1 AND story_id = $2
-        //     "#,
-        // )
-        // .bind(user_id)
-        // .bind(2i64)
-        // .fetch_one(&mut *conn)
-        // .await?;
-        //
-        // assert!(
-        //     result
-        //         .get::<Option<OffsetDateTime>, _>("deleted_at")
-        //         .is_none()
-        // );
+        // Restore the story
+        sqlx::query(
+            r#"
+            UPDATE stories
+            SET deleted_at = NULL
+            WHERE id = $1
+            "#,
+        )
+        .bind(2i64)
+        .execute(&mut *conn)
+        .await?;
+
+        // Story like should be restored
+        let result = sqlx::query(
+            r#"
+            SELECT deleted_at FROM story_likes
+            WHERE user_id = $1 AND story_id = $2
+            "#,
+        )
+        .bind(user_id)
+        .bind(2i64)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_none()
+        );
 
         Ok(())
     }
@@ -6467,36 +6462,35 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
                 .is_some()
         );
 
-        // TODO: Uncomment once story_like trigger is written
-        // // Restore the story
-        // sqlx::query(
-        //     r#"
-        //     UPDATE stories
-        //     SET deleted_at = NULL
-        //     WHERE id = $1
-        //     "#,
-        // )
-        // .bind(2i64)
-        // .execute(&mut *conn)
-        // .await?;
-        //
-        // // Story like should be restored
-        // let result = sqlx::query(
-        //     r#"
-        //     SELECT deleted_at FROM story_likes
-        //     WHERE user_id = $1 AND story_id = $2
-        //     "#,
-        // )
-        // .bind(user_id)
-        // .bind(2i64)
-        // .fetch_one(&mut *conn)
-        // .await?;
-        //
-        // assert!(
-        //     result
-        //         .get::<Option<OffsetDateTime>, _>("deleted_at")
-        //         .is_none()
-        // );
+        // Restore the story
+        sqlx::query(
+            r#"
+            UPDATE stories
+            SET deleted_at = NULL
+            WHERE id = $1
+            "#,
+        )
+        .bind(2i64)
+        .execute(&mut *conn)
+        .await?;
+
+        // Story like should be restored
+        let result = sqlx::query(
+            r#"
+            SELECT deleted_at FROM story_likes
+            WHERE user_id = $1 AND story_id = $2
+            "#,
+        )
+        .bind(user_id)
+        .bind(2i64)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_none()
+        );
 
         Ok(())
     }
@@ -6602,36 +6596,35 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
                 .is_some()
         );
 
-        // TODO: Uncomment once comment_like trigger is written
-        // // Restore the comment
-        // sqlx::query(
-        //     r#"
-        //     UPDATE comments
-        //     SET deleted_at = NULL
-        //     WHERE id = $1
-        //     "#,
-        // )
-        // .bind(3i64)
-        // .execute(&mut *conn)
-        // .await?;
-        //
-        // // Comment like should be restored
-        // let result = sqlx::query(
-        //     r#"
-        //     SELECT deleted_at FROM comment_likes
-        //     WHERE user_id = $1 AND comment_id = $2
-        //     "#,
-        // )
-        // .bind(user_id)
-        // .bind(3i64)
-        // .fetch_one(&mut *conn)
-        // .await?;
-        //
-        // assert!(
-        //     result
-        //         .get::<Option<OffsetDateTime>, _>("deleted_at")
-        //         .is_none()
-        // );
+        // Restore the comment
+        sqlx::query(
+            r#"
+            UPDATE comments
+            SET deleted_at = NULL
+            WHERE id = $1
+            "#,
+        )
+        .bind(3i64)
+        .execute(&mut *conn)
+        .await?;
+
+        // Comment like should be restored
+        let result = sqlx::query(
+            r#"
+            SELECT deleted_at FROM comment_likes
+            WHERE user_id = $1 AND comment_id = $2
+            "#,
+        )
+        .bind(user_id)
+        .bind(3i64)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_none()
+        );
 
         Ok(())
     }
@@ -6735,36 +6728,35 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
                 .is_some()
         );
 
-        // TODO: Uncomment once comment_like trigger is written
-        // // Restore the comment
-        // sqlx::query(
-        //     r#"
-        //     UPDATE comments
-        //     SET deleted_at = NULL
-        //     WHERE id = $1
-        //     "#,
-        // )
-        // .bind(3i64)
-        // .execute(&mut *conn)
-        // .await?;
-        //
-        // // Comment like should be restored
-        // let result = sqlx::query(
-        //     r#"
-        //     SELECT deleted_at FROM comment_likes
-        //     WHERE user_id = $1 AND comment_id = $2
-        //     "#,
-        // )
-        // .bind(user_id)
-        // .bind(3i64)
-        // .fetch_one(&mut *conn)
-        // .await?;
-        //
-        // assert!(
-        //     result
-        //         .get::<Option<OffsetDateTime>, _>("deleted_at")
-        //         .is_none()
-        // );
+        // Restore the comment
+        sqlx::query(
+            r#"
+            UPDATE comments
+            SET deleted_at = NULL
+            WHERE id = $1
+            "#,
+        )
+        .bind(3i64)
+        .execute(&mut *conn)
+        .await?;
+
+        // Comment like should be restored
+        let result = sqlx::query(
+            r#"
+            SELECT deleted_at FROM comment_likes
+            WHERE user_id = $1 AND comment_id = $2
+            "#,
+        )
+        .bind(user_id)
+        .bind(3i64)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_none()
+        );
 
         Ok(())
     }
@@ -7581,12 +7573,11 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
         // Insert a story
         let story_result = sqlx::query(
             r#"
-            INSERT INTO stories(title, user_id)
-            VALUES ($1, $2)
+            INSERT INTO stories(user_id)
+            VALUES ($1)
             RETURNING id, deleted_at
             "#,
         )
-        .bind("Sample story".to_string())
         .bind(user_id)
         .fetch_one(&mut *conn)
         .await?;
@@ -7683,12 +7674,11 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
         // Insert a story
         let story_result = sqlx::query(
             r#"
-            INSERT INTO stories(title, user_id)
-            VALUES ($1, $2)
+            INSERT INTO stories(user_id)
+            VALUES ($1)
             RETURNING id, deleted_at
             "#,
         )
-        .bind("Sample story".to_string())
         .bind(user_id)
         .fetch_one(&mut *conn)
         .await?;
@@ -7995,12 +7985,11 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
         // Insert a story
         let story_result = sqlx::query(
             r#"
-            INSERT INTO stories(title, user_id)
-            VALUES ($1, $2)
+            INSERT INTO stories(user_id)
+            VALUES ($1)
             RETURNING id, deleted_at
             "#,
         )
-        .bind("Sample story".to_string())
         .bind(user_id)
         .fetch_one(&mut *conn)
         .await?;
@@ -8098,12 +8087,11 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
         // Insert a story
         let story_result = sqlx::query(
             r#"
-            INSERT INTO stories(title, user_id)
-            VALUES ($1, $2)
+            INSERT INTO stories(user_id)
+            VALUES ($1)
             RETURNING id, deleted_at
             "#,
         )
-        .bind("Sample story".to_string())
         .bind(user_id)
         .fetch_one(&mut *conn)
         .await?;
@@ -8621,12 +8609,11 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
         // Insert a story
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO stories(title, user_id)
-            VALUES ($1, $2)
+            INSERT INTO stories(user_id)
+            VALUES ($1)
             RETURNING id
             "#,
         )
-        .bind("Sample story".to_string())
         .bind(user_id)
         .fetch_one(&mut *conn)
         .await?;

@@ -22,6 +22,8 @@ mod tests {
     use time::OffsetDateTime;
 
     /// Returns a sample story
+    ///
+    /// * `is_published` - Whether to return a published story.
     fn get_default_story(is_published: bool) -> Story {
         Story {
             id: 0,
@@ -61,6 +63,7 @@ mod tests {
     /// Inserts a sample story into the database.
     ///
     /// * `conn` - Pool connection.
+    /// * `is_published` - Whether to insert a published story.
     async fn insert_sample_story(
         conn: &mut PoolConnection<Postgres>,
         is_published: bool,
@@ -1378,8 +1381,7 @@ mod tests {
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let result = insert_sample_story(&mut conn, false).await?;
-        let story_id = result.get::<i64, _>("id");
+        let story_id = (insert_sample_story(&mut conn, false).await?).get::<i64, _>("id");
 
         // Should not increment the `story_count` as it is still a draft
         let user_result = sqlx::query(
@@ -1502,8 +1504,7 @@ mod tests {
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let result = insert_sample_story(&mut conn, false).await?;
-        let story_id = result.get::<i64, _>("id");
+        let story_id = (insert_sample_story(&mut conn, false).await?).get::<i64, _>("id");
 
         // Should not increment the `story_count` as it is still a draft
         let user_result = sqlx::query(
@@ -1575,8 +1576,7 @@ mod tests {
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let result = insert_sample_story(&mut conn, false).await?;
-        let story_id = result.get::<i64, _>("id");
+        let story_id = (insert_sample_story(&mut conn, false).await?).get::<i64, _>("id");
 
         // Should not increment the `story_count` for a draft
         let user_result = sqlx::query(
@@ -1644,13 +1644,124 @@ mod tests {
         Ok(())
     }
 
+    #[sqlx::test(fixtures("user"))]
+    async fn should_not_update_story_count_on_user_when_hard_deleting_a_soft_deleted_story(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let story_id = (insert_sample_story(&mut conn, false).await?).get::<i64, _>("id");
+
+        // Insert one more story so that the `story_count` is always >= 1,
+        // which would allow us to bypass the `story_count > 1` constraint
+        // on the user when decrementing the `story_count`.
+        let second_story_id = (insert_sample_story(&mut conn, false).await?).get::<i64, _>("id");
+        sqlx::query(
+            r#"
+            UPDATE stories
+            SET published_at = now()
+            WHERE id = $1
+            "#,
+        )
+        .bind(second_story_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // Should not increment the `story_count` as it is still a draft
+        let user_result = sqlx::query(
+            r#"
+            SELECT story_count FROM users
+            WHERE id = $1
+            "#,
+        )
+        .bind(1i64)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert_eq!(user_result.get::<i32, _>("story_count"), 1);
+
+        // Publish the draft
+        sqlx::query(
+            r#"
+            UPDATE stories
+            SET published_at = now()
+            WHERE id = $1
+            "#,
+        )
+        .bind(story_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // Should increment the `story_count`
+        let user_result = sqlx::query(
+            r#"
+            SELECT story_count FROM users
+            WHERE id = $1
+            "#,
+        )
+        .bind(1i64)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert_eq!(user_result.get::<i32, _>("story_count"), 2);
+
+        // Soft-delete the story
+        sqlx::query(
+            r#"
+            UPDATE stories
+            SET deleted_at = now()
+            WHERE id = $1
+            "#,
+        )
+        .bind(story_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // Should decrement the `story_count`
+        let user_result = sqlx::query(
+            r#"
+            SELECT story_count FROM users
+            WHERE id = $1
+            "#,
+        )
+        .bind(1i64)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert_eq!(user_result.get::<i32, _>("story_count"), 1);
+
+        // Delete the story
+        sqlx::query(
+            r#"
+            DELETE FROM stories
+            WHERE id = $1
+            "#,
+        )
+        .bind(story_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // Should not decrement the `story_count` any further
+        let user_result = sqlx::query(
+            r#"
+            SELECT story_count FROM users
+            WHERE id = $1
+            "#,
+        )
+        .bind(1i64)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert_eq!(user_result.get::<i32, _>("story_count"), 1);
+
+        Ok(())
+    }
+
     // Misc
 
     #[sqlx::test(fixtures("user"))]
     async fn can_reset_read_count_when_soft_deleting_the_story(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let result = insert_sample_story(&mut conn, true).await?;
-        let story_id = result.get::<i64, _>("id");
+        let story_id = (insert_sample_story(&mut conn, true).await?).get::<i64, _>("id");
 
         // Set initial `read_count`
         let update_result = sqlx::query(
@@ -1698,8 +1809,7 @@ mod tests {
     #[sqlx::test(fixtures("user"))]
     async fn can_reset_read_count_when_unpublishing_the_story(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let result = insert_sample_story(&mut conn, true).await?;
-        let story_id = result.get::<i64, _>("id");
+        let story_id = (insert_sample_story(&mut conn, true).await?).get::<i64, _>("id");
 
         // Set initial `read_count`
         let update_result = sqlx::query(
@@ -1747,8 +1857,7 @@ mod tests {
     #[sqlx::test(fixtures("user"))]
     async fn can_reset_timestamps_when_soft_deleting_the_story(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let result = insert_sample_story(&mut conn, true).await?;
-        let story_id = result.get::<i64, _>("id");
+        let story_id = (insert_sample_story(&mut conn, true).await?).get::<i64, _>("id");
 
         // Set initial `edited_at`
         let update_result = sqlx::query(
@@ -1814,8 +1923,7 @@ mod tests {
     #[sqlx::test(fixtures("user"))]
     async fn can_reset_timestamps_when_unpublishing_the_story(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let result = insert_sample_story(&mut conn, false).await?;
-        let story_id = result.get::<i64, _>("id");
+        let story_id = (insert_sample_story(&mut conn, false).await?).get::<i64, _>("id");
 
         // Publish the story
         sqlx::query(
@@ -3992,8 +4100,7 @@ mod tests {
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let result = insert_sample_story(&mut conn, true).await?;
-        let story_id = result.get::<i64, _>("id");
+        let story_id = (insert_sample_story(&mut conn, true).await?).get::<i64, _>("id");
 
         // Insert a document
         let insert_result = sqlx::query(
@@ -4040,8 +4147,7 @@ mod tests {
     #[sqlx::test(fixtures("user"))]
     async fn can_delete_comment_on_story_hard_delete(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let result = insert_sample_story(&mut conn, true).await?;
-        let story_id = result.get::<i64, _>("id");
+        let story_id = (insert_sample_story(&mut conn, true).await?).get::<i64, _>("id");
 
         // Insert a comment
         let insert_result = sqlx::query(
@@ -4091,8 +4197,7 @@ mod tests {
     #[sqlx::test(fixtures("user"))]
     async fn can_delete_story_like_on_story_hard_delete(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let result = insert_sample_story(&mut conn, true).await?;
-        let story_id = result.get::<i64, _>("id");
+        let story_id = (insert_sample_story(&mut conn, true).await?).get::<i64, _>("id");
 
         // Like the story
         let insert_result = sqlx::query(
@@ -4141,8 +4246,7 @@ mod tests {
     #[sqlx::test(fixtures("user", "tag"))]
     async fn can_delete_story_tag_on_story_hard_delete(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let result = insert_sample_story(&mut conn, true).await?;
-        let story_id = result.get::<i64, _>("id");
+        let story_id = (insert_sample_story(&mut conn, true).await?).get::<i64, _>("id");
 
         // Insert a story tag
         let insert_result = sqlx::query(
@@ -4191,8 +4295,7 @@ mod tests {
     #[sqlx::test(fixtures("user"))]
     async fn can_delete_notification_on_story_hard_delete(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let result = insert_sample_story(&mut conn, true).await?;
-        let story_id = result.get::<i64, _>("id");
+        let story_id = (insert_sample_story(&mut conn, true).await?).get::<i64, _>("id");
 
         // Insert a notification
         let insert_result = sqlx::query(
@@ -4242,8 +4345,7 @@ mod tests {
     #[sqlx::test(fixtures("user"))]
     async fn can_delete_bookmark_on_story_hard_delete(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let result = insert_sample_story(&mut conn, true).await?;
-        let story_id = result.get::<i64, _>("id");
+        let story_id = (insert_sample_story(&mut conn, true).await?).get::<i64, _>("id");
 
         // Insert a bookmark
         let insert_result = sqlx::query(
@@ -4292,8 +4394,7 @@ mod tests {
     #[sqlx::test(fixtures("user"))]
     async fn can_delete_history_on_story_hard_delete(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let result = insert_sample_story(&mut conn, true).await?;
-        let story_id = result.get::<i64, _>("id");
+        let story_id = (insert_sample_story(&mut conn, true).await?).get::<i64, _>("id");
 
         // Insert a history
         let insert_result = sqlx::query(
