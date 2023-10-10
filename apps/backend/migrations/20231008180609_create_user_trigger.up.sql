@@ -157,6 +157,9 @@ BEGIN
             OR entity_id = NEW.id;
         DELETE FROM notification_outs
         WHERE notified_id = NEW.id;
+        --
+        RETURN NEW;
+        --
     END IF;
     --
     -- User recovered or re-activated
@@ -423,9 +426,9 @@ $$
 LANGUAGE plpgsql;
 
 CREATE OR REPLACE TRIGGER user_update_trigger
-    AFTER UPDATE OF deleted_at,
-    deactivated_at ON users
+    AFTER UPDATE ON users
     FOR EACH ROW
+    WHEN(OLD.deleted_at IS DISTINCT FROM NEW.deleted_at OR OLD.deactivated_at IS DISTINCT FROM NEW.deactivated_at)
     EXECUTE PROCEDURE user_update_trigger_proc();
 
 -- Delete

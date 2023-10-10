@@ -245,13 +245,12 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
         // Insert a story
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO stories(title, doc_key, user_id)
-            VALUES ($1, $2, $3)
+            INSERT INTO stories(title, user_id)
+            VALUES ($1, $2)
             RETURNING id, deleted_at
             "#,
         )
         .bind("Sample story".to_string())
-        .bind("sample-key".to_string())
         .bind(user_id)
         .fetch_one(&mut *conn)
         .await?;
@@ -260,7 +259,7 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
         assert!(
             insert_result
                 .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none(),
+                .is_none()
         );
 
         // Soft-delete the user
@@ -334,13 +333,12 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
         // Insert a story
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO stories(title, doc_key, user_id)
-            VALUES ($1, $2, $3)
+            INSERT INTO stories(title, user_id)
+            VALUES ($1, $2)
             RETURNING id, deleted_at
             "#,
         )
         .bind("Sample story".to_string())
-        .bind("sample-key".to_string())
         .bind(user_id)
         .fetch_one(&mut *conn)
         .await?;
@@ -349,7 +347,7 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
         assert!(
             insert_result
                 .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none(),
+                .is_none()
         );
 
         // Deactivate the user
@@ -438,7 +436,7 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
         assert!(
             insert_result
                 .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none(),
+                .is_none()
         );
 
         // Soft-delete the user
@@ -527,7 +525,7 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
         assert!(
             insert_result
                 .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none(),
+                .is_none()
         );
 
         // Deactivate the user
@@ -616,7 +614,7 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
         assert!(
             insert_result
                 .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none(),
+                .is_none()
         );
 
         // Soft-delete the user
@@ -705,7 +703,7 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
         assert!(
             insert_result
                 .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none(),
+                .is_none()
         );
 
         // Deactivate the user
@@ -792,7 +790,7 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
         assert!(
             insert_result
                 .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none(),
+                .is_none()
         );
 
         // Soft-delete the user
@@ -881,7 +879,7 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
         assert!(
             insert_result
                 .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none(),
+                .is_none()
         );
 
         // Deactivate the user
@@ -970,7 +968,7 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
         assert!(
             insert_result
                 .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none(),
+                .is_none()
         );
 
         // Soft-delete the user
@@ -1059,7 +1057,7 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
         assert!(
             insert_result
                 .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none(),
+                .is_none()
         );
 
         // Deactivate the user
@@ -1146,7 +1144,7 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
         assert!(
             insert_result
                 .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none(),
+                .is_none()
         );
 
         // Soft-delete the user
@@ -1235,7 +1233,7 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
         assert!(
             insert_result
                 .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none(),
+                .is_none()
         );
 
         // Deactivate the user
@@ -1324,7 +1322,7 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
         assert!(
             insert_result
                 .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none(),
+                .is_none()
         );
 
         // Soft-delete the user
@@ -1413,7 +1411,7 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
         assert!(
             insert_result
                 .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none(),
+                .is_none()
         );
 
         // Deactivate the user
@@ -1500,7 +1498,7 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
         assert!(
             insert_result
                 .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none(),
+                .is_none()
         );
 
         // Soft-delete the user
@@ -1589,7 +1587,7 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
         assert!(
             insert_result
                 .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none(),
+                .is_none()
         );
 
         // Deactivate the user
@@ -1678,7 +1676,7 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
         assert!(
             insert_result
                 .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none(),
+                .is_none()
         );
 
         // Soft-delete the user
@@ -1767,7 +1765,7 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
         assert!(
             insert_result
                 .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none(),
+                .is_none()
         );
 
         // Deactivate the user
@@ -1856,7 +1854,7 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
         assert!(
             insert_result
                 .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none(),
+                .is_none()
         );
 
         // Soft-delete the user
@@ -1945,7 +1943,7 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
         assert!(
             insert_result
                 .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none(),
+                .is_none()
         );
 
         // Deactivate the user
@@ -2034,7 +2032,7 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
         assert!(
             insert_result
                 .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none(),
+                .is_none()
         );
 
         // Soft-delete the user
@@ -2123,7 +2121,7 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
         assert!(
             insert_result
                 .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none(),
+                .is_none()
         );
 
         // Deactivate the user
@@ -2212,7 +2210,7 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
         assert!(
             insert_result
                 .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none(),
+                .is_none()
         );
 
         // Soft-delete the user
@@ -2301,7 +2299,7 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
         assert!(
             insert_result
                 .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none(),
+                .is_none()
         );
 
         // Deactivate the user
@@ -2390,7 +2388,7 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
         assert!(
             insert_result
                 .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none(),
+                .is_none()
         );
 
         // Soft-delete the user
@@ -2479,7 +2477,7 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
         assert!(
             insert_result
                 .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none(),
+                .is_none()
         );
 
         // Deactivate the user
@@ -2568,7 +2566,7 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
         assert!(
             insert_result
                 .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none(),
+                .is_none()
         );
 
         // Soft-delete the current user
@@ -2657,7 +2655,7 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
         assert!(
             insert_result
                 .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none(),
+                .is_none()
         );
 
         // Deactivate the current user
@@ -2744,7 +2742,7 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
         assert!(
             insert_result
                 .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none(),
+                .is_none()
         );
 
         // Soft-delete the current user
@@ -2833,7 +2831,7 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
         assert!(
             insert_result
                 .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none(),
+                .is_none()
         );
 
         // Deactivate the current user
@@ -2922,7 +2920,7 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
         assert!(
             insert_result
                 .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none(),
+                .is_none()
         );
 
         // Soft-delete the current user
@@ -3011,7 +3009,7 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
         assert!(
             insert_result
                 .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none(),
+                .is_none()
         );
 
         // Deactivate the current user
@@ -3098,7 +3096,7 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
         assert!(
             insert_result
                 .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none(),
+                .is_none()
         );
 
         // Soft-delete the current user
@@ -3187,7 +3185,7 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
         assert!(
             insert_result
                 .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none(),
+                .is_none()
         );
 
         // Deactivate the current user
@@ -3701,7 +3699,7 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
         assert!(
             result
                 .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none(),
+                .is_none()
         );
 
         // Soft-delete the user
@@ -3774,35 +3772,34 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
                 .is_some()
         );
 
-        // TODO: Uncomment once story triggers are implemented
-        // // Restore the story
-        // sqlx::query(
-        //     r#"
-        //     UPDATE stories
-        //     SET deleted_at = NULL
-        //     WHERE id = $1
-        //     "#,
-        // )
-        // .bind(2i64)
-        // .execute(&mut *conn)
-        // .await?;
-        //
-        // // Comment should be restored
-        // let result = sqlx::query(
-        //     r#"
-        //     SELECT deleted_at FROM comments
-        //     WHERE id = $1
-        //     "#,
-        // )
-        // .bind(comment_id)
-        // .fetch_one(&mut *conn)
-        // .await?;
-        //
-        // assert!(
-        //     result
-        //         .get::<Option<OffsetDateTime>, _>("deleted_at")
-        //         .is_none()
-        // );
+        // Restore the story
+        sqlx::query(
+            r#"
+            UPDATE stories
+            SET deleted_at = NULL
+            WHERE id = $1
+            "#,
+        )
+        .bind(2i64)
+        .execute(&mut *conn)
+        .await?;
+
+        // Comment should be restored
+        let result = sqlx::query(
+            r#"
+            SELECT deleted_at FROM comments
+            WHERE id = $1
+            "#,
+        )
+        .bind(comment_id)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_none()
+        );
 
         Ok(())
     }
@@ -3833,7 +3830,7 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
         assert!(
             result
                 .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none(),
+                .is_none()
         );
 
         // Deactivate the user
@@ -3906,35 +3903,34 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
                 .is_some()
         );
 
-        // TODO: Uncomment once story triggers are implemented
-        // // Restore the story
-        // sqlx::query(
-        //     r#"
-        //     UPDATE stories
-        //     SET deleted_at = NULL
-        //     WHERE id = $1
-        //     "#,
-        // )
-        // .bind(2i64)
-        // .execute(&mut *conn)
-        // .await?;
-        //
-        // // Comment should be restored
-        // let result = sqlx::query(
-        //     r#"
-        //     SELECT deleted_at FROM comments
-        //     WHERE id = $1
-        //     "#,
-        // )
-        // .bind(comment_id)
-        // .fetch_one(&mut *conn)
-        // .await?;
-        //
-        // assert!(
-        //     result
-        //         .get::<Option<OffsetDateTime>, _>("deleted_at")
-        //         .is_none()
-        // );
+        // Restore the story
+        sqlx::query(
+            r#"
+            UPDATE stories
+            SET deleted_at = NULL
+            WHERE id = $1
+            "#,
+        )
+        .bind(2i64)
+        .execute(&mut *conn)
+        .await?;
+
+        // Comment should be restored
+        let result = sqlx::query(
+            r#"
+            SELECT deleted_at FROM comments
+            WHERE id = $1
+            "#,
+        )
+        .bind(comment_id)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_none()
+        );
 
         Ok(())
     }
@@ -3967,7 +3963,7 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
         assert!(
             result
                 .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none(),
+                .is_none()
         );
 
         // Soft-delete the user
@@ -4099,7 +4095,7 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
         assert!(
             result
                 .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none(),
+                .is_none()
         );
 
         // Deactivate the user
@@ -4231,7 +4227,7 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
         assert!(
             result
                 .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none(),
+                .is_none()
         );
 
         // Soft-delete the current user and the followed user
@@ -4352,7 +4348,7 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
         assert!(
             result
                 .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none(),
+                .is_none()
         );
 
         // Deactivate the current user
@@ -4484,7 +4480,7 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
         assert!(
             result
                 .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none(),
+                .is_none()
         );
 
         // Soft-delete the current user
@@ -4616,7 +4612,7 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
         assert!(
             result
                 .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none(),
+                .is_none()
         );
 
         // Deactivate the current user and the followed user
@@ -4739,7 +4735,7 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
         assert!(
             result
                 .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none(),
+                .is_none()
         );
 
         // Soft-delete the current user and the follower user
@@ -4860,7 +4856,7 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
         assert!(
             result
                 .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none(),
+                .is_none()
         );
 
         // Deactivate the current user
@@ -4992,7 +4988,7 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
         assert!(
             result
                 .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none(),
+                .is_none()
         );
 
         // Soft-delete the current user
@@ -5124,7 +5120,7 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
         assert!(
             result
                 .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none(),
+                .is_none()
         );
 
         // Deactivate the current user and the follower user
@@ -5247,7 +5243,7 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
         assert!(
             result
                 .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none(),
+                .is_none()
         );
 
         // Soft-delete the current user and the transmitter user
@@ -5368,7 +5364,7 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
         assert!(
             result
                 .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none(),
+                .is_none()
         );
 
         // Deactivate the current user
@@ -5500,7 +5496,7 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
         assert!(
             result
                 .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none(),
+                .is_none()
         );
 
         // Soft-delete the current user
@@ -5632,7 +5628,7 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
         assert!(
             result
                 .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none(),
+                .is_none()
         );
 
         // Deactivate the current user and the transmitter user
@@ -5755,7 +5751,7 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
         assert!(
             result
                 .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none(),
+                .is_none()
         );
 
         // Soft-delete the current user and the receiver user
@@ -5876,7 +5872,7 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
         assert!(
             result
                 .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none(),
+                .is_none()
         );
 
         // Deactivate the current user
@@ -6008,7 +6004,7 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
         assert!(
             result
                 .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none(),
+                .is_none()
         );
 
         // Soft-delete the current user
@@ -6140,7 +6136,7 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
         assert!(
             result
                 .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none(),
+                .is_none()
         );
 
         // Deactivate the current user and the receiver user
@@ -6263,7 +6259,7 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
         assert!(
             result
                 .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none(),
+                .is_none()
         );
 
         // Soft-delete the user
@@ -6396,7 +6392,7 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
         assert!(
             result
                 .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none(),
+                .is_none()
         );
 
         // Deactivate the user
@@ -6531,7 +6527,7 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
         assert!(
             result
                 .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none(),
+                .is_none()
         );
 
         // Soft-delete the user
@@ -6664,7 +6660,7 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
         assert!(
             result
                 .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none(),
+                .is_none()
         );
 
         // Deactivate the user
@@ -6799,7 +6795,7 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
         assert!(
             result
                 .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none(),
+                .is_none()
         );
 
         // Soft-delete the user
@@ -6932,7 +6928,7 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
         assert!(
             result
                 .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none(),
+                .is_none()
         );
 
         // Deactivate the user
@@ -7067,7 +7063,7 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
         assert!(
             result
                 .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none(),
+                .is_none()
         );
 
         // Soft-delete the user
@@ -7142,35 +7138,35 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
                 .is_some()
         );
 
-        // TODO: Uncomment once story triggers are implemented
-        // // Restore the story
-        // sqlx::query(
-        //     r#"
-        //     UPDATE stories
-        //     SET deleted_at = NULL
-        //     WHERE id = $1
-        //     "#,
-        // )
-        // .bind(2i64)
-        // .execute(&mut *conn)
-        // .await?;
-        //
-        // // Bookmark should be restored
-        // let result = sqlx::query(
-        //     r#"
-        //     SELECT deleted_at FROM bookmarks
-        //     WHERE user_id = $1 AND story_id = $2
-        //     "#,
-        // )
-        // .bind(user_id).bind(2i64)
-        // .fetch_one(&mut *conn)
-        // .await?;
-        //
-        // assert!(
-        //     result
-        //         .get::<Option<OffsetDateTime>, _>("deleted_at")
-        //         .is_none()
-        // );
+        // Restore the story
+        sqlx::query(
+            r#"
+            UPDATE stories
+            SET deleted_at = NULL
+            WHERE id = $1
+            "#,
+        )
+        .bind(2i64)
+        .execute(&mut *conn)
+        .await?;
+
+        // Bookmark should be restored
+        let result = sqlx::query(
+            r#"
+            SELECT deleted_at FROM bookmarks
+            WHERE user_id = $1 AND story_id = $2
+            "#,
+        )
+        .bind(user_id)
+        .bind(2i64)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_none()
+        );
 
         Ok(())
     }
@@ -7199,7 +7195,7 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
         assert!(
             result
                 .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none(),
+                .is_none()
         );
 
         // Deactivate the user
@@ -7274,35 +7270,35 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
                 .is_some()
         );
 
-        // TODO: Uncomment once story triggers are implemented
-        // // Restore the story
-        // sqlx::query(
-        //     r#"
-        //     UPDATE stories
-        //     SET deleted_at = NULL
-        //     WHERE id = $1
-        //     "#,
-        // )
-        // .bind(2i64)
-        // .execute(&mut *conn)
-        // .await?;
-        //
-        // // Bookmark should be restored
-        // let result = sqlx::query(
-        //     r#"
-        //     SELECT deleted_at FROM bookmarks
-        //     WHERE user_id = $1 AND story_id = $2
-        //     "#,
-        // )
-        // .bind(user_id).bind(2i64)
-        // .fetch_one(&mut *conn)
-        // .await?;
-        //
-        // assert!(
-        //     result
-        //         .get::<Option<OffsetDateTime>, _>("deleted_at")
-        //         .is_none()
-        // );
+        // Restore the story
+        sqlx::query(
+            r#"
+            UPDATE stories
+            SET deleted_at = NULL
+            WHERE id = $1
+            "#,
+        )
+        .bind(2i64)
+        .execute(&mut *conn)
+        .await?;
+
+        // Bookmark should be restored
+        let result = sqlx::query(
+            r#"
+            SELECT deleted_at FROM bookmarks
+            WHERE user_id = $1 AND story_id = $2
+            "#,
+        )
+        .bind(user_id)
+        .bind(2i64)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_none()
+        );
 
         Ok(())
     }
@@ -7333,7 +7329,7 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
         assert!(
             result
                 .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none(),
+                .is_none()
         );
 
         // Soft-delete the user
@@ -7408,35 +7404,35 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
                 .is_some()
         );
 
-        // TODO: Uncomment once story triggers are implemented
-        // // Restore the story
-        // sqlx::query(
-        //     r#"
-        //     UPDATE stories
-        //     SET deleted_at = NULL
-        //     WHERE id = $1
-        //     "#,
-        // )
-        // .bind(2i64)
-        // .execute(&mut *conn)
-        // .await?;
-        //
-        // // History should be restored
-        // let result = sqlx::query(
-        //     r#"
-        //     SELECT deleted_at FROM histories
-        //     WHERE user_id = $1 AND story_id = $2
-        //     "#,
-        // )
-        // .bind(user_id).bind(2i64)
-        // .fetch_one(&mut *conn)
-        // .await?;
-        //
-        // assert!(
-        //     result
-        //         .get::<Option<OffsetDateTime>, _>("deleted_at")
-        //         .is_none()
-        // );
+        // Restore the story
+        sqlx::query(
+            r#"
+            UPDATE stories
+            SET deleted_at = NULL
+            WHERE id = $1
+            "#,
+        )
+        .bind(2i64)
+        .execute(&mut *conn)
+        .await?;
+
+        // History should be restored
+        let result = sqlx::query(
+            r#"
+            SELECT deleted_at FROM histories
+            WHERE user_id = $1 AND story_id = $2
+            "#,
+        )
+        .bind(user_id)
+        .bind(2i64)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_none()
+        );
 
         Ok(())
     }
@@ -7465,7 +7461,7 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
         assert!(
             result
                 .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none(),
+                .is_none()
         );
 
         // Deactivate the user
@@ -7540,35 +7536,35 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
                 .is_some()
         );
 
-        // TODO: Uncomment once story triggers are implemented
-        // // Restore the story
-        // sqlx::query(
-        //     r#"
-        //     UPDATE stories
-        //     SET deleted_at = NULL
-        //     WHERE id = $1
-        //     "#,
-        // )
-        // .bind(2i64)
-        // .execute(&mut *conn)
-        // .await?;
-        //
-        // // History should be restored
-        // let result = sqlx::query(
-        //     r#"
-        //     SELECT deleted_at FROM histories
-        //     WHERE user_id = $1 AND story_id = $2
-        //     "#,
-        // )
-        // .bind(user_id).bind(2i64)
-        // .fetch_one(&mut *conn)
-        // .await?;
-        //
-        // assert!(
-        //     result
-        //         .get::<Option<OffsetDateTime>, _>("deleted_at")
-        //         .is_none()
-        // );
+        // Restore the story
+        sqlx::query(
+            r#"
+            UPDATE stories
+            SET deleted_at = NULL
+            WHERE id = $1
+            "#,
+        )
+        .bind(2i64)
+        .execute(&mut *conn)
+        .await?;
+
+        // History should be restored
+        let result = sqlx::query(
+            r#"
+            SELECT deleted_at FROM histories
+            WHERE user_id = $1 AND story_id = $2
+            "#,
+        )
+        .bind(user_id)
+        .bind(2i64)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_none()
+        );
 
         Ok(())
     }
@@ -7585,13 +7581,12 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
         // Insert a story
         let story_result = sqlx::query(
             r#"
-            INSERT INTO stories(title, doc_key, user_id)
-            VALUES ($1, $2, $3)
+            INSERT INTO stories(title, user_id)
+            VALUES ($1, $2)
             RETURNING id, deleted_at
             "#,
         )
         .bind("Sample story".to_string())
-        .bind("sample-key".to_string())
         .bind(user_id)
         .fetch_one(&mut *conn)
         .await?;
@@ -7614,7 +7609,7 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
         assert!(
             comment_result
                 .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none(),
+                .is_none()
         );
 
         // Soft-delete the user
@@ -7688,13 +7683,12 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
         // Insert a story
         let story_result = sqlx::query(
             r#"
-            INSERT INTO stories(title, doc_key, user_id)
-            VALUES ($1, $2, $3)
+            INSERT INTO stories(title, user_id)
+            VALUES ($1, $2)
             RETURNING id, deleted_at
             "#,
         )
         .bind("Sample story".to_string())
-        .bind("sample-key".to_string())
         .bind(user_id)
         .fetch_one(&mut *conn)
         .await?;
@@ -7717,7 +7711,7 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
         assert!(
             comment_result
                 .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none(),
+                .is_none()
         );
 
         // Deactivate the user
@@ -7822,7 +7816,7 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
         assert!(
             reply_result
                 .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none(),
+                .is_none()
         );
 
         // Soft-delete the user
@@ -7925,7 +7919,7 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
         assert!(
             reply_result
                 .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none(),
+                .is_none()
         );
 
         // Deactivate the user
@@ -8001,13 +7995,12 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
         // Insert a story
         let story_result = sqlx::query(
             r#"
-            INSERT INTO stories(title, doc_key, user_id)
-            VALUES ($1, $2, $3)
+            INSERT INTO stories(title, user_id)
+            VALUES ($1, $2)
             RETURNING id, deleted_at
             "#,
         )
         .bind("Sample story".to_string())
-        .bind("sample-key".to_string())
         .bind(user_id)
         .fetch_one(&mut *conn)
         .await?;
@@ -8029,7 +8022,7 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
         assert!(
             story_like_result
                 .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none(),
+                .is_none()
         );
 
         // Soft-delete the user
@@ -8105,13 +8098,12 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
         // Insert a story
         let story_result = sqlx::query(
             r#"
-            INSERT INTO stories(title, doc_key, user_id)
-            VALUES ($1, $2, $3)
+            INSERT INTO stories(title, user_id)
+            VALUES ($1, $2)
             RETURNING id, deleted_at
             "#,
         )
         .bind("Sample story".to_string())
-        .bind("sample-key".to_string())
         .bind(user_id)
         .fetch_one(&mut *conn)
         .await?;
@@ -8133,7 +8125,7 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
         assert!(
             story_like_result
                 .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none(),
+                .is_none()
         );
 
         // Deactivate the user
@@ -8239,7 +8231,7 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
         assert!(
             comment_like_result
                 .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none(),
+                .is_none()
         );
 
         // Soft-delete the user
@@ -8343,7 +8335,7 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
         assert!(
             comment_like_result
                 .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none(),
+                .is_none()
         );
 
         // Deactivate the user
@@ -8449,7 +8441,7 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
         assert!(
             reply_like_result
                 .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none(),
+                .is_none()
         );
 
         // Soft-delete the user
@@ -8553,7 +8545,7 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
         assert!(
             reply_like_result
                 .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none(),
+                .is_none()
         );
 
         // Deactivate the user
@@ -8629,13 +8621,12 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
         // Insert a story
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO stories(title, doc_key, user_id)
-            VALUES ($1, $2, $3)
+            INSERT INTO stories(title, user_id)
+            VALUES ($1, $2)
             RETURNING id
             "#,
         )
         .bind("Sample story".to_string())
-        .bind("sample-key".to_string())
         .bind(user_id)
         .fetch_one(&mut *conn)
         .await?;
@@ -8968,7 +8959,7 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
     }
 
     #[sqlx::test]
-    async fn can_set_asset_user_as_null_on_user_hard_delete(pool: PgPool) -> sqlx::Result<()> {
+    async fn can_set_asset_user_id_as_null_on_user_hard_delete(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let user_id = (insert_sample_user(&mut conn).await?).get::<i64, _>("id");
 
@@ -9012,7 +9003,7 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
         .fetch_one(&mut *conn)
         .await?;
 
-        assert_eq!(result.get::<Option<i64>, _>("user_id"), None);
+        assert!(result.get::<Option<i64>, _>("user_id").is_none());
 
         Ok(())
     }
