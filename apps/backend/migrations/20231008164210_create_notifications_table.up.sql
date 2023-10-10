@@ -4,3 +4,4 @@ CREATE TABLE IF NOT EXISTS notifications(
     entity_type SMALLINT NOT NULL, -- Notification type enum
     notifier_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE -- Can be NULL for system notifications
 );
+
