@@ -9,7 +9,6 @@ CREATE TABLE IF NOT EXISTS assets(
     user_id BIGINT REFERENCES users(id) ON DELETE SET NULL, -- Cascade action will result in orphaned objects in S3
     -- Timestamps
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-    deleted_at TIMESTAMPTZ,
     favourited_at TIMESTAMPTZ
 );
 

@@ -6,4 +6,3 @@ CREATE TABLE IF NOT EXISTS notification_outs(
     read_at TIMESTAMPTZ,
     PRIMARY KEY (notification_id, notified_id)
 );
-

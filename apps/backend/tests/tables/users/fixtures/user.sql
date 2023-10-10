@@ -1,2 +1,2 @@
 INSERT INTO users(id, name, username, email)
-VALUES (1, 'Sample user', 'sample_user', 'sample.user@example.com');
+    VALUES (1, 'Sample user', 'sample_user', 'sample.user@example.com');
