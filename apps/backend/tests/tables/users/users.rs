@@ -6862,36 +6862,35 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
                 .is_some()
         );
 
-        // TODO: Uncomment once reply_like trigger is written
-        // // Restore the reply
-        // sqlx::query(
-        //     r#"
-        //     UPDATE replies
-        //     SET deleted_at = NULL
-        //     WHERE id = $1
-        //     "#,
-        // )
-        // .bind(4i64)
-        // .execute(&mut *conn)
-        // .await?;
-        //
-        // // Reply like should be restored
-        // let result = sqlx::query(
-        //     r#"
-        //     SELECT deleted_at FROM reply_likes
-        //     WHERE user_id = $1 AND reply_id = $2
-        //     "#,
-        // )
-        // .bind(user_id)
-        // .bind(4i64)
-        // .fetch_one(&mut *conn)
-        // .await?;
-        //
-        // assert!(
-        //     result
-        //         .get::<Option<OffsetDateTime>, _>("deleted_at")
-        //         .is_none()
-        // );
+        // Restore the reply
+        sqlx::query(
+            r#"
+            UPDATE replies
+            SET deleted_at = NULL
+            WHERE id = $1
+            "#,
+        )
+        .bind(4i64)
+        .execute(&mut *conn)
+        .await?;
+
+        // Reply like should be restored
+        let result = sqlx::query(
+            r#"
+            SELECT deleted_at FROM reply_likes
+            WHERE user_id = $1 AND reply_id = $2
+            "#,
+        )
+        .bind(user_id)
+        .bind(4i64)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_none()
+        );
 
         Ok(())
     }
@@ -6995,36 +6994,35 @@ VALUES            ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, 
                 .is_some()
         );
 
-        // TODO: Uncomment once reply_like trigger is written
-        // // Restore the reply
-        // sqlx::query(
-        //     r#"
-        //     UPDATE replies
-        //     SET deleted_at = NULL
-        //     WHERE id = $1
-        //     "#,
-        // )
-        // .bind(4i64)
-        // .execute(&mut *conn)
-        // .await?;
-        //
-        // // Reply like should be restored
-        // let result = sqlx::query(
-        //     r#"
-        //     SELECT deleted_at FROM reply_likes
-        //     WHERE user_id = $1 AND reply_id = $2
-        //     "#,
-        // )
-        // .bind(user_id)
-        // .bind(4i64)
-        // .fetch_one(&mut *conn)
-        // .await?;
-        //
-        // assert!(
-        //     result
-        //         .get::<Option<OffsetDateTime>, _>("deleted_at")
-        //         .is_none()
-        // );
+        // Restore the reply
+        sqlx::query(
+            r#"
+            UPDATE replies
+            SET deleted_at = NULL
+            WHERE id = $1
+            "#,
+        )
+        .bind(4i64)
+        .execute(&mut *conn)
+        .await?;
+
+        // Reply like should be restored
+        let result = sqlx::query(
+            r#"
+            SELECT deleted_at FROM reply_likes
+            WHERE user_id = $1 AND reply_id = $2
+            "#,
+        )
+        .bind(user_id)
+        .bind(4i64)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_none()
+        );
 
         Ok(())
     }
