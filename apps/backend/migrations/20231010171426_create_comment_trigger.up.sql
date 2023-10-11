@@ -4,25 +4,43 @@ CREATE OR REPLACE FUNCTION comment_before_insert_trigger_proc()
     RETURNS TRIGGER
     AS $$
 BEGIN
-    -- Check if the user is blocked by the story writer
+    -- Check whether the story is soft-deleted/unpublished or the comment writer is soft-deleted/deactivated
     IF(EXISTS(
         SELECT
             1
         FROM
-            stories s
+            stories
         WHERE
-            s.id = NEW.story_id AND EXISTS(
+            id = NEW.story_id AND deleted_at IS NOT NULL OR published_at IS NULL) OR EXISTS(
+        SELECT
+            1
+        FROM
+            users
+        WHERE
+            id = NEW.user_id AND(deleted_at IS NOT NULL OR deactivated_at IS NOT NULL))) THEN
+        RAISE 'Story is soft-deleted/unpublished or comment writer is soft-deleted/deactivated'
+        USING ERRCODE = '52001';
+    END IF;
+        --
+        -- Check if the user is blocked by the story writer
+        IF(EXISTS(
             SELECT
                 1
             FROM
-                blocks b
+                stories s
             WHERE
-                b.blocker_id = s.user_id AND b.blocked_id = NEW.user_id))) THEN
-        RAISE 'User is blocked by the story writer'
-        USING ERRCODE = '50000';
-    END IF;
-        --
-        RETURN NEW;
+                s.id = NEW.story_id AND EXISTS(
+                SELECT
+                    1
+                FROM
+                    blocks b
+                WHERE
+                    b.blocker_id = s.user_id AND b.blocked_id = NEW.user_id AND b.deleted_at IS NULL))) THEN
+            RAISE 'User is blocked by the story writer'
+            USING ERRCODE = '50000';
+        END IF;
+            --
+            RETURN NEW;
 END;
 $$
 LANGUAGE plpgsql;

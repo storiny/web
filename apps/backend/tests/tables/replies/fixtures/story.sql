@@ -1,3 +1,3 @@
-INSERT INTO stories(id, user_id)
-    VALUES (3, 1);
+INSERT INTO stories(id, user_id, published_at)
+    VALUES (3, 1, now());
 

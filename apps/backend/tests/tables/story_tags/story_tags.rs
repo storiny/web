@@ -25,6 +25,47 @@ mod tests {
     }
 
     #[sqlx::test(fixtures("user", "story", "tag"))]
+    async fn can_reject_story_tag_for_soft_deleted_story(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+
+        // Soft-delete the story
+        sqlx::query(
+            r#"
+            UPDATE stories
+            SET deleted_at = now()
+            WHERE id = $1
+            "#,
+        )
+        .bind(2i64)
+        .execute(&mut *conn)
+        .await?;
+
+        let result = sqlx::query(
+            r#"
+            INSERT INTO story_tags(tag_id, story_id)
+            VALUES ($1, $2)
+            "#,
+        )
+        .bind(4i64)
+        .bind(2i64)
+        .execute(&mut *conn)
+        .await;
+
+        // Should reject with `52001` SQLSTATE
+        assert_eq!(
+            result
+                .unwrap_err()
+                .into_database_error()
+                .unwrap()
+                .code()
+                .unwrap(),
+            "52001"
+        );
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("user", "story", "tag"))]
     async fn can_increment_story_count_on_tag_when_inserting_story_tag(
         pool: PgPool,
     ) -> sqlx::Result<()> {

@@ -17,6 +17,5 @@
 
 | Class | Action             | Description                                                                             |
 |-------|--------------------|-----------------------------------------------------------------------------------------|
-| 52000 | Friend request     | Inverse relation exists ((transmitter_id, receiver_id) = (receiver_id, transmitter_id)) |
-| 52001 | Relation overlap   | Target user ID is equivalent to the source user ID                                      | 
-| 52002 | Entity unavailable | Entity has been soft-deleted (or deactivated in case of a user)                         |
+| 52000 | Relation overlap   | Target user ID is equivalent to the source user ID                                      | 
+| 52001 | Entity unavailable | Entity has been soft-deleted (or deactivated in case of a user)                         |

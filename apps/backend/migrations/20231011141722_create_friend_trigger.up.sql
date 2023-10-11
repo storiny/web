@@ -1,80 +1,108 @@
+-- pgfmt-ignore TODO: Remove this comment once pgFormatter handles CTE
+
 -- Insert
 --
 CREATE OR REPLACE FUNCTION friend_insert_trigger_proc()
     RETURNS TRIGGER
     AS $$
 DECLARE
-    incoming_friend_requests SMALLINT;
+    incoming_friend_requests_value SMALLINT;
 BEGIN
     -- Sanity check
     IF (NEW.transmitter_id = NEW.receiver_id) THEN
         RAISE 'Source user is equivalent to the target user'
+        USING ERRCODE = '52000';
+    END IF;
+    --
+    -- Check whether the transmitter/receiver is soft-deleted or deactivated
+    IF (
+        EXISTS (
+            SELECT
+                1
+            FROM
+                users
+            WHERE
+                id IN (NEW.transmitter_id,NEW.receiver_id) AND (deleted_at IS NOT NULL OR deactivated_at IS NOT NULL)
+        )
+    ) THEN
+        RAISE 'Transmitter/receiver is either soft-deleted or deactivated'
         USING ERRCODE = '52001';
     END IF;
+    --
+    -- Check if the transmitter user is blocked by the receiver user
+    IF (
+        EXISTS (
+            SELECT
+                1
+            FROM
+                blocks
+            WHERE
+                blocker_id = NEW.receiver_id AND blocked_id = NEW.transmitter_id AND deleted_at IS NULL
+        )
+    ) THEN
+        RAISE 'Source user is blocked by the target user'
+        USING ERRCODE = '50003';
+    END IF;
+    --
+    -- Check for `incoming_friend_requests` flag on the receiver
+    SELECT
+        incoming_friend_requests INTO incoming_friend_requests_value
+    FROM
+        users
+    WHERE
+        id = NEW.receiver_id;
+    --
+    IF (
+        -- None
+        incoming_friend_requests_value = 4 OR
         --
-        -- Check whether an inverse relation already exist
-        IF (EXISTS (
+        -- Following
+        incoming_friend_requests_value = 2 AND NOT EXISTS (
+            SELECT
+                1
+            FROM
+                relations
+            WHERE
+                follower_id = NEW.transmitter_id AND followed_id = NEW.receiver_id AND deleted_at IS NULL
+        ) OR
+        --
+        -- Friend of friends
+        incoming_friend_requests_value = 3 AND NOT EXISTS (
+            WITH receiver_friends AS (
+                SELECT
+                    transmitter_id as user_id
+                FROM
+                    friends
+                WHERE (transmitter_id = NEW.receiver_id OR receiver_id = NEW.receiver_id)
+                  AND accepted_at IS NOT NULL AND deleted_at IS NULL
+                UNION
+                SELECT
+                    receiver_id as user_id
+                FROM
+                    friends
+                WHERE (transmitter_id = NEW.receiver_id OR receiver_id = NEW.receiver_id)
+                  AND accepted_at IS NOT NULL AND deleted_at IS NULL
+            )
             SELECT
                 1
             FROM
                 friends
-            WHERE
-                transmitter_id = NEW.receiver_id AND receiver_id = NEW.transmitter_id)) THEN
-            RAISE 'Inverse relation already exist'
-            USING ERRCODE = '52000';
-        END IF;
-            --
-            -- Check if the transmitter user is blocked by the receiver user
-            IF (EXISTS (
-                SELECT
-                    1
-                FROM
-                    blocks
-                WHERE
-                    blocker_id = NEW.receiver_id AND blocked_id = NEW.transmitter_id)) THEN
-                RAISE 'Source user is blocked by the target user'
-                USING ERRCODE = '50003';
-            END IF;
-                --
-                -- Check for `incoming_friend_requests` flag on the receiver
-                SELECT
-                    incoming_friend_requests INTO incoming_friend_requests
-                FROM
-                    users
-                WHERE
-                    id = NEW.receiver_id;
-                --
-                IF (
-                    -- None
-                    incoming_friend_requests = 4 OR
-                    -- Following
-(incoming_friend_requests = 2 AND NOT EXISTS (
-                    SELECT
-                        1
-                    FROM
-                        relations r
-                    WHERE
-                        r. follower_id = NEW.transmitter_id AND r.followed_id = NEW.receiver_id)) OR
-                -- Friend of friends (also check accepted at TODO)
-(incoming_friend_requests = 3 AND NOT EXISTS ( WITH receiver_friends AS (
-                SELECT
-                    transmitter_id,
-                    receiver_id
-                FROM
-                    friends
-                WHERE (transmitter_id = NEW.receiver_id OR receiver_id = NEW.receiver_id) AND accepted_at IS NOT NULL
-)
-        SELECT
-            1
-        FROM
-            friends
-        WHERE (transmitter_id = NEW.transmitter_id AND receiver_id IN (receiver_friends.transmitter_id, receiver_friends.receiver_id) OR receiver_id = NEW.transmitter_id AND transmitter_id IN (receiver_friends.transmitter_id, receiver_friends.receiver_id)) AND accepted_at IS NOT NULL
-LIMIT 1))) THEN
-                    RAISE 'Target user is not accepting friend requests from the source user'
-                    USING ERRCODE = '51000';
-                END IF;
-                    --
-                    RETURN NEW;
+            WHERE (
+                transmitter_id = NEW.transmitter_id AND receiver_id IN (SELECT user_id FROM receiver_friends)
+                    OR receiver_id = NEW.transmitter_id AND transmitter_id IN (SELECT user_id FROM receiver_friends))
+              AND accepted_at IS NOT NULL AND deleted_at IS NULL
+            LIMIT 1
+            )
+    ) THEN
+        RAISE 'Target user is not accepting friend requests from the source user'
+        USING ERRCODE = '51000';
+    END IF;
+    --
+    -- Delete existing inverse friend relation
+    DELETE FROm friends
+               WHERE     transmitter_id = NEW.receiver_id AND receiver_id = NEW.transmitter_id;
+    --
+    RETURN NEW;
 END;
 $$
 LANGUAGE plpgsql;

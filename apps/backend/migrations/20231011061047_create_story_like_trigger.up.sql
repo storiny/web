@@ -1,6 +1,39 @@
 -- Insert
 --
-CREATE OR REPLACE FUNCTION story_like_insert_trigger_proc()
+CREATE OR REPLACE FUNCTION story_like_before_insert_trigger_proc()
+    RETURNS TRIGGER
+    AS $$
+BEGIN
+    -- Check whether the story is soft-deleted/unpublished or the user is soft-deleted/deactivated
+    IF(EXISTS(
+        SELECT
+            1
+        FROM
+            stories
+        WHERE
+            id = NEW.story_id AND deleted_at IS NOT NULL OR published_at IS NULL) OR EXISTS(
+        SELECT
+            1
+        FROM
+            users
+        WHERE
+            id = NEW.user_id AND(deleted_at IS NOT NULL OR deactivated_at IS NOT NULL))) THEN
+        RAISE 'Story is soft-deleted/unpublished or user is soft-deleted/deactivated'
+        USING ERRCODE = '52001';
+    END IF;
+        --
+        RETURN NEW;
+END;
+$$
+LANGUAGE plpgsql;
+
+CREATE OR REPLACE TRIGGER story_like_before_insert_trigger
+    BEFORE INSERT ON story_likes
+    FOR EACH ROW
+    EXECUTE PROCEDURE story_like_before_insert_trigger_proc();
+
+--
+CREATE OR REPLACE FUNCTION story_like_after_insert_trigger_proc()
     RETURNS TRIGGER
     AS $$
 BEGIN
@@ -17,10 +50,10 @@ END;
 $$
 LANGUAGE plpgsql;
 
-CREATE OR REPLACE TRIGGER story_like_insert_trigger
+CREATE OR REPLACE TRIGGER story_like_after_insert_trigger
     AFTER INSERT ON story_likes
     FOR EACH ROW
-    EXECUTE PROCEDURE story_like_insert_trigger_proc();
+    EXECUTE PROCEDURE story_like_after_insert_trigger_proc();
 
 -- Update
 --

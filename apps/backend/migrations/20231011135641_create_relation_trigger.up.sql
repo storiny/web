@@ -7,22 +7,34 @@ BEGIN
     -- Sanity check
     IF(NEW.follower_id = NEW.followed_id) THEN
         RAISE 'Source user is equivalent to the target user'
-        USING ERRCODE = '52001';
+        USING ERRCODE = '52000';
     END IF;
         --
-        -- Check if the follower user is blocked by the followed user
+        -- Check whether the follower/followed user is soft-deleted or deactivated
         IF(EXISTS(
             SELECT
                 1
             FROM
-                blocks
+                users
             WHERE
-                blocker_id = NEW.followed_id AND blocked_id = NEW.follower_id)) THEN
-            RAISE 'Source user is blocked by the target user'
-            USING ERRCODE = '50002';
+                id IN(NEW.follower_id, NEW.followed_id) AND(deleted_at IS NOT NULL OR deactivated_at IS NOT NULL))) THEN
+            RAISE 'Follower/followed user is either soft-deleted or deactivated'
+            USING ERRCODE = '52001';
         END IF;
             --
-            RETURN NEW;
+            -- Check if the follower user is blocked by the followed user
+            IF(EXISTS(
+                SELECT
+                    1
+                FROM
+                    blocks
+                WHERE
+                    blocker_id = NEW.followed_id AND blocked_id = NEW.follower_id AND deleted_at IS NULL)) THEN
+                RAISE 'Source user is blocked by the target user'
+                USING ERRCODE = '50002';
+            END IF;
+                --
+                RETURN NEW;
 END;
 $$
 LANGUAGE plpgsql;
