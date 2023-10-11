@@ -67,7 +67,6 @@ CREATE OR REPLACE TRIGGER reply_before_update_trigger
     EXECUTE PROCEDURE reply_before_update_trigger_proc();
 
 --
---
 CREATE OR REPLACE FUNCTION reply_after_update_trigger_proc()
     RETURNS TRIGGER
     AS $$

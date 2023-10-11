@@ -8,10 +8,7 @@ mod tests {
         Postgres,
         Row,
     };
-    use storiny::models::{
-        comment::Comment,
-        reply::Reply,
-    };
+    use storiny::models::reply::Reply;
     use time::OffsetDateTime;
 
     /// Returns a sample reply
@@ -89,27 +86,27 @@ mod tests {
                 .is_none()
         );
 
-        // Soft-delete the comment
+        // Soft-delete the reply
         sqlx::query(
             r#"
-            UPDATE comments
+            UPDATE replies
             SET deleted_at = now()
             WHERE id = $1
             "#,
         )
-        .bind(comment_id)
+        .bind(reply_id)
         .execute(&mut *conn)
         .await?;
 
-        // Comment like should be soft-deleted
+        // Reply like should be soft-deleted
         let result = sqlx::query(
             r#"
-            SELECT deleted_at FROM comment_likes
-            WHERE user_id = $1 AND comment_id = $2
+            SELECT deleted_at FROM reply_likes
+            WHERE user_id = $1 AND reply_id = $2
             "#,
         )
         .bind(1i64)
-        .bind(comment_id)
+        .bind(reply_id)
         .fetch_one(&mut *conn)
         .await?;
 
@@ -119,27 +116,27 @@ mod tests {
                 .is_some()
         );
 
-        // Restore the comment
+        // Restore the reply
         sqlx::query(
             r#"
-            UPDATE comments
+            UPDATE replies
             SET deleted_at = NULL
             WHERE id = $1
             "#,
         )
-        .bind(comment_id)
+        .bind(reply_id)
         .execute(&mut *conn)
         .await?;
 
-        // Comment like should be restored
+        // Reply like should be restored
         let result = sqlx::query(
             r#"
-            SELECT deleted_at FROM comment_likes
-            WHERE user_id = $1 AND comment_id = $2
+            SELECT deleted_at FROM reply_likes
+            WHERE user_id = $1 AND reply_id = $2
             "#,
         )
         .bind(1i64)
-        .bind(comment_id)
+        .bind(reply_id)
         .fetch_one(&mut *conn)
         .await?;
 
@@ -154,12 +151,12 @@ mod tests {
 
     // Notifications
 
-    #[sqlx::test(fixtures("user", "story"))]
-    async fn can_delete_notifications_when_the_comment_is_soft_deleted(
+    #[sqlx::test(fixtures("user", "story", "comment"))]
+    async fn can_delete_notifications_when_the_reply_is_soft_deleted(
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let comment_id = (insert_sample_reply(&mut conn).await?).get::<i64, _>("id");
+        let reply_id = (insert_sample_reply(&mut conn).await?).get::<i64, _>("id");
 
         // Insert a notification
         let insert_result = sqlx::query(
@@ -169,7 +166,7 @@ mod tests {
             RETURNING id
             "#,
         )
-        .bind(comment_id)
+        .bind(reply_id)
         .bind(0)
         .bind(1i64)
         .fetch_one(&mut *conn)
@@ -177,15 +174,15 @@ mod tests {
 
         assert!(insert_result.try_get::<i64, _>("id").is_ok());
 
-        // Soft-delete the comment
+        // Soft-delete the reply
         sqlx::query(
             r#"
-            UPDATE comments
+            UPDATE replies
             SET deleted_at = now()
             WHERE id = $1
             "#,
         )
-        .bind(comment_id)
+        .bind(reply_id)
         .execute(&mut *conn)
         .await?;
 
@@ -207,267 +204,265 @@ mod tests {
         Ok(())
     }
 
-    // `comment_count` counter cache
+    // `reply_count` counter cache
 
-    #[sqlx::test(fixtures("user", "story"))]
-    async fn can_increment_comment_count_on_story_when_inserting_the_comment(
+    #[sqlx::test(fixtures("user", "story", "comment"))]
+    async fn can_increment_reply_count_on_comment_when_inserting_the_reply(
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         insert_sample_reply(&mut conn).await?;
 
-        // Should increment the `comment_count`
+        // Should increment the `reply_count`
         let story_result = sqlx::query(
             r#"
-            SELECT comment_count FROM stories
+            SELECT reply_count FROM comments
             WHERE id = $1
             "#,
         )
-        .bind(2i64)
+        .bind(3i64)
         .fetch_one(&mut *conn)
         .await?;
 
-        assert_eq!(story_result.get::<i32, _>("comment_count"), 1);
+        assert_eq!(story_result.get::<i32, _>("reply_count"), 1);
 
         Ok(())
     }
 
-    #[sqlx::test(fixtures("user", "story"))]
-    async fn can_update_comment_count_on_story_when_soft_deleting_and_restoring_the_comment(
+    #[sqlx::test(fixtures("user", "story", "comment"))]
+    async fn can_update_reply_count_on_comment_when_soft_deleting_and_restoring_the_reply(
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let comment_id = (insert_sample_reply(&mut conn).await?).get::<i64, _>("id");
+        let reply_id = (insert_sample_reply(&mut conn).await?).get::<i64, _>("id");
 
-        // Should have 1 `comment_count` initially
+        // Should have 1 `reply_count` initially
         let story_result = sqlx::query(
             r#"
-            SELECT comment_count FROM stories
+            SELECT reply_count FROM comments
             WHERE id = $1
             "#,
         )
-        .bind(2i64)
+        .bind(3i64)
         .fetch_one(&mut *conn)
         .await?;
 
-        assert_eq!(story_result.get::<i32, _>("comment_count"), 1);
+        assert_eq!(story_result.get::<i32, _>("reply_count"), 1);
 
-        // Soft-delete the comment
+        // Soft-delete the reply
         sqlx::query(
             r#"
-            UPDATE comments
+            UPDATE replies
             SET deleted_at = now()
             WHERE id = $1
             "#,
         )
-        .bind(comment_id)
+        .bind(reply_id)
         .execute(&mut *conn)
         .await?;
 
-        // Should decrement the `comment_count`
+        // Should decrement the `reply_count`
         let story_result = sqlx::query(
             r#"
-            SELECT comment_count FROM stories
+            SELECT reply_count FROM comments
             WHERE id = $1
             "#,
         )
-        .bind(2i64)
+        .bind(3i64)
         .fetch_one(&mut *conn)
         .await?;
 
-        assert_eq!(story_result.get::<i32, _>("comment_count"), 0);
+        assert_eq!(story_result.get::<i32, _>("reply_count"), 0);
 
-        // Restore the comment
+        // Restore the reply
         sqlx::query(
             r#"
-            UPDATE comments
+            UPDATE replies
             SET deleted_at = NULL
             WHERE id = $1
             "#,
         )
-        .bind(comment_id)
+        .bind(reply_id)
         .execute(&mut *conn)
         .await?;
 
-        // Should increment the `comment_count`
+        // Should increment the `reply_count`
         let story_result = sqlx::query(
             r#"
-            SELECT comment_count FROM stories
+            SELECT reply_count FROM comments
             WHERE id = $1
             "#,
         )
-        .bind(2i64)
+        .bind(3i64)
         .fetch_one(&mut *conn)
         .await?;
 
-        assert_eq!(story_result.get::<i32, _>("comment_count"), 1);
+        assert_eq!(story_result.get::<i32, _>("reply_count"), 1);
 
         Ok(())
     }
 
-    #[sqlx::test(fixtures("user", "story"))]
-    async fn can_update_comment_count_on_story_when_hard_deleting_the_comment(
+    #[sqlx::test(fixtures("user", "story", "comment"))]
+    async fn can_update_reply_count_on_comment_when_hard_deleting_the_reply(
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let comment_id = (insert_sample_reply(&mut conn).await?).get::<i64, _>("id");
+        let reply_id = (insert_sample_reply(&mut conn).await?).get::<i64, _>("id");
 
-        // Should have 1 `comment_count` initially
+        // Should have 1 `reply_count` initially
         let story_result = sqlx::query(
             r#"
-            SELECT comment_count FROM stories
+            SELECT reply_count FROM comments
             WHERE id = $1
             "#,
         )
-        .bind(2i64)
+        .bind(3i64)
         .fetch_one(&mut *conn)
         .await?;
 
-        assert_eq!(story_result.get::<i32, _>("comment_count"), 1);
+        assert_eq!(story_result.get::<i32, _>("reply_count"), 1);
 
-        // Delete the comment
+        // Delete the reply
         sqlx::query(
             r#"
-            DELETE FROM comments
+            DELETE FROM replies
             WHERE id = $1
             "#,
         )
-        .bind(comment_id)
+        .bind(reply_id)
         .execute(&mut *conn)
         .await?;
 
-        // Should decrement the `comment_count`
+        // Should decrement the `reply_count`
         let story_result = sqlx::query(
             r#"
-            SELECT comment_count FROM stories
+            SELECT reply_count FROM comments
             WHERE id = $1
             "#,
         )
-        .bind(2i64)
+        .bind(3i64)
         .fetch_one(&mut *conn)
         .await?;
 
-        assert_eq!(story_result.get::<i32, _>("comment_count"), 0);
+        assert_eq!(story_result.get::<i32, _>("reply_count"), 0);
 
         Ok(())
     }
 
-    #[sqlx::test(fixtures("user", "story"))]
-    async fn should_not_update_comment_count_on_story_when_hard_deleting_a_soft_deleted_comment(
+    #[sqlx::test(fixtures("user", "story", "comment"))]
+    async fn should_not_update_reply_count_on_comment_when_hard_deleting_a_soft_deleted_reply(
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let comment_id = (insert_sample_reply(&mut conn).await?).get::<i64, _>("id");
+        let reply_id = (insert_sample_reply(&mut conn).await?).get::<i64, _>("id");
 
-        // Insert one more comment so that the `comment_count` is always >= 1,
-        // which would allow us to bypass the `comment_count > 1` constraint
-        // on the story when decrementing the `comment_count`.
+        // Insert one more reply so that the `reply_count` is always >= 1,
+        // which would allow us to bypass the `reply_count > 1` constraint
+        // on the comment when decrementing the `reply_count`.
         insert_sample_reply(&mut conn).await?;
 
-        // Should have 2 `comment_count` initially
-        let story_result = sqlx::query(
+        // Should have 2 `reply_count` initially
+        let comment_result = sqlx::query(
             r#"
-            SELECT comment_count FROM stories
+            SELECT reply_count FROM comments
             WHERE id = $1
             "#,
         )
-        .bind(2i64)
+        .bind(3i64)
         .fetch_one(&mut *conn)
         .await?;
 
-        assert_eq!(story_result.get::<i32, _>("comment_count"), 2);
+        assert_eq!(comment_result.get::<i32, _>("reply_count"), 2);
 
-        // Soft-delete the comment
+        // Soft-delete the reply
         sqlx::query(
             r#"
-            UPDATE comments
+            UPDATE replies
             SET deleted_at = now()
             WHERE id = $1
             "#,
         )
-        .bind(comment_id)
+        .bind(reply_id)
         .execute(&mut *conn)
         .await?;
 
-        // Should decrement the `comment_count`
+        // Should decrement the `reply_count`
         let story_result = sqlx::query(
             r#"
-            SELECT comment_count FROM stories
+            SELECT reply_count FROM comments
             WHERE id = $1
             "#,
         )
-        .bind(2i64)
+        .bind(3i64)
         .fetch_one(&mut *conn)
         .await?;
 
-        assert_eq!(story_result.get::<i32, _>("comment_count"), 1);
+        assert_eq!(story_result.get::<i32, _>("reply_count"), 1);
 
-        // Delete the comment
+        // Delete the reply
         sqlx::query(
             r#"
-            DELETE FROM comments
+            DELETE FROM replies
             WHERE id = $1
             "#,
         )
-        .bind(comment_id)
+        .bind(reply_id)
         .execute(&mut *conn)
         .await?;
 
-        // Should not decrement the `comment_count` any further
+        // Should not decrement the `reply_count` any further
         let story_result = sqlx::query(
             r#"
-            SELECT comment_count FROM stories
+            SELECT reply_count FROM comments
             WHERE id = $1
             "#,
         )
-        .bind(2i64)
+        .bind(3i64)
         .fetch_one(&mut *conn)
         .await?;
 
-        assert_eq!(story_result.get::<i32, _>("comment_count"), 1);
+        assert_eq!(story_result.get::<i32, _>("reply_count"), 1);
 
         Ok(())
     }
 
     // Misc
 
-    #[sqlx::test(fixtures("user", "story"))]
-    async fn should_not_restore_replies_from_deleted_users_when_cascading_comment(
+    #[sqlx::test(fixtures("user", "story", "comment"))]
+    async fn should_not_restore_reply_likes_from_deleted_users_when_cascading_reply(
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let comment_id = (insert_sample_reply(&mut conn).await?).get::<i64, _>("id");
+        let reply_id = (insert_sample_reply(&mut conn).await?).get::<i64, _>("id");
 
-        // Insert a reply
+        // Like the reply
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO replies(content, user_id, comment_id)
-            VALUES ($1, $2, $3)
-            RETURNING id, deleted_at
+            INSERT INTO reply_likes(user_id, reply_id)
+            VALUES ($1, $2)
+            RETURNING deleted_at
             "#,
         )
-        .bind("Sample content".to_string())
         .bind(1i64)
-        .bind(comment_id)
+        .bind(reply_id)
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(insert_result.try_get::<i64, _>("id").is_ok());
         assert!(
             insert_result
                 .get::<Option<OffsetDateTime>, _>("deleted_at")
                 .is_none()
         );
 
-        // Soft-delete the comment
+        // Soft-delete the reply
         sqlx::query(
             r#"
-            UPDATE comments
+            UPDATE replies
             SET deleted_at = now()
             WHERE id = $1
             "#,
         )
-        .bind(comment_id)
+        .bind(reply_id)
         .execute(&mut *conn)
         .await?;
 
@@ -483,14 +478,15 @@ mod tests {
         .execute(&mut *conn)
         .await?;
 
-        // Reply should be soft-deleted
+        // Reply like should be soft-deleted
         let result = sqlx::query(
             r#"
-            SELECT deleted_at FROM replies
-            WHERE id = $1
+            SELECT deleted_at FROM reply_likes
+            WHERE user_id = $1 AND reply_id = $2
             "#,
         )
-        .bind(insert_result.get::<i64, _>("id"))
+        .bind(1i64)
+        .bind(reply_id)
         .fetch_one(&mut *conn)
         .await?;
 
@@ -500,26 +496,27 @@ mod tests {
                 .is_some()
         );
 
-        // Restore the comment
+        // Restore the reply
         sqlx::query(
             r#"
-            UPDATE comments
+            UPDATE replies
             SET deleted_at = NULL
             WHERE id = $1
             "#,
         )
-        .bind(comment_id)
+        .bind(reply_id)
         .execute(&mut *conn)
         .await?;
 
-        // Reply should still be soft-deleted
+        // Reply like should still be soft-deleted
         let result = sqlx::query(
             r#"
-            SELECT deleted_at FROM replies
-            WHERE id = $1
+            SELECT deleted_at FROM reply_likes
+            WHERE user_id = $1 AND reply_id = $2
             "#,
         )
-        .bind(insert_result.get::<i64, _>("id"))
+        .bind(1i64)
+        .bind(reply_id)
         .fetch_one(&mut *conn)
         .await?;
 
@@ -541,14 +538,15 @@ mod tests {
         .execute(&mut *conn)
         .await?;
 
-        // Reply should get restored
+        // Reply like should get restored
         let result = sqlx::query(
             r#"
-            SELECT deleted_at FROM replies
-            WHERE id = $1
+            SELECT deleted_at FROM reply_likes
+            WHERE user_id = $1 AND reply_id = $2
             "#,
         )
-        .bind(insert_result.get::<i64, _>("id"))
+        .bind(1i64)
+        .bind(reply_id)
         .fetch_one(&mut *conn)
         .await?;
 
@@ -561,43 +559,41 @@ mod tests {
         Ok(())
     }
 
-    #[sqlx::test(fixtures("user", "story"))]
-    async fn should_not_restore_replies_from_deactivated_users_when_cascading_comment(
+    #[sqlx::test(fixtures("user", "story", "comment"))]
+    async fn should_not_restore_reply_likes_from_deactivated_users_when_cascading_reply(
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let comment_id = (insert_sample_reply(&mut conn).await?).get::<i64, _>("id");
+        let reply_id = (insert_sample_reply(&mut conn).await?).get::<i64, _>("id");
 
-        // Insert a reply
+        // Like the reply
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO replies(content, user_id, comment_id)
-            VALUES ($1, $2, $3)
-            RETURNING id, deleted_at
+            INSERT INTO reply_likes(user_id, reply_id)
+            VALUES ($1, $2)
+            RETURNING deleted_at
             "#,
         )
-        .bind("Sample content".to_string())
         .bind(1i64)
-        .bind(comment_id)
+        .bind(reply_id)
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(insert_result.try_get::<i64, _>("id").is_ok());
         assert!(
             insert_result
                 .get::<Option<OffsetDateTime>, _>("deleted_at")
                 .is_none()
         );
 
-        // Soft-delete the comment
+        // Soft-delete the reply
         sqlx::query(
             r#"
-            UPDATE comments
+            UPDATE replies
             SET deleted_at = now()
             WHERE id = $1
             "#,
         )
-        .bind(comment_id)
+        .bind(reply_id)
         .execute(&mut *conn)
         .await?;
 
@@ -613,14 +609,15 @@ mod tests {
         .execute(&mut *conn)
         .await?;
 
-        // Reply should be soft-deleted
+        // Reply like should be soft-deleted
         let result = sqlx::query(
             r#"
-            SELECT deleted_at FROM replies
-            WHERE id = $1
+            SELECT deleted_at FROM reply_likes
+            WHERE user_id = $1 AND reply_id = $2
             "#,
         )
-        .bind(insert_result.get::<i64, _>("id"))
+        .bind(1i64)
+        .bind(reply_id)
         .fetch_one(&mut *conn)
         .await?;
 
@@ -630,26 +627,27 @@ mod tests {
                 .is_some()
         );
 
-        // Restore the comment
+        // Restore the reply
         sqlx::query(
             r#"
-            UPDATE comments
+            UPDATE replies
             SET deleted_at = NULL
             WHERE id = $1
             "#,
         )
-        .bind(comment_id)
+        .bind(reply_id)
         .execute(&mut *conn)
         .await?;
 
-        // Reply should still be soft-deleted
+        // Reply like should still be soft-deleted
         let result = sqlx::query(
             r#"
-            SELECT deleted_at FROM replies
-            WHERE id = $1
+            SELECT deleted_at FROM reply_likes
+            WHERE user_id = $1 AND reply_id = $2
             "#,
         )
-        .bind(insert_result.get::<i64, _>("id"))
+        .bind(1i64)
+        .bind(reply_id)
         .fetch_one(&mut *conn)
         .await?;
 
@@ -671,278 +669,15 @@ mod tests {
         .execute(&mut *conn)
         .await?;
 
-        // Reply should get restored
+        // Reply like should get restored
         let result = sqlx::query(
             r#"
-            SELECT deleted_at FROM replies
-            WHERE id = $1
-            "#,
-        )
-        .bind(insert_result.get::<i64, _>("id"))
-        .fetch_one(&mut *conn)
-        .await?;
-
-        assert!(
-            result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none()
-        );
-
-        Ok(())
-    }
-
-    //
-
-    #[sqlx::test(fixtures("user", "story"))]
-    async fn should_not_restore_comment_likes_from_deleted_users_when_cascading_comment(
-        pool: PgPool,
-    ) -> sqlx::Result<()> {
-        let mut conn = pool.acquire().await?;
-        let comment_id = (insert_sample_reply(&mut conn).await?).get::<i64, _>("id");
-
-        // Like the comment
-        let insert_result = sqlx::query(
-            r#"
-            INSERT INTO comment_likes(user_id, comment_id)
-            VALUES ($1, $2)
-            RETURNING deleted_at
+            SELECT deleted_at FROM reply_likes
+            WHERE user_id = $1 AND reply_id = $2
             "#,
         )
         .bind(1i64)
-        .bind(comment_id)
-        .fetch_one(&mut *conn)
-        .await?;
-
-        assert!(
-            insert_result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none()
-        );
-
-        // Soft-delete the comment
-        sqlx::query(
-            r#"
-            UPDATE comments
-            SET deleted_at = now()
-            WHERE id = $1
-            "#,
-        )
-        .bind(comment_id)
-        .execute(&mut *conn)
-        .await?;
-
-        // Soft-delete the user
-        sqlx::query(
-            r#"
-            UPDATE users
-            SET deleted_at = now()
-            WHERE id = $1
-            "#,
-        )
-        .bind(1i64)
-        .execute(&mut *conn)
-        .await?;
-
-        // Comment like should be soft-deleted
-        let result = sqlx::query(
-            r#"
-            SELECT deleted_at FROM comment_likes
-            WHERE user_id = $1 AND comment_id = $2
-            "#,
-        )
-        .bind(1i64)
-        .bind(comment_id)
-        .fetch_one(&mut *conn)
-        .await?;
-
-        assert!(
-            result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_some()
-        );
-
-        // Restore the comment
-        sqlx::query(
-            r#"
-            UPDATE comments
-            SET deleted_at = NULL
-            WHERE id = $1
-            "#,
-        )
-        .bind(comment_id)
-        .execute(&mut *conn)
-        .await?;
-
-        // Comment like should still be soft-deleted
-        let result = sqlx::query(
-            r#"
-            SELECT deleted_at FROM comment_likes
-            WHERE user_id = $1 AND comment_id = $2
-            "#,
-        )
-        .bind(1i64)
-        .bind(comment_id)
-        .fetch_one(&mut *conn)
-        .await?;
-
-        assert!(
-            result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_some()
-        );
-
-        // Restore the user
-        sqlx::query(
-            r#"
-            UPDATE users
-            SET deleted_at = NULL
-            WHERE id = $1
-            "#,
-        )
-        .bind(1i64)
-        .execute(&mut *conn)
-        .await?;
-
-        // Comment like should get restored
-        let result = sqlx::query(
-            r#"
-            SELECT deleted_at FROM comment_likes
-            WHERE user_id = $1 AND comment_id = $2
-            "#,
-        )
-        .bind(1i64)
-        .bind(comment_id)
-        .fetch_one(&mut *conn)
-        .await?;
-
-        assert!(
-            result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none()
-        );
-
-        Ok(())
-    }
-
-    #[sqlx::test(fixtures("user", "story"))]
-    async fn should_not_restore_comment_likes_from_deactivated_users_when_cascading_comment(
-        pool: PgPool,
-    ) -> sqlx::Result<()> {
-        let mut conn = pool.acquire().await?;
-        let comment_id = (insert_sample_reply(&mut conn).await?).get::<i64, _>("id");
-
-        // Like the comment
-        let insert_result = sqlx::query(
-            r#"
-            INSERT INTO comment_likes(user_id, comment_id)
-            VALUES ($1, $2)
-            RETURNING deleted_at
-            "#,
-        )
-        .bind(1i64)
-        .bind(comment_id)
-        .fetch_one(&mut *conn)
-        .await?;
-
-        assert!(
-            insert_result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none()
-        );
-
-        // Soft-delete the comment
-        sqlx::query(
-            r#"
-            UPDATE comments
-            SET deleted_at = now()
-            WHERE id = $1
-            "#,
-        )
-        .bind(comment_id)
-        .execute(&mut *conn)
-        .await?;
-
-        // Deactivate the user
-        sqlx::query(
-            r#"
-            UPDATE users
-            SET deactivated_at = now()
-            WHERE id = $1
-            "#,
-        )
-        .bind(1i64)
-        .execute(&mut *conn)
-        .await?;
-
-        // Comment like should be soft-deleted
-        let result = sqlx::query(
-            r#"
-            SELECT deleted_at FROM comment_likes
-            WHERE user_id = $1 AND comment_id = $2
-            "#,
-        )
-        .bind(1i64)
-        .bind(comment_id)
-        .fetch_one(&mut *conn)
-        .await?;
-
-        assert!(
-            result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_some()
-        );
-
-        // Restore the comment
-        sqlx::query(
-            r#"
-            UPDATE comments
-            SET deleted_at = NULL
-            WHERE id = $1
-            "#,
-        )
-        .bind(comment_id)
-        .execute(&mut *conn)
-        .await?;
-
-        // Comment like should still be soft-deleted
-        let result = sqlx::query(
-            r#"
-            SELECT deleted_at FROM comment_likes
-            WHERE user_id = $1 AND comment_id = $2
-            "#,
-        )
-        .bind(1i64)
-        .bind(comment_id)
-        .fetch_one(&mut *conn)
-        .await?;
-
-        assert!(
-            result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_some()
-        );
-
-        // Activate the user
-        sqlx::query(
-            r#"
-            UPDATE users
-            SET deactivated_at = NULL
-            WHERE id = $1
-            "#,
-        )
-        .bind(1i64)
-        .execute(&mut *conn)
-        .await?;
-
-        // Comment like should get restored
-        let result = sqlx::query(
-            r#"
-            SELECT deleted_at FROM comment_likes
-            WHERE user_id = $1 AND comment_id = $2
-            "#,
-        )
-        .bind(1i64)
-        .bind(comment_id)
+        .bind(reply_id)
         .fetch_one(&mut *conn)
         .await?;
 
@@ -957,97 +692,47 @@ mod tests {
 
     // Hard deletes
 
-    #[sqlx::test(fixtures("user", "story"))]
-    async fn can_delete_reply_on_comment_hard_delete(pool: PgPool) -> sqlx::Result<()> {
+    #[sqlx::test(fixtures("user", "story", "comment"))]
+    async fn can_delete_reply_like_on_reply_hard_delete(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let comment_id = (insert_sample_reply(&mut conn).await?).get::<i64, _>("id");
+        let reply_id = (insert_sample_reply(&mut conn).await?).get::<i64, _>("id");
 
-        // Insert a reply
+        // Like the reply
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO replies(content, user_id, comment_id)
-            VALUES ($1, $2, $3)
-            RETURNING id
-            "#,
-        )
-        .bind("Sample content".to_string())
-        .bind(1i64)
-        .bind(comment_id)
-        .fetch_one(&mut *conn)
-        .await?;
-
-        assert!(insert_result.try_get::<i64, _>("id").is_ok());
-
-        // Delete the comment
-        sqlx::query(
-            r#"
-            DELETE FROM comments
-            WHERE id = $1
-            "#,
-        )
-        .bind(comment_id)
-        .execute(&mut *conn)
-        .await?;
-
-        // Reply should get deleted
-        let result = sqlx::query(
-            r#"
-            SELECT EXISTS(
-                SELECT 1 FROM replies
-                WHERE id = $1
-            )
-            "#,
-        )
-        .bind(insert_result.get::<i64, _>("id"))
-        .fetch_one(&mut *conn)
-        .await?;
-
-        assert_eq!(result.get::<bool, _>("exists"), false);
-
-        Ok(())
-    }
-
-    #[sqlx::test(fixtures("user", "story"))]
-    async fn can_delete_comment_like_on_comment_hard_delete(pool: PgPool) -> sqlx::Result<()> {
-        let mut conn = pool.acquire().await?;
-        let comment_id = (insert_sample_reply(&mut conn).await?).get::<i64, _>("id");
-
-        // Like the comment
-        let insert_result = sqlx::query(
-            r#"
-            INSERT INTO comment_likes(user_id, comment_id)
+            INSERT INTO reply_likes(user_id, reply_id)
             VALUES ($1, $2)
             "#,
         )
         .bind(1i64)
-        .bind(comment_id)
+        .bind(reply_id)
         .execute(&mut *conn)
         .await?;
 
         assert_eq!(insert_result.rows_affected(), 1);
 
-        // Delete the comment
+        // Delete the reply
         sqlx::query(
             r#"
-            DELETE FROM comments
+            DELETE FROM replies
             WHERE id = $1
             "#,
         )
-        .bind(comment_id)
+        .bind(reply_id)
         .execute(&mut *conn)
         .await?;
 
-        // Comment like should get deleted
+        // Reply like should get deleted
         let result = sqlx::query(
             r#"
             SELECT EXISTS(
-                SELECT 1 FROM comment_likes
-                WHERE user_id = $1 AND comment_id = $2
+                SELECT 1 FROM reply_likes
+                WHERE user_id = $1 AND reply_id = $2
             )
             "#,
         )
         .bind(1i64)
-        .bind(comment_id)
+        .bind(reply_id)
         .fetch_one(&mut *conn)
         .await?;
 
@@ -1056,10 +741,10 @@ mod tests {
         Ok(())
     }
 
-    #[sqlx::test(fixtures("user", "story"))]
-    async fn can_delete_notification_on_comment_hard_delete(pool: PgPool) -> sqlx::Result<()> {
+    #[sqlx::test(fixtures("user", "story", "comment"))]
+    async fn can_delete_notification_on_reply_hard_delete(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let comment_id = (insert_sample_reply(&mut conn).await?).get::<i64, _>("id");
+        let reply_id = (insert_sample_reply(&mut conn).await?).get::<i64, _>("id");
 
         // Insert a notification
         let insert_result = sqlx::query(
@@ -1069,7 +754,7 @@ mod tests {
             RETURNING id
             "#,
         )
-        .bind(comment_id)
+        .bind(reply_id)
         .bind(0)
         .bind(1i64)
         .fetch_one(&mut *conn)
@@ -1077,14 +762,14 @@ mod tests {
 
         assert!(insert_result.try_get::<i64, _>("id").is_ok());
 
-        // Delete the comment
+        // Delete the reply
         sqlx::query(
             r#"
-            DELETE FROM comments
+            DELETE FROM replies
             WHERE id = $1
             "#,
         )
-        .bind(comment_id)
+        .bind(reply_id)
         .execute(&mut *conn)
         .await?;
 

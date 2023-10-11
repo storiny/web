@@ -67,7 +67,6 @@ CREATE OR REPLACE TRIGGER comment_before_update_trigger
     EXECUTE PROCEDURE comment_before_update_trigger_proc();
 
 --
---
 CREATE OR REPLACE FUNCTION comment_after_update_trigger_proc()
     RETURNS TRIGGER
     AS $$

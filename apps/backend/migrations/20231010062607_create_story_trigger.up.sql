@@ -60,7 +60,6 @@ CREATE OR REPLACE TRIGGER story_before_update_trigger
     EXECUTE PROCEDURE story_before_update_trigger_proc();
 
 --
---
 CREATE OR REPLACE FUNCTION story_after_update_trigger_proc()
     RETURNS TRIGGER
     AS $$
