@@ -8,46 +8,22 @@ mod tests {
         Postgres,
         Row,
     };
-    use storiny::models::reply::Reply;
     use time::OffsetDateTime;
-
-    /// Returns a sample reply
-    fn get_default_reply() -> Reply {
-        Reply {
-            id: 0,
-            content: "Sample **content**".to_string(),
-            rendered_content: "Sample <strong>content</strong>".to_string(),
-            hidden: false,
-            user_id: 1i64,
-            comment_id: 4i64,
-            like_count: 0,
-            created_at: OffsetDateTime::now_utc(),
-            edited_at: None,
-            deleted_at: None,
-        }
-    }
 
     /// Inserts a sample reply into the database.
     ///
     /// * `conn` - Pool connection.
     async fn insert_sample_reply(conn: &mut PoolConnection<Postgres>) -> Result<PgRow, Error> {
-        let reply = get_default_reply();
         sqlx::query(
             r#"
-            INSERT INTO replies (content, rendered_content, hidden, user_id, comment_id, like_count, created_at, edited_at, deleted_at)
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+            INSERT INTO replies(content, user_id, comment_id)
+            VALUES ($1, $2, $3)
             RETURNING id
             "#,
         )
-        .bind(reply.content)
-        .bind(reply.rendered_content)
-        .bind(reply.hidden)
-        .bind(reply.user_id)
-        .bind(reply.comment_id)
-        .bind(reply.like_count)
-        .bind(reply.created_at)
-        .bind(reply.edited_at)
-        .bind(reply.deleted_at)
+        .bind("Sample content".to_string())
+        .bind(1i64)
+        .bind(4i64)
         .fetch_one(&mut **conn)
         .await
     }
@@ -57,6 +33,132 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let result = insert_sample_reply(&mut conn).await?;
         assert!(result.try_get::<i64, _>("id").is_ok());
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("user", "story", "comment"))]
+    async fn can_reject_reply_for_soft_deleted_comment(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+
+        // Soft-delete the comment
+        sqlx::query(
+            r#"
+            UPDATE comments
+            SET deleted_at = now()
+            WHERE id = $1
+            "#,
+        )
+        .bind(4i64)
+        .execute(&mut *conn)
+        .await?;
+
+        let result = sqlx::query(
+            r#"
+            INSERT INTO replies(content, user_id, comment_id)
+            VALUES ($1, $2, $3)
+            "#,
+        )
+        .bind("Sample content")
+        .bind(1i64)
+        .bind(4i64)
+        .execute(&mut *conn)
+        .await;
+
+        // Should reject with `52001` SQLSTATE
+        assert_eq!(
+            result
+                .unwrap_err()
+                .into_database_error()
+                .unwrap()
+                .code()
+                .unwrap(),
+            "52001"
+        );
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("user", "story", "comment"))]
+    async fn can_reject_reply_for_soft_deleted_user(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+
+        // Soft-delete the user
+        sqlx::query(
+            r#"
+            UPDATE users
+            SET deleted_at = now()
+            WHERE id = $1
+            "#,
+        )
+        .bind(1i64)
+        .execute(&mut *conn)
+        .await?;
+
+        let result = sqlx::query(
+            r#"
+            INSERT INTO replies(content, user_id, comment_id)
+            VALUES ($1, $2, $3)
+            "#,
+        )
+        .bind("Sample content")
+        .bind(1i64)
+        .bind(4i64)
+        .execute(&mut *conn)
+        .await;
+
+        // Should reject with `52001` SQLSTATE
+        assert_eq!(
+            result
+                .unwrap_err()
+                .into_database_error()
+                .unwrap()
+                .code()
+                .unwrap(),
+            "52001"
+        );
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("user", "story", "comment"))]
+    async fn can_reject_reply_for_deactivated_user(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+
+        // Deactivate the user
+        sqlx::query(
+            r#"
+            UPDATE users
+            SET deactivated_at = now()
+            WHERE id = $1
+            "#,
+        )
+        .bind(1i64)
+        .execute(&mut *conn)
+        .await?;
+
+        let result = sqlx::query(
+            r#"
+            INSERT INTO replies(content, user_id, comment_id)
+            VALUES ($1, $2, $3)
+            "#,
+        )
+        .bind("Sample content")
+        .bind(1i64)
+        .bind(4i64)
+        .execute(&mut *conn)
+        .await;
+
+        // Should reject with `52001` SQLSTATE
+        assert_eq!(
+            result
+                .unwrap_err()
+                .into_database_error()
+                .unwrap()
+                .code()
+                .unwrap(),
+            "52001"
+        );
+
         Ok(())
     }
 

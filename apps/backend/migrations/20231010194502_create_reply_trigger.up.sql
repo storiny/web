@@ -4,25 +4,43 @@ CREATE OR REPLACE FUNCTION reply_before_insert_trigger_proc()
     RETURNS TRIGGER
     AS $$
 BEGIN
-    -- Check if the user is blocked by the comment writer
+    -- Check whether the comment is soft-deleted or the reply writer is soft-deleted/deactivated
     IF(EXISTS(
         SELECT
             1
         FROM
-            comments c
+            comments
         WHERE
-            c.id = NEW.comment_id AND EXISTS(
+            id = NEW.comment_id AND deleted_at IS NOT NULL) OR EXISTS(
+        SELECT
+            1
+        FROM
+            users
+        WHERE
+            id = NEW.user_id AND(deleted_at IS NOT NULL OR deactivated_at IS NOT NULL))) THEN
+        RAISE 'Comment is soft-deleted or reply writer is soft-deleted/deactivated'
+        USING ERRCODE = '52001';
+    END IF;
+        --
+        -- Check if the user is blocked by the comment writer
+        IF(EXISTS(
             SELECT
                 1
             FROM
-                blocks b
+                comments c
             WHERE
-                b.blocker_id = c.user_id AND b.blocked_id = NEW.user_id))) THEN
-        RAISE 'User is blocked by the comment writer'
-        USING ERRCODE = '50001';
-    END IF;
-        --
-        RETURN NEW;
+                c.id = NEW.comment_id AND EXISTS(
+                SELECT
+                    1
+                FROM
+                    blocks b
+                WHERE
+                    b.blocker_id = c.user_id AND b.blocked_id = NEW.user_id AND c.deleted_at IS NULL))) THEN
+            RAISE 'User is blocked by the comment writer'
+            USING ERRCODE = '50001';
+        END IF;
+            --
+            RETURN NEW;
 END;
 $$
 LANGUAGE plpgsql;

@@ -8,57 +8,7 @@ mod tests {
         Postgres,
         Row,
     };
-    use storiny::{
-        models::story::{
-            Story,
-            StoryCategory,
-        },
-        story_def::v1::{
-            StoryAgeRestriction,
-            StoryLicense,
-            StoryVisibility,
-        },
-    };
     use time::OffsetDateTime;
-
-    /// Returns a sample story
-    ///
-    /// * `is_published` - Whether to return a published story.
-    fn get_default_story(is_published: bool) -> Story {
-        Story {
-            id: 0,
-            title: "Some story".to_string(),
-            slug: None,
-            description: None,
-            splash_id: None,
-            splash_hex: None,
-            category: StoryCategory::Others,
-            license: StoryLicense::Reserved,
-            visibility: StoryVisibility::Public,
-            age_restriction: StoryAgeRestriction::NotRated,
-            user_id: 1i64,
-            seo_title: None,
-            seo_description: None,
-            canonical_url: None,
-            preview_image: None,
-            word_count: 0,
-            read_count: 0,
-            like_count: 0,
-            comment_count: 0,
-            disable_public_revision_history: false,
-            disable_comments: false,
-            disable_toc: false,
-            created_at: OffsetDateTime::now_utc(),
-            first_published_at: None,
-            published_at: if is_published {
-                Some(OffsetDateTime::now_utc())
-            } else {
-                None
-            },
-            edited_at: None,
-            deleted_at: None,
-        }
-    }
 
     /// Inserts a sample story into the database.
     ///
@@ -68,42 +18,21 @@ mod tests {
         conn: &mut PoolConnection<Postgres>,
         is_published: bool,
     ) -> Result<PgRow, Error> {
-        let story = get_default_story(is_published);
         sqlx::query(
             r#"
-            INSERT INTO stories (title, slug, description, splash_id, splash_hex, category, visibility, age_restriction, license, user_id, seo_title, seo_description, canonical_url, preview_image, word_count, read_count, like_count, comment_count, disable_public_revision_history, disable_comments, disable_toc, created_at, first_published_at, published_at, edited_at, deleted_at)
-            VALUES ($1, $2, $3, $4, $5, $6::story_category, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26)
+            INSERT INTO stories(user_id, published_at)
+            VALUES ($1, $2)
             RETURNING id
             "#,
         )
-            .bind(&story.title)
-            .bind(&story.slug)
-            .bind(&story.description)
-            .bind(&story.splash_id)
-            .bind(&story.splash_hex)
-            .bind(&story.category.to_string())
-            .bind(&(story.visibility as i16))
-            .bind(&(story.age_restriction as i16))
-            .bind(&(story.license as i16))
-            .bind(&story.user_id)
-            .bind(&story.seo_title)
-            .bind(&story.seo_description)
-            .bind(&story.canonical_url)
-            .bind(&story.preview_image)
-            .bind(&story.word_count)
-            .bind(&story.read_count)
-            .bind(&story.like_count)
-            .bind(&story.comment_count)
-            .bind(&story.disable_public_revision_history)
-            .bind(&story.disable_comments)
-            .bind(&story.disable_toc)
-            .bind(&story.created_at)
-            .bind(&story.first_published_at)
-            .bind(&story.published_at)
-            .bind(&story.edited_at)
-            .bind(&story.deleted_at)
-            .fetch_one(&mut **conn)
-            .await
+        .bind(1i64)
+        .bind(if is_published {
+            Some(OffsetDateTime::now_utc())
+        } else {
+            None
+        })
+        .fetch_one(&mut **conn)
+        .await
     }
 
     #[sqlx::test(fixtures("user"))]
@@ -111,6 +40,86 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let result = insert_sample_story(&mut conn, false).await?;
         assert!(result.try_get::<i64, _>("id").is_ok());
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("user"))]
+    async fn can_reject_story_for_soft_deleted_story_writer(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+
+        // Soft-delete the story writer
+        sqlx::query(
+            r#"
+            UPDATE users
+            SET deleted_at = now()
+            WHERE id = $1
+            "#,
+        )
+        .bind(1i64)
+        .execute(&mut *conn)
+        .await?;
+
+        let result = sqlx::query(
+            r#"
+            INSERT INTO stories(user_id)
+            VALUES ($1)
+            "#,
+        )
+        .bind(1i64)
+        .execute(&mut *conn)
+        .await;
+
+        // Should reject with `52001` SQLSTATE
+        assert_eq!(
+            result
+                .unwrap_err()
+                .into_database_error()
+                .unwrap()
+                .code()
+                .unwrap(),
+            "52001"
+        );
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("user"))]
+    async fn can_reject_story_for_deactivated_story_writer(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+
+        // Deactivate the story writer
+        sqlx::query(
+            r#"
+            UPDATE users
+            SET deactivated_at = now()
+            WHERE id = $1
+            "#,
+        )
+        .bind(1i64)
+        .execute(&mut *conn)
+        .await?;
+
+        let result = sqlx::query(
+            r#"
+            INSERT INTO stories(user_id)
+            VALUES ($1)
+            "#,
+        )
+        .bind(1i64)
+        .execute(&mut *conn)
+        .await;
+
+        // Should reject with `52001` SQLSTATE
+        assert_eq!(
+            result
+                .unwrap_err()
+                .into_database_error()
+                .unwrap()
+                .code()
+                .unwrap(),
+            "52001"
+        );
+
         Ok(())
     }
 

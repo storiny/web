@@ -1,3 +1,12 @@
+#[path = "assets/assets.rs"]
+mod assets;
+
+#[path = "blocks/blocks.rs"]
+mod blocks;
+
+#[path = "mutes/mutes.rs"]
+mod mutes;
+
 #[path = "users/users.rs"]
 mod users;
 
@@ -24,3 +33,6 @@ mod reply_likes;
 
 #[path = "story_tags/story_tags.rs"]
 mod story_tags;
+
+#[path = "bookmarks/bookmarks.rs"]
+mod bookmarks;

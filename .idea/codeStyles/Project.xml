@@ -1,0 +1,10 @@
+<component name="ProjectCodeStyleConfiguration">
+  <code_scheme name="Project" version="173">
+    <SqlCodeStyleSettings version="6">
+      <option name="KEYWORD_CASE" value="2" />
+      <option name="TYPE_CASE" value="2" />
+      <option name="CUSTOM_TYPE_CASE" value="0" />
+      <option name="QUERY_EL_COMMA" value="2" />
+    </SqlCodeStyleSettings>
+  </code_scheme>
+</component>
