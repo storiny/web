@@ -84,15 +84,6 @@ BEGIN
             deleted_at IS NULL
             AND story_id = NEW.id;
         --
-        -- Soft-delete story tags
-        UPDATE
-            story_tags
-        SET
-            deleted_at = now()
-        WHERE
-            deleted_at IS NULL
-            AND story_id = NEW.id;
-        --
         -- Soft-delete bookmarks
         UPDATE
             bookmarks
@@ -110,6 +101,10 @@ BEGIN
         WHERE
             deleted_at IS NULL
             AND story_id = NEW.id;
+        --
+        -- Delete story tags
+        DELETE FROM story_tags
+        WHERE story_id = NEW.id;
         --
         -- Delete notifications
         DELETE FROM notifications
@@ -156,15 +151,6 @@ BEGIN
                     u.id = sl.user_id
                     AND u.deleted_at IS NULL
                     AND u.deactivated_at IS NULL);
-        --
-        -- Restore story tags
-        UPDATE
-            story_tags AS st
-        SET
-            deleted_at = NULL
-        WHERE
-            deleted_at IS NOT NULL
-            AND st.story_id = NEW.id;
         --
         -- Restore bookmarks
         UPDATE

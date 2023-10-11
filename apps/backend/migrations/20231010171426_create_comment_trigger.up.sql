@@ -1,6 +1,39 @@
 -- Insert
 --
-CREATE OR REPLACE FUNCTION comment_insert_trigger_proc()
+CREATE OR REPLACE FUNCTION comment_before_insert_trigger_proc()
+    RETURNS TRIGGER
+    AS $$
+BEGIN
+    -- Check if the user is blocked by the story writer
+    IF(EXISTS(
+        SELECT
+            1
+        FROM
+            stories s
+        WHERE
+            s.id = NEW.story_id AND EXISTS(
+            SELECT
+                1
+            FROM
+                blocks b
+            WHERE
+                b.blocker_id = s.user_id AND b.blocked_id = NEW.user_id))) THEN
+        RAISE 'User is blocked by the story writer'
+        USING ERRCODE = '50000';
+    END IF;
+        --
+        RETURN NEW;
+END;
+$$
+LANGUAGE plpgsql;
+
+CREATE OR REPLACE TRIGGER comment_before_insert_trigger
+    BEFORE INSERT ON comments
+    FOR EACH ROW
+    EXECUTE PROCEDURE comment_before_insert_trigger_proc();
+
+--
+CREATE OR REPLACE FUNCTION comment_after_insert_trigger_proc()
     RETURNS TRIGGER
     AS $$
 BEGIN
@@ -17,10 +50,10 @@ END;
 $$
 LANGUAGE plpgsql;
 
-CREATE OR REPLACE TRIGGER comment_insert_trigger
+CREATE OR REPLACE TRIGGER comment_after_insert_trigger
     AFTER INSERT ON comments
     FOR EACH ROW
-    EXECUTE PROCEDURE comment_insert_trigger_proc();
+    EXECUTE PROCEDURE comment_after_insert_trigger_proc();
 
 -- Update
 --

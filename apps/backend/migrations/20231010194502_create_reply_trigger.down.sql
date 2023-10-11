@@ -1,6 +1,10 @@
-DROP TRIGGER IF EXISTS reply_insert_trigger ON replies;
+DROP TRIGGER IF EXISTS reply_before_insert_trigger ON replies;
 
-DROP FUNCTION IF EXISTS reply_insert_trigger_proc;
+DROP FUNCTION IF EXISTS reply_before_insert_trigger_proc;
+
+DROP TRIGGER IF EXISTS reply_after_insert_trigger ON replies;
+
+DROP FUNCTION IF EXISTS reply_after_insert_trigger_proc;
 
 DROP TRIGGER IF EXISTS reply_before_update_trigger ON replies;
 

@@ -8,7 +8,11 @@ mod tests {
         Postgres,
         Row,
     };
-    use storiny::models::user::User;
+    use storiny::models::user::{
+        FollowingListVisibility,
+        FriendListVisibility,
+        User,
+    };
     use time::OffsetDateTime;
 
     /// Returns a sample user
@@ -34,6 +38,9 @@ mod tests {
             following_count: 0,
             friend_count: 0,
             story_count: 0,
+            incoming_friend_requests: Default::default(),
+            following_list_visibility: FollowingListVisibility::Everyone,
+            friend_list_visibility: FriendListVisibility::Everyone,
             login_apple_id: None,
             login_google_id: None,
             mfa_enabled: false,
@@ -51,39 +58,42 @@ mod tests {
         let user = get_default_user();
         sqlx::query(
             r#"
-INSERT INTO users (name, username, email, email_verified, password, bio, rendered_bio, location, wpm, avatar_id, avatar_hex, banner_id, banner_hex, is_private, public_flags, follower_count, following_count, friend_count, story_count, login_apple_id, login_google_id, mfa_enabled, mfa_secret, created_at, username_modified_at, deleted_at)
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26)
-RETURNING id
-               "#,
+            INSERT INTO users (name, username, email, email_verified, password, bio, rendered_bio, location, wpm, avatar_id, avatar_hex, banner_id, banner_hex, is_private, public_flags, follower_count, following_count, friend_count, story_count, incoming_friend_requests, following_list_visibility, friend_list_visibility, login_apple_id, login_google_id, mfa_enabled, mfa_secret, created_at, username_modified_at, deleted_at)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29)
+            RETURNING id
+            "#,
         )
-            .bind(user.name)
-            .bind(user.username)
-            .bind(user.email)
-            .bind(user.email_verified)
-            .bind(user.password)
-            .bind(user.bio)
-            .bind(user.rendered_bio)
-            .bind(user.location)
-            .bind(user.wpm)
-            .bind(user.avatar_id)
-            .bind(user.avatar_hex)
-            .bind(user.banner_id)
-            .bind(user.banner_hex)
-            .bind(user.is_private)
-            .bind(user.public_flags)
-            .bind(user.follower_count)
-            .bind(user.following_count)
-            .bind(user.friend_count)
-            .bind(user.story_count)
-            .bind(user.login_apple_id)
-            .bind(user.login_google_id)
-            .bind(user.mfa_enabled)
-            .bind(user.mfa_secret)
-            .bind(user.created_at)
-            .bind(user.username_modified_at)
-            .bind(&user.deleted_at)
-            .fetch_one( &mut **conn)
-            .await
+        .bind(user.name)
+        .bind(user.username)
+        .bind(user.email)
+        .bind(user.email_verified)
+        .bind(user.password)
+        .bind(user.bio)
+        .bind(user.rendered_bio)
+        .bind(user.location)
+        .bind(user.wpm)
+        .bind(user.avatar_id)
+        .bind(user.avatar_hex)
+        .bind(user.banner_id)
+        .bind(user.banner_hex)
+        .bind(user.is_private)
+        .bind(user.public_flags)
+        .bind(user.follower_count)
+        .bind(user.following_count)
+        .bind(user.friend_count)
+        .bind(user.story_count)
+        .bind(user.incoming_friend_requests)
+        .bind(user.following_list_visibility)
+        .bind(user.friend_list_visibility)
+        .bind(user.login_apple_id)
+        .bind(user.login_google_id)
+        .bind(user.mfa_enabled)
+        .bind(user.mfa_secret)
+        .bind(user.created_at)
+        .bind(user.username_modified_at)
+        .bind(&user.deleted_at)
+        .fetch_one(&mut **conn)
+        .await
     }
 
     #[sqlx::test]

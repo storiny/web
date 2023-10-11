@@ -1,6 +1,39 @@
 -- Insert
 --
-CREATE OR REPLACE FUNCTION reply_insert_trigger_proc()
+CREATE OR REPLACE FUNCTION reply_before_insert_trigger_proc()
+    RETURNS TRIGGER
+    AS $$
+BEGIN
+    -- Check if the user is blocked by the comment writer
+    IF(EXISTS(
+        SELECT
+            1
+        FROM
+            comments c
+        WHERE
+            c.id = NEW.comment_id AND EXISTS(
+            SELECT
+                1
+            FROM
+                blocks b
+            WHERE
+                b.blocker_id = c.user_id AND b.blocked_id = NEW.user_id))) THEN
+        RAISE 'User is blocked by the comment writer'
+        USING ERRCODE = '50001';
+    END IF;
+        --
+        RETURN NEW;
+END;
+$$
+LANGUAGE plpgsql;
+
+CREATE OR REPLACE TRIGGER reply_before_insert_trigger
+    BEFORE INSERT ON replies
+    FOR EACH ROW
+    EXECUTE PROCEDURE reply_before_insert_trigger_proc();
+
+--
+CREATE OR REPLACE FUNCTION reply_after_insert_trigger_proc()
     RETURNS TRIGGER
     AS $$
 BEGIN
@@ -17,10 +50,10 @@ END;
 $$
 LANGUAGE plpgsql;
 
-CREATE OR REPLACE TRIGGER reply_insert_trigger
+CREATE OR REPLACE TRIGGER reply_after_insert_trigger
     AFTER INSERT ON replies
     FOR EACH ROW
-    EXECUTE PROCEDURE reply_insert_trigger_proc();
+    EXECUTE PROCEDURE reply_after_insert_trigger_proc();
 
 -- Update
 --
