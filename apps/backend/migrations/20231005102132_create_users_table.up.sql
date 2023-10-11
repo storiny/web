@@ -16,13 +16,18 @@ CREATE TABLE IF NOT EXISTS users(
     banner_id asset_key,
     avatar_hex hex_color,
     banner_hex hex_color,
-    is_private BOOL NOT NULL DEFAULT FALSE,
     public_flags unsigned_int32 NOT NULL DEFAULT 0,
     -- Stats
     follower_count unsigned_int32 NOT NULL DEFAULT 0,
     following_count unsigned_int32 NOT NULL DEFAULT 0,
     friend_count unsigned_int32 NOT NULL DEFAULT 0,
     story_count unsigned_int32 NOT NULL DEFAULT 0,
+    -- Privacy settings
+    is_private BOOL NOT NULL DEFAULT FALSE,
+    incoming_friend_requests SMALLINT NOT NULL DEFAULT 1, -- 1 (everyone) by default
+    following_list_visibility SMALLINT NOT NULL DEFAULT 0, -- 0 (everyone) by default
+    friend_list_visibility SMALLINT NOT NULL DEFAULT 0, -- 0 (everyone) by default
+    disable_read_history BOOL NOT NULL DEFAULT FALSE,
     -- Third-party login credentials
     login_apple_id TEXT CONSTRAINT login_apple_id_length CHECK (char_length(login_apple_id) <= 256),
     login_google_id TEXT CONSTRAINT login_google_id_length CHECK (char_length(login_google_id) <= 256),

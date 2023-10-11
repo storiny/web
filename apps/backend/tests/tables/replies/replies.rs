@@ -19,7 +19,7 @@ mod tests {
             rendered_content: "Sample <strong>content</strong>".to_string(),
             hidden: false,
             user_id: 1i64,
-            comment_id: 3i64,
+            comment_id: 4i64,
             like_count: 0,
             created_at: OffsetDateTime::now_utc(),
             edited_at: None,
@@ -57,6 +57,52 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let result = insert_sample_reply(&mut conn).await?;
         assert!(result.try_get::<i64, _>("id").is_ok());
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("user", "story", "comment"))]
+    async fn can_reject_reply_if_the_user_is_blocked_by_the_comment_writer(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+
+        // Block the reply writer
+        sqlx::query(
+            r#"
+            INSERT INTO blocks(blocker_id, blocked_id)
+            VALUES ($1, $2)
+            "#,
+        )
+        .bind(1i64)
+        .bind(2i64)
+        .execute(&mut *conn)
+        .await?;
+
+        // Insert a reply
+        let result = sqlx::query(
+            r#"
+            INSERT INTO replies(content, user_id, comment_id)
+            VALUES ($1, $2, $3)
+            RETURNING id
+            "#,
+        )
+        .bind("Sample content".to_string())
+        .bind(2i64)
+        .bind(4i64)
+        .execute(&mut *conn)
+        .await;
+
+        // Should reject with `50001` SQLSTATE
+        assert_eq!(
+            result
+                .unwrap_err()
+                .into_database_error()
+                .unwrap()
+                .code()
+                .unwrap(),
+            "50001"
+        );
+
         Ok(())
     }
 
@@ -220,7 +266,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(3i64)
+        .bind(4i64)
         .fetch_one(&mut *conn)
         .await?;
 
@@ -243,7 +289,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(3i64)
+        .bind(4i64)
         .fetch_one(&mut *conn)
         .await?;
 
@@ -268,7 +314,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(3i64)
+        .bind(4i64)
         .fetch_one(&mut *conn)
         .await?;
 
@@ -293,7 +339,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(3i64)
+        .bind(4i64)
         .fetch_one(&mut *conn)
         .await?;
 
@@ -316,7 +362,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(3i64)
+        .bind(4i64)
         .fetch_one(&mut *conn)
         .await?;
 
@@ -340,7 +386,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(3i64)
+        .bind(4i64)
         .fetch_one(&mut *conn)
         .await?;
 
@@ -368,7 +414,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(3i64)
+        .bind(4i64)
         .fetch_one(&mut *conn)
         .await?;
 
@@ -393,7 +439,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(3i64)
+        .bind(4i64)
         .fetch_one(&mut *conn)
         .await?;
 
@@ -417,7 +463,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(3i64)
+        .bind(4i64)
         .fetch_one(&mut *conn)
         .await?;
 

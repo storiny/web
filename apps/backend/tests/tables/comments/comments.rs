@@ -19,7 +19,7 @@ mod tests {
             rendered_content: "Sample <strong>content</strong>".to_string(),
             hidden: false,
             user_id: 1i64,
-            story_id: 2i64,
+            story_id: 3i64,
             like_count: 0,
             reply_count: 0,
             created_at: OffsetDateTime::now_utc(),
@@ -35,7 +35,7 @@ mod tests {
         let comment = get_default_comment();
         sqlx::query(
             r#"
-            INSERT INTO comments (content, rendered_content, hidden, user_id, story_id, like_count, reply_count, created_at, edited_at, deleted_at)
+            INSERT INTO comments(content, rendered_content, hidden, user_id, story_id, like_count, reply_count, created_at, edited_at, deleted_at)
             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
             RETURNING id
             "#,
@@ -59,6 +59,52 @@ mod tests {
         let mut conn = pool.acquire().await?;
         let result = insert_sample_comment(&mut conn).await?;
         assert!(result.try_get::<i64, _>("id").is_ok());
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("user", "story"))]
+    async fn can_reject_comment_if_the_user_is_blocked_by_the_story_writer(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+
+        // Block the comment writer
+        sqlx::query(
+            r#"
+            INSERT INTO blocks(blocker_id, blocked_id)
+            VALUES ($1, $2)
+            "#,
+        )
+        .bind(1i64)
+        .bind(2i64)
+        .execute(&mut *conn)
+        .await?;
+
+        // Insert a comment
+        let result = sqlx::query(
+            r#"
+            INSERT INTO comments(content, user_id, story_id)
+            VALUES ($1, $2, $3)
+            RETURNING id
+            "#,
+        )
+        .bind("Sample content".to_string())
+        .bind(2i64)
+        .bind(3i64)
+        .execute(&mut *conn)
+        .await;
+
+        // Should reject with `50000` SQLSTATE
+        assert_eq!(
+            result
+                .unwrap_err()
+                .into_database_error()
+                .unwrap()
+                .code()
+                .unwrap(),
+            "50000"
+        );
+
         Ok(())
     }
 
@@ -311,7 +357,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(2i64)
+        .bind(3i64)
         .fetch_one(&mut *conn)
         .await?;
 
@@ -334,7 +380,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(2i64)
+        .bind(3i64)
         .fetch_one(&mut *conn)
         .await?;
 
@@ -359,7 +405,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(2i64)
+        .bind(3i64)
         .fetch_one(&mut *conn)
         .await?;
 
@@ -384,7 +430,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(2i64)
+        .bind(3i64)
         .fetch_one(&mut *conn)
         .await?;
 
@@ -407,7 +453,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(2i64)
+        .bind(3i64)
         .fetch_one(&mut *conn)
         .await?;
 
@@ -431,7 +477,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(2i64)
+        .bind(3i64)
         .fetch_one(&mut *conn)
         .await?;
 
@@ -459,7 +505,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(2i64)
+        .bind(3i64)
         .fetch_one(&mut *conn)
         .await?;
 
@@ -484,7 +530,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(2i64)
+        .bind(3i64)
         .fetch_one(&mut *conn)
         .await?;
 
@@ -508,7 +554,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(2i64)
+        .bind(3i64)
         .fetch_one(&mut *conn)
         .await?;
 

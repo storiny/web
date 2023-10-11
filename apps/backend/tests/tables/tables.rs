@@ -21,3 +21,6 @@ mod comment_likes;
 
 #[path = "reply_likes/reply_likes.rs"]
 mod reply_likes;
+
+#[path = "story_tags/story_tags.rs"]
+mod story_tags;

@@ -1,3 +1,3 @@
 INSERT INTO stories(id, user_id)
-    VALUES (2, 1);
+    VALUES (3, 1);
 

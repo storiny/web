@@ -27,7 +27,7 @@ message GetProfileResponse {
   uint32 public_flags /*                              */ = 13;
   uint32 story_count /*                               */ = 14;
   uint32 follower_count /*                            */ = 15;
-  // Following and friend lists can be private
+  // Following and friend lists can be private (optional=private)
   optional uint32 following_count /*                  */ = 16;
   optional uint32 friend_count /*                     */ = 17;
   bool is_private /*                                  */ = 18;

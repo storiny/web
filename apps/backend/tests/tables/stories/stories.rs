@@ -473,7 +473,7 @@ mod tests {
     // Story tags
 
     #[sqlx::test(fixtures("user", "tag"))]
-    async fn can_cascade_story_soft_delete_to_story_tags(pool: PgPool) -> sqlx::Result<()> {
+    async fn can_delete_story_tag_when_story_is_soft_deleted(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let story_id = (insert_sample_story(&mut conn, true).await?).get::<i64, _>("id");
 
@@ -482,19 +482,14 @@ mod tests {
             r#"
             INSERT INTO story_tags(tag_id, story_id)
             VALUES ($1, $2)
-            RETURNING deleted_at
             "#,
         )
         .bind(2i64)
         .bind(story_id)
-        .fetch_one(&mut *conn)
+        .execute(&mut *conn)
         .await?;
 
-        assert!(
-            insert_result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none()
-        );
+        assert_eq!(insert_result.rows_affected(), 1);
 
         // Soft-delete the story
         sqlx::query(
@@ -508,11 +503,13 @@ mod tests {
         .execute(&mut *conn)
         .await?;
 
-        // Story tag should be soft-deleted
+        // Story tag should get deleted
         let result = sqlx::query(
             r#"
-            SELECT deleted_at FROM story_tags
-            WHERE tag_id = $1 AND story_id = $2
+            SELECT EXISTS(
+                SELECT 1 FROM story_tags
+                WHERE tag_id = $1 AND story_id = $2
+            )
             "#,
         )
         .bind(2i64)
@@ -520,49 +517,13 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(
-            result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_some()
-        );
-
-        // Restore the story
-        sqlx::query(
-            r#"
-            UPDATE stories
-            SET deleted_at = NULL
-            WHERE id = $1
-            "#,
-        )
-        .bind(story_id)
-        .execute(&mut *conn)
-        .await?;
-
-        // Story tag should be restored
-        let result = sqlx::query(
-            r#"
-            SELECT deleted_at FROM story_tags
-            WHERE tag_id = $1 AND story_id = $2
-            "#,
-        )
-        .bind(2i64)
-        .bind(story_id)
-        .fetch_one(&mut *conn)
-        .await?;
-
-        assert!(
-            result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none()
-        );
+        assert_eq!(result.get::<bool, _>("exists"), false);
 
         Ok(())
     }
 
     #[sqlx::test(fixtures("user", "tag"))]
-    async fn can_soft_delete_story_tags_when_the_story_is_unpublished(
-        pool: PgPool,
-    ) -> sqlx::Result<()> {
+    async fn can_delete_story_tag_when_the_story_is_unpublished(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let story_id = (insert_sample_story(&mut conn, true).await?).get::<i64, _>("id");
 
@@ -571,19 +532,14 @@ mod tests {
             r#"
             INSERT INTO story_tags(tag_id, story_id)
             VALUES ($1, $2)
-            RETURNING deleted_at
             "#,
         )
         .bind(2i64)
         .bind(story_id)
-        .fetch_one(&mut *conn)
+        .execute(&mut *conn)
         .await?;
 
-        assert!(
-            insert_result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none()
-        );
+        assert_eq!(insert_result.rows_affected(), 1);
 
         // Unpublish the story
         sqlx::query(
@@ -597,11 +553,13 @@ mod tests {
         .execute(&mut *conn)
         .await?;
 
-        // Story tag should be soft-deleted
+        // Story tag should get deleted
         let result = sqlx::query(
             r#"
-            SELECT deleted_at FROM story_tags
-            WHERE tag_id = $1 AND story_id = $2
+            SELECT EXISTS(
+                SELECT 1 FROM story_tags
+                WHERE tag_id = $1 AND story_id = $2
+            )
             "#,
         )
         .bind(2i64)
@@ -609,41 +567,7 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(
-            result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_some()
-        );
-
-        // Republish the story
-        sqlx::query(
-            r#"
-            UPDATE stories
-            SET published_at = now()
-            WHERE id = $1
-            "#,
-        )
-        .bind(story_id)
-        .execute(&mut *conn)
-        .await?;
-
-        // Story tag should be restored
-        let result = sqlx::query(
-            r#"
-            SELECT deleted_at FROM story_tags
-            WHERE tag_id = $1 AND story_id = $2
-            "#,
-        )
-        .bind(2i64)
-        .bind(story_id)
-        .fetch_one(&mut *conn)
-        .await?;
-
-        assert!(
-            result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none()
-        );
+        assert_eq!(result.get::<bool, _>("exists"), false);
 
         Ok(())
     }

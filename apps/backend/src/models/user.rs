@@ -1,9 +1,24 @@
+use crate::privacy_settings_def::v1::IncomingFriendRequest;
 use serde::{
     Deserialize,
     Serialize,
 };
 use sqlx::FromRow;
 use time::OffsetDateTime;
+
+#[derive(Debug, Serialize, Deserialize, Copy, Clone)]
+pub enum FollowingListVisibility {
+    Everyone,
+    Friends,
+    None,
+}
+
+#[derive(Debug, Serialize, Deserialize, Copy, Clone)]
+pub enum FriendListVisibility {
+    Everyone,
+    Friends,
+    None,
+}
 
 #[derive(Debug, FromRow, Deserialize, Serialize, Clone)]
 pub struct User {
@@ -28,6 +43,11 @@ pub struct User {
     pub following_count: i32,
     pub friend_count: i32,
     pub story_count: i32,
+    // Privacy settings
+    pub incoming_friend_requests: IncomingFriendRequest,
+    pub following_list_visibility: FollowingListVisibility,
+    pub friend_list_visibility: FriendListVisibility,
+    pub disable_read_history: bool,
     // Third-party login credentials
     pub login_apple_id: Option<String>,
     pub login_google_id: Option<String>,
