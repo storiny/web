@@ -19,6 +19,7 @@ describe("<SiteNotifications />", () => {
         on_submit={mock_submit}
         replies
         stories
+        story_likes
         tags
       />,
       {
@@ -35,6 +36,7 @@ describe("<SiteNotifications />", () => {
         friend_requests: true,
         features_and_updates: false,
         new_followers: true,
+        story_likes: true,
         replies: true,
         comments: true,
         tags: true,

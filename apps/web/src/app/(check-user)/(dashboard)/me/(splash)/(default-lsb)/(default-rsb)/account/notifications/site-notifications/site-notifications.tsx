@@ -25,20 +25,22 @@ const SiteNotifications = ({
   replies,
   new_followers,
   stories,
-  comments
+  comments,
+  story_likes
 }: SiteNotificationsProps): React.ReactElement => {
   const toast = use_toast();
   const prev_values_ref = React.useRef<SiteNotificationsSchema>();
   const form = use_form<SiteNotificationsSchema>({
     resolver: zod_resolver(SITE_NOTIFICATIONS_SCHEMA),
     defaultValues: {
-      friend_requests: friend_requests,
-      features_and_updates: features_and_updates,
-      new_followers: new_followers,
+      friend_requests,
+      features_and_updates,
+      new_followers,
       replies,
       comments,
       tags,
-      stories
+      stories,
+      story_likes
     }
   });
   const [mutate_site_notification_settings, { isLoading: is_loading }] =
@@ -96,6 +98,13 @@ const SiteNotifications = ({
           }
           label={"Stories"}
           name={"stories"}
+          onCheckedChange={submit_form}
+          size={"lg"}
+        />
+        <FormCheckbox
+          helper_text={"Receive a notification when someone likes your story."}
+          label={"Story likes"}
+          name={"story_likes"}
           onCheckedChange={submit_form}
           size={"lg"}
         />

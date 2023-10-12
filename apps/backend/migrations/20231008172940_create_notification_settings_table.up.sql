@@ -3,6 +3,7 @@ CREATE TABLE IF NOT EXISTS notification_settings(
     -- Push notifications
     push_features_and_updates BOOL NOT NULL DEFAULT TRUE,
     push_stories BOOL NOT NULL DEFAULT TRUE,
+    push_story_likes BOOL NOT NULL DEFAULT TRUE,
     push_tags BOOL NOT NULL DEFAULT TRUE,
     push_comments BOOL NOT NULL DEFAULT TRUE,
     push_replies BOOL NOT NULL DEFAULT TRUE,

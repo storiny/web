@@ -10,14 +10,15 @@ message GetNotificationSettingsResponse {
   // Site notifications
   bool features_and_updates /*     */ = 1;
   bool stories /*                  */ = 2;
-  bool tags /*                     */ = 3;
-  bool comments /*                 */ = 4;
-  bool replies /*                  */ = 5;
-  bool new_followers /*            */ = 6;
-  bool friend_requests /*          */ = 7;
+  bool story_likes /*              */ = 3;
+  bool tags /*                     */ = 4;
+  bool comments /*                 */ = 5;
+  bool replies /*                  */ = 6;
+  bool new_followers /*            */ = 7;
+  bool friend_requests /*          */ = 8;
   // Mail notifications
-  bool mail_login_activity /*      */ = 8;
-  bool mail_features_and_updates /**/ = 9;
-  bool mail_newsletters /*         */ = 10;
-  bool mail_digest /*              */ = 11;
+  bool mail_login_activity /*      */ = 9;
+  bool mail_features_and_updates /**/ = 10;
+  bool mail_newsletters /*         */ = 11;
+  bool mail_digest /*              */ = 12;
 }

@@ -5,6 +5,7 @@ export type SiteNotificationsSchema = z.infer<typeof SITE_NOTIFICATIONS_SCHEMA>;
 export const SITE_NOTIFICATIONS_SCHEMA = z.object({
   features_and_updates: z.boolean(),
   stories: z.boolean(),
+  story_likes: z.boolean(),
   tags: z.boolean(),
   comments: z.boolean(),
   replies: z.boolean(),
