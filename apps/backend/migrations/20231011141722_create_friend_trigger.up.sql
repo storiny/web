@@ -63,7 +63,7 @@ BEGIN
             FROM
                 relations
             WHERE
-                follower_id = NEW.transmitter_id AND followed_id = NEW.receiver_id AND deleted_at IS NULL
+                followed_id = NEW.transmitter_id AND follower_id = NEW.receiver_id AND deleted_at IS NULL
         ) OR
         --
         -- Friend of friends
@@ -162,6 +162,13 @@ BEGIN
             --
         END IF;
     END IF;
+    -- Friend soft-deleted
+    IF (OLD.deleted_at IS NULL AND NEW.deleted_at IS NOT NULL) THEN
+        -- Delete notifications
+        DELETE FROM notifications
+        WHERE entity_id = NEW.transmitter_id;
+    END IF;
+    --
     --
     RETURN NEW;
 END;
@@ -184,6 +191,7 @@ BEGIN
     DELETE FROM notifications
     WHERE entity_id = OLD.transmitter_id;
     --
+    IF (OLD.accepted_at IS NOT NULL) THEN
     -- Decrement `friend_count`
     UPDATE
         users
@@ -192,6 +200,7 @@ BEGIN
     WHERE
         id IN(OLD.transmitter_id, OLD.receiver_id)
         AND friend_count > 0;
+    END IF;
     --
     RETURN OLD;
 END;
@@ -201,6 +210,6 @@ LANGUAGE plpgsql;
 CREATE OR REPLACE TRIGGER friend_delete_trigger
     AFTER DELETE ON friends
     FOR EACH ROW
-    WHEN(OLD.deleted_at IS NULL AND OLD.accepted_at IS NOT NULL) -- Only run when the friend is directly deleted (and was accepted)
+    WHEN(OLD.deleted_at IS NULL) -- Only run when the friend is directly deleted
     EXECUTE PROCEDURE friend_delete_trigger_proc();
 

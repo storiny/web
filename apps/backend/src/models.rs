@@ -12,3 +12,6 @@ pub mod comment;
 
 #[path = "models/reply.rs"]
 pub mod reply;
+
+#[path = "models/notification.rs"]
+pub mod notification;

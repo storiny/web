@@ -36,3 +36,27 @@ mod story_tags;
 
 #[path = "bookmarks/bookmarks.rs"]
 mod bookmarks;
+
+#[path = "histories/histories.rs"]
+mod histories;
+
+#[path = "connections/connections.rs"]
+mod connections;
+
+#[path = "tag_followers/tag_followers.rs"]
+mod tag_followers;
+
+#[path = "account_activities/account_activities.rs"]
+mod account_activities;
+
+#[path = "notification_outs/notification_outs.rs"]
+mod notification_outs;
+
+#[path = "relations/relations.rs"]
+mod relations;
+
+#[path = "friends/friends.rs"]
+mod friends;
+
+#[path = "documents/documents.rs"]
+mod documents;

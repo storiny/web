@@ -11,6 +11,7 @@ export interface GetNotificationSettingsResponse {
   /** Site notifications */
   features_and_updates: boolean;
   stories: boolean;
+  story_likes: boolean;
   tags: boolean;
   comments: boolean;
   replies: boolean;
@@ -86,6 +87,7 @@ function createBaseGetNotificationSettingsResponse(): GetNotificationSettingsRes
   return {
     features_and_updates: false,
     stories: false,
+    story_likes: false,
     tags: false,
     comments: false,
     replies: false,
@@ -106,32 +108,35 @@ export const GetNotificationSettingsResponse = {
     if (message.stories === true) {
       writer.uint32(16).bool(message.stories);
     }
+    if (message.story_likes === true) {
+      writer.uint32(24).bool(message.story_likes);
+    }
     if (message.tags === true) {
-      writer.uint32(24).bool(message.tags);
+      writer.uint32(32).bool(message.tags);
     }
     if (message.comments === true) {
-      writer.uint32(32).bool(message.comments);
+      writer.uint32(40).bool(message.comments);
     }
     if (message.replies === true) {
-      writer.uint32(40).bool(message.replies);
+      writer.uint32(48).bool(message.replies);
     }
     if (message.new_followers === true) {
-      writer.uint32(48).bool(message.new_followers);
+      writer.uint32(56).bool(message.new_followers);
     }
     if (message.friend_requests === true) {
-      writer.uint32(56).bool(message.friend_requests);
+      writer.uint32(64).bool(message.friend_requests);
     }
     if (message.mail_login_activity === true) {
-      writer.uint32(64).bool(message.mail_login_activity);
+      writer.uint32(72).bool(message.mail_login_activity);
     }
     if (message.mail_features_and_updates === true) {
-      writer.uint32(72).bool(message.mail_features_and_updates);
+      writer.uint32(80).bool(message.mail_features_and_updates);
     }
     if (message.mail_newsletters === true) {
-      writer.uint32(80).bool(message.mail_newsletters);
+      writer.uint32(88).bool(message.mail_newsletters);
     }
     if (message.mail_digest === true) {
-      writer.uint32(88).bool(message.mail_digest);
+      writer.uint32(96).bool(message.mail_digest);
     }
     return writer;
   },
@@ -162,59 +167,66 @@ export const GetNotificationSettingsResponse = {
             break;
           }
 
-          message.tags = reader.bool();
+          message.story_likes = reader.bool();
           continue;
         case 4:
           if (tag !== 32) {
             break;
           }
 
-          message.comments = reader.bool();
+          message.tags = reader.bool();
           continue;
         case 5:
           if (tag !== 40) {
             break;
           }
 
-          message.replies = reader.bool();
+          message.comments = reader.bool();
           continue;
         case 6:
           if (tag !== 48) {
             break;
           }
 
-          message.new_followers = reader.bool();
+          message.replies = reader.bool();
           continue;
         case 7:
           if (tag !== 56) {
             break;
           }
 
-          message.friend_requests = reader.bool();
+          message.new_followers = reader.bool();
           continue;
         case 8:
           if (tag !== 64) {
             break;
           }
 
-          message.mail_login_activity = reader.bool();
+          message.friend_requests = reader.bool();
           continue;
         case 9:
           if (tag !== 72) {
             break;
           }
 
-          message.mail_features_and_updates = reader.bool();
+          message.mail_login_activity = reader.bool();
           continue;
         case 10:
           if (tag !== 80) {
             break;
           }
 
-          message.mail_newsletters = reader.bool();
+          message.mail_features_and_updates = reader.bool();
           continue;
         case 11:
           if (tag !== 88) {
+            break;
+          }
+
+          message.mail_newsletters = reader.bool();
+          continue;
+        case 12:
+          if (tag !== 96) {
             break;
           }
 
@@ -235,6 +247,7 @@ export const GetNotificationSettingsResponse = {
         ? globalThis.Boolean(object.features_and_updates)
         : false,
       stories: isSet(object.stories) ? globalThis.Boolean(object.stories) : false,
+      story_likes: isSet(object.story_likes) ? globalThis.Boolean(object.story_likes) : false,
       tags: isSet(object.tags) ? globalThis.Boolean(object.tags) : false,
       comments: isSet(object.comments) ? globalThis.Boolean(object.comments) : false,
       replies: isSet(object.replies) ? globalThis.Boolean(object.replies) : false,
@@ -256,6 +269,9 @@ export const GetNotificationSettingsResponse = {
     }
     if (message.stories === true) {
       obj.stories = message.stories;
+    }
+    if (message.story_likes === true) {
+      obj.story_likes = message.story_likes;
     }
     if (message.tags === true) {
       obj.tags = message.tags;
@@ -296,6 +312,7 @@ export const GetNotificationSettingsResponse = {
     const message = createBaseGetNotificationSettingsResponse();
     message.features_and_updates = object.features_and_updates ?? false;
     message.stories = object.stories ?? false;
+    message.story_likes = object.story_likes ?? false;
     message.tags = object.tags ?? false;
     message.comments = object.comments ?? false;
     message.replies = object.replies ?? false;

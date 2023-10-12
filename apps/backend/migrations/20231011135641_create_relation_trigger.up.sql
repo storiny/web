@@ -155,7 +155,7 @@ BEGIN
     SET
         following_count = following_count - 1
     WHERE
-        id = NEW.follower_id
+        id = OLD.follower_id
         AND following_count > 0;
     --
     -- Decrement `follower_count` on followed user
@@ -164,7 +164,7 @@ BEGIN
     SET
         follower_count = follower_count - 1
     WHERE
-        id = NEW.followed_id
+        id = OLD.followed_id
         AND follower_count > 0;
     --
     RETURN OLD;

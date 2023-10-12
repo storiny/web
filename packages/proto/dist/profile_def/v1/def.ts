@@ -27,7 +27,7 @@ export interface GetProfileResponse {
   public_flags: number;
   story_count: number;
   follower_count: number;
-  /** Following and friend lists can be private */
+  /** Following and friend lists can be private (optional=private) */
   following_count?: number | undefined;
   friend_count?: number | undefined;
   is_private: boolean;
