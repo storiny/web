@@ -1,4 +1,4 @@
-use super::Session;
+use super::session::Session;
 use actix_web::{
     dev::{
         ServiceRequest,

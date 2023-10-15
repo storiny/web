@@ -1,18 +1,10 @@
 use super::{
-    interface::{
-        LoadError,
-        SaveError,
-        SessionState,
-        UpdateError,
-    },
     session_key::SessionKey,
     utils::generate_session_key,
 };
 use actix_web::cookie::time::Duration;
-use anyhow::{
-    Context,
-    Error,
-};
+use derive_more::Display;
+use hashbrown::HashMap;
 use redis::{
     aio::ConnectionManager,
     AsyncCommands,
@@ -22,50 +14,96 @@ use redis::{
     RedisResult,
     Value,
 };
-use std::{
-    convert::TryInto,
-    sync::Arc,
-};
 
-/// A builder to construct a [`RedisSessionStore`] instance with custom configuration
-/// parameters.
+pub type SessionState = HashMap<String, String>;
+
+/// Possible failures modes for [`RedisSessionStore::load`].
+#[derive(Debug, Display)]
+pub enum LoadError {
+    /// Failed to deserialize session state.
+    #[display(fmt = "Failed to deserialize session state")]
+    Deserialization(anyhow::Error),
+    /// Something went wrong while retrieving the session state.
+    #[display(fmt = "Something went wrong while retrieving the session state")]
+    Other(anyhow::Error),
+}
+
+impl std::error::Error for LoadError {
+    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
+        match self {
+            Self::Deserialization(err) => Some(err.as_ref()),
+            Self::Other(err) => Some(err.as_ref()),
+        }
+    }
+}
+
+/// Possible failures modes for [`RedisSessionStore::save`].
+#[derive(Debug, Display)]
+pub enum SaveError {
+    /// Failed to serialize session state.
+    #[display(fmt = "Failed to serialize session state")]
+    Serialization(anyhow::Error),
+    /// Something went wrong while persisting the session state.
+    #[display(fmt = "Something went wrong while persisting the session state")]
+    Other(anyhow::Error),
+}
+
+impl std::error::Error for SaveError {
+    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
+        match self {
+            Self::Serialization(err) => Some(err.as_ref()),
+            Self::Other(err) => Some(err.as_ref()),
+        }
+    }
+}
+
+#[derive(Debug, Display)]
+/// Possible failures modes for [`RedisSessionStore::update`].
+pub enum UpdateError {
+    /// Failed to serialize session state.
+    #[display(fmt = "Failed to serialize session state")]
+    Serialization(anyhow::Error),
+    /// Something went wrong while updating the session state.
+    #[display(fmt = "Something went wrong while updating the session state.")]
+    Other(anyhow::Error),
+}
+
+impl std::error::Error for UpdateError {
+    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
+        match self {
+            Self::Serialization(err) => Some(err.as_ref()),
+            Self::Other(err) => Some(err.as_ref()),
+        }
+    }
+}
+
+/// A builder to construct a [`RedisSessionStore`] instance.
 pub struct RedisSessionStoreBuilder {
     connection_string: String,
-    configuration: CacheConfiguration,
 }
 
 impl RedisSessionStoreBuilder {
     /// Finalise the builder and return a [`RedisActorSessionStore`] instance.
     pub async fn build(self) -> Result<RedisSessionStore, anyhow::Error> {
         let client = ConnectionManager::new(redis::Client::open(self.connection_string)?).await?;
-        Ok(RedisSessionStore {
-            configuration: self.configuration,
-            client,
-        })
+        Ok(RedisSessionStore { client })
     }
 }
 
 /// Redis session storage backend.
 #[derive(Clone)]
 pub struct RedisSessionStore {
-    configuration: CacheConfiguration,
     client: ConnectionManager,
-}
-
-#[derive(Clone)]
-struct CacheConfiguration {
-    cache_keygen: Arc<dyn Fn(&str) -> String + Send + Sync>,
 }
 
 impl RedisSessionStore {
     /// Creates a new instance of [`RedisSessionStore`].
     ///
     /// * `connection_string` - A connection string for Redis.
-    pub async fn new<S: Into<String>>(connection_string: S) -> Result<RedisSessionStore, Error> {
+    pub async fn new<S: Into<String>>(
+        connection_string: S,
+    ) -> Result<RedisSessionStore, anyhow::Error> {
         RedisSessionStoreBuilder {
-            configuration: CacheConfiguration {
-                cache_keygen: Arc::new(str::to_owned),
-            },
             connection_string: connection_string.into(),
         }
         .build()
@@ -87,11 +125,47 @@ impl RedisSessionStore {
         }
     }
 
+    /// Limits the maximum number of sessions per client (10).
+    ///
+    /// * `user_id` - The ID of the user (client).
+    async fn limit_sessions(&self, user_id: &str) -> Result<(), SaveError> {
+        let mut client = self.client.clone();
+        let iter_result: RedisResult<AsyncIter<String>> = client
+            .scan_match(format!("s:{}:*", user_id)) // Match pattern `s:user_id?:session_key`
+            .await;
+
+        match iter_result {
+            Ok(mut iter) => {
+                let mut keys: Vec<String> = vec![];
+
+                while let Some(result) = iter.next_item().await {
+                    keys.push(result)
+                }
+
+                // Remove the last 10 sessions
+                if keys.len() > 10 {
+                    let keys_to_remove = &keys[(keys.len() - 10)..];
+
+                    for key in keys_to_remove {
+                        // TODO: Use pipeline to batch the commands
+                        self.execute_command(redis::cmd("DEL").arg(&[&key]))
+                            .await
+                            .map_err(Into::into)
+                            .map_err(SaveError::Other)?;
+                    }
+                }
+
+                Ok(())
+            }
+            Err(_) => Ok(()),
+        }
+    }
+
     /// Loads the session state associated to a session key.
     ///
     /// * `session_key` - The session key.
-    async fn load(&self, session_key: &SessionKey) -> Result<Option<SessionState>, LoadError> {
-        let cache_key = (self.configuration.cache_keygen)(session_key.as_ref());
+    pub async fn load(&self, session_key: &SessionKey) -> Result<Option<SessionState>, LoadError> {
+        let cache_key = session_key.as_ref().to_string();
         let redis_key = self.get_cache_key(&cache_key).await.unwrap_or(cache_key);
 
         let value: Option<String> = self
@@ -114,7 +188,7 @@ impl RedisSessionStore {
     /// * `ttl` - TTL duration.
     ///
     /// Returns the corresponding session key.
-    async fn save(
+    pub async fn save(
         &self,
         session_state: SessionState,
         ttl: &Duration,
@@ -123,20 +197,19 @@ impl RedisSessionStore {
             .map_err(Into::into)
             .map_err(SaveError::Serialization)?;
         let session_key = generate_session_key();
-        let user_id = session_state.get("user_id");
+        let user_id = if let Some(unwrapped_id) = session_state.get("user_id") {
+            serde_json::from_str::<&str>(unwrapped_id).unwrap_or_default()
+        } else {
+            ""
+        };
 
         // Cache key format: s:user_id?:session_key
         // This allows us to scan for all the sessions
         // for a user by its ID.
-        let cache_key = format!(
-            "s:{}:{}",
-            if let Some(unwrapped_id) = user_id {
-                serde_json::from_str::<&str>(unwrapped_id).unwrap_or_default()
-            } else {
-                ""
-            },
-            (self.configuration.cache_keygen)(session_key.as_ref())
-        );
+        let cache_key = format!("s:{}:{}", user_id, session_key.as_ref());
+
+        // Limit the number of sessions before inserting a new one.
+        let _ = self.limit_sessions(user_id).await?;
 
         self.execute_command(redis::cmd("SET").arg(&[
             &cache_key,
@@ -157,7 +230,7 @@ impl RedisSessionStore {
     /// * `session_key` - The session key.
     /// * `session_state` - Next session data.
     /// * `ttl` - TTL duration
-    async fn update(
+    pub async fn update(
         &self,
         session_key: SessionKey,
         session_state: SessionState,
@@ -167,7 +240,7 @@ impl RedisSessionStore {
             .map_err(Into::into)
             .map_err(UpdateError::Serialization)?;
 
-        let cache_key = (self.configuration.cache_keygen)(session_key.as_ref());
+        let cache_key = session_key.as_ref().to_string();
         let redis_key = self.get_cache_key(&cache_key).await.unwrap_or(cache_key);
 
         let value: Value = self
@@ -203,31 +276,11 @@ impl RedisSessionStore {
         }
     }
 
-    /// Updates the TTL of the session state associated to a pre-existing session key.
-    ///
-    /// * `session_key` - The session key
-    /// * `ttl` - Next TTL duration
-    async fn update_ttl(&self, session_key: &SessionKey, ttl: &Duration) -> Result<(), Error> {
-        let cache_key = (self.configuration.cache_keygen)(session_key.as_ref());
-        let redis_key = self.get_cache_key(&cache_key).await.unwrap_or(cache_key);
-
-        self.client
-            .clone()
-            .expire(
-                &redis_key,
-                ttl.whole_seconds().try_into().context(
-                    "Failed to convert the state TTL into the number of whole seconds remaining",
-                )?,
-            )
-            .await?;
-        Ok(())
-    }
-
     /// Removes a session at the specified key from the Redis backend.
     ///
     /// * `session_key` - The session key.
-    async fn delete(&self, session_key: &SessionKey) -> Result<(), Error> {
-        let cache_key = (self.configuration.cache_keygen)(session_key.as_ref());
+    pub async fn delete(&self, session_key: &SessionKey) -> Result<(), anyhow::Error> {
+        let cache_key = session_key.as_ref().to_string();
         let redis_key = self.get_cache_key(&cache_key).await.unwrap_or(cache_key);
         self.execute_command(redis::cmd("DEL").arg(&[&redis_key]))
             .await
@@ -236,12 +289,45 @@ impl RedisSessionStore {
 
         Ok(())
     }
-}
 
-// #[async_trait::async_trait(?Send)]
-// impl SessionStore for RedisSessionStore {}
+    /// Removes all the sessions except the one at specified key from the Redis backend.
+    ///
+    /// * `session_key` - The session key (This session will not get removed).
+    pub async fn delete_all(&self, session_key: &SessionKey) -> Result<(), anyhow::Error> {
+        let cache_key = session_key.as_ref().to_string();
 
-impl RedisSessionStore {
+        match self.get_cache_key(&cache_key).await {
+            None => {}
+            Some(redis_key) => {
+                // Extract the `user_id` from the session key
+                let user_id = redis_key.split(":").collect::<Vec<_>>()[1];
+
+                // Check if the cache key contains a `user_id`
+                if !user_id.is_empty() {
+                    let mut client = self.client.clone();
+                    let iter_result: RedisResult<AsyncIter<String>> = client
+                        .scan_match(format!("s:{}:*", user_id)) // Match all user sessions
+                        .await;
+
+                    match iter_result {
+                        Ok(mut iter) => {
+                            if let Some(item) = iter.next_item().await {
+                                // TODO: Use pipeline to batch the commands
+                                self.execute_command(redis::cmd("DEL").arg(&[&item]))
+                                    .await
+                                    .map_err(Into::into)
+                                    .map_err(UpdateError::Other)?;
+                            }
+                        }
+                        Err(_) => {}
+                    }
+                }
+            }
+        }
+
+        Ok(())
+    }
+
     /// Executes Redis commands and retries once in certain cases.
     ///
     /// `ConnectionManager` automatically reconnects when it encounters an error talking to Redis.
@@ -282,18 +368,14 @@ impl RedisSessionStore {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
-    use crate::middleware::session::{
-        config::{
-            CookieContentSecurity,
-            PersistentSession,
-            TtlExtensionPolicy,
+    use super::{
+        super::{
+            middleware::SessionMiddleware,
+            session::Session,
         },
-        middleware,
-        Session,
-        SessionExt,
-        SessionMiddleware,
+        *,
     };
+    use crate::middleware::session::session_ext::SessionExt;
     use actix_web::{
         cookie::{
             time,
@@ -314,7 +396,6 @@ mod tests {
         Serialize,
     };
     use serde_json::json;
-    use std::collections::HashMap;
 
     /// Returns a new Redis session store instance
     async fn redis_store() -> RedisSessionStore {
@@ -346,6 +427,7 @@ mod tests {
             .unwrap_or(Some(0))
             .map_or(1, |inner| inner + 1);
         session.insert("counter", counter)?;
+        session.insert("cookie_type", "persistent")?;
 
         Ok(HttpResponse::Ok().json(&IndexResponse { user_id, counter }))
     }
@@ -404,7 +486,7 @@ mod tests {
     }
 
     #[actix_web::test]
-    async fn test_basic_workflow() {
+    async fn test_redis_session_basic_workflow() {
         let redis_store = redis_store().await;
         let app = test::init_service(
             App::new()
@@ -413,10 +495,7 @@ mod tests {
                         .cookie_path("/test/".into())
                         .cookie_name("actix-test".into())
                         .cookie_domain("localhost".into())
-                        .cookie_content_security(CookieContentSecurity::Signed)
-                        .session_lifecycle(
-                            PersistentSession::default().session_ttl(time::Duration::seconds(100)),
-                        )
+                        .cookie_max_age(time::Duration::seconds(100))
                         .build(),
                 )
                 .service(web::resource("/").to(|ses: Session| async move {
@@ -433,29 +512,31 @@ mod tests {
         let request = test::TestRequest::get().to_request();
         let response = app.call(request).await.unwrap();
         let cookie = response.get_cookie("actix-test").unwrap().clone();
+
         assert_eq!(cookie.path().unwrap(), "/test/");
 
         let request = test::TestRequest::with_uri("/test/")
             .cookie(cookie)
             .to_request();
         let body = test::call_and_read_body(&app, request).await;
+
         assert_eq!(body, web::Bytes::from_static(b"counter: 100"));
     }
 
     #[actix_web::test]
-    async fn test_expiration_is_refreshed_on_changes() {
+    async fn test_redis_session_expiration_is_refreshed_on_changes() {
         let redis_store = redis_store().await;
         let session_ttl = time::Duration::seconds(60);
         let app = test::init_service(
             App::new()
                 .wrap(
                     SessionMiddleware::builder(redis_store.clone(), Key::generate())
-                        .cookie_content_security(CookieContentSecurity::Signed)
-                        .session_lifecycle(PersistentSession::default().session_ttl(session_ttl))
+                        .cookie_max_age(session_ttl)
                         .build(),
                 )
                 .service(web::resource("/").to(|ses: Session| async move {
-                    let _ = ses.insert("counter", 100);
+                    ses.insert("counter", 100).unwrap_or_default();
+                    ses.insert("cookie_type", "persistent").unwrap_or_default();
                     "test"
                 }))
                 .service(web::resource("/test/").to(|| async move { "no-changes-in-session" })),
@@ -464,33 +545,33 @@ mod tests {
 
         let request = test::TestRequest::get().to_request();
         let response = app.call(request).await.unwrap();
-        let cookie_1 = response.get_cookie("id").expect("Cookie is set");
+        let cookie_1 = response.get_cookie("_storiny_sess").expect("Cookie is set");
+
         assert_eq!(cookie_1.max_age(), Some(session_ttl));
 
         let request = test::TestRequest::with_uri("/test/")
             .cookie(cookie_1.clone())
             .to_request();
         let response = app.call(request).await.unwrap();
+
         assert!(response.response().cookies().next().is_none());
 
         let request = test::TestRequest::get().cookie(cookie_1).to_request();
         let response = app.call(request).await.unwrap();
-        let cookie_2 = response.get_cookie("id").expect("Cookie is set");
+        let cookie_2 = response.get_cookie("_storiny_sess").expect("Cookie is set");
+
         assert_eq!(cookie_2.max_age(), Some(session_ttl));
     }
 
     #[actix_web::test]
-    async fn test_guard() {
+    async fn test_redis_session_guard() {
         let redis_store = redis_store().await;
         let srv = actix_test::start(move || {
             App::new()
                 .wrap(
                     SessionMiddleware::builder(redis_store.clone(), Key::generate())
                         .cookie_name("test-session".into())
-                        .cookie_content_security(CookieContentSecurity::Signed)
-                        .session_lifecycle(
-                            PersistentSession::default().session_ttl(time::Duration::days(7)),
-                        )
+                        .cookie_max_age(time::Duration::weeks(1))
                         .build(),
                 )
                 .wrap(actix_web::middleware::Logger::default())
@@ -563,7 +644,7 @@ mod tests {
     }
 
     #[actix_web::test]
-    async fn test_complex_workflow() {
+    async fn test_redis_session_complex_workflow() {
         let session_ttl = time::Duration::days(7);
         let redis_store = redis_store().await;
         let srv = actix_test::start(move || {
@@ -571,8 +652,7 @@ mod tests {
                 .wrap(
                     SessionMiddleware::builder(redis_store.clone(), Key::generate())
                         .cookie_name("test-session".into())
-                        .cookie_content_security(CookieContentSecurity::Signed)
-                        .session_lifecycle(PersistentSession::default().session_ttl(session_ttl))
+                        .cookie_max_age(session_ttl)
                         .build(),
                 )
                 .wrap(actix_web::middleware::Logger::default())
@@ -757,14 +837,14 @@ mod tests {
     }
 
     #[actix_web::test]
-    async fn loading_a_missing_session_returns_none() {
+    async fn can_return_none_when_loading_a_missing_session() {
         let store = redis_store().await;
         let session_key = generate_session_key();
         assert!(store.load(&session_key).await.unwrap().is_none());
     }
 
     #[actix_web::test]
-    async fn loading_an_invalid_session_state_returns_deserialization_error() {
+    async fn can_return_a_deserialization_error_for_an_invalid_session_state() {
         let store = redis_store().await;
         let session_key = generate_session_key();
         store
@@ -783,12 +863,16 @@ mod tests {
     }
 
     #[actix_web::test]
-    async fn updating_of_an_expired_state_is_handled_gracefully() {
+    async fn can_handle_updating_of_an_expired_state_gracefully() {
         let store = redis_store().await;
         let session_key = generate_session_key();
         let initial_session_key = session_key.as_ref().to_owned();
         let updated_session_key = store
-            .update(session_key, HashMap::new(), &Duration::seconds(1))
+            .update(
+                session_key,
+                hashbrown::HashMap::new(),
+                &Duration::seconds(1),
+            )
             .await
             .unwrap();
         assert_ne!(initial_session_key, updated_session_key.as_ref());

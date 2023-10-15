@@ -1,11 +1,11 @@
+use actix_web::{
+    HttpResponse,
+    ResponseError,
+};
 use serde::Serialize;
-use std::{
-    error,
-    fmt::{
-        self,
-        Display,
-    },
-    io,
+use std::fmt::{
+    Display,
+    Formatter,
 };
 
 /// JSON form error response
@@ -58,47 +58,24 @@ impl ToastErrorResponse {
     }
 }
 
-/// Custom IO error type.
+/// Database errors.
 #[derive(Debug)]
-#[non_exhaustive]
-pub struct CustomIoError(pub io::Error);
+pub struct AppError(sqlx::Error);
 
-impl error::Error for CustomIoError {}
-
-impl Display for CustomIoError {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "Custom IO error: {}", self.0)
+impl Display for AppError {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "Application error: {}", self.0)
     }
 }
 
-/// Custom error type.
-#[derive(Debug)]
-pub enum Error {
-    /// Serde JSON error.
-    Serde(serde_json::Error),
-    /// Custom IO error.
-    CustomIo(CustomIoError),
-}
-
-impl error::Error for Error {}
-
-impl From<serde_json::Error> for Error {
-    fn from(err: serde_json::Error) -> Self {
-        Self::Serde(err)
+impl ResponseError for AppError {
+    fn error_response(&self) -> HttpResponse {
+        HttpResponse::InternalServerError().finish()
     }
 }
 
-impl From<io::Error> for Error {
-    fn from(err: io::Error) -> Self {
-        Self::CustomIo(CustomIoError(err))
-    }
-}
-
-impl Display for Error {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
-            Error::Serde(err) => err.fmt(f),
-            Error::CustomIo(err) => err.fmt(f),
-        }
+impl From<sqlx::Error> for AppError {
+    fn from(err: sqlx::Error) -> Self {
+        AppError(err)
     }
 }

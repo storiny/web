@@ -157,6 +157,9 @@ BEGIN
             OR entity_id = NEW.id;
         DELETE FROM notification_outs
         WHERE notified_id = NEW.id;
+        -- Delete tokens
+        DELETE FROM tokens
+        WHERE user_id = NEW.id;
         --
         RETURN NEW;
         --

@@ -1,3 +1,20 @@
+use super::{
+    config::{
+        self,
+        Configuration,
+        CookieConfiguration,
+        SessionMiddlewareBuilder,
+    },
+    session::{
+        Session,
+        SessionStatus,
+    },
+    session_key::SessionKey,
+    storage::{
+        LoadError,
+        RedisSessionStore,
+    },
+};
 use actix_utils::future::{
     ready,
     Ready,
@@ -24,29 +41,13 @@ use actix_web::{
     HttpResponse,
 };
 use anyhow::Context;
+use hashbrown::HashMap;
 use std::{
-    collections::HashMap,
     convert::TryInto,
     fmt,
     future::Future,
     pin::Pin,
     rc::Rc,
-};
-
-use super::{
-    config::{
-        self,
-        Configuration,
-        CookieConfiguration,
-        SessionMiddlewareBuilder,
-    },
-    interface::{
-        LoadError,
-        SessionStore,
-    },
-    session_key::SessionKey,
-    Session,
-    SessionStatus,
 };
 
 /// A middleware for session management.
@@ -59,22 +60,22 @@ use super::{
 /// - Set/remove a cookie, on the client side, to enable a user to be consistently associated with
 ///   the same session across multiple HTTP requests.
 #[derive(Clone)]
-pub struct SessionMiddleware<Store: SessionStore> {
-    storage_backend: Rc<Store>,
+pub struct SessionMiddleware {
+    storage_backend: Rc<RedisSessionStore>,
     configuration: Rc<Configuration>,
 }
 
-impl<Store: SessionStore> SessionMiddleware<Store> {
+impl SessionMiddleware {
     /// A fluent API to configure [`SessionMiddleware`].
     ///
     /// * `store` - An instance of the session storage backend (Redis).
     /// * `key` - A secret key, to sign the contents of the client-side session cookie.
-    pub fn builder(store: Store, key: Key) -> SessionMiddlewareBuilder<Store> {
+    pub fn builder(store: RedisSessionStore, key: Key) -> SessionMiddlewareBuilder {
         SessionMiddlewareBuilder::new(store, config::default_configuration(key))
     }
 
     /// Build from parts
-    pub fn from_parts(store: Store, configuration: Configuration) -> Self {
+    pub fn from_parts(store: RedisSessionStore, configuration: Configuration) -> Self {
         Self {
             storage_backend: Rc::new(store),
             configuration: Rc::new(configuration),
@@ -82,16 +83,15 @@ impl<Store: SessionStore> SessionMiddleware<Store> {
     }
 }
 
-impl<S, B, Store> Transform<S, ServiceRequest> for SessionMiddleware<Store>
+impl<S, B> Transform<S, ServiceRequest> for SessionMiddleware
 where
     S: Service<ServiceRequest, Response = ServiceResponse<B>, Error = actix_web::Error> + 'static,
     S::Future: 'static,
     B: MessageBody + 'static,
-    Store: SessionStore + 'static,
 {
     type Response = ServiceResponse<B>;
     type Error = actix_web::Error;
-    type Transform = InnerSessionMiddleware<S, Store>;
+    type Transform = InnerSessionMiddleware<S>;
     type InitError = ();
     type Future = Ready<Result<Self::Transform, Self::InitError>>;
 
@@ -121,17 +121,16 @@ fn e500<E: fmt::Debug + fmt::Display + 'static>(err: E) -> actix_web::Error {
 }
 
 #[non_exhaustive]
-pub struct InnerSessionMiddleware<S, Store: SessionStore + 'static> {
+pub struct InnerSessionMiddleware<S> {
     service: Rc<S>,
     configuration: Rc<Configuration>,
-    storage_backend: Rc<Store>,
+    storage_backend: Rc<RedisSessionStore>,
 }
 
-impl<S, B, Store> Service<ServiceRequest> for InnerSessionMiddleware<S, Store>
+impl<S, B> Service<ServiceRequest> for InnerSessionMiddleware<S>
 where
     S: Service<ServiceRequest, Response = ServiceResponse<B>, Error = actix_web::Error> + 'static,
     S::Future: 'static,
-    Store: SessionStore + 'static,
 {
     type Response = ServiceResponse<B>;
     type Error = actix_web::Error;
@@ -240,6 +239,12 @@ where
                             )
                             .map_err(e500)?;
                         }
+                        SessionStatus::PurgedAll => {
+                            storage_backend
+                                .delete_all(&session_key)
+                                .await
+                                .map_err(e500)?;
+                        }
                         SessionStatus::Unchanged => {}
                     };
                 }
@@ -289,9 +294,9 @@ fn extract_session_key(req: &ServiceRequest, config: &CookieConfiguration) -> Op
 ///
 /// * `session_key` - The session key.
 /// * `storage_backend` - The Redis storage backend.
-async fn load_session_state<Store: SessionStore>(
+async fn load_session_state(
     session_key: Option<SessionKey>,
-    storage_backend: &Store,
+    storage_backend: &RedisSessionStore,
 ) -> Result<(Option<SessionKey>, HashMap<String, String>), actix_web::Error> {
     if let Some(session_key) = session_key {
         match storage_backend.load(&session_key).await {
@@ -371,7 +376,7 @@ fn set_session_cookie(
     Ok(())
 }
 
-/// Removes the cookie for the response.
+/// Appends a session removal cookie to the response.
 ///
 /// * `response` - Client response.
 /// * `config` - Cookie configuration.

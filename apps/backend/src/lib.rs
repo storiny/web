@@ -1,3 +1,5 @@
+use actix::Addr;
+use actix_redis::RedisActor;
 use maxminddb::Reader;
 use sailfish::TemplateOnce;
 use sqlx::{
@@ -21,6 +23,9 @@ pub mod utils;
 #[path = "middleware.rs"]
 pub mod middleware;
 
+#[path = "constants.rs"]
+pub mod constants;
+
 /// Index page template
 #[derive(TemplateOnce)]
 #[template(path = "index.stpl")]
@@ -30,6 +35,8 @@ pub struct IndexTemplate {
 
 /// Application state
 pub struct AppState {
+    /// Redis connection instance
+    pub redis: Option<Addr<RedisActor>>,
     /// Postgres connection pool
     pub db_pool: Pool<Postgres>,
     /// GeoIP database instance

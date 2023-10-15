@@ -53,6 +53,14 @@ services:
       - ./docker/redis/users.acl:/opt/bitnami/redis/mounted-etc/users.acl
     command: /opt/bitnami/scripts/redis/run.sh --maxmemory 100mb
 
+  aws_ses:
+    container_name: "storiny-aws-ses"
+    image: bh42/aws-ses-local
+    networks:
+      - custom-net
+    ports:
+      - "7044:9001"
+
 #  postgres:
 #    container_name: "storiny-postgres"
 #    image: postgres
