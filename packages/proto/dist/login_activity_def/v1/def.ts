@@ -3,16 +3,7 @@ import _m0 from "protobufjs/minimal";
 
 export const protobufPackage = "login_activity_def.v1";
 
-export const DeviceType = {
-  UNSPECIFIED: 0,
-  COMPUTER: 1,
-  CONSOLE: 2,
-  MOBILE: 3,
-  SMART_TV: 4,
-  TABLET: 5,
-  UNKNOWN: 6,
-  UNRECOGNIZED: -1,
-} as const;
+export const DeviceType = { UNSPECIFIED: 0, COMPUTER: 1, MOBILE: 2, TABLET: 3, UNKNOWN: 4, UNRECOGNIZED: -1 } as const;
 
 export type DeviceType = typeof DeviceType[keyof typeof DeviceType];
 
@@ -25,18 +16,12 @@ export function deviceTypeFromJSON(object: any): DeviceType {
     case "DEVICE_TYPE_COMPUTER":
       return DeviceType.COMPUTER;
     case 2:
-    case "DEVICE_TYPE_CONSOLE":
-      return DeviceType.CONSOLE;
-    case 3:
     case "DEVICE_TYPE_MOBILE":
       return DeviceType.MOBILE;
-    case 4:
-    case "DEVICE_TYPE_SMART_TV":
-      return DeviceType.SMART_TV;
-    case 5:
+    case 3:
     case "DEVICE_TYPE_TABLET":
       return DeviceType.TABLET;
-    case 6:
+    case 4:
     case "DEVICE_TYPE_UNKNOWN":
       return DeviceType.UNKNOWN;
     case -1:
@@ -52,12 +37,8 @@ export function deviceTypeToJSON(object: DeviceType): string {
       return "DEVICE_TYPE_UNSPECIFIED";
     case DeviceType.COMPUTER:
       return "DEVICE_TYPE_COMPUTER";
-    case DeviceType.CONSOLE:
-      return "DEVICE_TYPE_CONSOLE";
     case DeviceType.MOBILE:
       return "DEVICE_TYPE_MOBILE";
-    case DeviceType.SMART_TV:
-      return "DEVICE_TYPE_SMART_TV";
     case DeviceType.TABLET:
       return "DEVICE_TYPE_TABLET";
     case DeviceType.UNKNOWN:

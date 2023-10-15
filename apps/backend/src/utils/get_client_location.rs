@@ -1,151 +1,111 @@
-use crate::login_activity_def::v1::DeviceType;
-use std::borrow::Cow;
-use user_agent_parser::UserAgentParser;
+use maxminddb::{
+    geoip2,
+    Reader,
+};
+use serde::{
+    Deserialize,
+    Serialize,
+};
+use std::net::IpAddr;
 
-/// Parses and return client's device information from the user-agent string.
+#[derive(Debug, Serialize, Deserialize)]
+pub struct ClientLocation {
+    display_name: String,
+    lat: Option<f64>,
+    lng: Option<f64>,
+}
+
+/// Parses and return client's location information from IP.
 ///
-/// * `ua` - User-agent string
-/// * `parser` - User-agent parser instannce
-pub fn get_device(ua: &str, parser: &UserAgentParser) -> (String, DeviceType) {
-    let device = parser.parse_device(ua);
-    let os = parser.parse_os(ua);
-    let brand = device.clone().brand.unwrap_or_default();
-    let mut device_type = DeviceType::Unknown;
+/// * `ip` - Client IP address
+/// * `reader` - GeoIP database reader instance
+pub fn get_client_location(ip: IpAddr, reader: &Reader<Vec<u8>>) -> ClientLocation {
+    let lookup_result = reader.lookup::<geoip2::City>(ip);
 
-    {
-        match os.name.clone().unwrap_or_default().as_ref() {
-            "Windows" | "Mac OS" | "Chrome OS" | "CentOS" | "AmigaOS" | "Ubuntu" | "Arch"
-            | "Debian" | "Unix" | "Linux" | "Raspbian" | "VectorLinux" | "Solaris" => {
-                device_type = DeviceType::Computer;
+    if lookup_result.is_err() {
+        return ClientLocation {
+            display_name: "Unknown location".to_string(),
+            lat: None,
+            lng: None,
+        };
+    }
+
+    let result = lookup_result.unwrap();
+    let mut city_name: Option<String> = None;
+    let mut country_name: Option<String> = None;
+    let mut lat: Option<f64> = None;
+    let mut lng: Option<f64> = None;
+    let display_name: String;
+
+    if let Some(city) = &result.city {
+        if let Some(city_names) = &city.names {
+            if let Some(en_name) = city_names.get("en") {
+                city_name = Some(en_name.to_owned().to_string());
             }
-            "Android" | "iOS" | "Windows Phone" => {
-                device_type = DeviceType::Mobile;
-            }
-            _ => {}
-        }
-
-        match device.model.clone().unwrap_or_default().as_ref() {
-            "iPad" => device_type = DeviceType::Tablet,
-            "Mac" => device_type = DeviceType::Computer,
-            _ => {}
-        }
-
-        match brand.as_ref() {
-            "Generic_Android" => device_type = DeviceType::Mobile,
-            "Generic_Android_Tablet" => device_type = DeviceType::Tablet,
-            _ => {}
         }
     }
 
-    if device.brand.is_some() && device.model.is_some() {
-        return (
-            format!(
-                "{} {}",
-                if &brand == "Generic_Android" {
-                    "Android".to_string()
-                } else if &brand == "Generic_Android_Tablet" {
-                    "Android Tablet".to_string()
-                } else {
-                    brand.to_string()
-                },
-                device.model.unwrap_or_default(),
-            ),
-            device_type,
-        );
+    if let Some(country) = &result.country {
+        if let Some(country_names) = &country.names {
+            if let Some(en_name) = country_names.get("en") {
+                country_name = Some(en_name.to_owned().to_string());
+            }
+        }
     }
 
-    let os_name = os.name.unwrap_or(Cow::from("Unknown device")).to_string();
+    if let Some(location) = &result.location {
+        lat = location.latitude;
+        lng = location.longitude;
+    }
 
-    (
-        if os_name == "Other" {
-            "Unknown device".to_string()
+    if city_name.is_some() {
+        if country_name.is_some() {
+            display_name = format!(
+                "{}, {}",
+                city_name.unwrap_or_default(),
+                country_name.unwrap_or_default()
+            );
         } else {
-            os_name
-        },
-        device_type,
-    )
+            display_name = city_name.unwrap_or_default();
+        }
+    } else if country_name.is_some() {
+        display_name = country_name.unwrap_or_default()
+    } else {
+        display_name = "Unknown location".to_string()
+    }
+
+    ClientLocation {
+        display_name,
+        lat,
+        lng,
+    }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::net::Ipv4Addr;
 
-    /// Returns the user agent parser instance
-    fn get_ua_parser() -> UserAgentParser {
-        UserAgentParser::from_path("./data/ua_parser/regexes.yaml")
-            .expect("Cannot build user-agent parser")
+    /// Returns the geo database instance
+    fn get_geo_db() -> Reader<Vec<u8>> {
+        maxminddb::Reader::open_readfile("geo/db/GeoLite2-City.mmdb").unwrap()
     }
 
     #[test]
-    fn can_return_device_information_for_a_windows_desktop() {
-        let result = get_device(
-            "Mozilla/5.0 (Windows NT 6.1; WOW64; Trident/7.0; rv:11.0) like Gecko",
-            &get_ua_parser(),
-        );
+    fn can_return_valid_client_location_information() {
+        let result = get_client_location(IpAddr::V4(Ipv4Addr::new(8, 8, 8, 8)), &get_geo_db());
 
-        assert_eq!(result.0, "Windows");
-        assert_eq!(result.1, DeviceType::Computer);
+        assert_eq!(result.display_name, "United States".to_string());
+        assert!(result.lat.is_some());
+        assert!(result.lng.is_some());
     }
 
     #[test]
-    fn can_return_device_information_for_a_mac() {
-        let result = get_device(
-            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:40.0) Gecko/20100101 Firefox/40.0",
-            &get_ua_parser(),
-        );
+    fn can_handle_invalid_ip_address() {
+        let result = get_client_location(IpAddr::V4(Ipv4Addr::new(127, 0, 0, 1)), &get_geo_db());
 
-        assert_eq!(result.0, "Apple Mac");
-        assert_eq!(result.1, DeviceType::Computer);
-    }
-
-    #[test]
-    fn can_return_device_information_for_an_ubuntu_desktop() {
-        let result = get_device(
-            "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:40.0) Gecko/20100101 Firefox/40.0",
-            &get_ua_parser(),
-        );
-
-        assert_eq!(result.0, "Ubuntu");
-        assert_eq!(result.1, DeviceType::Computer);
-    }
-
-    #[test]
-    fn can_return_device_information_for_an_android_smartphone() {
-        let result = get_device(
-            "Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.5993.65 Mobile Safari/537.36",
-            &get_ua_parser(),
-        );
-
-        assert_eq!(result.0, "Generic Smartphone");
-        assert_eq!(result.1, DeviceType::Mobile);
-    }
-
-    #[test]
-    fn can_return_device_information_for_an_iphone() {
-        let result = get_device(
-            "Mozilla/5.0 (iPhone; CPU iPhone OS 7_1_2 like Mac OS X) AppleWebKit/537.51.2 (KHTML, like Gecko) Version/7.0 Mobile/11D257 Safari/9537.53",
-            &get_ua_parser(),
-        );
-
-        assert_eq!(result.0, "Apple iPhone");
-        assert_eq!(result.1, DeviceType::Mobile);
-    }
-
-    #[test]
-    fn can_return_device_information_for_an_ipad() {
-        let result = get_device(
-            "Mozilla/5.0 (iPad; CPU OS 17_0_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1",
-            &get_ua_parser(),
-        );
-
-        assert_eq!(result.0, "Apple iPad");
-        assert_eq!(result.1, DeviceType::Tablet);
-    }
-
-    #[test]
-    fn can_handle_unknown_devices() {
-        let result = get_device("Invalid UA", &get_ua_parser());
-        assert_eq!(result.0, "Unknown device");
-        assert_eq!(result.1, DeviceType::Unknown);
+        assert_eq!(result.display_name, "Unknown location".to_string());
+        assert!(result.lat.is_none());
+        assert!(result.lng.is_none());
     }
 }

@@ -51,11 +51,9 @@ pub struct GetLoginActivityResponse {
 pub enum DeviceType {
     Unspecified = 0,
     Computer = 1,
-    Console = 2,
-    Mobile = 3,
-    SmartTv = 4,
-    Tablet = 5,
-    Unknown = 6,
+    Mobile = 2,
+    Tablet = 3,
+    Unknown = 4,
 }
 impl DeviceType {
     /// String value of the enum field names used in the ProtoBuf definition.
@@ -66,9 +64,7 @@ impl DeviceType {
         match self {
             DeviceType::Unspecified => "DEVICE_TYPE_UNSPECIFIED",
             DeviceType::Computer => "DEVICE_TYPE_COMPUTER",
-            DeviceType::Console => "DEVICE_TYPE_CONSOLE",
             DeviceType::Mobile => "DEVICE_TYPE_MOBILE",
-            DeviceType::SmartTv => "DEVICE_TYPE_SMART_TV",
             DeviceType::Tablet => "DEVICE_TYPE_TABLET",
             DeviceType::Unknown => "DEVICE_TYPE_UNKNOWN",
         }
@@ -78,9 +74,7 @@ impl DeviceType {
         match value {
             "DEVICE_TYPE_UNSPECIFIED" => Some(Self::Unspecified),
             "DEVICE_TYPE_COMPUTER" => Some(Self::Computer),
-            "DEVICE_TYPE_CONSOLE" => Some(Self::Console),
             "DEVICE_TYPE_MOBILE" => Some(Self::Mobile),
-            "DEVICE_TYPE_SMART_TV" => Some(Self::SmartTv),
             "DEVICE_TYPE_TABLET" => Some(Self::Tablet),
             "DEVICE_TYPE_UNKNOWN" => Some(Self::Unknown),
             _ => None,

@@ -5,11 +5,9 @@ package login_activity_def.v1;
 enum DeviceType {
   DEVICE_TYPE_UNSPECIFIED /* */ = 0;
   DEVICE_TYPE_COMPUTER /*    */ = 1;
-  DEVICE_TYPE_CONSOLE /*     */ = 2;
-  DEVICE_TYPE_MOBILE /*      */ = 3;
-  DEVICE_TYPE_SMART_TV /*    */ = 4;
-  DEVICE_TYPE_TABLET /*      */ = 5;
-  DEVICE_TYPE_UNKNOWN /*     */ = 6;
+  DEVICE_TYPE_MOBILE /*      */ = 2;
+  DEVICE_TYPE_TABLET /*      */ = 3;
+  DEVICE_TYPE_UNKNOWN /*     */ = 4;
 }
 
 message Device {

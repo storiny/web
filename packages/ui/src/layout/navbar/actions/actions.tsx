@@ -189,11 +189,7 @@ const Actions = (): React.ReactElement => {
             trigger={
               <div
                 aria-busy
-                className={clsx(
-                  css["unset"],
-                  css["flex-center"],
-                  styles.trigger
-                )}
+                className={clsx(css["flex-center"], styles.trigger)}
               >
                 {auth_status === "loading" ? (
                   <Skeleton height={32} shape={"circular"} width={32} />
@@ -212,7 +208,6 @@ const Actions = (): React.ReactElement => {
               <button
                 aria-label={"Site and account options"}
                 className={clsx(
-                  css["unset"],
                   css["focusable"],
                   css["flex-center"],
                   styles.trigger

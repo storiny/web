@@ -2,8 +2,7 @@ import "server-only";
 
 import { cookies } from "next/headers";
 
-// TODO: Change cookie ID
-export const SESSION_COOKIE_ID = "storiny.sid";
+export const SESSION_COOKIE_ID = "_storiny_sess";
 
 /**
  * Returns the session cookie value if present

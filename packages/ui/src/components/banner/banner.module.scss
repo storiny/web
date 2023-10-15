@@ -59,6 +59,7 @@
 .close {
   --icon-size: 16px;
 
+  all: unset;
   cursor: pointer;
   border-radius: var(--radius-md); // Focus outline radius
   width: var(--icon-size);

@@ -50,6 +50,7 @@ const Wordmark = forward_ref<WordmarkProps, "span">((props, ref) => {
           <Typography
             {...component_props?.beta_label}
             className={clsx(
+              styles.x,
               styles.beta,
               component_props?.beta_label?.className
             )}

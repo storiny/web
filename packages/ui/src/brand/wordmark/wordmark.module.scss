@@ -10,11 +10,13 @@
   line-height: 100%;
 }
 
-.beta {
-  font-size: 12px;
-  line-height: 100%;
-  color: var(--fg-minor);
-  margin-top: -1px;
+.x {
+  &.beta {
+    font-size: 12px;
+    line-height: 100%;
+    color: var(--fg-minor);
+    margin-top: -1px;
+  }
 }
 
 /* Sizes */

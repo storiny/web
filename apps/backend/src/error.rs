@@ -1,3 +1,4 @@
+use serde::Serialize;
 use std::{
     error,
     fmt::{
@@ -6,6 +7,56 @@ use std::{
     },
     io,
 };
+
+/// JSON form error response
+#[derive(Debug, Serialize)]
+pub struct FormErrorResponse {
+    pub errors: Vec<Vec<String>>,
+    pub r#type: String,
+}
+
+impl FormErrorResponse {
+    pub fn new(errors: Vec<Vec<String>>) -> Self {
+        Self {
+            r#type: "form".to_string(),
+            errors,
+        }
+    }
+}
+
+/// Custom JSON error response for validator
+impl From<&validator::ValidationErrors> for FormErrorResponse {
+    fn from(error: &validator::ValidationErrors) -> Self {
+        FormErrorResponse::new(
+            error
+                .field_errors()
+                .iter()
+                .filter_map(|(field, value)| {
+                    if let Some(error_message) = value.iter().next() {
+                        return Some(vec![field.to_string(), error_message.to_string()]);
+                    }
+                    None
+                })
+                .collect(),
+        )
+    }
+}
+
+/// JSON toast error response
+#[derive(Debug, Serialize)]
+pub struct ToastErrorResponse {
+    pub error: String,
+    pub r#type: String,
+}
+
+impl ToastErrorResponse {
+    pub fn new(error: String) -> Self {
+        Self {
+            r#type: "toast".to_string(),
+            error,
+        }
+    }
+}
 
 /// Custom IO error type.
 #[derive(Debug)]
@@ -25,8 +76,6 @@ impl Display for CustomIoError {
 pub enum Error {
     /// Serde JSON error.
     Serde(serde_json::Error),
-    /// URL parsing error.
-    Url(url::ParseError),
     /// Custom IO error.
     CustomIo(CustomIoError),
 }
@@ -36,12 +85,6 @@ impl error::Error for Error {}
 impl From<serde_json::Error> for Error {
     fn from(err: serde_json::Error) -> Self {
         Self::Serde(err)
-    }
-}
-
-impl From<url::ParseError> for Error {
-    fn from(err: url::ParseError) -> Self {
-        Self::Url(err)
     }
 }
 
@@ -55,7 +98,6 @@ impl Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Error::Serde(err) => err.fmt(f),
-            Error::Url(err) => err.fmt(f),
             Error::CustomIo(err) => err.fmt(f),
         }
     }

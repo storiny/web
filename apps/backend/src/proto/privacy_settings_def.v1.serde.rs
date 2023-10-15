@@ -285,13 +285,13 @@ impl serde::Serialize for IncomingFriendRequest {
         S: serde::Serializer,
     {
         let variant = match self {
-            Self::Unspecified => "INCOMING_FRIEND_REQUEST_UNSPECIFIED",
-            Self::Everyone => "INCOMING_FRIEND_REQUEST_EVERYONE",
-            Self::Following => "INCOMING_FRIEND_REQUEST_FOLLOWING",
-            Self::Fof => "INCOMING_FRIEND_REQUEST_FOF",
-            Self::None => "INCOMING_FRIEND_REQUEST_NONE",
+            Self::Unspecified => 0,
+            Self::Everyone => 1,
+            Self::Following => 2,
+            Self::Fof => 3,
+            Self::None => 4,
         };
-        serializer.serialize_str(variant)
+        serializer.serialize_i32(variant)
     }
 }
 impl<'de> serde::Deserialize<'de> for IncomingFriendRequest {
@@ -367,12 +367,12 @@ impl serde::Serialize for RelationVisibility {
         S: serde::Serializer,
     {
         let variant = match self {
-            Self::Unspecified => "RELATION_VISIBILITY_UNSPECIFIED",
-            Self::Everyone => "RELATION_VISIBILITY_EVERYONE",
-            Self::Friends => "RELATION_VISIBILITY_FRIENDS",
-            Self::None => "RELATION_VISIBILITY_NONE",
+            Self::Unspecified => 0,
+            Self::Everyone => 1,
+            Self::Friends => 2,
+            Self::None => 3,
         };
-        serializer.serialize_str(variant)
+        serializer.serialize_i32(variant)
     }
 }
 impl<'de> serde::Deserialize<'de> for RelationVisibility {

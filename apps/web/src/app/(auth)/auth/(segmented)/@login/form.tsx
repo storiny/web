@@ -33,7 +33,7 @@ const LoginForm = ({ on_submit }: Props): React.ReactElement => {
     defaultValues: {
       email: "",
       password: "",
-      remember_me: false
+      remember_me: true
     }
   });
   const [mutate_login, { isLoading: is_loading }] = use_login_mutation();
@@ -53,6 +53,9 @@ const LoginForm = ({ on_submit }: Props): React.ReactElement => {
                 ? "suspended"
                 : res.result === "held_for_deletion"
                 ? "deletion"
+                : // TODO: Implement deactivated page (+ add bypass=true to deleted and deactivated pages)
+                res.result === "deactivated"
+                ? "deactivated"
                 : "email_confirmation"
             );
           }

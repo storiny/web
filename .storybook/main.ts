@@ -24,7 +24,7 @@ const config: StorybookConfig = {
         sass: {
           implementation: require("sass"),
           includePaths: [path.join(__dirname, "../packages/ui/src/theme")],
-          additionalData: `$cdn: "${process.env.NEXT_PUBLIC_CDN_URL}";`,
+          prependData: `$cdn: "${process.env.NEXT_PUBLIC_CDN_URL}";`,
         },
       },
     },

@@ -109,12 +109,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>((props, ref) => {
         <input
           {...rest}
           autoFocus={auto_focus}
-          className={clsx(
-            css["unset"],
-            monospaced && css["t-mono"],
-            styles.input,
-            className
-          )}
+          className={clsx(monospaced && css["t-mono"], styles.input, className)}
           disabled={disabled}
           onBlur={handle_blur}
           onFocus={handle_focus}
@@ -136,7 +131,6 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>((props, ref) => {
               {...slot_props?.spinner_decrement_button}
               aria-label={"decrement-value"}
               className={clsx(
-                css["unset"],
                 css["focusable"],
                 css["focus-invert"],
                 styles.spinner,
@@ -163,7 +157,6 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>((props, ref) => {
               {...slot_props?.spinner_increment_button}
               aria-label={"Increment value"}
               className={clsx(
-                css["unset"],
                 css["focusable"],
                 css["focus-invert"],
                 styles.spinner,

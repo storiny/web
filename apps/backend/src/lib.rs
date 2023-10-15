@@ -1,4 +1,10 @@
+use maxminddb::Reader;
 use sailfish::TemplateOnce;
+use sqlx::{
+    Pool,
+    Postgres,
+};
+use user_agent_parser::UserAgentParser;
 
 #[path = "error.rs"]
 pub mod error;
@@ -9,11 +15,27 @@ pub mod models;
 #[path = "routes.rs"]
 pub mod routes;
 
+#[path = "utils.rs"]
+pub mod utils;
+
+#[path = "middleware.rs"]
+pub mod middleware;
+
 /// Index page template
 #[derive(TemplateOnce)]
 #[template(path = "index.stpl")]
 pub struct IndexTemplate {
     req_id: String,
+}
+
+/// Application state
+pub struct AppState {
+    /// Postgres connection pool
+    pub db_pool: Pool<Postgres>,
+    /// GeoIP database instance
+    pub geo_db: Reader<Vec<u8>>,
+    /// User-agent parser instance
+    pub ua_parser: UserAgentParser,
 }
 
 pub mod comment_def {

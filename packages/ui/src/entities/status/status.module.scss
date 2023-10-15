@@ -3,6 +3,7 @@
 }
 
 .status {
+  all: unset;
   background-color: var(--bg-elevation-sm);
   border: 1px solid var(--divider);
   border-radius: var(--radius-md);

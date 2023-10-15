@@ -4,8 +4,13 @@ use actix_extensible_rate_limit::{
     RateLimiter,
 };
 use actix_files as fs;
+use actix_identity::IdentityMiddleware;
 use actix_request_identifier::RequestIdentifier;
 use actix_web::{
+    cookie::{
+        Key,
+        SameSite,
+    },
     http::{
         header,
         header::ContentType,
@@ -17,14 +22,25 @@ use actix_web::{
     HttpServer,
     Responder,
 };
+use actix_web_validator::JsonConfig;
 use dotenv::dotenv;
+use middleware::session::{
+    config::CookieContentSecurity,
+    storage::RedisSessionStore,
+    SessionMiddleware,
+};
 use redis::aio::ConnectionManager;
+use sqlx::postgres::PgPoolOptions;
 use std::{
     env,
     io,
     time::Duration,
 };
-use storiny::*;
+use storiny::{
+    error::FormErrorResponse,
+    *,
+};
+use user_agent_parser::UserAgentParser;
 
 mod middleware;
 
@@ -51,10 +67,14 @@ async fn main() -> io::Result<()> {
     );
 
     let allowed_origin = env::var("ALLOWED_ORIGIN").expect("Allowed origin not set");
+
     let redis_host = env::var("REDIS_HOST").unwrap_or("localhost".to_string());
     let redis_port = env::var("REDIS_PORT").unwrap_or("7000".to_string());
-    let redis_client = redis::Client::open(format!("redis://{redis_host}:{redis_port}"))
-        .expect("Cannot build Redis client");
+    let redis_connection_string = format!("redis://{redis_host}:{redis_port}");
+
+    // Rate-limit
+    let redis_client =
+        redis::Client::open(redis_connection_string.clone()).expect("Cannot build Redis client");
     let redis_connection_manager = ConnectionManager::new(redis_client)
         .await
         .expect("Cannot build Redis connection manager");
@@ -62,10 +82,55 @@ async fn main() -> io::Result<()> {
         .key_prefix(Some("dsc_")) // Add prefix to avoid collisions with other servicse
         .build();
 
+    // Session
+    // TODO: The secret key would usually be read from a configuration file/environment variables.
+    let secret_key = Key::generate();
+    let redis_store = RedisSessionStore::new(&redis_connection_string)
+        .await
+        .unwrap();
+
+    // Postgres
+    let database_url = env::var("DATABASE_URL").expect("DATABASE_URL not set");
+    let db_pool = match PgPoolOptions::new()
+        .max_connections(15)
+        .connect(&database_url)
+        .await
+    {
+        Ok(pool) => {
+            println!("Connected to Postgres");
+            pool
+        }
+        Err(err) => {
+            println!("Failed to connect to Postgres: {:?}", err);
+            std::process::exit(1);
+        }
+    };
+
     HttpServer::new(move || {
         let input = SimpleInputFunctionBuilder::new(Duration::from_secs(5), 25) // 25 requests / 5s
             .real_ip_key()
             .build();
+
+        // GeoIP service
+        let geo_db = maxminddb::Reader::open_readfile("geo/db/GeoLite2-City.mmdb").unwrap();
+
+        // User-agent parser
+        let ua_parser = UserAgentParser::from_path("./data/ua_parser/regexes.yaml")
+            .expect("Cannot build user-agent parser");
+
+        // JSON validator
+        let json_config = JsonConfig::default().error_handler(|err, _| {
+            let json_error = match &err {
+                actix_web_validator::Error::Validate(error) => FormErrorResponse::from(error),
+                _ => FormErrorResponse::new(Vec::new()),
+            };
+
+            actix_web::error::InternalError::from_response(
+                err,
+                HttpResponse::Conflict().json(json_error),
+            )
+            .into()
+        });
 
         App::new()
             .wrap(
@@ -88,6 +153,24 @@ async fn main() -> io::Result<()> {
             .wrap(Logger::new(
                 "%a %t \"%r\" %s %b \"%{Referer}i\" \"%{User-Agent}i\" %T",
             ))
+            .wrap(IdentityMiddleware::default())
+            .wrap(
+                SessionMiddleware::builder(redis_store.clone(), secret_key.clone())
+                    .cookie_name("_storiny_sess".to_string())
+                    .cookie_same_site(SameSite::None)
+                    .cookie_domain("storiny.com".to_string())
+                    .cookie_path("/".to_string())
+                    .cookie_secure(true)
+                    .cookie_http_only(true)
+                    .cookie_content_security(CookieContentSecurity::Signed)
+                    .build(),
+            )
+            .app_data(json_config)
+            .app_data(web::Data::new(AppState {
+                db_pool: db_pool.clone(),
+                geo_db,
+                ua_parser,
+            }))
             .configure(routes::init_routes)
             .service(fs::Files::new("/", "./static"))
             .default_service(web::route().to(not_found))

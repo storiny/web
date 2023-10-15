@@ -52,7 +52,6 @@ const Switch = forward_ref<SwitchProps, "button">((props, ref) => {
       {...rest}
       asChild
       className={clsx(
-        css["unset"],
         css["focusable"],
         styles.switch,
         styles[color],

@@ -85,8 +85,11 @@
 
 .x {
   &.section-title {
-    position: sticky;
-    top: calc(var(--header-height) + 24px);
     height: fit-content;
+
+    @include breakpoints.media(">=tablet") {
+      position: sticky;
+      top: calc(var(--header-height) + 24px);
+    }
   }
 }

@@ -69,6 +69,7 @@
 .close {
   --icon-size: 14px;
 
+  all: unset;
   padding: 9px;
   border-left: 1px solid var(--divider);
 
