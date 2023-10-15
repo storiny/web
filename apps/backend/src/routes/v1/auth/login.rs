@@ -1,6 +1,13 @@
 use crate::{
-    error::ToastErrorResponse,
-    middleware::session::Session,
+    error::{
+        AppError,
+        FormErrorResponse,
+        ToastErrorResponse,
+    },
+    middleware::{
+        identity::identity::Identity,
+        session::session::Session,
+    },
     models::user::UserFlag,
     utils::{
         flag::{
@@ -19,7 +26,6 @@ use crate::{
     AppState,
 };
 use actix_http::HttpMessage;
-use actix_identity::Identity;
 use actix_web::{
     get,
     http::header::ContentType,
@@ -35,6 +41,7 @@ use argon2::{
     PasswordHash,
     PasswordVerifier,
 };
+use email_address::EmailAddress;
 use serde::{
     Deserialize,
     Serialize,
@@ -87,8 +94,28 @@ async fn post(
     req: HttpRequest,
     query: web::Query<QueryParams>,
     data: web::Data<AppState>,
+    user: Option<Identity>,
     session: Session,
-) -> impl Responder {
+) -> Result<HttpResponse, AppError> {
+    // Return if the user is already logged-in
+    if user.is_some() {
+        return Ok(HttpResponse::BadRequest()
+            .content_type(ContentType::json())
+            .json(ToastErrorResponse::new(
+                "You are already logged-in".to_string(),
+            )));
+    }
+
+    // Check for valid e-mail
+    if !EmailAddress::is_valid(&payload.email) {
+        return Ok(HttpResponse::BadRequest()
+            .content_type(ContentType::json())
+            .json(FormErrorResponse::new(vec![vec![
+                "email".to_string(),
+                "Invalid e-mail".to_string(),
+            ]])));
+    }
+
     let should_bypass = query.bypass.is_some();
     let query_result = sqlx::query(
         r#"
@@ -105,9 +132,9 @@ async fn post(
             let user_password = user.get::<Option<String>, _>("password");
             // User has created account using a third-party service, such as Apple or Google
             if user_password.is_none() {
-                return HttpResponse::Unauthorized()
+                return Ok(HttpResponse::Unauthorized()
                     .content_type(ContentType::json())
-                    .json(ToastErrorResponse::new("Invalid credentials".to_string()));
+                    .json(ToastErrorResponse::new("Invalid credentials".to_string())));
             }
 
             return match PasswordHash::new(&user_password.unwrap()) {
@@ -124,11 +151,11 @@ async fn post(
                                     UserFlag::TemporarilySuspended,
                                     UserFlag::PermanentlySuspended,
                                 ])) {
-                                    return HttpResponse::Ok()
+                                    return Ok(HttpResponse::Ok()
                                         .content_type(ContentType::json())
                                         .json(Response {
                                             result: "suspended".to_string(),
-                                        });
+                                        }));
                                 }
                             }
 
@@ -140,7 +167,7 @@ async fn post(
                                 if deleted_at.is_some() {
                                     if should_bypass {
                                         // Restore the user
-                                        match sqlx::query(
+                                        sqlx::query(
                                             r#"
                                             UPDATE users
                                             SET deleted_at = NULL
@@ -149,20 +176,13 @@ async fn post(
                                         )
                                         .bind(&payload.email)
                                         .execute(&data.db_pool)
-                                        .await
-                                        {
-                                            Ok(_) => {}
-                                            Err(_) => {
-                                                return HttpResponse::InternalServerError()
-                                                    .finish();
-                                            }
-                                        };
+                                        .await?;
                                     } else {
-                                        return HttpResponse::Ok()
+                                        return Ok(HttpResponse::Ok()
                                             .content_type(ContentType::json())
                                             .json(Response {
                                                 result: "held_for_deletion".to_string(),
-                                            });
+                                            }));
                                     }
                                 }
                             }
@@ -175,7 +195,7 @@ async fn post(
                                 if deactivated_at.is_some() {
                                     if should_bypass {
                                         // Reactivate the user
-                                        match sqlx::query(
+                                        sqlx::query(
                                             r#"
                                             UPDATE users
                                             SET deactivated_at = NULL
@@ -184,20 +204,13 @@ async fn post(
                                         )
                                         .bind(&payload.email)
                                         .execute(&data.db_pool)
-                                        .await
-                                        {
-                                            Ok(_) => {}
-                                            Err(_) => {
-                                                return HttpResponse::InternalServerError()
-                                                    .finish();
-                                            }
-                                        };
+                                        .await?;
                                     } else {
-                                        return HttpResponse::Ok()
+                                        return Ok(HttpResponse::Ok()
                                             .content_type(ContentType::json())
                                             .json(Response {
                                                 result: "deactivated".to_string(),
-                                            });
+                                            }));
                                     }
                                 }
                             }
@@ -207,11 +220,11 @@ async fn post(
                                 let email_verified = user.get::<bool, _>("email_verified");
 
                                 if !email_verified {
-                                    return HttpResponse::Ok()
+                                    return Ok(HttpResponse::Ok()
                                         .content_type(ContentType::json())
                                         .json(Response {
                                             result: "email_confirmation".to_string(),
-                                        });
+                                        }));
                                 }
                             }
 
@@ -256,29 +269,29 @@ async fn post(
                                 &req.extensions(),
                                 user.get::<i64, _>("id").to_string(),
                             ) {
-                                Ok(_) => HttpResponse::Ok().content_type(ContentType::json()).json(
-                                    Response {
+                                Ok(_) => Ok(HttpResponse::Ok()
+                                    .content_type(ContentType::json())
+                                    .json(Response {
                                         result: "success".to_string(),
-                                    },
-                                ),
-                                Err(_) => HttpResponse::InternalServerError().finish(),
+                                    })),
+                                Err(_) => Ok(HttpResponse::InternalServerError().finish()),
                             }
                         }
-                        Err(_) => HttpResponse::Unauthorized()
+                        Err(_) => Ok(HttpResponse::Unauthorized()
                             .content_type(ContentType::json())
-                            .json(ToastErrorResponse::new("Invalid credentials".to_string())),
+                            .json(ToastErrorResponse::new("Invalid credentials".to_string()))),
                     }
                 }
-                Err(_) => HttpResponse::InternalServerError().finish(),
+                Err(_) => Ok(HttpResponse::InternalServerError().finish()),
             };
         }
         Err(kind) => match kind {
-            Error::RowNotFound => HttpResponse::Unauthorized()
+            Error::RowNotFound => Ok(HttpResponse::Unauthorized()
                 .content_type(ContentType::json())
                 .json(ToastErrorResponse::new(
                     "Invalid e-mail or password".to_string(),
-                )),
-            _ => HttpResponse::InternalServerError().finish(),
+                ))),
+            _ => Ok(HttpResponse::InternalServerError().finish()),
         },
     }
 }
@@ -877,6 +890,150 @@ mod tests {
 
         // Should be persistent
         assert!(cookie_value.max_age().is_some());
+
+        Ok(())
+    }
+
+    #[sqlx::test]
+    async fn can_restore_and_login_a_soft_deleted_user_on_bypass(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let app = init_app_for_test(services![get, post], pool).await;
+        let (email, password_hash, password) = get_sample_email_and_password();
+
+        // Insert the user
+        sqlx::query(
+            r#"
+            INSERT INTO users(name, username, email, password, email_verified)
+            VALUES ($1, $2, $3, $4, TRUE)
+            "#,
+        )
+        .bind("Sample user".to_string())
+        .bind("sample_user".to_string())
+        .bind((&email).to_string())
+        .bind(password_hash)
+        .execute(&mut *conn)
+        .await?;
+
+        // Soft-delete the user
+        sqlx::query(
+            r#"
+            UPDATE users
+            SET deleted_at = now()
+            WHERE email = $1
+            "#,
+        )
+        .bind((&email).to_string())
+        .execute(&mut *conn)
+        .await?;
+
+        let req = test::TestRequest::post()
+            .uri("/v1/auth/login?bypass=true")
+            .set_json(Request {
+                email: email.to_string(),
+                password: password.to_string(),
+                remember_me: true,
+            })
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_success());
+        assert_eq!(
+            to_bytes(res.into_body()).await.unwrap_or_default(),
+            serde_json::to_string(&Response {
+                result: "success".to_string()
+            })
+            .unwrap_or_default()
+        );
+
+        // User should be restored
+        let user_result = sqlx::query(
+            r#"
+            SELECT deleted_at FROM users
+            WHERE email = $1
+            "#,
+        )
+        .bind((&email).to_string())
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            user_result
+                .get::<Option<OffsetDateTime>, _>("deleted_at")
+                .is_none()
+        );
+
+        Ok(())
+    }
+
+    #[sqlx::test]
+    async fn can_reactivate_and_login_a_deactivated_user_on_bypass(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let app = init_app_for_test(services![get, post], pool).await;
+        let (email, password_hash, password) = get_sample_email_and_password();
+
+        // Insert the user
+        sqlx::query(
+            r#"
+            INSERT INTO users(name, username, email, password, email_verified)
+            VALUES ($1, $2, $3, $4, TRUE)
+            "#,
+        )
+        .bind("Sample user".to_string())
+        .bind("sample_user".to_string())
+        .bind((&email).to_string())
+        .bind(password_hash)
+        .execute(&mut *conn)
+        .await?;
+
+        // Deactivate the user
+        sqlx::query(
+            r#"
+            UPDATE users
+            SET deactivated_at = now()
+            WHERE email = $1
+            "#,
+        )
+        .bind((&email).to_string())
+        .execute(&mut *conn)
+        .await?;
+
+        let req = test::TestRequest::post()
+            .uri("/v1/auth/login?bypass=true")
+            .set_json(Request {
+                email: email.to_string(),
+                password: password.to_string(),
+                remember_me: true,
+            })
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_success());
+        assert_eq!(
+            to_bytes(res.into_body()).await.unwrap_or_default(),
+            serde_json::to_string(&Response {
+                result: "success".to_string()
+            })
+            .unwrap_or_default()
+        );
+
+        // User should be reactivated
+        let user_result = sqlx::query(
+            r#"
+            SELECT deactivated_at FROM users
+            WHERE email = $1
+            "#,
+        )
+        .bind((&email).to_string())
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            user_result
+                .get::<Option<OffsetDateTime>, _>("deactivated_at")
+                .is_none()
+        );
 
         Ok(())
     }

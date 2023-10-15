@@ -1,0 +1,241 @@
+use crate::{
+    constants::{
+        reserved_usernames::RESERVED_USERNAMES,
+        token_type::TokenType,
+    },
+    error::{
+        AppError,
+        FormErrorResponse,
+        ToastErrorResponse,
+    },
+    AppState,
+};
+use actix_web::{
+    http::header::ContentType,
+    post,
+    web,
+    HttpResponse,
+};
+use actix_web_validator::Json;
+use argon2::{
+    password_hash::{
+        rand_core::OsRng,
+        SaltString,
+    },
+    Argon2,
+    PasswordHasher,
+};
+use email_address::EmailAddress;
+use serde::{
+    Deserialize,
+    Serialize,
+};
+use sqlx::Row;
+use time::OffsetDateTime;
+use validator::Validate;
+
+#[derive(Debug, Serialize, Deserialize, Validate)]
+struct Request {
+    #[validate(email(message = "Invalid e-mail"))]
+    #[validate(length(min = 3, max = 300, message = "Invalid e-mail length"))]
+    email: String,
+    #[validate(length(min = 6, max = 64, message = "Invalid password length"))]
+    password: String,
+    logout_of_all_devices: bool,
+    #[validate(length(min = 4, max = 128, message = "Invalid token length"))]
+    token: String,
+}
+
+#[post("/v1/auth/reset-password")]
+async fn post(payload: Json<Request>, data: web::Data<AppState>) -> Result<HttpResponse, AppError> {
+    match &payload.token.parse::<i64>() {
+        Ok(token) => {
+            if !EmailAddress::is_valid(&payload.email) {
+                return Ok(
+                    HttpResponse::Conflict().json(FormErrorResponse::new(vec![vec![
+                        "email".to_string(),
+                        "Invalid e-mail".to_string(),
+                    ]])),
+                );
+            }
+
+            {
+                // Check if the user exists using the provided e-mail
+                let email_check = sqlx::query(
+                    r#"
+                    SELECT EXISTS(
+                        SELECT 1 FROM users
+                        WHERE email = $1
+                            AND deleted_at = NULL AND deactivated_at = NULL 
+                    )
+                    "#,
+                )
+                .bind(&payload.email)
+                .fetch_one(&data.db_pool)
+                .await?;
+
+                if !email_check.get::<bool, _>("exists") {
+                    return Ok(
+                        HttpResponse::Conflict().json(FormErrorResponse::new(vec![vec![
+                            "email".to_string(),
+                            "Could not find any account associated with this e-mail".to_string(),
+                        ]])),
+                    );
+                }
+            }
+
+            match sqlx::query(
+                r#"
+                SELECT user_id, expires_at FROM tokens
+                WHERE id = $1 AND type = $2
+                "#,
+            )
+            .bind(token)
+            .bind(TokenType::PasswordReset.to_string())
+            .fetch_one(&data.db_pool)
+            .await
+            {
+                Ok(token_result) => {
+                    let expires_at = token_result.get::<OffsetDateTime, _>("expires_at");
+
+                    // Check if the token has expired
+                    if expires_at < OffsetDateTime::now_utc() {
+                        return Ok(HttpResponse::BadRequest()
+                            .content_type(ContentType::json())
+                            .json(ToastErrorResponse::new("Token has expired".to_string())));
+                    }
+
+                    // Generate password hash
+                    let salt = SaltString::generate(&mut OsRng);
+
+                    match Argon2::default().hash_password(&payload.password.as_bytes(), &salt) {
+                        Ok(hashed_password) => {
+                            let pg_pool = &data.db_pool;
+                            let mut transaction = pg_pool.begin().await?;
+
+                            // Delete the token
+                            sqlx::query(
+                                r#"
+                                DELETE FROM tokens
+                                WHERE id = $1
+                                "#,
+                            )
+                            .bind(token)
+                            .execute(&mut *transaction)
+                            .await?;
+
+                            // Update user's password
+                            sqlx::query(
+                                r#"
+                                UPDATE users
+                                SET password = $1
+                                WHERE id = $2
+                                "#,
+                            )
+                            .bind(hashed_password.to_string())
+                            .bind(token_result.get::<i64, _>("user_id"))
+                            .execute(&mut *transaction)
+                            .await?;
+
+                            transaction.commit().await?;
+
+                            // Logout of all devices if requested
+                            if payload.logout_of_all_devices {
+                                todo!()
+                            }
+
+                            Ok(HttpResponse::NotModified().finish())
+                        }
+                        Err(_) => Ok(HttpResponse::InternalServerError().finish()),
+                    }
+                }
+                Err(kind) => match kind {
+                    sqlx::Error::RowNotFound => Ok(HttpResponse::BadRequest()
+                        .content_type(ContentType::json())
+                        .json(ToastErrorResponse::new("Invalid token".to_string()))),
+                    _ => Ok(HttpResponse::InternalServerError().finish()),
+                },
+            }
+        }
+        Err(_) => Ok(HttpResponse::BadRequest()
+            .content_type(ContentType::json())
+            .json(ToastErrorResponse::new("Invalid token".to_string()))),
+    }
+}
+
+async fn send_confirmation_email() {}
+
+pub fn init_routes(cfg: &mut web::ServiceConfig) {
+    cfg.service(post);
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::utils::init_app_for_test::init_app_for_test;
+    use actix_http::body::to_bytes;
+    use actix_web::test;
+    use argon2::{
+        PasswordHash,
+        PasswordVerifier,
+    };
+    use sqlx::PgPool;
+    use time::Duration;
+
+    #[sqlx::test(fixtures("user"))]
+    async fn can_reset_password(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let app = init_app_for_test(post, pool).await;
+
+        // Insert reset password token
+        let token_result = sqlx::query(
+            r#"
+            INSERT INTO tokens(type, user_id, expires_at)
+            VALUES ($1, $2, $3)
+            RETURNING id
+            "#,
+        )
+        .bind(TokenType::PasswordReset.to_string())
+        .bind(1i64)
+        .bind(OffsetDateTime::now_utc() + Duration::days(3)) // 3 days
+        .fetch_one(&mut *conn)
+        .await?;
+
+        let req = test::TestRequest::post()
+            .uri("/v1/auth/reset-password")
+            .set_json(Request {
+                email: "someone@example.com".to_string(),
+                password: "new_password".to_string(),
+                logout_of_all_devices: false,
+                token: token_result.get::<i64, _>("id").to_string(),
+            })
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        println!("{:#?}", res.response().body());
+
+        assert!(res.status().is_success());
+
+        // Password should get updated in the database
+        let user = sqlx::query(
+            r#"
+            SELECT password FROM users
+            WHERE email = $1
+            "#,
+        )
+        .bind("someone@example.com")
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(
+            Argon2::default()
+                .verify_password(
+                    "new_password".as_bytes(),
+                    &PasswordHash::new(&user.get::<String, _>("password")).unwrap(),
+                )
+                .is_ok()
+        );
+
+        Ok(())
+    }
+}

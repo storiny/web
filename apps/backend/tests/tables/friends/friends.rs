@@ -1444,7 +1444,7 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert_eq!(result.get::<bool, _>("exists"), false);
+        assert!(!result.get::<bool, _>("exists"));
 
         Ok(())
     }
@@ -1508,7 +1508,7 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert_eq!(result.get::<bool, _>("exists"), false);
+        assert!(!result.get::<bool, _>("exists"));
 
         Ok(())
     }

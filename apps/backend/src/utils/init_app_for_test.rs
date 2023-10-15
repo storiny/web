@@ -1,15 +1,17 @@
 use crate::{
-    middleware::session::{
-        config::CookieContentSecurity,
-        storage::RedisSessionStore,
-        SessionMiddleware,
+    middleware::{
+        identity::middleware::IdentityMiddleware,
+        session::{
+            middleware::SessionMiddleware,
+            storage::RedisSessionStore,
+        },
     },
     AppState,
 };
 use actix_http::Request;
-use actix_identity::IdentityMiddleware;
 use actix_web::{
     cookie::{
+        time::Duration,
         Key,
         SameSite,
     },
@@ -37,8 +39,9 @@ pub async fn init_app_for_test(
 ) -> impl Service<Request, Response = ServiceResponse, Error = Error> {
     let redis_host = env::var("REDIS_HOST").unwrap_or("localhost".to_string());
     let redis_port = env::var("REDIS_PORT").unwrap_or("7000".to_string());
+    let redis_connection_string = format!("redis://{redis_host}:{redis_port}");
     let secret_key = Key::generate();
-    let redis_store = RedisSessionStore::new(format!("redis://{redis_host}:{redis_port}"))
+    let redis_store = RedisSessionStore::new(&redis_connection_string)
         .await
         .unwrap();
 
@@ -54,16 +57,17 @@ pub async fn init_app_for_test(
             .wrap(IdentityMiddleware::default())
             .wrap(
                 SessionMiddleware::builder(redis_store.clone(), secret_key.clone())
-                    .cookie_name("_storiny_sess".to_string())
+                    .cookie_name("_storiny_sess".into())
                     .cookie_same_site(SameSite::None)
-                    .cookie_domain("storiny.com".to_string())
+                    .cookie_domain("storiny.com".into())
                     .cookie_path("/".to_string())
+                    .cookie_max_age(Duration::weeks(1))
                     .cookie_secure(true)
                     .cookie_http_only(true)
-                    .cookie_content_security(CookieContentSecurity::Signed)
                     .build(),
             )
             .app_data(web::Data::new(AppState {
+                redis: None,
                 db_pool,
                 geo_db,
                 ua_parser,

@@ -3197,7 +3197,7 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert_eq!(result.get::<bool, _>("exists"), false);
+        assert!(!result.get::<bool, _>("exists"));
 
         Ok(())
     }
@@ -3250,7 +3250,7 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert_eq!(result.get::<bool, _>("exists"), false);
+        assert!(!result.get::<bool, _>("exists"));
 
         Ok(())
     }
@@ -3301,7 +3301,7 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert_eq!(result.get::<bool, _>("exists"), false);
+        assert!(!result.get::<bool, _>("exists"));
 
         Ok(())
     }
@@ -3352,7 +3352,7 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert_eq!(result.get::<bool, _>("exists"), false);
+        assert!(!result.get::<bool, _>("exists"));
 
         Ok(())
     }
@@ -3405,7 +3405,7 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert_eq!(result.get::<bool, _>("exists"), false);
+        assert!(!result.get::<bool, _>("exists"));
 
         Ok(())
     }
@@ -3458,7 +3458,58 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert_eq!(result.get::<bool, _>("exists"), false);
+        assert!(!result.get::<bool, _>("exists"));
+
+        Ok(())
+    }
+
+    // Tokens
+
+    #[sqlx::test(fixtures("user"))]
+    async fn can_delete_token_on_user_soft_delete(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+
+        // Insert a token
+        let insert_result = sqlx::query(
+            r#"
+            INSERT INTO tokens(type, user_id, expires_at)
+            VALUES ($1, $2, now())
+            RETURNING id
+            "#,
+        )
+        .bind("sample")
+        .bind(1i64)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(insert_result.try_get::<i64, _>("id").is_ok());
+
+        // Soft-delete the user
+        sqlx::query(
+            r#"
+            UPDATE users
+            SET deleted_at = now()
+            WHERE id = $1
+            "#,
+        )
+        .bind(1i64)
+        .execute(&mut *conn)
+        .await?;
+
+        // Token should get deleted
+        let result = sqlx::query(
+            r#"
+            SELECT EXISTS(
+              SELECT 1 FROM tokens
+              WHERE id = $1
+            )
+            "#,
+        )
+        .bind(insert_result.get::<i64, _>("id"))
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(!result.get::<bool, _>("exists"));
 
         Ok(())
     }
@@ -8540,7 +8591,7 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert_eq!(result.get::<bool, _>("exists"), false);
+        assert!(!result.get::<bool, _>("exists"));
 
         Ok(())
     }
@@ -8590,7 +8641,7 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert_eq!(result.get::<bool, _>("exists"), false);
+        assert!(!result.get::<bool, _>("exists"));
 
         Ok(())
     }
@@ -8640,7 +8691,7 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert_eq!(result.get::<bool, _>("exists"), false);
+        assert!(!result.get::<bool, _>("exists"));
 
         Ok(())
     }
@@ -8689,7 +8740,7 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert_eq!(result.get::<bool, _>("exists"), false);
+        assert!(!result.get::<bool, _>("exists"));
 
         Ok(())
     }
@@ -8738,7 +8789,7 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert_eq!(result.get::<bool, _>("exists"), false);
+        assert!(!result.get::<bool, _>("exists"));
 
         Ok(())
     }
@@ -8787,7 +8838,7 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert_eq!(result.get::<bool, _>("exists"), false);
+        assert!(!result.get::<bool, _>("exists"));
 
         Ok(())
     }
@@ -8836,7 +8887,7 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert_eq!(result.get::<bool, _>("exists"), false);
+        assert!(!result.get::<bool, _>("exists"));
 
         Ok(())
     }
@@ -8935,7 +8986,7 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert_eq!(result.get::<bool, _>("exists"), false);
+        assert!(!result.get::<bool, _>("exists"));
 
         Ok(())
     }
@@ -8984,7 +9035,7 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert_eq!(result.get::<bool, _>("exists"), false);
+        assert!(!result.get::<bool, _>("exists"));
 
         Ok(())
     }
@@ -9033,7 +9084,7 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert_eq!(result.get::<bool, _>("exists"), false);
+        assert!(!result.get::<bool, _>("exists"));
 
         Ok(())
     }
@@ -9082,7 +9133,7 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert_eq!(result.get::<bool, _>("exists"), false);
+        assert!(!result.get::<bool, _>("exists"));
 
         Ok(())
     }
@@ -9131,7 +9182,7 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert_eq!(result.get::<bool, _>("exists"), false);
+        assert!(!result.get::<bool, _>("exists"));
 
         Ok(())
     }
@@ -9182,7 +9233,7 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert_eq!(result.get::<bool, _>("exists"), false);
+        assert!(!result.get::<bool, _>("exists"));
 
         Ok(())
     }
@@ -9231,7 +9282,7 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert_eq!(result.get::<bool, _>("exists"), false);
+        assert!(!result.get::<bool, _>("exists"));
 
         Ok(())
     }
@@ -9280,7 +9331,7 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert_eq!(result.get::<bool, _>("exists"), false);
+        assert!(!result.get::<bool, _>("exists"));
 
         Ok(())
     }
@@ -9329,7 +9380,7 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert_eq!(result.get::<bool, _>("exists"), false);
+        assert!(!result.get::<bool, _>("exists"));
 
         Ok(())
     }
@@ -9378,7 +9429,55 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert_eq!(result.get::<bool, _>("exists"), false);
+        assert!(!result.get::<bool, _>("exists"));
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("user"))]
+    async fn can_delete_token_on_user_hard_delete(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+
+        // Insert a token
+        let insert_result = sqlx::query(
+            r#"
+            INSERT INTO tokens(type, user_id, expires_at)
+            VALUES ($1, $2, now())
+            RETURNING id
+            "#,
+        )
+        .bind("sample")
+        .bind(1i64)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(insert_result.try_get::<i64, _>("id").is_ok());
+
+        // Delete the user
+        sqlx::query(
+            r#"
+            DELETE FROM users
+            WHERE id = $1
+            "#,
+        )
+        .bind(1i64)
+        .execute(&mut *conn)
+        .await?;
+
+        // Token should get deleted
+        let result = sqlx::query(
+            r#"
+            SELECT EXISTS(
+              SELECT 1 FROM tokens
+              WHERE id = $1
+            )
+            "#,
+        )
+        .bind(insert_result.get::<i64, _>("id"))
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(!result.get::<bool, _>("exists"));
 
         Ok(())
     }
@@ -9430,7 +9529,7 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert_eq!(result.get::<bool, _>("exists"), false);
+        assert!(!result.get::<bool, _>("exists"));
 
         Ok(())
     }
@@ -9480,7 +9579,7 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert_eq!(result.get::<bool, _>("exists"), false);
+        assert!(!result.get::<bool, _>("exists"));
 
         Ok(())
     }
@@ -9532,7 +9631,7 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert_eq!(result.get::<bool, _>("exists"), false);
+        assert!(!result.get::<bool, _>("exists"));
 
         Ok(())
     }
@@ -9568,7 +9667,7 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert_eq!(result.get::<bool, _>("exists"), false);
+        assert!(!result.get::<bool, _>("exists"));
 
         Ok(())
     }
@@ -9616,7 +9715,7 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert_eq!(result.get::<bool, _>("exists"), false);
+        assert!(!result.get::<bool, _>("exists"));
 
         Ok(())
     }
@@ -9664,7 +9763,7 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert_eq!(result.get::<bool, _>("exists"), false);
+        assert!(!result.get::<bool, _>("exists"));
 
         Ok(())
     }

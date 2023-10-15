@@ -4,7 +4,7 @@ use actix_extensible_rate_limit::{
     RateLimiter,
 };
 use actix_files as fs;
-use actix_identity::IdentityMiddleware;
+use actix_redis::RedisActor;
 use actix_request_identifier::RequestIdentifier;
 use actix_web::{
     cookie::{
@@ -25,9 +25,8 @@ use actix_web::{
 use actix_web_validator::JsonConfig;
 use dotenv::dotenv;
 use middleware::session::{
-    config::CookieContentSecurity,
+    middleware::SessionMiddleware,
     storage::RedisSessionStore,
-    SessionMiddleware,
 };
 use redis::aio::ConnectionManager;
 use sqlx::postgres::PgPoolOptions;
@@ -38,6 +37,7 @@ use std::{
 };
 use storiny::{
     error::FormErrorResponse,
+    middleware::identity::middleware::IdentityMiddleware,
     *,
 };
 use user_agent_parser::UserAgentParser;
@@ -78,14 +78,16 @@ async fn main() -> io::Result<()> {
     let redis_connection_manager = ConnectionManager::new(redis_client)
         .await
         .expect("Cannot build Redis connection manager");
-    let backend = middleware::rate_limiter::RedisBackend::builder(redis_connection_manager)
-        .key_prefix(Some("dsc_")) // Add prefix to avoid collisions with other servicse
-        .build();
+    let backend = middleware::rate_limiter::rate_limiter::RedisBackend::builder(
+        redis_connection_manager.clone(),
+    )
+    .key_prefix(Some("lim:a:")) // Add prefix to avoid collisions with other servicse
+    .build();
 
     // Session
     // TODO: The secret key would usually be read from a configuration file/environment variables.
     let secret_key = Key::generate();
-    let redis_store = RedisSessionStore::new(&redis_connection_string)
+    let redis_store = RedisSessionStore::new(&redis_connection_string.clone())
         .await
         .unwrap();
 
@@ -156,17 +158,18 @@ async fn main() -> io::Result<()> {
             .wrap(IdentityMiddleware::default())
             .wrap(
                 SessionMiddleware::builder(redis_store.clone(), secret_key.clone())
-                    .cookie_name("_storiny_sess".to_string())
+                    .cookie_name("_storiny_sess".into())
                     .cookie_same_site(SameSite::None)
-                    .cookie_domain("storiny.com".to_string())
+                    .cookie_domain("storiny.com".into())
                     .cookie_path("/".to_string())
+                    .cookie_max_age(actix_web::cookie::time::Duration::weeks(1))
                     .cookie_secure(true)
                     .cookie_http_only(true)
-                    .cookie_content_security(CookieContentSecurity::Signed)
                     .build(),
             )
             .app_data(json_config)
             .app_data(web::Data::new(AppState {
+                redis: Some(RedisActor::start(format!("{redis_host}:{redis_port}"))),
                 db_pool: db_pool.clone(),
                 geo_db,
                 ua_parser,
