@@ -31,6 +31,7 @@
 }
 
 .input {
+  all: unset;
   padding: 0 8px;
   flex: 1 1 auto;
   align-self: stretch;
@@ -136,6 +137,7 @@
   --icon-size: var(--spinner-icon-size);
   --icon-stroke: var(--fg);
 
+  all: unset;
   display: inherit;
   cursor: pointer;
   padding: 5px 6px;

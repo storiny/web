@@ -1,5 +1,4 @@
 import { is_num } from "@storiny/shared/src/utils/is-num";
-import NextLink from "next/link";
 import React from "react";
 
 import { GetProfileResponse } from "~/common/grpc";

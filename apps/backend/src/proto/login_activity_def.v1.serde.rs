@@ -117,15 +117,13 @@ impl serde::Serialize for DeviceType {
         S: serde::Serializer,
     {
         let variant = match self {
-            Self::Unspecified => "DEVICE_TYPE_UNSPECIFIED",
-            Self::Computer => "DEVICE_TYPE_COMPUTER",
-            Self::Console => "DEVICE_TYPE_CONSOLE",
-            Self::Mobile => "DEVICE_TYPE_MOBILE",
-            Self::SmartTv => "DEVICE_TYPE_SMART_TV",
-            Self::Tablet => "DEVICE_TYPE_TABLET",
-            Self::Unknown => "DEVICE_TYPE_UNKNOWN",
+            Self::Unspecified => 0,
+            Self::Computer => 1,
+            Self::Mobile => 2,
+            Self::Tablet => 3,
+            Self::Unknown => 4,
         };
-        serializer.serialize_str(variant)
+        serializer.serialize_i32(variant)
     }
 }
 impl<'de> serde::Deserialize<'de> for DeviceType {
@@ -137,9 +135,7 @@ impl<'de> serde::Deserialize<'de> for DeviceType {
         const FIELDS: &[&str] = &[
             "DEVICE_TYPE_UNSPECIFIED",
             "DEVICE_TYPE_COMPUTER",
-            "DEVICE_TYPE_CONSOLE",
             "DEVICE_TYPE_MOBILE",
-            "DEVICE_TYPE_SMART_TV",
             "DEVICE_TYPE_TABLET",
             "DEVICE_TYPE_UNKNOWN",
         ];
@@ -186,9 +182,7 @@ impl<'de> serde::Deserialize<'de> for DeviceType {
                 match value {
                     "DEVICE_TYPE_UNSPECIFIED" => Ok(DeviceType::Unspecified),
                     "DEVICE_TYPE_COMPUTER" => Ok(DeviceType::Computer),
-                    "DEVICE_TYPE_CONSOLE" => Ok(DeviceType::Console),
                     "DEVICE_TYPE_MOBILE" => Ok(DeviceType::Mobile),
-                    "DEVICE_TYPE_SMART_TV" => Ok(DeviceType::SmartTv),
                     "DEVICE_TYPE_TABLET" => Ok(DeviceType::Tablet),
                     "DEVICE_TYPE_UNKNOWN" => Ok(DeviceType::Unknown),
                     _ => Err(serde::de::Error::unknown_variant(value, FIELDS)),

@@ -42,7 +42,7 @@ const next_config = {
   },
   sassOptions: {
     includePaths: [path.join(__dirname, "../../packages/ui/src/theme")],
-    additionalData: `$cdn: "${process.env.NEXT_PUBLIC_CDN_URL}";`
+    prependData: `$cdn: "${process.env.NEXT_PUBLIC_CDN_URL}";`
   },
   publicRuntimeConfig: {
     version: pkg?.default?.version,

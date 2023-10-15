@@ -69,7 +69,6 @@ const Notification = forward_ref<NotificationProps, "li">((props, ref) => {
             <button
               {...slot_props?.primary_button}
               className={clsx(
-                css["unset"],
                 css["focusable"],
                 css["focus-invert"],
                 css["t-center"],
@@ -90,7 +89,6 @@ const Notification = forward_ref<NotificationProps, "li">((props, ref) => {
             {...slot_props?.secondary_button}
             aria-label={secondary_button_text}
             className={clsx(
-              css["unset"],
               css["focusable"],
               css["t-center"],
               styles.button,

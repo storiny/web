@@ -78,7 +78,7 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
         <textarea
           {...rest}
           autoFocus={auto_focus}
-          className={clsx(css["unset"], styles.textarea, className)}
+          className={clsx(styles.textarea, className)}
           disabled={disabled}
           onBlur={handle_blur}
           onFocus={handle_focus}

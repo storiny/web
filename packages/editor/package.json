@@ -5,9 +5,9 @@
   "sideEffects": false,
   "scripts": {
     "lint": "eslint \"**/*.ts*\"",
-    "dev": "dotenv -e ../../.env.local next dev",
-    "build": "dotenv -e ../../.env.local next build",
-    "start": "dotenv -e ../../.env.local next start",
+    "dev": "dotenv -e ./.env next dev",
+    "build": "dotenv -e ./.env next build",
+    "start": "dotenv -e ./.env next start",
     "multiplayer:server": "dotenv -v HOST=localhost -v PORT=1234 -- npx y-websocket-server",
     "multiplayer:test": "concurrently --raw \"yarn multiplayer:server\" \"yarn start\""
   },
@@ -22,7 +22,7 @@
     "@types/react-dom": "^18.2.8",
     "dotenv": "^16.3.1",
     "eslint": "^8.42.0",
-    "next": "^13.4.19",
+    "next": "v13.5.5-canary.12",
     "prettier": "^3.0.3",
     "typescript": "^5.1.5",
     "y-websocket": "^1.5.0",

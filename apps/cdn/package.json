@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "dev": "dotenv -e ../../.env.local docker compose up",
+    "dev": "docker compose up",
     "build": "rollup -c && docker compose build",
     "rollup": "rollup -c",
     "sync": "aws s3 sync buckets/base s3://base --delete --exclude 'sitemaps/*'",

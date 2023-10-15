@@ -30,13 +30,13 @@ describe("flags", () => {
   it("adds a new flag", () => {
     const flags = new Flag();
     flags.add_flag(UserFlag.STAFF);
-    expect(flags.get_flags()).toEqual(1);
+    expect(flags.get_flags()).toEqual(UserFlag.STAFF);
   });
 
   it("removes an existing flag", () => {
     const flags = new Flag();
     flags.add_flag(UserFlag.STAFF);
-    expect(flags.get_flags()).toEqual(1);
+    expect(flags.get_flags()).toEqual(UserFlag.STAFF);
     flags.remove_flag(UserFlag.STAFF);
     expect(flags.get_flags()).toEqual(0);
   });
@@ -44,9 +44,9 @@ describe("flags", () => {
   it("does not throw on a non existent flag", () => {
     const flags = new Flag();
     flags.add_flag(UserFlag.STAFF);
-    expect(flags.get_flags()).toEqual(1);
+    expect(flags.get_flags()).toEqual(UserFlag.STAFF);
     flags.remove_flag(UserFlag.VERIFIED);
-    expect(flags.get_flags()).toEqual(1);
+    expect(flags.get_flags()).toEqual(UserFlag.STAFF);
   });
 
   it("adds multiple flags", () => {

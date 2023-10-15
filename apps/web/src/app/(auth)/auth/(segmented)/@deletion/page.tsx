@@ -19,8 +19,7 @@ const Page = (): React.ReactElement => (
       <br />
       However, if you continue to log in, your account will not be deleted in
       accordance to our policy, which includes a grace period of 30 days for
-      account recovery. This period provides account owners with ample time to
-      reconsider and cancel their deletion request.
+      account recovery.
     </Typography>
     <Grow />
     <div className={css["flex-center"]}>

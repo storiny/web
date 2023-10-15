@@ -64,7 +64,6 @@ const Banner = forward_ref<BannerProps, "li">((props, ref) => {
           title={"Dismiss"}
           {...slot_props?.close}
           className={clsx(
-            css["unset"],
             css["focusable"],
             styles.close,
             slot_props?.close?.className

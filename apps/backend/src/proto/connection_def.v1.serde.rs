@@ -296,22 +296,22 @@ impl serde::Serialize for Provider {
         S: serde::Serializer,
     {
         let variant = match self {
-            Self::Unspecified => "PROVIDER_UNSPECIFIED",
-            Self::Twitter => "PROVIDER_TWITTER",
-            Self::Github => "PROVIDER_GITHUB",
-            Self::Twitch => "PROVIDER_TWITCH",
-            Self::Spotify => "PROVIDER_SPOTIFY",
-            Self::Reddit => "PROVIDER_REDDIT",
-            Self::Facebook => "PROVIDER_FACEBOOK",
-            Self::Instagram => "PROVIDER_INSTAGRAM",
-            Self::Discord => "PROVIDER_DISCORD",
-            Self::Youtube => "PROVIDER_YOUTUBE",
-            Self::LinkedIn => "PROVIDER_LINKED_IN",
-            Self::Figma => "PROVIDER_FIGMA",
-            Self::Dribbble => "PROVIDER_DRIBBBLE",
-            Self::Snapchat => "PROVIDER_SNAPCHAT",
+            Self::Unspecified => 0,
+            Self::Twitter => 1,
+            Self::Github => 2,
+            Self::Twitch => 3,
+            Self::Spotify => 4,
+            Self::Reddit => 5,
+            Self::Facebook => 6,
+            Self::Instagram => 7,
+            Self::Discord => 8,
+            Self::Youtube => 9,
+            Self::LinkedIn => 10,
+            Self::Figma => 11,
+            Self::Dribbble => 12,
+            Self::Snapchat => 13,
         };
-        serializer.serialize_str(variant)
+        serializer.serialize_i32(variant)
     }
 }
 impl<'de> serde::Deserialize<'de> for Provider {

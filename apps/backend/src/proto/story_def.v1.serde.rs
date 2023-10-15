@@ -1416,11 +1416,11 @@ impl serde::Serialize for StoryAgeRestriction {
         S: serde::Serializer,
     {
         let variant = match self {
-            Self::Unspecified => "STORY_AGE_RESTRICTION_UNSPECIFIED",
-            Self::NotRated => "STORY_AGE_RESTRICTION_NOT_RATED",
-            Self::Rated => "STORY_AGE_RESTRICTION_RATED",
+            Self::Unspecified => 0,
+            Self::NotRated => 1,
+            Self::Rated => 2,
         };
-        serializer.serialize_str(variant)
+        serializer.serialize_i32(variant)
     }
 }
 impl<'de> serde::Deserialize<'de> for StoryAgeRestriction {
@@ -1492,17 +1492,17 @@ impl serde::Serialize for StoryLicense {
         S: serde::Serializer,
     {
         let variant = match self {
-            Self::Unspecified => "STORY_LICENSE_UNSPECIFIED",
-            Self::Reserved => "STORY_LICENSE_RESERVED",
-            Self::CcZero => "STORY_LICENSE_CC_ZERO",
-            Self::CcBy => "STORY_LICENSE_CC_BY",
-            Self::CcBySa => "STORY_LICENSE_CC_BY_SA",
-            Self::CcByNd => "STORY_LICENSE_CC_BY_ND",
-            Self::CcByNc => "STORY_LICENSE_CC_BY_NC",
-            Self::CcByNcSa => "STORY_LICENSE_CC_BY_NC_SA",
-            Self::CcByNcNd => "STORY_LICENSE_CC_BY_NC_ND",
+            Self::Unspecified => 0,
+            Self::Reserved => 1,
+            Self::CcZero => 2,
+            Self::CcBy => 3,
+            Self::CcBySa => 4,
+            Self::CcByNd => 5,
+            Self::CcByNc => 6,
+            Self::CcByNcSa => 7,
+            Self::CcByNcNd => 8,
         };
-        serializer.serialize_str(variant)
+        serializer.serialize_i32(variant)
     }
 }
 impl<'de> serde::Deserialize<'de> for StoryLicense {
@@ -1586,11 +1586,11 @@ impl serde::Serialize for StoryVisibility {
         S: serde::Serializer,
     {
         let variant = match self {
-            Self::Unspecified => "STORY_VISIBILITY_UNSPECIFIED",
-            Self::Unlisted => "STORY_VISIBILITY_UNLISTED",
-            Self::Public => "STORY_VISIBILITY_PUBLIC",
+            Self::Unspecified => 0,
+            Self::Unlisted => 1,
+            Self::Public => 2,
         };
-        serializer.serialize_str(variant)
+        serializer.serialize_i32(variant)
     }
 }
 impl<'de> serde::Deserialize<'de> for StoryVisibility {

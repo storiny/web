@@ -226,12 +226,12 @@ impl serde::Serialize for TokenType {
         S: serde::Serializer,
     {
         let variant = match self {
-            Self::Unspecified => "TOKEN_TYPE_UNSPECIFIED",
-            Self::EmailVerification => "TOKEN_TYPE_EMAIL_VERIFICATION",
-            Self::PasswordReset => "TOKEN_TYPE_PASSWORD_RESET",
-            Self::PasswordAdd => "TOKEN_TYPE_PASSWORD_ADD",
+            Self::Unspecified => 0,
+            Self::EmailVerification => 1,
+            Self::PasswordReset => 2,
+            Self::PasswordAdd => 3,
         };
-        serializer.serialize_str(variant)
+        serializer.serialize_i32(variant)
     }
 }
 impl<'de> serde::Deserialize<'de> for TokenType {

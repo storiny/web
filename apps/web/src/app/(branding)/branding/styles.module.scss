@@ -70,6 +70,7 @@
   z-index: 0;
   user-select: none;
   border-bottom: 1px solid var(--divider);
+  grid-template-rows: 1fr;
 
   &::after {
     content: "";
@@ -107,8 +108,11 @@
 
 .x {
   &.section-title {
-    position: sticky;
-    top: calc(var(--header-height) + 24px);
     height: fit-content;
+
+    @include breakpoints.media(">=tablet") {
+      position: sticky;
+      top: calc(var(--header-height) + 24px);
+    }
   }
 }

@@ -31,7 +31,6 @@ const Entity = forward_ref<StatusProps, "span">((props, ref) => {
     <Component
       {...rest}
       className={clsx(
-        css["unset"],
         css["flex-center"],
         css["focusable"],
         styles.status,

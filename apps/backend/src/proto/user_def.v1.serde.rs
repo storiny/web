@@ -967,14 +967,14 @@ impl serde::Serialize for StatusDuration {
         S: serde::Serializer,
     {
         let variant = match self {
-            Self::Unspecified => "STATUS_DURATION_UNSPECIFIED",
-            Self::Never => "STATUS_DURATION_NEVER",
-            Self::Min30 => "STATUS_DURATION_MIN_30",
-            Self::Min60 => "STATUS_DURATION_MIN_60",
-            Self::Hr4 => "STATUS_DURATION_HR_4",
-            Self::Day1 => "STATUS_DURATION_DAY_1",
+            Self::Unspecified => 0,
+            Self::Never => 1,
+            Self::Min30 => 2,
+            Self::Min60 => 3,
+            Self::Hr4 => 4,
+            Self::Day1 => 5,
         };
-        serializer.serialize_str(variant)
+        serializer.serialize_i32(variant)
     }
 }
 impl<'de> serde::Deserialize<'de> for StatusDuration {
@@ -1052,12 +1052,12 @@ impl serde::Serialize for StatusVisibility {
         S: serde::Serializer,
     {
         let variant = match self {
-            Self::Unspecified => "STATUS_VISIBILITY_UNSPECIFIED",
-            Self::Global => "STATUS_VISIBILITY_GLOBAL",
-            Self::Followers => "STATUS_VISIBILITY_FOLLOWERS",
-            Self::Friends => "STATUS_VISIBILITY_FRIENDS",
+            Self::Unspecified => 0,
+            Self::Global => 1,
+            Self::Followers => 2,
+            Self::Friends => 3,
         };
-        serializer.serialize_str(variant)
+        serializer.serialize_i32(variant)
     }
 }
 impl<'de> serde::Deserialize<'de> for StatusVisibility {

@@ -66,11 +66,7 @@ const Toast = forward_ref<ToastProps, "li">((props, ref) => {
           aria-label="Dismiss"
           title={"Dismiss"}
           {...slot_props?.close}
-          className={clsx(
-            css["unset"],
-            styles.close,
-            slot_props?.close?.className
-          )}
+          className={clsx(styles.close, slot_props?.close?.className)}
         >
           <span
             aria-hidden
