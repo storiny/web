@@ -4,10 +4,20 @@
   "private": true,
   "sideEffects": false,
   "scripts": {
-    "build": "bin/generate.sh"
+    "build": "bin/generate.sh",
+    "sync": "ts-node ./update.ts"
   },
   "devDependencies": {
+    "@storiny/eslint-config": "*",
     "@storiny/prettier-config": "*",
-    "mjml": "^4.14.1"
+    "@storiny/tsconfig": "*",
+    "eslint": "^8.51.0",
+    "mjml": "^4.14.1",
+    "prettier": "^3.0.3",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.2.2"
+  },
+  "dependencies": {
+    "@aws-sdk/client-ses": "^3.428.0"
   }
 }

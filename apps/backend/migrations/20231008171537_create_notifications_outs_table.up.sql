@@ -7,3 +7,6 @@ CREATE TABLE IF NOT EXISTS notification_outs(
     PRIMARY KEY (notification_id, notified_id)
 );
 
+create index notified_id_on_notification_outs on notification_outs(notified_id);
+
+CREATE index created_at_on_notification_outs on notification_outs(created_at);
