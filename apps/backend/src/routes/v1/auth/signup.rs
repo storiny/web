@@ -28,6 +28,7 @@ use argon2::{
 };
 use email_address::EmailAddress;
 use lazy_static::lazy_static;
+use nanoid::nanoid;
 use regex::Regex;
 use serde::{
     Deserialize,
@@ -162,24 +163,25 @@ async fn post(
             .await?;
 
             let user_id = user_insert_result.get::<i64, _>("id");
+            let token_id = nanoid!(24);
 
             // Insert email verification token
             let token_insert_result = sqlx::query(
                 r#"
-                INSERT INTO tokens(type, user_id, expires_at)
+                INSERT INTO tokens(id, type, user_id, expires_at)
                 VALUES ($1, $2, $3)
-                RETURNING id
                 "#,
             )
+            .bind(token_id)
             .bind(TokenType::EmailVerify.to_string())
             .bind(user_id)
-            .bind(OffsetDateTime::now_utc() + Duration::days(3)) // 3 days
+            .bind(OffsetDateTime::now_utc() + Duration::days(1)) // 24 hours
             .fetch_one(&mut *transaction)
             .await?;
 
             transaction.commit().await?;
 
-            // TODO: Send email
+            send_confirmation_email().await;
 
             Ok(HttpResponse::Created().finish())
         }
@@ -187,7 +189,9 @@ async fn post(
     }
 }
 
-async fn send_confirmation_email() {}
+async fn send_confirmation_email() {
+    todo!()
+}
 
 pub fn init_routes(cfg: &mut web::ServiceConfig) {
     cfg.service(post);

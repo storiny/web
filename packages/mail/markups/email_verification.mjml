@@ -1,0 +1,55 @@
+<mjml lang="en">
+  <mj-head>
+    <mj-attributes>
+      <mj-title>Verify your e-mail</mj-title>
+      <mj-include path="./partials/attributes.mjml" />
+    </mj-attributes>
+    <mj-include path="./partials/styles.mjml" />
+  </mj-head>
+  <mj-body>
+    <mj-section css-class="section main">
+      <mj-column>
+        <mj-table align="center">
+          <tr>
+            <td align="center">
+              <img
+                alt=""
+                class="emoji"
+                src="https://cdn.storiny.com/mail-assets/images/emojis/waving-hand.png"
+              />
+              <p class="t-head">Hello {{name}}!</p>
+            </td>
+          </tr>
+        </mj-table>
+        <mj-spacer height="36px" />
+        <mj-text mj-class="t-body1 t-major" align="center">
+          Welcome to Storiny. Click on the button below to verify your e-mail
+          address and finish signing up.
+        </mj-text>
+        <mj-spacer height="24px" />
+        <mj-button target="_blank" href="{{link}}">
+          Verify my e-mail
+        </mj-button>
+        <mj-spacer mj-class="body-spacer" />
+        <mj-text mj-class="t-body1 t-minor" align="center">
+          This verification request will automatically expire in 24 hours. If
+          the button above does not work, please navigate to this link:
+          <a href="https://storiny.com" class="link" target="_blank"
+            >{{link}}</a
+          >
+        </mj-text>
+      </mj-column>
+    </mj-section>
+    <mj-section css-class="section footer">
+      <mj-column>
+        <mj-text mj-class="t-body2 t-muted" align="center">
+          You are receiving this email because you (or someone else) attempted
+          to sign up using this email (<span class="medium">{{email}}</span>) on
+          Storiny. If it wasn't you, you can safely ignore this email.
+        </mj-text>
+        <mj-spacer height="64px" />
+        <mj-include path="./partials/copyright.mjml" />
+      </mj-column>
+    </mj-section>
+  </mj-body>
+</mjml>

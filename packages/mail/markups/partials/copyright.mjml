@@ -1,0 +1,27 @@
+<mj-table align="center">
+  <tr>
+    <td align="center" width="50%" style="padding-right: 24px">
+      <a target="_blank" href="https://storiny.com?source=mail">
+        <img
+          width="104px"
+          src="https://cdn.storiny.com/mail-assets/images/brand/wordmark.png"
+          alt="Storiny wordmark"
+        />
+      </a>
+    </td>
+    <td
+      align="left"
+      width="50%"
+      style="border-left: 1px solid #d9d9d9; padding-left: 24px"
+    >
+      <span class="footer-text">
+        © Storiny 2023
+        <br />
+        Contact us:
+        <a href="mailto:support@storiny.com" class="link"
+          >support@storiny.com</a
+        >
+      </span>
+    </td>
+  </tr>
+</mj-table>

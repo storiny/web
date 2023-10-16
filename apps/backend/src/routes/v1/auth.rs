@@ -6,3 +6,6 @@ pub mod reset_password;
 
 #[path = "auth/signup.rs"]
 pub mod signup;
+
+#[path = "auth/recovery/recovery.rs"]
+pub mod recovery;

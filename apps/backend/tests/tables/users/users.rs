@@ -1,5 +1,6 @@
 #[cfg(test)]
 mod tests {
+    use nanoid::nanoid;
     use sqlx::{
         pool::PoolConnection,
         postgres::PgRow,
@@ -3468,21 +3469,23 @@ mod tests {
     #[sqlx::test(fixtures("user"))]
     async fn can_delete_token_on_user_soft_delete(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
+        let token_id = nanoid!(24);
 
         // Insert a token
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO tokens(type, user_id, expires_at)
-            VALUES ($1, $2, now())
+            INSERT INTO tokens(id, type, user_id, expires_at)
+            VALUES ($1, $2, $3, now())
             RETURNING id
             "#,
         )
+        .bind(token_id)
         .bind("sample")
         .bind(1i64)
-        .fetch_one(&mut *conn)
+        .execute(&mut *conn)
         .await?;
 
-        assert!(insert_result.try_get::<i64, _>("id").is_ok());
+        assert_eq!(insert_result.rows_affected(), 1);
 
         // Soft-delete the user
         sqlx::query(
@@ -3505,7 +3508,7 @@ mod tests {
             )
             "#,
         )
-        .bind(insert_result.get::<i64, _>("id"))
+        .bind(token_id)
         .fetch_one(&mut *conn)
         .await?;
 
@@ -9437,21 +9440,23 @@ mod tests {
     #[sqlx::test(fixtures("user"))]
     async fn can_delete_token_on_user_hard_delete(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
+        let token_id = nanoid!(24);
 
         // Insert a token
         let insert_result = sqlx::query(
             r#"
-            INSERT INTO tokens(type, user_id, expires_at)
-            VALUES ($1, $2, now())
+            INSERT INTO tokens(id, type, user_id, expires_at)
+            VALUES ($1, $2, $3, now())
             RETURNING id
             "#,
         )
+        .bind(token_id)
         .bind("sample")
         .bind(1i64)
-        .fetch_one(&mut *conn)
+        .execute(&mut *conn)
         .await?;
 
-        assert!(insert_result.try_get::<i64, _>("id").is_ok());
+        assert_eq!(insert_result.rows_affected(), 1);
 
         // Delete the user
         sqlx::query(
@@ -9473,7 +9478,7 @@ mod tests {
             )
             "#,
         )
-        .bind(insert_result.get::<i64, _>("id"))
+        .bind(token_id)
         .fetch_one(&mut *conn)
         .await?;
 
