@@ -3469,7 +3469,7 @@ mod tests {
     #[sqlx::test(fixtures("user"))]
     async fn can_delete_token_on_user_soft_delete(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let token_id = nanoid!(24);
+        let token_id = nanoid!(48);
 
         // Insert a token
         let insert_result = sqlx::query(
@@ -3479,7 +3479,7 @@ mod tests {
             RETURNING id
             "#,
         )
-        .bind(token_id)
+        .bind(&token_id)
         .bind("sample")
         .bind(1i64)
         .execute(&mut *conn)
@@ -3508,7 +3508,7 @@ mod tests {
             )
             "#,
         )
-        .bind(token_id)
+        .bind(&token_id)
         .fetch_one(&mut *conn)
         .await?;
 
@@ -9440,7 +9440,7 @@ mod tests {
     #[sqlx::test(fixtures("user"))]
     async fn can_delete_token_on_user_hard_delete(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let token_id = nanoid!(24);
+        let token_id = nanoid!(48);
 
         // Insert a token
         let insert_result = sqlx::query(
@@ -9450,7 +9450,7 @@ mod tests {
             RETURNING id
             "#,
         )
-        .bind(token_id)
+        .bind(&token_id)
         .bind("sample")
         .bind(1i64)
         .execute(&mut *conn)
@@ -9478,7 +9478,7 @@ mod tests {
             )
             "#,
         )
-        .bind(token_id)
+        .bind(&token_id)
         .fetch_one(&mut *conn)
         .await?;
 

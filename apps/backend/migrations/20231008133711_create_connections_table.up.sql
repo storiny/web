@@ -7,4 +7,3 @@ CREATE TABLE IF NOT EXISTS connections(
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     UNIQUE (user_id, provider)
 );
-

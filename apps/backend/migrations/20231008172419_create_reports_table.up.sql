@@ -5,4 +5,3 @@ CREATE TABLE IF NOT EXISTS reports(
     reason TEXT NOT NULL CONSTRAINT reason_length CHECK (char_length(reason) <= 1024),
     created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
-

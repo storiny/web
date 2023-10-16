@@ -42,9 +42,12 @@ CREATE INDEX category_on_stories ON stories(category)
 WHERE
     category != 'others'::story_category;
 
+CREATE INDEX created_at_on_stories ON stories(created_at);
+
 CREATE INDEX published_at_on_stories ON stories(published_at)
 WHERE
     published_at IS NOT NULL;
 
 CREATE INDEX deleted_at_on_stories ON stories(deleted_at);
 
+CREATE INDEX user_id_on_stories on stories(user_id);

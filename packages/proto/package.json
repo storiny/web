@@ -15,6 +15,6 @@
     "@storiny/tsconfig": "*",
     "eslint": "^8.51.0",
     "ts-proto": "^1.148.2",
-    "typescript": "^5.1.5"
+    "typescript": "^5.2.2"
   }
 }

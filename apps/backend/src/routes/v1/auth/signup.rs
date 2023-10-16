@@ -138,52 +138,62 @@ async fn post(
         return Ok(HttpResponse::Conflict().json(FormErrorResponse::new(form_errors)));
     }
 
-    // Generate password hash
-    let salt = SaltString::generate(&mut OsRng);
-
-    match Argon2::default().hash_password(&payload.password.as_bytes(), &salt) {
+    // Generate a hash from the password
+    match Argon2::default().hash_password(
+        &payload.password.as_bytes(),
+        &SaltString::generate(&mut OsRng),
+    ) {
         Ok(hashed_password) => {
-            let pg_pool = &data.db_pool;
-            let mut transaction = pg_pool.begin().await?;
+            let token_id = nanoid!(48);
 
-            // Insert the user
-            let user_insert_result = sqlx::query(
-                r#"
-                INSERT INTO users(email, name, username, password, wpm)
-                VALUES ($1, $2, $3, $4, $5)
-                RETURNING id
-                "#,
-            )
-            .bind(&payload.email)
-            .bind(&payload.name)
-            .bind(&slugged_username)
-            .bind(hashed_password.to_string())
-            .bind((&payload.wpm).clone() as i32)
-            .fetch_one(&mut *transaction)
-            .await?;
+            // Generate the token hash
+            match Argon2::default()
+                .hash_password(&token_id.as_bytes(), &SaltString::generate(&mut OsRng))
+            {
+                Ok(hashed_token) => {
+                    let pg_pool = &data.db_pool;
+                    let mut transaction = pg_pool.begin().await?;
 
-            let user_id = user_insert_result.get::<i64, _>("id");
-            let token_id = nanoid!(24);
+                    // Insert the user
+                    let user_insert_result = sqlx::query(
+                        r#"
+                        INSERT INTO users(email, name, username, password, wpm)
+                        VALUES ($1, $2, $3, $4, $5)
+                        RETURNING id
+                        "#,
+                    )
+                    .bind(&payload.email)
+                    .bind(&payload.name)
+                    .bind(&slugged_username)
+                    .bind(hashed_password.to_string())
+                    .bind((&payload.wpm).clone() as i32)
+                    .fetch_one(&mut *transaction)
+                    .await?;
 
-            // Insert email verification token
-            let token_insert_result = sqlx::query(
-                r#"
-                INSERT INTO tokens(id, type, user_id, expires_at)
-                VALUES ($1, $2, $3)
-                "#,
-            )
-            .bind(token_id)
-            .bind(TokenType::EmailVerify.to_string())
-            .bind(user_id)
-            .bind(OffsetDateTime::now_utc() + Duration::days(1)) // 24 hours
-            .fetch_one(&mut *transaction)
-            .await?;
+                    let user_id = user_insert_result.get::<i64, _>("id");
 
-            transaction.commit().await?;
+                    // Insert email verification token
+                    let token_insert_result = sqlx::query(
+                        r#"
+                        INSERT INTO tokens(id, type, user_id, expires_at)
+                        VALUES ($1, $2, $3)
+                        "#,
+                    )
+                    .bind(hashed_token.to_string())
+                    .bind(TokenType::EmailVerify.to_string())
+                    .bind(user_id)
+                    .bind(OffsetDateTime::now_utc() + Duration::days(1)) // 24 hours
+                    .fetch_one(&mut *transaction)
+                    .await?;
 
-            send_confirmation_email().await;
+                    transaction.commit().await?;
 
-            Ok(HttpResponse::Created().finish())
+                    // TODO: send_confirmation_email(token_id).await;
+
+                    Ok(HttpResponse::Created().finish())
+                }
+                Err(_) => Ok(HttpResponse::InternalServerError().finish()),
+            }
         }
         Err(_) => Ok(HttpResponse::InternalServerError().finish()),
     }
