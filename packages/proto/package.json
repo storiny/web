@@ -13,7 +13,7 @@
     "@bufbuild/buf": "^1.21.0-1",
     "@storiny/eslint-config": "*",
     "@storiny/tsconfig": "*",
-    "eslint": "^8.42.0",
+    "eslint": "^8.51.0",
     "ts-proto": "^1.148.2",
     "typescript": "^5.1.5"
   }

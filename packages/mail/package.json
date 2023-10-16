@@ -1,0 +1,13 @@
+{
+  "name": "@storiny/mail",
+  "version": "0.0.0",
+  "private": true,
+  "sideEffects": false,
+  "scripts": {
+    "build": "bin/generate.sh"
+  },
+  "devDependencies": {
+    "@storiny/prettier-config": "*",
+    "mjml": "^4.14.1"
+  }
+}
