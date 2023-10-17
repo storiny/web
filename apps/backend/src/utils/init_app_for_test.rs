@@ -25,6 +25,13 @@ use actix_web::{
     App,
     Error,
 };
+use rusoto_signature::Region;
+
+use rusoto_mock::{
+    MockCredentialsProvider,
+    MockRequestDispatcher,
+};
+use rusoto_ses::SesClient;
 use sqlx::PgPool;
 use std::env;
 use user_agent_parser::UserAgentParser;
@@ -71,6 +78,11 @@ pub async fn init_app_for_test(
                 db_pool,
                 geo_db,
                 ua_parser,
+                ses_client: SesClient::new_with(
+                    MockRequestDispatcher::default(),
+                    MockCredentialsProvider,
+                    Region::UsEast1,
+                ),
             }))
             .service(service_factory),
     )

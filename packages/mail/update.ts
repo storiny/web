@@ -2,21 +2,30 @@
 
 import {
   CreateTemplateCommand,
-  UpdateTemplateCommand,
+  GetTemplateCommand,
   SESClient,
   Template,
-  GetTemplateCommand,
-  TemplateDoesNotExistException
+  TemplateDoesNotExistException,
+  UpdateTemplateCommand
 } from "@aws-sdk/client-ses";
+import { fromEnv as from_env } from "@aws-sdk/credential-providers"; // ES6 import
+import { config } from "dotenv";
 import fs from "fs";
 import path from "path";
 
-const CLIENT = new SESClient({ region: "us-east-1" });
+config();
+
+const CLIENT = new SESClient({
+  region: process.env.AWS_SES_REGION,
+  endpoint: process.env.AWS_SES_ENDPOINT,
+  credentials: from_env()
+});
+
 const TEMPLATE_FILES = fs
   .readdirSync("./templates")
   .filter((file) => path.extname(file) === ".json");
 
-(async () => {
+(async (): Promise<void> => {
   for (const template of TEMPLATE_FILES) {
     const template_data: { Template: Template } = JSON.parse(
       fs.readFileSync(path.join("./templates", template)).toString()

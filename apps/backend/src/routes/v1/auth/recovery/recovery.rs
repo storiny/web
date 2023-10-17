@@ -1,5 +1,9 @@
 use crate::{
-    constants::token_type::TokenType,
+    constants::{
+        email_source::EMAIL_SOURCE,
+        email_templates::EmailTemplate,
+        token_type::TokenType,
+    },
     error::{
         AppError,
         FormErrorResponse,
@@ -23,6 +27,11 @@ use argon2::{
 };
 use email_address::EmailAddress;
 use nanoid::nanoid;
+use rusoto_ses::{
+    Destination,
+    SendTemplatedEmailRequest,
+    Ses,
+};
 use serde::{
     Deserialize,
     Serialize,
@@ -36,6 +45,11 @@ struct Request {
     #[validate(email(message = "Invalid e-mail"))]
     #[validate(length(min = 3, max = 300, message = "Invalid e-mail length"))]
     email: String,
+}
+
+#[derive(Debug, Serialize)]
+struct ResetPasswordEmailTemplateData {
+    link: String,
 }
 
 #[post("/v1/auth/recovery")]
@@ -99,10 +113,35 @@ async fn post(payload: Json<Request>, data: web::Data<AppState>) -> Result<HttpR
 
                     transaction.commit().await?;
 
-                    // TODO:
-                    // send_recovery_email(token_id).await;
+                    match serde_json::to_string(&ResetPasswordEmailTemplateData {
+                        link: format!("https://storiny.com/auth/reset-password/{}", token_id),
+                    }) {
+                        Ok(template_data) => {
+                            let ses = &data.ses_client;
+                            let _ = ses
+                                .send_templated_email(SendTemplatedEmailRequest {
+                                    configuration_set_name: None,
+                                    destination: Destination {
+                                        bcc_addresses: None,
+                                        cc_addresses: None,
+                                        to_addresses: Some(vec![(&payload.email).to_string()]),
+                                    },
+                                    reply_to_addresses: None,
+                                    return_path: None,
+                                    return_path_arn: None,
+                                    source: EMAIL_SOURCE.to_string(),
+                                    source_arn: None,
+                                    tags: None,
+                                    template: EmailTemplate::PasswordReset.to_string(),
+                                    template_data,
+                                    template_arn: None,
+                                })
+                                .await;
 
-                    Ok(HttpResponse::NoContent().finish())
+                            Ok(HttpResponse::Created().finish())
+                        }
+                        Err(_) => Ok(HttpResponse::InternalServerError().finish()),
+                    }
                 }
                 Err(_) => Ok(HttpResponse::InternalServerError().finish()),
             }
@@ -117,10 +156,6 @@ async fn post(payload: Json<Request>, data: web::Data<AppState>) -> Result<HttpR
             _ => Ok(HttpResponse::InternalServerError().finish()),
         },
     }
-}
-
-async fn send_recovery_email() {
-    todo!()
 }
 
 pub fn init_routes(cfg: &mut web::ServiceConfig) {

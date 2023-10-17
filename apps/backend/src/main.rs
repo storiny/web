@@ -29,6 +29,8 @@ use middleware::session::{
     storage::RedisSessionStore,
 };
 use redis::aio::ConnectionManager;
+use rusoto_ses::SesClient;
+use rusoto_signature::Region;
 use sqlx::postgres::PgPoolOptions;
 use std::{
     env,
@@ -173,6 +175,7 @@ async fn main() -> io::Result<()> {
                 db_pool: db_pool.clone(),
                 geo_db,
                 ua_parser,
+                ses_client: SesClient::new(Region::UsEast1),
             }))
             .configure(routes::init_routes)
             .service(fs::Files::new("/", "./static"))

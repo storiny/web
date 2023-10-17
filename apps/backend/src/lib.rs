@@ -1,6 +1,7 @@
 use actix::Addr;
 use actix_redis::RedisActor;
 use maxminddb::Reader;
+use rusoto_ses::SesClient;
 use sailfish::TemplateOnce;
 use sqlx::{
     Pool,
@@ -43,6 +44,8 @@ pub struct AppState {
     pub geo_db: Reader<Vec<u8>>,
     /// User-agent parser instance
     pub ua_parser: UserAgentParser,
+    /// AWS SES client instance
+    pub ses_client: SesClient,
 }
 
 pub mod comment_def {
