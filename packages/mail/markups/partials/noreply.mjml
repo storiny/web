@@ -1,0 +1,6 @@
+<mj-spacer height="32px" />
+<mj-text mj-class="t-body2 t-muted" align="center">
+  This email was sent from a system that we only use for sending emails. Please
+  do not reply to this email, as we will not receive your response. Instead,
+  reach out to us using the support email provided below.
+</mj-text>

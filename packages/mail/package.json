@@ -18,6 +18,7 @@
     "typescript": "^5.2.2"
   },
   "dependencies": {
-    "@aws-sdk/client-ses": "^3.428.0"
+    "@aws-sdk/client-ses": "^3.428.0",
+    "@aws-sdk/credential-providers": "^3.429.0"
   }
 }

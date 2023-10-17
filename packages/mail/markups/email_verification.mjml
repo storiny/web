@@ -47,6 +47,7 @@
           to sign up using this email (<span class="medium">{{email}}</span>) on
           Storiny. If it wasn't you, you can safely ignore this email.
         </mj-text>
+        <mj-include path="./partials/noreply.mjml" />
         <mj-spacer height="64px" />
         <mj-include path="./partials/copyright.mjml" />
       </mj-column>

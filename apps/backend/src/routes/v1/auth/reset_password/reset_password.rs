@@ -110,9 +110,9 @@ async fn post(payload: Json<Request>, data: web::Data<AppState>) -> Result<HttpR
                                         // Delete the token
                                         sqlx::query(
                                             r#"
-                                    DELETE FROM tokens
-                                    WHERE id = $1
-                                    "#,
+                                            DELETE FROM tokens
+                                            WHERE id = $1
+                                            "#,
                                         )
                                         .bind(token_result.get::<String, _>("id"))
                                         .execute(&mut *transaction)
@@ -121,10 +121,10 @@ async fn post(payload: Json<Request>, data: web::Data<AppState>) -> Result<HttpR
                                         // Update user's password
                                         sqlx::query(
                                             r#"
-                                    UPDATE users
-                                    SET password = $1
-                                    WHERE id = $2
-                                    "#,
+                                            UPDATE users
+                                            SET password = $1
+                                            WHERE id = $2
+                                            "#,
                                         )
                                         .bind(hashed_password.to_string())
                                         .bind(user.get::<i64, _>("id"))
@@ -330,8 +330,10 @@ mod tests {
         .bind(TokenType::PasswordReset.to_string())
         .bind(1i64)
         .bind(OffsetDateTime::now_utc() - Duration::days(1)) // The token expired yesterday
-        .fetch_one(&mut *conn)
+        .execute(&mut *conn)
         .await?;
+
+        assert_eq!(token_result.rows_affected(), 1);
 
         let req = test::TestRequest::post()
             .uri("/v1/auth/reset-password")
@@ -356,7 +358,6 @@ mod tests {
 
     #[sqlx::test(fixtures("user"))]
     async fn can_reject_reset_password_for_an_invalid_token(pool: PgPool) -> sqlx::Result<()> {
-        let conn = pool.acquire().await?;
         let app = init_app_for_test(post, pool).await;
 
         let req = test::TestRequest::post()
