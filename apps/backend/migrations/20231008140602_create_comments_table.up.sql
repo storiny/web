@@ -15,14 +15,13 @@ CREATE TABLE IF NOT EXISTS comments(
     deleted_at TIMESTAMPTZ
 );
 
-CREATE INDEX user_id_on_comments on comments(user_id);
+CREATE INDEX user_id_on_comments ON comments(user_id);
 
-CREATE index story_id_on_comments on comments(story_id);
+CREATE INDEX story_id_on_comments ON comments(story_id);
 
-CREATE INDEX reply_count_on_comments on comments(reply_count);
+CREATE INDEX reply_count_on_comments ON comments(reply_count);
 
-CREATE INDEX like_count_on_comments on comments(like_count);
+CREATE INDEX like_count_on_comments ON comments(like_count);
 
-CREATE INDEX created_at_on_comments on comments(created_at);
+CREATE INDEX created_at_on_comments ON comments(created_at);
 
-CREATE INDEX deleted_at_on_comments on comments(deleted_at);

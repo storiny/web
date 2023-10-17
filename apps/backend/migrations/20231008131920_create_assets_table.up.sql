@@ -12,6 +12,7 @@ CREATE TABLE IF NOT EXISTS assets(
     favourited_at TIMESTAMPTZ
 );
 
-CREATE INDEX user_id_on_assets on assets(user_id);
+CREATE INDEX user_id_on_assets ON assets(user_id);
 
-CREATE INDEX created_at_on_assets on assets(created_at);
+CREATE INDEX created_at_on_assets ON assets(created_at);
+

@@ -43,6 +43,3 @@ CREATE TABLE IF NOT EXISTS users(
 
 CREATE INDEX follower_count_on_users ON users(follower_count);
 
-CREATE INDEX deleted_at_on_users ON users(deleted_at);
-
-CREATE INDEX deactivated_at_on_users ON users(deactivated_at);

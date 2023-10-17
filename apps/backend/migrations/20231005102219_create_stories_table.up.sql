@@ -32,15 +32,9 @@ CREATE TABLE IF NOT EXISTS stories(
     deleted_at TIMESTAMPTZ
 );
 
-CREATE INDEX visibility_on_stories ON stories(visibility);
-
 CREATE INDEX read_count_on_stories ON stories(read_count);
 
 CREATE INDEX like_count_on_stories ON stories(like_count);
-
-CREATE INDEX category_on_stories ON stories(category)
-WHERE
-    category != 'others'::story_category;
 
 CREATE INDEX created_at_on_stories ON stories(created_at);
 
@@ -48,6 +42,5 @@ CREATE INDEX published_at_on_stories ON stories(published_at)
 WHERE
     published_at IS NOT NULL;
 
-CREATE INDEX deleted_at_on_stories ON stories(deleted_at);
+CREATE INDEX user_id_on_stories ON stories(user_id);
 
-CREATE INDEX user_id_on_stories on stories(user_id);

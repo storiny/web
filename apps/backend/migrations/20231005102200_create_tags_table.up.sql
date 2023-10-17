@@ -9,3 +9,4 @@ CREATE TABLE IF NOT EXISTS tags(
 );
 
 CREATE INDEX follower_count_on_tags ON tags(follower_count);
+
