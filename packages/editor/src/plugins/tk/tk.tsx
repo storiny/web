@@ -11,6 +11,7 @@ import {
 } from "lexical";
 import React from "react";
 
+import { $is_caption_node } from "../../nodes/caption";
 import { $create_tk_node, $is_tk_node, TKNode } from "../../nodes/tk";
 import styles from "./tk.module.scss";
 
@@ -223,7 +224,8 @@ const TKPlugin = (): null => {
 
                       if (
                         $is_tk_node(node) &&
-                        !$is_paragraph_node(node.getParent())
+                        !$is_paragraph_node(node.getParent()) &&
+                        !$is_caption_node(node.getParent()) // Leave caption nodes
                       ) {
                         node.replace($create_text_node("TK"));
                       }

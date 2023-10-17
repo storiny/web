@@ -12,8 +12,10 @@ import TabsList from "~/components/tabs-list";
 import ErrorState from "~/entities/error-state";
 import {
   get_query_error_type,
+  select_is_logged_in,
   use_get_home_feed_query
 } from "~/redux/features";
+import { use_app_selector } from "~/redux/hooks";
 import css from "~/theme/main.module.scss";
 
 import styles from "./styles.module.scss";
@@ -55,6 +57,7 @@ const PageHeader = ({
 );
 
 const Page = (): React.ReactElement => {
+  const is_logged_in = use_app_selector(select_is_logged_in);
   const [value, set_value] = React.useState<IndexTabValue>("suggested");
   const [page, set_page] = React.useState<number>(1);
   const {
@@ -82,7 +85,7 @@ const Page = (): React.ReactElement => {
 
   return (
     <>
-      <PageHeader on_change={handle_change} value={value} />
+      {is_logged_in && <PageHeader on_change={handle_change} value={value} />}
       {is_loading || (is_fetching && page === 1) ? (
         <StoryListSkeleton />
       ) : is_error ? (

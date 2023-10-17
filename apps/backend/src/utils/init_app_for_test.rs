@@ -1,6 +1,9 @@
 use crate::{
     middleware::{
-        identity::middleware::IdentityMiddleware,
+        identity::{
+            identity::Identity,
+            middleware::IdentityMiddleware,
+        },
         session::{
             middleware::SessionMiddleware,
             storage::RedisSessionStore,
@@ -8,10 +11,14 @@ use crate::{
     },
     AppState,
 };
-use actix_http::Request;
+use actix_http::{
+    HttpMessage,
+    Request,
+};
 use actix_web::{
     cookie::{
         time::Duration,
+        Cookie,
         Key,
         SameSite,
     },
@@ -20,30 +27,46 @@ use actix_web::{
         Service,
         ServiceResponse,
     },
+    post,
     test,
     web,
     App,
     Error,
+    HttpRequest,
+    HttpResponse,
+    Responder,
 };
-use rusoto_signature::Region;
-
 use rusoto_mock::{
     MockCredentialsProvider,
     MockRequestDispatcher,
 };
 use rusoto_ses::SesClient;
+use rusoto_signature::Region;
 use sqlx::PgPool;
 use std::env;
 use user_agent_parser::UserAgentParser;
+
+// Private login route
+#[post("/__login__")]
+async fn post(req: HttpRequest) -> impl Responder {
+    Identity::login(&req.extensions(), "1".to_string()).unwrap();
+    HttpResponse::Ok().finish()
+}
 
 /// Initializes the server application for tests
 ///
 /// * `service_factory` - Service factory
 /// * `db_pool` - Postgres pool
+/// * `logged_in` - Whether to create a session for the user.
 pub async fn init_app_for_test(
     service_factory: impl HttpServiceFactory + 'static,
     db_pool: PgPool,
-) -> impl Service<Request, Response = ServiceResponse, Error = Error> {
+    logged_in: bool,
+) -> (
+    impl Service<Request, Response = ServiceResponse, Error = Error>,
+    Option<Cookie<'static>>,
+    Option<i64>, // User ID
+) {
     let redis_host = env::var("REDIS_HOST").unwrap_or("localhost".to_string());
     let redis_port = env::var("REDIS_PORT").unwrap_or("7000".to_string());
     let redis_connection_string = format!("redis://{redis_host}:{redis_port}");
@@ -59,7 +82,7 @@ pub async fn init_app_for_test(
     let ua_parser = UserAgentParser::from_path("./data/ua_parser/regexes.yaml")
         .expect("Cannot build user-agent parser");
 
-    test::init_service(
+    let service = test::init_service(
         App::new()
             .wrap(IdentityMiddleware::default())
             .wrap(
@@ -75,7 +98,7 @@ pub async fn init_app_for_test(
             )
             .app_data(web::Data::new(AppState {
                 redis: None,
-                db_pool,
+                db_pool: db_pool.clone(),
                 geo_db,
                 ua_parser,
                 ses_client: SesClient::new_with(
@@ -86,5 +109,35 @@ pub async fn init_app_for_test(
             }))
             .service(service_factory),
     )
-    .await
+    .await;
+
+    if logged_in {
+        // Insert the user
+        sqlx::query(
+            r#"
+            INSERT INTO users(id, name, username, email)
+            VALUES ($1, $2, $3, $4)
+            "#,
+        )
+        .bind(1i64)
+        .bind("Some user".to_string())
+        .bind("some_user".to_string())
+        .bind("someone@example.com".to_string())
+        .fetch_one(&db_pool)
+        .await
+        .unwrap();
+
+        // Log the user in
+        let req = test::TestRequest::post().uri("/__login__").to_request();
+        let res = test::call_service(&service, req).await;
+        let cookie = res
+            .response()
+            .cookies()
+            .find(|cookie| cookie.name() == "_storiny_sess")
+            .unwrap();
+
+        return (service, Some(cookie.into_owned()), Some(1i64));
+    }
+
+    (service, None, None)
 }

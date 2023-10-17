@@ -16,4 +16,5 @@ CREATE TABLE IF NOT EXISTS notification_settings(
     mail_suggested_stories BOOL NOT NULL DEFAULT TRUE
 );
 
-CREATE INDEX user_id_on_notification_settings on notification_settings(user_id);
+CREATE INDEX user_id_on_notification_settings ON notification_settings(user_id);
+

@@ -14,12 +14,11 @@ CREATE TABLE IF NOT EXISTS replies(
     deleted_at TIMESTAMPTZ
 );
 
-CREATE INDEX user_id_on_replies on replies(user_id);
+CREATE INDEX user_id_on_replies ON replies(user_id);
 
-create index comment_id_on_replies on replies(comment_id);
+CREATE INDEX comment_id_on_replies ON replies(comment_id);
 
-create index like_count_on_replies on replies(like_count);
+CREATE INDEX like_count_on_replies ON replies(like_count);
 
-create index created_at_on_replies on replies(created_at);
+CREATE INDEX created_at_on_replies ON replies(created_at);
 
-create index deleted_at_on_replies on replies(deleted_at);

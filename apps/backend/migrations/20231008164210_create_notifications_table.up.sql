@@ -5,5 +5,5 @@ CREATE TABLE IF NOT EXISTS notifications(
     notifier_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE -- Can be NULL for system notifications
 );
 
-CREATE INDEX entity_id_on_notifications on notifications(entity_id);
+CREATE INDEX entity_id_on_notifications ON notifications(entity_id);
 

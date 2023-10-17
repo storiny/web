@@ -211,7 +211,6 @@ mod tests {
         RedisBackend::builder(manager)
     }
 
-    #[ignore = "TODO: Ignored"]
     #[actix_web::test]
     async fn can_allow_deny() {
         let backend = make_backend("test_allow_deny").await.build();
@@ -230,7 +229,6 @@ mod tests {
         assert!(!allow);
     }
 
-    #[ignore = "TODO: Ignored"]
     #[actix_web::test]
     async fn can_reset() {
         let backend = make_backend("test_reset").await.build();
@@ -251,7 +249,6 @@ mod tests {
         assert!(allow);
     }
 
-    #[ignore = "TODO: Ignored"]
     #[actix_web::test]
     async fn can_produce_output() {
         let backend = make_backend("test_output").await.build();
@@ -280,7 +277,6 @@ mod tests {
         assert!(output.seconds_until_reset() > 0 && output.seconds_until_reset() <= 60);
     }
 
-    #[ignore = "TODO: Ignored"]
     #[actix_web::test]
     async fn can_rollback() {
         let backend = make_backend("test_rollback").await.build();
@@ -299,7 +295,6 @@ mod tests {
         assert!(output.seconds_until_reset() > 0 && output.seconds_until_reset() <= 60);
     }
 
-    #[ignore = "TODO: Ignored"]
     #[actix_web::test]
     async fn can_rollback_key_gone() {
         let backend = make_backend("test_rollback_key_gone").await.build();
@@ -317,7 +312,6 @@ mod tests {
         );
     }
 
-    #[ignore = "TODO: Ignored"]
     #[actix_web::test]
     async fn can_remove_key() {
         let backend = make_backend("test_remove_key").await.build();
@@ -336,7 +330,6 @@ mod tests {
         assert!(allow);
     }
 
-    #[ignore = "TODO: Ignored"]
     #[actix_web::test]
     async fn can_add_key_prefix() {
         let backend = make_backend("prefix:test_key_prefix")

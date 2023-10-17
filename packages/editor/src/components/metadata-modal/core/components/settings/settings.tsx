@@ -1,3 +1,4 @@
+import { StoryVisibility } from "@storiny/shared";
 import { clsx } from "clsx";
 import React from "react";
 
@@ -25,7 +26,11 @@ const SettingsTab = (): React.ReactElement => (
       label={"Visibility"}
       name={"visibility"}
     >
-      <FormRadio aria-label={"Public"} label={"Public"} value={"1"}>
+      <FormRadio
+        aria-label={"Public"}
+        label={"Public"}
+        value={String(StoryVisibility.PUBLIC)}
+      >
         <Typography className={css["t-minor"]} level={"body3"}>
           Public stories are visible to everyone and can be featured in home
           feeds, recommended stories, and search results. However, if your
@@ -34,7 +39,11 @@ const SettingsTab = (): React.ReactElement => (
         </Typography>
       </FormRadio>
       <Spacer orientation={"vertical"} />
-      <FormRadio aria-label={"Unlisted"} label={"Unlisted"} value={"0"}>
+      <FormRadio
+        aria-label={"Unlisted"}
+        label={"Unlisted"}
+        value={String(StoryVisibility.UNLISTED)}
+      >
         <Typography className={css["t-minor"]} level={"body3"}>
           Unlisted stories are not displayed in the home feed or search results,
           and can only be accessed via a direct link.

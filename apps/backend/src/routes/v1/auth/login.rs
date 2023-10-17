@@ -339,7 +339,7 @@ mod tests {
     #[sqlx::test]
     async fn can_login_using_valid_credentials(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let app = init_app_for_test(post, pool).await;
+        let app = init_app_for_test(post, pool, false).await.0;
         let (email, password_hash, password) = get_sample_email_and_password();
 
         // Insert the user
@@ -381,7 +381,7 @@ mod tests {
     #[sqlx::test]
     async fn can_reject_login_with_invalid_email(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let app = init_app_for_test(post, pool).await;
+        let app = init_app_for_test(post, pool, false).await.0;
         let (email, password_hash, password) = get_sample_email_and_password();
 
         // Insert the user
@@ -423,7 +423,7 @@ mod tests {
     #[sqlx::test]
     async fn can_reject_login_with_missing_password(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let app = init_app_for_test(post, pool).await;
+        let app = init_app_for_test(post, pool, false).await.0;
         let (email, _, password) = get_sample_email_and_password();
 
         // Insert the user
@@ -462,7 +462,7 @@ mod tests {
     #[sqlx::test]
     async fn can_reject_login_using_invalid_password(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let app = init_app_for_test(post, pool).await;
+        let app = init_app_for_test(post, pool, false).await.0;
         let (email, password_hash, _) = get_sample_email_and_password();
 
         // Insert the user
@@ -504,7 +504,7 @@ mod tests {
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let app = init_app_for_test(post, pool).await;
+        let app = init_app_for_test(post, pool, false).await.0;
         let (email, password_hash, password) = get_sample_email_and_password();
         let mut flags = Flag::new(0);
         flags.add_flag(UserFlag::TemporarilySuspended);
@@ -551,7 +551,7 @@ mod tests {
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let app = init_app_for_test(post, pool).await;
+        let app = init_app_for_test(post, pool, false).await.0;
         let (email, password_hash, password) = get_sample_email_and_password();
         let mut flags = Flag::new(0);
         flags.add_flag(UserFlag::PermanentlySuspended);
@@ -596,7 +596,7 @@ mod tests {
     #[sqlx::test]
     async fn can_reject_login_when_the_user_is_deactivated(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let app = init_app_for_test(post, pool).await;
+        let app = init_app_for_test(post, pool, false).await.0;
         let (email, password_hash, password) = get_sample_email_and_password();
 
         // Insert the user
@@ -650,7 +650,7 @@ mod tests {
     #[sqlx::test]
     async fn can_reject_login_when_the_user_is_soft_deleted(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let app = init_app_for_test(post, pool).await;
+        let app = init_app_for_test(post, pool, false).await.0;
         let (email, password_hash, password) = get_sample_email_and_password();
 
         // Insert the user
@@ -704,7 +704,7 @@ mod tests {
     #[sqlx::test]
     async fn can_reject_login_if_the_email_is_not_verified(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let app = init_app_for_test(post, pool).await;
+        let app = init_app_for_test(post, pool, false).await.0;
         let (email, password_hash, password) = get_sample_email_and_password();
 
         // Insert the user
@@ -748,7 +748,7 @@ mod tests {
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let app = init_app_for_test(services![get, post], pool).await;
+        let app = init_app_for_test(services![get, post], pool, false).await.0;
         let (email, password_hash, password) = get_sample_email_and_password();
 
         // Insert the user
@@ -811,7 +811,7 @@ mod tests {
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let app = init_app_for_test(services![get, post], pool).await;
+        let app = init_app_for_test(services![get, post], pool, false).await.0;
         let (email, password_hash, password) = get_sample_email_and_password();
 
         // Insert the user
@@ -855,7 +855,7 @@ mod tests {
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let app = init_app_for_test(services![get, post], pool).await;
+        let app = init_app_for_test(services![get, post], pool, false).await.0;
         let (email, password_hash, password) = get_sample_email_and_password();
 
         // Insert the user
@@ -897,7 +897,7 @@ mod tests {
     #[sqlx::test]
     async fn can_restore_and_login_a_soft_deleted_user_on_bypass(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let app = init_app_for_test(services![get, post], pool).await;
+        let app = init_app_for_test(services![get, post], pool, false).await.0;
         let (email, password_hash, password) = get_sample_email_and_password();
 
         // Insert the user
@@ -970,7 +970,7 @@ mod tests {
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let app = init_app_for_test(services![get, post], pool).await;
+        let app = init_app_for_test(services![get, post], pool, false).await.0;
         let (email, password_hash, password) = get_sample_email_and_password();
 
         // Insert the user

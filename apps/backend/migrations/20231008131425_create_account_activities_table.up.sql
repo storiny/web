@@ -7,3 +7,7 @@ CREATE TABLE IF NOT EXISTS account_activities(
     created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
+CREATE INDEX user_id_on_account_activities ON account_activities(user_id);
+
+CREATE INDEX created_at_on_account_activities ON account_activities(created_at);
+
