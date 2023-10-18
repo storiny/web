@@ -265,10 +265,7 @@ async fn post(
                                     .unwrap_or_default();
                             }
 
-                            match Identity::login(
-                                &req.extensions(),
-                                user.get::<i64, _>("id").to_string(),
-                            ) {
+                            match Identity::login(&req.extensions(), user.get::<i64, _>("id")) {
                                 Ok(_) => Ok(HttpResponse::Ok()
                                     .content_type(ContentType::json())
                                     .json(Response {

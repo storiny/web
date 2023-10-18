@@ -1,6 +1,7 @@
 use actix::Addr;
 use actix_redis::RedisActor;
 use maxminddb::Reader;
+use rusoto_s3::S3Client;
 use rusoto_ses::SesClient;
 use sailfish::TemplateOnce;
 use sqlx::{
@@ -49,6 +50,8 @@ pub struct AppState {
     pub ua_parser: UserAgentParser,
     /// AWS SES client instance
     pub ses_client: SesClient,
+    /// AWS S3 client instance
+    pub s3_client: S3Client,
 }
 
 pub mod comment_def {

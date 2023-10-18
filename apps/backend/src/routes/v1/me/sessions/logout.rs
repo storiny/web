@@ -29,7 +29,7 @@ async fn post(user: Identity, payload: Json<Request>, data: web::Data<AppState>)
     match user.id() {
         Ok(user_id) => {
             let redis = &data.redis.as_ref().unwrap();
-            let cache_key = format!("s:{}:{}", user_id, &payload.id);
+            let cache_key = format!("s:{}:{}", user_id.to_string(), &payload.id);
             let _ = redis.send(Command(resp_array!["DEL", &cache_key])).await;
             HttpResponse::Ok().finish()
         }

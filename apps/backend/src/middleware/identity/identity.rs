@@ -68,11 +68,13 @@ const LOGIN_UNIX_TIMESTAMP_KEY: &str = "created_at";
 #[allow(dead_code)]
 impl Identity {
     /// Returns the user id associated to the current session.
-    pub fn id(&self) -> Result<String, GetIdentityError> {
-        self.0
-            .session
-            .get(ID_KEY)?
-            .ok_or_else(|| LostIdentityError.into())
+    pub fn id(&self) -> Result<i64, GetIdentityError> {
+        let str_id = self.0.session.get::<String>(ID_KEY)?;
+
+        match str_id {
+            Some(id) => id.parse::<i64>().map_err(|_| LostIdentityError.into()),
+            None => Err(LostIdentityError.into()),
+        }
     }
 
     /// Attaches a valid user identity to the current session.
@@ -82,9 +84,9 @@ impl Identity {
     /// [`Identity`].
     ///
     /// * `id` - ID of the user.
-    pub fn login(ext: &Extensions, id: String) -> Result<Self, LoginError> {
+    pub fn login(ext: &Extensions, id: i64) -> Result<Self, LoginError> {
         let inner = IdentityInner::extract(ext);
-        inner.session.insert(ID_KEY, id)?;
+        inner.session.insert(ID_KEY, id.to_string())?;
         let now = OffsetDateTime::now_utc().unix_timestamp();
         inner.session.insert(LOGIN_UNIX_TIMESTAMP_KEY, now)?;
         inner.session.renew();

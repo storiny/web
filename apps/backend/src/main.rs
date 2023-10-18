@@ -32,6 +32,7 @@ use middleware::session::{
     storage::RedisSessionStore,
 };
 use redis::aio::ConnectionManager;
+use rusoto_s3::S3Client;
 use rusoto_ses::SesClient;
 use rusoto_signature::Region;
 use sqlx::postgres::PgPoolOptions;
@@ -189,6 +190,7 @@ async fn main() -> io::Result<()> {
                 geo_db,
                 ua_parser,
                 ses_client: SesClient::new(Region::UsEast1),
+                s3_client: S3Client::new(Region::UsEast1),
             }))
             .configure(routes::init_routes)
             .service(fs::Files::new("/", "./static"))

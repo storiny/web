@@ -1,0 +1,170 @@
+use crate::{
+    constants::account_activity_type::AccountActivityType,
+    error::AppError,
+    middleware::identity::identity::Identity,
+    AppState,
+};
+use actix_multipart::{
+    form::tempfile::TempFile,
+    Multipart,
+};
+use actix_web::{
+    get,
+    http::header::ContentType,
+    post,
+    web,
+    HttpResponse,
+};
+use actix_web_validator::QsQuery;
+use serde::{
+    Deserialize,
+    Serialize,
+};
+use sqlx::FromRow;
+use time::{
+    format_description,
+    OffsetDateTime,
+};
+use validator::Validate;
+
+#[derive(Serialize, Deserialize, Validate)]
+struct QueryParams {
+    #[validate(range(min = 1, max = 1000))]
+    page: Option<u16>,
+}
+
+#[derive(MultipartForm)]
+struct UploadAsset {
+    alt: String,
+    file: TempFile,
+}
+
+#[post("/v1/me/assets")]
+async fn get(
+    payload: Multipart,
+    data: web::Data<AppState>,
+    user: Identity,
+) -> Result<HttpResponse, AppError> {
+    match user.id() {
+        Ok(user_id) => {
+            let page = query.page.unwrap_or_default();
+            let mut result = sqlx::query_as::<_, AccountActivity>(
+                r#"
+                SELECT id, type, description, created_at FROM account_activities
+                WHERE user_id = $1
+                ORDER BY created_at DESC
+                LIMIT $2 OFFSET $3
+                "#,
+            )
+            .bind(user_id)
+            .bind(10i16)
+            .bind((page * 10) as i16)
+            .fetch_all(&data.db_pool)
+            .await?;
+
+            for item in &mut result {
+                (*item).description = Some(get_description_for_activity(&item));
+            }
+
+            Ok(HttpResponse::Ok()
+                .content_type(ContentType::json())
+                .json(result))
+        }
+        Err(_) => Ok(HttpResponse::InternalServerError().finish()),
+    }
+}
+
+pub fn init_routes(cfg: &mut web::ServiceConfig) {
+    cfg.service(get);
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::utils::init_app_for_test::init_app_for_test;
+    use actix_http::body::to_bytes;
+    use actix_web::test;
+    use sqlx::PgPool;
+    use std::str;
+
+    #[sqlx::test]
+    async fn can_return_account_activity(pool: PgPool) -> sqlx::Result<()> {
+        let (app, cookie, _) = init_app_for_test(get, pool, true, false).await;
+        let req = test::TestRequest::get()
+            .cookie(cookie.unwrap())
+            .uri("/v1/me/account-activity")
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_success());
+
+        let json = serde_json::from_str::<Vec<AccountActivity>>(
+            str::from_utf8(&to_bytes(res.into_body()).await.unwrap().to_vec()).unwrap(),
+        );
+
+        assert!(json.is_ok());
+
+        let json_data = json.unwrap();
+        // By default, the user will have `Account created` activity
+        let creation_activity = &json_data[0];
+
+        // Should return description generated at the application layer
+        assert!(
+            creation_activity
+                .description
+                .clone()
+                .unwrap()
+                .starts_with("You created this account on")
+        );
+
+        Ok(())
+    }
+
+    #[sqlx::test]
+    async fn can_return_account_activity_with_predefined_description(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false).await;
+
+        // Insert an account activity with a description
+        sqlx::query(
+            r#"
+            INSERT INTO account_activities(type, description, user_id)
+            VALUES ($1, $2, $3)
+            "#,
+        )
+        .bind(AccountActivityType::Password as i16)
+        .bind("You updated your password")
+        .bind(user_id.unwrap())
+        .execute(&mut *conn)
+        .await?;
+
+        let req = test::TestRequest::get()
+            .cookie(cookie.unwrap())
+            .uri("/v1/me/account-activity")
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_success());
+
+        let json = serde_json::from_str::<Vec<AccountActivity>>(
+            str::from_utf8(&to_bytes(res.into_body()).await.unwrap().to_vec()).unwrap(),
+        );
+
+        assert!(json.is_ok());
+
+        let json_data = json.unwrap();
+        let password_activity = json_data
+            .iter()
+            .find(|&item| item.r#type == AccountActivityType::Password as i16)
+            .unwrap();
+
+        assert_eq!(
+            password_activity.description.clone().unwrap(),
+            "You updated your password"
+        );
+
+        Ok(())
+    }
+}
