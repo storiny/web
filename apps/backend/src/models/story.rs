@@ -73,14 +73,14 @@ pub struct Story {
     pub disable_comments: bool,
     pub disable_toc: bool,
     // Timestamps
-    #[serde(with = "time::serde::iso8601")]
+    #[serde(with = "crate::iso8601::time")]
     pub created_at: OffsetDateTime,
-    #[serde(with = "time::serde::iso8601::option")]
+    #[serde(with = "crate::iso8601::time::option")]
     pub first_published_at: Option<OffsetDateTime>,
-    #[serde(with = "time::serde::iso8601::option")]
+    #[serde(with = "crate::iso8601::time::option")]
     pub published_at: Option<OffsetDateTime>,
-    #[serde(with = "time::serde::iso8601::option")]
+    #[serde(with = "crate::iso8601::time::option")]
     pub edited_at: Option<OffsetDateTime>,
-    #[serde(with = "time::serde::iso8601::option")]
+    #[serde(with = "crate::iso8601::time::option")]
     pub deleted_at: Option<OffsetDateTime>,
 }

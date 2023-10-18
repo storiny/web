@@ -58,10 +58,13 @@ async fn post(req: HttpRequest) -> impl Responder {
 /// * `service_factory` - Service factory
 /// * `db_pool` - Postgres pool
 /// * `logged_in` - Whether to create a session for the user.
+/// * `skip_inserting_user` - Whether to skip inserting the user into the database when `logged_in`
+///   is enabled.
 pub async fn init_app_for_test(
     service_factory: impl HttpServiceFactory + 'static,
     db_pool: PgPool,
     logged_in: bool,
+    skip_inserting_user: bool,
 ) -> (
     impl Service<Request, Response = ServiceResponse, Error = Error>,
     Option<Cookie<'static>>,
@@ -107,25 +110,28 @@ pub async fn init_app_for_test(
                     Region::UsEast1,
                 ),
             }))
+            .service(post)
             .service(service_factory),
     )
     .await;
 
     if logged_in {
-        // Insert the user
-        sqlx::query(
-            r#"
-            INSERT INTO users(id, name, username, email)
-            VALUES ($1, $2, $3, $4)
-            "#,
-        )
-        .bind(1i64)
-        .bind("Some user".to_string())
-        .bind("some_user".to_string())
-        .bind("someone@example.com".to_string())
-        .fetch_one(&db_pool)
-        .await
-        .unwrap();
+        if !skip_inserting_user {
+            // Insert the user
+            sqlx::query(
+                r#"
+                INSERT INTO users(id, name, username, email)
+                VALUES ($1, $2, $3, $4)
+                "#,
+            )
+            .bind(1i64)
+            .bind("Some user".to_string())
+            .bind("some_user".to_string())
+            .bind("someone@example.com".to_string())
+            .execute(&db_pool)
+            .await
+            .unwrap();
+        }
 
         // Log the user in
         let req = test::TestRequest::post().uri("/__login__").to_request();

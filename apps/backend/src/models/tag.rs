@@ -11,6 +11,6 @@ pub struct Tag {
     pub name: String,
     pub follower_count: i32,
     pub story_count: i32,
-    #[serde(with = "time::serde::iso8601")]
+    #[serde(with = "crate::iso8601::time")]
     pub created_at: OffsetDateTime,
 }

@@ -36,7 +36,6 @@ import {
 import { select_is_logged_in } from "~/redux/features/auth/selectors";
 import { use_app_dispatch, use_app_selector } from "~/redux/hooks";
 import { BREAKPOINTS } from "~/theme/breakpoints";
-import css from "~/theme/main.module.scss";
 
 const StoryActions = ({
   story,

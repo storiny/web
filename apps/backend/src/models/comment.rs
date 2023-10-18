@@ -17,10 +17,10 @@ pub struct Comment {
     pub like_count: i32,
     pub reply_count: i32,
     // Timestamps
-    #[serde(with = "time::serde::iso8601")]
+    #[serde(with = "crate::iso8601::time")]
     pub created_at: OffsetDateTime,
-    #[serde(with = "time::serde::iso8601::option")]
+    #[serde(with = "crate::iso8601::time::option")]
     pub edited_at: Option<OffsetDateTime>,
-    #[serde(with = "time::serde::iso8601::option")]
+    #[serde(with = "crate::iso8601::time::option")]
     pub deleted_at: Option<OffsetDateTime>,
 }

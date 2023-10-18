@@ -173,7 +173,7 @@ mod tests {
     #[sqlx::test(fixtures("user"))]
     async fn can_handle_account_recovery_request(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let app = init_app_for_test(post, pool, false).await.0;
+        let app = init_app_for_test(post, pool, false, false).await.0;
 
         let req = test::TestRequest::post()
             .uri("/v1/auth/recovery")
@@ -205,7 +205,7 @@ mod tests {
 
     #[sqlx::test(fixtures("user"))]
     async fn can_reject_recovery_request_for_an_invalid_email(pool: PgPool) -> sqlx::Result<()> {
-        let app = init_app_for_test(post, pool, false).await.0;
+        let app = init_app_for_test(post, pool, false, false).await.0;
 
         let req = test::TestRequest::post()
             .uri("/v1/auth/recovery")
@@ -233,7 +233,7 @@ mod tests {
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let app = init_app_for_test(post, pool, false).await.0;
+        let app = init_app_for_test(post, pool, false, false).await.0;
 
         // Insert a password reset token
         let prev_result = sqlx::query(

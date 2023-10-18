@@ -22,7 +22,10 @@ use actix_web::{
     HttpServer,
     Responder,
 };
-use actix_web_validator::JsonConfig;
+use actix_web_validator::{
+    JsonConfig,
+    QsQueryConfig,
+};
 use dotenv::dotenv;
 use middleware::session::{
     middleware::SessionMiddleware,
@@ -122,7 +125,7 @@ async fn main() -> io::Result<()> {
         let ua_parser = UserAgentParser::from_path("./data/ua_parser/regexes.yaml")
             .expect("Cannot build user-agent parser");
 
-        // JSON validator
+        // JSON validation error handler
         let json_config = JsonConfig::default().error_handler(|err, _| {
             let json_error = match &err {
                 actix_web_validator::Error::Validate(error) => FormErrorResponse::from(error),
@@ -132,6 +135,15 @@ async fn main() -> io::Result<()> {
             actix_web::error::InternalError::from_response(
                 err,
                 HttpResponse::Conflict().json(json_error),
+            )
+            .into()
+        });
+
+        // Query validation error handler
+        let qs_query_config = QsQueryConfig::default().error_handler(|err, _| {
+            actix_web::error::InternalError::from_response(
+                err,
+                HttpResponse::Conflict().body("Invalid query parameters".to_string()),
             )
             .into()
         });
@@ -170,6 +182,7 @@ async fn main() -> io::Result<()> {
                     .build(),
             )
             .app_data(json_config)
+            .app_data(qs_query_config)
             .app_data(web::Data::new(AppState {
                 redis: Some(RedisActor::start(format!("{redis_host}:{redis_port}"))),
                 db_pool: db_pool.clone(),

@@ -19,7 +19,7 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
     auth::reset_password::init_routes(cfg);
     auth::recovery::init_routes(cfg);
     // Feed
-    // feed::feed::
+    feed::feed::init_routes(cfg);
     // User settings
     me::sessions::destroy::init_routes(cfg);
     me::sessions::logout::init_routes(cfg)
