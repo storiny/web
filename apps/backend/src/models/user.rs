@@ -62,12 +62,12 @@ pub struct User {
     // Multi-factor auth
     pub mfa_enabled: bool,
     pub mfa_secret: Option<String>,
-    #[serde(with = "time::serde::iso8601")]
+    #[serde(with = "crate::iso8601::time")]
     pub created_at: OffsetDateTime,
-    #[serde(with = "time::serde::iso8601::option")]
+    #[serde(with = "crate::iso8601::time::option")]
     pub username_modified_at: Option<OffsetDateTime>,
-    #[serde(with = "time::serde::iso8601::option")]
+    #[serde(with = "crate::iso8601::time::option")]
     pub deleted_at: Option<OffsetDateTime>,
-    #[serde(with = "time::serde::iso8601::option")]
+    #[serde(with = "crate::iso8601::time::option")]
     pub deactivated_at: Option<OffsetDateTime>,
 }

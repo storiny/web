@@ -27,6 +27,9 @@ pub mod middleware;
 #[path = "constants.rs"]
 pub mod constants;
 
+#[path = "iso8601.rs"]
+pub mod iso8601;
+
 /// Index page template
 #[derive(TemplateOnce)]
 #[template(path = "index.stpl")]
