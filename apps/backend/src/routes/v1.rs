@@ -21,6 +21,8 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
     // Feed
     feed::feed::init_routes(cfg);
     // User settings
+    me::account_activity::init_routes(cfg);
+    me::assets::assets_post::init_routes(cfg);
     me::sessions::destroy::init_routes(cfg);
     me::sessions::logout::init_routes(cfg)
 }

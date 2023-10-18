@@ -9,3 +9,6 @@ pub mod email_templates;
 
 #[path = "constants/email_source.rs"]
 pub mod email_source;
+
+#[path = "constants/account_activity_type.rs"]
+pub mod account_activity_type;

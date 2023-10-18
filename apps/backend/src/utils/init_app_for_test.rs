@@ -40,6 +40,7 @@ use rusoto_mock::{
     MockCredentialsProvider,
     MockRequestDispatcher,
 };
+use rusoto_s3::S3Client;
 use rusoto_ses::SesClient;
 use rusoto_signature::Region;
 use sqlx::PgPool;
@@ -49,7 +50,7 @@ use user_agent_parser::UserAgentParser;
 // Private login route
 #[post("/__login__")]
 async fn post(req: HttpRequest) -> impl Responder {
-    Identity::login(&req.extensions(), "1".to_string()).unwrap();
+    Identity::login(&req.extensions(), 1i64).unwrap();
     HttpResponse::Ok().finish()
 }
 
@@ -105,6 +106,11 @@ pub async fn init_app_for_test(
                 geo_db,
                 ua_parser,
                 ses_client: SesClient::new_with(
+                    MockRequestDispatcher::default(),
+                    MockCredentialsProvider,
+                    Region::UsEast1,
+                ),
+                s3_client: S3Client::new_with(
                     MockRequestDispatcher::default(),
                     MockCredentialsProvider,
                     Region::UsEast1,

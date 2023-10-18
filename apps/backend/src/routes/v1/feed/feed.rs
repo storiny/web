@@ -93,40 +93,37 @@ async fn get(
     // Query for logged-in users
     if user.is_some() {
         return match user.unwrap().id() {
-            Ok(user_id_str) => match user_id_str.parse::<i64>() {
-                Ok(user_id) => {
-                    if r#type == "suggested" {
-                        let result = sqlx::query_file_as!(
-                            Story,
-                            "queries/home_feed/suggested.sql",
-                            user_id,
-                            10 as i16,
-                            (page * 10) as i16
-                        )
-                        .fetch_all(&data.db_pool)
-                        .await?;
+            Ok(user_id) => {
+                if r#type == "suggested" {
+                    let result = sqlx::query_file_as!(
+                        Story,
+                        "queries/home_feed/suggested.sql",
+                        user_id,
+                        10 as i16,
+                        (page * 10) as i16
+                    )
+                    .fetch_all(&data.db_pool)
+                    .await?;
 
-                        Ok(HttpResponse::Ok()
-                            .content_type(ContentType::json())
-                            .json(result))
-                    } else {
-                        let result = sqlx::query_file_as!(
-                            Story,
-                            "queries/home_feed/friends_and_following.sql",
-                            user_id,
-                            10 as i16,
-                            (page * 10) as i16
-                        )
-                        .fetch_all(&data.db_pool)
-                        .await?;
+                    Ok(HttpResponse::Ok()
+                        .content_type(ContentType::json())
+                        .json(result))
+                } else {
+                    let result = sqlx::query_file_as!(
+                        Story,
+                        "queries/home_feed/friends_and_following.sql",
+                        user_id,
+                        10 as i16,
+                        (page * 10) as i16
+                    )
+                    .fetch_all(&data.db_pool)
+                    .await?;
 
-                        Ok(HttpResponse::Ok()
-                            .content_type(ContentType::json())
-                            .json(result))
-                    }
+                    Ok(HttpResponse::Ok()
+                        .content_type(ContentType::json())
+                        .json(result))
                 }
-                Err(_) => Ok(HttpResponse::InternalServerError().finish()),
-            },
+            }
             Err(_) => Ok(HttpResponse::InternalServerError().finish()),
         };
     }
@@ -220,7 +217,7 @@ mod tests {
     }
 
     #[sqlx::test]
-    async fn should_not_include_stories_from_private_users_when_logged_out(
+    async fn should_not_include_stories_from_private_users_in_feed_when_logged_out(
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
@@ -261,6 +258,124 @@ mod tests {
             "#,
         )
         .bind(story_result.get::<i64, _>("user_id"))
+        .execute(&mut *conn)
+        .await?;
+
+        // Fetch the feed again
+        let req = test::TestRequest::get().uri("/v1/feed").to_request();
+        let res = test::call_service(&app, req).await;
+
+        let json = serde_json::from_str::<Vec<Story>>(
+            str::from_utf8(&to_bytes(res.into_body()).await.unwrap().to_vec()).unwrap(),
+        );
+
+        // Should not be included in the feed
+        assert_eq!(json.unwrap().len(), 0);
+
+        Ok(())
+    }
+
+    #[sqlx::test]
+    async fn should_not_include_soft_deleted_stories_in_feed_when_logged_out(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let (app, _, _) = init_app_for_test(get, pool, false, false).await;
+
+        // Insert a story
+        let story_result = sqlx::query(
+            r#"
+            WITH inserted_user AS (
+                INSERT INTO users(name, username, email)
+                VALUES ('Sample user', 'sample_user', 'sample@example.com')
+                RETURNING id
+            )
+                INSERT INTO stories(user_id, slug, published_at)
+                VALUES ((SELECT id FROM inserted_user), 'some-story', now())
+                RETURNING id
+            "#,
+        )
+        .fetch_one(&mut *conn)
+        .await?;
+
+        let req = test::TestRequest::get().uri("/v1/feed").to_request();
+        let res = test::call_service(&app, req).await;
+
+        let json = serde_json::from_str::<Vec<Story>>(
+            str::from_utf8(&to_bytes(res.into_body()).await.unwrap().to_vec()).unwrap(),
+        );
+
+        // Should be included in the feed initially
+        assert_eq!(json.unwrap().len(), 1);
+
+        // Soft-delete the story
+        sqlx::query(
+            r#"
+            UPDATE stories
+            SET deleted_at = now()
+            WHERE id = $1
+            "#,
+        )
+        .bind(story_result.get::<i64, _>("id"))
+        .execute(&mut *conn)
+        .await?;
+
+        // Fetch the feed again
+        let req = test::TestRequest::get().uri("/v1/feed").to_request();
+        let res = test::call_service(&app, req).await;
+
+        let json = serde_json::from_str::<Vec<Story>>(
+            str::from_utf8(&to_bytes(res.into_body()).await.unwrap().to_vec()).unwrap(),
+        );
+
+        // Should not be included in the feed
+        assert_eq!(json.unwrap().len(), 0);
+
+        Ok(())
+    }
+
+    #[sqlx::test]
+    async fn should_not_include_unpublished_stories_in_feed_when_logged_out(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let (app, _, _) = init_app_for_test(get, pool, false, false).await;
+
+        // Insert a story
+        let story_result = sqlx::query(
+            r#"
+            WITH inserted_user AS (
+                INSERT INTO users(name, username, email)
+                VALUES ('Sample user', 'sample_user', 'sample@example.com')
+                RETURNING id
+            )
+                INSERT INTO stories(user_id, slug, published_at)
+                VALUES ((SELECT id FROM inserted_user), 'some-story', now())
+                RETURNING id
+            "#,
+        )
+        .fetch_one(&mut *conn)
+        .await?;
+
+        let req = test::TestRequest::get().uri("/v1/feed").to_request();
+        let res = test::call_service(&app, req).await;
+
+        let json = serde_json::from_str::<Vec<Story>>(
+            str::from_utf8(&to_bytes(res.into_body()).await.unwrap().to_vec()).unwrap(),
+        );
+
+        // Should be included in the feed initially
+        assert_eq!(json.unwrap().len(), 1);
+
+        // Unpublish the story
+        sqlx::query(
+            r#"
+            UPDATE stories
+            SET published_at = NULL
+            WHERE id = $1
+            "#,
+        )
+        .bind(story_result.get::<i64, _>("id"))
         .execute(&mut *conn)
         .await?;
 
@@ -503,7 +618,7 @@ mod tests {
             VALUES ($1, $2, now())
             "#,
         )
-        .bind(user_id)
+        .bind(user_id.unwrap())
         .bind(story_result.get::<i64, _>("user_id"))
         .execute(&mut *conn)
         .await?;
@@ -521,6 +636,136 @@ mod tests {
 
         // Should now include the story in the feed
         assert_eq!(json.unwrap().len(), 1);
+
+        Ok(())
+    }
+
+    #[sqlx::test]
+    async fn should_not_include_soft_deleted_stories_in_feed_for_suggested_type(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let (app, cookie, _) = init_app_for_test(get, pool, true, false).await;
+
+        // Insert a story
+        let story_result = sqlx::query(
+            r#"
+            WITH inserted_user AS (
+                INSERT INTO users(name, username, email)
+                VALUES ('Sample user', 'sample_user', 'sample@example.com')
+                RETURNING id
+            )
+                INSERT INTO stories(user_id, slug, published_at)
+                VALUES ((SELECT id FROM inserted_user), 'some-story', now())
+                RETURNING id
+            "#,
+        )
+        .fetch_one(&mut *conn)
+        .await?;
+
+        let req = test::TestRequest::get()
+            .cookie(cookie.clone().unwrap())
+            .uri("/v1/feed?type=suggested")
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        let json = serde_json::from_str::<Vec<Story>>(
+            str::from_utf8(&to_bytes(res.into_body()).await.unwrap().to_vec()).unwrap(),
+        );
+
+        // Should be included in the feed initially
+        assert_eq!(json.unwrap().len(), 1);
+
+        // Soft-delete the story
+        sqlx::query(
+            r#"
+            UPDATE stories
+            SET deleted_at = now()
+            WHERE id = $1
+            "#,
+        )
+        .bind(story_result.get::<i64, _>("id"))
+        .execute(&mut *conn)
+        .await?;
+
+        // Fetch the feed again
+        let req = test::TestRequest::get()
+            .cookie(cookie.unwrap())
+            .uri("/v1/feed?type=suggested")
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        let json = serde_json::from_str::<Vec<Story>>(
+            str::from_utf8(&to_bytes(res.into_body()).await.unwrap().to_vec()).unwrap(),
+        );
+
+        // Should not be included in the feed
+        assert_eq!(json.unwrap().len(), 0);
+
+        Ok(())
+    }
+
+    #[sqlx::test]
+    async fn should_not_include_unpublished_stories_in_feed_for_suggested_type(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let (app, cookie, _) = init_app_for_test(get, pool, true, false).await;
+
+        // Insert a story
+        let story_result = sqlx::query(
+            r#"
+            WITH inserted_user AS (
+                INSERT INTO users(name, username, email)
+                VALUES ('Sample user', 'sample_user', 'sample@example.com')
+                RETURNING id
+            )
+                INSERT INTO stories(user_id, slug, published_at)
+                VALUES ((SELECT id FROM inserted_user), 'some-story', now())
+                RETURNING id
+            "#,
+        )
+        .fetch_one(&mut *conn)
+        .await?;
+
+        let req = test::TestRequest::get()
+            .cookie(cookie.clone().unwrap())
+            .uri("/v1/feed?type=suggested")
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        let json = serde_json::from_str::<Vec<Story>>(
+            str::from_utf8(&to_bytes(res.into_body()).await.unwrap().to_vec()).unwrap(),
+        );
+
+        // Should be included in the feed initially
+        assert_eq!(json.unwrap().len(), 1);
+
+        // Unpublish the story
+        sqlx::query(
+            r#"
+            UPDATE stories
+            SET published_at = NULL
+            WHERE id = $1
+            "#,
+        )
+        .bind(story_result.get::<i64, _>("id"))
+        .execute(&mut *conn)
+        .await?;
+
+        // Fetch the feed again
+        let req = test::TestRequest::get()
+            .cookie(cookie.unwrap())
+            .uri("/v1/feed?type=suggested")
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        let json = serde_json::from_str::<Vec<Story>>(
+            str::from_utf8(&to_bytes(res.into_body()).await.unwrap().to_vec()).unwrap(),
+        );
+
+        // Should not be included in the feed
+        assert_eq!(json.unwrap().len(), 0);
 
         Ok(())
     }
@@ -575,7 +820,7 @@ mod tests {
                 RETURNING followed_id
             "#,
         )
-        .bind(user_id)
+        .bind(user_id.unwrap())
         .fetch_one(&mut *conn)
         .await?;
 
@@ -645,7 +890,7 @@ mod tests {
                 RETURNING followed_id
             "#,
         )
-        .bind(user_id)
+        .bind(user_id.unwrap())
         .fetch_one(&mut *conn)
         .await?;
 
@@ -715,7 +960,7 @@ mod tests {
                 RETURNING followed_id
             "#,
         )
-        .bind(user_id)
+        .bind(user_id.unwrap())
         .fetch_one(&mut *conn)
         .await?;
 
@@ -765,7 +1010,7 @@ mod tests {
             VALUES ($1, $2, now())
             "#,
         )
-        .bind(user_id)
+        .bind(user_id.unwrap())
         .bind(story_result.get::<i64, _>("followed_id"))
         .execute(&mut *conn)
         .await?;
@@ -783,6 +1028,148 @@ mod tests {
 
         // Should now include the story in the feed
         assert_eq!(json.unwrap().len(), 1);
+
+        Ok(())
+    }
+
+    #[sqlx::test]
+    async fn should_not_include_soft_deleted_stories_in_feed_for_friends_and_following_type(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false).await;
+
+        // Insert a story
+        let story_result = sqlx::query(
+            r#"
+            WITH inserted_user AS (
+                INSERT INTO users(name, username, email)
+                VALUES ('Sample user', 'sample_user', 'sample@example.com')
+                RETURNING id
+            ),
+            inserted_story AS (
+                INSERT INTO stories(user_id, slug, published_at)
+                VALUES ((SELECT id FROM inserted_user), 'some-story', now())
+                RETURNING id
+            )
+                INSERT INTO relations(follower_id, followed_id)
+                VALUES ($1, (SELECT id FROM inserted_user))
+                RETURNING (SELECT id FROM inserted_story)
+            "#,
+        )
+        .bind(user_id.unwrap())
+        .fetch_one(&mut *conn)
+        .await?;
+
+        let req = test::TestRequest::get()
+            .cookie(cookie.clone().unwrap())
+            .uri("/v1/feed?type=friends-and-following")
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        let json = serde_json::from_str::<Vec<Story>>(
+            str::from_utf8(&to_bytes(res.into_body()).await.unwrap().to_vec()).unwrap(),
+        );
+
+        // Should be included in the feed initially
+        assert_eq!(json.unwrap().len(), 1);
+
+        // Soft-delete the story
+        sqlx::query(
+            r#"
+            UPDATE stories
+            SET deleted_at = now()
+            WHERE id = $1
+            "#,
+        )
+        .bind(story_result.get::<i64, _>("id"))
+        .execute(&mut *conn)
+        .await?;
+
+        // Fetch the feed again
+        let req = test::TestRequest::get()
+            .cookie(cookie.unwrap())
+            .uri("/v1/feed?type=friends-and-following")
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        let json = serde_json::from_str::<Vec<Story>>(
+            str::from_utf8(&to_bytes(res.into_body()).await.unwrap().to_vec()).unwrap(),
+        );
+
+        // Should not be included in the feed
+        assert_eq!(json.unwrap().len(), 0);
+
+        Ok(())
+    }
+
+    #[sqlx::test]
+    async fn should_not_include_unpublished_stories_in_feed_for_friends_and_following_type(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false).await;
+
+        // Insert a story
+        let story_result = sqlx::query(
+            r#"
+            WITH inserted_user AS (
+                INSERT INTO users(name, username, email)
+                VALUES ('Sample user', 'sample_user', 'sample@example.com')
+                RETURNING id
+            ),
+            inserted_story AS (
+                INSERT INTO stories(user_id, slug, published_at)
+                VALUES ((SELECT id FROM inserted_user), 'some-story', now())
+                RETURNING id
+            )
+                INSERT INTO relations(follower_id, followed_id)
+                VALUES ($1, (SELECT id FROM inserted_user))
+                RETURNING (SELECT id FROM inserted_story)
+            "#,
+        )
+        .bind(user_id.unwrap())
+        .fetch_one(&mut *conn)
+        .await?;
+
+        let req = test::TestRequest::get()
+            .cookie(cookie.clone().unwrap())
+            .uri("/v1/feed?type=friends-and-following")
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        let json = serde_json::from_str::<Vec<Story>>(
+            str::from_utf8(&to_bytes(res.into_body()).await.unwrap().to_vec()).unwrap(),
+        );
+
+        // Should be included in the feed initially
+        assert_eq!(json.unwrap().len(), 1);
+
+        // Unpublish the story
+        sqlx::query(
+            r#"
+            UPDATE stories
+            SET published_at = NULL
+            WHERE id = $1
+            "#,
+        )
+        .bind(story_result.get::<i64, _>("id"))
+        .execute(&mut *conn)
+        .await?;
+
+        // Fetch the feed again
+        let req = test::TestRequest::get()
+            .cookie(cookie.unwrap())
+            .uri("/v1/feed?type=friends-and-following")
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        let json = serde_json::from_str::<Vec<Story>>(
+            str::from_utf8(&to_bytes(res.into_body()).await.unwrap().to_vec()).unwrap(),
+        );
+
+        // Should not be included in the feed
+        assert_eq!(json.unwrap().len(), 0);
 
         Ok(())
     }
