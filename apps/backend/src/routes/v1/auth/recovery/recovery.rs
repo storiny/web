@@ -120,21 +120,14 @@ async fn post(payload: Json<Request>, data: web::Data<AppState>) -> Result<HttpR
                             let ses = &data.ses_client;
                             let _ = ses
                                 .send_templated_email(SendTemplatedEmailRequest {
-                                    configuration_set_name: None,
                                     destination: Destination {
-                                        bcc_addresses: None,
-                                        cc_addresses: None,
                                         to_addresses: Some(vec![(&payload.email).to_string()]),
+                                        ..Default::default()
                                     },
-                                    reply_to_addresses: None,
-                                    return_path: None,
-                                    return_path_arn: None,
                                     source: EMAIL_SOURCE.to_string(),
-                                    source_arn: None,
-                                    tags: None,
                                     template: EmailTemplate::PasswordReset.to_string(),
                                     template_data,
-                                    template_arn: None,
+                                    ..Default::default()
                                 })
                                 .await;
 
@@ -165,7 +158,7 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::utils::init_app_for_test::init_app_for_test;
+    use crate::test_utils::test_utils::init_app_for_test;
     use actix_http::body::to_bytes;
     use actix_web::test;
     use sqlx::PgPool;

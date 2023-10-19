@@ -118,4 +118,3 @@ services:
 networks:
   custom-net:
     name: internal
-

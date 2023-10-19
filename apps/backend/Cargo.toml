@@ -21,22 +21,27 @@ actix-web-validator = "5.0.1"
 anyhow = "1.0.75"
 argon2 = "0.5.2"
 async-trait = "0.1.73"
-color-thief = "0.2.2"
+colors-transform = "0.2.11"
 derive_more = "0.99.17"
+dominant_color = "0.4.0"
 dotenv = "0.15.0"
 email_address = "0.2.4"
 env_logger = "0.10.0"
 futures-core = "0.3.28"
 hashbrown = { version = "0.14.0", features = ["serde"] }
+image = { version = "0.24.7", default-features = false, features = ["gif", "png", "jpeg", "jpeg_rayon", "webp", "webp-encoder"] }
 lazy_static = "1.4.0"
 log = "0.4.20"
 maxminddb = "0.23.0"
+mime = "0.3.17"
 nanoid = "0.4.0"
 pbjson = "0.6.0"
 prost = "0.12.1"
 rand = "0.8.5"
 redis = { version = "0.23.3", features = ["tokio-comp", "aio", "connection-manager"] }
 regex = "1.9.5"
+rusoto_core = "0.48.0"
+rusoto_credential = "0.48.0"
 rusoto_mock = "0.48.0"
 rusoto_s3 = "0.48.0"
 rusoto_ses = "0.48.0"
@@ -58,3 +63,4 @@ validator = { version = "0.16.1", features = ["derive"] }
 
 [dev-dependencies]
 just = "1.14.0"
+reqwest = { version = "0.11.22", default-features = false, features = ["cookies", "json"] }
