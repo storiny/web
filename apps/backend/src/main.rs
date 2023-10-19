@@ -190,7 +190,10 @@ async fn main() -> io::Result<()> {
                 geo_db,
                 ua_parser,
                 ses_client: SesClient::new(Region::UsEast1),
-                s3_client: S3Client::new(Region::UsEast1),
+                s3_client: S3Client::new(Region::Custom {
+                    name: "us-east-1".to_string(),
+                    endpoint: "http://localhost:9000".to_string(),
+                }),
             }))
             .configure(routes::init_routes)
             .service(fs::Files::new("/", "./static"))

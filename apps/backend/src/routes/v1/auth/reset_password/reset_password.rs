@@ -179,7 +179,7 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::utils::init_app_for_test::init_app_for_test;
+    use crate::test_utils::test_utils::init_app_for_test;
     use actix_http::body::to_bytes;
     use actix_web::test;
     use argon2::{

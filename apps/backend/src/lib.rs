@@ -31,6 +31,9 @@ pub mod constants;
 #[path = "iso8601.rs"]
 pub mod iso8601;
 
+#[path = "test_utils.rs"]
+pub mod test_utils;
+
 /// Index page template
 #[derive(TemplateOnce)]
 #[template(path = "index.stpl")]

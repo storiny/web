@@ -7,5 +7,5 @@ pub mod get_client_location;
 #[path = "utils/flag.rs"]
 pub mod flag;
 
-#[path = "utils/init_app_for_test.rs"]
-pub mod init_app_for_test;
+#[path = "utils/generate_random_object_key.rs"]
+pub mod generate_random_object_key;

@@ -12,3 +12,6 @@ pub mod email_source;
 
 #[path = "constants/account_activity_type.rs"]
 pub mod account_activity_type;
+
+#[path = "constants/buckets.rs"]
+pub mod buckets;
