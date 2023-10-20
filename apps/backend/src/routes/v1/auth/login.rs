@@ -14,26 +14,18 @@ use crate::{
             Flag,
             Mask,
         },
-        get_client_device::{
-            get_client_device,
-            ClientDevice,
-        },
-        get_client_location::{
-            get_client_location,
-            ClientLocation,
-        },
+        get_client_device::get_client_device,
+        get_client_location::get_client_location,
     },
     AppState,
 };
 use actix_http::HttpMessage;
 use actix_web::{
-    get,
     http::header::ContentType,
     post,
     web,
     HttpRequest,
     HttpResponse,
-    Responder,
 };
 use actix_web_validator::Json;
 use argon2::{
@@ -46,7 +38,6 @@ use serde::{
     Deserialize,
     Serialize,
 };
-use serde_json::json;
 use sqlx::{
     Error,
     Row,
@@ -73,19 +64,6 @@ struct Response {
 #[derive(Deserialize)]
 struct QueryParams {
     bypass: Option<String>,
-}
-
-/// Only for testing
-#[get("/v1/auth/login")]
-async fn get(session: Session) -> impl Responder {
-    let location = session.get::<ClientLocation>("location").unwrap();
-    let device = session.get::<ClientDevice>("device").unwrap();
-    HttpResponse::Ok()
-        .content_type(ContentType::json())
-        .json(json!({
-            "location": location,
-            "device": device
-        }))
 }
 
 #[post("/v1/auth/login")]
@@ -300,11 +278,19 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::test_utils::test_utils::init_app_for_test;
+    use crate::{
+        test_utils::test_utils::init_app_for_test,
+        utils::{
+            get_client_device::ClientDevice,
+            get_client_location::ClientLocation,
+        },
+    };
     use actix_http::body::to_bytes;
     use actix_web::{
+        get,
         services,
         test,
+        Responder,
     };
     use argon2::{
         password_hash::{
@@ -313,12 +299,26 @@ mod tests {
         },
         PasswordHasher,
     };
+    use serde_json::json;
     use sqlx::PgPool;
     use std::net::{
         Ipv4Addr,
         SocketAddr,
         SocketAddrV4,
     };
+
+    /// Only for testing
+    #[get("/v1/auth/login")]
+    async fn get(session: Session) -> impl Responder {
+        let location = session.get::<ClientLocation>("location").unwrap();
+        let device = session.get::<ClientDevice>("device").unwrap();
+        HttpResponse::Ok()
+            .content_type(ContentType::json())
+            .json(json!({
+                "location": location,
+                "device": device
+            }))
+    }
 
     /// Returns sample email and hashed password
     fn get_sample_email_and_password() -> (String, String, String) {

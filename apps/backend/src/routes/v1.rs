@@ -20,9 +20,18 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
     auth::recovery::init_routes(cfg);
     // Feed
     feed::feed::init_routes(cfg);
-    // User settings
+    // User activity
     me::account_activity::init_routes(cfg);
+    // Assets
+    me::assets::assets_get::init_routes(cfg);
     me::assets::assets_post::init_routes(cfg);
+    me::assets::assets_delete::init_routes(cfg);
+    me::assets::assets_alt::init_routes(cfg);
+    me::assets::assets_favourite::init_routes(cfg);
+    me::assets::assets_rating::init_routes(cfg);
+    // Blocked users
+    me::blocked_users::blocked_users_get::init_routes(cfg);
+    // Sessions
     me::sessions::destroy::init_routes(cfg);
     me::sessions::logout::init_routes(cfg)
 }

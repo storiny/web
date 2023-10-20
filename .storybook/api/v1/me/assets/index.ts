@@ -11,8 +11,8 @@ worker.use(
   rest.post(
     `${process.env.NEXT_PUBLIC_API_URL}/v1/me/assets`,
     (req, res, ctx) =>
-      res(ctx.delay(3400), ctx.status(201), ctx.json(MOCK_ASSETS[0]))
-  )
+      res(ctx.delay(3400), ctx.status(201), ctx.json(MOCK_ASSETS[0])),
+  ),
 );
 
 worker.use(
@@ -20,17 +20,17 @@ worker.use(
     res(
       ctx.delay(1200),
       ctx.json(
-        MOCK_ASSETS.slice(0, 15).map((asset) => ({ ...asset, id: nanoid() }))
-      )
-    )
-  )
+        MOCK_ASSETS.slice(0, 15).map((asset) => ({ ...asset, id: nanoid() })),
+      ),
+    ),
+  ),
 );
 
 worker.use(
   rest.delete(
-    `${process.env.NEXT_PUBLIC_API_URL}/v1/me/assets/:assetId`,
-    (req, res, ctx) => res(ctx.delay(1200), ctx.status(204))
-  )
+    `${process.env.NEXT_PUBLIC_API_URL}/v1/me/assets/:asset_id`,
+    (req, res, ctx) => res(ctx.delay(1200), ctx.status(204)),
+  ),
 );
 
 export {};

@@ -24,6 +24,7 @@ use actix_web::{
 };
 use actix_web_validator::{
     JsonConfig,
+    PathConfig,
     QsQueryConfig,
 };
 use dotenv::dotenv;
@@ -149,6 +150,15 @@ async fn main() -> io::Result<()> {
             .into()
         });
 
+        // Path fragments validation error handler
+        let path_config = PathConfig::default().error_handler(|err, _| {
+            actix_web::error::InternalError::from_response(
+                err,
+                HttpResponse::Conflict().body("Invalid path fragments".to_string()),
+            )
+            .into()
+        });
+
         App::new()
             .wrap(
                 RateLimiter::builder(backend.clone(), input)
@@ -184,6 +194,7 @@ async fn main() -> io::Result<()> {
             )
             .app_data(json_config)
             .app_data(qs_query_config)
+            .app_data(path_config)
             .app_data(web::Data::new(AppState {
                 redis: Some(RedisActor::start(format!("{redis_host}:{redis_port}"))),
                 db_pool: db_pool.clone(),

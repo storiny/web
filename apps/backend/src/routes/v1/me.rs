@@ -6,3 +6,6 @@ pub mod account_activity;
 
 #[path = "me/assets.rs"]
 pub mod assets;
+
+#[path = "me/blocked_users.rs"]
+pub mod blocked_users;

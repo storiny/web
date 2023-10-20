@@ -1,0 +1,153 @@
+use crate::{
+    error::AppError,
+    middleware::identity::identity::Identity,
+    AppState,
+};
+use actix_web::{
+    get,
+    http::header::ContentType,
+    web,
+    HttpResponse,
+};
+use actix_web_validator::QsQuery;
+use serde::{
+    Deserialize,
+    Serialize,
+};
+use sqlx::FromRow;
+use time::OffsetDateTime;
+use validator::Validate;
+
+#[derive(Serialize, Deserialize, Validate)]
+struct QueryParams {
+    #[validate(range(min = 1, max = 1000))]
+    page: Option<u16>,
+}
+
+#[derive(Debug, FromRow, Serialize, Deserialize)]
+struct Asset {
+    id: i64,
+    key: String,
+    hex: String,
+    alt: String,
+    rating: i16,
+    favourite: bool, // This is casted as bool from `favourited_at`
+    height: i16,
+    width: i16,
+    // Timestamps
+    #[serde(with = "crate::iso8601::time")]
+    created_at: OffsetDateTime,
+}
+
+#[get("/v1/me/assets")]
+async fn get(
+    query: QsQuery<QueryParams>,
+    data: web::Data<AppState>,
+    user: Identity,
+) -> Result<HttpResponse, AppError> {
+    match user.id() {
+        Ok(user_id) => {
+            let page = query.page.unwrap_or_default();
+            let result = sqlx::query_as::<_, Asset>(
+                r#"
+                SELECT
+                    id,
+                    key,
+                    hex,
+                    alt,
+                    rating,
+                    height,
+                    width,
+                    created_at,
+                    CASE WHEN favourited_at IS NULL THEN
+                        FALSE
+                    ELSE
+                        TRUE
+                    END AS "favourite"
+                FROM
+                    assets
+                WHERE
+                    user_id = $1
+                ORDER BY
+                    favourited_at DESC NULLS LAST,
+                    created_at DESC
+                LIMIT $2 OFFSET $3
+                "#,
+            )
+            .bind(user_id)
+            .bind(10i16)
+            .bind((page * 10) as i16)
+            .fetch_all(&data.db_pool)
+            .await?;
+
+            Ok(HttpResponse::Ok()
+                .content_type(ContentType::json())
+                .json(result))
+        }
+        Err(_) => Ok(HttpResponse::InternalServerError().finish()),
+    }
+}
+
+pub fn init_routes(cfg: &mut web::ServiceConfig) {
+    cfg.service(get);
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::test_utils::test_utils::init_app_for_test;
+    use actix_http::body::to_bytes;
+    use actix_web::test;
+    use sqlx::PgPool;
+    use std::str;
+
+    #[sqlx::test]
+    async fn can_return_assets(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false).await;
+
+        // Insert some assets
+        let insert_result = sqlx::query(
+            r#"
+            INSERT INTO assets(key, hex, height, width, user_id, favourited_at) 
+            VALUES
+                ($1, $2, $3, $4, $5, now()),
+                ($6, $2, $3, $4, $5, NULL)
+            "#,
+        )
+        .bind("some_key".to_string())
+        .bind("000000".to_string())
+        .bind(0)
+        .bind(0)
+        .bind(user_id)
+        .bind("other_key".to_string())
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(insert_result.rows_affected(), 2);
+
+        let req = test::TestRequest::get()
+            .cookie(cookie.unwrap())
+            .uri("/v1/me/assets")
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_success());
+
+        let json = serde_json::from_str::<Vec<Asset>>(
+            str::from_utf8(&to_bytes(res.into_body()).await.unwrap().to_vec()).unwrap(),
+        );
+
+        assert!(json.is_ok());
+
+        let results = json.unwrap();
+
+        // Assets are sorted by `favourited_at` DESC (NULLS LAST), so the first asset in the result
+        // must have `favourite` set to `true`.
+        assert!(results[0].favourite);
+        // The second asset should have `favourite` set to `false`, casted from the `NULL` value.
+        assert!(!results[1].favourite);
+
+        Ok(())
+    }
+}
