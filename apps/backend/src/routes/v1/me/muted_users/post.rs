@@ -17,7 +17,7 @@ struct Fragments {
     id: String,
 }
 
-#[post("/v1/me/blocked-users/{id}")]
+#[post("/v1/me/muted-users/{id}")]
 async fn post(
     path: web::Path<Fragments>,
     data: web::Data<AppState>,
@@ -26,15 +26,15 @@ async fn post(
     match user.id() {
         Ok(user_id) => {
             match path.id.parse::<i64>() {
-                Ok(blocked_id) => {
+                Ok(muted_id) => {
                     match sqlx::query(
                         r#"
-                        INSERT INTO blocks(blocker_id, blocked_id)
+                        INSERT INTO mutes(muter_id, muted_id)
                         VALUES ($1, $2)
                         "#,
                     )
                     .bind(user_id)
-                    .bind(blocked_id)
+                    .bind(muted_id)
                     .execute(&data.db_pool)
                     .await
                     {
@@ -42,16 +42,18 @@ async fn post(
                         Err(err) => {
                             if let Some(db_err) = err.into_database_error() {
                                 match db_err.kind() {
-                                    // Do not throw if already blocked
+                                    // Do not throw if already muted
                                     sqlx::error::ErrorKind::UniqueViolation => {
                                         Ok(HttpResponse::NoContent().finish())
                                     }
                                     _ => {
-                                        // Check if the blocked user is soft-deleted or deactivated
+                                        // Check if the muted user is soft-deleted or deactivated
                                         if db_err.code().unwrap_or_default()
                                             == SqlState::EntityUnavailable.to_string()
                                         {
-                                            Ok(HttpResponse::BadRequest().body("User being blocked is either deleted or deactivated"))
+                                            Ok(HttpResponse::BadRequest().body(
+                                                "User being muted is either deleted or deactivated",
+                                            ))
                                         } else {
                                             Ok(HttpResponse::InternalServerError().finish())
                                         }
@@ -86,24 +88,24 @@ mod tests {
     };
 
     #[sqlx::test(fixtures("user"))]
-    async fn can_block_a_user(pool: PgPool) -> sqlx::Result<()> {
+    async fn can_mute_a_user(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(post, pool, true, false).await;
 
         let req = test::TestRequest::post()
             .cookie(cookie.unwrap())
-            .uri(&format!("/v1/me/blocked-users/{}", 2))
+            .uri(&format!("/v1/me/muted-users/{}", 2))
             .to_request();
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_success());
 
-        // Block should be present in the database
+        // Mute should be present in the database
         let result = sqlx::query(
             r#"
             SELECT EXISTS(
-                SELECT 1 FROM blocks
-                WHERE blocker_id = $1 AND blocked_id = $2
+                SELECT 1 FROM mutes
+                WHERE muter_id = $1 AND muted_id = $2
             )
             "#,
         )
@@ -118,24 +120,22 @@ mod tests {
     }
 
     #[sqlx::test(fixtures("user"))]
-    async fn should_not_throw_when_blocking_an_already_blocked_user(
-        pool: PgPool,
-    ) -> sqlx::Result<()> {
+    async fn should_not_throw_when_muting_an_already_muted_user(pool: PgPool) -> sqlx::Result<()> {
         let (app, cookie, _) = init_app_for_test(post, pool, true, false).await;
 
-        // Block the user for the first time
+        // Mute the user for the first time
         let req = test::TestRequest::post()
             .cookie(cookie.clone().unwrap())
-            .uri(&format!("/v1/me/blocked-users/{}", 2))
+            .uri(&format!("/v1/me/muted-users/{}", 2))
             .to_request();
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_success());
 
-        // Try blocking the user again
+        // Try muting the user again
         let req = test::TestRequest::post()
             .cookie(cookie.unwrap())
-            .uri(&format!("/v1/me/blocked-users/{}", 2))
+            .uri(&format!("/v1/me/muted-users/{}", 2))
             .to_request();
         let res = test::call_service(&app, req).await;
 
@@ -146,7 +146,7 @@ mod tests {
     }
 
     #[sqlx::test(fixtures("user"))]
-    async fn should_not_block_a_soft_deleted_user(pool: PgPool) -> sqlx::Result<()> {
+    async fn should_not_mute_a_soft_deleted_user(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let (app, cookie, _) = init_app_for_test(post, pool, true, false).await;
 
@@ -164,24 +164,24 @@ mod tests {
 
         assert_eq!(result.rows_affected(), 1);
 
-        // Try blocking the user
+        // Try muting the user
         let req = test::TestRequest::post()
             .cookie(cookie.clone().unwrap())
-            .uri(&format!("/v1/me/blocked-users/{}", 2))
+            .uri(&format!("/v1/me/muted-users/{}", 2))
             .to_request();
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_client_error());
         assert_eq!(
             to_bytes(res.into_body()).await.unwrap_or_default(),
-            "User being blocked is either deleted or deactivated".to_string()
+            "User being muted is either deleted or deactivated".to_string()
         );
 
         Ok(())
     }
 
     #[sqlx::test(fixtures("user"))]
-    async fn should_not_block_a_deactivated_user(pool: PgPool) -> sqlx::Result<()> {
+    async fn should_not_mute_a_deactivated_user(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let (app, cookie, _) = init_app_for_test(post, pool, true, false).await;
 
@@ -199,17 +199,17 @@ mod tests {
 
         assert_eq!(result.rows_affected(), 1);
 
-        // Try blocking the user
+        // Try muting the user
         let req = test::TestRequest::post()
             .cookie(cookie.clone().unwrap())
-            .uri(&format!("/v1/me/blocked-users/{}", 2))
+            .uri(&format!("/v1/me/muted-users/{}", 2))
             .to_request();
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_client_error());
         assert_eq!(
             to_bytes(res.into_body()).await.unwrap_or_default(),
-            "User being blocked is either deleted or deactivated".to_string()
+            "User being muted is either deleted or deactivated".to_string()
         );
 
         Ok(())

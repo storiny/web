@@ -5,8 +5,12 @@ CREATE TABLE IF NOT EXISTS tags(
     follower_count unsigned_int32 NOT NULL DEFAULT 0,
     story_count unsigned_int32 NOT NULL DEFAULT 0,
     -- Timestamps
-    created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    -- FTS
+    search_vec TSVECTOR GENERATED ALWAYS AS (to_tsvector("name")) STORED
 );
 
 CREATE INDEX follower_count_on_tags ON tags(follower_count);
+
+CREATE INDEX search_vec_on_tags ON tags USING GIN(search_vec);
 

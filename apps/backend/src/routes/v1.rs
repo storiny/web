@@ -31,6 +31,12 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
     me::assets::assets_rating::init_routes(cfg);
     // Blocked users
     me::blocked_users::blocked_users_get::init_routes(cfg);
+    me::blocked_users::blocked_users_post::init_routes(cfg);
+    me::blocked_users::blocked_users_delete::init_routes(cfg);
+    // Muted users
+    me::muted_users::muted_users_get::init_routes(cfg);
+    me::muted_users::muted_users_post::init_routes(cfg);
+    me::muted_users::muted_users_delete::init_routes(cfg);
     // Sessions
     me::sessions::destroy::init_routes(cfg);
     me::sessions::logout::init_routes(cfg)

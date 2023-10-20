@@ -15,3 +15,6 @@ pub mod account_activity_type;
 
 #[path = "constants/buckets.rs"]
 pub mod buckets;
+
+#[path = "constants/sql_states.rs"]
+pub mod sql_states;

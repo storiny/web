@@ -9,3 +9,6 @@ pub mod assets;
 
 #[path = "me/blocked_users.rs"]
 pub mod blocked_users;
+
+#[path = "me/muted_users.rs"]
+pub mod muted_users;

@@ -29,7 +29,9 @@ CREATE TABLE IF NOT EXISTS stories(
     first_published_at TIMESTAMPTZ,
     published_at TIMESTAMPTZ,
     edited_at TIMESTAMPTZ,
-    deleted_at TIMESTAMPTZ
+    deleted_at TIMESTAMPTZ,
+    -- FTS
+    search_vec TSVECTOR GENERATED ALWAYS AS (setweight(to_tsvector("title"), 'A') || setweight(to_tsvector(coalesce("description", '')), 'C')) STORED
 );
 
 CREATE INDEX read_count_on_stories ON stories(read_count);
@@ -43,4 +45,6 @@ WHERE
     published_at IS NOT NULL;
 
 CREATE INDEX user_id_on_stories ON stories(user_id);
+
+CREATE INDEX search_vec_on_stories ON stories USING GIN(search_vec);
 

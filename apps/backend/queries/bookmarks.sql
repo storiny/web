@@ -1,0 +1,56 @@
+SELECT
+    -- Story
+    s.id,
+    s.title,
+    s.slug AS "slug!",
+    s.description,
+    s.splash_id,
+    s.splash_hex,
+    s.category::TEXT AS "category!",
+    s.age_restriction,
+    s.license,
+    s.user_id,
+    -- Stats
+    s.word_count,
+    s.read_count,
+    s.like_count,
+    s.comment_count,
+    -- Timestamps
+    s.published_at AS "published_at!",
+    s.edited_at,
+    -- Boolean flags
+    TRUE AS "is_bookmarked!",
+    CASE WHEN count("s->is_liked") = 1 THEN
+        TRUE
+    ELSE
+        FALSE
+    END AS "is_liked!",
+    -- User
+    json_build_object('id', su.id, 'name', su.name, 'username', su.username, 'avatar_id', su.avatar_id, 'avatar_hex', su.avatar_hex, 'public_flags', su.public_flags) AS "user!: Json<User>",
+    -- Tags
+    coalesce(array_agg(("s->story_tags->tag".id, "s->story_tags->tag".name)) FILTER (WHERE "s->story_tags->tag".id IS NOT NULL), '{}') AS "tags!: Vec<Tag>"
+FROM
+    bookmarks b
+    INNER JOIN stories s ON s.id = b.story_id
+    INNER JOIN users su ON su.id = s.user_id
+    --
+    -- Join story tags
+    LEFT OUTER JOIN story_tags AS "s->story_tags"
+    -- Join tags
+    INNER JOIN tags AS "s->story_tags->tag" ON "s->story_tags->tag".id = "s->story_tags".tag_id
+    --
+    ON "s->story_tags".story_id = s.id
+    --
+    -- Boolean story like flag
+    LEFT OUTER JOIN story_likes AS "s->is_liked" ON "s->is_liked".story_id = s.id
+        AND "s->is_liked".user_id = $1
+        AND "s->is_liked".deleted_at IS NULL
+WHERE
+    b.user_id = $1
+    AND b.deleted_at IS NULL
+GROUP BY
+    s.id,
+    b.created_at
+ORDER BY
+    b.created_at DESC
+LIMIT $2 OFFSET $3
