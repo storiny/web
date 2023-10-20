@@ -24,7 +24,7 @@ struct QueryParams {
 }
 
 #[derive(Debug, FromRow, Serialize, Deserialize)]
-struct BlockedUser {
+struct MutedUser {
     id: i64,
     name: String,
     username: String,
@@ -34,10 +34,10 @@ struct BlockedUser {
     follower_count: i32,
     story_count: i32,
     rendered_bio: String,
-    is_blocking: bool,
+    is_muted: bool,
 }
 
-#[get("/v1/me/blocked-users")]
+#[get("/v1/me/muted-users")]
 async fn get(
     query: QsQuery<QueryParams>,
     data: web::Data<AppState>,
@@ -46,7 +46,7 @@ async fn get(
     match user.id() {
         Ok(user_id) => {
             let page = query.page.clone().unwrap_or_default();
-            let result = sqlx::query_as::<_, BlockedUser>(
+            let result = sqlx::query_as::<_, MutedUser>(
                 r#"
                 SELECT
                     u.id AS "id",
@@ -58,15 +58,15 @@ async fn get(
                     u.follower_count AS "follower_count",
                     u.story_count AS "story_count",
                     u.rendered_bio AS "rendered_bio",
-                    TRUE AS "is_blocking"
+                    TRUE AS "is_muted"
                 FROM
-                    blocks b
-                    INNER JOIN users u ON b.blocked_id = u.id
+                    mutes m
+                    INNER JOIN users u ON m.muted_id = u.id
                 WHERE
-                    b.blocker_id = $1
-                    AND b.deleted_at IS NULL
+                    m.muter_id = $1
+                    AND m.deleted_at IS NULL
                 ORDER BY
-                    b.created_at DESC
+                    m.created_at DESC
                 LIMIT $2 OFFSET $3
                 "#,
             )
@@ -98,30 +98,30 @@ mod tests {
     use std::str;
 
     #[sqlx::test(fixtures("user"))]
-    async fn can_return_blocked_users(pool: PgPool) -> sqlx::Result<()> {
+    async fn can_return_muted_users(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(get, pool, true, false).await;
 
         // Should return an empty array initially
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
-            .uri("/v1/me/blocked-users")
+            .uri("/v1/me/muted-users")
             .to_request();
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_success());
 
-        let json = serde_json::from_str::<Vec<BlockedUser>>(
+        let json = serde_json::from_str::<Vec<MutedUser>>(
             str::from_utf8(&to_bytes(res.into_body()).await.unwrap().to_vec()).unwrap(),
         );
 
         assert!(json.is_ok());
         assert_eq!(json.unwrap().len(), 0);
 
-        // Block a user
+        // Mute a user
         let result = sqlx::query(
             r#"
-            INSERT INTO blocks(blocker_id, blocked_id)
+            INSERT INTO mutes(muter_id, muted_id)
             VALUES ($1, $2)
             "#,
         )
@@ -132,16 +132,16 @@ mod tests {
 
         assert_eq!(result.rows_affected(), 1);
 
-        // Should include the blocked user
+        // Should include the muted user
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())
-            .uri("/v1/me/blocked-users")
+            .uri("/v1/me/muted-users")
             .to_request();
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_success());
 
-        let json = serde_json::from_str::<Vec<BlockedUser>>(
+        let json = serde_json::from_str::<Vec<MutedUser>>(
             str::from_utf8(&to_bytes(res.into_body()).await.unwrap().to_vec()).unwrap(),
         );
 
@@ -156,30 +156,30 @@ mod tests {
     }
 
     #[sqlx::test(fixtures("user"))]
-    async fn should_not_return_soft_deleted_blocks(pool: PgPool) -> sqlx::Result<()> {
+    async fn should_not_return_soft_deleted_mutes(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(get, pool, true, false).await;
 
         // Should return an empty array initially
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
-            .uri("/v1/me/blocked-users")
+            .uri("/v1/me/muted-users")
             .to_request();
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_success());
 
-        let json = serde_json::from_str::<Vec<BlockedUser>>(
+        let json = serde_json::from_str::<Vec<MutedUser>>(
             str::from_utf8(&to_bytes(res.into_body()).await.unwrap().to_vec()).unwrap(),
         );
 
         assert!(json.is_ok());
         assert_eq!(json.unwrap().len(), 0);
 
-        // Block a user
+        // Mute a user
         let result = sqlx::query(
             r#"
-            INSERT INTO blocks(blocker_id, blocked_id)
+            INSERT INTO mutes(muter_id, muted_id)
             VALUES ($1, $2)
             "#,
         )
@@ -190,23 +190,23 @@ mod tests {
 
         assert_eq!(result.rows_affected(), 1);
 
-        // Should include the blocked user
+        // Should include the muted user
         let req = test::TestRequest::get()
             .cookie(cookie.clone().unwrap())
-            .uri("/v1/me/blocked-users")
+            .uri("/v1/me/muted-users")
             .to_request();
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_success());
 
-        let json = serde_json::from_str::<Vec<BlockedUser>>(
+        let json = serde_json::from_str::<Vec<MutedUser>>(
             str::from_utf8(&to_bytes(res.into_body()).await.unwrap().to_vec()).unwrap(),
         );
 
         assert!(json.is_ok());
         assert_eq!(json.unwrap().len(), 1);
 
-        // Deactivate the blocked user, this should soft-delete the block
+        // Deactivate the muted user, this should soft-delete the mute
         sqlx::query(
             r#"
             UPDATE users
@@ -218,16 +218,16 @@ mod tests {
         .execute(&mut *conn)
         .await?;
 
-        // Should not return the soft-deleted block
+        // Should not return the soft-deleted mute
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())
-            .uri("/v1/me/blocked-users")
+            .uri("/v1/me/muted-users")
             .to_request();
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_success());
 
-        let json = serde_json::from_str::<Vec<BlockedUser>>(
+        let json = serde_json::from_str::<Vec<MutedUser>>(
             str::from_utf8(&to_bytes(res.into_body()).await.unwrap().to_vec()).unwrap(),
         );
 

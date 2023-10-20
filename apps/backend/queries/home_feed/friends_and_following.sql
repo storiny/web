@@ -56,7 +56,7 @@ WITH friends_and_following_stories AS (
                 mutes m
             WHERE
                 m.muter_id = $1)
-            -- Join tags
+  --
             -- Join story tags
         LEFT OUTER JOIN story_tags AS "s->story_tags"
     -- Join tags

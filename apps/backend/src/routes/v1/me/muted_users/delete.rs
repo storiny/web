@@ -16,7 +16,7 @@ struct Fragments {
     id: String,
 }
 
-#[delete("/v1/me/blocked-users/{id}")]
+#[delete("/v1/me/muted-users/{id}")]
 async fn delete(
     path: web::Path<Fragments>,
     data: web::Data<AppState>,
@@ -24,20 +24,20 @@ async fn delete(
 ) -> Result<HttpResponse, AppError> {
     match user.id() {
         Ok(user_id) => match path.id.parse::<i64>() {
-            Ok(blocked_id) => {
+            Ok(muted_id) => {
                 match sqlx::query(
                     r#"
-                    DELETE FROM blocks
-                    WHERE blocker_id = $1 AND blocked_id = $2
+                    DELETE FROM mutes
+                    WHERE muter_id = $1 AND muted_id = $2
                     "#,
                 )
                 .bind(user_id)
-                .bind(blocked_id)
+                .bind(muted_id)
                 .execute(&data.db_pool)
                 .await?
                 .rows_affected()
                 {
-                    0 => Ok(HttpResponse::BadRequest().body("User or block not found")),
+                    0 => Ok(HttpResponse::BadRequest().body("User or mute not found")),
                     _ => Ok(HttpResponse::NoContent().finish()),
                 }
             }
@@ -63,14 +63,14 @@ mod tests {
     };
 
     #[sqlx::test(fixtures("user"))]
-    async fn can_unblock_a_user(pool: PgPool) -> sqlx::Result<()> {
+    async fn can_unmute_a_user(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(delete, pool, true, false).await;
 
-        // Block the user
+        // Mute the user
         let result = sqlx::query(
             r#"
-            INSERT INTO blocks(blocker_id, blocked_id)
+            INSERT INTO mutes(muter_id, muted_id)
             VALUES ($1, $2)
             "#,
         )
@@ -83,18 +83,18 @@ mod tests {
 
         let req = test::TestRequest::delete()
             .cookie(cookie.unwrap())
-            .uri(&format!("/v1/me/blocked-users/{}", 2))
+            .uri(&format!("/v1/me/muted-users/{}", 2))
             .to_request();
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_success());
 
-        // Block should not be present in the database
+        // Mute should not be present in the database
         let result = sqlx::query(
             r#"
             SELECT EXISTS(
-                SELECT 1 FROM blocks
-                WHERE blocker_id = $1 AND blocked_id = $2
+                SELECT 1 FROM mutes
+                WHERE muter_id = $1 AND muted_id = $2
             )
             "#,
         )
@@ -109,21 +109,21 @@ mod tests {
     }
 
     #[sqlx::test(fixtures("user"))]
-    async fn can_return_an_error_response_when_unblocking_an_unknown_user(
+    async fn can_return_an_error_response_when_unmuting_an_unknown_user(
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let (app, cookie, _) = init_app_for_test(delete, pool, true, false).await;
 
         let req = test::TestRequest::delete()
             .cookie(cookie.unwrap())
-            .uri(&format!("/v1/me/blocked-users/{}", 12345))
+            .uri(&format!("/v1/me/muted-users/{}", 12345))
             .to_request();
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_client_error());
         assert_eq!(
             to_bytes(res.into_body()).await.unwrap_or_default(),
-            "User or block not found".to_string()
+            "User or mute not found".to_string()
         );
 
         Ok(())

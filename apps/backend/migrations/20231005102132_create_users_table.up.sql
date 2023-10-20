@@ -38,8 +38,12 @@ CREATE TABLE IF NOT EXISTS users(
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     username_modified_at TIMESTAMPTZ,
     deactivated_at TIMESTAMPTZ,
-    deleted_at TIMESTAMPTZ
+    deleted_at TIMESTAMPTZ,
+    -- FTS
+    search_vec TSVECTOR GENERATED ALWAYS AS (setweight(to_tsvector("username"), 'A') || setweight(to_tsvector("name"), 'B')) STORED
 );
 
 CREATE INDEX follower_count_on_users ON users(follower_count);
+
+CREATE INDEX search_vec_on_users ON users USING GIN(search_vec);
 
