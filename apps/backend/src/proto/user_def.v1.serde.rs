@@ -1141,9 +1141,6 @@ impl serde::Serialize for User {
         if !self.username.is_empty() {
             len += 1;
         }
-        if !self.bio.is_empty() {
-            len += 1;
-        }
         if !self.rendered_bio.is_empty() {
             len += 1;
         }
@@ -1192,9 +1189,6 @@ impl serde::Serialize for User {
         }
         if !self.username.is_empty() {
             struct_ser.serialize_field("username", &self.username)?;
-        }
-        if !self.bio.is_empty() {
-            struct_ser.serialize_field("bio", &self.bio)?;
         }
         if !self.rendered_bio.is_empty() {
             struct_ser.serialize_field("renderedBio", &self.rendered_bio)?;
@@ -1248,7 +1242,6 @@ impl<'de> serde::Deserialize<'de> for User {
             "id",
             "name",
             "username",
-            "bio",
             "rendered_bio",
             "renderedBio",
             "avatar_id",
@@ -1281,7 +1274,6 @@ impl<'de> serde::Deserialize<'de> for User {
             Id,
             Name,
             Username,
-            Bio,
             RenderedBio,
             AvatarId,
             AvatarHex,
@@ -1319,7 +1311,6 @@ impl<'de> serde::Deserialize<'de> for User {
                             "id" => Ok(GeneratedField::Id),
                             "name" => Ok(GeneratedField::Name),
                             "username" => Ok(GeneratedField::Username),
-                            "bio" => Ok(GeneratedField::Bio),
                             "renderedBio" | "rendered_bio" => Ok(GeneratedField::RenderedBio),
                             "avatarId" | "avatar_id" => Ok(GeneratedField::AvatarId),
                             "avatarHex" | "avatar_hex" => Ok(GeneratedField::AvatarHex),
@@ -1355,7 +1346,6 @@ impl<'de> serde::Deserialize<'de> for User {
                 let mut id__ = None;
                 let mut name__ = None;
                 let mut username__ = None;
-                let mut bio__ = None;
                 let mut rendered_bio__ = None;
                 let mut avatar_id__ = None;
                 let mut avatar_hex__ = None;
@@ -1388,12 +1378,6 @@ impl<'de> serde::Deserialize<'de> for User {
                                 return Err(serde::de::Error::duplicate_field("username"));
                             }
                             username__ = Some(map.next_value()?);
-                        }
-                        GeneratedField::Bio => {
-                            if bio__.is_some() {
-                                return Err(serde::de::Error::duplicate_field("bio"));
-                            }
-                            bio__ = Some(map.next_value()?);
                         }
                         GeneratedField::RenderedBio => {
                             if rendered_bio__.is_some() {
@@ -1483,7 +1467,6 @@ impl<'de> serde::Deserialize<'de> for User {
                     id: id__.unwrap_or_default(),
                     name: name__.unwrap_or_default(),
                     username: username__.unwrap_or_default(),
-                    bio: bio__.unwrap_or_default(),
                     rendered_bio: rendered_bio__.unwrap_or_default(),
                     avatar_id: avatar_id__,
                     avatar_hex: avatar_hex__,

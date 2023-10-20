@@ -16,7 +16,7 @@ export const { useAssetAltMutation: use_asset_alt_mutation } =
       assetAlt: builder.mutation<void, AssetAltPayload>({
         query: (body) => ({
           url: `/${SEGMENT(body.id)}`,
-          method: "POST",
+          method: "PATCH",
           body: {
             alt: body.alt
           },

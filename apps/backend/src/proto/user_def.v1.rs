@@ -25,33 +25,31 @@ pub struct User {
     #[prost(string, tag="3")]
     pub username: ::prost::alloc::string::String,
     #[prost(string, tag="4")]
-    pub bio: ::prost::alloc::string::String,
-    #[prost(string, tag="5")]
     pub rendered_bio: ::prost::alloc::string::String,
-    #[prost(string, optional, tag="6")]
+    #[prost(string, optional, tag="5")]
     pub avatar_id: ::core::option::Option<::prost::alloc::string::String>,
-    #[prost(string, optional, tag="7")]
+    #[prost(string, optional, tag="6")]
     pub avatar_hex: ::core::option::Option<::prost::alloc::string::String>,
-    #[prost(uint32, tag="8")]
+    #[prost(uint32, tag="7")]
     pub public_flags: u32,
-    #[prost(bool, tag="9")]
+    #[prost(bool, tag="8")]
     pub is_private: bool,
-    #[prost(string, tag="10")]
+    #[prost(string, tag="9")]
     pub location: ::prost::alloc::string::String,
-    #[prost(string, tag="11")]
+    #[prost(string, tag="10")]
     pub created_at: ::prost::alloc::string::String,
-    #[prost(uint32, tag="12")]
+    #[prost(uint32, tag="11")]
     pub follower_count: u32,
     /// User specific props
-    #[prost(bool, optional, tag="13")]
+    #[prost(bool, optional, tag="12")]
     pub is_self: ::core::option::Option<bool>,
-    #[prost(bool, optional, tag="14")]
+    #[prost(bool, optional, tag="13")]
     pub is_following: ::core::option::Option<bool>,
-    #[prost(bool, optional, tag="15")]
+    #[prost(bool, optional, tag="14")]
     pub is_follower: ::core::option::Option<bool>,
-    #[prost(bool, optional, tag="16")]
+    #[prost(bool, optional, tag="15")]
     pub is_friend: ::core::option::Option<bool>,
-    #[prost(bool, optional, tag="17")]
+    #[prost(bool, optional, tag="16")]
     pub is_blocked_by_user: ::core::option::Option<bool>,
 }
 // Get user ID

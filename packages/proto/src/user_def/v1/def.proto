@@ -32,21 +32,20 @@ message User {
   string id /*                       */ = 1;
   string name /*                     */ = 2;
   string username /*                 */ = 3;
-  string bio /*                      */ = 4;
-  string rendered_bio /*             */ = 5;
-  optional string avatar_id /*       */ = 6;
-  optional string avatar_hex /*      */ = 7;
-  uint32 public_flags /*             */ = 8;
-  bool is_private /*                 */ = 9;
-  string location /*                 */ = 10;
-  string created_at /*               */ = 11;
-  uint32 follower_count /*           */ = 12;
+  string rendered_bio /*             */ = 4;
+  optional string avatar_id /*       */ = 5;
+  optional string avatar_hex /*      */ = 6;
+  uint32 public_flags /*             */ = 7;
+  bool is_private /*                 */ = 8;
+  string location /*                 */ = 9;
+  string created_at /*               */ = 10;
+  uint32 follower_count /*           */ = 11;
   // User specific props
-  optional bool is_self /*           */ = 13;
-  optional bool is_following /*      */ = 14;
-  optional bool is_follower /*       */ = 15;
-  optional bool is_friend /*         */ = 16;
-  optional bool is_blocked_by_user /**/ = 17;
+  optional bool is_self /*           */ = 12;
+  optional bool is_following /*      */ = 13;
+  optional bool is_follower /*       */ = 14;
+  optional bool is_friend /*         */ = 15;
+  optional bool is_blocked_by_user /**/ = 16;
 }
 
 // Get user ID

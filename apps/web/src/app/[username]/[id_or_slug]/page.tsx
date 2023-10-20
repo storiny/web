@@ -58,8 +58,7 @@ const Page = async ({
       if (story_response.user.is_private && !story_response.user.is_friend) {
         not_found(); // Private story
       } else if (story_response.user.is_blocked_by_user) {
-        story_response.user.bio = ""; // Hide bio
-        story_response.user.rendered_bio = "";
+        story_response.user.rendered_bio = ""; // Hide bio
 
         return (
           <RestrictedStory type={"unpublished"} user={story_response.user} />

@@ -88,7 +88,7 @@ const RestrictedStory = (props: RestrictedStoryProps): React.ReactElement => {
             }
             size={"lg"}
           />
-          {user.bio.trim() ? (
+          {user.rendered_bio.trim() ? (
             <React.Fragment>
               <Spacer orientation={"vertical"} size={2} />
               <Typography className={css["t-minor"]} level={"body2"}>

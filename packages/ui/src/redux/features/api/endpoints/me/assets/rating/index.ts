@@ -16,7 +16,7 @@ export const { useAssetRatingMutation: use_asset_rating_mutation } =
       assetRating: builder.mutation<void, AssetRatingPayload>({
         query: (body) => ({
           url: `/${SEGMENT(body.id)}`,
-          method: "POST",
+          method: "PATCH",
           body: {
             rating: body.rating
           },
