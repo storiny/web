@@ -31,7 +31,7 @@ CREATE TABLE IF NOT EXISTS stories(
     edited_at TIMESTAMPTZ,
     deleted_at TIMESTAMPTZ,
     -- FTS
-    search_vec TSVECTOR GENERATED ALWAYS AS (setweight(to_tsvector("title"), 'A') || setweight(to_tsvector(coalesce("description", '')), 'C')) STORED
+    search_vec TSVECTOR GENERATED ALWAYS AS (setweight(to_tsvector('english', "title"), 'A') || setweight(to_tsvector('english', coalesce("description", '')), 'C')) STORED
 );
 
 CREATE INDEX read_count_on_stories ON stories(read_count);

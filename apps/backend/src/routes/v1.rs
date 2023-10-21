@@ -33,6 +33,8 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
     me::blocked_users::blocked_users_get::init_routes(cfg);
     me::blocked_users::blocked_users_post::init_routes(cfg);
     me::blocked_users::blocked_users_delete::init_routes(cfg);
+    // Bookmarks
+    me::bookmarks::bookmarks_get::init_routes(cfg);
     // Muted users
     me::muted_users::muted_users_get::init_routes(cfg);
     me::muted_users::muted_users_post::init_routes(cfg);

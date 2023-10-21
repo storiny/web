@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS tags(
     -- Timestamps
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     -- FTS
-    search_vec TSVECTOR GENERATED ALWAYS AS (to_tsvector("name")) STORED
+    search_vec TSVECTOR GENERATED ALWAYS AS (to_tsvector('english', "name")) STORED
 );
 
 CREATE INDEX follower_count_on_tags ON tags(follower_count);
