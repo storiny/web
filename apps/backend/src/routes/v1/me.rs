@@ -12,3 +12,6 @@ pub mod blocked_users;
 
 #[path = "me/muted_users.rs"]
 pub mod muted_users;
+
+#[path = "me/bookmarks.rs"]
+pub mod bookmarks;

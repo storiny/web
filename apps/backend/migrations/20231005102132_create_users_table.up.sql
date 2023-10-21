@@ -40,7 +40,7 @@ CREATE TABLE IF NOT EXISTS users(
     deactivated_at TIMESTAMPTZ,
     deleted_at TIMESTAMPTZ,
     -- FTS
-    search_vec TSVECTOR GENERATED ALWAYS AS (setweight(to_tsvector("username"), 'A') || setweight(to_tsvector("name"), 'B')) STORED
+    search_vec TSVECTOR GENERATED ALWAYS AS (setweight(to_tsvector('english', "username"), 'A') || setweight(to_tsvector('english', "name"), 'B')) STORED
 );
 
 CREATE INDEX follower_count_on_users ON users(follower_count);

@@ -60,8 +60,8 @@ struct Story {
     splash_id: Option<String>,
     splash_hex: Option<String>,
     category: String,
-    age_restriction: i32,
-    license: i32,
+    age_restriction: i16,
+    license: i16,
     user_id: i64,
     // Stats
     word_count: i32,
