@@ -1,8 +1,4 @@
-WITH bookmarks AS (
-    WITH search_query AS (
-        SELECT
-            plainto_tsquery('english', $1) AS tsq
-    )
+WITH history AS (
     SELECT
         -- Story
         s.id,
@@ -24,6 +20,11 @@ WITH bookmarks AS (
         s.published_at AS "published_at!",
         s.edited_at,
         -- Boolean flags
+        CASE WHEN count("s->is_bookmarked") = 1 THEN
+                 TRUE
+             ELSE
+                 FALSE
+            END AS "is_bookmarked!",
         CASE WHEN count("s->is_liked") = 1 THEN
                  TRUE
              ELSE
@@ -45,13 +46,11 @@ WITH bookmarks AS (
                                  ) FILTER (
                             WHERE "s->story_tags->tag".id IS NOT NULL
                             ), '{}'
-        ) AS "tags!: Vec<Tag>",
-        -- Query score
-        ts_rank_cd(s.search_vec, (SELECT tsq FROM search_query)) AS "query_score"
+        ) AS "tags!: Vec<Tag>"
     FROM
-        bookmarks b
+        histories h
             INNER JOIN stories s
-            INNER JOIN users su ON su.id = s.user_id ON s.id = b.story_id
+            INNER JOIN users su ON su.id = s.user_id ON s.id =h.story_id
             -- Join story tags
             LEFT OUTER JOIN story_tags AS "s->story_tags"
             -- Join tags
@@ -59,22 +58,24 @@ WITH bookmarks AS (
             --
                        ON "s->story_tags".story_id = s.id
             --
+            -- Boolean bookmark flag
+            LEFT OUTER JOIN bookmarks AS "s->is_bookmarked" ON "s->is_bookmarked".story_id = s.id
+            AND "s->is_bookmarked".user_id = $1
+            AND "s->is_bookmarked".deleted_at IS NULL
             -- Boolean story like flag
             LEFT OUTER JOIN story_likes AS "s->is_liked" ON "s->is_liked".story_id = s.id
-            AND "s->is_liked".user_id = $2
+            AND "s->is_liked".user_id = $1
             AND "s->is_liked".deleted_at IS NULL
     WHERE
-            b.user_id = $2
-      AND s.search_vec @@ (SELECT tsq FROM search_query)
-      AND b.deleted_at IS NULL
+            h.user_id = $1
+      AND h.deleted_at IS NULL
     GROUP BY
         s.id,
         su.id,
-        b.created_at
+        h.created_at
     ORDER BY
-        query_score DESC,
-        b.created_at DESC
-    LIMIT $3 OFFSET $4
+        h.created_at DESC
+    LIMIT $2 OFFSET $3
 )
 SELECT
     -- Story
@@ -97,10 +98,10 @@ SELECT
     "published_at!",
     edited_at,
     -- Boolean flags
-    TRUE AS "is_bookmarked!",
+    "is_bookmarked!",
     "is_liked!",
     -- Joins
     "user!: Json<User>",
     "tags!: Vec<Tag>"
 FROM
-    bookmarks
+    history

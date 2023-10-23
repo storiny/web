@@ -40,7 +40,7 @@ WITH bookmarks AS (
                         ("s->story_tags->tag".id, "s->story_tags->tag".name)
                                  ) FILTER (
                             WHERE "s->story_tags->tag".id IS NOT NULL
-                            ), '{{}}'
+                            ), '{}'
         ) AS "tags!: Vec<Tag>"
     FROM
         bookmarks b
