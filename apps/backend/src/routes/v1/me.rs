@@ -15,3 +15,6 @@ pub mod muted_users;
 
 #[path = "me/bookmarks.rs"]
 pub mod bookmarks;
+
+#[path = "me/history.rs"]
+pub mod history;
