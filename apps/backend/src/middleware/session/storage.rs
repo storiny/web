@@ -1,18 +1,9 @@
-use super::{
-    session_key::SessionKey,
-    utils::generate_session_key,
-};
+use super::{session_key::SessionKey, utils::generate_session_key};
 use actix_web::cookie::time::Duration;
 use derive_more::Display;
 use hashbrown::HashMap;
 use redis::{
-    aio::ConnectionManager,
-    AsyncCommands,
-    AsyncIter,
-    Cmd,
-    FromRedisValue,
-    RedisResult,
-    Value,
+    aio::ConnectionManager, AsyncCommands, AsyncIter, Cmd, FromRedisValue, RedisResult, Value,
 };
 
 pub type SessionState = HashMap<String, String>;
@@ -369,37 +360,22 @@ impl RedisSessionStore {
 #[cfg(test)]
 mod tests {
     use super::{
-        super::{
-            middleware::SessionMiddleware,
-            session::Session,
-        },
+        super::{middleware::SessionMiddleware, session::Session},
         *,
     };
     use crate::middleware::session::session_ext::SessionExt;
     use actix_web::{
-        cookie::{
-            time,
-            Key,
-        },
-        dev::{
-            Service,
-            ServiceResponse,
-        },
-        test,
-        web,
-        App,
-        HttpResponse,
+        cookie::{time, Key},
+        dev::{Service, ServiceResponse},
+        test, web, App, HttpResponse,
     };
     use redis::AsyncCommands;
-    use serde::{
-        Deserialize,
-        Serialize,
-    };
+    use serde::{Deserialize, Serialize};
     use serde_json::json;
 
     /// Returns a new Redis session store instance
     async fn redis_store() -> RedisSessionStore {
-        RedisSessionStore::new("redis://127.0.0.1:7000")
+        RedisSessionStore::new("redis://127.0.0.1:7001")
             .await
             .unwrap()
     }

@@ -1,8 +1,6 @@
 use crate::{error::AppError, middleware::identity::identity::Identity, AppState};
 use actix_web::{get, http::header::ContentType, web, HttpResponse};
 use actix_web_validator::QsQuery;
-use lazy_static::lazy_static;
-use regex::Regex;
 use serde::{Deserialize, Serialize};
 use sqlx::{types::Json, FromRow};
 use time::OffsetDateTime;
@@ -162,10 +160,13 @@ mod tests {
     use sqlx::{PgPool, Row};
     use std::str;
 
-    #[sqlx::test(fixtures("feed"))]
-    async fn can_generate_feed_for_logged_out_user(pool: PgPool) -> sqlx::Result<()> {
-        let (app, _, _) = init_app_for_test(get, pool, false, false).await;
-        let req = test::TestRequest::get().uri("/v1/feed").to_request();
+    #[sqlx::test(fixtures("history"))]
+    async fn can_return_history(pool: PgPool) -> sqlx::Result<()> {
+        let (app, cookie, user_id) = init_app_for_test(get, pool, false, false).await;
+        let req = test::TestRequest::get()
+            .cookie(cookie.unwrap())
+            .uri("/v1/me/history")
+            .to_request();
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_success());

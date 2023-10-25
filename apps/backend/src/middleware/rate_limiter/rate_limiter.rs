@@ -1,22 +1,8 @@
-use actix_extensible_rate_limit::backend::{
-    Backend,
-    SimpleBackend,
-    SimpleInput,
-    SimpleOutput,
-};
-use actix_web::{
-    HttpResponse,
-    ResponseError,
-};
+use actix_extensible_rate_limit::backend::{Backend, SimpleBackend, SimpleInput, SimpleOutput};
+use actix_web::{HttpResponse, ResponseError};
 use async_trait::async_trait;
-use redis::{
-    aio::ConnectionManager,
-    AsyncCommands,
-};
-use std::{
-    borrow::Cow,
-    time::Duration,
-};
+use redis::{aio::ConnectionManager, AsyncCommands};
+use std::{borrow::Cow, time::Duration};
 use thiserror::Error;
 use tokio::time::Instant;
 
@@ -202,7 +188,7 @@ mod tests {
     async fn make_backend(clear_test_key: &str) -> Builder {
         // Env
         let host = option_env!("REDIS_HOST").unwrap_or("127.0.0.1");
-        let port = option_env!("REDIS_PORT").unwrap_or("7000");
+        let port = option_env!("REDIS_PORT").unwrap_or("7001");
 
         let client = redis::Client::open(format!("redis://{host}:{port}")).unwrap();
         let mut manager = ConnectionManager::new(client).await.unwrap();
@@ -305,11 +291,10 @@ mod tests {
             .await
             .unwrap();
         // In which case nothing should happen
-        assert!(
-            !con.exists::<_, bool>("test_rollback_key_gone")
-                .await
-                .unwrap()
-        );
+        assert!(!con
+            .exists::<_, bool>("test_rollback_key_gone")
+            .await
+            .unwrap());
     }
 
     #[actix_web::test]
@@ -343,17 +328,15 @@ mod tests {
             key: "test_key_prefix".to_string(),
         };
         backend.request(input.clone()).await.unwrap();
-        assert!(
-            con.exists::<_, bool>("prefix:test_key_prefix")
-                .await
-                .unwrap()
-        );
+        assert!(con
+            .exists::<_, bool>("prefix:test_key_prefix")
+            .await
+            .unwrap());
 
         backend.remove_key("test_key_prefix").await.unwrap();
-        assert!(
-            !con.exists::<_, bool>("prefix:test_key_prefix")
-                .await
-                .unwrap()
-        );
+        assert!(!con
+            .exists::<_, bool>("prefix:test_key_prefix")
+            .await
+            .unwrap());
     }
 }
