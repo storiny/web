@@ -2,46 +2,18 @@
 pub mod test_utils {
     use crate::{
         middleware::{
-            identity::{
-                identity::Identity,
-                middleware::IdentityMiddleware,
-            },
-            session::{
-                middleware::SessionMiddleware,
-                storage::RedisSessionStore,
-            },
+            identity::{identity::Identity, middleware::IdentityMiddleware},
+            session::{middleware::SessionMiddleware, storage::RedisSessionStore},
         },
         AppState,
     };
-    use actix_http::{
-        HttpMessage,
-        Request,
-    };
+    use actix_http::{HttpMessage, Request};
     use actix_web::{
-        cookie::{
-            time::Duration,
-            Cookie,
-            Key,
-            SameSite,
-        },
-        dev::{
-            HttpServiceFactory,
-            Service,
-            ServiceResponse,
-        },
-        post,
-        test,
-        web,
-        App,
-        Error,
-        HttpRequest,
-        HttpResponse,
-        Responder,
+        cookie::{time::Duration, Cookie, Key, SameSite},
+        dev::{HttpServiceFactory, Service, ServiceResponse},
+        post, test, web, App, Error, HttpRequest, HttpResponse, Responder,
     };
-    use rusoto_mock::{
-        MockCredentialsProvider,
-        MockRequestDispatcher,
-    };
+    use rusoto_mock::{MockCredentialsProvider, MockRequestDispatcher};
     use rusoto_s3::S3Client;
     use rusoto_ses::SesClient;
     use rusoto_signature::Region;
@@ -74,7 +46,7 @@ pub mod test_utils {
         Option<i64>, // User ID
     ) {
         let redis_host = env::var("REDIS_HOST").unwrap_or("localhost".to_string());
-        let redis_port = env::var("REDIS_PORT").unwrap_or("7000".to_string());
+        let redis_port = env::var("REDIS_PORT").unwrap_or("7001".to_string());
         let redis_connection_string = format!("redis://{redis_host}:{redis_port}");
         let secret_key = Key::generate();
         let redis_store = RedisSessionStore::new(&redis_connection_string)

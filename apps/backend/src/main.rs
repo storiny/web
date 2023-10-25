@@ -1,52 +1,24 @@
 use actix_cors::Cors;
-use actix_extensible_rate_limit::{
-    backend::SimpleInputFunctionBuilder,
-    RateLimiter,
-};
+use actix_extensible_rate_limit::{backend::SimpleInputFunctionBuilder, RateLimiter};
 use actix_files as fs;
 use actix_redis::RedisActor;
 use actix_request_identifier::RequestIdentifier;
 use actix_web::{
-    cookie::{
-        Key,
-        SameSite,
-    },
-    http::{
-        header,
-        header::ContentType,
-    },
+    cookie::{Key, SameSite},
+    http::{header, header::ContentType},
     middleware::Logger,
-    web,
-    App,
-    HttpResponse,
-    HttpServer,
-    Responder,
+    web, App, HttpResponse, HttpServer, Responder,
 };
-use actix_web_validator::{
-    JsonConfig,
-    PathConfig,
-    QsQueryConfig,
-};
+use actix_web_validator::{JsonConfig, PathConfig, QsQueryConfig};
 use dotenv::dotenv;
-use middleware::session::{
-    middleware::SessionMiddleware,
-    storage::RedisSessionStore,
-};
+use middleware::session::{middleware::SessionMiddleware, storage::RedisSessionStore};
 use redis::aio::ConnectionManager;
 use rusoto_s3::S3Client;
 use rusoto_ses::SesClient;
 use rusoto_signature::Region;
 use sqlx::postgres::PgPoolOptions;
-use std::{
-    env,
-    io,
-    time::Duration,
-};
-use storiny::{
-    error::FormErrorResponse,
-    middleware::identity::middleware::IdentityMiddleware,
-    *,
-};
+use std::{env, io, time::Duration};
+use storiny::{error::FormErrorResponse, middleware::identity::middleware::IdentityMiddleware, *};
 use user_agent_parser::UserAgentParser;
 
 mod middleware;
@@ -76,7 +48,7 @@ async fn main() -> io::Result<()> {
     let allowed_origin = env::var("ALLOWED_ORIGIN").expect("Allowed origin not set");
 
     let redis_host = env::var("REDIS_HOST").unwrap_or("localhost".to_string());
-    let redis_port = env::var("REDIS_PORT").unwrap_or("7000".to_string());
+    let redis_port = env::var("REDIS_PORT").unwrap_or("7001".to_string());
     let redis_connection_string = format!("redis://{redis_host}:{redis_port}");
 
     // Rate-limit
