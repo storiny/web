@@ -7,8 +7,5 @@ fmt:
 udeps:
     cargo +nightly udeps --all-targets
 
-fmt_sql:
-    ./bin/format-sql.sh
-
 update_geo:
-    docker-compose -f geo/docker-compose.yaml up
+    docker compose -f geo/docker-compose.yaml up

@@ -1,13 +1,6 @@
 #[cfg(test)]
 mod tests {
-    use sqlx::{
-        pool::PoolConnection,
-        postgres::PgRow,
-        Error,
-        PgPool,
-        Postgres,
-        Row,
-    };
+    use sqlx::{pool::PoolConnection, postgres::PgRow, Error, PgPool, Postgres, Row};
     use time::OffsetDateTime;
 
     /// Inserts a sample story into the database.
@@ -145,11 +138,9 @@ mod tests {
         .await?;
 
         assert!(insert_result.try_get::<i64, _>("id").is_ok());
-        assert!(
-            insert_result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none()
-        );
+        assert!(insert_result
+            .get::<Option<OffsetDateTime>, _>("deleted_at")
+            .is_none());
 
         // Soft-delete the story
         sqlx::query(
@@ -174,11 +165,9 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(
-            result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_some()
-        );
+        assert!(result
+            .get::<Option<OffsetDateTime>, _>("deleted_at")
+            .is_some());
 
         // Restore the story
         sqlx::query(
@@ -203,11 +192,9 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(
-            result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none()
-        );
+        assert!(result
+            .get::<Option<OffsetDateTime>, _>("deleted_at")
+            .is_none());
 
         Ok(())
     }
@@ -234,11 +221,9 @@ mod tests {
         .await?;
 
         assert!(insert_result.try_get::<i64, _>("id").is_ok());
-        assert!(
-            insert_result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none()
-        );
+        assert!(insert_result
+            .get::<Option<OffsetDateTime>, _>("deleted_at")
+            .is_none());
 
         // Unpublish the story
         sqlx::query(
@@ -263,11 +248,9 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(
-            result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_some()
-        );
+        assert!(result
+            .get::<Option<OffsetDateTime>, _>("deleted_at")
+            .is_some());
 
         // Republish the story
         sqlx::query(
@@ -292,11 +275,9 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(
-            result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none()
-        );
+        assert!(result
+            .get::<Option<OffsetDateTime>, _>("deleted_at")
+            .is_none());
 
         Ok(())
     }
@@ -321,11 +302,9 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(
-            insert_result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none()
-        );
+        assert!(insert_result
+            .get::<Option<OffsetDateTime>, _>("deleted_at")
+            .is_none());
 
         // Soft-delete the story
         sqlx::query(
@@ -351,11 +330,9 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(
-            result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_some()
-        );
+        assert!(result
+            .get::<Option<OffsetDateTime>, _>("deleted_at")
+            .is_some());
 
         // Restore the story
         sqlx::query(
@@ -381,11 +358,9 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(
-            result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none()
-        );
+        assert!(result
+            .get::<Option<OffsetDateTime>, _>("deleted_at")
+            .is_none());
 
         Ok(())
     }
@@ -410,11 +385,9 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(
-            insert_result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none()
-        );
+        assert!(insert_result
+            .get::<Option<OffsetDateTime>, _>("deleted_at")
+            .is_none());
 
         // Unpublish the story
         sqlx::query(
@@ -440,11 +413,9 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(
-            result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_some()
-        );
+        assert!(result
+            .get::<Option<OffsetDateTime>, _>("deleted_at")
+            .is_some());
 
         // Republish the story
         sqlx::query(
@@ -470,11 +441,9 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(
-            result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none()
-        );
+        assert!(result
+            .get::<Option<OffsetDateTime>, _>("deleted_at")
+            .is_none());
 
         Ok(())
     }
@@ -601,11 +570,9 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(
-            insert_result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none()
-        );
+        assert!(insert_result
+            .get::<Option<OffsetDateTime>, _>("deleted_at")
+            .is_none());
 
         // Soft-delete the story
         sqlx::query(
@@ -631,11 +598,9 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(
-            result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_some()
-        );
+        assert!(result
+            .get::<Option<OffsetDateTime>, _>("deleted_at")
+            .is_some());
 
         // Restore the story
         sqlx::query(
@@ -661,11 +626,9 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(
-            result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none()
-        );
+        assert!(result
+            .get::<Option<OffsetDateTime>, _>("deleted_at")
+            .is_none());
 
         Ok(())
     }
@@ -690,11 +653,9 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(
-            insert_result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none()
-        );
+        assert!(insert_result
+            .get::<Option<OffsetDateTime>, _>("deleted_at")
+            .is_none());
 
         // Unpublish the story
         sqlx::query(
@@ -720,11 +681,9 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(
-            result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_some()
-        );
+        assert!(result
+            .get::<Option<OffsetDateTime>, _>("deleted_at")
+            .is_some());
 
         // Republish the story
         sqlx::query(
@@ -750,11 +709,9 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(
-            result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none()
-        );
+        assert!(result
+            .get::<Option<OffsetDateTime>, _>("deleted_at")
+            .is_none());
 
         Ok(())
     }
@@ -779,11 +736,9 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(
-            insert_result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none()
-        );
+        assert!(insert_result
+            .get::<Option<OffsetDateTime>, _>("deleted_at")
+            .is_none());
 
         // Soft-delete the story
         sqlx::query(
@@ -809,11 +764,9 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(
-            result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_some()
-        );
+        assert!(result
+            .get::<Option<OffsetDateTime>, _>("deleted_at")
+            .is_some());
 
         // Restore the story
         sqlx::query(
@@ -839,11 +792,9 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(
-            result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none()
-        );
+        assert!(result
+            .get::<Option<OffsetDateTime>, _>("deleted_at")
+            .is_none());
 
         Ok(())
     }
@@ -868,11 +819,9 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(
-            insert_result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none()
-        );
+        assert!(insert_result
+            .get::<Option<OffsetDateTime>, _>("deleted_at")
+            .is_none());
 
         // Unpublish the story
         sqlx::query(
@@ -898,11 +847,9 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(
-            result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_some()
-        );
+        assert!(result
+            .get::<Option<OffsetDateTime>, _>("deleted_at")
+            .is_some());
 
         // Republish the story
         sqlx::query(
@@ -928,11 +875,9 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(
-            result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none()
-        );
+        assert!(result
+            .get::<Option<OffsetDateTime>, _>("deleted_at")
+            .is_none());
 
         Ok(())
     }
@@ -1170,11 +1115,9 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(
-            update_result
-                .get::<Option<OffsetDateTime>, _>("first_published_at")
-                .is_none()
-        );
+        assert!(update_result
+            .get::<Option<OffsetDateTime>, _>("first_published_at")
+            .is_none());
 
         // Publish the story
         sqlx::query(
@@ -1199,11 +1142,9 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(
-            result
-                .get::<Option<OffsetDateTime>, _>("first_published_at")
-                .is_some()
-        );
+        assert!(result
+            .get::<Option<OffsetDateTime>, _>("first_published_at")
+            .is_some());
 
         Ok(())
     }
@@ -1358,7 +1299,7 @@ mod tests {
         sqlx::query(
             r#"
             UPDATE stories
-            SET deleted_at = now()
+            SET deleted_at = now(), published_at = NULL
             WHERE id = $1
             "#,
         )
@@ -1805,11 +1746,9 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(
-            update_result
-                .get::<Option<OffsetDateTime>, _>("edited_at")
-                .is_some()
-        );
+        assert!(update_result
+            .get::<Option<OffsetDateTime>, _>("edited_at")
+            .is_some());
 
         // Soft-delete the story
         sqlx::query(
@@ -1823,10 +1762,10 @@ mod tests {
         .execute(&mut *conn)
         .await?;
 
-        // Should reset the `published_at`, `edited_at`, and `first_published_at` timestamps
+        // Should reset the `edited_at`, and `first_published_at` timestamps
         let result = sqlx::query(
             r#"
-            SELECT published_at, edited_at, first_published_at FROM stories
+            SELECT edited_at, first_published_at FROM stories
             WHERE id = $1
             "#,
         )
@@ -1834,21 +1773,12 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(
-            result
-                .get::<Option<OffsetDateTime>, _>("published_at")
-                .is_none()
-        );
-        assert!(
-            result
-                .get::<Option<OffsetDateTime>, _>("edited_at")
-                .is_none()
-        );
-        assert!(
-            result
-                .get::<Option<OffsetDateTime>, _>("first_published_at")
-                .is_none()
-        );
+        assert!(result
+            .get::<Option<OffsetDateTime>, _>("edited_at")
+            .is_none());
+        assert!(result
+            .get::<Option<OffsetDateTime>, _>("first_published_at")
+            .is_none());
 
         Ok(())
     }
@@ -1883,11 +1813,9 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(
-            update_result
-                .get::<Option<OffsetDateTime>, _>("edited_at")
-                .is_some()
-        );
+        assert!(update_result
+            .get::<Option<OffsetDateTime>, _>("edited_at")
+            .is_some());
 
         // Unpublish the story
         sqlx::query(
@@ -1912,16 +1840,12 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(
-            result
-                .get::<Option<OffsetDateTime>, _>("edited_at")
-                .is_none()
-        );
-        assert!(
-            result
-                .get::<Option<OffsetDateTime>, _>("first_published_at")
-                .is_some()
-        );
+        assert!(result
+            .get::<Option<OffsetDateTime>, _>("edited_at")
+            .is_none());
+        assert!(result
+            .get::<Option<OffsetDateTime>, _>("first_published_at")
+            .is_some());
 
         Ok(())
     }
@@ -1950,11 +1874,9 @@ mod tests {
         .await?;
 
         assert!(insert_result.try_get::<i64, _>("id").is_ok());
-        assert!(
-            insert_result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none()
-        );
+        assert!(insert_result
+            .get::<Option<OffsetDateTime>, _>("deleted_at")
+            .is_none());
 
         // Soft-delete the story
         sqlx::query(
@@ -1991,11 +1913,9 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(
-            result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_some()
-        );
+        assert!(result
+            .get::<Option<OffsetDateTime>, _>("deleted_at")
+            .is_some());
 
         // Restore the story
         sqlx::query(
@@ -2020,11 +1940,9 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(
-            result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_some()
-        );
+        assert!(result
+            .get::<Option<OffsetDateTime>, _>("deleted_at")
+            .is_some());
 
         // Restore the user
         sqlx::query(
@@ -2049,11 +1967,9 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(
-            result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none()
-        );
+        assert!(result
+            .get::<Option<OffsetDateTime>, _>("deleted_at")
+            .is_none());
 
         Ok(())
     }
@@ -2080,11 +1996,9 @@ mod tests {
         .await?;
 
         assert!(insert_result.try_get::<i64, _>("id").is_ok());
-        assert!(
-            insert_result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none()
-        );
+        assert!(insert_result
+            .get::<Option<OffsetDateTime>, _>("deleted_at")
+            .is_none());
 
         // Soft-delete the story
         sqlx::query(
@@ -2121,11 +2035,9 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(
-            result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_some()
-        );
+        assert!(result
+            .get::<Option<OffsetDateTime>, _>("deleted_at")
+            .is_some());
 
         // Restore the story
         sqlx::query(
@@ -2150,11 +2062,9 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(
-            result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_some()
-        );
+        assert!(result
+            .get::<Option<OffsetDateTime>, _>("deleted_at")
+            .is_some());
 
         // Activate the user
         sqlx::query(
@@ -2179,11 +2089,9 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(
-            result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none()
-        );
+        assert!(result
+            .get::<Option<OffsetDateTime>, _>("deleted_at")
+            .is_none());
 
         Ok(())
     }
@@ -2210,11 +2118,9 @@ mod tests {
         .await?;
 
         assert!(insert_result.try_get::<i64, _>("id").is_ok());
-        assert!(
-            insert_result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none()
-        );
+        assert!(insert_result
+            .get::<Option<OffsetDateTime>, _>("deleted_at")
+            .is_none());
 
         // Unpublish the story
         sqlx::query(
@@ -2251,11 +2157,9 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(
-            result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_some()
-        );
+        assert!(result
+            .get::<Option<OffsetDateTime>, _>("deleted_at")
+            .is_some());
 
         // Republish the story
         sqlx::query(
@@ -2280,11 +2184,9 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(
-            result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_some()
-        );
+        assert!(result
+            .get::<Option<OffsetDateTime>, _>("deleted_at")
+            .is_some());
 
         // Restore the user
         sqlx::query(
@@ -2309,11 +2211,9 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(
-            result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none()
-        );
+        assert!(result
+            .get::<Option<OffsetDateTime>, _>("deleted_at")
+            .is_none());
 
         Ok(())
     }
@@ -2340,11 +2240,9 @@ mod tests {
         .await?;
 
         assert!(insert_result.try_get::<i64, _>("id").is_ok());
-        assert!(
-            insert_result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none()
-        );
+        assert!(insert_result
+            .get::<Option<OffsetDateTime>, _>("deleted_at")
+            .is_none());
 
         // Unpublish the story
         sqlx::query(
@@ -2381,11 +2279,9 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(
-            result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_some()
-        );
+        assert!(result
+            .get::<Option<OffsetDateTime>, _>("deleted_at")
+            .is_some());
 
         // Republish the story
         sqlx::query(
@@ -2410,11 +2306,9 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(
-            result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_some()
-        );
+        assert!(result
+            .get::<Option<OffsetDateTime>, _>("deleted_at")
+            .is_some());
 
         // Activate the user
         sqlx::query(
@@ -2439,11 +2333,9 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(
-            result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none()
-        );
+        assert!(result
+            .get::<Option<OffsetDateTime>, _>("deleted_at")
+            .is_none());
 
         Ok(())
     }
@@ -2470,11 +2362,9 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(
-            insert_result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none()
-        );
+        assert!(insert_result
+            .get::<Option<OffsetDateTime>, _>("deleted_at")
+            .is_none());
 
         // Soft-delete the story
         sqlx::query(
@@ -2512,11 +2402,9 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(
-            result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_some()
-        );
+        assert!(result
+            .get::<Option<OffsetDateTime>, _>("deleted_at")
+            .is_some());
 
         // Restore the story
         sqlx::query(
@@ -2542,11 +2430,9 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(
-            result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_some()
-        );
+        assert!(result
+            .get::<Option<OffsetDateTime>, _>("deleted_at")
+            .is_some());
 
         // Restore the user
         sqlx::query(
@@ -2572,11 +2458,9 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(
-            result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none()
-        );
+        assert!(result
+            .get::<Option<OffsetDateTime>, _>("deleted_at")
+            .is_none());
 
         Ok(())
     }
@@ -2601,11 +2485,9 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(
-            insert_result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none()
-        );
+        assert!(insert_result
+            .get::<Option<OffsetDateTime>, _>("deleted_at")
+            .is_none());
 
         // Soft-delete the story
         sqlx::query(
@@ -2643,11 +2525,9 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(
-            result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_some()
-        );
+        assert!(result
+            .get::<Option<OffsetDateTime>, _>("deleted_at")
+            .is_some());
 
         // Restore the story
         sqlx::query(
@@ -2673,11 +2553,9 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(
-            result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_some()
-        );
+        assert!(result
+            .get::<Option<OffsetDateTime>, _>("deleted_at")
+            .is_some());
 
         // Activate the user
         sqlx::query(
@@ -2703,11 +2581,9 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(
-            result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none()
-        );
+        assert!(result
+            .get::<Option<OffsetDateTime>, _>("deleted_at")
+            .is_none());
 
         Ok(())
     }
@@ -2732,11 +2608,9 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(
-            insert_result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none()
-        );
+        assert!(insert_result
+            .get::<Option<OffsetDateTime>, _>("deleted_at")
+            .is_none());
 
         // Unpublish the story
         sqlx::query(
@@ -2774,11 +2648,9 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(
-            result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_some()
-        );
+        assert!(result
+            .get::<Option<OffsetDateTime>, _>("deleted_at")
+            .is_some());
 
         // Republish the story
         sqlx::query(
@@ -2804,11 +2676,9 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(
-            result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_some()
-        );
+        assert!(result
+            .get::<Option<OffsetDateTime>, _>("deleted_at")
+            .is_some());
 
         // Restore the user
         sqlx::query(
@@ -2834,11 +2704,9 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(
-            result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none()
-        );
+        assert!(result
+            .get::<Option<OffsetDateTime>, _>("deleted_at")
+            .is_none());
 
         Ok(())
     }
@@ -2863,11 +2731,9 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(
-            insert_result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none()
-        );
+        assert!(insert_result
+            .get::<Option<OffsetDateTime>, _>("deleted_at")
+            .is_none());
 
         // Unpublish the story
         sqlx::query(
@@ -2905,11 +2771,9 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(
-            result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_some()
-        );
+        assert!(result
+            .get::<Option<OffsetDateTime>, _>("deleted_at")
+            .is_some());
 
         // Republish the story
         sqlx::query(
@@ -2935,11 +2799,9 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(
-            result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_some()
-        );
+        assert!(result
+            .get::<Option<OffsetDateTime>, _>("deleted_at")
+            .is_some());
 
         // Activate the user
         sqlx::query(
@@ -2965,11 +2827,9 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(
-            result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none()
-        );
+        assert!(result
+            .get::<Option<OffsetDateTime>, _>("deleted_at")
+            .is_none());
 
         Ok(())
     }
@@ -2996,11 +2856,9 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(
-            insert_result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none()
-        );
+        assert!(insert_result
+            .get::<Option<OffsetDateTime>, _>("deleted_at")
+            .is_none());
 
         // Soft-delete the story
         sqlx::query(
@@ -3038,11 +2896,9 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(
-            result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_some()
-        );
+        assert!(result
+            .get::<Option<OffsetDateTime>, _>("deleted_at")
+            .is_some());
 
         // Restore the story
         sqlx::query(
@@ -3068,11 +2924,9 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(
-            result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_some()
-        );
+        assert!(result
+            .get::<Option<OffsetDateTime>, _>("deleted_at")
+            .is_some());
 
         // Restore the user
         sqlx::query(
@@ -3098,11 +2952,9 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(
-            result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none()
-        );
+        assert!(result
+            .get::<Option<OffsetDateTime>, _>("deleted_at")
+            .is_none());
 
         Ok(())
     }
@@ -3127,11 +2979,9 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(
-            insert_result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none()
-        );
+        assert!(insert_result
+            .get::<Option<OffsetDateTime>, _>("deleted_at")
+            .is_none());
 
         // Soft-delete the story
         sqlx::query(
@@ -3169,11 +3019,9 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(
-            result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_some()
-        );
+        assert!(result
+            .get::<Option<OffsetDateTime>, _>("deleted_at")
+            .is_some());
 
         // Restore the story
         sqlx::query(
@@ -3199,11 +3047,9 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(
-            result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_some()
-        );
+        assert!(result
+            .get::<Option<OffsetDateTime>, _>("deleted_at")
+            .is_some());
 
         // Activate the user
         sqlx::query(
@@ -3229,11 +3075,9 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(
-            result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none()
-        );
+        assert!(result
+            .get::<Option<OffsetDateTime>, _>("deleted_at")
+            .is_none());
 
         Ok(())
     }
@@ -3258,11 +3102,9 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(
-            insert_result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none()
-        );
+        assert!(insert_result
+            .get::<Option<OffsetDateTime>, _>("deleted_at")
+            .is_none());
 
         // Unpublish the story
         sqlx::query(
@@ -3300,11 +3142,9 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(
-            result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_some()
-        );
+        assert!(result
+            .get::<Option<OffsetDateTime>, _>("deleted_at")
+            .is_some());
 
         // Republish the story
         sqlx::query(
@@ -3330,11 +3170,9 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(
-            result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_some()
-        );
+        assert!(result
+            .get::<Option<OffsetDateTime>, _>("deleted_at")
+            .is_some());
 
         // Restore the user
         sqlx::query(
@@ -3360,11 +3198,9 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(
-            result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none()
-        );
+        assert!(result
+            .get::<Option<OffsetDateTime>, _>("deleted_at")
+            .is_none());
 
         Ok(())
     }
@@ -3389,11 +3225,9 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(
-            insert_result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none()
-        );
+        assert!(insert_result
+            .get::<Option<OffsetDateTime>, _>("deleted_at")
+            .is_none());
 
         // Unpublish the story
         sqlx::query(
@@ -3431,11 +3265,9 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(
-            result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_some()
-        );
+        assert!(result
+            .get::<Option<OffsetDateTime>, _>("deleted_at")
+            .is_some());
 
         // Republish the story
         sqlx::query(
@@ -3461,11 +3293,9 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(
-            result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_some()
-        );
+        assert!(result
+            .get::<Option<OffsetDateTime>, _>("deleted_at")
+            .is_some());
 
         // Activate the user
         sqlx::query(
@@ -3491,11 +3321,9 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(
-            result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none()
-        );
+        assert!(result
+            .get::<Option<OffsetDateTime>, _>("deleted_at")
+            .is_none());
 
         Ok(())
     }
@@ -3522,11 +3350,9 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(
-            insert_result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none()
-        );
+        assert!(insert_result
+            .get::<Option<OffsetDateTime>, _>("deleted_at")
+            .is_none());
 
         // Soft-delete the story
         sqlx::query(
@@ -3564,11 +3390,9 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(
-            result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_some()
-        );
+        assert!(result
+            .get::<Option<OffsetDateTime>, _>("deleted_at")
+            .is_some());
 
         // Restore the story
         sqlx::query(
@@ -3594,11 +3418,9 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(
-            result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_some()
-        );
+        assert!(result
+            .get::<Option<OffsetDateTime>, _>("deleted_at")
+            .is_some());
 
         // Restore the user
         sqlx::query(
@@ -3624,11 +3446,9 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(
-            result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none()
-        );
+        assert!(result
+            .get::<Option<OffsetDateTime>, _>("deleted_at")
+            .is_none());
 
         Ok(())
     }
@@ -3653,11 +3473,9 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(
-            insert_result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none()
-        );
+        assert!(insert_result
+            .get::<Option<OffsetDateTime>, _>("deleted_at")
+            .is_none());
 
         // Soft-delete the story
         sqlx::query(
@@ -3695,11 +3513,9 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(
-            result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_some()
-        );
+        assert!(result
+            .get::<Option<OffsetDateTime>, _>("deleted_at")
+            .is_some());
 
         // Restore the story
         sqlx::query(
@@ -3725,11 +3541,9 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(
-            result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_some()
-        );
+        assert!(result
+            .get::<Option<OffsetDateTime>, _>("deleted_at")
+            .is_some());
 
         // Activate the user
         sqlx::query(
@@ -3755,11 +3569,9 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(
-            result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none()
-        );
+        assert!(result
+            .get::<Option<OffsetDateTime>, _>("deleted_at")
+            .is_none());
 
         Ok(())
     }
@@ -3784,11 +3596,9 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(
-            insert_result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none()
-        );
+        assert!(insert_result
+            .get::<Option<OffsetDateTime>, _>("deleted_at")
+            .is_none());
 
         // Unpublish the story
         sqlx::query(
@@ -3826,11 +3636,9 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(
-            result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_some()
-        );
+        assert!(result
+            .get::<Option<OffsetDateTime>, _>("deleted_at")
+            .is_some());
 
         // Republish the story
         sqlx::query(
@@ -3856,11 +3664,9 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(
-            result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_some()
-        );
+        assert!(result
+            .get::<Option<OffsetDateTime>, _>("deleted_at")
+            .is_some());
 
         // Restore the user
         sqlx::query(
@@ -3886,11 +3692,9 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(
-            result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none()
-        );
+        assert!(result
+            .get::<Option<OffsetDateTime>, _>("deleted_at")
+            .is_none());
 
         Ok(())
     }
@@ -3915,11 +3719,9 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(
-            insert_result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none()
-        );
+        assert!(insert_result
+            .get::<Option<OffsetDateTime>, _>("deleted_at")
+            .is_none());
 
         // Unpublish the story
         sqlx::query(
@@ -3957,11 +3759,9 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(
-            result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_some()
-        );
+        assert!(result
+            .get::<Option<OffsetDateTime>, _>("deleted_at")
+            .is_some());
 
         // Republish the story
         sqlx::query(
@@ -3987,11 +3787,9 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(
-            result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_some()
-        );
+        assert!(result
+            .get::<Option<OffsetDateTime>, _>("deleted_at")
+            .is_some());
 
         // Activate the user
         sqlx::query(
@@ -4017,11 +3815,9 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(
-            result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none()
-        );
+        assert!(result
+            .get::<Option<OffsetDateTime>, _>("deleted_at")
+            .is_none());
 
         Ok(())
     }

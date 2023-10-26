@@ -1,9 +1,12 @@
-CREATE TABLE IF NOT EXISTS notifications(
-    id BIGINT PRIMARY KEY DEFAULT public.next_snowflake(),
-    entity_id BIGINT NOT NULL, -- ID of the main entity of the notification
-    entity_type SMALLINT NOT NULL, -- Notification type enum
-    notifier_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE -- Can be NULL for system notifications
+CREATE TABLE IF NOT EXISTS notifications
+(
+	id          BIGINT PRIMARY KEY DEFAULT public.next_snowflake(),
+	entity_id   BIGINT   NOT NULL, -- ID of the main entity of the notification
+	entity_type SMALLINT NOT NULL, -- Notification type enum
+	notifier_id BIGINT   NOT NULL
+		REFERENCES users (id)
+			ON DELETE CASCADE      -- Can be NULL for system notifications
 );
 
-CREATE INDEX entity_id_on_notifications ON notifications(entity_id);
+CREATE INDEX entity_id_on_notifications ON notifications (entity_id);
 
