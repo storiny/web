@@ -1,9 +1,8 @@
 #[path = "bookmarks/get.rs"]
 pub mod bookmarks_get;
 
-//
-// #[path = "blocked_users/post.rs"]
-// pub mod blocked_users_post;
-//
-// #[path = "blocked_users/delete.rs"]
-// pub mod blocked_users_delete;
+#[path = "bookmarks/post.rs"]
+pub mod bookmarks_post;
+
+#[path = "bookmarks/delete.rs"]
+pub mod bookmarks_delete;

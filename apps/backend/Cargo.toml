@@ -37,6 +37,7 @@ mime = "0.3.17"
 nanoid = "0.4.0"
 pbjson = "0.6.0"
 prost = "0.12.1"
+pulldown-cmark = "0.9.3"
 rand = "0.8.5"
 redis = { version = "0.23.3", features = ["tokio-comp", "aio", "connection-manager"] }
 regex = "1.9.5"

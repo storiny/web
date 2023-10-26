@@ -5,35 +5,35 @@ use validator::Validate;
 
 #[derive(Deserialize, Validate)]
 struct Fragments {
-    user_id: String,
+    story_id: String,
 }
 
-#[delete("/v1/me/blocked-users/{user_id}")]
+#[delete("/v1/me/bookmarks/{story_id}")]
 async fn delete(
     path: web::Path<Fragments>,
     data: web::Data<AppState>,
     user: Identity,
 ) -> Result<HttpResponse, AppError> {
     match user.id() {
-        Ok(user_id) => match path.user_id.parse::<i64>() {
-            Ok(blocked_id) => {
+        Ok(user_id) => match path.story_id.parse::<i64>() {
+            Ok(story_id) => {
                 match sqlx::query(
                     r#"
-                    DELETE FROM blocks
-                    WHERE blocker_id = $1 AND blocked_id = $2
+                    DELETE FROM bookmarks
+                    WHERE user_id = $1 AND story_id = $2
                     "#,
                 )
                 .bind(user_id)
-                .bind(blocked_id)
+                .bind(story_id)
                 .execute(&data.db_pool)
                 .await?
                 .rows_affected()
                 {
-                    0 => Ok(HttpResponse::BadRequest().body("User or block not found")),
+                    0 => Ok(HttpResponse::BadRequest().body("Story or bookmark not found")),
                     _ => Ok(HttpResponse::NoContent().finish()),
                 }
             }
-            Err(_) => Ok(HttpResponse::BadRequest().body("Invalid user ID")),
+            Err(_) => Ok(HttpResponse::BadRequest().body("Invalid story ID")),
         },
         Err(_) => Ok(HttpResponse::InternalServerError().finish()),
     }
@@ -51,20 +51,20 @@ mod tests {
     use actix_web::test;
     use sqlx::{PgPool, Row};
 
-    #[sqlx::test(fixtures("user"))]
-    async fn can_unblock_a_user(pool: PgPool) -> sqlx::Result<()> {
+    #[sqlx::test(fixtures("bookmark"))]
+    async fn can_unbookmark_a_story(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(delete, pool, true, false).await;
 
-        // Block the user
+        // Bookmark the story
         let result = sqlx::query(
             r#"
-            INSERT INTO blocks(blocker_id, blocked_id)
+            INSERT INTO bookmarks(user_id, story_id)
             VALUES ($1, $2)
             "#,
         )
         .bind(user_id)
-        .bind(2i64)
+        .bind(3i64)
         .execute(&mut *conn)
         .await?;
 
@@ -72,23 +72,23 @@ mod tests {
 
         let req = test::TestRequest::delete()
             .cookie(cookie.unwrap())
-            .uri(&format!("/v1/me/blocked-users/{}", 2))
+            .uri(&format!("/v1/me/bookmarks/{}", 3))
             .to_request();
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_success());
 
-        // Block should not be present in the database
+        // Bookmark should not be present in the database
         let result = sqlx::query(
             r#"
             SELECT EXISTS(
-                SELECT 1 FROM blocks
-                WHERE blocker_id = $1 AND blocked_id = $2
+                SELECT 1 FROM bookmarks
+                WHERE user_id = $1 AND story_id = $2
             )
             "#,
         )
         .bind(user_id)
-        .bind(2i64)
+        .bind(3i64)
         .fetch_one(&mut *conn)
         .await?;
 
@@ -97,22 +97,22 @@ mod tests {
         Ok(())
     }
 
-    #[sqlx::test(fixtures("user"))]
-    async fn can_return_an_error_response_when_unblocking_an_unknown_user(
+    #[sqlx::test(fixtures("bookmark"))]
+    async fn can_return_an_error_response_when_unbookmarking_an_unknown_story(
         pool: PgPool,
     ) -> sqlx::Result<()> {
         let (app, cookie, _) = init_app_for_test(delete, pool, true, false).await;
 
         let req = test::TestRequest::delete()
             .cookie(cookie.unwrap())
-            .uri(&format!("/v1/me/blocked-users/{}", 12345))
+            .uri(&format!("/v1/me/bookmarks/{}", 12345))
             .to_request();
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_client_error());
         assert_eq!(
             to_bytes(res.into_body()).await.unwrap_or_default(),
-            "User or block not found".to_string()
+            "Story or bookmark not found".to_string()
         );
 
         Ok(())
