@@ -1,33 +1,10 @@
-use crate::{
-    error::AppError,
-    middleware::identity::identity::Identity,
-    AppState,
-};
-use actix_web::{
-    get,
-    http::header::ContentType,
-    web,
-    HttpResponse,
-};
+use crate::{error::AppError, middleware::identity::identity::Identity, AppState};
+use actix_web::{get, http::header::ContentType, web, HttpResponse};
 use actix_web_validator::QsQuery;
 use lazy_static::lazy_static;
 use regex::Regex;
-use serde::{
-    Deserialize,
-    Serialize,
-};
-use sqlx::{
-    postgres::{
-        PgHasArrayType,
-        PgTypeInfo,
-    },
-    types::Json,
-    Execute,
-    FromRow,
-    Postgres,
-    QueryBuilder,
-    TypeInfo,
-};
+use serde::{Deserialize, Serialize};
+use sqlx::{types::Json, FromRow};
 use time::OffsetDateTime;
 use validator::Validate;
 
@@ -61,25 +38,15 @@ struct Tag {
     name: String,
 }
 
-impl PgHasArrayType for Tag {
-    fn array_type_info() -> PgTypeInfo {
-        PgTypeInfo::with_name("tags")
-    }
-
-    fn array_compatible(ty: &PgTypeInfo) -> bool {
-        ty.name() == "tags"
-    }
-}
-
 #[derive(Debug, FromRow, Serialize, Deserialize)]
 struct Bookmark {
     id: i64,
     title: String,
-    // slug: String,
+    slug: String,
     description: Option<String>,
     splash_id: Option<String>,
     splash_hex: Option<String>,
-    // category: String,
+    category: String,
     age_restriction: i16,
     license: i16,
     user_id: i64,
@@ -107,217 +74,57 @@ async fn get(
     data: web::Data<AppState>,
     user: Identity,
 ) -> Result<HttpResponse, AppError> {
+    let page = query.page.clone().unwrap_or_default();
+    let sort = query.sort.clone().unwrap_or("recent".to_string());
+    let search_query = query.query.clone().unwrap_or_default();
+    let has_search_query = !search_query.trim().is_empty();
+
     match user.id() {
         Ok(user_id) => {
-            let page = query.page.clone().unwrap_or_default();
-            let sort = query.sort.clone().unwrap_or("recent".to_string());
-            let search_query = query.query.clone().unwrap_or_default();
-            let has_search_query = !search_query.trim().is_empty();
-
-            let mut query_builder: QueryBuilder<Postgres> = QueryBuilder::new(
-                r#"
-                WITH bookmarks AS (
-                "#,
-            );
-
-            // Query CTE
             if has_search_query {
-                query_builder.push(
-                    r#"
-                    WITH search_query AS (
-                        SELECT plainto_tsquery('english',
-                    "#,
-                );
-                query_builder.push_bind(search_query);
-                query_builder.push(
-                    r#"
-                        ) as tsq
-                    )
-                    "#,
-                );
-            }
-
-            query_builder.push(
-                r#"
-                    SELECT
-                        -- Story
-                        s.id,
-                        s.title,
-                        s.slug AS "slug!",
-                        s.description,
-                        s.splash_id,
-                        s.splash_hex,
-                        s.category::TEXT AS "category!",
-                        s.age_restriction,
-                        s.license,
-                        s.user_id,
-                        -- Stats
-                        s.word_count,
-                        s.read_count,
-                        s.like_count,
-                        s.comment_count,
-                        -- Timestamps
-                        s.published_at AS "published_at!",
-                        s.edited_at,
-                        -- Boolean flags
-                        CASE WHEN count("s->is_liked") = 1 THEN
-                            TRUE
-                        ELSE
-                            FALSE
-                        END AS "is_liked!",
-                        -- User
-                        json_build_object(
-                            'id', su.id,
-                            'name', su.name,
-                            'username', su.username,
-                            'avatar_id', su.avatar_id,
-                            'avatar_hex', su.avatar_hex,
-                            'public_flags', su.public_flags
-                        ) AS "user!: Json<User>",
-                        -- Tags
-                        coalesce(
-                            array_agg(
-                                (
-                                    "s->story_tags->tag".id,
-                                    "s->story_tags->tag".name
-                                )
-                            ) FILTER (
-                                WHERE "s->story_tags->tag".id IS NOT NULL
-                            ),
-                            '{}'
-                        ) AS "tags!: Vec<Tag>"
-                "#,
-            );
-
-            // Search ranking
-            if has_search_query {
-                query_builder.push(",");
-                query_builder.push(
-                    r#"
-                    -- Query score
-                    ts_rank_cd(s.search_vec, (SELECT tsq FROM search_query)) AS "query_score"
-                    "#,
-                );
-            }
-
-            query_builder.push(
-                r#"
-                FROM
-                bookmarks b
-                    INNER JOIN stories s
-                        INNER JOIN users su ON su.id = s.user_id
-                    ON s.id = b.story_id
-                "#,
-            );
-
-            query_builder.push(
-                r#"
-                    -- Join story tags
-                    LEFT OUTER JOIN story_tags AS "s->story_tags"
-                    -- Join tags
-                    INNER JOIN tags AS "s->story_tags->tag" ON "s->story_tags->tag".id =
-            "s->story_tags".tag_id         --
-                    ON "s->story_tags".story_id = s.id
-                    --
-                    -- Boolean story like flag
-                    LEFT OUTER JOIN story_likes AS "s->is_liked" ON "s->is_liked".story_id = s.id
-                        AND "s->is_liked".user_id =
-                "#,
-            );
-
-            query_builder.push_bind(user_id);
-
-            query_builder.push(
-                r#"
-                        AND "s->is_liked".deleted_at IS NULL
-                WHERE
-                    b.user_id =
-                "#,
-            );
-
-            query_builder.push_bind(user_id);
-
-            // Match search query
-            if has_search_query {
-                query_builder.push(
-                    r#"
-                    AND s.search_vec @@ (SELECT tsq FROM search_query)
-                    "#,
-                );
-            }
-
-            query_builder.push(
-                r#"
-                    AND b.deleted_at IS NULL
-                GROUP BY
-                    s.id,
-                    su.id,
-                    b.created_at
-                ORDER BY
-                "#,
-            );
-
-            // Sort by search query ranking
-            if has_search_query {
-                query_builder.push(" query_score DESC ");
-                query_builder.push(",");
-            }
-
-            // Sort
-            query_builder.push(" b.created_at ");
-            query_builder.push(if sort == "recent" { "DESC" } else { "ASC" });
-
-            // Limit
-            query_builder.push(" LIMIT ");
-            query_builder.push_bind(10i16);
-
-            // Offset
-            query_builder.push(" OFFSET ");
-            query_builder.push_bind((page * 10) as i16);
-
-            query_builder.push(
-                r#"
-                )
-                SELECT
-                    -- Story
-                    id,
-                    title,
-                    "slug!",
-                    description,
-                    splash_id,
-                    splash_hex,
-                    "category!",
-                    age_restriction,
-                    license,
+                let result = sqlx::query_file_as!(
+                    Bookmark,
+                    "queries/bookmarks/with_query.sql",
+                    search_query,
                     user_id,
-                    -- Stats
-                    word_count,
-                    read_count,
-                    like_count,
-                    comment_count,
-                    -- Timestamps
-                    "published_at!",
-                    edited_at,
-                    -- Boolean flags
-                    TRUE AS "is_bookmarked!",
-                    "is_liked!",
-                    -- Joins
-                    "user!: Json<User>",
-                    "tags!: Vec<Tag>"
-                FROM
-                    bookmarks
-                "#,
-            );
-
-            let result = query_builder
-                .build_query_as::<Bookmark>()
+                    10 as i16,
+                    (page * 10) as i16
+                )
                 .fetch_all(&data.db_pool)
-                .await
-                .unwrap();
+                .await?;
 
-            Ok(HttpResponse::Ok()
-                .content_type(ContentType::json())
-                .json(result))
+                Ok(HttpResponse::Ok()
+                    .content_type(ContentType::json())
+                    .json(result))
+            } else if sort == "old" {
+                let result = sqlx::query_file_as!(
+                    Bookmark,
+                    "queries/bookmarks/default_asc.sql",
+                    user_id,
+                    10 as i16,
+                    (page * 10) as i16
+                )
+                .fetch_all(&data.db_pool)
+                .await?;
+
+                Ok(HttpResponse::Ok()
+                    .content_type(ContentType::json())
+                    .json(result))
+            } else {
+                let result = sqlx::query_file_as!(
+                    Bookmark,
+                    "queries/bookmarks/default_desc.sql",
+                    user_id,
+                    10 as i16,
+                    (page * 10) as i16
+                )
+                .fetch_all(&data.db_pool)
+                .await?;
+
+                Ok(HttpResponse::Ok()
+                    .content_type(ContentType::json())
+                    .json(result))
+            }
         }
         Err(_) => Ok(HttpResponse::InternalServerError().finish()),
     }
@@ -373,11 +180,9 @@ mod tests {
     use crate::test_utils::test_utils::init_app_for_test;
     use actix_http::body::to_bytes;
     use actix_web::test;
-    use sqlx::{
-        PgPool,
-        Row,
-    };
+    use sqlx::PgPool;
     use std::str;
+    use urlencoding::encode;
 
     #[sqlx::test(fixtures("bookmark"))]
     async fn can_return_bookmarks(pool: PgPool) -> sqlx::Result<()> {
@@ -385,19 +190,19 @@ mod tests {
         let (app, cookie, user_id) = init_app_for_test(get, pool, true, false).await;
 
         // Insert some bookmarks
-        let result = sqlx::query(
+        let insert_result = sqlx::query(
             r#"
-            INSERT INTO bookmarks(user_id, story_id) 
+            INSERT INTO bookmarks(user_id, story_id)
             VALUES ($1, $2), ($1, $3)
             "#,
         )
-        .bind(user_id)
+        .bind(user_id.unwrap())
         .bind(3i64)
         .bind(4i64)
         .execute(&mut *conn)
         .await?;
 
-        assert_eq!(result.rows_affected(), 2);
+        assert_eq!(insert_result.rows_affected(), 2);
 
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())
@@ -412,7 +217,946 @@ mod tests {
         );
 
         assert!(json.is_ok());
-        assert!(json.unwrap().len() > 0);
+        assert_eq!(json.unwrap().len(), 2);
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("bookmark"))]
+    async fn can_return_bookmarks_in_desc_order(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false).await;
+
+        // Insert some bookmarks
+        sqlx::query(
+            r#"
+            INSERT INTO bookmarks(user_id, story_id)
+            VALUES ($1, $2)
+            "#,
+        )
+        .bind(user_id.unwrap())
+        .bind(3i64)
+        .execute(&mut *conn)
+        .await?;
+
+        sqlx::query(
+            r#"
+            INSERT INTO bookmarks(user_id, story_id)
+            VALUES ($1, $2)
+            "#,
+        )
+        .bind(user_id.unwrap())
+        .bind(4i64)
+        .execute(&mut *conn)
+        .await?;
+
+        let req = test::TestRequest::get()
+            .cookie(cookie.unwrap())
+            .uri("/v1/me/bookmarks?sort=recent")
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_success());
+
+        let json = serde_json::from_str::<Vec<Bookmark>>(
+            str::from_utf8(&to_bytes(res.into_body()).await.unwrap().to_vec()).unwrap(),
+        )
+        .unwrap();
+
+        assert_eq!(json[0].id, 4i64);
+        assert_eq!(json[1].id, 3i64);
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("bookmark"))]
+    async fn can_return_bookmarks_in_asc_order(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false).await;
+
+        // Insert some bookmarks
+        sqlx::query(
+            r#"
+            INSERT INTO bookmarks(user_id, story_id)
+            VALUES ($1, $2)
+            "#,
+        )
+        .bind(user_id.unwrap())
+        .bind(3i64)
+        .execute(&mut *conn)
+        .await?;
+
+        sqlx::query(
+            r#"
+            INSERT INTO bookmarks(user_id, story_id)
+            VALUES ($1, $2)
+            "#,
+        )
+        .bind(user_id.unwrap())
+        .bind(4i64)
+        .execute(&mut *conn)
+        .await?;
+
+        let req = test::TestRequest::get()
+            .cookie(cookie.unwrap())
+            .uri("/v1/me/bookmarks?sort=old")
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_success());
+
+        let json = serde_json::from_str::<Vec<Bookmark>>(
+            str::from_utf8(&to_bytes(res.into_body()).await.unwrap().to_vec()).unwrap(),
+        )
+        .unwrap();
+
+        assert_eq!(json[0].id, 3i64);
+        assert_eq!(json[1].id, 4i64);
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("bookmark"))]
+    async fn can_search_bookmarks(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false).await;
+
+        // Insert some bookmarks
+        let insert_result = sqlx::query(
+            r#"
+            INSERT INTO bookmarks(user_id, story_id)
+            VALUES ($1, $2), ($1, $3)
+            "#,
+        )
+        .bind(user_id.unwrap())
+        .bind(3i64)
+        .bind(4i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(insert_result.rows_affected(), 2);
+
+        let req = test::TestRequest::get()
+            .cookie(cookie.unwrap())
+            .uri(&format!("/v1/me/bookmarks?query={}", encode("ancient")))
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_success());
+
+        let json = serde_json::from_str::<Vec<Bookmark>>(
+            str::from_utf8(&to_bytes(res.into_body()).await.unwrap().to_vec()).unwrap(),
+        )
+        .unwrap();
+
+        assert!(json[0].title.contains("ancient"));
+        assert_eq!(json.len(), 1);
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("bookmark"))]
+    async fn should_not_include_soft_deleted_stories_in_bookmarks(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false).await;
+
+        // Insert some bookmarks
+        let insert_result = sqlx::query(
+            r#"
+            INSERT INTO bookmarks(user_id, story_id)
+            VALUES ($1, $2), ($1, $3)
+            "#,
+        )
+        .bind(user_id.unwrap())
+        .bind(3i64)
+        .bind(4i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(insert_result.rows_affected(), 2);
+
+        // Should return all the stories initially
+        let req = test::TestRequest::get()
+            .cookie(cookie.clone().unwrap())
+            .uri("/v1/me/bookmarks")
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_success());
+
+        let json = serde_json::from_str::<Vec<Bookmark>>(
+            str::from_utf8(&to_bytes(res.into_body()).await.unwrap().to_vec()).unwrap(),
+        );
+
+        assert!(json.is_ok());
+        assert_eq!(json.unwrap().len(), 2);
+
+        // Soft-delete one of the stories
+        let result = sqlx::query(
+            r#"
+            UPDATE stories
+            SET deleted_at = now()
+            WHERE id = $1
+            "#,
+        )
+        .bind(3i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(result.rows_affected(), 1);
+
+        // Should return only one story
+        let req = test::TestRequest::get()
+            .cookie(cookie.clone().unwrap())
+            .uri("/v1/me/bookmarks")
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_success());
+
+        let json = serde_json::from_str::<Vec<Bookmark>>(
+            str::from_utf8(&to_bytes(res.into_body()).await.unwrap().to_vec()).unwrap(),
+        );
+
+        assert!(json.is_ok());
+        assert_eq!(json.unwrap().len(), 1);
+
+        // Recover the soft-deleted story
+        let result = sqlx::query(
+            r#"
+            UPDATE stories
+            SET deleted_at = NULL
+            WHERE id = $1
+            "#,
+        )
+        .bind(3i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(result.rows_affected(), 1);
+
+        // Should return all the stories again
+        let req = test::TestRequest::get()
+            .cookie(cookie.unwrap())
+            .uri("/v1/me/bookmarks")
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_success());
+
+        let json = serde_json::from_str::<Vec<Bookmark>>(
+            str::from_utf8(&to_bytes(res.into_body()).await.unwrap().to_vec()).unwrap(),
+        );
+
+        assert!(json.is_ok());
+        assert_eq!(json.unwrap().len(), 2);
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("bookmark"))]
+    async fn should_not_include_unpublished_stories_in_bookmarks(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false).await;
+
+        // Insert some bookmarks
+        let insert_result = sqlx::query(
+            r#"
+            INSERT INTO bookmarks(user_id, story_id)
+            VALUES ($1, $2), ($1, $3)
+            "#,
+        )
+        .bind(user_id.unwrap())
+        .bind(3i64)
+        .bind(4i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(insert_result.rows_affected(), 2);
+
+        // Should return all the stories initially
+        let req = test::TestRequest::get()
+            .cookie(cookie.clone().unwrap())
+            .uri("/v1/me/bookmarks")
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_success());
+
+        let json = serde_json::from_str::<Vec<Bookmark>>(
+            str::from_utf8(&to_bytes(res.into_body()).await.unwrap().to_vec()).unwrap(),
+        );
+
+        assert!(json.is_ok());
+        assert_eq!(json.unwrap().len(), 2);
+
+        // Unpublish one of the stories
+        let result = sqlx::query(
+            r#"
+            UPDATE stories
+            SET published_at = NULL
+            WHERE id = $1
+            "#,
+        )
+        .bind(3i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(result.rows_affected(), 1);
+
+        // Should return only one story
+        let req = test::TestRequest::get()
+            .cookie(cookie.clone().unwrap())
+            .uri("/v1/me/bookmarks")
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_success());
+
+        let json = serde_json::from_str::<Vec<Bookmark>>(
+            str::from_utf8(&to_bytes(res.into_body()).await.unwrap().to_vec()).unwrap(),
+        );
+
+        assert!(json.is_ok());
+        assert_eq!(json.unwrap().len(), 1);
+
+        // Republish the unpublished story
+        let result = sqlx::query(
+            r#"
+            UPDATE stories
+            SET published_at = now()
+            WHERE id = $1
+            "#,
+        )
+        .bind(3i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(result.rows_affected(), 1);
+
+        // Should return all the stories again
+        let req = test::TestRequest::get()
+            .cookie(cookie.unwrap())
+            .uri("/v1/me/bookmarks")
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_success());
+
+        let json = serde_json::from_str::<Vec<Bookmark>>(
+            str::from_utf8(&to_bytes(res.into_body()).await.unwrap().to_vec()).unwrap(),
+        );
+
+        assert!(json.is_ok());
+        assert_eq!(json.unwrap().len(), 2);
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("bookmark"))]
+    async fn should_not_include_soft_deleted_stories_in_bookmarks_in_asc_order(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false).await;
+
+        // Insert some bookmarks
+        let insert_result = sqlx::query(
+            r#"
+            INSERT INTO bookmarks(user_id, story_id)
+            VALUES ($1, $2), ($1, $3)
+            "#,
+        )
+        .bind(user_id.unwrap())
+        .bind(3i64)
+        .bind(4i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(insert_result.rows_affected(), 2);
+
+        // Should return all the stories initially
+        let req = test::TestRequest::get()
+            .cookie(cookie.clone().unwrap())
+            .uri("/v1/me/bookmarks?sort=old")
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_success());
+
+        let json = serde_json::from_str::<Vec<Bookmark>>(
+            str::from_utf8(&to_bytes(res.into_body()).await.unwrap().to_vec()).unwrap(),
+        );
+
+        assert!(json.is_ok());
+        assert_eq!(json.unwrap().len(), 2);
+
+        // Soft-delete one of the stories
+        let result = sqlx::query(
+            r#"
+            UPDATE stories
+            SET deleted_at = now()
+            WHERE id = $1
+            "#,
+        )
+        .bind(3i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(result.rows_affected(), 1);
+
+        // Should return only one story
+        let req = test::TestRequest::get()
+            .cookie(cookie.clone().unwrap())
+            .uri("/v1/me/bookmarks?sort=old")
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_success());
+
+        let json = serde_json::from_str::<Vec<Bookmark>>(
+            str::from_utf8(&to_bytes(res.into_body()).await.unwrap().to_vec()).unwrap(),
+        );
+
+        assert!(json.is_ok());
+        assert_eq!(json.unwrap().len(), 1);
+
+        // Recover the soft-deleted story
+        let result = sqlx::query(
+            r#"
+            UPDATE stories
+            SET deleted_at = NULL
+            WHERE id = $1
+            "#,
+        )
+        .bind(3i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(result.rows_affected(), 1);
+
+        // Should return all the stories again
+        let req = test::TestRequest::get()
+            .cookie(cookie.unwrap())
+            .uri("/v1/me/bookmarks?sort=old")
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_success());
+
+        let json = serde_json::from_str::<Vec<Bookmark>>(
+            str::from_utf8(&to_bytes(res.into_body()).await.unwrap().to_vec()).unwrap(),
+        );
+
+        assert!(json.is_ok());
+        assert_eq!(json.unwrap().len(), 2);
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("bookmark"))]
+    async fn should_not_include_unpublished_stories_in_bookmarks_in_asc_order(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false).await;
+
+        // Insert some bookmarks
+        let insert_result = sqlx::query(
+            r#"
+            INSERT INTO bookmarks(user_id, story_id)
+            VALUES ($1, $2), ($1, $3)
+            "#,
+        )
+        .bind(user_id.unwrap())
+        .bind(3i64)
+        .bind(4i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(insert_result.rows_affected(), 2);
+
+        // Should return all the stories initially
+        let req = test::TestRequest::get()
+            .cookie(cookie.clone().unwrap())
+            .uri("/v1/me/bookmarks?sort=old")
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_success());
+
+        let json = serde_json::from_str::<Vec<Bookmark>>(
+            str::from_utf8(&to_bytes(res.into_body()).await.unwrap().to_vec()).unwrap(),
+        );
+
+        assert!(json.is_ok());
+        assert_eq!(json.unwrap().len(), 2);
+
+        // Unpublish one of the stories
+        let result = sqlx::query(
+            r#"
+            UPDATE stories
+            SET published_at = NULL
+            WHERE id = $1
+            "#,
+        )
+        .bind(3i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(result.rows_affected(), 1);
+
+        // Should return only one story
+        let req = test::TestRequest::get()
+            .cookie(cookie.clone().unwrap())
+            .uri("/v1/me/bookmarks?sort=old")
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_success());
+
+        let json = serde_json::from_str::<Vec<Bookmark>>(
+            str::from_utf8(&to_bytes(res.into_body()).await.unwrap().to_vec()).unwrap(),
+        );
+
+        assert!(json.is_ok());
+        assert_eq!(json.unwrap().len(), 1);
+
+        // Republish the unpublished story
+        let result = sqlx::query(
+            r#"
+            UPDATE stories
+            SET published_at = now()
+            WHERE id = $1
+            "#,
+        )
+        .bind(3i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(result.rows_affected(), 1);
+
+        // Should return all the stories again
+        let req = test::TestRequest::get()
+            .cookie(cookie.unwrap())
+            .uri("/v1/me/bookmarks?sort=old")
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_success());
+
+        let json = serde_json::from_str::<Vec<Bookmark>>(
+            str::from_utf8(&to_bytes(res.into_body()).await.unwrap().to_vec()).unwrap(),
+        );
+
+        assert!(json.is_ok());
+        assert_eq!(json.unwrap().len(), 2);
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("bookmark"))]
+    async fn should_not_include_soft_deleted_stories_in_bookmarks_in_desc_order(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false).await;
+
+        // Insert some bookmarks
+        let insert_result = sqlx::query(
+            r#"
+            INSERT INTO bookmarks(user_id, story_id)
+            VALUES ($1, $2), ($1, $3)
+            "#,
+        )
+        .bind(user_id.unwrap())
+        .bind(3i64)
+        .bind(4i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(insert_result.rows_affected(), 2);
+
+        // Should return all the stories initially
+        let req = test::TestRequest::get()
+            .cookie(cookie.clone().unwrap())
+            .uri("/v1/me/bookmarks?sort=recent")
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_success());
+
+        let json = serde_json::from_str::<Vec<Bookmark>>(
+            str::from_utf8(&to_bytes(res.into_body()).await.unwrap().to_vec()).unwrap(),
+        );
+
+        assert!(json.is_ok());
+        assert_eq!(json.unwrap().len(), 2);
+
+        // Soft-delete one of the stories
+        let result = sqlx::query(
+            r#"
+            UPDATE stories
+            SET deleted_at = now()
+            WHERE id = $1
+            "#,
+        )
+        .bind(3i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(result.rows_affected(), 1);
+
+        // Should return only one story
+        let req = test::TestRequest::get()
+            .cookie(cookie.clone().unwrap())
+            .uri("/v1/me/bookmarks?sort=recent")
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_success());
+
+        let json = serde_json::from_str::<Vec<Bookmark>>(
+            str::from_utf8(&to_bytes(res.into_body()).await.unwrap().to_vec()).unwrap(),
+        );
+
+        assert!(json.is_ok());
+        assert_eq!(json.unwrap().len(), 1);
+
+        // Recover the soft-deleted story
+        let result = sqlx::query(
+            r#"
+            UPDATE stories
+            SET deleted_at = NULL
+            WHERE id = $1
+            "#,
+        )
+        .bind(3i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(result.rows_affected(), 1);
+
+        // Should return all the stories again
+        let req = test::TestRequest::get()
+            .cookie(cookie.unwrap())
+            .uri("/v1/me/bookmarks?sort=recent")
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_success());
+
+        let json = serde_json::from_str::<Vec<Bookmark>>(
+            str::from_utf8(&to_bytes(res.into_body()).await.unwrap().to_vec()).unwrap(),
+        );
+
+        assert!(json.is_ok());
+        assert_eq!(json.unwrap().len(), 2);
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("bookmark"))]
+    async fn should_not_include_unpublished_stories_in_bookmarks_in_desc_order(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false).await;
+
+        // Insert some bookmarks
+        let insert_result = sqlx::query(
+            r#"
+            INSERT INTO bookmarks(user_id, story_id)
+            VALUES ($1, $2), ($1, $3)
+            "#,
+        )
+        .bind(user_id.unwrap())
+        .bind(3i64)
+        .bind(4i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(insert_result.rows_affected(), 2);
+
+        // Should return all the stories initially
+        let req = test::TestRequest::get()
+            .cookie(cookie.clone().unwrap())
+            .uri("/v1/me/bookmarks?sort=recent")
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_success());
+
+        let json = serde_json::from_str::<Vec<Bookmark>>(
+            str::from_utf8(&to_bytes(res.into_body()).await.unwrap().to_vec()).unwrap(),
+        );
+
+        assert!(json.is_ok());
+        assert_eq!(json.unwrap().len(), 2);
+
+        // Unpublish one of the stories
+        let result = sqlx::query(
+            r#"
+            UPDATE stories
+            SET published_at = NULL
+            WHERE id = $1
+            "#,
+        )
+        .bind(3i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(result.rows_affected(), 1);
+
+        // Should return only one story
+        let req = test::TestRequest::get()
+            .cookie(cookie.clone().unwrap())
+            .uri("/v1/me/bookmarks?sort=recent")
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_success());
+
+        let json = serde_json::from_str::<Vec<Bookmark>>(
+            str::from_utf8(&to_bytes(res.into_body()).await.unwrap().to_vec()).unwrap(),
+        );
+
+        assert!(json.is_ok());
+        assert_eq!(json.unwrap().len(), 1);
+
+        // Republish the unpublished story
+        let result = sqlx::query(
+            r#"
+            UPDATE stories
+            SET published_at = now()
+            WHERE id = $1
+            "#,
+        )
+        .bind(3i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(result.rows_affected(), 1);
+
+        // Should return all the stories again
+        let req = test::TestRequest::get()
+            .cookie(cookie.unwrap())
+            .uri("/v1/me/bookmarks?sort=recent")
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_success());
+
+        let json = serde_json::from_str::<Vec<Bookmark>>(
+            str::from_utf8(&to_bytes(res.into_body()).await.unwrap().to_vec()).unwrap(),
+        );
+
+        assert!(json.is_ok());
+        assert_eq!(json.unwrap().len(), 2);
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("bookmark"))]
+    async fn should_not_include_soft_deleted_stories_in_bookmarks_when_searching(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false).await;
+
+        // Insert some bookmarks
+        let insert_result = sqlx::query(
+            r#"
+            INSERT INTO bookmarks(user_id, story_id)
+            VALUES ($1, $2), ($1, $3)
+            "#,
+        )
+        .bind(user_id.unwrap())
+        .bind(3i64)
+        .bind(4i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(insert_result.rows_affected(), 2);
+
+        // Should return all the stories initially
+        let req = test::TestRequest::get()
+            .cookie(cookie.clone().unwrap())
+            .uri(&format!("/v1/me/bookmarks?query={}", encode("ancient")))
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_success());
+
+        let json = serde_json::from_str::<Vec<Bookmark>>(
+            str::from_utf8(&to_bytes(res.into_body()).await.unwrap().to_vec()).unwrap(),
+        );
+
+        assert!(json.is_ok());
+        assert_eq!(json.unwrap().len(), 1);
+
+        // Soft-delete one of the stories
+        let result = sqlx::query(
+            r#"
+            UPDATE stories
+            SET deleted_at = now()
+            WHERE id = $1
+            "#,
+        )
+        .bind(3i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(result.rows_affected(), 1);
+
+        // Should return only one story
+        let req = test::TestRequest::get()
+            .cookie(cookie.clone().unwrap())
+            .uri(&format!("/v1/me/bookmarks?query={}", encode("ancient")))
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_success());
+
+        let json = serde_json::from_str::<Vec<Bookmark>>(
+            str::from_utf8(&to_bytes(res.into_body()).await.unwrap().to_vec()).unwrap(),
+        );
+
+        assert!(json.is_ok());
+        assert_eq!(json.unwrap().len(), 0);
+
+        // Recover the soft-deleted story
+        let result = sqlx::query(
+            r#"
+            UPDATE stories
+            SET deleted_at = NULL
+            WHERE id = $1
+            "#,
+        )
+        .bind(3i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(result.rows_affected(), 1);
+
+        // Should return all the stories again
+        let req = test::TestRequest::get()
+            .cookie(cookie.unwrap())
+            .uri(&format!("/v1/me/bookmarks?query={}", encode("ancient")))
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_success());
+
+        let json = serde_json::from_str::<Vec<Bookmark>>(
+            str::from_utf8(&to_bytes(res.into_body()).await.unwrap().to_vec()).unwrap(),
+        );
+
+        assert!(json.is_ok());
+        assert_eq!(json.unwrap().len(), 1);
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("bookmark"))]
+    async fn should_not_include_unpublished_stories_in_bookmarks_when_searching(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false).await;
+
+        // Insert some bookmarks
+        let insert_result = sqlx::query(
+            r#"
+            INSERT INTO bookmarks(user_id, story_id)
+            VALUES ($1, $2), ($1, $3)
+            "#,
+        )
+        .bind(user_id.unwrap())
+        .bind(3i64)
+        .bind(4i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(insert_result.rows_affected(), 2);
+
+        // Should return all the stories initially
+        let req = test::TestRequest::get()
+            .cookie(cookie.clone().unwrap())
+            .uri(&format!("/v1/me/bookmarks?query={}", encode("ancient")))
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_success());
+
+        let json = serde_json::from_str::<Vec<Bookmark>>(
+            str::from_utf8(&to_bytes(res.into_body()).await.unwrap().to_vec()).unwrap(),
+        );
+
+        assert!(json.is_ok());
+        assert_eq!(json.unwrap().len(), 1);
+
+        // Unpublish one of the stories
+        let result = sqlx::query(
+            r#"
+            UPDATE stories
+            SET published_at = NULL
+            WHERE id = $1
+            "#,
+        )
+        .bind(3i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(result.rows_affected(), 1);
+
+        // Should return only one story
+        let req = test::TestRequest::get()
+            .cookie(cookie.clone().unwrap())
+            .uri(&format!("/v1/me/bookmarks?query={}", encode("ancient")))
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_success());
+
+        let json = serde_json::from_str::<Vec<Bookmark>>(
+            str::from_utf8(&to_bytes(res.into_body()).await.unwrap().to_vec()).unwrap(),
+        );
+
+        assert!(json.is_ok());
+        assert_eq!(json.unwrap().len(), 0);
+
+        // Republish the unpublished story
+        let result = sqlx::query(
+            r#"
+            UPDATE stories
+            SET published_at = now()
+            WHERE id = $1
+            "#,
+        )
+        .bind(3i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(result.rows_affected(), 1);
+
+        // Should return all the stories again
+        let req = test::TestRequest::get()
+            .cookie(cookie.unwrap())
+            .uri(&format!("/v1/me/bookmarks?query={}", encode("ancient")))
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_success());
+
+        let json = serde_json::from_str::<Vec<Bookmark>>(
+            str::from_utf8(&to_bytes(res.into_body()).await.unwrap().to_vec()).unwrap(),
+        );
+
+        assert!(json.is_ok());
+        assert_eq!(json.unwrap().len(), 1);
 
         Ok(())
     }

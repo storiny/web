@@ -31,7 +31,7 @@ struct Tag {
 }
 
 #[derive(Debug, FromRow, Serialize, Deserialize)]
-struct Story {
+struct History {
     id: i64,
     title: String,
     slug: String,
@@ -70,11 +70,11 @@ async fn get(
     let search_query = query.query.clone().unwrap_or_default();
     let has_search_query = !search_query.trim().is_empty();
 
-    match user.unwrap().id() {
+    match user.id() {
         Ok(user_id) => {
             if has_search_query {
                 let result = sqlx::query_file_as!(
-                    Story,
+                    History,
                     "queries/history/with_query.sql",
                     search_query,
                     user_id,
@@ -89,7 +89,7 @@ async fn get(
                     .json(result))
             } else {
                 let result = sqlx::query_file_as!(
-                    Story,
+                    History,
                     "queries/history/default.sql",
                     user_id,
                     10 as i16,
@@ -157,12 +157,30 @@ mod tests {
     use crate::test_utils::test_utils::init_app_for_test;
     use actix_http::body::to_bytes;
     use actix_web::test;
-    use sqlx::{PgPool, Row};
+    use sqlx::PgPool;
     use std::str;
+    use urlencoding::encode;
 
     #[sqlx::test(fixtures("history"))]
     async fn can_return_history(pool: PgPool) -> sqlx::Result<()> {
-        let (app, cookie, user_id) = init_app_for_test(get, pool, false, false).await;
+        let mut conn = pool.acquire().await?;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false).await;
+
+        // Insert some history
+        let insert_result = sqlx::query(
+            r#"
+            INSERT INTO histories(user_id, story_id)
+            VALUES ($1, $2), ($1, $3)
+            "#,
+        )
+        .bind(user_id.unwrap())
+        .bind(3i64)
+        .bind(4i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(insert_result.rows_affected(), 2);
+
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())
             .uri("/v1/me/history")
@@ -171,12 +189,451 @@ mod tests {
 
         assert!(res.status().is_success());
 
-        let json = serde_json::from_str::<Vec<Story>>(
+        let json = serde_json::from_str::<Vec<History>>(
             str::from_utf8(&to_bytes(res.into_body()).await.unwrap().to_vec()).unwrap(),
         );
 
         assert!(json.is_ok());
-        assert!(json.unwrap().len() > 0);
+        assert_eq!(json.unwrap().len(), 2);
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("history"))]
+    async fn can_search_history(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false).await;
+
+        // Insert some history
+        let insert_result = sqlx::query(
+            r#"
+            INSERT INTO histories(user_id, story_id)
+            VALUES ($1, $2), ($1, $3)
+            "#,
+        )
+        .bind(user_id.unwrap())
+        .bind(3i64)
+        .bind(4i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(insert_result.rows_affected(), 2);
+
+        let req = test::TestRequest::get()
+            .cookie(cookie.unwrap())
+            .uri(&format!("/v1/me/history?query={}", encode("ancient")))
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_success());
+
+        let json = serde_json::from_str::<Vec<History>>(
+            str::from_utf8(&to_bytes(res.into_body()).await.unwrap().to_vec()).unwrap(),
+        )
+        .unwrap();
+
+        assert!(json[0].title.contains("ancient"));
+        assert_eq!(json.len(), 1);
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("history"))]
+    async fn should_not_include_soft_deleted_stories_in_history(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false).await;
+
+        // Insert some history
+        let insert_result = sqlx::query(
+            r#"
+            INSERT INTO histories(user_id, story_id)
+            VALUES ($1, $2), ($1, $3)
+            "#,
+        )
+        .bind(user_id.unwrap())
+        .bind(3i64)
+        .bind(4i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(insert_result.rows_affected(), 2);
+
+        // Should return all the stories initially
+        let req = test::TestRequest::get()
+            .cookie(cookie.clone().unwrap())
+            .uri("/v1/me/history")
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_success());
+
+        let json = serde_json::from_str::<Vec<History>>(
+            str::from_utf8(&to_bytes(res.into_body()).await.unwrap().to_vec()).unwrap(),
+        );
+
+        assert!(json.is_ok());
+        assert_eq!(json.unwrap().len(), 2);
+
+        // Soft-delete one of the stories
+        let result = sqlx::query(
+            r#"
+            UPDATE stories
+            SET deleted_at = now()
+            WHERE id = $1
+            "#,
+        )
+        .bind(3i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(result.rows_affected(), 1);
+
+        // Should return only one story
+        let req = test::TestRequest::get()
+            .cookie(cookie.clone().unwrap())
+            .uri("/v1/me/history")
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_success());
+
+        let json = serde_json::from_str::<Vec<History>>(
+            str::from_utf8(&to_bytes(res.into_body()).await.unwrap().to_vec()).unwrap(),
+        );
+
+        assert!(json.is_ok());
+        assert_eq!(json.unwrap().len(), 1);
+
+        // Recover the soft-deleted story
+        let result = sqlx::query(
+            r#"
+            UPDATE stories
+            SET deleted_at = NULL
+            WHERE id = $1
+            "#,
+        )
+        .bind(3i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(result.rows_affected(), 1);
+
+        // Should return all the stories again
+        let req = test::TestRequest::get()
+            .cookie(cookie.unwrap())
+            .uri("/v1/me/history")
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_success());
+
+        let json = serde_json::from_str::<Vec<History>>(
+            str::from_utf8(&to_bytes(res.into_body()).await.unwrap().to_vec()).unwrap(),
+        );
+
+        assert!(json.is_ok());
+        assert_eq!(json.unwrap().len(), 2);
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("history"))]
+    async fn should_not_include_unpublished_stories_in_history(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false).await;
+
+        // Insert some history
+        let insert_result = sqlx::query(
+            r#"
+            INSERT INTO histories(user_id, story_id)
+            VALUES ($1, $2), ($1, $3)
+            "#,
+        )
+        .bind(user_id.unwrap())
+        .bind(3i64)
+        .bind(4i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(insert_result.rows_affected(), 2);
+
+        // Should return all the stories initially
+        let req = test::TestRequest::get()
+            .cookie(cookie.clone().unwrap())
+            .uri("/v1/me/history")
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_success());
+
+        let json = serde_json::from_str::<Vec<History>>(
+            str::from_utf8(&to_bytes(res.into_body()).await.unwrap().to_vec()).unwrap(),
+        );
+
+        assert!(json.is_ok());
+        assert_eq!(json.unwrap().len(), 2);
+
+        // Unpublish one of the stories
+        let result = sqlx::query(
+            r#"
+            UPDATE stories
+            SET published_at = NULL
+            WHERE id = $1
+            "#,
+        )
+        .bind(3i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(result.rows_affected(), 1);
+
+        // Should return only one story
+        let req = test::TestRequest::get()
+            .cookie(cookie.clone().unwrap())
+            .uri("/v1/me/history")
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_success());
+
+        let json = serde_json::from_str::<Vec<History>>(
+            str::from_utf8(&to_bytes(res.into_body()).await.unwrap().to_vec()).unwrap(),
+        );
+
+        assert!(json.is_ok());
+        assert_eq!(json.unwrap().len(), 1);
+
+        // Republish the unpublished story
+        let result = sqlx::query(
+            r#"
+            UPDATE stories
+            SET published_at = now()
+            WHERE id = $1
+            "#,
+        )
+        .bind(3i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(result.rows_affected(), 1);
+
+        // Should return all the stories again
+        let req = test::TestRequest::get()
+            .cookie(cookie.unwrap())
+            .uri("/v1/me/history")
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_success());
+
+        let json = serde_json::from_str::<Vec<History>>(
+            str::from_utf8(&to_bytes(res.into_body()).await.unwrap().to_vec()).unwrap(),
+        );
+
+        assert!(json.is_ok());
+        assert_eq!(json.unwrap().len(), 2);
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("history"))]
+    async fn should_not_include_soft_deleted_stories_in_history_when_searching(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false).await;
+
+        // Insert some history
+        let insert_result = sqlx::query(
+            r#"
+            INSERT INTO histories(user_id, story_id)
+            VALUES ($1, $2), ($1, $3)
+            "#,
+        )
+        .bind(user_id.unwrap())
+        .bind(3i64)
+        .bind(4i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(insert_result.rows_affected(), 2);
+
+        // Should return all the stories initially
+        let req = test::TestRequest::get()
+            .cookie(cookie.clone().unwrap())
+            .uri(&format!("/v1/me/history?query={}", encode("ancient")))
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_success());
+
+        let json = serde_json::from_str::<Vec<History>>(
+            str::from_utf8(&to_bytes(res.into_body()).await.unwrap().to_vec()).unwrap(),
+        );
+
+        assert!(json.is_ok());
+        assert_eq!(json.unwrap().len(), 1);
+
+        // Soft-delete one of the stories
+        let result = sqlx::query(
+            r#"
+            UPDATE stories
+            SET deleted_at = now()
+            WHERE id = $1
+            "#,
+        )
+        .bind(3i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(result.rows_affected(), 1);
+
+        // Should return only one story
+        let req = test::TestRequest::get()
+            .cookie(cookie.clone().unwrap())
+            .uri(&format!("/v1/me/history?query={}", encode("ancient")))
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_success());
+
+        let json = serde_json::from_str::<Vec<History>>(
+            str::from_utf8(&to_bytes(res.into_body()).await.unwrap().to_vec()).unwrap(),
+        );
+
+        assert!(json.is_ok());
+        assert_eq!(json.unwrap().len(), 0);
+
+        // Recover the soft-deleted story
+        let result = sqlx::query(
+            r#"
+            UPDATE stories
+            SET deleted_at = NULL
+            WHERE id = $1
+            "#,
+        )
+        .bind(3i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(result.rows_affected(), 1);
+
+        // Should return all the stories again
+        let req = test::TestRequest::get()
+            .cookie(cookie.unwrap())
+            .uri(&format!("/v1/me/history?query={}", encode("ancient")))
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_success());
+
+        let json = serde_json::from_str::<Vec<History>>(
+            str::from_utf8(&to_bytes(res.into_body()).await.unwrap().to_vec()).unwrap(),
+        );
+
+        assert!(json.is_ok());
+        assert_eq!(json.unwrap().len(), 1);
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("history"))]
+    async fn should_not_include_unpublished_stories_in_history_when_searching(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false).await;
+
+        // Insert some history
+        let insert_result = sqlx::query(
+            r#"
+            INSERT INTO histories(user_id, story_id)
+            VALUES ($1, $2), ($1, $3)
+            "#,
+        )
+        .bind(user_id.unwrap())
+        .bind(3i64)
+        .bind(4i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(insert_result.rows_affected(), 2);
+
+        // Should return all the stories initially
+        let req = test::TestRequest::get()
+            .cookie(cookie.clone().unwrap())
+            .uri(&format!("/v1/me/history?query={}", encode("ancient")))
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_success());
+
+        let json = serde_json::from_str::<Vec<History>>(
+            str::from_utf8(&to_bytes(res.into_body()).await.unwrap().to_vec()).unwrap(),
+        );
+
+        assert!(json.is_ok());
+        assert_eq!(json.unwrap().len(), 1);
+
+        // Unpublish one of the stories
+        let result = sqlx::query(
+            r#"
+            UPDATE stories
+            SET published_at = NULL
+            WHERE id = $1
+            "#,
+        )
+        .bind(3i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(result.rows_affected(), 1);
+
+        // Should return only one story
+        let req = test::TestRequest::get()
+            .cookie(cookie.clone().unwrap())
+            .uri(&format!("/v1/me/history?query={}", encode("ancient")))
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_success());
+
+        let json = serde_json::from_str::<Vec<History>>(
+            str::from_utf8(&to_bytes(res.into_body()).await.unwrap().to_vec()).unwrap(),
+        );
+
+        assert!(json.is_ok());
+        assert_eq!(json.unwrap().len(), 0);
+
+        // Republish the unpublished story
+        let result = sqlx::query(
+            r#"
+            UPDATE stories
+            SET published_at = now()
+            WHERE id = $1
+            "#,
+        )
+        .bind(3i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(result.rows_affected(), 1);
+
+        // Should return all the stories again
+        let req = test::TestRequest::get()
+            .cookie(cookie.unwrap())
+            .uri(&format!("/v1/me/history?query={}", encode("ancient")))
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_success());
+
+        let json = serde_json::from_str::<Vec<History>>(
+            str::from_utf8(&to_bytes(res.into_body()).await.unwrap().to_vec()).unwrap(),
+        );
+
+        assert!(json.is_ok());
+        assert_eq!(json.unwrap().len(), 1);
 
         Ok(())
     }
