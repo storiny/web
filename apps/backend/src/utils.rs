@@ -9,3 +9,6 @@ pub mod flag;
 
 #[path = "utils/generate_random_object_key.rs"]
 pub mod generate_random_object_key;
+
+#[path = "utils/md_to_html.rs"]
+pub mod md_to_html;
