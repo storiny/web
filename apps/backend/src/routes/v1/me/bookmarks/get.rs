@@ -84,7 +84,7 @@ async fn get(
             if has_search_query {
                 let result = sqlx::query_file_as!(
                     Bookmark,
-                    "queries/bookmarks/with_query.sql",
+                    "queries/me/bookmarks/with_query.sql",
                     search_query,
                     user_id,
                     10 as i16,
@@ -99,7 +99,7 @@ async fn get(
             } else if sort == "old" {
                 let result = sqlx::query_file_as!(
                     Bookmark,
-                    "queries/bookmarks/default_asc.sql",
+                    "queries/me/bookmarks/default_asc.sql",
                     user_id,
                     10 as i16,
                     (page * 10) as i16
@@ -113,7 +113,7 @@ async fn get(
             } else {
                 let result = sqlx::query_file_as!(
                     Bookmark,
-                    "queries/bookmarks/default_desc.sql",
+                    "queries/me/bookmarks/default_desc.sql",
                     user_id,
                     10 as i16,
                     (page * 10) as i16

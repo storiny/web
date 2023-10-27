@@ -38,6 +38,7 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
     me::bookmarks::bookmarks_post::init_routes(cfg);
     me::bookmarks::bookmarks_delete::init_routes(cfg);
     // Comments
+    me::comments::comments_get::init_routes(cfg);
     me::comments::comments_post::init_routes(cfg);
     // History
     me::history::history::init_routes(cfg);

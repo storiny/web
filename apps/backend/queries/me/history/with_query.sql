@@ -1,5 +1,5 @@
 WITH
-	history AS (WITH
+	history_result AS (WITH
 					search_query AS (SELECT
 										 PLAINTO_TSQUERY('english', $1) AS tsq)
 				SELECT
@@ -119,4 +119,4 @@ SELECT
 	"user!: Json<User>",
 	"tags!: Vec<Tag>"
 FROM
-	history
+	history_result

@@ -18,7 +18,9 @@ CREATE TABLE IF NOT EXISTS replies
 	-- Timestamps
 	created_at       TIMESTAMPTZ    NOT NULL DEFAULT NOW(),
 	edited_at        TIMESTAMPTZ,
-	deleted_at       TIMESTAMPTZ
+	deleted_at       TIMESTAMPTZ,
+	-- FTS
+	search_vec       TSVECTOR GENERATED ALWAYS AS (TO_TSVECTOR('english', "content")) STORED
 );
 
 CREATE INDEX user_id_on_replies ON replies (user_id);

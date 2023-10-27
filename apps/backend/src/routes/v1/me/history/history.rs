@@ -75,7 +75,7 @@ async fn get(
             if has_search_query {
                 let result = sqlx::query_file_as!(
                     History,
-                    "queries/history/with_query.sql",
+                    "queries/me/history/with_query.sql",
                     search_query,
                     user_id,
                     10 as i16,
@@ -90,7 +90,7 @@ async fn get(
             } else {
                 let result = sqlx::query_file_as!(
                     History,
-                    "queries/history/default.sql",
+                    "queries/me/history/default.sql",
                     user_id,
                     10 as i16,
                     (page * 10) as i16
