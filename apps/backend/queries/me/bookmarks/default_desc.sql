@@ -1,5 +1,5 @@
 WITH
-	bookmarks AS (SELECT
+	bookmarks_result AS (SELECT
 					  -- Story
 					  s.id,
 					  s.title,
@@ -71,7 +71,7 @@ WITH
 					  su.id,
 					  b.created_at
 				  ORDER BY
-					  b.created_at
+					  b.created_at DESC
 				  LIMIT $2 OFFSET $3)
 SELECT
 	-- Story
@@ -100,4 +100,4 @@ SELECT
 	"user!: Json<User>",
 	"tags!: Vec<Tag>"
 FROM
-	bookmarks
+	bookmarks_result

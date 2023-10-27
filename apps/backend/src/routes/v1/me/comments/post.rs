@@ -5,7 +5,6 @@ use crate::{
 };
 use actix_web::{post, web, HttpResponse};
 use actix_web_validator::Json;
-use pulldown_cmark::{html, Options, Parser};
 use serde::{Deserialize, Serialize};
 use validator::Validate;
 
@@ -50,16 +49,23 @@ async fn post(
                         Err(err) => {
                             if let Some(db_err) = err.into_database_error() {
                                 match db_err.kind() {
-                                    // Do not throw if already bookmarked
-                                    sqlx::error::ErrorKind::UniqueViolation => {
-                                        Ok(HttpResponse::NoContent().finish())
+                                    sqlx::error::ErrorKind::ForeignKeyViolation => {
+                                        Ok(HttpResponse::BadRequest().body("Story does not exist"))
                                     }
                                     _ => {
+                                        let err_code = db_err.code().unwrap_or_default();
+
                                         // Check if the story is soft-deleted or unpublished
-                                        if db_err.code().unwrap_or_default()
-                                            == SqlState::EntityUnavailable.to_string()
+                                        if err_code == SqlState::EntityUnavailable.to_string() {
+                                            Ok(HttpResponse::BadRequest()
+                                                .body("Story is either deleted or unpublished"))
+                                        // Check if the comment writer is blocked by the story writer
+                                        } else if err_code
+                                            == SqlState::CommentWriterBlockedByStoryWriter
+                                                .to_string()
                                         {
-                                            Ok(HttpResponse::BadRequest().body("Story being bookmarked is either deleted or unpublished"))
+                                            Ok(HttpResponse::BadRequest()
+                                                .body("You are being blocked by the story writer"))
                                         } else {
                                             Ok(HttpResponse::InternalServerError().finish())
                                         }
@@ -89,36 +95,174 @@ mod tests {
     use actix_http::body::to_bytes;
     use actix_web::test;
     use sqlx::{PgPool, Row};
-    //
-    // #[sqlx::test(fixtures("bookmark"))]
-    // async fn can_bookmark_a_story(pool: PgPool) -> sqlx::Result<()> {
-    //     let mut conn = pool.acquire().await?;
-    //     let (app, cookie, user_id) = init_app_for_test(post, pool, true, false).await;
-    //
-    //     let req = test::TestRequest::post()
-    //         .cookie(cookie.unwrap())
-    //         .uri(&format!("/v1/me/bookmarks/{}", 3))
-    //         .to_request();
-    //     let res = test::call_service(&app, req).await;
-    //
-    //     assert!(res.status().is_success());
-    //
-    //     // Bookmark should be present in the database
-    //     let result = sqlx::query(
-    //         r#"
-    //         SELECT EXISTS(
-    //             SELECT 1 FROM bookmarks
-    //             WHERE user_id = $1 AND story_id = $2
-    //         )
-    //         "#,
-    //     )
-    //     .bind(user_id)
-    //     .bind(3i64)
-    //     .fetch_one(&mut *conn)
-    //     .await?;
-    //
-    //     assert!(result.get::<bool, _>("exists"));
-    //
-    //     Ok(())
-    // }
+
+    #[sqlx::test(fixtures("comment"))]
+    async fn can_add_a_comment(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let (app, cookie, user_id) = init_app_for_test(post, pool, true, false).await;
+
+        let req = test::TestRequest::post()
+            .cookie(cookie.unwrap())
+            .uri("/v1/me/comments")
+            .set_json(Request {
+                content: "Sample **comment** content!".to_string(),
+                story_id: "3".to_string(),
+            })
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_success());
+
+        // Comment should be present in the database, with rendered markdown
+        let result = sqlx::query(
+            r#"
+            SELECT rendered_content FROM comments
+            WHERE user_id = $1 AND story_id = $2
+            "#,
+        )
+        .bind(user_id.unwrap())
+        .bind(3i64)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert_eq!(
+            result.get::<String, _>("rendered_content"),
+            md_to_html(MarkdownSource::Response("Sample **comment** content!"))
+        );
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("comment"))]
+    async fn can_reject_comment_for_a_missing_story(pool: PgPool) -> sqlx::Result<()> {
+        let (app, cookie, _) = init_app_for_test(post, pool, true, false).await;
+
+        let req = test::TestRequest::post()
+            .cookie(cookie.unwrap())
+            .uri("/v1/me/comments")
+            .set_json(Request {
+                content: "Sample **comment** content!".to_string(),
+                story_id: "12345".to_string(),
+            })
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_client_error());
+        assert_eq!(
+            to_bytes(res.into_body()).await.unwrap_or_default(),
+            "Story does not exist"
+        );
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("comment"))]
+    async fn can_reject_comment_for_a_soft_deleted_story(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let (app, cookie, _) = init_app_for_test(post, pool, true, false).await;
+
+        // Soft-delete the story
+        sqlx::query(
+            r#"
+            UPDATE stories
+            SET deleted_at = now()
+            WHERE id = $1
+            "#,
+        )
+        .bind(3i64)
+        .execute(&mut *conn)
+        .await?;
+
+        let req = test::TestRequest::post()
+            .cookie(cookie.unwrap())
+            .uri("/v1/me/comments")
+            .set_json(Request {
+                content: "Sample **comment** content!".to_string(),
+                story_id: "3".to_string(),
+            })
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_client_error());
+        assert_eq!(
+            to_bytes(res.into_body()).await.unwrap_or_default(),
+            "Story is either deleted or unpublished"
+        );
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("comment"))]
+    async fn can_reject_comment_for_an_unpublished_story(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let (app, cookie, _) = init_app_for_test(post, pool, true, false).await;
+
+        // Unpublish the story
+        sqlx::query(
+            r#"
+            UPDATE stories
+            SET published_at = NULL
+            WHERE id = $1
+            "#,
+        )
+        .bind(3i64)
+        .execute(&mut *conn)
+        .await?;
+
+        let req = test::TestRequest::post()
+            .cookie(cookie.unwrap())
+            .uri("/v1/me/comments")
+            .set_json(Request {
+                content: "Sample **comment** content!".to_string(),
+                story_id: "3".to_string(),
+            })
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_client_error());
+        assert_eq!(
+            to_bytes(res.into_body()).await.unwrap_or_default(),
+            "Story is either deleted or unpublished"
+        );
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("comment"))]
+    async fn can_reject_comment_when_story_writer_has_blocked_the_comment_writer(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let (app, cookie, user_id) = init_app_for_test(post, pool, true, false).await;
+
+        // Get blocked by the story writer
+        sqlx::query(
+            r#"
+            INSERT INTO blocks(blocker_id, blocked_id)
+            VALUES ($1, $2)
+            "#,
+        )
+        .bind(2i64)
+        .bind(user_id.unwrap())
+        .execute(&mut *conn)
+        .await?;
+
+        let req = test::TestRequest::post()
+            .cookie(cookie.unwrap())
+            .uri("/v1/me/comments")
+            .set_json(Request {
+                content: "Sample **comment** content!".to_string(),
+                story_id: "3".to_string(),
+            })
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_client_error());
+        assert_eq!(
+            to_bytes(res.into_body()).await.unwrap_or_default(),
+            "You are being blocked by the story writer"
+        );
+
+        Ok(())
+    }
 }

@@ -1,4 +1,4 @@
-use pulldown_cmark::{html, Event, Options, Parser, Tag};
+use markdown::{to_html_with_options, CompileOptions, Constructs, Options, ParseOptions};
 
 /// Source of the markdown string. Controls how the markdown is parsed and rendered into
 /// the HTML string and which features are enabled for the specific source.
@@ -13,41 +13,128 @@ pub enum MarkdownSource<'a> {
 ///
 /// * `md_source` - The markdown source string.
 pub fn md_to_html(md_source: MarkdownSource) -> String {
-    let mut options = Options::empty();
-    let mut html_buf = String::new();
-
-    options.insert(Options::ENABLE_STRIKETHROUGH);
-    options.insert(Options::ENABLE_SMART_PUNCTUATION);
-
     match md_source {
         MarkdownSource::Bio(md_str) => {
-            let parser = Parser::new_ext(md_str, options)
-                .map(|event| match event {
-                    Event::Html(html) => Event::Text(html),
-                    _ => event,
-                })
-                .filter(|event| match event {
-                    Event::Start(Tag::Paragraph) | Event::End(Tag::Paragraph) => true,
-                    Event::Start(Tag::Emphasis) | Event::End(Tag::Emphasis) => true,
-                    Event::Start(Tag::Strikethrough) | Event::End(Tag::Strikethrough) => true,
-                    Event::Start(Tag::Strong) | Event::End(Tag::Strong) => true,
-                    Event::Start(Tag::Link(..)) | Event::End(Tag::Link(..)) => true,
-                    _ => false,
-                });
-            html::push_html(&mut html_buf, parser);
+            let options = Options {
+                parse: ParseOptions {
+                    constructs: Constructs {
+                        attention: true,
+                        autolink: false,
+                        block_quote: false,
+                        character_escape: true,
+                        character_reference: false,
+                        code_indented: false,
+                        code_fenced: false,
+                        code_text: false,
+                        definition: false,
+                        frontmatter: false,
+                        gfm_autolink_literal: true,
+                        gfm_footnote_definition: false,
+                        gfm_label_start_footnote: false,
+                        gfm_strikethrough: true,
+                        gfm_table: false,
+                        gfm_task_list_item: false,
+                        hard_break_escape: false,
+                        hard_break_trailing: false,
+                        heading_atx: false,
+                        heading_setext: false,
+                        html_flow: false,
+                        html_text: false,
+                        label_start_image: false,
+                        label_start_link: false,
+                        label_end: false,
+                        list_item: false,
+                        math_flow: false,
+                        math_text: false,
+                        mdx_esm: false,
+                        mdx_expression_flow: false,
+                        mdx_expression_text: false,
+                        mdx_jsx_flow: false,
+                        mdx_jsx_text: false,
+                        thematic_break: false,
+                    },
+                    gfm_strikethrough_single_tilde: true,
+                    math_text_single_dollar: false,
+                    mdx_expression_parse: None,
+                    mdx_esm_parse: None,
+                },
+                compile: CompileOptions {
+                    allow_dangerous_html: false,
+                    allow_dangerous_protocol: false,
+                    default_line_ending: Default::default(),
+                    gfm_footnote_label: None,
+                    gfm_footnote_label_tag_name: None,
+                    gfm_footnote_label_attributes: None,
+                    gfm_footnote_back_label: None,
+                    gfm_footnote_clobber_prefix: None,
+                    gfm_task_list_item_checkable: false,
+                    gfm_tagfilter: false,
+                },
+            };
 
-            html_buf
+            // Can be safely unwrapped unless using MDX
+            to_html_with_options(md_str, &options).unwrap()
         }
         MarkdownSource::Response(md_str) => {
-            let parser = Parser::new_ext(md_str, options)
-                .into_iter()
-                .map(|event| match event {
-                    Event::Html(html) => Event::Text(html),
-                    _ => event,
-                });
-            html::push_html(&mut html_buf, parser);
+            let options = Options {
+                parse: ParseOptions {
+                    constructs: Constructs {
+                        attention: true,
+                        autolink: false,
+                        block_quote: false,
+                        character_escape: true,
+                        gfm_autolink_literal: true,
+                        gfm_footnote_definition: false,
+                        gfm_label_start_footnote: false,
+                        gfm_strikethrough: true,
+                        gfm_table: false,
+                        gfm_task_list_item: false,
+                        hard_break_escape: false,
+                        hard_break_trailing: false,
+                        heading_atx: false,
+                        heading_setext: false,
+                        html_flow: false,
+                        html_text: false,
+                        label_start_image: false,
+                        label_start_link: false,
+                        label_end: false,
+                        list_item: false,
+                        math_flow: false,
+                        math_text: false,
+                        mdx_esm: false,
+                        mdx_expression_flow: false,
+                        mdx_expression_text: false,
+                        mdx_jsx_flow: false,
+                        mdx_jsx_text: false,
+                        code_text: true,
+                        definition: false,
+                        code_indented: true,
+                        code_fenced: true,
+                        character_reference: false,
+                        frontmatter: false,
+                        thematic_break: false,
+                    },
+                    gfm_strikethrough_single_tilde: true,
+                    math_text_single_dollar: false,
+                    mdx_expression_parse: None,
+                    mdx_esm_parse: None,
+                },
+                compile: CompileOptions {
+                    allow_dangerous_html: false,
+                    allow_dangerous_protocol: false,
+                    default_line_ending: Default::default(),
+                    gfm_footnote_label: None,
+                    gfm_footnote_label_tag_name: None,
+                    gfm_footnote_label_attributes: None,
+                    gfm_footnote_back_label: None,
+                    gfm_footnote_clobber_prefix: None,
+                    gfm_task_list_item_checkable: false,
+                    gfm_tagfilter: false,
+                },
+            };
 
-            html_buf
+            // Can be safely unwrapped unless using MDX
+            to_html_with_options(md_str, &options).unwrap()
         }
     }
 }
@@ -56,10 +143,7 @@ pub fn md_to_html(md_source: MarkdownSource) -> String {
 mod tests {
     use super::*;
 
-    #[test]
-    fn can_convert_md_to_html_for_bio() {
-        let md = r#"
-# H1
+    const MD_TEXT: &'static str = r#"# H1
 ## H2
 ### H3
 #### H4
@@ -107,10 +191,82 @@ fn main() {
 ## Raw HTML
 
 <img alt="raw html image" src="https://example.com/image.png" />
-        "#;
+"#;
 
-        let html = md_to_html(MarkdownSource::Bio(md));
+    #[test]
+    fn can_convert_md_to_html_for_bio() {
+        let html = r#"<p># H1
+## H2
+### H3
+#### H4
+##### H5
+###### H6</p>
+<p>## Text Formatting</p>
+<p>- <strong>Bold text</strong> is created with double asterisks or double underscores.
+- <em>Italic text</em> is created with single asterisks or single underscores.
+- <del>Strikethrough text</del> is created with double tildes.</p>
+<p>## Lists</p>
+<p>1. Ordered list item 1
+2. Ordered list item 2
+3. Ordered list item 3</p>
+<p>- Unordered list item
+- Unordered list item
+- Unordered list item</p>
+<p>## Links</p>
+<p>Create [links](<a href="https://www.storiny.com">https://www.storiny.com</a>) like this.</p>
+<p>## Images</p>
+<p>Embed images ![Alt text](image-url) like this:</p>
+<p>![Image alt](<a href="https://example.com/some_image.svg">https://example.com/some_image.svg</a>)</p>
+<p>## Code</p>
+<p>Inline code can be created with backticks like `code`.</p>
+<p>Create code blocks by wrapping the code in triple backticks:</p>
+<p>```rust
+fn main() {
+println!(&quot;Hello&quot;);
+}
+```</p>
+<p>## Raw HTML</p>
+<p>&lt;img alt=&quot;raw html image&quot; src=&quot;<a href="https://example.com/image.png">https://example.com/image.png</a>&quot; /&gt;</p>
+"#;
 
-        assert_eq!(html, "".to_string());
+        assert_eq!(md_to_html(MarkdownSource::Bio(MD_TEXT)), html);
+    }
+
+    #[test]
+    fn can_convert_md_to_html_for_response() {
+        let html = r#"<p># H1
+## H2
+### H3
+#### H4
+##### H5
+###### H6</p>
+<p>## Text Formatting</p>
+<p>- <strong>Bold text</strong> is created with double asterisks or double underscores.
+- <em>Italic text</em> is created with single asterisks or single underscores.
+- <del>Strikethrough text</del> is created with double tildes.</p>
+<p>## Lists</p>
+<p>1. Ordered list item 1
+2. Ordered list item 2
+3. Ordered list item 3</p>
+<p>- Unordered list item
+- Unordered list item
+- Unordered list item</p>
+<p>## Links</p>
+<p>Create [links](<a href="https://www.storiny.com">https://www.storiny.com</a>) like this.</p>
+<p>## Images</p>
+<p>Embed images ![Alt text](image-url) like this:</p>
+<p>![Image alt](<a href="https://example.com/some_image.svg">https://example.com/some_image.svg</a>)</p>
+<p>## Code</p>
+<p>Inline code can be created with backticks like <code>code</code>.</p>
+<p>Create code blocks by wrapping the code in triple backticks:</p>
+<pre><code class="language-rust">fn main() {
+    println!(&quot;Hello&quot;);
+}
+</code></pre>
+<p>## Raw HTML</p>
+<p>&lt;img alt=&quot;raw html image&quot; src=&quot;<a href="https://example.com/image.png">https://example.com/image.png</a>&quot; /&gt;</p>
+"#;
+
+        assert_eq!(md_to_html(MarkdownSource::Response(MD_TEXT)), html);
     }
 }

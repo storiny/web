@@ -19,7 +19,9 @@ CREATE TABLE IF NOT EXISTS comments
 	-- Timestamps
 	created_at       TIMESTAMPTZ    NOT NULL DEFAULT NOW(),
 	edited_at        TIMESTAMPTZ,
-	deleted_at       TIMESTAMPTZ
+	deleted_at       TIMESTAMPTZ,
+	-- FTS
+	search_vec       TSVECTOR GENERATED ALWAYS AS (TO_TSVECTOR('english', "content")) STORED
 );
 
 CREATE INDEX user_id_on_comments ON comments (user_id);

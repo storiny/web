@@ -1,5 +1,5 @@
 WITH
-	history AS (SELECT
+	history_result AS (SELECT
 					-- Story
 					s.id,
 					s.title,
@@ -111,4 +111,4 @@ SELECT
 	"user!: Json<User>",
 	"tags!: Vec<Tag>"
 FROM
-	history
+	history_result

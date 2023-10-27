@@ -1,13 +1,16 @@
 WITH
-	bookmarks AS (SELECT
+	bookmarks_result AS (WITH
+					  search_query AS (SELECT
+										   PLAINTO_TSQUERY('english', $1) AS tsq)
+				  SELECT
 					  -- Story
 					  s.id,
 					  s.title,
-					  s.slug           AS "slug!",
+					  s.slug                                                   AS "slug!",
 					  s.description,
 					  s.splash_id,
 					  s.splash_hex,
-					  s.category::TEXT AS "category!",
+					  s.category::TEXT                                         AS "category!",
 					  s.age_restriction,
 					  s.license,
 					  s.user_id,
@@ -17,7 +20,7 @@ WITH
 					  s.like_count,
 					  s.comment_count,
 					  -- Timestamps
-					  s.published_at   AS "published_at!",
+					  s.published_at                                           AS "published_at!",
 					  s.edited_at,
 					  -- Boolean flags
 					  CASE
@@ -26,7 +29,7 @@ WITH
 							  TRUE
 						  ELSE
 							  FALSE
-					  END              AS "is_liked!",
+					  END                                                      AS "is_liked!",
 					  -- User
 					  JSON_BUILD_OBJECT(
 							  'id', su.id,
@@ -35,7 +38,7 @@ WITH
 							  'avatar_id', su.avatar_id,
 							  'avatar_hex', su.avatar_hex,
 							  'public_flags', su.public_flags
-					  )                AS "user!: Json<User>",
+					  )                                                        AS "user!: Json<User>",
 					  -- Tags
 					  COALESCE(
 									  ARRAY_AGG(
@@ -43,7 +46,9 @@ WITH
 											   ) FILTER (
 										  WHERE "s->story_tags->tag".id IS NOT NULL
 										  ), '{}'
-					  )                AS "tags!: Vec<Tag>"
+					  )                                                        AS "tags!: Vec<Tag>",
+					  -- Query score
+					  TS_RANK_CD(s.search_vec, (SELECT tsq FROM search_query)) AS "query_score"
 				  FROM
 					  bookmarks b
 						  INNER JOIN stories s
@@ -61,18 +66,20 @@ WITH
 						  -- Boolean story like flag
 						  LEFT OUTER JOIN story_likes AS "s->is_liked"
 										  ON "s->is_liked".story_id = s.id
-											  AND "s->is_liked".user_id = $1
+											  AND "s->is_liked".user_id = $2
 											  AND "s->is_liked".deleted_at IS NULL
 				  WHERE
-						b.user_id = $1
+						b.user_id = $2
+					AND s.search_vec @@ (SELECT tsq FROM search_query)
 					AND b.deleted_at IS NULL
 				  GROUP BY
 					  s.id,
 					  su.id,
 					  b.created_at
 				  ORDER BY
+					  query_score  DESC,
 					  b.created_at DESC
-				  LIMIT $2 OFFSET $3)
+				  LIMIT $3 OFFSET $4)
 SELECT
 	-- Story
 	id,
@@ -100,4 +107,4 @@ SELECT
 	"user!: Json<User>",
 	"tags!: Vec<Tag>"
 FROM
-	bookmarks
+	bookmarks_result
