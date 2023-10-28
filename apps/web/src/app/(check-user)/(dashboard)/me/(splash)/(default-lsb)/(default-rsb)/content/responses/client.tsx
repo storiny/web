@@ -37,14 +37,14 @@ const EmptyState = dynamic(() => import("./empty-state"), {
   loading: dynamic_loader()
 });
 
-type SortOrder = "dsc" | "asc";
+type SortOrder = "least" | "most";
 
 export type ResponsesTabValue = "comments" | "replies";
 export type ResponsesSortValue =
   | "recent"
   | "old"
-  | `replies-${SortOrder}`
-  | `likes-${SortOrder}`;
+  | `${SortOrder}-replied`
+  | `${SortOrder}-liked`;
 
 // Page header tabs
 
@@ -187,12 +187,12 @@ const ControlBar = ({
     >
       <Option value={"recent"}>Recent</Option>
       <Option value={"old"}>Old</Option>
-      <Option value={"likes-dsc"}>Most liked</Option>
-      <Option value={"likes-asc"}>Least liked</Option>
+      <Option value={"most-liked"}>Most liked</Option>
+      <Option value={"least-liked"}>Least liked</Option>
       {tab !== "replies" && (
         <React.Fragment>
-          <Option value={"replies-dsc"}>Most replied</Option>
-          <Option value={"replies-asc"}>Least replied</Option>
+          <Option value={"most-replied"}>Most replied</Option>
+          <Option value={"least-replied"}>Least replied</Option>
         </React.Fragment>
       )}
     </Select>
@@ -303,7 +303,11 @@ const ReplyList = (props: {
     page,
     sort,
     query: debounced_query
-  } as { page: number; query: string; sort: "recent" | "old" | `likes-${"dsc" | "asc"}` });
+  } as {
+    page: number;
+    query: string;
+    sort: "recent" | "old" | `${"least" | "most"}-liked`;
+  });
   const { items = [], has_more } = data || {};
   const is_typing = query !== debounced_query;
 

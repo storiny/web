@@ -1,13 +1,5 @@
-use crate::{
-    error::AppError,
-    middleware::identity::identity::Identity,
-    AppState,
-};
-use actix_web::{
-    delete,
-    web,
-    HttpResponse,
-};
+use crate::{error::AppError, middleware::identity::identity::Identity, AppState};
+use actix_web::{delete, web, HttpResponse};
 use serde::Deserialize;
 use validator::Validate;
 
@@ -54,13 +46,9 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::test_utils::test_utils::init_app_for_test;
-    use actix_http::body::to_bytes;
+    use crate::test_utils::test_utils::{assert_response_body_text, init_app_for_test};
     use actix_web::test;
-    use sqlx::{
-        PgPool,
-        Row,
-    };
+    use sqlx::{PgPool, Row};
 
     #[sqlx::test(fixtures("user"))]
     async fn can_unmute_a_user(pool: PgPool) -> sqlx::Result<()> {
@@ -75,7 +63,7 @@ mod tests {
             "#,
         )
         .bind(user_id)
-        .bind(2i64)
+        .bind(2_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -99,7 +87,7 @@ mod tests {
             "#,
         )
         .bind(user_id)
-        .bind(2i64)
+        .bind(2_i64)
         .fetch_one(&mut *conn)
         .await?;
 
@@ -108,7 +96,7 @@ mod tests {
         Ok(())
     }
 
-    #[sqlx::test(fixtures("user"))]
+    #[sqlx::test]
     async fn can_return_an_error_response_when_unmuting_an_unknown_user(
         pool: PgPool,
     ) -> sqlx::Result<()> {
@@ -121,10 +109,7 @@ mod tests {
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_client_error());
-        assert_eq!(
-            to_bytes(res.into_body()).await.unwrap_or_default(),
-            "User or mute not found".to_string()
-        );
+        assert_response_body_text(res, "User or mute not found").await;
 
         Ok(())
     }

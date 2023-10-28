@@ -1,9 +1,6 @@
 #[cfg(test)]
 mod tests {
-    use sqlx::{
-        PgPool,
-        Row,
-    };
+    use sqlx::{PgPool, Row};
 
     #[sqlx::test(fixtures("user", "story", "comment"))]
     async fn can_like_a_comment(pool: PgPool) -> sqlx::Result<()> {
@@ -14,8 +11,8 @@ mod tests {
             VALUES ($1, $2)
             "#,
         )
-        .bind(1i64)
-        .bind(4i64)
+        .bind(1_i64)
+        .bind(4_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -36,7 +33,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(4i64)
+        .bind(4_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -46,8 +43,8 @@ mod tests {
             VALUES ($1, $2)
             "#,
         )
-        .bind(1i64)
-        .bind(4i64)
+        .bind(1_i64)
+        .bind(4_i64)
         .execute(&mut *conn)
         .await;
 
@@ -77,7 +74,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -87,8 +84,8 @@ mod tests {
             VALUES ($1, $2)
             "#,
         )
-        .bind(1i64)
-        .bind(4i64)
+        .bind(1_i64)
+        .bind(4_i64)
         .execute(&mut *conn)
         .await;
 
@@ -118,7 +115,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -128,8 +125,8 @@ mod tests {
             VALUES ($1, $2)
             "#,
         )
-        .bind(1i64)
-        .bind(4i64)
+        .bind(1_i64)
+        .bind(4_i64)
         .execute(&mut *conn)
         .await;
 
@@ -160,8 +157,8 @@ mod tests {
             VALUES ($1, $2)
             "#,
         )
-        .bind(1i64)
-        .bind(4i64)
+        .bind(1_i64)
+        .bind(4_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -174,7 +171,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(4i64)
+        .bind(4_i64)
         .fetch_one(&mut *conn)
         .await?;
 
@@ -196,8 +193,8 @@ mod tests {
             VALUES ($1, $2)
             "#,
         )
-        .bind(1i64)
-        .bind(4i64)
+        .bind(1_i64)
+        .bind(4_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -210,7 +207,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(4i64)
+        .bind(4_i64)
         .fetch_one(&mut *conn)
         .await?;
 
@@ -224,8 +221,8 @@ mod tests {
             WHERE user_id = $1 AND comment_id = $2
             "#,
         )
-        .bind(1i64)
-        .bind(4i64)
+        .bind(1_i64)
+        .bind(4_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -236,7 +233,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(4i64)
+        .bind(4_i64)
         .fetch_one(&mut *conn)
         .await?;
 
@@ -250,8 +247,8 @@ mod tests {
             WHERE user_id = $1 AND comment_id = $2
             "#,
         )
-        .bind(1i64)
-        .bind(4i64)
+        .bind(1_i64)
+        .bind(4_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -262,7 +259,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(4i64)
+        .bind(4_i64)
         .fetch_one(&mut *conn)
         .await?;
 
@@ -284,8 +281,8 @@ mod tests {
             VALUES ($1, $2)
             "#,
         )
-        .bind(1i64)
-        .bind(4i64)
+        .bind(1_i64)
+        .bind(4_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -298,7 +295,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(4i64)
+        .bind(4_i64)
         .fetch_one(&mut *conn)
         .await?;
 
@@ -311,8 +308,8 @@ mod tests {
             WHERE user_id = $1 AND comment_id = $2
             "#,
         )
-        .bind(1i64)
-        .bind(4i64)
+        .bind(1_i64)
+        .bind(4_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -323,7 +320,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(4i64)
+        .bind(4_i64)
         .fetch_one(&mut *conn)
         .await?;
 
@@ -345,8 +342,8 @@ mod tests {
             VALUES ($1, $2)
             "#,
         )
-        .bind(1i64)
-        .bind(4i64)
+        .bind(1_i64)
+        .bind(4_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -359,8 +356,8 @@ mod tests {
             VALUES ($1, $2)
             "#,
         )
-        .bind(2i64)
-        .bind(4i64)
+        .bind(2_i64)
+        .bind(4_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -371,7 +368,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(4i64)
+        .bind(4_i64)
         .fetch_one(&mut *conn)
         .await?;
 
@@ -385,8 +382,8 @@ mod tests {
             WHERE user_id = $1 AND comment_id = $2
             "#,
         )
-        .bind(1i64)
-        .bind(4i64)
+        .bind(1_i64)
+        .bind(4_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -397,7 +394,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(4i64)
+        .bind(4_i64)
         .fetch_one(&mut *conn)
         .await?;
 
@@ -410,8 +407,8 @@ mod tests {
             WHERE user_id = $1 AND comment_id = $2
             "#,
         )
-        .bind(1i64)
-        .bind(4i64)
+        .bind(1_i64)
+        .bind(4_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -422,7 +419,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(4i64)
+        .bind(4_i64)
         .fetch_one(&mut *conn)
         .await?;
 

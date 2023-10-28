@@ -1,22 +1,11 @@
 use crate::{
     constants::buckets::S3_UPLOADS_BUCKET,
-    error::{
-        AppError,
-        ToastErrorResponse,
-    },
+    error::{AppError, ToastErrorResponse},
     middleware::identity::identity::Identity,
     AppState,
 };
-use actix_web::{
-    delete,
-    http::header::ContentType,
-    web,
-    HttpResponse,
-};
-use rusoto_s3::{
-    DeleteObjectRequest,
-    S3,
-};
+use actix_web::{delete, web, HttpResponse};
+use rusoto_s3::{DeleteObjectRequest, S3};
 use serde::Deserialize;
 use sqlx::Row;
 use validator::Validate;
@@ -78,7 +67,6 @@ async fn delete(
                     }
                     Err(kind) => match kind {
                         sqlx::Error::RowNotFound => Ok(HttpResponse::BadRequest()
-                            .content_type(ContentType::json())
                             .json(ToastErrorResponse::new("Asset not found".to_string()))),
                         _ => Ok(HttpResponse::InternalServerError().finish()),
                     },
@@ -97,8 +85,7 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::test_utils::test_utils::init_app_for_test;
-    use actix_http::body::to_bytes;
+    use crate::test_utils::test_utils::{assert_toast_error_response, init_app_for_test};
     use actix_web::test;
     use sqlx::PgPool;
 
@@ -165,11 +152,7 @@ mod tests {
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_client_error());
-        assert_eq!(
-            to_bytes(res.into_body()).await.unwrap_or_default(),
-            serde_json::to_string(&ToastErrorResponse::new("Asset not found".to_string()))
-                .unwrap_or_default()
-        );
+        assert_toast_error_response(res, "Asset not found").await;
 
         Ok(())
     }

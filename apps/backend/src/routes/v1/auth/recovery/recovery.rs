@@ -1,41 +1,20 @@
 use crate::{
     constants::{
-        email_source::EMAIL_SOURCE,
-        email_templates::EmailTemplate,
-        token_type::TokenType,
+        email_source::EMAIL_SOURCE, email_templates::EmailTemplate, token_type::TokenType,
     },
-    error::{
-        AppError,
-        FormErrorResponse,
-    },
+    error::{AppError, FormErrorResponse},
     AppState,
 };
-use actix_web::{
-    cookie::time::OffsetDateTime,
-    post,
-    web,
-    HttpResponse,
-};
+use actix_web::{cookie::time::OffsetDateTime, post, web, HttpResponse};
 use actix_web_validator::Json;
 use argon2::{
-    password_hash::{
-        rand_core::OsRng,
-        SaltString,
-    },
-    Argon2,
-    PasswordHasher,
+    password_hash::{rand_core::OsRng, SaltString},
+    Argon2, PasswordHasher,
 };
 use email_address::EmailAddress;
 use nanoid::nanoid;
-use rusoto_ses::{
-    Destination,
-    SendTemplatedEmailRequest,
-    Ses,
-};
-use serde::{
-    Deserialize,
-    Serialize,
-};
+use rusoto_ses::{Destination, SendTemplatedEmailRequest, Ses};
+use serde::{Deserialize, Serialize};
 use sqlx::Row;
 use time::Duration;
 use validator::Validate;
@@ -158,8 +137,7 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::test_utils::test_utils::init_app_for_test;
-    use actix_http::body::to_bytes;
+    use crate::test_utils::test_utils::{assert_form_error_response, init_app_for_test};
     use actix_web::test;
     use sqlx::PgPool;
 
@@ -209,14 +187,14 @@ mod tests {
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_client_error());
-        assert_eq!(
-            to_bytes(res.into_body()).await.unwrap(),
-            serde_json::to_string(&FormErrorResponse::new(vec![vec![
+        assert_form_error_response(
+            res,
+            vec![vec![
                 "email".to_string(),
                 "Could not find any account associated with this e-mail".to_string(),
-            ]]))
-            .unwrap()
-        );
+            ]],
+        )
+        .await;
 
         Ok(())
     }
@@ -237,7 +215,7 @@ mod tests {
         )
         .bind("sample")
         .bind(TokenType::PasswordReset.to_string())
-        .bind(1i64)
+        .bind(1_i64)
         .bind(OffsetDateTime::now_utc() + Duration::days(1)) // 24 hours
         .execute(&mut *conn)
         .await?;

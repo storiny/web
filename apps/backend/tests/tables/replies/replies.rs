@@ -1,13 +1,6 @@
 #[cfg(test)]
 mod tests {
-    use sqlx::{
-        pool::PoolConnection,
-        postgres::PgRow,
-        Error,
-        PgPool,
-        Postgres,
-        Row,
-    };
+    use sqlx::{pool::PoolConnection, postgres::PgRow, Error, PgPool, Postgres, Row};
     use time::OffsetDateTime;
 
     /// Inserts a sample reply into the database.
@@ -22,8 +15,8 @@ mod tests {
             "#,
         )
         .bind("Sample content".to_string())
-        .bind(1i64)
-        .bind(4i64)
+        .bind(1_i64)
+        .bind(4_i64)
         .fetch_one(&mut **conn)
         .await
     }
@@ -48,7 +41,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(4i64)
+        .bind(4_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -59,8 +52,8 @@ mod tests {
             "#,
         )
         .bind("Sample content")
-        .bind(1i64)
-        .bind(4i64)
+        .bind(1_i64)
+        .bind(4_i64)
         .execute(&mut *conn)
         .await;
 
@@ -90,7 +83,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -101,8 +94,8 @@ mod tests {
             "#,
         )
         .bind("Sample content")
-        .bind(1i64)
-        .bind(4i64)
+        .bind(1_i64)
+        .bind(4_i64)
         .execute(&mut *conn)
         .await;
 
@@ -132,7 +125,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -143,8 +136,8 @@ mod tests {
             "#,
         )
         .bind("Sample content")
-        .bind(1i64)
-        .bind(4i64)
+        .bind(1_i64)
+        .bind(4_i64)
         .execute(&mut *conn)
         .await;
 
@@ -175,8 +168,8 @@ mod tests {
             VALUES ($1, $2)
             "#,
         )
-        .bind(1i64)
-        .bind(2i64)
+        .bind(1_i64)
+        .bind(2_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -189,8 +182,8 @@ mod tests {
             "#,
         )
         .bind("Sample content".to_string())
-        .bind(2i64)
-        .bind(4i64)
+        .bind(2_i64)
+        .bind(4_i64)
         .execute(&mut *conn)
         .await;
 
@@ -223,16 +216,14 @@ mod tests {
             RETURNING deleted_at
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .bind(reply_id)
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(
-            insert_result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none()
-        );
+        assert!(insert_result
+            .get::<Option<OffsetDateTime>, _>("deleted_at")
+            .is_none());
 
         // Soft-delete the reply
         sqlx::query(
@@ -253,16 +244,14 @@ mod tests {
             WHERE user_id = $1 AND reply_id = $2
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .bind(reply_id)
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(
-            result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_some()
-        );
+        assert!(result
+            .get::<Option<OffsetDateTime>, _>("deleted_at")
+            .is_some());
 
         // Restore the reply
         sqlx::query(
@@ -283,16 +272,14 @@ mod tests {
             WHERE user_id = $1 AND reply_id = $2
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .bind(reply_id)
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(
-            result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none()
-        );
+        assert!(result
+            .get::<Option<OffsetDateTime>, _>("deleted_at")
+            .is_none());
 
         Ok(())
     }
@@ -316,7 +303,7 @@ mod tests {
         )
         .bind(reply_id)
         .bind(0)
-        .bind(1i64)
+        .bind(1_i64)
         .fetch_one(&mut *conn)
         .await?;
 
@@ -368,7 +355,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(4i64)
+        .bind(4_i64)
         .fetch_one(&mut *conn)
         .await?;
 
@@ -391,7 +378,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(4i64)
+        .bind(4_i64)
         .fetch_one(&mut *conn)
         .await?;
 
@@ -416,7 +403,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(4i64)
+        .bind(4_i64)
         .fetch_one(&mut *conn)
         .await?;
 
@@ -441,7 +428,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(4i64)
+        .bind(4_i64)
         .fetch_one(&mut *conn)
         .await?;
 
@@ -464,7 +451,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(4i64)
+        .bind(4_i64)
         .fetch_one(&mut *conn)
         .await?;
 
@@ -488,7 +475,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(4i64)
+        .bind(4_i64)
         .fetch_one(&mut *conn)
         .await?;
 
@@ -516,7 +503,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(4i64)
+        .bind(4_i64)
         .fetch_one(&mut *conn)
         .await?;
 
@@ -541,7 +528,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(4i64)
+        .bind(4_i64)
         .fetch_one(&mut *conn)
         .await?;
 
@@ -565,7 +552,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(4i64)
+        .bind(4_i64)
         .fetch_one(&mut *conn)
         .await?;
 
@@ -591,16 +578,14 @@ mod tests {
             RETURNING deleted_at
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .bind(reply_id)
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(
-            insert_result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none()
-        );
+        assert!(insert_result
+            .get::<Option<OffsetDateTime>, _>("deleted_at")
+            .is_none());
 
         // Soft-delete the reply
         sqlx::query(
@@ -622,7 +607,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -633,16 +618,14 @@ mod tests {
             WHERE user_id = $1 AND reply_id = $2
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .bind(reply_id)
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(
-            result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_some()
-        );
+        assert!(result
+            .get::<Option<OffsetDateTime>, _>("deleted_at")
+            .is_some());
 
         // Restore the reply
         sqlx::query(
@@ -663,16 +646,14 @@ mod tests {
             WHERE user_id = $1 AND reply_id = $2
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .bind(reply_id)
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(
-            result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_some()
-        );
+        assert!(result
+            .get::<Option<OffsetDateTime>, _>("deleted_at")
+            .is_some());
 
         // Restore the user
         sqlx::query(
@@ -682,7 +663,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -693,16 +674,14 @@ mod tests {
             WHERE user_id = $1 AND reply_id = $2
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .bind(reply_id)
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(
-            result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none()
-        );
+        assert!(result
+            .get::<Option<OffsetDateTime>, _>("deleted_at")
+            .is_none());
 
         Ok(())
     }
@@ -722,16 +701,14 @@ mod tests {
             RETURNING deleted_at
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .bind(reply_id)
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(
-            insert_result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none()
-        );
+        assert!(insert_result
+            .get::<Option<OffsetDateTime>, _>("deleted_at")
+            .is_none());
 
         // Soft-delete the reply
         sqlx::query(
@@ -753,7 +730,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -764,16 +741,14 @@ mod tests {
             WHERE user_id = $1 AND reply_id = $2
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .bind(reply_id)
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(
-            result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_some()
-        );
+        assert!(result
+            .get::<Option<OffsetDateTime>, _>("deleted_at")
+            .is_some());
 
         // Restore the reply
         sqlx::query(
@@ -794,16 +769,14 @@ mod tests {
             WHERE user_id = $1 AND reply_id = $2
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .bind(reply_id)
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(
-            result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_some()
-        );
+        assert!(result
+            .get::<Option<OffsetDateTime>, _>("deleted_at")
+            .is_some());
 
         // Activate the user
         sqlx::query(
@@ -813,7 +786,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -824,16 +797,14 @@ mod tests {
             WHERE user_id = $1 AND reply_id = $2
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .bind(reply_id)
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(
-            result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none()
-        );
+        assert!(result
+            .get::<Option<OffsetDateTime>, _>("deleted_at")
+            .is_none());
 
         Ok(())
     }
@@ -852,7 +823,7 @@ mod tests {
             VALUES ($1, $2)
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .bind(reply_id)
         .execute(&mut *conn)
         .await?;
@@ -879,7 +850,7 @@ mod tests {
             )
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .bind(reply_id)
         .fetch_one(&mut *conn)
         .await?;
@@ -904,7 +875,7 @@ mod tests {
         )
         .bind(reply_id)
         .bind(0)
-        .bind(1i64)
+        .bind(1_i64)
         .fetch_one(&mut *conn)
         .await?;
 

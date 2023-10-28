@@ -1,52 +1,27 @@
 use crate::{
     constants::{
-        email_source::EMAIL_SOURCE,
-        email_templates::EmailTemplate,
-        reserved_usernames::RESERVED_USERNAMES,
-        token_type::TokenType,
+        email_source::EMAIL_SOURCE, email_templates::EmailTemplate,
+        reserved_usernames::RESERVED_USERNAMES, token_type::TokenType,
     },
-    error::{
-        AppError,
-        FormErrorResponse,
-        ToastErrorResponse,
-    },
+    error::{AppError, FormErrorResponse, ToastErrorResponse},
     middleware::identity::identity::Identity,
     AppState,
 };
-use actix_web::{
-    http::header::ContentType,
-    post,
-    web,
-    HttpResponse,
-};
+use actix_web::{post, web, HttpResponse};
 use actix_web_validator::Json;
 use argon2::{
-    password_hash::{
-        rand_core::OsRng,
-        SaltString,
-    },
-    Argon2,
-    PasswordHasher,
+    password_hash::{rand_core::OsRng, SaltString},
+    Argon2, PasswordHasher,
 };
 use email_address::EmailAddress;
 use lazy_static::lazy_static;
 use nanoid::nanoid;
 use regex::Regex;
-use rusoto_ses::{
-    Destination,
-    SendTemplatedEmailRequest,
-    Ses,
-};
-use serde::{
-    Deserialize,
-    Serialize,
-};
+use rusoto_ses::{Destination, SendTemplatedEmailRequest, Ses};
+use serde::{Deserialize, Serialize};
 use slugify::slugify;
 use sqlx::Row;
-use time::{
-    Duration,
-    OffsetDateTime,
-};
+use time::{Duration, OffsetDateTime};
 use validator::Validate;
 
 lazy_static! {
@@ -84,11 +59,9 @@ async fn post(
 ) -> Result<HttpResponse, AppError> {
     // Return if the user maintains a valid session
     if user.is_some() {
-        return Ok(HttpResponse::BadRequest()
-            .content_type(ContentType::json())
-            .json(ToastErrorResponse::new(
-                "You are already logged-in".to_string(),
-            )));
+        return Ok(HttpResponse::BadRequest().json(ToastErrorResponse::new(
+            "You are already logged-in".to_string(),
+        )));
     }
 
     let mut form_errors: Vec<Vec<String>> = vec![];
@@ -246,13 +219,9 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::test_utils::test_utils::init_app_for_test;
-    use actix_http::body::to_bytes;
+    use crate::test_utils::test_utils::{assert_form_error_response, init_app_for_test};
     use actix_web::test;
-    use argon2::{
-        PasswordHash,
-        PasswordVerifier,
-    };
+    use argon2::{PasswordHash, PasswordVerifier};
     use sqlx::PgPool;
 
     #[sqlx::test]
@@ -289,14 +258,12 @@ mod tests {
         assert_eq!(user.get::<String, _>("name"), "Some user".to_string());
 
         // Check whether the hashed password matches
-        assert!(
-            Argon2::default()
-                .verify_password(
-                    "some_secret_password".as_bytes(),
-                    &PasswordHash::new(&user.get::<String, _>("password")).unwrap(),
-                )
-                .is_ok()
-        );
+        assert!(Argon2::default()
+            .verify_password(
+                "some_secret_password".as_bytes(),
+                &PasswordHash::new(&user.get::<String, _>("password")).unwrap(),
+            )
+            .is_ok());
 
         // Should also insert an e-mail verification token
         let token = sqlx::query(
@@ -347,14 +314,14 @@ mod tests {
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_client_error());
-        assert_eq!(
-            to_bytes(res.into_body()).await.unwrap_or_default(),
-            serde_json::to_string(&FormErrorResponse::new(vec![vec![
+        assert_form_error_response(
+            res,
+            vec![vec![
                 "email".to_string(),
                 "This e-mail is already in use".to_string(),
-            ]]))
-            .unwrap_or_default()
-        );
+            ]],
+        )
+        .await;
 
         Ok(())
     }
@@ -390,14 +357,14 @@ mod tests {
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_client_error());
-        assert_eq!(
-            to_bytes(res.into_body()).await.unwrap_or_default(),
-            serde_json::to_string(&FormErrorResponse::new(vec![vec![
+        assert_form_error_response(
+            res,
+            vec![vec![
                 "username".to_string(),
                 "This username is already in use".to_string(),
-            ]]))
-            .unwrap_or_default()
-        );
+            ]],
+        )
+        .await;
 
         Ok(())
     }
@@ -419,14 +386,14 @@ mod tests {
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_client_error());
-        assert_eq!(
-            to_bytes(res.into_body()).await.unwrap_or_default(),
-            serde_json::to_string(&FormErrorResponse::new(vec![vec![
+        assert_form_error_response(
+            res,
+            vec![vec![
                 "username".to_string(),
                 "This username is not available".to_string(),
-            ]]))
-            .unwrap_or_default()
-        );
+            ]],
+        )
+        .await;
 
         Ok(())
     }

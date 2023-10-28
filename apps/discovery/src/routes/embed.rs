@@ -69,7 +69,7 @@ async fn respond_with_metadata(url: &str) -> HttpResponse {
 
     if let Ok(metadata) = metadata {
         HttpResponse::Ok()
-            .content_type(ContentType::json())
+
             .json(metadata)
     } else {
         HttpResponse::UnprocessableEntity()
@@ -204,7 +204,7 @@ async fn get(
                                     &provider.supports_binary_theme,
                                 ) {
                                     None => HttpResponse::Ok()
-                                        .content_type(ContentType::json())
+
                                         .json(&json),
                                     Some(parsed) => {
                                         match parsed {
@@ -249,7 +249,7 @@ async fn get(
                                             ParseResult::ScriptResult(result) => {
                                                 // Handle responses without iframes
                                                 HttpResponse::Ok()
-                                                    .content_type(ContentType::json())
+
                                                     .json(&result)
                                             }
                                         }

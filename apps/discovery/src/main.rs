@@ -78,7 +78,7 @@ async fn main() -> io::Result<()> {
 
     let allowed_origin = env::var("ALLOWED_ORIGIN").expect("Allowed origin not set");
     let redis_host = env::var("REDIS_HOST").unwrap_or("localhost".to_string());
-    let redis_port = env::var("REDIS_PORT").unwrap_or("7000".to_string());
+    let redis_port = env::var("REDIS_PORT").unwrap_or("7001".to_string());
     let redis_client = redis::Client::open(format!("redis://{redis_host}:{redis_port}"))
         .expect("Cannot build Redis client");
     let redis_connection_manager = ConnectionManager::new(redis_client)

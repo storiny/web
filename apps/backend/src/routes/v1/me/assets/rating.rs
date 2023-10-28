@@ -1,22 +1,11 @@
 use crate::{
-    error::{
-        AppError,
-        ToastErrorResponse,
-    },
+    error::{AppError, ToastErrorResponse},
     middleware::identity::identity::Identity,
     AppState,
 };
-use actix_web::{
-    http::header::ContentType,
-    patch,
-    web,
-    HttpResponse,
-};
+use actix_web::{patch, web, HttpResponse};
 use actix_web_validator::Json;
-use serde::{
-    Deserialize,
-    Serialize,
-};
+use serde::{Deserialize, Serialize};
 use validator::Validate;
 
 #[derive(Debug, Serialize, Deserialize, Validate)]
@@ -55,7 +44,6 @@ async fn patch(
                 .rows_affected()
                 {
                     0 => Ok(HttpResponse::BadRequest()
-                        .content_type(ContentType::json())
                         .json(ToastErrorResponse::new("Asset not found".to_string()))),
                     _ => Ok(HttpResponse::NoContent().finish()),
                 }
@@ -73,13 +61,9 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::test_utils::test_utils::init_app_for_test;
-    use actix_http::body::to_bytes;
+    use crate::test_utils::test_utils::{assert_toast_error_response, init_app_for_test};
     use actix_web::test;
-    use sqlx::{
-        PgPool,
-        Row,
-    };
+    use sqlx::{PgPool, Row};
 
     #[sqlx::test]
     async fn can_update_rating_for_an_asset(pool: PgPool) -> sqlx::Result<()> {
@@ -103,7 +87,7 @@ mod tests {
         .await?;
 
         // Should be `NOT_RATED` by default
-        assert_eq!(result.get::<i16, _>("rating"), 1i16);
+        assert_eq!(result.get::<i16, _>("rating"), 1_i16);
 
         let asset_id = result.get::<i64, _>("id");
 
@@ -127,7 +111,7 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert_eq!(asset.get::<i16, _>("rating"), 2i16);
+        assert_eq!(asset.get::<i16, _>("rating"), 2_i16);
 
         Ok(())
     }
@@ -144,11 +128,7 @@ mod tests {
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_client_error());
-        assert_eq!(
-            to_bytes(res.into_body()).await.unwrap_or_default(),
-            serde_json::to_string(&ToastErrorResponse::new("Asset not found".to_string()))
-                .unwrap_or_default()
-        );
+        assert_toast_error_response(res, "Asset not found").await;
 
         Ok(())
     }

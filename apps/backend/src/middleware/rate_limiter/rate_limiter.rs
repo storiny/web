@@ -110,7 +110,7 @@ impl Backend<SimpleInput> for RedisBackend {
         pipe.atomic()
             .cmd("SET")
             .arg(key.as_ref())
-            .arg(0i64)
+            .arg(0_i64)
             .arg("EX")
             .arg(input.interval.as_secs())
             .arg("NX")

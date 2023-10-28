@@ -1,47 +1,21 @@
 use crate::{
-    error::{
-        AppError,
-        FormErrorResponse,
-        ToastErrorResponse,
-    },
-    middleware::{
-        identity::identity::Identity,
-        session::session::Session,
-    },
+    error::{AppError, FormErrorResponse, ToastErrorResponse},
+    middleware::{identity::identity::Identity, session::session::Session},
     models::user::UserFlag,
     utils::{
-        flag::{
-            Flag,
-            Mask,
-        },
+        flag::{Flag, Mask},
         get_client_device::get_client_device,
         get_client_location::get_client_location,
     },
     AppState,
 };
 use actix_http::HttpMessage;
-use actix_web::{
-    http::header::ContentType,
-    post,
-    web,
-    HttpRequest,
-    HttpResponse,
-};
+use actix_web::{post, web, HttpRequest, HttpResponse};
 use actix_web_validator::Json;
-use argon2::{
-    Argon2,
-    PasswordHash,
-    PasswordVerifier,
-};
+use argon2::{Argon2, PasswordHash, PasswordVerifier};
 use email_address::EmailAddress;
-use serde::{
-    Deserialize,
-    Serialize,
-};
-use sqlx::{
-    Error,
-    Row,
-};
+use serde::{Deserialize, Serialize};
+use sqlx::{Error, Row};
 use std::net::IpAddr;
 use time::OffsetDateTime;
 use validator::Validate;
@@ -77,21 +51,19 @@ async fn post(
 ) -> Result<HttpResponse, AppError> {
     // Return if the user is already logged-in
     if user.is_some() {
-        return Ok(HttpResponse::BadRequest()
-            .content_type(ContentType::json())
-            .json(ToastErrorResponse::new(
-                "You are already logged-in".to_string(),
-            )));
+        return Ok(HttpResponse::BadRequest().json(ToastErrorResponse::new(
+            "You are already logged-in".to_string(),
+        )));
     }
 
     // Check for valid e-mail
     if !EmailAddress::is_valid(&payload.email) {
-        return Ok(HttpResponse::BadRequest()
-            .content_type(ContentType::json())
-            .json(FormErrorResponse::new(vec![vec![
+        return Ok(
+            HttpResponse::BadRequest().json(FormErrorResponse::new(vec![vec![
                 "email".to_string(),
                 "Invalid e-mail".to_string(),
-            ]])));
+            ]])),
+        );
     }
 
     let should_bypass = query.bypass.is_some();
@@ -111,7 +83,6 @@ async fn post(
             // User has created account using a third-party service, such as Apple or Google
             if user_password.is_none() {
                 return Ok(HttpResponse::Unauthorized()
-                    .content_type(ContentType::json())
                     .json(ToastErrorResponse::new("Invalid credentials".to_string())));
             }
 
@@ -129,11 +100,9 @@ async fn post(
                                     UserFlag::TemporarilySuspended,
                                     UserFlag::PermanentlySuspended,
                                 ])) {
-                                    return Ok(HttpResponse::Ok()
-                                        .content_type(ContentType::json())
-                                        .json(Response {
-                                            result: "suspended".to_string(),
-                                        }));
+                                    return Ok(HttpResponse::Ok().json(Response {
+                                        result: "suspended".to_string(),
+                                    }));
                                 }
                             }
 
@@ -156,11 +125,9 @@ async fn post(
                                         .execute(&data.db_pool)
                                         .await?;
                                     } else {
-                                        return Ok(HttpResponse::Ok()
-                                            .content_type(ContentType::json())
-                                            .json(Response {
-                                                result: "held_for_deletion".to_string(),
-                                            }));
+                                        return Ok(HttpResponse::Ok().json(Response {
+                                            result: "held_for_deletion".to_string(),
+                                        }));
                                     }
                                 }
                             }
@@ -184,11 +151,9 @@ async fn post(
                                         .execute(&data.db_pool)
                                         .await?;
                                     } else {
-                                        return Ok(HttpResponse::Ok()
-                                            .content_type(ContentType::json())
-                                            .json(Response {
-                                                result: "deactivated".to_string(),
-                                            }));
+                                        return Ok(HttpResponse::Ok().json(Response {
+                                            result: "deactivated".to_string(),
+                                        }));
                                     }
                                 }
                             }
@@ -198,11 +163,9 @@ async fn post(
                                 let email_verified = user.get::<bool, _>("email_verified");
 
                                 if !email_verified {
-                                    return Ok(HttpResponse::Ok()
-                                        .content_type(ContentType::json())
-                                        .json(Response {
-                                            result: "email_confirmation".to_string(),
-                                        }));
+                                    return Ok(HttpResponse::Ok().json(Response {
+                                        result: "email_confirmation".to_string(),
+                                    }));
                                 }
                             }
 
@@ -244,16 +207,13 @@ async fn post(
                             }
 
                             match Identity::login(&req.extensions(), user.get::<i64, _>("id")) {
-                                Ok(_) => Ok(HttpResponse::Ok()
-                                    .content_type(ContentType::json())
-                                    .json(Response {
-                                        result: "success".to_string(),
-                                    })),
+                                Ok(_) => Ok(HttpResponse::Ok().json(Response {
+                                    result: "success".to_string(),
+                                })),
                                 Err(_) => Ok(HttpResponse::InternalServerError().finish()),
                             }
                         }
                         Err(_) => Ok(HttpResponse::Unauthorized()
-                            .content_type(ContentType::json())
                             .json(ToastErrorResponse::new("Invalid credentials".to_string()))),
                     }
                 }
@@ -261,11 +221,9 @@ async fn post(
             };
         }
         Err(kind) => match kind {
-            Error::RowNotFound => Ok(HttpResponse::Unauthorized()
-                .content_type(ContentType::json())
-                .json(ToastErrorResponse::new(
-                    "Invalid e-mail or password".to_string(),
-                ))),
+            Error::RowNotFound => Ok(HttpResponse::Unauthorized().json(ToastErrorResponse::new(
+                "Invalid e-mail or password".to_string(),
+            ))),
             _ => Ok(HttpResponse::InternalServerError().finish()),
         },
     }
@@ -278,46 +236,29 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::test_utils::test_utils::{assert_response_body_text, assert_toast_error_response};
     use crate::{
         test_utils::test_utils::init_app_for_test,
-        utils::{
-            get_client_device::ClientDevice,
-            get_client_location::ClientLocation,
-        },
+        utils::{get_client_device::ClientDevice, get_client_location::ClientLocation},
     };
-    use actix_http::body::to_bytes;
-    use actix_web::{
-        get,
-        services,
-        test,
-        Responder,
-    };
+    use actix_web::{get, services, test, Responder};
     use argon2::{
-        password_hash::{
-            rand_core::OsRng,
-            SaltString,
-        },
+        password_hash::{rand_core::OsRng, SaltString},
         PasswordHasher,
     };
     use serde_json::json;
     use sqlx::PgPool;
-    use std::net::{
-        Ipv4Addr,
-        SocketAddr,
-        SocketAddrV4,
-    };
+    use std::net::{Ipv4Addr, SocketAddr, SocketAddrV4};
 
     /// Only for testing
     #[get("/v1/auth/login")]
     async fn get(session: Session) -> impl Responder {
         let location = session.get::<ClientLocation>("location").unwrap();
         let device = session.get::<ClientDevice>("device").unwrap();
-        HttpResponse::Ok()
-            .content_type(ContentType::json())
-            .json(json!({
-                "location": location,
-                "device": device
-            }))
+        HttpResponse::Ok().json(json!({
+            "location": location,
+            "device": device
+        }))
     }
 
     /// Returns sample email and hashed password
@@ -364,13 +305,14 @@ mod tests {
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_success());
-        assert_eq!(
-            to_bytes(res.into_body()).await.unwrap_or_default(),
-            serde_json::to_string(&Response {
-                result: "success".to_string()
+        assert_response_body_text(
+            res,
+            &serde_json::to_string(&Response {
+                result: "success".to_string(),
             })
-            .unwrap_or_default()
-        );
+            .unwrap_or_default(),
+        )
+        .await;
 
         Ok(())
     }
@@ -406,13 +348,7 @@ mod tests {
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_client_error());
-        assert_eq!(
-            to_bytes(res.into_body()).await.unwrap(),
-            serde_json::to_string(&ToastErrorResponse::new(
-                "Invalid e-mail or password".to_string()
-            ))
-            .unwrap()
-        );
+        assert_toast_error_response(res, "Invalid e-mail or password").await;
 
         Ok(())
     }
@@ -447,11 +383,7 @@ mod tests {
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_client_error());
-        assert_eq!(
-            to_bytes(res.into_body()).await.unwrap(),
-            serde_json::to_string(&ToastErrorResponse::new("Invalid credentials".to_string()))
-                .unwrap()
-        );
+        assert_toast_error_response(res, "Invalid credentials").await;
 
         Ok(())
     }
@@ -487,11 +419,7 @@ mod tests {
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_client_error());
-        assert_eq!(
-            to_bytes(res.into_body()).await.unwrap(),
-            serde_json::to_string(&ToastErrorResponse::new("Invalid credentials".to_string()))
-                .unwrap()
-        );
+        assert_toast_error_response(res, "Invalid credentials").await;
 
         Ok(())
     }
@@ -532,13 +460,14 @@ mod tests {
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_success());
-        assert_eq!(
-            to_bytes(res.into_body()).await.unwrap(),
-            serde_json::to_string(&Response {
-                result: "suspended".to_string()
+        assert_response_body_text(
+            res,
+            &serde_json::to_string(&Response {
+                result: "suspended".to_string(),
             })
-            .unwrap()
-        );
+            .unwrap(),
+        )
+        .await;
 
         Ok(())
     }
@@ -579,13 +508,14 @@ mod tests {
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_success());
-        assert_eq!(
-            to_bytes(res.into_body()).await.unwrap(),
-            serde_json::to_string(&Response {
-                result: "suspended".to_string()
+        assert_response_body_text(
+            res,
+            &serde_json::to_string(&Response {
+                result: "suspended".to_string(),
             })
-            .unwrap()
-        );
+            .unwrap(),
+        )
+        .await;
 
         Ok(())
     }
@@ -633,13 +563,14 @@ mod tests {
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_success());
-        assert_eq!(
-            to_bytes(res.into_body()).await.unwrap(),
-            serde_json::to_string(&Response {
-                result: "deactivated".to_string()
+        assert_response_body_text(
+            res,
+            &serde_json::to_string(&Response {
+                result: "deactivated".to_string(),
             })
-            .unwrap()
-        );
+            .unwrap(),
+        )
+        .await;
 
         Ok(())
     }
@@ -687,13 +618,14 @@ mod tests {
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_success());
-        assert_eq!(
-            to_bytes(res.into_body()).await.unwrap(),
-            serde_json::to_string(&Response {
-                result: "held_for_deletion".to_string()
+        assert_response_body_text(
+            res,
+            &serde_json::to_string(&Response {
+                result: "held_for_deletion".to_string(),
             })
-            .unwrap()
-        );
+            .unwrap(),
+        )
+        .await;
 
         Ok(())
     }
@@ -729,13 +661,14 @@ mod tests {
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_success());
-        assert_eq!(
-            to_bytes(res.into_body()).await.unwrap(),
-            serde_json::to_string(&Response {
-                result: "email_confirmation".to_string()
+        assert_response_body_text(
+            res,
+            &serde_json::to_string(&Response {
+                result: "email_confirmation".to_string(),
             })
-            .unwrap()
-        );
+            .unwrap(),
+        )
+        .await;
 
         Ok(())
     }
@@ -942,13 +875,14 @@ mod tests {
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_success());
-        assert_eq!(
-            to_bytes(res.into_body()).await.unwrap_or_default(),
-            serde_json::to_string(&Response {
-                result: "success".to_string()
+        assert_response_body_text(
+            res,
+            &serde_json::to_string(&Response {
+                result: "success".to_string(),
             })
-            .unwrap_or_default()
-        );
+            .unwrap_or_default(),
+        )
+        .await;
 
         // User should be restored
         let user_result = sqlx::query(
@@ -961,11 +895,9 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(
-            user_result
-                .get::<Option<OffsetDateTime>, _>("deleted_at")
-                .is_none()
-        );
+        assert!(user_result
+            .get::<Option<OffsetDateTime>, _>("deleted_at")
+            .is_none());
 
         Ok(())
     }
@@ -1017,13 +949,14 @@ mod tests {
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_success());
-        assert_eq!(
-            to_bytes(res.into_body()).await.unwrap_or_default(),
-            serde_json::to_string(&Response {
-                result: "success".to_string()
+        assert_response_body_text(
+            res,
+            &serde_json::to_string(&Response {
+                result: "success".to_string(),
             })
-            .unwrap_or_default()
-        );
+            .unwrap_or_default(),
+        )
+        .await;
 
         // User should be reactivated
         let user_result = sqlx::query(
@@ -1036,11 +969,9 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(
-            user_result
-                .get::<Option<OffsetDateTime>, _>("deactivated_at")
-                .is_none()
-        );
+        assert!(user_result
+            .get::<Option<OffsetDateTime>, _>("deactivated_at")
+            .is_none());
 
         Ok(())
     }

@@ -1,25 +1,12 @@
 use crate::{
-    constants::account_activity_type::AccountActivityType,
-    error::AppError,
-    middleware::identity::identity::Identity,
-    AppState,
+    constants::account_activity_type::AccountActivityType, error::AppError,
+    middleware::identity::identity::Identity, AppState,
 };
-use actix_web::{
-    get,
-    http::header::ContentType,
-    web,
-    HttpResponse,
-};
+use actix_web::{get, web, HttpResponse};
 use actix_web_validator::QsQuery;
-use serde::{
-    Deserialize,
-    Serialize,
-};
+use serde::{Deserialize, Serialize};
 use sqlx::FromRow;
-use time::{
-    format_description,
-    OffsetDateTime,
-};
+use time::{format_description, OffsetDateTime};
 use validator::Validate;
 
 #[derive(Serialize, Deserialize, Validate)]
@@ -93,7 +80,7 @@ async fn get(
                 "#,
             )
             .bind(user_id)
-            .bind(10i16)
+            .bind(10_i16)
             .bind((page * 10) as i16)
             .fetch_all(&data.db_pool)
             .await?;
@@ -102,9 +89,7 @@ async fn get(
                 (*item).description = Some(get_description_for_activity(&item));
             }
 
-            Ok(HttpResponse::Ok()
-                .content_type(ContentType::json())
-                .json(result))
+            Ok(HttpResponse::Ok().json(result))
         }
         Err(_) => Ok(HttpResponse::InternalServerError().finish()),
     }
@@ -117,11 +102,9 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::test_utils::test_utils::init_app_for_test;
-    use actix_http::body::to_bytes;
+    use crate::test_utils::test_utils::{init_app_for_test, res_to_string};
     use actix_web::test;
     use sqlx::PgPool;
-    use std::str;
 
     #[sqlx::test]
     async fn can_return_account_activity(pool: PgPool) -> sqlx::Result<()> {
@@ -134,9 +117,7 @@ mod tests {
 
         assert!(res.status().is_success());
 
-        let json = serde_json::from_str::<Vec<AccountActivity>>(
-            str::from_utf8(&to_bytes(res.into_body()).await.unwrap().to_vec()).unwrap(),
-        );
+        let json = serde_json::from_str::<Vec<AccountActivity>>(&res_to_string(res).await);
 
         assert!(json.is_ok());
 
@@ -145,13 +126,11 @@ mod tests {
         let creation_activity = &json_data[0];
 
         // Should return description generated at the application layer
-        assert!(
-            creation_activity
-                .description
-                .clone()
-                .unwrap()
-                .starts_with("You created this account on")
-        );
+        assert!(creation_activity
+            .description
+            .clone()
+            .unwrap()
+            .starts_with("You created this account on"));
 
         Ok(())
     }
@@ -184,9 +163,7 @@ mod tests {
 
         assert!(res.status().is_success());
 
-        let json = serde_json::from_str::<Vec<AccountActivity>>(
-            str::from_utf8(&to_bytes(res.into_body()).await.unwrap().to_vec()).unwrap(),
-        );
+        let json = serde_json::from_str::<Vec<AccountActivity>>(&res_to_string(res).await);
 
         assert!(json.is_ok());
 

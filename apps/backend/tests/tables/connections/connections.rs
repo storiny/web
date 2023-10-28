@@ -13,7 +13,7 @@ mod tests {
         )
         .bind(0)
         .bind("some-id".to_string())
-        .bind(1i64)
+        .bind(1_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -36,7 +36,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -48,7 +48,7 @@ mod tests {
         )
         .bind(0)
         .bind("some-id".to_string())
-        .bind(1i64)
+        .bind(1_i64)
         .execute(&mut *conn)
         .await;
 
@@ -78,7 +78,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -90,7 +90,7 @@ mod tests {
         )
         .bind(0)
         .bind("some-id".to_string())
-        .bind(1i64)
+        .bind(1_i64)
         .execute(&mut *conn)
         .await;
 

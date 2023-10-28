@@ -1,18 +1,9 @@
 use crate::{
-    error::{
-        AppError,
-        ToastErrorResponse,
-    },
+    error::{AppError, ToastErrorResponse},
     middleware::identity::identity::Identity,
     AppState,
 };
-use actix_web::{
-    delete,
-    http::header::ContentType,
-    post,
-    web,
-    HttpResponse,
-};
+use actix_web::{delete, post, web, HttpResponse};
 use serde::Deserialize;
 use validator::Validate;
 
@@ -44,7 +35,6 @@ async fn post(
                 .rows_affected()
                 {
                     0 => Ok(HttpResponse::BadRequest()
-                        .content_type(ContentType::json())
                         .json(ToastErrorResponse::new("Asset not found".to_string()))),
                     _ => Ok(HttpResponse::NoContent().finish()),
                 }
@@ -78,7 +68,6 @@ async fn delete(
                 .rows_affected()
                 {
                     0 => Ok(HttpResponse::BadRequest()
-                        .content_type(ContentType::json())
                         .json(ToastErrorResponse::new("Asset not found".to_string()))),
                     _ => Ok(HttpResponse::NoContent().finish()),
                 }
@@ -97,16 +86,9 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::test_utils::test_utils::init_app_for_test;
-    use actix_http::body::to_bytes;
-    use actix_web::{
-        services,
-        test,
-    };
-    use sqlx::{
-        PgPool,
-        Row,
-    };
+    use crate::test_utils::test_utils::{assert_toast_error_response, init_app_for_test};
+    use actix_web::{services, test};
+    use sqlx::{PgPool, Row};
     use time::OffsetDateTime;
 
     #[sqlx::test]
@@ -133,11 +115,9 @@ mod tests {
 
         assert!(result.try_get::<i64, _>("id").is_ok());
         // `favourited_at` should be NULL initially
-        assert!(
-            result
-                .get::<Option<OffsetDateTime>, _>("favourited_at")
-                .is_none()
-        );
+        assert!(result
+            .get::<Option<OffsetDateTime>, _>("favourited_at")
+            .is_none());
 
         let asset_id = result.get::<i64, _>("id");
 
@@ -161,11 +141,9 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(
-            asset
-                .get::<Option<OffsetDateTime>, _>("favourited_at")
-                .is_some()
-        );
+        assert!(asset
+            .get::<Option<OffsetDateTime>, _>("favourited_at")
+            .is_some());
 
         // Remove the asset from favourites
         let req = test::TestRequest::delete()
@@ -187,11 +165,9 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(
-            asset
-                .get::<Option<OffsetDateTime>, _>("favourited_at")
-                .is_none()
-        );
+        assert!(asset
+            .get::<Option<OffsetDateTime>, _>("favourited_at")
+            .is_none());
 
         Ok(())
     }
@@ -208,11 +184,7 @@ mod tests {
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_client_error());
-        assert_eq!(
-            to_bytes(res.into_body()).await.unwrap_or_default(),
-            serde_json::to_string(&ToastErrorResponse::new("Asset not found".to_string()))
-                .unwrap_or_default()
-        );
+        assert_toast_error_response(res, "Asset not found").await;
 
         // Delete
         let req = test::TestRequest::delete()
@@ -222,11 +194,7 @@ mod tests {
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_client_error());
-        assert_eq!(
-            to_bytes(res.into_body()).await.unwrap_or_default(),
-            serde_json::to_string(&ToastErrorResponse::new("Asset not found".to_string()))
-                .unwrap_or_default()
-        );
+        assert_toast_error_response(res, "Asset not found").await;
 
         Ok(())
     }
@@ -257,11 +225,9 @@ mod tests {
 
         assert!(result.try_get::<i64, _>("id").is_ok());
         // `favourited_at` should be NULL initially
-        assert!(
-            result
-                .get::<Option<OffsetDateTime>, _>("favourited_at")
-                .is_none()
-        );
+        assert!(result
+            .get::<Option<OffsetDateTime>, _>("favourited_at")
+            .is_none());
 
         let asset_id = result.get::<i64, _>("id");
 

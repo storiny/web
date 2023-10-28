@@ -18,7 +18,7 @@ mod tests {
             RETURNING id
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .bind(if is_published {
             Some(OffsetDateTime::now_utc())
         } else {
@@ -48,7 +48,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -58,7 +58,7 @@ mod tests {
             VALUES ($1)
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .execute(&mut *conn)
         .await;
 
@@ -88,7 +88,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -98,7 +98,7 @@ mod tests {
             VALUES ($1)
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .execute(&mut *conn)
         .await;
 
@@ -132,7 +132,7 @@ mod tests {
             "#,
         )
         .bind("Sample content".to_string())
-        .bind(1i64)
+        .bind(1_i64)
         .bind(story_id)
         .fetch_one(&mut *conn)
         .await?;
@@ -215,7 +215,7 @@ mod tests {
             "#,
         )
         .bind("Sample content".to_string())
-        .bind(1i64)
+        .bind(1_i64)
         .bind(story_id)
         .fetch_one(&mut *conn)
         .await?;
@@ -297,7 +297,7 @@ mod tests {
             RETURNING deleted_at
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .bind(story_id)
         .fetch_one(&mut *conn)
         .await?;
@@ -325,7 +325,7 @@ mod tests {
             WHERE user_id = $1 AND story_id = $2
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .bind(story_id)
         .fetch_one(&mut *conn)
         .await?;
@@ -353,7 +353,7 @@ mod tests {
             WHERE user_id = $1 AND story_id = $2
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .bind(story_id)
         .fetch_one(&mut *conn)
         .await?;
@@ -380,7 +380,7 @@ mod tests {
             RETURNING deleted_at
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .bind(story_id)
         .fetch_one(&mut *conn)
         .await?;
@@ -408,7 +408,7 @@ mod tests {
             WHERE user_id = $1 AND story_id = $2
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .bind(story_id)
         .fetch_one(&mut *conn)
         .await?;
@@ -436,7 +436,7 @@ mod tests {
             WHERE user_id = $1 AND story_id = $2
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .bind(story_id)
         .fetch_one(&mut *conn)
         .await?;
@@ -462,7 +462,7 @@ mod tests {
             VALUES ($1, $2)
             "#,
         )
-        .bind(2i64)
+        .bind(2_i64)
         .bind(story_id)
         .execute(&mut *conn)
         .await?;
@@ -490,7 +490,7 @@ mod tests {
             )
             "#,
         )
-        .bind(2i64)
+        .bind(2_i64)
         .bind(story_id)
         .fetch_one(&mut *conn)
         .await?;
@@ -512,7 +512,7 @@ mod tests {
             VALUES ($1, $2)
             "#,
         )
-        .bind(2i64)
+        .bind(2_i64)
         .bind(story_id)
         .execute(&mut *conn)
         .await?;
@@ -540,7 +540,7 @@ mod tests {
             )
             "#,
         )
-        .bind(2i64)
+        .bind(2_i64)
         .bind(story_id)
         .fetch_one(&mut *conn)
         .await?;
@@ -565,7 +565,7 @@ mod tests {
             RETURNING deleted_at
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .bind(story_id)
         .fetch_one(&mut *conn)
         .await?;
@@ -593,7 +593,7 @@ mod tests {
             WHERE user_id = $1 AND story_id = $2
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .bind(story_id)
         .fetch_one(&mut *conn)
         .await?;
@@ -621,7 +621,7 @@ mod tests {
             WHERE user_id = $1 AND story_id = $2
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .bind(story_id)
         .fetch_one(&mut *conn)
         .await?;
@@ -648,7 +648,7 @@ mod tests {
             RETURNING deleted_at
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .bind(story_id)
         .fetch_one(&mut *conn)
         .await?;
@@ -676,7 +676,7 @@ mod tests {
             WHERE user_id = $1 AND story_id = $2
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .bind(story_id)
         .fetch_one(&mut *conn)
         .await?;
@@ -704,7 +704,7 @@ mod tests {
             WHERE user_id = $1 AND story_id = $2
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .bind(story_id)
         .fetch_one(&mut *conn)
         .await?;
@@ -731,7 +731,7 @@ mod tests {
             RETURNING deleted_at
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .bind(story_id)
         .fetch_one(&mut *conn)
         .await?;
@@ -759,7 +759,7 @@ mod tests {
             WHERE user_id = $1 AND story_id = $2
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .bind(story_id)
         .fetch_one(&mut *conn)
         .await?;
@@ -787,7 +787,7 @@ mod tests {
             WHERE user_id = $1 AND story_id = $2
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .bind(story_id)
         .fetch_one(&mut *conn)
         .await?;
@@ -814,7 +814,7 @@ mod tests {
             RETURNING deleted_at
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .bind(story_id)
         .fetch_one(&mut *conn)
         .await?;
@@ -842,7 +842,7 @@ mod tests {
             WHERE user_id = $1 AND story_id = $2
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .bind(story_id)
         .fetch_one(&mut *conn)
         .await?;
@@ -870,7 +870,7 @@ mod tests {
             WHERE user_id = $1 AND story_id = $2
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .bind(story_id)
         .fetch_one(&mut *conn)
         .await?;
@@ -901,7 +901,7 @@ mod tests {
         )
         .bind(story_id)
         .bind(0)
-        .bind(1i64)
+        .bind(1_i64)
         .fetch_one(&mut *conn)
         .await?;
 
@@ -954,7 +954,7 @@ mod tests {
         )
         .bind(story_id)
         .bind(0)
-        .bind(1i64)
+        .bind(1_i64)
         .fetch_one(&mut *conn)
         .await?;
 
@@ -1166,7 +1166,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .fetch_one(&mut *conn)
         .await?;
 
@@ -1191,7 +1191,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .fetch_one(&mut *conn)
         .await?;
 
@@ -1216,7 +1216,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .fetch_one(&mut *conn)
         .await?;
 
@@ -1241,7 +1241,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .fetch_one(&mut *conn)
         .await?;
 
@@ -1264,7 +1264,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .fetch_one(&mut *conn)
         .await?;
 
@@ -1289,7 +1289,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .fetch_one(&mut *conn)
         .await?;
 
@@ -1314,7 +1314,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .fetch_one(&mut *conn)
         .await?;
 
@@ -1339,7 +1339,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .fetch_one(&mut *conn)
         .await?;
 
@@ -1364,7 +1364,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .fetch_one(&mut *conn)
         .await?;
 
@@ -1387,7 +1387,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .fetch_one(&mut *conn)
         .await?;
 
@@ -1412,7 +1412,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .fetch_one(&mut *conn)
         .await?;
 
@@ -1436,7 +1436,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .fetch_one(&mut *conn)
         .await?;
 
@@ -1459,7 +1459,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .fetch_one(&mut *conn)
         .await?;
 
@@ -1484,7 +1484,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .fetch_one(&mut *conn)
         .await?;
 
@@ -1509,7 +1509,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .fetch_one(&mut *conn)
         .await?;
 
@@ -1547,7 +1547,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .fetch_one(&mut *conn)
         .await?;
 
@@ -1572,7 +1572,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .fetch_one(&mut *conn)
         .await?;
 
@@ -1597,7 +1597,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .fetch_one(&mut *conn)
         .await?;
 
@@ -1621,7 +1621,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .fetch_one(&mut *conn)
         .await?;
 
@@ -1868,7 +1868,7 @@ mod tests {
             "#,
         )
         .bind("Sample content".to_string())
-        .bind(1i64)
+        .bind(1_i64)
         .bind(story_id)
         .fetch_one(&mut *conn)
         .await?;
@@ -1898,7 +1898,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -1952,7 +1952,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -1990,7 +1990,7 @@ mod tests {
             "#,
         )
         .bind("Sample content".to_string())
-        .bind(1i64)
+        .bind(1_i64)
         .bind(story_id)
         .fetch_one(&mut *conn)
         .await?;
@@ -2020,7 +2020,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -2074,7 +2074,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -2112,7 +2112,7 @@ mod tests {
             "#,
         )
         .bind("Sample content".to_string())
-        .bind(1i64)
+        .bind(1_i64)
         .bind(story_id)
         .fetch_one(&mut *conn)
         .await?;
@@ -2142,7 +2142,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -2196,7 +2196,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -2234,7 +2234,7 @@ mod tests {
             "#,
         )
         .bind("Sample content".to_string())
-        .bind(1i64)
+        .bind(1_i64)
         .bind(story_id)
         .fetch_one(&mut *conn)
         .await?;
@@ -2264,7 +2264,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -2318,7 +2318,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -2357,7 +2357,7 @@ mod tests {
             RETURNING deleted_at
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .bind(story_id)
         .fetch_one(&mut *conn)
         .await?;
@@ -2386,7 +2386,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -2397,7 +2397,7 @@ mod tests {
             WHERE user_id = $1 AND story_id = $2
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .bind(story_id)
         .fetch_one(&mut *conn)
         .await?;
@@ -2425,7 +2425,7 @@ mod tests {
             WHERE user_id = $1 AND story_id = $2
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .bind(story_id)
         .fetch_one(&mut *conn)
         .await?;
@@ -2442,7 +2442,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -2453,7 +2453,7 @@ mod tests {
             WHERE user_id = $1 AND story_id = $2
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .bind(story_id)
         .fetch_one(&mut *conn)
         .await?;
@@ -2480,7 +2480,7 @@ mod tests {
             RETURNING deleted_at
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .bind(story_id)
         .fetch_one(&mut *conn)
         .await?;
@@ -2509,7 +2509,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -2520,7 +2520,7 @@ mod tests {
             WHERE user_id = $1 AND story_id = $2
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .bind(story_id)
         .fetch_one(&mut *conn)
         .await?;
@@ -2548,7 +2548,7 @@ mod tests {
             WHERE user_id = $1 AND story_id = $2
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .bind(story_id)
         .fetch_one(&mut *conn)
         .await?;
@@ -2565,7 +2565,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -2576,7 +2576,7 @@ mod tests {
             WHERE user_id = $1 AND story_id = $2
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .bind(story_id)
         .fetch_one(&mut *conn)
         .await?;
@@ -2603,7 +2603,7 @@ mod tests {
             RETURNING deleted_at
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .bind(story_id)
         .fetch_one(&mut *conn)
         .await?;
@@ -2632,7 +2632,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -2643,7 +2643,7 @@ mod tests {
             WHERE user_id = $1 AND story_id = $2
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .bind(story_id)
         .fetch_one(&mut *conn)
         .await?;
@@ -2671,7 +2671,7 @@ mod tests {
             WHERE user_id = $1 AND story_id = $2
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .bind(story_id)
         .fetch_one(&mut *conn)
         .await?;
@@ -2688,7 +2688,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -2699,7 +2699,7 @@ mod tests {
             WHERE user_id = $1 AND story_id = $2
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .bind(story_id)
         .fetch_one(&mut *conn)
         .await?;
@@ -2726,7 +2726,7 @@ mod tests {
             RETURNING deleted_at
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .bind(story_id)
         .fetch_one(&mut *conn)
         .await?;
@@ -2755,7 +2755,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -2766,7 +2766,7 @@ mod tests {
             WHERE user_id = $1 AND story_id = $2
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .bind(story_id)
         .fetch_one(&mut *conn)
         .await?;
@@ -2794,7 +2794,7 @@ mod tests {
             WHERE user_id = $1 AND story_id = $2
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .bind(story_id)
         .fetch_one(&mut *conn)
         .await?;
@@ -2811,7 +2811,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -2822,7 +2822,7 @@ mod tests {
             WHERE user_id = $1 AND story_id = $2
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .bind(story_id)
         .fetch_one(&mut *conn)
         .await?;
@@ -2851,7 +2851,7 @@ mod tests {
             RETURNING deleted_at
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .bind(story_id)
         .fetch_one(&mut *conn)
         .await?;
@@ -2880,7 +2880,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -2891,7 +2891,7 @@ mod tests {
             WHERE user_id = $1 AND story_id = $2
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .bind(story_id)
         .fetch_one(&mut *conn)
         .await?;
@@ -2919,7 +2919,7 @@ mod tests {
             WHERE user_id = $1 AND story_id = $2
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .bind(story_id)
         .fetch_one(&mut *conn)
         .await?;
@@ -2936,7 +2936,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -2947,7 +2947,7 @@ mod tests {
             WHERE user_id = $1 AND story_id = $2
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .bind(story_id)
         .fetch_one(&mut *conn)
         .await?;
@@ -2974,7 +2974,7 @@ mod tests {
             RETURNING deleted_at
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .bind(story_id)
         .fetch_one(&mut *conn)
         .await?;
@@ -3003,7 +3003,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -3014,7 +3014,7 @@ mod tests {
             WHERE user_id = $1 AND story_id = $2
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .bind(story_id)
         .fetch_one(&mut *conn)
         .await?;
@@ -3042,7 +3042,7 @@ mod tests {
             WHERE user_id = $1 AND story_id = $2
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .bind(story_id)
         .fetch_one(&mut *conn)
         .await?;
@@ -3059,7 +3059,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -3070,7 +3070,7 @@ mod tests {
             WHERE user_id = $1 AND story_id = $2
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .bind(story_id)
         .fetch_one(&mut *conn)
         .await?;
@@ -3097,7 +3097,7 @@ mod tests {
             RETURNING deleted_at
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .bind(story_id)
         .fetch_one(&mut *conn)
         .await?;
@@ -3126,7 +3126,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -3137,7 +3137,7 @@ mod tests {
             WHERE user_id = $1 AND story_id = $2
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .bind(story_id)
         .fetch_one(&mut *conn)
         .await?;
@@ -3165,7 +3165,7 @@ mod tests {
             WHERE user_id = $1 AND story_id = $2
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .bind(story_id)
         .fetch_one(&mut *conn)
         .await?;
@@ -3182,7 +3182,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -3193,7 +3193,7 @@ mod tests {
             WHERE user_id = $1 AND story_id = $2
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .bind(story_id)
         .fetch_one(&mut *conn)
         .await?;
@@ -3220,7 +3220,7 @@ mod tests {
             RETURNING deleted_at
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .bind(story_id)
         .fetch_one(&mut *conn)
         .await?;
@@ -3249,7 +3249,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -3260,7 +3260,7 @@ mod tests {
             WHERE user_id = $1 AND story_id = $2
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .bind(story_id)
         .fetch_one(&mut *conn)
         .await?;
@@ -3288,7 +3288,7 @@ mod tests {
             WHERE user_id = $1 AND story_id = $2
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .bind(story_id)
         .fetch_one(&mut *conn)
         .await?;
@@ -3305,7 +3305,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -3316,7 +3316,7 @@ mod tests {
             WHERE user_id = $1 AND story_id = $2
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .bind(story_id)
         .fetch_one(&mut *conn)
         .await?;
@@ -3345,7 +3345,7 @@ mod tests {
             RETURNING deleted_at
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .bind(story_id)
         .fetch_one(&mut *conn)
         .await?;
@@ -3374,7 +3374,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -3385,7 +3385,7 @@ mod tests {
             WHERE user_id = $1 AND story_id = $2
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .bind(story_id)
         .fetch_one(&mut *conn)
         .await?;
@@ -3413,7 +3413,7 @@ mod tests {
             WHERE user_id = $1 AND story_id = $2
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .bind(story_id)
         .fetch_one(&mut *conn)
         .await?;
@@ -3430,7 +3430,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -3441,7 +3441,7 @@ mod tests {
             WHERE user_id = $1 AND story_id = $2
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .bind(story_id)
         .fetch_one(&mut *conn)
         .await?;
@@ -3468,7 +3468,7 @@ mod tests {
             RETURNING deleted_at
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .bind(story_id)
         .fetch_one(&mut *conn)
         .await?;
@@ -3497,7 +3497,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -3508,7 +3508,7 @@ mod tests {
             WHERE user_id = $1 AND story_id = $2
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .bind(story_id)
         .fetch_one(&mut *conn)
         .await?;
@@ -3536,7 +3536,7 @@ mod tests {
             WHERE user_id = $1 AND story_id = $2
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .bind(story_id)
         .fetch_one(&mut *conn)
         .await?;
@@ -3553,7 +3553,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -3564,7 +3564,7 @@ mod tests {
             WHERE user_id = $1 AND story_id = $2
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .bind(story_id)
         .fetch_one(&mut *conn)
         .await?;
@@ -3591,7 +3591,7 @@ mod tests {
             RETURNING deleted_at
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .bind(story_id)
         .fetch_one(&mut *conn)
         .await?;
@@ -3620,7 +3620,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -3631,7 +3631,7 @@ mod tests {
             WHERE user_id = $1 AND story_id = $2
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .bind(story_id)
         .fetch_one(&mut *conn)
         .await?;
@@ -3659,7 +3659,7 @@ mod tests {
             WHERE user_id = $1 AND story_id = $2
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .bind(story_id)
         .fetch_one(&mut *conn)
         .await?;
@@ -3676,7 +3676,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -3687,7 +3687,7 @@ mod tests {
             WHERE user_id = $1 AND story_id = $2
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .bind(story_id)
         .fetch_one(&mut *conn)
         .await?;
@@ -3714,7 +3714,7 @@ mod tests {
             RETURNING deleted_at
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .bind(story_id)
         .fetch_one(&mut *conn)
         .await?;
@@ -3743,7 +3743,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -3754,7 +3754,7 @@ mod tests {
             WHERE user_id = $1 AND story_id = $2
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .bind(story_id)
         .fetch_one(&mut *conn)
         .await?;
@@ -3782,7 +3782,7 @@ mod tests {
             WHERE user_id = $1 AND story_id = $2
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .bind(story_id)
         .fetch_one(&mut *conn)
         .await?;
@@ -3799,7 +3799,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -3810,7 +3810,7 @@ mod tests {
             WHERE user_id = $1 AND story_id = $2
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .bind(story_id)
         .fetch_one(&mut *conn)
         .await?;
@@ -3887,7 +3887,7 @@ mod tests {
             "#,
         )
         .bind("Sample content".to_string())
-        .bind(1i64)
+        .bind(1_i64)
         .bind(story_id)
         .fetch_one(&mut *conn)
         .await?;
@@ -3935,7 +3935,7 @@ mod tests {
             VALUES ($1, $2)
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .bind(story_id)
         .execute(&mut *conn)
         .await?;
@@ -3962,7 +3962,7 @@ mod tests {
             )
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .bind(story_id)
         .fetch_one(&mut *conn)
         .await?;
@@ -3984,7 +3984,7 @@ mod tests {
             VALUES ($1, $2)
             "#,
         )
-        .bind(2i64)
+        .bind(2_i64)
         .bind(story_id)
         .execute(&mut *conn)
         .await?;
@@ -4011,7 +4011,7 @@ mod tests {
             )
             "#,
         )
-        .bind(2i64)
+        .bind(2_i64)
         .bind(story_id)
         .fetch_one(&mut *conn)
         .await?;
@@ -4036,7 +4036,7 @@ mod tests {
         )
         .bind(story_id)
         .bind(0)
-        .bind(1i64)
+        .bind(1_i64)
         .fetch_one(&mut *conn)
         .await?;
 
@@ -4083,7 +4083,7 @@ mod tests {
             VALUES ($1, $2)
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .bind(story_id)
         .execute(&mut *conn)
         .await?;
@@ -4110,7 +4110,7 @@ mod tests {
             )
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .bind(story_id)
         .fetch_one(&mut *conn)
         .await?;
@@ -4132,7 +4132,7 @@ mod tests {
             VALUES ($1, $2)
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .bind(story_id)
         .execute(&mut *conn)
         .await?;
@@ -4159,7 +4159,7 @@ mod tests {
             )
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .bind(story_id)
         .fetch_one(&mut *conn)
         .await?;

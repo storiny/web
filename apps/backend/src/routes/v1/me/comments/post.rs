@@ -1,3 +1,4 @@
+use crate::error::ToastErrorResponse;
 use crate::utils::md_to_html::{md_to_html, MarkdownSource};
 use crate::{
     constants::sql_states::SqlState, error::AppError, middleware::identity::identity::Identity,
@@ -49,23 +50,33 @@ async fn post(
                         Err(err) => {
                             if let Some(db_err) = err.into_database_error() {
                                 match db_err.kind() {
-                                    sqlx::error::ErrorKind::ForeignKeyViolation => {
-                                        Ok(HttpResponse::BadRequest().body("Story does not exist"))
-                                    }
+                                    sqlx::error::ErrorKind::ForeignKeyViolation => Ok(
+                                        HttpResponse::BadRequest().json(ToastErrorResponse::new(
+                                            "Story does not exist".to_string(),
+                                        )),
+                                    ),
                                     _ => {
                                         let err_code = db_err.code().unwrap_or_default();
 
                                         // Check if the story is soft-deleted or unpublished
                                         if err_code == SqlState::EntityUnavailable.to_string() {
-                                            Ok(HttpResponse::BadRequest()
-                                                .body("Story is either deleted or unpublished"))
+                                            Ok(HttpResponse::BadRequest().json(
+                                                ToastErrorResponse::new(
+                                                    "Story is either deleted or unpublished"
+                                                        .to_string(),
+                                                ),
+                                            ))
                                         // Check if the comment writer is blocked by the story writer
                                         } else if err_code
                                             == SqlState::CommentWriterBlockedByStoryWriter
                                                 .to_string()
                                         {
-                                            Ok(HttpResponse::BadRequest()
-                                                .body("You are being blocked by the story writer"))
+                                            Ok(HttpResponse::BadRequest().json(
+                                                ToastErrorResponse::new(
+                                                    "You are being blocked by the story writer"
+                                                        .to_string(),
+                                                ),
+                                            ))
                                         } else {
                                             Ok(HttpResponse::InternalServerError().finish())
                                         }
@@ -91,8 +102,7 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::test_utils::test_utils::init_app_for_test;
-    use actix_http::body::to_bytes;
+    use crate::test_utils::test_utils::{assert_toast_error_response, init_app_for_test};
     use actix_web::test;
     use sqlx::{PgPool, Row};
 
@@ -121,7 +131,7 @@ mod tests {
             "#,
         )
         .bind(user_id.unwrap())
-        .bind(3i64)
+        .bind(3_i64)
         .fetch_one(&mut *conn)
         .await?;
 
@@ -148,10 +158,7 @@ mod tests {
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_client_error());
-        assert_eq!(
-            to_bytes(res.into_body()).await.unwrap_or_default(),
-            "Story does not exist"
-        );
+        assert_toast_error_response(res, "Story does not exist").await;
 
         Ok(())
     }
@@ -169,7 +176,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(3i64)
+        .bind(3_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -184,10 +191,7 @@ mod tests {
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_client_error());
-        assert_eq!(
-            to_bytes(res.into_body()).await.unwrap_or_default(),
-            "Story is either deleted or unpublished"
-        );
+        assert_toast_error_response(res, "Story is either deleted or unpublished").await;
 
         Ok(())
     }
@@ -205,7 +209,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(3i64)
+        .bind(3_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -220,10 +224,7 @@ mod tests {
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_client_error());
-        assert_eq!(
-            to_bytes(res.into_body()).await.unwrap_or_default(),
-            "Story is either deleted or unpublished"
-        );
+        assert_toast_error_response(res, "Story is either deleted or unpublished").await;
 
         Ok(())
     }
@@ -242,7 +243,7 @@ mod tests {
             VALUES ($1, $2)
             "#,
         )
-        .bind(2i64)
+        .bind(2_i64)
         .bind(user_id.unwrap())
         .execute(&mut *conn)
         .await?;
@@ -258,10 +259,7 @@ mod tests {
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_client_error());
-        assert_eq!(
-            to_bytes(res.into_body()).await.unwrap_or_default(),
-            "You are being blocked by the story writer"
-        );
+        assert_toast_error_response(res, "You are being blocked by the story writer").await;
 
         Ok(())
     }

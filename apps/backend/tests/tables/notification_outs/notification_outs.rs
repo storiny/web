@@ -12,8 +12,8 @@ mod tests {
             VALUES ($1, $2)
             "#,
         )
-        .bind(2i64)
-        .bind(3i64)
+        .bind(2_i64)
+        .bind(3_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -38,7 +38,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(2i64)
+        .bind(2_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -48,8 +48,8 @@ mod tests {
             VALUES ($1, $2)
             "#,
         )
-        .bind(2i64)
-        .bind(3i64)
+        .bind(2_i64)
+        .bind(3_i64)
         .execute(&mut *conn)
         .await;
 
@@ -81,7 +81,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(2i64)
+        .bind(2_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -91,8 +91,8 @@ mod tests {
             VALUES ($1, $2)
             "#,
         )
-        .bind(2i64)
-        .bind(3i64)
+        .bind(2_i64)
+        .bind(3_i64)
         .execute(&mut *conn)
         .await;
 
@@ -125,8 +125,8 @@ mod tests {
             VALUES ($1, $2)
             "#,
         )
-        .bind(2i64)
-        .bind(1i64)
+        .bind(2_i64)
+        .bind(1_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -136,8 +136,8 @@ mod tests {
             VALUES ($1, $2)
             "#,
         )
-        .bind(2i64)
-        .bind(3i64)
+        .bind(2_i64)
+        .bind(3_i64)
         .execute(&mut *conn)
         .await;
 
@@ -168,8 +168,8 @@ mod tests {
             VALUES ($1, $2)
             "#,
         )
-        .bind(2i64)
-        .bind(1i64)
+        .bind(2_i64)
+        .bind(1_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -179,8 +179,8 @@ mod tests {
             VALUES ($1, $2)
             "#,
         )
-        .bind(2i64)
-        .bind(3i64)
+        .bind(2_i64)
+        .bind(3_i64)
         .execute(&mut *conn)
         .await;
 
@@ -214,7 +214,7 @@ mod tests {
             WHERE user_id = $1
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -227,7 +227,7 @@ mod tests {
             "#,
         )
         .bind(NotificationEntityType::StoryAddByUser as i16)
-        .bind(3i64)
+        .bind(3_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -237,8 +237,8 @@ mod tests {
             VALUES ($1, $2)
             "#,
         )
-        .bind(1i64)
-        .bind(3i64)
+        .bind(1_i64)
+        .bind(3_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -254,7 +254,7 @@ mod tests {
             "#,
         )
         .bind(NotificationEntityType::StoryAddByTag as i16)
-        .bind(3i64)
+        .bind(3_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -264,8 +264,8 @@ mod tests {
             VALUES ($1, $2)
             "#,
         )
-        .bind(1i64)
-        .bind(3i64)
+        .bind(1_i64)
+        .bind(3_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -289,7 +289,7 @@ mod tests {
             WHERE user_id = $1
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -302,7 +302,7 @@ mod tests {
             "#,
         )
         .bind(NotificationEntityType::StoryLike as i16)
-        .bind(3i64)
+        .bind(3_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -312,8 +312,8 @@ mod tests {
             VALUES ($1, $2)
             "#,
         )
-        .bind(1i64)
-        .bind(3i64)
+        .bind(1_i64)
+        .bind(3_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -337,7 +337,7 @@ mod tests {
             WHERE user_id = $1
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -350,7 +350,7 @@ mod tests {
             "#,
         )
         .bind(NotificationEntityType::CommentAdd as i16)
-        .bind(3i64)
+        .bind(3_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -360,8 +360,8 @@ mod tests {
             VALUES ($1, $2)
             "#,
         )
-        .bind(1i64)
-        .bind(3i64)
+        .bind(1_i64)
+        .bind(3_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -385,7 +385,7 @@ mod tests {
             WHERE user_id = $1
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -398,7 +398,7 @@ mod tests {
             "#,
         )
         .bind(NotificationEntityType::ReplyAdd as i16)
-        .bind(3i64)
+        .bind(3_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -408,8 +408,8 @@ mod tests {
             VALUES ($1, $2)
             "#,
         )
-        .bind(1i64)
-        .bind(3i64)
+        .bind(1_i64)
+        .bind(3_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -433,7 +433,7 @@ mod tests {
             WHERE user_id = $1
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -446,7 +446,7 @@ mod tests {
             "#,
         )
         .bind(NotificationEntityType::FollowerAdd as i16)
-        .bind(3i64)
+        .bind(3_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -456,8 +456,8 @@ mod tests {
             VALUES ($1, $2)
             "#,
         )
-        .bind(1i64)
-        .bind(3i64)
+        .bind(1_i64)
+        .bind(3_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -481,7 +481,7 @@ mod tests {
             WHERE user_id = $1
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -494,7 +494,7 @@ mod tests {
             "#,
         )
         .bind(NotificationEntityType::FriendReqReceived as i16)
-        .bind(3i64)
+        .bind(3_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -504,8 +504,8 @@ mod tests {
             VALUES ($1, $2)
             "#,
         )
-        .bind(1i64)
-        .bind(3i64)
+        .bind(1_i64)
+        .bind(3_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -521,7 +521,7 @@ mod tests {
             "#,
         )
         .bind(NotificationEntityType::FriendReqAccept as i16)
-        .bind(3i64)
+        .bind(3_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -531,8 +531,8 @@ mod tests {
             VALUES ($1, $2)
             "#,
         )
-        .bind(1i64)
-        .bind(3i64)
+        .bind(1_i64)
+        .bind(3_i64)
         .execute(&mut *conn)
         .await?;
 
