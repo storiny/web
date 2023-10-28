@@ -1,9 +1,6 @@
 #[cfg(test)]
 mod tests {
-    use sqlx::{
-        PgPool,
-        Row,
-    };
+    use sqlx::{PgPool, Row};
 
     #[sqlx::test(fixtures("user"))]
     async fn can_insert_a_relation(pool: PgPool) -> sqlx::Result<()> {
@@ -14,8 +11,8 @@ mod tests {
             VALUES ($1, $2)
             "#,
         )
-        .bind(1i64)
-        .bind(2i64)
+        .bind(1_i64)
+        .bind(2_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -37,8 +34,8 @@ mod tests {
             VALUES ($1, $2)
             "#,
         )
-        .bind(1i64)
-        .bind(1i64)
+        .bind(1_i64)
+        .bind(1_i64)
         .execute(&mut *conn)
         .await;
 
@@ -70,7 +67,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(2i64)
+        .bind(2_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -80,8 +77,8 @@ mod tests {
             VALUES ($1, $2)
             "#,
         )
-        .bind(2i64)
-        .bind(1i64)
+        .bind(2_i64)
+        .bind(1_i64)
         .execute(&mut *conn)
         .await;
 
@@ -111,7 +108,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(2i64)
+        .bind(2_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -121,8 +118,8 @@ mod tests {
             VALUES ($1, $2)
             "#,
         )
-        .bind(2i64)
-        .bind(1i64)
+        .bind(2_i64)
+        .bind(1_i64)
         .execute(&mut *conn)
         .await;
 
@@ -152,7 +149,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -162,8 +159,8 @@ mod tests {
             VALUES ($1, $2)
             "#,
         )
-        .bind(2i64)
-        .bind(1i64)
+        .bind(2_i64)
+        .bind(1_i64)
         .execute(&mut *conn)
         .await;
 
@@ -193,7 +190,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -203,8 +200,8 @@ mod tests {
             VALUES ($1, $2)
             "#,
         )
-        .bind(2i64)
-        .bind(1i64)
+        .bind(2_i64)
+        .bind(1_i64)
         .execute(&mut *conn)
         .await;
 
@@ -237,8 +234,8 @@ mod tests {
             VALUES ($1, $2)
             "#,
         )
-        .bind(2i64)
-        .bind(1i64)
+        .bind(2_i64)
+        .bind(1_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -249,7 +246,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .fetch_one(&mut *conn)
         .await?;
 
@@ -271,8 +268,8 @@ mod tests {
             VALUES ($1, $2)
             "#,
         )
-        .bind(2i64)
-        .bind(1i64)
+        .bind(2_i64)
+        .bind(1_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -283,7 +280,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .fetch_one(&mut *conn)
         .await?;
 
@@ -297,8 +294,8 @@ mod tests {
             WHERE follower_id = $1 AND followed_id = $2
             "#,
         )
-        .bind(2i64)
-        .bind(1i64)
+        .bind(2_i64)
+        .bind(1_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -309,7 +306,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .fetch_one(&mut *conn)
         .await?;
 
@@ -323,8 +320,8 @@ mod tests {
             WHERE follower_id = $1 AND followed_id = $2
             "#,
         )
-        .bind(2i64)
-        .bind(1i64)
+        .bind(2_i64)
+        .bind(1_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -335,7 +332,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .fetch_one(&mut *conn)
         .await?;
 
@@ -357,8 +354,8 @@ mod tests {
             VALUES ($1, $2)
             "#,
         )
-        .bind(2i64)
-        .bind(1i64)
+        .bind(2_i64)
+        .bind(1_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -369,7 +366,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .fetch_one(&mut *conn)
         .await?;
 
@@ -382,8 +379,8 @@ mod tests {
             WHERE follower_id = $1 AND followed_id = $2
             "#,
         )
-        .bind(2i64)
-        .bind(1i64)
+        .bind(2_i64)
+        .bind(1_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -394,7 +391,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .fetch_one(&mut *conn)
         .await?;
 
@@ -416,8 +413,8 @@ mod tests {
             VALUES ($1, $2)
             "#,
         )
-        .bind(2i64)
-        .bind(1i64)
+        .bind(2_i64)
+        .bind(1_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -430,8 +427,8 @@ mod tests {
             VALUES ($1, $2)
             "#,
         )
-        .bind(3i64)
-        .bind(1i64)
+        .bind(3_i64)
+        .bind(1_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -442,7 +439,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .fetch_one(&mut *conn)
         .await?;
 
@@ -456,8 +453,8 @@ mod tests {
             WHERE follower_id = $1 AND followed_id = $2
             "#,
         )
-        .bind(2i64)
-        .bind(1i64)
+        .bind(2_i64)
+        .bind(1_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -468,7 +465,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .fetch_one(&mut *conn)
         .await?;
 
@@ -481,8 +478,8 @@ mod tests {
             WHERE follower_id = $1 AND followed_id = $2
            "#,
         )
-        .bind(2i64)
-        .bind(1i64)
+        .bind(2_i64)
+        .bind(1_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -493,7 +490,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .fetch_one(&mut *conn)
         .await?;
 
@@ -517,8 +514,8 @@ mod tests {
             VALUES ($1, $2)
             "#,
         )
-        .bind(2i64)
-        .bind(1i64)
+        .bind(2_i64)
+        .bind(1_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -529,7 +526,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(2i64)
+        .bind(2_i64)
         .fetch_one(&mut *conn)
         .await?;
 
@@ -551,8 +548,8 @@ mod tests {
             VALUES ($1, $2)
             "#,
         )
-        .bind(2i64)
-        .bind(1i64)
+        .bind(2_i64)
+        .bind(1_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -563,7 +560,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(2i64)
+        .bind(2_i64)
         .fetch_one(&mut *conn)
         .await?;
 
@@ -577,8 +574,8 @@ mod tests {
             WHERE follower_id = $1 AND followed_id = $2
             "#,
         )
-        .bind(2i64)
-        .bind(1i64)
+        .bind(2_i64)
+        .bind(1_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -589,7 +586,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(2i64)
+        .bind(2_i64)
         .fetch_one(&mut *conn)
         .await?;
 
@@ -603,8 +600,8 @@ mod tests {
             WHERE follower_id = $1 AND followed_id = $2
             "#,
         )
-        .bind(2i64)
-        .bind(1i64)
+        .bind(2_i64)
+        .bind(1_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -615,7 +612,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(2i64)
+        .bind(2_i64)
         .fetch_one(&mut *conn)
         .await?;
 
@@ -637,8 +634,8 @@ mod tests {
             VALUES ($1, $2)
             "#,
         )
-        .bind(2i64)
-        .bind(1i64)
+        .bind(2_i64)
+        .bind(1_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -649,7 +646,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(2i64)
+        .bind(2_i64)
         .fetch_one(&mut *conn)
         .await?;
 
@@ -662,8 +659,8 @@ mod tests {
             WHERE follower_id = $1 AND followed_id = $2
             "#,
         )
-        .bind(2i64)
-        .bind(1i64)
+        .bind(2_i64)
+        .bind(1_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -674,7 +671,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(2i64)
+        .bind(2_i64)
         .fetch_one(&mut *conn)
         .await?;
 
@@ -696,8 +693,8 @@ mod tests {
             VALUES ($1, $2)
             "#,
         )
-        .bind(2i64)
-        .bind(1i64)
+        .bind(2_i64)
+        .bind(1_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -710,8 +707,8 @@ mod tests {
             VALUES ($1, $2)
             "#,
         )
-        .bind(2i64)
-        .bind(3i64)
+        .bind(2_i64)
+        .bind(3_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -722,7 +719,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(2i64)
+        .bind(2_i64)
         .fetch_one(&mut *conn)
         .await?;
 
@@ -736,8 +733,8 @@ mod tests {
             WHERE follower_id = $1 AND followed_id = $2
             "#,
         )
-        .bind(2i64)
-        .bind(1i64)
+        .bind(2_i64)
+        .bind(1_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -748,7 +745,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(2i64)
+        .bind(2_i64)
         .fetch_one(&mut *conn)
         .await?;
 
@@ -761,8 +758,8 @@ mod tests {
             WHERE follower_id = $1 AND followed_id = $2
            "#,
         )
-        .bind(2i64)
-        .bind(1i64)
+        .bind(2_i64)
+        .bind(1_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -773,7 +770,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(2i64)
+        .bind(2_i64)
         .fetch_one(&mut *conn)
         .await?;
 
@@ -797,8 +794,8 @@ mod tests {
             VALUES ($1, $2)
             "#,
         )
-        .bind(2i64)
-        .bind(1i64)
+        .bind(2_i64)
+        .bind(1_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -810,9 +807,9 @@ mod tests {
             RETURNING id
             "#,
         )
-        .bind(2i64)
+        .bind(2_i64)
         .bind(0)
-        .bind(2i64)
+        .bind(2_i64)
         .fetch_one(&mut *conn)
         .await?;
 
@@ -826,8 +823,8 @@ mod tests {
             WHERE follower_id = $1 AND followed_id = $2
             "#,
         )
-        .bind(2i64)
-        .bind(1i64)
+        .bind(2_i64)
+        .bind(1_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -862,8 +859,8 @@ mod tests {
             VALUES ($1, $2)
             "#,
         )
-        .bind(2i64)
-        .bind(1i64)
+        .bind(2_i64)
+        .bind(1_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -875,9 +872,9 @@ mod tests {
             RETURNING id
             "#,
         )
-        .bind(2i64)
+        .bind(2_i64)
         .bind(0)
-        .bind(2i64)
+        .bind(2_i64)
         .fetch_one(&mut *conn)
         .await?;
 
@@ -890,8 +887,8 @@ mod tests {
             WHERE follower_id = $1 AND followed_id = $2
             "#,
         )
-        .bind(2i64)
-        .bind(1i64)
+        .bind(2_i64)
+        .bind(1_i64)
         .execute(&mut *conn)
         .await?;
 

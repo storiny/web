@@ -1,19 +1,7 @@
-use crate::{
-    error::AppError,
-    middleware::identity::identity::Identity,
-    AppState,
-};
-use actix_web::{
-    get,
-    http::header::ContentType,
-    web,
-    HttpResponse,
-};
+use crate::{error::AppError, middleware::identity::identity::Identity, AppState};
+use actix_web::{get, web, HttpResponse};
 use actix_web_validator::QsQuery;
-use serde::{
-    Deserialize,
-    Serialize,
-};
+use serde::{Deserialize, Serialize};
 use sqlx::FromRow;
 use time::OffsetDateTime;
 use validator::Validate;
@@ -75,14 +63,12 @@ async fn get(
                 "#,
             )
             .bind(user_id)
-            .bind(10i16)
+            .bind(10_i16)
             .bind((page * 10) as i16)
             .fetch_all(&data.db_pool)
             .await?;
 
-            Ok(HttpResponse::Ok()
-                .content_type(ContentType::json())
-                .json(result))
+            Ok(HttpResponse::Ok().json(result))
         }
         Err(_) => Ok(HttpResponse::InternalServerError().finish()),
     }
@@ -95,11 +81,9 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::test_utils::test_utils::init_app_for_test;
-    use actix_http::body::to_bytes;
+    use crate::test_utils::test_utils::{init_app_for_test, res_to_string};
     use actix_web::test;
     use sqlx::PgPool;
-    use std::str;
 
     #[sqlx::test]
     async fn can_return_assets(pool: PgPool) -> sqlx::Result<()> {
@@ -134,9 +118,7 @@ mod tests {
 
         assert!(res.status().is_success());
 
-        let json = serde_json::from_str::<Vec<Asset>>(
-            str::from_utf8(&to_bytes(res.into_body()).await.unwrap().to_vec()).unwrap(),
-        );
+        let json = serde_json::from_str::<Vec<Asset>>(&res_to_string(res).await);
 
         assert!(json.is_ok());
 

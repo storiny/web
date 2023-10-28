@@ -19,5 +19,8 @@ pub mod bookmarks;
 #[path = "me/comments.rs"]
 pub mod comments;
 
+#[path = "me/replies.rs"]
+pub mod replies;
+
 #[path = "me/history.rs"]
 pub mod history;

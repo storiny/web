@@ -1,52 +1,20 @@
 use crate::{
     constants::buckets::S3_UPLOADS_BUCKET,
-    error::{
-        AppError,
-        ToastErrorResponse,
-    },
+    error::{AppError, ToastErrorResponse},
     middleware::identity::identity::Identity,
     utils::generate_random_object_key::generate_random_object_key,
     AppState,
 };
-use actix_multipart::form::{
-    tempfile::TempFile,
-    text::Text,
-    MultipartForm,
-};
-use actix_web::{
-    http::header::ContentType,
-    post,
-    web,
-    HttpResponse,
-};
+use actix_multipart::form::{tempfile::TempFile, text::Text, MultipartForm};
+use actix_web::{post, web, HttpResponse};
 use colors_transform::Rgb;
 use dominant_color::get_colors;
-use image::{
-    imageops::FilterType,
-    EncodableLayout,
-    GenericImageView,
-    ImageOutputFormat,
-};
-use mime::{
-    IMAGE_GIF,
-    IMAGE_JPEG,
-    IMAGE_PNG,
-};
-use rusoto_s3::{
-    DeleteObjectRequest,
-    PutObjectRequest,
-    S3,
-};
-use serde::{
-    Deserialize,
-    Serialize,
-};
+use image::{imageops::FilterType, EncodableLayout, GenericImageView, ImageOutputFormat};
+use mime::{IMAGE_GIF, IMAGE_JPEG, IMAGE_PNG};
+use rusoto_s3::{DeleteObjectRequest, PutObjectRequest, S3};
+use serde::{Deserialize, Serialize};
 use sqlx::Row;
-use std::io::{
-    BufReader,
-    Cursor,
-    Read,
-};
+use std::io::{BufReader, Cursor, Read};
 
 const MAX_FILE_SIZE: usize = 1024 * 1024 * 10; // 10 MB
 
@@ -230,17 +198,15 @@ async fn handle_upload(
                             .fetch_one(&data.db_pool)
                             .await
                             {
-                                Ok(asset) => Ok(HttpResponse::Created()
-                                    .content_type(ContentType::json())
-                                    .json(Response {
-                                        id: asset.get::<i64, _>("id"),
-                                        key: object_key,
-                                        alt: img_alt.to_string(),
-                                        hex: hex_color,
-                                        width: img_w as i16,
-                                        height: img_h as i16,
-                                        rating: asset.get::<i16, _>("rating"),
-                                    })),
+                                Ok(asset) => Ok(HttpResponse::Created().json(Response {
+                                    id: asset.get::<i64, _>("id"),
+                                    key: object_key,
+                                    alt: img_alt.to_string(),
+                                    hex: hex_color,
+                                    width: img_w as i16,
+                                    height: img_h as i16,
+                                    rating: asset.get::<i16, _>("rating"),
+                                })),
                                 Err(_) => {
                                     // Delete the object from S3 if the database operation fails for
                                     // some reason.
@@ -271,31 +237,18 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use actix_web::{
-        App,
-        HttpServer,
-    };
+    use actix_web::{App, HttpServer};
     use reqwest::{
         self,
-        multipart::{
-            Form,
-            Part,
-        },
-        Body,
-        Client,
+        multipart::{Form, Part},
+        Body, Client,
     };
-    use rusoto_mock::{
-        MockCredentialsProvider,
-        MockRequestDispatcher,
-    };
+    use rusoto_mock::{MockCredentialsProvider, MockRequestDispatcher};
     use rusoto_s3::S3Client;
     use rusoto_ses::SesClient;
     use rusoto_signature::Region;
     use sqlx::PgPool;
-    use std::{
-        net::TcpListener,
-        str,
-    };
+    use std::{net::TcpListener, str};
     use tokio_util::codec::BytesCodec;
     use user_agent_parser::UserAgentParser;
 
@@ -305,7 +258,7 @@ mod tests {
         form: MultipartForm<UploadAsset>,
         data: web::Data<AppState>,
     ) -> Result<HttpResponse, AppError> {
-        handle_upload(form, data, 1i64).await
+        handle_upload(form, data, 1_i64).await
     }
 
     /// Initializes and spawns an HTTP server for tests using `reqwest`
@@ -363,7 +316,7 @@ mod tests {
             VALUES ($1, $2, $3, $4)
             "#,
         )
-        .bind(1i64)
+        .bind(1_i64)
         .bind("Some user".to_string())
         .bind("some_user".to_string())
         .bind("someone@example.com".to_string())

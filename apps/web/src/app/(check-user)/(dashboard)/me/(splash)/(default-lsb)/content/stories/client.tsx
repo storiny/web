@@ -39,14 +39,14 @@ const EmptyState = dynamic(() => import("./empty-state"), {
   loading: dynamic_loader()
 });
 
-type SortOrder = "dsc" | "asc";
+type SortOrder = "least" | "most";
 
 export type StoriesTabValue = "published" | "deleted";
 export type StoriesSortValue =
   | "recent"
   | "old"
-  | `popular-${SortOrder}`
-  | `likes-${SortOrder}`;
+  | `${SortOrder}-popular`
+  | `${SortOrder}-liked`;
 
 // Page header tabs
 
@@ -112,10 +112,10 @@ const SortControl = ({
     <Option value={"old"}>Old</Option>
     {tab !== "deleted" && (
       <React.Fragment>
-        <Option value={"popular-dsc"}>Most popular</Option>
-        <Option value={"popular-asc"}>Least popular</Option>
-        <Option value={"likes-dsc"}>Most liked</Option>
-        <Option value={"likes-asc"}>Least liked</Option>
+        <Option value={"most-popular"}>Most popular</Option>
+        <Option value={"least-popular"}>Least popular</Option>
+        <Option value={"most-liked"}>Most liked</Option>
+        <Option value={"least-liked"}>Least liked</Option>
       </React.Fragment>
     )}
   </Select>

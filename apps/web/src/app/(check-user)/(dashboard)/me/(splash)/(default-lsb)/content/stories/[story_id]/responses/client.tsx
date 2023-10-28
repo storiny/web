@@ -36,14 +36,14 @@ const EmptyState = dynamic(() => import("./empty-state"), {
   loading: dynamic_loader()
 });
 
-type SortOrder = "dsc" | "asc";
+type SortOrder = "least" | "most";
 
 export type StoryResponsesTabValue = "all" | "hidden";
 export type StoryResponsesSortValue =
   | "recent"
   | "old"
-  | `replies-${SortOrder}`
-  | `likes-${SortOrder}`;
+  | `${SortOrder}-replied`
+  | `${SortOrder}-liked`;
 
 // Page header tabs
 
@@ -197,10 +197,10 @@ const ControlBar = ({
     >
       <Option value={"recent"}>Recent</Option>
       <Option value={"old"}>Old</Option>
-      <Option value={"likes-dsc"}>Most liked</Option>
-      <Option value={"likes-asc"}>Least liked</Option>
-      <Option value={"replies-dsc"}>Most replied</Option>
-      <Option value={"replies-asc"}>Least replied</Option>
+      <Option value={"most-liked"}>Most liked</Option>
+      <Option value={"least-liked"}>Least liked</Option>
+      <Option value={"most-replied"}>Most replied</Option>
+      <Option value={"least-replied"}>Least replied</Option>
     </Select>
   </div>
 );

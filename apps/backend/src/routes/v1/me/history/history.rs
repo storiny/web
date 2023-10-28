@@ -1,5 +1,5 @@
 use crate::{error::AppError, middleware::identity::identity::Identity, AppState};
-use actix_web::{get, http::header::ContentType, web, HttpResponse};
+use actix_web::{get, web, HttpResponse};
 use actix_web_validator::QsQuery;
 use serde::{Deserialize, Serialize};
 use sqlx::{types::Json, FromRow};
@@ -84,9 +84,7 @@ async fn get(
                 .fetch_all(&data.db_pool)
                 .await?;
 
-                Ok(HttpResponse::Ok()
-                    .content_type(ContentType::json())
-                    .json(result))
+                Ok(HttpResponse::Ok().json(result))
             } else {
                 let result = sqlx::query_file_as!(
                     History,
@@ -98,9 +96,7 @@ async fn get(
                 .fetch_all(&data.db_pool)
                 .await?;
 
-                Ok(HttpResponse::Ok()
-                    .content_type(ContentType::json())
-                    .json(result))
+                Ok(HttpResponse::Ok().json(result))
             }
         }
         Err(_) => Ok(HttpResponse::InternalServerError().finish()),
@@ -154,11 +150,9 @@ impl ::sqlx::Type<::sqlx::Postgres> for User {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::test_utils::test_utils::init_app_for_test;
-    use actix_http::body::to_bytes;
+    use crate::test_utils::test_utils::{init_app_for_test, res_to_string};
     use actix_web::test;
     use sqlx::PgPool;
-    use std::str;
     use urlencoding::encode;
 
     #[sqlx::test(fixtures("history"))]
@@ -174,8 +168,8 @@ mod tests {
             "#,
         )
         .bind(user_id.unwrap())
-        .bind(3i64)
-        .bind(4i64)
+        .bind(3_i64)
+        .bind(4_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -189,9 +183,7 @@ mod tests {
 
         assert!(res.status().is_success());
 
-        let json = serde_json::from_str::<Vec<History>>(
-            str::from_utf8(&to_bytes(res.into_body()).await.unwrap().to_vec()).unwrap(),
-        );
+        let json = serde_json::from_str::<Vec<History>>(&res_to_string(res).await);
 
         assert!(json.is_ok());
         assert_eq!(json.unwrap().len(), 2);
@@ -212,8 +204,8 @@ mod tests {
             "#,
         )
         .bind(user_id.unwrap())
-        .bind(3i64)
-        .bind(4i64)
+        .bind(3_i64)
+        .bind(4_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -227,10 +219,7 @@ mod tests {
 
         assert!(res.status().is_success());
 
-        let json = serde_json::from_str::<Vec<History>>(
-            str::from_utf8(&to_bytes(res.into_body()).await.unwrap().to_vec()).unwrap(),
-        )
-        .unwrap();
+        let json = serde_json::from_str::<Vec<History>>(&res_to_string(res).await).unwrap();
 
         assert!(json[0].title.contains("ancient"));
         assert_eq!(json.len(), 1);
@@ -251,8 +240,8 @@ mod tests {
             "#,
         )
         .bind(user_id.unwrap())
-        .bind(3i64)
-        .bind(4i64)
+        .bind(3_i64)
+        .bind(4_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -267,9 +256,7 @@ mod tests {
 
         assert!(res.status().is_success());
 
-        let json = serde_json::from_str::<Vec<History>>(
-            str::from_utf8(&to_bytes(res.into_body()).await.unwrap().to_vec()).unwrap(),
-        );
+        let json = serde_json::from_str::<Vec<History>>(&res_to_string(res).await);
 
         assert!(json.is_ok());
         assert_eq!(json.unwrap().len(), 2);
@@ -282,7 +269,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(3i64)
+        .bind(3_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -297,9 +284,7 @@ mod tests {
 
         assert!(res.status().is_success());
 
-        let json = serde_json::from_str::<Vec<History>>(
-            str::from_utf8(&to_bytes(res.into_body()).await.unwrap().to_vec()).unwrap(),
-        );
+        let json = serde_json::from_str::<Vec<History>>(&res_to_string(res).await);
 
         assert!(json.is_ok());
         assert_eq!(json.unwrap().len(), 1);
@@ -312,7 +297,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(3i64)
+        .bind(3_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -327,9 +312,7 @@ mod tests {
 
         assert!(res.status().is_success());
 
-        let json = serde_json::from_str::<Vec<History>>(
-            str::from_utf8(&to_bytes(res.into_body()).await.unwrap().to_vec()).unwrap(),
-        );
+        let json = serde_json::from_str::<Vec<History>>(&res_to_string(res).await);
 
         assert!(json.is_ok());
         assert_eq!(json.unwrap().len(), 2);
@@ -350,8 +333,8 @@ mod tests {
             "#,
         )
         .bind(user_id.unwrap())
-        .bind(3i64)
-        .bind(4i64)
+        .bind(3_i64)
+        .bind(4_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -366,9 +349,7 @@ mod tests {
 
         assert!(res.status().is_success());
 
-        let json = serde_json::from_str::<Vec<History>>(
-            str::from_utf8(&to_bytes(res.into_body()).await.unwrap().to_vec()).unwrap(),
-        );
+        let json = serde_json::from_str::<Vec<History>>(&res_to_string(res).await);
 
         assert!(json.is_ok());
         assert_eq!(json.unwrap().len(), 2);
@@ -381,7 +362,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(3i64)
+        .bind(3_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -396,9 +377,7 @@ mod tests {
 
         assert!(res.status().is_success());
 
-        let json = serde_json::from_str::<Vec<History>>(
-            str::from_utf8(&to_bytes(res.into_body()).await.unwrap().to_vec()).unwrap(),
-        );
+        let json = serde_json::from_str::<Vec<History>>(&res_to_string(res).await);
 
         assert!(json.is_ok());
         assert_eq!(json.unwrap().len(), 1);
@@ -411,7 +390,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(3i64)
+        .bind(3_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -426,9 +405,7 @@ mod tests {
 
         assert!(res.status().is_success());
 
-        let json = serde_json::from_str::<Vec<History>>(
-            str::from_utf8(&to_bytes(res.into_body()).await.unwrap().to_vec()).unwrap(),
-        );
+        let json = serde_json::from_str::<Vec<History>>(&res_to_string(res).await);
 
         assert!(json.is_ok());
         assert_eq!(json.unwrap().len(), 2);
@@ -451,8 +428,8 @@ mod tests {
             "#,
         )
         .bind(user_id.unwrap())
-        .bind(3i64)
-        .bind(4i64)
+        .bind(3_i64)
+        .bind(4_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -467,9 +444,7 @@ mod tests {
 
         assert!(res.status().is_success());
 
-        let json = serde_json::from_str::<Vec<History>>(
-            str::from_utf8(&to_bytes(res.into_body()).await.unwrap().to_vec()).unwrap(),
-        );
+        let json = serde_json::from_str::<Vec<History>>(&res_to_string(res).await);
 
         assert!(json.is_ok());
         assert_eq!(json.unwrap().len(), 1);
@@ -482,7 +457,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(3i64)
+        .bind(3_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -497,9 +472,7 @@ mod tests {
 
         assert!(res.status().is_success());
 
-        let json = serde_json::from_str::<Vec<History>>(
-            str::from_utf8(&to_bytes(res.into_body()).await.unwrap().to_vec()).unwrap(),
-        );
+        let json = serde_json::from_str::<Vec<History>>(&res_to_string(res).await);
 
         assert!(json.is_ok());
         assert_eq!(json.unwrap().len(), 0);
@@ -512,7 +485,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(3i64)
+        .bind(3_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -527,9 +500,7 @@ mod tests {
 
         assert!(res.status().is_success());
 
-        let json = serde_json::from_str::<Vec<History>>(
-            str::from_utf8(&to_bytes(res.into_body()).await.unwrap().to_vec()).unwrap(),
-        );
+        let json = serde_json::from_str::<Vec<History>>(&res_to_string(res).await);
 
         assert!(json.is_ok());
         assert_eq!(json.unwrap().len(), 1);
@@ -552,8 +523,8 @@ mod tests {
             "#,
         )
         .bind(user_id.unwrap())
-        .bind(3i64)
-        .bind(4i64)
+        .bind(3_i64)
+        .bind(4_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -568,9 +539,7 @@ mod tests {
 
         assert!(res.status().is_success());
 
-        let json = serde_json::from_str::<Vec<History>>(
-            str::from_utf8(&to_bytes(res.into_body()).await.unwrap().to_vec()).unwrap(),
-        );
+        let json = serde_json::from_str::<Vec<History>>(&res_to_string(res).await);
 
         assert!(json.is_ok());
         assert_eq!(json.unwrap().len(), 1);
@@ -583,7 +552,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(3i64)
+        .bind(3_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -598,9 +567,7 @@ mod tests {
 
         assert!(res.status().is_success());
 
-        let json = serde_json::from_str::<Vec<History>>(
-            str::from_utf8(&to_bytes(res.into_body()).await.unwrap().to_vec()).unwrap(),
-        );
+        let json = serde_json::from_str::<Vec<History>>(&res_to_string(res).await);
 
         assert!(json.is_ok());
         assert_eq!(json.unwrap().len(), 0);
@@ -613,7 +580,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(3i64)
+        .bind(3_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -628,9 +595,7 @@ mod tests {
 
         assert!(res.status().is_success());
 
-        let json = serde_json::from_str::<Vec<History>>(
-            str::from_utf8(&to_bytes(res.into_body()).await.unwrap().to_vec()).unwrap(),
-        );
+        let json = serde_json::from_str::<Vec<History>>(&res_to_string(res).await);
 
         assert!(json.is_ok());
         assert_eq!(json.unwrap().len(), 1);

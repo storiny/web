@@ -1,34 +1,16 @@
 use crate::{
     constants::token_type::TokenType,
-    error::{
-        AppError,
-        FormErrorResponse,
-        ToastErrorResponse,
-    },
+    error::{AppError, FormErrorResponse, ToastErrorResponse},
     AppState,
 };
-use actix_web::{
-    http::header::ContentType,
-    post,
-    web,
-    HttpResponse,
-};
+use actix_web::{post, web, HttpResponse};
 use actix_web_validator::Json;
 use argon2::{
-    password_hash::{
-        rand_core::OsRng,
-        SaltString,
-    },
-    Argon2,
-    PasswordHash,
-    PasswordHasher,
-    PasswordVerifier,
+    password_hash::{rand_core::OsRng, SaltString},
+    Argon2, PasswordHash, PasswordHasher, PasswordVerifier,
 };
 use email_address::EmailAddress;
-use serde::{
-    Deserialize,
-    Serialize,
-};
+use serde::{Deserialize, Serialize};
 use sqlx::Row;
 use time::OffsetDateTime;
 use validator::Validate;
@@ -91,11 +73,9 @@ async fn post(payload: Json<Request>, data: web::Data<AppState>) -> Result<HttpR
 
                                 // Check if the token has expired
                                 if expires_at < OffsetDateTime::now_utc() {
-                                    return Ok(HttpResponse::BadRequest()
-                                        .content_type(ContentType::json())
-                                        .json(ToastErrorResponse::new(
-                                            "Token has expired".to_string(),
-                                        )));
+                                    return Ok(HttpResponse::BadRequest().json(
+                                        ToastErrorResponse::new("Token has expired".to_string()),
+                                    ));
                                 }
 
                                 // Generate a hash from the new password
@@ -144,7 +124,6 @@ async fn post(payload: Json<Request>, data: web::Data<AppState>) -> Result<HttpR
                                 }
                             }
                             Err(_) => Ok(HttpResponse::BadRequest()
-                                .content_type(ContentType::json())
                                 .json(ToastErrorResponse::new("Invalid token".to_string()))),
                         }
                     }
@@ -153,7 +132,6 @@ async fn post(payload: Json<Request>, data: web::Data<AppState>) -> Result<HttpR
             }
             Err(kind) => match kind {
                 sqlx::Error::RowNotFound => Ok(HttpResponse::BadRequest()
-                    .content_type(ContentType::json())
                     .json(ToastErrorResponse::new("Invalid token".to_string()))),
                 _ => Ok(HttpResponse::InternalServerError().finish()),
             },
@@ -179,13 +157,11 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::test_utils::test_utils::init_app_for_test;
-    use actix_http::body::to_bytes;
-    use actix_web::test;
-    use argon2::{
-        PasswordHash,
-        PasswordVerifier,
+    use crate::test_utils::test_utils::{
+        assert_form_error_response, assert_toast_error_response, init_app_for_test,
     };
+    use actix_web::test;
+    use argon2::{PasswordHash, PasswordVerifier};
     use nanoid::nanoid;
     use sqlx::PgPool;
     use time::Duration;
@@ -209,7 +185,7 @@ mod tests {
         )
         .bind(hashed_token.to_string())
         .bind(TokenType::PasswordReset.to_string())
-        .bind(1i64)
+        .bind(1_i64)
         .bind(OffsetDateTime::now_utc() + Duration::days(1)) // 24 hours
         .execute(&mut *conn)
         .await?;
@@ -238,14 +214,12 @@ mod tests {
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(
-            Argon2::default()
-                .verify_password(
-                    "new_password".as_bytes(),
-                    &PasswordHash::new(&user.get::<String, _>("password")).unwrap(),
-                )
-                .is_ok()
-        );
+        assert!(Argon2::default()
+            .verify_password(
+                "new_password".as_bytes(),
+                &PasswordHash::new(&user.get::<String, _>("password")).unwrap(),
+            )
+            .is_ok());
 
         // Token should get removed from the database.
         let token = sqlx::query(
@@ -280,7 +254,7 @@ mod tests {
         )
         .bind(token_id.clone())
         .bind(TokenType::PasswordReset.to_string())
-        .bind(1i64)
+        .bind(1_i64)
         .bind(OffsetDateTime::now_utc() + Duration::days(1)) // 24 hours
         .execute(&mut *conn)
         .await?;
@@ -297,14 +271,14 @@ mod tests {
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_client_error());
-        assert_eq!(
-            to_bytes(res.into_body()).await.unwrap(),
-            serde_json::to_string(&FormErrorResponse::new(vec![vec![
+        assert_form_error_response(
+            res,
+            vec![vec![
                 "email".to_string(),
                 "Could not find any account associated with this e-mail".to_string(),
-            ]]))
-            .unwrap()
-        );
+            ]],
+        )
+        .await;
 
         Ok(())
     }
@@ -328,7 +302,7 @@ mod tests {
         )
         .bind(hashed_token.to_string())
         .bind(TokenType::PasswordReset.to_string())
-        .bind(1i64)
+        .bind(1_i64)
         .bind(OffsetDateTime::now_utc() - Duration::days(1)) // The token expired yesterday
         .execute(&mut *conn)
         .await?;
@@ -347,11 +321,7 @@ mod tests {
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_client_error());
-        assert_eq!(
-            to_bytes(res.into_body()).await.unwrap(),
-            serde_json::to_string(&ToastErrorResponse::new("Token has expired".to_string()))
-                .unwrap()
-        );
+        assert_toast_error_response(res, "Token has expired").await;
 
         Ok(())
     }
@@ -372,10 +342,7 @@ mod tests {
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_client_error());
-        assert_eq!(
-            to_bytes(res.into_body()).await.unwrap(),
-            serde_json::to_string(&ToastErrorResponse::new("Invalid token".to_string())).unwrap()
-        );
+        assert_toast_error_response(res, "Invalid token").await;
 
         Ok(())
     }

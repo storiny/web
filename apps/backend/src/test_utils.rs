@@ -1,5 +1,6 @@
 #[cfg(test)]
 pub mod test_utils {
+    use crate::error::{FormErrorResponse, ToastErrorResponse};
     use crate::{
         middleware::{
             identity::{identity::Identity, middleware::IdentityMiddleware},
@@ -7,6 +8,7 @@ pub mod test_utils {
         },
         AppState,
     };
+    use actix_http::body::to_bytes;
     use actix_http::{HttpMessage, Request};
     use actix_web::{
         cookie::{time::Duration, Cookie, Key, SameSite},
@@ -18,13 +20,13 @@ pub mod test_utils {
     use rusoto_ses::SesClient;
     use rusoto_signature::Region;
     use sqlx::PgPool;
-    use std::env;
+    use std::{env, str};
     use user_agent_parser::UserAgentParser;
 
     // Private login route
     #[post("/__login__")]
     async fn post(req: HttpRequest) -> impl Responder {
-        Identity::login(&req.extensions(), 1i64).unwrap();
+        Identity::login(&req.extensions(), 1_i64).unwrap();
         HttpResponse::Ok().finish()
     }
 
@@ -100,11 +102,11 @@ pub mod test_utils {
                 // Insert the user
                 sqlx::query(
                     r#"
-                INSERT INTO users(id, name, username, email)
-                VALUES ($1, $2, $3, $4)
-                "#,
+                    INSERT INTO users(id, name, username, email)
+                    VALUES ($1, $2, $3, $4)
+                    "#,
                 )
-                .bind(1i64)
+                .bind(1_i64)
                 .bind("Some user".to_string())
                 .bind("some_user".to_string())
                 .bind("someone@example.com".to_string())
@@ -122,9 +124,53 @@ pub mod test_utils {
                 .find(|cookie| cookie.name() == "_storiny_sess")
                 .unwrap();
 
-            return (service, Some(cookie.into_owned()), Some(1i64));
+            return (service, Some(cookie.into_owned()), Some(1_i64));
         }
 
         (service, None, None)
+    }
+
+    /// Converts the response body to string.
+    ///
+    /// * `res` - The service response.
+    pub async fn res_to_string(res: ServiceResponse) -> String {
+        let bytes = to_bytes(res.into_body()).await.unwrap().to_vec();
+        String::from_utf8(bytes).unwrap()
+    }
+
+    /// Asserts text string on a service response body.
+    ///
+    /// * `res` - The service response.
+    /// * `expected_text` - The expected body text string.
+    pub async fn assert_response_body_text(res: ServiceResponse, expected_text: &str) {
+        assert_eq!(
+            to_bytes(res.into_body()).await.unwrap_or_default(),
+            expected_text.to_string()
+        );
+    }
+
+    /// Asserts toast error response message on a service response.
+    ///
+    /// * `res` - The service response.
+    /// * `err_message` - The toast error message string.
+    pub async fn assert_toast_error_response(res: ServiceResponse, err_message: &str) {
+        assert_response_body_text(
+            res,
+            &serde_json::to_string(&ToastErrorResponse::new(err_message.to_string()))
+                .unwrap_or_default(),
+        )
+        .await;
+    }
+
+    /// Asserts form error response on a service response.
+    ///
+    /// * `res` - The service response.
+    /// * `err_data` - The form error data.
+    pub async fn assert_form_error_response(res: ServiceResponse, err_data: Vec<Vec<String>>) {
+        assert_response_body_text(
+            res,
+            &serde_json::to_string(&FormErrorResponse::new(err_data)).unwrap_or_default(),
+        )
+        .await;
     }
 }

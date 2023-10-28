@@ -124,7 +124,7 @@ impl Backend<SimpleInput> for RedisBackend {
         pipe.atomic()
             .cmd("SET")
             .arg(key.as_ref())
-            .arg(0i64)
+            .arg(0_i64)
             .arg("EX")
             .arg(input.interval.as_secs())
             .arg("NX")
@@ -202,7 +202,7 @@ mod tests {
     async fn make_backend(clear_test_key: &str) -> Builder {
         // Env
         let host = option_env!("REDIS_HOST").unwrap_or("127.0.0.1");
-        let port = option_env!("REDIS_PORT").unwrap_or("7000");
+        let port = option_env!("REDIS_PORT").unwrap_or("7001");
 
         let client = redis::Client::open(format!("redis://{host}:{port}")).unwrap();
         let mut manager = ConnectionManager::new(client).await.unwrap();

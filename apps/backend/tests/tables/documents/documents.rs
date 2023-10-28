@@ -12,7 +12,7 @@ mod tests {
             "#,
         )
         .bind("some_key".to_string())
-        .bind(2i64)
+        .bind(2_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -33,7 +33,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(2i64)
+        .bind(2_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -44,7 +44,7 @@ mod tests {
             "#,
         )
         .bind("some_key".to_string())
-        .bind(2i64)
+        .bind(2_i64)
         .execute(&mut *conn)
         .await;
 

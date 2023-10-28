@@ -32,9 +32,9 @@ const EmptyState = dynamic(() => import("./empty-state"), {
   loading: dynamic_loader()
 });
 
-type SortOrder = "dsc" | "asc";
+type SortOrder = "least" | "most";
 
-export type TagsSortValue = "recent" | "old" | `popular-${SortOrder}`;
+export type TagsSortValue = "recent" | "old" | `${SortOrder}-popular`;
 
 // Status header
 
@@ -123,8 +123,8 @@ const ControlBar = ({
     >
       <Option value={"recent"}>Recent</Option>
       <Option value={"old"}>Old</Option>
-      <Option value={"popular-dsc"}>Most popular</Option>
-      <Option value={"popular-asc"}>Least popular</Option>
+      <Option value={"most-popular"}>Most popular</Option>
+      <Option value={"least-popular"}>Least popular</Option>
     </Select>
   </div>
 );

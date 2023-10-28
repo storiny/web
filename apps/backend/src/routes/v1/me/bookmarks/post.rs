@@ -71,8 +71,7 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::test_utils::test_utils::init_app_for_test;
-    use actix_http::body::to_bytes;
+    use crate::test_utils::test_utils::{assert_response_body_text, init_app_for_test};
     use actix_web::test;
     use sqlx::{PgPool, Row};
 
@@ -99,7 +98,7 @@ mod tests {
             "#,
         )
         .bind(user_id)
-        .bind(3i64)
+        .bind(3_i64)
         .fetch_one(&mut *conn)
         .await?;
 
@@ -149,7 +148,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(3i64)
+        .bind(3_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -163,10 +162,11 @@ mod tests {
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_client_error());
-        assert_eq!(
-            to_bytes(res.into_body()).await.unwrap_or_default(),
-            "Story being bookmarked is either deleted or unpublished".to_string()
-        );
+        assert_response_body_text(
+            res,
+            "Story being bookmarked is either deleted or unpublished",
+        )
+        .await;
 
         Ok(())
     }
@@ -184,7 +184,7 @@ mod tests {
             WHERE id = $1
             "#,
         )
-        .bind(3i64)
+        .bind(3_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -198,10 +198,11 @@ mod tests {
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_client_error());
-        assert_eq!(
-            to_bytes(res.into_body()).await.unwrap_or_default(),
-            "Story being bookmarked is either deleted or unpublished".to_string()
-        );
+        assert_response_body_text(
+            res,
+            "Story being bookmarked is either deleted or unpublished",
+        )
+        .await;
 
         Ok(())
     }

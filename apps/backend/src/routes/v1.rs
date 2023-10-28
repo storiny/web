@@ -40,6 +40,13 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
     // Comments
     me::comments::comments_get::init_routes(cfg);
     me::comments::comments_post::init_routes(cfg);
+    me::comments::comments_patch::init_routes(cfg);
+    me::comments::comments_delete::init_routes(cfg);
+    // Replies
+    me::replies::replies_get::init_routes(cfg);
+    me::replies::replies_post::init_routes(cfg);
+    me::replies::replies_patch::init_routes(cfg);
+    me::replies::replies_delete::init_routes(cfg);
     // History
     me::history::history::init_routes(cfg);
     // Muted users

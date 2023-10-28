@@ -1,9 +1,6 @@
 #[cfg(test)]
 mod tests {
-    use sqlx::{
-        PgPool,
-        Row,
-    };
+    use sqlx::{PgPool, Row};
 
     #[sqlx::test]
     async fn can_insert_a_valid_tag(pool: PgPool) -> sqlx::Result<()> {
@@ -90,7 +87,7 @@ mod tests {
             "#,
         )
         .bind(result.get::<i64, _>("id"))
-        .bind(2i64)
+        .bind(2_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -102,7 +99,7 @@ mod tests {
             "#,
         )
         .bind(result.get::<i64, _>("id"))
-        .bind(2i64)
+        .bind(2_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -148,7 +145,7 @@ mod tests {
             "#,
         )
         .bind(result.get::<i64, _>("id"))
-        .bind(2i64)
+        .bind(2_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -175,7 +172,7 @@ mod tests {
             "#,
         )
         .bind(result.get::<i64, _>("id"))
-        .bind(2i64)
+        .bind(2_i64)
         .fetch_one(&mut *conn)
         .await?;
 
@@ -208,7 +205,7 @@ mod tests {
             "#,
         )
         .bind(result.get::<i64, _>("id"))
-        .bind(1i64)
+        .bind(1_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -235,7 +232,7 @@ mod tests {
             "#,
         )
         .bind(result.get::<i64, _>("id"))
-        .bind(1i64)
+        .bind(1_i64)
         .fetch_one(&mut *conn)
         .await?;
 

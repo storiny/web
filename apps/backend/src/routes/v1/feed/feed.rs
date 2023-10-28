@@ -1,25 +1,10 @@
-use crate::{
-    error::AppError,
-    middleware::identity::identity::Identity,
-    AppState,
-};
-use actix_web::{
-    get,
-    http::header::ContentType,
-    web,
-    HttpResponse,
-};
+use crate::{error::AppError, middleware::identity::identity::Identity, AppState};
+use actix_web::{get, web, HttpResponse};
 use actix_web_validator::QsQuery;
 use lazy_static::lazy_static;
 use regex::Regex;
-use serde::{
-    Deserialize,
-    Serialize,
-};
-use sqlx::{
-    types::Json,
-    FromRow,
-};
+use serde::{Deserialize, Serialize};
+use sqlx::{types::Json, FromRow};
 use time::OffsetDateTime;
 use validator::Validate;
 
@@ -105,9 +90,7 @@ async fn get(
                     .fetch_all(&data.db_pool)
                     .await?;
 
-                    Ok(HttpResponse::Ok()
-                        .content_type(ContentType::json())
-                        .json(result))
+                    Ok(HttpResponse::Ok().json(result))
                 } else {
                     let result = sqlx::query_file_as!(
                         Story,
@@ -119,9 +102,7 @@ async fn get(
                     .fetch_all(&data.db_pool)
                     .await?;
 
-                    Ok(HttpResponse::Ok()
-                        .content_type(ContentType::json())
-                        .json(result))
+                    Ok(HttpResponse::Ok().json(result))
                 }
             }
             Err(_) => Ok(HttpResponse::InternalServerError().finish()),
@@ -137,9 +118,7 @@ async fn get(
     .fetch_all(&data.db_pool)
     .await?;
 
-    Ok(HttpResponse::Ok()
-        .content_type(ContentType::json())
-        .json(result))
+    Ok(HttpResponse::Ok().json(result))
 }
 
 pub fn init_routes(cfg: &mut web::ServiceConfig) {
@@ -189,14 +168,9 @@ impl ::sqlx::Type<::sqlx::Postgres> for User {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::test_utils::test_utils::init_app_for_test;
-    use actix_http::body::to_bytes;
+    use crate::test_utils::test_utils::{init_app_for_test, res_to_string};
     use actix_web::test;
-    use sqlx::{
-        PgPool,
-        Row,
-    };
-    use std::str;
+    use sqlx::{PgPool, Row};
 
     #[sqlx::test(fixtures("feed"))]
     async fn can_generate_feed_for_logged_out_user(pool: PgPool) -> sqlx::Result<()> {
@@ -206,9 +180,7 @@ mod tests {
 
         assert!(res.status().is_success());
 
-        let json = serde_json::from_str::<Vec<Story>>(
-            str::from_utf8(&to_bytes(res.into_body()).await.unwrap().to_vec()).unwrap(),
-        );
+        let json = serde_json::from_str::<Vec<Story>>(&res_to_string(res).await);
 
         assert!(json.is_ok());
         assert!(json.unwrap().len() > 0);
@@ -241,10 +213,7 @@ mod tests {
 
         let req = test::TestRequest::get().uri("/v1/feed").to_request();
         let res = test::call_service(&app, req).await;
-
-        let json = serde_json::from_str::<Vec<Story>>(
-            str::from_utf8(&to_bytes(res.into_body()).await.unwrap().to_vec()).unwrap(),
-        );
+        let json = serde_json::from_str::<Vec<Story>>(&res_to_string(res).await);
 
         // Should be included in the feed initially
         assert_eq!(json.unwrap().len(), 1);
@@ -264,10 +233,7 @@ mod tests {
         // Fetch the feed again
         let req = test::TestRequest::get().uri("/v1/feed").to_request();
         let res = test::call_service(&app, req).await;
-
-        let json = serde_json::from_str::<Vec<Story>>(
-            str::from_utf8(&to_bytes(res.into_body()).await.unwrap().to_vec()).unwrap(),
-        );
+        let json = serde_json::from_str::<Vec<Story>>(&res_to_string(res).await);
 
         // Should not be included in the feed
         assert_eq!(json.unwrap().len(), 0);
@@ -300,10 +266,7 @@ mod tests {
 
         let req = test::TestRequest::get().uri("/v1/feed").to_request();
         let res = test::call_service(&app, req).await;
-
-        let json = serde_json::from_str::<Vec<Story>>(
-            str::from_utf8(&to_bytes(res.into_body()).await.unwrap().to_vec()).unwrap(),
-        );
+        let json = serde_json::from_str::<Vec<Story>>(&res_to_string(res).await);
 
         // Should be included in the feed initially
         assert_eq!(json.unwrap().len(), 1);
@@ -323,10 +286,7 @@ mod tests {
         // Fetch the feed again
         let req = test::TestRequest::get().uri("/v1/feed").to_request();
         let res = test::call_service(&app, req).await;
-
-        let json = serde_json::from_str::<Vec<Story>>(
-            str::from_utf8(&to_bytes(res.into_body()).await.unwrap().to_vec()).unwrap(),
-        );
+        let json = serde_json::from_str::<Vec<Story>>(&res_to_string(res).await);
 
         // Should not be included in the feed
         assert_eq!(json.unwrap().len(), 0);
@@ -359,10 +319,7 @@ mod tests {
 
         let req = test::TestRequest::get().uri("/v1/feed").to_request();
         let res = test::call_service(&app, req).await;
-
-        let json = serde_json::from_str::<Vec<Story>>(
-            str::from_utf8(&to_bytes(res.into_body()).await.unwrap().to_vec()).unwrap(),
-        );
+        let json = serde_json::from_str::<Vec<Story>>(&res_to_string(res).await);
 
         // Should be included in the feed initially
         assert_eq!(json.unwrap().len(), 1);
@@ -382,10 +339,7 @@ mod tests {
         // Fetch the feed again
         let req = test::TestRequest::get().uri("/v1/feed").to_request();
         let res = test::call_service(&app, req).await;
-
-        let json = serde_json::from_str::<Vec<Story>>(
-            str::from_utf8(&to_bytes(res.into_body()).await.unwrap().to_vec()).unwrap(),
-        );
+        let json = serde_json::from_str::<Vec<Story>>(&res_to_string(res).await);
 
         // Should not be included in the feed
         assert_eq!(json.unwrap().len(), 0);
@@ -409,9 +363,7 @@ mod tests {
 
         assert!(res.status().is_success());
 
-        let json = serde_json::from_str::<Vec<Story>>(
-            str::from_utf8(&to_bytes(res.into_body()).await.unwrap().to_vec()).unwrap(),
-        );
+        let json = serde_json::from_str::<Vec<Story>>(&res_to_string(res).await);
 
         assert!(json.is_ok());
         assert!(json.unwrap().len() > 0);
@@ -447,10 +399,7 @@ mod tests {
             .uri("/v1/feed?type=suggested")
             .to_request();
         let res = test::call_service(&app, req).await;
-
-        let json = serde_json::from_str::<Vec<Story>>(
-            str::from_utf8(&to_bytes(res.into_body()).await.unwrap().to_vec()).unwrap(),
-        );
+        let json = serde_json::from_str::<Vec<Story>>(&res_to_string(res).await);
 
         // Should be included in the feed initially
         assert_eq!(json.unwrap().len(), 1);
@@ -473,10 +422,7 @@ mod tests {
             .uri("/v1/feed?type=suggested")
             .to_request();
         let res = test::call_service(&app, req).await;
-
-        let json = serde_json::from_str::<Vec<Story>>(
-            str::from_utf8(&to_bytes(res.into_body()).await.unwrap().to_vec()).unwrap(),
-        );
+        let json = serde_json::from_str::<Vec<Story>>(&res_to_string(res).await);
 
         // Should not be included in the feed
         assert_eq!(json.unwrap().len(), 0);
@@ -512,10 +458,7 @@ mod tests {
             .uri("/v1/feed?type=suggested")
             .to_request();
         let res = test::call_service(&app, req).await;
-
-        let json = serde_json::from_str::<Vec<Story>>(
-            str::from_utf8(&to_bytes(res.into_body()).await.unwrap().to_vec()).unwrap(),
-        );
+        let json = serde_json::from_str::<Vec<Story>>(&res_to_string(res).await);
 
         // Should be included in the feed initially
         assert_eq!(json.unwrap().len(), 1);
@@ -538,10 +481,7 @@ mod tests {
             .uri("/v1/feed?type=suggested")
             .to_request();
         let res = test::call_service(&app, req).await;
-
-        let json = serde_json::from_str::<Vec<Story>>(
-            str::from_utf8(&to_bytes(res.into_body()).await.unwrap().to_vec()).unwrap(),
-        );
+        let json = serde_json::from_str::<Vec<Story>>(&res_to_string(res).await);
 
         // Should not be included in the feed
         assert_eq!(json.unwrap().len(), 0);
@@ -577,10 +517,7 @@ mod tests {
             .uri("/v1/feed?type=suggested")
             .to_request();
         let res = test::call_service(&app, req).await;
-
-        let json = serde_json::from_str::<Vec<Story>>(
-            str::from_utf8(&to_bytes(res.into_body()).await.unwrap().to_vec()).unwrap(),
-        );
+        let json = serde_json::from_str::<Vec<Story>>(&res_to_string(res).await);
 
         // Should be included in the feed initially
         assert_eq!(json.unwrap().len(), 1);
@@ -603,10 +540,7 @@ mod tests {
             .uri("/v1/feed?type=suggested")
             .to_request();
         let res = test::call_service(&app, req).await;
-
-        let json = serde_json::from_str::<Vec<Story>>(
-            str::from_utf8(&to_bytes(res.into_body()).await.unwrap().to_vec()).unwrap(),
-        );
+        let json = serde_json::from_str::<Vec<Story>>(&res_to_string(res).await);
 
         // Should not be included in the feed
         assert_eq!(json.unwrap().len(), 0);
@@ -629,10 +563,7 @@ mod tests {
             .uri("/v1/feed?type=suggested")
             .to_request();
         let res = test::call_service(&app, req).await;
-
-        let json = serde_json::from_str::<Vec<Story>>(
-            str::from_utf8(&to_bytes(res.into_body()).await.unwrap().to_vec()).unwrap(),
-        );
+        let json = serde_json::from_str::<Vec<Story>>(&res_to_string(res).await);
 
         // Should now include the story in the feed
         assert_eq!(json.unwrap().len(), 1);
@@ -668,10 +599,7 @@ mod tests {
             .uri("/v1/feed?type=suggested")
             .to_request();
         let res = test::call_service(&app, req).await;
-
-        let json = serde_json::from_str::<Vec<Story>>(
-            str::from_utf8(&to_bytes(res.into_body()).await.unwrap().to_vec()).unwrap(),
-        );
+        let json = serde_json::from_str::<Vec<Story>>(&res_to_string(res).await);
 
         // Should be included in the feed initially
         assert_eq!(json.unwrap().len(), 1);
@@ -694,10 +622,7 @@ mod tests {
             .uri("/v1/feed?type=suggested")
             .to_request();
         let res = test::call_service(&app, req).await;
-
-        let json = serde_json::from_str::<Vec<Story>>(
-            str::from_utf8(&to_bytes(res.into_body()).await.unwrap().to_vec()).unwrap(),
-        );
+        let json = serde_json::from_str::<Vec<Story>>(&res_to_string(res).await);
 
         // Should not be included in the feed
         assert_eq!(json.unwrap().len(), 0);
@@ -733,10 +658,7 @@ mod tests {
             .uri("/v1/feed?type=suggested")
             .to_request();
         let res = test::call_service(&app, req).await;
-
-        let json = serde_json::from_str::<Vec<Story>>(
-            str::from_utf8(&to_bytes(res.into_body()).await.unwrap().to_vec()).unwrap(),
-        );
+        let json = serde_json::from_str::<Vec<Story>>(&res_to_string(res).await);
 
         // Should be included in the feed initially
         assert_eq!(json.unwrap().len(), 1);
@@ -759,10 +681,7 @@ mod tests {
             .uri("/v1/feed?type=suggested")
             .to_request();
         let res = test::call_service(&app, req).await;
-
-        let json = serde_json::from_str::<Vec<Story>>(
-            str::from_utf8(&to_bytes(res.into_body()).await.unwrap().to_vec()).unwrap(),
-        );
+        let json = serde_json::from_str::<Vec<Story>>(&res_to_string(res).await);
 
         // Should not be included in the feed
         assert_eq!(json.unwrap().len(), 0);
@@ -786,9 +705,7 @@ mod tests {
 
         assert!(res.status().is_success());
 
-        let json = serde_json::from_str::<Vec<Story>>(
-            str::from_utf8(&to_bytes(res.into_body()).await.unwrap().to_vec()).unwrap(),
-        );
+        let json = serde_json::from_str::<Vec<Story>>(&res_to_string(res).await);
 
         assert!(json.is_ok());
         assert!(json.unwrap().len() > 0);
@@ -829,10 +746,7 @@ mod tests {
             .uri("/v1/feed?type=friends-and-following")
             .to_request();
         let res = test::call_service(&app, req).await;
-
-        let json = serde_json::from_str::<Vec<Story>>(
-            str::from_utf8(&to_bytes(res.into_body()).await.unwrap().to_vec()).unwrap(),
-        );
+        let json = serde_json::from_str::<Vec<Story>>(&res_to_string(res).await);
 
         // Should be included in the feed initially
         assert_eq!(json.unwrap().len(), 1);
@@ -855,10 +769,7 @@ mod tests {
             .uri("/v1/feed?type=friends-and-following")
             .to_request();
         let res = test::call_service(&app, req).await;
-
-        let json = serde_json::from_str::<Vec<Story>>(
-            str::from_utf8(&to_bytes(res.into_body()).await.unwrap().to_vec()).unwrap(),
-        );
+        let json = serde_json::from_str::<Vec<Story>>(&res_to_string(res).await);
 
         // Should not be included in the feed
         assert_eq!(json.unwrap().len(), 0);
@@ -899,10 +810,7 @@ mod tests {
             .uri("/v1/feed?type=friends-and-following")
             .to_request();
         let res = test::call_service(&app, req).await;
-
-        let json = serde_json::from_str::<Vec<Story>>(
-            str::from_utf8(&to_bytes(res.into_body()).await.unwrap().to_vec()).unwrap(),
-        );
+        let json = serde_json::from_str::<Vec<Story>>(&res_to_string(res).await);
 
         // Should be included in the feed initially
         assert_eq!(json.unwrap().len(), 1);
@@ -925,10 +833,7 @@ mod tests {
             .uri("/v1/feed?type=friends-and-following")
             .to_request();
         let res = test::call_service(&app, req).await;
-
-        let json = serde_json::from_str::<Vec<Story>>(
-            str::from_utf8(&to_bytes(res.into_body()).await.unwrap().to_vec()).unwrap(),
-        );
+        let json = serde_json::from_str::<Vec<Story>>(&res_to_string(res).await);
 
         // Should not be included in the feed
         assert_eq!(json.unwrap().len(), 0);
@@ -969,10 +874,7 @@ mod tests {
             .uri("/v1/feed?type=friends-and-following")
             .to_request();
         let res = test::call_service(&app, req).await;
-
-        let json = serde_json::from_str::<Vec<Story>>(
-            str::from_utf8(&to_bytes(res.into_body()).await.unwrap().to_vec()).unwrap(),
-        );
+        let json = serde_json::from_str::<Vec<Story>>(&res_to_string(res).await);
 
         // Should be included in the feed initially
         assert_eq!(json.unwrap().len(), 1);
@@ -995,10 +897,7 @@ mod tests {
             .uri("/v1/feed?type=friends-and-following")
             .to_request();
         let res = test::call_service(&app, req).await;
-
-        let json = serde_json::from_str::<Vec<Story>>(
-            str::from_utf8(&to_bytes(res.into_body()).await.unwrap().to_vec()).unwrap(),
-        );
+        let json = serde_json::from_str::<Vec<Story>>(&res_to_string(res).await);
 
         // Should not be included in the feed
         assert_eq!(json.unwrap().len(), 0);
@@ -1021,10 +920,7 @@ mod tests {
             .uri("/v1/feed?type=friends-and-following")
             .to_request();
         let res = test::call_service(&app, req).await;
-
-        let json = serde_json::from_str::<Vec<Story>>(
-            str::from_utf8(&to_bytes(res.into_body()).await.unwrap().to_vec()).unwrap(),
-        );
+        let json = serde_json::from_str::<Vec<Story>>(&res_to_string(res).await);
 
         // Should now include the story in the feed
         assert_eq!(json.unwrap().len(), 1);
@@ -1066,10 +962,7 @@ mod tests {
             .uri("/v1/feed?type=friends-and-following")
             .to_request();
         let res = test::call_service(&app, req).await;
-
-        let json = serde_json::from_str::<Vec<Story>>(
-            str::from_utf8(&to_bytes(res.into_body()).await.unwrap().to_vec()).unwrap(),
-        );
+        let json = serde_json::from_str::<Vec<Story>>(&res_to_string(res).await);
 
         // Should be included in the feed initially
         assert_eq!(json.unwrap().len(), 1);
@@ -1092,10 +985,7 @@ mod tests {
             .uri("/v1/feed?type=friends-and-following")
             .to_request();
         let res = test::call_service(&app, req).await;
-
-        let json = serde_json::from_str::<Vec<Story>>(
-            str::from_utf8(&to_bytes(res.into_body()).await.unwrap().to_vec()).unwrap(),
-        );
+        let json = serde_json::from_str::<Vec<Story>>(&res_to_string(res).await);
 
         // Should not be included in the feed
         assert_eq!(json.unwrap().len(), 0);
@@ -1137,10 +1027,7 @@ mod tests {
             .uri("/v1/feed?type=friends-and-following")
             .to_request();
         let res = test::call_service(&app, req).await;
-
-        let json = serde_json::from_str::<Vec<Story>>(
-            str::from_utf8(&to_bytes(res.into_body()).await.unwrap().to_vec()).unwrap(),
-        );
+        let json = serde_json::from_str::<Vec<Story>>(&res_to_string(res).await);
 
         // Should be included in the feed initially
         assert_eq!(json.unwrap().len(), 1);
@@ -1163,10 +1050,7 @@ mod tests {
             .uri("/v1/feed?type=friends-and-following")
             .to_request();
         let res = test::call_service(&app, req).await;
-
-        let json = serde_json::from_str::<Vec<Story>>(
-            str::from_utf8(&to_bytes(res.into_body()).await.unwrap().to_vec()).unwrap(),
-        );
+        let json = serde_json::from_str::<Vec<Story>>(&res_to_string(res).await);
 
         // Should not be included in the feed
         assert_eq!(json.unwrap().len(), 0);

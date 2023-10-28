@@ -12,7 +12,7 @@ mod tests {
             "#,
         )
         .bind(1234i32)
-        .bind(1234i64)
+        .bind(1234_i64)
         .execute(&mut *conn)
         .await?;
 
@@ -44,7 +44,7 @@ mod tests {
             VALUES (DEFAULT, $1)
             "#,
         )
-        .bind(-1i64)
+        .bind(-1_i64)
         .execute(&mut *conn)
         .await;
 
