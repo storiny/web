@@ -4,34 +4,18 @@ use maxminddb::Reader;
 use rusoto_s3::S3Client;
 use rusoto_ses::SesClient;
 use sailfish::TemplateOnce;
-use sqlx::{
-    Pool,
-    Postgres,
-};
+use sqlx::{Pool, Postgres};
 use user_agent_parser::UserAgentParser;
 
-#[path = "error.rs"]
+pub mod constants;
 pub mod error;
-
-#[path = "models.rs"]
+pub mod iso8601;
+pub mod middleware;
 pub mod models;
-
-#[path = "routes.rs"]
 pub mod routes;
-
-#[path = "utils.rs"]
 pub mod utils;
 
-#[path = "middleware.rs"]
-pub mod middleware;
-
-#[path = "constants.rs"]
-pub mod constants;
-
-#[path = "iso8601.rs"]
-pub mod iso8601;
-
-#[path = "test_utils.rs"]
+#[cfg(test)]
 pub mod test_utils;
 
 /// Index page template
@@ -56,6 +40,8 @@ pub struct AppState {
     /// AWS S3 client instance
     pub s3_client: S3Client,
 }
+
+// GRPC
 
 pub mod comment_def {
     pub mod v1 {

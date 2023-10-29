@@ -236,9 +236,8 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::test_utils::test_utils::{assert_response_body_text, assert_toast_error_response};
     use crate::{
-        test_utils::test_utils::init_app_for_test,
+        test_utils::{assert_response_body_text, assert_toast_error_response, init_app_for_test},
         utils::{get_client_device::ClientDevice, get_client_location::ClientLocation},
     };
     use actix_web::{get, services, test, Responder};

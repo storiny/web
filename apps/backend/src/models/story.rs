@@ -1,17 +1,20 @@
-use crate::story_def::v1::{
-    StoryAgeRestriction,
-    StoryLicense,
-    StoryVisibility,
-};
-use serde::{
-    Deserialize,
-    Serialize,
-};
+use crate::story_def::v1::{StoryAgeRestriction, StoryLicense, StoryVisibility};
+use lazy_static::lazy_static;
+use serde::{Deserialize, Serialize};
 use sqlx::FromRow;
-use strum::Display;
+use std::iter::Iterator;
+use std::string::ToString;
+use strum::{Display, IntoEnumIterator};
+use strum_macros::{EnumCount as EnumCountMacro, EnumIter};
 use time::OffsetDateTime;
 
-#[derive(Display, Debug, Serialize, Deserialize, Copy, Clone)]
+lazy_static! {
+    pub static ref STORY_CATEGORY_VEC: Vec<String> = StoryCategory::iter()
+        .map(|item| item.to_string())
+        .collect::<Vec<_>>();
+}
+
+#[derive(Display, Debug, Serialize, Deserialize, Copy, Clone, EnumCountMacro, EnumIter)]
 pub enum StoryCategory {
     #[strum(serialize = "business-and-finance")]
     BusinessAndFinance,

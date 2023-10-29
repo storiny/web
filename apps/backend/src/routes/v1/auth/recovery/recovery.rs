@@ -137,7 +137,7 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::test_utils::test_utils::{assert_form_error_response, init_app_for_test};
+    use crate::test_utils::{assert_form_error_response, init_app_for_test};
     use actix_web::test;
     use sqlx::PgPool;
 
