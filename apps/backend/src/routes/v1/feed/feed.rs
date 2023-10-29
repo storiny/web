@@ -168,7 +168,7 @@ impl ::sqlx::Type<::sqlx::Postgres> for User {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::test_utils::test_utils::{init_app_for_test, res_to_string};
+    use crate::test_utils::{init_app_for_test, res_to_string};
     use actix_web::test;
     use sqlx::{PgPool, Row};
 

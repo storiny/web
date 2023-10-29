@@ -178,7 +178,8 @@ async fn main() -> io::Result<()> {
                     endpoint: "http://localhost:9000".to_string(),
                 }),
             }))
-            .configure(routes::init_routes)
+            .configure(routes::init::init_common_routes)
+            .configure(routes::init::init_v1_routes)
             .service(fs::Files::new("/", "./static"))
             .default_service(web::route().to(not_found))
     })

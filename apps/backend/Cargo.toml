@@ -30,8 +30,10 @@ env_logger = "0.10.0"
 futures-core = "0.3.28"
 hashbrown = { version = "0.14.0", features = ["serde"] }
 image = { version = "0.24.7", default-features = false, features = ["gif", "png", "jpeg", "jpeg_rayon", "webp", "webp-encoder"] }
+itertools = "0.11.0"
 lazy_static = "1.4.0"
 log = "0.4.20"
+lz-str = "0.2.1"
 markdown = "1.0.0-alpha.14"
 maxminddb = "0.23.0"
 mime = "0.3.17"
@@ -53,6 +55,7 @@ serde_json = "1.0.105"
 slugify = "0.1.0"
 sqlx = { version = "0.7.2", features = ["postgres", "time", "macros", "json", "migrate", "runtime-tokio", "sqlx-postgres"] }
 strum = { version = "0.25.0", features = ["derive"] }
+strum_macros = "0.25.3"
 thiserror = "1.0.48"
 time = { version = "0.3.29", features = ["serde", "formatting", "macros"] }
 tokio = "1.32.0"
