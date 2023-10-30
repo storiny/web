@@ -46,34 +46,26 @@ services:
       REDIS_PORT_NUMBER: 7000
       REDIS_ACLFILE: "/opt/bitnami/redis/mounted-etc/users.acl"
     ports:
-      - "7000:7000"
+      - "7001:7000"
     volumes:
       - ./docker/tmp/redis:/bitnami/redis/data
       - ./docker/redis/overrides.conf:/opt/bitnami/redis/mounted-etc/overrides.conf
       - ./docker/redis/users.acl:/opt/bitnami/redis/mounted-etc/users.acl
     command: /opt/bitnami/scripts/redis/run.sh --maxmemory 100mb
 
-  aws_ses:
-    container_name: "storiny-aws-ses"
-    image: bh42/aws-ses-local
-    networks:
-      - custom-net
+  postgres:
+    container_name: "storiny-postgres"
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "pg_pass"
+      POSTGRES_DB: "primary"
+      PGDATA: "/var/lib/postgresql/data/pgdata"
     ports:
-      - "7044:9001"
-
-#  postgres:
-#    container_name: "storiny-postgres"
-#    image: postgres
-#    restart: always
-#    environment:
-#      POSTGRES_USER: "${PGUSER:-local_postgres_user}"
-#      POSTGRES_PASSWORD: "${PGPASSWORD:-local_postgres_pass}"
-#      POSTGRES_DB: "${PGDATABASE:-local_primary}"
-#      PGDATA: "/var/lib/postgresql/data/pgdata"
-#    ports:
-#      - "5432:5432"
-#    volumes:
-#      - ./docker/tmp/postgres:/var/lib/postgresql/data
+      - "5432:5432"
+    volumes:
+      - ./docker/tmp/postgres:/var/lib/postgresql/data
 
 #  elasticsearch:
 #    container_name: "storiny-elasticsearch"

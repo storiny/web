@@ -14,10 +14,24 @@ worker.use(
             ...story,
             is_bookmarked: true,
             id: nanoid(),
-          }))
-        )
-      )
-  )
+          })),
+        ),
+      ),
+  ),
+);
+
+worker.use(
+  rest.post(
+    `${process.env.NEXT_PUBLIC_API_URL}/v1/me/bookmarks/:story_id`,
+    (_, res, ctx) => res(ctx.delay(750), ctx.status(201)),
+  ),
+);
+
+worker.use(
+  rest.delete(
+    `${process.env.NEXT_PUBLIC_API_URL}/v1/me/bookmarks/:story_id`,
+    (_, res, ctx) => res(ctx.delay(750), ctx.status(204)),
+  ),
 );
 
 export {};

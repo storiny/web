@@ -5,7 +5,7 @@ const { worker, rest } = window.msw;
 
 worker.use(
   rest.get(
-    `${process.env.NEXT_PUBLIC_API_URL}/v1/public/stories/:storyId/comments`,
+    `${process.env.NEXT_PUBLIC_API_URL}/v1/public/stories/:story_id/comments`,
     (req, res, ctx) =>
       res(
         ctx.delay(1200),
@@ -14,10 +14,10 @@ worker.use(
             ...comment,
             id: nanoid(),
             hidden: req.url.searchParams.get("type") === "hidden",
-          }))
-        )
-      )
-  )
+          })),
+        ),
+      ),
+  ),
 );
 
 export {};

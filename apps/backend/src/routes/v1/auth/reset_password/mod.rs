@@ -1,1 +1,3 @@
-pub mod reset_password;
+mod reset_password;
+
+pub use reset_password::*;

@@ -1,1 +1,4 @@
-pub mod recovery;
+
+mod recovery;
+
+pub use recovery::*;

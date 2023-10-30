@@ -2,7 +2,7 @@ import { ContentType } from "@storiny/shared";
 
 import { api_slice } from "~/redux/features/api/slice";
 
-const SEGMENT = (id: string): string => `me/comments/${id}/edit`;
+const SEGMENT = (id: string): string => `me/comments/${id}`;
 
 export interface CommentEditPayload {
   content: string;

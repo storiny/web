@@ -24,8 +24,8 @@ pub fn init_v1_routes(cfg: &mut web::ServiceConfig) {
     // Auth
     v1::auth::login::init_routes(cfg);
     v1::auth::signup::init_routes(cfg);
-    v1::auth::reset_password::reset_password::init_routes(cfg);
-    v1::auth::recovery::recovery::init_routes(cfg);
+    v1::auth::reset_password::init_routes(cfg);
+    v1::auth::recovery::init_routes(cfg);
     // Feed
     v1::feed::feed::init_routes(cfg);
     // User activity
@@ -61,6 +61,20 @@ pub fn init_v1_routes(cfg: &mut web::ServiceConfig) {
     v1::me::drafts::delete::init_routes(cfg);
     // Flow
     v1::me::flow::onboarding::tags::init_routes(cfg);
+    v1::me::flow::onboarding::writers::init_routes(cfg);
+    // Followed tags
+    v1::me::followed_tags::get::init_routes(cfg);
+    v1::me::followed_tags::post::init_routes(cfg);
+    v1::me::followed_tags::delete::init_routes(cfg);
+    // Followers
+    v1::me::followers::delete::init_routes(cfg);
+    // Following
+    v1::me::following::post::init_routes(cfg);
+    v1::me::following::delete::init_routes(cfg);
+    // Friend requests
+    v1::me::friend_requests::get::init_routes(cfg);
+    v1::me::friend_requests::post::init_routes(cfg);
+    v1::me::friend_requests::delete::init_routes(cfg);
     // History
     v1::me::history::history::init_routes(cfg);
     // Muted users

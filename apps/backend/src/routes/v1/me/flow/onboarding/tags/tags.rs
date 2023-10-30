@@ -71,7 +71,7 @@ mod tests {
         let req = test::TestRequest::get()
             .cookie(cookie.unwrap())
             .uri(&format!(
-                "/v1/me/onboarding/tags?encoded_categories={}",
+                "/v1/me/flow/onboarding/tags?encoded_categories={}",
                 encoded_categories
             ))
             .to_request();

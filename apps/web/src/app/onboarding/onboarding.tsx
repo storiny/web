@@ -139,9 +139,9 @@ const Tag = ({
 // Tags segment
 
 const TagsSegment = ({
-  categories_hash
+  encoded_categories
 }: {
-  categories_hash: string;
+  encoded_categories: string;
 }): React.ReactElement => {
   const {
     data,
@@ -150,7 +150,7 @@ const TagsSegment = ({
     isError: is_error,
     error,
     refetch
-  } = use_get_onboarding_tags_query(categories_hash);
+  } = use_get_onboarding_tags_query(encoded_categories);
 
   return (
     <Segment
@@ -228,9 +228,9 @@ const TagsSegment = ({
 // Writers segment
 
 const WritersSegment = ({
-  categories_hash
+  encoded_categories
 }: {
-  categories_hash: string;
+  encoded_categories: string;
 }): React.ReactElement => {
   const {
     data = [],
@@ -239,7 +239,7 @@ const WritersSegment = ({
     isError: is_error,
     error,
     refetch
-  } = use_get_onboarding_writers_query(categories_hash);
+  } = use_get_onboarding_writers_query(encoded_categories);
 
   return (
     <Segment
@@ -300,7 +300,7 @@ const Onboarding = (): React.ReactElement => {
   const [selected_categories, set_selected_categories] = React.useState<
     Set<StoryCategory>
   >(new Set([]));
-  const categories_hash = React.useMemo(
+  const encoded_categories = React.useMemo(
     () =>
       compress_to_encoded_uri_component(
         Array.from(selected_categories).join("|")
@@ -381,8 +381,8 @@ const Onboarding = (): React.ReactElement => {
               set_selected_categories={set_selected_categories_impl}
             />
           ),
-          tags: <TagsSegment categories_hash={categories_hash} />,
-          writers: <WritersSegment categories_hash={categories_hash} />
+          tags: <TagsSegment encoded_categories={encoded_categories} />,
+          writers: <WritersSegment encoded_categories={encoded_categories} />
         }[segment]
       }
       <Stepper

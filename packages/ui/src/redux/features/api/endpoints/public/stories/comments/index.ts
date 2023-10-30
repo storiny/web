@@ -1,4 +1,5 @@
 import { Comment } from "@storiny/types";
+import { StoryResponsesSortValue } from "@storiny/web/src/app/(check-user)/(dashboard)/me/(splash)/(default-lsb)/content/stories/[story_id]/responses/client";
 
 import { api_slice } from "~/redux/features/api/slice";
 
@@ -16,11 +17,7 @@ export const get_story_comments_api = api_slice.injectEndpoints({
       {
         page: number;
         query?: string;
-        sort:
-          | "recent"
-          | "old"
-          | `replies-${"dsc" | "asc"}`
-          | `likes-${"dsc" | "asc"}`;
+        sort: StoryResponsesSortValue;
         story_id: string;
         type: "all" | "hidden";
       }
