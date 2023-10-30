@@ -71,7 +71,7 @@ async fn post(
                                             == SqlState::CommentWriterBlockedByStoryWriter
                                                 .to_string()
                                         {
-                                            Ok(HttpResponse::BadRequest().json(
+                                            Ok(HttpResponse::Forbidden().json(
                                                 ToastErrorResponse::new(
                                                     "You are being blocked by the story writer"
                                                         .to_string(),

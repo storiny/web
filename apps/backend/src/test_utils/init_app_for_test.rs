@@ -58,6 +58,9 @@ pub async fn init_app_for_test(
     let ua_parser = UserAgentParser::from_path("./data/ua_parser/regexes.yaml")
         .expect("Cannot build user-agent parser");
 
+    // Pexels
+    let pexels_api_key = env::var("PEXELS_API_KEY").expect("Pexels API key not set");
+
     let service = test::init_service(
         App::new()
             .wrap(IdentityMiddleware::default())
@@ -87,6 +90,8 @@ pub async fn init_app_for_test(
                     MockCredentialsProvider,
                     Region::UsEast1,
                 ),
+                reqwest_client: reqwest::Client::new(),
+                pexels_api_key: pexels_api_key.to_owned(),
             }))
             .service(post)
             .service(service_factory),

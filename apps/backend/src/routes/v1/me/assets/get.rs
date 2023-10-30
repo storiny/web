@@ -35,7 +35,7 @@ async fn get(
 ) -> Result<HttpResponse, AppError> {
     match user.id() {
         Ok(user_id) => {
-            let page = query.page.unwrap_or_default();
+            let page = query.page.unwrap_or(1) - 1;
             let result = sqlx::query_as::<_, Asset>(
                 r#"
                 SELECT

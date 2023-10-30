@@ -64,11 +64,17 @@ async fn main() -> io::Result<()> {
     .build();
 
     // Session
-    // TODO: The secret key would usually be read from a configuration file/environment variables.
-    let secret_key = Key::generate();
+    let secret_key = Key::from(
+        env::var("SESSION_SECRET_KEY")
+            .expect("Session secret key not set")
+            .as_bytes(),
+    );
     let redis_store = RedisSessionStore::new(&redis_connection_string.clone())
         .await
         .unwrap();
+
+    // Pexels
+    let pexels_api_key = env::var("PEXELS_API_KEY").expect("Pexels API key not set");
 
     // Postgres
     let database_url = env::var("DATABASE_URL").expect("DATABASE_URL not set");
@@ -177,6 +183,8 @@ async fn main() -> io::Result<()> {
                     name: "us-east-1".to_string(),
                     endpoint: "http://localhost:9000".to_string(),
                 }),
+                reqwest_client: reqwest::Client::new(),
+                pexels_api_key: pexels_api_key.to_owned(),
             }))
             .configure(routes::init::init_common_routes)
             .configure(routes::init::init_v1_routes)

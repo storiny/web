@@ -292,6 +292,8 @@ mod tests {
                         MockCredentialsProvider,
                         Region::UsEast1,
                     ),
+                    reqwest_client: reqwest::Client::new(),
+                    pexels_api_key: "".to_owned(),
                 }))
                 .service(unsecure_post)
         })

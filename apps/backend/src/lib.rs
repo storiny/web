@@ -39,6 +39,10 @@ pub struct AppState {
     pub ses_client: SesClient,
     /// AWS S3 client instance
     pub s3_client: S3Client,
+    /// Reqwest client instance
+    pub reqwest_client: reqwest::Client,
+    /// Pexels API key
+    pub pexels_api_key: String,
 }
 
 // GRPC
