@@ -14,31 +14,31 @@ worker.use(
             ...reply,
             id: nanoid(),
             user_id: MOCK_USERS[4].id,
-          }))
-        )
-      )
-  )
+          })),
+        ),
+      ),
+  ),
 );
 
 worker.use(
   rest.post(
     `${process.env.NEXT_PUBLIC_API_URL}/v1/me/replies`,
-    (req, res, ctx) => res(ctx.delay(750), ctx.status(201))
-  )
+    (req, res, ctx) => res(ctx.delay(750), ctx.status(201)),
+  ),
 );
 
 worker.use(
   rest.patch(
-    `${process.env.NEXT_PUBLIC_API_URL}/v1/me/replies/:replyId/edit`,
-    (req, res, ctx) => res(ctx.delay(750), ctx.status(204))
-  )
+    `${process.env.NEXT_PUBLIC_API_URL}/v1/me/replies/:reply_id`,
+    (req, res, ctx) => res(ctx.delay(750), ctx.status(204)),
+  ),
 );
 
 worker.use(
   rest.delete(
-    `${process.env.NEXT_PUBLIC_API_URL}/v1/me/replies/:replyId`,
-    (req, res, ctx) => res(ctx.delay(750), ctx.status(204))
-  )
+    `${process.env.NEXT_PUBLIC_API_URL}/v1/me/replies/:reply_id`,
+    (req, res, ctx) => res(ctx.delay(750), ctx.status(204)),
+  ),
 );
 
 export {};

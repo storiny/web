@@ -1,5 +1,4 @@
 import { Comment } from "@storiny/types";
-import NextLink from "next/link";
 import React from "react";
 
 import { use_confirmation } from "~/components/confirmation";

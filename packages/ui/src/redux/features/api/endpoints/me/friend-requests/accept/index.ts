@@ -1,7 +1,7 @@
 import { self_action, set_self_friend_count } from "~/redux/features";
 import { api_slice } from "~/redux/features/api/slice";
 
-const SEGMENT = (id: string): string => `me/friend-requests/${id}/accept`;
+const SEGMENT = (id: string): string => `me/friend-requests/${id}`;
 
 export interface FriendRequestAcceptPayload {
   id: string;

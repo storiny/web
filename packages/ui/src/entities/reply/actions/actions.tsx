@@ -1,7 +1,5 @@
 import { Reply } from "@storiny/types";
-import NextLink from "next/link";
 import React from "react";
-import * as repl from "repl";
 
 import { use_confirmation } from "~/components/confirmation";
 import IconButton from "~/components/icon-button";

@@ -13,7 +13,7 @@ export const {
   endpoints: (builder) => ({
     // eslint-disable-next-line prefer-snakecase/prefer-snakecase
     getOnboardingWriters: builder.query<GetOnboardingWritersResponse, string>({
-      query: (hash) => `/${SEGMENT}?categories_hash=${hash}`,
+      query: (hash) => `/${SEGMENT}?encoded_categories=${hash}`,
       serializeQueryArgs: ({ endpointName, queryArgs }) =>
         `${endpointName}:${queryArgs}`,
       forceRefetch: ({ currentArg, previousArg }) => currentArg !== previousArg

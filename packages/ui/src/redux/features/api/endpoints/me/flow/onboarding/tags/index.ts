@@ -14,7 +14,7 @@ export const { useGetOnboardingTagsQuery: use_get_onboarding_tags_query } =
     endpoints: (builder) => ({
       // eslint-disable-next-line prefer-snakecase/prefer-snakecase
       getOnboardingTags: builder.query<GetOnboardingTagsResponse, string>({
-        query: (hash) => `/${SEGMENT}?categories_hash=${hash}`,
+        query: (hash) => `/${SEGMENT}?encoded_categories=${hash}`,
         serializeQueryArgs: ({ endpointName, queryArgs }) =>
           `${endpointName}:${queryArgs}`,
         forceRefetch: ({ currentArg, previousArg }) =>

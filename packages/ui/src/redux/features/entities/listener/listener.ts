@@ -1,3 +1,4 @@
+import { add_bookmark_listener } from "~/redux/features/entities/listener/bookmark";
 import { add_followed_tag_listener } from "~/redux/features/entities/listener/followed-tag";
 import { add_follower_listener } from "~/redux/features/entities/listener/follower";
 import { add_following_listener } from "~/redux/features/entities/listener/following";
@@ -22,6 +23,7 @@ export const add_entities_listeners = (
     add_liked_comment_listener,
     add_liked_reply_listener,
     add_liked_story_listener,
-    add_mute_listener
+    add_mute_listener,
+    add_bookmark_listener
   ].forEach((bind) => bind(start_listening));
 };

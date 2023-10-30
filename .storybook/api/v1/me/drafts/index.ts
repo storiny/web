@@ -12,24 +12,24 @@ worker.use(
           ...story,
           id: nanoid(),
           published_at: null,
-        }))
-      )
-    )
-  )
+        })),
+      ),
+    ),
+  ),
 );
 
 worker.use(
   rest.delete(
-    `${process.env.NEXT_PUBLIC_API_URL}/v1/me/drafts/:draftId`,
-    (req, res, ctx) => res(ctx.delay(750), ctx.status(204))
-  )
+    `${process.env.NEXT_PUBLIC_API_URL}/v1/me/drafts/:draft_id`,
+    (req, res, ctx) => res(ctx.delay(750), ctx.status(204)),
+  ),
 );
 
 worker.use(
   rest.post(
-    `${process.env.NEXT_PUBLIC_API_URL}/v1/me/drafts/:draftId/recover`,
-    (req, res, ctx) => res(ctx.delay(750), ctx.status(204))
-  )
+    `${process.env.NEXT_PUBLIC_API_URL}/v1/me/drafts/:draft_id/recover`,
+    (req, res, ctx) => res(ctx.delay(750), ctx.status(204)),
+  ),
 );
 
 export {};

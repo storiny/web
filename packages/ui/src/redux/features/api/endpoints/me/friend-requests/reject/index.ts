@@ -1,7 +1,7 @@
 import { self_action } from "~/redux/features";
 import { api_slice } from "~/redux/features/api/slice";
 
-const SEGMENT = (id: string): string => `me/friend-requests/${id}/reject`;
+const SEGMENT = (id: string): string => `me/friend-requests/${id}`;
 
 export interface FriendRequestRejectPayload {
   id: string;
@@ -16,7 +16,7 @@ export const {
     rejectFriendRequest: builder.mutation<void, FriendRequestRejectPayload>({
       query: (body) => ({
         url: `/${SEGMENT(body.id)}`,
-        method: "POST"
+        method: "DELETE"
       }),
       invalidatesTags: (result, error, arg) => [
         { type: "FriendRequest", id: arg.id }

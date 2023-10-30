@@ -15,7 +15,7 @@ export const get_replies_api = api_slice.injectEndpoints({
       {
         page: number;
         query?: string;
-        sort: "recent" | "old" | `likes-${"dsc" | "asc"}`;
+        sort: "recent" | "old" | `${"least" | "most"}-liked`;
       }
     >({
       query: ({ page, sort, query }) =>

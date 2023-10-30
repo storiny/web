@@ -18,7 +18,7 @@ FROM
 					   AND "t->story_tag->story".published_at IS NOT NULL
 				   ON "t->story_tag".tag_id = t.id
 WHERE
-	"t->story_tag->story".category = ANY ($1)
+	"t->story_tag->story".category::TEXT = ANY ($1)
 GROUP BY
 	"t->story_tag->story".category,
 	t.follower_count

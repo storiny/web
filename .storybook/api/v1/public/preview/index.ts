@@ -4,9 +4,9 @@ const { worker, rest } = window.msw;
 
 worker.use(
   rest.get(
-    `${process.env.NEXT_PUBLIC_API_URL}/v1/public/preview/:storyId`,
-    (req, res, ctx) => res(ctx.delay(1200), ctx.json(MOCK_STORIES[8]))
-  )
+    `${process.env.NEXT_PUBLIC_API_URL}/v1/public/preview/:story_id`,
+    (req, res, ctx) => res(ctx.delay(1200), ctx.json(MOCK_STORIES[8])),
+  ),
 );
 
 export {};

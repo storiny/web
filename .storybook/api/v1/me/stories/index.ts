@@ -14,17 +14,20 @@ worker.use(
       res(
         ctx.delay(1200),
         ctx.json(
-          MOCK_STORIES.slice(0, 10).map((story) => ({ ...story, id: nanoid() }))
-        )
-      )
-  )
+          MOCK_STORIES.slice(0, 10).map((story) => ({
+            ...story,
+            id: nanoid(),
+          })),
+        ),
+      ),
+  ),
 );
 
 worker.use(
   rest.delete(
-    `${process.env.NEXT_PUBLIC_API_URL}/v1/me/stories/:storyId`,
-    (req, res, ctx) => res(ctx.delay(750), ctx.status(204))
-  )
+    `${process.env.NEXT_PUBLIC_API_URL}/v1/me/stories/:story_id`,
+    (req, res, ctx) => res(ctx.delay(750), ctx.status(204)),
+  ),
 );
 
 export {};

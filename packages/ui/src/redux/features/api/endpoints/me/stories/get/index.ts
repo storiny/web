@@ -1,4 +1,5 @@
 import { Story } from "@storiny/types";
+import { StoriesSortValue } from "@storiny/web/src/app/(check-user)/(dashboard)/me/(splash)/(default-lsb)/content/stories/client";
 
 import { api_slice } from "~/redux/features/api/slice";
 
@@ -15,11 +16,7 @@ export const get_stories_api = api_slice.injectEndpoints({
       {
         page: number;
         query?: string;
-        sort:
-          | "recent"
-          | "old"
-          | `popular-${"dsc" | "asc"}`
-          | `likes-${"dsc" | "asc"}`;
+        sort: StoriesSortValue;
         type: "published" | "deleted";
       }
     >({
