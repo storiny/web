@@ -9,6 +9,8 @@ pub mod followed_tags;
 pub mod followers;
 pub mod following;
 pub mod friend_requests;
+pub mod friends;
+pub mod gallery;
 pub mod history;
 pub mod muted_users;
 pub mod replies;

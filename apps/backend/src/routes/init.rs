@@ -75,6 +75,12 @@ pub fn init_v1_routes(cfg: &mut web::ServiceConfig) {
     v1::me::friend_requests::get::init_routes(cfg);
     v1::me::friend_requests::post::init_routes(cfg);
     v1::me::friend_requests::delete::init_routes(cfg);
+    // Friends
+    v1::me::friends::post::init_routes(cfg);
+    v1::me::friends::delete::init_routes(cfg);
+    // Gallery
+    v1::me::gallery::get::init_routes(cfg);
+    v1::me::gallery::post::init_routes(cfg);
     // History
     v1::me::history::history::init_routes(cfg);
     // Muted users

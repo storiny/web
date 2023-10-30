@@ -70,7 +70,7 @@ async fn get(
 ) -> Result<HttpResponse, AppError> {
     match user.id() {
         Ok(user_id) => {
-            let page = query.page.unwrap_or_default();
+            let page = query.page.unwrap_or(1) - 1;
             let mut result = sqlx::query_as::<_, AccountActivity>(
                 r#"
                 SELECT id, type, description, created_at FROM account_activities

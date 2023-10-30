@@ -16,7 +16,7 @@ type ApiResponse = Photos | PhotosWithTotalResults | ErrorResponse;
  * Predicate function for determining error responses
  * @param res Resposne
  */
-const isErrorResponse = (res: Photos | ErrorResponse): res is ErrorResponse =>
+const is_error_response = (res: Photos | ErrorResponse): res is ErrorResponse =>
   "error" in res;
 
 worker.use(
@@ -44,21 +44,21 @@ worker.use(
 
       window.fetch = originalFetch;
 
-      if (isErrorResponse(response)) {
+      if (is_error_response(response)) {
         return res(ctx.status(500));
       }
 
       return res(ctx.json(response.photos));
-    }
-  )
+    },
+  ),
 );
 
 worker.use(
   rest.post(
     `${process.env.NEXT_PUBLIC_API_URL}/v1/me/gallery`,
     (req, res, ctx) =>
-      res(ctx.delay(3400), ctx.status(201), ctx.json(MOCK_ASSETS[1]))
-  )
+      res(ctx.delay(3400), ctx.status(201), ctx.json(MOCK_ASSETS[1])),
+  ),
 );
 
 export {};

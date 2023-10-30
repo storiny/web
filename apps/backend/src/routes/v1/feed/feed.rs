@@ -72,7 +72,7 @@ async fn get(
     data: web::Data<AppState>,
     user: Option<Identity>,
 ) -> Result<HttpResponse, AppError> {
-    let page = query.page.clone().unwrap_or_default();
+    let page = query.page.clone().unwrap_or(1) - 1;
     let r#type = query.r#type.clone().unwrap_or("suggested".to_string());
 
     // Query for logged-in users
