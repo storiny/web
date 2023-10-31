@@ -1,4 +1,3 @@
-
 -- Insert
 --
 CREATE OR REPLACE FUNCTION friend_insert_trigger_proc(
@@ -23,7 +22,8 @@ BEGIN
 					users
 				WHERE
 					  id IN (NEW.transmitter_id, NEW.receiver_id)
-				  AND (deleted_at IS NOT NULL OR deactivated_at IS NOT NULL))
+				  AND (deleted_at IS NOT NULL OR deactivated_at IS NOT NULL)
+			   )
 		) THEN
 		RAISE 'Transmitter/receiver is either soft-deleted or deactivated'
 			USING ERRCODE = '52001';
@@ -38,7 +38,8 @@ BEGIN
 				WHERE
 					  blocker_id = NEW.receiver_id
 				  AND blocked_id = NEW.transmitter_id
-				  AND deleted_at IS NULL)
+				  AND deleted_at IS NULL
+			   )
 		) THEN
 		RAISE 'Source user is blocked by the target user'
 			USING ERRCODE = '50003';
@@ -65,7 +66,8 @@ BEGIN
 																   WHERE
 																		 followed_id = NEW.transmitter_id
 																	 AND follower_id = NEW.receiver_id
-																	 AND deleted_at IS NULL) OR
+																	 AND deleted_at IS NULL
+																  ) OR
 			--
 			-- Friend of friends
 				incoming_friend_requests_value = 3 AND NOT EXISTS (WITH
@@ -85,7 +87,8 @@ BEGIN
 																							WHERE
 																								  (transmitter_id = NEW.receiver_id OR receiver_id = NEW.receiver_id)
 																							  AND accepted_at IS NOT NULL
-																							  AND deleted_at IS NULL)
+																							  AND deleted_at IS NULL
+																	   )
 																   SELECT
 																	   1
 																   FROM
@@ -95,13 +98,18 @@ BEGIN
 																						 transmitter_id =
 																						 NEW.transmitter_id AND
 																						 receiver_id IN
-																						 (SELECT user_id FROM receiver_friends)
+																						 (SELECT user_id
+																						  FROM receiver_friends
+																						 )
 																				 OR receiver_id = NEW.transmitter_id AND
 																					transmitter_id IN
-																					(SELECT user_id FROM receiver_friends))
+																					(SELECT user_id
+																					 FROM receiver_friends
+																					))
 																	 AND accepted_at IS NOT NULL
 																	 AND deleted_at IS NULL
-																   LIMIT 1)
+																   LIMIT 1
+																  )
 		) THEN
 		RAISE 'Target user is not accepting friend requests from the source user'
 			USING ERRCODE = '51000';

@@ -38,12 +38,11 @@ WITH
 											   AND u.is_private IS FALSE
 								--
 								-- Join story tags
-								LEFT OUTER JOIN story_tags AS "s->story_tags"
+								LEFT OUTER JOIN (story_tags AS "s->story_tags"
 								-- Join tags
 								INNER JOIN tags AS "s->story_tags->tag"
-										   ON "s->story_tags->tag".id = "s->story_tags".tag_id
-								--
-										   ON "s->story_tags".story_id = s.id
+												 ON "s->story_tags->tag".id = "s->story_tags".tag_id)
+												ON "s->story_tags".story_id = s.id
 						WHERE
 							  -- Public
 							  s.visibility = 2

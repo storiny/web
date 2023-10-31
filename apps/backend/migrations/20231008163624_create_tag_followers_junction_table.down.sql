@@ -1,2 +1,2 @@
-DROP TABLE IF EXISTS tag_followers;
+DROP TABLE IF EXISTS tag_followers CASCADE;
 

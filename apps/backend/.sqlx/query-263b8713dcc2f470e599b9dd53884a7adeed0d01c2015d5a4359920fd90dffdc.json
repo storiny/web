@@ -1,0 +1,52 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT\n\tu.id           AS \"id\",\n\tu.name         AS \"name\",\n\tu.username     AS \"username\",\n\tu.avatar_id    AS \"avatar_id\",\n\tu.avatar_hex   AS \"avatar_hex\",\n\tu.public_flags AS \"public_flags\"\nFROM\n\tusers u\n\t\t-- Join stories\n\t\tINNER JOIN stories AS \"u->story\"\n\t\t\t\t   ON \"u->story\".user_id = u.id\n\t\t\t\t\t   AND \"u->story\".deleted_at IS NULL\n\t\t\t\t\t   AND \"u->story\".published_at IS NOT NULL\nWHERE\n\t\"u->story\".category::TEXT = ANY ($1)\nORDER BY\n\tu.follower_count DESC\nLIMIT 25",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Int8"
+      },
+      {
+        "ordinal": 1,
+        "name": "name",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 2,
+        "name": "username",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 3,
+        "name": "avatar_id",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 4,
+        "name": "avatar_hex",
+        "type_info": "Bpchar"
+      },
+      {
+        "ordinal": 5,
+        "name": "public_flags",
+        "type_info": "Int4"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "TextArray"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      true,
+      true,
+      false
+    ]
+  },
+  "hash": "263b8713dcc2f470e599b9dd53884a7adeed0d01c2015d5a4359920fd90dffdc"
+}

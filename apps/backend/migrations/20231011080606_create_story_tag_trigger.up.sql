@@ -11,7 +11,8 @@ BEGIN
 				   stories
 			   WHERE
 					id = NEW.story_id AND deleted_at IS NOT NULL
-				 OR published_at IS NULL)) THEN
+				 OR published_at IS NULL
+			  )) THEN
 		RAISE 'Story is soft-deleted/unpublished'
 			USING ERRCODE = '52001';
 	END IF;
@@ -53,6 +54,13 @@ BEGIN
 		WHERE
 			  id = OLD.tag_id
 		  AND story_count > 0;
+		--
+		-- Delete notifications
+		DELETE
+		FROM
+			notifications
+		WHERE
+			entity_id = OLD.id;
 		--
 		RETURN OLD;
 	END IF;

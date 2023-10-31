@@ -1,2 +1,2 @@
-DROP TABLE IF EXISTS story_tags;
+DROP TABLE IF EXISTS story_tags CASCADE;
 

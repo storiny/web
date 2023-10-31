@@ -2,7 +2,7 @@
 mod tests {
     use sqlx::PgPool;
 
-    #[sqlx::test(fixtures("hex-color"))]
+    #[sqlx::test(fixtures("hex_color"))]
     async fn can_insert_valid_hex_color(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let result = sqlx::query(
@@ -19,7 +19,7 @@ mod tests {
         Ok(())
     }
 
-    #[sqlx::test(fixtures("hex-color"))]
+    #[sqlx::test(fixtures("hex_color"))]
     async fn can_reject_invalid_hex_color(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let result = sqlx::query(
@@ -36,7 +36,7 @@ mod tests {
         Ok(())
     }
 
-    #[sqlx::test(fixtures("hex-color"))]
+    #[sqlx::test(fixtures("hex_color"))]
     async fn can_only_accept_six_character_hex_color(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let three_char_color_result = sqlx::query(

@@ -118,18 +118,16 @@ WITH
 													  AND "s->bookmarks".deleted_at IS NULL
 								  --
 								  -- Join story tags
-								  LEFT OUTER JOIN story_tags AS "s->story_tags"
--- Join tags
+								  LEFT OUTER JOIN (story_tags AS "s->story_tags"
+								  -- Join tags
 								  INNER JOIN tags AS "s->story_tags->tag"
-											 ON "s->story_tags->tag".id = "s->story_tags".tag_id
+												   ON "s->story_tags->tag".id = "s->story_tags".tag_id)
+												  ON "s->story_tags".story_id = s.id
 -- Join followed tags for current user
 								  LEFT OUTER JOIN tag_followers AS "s->story_tags->follower"
 												  ON "s->story_tags->follower".tag_id = "s->story_tags".tag_id
 													  AND "s->story_tags->follower".user_id = $1
 													  AND "s->story_tags->follower".deleted_at IS NULL
-								  --
-												  ON "s->story_tags".story_id = s.id
-						  --
 						  WHERE
 								-- Public
 								s.visibility = 2

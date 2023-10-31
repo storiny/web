@@ -1,11 +1,11 @@
-use crate::models::photo::PexelsResponse;
-use crate::{error::AppError, middleware::identity::identity::Identity, AppState};
+use crate::{
+    constants::pexels::PEXELS_API_URL, error::AppError, middleware::identity::identity::Identity,
+    models::photo::PexelsResponse, AppState,
+};
 use actix_web::{get, web, HttpResponse};
 use actix_web_validator::QsQuery;
 use serde::{Deserialize, Serialize};
 use validator::Validate;
-
-const PEXELS_API_URL: &'static str = "https://api.pexels.com";
 
 #[derive(Serialize, Deserialize, Validate)]
 struct QueryParams {
@@ -37,7 +37,7 @@ async fn get(
                 "v1/curated"
             }
         ))
-        .query(&[("per_page", 10), ("page", page)])
+        .query(&[("per_page", 15), ("page", page)])
         .query(&[("query", search_query)])
         .header(reqwest::header::AUTHORIZATION, api_key)
         .send()

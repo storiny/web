@@ -171,4 +171,69 @@ mod tests {
 
         Ok(())
     }
+
+    #[sqlx::test(fixtures("user", "story", "tag"))]
+    async fn can_delete_notification_on_story_tag_hard_delete(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+
+        // Insert a story tag
+        let story_tag_result = sqlx::query(
+            r#"
+            INSERT INTO story_tags(tag_id, story_id)
+            VALUES ($1, $2)
+            RETURNING id
+            "#,
+        )
+        .bind(4_i64)
+        .bind(2_i64)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(story_tag_result.try_get::<i64, _>("id").is_ok());
+        let story_tag_id = story_tag_result.get::<i64, _>("id");
+
+        // Insert a notification
+        let notification_result = sqlx::query(
+            r#"
+            INSERT INTO notifications(entity_id, entity_type, notifier_id)
+            VALUES ($1, $2, $3)
+            RETURNING id
+            "#,
+        )
+        .bind(story_tag_id)
+        .bind(0)
+        .bind(1_i64)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(notification_result.try_get::<i64, _>("id").is_ok());
+
+        // Delete the story tag
+        sqlx::query(
+            r#"
+            DELETE FROM story_tags
+            WHERE id = $1
+            "#,
+        )
+        .bind(story_tag_id)
+        .execute(&mut *conn)
+        .await?;
+
+        // Notification should get deleted
+        let result = sqlx::query(
+            r#"
+            SELECT EXISTS(
+                SELECT 1 FROM notifications
+                WHERE id = $1
+            )
+            "#,
+        )
+        .bind(notification_result.get::<i64, _>("id"))
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(!result.get::<bool, _>("exists"));
+
+        Ok(())
+    }
 }

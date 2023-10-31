@@ -67,8 +67,10 @@ pub fn init_v1_routes(cfg: &mut web::ServiceConfig) {
     v1::me::followed_tags::post::init_routes(cfg);
     v1::me::followed_tags::delete::init_routes(cfg);
     // Followers
+    v1::me::followers::get::init_routes(cfg);
     v1::me::followers::delete::init_routes(cfg);
     // Following
+    v1::me::following::get::init_routes(cfg);
     v1::me::following::post::init_routes(cfg);
     v1::me::following::delete::init_routes(cfg);
     // Friend requests
@@ -76,6 +78,7 @@ pub fn init_v1_routes(cfg: &mut web::ServiceConfig) {
     v1::me::friend_requests::post::init_routes(cfg);
     v1::me::friend_requests::delete::init_routes(cfg);
     // Friends
+    v1::me::friends::get::init_routes(cfg);
     v1::me::friends::post::init_routes(cfg);
     v1::me::friends::delete::init_routes(cfg);
     // Gallery
@@ -83,10 +86,23 @@ pub fn init_v1_routes(cfg: &mut web::ServiceConfig) {
     v1::me::gallery::post::init_routes(cfg);
     // History
     v1::me::history::history::init_routes(cfg);
+    // Liked comments
+    v1::me::liked_comments::post::init_routes(cfg);
+    v1::me::liked_comments::delete::init_routes(cfg);
+    // Liked replies
+    v1::me::liked_replies::post::init_routes(cfg);
+    v1::me::liked_replies::delete::init_routes(cfg);
+    // Liked stories
+    v1::me::liked_stories::get::init_routes(cfg);
+    v1::me::liked_stories::post::init_routes(cfg);
+    v1::me::liked_stories::delete::init_routes(cfg);
     // Muted users
     v1::me::muted_users::get::init_routes(cfg);
     v1::me::muted_users::post::init_routes(cfg);
     v1::me::muted_users::delete::init_routes(cfg);
+    // Notifications
+    v1::me::notifications::get::init_routes(cfg);
+    v1::me::notifications::read::init_routes(cfg);
     // Sessions
     v1::me::sessions::destroy::init_routes(cfg);
     v1::me::sessions::logout::init_routes(cfg)

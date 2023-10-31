@@ -65,12 +65,12 @@ WITH
 																				  m.muter_id = $1)
 											  --
 											  -- Join story tags
-											  LEFT OUTER JOIN story_tags AS "s->story_tags"
+											  LEFT OUTER JOIN (story_tags AS "s->story_tags"
 											  -- Join tags
 											  INNER JOIN tags AS "s->story_tags->tag"
-														 ON "s->story_tags->tag".id = "s->story_tags".tag_id
+															   ON "s->story_tags->tag".id = "s->story_tags".tag_id)
+															  ON "s->story_tags".story_id = s.id
 											  --
-														 ON "s->story_tags".story_id = s.id
 											  -- Boolean bookmark flag
 											  LEFT OUTER JOIN bookmarks AS "s->is_bookmarked"
 															  ON "s->is_bookmarked".story_id = s.id

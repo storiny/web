@@ -11,7 +11,8 @@ BEGIN
 				   users
 			   WHERE
 					 id = NEW.notified_id
-				 AND (deleted_at IS NOT NULL OR deactivated_at IS NOT NULL))) THEN
+				 AND (deleted_at IS NOT NULL OR deactivated_at IS NOT NULL)
+			  )) THEN
 		RAISE 'Notifier is soft-deleted/deactivated'
 			USING ERRCODE = '52001';
 	END IF;
@@ -25,15 +26,17 @@ BEGIN
 								  ON n.id = NEW.notification_id
 			   WHERE
 					 muter_id = NEW.notified_id
-				 AND muted_id = n.notifier_id) OR EXISTS(SELECT
-															 1
-														 FROM
-															 blocks
-																 INNER JOIN notifications n
-																			ON n.id = NEW.notification_id
-														 WHERE
-															   blocker_id = NEW.notified_id
-														   AND blocked_id = n.notifier_id)) THEN
+				 AND muted_id = n.notifier_id
+			  ) OR EXISTS(SELECT
+							  1
+						  FROM
+							  blocks
+								  INNER JOIN notifications n
+											 ON n.id = NEW.notification_id
+						  WHERE
+								blocker_id = NEW.notified_id
+							AND blocked_id = n.notifier_id
+						 )) THEN
 		RAISE 'Notified user has muted/blocked the notifier user'
 			USING ERRCODE = '52003';
 	END IF;
@@ -59,7 +62,8 @@ BEGIN
 							 -- 10 = Story add by user, 11 = Story add by tag
 							 (ns.push_stories IS FALSE AND n.entity_type IN (10, 11)) OR
 -- 9 = Story like
-							 (ns.push_story_likes IS FALSE AND n.entity_type = 9)))) THEN
+							 (ns.push_story_likes IS FALSE AND n.entity_type = 9))
+			  )) THEN
 		-- Skip inserting the row
 		RETURN NULL;
 	END IF;

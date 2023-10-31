@@ -2,7 +2,7 @@
 mod tests {
     use sqlx::PgPool;
 
-    #[sqlx::test(fixtures("asset-key"))]
+    #[sqlx::test(fixtures("asset_key"))]
     async fn can_insert_valid_asset_key(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let result = sqlx::query(
@@ -19,7 +19,7 @@ mod tests {
         Ok(())
     }
 
-    #[sqlx::test(fixtures("asset-key"))]
+    #[sqlx::test(fixtures("asset_key"))]
     async fn can_reject_overflowing_asset_key(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let result = sqlx::query(

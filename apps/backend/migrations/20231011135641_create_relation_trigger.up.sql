@@ -19,7 +19,8 @@ BEGIN
 				   users
 			   WHERE
 					 id IN (NEW.follower_id, NEW.followed_id)
-				 AND (deleted_at IS NOT NULL OR deactivated_at IS NOT NULL))) THEN
+				 AND (deleted_at IS NOT NULL OR deactivated_at IS NOT NULL)
+			  )) THEN
 		RAISE 'Follower/followed user is either soft-deleted or deactivated'
 			USING ERRCODE = '52001';
 	END IF;
@@ -32,7 +33,8 @@ BEGIN
 			   WHERE
 					 blocker_id = NEW.followed_id
 				 AND blocked_id = NEW.follower_id
-				 AND deleted_at IS NULL)) THEN
+				 AND deleted_at IS NULL
+			  )) THEN
 		RAISE 'Source user is blocked by the target user'
 			USING ERRCODE = '50002';
 	END IF;

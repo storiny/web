@@ -1,2 +1,2 @@
-DROP TABLE IF EXISTS account_activities;
+DROP TABLE IF EXISTS account_activities CASCADE;
 

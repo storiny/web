@@ -1,2 +1,2 @@
-DROP TABLE IF EXISTS notification_outs;
+DROP TABLE IF EXISTS notification_outs CASCADE;
 
