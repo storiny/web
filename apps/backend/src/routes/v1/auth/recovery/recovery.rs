@@ -5,7 +5,7 @@ use crate::{
     error::{AppError, FormErrorResponse},
     AppState,
 };
-use actix_web::{cookie::time::OffsetDateTime, post, web, HttpResponse};
+use actix_web::{post, web, HttpResponse};
 use actix_web_validator::Json;
 use argon2::{
     password_hash::{rand_core::OsRng, SaltString},
@@ -16,7 +16,7 @@ use nanoid::nanoid;
 use rusoto_ses::{Destination, SendTemplatedEmailRequest, Ses};
 use serde::{Deserialize, Serialize};
 use sqlx::Row;
-use time::Duration;
+use time::{Duration, OffsetDateTime};
 use validator::Validate;
 
 #[derive(Debug, Serialize, Deserialize, Validate)]

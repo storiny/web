@@ -9,6 +9,4 @@ INTO
 	notifications (id, entity_id, entity_type, notifier_id)
 VALUES
 	(4, 2, 4, 2),
-	(5, 3, 5, 3),
-	-- System notification
-	(6, DEFAULT, 0, DEFAULT);
+	(5, 3, 5, 3);

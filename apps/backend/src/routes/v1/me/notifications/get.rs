@@ -41,7 +41,7 @@ struct Notification {
     #[serde(with = "crate::iso8601::time::option")]
     read_at: Option<OffsetDateTime>,
     // Joins
-    actor: Json<Actor>,
+    actor: Option<Json<Actor>>,
 }
 
 #[get("/v1/me/notifications")]
@@ -70,21 +70,25 @@ async fn get(
                     END AS "rendered_content",
                     "nu->notification".entity_type AS "type",
                     -- Actor
-                    JSON_BUILD_OBJECT(
-                        'id', notifier.id,
-                        'name', notifier.name,
-                        'username', notifier.username,
-                        'avatar_id', notifier.avatar_id,
-                        'avatar_hex', notifier.avatar_hex,
-                        'public_flags', notifier.public_flags
-                    ) AS "actor"
+                    CASE
+                        WHEN notifier.id IS NOT NULL
+                        THEN
+                            JSON_BUILD_OBJECT(
+                                'id', notifier.id,
+                                'name', notifier.name,
+                                'username', notifier.username,
+                                'avatar_id', notifier.avatar_id,
+                                'avatar_hex', notifier.avatar_hex,
+                                'public_flags', notifier.public_flags
+                            )
+                    END AS "actor"
                 FROM
                     notification_outs nu
                         -- Join notification
                         INNER JOIN notifications AS "nu->notification"
                            ON nu.notification_id = "nu->notification".id
                         -- Join notification user
-                        INNER JOIN users AS notifier
+                        LEFT OUTER JOIN users AS notifier
                             ON "nu->notification".notifier_id = notifier.id
                 "#,
             );
@@ -190,6 +194,41 @@ mod tests {
 
         assert!(json.is_ok());
         assert_eq!(json.unwrap().len(), 2);
+
+        Ok(())
+    }
+
+    #[sqlx::test(fixtures("notification"))]
+    async fn can_return_system_notifications(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let (app, cookie, user_id) = init_app_for_test(get, pool, true, false).await;
+
+        // Receive a system notification
+        let insert_result = sqlx::query(
+            r#"
+            INSERT INTO notification_outs(notified_id, notification_id)
+            VALUES ($1, $2)
+            "#,
+        )
+        .bind(user_id.unwrap())
+        .bind(6_i64)
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(insert_result.rows_affected(), 1);
+
+        let req = test::TestRequest::get()
+            .cookie(cookie.unwrap())
+            .uri("/v1/me/notifications")
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_success());
+
+        let json = serde_json::from_str::<Vec<Notification>>(&res_to_string(res).await);
+
+        assert!(json.is_ok());
+        assert_eq!(json.unwrap().len(), 1);
 
         Ok(())
     }
@@ -319,7 +358,7 @@ mod tests {
         let json = serde_json::from_str::<Vec<Notification>>(&res_to_string(res).await).unwrap();
 
         assert_eq!(json.len(), 1);
-        assert_eq!(json[0].actor.id, 2_i64);
+        assert_eq!(json[0].actor.as_ref().unwrap().id, 2_i64);
 
         Ok(())
     }
@@ -384,7 +423,7 @@ mod tests {
         let json = serde_json::from_str::<Vec<Notification>>(&res_to_string(res).await).unwrap();
 
         assert_eq!(json.len(), 1);
-        assert_eq!(json[0].actor.id, 2_i64);
+        assert_eq!(json[0].actor.as_ref().unwrap().id, 2_i64);
 
         Ok(())
     }
@@ -437,7 +476,7 @@ mod tests {
         let json = serde_json::from_str::<Vec<Notification>>(&res_to_string(res).await).unwrap();
 
         assert_eq!(json.len(), 1);
-        assert_eq!(json[0].actor.id, 2_i64);
+        assert_eq!(json[0].actor.as_ref().unwrap().id, 2_i64);
 
         // Soft-delete the followed relation
         let result = sqlx::query(
@@ -518,7 +557,7 @@ mod tests {
         let json = serde_json::from_str::<Vec<Notification>>(&res_to_string(res).await).unwrap();
 
         assert_eq!(json.len(), 1);
-        assert_eq!(json[0].actor.id, 2_i64);
+        assert_eq!(json[0].actor.as_ref().unwrap().id, 2_i64);
 
         // Soft-delete the friend relation
         let result = sqlx::query(
@@ -627,7 +666,7 @@ mod tests {
         let json = serde_json::from_str::<Vec<Notification>>(&res_to_string(res).await).unwrap();
 
         assert_eq!(json.len(), 1);
-        assert_eq!(json[0].actor.id, 2_i64);
+        assert_eq!(json[0].actor.as_ref().unwrap().id, 2_i64);
 
         Ok(())
     }

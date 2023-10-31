@@ -19,4 +19,5 @@ pub mod story_likes;
 pub mod story_tags;
 pub mod tag_followers;
 pub mod tags;
+pub mod user_statuses;
 pub mod users;

@@ -98,13 +98,17 @@ BEGIN
 																						 transmitter_id =
 																						 NEW.transmitter_id AND
 																						 receiver_id IN
-																						 (SELECT user_id
-																						  FROM receiver_friends
+																						 (SELECT
+																							  user_id
+																						  FROM
+																							  receiver_friends
 																						 )
 																				 OR receiver_id = NEW.transmitter_id AND
 																					transmitter_id IN
-																					(SELECT user_id
-																					 FROM receiver_friends
+																					(SELECT
+																						 user_id
+																					 FROM
+																						 receiver_friends
 																					))
 																	 AND accepted_at IS NOT NULL
 																	 AND deleted_at IS NULL
