@@ -103,7 +103,24 @@ pub fn init_v1_routes(cfg: &mut web::ServiceConfig) {
     // Notifications
     v1::me::notifications::get::init_routes(cfg);
     v1::me::notifications::read::init_routes(cfg);
-    // Sessions
-    v1::me::sessions::destroy::init_routes(cfg);
-    v1::me::sessions::logout::init_routes(cfg)
+    // Settings
+    // -- Accounts
+    v1::me::settings::accounts::remove::init_routes(cfg);
+    // -- Avatar
+    v1::me::settings::avatar::init_routes(cfg);
+    // -- Sessions
+    v1::me::settings::sessions::destroy::init_routes(cfg);
+    v1::me::settings::sessions::logout::init_routes(cfg);
+    // Status
+    v1::me::status::post::init_routes(cfg);
+    v1::me::status::delete::init_routes(cfg);
+    // Stories
+    // v1::me::stories::get::init_routes(cfg);
+    // v1::me::stories::metadata::init_routes(cfg);
+    // v1::me::stories::publish::init_routes(cfg);
+    // v1::me::stories::recover::init_routes(cfg);
+    // v1::me::stories::unpublish::init_routes(cfg);
+    // v1::me::stories::delete::init_routes(cfg);
+    // Unread notifications
+    v1::me::unread_notifications::init_routes(cfg);
 }
