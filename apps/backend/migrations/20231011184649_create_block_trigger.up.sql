@@ -13,7 +13,8 @@ BEGIN
 				   users
 			   WHERE
 					 id IN (NEW.blocker_id, NEW.blocked_id)
-				 AND (deleted_at IS NOT NULL OR deactivated_at IS NOT NULL))) THEN
+				 AND (deleted_at IS NOT NULL OR deactivated_at IS NOT NULL)
+			  )) THEN
 		RAISE 'Blocker/blocked user is soft-deleted/deactivated'
 			USING ERRCODE = '52001';
 	END IF;

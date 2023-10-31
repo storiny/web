@@ -13,13 +13,15 @@ BEGIN
 				   comments
 			   WHERE
 					 id = NEW.comment_id
-				 AND deleted_at IS NOT NULL) OR EXISTS(SELECT
-														   1
-													   FROM
-														   users
-													   WHERE
-															 id = NEW.user_id
-														 AND (deleted_at IS NOT NULL OR deactivated_at IS NOT NULL))) THEN
+				 AND deleted_at IS NOT NULL
+			  ) OR EXISTS(SELECT
+							  1
+						  FROM
+							  users
+						  WHERE
+								id = NEW.user_id
+							AND (deleted_at IS NOT NULL OR deactivated_at IS NOT NULL)
+						 )) THEN
 		RAISE 'Comment is soft-deleted or reply writer is soft-deleted/deactivated'
 			USING ERRCODE = '52001';
 	END IF;
@@ -38,7 +40,9 @@ BEGIN
 							WHERE
 								  b.blocker_id = c.user_id
 							  AND b.blocked_id = NEW.user_id
-							  AND c.deleted_at IS NULL))) THEN
+							  AND c.deleted_at IS NULL
+						   )
+			  )) THEN
 		RAISE 'User is blocked by the comment writer'
 			USING ERRCODE = '50001';
 	END IF;
@@ -173,7 +177,8 @@ BEGIN
 					 WHERE
 						   u.id = rl.user_id
 					   AND u.deleted_at IS NULL
-					   AND u.deactivated_at IS NULL);
+					   AND u.deactivated_at IS NULL
+					);
 	END IF;
 	--
 	RETURN NEW;

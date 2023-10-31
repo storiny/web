@@ -1,2 +1,2 @@
-DROP TABLE IF EXISTS histories;
+DROP TABLE IF EXISTS histories CASCADE;
 

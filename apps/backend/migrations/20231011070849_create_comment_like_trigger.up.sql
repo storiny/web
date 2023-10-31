@@ -13,13 +13,15 @@ BEGIN
 				   comments
 			   WHERE
 					 id = NEW.comment_id
-				 AND deleted_at IS NOT NULL) OR EXISTS(SELECT
-														   1
-													   FROM
-														   users
-													   WHERE
-															 id = NEW.user_id
-														 AND (deleted_at IS NOT NULL OR deactivated_at IS NOT NULL))) THEN
+				 AND deleted_at IS NOT NULL
+			  ) OR EXISTS(SELECT
+							  1
+						  FROM
+							  users
+						  WHERE
+								id = NEW.user_id
+							AND (deleted_at IS NOT NULL OR deactivated_at IS NOT NULL)
+						 )) THEN
 		RAISE 'Comment is soft-deleted or user is soft-deleted/deactivated'
 			USING ERRCODE = '52001';
 	END IF;

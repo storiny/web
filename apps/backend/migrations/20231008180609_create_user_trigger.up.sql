@@ -206,7 +206,8 @@ BEGIN
 						 stories AS s
 					 WHERE
 						   s.id = c.story_id
-					   AND s.deleted_at IS NULL);
+					   AND s.deleted_at IS NULL
+					);
 		--
 		-- Restore replies
 		UPDATE
@@ -222,7 +223,8 @@ BEGIN
 						 comments AS c
 					 WHERE
 						   c.id = r.comment_id
-					   AND c.deleted_at IS NULL);
+					   AND c.deleted_at IS NULL
+					);
 		--
 		-- Restore relations
 		UPDATE
@@ -239,7 +241,8 @@ BEGIN
 					   WHERE
 							 u.id = r.followed_id
 						 AND u.deleted_at IS NULL
-						 AND u.deactivated_at IS NULL))
+						 AND u.deactivated_at IS NULL
+					  ))
 			OR (r.followed_id = NEW.id
 				AND EXISTS(SELECT
 							   1
@@ -248,7 +251,8 @@ BEGIN
 						   WHERE
 								 u.id = r.follower_id
 							 AND u.deleted_at IS NULL
-							 AND u.deactivated_at IS NULL)));
+							 AND u.deactivated_at IS NULL
+						  )));
 		--
 		-- Restore friends
 		UPDATE
@@ -265,7 +269,8 @@ BEGIN
 					   WHERE
 							 u.id = f.receiver_id
 						 AND u.deleted_at IS NULL
-						 AND u.deactivated_at IS NULL))
+						 AND u.deactivated_at IS NULL
+					  ))
 			OR (f.receiver_id = NEW.id
 				AND EXISTS(SELECT
 							   1
@@ -274,7 +279,8 @@ BEGIN
 						   WHERE
 								 u.id = f.transmitter_id
 							 AND u.deleted_at IS NULL
-							 AND u.deactivated_at IS NULL)));
+							 AND u.deactivated_at IS NULL
+						  )));
 		--
 		-- Restore story likes
 		UPDATE
@@ -290,7 +296,8 @@ BEGIN
 						 stories AS s
 					 WHERE
 						   s.id = sl.story_id
-					   AND s.deleted_at IS NULL);
+					   AND s.deleted_at IS NULL
+					);
 		--
 		-- Restore comment likes
 		UPDATE
@@ -306,7 +313,8 @@ BEGIN
 						 comments AS c
 					 WHERE
 						   c.id = cl.comment_id
-					   AND c.deleted_at IS NULL);
+					   AND c.deleted_at IS NULL
+					);
 		--
 		-- Restore reply likes
 		UPDATE
@@ -322,7 +330,8 @@ BEGIN
 						 replies AS r
 					 WHERE
 						   r.id = rl.reply_id
-					   AND r.deleted_at IS NULL);
+					   AND r.deleted_at IS NULL
+					);
 		--
 		-- Restore followed tags
 		UPDATE
@@ -337,7 +346,8 @@ BEGIN
 					 FROM
 						 tags AS t
 					 WHERE
-						 t.id = tf.tag_id);
+						 t.id = tf.tag_id
+					);
 		--
 		-- Restore bookmarks
 		UPDATE
@@ -353,7 +363,8 @@ BEGIN
 						 stories AS s
 					 WHERE
 						   s.id = b.story_id
-					   AND s.deleted_at IS NULL);
+					   AND s.deleted_at IS NULL
+					);
 		--
 		-- Restore histories
 		UPDATE
@@ -369,7 +380,8 @@ BEGIN
 						 stories AS s
 					 WHERE
 						   s.id = h.story_id
-					   AND s.deleted_at IS NULL);
+					   AND s.deleted_at IS NULL
+					);
 		--
 		-- Restore blocks
 		UPDATE
@@ -386,7 +398,8 @@ BEGIN
 					   WHERE
 							 u.id = b.blocked_id
 						 AND u.deleted_at IS NULL
-						 AND u.deactivated_at IS NULL))
+						 AND u.deactivated_at IS NULL
+					  ))
 			OR (b.blocked_id = NEW.id
 				AND EXISTS(SELECT
 							   1
@@ -395,7 +408,8 @@ BEGIN
 						   WHERE
 								 u.id = b.blocker_id
 							 AND u.deleted_at IS NULL
-							 AND u.deactivated_at IS NULL)));
+							 AND u.deactivated_at IS NULL
+						  )));
 		-- Restore mutes
 		UPDATE
 			mutes AS m
@@ -411,7 +425,8 @@ BEGIN
 					   WHERE
 							 u.id = m.muted_id
 						 AND u.deleted_at IS NULL
-						 AND u.deactivated_at IS NULL))
+						 AND u.deactivated_at IS NULL
+					  ))
 			OR (m.muted_id = NEW.id
 				AND EXISTS(SELECT
 							   1
@@ -420,7 +435,8 @@ BEGIN
 						   WHERE
 								 u.id = m.muter_id
 							 AND u.deleted_at IS NULL
-							 AND u.deactivated_at IS NULL)));
+							 AND u.deactivated_at IS NULL
+						  )));
 	END IF;
 	--
 	RETURN NEW;

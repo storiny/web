@@ -302,7 +302,6 @@ mod tests {
         .unwrap()
         .run();
 
-        // tokio::s::spawn(server);
         tokio::spawn(server);
 
         let client = Client::builder().build().unwrap();

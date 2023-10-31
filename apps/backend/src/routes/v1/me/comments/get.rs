@@ -146,12 +146,10 @@ async fn get(
                     comments c
                         -- Join story
                         INNER JOIN stories AS cs
+                                   ON cs.id = c.story_id
                         -- Join story user
                         INNER JOIN users AS "cs->user"
                                    ON "cs->user".id = cs.user_id
-                        --
-                                   ON cs.id = c.story_id
-                        --
                         -- Boolean like flag
                         LEFT OUTER JOIN comment_likes AS "c->is_liked"
                                         ON "c->is_liked".comment_id = c.id                           

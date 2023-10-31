@@ -13,7 +13,8 @@ BEGIN
 				   users
 			   WHERE
 					 id = NEW.user_id
-				 AND (deleted_at IS NOT NULL OR deactivated_at IS NOT NULL))) THEN
+				 AND (deleted_at IS NOT NULL OR deactivated_at IS NOT NULL)
+			  )) THEN
 		RAISE 'Story writer is either soft-deleted or deactivated'
 			USING ERRCODE = '52001';
 	END IF;
@@ -176,7 +177,8 @@ BEGIN
 					 WHERE
 						   u.id = c.user_id
 					   AND u.deleted_at IS NULL
-					   AND u.deactivated_at IS NULL);
+					   AND u.deactivated_at IS NULL
+					);
 		--
 		-- Restore story likes
 		UPDATE
@@ -193,7 +195,8 @@ BEGIN
 					 WHERE
 						   u.id = sl.user_id
 					   AND u.deleted_at IS NULL
-					   AND u.deactivated_at IS NULL);
+					   AND u.deactivated_at IS NULL
+					);
 		--
 		-- Restore bookmarks
 		UPDATE
@@ -210,7 +213,8 @@ BEGIN
 					 WHERE
 						   u.id = b.user_id
 					   AND u.deleted_at IS NULL
-					   AND u.deactivated_at IS NULL);
+					   AND u.deactivated_at IS NULL
+					);
 		--
 		-- Restore histories
 		UPDATE
@@ -227,7 +231,8 @@ BEGIN
 					 WHERE
 						   u.id = h.user_id
 					   AND u.deleted_at IS NULL
-					   AND u.deactivated_at IS NULL);
+					   AND u.deactivated_at IS NULL
+					);
 	END IF;
 	--
 	RETURN NEW;

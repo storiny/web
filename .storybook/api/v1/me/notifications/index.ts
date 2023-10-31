@@ -13,10 +13,17 @@ worker.use(
           MOCK_NOTIFICATIONS.slice(0, 10).map((notification) => ({
             ...notification,
             id: nanoid(),
-          }))
-        )
-      )
-  )
+          })),
+        ),
+      ),
+  ),
+);
+
+worker.use(
+  rest.post(
+    `${process.env.NEXT_PUBLIC_API_URL}/v1/me/notifications/:notification_id/read`,
+    (req, res, ctx) => res(ctx.delay(750), ctx.status(204)),
+  ),
 );
 
 export {};

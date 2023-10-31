@@ -1,8 +1,3 @@
-#[path = "domains/domains.rs"]
 mod domains;
-
-#[path = "tables/tables.rs"]
+mod functions;
 mod tables;
-
-#[path = "snowflake.rs"]
-mod snowflake;

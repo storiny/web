@@ -5,6 +5,7 @@ import { Interweave, InterweaveProps, Node } from "interweave";
 import React from "react";
 
 import Link from "~/components/link";
+import css from "~/theme/main.module.scss";
 
 /**
  * Node transformer
@@ -16,7 +17,14 @@ const transform = (node: HTMLElement, children: Node[]): React.ReactNode => {
     case "a":
       return (
         <Link
-          className={clsx(node.className)}
+          className={clsx(
+            node.className,
+            node.getAttribute("data-fw-bold")
+              ? css["t-bold"]
+              : node.getAttribute("data-fw-medium")
+              ? css["t-medium"]
+              : null
+          )}
           href={node.getAttribute("href") || "/"}
           style={{ color: "var(--fg-major)" }}
           underline={node.getAttribute("data-underline") ? "always" : "hover"}

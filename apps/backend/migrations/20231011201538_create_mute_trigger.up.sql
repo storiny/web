@@ -11,7 +11,8 @@ BEGIN
 				   users
 			   WHERE
 					 id IN (NEW.muter_id, NEW.muted_id)
-				 AND (deleted_at IS NOT NULL OR deactivated_at IS NOT NULL))) THEN
+				 AND (deleted_at IS NOT NULL OR deactivated_at IS NOT NULL)
+			  )) THEN
 		RAISE 'Muter/muted user is soft-deleted/deactivated'
 			USING ERRCODE = '52001';
 	END IF;

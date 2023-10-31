@@ -156,19 +156,16 @@ async fn get(
                     replies r
                         -- Join comment
                         INNER JOIN comments AS rc
-                            --
-                            -- Join comment user
-                            INNER JOIN users AS "rc->user"
+                            ON rc.id = r.comment_id
+                        -- Join comment user
+                        INNER JOIN users AS "rc->user"
                             ON "rc->user".id = rc.user_id
-                            --
-                            -- Join comment story
-                            INNER JOIN stories AS "rc->story"
-                                -- Join comment story user
-                                INNER JOIN users AS "rc->story->user"
-                                ON "rc->story->user".id = "rc->story".user_id
+                        -- Join comment story
+                        INNER JOIN stories AS "rc->story"
                             ON "rc->story".id = rc.story_id
-                        ON rc.id = r.comment_id
-                        --
+                        -- Join comment story user
+                        INNER JOIN users AS "rc->story->user"
+                            ON "rc->story->user".id = "rc->story".user_id
                         -- Boolean like flag
                         LEFT OUTER JOIN reply_likes AS "r->is_liked"
                                         ON "r->is_liked".reply_id = r.id                           

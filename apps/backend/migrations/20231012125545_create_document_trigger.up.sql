@@ -11,7 +11,8 @@ BEGIN
 				   stories
 			   WHERE
 					 id = NEW.story_id
-				 AND deleted_at IS NOT NULL)) THEN
+				 AND deleted_at IS NOT NULL
+			  )) THEN
 		RAISE 'Story is soft-deleted'
 			USING ERRCODE = '52001';
 	END IF;
