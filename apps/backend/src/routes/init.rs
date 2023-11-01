@@ -103,12 +103,31 @@ pub fn init_v1_routes(cfg: &mut web::ServiceConfig) {
     // Notifications
     v1::me::notifications::get::init_routes(cfg);
     v1::me::notifications::read::init_routes(cfg);
-    // Settings
-    // -- Accounts
+    // Settings - Accounts
     v1::me::settings::accounts::remove::init_routes(cfg);
-    // -- Avatar
+    // Settings - Avatar
     v1::me::settings::avatar::init_routes(cfg);
-    // -- Sessions
+    // Settings - Banner
+    v1::me::settings::banner::init_routes(cfg);
+    // Settings - Connections
+    v1::me::settings::connections::visibility::init_routes(cfg);
+    v1::me::settings::connections::remove::init_routes(cfg);
+    // Settings - Email
+    v1::me::settings::email::init_routes(cfg);
+    // Settings - Password
+    v1::me::settings::password::add::init_routes(cfg);
+    v1::me::settings::password::update::init_routes(cfg);
+    v1::me::settings::password::request_verification::init_routes(cfg);
+    // Settings - Privacy
+    v1::me::settings::privacy::delete_account::init_routes(cfg);
+    v1::me::settings::privacy::disable_account::init_routes(cfg);
+    v1::me::settings::privacy::following_list::init_routes(cfg);
+    v1::me::settings::privacy::friend_list::init_routes(cfg);
+    v1::me::settings::privacy::incoming_friend_requests::init_routes(cfg);
+    v1::me::settings::privacy::private_account::init_routes(cfg);
+    v1::me::settings::privacy::read_history::init_routes(cfg);
+    v1::me::settings::privacy::sensitive_content::init_routes(cfg);
+    // Settings - Sessions
     v1::me::settings::sessions::destroy::init_routes(cfg);
     v1::me::settings::sessions::logout::init_routes(cfg);
     // Status

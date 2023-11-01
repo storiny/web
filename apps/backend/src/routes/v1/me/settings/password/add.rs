@@ -1,0 +1,378 @@
+use crate::{
+    constants::{account_activity_type::AccountActivityType, token_type::TokenType},
+    error::{AppError, ToastErrorResponse},
+    middleware::{identity::identity::Identity, session::session::Session},
+    AppState,
+};
+use actix_web::{post, web, HttpResponse};
+use actix_web_validator::Json;
+use argon2::password_hash::rand_core::OsRng;
+use argon2::password_hash::SaltString;
+use argon2::{Argon2, PasswordHash, PasswordHasher, PasswordVerifier};
+use serde::{Deserialize, Serialize};
+use sqlx::Row;
+use time::OffsetDateTime;
+use validator::Validate;
+
+#[derive(Debug, Serialize, Deserialize, Validate)]
+struct Request {
+    #[validate(length(equal = 6, message = "Invalid verification code"))]
+    verification_code: String,
+    #[validate(length(min = 6, max = 64, message = "Invalid password length"))]
+    new_password: String,
+}
+
+#[post("/v1/me/settings/password/add")]
+async fn post(
+    payload: Json<Request>,
+    data: web::Data<AppState>,
+    user: Identity,
+    session: Session,
+) -> Result<HttpResponse, AppError> {
+    match user.id() {
+        Ok(user_id) => {
+            let db_user = sqlx::query(
+                r#"
+                SELECT password FROM users
+                WHERE id = $1
+                "#,
+            )
+            .bind(user_id)
+            .fetch_one(&data.db_pool)
+            .await?;
+
+            let user_password = db_user.get::<Option<String>, _>("password");
+
+            if user_password.is_some() {
+                return Ok(HttpResponse::BadRequest().json(ToastErrorResponse::new(
+                    "You have already set a password".to_string(),
+                )));
+            }
+
+            match sqlx::query(
+                r#"
+                SELECT id, expires_at FROM tokens
+                WHERE type = $1 AND user_id = $2
+                "#,
+            )
+            .bind(TokenType::PasswordAddVerification.to_string())
+            .bind(user_id)
+            .fetch_one(&data.db_pool)
+            .await
+            {
+                Ok(token_result) => {
+                    match PasswordHash::new(&token_result.get::<String, _>("id")) {
+                        Ok(token_hash) => {
+                            // Check if the token is valid
+                            match Argon2::default()
+                                .verify_password(&payload.verification_code.as_bytes(), &token_hash)
+                            {
+                                Ok(_) => {
+                                    let expires_at =
+                                        token_result.get::<OffsetDateTime, _>("expires_at");
+
+                                    // Check if the verification code has expired
+                                    if expires_at < OffsetDateTime::now_utc() {
+                                        return Ok(HttpResponse::BadRequest().json(
+                                            ToastErrorResponse::new(
+                                                "Verification code has expired".to_string(),
+                                            ),
+                                        ));
+                                    }
+
+                                    // Generate a hash from the new password
+                                    match Argon2::default().hash_password(
+                                        &payload.new_password.as_bytes(),
+                                        &SaltString::generate(&mut OsRng),
+                                    ) {
+                                        Ok(hashed_password) => {
+                                            let pg_pool = &data.db_pool;
+                                            let mut txn = pg_pool.begin().await?;
+
+                                            // Delete the verification token
+                                            sqlx::query(
+                                                r#"
+                                                DELETE FROM tokens
+                                                WHERE id = $1
+                                                "#,
+                                            )
+                                            .bind(token_result.get::<String, _>("id"))
+                                            .execute(&mut *txn)
+                                            .await?;
+
+                                            // Update user's password
+                                            sqlx::query(
+                                                r#"
+                                                UPDATE users
+                                                SET password = $1
+                                                WHERE id = $2
+                                                "#,
+                                            )
+                                            .bind(hashed_password.to_string())
+                                            .bind(user_id)
+                                            .execute(&mut *txn)
+                                            .await?;
+
+                                            // Add password-add account activity
+                                            sqlx::query(
+                                                r#"
+                                                INSERT
+                                                    INTO
+                                                    account_activities (type, description, user_id)
+                                                VALUES
+                                                    ($1,
+                                                     'You added a password to your account.',
+                                                     $2)
+                                                "#,
+                                            )
+                                            .bind(AccountActivityType::Password as i16)
+                                            .bind(user_id)
+                                            .execute(&mut *txn)
+                                            .await?;
+
+                                            txn.commit().await?;
+
+                                            // Log the user out and destroy all the sessions
+                                            session.purge_all();
+                                            user.logout();
+
+                                            Ok(HttpResponse::NoContent().finish())
+                                        }
+                                        Err(_) => Ok(HttpResponse::InternalServerError().finish()),
+                                    }
+                                }
+                                Err(_) => {
+                                    Ok(HttpResponse::BadRequest().json(ToastErrorResponse::new(
+                                        "Invalid verification code".to_string(),
+                                    )))
+                                }
+                            }
+                        }
+                        Err(_) => Ok(HttpResponse::InternalServerError().finish()),
+                    }
+                }
+                Err(kind) => match kind {
+                    sqlx::Error::RowNotFound => Ok(HttpResponse::BadRequest().json(
+                        ToastErrorResponse::new("Invalid verification code".to_string()),
+                    )),
+                    _ => Ok(HttpResponse::InternalServerError().finish()),
+                },
+            }
+        }
+        Err(_) => Ok(HttpResponse::InternalServerError().finish()),
+    }
+}
+
+pub fn init_routes(cfg: &mut web::ServiceConfig) {
+    cfg.service(post);
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::test_utils::{assert_toast_error_response, init_app_for_test};
+    use actix_web::test;
+    use argon2::{
+        password_hash::{rand_core::OsRng, SaltString},
+        PasswordHasher,
+    };
+    use nanoid::nanoid;
+    use sqlx::{PgPool, Row};
+    use time::Duration;
+
+    #[sqlx::test]
+    async fn can_add_a_password(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let (app, cookie, user_id) = init_app_for_test(post, pool, true, false).await;
+        let verification_code = nanoid!(6);
+        let salt = SaltString::generate(&mut OsRng);
+        let hashed_verification_code = Argon2::default()
+            .hash_password(&verification_code.as_bytes(), &salt)
+            .unwrap();
+
+        // Insert password-add verification token
+        sqlx::query(
+            r#"
+            INSERT INTO tokens(id, type, user_id, expires_at)
+            VALUES ($1, $2, $3, $4)
+            "#,
+        )
+        .bind(hashed_verification_code.to_string())
+        .bind(TokenType::PasswordAddVerification.to_string())
+        .bind(user_id.unwrap())
+        .bind(OffsetDateTime::now_utc() + Duration::days(1)) // 24 hours
+        .execute(&mut *conn)
+        .await?;
+
+        let req = test::TestRequest::post()
+            .cookie(cookie.unwrap())
+            .uri("/v1/me/settings/password/add")
+            .set_json(Request {
+                new_password: "new_password".to_string(),
+                verification_code: verification_code.clone(),
+            })
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_success());
+
+        // Password should get updated in the database
+        let user = sqlx::query(
+            r#"
+            SELECT password FROM users
+            WHERE id = $1
+            "#,
+        )
+        .bind(user_id.unwrap())
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(Argon2::default()
+            .verify_password(
+                "new_password".as_bytes(),
+                &PasswordHash::new(&user.get::<String, _>("password")).unwrap(),
+            )
+            .is_ok());
+
+        // Token should get removed from the database
+        let token = sqlx::query(
+            r#"
+            SELECT EXISTS(
+                SELECT 1 FROM tokens
+                WHERE id = $1
+            )
+            "#,
+        )
+        .bind(hashed_verification_code.to_string())
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert!(!token.get::<bool, _>("exists"));
+
+        // Should also insert an account activity
+        let result = sqlx::query(
+            r#"
+            SELECT description FROM account_activities
+            WHERE user_id = $1 AND type = $2
+            "#,
+        )
+        .bind(user_id.unwrap())
+        .bind(AccountActivityType::Password as i16)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert_eq!(
+            result.get::<String, _>("description"),
+            "You added a password to your account.".to_string()
+        );
+
+        Ok(())
+    }
+
+    #[sqlx::test]
+    async fn can_reject_add_password_request_for_an_account_with_existing_password(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let (app, cookie, user_id) = init_app_for_test(post, pool, true, true).await;
+
+        // Insert the user
+        let result = sqlx::query(
+            r#"
+            INSERT INTO users(id, name, username, email, password)
+            VALUES ($1, $2, $3, $4, $5)
+            "#,
+        )
+        .bind(user_id.unwrap())
+        .bind("Sample user")
+        .bind("sample_user")
+        .bind("old@example.com")
+        .bind("sample_hashed_password")
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(result.rows_affected(), 1);
+
+        // Send the request
+        let req = test::TestRequest::post()
+            .cookie(cookie.unwrap())
+            .uri("/v1/me/settings/password/add")
+            .set_json(Request {
+                new_password: "new_password".to_string(),
+                verification_code: "000000".to_string(),
+            })
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_client_error());
+        assert_toast_error_response(res, "You have already set a password").await;
+
+        Ok(())
+    }
+
+    #[sqlx::test]
+    async fn can_reject_add_password_request_for_an_expired_verification_code(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let (app, cookie, user_id) = init_app_for_test(post, pool, true, false).await;
+        let verification_code = nanoid!(6);
+        let salt = SaltString::generate(&mut OsRng);
+        let hashed_verification_code = Argon2::default()
+            .hash_password(&verification_code.as_bytes(), &salt)
+            .unwrap();
+
+        // Insert password-add verification token
+        let token_result = sqlx::query(
+            r#"
+            INSERT INTO tokens(id, type, user_id, expires_at)
+            VALUES ($1, $2, $3, $4)
+            "#,
+        )
+        .bind(hashed_verification_code.to_string())
+        .bind(TokenType::PasswordAddVerification.to_string())
+        .bind(user_id.unwrap())
+        .bind(OffsetDateTime::now_utc() - Duration::days(1)) // The token expired yesterday
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(token_result.rows_affected(), 1);
+
+        let req = test::TestRequest::post()
+            .cookie(cookie.unwrap())
+            .uri("/v1/me/settings/password/add")
+            .set_json(Request {
+                new_password: "new_password".to_string(),
+                verification_code,
+            })
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_client_error());
+        assert_toast_error_response(res, "Verification code has expired").await;
+
+        Ok(())
+    }
+
+    #[sqlx::test]
+    async fn can_reject_add_password_request_for_an_invalid_verification_code(
+        pool: PgPool,
+    ) -> sqlx::Result<()> {
+        let (app, cookie, _) = init_app_for_test(post, pool, true, false).await;
+
+        let req = test::TestRequest::post()
+            .cookie(cookie.unwrap())
+            .uri("/v1/me/settings/password/add")
+            .set_json(Request {
+                new_password: "new_password".to_string(),
+                verification_code: nanoid!(6).to_string(),
+            })
+            .to_request();
+        let res = test::call_service(&app, req).await;
+
+        assert!(res.status().is_client_error());
+        assert_toast_error_response(res, "Invalid verification code").await;
+
+        Ok(())
+    }
+}

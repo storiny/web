@@ -89,10 +89,11 @@ export const ExportData = ({
         auto_size
         check_auth
         className={css["fit-w"]}
+        disabled
         onClick={open_modal}
         variant={"hollow"}
       >
-        Request data
+        Available soon
       </Button>
     ),
     <Form<ExportDataSchema>

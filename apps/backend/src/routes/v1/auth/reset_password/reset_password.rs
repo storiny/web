@@ -85,7 +85,7 @@ async fn post(payload: Json<Request>, data: web::Data<AppState>) -> Result<HttpR
                                 ) {
                                     Ok(hashed_password) => {
                                         let pg_pool = &data.db_pool;
-                                        let mut transaction = pg_pool.begin().await?;
+                                        let mut txn = pg_pool.begin().await?;
 
                                         // Delete the token
                                         sqlx::query(
@@ -95,7 +95,7 @@ async fn post(payload: Json<Request>, data: web::Data<AppState>) -> Result<HttpR
                                             "#,
                                         )
                                         .bind(token_result.get::<String, _>("id"))
-                                        .execute(&mut *transaction)
+                                        .execute(&mut *txn)
                                         .await?;
 
                                         // Update user's password
@@ -108,10 +108,10 @@ async fn post(payload: Json<Request>, data: web::Data<AppState>) -> Result<HttpR
                                         )
                                         .bind(hashed_password.to_string())
                                         .bind(user.get::<i64, _>("id"))
-                                        .execute(&mut *transaction)
+                                        .execute(&mut *txn)
                                         .await?;
 
-                                        transaction.commit().await?;
+                                        txn.commit().await?;
 
                                         // Logout of all devices if requested
                                         if payload.logout_of_all_devices {
@@ -196,7 +196,7 @@ mod tests {
                 email: "someone@example.com".to_string(),
                 password: "new_password".to_string(),
                 logout_of_all_devices: false,
-                token: token_id.clone(),
+                token: token_id,
             })
             .to_request();
         let res = test::call_service(&app, req).await;
@@ -221,7 +221,7 @@ mod tests {
             )
             .is_ok());
 
-        // Token should get removed from the database.
+        // Token should get removed from the database
         let token = sqlx::query(
             r#"
             SELECT EXISTS(
@@ -230,7 +230,7 @@ mod tests {
             )
             "#,
         )
-        .bind(&token_id)
+        .bind(hashed_token.to_string())
         .fetch_one(&mut *conn)
         .await?;
 

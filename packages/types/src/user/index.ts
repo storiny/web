@@ -23,10 +23,13 @@ interface UserLoginProps {
 }
 
 interface UserOptionalProps {
+  allow_sensitive_content?: boolean;
   connections?: Connection<false>[];
   email?: string;
-  mfa_enabled?: boolean; // Multifactor auth
-  mfa_secret?: string | null; // MFA secret
+  mfa_enabled?: boolean;
+  // Multifactor auth
+  mfa_secret?: string | null;
+  // MFA secret
   password?: string | null;
   username_modified_at?: string | null;
 }

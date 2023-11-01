@@ -25,8 +25,7 @@ import { AddPasswordProps } from "./add-password.props";
 import {
   ADD_PASSWORD_SCHEMA,
   AddPasswordSchema,
-  VERIFICATION_CODE_MAX_LENGTH,
-  VERIFICATION_CODE_MIN_LENGTH
+  VERIFICATION_CODE_LENGTH
 } from "./add-password.schema";
 import { add_password_screen_atom, AddPasswordScreen } from "./atom";
 
@@ -66,8 +65,7 @@ const AddPasswordModal = (): React.ReactElement => {
               }
             }}
             label={"Verification code"}
-            maxLength={VERIFICATION_CODE_MAX_LENGTH}
-            minLength={VERIFICATION_CODE_MIN_LENGTH}
+            maxLength={VERIFICATION_CODE_LENGTH}
             name={"verification_code"}
             required
           />

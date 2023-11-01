@@ -1,23 +1,6 @@
-use serde::{
-    Deserialize,
-    Serialize,
-};
+use serde::{Deserialize, Serialize};
 use sqlx::FromRow;
 use time::OffsetDateTime;
-
-#[derive(Debug, sqlx::Type, Serialize, Deserialize, Copy, Clone)]
-pub enum FollowingListVisibility {
-    Everyone,
-    Friends,
-    None,
-}
-
-#[derive(Debug, sqlx::Type, Serialize, Deserialize, Copy, Clone)]
-pub enum FriendListVisibility {
-    Everyone,
-    Friends,
-    None,
-}
 
 #[derive(Debug, sqlx::Type, Serialize, Deserialize, Copy, Clone)]
 pub enum UserFlag {

@@ -33,9 +33,10 @@ CREATE TABLE IF NOT EXISTS users
 	-- Privacy settings
 	is_private                BOOL           NOT NULL DEFAULT FALSE,
 	incoming_friend_requests  SMALLINT       NOT NULL DEFAULT 1, -- 1 (everyone) by default
-	following_list_visibility SMALLINT       NOT NULL DEFAULT 0, -- 0 (everyone) by default
-	friend_list_visibility    SMALLINT       NOT NULL DEFAULT 0, -- 0 (everyone) by default
+	following_list_visibility SMALLINT       NOT NULL DEFAULT 1, -- 1 (everyone) by default
+	friend_list_visibility    SMALLINT       NOT NULL DEFAULT 1, -- 1 (everyone) by default
 	disable_read_history      BOOL           NOT NULL DEFAULT FALSE,
+	allow_sensitive_content BOOL NOT NULL DEFAULT FALSE,
 	-- Third-party login credentials
 	login_apple_id            TEXT
 		CONSTRAINT login_apple_id_length CHECK (CHAR_LENGTH(login_apple_id) <= 256),

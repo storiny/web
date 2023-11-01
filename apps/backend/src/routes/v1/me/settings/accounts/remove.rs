@@ -1,3 +1,4 @@
+use crate::constants::account_activity_type::AccountActivityType;
 use crate::{
     error::AppError, error::ToastErrorResponse, middleware::identity::identity::Identity, AppState,
 };
@@ -57,23 +58,45 @@ async fn post(
                             if payload.vendor == "apple" {
                                 sqlx::query(
                                     r#"
-                                    UPDATE users
-                                    SET login_apple_id = NULL
-                                    WHERE id = $1
+                                    WITH
+                                        updated_user AS (
+                                            UPDATE users
+                                                SET login_apple_id = NULL
+                                                WHERE id = $1
+                                        )
+                                    INSERT
+                                    INTO
+                                        account_activities (type, description, user_id)
+                                    VALUES
+                                        ($2,
+                                         'You removed <m>Apple</m> as a third-party login method.',
+                                         $1)
                                     "#,
                                 )
                                 .bind(user_id)
+                                .bind(AccountActivityType::ThirdPartyLogin as i16)
                                 .execute(&data.db_pool)
                                 .await?;
                             } else {
                                 sqlx::query(
                                     r#"
-                                    UPDATE users
-                                    SET login_google_id = NULL
-                                    WHERE id = $1
+                                    WITH
+                                        updated_user AS (
+                                            UPDATE users
+                                                SET login_google_id = NULL
+                                                WHERE id = $1
+                                        )
+                                    INSERT
+                                    INTO
+                                        account_activities (type, description, user_id)
+                                    VALUES
+                                        ($2,
+                                         'You removed <m>Google</m> as a third-party login method.',
+                                         $1)
                                     "#,
                                 )
                                 .bind(user_id)
+                                .bind(AccountActivityType::ThirdPartyLogin as i16)
                                 .execute(&data.db_pool)
                                 .await?;
                             }
@@ -131,7 +154,7 @@ mod tests {
             VALUES ($1, $2, $3, $4, $5, $6, $7)
             "#,
         )
-        .bind(1_i64)
+        .bind(user_id.unwrap())
         .bind("Sample user")
         .bind("sample_user")
         .bind("sample@example.com")
@@ -169,6 +192,26 @@ mod tests {
 
         assert!(result.get::<Option<String>, _>("login_apple_id").is_none());
 
+        // Should also insert an account activity (for Apple)
+        let result = sqlx::query(
+            r#"
+            SELECT description FROM account_activities
+            WHERE user_id = $1 AND type = $2
+            ORDER BY
+                created_at DESC
+            LIMIT 1
+            "#,
+        )
+        .bind(user_id.unwrap())
+        .bind(AccountActivityType::ThirdPartyLogin as i16)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert_eq!(
+            result.get::<String, _>("description"),
+            "You removed <m>Apple</m> as a third-party login method.".to_string()
+        );
+
         // Remove Google login account
         let req = test::TestRequest::post()
             .cookie(cookie.unwrap())
@@ -194,6 +237,26 @@ mod tests {
         .await?;
 
         assert!(result.get::<Option<String>, _>("login_google_id").is_none());
+
+        // Should also insert an account activity (for Google)
+        let result = sqlx::query(
+            r#"
+            SELECT description FROM account_activities
+            WHERE user_id = $1 AND type = $2
+            ORDER BY
+                created_at DESC
+            LIMIT 1
+            "#,
+        )
+        .bind(user_id.unwrap())
+        .bind(AccountActivityType::ThirdPartyLogin as i16)
+        .fetch_one(&mut *conn)
+        .await?;
+
+        assert_eq!(
+            result.get::<String, _>("description"),
+            "You removed <m>Google</m> as a third-party login method.".to_string()
+        );
 
         Ok(())
     }
@@ -230,7 +293,7 @@ mod tests {
     ) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(post, pool, true, true).await;
-        let (password_hash, password) = get_sample_password();
+        let (password_hash, _) = get_sample_password();
 
         // Insert the user
         let result = sqlx::query(
@@ -239,7 +302,7 @@ mod tests {
             VALUES ($1, $2, $3, $4, $5, $6, $7)
             "#,
         )
-        .bind(1_i64)
+        .bind(user_id.unwrap())
         .bind("Sample user")
         .bind("sample_user")
         .bind("sample@example.com")

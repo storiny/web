@@ -103,7 +103,7 @@ export class PenBrush extends BaseBrush {
    */
   private points: Point[];
   /**
-   * Boolean flag indicating wether the temporary drawing has finished
+   * Boolean flag indicating whether the temporary drawing has finished
    * (mouse-up event), and the drawing needs to be off-loaded to the
    * main canvas
    * @private
