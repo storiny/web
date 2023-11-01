@@ -1,3 +1,4 @@
+use crate::models::user::USERNAME_REGEX;
 use crate::{
     constants::{
         email_source::EMAIL_SOURCE, email_templates::EmailTemplate,
@@ -14,19 +15,13 @@ use argon2::{
     Argon2, PasswordHasher,
 };
 use email_address::EmailAddress;
-use lazy_static::lazy_static;
 use nanoid::nanoid;
-use regex::Regex;
 use rusoto_ses::{Destination, SendTemplatedEmailRequest, Ses};
 use serde::{Deserialize, Serialize};
 use slugify::slugify;
 use sqlx::Row;
 use time::{Duration, OffsetDateTime};
 use validator::Validate;
-
-lazy_static! {
-    static ref USERNAME_REGEX: Regex = Regex::new(r"^[\w_]+$").unwrap();
-}
 
 #[derive(Debug, Serialize, Deserialize, Validate)]
 struct Request {

@@ -112,6 +112,10 @@ pub fn init_v1_routes(cfg: &mut web::ServiceConfig) {
     // Settings - Connections
     v1::me::settings::connections::visibility::init_routes(cfg);
     v1::me::settings::connections::remove::init_routes(cfg);
+    // Settings - Notifications
+    v1::me::settings::notifications::mail::init_routes(cfg);
+    v1::me::settings::notifications::site::init_routes(cfg);
+    v1::me::settings::notifications::unsubscribe::init_routes(cfg);
     // Settings - Email
     v1::me::settings::email::init_routes(cfg);
     // Settings - Password
@@ -127,19 +131,23 @@ pub fn init_v1_routes(cfg: &mut web::ServiceConfig) {
     v1::me::settings::privacy::private_account::init_routes(cfg);
     v1::me::settings::privacy::read_history::init_routes(cfg);
     v1::me::settings::privacy::sensitive_content::init_routes(cfg);
+    // Settings - Profile
+    v1::me::settings::profile::init_routes(cfg);
     // Settings - Sessions
     v1::me::settings::sessions::destroy::init_routes(cfg);
     v1::me::settings::sessions::logout::init_routes(cfg);
+    // Settings - Username
+    v1::me::settings::username::init_routes(cfg);
     // Status
     v1::me::status::post::init_routes(cfg);
     v1::me::status::delete::init_routes(cfg);
     // Stories
-    // v1::me::stories::get::init_routes(cfg);
-    // v1::me::stories::metadata::init_routes(cfg);
-    // v1::me::stories::publish::init_routes(cfg);
-    // v1::me::stories::recover::init_routes(cfg);
-    // v1::me::stories::unpublish::init_routes(cfg);
-    // v1::me::stories::delete::init_routes(cfg);
+    v1::me::stories::get::init_routes(cfg);
+    v1::me::stories::metadata::init_routes(cfg);
+    v1::me::stories::publish::init_routes(cfg);
+    v1::me::stories::recover::init_routes(cfg);
+    v1::me::stories::unpublish::init_routes(cfg);
+    v1::me::stories::delete::init_routes(cfg);
     // Unread notifications
     v1::me::unread_notifications::init_routes(cfg);
 }

@@ -115,7 +115,9 @@ async fn get(
                     stories d
                 WHERE
                     d.user_id = $1
-                    AND d.published_at IS NULL
+                    -- Use `first_published_at` instead of `published_at` to ensure
+                    -- that soft-deleted published stories are excluded from results
+                    AND d.first_published_at IS NULL
                 "#,
             );
 

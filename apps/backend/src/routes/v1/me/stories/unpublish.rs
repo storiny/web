@@ -1,65 +1,47 @@
-use crate::{
-    constants::sql_states::SqlState, error::AppError, middleware::identity::identity::Identity,
-    AppState,
-};
+use crate::error::ToastErrorResponse;
+use crate::{error::AppError, middleware::identity::identity::Identity, AppState};
 use actix_web::{post, web, HttpResponse};
 use serde::Deserialize;
 use validator::Validate;
 
 #[derive(Deserialize, Validate)]
 struct Fragments {
-    user_id: String,
+    story_id: String,
 }
 
-#[post("/v1/me/blocked-users/{user_id}")]
+#[post("/v1/me/stories/{story_id}/unpublish")]
 async fn post(
     path: web::Path<Fragments>,
     data: web::Data<AppState>,
     user: Identity,
 ) -> Result<HttpResponse, AppError> {
     match user.id() {
-        Ok(user_id) => {
-            match path.user_id.parse::<i64>() {
-                Ok(blocked_id) => {
-                    match sqlx::query(
-                        r#"
-                        INSERT INTO blocks(blocker_id, blocked_id)
-                        VALUES ($1, $2)
-                        "#,
-                    )
-                    .bind(user_id)
-                    .bind(blocked_id)
-                    .execute(&data.db_pool)
-                    .await
-                    {
-                        Ok(_) => Ok(HttpResponse::Created().finish()),
-                        Err(err) => {
-                            if let Some(db_err) = err.into_database_error() {
-                                match db_err.kind() {
-                                    // Do not throw if already blocked
-                                    sqlx::error::ErrorKind::UniqueViolation => {
-                                        Ok(HttpResponse::NoContent().finish())
-                                    }
-                                    _ => {
-                                        // Check if the blocked user is soft-deleted or deactivated
-                                        if db_err.code().unwrap_or_default()
-                                            == SqlState::EntityUnavailable.to_string()
-                                        {
-                                            Ok(HttpResponse::BadRequest().body("User being blocked is either deleted or deactivated"))
-                                        } else {
-                                            Ok(HttpResponse::InternalServerError().finish())
-                                        }
-                                    }
-                                }
-                            } else {
-                                Ok(HttpResponse::InternalServerError().finish())
-                            }
-                        }
-                    }
+        Ok(user_id) => match path.story_id.parse::<i64>() {
+            Ok(story_id) => {
+                match sqlx::query(
+                    r#"
+                    UPDATE stories
+                    SET published_at = NULL
+                    WHERE
+                        user_id = $1
+                        AND id = $2
+                        AND published_at IS NOT NULL
+                        AND deleted_at IS NULL
+                    "#,
+                )
+                .bind(user_id)
+                .bind(story_id)
+                .execute(&data.db_pool)
+                .await?
+                .rows_affected()
+                {
+                    0 => Ok(HttpResponse::BadRequest()
+                        .json(ToastErrorResponse::new("Story not found".to_string()))),
+                    _ => Ok(HttpResponse::NoContent().finish()),
                 }
-                Err(_) => Ok(HttpResponse::BadRequest().body("Invalid user ID")),
             }
-        }
+            Err(_) => Ok(HttpResponse::BadRequest().body("Invalid story ID")),
+        },
         Err(_) => Ok(HttpResponse::InternalServerError().finish()),
     }
 }
@@ -71,130 +53,130 @@ pub fn init_routes(cfg: &mut web::ServiceConfig) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::test_utils::{assert_response_body_text, init_app_for_test};
+    use crate::test_utils::{assert_toast_error_response, init_app_for_test};
     use actix_web::test;
     use sqlx::{PgPool, Row};
+    use time::OffsetDateTime;
 
-    #[sqlx::test(fixtures("user"))]
-    async fn can_block_a_user(pool: PgPool) -> sqlx::Result<()> {
+    #[sqlx::test]
+    async fn can_unpublish_a_story(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
         let (app, cookie, user_id) = init_app_for_test(post, pool, true, false).await;
 
+        // Insert a published story
+        let result = sqlx::query(
+            r#"
+            INSERT INTO stories(id, user_id, published_at)
+            VALUES ($1, $2, now())
+            "#,
+        )
+        .bind(2_i64)
+        .bind(user_id.unwrap())
+        .execute(&mut *conn)
+        .await?;
+
+        assert_eq!(result.rows_affected(), 1);
+
         let req = test::TestRequest::post()
             .cookie(cookie.unwrap())
-            .uri(&format!("/v1/me/blocked-users/{}", 2))
+            .uri(&format!("/v1/me/stories/{}/unpublish", 2))
             .to_request();
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_success());
 
-        // Block should be present in the database
+        // Story should get updated in the database
         let result = sqlx::query(
             r#"
-            SELECT EXISTS(
-                SELECT 1 FROM blocks
-                WHERE blocker_id = $1 AND blocked_id = $2
-            )
+            SELECT published_at FROM stories
+            WHERE id = $1
             "#,
         )
-        .bind(user_id)
         .bind(2_i64)
         .fetch_one(&mut *conn)
         .await?;
 
-        assert!(result.get::<bool, _>("exists"));
+        assert!(result
+            .get::<Option<OffsetDateTime>, _>("published_at")
+            .is_none());
 
         Ok(())
     }
 
-    #[sqlx::test(fixtures("user"))]
-    async fn should_not_throw_when_blocking_an_already_blocked_user(
-        pool: PgPool,
-    ) -> sqlx::Result<()> {
-        let (app, cookie, _) = init_app_for_test(post, pool, true, false).await;
+    #[sqlx::test]
+    async fn should_not_unpublish_drafts(pool: PgPool) -> sqlx::Result<()> {
+        let mut conn = pool.acquire().await?;
+        let (app, cookie, user_id) = init_app_for_test(post, pool, true, false).await;
 
-        // Block the user for the first time
-        let req = test::TestRequest::post()
-            .cookie(cookie.clone().unwrap())
-            .uri(&format!("/v1/me/blocked-users/{}", 2))
-            .to_request();
-        let res = test::call_service(&app, req).await;
+        // Insert a draft
+        let result = sqlx::query(
+            r#"
+            INSERT INTO stories(id, user_id)
+            VALUES ($1, $2)
+            "#,
+        )
+        .bind(2_i64)
+        .bind(user_id.unwrap())
+        .execute(&mut *conn)
+        .await?;
 
-        assert!(res.status().is_success());
+        assert_eq!(result.rows_affected(), 1);
 
-        // Try blocking the user again
         let req = test::TestRequest::post()
             .cookie(cookie.unwrap())
-            .uri(&format!("/v1/me/blocked-users/{}", 2))
+            .uri(&format!("/v1/me/stories/{}/unpublish", 2))
             .to_request();
         let res = test::call_service(&app, req).await;
 
-        // Should not throw
-        assert!(res.status().is_success());
+        assert!(res.status().is_client_error());
+        assert_toast_error_response(res, "Story not found").await;
 
         Ok(())
     }
 
-    #[sqlx::test(fixtures("user"))]
-    async fn should_not_block_a_soft_deleted_user(pool: PgPool) -> sqlx::Result<()> {
+    #[sqlx::test]
+    async fn should_not_unpublish_soft_deleted_stories(pool: PgPool) -> sqlx::Result<()> {
         let mut conn = pool.acquire().await?;
-        let (app, cookie, _) = init_app_for_test(post, pool, true, false).await;
+        let (app, cookie, user_id) = init_app_for_test(post, pool, true, false).await;
 
-        // Soft-delete the target user
+        // Insert a soft-deleted story
         let result = sqlx::query(
             r#"
-            UPDATE users
-            SET deleted_at = now()
-            WHERE id = $1
+            INSERT INTO stories(id, user_id, deleted_at, published_at)
+            VALUES ($1, $2, now(), now())
             "#,
         )
         .bind(2_i64)
+        .bind(user_id.unwrap())
         .execute(&mut *conn)
         .await?;
 
         assert_eq!(result.rows_affected(), 1);
 
-        // Try blocking the user
         let req = test::TestRequest::post()
-            .cookie(cookie.clone().unwrap())
-            .uri(&format!("/v1/me/blocked-users/{}", 2))
+            .cookie(cookie.unwrap())
+            .uri(&format!("/v1/me/stories/{}/unpublish", 2))
             .to_request();
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_client_error());
-        assert_response_body_text(res, "User being blocked is either deleted or deactivated").await;
+        assert_toast_error_response(res, "Story not found").await;
 
         Ok(())
     }
 
-    #[sqlx::test(fixtures("user"))]
-    async fn should_not_block_a_deactivated_user(pool: PgPool) -> sqlx::Result<()> {
-        let mut conn = pool.acquire().await?;
+    #[sqlx::test]
+    async fn can_handle_unknown_stories(pool: PgPool) -> sqlx::Result<()> {
         let (app, cookie, _) = init_app_for_test(post, pool, true, false).await;
 
-        // Deactivate the target user
-        let result = sqlx::query(
-            r#"
-            UPDATE users
-            SET deactivated_at = now()
-            WHERE id = $1
-            "#,
-        )
-        .bind(2_i64)
-        .execute(&mut *conn)
-        .await?;
-
-        assert_eq!(result.rows_affected(), 1);
-
-        // Try blocking the user
         let req = test::TestRequest::post()
-            .cookie(cookie.clone().unwrap())
-            .uri(&format!("/v1/me/blocked-users/{}", 2))
+            .cookie(cookie.unwrap())
+            .uri(&format!("/v1/me/stories/{}/unpublish", 12345))
             .to_request();
         let res = test::call_service(&app, req).await;
 
         assert!(res.status().is_client_error());
-        assert_response_body_text(res, "User being blocked is either deleted or deactivated").await;
+        assert_toast_error_response(res, "Story not found").await;
 
         Ok(())
     }

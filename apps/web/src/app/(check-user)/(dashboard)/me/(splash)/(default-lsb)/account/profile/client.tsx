@@ -50,8 +50,8 @@ const ProfileSettingsClient = (): React.ReactElement => {
           <DashboardGroup>
             <TitleBlock title={"Username"}>
               Your username is unique to you globally, and changing it will
-              break any existing links to your profile. Therefore, we only allow
-              changing it once a month.{" "}
+              break any existing links to your profile. You can only change your
+              username once a month.{" "}
               <Link
                 // TODO(future): Get rid of notion
                 href={

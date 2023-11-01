@@ -45,11 +45,6 @@ BEGIN
 		NEW.read_count := 0;
 		NEW.edited_at := NULL;
 		--
-		-- Do not reset `first_published_at` on unpublish as it helps in keeping track of whether the story was unpublished
-		IF (OLD.deleted_at IS NULL AND NEW.deleted_at IS NOT NULL) THEN
-			NEW.first_published_at := NULL;
-		END IF;
-		--
 		-- Decrement `story_count` on user if the story was previously published
 		IF (OLD.published_at IS NOT NULL) THEN
 			UPDATE

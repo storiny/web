@@ -1762,10 +1762,10 @@ mod tests {
         .execute(&mut *conn)
         .await?;
 
-        // Should reset the `edited_at`, and `first_published_at` timestamps
+        // Should reset the `edited_at` timestamp
         let result = sqlx::query(
             r#"
-            SELECT edited_at, first_published_at FROM stories
+            SELECT edited_at FROM stories
             WHERE id = $1
             "#,
         )
@@ -1775,9 +1775,6 @@ mod tests {
 
         assert!(result
             .get::<Option<OffsetDateTime>, _>("edited_at")
-            .is_none());
-        assert!(result
-            .get::<Option<OffsetDateTime>, _>("first_published_at")
             .is_none());
 
         Ok(())
@@ -1829,10 +1826,10 @@ mod tests {
         .execute(&mut *conn)
         .await?;
 
-        // Should reset the `edited_at` timestamp and skip the `first_published_at` timestamp
+        // Should reset the `edited_at` timestamp
         let result = sqlx::query(
             r#"
-            SELECT edited_at, first_published_at FROM stories
+            SELECT edited_at FROM stories
             WHERE id = $1
             "#,
         )
@@ -1843,9 +1840,6 @@ mod tests {
         assert!(result
             .get::<Option<OffsetDateTime>, _>("edited_at")
             .is_none());
-        assert!(result
-            .get::<Option<OffsetDateTime>, _>("first_published_at")
-            .is_some());
 
         Ok(())
     }
